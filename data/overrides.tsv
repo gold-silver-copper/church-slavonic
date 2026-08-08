@@ -1,0 +1,2 @@
+lemma	pos	feature	variants	reason	source	review_status
+# Ordered variants use ` || `; optional source romanization uses `form :: romanization`.

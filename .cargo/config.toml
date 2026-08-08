@@ -1,0 +1,8 @@
+# Verify the facade package before the matching core version exists on
+# crates.io. Cargo configuration is not embedded in the resulting .crate;
+# actual releases publish old-church-slavonic-core first.
+[alias]
+xtask = "run --package xtask --"
+
+[patch.crates-io]
+old-church-slavonic-core = { path = "crates/old-church-slavonic-core" }

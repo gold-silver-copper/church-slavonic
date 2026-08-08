@@ -1,0 +1,18 @@
+registry_schema = 1
+
+[[source]]
+name = "English Wiktionary Old Church Slavonic via Kaikki"
+url = "https://kaikki.org/dictionary/Old%20Church%20Slavonic/kaikki.org-dictionary-OldChurchSlavonic.jsonl"
+wiktionary_dump_date = "2026-07-06"
+kaikki_extraction_date = "2026-08-02"
+bytes = 46091411
+sha256 = "5bd61e747aa7aeb677af92b4e32c65476e5c6ee74bff146269460c962be5456c"
+wiktextract_commit = "d9fa233"
+refresh_command = "cargo xtask refresh-data --dump <PATH>"
+license = "CC BY-SA 4.0 for this distribution; upstream is also available under GFDL 1.1 or later"
+
+[[optional_evaluation_source]]
+name = "UD Old Church Slavonic PROIEL"
+url = "https://universaldependencies.org/treebanks/cu_proiel/index.html"
+bundled = false
+license = "CC BY-NC-SA 4.0"
