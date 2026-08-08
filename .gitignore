@@ -2,4 +2,6 @@
 /data/raw/
 /data/intermediate/
 *.tmp
+reports/corpus-details*.tsv
+target/corpus-evaluation/
 .DS_Store

@@ -10,6 +10,7 @@ licenses.
 | Generated Rust dictionary tables | `crates/old-church-slavonic/generated` | derived from English Wiktionary; CC BY-SA 4.0 |
 | Extraction/accuracy reports containing forms | `reports` | derived from English Wiktionary; CC BY-SA 4.0 |
 | UD OCS PROIEL | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
+| Syntacticus native PROIEL/TOROT OCS selection | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
 
 ## English Wiktionary and Wiktextract
 
@@ -40,6 +41,19 @@ The optional evaluation command accepts a user-supplied checkout of UD Old Churc
 Slavonic PROIEL. It is not included in this repository, generated data, runtime
 crate, or package because its license is CC BY-NC-SA 4.0. See
 <https://universaldependencies.org/treebanks/cu_proiel/index.html>.
+
+## Syntacticus / native PROIEL and TOROT
+
+Past-subtype evaluation optionally reads the original PROIEL XML distributed by the
+Syntacticus treebank data project:
+<https://github.com/syntacticus/syntacticus-treebank-data>. The pinned selection is
+Codex Marianus, Suprasliensis, Euchologium Sinaiticum, the Kiev Missal, Psalterium
+Sinaiticum, and Zographensis at release `20230428`. The source XML identifies the
+license as CC BY-NC-SA 4.0. Neither XML, token listings, nor mismatch excerpts are
+bundled; only non-reconstructive aggregate metrics and hashes are committed.
+
+Exact commits, paths, and SHA-256 values for both corpora are recorded in
+`data/evaluation-sources.json`.
 
 ## Reuse
 

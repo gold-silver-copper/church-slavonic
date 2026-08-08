@@ -20,33 +20,55 @@ pub fn decline(
         class: lexeme.class,
     };
     let lexeme = &normalized_lexeme;
-    let (stem, ending, rule_id) = match (lexeme.class, cell.form) {
-        (AdjectiveClass::Hard, AdjectiveForm::Short) => (
-            strip_citation(&lexeme.lemma, &["ъ"], "hard")?,
-            hard_short_ending(cell),
-            RuleId::AdjectiveHardShort,
-        ),
-        (AdjectiveClass::Hard, AdjectiveForm::Long) => (
-            strip_citation(&lexeme.lemma, &["ъ"], "hard")?,
-            hard_long_ending(cell),
-            RuleId::AdjectiveHardLong,
-        ),
-        (AdjectiveClass::Soft, AdjectiveForm::Short) => (
-            strip_citation(&lexeme.lemma, &["ь", "и"], "soft")?,
-            soft_short_ending(cell),
-            RuleId::AdjectiveSoftShort,
-        ),
-        (AdjectiveClass::Soft, AdjectiveForm::Long) => (
-            strip_citation(&lexeme.lemma, &["ь", "и"], "soft")?,
-            soft_long_ending(cell),
-            RuleId::AdjectiveSoftLong,
-        ),
+    let stem = match lexeme.class {
+        AdjectiveClass::Hard => strip_citation(&lexeme.lemma, &["ъ"], "hard")?,
+        AdjectiveClass::Soft => strip_citation(&lexeme.lemma, &["ь", "и"], "soft")?,
     };
-    let changed_stem = if lexeme.class == AdjectiveClass::Hard
+    decline_validated_stem(stem, lexeme.class, cell, &lexeme.lemma)
+}
+
+/// Declines an already selected adjective stem. Participles use this entry point so
+/// adjective agreement has one implementation without pretending the verbal stem is
+/// itself a dictionary adjective citation.
+pub fn decline_stem(
+    stem: &str,
+    class: AdjectiveClass,
+    cell: AdjectiveCell,
+) -> Result<PredictedForm, InflectionError> {
+    let stem = crate::orthography::canonical_display(stem)?;
+    if stem.is_empty() {
+        return Err(InflectionError::InvalidInput {
+            reason: "an adjective agreement stem cannot be empty".to_string(),
+        });
+    }
+    decline_validated_stem(&stem, class, cell, &stem)
+}
+
+fn decline_validated_stem(
+    stem: &str,
+    class: AdjectiveClass,
+    cell: AdjectiveCell,
+    before: &str,
+) -> Result<PredictedForm, InflectionError> {
+    let (ending, rule_id) = match (class, cell.form) {
+        (AdjectiveClass::Hard, AdjectiveForm::Short) => {
+            (hard_short_ending(cell), RuleId::AdjectiveHardShort)
+        }
+        (AdjectiveClass::Hard, AdjectiveForm::Long) => {
+            (hard_long_ending(cell), RuleId::AdjectiveHardLong)
+        }
+        (AdjectiveClass::Soft, AdjectiveForm::Short) => {
+            (soft_short_ending(cell), RuleId::AdjectiveSoftShort)
+        }
+        (AdjectiveClass::Soft, AdjectiveForm::Long) => {
+            (soft_long_ending(cell), RuleId::AdjectiveSoftLong)
+        }
+    };
+    let changed_stem = if class == AdjectiveClass::Hard
         && (ending.starts_with('ѣ') || matches!(ending, "и" | "ии"))
     {
         palatalize(stem, [('к', "ц"), ('г', "ѕ"), ('х', "с")])
-    } else if lexeme.class == AdjectiveClass::Hard && ending == "е" {
+    } else if class == AdjectiveClass::Hard && ending == "е" {
         palatalize(stem, [('к', "ч"), ('г', "ж"), ('х', "ш")])
     } else {
         stem.to_string()
@@ -57,7 +79,7 @@ pub fn decline(
         rule_id,
         trace: vec![RuleStep {
             rule_id,
-            before: lexeme.lemma.clone(),
+            before: before.to_string(),
             after: text,
             reason: "attach the class and form specific adjective agreement ending",
         }],

@@ -51,8 +51,21 @@ pub enum MetadataField {
     Animacy,
     VerbClass,
     PresentStem,
+    PresentFirstSingularStem,
+    ImperfectStem,
+    ImperfectFormation,
     AoristStem,
-    ParticipleStem,
+    AoristFormation,
+    ImperativeStem,
+    ImperativeFormation,
+    PresentActiveParticipleStem,
+    PresentActiveParticipleFormation,
+    PresentPassiveParticipleStem,
+    PresentPassiveParticipleFormation,
+    PastActiveParticipleStem,
+    PastActiveParticipleFormation,
+    PastPassiveParticipleStem,
+    PastPassiveParticipleFormation,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

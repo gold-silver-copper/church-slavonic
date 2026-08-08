@@ -261,6 +261,65 @@ pub enum VerbClass {
     Irregular,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum VerbAspect {
+    Perfective,
+    Imperfective,
+    Biaspectual,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ImperfectFormation {
+    /// The infinitive-aorist stem takes the `-ах-` series.
+    A,
+    /// The infinitive-aorist stem takes the `-ѣах-` series.
+    YatA,
+    /// A final velar is first-palatalized before the `-аах-` series.
+    PalatalizedA,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum AoristFormation {
+    Asigmatic,
+    Sigmatic,
+    New,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ImperativeFormation {
+    /// `-и-` throughout the non-singular imperative, after a palatal or `j`-stem.
+    ISeries,
+    /// Singular `-и`, but non-singular `-ѣ-`, after a non-palatal consonant.
+    YatSeries,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PresentActiveParticipleFormation {
+    YushtHard,
+    YushtSoft,
+    YeshtSoft,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PresentPassiveParticipleFormation {
+    Im,
+    Em,
+    Om,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PastActiveParticipleFormation {
+    Ush,
+    Vush,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PastPassiveParticipleFormation {
+    T,
+    N,
+    En,
+}
+
 impl VerbClass {
     pub const fn code(self) -> &'static str {
         match self {
@@ -334,6 +393,44 @@ pub struct ImperativeCell {
 }
 
 impl ImperativeCell {
+    pub const SUPPORTED: [Self; 6] = [
+        Self {
+            person: Person::Second,
+            number: Number::Singular,
+        },
+        Self {
+            person: Person::Third,
+            number: Number::Singular,
+        },
+        Self {
+            person: Person::First,
+            number: Number::Dual,
+        },
+        Self {
+            person: Person::Second,
+            number: Number::Dual,
+        },
+        Self {
+            person: Person::First,
+            number: Number::Plural,
+        },
+        Self {
+            person: Person::Second,
+            number: Number::Plural,
+        },
+    ];
+
+    pub const fn is_supported(self) -> bool {
+        matches!(
+            (self.person, self.number),
+            (Person::Second | Person::Third, Number::Singular)
+                | (
+                    Person::First | Person::Second,
+                    Number::Dual | Number::Plural
+                )
+        )
+    }
+
     pub fn key(self) -> String {
         format!(
             "verb:imperative:{}:{}",

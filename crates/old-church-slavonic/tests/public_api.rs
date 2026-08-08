@@ -2,10 +2,12 @@ use old_church_slavonic::adjective::AdjectiveLexeme;
 use old_church_slavonic::noun::NounLexeme;
 use old_church_slavonic::verb::VerbLexeme;
 use old_church_slavonic::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, ClosedClassCell, FiniteTense,
-    FiniteVerbCell, FormSource, Gender, ImperativeCell, InflectionError, InflectionWarning,
-    LParticipleCell, NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell,
-    ParticipleKind, Person, VerbClass,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
+    FiniteTense, FiniteVerbCell, FormSource, Gender, ImperativeCell, ImperativeFormation,
+    ImperfectFormation, InflectionError, InflectionWarning, LParticipleCell, NounCell, NounClass,
+    Number, NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
+    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RuleId, VerbClass,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -239,10 +241,115 @@ fn safe_dictionary_verb_components_have_typed_apis() {
             .collect::<Vec<_>>(),
         ["благословл҄ь", "благословивъ"]
     );
+    assert_eq!(
+        old_church_slavonic::participle_citation("благословити", ParticipleKind::PresentActive,)
+            .expect("safely tagged present active participle")
+            .variants[0]
+            .text,
+        "благословѧ"
+    );
+}
+
+#[test]
+fn explicit_verb_system_apis_expose_rules_traces_and_historical_cells() {
+    let mut lexeme = VerbLexeme::new("нести", VerbClass::IA1);
+    lexeme.stems.imperfect = Some("нес".to_string());
+    lexeme.formations.imperfect = Some(ImperfectFormation::YatA);
+    lexeme.stems.aorist = Some("рек".to_string());
+    lexeme.formations.aorist = Some(AoristFormation::New);
+    lexeme.stems.imperative = Some("нес".to_string());
+    lexeme.formations.imperative = Some(ImperativeFormation::YatSeries);
+
+    let imperfect = old_church_slavonic::finite_verb_with(
+        &lexeme,
+        FiniteVerbCell {
+            tense: FiniteTense::Imperfect,
+            person: Person::Third,
+            number: Number::Dual,
+        },
+    )
+    .expect("explicit imperfect");
+    assert_eq!(imperfect.variants[0].text, "несѣашете");
     assert!(matches!(
-        old_church_slavonic::participle_citation("благословити", ParticipleKind::PresentActive,),
+        imperfect.source,
+        FormSource::ExplicitMetadataRule {
+            rule_id: RuleId::VerbImperfectYatA
+        }
+    ));
+    assert_eq!(imperfect.trace.len(), 1);
+
+    assert_eq!(
+        old_church_slavonic::finite_verb_with(
+            &lexeme,
+            FiniteVerbCell {
+                tense: FiniteTense::Aorist,
+                person: Person::Third,
+                number: Number::Singular,
+            },
+        )
+        .expect("explicit new aorist")
+        .variants[0]
+            .text,
+        "рече"
+    );
+    assert_eq!(
+        old_church_slavonic::imperative_with(
+            &lexeme,
+            ImperativeCell {
+                person: Person::First,
+                number: Number::Plural,
+            },
+        )
+        .expect("explicit imperative")
+        .variants[0]
+            .text,
+        "несѣмъ"
+    );
+    assert!(matches!(
+        old_church_slavonic::imperative_with(
+            &lexeme,
+            ImperativeCell {
+                person: Person::Third,
+                number: Number::Plural,
+            },
+        ),
         Err(InflectionError::UnsupportedCell)
     ));
+
+    lexeme.stems.present_active_participle = Some("нес".to_string());
+    lexeme.formations.present_active_participle = Some(PresentActiveParticipleFormation::YushtHard);
+    lexeme.stems.present_passive_participle = Some("нес".to_string());
+    lexeme.formations.present_passive_participle = Some(PresentPassiveParticipleFormation::Om);
+    lexeme.stems.past_active_participle = Some("нес".to_string());
+    lexeme.formations.past_active_participle = Some(PastActiveParticipleFormation::Ush);
+    lexeme.stems.past_passive_participle = Some("нес".to_string());
+    lexeme.formations.past_passive_participle = Some(PastPassiveParticipleFormation::En);
+    for kind in [
+        ParticipleKind::PresentActive,
+        ParticipleKind::PresentPassive,
+        ParticipleKind::PastActive,
+        ParticipleKind::PastPassive,
+    ] {
+        let result = old_church_slavonic::participle_with(
+            &lexeme,
+            ParticipleCell {
+                kind,
+                adjective: AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Dual,
+                    gender: Gender::Feminine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                },
+            },
+        )
+        .expect("all four productive participles");
+        assert_eq!(result.trace.len(), 2);
+        assert!(matches!(
+            result.source,
+            FormSource::ExplicitMetadataRule { .. }
+        ));
+    }
 }
 
 #[test]
@@ -416,12 +523,10 @@ fn exercise_public_surface(hostile: &str) {
         lemma: hostile.to_string(),
         class: AdjectiveClass::Hard,
     };
-    let verb_lexeme = VerbLexeme {
-        lemma: hostile.to_string(),
-        class: VerbClass::II1,
-        present_stem: Some(hostile.to_string()),
-        aorist_stem: Some(hostile.to_string()),
-    };
+    let mut verb_lexeme = VerbLexeme::new(hostile, VerbClass::II1);
+    verb_lexeme.stems.present = Some(hostile.to_string());
+    verb_lexeme.stems.present_first_singular = Some(hostile.to_string());
+    verb_lexeme.stems.aorist = Some(hostile.to_string());
 
     let _ = old_church_slavonic::lookup(hostile, PartOfSpeech::Noun);
     let _ = old_church_slavonic::noun(hostile, noun_cell);
@@ -447,6 +552,8 @@ fn exercise_public_surface(hostile: &str) {
     let _ = old_church_slavonic::l_participle_with(&verb_lexeme, l_cell);
     let _ = old_church_slavonic::participle(hostile, participle_cell);
     let _ = old_church_slavonic::participle_by_id(hostile, participle_cell);
+    let _ = old_church_slavonic::participle_with(&verb_lexeme, participle_cell);
+    let _ = old_church_slavonic::participle_paradigm(hostile, ParticipleKind::PresentActive);
     let _ = old_church_slavonic::participle_citation(hostile, ParticipleKind::PresentActive);
     let _ = old_church_slavonic::participle_citation_by_id(hostile, ParticipleKind::PresentActive);
     let _ = old_church_slavonic::infinitive(hostile);

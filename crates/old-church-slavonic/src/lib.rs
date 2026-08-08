@@ -215,17 +215,23 @@ pub fn imperative_by_id(id: &str, cell: ImperativeCell) -> Result<FormSet, Infle
     lookup::table_form(id, &cell.key()).ok_or(InflectionError::UnsupportedCell)
 }
 
+pub fn imperative_with(
+    lexeme: &VerbLexeme,
+    cell: ImperativeCell,
+) -> Result<FormSet, InflectionError> {
+    let predicted = old_church_slavonic_core::verb::imperative(lexeme, cell)?;
+    let lemma = orthography::canonical_display(&lexeme.lemma)?;
+    Ok(predicted_set(&lemma, predicted, FormSourceKind::Explicit))
+}
+
 pub fn imperative_paradigm(id: &str) -> Result<ImperativeParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     let mut cells = Vec::new();
-    for number in Number::ALL {
-        for person in Person::ALL {
-            let cell = ImperativeCell { person, number };
-            cells.push(CellOutcome {
-                cell,
-                result: imperative_by_id(id, cell),
-            });
-        }
+    for cell in ImperativeCell::SUPPORTED {
+        cells.push(CellOutcome {
+            cell,
+            result: imperative_by_id(id, cell),
+        });
     }
     Ok(ImperativeParadigm {
         lexeme_id: id.to_string(),
@@ -278,6 +284,52 @@ pub fn participle(lemma: &str, cell: ParticipleCell) -> Result<FormSet, Inflecti
 pub fn participle_by_id(id: &str, cell: ParticipleCell) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     lookup::table_form(id, &cell.key()).ok_or(InflectionError::UnsupportedCell)
+}
+
+pub fn participle_with(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+) -> Result<FormSet, InflectionError> {
+    let predicted = old_church_slavonic_core::verb::participle(lexeme, cell)?;
+    let lemma = orthography::canonical_display(&lexeme.lemma)?;
+    Ok(predicted_set(&lemma, predicted, FormSourceKind::Explicit))
+}
+
+pub fn participle_paradigm(
+    id: &str,
+    kind: ParticipleKind,
+) -> Result<ParticipleParadigm, InflectionError> {
+    ensure_pos(id, PartOfSpeech::Verb)?;
+    let mut cells = Vec::new();
+    for form in AdjectiveForm::ALL {
+        for number in Number::ALL {
+            for case in Case::ALL {
+                for gender in Gender::ALL {
+                    for animacy in [Animacy::Animate, Animacy::Inanimate] {
+                        let cell = ParticipleCell {
+                            kind,
+                            adjective: AdjectiveCell {
+                                case,
+                                number,
+                                gender,
+                                animacy,
+                                form,
+                            },
+                        };
+                        cells.push(CellOutcome {
+                            cell,
+                            result: participle_by_id(id, cell),
+                        });
+                    }
+                }
+            }
+        }
+    }
+    Ok(ParticipleParadigm {
+        lexeme_id: id.to_string(),
+        kind,
+        cells,
+    })
 }
 
 pub fn participle_citation(lemma: &str, kind: ParticipleKind) -> Result<FormSet, InflectionError> {

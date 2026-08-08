@@ -30,6 +30,16 @@ pub enum RuleId {
     VerbInfinitive,
     VerbSupine,
     VerbLParticiple,
+    VerbImperfectA,
+    VerbImperfectYatA,
+    VerbImperfectPalatalizedA,
+    VerbAoristAsigmatic,
+    VerbAoristNew,
+    VerbImperative,
+    VerbParticiplePresentActive,
+    VerbParticiplePresentPassive,
+    VerbParticiplePastActive,
+    VerbParticiplePastPassive,
 }
 
 impl RuleId {
@@ -63,6 +73,16 @@ impl RuleId {
             Self::VerbInfinitive => "V-INF-01",
             Self::VerbSupine => "V-SUP-01",
             Self::VerbLParticiple => "V-LPART-01",
+            Self::VerbImperfectA => "V-IMPF-A-01",
+            Self::VerbImperfectYatA => "V-IMPF-YAT-A-01",
+            Self::VerbImperfectPalatalizedA => "V-IMPF-PAL-A-01",
+            Self::VerbAoristAsigmatic => "V-AOR-ASIG-01",
+            Self::VerbAoristNew => "V-AOR-NEW-01",
+            Self::VerbImperative => "V-IMP-01",
+            Self::VerbParticiplePresentActive => "V-PTCP-PRES-ACT-01",
+            Self::VerbParticiplePresentPassive => "V-PTCP-PRES-PASS-01",
+            Self::VerbParticiplePastActive => "V-PTCP-PAST-ACT-01",
+            Self::VerbParticiplePastPassive => "V-PTCP-PAST-PASS-01",
         }
     }
 }

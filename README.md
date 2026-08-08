@@ -21,23 +21,24 @@ old-church-slavonic = "0.1"
 The crate performs no runtime file access, network access, JSON parsing, or Lua
 execution. Its generated dictionary is compiled into the package.
 
-## Supported v0.1 surface
+## Supported surface
 
 - nouns: seven cases × singular/dual/plural from dictionary tables; OOV rules for
   hard o/a, soft jo/ja, i-, u-, and n/nt/r/s/v consonant stems;
 - adjectives: dictionary and OOV hard/soft, short/simple and long/compound agreement;
   dictionary-listed comparative citations;
-- verbs: safely extracted present, imperfect, aorist variants, imperative,
-  infinitive, supine, l-participle, citation participles, and verbal nouns; OOV
-  present forms require a class and present stem, while regular supine and
-  l-participle components require explicit metadata;
+- verbs: safely extracted dictionary forms plus productive typed presents,
+  imperfects, asigmatic and new *ox*-aorists, i/yat-series imperatives, infinitive,
+  supine, l-participle, and present-active/present-passive/past-active/past-passive
+  participles with full adjective agreement. Every nontrivial system requires its
+  own explicit stem and formation metadata;
 - dictionary-backed pronoun, determiner, and numeral cells, including person where
   a source table combines personal pronouns.
 
 The malformed Wiktextract verb rows are not “repaired” by guessing. Rows with
 `error-unrecognized-form` and declined participles that cannot be safely assigned to
-a kind are excluded and counted. Productive imperfect/aorist/imperative and
-participial-stem derivation remain unsupported in the core.
+a kind remain excluded and counted. Productive rules expand fallback behavior; they
+do not weaken source-table guards.
 
 ## Forms, ambiguity, and provenance
 
@@ -101,6 +102,28 @@ Bare infinitives do not select a verb class or present/aorist stem. Supply a
 `verb::VerbLexeme`; an omitted required stem is returned as
 `MissingLexicalMetadata`, not hidden by the most frequent class.
 
+```rust
+use old_church_slavonic::verb::VerbLexeme;
+use old_church_slavonic::{
+    finite_verb_with, AoristFormation, FiniteTense, FiniteVerbCell, Number, Person,
+    VerbClass,
+};
+
+let mut verb = VerbLexeme::new("рещи", VerbClass::IA1);
+verb.stems.aorist = Some("рек".into());
+verb.formations.aorist = Some(AoristFormation::New);
+let form = finite_verb_with(
+    &verb,
+    FiniteVerbCell {
+        tense: FiniteTense::Aorist,
+        person: Person::Third,
+        number: Number::Singular,
+    },
+)?;
+assert_eq!(form.variants[0].text, "рече");
+# Ok::<(), old_church_slavonic::InflectionError>(())
+```
+
 ## Unicode and scripts
 
 Display spelling is NFC and otherwise lossless. Lookup uses the identical shared
@@ -115,15 +138,14 @@ normalized evaluation.
 
 ## Measured pinned snapshot
 
-The current committed snapshot contains 3,081 accepted lexemes, 134,436 public
-feature cells, and 137,081 ordered variants. All 137,081 variants round-trip through
-the typed public facade in source order. The deterministic held-out OOV split reports
-a 91.88% macro exact average across represented noun, adjective, and verb rule slices
-(also 91.88% under the conservative NFC/lowercase metric). Per-class and per-cell
-denominators and development/test results are in [reports/accuracy.md](reports/accuracy.md); extraction drops are in
-[reports/extraction-coverage.md](reports/extraction-coverage.md). These metrics are
-not combined: registry round-trip measures pipeline integrity, while OOV recall
-measures rule generalization against the same table target.
+The current committed snapshot contains 3,081 accepted lexemes, 134,761 public
+feature cells, and 137,406 ordered variants. All variants round-trip through the
+typed public facade in source order. Per-class and per-cell dictionary/OOV results
+are in [reports/accuracy.md](reports/accuracy.md), real manuscript-token results are
+in [reports/corpus-accuracy.md](reports/corpus-accuracy.md), and extraction drops are
+in [reports/extraction-coverage.md](reports/extraction-coverage.md). These metrics
+remain separate: registry round-trip tests pipeline integrity, dictionary OOV tests
+full-paradigm generalization, and corpus evaluation tests observed tokens.
 
 ## Data, attribution, and maintenance
 
@@ -132,8 +154,9 @@ The raw JSONL is not. Source URL, dates, byte length, Wiktextract revision, and 
 are in `data/SOURCES.toml` and `data/extracted/source.json`. This distribution uses
 CC BY-SA 4.0 for Wiktionary-derived data; code is MIT OR Apache-2.0. See
 [ATTRIBUTION.md](ATTRIBUTION.md).
-UD OCS PROIEL is CC BY-NC-SA and is accepted only as optional local evaluation input;
-it is not bundled in the runtime or published package.
+UD OCS PROIEL and native Syntacticus/PROIEL/TOROT are CC BY-NC-SA and are accepted
+only as optional local evaluation inputs; neither is bundled in the runtime or
+published package.
 
 ```bash
 cargo xtask refresh-data --dump /path/to/pinned-ocs.jsonl
@@ -141,7 +164,9 @@ cargo xtask check-registry
 cargo xtask extraction-report
 cargo xtask accuracy
 cargo xtask accuracy --dump /path/to/pinned-ocs.jsonl
-cargo xtask accuracy-ud --path /path/to/UD_Old_Church_Slavonic-PROIEL
+cargo xtask accuracy-corpus \
+  --ud /path/to/UD_Old_Church_Slavonic-PROIEL \
+  --syntacticus /path/to/syntacticus-treebank-data
 cargo xtask dump-paradigms before
 cargo xtask diff-paradigms target/paradigm-fingerprint/before.tsv after.tsv
 cargo xtask examples
@@ -157,7 +182,7 @@ cargo xtask check-all
 - `old-church-slavonic-extractor`: streaming offline normalizer/generator;
 - `xtask`: checks, reports, examples, speed, and reviewable paradigm diffs.
 
-V0.1 does not perform morphological analysis, syntax or phrase realization,
+The project does not perform morphological analysis, syntax or phrase realization,
 compound tense construction, clitic placement, manuscript transcription/OCR,
 abbreviation expansion, reconstructed accent placement, automatic script conversion,
 or later-recension normalization.

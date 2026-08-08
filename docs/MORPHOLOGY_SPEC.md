@@ -1,4 +1,4 @@
-# Old Church Slavonic morphology specification for v0.1
+# Old Church Slavonic morphology specification
 
 This is the normative specification for `old-church-slavonic-core`. It describes
 canonical Old Church Slavonic (`cu`), not a later Church Slavonic recension. Every
@@ -118,9 +118,8 @@ indeclinable.
   `-ии-` obliques.
 
 All four rules use the same case × number × gender resolver and handle masculine
-accusative animacy. Declined participles are required to reuse this resolver once a
-safe participial stem is available; v0.1 does not guess that stem from malformed
-Wiktextract rows.
+accusative animacy. Declined participles reuse this resolver once a caller supplies a
+safe participial stem; malformed Wiktextract rows never supply that stem.
 
 Dictionary adjective records retain `adj-hard`/`adj-soft` metadata when their
 canonical masculine citation has the unambiguous `-ъ` versus `-ь/-и` shape. Exact
@@ -129,20 +128,130 @@ always bypass citation-shape inference with an explicit `AdjectiveLexeme`.
 
 ## Verb rules
 
-`V-IA1-01`, `V-IA2-01`, and `V-II1-01` through `V-II3-01` generate the present
-only when the caller supplies the class and present stem. The first conjugation uses
-the e-series; the second uses the i-series and the documented first-singular seam
-mutation. A bare infinitive never selects a class.
+### Independent lexical dimensions
+
+`VerbClass` owns only the present conjugation. `VerbLexeme` separately records the
+present stem and first-singular allomorph, imperfect stem and formation, aorist stem
+and formation, imperative stem and formation, and one stem/formation pair for each
+productive participle. Lexical aspect is metadata and never chooses an aorist.
+Root and irregular lexemes are explicit classes. A caller may use a productive
+past-system formation with a root only by declaring the needed stem and formation;
+the engine never derives those principal parts from the infinitive.
+
+Every stem is canonicalized and validated before use. A missing stem and a missing
+formation report their distinct `MetadataField`; an unimplemented formation reports
+`UnsupportedCell`. This model follows the separation of present, aorist, imperative,
+and participial systems in UT *Old Church Slavonic Online*.
+
+### Present, infinitive, supine, and l-participle
+
+`V-IA1-01`, `V-IA2-01`, and `V-II1-01` through `V-II3-01` attach the e-series or
+i-series present endings to an explicit present stem. Second-conjugation 1sg cells
+require `present_first_singular`; this replaces the former broad consonant-mutation
+guess. A bare infinitive never selects a class or invents an allomorph. Known table
+cells still precede every rule.
 
 `V-INF-01` validates and returns an explicit `-ти` citation. `V-SUP-01` supplies the
 regular `-ти → -тъ` supine component. `V-LPART-01` attaches l-participle gender and
 number endings to an explicitly supplied aorist stem. Irregular/root supines and
-stems stay dictionary-backed.
+stems remain dictionary-backed. Authority: UT lessons 2 and 7,
+<https://lrc.la.utexas.edu/eieol/ocsol/20#grammar_979> and
+<https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1023>.
 
-Imperfect and aorist prediction, productive imperative prediction, and productive
-participial-stem derivation are intentionally unsupported. Safely tagged dictionary
-cells still have typed APIs. This is not a claim that those categories are absent
-from OCS.
+### Imperfect
+
+The imperfect needs both `ImperfectStem` and `ImperfectFormation`. The stem is the
+lexically selected base before the formation marker.
+
+| Rule | Formation | Operation |
+|---|---|---|
+| `V-IMPF-A-01` | `A` | stem + `а` + personal ending |
+| `V-IMPF-YAT-A-01` | `YatA` | stem + `ѣа` + personal ending |
+| `V-IMPF-PAL-A-01` | `PalatalizedA` | final `к/г/х → ч/ж/ш`, then `аа` + personal ending |
+
+| Cell | Personal ending after the marker |
+|---|---|
+| 1sg | `хъ` |
+| 2sg, 3sg | `ше` |
+| 1du | `ховѣ` |
+| 2du | `шета` |
+| 3du | `шете` |
+| 1pl | `хомъ` |
+| 2pl | `шете` |
+| 3pl | `хѫ` |
+
+Thus `нес-` + `YatA` gives `несѣахъ, несѣаше, …, несѣахѫ`, while
+`мог-` + `PalatalizedA` gives `можаахъ`. Contracted, suppletive, and lexically
+exceptional imperfects require an explicit dictionary cell rather than a guessed
+variant. Authority: UT lesson 1 §4.2,
+<https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967>.
+
+### Aorists
+
+`AoristFormation` is independent of present class and `VerbAspect`.
+
+- `V-AOR-ASIG-01` implements the source-described asigmatic endings. It preserves
+  the explicit stem in 1sg/1du/1pl/3pl and first-palatalizes a final velar in 2sg,
+  3sg, 2du, 3du, and 2pl. The endings are `-ъ/-е`, `-овѣ/-ета/-ете`, and
+  `-омъ/-ете/-ѫ`.
+- `V-AOR-NEW-01` implements the new *ox*-aorist: `-охъ/-е`,
+  `-оховѣ/-оста/-осте`, and `-охомъ/-осте/-ошѧ`. Only the 2sg/3sg seam applies
+  first palatalization. For example, explicit `рек-` yields `рекохъ` but `рече`.
+- `Sigmatic` is represented so metadata can be honest, but generation remains
+  explicitly unsupported. The attested sigmatic alternations and stem loss are not
+  yet independently encoded.
+
+Multiple aorist formations for one lemma remain separate lexical analyses; aspect
+never selects among them. Suppletive forms of `бꙑти`, `дати`, `ѣсти`, `вѣдѣти`,
+`хотѣти`, and motion verbs stay table-backed unless a caller supplies a deliberately
+audited root analysis. Authority: UT lesson 3 §§14.1–14.3,
+<https://lrc.la.utexas.edu/eieol/ocsol/30#grammar_987> and
+<https://lrc.la.utexas.edu/eieol/ocsol/30#grammar_989>.
+
+### Imperative
+
+`V-IMP-01` requires an explicit imperative stem and either `ISeries` or
+`YatSeries`. Both use `-и` in 2sg/3sg. The i-series uses
+`-ивѣ/-ита/-имъ/-ите`; the yat-series uses
+`-ѣвѣ/-ѣта/-ѣмъ/-ѣте` in 1du/2du/1pl/2pl. These are the only six morphological
+cells. First singular, third dual, and third plural periphrases with `да` are outside
+the word inflector and return `UnsupportedCell`.
+
+The pinned Wiktionary target sometimes spells 1du with final `-ве`; such exact table
+variants still win, while the productive rule follows the grammar's `-вѣ`. Optional
+plural `-ꙗмъ/-ꙗте` variants for some types remain table-backed until the typed result
+can associate them with a justified formation. Authority: UT lesson 2 §9,
+<https://lrc.la.utexas.edu/eieol/ocsol/20#grammar_979>.
+
+### Participial stem formation and agreement
+
+All four rules require an explicit participial stem and formation. Stem formation
+is the verb rule's first trace step; agreement is the second. The agreement step is
+owned exclusively by `adjective::decline_stem`.
+
+- `V-PTCP-PRES-ACT-01`: `YushtHard`, `YushtSoft`, or `YeshtSoft` builds the
+  `-ѫшт-/-ѧшт-` oblique stem and its source-described special short nominatives.
+  Other short cells and every long cell use soft adjective agreement.
+- `V-PTCP-PRES-PASS-01`: `Im`, `Em`, or `Om` builds `-им-/-ем-/-ом-`, then uses
+  hard short/long adjective agreement.
+- `V-PTCP-PAST-ACT-01`: `Ush` or `Vush` builds `-ъш-/-въш-` plus the special
+  active short nominative, then uses soft adjective agreement.
+- `V-PTCP-PAST-PASS-01`: `T`, `N`, or `En` builds `-т-/-н-/-ен-`, then uses hard
+  adjective agreement.
+
+`ParticipleCell` carries kind, short/long form, case, number, gender, and animacy;
+it is distinct from a citation participle and from `LParticipleCell`. The active
+short nominative seams and every ordinary adjective agreement cell are golden or
+metamorphically tested. Authorities: UT lesson 6 §26 and lesson 7 §§31.1–32,
+<https://lrc.la.utexas.edu/eieol/ocsol/60#grammar_1017>,
+<https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1023>,
+<https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1024>, and
+<https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1025>.
+
+The primary `-ьш-` past-active formation of transformed i-stems, plus automatic
+final-j deletion and `ov → u` before `-въш-`, are not inferred by this version.
+Such citations remain table-backed unless the caller supplies an already appropriate
+stem for one of the represented formations.
 
 ## Recorded source conflicts and limitations
 

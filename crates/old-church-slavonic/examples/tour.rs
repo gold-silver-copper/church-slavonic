@@ -91,13 +91,12 @@ fn main() -> Result<(), InflectionError> {
     )?;
     println!("predicted adjective: {predicted_long:?}");
 
+    let mut verb_lexeme = VerbLexeme::new("правити", VerbClass::II1);
+    verb_lexeme.stems.present = Some("прав".to_string());
+    verb_lexeme.stems.present_first_singular = Some("правл".to_string());
+    verb_lexeme.stems.aorist = Some("прави".to_string());
     let explicit_verb = old_church_slavonic::finite_verb_with(
-        &VerbLexeme {
-            lemma: "правити".to_string(),
-            class: VerbClass::II1,
-            present_stem: Some("прав".to_string()),
-            aorist_stem: Some("прави".to_string()),
-        },
+        &verb_lexeme,
         FiniteVerbCell {
             tense: FiniteTense::Present,
             person: Person::First,

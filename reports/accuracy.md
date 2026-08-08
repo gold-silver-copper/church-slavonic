@@ -9,19 +9,19 @@ The OOV split is lemma-level: 64-bit FNV-1a of the shared normalized lemma key, 
 | Metric | Value |
 |---|---:|
 | lexemes | 3081 |
-| cells | 134436 |
-| variants | 137081 |
-| reachable variants | 137081 / 137081 |
-| exact variant-order cells | 134436 / 134436 |
-| primary-correct cells | 134436 / 134436 |
+| cells | 134761 |
+| variants | 137406 |
+| reachable variants | 137406 / 137406 |
+| exact variant-order cells | 134761 / 134761 |
+| primary-correct cells | 134761 / 134761 |
 | ambiguous bare lemma/POS pairs | 112 |
 | complete dictionary paradigm key sets | 3081 / 3081 |
 
 Cells by public provenance:
 
-- `dictionary-table`: 134436
+- `dictionary-table`: 134761
 
-Verb present and l-participle slices use the source 2nd-singular present and masculine-singular l-participle, respectively, only as lexical stem metadata. Those two metadata cells are excluded from scoring. This matches the explicit-stem OOV API.
+Verb OOV metadata may use the 2nd-singular present, masculine-singular l-participle, 1st-singular imperfect/new aorist, or 2nd-singular imperative. Every metadata source cell and equivalent duplicate target is excluded. Participle citation targets use only those independently held principal parts plus declared class/formation policies; they are never used to derive themselves.
 
 ## Development OOV
 
@@ -48,14 +48,23 @@ Verb present and l-participle slices use the source 2nd-singular present and mas
 | `v-f` | 210 | 210 | 210 | 100.00% | 100.00% |
 | `verb-IA1-present` | 558 | 558 | 600 | 93.00% | 93.00% |
 | `verb-IA2-present` | 16 | 16 | 16 | 100.00% | 100.00% |
-| `verb-II1-present` | 278 | 278 | 296 | 93.92% | 93.92% |
-| `verb-II2-present` | 147 | 147 | 160 | 91.88% | 91.88% |
-| `verb-II3-present` | 16 | 16 | 16 | 100.00% | 100.00% |
+| `verb-II1-present` | 259 | 259 | 259 | 100.00% | 100.00% |
+| `verb-II2-present` | 140 | 140 | 140 | 100.00% | 100.00% |
+| `verb-II3-present` | 14 | 14 | 14 | 100.00% | 100.00% |
+| `verb-imperative` | 459 | 459 | 536 | 85.63% | 85.63% |
+| `verb-imperfect` | 1104 | 1104 | 1104 | 100.00% | 100.00% |
 | `verb-infinitive` | 526 | 526 | 526 | 100.00% | 100.00% |
 | `verb-l-participle` | 4432 | 4432 | 4432 | 100.00% | 100.00% |
+| `verb-past-active-participle-ush` | 29 | 29 | 69 | 42.03% | 42.03% |
+| `verb-past-active-participle-vush` | 65 | 65 | 71 | 91.55% | 91.55% |
+| `verb-past-passive-participle-en` | 7 | 7 | 49 | 14.29% | 14.29% |
+| `verb-present-active-participle-yesht-soft` | 59 | 59 | 59 | 100.00% | 100.00% |
+| `verb-present-active-participle-yusht-hard` | 56 | 56 | 77 | 72.73% | 72.73% |
+| `verb-present-passive-participle-im` | 45 | 45 | 45 | 100.00% | 100.00% |
+| `verb-present-passive-participle-om` | 33 | 33 | 49 | 67.35% | 67.35% |
 | `verb-supine` | 511 | 511 | 526 | 97.15% | 97.15% |
 
-Macro average across reported rule slices: 93.94% exact, 93.94% normalized.
+Macro average across reported rule slices: 89.56% exact, 89.56% normalized.
 
 ### POS, class, and cell detail
 
@@ -883,7 +892,6 @@ Macro average across reported rule slices: 93.94% exact, 93.94% normalized.
 | `verb/verb-IA2-present/verb:finite:present:3:sg` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:1:du` | 37 | 37 | 37 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:1:pl` | 37 | 37 | 37 | 100.00% | 100.00% |
-| `verb/verb-II1-present/verb:finite:present:1:sg` | 19 | 19 | 37 | 51.35% | 51.35% |
 | `verb/verb-II1-present/verb:finite:present:2:du` | 37 | 37 | 37 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:2:pl` | 37 | 37 | 37 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:3:du` | 37 | 37 | 37 | 100.00% | 100.00% |
@@ -891,7 +899,6 @@ Macro average across reported rule slices: 93.94% exact, 93.94% normalized.
 | `verb/verb-II1-present/verb:finite:present:3:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:1:du` | 20 | 20 | 20 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:1:pl` | 20 | 20 | 20 | 100.00% | 100.00% |
-| `verb/verb-II2-present/verb:finite:present:1:sg` | 7 | 7 | 20 | 35.00% | 35.00% |
 | `verb/verb-II2-present/verb:finite:present:2:du` | 20 | 20 | 20 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:2:pl` | 20 | 20 | 20 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:3:du` | 20 | 20 | 20 | 100.00% | 100.00% |
@@ -899,12 +906,23 @@ Macro average across reported rule slices: 93.94% exact, 93.94% normalized.
 | `verb/verb-II2-present/verb:finite:present:3:sg` | 20 | 20 | 20 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:1:du` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:1:pl` | 2 | 2 | 2 | 100.00% | 100.00% |
-| `verb/verb-II3-present/verb:finite:present:1:sg` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:2:du` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:2:pl` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:3:du` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:3:pl` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:3:sg` | 2 | 2 | 2 | 100.00% | 100.00% |
+| `verb/verb-imperative/verb:imperative:1:du` | 57 | 57 | 134 | 42.54% | 42.54% |
+| `verb/verb-imperative/verb:imperative:1:pl` | 134 | 134 | 134 | 100.00% | 100.00% |
+| `verb/verb-imperative/verb:imperative:2:du` | 134 | 134 | 134 | 100.00% | 100.00% |
+| `verb/verb-imperative/verb:imperative:2:pl` | 134 | 134 | 134 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:1:du` | 138 | 138 | 138 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:1:pl` | 138 | 138 | 138 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:2:du` | 138 | 138 | 138 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:2:pl` | 138 | 138 | 138 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:2:sg` | 138 | 138 | 138 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:3:du` | 138 | 138 | 138 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:3:pl` | 138 | 138 | 138 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:3:sg` | 138 | 138 | 138 | 100.00% | 100.00% |
 | `verb/verb-infinitive/verb:infinitive` | 526 | 526 | 526 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:du` | 554 | 554 | 554 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:pl` | 554 | 554 | 554 | 100.00% | 100.00% |
@@ -914,6 +932,13 @@ Macro average across reported rule slices: 93.94% exact, 93.94% normalized.
 | `verb/verb-l-participle/verb:l-participle:n:du` | 554 | 554 | 554 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:n:pl` | 554 | 554 | 554 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:n:sg` | 554 | 554 | 554 | 100.00% | 100.00% |
+| `verb/verb-past-active-participle-ush/verb:participle:past-active:citation` | 29 | 29 | 69 | 42.03% | 42.03% |
+| `verb/verb-past-active-participle-vush/verb:participle:past-active:citation` | 65 | 65 | 71 | 91.55% | 91.55% |
+| `verb/verb-past-passive-participle-en/verb:participle:past-passive:citation` | 7 | 7 | 49 | 14.29% | 14.29% |
+| `verb/verb-present-active-participle-yesht-soft/verb:participle:present-active:citation` | 59 | 59 | 59 | 100.00% | 100.00% |
+| `verb/verb-present-active-participle-yusht-hard/verb:participle:present-active:citation` | 56 | 56 | 77 | 72.73% | 72.73% |
+| `verb/verb-present-passive-participle-im/verb:participle:present-passive:citation` | 45 | 45 | 45 | 100.00% | 100.00% |
+| `verb/verb-present-passive-participle-om/verb:participle:present-passive:citation` | 33 | 33 | 49 | 67.35% | 67.35% |
 | `verb/verb-supine/verb:supine` | 511 | 511 | 526 | 97.15% | 97.15% |
 
 ## Held-out OOV
@@ -940,14 +965,23 @@ Macro average across reported rule slices: 93.94% exact, 93.94% normalized.
 | `v-f` | 84 | 84 | 84 | 100.00% | 100.00% |
 | `verb-IA1-present` | 230 | 230 | 240 | 95.83% | 95.83% |
 | `verb-IA2-present` | 6 | 6 | 8 | 75.00% | 75.00% |
-| `verb-II1-present` | 70 | 70 | 72 | 97.22% | 97.22% |
-| `verb-II2-present` | 46 | 46 | 48 | 95.83% | 95.83% |
-| `verb-II3-present` | 15 | 15 | 16 | 93.75% | 93.75% |
+| `verb-II1-present` | 63 | 63 | 63 | 100.00% | 100.00% |
+| `verb-II2-present` | 42 | 42 | 42 | 100.00% | 100.00% |
+| `verb-II3-present` | 14 | 14 | 14 | 100.00% | 100.00% |
+| `verb-imperative` | 157 | 157 | 188 | 83.51% | 83.51% |
+| `verb-imperfect` | 384 | 384 | 384 | 100.00% | 100.00% |
 | `verb-infinitive` | 146 | 146 | 146 | 100.00% | 100.00% |
 | `verb-l-participle` | 1216 | 1216 | 1216 | 100.00% | 100.00% |
+| `verb-past-active-participle-ush` | 14 | 14 | 25 | 56.00% | 56.00% |
+| `verb-past-active-participle-vush` | 20 | 20 | 25 | 80.00% | 80.00% |
+| `verb-past-passive-participle-en` | 8 | 8 | 23 | 34.78% | 34.78% |
+| `verb-present-active-participle-yesht-soft` | 17 | 17 | 17 | 100.00% | 100.00% |
+| `verb-present-active-participle-yusht-hard` | 25 | 25 | 31 | 80.65% | 80.65% |
+| `verb-present-passive-participle-im` | 15 | 15 | 15 | 100.00% | 100.00% |
+| `verb-present-passive-participle-om` | 19 | 19 | 23 | 82.61% | 82.61% |
 | `verb-supine` | 139 | 139 | 145 | 95.86% | 95.86% |
 
-Macro average across reported rule slices: 91.88% exact, 91.88% normalized.
+Macro average across reported rule slices: 89.13% exact, 89.13% normalized.
 
 ### POS, class, and cell detail
 
@@ -1754,7 +1788,6 @@ Macro average across reported rule slices: 91.88% exact, 91.88% normalized.
 | `verb/verb-IA2-present/verb:finite:present:3:sg` | 1 | 1 | 1 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:1:du` | 9 | 9 | 9 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:1:pl` | 9 | 9 | 9 | 100.00% | 100.00% |
-| `verb/verb-II1-present/verb:finite:present:1:sg` | 7 | 7 | 9 | 77.78% | 77.78% |
 | `verb/verb-II1-present/verb:finite:present:2:du` | 9 | 9 | 9 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:2:pl` | 9 | 9 | 9 | 100.00% | 100.00% |
 | `verb/verb-II1-present/verb:finite:present:3:du` | 9 | 9 | 9 | 100.00% | 100.00% |
@@ -1762,7 +1795,6 @@ Macro average across reported rule slices: 91.88% exact, 91.88% normalized.
 | `verb/verb-II1-present/verb:finite:present:3:sg` | 9 | 9 | 9 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:1:du` | 6 | 6 | 6 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:1:pl` | 6 | 6 | 6 | 100.00% | 100.00% |
-| `verb/verb-II2-present/verb:finite:present:1:sg` | 4 | 4 | 6 | 66.67% | 66.67% |
 | `verb/verb-II2-present/verb:finite:present:2:du` | 6 | 6 | 6 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:2:pl` | 6 | 6 | 6 | 100.00% | 100.00% |
 | `verb/verb-II2-present/verb:finite:present:3:du` | 6 | 6 | 6 | 100.00% | 100.00% |
@@ -1770,12 +1802,23 @@ Macro average across reported rule slices: 91.88% exact, 91.88% normalized.
 | `verb/verb-II2-present/verb:finite:present:3:sg` | 6 | 6 | 6 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:1:du` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:1:pl` | 2 | 2 | 2 | 100.00% | 100.00% |
-| `verb/verb-II3-present/verb:finite:present:1:sg` | 1 | 1 | 2 | 50.00% | 50.00% |
 | `verb/verb-II3-present/verb:finite:present:2:du` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:2:pl` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:3:du` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:3:pl` | 2 | 2 | 2 | 100.00% | 100.00% |
 | `verb/verb-II3-present/verb:finite:present:3:sg` | 2 | 2 | 2 | 100.00% | 100.00% |
+| `verb/verb-imperative/verb:imperative:1:du` | 16 | 16 | 47 | 34.04% | 34.04% |
+| `verb/verb-imperative/verb:imperative:1:pl` | 47 | 47 | 47 | 100.00% | 100.00% |
+| `verb/verb-imperative/verb:imperative:2:du` | 47 | 47 | 47 | 100.00% | 100.00% |
+| `verb/verb-imperative/verb:imperative:2:pl` | 47 | 47 | 47 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:1:du` | 48 | 48 | 48 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:1:pl` | 48 | 48 | 48 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:2:du` | 48 | 48 | 48 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:2:pl` | 48 | 48 | 48 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:2:sg` | 48 | 48 | 48 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:3:du` | 48 | 48 | 48 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:3:pl` | 48 | 48 | 48 | 100.00% | 100.00% |
+| `verb/verb-imperfect/verb:finite:imperfect:3:sg` | 48 | 48 | 48 | 100.00% | 100.00% |
 | `verb/verb-infinitive/verb:infinitive` | 146 | 146 | 146 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:du` | 152 | 152 | 152 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:pl` | 152 | 152 | 152 | 100.00% | 100.00% |
@@ -1785,9 +1828,16 @@ Macro average across reported rule slices: 91.88% exact, 91.88% normalized.
 | `verb/verb-l-participle/verb:l-participle:n:du` | 152 | 152 | 152 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:n:pl` | 152 | 152 | 152 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:n:sg` | 152 | 152 | 152 | 100.00% | 100.00% |
+| `verb/verb-past-active-participle-ush/verb:participle:past-active:citation` | 14 | 14 | 25 | 56.00% | 56.00% |
+| `verb/verb-past-active-participle-vush/verb:participle:past-active:citation` | 20 | 20 | 25 | 80.00% | 80.00% |
+| `verb/verb-past-passive-participle-en/verb:participle:past-passive:citation` | 8 | 8 | 23 | 34.78% | 34.78% |
+| `verb/verb-present-active-participle-yesht-soft/verb:participle:present-active:citation` | 17 | 17 | 17 | 100.00% | 100.00% |
+| `verb/verb-present-active-participle-yusht-hard/verb:participle:present-active:citation` | 25 | 25 | 31 | 80.65% | 80.65% |
+| `verb/verb-present-passive-participle-im/verb:participle:present-passive:citation` | 15 | 15 | 15 | 100.00% | 100.00% |
+| `verb/verb-present-passive-participle-om/verb:participle:present-passive:citation` | 19 | 19 | 23 | 82.61% | 82.61% |
 | `verb/verb-supine/verb:supine` | 139 | 139 | 145 | 95.86% | 95.86% |
 
-Skipped OOV cells requiring unavailable lexical metadata: 4838.
+Skipped OOV cells requiring unavailable lexical metadata: 5085.
 
 ## Extraction exclusions
 
@@ -1803,11 +1853,11 @@ Skipped OOV cells requiring unavailable lexical metadata: 4838.
 - `l-participle-missing-gender`: 90
 - `non-ocs-script-form`: 1962
 - `noun-missing-or-ambiguous-case`: 60
+- `participle-missing-tense`: 5
 - `personal-reflexive-table-other-lexeme`: 139
 - `table-metadata-or-sentinel`: 15217
 - `template-markup-form`: 214
-- `unsafe-or-unknown-verb-shape`: 624
+- `unsafe-or-unknown-verb-shape`: 619
 - `unsafe-page-word`: 28
 - `unsafe-verb-error-unrecognized-form`: 17912
-- `unsafe-verb-finite-missing-person`: 329
 - `unsupported-pos`: 296

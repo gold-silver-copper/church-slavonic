@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "thresholds": {
+    "facade_attempt_coverage_basis_points": 6500,
+    "facade_lookup_any_accuracy_basis_points": 2000,
+    "native_attempt_coverage_basis_points": 3000,
+    "native_lookup_any_accuracy_basis_points": 4700
+  },
+  "sources": [
+    {
+      "id": "ud-ocs-proiel-r2.18",
+      "name": "UD Old Church Slavonic PROIEL",
+      "kind": "ud-conllu",
+      "version": "r2.18",
+      "commit": "64eddf87abfaa51e7f5acf0bef1bebcdaca1559f",
+      "url": "https://github.com/UniversalDependencies/UD_Old_Church_Slavonic-PROIEL",
+      "license": "CC BY-NC-SA 4.0",
+      "bundled": false,
+      "files": [
+        {
+          "path": "cu_proiel-ud-dev.conllu",
+          "sha256": "1e84663c501e29ff27c89854052d2d9b678b8625597e15a81108af46de48f53c",
+          "partition": "dev"
+        },
+        {
+          "path": "cu_proiel-ud-test.conllu",
+          "sha256": "1f2c2e078a498594b1d1efb4816390ebb543c46d8b97f0d4694c8399f8b45828",
+          "partition": "test"
+        },
+        {
+          "path": "cu_proiel-ud-train.conllu",
+          "sha256": "c9d9a65074bd95bf51617b27515b735d4de13dcc94392ced763d63aa1dc68510",
+          "partition": "train"
+        }
+      ]
+    },
+    {
+      "id": "syntacticus-ocs-20230428",
+      "name": "Syntacticus native PROIEL/TOROT Old Church Slavonic selection",
+      "kind": "proiel-xml",
+      "version": "20230428",
+      "commit": "525cee4fb40590d7d514376c11acaed1bdd91c15",
+      "url": "https://github.com/syntacticus/syntacticus-treebank-data",
+      "license": "CC BY-NC-SA 4.0",
+      "bundled": false,
+      "files": [
+        {
+          "path": "proiel/marianus.xml",
+          "sha256": "be58539cdf9282c12eb5a9d5b4a6de17bc9a4d33e84f74c2c8a4283b0252e65e",
+          "partition": "marianus"
+        },
+        {
+          "path": "torot/supr.xml",
+          "sha256": "ef5f1b4602ad9d97e8a1d0ec91209bbc6433371b02c41dc6e36cb73bf324cd8e",
+          "partition": "suprasliensis"
+        },
+        {
+          "path": "torot/euch.xml",
+          "sha256": "86f5c35bf462faa7f9684c1a217ca6c06cc4bec744bd555fd8913a37718459f8",
+          "partition": "euchologium-sinaiticum"
+        },
+        {
+          "path": "torot/kiev-mis.xml",
+          "sha256": "b316a3763a16d378e4d06f6f6b6942de6a41998f2bd86eab81f1feae60cc0712",
+          "partition": "kiev-missal"
+        },
+        {
+          "path": "torot/psal-sin.xml",
+          "sha256": "fb987a2e4658ac67293828c10373c43509e9a527721a61de239c9184a3ec16b4",
+          "partition": "psalterium-sinaiticum"
+        },
+        {
+          "path": "torot/zogr.xml",
+          "sha256": "dc34c5173d9efcd6f539eb3f1c993922db7f029f8ef2c491f3892bd0a8d6275f",
+          "partition": "zographensis"
+        }
+      ]
+    }
+  ]
+}

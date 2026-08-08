@@ -2,7 +2,7 @@
 
 use old_church_slavonic_core::{
     AdjectiveCell, FiniteVerbCell, FormSet, ImperativeCell, InflectionError, LParticipleCell,
-    NounCell, PartOfSpeech,
+    NounCell, PartOfSpeech, ParticipleCell, ParticipleKind,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -55,6 +55,13 @@ pub struct ImperativeParadigm {
 pub struct LParticipleParadigm {
     pub lexeme_id: String,
     pub cells: Vec<CellOutcome<LParticipleCell>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ParticipleParadigm {
+    pub lexeme_id: String,
+    pub kind: ParticipleKind,
+    pub cells: Vec<CellOutcome<ParticipleCell>>,
 }
 
 /// Every table-backed cell for a dictionary lexeme, including non-finite forms.

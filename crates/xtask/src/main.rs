@@ -1,9 +1,13 @@
 #![forbid(unsafe_code)]
 
+mod corpus;
+
 use old_church_slavonic::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, ClosedClassCell, FiniteTense,
-    FiniteVerbCell, Gender, ImperativeCell, LParticipleCell, NounCell, NounClass, Number,
-    NumberRestriction, PartOfSpeech, ParticipleKind, Person, VerbClass,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
+    FiniteTense, FiniteVerbCell, Gender, ImperativeCell, ImperativeFormation, ImperfectFormation,
+    LParticipleCell, NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell,
+    ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
+    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, VerbClass,
 };
 use old_church_slavonic_core::adjective::AdjectiveLexeme;
 use old_church_slavonic_core::noun::NounLexeme;
@@ -39,6 +43,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("check-registry") => check_registry(&workspace_root()?),
         Some("extraction-report") => extraction_report(),
         Some("accuracy") => accuracy(&mut args),
+        Some("accuracy-corpus") => corpus::run(&mut args, &workspace_root()?),
         Some("accuracy-ud") => accuracy_ud(&mut args),
         Some("dump-paradigms") => dump_paradigms(args.next()),
         Some("diff-paradigms") => {
@@ -601,31 +606,109 @@ fn evaluate_oov_verb(
                 .iter()
                 .find_map(|form| derive_l_participle_stem(&form.form))
         });
-    let lexeme = VerbLexeme {
-        lemma: row.lemma.clone(),
-        class: class.unwrap_or(VerbClass::Irregular),
-        present_stem,
-        aorist_stem,
-    };
+    let imperfect_metadata = grouped
+        .get(&(row.id.clone(), "verb:finite:imperfect:1:sg".to_string()))
+        .and_then(|forms| {
+            forms
+                .iter()
+                .find_map(|form| derive_imperfect_metadata(&form.form))
+        });
+    let new_aorist_stem = grouped
+        .get(&(row.id.clone(), "verb:finite:aorist:1:sg".to_string()))
+        .and_then(|forms| {
+            forms
+                .iter()
+                .find_map(|form| derive_new_aorist_stem(&form.form))
+        });
+    let imperative_stem = grouped
+        .get(&(row.id.clone(), "verb:imperative:2:sg".to_string()))
+        .and_then(|forms| {
+            forms
+                .iter()
+                .find_map(|form| derive_imperative_stem(&form.form))
+        });
+    let mut lexeme = VerbLexeme::new(row.lemma.clone(), class.unwrap_or(VerbClass::Irregular));
+    lexeme.stems.present = present_stem;
+    lexeme.stems.aorist = new_aorist_stem.clone().or(aorist_stem);
+    if let Some((stem, formation)) = imperfect_metadata {
+        lexeme.stems.imperfect = Some(stem);
+        lexeme.formations.imperfect = Some(formation);
+    }
+    if new_aorist_stem.is_some() {
+        lexeme.formations.aorist = Some(AoristFormation::New);
+    }
+    if let Some(stem) = imperative_stem {
+        lexeme.stems.imperative = Some(stem);
+        lexeme.formations.imperative = class.map(|class| {
+            if matches!(class, VerbClass::II1 | VerbClass::II2 | VerbClass::II3) {
+                ImperativeFormation::ISeries
+            } else {
+                ImperativeFormation::YatSeries
+            }
+        });
+    }
+    if let (Some(class), Some(stem)) = (class, lexeme.stems.present.clone()) {
+        lexeme.stems.present_active_participle = Some(stem.clone());
+        lexeme.formations.present_active_participle =
+            Some(if matches!(class, VerbClass::IA1 | VerbClass::IA2) {
+                PresentActiveParticipleFormation::YushtHard
+            } else {
+                PresentActiveParticipleFormation::YeshtSoft
+            });
+        lexeme.stems.present_passive_participle = Some(stem);
+        lexeme.formations.present_passive_participle =
+            Some(if matches!(class, VerbClass::IA1 | VerbClass::IA2) {
+                PresentPassiveParticipleFormation::Om
+            } else {
+                PresentPassiveParticipleFormation::Im
+            });
+    }
+    if let Some(stem) = lexeme.stems.aorist.clone() {
+        lexeme.stems.past_active_participle = Some(stem.clone());
+        lexeme.formations.past_active_participle = Some(if stem.ends_with(['а', 'ѣ', 'и']) {
+            PastActiveParticipleFormation::Vush
+        } else {
+            PastActiveParticipleFormation::Ush
+        });
+        if matches!(class, Some(VerbClass::IA1 | VerbClass::IA2)) {
+            lexeme.stems.past_passive_participle = Some(stem);
+            lexeme.formations.past_passive_participle = Some(PastPassiveParticipleFormation::En);
+        }
+    }
     let start = (row.id.clone(), String::new());
     let end = (row.id.clone(), "\u{10ffff}".to_string());
     for ((_id, feature), expected) in grouped.range(start..=end) {
         if let Some(cell) = parse_finite_verb_cell(feature) {
-            if cell.tense != FiniteTense::Present {
+            let metadata_cell = match cell.tense {
+                FiniteTense::Present => {
+                    cell.person == Person::Second && cell.number == Number::Singular
+                }
+                FiniteTense::Imperfect | FiniteTense::Aorist => {
+                    cell.person == Person::First && cell.number == Number::Singular
+                }
+            };
+            if metadata_cell {
                 continue;
             }
-            if cell.person == Person::Second && cell.number == Number::Singular {
-                continue;
-            }
-            let Some(class) = class else {
+            if cell.tense == FiniteTense::Present && class.is_none() {
                 *skipped += 1;
                 continue;
-            };
+            }
             let Ok(predicted) = old_church_slavonic_core::verb::finite(&lexeme, cell) else {
                 *skipped += 1;
                 continue;
             };
-            let rule_slice = format!("verb-{}-present", class.code());
+            let rule_slice = match cell.tense {
+                FiniteTense::Present => {
+                    let Some(class) = class else {
+                        *skipped += 1;
+                        continue;
+                    };
+                    format!("verb-{}-present", class.code())
+                }
+                FiniteTense::Imperfect => "verb-imperfect".to_string(),
+                FiniteTense::Aorist => "verb-aorist-new".to_string(),
+            };
             score_prediction(
                 destination,
                 &rule_slice,
@@ -634,6 +717,52 @@ fn evaluate_oov_verb(
                 expected,
                 &predicted.text,
             );
+            continue;
+        }
+        if let Some(cell) = parse_imperative_cell(feature) {
+            // The 2sg supplies the imperative stem and the 3sg is the same
+            // morphological form; neither is scored against its own metadata.
+            if cell.number == Number::Singular {
+                continue;
+            }
+            match old_church_slavonic_core::verb::imperative(&lexeme, cell) {
+                Ok(predicted) => score_prediction(
+                    destination,
+                    "verb-imperative",
+                    by_cell,
+                    &format!("verb/verb-imperative/{feature}"),
+                    expected,
+                    &predicted.text,
+                ),
+                Err(_) => *skipped += 1,
+            }
+            continue;
+        }
+        if let Some(kind) = parse_participle_citation_kind(feature) {
+            let cell = ParticipleCell {
+                kind,
+                adjective: AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                },
+            };
+            match old_church_slavonic_core::verb::participle(&lexeme, cell) {
+                Ok(predicted) => {
+                    let rule_slice = participle_rule_slice(&lexeme, kind);
+                    score_prediction(
+                        destination,
+                        rule_slice,
+                        by_cell,
+                        &format!("verb/{rule_slice}/{feature}"),
+                        expected,
+                        &predicted.text,
+                    );
+                }
+                Err(_) => *skipped += 1,
+            }
             continue;
         }
         if feature == "verb:infinitive" {
@@ -714,6 +843,27 @@ fn derive_l_participle_stem(masculine_singular: &str) -> Option<String> {
         .map(str::to_string)
 }
 
+fn derive_imperfect_metadata(form: &str) -> Option<(String, ImperfectFormation)> {
+    if let Some(stem) = form.strip_suffix("ѣахъ").filter(|stem| !stem.is_empty()) {
+        return Some((stem.to_string(), ImperfectFormation::YatA));
+    }
+    form.strip_suffix("ахъ")
+        .filter(|stem| !stem.is_empty())
+        .map(|stem| (stem.to_string(), ImperfectFormation::A))
+}
+
+fn derive_new_aorist_stem(form: &str) -> Option<String> {
+    form.strip_suffix("охъ")
+        .filter(|stem| !stem.is_empty())
+        .map(str::to_string)
+}
+
+fn derive_imperative_stem(form: &str) -> Option<String> {
+    form.strip_suffix('и')
+        .filter(|stem| !stem.is_empty())
+        .map(str::to_string)
+}
+
 fn parse_finite_verb_cell(feature: &str) -> Option<FiniteVerbCell> {
     let parts = feature.split(':').collect::<Vec<_>>();
     match parts.as_slice() {
@@ -734,6 +884,61 @@ fn parse_l_participle_cell(feature: &str) -> Option<LParticipleCell> {
             number: parse_number(number)?,
         }),
         _ => None,
+    }
+}
+
+fn parse_imperative_cell(feature: &str) -> Option<ImperativeCell> {
+    let parts = feature.split(':').collect::<Vec<_>>();
+    match parts.as_slice() {
+        ["verb", "imperative", person, number] => Some(ImperativeCell {
+            person: parse_person(person)?,
+            number: parse_number(number)?,
+        }),
+        _ => None,
+    }
+}
+
+fn parse_participle_citation_kind(feature: &str) -> Option<ParticipleKind> {
+    match feature {
+        "verb:participle:present-active:citation" => Some(ParticipleKind::PresentActive),
+        "verb:participle:present-passive:citation" => Some(ParticipleKind::PresentPassive),
+        "verb:participle:past-active:citation" => Some(ParticipleKind::PastActive),
+        "verb:participle:past-passive:citation" => Some(ParticipleKind::PastPassive),
+        _ => None,
+    }
+}
+
+fn participle_rule_slice(lexeme: &VerbLexeme, kind: ParticipleKind) -> &'static str {
+    match kind {
+        ParticipleKind::PresentActive => match lexeme.formations.present_active_participle {
+            Some(PresentActiveParticipleFormation::YushtHard) => {
+                "verb-present-active-participle-yusht-hard"
+            }
+            Some(PresentActiveParticipleFormation::YushtSoft) => {
+                "verb-present-active-participle-yusht-soft"
+            }
+            Some(PresentActiveParticipleFormation::YeshtSoft) => {
+                "verb-present-active-participle-yesht-soft"
+            }
+            None => "verb-present-active-participle-missing-formation",
+        },
+        ParticipleKind::PresentPassive => match lexeme.formations.present_passive_participle {
+            Some(PresentPassiveParticipleFormation::Im) => "verb-present-passive-participle-im",
+            Some(PresentPassiveParticipleFormation::Em) => "verb-present-passive-participle-em",
+            Some(PresentPassiveParticipleFormation::Om) => "verb-present-passive-participle-om",
+            None => "verb-present-passive-participle-missing-formation",
+        },
+        ParticipleKind::PastActive => match lexeme.formations.past_active_participle {
+            Some(PastActiveParticipleFormation::Ush) => "verb-past-active-participle-ush",
+            Some(PastActiveParticipleFormation::Vush) => "verb-past-active-participle-vush",
+            None => "verb-past-active-participle-missing-formation",
+        },
+        ParticipleKind::PastPassive => match lexeme.formations.past_passive_participle {
+            Some(PastPassiveParticipleFormation::T) => "verb-past-passive-participle-t",
+            Some(PastPassiveParticipleFormation::N) => "verb-past-passive-participle-n",
+            Some(PastPassiveParticipleFormation::En) => "verb-past-passive-participle-en",
+            None => "verb-past-passive-participle-missing-formation",
+        },
     }
 }
 
@@ -906,9 +1111,11 @@ sealed, and must not be used for rule tuning.\n\n",
     }
     out.push('\n');
     out.push_str(
-        "Verb present and l-participle slices use the source 2nd-singular present and \
-masculine-singular l-participle, respectively, only as lexical stem metadata. Those two \
-metadata cells are excluded from scoring. This matches the explicit-stem OOV API.\n\n",
+        "Verb OOV metadata may use the 2nd-singular present, masculine-singular \
+l-participle, 1st-singular imperfect/new aorist, or 2nd-singular imperative. Every \
+metadata source cell and equivalent duplicate target is excluded. Participle citation \
+targets use only those independently held principal parts plus declared class/formation \
+policies; they are never used to derive themselves.\n\n",
     );
     for (title, slices, by_cell) in [
         (
@@ -984,169 +1191,7 @@ fn accuracy_ud(args: &mut impl Iterator<Item = String>) -> Result<(), Box<dyn Er
     if !path.exists() {
         return Err(format!("UD path does not exist: {}", path.display()).into());
     }
-    let files = conllu_files(&path)?;
-    let mut tokens = 0usize;
-    let mut compatible = 0usize;
-    let mut exact = 0usize;
-    let mut normalized = 0usize;
-    for file in &files {
-        for line in fs::read_to_string(file)?.lines() {
-            if line.starts_with('#') || line.is_empty() {
-                continue;
-            }
-            let columns: Vec<_> = line.split('\t').collect();
-            if columns.len() != 10 || columns[0].contains(['-', '.']) {
-                continue;
-            }
-            tokens += 1;
-            let (surface, lemma, upos, features) = (columns[1], columns[2], columns[3], columns[5]);
-            let pos = match upos {
-                "NOUN" | "PROPN" => PartOfSpeech::Noun,
-                "ADJ" => PartOfSpeech::Adjective,
-                "VERB" | "AUX" => PartOfSpeech::Verb,
-                "PRON" => PartOfSpeech::Pronoun,
-                "NUM" => PartOfSpeech::Numeral,
-                "DET" => PartOfSpeech::Determiner,
-                _ => continue,
-            };
-            let Some(feature) = ud_feature_key(pos, features) else {
-                continue;
-            };
-            let candidates = old_church_slavonic::lookup(lemma, pos)?;
-            if candidates.is_empty() {
-                continue;
-            }
-            compatible += 1;
-            let generated = candidates
-                .iter()
-                .filter_map(|candidate| {
-                    old_church_slavonic::dictionary_form_by_id(&candidate.id, &feature).ok()
-                })
-                .flat_map(|forms| forms.variants)
-                .collect::<Vec<_>>();
-            exact += usize::from(generated.iter().any(|form| form.text == surface));
-            normalized += usize::from(
-                generated
-                    .iter()
-                    .any(|form| normalized_equal(&form.text, surface)),
-            );
-        }
-    }
-    println!(
-        "UD diagnostic (CC BY-NC-SA input, not bundled): {exact}/{compatible} raw exact; {normalized}/{compatible} NFC/lowercase exact; {tokens} tokens scanned across {} files",
-        files.len()
-    );
-    Ok(())
-}
-
-fn ud_feature_key(pos: PartOfSpeech, features: &str) -> Option<String> {
-    let map = features
-        .split('|')
-        .filter_map(|feature| feature.split_once('='))
-        .collect::<BTreeMap<_, _>>();
-    if pos == PartOfSpeech::Verb {
-        return ud_verb_feature_key(&map);
-    }
-    let case = match *map.get("Case")? {
-        "Nom" => "nom",
-        "Gen" => "gen",
-        "Dat" => "dat",
-        "Acc" => "acc",
-        "Ins" => "ins",
-        "Loc" => "loc",
-        "Voc" => "voc",
-        _ => return None,
-    };
-    let number = match *map.get("Number")? {
-        "Sing" => "sg",
-        "Dual" => "du",
-        "Plur" => "pl",
-        _ => return None,
-    };
-    match pos {
-        PartOfSpeech::Noun => Some(format!("noun:{case}:{number}")),
-        PartOfSpeech::Pronoun | PartOfSpeech::Numeral | PartOfSpeech::Determiner => {
-            let gender = map.get("Gender").and_then(|value| ud_gender(value));
-            let person = map.get("Person").and_then(|value| parse_person(value));
-            Some(
-                ClosedClassCell {
-                    case: parse_case(case)?,
-                    number: parse_number(number)?,
-                    gender: gender.and_then(parse_gender_code),
-                    person,
-                }
-                .key(pos),
-            )
-        }
-        // PROIEL does not encode the OCS short/long adjective dimension, so an
-        // adjective bundle is not compatible with either public feature key.
-        PartOfSpeech::Adjective | PartOfSpeech::Verb => None,
-    }
-}
-
-fn ud_verb_feature_key(map: &BTreeMap<&str, &str>) -> Option<String> {
-    match *map.get("VerbForm")? {
-        "Inf" => Some("verb:infinitive".to_string()),
-        "Sup" => Some("verb:supine".to_string()),
-        "PartRes" => {
-            let gender = ud_gender(map.get("Gender")?)?;
-            let number = match *map.get("Number")? {
-                "Sing" => "sg",
-                "Dual" => "du",
-                "Plur" => "pl",
-                _ => return None,
-            };
-            Some(format!("verb:l-participle:{gender}:{number}"))
-        }
-        "Fin" => {
-            let person = *map.get("Person")?;
-            if !matches!(person, "1" | "2" | "3") {
-                return None;
-            }
-            let number = match *map.get("Number")? {
-                "Sing" => "sg",
-                "Dual" => "du",
-                "Plur" => "pl",
-                _ => return None,
-            };
-            match *map.get("Mood")? {
-                "Imp" => Some(format!("verb:imperative:{person}:{number}")),
-                "Ind" if map.get("Tense").copied() == Some("Pres") => {
-                    Some(format!("verb:finite:present:{person}:{number}"))
-                }
-                _ => None,
-            }
-        }
-        _ => None,
-    }
-}
-
-fn ud_gender(value: &str) -> Option<&'static str> {
-    match value {
-        "Masc" => Some("m"),
-        "Fem" => Some("f"),
-        "Neut" => Some("n"),
-        _ => None,
-    }
-}
-
-fn conllu_files(root: &Path) -> Result<Vec<PathBuf>, Box<dyn Error>> {
-    let mut out = Vec::new();
-    let mut stack = vec![root.to_path_buf()];
-    while let Some(path) = stack.pop() {
-        if path.is_dir() {
-            for entry in fs::read_dir(path)? {
-                stack.push(entry?.path());
-            }
-        } else if path
-            .extension()
-            .is_some_and(|extension| extension == "conllu")
-        {
-            out.push(path);
-        }
-    }
-    out.sort();
-    Ok(out)
+    corpus::run_legacy(&path, &workspace_root()?)
 }
 
 fn dump_paradigms(name: Option<String>) -> Result<(), Box<dyn Error>> {
@@ -1654,6 +1699,9 @@ fn print_help() {
     eprintln!("  extraction-report");
     eprintln!("  accuracy");
     eprintln!("  accuracy-ud --path UD_DIRECTORY");
+    eprintln!(
+        "  accuracy-corpus [--ud UD_DIRECTORY] [--syntacticus TREEBANK_DIRECTORY] [--details PATH] [--write]"
+    );
     eprintln!("  dump-paradigms [NAME]");
     eprintln!("  diff-paradigms BEFORE AFTER");
     eprintln!("  examples");
@@ -1682,56 +1730,5 @@ mod tests {
         );
         assert_eq!(derive_present_stem(VerbClass::Root, "еси"), None);
         assert_eq!(derive_l_participle_stem("лъ"), None);
-    }
-
-    #[test]
-    fn ud_mapper_accepts_only_fully_compatible_verb_bundles() {
-        assert_eq!(
-            ud_feature_key(
-                PartOfSpeech::Verb,
-                "Mood=Ind|Number=Dual|Person=1|Tense=Pres|VerbForm=Fin"
-            ),
-            Some("verb:finite:present:1:du".to_string())
-        );
-        assert_eq!(
-            ud_feature_key(
-                PartOfSpeech::Verb,
-                "Mood=Imp|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin"
-            ),
-            Some("verb:imperative:2:sg".to_string())
-        );
-        assert_eq!(
-            ud_feature_key(PartOfSpeech::Verb, "VerbForm=Inf"),
-            Some("verb:infinitive".to_string())
-        );
-        assert_eq!(
-            ud_feature_key(PartOfSpeech::Verb, "VerbForm=Sup"),
-            Some("verb:supine".to_string())
-        );
-        assert_eq!(
-            ud_feature_key(
-                PartOfSpeech::Verb,
-                "Gender=Fem|Number=Plur|Tense=Past|VerbForm=PartRes"
-            ),
-            Some("verb:l-participle:f:pl".to_string())
-        );
-        assert_eq!(
-            ud_feature_key(
-                PartOfSpeech::Verb,
-                "Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin"
-            ),
-            None
-        );
-    }
-
-    #[test]
-    fn ud_adjective_without_short_long_feature_is_not_guessed() {
-        assert_eq!(
-            ud_feature_key(
-                PartOfSpeech::Adjective,
-                "Case=Nom|Degree=Pos|Gender=Masc|Number=Sing"
-            ),
-            None
-        );
     }
 }

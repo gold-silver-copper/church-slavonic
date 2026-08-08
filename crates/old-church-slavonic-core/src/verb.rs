@@ -1,55 +1,104 @@
-//! Conservative rule-based verb forms.
+//! Explicit-principal-part Old Church Slavonic verb morphology.
 
 use crate::{
-    FiniteTense, FiniteVerbCell, Gender, InflectionError, LParticipleCell, Number, Person,
-    PredictedForm, RuleId, RuleStep, VerbClass,
+    AdjectiveClass, AdjectiveForm, AoristFormation, Case, FiniteTense, FiniteVerbCell, Gender,
+    ImperativeCell, ImperativeFormation, ImperfectFormation, InflectionError, LParticipleCell,
+    MetadataField, Number, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
+    PastPassiveParticipleFormation, Person, PredictedForm, PresentActiveParticipleFormation,
+    PresentPassiveParticipleFormation, RuleId, RuleStep, VerbAspect, VerbClass,
 };
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct VerbStems {
+    pub present: Option<String>,
+    pub present_first_singular: Option<String>,
+    pub imperfect: Option<String>,
+    pub aorist: Option<String>,
+    pub imperative: Option<String>,
+    pub present_active_participle: Option<String>,
+    pub present_passive_participle: Option<String>,
+    pub past_active_participle: Option<String>,
+    pub past_passive_participle: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct VerbFormations {
+    pub imperfect: Option<ImperfectFormation>,
+    pub aorist: Option<AoristFormation>,
+    pub imperative: Option<ImperativeFormation>,
+    pub present_active_participle: Option<PresentActiveParticipleFormation>,
+    pub present_passive_participle: Option<PresentPassiveParticipleFormation>,
+    pub past_active_participle: Option<PastActiveParticipleFormation>,
+    pub past_passive_participle: Option<PastPassiveParticipleFormation>,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VerbLexeme {
     pub lemma: String,
     pub class: VerbClass,
-    pub present_stem: Option<String>,
-    pub aorist_stem: Option<String>,
+    pub aspect: Option<VerbAspect>,
+    pub stems: VerbStems,
+    pub formations: VerbFormations,
+}
+
+impl VerbLexeme {
+    pub fn new(lemma: impl Into<String>, class: VerbClass) -> Self {
+        Self {
+            lemma: lemma.into(),
+            class,
+            aspect: None,
+            stems: VerbStems::default(),
+            formations: VerbFormations::default(),
+        }
+    }
 }
 
 pub fn finite(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, InflectionError> {
     crate::orthography::canonical_display(&lexeme.lemma)?;
-    if cell.tense != FiniteTense::Present {
+    match cell.tense {
+        FiniteTense::Present => present(lexeme, cell),
+        FiniteTense::Imperfect => imperfect(lexeme, cell),
+        FiniteTense::Aorist => aorist(lexeme, cell),
+    }
+}
+
+pub fn imperative(
+    lexeme: &VerbLexeme,
+    cell: ImperativeCell,
+) -> Result<PredictedForm, InflectionError> {
+    crate::orthography::canonical_display(&lexeme.lemma)?;
+    if !cell.is_supported() {
         return Err(InflectionError::UnsupportedCell);
     }
-    let raw_stem =
+    let formation =
         lexeme
-            .present_stem
-            .as_deref()
+            .formations
+            .imperative
             .ok_or_else(|| InflectionError::MissingLexicalMetadata {
-                needed: vec![crate::MetadataField::PresentStem],
+                needed: vec![MetadataField::ImperativeFormation],
             })?;
-    let stem = crate::orthography::canonical_display(raw_stem)?;
-    let (ending, rule_id) = present_ending(lexeme.class, cell)?;
-    let changed_stem = if matches!(
-        (lexeme.class, cell.person, cell.number),
-        (
-            VerbClass::II1 | VerbClass::II2 | VerbClass::II3,
-            Person::First,
-            Number::Singular
-        )
-    ) {
-        mutate_second_first_singular(&stem)
-    } else {
-        stem.clone()
+    let stem = required_stem(
+        lexeme.stems.imperative.as_deref(),
+        MetadataField::ImperativeStem,
+    )?;
+    let ending = match (formation, cell.person, cell.number) {
+        (_, Person::Second | Person::Third, Number::Singular) => "и",
+        (ImperativeFormation::ISeries, Person::First, Number::Dual) => "ивѣ",
+        (ImperativeFormation::ISeries, Person::Second, Number::Dual) => "ита",
+        (ImperativeFormation::ISeries, Person::First, Number::Plural) => "имъ",
+        (ImperativeFormation::ISeries, Person::Second, Number::Plural) => "ите",
+        (ImperativeFormation::YatSeries, Person::First, Number::Dual) => "ѣвѣ",
+        (ImperativeFormation::YatSeries, Person::Second, Number::Dual) => "ѣта",
+        (ImperativeFormation::YatSeries, Person::First, Number::Plural) => "ѣмъ",
+        (ImperativeFormation::YatSeries, Person::Second, Number::Plural) => "ѣте",
+        _ => return Err(InflectionError::UnsupportedCell),
     };
-    let text = format!("{changed_stem}{ending}");
-    Ok(PredictedForm {
-        text: text.clone(),
-        rule_id,
-        trace: vec![RuleStep {
-            rule_id,
-            before: stem,
-            after: text,
-            reason: "attach the class-specific present ending to the supplied present stem",
-        }],
-    })
+    Ok(join(
+        &stem,
+        ending,
+        RuleId::VerbImperative,
+        "attach the explicitly selected i-series or yat-series imperative ending",
+    ))
 }
 
 pub fn infinitive(lexeme: &VerbLexeme) -> Result<PredictedForm, InflectionError> {
@@ -89,14 +138,7 @@ pub fn l_participle(
     cell: LParticipleCell,
 ) -> Result<PredictedForm, InflectionError> {
     crate::orthography::canonical_display(&lexeme.lemma)?;
-    let raw_stem =
-        lexeme
-            .aorist_stem
-            .as_deref()
-            .ok_or_else(|| InflectionError::MissingLexicalMetadata {
-                needed: vec![crate::MetadataField::AoristStem],
-            })?;
-    let stem = crate::orthography::canonical_display(raw_stem)?;
+    let stem = required_stem(lexeme.stems.aorist.as_deref(), MetadataField::AoristStem)?;
     let ending = match (cell.gender, cell.number) {
         (Gender::Masculine, Number::Singular) => "лъ",
         (Gender::Feminine, Number::Singular) => "ла",
@@ -107,13 +149,388 @@ pub fn l_participle(
         (Gender::Feminine, Number::Plural) => "лꙑ",
         (Gender::Neuter, Number::Plural) => "ла",
     };
-    let text = format!("{stem}{ending}");
-    Ok(single_step(
+    Ok(join(
         &stem,
-        &text,
+        ending,
         RuleId::VerbLParticiple,
-        "attach the l-participle agreement ending to the explicitly supplied aorist stem",
+        "attach the l-participle agreement ending to the explicit aorist stem",
     ))
+}
+
+pub fn participle(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+) -> Result<PredictedForm, InflectionError> {
+    crate::orthography::canonical_display(&lexeme.lemma)?;
+    match cell.kind {
+        ParticipleKind::PresentActive => present_active_participle(lexeme, cell),
+        ParticipleKind::PresentPassive => present_passive_participle(lexeme, cell),
+        ParticipleKind::PastActive => past_active_participle(lexeme, cell),
+        ParticipleKind::PastPassive => past_passive_participle(lexeme, cell),
+    }
+}
+
+fn present(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, InflectionError> {
+    if !matches!(
+        lexeme.class,
+        VerbClass::IA1 | VerbClass::IA2 | VerbClass::II1 | VerbClass::II2 | VerbClass::II3
+    ) {
+        return Err(InflectionError::UnsupportedCell);
+    }
+    let default_stem = required_stem(lexeme.stems.present.as_deref(), MetadataField::PresentStem)?;
+    let second_conjugation = matches!(
+        lexeme.class,
+        VerbClass::II1 | VerbClass::II2 | VerbClass::II3
+    );
+    let stem = if cell.person == Person::First && cell.number == Number::Singular {
+        match lexeme.stems.present_first_singular.as_deref() {
+            Some(stem) => required_stem(Some(stem), MetadataField::PresentFirstSingularStem)?,
+            None if second_conjugation => {
+                return Err(InflectionError::MissingLexicalMetadata {
+                    needed: vec![MetadataField::PresentFirstSingularStem],
+                });
+            }
+            None => default_stem.clone(),
+        }
+    } else {
+        default_stem
+    };
+    let (ending, rule_id) = present_ending(lexeme.class, cell)?;
+    Ok(join(
+        &stem,
+        ending,
+        rule_id,
+        "attach the class-specific present ending to the supplied present allomorph",
+    ))
+}
+
+fn imperfect(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, InflectionError> {
+    let formation =
+        lexeme
+            .formations
+            .imperfect
+            .ok_or_else(|| InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::ImperfectFormation],
+            })?;
+    let stem = required_stem(
+        lexeme.stems.imperfect.as_deref(),
+        MetadataField::ImperfectStem,
+    )?;
+    let (stem, marker, rule_id) = match formation {
+        ImperfectFormation::A => (stem, "а", RuleId::VerbImperfectA),
+        ImperfectFormation::YatA => (stem, "ѣа", RuleId::VerbImperfectYatA),
+        ImperfectFormation::PalatalizedA => {
+            let changed = first_palatalize(&stem);
+            if changed == stem {
+                return Err(InflectionError::InvalidInput {
+                    reason: "the palatalized imperfect formation requires a final velar stem"
+                        .to_string(),
+                });
+            }
+            (changed, "аа", RuleId::VerbImperfectPalatalizedA)
+        }
+    };
+    let personal = imperfect_personal_ending(cell);
+    let ending = format!("{marker}{personal}");
+    Ok(join(
+        &stem,
+        &ending,
+        rule_id,
+        "attach the explicitly selected imperfect marker and personal ending",
+    ))
+}
+
+fn aorist(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, InflectionError> {
+    let formation =
+        lexeme
+            .formations
+            .aorist
+            .ok_or_else(|| InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::AoristFormation],
+            })?;
+    if formation == AoristFormation::Sigmatic {
+        return Err(InflectionError::UnsupportedCell);
+    }
+    let stem = required_stem(lexeme.stems.aorist.as_deref(), MetadataField::AoristStem)?;
+    match formation {
+        AoristFormation::Asigmatic => {
+            let (changed, ending) = asigmatic_aorist_cell(&stem, cell);
+            Ok(join(
+                &changed,
+                ending,
+                RuleId::VerbAoristAsigmatic,
+                "attach the asigmatic aorist personal ending to the explicit aorist stem",
+            ))
+        }
+        AoristFormation::New => {
+            let (changed, ending) = new_aorist_cell(&stem, cell);
+            Ok(join(
+                &changed,
+                ending,
+                RuleId::VerbAoristNew,
+                "attach the new ox-aorist personal ending to the explicit aorist stem",
+            ))
+        }
+        AoristFormation::Sigmatic => unreachable!("sigmatic aorist returned above"),
+    }
+}
+
+fn present_active_participle(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+) -> Result<PredictedForm, InflectionError> {
+    let formation = lexeme.formations.present_active_participle.ok_or_else(|| {
+        InflectionError::MissingLexicalMetadata {
+            needed: vec![MetadataField::PresentActiveParticipleFormation],
+        }
+    })?;
+    let stem = required_stem(
+        lexeme.stems.present_active_participle.as_deref(),
+        MetadataField::PresentActiveParticipleStem,
+    )?;
+    let (oblique, nominative) = match formation {
+        PresentActiveParticipleFormation::YushtHard => (format!("{stem}ѫшт"), format!("{stem}ꙑ")),
+        PresentActiveParticipleFormation::YushtSoft => (format!("{stem}ѫшт"), format!("{stem}ѩ")),
+        PresentActiveParticipleFormation::YeshtSoft => (format!("{stem}ѧшт"), format!("{stem}ѧ")),
+    };
+    decline_active_participle(
+        lexeme,
+        cell,
+        &oblique,
+        &nominative,
+        RuleId::VerbParticiplePresentActive,
+        "form the present active participle from the explicit participial stem",
+    )
+}
+
+fn past_active_participle(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+) -> Result<PredictedForm, InflectionError> {
+    let formation = lexeme.formations.past_active_participle.ok_or_else(|| {
+        InflectionError::MissingLexicalMetadata {
+            needed: vec![MetadataField::PastActiveParticipleFormation],
+        }
+    })?;
+    let stem = required_stem(
+        lexeme.stems.past_active_participle.as_deref(),
+        MetadataField::PastActiveParticipleStem,
+    )?;
+    let (oblique, nominative) = match formation {
+        PastActiveParticipleFormation::Ush => (format!("{stem}ъш"), format!("{stem}ъ")),
+        PastActiveParticipleFormation::Vush => (format!("{stem}въш"), format!("{stem}въ")),
+    };
+    decline_active_participle(
+        lexeme,
+        cell,
+        &oblique,
+        &nominative,
+        RuleId::VerbParticiplePastActive,
+        "form the past active participle from the explicit participial stem",
+    )
+}
+
+fn present_passive_participle(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+) -> Result<PredictedForm, InflectionError> {
+    let formation = lexeme
+        .formations
+        .present_passive_participle
+        .ok_or_else(|| InflectionError::MissingLexicalMetadata {
+            needed: vec![MetadataField::PresentPassiveParticipleFormation],
+        })?;
+    let stem = required_stem(
+        lexeme.stems.present_passive_participle.as_deref(),
+        MetadataField::PresentPassiveParticipleStem,
+    )?;
+    let adjectival_stem = match formation {
+        PresentPassiveParticipleFormation::Im => format!("{stem}им"),
+        PresentPassiveParticipleFormation::Em => format!("{stem}ем"),
+        PresentPassiveParticipleFormation::Om => format!("{stem}ом"),
+    };
+    decline_passive_participle(
+        lexeme,
+        cell,
+        &adjectival_stem,
+        RuleId::VerbParticiplePresentPassive,
+        "form the present passive participle from the explicit present-system stem",
+    )
+}
+
+fn past_passive_participle(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+) -> Result<PredictedForm, InflectionError> {
+    let formation = lexeme.formations.past_passive_participle.ok_or_else(|| {
+        InflectionError::MissingLexicalMetadata {
+            needed: vec![MetadataField::PastPassiveParticipleFormation],
+        }
+    })?;
+    let stem = required_stem(
+        lexeme.stems.past_passive_participle.as_deref(),
+        MetadataField::PastPassiveParticipleStem,
+    )?;
+    let adjectival_stem = match formation {
+        PastPassiveParticipleFormation::T => format!("{stem}т"),
+        PastPassiveParticipleFormation::N => format!("{stem}н"),
+        PastPassiveParticipleFormation::En => format!("{stem}ен"),
+    };
+    decline_passive_participle(
+        lexeme,
+        cell,
+        &adjectival_stem,
+        RuleId::VerbParticiplePastPassive,
+        "form the past passive participle from the explicit infinitive-system stem",
+    )
+}
+
+fn decline_passive_participle(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+    adjectival_stem: &str,
+    rule_id: RuleId,
+    formation_reason: &'static str,
+) -> Result<PredictedForm, InflectionError> {
+    let agreed =
+        crate::adjective::decline_stem(adjectival_stem, AdjectiveClass::Hard, cell.adjective)?;
+    Ok(participle_result(
+        lexeme,
+        adjectival_stem,
+        agreed.text,
+        agreed.trace,
+        rule_id,
+        formation_reason,
+    ))
+}
+
+fn decline_active_participle(
+    lexeme: &VerbLexeme,
+    cell: ParticipleCell,
+    oblique_stem: &str,
+    nominative_mn_singular: &str,
+    rule_id: RuleId,
+    formation_reason: &'static str,
+) -> Result<PredictedForm, InflectionError> {
+    use AdjectiveForm::Short;
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Plural, Singular};
+
+    let agreement = cell.adjective;
+    let special = match (
+        agreement.form,
+        agreement.case,
+        agreement.number,
+        agreement.gender,
+    ) {
+        (Short, Case::Nominative | Case::Vocative, Singular, Masculine | Neuter) => {
+            Some(nominative_mn_singular.to_string())
+        }
+        (Short, Case::Nominative | Case::Vocative, Singular, Feminine) => {
+            Some(format!("{oblique_stem}и"))
+        }
+        (Short, Case::Nominative | Case::Vocative, Plural, Masculine) => {
+            Some(format!("{oblique_stem}е"))
+        }
+        _ => None,
+    };
+    let (text, agreement_trace) = match special {
+        Some(text) => {
+            let trace = vec![RuleStep {
+                rule_id,
+                before: oblique_stem.to_string(),
+                after: text.clone(),
+                reason: "apply the source-described active-participle nominative seam",
+            }];
+            (text, trace)
+        }
+        None => {
+            let agreed =
+                crate::adjective::decline_stem(oblique_stem, AdjectiveClass::Soft, agreement)?;
+            (agreed.text, agreed.trace)
+        }
+    };
+    Ok(participle_result(
+        lexeme,
+        oblique_stem,
+        text,
+        agreement_trace,
+        rule_id,
+        formation_reason,
+    ))
+}
+
+fn participle_result(
+    lexeme: &VerbLexeme,
+    adjectival_stem: &str,
+    text: String,
+    agreement_trace: Vec<RuleStep>,
+    rule_id: RuleId,
+    formation_reason: &'static str,
+) -> PredictedForm {
+    PredictedForm {
+        text: text.clone(),
+        rule_id,
+        trace: std::iter::once(RuleStep {
+            rule_id,
+            before: lexeme.lemma.clone(),
+            after: adjectival_stem.to_string(),
+            reason: formation_reason,
+        })
+        .chain(agreement_trace)
+        .collect(),
+    }
+}
+
+fn imperfect_personal_ending(cell: FiniteVerbCell) -> &'static str {
+    match (cell.person, cell.number) {
+        (Person::First, Number::Singular) => "хъ",
+        (Person::Second | Person::Third, Number::Singular) => "ше",
+        (Person::First, Number::Dual) => "ховѣ",
+        (Person::Second, Number::Dual) => "шета",
+        (Person::Third, Number::Dual) => "шете",
+        (Person::First, Number::Plural) => "хомъ",
+        (Person::Second, Number::Plural) => "шете",
+        (Person::Third, Number::Plural) => "хѫ",
+    }
+}
+
+fn asigmatic_aorist_cell(stem: &str, cell: FiniteVerbCell) -> (String, &'static str) {
+    match (cell.person, cell.number) {
+        (Person::First, Number::Singular) => (stem.to_string(), "ъ"),
+        (Person::Second | Person::Third, Number::Singular) => (first_palatalize(stem), "е"),
+        (Person::First, Number::Dual) => (stem.to_string(), "овѣ"),
+        (Person::Second, Number::Dual) => (first_palatalize(stem), "ета"),
+        (Person::Third, Number::Dual) => (first_palatalize(stem), "ете"),
+        (Person::First, Number::Plural) => (stem.to_string(), "омъ"),
+        (Person::Second, Number::Plural) => (first_palatalize(stem), "ете"),
+        (Person::Third, Number::Plural) => (stem.to_string(), "ѫ"),
+    }
+}
+
+fn new_aorist_cell(stem: &str, cell: FiniteVerbCell) -> (String, &'static str) {
+    match (cell.person, cell.number) {
+        (Person::First, Number::Singular) => (stem.to_string(), "охъ"),
+        (Person::Second | Person::Third, Number::Singular) => (first_palatalize(stem), "е"),
+        (Person::First, Number::Dual) => (stem.to_string(), "оховѣ"),
+        (Person::Second, Number::Dual) => (stem.to_string(), "оста"),
+        (Person::Third, Number::Dual) => (stem.to_string(), "осте"),
+        (Person::First, Number::Plural) => (stem.to_string(), "охомъ"),
+        (Person::Second, Number::Plural) => (stem.to_string(), "осте"),
+        (Person::Third, Number::Plural) => (stem.to_string(), "ошѧ"),
+    }
+}
+
+fn required_stem(value: Option<&str>, field: MetadataField) -> Result<String, InflectionError> {
+    let value = value.ok_or_else(|| InflectionError::MissingLexicalMetadata {
+        needed: vec![field],
+    })?;
+    crate::orthography::canonical_display(value)
+}
+
+fn join(stem: &str, ending: &str, rule_id: RuleId, reason: &'static str) -> PredictedForm {
+    let text = format!("{stem}{ending}");
+    single_step(stem, &text, rule_id, reason)
 }
 
 fn single_step(before: &str, after: &str, rule_id: RuleId, reason: &'static str) -> PredictedForm {
@@ -129,33 +546,16 @@ fn single_step(before: &str, after: &str, rule_id: RuleId, reason: &'static str)
     }
 }
 
-fn mutate_second_first_singular(stem: &str) -> String {
-    const CLUSTERS: [(&str, &str); 6] = [
-        ("зд", "жд"),
-        ("ск", "щ"),
-        ("ст", "щ"),
-        ("сл", "шл"),
-        ("сн", "шн"),
-        ("зн", "жн"),
-    ];
-    for (from, to) in CLUSTERS {
-        if let Some(prefix) = stem.strip_suffix(from) {
-            return format!("{prefix}{to}");
-        }
-    }
+fn first_palatalize(stem: &str) -> String {
+    replace_final(stem, [('к', "ч"), ('г', "ж"), ('х', "ш")])
+}
+
+fn replace_final<const N: usize>(stem: &str, replacements: [(char, &str); N]) -> String {
     let Some(last) = stem.chars().last() else {
         return String::new();
     };
-    let replacement = match last {
-        'г' | 'ѕ' | 'з' => "ж",
-        'к' => "ч",
-        'с' => "ш",
-        'х' => "ш",
-        'т' => "щ",
-        'д' => "жд",
-        'б' | 'в' | 'м' | 'п' => return format!("{stem}л"),
-        'j' => "",
-        _ => return stem.to_string(),
+    let Some((_, replacement)) = replacements.iter().find(|(from, _)| *from == last) else {
+        return stem.to_string();
     };
     let prefix_len = stem.len() - last.len_utf8();
     format!("{}{replacement}", &stem[..prefix_len])
@@ -202,114 +602,395 @@ fn present_ending(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{AdjectiveCell, Animacy};
 
-    #[test]
-    fn every_productive_present_class_uses_its_stable_rule() {
-        for (class, expected) in [
-            (VerbClass::IA1, RuleId::VerbIA1),
-            (VerbClass::IA2, RuleId::VerbIA2),
-            (VerbClass::II1, RuleId::VerbII1),
-            (VerbClass::II2, RuleId::VerbII2),
-            (VerbClass::II3, RuleId::VerbII3),
-        ] {
-            let verb = VerbLexeme {
-                lemma: "правити".to_string(),
-                class,
-                present_stem: Some("прав".to_string()),
-                aorist_stem: None,
-            };
-            let predicted = finite(
-                &verb,
-                FiniteVerbCell {
-                    tense: FiniteTense::Present,
-                    person: Person::Third,
-                    number: Number::Dual,
-                },
-            )
-            .expect("productive present class");
-            assert_eq!(predicted.rule_id, expected);
+    fn finite_cell(tense: FiniteTense, person: Person, number: Number) -> FiniteVerbCell {
+        FiniteVerbCell {
+            tense,
+            person,
+            number,
         }
     }
 
-    #[test]
-    fn second_conjugation_first_singular_mutates_labial() {
-        let verb = VerbLexeme {
-            lemma: "правити".to_string(),
-            class: VerbClass::II1,
-            present_stem: Some("прав".to_string()),
-            aorist_stem: None,
-        };
-        let form = finite(
-            &verb,
-            FiniteVerbCell {
-                tense: FiniteTense::Present,
-                person: Person::First,
-                number: Number::Singular,
+    fn adjective_cell(
+        kind: ParticipleKind,
+        form: AdjectiveForm,
+        case: Case,
+        number: Number,
+        gender: Gender,
+    ) -> ParticipleCell {
+        ParticipleCell {
+            kind,
+            adjective: AdjectiveCell {
+                case,
+                number,
+                gender,
+                animacy: Animacy::Inanimate,
+                form,
             },
-        )
-        .expect("supported");
-        assert_eq!(form.text, "правлѭ");
+        }
+    }
+
+    fn finite_paradigm(lexeme: &VerbLexeme, tense: FiniteTense) -> Vec<String> {
+        Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Person::ALL.into_iter().map(move |person| {
+                    finite(lexeme, finite_cell(tense, person, number))
+                        .expect("complete finite paradigm")
+                        .text
+                })
+            })
+            .collect()
     }
 
     #[test]
-    fn explicit_stems_generate_nonfinite_components() {
-        let verb = VerbLexeme {
-            lemma: "правити".to_string(),
-            class: VerbClass::II1,
-            present_stem: Some("прав".to_string()),
-            aorist_stem: Some("прави".to_string()),
-        };
-        assert_eq!(supine(&verb).expect("regular supine").text, "правитъ");
+    fn explicit_present_allomorph_replaces_automatic_guessing() {
+        let mut verb = VerbLexeme::new("правити", VerbClass::II1);
+        verb.stems.present = Some("прав".to_string());
+        let cell = finite_cell(FiniteTense::Present, Person::First, Number::Singular);
         assert_eq!(
-            l_participle(
-                &verb,
-                LParticipleCell {
-                    gender: Gender::Feminine,
-                    number: Number::Dual,
-                }
-            )
-            .expect("explicit aorist stem")
-            .text,
-            "правилѣ"
+            finite(&verb, cell),
+            Err(InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::PresentFirstSingularStem]
+            })
+        );
+        verb.stems.present_first_singular = Some("правл".to_string());
+        assert_eq!(
+            finite(&verb, cell).expect("explicit allomorph").text,
+            "правлѭ"
         );
     }
 
     #[test]
-    fn missing_empty_and_hostile_metadata_fail_without_panicking() {
-        let cell = FiniteVerbCell {
-            tense: FiniteTense::Present,
-            person: Person::First,
-            number: Number::Singular,
-        };
-        let mut verb = VerbLexeme {
-            lemma: "правити".to_string(),
-            class: VerbClass::II1,
-            present_stem: None,
-            aorist_stem: None,
-        };
-        assert!(matches!(
-            finite(&verb, cell),
-            Err(InflectionError::MissingLexicalMetadata { .. })
-        ));
-        verb.present_stem = Some(String::new());
-        assert!(matches!(
-            finite(&verb, cell),
-            Err(InflectionError::InvalidInput { .. })
-        ));
-        verb.aorist_stem = Some(String::new());
-        assert!(matches!(
-            l_participle(
+    fn imperfect_has_all_person_number_cells_and_velar_seam() {
+        let mut verb = VerbLexeme::new("нести", VerbClass::IA1);
+        verb.stems.imperfect = Some("нес".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::YatA);
+        let expected = [
+            "несѣахъ",
+            "несѣаше",
+            "несѣаше",
+            "несѣаховѣ",
+            "несѣашета",
+            "несѣашете",
+            "несѣахомъ",
+            "несѣашете",
+            "несѣахѫ",
+        ];
+        assert_eq!(finite_paradigm(&verb, FiniteTense::Imperfect), expected);
+
+        // UT OCS Online, lesson 1, §4.2: the -ах- series.
+        verb.stems.imperfect = Some("зна".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::A);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Imperfect),
+            [
+                "знаахъ",
+                "знааше",
+                "знааше",
+                "знааховѣ",
+                "знаашета",
+                "знаашете",
+                "знаахомъ",
+                "знаашете",
+                "знаахѫ",
+            ]
+        );
+
+        verb.stems.imperfect = Some("мог".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::PalatalizedA);
+        assert_eq!(
+            finite(
                 &verb,
-                LParticipleCell {
-                    gender: Gender::Masculine,
-                    number: Number::Singular,
+                finite_cell(FiniteTense::Imperfect, Person::First, Number::Singular)
+            )
+            .expect("palatalized imperfect")
+            .text,
+            "можаахъ"
+        );
+    }
+
+    #[test]
+    fn new_and_asigmatic_aorists_keep_formation_separate_from_aspect() {
+        let mut verb = VerbLexeme::new("рещи", VerbClass::IA1);
+        verb.aspect = Some(VerbAspect::Perfective);
+        verb.stems.aorist = Some("рек".to_string());
+        verb.formations.aorist = Some(AoristFormation::New);
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Aorist, Person::First, Number::Singular)
+            )
+            .expect("new aorist")
+            .text,
+            "рекохъ"
+        );
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Aorist, Person::Third, Number::Singular)
+            )
+            .expect("new aorist palatal seam")
+            .text,
+            "рече"
+        );
+        verb.formations.aorist = Some(AoristFormation::Asigmatic);
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Aorist, Person::First, Number::Plural)
+            )
+            .expect("asigmatic aorist")
+            .text,
+            "рекомъ"
+        );
+
+        // UT OCS Online, lesson 3, §14.3: complete new ox-aorist.
+        verb.formations.aorist = Some(AoristFormation::New);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Aorist),
+            [
+                "рекохъ",
+                "рече",
+                "рече",
+                "рекоховѣ",
+                "рекоста",
+                "рекосте",
+                "рекохомъ",
+                "рекосте",
+                "рекошѧ",
+            ]
+        );
+        verb.stems.aorist = Some("мог".to_string());
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Aorist),
+            [
+                "могохъ",
+                "може",
+                "може",
+                "могоховѣ",
+                "могоста",
+                "могосте",
+                "могохомъ",
+                "могосте",
+                "могошѧ",
+            ]
+        );
+
+        // The asigmatic formation is selected independently and has its own seam.
+        verb.stems.aorist = Some("пек".to_string());
+        verb.formations.aorist = Some(AoristFormation::Asigmatic);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Aorist),
+            [
+                "пекъ",
+                "пече",
+                "пече",
+                "пековѣ",
+                "печета",
+                "печете",
+                "пекомъ",
+                "печете",
+                "пекѫ",
+            ]
+        );
+        verb.formations.aorist = Some(AoristFormation::Sigmatic);
+        verb.stems.aorist = None;
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Aorist, Person::First, Number::Singular)
+            ),
+            Err(InflectionError::UnsupportedCell)
+        );
+    }
+
+    #[test]
+    fn imperative_exposes_only_the_historical_cell_inventory() {
+        let mut verb = VerbLexeme::new("нести", VerbClass::IA1);
+        verb.stems.imperative = Some("нес".to_string());
+        verb.formations.imperative = Some(ImperativeFormation::YatSeries);
+        let forms = ImperativeCell::SUPPORTED
+            .map(|cell| imperative(&verb, cell).expect("supported imperative").text);
+        assert_eq!(
+            forms,
+            ["неси", "неси", "несѣвѣ", "несѣта", "несѣмъ", "несѣте"]
+        );
+        verb.stems.imperative = Some("мол".to_string());
+        verb.formations.imperative = Some(ImperativeFormation::ISeries);
+        let forms = ImperativeCell::SUPPORTED
+            .map(|cell| imperative(&verb, cell).expect("supported i-series").text);
+        assert_eq!(
+            forms,
+            ["моли", "моли", "моливѣ", "молита", "молимъ", "молите"]
+        );
+        assert_eq!(
+            imperative(
+                &verb,
+                ImperativeCell {
+                    person: Person::Third,
+                    number: Number::Plural
                 }
             ),
-            Err(InflectionError::InvalidInput { .. })
-        ));
-        verb.lemma = "two words".to_string();
+            Err(InflectionError::UnsupportedCell)
+        );
+    }
+
+    #[test]
+    fn all_four_participles_form_stems_and_share_adjective_agreement() {
+        let mut verb = VerbLexeme::new("нести", VerbClass::IA1);
+        verb.stems.present_active_participle = Some("нес".to_string());
+        verb.formations.present_active_participle =
+            Some(PresentActiveParticipleFormation::YushtHard);
+        verb.stems.present_passive_participle = Some("нес".to_string());
+        verb.formations.present_passive_participle = Some(PresentPassiveParticipleFormation::Om);
+        verb.stems.past_active_participle = Some("нес".to_string());
+        verb.formations.past_active_participle = Some(PastActiveParticipleFormation::Ush);
+        verb.stems.past_passive_participle = Some("нес".to_string());
+        verb.formations.past_passive_participle = Some(PastPassiveParticipleFormation::En);
+
+        assert_eq!(
+            participle(
+                &verb,
+                adjective_cell(
+                    ParticipleKind::PresentActive,
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine
+                )
+            )
+            .expect("present active")
+            .text,
+            "несꙑ"
+        );
+        assert_eq!(
+            participle(
+                &verb,
+                adjective_cell(
+                    ParticipleKind::PresentPassive,
+                    AdjectiveForm::Long,
+                    Case::Dative,
+                    Number::Dual,
+                    Gender::Feminine
+                )
+            )
+            .expect("present passive")
+            .text,
+            "несомꙑима"
+        );
+        assert_eq!(
+            participle(
+                &verb,
+                adjective_cell(
+                    ParticipleKind::PastActive,
+                    AdjectiveForm::Short,
+                    Case::Genitive,
+                    Number::Singular,
+                    Gender::Masculine
+                )
+            )
+            .expect("past active")
+            .text,
+            "несъша"
+        );
+        assert_eq!(
+            participle(
+                &verb,
+                adjective_cell(
+                    ParticipleKind::PastPassive,
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine
+                )
+            )
+            .expect("past passive")
+            .text,
+            "несенъ"
+        );
+
+        // Every agreement cell is delegated to the shared adjective owner after
+        // the source-cited participial stem is formed (UT lessons 6 and 7).
+        for kind in [
+            ParticipleKind::PresentActive,
+            ParticipleKind::PresentPassive,
+            ParticipleKind::PastActive,
+            ParticipleKind::PastPassive,
+        ] {
+            for form in AdjectiveForm::ALL {
+                for number in Number::ALL {
+                    for case in Case::ALL {
+                        for gender in Gender::ALL {
+                            for animacy in [Animacy::Inanimate, Animacy::Animate] {
+                                let adjective = AdjectiveCell {
+                                    case,
+                                    number,
+                                    gender,
+                                    animacy,
+                                    form,
+                                };
+                                let result = participle(&verb, ParticipleCell { kind, adjective })
+                                    .expect("all adjective agreement cells are supported");
+                                assert_eq!(result.trace.len(), 2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        let long_oblique = AdjectiveCell {
+            case: Case::Genitive,
+            number: Number::Plural,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            form: AdjectiveForm::Long,
+        };
+        let active = participle(
+            &verb,
+            ParticipleCell {
+                kind: ParticipleKind::PresentActive,
+                adjective: long_oblique,
+            },
+        )
+        .expect("long active participle");
+        let adjective =
+            crate::adjective::decline_stem("несѫшт", AdjectiveClass::Soft, long_oblique)
+                .expect("shared soft adjective agreement");
+        assert_eq!(active.text, adjective.text);
+        assert_eq!(active.trace[1].rule_id, RuleId::AdjectiveSoftLong);
+    }
+
+    #[test]
+    fn missing_and_hostile_metadata_fail_without_panicking() {
+        let verb = VerbLexeme::new("нести", VerbClass::IA1);
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::First, Number::Singular)
+            ),
+            Err(InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::ImperfectFormation]
+            })
+        );
+        let root = VerbLexeme::new("бꙋти", VerbClass::Root);
+        assert_eq!(
+            finite(
+                &root,
+                finite_cell(FiniteTense::Present, Person::First, Number::Singular)
+            ),
+            Err(InflectionError::UnsupportedCell)
+        );
+        let mut hostile = VerbLexeme::new("нести", VerbClass::IA1);
+        hostile.stems.imperfect = Some("\0".to_string());
+        hostile.formations.imperfect = Some(ImperfectFormation::A);
         assert!(matches!(
-            finite(&verb, cell),
+            finite(
+                &hostile,
+                finite_cell(FiniteTense::Imperfect, Person::First, Number::Singular)
+            ),
             Err(InflectionError::InvalidInput { .. })
         ));
     }

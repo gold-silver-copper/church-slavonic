@@ -16,3 +16,9 @@ name = "UD Old Church Slavonic PROIEL"
 url = "https://universaldependencies.org/treebanks/cu_proiel/index.html"
 bundled = false
 license = "CC BY-NC-SA 4.0"
+
+[[optional_evaluation_source]]
+name = "Syntacticus native PROIEL/TOROT Old Church Slavonic selection"
+url = "https://github.com/syntacticus/syntacticus-treebank-data"
+bundled = false
+license = "CC BY-NC-SA 4.0"

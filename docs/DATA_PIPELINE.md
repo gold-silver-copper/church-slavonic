@@ -7,6 +7,7 @@
 | `refresh-data` | an explicit local Kaikki/Wiktextract JSONL path | `data/extracted/*.tsv`, `data/extracted/source.json`, generated Rust, extraction reports |
 | `check-registry` | committed normalized TSV | nothing; compares deterministic generated Rust and validates semantics |
 | `accuracy` | committed registry and public facade | `reports/accuracy.{json,md}` when refreshed |
+| `accuracy-corpus` | explicit local paths to hash-pinned UD and/or Syntacticus data | aggregate `reports/corpus-accuracy.{json,md}` only with `--write`; optional token details stay local |
 | runtime facade | generated Rust only | nothing |
 
 The raw dump is gitignored. No normal build, test, example, or package operation uses
@@ -78,9 +79,20 @@ raw dump. For a raw dump it verifies the committed byte length and SHA-256 befor
 evaluating the committed normalization; changed raw data must go through
 `refresh-data` first. Normal builds and checks never download a source.
 
-`accuracy-ud` accepts a user-supplied PROIEL checkout and compares only feature
-bundles that map without guessing: nominal/closed-class cells, present finite verbs,
-imperatives, infinitives, supines, and resultative/l-participles. PROIEL does not
-encode the short/long adjective distinction and collapses multiple past finite
-tenses, so those incompatible bundles are skipped. Raw and NFC/lowercase results are
-printed separately; the noncommercial corpus is never copied into this project.
+`accuracy-corpus --ud PATH --syntacticus PATH` verifies every file against
+`data/evaluation-sources.json` before parsing. The UD mapper admits only complete,
+lossless verb bundles. In particular, UD finite `Tense=Past` is counted as
+`incompatible-past-subtype`; lexical `Aspect` is never reinterpreted as aorist or
+imperfect. Native PROIEL/TOROT ten-character morphology retains `i` (imperfect) and
+`a` (aorist), so it owns past-subtype evaluation.
+
+The report separates public facade recall, productive core generalization using an
+explicit oracle principal part, and a lemma-disjoint OOV view. When a native token
+supplies a diagnostic stem/formation, every token in that person-number cell is
+excluded. Diplomatic and shared NFC/lowercase lookup scores, top-1 and any-variant,
+coverage, conditional accuracy, documents, cells, and exact skip reasons remain
+separate. `--details PATH` writes local token-level evidence; these CC BY-NC-SA files
+and derived excerpts must never be committed. See `docs/CORPUS_EVALUATION.md`.
+
+The original `accuracy-ud` command remains a compatibility alias for the UD-only
+diagnostic. It does not evaluate native past subtypes.

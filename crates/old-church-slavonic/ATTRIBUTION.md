@@ -20,4 +20,4 @@ Pinned source used by package 0.1.0:
 The source was modified by selecting OCS entries, rejecting unsafe cells, normalizing
 the accepted data, and generating static Rust tables. These are dictionary-generated
 forms, not automatically manuscript-attested forms. The noncommercial UD OCS PROIEL
-corpus is not bundled.
+and native Syntacticus/PROIEL/TOROT evaluation corpora are not bundled.

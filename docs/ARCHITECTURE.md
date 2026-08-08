@@ -11,6 +11,10 @@ Kaikki/Wiktextract JSONL
   -> generated Rust arrays
   -> old-church-slavonic facade
        -> exact table cell, otherwise old-church-slavonic-core
+
+external pinned UD CoNLL-U + native PROIEL/TOROT XML
+  -> xtask hash/schema verification and lossless feature mappers
+  -> aggregate reports only (corpus text and token details stay local)
 ```
 
 The source dump is local and gitignored. The normalized registry is the committed,
@@ -38,6 +42,19 @@ I/O. Cell lookup and full paradigms share the same resolver.
   combinations; finite verbs, imperatives, and participles use separate requests.
 - The current malformed Wiktextract verb tags are not normalized away. Safe cells are
   admitted and unsafe table blocks are counted and excluded.
+
+## Verb-system boundary
+
+`VerbClass` selects only the present ending series. `VerbLexeme` independently owns
+present allomorphs, imperfect/aorist/imperative stems and formation enums, lexical
+aspect, and the four participial stem/formation pairs. This prevents lexical aspect
+or a present class from silently choosing a past formation. The pure core returns a
+stable rule and trace; the facade keeps exact dictionary cells ahead of rule output.
+
+Participial stem formation belongs to the verb module. Once formed, the stem crosses
+one explicit boundary into `adjective::decline_stem`, the sole owner of short/long
+case-number-gender-animacy agreement. Corpus evaluators invoke these production
+entry points; they do not contain a second morphology implementation.
 
 ## Unicode dependency
 

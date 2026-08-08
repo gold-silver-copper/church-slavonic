@@ -2,14 +2,14 @@
   "schema_version": 2,
   "dictionary": {
     "lexemes": 3081,
-    "cells": 134436,
-    "variants": 137081,
-    "reachable_variants": 137081,
-    "exact_variant_order_cells": 134436,
-    "primary_correct_cells": 134436,
+    "cells": 134761,
+    "variants": 137406,
+    "reachable_variants": 137406,
+    "exact_variant_order_cells": 134761,
+    "primary_correct_cells": 134761,
     "ambiguous_bare_lemma_pos_pairs": 112,
     "cells_by_source": {
-      "dictionary-table": 134436
+      "dictionary-table": 134761
     },
     "paradigm_cell_sets_correct": 3081
   },
@@ -121,19 +121,29 @@
         "total": 16
       },
       "verb-II1-present": {
-        "correct": 278,
-        "normalized_correct": 278,
-        "total": 296
+        "correct": 259,
+        "normalized_correct": 259,
+        "total": 259
       },
       "verb-II2-present": {
-        "correct": 147,
-        "normalized_correct": 147,
-        "total": 160
+        "correct": 140,
+        "normalized_correct": 140,
+        "total": 140
       },
       "verb-II3-present": {
-        "correct": 16,
-        "normalized_correct": 16,
-        "total": 16
+        "correct": 14,
+        "normalized_correct": 14,
+        "total": 14
+      },
+      "verb-imperative": {
+        "correct": 459,
+        "normalized_correct": 459,
+        "total": 536
+      },
+      "verb-imperfect": {
+        "correct": 1104,
+        "normalized_correct": 1104,
+        "total": 1104
       },
       "verb-infinitive": {
         "correct": 526,
@@ -144,6 +154,41 @@
         "correct": 4432,
         "normalized_correct": 4432,
         "total": 4432
+      },
+      "verb-past-active-participle-ush": {
+        "correct": 29,
+        "normalized_correct": 29,
+        "total": 69
+      },
+      "verb-past-active-participle-vush": {
+        "correct": 65,
+        "normalized_correct": 65,
+        "total": 71
+      },
+      "verb-past-passive-participle-en": {
+        "correct": 7,
+        "normalized_correct": 7,
+        "total": 49
+      },
+      "verb-present-active-participle-yesht-soft": {
+        "correct": 59,
+        "normalized_correct": 59,
+        "total": 59
+      },
+      "verb-present-active-participle-yusht-hard": {
+        "correct": 56,
+        "normalized_correct": 56,
+        "total": 77
+      },
+      "verb-present-passive-participle-im": {
+        "correct": 45,
+        "normalized_correct": 45,
+        "total": 45
+      },
+      "verb-present-passive-participle-om": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 49
       },
       "verb-supine": {
         "correct": 511,
@@ -253,19 +298,29 @@
         "total": 8
       },
       "verb-II1-present": {
-        "correct": 70,
-        "normalized_correct": 70,
-        "total": 72
+        "correct": 63,
+        "normalized_correct": 63,
+        "total": 63
       },
       "verb-II2-present": {
-        "correct": 46,
-        "normalized_correct": 46,
-        "total": 48
+        "correct": 42,
+        "normalized_correct": 42,
+        "total": 42
       },
       "verb-II3-present": {
-        "correct": 15,
-        "normalized_correct": 15,
-        "total": 16
+        "correct": 14,
+        "normalized_correct": 14,
+        "total": 14
+      },
+      "verb-imperative": {
+        "correct": 157,
+        "normalized_correct": 157,
+        "total": 188
+      },
+      "verb-imperfect": {
+        "correct": 384,
+        "normalized_correct": 384,
+        "total": 384
       },
       "verb-infinitive": {
         "correct": 146,
@@ -276,6 +331,41 @@
         "correct": 1216,
         "normalized_correct": 1216,
         "total": 1216
+      },
+      "verb-past-active-participle-ush": {
+        "correct": 14,
+        "normalized_correct": 14,
+        "total": 25
+      },
+      "verb-past-active-participle-vush": {
+        "correct": 20,
+        "normalized_correct": 20,
+        "total": 25
+      },
+      "verb-past-passive-participle-en": {
+        "correct": 8,
+        "normalized_correct": 8,
+        "total": 23
+      },
+      "verb-present-active-participle-yesht-soft": {
+        "correct": 17,
+        "normalized_correct": 17,
+        "total": 17
+      },
+      "verb-present-active-participle-yusht-hard": {
+        "correct": 25,
+        "normalized_correct": 25,
+        "total": 31
+      },
+      "verb-present-passive-participle-im": {
+        "correct": 15,
+        "normalized_correct": 15,
+        "total": 15
+      },
+      "verb-present-passive-participle-om": {
+        "correct": 19,
+        "normalized_correct": 19,
+        "total": 23
       },
       "verb-supine": {
         "correct": 139,
@@ -4394,11 +4484,6 @@
         "normalized_correct": 37,
         "total": 37
       },
-      "verb/verb-II1-present/verb:finite:present:1:sg": {
-        "correct": 19,
-        "normalized_correct": 19,
-        "total": 37
-      },
       "verb/verb-II1-present/verb:finite:present:2:du": {
         "correct": 37,
         "normalized_correct": 37,
@@ -4432,11 +4517,6 @@
       "verb/verb-II2-present/verb:finite:present:1:pl": {
         "correct": 20,
         "normalized_correct": 20,
-        "total": 20
-      },
-      "verb/verb-II2-present/verb:finite:present:1:sg": {
-        "correct": 7,
-        "normalized_correct": 7,
         "total": 20
       },
       "verb/verb-II2-present/verb:finite:present:2:du": {
@@ -4474,11 +4554,6 @@
         "normalized_correct": 2,
         "total": 2
       },
-      "verb/verb-II3-present/verb:finite:present:1:sg": {
-        "correct": 2,
-        "normalized_correct": 2,
-        "total": 2
-      },
       "verb/verb-II3-present/verb:finite:present:2:du": {
         "correct": 2,
         "normalized_correct": 2,
@@ -4503,6 +4578,66 @@
         "correct": 2,
         "normalized_correct": 2,
         "total": 2
+      },
+      "verb/verb-imperative/verb:imperative:1:du": {
+        "correct": 57,
+        "normalized_correct": 57,
+        "total": 134
+      },
+      "verb/verb-imperative/verb:imperative:1:pl": {
+        "correct": 134,
+        "normalized_correct": 134,
+        "total": 134
+      },
+      "verb/verb-imperative/verb:imperative:2:du": {
+        "correct": 134,
+        "normalized_correct": 134,
+        "total": 134
+      },
+      "verb/verb-imperative/verb:imperative:2:pl": {
+        "correct": 134,
+        "normalized_correct": 134,
+        "total": 134
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:1:du": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:1:pl": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:2:du": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:2:pl": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:2:sg": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:3:du": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:3:pl": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:3:sg": {
+        "correct": 138,
+        "normalized_correct": 138,
+        "total": 138
       },
       "verb/verb-infinitive/verb:infinitive": {
         "correct": 526,
@@ -4548,6 +4683,41 @@
         "correct": 554,
         "normalized_correct": 554,
         "total": 554
+      },
+      "verb/verb-past-active-participle-ush/verb:participle:past-active:citation": {
+        "correct": 29,
+        "normalized_correct": 29,
+        "total": 69
+      },
+      "verb/verb-past-active-participle-vush/verb:participle:past-active:citation": {
+        "correct": 65,
+        "normalized_correct": 65,
+        "total": 71
+      },
+      "verb/verb-past-passive-participle-en/verb:participle:past-passive:citation": {
+        "correct": 7,
+        "normalized_correct": 7,
+        "total": 49
+      },
+      "verb/verb-present-active-participle-yesht-soft/verb:participle:present-active:citation": {
+        "correct": 59,
+        "normalized_correct": 59,
+        "total": 59
+      },
+      "verb/verb-present-active-participle-yusht-hard/verb:participle:present-active:citation": {
+        "correct": 56,
+        "normalized_correct": 56,
+        "total": 77
+      },
+      "verb/verb-present-passive-participle-im/verb:participle:present-passive:citation": {
+        "correct": 45,
+        "normalized_correct": 45,
+        "total": 45
+      },
+      "verb/verb-present-passive-participle-om/verb:participle:present-passive:citation": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 49
       },
       "verb/verb-supine/verb:supine": {
         "correct": 511,
@@ -8561,11 +8731,6 @@
         "normalized_correct": 9,
         "total": 9
       },
-      "verb/verb-II1-present/verb:finite:present:1:sg": {
-        "correct": 7,
-        "normalized_correct": 7,
-        "total": 9
-      },
       "verb/verb-II1-present/verb:finite:present:2:du": {
         "correct": 9,
         "normalized_correct": 9,
@@ -8599,11 +8764,6 @@
       "verb/verb-II2-present/verb:finite:present:1:pl": {
         "correct": 6,
         "normalized_correct": 6,
-        "total": 6
-      },
-      "verb/verb-II2-present/verb:finite:present:1:sg": {
-        "correct": 4,
-        "normalized_correct": 4,
         "total": 6
       },
       "verb/verb-II2-present/verb:finite:present:2:du": {
@@ -8641,11 +8801,6 @@
         "normalized_correct": 2,
         "total": 2
       },
-      "verb/verb-II3-present/verb:finite:present:1:sg": {
-        "correct": 1,
-        "normalized_correct": 1,
-        "total": 2
-      },
       "verb/verb-II3-present/verb:finite:present:2:du": {
         "correct": 2,
         "normalized_correct": 2,
@@ -8670,6 +8825,66 @@
         "correct": 2,
         "normalized_correct": 2,
         "total": 2
+      },
+      "verb/verb-imperative/verb:imperative:1:du": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 47
+      },
+      "verb/verb-imperative/verb:imperative:1:pl": {
+        "correct": 47,
+        "normalized_correct": 47,
+        "total": 47
+      },
+      "verb/verb-imperative/verb:imperative:2:du": {
+        "correct": 47,
+        "normalized_correct": 47,
+        "total": 47
+      },
+      "verb/verb-imperative/verb:imperative:2:pl": {
+        "correct": 47,
+        "normalized_correct": 47,
+        "total": 47
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:1:du": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:1:pl": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:2:du": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:2:pl": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:2:sg": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:3:du": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:3:pl": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb/verb-imperfect/verb:finite:imperfect:3:sg": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
       },
       "verb/verb-infinitive/verb:infinitive": {
         "correct": 146,
@@ -8716,13 +8931,48 @@
         "normalized_correct": 152,
         "total": 152
       },
+      "verb/verb-past-active-participle-ush/verb:participle:past-active:citation": {
+        "correct": 14,
+        "normalized_correct": 14,
+        "total": 25
+      },
+      "verb/verb-past-active-participle-vush/verb:participle:past-active:citation": {
+        "correct": 20,
+        "normalized_correct": 20,
+        "total": 25
+      },
+      "verb/verb-past-passive-participle-en/verb:participle:past-passive:citation": {
+        "correct": 8,
+        "normalized_correct": 8,
+        "total": 23
+      },
+      "verb/verb-present-active-participle-yesht-soft/verb:participle:present-active:citation": {
+        "correct": 17,
+        "normalized_correct": 17,
+        "total": 17
+      },
+      "verb/verb-present-active-participle-yusht-hard/verb:participle:present-active:citation": {
+        "correct": 25,
+        "normalized_correct": 25,
+        "total": 31
+      },
+      "verb/verb-present-passive-participle-im/verb:participle:present-passive:citation": {
+        "correct": 15,
+        "normalized_correct": 15,
+        "total": 15
+      },
+      "verb/verb-present-passive-participle-om/verb:participle:present-passive:citation": {
+        "correct": 19,
+        "normalized_correct": 19,
+        "total": 23
+      },
       "verb/verb-supine/verb:supine": {
         "correct": 139,
         "normalized_correct": 139,
         "total": 145
       }
     },
-    "skipped_cells": 4838
+    "skipped_cells": 5085
   },
   "extraction_exclusions": {
     "adjective-missing-gender": 21,
@@ -8737,13 +8987,13 @@
     "l-participle-missing-gender": 90,
     "non-ocs-script-form": 1962,
     "noun-missing-or-ambiguous-case": 60,
+    "participle-missing-tense": 5,
     "personal-reflexive-table-other-lexeme": 139,
     "table-metadata-or-sentinel": 15217,
     "template-markup-form": 214,
-    "unsafe-or-unknown-verb-shape": 624,
+    "unsafe-or-unknown-verb-shape": 619,
     "unsafe-page-word": 28,
     "unsafe-verb-error-unrecognized-form": 17912,
-    "unsafe-verb-finite-missing-person": 329,
     "unsupported-pos": 296
   }
 }

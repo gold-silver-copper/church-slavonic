@@ -834,6 +834,28 @@ fn verb_features(form: &SourceForm) -> Result<Vec<String>, &'static str> {
             _ => Err("unsafe-verb-imperative-missing-person-or-number"),
         };
     }
+    let active = has(&form.tags, "active");
+    let passive = has(&form.tags, "passive");
+    if active && passive {
+        return Err("participle-contradictory-voice");
+    }
+    if active || passive {
+        if one_case(&form.tags).is_some() {
+            return Err("declined-participle-not-safely-attributed");
+        }
+        if person.is_none() && number.is_none() {
+            let present = has(&form.tags, "present");
+            let past = has(&form.tags, "past");
+            let tense = match (present, past) {
+                (true, false) => "present",
+                (false, true) => "past",
+                (true, true) => return Err("participle-contradictory-tense"),
+                (false, false) => return Err("participle-missing-tense"),
+            };
+            let voice = if active { "active" } else { "passive" };
+            return Ok(vec![format!("verb:participle:{tense}-{voice}:citation")]);
+        }
+    }
     for (tag, tense) in [
         ("present", "present"),
         ("imperfect", "imperfect"),
@@ -864,26 +886,6 @@ fn verb_features(form: &SourceForm) -> Result<Vec<String>, &'static str> {
             .into_iter()
             .map(|gender| format!("verb:l-participle:{gender}:{number}"))
             .collect());
-    }
-    let voice = if has(&form.tags, "active") {
-        Some("active")
-    } else if has(&form.tags, "passive") {
-        Some("passive")
-    } else {
-        None
-    };
-    let tense = if has(&form.tags, "present") {
-        Some("present")
-    } else if has(&form.tags, "past") {
-        Some("past")
-    } else {
-        None
-    };
-    if let (Some(tense), Some(voice)) = (tense, voice) {
-        if one_case(&form.tags).is_some() {
-            return Err("declined-participle-not-safely-attributed");
-        }
-        return Ok(vec![format!("verb:participle:{tense}-{voice}:citation")]);
     }
     if one_case(&form.tags).is_some() && !genders(&form.tags).is_empty() {
         return Err("declined-participle-not-safely-attributed");
@@ -1474,6 +1476,37 @@ mod tests {
         ]))
         .expect("complete finite signature");
         assert_eq!(keys, ["verb:finite:present:1:sg"]);
+    }
+
+    #[test]
+    fn present_participle_citations_precede_finite_tense_mapping() {
+        assert_eq!(
+            verb_features(&form(&["present", "active"])).expect("ordered citation"),
+            ["verb:participle:present-active:citation"]
+        );
+        assert_eq!(
+            verb_features(&form(&["passive", "present", "present"]))
+                .expect("reordered duplicate tags are deterministic"),
+            ["verb:participle:present-passive:citation"]
+        );
+        assert_eq!(
+            verb_features(&form(&[
+                "present",
+                "active",
+                "genitive",
+                "singular",
+                "masculine",
+            ])),
+            Err("declined-participle-not-safely-attributed")
+        );
+        assert_eq!(
+            verb_features(&form(&["present", "past", "active"])),
+            Err("participle-contradictory-tense")
+        );
+        assert_eq!(
+            verb_features(&form(&["present", "active", "passive"])),
+            Err("participle-contradictory-voice")
+        );
     }
 
     #[test]
