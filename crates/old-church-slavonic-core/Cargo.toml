@@ -1,6 +1,6 @@
 [package]
 name = "old-church-slavonic-core"
-version = "0.1.0"
+version = "0.2.0"
 description = "Rule-based Old Church Slavonic morphology without bundled dictionary data"
 authors.workspace = true
 edition.workspace = true
