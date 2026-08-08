@@ -1,8 +1,14 @@
-use old_church_slavonic::{
-    AdjectiveCell, AdjectiveForm, Animacy, AoristFormation, Case, FiniteTense, FiniteVerbCell,
-    FormSource, Gender, ImperfectFormation, Number, PartOfSpeech, ParticipleCell, ParticipleKind,
-    Person, VerbClass,
+use old_church_slavonic::advanced::cells::{
+    AdjectiveCell, AdjectiveForm, FiniteVerbCell, ImperativeCell, ParticipleCell,
 };
+use old_church_slavonic::advanced::raw_features;
+use old_church_slavonic::advanced::rules::{
+    AoristFormation, ImperfectFormation, ImperfectVariantPolicy, VerbClass,
+};
+use old_church_slavonic::{
+    Animacy, Case, FiniteTense, FormSource, Gender, Number, PartOfSpeech, ParticipleKind, Person,
+};
+use old_church_slavonic_core::orthography;
 use old_church_slavonic_core::verb::VerbLexeme;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -366,7 +372,7 @@ fn evaluate_ud(
                 }
             };
             counts.compatible_bundles += 1;
-            let lemma_key = match old_church_slavonic::orthography::lookup_key(lemma) {
+            let lemma_key = match orthography::lookup_key(lemma) {
                 Ok(key) => key,
                 Err(_) => {
                     bump(&mut counts.skipped_by_reason, "invalid-lemma");
@@ -433,9 +439,9 @@ fn evaluate_ud(
             let mut predictions = Vec::new();
             for candidate in &candidates {
                 for feature in &mapped.feature_keys {
-                    if let Ok(forms) = old_church_slavonic::form_by_id(&candidate.id, feature) {
-                        generation_paths.insert(form_source_label(&forms.source));
-                        for form in forms.variants {
+                    if let Ok(forms) = raw_features::form_by_id(&candidate.id, feature) {
+                        generation_paths.insert(form_source_label(forms.source()));
+                        for form in forms.into_variants() {
                             if seen.insert(form.text.clone()) {
                                 predictions.push(form.text);
                             }
@@ -791,7 +797,7 @@ fn evaluate_syntacticus(
                 bump(&mut counts.skipped_by_reason, "native-missing-lemma");
                 continue;
             };
-            let lemma_key = match old_church_slavonic::orthography::lookup_key(&lemma) {
+            let lemma_key = match orthography::lookup_key(&lemma) {
                 Ok(key) => key,
                 Err(_) => {
                     bump(&mut counts.skipped_by_reason, "native-invalid-lemma");
@@ -878,7 +884,7 @@ fn evaluate_syntacticus(
                     lexeme.stems.imperfect = Some(metadata.stem.clone());
                     lexeme.formations.imperfect = Some(formation);
                     lexeme.formations.imperfect_variant_policy =
-                        Some(old_church_slavonic::ImperfectVariantPolicy::UncontractedOnly);
+                        Some(ImperfectVariantPolicy::UncontractedOnly);
                 }
                 NativeFormation::NewAorist => {
                     lexeme.stems.aorist = Some(metadata.stem.clone());
@@ -1301,7 +1307,7 @@ fn map_finite(map: &BTreeMap<&str, &str>) -> Result<MappedCell, &'static str> {
                 Some(_) => return Err("incompatible-imperative-tense"),
                 None => return Err("missing-imperative-tense"),
             }
-            let cell = old_church_slavonic::ImperativeCell {
+            let cell = ImperativeCell {
                 person: map_person_enum(person),
                 number: map_number_code(number),
             };
@@ -1508,8 +1514,8 @@ fn lemma_frequencies(outcomes: &[PendingOutcome]) -> BTreeMap<String, usize> {
 
 fn lookup_equal(left: &str, right: &str) -> bool {
     match (
-        old_church_slavonic::orthography::lookup_key(left),
-        old_church_slavonic::orthography::lookup_key(right),
+        orthography::lookup_key(left),
+        orthography::lookup_key(right),
     ) {
         (Ok(left), Ok(right)) => left == right,
         _ => false,

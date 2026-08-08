@@ -58,7 +58,7 @@ pub(crate) fn table_form(id: &str, feature: &str) -> Option<FormSet> {
     if rows.is_empty() {
         return None;
     }
-    let variants = rows
+    let mut variants = rows
         .iter()
         .enumerate()
         .map(|(expected_rank, row)| {
@@ -89,14 +89,16 @@ pub(crate) fn table_form(id: &str, feature: &str) -> Option<FormSet> {
         evidence,
         trace: Vec::new(),
     }];
-    Some(FormSet {
-        lemma: lexeme.lemma.to_string(),
+    let primary = variants.remove(0);
+    Some(FormSet::new(
+        lexeme.lemma,
+        primary,
         variants,
         source,
         warnings,
-        trace: Vec::new(),
+        Vec::new(),
         analyses,
-    })
+    ))
 }
 
 pub(crate) fn override_form(id: &str, feature: &str) -> Option<FormSet> {
@@ -108,7 +110,7 @@ pub(crate) fn override_form(id: &str, feature: &str) -> Option<FormSet> {
     if rows.is_empty() {
         return None;
     }
-    let variants = rows
+    let mut variants = rows
         .iter()
         .enumerate()
         .map(|(expected_rank, row)| {
@@ -139,18 +141,21 @@ pub(crate) fn override_form(id: &str, feature: &str) -> Option<FormSet> {
         evidence,
         trace: trace.clone(),
     }];
-    Some(FormSet {
-        lemma: lexeme.lemma.to_string(),
-        warnings: if variants.len() > 1 {
-            vec![InflectionWarning::MultipleDictionaryVariants]
-        } else {
-            Vec::new()
-        },
+    let warnings = if variants.len() > 1 {
+        vec![InflectionWarning::MultipleDictionaryVariants]
+    } else {
+        Vec::new()
+    };
+    let primary = variants.remove(0);
+    Some(FormSet::new(
+        lexeme.lemma,
+        primary,
         variants,
-        source: FormSource::ManualOverride,
+        FormSource::ManualOverride,
+        warnings,
         trace,
         analyses,
-    })
+    ))
 }
 
 pub(crate) fn table_paradigm(id: &str) -> Option<Vec<(String, FormSet)>> {

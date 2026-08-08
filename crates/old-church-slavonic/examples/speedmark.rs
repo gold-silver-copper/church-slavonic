@@ -1,16 +1,19 @@
-use old_church_slavonic::{Case, NounCell, Number, noun};
+use old_church_slavonic::{Case, Number, noun};
 use std::hint::black_box;
 use std::time::Instant;
 
 fn main() {
     const CALLS: usize = 1_000_000;
-    let cell = NounCell {
-        case: Case::Dative,
-        number: Number::Dual,
-    };
     let started = Instant::now();
     for _ in 0..CALLS {
-        black_box(noun(black_box("обѣдъ"), black_box(cell)).expect("bundled golden lexeme"));
+        black_box(
+            noun(
+                black_box("обѣдъ"),
+                black_box(Case::Dative),
+                black_box(Number::Dual),
+            )
+            .expect("bundled golden lexeme"),
+        );
     }
     let elapsed = started.elapsed();
     println!(

@@ -6,11 +6,17 @@ with `cargo xtask check-all`; run the injected, temporary failure cases with
 process-specific temporary directory, mutates the copy, requires the named guard to
 fail, restores the copied artifact, and deletes the directory.
 
-All witnesses below were executed successfully on 2026-08-07. No witness mutates the
+All witnesses below were executed successfully on 2026-08-08. No witness mutates the
 committed workspace.
 
 | Invariant | Guard owner | Minimal injected witness | Observed failure |
 |---|---|---|---|
+| facade root remains curated | public API structure scan | append `pub use old_church_slavonic_core::*` to copied facade source | blanket core re-export |
+| ordinary calls take direct grammar dimensions | public API signature scan | replace copied `noun(lemma, case, number)` parameters with `NounCell` | ordinary root function requires a cell struct |
+| successful form sets are structurally nonempty | private-field/constructor scan | make copied `FormSet::variants` public | nonempty construction invariant lost |
+| convenience calls use the canonical resolver | root delegation scan | replace copied `resolver::noun` delegation with a direct core call | canonical delegation missing |
+| paradigms retain failed cells | paradigm-builder scan | conditionally continue when copied `noun_by_id` returns an error | canonical `CellOutcome` missing / failure filter detected |
+| every root function has a runnable rustdoc example | root rustdoc scan plus doctests | remove the copied noun example fences | root function lacks an example |
 | generated registry is current | `check-registry` deterministic emitter comparison | append one comment to copied `generated/registry.rs` | stale generated registry |
 | cell/rank keys are unique | registry semantic validator | duplicate one copied form row | duplicate form key |
 | metadata codes are closed and typed | registry semantic validator | replace one formation with `unknown-formation` | unknown metadata formation |
@@ -27,14 +33,14 @@ committed workspace.
 | paradigms and cell getters agree | public-facade accuracy sweep | decrement the observed matching-paradigm count | paradigm/cell disagreement |
 | extraction coverage cannot silently collapse | pinned semantic floor | evaluate one fewer than 3,000 accepted lexemes | coverage collapse |
 | hostile inputs do not panic | exhaustive public API integration test | a panic in any exercised public operation makes `catch_unwind` fail | targeted test fails; baseline is also exercised by `guard-witnesses` |
-| runtime crates perform no I/O/network access | runtime source-boundary scan | append `use std::fs;` to copied core source | runtime boundary violation |
+| runtime crates perform no file/network/JSON/TSV/XML/Lua access | runtime source and dependency boundary scan | append `use std::fs;` to copied core source | runtime boundary violation |
 | attribution and licenses ship | package attribution guard and `cargo package` | remove the pinned source SHA from copied package attribution | attribution failure |
 | extraction report matches registry | `check-registry` report regeneration/denominator checks | set copied JSON accepted-form count to 1 | report mismatch |
 | accuracy report matches fresh evaluation | non-writing full evaluator comparison | append text to copied accuracy Markdown | stale accuracy report |
 | held metadata cannot win by abstaining | dictionary-metadata funnel guard | lower final metadata availability below 35% | metadata availability floor |
 | held metadata output remains accurate | dictionary-metadata funnel guard | lower final lookup-any conditional correctness below 95% | metadata conditional-accuracy floor |
 
-The duplicate-rank, sentinel, markup, citation, coverage, Unicode/hostile-input,
+The API-shape, duplicate-rank, sentinel, markup, citation, coverage, Unicode/hostile-input,
 strict verb-shape, metadata-code, metadata-rank/provenance, leakage-filter, and
 frozen-partition witnesses also have direct unit or integration tests. This gives
 fast local failures while the temporary injected suite demonstrates that the

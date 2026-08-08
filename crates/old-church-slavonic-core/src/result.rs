@@ -11,22 +11,107 @@ pub struct FormVariant {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FormSet {
-    pub lemma: String,
-    pub variants: Vec<FormVariant>,
-    pub source: FormSource,
-    pub warnings: Vec<InflectionWarning>,
+    lemma: String,
+    variants: Vec<FormVariant>,
+    source: FormSource,
+    warnings: Vec<InflectionWarning>,
     /// Ordered generation steps. Exact dictionary-table results have an empty
     /// trace; metadata-backed and productive results retain their operations.
-    pub trace: Vec<RuleStep>,
+    trace: Vec<RuleStep>,
     /// Provenance-preserving analyses. A dictionary table is one analysis with
     /// source-ordered variants; competing lexical analyses remain separate.
-    pub analyses: Vec<FormAnalysis>,
+    analyses: Vec<FormAnalysis>,
 }
 
 impl FormSet {
-    /// Returns the source-order primary variant. No linguistic preference is inferred.
-    pub fn primary_source_order(&self) -> Option<&FormVariant> {
-        self.variants.first()
+    /// Construct a successful, necessarily nonempty set of ordered forms.
+    pub fn new(
+        lemma: impl Into<String>,
+        primary: FormVariant,
+        alternatives: Vec<FormVariant>,
+        source: FormSource,
+        warnings: Vec<InflectionWarning>,
+        trace: Vec<RuleStep>,
+        analyses: Vec<FormAnalysis>,
+    ) -> Self {
+        let mut variants = Vec::with_capacity(alternatives.len() + 1);
+        variants.push(primary);
+        variants.extend(alternatives);
+        Self {
+            lemma: lemma.into(),
+            variants,
+            source,
+            warnings,
+            trace,
+            analyses,
+        }
+    }
+
+    /// The canonical lemma associated with this result.
+    pub fn lemma(&self) -> &str {
+        &self.lemma
+    }
+
+    /// The first variant in deterministic source order.
+    ///
+    /// This is not a claim that the first spelling is linguistically superior.
+    pub fn primary(&self) -> &FormVariant {
+        // Construction requires a primary variant and the field is private.
+        &self.variants[0]
+    }
+
+    /// The text of [`Self::primary`].
+    pub fn primary_text(&self) -> &str {
+        &self.primary().text
+    }
+
+    /// All variants in deterministic source order.
+    pub fn variants(&self) -> impl ExactSizeIterator<Item = &FormVariant> {
+        self.variants.iter()
+    }
+
+    /// All surface strings in deterministic source order.
+    pub fn texts(&self) -> impl ExactSizeIterator<Item = &str> {
+        self.variants.iter().map(|variant| variant.text.as_str())
+    }
+
+    /// Consume the set and return its deterministic source-order primary text.
+    pub fn into_primary_text(self) -> String {
+        self.variants
+            .into_iter()
+            .next()
+            .expect("FormSet construction guarantees a primary variant")
+            .text
+    }
+
+    /// Consume the set and iterate over every ordered variant.
+    pub fn into_variants(self) -> impl ExactSizeIterator<Item = FormVariant> {
+        self.variants.into_iter()
+    }
+
+    /// The evidence class from which this result was resolved.
+    pub fn source(&self) -> &FormSource {
+        &self.source
+    }
+
+    /// Non-fatal properties of this result.
+    pub fn warnings(&self) -> &[InflectionWarning] {
+        &self.warnings
+    }
+
+    /// Ordered productive rule steps, when a single generated analysis exists.
+    pub fn trace(&self) -> &[RuleStep] {
+        &self.trace
+    }
+
+    /// Ordered source-backed morphological analyses.
+    pub fn analyses(&self) -> &[FormAnalysis] {
+        &self.analyses
+    }
+
+    /// Add a resolver warning while preserving the nonempty result invariant.
+    pub fn add_warning(&mut self, warning: InflectionWarning) {
+        self.warnings.push(warning);
     }
 }
 

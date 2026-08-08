@@ -33,7 +33,7 @@ inputs.
 - `DictionaryVerbMetadata` validates normalized codes into enums. Present,
   imperfect, aorist, imperative, l-participle, and all four non-l participle systems
   are separate ordered analysis arrays; lexical aspect is independent.
-- `FormSet::analyses` binds each generated alternative to evidence and its own
+- `FormSet::analyses()` binds each generated alternative to evidence and its own
   metadata-selection/productive-rule trace. Exact source table variants remain
   unchanged and first.
 - Lemma and by-ID APIs now resolve table -> metadata -> approved cell override ->

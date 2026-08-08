@@ -1,53 +1,76 @@
 # old-church-slavonic
 
-Dictionary-backed Old Church Slavonic inflection with structured variants, typed
-ambiguity/errors, source-ordered alternatives, and a pure rule fallback.
+Dictionary-backed Old Church Slavonic inflection starts with a lemma and direct
+grammatical dimensions:
 
 ```rust
-use old_church_slavonic::{Case, NounCell, Number, noun};
+use old_church_slavonic::{noun, verb, Case, Number, Person};
 
-let forms = noun(
-    "обѣдъ",
-    NounCell { case: Case::Dative, number: Number::Dual },
-)?;
-assert_eq!(forms.variants[0].text, "обѣдома");
+let dual = noun("обѣдъ", Case::Dative, Number::Dual)?;
+assert_eq!(dual.primary_text(), "обѣдома");
+
+let present = verb("благословити", Person::First, Number::Singular)?;
+assert_eq!(present.primary_text(), "благословлѭ");
 # Ok::<(), old_church_slavonic::InflectionError>(())
 ```
 
-The package includes the pinned generated dictionary and performs no runtime file,
-network, JSON, or Lua access. See the repository README and reports for exact V0.1
-coverage, constrained verb scope, OOV accuracy, and provenance semantics.
-
-Known verbs use the same conservative order for every lemma and by-ID API: exact
-dictionary table, typed dictionary principal parts, approved cell override, then
-productive core. `FormSet::analyses` keeps multiple source-backed analyses ordered
-with their evidence and traces. Missing or contradictory principal parts and
-unsupported formations are returned as typed errors; no suffix-frequency heuristic
-is used.
+For repeated calls, bind a unique dictionary identity once:
 
 ```rust
-use old_church_slavonic::{
-    participle, AdjectiveCell, AdjectiveForm, Animacy, Case, Gender, Number,
-    ParticipleCell, ParticipleKind,
-};
+use old_church_slavonic::{Case, Noun, Number, Person, Verb};
 
-let forms = participle(
-    "благословити",
-    ParticipleCell {
-        kind: ParticipleKind::PastActive,
-        adjective: AdjectiveCell {
-            case: Case::Genitive,
-            number: Number::Singular,
-            gender: Gender::Masculine,
-            animacy: Animacy::Inanimate,
-            form: AdjectiveForm::Short,
-        },
-    },
-)?;
-assert_eq!(forms.variants.len(), 2);
+let meal = Noun::new("обѣдъ")?;
+assert_eq!(meal.form(Case::Dative, Number::Dual)?.primary_text(), "обѣдома");
+
+let bless = Verb::new("благословити")?;
+assert_eq!(
+    bless.present(Person::First, Number::Singular)?.primary_text(),
+    "благословлѭ",
+);
 # Ok::<(), old_church_slavonic::InflectionError>(())
 ```
 
-Original code is MIT OR Apache-2.0. The bundled English-Wiktionary-derived data is
-redistributed under CC BY-SA 4.0; [ATTRIBUTION.md](ATTRIBUTION.md) records the source,
-snapshot hash, transformation notice, and license links.
+A successful `FormSet` is nonempty. `primary_text()` means the first deterministic
+source-order spelling, while `variants()` and `texts()` preserve every alternative.
+Romanization, source, warnings, traces, and competing analyses remain accessible.
+Ambiguity, unknown lemmas, missing metadata, unsupported formations, and invalid
+historical cells are distinct `InflectionError` values.
+
+Resolved `Participle` handles retain the verb's ordered source-backed analyses and
+independent oblique stems:
+
+```rust
+use old_church_slavonic::{Animacy, Case, Gender, Number, Verb};
+
+let participle = Verb::new("благословити")?.past_active_participle()?;
+let forms = participle.short(
+    Case::Genitive,
+    Number::Singular,
+    Gender::Masculine,
+    Animacy::Inanimate,
+)?;
+assert_eq!(
+    forms.texts().collect::<Vec<_>>(),
+    ["благословл҄ьша", "благословивъша"],
+);
+# Ok::<(), old_church_slavonic::InflectionError>(())
+```
+
+The crate root is the ordinary API. Generic cells and tooling are in
+`advanced::cells`; stable IDs in `advanced::by_id`; explicit caller metadata and
+`*_with` rules in `advanced::rules`; audited principal parts in
+`advanced::metadata`; generic dictionary features in `advanced::raw_features`; and
+diagnostics in `trace`.
+
+| Former call | Current call |
+|---|---|
+| `noun(lemma, NounCell { ... })` | `noun(lemma, case, number)` |
+| generic long/short adjective cell | `adjective(...)` / `short_adjective(...)` |
+| present finite cell | `verb(lemma, person, number)` |
+| `noun_paradigm(id)` | `noun_paradigm(lemma)` / `advanced::by_id::noun_paradigm_by_id(id)` |
+| `primary_source_order().unwrap()` | `primary()` / `primary_text()` |
+
+The package includes its pinned generated dictionary and attribution. Runtime code
+performs no file, network, JSON, TSV, XML, or Lua access. Original code is MIT OR
+Apache-2.0; English-Wiktionary-derived data is CC BY-SA 4.0. See
+[ATTRIBUTION.md](ATTRIBUTION.md).

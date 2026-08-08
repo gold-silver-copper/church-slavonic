@@ -11,6 +11,8 @@ Kaikki/Wiktextract JSONL
      + reports/extraction-coverage.*
   -> generated Rust arrays
   -> old-church-slavonic facade
+       -> curated root: direct dimensions and resolved lexical handles
+       -> advanced: cells, stable IDs, metadata, rules, and raw features
        -> resolve one lexeme ID
        -> exact table cell
        -> typed dictionary metadata
@@ -24,7 +26,8 @@ external pinned UD CoNLL-U + native PROIEL/TOROT XML
 
 The source dump is local and gitignored. The normalized registry is the committed,
 reviewable source for generated Rust. Runtime crates do not parse data files or do
-I/O. Cell lookup and full paradigms share the same resolver.
+I/O. Direct root calls, resolved-handle methods, by-ID operations, and full
+paradigms share the same resolver.
 
 The resolution order is structural, not a scoring preference. A row in `forms.tsv`
 always returns `DictionaryTable` before metadata or overrides are considered.
@@ -40,11 +43,13 @@ No error is caught and replaced by a frequent class.
 | `english` | table-first lookup, rule fallback, streaming extraction, parse-failure ceiling, deterministic generated data, separate registry and accuracy checks |
 | `interslavic-rs` | core/facade/extractor/xtask split, full paradigm structures, explicit lexical hints, ordered alternatives, whole-registry fingerprints/diffs |
 | `slovowiki` | single-owner pipeline artifacts, committed machine and human reports, explicit provenance, semantic full-corpus checks, guards with failure witnesses |
-| `ruthenian` | written morphology authority, stable rule IDs, one generation path, hostile-input testing, lexical state derived or explicitly supplied |
+| `ruthenian` | lemma-plus-dimensions ordinary calls, lightweight resolved handles, a curated root, written morphology authority, stable rule IDs, one generation path, and hostile-input testing |
 
 ## Deliberately not adopted
 
-- Alternatives are `Vec<FormVariant>`, not slash-delimited strings.
+- Alternatives are a nonempty `FormSet`, not slash-delimited strings or a bare
+  `String`. `primary_text()` is deterministic source order, while `variants()`
+  retains the complete sequence.
 - Missing or ambiguous OCS cells are typed errors, not guessed strings. OCS is
   attested, lexically irregular, and has genuine paradigm gaps.
 - Dictionary table output is called `DictionaryTable`, not “attested”. The table is
@@ -54,6 +59,26 @@ No error is caught and replaced by a frequent class.
   combinations; finite verbs, imperatives, and participles use separate requests.
 - The current malformed Wiktextract verb tags are not normalized away. Safe cells are
   admitted and unsafe table blocks are counted and excluded.
+
+## Public API boundary
+
+The `old-church-slavonic` root is intentionally small: common grammar enums,
+structured results, `lookup`, lemma-oriented morphology functions, resolved
+`Noun`/`Adjective`/`Verb`/`Participle` handles, and typed paradigms. Ordinary calls
+take their grammatical dimensions directly. A handle stores only a stable lexeme
+ID and canonical lemma; all class, stem, formation, and evidence facts stay in the
+generated registry and metadata resolver.
+
+Specialist interfaces live under `advanced::cells`, `advanced::by_id`,
+`advanced::rules`, `advanced::metadata`, and `advanced::raw_features`. Trace and
+evidence diagnostics live under `trace`. The facade has no blanket core re-export.
+The pure core remains independently usable for callers who explicitly supply the
+lexical facts that cannot be inferred from an OCS citation.
+
+Every lemma paradigm resolves one identity and stores every requested
+`CellOutcome`, including failures. Its builder calls the same by-ID cell resolver
+as the corresponding handle. This is why paradigm gaps remain visible and why no
+ergonomic wrapper owns a second morphology implementation.
 
 ## Verb-system boundary
 
@@ -77,7 +102,7 @@ normalized registry is permitted to serialize stable strings; construction rejec
 unknown system/field/formation codes, non-contiguous ranks, incomplete groups, and
 invalid stems before generation.
 
-`FormSet::analyses` preserves that analysis identity. Each generated analysis has a
+`FormSet::analyses()` preserves that analysis identity. Each generated analysis has a
 metadata-selection trace step followed by the productive core trace; participles
 then show the separate adjective-agreement step. `DictionaryMetadataAnalyses`
 denotes multiple ordered analyses, while a single analysis names its productive
@@ -93,7 +118,7 @@ letters or combining marks.
 
 ## Current data representation
 
-V0.1 uses sorted generated static arrays with binary search and partition points.
+The current snapshot uses sorted generated static arrays with binary search and partition points.
 This favors inspectable, deterministic output while avoiding linear scans. Package
 size and lookup throughput are measured before replacing the representation. The
 normalized registry remains the stable boundary if the generated representation

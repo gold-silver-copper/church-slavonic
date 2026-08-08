@@ -14,6 +14,16 @@ pub mod result;
 pub mod trace;
 pub mod verb;
 
-pub use grammar::*;
-pub use result::*;
-pub use trace::*;
+pub use grammar::{
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
+    FiniteTense, FiniteVerbCell, Gender, ImperativeCell, ImperativeFormation, ImperfectFormation,
+    ImperfectVariantPolicy, LParticipleCell, NounCell, NounClass, Number, NumberRestriction,
+    PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
+    PastPassiveParticipleFormation, Person, PresentActiveParticipleFormation,
+    PresentPassiveParticipleFormation, VerbAspect, VerbClass,
+};
+pub use result::{
+    FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,
+    LexemeSummary, MetadataEvidence, MetadataField, MetadataProvenance,
+};
+pub use trace::{PredictedForm, RuleId, RuleStep};

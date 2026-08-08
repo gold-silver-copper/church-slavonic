@@ -139,11 +139,13 @@ Root and irregular lexemes are explicit classes. A caller may use a productive
 past-system formation with a root only by declaring the needed stem and formation;
 the engine never derives those principal parts from the infinitive.
 
-The facade's `DictionaryVerbMetadata` keeps each system as an ordered array of
-typed analyses. Every stem, class/formation, source feature, source spelling,
-cross-check set, authority, and provenance travels together. Analysis rank is
-stable source order; two defensible analyses are generated separately and are not
-collapsed into a bag of strings. Aspect is an independent sourced field.
+The facade's advanced `DictionaryVerbMetadata` keeps each system as an ordered
+array of typed analyses. Every stem, class/formation, source feature, source
+spelling, cross-check set, authority, and provenance travels together. Analysis
+rank is stable source order; two defensible analyses are generated separately and
+are not collapsed into a bag of strings. Ordinary root functions and resolved
+handles reach these facts only through the canonical dictionary resolver. Aspect
+is an independent sourced field.
 
 Every stem is canonicalized and validated before use. A missing stem and a missing
 formation report their distinct `MetadataField`; contradictory normalized fields,

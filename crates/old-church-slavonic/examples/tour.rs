@@ -1,70 +1,45 @@
-use old_church_slavonic::adjective::AdjectiveLexeme;
-use old_church_slavonic::noun::NounLexeme;
-use old_church_slavonic::verb::VerbLexeme;
+use old_church_slavonic::advanced::cells::{
+    AdjectiveCell, AdjectiveForm, FiniteVerbCell, NounCell,
+};
+use old_church_slavonic::advanced::raw_features::dictionary_paradigm_by_id;
+use old_church_slavonic::advanced::rules::{
+    AdjectiveClass, AdjectiveLexeme, NounClass, NounLexeme, NumberRestriction, VerbClass,
+    VerbLexeme, adjective_with, finite_verb_with, noun_with,
+};
 use old_church_slavonic::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, FiniteTense, FiniteVerbCell,
-    Gender, InflectionError, NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, Person,
-    VerbClass,
+    Adjective, Animacy, Case, FiniteTense, Gender, InflectionError, Noun, Number, Person, Verb,
+    aorist, noun,
 };
 
 fn main() -> Result<(), InflectionError> {
-    let dual = old_church_slavonic::noun(
-        "обѣдъ",
-        NounCell {
-            case: Case::Dative,
-            number: Number::Dual,
-        },
-    )?;
+    let dual = noun("обѣдъ", Case::Dative, Number::Dual)?;
     println!("dictionary dual: {dual:?}");
-    let noun_id = old_church_slavonic::lookup("обѣдъ", PartOfSpeech::Noun)?
-        .into_iter()
-        .next()
-        .ok_or(InflectionError::UnknownLemma)?
-        .id;
-    let noun_paradigm = old_church_slavonic::noun_paradigm(&noun_id)?;
-    println!(
-        "dictionary noun paradigm: {} cells",
-        noun_paradigm.cells.len()
-    );
 
-    let adjective_cell = AdjectiveCell {
-        case: Case::Nominative,
-        number: Number::Singular,
-        gender: Gender::Masculine,
-        animacy: Animacy::Inanimate,
-        form: AdjectiveForm::Short,
-    };
-    let short = old_church_slavonic::adjective("добръ", adjective_cell)?;
-    let long = old_church_slavonic::adjective(
-        "добръ",
-        AdjectiveCell {
-            form: AdjectiveForm::Long,
-            ..adjective_cell
-        },
+    let meal = Noun::new("обѣдъ")?;
+    println!("dictionary noun paradigm: {} cells", meal.paradigm().len());
+
+    let good = Adjective::new("добръ")?;
+    let short = good.short(
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    )?;
+    let long = good.long(
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
     )?;
     println!("short/long: {short:?} / {long:?}");
 
-    let verb = old_church_slavonic::finite_verb(
-        "бꙑти",
-        FiniteVerbCell {
-            tense: FiniteTense::Aorist,
-            person: Person::First,
-            number: Number::Singular,
-        },
-    )?;
-    println!("dictionary verb variants: {verb:?}");
-    let verb_id = old_church_slavonic::lookup("бꙑти", PartOfSpeech::Verb)?
-        .into_iter()
-        .next()
-        .ok_or(InflectionError::UnknownLemma)?
-        .id;
-    let verb_paradigm = old_church_slavonic::dictionary_paradigm_by_id(&verb_id)?;
-    println!(
-        "dictionary verb paradigm: {} extracted cells",
-        verb_paradigm.cells.len()
-    );
+    let aorist = aorist("бꙑти", Person::First, Number::Singular)?;
+    println!("dictionary verb variants: {aorist:?}");
+    let be = Verb::new("бꙑти")?;
+    let raw = dictionary_paradigm_by_id(be.id())?;
+    println!("dictionary verb paradigm: {} extracted cells", raw.len());
 
-    let oov = old_church_slavonic::noun_with(
+    let oov = noun_with(
         &NounLexeme {
             lemma: "роботъ".to_string(),
             class: NounClass::OMasculineHard,
@@ -79,14 +54,17 @@ fn main() -> Result<(), InflectionError> {
     )?;
     println!("explicit OOV with trace: {oov:?}");
 
-    let predicted_long = old_church_slavonic::adjective_with(
+    let predicted_long = adjective_with(
         &AdjectiveLexeme {
             lemma: "новъ".to_string(),
             class: AdjectiveClass::Hard,
         },
         AdjectiveCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
             form: AdjectiveForm::Long,
-            ..adjective_cell
         },
     )?;
     println!("predicted adjective: {predicted_long:?}");
@@ -94,8 +72,7 @@ fn main() -> Result<(), InflectionError> {
     let mut verb_lexeme = VerbLexeme::new("правити", VerbClass::II1);
     verb_lexeme.stems.present = Some("прав".to_string());
     verb_lexeme.stems.present_first_singular = Some("правл".to_string());
-    verb_lexeme.stems.aorist = Some("прави".to_string());
-    let explicit_verb = old_church_slavonic::finite_verb_with(
+    let explicit_verb = finite_verb_with(
         &verb_lexeme,
         FiniteVerbCell {
             tense: FiniteTense::Present,
@@ -105,26 +82,11 @@ fn main() -> Result<(), InflectionError> {
     )?;
     println!("explicit verb stem: {explicit_verb:?}");
 
-    let ambiguous = old_church_slavonic::noun(
-        "блѧдь",
-        NounCell {
-            case: Case::Nominative,
-            number: Number::Singular,
-        },
-    );
-    println!("ambiguity: {ambiguous:?}");
-
-    let multi = old_church_slavonic::noun(
-        "аблань",
-        NounCell {
-            case: Case::Genitive,
-            number: Number::Dual,
-        },
-    )?;
-    println!("source-ordered variants: {multi:?}");
     println!(
-        "lookup candidates: {:?}",
-        old_church_slavonic::lookup("блѧдь", PartOfSpeech::Noun)?
+        "ambiguity: {:?}",
+        noun("блѧдь", Case::Nominative, Number::Singular)
     );
+    let variants = noun("аблань", Case::Genitive, Number::Dual)?;
+    println!("source-ordered variants: {variants:?}");
     Ok(())
 }

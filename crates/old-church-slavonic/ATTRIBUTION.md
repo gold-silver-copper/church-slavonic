@@ -9,7 +9,7 @@ or later. This package redistributes the derived dictionary under CC BY-SA 4.0; 
 
 Source: <https://kaikki.org/dictionary/Old%20Church%20Slavonic/index.html>
 
-Pinned source used by package 0.1.0:
+Pinned source used by the bundled registry:
 
 - English Wiktionary dump date: 2026-07-06
 - Kaikki extraction date: 2026-08-02

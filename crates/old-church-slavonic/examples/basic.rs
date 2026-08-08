@@ -1,12 +1,6 @@
-use old_church_slavonic::{Case, NounCell, Number, noun};
+use old_church_slavonic::{Case, Number, noun};
 
 fn main() {
-    let form = noun(
-        "обѣдъ",
-        NounCell {
-            case: Case::Dative,
-            number: Number::Dual,
-        },
-    );
+    let form = noun("обѣдъ", Case::Dative, Number::Dual);
     println!("{form:?}");
 }

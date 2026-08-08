@@ -2,16 +2,24 @@
 
 mod corpus;
 
+use old_church_slavonic::advanced::cells::{
+    AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, ImperativeCell, LParticipleCell,
+    NounCell, ParticipleCell,
+};
+use old_church_slavonic::advanced::rules::{
+    AdjectiveClass, AoristFormation, ImperativeFormation, ImperfectFormation,
+    ImperfectVariantPolicy, NounClass, NumberRestriction, PastActiveParticipleFormation,
+    PastPassiveParticipleFormation, PresentActiveParticipleFormation,
+    PresentPassiveParticipleFormation, VerbClass,
+};
+use old_church_slavonic::advanced::{by_id, metadata as api_metadata, raw_features};
 use old_church_slavonic::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
-    FiniteTense, FiniteVerbCell, Gender, ImperativeCell, ImperativeFormation, ImperfectFormation,
-    ImperfectVariantPolicy, InflectionError, LParticipleCell, NormalizedVerbMetadataField,
-    NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind,
-    PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
-    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, VerbClass,
+    Animacy, Case, FiniteTense, Gender, InflectionError, Number, PartOfSpeech, ParticipleKind,
+    Person,
 };
 use old_church_slavonic_core::adjective::AdjectiveLexeme;
 use old_church_slavonic_core::noun::NounLexeme;
+use old_church_slavonic_core::orthography;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_extractor::extract::{
     check_registry, load_registry, refresh, refresh_derived_registry, registry_with_overrides,
@@ -386,7 +394,7 @@ fn dictionary_metadata_e2e_accuracy(
                 "regular-single-analysis"
             };
             let fields = rows.into_iter().map(normalized_metadata_field);
-            let metadata = match old_church_slavonic::DictionaryVerbMetadata::from_normalized_fields(
+            let metadata = match api_metadata::DictionaryVerbMetadata::from_normalized_fields(
                 &lexeme.id,
                 &lexeme.lemma,
                 fields,
@@ -401,11 +409,7 @@ fn dictionary_metadata_e2e_accuracy(
             funnel.generation_attempts += 1;
             let result = generate_metadata_target(&metadata, target);
             let forms = match result {
-                Ok(forms) if !forms.variants.is_empty() => forms,
-                Ok(_) => {
-                    bump(&mut out.skip_reasons, "empty-rule-result");
-                    continue;
-                }
+                Ok(forms) => forms,
                 Err(error) => {
                     bump(&mut out.skip_reasons, metadata_error_reason(&error));
                     continue;
@@ -418,19 +422,15 @@ fn dictionary_metadata_e2e_accuracy(
                 .collect::<Vec<_>>();
             let expected_lookup = expected_exact
                 .iter()
-                .filter_map(|value| old_church_slavonic::orthography::lookup_key(value).ok())
+                .filter_map(|value| orthography::lookup_key(value).ok())
                 .collect::<Vec<_>>();
             let returned_exact = forms
-                .variants
-                .iter()
+                .variants()
                 .map(|variant| variant.text.as_str())
                 .collect::<Vec<_>>();
             let returned_lookup = forms
-                .variants
-                .iter()
-                .filter_map(|variant| {
-                    old_church_slavonic::orthography::lookup_key(&variant.text).ok()
-                })
+                .variants()
+                .filter_map(|variant| orthography::lookup_key(&variant.text).ok())
                 .collect::<Vec<_>>();
             let top1 = returned_exact
                 .first()
@@ -574,7 +574,7 @@ fn metadata_source_policy_slice(
 }
 
 fn metadata_generation_path(forms: &old_church_slavonic::FormSet) -> String {
-    match forms.source {
+    match forms.source() {
         old_church_slavonic::FormSource::DictionaryMetadataRule { rule_id } => {
             format!("dictionary-metadata-rule:{}", rule_id.code())
         }
@@ -704,8 +704,8 @@ fn metadata_coverage(registry: &Registry) -> BTreeMap<String, usize> {
 
 fn normalized_metadata_field(
     row: old_church_slavonic_extractor::schema::VerbMetadataRow,
-) -> NormalizedVerbMetadataField {
-    NormalizedVerbMetadataField {
+) -> api_metadata::NormalizedVerbMetadataField {
+    api_metadata::NormalizedVerbMetadataField {
         system: row.system,
         analysis_rank: row.analysis_rank,
         field: row.field,
@@ -739,21 +739,21 @@ fn parse_metadata_target(feature: &str) -> Option<MetadataTarget> {
 }
 
 fn generate_metadata_target(
-    metadata: &old_church_slavonic::DictionaryVerbMetadata,
+    metadata: &api_metadata::DictionaryVerbMetadata,
     target: MetadataTarget,
 ) -> Result<old_church_slavonic::FormSet, InflectionError> {
     match target {
         MetadataTarget::Finite(cell) => {
-            old_church_slavonic::finite_verb_from_dictionary_metadata(metadata, cell)
+            api_metadata::finite_verb_from_dictionary_metadata(metadata, cell)
         }
         MetadataTarget::Imperative(cell) => {
-            old_church_slavonic::imperative_from_dictionary_metadata(metadata, cell)
+            api_metadata::imperative_from_dictionary_metadata(metadata, cell)
         }
         MetadataTarget::LParticiple(cell) => {
-            old_church_slavonic::l_participle_from_dictionary_metadata(metadata, cell)
+            api_metadata::l_participle_from_dictionary_metadata(metadata, cell)
         }
         MetadataTarget::ParticipleCitation(kind) => {
-            old_church_slavonic::participle_from_dictionary_metadata(
+            api_metadata::participle_from_dictionary_metadata(
                 metadata,
                 ParticipleCell {
                     kind,
@@ -856,8 +856,7 @@ fn dictionary_accuracy(registry: &Registry) -> Result<DictionaryAccuracy, Box<dy
             .map(|row| (row.form.as_str(), row.romanization.as_str()))
             .collect::<Vec<_>>();
         let actual_values = actual
-            .variants
-            .iter()
+            .variants()
             .map(|variant| {
                 (
                     variant.text.as_str(),
@@ -871,7 +870,7 @@ fn dictionary_accuracy(registry: &Registry) -> Result<DictionaryAccuracy, Box<dy
             .count();
         ordered += usize::from(expected_values == actual_values);
         primary += usize::from(expected_values.first() == actual_values.first());
-        let source = match actual.source {
+        let source = match actual.source() {
             old_church_slavonic::FormSource::DictionaryTable => "dictionary-table",
             old_church_slavonic::FormSource::ManualOverride => "manual-override",
             old_church_slavonic::FormSource::DictionaryMetadataRule { .. } => {
@@ -903,7 +902,7 @@ fn dictionary_accuracy(registry: &Registry) -> Result<DictionaryAccuracy, Box<dy
     }
     let mut paradigm_cell_sets_correct = 0;
     for lexeme in &registry.lexemes {
-        let paradigm = old_church_slavonic::dictionary_paradigm_by_id(&lexeme.id)?;
+        let paradigm = raw_features::dictionary_paradigm_by_id(&lexeme.id)?;
         let start = (lexeme.id.clone(), String::new());
         let end = (lexeme.id.clone(), "\u{10ffff}".to_string());
         let expected = grouped
@@ -911,9 +910,8 @@ fn dictionary_accuracy(registry: &Registry) -> Result<DictionaryAccuracy, Box<dy
             .map(|((_id, feature), _)| feature.as_str())
             .collect::<BTreeSet<_>>();
         let actual = paradigm
-            .cells
             .iter()
-            .map(|(feature, _)| feature.as_str())
+            .map(|(feature, _)| feature)
             .collect::<BTreeSet<_>>();
         paradigm_cell_sets_correct += usize::from(expected == actual);
     }
@@ -935,17 +933,17 @@ fn public_cell_by_id(
     feature: &str,
 ) -> Result<old_church_slavonic::FormSet, Box<dyn Error>> {
     if let Some(cell) = parse_noun_cell(feature) {
-        return Ok(old_church_slavonic::noun_by_id(id, cell)?);
+        return Ok(by_id::noun_by_id(id, cell)?);
     }
     if let Some(cell) = parse_adjective_cell(feature) {
-        return Ok(old_church_slavonic::adjective_by_id(id, cell)?);
+        return Ok(by_id::adjective_by_id(id, cell)?);
     }
     if feature == "adj:comparative:citation" {
-        return Ok(old_church_slavonic::adjective_comparatives_by_id(id)?);
+        return Ok(by_id::adjective_comparatives_by_id(id)?);
     }
     let parts = feature.split(':').collect::<Vec<_>>();
     match parts.as_slice() {
-        ["verb", "finite", tense, person, number] => Ok(old_church_slavonic::finite_verb_by_id(
+        ["verb", "finite", tense, person, number] => Ok(by_id::finite_verb_by_id(
             id,
             FiniteVerbCell {
                 tense: parse_tense(tense).ok_or("invalid finite tense")?,
@@ -953,29 +951,27 @@ fn public_cell_by_id(
                 number: parse_number(number).ok_or("invalid finite number")?,
             },
         )?),
-        ["verb", "imperative", person, number] => Ok(old_church_slavonic::imperative_by_id(
+        ["verb", "imperative", person, number] => Ok(by_id::imperative_by_id(
             id,
             ImperativeCell {
                 person: parse_person(person).ok_or("invalid imperative person")?,
                 number: parse_number(number).ok_or("invalid imperative number")?,
             },
         )?),
-        ["verb", "l-participle", gender, number] => Ok(old_church_slavonic::l_participle_by_id(
+        ["verb", "l-participle", gender, number] => Ok(by_id::l_participle_by_id(
             id,
             LParticipleCell {
                 gender: parse_gender_code(gender).ok_or("invalid l-participle gender")?,
                 number: parse_number(number).ok_or("invalid l-participle number")?,
             },
         )?),
-        ["verb", "participle", kind, "citation"] => {
-            Ok(old_church_slavonic::participle_citation_by_id(
-                id,
-                parse_participle_kind(kind).ok_or("invalid participle kind")?,
-            )?)
-        }
-        ["verb", "infinitive"] => Ok(old_church_slavonic::infinitive_by_id(id)?),
-        ["verb", "supine"] => Ok(old_church_slavonic::supine_by_id(id)?),
-        ["verb", "verbal-noun"] => Ok(old_church_slavonic::verbal_noun_by_id(id)?),
+        ["verb", "participle", kind, "citation"] => Ok(by_id::participle_citation_by_id(
+            id,
+            parse_participle_kind(kind).ok_or("invalid participle kind")?,
+        )?),
+        ["verb", "infinitive"] => Ok(by_id::infinitive_by_id(id)?),
+        ["verb", "supine"] => Ok(by_id::supine_by_id(id)?),
+        ["verb", "verbal-noun"] => Ok(by_id::verbal_noun_by_id(id)?),
         ["decl", pos, case, number, rest @ ..] => {
             let part_of_speech = match *pos {
                 "pron" => PartOfSpeech::Pronoun,
@@ -994,7 +990,7 @@ fn public_cell_by_id(
                     return Err(format!("invalid closed-class feature segment: {value}").into());
                 }
             }
-            Ok(old_church_slavonic::closed_class_by_id(
+            Ok(raw_features::closed_class_by_id(
                 id,
                 part_of_speech,
                 ClosedClassCell {
@@ -1615,8 +1611,7 @@ fn score_prediction(
 }
 
 fn normalized_equal(left: &str, right: &str) -> bool {
-    old_church_slavonic::orthography::lookup_key(left).ok()
-        == old_church_slavonic::orthography::lookup_key(right).ok()
+    orthography::lookup_key(left).ok() == orthography::lookup_key(right).ok()
 }
 
 fn grouped_forms(registry: &Registry) -> BTreeMap<(String, String), Vec<&FormRow>> {
@@ -2109,6 +2104,7 @@ fn check_all() -> Result<(), Box<dyn Error>> {
     let root = workspace_root()?;
     check_registry(&root)?;
     check_accuracy_report(&root)?;
+    check_public_api_structure(&root)?;
     check_runtime_boundaries(&root)?;
     check_attribution(&root)?;
     examples()
@@ -2127,6 +2123,235 @@ fn check_accuracy_report(root: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
+    let facade = fs::read_to_string(root.join("crates/old-church-slavonic/src/lib.rs"))?;
+    let result = fs::read_to_string(root.join("crates/old-church-slavonic-core/src/result.rs"))?;
+    let resolver = fs::read_to_string(root.join("crates/old-church-slavonic/src/resolver.rs"))?;
+
+    if facade.contains("pub use old_church_slavonic_core::*") {
+        return Err("facade root restores a blanket core re-export".into());
+    }
+
+    for (name, dimensions) in [
+        ("noun", &["lemma: &str", "case: Case", "number: Number"][..]),
+        (
+            "adjective",
+            &[
+                "lemma: &str",
+                "case: Case",
+                "number: Number",
+                "gender: Gender",
+                "animacy: Animacy",
+            ][..],
+        ),
+        (
+            "short_adjective",
+            &[
+                "lemma: &str",
+                "case: Case",
+                "number: Number",
+                "gender: Gender",
+                "animacy: Animacy",
+            ][..],
+        ),
+        ("verb", &["lemma: &str", "person: Person", "number: Number"]),
+        (
+            "imperfect",
+            &["lemma: &str", "person: Person", "number: Number"],
+        ),
+        (
+            "aorist",
+            &["lemma: &str", "person: Person", "number: Number"],
+        ),
+        (
+            "finite_verb",
+            &[
+                "lemma: &str",
+                "tense: FiniteTense",
+                "person: Person",
+                "number: Number",
+            ],
+        ),
+        (
+            "imperative",
+            &["lemma: &str", "person: Person", "number: Number"],
+        ),
+        (
+            "l_participle",
+            &["lemma: &str", "gender: Gender", "number: Number"],
+        ),
+        ("infinitive", &["lemma: &str"]),
+        ("supine", &["lemma: &str"]),
+        ("verbal_noun", &["lemma: &str"]),
+        ("comparative", &["lemma: &str"]),
+    ] {
+        let header = source_item(&facade, &format!("pub fn {name}("))?;
+        if header[..=header.find('{').ok_or("public function has no body")?].contains("Cell") {
+            return Err(format!("ordinary root function {name} requires a cell struct").into());
+        }
+        for dimension in dimensions {
+            if !header.contains(dimension) {
+                return Err(format!(
+                    "ordinary root function {name} is missing direct dimension `{dimension}`"
+                )
+                .into());
+            }
+        }
+    }
+
+    for (name, delegation) in [
+        ("noun", "resolver::noun("),
+        ("adjective", "adjective_form("),
+        ("short_adjective", "adjective_form("),
+        ("verb", "finite_verb("),
+        ("imperfect", "finite_verb("),
+        ("aorist", "finite_verb("),
+        ("finite_verb", "resolver::finite_verb("),
+        ("imperative", "resolver::imperative("),
+        ("l_participle", "resolver::l_participle("),
+        ("infinitive", "resolver::infinitive("),
+        ("supine", "resolver::supine("),
+        ("verbal_noun", "resolver::verbal_noun("),
+        ("comparative", "resolver::adjective_comparatives("),
+        ("present_active_participle", "Verb::new("),
+        ("present_passive_participle", "Verb::new("),
+        ("past_active_participle", "Verb::new("),
+        ("past_passive_participle", "Verb::new("),
+        ("noun_paradigm", "Noun::new("),
+        ("adjective_paradigm", "Adjective::new("),
+        ("verb_paradigm", "Verb::new("),
+        ("finite_verb_paradigm", "Verb::new("),
+        ("imperative_paradigm", "Verb::new("),
+        ("l_participle_paradigm", "Verb::new("),
+        ("participle_paradigm", "Verb::new("),
+    ] {
+        let item = source_item(&facade, &format!("pub fn {name}("))?;
+        if !item.contains(delegation) {
+            return Err(format!(
+                "root convenience function {name} bypasses canonical delegation `{delegation}`"
+            )
+            .into());
+        }
+    }
+    if !source_item(&facade, "fn adjective_form(")?.contains("resolver::adjective(") {
+        return Err("ordinary adjective functions bypass the canonical resolver".into());
+    }
+
+    let form_set = source_item(&result, "pub struct FormSet {")?;
+    let constructor = source_item(&result, "pub fn new(")?;
+    if form_set.contains("pub variants:")
+        || !form_set.contains("variants: Vec<FormVariant>")
+        || !constructor.contains("primary: FormVariant")
+        || !constructor.contains("variants.push(primary)")
+        || result.matches("\n        Self {\n").count() != 1
+        || result.contains("impl Default for FormSet")
+    {
+        return Err("successful FormSet construction is not structurally nonempty".into());
+    }
+
+    for (builder, resolver_call) in [
+        ("build_noun_paradigm", "result: noun_by_id(id, cell)"),
+        (
+            "build_adjective_paradigm",
+            "result: adjective_by_id(id, cell)",
+        ),
+        (
+            "build_finite_verb_paradigm",
+            "result: finite_verb_by_id(id, cell)",
+        ),
+        ("build_verb_paradigm", "result: finite_verb_by_id(id, cell)"),
+        (
+            "build_imperative_paradigm",
+            "result: imperative_by_id(id, cell)",
+        ),
+        (
+            "build_l_participle_paradigm",
+            "result: l_participle_by_id(id, cell)",
+        ),
+        (
+            "build_participle_paradigm",
+            "result: participle_by_id(id, cell)",
+        ),
+    ] {
+        let item = source_item(&resolver, &format!("fn {builder}("))?;
+        if !item.contains("cells.push(CellOutcome") || !item.contains(resolver_call) {
+            return Err(format!("{builder} does not retain every canonical cell outcome").into());
+        }
+        for dropping in [
+            "if let Ok",
+            ".is_ok()",
+            ".filter(",
+            ".filter_map(",
+            ".retain(",
+        ] {
+            if item.contains(dropping) {
+                return Err(format!("{builder} can drop failed cells through `{dropping}`").into());
+            }
+        }
+    }
+
+    let mut remaining = facade.as_str();
+    let mut offset = 0;
+    while let Some(relative) = remaining.find("pub fn ") {
+        let start = offset + relative;
+        let name_start = start + "pub fn ".len();
+        let name_end = facade[name_start..]
+            .find('(')
+            .map(|position| name_start + position)
+            .ok_or("public root function has no argument list")?;
+        let name = &facade[name_start..name_end];
+        let docs = immediately_preceding_docs(&facade, start);
+        if !docs.contains("```") {
+            return Err(format!("root function {name} lacks a rustdoc example").into());
+        }
+        offset = name_end;
+        remaining = &facade[offset..];
+    }
+
+    println!("public API structure: curated, delegated, nonempty, and documented");
+    Ok(())
+}
+
+fn source_item<'a>(source: &'a str, needle: &str) -> Result<&'a str, Box<dyn Error>> {
+    let start = source
+        .find(needle)
+        .ok_or_else(|| format!("source item `{needle}` is missing"))?;
+    let open = source[start..]
+        .find('{')
+        .map(|position| start + position)
+        .ok_or_else(|| format!("source item `{needle}` has no body"))?;
+    let mut depth = 0_usize;
+    for (relative, character) in source[open..].char_indices() {
+        match character {
+            '{' => depth += 1,
+            '}' => {
+                depth = depth
+                    .checked_sub(1)
+                    .ok_or_else(|| format!("source item `{needle}` has unbalanced braces"))?;
+                if depth == 0 {
+                    return Ok(&source[start..open + relative + character.len_utf8()]);
+                }
+            }
+            _ => {}
+        }
+    }
+    Err(format!("source item `{needle}` has no closing brace").into())
+}
+
+fn immediately_preceding_docs(source: &str, item_start: usize) -> String {
+    let mut lines = source[..item_start].lines().rev();
+    let mut docs = Vec::new();
+    for line in lines.by_ref() {
+        if line.trim_start().starts_with("///") {
+            docs.push(line);
+        } else {
+            break;
+        }
+    }
+    docs.reverse();
+    docs.join("\n")
+}
+
 fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
     for relative in [
         "crates/old-church-slavonic-core/src",
@@ -2142,11 +2367,18 @@ fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
                 let source = fs::read_to_string(&path)?;
                 for forbidden in [
                     "std::fs",
+                    "std::io",
                     "std::net",
                     "TcpStream",
                     "UdpSocket",
                     "reqwest",
                     "ureq",
+                    "serde_json",
+                    "quick_xml",
+                    "roxmltree",
+                    "csv::",
+                    "mlua",
+                    "rlua",
                 ] {
                     if source.contains(forbidden) {
                         return Err(format!(
@@ -2159,7 +2391,34 @@ fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
             }
         }
     }
-    println!("runtime boundary: no I/O or network APIs");
+    for relative in [
+        "crates/old-church-slavonic-core/Cargo.toml",
+        "crates/old-church-slavonic/Cargo.toml",
+    ] {
+        let manifest = fs::read_to_string(root.join(relative))?;
+        for forbidden in [
+            "reqwest",
+            "ureq",
+            "serde_json",
+            "quick-xml",
+            "roxmltree",
+            "csv",
+            "mlua",
+            "rlua",
+        ] {
+            if manifest.lines().any(|line| {
+                line.trim_start()
+                    .strip_prefix(forbidden)
+                    .is_some_and(|suffix| suffix.trim_start().starts_with(['=', '.']))
+            }) {
+                return Err(format!(
+                    "runtime data/network dependency violation in {relative}: {forbidden}"
+                )
+                .into());
+            }
+        }
+    }
+    println!("runtime boundary: no file, network, JSON, TSV, XML, or Lua access");
     Ok(())
 }
 
@@ -2213,6 +2472,87 @@ fn guard_witnesses() -> Result<(), Box<dyn Error>> {
     }
     let result = (|| -> Result<(), Box<dyn Error>> {
         copy_guard_fixture(&root, &witness_root)?;
+
+        let facade_lib = "crates/old-church-slavonic/src/lib.rs";
+        let mut changed = fs::read_to_string(witness_root.join(facade_lib))?;
+        changed.push_str("\npub use old_church_slavonic_core::*;\n");
+        fs::write(witness_root.join(facade_lib), changed)?;
+        require_guard_failure(
+            "curated facade root",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, facade_lib)?;
+
+        let mut changed = fs::read_to_string(witness_root.join(facade_lib))?;
+        changed = changed.replacen(
+            "pub fn noun(lemma: &str, case: Case, number: Number)",
+            "pub fn noun(lemma: &str, cell: old_church_slavonic_core::NounCell)",
+            1,
+        );
+        fs::write(witness_root.join(facade_lib), changed)?;
+        require_guard_failure(
+            "direct ordinary dimensions",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, facade_lib)?;
+
+        let result_source = "crates/old-church-slavonic-core/src/result.rs";
+        let mut changed = fs::read_to_string(witness_root.join(result_source))?;
+        changed = changed.replacen(
+            "    variants: Vec<FormVariant>,",
+            "    pub variants: Vec<FormVariant>,",
+            1,
+        );
+        fs::write(witness_root.join(result_source), changed)?;
+        require_guard_failure(
+            "nonempty successful FormSet",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, result_source)?;
+
+        let mut changed = fs::read_to_string(witness_root.join(facade_lib))?;
+        changed = changed.replacen(
+            "resolver::noun(lemma,",
+            "old_church_slavonic_core::noun::decline(lemma,",
+            1,
+        );
+        fs::write(witness_root.join(facade_lib), changed)?;
+        require_guard_failure(
+            "canonical convenience delegation",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, facade_lib)?;
+
+        let resolver_source = "crates/old-church-slavonic/src/resolver.rs";
+        let mut changed = fs::read_to_string(witness_root.join(resolver_source))?;
+        changed = changed.replacen(
+            "result: noun_by_id(id, cell),",
+            "result: if noun_by_id(id, cell).is_ok() { noun_by_id(id, cell) } else { continue },",
+            1,
+        );
+        fs::write(witness_root.join(resolver_source), changed)?;
+        require_guard_failure(
+            "failed paradigm cells remain visible",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, resolver_source)?;
+
+        let mut changed = fs::read_to_string(witness_root.join(facade_lib))?;
+        let noun_docs_start = changed
+            .find("/// Decline one dictionary noun cell.")
+            .ok_or("noun rustdoc witness target is missing")?;
+        let noun_item_start = changed[noun_docs_start..]
+            .find("pub fn noun(")
+            .map(|position| noun_docs_start + position)
+            .ok_or("noun function witness target is missing")?;
+        let without_example = changed[noun_docs_start..noun_item_start].replace("```", "~~~");
+        changed.replace_range(noun_docs_start..noun_item_start, &without_example);
+        fs::write(witness_root.join(facade_lib), changed)?;
+        require_guard_failure(
+            "root rustdoc examples",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, facade_lib)?;
 
         let generated = "crates/old-church-slavonic/generated/registry.rs";
         let mut changed = fs::read_to_string(witness_root.join(generated))?;
