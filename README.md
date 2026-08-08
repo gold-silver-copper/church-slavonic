@@ -31,7 +31,9 @@ execution. Its generated dictionary is compiled into the package.
   imperfects, asigmatic and new *ox*-aorists, i/yat-series imperatives, infinitive,
   supine, l-participle, and present-active/present-passive/past-active/past-passive
   participles with full adjective agreement. Every nontrivial system requires its
-  own explicit stem and formation metadata;
+  own source-backed or caller-supplied stem and formation metadata. Past-active
+  participles distinguish `-ъш-`, transformed i-stem `-ьш-`, ordinary `-въш-`,
+  declared final-j deletion, and `ov → u` seams;
 - dictionary-backed pronoun, determiner, and numeral cells, including person where
   a source table combines personal pronouns.
 
@@ -74,6 +76,76 @@ or an em dash.
 Whole noun, adjective, finite-verb, imperative, and l-participle paradigms enumerate
 the same typed cell resolver as individual calls. `dictionary_paradigm_by_id()`
 returns every safely extracted table feature, including non-finite verb cells.
+
+For an ordinary known lemma, no manual `VerbLexeme` assembly is needed. The facade
+returns an exact table cell first; a missing cell can use ordered dictionary
+principal-part analyses:
+
+```rust
+use old_church_slavonic::{
+    participle, AdjectiveCell, AdjectiveForm, Animacy, Case, FormSource, Gender, Number,
+    ParticipleCell, ParticipleKind,
+};
+
+let forms = participle(
+    "благословити",
+    ParticipleCell {
+        kind: ParticipleKind::PastActive,
+        adjective: AdjectiveCell {
+            case: Case::Genitive,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            form: AdjectiveForm::Short,
+        },
+    },
+)?;
+assert_eq!(forms.source, FormSource::DictionaryMetadataAnalyses);
+assert_eq!(forms.variants[0].text, "благословл҄ьша");
+assert_eq!(forms.variants[1].text, "благословивъша");
+assert_eq!(forms.analyses.len(), 2);
+# Ok::<(), old_church_slavonic::InflectionError>(())
+```
+
+Each analysis retains its diagnostic dictionary feature/spelling, authority,
+cross-checks, productive rule, and ordered trace. A reviewed irregular cell reports
+`ManualOverride`. Unknown lemmas, ambiguous lexemes, missing principal parts,
+invalid metadata, and represented-but-unsupported cells remain distinct typed
+errors; the facade never replaces them with a frequent class.
+
+Typed ambiguity and a represented-but-unsupported formation are observable without
+string matching:
+
+```rust
+use old_church_slavonic::verb::VerbLexeme;
+use old_church_slavonic::{
+    finite_verb_with, noun, AoristFormation, Case, FiniteTense, FiniteVerbCell,
+    InflectionError, NounCell, Number, Person, VerbClass,
+};
+
+assert!(matches!(
+    noun(
+        "блѧдь",
+        NounCell { case: Case::Nominative, number: Number::Singular },
+    ),
+    Err(InflectionError::AmbiguousLexeme { .. })
+));
+
+let mut verb = VerbLexeme::new("нести", VerbClass::IA1);
+verb.stems.aorist = Some("нес".into());
+verb.formations.aorist = Some(AoristFormation::SigmaticPrimary);
+assert!(matches!(
+    finite_verb_with(
+        &verb,
+        FiniteVerbCell {
+            tense: FiniteTense::Aorist,
+            person: Person::First,
+            number: Number::Singular,
+        },
+    ),
+    Err(InflectionError::UnsupportedFormation { .. })
+));
+```
 
 ## Explicit OOV metadata
 
@@ -139,8 +211,12 @@ normalized evaluation.
 ## Measured pinned snapshot
 
 The current committed snapshot contains 3,081 accepted lexemes, 134,761 public
-feature cells, and 137,406 ordered variants. All variants round-trip through the
-typed public facade in source order. Per-class and per-cell dictionary/OOV results
+feature cells, 137,406 ordered variants, and 3,157 normalized source- or
+grammar-backed verb metadata fields. All dictionary variants round-trip through the
+typed public facade
+in source order. The leakage-controlled metadata score removes target/equivalent
+cells before rebuilding principal parts; the independent-corpus score remains a
+separate observation. Per-class and per-cell dictionary/OOV results
 are in [reports/accuracy.md](reports/accuracy.md), real manuscript-token results are
 in [reports/corpus-accuracy.md](reports/corpus-accuracy.md), and extraction drops are
 in [reports/extraction-coverage.md](reports/extraction-coverage.md). These metrics

@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "dictionary": {
     "lexemes": 3081,
     "cells": 134761,
@@ -12,6 +12,763 @@
       "dictionary-table": 134761
     },
     "paradigm_cell_sets_correct": 3081
+  },
+  "dictionary_metadata_e2e": {
+    "source_verb_lexemes": 711,
+    "metadata_coverage_by_field": {
+      "aorist/formation": 0,
+      "aorist/formation=asigmatic": 0,
+      "aorist/formation=new": 0,
+      "aorist/formation=sigmatic-primary": 0,
+      "aorist/formation=sigmatic-secondary": 0,
+      "aorist/stem": 0,
+      "aspect/aspect": 647,
+      "aspect/aspect=biaspectual": 9,
+      "aspect/aspect=imperfective": 374,
+      "aspect/aspect=perfective": 264,
+      "imperative/formation": 73,
+      "imperative/formation=i-series": 73,
+      "imperative/formation=yat-series": 0,
+      "imperative/stem": 73,
+      "imperfect/formation": 150,
+      "imperfect/formation=a": 44,
+      "imperfect/formation=palatalized-a": 0,
+      "imperfect/formation=yat-a": 106,
+      "imperfect/stem": 150,
+      "imperfect/variant-policy": 150,
+      "imperfect/variant-policy=uncontracted-only": 150,
+      "l-participle/stem": 185,
+      "past-active-participle/formation": 185,
+      "past-active-participle/formation=ish": 44,
+      "past-active-participle/formation=ush": 96,
+      "past-active-participle/formation=vush": 89,
+      "past-active-participle/formation=vush-after-j-deletion": 0,
+      "past-active-participle/formation=vush-after-ov-to-u": 0,
+      "past-active-participle/stem": 185,
+      "past-passive-participle/formation": 134,
+      "past-passive-participle/formation=en": 67,
+      "past-passive-participle/formation=n": 51,
+      "past-passive-participle/formation=t": 16,
+      "past-passive-participle/stem": 134,
+      "present-active-participle/formation": 186,
+      "present-active-participle/formation=yesht-soft": 78,
+      "present-active-participle/formation=yusht-hard": 108,
+      "present-active-participle/formation=yusht-soft": 0,
+      "present-active-participle/stem": 186,
+      "present-passive-participle/formation": 134,
+      "present-passive-participle/formation=em": 0,
+      "present-passive-participle/formation=im": 62,
+      "present-passive-participle/formation=om": 72,
+      "present-passive-participle/stem": 134,
+      "present/class": 121,
+      "present/class=IA1": 79,
+      "present/class=IA2": 2,
+      "present/class=II1": 26,
+      "present/class=II2": 11,
+      "present/class=II3": 3,
+      "present/first-singular-stem": 121,
+      "present/stem": 121
+    },
+    "development": {
+      "compatible_target_cells": 8895,
+      "unambiguous_target_cells": 8628,
+      "metadata_records_found": 2784,
+      "metadata_records_validated": 2784,
+      "generation_attempts": 2784,
+      "returned_forms": 2784,
+      "diplomatic_top1_correct": 2690,
+      "diplomatic_any_correct": 2690,
+      "lookup_top1_correct": 2690,
+      "lookup_any_correct": 2690
+    },
+    "final_holdout": {
+      "compatible_target_cells": 2748,
+      "unambiguous_target_cells": 2564,
+      "metadata_records_found": 997,
+      "metadata_records_validated": 997,
+      "generation_attempts": 997,
+      "returned_forms": 997,
+      "diplomatic_top1_correct": 964,
+      "diplomatic_any_correct": 964,
+      "lookup_top1_correct": 964,
+      "lookup_any_correct": 964
+    },
+    "development_by_system": {
+      "imperative": {
+        "correct": 220,
+        "normalized_correct": 220,
+        "total": 293
+      },
+      "imperfect": {
+        "correct": 824,
+        "normalized_correct": 824,
+        "total": 824
+      },
+      "l-participle": {
+        "correct": 1048,
+        "normalized_correct": 1048,
+        "total": 1048
+      },
+      "present": {
+        "correct": 598,
+        "normalized_correct": 598,
+        "total": 619
+      }
+    },
+    "final_by_system": {
+      "imperative": {
+        "correct": 64,
+        "normalized_correct": 64,
+        "total": 91
+      },
+      "imperfect": {
+        "correct": 296,
+        "normalized_correct": 296,
+        "total": 296
+      },
+      "l-participle": {
+        "correct": 352,
+        "normalized_correct": 352,
+        "total": 352
+      },
+      "present": {
+        "correct": 252,
+        "normalized_correct": 252,
+        "total": 258
+      }
+    },
+    "development_by_cell": {
+      "verb:finite:imperfect:1:du": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:imperfect:1:pl": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:imperfect:2:du": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:imperfect:2:pl": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:imperfect:2:sg": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:imperfect:3:du": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:imperfect:3:pl": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:imperfect:3:sg": {
+        "correct": 103,
+        "normalized_correct": 103,
+        "total": 103
+      },
+      "verb:finite:present:1:du": {
+        "correct": 78,
+        "normalized_correct": 78,
+        "total": 78
+      },
+      "verb:finite:present:1:pl": {
+        "correct": 78,
+        "normalized_correct": 78,
+        "total": 78
+      },
+      "verb:finite:present:1:sg": {
+        "correct": 52,
+        "normalized_correct": 52,
+        "total": 52
+      },
+      "verb:finite:present:2:du": {
+        "correct": 78,
+        "normalized_correct": 78,
+        "total": 78
+      },
+      "verb:finite:present:2:pl": {
+        "correct": 78,
+        "normalized_correct": 78,
+        "total": 78
+      },
+      "verb:finite:present:3:du": {
+        "correct": 78,
+        "normalized_correct": 78,
+        "total": 78
+      },
+      "verb:finite:present:3:pl": {
+        "correct": 78,
+        "normalized_correct": 78,
+        "total": 99
+      },
+      "verb:finite:present:3:sg": {
+        "correct": 78,
+        "normalized_correct": 78,
+        "total": 78
+      },
+      "verb:imperative:1:du": {
+        "correct": 55,
+        "normalized_correct": 55,
+        "total": 128
+      },
+      "verb:imperative:1:pl": {
+        "correct": 55,
+        "normalized_correct": 55,
+        "total": 55
+      },
+      "verb:imperative:2:du": {
+        "correct": 55,
+        "normalized_correct": 55,
+        "total": 55
+      },
+      "verb:imperative:2:pl": {
+        "correct": 55,
+        "normalized_correct": 55,
+        "total": 55
+      },
+      "verb:l-participle:f:du": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      },
+      "verb:l-participle:f:pl": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      },
+      "verb:l-participle:f:sg": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      },
+      "verb:l-participle:m:du": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      },
+      "verb:l-participle:m:pl": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      },
+      "verb:l-participle:n:du": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      },
+      "verb:l-participle:n:pl": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      },
+      "verb:l-participle:n:sg": {
+        "correct": 131,
+        "normalized_correct": 131,
+        "total": 131
+      }
+    },
+    "final_by_cell": {
+      "verb:finite:imperfect:1:du": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:imperfect:1:pl": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:imperfect:2:du": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:imperfect:2:pl": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:imperfect:2:sg": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:imperfect:3:du": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:imperfect:3:pl": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:imperfect:3:sg": {
+        "correct": 37,
+        "normalized_correct": 37,
+        "total": 37
+      },
+      "verb:finite:present:1:du": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 33
+      },
+      "verb:finite:present:1:pl": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 33
+      },
+      "verb:finite:present:1:sg": {
+        "correct": 21,
+        "normalized_correct": 21,
+        "total": 21
+      },
+      "verb:finite:present:2:du": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 33
+      },
+      "verb:finite:present:2:pl": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 33
+      },
+      "verb:finite:present:3:du": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 33
+      },
+      "verb:finite:present:3:pl": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 39
+      },
+      "verb:finite:present:3:sg": {
+        "correct": 33,
+        "normalized_correct": 33,
+        "total": 33
+      },
+      "verb:imperative:1:du": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 43
+      },
+      "verb:imperative:1:pl": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 16
+      },
+      "verb:imperative:2:du": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 16
+      },
+      "verb:imperative:2:pl": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 16
+      },
+      "verb:l-participle:f:du": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      },
+      "verb:l-participle:f:pl": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      },
+      "verb:l-participle:f:sg": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      },
+      "verb:l-participle:m:du": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      },
+      "verb:l-participle:m:pl": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      },
+      "verb:l-participle:n:du": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      },
+      "verb:l-participle:n:pl": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      },
+      "verb:l-participle:n:sg": {
+        "correct": 44,
+        "normalized_correct": 44,
+        "total": 44
+      }
+    },
+    "development_by_generation_path": {
+      "dictionary-metadata-rule:V-IA1-01": {
+        "correct": 400,
+        "normalized_correct": 400,
+        "total": 421
+      },
+      "dictionary-metadata-rule:V-IA2-01": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 16
+      },
+      "dictionary-metadata-rule:V-II1-01": {
+        "correct": 126,
+        "normalized_correct": 126,
+        "total": 126
+      },
+      "dictionary-metadata-rule:V-II2-01": {
+        "correct": 42,
+        "normalized_correct": 42,
+        "total": 42
+      },
+      "dictionary-metadata-rule:V-II3-01": {
+        "correct": 14,
+        "normalized_correct": 14,
+        "total": 14
+      },
+      "dictionary-metadata-rule:V-IMP-01": {
+        "correct": 220,
+        "normalized_correct": 220,
+        "total": 293
+      },
+      "dictionary-metadata-rule:V-IMPF-A-01": {
+        "correct": 264,
+        "normalized_correct": 264,
+        "total": 264
+      },
+      "dictionary-metadata-rule:V-IMPF-YAT-A-01": {
+        "correct": 560,
+        "normalized_correct": 560,
+        "total": 560
+      },
+      "dictionary-metadata-rule:V-LPART-01": {
+        "correct": 1048,
+        "normalized_correct": 1048,
+        "total": 1048
+      }
+    },
+    "final_by_generation_path": {
+      "dictionary-metadata-rule:V-IA1-01": {
+        "correct": 168,
+        "normalized_correct": 168,
+        "total": 173
+      },
+      "dictionary-metadata-rule:V-IA2-01": {
+        "correct": 0,
+        "normalized_correct": 0,
+        "total": 1
+      },
+      "dictionary-metadata-rule:V-II1-01": {
+        "correct": 49,
+        "normalized_correct": 49,
+        "total": 49
+      },
+      "dictionary-metadata-rule:V-II2-01": {
+        "correct": 28,
+        "normalized_correct": 28,
+        "total": 28
+      },
+      "dictionary-metadata-rule:V-II3-01": {
+        "correct": 7,
+        "normalized_correct": 7,
+        "total": 7
+      },
+      "dictionary-metadata-rule:V-IMP-01": {
+        "correct": 64,
+        "normalized_correct": 64,
+        "total": 91
+      },
+      "dictionary-metadata-rule:V-IMPF-A-01": {
+        "correct": 80,
+        "normalized_correct": 80,
+        "total": 80
+      },
+      "dictionary-metadata-rule:V-IMPF-YAT-A-01": {
+        "correct": 216,
+        "normalized_correct": 216,
+        "total": 216
+      },
+      "dictionary-metadata-rule:V-LPART-01": {
+        "correct": 352,
+        "normalized_correct": 352,
+        "total": 352
+      }
+    },
+    "development_by_present_class": {
+      "IA1": {
+        "correct": 1360,
+        "normalized_correct": 1360,
+        "total": 1452
+      },
+      "IA2": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 50
+      },
+      "II1": {
+        "correct": 790,
+        "normalized_correct": 790,
+        "total": 790
+      },
+      "II2": {
+        "correct": 438,
+        "normalized_correct": 438,
+        "total": 438
+      },
+      "II3": {
+        "correct": 54,
+        "normalized_correct": 54,
+        "total": 54
+      }
+    },
+    "final_by_present_class": {
+      "IA1": {
+        "correct": 544,
+        "normalized_correct": 544,
+        "total": 575
+      },
+      "IA2": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 18
+      },
+      "II1": {
+        "correct": 221,
+        "normalized_correct": 221,
+        "total": 221
+      },
+      "II2": {
+        "correct": 144,
+        "normalized_correct": 144,
+        "total": 144
+      },
+      "II3": {
+        "correct": 39,
+        "normalized_correct": 39,
+        "total": 39
+      }
+    },
+    "development_by_formation": {
+      "imperative:i-series": {
+        "correct": 220,
+        "normalized_correct": 220,
+        "total": 220
+      },
+      "imperative:yat-series": {
+        "correct": 0,
+        "normalized_correct": 0,
+        "total": 73
+      },
+      "imperfect:a": {
+        "correct": 264,
+        "normalized_correct": 264,
+        "total": 264
+      },
+      "imperfect:yat-a": {
+        "correct": 560,
+        "normalized_correct": 560,
+        "total": 560
+      },
+      "l-participle:no-formation": {
+        "correct": 1048,
+        "normalized_correct": 1048,
+        "total": 1048
+      },
+      "present:IA1": {
+        "correct": 400,
+        "normalized_correct": 400,
+        "total": 421
+      },
+      "present:IA2": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 16
+      },
+      "present:II1": {
+        "correct": 126,
+        "normalized_correct": 126,
+        "total": 126
+      },
+      "present:II2": {
+        "correct": 42,
+        "normalized_correct": 42,
+        "total": 42
+      },
+      "present:II3": {
+        "correct": 14,
+        "normalized_correct": 14,
+        "total": 14
+      }
+    },
+    "final_by_formation": {
+      "imperative:i-series": {
+        "correct": 64,
+        "normalized_correct": 64,
+        "total": 64
+      },
+      "imperative:yat-series": {
+        "correct": 0,
+        "normalized_correct": 0,
+        "total": 27
+      },
+      "imperfect:a": {
+        "correct": 80,
+        "normalized_correct": 80,
+        "total": 80
+      },
+      "imperfect:yat-a": {
+        "correct": 216,
+        "normalized_correct": 216,
+        "total": 216
+      },
+      "l-participle:no-formation": {
+        "correct": 352,
+        "normalized_correct": 352,
+        "total": 352
+      },
+      "present:IA1": {
+        "correct": 168,
+        "normalized_correct": 168,
+        "total": 173
+      },
+      "present:IA2": {
+        "correct": 0,
+        "normalized_correct": 0,
+        "total": 1
+      },
+      "present:II1": {
+        "correct": 49,
+        "normalized_correct": 49,
+        "total": 49
+      },
+      "present:II2": {
+        "correct": 28,
+        "normalized_correct": 28,
+        "total": 28
+      },
+      "present:II3": {
+        "correct": 7,
+        "normalized_correct": 7,
+        "total": 7
+      }
+    },
+    "development_by_source_policy": {
+      "headword:class + verb:finite:present:1:sg + verb:finite:present:2:sg": {
+        "correct": 546,
+        "normalized_correct": 546,
+        "total": 567
+      },
+      "headword:class + verb:finite:present:2:sg": {
+        "correct": 52,
+        "normalized_correct": 52,
+        "total": 52
+      },
+      "verb:finite:imperfect:1:sg": {
+        "correct": 824,
+        "normalized_correct": 824,
+        "total": 824
+      },
+      "verb:imperative:1:du + verb:imperative:2:sg": {
+        "correct": 165,
+        "normalized_correct": 165,
+        "total": 165
+      },
+      "verb:imperative:2:du + verb:imperative:2:sg": {
+        "correct": 55,
+        "normalized_correct": 55,
+        "total": 128
+      },
+      "verb:l-participle:m:sg": {
+        "correct": 1048,
+        "normalized_correct": 1048,
+        "total": 1048
+      }
+    },
+    "final_by_source_policy": {
+      "headword:class + verb:finite:present:1:sg + verb:finite:present:2:sg": {
+        "correct": 231,
+        "normalized_correct": 231,
+        "total": 237
+      },
+      "headword:class + verb:finite:present:2:sg": {
+        "correct": 21,
+        "normalized_correct": 21,
+        "total": 21
+      },
+      "verb:finite:imperfect:1:sg": {
+        "correct": 296,
+        "normalized_correct": 296,
+        "total": 296
+      },
+      "verb:imperative:1:du + verb:imperative:2:sg": {
+        "correct": 48,
+        "normalized_correct": 48,
+        "total": 48
+      },
+      "verb:imperative:2:du + verb:imperative:2:sg": {
+        "correct": 16,
+        "normalized_correct": 16,
+        "total": 43
+      },
+      "verb:l-participle:m:sg": {
+        "correct": 352,
+        "normalized_correct": 352,
+        "total": 352
+      }
+    },
+    "development_by_analysis_kind": {
+      "regular-single-analysis": {
+        "correct": 2690,
+        "normalized_correct": 2690,
+        "total": 2784
+      }
+    },
+    "final_by_analysis_kind": {
+      "regular-single-analysis": {
+        "correct": 964,
+        "normalized_correct": 964,
+        "total": 997
+      }
+    },
+    "development_by_lemma_frequency": {
+      "11-50": {
+        "correct": 2690,
+        "normalized_correct": 2690,
+        "total": 2784
+      }
+    },
+    "final_by_lemma_frequency": {
+      "11-50": {
+        "correct": 964,
+        "normalized_correct": 964,
+        "total": 997
+      }
+    },
+    "skip_reasons": {
+      "ambiguous-lemma": 451,
+      "missing-principal-part-after-exclusion": 7411
+    }
   },
   "oov": {
     "development": {

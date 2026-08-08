@@ -44,7 +44,7 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
         root.join("data/overrides.tsv"),
         concat!(
             "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
-            "тестъ\tnoun\tnoun:gen:sg\tтестоу :: testou || теста :: testa\t",
+            "тестъ\tnoun\tnoun:dat:sg\tтестоу :: testou || тестови :: testovi\t",
             "fixture correction\tfixture citation\tapproved\n"
         ),
     )
@@ -52,34 +52,64 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
     let overridden = registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))
         .expect("apply approved override");
     let override_forms = overridden
-        .forms
+        .overrides
         .iter()
-        .filter(|row| row.feature == "noun:gen:sg")
+        .filter(|row| row.feature == "noun:dat:sg")
         .collect::<Vec<_>>();
     assert_eq!(override_forms.len(), 2);
     assert_eq!(override_forms[0].form, "тестоу");
     assert_eq!(override_forms[0].rank, 0);
-    assert_eq!(override_forms[1].form, "теста");
+    assert_eq!(override_forms[1].form, "тестови");
     assert_eq!(override_forms[1].rank, 1);
     assert!(
         override_forms
             .iter()
-            .all(|row| row.source_tags == "manual-override")
+            .all(|row| row.reason == "fixture correction" && row.authority == "fixture citation")
     );
 
     fs::write(
         root.join("data/overrides.tsv"),
         concat!(
             "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
-            "тестъ\tnoun\tnoun:gen:sg\tдва слова\tbad fixture\tfixture citation\tapproved\n"
+            "тестъ\tnoun\tnoun:dat:sg\tдва слова\tbad fixture\tfixture citation\tapproved\n"
         ),
     )
     .expect("write invalid override");
     assert!(
-        registry_with_overrides(registry, &root.join("data/overrides.tsv"))
+        registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))
             .expect_err("word-level override must fail")
             .to_string()
             .contains("whitespace")
+    );
+
+    fs::write(
+        root.join("data/overrides.tsv"),
+        concat!(
+            "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
+            "тестъ\tnoun\tnoun:unknown:sg\tтестоу\tbad feature\tfixture citation\tapproved\n"
+        ),
+    )
+    .expect("write invalid feature override");
+    assert!(
+        registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))
+            .expect_err("unknown override feature must fail")
+            .to_string()
+            .contains("invalid feature")
+    );
+
+    fs::write(
+        root.join("data/overrides.tsv"),
+        concat!(
+            "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
+            "тестъ\tnoun\tnoun:gen:sg\tтестоу\tshadow\tfixture citation\tapproved\n"
+        ),
+    )
+    .expect("write shadowing override");
+    assert!(
+        registry_with_overrides(registry, &root.join("data/overrides.tsv"))
+            .expect_err("source-cell shadowing must fail")
+            .to_string()
+            .contains("shadow an exact source cell")
     );
     fs::remove_dir_all(&root).expect("clean fixture output");
 }

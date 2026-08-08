@@ -1,8 +1,9 @@
 use crate::emit::generated_rust;
 use crate::normalize::{has_wiki_markup, lookup_key};
 use crate::report::ExtractionReport;
-use crate::schema::{AliasRow, Entry, FormRow, LexemeRow, Registry, SourceForm};
+use crate::schema::{AliasRow, Entry, FormRow, LexemeRow, Registry, SourceForm, VerbMetadataRow};
 use crate::validate;
+use crate::verb_metadata;
 use old_church_slavonic_core::orthography::{Script, canonical_display, detect_script};
 use serde::Serialize;
 use sha2::{Digest, Sha256};
@@ -13,7 +14,7 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader, Read, Write};
 use std::path::{Path, PathBuf};
 
-const REGISTRY_SCHEMA: u32 = 1;
+const REGISTRY_SCHEMA: u32 = 2;
 const MAX_PARSE_FAILURE_FRACTION: f64 = 0.001;
 
 #[derive(Debug)]
@@ -94,6 +95,8 @@ pub fn refresh(dump: &Path, root: &Path) -> Result<(), Box<dyn Error>> {
     registry.aliases.sort();
     registry.aliases.dedup();
     registry.forms.sort();
+    registry.verb_metadata = verb_metadata::derive(&registry, &BTreeSet::new())?;
+    registry.verb_metadata.sort();
     validate::registry(&registry)?;
     let citation_exemptions = load_citation_exemptions(&root.join("data/citation-exemptions.tsv"))?;
 
@@ -158,7 +161,7 @@ pub fn refresh(dump: &Path, root: &Path) -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(&extracted)?;
     fs::create_dir_all(root.join("reports"))?;
     fs::create_dir_all(root.join("crates/old-church-slavonic/generated"))?;
-    let (lexemes_tsv, aliases_tsv, forms_tsv) = registry_text(&registry);
+    let (lexemes_tsv, aliases_tsv, forms_tsv, verb_metadata_tsv) = registry_text(&registry);
     let generated_registry =
         registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))?;
     validate::noun_citations(&generated_registry, &citation_exemptions)?;
@@ -171,6 +174,10 @@ pub fn refresh(dump: &Path, root: &Path) -> Result<(), Box<dyn Error>> {
         (extracted.join("lexemes.tsv"), lexemes_tsv.as_bytes()),
         (extracted.join("aliases.tsv"), aliases_tsv.as_bytes()),
         (extracted.join("forms.tsv"), forms_tsv.as_bytes()),
+        (
+            extracted.join("verb_metadata.tsv"),
+            verb_metadata_tsv.as_bytes(),
+        ),
         (extracted.join("source.json"), &source_json),
         (
             root.join("crates/old-church-slavonic/generated/registry.rs"),
@@ -215,6 +222,11 @@ fn load_citation_exemptions(path: &Path) -> Result<BTreeSet<String>, Box<dyn Err
 pub fn check_registry(root: &Path) -> Result<(), Box<dyn Error>> {
     let registry = load_registry(&root.join("data/extracted"))?;
     validate::registry(&registry)?;
+    let mut derived_metadata = verb_metadata::derive(&registry, &BTreeSet::new())?;
+    derived_metadata.sort();
+    if registry.verb_metadata != derived_metadata {
+        return Err("committed verb metadata is stale relative to normalized source cells".into());
+    }
     let citation_exemptions = load_citation_exemptions(&root.join("data/citation-exemptions.tsv"))?;
     validate::coverage(registry.lexemes.len(), registry.forms.len())?;
     let coverage_bytes = fs::read(root.join("reports/extraction-coverage.json"))?;
@@ -264,6 +276,31 @@ pub fn check_registry(root: &Path) -> Result<(), Box<dyn Error>> {
         registry.lexemes.len(),
         registry.forms.len()
     );
+    Ok(())
+}
+
+/// Refresh only artifacts that are pure derivations of the already committed
+/// normalized registry. This never substitutes for auditing a changed raw dump.
+pub fn refresh_derived_registry(root: &Path) -> Result<(), Box<dyn Error>> {
+    let mut registry = load_registry(&root.join("data/extracted"))?;
+    registry.verb_metadata = verb_metadata::derive(&registry, &BTreeSet::new())?;
+    registry.verb_metadata.sort();
+    validate::registry(&registry)?;
+    let (_, _, _, verb_metadata_tsv) = registry_text(&registry);
+    let generated_registry = registry_with_overrides(registry, &root.join("data/overrides.tsv"))?;
+    let citation_exemptions = load_citation_exemptions(&root.join("data/citation-exemptions.tsv"))?;
+    validate::noun_citations(&generated_registry, &citation_exemptions)?;
+    let generated = generated_rust(&generated_registry);
+    atomic_write_batch(&[
+        (
+            root.join("data/extracted/verb_metadata.tsv"),
+            verb_metadata_tsv.as_bytes(),
+        ),
+        (
+            root.join("crates/old-church-slavonic/generated/registry.rs"),
+            generated.as_bytes(),
+        ),
+    ])?;
     Ok(())
 }
 
@@ -339,9 +376,6 @@ pub fn registry_with_overrides(
         if parsed.is_empty() {
             return Err(format!("override row {} has no variants", line_index + 1).into());
         }
-        registry
-            .forms
-            .retain(|form| form.lexeme_id != *lexeme_id || form.feature != feature);
         for (rank, value) in parsed.into_iter().enumerate() {
             let (form, romanization) = value.split_once(" :: ").unwrap_or((value, ""));
             if form.is_empty() || matches!(form, "-" | "—" | "no-table-tags") {
@@ -349,18 +383,18 @@ pub fn registry_with_overrides(
                     format!("override row {} contains a sentinel form", line_index + 1).into(),
                 );
             }
-            registry.forms.push(FormRow {
+            registry.overrides.push(crate::schema::OverrideRow {
                 lexeme_id: lexeme_id.clone(),
                 feature: feature.to_string(),
                 rank: u16::try_from(rank)?,
                 form: form.to_string(),
                 romanization: romanization.to_string(),
-                source_spelling: form.to_string(),
-                source_tags: "manual-override".to_string(),
+                reason: reason.to_string(),
+                authority: source.to_string(),
             });
         }
     }
-    registry.forms.sort();
+    registry.overrides.sort();
     validate::registry(&registry)?;
     Ok(registry)
 }
@@ -1203,7 +1237,7 @@ fn source_metadata(path: &Path) -> Result<SourceMetadata, Box<dyn Error>> {
     })
 }
 
-fn registry_text(registry: &Registry) -> (String, String, String) {
+fn registry_text(registry: &Registry) -> (String, String, String, String) {
     let mut lexemes = String::from(
         "id\tlemma\tpage_word\tkey\tpos\tclass\traw_class\tgender\tanimacy\tnumber_restriction\thead_templates\tsignature\n",
     );
@@ -1246,7 +1280,25 @@ fn registry_text(registry: &Registry) -> (String, String, String) {
             row.source_tags
         ));
     }
-    (lexemes, aliases, forms)
+    let mut verb_metadata = String::from(
+        "lexeme_id\tsystem\tanalysis_rank\tfield\tvalue\tprovenance\tsource_feature\tsource_form\tcrosscheck_features\tauthority\n",
+    );
+    for row in &registry.verb_metadata {
+        verb_metadata.push_str(&format!(
+            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+            row.lexeme_id,
+            row.system,
+            row.analysis_rank,
+            row.field,
+            row.value,
+            row.provenance,
+            row.source_feature,
+            row.source_form,
+            row.crosscheck_features,
+            row.authority,
+        ));
+    }
+    (lexemes, aliases, forms, verb_metadata)
 }
 
 pub fn load_registry(dir: &Path) -> Result<Registry, Box<dyn Error>> {
@@ -1332,6 +1384,31 @@ pub fn load_registry(dir: &Path) -> Result<Registry, Box<dyn Error>> {
             },
             source_tags: columns[columns.len() - 1].to_string(),
         });
+    }
+    let metadata_path = dir.join("verb_metadata.tsv");
+    if metadata_path.exists() {
+        for (line_number, line) in fs::read_to_string(metadata_path)?
+            .lines()
+            .enumerate()
+            .skip(1)
+        {
+            let columns = line.split('\t').collect::<Vec<_>>();
+            if columns.len() != 10 {
+                return Err(format!("invalid verb_metadata.tsv row {}", line_number + 1).into());
+            }
+            registry.verb_metadata.push(VerbMetadataRow {
+                lexeme_id: columns[0].to_string(),
+                system: columns[1].to_string(),
+                analysis_rank: columns[2].parse()?,
+                field: columns[3].to_string(),
+                value: columns[4].to_string(),
+                provenance: columns[5].to_string(),
+                source_feature: columns[6].to_string(),
+                source_form: columns[7].to_string(),
+                crosscheck_features: columns[8].to_string(),
+                authority: columns[9].to_string(),
+            });
+        }
     }
     Ok(registry)
 }
@@ -1700,5 +1777,50 @@ mod tests {
             b"new-second"
         );
         fs::remove_dir_all(root).expect("remove test directory");
+    }
+
+    #[test]
+    fn content_change_rekeys_lexeme_and_rewrites_every_alias_reference() {
+        let entry = |genitive: &str| {
+            serde_json::from_str::<Entry>(&format!(
+                r#"{{
+                    "word":"домъ","lang_code":"cu","pos":"noun",
+                    "forms":[
+                      {{"form":"домъ","source":"declension","tags":["nominative","singular"]}},
+                      {{"form":"{genitive}","source":"declension","tags":["genitive","singular"]}}
+                    ]
+                }}"#
+            ))
+            .expect("fixture JSON")
+        };
+        let build = |entry: Entry| {
+            let mut report = ExtractionReport::default();
+            let pending = pending_lexeme(&entry, "noun", &mut report)
+                .expect("safe entry")
+                .expect("fixture lexeme");
+            finalize(vec![pending], &mut report).expect("finalized registry")
+        };
+
+        let before = build(entry("дома"));
+        let after = build(entry("домоу"));
+        assert_ne!(before.lexemes[0].id, after.lexemes[0].id);
+        assert!(
+            before
+                .aliases
+                .iter()
+                .all(|alias| alias.lexeme_id == before.lexemes[0].id)
+        );
+        assert!(
+            after
+                .aliases
+                .iter()
+                .all(|alias| alias.lexeme_id == after.lexemes[0].id)
+        );
+        assert!(
+            after
+                .forms
+                .iter()
+                .all(|form| form.lexeme_id == after.lexemes[0].id)
+        );
     }
 }

@@ -29,13 +29,43 @@ pub fn generated_rust(registry: &Registry) -> String {
     out.push_str("pub(crate) static FORMS: &[FormRecord] = &[\n");
     for row in &registry.forms {
         out.push_str(&format!(
-            "    FormRecord {{ lexeme_id: {:?}, feature: {:?}, rank: {}, form: {:?}, romanization: {:?}, is_override: {} }},\n",
+            "    FormRecord {{ lexeme_id: {:?}, feature: {:?}, rank: {}, form: {:?}, romanization: {:?} }},\n",
             row.lexeme_id,
             row.feature,
             row.rank,
             row.form,
             row.romanization,
-            row.source_tags == "manual-override"
+        ));
+    }
+    out.push_str("];\n");
+    out.push_str("pub(crate) static OVERRIDES: &[OverrideRecord] = &[\n");
+    for row in &registry.overrides {
+        out.push_str(&format!(
+            "    OverrideRecord {{ lexeme_id: {:?}, feature: {:?}, rank: {}, form: {:?}, romanization: {:?}, reason: {:?}, authority: {:?} }},\n",
+            row.lexeme_id,
+            row.feature,
+            row.rank,
+            row.form,
+            row.romanization,
+            row.reason,
+            row.authority,
+        ));
+    }
+    out.push_str("];\n");
+    out.push_str("pub(crate) static VERB_METADATA: &[VerbMetadataRecord] = &[\n");
+    for row in &registry.verb_metadata {
+        out.push_str(&format!(
+            "    VerbMetadataRecord {{ lexeme_id: {:?}, system: {:?}, analysis_rank: {}, field: {:?}, value: {:?}, provenance: {:?}, source_feature: {:?}, source_form: {:?}, crosscheck_features: {:?}, authority: {:?} }},\n",
+            row.lexeme_id,
+            row.system,
+            row.analysis_rank,
+            row.field,
+            row.value,
+            row.provenance,
+            row.source_feature,
+            row.source_form,
+            row.crosscheck_features,
+            row.authority,
         ));
     }
     out.push_str("];\n");

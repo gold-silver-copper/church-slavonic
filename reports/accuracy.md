@@ -21,7 +21,300 @@ Cells by public provenance:
 
 - `dictionary-table`: 134761
 
-Verb OOV metadata may use the 2nd-singular present, masculine-singular l-participle, 1st-singular imperfect/new aorist, or 2nd-singular imperative. Every metadata source cell and equivalent duplicate target is excluded. Participle citation targets use only those independently held principal parts plus declared class/formation policies; they are never used to derive themselves.
+## Leakage-controlled dictionary-metadata generation
+
+This primary fallback score removes the target feature, an equivalent 2sg/3sg finite or imperative feature, and every same-spelling dictionary feature before rebuilding metadata. It then calls the public dictionary-metadata resolver; exact table lookup is unavailable to this path. Development and final lemmas use the same frozen modulo-five partition as OOV.
+
+Source dictionary verb lexemes: 711.
+
+### Metadata coverage by field
+
+| Field or declared value | Lexemes |
+|---|---:|
+| `aorist/formation` | 0 |
+| `aorist/formation=asigmatic` | 0 |
+| `aorist/formation=new` | 0 |
+| `aorist/formation=sigmatic-primary` | 0 |
+| `aorist/formation=sigmatic-secondary` | 0 |
+| `aorist/stem` | 0 |
+| `aspect/aspect` | 647 |
+| `aspect/aspect=biaspectual` | 9 |
+| `aspect/aspect=imperfective` | 374 |
+| `aspect/aspect=perfective` | 264 |
+| `imperative/formation` | 73 |
+| `imperative/formation=i-series` | 73 |
+| `imperative/formation=yat-series` | 0 |
+| `imperative/stem` | 73 |
+| `imperfect/formation` | 150 |
+| `imperfect/formation=a` | 44 |
+| `imperfect/formation=palatalized-a` | 0 |
+| `imperfect/formation=yat-a` | 106 |
+| `imperfect/stem` | 150 |
+| `imperfect/variant-policy` | 150 |
+| `imperfect/variant-policy=uncontracted-only` | 150 |
+| `l-participle/stem` | 185 |
+| `past-active-participle/formation` | 185 |
+| `past-active-participle/formation=ish` | 44 |
+| `past-active-participle/formation=ush` | 96 |
+| `past-active-participle/formation=vush` | 89 |
+| `past-active-participle/formation=vush-after-j-deletion` | 0 |
+| `past-active-participle/formation=vush-after-ov-to-u` | 0 |
+| `past-active-participle/stem` | 185 |
+| `past-passive-participle/formation` | 134 |
+| `past-passive-participle/formation=en` | 67 |
+| `past-passive-participle/formation=n` | 51 |
+| `past-passive-participle/formation=t` | 16 |
+| `past-passive-participle/stem` | 134 |
+| `present-active-participle/formation` | 186 |
+| `present-active-participle/formation=yesht-soft` | 78 |
+| `present-active-participle/formation=yusht-hard` | 108 |
+| `present-active-participle/formation=yusht-soft` | 0 |
+| `present-active-participle/stem` | 186 |
+| `present-passive-participle/formation` | 134 |
+| `present-passive-participle/formation=em` | 0 |
+| `present-passive-participle/formation=im` | 62 |
+| `present-passive-participle/formation=om` | 72 |
+| `present-passive-participle/stem` | 134 |
+| `present/class` | 121 |
+| `present/class=IA1` | 79 |
+| `present/class=IA2` | 2 |
+| `present/class=II1` | 26 |
+| `present/class=II2` | 11 |
+| `present/class=II3` | 3 |
+| `present/first-singular-stem` | 121 |
+| `present/stem` | 121 |
+
+### Held-cell stage funnel
+
+| Stage | Development | Final holdout |
+|---|---:|---:|
+| compatible requested cells | 8895 | 2748 |
+| unambiguous lexeme cells | 8628 | 2564 |
+| metadata records found | 2784 | 997 |
+| metadata records validated | 2784 | 997 |
+| generation attempts | 2784 | 997 |
+| returned forms | 2784 | 997 |
+| diplomatic top-1 correct | 2690 | 964 |
+| diplomatic any correct | 2690 | 964 |
+| project-lookup top-1 correct | 2690 | 964 |
+| project-lookup any correct | 2690 | 964 |
+
+The slice tables below report diplomatic-any in `Exact` and shared NFC/lowercase-any in `NFC/lowercase`; top-1 remains separate in the funnel.
+
+#### Development by system
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `imperative` | 220 | 220 | 293 |
+| `imperfect` | 824 | 824 | 824 |
+| `l-participle` | 1048 | 1048 | 1048 |
+| `present` | 598 | 598 | 619 |
+
+#### Final holdout by system
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `imperative` | 64 | 64 | 91 |
+| `imperfect` | 296 | 296 | 296 |
+| `l-participle` | 352 | 352 | 352 |
+| `present` | 252 | 252 | 258 |
+
+#### Development by complete cell
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `verb:finite:imperfect:1:du` | 103 | 103 | 103 |
+| `verb:finite:imperfect:1:pl` | 103 | 103 | 103 |
+| `verb:finite:imperfect:2:du` | 103 | 103 | 103 |
+| `verb:finite:imperfect:2:pl` | 103 | 103 | 103 |
+| `verb:finite:imperfect:2:sg` | 103 | 103 | 103 |
+| `verb:finite:imperfect:3:du` | 103 | 103 | 103 |
+| `verb:finite:imperfect:3:pl` | 103 | 103 | 103 |
+| `verb:finite:imperfect:3:sg` | 103 | 103 | 103 |
+| `verb:finite:present:1:du` | 78 | 78 | 78 |
+| `verb:finite:present:1:pl` | 78 | 78 | 78 |
+| `verb:finite:present:1:sg` | 52 | 52 | 52 |
+| `verb:finite:present:2:du` | 78 | 78 | 78 |
+| `verb:finite:present:2:pl` | 78 | 78 | 78 |
+| `verb:finite:present:3:du` | 78 | 78 | 78 |
+| `verb:finite:present:3:pl` | 78 | 78 | 99 |
+| `verb:finite:present:3:sg` | 78 | 78 | 78 |
+| `verb:imperative:1:du` | 55 | 55 | 128 |
+| `verb:imperative:1:pl` | 55 | 55 | 55 |
+| `verb:imperative:2:du` | 55 | 55 | 55 |
+| `verb:imperative:2:pl` | 55 | 55 | 55 |
+| `verb:l-participle:f:du` | 131 | 131 | 131 |
+| `verb:l-participle:f:pl` | 131 | 131 | 131 |
+| `verb:l-participle:f:sg` | 131 | 131 | 131 |
+| `verb:l-participle:m:du` | 131 | 131 | 131 |
+| `verb:l-participle:m:pl` | 131 | 131 | 131 |
+| `verb:l-participle:n:du` | 131 | 131 | 131 |
+| `verb:l-participle:n:pl` | 131 | 131 | 131 |
+| `verb:l-participle:n:sg` | 131 | 131 | 131 |
+
+#### Final holdout by complete cell
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `verb:finite:imperfect:1:du` | 37 | 37 | 37 |
+| `verb:finite:imperfect:1:pl` | 37 | 37 | 37 |
+| `verb:finite:imperfect:2:du` | 37 | 37 | 37 |
+| `verb:finite:imperfect:2:pl` | 37 | 37 | 37 |
+| `verb:finite:imperfect:2:sg` | 37 | 37 | 37 |
+| `verb:finite:imperfect:3:du` | 37 | 37 | 37 |
+| `verb:finite:imperfect:3:pl` | 37 | 37 | 37 |
+| `verb:finite:imperfect:3:sg` | 37 | 37 | 37 |
+| `verb:finite:present:1:du` | 33 | 33 | 33 |
+| `verb:finite:present:1:pl` | 33 | 33 | 33 |
+| `verb:finite:present:1:sg` | 21 | 21 | 21 |
+| `verb:finite:present:2:du` | 33 | 33 | 33 |
+| `verb:finite:present:2:pl` | 33 | 33 | 33 |
+| `verb:finite:present:3:du` | 33 | 33 | 33 |
+| `verb:finite:present:3:pl` | 33 | 33 | 39 |
+| `verb:finite:present:3:sg` | 33 | 33 | 33 |
+| `verb:imperative:1:du` | 16 | 16 | 43 |
+| `verb:imperative:1:pl` | 16 | 16 | 16 |
+| `verb:imperative:2:du` | 16 | 16 | 16 |
+| `verb:imperative:2:pl` | 16 | 16 | 16 |
+| `verb:l-participle:f:du` | 44 | 44 | 44 |
+| `verb:l-participle:f:pl` | 44 | 44 | 44 |
+| `verb:l-participle:f:sg` | 44 | 44 | 44 |
+| `verb:l-participle:m:du` | 44 | 44 | 44 |
+| `verb:l-participle:m:pl` | 44 | 44 | 44 |
+| `verb:l-participle:n:du` | 44 | 44 | 44 |
+| `verb:l-participle:n:pl` | 44 | 44 | 44 |
+| `verb:l-participle:n:sg` | 44 | 44 | 44 |
+
+#### Development by generation path
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `dictionary-metadata-rule:V-IA1-01` | 400 | 400 | 421 |
+| `dictionary-metadata-rule:V-IA2-01` | 16 | 16 | 16 |
+| `dictionary-metadata-rule:V-II1-01` | 126 | 126 | 126 |
+| `dictionary-metadata-rule:V-II2-01` | 42 | 42 | 42 |
+| `dictionary-metadata-rule:V-II3-01` | 14 | 14 | 14 |
+| `dictionary-metadata-rule:V-IMP-01` | 220 | 220 | 293 |
+| `dictionary-metadata-rule:V-IMPF-A-01` | 264 | 264 | 264 |
+| `dictionary-metadata-rule:V-IMPF-YAT-A-01` | 560 | 560 | 560 |
+| `dictionary-metadata-rule:V-LPART-01` | 1048 | 1048 | 1048 |
+
+#### Final holdout by generation path
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `dictionary-metadata-rule:V-IA1-01` | 168 | 168 | 173 |
+| `dictionary-metadata-rule:V-IA2-01` | 0 | 0 | 1 |
+| `dictionary-metadata-rule:V-II1-01` | 49 | 49 | 49 |
+| `dictionary-metadata-rule:V-II2-01` | 28 | 28 | 28 |
+| `dictionary-metadata-rule:V-II3-01` | 7 | 7 | 7 |
+| `dictionary-metadata-rule:V-IMP-01` | 64 | 64 | 91 |
+| `dictionary-metadata-rule:V-IMPF-A-01` | 80 | 80 | 80 |
+| `dictionary-metadata-rule:V-IMPF-YAT-A-01` | 216 | 216 | 216 |
+| `dictionary-metadata-rule:V-LPART-01` | 352 | 352 | 352 |
+
+#### Development by present class
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `IA1` | 1360 | 1360 | 1452 |
+| `IA2` | 48 | 48 | 50 |
+| `II1` | 790 | 790 | 790 |
+| `II2` | 438 | 438 | 438 |
+| `II3` | 54 | 54 | 54 |
+
+#### Final holdout by present class
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `IA1` | 544 | 544 | 575 |
+| `IA2` | 16 | 16 | 18 |
+| `II1` | 221 | 221 | 221 |
+| `II2` | 144 | 144 | 144 |
+| `II3` | 39 | 39 | 39 |
+
+#### Development by formation
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `imperative:i-series` | 220 | 220 | 220 |
+| `imperative:yat-series` | 0 | 0 | 73 |
+| `imperfect:a` | 264 | 264 | 264 |
+| `imperfect:yat-a` | 560 | 560 | 560 |
+| `l-participle:no-formation` | 1048 | 1048 | 1048 |
+| `present:IA1` | 400 | 400 | 421 |
+| `present:IA2` | 16 | 16 | 16 |
+| `present:II1` | 126 | 126 | 126 |
+| `present:II2` | 42 | 42 | 42 |
+| `present:II3` | 14 | 14 | 14 |
+
+#### Final holdout by formation
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `imperative:i-series` | 64 | 64 | 64 |
+| `imperative:yat-series` | 0 | 0 | 27 |
+| `imperfect:a` | 80 | 80 | 80 |
+| `imperfect:yat-a` | 216 | 216 | 216 |
+| `l-participle:no-formation` | 352 | 352 | 352 |
+| `present:IA1` | 168 | 168 | 173 |
+| `present:IA2` | 0 | 0 | 1 |
+| `present:II1` | 49 | 49 | 49 |
+| `present:II2` | 28 | 28 | 28 |
+| `present:II3` | 7 | 7 | 7 |
+
+#### Development by metadata source-cell policy
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `headword:class + verb:finite:present:1:sg + verb:finite:present:2:sg` | 546 | 546 | 567 |
+| `headword:class + verb:finite:present:2:sg` | 52 | 52 | 52 |
+| `verb:finite:imperfect:1:sg` | 824 | 824 | 824 |
+| `verb:imperative:1:du + verb:imperative:2:sg` | 165 | 165 | 165 |
+| `verb:imperative:2:du + verb:imperative:2:sg` | 55 | 55 | 128 |
+| `verb:l-participle:m:sg` | 1048 | 1048 | 1048 |
+
+#### Final holdout by metadata source-cell policy
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `headword:class + verb:finite:present:1:sg + verb:finite:present:2:sg` | 231 | 231 | 237 |
+| `headword:class + verb:finite:present:2:sg` | 21 | 21 | 21 |
+| `verb:finite:imperfect:1:sg` | 296 | 296 | 296 |
+| `verb:imperative:1:du + verb:imperative:2:sg` | 48 | 48 | 48 |
+| `verb:imperative:2:du + verb:imperative:2:sg` | 16 | 16 | 43 |
+| `verb:l-participle:m:sg` | 352 | 352 | 352 |
+
+#### Development by regular/analysis kind
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `regular-single-analysis` | 2690 | 2690 | 2784 |
+
+#### Final holdout by regular/analysis kind
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `regular-single-analysis` | 964 | 964 | 997 |
+
+#### Development by lemma dictionary frequency
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `11-50` | 2690 | 2690 | 2784 |
+
+#### Final holdout by lemma dictionary frequency
+
+| Slice | Exact | NFC/lowercase | Returned |
+|---|---:|---:|---:|
+| `11-50` | 964 | 964 | 997 |
+
+Skip and failure reasons:
+
+- `ambiguous-lemma`: 451
+- `missing-principal-part-after-exclusion`: 7411
+
+The legacy oracle/core OOV diagnostic below may use the 2nd-singular present, masculine-singular l-participle, 1st-singular imperfect/new aorist, or 2nd-singular imperative. Every metadata source cell and equivalent duplicate target is excluded. Participle citation targets use only those independently held principal parts plus declared class/formation policies; they are never used to derive themselves.
 
 ## Development OOV
 

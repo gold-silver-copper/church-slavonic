@@ -44,11 +44,10 @@ fixture is included until that audit is complete.
 The native ten-position mapper is fixture-tested. Hash verification plus required
 schema markers makes an unreviewed upstream schema change fail closed.
 
-## Three separate questions
+## Four separate questions
 
-1. **Facade attested-token recall** uses only an unambiguous dictionary lexeme and
-   typed table cell. It asks whether the public table-first facade returns the
-   observed variant. It is not a productive-rule score.
+1. **Exact dictionary-cell recall** verifies that every normalized source cell and
+   ordered variant round-trips through the public table resolver.
 2. **Core generalization with declared principal parts** uses native imperfect and
    aorist labels. One morphologically diagnostic token may supply an oracle stem and
    formation. Every token in that person-number source cell is excluded, and the
@@ -58,9 +57,23 @@ schema markers makes an unreviewed upstream schema change fail closed.
    lemma. It measures the same production rule on a lemma-disjoint final group and
    states that the metadata came from another native corpus token. It does not claim
    automatic principal-part discovery for a wholly unseen lexeme.
+4. **Dictionary-metadata held-cell generation** removes the dictionary target,
+   equivalent 2sg/3sg cells, and every same-spelling feature before rebuilding
+   principal parts. It calls the public metadata resolver and reports metadata
+   construction separately from generation. Exact-table hits cannot enter its
+   numerator.
 
-No evaluator reimplements endings. Facade evaluation calls public table resolvers;
-core/OOV evaluation constructs the typed `VerbLexeme` and calls the production core.
+The UD **facade real-text recall** view is an additional observation over question 1
+and question 4 paths: it calls the ordinary table-first public facade and slices
+exact-table versus dictionary-metadata results. It uses only dictionary/curated
+lexical evidence, never a corpus-derived principal part. Because dictionary metadata
+is not rebuilt separately for each corpus token, this view is not labeled a held-cell
+score.
+
+No evaluator reimplements endings. Dictionary metadata is decoded through
+`DictionaryVerbMetadata` and uses the public metadata resolver; facade evaluation
+calls `form_by_id`; core/OOV evaluation constructs the typed `VerbLexeme` and calls
+the production core.
 
 ## Leakage controls and partitions
 
@@ -75,6 +88,10 @@ core/OOV evaluation constructs the typed `VerbLexeme` and calls the production c
   2sg, then 3sg. Editorially plain forms precede marked forms within the same cell.
 - A diagnostic native source cell is excluded across every occurrence and document,
   not merely the individual token used.
+- Dictionary held-cell evaluation applies exclusions before derivation or
+  cross-checking. It rejects ambiguous lemma keys and never loads curated overrides;
+  the current `бꙑти` override is development-only and has separate public-API
+  provenance tests.
 - The final holdout must not drive an override. A future override learned from it
   requires moving the lemma to development and transparently resetting the baseline.
 
@@ -91,15 +108,24 @@ It also records conditional correctness and coverage by category, complete cell,
 document, lemma frequency, and declared native formation in JSON. The committed
 human report keeps the main slices compact.
 
-The manifest freezes conservative non-regression floors in basis points. Current
-floors are 65% facade attempt coverage, 20% facade lookup-any conditional accuracy,
-30% native oracle attempt coverage, and 47% native oracle lookup-any conditional
-accuracy. They are guardrails below the audited baseline, not desired linguistic
-accuracy claims.
+The corpus manifest freezes conservative non-regression floors in basis points.
+Current floors are 65% facade attempt coverage, 20% facade lookup-any conditional
+accuracy, 30% native oracle attempt coverage, and 47% native oracle lookup-any
+conditional accuracy. The dictionary-metadata evaluator separately requires at
+least 30% development and 35% final metadata availability among unambiguous targets,
+plus 95% lookup-any conditional correctness in each partition. These are guardrails,
+not desired linguistic accuracy claims.
+
+On the current dictionary snapshot, development finds and returns metadata for
+2,784/8,628 unambiguous compatible targets and matches 2,690; the frozen final
+partition returns 997/2,564 and matches 964. These are held-dictionary-cell results,
+not corpus scores. Citation participles are absent from this numerator because
+removing their only safely typed citation also removes their formation selector.
 
 ## Running the evaluation
 
 ```bash
+cargo xtask accuracy
 cargo xtask accuracy-corpus \
   --ud /path/to/UD_Old_Church_Slavonic-PROIEL \
   --syntacticus /path/to/syntacticus-treebank-data
@@ -120,10 +146,13 @@ lookup-any matches. That first evaluator unioned ambiguous lemma candidates and 
 not distinguish top-1 from any, so it is retained as an audit baseline rather than
 compared as if its denominator were identical.
 
-The audited schema-2 facade now excludes ambiguous lemmas and feature bundles that
-lose polarity, finite voice, fixed resultative dimensions, or the typed imperative
-inventory: 18,712 attempts produce 3,811 diplomatic-any and 3,909 lookup-any
-matches. The new native evaluator sees
+The audited schema-2 facade excludes ambiguous lemmas and feature bundles that lose
+polarity, finite voice, fixed resultative dimensions, or the typed imperative
+inventory. Before dictionary metadata was connected, 18,712 attempts returned only
+8,715 exact-table results, with 3,811 diplomatic-any and 3,909 lookup-any matches.
+The same attempts now return 11,063 forms: 4,711 diplomatic-any and 4,850 lookup-any.
+The 2,348 additional returns are sliced by generation path in the committed report;
+external token rows remain local. The native oracle evaluator sees
 14,393 compatible imperfect/aorist tokens; safe oracle metadata permits 4,368
 non-source-cell attempts, with 1,971 diplomatic and 2,058 lookup matches. The
 lemma-disjoint final view is 324/623 diplomatic and 341/623 lookup. Full category,

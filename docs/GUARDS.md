@@ -13,6 +13,13 @@ committed workspace.
 |---|---|---|---|
 | generated registry is current | `check-registry` deterministic emitter comparison | append one comment to copied `generated/registry.rs` | stale generated registry |
 | cell/rank keys are unique | registry semantic validator | duplicate one copied form row | duplicate form key |
+| metadata codes are closed and typed | registry semantic validator | replace one formation with `unknown-formation` | unknown metadata formation |
+| metadata analyses are complete | registry semantic validator | remove one imperfect `variant-policy` row | incomplete metadata analysis |
+| metadata field groups are unique | registry semantic validator | duplicate one normalized metadata row | duplicate metadata field |
+| metadata belongs to a verb lexeme | registry semantic validator | replace one metadata ID with an orphan | orphan metadata lexeme |
+| metadata stems are present and NFC | registry semantic validator | empty a stem, then replace one with decomposed `И` + breve | empty/non-NFC metadata value |
+| productive metadata stems are Cyrillic | registry semantic validator | replace one stem with Latin text | non-Cyrillic metadata stem |
+| overrides name valid missing cells | override parser and registry validator | replace an override feature with unsupported `future` | invalid override feature |
 | public forms are nonempty and not sentinels | registry semantic validator | replace one copied form with `—` | sentinel public form |
 | public spellings contain no MediaWiki markup | registry semantic validator | replace one copied form with `сло{{{2}}}во` | markup public form |
 | canonical noun citations remain reachable | citation validator plus sourced exemption registry | change `обѣдъ` nominative singular | missing canonical citation |
@@ -24,8 +31,11 @@ committed workspace.
 | attribution and licenses ship | package attribution guard and `cargo package` | remove the pinned source SHA from copied package attribution | attribution failure |
 | extraction report matches registry | `check-registry` report regeneration/denominator checks | set copied JSON accepted-form count to 1 | report mismatch |
 | accuracy report matches fresh evaluation | non-writing full evaluator comparison | append text to copied accuracy Markdown | stale accuracy report |
+| held metadata cannot win by abstaining | dictionary-metadata funnel guard | lower final metadata availability below 35% | metadata availability floor |
+| held metadata output remains accurate | dictionary-metadata funnel guard | lower final lookup-any conditional correctness below 95% | metadata conditional-accuracy floor |
 
-The duplicate-rank, sentinel, markup, citation, coverage, Unicode/hostile-input, and
-strict verb-shape witnesses also have direct unit or integration tests. This gives fast
-local failures while the temporary injected suite demonstrates that the complete
-maintenance guards are wired to the committed artifacts.
+The duplicate-rank, sentinel, markup, citation, coverage, Unicode/hostile-input,
+strict verb-shape, metadata-code, metadata-rank/provenance, leakage-filter, and
+frozen-partition witnesses also have direct unit or integration tests. This gives
+fast local failures while the temporary injected suite demonstrates that the
+complete maintenance guards are wired to the committed artifacts.

@@ -433,9 +433,7 @@ fn evaluate_ud(
             let mut predictions = Vec::new();
             for candidate in &candidates {
                 for feature in &mapped.feature_keys {
-                    if let Ok(forms) =
-                        old_church_slavonic::dictionary_form_by_id(&candidate.id, feature)
-                    {
+                    if let Ok(forms) = old_church_slavonic::form_by_id(&candidate.id, feature) {
                         generation_paths.insert(form_source_label(&forms.source));
                         for form in forms.variants {
                             if seen.insert(form.text.clone()) {
@@ -592,6 +590,7 @@ fn form_source_label(source: &FormSource) -> String {
         FormSource::DictionaryMetadataRule { rule_id } => {
             format!("dictionary-metadata-rule:{}", rule_id.code())
         }
+        FormSource::DictionaryMetadataAnalyses => "dictionary-metadata-analyses".to_string(),
         FormSource::ExplicitMetadataRule { rule_id } => {
             format!("explicit-metadata-rule:{}", rule_id.code())
         }
@@ -878,6 +877,8 @@ fn evaluate_syntacticus(
                 NativeFormation::Imperfect(formation) => {
                     lexeme.stems.imperfect = Some(metadata.stem.clone());
                     lexeme.formations.imperfect = Some(formation);
+                    lexeme.formations.imperfect_variant_policy =
+                        Some(old_church_slavonic::ImperfectVariantPolicy::UncontractedOnly);
                 }
                 NativeFormation::NewAorist => {
                     lexeme.stems.aorist = Some(metadata.stem.clone());
@@ -1579,7 +1580,7 @@ fn report_markdown(report: &CorpusReport) -> String {
     out.push('\n');
     out.push_str("UD finite `Tense=Past` is deliberately excluded because it does not distinguish aorist from imperfect. `Aspect` is never used as a substitute.\n\n");
     out.push_str("## 1. Facade attested-token recall (UD)\n\n");
-    out.push_str("This asks whether an unambiguous known dictionary lexeme/cell exposes the attested variant through the public table-first facade. It is not productive-rule accuracy.\n\n");
+    out.push_str("This asks whether the public table-first facade can expose an attested token for an unambiguous known dictionary lexeme. The generation-path slice separates exact dictionary cells from source-backed dictionary-metadata rules. Because the target token is not held out from dictionary principal-part extraction, this is real-text recall, not the leakage-controlled dictionary held-cell score.\n\n");
     push_counts(&mut out, &report.facade_attested_token_recall.counts);
 
     out.push_str("\n### Fixed holdouts\n\n");
@@ -1875,6 +1876,16 @@ mod tests {
             },
         );
         assert!(derive_native_metadata(&nondiagnostic).is_none());
+    }
+
+    #[test]
+    fn frozen_corpus_partition_witnesses_do_not_drift() {
+        assert!(is_final_lemma("нести"));
+        assert!(!is_final_lemma("бꙑти"));
+        assert_eq!(fnv1a("нести".as_bytes()), 9_211_201_522_989_420_120);
+        assert_eq!(frequency_band(1), "1");
+        assert_eq!(frequency_band(2), "2-5");
+        assert_eq!(frequency_band(21), "21+");
     }
 
     #[test]

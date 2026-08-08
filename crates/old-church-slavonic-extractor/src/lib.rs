@@ -6,3 +6,4 @@ pub mod normalize;
 pub mod report;
 pub mod schema;
 pub mod validate;
+pub mod verb_metadata;

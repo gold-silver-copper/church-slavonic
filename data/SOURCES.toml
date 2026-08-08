@@ -1,4 +1,4 @@
-registry_schema = 1
+registry_schema = 2
 
 [[source]]
 name = "English Wiktionary Old Church Slavonic via Kaikki"

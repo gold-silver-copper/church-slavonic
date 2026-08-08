@@ -1,2 +1,8 @@
 lemma	pos	feature	variants	reason	source	review_status
 # Ordered variants use ` || `; optional source romanization uses `form :: romanization`.
+бꙑти	verb	verb:finite:imperfect:1:sg	бѣахъ	Complete the suppletive бѣ- imperfect from the attested 3sg бѣаше using the cited imperfect endings.	UT OCS Online lesson 1 §4.2 https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967; pinned dictionary 3sg бѣаше	approved
+бꙑти	verb	verb:finite:imperfect:2:sg	бѣаше	Complete the suppletive бѣ- imperfect from the attested 3sg бѣаше using the cited imperfect endings.	UT OCS Online lesson 1 §4.2 https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967; pinned dictionary 3sg бѣаше	approved
+бꙑти	verb	verb:finite:imperfect:1:du	бѣаховѣ	Complete the suppletive бѣ- imperfect from the attested 3sg бѣаше using the cited imperfect endings.	UT OCS Online lesson 1 §4.2 https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967; pinned dictionary 3sg бѣаше	approved
+бꙑти	verb	verb:finite:imperfect:2:du	бѣашета	Complete the suppletive бѣ- imperfect from the attested 3sg бѣаше using the cited imperfect endings.	UT OCS Online lesson 1 §4.2 https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967; pinned dictionary 3sg бѣаше	approved
+бꙑти	verb	verb:finite:imperfect:1:pl	бѣахомъ	Complete the suppletive бѣ- imperfect from the attested 3sg бѣаше using the cited imperfect endings.	UT OCS Online lesson 1 §4.2 https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967; pinned dictionary 3sg бѣаше	approved
+бꙑти	verb	verb:finite:imperfect:2:pl	бѣашете	Complete the suppletive бѣ- imperfect from the attested 3sg бѣаше using the cited imperfect endings.	UT OCS Online lesson 1 §4.2 https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967; pinned dictionary 3sg бѣаше	approved

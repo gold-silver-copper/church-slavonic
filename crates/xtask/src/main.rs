@@ -5,17 +5,19 @@ mod corpus;
 use old_church_slavonic::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
     FiniteTense, FiniteVerbCell, Gender, ImperativeCell, ImperativeFormation, ImperfectFormation,
-    LParticipleCell, NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell,
-    ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
+    ImperfectVariantPolicy, InflectionError, LParticipleCell, NormalizedVerbMetadataField,
+    NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
     PresentActiveParticipleFormation, PresentPassiveParticipleFormation, VerbClass,
 };
 use old_church_slavonic_core::adjective::AdjectiveLexeme;
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_extractor::extract::{
-    check_registry, load_registry, refresh, registry_with_overrides,
+    check_registry, load_registry, refresh, refresh_derived_registry, registry_with_overrides,
 };
 use old_church_slavonic_extractor::schema::{FormRow, LexemeRow, Registry};
+use old_church_slavonic_extractor::verb_metadata;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
@@ -40,6 +42,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             let dump = required_path_flag(&mut args, "--dump")?;
             refresh(&dump, &workspace_root()?)
         }
+        Some("refresh-derived-registry") => refresh_derived_registry(&workspace_root()?),
         Some("check-registry") => check_registry(&workspace_root()?),
         Some("extraction-report") => extraction_report(),
         Some("accuracy") => accuracy(&mut args),
@@ -88,8 +91,48 @@ fn extraction_report() -> Result<(), Box<dyn Error>> {
 struct AccuracyReport {
     schema_version: u32,
     dictionary: DictionaryAccuracy,
+    dictionary_metadata_e2e: MetadataE2eAccuracy,
     oov: OovAccuracy,
     extraction_exclusions: BTreeMap<String, usize>,
+}
+
+#[derive(Debug, Default, Clone, Serialize)]
+struct MetadataE2eAccuracy {
+    source_verb_lexemes: usize,
+    metadata_coverage_by_field: BTreeMap<String, usize>,
+    development: MetadataFunnel,
+    final_holdout: MetadataFunnel,
+    development_by_system: BTreeMap<String, Slice>,
+    final_by_system: BTreeMap<String, Slice>,
+    development_by_cell: BTreeMap<String, Slice>,
+    final_by_cell: BTreeMap<String, Slice>,
+    development_by_generation_path: BTreeMap<String, Slice>,
+    final_by_generation_path: BTreeMap<String, Slice>,
+    development_by_present_class: BTreeMap<String, Slice>,
+    final_by_present_class: BTreeMap<String, Slice>,
+    development_by_formation: BTreeMap<String, Slice>,
+    final_by_formation: BTreeMap<String, Slice>,
+    development_by_source_policy: BTreeMap<String, Slice>,
+    final_by_source_policy: BTreeMap<String, Slice>,
+    development_by_analysis_kind: BTreeMap<String, Slice>,
+    final_by_analysis_kind: BTreeMap<String, Slice>,
+    development_by_lemma_frequency: BTreeMap<String, Slice>,
+    final_by_lemma_frequency: BTreeMap<String, Slice>,
+    skip_reasons: BTreeMap<String, usize>,
+}
+
+#[derive(Debug, Default, Clone, Serialize)]
+struct MetadataFunnel {
+    compatible_target_cells: usize,
+    unambiguous_target_cells: usize,
+    metadata_records_found: usize,
+    metadata_records_validated: usize,
+    generation_attempts: usize,
+    returned_forms: usize,
+    diplomatic_top1_correct: usize,
+    diplomatic_any_correct: usize,
+    lookup_top1_correct: usize,
+    lookup_any_correct: usize,
 }
 
 #[derive(Debug, Serialize)]
@@ -140,6 +183,8 @@ fn evaluate_accuracy(root: &Path, registry_path: &Path) -> Result<AccuracyReport
     }
     let dictionary = dictionary_accuracy(&registry)?;
     ensure_dictionary_integrity(&dictionary)?;
+    let dictionary_metadata_e2e = dictionary_metadata_e2e_accuracy(&registry)?;
+    ensure_metadata_e2e(&dictionary_metadata_e2e)?;
     let oov = oov_accuracy(&registry);
     let extraction: serde_json::Value =
         serde_json::from_slice(&fs::read(root.join("reports/extraction-coverage.json"))?)?;
@@ -150,11 +195,48 @@ fn evaluate_accuracy(root: &Path, registry_path: &Path) -> Result<AccuracyReport
             .ok_or("extraction report has no dropped_by_reason")?,
     )?;
     Ok(AccuracyReport {
-        schema_version: 2,
+        schema_version: 4,
         dictionary,
+        dictionary_metadata_e2e,
         oov,
         extraction_exclusions,
     })
+}
+
+fn ensure_metadata_e2e(report: &MetadataE2eAccuracy) -> Result<(), Box<dyn Error>> {
+    for (name, funnel, minimum_availability) in [
+        ("development", &report.development, 30_usize),
+        ("final", &report.final_holdout, 35_usize),
+    ] {
+        if funnel.metadata_records_found > funnel.unambiguous_target_cells
+            || funnel.metadata_records_validated > funnel.metadata_records_found
+            || funnel.generation_attempts > funnel.metadata_records_validated
+            || funnel.returned_forms > funnel.generation_attempts
+            || funnel.diplomatic_top1_correct > funnel.returned_forms
+            || funnel.diplomatic_any_correct > funnel.returned_forms
+            || funnel.lookup_top1_correct > funnel.returned_forms
+            || funnel.lookup_any_correct > funnel.returned_forms
+        {
+            return Err(
+                format!("dictionary-metadata {name} funnel accounting is inconsistent").into(),
+            );
+        }
+        if funnel.metadata_records_validated * 100
+            < funnel.unambiguous_target_cells * minimum_availability
+        {
+            return Err(format!(
+                "dictionary-metadata {name} availability fell below {minimum_availability}%"
+            )
+            .into());
+        }
+        if funnel.lookup_any_correct * 100 < funnel.returned_forms * 95 {
+            return Err(format!(
+                "dictionary-metadata {name} conditional lookup accuracy fell below 95%"
+            )
+            .into());
+        }
+    }
+    Ok(())
 }
 
 fn ensure_dictionary_integrity(dictionary: &DictionaryAccuracy) -> Result<(), Box<dyn Error>> {
@@ -171,6 +253,550 @@ fn ensure_dictionary_integrity(dictionary: &DictionaryAccuracy) -> Result<(), Bo
         return Err("dictionary paradigms and public cell getters disagree".into());
     }
     Ok(())
+}
+
+#[derive(Debug, Clone, Copy)]
+enum MetadataTarget {
+    Finite(FiniteVerbCell),
+    Imperative(ImperativeCell),
+    LParticiple(LParticipleCell),
+    ParticipleCitation(ParticipleKind),
+}
+
+impl MetadataTarget {
+    fn system(self) -> &'static str {
+        match self {
+            Self::Finite(cell) => match cell.tense {
+                FiniteTense::Present => "present",
+                FiniteTense::Imperfect => "imperfect",
+                FiniteTense::Aorist => "aorist",
+            },
+            Self::Imperative(_) => "imperative",
+            Self::LParticiple(_) => "l-participle",
+            Self::ParticipleCitation(kind) => match kind {
+                ParticipleKind::PresentActive => "present-active-participle",
+                ParticipleKind::PresentPassive => "present-passive-participle",
+                ParticipleKind::PastActive => "past-active-participle",
+                ParticipleKind::PastPassive => "past-passive-participle",
+            },
+        }
+    }
+}
+
+fn dictionary_metadata_e2e_accuracy(
+    registry: &Registry,
+) -> Result<MetadataE2eAccuracy, Box<dyn Error>> {
+    let mut out = MetadataE2eAccuracy {
+        source_verb_lexemes: registry
+            .lexemes
+            .iter()
+            .filter(|row| row.pos == "verb")
+            .count(),
+        metadata_coverage_by_field: metadata_coverage(registry),
+        ..MetadataE2eAccuracy::default()
+    };
+    let grouped = grouped_forms(registry);
+    let mut forms_by_id: BTreeMap<&str, Vec<&FormRow>> = BTreeMap::new();
+    for form in &registry.forms {
+        forms_by_id
+            .entry(form.lexeme_id.as_str())
+            .or_default()
+            .push(form);
+    }
+    let pos_by_id = registry
+        .lexemes
+        .iter()
+        .map(|row| (row.id.as_str(), row.pos.as_str()))
+        .collect::<BTreeMap<_, _>>();
+    let mut canonical_candidates: BTreeMap<&str, BTreeSet<&str>> = BTreeMap::new();
+    for alias in &registry.aliases {
+        if pos_by_id.get(alias.lexeme_id.as_str()) == Some(&"verb") {
+            canonical_candidates
+                .entry(alias.key.as_str())
+                .or_default()
+                .insert(alias.lexeme_id.as_str());
+        }
+    }
+
+    for lexeme in registry.lexemes.iter().filter(|row| row.pos == "verb") {
+        let held_final = fnv1a(lexeme.key.as_bytes()) % 5 == 0;
+        let start = (lexeme.id.clone(), String::new());
+        let end = (lexeme.id.clone(), "\u{10ffff}".to_string());
+        for ((_id, feature), expected) in grouped.range(start..=end) {
+            let Some(target) = parse_metadata_target(feature) else {
+                continue;
+            };
+            let funnel = if held_final {
+                &mut out.final_holdout
+            } else {
+                &mut out.development
+            };
+            funnel.compatible_target_cells += 1;
+            if canonical_candidates
+                .get(lexeme.key.as_str())
+                .is_none_or(|ids| ids.len() != 1)
+            {
+                bump(&mut out.skip_reasons, "ambiguous-lemma");
+                continue;
+            }
+            funnel.unambiguous_target_cells += 1;
+
+            let target_spellings = expected
+                .iter()
+                .map(|row| row.form.as_str())
+                .collect::<BTreeSet<_>>();
+            let lexeme_forms = forms_by_id
+                .get(lexeme.id.as_str())
+                .map(Vec::as_slice)
+                .unwrap_or_default();
+            let excluded_features = excluded_metadata_features(
+                lexeme_forms.iter().copied(),
+                feature,
+                &target_spellings,
+            );
+            let mini = Registry {
+                lexemes: vec![lexeme.clone()],
+                aliases: Vec::new(),
+                forms: lexeme_forms
+                    .iter()
+                    .filter(|row| !excluded_features.contains(row.feature.as_str()))
+                    .map(|row| (*row).clone())
+                    .collect(),
+                verb_metadata: Vec::new(),
+                overrides: Vec::new(),
+            };
+            let rows = verb_metadata::derive(&mini, &BTreeSet::new())?;
+            if !rows.iter().any(|row| row.system == target.system()) {
+                bump(
+                    &mut out.skip_reasons,
+                    "missing-principal-part-after-exclusion",
+                );
+                continue;
+            }
+            funnel.metadata_records_found += 1;
+            let formation = metadata_formation_slice(&rows, target.system());
+            let source_policy = metadata_source_policy_slice(&rows, target.system());
+            let analysis_kind = if rows
+                .iter()
+                .filter(|row| row.system == target.system())
+                .any(|row| row.analysis_rank > 0)
+            {
+                "regular-multiple-analyses"
+            } else {
+                "regular-single-analysis"
+            };
+            let fields = rows.into_iter().map(normalized_metadata_field);
+            let metadata = match old_church_slavonic::DictionaryVerbMetadata::from_normalized_fields(
+                &lexeme.id,
+                &lexeme.lemma,
+                fields,
+            ) {
+                Ok(metadata) => metadata,
+                Err(_) => {
+                    bump(&mut out.skip_reasons, "invalid-filtered-metadata");
+                    continue;
+                }
+            };
+            funnel.metadata_records_validated += 1;
+            funnel.generation_attempts += 1;
+            let result = generate_metadata_target(&metadata, target);
+            let forms = match result {
+                Ok(forms) if !forms.variants.is_empty() => forms,
+                Ok(_) => {
+                    bump(&mut out.skip_reasons, "empty-rule-result");
+                    continue;
+                }
+                Err(error) => {
+                    bump(&mut out.skip_reasons, metadata_error_reason(&error));
+                    continue;
+                }
+            };
+            funnel.returned_forms += 1;
+            let expected_exact = expected
+                .iter()
+                .map(|row| row.form.as_str())
+                .collect::<Vec<_>>();
+            let expected_lookup = expected_exact
+                .iter()
+                .filter_map(|value| old_church_slavonic::orthography::lookup_key(value).ok())
+                .collect::<Vec<_>>();
+            let returned_exact = forms
+                .variants
+                .iter()
+                .map(|variant| variant.text.as_str())
+                .collect::<Vec<_>>();
+            let returned_lookup = forms
+                .variants
+                .iter()
+                .filter_map(|variant| {
+                    old_church_slavonic::orthography::lookup_key(&variant.text).ok()
+                })
+                .collect::<Vec<_>>();
+            let top1 = returned_exact
+                .first()
+                .is_some_and(|value| expected_exact.contains(value));
+            let any = returned_exact
+                .iter()
+                .any(|value| expected_exact.contains(value));
+            let lookup_top1 = returned_lookup
+                .first()
+                .is_some_and(|value| expected_lookup.contains(value));
+            let lookup_any = returned_lookup
+                .iter()
+                .any(|value| expected_lookup.contains(value));
+            funnel.diplomatic_top1_correct += usize::from(top1);
+            funnel.diplomatic_any_correct += usize::from(any);
+            funnel.lookup_top1_correct += usize::from(lookup_top1);
+            funnel.lookup_any_correct += usize::from(lookup_any);
+            let (by_system, by_cell) = if held_final {
+                (&mut out.final_by_system, &mut out.final_by_cell)
+            } else {
+                (&mut out.development_by_system, &mut out.development_by_cell)
+            };
+            score_metadata_slice(by_system, target.system(), any, lookup_any);
+            score_metadata_slice(by_cell, feature, any, lookup_any);
+            let generation_path = metadata_generation_path(&forms);
+            let present_class = if lexeme.class.is_empty() {
+                "unclassified"
+            } else {
+                lexeme.class.as_str()
+            };
+            let frequency = metadata_frequency_band(lexeme_forms.len());
+            if held_final {
+                score_metadata_slice(
+                    &mut out.final_by_generation_path,
+                    &generation_path,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.final_by_present_class,
+                    present_class,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(&mut out.final_by_formation, &formation, any, lookup_any);
+                score_metadata_slice(
+                    &mut out.final_by_source_policy,
+                    &source_policy,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.final_by_analysis_kind,
+                    analysis_kind,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.final_by_lemma_frequency,
+                    frequency,
+                    any,
+                    lookup_any,
+                );
+            } else {
+                score_metadata_slice(
+                    &mut out.development_by_generation_path,
+                    &generation_path,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.development_by_present_class,
+                    present_class,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.development_by_formation,
+                    &formation,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.development_by_source_policy,
+                    &source_policy,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.development_by_analysis_kind,
+                    analysis_kind,
+                    any,
+                    lookup_any,
+                );
+                score_metadata_slice(
+                    &mut out.development_by_lemma_frequency,
+                    frequency,
+                    any,
+                    lookup_any,
+                );
+            }
+        }
+    }
+    Ok(out)
+}
+
+fn metadata_formation_slice(
+    rows: &[old_church_slavonic_extractor::schema::VerbMetadataRow],
+    system: &str,
+) -> String {
+    let values = rows
+        .iter()
+        .filter(|row| row.system == system && matches!(row.field.as_str(), "formation" | "class"))
+        .map(|row| row.value.as_str())
+        .collect::<BTreeSet<_>>();
+    if values.is_empty() {
+        format!("{system}:no-formation")
+    } else {
+        format!(
+            "{system}:{}",
+            values.into_iter().collect::<Vec<_>>().join("+")
+        )
+    }
+}
+
+fn metadata_source_policy_slice(
+    rows: &[old_church_slavonic_extractor::schema::VerbMetadataRow],
+    system: &str,
+) -> String {
+    let features = rows
+        .iter()
+        .filter(|row| row.system == system)
+        .map(|row| row.source_feature.as_str())
+        .filter(|feature| !feature.is_empty())
+        .collect::<BTreeSet<_>>();
+    if features.is_empty() {
+        "no-source-feature".to_string()
+    } else {
+        features.into_iter().collect::<Vec<_>>().join(" + ")
+    }
+}
+
+fn metadata_generation_path(forms: &old_church_slavonic::FormSet) -> String {
+    match forms.source {
+        old_church_slavonic::FormSource::DictionaryMetadataRule { rule_id } => {
+            format!("dictionary-metadata-rule:{}", rule_id.code())
+        }
+        old_church_slavonic::FormSource::DictionaryMetadataAnalyses => {
+            "dictionary-metadata-analyses".to_string()
+        }
+        old_church_slavonic::FormSource::ManualOverride => "manual-override".to_string(),
+        old_church_slavonic::FormSource::DictionaryTable => "dictionary-table".to_string(),
+        old_church_slavonic::FormSource::ExplicitMetadataRule { rule_id } => {
+            format!("explicit-metadata-rule:{}", rule_id.code())
+        }
+        old_church_slavonic::FormSource::OovPrediction { rule_id } => {
+            format!("oov-prediction:{}", rule_id.code())
+        }
+    }
+}
+
+fn metadata_frequency_band(frequency: usize) -> &'static str {
+    match frequency {
+        0 | 1 => "1",
+        2..=10 => "2-10",
+        11..=50 => "11-50",
+        _ => "51+",
+    }
+}
+
+fn excluded_metadata_features<'a>(
+    forms: impl IntoIterator<Item = &'a FormRow>,
+    target_feature: &str,
+    target_spellings: &BTreeSet<&str>,
+) -> BTreeSet<&'a str> {
+    let equivalent_feature = match target_feature {
+        "verb:finite:imperfect:2:sg" => Some("verb:finite:imperfect:3:sg"),
+        "verb:finite:imperfect:3:sg" => Some("verb:finite:imperfect:2:sg"),
+        "verb:finite:aorist:2:sg" => Some("verb:finite:aorist:3:sg"),
+        "verb:finite:aorist:3:sg" => Some("verb:finite:aorist:2:sg"),
+        "verb:imperative:2:sg" => Some("verb:imperative:3:sg"),
+        "verb:imperative:3:sg" => Some("verb:imperative:2:sg"),
+        _ => None,
+    };
+    forms
+        .into_iter()
+        .filter(|row| {
+            row.feature == target_feature
+                || equivalent_feature == Some(row.feature.as_str())
+                || target_spellings.contains(row.form.as_str())
+        })
+        .map(|row| row.feature.as_str())
+        .collect()
+}
+
+fn metadata_coverage(registry: &Registry) -> BTreeMap<String, usize> {
+    let mut sets: BTreeMap<String, BTreeSet<&str>> = BTreeMap::new();
+    for key in [
+        "aspect/aspect",
+        "aspect/aspect=biaspectual",
+        "aspect/aspect=imperfective",
+        "aspect/aspect=perfective",
+        "present/class",
+        "present/class=IA1",
+        "present/class=IA2",
+        "present/class=II1",
+        "present/class=II2",
+        "present/class=II3",
+        "present/stem",
+        "present/first-singular-stem",
+        "imperfect/stem",
+        "imperfect/formation",
+        "imperfect/formation=a",
+        "imperfect/formation=yat-a",
+        "imperfect/formation=palatalized-a",
+        "imperfect/variant-policy",
+        "imperfect/variant-policy=uncontracted-only",
+        "aorist/stem",
+        "aorist/formation",
+        "aorist/formation=asigmatic",
+        "aorist/formation=new",
+        "aorist/formation=sigmatic-primary",
+        "aorist/formation=sigmatic-secondary",
+        "imperative/stem",
+        "imperative/formation",
+        "imperative/formation=i-series",
+        "imperative/formation=yat-series",
+        "l-participle/stem",
+        "present-active-participle/stem",
+        "present-active-participle/formation",
+        "present-active-participle/formation=yusht-hard",
+        "present-active-participle/formation=yusht-soft",
+        "present-active-participle/formation=yesht-soft",
+        "present-passive-participle/stem",
+        "present-passive-participle/formation",
+        "present-passive-participle/formation=im",
+        "present-passive-participle/formation=em",
+        "present-passive-participle/formation=om",
+        "past-active-participle/stem",
+        "past-active-participle/formation",
+        "past-active-participle/formation=ush",
+        "past-active-participle/formation=ish",
+        "past-active-participle/formation=vush",
+        "past-active-participle/formation=vush-after-j-deletion",
+        "past-active-participle/formation=vush-after-ov-to-u",
+        "past-passive-participle/stem",
+        "past-passive-participle/formation",
+        "past-passive-participle/formation=t",
+        "past-passive-participle/formation=n",
+        "past-passive-participle/formation=en",
+    ] {
+        sets.entry(key.to_string()).or_default();
+    }
+    for row in &registry.verb_metadata {
+        sets.entry(format!("{}/{}", row.system, row.field))
+            .or_default()
+            .insert(row.lexeme_id.as_str());
+        if matches!(
+            row.field.as_str(),
+            "formation" | "variant-policy" | "aspect" | "class"
+        ) {
+            sets.entry(format!("{}/{}={}", row.system, row.field, row.value))
+                .or_default()
+                .insert(row.lexeme_id.as_str());
+        }
+    }
+    sets.into_iter()
+        .map(|(field, ids)| (field, ids.len()))
+        .collect()
+}
+
+fn normalized_metadata_field(
+    row: old_church_slavonic_extractor::schema::VerbMetadataRow,
+) -> NormalizedVerbMetadataField {
+    NormalizedVerbMetadataField {
+        system: row.system,
+        analysis_rank: row.analysis_rank,
+        field: row.field,
+        value: row.value,
+        provenance: row.provenance,
+        source_feature: row.source_feature,
+        source_form: row.source_form,
+        crosscheck_features: row
+            .crosscheck_features
+            .split(" || ")
+            .filter(|value| !value.is_empty())
+            .map(str::to_string)
+            .collect(),
+        authority: row.authority,
+    }
+}
+
+fn parse_metadata_target(feature: &str) -> Option<MetadataTarget> {
+    if let Some(cell) = parse_finite_verb_cell(feature) {
+        return Some(MetadataTarget::Finite(cell));
+    }
+    if let Some(cell) = parse_imperative_cell(feature) {
+        return cell
+            .is_supported()
+            .then_some(MetadataTarget::Imperative(cell));
+    }
+    if let Some(cell) = parse_l_participle_cell(feature) {
+        return Some(MetadataTarget::LParticiple(cell));
+    }
+    parse_participle_citation_kind(feature).map(MetadataTarget::ParticipleCitation)
+}
+
+fn generate_metadata_target(
+    metadata: &old_church_slavonic::DictionaryVerbMetadata,
+    target: MetadataTarget,
+) -> Result<old_church_slavonic::FormSet, InflectionError> {
+    match target {
+        MetadataTarget::Finite(cell) => {
+            old_church_slavonic::finite_verb_from_dictionary_metadata(metadata, cell)
+        }
+        MetadataTarget::Imperative(cell) => {
+            old_church_slavonic::imperative_from_dictionary_metadata(metadata, cell)
+        }
+        MetadataTarget::LParticiple(cell) => {
+            old_church_slavonic::l_participle_from_dictionary_metadata(metadata, cell)
+        }
+        MetadataTarget::ParticipleCitation(kind) => {
+            old_church_slavonic::participle_from_dictionary_metadata(
+                metadata,
+                ParticipleCell {
+                    kind,
+                    adjective: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                    },
+                },
+            )
+        }
+    }
+}
+
+fn metadata_error_reason(error: &InflectionError) -> &'static str {
+    match error {
+        InflectionError::MissingLexicalMetadata { .. } => "generation-missing-metadata",
+        InflectionError::ContradictoryLexicalMetadata { .. } => "generation-contradictory-metadata",
+        InflectionError::UnsupportedFormation { .. } => "represented-unsupported-formation",
+        InflectionError::HistoricallyInvalidCell => "historically-invalid-cell",
+        InflectionError::UnsupportedCell => "unsupported-cell",
+        InflectionError::InvalidInput { .. } => "generation-invalid-metadata",
+        InflectionError::UnknownLemma => "generation-unknown-lemma",
+        InflectionError::AmbiguousLexeme { .. } => "generation-ambiguous-lemma",
+    }
+}
+
+fn score_metadata_slice(
+    destination: &mut BTreeMap<String, Slice>,
+    key: &str,
+    exact_any: bool,
+    lookup_any: bool,
+) {
+    let slice = destination.entry(key.to_string()).or_default();
+    slice.total += 1;
+    slice.correct += usize::from(exact_any);
+    slice.normalized_correct += usize::from(lookup_any);
+}
+
+fn bump(map: &mut BTreeMap<String, usize>, key: &str) {
+    *map.entry(key.to_string()).or_default() += 1;
 }
 
 fn accuracy_registry_path(
@@ -250,6 +876,9 @@ fn dictionary_accuracy(registry: &Registry) -> Result<DictionaryAccuracy, Box<dy
             old_church_slavonic::FormSource::ManualOverride => "manual-override",
             old_church_slavonic::FormSource::DictionaryMetadataRule { .. } => {
                 "dictionary-metadata-rule"
+            }
+            old_church_slavonic::FormSource::DictionaryMetadataAnalyses => {
+                "dictionary-metadata-analyses"
             }
             old_church_slavonic::FormSource::ExplicitMetadataRule { .. } => {
                 "explicit-metadata-rule"
@@ -633,6 +1262,7 @@ fn evaluate_oov_verb(
     if let Some((stem, formation)) = imperfect_metadata {
         lexeme.stems.imperfect = Some(stem);
         lexeme.formations.imperfect = Some(formation);
+        lexeme.formations.imperfect_variant_policy = Some(ImperfectVariantPolicy::UncontractedOnly);
     }
     if new_aorist_stem.is_some() {
         lexeme.formations.aorist = Some(AoristFormation::New);
@@ -930,6 +1560,13 @@ fn participle_rule_slice(lexeme: &VerbLexeme, kind: ParticipleKind) -> &'static 
         },
         ParticipleKind::PastActive => match lexeme.formations.past_active_participle {
             Some(PastActiveParticipleFormation::Ush) => "verb-past-active-participle-ush",
+            Some(PastActiveParticipleFormation::Ish) => "verb-past-active-participle-ish",
+            Some(PastActiveParticipleFormation::VushAfterJDeletion) => {
+                "verb-past-active-participle-vush-j-deletion"
+            }
+            Some(PastActiveParticipleFormation::VushAfterOvToU) => {
+                "verb-past-active-participle-vush-ov-to-u"
+            }
             Some(PastActiveParticipleFormation::Vush) => "verb-past-active-participle-vush",
             None => "verb-past-active-participle-missing-formation",
         },
@@ -1110,8 +1747,96 @@ sealed, and must not be used for rule tuning.\n\n",
         out.push_str(&format!("- `{source}`: {count}\n"));
     }
     out.push('\n');
+    let e2e = &report.dictionary_metadata_e2e;
+    out.push_str("## Leakage-controlled dictionary-metadata generation\n\n");
     out.push_str(
-        "Verb OOV metadata may use the 2nd-singular present, masculine-singular \
+        "This primary fallback score removes the target feature, an equivalent 2sg/3sg \
+finite or imperative feature, and every same-spelling dictionary feature before rebuilding metadata. It then calls the public \
+dictionary-metadata resolver; exact table lookup is unavailable to this path. \
+Development and final lemmas use the same frozen modulo-five partition as OOV.\n\n",
+    );
+    out.push_str(&format!(
+        "Source dictionary verb lexemes: {}.\n\n",
+        e2e.source_verb_lexemes
+    ));
+    out.push_str(
+        "### Metadata coverage by field\n\n| Field or declared value | Lexemes |\n|---|---:|\n",
+    );
+    for (field, count) in &e2e.metadata_coverage_by_field {
+        out.push_str(&format!("| `{field}` | {count} |\n"));
+    }
+    out.push_str("\n### Held-cell stage funnel\n\n");
+    out.push_str("| Stage | Development | Final holdout |\n|---|---:|---:|\n");
+    for (label, value) in metadata_funnel_rows(&e2e.development, &e2e.final_holdout) {
+        out.push_str(&format!("| {label} | {} | {} |\n", value.0, value.1));
+    }
+    out.push_str("\nThe slice tables below report diplomatic-any in `Exact` and shared NFC/lowercase-any in `NFC/lowercase`; top-1 remains separate in the funnel.\n\n");
+    for (title, slices) in [
+        ("Development by system", &e2e.development_by_system),
+        ("Final holdout by system", &e2e.final_by_system),
+        ("Development by complete cell", &e2e.development_by_cell),
+        ("Final holdout by complete cell", &e2e.final_by_cell),
+        (
+            "Development by generation path",
+            &e2e.development_by_generation_path,
+        ),
+        (
+            "Final holdout by generation path",
+            &e2e.final_by_generation_path,
+        ),
+        (
+            "Development by present class",
+            &e2e.development_by_present_class,
+        ),
+        (
+            "Final holdout by present class",
+            &e2e.final_by_present_class,
+        ),
+        ("Development by formation", &e2e.development_by_formation),
+        ("Final holdout by formation", &e2e.final_by_formation),
+        (
+            "Development by metadata source-cell policy",
+            &e2e.development_by_source_policy,
+        ),
+        (
+            "Final holdout by metadata source-cell policy",
+            &e2e.final_by_source_policy,
+        ),
+        (
+            "Development by regular/analysis kind",
+            &e2e.development_by_analysis_kind,
+        ),
+        (
+            "Final holdout by regular/analysis kind",
+            &e2e.final_by_analysis_kind,
+        ),
+        (
+            "Development by lemma dictionary frequency",
+            &e2e.development_by_lemma_frequency,
+        ),
+        (
+            "Final holdout by lemma dictionary frequency",
+            &e2e.final_by_lemma_frequency,
+        ),
+    ] {
+        out.push_str(&format!(
+            "#### {title}\n\n| Slice | Exact | NFC/lowercase | Returned |\n|---|---:|---:|---:|\n"
+        ));
+        for (key, slice) in slices {
+            out.push_str(&format!(
+                "| `{key}` | {} | {} | {} |\n",
+                slice.correct, slice.normalized_correct, slice.total
+            ));
+        }
+        out.push('\n');
+    }
+    out.push_str("Skip and failure reasons:\n\n");
+    for (reason, count) in &e2e.skip_reasons {
+        out.push_str(&format!("- `{reason}`: {count}\n"));
+    }
+    out.push('\n');
+    out.push_str(
+        "The legacy oracle/core OOV diagnostic below may use the 2nd-singular present, masculine-singular \
 l-participle, 1st-singular imperfect/new aorist, or 2nd-singular imperative. Every \
 metadata source cell and equivalent duplicate target is excluded. Participle citation \
 targets use only those independently held principal parts plus declared class/formation \
@@ -1184,6 +1909,81 @@ policies; they are never used to derive themselves.\n\n",
         out.push_str(&format!("- `{reason}`: {count}\n"));
     }
     out
+}
+
+fn metadata_funnel_rows(
+    development: &MetadataFunnel,
+    final_holdout: &MetadataFunnel,
+) -> Vec<(&'static str, (usize, usize))> {
+    vec![
+        (
+            "compatible requested cells",
+            (
+                development.compatible_target_cells,
+                final_holdout.compatible_target_cells,
+            ),
+        ),
+        (
+            "unambiguous lexeme cells",
+            (
+                development.unambiguous_target_cells,
+                final_holdout.unambiguous_target_cells,
+            ),
+        ),
+        (
+            "metadata records found",
+            (
+                development.metadata_records_found,
+                final_holdout.metadata_records_found,
+            ),
+        ),
+        (
+            "metadata records validated",
+            (
+                development.metadata_records_validated,
+                final_holdout.metadata_records_validated,
+            ),
+        ),
+        (
+            "generation attempts",
+            (
+                development.generation_attempts,
+                final_holdout.generation_attempts,
+            ),
+        ),
+        (
+            "returned forms",
+            (development.returned_forms, final_holdout.returned_forms),
+        ),
+        (
+            "diplomatic top-1 correct",
+            (
+                development.diplomatic_top1_correct,
+                final_holdout.diplomatic_top1_correct,
+            ),
+        ),
+        (
+            "diplomatic any correct",
+            (
+                development.diplomatic_any_correct,
+                final_holdout.diplomatic_any_correct,
+            ),
+        ),
+        (
+            "project-lookup top-1 correct",
+            (
+                development.lookup_top1_correct,
+                final_holdout.lookup_top1_correct,
+            ),
+        ),
+        (
+            "project-lookup any correct",
+            (
+                development.lookup_any_correct,
+                final_holdout.lookup_any_correct,
+            ),
+        ),
+    ]
 }
 
 fn accuracy_ud(args: &mut impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
@@ -1437,6 +2237,94 @@ fn guard_witnesses() -> Result<(), Box<dyn Error>> {
         require_guard_failure("duplicate cell/rank", check_registry(&witness_root))?;
         restore_guard_file(&root, &witness_root, forms)?;
 
+        let metadata = "data/extracted/verb_metadata.tsv";
+        rewrite_metadata_row(
+            &witness_root.join(metadata),
+            |columns| columns.get(3).is_some_and(|field| field == "formation"),
+            |columns| columns[4] = "unknown-formation".to_string(),
+        )?;
+        require_guard_failure("unknown metadata formation", check_registry(&witness_root))?;
+        restore_guard_file(&root, &witness_root, metadata)?;
+
+        let changed = fs::read_to_string(witness_root.join(metadata))?;
+        let mut removed_policy = false;
+        let changed = changed
+            .lines()
+            .filter(|line| {
+                let remove = !removed_policy
+                    && line
+                        .split('\t')
+                        .nth(3)
+                        .is_some_and(|field| field == "variant-policy");
+                removed_policy |= remove;
+                !remove
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+            + "\n";
+        if !removed_policy {
+            return Err("metadata fixture has no variant-policy row".into());
+        }
+        fs::write(witness_root.join(metadata), changed)?;
+        require_guard_failure(
+            "incomplete metadata analysis",
+            check_registry(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, metadata)?;
+
+        let mut changed = fs::read_to_string(witness_root.join(metadata))?;
+        let duplicate = changed
+            .lines()
+            .nth(1)
+            .ok_or("metadata fixture has no data row")?
+            .to_string();
+        changed.push_str(&duplicate);
+        changed.push('\n');
+        fs::write(witness_root.join(metadata), changed)?;
+        require_guard_failure("duplicate metadata field", check_registry(&witness_root))?;
+        restore_guard_file(&root, &witness_root, metadata)?;
+
+        rewrite_metadata_row(
+            &witness_root.join(metadata),
+            |_| true,
+            |columns| columns[0] = "missing|verb|orphan".to_string(),
+        )?;
+        require_guard_failure("orphan metadata lexeme", check_registry(&witness_root))?;
+        restore_guard_file(&root, &witness_root, metadata)?;
+
+        rewrite_metadata_row(
+            &witness_root.join(metadata),
+            |columns| columns.get(3).is_some_and(|field| field == "stem"),
+            |columns| columns[4].clear(),
+        )?;
+        require_guard_failure("empty metadata stem", check_registry(&witness_root))?;
+        restore_guard_file(&root, &witness_root, metadata)?;
+
+        rewrite_metadata_row(
+            &witness_root.join(metadata),
+            |columns| columns.get(3).is_some_and(|field| field == "stem"),
+            |columns| columns[4] = "И\u{306}".to_string(),
+        )?;
+        require_guard_failure("non-NFC metadata stem", check_registry(&witness_root))?;
+        restore_guard_file(&root, &witness_root, metadata)?;
+
+        rewrite_metadata_row(
+            &witness_root.join(metadata),
+            |columns| columns.get(3).is_some_and(|field| field == "stem"),
+            |columns| columns[4] = "latin".to_string(),
+        )?;
+        require_guard_failure("non-Cyrillic metadata stem", check_registry(&witness_root))?;
+        restore_guard_file(&root, &witness_root, metadata)?;
+
+        let overrides = "data/overrides.tsv";
+        rewrite_metadata_row(
+            &witness_root.join(overrides),
+            |columns| columns.get(1).is_some_and(|pos| pos == "verb"),
+            |columns| columns[2] = "verb:finite:future:1:sg".to_string(),
+        )?;
+        require_guard_failure("invalid override feature", check_registry(&witness_root))?;
+        restore_guard_file(&root, &witness_root, overrides)?;
+
         rewrite_form_row(
             &witness_root.join(forms),
             |columns| columns.get(3).is_some_and(|form| !form.is_empty()),
@@ -1522,6 +2410,42 @@ fn guard_witnesses() -> Result<(), Box<dyn Error>> {
         require_guard_failure(
             "paradigm/cell agreement",
             ensure_dictionary_integrity(&integrity),
+        )?;
+
+        let healthy_funnel = MetadataFunnel {
+            compatible_target_cells: 100,
+            unambiguous_target_cells: 100,
+            metadata_records_found: 100,
+            metadata_records_validated: 100,
+            generation_attempts: 100,
+            returned_forms: 100,
+            diplomatic_top1_correct: 100,
+            diplomatic_any_correct: 100,
+            lookup_top1_correct: 100,
+            lookup_any_correct: 100,
+        };
+        let mut metadata_integrity = MetadataE2eAccuracy {
+            development: healthy_funnel.clone(),
+            final_holdout: healthy_funnel,
+            ..MetadataE2eAccuracy::default()
+        };
+        metadata_integrity.final_holdout.metadata_records_found = 34;
+        metadata_integrity.final_holdout.metadata_records_validated = 34;
+        metadata_integrity.final_holdout.generation_attempts = 34;
+        metadata_integrity.final_holdout.returned_forms = 34;
+        metadata_integrity.final_holdout.diplomatic_top1_correct = 34;
+        metadata_integrity.final_holdout.diplomatic_any_correct = 34;
+        metadata_integrity.final_holdout.lookup_top1_correct = 34;
+        metadata_integrity.final_holdout.lookup_any_correct = 34;
+        require_guard_failure(
+            "metadata availability floor",
+            ensure_metadata_e2e(&metadata_integrity),
+        )?;
+        metadata_integrity.final_holdout = metadata_integrity.development.clone();
+        metadata_integrity.final_holdout.lookup_any_correct = 94;
+        require_guard_failure(
+            "metadata conditional-accuracy floor",
+            ensure_metadata_e2e(&metadata_integrity),
         )?;
 
         for hostile in ["", "two words", "\0", &"x".repeat(4_097)] {
@@ -1634,6 +2558,30 @@ fn rewrite_form_row(
     Ok(())
 }
 
+fn rewrite_metadata_row(
+    path: &Path,
+    predicate: impl Fn(&[String]) -> bool,
+    mutation: impl Fn(&mut [String]),
+) -> Result<(), Box<dyn Error>> {
+    let contents = fs::read_to_string(path)?;
+    let mut changed = false;
+    let mut output = String::new();
+    for (line_index, line) in contents.lines().enumerate() {
+        let mut columns = line.split('\t').map(str::to_string).collect::<Vec<_>>();
+        if line_index > 0 && !changed && predicate(&columns) {
+            mutation(&mut columns);
+            changed = true;
+        }
+        output.push_str(&columns.join("\t"));
+        output.push('\n');
+    }
+    if !changed {
+        return Err("guard witness could not find its target metadata row".into());
+    }
+    fs::write(path, output)?;
+    Ok(())
+}
+
 fn swap_first_variant_pair(path: &Path) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(path)?;
     let mut lines = contents
@@ -1695,6 +2643,7 @@ fn workspace_root() -> Result<PathBuf, Box<dyn Error>> {
 fn print_help() {
     eprintln!("cargo xtask <command>");
     eprintln!("  refresh-data --dump PATH");
+    eprintln!("  refresh-derived-registry");
     eprintln!("  check-registry");
     eprintln!("  extraction-report");
     eprintln!("  accuracy");
@@ -1714,6 +2663,18 @@ fn print_help() {
 mod tests {
     use super::*;
 
+    fn form(feature: &str, value: &str) -> FormRow {
+        FormRow {
+            lexeme_id: "нести|verb|fixture".to_string(),
+            feature: feature.to_string(),
+            rank: 0,
+            form: value.to_string(),
+            romanization: String::new(),
+            source_spelling: value.to_string(),
+            source_tags: "fixture".to_string(),
+        }
+    }
+
     #[test]
     fn held_principal_parts_yield_explicit_verb_stems() {
         assert_eq!(
@@ -1730,5 +2691,46 @@ mod tests {
         );
         assert_eq!(derive_present_stem(VerbClass::Root, "еси"), None);
         assert_eq!(derive_l_participle_stem("лъ"), None);
+    }
+
+    #[test]
+    fn leakage_filter_removes_target_and_same_spelling_features() {
+        let forms = [
+            form("verb:finite:imperfect:1:sg", "несѣахъ"),
+            form("verb:finite:imperfect:3:sg", "несѣахъ"),
+            form("verb:finite:imperfect:2:sg", "несѣаше"),
+        ];
+        let spellings = BTreeSet::from(["несѣахъ"]);
+        let excluded =
+            excluded_metadata_features(forms.iter(), "verb:finite:imperfect:1:sg", &spellings);
+        assert_eq!(
+            excluded,
+            BTreeSet::from(["verb:finite:imperfect:1:sg", "verb:finite:imperfect:3:sg"])
+        );
+        assert!(!excluded.contains("verb:finite:imperfect:2:sg"));
+    }
+
+    #[test]
+    fn leakage_filter_removes_equivalent_person_cells_even_when_spelling_differs() {
+        let forms = [
+            form("verb:finite:imperfect:2:sg", "несѣаше"),
+            form("verb:finite:imperfect:3:sg", "несѣа҅ше"),
+            form("verb:finite:imperfect:1:sg", "несѣахъ"),
+        ];
+        let spellings = BTreeSet::from(["несѣаше"]);
+        let excluded =
+            excluded_metadata_features(forms.iter(), "verb:finite:imperfect:2:sg", &spellings);
+        assert_eq!(
+            excluded,
+            BTreeSet::from(["verb:finite:imperfect:2:sg", "verb:finite:imperfect:3:sg"])
+        );
+    }
+
+    #[test]
+    fn frozen_dictionary_partition_witnesses_do_not_drift() {
+        assert_eq!(fnv1a("нести".as_bytes()), 9_211_201_522_989_420_120);
+        assert_eq!(fnv1a("нести".as_bytes()) % 5, 0);
+        assert_eq!(fnv1a("бꙑти".as_bytes()) % 5, 1);
+        assert_eq!(fnv1a("благословити".as_bytes()) % 5, 4);
     }
 }

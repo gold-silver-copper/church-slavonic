@@ -1,9 +1,9 @@
 //! Dictionary lookup and generated-cell access.
 
-use crate::dictionary::{ALIASES, FORMS, LEXEMES, LexemeRecord};
+use crate::dictionary::{ALIASES, FORMS, LEXEMES, LexemeRecord, OVERRIDES};
 use old_church_slavonic_core::{
-    FormSet, FormSource, FormVariant, InflectionError, InflectionWarning, LexemeSummary,
-    PartOfSpeech,
+    FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,
+    LexemeSummary, MetadataEvidence, MetadataProvenance, PartOfSpeech,
 };
 
 pub fn lookup(
@@ -74,16 +74,82 @@ pub(crate) fn table_form(id: &str, feature: &str) -> Option<FormSet> {
     } else {
         Vec::new()
     };
+    let source = FormSource::DictionaryTable;
+    let evidence = vec![MetadataEvidence {
+        field: None,
+        provenance: MetadataProvenance::ExactDictionaryTableCell,
+        source_feature: Some(feature.to_string()),
+        source_form: None,
+        crosscheck_features: Vec::new(),
+        authority: Some("wiktionary-kaikki-2026-07-06".to_string()),
+    }];
+    let analyses = vec![FormAnalysis {
+        variants: variants.clone(),
+        source: source.clone(),
+        evidence,
+        trace: Vec::new(),
+    }];
     Some(FormSet {
         lemma: lexeme.lemma.to_string(),
         variants,
-        source: if rows[0].is_override {
-            FormSource::ManualOverride
-        } else {
-            FormSource::DictionaryTable
-        },
+        source,
         warnings,
         trace: Vec::new(),
+        analyses,
+    })
+}
+
+pub(crate) fn override_form(id: &str, feature: &str) -> Option<FormSet> {
+    let lexeme = find_lexeme(id)?;
+    let requested = (id, feature);
+    let start = OVERRIDES.partition_point(|record| (record.lexeme_id, record.feature) < requested);
+    let end = OVERRIDES.partition_point(|record| (record.lexeme_id, record.feature) <= requested);
+    let rows = &OVERRIDES[start..end];
+    if rows.is_empty() {
+        return None;
+    }
+    let variants = rows
+        .iter()
+        .enumerate()
+        .map(|(expected_rank, row)| {
+            debug_assert_eq!(usize::from(row.rank), expected_rank);
+            FormVariant {
+                text: row.form.to_string(),
+                romanization: (!row.romanization.is_empty()).then(|| row.romanization.to_string()),
+            }
+        })
+        .collect::<Vec<_>>();
+    let evidence = vec![MetadataEvidence {
+        field: None,
+        provenance: MetadataProvenance::CuratedGrammarOverride,
+        source_feature: Some(feature.to_string()),
+        source_form: None,
+        crosscheck_features: Vec::new(),
+        authority: Some(rows[0].authority.to_string()),
+    }];
+    let trace = vec![old_church_slavonic_core::RuleStep {
+        rule_id: old_church_slavonic_core::RuleId::VerbDictionaryMetadata,
+        before: rows[0].reason.to_string(),
+        after: variants[0].text.clone(),
+        reason: "apply a reviewed cell-specific override after exact-table lookup",
+    }];
+    let analyses = vec![FormAnalysis {
+        variants: variants.clone(),
+        source: FormSource::ManualOverride,
+        evidence,
+        trace: trace.clone(),
+    }];
+    Some(FormSet {
+        lemma: lexeme.lemma.to_string(),
+        warnings: if variants.len() > 1 {
+            vec![InflectionWarning::MultipleDictionaryVariants]
+        } else {
+            Vec::new()
+        },
+        variants,
+        source: FormSource::ManualOverride,
+        trace,
+        analyses,
     })
 }
 

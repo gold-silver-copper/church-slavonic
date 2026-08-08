@@ -11,6 +11,7 @@ licenses.
 | Extraction/accuracy reports containing forms | `reports` | derived from English Wiktionary; CC BY-SA 4.0 |
 | UD OCS PROIEL | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
 | Syntacticus native PROIEL/TOROT OCS selection | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
+| University of Texas *Old Church Slavonic Online* grammar | not bundled; cited as grammatical authority | reference only; no lesson text redistributed |
 
 ## English Wiktionary and Wiktextract
 
@@ -54,6 +55,14 @@ bundled; only non-reconstructive aggregate metrics and hashes are committed.
 
 Exact commits, paths, and SHA-256 values for both corpora are recorded in
 `data/evaluation-sources.json`.
+
+## Grammatical authority
+
+Productive verb rules and the documented unsupported boundaries were audited
+against the University of Texas Linguistics Research Center, *Old Church Slavonic
+Online*: <https://lrc.la.utexas.edu/eieol_toc/ocsol>. Relevant lesson/section links
+are attached to the rules in `docs/MORPHOLOGY_SPEC.md`. No lesson text, exercise,
+or dataset from that site is copied into the registry or package.
 
 ## Reuse
 

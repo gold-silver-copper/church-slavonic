@@ -4,10 +4,11 @@ use old_church_slavonic::verb::VerbLexeme;
 use old_church_slavonic::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
     FiniteTense, FiniteVerbCell, FormSource, Gender, ImperativeCell, ImperativeFormation,
-    ImperfectFormation, InflectionError, InflectionWarning, LParticipleCell, NounCell, NounClass,
-    Number, NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind,
-    PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
-    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RuleId, VerbClass,
+    ImperfectFormation, ImperfectVariantPolicy, InflectionError, InflectionWarning,
+    LParticipleCell, MetadataField, MetadataProvenance, NounCell, NounClass, Number,
+    NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
+    PastPassiveParticipleFormation, Person, PresentActiveParticipleFormation,
+    PresentPassiveParticipleFormation, RuleId, VerbClass,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -251,10 +252,64 @@ fn safe_dictionary_verb_components_have_typed_apis() {
 }
 
 #[test]
+fn missing_participle_cell_uses_ordered_dictionary_metadata_analyses() {
+    let cell = ParticipleCell {
+        kind: ParticipleKind::PastActive,
+        adjective: AdjectiveCell {
+            case: Case::Genitive,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            form: AdjectiveForm::Short,
+        },
+    };
+    let by_lemma = old_church_slavonic::participle("благословити", cell)
+        .expect("dictionary metadata fallback");
+    let id = only_id("благословити", PartOfSpeech::Verb);
+    let by_id = old_church_slavonic::participle_by_id(&id, cell).expect("by-id metadata fallback");
+    let generic =
+        old_church_slavonic::form_by_id(&id, "verb:participle:past-active:adj:short:gen:sg:m:in")
+            .expect("generic feature resolver uses the same metadata fallback");
+    assert_eq!(by_lemma, by_id);
+    assert_eq!(generic, by_id);
+    assert_eq!(by_lemma.source, FormSource::DictionaryMetadataAnalyses);
+    assert_eq!(by_lemma.analyses.len(), 2);
+    assert_eq!(
+        by_lemma
+            .variants
+            .iter()
+            .map(|variant| variant.text.as_str())
+            .collect::<Vec<_>>(),
+        ["благословл҄ьша", "благословивъша"]
+    );
+    assert!(by_lemma.analyses.iter().all(|analysis| {
+        analysis.evidence.iter().any(|evidence| {
+            evidence.provenance == MetadataProvenance::DictionaryPrincipalPart
+                && evidence.source_feature.as_deref()
+                    == Some("verb:participle:past-active:citation")
+        })
+    }));
+    assert!(by_lemma.analyses.iter().all(|analysis| {
+        analysis
+            .trace
+            .first()
+            .is_some_and(|step| step.rule_id == RuleId::VerbDictionaryMetadata)
+    }));
+
+    let metadata = old_church_slavonic::verb_metadata_by_id(&id).expect("typed metadata");
+    assert_eq!(metadata.past_active_participle.len(), 2);
+    assert_eq!(
+        metadata.past_active_participle[0].stem.evidence.field,
+        Some(MetadataField::PastActiveParticipleStem)
+    );
+}
+
+#[test]
 fn explicit_verb_system_apis_expose_rules_traces_and_historical_cells() {
     let mut lexeme = VerbLexeme::new("нести", VerbClass::IA1);
     lexeme.stems.imperfect = Some("нес".to_string());
     lexeme.formations.imperfect = Some(ImperfectFormation::YatA);
+    lexeme.formations.imperfect_variant_policy = Some(ImperfectVariantPolicy::UncontractedOnly);
     lexeme.stems.aorist = Some("рек".to_string());
     lexeme.formations.aorist = Some(AoristFormation::New);
     lexeme.stems.imperative = Some("нес".to_string());
@@ -313,7 +368,7 @@ fn explicit_verb_system_apis_expose_rules_traces_and_historical_cells() {
                 number: Number::Plural,
             },
         ),
-        Err(InflectionError::UnsupportedCell)
+        Err(InflectionError::HistoricallyInvalidCell)
     ));
 
     lexeme.stems.present_active_participle = Some("нес".to_string());
@@ -445,12 +500,110 @@ fn ambiguity_and_unsupported_cells_are_typed() {
                 number: Number::Singular,
             }
         ),
-        Err(InflectionError::UnsupportedCell)
+        Err(InflectionError::MissingLexicalMetadata { needed })
+            if needed == vec![MetadataField::AoristStem, MetadataField::AoristFormation]
     ));
     assert!(matches!(
         old_church_slavonic::dictionary_form_by_id("missing", "noun:nom:sg"),
         Err(InflectionError::UnknownLemma)
     ));
+    assert!(matches!(
+        old_church_slavonic::finite_verb(
+            "несуществовати",
+            FiniteVerbCell {
+                tense: FiniteTense::Present,
+                person: Person::Third,
+                number: Number::Singular,
+            }
+        ),
+        Err(InflectionError::UnknownLemma)
+    ));
+    let verb_id = only_id("благословити", PartOfSpeech::Verb);
+    assert!(matches!(
+        old_church_slavonic::form_by_id(&verb_id, "verb:finite:future:1:sg"),
+        Err(InflectionError::InvalidInput { .. })
+    ));
+}
+
+#[test]
+fn reviewed_irregular_override_follows_table_and_keeps_authority() {
+    let id = only_id("бꙑти", PartOfSpeech::Verb);
+    let missing_source_cell = FiniteVerbCell {
+        tense: FiniteTense::Imperfect,
+        person: Person::First,
+        number: Number::Singular,
+    };
+    let by_id = old_church_slavonic::finite_verb_by_id(&id, missing_source_cell)
+        .expect("reviewed suppletive override");
+    let by_lemma = old_church_slavonic::finite_verb("бꙑти", missing_source_cell)
+        .expect("lemma resolver uses the same override");
+    assert_eq!(by_id, by_lemma);
+    assert_eq!(by_id.variants[0].text, "бѣахъ");
+    assert_eq!(by_id.source, FormSource::ManualOverride);
+    assert_eq!(
+        by_id.analyses[0].evidence[0].provenance,
+        MetadataProvenance::CuratedGrammarOverride
+    );
+    assert!(
+        by_id.analyses[0].evidence[0]
+            .authority
+            .as_deref()
+            .is_some_and(|source| source.contains("UT OCS Online lesson 1"))
+    );
+
+    let exact_source_cell = old_church_slavonic::finite_verb(
+        "бꙑти",
+        FiniteVerbCell {
+            tense: FiniteTense::Imperfect,
+            person: Person::Third,
+            number: Number::Singular,
+        },
+    )
+    .expect("exact source table");
+    assert_eq!(exact_source_cell.variants[0].text, "бѣаше");
+    assert_eq!(exact_source_cell.source, FormSource::DictionaryTable);
+}
+
+#[test]
+fn every_verb_paradigm_cell_uses_its_individual_public_resolver() {
+    let id = only_id("благословити", PartOfSpeech::Verb);
+    let finite = old_church_slavonic::finite_verb_paradigm(&id).expect("finite paradigm");
+    for outcome in finite.cells {
+        assert_eq!(
+            outcome.result,
+            old_church_slavonic::finite_verb_by_id(&id, outcome.cell)
+        );
+    }
+    let imperative = old_church_slavonic::imperative_paradigm(&id).expect("imperative paradigm");
+    for outcome in imperative.cells {
+        assert_eq!(
+            outcome.result,
+            old_church_slavonic::imperative_by_id(&id, outcome.cell)
+        );
+    }
+    let l_participle =
+        old_church_slavonic::l_participle_paradigm(&id).expect("l-participle paradigm");
+    for outcome in l_participle.cells {
+        assert_eq!(
+            outcome.result,
+            old_church_slavonic::l_participle_by_id(&id, outcome.cell)
+        );
+    }
+    for kind in [
+        ParticipleKind::PresentActive,
+        ParticipleKind::PresentPassive,
+        ParticipleKind::PastActive,
+        ParticipleKind::PastPassive,
+    ] {
+        let paradigm =
+            old_church_slavonic::participle_paradigm(&id, kind).expect("participle paradigm");
+        for outcome in paradigm.cells {
+            assert_eq!(
+                outcome.result,
+                old_church_slavonic::participle_by_id(&id, outcome.cell)
+            );
+        }
+    }
 }
 
 #[test]

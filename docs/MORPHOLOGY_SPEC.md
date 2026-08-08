@@ -131,17 +131,25 @@ always bypass citation-shape inference with an explicit `AdjectiveLexeme`.
 ### Independent lexical dimensions
 
 `VerbClass` owns only the present conjugation. `VerbLexeme` separately records the
-present stem and first-singular allomorph, imperfect stem and formation, aorist stem
-and formation, imperative stem and formation, and one stem/formation pair for each
-productive participle. Lexical aspect is metadata and never chooses an aorist.
+present stem and first-singular allomorph, imperfect stem, formation, and variant
+policy, aorist stem and formation, imperative stem and formation, and one
+stem/formation pair for each productive participle. Lexical aspect is metadata and
+never chooses an aorist.
 Root and irregular lexemes are explicit classes. A caller may use a productive
 past-system formation with a root only by declaring the needed stem and formation;
 the engine never derives those principal parts from the infinitive.
 
+The facade's `DictionaryVerbMetadata` keeps each system as an ordered array of
+typed analyses. Every stem, class/formation, source feature, source spelling,
+cross-check set, authority, and provenance travels together. Analysis rank is
+stable source order; two defensible analyses are generated separately and are not
+collapsed into a bag of strings. Aspect is an independent sourced field.
+
 Every stem is canonicalized and validated before use. A missing stem and a missing
-formation report their distinct `MetadataField`; an unimplemented formation reports
-`UnsupportedCell`. This model follows the separation of present, aorist, imperative,
-and participial systems in UT *Old Church Slavonic Online*.
+formation report their distinct `MetadataField`; contradictory normalized fields,
+an unimplemented formation, and a historically invalid cell have separate typed
+errors. This model follows the separation of present, aorist, imperative, and
+participial systems in UT *Old Church Slavonic Online*.
 
 ### Present, infinitive, supine, and l-participle
 
@@ -160,8 +168,10 @@ stems remain dictionary-backed. Authority: UT lessons 2 and 7,
 
 ### Imperfect
 
-The imperfect needs both `ImperfectStem` and `ImperfectFormation`. The stem is the
-lexically selected base before the formation marker.
+The imperfect needs `ImperfectStem`, `ImperfectFormation`, and
+`ImperfectVariantPolicy`. The stem is the lexically selected base before the
+formation marker. The current only admitted policy is `UncontractedOnly`; it makes
+the deliberate absence of a generalized contracted variant explicit and sourced.
 
 | Rule | Formation | Operation |
 |---|---|---|
@@ -186,6 +196,15 @@ exceptional imperfects require an explicit dictionary cell rather than a guessed
 variant. Authority: UT lesson 1 §4.2,
 <https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967>.
 
+That section also records later shortened `-ах/-ѣх` forms and shortened dual and
+plural endings. The pinned native-corpus audit found 1,349 diplomatic mismatches in
+1,725 oracle-generated imperfect tokens: 890 in the `YatA` slice and 459 in the
+explicit-base `A` slice. Of those mismatches, 630 belong to suppletive `бꙑти` and
+235 to abbreviation-heavy `глаголати`; 1,100 occur in 3sg. The remainder mixes
+contraction, editorial marks, orthographic substitutions, and unsafe principal-part
+selection across manuscripts. Those aggregates do not establish a single lexical
+or manuscript distribution, so this version adds no global contracted variant.
+
 ### Aorists
 
 `AoristFormation` is independent of present class and `VerbAspect`.
@@ -197,9 +216,15 @@ variant. Authority: UT lesson 1 §4.2,
 - `V-AOR-NEW-01` implements the new *ox*-aorist: `-охъ/-е`,
   `-оховѣ/-оста/-осте`, and `-охомъ/-осте/-ошѧ`. Only the 2sg/3sg seam applies
   first palatalization. For example, explicit `рек-` yields `рекохъ` but `рече`.
-- `Sigmatic` is represented so metadata can be honest, but generation remains
-  explicitly unsupported. The attested sigmatic alternations and stem loss are not
-  yet independently encoded.
+- `SigmaticPrimary` and `SigmaticSecondary` are distinct typed formations so
+  normalized metadata cannot collapse them, but both remain explicitly unsupported.
+  UT lesson 3 §14.2 requires a pre-sigmatic long-grade/root alternation, `s/x` seam
+  selection, a distinct 2sg/3sg base, and a documented optional final `-тъ`. A
+  subtype name plus one supplied stem still cannot represent those independent
+  choices. A future implementation therefore needs non-singular and 2sg/3sg
+  allomorphs, seam policy, and `-тъ` variant policy backed by lexeme-level evidence.
+  Both return `UnsupportedFormation` before a stem is requested, so a represented
+  unsupported subtype cannot masquerade as missing metadata.
 
 Multiple aorist formations for one lemma remain separate lexical analyses; aspect
 never selects among them. Suppletive forms of `бꙑти`, `дати`, `ѣсти`, `вѣдѣти`,
@@ -215,7 +240,7 @@ audited root analysis. Authority: UT lesson 3 §§14.1–14.3,
 `-ивѣ/-ита/-имъ/-ите`; the yat-series uses
 `-ѣвѣ/-ѣта/-ѣмъ/-ѣте` in 1du/2du/1pl/2pl. These are the only six morphological
 cells. First singular, third dual, and third plural periphrases with `да` are outside
-the word inflector and return `UnsupportedCell`.
+the word inflector and return `HistoricallyInvalidCell`.
 
 The pinned Wiktionary target sometimes spells 1du with final `-ве`; such exact table
 variants still win, while the productive rule follows the grammar's `-вѣ`. Optional
@@ -234,8 +259,12 @@ owned exclusively by `adjective::decline_stem`.
   Other short cells and every long cell use soft adjective agreement.
 - `V-PTCP-PRES-PASS-01`: `Im`, `Em`, or `Om` builds `-им-/-ем-/-ом-`, then uses
   hard short/long adjective agreement.
-- `V-PTCP-PAST-ACT-01`: `Ush` or `Vush` builds `-ъш-/-въш-` plus the special
-  active short nominative, then uses soft adjective agreement.
+- `V-PTCP-PAST-ACT-01`: `Ush`, `Ish`, or a typed `Vush` seam builds
+  `-ъш-/-ьш-/-въш-` plus the special active short nominative, then uses soft
+  adjective agreement. `VushAfterJDeletion` declares that the supplied Cyrillic
+  base already reflects loss of underlying final *j*; `VushAfterOvToU` requires
+  final `-ов`, changes it to `-оу`, and then attaches `-въш-`; plain `Vush`
+  performs no extra seam. A malformed `VushAfterOvToU` input is a typed error.
 - `V-PTCP-PAST-PASS-01`: `T`, `N`, or `En` builds `-т-/-н-/-ен-`, then uses hard
   adjective agreement.
 
@@ -248,10 +277,49 @@ metamorphically tested. Authorities: UT lesson 6 §26 and lesson 7 §§31.1–32
 <https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1024>, and
 <https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1025>.
 
-The primary `-ьш-` past-active formation of transformed i-stems, plus automatic
-final-j deletion and `ov → u` before `-въш-`, are not inferred by this version.
-Such citations remain table-backed unless the caller supplies an already appropriate
-stem for one of the represented formations.
+The core therefore covers independently declared `-ъш-`, transformed i-stem
+`-ьш-`, ordinary `-въш-`, final-j deletion, and `ov → u` seams. Automatic
+selection of the two special seams from a spelling remains deliberately absent;
+dictionary extraction admits only what the citation itself diagnoses, while an
+explicit caller may select the more precise typed seam.
+
+### Dictionary principal-part derivation contracts
+
+All contracts run after held-cell exclusions. An available non-source diagnostic
+cell must reproduce exactly; any contradiction rejects the analysis. Source order
+sets `analysis_rank`, and every output stores authority
+`wiktionary-kaikki-2026-07-06` plus either `dictionary-principal-part` or
+`dictionary-headword-metadata` provenance. Productive metadata derivation admits
+only Cyrillic lemmas and stems because the current rules emit Cyrillic endings;
+Glagolitic remains exact-source-only rather than producing mixed-script forms.
+
+| Field/system | Admitted source and operation | Prerequisite, cross-check, and rejection policy |
+|---|---|---|
+| aspect | unique `cu-verb` argument or `head` gender/aspect argument | unknown or conflicting codes reject; never selects tense or aorist |
+| present | class from the audited head template; remove class-specific `-еши/-иши` from 2sg; remove `-ѫ/-ѭ` from 1sg allomorph | only IA1/IA2/II1/II2/II3; second conjugation requires 1sg; every other available present cell must agree; no consonant mutation |
+| imperfect | remove `-ѣахъ` as `YatA` or `-ахъ` as `A` from 1sg; attach `UncontractedOnly` under UT lesson 1 §4.2 | all other available imperfect cells must agree; a surface palatalized `-аахъ` is rejected because it cannot recover the underlying velar; no corpus-derived contraction policy is inferred |
+| new aorist | remove `-охъ` from 1sg and declare `New` | all other available aorist cells must agree; asigmatic/sigmatic shapes are not inferred |
+| imperative | remove final `-и` from 2sg | i/yat series must be diagnosed by an exact 1du/2du/1pl/2pl match; missing or contradictory diagnostics reject; both defensible series remain separate |
+| l-participle | remove `-лъ` from masculine singular | every other available gender/number cell must agree; at least one cross-check is required |
+| present active citation | remove short masculine `-ꙑ/-ѩ/-ѧ` and select `YushtHard/YushtSoft/YeshtSoft` under the declared present class | malformed/empty bases reject; source alternatives remain ranked analyses |
+| present passive citation | remove `-имъ/-емъ/-омъ` | suffix directly selects `Im/Em/Om`; ambiguous or empty bases reject |
+| past active citation | remove `-ъ/-ь/-въ` | selects `Ush/Ish/Vush`; special j-loss and `ov → u` are never guessed from this source |
+| past passive citation | remove `-тъ/-нъ/-енъ` longest suffix first | selects `T/N/En`; empty bases reject |
+
+Citation-participle contracts intentionally have no independent table cross-check in
+this snapshot. Leakage-controlled evaluation removes the citation target before
+derivation, so a citation can never prove its own predicted form. Declined source
+rows remain excluded rather than being used as an unsafe cross-check.
+
+### Curated irregular overrides
+
+Overrides are complete-cell records outside the source table and metadata arrays.
+The initial reviewed set covers six otherwise absent imperfect cells of `бꙑти`,
+using the pinned dictionary 3sg `бѣаше` as the suppletive base and the endings in UT
+lesson 1 §4.2. The source 3sg remains `DictionaryTable`; overrides carry
+`CuratedGrammarOverride` evidence and their full authority. No development override
+is inferred from the final lemma partition, and other high-value irregular verbs
+remain exact-table or explicitly unsupported until an equally specific audit exists.
 
 ## Recorded source conflicts and limitations
 

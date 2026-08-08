@@ -25,7 +25,31 @@ pub(crate) struct FormRecord {
     pub rank: u16,
     pub form: &'static str,
     pub romanization: &'static str,
-    pub is_override: bool,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct OverrideRecord {
+    pub lexeme_id: &'static str,
+    pub feature: &'static str,
+    pub rank: u16,
+    pub form: &'static str,
+    pub romanization: &'static str,
+    pub reason: &'static str,
+    pub authority: &'static str,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct VerbMetadataRecord {
+    pub lexeme_id: &'static str,
+    pub system: &'static str,
+    pub analysis_rank: u16,
+    pub field: &'static str,
+    pub value: &'static str,
+    pub provenance: &'static str,
+    pub source_feature: &'static str,
+    pub source_form: &'static str,
+    pub crosscheck_features: &'static str,
+    pub authority: &'static str,
 }
 
 include!(concat!(

@@ -9,7 +9,7 @@ UD finite `Tense=Past` is deliberately excluded because it does not distinguish 
 
 ## 1. Facade attested-token recall (UD)
 
-This asks whether an unambiguous known dictionary lexeme/cell exposes the attested variant through the public table-first facade. It is not productive-rule accuracy.
+This asks whether the public table-first facade can expose an attested token for an unambiguous known dictionary lexeme. The generation-path slice separates exact dictionary cells from source-backed dictionary-metadata rules. Because the target token is not held out from dictionary principal-part extraction, this is real-text recall, not the leakage-controlled dictionary held-cell score.
 
 | Stage | Tokens |
 |---|---:|
@@ -19,18 +19,18 @@ This asks whether an unambiguous known dictionary lexeme/cell exposes the attest
 | unambiguous/valid lemma matches | 18712 |
 | sufficient lexical metadata | 18712 |
 | generation attempts | 18712 |
-| attempts returning forms | 8715 |
-| diplomatic top-1 / any | 3810 / 3811 |
-| project-lookup top-1 / any | 3908 / 3909 |
+| attempts returning forms | 11063 |
+| diplomatic top-1 / any | 4655 / 4711 |
+| project-lookup top-1 / any | 4792 / 4850 |
 
 ### Fixed holdouts
 
 | Partition | Eligible | Attempted | Returned | Raw top-1 | Raw any | Lookup top-1 | Lookup any |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| lemma development | 23754 | 15287 | 6952 | 2798/15287 (18.30%) | 2798/15287 (18.30%) | 2848/15287 (18.63%) | 2848/15287 (18.63%) |
-| lemma final holdout | 5019 | 3425 | 1763 | 1012/3425 (29.55%) | 1013/3425 (29.58%) | 1060/3425 (30.95%) | 1061/3425 (30.98%) |
-| document development | 22679 | 14748 | 6841 | 3014/14748 (20.44%) | 3014/14748 (20.44%) | 3079/14748 (20.88%) | 3079/14748 (20.88%) |
-| document holdout | 6094 | 3964 | 1874 | 796/3964 (20.08%) | 797/3964 (20.11%) | 829/3964 (20.91%) | 830/3964 (20.94%) |
+| lemma development | 23754 | 15287 | 8496 | 3345/15287 (21.88%) | 3399/15287 (22.23%) | 3415/15287 (22.34%) | 3470/15287 (22.70%) |
+| lemma final holdout | 5019 | 3425 | 2567 | 1310/3425 (38.25%) | 1312/3425 (38.31%) | 1377/3425 (40.20%) | 1380/3425 (40.29%) |
+| document development | 22679 | 14748 | 8768 | 3702/14748 (25.10%) | 3755/14748 (25.46%) | 3793/14748 (25.72%) | 3846/14748 (26.08%) |
+| document holdout | 6094 | 3964 | 2295 | 953/3964 (24.04%) | 956/3964 (24.12%) | 999/3964 (25.20%) | 1004/3964 (25.33%) |
 
 ### By verb category
 
@@ -39,17 +39,22 @@ This asks whether an unambiguous known dictionary lexeme/cell exposes the attest
 | imperative | 3245 | 2014 | 1157 | 553/2014 (27.46%) | 553/2014 (27.46%) | 610/2014 (30.29%) | 610/2014 (30.29%) |
 | infinitive | 3366 | 2071 | 2071 | 1233/2071 (59.54%) | 1233/2071 (59.54%) | 1247/2071 (60.21%) | 1247/2071 (60.21%) |
 | l-participle | 841 | 461 | 461 | 224/461 (48.59%) | 224/461 (48.59%) | 232/461 (50.33%) | 232/461 (50.33%) |
-| past-active-participle | 3743 | 2466 | 0 | 0/2466 (0.00%) | 0/2466 (0.00%) | 0/2466 (0.00%) | 0/2466 (0.00%) |
-| past-passive-participle | 1195 | 489 | 0 | 0/489 (0.00%) | 0/489 (0.00%) | 0/489 (0.00%) | 0/489 (0.00%) |
+| past-active-participle | 3743 | 2466 | 1464 | 551/2466 (22.34%) | 606/2466 (24.57%) | 584/2466 (23.68%) | 641/2466 (25.99%) |
+| past-passive-participle | 1195 | 489 | 175 | 84/489 (17.18%) | 84/489 (17.18%) | 88/489 (18.00%) | 88/489 (18.00%) |
 | present | 12277 | 8364 | 4948 | 1747/8364 (20.89%) | 1748/8364 (20.90%) | 1765/8364 (21.10%) | 1766/8364 (21.11%) |
-| present-active-participle | 3615 | 2587 | 0 | 0/2587 (0.00%) | 0/2587 (0.00%) | 0/2587 (0.00%) | 0/2587 (0.00%) |
-| present-passive-participle | 356 | 182 | 0 | 0/182 (0.00%) | 0/182 (0.00%) | 0/182 (0.00%) | 0/182 (0.00%) |
+| present-active-participle | 3615 | 2587 | 646 | 157/2587 (6.07%) | 157/2587 (6.07%) | 159/2587 (6.15%) | 159/2587 (6.15%) |
+| present-passive-participle | 356 | 182 | 63 | 53/182 (29.12%) | 53/182 (29.12%) | 53/182 (29.12%) | 53/182 (29.12%) |
 | supine | 135 | 78 | 78 | 53/78 (67.95%) | 53/78 (67.95%) | 54/78 (69.23%) | 54/78 (69.23%) |
 
 ### By public generation path
 
 | Path | Eligible | Attempted | Returned | Raw top-1 | Raw any | Lookup top-1 | Lookup any |
 |---|---:|---:|---:|---:|---:|---:|---:|
+| dictionary-metadata-analyses | 170 | 170 | 170 | 3/170 (1.76%) | 58/170 (34.12%) | 3/170 (1.76%) | 60/170 (35.29%) |
+| dictionary-metadata-rule:V-PTCP-PAST-ACT-01 | 1294 | 1294 | 1294 | 548/1294 (42.35%) | 548/1294 (42.35%) | 581/1294 (44.90%) | 581/1294 (44.90%) |
+| dictionary-metadata-rule:V-PTCP-PAST-PASS-01 | 175 | 175 | 175 | 84/175 (48.00%) | 84/175 (48.00%) | 88/175 (50.29%) | 88/175 (50.29%) |
+| dictionary-metadata-rule:V-PTCP-PRES-ACT-01 | 646 | 646 | 646 | 157/646 (24.30%) | 157/646 (24.30%) | 159/646 (24.61%) | 159/646 (24.61%) |
+| dictionary-metadata-rule:V-PTCP-PRES-PASS-01 | 63 | 63 | 63 | 53/63 (84.13%) | 53/63 (84.13%) | 53/63 (84.13%) | 53/63 (84.13%) |
 | dictionary-table | 8715 | 8715 | 8715 | 3810/8715 (43.72%) | 3811/8715 (43.73%) | 3908/8715 (44.84%) | 3909/8715 (44.85%) |
 
 ### Facade skip and incompatibility reasons
@@ -66,7 +71,7 @@ This asks whether an unambiguous known dictionary lexeme/cell exposes the attest
 - `missing-participle-variant`: 3036
 - `missing-resultative-variant`: 1
 - `missing-verb-form`: 55
-- `no-public-form`: 9997
+- `no-public-form`: 7649
 - `unknown-lemma`: 9600
 - `unsupported-imperative-cell`: 9
 

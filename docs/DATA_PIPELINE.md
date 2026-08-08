@@ -5,6 +5,7 @@
 | Stage | Reads | Owns |
 |---|---|---|
 | `refresh-data` | an explicit local Kaikki/Wiktextract JSONL path | `data/extracted/*.tsv`, `data/extracted/source.json`, generated Rust, extraction reports |
+| `refresh-derived-registry` | committed normalized TSV | `verb_metadata.tsv` and generated Rust only; never changes source-normalization reports |
 | `check-registry` | committed normalized TSV | nothing; compares deterministic generated Rust and validates semantics |
 | `accuracy` | committed registry and public facade | `reports/accuracy.{json,md}` when refreshed |
 | `accuracy-corpus` | explicit local paths to hash-pinned UD and/or Syntacticus data | aggregate `reports/corpus-accuracy.{json,md}` only with `--write`; optional token details stay local |
@@ -55,15 +56,40 @@ The sampled snapshot confirmed two flattening hazards:
   alternative spelling relationship;
 - `forms.tsv`: one ordered variant per row with the exact raw source spelling,
   source tags, and romanization;
+- `verb_metadata.tsv`: one normalized field per `(lexeme_id, system,
+  analysis_rank)` group, with `field`, typed stable-code `value`, `provenance`,
+  diagnostic `source_feature`/`source_form`, ordered cross-check features, and
+  authority;
 - `source.json`: input filename, size, SHA-256, and registry schema.
 
+Metadata is derived only after safe table extraction. Present, imperfect, new
+aorist, imperative, and l-participle analyses require the diagnostic cells and
+cross-checks specified in `docs/MORPHOLOGY_SPEC.md`; citation-participle analyses
+retain source alternatives but cannot score their own held citation. Exclusion is
+applied before any diagnostic or cross-check is visible. The held evaluator removes
+the target feature, equivalent 2sg/3sg finite or imperative cells, and every feature
+sharing a target spelling before rebuilding metadata.
+
+`check-registry` independently repeats this derivation from `forms.tsv` and the
+stored head templates, then requires the complete result to match
+`verb_metadata.tsv` row-for-row. A well-shaped but manually altered stem,
+formation, source feature, cross-check, or provenance therefore fails even when its
+code is otherwise valid.
+
 TSV fields are rejected if they contain a tab or newline. Generated Rust is a pure
-function of these files plus `data/overrides.tsv`. An override row contains
+function of these files plus `data/overrides.tsv`. Metadata validation rejects
+orphan/non-verb IDs, unknown systems/fields/codes/provenance, duplicate or
+non-contiguous analyses, incomplete stem/formation groups, empty values, invalid
+script, and non-NFC text. An override row contains
 `lemma`, `pos`, a complete feature key, source-ordered variants separated by ` || `
 (optional romanization follows ` :: `), a reason, a source citation, and the literal
 review status `approved`. Missing citations, unapproved rows, ambiguous lemmas, and
-duplicate overridden cells fail validation. Refresh writes through temporary files
-and renames only after successful extraction and validation.
+duplicate overridden cells fail validation. Feature keys use a POS-specific closed
+vocabulary, and an override is rejected if the exact source cell already exists.
+Overrides compile into their own array; they do not delete or replace `forms.tsv`,
+so a source table cell remains structurally first. Refresh writes every output
+through temporary files and renames the batch only after successful extraction and
+validation.
 
 ## Schema drift
 
@@ -86,8 +112,20 @@ lossless verb bundles. In particular, UD finite `Tense=Past` is counted as
 imperfect. Native PROIEL/TOROT ten-character morphology retains `i` (imperfect) and
 `a` (aorist), so it owns past-subtype evaluation.
 
-The report separates public facade recall, productive core generalization using an
-explicit oracle principal part, and a lemma-disjoint OOV view. When a native token
+The dictionary report adds a leakage-controlled fourth question: target cells are
+removed, metadata is rebuilt, decoded by the public metadata type, and sent through
+the same public generation resolver without an exact-table lookup. Its stage funnel
+separates compatible/unambiguous requests, metadata found/validated, generation
+attempts/returns, and diplomatic versus shared lookup correctness. Development and
+final lemma partitions, systems, complete cells, class, formation, source-cell
+policy, analysis multiplicity, generation path, and dictionary-frequency slices are
+reported independently.
+
+The corpus report separately retains public facade recall, productive core
+generalization using an explicit oracle principal part, and a lemma-disjoint OOV
+view. The facade path now includes dictionary-metadata fallback, but this real-token
+view is not called held-cell end to end because its dictionary principal part was not
+rebuilt with the corpus target withheld. When a native token
 supplies a diagnostic stem/formation, every token in that person-number cell is
 excluded. Diplomatic and shared NFC/lowercase lookup scores, top-1 and any-variant,
 coverage, conditional accuracy, documents, cells, and exact skip reasons remain

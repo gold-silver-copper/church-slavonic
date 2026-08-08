@@ -8,9 +8,11 @@
 
 mod dictionary;
 mod lookup;
+mod metadata;
 mod paradigm;
 
 pub use lookup::lookup;
+pub use metadata::*;
 pub use old_church_slavonic_core::*;
 pub use paradigm::*;
 
@@ -26,6 +28,9 @@ pub fn noun(lemma: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
 pub fn noun_by_id(id: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Noun)?;
     if let Some(form) = lookup::table_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
     let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
@@ -92,6 +97,9 @@ pub fn adjective_by_id(id: &str, cell: AdjectiveCell) -> Result<FormSet, Inflect
     if let Some(form) = lookup::table_form(id, &cell.key()) {
         return Ok(form);
     }
+    if let Some(form) = lookup::override_form(id, &cell.key()) {
+        return Ok(form);
+    }
     let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
     let class = parse_adjective_class(record.class).ok_or_else(|| {
         InflectionError::MissingLexicalMetadata {
@@ -156,7 +164,9 @@ pub fn adjective_comparatives(lemma: &str) -> Result<FormSet, InflectionError> {
 
 pub fn adjective_comparatives_by_id(id: &str) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Adjective)?;
-    lookup::table_form(id, "adj:comparative:citation").ok_or(InflectionError::UnsupportedCell)
+    lookup::table_form(id, "adj:comparative:citation")
+        .or_else(|| lookup::override_form(id, "adj:comparative:citation"))
+        .ok_or(InflectionError::UnsupportedCell)
 }
 
 pub fn finite_verb(lemma: &str, cell: FiniteVerbCell) -> Result<FormSet, InflectionError> {
@@ -169,7 +179,22 @@ pub fn finite_verb_by_id(id: &str, cell: FiniteVerbCell) -> Result<FormSet, Infl
     if let Some(form) = lookup::table_form(id, &cell.key()) {
         return Ok(form);
     }
-    Err(InflectionError::UnsupportedCell)
+    let metadata = verb_metadata_by_id(id)?;
+    if let Some(form) = lookup::override_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    generate_finite_from_metadata(&metadata, cell)
+}
+
+/// Generate through the same dictionary-metadata resolver after an offline
+/// caller has already constructed and validated a metadata view. This does not
+/// consult the bundled dictionary table and is used for leakage-controlled
+/// held-cell evaluation.
+pub fn finite_verb_from_dictionary_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: FiniteVerbCell,
+) -> Result<FormSet, InflectionError> {
+    generate_finite_from_metadata(metadata, cell)
 }
 
 pub fn finite_verb_paradigm(id: &str) -> Result<FiniteVerbParadigm, InflectionError> {
@@ -212,7 +237,21 @@ pub fn imperative(lemma: &str, cell: ImperativeCell) -> Result<FormSet, Inflecti
 
 pub fn imperative_by_id(id: &str, cell: ImperativeCell) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, &cell.key()).ok_or(InflectionError::UnsupportedCell)
+    if let Some(form) = lookup::table_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    let metadata = verb_metadata_by_id(id)?;
+    if let Some(form) = lookup::override_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    generate_imperative_from_metadata(&metadata, cell)
+}
+
+pub fn imperative_from_dictionary_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: ImperativeCell,
+) -> Result<FormSet, InflectionError> {
+    generate_imperative_from_metadata(metadata, cell)
 }
 
 pub fn imperative_with(
@@ -246,7 +285,21 @@ pub fn l_participle(lemma: &str, cell: LParticipleCell) -> Result<FormSet, Infle
 
 pub fn l_participle_by_id(id: &str, cell: LParticipleCell) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, &cell.key()).ok_or(InflectionError::UnsupportedCell)
+    if let Some(form) = lookup::table_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    let metadata = verb_metadata_by_id(id)?;
+    if let Some(form) = lookup::override_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    generate_l_participle_from_metadata(&metadata, cell)
+}
+
+pub fn l_participle_from_dictionary_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: LParticipleCell,
+) -> Result<FormSet, InflectionError> {
+    generate_l_participle_from_metadata(metadata, cell)
 }
 
 pub fn l_participle_with(
@@ -283,7 +336,21 @@ pub fn participle(lemma: &str, cell: ParticipleCell) -> Result<FormSet, Inflecti
 
 pub fn participle_by_id(id: &str, cell: ParticipleCell) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, &cell.key()).ok_or(InflectionError::UnsupportedCell)
+    if let Some(form) = lookup::table_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    let metadata = verb_metadata_by_id(id)?;
+    if let Some(form) = lookup::override_form(id, &cell.key()) {
+        return Ok(form);
+    }
+    generate_participle_from_metadata(&metadata, cell)
+}
+
+pub fn participle_from_dictionary_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: ParticipleCell,
+) -> Result<FormSet, InflectionError> {
+    generate_participle_from_metadata(metadata, cell)
 }
 
 pub fn participle_with(
@@ -342,8 +409,27 @@ pub fn participle_citation_by_id(
     kind: ParticipleKind,
 ) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, &format!("verb:participle:{}:citation", kind.code()))
-        .ok_or(InflectionError::UnsupportedCell)
+    let feature = format!("verb:participle:{}:citation", kind.code());
+    if let Some(form) = lookup::table_form(id, &feature) {
+        return Ok(form);
+    }
+    let metadata = verb_metadata_by_id(id)?;
+    if let Some(form) = lookup::override_form(id, &feature) {
+        return Ok(form);
+    }
+    generate_participle_from_metadata(
+        &metadata,
+        ParticipleCell {
+            kind,
+            adjective: AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Short,
+            },
+        },
+    )
 }
 
 pub fn infinitive(lemma: &str) -> Result<FormSet, InflectionError> {
@@ -353,7 +439,9 @@ pub fn infinitive(lemma: &str) -> Result<FormSet, InflectionError> {
 
 pub fn infinitive_by_id(id: &str) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, "verb:infinitive").ok_or(InflectionError::UnsupportedCell)
+    lookup::table_form(id, "verb:infinitive")
+        .or_else(|| lookup::override_form(id, "verb:infinitive"))
+        .ok_or(InflectionError::UnsupportedCell)
 }
 
 pub fn infinitive_with(lexeme: &VerbLexeme) -> Result<FormSet, InflectionError> {
@@ -442,7 +530,499 @@ pub fn dictionary_paradigm_by_id(id: &str) -> Result<DictionaryParadigm, Inflect
 
 pub fn dictionary_form_by_id(id: &str, feature: &str) -> Result<FormSet, InflectionError> {
     lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
-    lookup::table_form(id, feature).ok_or(InflectionError::UnsupportedCell)
+    lookup::table_form(id, feature)
+        .or_else(|| lookup::override_form(id, feature))
+        .ok_or(InflectionError::UnsupportedCell)
+}
+
+/// Resolve an accepted normalized verb feature through the same table-first
+/// public APIs as the typed entry points. Non-verb exact table/override keys
+/// remain available, but productive normalized-key dispatch is intentionally
+/// verb-only. Ordinary callers should prefer the typed cell APIs.
+pub fn form_by_id(id: &str, feature: &str) -> Result<FormSet, InflectionError> {
+    let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    if let Some(form) = lookup::table_form(id, feature) {
+        return Ok(form);
+    }
+    let parts = feature.split(':').collect::<Vec<_>>();
+    match parts.as_slice() {
+        ["verb", "finite", tense, person, number] if record.pos == "verb" => finite_verb_by_id(
+            id,
+            FiniteVerbCell {
+                tense: parse_feature_tense(tense)?,
+                person: parse_feature_person(person)?,
+                number: parse_feature_number(number)?,
+            },
+        ),
+        ["verb", "imperative", person, number] if record.pos == "verb" => imperative_by_id(
+            id,
+            ImperativeCell {
+                person: parse_feature_person(person)?,
+                number: parse_feature_number(number)?,
+            },
+        ),
+        ["verb", "l-participle", gender, number] if record.pos == "verb" => l_participle_by_id(
+            id,
+            LParticipleCell {
+                gender: parse_feature_gender(gender)?,
+                number: parse_feature_number(number)?,
+            },
+        ),
+        [
+            "verb",
+            "participle",
+            kind,
+            "adj",
+            form,
+            case,
+            number,
+            gender,
+            animacy,
+        ] if record.pos == "verb" => participle_by_id(
+            id,
+            ParticipleCell {
+                kind: parse_feature_participle_kind(kind)?,
+                adjective: AdjectiveCell {
+                    case: parse_feature_case(case)?,
+                    number: parse_feature_number(number)?,
+                    gender: parse_feature_gender(gender)?,
+                    animacy: parse_feature_animacy(animacy)?,
+                    form: parse_feature_adjective_form(form)?,
+                },
+            },
+        ),
+        ["verb", "participle", kind, "citation"] if record.pos == "verb" => {
+            participle_citation_by_id(id, parse_feature_participle_kind(kind)?)
+        }
+        ["verb", "infinitive"] if record.pos == "verb" => infinitive_by_id(id),
+        ["verb", "supine"] if record.pos == "verb" => supine_by_id(id),
+        ["verb", "verbal-noun"] if record.pos == "verb" => verbal_noun_by_id(id),
+        _ => lookup::override_form(id, feature).ok_or(InflectionError::UnsupportedCell),
+    }
+}
+
+fn invalid_feature(segment: &str) -> InflectionError {
+    InflectionError::InvalidInput {
+        reason: format!("invalid normalized feature segment: {segment}"),
+    }
+}
+
+fn parse_feature_tense(value: &str) -> Result<FiniteTense, InflectionError> {
+    match value {
+        "present" => Ok(FiniteTense::Present),
+        "imperfect" => Ok(FiniteTense::Imperfect),
+        "aorist" => Ok(FiniteTense::Aorist),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+fn parse_feature_person(value: &str) -> Result<Person, InflectionError> {
+    match value {
+        "1" => Ok(Person::First),
+        "2" => Ok(Person::Second),
+        "3" => Ok(Person::Third),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+fn parse_feature_number(value: &str) -> Result<Number, InflectionError> {
+    match value {
+        "sg" => Ok(Number::Singular),
+        "du" => Ok(Number::Dual),
+        "pl" => Ok(Number::Plural),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+fn parse_feature_gender(value: &str) -> Result<Gender, InflectionError> {
+    match value {
+        "m" => Ok(Gender::Masculine),
+        "f" => Ok(Gender::Feminine),
+        "n" => Ok(Gender::Neuter),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+fn parse_feature_case(value: &str) -> Result<Case, InflectionError> {
+    match value {
+        "nom" => Ok(Case::Nominative),
+        "gen" => Ok(Case::Genitive),
+        "dat" => Ok(Case::Dative),
+        "acc" => Ok(Case::Accusative),
+        "ins" => Ok(Case::Instrumental),
+        "loc" => Ok(Case::Locative),
+        "voc" => Ok(Case::Vocative),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+fn parse_feature_animacy(value: &str) -> Result<Animacy, InflectionError> {
+    match value {
+        "an" => Ok(Animacy::Animate),
+        "in" => Ok(Animacy::Inanimate),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+fn parse_feature_adjective_form(value: &str) -> Result<AdjectiveForm, InflectionError> {
+    match value {
+        "short" => Ok(AdjectiveForm::Short),
+        "long" => Ok(AdjectiveForm::Long),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+fn parse_feature_participle_kind(value: &str) -> Result<ParticipleKind, InflectionError> {
+    match value {
+        "present-active" => Ok(ParticipleKind::PresentActive),
+        "present-passive" => Ok(ParticipleKind::PresentPassive),
+        "past-active" => Ok(ParticipleKind::PastActive),
+        "past-passive" => Ok(ParticipleKind::PastPassive),
+        _ => Err(invalid_feature(value)),
+    }
+}
+
+#[derive(Clone)]
+struct UsedMetadata {
+    value: String,
+    evidence: MetadataEvidence,
+}
+
+fn generate_finite_from_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: FiniteVerbCell,
+) -> Result<FormSet, InflectionError> {
+    let mut analyses = Vec::new();
+    match cell.tense {
+        FiniteTense::Present => {
+            if metadata.present.is_empty() {
+                return Err(InflectionError::MissingLexicalMetadata {
+                    needed: vec![MetadataField::VerbClass, MetadataField::PresentStem],
+                });
+            }
+            for analysis in &metadata.present {
+                let mut lexeme = VerbLexeme::new(&metadata.lemma, analysis.class.value);
+                lexeme.aspect = metadata.aspect.as_ref().map(|aspect| aspect.value);
+                lexeme.stems.present = Some(analysis.stem.value.clone());
+                lexeme.stems.present_first_singular = analysis
+                    .first_singular_stem
+                    .as_ref()
+                    .map(|stem| stem.value.clone());
+                let predicted = old_church_slavonic_core::verb::finite(&lexeme, cell)?;
+                let mut selected = vec![used(&analysis.class), used(&analysis.stem)];
+                if cell.person == Person::First && cell.number == Number::Singular {
+                    if let Some(first) = &analysis.first_singular_stem {
+                        selected.push(used(first));
+                    }
+                }
+                analyses.push(metadata_analysis(predicted, selected));
+            }
+        }
+        FiniteTense::Imperfect => {
+            if metadata.imperfect.is_empty() {
+                return Err(InflectionError::MissingLexicalMetadata {
+                    needed: vec![
+                        MetadataField::ImperfectStem,
+                        MetadataField::ImperfectFormation,
+                    ],
+                });
+            }
+            for analysis in &metadata.imperfect {
+                let mut lexeme = metadata_verb(metadata);
+                lexeme.stems.imperfect = Some(analysis.stem.value.clone());
+                lexeme.formations.imperfect = Some(analysis.formation.value);
+                lexeme.formations.imperfect_variant_policy = Some(analysis.variant_policy.value);
+                let predicted = old_church_slavonic_core::verb::finite(&lexeme, cell)?;
+                analyses.push(metadata_analysis(
+                    predicted,
+                    vec![
+                        used(&analysis.stem),
+                        used(&analysis.formation),
+                        used(&analysis.variant_policy),
+                    ],
+                ));
+            }
+        }
+        FiniteTense::Aorist => {
+            if metadata.aorist.is_empty() {
+                return Err(InflectionError::MissingLexicalMetadata {
+                    needed: vec![MetadataField::AoristStem, MetadataField::AoristFormation],
+                });
+            }
+            for analysis in &metadata.aorist {
+                let mut lexeme = metadata_verb(metadata);
+                lexeme.stems.aorist = Some(analysis.stem.value.clone());
+                lexeme.formations.aorist = Some(analysis.formation.value);
+                let predicted = old_church_slavonic_core::verb::finite(&lexeme, cell)?;
+                analyses.push(metadata_analysis(
+                    predicted,
+                    vec![used(&analysis.stem), used(&analysis.formation)],
+                ));
+            }
+        }
+    }
+    Ok(metadata_form_set(&metadata.lemma, analyses))
+}
+
+fn generate_imperative_from_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: ImperativeCell,
+) -> Result<FormSet, InflectionError> {
+    if !cell.is_supported() {
+        return Err(InflectionError::HistoricallyInvalidCell);
+    }
+    if metadata.imperative.is_empty() {
+        return Err(InflectionError::MissingLexicalMetadata {
+            needed: vec![
+                MetadataField::ImperativeStem,
+                MetadataField::ImperativeFormation,
+            ],
+        });
+    }
+    let mut analyses = Vec::new();
+    for analysis in &metadata.imperative {
+        let mut lexeme = metadata_verb(metadata);
+        lexeme.stems.imperative = Some(analysis.stem.value.clone());
+        lexeme.formations.imperative = Some(analysis.formation.value);
+        let predicted = old_church_slavonic_core::verb::imperative(&lexeme, cell)?;
+        analyses.push(metadata_analysis(
+            predicted,
+            vec![used(&analysis.stem), used(&analysis.formation)],
+        ));
+    }
+    Ok(metadata_form_set(&metadata.lemma, analyses))
+}
+
+fn generate_l_participle_from_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: LParticipleCell,
+) -> Result<FormSet, InflectionError> {
+    if metadata.l_participle.is_empty() {
+        return Err(InflectionError::MissingLexicalMetadata {
+            needed: vec![MetadataField::LParticipleStem],
+        });
+    }
+    let mut analyses = Vec::new();
+    for analysis in &metadata.l_participle {
+        let mut lexeme = metadata_verb(metadata);
+        lexeme.stems.aorist = Some(analysis.stem.value.clone());
+        let predicted = old_church_slavonic_core::verb::l_participle(&lexeme, cell)?;
+        analyses.push(metadata_analysis(predicted, vec![used(&analysis.stem)]));
+    }
+    Ok(metadata_form_set(&metadata.lemma, analyses))
+}
+
+fn generate_participle_from_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: ParticipleCell,
+) -> Result<FormSet, InflectionError> {
+    let mut analyses = Vec::new();
+    match cell.kind {
+        ParticipleKind::PresentActive => {
+            if metadata.present_active_participle.is_empty() {
+                return missing_participle(
+                    MetadataField::PresentActiveParticipleStem,
+                    MetadataField::PresentActiveParticipleFormation,
+                );
+            }
+            for analysis in &metadata.present_active_participle {
+                let mut lexeme = metadata_verb(metadata);
+                lexeme.stems.present_active_participle = Some(analysis.stem.value.clone());
+                lexeme.formations.present_active_participle = Some(analysis.formation.value);
+                analyses.push(metadata_analysis(
+                    old_church_slavonic_core::verb::participle(&lexeme, cell)?,
+                    vec![used(&analysis.stem), used(&analysis.formation)],
+                ));
+            }
+        }
+        ParticipleKind::PresentPassive => {
+            if metadata.present_passive_participle.is_empty() {
+                return missing_participle(
+                    MetadataField::PresentPassiveParticipleStem,
+                    MetadataField::PresentPassiveParticipleFormation,
+                );
+            }
+            for analysis in &metadata.present_passive_participle {
+                let mut lexeme = metadata_verb(metadata);
+                lexeme.stems.present_passive_participle = Some(analysis.stem.value.clone());
+                lexeme.formations.present_passive_participle = Some(analysis.formation.value);
+                analyses.push(metadata_analysis(
+                    old_church_slavonic_core::verb::participle(&lexeme, cell)?,
+                    vec![used(&analysis.stem), used(&analysis.formation)],
+                ));
+            }
+        }
+        ParticipleKind::PastActive => {
+            if metadata.past_active_participle.is_empty() {
+                return missing_participle(
+                    MetadataField::PastActiveParticipleStem,
+                    MetadataField::PastActiveParticipleFormation,
+                );
+            }
+            for analysis in &metadata.past_active_participle {
+                let mut lexeme = metadata_verb(metadata);
+                lexeme.stems.past_active_participle = Some(analysis.stem.value.clone());
+                lexeme.formations.past_active_participle = Some(analysis.formation.value);
+                analyses.push(metadata_analysis(
+                    old_church_slavonic_core::verb::participle(&lexeme, cell)?,
+                    vec![used(&analysis.stem), used(&analysis.formation)],
+                ));
+            }
+        }
+        ParticipleKind::PastPassive => {
+            if metadata.past_passive_participle.is_empty() {
+                return missing_participle(
+                    MetadataField::PastPassiveParticipleStem,
+                    MetadataField::PastPassiveParticipleFormation,
+                );
+            }
+            for analysis in &metadata.past_passive_participle {
+                let mut lexeme = metadata_verb(metadata);
+                lexeme.stems.past_passive_participle = Some(analysis.stem.value.clone());
+                lexeme.formations.past_passive_participle = Some(analysis.formation.value);
+                analyses.push(metadata_analysis(
+                    old_church_slavonic_core::verb::participle(&lexeme, cell)?,
+                    vec![used(&analysis.stem), used(&analysis.formation)],
+                ));
+            }
+        }
+    }
+    Ok(metadata_form_set(&metadata.lemma, analyses))
+}
+
+fn missing_participle<T>(
+    stem: MetadataField,
+    formation: MetadataField,
+) -> Result<T, InflectionError> {
+    Err(InflectionError::MissingLexicalMetadata {
+        needed: vec![stem, formation],
+    })
+}
+
+fn metadata_verb(metadata: &DictionaryVerbMetadata) -> VerbLexeme {
+    let class = metadata
+        .present
+        .first()
+        .map_or(VerbClass::Irregular, |present| present.class.value);
+    let mut lexeme = VerbLexeme::new(&metadata.lemma, class);
+    lexeme.aspect = metadata.aspect.as_ref().map(|aspect| aspect.value);
+    lexeme
+}
+
+trait TraceMetadataValue {
+    fn trace_value(&self) -> String;
+}
+
+impl TraceMetadataValue for String {
+    fn trace_value(&self) -> String {
+        self.clone()
+    }
+}
+
+macro_rules! trace_debug_value {
+    ($($type:ty),+ $(,)?) => {
+        $(impl TraceMetadataValue for $type {
+            fn trace_value(&self) -> String {
+                format!("{self:?}")
+            }
+        })+
+    };
+}
+
+trace_debug_value!(
+    VerbClass,
+    ImperfectFormation,
+    ImperfectVariantPolicy,
+    AoristFormation,
+    ImperativeFormation,
+    PresentActiveParticipleFormation,
+    PresentPassiveParticipleFormation,
+    PastActiveParticipleFormation,
+    PastPassiveParticipleFormation,
+);
+
+fn used<T: TraceMetadataValue>(metadata: &SourcedMetadata<T>) -> UsedMetadata {
+    UsedMetadata {
+        value: metadata.value.trace_value(),
+        evidence: metadata.evidence.clone(),
+    }
+}
+
+fn metadata_analysis(predicted: PredictedForm, used: Vec<UsedMetadata>) -> FormAnalysis {
+    let source = FormSource::DictionaryMetadataRule {
+        rule_id: predicted.rule_id,
+    };
+    let mut trace = used
+        .iter()
+        .map(|metadata| RuleStep {
+            rule_id: RuleId::VerbDictionaryMetadata,
+            before: metadata.evidence.source_form.clone().unwrap_or_default(),
+            after: metadata.value.clone(),
+            reason: "select a validated dictionary principal-part field",
+        })
+        .collect::<Vec<_>>();
+    trace.extend(predicted.trace);
+    let mut evidence = used
+        .into_iter()
+        .map(|metadata| metadata.evidence)
+        .collect::<Vec<_>>();
+    evidence.push(MetadataEvidence {
+        field: None,
+        provenance: MetadataProvenance::ProductiveRuleOutput,
+        source_feature: Some(predicted.rule_id.code().to_string()),
+        source_form: None,
+        crosscheck_features: Vec::new(),
+        authority: Some("docs/MORPHOLOGY_SPEC.md".to_string()),
+    });
+    FormAnalysis {
+        variants: vec![FormVariant {
+            text: predicted.text,
+            romanization: None,
+        }],
+        source,
+        evidence,
+        trace,
+    }
+}
+
+fn metadata_form_set(lemma: &str, analyses: Vec<FormAnalysis>) -> FormSet {
+    let mut variants = Vec::new();
+    for analysis in &analyses {
+        for variant in &analysis.variants {
+            if !variants.contains(variant) {
+                variants.push(variant.clone());
+            }
+        }
+    }
+    let multiple = analyses.len() > 1;
+    let source = if multiple {
+        FormSource::DictionaryMetadataAnalyses
+    } else {
+        analyses
+            .first()
+            .map_or(FormSource::DictionaryMetadataAnalyses, |analysis| {
+                analysis.source.clone()
+            })
+    };
+    let trace = if multiple {
+        Vec::new()
+    } else {
+        analyses
+            .first()
+            .map_or_else(Vec::new, |analysis| analysis.trace.clone())
+    };
+    let mut warnings = vec![InflectionWarning::PredictedNotDictionaryBacked];
+    if multiple {
+        warnings.push(InflectionWarning::MultipleMorphologicalAnalyses);
+    }
+    FormSet {
+        lemma: lemma.to_string(),
+        variants,
+        source,
+        warnings,
+        trace,
+        analyses,
+    }
 }
 
 fn ensure_pos(id: &str, expected: PartOfSpeech) -> Result<(), InflectionError> {
@@ -521,6 +1101,7 @@ fn predicted_noun(
     ))
 }
 
+#[derive(Clone, Copy)]
 enum FormSourceKind {
     DictionaryMetadata,
     Explicit,
@@ -540,15 +1121,35 @@ fn predicted_set(lemma: &str, predicted: PredictedForm, kind: FormSourceKind) ->
             rule_id: predicted.rule_id,
         },
     };
+    let variants = vec![FormVariant {
+        text: predicted.text,
+        romanization: None,
+    }];
+    let evidence = vec![MetadataEvidence {
+        field: None,
+        provenance: match kind {
+            FormSourceKind::DictionaryMetadata => MetadataProvenance::DictionaryPrincipalPart,
+            FormSourceKind::Explicit => MetadataProvenance::ExplicitCallerMetadata,
+            FormSourceKind::Oov => MetadataProvenance::ProductiveRuleOutput,
+        },
+        source_feature: None,
+        source_form: None,
+        crosscheck_features: Vec::new(),
+        authority: None,
+    }];
+    let analyses = vec![FormAnalysis {
+        variants: variants.clone(),
+        source: source.clone(),
+        evidence,
+        trace: trace.clone(),
+    }];
     FormSet {
         lemma: lemma.to_string(),
-        variants: vec![FormVariant {
-            text: predicted.text,
-            romanization: None,
-        }],
+        variants,
         source,
         warnings: vec![InflectionWarning::PredictedNotDictionaryBacked],
         trace,
+        analyses,
     }
 }
 

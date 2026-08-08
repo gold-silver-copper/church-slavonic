@@ -278,10 +278,20 @@ pub enum ImperfectFormation {
     PalatalizedA,
 }
 
+/// Lexically/source-audited surface-variant policy for the imperfect system.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ImperfectVariantPolicy {
+    /// Emit only the independently specified uncontracted series.
+    UncontractedOnly,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AoristFormation {
     Asigmatic,
-    Sigmatic,
+    /// Primary sigmatic formation. Represented separately but not yet generated.
+    SigmaticPrimary,
+    /// Secondary sigmatic formation. Represented separately but not yet generated.
+    SigmaticSecondary,
     New,
 }
 
@@ -310,6 +320,14 @@ pub enum PresentPassiveParticipleFormation {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum PastActiveParticipleFormation {
     Ush,
+    /// The primary transformed i-stem series with `-ьш-` obliques.
+    Ish,
+    /// The underlying final `j` is declared by the formation and absent from
+    /// the supplied Cyrillic orthographic base before `-въш-` is attached.
+    VushAfterJDeletion,
+    /// Transform final `-ов` to `-оу` before attaching `-въш-`.
+    VushAfterOvToU,
+    /// Attach `-въш-` to a base on which no additional seam is required.
     Vush,
 }
 

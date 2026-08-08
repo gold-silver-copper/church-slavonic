@@ -7,10 +7,15 @@ The project uses four crates and one committed data boundary:
 ```text
 Kaikki/Wiktextract JSONL
   -> old-church-slavonic-extractor
-  -> data/extracted/*.tsv + reports/extraction-coverage.*
+  -> data/extracted/*.tsv, including verb_metadata.tsv
+     + reports/extraction-coverage.*
   -> generated Rust arrays
   -> old-church-slavonic facade
-       -> exact table cell, otherwise old-church-slavonic-core
+       -> resolve one lexeme ID
+       -> exact table cell
+       -> typed dictionary metadata
+       -> reviewed cell override
+       -> old-church-slavonic-core analysis/analyses
 
 external pinned UD CoNLL-U + native PROIEL/TOROT XML
   -> xtask hash/schema verification and lossless feature mappers
@@ -20,6 +25,13 @@ external pinned UD CoNLL-U + native PROIEL/TOROT XML
 The source dump is local and gitignored. The normalized registry is the committed,
 reviewable source for generated Rust. Runtime crates do not parse data files or do
 I/O. Cell lookup and full paradigms share the same resolver.
+
+The resolution order is structural, not a scoring preference. A row in `forms.tsv`
+always returns `DictionaryTable` before metadata or overrides are considered.
+`verb_metadata.tsv` is decoded into enums and provenance-bearing analyses for the
+same exact lexeme ID. A cell-specific approved override is considered only after
+that source-table miss. The core then runs each remaining analysis in rank order.
+No error is caught and replaced by a frequent class.
 
 ## Adopted from the sibling projects
 
@@ -46,8 +58,9 @@ I/O. Cell lookup and full paradigms share the same resolver.
 ## Verb-system boundary
 
 `VerbClass` selects only the present ending series. `VerbLexeme` independently owns
-present allomorphs, imperfect/aorist/imperative stems and formation enums, lexical
-aspect, and the four participial stem/formation pairs. This prevents lexical aspect
+present allomorphs, imperfect/aorist/imperative stems and formation enums, an
+explicit imperfect variant policy, lexical aspect, and the four participial
+stem/formation pairs. This prevents lexical aspect
 or a present class from silently choosing a past formation. The pure core returns a
 stable rule and trace; the facade keeps exact dictionary cells ahead of rule output.
 
@@ -55,6 +68,21 @@ Participial stem formation belongs to the verb module. Once formed, the stem cro
 one explicit boundary into `adjective::decline_stem`, the sole owner of short/long
 case-number-gender-animacy agreement. Corpus evaluators invoke these production
 entry points; they do not contain a second morphology implementation.
+
+`DictionaryVerbMetadata` is the runtime lexical boundary. Its present, imperfect,
+aorist, imperative, l-participle, and four non-l-participle members are independent
+ordered arrays. `SourcedMetadata<T>` binds a typed value to its source feature,
+source spelling, authority, cross-checks, field identity, and provenance. The
+normalized registry is permitted to serialize stable strings; construction rejects
+unknown system/field/formation codes, non-contiguous ranks, incomplete groups, and
+invalid stems before generation.
+
+`FormSet::analyses` preserves that analysis identity. Each generated analysis has a
+metadata-selection trace step followed by the productive core trace; participles
+then show the separate adjective-agreement step. `DictionaryMetadataAnalyses`
+denotes multiple ordered analyses, while a single analysis names its productive
+rule in `DictionaryMetadataRule`. Exact source variants retain their original order
+and are never relabeled as rule output.
 
 ## Unicode dependency
 

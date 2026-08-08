@@ -21,3 +21,8 @@ The source was modified by selecting OCS entries, rejecting unsafe cells, normal
 the accepted data, and generating static Rust tables. These are dictionary-generated
 forms, not automatically manuscript-attested forms. The noncommercial UD OCS PROIEL
 and native Syntacticus/PROIEL/TOROT evaluation corpora are not bundled.
+
+Productive morphology was independently audited against the University of Texas
+Linguistics Research Center, *Old Church Slavonic Online*,
+<https://lrc.la.utexas.edu/eieol_toc/ocsol>. It is cited as a grammatical authority;
+no lesson text or dataset from that site is bundled in this package.

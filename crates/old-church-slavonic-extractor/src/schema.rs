@@ -76,9 +76,44 @@ pub struct FormRow {
     pub source_tags: String,
 }
 
+/// One provenance-bearing field in a verb-system analysis.
+///
+/// The normalized file deliberately stores fields rather than a wide optional
+/// record. `system` and `analysis_rank` keep alternative aorists or participles
+/// separate, while `field` is validated against a closed vocabulary before the
+/// runtime registry is generated.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct VerbMetadataRow {
+    pub lexeme_id: String,
+    pub system: String,
+    pub analysis_rank: u16,
+    pub field: String,
+    pub value: String,
+    pub provenance: String,
+    pub source_feature: String,
+    pub source_form: String,
+    pub crosscheck_features: String,
+    pub authority: String,
+}
+
+/// One reviewed cell-specific correction, kept separate from source table rows
+/// so an override can never displace exact dictionary evidence.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct OverrideRow {
+    pub lexeme_id: String,
+    pub feature: String,
+    pub rank: u16,
+    pub form: String,
+    pub romanization: String,
+    pub reason: String,
+    pub authority: String,
+}
+
 #[derive(Debug, Default, Clone)]
 pub struct Registry {
     pub lexemes: Vec<LexemeRow>,
     pub aliases: Vec<AliasRow>,
     pub forms: Vec<FormRow>,
+    pub verb_metadata: Vec<VerbMetadataRow>,
+    pub overrides: Vec<OverrideRow>,
 }
