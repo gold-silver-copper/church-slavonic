@@ -1,6 +1,6 @@
 //! Structured inflection results and typed failures.
 
-use crate::{PartOfSpeech, RuleId, RuleStep};
+use crate::{PartOfSpeech, RequestedCell, RuleId, RuleStep};
 use core::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -65,6 +65,24 @@ impl FormSet {
         &self.primary().text
     }
 
+    /// Select a form using an explicit variant policy.
+    pub fn select(&self, policy: VariantPolicy) -> Result<&FormVariant, VariantSelectionError> {
+        match policy {
+            VariantPolicy::SourceFirst => Ok(self.primary()),
+            VariantPolicy::RequireUnique if self.variants.len() == 1 => Ok(self.primary()),
+            VariantPolicy::RequireUnique => Err(VariantSelectionError {
+                lemma: self.lemma.clone(),
+                variant_count: self.variants.len(),
+            }),
+        }
+    }
+
+    /// Return the only surface text, failing rather than discarding variants.
+    pub fn unique_text(&self) -> Result<&str, VariantSelectionError> {
+        self.select(VariantPolicy::RequireUnique)
+            .map(|variant| variant.text.as_str())
+    }
+
     /// All variants in deterministic source order.
     pub fn variants(&self) -> impl ExactSizeIterator<Item = &FormVariant> {
         self.variants.iter()
@@ -114,6 +132,34 @@ impl FormSet {
         self.warnings.push(warning);
     }
 }
+
+/// An explicit policy for selecting one source-ordered variant.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum VariantPolicy {
+    /// Choose the first form in deterministic source order.
+    SourceFirst,
+    /// Accept only a result that contains exactly one form.
+    RequireUnique,
+}
+
+/// A request for one surface form encountered multiple source variants.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct VariantSelectionError {
+    pub lemma: String,
+    pub variant_count: usize,
+}
+
+impl fmt::Display for VariantSelectionError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "lemma {:?} has {} source-ordered variants",
+            self.lemma, self.variant_count
+        )
+    }
+}
+
+impl std::error::Error for VariantSelectionError {}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FormSource {
@@ -201,10 +247,21 @@ pub struct LexemeSummary {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum InflectionError {
+    InvalidLemma {
+        input: String,
+        reason: String,
+    },
     InvalidInput {
         reason: String,
     },
-    UnknownLemma,
+    UnknownLemma {
+        lemma: String,
+        part_of_speech: PartOfSpeech,
+    },
+    UnknownLexemeId {
+        id: String,
+        expected_part_of_speech: Option<PartOfSpeech>,
+    },
     AmbiguousLexeme {
         candidates: Vec<LexemeSummary>,
     },
@@ -218,15 +275,92 @@ pub enum InflectionError {
         system: MetadataField,
         formation: String,
     },
-    HistoricallyInvalidCell,
-    UnsupportedCell,
+    HistoricallyInvalidCell {
+        /// Stable dictionary ID in facade calls; caller-supplied lemma in the
+        /// rule-only core, which has no dictionary identity.
+        lexeme_id: String,
+        cell: RequestedCell,
+    },
+    UnsupportedCell {
+        /// Stable dictionary ID in facade calls; caller-supplied lemma in the
+        /// rule-only core, which has no dictionary identity.
+        lexeme_id: String,
+        cell: RequestedCell,
+    },
+}
+
+impl InflectionError {
+    pub fn invalid_lemma(input: impl Into<String>, reason: impl Into<String>) -> Self {
+        Self::InvalidLemma {
+            input: input.into(),
+            reason: reason.into(),
+        }
+    }
+
+    pub fn unknown_lemma(lemma: impl Into<String>, part_of_speech: PartOfSpeech) -> Self {
+        Self::UnknownLemma {
+            lemma: lemma.into(),
+            part_of_speech,
+        }
+    }
+
+    pub fn unknown_id(
+        id: impl Into<String>,
+        expected_part_of_speech: Option<PartOfSpeech>,
+    ) -> Self {
+        Self::UnknownLexemeId {
+            id: id.into(),
+            expected_part_of_speech,
+        }
+    }
+
+    pub fn unsupported(lexeme_id: impl Into<String>, cell: RequestedCell) -> Self {
+        Self::UnsupportedCell {
+            lexeme_id: lexeme_id.into(),
+            cell,
+        }
+    }
+
+    pub fn historically_invalid(lexeme_id: impl Into<String>, cell: RequestedCell) -> Self {
+        Self::HistoricallyInvalidCell {
+            lexeme_id: lexeme_id.into(),
+            cell,
+        }
+    }
+
+    /// Replace a rule-layer lemma context with a stable facade lexeme identity.
+    pub fn with_lexeme_id(self, lexeme_id: impl Into<String>) -> Self {
+        let lexeme_id = lexeme_id.into();
+        match self {
+            Self::HistoricallyInvalidCell { cell, .. } => {
+                Self::HistoricallyInvalidCell { lexeme_id, cell }
+            }
+            Self::UnsupportedCell { cell, .. } => Self::UnsupportedCell { lexeme_id, cell },
+            other => other,
+        }
+    }
 }
 
 impl fmt::Display for InflectionError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::InvalidLemma { input, reason } => {
+                write!(f, "invalid lemma {input:?}: {reason}")
+            }
             Self::InvalidInput { reason } => write!(f, "invalid input: {reason}"),
-            Self::UnknownLemma => f.write_str("unknown lemma"),
+            Self::UnknownLemma {
+                lemma,
+                part_of_speech,
+            } => write!(f, "unknown {part_of_speech} lemma {lemma:?}"),
+            Self::UnknownLexemeId {
+                id,
+                expected_part_of_speech,
+            } => match expected_part_of_speech {
+                Some(part_of_speech) => {
+                    write!(f, "unknown {part_of_speech} lexeme ID {id:?}")
+                }
+                None => write!(f, "unknown lexeme ID {id:?}"),
+            },
             Self::AmbiguousLexeme { candidates } => {
                 write!(f, "ambiguous lemma ({} candidates)", candidates.len())
             }
@@ -239,8 +373,12 @@ impl fmt::Display for InflectionError {
             Self::UnsupportedFormation { system, formation } => {
                 write!(f, "unsupported {system:?}: {formation}")
             }
-            Self::HistoricallyInvalidCell => f.write_str("historically invalid paradigm cell"),
-            Self::UnsupportedCell => f.write_str("unsupported paradigm cell"),
+            Self::HistoricallyInvalidCell { lexeme_id, cell } => {
+                write!(f, "historically invalid cell {cell:?} for {lexeme_id:?}")
+            }
+            Self::UnsupportedCell { lexeme_id, cell } => {
+                write!(f, "unsupported cell {cell:?} for {lexeme_id:?}")
+            }
         }
     }
 }

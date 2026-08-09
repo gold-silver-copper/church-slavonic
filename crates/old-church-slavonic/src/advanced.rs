@@ -6,19 +6,24 @@
 /// Typed cell structures used by generic tools and paradigms.
 pub mod cells {
     pub use old_church_slavonic_core::{
-        AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, ImperativeCell,
-        LParticipleCell, NounCell, ParticipleCell, ParticipleKind,
+        AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, GenderedCell,
+        ImperativeCell, LParticipleCell, NounCell, ParticipleCell, ParticipleKind,
+        PersonalPronounCell, UngenderedCell,
     };
 }
 
 /// Stable dictionary-identity operations.
 pub mod by_id {
     pub use crate::resolver::{
-        adjective_by_id, adjective_comparatives_by_id, adjective_paradigm_by_id, finite_verb_by_id,
-        finite_verb_paradigm_by_id, imperative_by_id, imperative_paradigm_by_id, infinitive_by_id,
-        l_participle_by_id, l_participle_paradigm_by_id, noun_by_id, noun_paradigm_by_id,
-        participle_by_id, participle_citation_by_id, participle_paradigm_by_id, supine_by_id,
-        verb_paradigm_by_id, verbal_noun_by_id,
+        adjective_by_id, adjective_paradigm_by_id, comparative_citation_by_id, determiner_by_id,
+        determiner_paradigm_by_id, finite_by_id, finite_paradigm_by_id, gendered_numeral_by_id,
+        gendered_numeral_paradigm_by_id, gendered_pronoun_by_id, gendered_pronoun_paradigm_by_id,
+        imperative_by_id, imperative_paradigm_by_id, infinitive_by_id, l_participle_by_id,
+        l_participle_paradigm_by_id, noun_by_id, noun_paradigm_by_id, numeral_by_id,
+        numeral_paradigm_by_id, participle_by_id, participle_citation_by_id,
+        participle_paradigm_by_id, personal_pronoun_by_id, personal_pronoun_paradigm_by_id,
+        present_paradigm_by_id, pronoun_by_id, pronoun_paradigm_by_id, supine_by_id,
+        verbal_noun_by_id,
     };
 }
 

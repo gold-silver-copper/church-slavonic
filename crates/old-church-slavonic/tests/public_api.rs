@@ -12,11 +12,14 @@ use old_church_slavonic::advanced::rules::{
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
-    Adjective, Animacy, Case, FiniteTense, FormSource, Gender, InflectionError, InflectionWarning,
-    Noun, Number, PartOfSpeech, ParticipleKind, Person, Verb, adjective, adjective_paradigm,
-    aorist, finite_verb, finite_verb_paradigm, imperative, imperative_paradigm, imperfect,
-    infinitive, l_participle, l_participle_paradigm, noun, noun_paradigm, participle_paradigm,
-    past_active_participle, short_adjective, supine, verb, verb_paradigm,
+    Adjective, Animacy, Case, Determiner, FiniteTense, FormSource, Gender, GenderedCell,
+    InflectionError, InflectionWarning, Lemma, Noun, Number, Numeral, ParadigmLookupError,
+    PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, Pronoun, RequestedCell, Script,
+    UngenderedCell, VariantPolicy, Verb, adjective_paradigm, aorist, determiner,
+    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
+    imperative_paradigm, imperfect, infinitive, l_participle, l_participle_paradigm,
+    long_adjective, noun, noun_paradigm, numeral, participle_paradigm, past_active_participle,
+    personal_pronoun, present, present_paradigm, pronoun, short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -72,7 +75,7 @@ fn ordinary_calls_take_direct_grammar_and_keep_structured_results() {
         "обѣдома"
     );
     assert_eq!(
-        adjective(
+        long_adjective(
             "добръ",
             Case::Nominative,
             Number::Singular,
@@ -96,7 +99,7 @@ fn ordinary_calls_take_direct_grammar_and_keep_structured_results() {
         "добръ"
     );
     assert_eq!(
-        verb("благословити", Person::First, Number::Singular)
+        present("благословити", Person::First, Number::Singular)
             .expect("present")
             .primary_text(),
         "благословлѭ"
@@ -149,14 +152,14 @@ fn source_order_primary_access_never_discards_alternatives() {
             .warnings()
             .contains(&InflectionWarning::MultipleDictionaryVariants)
     );
-    let be = Verb::new("бꙑти").expect("unique verb");
+    let be = Verb::resolve("бꙑти").expect("unique verb");
     assert_eq!(
         be.aorist(Person::First, Number::Singular)
             .expect("handle aorists"),
         aorists
     );
     assert_eq!(
-        by_id::finite_verb_by_id(
+        by_id::finite_by_id(
             be.id(),
             FiniteVerbCell {
                 tense: FiniteTense::Aorist,
@@ -169,9 +172,7 @@ fn source_order_primary_access_never_discards_alternatives() {
     );
     assert_eq!(
         be.finite_paradigm()
-            .get(FiniteTense::Aorist, Person::First, Number::Singular,)
-            .expect("paradigm aorist cell")
-            .as_ref()
+            .form(FiniteTense::Aorist, Person::First, Number::Singular,)
             .expect("successful paradigm aorists"),
         &aorists
     );
@@ -181,8 +182,280 @@ fn source_order_primary_access_never_discards_alternatives() {
 }
 
 #[test]
+fn validated_lemmas_and_explicit_variant_selection_are_ergonomic() {
+    let lemma = Lemma::parse("обѣдъ").expect("validated lemma");
+    assert_eq!(lemma.script(), Script::Cyrillic);
+    assert_eq!(
+        noun(&lemma, Case::Dative, Number::Dual),
+        noun("обѣдъ", Case::Dative, Number::Dual)
+    );
+
+    let normalized = Lemma::parse("И\u{306}").expect("NFC normalized lemma");
+    assert_eq!(normalized.as_str(), "Й");
+    for invalid in ["слоword", "слоα", "<слово>", "\u{301}слово"] {
+        assert!(matches!(
+            Lemma::parse(invalid),
+            Err(InflectionError::InvalidLemma { input, .. }) if input == invalid
+        ));
+        assert!(matches!(
+            noun(invalid, Case::Nominative, Number::Singular),
+            Err(InflectionError::InvalidLemma { input, .. }) if input == invalid
+        ));
+    }
+
+    let unique = noun("обѣдъ", Case::Dative, Number::Dual).expect("unique form");
+    assert_eq!(unique.unique_text().expect("one form"), "обѣдома");
+    assert_eq!(
+        unique
+            .select(VariantPolicy::SourceFirst)
+            .expect("explicit source-first")
+            .text,
+        "обѣдома"
+    );
+    let variants = aorist("бꙑти", Person::First, Number::Singular).expect("variants");
+    let error = variants.unique_text().expect_err("must reject two forms");
+    assert_eq!(error.lemma, "бꙑти");
+    assert_eq!(error.variant_count, 2);
+}
+
+#[test]
+fn restrained_prelude_supports_an_ordinary_workflow() {
+    use old_church_slavonic::prelude::*;
+
+    let lemma = Lemma::parse("обѣдъ").expect("validated prelude lemma");
+    let forms = noun(&lemma, Case::Dative, Number::Dual).expect("prelude inflection");
+    assert_eq!(forms.unique_text().expect("unique table cell"), "обѣдома");
+    assert_eq!(
+        Noun::resolve(&lemma).expect("prelude handle").lemma(),
+        lemma.as_str()
+    );
+}
+
+#[test]
+fn ordinary_closed_class_handles_share_direct_by_id_and_paradigm_paths() {
+    let which = Determiner::resolve("кꙑи").expect("determiner");
+    assert_eq!(
+        Determiner::from_id(which.id()).expect("rebound determiner"),
+        which
+    );
+    let determiner_cell = GenderedCell {
+        case: Case::Accusative,
+        number: Number::Singular,
+        gender: Gender::Feminine,
+    };
+    let direct = determiner(
+        "кꙑи",
+        determiner_cell.case,
+        determiner_cell.number,
+        determiner_cell.gender,
+    );
+    assert_eq!(
+        direct,
+        which.form(
+            determiner_cell.case,
+            determiner_cell.number,
+            determiner_cell.gender
+        )
+    );
+    assert_eq!(direct, by_id::determiner_by_id(which.id(), determiner_cell));
+    assert_eq!(
+        direct.as_ref().expect("determiner cell"),
+        determiner_paradigm("кꙑи")
+            .expect("determiner paradigm")
+            .form(
+                determiner_cell.case,
+                determiner_cell.number,
+                determiner_cell.gender
+            )
+            .expect("paradigm cell")
+    );
+
+    let reflexive = Pronoun::resolve("сѧ").expect("reflexive pronoun");
+    assert_eq!(
+        Pronoun::from_id(reflexive.id()).expect("rebound pronoun"),
+        reflexive
+    );
+    let plain_cell = UngenderedCell {
+        case: Case::Genitive,
+        number: Number::Singular,
+    };
+    let direct = pronoun("сѧ", plain_cell.case, plain_cell.number);
+    assert_eq!(direct, reflexive.form(plain_cell.case, plain_cell.number));
+    assert_eq!(direct, by_id::pronoun_by_id(reflexive.id(), plain_cell));
+    assert_eq!(
+        direct.as_ref().expect("pronoun"),
+        reflexive
+            .paradigm()
+            .form(plain_cell.case, plain_cell.number)
+            .expect("row")
+    );
+
+    let first = Pronoun::resolve("азъ").expect("personal pronoun table");
+    let personal_cell = PersonalPronounCell {
+        case: Case::Dative,
+        number: Number::Singular,
+        person: Person::First,
+    };
+    let direct = personal_pronoun(
+        "азъ",
+        personal_cell.case,
+        personal_cell.number,
+        personal_cell.person,
+    );
+    assert_eq!(
+        direct,
+        first.personal(
+            personal_cell.case,
+            personal_cell.number,
+            personal_cell.person
+        )
+    );
+    assert_eq!(
+        direct,
+        by_id::personal_pronoun_by_id(first.id(), personal_cell)
+    );
+    assert_eq!(
+        direct.as_ref().expect("personal pronoun"),
+        first
+            .personal_paradigm()
+            .form(
+                personal_cell.case,
+                personal_cell.number,
+                personal_cell.person
+            )
+            .expect("personal paradigm row")
+    );
+
+    let third = Pronoun::resolve("онъ").expect("gendered pronoun");
+    let gendered_cell = GenderedCell {
+        case: Case::Dative,
+        number: Number::Singular,
+        gender: Gender::Feminine,
+    };
+    let direct = gendered_pronoun(
+        "онъ",
+        gendered_cell.case,
+        gendered_cell.number,
+        gendered_cell.gender,
+    );
+    assert_eq!(
+        direct,
+        third.gendered(
+            gendered_cell.case,
+            gendered_cell.number,
+            gendered_cell.gender,
+        )
+    );
+    assert_eq!(
+        direct,
+        by_id::gendered_pronoun_by_id(third.id(), gendered_cell)
+    );
+    assert_eq!(
+        direct.as_ref().expect("gendered pronoun"),
+        third
+            .gendered_paradigm()
+            .form(
+                gendered_cell.case,
+                gendered_cell.number,
+                gendered_cell.gender,
+            )
+            .expect("gendered paradigm row")
+    );
+
+    let nine = Numeral::resolve("девѧть").expect("cardinal numeral");
+    assert_eq!(Numeral::from_id(nine.id()).expect("rebound numeral"), nine);
+    let numeral_cell = UngenderedCell {
+        case: Case::Genitive,
+        number: Number::Singular,
+    };
+    let direct = numeral("девѧть", numeral_cell.case, numeral_cell.number);
+    assert_eq!(direct, nine.form(numeral_cell.case, numeral_cell.number));
+    assert_eq!(direct, by_id::numeral_by_id(nine.id(), numeral_cell));
+    assert_eq!(
+        direct.as_ref().expect("numeral"),
+        nine.paradigm()
+            .form(numeral_cell.case, numeral_cell.number)
+            .expect("numeral paradigm row")
+    );
+
+    let first_ordinal = Numeral::resolve("прьвъ").expect("gendered numeral");
+    let numeral_cell = GenderedCell {
+        case: Case::Nominative,
+        number: Number::Singular,
+        gender: Gender::Feminine,
+    };
+    let direct = gendered_numeral(
+        "прьвъ",
+        numeral_cell.case,
+        numeral_cell.number,
+        numeral_cell.gender,
+    );
+    assert_eq!(
+        direct,
+        first_ordinal.gendered(numeral_cell.case, numeral_cell.number, numeral_cell.gender,)
+    );
+    assert_eq!(
+        direct,
+        by_id::gendered_numeral_by_id(first_ordinal.id(), numeral_cell)
+    );
+    assert_eq!(
+        direct.as_ref().expect("gendered numeral"),
+        first_ordinal
+            .gendered_paradigm()
+            .form(numeral_cell.case, numeral_cell.number, numeral_cell.gender)
+            .expect("gendered numeral paradigm row")
+    );
+}
+
+#[test]
+fn paradigm_access_distinguishes_unrepresented_and_failed_cells() {
+    let imperative_table = imperative_paradigm("благословити").expect("imperative table");
+    assert!(matches!(
+        imperative_table.form(Person::Third, Number::Plural),
+        Err(ParadigmLookupError::NotRepresented)
+    ));
+
+    let determiner_id = only_id("кꙑи", PartOfSpeech::Determiner);
+    let requested = ClosedClassCell {
+        case: Case::Vocative,
+        number: Number::Dual,
+        gender: Some(Gender::Masculine),
+        person: None,
+    };
+    assert_eq!(
+        determiner(
+            "кꙑи",
+            requested.case,
+            requested.number,
+            requested.gender.expect("gendered request"),
+        ),
+        Err(InflectionError::UnsupportedCell {
+            lexeme_id: determiner_id,
+            cell: RequestedCell::ClosedClass {
+                part_of_speech: PartOfSpeech::Determiner,
+                cell: requested,
+            },
+        })
+    );
+
+    let determiner_table = determiner_paradigm("кꙑи").expect("determiner table");
+    assert!(matches!(
+        determiner_table.form(Case::Vocative, Number::Dual, Gender::Masculine),
+        Err(ParadigmLookupError::Failed(
+            InflectionError::UnsupportedCell { .. }
+        ))
+    ));
+    assert!(!determiner_table.successes().collect::<Vec<_>>().is_empty());
+    assert!(!determiner_table.failures().collect::<Vec<_>>().is_empty());
+    assert_eq!(
+        determiner_table.clone().into_rows().len(),
+        determiner_table.len()
+    );
+}
+
+#[test]
 fn resolved_noun_and_adjective_handles_share_free_and_by_id_paths() {
-    let meal = Noun::new("обѣдъ").expect("unique noun");
+    let meal = Noun::resolve("обѣдъ").expect("unique noun");
     let rebound = Noun::from_id(meal.id()).expect("valid noun ID");
     assert_eq!(meal, rebound);
     let direct = noun("обѣдъ", Case::Dative, Number::Dual);
@@ -217,7 +490,7 @@ fn resolved_noun_and_adjective_handles_share_free_and_by_id_paths() {
         paradigm
     );
 
-    let good = Adjective::new("добръ").expect("unique adjective");
+    let good = Adjective::resolve("добръ").expect("unique adjective");
     let long = good.long(
         Case::Nominative,
         Number::Singular,
@@ -226,7 +499,7 @@ fn resolved_noun_and_adjective_handles_share_free_and_by_id_paths() {
     );
     assert_eq!(
         long,
-        adjective(
+        long_adjective(
             "добръ",
             Case::Nominative,
             Number::Singular,
@@ -238,7 +511,7 @@ fn resolved_noun_and_adjective_handles_share_free_and_by_id_paths() {
     assert_eq!(adjective_table, good.paradigm());
     for outcome in &adjective_table {
         let direct = match outcome.cell.form {
-            AdjectiveForm::Long => adjective(
+            AdjectiveForm::Long => long_adjective(
                 "добръ",
                 outcome.cell.case,
                 outcome.cell.number,
@@ -263,35 +536,35 @@ fn resolved_noun_and_adjective_handles_share_free_and_by_id_paths() {
 
 #[test]
 fn resolved_verb_handle_and_every_paradigm_use_the_cell_resolver() {
-    let bless = Verb::new("благословити").expect("unique verb");
+    let bless = Verb::resolve("благословити").expect("unique verb");
     assert_eq!(Verb::from_id(bless.id()).expect("valid verb ID"), bless);
     assert_eq!(
         bless.present(Person::First, Number::Singular),
-        verb("благословити", Person::First, Number::Singular)
+        present("благословити", Person::First, Number::Singular)
     );
     assert_eq!(
-        verb_paradigm("благословити").expect("present table"),
-        bless.paradigm()
+        present_paradigm("благословити").expect("present table"),
+        bless.present_paradigm()
     );
     assert_eq!(
-        by_id::verb_paradigm_by_id(bless.id()).expect("present table by ID"),
-        bless.paradigm()
+        by_id::present_paradigm_by_id(bless.id()).expect("present table by ID"),
+        bless.present_paradigm()
     );
-    for outcome in bless.paradigm() {
+    for outcome in bless.present_paradigm() {
         assert_eq!(outcome.cell.tense, FiniteTense::Present);
         assert_eq!(
             outcome.result,
-            verb("благословити", outcome.cell.person, outcome.cell.number)
+            present("благословити", outcome.cell.person, outcome.cell.number)
         );
     }
 
-    let finite = finite_verb_paradigm("благословити").expect("finite paradigm");
-    assert_eq!(finite.len(), 27);
-    assert_eq!(finite, bless.finite_paradigm());
-    for outcome in &finite {
+    let finite_table = finite_paradigm("благословити").expect("finite paradigm");
+    assert_eq!(finite_table.len(), 27);
+    assert_eq!(finite_table, bless.finite_paradigm());
+    for outcome in &finite_table {
         assert_eq!(
             &outcome.result,
-            &finite_verb(
+            &finite(
                 "благословити",
                 outcome.cell.tense,
                 outcome.cell.person,
@@ -300,7 +573,7 @@ fn resolved_verb_handle_and_every_paradigm_use_the_cell_resolver() {
         );
         assert_eq!(
             &outcome.result,
-            &by_id::finite_verb_by_id(bless.id(), outcome.cell)
+            &by_id::finite_by_id(bless.id(), outcome.cell)
         );
     }
 
@@ -334,7 +607,7 @@ fn resolved_verb_handle_and_every_paradigm_use_the_cell_resolver() {
 #[test]
 fn named_participle_handle_preserves_competing_metadata_analyses() {
     let participle = past_active_participle("благословити").expect("past active participle");
-    let handle_participle = Verb::new("благословити")
+    let handle_participle = Verb::resolve("благословити")
         .expect("unique verb")
         .past_active_participle()
         .expect("handle participle");
@@ -482,16 +755,23 @@ fn advanced_explicit_metadata_is_independent_and_typed() {
 
 #[test]
 fn ambiguity_unknown_missing_metadata_and_invalid_cells_remain_distinct() {
+    let ambiguity = noun("блѧдь", Case::Nominative, Number::Singular)
+        .expect_err("fixture has multiple dictionary identities");
+    let InflectionError::AmbiguousLexeme { candidates } = ambiguity else {
+        panic!("expected ambiguity, got {ambiguity:?}");
+    };
+    assert!(candidates.len() > 1);
+    assert!(candidates.iter().all(|candidate| !candidate.id.is_empty()));
+
+    assert_eq!(
+        present("несуществовати", Person::Third, Number::Singular),
+        Err(InflectionError::UnknownLemma {
+            lemma: "несуществовати".to_string(),
+            part_of_speech: PartOfSpeech::Verb,
+        })
+    );
     assert!(matches!(
-        noun("блѧдь", Case::Nominative, Number::Singular),
-        Err(InflectionError::AmbiguousLexeme { .. })
-    ));
-    assert!(matches!(
-        verb("несуществовати", Person::Third, Number::Singular),
-        Err(InflectionError::UnknownLemma)
-    ));
-    assert!(matches!(
-        finite_verb(
+        finite(
             "благословити",
             FiniteTense::Aorist,
             Person::First,
@@ -500,11 +780,17 @@ fn ambiguity_unknown_missing_metadata_and_invalid_cells_remain_distinct() {
         Err(InflectionError::MissingLexicalMetadata { needed })
             if needed == vec![MetadataField::AoristStem, MetadataField::AoristFormation]
     ));
-    assert!(matches!(
-        imperative("благословити", Person::Third, Number::Dual),
-        Err(InflectionError::HistoricallyInvalidCell)
-    ));
     let id = only_id("благословити", PartOfSpeech::Verb);
+    assert_eq!(
+        imperative("благословити", Person::Third, Number::Dual),
+        Err(InflectionError::HistoricallyInvalidCell {
+            lexeme_id: id.clone(),
+            cell: RequestedCell::Imperative(ImperativeCell {
+                person: Person::Third,
+                number: Number::Dual,
+            }),
+        })
+    );
     assert!(matches!(
         raw_features::form_by_id(&id, "verb:finite:future:1:sg"),
         Err(InflectionError::InvalidInput { .. })
@@ -512,9 +798,73 @@ fn ambiguity_unknown_missing_metadata_and_invalid_cells_remain_distinct() {
 }
 
 #[test]
+fn grammar_all_inventories_are_complete_and_stably_ordered() {
+    assert_eq!(
+        Case::ALL,
+        [
+            Case::Nominative,
+            Case::Genitive,
+            Case::Dative,
+            Case::Accusative,
+            Case::Instrumental,
+            Case::Locative,
+            Case::Vocative,
+        ]
+    );
+    assert_eq!(
+        Number::ALL,
+        [Number::Singular, Number::Dual, Number::Plural]
+    );
+    assert_eq!(
+        Gender::ALL,
+        [Gender::Masculine, Gender::Feminine, Gender::Neuter]
+    );
+    assert_eq!(Animacy::ALL, [Animacy::Animate, Animacy::Inanimate]);
+    assert_eq!(Person::ALL, [Person::First, Person::Second, Person::Third]);
+    assert_eq!(
+        AdjectiveForm::ALL,
+        [AdjectiveForm::Short, AdjectiveForm::Long]
+    );
+    assert_eq!(
+        FiniteTense::ALL,
+        [
+            FiniteTense::Present,
+            FiniteTense::Imperfect,
+            FiniteTense::Aorist,
+        ]
+    );
+    assert_eq!(
+        ParticipleKind::ALL,
+        [
+            ParticipleKind::PresentActive,
+            ParticipleKind::PresentPassive,
+            ParticipleKind::PastActive,
+            ParticipleKind::PastPassive,
+        ]
+    );
+    assert_eq!(ImperativeCell::SUPPORTED.len(), 6);
+    assert!(
+        ImperativeCell::SUPPORTED
+            .iter()
+            .copied()
+            .all(ImperativeCell::is_supported)
+    );
+    assert_eq!(
+        Number::ALL
+            .into_iter()
+            .flat_map(|number| Person::ALL
+                .into_iter()
+                .map(move |person| ImperativeCell { person, number }))
+            .filter(|cell| cell.is_supported())
+            .collect::<Vec<_>>(),
+        ImperativeCell::SUPPORTED
+    );
+}
+
+#[test]
 fn reviewed_override_follows_exact_table_and_keeps_authority() {
     let id = only_id("бꙑти", PartOfSpeech::Verb);
-    let by_id = by_id::finite_verb_by_id(
+    let by_id = by_id::finite_by_id(
         &id,
         FiniteVerbCell {
             tense: FiniteTense::Imperfect,
@@ -676,24 +1026,83 @@ fn exercise_public_surface(hostile: &str) {
 
     let _ = old_church_slavonic::lookup(hostile, PartOfSpeech::Noun);
     let _ = noun(hostile, Case::Nominative, Number::Singular);
-    let _ = adjective(
+    let _ = long_adjective(
         hostile,
         Case::Nominative,
         Number::Singular,
         Gender::Masculine,
         Animacy::Inanimate,
     );
-    let _ = verb(hostile, Person::First, Number::Singular);
+    let _ = short_adjective(
+        hostile,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    );
+    let _ = determiner(
+        hostile,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+    );
+    let _ = pronoun(hostile, Case::Nominative, Number::Singular);
+    let _ = personal_pronoun(hostile, Case::Nominative, Number::Singular, Person::First);
+    let _ = gendered_pronoun(
+        hostile,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+    );
+    let _ = numeral(hostile, Case::Nominative, Number::Singular);
+    let _ = gendered_numeral(
+        hostile,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+    );
+    let _ = present(hostile, Person::First, Number::Singular);
+    let _ = imperfect(hostile, Person::First, Number::Singular);
+    let _ = aorist(hostile, Person::First, Number::Singular);
+    let _ = finite(
+        hostile,
+        FiniteTense::Present,
+        Person::First,
+        Number::Singular,
+    );
     let _ = imperative(hostile, Person::Second, Number::Singular);
-    let _ = Noun::new(hostile);
-    let _ = Adjective::new(hostile);
-    let _ = Verb::new(hostile);
+    let _ = l_participle(hostile, Gender::Masculine, Number::Singular);
+    let _ = infinitive(hostile);
+    let _ = supine(hostile);
+    let _ = old_church_slavonic::verbal_noun(hostile);
+    let _ = old_church_slavonic::comparative_citation(hostile);
+    let _ = old_church_slavonic::present_active_participle(hostile);
+    let _ = old_church_slavonic::present_passive_participle(hostile);
+    let _ = old_church_slavonic::past_active_participle(hostile);
+    let _ = old_church_slavonic::past_passive_participle(hostile);
+    let _ = Noun::resolve(hostile);
+    let _ = Adjective::resolve(hostile);
+    let _ = Verb::resolve(hostile);
+    let _ = Determiner::resolve(hostile);
+    let _ = Pronoun::resolve(hostile);
+    let _ = Numeral::resolve(hostile);
     let _ = noun_paradigm(hostile);
-    let _ = finite_verb_paradigm(hostile);
+    let _ = adjective_paradigm(hostile);
+    let _ = determiner_paradigm(hostile);
+    let _ = old_church_slavonic::pronoun_paradigm(hostile);
+    let _ = old_church_slavonic::personal_pronoun_paradigm(hostile);
+    let _ = old_church_slavonic::gendered_pronoun_paradigm(hostile);
+    let _ = old_church_slavonic::numeral_paradigm(hostile);
+    let _ = old_church_slavonic::gendered_numeral_paradigm(hostile);
+    let _ = present_paradigm(hostile);
+    let _ = finite_paradigm(hostile);
+    let _ = imperative_paradigm(hostile);
+    let _ = l_participle_paradigm(hostile);
+    let _ = participle_paradigm(hostile, ParticipleKind::PresentActive);
 
     let _ = by_id::noun_by_id(hostile, noun_cell);
     let _ = by_id::adjective_by_id(hostile, adjective_cell);
-    let _ = by_id::finite_verb_by_id(hostile, finite_cell);
+    let _ = by_id::finite_by_id(hostile, finite_cell);
     let _ = by_id::imperative_by_id(hostile, imperative_cell);
     let _ = by_id::l_participle_by_id(hostile, l_cell);
     let _ = by_id::participle_by_id(hostile, participle_cell);

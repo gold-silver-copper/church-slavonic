@@ -23,7 +23,7 @@ pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, Inf
         number_restriction: lexeme.number_restriction,
     };
     let lexeme = &normalized_lexeme;
-    enforce_number(lexeme.number_restriction, cell.number)?;
+    enforce_number(&lexeme.lemma, lexeme.number_restriction, cell)?;
     match lexeme.class {
         NounClass::OMasculineHard => decline_o_masculine_hard(lexeme, cell),
         NounClass::ONeuterHard => decline_o_neuter_hard(lexeme, cell),
@@ -371,17 +371,24 @@ fn decline_v_feminine(
     Ok(join(stem, ending, Mutation::None, RuleId::NounVFeminine))
 }
 
-fn enforce_number(restriction: NumberRestriction, number: Number) -> Result<(), InflectionError> {
+fn enforce_number(
+    lemma: &str,
+    restriction: NumberRestriction,
+    cell: NounCell,
+) -> Result<(), InflectionError> {
     let supported = match restriction {
         NumberRestriction::All => true,
-        NumberRestriction::SingularOnly => number == Number::Singular,
-        NumberRestriction::DualOnly => number == Number::Dual,
-        NumberRestriction::PluralOnly => number == Number::Plural,
+        NumberRestriction::SingularOnly => cell.number == Number::Singular,
+        NumberRestriction::DualOnly => cell.number == Number::Dual,
+        NumberRestriction::PluralOnly => cell.number == Number::Plural,
     };
     if supported {
         Ok(())
     } else {
-        Err(InflectionError::UnsupportedCell)
+        Err(InflectionError::unsupported(
+            lemma,
+            crate::RequestedCell::Noun(cell),
+        ))
     }
 }
 
@@ -817,7 +824,7 @@ mod tests {
         lexeme.number_restriction = NumberRestriction::PluralOnly;
         assert!(matches!(
             decline(&lexeme, cell),
-            Err(InflectionError::UnsupportedCell)
+            Err(InflectionError::UnsupportedCell { .. })
         ));
 
         for lemma in ["", "два слова", "слово\0"] {

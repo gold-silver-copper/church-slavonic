@@ -15,10 +15,10 @@ fn main() -> Result<(), InflectionError> {
     let dual = noun("обѣдъ", Case::Dative, Number::Dual)?;
     println!("dictionary dual: {dual:?}");
 
-    let meal = Noun::new("обѣдъ")?;
+    let meal = Noun::resolve("обѣдъ")?;
     println!("dictionary noun paradigm: {} cells", meal.paradigm().len());
 
-    let good = Adjective::new("добръ")?;
+    let good = Adjective::resolve("добръ")?;
     let short = good.short(
         Case::Nominative,
         Number::Singular,
@@ -35,7 +35,7 @@ fn main() -> Result<(), InflectionError> {
 
     let aorist = aorist("бꙑти", Person::First, Number::Singular)?;
     println!("dictionary verb variants: {aorist:?}");
-    let be = Verb::new("бꙑти")?;
+    let be = Verb::resolve("бꙑти")?;
     let raw = dictionary_paradigm_by_id(be.id())?;
     println!("dictionary verb paradigm: {} extracted cells", raw.len());
 

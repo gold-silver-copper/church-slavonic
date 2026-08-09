@@ -6,11 +6,20 @@ use old_church_slavonic_core::{
     LexemeSummary, MetadataEvidence, MetadataProvenance, PartOfSpeech,
 };
 
+/// Return every dictionary identity matching one normalized lemma and part of speech.
+///
+/// ```
+/// use old_church_slavonic::{lookup, PartOfSpeech};
+/// let candidates = lookup("обѣдъ", PartOfSpeech::Noun)?;
+/// assert_eq!(candidates.len(), 1);
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
 pub fn lookup(
     lemma: &str,
     part_of_speech: PartOfSpeech,
 ) -> Result<Vec<LexemeSummary>, InflectionError> {
-    let key = old_church_slavonic_core::orthography::lookup_key(lemma)?;
+    let lemma = old_church_slavonic_core::Lemma::parse(lemma)?;
+    let key = old_church_slavonic_core::orthography::lookup_key(lemma.as_str())?;
     let start = ALIASES.partition_point(|alias| alias.key < key.as_str());
     let end = ALIASES.partition_point(|alias| alias.key <= key.as_str());
     let mut ids: Vec<&str> = ALIASES[start..end]
@@ -34,7 +43,7 @@ pub(crate) fn resolve_one(
 ) -> Result<&'static LexemeRecord, InflectionError> {
     let candidates = lookup(lemma, part_of_speech)?;
     match candidates.as_slice() {
-        [] => Err(InflectionError::UnknownLemma),
+        [] => Err(InflectionError::unknown_lemma(lemma, part_of_speech)),
         [one] => find_lexeme(&one.id).ok_or_else(|| InflectionError::InvalidInput {
             reason: "generated alias points at a missing lexeme".to_string(),
         }),

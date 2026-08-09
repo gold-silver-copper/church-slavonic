@@ -403,7 +403,7 @@ fn generated_form_index() -> &'static BTreeMap<String, Vec<DictionaryFormMatch>>
                     }
                 }
                 PartOfSpeech::Verb => {
-                    if let Ok(paradigm) = by_id::finite_verb_paradigm_by_id(&id) {
+                    if let Ok(paradigm) = by_id::finite_paradigm_by_id(&id) {
                         for outcome in paradigm.iter() {
                             if let Ok(forms) = &outcome.result {
                                 add(outcome.cell.key(), forms);

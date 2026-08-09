@@ -6,16 +6,21 @@ with `cargo xtask check-all`; run the injected, temporary failure cases with
 process-specific temporary directory, mutates the copy, requires the named guard to
 fail, restores the copied artifact, and deletes the directory.
 
-All witnesses below were executed successfully on 2026-08-08. No witness mutates the
+All witnesses below were executed successfully on 2026-08-09. No witness mutates the
 committed workspace.
 
 | Invariant | Guard owner | Minimal injected witness | Observed failure |
 |---|---|---|---|
 | facade root remains curated | public API structure scan | append `pub use old_church_slavonic_core::*` to copied facade source | blanket core re-export |
+| raw normalized keys stay specialist-only | root/prelude namespace scan | re-export copied `advanced::raw_features::form_by_id` at the root | raw feature access escaped its namespace |
+| ordinary lookup validates lemmas | lookup delegation scan | replace copied `Lemma::parse` with low-level display normalization | validated lemma parsing bypassed |
 | ordinary calls take direct grammar dimensions | public API signature scan | replace copied `noun(lemma, case, number)` parameters with `NounCell` | ordinary root function requires a cell struct |
 | successful form sets are structurally nonempty | private-field/constructor scan | make copied `FormSet::variants` public | nonempty construction invariant lost |
+| variant reduction stays explicit | result API structure scan plus integration tests | remove `RequireUnique` or source-first selection | lossless selection contract fails |
+| contextual failures retain identity and cell | error-shape scan plus exact integration assertions | remove lemma/POS or lexeme-ID/requested-cell fields | contextual error contract fails |
 | convenience calls use the canonical resolver | root delegation scan | replace copied `resolver::noun` delegation with a direct core call | canonical delegation missing |
 | paradigms retain failed cells | paradigm-builder scan | conditionally continue when copied `noun_by_id` returns an error | canonical `CellOutcome` missing / failure filter detected |
+| paradigms have direct typed access and views | paradigm API scan plus integration tests | remove `form`, `successes`, `failures`, or `into_rows` | paradigm ergonomics contract fails |
 | every root function has a runnable rustdoc example | root rustdoc scan plus doctests | remove the copied noun example fences | root function lacks an example |
 | generated registry is current | `check-registry` deterministic emitter comparison | append one comment to copied `generated/registry.rs` | stale generated registry |
 | cell/rank keys are unique | registry semantic validator | duplicate one copied form row | duplicate form key |

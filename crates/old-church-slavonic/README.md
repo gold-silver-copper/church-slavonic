@@ -1,86 +1,159 @@
 # old-church-slavonic
 
-Dictionary-backed Old Church Slavonic inflection starts with a lemma and direct
-grammatical dimensions:
+Offline, dictionary-backed Old Church Slavonic inflection with a typed
+lemma-plus-grammar API. The bundled snapshot is derived from English Wiktionary;
+runtime code performs no file or network access.
+
+## One direct cell
 
 ```rust
-use old_church_slavonic::{noun, verb, Case, Number, Person};
+use old_church_slavonic::{noun, present, Case, Number, Person};
 
 let dual = noun("обѣдъ", Case::Dative, Number::Dual)?;
 assert_eq!(dual.primary_text(), "обѣдома");
 
-let present = verb("благословити", Person::First, Number::Singular)?;
-assert_eq!(present.primary_text(), "благословлѭ");
+let blessing = present("благословити", Person::First, Number::Singular)?;
+assert_eq!(blessing.primary_text(), "благословлѭ");
 # Ok::<(), old_church_slavonic::InflectionError>(())
 ```
 
-Dictionary determiners use the same direct grammatical dimensions:
+Every raw lemma goes through `Lemma::parse`: input is NFC-normalized, historical
+characters and diacritics are preserved, Cyrillic and Glagolitic are detected,
+and empty, mixed-script, markup-bearing, or malformed input is rejected.
+
+## Resolve once
+
+Use a handle when several cells belong to the same unambiguous dictionary identity:
 
 ```rust
-use old_church_slavonic::{determiner, Case, Gender, Number};
+use old_church_slavonic::{Number, Person, Verb};
 
-let which = determiner("кꙑи", Case::Accusative, Number::Singular, Gender::Feminine)?;
-assert_eq!(which.primary_text(), "кѫѭ");
-# Ok::<(), old_church_slavonic::InflectionError>(())
-```
-
-For repeated calls, bind a unique dictionary identity once:
-
-```rust
-use old_church_slavonic::{Case, Noun, Number, Person, Verb};
-
-let meal = Noun::new("обѣдъ")?;
-assert_eq!(meal.form(Case::Dative, Number::Dual)?.primary_text(), "обѣдома");
-
-let bless = Verb::new("благословити")?;
+let verb = Verb::resolve("благословити")?;
 assert_eq!(
-    bless.present(Person::First, Number::Singular)?.primary_text(),
+    verb.present(Person::First, Number::Singular)?.primary_text(),
     "благословлѭ",
 );
+assert_eq!(verb.lemma(), "благословити");
+
+let rebound = Verb::from_id(verb.id())?;
+assert_eq!(rebound, verb);
 # Ok::<(), old_church_slavonic::InflectionError>(())
 ```
 
-A successful `FormSet` is nonempty. `primary_text()` means the first deterministic
-source-order spelling, while `variants()` and `texts()` preserve every alternative.
-Romanization, source, warnings, traces, and competing analyses remain accessible.
-Ambiguity, unknown lemmas, missing metadata, unsupported formations, and invalid
-historical cells are distinct `InflectionError` values.
+`Noun`, `Adjective`, `Determiner`, `Pronoun`, and `Numeral` provide the same
+`resolve`/`from_id`/`lemma`/`id` pattern. Ambiguous lookup returns every candidate
+identity instead of selecting one silently.
 
-Resolved `Participle` handles retain the verb's ordered source-backed analyses and
-independent oblique stems:
+## Handle source variants explicitly
+
+A successful `FormSet` is nonempty. `primary_text()` is the first deterministic
+source-order spelling—not a claim that it is linguistically preferred.
 
 ```rust
-use old_church_slavonic::{Animacy, Case, Gender, Number, Verb};
+use old_church_slavonic::{aorist, Number, Person, VariantPolicy};
 
-let participle = Verb::new("благословити")?.past_active_participle()?;
-let forms = participle.short(
-    Case::Genitive,
-    Number::Singular,
-    Gender::Masculine,
-    Animacy::Inanimate,
-)?;
+let forms = aorist("бꙑти", Person::First, Number::Singular)?;
+assert_eq!(forms.texts().collect::<Vec<_>>(), ["бѣхъ", "бꙑхъ"]);
+assert!(forms.unique_text().is_err());
+assert_eq!(forms.select(VariantPolicy::SourceFirst)?.text, "бѣхъ");
+# Ok::<(), Box<dyn std::error::Error>>(())
+```
+
+Variants retain romanization; the set also retains its source class, warnings,
+rule trace, provenance, and competing morphological analyses.
+
+## Inspect a contextual error
+
+```rust
+use old_church_slavonic::{present, InflectionError, Number, PartOfSpeech, Person};
+
+let error = present("несуществовати", Person::Third, Number::Singular)
+    .expect_err("unknown fixture");
+assert!(matches!(
+    error,
+    InflectionError::UnknownLemma { ref lemma, part_of_speech: PartOfSpeech::Verb }
+        if lemma == "несуществовати"
+));
+```
+
+Invalid input, unknown or ambiguous lemmas, missing or contradictory metadata,
+unsupported formations, historically invalid cells, and unsupported cells stay
+distinct. Cell errors retain the stable lexeme ID and the exact `RequestedCell`.
+The crate never uses `"?"`, an empty string, or a neighboring cell as a fallback.
+
+## Walk a paradigm
+
+```rust
+use old_church_slavonic::{noun_paradigm, Case, Number};
+
+let paradigm = noun_paradigm("обѣдъ")?;
 assert_eq!(
-    forms.texts().collect::<Vec<_>>(),
-    ["благословл҄ьша", "благословивъша"],
+    paradigm.form(Case::Dative, Number::Dual)?.primary_text(),
+    "обѣдома",
 );
+assert_eq!(paradigm.iter().count(), 21);
+assert_eq!(paradigm.successes().count() + paradigm.failures().count(), 21);
+
+let rows = paradigm.into_rows();
+assert_eq!(rows.len(), 21);
+# Ok::<(), Box<dyn std::error::Error>>(())
+```
+
+Every paradigm calls the same canonical one-cell by-ID resolver used by direct
+calls and handles. Failed rows remain visible. `ParadigmLookupError` distinguishes
+a cell outside a specialized inventory from a represented cell that failed.
+
+## Supply explicit out-of-vocabulary metadata
+
+The advanced rules API requires the caller to state lexical facts instead of
+guessing them from a later Slavic language:
+
+```rust
+use old_church_slavonic::advanced::cells::NounCell;
+use old_church_slavonic::advanced::rules::{
+    noun_with, NounClass, NounLexeme, NumberRestriction,
+};
+use old_church_slavonic::{Animacy, Case, FormSource, Gender, Number};
+
+let forms = noun_with(
+    &NounLexeme {
+        lemma: "роботъ".into(),
+        class: NounClass::OMasculineHard,
+        gender: Gender::Masculine,
+        animacy: Animacy::Inanimate,
+        number_restriction: NumberRestriction::All,
+    },
+    NounCell { case: Case::Locative, number: Number::Plural },
+)?;
+assert_eq!(forms.primary_text(), "роботѣхъ");
+assert!(matches!(forms.source(), FormSource::ExplicitMetadataRule { .. }));
 # Ok::<(), old_church_slavonic::InflectionError>(())
 ```
 
-The crate root is the ordinary API. Generic cells and tooling are in
-`advanced::cells`; stable IDs in `advanced::by_id`; explicit caller metadata and
-`*_with` rules in `advanced::rules`; audited principal parts in
-`advanced::metadata`; generic dictionary features in `advanced::raw_features`; and
-diagnostics in `trace`.
+## Capability table
 
-| Former call | Current call |
-|---|---|
-| `noun(lemma, NounCell { ... })` | `noun(lemma, case, number)` |
-| generic long/short adjective cell | `adjective(...)` / `short_adjective(...)` |
-| present finite cell | `verb(lemma, person, number)` |
-| `noun_paradigm(id)` | `noun_paradigm(lemma)` / `advanced::by_id::noun_paradigm_by_id(id)` |
-| `primary_source_order().unwrap()` | `primary()` / `primary_text()` |
+| System | Ordinary API | Evidence behavior |
+|---|---|---|
+| Nouns | `noun`, `Noun`, `noun_paradigm` | Tables first; supported dictionary metadata or explicit rules |
+| Adjectives | `long_adjective`, `short_adjective`, `Adjective` | Tables first; hard/soft metadata rules; citation comparatives only |
+| Determiners | `determiner`, `Determiner` | Exact pinned dictionary cells |
+| Pronouns | `pronoun`, `personal_pronoun`, `gendered_pronoun`, `Pronoun` | Separate source-backed cell shapes; unsupported cells fail |
+| Numerals | `numeral`, `gendered_numeral`, `Numeral` | Pinned declension cells; no arbitrary numeral generator |
+| Finite verbs | `present`, `imperfect`, `aorist`, `finite`, `Verb` | Tables, independently sourced metadata, reviewed overrides |
+| Imperatives | `imperative` | Six historically represented person-number cells |
+| Non-finite forms | `infinitive`, `supine`, `verbal_noun`, `l_participle` | Table or independently supported rule |
+| Participles | four named binders and `Participle` | Four separate verbal formations with adjective agreement |
 
-The package includes its pinned generated dictionary and attribution. Runtime code
-performs no file, network, JSON, TSV, XML, or Lua access. Original code is MIT OR
-Apache-2.0; English-Wiktionary-derived data is CC BY-SA 4.0. See
+The crate root is the ordinary API and includes a restrained `prelude`.
+Specialist interfaces live under:
+
+- `advanced::cells` for generic typed cells;
+- `advanced::by_id` for stable dictionary identities;
+- `advanced::rules` for explicit caller-supplied metadata;
+- `advanced::metadata` for audited dictionary principal parts;
+- `advanced::raw_features` for extraction and diagnostic feature keys; and
+- `trace` for provenance and rule diagnostics.
+
+The package includes its generated dictionary and attribution. Original code is
+MIT OR Apache-2.0; English-Wiktionary-derived data is CC BY-SA 4.0. See
 [ATTRIBUTION.md](ATTRIBUTION.md).

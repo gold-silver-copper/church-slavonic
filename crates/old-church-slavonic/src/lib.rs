@@ -1,8 +1,10 @@
 //! Dictionary-backed Old Church Slavonic inflection with a direct typed API.
 //!
-//! Give the facade a lemma and the grammatical dimensions of one cell. A
-//! successful result remains structured because the source can contain ordered
-//! variants and competing analyses.
+//! Ordinary calls take a lemma and the grammatical dimensions of one cell. The
+//! result stays structured because a source can supply ordered spelling variants,
+//! romanizations, competing analyses, warnings, and provenance.
+//!
+//! ## One direct cell
 //!
 //! ```
 //! use old_church_slavonic::{noun, Case, Number};
@@ -12,12 +14,15 @@
 //! # Ok::<(), old_church_slavonic::InflectionError>(())
 //! ```
 //!
-//! Resolve a lexical identity once for repeated calls:
+//! ## Resolve once
+//!
+//! A handle binds one unambiguous dictionary identity. Its methods and the free
+//! functions use the same canonical by-ID resolver.
 //!
 //! ```
 //! use old_church_slavonic::{Number, Person, Verb};
 //!
-//! let verb = Verb::new("благословити")?;
+//! let verb = Verb::resolve("благословити")?;
 //! assert_eq!(
 //!     verb.present(Person::First, Number::Singular)?.primary_text(),
 //!     "благословлѭ",
@@ -25,10 +30,102 @@
 //! # Ok::<(), old_church_slavonic::InflectionError>(())
 //! ```
 //!
+//! ## Keep or select variants explicitly
+//!
+//! [`FormSet::primary_text`] means source-first, not linguistically preferred.
+//! Use [`FormSet::unique_text`] when multiplicity should be an error, or
+//! [`FormSet::select`] with an explicit [`VariantPolicy`].
+//!
+//! ```
+//! use old_church_slavonic::{aorist, Number, Person, VariantPolicy};
+//!
+//! let forms = aorist("бꙑти", Person::First, Number::Singular)?;
+//! assert_eq!(forms.texts().collect::<Vec<_>>(), ["бѣхъ", "бꙑхъ"]);
+//! assert!(forms.unique_text().is_err());
+//! assert_eq!(
+//!     forms.select(VariantPolicy::SourceFirst)?.text,
+//!     "бѣхъ",
+//! );
+//! # Ok::<(), Box<dyn std::error::Error>>(())
+//! ```
+//!
+//! ## Inspect contextual errors
+//!
+//! ```
+//! use old_church_slavonic::{present, InflectionError, Number, PartOfSpeech, Person};
+//!
+//! let error = present("несуществовати", Person::Third, Number::Singular)
+//!     .expect_err("unknown fixture");
+//! assert!(matches!(
+//!     error,
+//!     InflectionError::UnknownLemma { ref lemma, part_of_speech: PartOfSpeech::Verb }
+//!         if lemma == "несуществовати"
+//! ));
+//! ```
+//!
+//! ## Walk a paradigm
+//!
+//! Paradigms retain both successful and failed rows. [`ParadigmLookupError`]
+//! distinguishes a cell outside a specialized inventory from a represented row
+//! whose inflection failed.
+//!
+//! ```
+//! use old_church_slavonic::{noun_paradigm, Case, Number};
+//!
+//! let paradigm = noun_paradigm("обѣдъ")?;
+//! assert_eq!(
+//!     paradigm.form(Case::Dative, Number::Dual)?.primary_text(),
+//!     "обѣдома",
+//! );
+//! assert_eq!(paradigm.iter().count(), 21);
+//! assert_eq!(paradigm.successes().count() + paradigm.failures().count(), 21);
+//! # Ok::<(), Box<dyn std::error::Error>>(())
+//! ```
+//!
+//! ## Supply explicit out-of-vocabulary metadata
+//!
+//! Productive rules are deliberately under [`advanced::rules`]. The caller owns
+//! the lexical class facts and the result records that provenance.
+//!
+//! ```
+//! use old_church_slavonic::advanced::cells::NounCell;
+//! use old_church_slavonic::advanced::rules::{
+//!     noun_with, NounClass, NounLexeme, NumberRestriction,
+//! };
+//! use old_church_slavonic::{Animacy, Case, Gender, Number};
+//!
+//! let lexeme = NounLexeme {
+//!     lemma: "роботъ".into(),
+//!     class: NounClass::OMasculineHard,
+//!     gender: Gender::Masculine,
+//!     animacy: Animacy::Inanimate,
+//!     number_restriction: NumberRestriction::All,
+//! };
+//! let forms = noun_with(
+//!     &lexeme,
+//!     NounCell { case: Case::Locative, number: Number::Plural },
+//! )?;
+//! assert_eq!(forms.primary_text(), "роботѣхъ");
+//! # Ok::<(), old_church_slavonic::InflectionError>(())
+//! ```
+//!
+//! ## Capability and evidence boundary
+//!
+//! | System | Ordinary API | Evidence behavior |
+//! |---|---|---|
+//! | Nouns | [`noun`], [`Noun`], [`noun_paradigm`] | Table first; dictionary metadata or explicit rules when supported |
+//! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; citation comparatives only |
+//! | Closed classes | [`determiner`], [`pronoun`], [`personal_pronoun`], [`gendered_pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells only |
+//! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
+//! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
+//! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
+//! | Participles | named participle functions and [`Participle`] | Four independently represented systems with adjective agreement |
+//!
 //! Exact table cells take precedence over dictionary principal-part rules and
-//! reviewed overrides. Ambiguity, missing metadata, unsupported formations, and
-//! historically invalid cells remain distinct [`InflectionError`] values. See
-//! [`advanced`] for by-ID, explicit-rule, metadata, and raw-feature operations.
+//! reviewed overrides. Explicit caller metadata is a separate evidence class.
+//! Unsupported systems never fall back to another language or a plausible-looking
+//! substitute. See [`advanced`] for stable IDs, explicit rules, dictionary metadata,
+//! and diagnostic raw-feature access.
 
 #![forbid(unsafe_code)]
 
@@ -40,22 +137,47 @@ mod metadata;
 mod paradigm;
 mod resolver;
 
-pub use handles::{Adjective, Noun, Participle, Verb};
+pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
     AdjectiveForm, Animacy, Case, FiniteTense, FormSet, FormSource, FormVariant, Gender,
-    InflectionError, InflectionWarning, LexemeSummary, Number, PartOfSpeech, ParticipleKind,
-    Person,
+    GenderedCell, InflectionError, InflectionWarning, Lemma, LexemeSummary, Number, PartOfSpeech,
+    ParticipleKind, Person, PersonalPronounCell, RequestedCell, Script, UngenderedCell,
+    VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
-    AdjectiveParadigm, CellOutcome, FiniteVerbParadigm, ImperativeParadigm, LParticipleParadigm,
-    NounParadigm, ParticipleParadigm, VerbParadigm,
+    AdjectiveParadigm, CellOutcome, ClosedClassParadigm, DeterminerParadigm, FiniteVerbParadigm,
+    GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm, LParticipleParadigm,
+    NounParadigm, NumeralParadigm, ParadigmLookupError, ParticipleParadigm,
+    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
 pub mod trace {
     pub use old_church_slavonic_core::{
         FormAnalysis, MetadataEvidence, MetadataField, MetadataProvenance, RuleId, RuleStep,
+    };
+}
+
+/// Common ordinary morphology imports. Specialist metadata and raw features are
+/// intentionally excluded; use [`advanced`] for those APIs.
+pub mod prelude {
+    pub use crate::{
+        Adjective, AdjectiveForm, AdjectiveParadigm, Animacy, Case, Determiner, DeterminerParadigm,
+        FiniteTense, FiniteVerbParadigm, FormSet, FormSource, FormVariant, Gender,
+        GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm, InflectionError,
+        InflectionResult, InflectionWarning, LParticipleParadigm, Lemma, Noun, NounParadigm,
+        Number, Numeral, NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle,
+        ParticipleKind, ParticipleParadigm, Person, PersonalPronounParadigm, Pronoun,
+        PronounParadigm, Script, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
+        adjective_paradigm, aorist, comparative_citation, determiner, determiner_paradigm, finite,
+        finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
+        gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
+        l_participle, l_participle_paradigm, long_adjective, lookup, noun, noun_paradigm, numeral,
+        numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
+        personal_pronoun, personal_pronoun_paradigm, present, present_active_participle,
+        present_paradigm, present_passive_participle, pronoun, pronoun_paradigm, short_adjective,
+        supine, verbal_noun,
     };
 }
 
@@ -76,9 +198,9 @@ pub fn noun(lemma: &str, case: Case, number: Number) -> InflectionResult {
 /// Decline one long/compound adjective cell.
 ///
 /// ```
-/// use old_church_slavonic::{adjective, Animacy, Case, Gender, Number};
+/// use old_church_slavonic::{long_adjective, Animacy, Case, Gender, Number};
 /// assert_eq!(
-///     adjective(
+///     long_adjective(
 ///         "добръ", Case::Nominative, Number::Singular,
 ///         Gender::Masculine, Animacy::Inanimate,
 ///     )?.primary_text(),
@@ -86,7 +208,7 @@ pub fn noun(lemma: &str, case: Case, number: Number) -> InflectionResult {
 /// );
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
-pub fn adjective(
+pub fn long_adjective(
     lemma: &str,
     case: Case,
     number: Number,
@@ -120,6 +242,120 @@ pub fn determiner(lemma: &str, case: Case, number: Number, gender: Gender) -> In
             gender: Some(gender),
             person: None,
         },
+    )
+}
+
+/// Decline an case-number-only dictionary pronoun cell.
+///
+/// ```
+/// use old_church_slavonic::{pronoun, Case, Number};
+/// assert_eq!(pronoun("сѧ", Case::Genitive, Number::Singular)?.primary_text(), "себе");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn pronoun(lemma: &str, case: Case, number: Number) -> InflectionResult {
+    resolver::closed_class(
+        lemma,
+        PartOfSpeech::Pronoun,
+        UngenderedCell { case, number }.closed_class(),
+    )
+}
+
+/// Decline one person-indexed personal-pronoun cell.
+///
+/// ```
+/// use old_church_slavonic::{personal_pronoun, Case, Number, Person};
+/// assert_eq!(
+///     personal_pronoun("азъ", Case::Dative, Number::Singular, Person::First)?
+///         .primary_text(),
+///     "мьнѣ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn personal_pronoun(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    person: Person,
+) -> InflectionResult {
+    resolver::closed_class(
+        lemma,
+        PartOfSpeech::Pronoun,
+        PersonalPronounCell {
+            case,
+            number,
+            person,
+        }
+        .closed_class(),
+    )
+}
+
+/// Decline one gender-indexed pronoun cell.
+///
+/// ```
+/// use old_church_slavonic::{gendered_pronoun, Case, Gender, Number};
+/// assert_eq!(
+///     gendered_pronoun("онъ", Case::Dative, Number::Singular, Gender::Feminine)?
+///         .primary_text(),
+///     "онои",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn gendered_pronoun(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> InflectionResult {
+    resolver::closed_class(
+        lemma,
+        PartOfSpeech::Pronoun,
+        GenderedCell {
+            case,
+            number,
+            gender,
+        }
+        .closed_class(),
+    )
+}
+
+/// Decline an case-number-only dictionary numeral cell.
+///
+/// ```
+/// use old_church_slavonic::{numeral, Case, Number};
+/// assert_eq!(numeral("девѧть", Case::Genitive, Number::Singular)?.primary_text(), "девѧти");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn numeral(lemma: &str, case: Case, number: Number) -> InflectionResult {
+    resolver::closed_class(
+        lemma,
+        PartOfSpeech::Numeral,
+        UngenderedCell { case, number }.closed_class(),
+    )
+}
+
+/// Decline a gender-indexed dictionary numeral cell.
+///
+/// ```
+/// use old_church_slavonic::{gendered_numeral, Case, Gender, Number};
+/// let forms = gendered_numeral("прьвъ", Case::Nominative, Number::Singular, Gender::Feminine)?;
+/// assert_eq!(forms.primary_text(), "прьва");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn gendered_numeral(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> InflectionResult {
+    resolver::closed_class(
+        lemma,
+        PartOfSpeech::Numeral,
+        GenderedCell {
+            case,
+            number,
+            gender,
+        }
+        .closed_class(),
     )
 }
 
@@ -169,15 +405,15 @@ fn adjective_form(
 /// Inflect a present-indicative verb cell.
 ///
 /// ```
-/// use old_church_slavonic::{verb, Number, Person};
+/// use old_church_slavonic::{present, Number, Person};
 /// assert_eq!(
-///     verb("благословити", Person::First, Number::Singular)?.primary_text(),
+///     present("благословити", Person::First, Number::Singular)?.primary_text(),
 ///     "благословлѭ",
 /// );
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
-pub fn verb(lemma: &str, person: Person, number: Number) -> InflectionResult {
-    finite_verb(lemma, FiniteTense::Present, person, number)
+pub fn present(lemma: &str, person: Person, number: Number) -> InflectionResult {
+    finite(lemma, FiniteTense::Present, person, number)
 }
 
 /// Inflect one imperfect person-number cell.
@@ -189,7 +425,7 @@ pub fn verb(lemma: &str, person: Person, number: Number) -> InflectionResult {
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn imperfect(lemma: &str, person: Person, number: Number) -> InflectionResult {
-    finite_verb(lemma, FiniteTense::Imperfect, person, number)
+    finite(lemma, FiniteTense::Imperfect, person, number)
 }
 
 /// Inflect one aorist person-number cell.
@@ -201,25 +437,20 @@ pub fn imperfect(lemma: &str, person: Person, number: Number) -> InflectionResul
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn aorist(lemma: &str, person: Person, number: Number) -> InflectionResult {
-    finite_verb(lemma, FiniteTense::Aorist, person, number)
+    finite(lemma, FiniteTense::Aorist, person, number)
 }
 
 /// Inflect one cell in an explicitly selected synthetic finite tense.
 ///
 /// ```
-/// use old_church_slavonic::{finite_verb, FiniteTense, Number, Person};
-/// let forms = finite_verb(
+/// use old_church_slavonic::{finite, FiniteTense, Number, Person};
+/// let forms = finite(
 ///     "благословити", FiniteTense::Present, Person::First, Number::Singular,
 /// )?;
 /// assert_eq!(forms.primary_text(), "благословлѭ");
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
-pub fn finite_verb(
-    lemma: &str,
-    tense: FiniteTense,
-    person: Person,
-    number: Number,
-) -> InflectionResult {
+pub fn finite(lemma: &str, tense: FiniteTense, person: Person, number: Number) -> InflectionResult {
     resolver::finite_verb(
         lemma,
         old_church_slavonic_core::FiniteVerbCell {
@@ -301,10 +532,13 @@ pub fn verbal_noun(lemma: &str) -> InflectionResult {
 /// Return dictionary-listed comparative citations.
 ///
 /// ```
-/// let result = old_church_slavonic::comparative("добръ");
-/// assert!(result.is_ok() || matches!(result, Err(old_church_slavonic::InflectionError::UnsupportedCell)));
+/// let result = old_church_slavonic::comparative_citation("добръ");
+/// assert!(result.is_ok() || matches!(
+///     result,
+///     Err(old_church_slavonic::InflectionError::UnsupportedCell { .. })
+/// ));
 /// ```
-pub fn comparative(lemma: &str) -> InflectionResult {
+pub fn comparative_citation(lemma: &str) -> InflectionResult {
     resolver::adjective_comparatives(lemma)
 }
 
@@ -316,7 +550,7 @@ pub fn comparative(lemma: &str) -> InflectionResult {
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn present_active_participle(lemma: &str) -> Result<Participle, InflectionError> {
-    Verb::new(lemma)?.present_active_participle()
+    Verb::resolve(lemma)?.present_active_participle()
 }
 
 /// Bind the present passive participle system of one verb.
@@ -327,7 +561,7 @@ pub fn present_active_participle(lemma: &str) -> Result<Participle, InflectionEr
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn present_passive_participle(lemma: &str) -> Result<Participle, InflectionError> {
-    Verb::new(lemma)?.present_passive_participle()
+    Verb::resolve(lemma)?.present_passive_participle()
 }
 
 /// Bind the past active participle system of one verb.
@@ -338,7 +572,7 @@ pub fn present_passive_participle(lemma: &str) -> Result<Participle, InflectionE
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn past_active_participle(lemma: &str) -> Result<Participle, InflectionError> {
-    Verb::new(lemma)?.past_active_participle()
+    Verb::resolve(lemma)?.past_active_participle()
 }
 
 /// Bind the past passive participle system of one verb.
@@ -349,7 +583,7 @@ pub fn past_active_participle(lemma: &str) -> Result<Participle, InflectionError
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn past_passive_participle(lemma: &str) -> Result<Participle, InflectionError> {
-    Verb::new(lemma)?.past_passive_participle()
+    Verb::resolve(lemma)?.past_passive_participle()
 }
 
 /// Enumerate all noun cells after resolving one dictionary lemma.
@@ -360,7 +594,7 @@ pub fn past_passive_participle(lemma: &str) -> Result<Participle, InflectionErro
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn noun_paradigm(lemma: &str) -> Result<NounParadigm, InflectionError> {
-    Ok(Noun::new(lemma)?.paradigm())
+    Ok(Noun::resolve(lemma)?.paradigm())
 }
 
 /// Enumerate long and short adjective cells after resolving one lemma.
@@ -371,29 +605,109 @@ pub fn noun_paradigm(lemma: &str) -> Result<NounParadigm, InflectionError> {
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn adjective_paradigm(lemma: &str) -> Result<AdjectiveParadigm, InflectionError> {
-    Ok(Adjective::new(lemma)?.paradigm())
+    Ok(Adjective::resolve(lemma)?.paradigm())
+}
+
+/// Enumerate the gendered dictionary determiner inventory.
+///
+/// ```
+/// let paradigm = old_church_slavonic::determiner_paradigm("кꙑи")?;
+/// assert!(!paradigm.successes().collect::<Vec<_>>().is_empty());
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn determiner_paradigm(lemma: &str) -> Result<DeterminerParadigm, InflectionError> {
+    Ok(Determiner::resolve(lemma)?.paradigm())
+}
+
+/// Enumerate case-number-only pronoun cells, retaining unsupported rows.
+///
+/// ```
+/// use old_church_slavonic::{pronoun_paradigm, Case, Number};
+/// let paradigm = pronoun_paradigm("сѧ")?;
+/// assert_eq!(paradigm.form(Case::Genitive, Number::Singular)?.primary_text(), "себе");
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn pronoun_paradigm(lemma: &str) -> Result<PronounParadigm, InflectionError> {
+    Ok(Pronoun::resolve(lemma)?.paradigm())
+}
+
+/// Enumerate person-indexed pronoun cells, retaining unsupported rows.
+///
+/// ```
+/// use old_church_slavonic::{personal_pronoun_paradigm, Case, Number, Person};
+/// let paradigm = personal_pronoun_paradigm("азъ")?;
+/// assert_eq!(
+///     paradigm.form(Case::Dative, Number::Singular, Person::First)?.primary_text(),
+///     "мьнѣ",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn personal_pronoun_paradigm(lemma: &str) -> Result<PersonalPronounParadigm, InflectionError> {
+    Ok(Pronoun::resolve(lemma)?.personal_paradigm())
+}
+
+/// Enumerate gender-indexed pronoun cells, retaining unsupported rows.
+///
+/// ```
+/// use old_church_slavonic::{gendered_pronoun_paradigm, Case, Gender, Number};
+/// let paradigm = gendered_pronoun_paradigm("онъ")?;
+/// assert_eq!(
+///     paradigm.form(Case::Dative, Number::Singular, Gender::Feminine)?.primary_text(),
+///     "онои",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn gendered_pronoun_paradigm(lemma: &str) -> Result<GenderedPronounParadigm, InflectionError> {
+    Ok(Pronoun::resolve(lemma)?.gendered_paradigm())
+}
+
+/// Enumerate case-number-only numeral cells, retaining unsupported rows.
+///
+/// ```
+/// use old_church_slavonic::{numeral_paradigm, Case, Number};
+/// let paradigm = numeral_paradigm("девѧть")?;
+/// assert_eq!(paradigm.form(Case::Genitive, Number::Singular)?.primary_text(), "девѧти");
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn numeral_paradigm(lemma: &str) -> Result<NumeralParadigm, InflectionError> {
+    Ok(Numeral::resolve(lemma)?.paradigm())
+}
+
+/// Enumerate gender-indexed numeral cells, retaining unsupported rows.
+///
+/// ```
+/// use old_church_slavonic::{gendered_numeral_paradigm, Case, Gender, Number};
+/// let paradigm = gendered_numeral_paradigm("прьвъ")?;
+/// assert_eq!(
+///     paradigm.form(Case::Nominative, Number::Singular, Gender::Feminine)?.primary_text(),
+///     "прьва",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn gendered_numeral_paradigm(lemma: &str) -> Result<GenderedNumeralParadigm, InflectionError> {
+    Ok(Numeral::resolve(lemma)?.gendered_paradigm())
 }
 
 /// Enumerate the nine present-indicative person-number cells.
 ///
 /// ```
-/// let paradigm = old_church_slavonic::verb_paradigm("благословити")?;
+/// let paradigm = old_church_slavonic::present_paradigm("благословити")?;
 /// assert_eq!(paradigm.len(), 9);
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
-pub fn verb_paradigm(lemma: &str) -> Result<VerbParadigm, InflectionError> {
-    Ok(Verb::new(lemma)?.paradigm())
+pub fn present_paradigm(lemma: &str) -> Result<VerbParadigm, InflectionError> {
+    Ok(Verb::resolve(lemma)?.present_paradigm())
 }
 
 /// Enumerate present, imperfect, and aorist cells after resolving one lemma.
 ///
 /// ```
-/// let paradigm = old_church_slavonic::finite_verb_paradigm("благословити")?;
+/// let paradigm = old_church_slavonic::finite_paradigm("благословити")?;
 /// assert_eq!(paradigm.len(), 27);
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
-pub fn finite_verb_paradigm(lemma: &str) -> Result<FiniteVerbParadigm, InflectionError> {
-    Ok(Verb::new(lemma)?.finite_paradigm())
+pub fn finite_paradigm(lemma: &str) -> Result<FiniteVerbParadigm, InflectionError> {
+    Ok(Verb::resolve(lemma)?.finite_paradigm())
 }
 
 /// Enumerate the six historically represented imperative cells.
@@ -404,7 +718,7 @@ pub fn finite_verb_paradigm(lemma: &str) -> Result<FiniteVerbParadigm, Inflectio
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn imperative_paradigm(lemma: &str) -> Result<ImperativeParadigm, InflectionError> {
-    Ok(Verb::new(lemma)?.imperative_paradigm())
+    Ok(Verb::resolve(lemma)?.imperative_paradigm())
 }
 
 /// Enumerate every gender-number l-participle cell.
@@ -415,7 +729,7 @@ pub fn imperative_paradigm(lemma: &str) -> Result<ImperativeParadigm, Inflection
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn l_participle_paradigm(lemma: &str) -> Result<LParticipleParadigm, InflectionError> {
-    Ok(Verb::new(lemma)?.l_participle_paradigm())
+    Ok(Verb::resolve(lemma)?.l_participle_paradigm())
 }
 
 /// Enumerate both agreement paradigms for one declined participle system.
@@ -431,5 +745,5 @@ pub fn participle_paradigm(
     lemma: &str,
     kind: ParticipleKind,
 ) -> Result<ParticipleParadigm, InflectionError> {
-    Ok(Verb::new(lemma)?.participle(kind)?.paradigm())
+    Ok(Verb::resolve(lemma)?.participle(kind)?.paradigm())
 }

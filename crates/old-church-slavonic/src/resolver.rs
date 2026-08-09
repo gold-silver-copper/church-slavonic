@@ -23,9 +23,10 @@ pub fn noun_by_id(id: &str, cell: NounCell) -> Result<FormSet, InflectionError> 
     if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
-    let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    let record = lookup::find_lexeme(id)
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Noun)))?;
     let lexeme = noun_lexeme(record)?;
-    predicted_noun(&lexeme, cell, true)
+    predicted_noun(&lexeme, cell, true).map_err(|error| error.with_lexeme_id(id))
 }
 
 pub fn noun_with(lexeme: &NounLexeme, cell: NounCell) -> Result<FormSet, InflectionError> {
@@ -35,7 +36,7 @@ pub fn noun_with(lexeme: &NounLexeme, cell: NounCell) -> Result<FormSet, Inflect
 pub fn noun_paradigm_by_id(id: &str) -> Result<NounParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Noun)?;
     let lemma = lookup::find_lexeme(id)
-        .ok_or(InflectionError::UnknownLemma)?
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Noun)))?
         .lemma;
     Ok(build_noun_paradigm(id, lemma))
 }
@@ -98,7 +99,8 @@ pub fn adjective_by_id(id: &str, cell: AdjectiveCell) -> Result<FormSet, Inflect
     if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
-    let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    let record = lookup::find_lexeme(id)
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Adjective)))?;
     let class = parse_adjective_class(record.class).ok_or_else(|| {
         InflectionError::MissingLexicalMetadata {
             needed: vec![MetadataField::AdjectiveClass],
@@ -108,7 +110,8 @@ pub fn adjective_by_id(id: &str, cell: AdjectiveCell) -> Result<FormSet, Inflect
         lemma: record.lemma.to_string(),
         class,
     };
-    let predicted = old_church_slavonic_core::adjective::decline(&lexeme, cell)?;
+    let predicted = old_church_slavonic_core::adjective::decline(&lexeme, cell)
+        .map_err(|error| error.with_lexeme_id(id))?;
     Ok(predicted_set(
         record.lemma,
         predicted,
@@ -119,7 +122,7 @@ pub fn adjective_by_id(id: &str, cell: AdjectiveCell) -> Result<FormSet, Inflect
 pub fn adjective_paradigm_by_id(id: &str) -> Result<AdjectiveParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Adjective)?;
     let lemma = lookup::find_lexeme(id)
-        .ok_or(InflectionError::UnknownLemma)?
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Adjective)))?
         .lemma;
     Ok(build_adjective_paradigm(id, lemma))
 }
@@ -130,7 +133,7 @@ pub(crate) fn build_adjective_paradigm(id: &str, lemma: &str) -> AdjectiveParadi
         for number in Number::ALL {
             for case in Case::ALL {
                 for gender in Gender::ALL {
-                    for animacy in [Animacy::Animate, Animacy::Inanimate] {
+                    for animacy in Animacy::ALL {
                         let cell = AdjectiveCell {
                             case,
                             number,
@@ -165,22 +168,22 @@ pub fn adjective_with(
 
 pub fn adjective_comparatives(lemma: &str) -> Result<FormSet, InflectionError> {
     let record = lookup::resolve_one(lemma, PartOfSpeech::Adjective)?;
-    queried_result(lemma, record, adjective_comparatives_by_id(record.id))
+    queried_result(lemma, record, comparative_citation_by_id(record.id))
 }
 
-pub fn adjective_comparatives_by_id(id: &str) -> Result<FormSet, InflectionError> {
+pub fn comparative_citation_by_id(id: &str) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Adjective)?;
     lookup::table_form(id, "adj:comparative:citation")
         .or_else(|| lookup::override_form(id, "adj:comparative:citation"))
-        .ok_or(InflectionError::UnsupportedCell)
+        .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::ComparativeCitation))
 }
 
 pub fn finite_verb(lemma: &str, cell: FiniteVerbCell) -> Result<FormSet, InflectionError> {
     let record = lookup::resolve_one(lemma, PartOfSpeech::Verb)?;
-    queried_result(lemma, record, finite_verb_by_id(record.id, cell))
+    queried_result(lemma, record, finite_by_id(record.id, cell))
 }
 
-pub fn finite_verb_by_id(id: &str, cell: FiniteVerbCell) -> Result<FormSet, InflectionError> {
+pub fn finite_by_id(id: &str, cell: FiniteVerbCell) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     if let Some(form) = lookup::table_form(id, &cell.key()) {
         return Ok(form);
@@ -189,7 +192,7 @@ pub fn finite_verb_by_id(id: &str, cell: FiniteVerbCell) -> Result<FormSet, Infl
     if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
-    generate_finite_from_metadata(&metadata, cell)
+    generate_finite_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
 }
 
 /// Generate through the same dictionary-metadata resolver after an offline
@@ -203,15 +206,15 @@ pub fn finite_verb_from_dictionary_metadata(
     generate_finite_from_metadata(metadata, cell)
 }
 
-pub fn finite_verb_paradigm_by_id(id: &str) -> Result<FiniteVerbParadigm, InflectionError> {
+pub fn finite_paradigm_by_id(id: &str) -> Result<FiniteVerbParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     let lemma = lookup::find_lexeme(id)
-        .ok_or(InflectionError::UnknownLemma)?
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
         .lemma;
-    Ok(build_finite_verb_paradigm(id, lemma))
+    Ok(build_finite_paradigm(id, lemma))
 }
 
-pub(crate) fn build_finite_verb_paradigm(id: &str, lemma: &str) -> FiniteVerbParadigm {
+pub(crate) fn build_finite_paradigm(id: &str, lemma: &str) -> FiniteVerbParadigm {
     let mut cells = Vec::new();
     for tense in FiniteTense::ALL {
         for number in Number::ALL {
@@ -223,7 +226,7 @@ pub(crate) fn build_finite_verb_paradigm(id: &str, lemma: &str) -> FiniteVerbPar
                 };
                 cells.push(CellOutcome {
                     cell,
-                    result: finite_verb_by_id(id, cell),
+                    result: finite_by_id(id, cell),
                 });
             }
         }
@@ -235,7 +238,7 @@ pub(crate) fn build_finite_verb_paradigm(id: &str, lemma: &str) -> FiniteVerbPar
     }
 }
 
-pub(crate) fn build_verb_paradigm(id: &str, lemma: &str) -> VerbParadigm {
+pub(crate) fn build_present_paradigm(id: &str, lemma: &str) -> VerbParadigm {
     let mut cells = Vec::with_capacity(Person::ALL.len() * Number::ALL.len());
     for number in Number::ALL {
         for person in Person::ALL {
@@ -246,7 +249,7 @@ pub(crate) fn build_verb_paradigm(id: &str, lemma: &str) -> VerbParadigm {
             };
             cells.push(CellOutcome {
                 cell,
-                result: finite_verb_by_id(id, cell),
+                result: finite_by_id(id, cell),
             });
         }
     }
@@ -257,12 +260,12 @@ pub(crate) fn build_verb_paradigm(id: &str, lemma: &str) -> VerbParadigm {
     }
 }
 
-pub fn verb_paradigm_by_id(id: &str) -> Result<VerbParadigm, InflectionError> {
+pub fn present_paradigm_by_id(id: &str) -> Result<VerbParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     let lemma = lookup::find_lexeme(id)
-        .ok_or(InflectionError::UnknownLemma)?
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
         .lemma;
-    Ok(build_verb_paradigm(id, lemma))
+    Ok(build_present_paradigm(id, lemma))
 }
 
 pub fn finite_verb_with(
@@ -288,7 +291,7 @@ pub fn imperative_by_id(id: &str, cell: ImperativeCell) -> Result<FormSet, Infle
     if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
-    generate_imperative_from_metadata(&metadata, cell)
+    generate_imperative_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
 }
 
 pub fn imperative_from_dictionary_metadata(
@@ -310,7 +313,7 @@ pub fn imperative_with(
 pub fn imperative_paradigm_by_id(id: &str) -> Result<ImperativeParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     let lemma = lookup::find_lexeme(id)
-        .ok_or(InflectionError::UnknownLemma)?
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
         .lemma;
     Ok(build_imperative_paradigm(id, lemma))
 }
@@ -344,7 +347,7 @@ pub fn l_participle_by_id(id: &str, cell: LParticipleCell) -> Result<FormSet, In
     if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
-    generate_l_participle_from_metadata(&metadata, cell)
+    generate_l_participle_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
 }
 
 pub fn l_participle_from_dictionary_metadata(
@@ -366,7 +369,7 @@ pub fn l_participle_with(
 pub fn l_participle_paradigm_by_id(id: &str) -> Result<LParticipleParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     let lemma = lookup::find_lexeme(id)
-        .ok_or(InflectionError::UnknownLemma)?
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
         .lemma;
     Ok(build_l_participle_paradigm(id, lemma))
 }
@@ -403,7 +406,7 @@ pub fn participle_by_id(id: &str, cell: ParticipleCell) -> Result<FormSet, Infle
     if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
-    generate_participle_from_metadata(&metadata, cell)
+    generate_participle_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
 }
 
 pub fn participle_from_dictionary_metadata(
@@ -428,7 +431,7 @@ pub fn participle_paradigm_by_id(
 ) -> Result<ParticipleParadigm, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     let lemma = lookup::find_lexeme(id)
-        .ok_or(InflectionError::UnknownLemma)?
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
         .lemma;
     Ok(build_participle_paradigm(id, lemma, kind))
 }
@@ -443,7 +446,7 @@ pub(crate) fn build_participle_paradigm(
         for number in Number::ALL {
             for case in Case::ALL {
                 for gender in Gender::ALL {
-                    for animacy in [Animacy::Animate, Animacy::Inanimate] {
+                    for animacy in Animacy::ALL {
                         let cell = ParticipleCell {
                             kind,
                             adjective: AdjectiveCell {
@@ -502,6 +505,7 @@ pub fn participle_citation_by_id(
             },
         },
     )
+    .map_err(|error| error.with_lexeme_id(id))
 }
 
 pub fn infinitive(lemma: &str) -> Result<FormSet, InflectionError> {
@@ -513,7 +517,7 @@ pub fn infinitive_by_id(id: &str) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
     lookup::table_form(id, "verb:infinitive")
         .or_else(|| lookup::override_form(id, "verb:infinitive"))
-        .ok_or(InflectionError::UnsupportedCell)
+        .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::Infinitive))
 }
 
 pub fn infinitive_with(lexeme: &VerbLexeme) -> Result<FormSet, InflectionError> {
@@ -529,7 +533,8 @@ pub fn supine(lemma: &str) -> Result<FormSet, InflectionError> {
 
 pub fn supine_by_id(id: &str) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, "verb:supine").ok_or(InflectionError::UnsupportedCell)
+    lookup::table_form(id, "verb:supine")
+        .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::Supine))
 }
 
 pub fn supine_with(lexeme: &VerbLexeme) -> Result<FormSet, InflectionError> {
@@ -545,7 +550,8 @@ pub fn verbal_noun(lemma: &str) -> Result<FormSet, InflectionError> {
 
 pub fn verbal_noun_by_id(id: &str) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, "verb:verbal-noun").ok_or(InflectionError::UnsupportedCell)
+    lookup::table_form(id, "verb:verbal-noun")
+        .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::VerbalNoun))
 }
 
 pub fn closed_class(
@@ -583,16 +589,192 @@ pub fn closed_class_by_id(
         });
     }
     ensure_pos(id, part_of_speech)?;
-    lookup::table_form(id, &cell.key(part_of_speech)).ok_or(InflectionError::UnsupportedCell)
+    lookup::table_form(id, &cell.key(part_of_speech)).ok_or_else(|| {
+        InflectionError::unsupported(
+            id,
+            RequestedCell::ClosedClass {
+                part_of_speech,
+                cell,
+            },
+        )
+    })
+}
+
+pub fn determiner_by_id(id: &str, cell: GenderedCell) -> Result<FormSet, InflectionError> {
+    closed_class_by_id(id, PartOfSpeech::Determiner, cell.closed_class())
+}
+
+pub fn pronoun_by_id(id: &str, cell: UngenderedCell) -> Result<FormSet, InflectionError> {
+    closed_class_by_id(id, PartOfSpeech::Pronoun, cell.closed_class())
+}
+
+pub fn personal_pronoun_by_id(
+    id: &str,
+    cell: PersonalPronounCell,
+) -> Result<FormSet, InflectionError> {
+    closed_class_by_id(id, PartOfSpeech::Pronoun, cell.closed_class())
+}
+
+pub fn gendered_pronoun_by_id(id: &str, cell: GenderedCell) -> Result<FormSet, InflectionError> {
+    closed_class_by_id(id, PartOfSpeech::Pronoun, cell.closed_class())
+}
+
+pub fn numeral_by_id(id: &str, cell: UngenderedCell) -> Result<FormSet, InflectionError> {
+    closed_class_by_id(id, PartOfSpeech::Numeral, cell.closed_class())
+}
+
+pub fn gendered_numeral_by_id(id: &str, cell: GenderedCell) -> Result<FormSet, InflectionError> {
+    closed_class_by_id(id, PartOfSpeech::Numeral, cell.closed_class())
+}
+
+fn closed_class_identity(
+    id: &str,
+    part_of_speech: PartOfSpeech,
+) -> Result<&'static dictionary::LexemeRecord, InflectionError> {
+    ensure_pos(id, part_of_speech)?;
+    lookup::find_lexeme(id).ok_or_else(|| InflectionError::unknown_id(id, Some(part_of_speech)))
+}
+
+pub fn determiner_paradigm_by_id(id: &str) -> Result<DeterminerParadigm, InflectionError> {
+    let record = closed_class_identity(id, PartOfSpeech::Determiner)?;
+    Ok(build_gendered_closed_class_paradigm(
+        id,
+        record.lemma,
+        PartOfSpeech::Determiner,
+    ))
+}
+
+pub fn pronoun_paradigm_by_id(id: &str) -> Result<PronounParadigm, InflectionError> {
+    let record = closed_class_identity(id, PartOfSpeech::Pronoun)?;
+    Ok(build_ungendered_closed_class_paradigm(
+        id,
+        record.lemma,
+        PartOfSpeech::Pronoun,
+    ))
+}
+
+pub fn personal_pronoun_paradigm_by_id(
+    id: &str,
+) -> Result<PersonalPronounParadigm, InflectionError> {
+    let record = closed_class_identity(id, PartOfSpeech::Pronoun)?;
+    Ok(build_personal_pronoun_paradigm(id, record.lemma))
+}
+
+pub fn gendered_pronoun_paradigm_by_id(
+    id: &str,
+) -> Result<GenderedPronounParadigm, InflectionError> {
+    let record = closed_class_identity(id, PartOfSpeech::Pronoun)?;
+    Ok(build_gendered_closed_class_paradigm(
+        id,
+        record.lemma,
+        PartOfSpeech::Pronoun,
+    ))
+}
+
+pub fn numeral_paradigm_by_id(id: &str) -> Result<NumeralParadigm, InflectionError> {
+    let record = closed_class_identity(id, PartOfSpeech::Numeral)?;
+    Ok(build_ungendered_closed_class_paradigm(
+        id,
+        record.lemma,
+        PartOfSpeech::Numeral,
+    ))
+}
+
+pub fn gendered_numeral_paradigm_by_id(
+    id: &str,
+) -> Result<GenderedNumeralParadigm, InflectionError> {
+    let record = closed_class_identity(id, PartOfSpeech::Numeral)?;
+    Ok(build_gendered_closed_class_paradigm(
+        id,
+        record.lemma,
+        PartOfSpeech::Numeral,
+    ))
+}
+
+pub(crate) fn build_ungendered_closed_class_paradigm(
+    id: &str,
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+) -> ClosedClassParadigm<UngenderedCell> {
+    let mut cells = Vec::with_capacity(Case::ALL.len() * Number::ALL.len());
+    for number in Number::ALL {
+        for case in Case::ALL {
+            let cell = UngenderedCell { case, number };
+            cells.push(CellOutcome {
+                cell,
+                result: closed_class_by_id(id, part_of_speech, cell.closed_class()),
+            });
+        }
+    }
+    ClosedClassParadigm {
+        lexeme_id: id.to_string(),
+        lemma: lemma.to_string(),
+        part_of_speech,
+        cells,
+    }
+}
+
+pub(crate) fn build_gendered_closed_class_paradigm(
+    id: &str,
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+) -> ClosedClassParadigm<GenderedCell> {
+    let mut cells = Vec::with_capacity(Case::ALL.len() * Number::ALL.len() * Gender::ALL.len());
+    for number in Number::ALL {
+        for case in Case::ALL {
+            for gender in Gender::ALL {
+                let cell = GenderedCell {
+                    case,
+                    number,
+                    gender,
+                };
+                cells.push(CellOutcome {
+                    cell,
+                    result: closed_class_by_id(id, part_of_speech, cell.closed_class()),
+                });
+            }
+        }
+    }
+    ClosedClassParadigm {
+        lexeme_id: id.to_string(),
+        lemma: lemma.to_string(),
+        part_of_speech,
+        cells,
+    }
+}
+
+pub(crate) fn build_personal_pronoun_paradigm(id: &str, lemma: &str) -> PersonalPronounParadigm {
+    let mut cells = Vec::with_capacity(Case::ALL.len() * Number::ALL.len() * Person::ALL.len());
+    for number in Number::ALL {
+        for case in Case::ALL {
+            for person in Person::ALL {
+                let cell = PersonalPronounCell {
+                    case,
+                    number,
+                    person,
+                };
+                cells.push(CellOutcome {
+                    cell,
+                    result: personal_pronoun_by_id(id, cell),
+                });
+            }
+        }
+    }
+    ClosedClassParadigm {
+        lexeme_id: id.to_string(),
+        lemma: lemma.to_string(),
+        part_of_speech: PartOfSpeech::Pronoun,
+        cells,
+    }
 }
 
 pub fn dictionary_paradigm_by_id(id: &str) -> Result<DictionaryParadigm, InflectionError> {
-    let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    let record = lookup::find_lexeme(id).ok_or_else(|| InflectionError::unknown_id(id, None))?;
     let part_of_speech =
         lookup::parse_pos(record.pos).ok_or_else(|| InflectionError::InvalidInput {
             reason: "generated lexeme has an invalid part of speech".to_string(),
         })?;
-    let cells = lookup::table_paradigm(id).ok_or(InflectionError::UnknownLemma)?;
+    let cells = lookup::table_paradigm(id).ok_or_else(|| InflectionError::unknown_id(id, None))?;
     Ok(DictionaryParadigm {
         lexeme_id: id.to_string(),
         lemma: record.lemma.to_string(),
@@ -602,10 +784,17 @@ pub fn dictionary_paradigm_by_id(id: &str) -> Result<DictionaryParadigm, Inflect
 }
 
 pub fn dictionary_form_by_id(id: &str, feature: &str) -> Result<FormSet, InflectionError> {
-    lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    lookup::find_lexeme(id).ok_or_else(|| InflectionError::unknown_id(id, None))?;
     lookup::table_form(id, feature)
         .or_else(|| lookup::override_form(id, feature))
-        .ok_or(InflectionError::UnsupportedCell)
+        .ok_or_else(|| {
+            InflectionError::unsupported(
+                id,
+                RequestedCell::RawFeature {
+                    feature: feature.to_string(),
+                },
+            )
+        })
 }
 
 /// Resolve an accepted normalized verb feature through the same table-first
@@ -613,13 +802,13 @@ pub fn dictionary_form_by_id(id: &str, feature: &str) -> Result<FormSet, Inflect
 /// remain available, but productive normalized-key dispatch is intentionally
 /// verb-only. Ordinary callers should prefer the typed cell APIs.
 pub fn form_by_id(id: &str, feature: &str) -> Result<FormSet, InflectionError> {
-    let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    let record = lookup::find_lexeme(id).ok_or_else(|| InflectionError::unknown_id(id, None))?;
     if let Some(form) = lookup::table_form(id, feature) {
         return Ok(form);
     }
     let parts = feature.split(':').collect::<Vec<_>>();
     match parts.as_slice() {
-        ["verb", "finite", tense, person, number] if record.pos == "verb" => finite_verb_by_id(
+        ["verb", "finite", tense, person, number] if record.pos == "verb" => finite_by_id(
             id,
             FiniteVerbCell {
                 tense: parse_feature_tense(tense)?,
@@ -670,7 +859,14 @@ pub fn form_by_id(id: &str, feature: &str) -> Result<FormSet, InflectionError> {
         ["verb", "infinitive"] if record.pos == "verb" => infinitive_by_id(id),
         ["verb", "supine"] if record.pos == "verb" => supine_by_id(id),
         ["verb", "verbal-noun"] if record.pos == "verb" => verbal_noun_by_id(id),
-        _ => lookup::override_form(id, feature).ok_or(InflectionError::UnsupportedCell),
+        _ => lookup::override_form(id, feature).ok_or_else(|| {
+            InflectionError::unsupported(
+                id,
+                RequestedCell::RawFeature {
+                    feature: feature.to_string(),
+                },
+            )
+        }),
     }
 }
 
@@ -842,7 +1038,10 @@ fn generate_imperative_from_metadata(
     cell: ImperativeCell,
 ) -> Result<FormSet, InflectionError> {
     if !cell.is_supported() {
-        return Err(InflectionError::HistoricallyInvalidCell);
+        return Err(InflectionError::historically_invalid(
+            &metadata.lexeme_id,
+            RequestedCell::Imperative(cell),
+        ));
     }
     if metadata.imperative.is_empty() {
         return Err(InflectionError::MissingLexicalMetadata {
@@ -1100,7 +1299,8 @@ fn metadata_form_set(lemma: &str, analyses: Vec<FormAnalysis>) -> Result<FormSet
 }
 
 fn ensure_pos(id: &str, expected: PartOfSpeech) -> Result<(), InflectionError> {
-    let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    let record =
+        lookup::find_lexeme(id).ok_or_else(|| InflectionError::unknown_id(id, Some(expected)))?;
     if record.pos == expected.code() {
         Ok(())
     } else {

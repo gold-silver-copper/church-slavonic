@@ -5,8 +5,8 @@ use crate::{
     ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
     InflectionError, LParticipleCell, MetadataField, Number, ParticipleCell, ParticipleKind,
     PastActiveParticipleFormation, PastPassiveParticipleFormation, Person, PredictedForm,
-    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RuleId, RuleStep,
-    VerbAspect, VerbClass,
+    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RequestedCell, RuleId,
+    RuleStep, VerbAspect, VerbClass,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -204,7 +204,10 @@ pub fn imperative(
 ) -> Result<PredictedForm, InflectionError> {
     crate::orthography::canonical_display(&lexeme.lemma)?;
     if !cell.is_supported() {
-        return Err(InflectionError::HistoricallyInvalidCell);
+        return Err(InflectionError::historically_invalid(
+            &lexeme.lemma,
+            RequestedCell::Imperative(cell),
+        ));
     }
     let formation =
         lexeme
@@ -227,7 +230,12 @@ pub fn imperative(
         (ImperativeFormation::YatSeries, Person::Second, Number::Dual) => "ѣта",
         (ImperativeFormation::YatSeries, Person::First, Number::Plural) => "ѣмъ",
         (ImperativeFormation::YatSeries, Person::Second, Number::Plural) => "ѣте",
-        _ => return Err(InflectionError::HistoricallyInvalidCell),
+        _ => {
+            return Err(InflectionError::historically_invalid(
+                &lexeme.lemma,
+                RequestedCell::Imperative(cell),
+            ));
+        }
     };
     Ok(join(
         &stem,
@@ -334,7 +342,7 @@ fn present(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, I
     } else {
         default_stem
     };
-    let (ending, rule_id) = present_ending(lexeme.class, cell)?;
+    let (ending, rule_id) = present_ending(&lexeme.lemma, lexeme.class, cell)?;
     Ok(join(
         &stem,
         ending,
@@ -753,6 +761,7 @@ fn replace_final<const N: usize>(stem: &str, replacements: [(char, &str); N]) ->
 }
 
 fn present_ending(
+    lemma: &str,
     class: VerbClass,
     cell: FiniteVerbCell,
 ) -> Result<(&'static str, RuleId), InflectionError> {
@@ -764,7 +773,12 @@ fn present_ending(
         VerbClass::II1 => RuleId::VerbII1,
         VerbClass::II2 => RuleId::VerbII2,
         VerbClass::II3 => RuleId::VerbII3,
-        _ => return Err(InflectionError::UnsupportedCell),
+        _ => {
+            return Err(InflectionError::unsupported(
+                lemma,
+                RequestedCell::FiniteVerb(cell),
+            ));
+        }
     };
     let ending = match (first, second, cell.person, cell.number) {
         (true, _, Person::First, Number::Singular) => "ѫ",
@@ -785,7 +799,12 @@ fn present_ending(
         (_, true, Person::First, Number::Plural) => "имъ",
         (_, true, Person::Second, Number::Plural) => "ите",
         (_, true, Person::Third, Number::Plural) => "ѧтъ",
-        _ => return Err(InflectionError::UnsupportedCell),
+        _ => {
+            return Err(InflectionError::unsupported(
+                lemma,
+                RequestedCell::FiniteVerb(cell),
+            ));
+        }
     };
     Ok((ending, rule))
 }
@@ -1027,7 +1046,7 @@ mod tests {
             forms,
             ["моли", "моли", "моливѣ", "молита", "молимъ", "молите"]
         );
-        assert_eq!(
+        assert!(matches!(
             imperative(
                 &verb,
                 ImperativeCell {
@@ -1035,8 +1054,8 @@ mod tests {
                     number: Number::Plural
                 }
             ),
-            Err(InflectionError::HistoricallyInvalidCell)
-        );
+            Err(InflectionError::HistoricallyInvalidCell { .. })
+        ));
     }
 
     #[test]

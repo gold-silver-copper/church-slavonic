@@ -31,9 +31,27 @@ romanization.
 
 ## Validation
 
-The word-level API rejects empty input, whitespace, control characters, and input
-longer than 4,096 Unicode scalar values. Non-OCS alphabetic text is not destroyed; it
-normally produces `UnknownLemma` unless the caller supplies explicit rule metadata.
+`Lemma::parse` is the shared boundary for every ordinary lemma-based call. It:
+
+- rejects empty input, whitespace, control characters, and input longer than 4,096
+  Unicode scalar values;
+- NFC-normalizes the spelling without stripping historical characters or marks;
+- rejects a combining mark that has no preceding lemma letter;
+- rejects punctuation and markup rather than treating them as part of a word;
+- accepts a single Cyrillic or Glagolitic script and reports it through
+  `Lemma::script()`; and
+- rejects Latin, mixed Cyrillic–Glagolitic, Cyrillic–Latin, and
+  Glagolitic–Latin input.
+
+Validation yields `InflectionError::InvalidLemma { input, reason }`, preserving
+the original rejected spelling. Dictionary misses after successful validation
+yield `UnknownLemma { lemma, part_of_speech }` instead. A prevalidated `Lemma` can
+be passed to ordinary calls as `&lemma`; those calls deliberately re-enter the
+same validation path rather than growing parallel behavior.
+
+The lower-level `canonical_display` and `lookup_key` helpers remain available in
+the rule-only core for registry tooling. They normalize losslessly but are not a
+claim that arbitrary alphabetic input is an OCS dictionary lemma.
 
 Raw exact metrics compare stored display strings byte-for-byte. The separately named
 normalized metric applies the same NFC-plus-lowercase function as lookup and does not

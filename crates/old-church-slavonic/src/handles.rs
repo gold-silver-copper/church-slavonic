@@ -1,12 +1,15 @@
 //! Resolved dictionary identities for repeated inflection.
 
 use crate::{
-    AdjectiveForm, AdjectiveParadigm, Animacy, Case, FiniteTense, FiniteVerbParadigm, FormSet,
-    Gender, ImperativeParadigm, InflectionError, LParticipleParadigm, NounParadigm, Number,
-    PartOfSpeech, ParticipleKind, ParticipleParadigm, Person, VerbParadigm, lookup, resolver,
+    AdjectiveForm, AdjectiveParadigm, Animacy, Case, DeterminerParadigm, FiniteTense,
+    FiniteVerbParadigm, FormSet, Gender, GenderedNumeralParadigm, GenderedPronounParadigm,
+    ImperativeParadigm, InflectionError, LParticipleParadigm, NounParadigm, Number,
+    NumeralParadigm, PartOfSpeech, ParticipleKind, ParticipleParadigm, Person,
+    PersonalPronounParadigm, PronounParadigm, VerbParadigm, lookup, resolver,
 };
 use old_church_slavonic_core::{
-    AdjectiveCell, FiniteVerbCell, ImperativeCell, LParticipleCell, NounCell, ParticipleCell,
+    AdjectiveCell, FiniteVerbCell, GenderedCell, ImperativeCell, LParticipleCell, NounCell,
+    ParticipleCell, PersonalPronounCell, UngenderedCell,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,7 +19,7 @@ struct ResolvedIdentity {
 }
 
 impl ResolvedIdentity {
-    fn new(lemma: &str, part_of_speech: PartOfSpeech) -> Result<Self, InflectionError> {
+    fn resolve(lemma: &str, part_of_speech: PartOfSpeech) -> Result<Self, InflectionError> {
         let record = lookup::resolve_one(lemma, part_of_speech)?;
         Ok(Self {
             id: record.id.to_string(),
@@ -25,7 +28,8 @@ impl ResolvedIdentity {
     }
 
     fn from_id(id: &str, part_of_speech: PartOfSpeech) -> Result<Self, InflectionError> {
-        let record = lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+        let record = lookup::find_lexeme(id)
+            .ok_or_else(|| InflectionError::unknown_id(id, Some(part_of_speech)))?;
         if record.pos != part_of_speech.code() {
             return Err(InflectionError::InvalidInput {
                 reason: format!("lexeme {id} is {}, not {part_of_speech}", record.pos),
@@ -43,7 +47,7 @@ impl ResolvedIdentity {
 /// ```
 /// use old_church_slavonic::{Case, Noun, Number};
 ///
-/// let noun = Noun::new("обѣдъ")?;
+/// let noun = Noun::resolve("обѣдъ")?;
 /// assert_eq!(noun.form(Case::Dative, Number::Dual)?.primary_text(), "обѣдома");
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
@@ -54,9 +58,9 @@ pub struct Noun {
 
 impl Noun {
     /// Resolve exactly one dictionary noun by lemma.
-    pub fn new(lemma: &str) -> Result<Self, InflectionError> {
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
         Ok(Self {
-            identity: ResolvedIdentity::new(lemma, PartOfSpeech::Noun)?,
+            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Noun)?,
         })
     }
 
@@ -88,12 +92,253 @@ impl Noun {
     }
 }
 
+/// A uniquely resolved dictionary determiner.
+///
+/// ```
+/// use old_church_slavonic::{Case, Determiner, Gender, Number};
+/// let word = Determiner::resolve("кꙑи")?;
+/// assert_eq!(
+///     word.form(Case::Accusative, Number::Singular, Gender::Feminine)?
+///         .primary_text(),
+///     "кѫѭ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Determiner {
+    identity: ResolvedIdentity,
+}
+
+impl Determiner {
+    /// Resolve exactly one dictionary determiner by lemma.
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
+        Ok(Self {
+            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Determiner)?,
+        })
+    }
+
+    /// Bind a stable dictionary ID after validating its part of speech.
+    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
+        Ok(Self {
+            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Determiner)?,
+        })
+    }
+
+    /// The canonical dictionary lemma.
+    pub fn lemma(&self) -> &str {
+        &self.identity.lemma
+    }
+
+    /// The stable dictionary lexeme ID.
+    pub fn id(&self) -> &str {
+        &self.identity.id
+    }
+
+    /// Resolve one case-number-gender cell.
+    pub fn form(
+        &self,
+        case: Case,
+        number: Number,
+        gender: Gender,
+    ) -> Result<FormSet, InflectionError> {
+        resolver::determiner_by_id(
+            self.id(),
+            GenderedCell {
+                case,
+                number,
+                gender,
+            },
+        )
+    }
+
+    /// Enumerate the typed determiner inventory through the canonical resolver.
+    pub fn paradigm(&self) -> DeterminerParadigm {
+        resolver::build_gendered_closed_class_paradigm(
+            self.id(),
+            self.lemma(),
+            PartOfSpeech::Determiner,
+        )
+    }
+}
+
+/// A uniquely resolved source-backed dictionary pronoun.
+///
+/// A source record can expose an case-number-only, person-indexed, or
+/// gender-indexed system. The three method families remain separate so callers
+/// never build a catch-all request from unrelated optional dimensions.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Pronoun {
+    identity: ResolvedIdentity,
+}
+
+impl Pronoun {
+    /// Resolve exactly one dictionary pronoun by lemma.
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
+        Ok(Self {
+            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Pronoun)?,
+        })
+    }
+
+    /// Bind a stable dictionary ID after validating its part of speech.
+    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
+        Ok(Self {
+            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Pronoun)?,
+        })
+    }
+
+    /// The canonical dictionary lemma.
+    pub fn lemma(&self) -> &str {
+        &self.identity.lemma
+    }
+
+    /// The stable dictionary lexeme ID.
+    pub fn id(&self) -> &str {
+        &self.identity.id
+    }
+
+    /// Resolve one case-number cell in an case-number-only pronoun table.
+    pub fn form(&self, case: Case, number: Number) -> Result<FormSet, InflectionError> {
+        resolver::pronoun_by_id(self.id(), UngenderedCell { case, number })
+    }
+
+    /// Resolve one case-number-person cell in a personal-pronoun table.
+    pub fn personal(
+        &self,
+        case: Case,
+        number: Number,
+        person: Person,
+    ) -> Result<FormSet, InflectionError> {
+        resolver::personal_pronoun_by_id(
+            self.id(),
+            PersonalPronounCell {
+                case,
+                number,
+                person,
+            },
+        )
+    }
+
+    /// Resolve one case-number-gender cell in an agreeing pronoun table.
+    pub fn gendered(
+        &self,
+        case: Case,
+        number: Number,
+        gender: Gender,
+    ) -> Result<FormSet, InflectionError> {
+        resolver::gendered_pronoun_by_id(
+            self.id(),
+            GenderedCell {
+                case,
+                number,
+                gender,
+            },
+        )
+    }
+
+    /// Enumerate the case-number-only case-number inventory.
+    pub fn paradigm(&self) -> PronounParadigm {
+        resolver::build_ungendered_closed_class_paradigm(
+            self.id(),
+            self.lemma(),
+            PartOfSpeech::Pronoun,
+        )
+    }
+
+    /// Enumerate the person-indexed inventory.
+    pub fn personal_paradigm(&self) -> PersonalPronounParadigm {
+        resolver::build_personal_pronoun_paradigm(self.id(), self.lemma())
+    }
+
+    /// Enumerate the gender-indexed inventory.
+    pub fn gendered_paradigm(&self) -> GenderedPronounParadigm {
+        resolver::build_gendered_closed_class_paradigm(
+            self.id(),
+            self.lemma(),
+            PartOfSpeech::Pronoun,
+        )
+    }
+}
+
+/// A uniquely resolved source-backed dictionary numeral.
+///
+/// Ungendered cardinal-like and gendered agreeing tables have separate methods.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Numeral {
+    identity: ResolvedIdentity,
+}
+
+impl Numeral {
+    /// Resolve exactly one dictionary numeral by lemma.
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
+        Ok(Self {
+            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Numeral)?,
+        })
+    }
+
+    /// Bind a stable dictionary ID after validating its part of speech.
+    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
+        Ok(Self {
+            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Numeral)?,
+        })
+    }
+
+    /// The canonical dictionary lemma.
+    pub fn lemma(&self) -> &str {
+        &self.identity.lemma
+    }
+
+    /// The stable dictionary lexeme ID.
+    pub fn id(&self) -> &str {
+        &self.identity.id
+    }
+
+    /// Resolve one case-number cell in an case-number-only numeral table.
+    pub fn form(&self, case: Case, number: Number) -> Result<FormSet, InflectionError> {
+        resolver::numeral_by_id(self.id(), UngenderedCell { case, number })
+    }
+
+    /// Resolve one case-number-gender cell in an agreeing numeral table.
+    pub fn gendered(
+        &self,
+        case: Case,
+        number: Number,
+        gender: Gender,
+    ) -> Result<FormSet, InflectionError> {
+        resolver::gendered_numeral_by_id(
+            self.id(),
+            GenderedCell {
+                case,
+                number,
+                gender,
+            },
+        )
+    }
+
+    /// Enumerate the case-number-only case-number inventory.
+    pub fn paradigm(&self) -> NumeralParadigm {
+        resolver::build_ungendered_closed_class_paradigm(
+            self.id(),
+            self.lemma(),
+            PartOfSpeech::Numeral,
+        )
+    }
+
+    /// Enumerate the gender-indexed inventory.
+    pub fn gendered_paradigm(&self) -> GenderedNumeralParadigm {
+        resolver::build_gendered_closed_class_paradigm(
+            self.id(),
+            self.lemma(),
+            PartOfSpeech::Numeral,
+        )
+    }
+}
+
 /// A uniquely resolved dictionary adjective.
 ///
 /// ```
 /// use old_church_slavonic::{Adjective, Animacy, Case, Gender, Number};
 ///
-/// let adjective = Adjective::new("добръ")?;
+/// let adjective = Adjective::resolve("добръ")?;
 /// assert_eq!(
 ///     adjective.long(
 ///         Case::Nominative,
@@ -112,9 +357,9 @@ pub struct Adjective {
 
 impl Adjective {
     /// Resolve exactly one dictionary adjective by lemma.
-    pub fn new(lemma: &str) -> Result<Self, InflectionError> {
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
         Ok(Self {
-            identity: ResolvedIdentity::new(lemma, PartOfSpeech::Adjective)?,
+            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Adjective)?,
         })
     }
 
@@ -178,8 +423,8 @@ impl Adjective {
     }
 
     /// Return dictionary-listed comparative citations.
-    pub fn comparative(&self) -> Result<FormSet, InflectionError> {
-        resolver::adjective_comparatives_by_id(self.id())
+    pub fn comparative_citation(&self) -> Result<FormSet, InflectionError> {
+        resolver::comparative_citation_by_id(self.id())
     }
 
     /// Enumerate both adjective paradigms through the canonical cell resolver.
@@ -193,7 +438,7 @@ impl Adjective {
 /// ```
 /// use old_church_slavonic::{Number, Person, Verb};
 ///
-/// let verb = Verb::new("благословити")?;
+/// let verb = Verb::resolve("благословити")?;
 /// assert_eq!(
 ///     verb.present(Person::First, Number::Singular)?.primary_text(),
 ///     "благословлѭ",
@@ -207,9 +452,9 @@ pub struct Verb {
 
 impl Verb {
     /// Resolve exactly one dictionary verb by lemma.
-    pub fn new(lemma: &str) -> Result<Self, InflectionError> {
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
         Ok(Self {
-            identity: ResolvedIdentity::new(lemma, PartOfSpeech::Verb)?,
+            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Verb)?,
         })
     }
 
@@ -252,7 +497,7 @@ impl Verb {
         person: Person,
         number: Number,
     ) -> Result<FormSet, InflectionError> {
-        resolver::finite_verb_by_id(
+        resolver::finite_by_id(
             self.id(),
             FiniteVerbCell {
                 tense,
@@ -318,13 +563,13 @@ impl Verb {
     }
 
     /// Enumerate the nine present-indicative cells.
-    pub fn paradigm(&self) -> VerbParadigm {
-        resolver::build_verb_paradigm(self.id(), self.lemma())
+    pub fn present_paradigm(&self) -> VerbParadigm {
+        resolver::build_present_paradigm(self.id(), self.lemma())
     }
 
     /// Enumerate present, imperfect, and aorist cells.
     pub fn finite_paradigm(&self) -> FiniteVerbParadigm {
-        resolver::build_finite_verb_paradigm(self.id(), self.lemma())
+        resolver::build_finite_paradigm(self.id(), self.lemma())
     }
 
     /// Enumerate the six historically represented imperative cells.
@@ -343,7 +588,7 @@ impl Verb {
 /// ```
 /// use old_church_slavonic::{Animacy, Case, Gender, Number, Verb};
 ///
-/// let participle = Verb::new("благословити")?.past_active_participle()?;
+/// let participle = Verb::resolve("благословити")?.past_active_participle()?;
 /// let forms = participle.short(
 ///     Case::Genitive,
 ///     Number::Singular,

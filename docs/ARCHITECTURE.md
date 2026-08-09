@@ -63,10 +63,12 @@ No error is caught and replaced by a frequent class.
 
 The `old-church-slavonic` root is intentionally small: common grammar enums,
 structured results, `lookup`, lemma-oriented morphology functions, resolved
-`Noun`/`Adjective`/`Verb`/`Participle` handles, and typed paradigms. Ordinary calls
-take their grammatical dimensions directly. A handle stores only a stable lexeme
-ID and canonical lemma; all class, stem, formation, and evidence facts stay in the
-generated registry and metadata resolver.
+`Noun`/`Adjective`/`Verb`/`Determiner`/`Pronoun`/`Numeral`/`Participle` handles,
+and typed paradigms. `Lemma::parse` is the shared validation boundary before every
+ordinary dictionary lookup. Ordinary calls take their grammatical dimensions
+directly. A handle stores only a stable lexeme ID and canonical lemma; all class,
+stem, formation, and evidence facts stay in the generated registry and metadata
+resolver.
 
 Specialist interfaces live under `advanced::cells`, `advanced::by_id`,
 `advanced::rules`, `advanced::metadata`, and `advanced::raw_features`. Trace and
@@ -75,9 +77,17 @@ The pure core remains independently usable for callers who explicitly supply the
 lexical facts that cannot be inferred from an OCS citation.
 
 Every lemma paradigm resolves one identity and stores every requested
-`CellOutcome`, including failures. Its builder calls the same by-ID cell resolver
-as the corresponding handle. This is why paradigm gaps remain visible and why no
-ergonomic wrapper owns a second morphology implementation.
+`CellOutcome`, including failures. `form(...)` distinguishes a row outside a
+specialized inventory from a represented row with a typed failure; `successes()`
+and `failures()` provide explicit filtered views without mutating that inventory.
+Its builder calls the same by-ID cell resolver as the corresponding handle. This is
+why paradigm gaps remain visible and why no ergonomic wrapper owns a second
+morphology implementation.
+
+Determiner, pronoun, and numeral root APIs are exact-table views over audited
+feature shapes. Pronoun and numeral handles separate unpositioned, person-indexed,
+and gender-indexed cells instead of exposing the registry's catch-all optional
+dimensions. Normalized raw keys remain confined to `advanced::raw_features`.
 
 ## Verb-system boundary
 

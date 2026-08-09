@@ -3,7 +3,7 @@
 use crate::dictionary::VERB_METADATA;
 use old_church_slavonic_core::{
     AoristFormation, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
-    InflectionError, MetadataEvidence, MetadataField, MetadataProvenance,
+    InflectionError, MetadataEvidence, MetadataField, MetadataProvenance, PartOfSpeech,
     PastActiveParticipleFormation, PastPassiveParticipleFormation,
     PresentActiveParticipleFormation, PresentPassiveParticipleFormation, VerbAspect, VerbClass,
     orthography::{Script, detect_script},
@@ -81,7 +81,8 @@ type FieldGroup = BTreeMap<String, NormalizedVerbMetadataField>;
 type FieldGroups = BTreeMap<(String, u16), FieldGroup>;
 
 pub fn verb_metadata_by_id(id: &str) -> Result<DictionaryVerbMetadata, InflectionError> {
-    let lexeme = crate::lookup::find_lexeme(id).ok_or(InflectionError::UnknownLemma)?;
+    let lexeme = crate::lookup::find_lexeme(id)
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?;
     if lexeme.pos != "verb" {
         return Err(InflectionError::InvalidInput {
             reason: format!("lexeme {id} is {}, not verb", lexeme.pos),

@@ -16,14 +16,16 @@ pub mod verb;
 
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
-    FiniteTense, FiniteVerbCell, Gender, ImperativeCell, ImperativeFormation, ImperfectFormation,
-    ImperfectVariantPolicy, LParticipleCell, NounCell, NounClass, Number, NumberRestriction,
-    PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
-    PastPassiveParticipleFormation, Person, PresentActiveParticipleFormation,
-    PresentPassiveParticipleFormation, VerbAspect, VerbClass,
+    FiniteTense, FiniteVerbCell, Gender, GenderedCell, ImperativeCell, ImperativeFormation,
+    ImperfectFormation, ImperfectVariantPolicy, LParticipleCell, NounCell, NounClass, Number,
+    NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
+    PastPassiveParticipleFormation, Person, PersonalPronounCell, PresentActiveParticipleFormation,
+    PresentPassiveParticipleFormation, RequestedCell, UngenderedCell, VerbAspect, VerbClass,
 };
+pub use orthography::{Lemma, Script};
 pub use result::{
     FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,
-    LexemeSummary, MetadataEvidence, MetadataField, MetadataProvenance,
+    LexemeSummary, MetadataEvidence, MetadataField, MetadataProvenance, VariantPolicy,
+    VariantSelectionError,
 };
 pub use trace::{PredictedForm, RuleId, RuleStep};

@@ -5,13 +5,13 @@ Slavonic** (`cu`/`chu`). Its ordinary API is a lemma followed by direct grammati
 dimensions:
 
 ```rust
-use old_church_slavonic::{noun, verb, Case, Number, Person};
+use old_church_slavonic::{noun, present, Case, Number, Person};
 
 let dual = noun("обѣдъ", Case::Dative, Number::Dual)?;
 assert_eq!(dual.primary_text(), "обѣдома");
 
-let present = verb("благословити", Person::First, Number::Singular)?;
-assert_eq!(present.primary_text(), "благословлѭ");
+let blessing = present("благословити", Person::First, Number::Singular)?;
+assert_eq!(blessing.primary_text(), "благословлѭ");
 # Ok::<(), old_church_slavonic::InflectionError>(())
 ```
 
@@ -25,7 +25,7 @@ The minimum supported Rust version is 1.85.
 
 ```toml
 [dependencies]
-old-church-slavonic = "0.4"
+old-church-slavonic = "0.5"
 ```
 
 The generated dictionary is compiled into the package. Runtime crates perform no
@@ -58,19 +58,19 @@ enforce a zero-unknown gate without treating a productive form as a quotation.
 
 ## Resolve once for repeated calls
 
-`Noun`, `Adjective`, and `Verb` bind one unambiguous dictionary identity without
-copying mutable class or stem metadata:
+`Noun`, `Adjective`, `Verb`, `Determiner`, `Pronoun`, and `Numeral` bind one
+unambiguous dictionary identity without copying mutable class or stem metadata:
 
 ```rust
 use old_church_slavonic::{Animacy, Case, Gender, Number, Person, Noun, Verb};
 
-let meal = Noun::new("обѣдъ")?;
+let meal = Noun::resolve("обѣдъ")?;
 assert_eq!(
     meal.form(Case::Dative, Number::Dual)?.primary_text(),
     "обѣдома",
 );
 
-let bless = Verb::new("благословити")?;
+let bless = Verb::resolve("благословити")?;
 assert_eq!(
     bless.present(Person::First, Number::Singular)?.primary_text(),
     "благословлѭ",
@@ -87,27 +87,31 @@ assert_eq!(
     declined.texts().collect::<Vec<_>>(),
     ["благословл҄ьша", "благословивъша"],
 );
-# Ok::<(), old_church_slavonic::InflectionError>(())
+# Ok::<(), Box<dyn std::error::Error>>(())
 ```
 
-`new` resolves exactly one lexeme of the required part of speech. Ambiguous and
+`resolve` selects exactly one lexeme of the required part of speech. Ambiguous and
 unknown lemmas remain typed errors. After selecting a candidate with `lookup`, use
-`Noun::from_id`, `Adjective::from_id`, or `Verb::from_id` to bind its stable ID.
+the corresponding handle's `from_id` constructor to bind its stable ID.
 
 ## Forms, alternatives, and evidence
 
 Every successful `FormSet` is nonempty. `primary()` and `primary_text()` return the
 first deterministic **source-order** variant; they do not claim that one spelling
-is linguistically superior. `variants()` and `texts()` retain every alternative:
+is linguistically superior. `variants()` and `texts()` retain every alternative.
+Use `unique_text()` when multiple source variants must be an error, or call
+`select(VariantPolicy::SourceFirst)` to make source-first selection explicit:
 
 ```rust
-use old_church_slavonic::{aorist, FormSource, Number, Person};
+use old_church_slavonic::{aorist, FormSource, Number, Person, VariantPolicy};
 
 let forms = aorist("бꙑти", Person::First, Number::Singular)?;
 assert_eq!(forms.primary_text(), "бѣхъ");
 assert_eq!(forms.texts().collect::<Vec<_>>(), ["бѣхъ", "бꙑхъ"]);
+assert!(forms.unique_text().is_err());
+assert_eq!(forms.select(VariantPolicy::SourceFirst)?.text, "бѣхъ");
 assert_eq!(forms.source(), &FormSource::DictionaryTable);
-# Ok::<(), old_church_slavonic::InflectionError>(())
+# Ok::<(), Box<dyn std::error::Error>>(())
 ```
 
 Results also retain romanization, source class, warnings, rule traces, and ordered
@@ -130,18 +134,20 @@ assert!(matches!(
 ));
 assert!(matches!(
     imperative("благословити", Person::Third, Number::Dual),
-    Err(InflectionError::HistoricallyInvalidCell),
+    Err(InflectionError::HistoricallyInvalidCell { .. }),
 ));
 ```
 
 ## Paradigms
 
-Lemma-oriented `noun_paradigm`, `adjective_paradigm`, `verb_paradigm`,
-`finite_verb_paradigm`, `imperative_paradigm`, `l_participle_paradigm`, and
-`participle_paradigm` enumerate the same by-ID resolver as one-cell calls. Their
-`CellOutcome` entries retain per-cell errors rather than omitting gaps. Each type
-provides `lemma()`, `id()`, direct-dimension `get(...)`, `iter()`, and owned and
-borrowed iteration. Stable identity alternatives are under `advanced::by_id`.
+Lemma-oriented `noun_paradigm`, `adjective_paradigm`, `present_paradigm`,
+`finite_paradigm`, `imperative_paradigm`, `l_participle_paradigm`, and
+`participle_paradigm` enumerate the same by-ID resolver as one-cell calls. Typed
+closed-class paradigms cover the source-supported determiner, pronoun, and numeral
+systems. Their `CellOutcome` entries retain per-cell errors rather than omitting
+gaps. Each type provides `lemma()`, `id()`, direct-dimension `form(...)`, `iter()`,
+`successes()`, `failures()`, and `into_rows()`. A missing specialized row and a
+represented cell that failed are distinct `ParadigmLookupError` variants.
 
 ## Explicit rules and specialist APIs
 
@@ -177,7 +183,7 @@ assert!(!forms.trace().is_empty());
 - `advanced::rules`: caller-supplied lexemes and `*_with` generation;
 - `advanced::metadata`: audited dictionary principal parts and evaluation entry
   points;
-- `advanced::raw_features`: closed-class and normalized feature-key access; and
+- `advanced::raw_features`: generic normalized feature-key access for diagnostics; and
 - `trace`: provenance and rule diagnostics.
 
 The independent `old-church-slavonic-core` crate remains available to rule-only
@@ -188,11 +194,16 @@ callers who explicitly supply lexical class and principal-part facts.
 | Former call | New ordinary call |
 |---|---|
 | `noun(lemma, NounCell { case, number })` | `noun(lemma, case, number)` |
-| `adjective(lemma, AdjectiveCell { form: Long, ... })` | `adjective(lemma, ...)` |
+| `adjective(lemma, AdjectiveCell { form: Long, ... })` | `long_adjective(lemma, ...)` |
 | `adjective(lemma, AdjectiveCell { form: Short, ... })` | `short_adjective(lemma, ...)` |
-| `finite_verb(lemma, Present cell)` | `verb(lemma, person, number)` |
+| `verb(lemma, person, number)` | `present(lemma, person, number)` |
 | `finite_verb(lemma, Imperfect cell)` | `imperfect(lemma, person, number)` |
 | `finite_verb(lemma, Aorist cell)` | `aorist(lemma, person, number)` |
+| `finite_verb(lemma, tense, person, number)` | `finite(lemma, tense, person, number)` |
+| `comparative(lemma)` | `comparative_citation(lemma)` |
+| `verb_paradigm(lemma)` | `present_paradigm(lemma)` |
+| `finite_verb_paradigm(lemma)` | `finite_paradigm(lemma)` |
+| `Noun::new(lemma)` | `Noun::resolve(lemma)` |
 | `noun_paradigm(id)` | `noun_paradigm(lemma)` or `advanced::by_id::noun_paradigm_by_id(id)` |
 | `forms.primary_source_order().unwrap().text` | `forms.primary_text()` |
 | public result fields | `variants()`, `source()`, `warnings()`, `trace()`, `analyses()` |
@@ -204,15 +215,17 @@ and genuine historical gaps.
 
 ## Supported surface
 
-- nouns: seven cases × singular/dual/plural from dictionary tables, plus explicit
-  rules for hard o/a, soft jo/ja, i-, u-, and n/nt/r/s/v consonant stems;
-- adjectives: dictionary and explicit hard/soft short and long agreement, plus
-  dictionary-listed comparative citations;
-- verbs: safe table cells and independently specified present, imperfect, aorist,
-  imperative, infinitive, supine, l-participle, and four declined participle
-  systems; and
-- dictionary-backed pronoun, determiner, and numeral cells in
-  `advanced::raw_features`.
+| System | Ordinary API | Evidence behavior |
+|---|---|---|
+| Nouns | `noun`, `Noun`, `noun_paradigm` | Exact tables first; dictionary metadata or explicit rules for supported classes |
+| Adjectives | `long_adjective`, `short_adjective`, `Adjective` | Exact tables first; hard/soft metadata rules; citation comparatives only |
+| Determiners | `determiner`, `Determiner`, typed paradigm | Exact pinned dictionary cells only |
+| Pronouns | `pronoun`, `personal_pronoun`, `gendered_pronoun`, `Pronoun` | Separate source-backed cell shapes; no catch-all options API |
+| Numerals | `numeral`, `gendered_numeral`, `Numeral` | Declension cells present in the pinned source; no arbitrary numeral generator |
+| Finite verbs | `present`, `imperfect`, `aorist`, `finite` | Exact tables, independently sourced metadata, then reviewed overrides |
+| Imperatives | `imperative` | Six historically represented person-number cells |
+| Non-finite forms | `infinitive`, `supine`, `verbal_noun`, `l_participle` | Table or independently supported productive rule |
+| Participles | four named binders plus `Participle` | Independently modeled verbal formations with adjective agreement |
 
 Malformed Wiktextract verb rows are not repaired by guessing. Productive rules
 expand missing-cell behavior only when source-backed or caller-supplied metadata is
@@ -220,10 +233,12 @@ sufficient.
 
 ## Unicode, data, and maintenance
 
-Display spelling is NFC and otherwise lossless. Lookup applies shared
-NFC-plus-Unicode-lowercase normalization without stripping historical letters,
-accents, titla, or palatalization marks. Cyrillic and Glagolitic remain distinct;
-there is no lossy automatic transliteration. See
+`Lemma::parse` NFC-normalizes one word, exposes `Script::Cyrillic` or
+`Script::Glagolitic`, and rejects empty, mixed-script, markup-bearing, or malformed
+input. Every ordinary raw-string call passes through that validation. Lookup then
+applies Unicode lowercase without stripping historical letters, accents, titla, or
+palatalization marks. Cyrillic and Glagolitic remain distinct; there is no lossy
+automatic transliteration. See
 [docs/ORTHOGRAPHY.md](docs/ORTHOGRAPHY.md).
 
 The current pinned snapshot contains 3,081 lexemes, 134,761 public feature cells,
@@ -243,7 +258,7 @@ cargo xtask check-all
 ```
 
 The workspace also contains the offline extractor and `xtask`. It intentionally
-does not implement productive arbitrary numerals, a feature-only pronoun API,
+does not implement productive arbitrary numerals, a catch-all pronoun API,
 automatic Cyrillic/Glagolitic transliteration, syntax, phrase realization,
 manuscript transcription, OCR, abbreviation expansion, or later-recension
 normalization.

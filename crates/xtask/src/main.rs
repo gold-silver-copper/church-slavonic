@@ -781,10 +781,13 @@ fn metadata_error_reason(error: &InflectionError) -> &'static str {
         InflectionError::MissingLexicalMetadata { .. } => "generation-missing-metadata",
         InflectionError::ContradictoryLexicalMetadata { .. } => "generation-contradictory-metadata",
         InflectionError::UnsupportedFormation { .. } => "represented-unsupported-formation",
-        InflectionError::HistoricallyInvalidCell => "historically-invalid-cell",
-        InflectionError::UnsupportedCell => "unsupported-cell",
+        InflectionError::HistoricallyInvalidCell { .. } => "historically-invalid-cell",
+        InflectionError::UnsupportedCell { .. } => "unsupported-cell",
+        InflectionError::InvalidLemma { .. } => "generation-invalid-lemma",
         InflectionError::InvalidInput { .. } => "generation-invalid-metadata",
-        InflectionError::UnknownLemma => "generation-unknown-lemma",
+        InflectionError::UnknownLemma { .. } | InflectionError::UnknownLexemeId { .. } => {
+            "generation-unknown-lemma"
+        }
         InflectionError::AmbiguousLexeme { .. } => "generation-ambiguous-lemma",
     }
 }
@@ -945,11 +948,11 @@ fn public_cell_by_id(
         return Ok(by_id::adjective_by_id(id, cell)?);
     }
     if feature == "adj:comparative:citation" {
-        return Ok(by_id::adjective_comparatives_by_id(id)?);
+        return Ok(by_id::comparative_citation_by_id(id)?);
     }
     let parts = feature.split(':').collect::<Vec<_>>();
     match parts.as_slice() {
-        ["verb", "finite", tense, person, number] => Ok(by_id::finite_verb_by_id(
+        ["verb", "finite", tense, person, number] => Ok(by_id::finite_by_id(
             id,
             FiniteVerbCell {
                 tense: parse_tense(tense).ok_or("invalid finite tense")?,
@@ -2132,17 +2135,92 @@ fn check_accuracy_report(root: &Path) -> Result<(), Box<dyn Error>> {
 
 fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
     let facade = fs::read_to_string(root.join("crates/old-church-slavonic/src/lib.rs"))?;
+    let advanced = fs::read_to_string(root.join("crates/old-church-slavonic/src/advanced.rs"))?;
+    let handles = fs::read_to_string(root.join("crates/old-church-slavonic/src/handles.rs"))?;
+    let lookup = fs::read_to_string(root.join("crates/old-church-slavonic/src/lookup.rs"))?;
+    let orthography =
+        fs::read_to_string(root.join("crates/old-church-slavonic-core/src/orthography.rs"))?;
+    let paradigm = fs::read_to_string(root.join("crates/old-church-slavonic/src/paradigm.rs"))?;
     let result = fs::read_to_string(root.join("crates/old-church-slavonic-core/src/result.rs"))?;
     let resolver = fs::read_to_string(root.join("crates/old-church-slavonic/src/resolver.rs"))?;
 
     if facade.contains("pub use old_church_slavonic_core::*") {
         return Err("facade root restores a blanket core re-export".into());
     }
+    for removed in [
+        "pub fn verb(",
+        "pub fn adjective(",
+        "pub fn finite_verb(",
+        "pub fn verb_paradigm(",
+        "pub fn finite_verb_paradigm(",
+        "pub fn comparative(",
+    ] {
+        if facade.contains(removed) {
+            return Err(format!("removed ambiguous root alias was restored: {removed}").into());
+        }
+    }
+    if handles.contains("pub fn new(") {
+        return Err("fallible resolved-handle constructor was restored as `new`".into());
+    }
+    for removed in [
+        "finite_verb_by_id",
+        "finite_verb_paradigm_by_id",
+        "verb_paradigm_by_id",
+        "adjective_comparatives_by_id",
+    ] {
+        if advanced.contains(removed) {
+            return Err(format!("removed ambiguous by-ID alias was restored: {removed}").into());
+        }
+    }
+    for required in [
+        "finite_by_id",
+        "finite_paradigm_by_id",
+        "present_paradigm_by_id",
+        "comparative_citation_by_id",
+    ] {
+        if !advanced.contains(required) {
+            return Err(format!("explicit by-ID operation is missing: {required}").into());
+        }
+    }
+
+    let lemma_parse = source_item(&orthography, "pub fn parse(input: &str)")?;
+    for required in [
+        "canonical_display(input)",
+        "detect_script(&text)",
+        "Script::Cyrillic | Script::Glagolitic",
+        "Script::Mixed",
+    ] {
+        if !lemma_parse.contains(required) {
+            return Err(format!("Lemma::parse no longer enforces `{required}`").into());
+        }
+    }
+    if !source_item(&lookup, "pub fn lookup(")?.contains("Lemma::parse(lemma)") {
+        return Err("ordinary lookup bypasses validated Lemma parsing".into());
+    }
+
+    let prelude = source_item(&facade, "pub mod prelude")?;
+    for forbidden in [
+        "raw_features",
+        "DictionaryVerbMetadata",
+        "NormalizedVerbMetadataField",
+        "dictionary_form_by_id",
+        "form_by_id",
+    ] {
+        if prelude.contains(forbidden) {
+            return Err(format!("ordinary prelude exposes specialist API `{forbidden}`").into());
+        }
+    }
+    if facade.contains("pub use crate::advanced::raw_features")
+        || facade.contains("pub use advanced::raw_features")
+        || !advanced.contains("pub mod raw_features")
+    {
+        return Err("raw normalized feature access escaped its advanced namespace".into());
+    }
 
     for (name, dimensions) in [
         ("noun", &["lemma: &str", "case: Case", "number: Number"][..]),
         (
-            "adjective",
+            "long_adjective",
             &[
                 "lemma: &str",
                 "case: Case",
@@ -2161,7 +2239,19 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
                 "animacy: Animacy",
             ][..],
         ),
-        ("verb", &["lemma: &str", "person: Person", "number: Number"]),
+        (
+            "determiner",
+            &[
+                "lemma: &str",
+                "case: Case",
+                "number: Number",
+                "gender: Gender",
+            ][..],
+        ),
+        (
+            "present",
+            &["lemma: &str", "person: Person", "number: Number"],
+        ),
         (
             "imperfect",
             &["lemma: &str", "person: Person", "number: Number"],
@@ -2171,7 +2261,7 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
             &["lemma: &str", "person: Person", "number: Number"],
         ),
         (
-            "finite_verb",
+            "finite",
             &[
                 "lemma: &str",
                 "tense: FiniteTense",
@@ -2190,7 +2280,36 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
         ("infinitive", &["lemma: &str"]),
         ("supine", &["lemma: &str"]),
         ("verbal_noun", &["lemma: &str"]),
-        ("comparative", &["lemma: &str"]),
+        ("comparative_citation", &["lemma: &str"]),
+        ("pronoun", &["lemma: &str", "case: Case", "number: Number"]),
+        (
+            "personal_pronoun",
+            &[
+                "lemma: &str",
+                "case: Case",
+                "number: Number",
+                "person: Person",
+            ],
+        ),
+        (
+            "gendered_pronoun",
+            &[
+                "lemma: &str",
+                "case: Case",
+                "number: Number",
+                "gender: Gender",
+            ],
+        ),
+        ("numeral", &["lemma: &str", "case: Case", "number: Number"]),
+        (
+            "gendered_numeral",
+            &[
+                "lemma: &str",
+                "case: Case",
+                "number: Number",
+                "gender: Gender",
+            ],
+        ),
     ] {
         let header = source_item(&facade, &format!("pub fn {name}("))?;
         if header[..=header.find('{').ok_or("public function has no body")?].contains("Cell") {
@@ -2208,29 +2327,41 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
 
     for (name, delegation) in [
         ("noun", "resolver::noun("),
-        ("adjective", "adjective_form("),
+        ("long_adjective", "adjective_form("),
         ("short_adjective", "adjective_form("),
-        ("verb", "finite_verb("),
-        ("imperfect", "finite_verb("),
-        ("aorist", "finite_verb("),
-        ("finite_verb", "resolver::finite_verb("),
+        ("present", "finite("),
+        ("imperfect", "finite("),
+        ("aorist", "finite("),
+        ("finite", "resolver::finite_verb("),
         ("imperative", "resolver::imperative("),
         ("l_participle", "resolver::l_participle("),
         ("infinitive", "resolver::infinitive("),
         ("supine", "resolver::supine("),
         ("verbal_noun", "resolver::verbal_noun("),
-        ("comparative", "resolver::adjective_comparatives("),
-        ("present_active_participle", "Verb::new("),
-        ("present_passive_participle", "Verb::new("),
-        ("past_active_participle", "Verb::new("),
-        ("past_passive_participle", "Verb::new("),
-        ("noun_paradigm", "Noun::new("),
-        ("adjective_paradigm", "Adjective::new("),
-        ("verb_paradigm", "Verb::new("),
-        ("finite_verb_paradigm", "Verb::new("),
-        ("imperative_paradigm", "Verb::new("),
-        ("l_participle_paradigm", "Verb::new("),
-        ("participle_paradigm", "Verb::new("),
+        ("comparative_citation", "resolver::adjective_comparatives("),
+        ("determiner", "resolver::closed_class("),
+        ("pronoun", "resolver::closed_class("),
+        ("personal_pronoun", "resolver::closed_class("),
+        ("gendered_pronoun", "resolver::closed_class("),
+        ("numeral", "resolver::closed_class("),
+        ("gendered_numeral", "resolver::closed_class("),
+        ("present_active_participle", "Verb::resolve("),
+        ("present_passive_participle", "Verb::resolve("),
+        ("past_active_participle", "Verb::resolve("),
+        ("past_passive_participle", "Verb::resolve("),
+        ("noun_paradigm", "Noun::resolve("),
+        ("adjective_paradigm", "Adjective::resolve("),
+        ("determiner_paradigm", "Determiner::resolve("),
+        ("pronoun_paradigm", "Pronoun::resolve("),
+        ("personal_pronoun_paradigm", "Pronoun::resolve("),
+        ("gendered_pronoun_paradigm", "Pronoun::resolve("),
+        ("numeral_paradigm", "Numeral::resolve("),
+        ("gendered_numeral_paradigm", "Numeral::resolve("),
+        ("present_paradigm", "Verb::resolve("),
+        ("finite_paradigm", "Verb::resolve("),
+        ("imperative_paradigm", "Verb::resolve("),
+        ("l_participle_paradigm", "Verb::resolve("),
+        ("participle_paradigm", "Verb::resolve("),
     ] {
         let item = source_item(&facade, &format!("pub fn {name}("))?;
         if !item.contains(delegation) {
@@ -2255,6 +2386,53 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
     {
         return Err("successful FormSet construction is not structurally nonempty".into());
     }
+    if !source_item(&result, "pub fn unique_text(")?.contains("VariantPolicy::RequireUnique")
+        || !source_item(&result, "pub fn select(")?.contains("VariantPolicy::SourceFirst")
+        || result.contains("impl fmt::Display for FormSet")
+    {
+        return Err("FormSet no longer requires explicit, lossless variant selection".into());
+    }
+    let errors = source_item(&result, "pub enum InflectionError")?;
+    for (variant, fields) in [
+        (
+            "UnknownLemma {",
+            &["lemma: String", "part_of_speech: PartOfSpeech"][..],
+        ),
+        (
+            "HistoricallyInvalidCell {",
+            &["lexeme_id: String", "cell: RequestedCell"][..],
+        ),
+        (
+            "UnsupportedCell {",
+            &["lexeme_id: String", "cell: RequestedCell"][..],
+        ),
+    ] {
+        let contextual = source_item(errors, variant)?;
+        if fields.iter().any(|field| !contextual.contains(field)) {
+            return Err(format!("contextual fields were removed from {variant}").into());
+        }
+    }
+
+    let paradigm_common = source_item(&paradigm, "macro_rules! paradigm_common")?;
+    for required in ["pub fn successes", "pub fn failures", "pub fn into_rows"] {
+        if !paradigm_common.contains(required) {
+            return Err(format!("typed paradigms are missing `{required}`").into());
+        }
+    }
+    for name in [
+        "NounParadigm",
+        "AdjectiveParadigm",
+        "FiniteVerbParadigm",
+        "VerbParadigm",
+        "ImperativeParadigm",
+        "LParticipleParadigm",
+        "ParticipleParadigm",
+    ] {
+        let implementation = source_item(&paradigm, &format!("impl {name} {{"))?;
+        if !implementation.contains("pub fn form(") || !implementation.contains("forms_for(") {
+            return Err(format!("{name} bypasses typed paradigm lookup").into());
+        }
+    }
 
     for (builder, resolver_call) in [
         ("build_noun_paradigm", "result: noun_by_id(id, cell)"),
@@ -2262,11 +2440,8 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
             "build_adjective_paradigm",
             "result: adjective_by_id(id, cell)",
         ),
-        (
-            "build_finite_verb_paradigm",
-            "result: finite_verb_by_id(id, cell)",
-        ),
-        ("build_verb_paradigm", "result: finite_verb_by_id(id, cell)"),
+        ("build_finite_paradigm", "result: finite_by_id(id, cell)"),
+        ("build_present_paradigm", "result: finite_by_id(id, cell)"),
         (
             "build_imperative_paradigm",
             "result: imperative_by_id(id, cell)",
@@ -2278,6 +2453,18 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
         (
             "build_participle_paradigm",
             "result: participle_by_id(id, cell)",
+        ),
+        (
+            "build_ungendered_closed_class_paradigm",
+            "result: closed_class_by_id(id, part_of_speech, cell.closed_class())",
+        ),
+        (
+            "build_gendered_closed_class_paradigm",
+            "result: closed_class_by_id(id, part_of_speech, cell.closed_class())",
+        ),
+        (
+            "build_personal_pronoun_paradigm",
+            "result: personal_pronoun_by_id(id, cell)",
         ),
     ] {
         let item = source_item(&resolver, &format!("fn {builder}("))?;
@@ -2491,6 +2678,29 @@ fn guard_witnesses() -> Result<(), Box<dyn Error>> {
         restore_guard_file(&root, &witness_root, facade_lib)?;
 
         let mut changed = fs::read_to_string(witness_root.join(facade_lib))?;
+        changed.push_str("\npub use crate::advanced::raw_features::form_by_id;\n");
+        fs::write(witness_root.join(facade_lib), changed)?;
+        require_guard_failure(
+            "raw feature keys remain specialist-only",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, facade_lib)?;
+
+        let lookup_source = "crates/old-church-slavonic/src/lookup.rs";
+        let mut changed = fs::read_to_string(witness_root.join(lookup_source))?;
+        changed = changed.replacen(
+            "let lemma = old_church_slavonic_core::Lemma::parse(lemma)?;",
+            "let lemma = old_church_slavonic_core::orthography::canonical_display(lemma)?;",
+            1,
+        );
+        fs::write(witness_root.join(lookup_source), changed)?;
+        require_guard_failure(
+            "ordinary lookup validates Lemma",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, lookup_source)?;
+
+        let mut changed = fs::read_to_string(witness_root.join(facade_lib))?;
         changed = changed.replacen(
             "pub fn noun(lemma: &str, case: Case, number: Number)",
             "pub fn noun(lemma: &str, cell: old_church_slavonic_core::NounCell)",
@@ -2516,6 +2726,42 @@ fn guard_witnesses() -> Result<(), Box<dyn Error>> {
             check_public_api_structure(&witness_root),
         )?;
         restore_guard_file(&root, &witness_root, result_source)?;
+
+        let mut changed = fs::read_to_string(witness_root.join(result_source))?;
+        changed = changed.replacen(
+            "self.select(VariantPolicy::RequireUnique)",
+            "self.select(VariantPolicy::SourceFirst)",
+            1,
+        );
+        fs::write(witness_root.join(result_source), changed)?;
+        require_guard_failure(
+            "explicit unique variant selection",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, result_source)?;
+
+        let mut changed = fs::read_to_string(witness_root.join(result_source))?;
+        changed = changed.replacen("        lexeme_id: String,", "        lexeme: String,", 1);
+        fs::write(witness_root.join(result_source), changed)?;
+        require_guard_failure(
+            "contextual cell errors",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, result_source)?;
+
+        let paradigm_source = "crates/old-church-slavonic/src/paradigm.rs";
+        let mut changed = fs::read_to_string(witness_root.join(paradigm_source))?;
+        changed = changed.replacen(
+            "            pub fn successes",
+            "            fn successes",
+            1,
+        );
+        fs::write(witness_root.join(paradigm_source), changed)?;
+        require_guard_failure(
+            "typed paradigm success and failure views",
+            check_public_api_structure(&witness_root),
+        )?;
+        restore_guard_file(&root, &witness_root, paradigm_source)?;
 
         let mut changed = fs::read_to_string(witness_root.join(facade_lib))?;
         changed = changed.replacen(

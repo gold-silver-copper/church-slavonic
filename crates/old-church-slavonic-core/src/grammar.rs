@@ -111,6 +111,8 @@ pub enum Animacy {
 }
 
 impl Animacy {
+    pub const ALL: [Self; 2] = [Self::Animate, Self::Inanimate];
+
     pub const fn code(self) -> &'static str {
         match self {
             Self::Animate => "an",
@@ -183,6 +185,13 @@ pub enum ParticipleKind {
 }
 
 impl ParticipleKind {
+    pub const ALL: [Self; 4] = [
+        Self::PresentActive,
+        Self::PresentPassive,
+        Self::PastActive,
+        Self::PastPassive,
+    ];
+
     pub const fn code(self) -> &'static str {
         match self {
             Self::PresentActive => "present-active",
@@ -480,12 +489,90 @@ pub struct ParticipleCell {
     pub adjective: AdjectiveCell,
 }
 
+/// A case-number cell for an unpositioned closed-class word.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct UngenderedCell {
+    pub case: Case,
+    pub number: Number,
+}
+
+impl UngenderedCell {
+    pub fn closed_class(self) -> ClosedClassCell {
+        ClosedClassCell {
+            case: self.case,
+            number: self.number,
+            gender: None,
+            person: None,
+        }
+    }
+}
+
+/// A case-number-gender cell for an agreeing closed-class word.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct GenderedCell {
+    pub case: Case,
+    pub number: Number,
+    pub gender: Gender,
+}
+
+impl GenderedCell {
+    pub fn closed_class(self) -> ClosedClassCell {
+        ClosedClassCell {
+            case: self.case,
+            number: self.number,
+            gender: Some(self.gender),
+            person: None,
+        }
+    }
+}
+
+/// A case-number-person cell for a personal pronoun table.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct PersonalPronounCell {
+    pub case: Case,
+    pub number: Number,
+    pub person: Person,
+}
+
+impl PersonalPronounCell {
+    pub fn closed_class(self) -> ClosedClassCell {
+        ClosedClassCell {
+            case: self.case,
+            number: self.number,
+            gender: None,
+            person: Some(self.person),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ClosedClassCell {
     pub case: Case,
     pub number: Number,
     pub gender: Option<Gender>,
     pub person: Option<Person>,
+}
+
+/// The grammatical request associated with a failed inflection.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum RequestedCell {
+    Noun(NounCell),
+    Adjective(AdjectiveCell),
+    FiniteVerb(FiniteVerbCell),
+    Imperative(ImperativeCell),
+    LParticiple(LParticipleCell),
+    Participle(ParticipleCell),
+    ClosedClass {
+        part_of_speech: PartOfSpeech,
+        cell: ClosedClassCell,
+    },
+    Infinitive,
+    Supine,
+    VerbalNoun,
+    ComparativeCitation,
+    RawFeature {
+        feature: String,
+    },
 }
 
 impl ClosedClassCell {
