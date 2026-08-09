@@ -1,6 +1,6 @@
 [package]
 name = "old-church-slavonic"
-version = "0.3.0"
+version = "0.4.0"
 description = "Dictionary-backed Old Church Slavonic inflection"
 authors.workspace = true
 edition.workspace = true

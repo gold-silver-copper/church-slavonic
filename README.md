@@ -25,7 +25,7 @@ The minimum supported Rust version is 1.85.
 
 ```toml
 [dependencies]
-old-church-slavonic = "0.3"
+old-church-slavonic = "0.4"
 ```
 
 The generated dictionary is compiled into the package. Runtime crates perform no
