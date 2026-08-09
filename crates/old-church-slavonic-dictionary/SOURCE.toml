@@ -1,0 +1,11 @@
+registry_schema = 1
+
+[[source]]
+name = "English Wiktionary Old Church Slavonic via Kaikki"
+url = "https://kaikki.org/dictionary/Old%20Church%20Slavonic/kaikki.org-dictionary-OldChurchSlavonic.jsonl"
+wiktionary_dump_date = "2026-08-05"
+kaikki_extraction_date = "2026-08-07"
+bytes = 43962382
+sha256 = "fb20336e716d8f29d0c53bb4cc32f35065ad973ef8b496654c72bf542f876a83"
+wiktextract_commit = "d9fa233"
+license = "CC BY-SA 4.0 for this distribution; upstream is also available under GFDL 1.1 or later"

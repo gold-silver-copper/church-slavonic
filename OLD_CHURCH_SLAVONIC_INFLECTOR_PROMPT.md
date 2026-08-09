@@ -4,7 +4,7 @@ Create a production-quality Rust workspace in this repository for **Old Church
 Slavonic** (ISO 639-1 `cu`, ISO 639-2 `chu`; Wiktionary/UD `lang_code` `cu`).
 The result should be a fast, embeddable
 inflection library in the same family as the sibling `english`, `interslavic-rs`,
-`slovowiki`, and `ruthenian` projects: deterministic offline data extraction,
+and `ruthenian` projects: deterministic offline data extraction,
 committed generated lookup data, a small rule engine for out-of-vocabulary words,
 an ergonomic public facade, and reproducible accuracy reports.
 
@@ -51,18 +51,6 @@ Learn from its dependency-free core, dictionary-metadata facade, full-paradigm
 structs, clean-cell expansion, explicit overrides, whole-dictionary fingerprints,
 variant-order contract, OOV tests, and external parity benchmark. Do not copy its
 slash-delimited multi-form return convention; return structure instead.
-
-### `../slovowiki`
-
-- `README.md`, `INTEGRATION.md`
-- `docs/{PIPELINE,ARCHITECTURE-ACCURACY-REVIEW,GUARD-REGISTRY}.md`
-- `src/{forms,inflect_eval,fingerprint}.rs`
-- `reports/inflection-report.md`
-
-Learn from its single-owner data pipeline, committed reports, provenance manifests,
-full-corpus semantic checks, deterministic exports, guard failure witnesses, and the
-warning that evaluation and production must use the same generation path. Avoid
-duplicated generation pipelines and byte-level guards that have no semantic owner.
 
 ### `../ruthenian`
 

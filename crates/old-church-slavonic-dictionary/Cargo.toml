@@ -1,0 +1,28 @@
+[package]
+name = "old-church-slavonic-dictionary"
+version = "0.1.0"
+description = "Wiktionary-backed Old Church Slavonic semantic dictionary and game-vocabulary tools"
+authors.workspace = true
+edition.workspace = true
+# Code is MIT/Apache; bundled Wiktionary-derived data is CC BY-SA 4.0.
+license = "(MIT OR Apache-2.0) AND CC-BY-SA-4.0"
+repository.workspace = true
+rust-version.workspace = true
+include = [
+    "src/**",
+    "generated/**",
+    "tests/**",
+    "build.rs",
+    "README.md",
+    "ATTRIBUTION.md",
+    "SOURCE.toml",
+]
+
+[dependencies]
+old-church-slavonic.workspace = true
+old-church-slavonic-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

@@ -96,6 +96,33 @@ pub fn adjective(
     adjective_form(lemma, AdjectiveForm::Long, case, number, gender, animacy)
 }
 
+/// Decline one dictionary determiner cell.
+///
+/// This typed facade covers interrogative and pronominal adjectives whose
+/// source tables are tagged as determiners rather than ordinary adjectives.
+///
+/// ```
+/// use old_church_slavonic::{determiner, Case, Gender, Number};
+/// assert_eq!(
+///     determiner("кꙑи", Case::Accusative, Number::Singular, Gender::Feminine)?
+///         .primary_text(),
+///     "кѫѭ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn determiner(lemma: &str, case: Case, number: Number, gender: Gender) -> InflectionResult {
+    resolver::closed_class(
+        lemma,
+        PartOfSpeech::Determiner,
+        old_church_slavonic_core::ClosedClassCell {
+            case,
+            number,
+            gender: Some(gender),
+            person: None,
+        },
+    )
+}
+
 /// Decline one short/simple adjective cell.
 ///
 /// ```

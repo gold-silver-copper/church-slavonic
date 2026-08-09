@@ -25,6 +25,7 @@ use old_church_slavonic_extractor::extract::{
     check_registry, load_registry, refresh, refresh_derived_registry, registry_with_overrides,
 };
 use old_church_slavonic_extractor::schema::{FormRow, LexemeRow, Registry};
+use old_church_slavonic_extractor::semantics::{check_dictionary, refresh_dictionary};
 use old_church_slavonic_extractor::verb_metadata;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
@@ -50,8 +51,13 @@ fn run() -> Result<(), Box<dyn Error>> {
             let dump = required_path_flag(&mut args, "--dump")?;
             refresh(&dump, &workspace_root()?)
         }
+        Some("refresh-dictionary") => {
+            let dump = required_path_flag(&mut args, "--dump")?;
+            refresh_dictionary(&dump, &workspace_root()?)
+        }
         Some("refresh-derived-registry") => refresh_derived_registry(&workspace_root()?),
         Some("check-registry") => check_registry(&workspace_root()?),
+        Some("check-dictionary") => check_dictionary(&workspace_root()?),
         Some("extraction-report") => extraction_report(),
         Some("accuracy") => accuracy(&mut args),
         Some("accuracy-corpus") => corpus::run(&mut args, &workspace_root()?),
@@ -2103,6 +2109,7 @@ fn check_all() -> Result<(), Box<dyn Error>> {
     run_cargo(&["test", "--workspace", "--doc"])?;
     let root = workspace_root()?;
     check_registry(&root)?;
+    check_dictionary(&root)?;
     check_accuracy_report(&root)?;
     check_public_api_structure(&root)?;
     check_runtime_boundaries(&root)?;
@@ -2983,8 +2990,10 @@ fn workspace_root() -> Result<PathBuf, Box<dyn Error>> {
 fn print_help() {
     eprintln!("cargo xtask <command>");
     eprintln!("  refresh-data --dump PATH");
+    eprintln!("  refresh-dictionary --dump PATH");
     eprintln!("  refresh-derived-registry");
     eprintln!("  check-registry");
+    eprintln!("  check-dictionary");
     eprintln!("  extraction-report");
     eprintln!("  accuracy");
     eprintln!("  accuracy-ud --path UD_DIRECTORY");

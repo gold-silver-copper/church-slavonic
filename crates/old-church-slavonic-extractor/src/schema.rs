@@ -40,6 +40,30 @@ pub struct HeadTemplate {
 pub struct Sense {
     #[serde(default)]
     pub tags: Vec<String>,
+    #[serde(default)]
+    pub glosses: Vec<String>,
+    #[serde(default)]
+    pub raw_glosses: Vec<String>,
+    #[serde(default)]
+    pub topics: Vec<String>,
+    #[serde(default)]
+    pub examples: Vec<SourceExample>,
+    #[serde(default)]
+    pub id: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SourceExample {
+    #[serde(default)]
+    pub text: String,
+    #[serde(default)]
+    pub roman: String,
+    #[serde(default)]
+    pub translation: String,
+    #[serde(default)]
+    pub english: String,
+    #[serde(default, rename = "ref")]
+    pub reference: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -116,4 +140,29 @@ pub struct Registry {
     pub forms: Vec<FormRow>,
     pub verb_metadata: Vec<VerbMetadataRow>,
     pub overrides: Vec<OverrideRow>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct DictionaryExampleRow {
+    pub text: String,
+    pub romanization: String,
+    pub translation: String,
+    pub reference: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct DictionarySenseRow {
+    pub id: String,
+    pub source_sense_id: String,
+    pub lemma: String,
+    pub page_word: String,
+    pub key: String,
+    pub page_key: String,
+    pub part_of_speech: String,
+    pub inflection_lexeme_id: Option<String>,
+    pub glosses: Vec<String>,
+    pub raw_glosses: Vec<String>,
+    pub tags: Vec<String>,
+    pub topics: Vec<String>,
+    pub examples: Vec<DictionaryExampleRow>,
 }

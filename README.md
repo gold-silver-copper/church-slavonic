@@ -31,6 +31,31 @@ old-church-slavonic = "0.3"
 The generated dictionary is compiled into the package. Runtime crates perform no
 file, network, JSON, TSV, XML, or Lua access.
 
+## Semantic dictionary and game vocabulary
+
+The workspace also contains `old-church-slavonic-dictionary`, an offline
+Wiktionary-backed meaning dictionary and the `ocs-dict` CLI. It searches English
+concepts, displays OCS senses and examples, analyzes exact and productively
+generated dictionary forms, and validates game-vocabulary manifests without a
+later-language fallback.
+
+```bash
+cargo install old-church-slavonic-dictionary
+ocs-dict search "gold coin"
+ocs-dict show златикъ
+ocs-dict lint game-vocabulary.tsv
+ocs-dict check-text rendered-game.txt --max-unknown 0
+```
+
+Meaning and morphology remain separate evidence layers. A semantic sense links to
+the inflector only when both snapshots resolve the same lexical identity; a lookup
+hit does not silently manufacture an unsupported paradigm.
+
+`check-text` distinguishes citations, exact source-table forms, forms generated
+by the inflector from pinned dictionary metadata, tokens attested in pinned
+source examples, explicit allowlist entries, and unknowns. This lets consumers
+enforce a zero-unknown gate without treating a productive form as a quotation.
+
 ## Resolve once for repeated calls
 
 `Noun`, `Adjective`, and `Verb` bind one unambiguous dictionary identity without
@@ -213,6 +238,7 @@ cargo xtask check-registry
 cargo xtask accuracy
 cargo xtask examples
 cargo xtask guard-witnesses
+cargo xtask check-dictionary
 cargo xtask check-all
 ```
 

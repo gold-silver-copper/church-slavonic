@@ -42,7 +42,6 @@ No error is caught and replaced by a frequent class.
 |---|---|
 | `english` | table-first lookup, rule fallback, streaming extraction, parse-failure ceiling, deterministic generated data, separate registry and accuracy checks |
 | `interslavic-rs` | core/facade/extractor/xtask split, full paradigm structures, explicit lexical hints, ordered alternatives, whole-registry fingerprints/diffs |
-| `slovowiki` | single-owner pipeline artifacts, committed machine and human reports, explicit provenance, semantic full-corpus checks, guards with failure witnesses |
 | `ruthenian` | lemma-plus-dimensions ordinary calls, lightweight resolved handles, a curated root, written morphology authority, stable rule IDs, one generation path, and hostile-input testing |
 
 ## Deliberately not adopted

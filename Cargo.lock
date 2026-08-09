@@ -89,6 +89,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "old-church-slavonic-dictionary"
+version = "0.1.0"
+dependencies = [
+ "old-church-slavonic",
+ "old-church-slavonic-core",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "old-church-slavonic-extractor"
 version = "0.1.0"
 dependencies = [

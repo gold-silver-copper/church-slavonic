@@ -2,6 +2,7 @@
 members = [
     "crates/old-church-slavonic-core",
     "crates/old-church-slavonic",
+    "crates/old-church-slavonic-dictionary",
     "crates/old-church-slavonic-extractor",
     "crates/xtask",
 ]
@@ -17,6 +18,7 @@ rust-version = "1.85"
 [workspace.dependencies]
 old-church-slavonic = { path = "crates/old-church-slavonic", version = "0.3.0" }
 old-church-slavonic-core = { path = "crates/old-church-slavonic-core", version = "0.3.0" }
+old-church-slavonic-dictionary = { path = "crates/old-church-slavonic-dictionary", version = "0.1.0" }
 old-church-slavonic-extractor = { path = "crates/old-church-slavonic-extractor", version = "0.1.0" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"

@@ -14,6 +14,16 @@ assert_eq!(present.primary_text(), "благословлѭ");
 # Ok::<(), old_church_slavonic::InflectionError>(())
 ```
 
+Dictionary determiners use the same direct grammatical dimensions:
+
+```rust
+use old_church_slavonic::{determiner, Case, Gender, Number};
+
+let which = determiner("кꙑи", Case::Accusative, Number::Singular, Gender::Feminine)?;
+assert_eq!(which.primary_text(), "кѫѭ");
+# Ok::<(), old_church_slavonic::InflectionError>(())
+```
+
 For repeated calls, bind a unique dictionary identity once:
 
 ```rust

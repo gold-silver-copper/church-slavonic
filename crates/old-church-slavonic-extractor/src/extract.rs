@@ -82,8 +82,30 @@ pub fn run_cli() -> Result<(), Box<dyn Error>> {
                 registry.forms.len()
             );
         }
+        Some("dictionary-refresh") => {
+            let mut dump = None;
+            let mut root = workspace_root()?;
+            while let Some(arg) = args.next() {
+                match arg.as_str() {
+                    "--dump" => dump = args.next().map(PathBuf::from),
+                    "--root" => root = PathBuf::from(args.next().ok_or("--root needs a path")?),
+                    other => return Err(format!("unknown argument: {other}").into()),
+                }
+            }
+            let dump = dump.ok_or("dictionary-refresh requires --dump <PATH>")?;
+            crate::semantics::refresh_dictionary(&dump, &root)?;
+        }
+        Some("dictionary-check") => {
+            let root = args
+                .next()
+                .map_or(workspace_root(), |value| Ok(value.into()))?;
+            crate::semantics::check_dictionary(&root)?;
+        }
         _ => {
-            eprintln!("usage: old-church-slavonic-extractor <refresh --dump PATH|check|report>");
+            eprintln!(
+                "usage: old-church-slavonic-extractor \
+                 <refresh --dump PATH|check|report|dictionary-refresh --dump PATH|dictionary-check>"
+            );
         }
     }
     Ok(())
@@ -659,7 +681,7 @@ fn pending_lexeme(
     }))
 }
 
-fn canonical_lemma<'a>(entry: &'a Entry, pos: &str) -> &'a str {
+pub(crate) fn canonical_lemma<'a>(entry: &'a Entry, pos: &str) -> &'a str {
     if let Some(form) = entry
         .forms
         .iter()

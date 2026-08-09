@@ -8,6 +8,7 @@ licenses.
 | Original Rust code and documentation | `crates/*/src`, `docs`, manifests | MIT OR Apache-2.0 |
 | Normalized dictionary registry | `data/extracted` | English Wiktionary CC BY-SA 4.0 |
 | Generated Rust dictionary tables | `crates/old-church-slavonic/generated` | derived from English Wiktionary; CC BY-SA 4.0 |
+| Semantic dictionary snapshot | `data/dictionary`, `crates/old-church-slavonic-dictionary/generated` | derived from English Wiktionary; CC BY-SA 4.0 |
 | Extraction/accuracy reports containing forms | `reports` | derived from English Wiktionary; CC BY-SA 4.0 |
 | UD OCS PROIEL | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
 | Syntacticus native PROIEL/TOROT OCS selection | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
@@ -27,10 +28,12 @@ distributed through Kaikki:
 - <https://github.com/tatuylonen/wiktextract>
 - <https://kaikki.org/dictionary/Old%20Church%20Slavonic/index.html>
 
-The exact source hash and extraction dates are recorded in `data/SOURCES.toml` and
-`data/extracted/source.json`. This project modifies the source by selecting OCS
-entries, rejecting unsafe cells, normalizing them into a structured registry, and
-generating static Rust tables. The raw JSONL dump is not redistributed.
+The morphology source identity is recorded in `data/SOURCES.toml` and
+`data/extracted/source.json`; the separately pinned semantic snapshot is recorded
+in `data/dictionary/SOURCES.toml` and `data/dictionary/source.json`. This project
+modifies the sources by selecting OCS entries, rejecting unsafe cells, normalizing
+them into structured registries, and generating static Rust tables. Raw JSONL is
+not redistributed.
 
 Wiktionary table cells are template-generated dictionary forms. The project does not
 describe them as manuscript-attested unless separate corpus evidence supports that
