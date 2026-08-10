@@ -1107,10 +1107,9 @@ fn derive_native_metadata(token: &NativeToken) -> Option<NativeMetadata> {
             let base = token.surface.strip_suffix(personal)?;
             let (stem, formation, label) = if let Some(stem) = base.strip_suffix("ѣа") {
                 (stem, ImperfectFormation::YatA, "imperfect-yat-a")
-            } else if let Some(stem) = base.strip_suffix('а') {
-                (stem, ImperfectFormation::A, "imperfect-a-explicit-base")
             } else {
-                return None;
+                let stem = base.strip_suffix('а')?;
+                (stem, ImperfectFormation::A, "imperfect-a-explicit-base")
             };
             if stem.is_empty() {
                 return None;
