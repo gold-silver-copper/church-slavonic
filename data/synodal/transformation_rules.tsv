@@ -1,0 +1,5 @@
+rule_id	source_recension	target_recension	operation	status	evidence_id
+identity-lexical-stem	old-church-slavonic	synodal-russian	explicit-identity	reviewed	alypy-inherited-identity-review
+ocs-ja-to-synodal-ѧ	old-church-slavonic	synodal-russian	orthographic-ja-to-small-yus	reviewed	alypy-2-letter-ya
+independent-synodal-principal-parts	old-church-slavonic	synodal-russian	discard-source-surface-use-target-principal-parts	reviewed	alypy-79-100-verbs
+ocs-lj-to-synodal-люб	old-church-slavonic	synodal-russian	lexical-stem-alignment	automatically-validated	alypy-82-lyubiti

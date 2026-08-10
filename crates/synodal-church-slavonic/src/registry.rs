@@ -1,0 +1,606 @@
+use synodal_church_slavonic_core::{
+    AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect, Confidence, Error, Gender,
+    GenerationPolicy, ImperativeFormation, ImperfectFormation, LexemeId, NounDeclension,
+    NounLexeme, RecensionMappingId, Result, SynodalWord, VerbConjugation, VerbLexeme,
+    normalize_lookup_accentless,
+};
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawLexeme(pub [&'static str; 9]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawPrincipalPart(pub [&'static str; 6]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawExactForm(pub [&'static str; 7]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawAlignment(pub [&'static str; 11]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawAbbreviation(pub [&'static str; 8]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawAccent(pub [&'static str; 8]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawPositionalRule(pub [&'static str; 7]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawTransformationRule(pub [&'static str; 6]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawConflict(pub [&'static str; 8]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawIrregularOverride(pub [&'static str; 5]);
+
+include!("../generated/registry.rs");
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum PartOfSpeech {
+    Noun,
+    Adjective,
+    Verb,
+    Pronoun,
+    Determiner,
+    Numeral,
+    Participle,
+}
+
+impl PartOfSpeech {
+    pub const ALL: [Self; 7] = [
+        Self::Noun,
+        Self::Adjective,
+        Self::Verb,
+        Self::Pronoun,
+        Self::Determiner,
+        Self::Numeral,
+        Self::Participle,
+    ];
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct LexemeSummary {
+    id: LexemeId,
+    lemma: String,
+    part_of_speech: PartOfSpeech,
+    source_id: String,
+}
+
+impl LexemeSummary {
+    #[must_use]
+    pub fn id(&self) -> &LexemeId {
+        &self.id
+    }
+
+    #[must_use]
+    pub fn lemma(&self) -> &str {
+        &self.lemma
+    }
+
+    #[must_use]
+    pub const fn part_of_speech(&self) -> PartOfSpeech {
+        self.part_of_speech
+    }
+
+    #[must_use]
+    pub fn source_id(&self) -> &str {
+        &self.source_id
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct AlignmentSummary {
+    pub mapping_id: String,
+    pub source_lexeme_id: String,
+    pub target_lexeme_id: String,
+    pub relation: String,
+    pub status: String,
+    pub morphology: String,
+    pub semantics: String,
+    pub confidence_basis_points: u16,
+    pub transformations: Vec<String>,
+    pub review_note: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct TransformationRuleSummary {
+    pub rule_id: String,
+    pub source_recension: String,
+    pub target_recension: String,
+    pub operation: String,
+    pub status: String,
+    pub evidence_id: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct RecensionConflictSummary {
+    pub conflict_id: String,
+    pub source_lexeme_id: String,
+    pub target_lexeme_id: String,
+    pub kind: String,
+    pub status: String,
+    pub supporting_evidence: String,
+    pub contradicting_evidence: String,
+    pub resolution: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct PositionalRuleSummary {
+    pub rule_id: String,
+    pub input: String,
+    pub context: String,
+    pub output: String,
+    pub exceptions: String,
+    pub evidence_id: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct IrregularOverrideSummary {
+    pub lexeme_id: String,
+    pub system: String,
+    pub cell_set: String,
+    pub evidence_id: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ExactFormRecord {
+    pub expanded: &'static str,
+    pub printed: &'static str,
+    pub evidence_id: &'static str,
+    pub source_kind: &'static str,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct AbbreviationRecord {
+    pub lexeme_id: &'static str,
+    pub sense_id: &'static str,
+    pub expanded: &'static str,
+    pub printed: &'static str,
+    pub rule_id: &'static str,
+    pub evidence_id: &'static str,
+    pub reversible: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct AccentRecord {
+    pub accented: &'static str,
+    pub evidence_id: &'static str,
+    pub source_id: &'static str,
+    pub source_recension: &'static str,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct InheritedAlignment {
+    pub mapping_id: RecensionMappingId,
+    pub source_lexeme_id: LexemeId,
+    pub confidence: Confidence,
+    pub evidence_ids: Vec<String>,
+    pub transformations: Vec<String>,
+}
+
+pub(crate) fn resolve(lemma: &SynodalWord) -> Result<LexemeSummary> {
+    let lookup = normalize_lookup_accentless(lemma.canonical());
+    let matches: Vec<&RawLexeme> = LEXEMES
+        .iter()
+        .filter(|row| normalize_lookup_accentless(row.0[1]) == lookup)
+        .collect();
+    match matches.as_slice() {
+        [] => Err(Error::UnknownLemma { lookup }),
+        [row] => summary(row),
+        rows => Err(Error::AmbiguousLexeme {
+            lexemes: rows.iter().map(|row| LexemeId::from(row.0[0])).collect(),
+        }),
+    }
+}
+
+pub(crate) fn from_id(id: &LexemeId) -> Result<LexemeSummary> {
+    let row = raw_by_id(id).ok_or_else(|| Error::UnknownLemma {
+        lookup: id.to_string(),
+    })?;
+    summary(row)
+}
+
+pub(crate) fn raw_by_id(id: &LexemeId) -> Option<&'static RawLexeme> {
+    LEXEMES.iter().find(|row| row.0[0] == id.as_str())
+}
+
+pub(crate) fn exact_forms(id: &LexemeId, cell: &str) -> Vec<ExactFormRecord> {
+    EXACT_FORMS
+        .iter()
+        .filter(|row| row.0[0] == id.as_str() && row.0[1] == cell)
+        .map(|row| ExactFormRecord {
+            expanded: row.0[2],
+            printed: row.0[3],
+            evidence_id: row.0[4],
+            source_kind: row.0[5],
+        })
+        .collect()
+}
+
+pub(crate) fn has_exact_forms(id: &LexemeId) -> bool {
+    EXACT_FORMS.iter().any(|row| row.0[0] == id.as_str())
+}
+
+pub(crate) fn has_exact_system(id: &LexemeId, prefix: &str) -> bool {
+    EXACT_FORMS
+        .iter()
+        .any(|row| row.0[0] == id.as_str() && row.0[1].starts_with(prefix))
+}
+
+pub(crate) fn has_principal_part(id: &LexemeId, system: &str) -> bool {
+    PRINCIPAL_PARTS
+        .iter()
+        .any(|row| row.0[0] == id.as_str() && row.0[1] == system)
+}
+
+pub(crate) fn has_accent_data(id: &LexemeId) -> bool {
+    ACCENTS.iter().any(|row| row.0[0] == id.as_str())
+        || EXACT_FORMS
+            .iter()
+            .any(|row| row.0[0] == id.as_str() && row.0[2] != row.0[3])
+}
+
+pub(crate) fn accent_for(id: &LexemeId, cell: &str, expanded: &str) -> Option<AccentRecord> {
+    ACCENTS
+        .iter()
+        .find(|row| row.0[0] == id.as_str() && row.0[1] == cell && row.0[2] == expanded)
+        .map(|row| AccentRecord {
+            accented: row.0[3],
+            evidence_id: row.0[4],
+            source_id: row.0[5],
+            source_recension: row.0[6],
+        })
+}
+
+pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
+    let row = require_pos(id, PartOfSpeech::Noun)?;
+    Ok(NounLexeme {
+        lemma: SynodalWord::parse(row.0[1])?,
+        stem: SynodalWord::parse(row.0[4])?,
+        gender: parse_gender(row.0[5])?,
+        declension: match row.0[3] {
+            "first-hard-m" | "inherited-first-hard-m" => NounDeclension::FirstHardMasculine,
+            "first-hard-n" => NounDeclension::FirstHardNeuter,
+            "second-hard" => NounDeclension::SecondHard,
+            "second-soft" => NounDeclension::SecondSoft,
+            "third-f" => NounDeclension::ThirdFeminine,
+            value => return invalid_metadata("noun class", value),
+        },
+    })
+}
+
+pub(crate) fn adjective_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
+    let row = require_pos(id, PartOfSpeech::Adjective)?;
+    Ok(AdjectiveLexeme {
+        lemma: SynodalWord::parse(row.0[1])?,
+        stem: SynodalWord::parse(row.0[4])?,
+        class: match row.0[3] {
+            "hard-short" => AdjectiveClass::Hard,
+            "soft-short" => AdjectiveClass::Soft,
+            value => return invalid_metadata("adjective class", value),
+        },
+    })
+}
+
+pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
+    let row = require_pos(id, PartOfSpeech::Verb)?;
+    let conjugation = match row.0[3] {
+        "first-unpalatalized" => VerbConjugation::FirstUnpalatalized,
+        "first-palatalized" => VerbConjugation::FirstPalatalized,
+        "second" => VerbConjugation::Second,
+        "archaic" => VerbConjugation::Archaic,
+        value => return invalid_metadata("verb conjugation", value),
+    };
+    let aspect = match row.0[6] {
+        "imperfective" => Aspect::Imperfective,
+        "perfective" => Aspect::Perfective,
+        "biaspectual" => Aspect::Biaspectual,
+        "" | "unknown" => Aspect::Unknown,
+        value => return invalid_metadata("aspect", value),
+    };
+    let part = |system: &str| {
+        PRINCIPAL_PARTS
+            .iter()
+            .find(|part| part.0[0] == id.as_str() && part.0[1] == system)
+    };
+    let parsed_part = |system: &str| -> Result<Option<SynodalWord>> {
+        part(system)
+            .map(|entry| SynodalWord::parse(entry.0[2]))
+            .transpose()
+    };
+
+    Ok(VerbLexeme {
+        lemma: SynodalWord::parse(row.0[1])?,
+        aspect,
+        conjugation,
+        present_stem: nonempty_word(row.0[4])?,
+        present_first_singular: parsed_part("present-first-singular")?,
+        present_third_plural: parsed_part("present-third-plural")?,
+        imperfect_stem: parsed_part("imperfect-stem")?,
+        imperfect_formation: part("imperfect-stem")
+            .map(|entry| parse_imperfect(entry.0[3]))
+            .transpose()?,
+        aorist_stem: parsed_part("aorist-stem")?,
+        aorist_formation: part("aorist-stem")
+            .map(|entry| parse_aorist(entry.0[3]))
+            .transpose()?,
+        imperative_stem: parsed_part("imperative-stem")?,
+        imperative_formation: part("imperative-stem")
+            .map(|entry| parse_imperative(entry.0[3]))
+            .transpose()?,
+        l_participle_stem: parsed_part("l-participle-stem")?,
+    })
+}
+
+pub(crate) fn all_lexemes() -> Result<Vec<LexemeSummary>> {
+    LEXEMES.iter().map(summary).collect()
+}
+
+pub(crate) fn alignments() -> Result<Vec<AlignmentSummary>> {
+    ALIGNMENTS
+        .iter()
+        .map(|row| {
+            let confidence_basis_points =
+                row.0[7]
+                    .parse::<u16>()
+                    .map_err(|_| Error::ContradictoryMetadata {
+                        reason: format!("invalid mapping confidence {}", row.0[7]),
+                    })?;
+            Ok(AlignmentSummary {
+                mapping_id: row.0[0].into(),
+                source_lexeme_id: row.0[1].into(),
+                target_lexeme_id: row.0[2].into(),
+                relation: row.0[3].into(),
+                status: row.0[4].into(),
+                morphology: row.0[5].into(),
+                semantics: row.0[6].into(),
+                confidence_basis_points,
+                transformations: split_list(row.0[9]),
+                review_note: row.0[10].into(),
+            })
+        })
+        .collect()
+}
+
+pub(crate) fn transformation_rules() -> Vec<TransformationRuleSummary> {
+    TRANSFORMATION_RULES
+        .iter()
+        .map(|row| TransformationRuleSummary {
+            rule_id: row.0[0].into(),
+            source_recension: row.0[1].into(),
+            target_recension: row.0[2].into(),
+            operation: row.0[3].into(),
+            status: row.0[4].into(),
+            evidence_id: row.0[5].into(),
+        })
+        .collect()
+}
+
+pub(crate) fn conflicts() -> Vec<RecensionConflictSummary> {
+    CONFLICTS
+        .iter()
+        .map(|row| RecensionConflictSummary {
+            conflict_id: row.0[0].into(),
+            source_lexeme_id: row.0[1].into(),
+            target_lexeme_id: row.0[2].into(),
+            kind: row.0[3].into(),
+            status: row.0[4].into(),
+            supporting_evidence: row.0[5].into(),
+            contradicting_evidence: row.0[6].into(),
+            resolution: row.0[7].into(),
+        })
+        .collect()
+}
+
+pub(crate) fn positional_rules() -> Vec<PositionalRuleSummary> {
+    POSITIONAL_RULES
+        .iter()
+        .map(|row| PositionalRuleSummary {
+            rule_id: row.0[0].into(),
+            input: row.0[1].into(),
+            context: row.0[2].into(),
+            output: row.0[3].into(),
+            exceptions: row.0[4].into(),
+            evidence_id: row.0[5].into(),
+        })
+        .collect()
+}
+
+pub(crate) fn irregular_overrides() -> Vec<IrregularOverrideSummary> {
+    IRREGULAR_OVERRIDES
+        .iter()
+        .map(|row| IrregularOverrideSummary {
+            lexeme_id: row.0[0].into(),
+            system: row.0[1].into(),
+            cell_set: row.0[2].into(),
+            evidence_id: row.0[3].into(),
+        })
+        .collect()
+}
+
+pub(crate) fn abbreviation_for(id: &LexemeId, sense_id: &str) -> Option<AbbreviationRecord> {
+    ABBREVIATIONS
+        .iter()
+        .find(|row| row.0[0] == id.as_str() && row.0[1] == sense_id)
+        .map(|row| AbbreviationRecord {
+            lexeme_id: row.0[0],
+            sense_id: row.0[1],
+            expanded: row.0[2],
+            printed: row.0[3],
+            rule_id: row.0[4],
+            evidence_id: row.0[5],
+            reversible: row.0[6] == "true",
+        })
+}
+
+pub(crate) fn abbreviations_for_printed(printed: &str) -> Vec<AbbreviationRecord> {
+    ABBREVIATIONS
+        .iter()
+        .filter(|row| row.0[3] == printed)
+        .map(|row| AbbreviationRecord {
+            lexeme_id: row.0[0],
+            sense_id: row.0[1],
+            expanded: row.0[2],
+            printed: row.0[3],
+            rule_id: row.0[4],
+            evidence_id: row.0[5],
+            reversible: row.0[6] == "true",
+        })
+        .collect()
+}
+
+pub(crate) fn noun_uses_inherited_class(id: &LexemeId) -> bool {
+    raw_by_id(id).is_some_and(|row| row.0[3].starts_with("inherited-"))
+}
+
+pub(crate) fn inherited_alignments(
+    id: &LexemeId,
+    policy: GenerationPolicy,
+    threshold_basis_points: u16,
+) -> Result<Vec<InheritedAlignment>> {
+    let candidates: Vec<&RawAlignment> = ALIGNMENTS
+        .iter()
+        .filter(|row| {
+            row.0[2] == id.as_str()
+                && row.0[4] != "rejected"
+                && row.0[6] != "false-friend"
+                && (policy == GenerationPolicy::Exploratory
+                    || matches!(row.0[4], "reviewed" | "automatically-validated"))
+        })
+        .collect();
+    if candidates.is_empty() {
+        return Err(Error::MissingRecensionMapping { source: id.clone() });
+    }
+    if policy != GenerationPolicy::Exploratory && candidates.len() > 1 {
+        return Err(Error::AmbiguousRecensionMapping {
+            mappings: candidates
+                .iter()
+                .map(|row| RecensionMappingId::from(row.0[0]))
+                .collect(),
+        });
+    }
+    candidates
+        .into_iter()
+        .map(|row| {
+            let confidence_basis_points =
+                row.0[7]
+                    .parse::<u16>()
+                    .map_err(|_| Error::ContradictoryMetadata {
+                        reason: format!("invalid mapping confidence {}", row.0[7]),
+                    })?;
+            if policy == GenerationPolicy::Productive
+                && confidence_basis_points < threshold_basis_points
+            {
+                return Err(Error::MissingRecensionMapping { source: id.clone() });
+            }
+            let confidence =
+                Confidence::from_basis_points(confidence_basis_points).ok_or_else(|| {
+                    Error::ContradictoryMetadata {
+                        reason: "mapping confidence exceeds 10000 basis points".into(),
+                    }
+                })?;
+            Ok(InheritedAlignment {
+                mapping_id: RecensionMappingId::from(row.0[0]),
+                source_lexeme_id: LexemeId::from(row.0[1]),
+                confidence,
+                evidence_ids: split_list(row.0[8]),
+                transformations: split_list(row.0[9]),
+            })
+        })
+        .collect()
+}
+
+fn require_pos(id: &LexemeId, expected: PartOfSpeech) -> Result<&'static RawLexeme> {
+    let row = raw_by_id(id).ok_or_else(|| Error::UnknownLemma {
+        lookup: id.to_string(),
+    })?;
+    let actual = parse_pos(row.0[2])?;
+    if actual == expected {
+        Ok(row)
+    } else {
+        Err(Error::ContradictoryMetadata {
+            reason: format!("lexeme {id} is {actual:?}, not {expected:?}"),
+        })
+    }
+}
+
+fn summary(row: &RawLexeme) -> Result<LexemeSummary> {
+    Ok(LexemeSummary {
+        id: LexemeId::from(row.0[0]),
+        lemma: row.0[1].into(),
+        part_of_speech: parse_pos(row.0[2])?,
+        source_id: row.0[7].into(),
+    })
+}
+
+fn parse_pos(value: &str) -> Result<PartOfSpeech> {
+    match value {
+        "noun" => Ok(PartOfSpeech::Noun),
+        "adjective" => Ok(PartOfSpeech::Adjective),
+        "verb" => Ok(PartOfSpeech::Verb),
+        "pronoun" => Ok(PartOfSpeech::Pronoun),
+        "determiner" => Ok(PartOfSpeech::Determiner),
+        "numeral" => Ok(PartOfSpeech::Numeral),
+        "participle" => Ok(PartOfSpeech::Participle),
+        other => invalid_metadata("part of speech", other),
+    }
+}
+
+fn parse_gender(value: &str) -> Result<Gender> {
+    match value {
+        "masculine" => Ok(Gender::Masculine),
+        "feminine" => Ok(Gender::Feminine),
+        "neuter" => Ok(Gender::Neuter),
+        other => invalid_metadata("gender", other),
+    }
+}
+
+fn parse_imperfect(value: &str) -> Result<ImperfectFormation> {
+    match value {
+        "h" => Ok(ImperfectFormation::H),
+        "yah" => Ok(ImperfectFormation::Yah),
+        "ah" => Ok(ImperfectFormation::Ah),
+        "irregular" => Ok(ImperfectFormation::Irregular),
+        other => invalid_metadata("imperfect formation", other),
+    }
+}
+
+fn parse_aorist(value: &str) -> Result<AoristFormation> {
+    match value {
+        "vowel" => Ok(AoristFormation::VowelStem),
+        "consonant" => Ok(AoristFormation::ConsonantStem),
+        "irregular" => Ok(AoristFormation::Irregular),
+        other => invalid_metadata("aorist formation", other),
+    }
+}
+
+fn parse_imperative(value: &str) -> Result<ImperativeFormation> {
+    match value {
+        "first-unpalatalized" => Ok(ImperativeFormation::FirstUnpalatalized),
+        "i-series" => Ok(ImperativeFormation::ISeries),
+        "irregular" => Ok(ImperativeFormation::Irregular),
+        other => invalid_metadata("imperative formation", other),
+    }
+}
+
+fn nonempty_word(value: &str) -> Result<Option<SynodalWord>> {
+    if value.is_empty() {
+        Ok(None)
+    } else {
+        SynodalWord::parse(value).map(Some)
+    }
+}
+
+fn invalid_metadata<T>(field: &str, value: &str) -> Result<T> {
+    Err(Error::ContradictoryMetadata {
+        reason: format!("unknown {field} code {value:?}"),
+    })
+}
+
+fn split_list(value: &str) -> Vec<String> {
+    if value.is_empty() {
+        Vec::new()
+    } else {
+        value.split(',').map(str::to_owned).collect()
+    }
+}

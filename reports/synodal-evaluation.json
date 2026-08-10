@@ -1,0 +1,224 @@
+{
+  "schema_version": 3,
+  "target_recension": "synodal-russian",
+  "fixture_source": "pinned Ponomar Elizabeth Bible, Matthew 1–5 and Acts 1:18",
+  "fixture_rows": 11,
+  "phrase_fixture_rows": 1,
+  "expanded": {
+    "total": 11,
+    "returned": 11,
+    "top_1_correct": 11,
+    "top_k_correct": 11,
+    "abstained": 0
+  },
+  "printed": {
+    "total": 11,
+    "returned": 11,
+    "top_1_correct": 11,
+    "top_k_correct": 11,
+    "abstained": 0
+  },
+  "accent_bearing_rows": 11,
+  "exact_accent_agreement": 11,
+  "by_regularity": {
+    "irregular": {
+      "total": 7,
+      "returned": 7,
+      "top_1_correct": 7,
+      "top_k_correct": 7,
+      "abstained": 0
+    },
+    "irregular-participle": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "regular": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "regular-inherited": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    }
+  },
+  "by_morphological_system": {
+    "imperative": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "noun": {
+      "total": 3,
+      "returned": 3,
+      "top_1_correct": 3,
+      "top_k_correct": 3,
+      "abstained": 0
+    },
+    "numeral": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "participle": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "present": {
+      "total": 4,
+      "returned": 4,
+      "top_1_correct": 4,
+      "top_k_correct": 4,
+      "abstained": 0
+    },
+    "pronoun": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    }
+  },
+  "by_provenance_path": {
+    "inherited-ocs-prediction": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "synodal-normative-table": {
+      "total": 8,
+      "returned": 8,
+      "top_1_correct": 8,
+      "top_k_correct": 8,
+      "abstained": 0
+    },
+    "synodal-productive-rule": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    }
+  },
+  "by_source": {
+    "ponomar-elizabeth-bible-2026-08-09": {
+      "total": 11,
+      "returned": 11,
+      "top_1_correct": 11,
+      "top_k_correct": 11,
+      "abstained": 0
+    }
+  },
+  "abstention_reasons": {},
+  "phrase_expanded": {
+    "total": 1,
+    "returned": 1,
+    "top_1_correct": 1,
+    "top_k_correct": 1,
+    "abstained": 0
+  },
+  "phrase_printed": {
+    "total": 1,
+    "returned": 1,
+    "top_1_correct": 1,
+    "top_k_correct": 1,
+    "abstained": 0
+  },
+  "leakage": {
+    "masked_expanded": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "masked_printed": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "leave_one_synodal_lexeme_out_expanded": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "leave_one_synodal_lexeme_out_printed": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    }
+  },
+  "inheritance": {
+    "accepted_alignments": 5,
+    "rejected_negative_controls": 1,
+    "aligned_target_lexemes": 5,
+    "identity_alignments": 2,
+    "transformed_alignments": 3,
+    "gold_admission_true_positives": 5,
+    "gold_admission_false_positives": 0,
+    "gold_admission_precision_basis_points": 10000,
+    "evaluated_inherited_cells": 1,
+    "extra_returned_cells": 1,
+    "exact_expanded_cells": 1,
+    "by_mapping_kind": {
+      "identity": {
+        "total": 1,
+        "returned": 1,
+        "top_1_correct": 1,
+        "top_k_correct": 1,
+        "abstained": 0
+      }
+    },
+    "by_morphological_system": {
+      "noun": {
+        "total": 1,
+        "returned": 1,
+        "top_1_correct": 1,
+        "top_k_correct": 1,
+        "abstained": 0
+      }
+    },
+    "by_confidence_band": {
+      "high-9500-10000": {
+        "total": 1,
+        "returned": 1,
+        "top_1_correct": 1,
+        "top_k_correct": 1,
+        "abstained": 0
+      }
+    },
+    "mean_returned_confidence_basis_points": 9500,
+    "empirical_exactness_basis_points": 10000,
+    "absolute_calibration_gap_basis_points": 500
+  },
+  "limitations": [
+    "The current real-text slice is intentionally small and reports counts, not statistical confidence.",
+    "Productive liturgical rendering abstains when accent metadata is absent.",
+    "One participle and one analytic perfect are covered by independent corpus witnesses; other analytic constructions remain typed unit fixtures until their lexical registries grow.",
+    "Gold admission precision is a structural policy check over the reviewed registry, not an independently estimated automatic-alignment precision.",
+    "The single inherited held-out cell is insufficient to assess confidence calibration; the reported gap is descriptive only."
+  ]
+}

@@ -4,6 +4,10 @@ members = [
     "crates/old-church-slavonic",
     "crates/old-church-slavonic-dictionary",
     "crates/old-church-slavonic-extractor",
+    "crates/synodal-church-slavonic-core",
+    "crates/synodal-church-slavonic",
+    "crates/synodal-church-slavonic-dictionary",
+    "crates/synodal-church-slavonic-extractor",
     "crates/xtask",
 ]
 resolver = "3"
@@ -20,6 +24,10 @@ old-church-slavonic = { path = "crates/old-church-slavonic", version = "0.5.0" }
 old-church-slavonic-core = { path = "crates/old-church-slavonic-core", version = "0.4.0" }
 old-church-slavonic-dictionary = { path = "crates/old-church-slavonic-dictionary", version = "0.2.0" }
 old-church-slavonic-extractor = { path = "crates/old-church-slavonic-extractor", version = "0.1.0" }
+synodal-church-slavonic = { path = "crates/synodal-church-slavonic", version = "0.1.0" }
+synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core", version = "0.1.0" }
+synodal-church-slavonic-dictionary = { path = "crates/synodal-church-slavonic-dictionary", version = "0.1.0" }
+synodal-church-slavonic-extractor = { path = "crates/synodal-church-slavonic-extractor", version = "0.1.0" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 sha2 = "0.10.9"

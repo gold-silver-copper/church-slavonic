@@ -1,6 +1,8 @@
 /target/
 /data/raw/
 /data/intermediate/
+/references/downloads/
+/references/.tmp/
 *.tmp
 reports/corpus-details*.tsv
 target/corpus-evaluation/

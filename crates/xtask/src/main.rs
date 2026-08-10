@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 mod corpus;
+mod synodal;
 
 use old_church_slavonic::advanced::cells::{
     AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, ImperativeCell, LParticipleCell,
@@ -71,6 +72,10 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("examples") => examples(),
         Some("speed") => speed(),
         Some("guard-witnesses") => guard_witnesses(),
+        Some("synodal-regenerate") => synodal::regenerate(&workspace_root()?),
+        Some("synodal-check") => synodal::check(&workspace_root()?),
+        Some("synodal-evaluate") => synodal::evaluate_and_write(&workspace_root()?),
+        Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
         Some("check-all") => check_all(),
         Some("help") | Some("-h") | Some("--help") | None => {
             print_help();
@@ -2117,6 +2122,7 @@ fn check_all() -> Result<(), Box<dyn Error>> {
     check_public_api_structure(&root)?;
     check_runtime_boundaries(&root)?;
     check_attribution(&root)?;
+    synodal::check(&root)?;
     examples()
 }
 
@@ -3251,6 +3257,10 @@ fn print_help() {
     eprintln!("  examples");
     eprintln!("  speed");
     eprintln!("  guard-witnesses");
+    eprintln!("  synodal-regenerate");
+    eprintln!("  synodal-check");
+    eprintln!("  synodal-evaluate");
+    eprintln!("  synodal-guard-witnesses");
     eprintln!("  check-all");
 }
 

@@ -1,0 +1,17 @@
+id	lemma	part_of_speech	class	stem	gender	aspect	source_id	target_recension
+synodal:noun:bog	богъ	noun	first-hard-m	бог	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:grad	градъ	noun	inherited-first-hard-m	град	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:rab	рабъ	noun	first-hard-m	раб	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:selo	село	noun	first-hard-n	сел	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:zhena	жена	noun	second-hard	жен	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:zemlya	землѧ	noun	second-soft	земл	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:zapoved	заповѣдь	noun	third-f	заповѣд	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:mudr	мꙋдръ	adjective	hard-short	мꙋдр			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:nesti	нести	verb	first-unpalatalized	нес		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:pisati	писати	verb	first-palatalized	пиш		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:lyubiti	любити	verb	second	люб		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:byti	быти	verb	archaic			biaspectual	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:imati	имати	verb	archaic			imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:toi	той	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:determiner:vsyak	всѧкъ	determiner	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:numeral:dva	два	numeral	exact				alypy-gamanovich-grammar-web-2023	synodal-russian

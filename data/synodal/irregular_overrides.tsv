@@ -1,0 +1,6 @@
+lexeme_id	system	cell_set	evidence_id	target_recension
+synodal:verb:byti	present	data/synodal/exact_forms.tsv	alypy-81-byti-present	synodal-russian
+synodal:verb:byti	aorist	data/synodal/exact_forms.tsv	alypy-81-byti-aorist	synodal-russian
+synodal:verb:byti	imperfect	data/synodal/exact_forms.tsv	alypy-81-byti-imperfect	synodal-russian
+synodal:verb:byti	imperative	data/synodal/exact_forms.tsv	alypy-81-byti-imperative	synodal-russian
+synodal:verb:imati	present	data/synodal/exact_forms.tsv	alypy-85-imati-future	synodal-russian

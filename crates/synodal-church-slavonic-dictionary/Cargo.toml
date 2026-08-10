@@ -1,0 +1,24 @@
+[package]
+name = "synodal-church-slavonic-dictionary"
+version = "0.1.0"
+description = "Semantic lookup and morphological analysis for Synodal Russian Church Slavonic"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+readme = "README.md"
+include = ["Cargo.toml", "README.md", "ATTRIBUTION.md", "LICENSE-*", "generated/**", "src/**"]
+
+[features]
+default = ["serde"]
+serde = ["synodal-church-slavonic/serde", "synodal-church-slavonic-core/serde"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+synodal-church-slavonic.workspace = true
+synodal-church-slavonic-core.workspace = true
+
+[lints]
+workspace = true

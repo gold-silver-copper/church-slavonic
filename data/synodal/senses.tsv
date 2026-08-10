@@ -1,0 +1,17 @@
+lexeme_id	sense_id	gloss	domains	source_id	source_recension	semantic_status
+synodal:noun:bog	sense:deity:christian	God; the Christian deity	religion,person	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:grad	sense:city	city; town	place,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:rab	sense:servant	servant; bondservant	person,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:selo	sense:village	village; settlement	place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:zhena	sense:woman-wife	woman; wife	person,family	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:zemlya	sense:earth-land	earth; land; ground	nature,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:zapoved	sense:commandment	commandment; injunction	religion,law	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:mudr	sense:wise	wise; prudent	quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:nesti	sense:carry	to carry; bear; bring	action	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:pisati	sense:write	to write	action,communication	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:lyubiti	sense:love	to love; cherish	emotion,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:byti	sense:be	to be; exist	state	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:imati	sense:future-auxiliary	to be about to; compound-future auxiliary	grammar,auxiliary	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:toi	sense:that	that; the aforementioned	determination	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:determiner:vsyak	sense:every	every; each	determination,distributive	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:dva	sense:two	two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative

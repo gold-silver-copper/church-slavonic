@@ -1,0 +1,7 @@
+mapping_id	source_lexeme_id	target_lexeme_id	relation	status	morphology	semantics	confidence_bp	evidence_ids	transformations	review_note
+map:ocs-rab:syn-rab	ocs:noun:rab	synodal:noun:rab	inherited-from	reviewed	compatible	established	9900	alypy-34-rab	identity-lexical-stem	Shared inherited lexeme; target forms are realized only by Synodal rules.
+map:ocs-grad:syn-grad	ocs:noun:grad	synodal:noun:grad	inherited-from	reviewed	compatible	established	9700	alypy-44app-gradovom	identity-lexical-stem	Target lemma is Synodal-attested; productive class is supplied as inherited evidence and realized by Alypy §34 rules.
+map:ocs-zemlja:syn-zemlya	ocs:noun:zemlja	synodal:noun:zemlya	inherited-from	reviewed	transformed	established	9700	alypy-39-zemlya	ocs-ja-to-synodal-ѧ	Reviewed orthographic and declensional transformation.
+map:ocs-nesti:syn-nesti	ocs:verb:nesti	synodal:verb:nesti	inherited-from	reviewed	transformed	established	9800	alypy-82-nesti,alypy-86-nesti	independent-synodal-principal-parts	OCS history supports class discovery; all target principal parts are independently sourced.
+map:ocs-lubiti:syn-lyubiti	ocs:verb:ljubiti	synodal:verb:lyubiti	inherited-from	automatically-validated	transformed	established	9500	alypy-82-lyubiti	ocs-lj-to-synodal-люб	Calibration seed; productive use requires confidence threshold.
+map:ocs-false-friend:rejected	ocs:lexeme:unknown	synodal:noun:bog	uncertain	rejected	unknown	false-friend	0			Negative gold row proving text similarity is not semantic alignment.

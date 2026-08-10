@@ -1,0 +1,9 @@
+lexeme_id	cell	expanded	accented	evidence_id	source_id	source_recension	target_recension
+synodal:noun:grad	noun:nominative:singular:inanimate	градъ	гра́дъ	ponomar-deut-2-34-grad	ponomar-elizabeth-bible-2026-08-09	synodal-russian	synodal-russian
+synodal:noun:zemlya	noun:nominative:singular:inanimate	землѧ	землѧ̀	ponomar-deut-11-17-zemlya	ponomar-elizabeth-bible-2026-08-09	synodal-russian	synodal-russian
+synodal:noun:zhena	noun:genitive:singular:animate	жены	жены̀	ponomar-deut-5-21-zheny	ponomar-elizabeth-bible-2026-08-09	synodal-russian	synodal-russian
+synodal:verb:nesti	present:first:singular	несꙋ	несꙋ̀	alypy-82-nesti	alypy-gamanovich-grammar-web-2023	synodal-russian	synodal-russian
+synodal:verb:pisati	l-participle:masculine:singular	писалъ	писа́лъ	alypy-79-97-pisati	alypy-gamanovich-grammar-web-2023	synodal-russian	synodal-russian
+synodal:noun:rab	noun:nominative:singular:animate	рабъ	ра́бъ	alypy-34-rab	alypy-gamanovich-grammar-web-2023	synodal-russian	synodal-russian
+synodal:adjective:mudr	adjective:nominative:singular:masculine:inanimate:long:positive	мꙋдрый	мꙋ́дрый	alypy-57-mudryi	alypy-gamanovich-grammar-web-2023	synodal-russian	synodal-russian
+synodal:verb:nesti	infinitive	нести	нестѝ	alypy-85-nesti-infinitive	alypy-gamanovich-grammar-web-2023	synodal-russian	synodal-russian

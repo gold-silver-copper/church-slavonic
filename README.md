@@ -1,4 +1,33 @@
-# Old Church Slavonic inflection for Rust
+# Historical Church Slavonic libraries for Rust
+
+This workspace contains two deliberately separate language targets:
+
+- `old-church-slavonic`: dictionary-backed canonical Old Church Slavonic; and
+- `synodal-church-slavonic`: the normalized Russian Synodal liturgical
+  recension, with Synodal morphology, accents, typography, semantic
+  abbreviations, analytic phrases, and explicit reviewed OCS inheritance.
+
+The Synodal library is not an orthographic alias for the OCS engine. It has an
+independent target registry and rule tables, and every OCS-derived prediction
+passes through a stable recension mapping and a Synodal realization rule.
+
+```rust
+use synodal_church_slavonic::{present, Number, Person};
+
+let form = present("быти", Person::First, Number::Singular)?;
+assert_eq!(form.primary_text(), "єсмь");
+assert_eq!(form.target_recension(), synodal_church_slavonic::Recension::SynodalRussian);
+# Ok::<(), synodal_church_slavonic::Error>(())
+```
+
+The full source inventory, including 244 locally cached and checksum-verified
+machine-readable artifacts (about 4.6 GB), is in `references/`. Raw source bytes
+are gitignored and excluded from packages. See `docs/SYNODAL_RECENSION.md`,
+`docs/SYNODAL_MORPHOLOGY.md`, `docs/SYNODAL_ORTHOGRAPHY.md`, and
+`reports/synodal-evaluation.md` for the implemented boundary and measured seed
+coverage.
+
+## Old Church Slavonic inflection
 
 `old-church-slavonic` is a fast, offline inflector for canonical **Old Church
 Slavonic** (`cu`/`chu`). Its ordinary API is a lemma followed by direct grammatical

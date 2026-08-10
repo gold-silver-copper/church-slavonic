@@ -1,0 +1,494 @@
+use synodal_church_slavonic_core::{
+    AdjectiveCell, AdjectiveForm, Animacy, Aspect, Case, Error, FiniteTense, FiniteVerbCell,
+    FormSet, Gender, GrammarCell, ImperativeCell, LParticipleCell, LexemeId, MetadataField, Number,
+    NumeralCell, NumeralKind, ParticipleCell, ParticipleTense, ParticipleVoice, Person,
+    PronounCell, Result, SynodalWord,
+};
+
+use crate::{
+    Inflector, LexemeSummary, Paradigm, PartOfSpeech,
+    paradigm::{
+        adjective_cells, finite_cells, noun_cells, numeral_cells, participle_cells, pronoun_cells,
+    },
+    registry,
+};
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Capabilities {
+    pub exact_forms: bool,
+    pub productive_noun: bool,
+    pub productive_adjective: bool,
+    pub present: bool,
+    pub imperfect: bool,
+    pub aorist: bool,
+    pub imperative: bool,
+    pub infinitive: bool,
+    pub l_participle: bool,
+    pub participle: bool,
+    pub supine: bool,
+    pub verbal_noun: bool,
+    pub reverse_analysis: bool,
+}
+
+impl Capabilities {
+    pub(crate) fn for_summary(summary: &LexemeSummary, inflector: Inflector) -> Self {
+        let noun = summary.part_of_speech() == PartOfSpeech::Noun;
+        let adjective = summary.part_of_speech() == PartOfSpeech::Adjective;
+        let verb = summary.part_of_speech() == PartOfSpeech::Verb;
+        let id = summary.id();
+        let verb_metadata = verb
+            .then(|| registry::verb_lexeme(id))
+            .transpose()
+            .ok()
+            .flatten();
+        Self {
+            exact_forms: registry::has_exact_forms(id),
+            productive_noun: noun
+                && registry::noun_lexeme(id).is_ok()
+                && (!registry::noun_uses_inherited_class(id)
+                    || inflector.generation_policy()
+                        != synodal_church_slavonic_core::GenerationPolicy::Strict),
+            productive_adjective: adjective && registry::adjective_lexeme(id).is_ok(),
+            present: verb
+                && (registry::has_exact_system(id, "present:")
+                    || verb_metadata.as_ref().is_some_and(|metadata| {
+                        metadata.present_stem.is_some()
+                            && metadata.present_first_singular.is_some()
+                            && metadata.present_third_plural.is_some()
+                    })),
+            imperfect: verb
+                && (registry::has_exact_system(id, "imperfect:")
+                    || registry::has_principal_part(id, "imperfect-stem")),
+            aorist: verb
+                && (registry::has_exact_system(id, "aorist:")
+                    || registry::has_principal_part(id, "aorist-stem")),
+            imperative: verb
+                && (registry::has_exact_system(id, "imperative:")
+                    || registry::has_principal_part(id, "imperative-stem")),
+            infinitive: verb,
+            l_participle: verb
+                && (registry::has_exact_system(id, "l-participle:")
+                    || registry::has_principal_part(id, "l-participle-stem")),
+            participle: verb && registry::has_exact_system(id, "participle:"),
+            supine: verb && registry::has_exact_system(id, "supine"),
+            verbal_noun: verb && registry::has_exact_system(id, "verbal-noun:"),
+            reverse_analysis: true,
+        }
+    }
+}
+
+macro_rules! identity_accessors {
+    () => {
+        #[must_use]
+        pub fn id(&self) -> &LexemeId {
+            self.summary.id()
+        }
+
+        #[must_use]
+        pub fn lemma(&self) -> &str {
+            self.summary.lemma()
+        }
+
+        #[must_use]
+        pub fn capabilities(&self) -> Capabilities {
+            Capabilities::for_summary(&self.summary, self.inflector)
+        }
+
+        #[must_use]
+        pub fn missing_metadata(&self) -> Vec<MetadataField> {
+            missing_metadata(&self.summary)
+        }
+    };
+}
+
+#[derive(Clone, Debug)]
+pub struct Noun {
+    summary: LexemeSummary,
+    inflector: Inflector,
+}
+
+impl Noun {
+    pub fn resolve(lemma: &str) -> Result<Self> {
+        Self::resolve_with(lemma, Inflector::default())
+    }
+
+    pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
+        let summary = inflector.resolve(lemma)?;
+        require_pos(&summary, PartOfSpeech::Noun)?;
+        Ok(Self { summary, inflector })
+    }
+
+    pub fn from_id(id: &LexemeId) -> Result<Self> {
+        Self::from_id_with(id, Inflector::default())
+    }
+
+    pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
+        let summary = inflector.from_id(id)?;
+        require_pos(&summary, PartOfSpeech::Noun)?;
+        Ok(Self { summary, inflector })
+    }
+
+    identity_accessors!();
+
+    pub fn form(&self, case: Case, number: Number, animacy: Animacy) -> Result<FormSet> {
+        self.inflector.form_by_id(
+            self.id(),
+            GrammarCell::Noun(synodal_church_slavonic_core::NounCell {
+                case,
+                number,
+                animacy,
+            }),
+        )
+    }
+
+    #[must_use]
+    pub fn paradigm(&self, animacy: Animacy) -> Paradigm {
+        Paradigm::build(self.inflector, self.summary.clone(), noun_cells(animacy))
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Adjective {
+    summary: LexemeSummary,
+    inflector: Inflector,
+}
+
+impl Adjective {
+    pub fn resolve(lemma: &str) -> Result<Self> {
+        Self::resolve_with(lemma, Inflector::default())
+    }
+
+    pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
+        let summary = inflector.resolve(lemma)?;
+        require_pos(&summary, PartOfSpeech::Adjective)?;
+        Ok(Self { summary, inflector })
+    }
+
+    pub fn from_id(id: &LexemeId) -> Result<Self> {
+        Self::from_id_with(id, Inflector::default())
+    }
+
+    pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
+        let summary = inflector.from_id(id)?;
+        require_pos(&summary, PartOfSpeech::Adjective)?;
+        Ok(Self { summary, inflector })
+    }
+
+    identity_accessors!();
+
+    pub fn form(&self, cell: AdjectiveCell) -> Result<FormSet> {
+        self.inflector
+            .form_by_id(self.id(), GrammarCell::Adjective(cell))
+    }
+
+    #[must_use]
+    pub fn paradigm(&self, form: AdjectiveForm) -> Paradigm {
+        let cells = adjective_cells(form)
+            .into_iter()
+            .map(GrammarCell::Adjective);
+        Paradigm::build(self.inflector, self.summary.clone(), cells)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Verb {
+    summary: LexemeSummary,
+    inflector: Inflector,
+}
+
+impl Verb {
+    pub fn resolve(lemma: &str) -> Result<Self> {
+        Self::resolve_with(lemma, Inflector::default())
+    }
+
+    pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
+        let summary = inflector.resolve(lemma)?;
+        require_pos(&summary, PartOfSpeech::Verb)?;
+        Ok(Self { summary, inflector })
+    }
+
+    pub fn from_id(id: &LexemeId) -> Result<Self> {
+        Self::from_id_with(id, Inflector::default())
+    }
+
+    pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
+        let summary = inflector.from_id(id)?;
+        require_pos(&summary, PartOfSpeech::Verb)?;
+        Ok(Self { summary, inflector })
+    }
+
+    identity_accessors!();
+
+    pub fn aspect(&self) -> Result<Aspect> {
+        Ok(registry::verb_lexeme(self.id())?.aspect)
+    }
+
+    pub fn present(&self, person: Person, number: Number) -> Result<FormSet> {
+        self.finite(FiniteTense::Present, person, number)
+    }
+
+    pub fn imperfect(&self, person: Person, number: Number) -> Result<FormSet> {
+        self.finite(FiniteTense::Imperfect, person, number)
+    }
+
+    pub fn aorist(&self, person: Person, number: Number) -> Result<FormSet> {
+        self.finite(FiniteTense::Aorist, person, number)
+    }
+
+    pub fn imperative(&self, person: Person, number: Number) -> Result<FormSet> {
+        self.inflector.form_by_id(
+            self.id(),
+            GrammarCell::Imperative(ImperativeCell { person, number }),
+        )
+    }
+
+    pub fn infinitive(&self) -> Result<FormSet> {
+        self.inflector
+            .form_by_id(self.id(), GrammarCell::Infinitive)
+    }
+
+    pub fn l_participle(&self, gender: Gender, number: Number) -> Result<FormSet> {
+        self.inflector.form_by_id(
+            self.id(),
+            GrammarCell::LParticiple(LParticipleCell { gender, number }),
+        )
+    }
+
+    #[must_use]
+    pub fn paradigm(&self, tense: FiniteTense) -> Paradigm {
+        Paradigm::build(self.inflector, self.summary.clone(), finite_cells(tense))
+    }
+
+    fn finite(&self, tense: FiniteTense, person: Person, number: Number) -> Result<FormSet> {
+        self.inflector.form_by_id(
+            self.id(),
+            GrammarCell::FiniteVerb(FiniteVerbCell {
+                tense,
+                person,
+                number,
+            }),
+        )
+    }
+}
+
+macro_rules! exact_handle {
+    ($name:ident, $pos:expr, $cell:ty, $variant:ident) => {
+        #[derive(Clone, Debug)]
+        pub struct $name {
+            summary: LexemeSummary,
+            inflector: Inflector,
+        }
+
+        impl $name {
+            pub fn resolve(lemma: &str) -> Result<Self> {
+                Self::resolve_with(lemma, Inflector::default())
+            }
+
+            pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
+                let summary = inflector.resolve(lemma)?;
+                require_pos(&summary, $pos)?;
+                Ok(Self { summary, inflector })
+            }
+
+            pub fn from_id(id: &LexemeId) -> Result<Self> {
+                Self::from_id_with(id, Inflector::default())
+            }
+
+            pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
+                let summary = inflector.from_id(id)?;
+                require_pos(&summary, $pos)?;
+                Ok(Self { summary, inflector })
+            }
+
+            identity_accessors!();
+
+            pub fn form(&self, cell: $cell) -> Result<FormSet> {
+                self.inflector
+                    .form_by_id(self.id(), GrammarCell::$variant(cell))
+            }
+        }
+    };
+}
+
+exact_handle!(Pronoun, PartOfSpeech::Pronoun, PronounCell, Pronoun);
+exact_handle!(Numeral, PartOfSpeech::Numeral, NumeralCell, Numeral);
+exact_handle!(
+    Determiner,
+    PartOfSpeech::Determiner,
+    AdjectiveCell,
+    Determiner
+);
+
+impl Pronoun {
+    #[must_use]
+    pub fn paradigm(&self) -> Paradigm {
+        Paradigm::build(self.inflector, self.summary.clone(), pronoun_cells())
+    }
+}
+
+impl Numeral {
+    #[must_use]
+    pub fn paradigm(&self, kind: NumeralKind) -> Paradigm {
+        Paradigm::build(self.inflector, self.summary.clone(), numeral_cells(kind))
+    }
+}
+
+impl Determiner {
+    #[must_use]
+    pub fn paradigm(&self, form: AdjectiveForm) -> Paradigm {
+        let cells = adjective_cells(form)
+            .into_iter()
+            .map(GrammarCell::Determiner);
+        Paradigm::build(self.inflector, self.summary.clone(), cells)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Participle {
+    verb: Verb,
+}
+
+impl Participle {
+    pub fn resolve(verb_lemma: &str) -> Result<Self> {
+        Self::resolve_with(verb_lemma, Inflector::default())
+    }
+
+    pub fn resolve_with(verb_lemma: &str, inflector: Inflector) -> Result<Self> {
+        Ok(Self {
+            verb: Verb::resolve_with(verb_lemma, inflector)?,
+        })
+    }
+
+    pub fn from_id(id: &LexemeId) -> Result<Self> {
+        Self::from_id_with(id, Inflector::default())
+    }
+
+    pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
+        Ok(Self {
+            verb: Verb::from_id_with(id, inflector)?,
+        })
+    }
+
+    #[must_use]
+    pub fn id(&self) -> &LexemeId {
+        self.verb.id()
+    }
+
+    #[must_use]
+    pub fn lemma(&self) -> &str {
+        self.verb.lemma()
+    }
+
+    #[must_use]
+    pub fn capabilities(&self) -> Capabilities {
+        self.verb.capabilities()
+    }
+
+    #[must_use]
+    pub fn missing_metadata(&self) -> Vec<MetadataField> {
+        self.verb.missing_metadata()
+    }
+
+    pub fn form(&self, cell: ParticipleCell) -> Result<FormSet> {
+        self.verb
+            .inflector
+            .form_by_id(self.id(), GrammarCell::Participle(cell))
+    }
+
+    #[must_use]
+    pub fn paradigm(
+        &self,
+        tense: ParticipleTense,
+        voice: ParticipleVoice,
+        form: AdjectiveForm,
+    ) -> Paradigm {
+        Paradigm::build(
+            self.verb.inflector,
+            self.verb.summary.clone(),
+            participle_cells(tense, voice, form),
+        )
+    }
+}
+
+fn missing_metadata(summary: &LexemeSummary) -> Vec<MetadataField> {
+    let mut missing = Vec::new();
+    if !registry::has_accent_data(summary.id()) {
+        missing.push(MetadataField::AccentClass);
+    }
+    if summary.part_of_speech() != PartOfSpeech::Verb {
+        return missing;
+    }
+    let id = summary.id();
+    if !registry::has_exact_system(id, "present:") {
+        match registry::verb_lexeme(id) {
+            Ok(metadata) => {
+                if metadata.present_stem.is_none() {
+                    missing.push(MetadataField::PresentStem);
+                }
+                if metadata.present_first_singular.is_none() {
+                    missing.push(MetadataField::PresentFirstSingular);
+                }
+                if metadata.present_third_plural.is_none() {
+                    missing.push(MetadataField::PresentThirdPlural);
+                }
+            }
+            Err(_) => {
+                missing.extend([
+                    MetadataField::PresentStem,
+                    MetadataField::PresentFirstSingular,
+                    MetadataField::PresentThirdPlural,
+                ]);
+            }
+        }
+    }
+    for (field, system, exact_prefix) in [
+        (MetadataField::ImperfectStem, "imperfect-stem", "imperfect:"),
+        (MetadataField::AoristStem, "aorist-stem", "aorist:"),
+        (
+            MetadataField::ImperativeStem,
+            "imperative-stem",
+            "imperative:",
+        ),
+        (
+            MetadataField::LParticipleStem,
+            "l-participle-stem",
+            "l-participle:",
+        ),
+        (MetadataField::SupineStem, "supine-stem", "supine"),
+        (
+            MetadataField::ParticipleStem,
+            "participle-stem",
+            "participle:",
+        ),
+        (
+            MetadataField::VerbalNounStem,
+            "verbal-noun-stem",
+            "verbal-noun:",
+        ),
+    ] {
+        if !registry::has_principal_part(id, system)
+            && !registry::has_exact_system(id, exact_prefix)
+        {
+            missing.push(field);
+        }
+    }
+    missing
+}
+
+pub(crate) fn resolve_summary(lemma: &str) -> Result<LexemeSummary> {
+    registry::resolve(&SynodalWord::parse(lemma)?)
+}
+
+fn require_pos(summary: &LexemeSummary, expected: PartOfSpeech) -> Result<()> {
+    if summary.part_of_speech() == expected {
+        Ok(())
+    } else {
+        Err(Error::ContradictoryMetadata {
+            reason: format!(
+                "lexeme {} is {:?}, not {expected:?}",
+                summary.id(),
+                summary.part_of_speech()
+            ),
+        })
+    }
+}

@@ -1,0 +1,29 @@
+schema_version = 1
+adapter = "synodal-corpora"
+target_recension = "synodal-russian"
+unicode_contract = "docs/SYNODAL_ORTHOGRAPHY.md"
+unknown_recension = "quarantine"
+write_raw_spelling = true
+write_transformation_log = true
+atomic_replace = true
+
+[partitions]
+source = "passage-disjoint-source"
+evaluation = "passage-disjoint-held-out"
+forbid_cross_partition_derivatives = true
+
+[[input]]
+source_id = "ponomar-elizabeth-bible-2026-08-09"
+parser = "ponomar-lightweight-markup"
+distribution = "local-evaluation-only"
+
+[[input]]
+source_id = "crosswire-csl-elizabeth-1.5.2"
+parser = "sword-module"
+orthography = "modernized-contrast"
+
+[[input]]
+source_id = "wikisource-church-slavonic-bible-2026-08-09"
+parser = "mediawiki-xml"
+preserve_revision_id = true
+preserve_template_lineage = true

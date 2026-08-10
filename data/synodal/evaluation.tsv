@@ -1,0 +1,12 @@
+id	lexeme_id	cell	policy	expected_expanded	expected_printed	source_id	passage	regularity
+eval:mt-5-14-grad	synodal:noun:grad	noun:nominative:singular:inanimate	productive	градъ	гра́дъ	ponomar-elizabeth-bible-2026-08-09	Matthew 5:14	regular-inherited
+eval:mt-4-15-zemlya	synodal:noun:zemlya	noun:nominative:singular:inanimate	strict	землѧ	землѧ̀	ponomar-elizabeth-bible-2026-08-09	Matthew 4:15	regular
+eval:mt-1-20-zhena	synodal:noun:zhena	noun:genitive:singular:animate	strict	жены	жены̀	ponomar-elizabeth-bible-2026-08-09	Matthew 1:20	regular
+eval:mt-1-23-byti	synodal:verb:byti	present:third:singular	strict	єсть	є҆́сть	ponomar-elizabeth-bible-2026-08-09	Matthew 1:23	irregular
+eval:mt-3-11-toi	synodal:pronoun:toi	pronoun:nominative:singular:masculine:inanimate	strict	той	то́й	ponomar-elizabeth-bible-2026-08-09	Matthew 3:11	irregular
+eval:mt-4-18-dva	synodal:numeral:dva	numeral:cardinal:nominative:dual:masculine:inanimate	strict	два	два̀	ponomar-elizabeth-bible-2026-08-09	Matthew 4:18	irregular
+eval:mt-2-13-byti-imperative	synodal:verb:byti	imperative:second:singular	strict	бꙋди	бꙋ́ди	ponomar-elizabeth-bible-2026-08-09	Matthew 2:13	irregular
+eval:mt-4-3-byti-second	synodal:verb:byti	present:second:singular	strict	єси	є҆сѝ	ponomar-elizabeth-bible-2026-08-09	Matthew 4:3	irregular
+eval:mt-5-11-byti-second-plural	synodal:verb:byti	present:second:plural	strict	єсте	є҆стѐ	ponomar-elizabeth-bible-2026-08-09	Matthew 5:11	irregular
+eval:mt-2-16-byti-third-plural	synodal:verb:byti	present:third:plural	strict	сꙋть	сꙋ́ть	ponomar-elizabeth-bible-2026-08-09	Matthew 2:16	irregular
+eval:acts-1-18-byti-participle	synodal:verb:byti	participle:past:active:nominative:singular:masculine:inanimate:short:positive	strict	бывъ	бы́въ	ponomar-elizabeth-bible-2026-08-09	Acts 1:18	irregular-participle

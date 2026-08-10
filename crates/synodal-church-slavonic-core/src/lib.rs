@@ -1,0 +1,49 @@
+#![doc = include_str!("../README.md")]
+#![forbid(unsafe_code)]
+
+pub mod collation;
+pub mod error;
+pub mod evidence;
+pub mod grammar;
+pub mod ids;
+pub mod mapping;
+pub mod morphology;
+pub mod numeral;
+pub mod orthography;
+pub mod phrase;
+pub mod policy;
+pub mod recension;
+pub mod result;
+pub mod trace;
+pub mod transliteration;
+
+pub use collation::{
+    CollationKey, CollationProfile, CollationStrength, collation_key, compare_synodal,
+};
+pub use error::{Error, MetadataField, Result};
+pub use evidence::{
+    Assumption, AuthorityRole, Confidence, Contradiction, EpistemicRole, Evidence, EvidenceKind,
+    FormSource,
+};
+pub use grammar::*;
+pub use ids::{EvidenceId, LexemeId, ModelId, RecensionMappingId, RuleId, SourceId};
+pub use mapping::{
+    LexemeRelation, MappingStatus, MorphologyAlignment, RecensionMapping, SemanticAlignment,
+    Transformation,
+};
+pub use morphology::{
+    AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect, ImperativeFormation,
+    ImperfectFormation, NounDeclension, NounLexeme, VerbConjugation, VerbLexeme, aorist,
+    decline_adjective, decline_noun, imperative, imperfect, infinitive, l_participle, present,
+};
+pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
+pub use orthography::{
+    InitialPresentation, Loss, NormalizationReport, OrthographyProfile, RenderedText, SynodalWord,
+    apply_initial_presentation, normalize_lookup, normalize_lookup_accentless,
+};
+pub use phrase::{AnalyticConstruction, PhraseRole, PhraseToken, RealizedPhrase};
+pub use policy::{GenerationPolicy, VariantPolicy};
+pub use recension::Recension;
+pub use result::{FormSet, FormVariant, Romanization, VariantSelection};
+pub use trace::{RuleTrace, TraceStep};
+pub use transliteration::{TransliterationScheme, transliterate};

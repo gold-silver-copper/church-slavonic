@@ -1,0 +1,5 @@
+rule_id	input	context	output	exceptions	evidence_id	target_recension
+SYN-ORTH-INITIAL-E	е	word-initial	є	lexically-contrastive-case-forms	alypy-2-letter-e	synodal-russian
+SYN-ORTH-INITIAL-YA	ѧ	word-initial	ꙗ	organ-yazyk-and-third-person-pronoun	alypy-2-letter-ya	synodal-russian
+SYN-ORTH-INITIAL-O	о	word-initial	ѻ	lexical-and-compound-exceptions	alypy-2-letter-o	synodal-russian
+SYN-ORTH-I-BEFORE-VOWEL	и	before-vowel	ї	foreign-etymology-may-also-require-decimal-i	alypy-2-letter-i	synodal-russian
