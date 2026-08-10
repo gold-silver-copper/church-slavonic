@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 mod corpus;
+mod sources;
 mod synodal;
 
 use old_church_slavonic::advanced::cells::{
@@ -76,6 +77,11 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-check") => synodal::check(&workspace_root()?),
         Some("synodal-evaluate") => synodal::evaluate_and_write(&workspace_root()?),
         Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
+        Some("synodal-sources") => sources::run(&mut args, &workspace_root()?),
+        Some("synodal-bootstrap") => synodal::bootstrap(&mut args, &workspace_root()?),
+        Some("synodal-fixture-bootstrap") => {
+            synodal::fixture_bootstrap(&mut args, &workspace_root()?)
+        }
         Some("check-all") => check_all(),
         Some("help") | Some("-h") | Some("--help") | None => {
             print_help();
@@ -3261,6 +3267,11 @@ fn print_help() {
     eprintln!("  synodal-check");
     eprintln!("  synodal-evaluate");
     eprintln!("  synodal-guard-witnesses");
+    eprintln!("  synodal-sources <list|status|fetch|verify|refresh> [OPTIONS]");
+    eprintln!(
+        "  synodal-bootstrap [--cache PATH] [--offline] [--source ID] [--skip-fetch] [--keep-intermediate]"
+    );
+    eprintln!("  synodal-fixture-bootstrap");
     eprintln!("  check-all");
 }
 

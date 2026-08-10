@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "target_recension": "synodal-russian",
+  "source_filter": null,
+  "source_verification": "all selected artifacts matched immutable SHA-256 locks",
+  "candidate_pipeline": {
+    "schema_version": 1,
+    "accepted_records": 1179847,
+    "quarantined_records": 3,
+    "skipped_records": 149018,
+    "source_reports": {
+      "alypy-gamanovich-grammar-web-2023": {
+        "accepted_records": 8477,
+        "quarantined_records": 0,
+        "skipped_records": 0,
+        "rejection_reasons": {},
+        "output_sha256": "2f24153b39204587479206e3eff3015b2f7e5980922d98b79c3f8107510f6591"
+      },
+      "ccmh-2021-04-23": {
+        "accepted_records": 54924,
+        "quarantined_records": 0,
+        "skipped_records": 9,
+        "rejection_reasons": {},
+        "output_sha256": "a7033e92ca8629761e9a2e88e8d3d242aaf478e09cfaf0deaab130b1dbc50265"
+      },
+      "crosswire-csl-elizabeth-1.5.2": {
+        "accepted_records": 36000,
+        "quarantined_records": 0,
+        "skipped_records": 2542,
+        "rejection_reasons": {},
+        "output_sha256": "1188b1e3422638341d30374a2024e103ccf8cb73ae40007e84d46ee90ea505b0"
+      },
+      "diacu-1.0": {
+        "accepted_records": 54311,
+        "quarantined_records": 0,
+        "skipped_records": 19705,
+        "rejection_reasons": {},
+        "output_sha256": "c83ca517e7981d752d4caf031da72f3c874744a617fae824c34893122e4845bb"
+      },
+      "dyachenko-1900-scan": {
+        "accepted_records": 134832,
+        "quarantined_records": 0,
+        "skipped_records": 0,
+        "rejection_reasons": {},
+        "output_sha256": "1bb05722203b11ba5fd3837cde96a2f581e25c3a78f28d40066a5d65b9da4660"
+      },
+      "english-wiktionary-ocs-kaikki-2026-08-07": {
+        "accepted_records": 4626,
+        "quarantined_records": 0,
+        "skipped_records": 0,
+        "rejection_reasons": {},
+        "output_sha256": "59902cba7d0407327e9970d5d509e1bb6ad4cccfa2df19f4ae35984ccb15c452"
+      },
+      "polivanova-fup-2023": {
+        "accepted_records": 106,
+        "quarantined_records": 0,
+        "skipped_records": 0,
+        "rejection_reasons": {},
+        "output_sha256": "3d5d83adc4c2beafb263a3b8168e5ac7a578bc576f4d19c1acaebf4b06e3a145"
+      },
+      "polivanova-osd-source": {
+        "accepted_records": 6408,
+        "quarantined_records": 0,
+        "skipped_records": 0,
+        "rejection_reasons": {},
+        "output_sha256": "9a7217f893f40174d64c14965c7afc1fa9ae0cd63ceb59d7106cb8e426955027"
+      },
+      "ponomar-elizabeth-bible-2026-08-09": {
+        "accepted_records": 37211,
+        "quarantined_records": 1,
+        "skipped_records": 2,
+        "rejection_reasons": {
+          "missing-verse-separator": 1
+        },
+        "output_sha256": "ef0323df940c93c9b72a3cbb6f7adfb062ba38ffcdcf401eff5cf369c4869c26"
+      },
+      "ponomar-modern-church-slavonic-corpus-2016": {
+        "accepted_records": 134392,
+        "quarantined_records": 0,
+        "skipped_records": 0,
+        "rejection_reasons": {},
+        "output_sha256": "09574842f778e3c9b0081f7c1f395a9a754bab2e732bd39d6aa8ada9ce0c3e8d"
+      },
+      "syntacticus-20230428": {
+        "accepted_records": 472798,
+        "quarantined_records": 0,
+        "skipped_records": 51525,
+        "rejection_reasons": {},
+        "output_sha256": "307ceae3fa8abf18ba6bbec61b49a3fa6de2e52d27c5c4b0b97a5dbd654549f6"
+      },
+      "ud-ocs-proiel-r2.18": {
+        "accepted_records": 198843,
+        "quarantined_records": 0,
+        "skipped_records": 67884,
+        "rejection_reasons": {},
+        "output_sha256": "c10b643c3f3a853d9c872e845abd099948b93a46a556da26722b56d827bbe1c3"
+      },
+      "wikisource-church-slavonic-bible-2026-08-09": {
+        "accepted_records": 36919,
+        "quarantined_records": 2,
+        "skipped_records": 7351,
+        "rejection_reasons": {
+          "invalid-chapter-anchor": 2
+        },
+        "output_sha256": "913d9781ef511988d8bcc5d19b1b8c63c7582cd5e476f62469eff199e7c2c08f"
+      }
+    }
+  },
+  "reviewed_overlay": "committed data/synodal review boundary applied read-only",
+  "registry_generation": "deterministic runtime registries regenerated",
+  "evaluation": "passage and lemma partition evaluation completed",
+  "freshness_and_boundaries": "freshness, recension, package, and runtime-I/O guards passed"
+}

@@ -1,9 +1,10 @@
 use synodal_church_slavonic_core::{
-    AdjectiveForm, Assumption, AuthorityRole, Confidence, EpistemicRole, Error, Evidence,
-    EvidenceId, EvidenceKind, FiniteTense, FormSet, FormSource, FormVariant, GenerationPolicy,
-    GrammarCell, LexemeId, OrthographyProfile, Recension, Result, RuleId, RuleTrace, SourceId,
-    TraceStep, aorist, decline_adjective, decline_noun, imperative, imperfect, infinitive,
-    l_participle, normalize_lookup_accentless, present,
+    AdjectiveCell, AdjectiveForm, Assumption, AuthorityRole, Comparison, Confidence, EpistemicRole,
+    Error, Evidence, EvidenceId, EvidenceKind, FiniteTense, FormSet, FormSource, FormVariant,
+    GenerationPolicy, GrammarCell, LexemeId, NumeralKind, OrthographyProfile, Recension, Result,
+    RuleId, RuleTrace, SourceId, TraceStep, aorist, decline_adjective, decline_noun,
+    decline_participle, imperative, imperfect, infinitive, l_participle,
+    normalize_lookup_accentless, present,
 };
 
 use crate::{Inflector, registry};
@@ -71,18 +72,39 @@ pub(crate) fn resolve_cell(
         GrammarCell::LParticiple(cell) => {
             l_participle(&registry::verb_lexeme(id)?, cell, rule_profile)
         }
-        GrammarCell::Determiner(_) => Err(Error::UnsupportedCell {
-            reason: "this determiner cell is absent from the exact normative registry".into(),
-        }),
+        GrammarCell::Determiner(cell) => {
+            let lexeme = registry::determiner_lexeme(id).map_err(|_| Error::UnsupportedCell {
+                reason: "this determiner has no reviewed productive class for the requested cell"
+                    .into(),
+            })?;
+            decline_adjective(&lexeme, cell, rule_profile)
+        }
         GrammarCell::Supine => Err(Error::UnsupportedCell {
             reason: "the Synodal supine inventory remains under normative review".into(),
         }),
-        GrammarCell::Participle(_) => Err(Error::UnsupportedCell {
-            reason: "declined participles require a sourced participial principal part".into(),
-        }),
+        GrammarCell::Participle(cell) => {
+            decline_participle(&registry::verb_lexeme(id)?, cell, rule_profile)
+        }
         GrammarCell::VerbalNoun(_) => Err(Error::UnsupportedCell {
             reason: "productive verbal nouns require lexical suffix metadata".into(),
         }),
+        GrammarCell::Numeral(cell) if cell.kind == NumeralKind::Ordinal => {
+            let gender = cell.gender.ok_or(Error::UnsupportedCell {
+                reason: "productive ordinal inflection requires grammatical gender".into(),
+            })?;
+            decline_adjective(
+                &registry::ordinal_lexeme(id)?,
+                AdjectiveCell {
+                    case: cell.case,
+                    number: cell.number,
+                    gender,
+                    animacy: cell.animacy,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                },
+                rule_profile,
+            )
+        }
         GrammarCell::Pronoun(_) | GrammarCell::Numeral(_) => Err(Error::UnsupportedCell {
             reason: "this pronoun or numeral cell is absent from the exact normative registry"
                 .into(),

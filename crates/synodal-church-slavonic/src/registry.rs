@@ -1,8 +1,8 @@
 use synodal_church_slavonic_core::{
     AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect, Confidence, Error, Gender,
     GenerationPolicy, ImperativeFormation, ImperfectFormation, LexemeId, NounDeclension,
-    NounLexeme, RecensionMappingId, Result, SynodalWord, VerbConjugation, VerbLexeme,
-    normalize_lookup_accentless,
+    NounLexeme, ParticiplePrincipalPart, RecensionMappingId, Result, SynodalWord, VerbConjugation,
+    VerbLexeme, normalize_lookup_accentless,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -233,6 +233,12 @@ pub(crate) fn has_principal_part(id: &LexemeId, system: &str) -> bool {
         .any(|row| row.0[0] == id.as_str() && row.0[1] == system)
 }
 
+pub(crate) fn has_principal_part_prefix(id: &LexemeId, prefix: &str) -> bool {
+    PRINCIPAL_PARTS
+        .iter()
+        .any(|row| row.0[0] == id.as_str() && row.0[1].starts_with(prefix))
+}
+
 pub(crate) fn has_accent_data(id: &LexemeId) -> bool {
     ACCENTS.iter().any(|row| row.0[0] == id.as_str())
         || EXACT_FORMS
@@ -261,6 +267,8 @@ pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
         declension: match row.0[3] {
             "first-hard-m" | "inherited-first-hard-m" => NounDeclension::FirstHardMasculine,
             "first-hard-n" => NounDeclension::FirstHardNeuter,
+            "first-soft-m" => NounDeclension::FirstSoftMasculine,
+            "first-soft-n" => NounDeclension::FirstSoftNeuter,
             "second-hard" => NounDeclension::SecondHard,
             "second-soft" => NounDeclension::SecondSoft,
             "third-f" => NounDeclension::ThirdFeminine,
@@ -270,15 +278,32 @@ pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
 }
 
 pub(crate) fn adjective_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
-    let row = require_pos(id, PartOfSpeech::Adjective)?;
+    adjectival_lexeme(id, PartOfSpeech::Adjective)
+}
+
+pub(crate) fn determiner_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
+    adjectival_lexeme(id, PartOfSpeech::Determiner)
+}
+
+pub(crate) fn ordinal_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
+    adjectival_lexeme(id, PartOfSpeech::Numeral)
+}
+
+fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveLexeme> {
+    let row = require_pos(id, expected)?;
     Ok(AdjectiveLexeme {
         lemma: SynodalWord::parse(row.0[1])?,
         stem: SynodalWord::parse(row.0[4])?,
         class: match row.0[3] {
-            "hard-short" => AdjectiveClass::Hard,
-            "soft-short" => AdjectiveClass::Soft,
+            "hard-short" | "determiner-hard" | "ordinal-hard" => AdjectiveClass::Hard,
+            "soft-short" | "determiner-soft" | "ordinal-soft" => AdjectiveClass::Soft,
             value => return invalid_metadata("adjective class", value),
         },
+        comparative_stem: PRINCIPAL_PARTS
+            .iter()
+            .find(|part| part.0[0] == id.as_str() && part.0[1] == "comparative-stem")
+            .map(|part| SynodalWord::parse(part.0[2]))
+            .transpose()?,
     })
 }
 
@@ -308,6 +333,38 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
             .map(|entry| SynodalWord::parse(entry.0[2]))
             .transpose()
     };
+    let participle_part = |prefix: &str| -> Result<Option<ParticiplePrincipalPart>> {
+        let short = part(&format!("{prefix}-short-stem"));
+        let long = part(&format!("{prefix}-long-stem"));
+        if short.is_none() && long.is_none() {
+            return Ok(None);
+        }
+        let formation = short.or(long).map_or("", |entry| entry.0[3]);
+        let class = match formation {
+            "hard" => AdjectiveClass::Hard,
+            "soft" => AdjectiveClass::Soft,
+            value => return invalid_metadata("participial adjective class", value),
+        };
+        for entry in [short, long].into_iter().flatten() {
+            if entry.0[3] != formation {
+                return Err(Error::ContradictoryMetadata {
+                    reason: format!(
+                        "participial stems for {} use inconsistent classes",
+                        id.as_str()
+                    ),
+                });
+            }
+        }
+        Ok(Some(ParticiplePrincipalPart {
+            short_stem: short
+                .map(|entry| SynodalWord::parse(entry.0[2]))
+                .transpose()?,
+            long_stem: long
+                .map(|entry| SynodalWord::parse(entry.0[2]))
+                .transpose()?,
+            class,
+        }))
+    };
 
     Ok(VerbLexeme {
         lemma: SynodalWord::parse(row.0[1])?,
@@ -329,6 +386,11 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
             .map(|entry| parse_imperative(entry.0[3]))
             .transpose()?,
         l_participle_stem: parsed_part("l-participle-stem")?,
+        present_active_participle: participle_part("present-active-participle")?,
+        past_active_participle: participle_part("past-active-participle")?,
+        present_passive_participle: participle_part("present-passive-participle")?,
+        past_passive_participle: participle_part("past-passive-participle")?,
+        verbal_noun: None,
     })
 }
 

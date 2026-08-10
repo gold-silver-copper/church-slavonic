@@ -10,3 +10,30 @@ eval:mt-4-3-byti-second	synodal:verb:byti	present:second:singular	strict	єси	
 eval:mt-5-11-byti-second-plural	synodal:verb:byti	present:second:plural	strict	єсте	є҆стѐ	ponomar-elizabeth-bible-2026-08-09	Matthew 5:11	irregular
 eval:mt-2-16-byti-third-plural	synodal:verb:byti	present:third:plural	strict	сꙋть	сꙋ́ть	ponomar-elizabeth-bible-2026-08-09	Matthew 2:16	irregular
 eval:acts-1-18-byti-participle	synodal:verb:byti	participle:past:active:nominative:singular:masculine:inanimate:short:positive	strict	бывъ	бы́въ	ponomar-elizabeth-bible-2026-08-09	Acts 1:18	irregular-participle
+eval:acts-1-1-slovo	synodal:noun:slovo	noun:nominative:singular:inanimate	strict	слово	сло́во	ponomar-elizabeth-bible-2026-08-09	Acts.1.1	regular-held-out
+eval:acts-4-36-syn	synodal:noun:syn	noun:nominative:singular:animate	strict	сынъ	сы́нъ	ponomar-elizabeth-bible-2026-08-09	Acts.4.36	regular-held-out
+eval:acts-4-24-more	synodal:noun:more	noun:accusative:singular:inanimate	strict	море	мо́ре	ponomar-elizabeth-bible-2026-08-09	Acts.4.24	regular-held-out
+eval:acts-4-24-glas	synodal:noun:glas	noun:accusative:singular:inanimate	strict	гласъ	гла́съ	ponomar-elizabeth-bible-2026-08-09	Acts.4.24	regular-held-out
+eval:acts-8-20-dar	synodal:noun:dar	noun:nominative:singular:inanimate	strict	даръ	да́ръ	ponomar-elizabeth-bible-2026-08-09	Acts.8.20	regular-held-out
+eval:acts-10-22-dom	synodal:noun:dom	noun:accusative:singular:inanimate	strict	домъ	до́мъ	ponomar-elizabeth-bible-2026-08-09	Acts.10.22	regular-held-out
+eval:dan-2-3-tsar	synodal:noun:tsar	noun:nominative:singular:animate	strict	царь	ца́рь	ponomar-elizabeth-bible-2026-08-09	Dan.2.3	regular-held-out
+eval:apoc-19-1-slava	synodal:noun:slava	noun:nominative:singular:inanimate	strict	слава	сла́ва	ponomar-elizabeth-bible-2026-08-09	Apoc.19.1	regular-held-out
+eval:apoc-19-1-sila	synodal:noun:sila	noun:nominative:singular:inanimate	strict	сила	си́ла	ponomar-elizabeth-bible-2026-08-09	Apoc.19.1	regular-held-out
+eval:dan-1-9-milost	synodal:noun:milost	noun:accusative:singular:inanimate	strict	милость	ми́лость	ponomar-elizabeth-bible-2026-08-09	Dan.1.9	regular-held-out
+eval:apoc-13-10-vera	synodal:noun:vera	noun:nominative:singular:inanimate	strict	вѣра	вѣ́ра	ponomar-elizabeth-bible-2026-08-09	Apoc.13.10	regular-held-out
+eval:dan-12-2-zhizn	synodal:noun:zhizn	noun:accusative:singular:inanimate	strict	жизнь	жи́знь	ponomar-elizabeth-bible-2026-08-09	Dan.12.2	regular-held-out
+eval:amos-5-18-svet	synodal:noun:svet	noun:nominative:singular:inanimate	strict	свѣтъ	свѣ́тъ	ponomar-elizabeth-bible-2026-08-09	Amos.5.18	regular-held-out
+eval:acts-23-3-zakon	synodal:noun:zakon	noun:accusative:singular:inanimate	strict	законъ	зако́нъ	ponomar-elizabeth-bible-2026-08-09	Acts.23.3	regular-held-out
+eval:apoc-4-1-pervyi	synodal:numeral:pervyi	numeral:ordinal:nominative:singular:masculine:inanimate	strict	первый	пе́рвый	ponomar-elizabeth-bible-2026-08-09	Apoc.4.1	regular-held-out
+eval:apoc-8-8-vtoryi	synodal:numeral:vtoryi	numeral:ordinal:nominative:singular:masculine:inanimate	strict	вторый	вторы́й	ponomar-elizabeth-bible-2026-08-09	Apoc.8.8	regular-held-out
+eval:deut-12-32-az	synodal:pronoun:az	pronoun:nominative:singular:any:first:inanimate	strict	азъ	а҆́зъ	ponomar-elizabeth-bible-2026-08-09	Deut.12.32	irregular-held-out
+eval:acts-4-24-ty	synodal:pronoun:ty	pronoun:nominative:singular:any:second:inanimate	strict	ты	ты̀	ponomar-elizabeth-bible-2026-08-09	Acts.4.24	irregular-held-out
+eval:apoc-13-16-dati	synodal:verb:dati	present:third:singular	strict	дастъ	да́стъ	ponomar-elizabeth-bible-2026-08-09	Apoc.13.16	irregular-held-out
+eval:acts-3-16-dati-aorist	synodal:verb:dati	aorist:third:singular	strict	даде	дадѐ	ponomar-elizabeth-bible-2026-08-09	Acts.3.16	irregular-held-out
+eval:dan-3-43-dati-imperative	synodal:verb:dati	imperative:second:singular	strict	даждь	да́ждь	ponomar-elizabeth-bible-2026-08-09	Dan.3.43	irregular-held-out
+eval:deut-6-10-dati-lpart	synodal:verb:dati	l-participle:masculine:singular	strict	далъ	да́лъ	ponomar-elizabeth-bible-2026-08-09	Deut.6.10	regular-held-out
+eval:acts-1-18-sei	synodal:pronoun:sei	pronoun:nominative:singular:masculine:none:inanimate	strict	сей	се́й	ponomar-elizabeth-bible-2026-08-09	Acts.1.18	irregular-held-out
+eval:acts-4-25-izhe	synodal:pronoun:izhe	pronoun:nominative:singular:masculine:none:animate	strict	иже	и҆́же	ponomar-elizabeth-bible-2026-08-09	Acts.4.25	irregular-held-out
+eval:acts-18-24-nekto	synodal:pronoun:nekto	pronoun:nominative:singular:any:none:animate	strict	нѣкто	нѣ́кто	ponomar-elizabeth-bible-2026-08-09	Acts.18.24	irregular-held-out
+eval:acts-9-9-tri	synodal:numeral:tri	numeral:cardinal:nominative:plural:masculine:inanimate	strict	три	трѝ	ponomar-elizabeth-bible-2026-08-09	Acts.9.9	irregular-held-out
+eval:amos-1-3-chetyre	synodal:numeral:chetyre	numeral:cardinal:accusative:plural:neuter:inanimate	strict	четыри	четы́ри	ponomar-elizabeth-bible-2026-08-09	Amos.1.3	irregular-held-out

@@ -108,6 +108,14 @@ pub fn long_adjective(
     })
 }
 
+/// Inflects an adjective in a fully specified grammatical cell.
+///
+/// Use [`short_adjective`] or [`long_adjective`] when only a positive-form
+/// convenience call is needed.
+pub fn adjective(lemma: &str, cell: AdjectiveCell) -> Result<FormSet> {
+    Adjective::resolve(lemma)?.form(cell)
+}
+
 pub fn present(lemma: &str, person: Person, number: Number) -> Result<FormSet> {
     Verb::resolve(lemma)?.present(person, number)
 }
@@ -337,6 +345,62 @@ mod tests {
     }
 
     #[test]
+    fn expanded_productive_classes_and_personal_pronouns_are_available() {
+        assert_eq!(
+            noun("царь", Case::Genitive, Number::Plural, Animacy::Animate)
+                .expect("reviewed soft masculine class")
+                .primary_text(),
+            "царей"
+        );
+        assert_eq!(
+            adjective(
+                "мꙋдръ",
+                AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Comparative,
+                }
+            )
+            .expect("reviewed comparison stem")
+            .primary_text(),
+            "мꙋдрѣйшїй"
+        );
+        assert_eq!(
+            numeral(
+                "первый",
+                NumeralCell {
+                    kind: NumeralKind::Ordinal,
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    gender: Some(Gender::Masculine),
+                    animacy: Animacy::Animate,
+                }
+            )
+            .expect("productive ordinal")
+            .primary_text(),
+            "первагѡ"
+        );
+        assert_eq!(
+            pronoun(
+                "азъ",
+                PronounCell {
+                    case: Case::Genitive,
+                    number: Number::Dual,
+                    gender: None,
+                    person: Some(Person::First),
+                    animacy: Animacy::Inanimate,
+                }
+            )
+            .expect("reviewed dual personal pronoun")
+            .primary_text(),
+            "наю"
+        );
+    }
+
+    #[test]
     fn capabilities_report_actual_supported_systems() {
         let verb = Verb::resolve("быти").expect("known irregular verb");
         let capabilities = verb.capabilities();
@@ -365,10 +429,19 @@ mod tests {
         )
         .expect("registered inherited-only noun");
         assert!(productive.capabilities().productive_noun);
+
+        let dati = Verb::resolve("дати").expect("reviewed archaic verb");
+        assert!(dati.capabilities().participle);
+        assert_eq!(
+            dati.present(Person::Third, Number::Singular)
+                .expect("reviewed simple-future table")
+                .primary_text(),
+            "дастъ"
+        );
     }
 
     #[test]
-    fn declined_participle_paradigm_retains_unsupported_rows() {
+    fn declined_participle_paradigm_uses_reviewed_principal_parts() {
         let participle = Participle::resolve("нести").expect("known verb");
         let paradigm = participle.paradigm(
             ParticipleTense::Present,
@@ -377,7 +450,7 @@ mod tests {
         );
         assert_eq!(paradigm.iter().count(), 126);
         assert_eq!(paradigm.attested().count(), 0);
-        assert_eq!(paradigm.predicted().count(), 1);
-        assert_eq!(paradigm.failures().count(), 125);
+        assert_eq!(paradigm.predicted().count(), 126);
+        assert_eq!(paradigm.failures().count(), 0);
     }
 }

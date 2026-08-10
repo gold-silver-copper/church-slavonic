@@ -1,31 +1,68 @@
 {
   "schema_version": 3,
   "target_recension": "synodal-russian",
-  "fixture_source": "pinned Ponomar Elizabeth Bible, Matthew 1–5 and Acts 1:18",
-  "fixture_rows": 11,
+  "fixture_source": "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
+  "fixture_rows": 38,
   "phrase_fixture_rows": 1,
   "expanded": {
-    "total": 11,
-    "returned": 11,
-    "top_1_correct": 11,
-    "top_k_correct": 11,
+    "total": 38,
+    "returned": 38,
+    "top_1_correct": 37,
+    "top_k_correct": 38,
     "abstained": 0
   },
   "printed": {
-    "total": 11,
-    "returned": 11,
-    "top_1_correct": 11,
-    "top_k_correct": 11,
+    "total": 38,
+    "returned": 38,
+    "top_1_correct": 37,
+    "top_k_correct": 38,
     "abstained": 0
   },
-  "accent_bearing_rows": 11,
-  "exact_accent_agreement": 11,
+  "expanded_disagreements": [
+    {
+      "id": "eval:acts-9-9-tri",
+      "cell": "numeral:cardinal:nominative:plural:masculine:inanimate",
+      "expected": "три",
+      "returned_top_1": "трїе"
+    }
+  ],
+  "printed_disagreements": [
+    {
+      "id": "eval:acts-9-9-tri",
+      "cell": "numeral:cardinal:nominative:plural:masculine:inanimate",
+      "expected": "трѝ",
+      "returned_top_1": "трїѐ"
+    }
+  ],
+  "exact_registry_expanded_round_trip": {
+    "total": 260,
+    "returned": 260,
+    "top_1_correct": 219,
+    "top_k_correct": 260,
+    "abstained": 0
+  },
+  "exact_registry_printed_round_trip": {
+    "total": 260,
+    "returned": 260,
+    "top_1_correct": 219,
+    "top_k_correct": 260,
+    "abstained": 0
+  },
+  "accent_bearing_rows": 36,
+  "exact_accent_agreement": 36,
   "by_regularity": {
     "irregular": {
       "total": 7,
       "returned": 7,
       "top_1_correct": 7,
       "top_k_correct": 7,
+      "abstained": 0
+    },
+    "irregular-held-out": {
+      "total": 10,
+      "returned": 10,
+      "top_1_correct": 9,
+      "top_k_correct": 10,
       "abstained": 0
     },
     "irregular-participle": {
@@ -42,6 +79,13 @@
       "top_k_correct": 2,
       "abstained": 0
     },
+    "regular-held-out": {
+      "total": 17,
+      "returned": 17,
+      "top_1_correct": 17,
+      "top_k_correct": 17,
+      "abstained": 0
+    },
     "regular-inherited": {
       "total": 1,
       "returned": 1,
@@ -50,8 +94,68 @@
       "abstained": 0
     }
   },
+  "by_policy": {
+    "exploratory": {
+      "total": 38,
+      "returned": 38,
+      "top_1_correct": 37,
+      "top_k_correct": 38,
+      "abstained": 0
+    },
+    "productive": {
+      "total": 38,
+      "returned": 38,
+      "top_1_correct": 37,
+      "top_k_correct": 38,
+      "abstained": 0
+    },
+    "strict": {
+      "total": 38,
+      "returned": 37,
+      "top_1_correct": 36,
+      "top_k_correct": 37,
+      "abstained": 1
+    }
+  },
+  "by_attestation_status": {
+    "attested": {
+      "total": 0,
+      "returned": 0,
+      "top_1_correct": 0,
+      "top_k_correct": 0,
+      "abstained": 0
+    },
+    "expected-form-not-returned": {
+      "total": 0,
+      "returned": 0,
+      "top_1_correct": 0,
+      "top_k_correct": 0,
+      "abstained": 0
+    },
+    "predicted": {
+      "total": 38,
+      "returned": 38,
+      "top_1_correct": 37,
+      "top_k_correct": 38,
+      "abstained": 0
+    }
+  },
   "by_morphological_system": {
+    "aorist": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
     "imperative": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "l-participle": {
       "total": 1,
       "returned": 1,
       "top_1_correct": 1,
@@ -59,17 +163,17 @@
       "abstained": 0
     },
     "noun": {
-      "total": 3,
-      "returned": 3,
-      "top_1_correct": 3,
-      "top_k_correct": 3,
+      "total": 17,
+      "returned": 17,
+      "top_1_correct": 17,
+      "top_k_correct": 17,
       "abstained": 0
     },
     "numeral": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 4,
+      "top_k_correct": 5,
       "abstained": 0
     },
     "participle": {
@@ -80,17 +184,17 @@
       "abstained": 0
     },
     "present": {
-      "total": 4,
-      "returned": 4,
-      "top_1_correct": 4,
-      "top_k_correct": 4,
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
       "abstained": 0
     },
     "pronoun": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+      "total": 6,
+      "returned": 6,
+      "top_1_correct": 6,
+      "top_k_correct": 6,
       "abstained": 0
     }
   },
@@ -103,26 +207,26 @@
       "abstained": 0
     },
     "synodal-normative-table": {
-      "total": 8,
-      "returned": 8,
-      "top_1_correct": 8,
-      "top_k_correct": 8,
+      "total": 18,
+      "returned": 18,
+      "top_1_correct": 17,
+      "top_k_correct": 18,
       "abstained": 0
     },
     "synodal-productive-rule": {
-      "total": 2,
-      "returned": 2,
-      "top_1_correct": 2,
-      "top_k_correct": 2,
+      "total": 19,
+      "returned": 19,
+      "top_1_correct": 19,
+      "top_k_correct": 19,
       "abstained": 0
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
-      "total": 11,
-      "returned": 11,
-      "top_1_correct": 11,
-      "top_k_correct": 11,
+      "total": 38,
+      "returned": 38,
+      "top_1_correct": 37,
+      "top_k_correct": 38,
       "abstained": 0
     }
   },
@@ -143,17 +247,17 @@
   },
   "leakage": {
     "masked_expanded": {
-      "total": 5,
-      "returned": 5,
-      "top_1_correct": 5,
-      "top_k_correct": 5,
+      "total": 29,
+      "returned": 29,
+      "top_1_correct": 28,
+      "top_k_correct": 29,
       "abstained": 0
     },
     "masked_printed": {
-      "total": 5,
-      "returned": 5,
-      "top_1_correct": 5,
-      "top_k_correct": 5,
+      "total": 29,
+      "returned": 29,
+      "top_1_correct": 28,
+      "top_k_correct": 29,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_expanded": {
@@ -216,8 +320,10 @@
   },
   "limitations": [
     "The current real-text slice is intentionally small and reports counts, not statistical confidence.",
+    "No legally cleared, machine-readable non-biblical Synodal liturgical corpus is currently pinned; catalog-only and unresolved-rights editions are intentionally excluded from held-out scoring.",
     "Productive liturgical rendering abstains when accent metadata is absent.",
     "One participle and one analytic perfect are covered by independent corpus witnesses; other analytic constructions remain typed unit fixtures until their lexical registries grow.",
+    "Abbreviation, numeral, malformed-mark, and hostile-Unicode regressions are deterministic utility fixtures, not corpus-accuracy rows.",
     "Gold admission precision is a structural policy check over the reviewed registry, not an independently estimated automatic-alignment precision.",
     "The single inherited held-out cell is insufficient to assess confidence calibration; the reported gap is descriptive only."
   ]

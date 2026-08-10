@@ -24,13 +24,16 @@ old-church-slavonic = { path = "crates/old-church-slavonic", version = "0.5.0" }
 old-church-slavonic-core = { path = "crates/old-church-slavonic-core", version = "0.4.0" }
 old-church-slavonic-dictionary = { path = "crates/old-church-slavonic-dictionary", version = "0.2.0" }
 old-church-slavonic-extractor = { path = "crates/old-church-slavonic-extractor", version = "0.1.0" }
-synodal-church-slavonic = { path = "crates/synodal-church-slavonic", version = "0.1.0" }
-synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core", version = "0.1.0" }
-synodal-church-slavonic-dictionary = { path = "crates/synodal-church-slavonic-dictionary", version = "0.1.0" }
+synodal-church-slavonic = { path = "crates/synodal-church-slavonic", version = "0.2.0" }
+synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core", version = "0.2.0" }
+synodal-church-slavonic-dictionary = { path = "crates/synodal-church-slavonic-dictionary", version = "0.2.0" }
 synodal-church-slavonic-extractor = { path = "crates/synodal-church-slavonic-extractor", version = "0.1.0" }
+quick-xml = "0.37.5"
+calamine = "0.28.0"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 sha2 = "0.10.9"
+toml = "0.8.23"
 unicode-normalization = "0.1.24"
 
 [workspace.lints.rust]
@@ -40,3 +43,6 @@ unsafe_code = "forbid"
 dbg_macro = "deny"
 todo = "deny"
 unwrap_used = "deny"
+
+[profile.dev.package.sha2]
+opt-level = 3

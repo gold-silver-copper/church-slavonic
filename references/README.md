@@ -9,12 +9,19 @@ and Synodal Russian Church Slavonic work. Run:
 
 Raw downloads are stored under `references/downloads/` and are intentionally
 gitignored. `SOURCES.toml` records their immutable revisions, licensing status,
-and intended evidential role. `SHA256SUMS` is regenerated after a successful
-fetch so every local byte can be audited. The complete cache is currently 244
-files and approximately 4.6 GB. This includes all 198 linked sections of the
+and intended evidential role. `SOURCE_LOCK.tsv` locks the URL, path, size, format,
+and SHA-256 of every artifact; ordinary fetch and verification commands never
+rewrite it. The complete locked cache is currently 321 files and approximately
+4.6 GB. This includes all 198 linked sections of the
 Alypy/Gamanovich grammar, not only its table of contents, plus the stable PDF and
 metadata page for Unicode Technical Note #41 revision 1 and both publisher
-editions (TEI XML and PDF) of Polivanova's grammar.
+editions (TEI XML and PDF) of Polivanova's grammar. Wikisource is stored as 78
+exact revision-pinned wikitext artifacts listed in `WIKISOURCE_REVISIONS.tsv`.
+
+The complete command, refresh, offline, recovery, prerequisite, and licensing
+procedure is documented in `docs/SYNODAL_DATA_PIPELINE.md`. The default CI uses
+`cargo xtask synodal-fixture-bootstrap`; the 4.6 GB full bootstrap is a separate
+manually triggered workflow.
 
 Not every item in the research backlog may lawfully or technically be bulk
 downloaded. GORAZD and the Russian National Corpus are metadata-only until bulk

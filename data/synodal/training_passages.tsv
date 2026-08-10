@@ -1,4 +1,21 @@
 source_id	passage	partition	purpose	evidence_ids	source_recension
-ponomar-elizabeth-bible-2026-08-09	Deuteronomy 2:34	source	accent-and-semantic-review	ponomar-deut-2-34-grad	synodal-russian
-ponomar-elizabeth-bible-2026-08-09	Deuteronomy 5:21	source	accent-review	ponomar-deut-5-21-zheny	synodal-russian
-ponomar-elizabeth-bible-2026-08-09	Deuteronomy 11:17	source	accent-and-semantic-review	ponomar-deut-11-17-zemlya	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Deut.2.34	source	accent-and-semantic-review	ponomar-deut-2-34-grad	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Deut.5.21	source	accent-review	ponomar-deut-5-21-zheny	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Deut.11.17	source	accent-and-semantic-review	ponomar-deut-11-17-zemlya	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.2.41	source	accent-review	ponomar-accent-slovo	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.16.1	source	accent-review	ponomar-accent-syn	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.14.15	source	accent-review	ponomar-accent-more	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.2.14	source	accent-review	ponomar-accent-glas	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.2.38	source	accent-review	ponomar-accent-dar	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.2.2	source	accent-review	ponomar-accent-dom	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.7.18	source	accent-review	ponomar-accent-tsar	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Apoc.1.6	source	accent-review	ponomar-accent-slava	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.8.10	source	accent-review	ponomar-accent-sila	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Composite.2.6	source	accent-review	ponomar-accent-milost	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Gal.5.6	source	accent-review	ponomar-accent-vera	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.13.48	source	accent-review	ponomar-accent-zhizn	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.9.3	source	accent-review	ponomar-accent-svet	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.6.13	source	accent-review	ponomar-accent-zakon	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Acts.26.23	source	accent-review	ponomar-accent-pervyi	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Apoc.16.3	source	accent-review	ponomar-accent-vtoryi	synodal-russian
+ponomar-elizabeth-bible-2026-08-09	Apoc.4.11	source	accent-review	ponomar-accent-dati-lpart	synodal-russian

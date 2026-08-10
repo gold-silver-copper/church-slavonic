@@ -1,6 +1,7 @@
 /target/
 /data/raw/
 /data/intermediate/
+/data/quarantine/
 /references/downloads/
 /references/.tmp/
 *.tmp

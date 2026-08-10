@@ -20,12 +20,12 @@ assert_eq!(form.target_recension(), synodal_church_slavonic::Recension::SynodalR
 # Ok::<(), synodal_church_slavonic::Error>(())
 ```
 
-The full source inventory, including 244 locally cached and checksum-verified
+The full source inventory, including 321 individually locked and checksum-verified
 machine-readable artifacts (about 4.6 GB), is in `references/`. Raw source bytes
 are gitignored and excluded from packages. See `docs/SYNODAL_RECENSION.md`,
 `docs/SYNODAL_MORPHOLOGY.md`, `docs/SYNODAL_ORTHOGRAPHY.md`, and
-`reports/synodal-evaluation.md` for the implemented boundary and measured seed
-coverage.
+`docs/SYNODAL_DATA_PIPELINE.md` and `reports/synodal-evaluation.md` for the
+implemented boundary, reproducible commands, and measured held-out coverage.
 
 ## Old Church Slavonic inflection
 

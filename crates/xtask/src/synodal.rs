@@ -4,13 +4,17 @@ use std::{
     collections::BTreeMap,
     error::Error,
     fs,
+    io::{Read, Write},
+    net::TcpListener,
     path::{Path, PathBuf},
+    process::Command,
+    thread,
 };
 use synodal_church_slavonic::{
     AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, FiniteTense, FiniteVerbCell, Gender,
-    GenerationPolicy, GrammarCell, ImperativeCell, Inflector, LexemeId, Number, NumeralCell,
-    NumeralKind, OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice, Person,
-    PronounCell, RealizedPhrase, phrases,
+    GenerationPolicy, GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, Number,
+    NumeralCell, NumeralKind, OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice,
+    Person, PronounCell, RealizedPhrase, phrases,
 };
 use synodal_church_slavonic_core::FormSource;
 
@@ -93,9 +97,15 @@ struct EvaluationReport {
     phrase_fixture_rows: usize,
     expanded: MetricSlice,
     printed: MetricSlice,
+    expanded_disagreements: Vec<EvaluationDisagreement>,
+    printed_disagreements: Vec<EvaluationDisagreement>,
+    exact_registry_expanded_round_trip: MetricSlice,
+    exact_registry_printed_round_trip: MetricSlice,
     accent_bearing_rows: usize,
     exact_accent_agreement: usize,
     by_regularity: BTreeMap<String, MetricSlice>,
+    by_policy: BTreeMap<String, MetricSlice>,
+    by_attestation_status: BTreeMap<String, MetricSlice>,
     by_morphological_system: BTreeMap<String, MetricSlice>,
     by_provenance_path: BTreeMap<String, MetricSlice>,
     by_source: BTreeMap<String, MetricSlice>,
@@ -105,6 +115,14 @@ struct EvaluationReport {
     leakage: LeakageMetrics,
     inheritance: InheritanceMetrics,
     limitations: Vec<&'static str>,
+}
+
+#[derive(Clone, Debug, Serialize)]
+struct EvaluationDisagreement {
+    id: String,
+    cell: String,
+    expected: String,
+    returned_top_1: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -118,6 +136,278 @@ struct ExtractionReport {
     morphology_registry_sha256: String,
     dictionary_registry_sha256: String,
     source_adapter_contracts: Vec<&'static str>,
+}
+
+#[derive(Debug, Serialize)]
+struct BootstrapReport {
+    schema_version: u8,
+    target_recension: &'static str,
+    source_filter: Option<String>,
+    source_verification: &'static str,
+    candidate_pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport,
+    reviewed_overlay: &'static str,
+    registry_generation: &'static str,
+    evaluation: &'static str,
+    freshness_and_boundaries: &'static str,
+}
+
+#[derive(Debug, Serialize)]
+struct FixtureBootstrapReport {
+    schema_version: u8,
+    target_recension: &'static str,
+    fixture_source: &'static str,
+    fixture_candidates_sha256: String,
+    fixture_runs_byte_identical: bool,
+    morphology_registry_sha256: String,
+    dictionary_registry_sha256: String,
+    generated_runs_byte_identical: bool,
+    committed_outputs_current: bool,
+    source_locks_unchanged: bool,
+    evaluation_rows: usize,
+    evaluation_top_1_correct: usize,
+}
+
+#[derive(Clone, Debug, Serialize, serde::Deserialize, PartialEq, Eq)]
+struct VerseDisagreementReport {
+    schema_version: u8,
+    target_recension: String,
+    comparison_basis: String,
+    passages_by_source: BTreeMap<String, usize>,
+    pairwise: Vec<VersePairComparison>,
+}
+
+#[derive(Clone, Debug, Serialize, serde::Deserialize, PartialEq, Eq)]
+struct VersePairComparison {
+    left_source: String,
+    right_source: String,
+    overlapping_passages: usize,
+    exact_text_agreements: usize,
+    text_disagreements: usize,
+    disagreement_samples: Vec<VerseDisagreementSample>,
+}
+
+#[derive(Clone, Debug, Serialize, serde::Deserialize, PartialEq, Eq)]
+struct VerseDisagreementSample {
+    passage: String,
+    left_sha256: String,
+    right_sha256: String,
+}
+
+pub(crate) fn bootstrap(
+    args: &mut impl Iterator<Item = String>,
+    root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let mut cache = root.join("references/downloads");
+    let mut offline = false;
+    let mut source = None::<String>;
+    let mut skip_fetch = false;
+    let mut keep_intermediate = false;
+    while let Some(argument) = args.next() {
+        match argument.as_str() {
+            "--cache" => cache = PathBuf::from(args.next().ok_or("--cache requires a path")?),
+            "--offline" => offline = true,
+            "--source" => source = Some(args.next().ok_or("--source requires an ID")?),
+            "--skip-fetch" => skip_fetch = true,
+            "--keep-intermediate" => keep_intermediate = true,
+            value => return Err(format!("unknown synodal-bootstrap argument {value:?}").into()),
+        }
+    }
+
+    if !offline && !skip_fetch {
+        let mut source_arguments = vec!["fetch".into(), "--cache".into()];
+        source_arguments.push(cache.display().to_string());
+        if let Some(source) = &source {
+            source_arguments.extend(["--source".into(), source.clone()]);
+        }
+        crate::sources::run(&mut source_arguments.into_iter(), root)?;
+    }
+    let mut verify_arguments = vec![
+        "verify".into(),
+        "--offline".into(),
+        "--cache".into(),
+        cache.display().to_string(),
+    ];
+    if let Some(source) = &source {
+        verify_arguments.extend(["--source".into(), source.clone()]);
+    }
+    crate::sources::run(&mut verify_arguments.into_iter(), root)?;
+
+    let candidate_pipeline = synodal_church_slavonic_extractor::pipeline::run_pipeline(
+        &synodal_church_slavonic_extractor::pipeline::PipelineOptions {
+            workspace_root: root.to_owned(),
+            cache,
+            intermediate: root.join("data/intermediate/synodal"),
+            quarantine: root.join("data/quarantine/synodal"),
+            source: source.clone(),
+            failure_ceiling: 10_000,
+            keep_work: keep_intermediate,
+        },
+    )?;
+    if source.is_none() {
+        synodal_church_slavonic_extractor::validate_candidate_links(
+            &root.join("data/synodal"),
+            &root.join("data/intermediate/synodal"),
+        )?;
+        write_verse_disagreement_report(root)?;
+    }
+
+    // The committed data/synodal TSVs are the reviewed overlay. Candidate
+    // extraction cannot write there; generation reads it only after adapters
+    // have completed successfully.
+    regenerate(root)?;
+    if source.is_none() {
+        write_bootstrap_report(root, candidate_pipeline)?;
+    }
+    check(root)?;
+    println!("Synodal bootstrap completed with verified, review-separated data");
+    Ok(())
+}
+
+fn bootstrap_report(
+    candidate_pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport,
+) -> BootstrapReport {
+    BootstrapReport {
+        schema_version: 1,
+        target_recension: "synodal-russian",
+        source_filter: None,
+        source_verification: "all selected artifacts matched immutable SHA-256 locks",
+        candidate_pipeline,
+        reviewed_overlay: "committed data/synodal review boundary applied read-only",
+        registry_generation: "deterministic runtime registries regenerated",
+        evaluation: "passage and lemma partition evaluation completed",
+        freshness_and_boundaries: "freshness, recension, package, and runtime-I/O guards passed",
+    }
+}
+
+fn write_bootstrap_report(
+    root: &Path,
+    candidate_pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport,
+) -> Result<(), Box<dyn Error>> {
+    fs::write(
+        root.join("reports/synodal-bootstrap.json"),
+        serde_json::to_vec_pretty(&bootstrap_report(candidate_pipeline))?,
+    )?;
+    Ok(())
+}
+
+/// Runs the small, network-free acceptance bootstrap used by default CI.
+/// The fixture cache and both output trees are reconstructed under a temporary
+/// directory; the real cache is never read or modified.
+pub(crate) fn fixture_bootstrap(
+    args: &mut impl Iterator<Item = String>,
+    root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    if let Some(argument) = args.next() {
+        return Err(format!("unknown synodal-fixture-bootstrap argument {argument:?}").into());
+    }
+    let temporary = temporary_directory("fixture-bootstrap");
+    if temporary.exists() {
+        fs::remove_dir_all(&temporary)?;
+    }
+    fs::create_dir_all(&temporary)?;
+    let source_lock_before = fs::read(root.join("references/SOURCE_LOCK.tsv"))?;
+    let checksums_before = fs::read(root.join("references/SHA256SUMS"))?;
+
+    let result = (|| -> Result<FixtureBootstrapReport, Box<dyn Error>> {
+        let html = b"<html><h3>\xc2\xa734</h3><span class=\"DSText\">\xd1\x80\xd0\xb0\xcc\x81\xd0\xb1-\xd1\x8a</span></html>";
+        let run_adapter = |name: &str| {
+            let (fixture_root, cache) = prepare_fixture_cache(&temporary, name, html)?;
+            let intermediate = temporary.join(format!("{name}/intermediate"));
+            let quarantine = temporary.join(format!("{name}/quarantine"));
+            let report = synodal_church_slavonic_extractor::pipeline::run_pipeline(
+                &synodal_church_slavonic_extractor::pipeline::PipelineOptions {
+                    workspace_root: fixture_root,
+                    cache,
+                    intermediate: intermediate.clone(),
+                    quarantine: quarantine.clone(),
+                    source: Some("alypy-gamanovich-grammar-web-2023".into()),
+                    failure_ceiling: 0,
+                    keep_work: false,
+                },
+            )?;
+            Ok::<_, Box<dyn Error>>((
+                report,
+                fs::read(intermediate.join("alypy-gamanovich-grammar-web-2023.jsonl"))?,
+                fs::read(intermediate.join("adapter-reports.json"))?,
+                fs::read(quarantine.join("alypy-gamanovich-grammar-web-2023.jsonl"))?,
+            ))
+        };
+        let first_adapter = run_adapter("first")?;
+        let second_adapter = run_adapter("second")?;
+        if first_adapter != second_adapter {
+            return Err("fixture adapter outputs differ across independent directories".into());
+        }
+
+        let generated_one = temporary.join("generated-one");
+        let generated_two = temporary.join("generated-two");
+        fs::create_dir_all(&generated_one)?;
+        fs::create_dir_all(&generated_two)?;
+        for destination in [&generated_one, &generated_two] {
+            synodal_church_slavonic_extractor::generate_registry(
+                &root.join("data/synodal"),
+                &destination.join("morphology.rs"),
+            )?;
+            synodal_church_slavonic_extractor::generate_dictionary_registry(
+                &root.join("data/synodal"),
+                &destination.join("dictionary.rs"),
+            )?;
+        }
+        let morphology_one = fs::read(generated_one.join("morphology.rs"))?;
+        let dictionary_one = fs::read(generated_one.join("dictionary.rs"))?;
+        let generated_runs_byte_identical = morphology_one
+            == fs::read(generated_two.join("morphology.rs"))?
+            && dictionary_one == fs::read(generated_two.join("dictionary.rs"))?;
+        if !generated_runs_byte_identical {
+            return Err("generated registries differ across independent directories".into());
+        }
+        let committed_outputs_current = morphology_one
+            == fs::read(root.join("crates/synodal-church-slavonic/generated/registry.rs"))?
+            && dictionary_one
+                == fs::read(
+                    root.join("crates/synodal-church-slavonic-dictionary/generated/registry.rs"),
+                )?;
+        if !committed_outputs_current {
+            return Err("fixture bootstrap reconstructed stale committed registries".into());
+        }
+        let evaluation = evaluate(root)?;
+        let source_locks_unchanged = source_lock_before
+            == fs::read(root.join("references/SOURCE_LOCK.tsv"))?
+            && checksums_before == fs::read(root.join("references/SHA256SUMS"))?;
+        if !source_locks_unchanged {
+            return Err("fixture bootstrap mutated committed source locks".into());
+        }
+        let source = first_adapter
+            .0
+            .source_reports
+            .get("alypy-gamanovich-grammar-web-2023")
+            .ok_or("fixture adapter omitted its source report")?;
+        Ok(FixtureBootstrapReport {
+            schema_version: 1,
+            target_recension: "synodal-russian",
+            fixture_source: "miniature locked Alypy HTML page",
+            fixture_candidates_sha256: source.output_sha256.clone(),
+            fixture_runs_byte_identical: true,
+            morphology_registry_sha256: file_sha256(&generated_one.join("morphology.rs"))?,
+            dictionary_registry_sha256: file_sha256(&generated_one.join("dictionary.rs"))?,
+            generated_runs_byte_identical,
+            committed_outputs_current,
+            source_locks_unchanged,
+            evaluation_rows: evaluation.expanded.total,
+            evaluation_top_1_correct: evaluation.expanded.top_1_correct,
+        })
+    })();
+    let cleanup = fs::remove_dir_all(&temporary);
+    let report = result?;
+    cleanup?;
+    fs::write(
+        root.join("reports/synodal-fixture-bootstrap.json"),
+        serde_json::to_vec_pretty(&report)?,
+    )?;
+    println!(
+        "Synodal fixture bootstrap: {} byte-identical candidates; {}/{} evaluation cells",
+        report.fixture_candidates_sha256, report.evaluation_top_1_correct, report.evaluation_rows
+    );
+    Ok(())
 }
 
 pub(crate) fn regenerate(root: &Path) -> Result<(), Box<dyn Error>> {
@@ -141,13 +431,207 @@ pub(crate) fn regenerate(root: &Path) -> Result<(), Box<dyn Error>> {
 }
 
 pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
+    crate::sources::check_lock(root)?;
+    check_reviewed_candidate_links(root)?;
     check_generated(root)?;
     check_source_boundaries(root)?;
     check_runtime_boundaries(root)?;
     check_evaluation_report(root)?;
     check_extraction_report(root)?;
+    check_verse_disagreement_report(root)?;
+    check_bootstrap_report(root)?;
     check_package_metadata(root)?;
     println!("synodal checks: current");
+    Ok(())
+}
+
+fn check_reviewed_candidate_links(root: &Path) -> Result<(), Box<dyn Error>> {
+    let intermediate = root.join("data/intermediate/synodal");
+    let adapter_report = intermediate.join("adapter-reports.json");
+    if !adapter_report.is_file() {
+        return Ok(());
+    }
+    let pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport =
+        serde_json::from_slice(&fs::read(adapter_report)?)?;
+    if pipeline.source_reports.len() == 13 {
+        synodal_church_slavonic_extractor::validate_candidate_links(
+            &root.join("data/synodal"),
+            &intermediate,
+        )?;
+    }
+    Ok(())
+}
+
+fn check_bootstrap_report(root: &Path) -> Result<(), Box<dyn Error>> {
+    let report_path = root.join("reports/synodal-bootstrap.json");
+    let committed = fs::read(&report_path)?;
+    let value: serde_json::Value = serde_json::from_slice(&committed)?;
+    if value
+        .get("target_recension")
+        .and_then(serde_json::Value::as_str)
+        != Some("synodal-russian")
+        || !value
+            .get("source_filter")
+            .is_some_and(serde_json::Value::is_null)
+        || value.get("offline").is_some()
+    {
+        return Err(format!(
+            "{} is not a deterministic full-source Synodal bootstrap report",
+            report_path.display()
+        )
+        .into());
+    }
+    let reported_sources = value
+        .pointer("/candidate_pipeline/source_reports")
+        .and_then(serde_json::Value::as_object)
+        .map_or(0, serde_json::Map::len);
+    if reported_sources != 13 {
+        return Err(format!(
+            "{} records {reported_sources} adapters, expected 13",
+            report_path.display()
+        )
+        .into());
+    }
+
+    let adapter_report = root.join("data/intermediate/synodal/adapter-reports.json");
+    if adapter_report.is_file() {
+        let pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport =
+            serde_json::from_slice(&fs::read(&adapter_report)?)?;
+        if pipeline.source_reports.len() == 13 {
+            let expected = serde_json::to_vec_pretty(&bootstrap_report(pipeline))?;
+            if committed != expected {
+                return Err(format!(
+                    "stale {}; rerun cargo xtask synodal-bootstrap",
+                    report_path.display()
+                )
+                .into());
+            }
+        }
+    }
+    Ok(())
+}
+
+fn verse_disagreement_report(root: &Path) -> Result<VerseDisagreementReport, Box<dyn Error>> {
+    const SOURCES: [&str; 3] = [
+        "ponomar-elizabeth-bible-2026-08-09",
+        "wikisource-church-slavonic-bible-2026-08-09",
+        "crosswire-csl-elizabeth-1.5.2",
+    ];
+    let intermediate = root.join("data/intermediate/synodal");
+    let mut corpora = BTreeMap::<String, BTreeMap<String, String>>::new();
+    for source in SOURCES {
+        let path = intermediate.join(format!("{source}.jsonl"));
+        let mut passages = BTreeMap::<String, String>::new();
+        for (offset, line) in fs::read_to_string(&path)?.lines().enumerate() {
+            let value: serde_json::Value = serde_json::from_str(line).map_err(|error| {
+                format!(
+                    "invalid candidate JSON in {}:{}: {error}",
+                    path.display(),
+                    offset + 1
+                )
+            })?;
+            let passage = value
+                .get("passage")
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| format!("candidate in {} has no passage", path.display()))?;
+            let text = value
+                .get("normalized_spelling")
+                .and_then(serde_json::Value::as_str)
+                .ok_or_else(|| {
+                    format!("candidate in {} has no normalized spelling", path.display())
+                })?;
+            let accumulated = passages.entry(passage.to_owned()).or_default();
+            if !accumulated.is_empty() {
+                accumulated.push(' ');
+            }
+            accumulated.push_str(text);
+        }
+        corpora.insert(source.into(), passages);
+    }
+
+    let passages_by_source = corpora
+        .iter()
+        .map(|(source, passages)| (source.clone(), passages.len()))
+        .collect();
+    let mut pairwise = Vec::new();
+    for (left, right) in [
+        (SOURCES[0], SOURCES[1]),
+        (SOURCES[0], SOURCES[2]),
+        (SOURCES[1], SOURCES[2]),
+    ] {
+        let left_passages = corpora.get(left).ok_or("missing left corpus")?;
+        let right_passages = corpora.get(right).ok_or("missing right corpus")?;
+        let mut overlapping_passages = 0;
+        let mut exact_text_agreements = 0;
+        let mut disagreement_samples = Vec::new();
+        for (passage, left_text) in left_passages {
+            let Some(right_text) = right_passages.get(passage) else {
+                continue;
+            };
+            overlapping_passages += 1;
+            if left_text == right_text {
+                exact_text_agreements += 1;
+            } else if disagreement_samples.len() < 25 {
+                disagreement_samples.push(VerseDisagreementSample {
+                    passage: passage.clone(),
+                    left_sha256: sha256_bytes(left_text.as_bytes()),
+                    right_sha256: sha256_bytes(right_text.as_bytes()),
+                });
+            }
+        }
+        pairwise.push(VersePairComparison {
+            left_source: left.into(),
+            right_source: right.into(),
+            overlapping_passages,
+            exact_text_agreements,
+            text_disagreements: overlapping_passages.saturating_sub(exact_text_agreements),
+            disagreement_samples,
+        });
+    }
+    Ok(VerseDisagreementReport {
+        schema_version: 1,
+        target_recension: "synodal-russian".into(),
+        comparison_basis: "exact normalized spelling after source-specific deterministic markup removal; CrossWire remains explicitly modernized".into(),
+        passages_by_source,
+        pairwise,
+    })
+}
+
+fn write_verse_disagreement_report(root: &Path) -> Result<(), Box<dyn Error>> {
+    let report = verse_disagreement_report(root)?;
+    fs::write(
+        root.join("reports/synodal-verse-disagreement.json"),
+        serde_json::to_vec_pretty(&report)?,
+    )?;
+    Ok(())
+}
+
+fn check_verse_disagreement_report(root: &Path) -> Result<(), Box<dyn Error>> {
+    let path = root.join("reports/synodal-verse-disagreement.json");
+    let committed: VerseDisagreementReport = serde_json::from_slice(&fs::read(&path)?)?;
+    if committed.target_recension != "synodal-russian"
+        || committed.pairwise.len() != 3
+        || committed
+            .pairwise
+            .iter()
+            .any(|pair| pair.overlapping_passages == 0)
+    {
+        return Err("committed Synodal verse-disagreement report is incomplete".into());
+    }
+    let intermediate = root.join("data/intermediate/synodal");
+    let complete_intermediate = [
+        "ponomar-elizabeth-bible-2026-08-09",
+        "wikisource-church-slavonic-bible-2026-08-09",
+        "crosswire-csl-elizabeth-1.5.2",
+    ]
+    .iter()
+    .all(|source| intermediate.join(format!("{source}.jsonl")).is_file());
+    if complete_intermediate && committed != verse_disagreement_report(root)? {
+        return Err(
+            "committed Synodal verse-disagreement report is stale; run a full synodal-bootstrap"
+                .into(),
+        );
+    }
     Ok(())
 }
 
@@ -165,6 +649,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         "lexemes.tsv",
         "positional_rules.tsv",
         "principal_parts.tsv",
+        "reviewed_evidence.tsv",
         "phrase_evaluation.tsv",
         "semantic_alignments.tsv",
         "senses.tsv",
@@ -191,7 +676,16 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         )?,
         source_adapter_contracts: vec![
             "streaming Ponomar verse adapter with source order and quarantine",
+            "complete Alypy HTML inventory with section and DSText witnesses",
+            "pinned D'yachenko DjVu OCR with page, line, box, confidence, and uncorrected status",
+            "exact-revision Wikisource MediaWiki export with template lineage",
+            "CrossWire CSlElizabeth SWORD export with module version and modernized-spelling label",
+            "Polivanova OSD spreadsheet and TEI adapters with common-lineage labels",
+            "UD PROIEL CoNLL-U and Syntacticus native CoNLL with shared-lineage labels",
+            "CCMH text/XML historical-comparison adapter",
+            "DIACU JSON recension-classification adapter",
             "streaming Kaikki OCS JSONL adapter with content IDs and no target surface rows",
+            "Ponomar modern Church Slavonic frequency-list adapter",
         ],
     })
 }
@@ -247,6 +741,13 @@ fn extraction_markdown(report: &ExtractionReport) -> String {
 fn file_sha256(path: &Path) -> Result<String, Box<dyn Error>> {
     let digest = Sha256::digest(fs::read(path)?);
     Ok(digest.iter().map(|byte| format!("{byte:02x}")).collect())
+}
+
+fn sha256_bytes(bytes: &[u8]) -> String {
+    Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
 }
 
 pub(crate) fn evaluate_and_write(root: &Path) -> Result<(), Box<dyn Error>> {
@@ -421,7 +922,18 @@ fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
         let source = root.join("crates").join(package).join("src");
         for path in rust_files(&source)? {
             let text = fs::read_to_string(&path)?;
-            for forbidden in ["std::fs", "std::net", "reqwest::", "ureq::"] {
+            for forbidden in [
+                "std::fs",
+                "std::io",
+                "std::net",
+                "reqwest::",
+                "ureq::",
+                "serde_json::",
+                "quick_xml::",
+                "calamine::",
+                "csv::",
+                "rusqlite::",
+            ] {
                 if text.contains(forbidden) {
                     return Err(format!(
                         "runtime I/O boundary violated by {forbidden} in {}",
@@ -429,6 +941,27 @@ fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
                     )
                     .into());
                 }
+            }
+        }
+        let manifest = fs::read_to_string(root.join("crates").join(package).join("Cargo.toml"))?;
+        for forbidden in [
+            "reqwest",
+            "ureq",
+            "serde_json",
+            "quick-xml",
+            "calamine",
+            "csv",
+            "rusqlite",
+        ] {
+            if manifest.lines().any(|line| {
+                line.trim_start()
+                    .strip_prefix(forbidden)
+                    .is_some_and(|suffix| suffix.trim_start().starts_with(['=', '.']))
+            }) {
+                return Err(format!(
+                    "runtime data/network dependency boundary violated by {forbidden} in {package}"
+                )
+                .into());
             }
         }
     }
@@ -479,6 +1012,38 @@ fn check_package_metadata(root: &Path) -> Result<(), Box<dyn Error>> {
         if !attribution.contains("SHA-256") || !attribution.contains("MIT OR Apache-2.0") {
             return Err(format!("{package} attribution is incomplete").into());
         }
+
+        let output = Command::new("cargo")
+            .args(["package", "-p", package, "--list", "--allow-dirty"])
+            .current_dir(root)
+            .output()?;
+        if !output.status.success() {
+            return Err(format!(
+                "cargo package --list failed for {package}: {}",
+                String::from_utf8_lossy(&output.stderr)
+            )
+            .into());
+        }
+        let packaged = String::from_utf8(output.stdout)?;
+        for path in packaged.lines() {
+            if path.starts_with("data/")
+                || path.starts_with("references/")
+                || path.starts_with("reports/")
+                || path.ends_with(".jsonl")
+                || path.ends_with(".tsv")
+                || path.ends_with(".xml")
+            {
+                return Err(format!(
+                    "{package} package leaks non-runtime or evaluation data: {path}"
+                )
+                .into());
+            }
+        }
+        if package != "synodal-church-slavonic-core"
+            && !packaged.lines().any(|path| path == "generated/registry.rs")
+        {
+            return Err(format!("{package} package omits generated/registry.rs").into());
+        }
     }
     Ok(())
 }
@@ -505,10 +1070,21 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
     let mut expanded = MetricSlice::default();
     let mut printed = MetricSlice::default();
     let mut by_regularity = BTreeMap::new();
+    let mut by_policy = BTreeMap::new();
+    let mut by_attestation_status = BTreeMap::from([
+        ("attested".to_owned(), MetricSlice::default()),
+        ("predicted".to_owned(), MetricSlice::default()),
+        (
+            "expected-form-not-returned".to_owned(),
+            MetricSlice::default(),
+        ),
+    ]);
     let mut by_source = BTreeMap::new();
     let mut by_morphological_system = BTreeMap::new();
     let mut by_provenance_path = BTreeMap::new();
     let mut abstention_reasons = BTreeMap::new();
+    let mut expanded_disagreements = Vec::new();
+    let mut printed_disagreements = Vec::new();
     let mut accent_bearing_rows = 0;
     let mut exact_accent_agreement = 0;
     let mut evaluated_inherited_cells = 0;
@@ -532,6 +1108,24 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
             expanded_result.as_ref().ok(),
             &row.expected_expanded,
         );
+        if expanded_result
+            .as_ref()
+            .ok()
+            .and_then(|forms| forms.variants().first())
+            .map(|form| form.expanded.as_str())
+            != Some(row.expected_expanded.as_str())
+        {
+            expanded_disagreements.push(EvaluationDisagreement {
+                id: row.id.clone(),
+                cell: row.cell_key.clone(),
+                expected: row.expected_expanded.clone(),
+                returned_top_1: expanded_result
+                    .as_ref()
+                    .ok()
+                    .and_then(|forms| forms.variants().first())
+                    .map(|form| form.expanded.clone()),
+            });
+        }
         if let Err(error) = &expanded_result {
             *abstention_reasons
                 .entry(abstention_reason(error).into())
@@ -568,12 +1162,72 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
             printed_result.as_ref().ok(),
             &row.expected_printed,
         );
+        if printed_result
+            .as_ref()
+            .ok()
+            .and_then(|forms| forms.variants().first())
+            .map(|form| form.printed.as_str())
+            != Some(row.expected_printed.as_str())
+        {
+            printed_disagreements.push(EvaluationDisagreement {
+                id: row.id.clone(),
+                cell: row.cell_key.clone(),
+                expected: row.expected_printed.clone(),
+                returned_top_1: printed_result
+                    .as_ref()
+                    .ok()
+                    .and_then(|forms| forms.variants().first())
+                    .map(|form| form.printed.clone()),
+            });
+        }
 
         let regularity = by_regularity
             .entry(row.regularity.clone())
             .or_insert_with(MetricSlice::default);
         score_result(
             regularity,
+            expanded_result.as_ref().ok(),
+            &row.expected_expanded,
+        );
+        // The row's policy remains the primary evaluation contract, but every
+        // held-out cell is also scored under all three policies. This keeps the
+        // policy slices comparable and makes Strict abstention visible instead
+        // of omitting cells assigned to Productive or Exploratory.
+        for (policy, label) in [
+            (GenerationPolicy::Strict, "strict"),
+            (GenerationPolicy::Productive, "productive"),
+            (GenerationPolicy::Exploratory, "exploratory"),
+        ] {
+            let policy_result = inflector(policy, OrthographyProfile::Expanded)
+                .form_by_id(&row.lexeme_id, row.cell);
+            score_result(
+                by_policy
+                    .entry(label.into())
+                    .or_insert_with(MetricSlice::default),
+                policy_result.as_ref().ok(),
+                &row.expected_expanded,
+            );
+        }
+        let attestation_status = expanded_result
+            .as_ref()
+            .ok()
+            .and_then(|forms| {
+                forms
+                    .variants()
+                    .iter()
+                    .find(|variant| variant.expanded == row.expected_expanded)
+            })
+            .map_or("expected-form-not-returned", |variant| {
+                if variant.is_attested() {
+                    "attested"
+                } else {
+                    "predicted"
+                }
+            });
+        score_result(
+            by_attestation_status
+                .get_mut(attestation_status)
+                .ok_or("unknown attestation-status metric slice")?,
             expanded_result.as_ref().ok(),
             &row.expected_expanded,
         );
@@ -756,18 +1410,26 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
     let absolute_calibration_gap_basis_points = mean_returned_confidence_basis_points
         .zip(empirical_exactness_basis_points)
         .map(|(confidence, accuracy)| confidence.abs_diff(accuracy));
+    let (exact_registry_expanded_round_trip, exact_registry_printed_round_trip) =
+        exact_registry_round_trip(root)?;
 
     Ok(EvaluationReport {
         schema_version: 3,
         target_recension: "synodal-russian",
-        fixture_source: "pinned Ponomar Elizabeth Bible, Matthew 1–5 and Acts 1:18",
+        fixture_source: "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
         fixture_rows: rows.len(),
         phrase_fixture_rows: phrase_rows.len(),
         expanded,
         printed,
+        expanded_disagreements,
+        printed_disagreements,
+        exact_registry_expanded_round_trip,
+        exact_registry_printed_round_trip,
         accent_bearing_rows,
         exact_accent_agreement,
         by_regularity,
+        by_policy,
+        by_attestation_status,
         by_morphological_system,
         by_provenance_path,
         by_source,
@@ -796,8 +1458,10 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
         },
         limitations: vec![
             "The current real-text slice is intentionally small and reports counts, not statistical confidence.",
+            "No legally cleared, machine-readable non-biblical Synodal liturgical corpus is currently pinned; catalog-only and unresolved-rights editions are intentionally excluded from held-out scoring.",
             "Productive liturgical rendering abstains when accent metadata is absent.",
             "One participle and one analytic perfect are covered by independent corpus witnesses; other analytic constructions remain typed unit fixtures until their lexical registries grow.",
+            "Abbreviation, numeral, malformed-mark, and hostile-Unicode regressions are deterministic utility fixtures, not corpus-accuracy rows.",
             "Gold admission precision is a structural policy check over the reviewed registry, not an independently estimated automatic-alignment precision.",
             "The single inherited held-out cell is insufficient to assess confidence calibration; the reported gap is descriptive only.",
         ],
@@ -983,6 +1647,43 @@ fn load_evaluation(path: &Path) -> Result<Vec<EvaluationRow>, Box<dyn Error>> {
     Ok(rows)
 }
 
+fn exact_registry_round_trip(root: &Path) -> Result<(MetricSlice, MetricSlice), Box<dyn Error>> {
+    const HEADER: &str =
+        "lexeme_id\tcell\texpanded\tprinted\tevidence_id\tsource_kind\ttarget_recension";
+    let path = root.join("data/synodal/exact_forms.tsv");
+    let text = fs::read_to_string(&path)?;
+    let mut lines = text.lines();
+    if lines.next() != Some(HEADER) {
+        return Err(format!("invalid exact-form header in {}", path.display()).into());
+    }
+    let expanded_inflector = inflector(GenerationPolicy::Strict, OrthographyProfile::Expanded);
+    let printed_inflector = inflector(
+        GenerationPolicy::Strict,
+        OrthographyProfile::SynodalLiturgical,
+    );
+    let mut expanded = MetricSlice::default();
+    let mut printed = MetricSlice::default();
+    for (offset, line) in lines.enumerate() {
+        if line.is_empty() {
+            continue;
+        }
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() != 7 || fields[6] != "synodal-russian" {
+            return Err(format!("invalid exact-form row {}", offset + 2).into());
+        }
+        let id = LexemeId::from(fields[0]);
+        let cell = parse_cell(fields[1])?;
+        let expanded_result = expanded_inflector.form_by_id(&id, cell);
+        let printed_result = printed_inflector.form_by_id(&id, cell);
+        score_result(&mut expanded, expanded_result.as_ref().ok(), fields[2]);
+        score_result(&mut printed, printed_result.as_ref().ok(), fields[3]);
+    }
+    if expanded.total == 0 {
+        return Err("exact-form registry is empty".into());
+    }
+    Ok((expanded, printed))
+}
+
 fn load_phrase_evaluation(path: &Path) -> Result<Vec<PhraseEvaluationRow>, Box<dyn Error>> {
     let text = fs::read_to_string(path)?;
     let mut lines = text.lines();
@@ -1048,7 +1749,14 @@ fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
             number: parse_number(number)?,
             gender: parse_optional_gender(gender)?,
             person: None,
-            animacy: parse_animacy(animacy)?,
+            animacy: parse_registry_animacy(animacy)?,
+        }),
+        ["pronoun", case, number, gender, person, animacy] => GrammarCell::Pronoun(PronounCell {
+            case: parse_case(case)?,
+            number: parse_number(number)?,
+            gender: parse_optional_gender(gender)?,
+            person: parse_optional_person(person)?,
+            animacy: parse_registry_animacy(animacy)?,
         }),
         ["numeral", kind, case, number, gender, animacy] => GrammarCell::Numeral(NumeralCell {
             kind: match *kind {
@@ -1060,7 +1768,7 @@ fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
             case: parse_case(case)?,
             number: parse_number(number)?,
             gender: parse_optional_gender(gender)?,
-            animacy: parse_animacy(animacy)?,
+            animacy: parse_registry_animacy(animacy)?,
         }),
         ["adjective", case, number, gender, animacy, form, comparison] => {
             GrammarCell::Adjective(AdjectiveCell {
@@ -1081,6 +1789,31 @@ fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
                 },
             })
         }
+        [
+            "determiner",
+            case,
+            number,
+            gender,
+            animacy,
+            form,
+            comparison,
+        ] => GrammarCell::Determiner(AdjectiveCell {
+            case: parse_case(case)?,
+            number: parse_number(number)?,
+            gender: parse_gender(gender)?,
+            animacy: parse_animacy(animacy)?,
+            form: match *form {
+                "short" => AdjectiveForm::Short,
+                "long" => AdjectiveForm::Long,
+                _ => return Err(format!("unknown determiner form {form}").into()),
+            },
+            comparison: match *comparison {
+                "positive" => Comparison::Positive,
+                "comparative" => Comparison::Comparative,
+                "superlative" => Comparison::Superlative,
+                _ => return Err(format!("unknown determiner comparison {comparison}").into()),
+            },
+        }),
         [
             "participle",
             tense,
@@ -1119,6 +1852,10 @@ fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
                     _ => return Err(format!("unknown comparison {comparison}").into()),
                 },
             },
+        }),
+        ["l-participle", gender, number] => GrammarCell::LParticiple(LParticipleCell {
+            gender: parse_gender(gender)?,
+            number: parse_number(number)?,
         }),
         ["infinitive"] => GrammarCell::Infinitive,
         _ => return Err(format!("unsupported evaluation cell {value}").into()),
@@ -1174,12 +1911,28 @@ fn parse_optional_gender(value: &str) -> Result<Option<Gender>, Box<dyn Error>> 
     }
 }
 
+fn parse_optional_person(value: &str) -> Result<Option<Person>, Box<dyn Error>> {
+    if value == "none" {
+        Ok(None)
+    } else {
+        parse_person(value).map(Some)
+    }
+}
+
 fn parse_animacy(value: &str) -> Result<Animacy, Box<dyn Error>> {
     Ok(match value {
         "animate" => Animacy::Animate,
         "inanimate" => Animacy::Inanimate,
         _ => return Err(format!("unknown animacy {value}").into()),
     })
+}
+
+fn parse_registry_animacy(value: &str) -> Result<Animacy, Box<dyn Error>> {
+    if value == "any" {
+        Ok(Animacy::Inanimate)
+    } else {
+        parse_animacy(value)
+    }
 }
 
 fn contains_accent(value: &str) -> bool {
@@ -1197,6 +1950,7 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
          | Expanded | {} | {} | {} | {} | {} |\n\
          | Printed | {} | {} | {} | {} | {} |\n\n\
          Analytic phrases: expanded {}/{}, printed {}/{} ({} held-out phrases).\n\n\
+         Exact registry round trips (top-k, including reviewed variants): expanded {}/{}, printed {}/{}.\n\n\
          Masked cells: expanded {}/{}, printed {}/{}. Leave-one-Synodal-lexeme-out inherited cells: expanded {}/{}, printed {}/{}.\n\n\
          Accent agreement: {}/{} accent-bearing rows.\n\n\
          Inherited evidence contributed {}/{} returned held-out cells, with {}/{} exact expanded forms. The reviewed alignment registry has {} accepted mappings, {} aligned target lexemes, and {} rejected negative controls.\n",
@@ -1217,6 +1971,10 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
         report.phrase_printed.top_1_correct,
         report.phrase_printed.total,
         report.phrase_fixture_rows,
+        report.exact_registry_expanded_round_trip.top_k_correct,
+        report.exact_registry_expanded_round_trip.total,
+        report.exact_registry_printed_round_trip.top_k_correct,
+        report.exact_registry_printed_round_trip.total,
         report.leakage.masked_expanded.top_1_correct,
         report.leakage.masked_expanded.total,
         report.leakage.masked_printed.top_1_correct,
@@ -1244,6 +2002,16 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
 
     push_metric_table(
         &mut markdown,
+        "Expanded accuracy by generation policy",
+        &report.by_policy,
+    );
+    push_metric_table(
+        &mut markdown,
+        "Expanded accuracy by attestation status",
+        &report.by_attestation_status,
+    );
+    push_metric_table(
+        &mut markdown,
         "Expanded accuracy by morphological system",
         &report.by_morphological_system,
     );
@@ -1257,6 +2025,36 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
         "Expanded accuracy by regularity",
         &report.by_regularity,
     );
+
+    markdown.push_str("\n## Top-1 disagreements\n\n");
+    if report.expanded_disagreements.is_empty() && report.printed_disagreements.is_empty() {
+        markdown.push_str("No top-1 disagreements.\n");
+    } else {
+        for disagreement in &report.expanded_disagreements {
+            markdown.push_str(&format!(
+                "- Expanded `{}` (`{}`): expected `{}`, top-1 `{}`.\n",
+                disagreement.id,
+                disagreement.cell,
+                disagreement.expected,
+                disagreement
+                    .returned_top_1
+                    .as_deref()
+                    .unwrap_or("abstained")
+            ));
+        }
+        for disagreement in &report.printed_disagreements {
+            markdown.push_str(&format!(
+                "- Printed `{}` (`{}`): expected `{}`, top-1 `{}`.\n",
+                disagreement.id,
+                disagreement.cell,
+                disagreement.expected,
+                disagreement
+                    .returned_top_1
+                    .as_deref()
+                    .unwrap_or("abstained")
+            ));
+        }
+    }
 
     markdown.push_str("\n## Inherited OCS evaluation\n\n");
     markdown.push_str(&format!(
@@ -1291,7 +2089,7 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
 
     markdown.push_str("\n## Abstention\n\n");
     if report.abstention_reasons.is_empty() {
-        markdown.push_str("No held-out row abstained in this seed fixture. Unsupported and missing-metadata behavior is exercised separately by paradigms and guard witnesses.\n");
+        markdown.push_str("No held-out row abstained in this reviewed fixture. Unsupported and missing-metadata behavior is exercised separately by paradigms and guard witnesses.\n");
     } else {
         for (reason, count) in &report.abstention_reasons {
             markdown.push_str(&format!("- `{reason}`: {count}\n"));
@@ -1346,6 +2144,49 @@ pub(crate) fn guard_witnesses(_root: &Path) -> Result<(), Box<dyn Error>> {
         fs::write(&private_use, "text\n\u{e000}\n")?;
         require_failure("private-use Unicode", check_source_boundaries(&temporary))?;
 
+        let review = temporary.join("data/synodal/reviewed_evidence.tsv");
+        fs::write(
+            &review,
+            "evidence_id\tcandidate_id\tsource_id\tcitation\tdecision\ttarget_recension\treview_note\n\
+             guard-orphan\tsynodal:candidate:missing\tguard-source\tfixture\treviewed\tsynodal-russian\tinjected orphan\n",
+        )?;
+        let intermediate = temporary.join("data/intermediate/synodal");
+        fs::create_dir_all(&intermediate)?;
+        fs::write(
+            intermediate.join("guard.jsonl"),
+            "{\"candidate_id\":\"synodal:candidate:different\"}\n",
+        )?;
+        require_failure(
+            "orphaned reviewed overlay",
+            synodal_church_slavonic_extractor::validate_candidate_links(
+                &temporary.join("data/synodal"),
+                &intermediate,
+            )
+            .map_err(|error| Box::new(error) as Box<dyn Error>),
+        )?;
+
+        for package in [
+            "synodal-church-slavonic-core",
+            "synodal-church-slavonic",
+            "synodal-church-slavonic-dictionary",
+        ] {
+            let package_root = temporary.join("crates").join(package);
+            fs::create_dir_all(package_root.join("src"))?;
+            fs::write(
+                package_root.join("Cargo.toml"),
+                "[package]\nname = \"guard\"\n",
+            )?;
+            fs::write(package_root.join("src/lib.rs"), "")?;
+        }
+        fs::write(
+            temporary.join("crates/synodal-church-slavonic-core/src/lib.rs"),
+            "use std::fs;\n",
+        )?;
+        require_failure(
+            "runtime filesystem boundary",
+            check_runtime_boundaries(&temporary),
+        )?;
+
         let strict = Inflector::default();
         let grad = LexemeId::from("synodal:noun:grad");
         let grad_cell = GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
@@ -1396,4 +2237,82 @@ fn temporary_directory(label: &str) -> PathBuf {
         "synodal-church-slavonic-{label}-{}",
         std::process::id()
     ))
+}
+
+fn prepare_fixture_cache(
+    temporary: &Path,
+    label: &str,
+    bytes: &'static [u8],
+) -> Result<(PathBuf, PathBuf), Box<dyn Error>> {
+    let fixture_root = temporary.join(label).join("workspace");
+    let references = fixture_root.join("references");
+    let cache = temporary.join(label).join("empty-cache");
+    fs::create_dir_all(&references)?;
+    if cache.exists() {
+        return Err(format!("fixture cache was not empty: {}", cache.display()).into());
+    }
+
+    let listener = TcpListener::bind("127.0.0.1:0")?;
+    let address = listener.local_addr()?;
+    let server = thread::spawn(move || -> Result<(), String> {
+        let (mut stream, _) = listener.accept().map_err(|error| error.to_string())?;
+        let mut request = [0_u8; 8192];
+        let count = stream
+            .read(&mut request)
+            .map_err(|error| error.to_string())?;
+        if count == 0 {
+            return Err("fixture server received an empty request".into());
+        }
+        write!(
+            stream,
+            "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+            bytes.len()
+        )
+        .map_err(|error| error.to_string())?;
+        stream.write_all(bytes).map_err(|error| error.to_string())?;
+        Ok(())
+    });
+
+    let sha = Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let locked_path = "downloads/alypy-grammar/p034.htm";
+    fs::write(
+        references.join("SOURCE_LOCK.tsv"),
+        format!(
+            "source_id\tartifact_id\ttransport\turl\tpath\tsha256\tsize_bytes\tformat\tsignature\tcontent_types\n\
+             alypy-gamanovich-grammar-web-2023\tfixture-page\tdirect\thttp://{address}/p034.htm\t{locked_path}\t{sha}\t{}\thtml\thtml\ttext/html\n",
+            bytes.len()
+        ),
+    )?;
+    fs::write(
+        references.join("SHA256SUMS"),
+        format!("{sha}  {locked_path}\n"),
+    )?;
+    fs::write(
+        references.join("SOURCES.toml"),
+        "[[source]]\nid = \"alypy-gamanovich-grammar-web-2023\"\nname = \"Fixture\"\n",
+    )?;
+
+    let mut fetch = vec![
+        "fetch".into(),
+        "--cache".into(),
+        cache.display().to_string(),
+    ]
+    .into_iter();
+    crate::sources::run(&mut fetch, &fixture_root)?;
+    server
+        .join()
+        .map_err(|_| "fixture HTTP server panicked")?
+        .map_err(|error| format!("fixture HTTP server failed: {error}"))?;
+    let mut verify = vec![
+        "verify".into(),
+        "--offline".into(),
+        "--cache".into(),
+        cache.display().to_string(),
+    ]
+    .into_iter();
+    crate::sources::run(&mut verify, &fixture_root)?;
+    Ok((fixture_root, cache))
 }

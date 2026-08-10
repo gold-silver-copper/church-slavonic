@@ -1,0 +1,81 @@
+evidence_id	candidate_id	source_id	citation	decision	target_recension	review_note
+alypy-2-letter-e	synodal:candidate:ae7375d09fc764cc8e7fed44	alypy-gamanovich-grammar-web-2023	§2	reviewed	synodal-russian	Positional-letter rule reviewed against the locked section.
+alypy-2-letter-i	synodal:candidate:ae7375d09fc764cc8e7fed44	alypy-gamanovich-grammar-web-2023	§2	reviewed	synodal-russian	Positional-letter rule reviewed against the locked section.
+alypy-2-letter-o	synodal:candidate:ae7375d09fc764cc8e7fed44	alypy-gamanovich-grammar-web-2023	§2	reviewed	synodal-russian	Positional-letter rule reviewed against the locked section.
+alypy-2-letter-ya	synodal:candidate:ae7375d09fc764cc8e7fed44	alypy-gamanovich-grammar-web-2023	§2	reviewed	synodal-russian	Positional-letter rule reviewed against the locked section.
+alypy-34-bog-vocative	synodal:candidate:c43019bb6abfe80eb460e34d	alypy-gamanovich-grammar-web-2023	§34	reviewed	synodal-russian	Normative noun witness reviewed.
+alypy-34-rab	synodal:candidate:c43019bb6abfe80eb460e34d	alypy-gamanovich-grammar-web-2023	§34	reviewed	synodal-russian	Normative noun paradigm reviewed.
+alypy-39-zemlya	synodal:candidate:d93e996ba3f1ac99efd70f94	alypy-gamanovich-grammar-web-2023	§39	reviewed	synodal-russian	Normative noun paradigm reviewed.
+alypy-44app-gradovom	synodal:candidate:cb40a6fc4819eb9a3c301be5	alypy-gamanovich-grammar-web-2023	§44 and appendix	reviewed	synodal-russian	Documented noun alternant reviewed.
+alypy-47-toi	synodal:candidate:2ed072f7bb9c5e17be6a6cd7	alypy-gamanovich-grammar-web-2023	§47	reviewed	synodal-russian	Pronoun paradigm reviewed.
+alypy-47-toi-animate	synodal:candidate:2ed072f7bb9c5e17be6a6cd7	alypy-gamanovich-grammar-web-2023	§47	reviewed	synodal-russian	Animate pronoun cell reviewed.
+alypy-47-toi-short	synodal:candidate:2ed072f7bb9c5e17be6a6cd7	alypy-gamanovich-grammar-web-2023	§47	reviewed	synodal-russian	Short pronoun variant reviewed.
+alypy-47-toi-variant	synodal:candidate:2ed072f7bb9c5e17be6a6cd7	alypy-gamanovich-grammar-web-2023	§47	reviewed	synodal-russian	Pronoun variant reviewed.
+alypy-47-personal	synodal:candidate:2ed072f7bb9c5e17be6a6cd7	alypy-gamanovich-grammar-web-2023	§47	reviewed	synodal-russian	First- and second-person singular, dual, and plural paradigms reviewed.
+alypy-48-vsyak	synodal:candidate:869769e608c0cd0fe1246016	alypy-gamanovich-grammar-web-2023	§48	reviewed	synodal-russian	Determiner witness reviewed.
+alypy-45-pronoun-inventory	synodal:candidate:ffbcfdaae4b2ba361e0232e6	alypy-gamanovich-grammar-web-2023	§45	reviewed	synodal-russian	Demonstrative, relative, interrogative, and indefinite pronoun inventory reviewed.
+alypy-48-interrogative-indefinite	synodal:candidate:869769e608c0cd0fe1246016	alypy-gamanovich-grammar-web-2023	§48	reviewed	synodal-russian	Interrogative and prefixed indefinite singular paradigms reviewed.
+alypy-57-mudryi	synodal:candidate:31447974c37cc8ebb1c071aa	alypy-gamanovich-grammar-web-2023	§57	reviewed	synodal-russian	Long-adjective paradigm reviewed.
+alypy-58-mudr-comparative	synodal:candidate:23b89c932872094c3918201b	alypy-gamanovich-grammar-web-2023	§58	reviewed	synodal-russian	Comparative stem formation and full-form declension reviewed.
+alypy-59-mudr-superlative	synodal:candidate:311cee7fff2460aee766beb4	alypy-gamanovich-grammar-web-2023	§59	reviewed	synodal-russian	Synodal superlative use of the reviewed comparative form reviewed.
+alypy-62-dva	synodal:candidate:b99a9b4b136e856079fa19fc	alypy-gamanovich-grammar-web-2023	§62	reviewed	synodal-russian	Cardinal-numeral paradigm reviewed.
+alypy-62-dva-short	synodal:candidate:b99a9b4b136e856079fa19fc	alypy-gamanovich-grammar-web-2023	§62	reviewed	synodal-russian	Cardinal variant reviewed.
+alypy-62-cardinals	synodal:candidate:b99a9b4b136e856079fa19fc	alypy-gamanovich-grammar-web-2023	§62	reviewed	synodal-russian	Three and four cardinal paradigms and gender variants reviewed.
+alypy-79-100-verbs	synodal:candidate:45716746758374749af0f1a2	alypy-gamanovich-grammar-web-2023	§§79–100	reviewed	synodal-russian	Verb-system scope reviewed.
+alypy-79-97-pisati	synodal:candidate:45716746758374749af0f1a2	alypy-gamanovich-grammar-web-2023	§§79–97	reviewed	synodal-russian	Verb principal-parts scope reviewed.
+alypy-81-byti-aorist	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular aorist reviewed.
+alypy-81-byti-aorist-short	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular aorist variant reviewed.
+alypy-81-byti-imperative	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular imperative reviewed.
+alypy-81-byti-imperfect	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular imperfect reviewed.
+alypy-81-byti-imperfect-be	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular imperfect variant reviewed.
+alypy-81-byti-imperfect-bya	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular imperfect variant reviewed.
+alypy-81-byti-past-active	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular past active participle reviewed.
+alypy-81-byti-present	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular present reviewed.
+alypy-81-byti-present-active	synodal:candidate:19fbc7a555efb67affa8d3d6	alypy-gamanovich-grammar-web-2023	§81	reviewed	synodal-russian	Irregular present participle reviewed.
+alypy-82-lyubiti	synodal:candidate:b254197f8930a011ff2a5e9b	alypy-gamanovich-grammar-web-2023	§82	reviewed	synodal-russian	Present principal parts reviewed.
+alypy-82-nesti	synodal:candidate:b254197f8930a011ff2a5e9b	alypy-gamanovich-grammar-web-2023	§82	reviewed	synodal-russian	Present principal parts reviewed.
+alypy-82-pisati	synodal:candidate:b254197f8930a011ff2a5e9b	alypy-gamanovich-grammar-web-2023	§82	reviewed	synodal-russian	Present principal parts reviewed.
+alypy-85-imati-future	synodal:candidate:4d2fe52fe0046dae0f54c36b	alypy-gamanovich-grammar-web-2023	§§84–85	reviewed	synodal-russian	Future auxiliary reviewed.
+alypy-85-nesti-infinitive	synodal:candidate:4d2fe52fe0046dae0f54c36b	alypy-gamanovich-grammar-web-2023	§85	reviewed	synodal-russian	Infinitive construction witness reviewed.
+alypy-86-lyubiti	synodal:candidate:8686579cb02d756eecb2a87c	alypy-gamanovich-grammar-web-2023	§86	reviewed	synodal-russian	Independent aorist principal part reviewed.
+alypy-86-nesti	synodal:candidate:8686579cb02d756eecb2a87c	alypy-gamanovich-grammar-web-2023	§86	reviewed	synodal-russian	Independent aorist principal part reviewed.
+alypy-86-pisati	synodal:candidate:8686579cb02d756eecb2a87c	alypy-gamanovich-grammar-web-2023	§86	reviewed	synodal-russian	Independent aorist principal part reviewed.
+alypy-87-lyubiti	synodal:candidate:0bcc346a6b9e703da1ac5d37	alypy-gamanovich-grammar-web-2023	§87	reviewed	synodal-russian	Independent imperfect principal part reviewed.
+alypy-87-nesti-pattern	synodal:candidate:0bcc346a6b9e703da1ac5d37	alypy-gamanovich-grammar-web-2023	§87	reviewed	synodal-russian	Independent imperfect principal part reviewed.
+alypy-87-pisati	synodal:candidate:0bcc346a6b9e703da1ac5d37	alypy-gamanovich-grammar-web-2023	§87	reviewed	synodal-russian	Independent imperfect principal part reviewed.
+alypy-93-first-conjugation	synodal:candidate:7603750481fbf7c1015dc307	alypy-gamanovich-grammar-web-2023	§93	reviewed	synodal-russian	Imperative formation reviewed.
+alypy-93-first-palatalized	synodal:candidate:7603750481fbf7c1015dc307	alypy-gamanovich-grammar-web-2023	§93	reviewed	synodal-russian	Imperative formation reviewed.
+alypy-93-second-conjugation	synodal:candidate:7603750481fbf7c1015dc307	alypy-gamanovich-grammar-web-2023	§93	reviewed	synodal-russian	Imperative formation reviewed.
+alypy-95-nesti-present-active	synodal:candidate:59c403f05361940b9668f4a7	alypy-gamanovich-grammar-web-2023	§95	reviewed	synodal-russian	Present active participle reviewed.
+alypy-96-nesti-past-active	synodal:candidate:ced871943a9e3b6578c5ef37	alypy-gamanovich-grammar-web-2023	§96	reviewed	synodal-russian	Past active participle reviewed.
+alypy-97-general	synodal:candidate:7d1b7821d6be38f023f2f877	alypy-gamanovich-grammar-web-2023	§97	reviewed	synodal-russian	L-participle formation reviewed.
+alypy-97-nesti	synodal:candidate:7d1b7821d6be38f023f2f877	alypy-gamanovich-grammar-web-2023	§97	reviewed	synodal-russian	L-participle principal part reviewed.
+alypy-99-nesti-present-passive	synodal:candidate:c48bfc47b449e65e6c607612	alypy-gamanovich-grammar-web-2023	§99	reviewed	synodal-russian	Present passive participle reviewed.
+alypy-100-nesti-past-passive	synodal:candidate:1a43025cfa8a9098c217ac62	alypy-gamanovich-grammar-web-2023	§100	reviewed	synodal-russian	Past passive participle reviewed.
+alypy-103-dati-present	synodal:candidate:417121a1d609b4f08db4e964	alypy-gamanovich-grammar-web-2023	§103	reviewed	synodal-russian	Archaic simple-future paradigm of да́ти reviewed.
+alypy-103-dati-imperative	synodal:candidate:417121a1d609b4f08db4e964	alypy-gamanovich-grammar-web-2023	§103	reviewed	synodal-russian	Archaic imperative paradigm of да́ти reviewed.
+alypy-103-dati-aorist	synodal:candidate:417121a1d609b4f08db4e964	alypy-gamanovich-grammar-web-2023	§103	reviewed	synodal-russian	Irregular aorist of да́ти reviewed.
+alypy-103-dati-other	synodal:candidate:417121a1d609b4f08db4e964	alypy-gamanovich-grammar-web-2023	§103 with §§96–100	reviewed	synodal-russian	Non-present forms use independently reviewed ordinary-system stems.
+alypy-inherited-identity-review	synodal:candidate:c43019bb6abfe80eb460e34d	alypy-gamanovich-grammar-web-2023	§34	reviewed	synodal-russian	Identity mapping requires separately reviewed target morphology.
+negative-control	synodal:candidate:c43019bb6abfe80eb460e34d	alypy-gamanovich-grammar-web-2023	reviewer-constructed negative	rejected	synodal-russian	Negative semantic alignment control; never generation evidence.
+string-similarity-only	synodal:candidate:c43019bb6abfe80eb460e34d	alypy-gamanovich-grammar-web-2023	reviewer-constructed negative	rejected	synodal-russian	String similarity is explicitly insufficient for inheritance.
+ponomar-deut-11-17-zemlya	synodal:candidate:2262165c81a83b8b7321bf3d	ponomar-elizabeth-bible-2026-08-09	Deut.11.17	reviewed	synodal-russian	Passage-backed target lexical evidence.
+ponomar-deut-2-34-grad	synodal:candidate:d7b37acf1e4f981f090f56b3	ponomar-elizabeth-bible-2026-08-09	Deut.2.34	reviewed	synodal-russian	Passage-backed target lexical evidence.
+ponomar-deut-5-21-zheny	synodal:candidate:d390051d5224126d73b7d448	ponomar-elizabeth-bible-2026-08-09	Deut.5.21	reviewed	synodal-russian	Passage-backed target lexical evidence.
+ponomar-accent-slovo	synodal:candidate:ef90a515798f5b1a411dcff0	ponomar-elizabeth-bible-2026-08-09	Acts.2.41	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-syn	synodal:candidate:9c07b4705bd4b776374a35dc	ponomar-elizabeth-bible-2026-08-09	Acts.16.1	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-more	synodal:candidate:dccb5452f54d1e27fee4149a	ponomar-elizabeth-bible-2026-08-09	Acts.14.15	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-glas	synodal:candidate:0c4909267559a76c2d590ea4	ponomar-elizabeth-bible-2026-08-09	Acts.2.14	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-dar	synodal:candidate:3ae0ee8909e66aca562c7ada	ponomar-elizabeth-bible-2026-08-09	Acts.2.38	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-dom	synodal:candidate:d1d557b482e9260532d8fed8	ponomar-elizabeth-bible-2026-08-09	Acts.2.2	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-tsar	synodal:candidate:9cf6db86fa90e9dc021c30dd	ponomar-elizabeth-bible-2026-08-09	Acts.7.18	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-slava	synodal:candidate:709db3bb02db2a4eadfe2753	ponomar-elizabeth-bible-2026-08-09	Apoc.1.6	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-sila	synodal:candidate:be99b4648e0c9b90b244f174	ponomar-elizabeth-bible-2026-08-09	Acts.8.10	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-milost	synodal:candidate:33227915e59d22c4ae9d9e85	ponomar-elizabeth-bible-2026-08-09	Composite.2.6	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-vera	synodal:candidate:6cf754bc15f3dcea96d682f4	ponomar-elizabeth-bible-2026-08-09	Gal.5.6	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-zhizn	synodal:candidate:b1e5441c81df71ec411e1b5b	ponomar-elizabeth-bible-2026-08-09	Acts.13.48	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-svet	synodal:candidate:574ce67bc5d852b505b811ff	ponomar-elizabeth-bible-2026-08-09	Acts.9.3	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-zakon	synodal:candidate:1ed0f52d1303940eb41c4450	ponomar-elizabeth-bible-2026-08-09	Acts.6.13	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-pervyi	synodal:candidate:430cd2a3230229ea06b09d21	ponomar-elizabeth-bible-2026-08-09	Acts.26.23	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-vtoryi	synodal:candidate:3737ac8e3b56b02d1147a37c	ponomar-elizabeth-bible-2026-08-09	Apoc.16.3	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.
+ponomar-accent-dati-lpart	synodal:candidate:71aa21c8ecea6526368de0e4	ponomar-elizabeth-bible-2026-08-09	Apoc.4.11	reviewed	synodal-russian	Source-partition accent witness reviewed; disjoint from evaluation passage.

@@ -1,0 +1,414 @@
+{
+  "schema_version": 1,
+  "target_recension": "synodal-russian",
+  "comparison_basis": "exact normalized spelling after source-specific deterministic markup removal; CrossWire remains explicitly modernized",
+  "passages_by_source": {
+    "crosswire-csl-elizabeth-1.5.2": 36000,
+    "ponomar-elizabeth-bible-2026-08-09": 37211,
+    "wikisource-church-slavonic-bible-2026-08-09": 36158
+  },
+  "pairwise": [
+    {
+      "left_source": "ponomar-elizabeth-bible-2026-08-09",
+      "right_source": "wikisource-church-slavonic-bible-2026-08-09",
+      "overlapping_passages": 35961,
+      "exact_text_agreements": 20995,
+      "text_disagreements": 14966,
+      "disagreement_samples": [
+        {
+          "passage": "Acts.1.1",
+          "left_sha256": "6db1e9ba3b599dc74b44d42e3d4c355efd9f887cc05db0f0124d0834942de4e2",
+          "right_sha256": "a3d62d57832f39ad2cb19c47edb442d176cd4a7f090d261541cd54ebead804f3"
+        },
+        {
+          "passage": "Acts.1.10",
+          "left_sha256": "ae4288c754dc6ef25be30fdc3365a05868ca77644430ce486521cbc9dafaa1c4",
+          "right_sha256": "8e6d54a8691a1b9e4423de95eed5c329a8aecc7695523ab9a8ac40a0ce2803ae"
+        },
+        {
+          "passage": "Acts.1.12",
+          "left_sha256": "b2545ef24d75892151408f5665675bbeb65d66fe5cced5d5e2d9c60f871820ae",
+          "right_sha256": "2d3e45369089b1787c1c803b414b8a04303f5825a676f32e094cb91eee85c0f5"
+        },
+        {
+          "passage": "Acts.1.15",
+          "left_sha256": "df5198c98c4a02e37ea5b68a3153d0f681ee70687257fc7cf105cd6c10012eb5",
+          "right_sha256": "9d5a3826ff57cc77115b4e4b2d9f13df61145ebd4598ccccd94580f3693382bd"
+        },
+        {
+          "passage": "Acts.1.16",
+          "left_sha256": "4d9e6c6d887c6a7e5a63df21a044d48b46dc7ff92611da2f148904fa22a0ac4c",
+          "right_sha256": "2c821d18b1e58f06a514afebae890cf4126a1c245c80d7b76e35e774e24391da"
+        },
+        {
+          "passage": "Acts.1.18",
+          "left_sha256": "725f6fdd7fac935b896c6267a7f37e1bbaef142d607d612164c7b3509ea32942",
+          "right_sha256": "6b5cfe54eb4003dd0f15555b1bc103224b703607bbd10aabc740ff1db097107b"
+        },
+        {
+          "passage": "Acts.1.2",
+          "left_sha256": "b9c8f9d02824b004df09f6493485e0e595ba750ec1cfed3568a5d29a797a3e94",
+          "right_sha256": "c012a2f573bd59b22b8fc3160cf1acf9fb9f0a39e4cd75ef3b31cfdac46235d0"
+        },
+        {
+          "passage": "Acts.1.21",
+          "left_sha256": "168a813fbec1b0a6ec56ee876554d78c4732ebfbff3b42394156aacf9f98927e",
+          "right_sha256": "5feda4709aa75c28cb43b54a1401dcf90d4d07161c8e6ab7c75d197de871bb63"
+        },
+        {
+          "passage": "Acts.1.22",
+          "left_sha256": "742496be2941b2309df2c2ceb3ae089b6d5a23928d6e0af0608d49e552cb6d0b",
+          "right_sha256": "018895f18c0fddf2448d7ca12a6e2524513b2373d3fe7615533f83c5b5927b68"
+        },
+        {
+          "passage": "Acts.1.25",
+          "left_sha256": "a728882603b155d3a42367f999de18cee74bc449bc51cef42ea017c299bc68bc",
+          "right_sha256": "9b186d737763713ee0ddc8a2fa308048a251a4e46a07a4546af23963f7150c4f"
+        },
+        {
+          "passage": "Acts.1.3",
+          "left_sha256": "b7c936c7a646f4c070044c9567e1820756499f4b47f43a0c2a989ccd8169b8c8",
+          "right_sha256": "0b9185cdac95418ef9a9835598f098136b0bb45f03c5b9e6cc35999befe8d587"
+        },
+        {
+          "passage": "Acts.1.5",
+          "left_sha256": "0732e516937fe9eec2b0347c40d1c5b014c9d4bd128da1629e3a6d4122bd4fb7",
+          "right_sha256": "542a84b4476f2871b905dab6705315a67d9dbcbe1f5e0091c174ae2e449557ad"
+        },
+        {
+          "passage": "Acts.1.6",
+          "left_sha256": "7dc3db622e6ea789bc395dad3ea632675567103b20e354964af03b084f29f725",
+          "right_sha256": "d1240d8d05f301388c4b87151efd7851a8281872c4c3cff9fc37e3998b1592a7"
+        },
+        {
+          "passage": "Acts.1.8",
+          "left_sha256": "e3b79cbcfc119538111ffc4bec714d0d8a6de7236d472410d28d655740413210",
+          "right_sha256": "4a463117edce206369889ece36f94b8ba2e5dffd359c404b1a1c7f108a7030c5"
+        },
+        {
+          "passage": "Acts.10.1",
+          "left_sha256": "696db21b797ab1304af59e3e215724c2bc972e1e8742873df305b499efe62f12",
+          "right_sha256": "8fc2ad94435a563889380e5c749d21f4fcb5b8361148abcda925df420de51138"
+        },
+        {
+          "passage": "Acts.10.10",
+          "left_sha256": "800a749cad1d8a2df27243e8b6632303249441833ac9be4499a55ae96e6d7a07",
+          "right_sha256": "229793e48fbe21b6731c1461057c641317a52a42a20e618cb60ca7dfdf4b2d0d"
+        },
+        {
+          "passage": "Acts.10.16",
+          "left_sha256": "0dc6c51a6b206d9e6dcf83e7570f21f7b1a420ff350d410d4dc9bd3f1524855d",
+          "right_sha256": "f5a5db418de4f2b90000d4229dfddf7c3401e692430e0439d8f4647e57f20b9c"
+        },
+        {
+          "passage": "Acts.10.17",
+          "left_sha256": "7dac08343ce8fd87f5901f2419d464d219a6342f093de5e4113e9802ed2baaf8",
+          "right_sha256": "85498497888ef310b16ead5e3c71b305da529bbeed5d9664b3fb66d53c4f4ba1"
+        },
+        {
+          "passage": "Acts.10.21",
+          "left_sha256": "cb98a1d34d1a1ef71d95e0f99a6b0340f9887e53a7d8ca8664aee52bec6dc646",
+          "right_sha256": "8177861a6712cff82f18231b29cf5a4d47e6dc265ff5903fd13b7843ef6418be"
+        },
+        {
+          "passage": "Acts.10.22",
+          "left_sha256": "6233a924ecaeb88d5bee6856f95a17687cac846ff511d3c491526566d6079f02",
+          "right_sha256": "c16ea25023f38368cfde289084f0cdfd93331ebc273d948ac22cc66a18655d81"
+        },
+        {
+          "passage": "Acts.10.23",
+          "left_sha256": "53619e0655d6e6e4801b7bf6bc7ae38ee498686df01f661a34e3c57dd2fb2dd9",
+          "right_sha256": "d7d7538a305b168524af5d80d84c523304a73782d47803236cf10a8b9d17bb84"
+        },
+        {
+          "passage": "Acts.10.29",
+          "left_sha256": "0bb65a6067cf871472deb68fe91a8e1c7673ec028c96c9ef1b200d56390e55af",
+          "right_sha256": "6887e49a0eaf88ce1173ec74e40777e6c483e4a20f143a23d52e806a6390fcb3"
+        },
+        {
+          "passage": "Acts.10.31",
+          "left_sha256": "511f05493a6786151516692845663ae14528384bf8fb55b27045011b7a0e7be1",
+          "right_sha256": "38f8ed5564203c28e87f73108cddff4016599d927f046560e0813d3cf7ae01be"
+        },
+        {
+          "passage": "Acts.10.32",
+          "left_sha256": "001e52e54e78650f54fc07e6c353e01deab497112f457798b5b484ac8bd270a3",
+          "right_sha256": "a67dc7ec2651e18aa411c7d345e26fe7867e76c463890189c6fe53a89a203b44"
+        },
+        {
+          "passage": "Acts.10.33",
+          "left_sha256": "06c80c2787c71549146102715c3531bdc1e075040dc1d24c699ce8b6ddc9588d",
+          "right_sha256": "2419d15969cc6d98d569a96f91e27e18846917d768be1f61efe6331a25ae7d7a"
+        }
+      ]
+    },
+    {
+      "left_source": "ponomar-elizabeth-bible-2026-08-09",
+      "right_source": "crosswire-csl-elizabeth-1.5.2",
+      "overlapping_passages": 35480,
+      "exact_text_agreements": 0,
+      "text_disagreements": 35480,
+      "disagreement_samples": [
+        {
+          "passage": "Acts.1.1",
+          "left_sha256": "6db1e9ba3b599dc74b44d42e3d4c355efd9f887cc05db0f0124d0834942de4e2",
+          "right_sha256": "b735d1a991316ef6201a6d86243a44979d493f995e626a4b3d2b13ffafe0fee2"
+        },
+        {
+          "passage": "Acts.1.10",
+          "left_sha256": "ae4288c754dc6ef25be30fdc3365a05868ca77644430ce486521cbc9dafaa1c4",
+          "right_sha256": "fb338cf401964e647cbb2a669bc2c14c95952f144ace3a994a382642a40d4426"
+        },
+        {
+          "passage": "Acts.1.11",
+          "left_sha256": "7840f100a564b304bb7c6ccc698b445346fd4a73bd7af43ae764764d82bd4208",
+          "right_sha256": "985e341872eeb5e8373d5964572b9a83df2455f0a5c5abf736bcaa406a346648"
+        },
+        {
+          "passage": "Acts.1.12",
+          "left_sha256": "b2545ef24d75892151408f5665675bbeb65d66fe5cced5d5e2d9c60f871820ae",
+          "right_sha256": "aef6caf51080eb612dcb2309f20ceb514d8746eb89ea5a90b90b8867cf4c9008"
+        },
+        {
+          "passage": "Acts.1.13",
+          "left_sha256": "bfd89f6e71a9a8ac819d6eea9be2615aae74d9a6de623661e1375ebeca0cde27",
+          "right_sha256": "d28fa560f546b1737a068f5c2b44d337e922bffb450e07caf3cef9003f5092c8"
+        },
+        {
+          "passage": "Acts.1.14",
+          "left_sha256": "302218a2c48966b58575c79b003c7454ae5993540e4d126b1d7487440cd8b4fb",
+          "right_sha256": "aab8fb899b0852b914d99f55f11584a324f09cd3902c67c4f11ea4645ebb8b13"
+        },
+        {
+          "passage": "Acts.1.15",
+          "left_sha256": "df5198c98c4a02e37ea5b68a3153d0f681ee70687257fc7cf105cd6c10012eb5",
+          "right_sha256": "23924b6f052d0f9de2edc8b875b7846af4bc363702885459c112e1b85acdda4e"
+        },
+        {
+          "passage": "Acts.1.16",
+          "left_sha256": "4d9e6c6d887c6a7e5a63df21a044d48b46dc7ff92611da2f148904fa22a0ac4c",
+          "right_sha256": "beb718976d04f5d009fe12bed2a51d1dbef2e23a6a188bbe42eb5dbcfea2c4f0"
+        },
+        {
+          "passage": "Acts.1.17",
+          "left_sha256": "81c866cf93ef7074c02f652364051936ecbbaba4cece538864762550f05bc136",
+          "right_sha256": "ae0e707b7c6851231380756c964136949803c52c3d6c93b1d5e0c6471afbe56e"
+        },
+        {
+          "passage": "Acts.1.18",
+          "left_sha256": "725f6fdd7fac935b896c6267a7f37e1bbaef142d607d612164c7b3509ea32942",
+          "right_sha256": "bdfdc1731b5fd1aefdbfec39bc31b841b1065d933873cd6942408346bbb1efac"
+        },
+        {
+          "passage": "Acts.1.19",
+          "left_sha256": "7427584ba2a4783637d1efdfcd2cf7902620e91d379fa4c96ee70e7f124341c4",
+          "right_sha256": "6ed4ffcb95955c5a51db61a46450e684b4e2119dce76469aa1821a6b4b8c163a"
+        },
+        {
+          "passage": "Acts.1.2",
+          "left_sha256": "b9c8f9d02824b004df09f6493485e0e595ba750ec1cfed3568a5d29a797a3e94",
+          "right_sha256": "1abec9a76abc99383552e0301853332292193d705feb1a3a76f1166e54eb9dce"
+        },
+        {
+          "passage": "Acts.1.20",
+          "left_sha256": "30d8dbe3f2e51370211f79bd8309bb32acbf67fe83d7998fa5f97d3218bc7d8b",
+          "right_sha256": "6a6c3e33bfc9656adf366a1ba2823e6b9a65f3f0e2941525d2837d2ee765063b"
+        },
+        {
+          "passage": "Acts.1.21",
+          "left_sha256": "168a813fbec1b0a6ec56ee876554d78c4732ebfbff3b42394156aacf9f98927e",
+          "right_sha256": "0e94a8abfd6e8dab36d90601591cd29621472c57e19a337caebcb4d699e113d9"
+        },
+        {
+          "passage": "Acts.1.22",
+          "left_sha256": "742496be2941b2309df2c2ceb3ae089b6d5a23928d6e0af0608d49e552cb6d0b",
+          "right_sha256": "0eaae5f9f3087713bbafbe5f5123985a1c50cc4c388ff1fbc91d29d09ca86075"
+        },
+        {
+          "passage": "Acts.1.23",
+          "left_sha256": "9060ab07924f4d425830e2973fbc20513b60583486f2059be157be43c9fe2edb",
+          "right_sha256": "935844ea6ff7c17fcd014e9d9d66b013863b3333b3660a42d27088c1cf9f11f7"
+        },
+        {
+          "passage": "Acts.1.24",
+          "left_sha256": "0aad968b539abb5cd6f9deacee40e9982b3bfc79b50108e474db3434ff27d9d8",
+          "right_sha256": "36ba2312ed009d3ca5dc987f57c875715c0d6f1b0c9174b41944086cd2ce42ec"
+        },
+        {
+          "passage": "Acts.1.25",
+          "left_sha256": "a728882603b155d3a42367f999de18cee74bc449bc51cef42ea017c299bc68bc",
+          "right_sha256": "0ffc92d3cd2ed641d5420c320808834c4b7dc552464766e19662b7e7790d1595"
+        },
+        {
+          "passage": "Acts.1.26",
+          "left_sha256": "9e0ebde4c285ecbb557dd4eceef270636333c11002bfc5452a1d68f1fa838a83",
+          "right_sha256": "3b1d328a43dbccaa45eec35517dcfedc28dc15a67f535407122c0dd398d66bb5"
+        },
+        {
+          "passage": "Acts.1.3",
+          "left_sha256": "b7c936c7a646f4c070044c9567e1820756499f4b47f43a0c2a989ccd8169b8c8",
+          "right_sha256": "525b5b41edbd8b922d16c625aca434d18cb17c3a3bdf39f10a19106ca7961f9c"
+        },
+        {
+          "passage": "Acts.1.4",
+          "left_sha256": "dff232f301e843ab4280c2a9c1a7624922dadbac0aa313ba1e63cfeb3b18d939",
+          "right_sha256": "0510a98bc5484746e595b19a68ddc95fad830d32f80b78067aea36fccef54313"
+        },
+        {
+          "passage": "Acts.1.5",
+          "left_sha256": "0732e516937fe9eec2b0347c40d1c5b014c9d4bd128da1629e3a6d4122bd4fb7",
+          "right_sha256": "e4fc0e07fc9538b7d9448d4e7e9a23bf7f2cccda9acd9f5c61afac8c9f12bb60"
+        },
+        {
+          "passage": "Acts.1.6",
+          "left_sha256": "7dc3db622e6ea789bc395dad3ea632675567103b20e354964af03b084f29f725",
+          "right_sha256": "afda012eaba678db61a8e2a6da8a14c9f1448d85d622fd196646b7e2ea85d260"
+        },
+        {
+          "passage": "Acts.1.7",
+          "left_sha256": "0a2a5ac84adcc34d9b0e0aa5a377cd07fe15cd5ce8ed288f3df26202bd98d537",
+          "right_sha256": "b005c1415396b0401cc572b60cd8b6b00d87832b45133cb823ee5a46d4afee74"
+        },
+        {
+          "passage": "Acts.1.8",
+          "left_sha256": "e3b79cbcfc119538111ffc4bec714d0d8a6de7236d472410d28d655740413210",
+          "right_sha256": "ca8ca953ba2b01bd12c34ab261bae1f15dc00a8949a34eec562a152e48401d31"
+        }
+      ]
+    },
+    {
+      "left_source": "wikisource-church-slavonic-bible-2026-08-09",
+      "right_source": "crosswire-csl-elizabeth-1.5.2",
+      "overlapping_passages": 34696,
+      "exact_text_agreements": 0,
+      "text_disagreements": 34696,
+      "disagreement_samples": [
+        {
+          "passage": "Acts.1.1",
+          "left_sha256": "a3d62d57832f39ad2cb19c47edb442d176cd4a7f090d261541cd54ebead804f3",
+          "right_sha256": "b735d1a991316ef6201a6d86243a44979d493f995e626a4b3d2b13ffafe0fee2"
+        },
+        {
+          "passage": "Acts.1.10",
+          "left_sha256": "8e6d54a8691a1b9e4423de95eed5c329a8aecc7695523ab9a8ac40a0ce2803ae",
+          "right_sha256": "fb338cf401964e647cbb2a669bc2c14c95952f144ace3a994a382642a40d4426"
+        },
+        {
+          "passage": "Acts.1.11",
+          "left_sha256": "7840f100a564b304bb7c6ccc698b445346fd4a73bd7af43ae764764d82bd4208",
+          "right_sha256": "985e341872eeb5e8373d5964572b9a83df2455f0a5c5abf736bcaa406a346648"
+        },
+        {
+          "passage": "Acts.1.12",
+          "left_sha256": "2d3e45369089b1787c1c803b414b8a04303f5825a676f32e094cb91eee85c0f5",
+          "right_sha256": "aef6caf51080eb612dcb2309f20ceb514d8746eb89ea5a90b90b8867cf4c9008"
+        },
+        {
+          "passage": "Acts.1.13",
+          "left_sha256": "bfd89f6e71a9a8ac819d6eea9be2615aae74d9a6de623661e1375ebeca0cde27",
+          "right_sha256": "d28fa560f546b1737a068f5c2b44d337e922bffb450e07caf3cef9003f5092c8"
+        },
+        {
+          "passage": "Acts.1.14",
+          "left_sha256": "302218a2c48966b58575c79b003c7454ae5993540e4d126b1d7487440cd8b4fb",
+          "right_sha256": "aab8fb899b0852b914d99f55f11584a324f09cd3902c67c4f11ea4645ebb8b13"
+        },
+        {
+          "passage": "Acts.1.15",
+          "left_sha256": "9d5a3826ff57cc77115b4e4b2d9f13df61145ebd4598ccccd94580f3693382bd",
+          "right_sha256": "23924b6f052d0f9de2edc8b875b7846af4bc363702885459c112e1b85acdda4e"
+        },
+        {
+          "passage": "Acts.1.16",
+          "left_sha256": "2c821d18b1e58f06a514afebae890cf4126a1c245c80d7b76e35e774e24391da",
+          "right_sha256": "beb718976d04f5d009fe12bed2a51d1dbef2e23a6a188bbe42eb5dbcfea2c4f0"
+        },
+        {
+          "passage": "Acts.1.17",
+          "left_sha256": "81c866cf93ef7074c02f652364051936ecbbaba4cece538864762550f05bc136",
+          "right_sha256": "ae0e707b7c6851231380756c964136949803c52c3d6c93b1d5e0c6471afbe56e"
+        },
+        {
+          "passage": "Acts.1.18",
+          "left_sha256": "6b5cfe54eb4003dd0f15555b1bc103224b703607bbd10aabc740ff1db097107b",
+          "right_sha256": "bdfdc1731b5fd1aefdbfec39bc31b841b1065d933873cd6942408346bbb1efac"
+        },
+        {
+          "passage": "Acts.1.19",
+          "left_sha256": "7427584ba2a4783637d1efdfcd2cf7902620e91d379fa4c96ee70e7f124341c4",
+          "right_sha256": "6ed4ffcb95955c5a51db61a46450e684b4e2119dce76469aa1821a6b4b8c163a"
+        },
+        {
+          "passage": "Acts.1.2",
+          "left_sha256": "c012a2f573bd59b22b8fc3160cf1acf9fb9f0a39e4cd75ef3b31cfdac46235d0",
+          "right_sha256": "1abec9a76abc99383552e0301853332292193d705feb1a3a76f1166e54eb9dce"
+        },
+        {
+          "passage": "Acts.1.20",
+          "left_sha256": "30d8dbe3f2e51370211f79bd8309bb32acbf67fe83d7998fa5f97d3218bc7d8b",
+          "right_sha256": "6a6c3e33bfc9656adf366a1ba2823e6b9a65f3f0e2941525d2837d2ee765063b"
+        },
+        {
+          "passage": "Acts.1.21",
+          "left_sha256": "5feda4709aa75c28cb43b54a1401dcf90d4d07161c8e6ab7c75d197de871bb63",
+          "right_sha256": "0e94a8abfd6e8dab36d90601591cd29621472c57e19a337caebcb4d699e113d9"
+        },
+        {
+          "passage": "Acts.1.22",
+          "left_sha256": "018895f18c0fddf2448d7ca12a6e2524513b2373d3fe7615533f83c5b5927b68",
+          "right_sha256": "0eaae5f9f3087713bbafbe5f5123985a1c50cc4c388ff1fbc91d29d09ca86075"
+        },
+        {
+          "passage": "Acts.1.23",
+          "left_sha256": "9060ab07924f4d425830e2973fbc20513b60583486f2059be157be43c9fe2edb",
+          "right_sha256": "935844ea6ff7c17fcd014e9d9d66b013863b3333b3660a42d27088c1cf9f11f7"
+        },
+        {
+          "passage": "Acts.1.24",
+          "left_sha256": "0aad968b539abb5cd6f9deacee40e9982b3bfc79b50108e474db3434ff27d9d8",
+          "right_sha256": "36ba2312ed009d3ca5dc987f57c875715c0d6f1b0c9174b41944086cd2ce42ec"
+        },
+        {
+          "passage": "Acts.1.25",
+          "left_sha256": "9b186d737763713ee0ddc8a2fa308048a251a4e46a07a4546af23963f7150c4f",
+          "right_sha256": "0ffc92d3cd2ed641d5420c320808834c4b7dc552464766e19662b7e7790d1595"
+        },
+        {
+          "passage": "Acts.1.26",
+          "left_sha256": "9e0ebde4c285ecbb557dd4eceef270636333c11002bfc5452a1d68f1fa838a83",
+          "right_sha256": "3b1d328a43dbccaa45eec35517dcfedc28dc15a67f535407122c0dd398d66bb5"
+        },
+        {
+          "passage": "Acts.1.3",
+          "left_sha256": "0b9185cdac95418ef9a9835598f098136b0bb45f03c5b9e6cc35999befe8d587",
+          "right_sha256": "525b5b41edbd8b922d16c625aca434d18cb17c3a3bdf39f10a19106ca7961f9c"
+        },
+        {
+          "passage": "Acts.1.4",
+          "left_sha256": "dff232f301e843ab4280c2a9c1a7624922dadbac0aa313ba1e63cfeb3b18d939",
+          "right_sha256": "0510a98bc5484746e595b19a68ddc95fad830d32f80b78067aea36fccef54313"
+        },
+        {
+          "passage": "Acts.1.5",
+          "left_sha256": "542a84b4476f2871b905dab6705315a67d9dbcbe1f5e0091c174ae2e449557ad",
+          "right_sha256": "e4fc0e07fc9538b7d9448d4e7e9a23bf7f2cccda9acd9f5c61afac8c9f12bb60"
+        },
+        {
+          "passage": "Acts.1.6",
+          "left_sha256": "d1240d8d05f301388c4b87151efd7851a8281872c4c3cff9fc37e3998b1592a7",
+          "right_sha256": "afda012eaba678db61a8e2a6da8a14c9f1448d85d622fd196646b7e2ea85d260"
+        },
+        {
+          "passage": "Acts.1.7",
+          "left_sha256": "0a2a5ac84adcc34d9b0e0aa5a377cd07fe15cd5ce8ed288f3df26202bd98d537",
+          "right_sha256": "b005c1415396b0401cc572b60cd8b6b00d87832b45133cb823ee5a46d4afee74"
+        },
+        {
+          "passage": "Acts.1.8",
+          "left_sha256": "4a463117edce206369889ece36f94b8ba2e5dffd359c404b1a1c7f108a7030c5",
+          "right_sha256": "ca8ca953ba2b01bd12c34ab261bae1f15dc00a8949a34eec562a152e48401d31"
+        }
+      ]
+    }
+  ]
+}

@@ -87,16 +87,20 @@ rules do not invent stress.
 | System | Stable rule IDs | Normative basis | Implemented input contract |
 |---|---|---|---|
 | First-declension hard masculine/neuter nouns | `SYN-NOUN-I-HARD-M-ALYPY-34`, `SYN-NOUN-I-HARD-N-ALYPY-34` | Alypy §§34–35 | explicit stem, lexical gender, class, case, number, animacy |
+| First-declension soft masculine/neuter nouns | `SYN-NOUN-I-SOFT-M-ALYPY-34`, `SYN-NOUN-I-SOFT-N-ALYPY-34` | Alypy §§34–35 | explicit stem, lexical gender, class, case, number, animacy |
 | Second-declension hard/soft nouns | `SYN-NOUN-II-HARD-ALYPY-39`, `SYN-NOUN-II-SOFT-ALYPY-39` | Alypy §§39, 44 | explicit stem and class; no automatic sibilant/velar alternation |
 | Third-declension feminine nouns | `SYN-NOUN-III-F-ALYPY-41` | Alypy §41 | explicit feminine stem and class |
 | Short adjectives, hard/soft | `SYN-ADJ-SHORT-{HARD,SOFT}-ALYPY-53` | Alypy §§53–55 | positive degree only; explicit stem/class/agreement |
 | Long adjectives, hard/soft | `SYN-ADJ-LONG-{HARD,SOFT}-ALYPY-57` | Alypy §§56–57 | positive degree only; explicit stem/class/agreement |
+| Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full forms only |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
 | Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
 | Imperative | `SYN-VERB-IMPERATIVE-ALYPY-93` | Alypy §93 | independent base and `first-unpalatalized`/`i-series` formation |
 | Infinitive | `SYN-VERB-INFINITIVE-LEXICAL` | Alypy §79 | resolved target lemma; no invented infinitive stem |
 | l-participle | `SYN-VERB-LPART-ALYPY-97` | Alypy §97 | independent base plus typed gender and number |
+| Declined active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-ALYPY-{95,96}` | Alypy §§95–96 | tense/voice-specific full-form stem and adjective class; special short nominatives remain exact-only |
+| Declined passive participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-PASSIVE-ALYPY-{99,100}` | Alypy §§99–100 | independent short/full stems; past-passive `н`/`нн` distinction is explicit metadata |
 
 Every productive variant carries `alypy-gamanovich-grammar-web-2023` as
 normative evidence and the rule ID as its exact citation. The core accepts these
@@ -115,21 +119,28 @@ variation.
 
 ### Exact and irregular systems
 
-The target exact-form registry contains 138 reviewable normative-table rows. It
+The target exact-form registry contains 260 reviewable normative-table and
+explicit normative-variant rows. It
 includes the complete nine-cell present, aorist, and imperfect paradigms of
 `быти`, its sourced imperative and representative active participles; the
 complete nine-cell future auxiliary present of `имати`; a full demonstrative
-paradigm for `той`; the reviewed cardinal paradigm of `два`; one determiner cell;
-and representative active/passive participle cells for `нести`.
+paradigm for `той`; reviewed exact cells for `сей`, `иже`, `кто`, `что`, and
+`нѣкто`; the reviewed cardinal paradigms of `два`, `три`, and `четыре`; one
+exceptional determiner cell; representative active/passive participle cells for
+`нести`; the first- and second-person personal-pronoun paradigms; and the
+complete reviewed present, imperative, and aorist tables of archaic `дати` from
+Alypy §103.
 
 `normative-table` is deliberately classified as sourced prediction, not corpus
 attestation. A future `synodal-attestation` row must carry edition and passage
 evidence before `FormVariant::is_attested()` can be true.
 
 The productive verb registry contains independently sourced principal parts for
-`нести`, `писати`, and `любити`: the 1sg and 3pl present edges, imperfect base and
+`нести`, `писати`, `любити`, and the supported non-present systems of `дати`: the 1sg and 3pl present edges, imperfect base and
 formation, aorist base and formation, imperative base and formation, and
-l-participle base. Present class and aspect never choose a past stem.
+l-participle base. `нести` additionally has four separate tense/voice
+participial systems, and `дати` has independently reviewed past-active and
+past-passive stems. Present class and aspect never choose a past stem.
 
 ## Structured analytic constructions
 
@@ -150,9 +161,10 @@ government beyond these construction-specific constraints remain future work.
 
 ## Current reviewed lexical surface
 
-The generated seed registry has 16 target lexemes: seven nouns, one adjective,
-five verbs (including two auxiliaries), one pronoun, one determiner, and one
-numeral. It is intentionally too small for broad lexical coverage. Productive
+The reviewed registry has 61 target lexemes. It includes corpus-prioritized hard
+and soft nouns, six additional regular adjectives, six verbs (including two
+auxiliaries and archaic `дати`), eight pronouns, two determiners, and five
+numerals. Productive
 rules can fill many cells of a resolved regular lexeme, but they do not infer an
 unknown lexeme's class or silently import a surface table from OCS.
 
@@ -167,16 +179,17 @@ string equality.
 
 The closed grammar enums represent these gaps so paradigms retain failures:
 
-- first-declension soft/mixed masculine and neuter classes, consonantal and
-  heteroclitic nouns, lexical stem alternants, number restrictions, and most
+- mixed, consonantal and heteroclitic nouns, lexical stem alternants, number restrictions, and most
   irregular/suppletive nouns;
 - automatic velar/sibilant alternation outside the narrowly reviewed aorist
   operation, and the several ending variants in Alypy §§34–44 not yet modeled;
-- productive comparative/superlative stems and their irregular lexical series;
-- pronouns other than `той`, arbitrary determiners, ordinal/collective/compound
-  numerals, and productive declension of numeral lexemes;
-- productive active/passive participle stem formation and full declined
-  participle tables (only representative exact cells exist);
+- automatic comparison-stem formation, short comparison series, and irregular
+  comparison stems other than the reviewed `мꙋдръ` series;
+- reflexive, relative, interrogative, indefinite, and negative pronouns beyond
+  reviewed exact cells; velar-stem determiners such as full `всѧкъ`; collective,
+  compound, and irregular cardinal numerals;
+- automatic participle stem formation from an undifferentiated verb stem and
+  active short-participle allomorphs outside reviewed exact cells;
 - the supine pending a target-recension normative inventory, productive verbal
   nouns pending lexical suffix metadata, and unregistered irregular verbs;
 - automatic productive accent classes, complete breathing/positional-letter
@@ -189,5 +202,8 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 These are coverage gaps, not invitations to guess. Direct calls return
 `MissingPrincipalPart`, `UnsupportedFormation`, `UnsupportedCell`,
 `HistoricallyInvalidCell`, or an orthographic metadata error as appropriate.
-The real-text fixture is deliberately small; its perfect score is a regression
-check for the seed slice and must not be read as language-wide accuracy.
+The 38-cell real-text evaluation is still deliberately bounded. It returns all
+38 expected forms in the top-k set and 37 as top-1; the reported `трїе`/`три`
+ordering is a real grammar-table-versus-corpus variant distinction. These are
+regression metrics for held-out registered forms and must not be read as
+language-wide accuracy.

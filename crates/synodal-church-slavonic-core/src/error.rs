@@ -18,6 +18,7 @@ pub enum MetadataField {
     LParticipleStem,
     ParticipleStem,
     VerbalNounStem,
+    ComparisonStem,
     AccentClass,
     SemanticIdentity,
     AbbreviationClass,

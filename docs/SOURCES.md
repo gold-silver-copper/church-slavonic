@@ -34,11 +34,11 @@ than averaged away.
 | `diacu-1.0` | mixed diachronic contamination set | commit `d4b00ba…`; `43d50771…` | no clear data license; quarantine/evaluation only |
 | `ponomar-elizabeth-bible-2026-08-09` | target Bible spelling/accent/evaluation | commit `0af645f…`; `86c5e584…` | repository GPL-3.0-or-later; raw text local pending file-level audit |
 | `crosswire-csl-elizabeth-1.5.2` | target/modernized Elizabeth Bible contrast | 1.5.2; `96705c57…` | public domain module; modernized spelling is not exact print authority |
-| `wikisource-church-slavonic-bible-2026-08-09` | target community Bible transcription | per-page revisions; `1af84c0e…` | CC BY-SA 4.0; compare with named editions and lineage fingerprints |
+| `wikisource-church-slavonic-bible-2026-08-09` | target community Bible transcription | 78 exact page revisions; aggregate `ba522409…` | CC BY-SA 4.0; compare with named editions and lineage fingerprints |
 | `ponomar-library-catalog-2026-08-09` | target liturgical-genre discovery | 2026-08-09; aggregate `900e368…` | catalog terms allow share-alike, but each edition needs a rights audit |
 | `ponomar-modern-church-slavonic-corpus-2016` | mixed modern corpus/dictionary/frequency | component dates 2014–2016; aggregate `d2f78135…` | per-work lineage unresolved; local evaluation and discovery |
 | `alypy-gamanovich-grammar-web-2023` | target grammar, accent, orthography, numerals | corrected through 2023-12-10; 198 HTML files; aggregate `f140bcc4…` | preserve Ponomar/edition notices; normative research anchor |
-| `dyachenko-1900-scan` | mixed historical lexical/semantic dictionary | Wikimedia revision 2019-06-11; `24ba2f69…` | public-domain scan; OCR candidates require image and target-corpus review |
+| `dyachenko-1900-scan` | mixed historical lexical/semantic dictionary | Wikimedia revision 2019-06-11 plus pinned tessdata_fast 4.1.0 Russian model; aggregate `64069228…` | public-domain scan; OCR candidates require image and target-corpus review |
 
 Full hashes, URLs, formats, upstream lineages, and paths are in the machine
 manifest; abbreviations above are only for readability.
@@ -65,3 +65,41 @@ The Elizabeth Bible hosts may share an electronic transcription. Verse-level
 fingerprints and editorial-error comparison are required before their agreement
 can count as independent evidence. Kaikki/raw Wiktextract/Wiktionary and
 UD/Syntacticus likewise remain explicitly single lineages.
+
+The dated `enwiktionary-20260801` XML, extraction revision, templates, modules,
+and raw Wiktextract output are locked as the reproducible Wiktionary lineage.
+The raw all-language JSONL does not expose the OCS records as top-level `cu`
+rows until Kaikki's language post-processing stage, so the adapter consumes the
+separately checksum-locked OCS JSONL from that same extraction. It never follows
+an unlocked `latest` result: any changed bytes fail ordinary fetch and require an
+explicit reviewed refresh.
+
+## Executable adapter coverage
+
+All locked, downloaded sources named below have command-line-accessible adapters
+under `cargo xtask synodal-bootstrap`; a source-filtered offline run is useful for
+diagnostics:
+
+```sh
+cargo xtask synodal-bootstrap --offline \
+  --cache references/downloads \
+  --source SOURCE_ID
+```
+
+| Source | Adapter output and evidential restriction |
+|---|---|
+| Ponomar Elizabeth Bible | all 78 `.text` files, ordered verse JSONL, markup-safe spelling, passage partitions, frequency table |
+| Alypy/Gamanovich | all 198 locked pages, stable section records and every `DSText` witness; review candidates only |
+| D’yachenko | 1,158-page embedded text or pinned-model OCR with page, bounding box, confidence, and uncorrected status; lexical candidates only |
+| Wikisource Bible | exact-revision MediaWiki exports, reviewed 78-title canonical book map, Cyrillic chapter/verse parsing, deterministic wikitext stripping, and revision/template lineage |
+| CrossWire CSlElizabeth | SWORD `mod2imp` verse export, canonical book/chapter/verse identity, version, and modernized-spelling label |
+| Polivanova OSD/FUP | XLS and TEI records with their common scholarly lineage preserved |
+| UD/Syntacticus | CoNLL-U and native CoNLL with shared PROIEL/TOROT lineage; inherited OCS/evaluation only |
+| CCMH | supported text/XML historical witnesses; comparative evidence only |
+| DIACU | JSON documents/control labels; period and contamination evaluation only |
+| English Wiktionary/Kaikki | streaming OCS JSONL; inherited candidates only, never target surface rows |
+| Ponomar modern corpus | locked frequency list for discovery and prioritization |
+
+Automatic JSONL candidates, quarantine records, reviewed overlays, runtime facts,
+and evaluation rows are separate layers. See `SYNODAL_DATA_PIPELINE.md` for the
+complete lock/refresh and clean-reconstruction procedure.

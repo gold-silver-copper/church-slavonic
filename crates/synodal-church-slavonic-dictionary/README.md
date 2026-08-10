@@ -26,9 +26,10 @@ status visible.
 
 `lint_vocabulary` validates a serializable game/application manifest for Unicode
 orthography, known morphology, expected part of speech, required semantic sense,
-and surface ambiguity. JSON helpers are provided for manifests and issue lists.
+and surface ambiguity. The crate accepts typed manifests only; applications may
+choose their own serialization layer outside the runtime linguistic crate.
 
-The bundled semantic registry contains only 16 reviewed seed lexemes. Mixed
+The bundled semantic registry contains 61 reviewed target lexemes. Mixed
 historical D'yachenko meanings enter it only after a Synodal-corpus review; raw
 dictionary scans and corpora are not packaged. Runtime operation is offline and
 the crate builds for `wasm32-unknown-unknown`.

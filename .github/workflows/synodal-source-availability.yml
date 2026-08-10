@@ -1,0 +1,29 @@
+name: Synodal source availability
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Locked source ID to audit
+        required: true
+        default: alypy-gamanovich-grammar-web-2023
+  schedule:
+    - cron: "17 9 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Fetch locked bytes into a disposable cache
+        env:
+          REQUESTED_SOURCE: ${{ inputs.source || 'alypy-gamanovich-grammar-web-2023' }}
+        run: |
+          cargo xtask synodal-sources fetch --source "$REQUESTED_SOURCE" --cache "${RUNNER_TEMP}/synodal-source-audit"
+          cargo xtask synodal-sources verify --offline --source "$REQUESTED_SOURCE" --cache "${RUNNER_TEMP}/synodal-source-audit"
+      - name: Prove availability audit did not rewrite locks
+        run: git diff --exit-code -- references/SOURCE_LOCK.tsv references/SHA256SUMS references/WIKISOURCE_REVISIONS.tsv

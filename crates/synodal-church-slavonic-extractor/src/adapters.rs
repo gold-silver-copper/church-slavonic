@@ -4,7 +4,7 @@ use serde::Serialize;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     error, fmt, fs,
     io::{self, BufRead, BufReader, BufWriter, Write},
     path::{Path, PathBuf},
@@ -30,6 +30,7 @@ pub struct StreamingReport {
 pub enum AdapterError {
     Io(io::Error),
     Json(serde_json::Error),
+    Xml(quick_xml::Error),
     InvalidConfiguration(String),
     FailureCeiling { failures: usize, ceiling: usize },
 }
@@ -39,6 +40,7 @@ impl fmt::Display for AdapterError {
         match self {
             Self::Io(error) => error.fmt(formatter),
             Self::Json(error) => error.fmt(formatter),
+            Self::Xml(error) => error.fmt(formatter),
             Self::InvalidConfiguration(reason) => formatter.write_str(reason),
             Self::FailureCeiling { failures, ceiling } => write!(
                 formatter,
@@ -59,6 +61,12 @@ impl From<io::Error> for AdapterError {
 impl From<serde_json::Error> for AdapterError {
     fn from(value: serde_json::Error) -> Self {
         Self::Json(value)
+    }
+}
+
+impl From<quick_xml::Error> for AdapterError {
+    fn from(value: quick_xml::Error) -> Self {
+        Self::Xml(value)
     }
 }
 
@@ -305,6 +313,275 @@ pub fn stream_kaikki_file(
     stream_file(source, normalized, quarantine, config, stream_kaikki_ocs)
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct WikisourceRevision {
+    title: String,
+    page_id: u64,
+    revision_id: u64,
+    timestamp: String,
+    mediawiki_sha1: String,
+}
+
+#[derive(Default)]
+struct WikisourcePage {
+    title: String,
+    page_id: String,
+    revision_id: String,
+    timestamp: String,
+    mediawiki_sha1: String,
+    text: String,
+}
+
+#[derive(Clone, Copy)]
+enum WikisourceField {
+    Title,
+    PageId,
+    RevisionId,
+    Timestamp,
+    Sha1,
+    Text,
+}
+
+/// Splits a pinned MediaWiki XML export into exact revision-content files.
+///
+/// The committed revision manifest is the authority for page identity. Every
+/// page, revision, timestamp, and MediaWiki SHA-1 in the export must agree with
+/// the manifest before the destination directory is replaced atomically.
+pub fn materialize_wikisource_export(
+    export: &Path,
+    revision_manifest: &Path,
+    destination: &Path,
+) -> Result<StreamingReport> {
+    let expected = load_wikisource_revisions(revision_manifest)?;
+    let temporary = destination.with_extension(format!("tmp-{}", std::process::id()));
+    if temporary.exists() {
+        fs::remove_dir_all(&temporary)?;
+    }
+    fs::create_dir_all(&temporary)?;
+    let result = materialize_wikisource_export_into(export, &temporary, &expected);
+    match result {
+        Ok(report) => {
+            let backup = destination.with_extension(format!("backup-{}", std::process::id()));
+            if backup.exists() {
+                fs::remove_dir_all(&backup)?;
+            }
+            if destination.exists() {
+                fs::rename(destination, &backup)?;
+            }
+            if let Err(error) = fs::rename(&temporary, destination) {
+                if backup.exists() {
+                    let _ = fs::rename(&backup, destination);
+                }
+                return Err(AdapterError::Io(error));
+            }
+            if backup.exists() {
+                fs::remove_dir_all(backup)?;
+            }
+            Ok(report)
+        }
+        Err(error) => {
+            let _ = fs::remove_dir_all(temporary);
+            Err(error)
+        }
+    }
+}
+
+fn materialize_wikisource_export_into(
+    export: &Path,
+    destination: &Path,
+    expected: &BTreeMap<u64, WikisourceRevision>,
+) -> Result<StreamingReport> {
+    use quick_xml::{Reader, events::Event};
+
+    let mut reader = Reader::from_reader(BufReader::new(fs::File::open(export)?));
+    reader.config_mut().trim_text(false);
+    let mut buffer = Vec::new();
+    let mut page = None::<WikisourcePage>;
+    let mut field = None::<WikisourceField>;
+    let mut in_revision = false;
+    let mut seen = BTreeSet::new();
+    let mut report = StreamingReport::default();
+
+    loop {
+        match reader.read_event_into(&mut buffer)? {
+            Event::Start(event) => match event.local_name().as_ref() {
+                b"page" => page = Some(WikisourcePage::default()),
+                b"revision" => in_revision = true,
+                b"title" => field = Some(WikisourceField::Title),
+                b"id"
+                    if in_revision
+                        && page
+                            .as_ref()
+                            .is_some_and(|page| page.revision_id.is_empty()) =>
+                {
+                    field = Some(WikisourceField::RevisionId);
+                }
+                b"id"
+                    if !in_revision
+                        && page.as_ref().is_some_and(|page| page.page_id.is_empty()) =>
+                {
+                    field = Some(WikisourceField::PageId);
+                }
+                b"timestamp" => field = Some(WikisourceField::Timestamp),
+                b"sha1" => field = Some(WikisourceField::Sha1),
+                b"text" => field = Some(WikisourceField::Text),
+                _ => {}
+            },
+            Event::Text(event) => {
+                if let (Some(page), Some(field)) = (&mut page, field) {
+                    let value = event.unescape()?.into_owned();
+                    wikimedia_field_mut(page, field).push_str(&value);
+                }
+            }
+            Event::CData(event) => {
+                if let (Some(page), Some(field)) = (&mut page, field) {
+                    let value = event.decode().map_err(|error| {
+                        AdapterError::InvalidConfiguration(format!(
+                            "invalid Wikisource CDATA encoding: {error}"
+                        ))
+                    })?;
+                    wikimedia_field_mut(page, field).push_str(&value);
+                }
+            }
+            Event::End(event) => match event.local_name().as_ref() {
+                b"title" | b"id" | b"timestamp" | b"sha1" | b"text" => field = None,
+                b"revision" => {
+                    in_revision = false;
+                    field = None;
+                }
+                b"page" => {
+                    let page = page.take().ok_or_else(|| {
+                        AdapterError::InvalidConfiguration(
+                            "Wikisource export closed an unopened page".into(),
+                        )
+                    })?;
+                    write_wikisource_page(page, destination, expected, &mut seen)?;
+                    report.input_lines += 1;
+                    report.accepted_rows += 1;
+                }
+                _ => {}
+            },
+            Event::Eof => break,
+            _ => {}
+        }
+        buffer.clear();
+    }
+    if seen.len() != expected.len() {
+        let missing: Vec<String> = expected
+            .keys()
+            .filter(|revision| !seen.contains(revision))
+            .map(u64::to_string)
+            .collect();
+        return Err(AdapterError::InvalidConfiguration(format!(
+            "Wikisource export omitted locked revisions: {}",
+            missing.join(",")
+        )));
+    }
+    Ok(report)
+}
+
+fn wikimedia_field_mut(page: &mut WikisourcePage, field: WikisourceField) -> &mut String {
+    match field {
+        WikisourceField::Title => &mut page.title,
+        WikisourceField::PageId => &mut page.page_id,
+        WikisourceField::RevisionId => &mut page.revision_id,
+        WikisourceField::Timestamp => &mut page.timestamp,
+        WikisourceField::Sha1 => &mut page.mediawiki_sha1,
+        WikisourceField::Text => &mut page.text,
+    }
+}
+
+fn write_wikisource_page(
+    page: WikisourcePage,
+    destination: &Path,
+    expected: &BTreeMap<u64, WikisourceRevision>,
+    seen: &mut BTreeSet<u64>,
+) -> Result<()> {
+    let page_id = page.page_id.parse::<u64>().map_err(|_| {
+        AdapterError::InvalidConfiguration(format!("invalid Wikisource page ID {:?}", page.page_id))
+    })?;
+    let revision_id = page.revision_id.parse::<u64>().map_err(|_| {
+        AdapterError::InvalidConfiguration(format!(
+            "invalid Wikisource revision ID {:?}",
+            page.revision_id
+        ))
+    })?;
+    let locked = expected.get(&revision_id).ok_or_else(|| {
+        AdapterError::InvalidConfiguration(format!(
+            "Wikisource export contains unlocked revision {revision_id}"
+        ))
+    })?;
+    if page.title != locked.title
+        || page_id != locked.page_id
+        || page.timestamp != locked.timestamp
+        || page.mediawiki_sha1 != locked.mediawiki_sha1
+    {
+        return Err(AdapterError::InvalidConfiguration(format!(
+            "Wikisource revision {revision_id} metadata disagrees with its lock"
+        )));
+    }
+    if !seen.insert(revision_id) {
+        return Err(AdapterError::InvalidConfiguration(format!(
+            "duplicate Wikisource revision {revision_id}"
+        )));
+    }
+    fs::write(
+        destination.join(format!("{revision_id}.wikitext")),
+        page.text,
+    )?;
+    Ok(())
+}
+
+fn load_wikisource_revisions(path: &Path) -> Result<BTreeMap<u64, WikisourceRevision>> {
+    const HEADER: &str = "title\tpage_id\trevision_id\ttimestamp\tmediawiki_sha1";
+    let text = fs::read_to_string(path)?;
+    let mut lines = text.lines();
+    if lines.next() != Some(HEADER) {
+        return Err(AdapterError::InvalidConfiguration(
+            "invalid Wikisource revision-lock header".into(),
+        ));
+    }
+    let mut revisions = BTreeMap::new();
+    for (offset, line) in lines.enumerate() {
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() != 5 {
+            return Err(AdapterError::InvalidConfiguration(format!(
+                "invalid Wikisource revision-lock row {}",
+                offset + 2
+            )));
+        }
+        let revision = WikisourceRevision {
+            title: fields[0].into(),
+            page_id: fields[1].parse().map_err(|_| {
+                AdapterError::InvalidConfiguration(format!(
+                    "invalid page ID in Wikisource revision-lock row {}",
+                    offset + 2
+                ))
+            })?,
+            revision_id: fields[2].parse().map_err(|_| {
+                AdapterError::InvalidConfiguration(format!(
+                    "invalid revision ID in Wikisource revision-lock row {}",
+                    offset + 2
+                ))
+            })?,
+            timestamp: fields[3].into(),
+            mediawiki_sha1: fields[4].into(),
+        };
+        if revisions.insert(revision.revision_id, revision).is_some() {
+            return Err(AdapterError::InvalidConfiguration(format!(
+                "duplicate revision ID in Wikisource revision-lock row {}",
+                offset + 2
+            )));
+        }
+    }
+    if revisions.is_empty() {
+        return Err(AdapterError::InvalidConfiguration(
+            "Wikisource revision lock is empty".into(),
+        ));
+    }
+    Ok(revisions)
+}
+
 fn stream_file(
     source: &Path,
     normalized: &Path,
@@ -497,5 +774,46 @@ mod tests {
         )
         .expect_err("ceiling must be enforced");
         assert!(matches!(error, AdapterError::FailureCeiling { .. }));
+    }
+
+    #[test]
+    fn wikisource_export_is_split_only_after_revision_lock_validation() {
+        let directory =
+            std::env::temp_dir().join(format!("synodal-wikisource-fixture-{}", std::process::id()));
+        if directory.exists() {
+            fs::remove_dir_all(&directory).expect("old fixture cleanup");
+        }
+        fs::create_dir_all(&directory).expect("fixture directory");
+        let export = directory.join("export.xml");
+        fs::write(
+            &export,
+            concat!(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                "<mediawiki><page><title>Бі́блїа</title><id>10</id><revision>",
+                "<id>20</id><timestamp>2026-01-02T03:04:05Z</timestamp>",
+                "<contributor><id>999</id></contributor>",
+                "<text xml:space=\"preserve\">слово &amp; гласъ</text>",
+                "<sha1>lockedsha1</sha1></revision></page></mediawiki>"
+            ),
+        )
+        .expect("export fixture");
+        let revisions = directory.join("revisions.tsv");
+        fs::write(
+            &revisions,
+            concat!(
+                "title\tpage_id\trevision_id\ttimestamp\tmediawiki_sha1\n",
+                "Бі́блїа\t10\t20\t2026-01-02T03:04:05Z\tlockedsha1\n"
+            ),
+        )
+        .expect("revision fixture");
+        let destination = directory.join("revisions");
+        let report = materialize_wikisource_export(&export, &revisions, &destination)
+            .expect("locked export");
+        assert_eq!(report.accepted_rows, 1);
+        assert_eq!(
+            fs::read_to_string(destination.join("20.wikitext")).expect("revision text"),
+            "слово & гласъ"
+        );
+        fs::remove_dir_all(directory).expect("fixture cleanup");
     }
 }

@@ -311,14 +311,6 @@ pub fn lint_vocabulary(manifest: &VocabularyManifest) -> Vec<VocabularyIssue> {
     issues
 }
 
-pub fn manifest_from_json(json: &str) -> serde_json::Result<VocabularyManifest> {
-    serde_json::from_str(json)
-}
-
-pub fn issues_to_json(issues: &[VocabularyIssue]) -> serde_json::Result<String> {
-    serde_json::to_string_pretty(issues)
-}
-
 fn entry_for(lexeme: LexemeSummary) -> Result<Entry> {
     let senses = senses_for(lexeme.id());
     if senses.is_empty() {

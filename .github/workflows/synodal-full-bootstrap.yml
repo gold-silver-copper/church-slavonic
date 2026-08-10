@@ -1,0 +1,33 @@
+name: Synodal full-source bootstrap
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install checked adapter prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes curl djvulibre-bin libsword-utils tesseract-ocr
+      - name: Rebuild from an empty cache
+        run: cargo xtask synodal-bootstrap --cache "${RUNNER_TEMP}/synodal-cache"
+      - name: Verify immutable cache and generated outputs
+        run: |
+          cargo xtask synodal-sources verify --offline --cache "${RUNNER_TEMP}/synodal-cache"
+          cargo xtask synodal-check
+          git diff --exit-code
+      - name: Upload non-redistributable reports only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synodal-full-bootstrap-reports
+          path: reports/synodal-*.json
+          if-no-files-found: error

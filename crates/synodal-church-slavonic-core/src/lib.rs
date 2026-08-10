@@ -33,8 +33,9 @@ pub use mapping::{
 };
 pub use morphology::{
     AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect, ImperativeFormation,
-    ImperfectFormation, NounDeclension, NounLexeme, VerbConjugation, VerbLexeme, aorist,
-    decline_adjective, decline_noun, imperative, imperfect, infinitive, l_participle, present,
+    ImperfectFormation, NounDeclension, NounLexeme, ParticiplePrincipalPart, VerbConjugation,
+    VerbLexeme, aorist, decline_adjective, decline_noun, decline_participle, imperative, imperfect,
+    infinitive, l_participle, present,
 };
 pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
 pub use orthography::{

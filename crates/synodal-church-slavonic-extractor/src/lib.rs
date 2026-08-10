@@ -2,9 +2,10 @@
 #![forbid(unsafe_code)]
 
 pub mod adapters;
+pub mod pipeline;
 
 use std::{
-    collections::BTreeSet,
+    collections::{BTreeMap, BTreeSet},
     error, fmt, fs,
     io::{self, Write},
     path::{Path, PathBuf},
@@ -161,6 +162,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         "lexeme_id\tsystem\tcell_set\tevidence_id\ttarget_recension",
         5,
     )?;
+    let reviewed_evidence = read_reviewed_evidence(data_directory)?;
 
     validate_lexemes(&lexeme_path, &lexemes)?;
     validate_principal_parts(&principal_path, &principal_parts)?;
@@ -172,6 +174,21 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     validate_transformation_rules(&transformation_path, &transformation_rules)?;
     validate_conflicts(&conflict_path, &conflicts)?;
     validate_irregular_overrides(&irregular_path, &irregular_overrides)?;
+    validate_morphology_evidence(
+        data_directory,
+        &reviewed_evidence,
+        [
+            (&principal_parts, &[4_usize][..]),
+            (&exact_forms, &[4][..]),
+            (&alignments, &[8][..]),
+            (&abbreviations, &[5][..]),
+            (&accents, &[4][..]),
+            (&positional_rules, &[5][..]),
+            (&transformation_rules, &[5][..]),
+            (&conflicts, &[5, 6][..]),
+            (&irregular_overrides, &[3][..]),
+        ],
+    )?;
     validate_morphology_references(
         &lexeme_path,
         &lexemes,
@@ -248,6 +265,12 @@ pub fn generate_dictionary_registry(
     validate_senses(&sense_path, &senses)?;
     validate_examples(&example_path, &examples)?;
     validate_semantic_alignments(&semantic_alignment_path, &semantic_alignments)?;
+    let reviewed_evidence = read_reviewed_evidence(data_directory)?;
+    validate_morphology_evidence(
+        data_directory,
+        &reviewed_evidence,
+        [(&semantic_alignments, &[4_usize][..])],
+    )?;
     let lexemes = read_table(
         &data_directory.join("lexemes.tsv"),
         "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension",
@@ -282,6 +305,144 @@ pub fn generate_dictionary_registry(
         semantic_alignments: semantic_alignments.rows.len(),
         output_sha256,
     })
+}
+
+fn read_reviewed_evidence(data_directory: &Path) -> Result<Table> {
+    let path = data_directory.join("reviewed_evidence.tsv");
+    let table = read_table(
+        &path,
+        "evidence_id\tcandidate_id\tsource_id\tcitation\tdecision\ttarget_recension\treview_note",
+        7,
+    )?;
+    let mut ids = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        if !ids.insert(row[0].clone()) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.clone(),
+                id: row[0].clone(),
+            });
+        }
+        if !row[1].starts_with("synodal:candidate:") {
+            return invalid(
+                &path,
+                offset + 2,
+                "review evidence requires a stable candidate ID",
+            );
+        }
+        if !matches!(row[4].as_str(), "reviewed" | "rejected") {
+            return invalid(
+                &path,
+                offset + 2,
+                "review decision must be reviewed or rejected",
+            );
+        }
+        validate_target(&path, offset + 2, &row[5])?;
+    }
+    Ok(table)
+}
+
+fn validate_morphology_evidence<const N: usize>(
+    data_directory: &Path,
+    reviewed: &Table,
+    tables: [(&Table, &[usize]); N],
+) -> Result<()> {
+    let evidence_path = data_directory.join("reviewed_evidence.tsv");
+    let known: BTreeSet<&str> = reviewed.rows.iter().map(|row| row[0].as_str()).collect();
+    for (table, columns) in tables {
+        for row in &table.rows {
+            for &column in columns {
+                for evidence_id in row[column]
+                    .split(',')
+                    .map(str::trim)
+                    .filter(|value| !value.is_empty())
+                {
+                    if !known.contains(evidence_id) {
+                        return invalid(
+                            &evidence_path,
+                            1,
+                            &format!(
+                                "runtime or review fact has unregistered evidence {evidence_id:?}"
+                            ),
+                        );
+                    }
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Proves that committed review decisions still name candidates produced from
+/// the current locked bytes. This runs only in a full bootstrap because partial
+/// source bootstraps intentionally materialize a subset.
+pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> Result<()> {
+    let evidence = read_reviewed_evidence(data_directory)?;
+    let mut candidates = BTreeMap::<String, (String, Option<String>)>::new();
+    for entry in fs::read_dir(intermediate)? {
+        let path = entry?.path();
+        if path
+            .extension()
+            .is_none_or(|extension| extension != "jsonl")
+        {
+            continue;
+        }
+        for (offset, line) in fs::read_to_string(&path)?.lines().enumerate() {
+            let value: serde_json::Value =
+                serde_json::from_str(line).map_err(|error| ExtractionError::InvalidRow {
+                    file: path.clone(),
+                    line: offset + 1,
+                    reason: format!("invalid candidate JSON: {error}"),
+                })?;
+            if let Some(candidate_id) = value
+                .get("candidate_id")
+                .and_then(serde_json::Value::as_str)
+            {
+                let source_id = value
+                    .get("source_id")
+                    .and_then(serde_json::Value::as_str)
+                    .ok_or_else(|| ExtractionError::InvalidRow {
+                        file: path.clone(),
+                        line: offset + 1,
+                        reason: "candidate has no source_id".into(),
+                    })?;
+                let target = value
+                    .get("target_recension")
+                    .and_then(serde_json::Value::as_str)
+                    .map(str::to_owned);
+                let metadata = (source_id.to_owned(), target);
+                if candidates
+                    .insert(candidate_id.to_owned(), metadata.clone())
+                    .is_some_and(|previous| previous != metadata)
+                {
+                    return invalid(
+                        &path,
+                        offset + 1,
+                        &format!("candidate {candidate_id} has conflicting source metadata"),
+                    );
+                }
+            }
+        }
+    }
+    for (offset, row) in evidence.rows.iter().enumerate() {
+        let Some((source_id, target)) = candidates.get(&row[1]) else {
+            return invalid(
+                &data_directory.join("reviewed_evidence.tsv"),
+                offset + 2,
+                &format!("reviewed candidate {} disappeared or changed", row[1]),
+            );
+        };
+        if source_id != &row[2] || target.as_deref().is_some_and(|target| target != row[5]) {
+            return invalid(
+                &data_directory.join("reviewed_evidence.tsv"),
+                offset + 2,
+                &format!(
+                    "reviewed candidate {} has mismatched source or target metadata",
+                    row[1]
+                ),
+            );
+        }
+    }
+    Ok(())
 }
 
 fn read_table(path: &Path, expected_header: &'static str, columns: usize) -> Result<Table> {
@@ -362,7 +523,10 @@ fn validate_exact_forms(path: &Path, table: &Table) -> Result<()> {
         validate_target(path, offset + 2, &row[6])?;
         validate_word(path, offset + 2, &row[2], "expanded form")?;
         validate_word(path, offset + 2, &row[3], "printed form")?;
-        if !matches!(row[5].as_str(), "normative-table" | "synodal-attestation") {
+        if !matches!(
+            row[5].as_str(),
+            "normative-table" | "normative-variant" | "synodal-attestation"
+        ) {
             return invalid(path, offset + 2, "unknown exact-form source kind");
         }
         if row[5] == "synodal-attestation" && row[4].is_empty() {
@@ -835,7 +999,19 @@ fn emit_registry(tables: RegistryTables) -> String {
     } = tables;
     lexemes.rows.sort();
     principal_parts.rows.sort();
-    exact_forms.rows.sort();
+    exact_forms.rows.sort_by(|left, right| {
+        let source_rank = |source: &str| match source {
+            "normative-table" | "synodal-attestation" => 0,
+            "normative-variant" => 1,
+            _ => 2,
+        };
+        left[0]
+            .cmp(&right[0])
+            .then_with(|| left[1].cmp(&right[1]))
+            .then_with(|| source_rank(&left[5]).cmp(&source_rank(&right[5])))
+            .then_with(|| left[2].cmp(&right[2]))
+            .then_with(|| left.cmp(right))
+    });
     alignments.rows.sort();
     abbreviations.rows.sort();
     accents.rows.sort();
@@ -1028,5 +1204,32 @@ mod tests {
             ]],
         };
         assert!(validate_alignments(path, &no_evidence).is_err());
+    }
+
+    #[test]
+    fn rejects_other_recensions_and_unreviewed_runtime_evidence() {
+        assert!(validate_target(Path::new("exact_forms.tsv"), 2, "old-church-slavonic").is_err());
+        let reviewed = Table {
+            rows: vec![vec![
+                "known-evidence".into(),
+                "synodal:candidate:known".into(),
+                "source".into(),
+                "citation".into(),
+                "reviewed".into(),
+                TARGET.into(),
+                "review".into(),
+            ]],
+        };
+        let runtime = Table {
+            rows: vec![vec!["lexeme".into(), "missing-evidence".into()]],
+        };
+        assert!(
+            validate_morphology_evidence(
+                Path::new("data/synodal"),
+                &reviewed,
+                [(&runtime, &[1_usize][..])],
+            )
+            .is_err()
+        );
     }
 }

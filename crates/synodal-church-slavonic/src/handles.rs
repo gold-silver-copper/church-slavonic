@@ -69,7 +69,12 @@ impl Capabilities {
             l_participle: verb
                 && (registry::has_exact_system(id, "l-participle:")
                     || registry::has_principal_part(id, "l-participle-stem")),
-            participle: verb && registry::has_exact_system(id, "participle:"),
+            participle: verb
+                && (registry::has_exact_system(id, "participle:")
+                    || registry::has_principal_part_prefix(id, "present-active-participle-")
+                    || registry::has_principal_part_prefix(id, "past-active-participle-")
+                    || registry::has_principal_part_prefix(id, "present-passive-participle-")
+                    || registry::has_principal_part_prefix(id, "past-passive-participle-")),
             supine: verb && registry::has_exact_system(id, "supine"),
             verbal_noun: verb && registry::has_exact_system(id, "verbal-noun:"),
             reverse_analysis: true,
@@ -466,9 +471,15 @@ fn missing_metadata(summary: &LexemeSummary) -> Vec<MetadataField> {
             "verbal-noun:",
         ),
     ] {
-        if !registry::has_principal_part(id, system)
-            && !registry::has_exact_system(id, exact_prefix)
-        {
+        let has_principal_part = if field == MetadataField::ParticipleStem {
+            registry::has_principal_part_prefix(id, "present-active-participle-")
+                || registry::has_principal_part_prefix(id, "past-active-participle-")
+                || registry::has_principal_part_prefix(id, "present-passive-participle-")
+                || registry::has_principal_part_prefix(id, "past-passive-participle-")
+        } else {
+            registry::has_principal_part(id, system)
+        };
+        if !has_principal_part && !registry::has_exact_system(id, exact_prefix) {
             missing.push(field);
         }
     }

@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Lint
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+      - name: Test
+        run: cargo test --workspace --all-targets --all-features
+      - name: Documentation tests
+        run: cargo test --workspace --doc
+      - name: Deterministic fixture bootstrap
+        run: cargo xtask synodal-fixture-bootstrap
+      - name: Structural checks
+        run: |
+          cargo xtask check-all
+          cargo xtask guard-witnesses
+          cargo xtask synodal-check
+          cargo xtask synodal-guard-witnesses
+      - name: Generated tree stays clean
+        run: git diff --exit-code
+
+  portable-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Native no-default-feature builds
+        run: |
+          cargo check -p synodal-church-slavonic-core --no-default-features
+          cargo check -p synodal-church-slavonic --no-default-features
+          cargo check -p synodal-church-slavonic-dictionary --no-default-features
+      - name: WebAssembly runtime builds
+        run: |
+          cargo check -p synodal-church-slavonic-core --target wasm32-unknown-unknown --no-default-features
+          cargo check -p synodal-church-slavonic --target wasm32-unknown-unknown --no-default-features
+          cargo check -p synodal-church-slavonic-dictionary --target wasm32-unknown-unknown --no-default-features
