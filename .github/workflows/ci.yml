@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -25,19 +25,31 @@ jobs:
         run: cargo test --workspace --doc
       - name: Deterministic fixture bootstrap
         run: cargo xtask synodal-fixture-bootstrap
+      - name: Deterministic coverage fixture
+        run: cargo xtask synodal-coverage --offline --fixture --check
       - name: Structural checks
         run: |
           cargo xtask check-all
           cargo xtask guard-witnesses
           cargo xtask synodal-check
           cargo xtask synodal-guard-witnesses
+          cargo xtask synodal-v04-audit --check
+          cargo xtask synodal-marginal-recovery --check
+          cargo xtask synodal-v05-audit --check
+          cargo xtask synodal-v06-review-packets --check
+          cargo xtask synodal-v06-audit --check
+      - name: Package and publish dry runs
+        run: |
+          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-core
+          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic
+          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-dictionary
       - name: Generated tree stays clean
         run: git diff --exit-code
 
   portable-runtime:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown

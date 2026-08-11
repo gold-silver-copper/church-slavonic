@@ -119,17 +119,36 @@ variation.
 
 ### Exact and irregular systems
 
-The target exact-form registry contains 260 reviewable normative-table and
-explicit normative-variant rows. It
-includes the complete nine-cell present, aorist, and imperfect paradigms of
-`быти`, its sourced imperative and representative active participles; the
+The generated v0.5 target registry contains 1,707 reviewable exact rows: normative
+tables and variants, plus passage-identified target attestations admitted by the
+v0.3 lexical review overlay. It includes the complete nine-cell present, simple
+future, aorist, and imperfect paradigms of `быти`, its sourced imperative and
+representative active participles; the
 complete nine-cell future auxiliary present of `имати`; a full demonstrative
 paradigm for `той`; reviewed exact cells for `сей`, `иже`, `кто`, `что`, and
 `нѣкто`; the reviewed cardinal paradigms of `два`, `три`, and `четыре`; one
 exceptional determiner cell; representative active/passive participle cells for
-`нести`; the first- and second-person personal-pronoun paradigms; and the
+`нести`; the first-, second-, and complete gendered third-person
+personal-pronoun paradigms; and the
 complete reviewed present, imperative, and aorist tables of archaic `дати` from
 Alypy §103.
+
+The v0.4 family review adds the complete, accent-specified `землѧ` paradigm from
+Alypy §39; independently delimited exact future/aorist/imperative cells for
+`рещи` from §104; five cited mixed cells for `весь` with the §48 no-dual
+restriction; five `сынъ` consonantal/`сынов-` overrides from §37; and seven typed
+`господь` contractions under §3. Only `землѧ` is admitted as a complete new
+productive class. The other admissions remain exact-cell families and do not
+license an inferred paradigm.
+
+The v0.5 review adds complete 57-cell, accent-specified possessive adjective
+tables for `мо́й`, `тво́й`, `на́шъ`, `ва́шъ`, and `сво́й`; eight reviewed
+reflexive-pronoun cells; additional exact cells for `сей` and `иже`; 66
+high-frequency lexical identities admitted as exact target evidence; bounded
+exact-form batches; and 42 additional typed abbreviation evaluation cases.
+These additions are deliberately data-driven: they do not introduce a new
+productive morphology rule, infer a class for an exact-only lexeme, or infer
+unreviewed abbreviation cells.
 
 `normative-table` is deliberately classified as sourced prediction, not corpus
 attestation. A future `synodal-attestation` row must carry edition and passage
@@ -161,12 +180,15 @@ government beyond these construction-specific constraints remain future work.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 61 target lexemes. It includes corpus-prioritized hard
-and soft nouns, six additional regular adjectives, six verbs (including two
-auxiliaries and archaic `дати`), eight pronouns, two determiners, and five
-numerals. Productive
-rules can fill many cells of a resolved regular lexeme, but they do not infer an
-unknown lexeme's class or silently import a surface table from OCS.
+The reviewed registry has 580 target lexemes and 580 reviewed senses. The
+original productive seed remains deliberately small: corpus-prioritized hard and
+soft nouns, regular adjectives, six verbs, reviewed closed-class paradigms, and
+five numerals. The v0.3 additions are primarily high-frequency exact lexical
+evidence. Inflectable additions use `LexicalForm` unless a class or independent
+principal parts have actually been reviewed; that cell supports only its exact
+target form and never enables a productive rule. Productive rules can fill many
+cells of a resolved regular lexeme, but they do not infer an unknown lexeme's
+class or silently import an OCS surface table.
 
 Five accepted OCS/Synodal mappings and one rejected negative control form the
 initial alignment gold set. One target (`градъ`) deliberately obtains only its
@@ -186,15 +208,16 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 - automatic comparison-stem formation, short comparison series, and irregular
   comparison stems other than the reviewed `мꙋдръ` series;
 - reflexive, relative, interrogative, indefinite, and negative pronouns beyond
-  reviewed exact cells; velar-stem determiners such as full `всѧкъ`; collective,
+  reviewed exact cells; the third-person paradigm is exact, not productive;
+  velar-stem determiners such as full `всѧкъ`; collective,
   compound, and irregular cardinal numerals;
 - automatic participle stem formation from an undifferentiated verb stem and
   active short-participle allomorphs outside reviewed exact cells;
 - the supine pending a target-recension normative inventory, productive verbal
   nouns pending lexical suffix metadata, and unregistered irregular verbs;
 - automatic productive accent classes, complete breathing/positional-letter
-  realization, and abbreviation families beyond the reviewed Christian sense
-  of `богъ`; and
+  realization, and abbreviation families beyond the 134 individually typed
+  contraction cells; and
 - automatic syntax, free agreement/government, dropped copulas, future
   auxiliaries `хотѣти`/`начати`, and the wider periphrastic inventory of Alypy
   §90.
@@ -202,8 +225,11 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 These are coverage gaps, not invitations to guess. Direct calls return
 `MissingPrincipalPart`, `UnsupportedFormation`, `UnsupportedCell`,
 `HistoricallyInvalidCell`, or an orthographic metadata error as appropriate.
-The 38-cell real-text evaluation is still deliberately bounded. It returns all
-38 expected forms in the top-k set and 37 as top-1; the reported `трїе`/`три`
-ordering is a real grammar-table-versus-corpus variant distinction. These are
-regression metrics for held-out registered forms and must not be read as
-language-wide accuracy.
+The real-text evaluation now contains 537 passage-disjoint morphology cells plus
+five analytic phrase cases and 49 separately scored typed contractions. Under
+Productive and Exploratory, expanded output is 532/537 top-1 and 537/537 top-k;
+printed output is 526/537 top-1 and 537/537 top-k. Strict preserves the intended
+inherited-cell abstention. All 49 contraction cases pass expansion and typed
+reverse lookup, with 40/49 top-1, and all 446 masked-cell leakage controls retain
+the expected top-k result. These remain regression metrics for registered forms,
+not language-wide accuracy.

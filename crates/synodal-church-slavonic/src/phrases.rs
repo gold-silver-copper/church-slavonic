@@ -151,13 +151,23 @@ pub fn analytic_passive(
     person: Person,
     number: Number,
 ) -> Result<RealizedPhrase> {
+    analytic_passive_with(lemma, participle_cell, person, number, Inflector::default())
+}
+
+pub fn analytic_passive_with(
+    lemma: &str,
+    participle_cell: ParticipleCell,
+    person: Person,
+    number: Number,
+    inflector: Inflector,
+) -> Result<RealizedPhrase> {
     if participle_cell.voice != ParticipleVoice::Passive {
         return Err(Error::HistoricallyInvalidCell {
             reason: "analytic passive requires a passive participle".into(),
         });
     }
-    let participle = Participle::resolve(lemma)?;
-    let copula = Verb::resolve("быти")?;
+    let participle = Participle::resolve_with(lemma, inflector)?;
+    let copula = Verb::resolve_with("быти", inflector)?;
     RealizedPhrase::new(
         AnalyticConstruction::AnalyticPassive,
         vec![
@@ -221,7 +231,22 @@ mod tests {
         let pluperfect = pluperfect("писати", Person::Third, Number::Singular, Gender::Masculine)
             .expect("supported pluperfect");
         assert_eq!(pluperfect.primary_text(), "писалъ бѣ");
-        assert_eq!(pluperfect.tokens()[1].forms.variants().len(), 2);
+        let copulas = pluperfect.tokens()[1].forms.variants();
+        assert_eq!(copulas.len(), 3);
+        assert_eq!(
+            copulas
+                .iter()
+                .filter(|variant| variant.is_attested())
+                .count(),
+            1
+        );
+        assert_eq!(
+            copulas
+                .iter()
+                .filter(|variant| variant.is_predicted())
+                .count(),
+            2
+        );
 
         let conditional = conditional("писати", Person::First, Number::Singular, Gender::Masculine)
             .expect("supported conditional");

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "milestone": "synodal-v0.5",
+  "target_recension": "synodal-russian",
+  "generation_policy": "strict",
+  "orthography_profile": "synodal-liturgical",
+  "tokenizer_contract": "synodal-dictionary-tokenize-v1",
+  "corpus": {
+    "passages": 74130,
+    "tokens": 1313344,
+    "token_types": 57476,
+    "source_ids": [
+      "ponomar-elizabeth-bible-2026-08-09",
+      "wikisource-church-slavonic-bible-2026-08-09"
+    ],
+    "partitions": [
+      "evaluation",
+      "source"
+    ]
+  },
+  "registry": {
+    "reviewed_lexemes": 580,
+    "reviewed_senses": 580,
+    "generated_exact_forms": 1707,
+    "exact_only_lexemes": 526,
+    "fully_classed_lexemes": 51,
+    "partial_lexemes": 3,
+    "principal_parts": 29,
+    "typed_abbreviations": 134
+  },
+  "coverage": {
+    "top_1_analyzed": 534615,
+    "top_k_analyzed": 792421,
+    "ambiguous": 14599,
+    "cyrillic_numerals": 197,
+    "top_k_uncovered": 520726,
+    "unresolved": 519542,
+    "by_status": {
+      "abbreviation-expansion": 38146,
+      "ambiguous": 14599,
+      "cyrillic-numeral": 197,
+      "exact-synodal-attestation": 498972,
+      "spelling-variant": 1184,
+      "synodal-normative-table": 222116,
+      "synodal-productive-rule": 18588,
+      "unresolved": 519542
+    },
+    "by_gap": {
+      "ambiguity-or-spelling-variant": 15783,
+      "missing-accent-or-orthographic-metadata": 7985,
+      "unknown-lexeme": 511557
+    },
+    "estimated_recovery_by_route": {
+      "abbreviation-registry": 21204,
+      "exact-evidence": 1393,
+      "spelling-variant": 9169,
+      "ungrouped-unknown": 488960
+    }
+  },
+  "evaluation": {
+    "morphological_cells": 537,
+    "analytic_phrases": 5,
+    "abbreviation_cells": 49,
+    "expanded_top_1": 532,
+    "expanded_top_k": 537,
+    "printed_top_1": 526,
+    "printed_top_k": 537,
+    "strict_top_k": 537,
+    "masked_expanded_top_k": 446,
+    "masked_printed_top_k": 446,
+    "evaluation_runtime_passage_overlap": 0
+  },
+  "reviews": {
+    "family_admitted": 15,
+    "family_deferred": 375,
+    "family_rejected": 3,
+    "current_top_200_decided": 200,
+    "current_queue_deferred": 249,
+    "current_queue_rejected": 1,
+    "current_queue_unreviewed": 750
+  },
+  "marginal": {
+    "batches": 996,
+    "overlap_adjusted_tokens": 190042,
+    "diagnostic_projected_top_k": 982463,
+    "by_route": {
+      "abbreviation-registry": 11405,
+      "spelling-variant": 2969,
+      "ungrouped-unknown": 175668
+    },
+    "by_readiness_effort": {
+      "ready/small": 1828,
+      "partial/medium": 13595,
+      "partial/large": 36870,
+      "weak/large": 137288,
+      "blocked/small": 461
+    }
+  },
+  "artifact_sha256": {
+    "crates/synodal-church-slavonic-dictionary/generated/registry.rs": "6cfd62cd656e77316d25ce1cb0a398ee40a0e64fe85a7d2b7219ab17ad91ab42",
+    "crates/synodal-church-slavonic/generated/registry.rs": "819eebed9adc8c7ae33c91beb5376f18af16feccca7adb8820327355ec5765fd",
+    "data/synodal/abbreviations.tsv": "7277a2eda15d338d8d060c28af958835ee403f2e234b866e55f5c4e4004c91c3",
+    "data/synodal/exact_forms.tsv": "7a5a567a3406bcb4e157f866a52f77feb5b4b1952088988be11148d1d663db31",
+    "data/synodal/family_reviews.tsv": "4f70881eb6f148b140433045f25a84808b5e1638a001c75472817df3fd3312cd",
+    "data/synodal/lexical_reviews.tsv": "de05547338b90eb6ac006bf4c71e3779527168b898c538fb08dca94a8dde6b03",
+    "docs/SYNODAL_V05_TOP_K_COVERAGE_AUDIT.md": "465c4fe9b48a45d42bb1c4f356c24de2e536155a5a32a0a70453b5151618a92e",
+    "reports/synodal-coverage.json": "215544d4ab9498c26ea9bb53166d66299db111e3825af1fb473b5443b3fd560f",
+    "reports/synodal-evaluation.json": "b8abecea408dec0a293270cc266015f7c9c7a47dc98efa9c0f79deb446cb9c72",
+    "reports/synodal-family-review-queue.json": "93134e4f0a733aeeba21a8571f27f9de309781843c0e70975b8b4b9abecd503c",
+    "reports/synodal-marginal-recovery.json": "a4cf91b0051aa25d0a396f01850c07ae9d54fa3083f70829d96aa03086351470"
+  },
+  "sources": [
+    {
+      "path": "data/intermediate/synodal/ponomar-elizabeth-bible-2026-08-09.jsonl",
+      "sha256": "ef0323df940c93c9b72a3cbb6f7adfb062ba38ffcdcf401eff5cf369c4869c26",
+      "evaluation_passages": 7574,
+      "source_passages": 29637
+    },
+    {
+      "path": "data/intermediate/synodal/wikisource-church-slavonic-bible-2026-08-09.jsonl",
+      "sha256": "913d9781ef511988d8bcc5d19b1b8c63c7582cd5e476f62469eff199e7c2c08f",
+      "evaluation_passages": 7481,
+      "source_passages": 29438
+    }
+  ]
+}

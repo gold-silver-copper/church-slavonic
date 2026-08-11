@@ -91,10 +91,73 @@ files, evaluates held-out rows, and proves that source locks did not change.
 6. `data/synodal/evaluation.tsv` and raw corpus passages are evaluation-only and
    cannot enter runtime packages.
 
+`data/synodal/lexical_reviews.tsv` is the v0.3 admission overlay. A reviewed row
+links one independently sourced semantic candidate to one locked target passage;
+rejected rows and their reasons remain in the same table. Inflectable rows
+without independently reviewed class or principal-part metadata become exact
+`LexicalForm` evidence only. Source adapters and queue generators are forbidden
+from writing this table. A semantic candidate may be inherited OCS evidence or
+a Synodal normative source, but it must name a different source and candidate
+from the target-passage attestation. A normative semantic candidate therefore
+cannot serve as its own corpus witness.
+
+`data/synodal/family_reviews.tsv` is the v0.4 morphological-family decision
+layer. Its admitted rows cite the target lexeme, exact table or class scope,
+stems/alternants where applicable, accent and positional metadata, normative and
+target evidence, semantic identity, confidence, assumptions, and an explicit
+review note. Deferred and rejected top-200 proposals remain in the same durable
+table. Queue generation never edits it.
+
 Reviewed evidence points to stable candidate IDs. A full bootstrap fails if a
 reviewed candidate disappears or changes. OCS records retain an OCS source
 recension and can affect generation only through a reviewed mapping; they never
 become exact Synodal rows.
+
+## Corpus coverage and review queues
+
+The report-producing commands use existing normalized intermediate candidates;
+they do not add raw-source adapters to the runtime CLI:
+
+```sh
+cargo xtask synodal-coverage --fixture --offline
+cargo xtask synodal-coverage --offline
+cargo xtask synodal-lexical-review-queue
+cargo xtask synodal-evaluation-queue
+cargo xtask synodal-family-review-queue
+cargo xtask synodal-marginal-recovery
+cargo xtask synodal-v06-review-packets
+cargo xtask synodal-v04-audit --check
+cargo xtask synodal-v05-audit
+cargo xtask synodal-v06-audit --check
+```
+
+Full coverage reads only the Ponomar and exact-revision Wikisource records whose
+target recension is `synodal-russian`, retains source and passage identities,
+and writes deterministic JSON/Markdown plus the ordered gap TSV under
+`reports/`. The fixture is committed in `data/synodal/coverage_passages.tsv` and
+has a stable hash test.
+
+The lexical queue cross-matches target source-partition frequency with English
+Wiktionary OCS semantics. The OCS candidate contributes only a proposed meaning;
+it is never target surface evidence. Already admitted `(lemma, part of speech)`
+pairs are excluded, ambiguous OCS paradigm owners are retained as blocked rows,
+and output is candidate-only. The evaluation queue searches evaluation-partition
+passages that are disjoint from training and lexical-review evidence. It blocks
+surface matches shared by multiple generated cells and never promotes a match
+without context review.
+
+The family queue groups repeated unresolved surfaces conservatively for human
+review and records contexts, possible cells, known and dictionary candidates,
+missing metadata, assumptions, contradictions, and stable candidate IDs. Its
+`--check` gate requires decisions for the top 200 current proposals. The
+marginal-recovery report overlap-adjusts unresolved candidate batches and makes
+the remaining token requirement explicit without granting coverage. The v0.4
+audit verifies a locked historical snapshot and digest. The v0.5 audit
+deterministically compares that baseline with the current registries, coverage,
+evaluation, family decisions, marginal diagnostics, and remaining gaps.
+
+See `SYNODAL_CLI_AND_COVERAGE.md` for normalized input formats, gap precedence,
+and consumer-facing commands.
 
 ## Refresh review
 

@@ -27,6 +27,43 @@ are gitignored and excluded from packages. See `docs/SYNODAL_RECENSION.md`,
 `docs/SYNODAL_DATA_PIPELINE.md` and `reports/synodal-evaluation.md` for the
 implemented boundary, reproducible commands, and measured held-out coverage.
 
+## Synodal dictionary and coverage CLI
+
+The v0.5 Synodal registry contains 580 reviewed lexemes, 580 reviewed senses,
+and 1,707 generated exact normative or target-attested forms. The `synodal-dict` executable
+searches and displays the registry, performs ambiguity-preserving reverse
+analysis, displays reviewed and proposed morphological families, validates
+application vocabulary, checks rendered text, and creates typed corpus-coverage
+reports:
+
+```bash
+cargo install --path crates/synodal-church-slavonic-dictionary
+synodal-dict search "king" --pos noun
+synodal-dict show synodal:verb:byti
+synodal-dict analyze 'бꙋ́детъ' --profile printed
+synodal-dict families 'весь' --json
+synodal-dict show-family family:synodal:determiner:ves --json
+synodal-dict check-text rendered.txt --strict
+synodal-dict coverage passages.tsv --by-family --json-out coverage.json
+```
+
+The committed full report is reproduced with
+`cargo xtask synodal-coverage --offline`; review queues are reproduced with
+`cargo xtask synodal-lexical-review-queue` and
+`cargo xtask synodal-evaluation-queue`; the family queue, overlap-adjusted
+marginal-recovery report, and audits use
+`cargo xtask synodal-family-review-queue` and
+`cargo xtask synodal-marginal-recovery`,
+`cargo xtask synodal-v04-audit --check`, and
+`cargo xtask synodal-v05-audit`; v0.6 family packets and the completed 65% audit
+use `cargo xtask synodal-v06-review-packets` and
+`cargo xtask synodal-v06-audit --check`. See
+[`docs/SYNODAL_CLI_AND_COVERAGE.md`](docs/SYNODAL_CLI_AND_COVERAGE.md) for command
+and input formats, gap precedence, thresholds, and the evidence-review workflow.
+The 1,187-cell morphology evaluation, five analytic phrases, and 64 typed
+abbreviation cases remain registered-form regression suites, not claims of
+language-wide accuracy.
+
 ## Old Church Slavonic inflection
 
 `old-church-slavonic` is a fast, offline inflector for canonical **Old Church

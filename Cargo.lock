@@ -380,7 +380,7 @@ dependencies = [
 
 [[package]]
 name = "synodal-church-slavonic"
-version = "0.2.0"
+version = "0.4.0"
 dependencies = [
  "serde",
  "synodal-church-slavonic-core",
@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "synodal-church-slavonic-core"
-version = "0.2.0"
+version = "0.4.0"
 dependencies = [
  "serde",
  "unicode-normalization",
@@ -396,11 +396,13 @@ dependencies = [
 
 [[package]]
 name = "synodal-church-slavonic-dictionary"
-version = "0.2.0"
+version = "0.4.0"
 dependencies = [
  "serde",
+ "serde_json",
  "synodal-church-slavonic",
  "synodal-church-slavonic-core",
+ "unicode-normalization",
 ]
 
 [[package]]
@@ -413,6 +415,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "synodal-church-slavonic-core",
+ "unicode-normalization",
 ]
 
 [[package]]
@@ -522,6 +525,7 @@ dependencies = [
  "synodal-church-slavonic-dictionary",
  "synodal-church-slavonic-extractor",
  "toml",
+ "unicode-normalization",
 ]
 
 [[package]]

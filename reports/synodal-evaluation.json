@@ -1,21 +1,22 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "target_recension": "synodal-russian",
   "fixture_source": "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
-  "fixture_rows": 38,
-  "phrase_fixture_rows": 1,
+  "fixture_rows": 1187,
+  "phrase_fixture_rows": 5,
+  "abbreviation_fixture_rows": 64,
   "expanded": {
-    "total": 38,
-    "returned": 38,
-    "top_1_correct": 37,
-    "top_k_correct": 38,
+    "total": 1187,
+    "returned": 1187,
+    "top_1_correct": 1163,
+    "top_k_correct": 1187,
     "abstained": 0
   },
   "printed": {
-    "total": 38,
-    "returned": 38,
-    "top_1_correct": 37,
-    "top_k_correct": 38,
+    "total": 1187,
+    "returned": 1187,
+    "top_1_correct": 1118,
+    "top_k_correct": 1187,
     "abstained": 0
   },
   "expanded_disagreements": [
@@ -23,7 +24,245 @@
       "id": "eval:acts-9-9-tri",
       "cell": "numeral:cardinal:nominative:plural:masculine:inanimate",
       "expected": "три",
-      "returned_top_1": "трїе"
+      "returned_top_1": "трїе",
+      "returned_top_k": [
+        "трїе",
+        "три"
+      ]
+    },
+    {
+      "id": "eval:v05:mnog-nominative-plural",
+      "cell": "adjective:nominative:plural:masculine:animate:short:positive",
+      "expected": "мнѡги",
+      "returned_top_1": "мнози",
+      "returned_top_k": [
+        "мнози",
+        "мнѡги"
+      ]
+    },
+    {
+      "id": "eval:v05:slovo-slovesa",
+      "cell": "noun:accusative:plural:inanimate",
+      "expected": "словеса",
+      "returned_top_1": "слова",
+      "returned_top_k": [
+        "слова",
+        "словеса"
+      ]
+    },
+    {
+      "id": "eval:v05:syn-dative-plural",
+      "cell": "noun:dative:plural:animate",
+      "expected": "сыномъ",
+      "returned_top_1": "сыновомъ",
+      "returned_top_k": [
+        "сыновомъ",
+        "сыномъ"
+      ]
+    },
+    {
+      "id": "eval:v05:ves-genitive-masculine",
+      "cell": "determiner:genitive:singular:masculine:inanimate:short:positive",
+      "expected": "всегѡ",
+      "returned_top_1": "всего",
+      "returned_top_k": [
+        "всего",
+        "всегѡ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-2b01c52cf32cfd85",
+      "cell": "noun:genitive:plural:inanimate",
+      "expected": "бѡлѣзни",
+      "returned_top_1": "болѣзни",
+      "returned_top_k": [
+        "болѣзни",
+        "бѡлѣзни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-32b0b5e0e7691641",
+      "cell": "adjective:nominative:singular:feminine:any:short:positive",
+      "expected": "добрѣ",
+      "returned_top_1": "добра",
+      "returned_top_k": [
+        "добра",
+        "добрѣ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-3dbd30879a2731eb",
+      "cell": "adjective:accusative:singular:neuter:inanimate:short:positive",
+      "expected": "малѡ",
+      "returned_top_1": "мало",
+      "returned_top_k": [
+        "мало",
+        "малѡ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-3ebf5549ab4f08a3",
+      "cell": "noun:nominative:plural:inanimate",
+      "expected": "бѡлѣзни",
+      "returned_top_1": "болѣзни",
+      "returned_top_k": [
+        "болѣзни",
+        "бѡлѣзни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-42beb1ca352eb0f0",
+      "cell": "past:third:singular",
+      "expected": "хождаше",
+      "returned_top_1": "ходи",
+      "returned_top_k": [
+        "ходи",
+        "хождаше"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-42d54c80b1e9c917",
+      "cell": "noun:accusative:singular:animate",
+      "expected": "рабъ",
+      "returned_top_1": "раба",
+      "returned_top_k": [
+        "раба",
+        "рабъ",
+        "рабъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-4939a19e5ab27dde",
+      "cell": "future:third:singular",
+      "expected": "избавитъ",
+      "returned_top_1": "избави",
+      "returned_top_k": [
+        "избави",
+        "избавитъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-614fe964ac48a0dd",
+      "cell": "imperative:second:singular",
+      "expected": "иди",
+      "returned_top_1": "идеши",
+      "returned_top_k": [
+        "идеши",
+        "иди"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-6849b215c9f1b25b",
+      "cell": "past:second:singular",
+      "expected": "прїѧтъ",
+      "returned_top_1": "прїѧ",
+      "returned_top_k": [
+        "прїѧ",
+        "прїѧтъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-70859d2e90da66bc",
+      "cell": "past:third:singular",
+      "expected": "прїѧтъ",
+      "returned_top_1": "прїѧ",
+      "returned_top_k": [
+        "прїѧ",
+        "прїѧтъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-7def29284314daa1",
+      "cell": "adjective:nominative:singular:neuter:any:short:positive",
+      "expected": "малѡ",
+      "returned_top_1": "мало",
+      "returned_top_k": [
+        "мало",
+        "малѡ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-8ee7fc72e685652e",
+      "cell": "noun:dative:singular:inanimate",
+      "expected": "бѡлѣзни",
+      "returned_top_1": "болѣзни",
+      "returned_top_k": [
+        "болѣзни",
+        "бѡлѣзни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-9bae23a5cc72b118",
+      "cell": "past:third:dual",
+      "expected": "рѣсте",
+      "returned_top_1": "рѣста",
+      "returned_top_k": [
+        "рѣста",
+        "рѣсте"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-a52b4e1dc0f77849",
+      "cell": "noun:accusative:singular:animate",
+      "expected": "рабъ",
+      "returned_top_1": "раба",
+      "returned_top_k": [
+        "раба",
+        "рабъ",
+        "рабъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-a9355c2daae719d5",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "словеси",
+      "returned_top_1": "слова",
+      "returned_top_k": [
+        "слова",
+        "словесе",
+        "словеси"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-b058ee586f2816e8",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "бѡлѣзни",
+      "returned_top_1": "болѣзни",
+      "returned_top_k": [
+        "болѣзни",
+        "бѡлѣзни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-c123b072b6cbc74e",
+      "cell": "noun:accusative:plural:inanimate",
+      "expected": "бѡлѣзни",
+      "returned_top_1": "болѣзни",
+      "returned_top_k": [
+        "болѣзни",
+        "бѡлѣзни"
+      ]
+    },
+    {
+      "id": "eval:v06:manual:resha",
+      "cell": "aorist:third:plural",
+      "expected": "рѣша",
+      "returned_top_1": "рекоша",
+      "returned_top_k": [
+        "рекоша",
+        "рѣша"
+      ]
+    },
+    {
+      "id": "eval:v06:slovo-gen-sg",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "словесе",
+      "returned_top_1": "слова",
+      "returned_top_k": [
+        "слова",
+        "словесе",
+        "словеси"
+      ]
     }
   ],
   "printed_disagreements": [
@@ -31,26 +270,747 @@
       "id": "eval:acts-9-9-tri",
       "cell": "numeral:cardinal:nominative:plural:masculine:inanimate",
       "expected": "трѝ",
-      "returned_top_1": "трїѐ"
+      "returned_top_1": "трїѐ",
+      "returned_top_k": [
+        "трїѐ",
+        "трѝ"
+      ]
+    },
+    {
+      "id": "eval:v04:reshchi-aorist-acute",
+      "cell": "aorist:third:singular",
+      "expected": "рече́",
+      "returned_top_1": "речѐ",
+      "returned_top_k": [
+        "речѐ",
+        "рече́"
+      ]
+    },
+    {
+      "id": "eval:v04:ves-masc-nom-pl",
+      "cell": "determiner:nominative:plural:masculine:animate:short:positive",
+      "expected": "всѝ",
+      "returned_top_1": "вси́",
+      "returned_top_k": [
+        "вси́",
+        "всѝ"
+      ]
+    },
+    {
+      "id": "eval:v05:interjection-se-acute-before-li",
+      "cell": "indeclinable",
+      "expected": "се́",
+      "returned_top_1": "сѐ",
+      "returned_top_k": [
+        "сѐ",
+        "се́"
+      ]
+    },
+    {
+      "id": "eval:v05:mnog-nominative-plural",
+      "cell": "adjective:nominative:plural:masculine:animate:short:positive",
+      "expected": "мнѡ́ги",
+      "returned_top_1": "Мно́зи",
+      "returned_top_k": [
+        "Мно́зи",
+        "мнѡ́ги"
+      ]
+    },
+    {
+      "id": "eval:v05:on-capital-plural",
+      "cell": "pronoun:nominative:plural:masculine:third:any",
+      "expected": "Ѻ҆ни́",
+      "returned_top_1": "ѻ҆нѝ",
+      "returned_top_k": [
+        "ѻ҆нѝ",
+        "Ѻ҆ни́"
+      ]
+    },
+    {
+      "id": "eval:v05:slovo-slovesa",
+      "cell": "noun:accusative:plural:inanimate",
+      "expected": "словеса̀",
+      "returned_top_1": "сло́ва",
+      "returned_top_k": [
+        "сло́ва",
+        "словеса̀"
+      ]
+    },
+    {
+      "id": "eval:v05:syn-dative-plural",
+      "cell": "noun:dative:plural:animate",
+      "expected": "сынѡ́мъ",
+      "returned_top_1": "сыновѡ́мъ",
+      "returned_top_k": [
+        "сыновѡ́мъ",
+        "сынѡ́мъ"
+      ]
+    },
+    {
+      "id": "eval:v05:ves-genitive-masculine",
+      "cell": "determiner:genitive:singular:masculine:inanimate:short:positive",
+      "expected": "всегѡ̀",
+      "returned_top_1": "всего̀",
+      "returned_top_k": [
+        "всего̀",
+        "всегѡ̀"
+      ]
+    },
+    {
+      "id": "eval:v05:ves-instrumental-feminine",
+      "cell": "determiner:instrumental:singular:feminine:inanimate:short:positive",
+      "expected": "все́ю",
+      "returned_top_1": "Все́ю",
+      "returned_top_k": [
+        "Все́ю",
+        "все́ю"
+      ]
+    },
+    {
+      "id": "eval:v05:zapoved-omega",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "за́пѡвѣди",
+      "returned_top_1": "за́повѣди",
+      "returned_top_k": [
+        "за́повѣди",
+        "за́пѡвѣди"
+      ]
+    },
+    {
+      "id": "eval:v06:dom-ins-sg",
+      "cell": "noun:instrumental:singular:inanimate",
+      "expected": "домѡ́мъ",
+      "returned_top_1": "до́момъ",
+      "returned_top_k": [
+        "до́момъ",
+        "домѡ́мъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-04cb9846b4c8b6db",
+      "cell": "adjective:genitive:singular:masculine:any:short:positive",
+      "expected": "жи̑ва",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-0642d378eeb6d2a1",
+      "cell": "noun:genitive:plural:animate",
+      "expected": "ра̑бъ",
+      "returned_top_1": "ра́бъ",
+      "returned_top_k": [
+        "ра́бъ",
+        "ра̑бъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-06a0b24fde2ef68e",
+      "cell": "participle:past:passive:nominative:singular:feminine:any:short:positive",
+      "expected": "дана̑",
+      "returned_top_1": "да́на",
+      "returned_top_k": [
+        "да́на",
+        "дана̀",
+        "дана̑"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-0cb4915a0058444d",
+      "cell": "adjective:genitive:singular:masculine:any:short:positive",
+      "expected": "жива̀",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-0eb4c7d99724ca76",
+      "cell": "adjective:nominative:singular:feminine:any:short:positive",
+      "expected": "жи̑ва",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-1a1c91bd40c26893",
+      "cell": "noun:nominative:plural:animate",
+      "expected": "лица̑",
+      "returned_top_1": "ли́ца",
+      "returned_top_k": [
+        "ли́ца",
+        "лица̑"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-1bbb80834ad2a9e3",
+      "cell": "noun:nominative:plural:inanimate",
+      "expected": "кораблѝ",
+      "returned_top_1": "корабли̑",
+      "returned_top_k": [
+        "корабли̑",
+        "кораблѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-206a4cdecc4a38cd",
+      "cell": "past:third:singular",
+      "expected": "живѝ",
+      "returned_top_1": "жи́ви",
+      "returned_top_k": [
+        "жи́ви",
+        "живѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-228dbb9a4fc0132b",
+      "cell": "adjective:genitive:singular:neuter:any:short:positive",
+      "expected": "блага̀",
+      "returned_top_1": "бла̑га",
+      "returned_top_k": [
+        "бла̑га",
+        "блага̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-29b870dbecaf8434",
+      "cell": "noun:nominative:plural:inanimate",
+      "expected": "стада̀",
+      "returned_top_1": "ста́да",
+      "returned_top_k": [
+        "ста́да",
+        "стада̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-2b01c52cf32cfd85",
+      "cell": "noun:genitive:plural:inanimate",
+      "expected": "бѡлѣ́зни",
+      "returned_top_1": "болѣ́зни",
+      "returned_top_k": [
+        "болѣ́зни",
+        "бѡлѣ́зни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-2b60f46e88d4822a",
+      "cell": "past:third:singular",
+      "expected": "родѝ",
+      "returned_top_1": "ро́ди",
+      "returned_top_k": [
+        "ро́ди",
+        "родѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-32b0b5e0e7691641",
+      "cell": "adjective:nominative:singular:feminine:any:short:positive",
+      "expected": "до́брѣ",
+      "returned_top_1": "добра̀",
+      "returned_top_k": [
+        "добра̀",
+        "до́брѣ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-3dbd30879a2731eb",
+      "cell": "adjective:accusative:singular:neuter:inanimate:short:positive",
+      "expected": "ма́лѡ",
+      "returned_top_1": "ма́ло",
+      "returned_top_k": [
+        "ма́ло",
+        "ма́лѡ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-3ebf5549ab4f08a3",
+      "cell": "noun:nominative:plural:inanimate",
+      "expected": "бѡлѣ́зни",
+      "returned_top_1": "болѣ́зни",
+      "returned_top_k": [
+        "болѣ́зни",
+        "бѡлѣ́зни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-42beb1ca352eb0f0",
+      "cell": "past:third:singular",
+      "expected": "хожда́ше",
+      "returned_top_1": "ходѝ",
+      "returned_top_k": [
+        "ходѝ",
+        "хожда́ше"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-42d54c80b1e9c917",
+      "cell": "noun:accusative:singular:animate",
+      "expected": "ра̑бъ",
+      "returned_top_1": "раба̀",
+      "returned_top_k": [
+        "раба̀",
+        "ра́бъ",
+        "ра̑бъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-44358b64f9d85332",
+      "cell": "noun:accusative:plural:inanimate",
+      "expected": "си̑лы",
+      "returned_top_1": "си́лы",
+      "returned_top_k": [
+        "си́лы",
+        "си̑лы"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-4939a19e5ab27dde",
+      "cell": "future:third:singular",
+      "expected": "и҆зба́витъ",
+      "returned_top_1": "и҆зба́ви",
+      "returned_top_k": [
+        "и҆зба́ви",
+        "и҆зба́витъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-4ffbc7e7b44507f2",
+      "cell": "adjective:genitive:singular:neuter:any:short:positive",
+      "expected": "жи̑ва",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-50c0d10124bc5a8f",
+      "cell": "past:third:singular",
+      "expected": "ста́",
+      "returned_top_1": "ста̀",
+      "returned_top_k": [
+        "ста̀",
+        "ста́",
+        "ста̑"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-56b5d1fe76029244",
+      "cell": "noun:genitive:singular:animate",
+      "expected": "лица̑",
+      "returned_top_1": "ли́ца",
+      "returned_top_k": [
+        "ли́ца",
+        "лица̑"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-5e52ffe3a03b4b11",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "си̑лы",
+      "returned_top_1": "си́лы",
+      "returned_top_k": [
+        "си́лы",
+        "си̑лы"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-614fe964ac48a0dd",
+      "cell": "imperative:second:singular",
+      "expected": "и҆дѝ",
+      "returned_top_1": "и҆́деши",
+      "returned_top_k": [
+        "и҆́деши",
+        "и҆дѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-6849b215c9f1b25b",
+      "cell": "past:second:singular",
+      "expected": "прїѧ́тъ",
+      "returned_top_1": "прїѧ̀",
+      "returned_top_k": [
+        "прїѧ̀",
+        "прїѧ́тъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-70859d2e90da66bc",
+      "cell": "past:third:singular",
+      "expected": "прїѧ́тъ",
+      "returned_top_1": "прїѧ̀",
+      "returned_top_k": [
+        "прїѧ̀",
+        "прїѧ́тъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-78d7153e6e0f1e23",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "лица̑",
+      "returned_top_1": "ли́ца",
+      "returned_top_k": [
+        "ли́ца",
+        "лица̑"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-79ad51711e4ee737",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "бра̑ни",
+      "returned_top_1": "бра́ни",
+      "returned_top_k": [
+        "бра́ни",
+        "бра̑ни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-7def29284314daa1",
+      "cell": "adjective:nominative:singular:neuter:any:short:positive",
+      "expected": "ма́лѡ",
+      "returned_top_1": "ма́ло",
+      "returned_top_k": [
+        "ма́ло",
+        "ма́лѡ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-85d3804bb10296b1",
+      "cell": "adjective:nominative:singular:feminine:any:short:positive",
+      "expected": "блага̀",
+      "returned_top_1": "бла̑га",
+      "returned_top_k": [
+        "бла̑га",
+        "блага̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-8dd8e840c4c8884a",
+      "cell": "adjective:nominative:plural:masculine:any:short:positive",
+      "expected": "живѝ",
+      "returned_top_1": "жи́ви",
+      "returned_top_k": [
+        "жи́ви",
+        "живѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-8ee7fc72e685652e",
+      "cell": "noun:dative:singular:inanimate",
+      "expected": "бѡлѣ́зни",
+      "returned_top_1": "болѣ́зни",
+      "returned_top_k": [
+        "болѣ́зни",
+        "бѡлѣ́зни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-95a1539bff67061b",
+      "cell": "adjective:genitive:singular:neuter:any:short:positive",
+      "expected": "жива̀",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-9bae23a5cc72b118",
+      "cell": "past:third:dual",
+      "expected": "рѣ́сте",
+      "returned_top_1": "рѣ́ста",
+      "returned_top_k": [
+        "рѣ́ста",
+        "рѣ́сте"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-9cb2f89f209d1b7f",
+      "cell": "imperative:second:plural",
+      "expected": "творитѐ",
+      "returned_top_1": "твори́те",
+      "returned_top_k": [
+        "твори́те",
+        "творитѐ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-a52b4e1dc0f77849",
+      "cell": "noun:accusative:singular:animate",
+      "expected": "ра́бъ",
+      "returned_top_1": "раба̀",
+      "returned_top_k": [
+        "раба̀",
+        "ра́бъ",
+        "ра̑бъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-a6f75ecf9d155583",
+      "cell": "adjective:nominative:plural:neuter:any:short:positive",
+      "expected": "жива̀",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-a9355c2daae719d5",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "словесѝ",
+      "returned_top_1": "сло́ва",
+      "returned_top_k": [
+        "сло́ва",
+        "словесѐ",
+        "словесѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-af9553144d42df99",
+      "cell": "participle:past:passive:nominative:singular:feminine:any:short:positive",
+      "expected": "дана̀",
+      "returned_top_1": "да́на",
+      "returned_top_k": [
+        "да́на",
+        "дана̀",
+        "дана̑"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-b058ee586f2816e8",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "бѡлѣ́зни",
+      "returned_top_1": "болѣ́зни",
+      "returned_top_k": [
+        "болѣ́зни",
+        "бѡлѣ́зни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-c123b072b6cbc74e",
+      "cell": "noun:accusative:plural:inanimate",
+      "expected": "бѡлѣ́зни",
+      "returned_top_1": "болѣ́зни",
+      "returned_top_k": [
+        "болѣ́зни",
+        "бѡлѣ́зни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-c906e786922f2016",
+      "cell": "adjective:accusative:plural:neuter:inanimate:short:positive",
+      "expected": "блага̀",
+      "returned_top_1": "бла̑га",
+      "returned_top_k": [
+        "бла̑га",
+        "блага̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-cb89ed83a7628524",
+      "cell": "adjective:genitive:singular:masculine:any:short:positive",
+      "expected": "блага̀",
+      "returned_top_1": "бла̑га",
+      "returned_top_k": [
+        "бла̑га",
+        "блага̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-cccf40d2cf68ed75",
+      "cell": "past:third:singular",
+      "expected": "ста̑",
+      "returned_top_1": "ста̀",
+      "returned_top_k": [
+        "ста̀",
+        "ста́",
+        "ста̑"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-d0b0242925123bef",
+      "cell": "noun:nominative:plural:inanimate",
+      "expected": "ри̑зы",
+      "returned_top_1": "ри́зы",
+      "returned_top_k": [
+        "ри́зы",
+        "ри̑зы"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-de69e9e2163ace8a",
+      "cell": "noun:locative:singular:inanimate",
+      "expected": "кораблѝ",
+      "returned_top_1": "корабли̑",
+      "returned_top_k": [
+        "корабли̑",
+        "кораблѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-e2353dc398fa9ef6",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "стада̀",
+      "returned_top_1": "ста́да",
+      "returned_top_k": [
+        "ста́да",
+        "стада̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-e5a8c9295ab08fc8",
+      "cell": "imperative:second:singular",
+      "expected": "живѝ",
+      "returned_top_1": "жи́ви",
+      "returned_top_k": [
+        "жи́ви",
+        "живѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-eb79ebbd741a24c4",
+      "cell": "noun:accusative:plural:inanimate",
+      "expected": "ри̑зы",
+      "returned_top_1": "ри́зы",
+      "returned_top_k": [
+        "ри́зы",
+        "ри̑зы"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-f3432698526965a8",
+      "cell": "noun:nominative:singular:animate",
+      "expected": "ра̑бъ",
+      "returned_top_1": "ра́бъ",
+      "returned_top_k": [
+        "ра́бъ",
+        "ра̑бъ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-f4d20f271a374033",
+      "cell": "adjective:nominative:singular:feminine:any:short:positive",
+      "expected": "жива̀",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-f9412ea965195abe",
+      "cell": "present:second:plural",
+      "expected": "творитѐ",
+      "returned_top_1": "твори́те",
+      "returned_top_k": [
+        "твори́те",
+        "творитѐ"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-fa7076f43321c9ce",
+      "cell": "adjective:nominative:plural:neuter:any:short:positive",
+      "expected": "жи̑ва",
+      "returned_top_1": "жи́ва",
+      "returned_top_k": [
+        "жи́ва",
+        "жи̑ва",
+        "жива̀"
+      ]
+    },
+    {
+      "id": "eval:v06:manual:resha",
+      "cell": "aorist:third:plural",
+      "expected": "рѣ́ша",
+      "returned_top_1": "реко́ша",
+      "returned_top_k": [
+        "реко́ша",
+        "рѣ́ша"
+      ]
+    },
+    {
+      "id": "eval:v06:noshch-gen-sg",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "нощѝ",
+      "returned_top_1": "но́щи",
+      "returned_top_k": [
+        "но́щи",
+        "нощѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:slovo-gen-sg",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "словесѐ",
+      "returned_top_1": "сло́ва",
+      "returned_top_k": [
+        "сло́ва",
+        "словесѐ",
+        "словесѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:strana-gen-sg",
+      "cell": "noun:genitive:singular:inanimate",
+      "expected": "страны̑",
+      "returned_top_1": "страны̀",
+      "returned_top_k": [
+        "страны̀",
+        "страны̑"
+      ]
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 260,
-    "returned": 260,
-    "top_1_correct": 219,
-    "top_k_correct": 260,
+    "total": 1876,
+    "returned": 1876,
+    "top_1_correct": 1737,
+    "top_k_correct": 1876,
     "abstained": 0
   },
   "exact_registry_printed_round_trip": {
-    "total": 260,
-    "returned": 260,
-    "top_1_correct": 219,
-    "top_k_correct": 260,
+    "total": 1876,
+    "returned": 1876,
+    "top_1_correct": 1628,
+    "top_k_correct": 1876,
     "abstained": 0
   },
-  "accent_bearing_rows": 36,
-  "exact_accent_agreement": 36,
+  "accent_bearing_rows": 1091,
+  "exact_accent_agreement": 1091,
   "by_regularity": {
+    "closed-class-held-out-exact-cell": {
+      "total": 25,
+      "returned": 25,
+      "top_1_correct": 25,
+      "top_k_correct": 25,
+      "abstained": 0
+    },
+    "closed-class-held-out-normative": {
+      "total": 30,
+      "returned": 30,
+      "top_1_correct": 30,
+      "top_k_correct": 30,
+      "abstained": 0
+    },
+    "exact-held-out-lexical": {
+      "total": 384,
+      "returned": 384,
+      "top_1_correct": 384,
+      "top_k_correct": 384,
+      "abstained": 0
+    },
     "irregular": {
       "total": 7,
       "returned": 7,
@@ -92,37 +1052,219 @@
       "top_1_correct": 1,
       "top_k_correct": 1,
       "abstained": 0
+    },
+    "reviewed-real-passage-normative": {
+      "total": 15,
+      "returned": 15,
+      "top_1_correct": 15,
+      "top_k_correct": 15,
+      "abstained": 0
+    },
+    "v04-held-out-exact-irregular": {
+      "total": 7,
+      "returned": 7,
+      "top_1_correct": 7,
+      "top_k_correct": 7,
+      "abstained": 0
+    },
+    "v04-held-out-normative-family": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-cardinal-cell": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-closed-class": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "v05-held-out-determiner-variant": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-exact-adjective": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 0,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-exact-irregular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-exact-noun": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-exact-numeral": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "v05-held-out-exact-verb": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "v05-held-out-irregular-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 0,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-mixed-determiner": {
+      "total": 8,
+      "returned": 8,
+      "top_1_correct": 7,
+      "top_k_correct": 8,
+      "abstained": 0
+    },
+    "v05-held-out-negative-irregular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-noun-variant": {
+      "total": 4,
+      "returned": 4,
+      "top_1_correct": 3,
+      "top_k_correct": 4,
+      "abstained": 0
+    },
+    "v05-held-out-positional-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-positional-variant": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-proper-name": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "v05-held-out-relative-pronoun": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v05-held-out-third-person-variant": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v06-held-out-exact-cell": {
+      "total": 81,
+      "returned": 81,
+      "top_1_correct": 80,
+      "top_k_correct": 81,
+      "abstained": 0
+    },
+    "v06-held-out-exact-irregular": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "v06-held-out-lexical-identity": {
+      "total": 61,
+      "returned": 61,
+      "top_1_correct": 61,
+      "top_k_correct": 61,
+      "abstained": 0
+    },
+    "v06-held-out-manual-exact": {
+      "total": 13,
+      "returned": 13,
+      "top_1_correct": 12,
+      "top_k_correct": 13,
+      "abstained": 0
+    },
+    "v06-held-out-normative-table": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "v06-held-out-source-typed-exact": {
+      "total": 485,
+      "returned": 485,
+      "top_1_correct": 468,
+      "top_k_correct": 485,
+      "abstained": 0
     }
   },
   "by_policy": {
     "exploratory": {
-      "total": 38,
-      "returned": 38,
-      "top_1_correct": 37,
-      "top_k_correct": 38,
+      "total": 1187,
+      "returned": 1187,
+      "top_1_correct": 1163,
+      "top_k_correct": 1187,
       "abstained": 0
     },
     "productive": {
-      "total": 38,
-      "returned": 38,
-      "top_1_correct": 37,
-      "top_k_correct": 38,
+      "total": 1187,
+      "returned": 1187,
+      "top_1_correct": 1163,
+      "top_k_correct": 1187,
       "abstained": 0
     },
     "strict": {
-      "total": 38,
-      "returned": 37,
-      "top_1_correct": 36,
-      "top_k_correct": 37,
-      "abstained": 1
+      "total": 1187,
+      "returned": 1187,
+      "top_1_correct": 1163,
+      "top_k_correct": 1187,
+      "abstained": 0
     }
   },
   "by_attestation_status": {
     "attested": {
-      "total": 0,
-      "returned": 0,
-      "top_1_correct": 0,
-      "top_k_correct": 0,
+      "total": 1084,
+      "returned": 1084,
+      "top_1_correct": 1061,
+      "top_k_correct": 1084,
       "abstained": 0
     },
     "expected-form-not-returned": {
@@ -133,145 +1275,215 @@
       "abstained": 0
     },
     "predicted": {
-      "total": 38,
-      "returned": 38,
-      "top_1_correct": 37,
-      "top_k_correct": 38,
+      "total": 103,
+      "returned": 103,
+      "top_1_correct": 102,
+      "top_k_correct": 103,
       "abstained": 0
     }
   },
   "by_morphological_system": {
+    "adjective": {
+      "total": 75,
+      "returned": 75,
+      "top_1_correct": 71,
+      "top_k_correct": 75,
+      "abstained": 0
+    },
     "aorist": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+      "total": 14,
+      "returned": 14,
+      "top_1_correct": 13,
+      "top_k_correct": 14,
+      "abstained": 0
+    },
+    "determiner": {
+      "total": 13,
+      "returned": 13,
+      "top_1_correct": 12,
+      "top_k_correct": 13,
+      "abstained": 0
+    },
+    "future": {
+      "total": 26,
+      "returned": 26,
+      "top_1_correct": 25,
+      "top_k_correct": 26,
       "abstained": 0
     },
     "imperative": {
-      "total": 2,
-      "returned": 2,
-      "top_1_correct": 2,
-      "top_k_correct": 2,
+      "total": 29,
+      "returned": 29,
+      "top_1_correct": 28,
+      "top_k_correct": 29,
+      "abstained": 0
+    },
+    "imperfect": {
+      "total": 3,
+      "returned": 3,
+      "top_1_correct": 3,
+      "top_k_correct": 3,
+      "abstained": 0
+    },
+    "indeclinable": {
+      "total": 64,
+      "returned": 64,
+      "top_1_correct": 64,
+      "top_k_correct": 64,
+      "abstained": 0
+    },
+    "infinitive": {
+      "total": 4,
+      "returned": 4,
+      "top_1_correct": 4,
+      "top_k_correct": 4,
       "abstained": 0
     },
     "l-participle": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+      "total": 8,
+      "returned": 8,
+      "top_1_correct": 8,
+      "top_k_correct": 8,
+      "abstained": 0
+    },
+    "lexical-form": {
+      "total": 408,
+      "returned": 408,
+      "top_1_correct": 408,
+      "top_k_correct": 408,
       "abstained": 0
     },
     "noun": {
-      "total": 17,
-      "returned": 17,
-      "top_1_correct": 17,
-      "top_k_correct": 17,
+      "total": 323,
+      "returned": 323,
+      "top_1_correct": 312,
+      "top_k_correct": 323,
       "abstained": 0
     },
     "numeral": {
-      "total": 5,
-      "returned": 5,
-      "top_1_correct": 4,
-      "top_k_correct": 5,
+      "total": 19,
+      "returned": 19,
+      "top_1_correct": 18,
+      "top_k_correct": 19,
       "abstained": 0
     },
     "participle": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+      "total": 23,
+      "returned": 23,
+      "top_1_correct": 23,
+      "top_k_correct": 23,
+      "abstained": 0
+    },
+    "past": {
+      "total": 73,
+      "returned": 73,
+      "top_1_correct": 69,
+      "top_k_correct": 73,
       "abstained": 0
     },
     "present": {
-      "total": 5,
-      "returned": 5,
-      "top_1_correct": 5,
-      "top_k_correct": 5,
+      "total": 36,
+      "returned": 36,
+      "top_1_correct": 36,
+      "top_k_correct": 36,
       "abstained": 0
     },
     "pronoun": {
-      "total": 6,
-      "returned": 6,
-      "top_1_correct": 6,
-      "top_k_correct": 6,
+      "total": 69,
+      "returned": 69,
+      "top_1_correct": 69,
+      "top_k_correct": 69,
       "abstained": 0
     }
   },
   "by_provenance_path": {
-    "inherited-ocs-prediction": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+    "exact-synodal-attestation": {
+      "total": 1083,
+      "returned": 1083,
+      "top_1_correct": 1061,
+      "top_k_correct": 1083,
       "abstained": 0
     },
     "synodal-normative-table": {
-      "total": 18,
-      "returned": 18,
-      "top_1_correct": 17,
-      "top_k_correct": 18,
+      "total": 83,
+      "returned": 83,
+      "top_1_correct": 81,
+      "top_k_correct": 83,
       "abstained": 0
     },
     "synodal-productive-rule": {
-      "total": 19,
-      "returned": 19,
-      "top_1_correct": 19,
-      "top_k_correct": 19,
+      "total": 21,
+      "returned": 21,
+      "top_1_correct": 21,
+      "top_k_correct": 21,
       "abstained": 0
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
-      "total": 38,
-      "returned": 38,
-      "top_1_correct": 37,
-      "top_k_correct": 38,
+      "total": 1180,
+      "returned": 1180,
+      "top_1_correct": 1156,
+      "top_k_correct": 1180,
+      "abstained": 0
+    },
+    "wikisource-church-slavonic-bible-2026-08-09": {
+      "total": 7,
+      "returned": 7,
+      "top_1_correct": 7,
+      "top_k_correct": 7,
       "abstained": 0
     }
   },
   "abstention_reasons": {},
   "phrase_expanded": {
-    "total": 1,
-    "returned": 1,
-    "top_1_correct": 1,
-    "top_k_correct": 1,
+    "total": 5,
+    "returned": 5,
+    "top_1_correct": 5,
+    "top_k_correct": 5,
     "abstained": 0
   },
   "phrase_printed": {
-    "total": 1,
-    "returned": 1,
-    "top_1_correct": 1,
-    "top_k_correct": 1,
+    "total": 5,
+    "returned": 5,
+    "top_1_correct": 5,
+    "top_k_correct": 5,
+    "abstained": 0
+  },
+  "abbreviation_expansion": {
+    "total": 64,
+    "returned": 64,
+    "top_1_correct": 55,
+    "top_k_correct": 64,
     "abstained": 0
   },
   "leakage": {
     "masked_expanded": {
-      "total": 29,
-      "returned": 29,
-      "top_1_correct": 28,
-      "top_k_correct": 29,
+      "total": 506,
+      "returned": 506,
+      "top_1_correct": 505,
+      "top_k_correct": 506,
       "abstained": 0
     },
     "masked_printed": {
-      "total": 29,
-      "returned": 29,
-      "top_1_correct": 28,
-      "top_k_correct": 29,
+      "total": 506,
+      "returned": 506,
+      "top_1_correct": 505,
+      "top_k_correct": 506,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_expanded": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+      "total": 0,
+      "returned": 0,
+      "top_1_correct": 0,
+      "top_k_correct": 0,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_printed": {
-      "total": 1,
-      "returned": 1,
-      "top_1_correct": 1,
-      "top_k_correct": 1,
+      "total": 0,
+      "returned": 0,
+      "top_1_correct": 0,
+      "top_k_correct": 0,
       "abstained": 0
     }
   },
@@ -285,38 +1497,14 @@
     "gold_admission_false_positives": 0,
     "gold_admission_precision_basis_points": 10000,
     "evaluated_inherited_cells": 1,
-    "extra_returned_cells": 1,
-    "exact_expanded_cells": 1,
-    "by_mapping_kind": {
-      "identity": {
-        "total": 1,
-        "returned": 1,
-        "top_1_correct": 1,
-        "top_k_correct": 1,
-        "abstained": 0
-      }
-    },
-    "by_morphological_system": {
-      "noun": {
-        "total": 1,
-        "returned": 1,
-        "top_1_correct": 1,
-        "top_k_correct": 1,
-        "abstained": 0
-      }
-    },
-    "by_confidence_band": {
-      "high-9500-10000": {
-        "total": 1,
-        "returned": 1,
-        "top_1_correct": 1,
-        "top_k_correct": 1,
-        "abstained": 0
-      }
-    },
-    "mean_returned_confidence_basis_points": 9500,
-    "empirical_exactness_basis_points": 10000,
-    "absolute_calibration_gap_basis_points": 500
+    "extra_returned_cells": 0,
+    "exact_expanded_cells": 0,
+    "by_mapping_kind": {},
+    "by_morphological_system": {},
+    "by_confidence_band": {},
+    "mean_returned_confidence_basis_points": null,
+    "empirical_exactness_basis_points": null,
+    "absolute_calibration_gap_basis_points": null
   },
   "limitations": [
     "The current real-text slice is intentionally small and reports counts, not statistical confidence.",

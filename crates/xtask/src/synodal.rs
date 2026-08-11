@@ -14,12 +14,13 @@ use synodal_church_slavonic::{
     AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, FiniteTense, FiniteVerbCell, Gender,
     GenerationPolicy, GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, Number,
     NumeralCell, NumeralKind, OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice,
-    Person, PronounCell, RealizedPhrase, phrases,
+    Person, PronounCell, RealizedPhrase, abbreviation, phrases,
 };
 use synodal_church_slavonic_core::FormSource;
 
 const EVALUATION_HEADER: &str = "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
 const PHRASE_EVALUATION_HEADER: &str = "id\tconstruction\tlemma\tperson\tnumber\tgender\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
+const ABBREVIATION_EVALUATION_HEADER: &str = "id\tlexeme_id\tsense_id\tcell\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
 
 #[derive(Clone, Debug)]
 struct EvaluationRow {
@@ -43,6 +44,19 @@ struct PhraseEvaluationRow {
     person: Person,
     number: Number,
     gender: Gender,
+    expected_expanded: String,
+    expected_printed: String,
+    source_id: String,
+    passage: String,
+    regularity: String,
+}
+
+#[derive(Clone, Debug)]
+struct AbbreviationEvaluationRow {
+    id: String,
+    lexeme_id: LexemeId,
+    sense_id: String,
+    cell: GrammarCell,
     expected_expanded: String,
     expected_printed: String,
     source_id: String,
@@ -95,6 +109,7 @@ struct EvaluationReport {
     fixture_source: &'static str,
     fixture_rows: usize,
     phrase_fixture_rows: usize,
+    abbreviation_fixture_rows: usize,
     expanded: MetricSlice,
     printed: MetricSlice,
     expanded_disagreements: Vec<EvaluationDisagreement>,
@@ -112,6 +127,7 @@ struct EvaluationReport {
     abstention_reasons: BTreeMap<String, usize>,
     phrase_expanded: MetricSlice,
     phrase_printed: MetricSlice,
+    abbreviation_expansion: MetricSlice,
     leakage: LeakageMetrics,
     inheritance: InheritanceMetrics,
     limitations: Vec<&'static str>,
@@ -123,6 +139,7 @@ struct EvaluationDisagreement {
     cell: String,
     expected: String,
     returned_top_1: Option<String>,
+    returned_top_k: Vec<String>,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -639,6 +656,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
     let mut normalized_tables = BTreeMap::new();
     for name in [
         "abbreviations.tsv",
+        "abbreviation_evaluation.tsv",
         "accents.tsv",
         "alignments.tsv",
         "conflicts.tsv",
@@ -646,6 +664,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         "exact_forms.tsv",
         "examples.tsv",
         "irregular_overrides.tsv",
+        "lexical_reviews.tsv",
         "lexemes.tsv",
         "positional_rules.tsv",
         "principal_parts.tsv",
@@ -889,6 +908,29 @@ fn check_partition_disjointness(root: &Path) -> Result<(), Box<dyn Error>> {
         }
     }
 
+    // The v0.3 lexical-review overlay is also generation evidence. It is kept
+    // separate from the older training manifest because many lexemes share a
+    // passage, but its source-partition passages must obey the same disjoint
+    // evaluation boundary.
+    let lexical_reviews = fs::read_to_string(root.join("data/synodal/lexical_reviews.tsv"))?;
+    let mut lines = lexical_reviews.lines();
+    let expected_header = "review_id\tlexeme_id\tsense_id\tlemma\tpart_of_speech\tcell\texpanded\tprinted\tgloss\tdomains\tsemantic_source_id\tsemantic_candidate_id\tattestation_source_id\tattestation_candidate_id\tcitation\tdecision\ttarget_recension\treview_note";
+    if lines.next() != Some(expected_header) {
+        return Err("invalid Synodal lexical-review header".into());
+    }
+    for (offset, line) in lines.enumerate() {
+        if line.is_empty() {
+            continue;
+        }
+        let fields: Vec<_> = line.split('\t').collect();
+        if fields.len() != 18 {
+            return Err(format!("invalid Synodal lexical-review row {}", offset + 2).into());
+        }
+        if fields[15] == "reviewed" {
+            source_passages.insert((fields[12].to_owned(), fields[14].to_owned()));
+        }
+    }
+
     let evaluation = load_evaluation(&root.join("data/synodal/evaluation.tsv"))?;
     for row in evaluation {
         if source_passages.contains(&(row.source_id.clone(), row.passage.clone())) {
@@ -910,6 +952,17 @@ fn check_partition_disjointness(root: &Path) -> Result<(), Box<dyn Error>> {
             .into());
         }
     }
+    let abbreviation_evaluation =
+        load_abbreviation_evaluation(&root.join("data/synodal/abbreviation_evaluation.tsv"))?;
+    for row in abbreviation_evaluation {
+        if source_passages.contains(&(row.source_id.clone(), row.passage.clone())) {
+            return Err(format!(
+                "Synodal abbreviation passage {} {} occurs in both source and evaluation partitions",
+                row.source_id, row.passage
+            )
+            .into());
+        }
+    }
     Ok(())
 }
 
@@ -921,6 +974,12 @@ fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
     ] {
         let source = root.join("crates").join(package).join("src");
         for path in rust_files(&source)? {
+            if path
+                .components()
+                .any(|component| component.as_os_str() == "bin")
+            {
+                continue;
+            }
             let text = fs::read_to_string(&path)?;
             for forbidden in [
                 "std::fs",
@@ -953,6 +1012,9 @@ fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
             "csv",
             "rusqlite",
         ] {
+            if package == "synodal-church-slavonic-dictionary" && forbidden == "serde_json" {
+                continue;
+            }
             if manifest.lines().any(|line| {
                 line.trim_start()
                     .strip_prefix(forbidden)
@@ -963,6 +1025,15 @@ fn check_runtime_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
                 )
                 .into());
             }
+        }
+        if package == "synodal-church-slavonic-dictionary"
+            && (!manifest.contains("serde_json = { workspace = true, optional = true }")
+                || !manifest.contains("cli = [\"dep:serde_json\"]")
+                || !manifest.contains("required-features = [\"cli\"]"))
+        {
+            return Err(
+                "synodal-dict serialization must remain optional and CLI-feature-gated".into(),
+            );
         }
     }
     Ok(())
@@ -1066,6 +1137,8 @@ fn check_evaluation_report(root: &Path) -> Result<(), Box<dyn Error>> {
 fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
     let rows = load_evaluation(&root.join("data/synodal/evaluation.tsv"))?;
     let phrase_rows = load_phrase_evaluation(&root.join("data/synodal/phrase_evaluation.tsv"))?;
+    let abbreviation_rows =
+        load_abbreviation_evaluation(&root.join("data/synodal/abbreviation_evaluation.tsv"))?;
     let exact_keys = load_exact_keys(&root.join("data/synodal/exact_forms.tsv"))?;
     let mut expanded = MetricSlice::default();
     let mut printed = MetricSlice::default();
@@ -1124,6 +1197,16 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
                     .ok()
                     .and_then(|forms| forms.variants().first())
                     .map(|form| form.expanded.clone()),
+                returned_top_k: expanded_result
+                    .as_ref()
+                    .ok()
+                    .map_or_else(Vec::new, |forms| {
+                        forms
+                            .variants()
+                            .iter()
+                            .map(|form| form.expanded.clone())
+                            .collect()
+                    }),
             });
         }
         if let Err(error) = &expanded_result {
@@ -1178,6 +1261,13 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
                     .ok()
                     .and_then(|forms| forms.variants().first())
                     .map(|form| form.printed.clone()),
+                returned_top_k: printed_result.as_ref().ok().map_or_else(Vec::new, |forms| {
+                    forms
+                        .variants()
+                        .iter()
+                        .map(|form| form.printed.clone())
+                        .collect()
+                }),
             });
         }
 
@@ -1369,6 +1459,45 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
         }
     }
 
+    let mut abbreviation_expansion = MetricSlice::default();
+    for row in &abbreviation_rows {
+        abbreviation_expansion.total += 1;
+        match abbreviation::expand(&row.expected_printed) {
+            Ok(candidates) => {
+                abbreviation_expansion.returned += 1;
+                let matches = |candidate: &synodal_church_slavonic::abbreviation::Abbreviation| {
+                    candidate.lexeme_id == row.lexeme_id
+                        && candidate.sense_id == row.sense_id
+                        && candidate.cell == row.cell
+                        && candidate.expanded == row.expected_expanded
+                        && candidate.printed == row.expected_printed
+                };
+                if candidates.first().is_some_and(matches) {
+                    abbreviation_expansion.top_1_correct += 1;
+                }
+                if candidates.iter().any(matches) {
+                    abbreviation_expansion.top_k_correct += 1;
+                }
+            }
+            Err(_) => abbreviation_expansion.abstained += 1,
+        }
+        let reverse = abbreviation::contractions_by_id(&row.lexeme_id, &row.sense_id)?;
+        if !reverse.iter().any(|candidate| {
+            candidate.cell == row.cell
+                && candidate.expanded == row.expected_expanded
+                && candidate.printed == row.expected_printed
+        }) {
+            return Err(format!(
+                "abbreviation evaluation row {} is not reversible through the typed registry lookup",
+                row.id
+            )
+            .into());
+        }
+        if row.source_id.is_empty() || row.passage.is_empty() || row.regularity.is_empty() {
+            return Err("abbreviation evaluation rows require source metadata".into());
+        }
+    }
+
     let accepted_alignments = alignments
         .iter()
         .filter(|alignment| {
@@ -1414,11 +1543,12 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
         exact_registry_round_trip(root)?;
 
     Ok(EvaluationReport {
-        schema_version: 3,
+        schema_version: 4,
         target_recension: "synodal-russian",
         fixture_source: "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
         fixture_rows: rows.len(),
         phrase_fixture_rows: phrase_rows.len(),
+        abbreviation_fixture_rows: abbreviation_rows.len(),
         expanded,
         printed,
         expanded_disagreements,
@@ -1436,6 +1566,7 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
         abstention_reasons,
         phrase_expanded,
         phrase_printed,
+        abbreviation_expansion,
         leakage,
         inheritance: InheritanceMetrics {
             accepted_alignments,
@@ -1500,10 +1631,14 @@ fn score_result(
 
 fn morphological_system(cell: GrammarCell) -> &'static str {
     match cell {
+        GrammarCell::LexicalForm => "lexical-form",
+        GrammarCell::Indeclinable => "indeclinable",
         GrammarCell::Noun(_) => "noun",
         GrammarCell::Adjective(_) => "adjective",
         GrammarCell::FiniteVerb(cell) => match cell.tense {
             FiniteTense::Present => "present",
+            FiniteTense::Future => "future",
+            FiniteTense::Past => "past",
             FiniteTense::Imperfect => "imperfect",
             FiniteTense::Aorist => "aorist",
         },
@@ -1575,9 +1710,36 @@ fn realize_phrase(
 ) -> synodal_church_slavonic::Result<RealizedPhrase> {
     let inflector = Inflector::builder().orthography(profile).build();
     match row.construction.as_str() {
+        "compound-future" => {
+            phrases::compound_future_with(&row.lemma, row.person, row.number, inflector)
+        }
         "perfect" => {
             phrases::perfect_with(&row.lemma, row.person, row.number, row.gender, inflector)
         }
+        "pluperfect" => {
+            phrases::pluperfect_with(&row.lemma, row.person, row.number, row.gender, inflector)
+        }
+        "conditional" => {
+            phrases::conditional_with(&row.lemma, row.person, row.number, row.gender, inflector)
+        }
+        "analytic-passive" => phrases::analytic_passive_with(
+            &row.lemma,
+            synodal_church_slavonic::ParticipleCell {
+                tense: synodal_church_slavonic::ParticipleTense::Past,
+                voice: synodal_church_slavonic::ParticipleVoice::Passive,
+                agreement: synodal_church_slavonic::AdjectiveCell {
+                    case: synodal_church_slavonic::Case::Nominative,
+                    number: row.number,
+                    gender: row.gender,
+                    animacy: synodal_church_slavonic::Animacy::Inanimate,
+                    form: synodal_church_slavonic::AdjectiveForm::Short,
+                    comparison: synodal_church_slavonic::Comparison::Positive,
+                },
+            },
+            row.person,
+            row.number,
+            inflector,
+        ),
         _ => Err(synodal_church_slavonic::Error::UnsupportedFormation {
             formation: format!("evaluation phrase {}", row.construction),
         }),
@@ -1719,27 +1881,72 @@ fn load_phrase_evaluation(path: &Path) -> Result<Vec<PhraseEvaluationRow>, Box<d
     Ok(rows)
 }
 
+fn load_abbreviation_evaluation(
+    path: &Path,
+) -> Result<Vec<AbbreviationEvaluationRow>, Box<dyn Error>> {
+    let text = fs::read_to_string(path)?;
+    let mut lines = text.lines();
+    if lines.next() != Some(ABBREVIATION_EVALUATION_HEADER) {
+        return Err(format!(
+            "invalid abbreviation-evaluation header in {}",
+            path.display()
+        )
+        .into());
+    }
+    let mut rows = Vec::new();
+    for (offset, line) in lines.enumerate() {
+        if line.is_empty() {
+            continue;
+        }
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() != 9 {
+            return Err(format!("invalid abbreviation-evaluation row {}", offset + 2).into());
+        }
+        rows.push(AbbreviationEvaluationRow {
+            id: fields[0].into(),
+            lexeme_id: LexemeId::from(fields[1]),
+            sense_id: fields[2].into(),
+            cell: parse_cell(fields[3])?,
+            expected_expanded: fields[4].into(),
+            expected_printed: fields[5].into(),
+            source_id: fields[6].into(),
+            passage: fields[7].into(),
+            regularity: fields[8].into(),
+        });
+    }
+    if rows.is_empty() {
+        return Err("Synodal abbreviation-evaluation fixture is empty".into());
+    }
+    Ok(rows)
+}
+
 fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
     let fields: Vec<&str> = value.split(':').collect();
     let cell = match fields.as_slice() {
+        ["lexical-form"] => GrammarCell::LexicalForm,
+        ["indeclinable"] => GrammarCell::Indeclinable,
         ["noun", case, number, animacy] => {
             GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
                 case: parse_case(case)?,
                 number: parse_number(number)?,
-                animacy: parse_animacy(animacy)?,
+                animacy: parse_registry_animacy(animacy)?,
             })
         }
-        [tense @ ("present" | "imperfect" | "aorist"), person, number] => {
-            GrammarCell::FiniteVerb(FiniteVerbCell {
-                tense: match *tense {
-                    "present" => FiniteTense::Present,
-                    "imperfect" => FiniteTense::Imperfect,
-                    _ => FiniteTense::Aorist,
-                },
-                person: parse_person(person)?,
-                number: parse_number(number)?,
-            })
-        }
+        [
+            tense @ ("present" | "future" | "past" | "imperfect" | "aorist"),
+            person,
+            number,
+        ] => GrammarCell::FiniteVerb(FiniteVerbCell {
+            tense: match *tense {
+                "present" => FiniteTense::Present,
+                "future" => FiniteTense::Future,
+                "past" => FiniteTense::Past,
+                "imperfect" => FiniteTense::Imperfect,
+                _ => FiniteTense::Aorist,
+            },
+            person: parse_person(person)?,
+            number: parse_number(number)?,
+        }),
         ["imperative", person, number] => GrammarCell::Imperative(ImperativeCell {
             person: parse_person(person)?,
             number: parse_number(number)?,
@@ -1775,7 +1982,7 @@ fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
                 case: parse_case(case)?,
                 number: parse_number(number)?,
                 gender: parse_gender(gender)?,
-                animacy: parse_animacy(animacy)?,
+                animacy: parse_registry_animacy(animacy)?,
                 form: match *form {
                     "short" => AdjectiveForm::Short,
                     "long" => AdjectiveForm::Long,
@@ -1801,7 +2008,7 @@ fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
             case: parse_case(case)?,
             number: parse_number(number)?,
             gender: parse_gender(gender)?,
-            animacy: parse_animacy(animacy)?,
+            animacy: parse_registry_animacy(animacy)?,
             form: match *form {
                 "short" => AdjectiveForm::Short,
                 "long" => AdjectiveForm::Long,
@@ -1839,7 +2046,7 @@ fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
                 case: parse_case(case)?,
                 number: parse_number(number)?,
                 gender: parse_gender(gender)?,
-                animacy: parse_animacy(animacy)?,
+                animacy: parse_registry_animacy(animacy)?,
                 form: match *form {
                     "short" => AdjectiveForm::Short,
                     "long" => AdjectiveForm::Long,
@@ -1950,6 +2157,7 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
          | Expanded | {} | {} | {} | {} | {} |\n\
          | Printed | {} | {} | {} | {} | {} |\n\n\
          Analytic phrases: expanded {}/{}, printed {}/{} ({} held-out phrases).\n\n\
+         Typed abbreviations: top-1 {}/{}, top-k {}/{} ({} held-out contractions; reverse lookup also required).\n\n\
          Exact registry round trips (top-k, including reviewed variants): expanded {}/{}, printed {}/{}.\n\n\
          Masked cells: expanded {}/{}, printed {}/{}. Leave-one-Synodal-lexeme-out inherited cells: expanded {}/{}, printed {}/{}.\n\n\
          Accent agreement: {}/{} accent-bearing rows.\n\n\
@@ -1971,6 +2179,11 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
         report.phrase_printed.top_1_correct,
         report.phrase_printed.total,
         report.phrase_fixture_rows,
+        report.abbreviation_expansion.top_1_correct,
+        report.abbreviation_expansion.total,
+        report.abbreviation_expansion.top_k_correct,
+        report.abbreviation_expansion.total,
+        report.abbreviation_fixture_rows,
         report.exact_registry_expanded_round_trip.top_k_correct,
         report.exact_registry_expanded_round_trip.total,
         report.exact_registry_printed_round_trip.top_k_correct,
@@ -2191,7 +2404,7 @@ pub(crate) fn guard_witnesses(_root: &Path) -> Result<(), Box<dyn Error>> {
         let grad = LexemeId::from("synodal:noun:grad");
         let grad_cell = GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
             case: Case::Dative,
-            number: Number::Plural,
+            number: Number::Dual,
             animacy: Animacy::Inanimate,
         });
         if strict.form_by_id(&grad, grad_cell).is_ok() {

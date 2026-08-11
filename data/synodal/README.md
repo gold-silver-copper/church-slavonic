@@ -6,10 +6,17 @@ recension and normative evidence have been reviewed. The offline extractor
 validates and converts them to deterministic Rust; generated Rust must not be
 edited directly.
 
-`exact_forms.tsv` currently contains normative grammar-table forms, not corpus
-attestation. Its `source_kind` therefore remains `normative-table`, and runtime
-provenance labels those forms as normative generations. Future passage-backed
-rows use a distinct `synodal-attestation` kind and an edition/passage evidence ID.
+`exact_forms.tsv` contains both normative grammar-table forms and exact
+source-partition target attestations. `source_kind` distinguishes
+`normative-table`, `normative-variant`, and `synodal-attestation`; every
+attestation must cite a reviewed whole-token corpus candidate outside all
+held-out passages.
+
+The v0.6 decision ledgers are `v06_exact_reviews.tsv`,
+`v06_abbreviation_reviews.tsv`, and `v06_spelling_reviews.tsv`. They retain
+predicted versus surface-realized gain, explicit deferrals and rejections, and
+precise evidence blockers. `v06_verification.tsv` records only checks actually
+run for the generated v0.6 completion audit.
 
 The alignment registry never imports an OCS surface cell. It connects stable
 lexeme identities and records morphology and semantics independently.

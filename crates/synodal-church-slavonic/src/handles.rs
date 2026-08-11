@@ -14,6 +14,7 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct Capabilities {
     pub exact_forms: bool,
     pub productive_noun: bool,
@@ -80,6 +81,16 @@ impl Capabilities {
             reverse_analysis: true,
         }
     }
+}
+
+pub(crate) fn capabilities_by_id(id: &LexemeId, inflector: Inflector) -> Result<Capabilities> {
+    let summary = inflector.from_id(id)?;
+    Ok(Capabilities::for_summary(&summary, inflector))
+}
+
+pub(crate) fn missing_metadata_by_id(id: &LexemeId) -> Result<Vec<MetadataField>> {
+    let summary = Inflector::default().from_id(id)?;
+    Ok(missing_metadata(&summary))
 }
 
 macro_rules! identity_accessors {
@@ -230,6 +241,16 @@ impl Verb {
 
     pub fn present(&self, person: Person, number: Number) -> Result<FormSet> {
         self.finite(FiniteTense::Present, person, number)
+    }
+
+    pub fn future(&self, person: Person, number: Number) -> Result<FormSet> {
+        self.finite(FiniteTense::Future, person, number)
+    }
+
+    /// Looks up a reviewed exact finite-past form whose evidence does not
+    /// distinguish aorist from imperfect.
+    pub fn past(&self, person: Person, number: Number) -> Result<FormSet> {
+        self.finite(FiniteTense::Past, person, number)
     }
 
     pub fn imperfect(&self, person: Person, number: Number) -> Result<FormSet> {

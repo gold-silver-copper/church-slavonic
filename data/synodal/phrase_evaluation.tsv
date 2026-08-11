@@ -1,2 +1,6 @@
 id	construction	lemma	person	number	gender	expected_expanded	expected_printed	source_id	passage	regularity
 eval:1macc-10-56-pisati-perfect	perfect	писати	second	singular	masculine	писалъ єси	писа́лъ є҆сѝ	ponomar-elizabeth-bible-2026-08-09	1 Maccabees 10:56	analytic-perfect
+eval:alypy-85-nesti-future	compound-future	нести	third	plural	masculine	имꙋтъ нести	и҆́мꙋтъ нестѝ	alypy-gamanovich-grammar-web-2023	§85	normative-construction-fixture
+eval:alypy-89-pisati-pluperfect	pluperfect	писати	third	singular	masculine	писалъ бѣ	писа́лъ бѣ̀	alypy-gamanovich-grammar-web-2023	§89	normative-construction-fixture
+eval:alypy-91-pisati-conditional	conditional	писати	first	singular	masculine	писалъ быхъ	писа́лъ бы́хъ	alypy-gamanovich-grammar-web-2023	§91	normative-construction-fixture
+eval:alypy-101-nesti-passive	analytic-passive	нести	third	singular	masculine	несенъ єсть	несе́нъ є҆́сть	alypy-gamanovich-grammar-web-2023	§§101–102	normative-construction-fixture

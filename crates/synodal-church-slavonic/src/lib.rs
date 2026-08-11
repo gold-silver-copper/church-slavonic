@@ -14,7 +14,8 @@ pub use handles::{Adjective, Capabilities, Determiner, Noun, Numeral, Participle
 pub use inflector::{Inflector, InflectorBuilder};
 pub use paradigm::{Paradigm, ParadigmRow, ParadigmStatus};
 pub use registry::{
-    AlignmentSummary, IrregularOverrideSummary, LexemeSummary, PartOfSpeech, PositionalRuleSummary,
+    AccentSummary, AlignmentSummary, ExactFormSummary, IrregularOverrideSummary, LexemeSummary,
+    LexicalMetadataSummary, PartOfSpeech, PositionalRuleSummary, PrincipalPartSummary,
     RecensionConflictSummary, TransformationRuleSummary,
 };
 pub use synodal_church_slavonic_core as core;
@@ -38,6 +39,27 @@ pub fn lookup(lemma: &str) -> Result<LexemeSummary> {
 /// Returns every curated target lexeme in deterministic ID order.
 pub fn lexemes() -> Result<Vec<LexemeSummary>> {
     registry::all_lexemes()
+}
+
+/// Returns the complete reviewable metadata associated with one target lexeme.
+pub fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> {
+    registry::lexical_metadata(id)
+}
+
+/// Reports the systems currently available for a stable target lexeme.
+pub fn capabilities_by_id(id: &LexemeId, inflector: Inflector) -> Result<Capabilities> {
+    handles::capabilities_by_id(id, inflector)
+}
+
+/// Lists metadata that prevents otherwise represented systems from running.
+pub fn missing_metadata_by_id(id: &LexemeId) -> Result<Vec<MetadataField>> {
+    handles::missing_metadata_by_id(id)
+}
+
+/// Returns the stable review/evaluation key for a typed grammar cell.
+#[must_use]
+pub fn grammar_cell_key(cell: GrammarCell) -> String {
+    resolver::cell_key(cell)
 }
 
 /// Returns the reviewed OCS-to-Synodal alignment gold registry, including
@@ -188,7 +210,7 @@ mod tests {
     fn ordinary_api_uses_synodal_not_ocs_noun_endings() {
         let forms =
             noun("рабъ", Case::Dative, Number::Plural, Animacy::Animate).expect("curated noun");
-        assert_eq!(forms.primary_text(), "рабомъ");
+        assert_eq!(forms.primary_text(), "рабѡмъ");
         assert_eq!(forms.target_recension(), Recension::SynodalRussian);
     }
 
@@ -215,21 +237,95 @@ mod tests {
     }
 
     #[test]
+    fn byti_future_is_an_exact_normative_table() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let verb = Verb::resolve_with("быти", inflector).expect("known verb");
+        let forms = verb
+            .future(Person::Third, Number::Singular)
+            .expect("reviewed simple future");
+        assert_eq!(forms.primary_text(), "бꙋ́детъ");
+        assert!(matches!(
+            forms.variants()[0].source,
+            core::FormSource::SynodalNormativeGeneration { .. }
+        ));
+
+        let unsupported = Verb::resolve("нести")
+            .expect("known verb")
+            .future(Person::Third, Number::Singular);
+        assert!(matches!(unsupported, Err(Error::UnsupportedCell { .. })));
+    }
+
+    #[test]
+    fn third_person_pronoun_preserves_case_distinguishing_accents() {
+        let pronoun = Pronoun::resolve_with(
+            "онъ",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed third-person pronoun");
+        let genitive = pronoun
+            .form(PronounCell {
+                case: Case::Genitive,
+                number: Number::Singular,
+                gender: Some(Gender::Masculine),
+                person: Some(Person::Third),
+                animacy: Animacy::Animate,
+            })
+            .expect("reviewed genitive");
+        assert_eq!(genitive.primary_text(), "є҆гѡ̀");
+    }
+
+    #[test]
+    fn positional_preposition_variants_keep_distinct_exact_cells() {
+        let inflector = Inflector::default();
+        let id = LexemeId::from("synodal:preposition:wikt-77998a1b179f");
+        assert_eq!(
+            inflector
+                .form_by_id(&id, GrammarCell::Indeclinable)
+                .expect("base preposition")
+                .primary_text(),
+            "къ"
+        );
+        assert_eq!(
+            inflector
+                .form_by_id(&id, GrammarCell::LexicalForm)
+                .expect("reviewed positional variant")
+                .primary_text(),
+            "ко"
+        );
+    }
+
+    #[test]
     fn paradigms_retain_failures() {
         let verb = Verb::resolve("быти").expect("known verb");
         let paradigm = verb.paradigm(FiniteTense::Imperfect);
         assert_eq!(paradigm.iter().count(), 9);
         assert_eq!(paradigm.failures().count(), 0);
+        let third_singular = paradigm
+            .form(GrammarCell::FiniteVerb(FiniteVerbCell {
+                tense: FiniteTense::Imperfect,
+                person: Person::Third,
+                number: Number::Singular,
+            }))
+            .expect("irregular table");
+        assert_eq!(third_singular.variants().len(), 3);
         assert_eq!(
-            paradigm
-                .form(GrammarCell::FiniteVerb(FiniteVerbCell {
-                    tense: FiniteTense::Imperfect,
-                    person: Person::Third,
-                    number: Number::Singular,
-                }))
-                .expect("irregular table")
+            third_singular
                 .variants()
-                .len(),
+                .iter()
+                .filter(|variant| variant.is_attested())
+                .count(),
+            1
+        );
+        assert_eq!(
+            third_singular
+                .variants()
+                .iter()
+                .filter(|variant| variant.is_predicted())
+                .count(),
             2
         );
     }
@@ -247,7 +343,7 @@ mod tests {
     #[test]
     fn generation_policies_gate_inherited_class_evidence() {
         assert!(matches!(
-            noun("градъ", Case::Dative, Number::Plural, Animacy::Inanimate),
+            noun("градъ", Case::Dative, Number::Dual, Animacy::Inanimate),
             Err(Error::UnsupportedCell { .. })
         ));
 
@@ -256,9 +352,9 @@ mod tests {
             .build();
         let noun = Noun::resolve_with("градъ", inflector).expect("target lexeme");
         let forms = noun
-            .form(Case::Dative, Number::Plural, Animacy::Inanimate)
+            .form(Case::Dative, Number::Dual, Animacy::Inanimate)
             .expect("reviewed inherited analysis");
-        assert_eq!(forms.primary_text(), "градомъ");
+        assert_eq!(forms.primary_text(), "градома");
         let variant = &forms.variants()[0];
         assert_eq!(variant.source_recension, Some(Recension::OldChurchSlavonic));
         assert!(variant.recension_mapping.is_some());
@@ -452,5 +548,56 @@ mod tests {
         assert_eq!(paradigm.attested().count(), 0);
         assert_eq!(paradigm.predicted().count(), 126);
         assert_eq!(paradigm.failures().count(), 0);
+    }
+
+    #[test]
+    fn v04_exact_families_abstain_outside_reviewed_cells() {
+        let strict = Inflector::builder()
+            .generation_policy(GenerationPolicy::Strict)
+            .build();
+        let ves = LexemeId::from("synodal:determiner:ves");
+        let unsupported_dual = GrammarCell::Determiner(AdjectiveCell {
+            case: Case::Nominative,
+            number: Number::Dual,
+            gender: Gender::Masculine,
+            animacy: Animacy::Animate,
+            form: AdjectiveForm::Short,
+            comparison: Comparison::Positive,
+        });
+        assert!(matches!(
+            strict.form_by_id(&ves, unsupported_dual),
+            Err(Error::UnsupportedCell { .. })
+        ));
+
+        let reshchi = LexemeId::from("synodal:verb:wikt-06af096688df");
+        assert!(matches!(
+            strict.form_by_id(
+                &reshchi,
+                GrammarCell::FiniteVerb(FiniteVerbCell {
+                    tense: FiniteTense::Present,
+                    person: Person::Third,
+                    number: Number::Singular,
+                })
+            ),
+            Err(Error::UnsupportedCell { .. })
+        ));
+        assert!(matches!(
+            strict.form_by_id(
+                &reshchi,
+                GrammarCell::Participle(ParticipleCell {
+                    tense: ParticipleTense::Past,
+                    voice: ParticipleVoice::Active,
+                    agreement: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Feminine,
+                        animacy: Animacy::Animate,
+                        form: AdjectiveForm::Short,
+                        comparison: Comparison::Positive,
+                    },
+                })
+            ),
+            Err(Error::UnsupportedCell { .. })
+        ));
     }
 }

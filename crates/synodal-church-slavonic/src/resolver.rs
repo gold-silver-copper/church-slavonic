@@ -18,15 +18,20 @@ pub(crate) fn resolve_cell(
     let mut exact = Vec::new();
     let mut exact_key = key.clone();
     for candidate_key in exact_lookup_keys(cell) {
-        let candidate = registry::exact_forms(id, &candidate_key);
-        if !candidate.is_empty() {
-            exact = candidate;
+        let mut candidate = registry::exact_forms(id, &candidate_key);
+        if !candidate.is_empty() && exact.is_empty() {
             exact_key = candidate_key;
-            break;
         }
+        exact.append(&mut candidate);
     }
     if !exact.is_empty() {
         return exact_forms(inflector, id, &exact_key, &exact);
+    }
+    if registry::is_exact_only(id) {
+        return Err(Error::UnsupportedCell {
+            reason: "this exact-only lexeme has no reviewed class or principal parts for the requested cell"
+                .into(),
+        });
     }
 
     let rule_profile = if inflector.orthography() == OrthographyProfile::SynodalLiturgical {
@@ -35,6 +40,12 @@ pub(crate) fn resolve_cell(
         inflector.orthography()
     };
     let forms = match cell {
+        GrammarCell::LexicalForm => Err(Error::UnsupportedCell {
+            reason: "a lexical-form cell must have exact reviewed target-recension evidence".into(),
+        }),
+        GrammarCell::Indeclinable => Err(Error::UnsupportedCell {
+            reason: "an indeclinable lexeme must have an exact reviewed lexical form".into(),
+        }),
         GrammarCell::Noun(cell) => {
             let forms = decline_noun(&registry::noun_lexeme(id)?, cell, rule_profile)?;
             if registry::noun_uses_inherited_class(id) {
@@ -61,6 +72,13 @@ pub(crate) fn resolve_cell(
             let verb = registry::verb_lexeme(id)?;
             match cell.tense {
                 FiniteTense::Present => present(&verb, cell.person, cell.number, rule_profile),
+                FiniteTense::Future => Err(Error::UnsupportedCell {
+                    reason: "a simple future must have an exact reviewed normative paradigm".into(),
+                }),
+                FiniteTense::Past => Err(Error::UnsupportedCell {
+                    reason: "an underspecified finite past must have exact reviewed evidence"
+                        .into(),
+                }),
                 FiniteTense::Imperfect => imperfect(&verb, cell.person, cell.number, rule_profile),
                 FiniteTense::Aorist => aorist(&verb, cell.person, cell.number, rule_profile),
             }
@@ -238,6 +256,8 @@ fn mark_inherited(
 
 pub(crate) fn cell_key(cell: GrammarCell) -> String {
     match cell {
+        GrammarCell::LexicalForm => "lexical-form".into(),
+        GrammarCell::Indeclinable => "indeclinable".into(),
         GrammarCell::Noun(cell) => format!(
             "noun:{}:{}:{}",
             case_name(cell.case),
@@ -306,6 +326,14 @@ pub(crate) fn cell_key(cell: GrammarCell) -> String {
 fn exact_lookup_keys(cell: GrammarCell) -> Vec<String> {
     let mut keys = vec![cell_key(cell)];
     match cell {
+        GrammarCell::Adjective(_) | GrammarCell::Determiner(_) | GrammarCell::Participle(_) => {
+            let neutral = keys[0]
+                .replace(":inanimate:", ":any:")
+                .replace(":animate:", ":any:");
+            if neutral != keys[0] {
+                keys.push(neutral);
+            }
+        }
         GrammarCell::Pronoun(pronoun) => {
             keys.push(pronoun_key(pronoun, None));
         }
@@ -482,6 +510,8 @@ fn animacy_name(value: synodal_church_slavonic_core::Animacy) -> &'static str {
 fn tense_name(value: FiniteTense) -> &'static str {
     match value {
         FiniteTense::Present => "present",
+        FiniteTense::Future => "future",
+        FiniteTense::Past => "past",
         FiniteTense::Imperfect => "imperfect",
         FiniteTense::Aorist => "aorist",
     }

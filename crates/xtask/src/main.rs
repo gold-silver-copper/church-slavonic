@@ -3,6 +3,16 @@
 mod corpus;
 mod sources;
 mod synodal;
+mod synodal_coverage;
+mod synodal_evaluation_queue;
+mod synodal_family_review;
+mod synodal_lexical_review;
+mod synodal_marginal_recovery;
+mod synodal_v04_audit;
+mod synodal_v05_audit;
+mod synodal_v05_baseline;
+mod synodal_v06_audit;
+mod synodal_v06_review_packets;
 
 use old_church_slavonic::advanced::cells::{
     AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, ImperativeCell, LParticipleCell,
@@ -82,6 +92,26 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-fixture-bootstrap") => {
             synodal::fixture_bootstrap(&mut args, &workspace_root()?)
         }
+        Some("synodal-coverage") => synodal_coverage::run(&mut args, &workspace_root()?),
+        Some("synodal-evaluation-queue") => {
+            synodal_evaluation_queue::run(&mut args, &workspace_root()?)
+        }
+        Some("synodal-family-review-queue") => {
+            synodal_family_review::run(&mut args, &workspace_root()?)
+        }
+        Some("synodal-lexical-review-queue") => {
+            synodal_lexical_review::run(&mut args, &workspace_root()?)
+        }
+        Some("synodal-marginal-recovery") => {
+            synodal_marginal_recovery::run(&mut args, &workspace_root()?)
+        }
+        Some("synodal-v06-review-packets") => {
+            synodal_v06_review_packets::run(&mut args, &workspace_root()?)
+        }
+        Some("synodal-v04-audit") => synodal_v04_audit::run(&mut args, &workspace_root()?),
+        Some("synodal-v05-baseline") => synodal_v05_baseline::run(&mut args, &workspace_root()?),
+        Some("synodal-v05-audit") => synodal_v05_audit::run(&mut args, &workspace_root()?),
+        Some("synodal-v06-audit") => synodal_v06_audit::run(&mut args, &workspace_root()?),
         Some("check-all") => check_all(),
         Some("help") | Some("-h") | Some("--help") | None => {
             print_help();
@@ -3272,6 +3302,20 @@ fn print_help() {
         "  synodal-bootstrap [--cache PATH] [--offline] [--source ID] [--skip-fetch] [--keep-intermediate]"
     );
     eprintln!("  synodal-fixture-bootstrap");
+    eprintln!(
+        "  synodal-coverage --offline [--fixture] [--source ID] [--policy POLICY] [--profile PROFILE] [--check]"
+    );
+    eprintln!("  synodal-evaluation-queue [--limit N] [--check]");
+    eprintln!("  synodal-family-review-queue [--limit N] [--check]");
+    eprintln!("  synodal-lexical-review-queue [--limit N] [--check]");
+    eprintln!(
+        "  synodal-marginal-recovery [--check] [--refresh-baseline] [--require-source-inputs]"
+    );
+    eprintln!("  synodal-v06-review-packets [--check]");
+    eprintln!("  synodal-v04-audit [--check]");
+    eprintln!("  synodal-v05-baseline [--check]");
+    eprintln!("  synodal-v05-audit [--check]");
+    eprintln!("  synodal-v06-audit [--check]");
     eprintln!("  check-all");
 }
 

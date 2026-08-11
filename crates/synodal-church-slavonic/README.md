@@ -11,7 +11,7 @@ use synodal_church_slavonic::{
 };
 
 let dative = noun("рабъ", Case::Dative, Number::Plural, Animacy::Animate)?;
-assert_eq!(dative.primary_text(), "рабомъ");
+assert_eq!(dative.primary_text(), "рабѡмъ");
 
 let inflector = Inflector::builder()
     .generation_policy(GenerationPolicy::Productive)

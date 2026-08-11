@@ -273,6 +273,11 @@ fn validate_word(value: &str) -> Result<()> {
                 reason: "Church Slavonic breathing U+0486 must precede the accent".into(),
             });
         }
+        if is_accent(character) && saw_accent {
+            return Err(Error::InvalidOrthography {
+                reason: "a letter cluster cannot carry more than one accent mark".into(),
+            });
+        }
         if is_accent(character) {
             saw_accent = true;
         }
@@ -330,6 +335,12 @@ mod tests {
     #[test]
     fn rejects_accent_before_breathing() {
         let error = SynodalWord::parse("о\u{0301}\u{0486}").expect_err("invalid order");
+        assert!(matches!(error, Error::InvalidOrthography { .. }));
+    }
+
+    #[test]
+    fn rejects_multiple_accents_on_one_letter_cluster() {
+        let error = SynodalWord::parse("а\u{0301}\u{0301}").expect_err("duplicate accents");
         assert!(matches!(error, Error::InvalidOrthography { .. }));
     }
 

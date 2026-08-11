@@ -13,6 +13,7 @@ use std::{
 
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic_core::{RenderedText, SynodalWord};
+use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
 
 /// Schema version for normalized Synodal registries.
 pub const REGISTRY_SCHEMA_VERSION: u32 = 1;
@@ -99,6 +100,194 @@ struct Table {
     rows: Vec<Vec<String>>,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct CandidateLink {
+    source_id: String,
+    target_recension: Option<String>,
+    partition: Option<String>,
+    passage: Option<String>,
+    raw_spelling: String,
+    normalized_spelling: String,
+}
+
+impl CandidateLink {
+    fn is_target_corpus_source(&self) -> bool {
+        matches!(
+            self.source_id.as_str(),
+            "ponomar-elizabeth-bible-2026-08-09" | "wikisource-church-slavonic-bible-2026-08-09"
+        )
+    }
+
+    fn is_direct_target_corpus(&self) -> bool {
+        self.is_target_corpus_source() && self.target_recension.as_deref() == Some(TARGET)
+    }
+
+    fn contains_exact(&self, form: &str) -> bool {
+        let canonical_form = form.nfc().collect::<String>();
+        contains_exact_token(
+            &self.raw_spelling.nfc().collect::<String>(),
+            &canonical_form,
+        ) || contains_exact_token(
+            &self.normalized_spelling.nfc().collect::<String>(),
+            &canonical_form,
+        )
+    }
+}
+
+fn contains_exact_token(text: &str, token: &str) -> bool {
+    !token.is_empty()
+        && text.match_indices(token).any(|(start, matched)| {
+            let end = start + matched.len();
+            text[..start]
+                .chars()
+                .next_back()
+                .is_none_or(|character| !is_token_component(character))
+                && text[end..]
+                    .chars()
+                    .next()
+                    .is_none_or(|character| !is_token_component(character))
+        })
+}
+
+fn is_token_component(character: char) -> bool {
+    character.is_alphabetic()
+        || is_combining_mark(character)
+        || character == '\u{0482}'
+        || ('\u{2de0}'..='\u{2dff}').contains(&character)
+}
+
+const LEXICAL_REVIEW_HEADER: &str = "review_id\tlexeme_id\tsense_id\tlemma\tpart_of_speech\tcell\texpanded\tprinted\tgloss\tdomains\tsemantic_source_id\tsemantic_candidate_id\tattestation_source_id\tattestation_candidate_id\tcitation\tdecision\ttarget_recension\treview_note";
+
+fn read_lexical_reviews(data_directory: &Path) -> Result<Table> {
+    read_table(
+        &data_directory.join("lexical_reviews.tsv"),
+        LEXICAL_REVIEW_HEADER,
+        18,
+    )
+}
+
+fn validate_lexical_reviews(path: &Path, table: &Table) -> Result<()> {
+    let mut review_ids = BTreeSet::new();
+    let mut lexeme_ids = BTreeSet::new();
+    let mut sense_ids = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
+        if !review_ids.insert(row[0].clone()) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: row[0].clone(),
+            });
+        }
+        if !matches!(row[15].as_str(), "reviewed" | "rejected") {
+            return invalid(path, line, "lexical decision must be reviewed or rejected");
+        }
+        validate_target(path, line, &row[16])?;
+        if !row[11].starts_with("synodal:candidate:") || !row[13].starts_with("synodal:candidate:")
+        {
+            return invalid(
+                path,
+                line,
+                "lexical reviews require stable semantic and attestation candidate IDs",
+            );
+        }
+        if row[17].is_empty() {
+            return invalid(
+                path,
+                line,
+                "lexical reviews require an explicit review note",
+            );
+        }
+        if row[15] == "rejected" {
+            continue;
+        }
+        if !lexeme_ids.insert(row[1].clone()) || !sense_ids.insert(row[2].clone()) {
+            return invalid(path, line, "reviewed lexeme and sense IDs must be unique");
+        }
+        if !row[1].starts_with("synodal:")
+            || !row[2].starts_with("sense:")
+            || row[8].is_empty()
+            || row[10].is_empty()
+            || row[12].is_empty()
+            || row[14].is_empty()
+        {
+            return invalid(
+                path,
+                line,
+                "reviewed lexical decisions require stable IDs, a gloss, both sources, and a citation",
+            );
+        }
+        validate_word(path, line, &row[3], "reviewed lemma")?;
+        validate_word(path, line, &row[6], "reviewed expanded form")?;
+        validate_word(path, line, &row[7], "reviewed printed form")?;
+        let closed = matches!(
+            row[4].as_str(),
+            "adverb" | "preposition" | "conjunction" | "particle" | "interjection"
+        );
+        let inflectable = matches!(
+            row[4].as_str(),
+            "proper-noun"
+                | "noun"
+                | "adjective"
+                | "verb"
+                | "pronoun"
+                | "determiner"
+                | "numeral"
+                | "participle"
+        );
+        if (!closed && !inflectable)
+            || (closed && row[5] != "indeclinable")
+            || (inflectable && row[5] != "lexical-form")
+        {
+            return invalid(
+                path,
+                line,
+                "part of speech must use the matching exact-only lexical cell",
+            );
+        }
+    }
+    Ok(())
+}
+
+type AdmittedLexicalReviewRows = (Vec<Vec<String>>, Vec<Vec<String>>, Vec<Vec<String>>);
+
+fn admitted_lexical_review_rows(reviews: &Table) -> AdmittedLexicalReviewRows {
+    let mut lexemes = Vec::new();
+    let mut exact_forms = Vec::new();
+    let mut senses = Vec::new();
+    for row in reviews.rows.iter().filter(|row| row[15] == "reviewed") {
+        lexemes.push(vec![
+            row[1].clone(),
+            row[3].clone(),
+            row[4].clone(),
+            String::new(),
+            String::new(),
+            String::new(),
+            String::new(),
+            row[12].clone(),
+            row[16].clone(),
+        ]);
+        exact_forms.push(vec![
+            row[1].clone(),
+            row[5].clone(),
+            row[6].clone(),
+            row[7].clone(),
+            row[0].clone(),
+            "synodal-attestation".into(),
+            row[16].clone(),
+        ]);
+        senses.push(vec![
+            row[1].clone(),
+            row[2].clone(),
+            row[8].clone(),
+            row[9].clone(),
+            row[10].clone(),
+            "old-church-slavonic".into(),
+            "reviewed-ocs-inheritance".into(),
+        ]);
+    }
+    (lexemes, exact_forms, senses)
+}
+
 /// Validates reviewable TSV and atomically writes the generated Rust registry.
 pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<GenerationReport> {
     let lexeme_path = data_directory.join("lexemes.tsv");
@@ -112,7 +301,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let conflict_path = data_directory.join("conflicts.tsv");
     let irregular_path = data_directory.join("irregular_overrides.tsv");
 
-    let lexemes = read_table(
+    let mut lexemes = read_table(
         &lexeme_path,
         "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension",
         9,
@@ -122,7 +311,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         "lexeme_id\tsystem\tvalue\tformation\tevidence_id\ttarget_recension",
         6,
     )?;
-    let exact_forms = read_table(
+    let mut exact_forms = read_table(
         &exact_path,
         "lexeme_id\tcell\texpanded\tprinted\tevidence_id\tsource_kind\ttarget_recension",
         7,
@@ -134,8 +323,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     )?;
     let abbreviations = read_table(
         &abbreviation_path,
-        "lexeme_id\tsense_id\texpanded\tprinted\trule_id\tevidence_id\treversible\ttarget_recension",
-        8,
+        "lexeme_id\tsense_id\tcell\texpanded\tprinted\trule_id\tevidence_id\treversible\trequired_marks\tcontext_restrictions\tambiguity\tsource_recension\ttarget_recension",
+        13,
     )?;
     let accents = read_table(
         &accent_path,
@@ -163,6 +352,12 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         5,
     )?;
     let reviewed_evidence = read_reviewed_evidence(data_directory)?;
+    let lexical_review_path = data_directory.join("lexical_reviews.tsv");
+    let lexical_reviews = read_lexical_reviews(data_directory)?;
+    validate_lexical_reviews(&lexical_review_path, &lexical_reviews)?;
+    let (review_lexemes, review_exact_forms, _) = admitted_lexical_review_rows(&lexical_reviews);
+    lexemes.rows.extend(review_lexemes);
+    exact_forms.rows.extend(review_exact_forms);
 
     validate_lexemes(&lexeme_path, &lexemes)?;
     validate_principal_parts(&principal_path, &principal_parts)?;
@@ -173,19 +368,20 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     validate_positional_rules(&positional_path, &positional_rules)?;
     validate_transformation_rules(&transformation_path, &transformation_rules)?;
     validate_conflicts(&conflict_path, &conflicts)?;
+    validate_conflict_evidence(&conflict_path, &conflicts, &reviewed_evidence)?;
     validate_irregular_overrides(&irregular_path, &irregular_overrides)?;
     validate_morphology_evidence(
         data_directory,
         &reviewed_evidence,
+        &lexical_reviews,
         [
             (&principal_parts, &[4_usize][..]),
             (&exact_forms, &[4][..]),
             (&alignments, &[8][..]),
-            (&abbreviations, &[5][..]),
+            (&abbreviations, &[6][..]),
             (&accents, &[4][..]),
             (&positional_rules, &[5][..]),
             (&transformation_rules, &[5][..]),
-            (&conflicts, &[5, 6][..]),
             (&irregular_overrides, &[3][..]),
         ],
     )?;
@@ -247,7 +443,7 @@ pub fn generate_dictionary_registry(
     let sense_path = data_directory.join("senses.tsv");
     let example_path = data_directory.join("examples.tsv");
     let semantic_alignment_path = data_directory.join("semantic_alignments.tsv");
-    let senses = read_table(
+    let mut senses = read_table(
         &sense_path,
         "lexeme_id\tsense_id\tgloss\tdomains\tsource_id\tsource_recension\tsemantic_status",
         7,
@@ -262,20 +458,26 @@ pub fn generate_dictionary_registry(
         "mapping_id\tsource_sense_id\ttarget_sense_id\tstatus\tevidence_id\treview_note",
         6,
     )?;
+    let lexical_review_path = data_directory.join("lexical_reviews.tsv");
+    let lexical_reviews = read_lexical_reviews(data_directory)?;
+    validate_lexical_reviews(&lexical_review_path, &lexical_reviews)?;
+    let (review_lexemes, _, review_senses) = admitted_lexical_review_rows(&lexical_reviews);
+    senses.rows.extend(review_senses);
     validate_senses(&sense_path, &senses)?;
     validate_examples(&example_path, &examples)?;
     validate_semantic_alignments(&semantic_alignment_path, &semantic_alignments)?;
     let reviewed_evidence = read_reviewed_evidence(data_directory)?;
-    validate_morphology_evidence(
-        data_directory,
+    validate_semantic_alignment_evidence(
+        &semantic_alignment_path,
+        &semantic_alignments,
         &reviewed_evidence,
-        [(&semantic_alignments, &[4_usize][..])],
     )?;
-    let lexemes = read_table(
+    let mut lexemes = read_table(
         &data_directory.join("lexemes.tsv"),
         "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension",
         9,
     )?;
+    lexemes.rows.extend(review_lexemes);
     let morphology_alignments = read_table(
         &data_directory.join("alignments.tsv"),
         "mapping_id\tsource_lexeme_id\ttarget_lexeme_id\trelation\tstatus\tmorphology\tsemantics\tconfidence_bp\tevidence_ids\ttransformations\treview_note",
@@ -344,10 +546,23 @@ fn read_reviewed_evidence(data_directory: &Path) -> Result<Table> {
 fn validate_morphology_evidence<const N: usize>(
     data_directory: &Path,
     reviewed: &Table,
+    lexical_reviews: &Table,
     tables: [(&Table, &[usize]); N],
 ) -> Result<()> {
     let evidence_path = data_directory.join("reviewed_evidence.tsv");
-    let known: BTreeSet<&str> = reviewed.rows.iter().map(|row| row[0].as_str()).collect();
+    let known: BTreeSet<&str> = reviewed
+        .rows
+        .iter()
+        .filter(|row| row[4] == "reviewed")
+        .map(|row| row[0].as_str())
+        .chain(
+            lexical_reviews
+                .rows
+                .iter()
+                .filter(|row| row[15] == "reviewed")
+                .map(|row| row[0].as_str()),
+        )
+        .collect();
     for (table, columns) in tables {
         for row in &table.rows {
             for &column in columns {
@@ -377,7 +592,35 @@ fn validate_morphology_evidence<const N: usize>(
 /// source bootstraps intentionally materialize a subset.
 pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> Result<()> {
     let evidence = read_reviewed_evidence(data_directory)?;
-    let mut candidates = BTreeMap::<String, (String, Option<String>)>::new();
+    let lexical_reviews = read_lexical_reviews(data_directory)?;
+    let evaluation = read_table(
+        &data_directory.join("evaluation.tsv"),
+        "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity",
+        9,
+    )?;
+    let abbreviation_evaluation = read_table(
+        &data_directory.join("abbreviation_evaluation.tsv"),
+        "id\tlexeme_id\tsense_id\tcell\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity",
+        9,
+    )?;
+    let evaluation_passages = evaluation
+        .rows
+        .iter()
+        .chain(&abbreviation_evaluation.rows)
+        .map(|row| (row[6].clone(), row[7].clone()))
+        .collect::<BTreeSet<_>>();
+    let wanted_candidates: BTreeSet<&str> = evidence
+        .rows
+        .iter()
+        .map(|row| row[1].as_str())
+        .chain(
+            lexical_reviews
+                .rows
+                .iter()
+                .flat_map(|row| [row[11].as_str(), row[13].as_str()]),
+        )
+        .collect();
+    let mut candidates = BTreeMap::<String, CandidateLink>::new();
     for entry in fs::read_dir(intermediate)? {
         let path = entry?.path();
         if path
@@ -397,6 +640,9 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
                 .get("candidate_id")
                 .and_then(serde_json::Value::as_str)
             {
+                if !wanted_candidates.contains(candidate_id) {
+                    continue;
+                }
                 let source_id = value
                     .get("source_id")
                     .and_then(serde_json::Value::as_str)
@@ -405,11 +651,32 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
                         line: offset + 1,
                         reason: "candidate has no source_id".into(),
                     })?;
-                let target = value
+                let target_recension = value
                     .get("target_recension")
                     .and_then(serde_json::Value::as_str)
                     .map(str::to_owned);
-                let metadata = (source_id.to_owned(), target);
+                let metadata = CandidateLink {
+                    source_id: source_id.to_owned(),
+                    target_recension,
+                    partition: value
+                        .get("partition")
+                        .and_then(serde_json::Value::as_str)
+                        .map(str::to_owned),
+                    passage: value
+                        .get("passage")
+                        .and_then(serde_json::Value::as_str)
+                        .map(str::to_owned),
+                    raw_spelling: value
+                        .get("raw_spelling")
+                        .and_then(serde_json::Value::as_str)
+                        .unwrap_or_default()
+                        .to_owned(),
+                    normalized_spelling: value
+                        .get("normalized_spelling")
+                        .and_then(serde_json::Value::as_str)
+                        .unwrap_or_default()
+                        .to_owned(),
+                };
                 if candidates
                     .insert(candidate_id.to_owned(), metadata.clone())
                     .is_some_and(|previous| previous != metadata)
@@ -423,15 +690,28 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
             }
         }
     }
+    let evidence_candidates: BTreeMap<&str, &CandidateLink> = evidence
+        .rows
+        .iter()
+        .filter_map(|row| {
+            candidates
+                .get(&row[1])
+                .map(|candidate| (row[0].as_str(), candidate))
+        })
+        .collect();
     for (offset, row) in evidence.rows.iter().enumerate() {
-        let Some((source_id, target)) = candidates.get(&row[1]) else {
+        let Some(candidate) = candidates.get(&row[1]) else {
             return invalid(
                 &data_directory.join("reviewed_evidence.tsv"),
                 offset + 2,
                 &format!("reviewed candidate {} disappeared or changed", row[1]),
             );
         };
-        if source_id != &row[2] || target.as_deref().is_some_and(|target| target != row[5]) {
+        let target_mismatch = candidate.target_recension.as_deref().map_or_else(
+            || candidate.is_target_corpus_source(),
+            |target| target != row[5],
+        );
+        if candidate.source_id != row[2] || target_mismatch {
             return invalid(
                 &data_directory.join("reviewed_evidence.tsv"),
                 offset + 2,
@@ -441,8 +721,196 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
                 ),
             );
         }
+        if candidate.is_direct_target_corpus()
+            && candidate.passage.as_deref() != Some(row[3].as_str())
+        {
+            return invalid(
+                &data_directory.join("reviewed_evidence.tsv"),
+                offset + 2,
+                &format!(
+                    "reviewed corpus evidence {} must cite its exact candidate passage",
+                    row[0]
+                ),
+            );
+        }
+    }
+
+    let exact_path = data_directory.join("exact_forms.tsv");
+    let exact_forms = read_table(
+        &exact_path,
+        "lexeme_id\tcell\texpanded\tprinted\tevidence_id\tsource_kind\ttarget_recension",
+        7,
+    )?;
+    for (offset, row) in exact_forms.rows.iter().enumerate() {
+        if row[5] != "synodal-attestation" {
+            continue;
+        }
+        let has_exact_source_witness = row[4]
+            .split(',')
+            .filter_map(|evidence_id| evidence_candidates.get(evidence_id))
+            .any(|candidate| {
+                candidate.is_direct_target_corpus()
+                    && candidate.partition.as_deref() == Some("source")
+                    && candidate.contains_exact(&row[3])
+            });
+        if !has_exact_source_witness {
+            return invalid(
+                &exact_path,
+                offset + 2,
+                "a Synodal attestation requires an exact source-partition corpus witness",
+            );
+        }
+    }
+
+    for evidence_id in runtime_evidence_ids(data_directory)? {
+        let Some(candidate) = evidence_candidates.get(evidence_id.as_str()) else {
+            continue;
+        };
+        if candidate.is_direct_target_corpus()
+            && candidate.partition.as_deref() == Some("evaluation")
+        {
+            return invalid(
+                &data_directory.join("reviewed_evidence.tsv"),
+                1,
+                &format!(
+                    "runtime evidence {evidence_id:?} may not use an evaluation-partition corpus candidate"
+                ),
+            );
+        }
+        if candidate.is_direct_target_corpus()
+            && candidate.passage.as_ref().is_some_and(|passage| {
+                evaluation_passages.contains(&(candidate.source_id.clone(), passage.clone()))
+            })
+        {
+            return invalid(
+                &data_directory.join("reviewed_evidence.tsv"),
+                1,
+                &format!(
+                    "runtime evidence {evidence_id:?} shares a passage with held-out evaluation"
+                ),
+            );
+        }
+    }
+
+    let review_path = data_directory.join("lexical_reviews.tsv");
+    for (offset, row) in lexical_reviews.rows.iter().enumerate() {
+        for (candidate_column, source_column, require_target, label) in [
+            (11_usize, 10_usize, false, "semantic"),
+            (13_usize, 12_usize, true, "attestation"),
+        ] {
+            let Some(candidate) = candidates.get(&row[candidate_column]) else {
+                return invalid(
+                    &review_path,
+                    offset + 2,
+                    &format!(
+                        "reviewed {label} candidate {} disappeared or changed",
+                        row[candidate_column]
+                    ),
+                );
+            };
+            let target_matches_role = if require_target {
+                candidate.target_recension.as_deref() == Some(TARGET)
+            } else {
+                // Semantic identity may come either from an inherited source
+                // with no target claim or from an independently sourced
+                // Synodal normative work. The latter still requires a
+                // separate target-passage attestation below.
+                candidate
+                    .target_recension
+                    .as_deref()
+                    .is_none_or(|target| target == TARGET)
+            };
+            if candidate.source_id != row[source_column] || !target_matches_role {
+                return invalid(
+                    &review_path,
+                    offset + 2,
+                    &format!(
+                        "reviewed {label} candidate {} has mismatched source or recension metadata",
+                        row[candidate_column]
+                    ),
+                );
+            }
+            if require_target
+                && row[15] == "reviewed"
+                && (candidate.partition.as_deref() != Some("source")
+                    || !candidate.contains_exact(&row[7])
+                    || candidate.passage.as_deref() != Some(row[14].as_str()))
+            {
+                return invalid(
+                    &review_path,
+                    offset + 2,
+                    "reviewed lexical attestation must match its exact source-partition form and passage",
+                );
+            }
+            if require_target
+                && row[15] == "reviewed"
+                && candidate.passage.as_ref().is_some_and(|passage| {
+                    evaluation_passages.contains(&(candidate.source_id.clone(), passage.clone()))
+                })
+            {
+                return invalid(
+                    &review_path,
+                    offset + 2,
+                    "reviewed lexical attestation shares a passage with held-out evaluation",
+                );
+            }
+        }
+        if row[10] == row[12] || row[11] == row[13] {
+            return invalid(
+                &review_path,
+                offset + 2,
+                "semantic identity and target attestation must be independently sourced",
+            );
+        }
     }
     Ok(())
+}
+
+fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
+    let specifications: [(&str, &[usize]); 8] = [
+        ("principal_parts.tsv", &[4]),
+        ("exact_forms.tsv", &[4]),
+        ("alignments.tsv", &[8]),
+        ("abbreviations.tsv", &[6]),
+        ("accents.tsv", &[4]),
+        ("positional_rules.tsv", &[5]),
+        ("transformation_rules.tsv", &[5]),
+        ("irregular_overrides.tsv", &[3]),
+    ];
+    let mut ids = BTreeSet::new();
+    for (file_name, columns) in specifications {
+        let path = data_directory.join(file_name);
+        let text = fs::read_to_string(&path)?;
+        let mut lines = text.lines();
+        let header_columns = lines.next().unwrap_or_default().split('\t').count();
+        for (offset, line) in lines.enumerate() {
+            if line.is_empty() {
+                continue;
+            }
+            let fields: Vec<&str> = line.split('\t').collect();
+            if fields.len() != header_columns {
+                return invalid(&path, offset + 2, "runtime evidence row has invalid width");
+            }
+            for &column in columns {
+                for evidence_id in fields[column].split(',').filter(|value| !value.is_empty()) {
+                    ids.insert(evidence_id.to_owned());
+                }
+            }
+        }
+    }
+    let semantic_alignments = read_table(
+        &data_directory.join("semantic_alignments.tsv"),
+        "mapping_id\tsource_sense_id\ttarget_sense_id\tstatus\tevidence_id\treview_note",
+        6,
+    )?;
+    for row in semantic_alignments
+        .rows
+        .iter()
+        .filter(|row| row[3] != "false-friend")
+    {
+        ids.insert(row[4].clone());
+    }
+    Ok(ids)
 }
 
 fn read_table(path: &Path, expected_header: &'static str, columns: usize) -> Result<Table> {
@@ -603,15 +1071,32 @@ fn validate_alignments(path: &Path, table: &Table) -> Result<()> {
 
 fn validate_abbreviations(path: &Path, table: &Table) -> Result<()> {
     for (offset, row) in table.rows.iter().enumerate() {
-        validate_target(path, offset + 2, &row[7])?;
-        validate_word(path, offset + 2, &row[2], "expanded abbreviation")?;
-        validate_word(path, offset + 2, &row[3], "printed abbreviation")?;
+        validate_target(path, offset + 2, &row[12])?;
+        validate_word(path, offset + 2, &row[3], "expanded abbreviation")?;
+        validate_word(path, offset + 2, &row[4], "printed abbreviation")?;
         if row[1].is_empty() {
             return invalid(
                 path,
                 offset + 2,
                 "abbreviation rows require a semantic sense ID",
             );
+        }
+        if row[2].is_empty()
+            || row[5].is_empty()
+            || row[6].is_empty()
+            || row[8].is_empty()
+            || row[9].is_empty()
+            || row[10].is_empty()
+            || row[11] != TARGET
+        {
+            return invalid(
+                path,
+                offset + 2,
+                "abbreviations require a cell, rule, evidence, marks, context, ambiguity, and Synodal source recension",
+            );
+        }
+        if !matches!(row[7].as_str(), "true" | "false") {
+            return invalid(path, offset + 2, "reversible must be true or false");
         }
     }
     Ok(())
@@ -713,6 +1198,28 @@ fn validate_conflicts(path: &Path, table: &Table) -> Result<()> {
     Ok(())
 }
 
+fn validate_conflict_evidence(path: &Path, conflicts: &Table, evidence: &Table) -> Result<()> {
+    let known = evidence
+        .rows
+        .iter()
+        .map(|row| row[0].as_str())
+        .collect::<BTreeSet<_>>();
+    for (offset, row) in conflicts.rows.iter().enumerate() {
+        for column in [5_usize, 6_usize] {
+            for evidence_id in row[column].split(',').filter(|value| !value.is_empty()) {
+                if !known.contains(evidence_id) {
+                    return invalid(
+                        path,
+                        offset + 2,
+                        &format!("conflict has unregistered evidence {evidence_id:?}"),
+                    );
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
 fn validate_irregular_overrides(path: &Path, table: &Table) -> Result<()> {
     let mut keys = BTreeSet::new();
     for (offset, row) in table.rows.iter().enumerate() {
@@ -779,6 +1286,36 @@ fn validate_semantic_alignments(path: &Path, table: &Table) -> Result<()> {
                 file: path.to_owned(),
                 id: row[0].clone(),
             });
+        }
+    }
+    Ok(())
+}
+
+fn validate_semantic_alignment_evidence(
+    path: &Path,
+    alignments: &Table,
+    evidence: &Table,
+) -> Result<()> {
+    let decisions = evidence
+        .rows
+        .iter()
+        .map(|row| (row[0].as_str(), row[4].as_str()))
+        .collect::<BTreeMap<_, _>>();
+    for (offset, row) in alignments.rows.iter().enumerate() {
+        let required_decision = if row[3] == "false-friend" {
+            "rejected"
+        } else {
+            "reviewed"
+        };
+        if decisions.get(row[4].as_str()) != Some(&required_decision) {
+            return invalid(
+                path,
+                offset + 2,
+                &format!(
+                    "semantic alignment status {:?} requires {required_decision} evidence",
+                    row[3]
+                ),
+            );
         }
     }
     Ok(())
@@ -1001,9 +1538,10 @@ fn emit_registry(tables: RegistryTables) -> String {
     principal_parts.rows.sort();
     exact_forms.rows.sort_by(|left, right| {
         let source_rank = |source: &str| match source {
-            "normative-table" | "synodal-attestation" => 0,
-            "normative-variant" => 1,
-            _ => 2,
+            "normative-table" => 0,
+            "synodal-attestation" => 1,
+            "normative-variant" => 2,
+            _ => 3,
         };
         left[0]
             .cmp(&right[0])
@@ -1223,13 +1761,59 @@ mod tests {
         let runtime = Table {
             rows: vec![vec!["lexeme".into(), "missing-evidence".into()]],
         };
+        let lexical_reviews = Table { rows: Vec::new() };
         assert!(
             validate_morphology_evidence(
                 Path::new("data/synodal"),
                 &reviewed,
+                &lexical_reviews,
                 [(&runtime, &[1_usize][..])],
             )
             .is_err()
+        );
+
+        let rejected = Table {
+            rows: vec![vec![
+                "rejected-evidence".into(),
+                "synodal:candidate:rejected".into(),
+                "source".into(),
+                "citation".into(),
+                "rejected".into(),
+                TARGET.into(),
+                "review".into(),
+            ]],
+        };
+        let rejected_runtime = Table {
+            rows: vec![vec!["lexeme".into(), "rejected-evidence".into()]],
+        };
+        assert!(
+            validate_morphology_evidence(
+                Path::new("data/synodal"),
+                &rejected,
+                &lexical_reviews,
+                [(&rejected_runtime, &[1_usize][..])],
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn exact_candidate_matching_accepts_canonical_unicode_equivalence() {
+        let candidate = CandidateLink {
+            source_id: "ponomar-elizabeth-bible-2026-08-09".into(),
+            target_recension: Some(TARGET.into()),
+            partition: Some("source".into()),
+            passage: Some("Acts.1.10".into()),
+            raw_spelling: "и҆ сѐ, мꙋ̑жа два̀".into(),
+            normalized_spelling: String::new(),
+        };
+        assert!(candidate.contains_exact("сѐ"));
+        assert!(
+            !CandidateLink {
+                raw_spelling: "вѣ́рꙋеши".into(),
+                ..candidate
+            }
+            .contains_exact("вѣ́рꙋ")
         );
     }
 }

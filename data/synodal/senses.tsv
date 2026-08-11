@@ -1,62 +1,82 @@
 lexeme_id	sense_id	gloss	domains	source_id	source_recension	semantic_status
+synodal:adjective:blazhenn	sense:blessed	blessed; beatified	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:bozhii	sense:v05:adjective:bozhii	divine; God's	religion,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adjective:gospoden	sense:v05:adjective:gospoden	of the Lord; Lord's	religion,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adjective:greshn	sense:sinful	sinful	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:mudr	sense:wise	wise; prudent	quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:nebesn	sense:heavenly	heavenly; celestial	religion,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:pravedn	sense:righteous	righteous; just	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:svyat	sense:holy	holy; sacred	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:v06-israel	sense:v06:israel-adjective	of Israel; Israelite	place,people,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adjective:vechn	sense:eternal	eternal; everlasting	time,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:determiner:sam	sense:self	self; the same person or thing	determination,emphasis	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:determiner:ves	sense:all-whole	all; whole; every member of a set	determination,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:determiner:vsyak	sense:every	every; each	determination,distributive	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:noun:bog	sense:deity:christian	God; the Christian deity	religion,person	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:dar	sense:gift	gift; offering	religion,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:delo	sense:deed	deed; work	action,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:dom	sense:house	house; household	place,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:glas	sense:voice	voice; sound	body,communication	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:glava	sense:head	head; chief	body,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:grad	sense:city	city; town	place,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:istina	sense:truth	truth	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:khram	sense:temple	temple; sanctuary	religion,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:lyubov	sense:love	love	emotion,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:mesto	sense:place	place; location	place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:milost	sense:mercy	mercy; compassion	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:molitva	sense:prayer	prayer	religion,communication	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:more	sense:sea	sea; large body of water	nature,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:narod	sense:people	people; nation	society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:noch	sense:night	night; nighttime	time,nature	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:pustynya	sense:wilderness	wilderness; desert	place,nature	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:rab	sense:servant	servant; bondservant	person,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:selo	sense:village	village; settlement	place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:zhena	sense:woman-wife	woman; wife	person,family	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:zemlya	sense:earth-land	earth; land; ground	nature,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:zapoved	sense:commandment	commandment; injunction	religion,law	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:tsar	sense:king	king; sovereign	person,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:more	sense:sea	sea; large body of water	nature,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:syn	sense:son	son; male descendant	person,family	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:dom	sense:house	house; household	place,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:narod	sense:people	people; nation	society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:zakon	sense:law	law; ordinance	law,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:khram	sense:temple	temple; sanctuary	religion,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:svet	sense:light	light; illumination	nature,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:glas	sense:voice	voice; sound	body,communication	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:dar	sense:gift	gift; offering	religion,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:slovo	sense:word	word; speech	communication,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:mesto	sense:place	place; location	place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:delo	sense:deed	deed; work	action,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:slava	sense:glory	glory; honor	religion,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:sila	sense:power	strength; power	quality,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:voda	sense:water	water	nature	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:slava	sense:glory	glory; honor	religion,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:slovo	sense:word	word; speech	communication,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:svet	sense:light	light; illumination	nature,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:syn	sense:son	son; male descendant	person,family	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:tsar	sense:king	king; sovereign	person,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:v06-israel	sense:v06:israel	Israel	place,people,name	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:v06-tysyashcha	sense:v06:tysyashcha	thousand	number,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:noun:vera	sense:faith	faith; belief	religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:istina	sense:truth	truth	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:glava	sense:head	head; chief	body,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:molitva	sense:prayer	prayer	religion,communication	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:voda	sense:water	water	nature	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:volya	sense:will	will; volition	mind,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:pustynya	sense:wilderness	wilderness; desert	place,nature	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:milost	sense:mercy	mercy; compassion	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:lyubov	sense:love	love	emotion,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:zakon	sense:law	law; ordinance	law,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:zapoved	sense:commandment	commandment; injunction	religion,law	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:zemlya	sense:earth-land	earth; land; ground	nature,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:zhena	sense:woman-wife	woman; wife	person,family	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:zhizn	sense:life	life	nature,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:noun:noch	sense:night	night; nighttime	time,nature	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:adjective:mudr	sense:wise	wise; prudent	quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:adjective:svyat	sense:holy	holy; sacred	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:adjective:pravedn	sense:righteous	righteous; just	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:adjective:vechn	sense:eternal	eternal; everlasting	time,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:adjective:nebesn	sense:heavenly	heavenly; celestial	religion,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:adjective:blazhenn	sense:blessed	blessed; beatified	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:adjective:greshn	sense:sinful	sinful	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:verb:nesti	sense:carry	to carry; bear; bring	action	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:verb:pisati	sense:write	to write	action,communication	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:verb:lyubiti	sense:love	to love; cherish	emotion,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:verb:byti	sense:be	to be; exist	state	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:verb:imati	sense:future-auxiliary	to be about to; compound-future auxiliary	grammar,auxiliary	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:verb:dati	sense:give	to give; grant	action,society,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
-synodal:pronoun:toi	sense:that	that; the aforementioned	determination	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:chetyre	sense:four	four	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:dva	sense:two	two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:pervyi	sense:first	first; ordinal one	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:tri	sense:three	three	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:v06-sto	sense:v06:sto	one hundred	number,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:vtoryi	sense:second	second; ordinal two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:az	sense:first-person	I; first-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:pronoun:ty	sense:second-person	you; second-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:pronoun:sei	sense:this	this; the present one	determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:chto	sense:what	what; interrogative pronoun	grammar,thing	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:izhe	sense:relative-who	who; which; that as a relative pronoun	grammar,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:kto	sense:who	who; interrogative pronoun	grammar,person	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:pronoun:chto	sense:what	what; interrogative pronoun	grammar,thing	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:moi	sense:possessive-first-singular	my; first-person singular possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:nash	sense:possessive-first-plural	our; first-person plural possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:nekto	sense:someone	someone; a certain person	grammar,indefinite	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:determiner:vsyak	sense:every	every; each	determination,distributive	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:determiner:sam	sense:self	self; the same person or thing	determination,emphasis	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:numeral:dva	sense:two	two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:numeral:tri	sense:three	three	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:numeral:chetyre	sense:four	four	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:numeral:pervyi	sense:first	first; ordinal one	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:numeral:vtoryi	sense:second	second; ordinal two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:on	sense:third-person	he; she; it; third-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:sebe	sense:reflexive-self	self; reflexive personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:sei	sense:this	this; the present one	determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:svoi	sense:possessive-reflexive	one's own; reflexive possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:toi	sense:that	that; the aforementioned	determination	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:tvoi	sense:possessive-second-singular	thy; your; second-person singular possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:ty	sense:second-person	you; second-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:v06-7cb9fbdd604c5a70	sense:v06:7cb9fbdd604c5a70	him; third-person oblique pronoun	grammar,person	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus
+synodal:pronoun:v06-nichtozhe	sense:v06:nichtozhe	nothing	grammar,thing	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:v06-niktozhe	sense:v06:niktozhe	nobody; no one	grammar,person	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:vash	sense:possessive-second-plural	your; second-person plural possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:verb:byti	sense:be	to be; exist	state	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:dati	sense:give	to give; grant	action,society,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:imati	sense:future-auxiliary	to be about to; compound-future auxiliary	grammar,auxiliary	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:verb:lyubiti	sense:love	to love; cherish	emotion,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:nesti	sense:carry	to carry; bear; bring	action	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:pisati	sense:write	to write	action,communication	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:v06-iziti	sense:v06:iziti	go out	motion	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus
+synodal:verb:v06-vzeti	sense:v06:vzeti	take; pick up	action,possession	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus
+synodal:verb:v06-vzyti	sense:v06:vzyti	go up; ascend	motion	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus

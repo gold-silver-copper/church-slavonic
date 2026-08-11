@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "milestone": "synodal-v0.4",
+  "target_recension": "synodal-russian",
+  "generation_policy": "strict",
+  "orthography_profile": "synodal-liturgical",
+  "tokenizer_contract": "synodal-dictionary-tokenize-v1",
+  "corpus": {
+    "passages": 74130,
+    "tokens": 1313344,
+    "token_types": 57476,
+    "source_ids": [
+      "ponomar-elizabeth-bible-2026-08-09",
+      "wikisource-church-slavonic-bible-2026-08-09"
+    ],
+    "partitions": [
+      "evaluation",
+      "source"
+    ]
+  },
+  "registry": {
+    "reviewed_lexemes": 506,
+    "reviewed_senses": 506,
+    "generated_exact_forms": 774,
+    "exact_only_lexemes": 457,
+    "fully_classed_lexemes": 46,
+    "partial_lexemes": 3
+  },
+  "coverage": {
+    "top_1_analyzed": 430470,
+    "top_k_analyzed": 569418,
+    "ambiguous": 13510,
+    "unresolved": 742721,
+    "estimated_recovery_by_route": {
+      "abbreviation-registry": 42115,
+      "exact-evidence": 8655,
+      "reviewed-class": 1092,
+      "reviewed-principal-part": 0,
+      "spelling-variant": 60053,
+      "ungrouped-unknown": 645324,
+      "unsupported-formation": 0
+    }
+  },
+  "evaluation": {
+    "morphological_cells": 445,
+    "analytic_phrases": 5,
+    "abbreviation_cells": 7,
+    "expanded_top_k": 445,
+    "printed_top_k": 445,
+    "strict_top_k": 444
+  },
+  "reviews": {
+    "family_admitted": 5,
+    "family_deferred": 197,
+    "family_rejected": 3,
+    "current_top_200_decided": 200,
+    "lower_ranked_unreviewed": 800
+  },
+  "artifact_sha256": {
+    "crates/synodal-church-slavonic-dictionary/generated/registry.rs": "a460c2c476749aa37290934eb075945279eaefff500cdde63b443363f6bac6d5",
+    "crates/synodal-church-slavonic/generated/registry.rs": "259b7a4b223eb8ce263c464e3d9b5945d58631340c53e2cb08f44f03328f03a2",
+    "data/synodal/family_reviews.tsv": "1b596aee2c956e55200c9ab7b655e9febc571ffabbdc1fc8ad1139ea50db9704",
+    "data/synodal/lexical_reviews.tsv": "5c8e1b4b23ba35c3a6474dcd83a85f4338c80ee6966c23269f62683baef675bd",
+    "reports/synodal-coverage.json": "1fb8426b49d3a40f1b28c72f65a1d51f15916127fd85c22f88cdf71d12d01dbf",
+    "reports/synodal-evaluation.json": "2d83efd560601e7ddcac2e6fc65ac4376eb1640b0615ff73c93d431cbbb5eed2",
+    "reports/synodal-family-review-queue.json": "2e168e226abd5d26b7f3e950666b2fe8fa116bdafec74fbacd52993b047e9b7b",
+    "reports/synodal-v04-marginal-recovery.json": "ef1a6cf4d2e58da449f6fabd8cd33a157f32dfcabbfbc36eb3a7758ffe008857"
+  },
+  "sources": [
+    {
+      "path": "data/intermediate/synodal/ponomar-elizabeth-bible-2026-08-09.jsonl",
+      "sha256": "ef0323df940c93c9b72a3cbb6f7adfb062ba38ffcdcf401eff5cf369c4869c26",
+      "evaluation_passages": 7574,
+      "source_passages": 29637
+    },
+    {
+      "path": "data/intermediate/synodal/wikisource-church-slavonic-bible-2026-08-09.jsonl",
+      "sha256": "913d9781ef511988d8bcc5d19b1b8c63c7582cd5e476f62469eff199e7c2c08f",
+      "evaluation_passages": 7481,
+      "source_passages": 29438
+    }
+  ]
+}

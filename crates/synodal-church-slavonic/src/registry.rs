@@ -14,7 +14,7 @@ pub(crate) struct RawExactForm(pub [&'static str; 7]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawAlignment(pub [&'static str; 11]);
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct RawAbbreviation(pub [&'static str; 8]);
+pub(crate) struct RawAbbreviation(pub [&'static str; 13]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawAccent(pub [&'static str; 8]);
 #[derive(Clone, Copy, Debug)]
@@ -31,6 +31,12 @@ include!("../generated/registry.rs");
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum PartOfSpeech {
+    Adverb,
+    Preposition,
+    Conjunction,
+    Particle,
+    Interjection,
+    ProperNoun,
     Noun,
     Adjective,
     Verb,
@@ -41,7 +47,13 @@ pub enum PartOfSpeech {
 }
 
 impl PartOfSpeech {
-    pub const ALL: [Self; 7] = [
+    pub const ALL: [Self; 13] = [
+        Self::Adverb,
+        Self::Preposition,
+        Self::Conjunction,
+        Self::Particle,
+        Self::Interjection,
+        Self::ProperNoun,
         Self::Noun,
         Self::Adjective,
         Self::Verb,
@@ -142,6 +154,53 @@ pub struct IrregularOverrideSummary {
     pub evidence_id: String,
 }
 
+/// Reviewable lexical metadata exposed without leaking the generated registry
+/// representation. Empty source fields stay `None` rather than being guessed.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct LexicalMetadataSummary {
+    pub lexeme_id: LexemeId,
+    pub class: Option<String>,
+    pub stem: Option<String>,
+    pub gender: Option<String>,
+    pub aspect: Option<String>,
+    pub source_id: String,
+    pub target_recension: String,
+    pub principal_parts: Vec<PrincipalPartSummary>,
+    pub exact_forms: Vec<ExactFormSummary>,
+    pub accents: Vec<AccentSummary>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct PrincipalPartSummary {
+    pub system: String,
+    pub value: String,
+    pub formation: Option<String>,
+    pub evidence_id: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct ExactFormSummary {
+    pub cell: String,
+    pub expanded: String,
+    pub printed: String,
+    pub evidence_id: String,
+    pub source_kind: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct AccentSummary {
+    pub cell: String,
+    pub expanded: String,
+    pub accented: String,
+    pub evidence_id: String,
+    pub source_id: String,
+    pub source_recension: String,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ExactFormRecord {
     pub expanded: &'static str,
@@ -154,11 +213,17 @@ pub(crate) struct ExactFormRecord {
 pub(crate) struct AbbreviationRecord {
     pub lexeme_id: &'static str,
     pub sense_id: &'static str,
+    pub cell: &'static str,
     pub expanded: &'static str,
     pub printed: &'static str,
     pub rule_id: &'static str,
     pub evidence_id: &'static str,
     pub reversible: bool,
+    pub required_marks: &'static str,
+    pub context_restrictions: &'static str,
+    pub ambiguity: &'static str,
+    pub source_recension: &'static str,
+    pub target_recension: &'static str,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -219,6 +284,13 @@ pub(crate) fn exact_forms(id: &LexemeId, cell: &str) -> Vec<ExactFormRecord> {
 
 pub(crate) fn has_exact_forms(id: &LexemeId) -> bool {
     EXACT_FORMS.iter().any(|row| row.0[0] == id.as_str())
+}
+
+pub(crate) fn is_exact_only(id: &LexemeId) -> bool {
+    raw_by_id(id).is_some_and(|row| {
+        (row.0[3].is_empty() || matches!(row.0[3], "exact" | "exact-complete-pronoun-table"))
+            && has_exact_forms(id)
+    })
 }
 
 pub(crate) fn has_exact_system(id: &LexemeId, prefix: &str) -> bool {
@@ -398,6 +470,55 @@ pub(crate) fn all_lexemes() -> Result<Vec<LexemeSummary>> {
     LEXEMES.iter().map(summary).collect()
 }
 
+pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> {
+    let row = raw_by_id(id).ok_or_else(|| Error::UnknownLemma {
+        lookup: id.to_string(),
+    })?;
+    let optional = |value: &str| (!value.is_empty()).then(|| value.to_owned());
+    Ok(LexicalMetadataSummary {
+        lexeme_id: id.clone(),
+        class: optional(row.0[3]),
+        stem: optional(row.0[4]),
+        gender: optional(row.0[5]),
+        aspect: optional(row.0[6]),
+        source_id: row.0[7].into(),
+        target_recension: row.0[8].into(),
+        principal_parts: PRINCIPAL_PARTS
+            .iter()
+            .filter(|part| part.0[0] == id.as_str())
+            .map(|part| PrincipalPartSummary {
+                system: part.0[1].into(),
+                value: part.0[2].into(),
+                formation: optional(part.0[3]),
+                evidence_id: part.0[4].into(),
+            })
+            .collect(),
+        exact_forms: EXACT_FORMS
+            .iter()
+            .filter(|form| form.0[0] == id.as_str())
+            .map(|form| ExactFormSummary {
+                cell: form.0[1].into(),
+                expanded: form.0[2].into(),
+                printed: form.0[3].into(),
+                evidence_id: form.0[4].into(),
+                source_kind: form.0[5].into(),
+            })
+            .collect(),
+        accents: ACCENTS
+            .iter()
+            .filter(|accent| accent.0[0] == id.as_str())
+            .map(|accent| AccentSummary {
+                cell: accent.0[1].into(),
+                expanded: accent.0[2].into(),
+                accented: accent.0[3].into(),
+                evidence_id: accent.0[4].into(),
+                source_id: accent.0[5].into(),
+                source_recension: accent.0[6].into(),
+            })
+            .collect(),
+    })
+}
+
 pub(crate) fn alignments() -> Result<Vec<AlignmentSummary>> {
     ALIGNMENTS
         .iter()
@@ -480,33 +601,46 @@ pub(crate) fn irregular_overrides() -> Vec<IrregularOverrideSummary> {
         .collect()
 }
 
-pub(crate) fn abbreviation_for(id: &LexemeId, sense_id: &str) -> Option<AbbreviationRecord> {
+pub(crate) fn abbreviations_for(id: &LexemeId, sense_id: &str) -> Vec<AbbreviationRecord> {
     ABBREVIATIONS
         .iter()
-        .find(|row| row.0[0] == id.as_str() && row.0[1] == sense_id)
+        .filter(|row| row.0[0] == id.as_str() && row.0[1] == sense_id)
         .map(|row| AbbreviationRecord {
             lexeme_id: row.0[0],
             sense_id: row.0[1],
-            expanded: row.0[2],
-            printed: row.0[3],
-            rule_id: row.0[4],
-            evidence_id: row.0[5],
-            reversible: row.0[6] == "true",
+            cell: row.0[2],
+            expanded: row.0[3],
+            printed: row.0[4],
+            rule_id: row.0[5],
+            evidence_id: row.0[6],
+            reversible: row.0[7] == "true",
+            required_marks: row.0[8],
+            context_restrictions: row.0[9],
+            ambiguity: row.0[10],
+            source_recension: row.0[11],
+            target_recension: row.0[12],
         })
+        .collect()
 }
 
 pub(crate) fn abbreviations_for_printed(printed: &str) -> Vec<AbbreviationRecord> {
     ABBREVIATIONS
         .iter()
-        .filter(|row| row.0[3] == printed)
+        .filter(|row| row.0[4] == printed)
         .map(|row| AbbreviationRecord {
             lexeme_id: row.0[0],
             sense_id: row.0[1],
-            expanded: row.0[2],
-            printed: row.0[3],
-            rule_id: row.0[4],
-            evidence_id: row.0[5],
-            reversible: row.0[6] == "true",
+            cell: row.0[2],
+            expanded: row.0[3],
+            printed: row.0[4],
+            rule_id: row.0[5],
+            evidence_id: row.0[6],
+            reversible: row.0[7] == "true",
+            required_marks: row.0[8],
+            context_restrictions: row.0[9],
+            ambiguity: row.0[10],
+            source_recension: row.0[11],
+            target_recension: row.0[12],
         })
         .collect()
 }
@@ -597,6 +731,12 @@ fn summary(row: &RawLexeme) -> Result<LexemeSummary> {
 
 fn parse_pos(value: &str) -> Result<PartOfSpeech> {
     match value {
+        "adverb" => Ok(PartOfSpeech::Adverb),
+        "preposition" => Ok(PartOfSpeech::Preposition),
+        "conjunction" => Ok(PartOfSpeech::Conjunction),
+        "particle" => Ok(PartOfSpeech::Particle),
+        "interjection" => Ok(PartOfSpeech::Interjection),
+        "proper-noun" => Ok(PartOfSpeech::ProperNoun),
         "noun" => Ok(PartOfSpeech::Noun),
         "adjective" => Ok(PartOfSpeech::Adjective),
         "verb" => Ok(PartOfSpeech::Verb),

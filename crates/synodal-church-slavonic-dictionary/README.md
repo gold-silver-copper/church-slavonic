@@ -29,7 +29,14 @@ orthography, known morphology, expected part of speech, required semantic sense,
 and surface ambiguity. The crate accepts typed manifests only; applications may
 choose their own serialization layer outside the runtime linguistic crate.
 
-The bundled semantic registry contains 61 reviewed target lexemes. Mixed
-historical D'yachenko meanings enter it only after a Synodal-corpus review; raw
-dictionary scans and corpora are not packaged. Runtime operation is offline and
-the crate builds for `wasm32-unknown-unknown`.
+The bundled semantic registry contains 506 reviewed target lexemes and senses.
+The public `families` and `show_family_by_id` operations expose exact members,
+principal parts, supported systems, and missing family metadata without accepting
+diagnostic candidate IDs as runtime facts. The `synodal-dict` binary adds
+`search`, `show`, `families`, `show-family`, `analyze`, `lint`, `check-text`, and
+corpus `coverage --by-family` commands; see
+`docs/SYNODAL_CLI_AND_COVERAGE.md`. Mixed
+historical D'yachenko meanings and OCS Wiktionary semantics enter only after an
+explicit Synodal-target review; raw dictionary scans and corpora are not
+packaged. Runtime operation is offline and the library still builds for
+`wasm32-unknown-unknown` without the CLI feature.

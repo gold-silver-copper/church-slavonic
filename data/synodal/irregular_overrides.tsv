@@ -4,3 +4,7 @@ synodal:verb:byti	aorist	data/synodal/exact_forms.tsv	alypy-81-byti-aorist	synod
 synodal:verb:byti	imperfect	data/synodal/exact_forms.tsv	alypy-81-byti-imperfect	synodal-russian
 synodal:verb:byti	imperative	data/synodal/exact_forms.tsv	alypy-81-byti-imperative	synodal-russian
 synodal:verb:imati	present	data/synodal/exact_forms.tsv	alypy-85-imati-future	synodal-russian
+synodal:verb:wikt-06af096688df	future	data/synodal/exact_forms.tsv	alypy-104-reshchi	synodal-russian
+synodal:verb:wikt-06af096688df	aorist	data/synodal/exact_forms.tsv	alypy-104-reshchi	synodal-russian
+synodal:verb:wikt-06af096688df	imperative	data/synodal/exact_forms.tsv	alypy-104-reshchi	synodal-russian
+synodal:noun:syn	noun-singular-dative-and-plural	data/synodal/exact_forms.tsv	alypy-37-synovi,alypy-37-synove,alypy-37-synov-oblique	synodal-russian
