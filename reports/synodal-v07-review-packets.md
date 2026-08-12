@@ -3,7 +3,7 @@
 These packets are acquisition and review aids. No predicted token counts enter coverage until an explicit decision is represented in the v0.7 ledgers and the canonical resolver is regenerated.
 
 - Locked v0.6 baseline top-k: 853770 of 1313344
-- Current top-k: 919752
+- Current top-k: 919786
 - Strictly-more-than-70% threshold: 919341
 - Remaining current deficit: 0
 - Candidate exact-cell rows: 101

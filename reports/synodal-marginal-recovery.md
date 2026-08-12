@@ -3,19 +3,19 @@
 This is a diagnostic counterfactual under `Strict` and `SynodalLiturgical`; it does not count a proposal as an analysis. Only canonical resolver output changes actual coverage.
 
 - Corpus tokens: 1313344
-- Current top-k: 919752
+- Current top-k: 919786
 - Canonical target (>70%): 919341
 - Tokens still needed for >70%: 0
 - Overlap-adjusted diagnostic potential in this queue: 139783
-- Diagnostic projected top-k if every batch were valid: 1059535
+- Diagnostic projected top-k if every batch were valid: 1059569
 
 | Milestone | Minimum top-k | Tokens needed | Margin |
 |---:|---:|---:|---:|
-| 66% | 866808 | 0 | 52944 |
-| 67% | 879941 | 0 | 39811 |
-| 68% | 893074 | 0 | 26678 |
-| 69% | 906208 | 0 | 13544 |
-| 70% | 919341 | 0 | 411 |
+| 66% | 866808 | 0 | 52978 |
+| 67% | 879941 | 0 | 39845 |
+| 68% | 893074 | 0 | 26712 |
+| 69% | 906208 | 0 | 13578 |
+| 70% | 919341 | 0 | 445 |
 
 | Rank | Batch | Route | Raw | Unique | Marginal | Cumulative | Readiness | Effort | Review status |
 |---:|---|---|---:|---:|---:|---:|---|---|---|

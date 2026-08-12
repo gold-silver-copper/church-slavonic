@@ -6,7 +6,7 @@
   "orthography_profile": "SynodalLiturgical",
   "corpus_tokens": 1313344,
   "baseline_top_k": 853770,
-  "current_top_k": 919752,
+  "current_top_k": 919786,
   "strictly_more_than_70_percent": 919341,
   "tokens_needed_for_70_percent": 0,
   "packet_rows": 101,
