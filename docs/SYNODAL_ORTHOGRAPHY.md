@@ -50,6 +50,27 @@ NFC is a useful baseline but not the whole contract. In particular:
 These constraints follow UTN #41. Exact allowed mark sequences are implemented as
 reviewable tables and covered by hostile-input tests.
 
+## Accent realization
+
+Liturgical generation resolves accent metadata in a fixed order: an exact
+reviewed accented/printed cell; an explicit lexical irregular printed override;
+a reviewed reusable `AccentParadigm`; otherwise a typed
+`OrthographicMetadataRequired` failure. A paradigm is not inferred from corpus
+frequency or one surface witness.
+
+The typed model distinguishes a stem vowel counted from the lexical left edge
+from an ending vowel counted from the right edge. Multiple disjoint cell/number
+scopes can express documented mobility and acute, grave, or kamora selection.
+Psili breathing has its own placement rule and is inserted before the stress
+mark when both occupy one base. The generated result is validated again through
+`SynodalWord`, preserving canonical combining order and rejecting hostile
+sequences.
+
+The reviewed `synodal-accent:mudr-fixed-stem` rule applies first-stem-vowel acute
+stress to multiple long positive singular forms of `мꙋдръ` under Alypy §57. It
+coexists with, and is lower precedence than, the existing exact nominative
+accent row.
+
 ## Lookup and collation
 
 Lookup normalization is deterministic and separate from printed rendering. It

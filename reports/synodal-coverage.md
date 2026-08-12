@@ -3,20 +3,20 @@
 - Passages: 74130
 - Tokens: 1313344
 - Types: 57476
-- Top-1 analyzed: 601108 (4576 bp)
-- Top-k analyzed: 919752 (7003 bp)
+- Top-1 analyzed: 601081 (4576 bp)
+- Top-k analyzed: 919786 (7003 bp)
 - Ambiguous: 17149
-- Unresolved: 392554
+- Unresolved: 392520
 
 ## Gap categories
 
 | Category | Tokens |
 |---|---:|
-| `unknown-lexeme` | 383175 |
+| `unknown-lexeme` | 383155 |
 | `missing-declension-or-class` | 55 |
 | `missing-verb-principal-part` | 72 |
 | `unsupported-formation` | 0 |
-| `missing-accent-or-orthographic-metadata` | 9252 |
+| `missing-accent-or-orthographic-metadata` | 9238 |
 | `ambiguity-or-spelling-variant` | 17990 |
 
 ## Estimated recovery routes
@@ -29,9 +29,9 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `reviewed-class` | 55 |
 | `reviewed-principal-part` | 72 |
 | `abbreviation-registry` | 12629 |
-| `spelling-variant` | 10093 |
+| `spelling-variant` | 10079 |
 | `unsupported-formation` | 0 |
-| `ungrouped-unknown` | 370046 |
+| `ungrouped-unknown` | 370026 |
 
 ## Unresolved tokens by probable family
 
@@ -131,40 +131,40 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `ungrouped:третїй` | 195 | 187 | `ungrouped-unknown` | Тре́тїй, тре́тїй |
 | `ungrouped:жєртвы` | 193 | 187 | `ungrouped-unknown` | Жє́ртвы, жє́ртвы |
 | `ungrouped:предо` | 193 | 189 | `ungrouped-unknown` | пре́до, предо |
-| `family:synodal:adjective:mudr` | 192 | 186 | `spelling-variant` | Мꙋ́дрыѧ, Мꙋ́дрїи, Мꙋ̑дрыѧ, Мꙋдрѣ́йшїй, мꙋ́дра, мꙋ́драго, мꙋ́драгѡ, мꙋ́драѧ, мꙋ́дри, мꙋ́дро, мꙋ́дромꙋ, мꙋ́дрыми, мꙋ́дрыхъ, мꙋ́дрыѧ, мꙋ́дрїи, мꙋ́дрѣ, мꙋ́дрꙋ, мꙋ̑дры, мꙋ̑дрымъ, мꙋ̑дрыѧ, мꙋдры̀, мꙋдрѣ́йшїй |
 | `ungrouped:глаголаша` | 192 | 184 | `ungrouped-unknown` | Глаго́лаша, глаго́лаша |
 | `ungrouped:книзѣ` | 192 | 188 | `ungrouped-unknown` | кни́зѣ |
 | `ungrouped:іꙋдеє` | 192 | 192 | `ungrouped-unknown` | І҆ꙋде́є, і҆ꙋде́є |
 | `ungrouped:всѧцѣмъ` | 191 | 179 | `ungrouped-unknown` | Всѧ́цѣмъ, всѧ́цѣ́мъ, всѧ́цѣмъ |
 | `ungrouped:мертвыхъ` | 190 | 180 | `ungrouped-unknown` | ме́ртвыхъ |
+| `ungrouped:іꙋдеи` | 190 | 188 | `ungrouped-unknown` | і҆ꙋде́и |
 
 ## Coverage by corpus
 
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| Church Slavonic Bible | 651487 | 298469 | 456878 | 8521 | 194074 |
-| Elizabeth Bible | 661857 | 302639 | 462874 | 8628 | 198480 |
+| Church Slavonic Bible | 651487 | 298456 | 456896 | 8521 | 194056 |
+| Elizabeth Bible | 661857 | 302625 | 462890 | 8628 | 198464 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 302639 | 462874 | 8628 | 198480 |
-| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 298469 | 456878 | 8521 | 194074 |
+| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 302625 | 462890 | 8628 | 198464 |
+| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 298456 | 456896 | 8521 | 194056 |
 
 ## Gap categories by source
 
 | Source | Category | Tokens |
 |---|---|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 193815 |
+| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 193805 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-declension-or-class` | 29 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-verb-principal-part` | 36 |
-| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 4600 |
+| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 4594 |
 | `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 9039 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 189360 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 189350 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-declension-or-class` | 26 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-verb-principal-part` | 36 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 4652 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 4644 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 8951 |
 
 ## Review queue

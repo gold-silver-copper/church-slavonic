@@ -2837,11 +2837,18 @@
       "top_k_correct": 2182,
       "abstained": 0
     },
+    "synodal-irregular-override": {
+      "total": 17,
+      "returned": 17,
+      "top_1_correct": 15,
+      "top_k_correct": 17,
+      "abstained": 0
+    },
     "synodal-normative-table": {
-      "total": 88,
-      "returned": 88,
-      "top_1_correct": 82,
-      "top_k_correct": 88,
+      "total": 71,
+      "returned": 71,
+      "top_1_correct": 67,
+      "top_k_correct": 71,
       "abstained": 0
     },
     "synodal-productive-rule": {

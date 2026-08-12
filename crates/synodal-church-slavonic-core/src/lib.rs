@@ -1,6 +1,7 @@
 #![doc = include_str!("../README.md")]
 #![forbid(unsafe_code)]
 
+pub mod accent;
 pub mod collation;
 pub mod error;
 pub mod evidence;
@@ -17,6 +18,10 @@ pub mod result;
 pub mod trace;
 pub mod transliteration;
 
+pub use accent::{
+    AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope, BreathingMark,
+    BreathingRule,
+};
 pub use collation::{
     CollationKey, CollationProfile, CollationStrength, collation_key, compare_synodal,
 };
@@ -32,10 +37,10 @@ pub use mapping::{
     Transformation,
 };
 pub use morphology::{
-    AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect, ImperativeFormation,
-    ImperfectFormation, NounDeclension, NounLexeme, ParticiplePrincipalPart, VerbConjugation,
-    VerbLexeme, aorist, decline_adjective, decline_noun, decline_participle, imperative, imperfect,
-    infinitive, l_participle, present,
+    ActiveParticipleShortFormation, AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect,
+    ComparisonFormation, ImperativeFormation, ImperfectFormation, NounDeclension, NounLexeme,
+    ParticiplePrincipalPart, VerbConjugation, VerbLexeme, aorist, decline_adjective, decline_noun,
+    decline_participle, imperative, imperfect, infinitive, l_participle, present,
 };
 pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
 pub use orthography::{

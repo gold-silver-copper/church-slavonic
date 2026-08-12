@@ -42,7 +42,9 @@ impl FormVariant {
         }
         match &self.source {
             FormSource::SynodalAttestation { .. }
-            | FormSource::SynodalNormativeGeneration { .. } => {
+            | FormSource::SynodalNormativeGeneration { .. }
+            | FormSource::SynodalIrregularOverride { .. }
+            | FormSource::CallerSpecifiedPrediction { .. } => {
                 if self.source_recension != Some(Recension::SynodalRussian)
                     || self.recension_mapping.is_some()
                 {

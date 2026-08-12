@@ -480,8 +480,10 @@ pub fn concordance(id: &LexemeId) -> Vec<SourceExample> {
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub enum AnalysisSource {
     ExactSynodalAttestation,
+    SynodalIrregularOverride,
     SynodalNormativeTable,
     SynodalProductiveRule,
+    CallerSpecifiedPrediction,
     InheritedPrediction,
     AnalogicalPrediction,
     AbbreviationExpansion,
@@ -917,12 +919,14 @@ fn collect_matching(
 fn analysis_source(source: &FormSource) -> AnalysisSource {
     match source {
         FormSource::SynodalAttestation { .. } => AnalysisSource::ExactSynodalAttestation,
+        FormSource::SynodalIrregularOverride { .. } => AnalysisSource::SynodalIrregularOverride,
         FormSource::SynodalNormativeGeneration { rule }
             if rule.as_str() == "SYN-REGISTRY-NORMATIVE-TABLE" =>
         {
             AnalysisSource::SynodalNormativeTable
         }
         FormSource::SynodalNormativeGeneration { .. } => AnalysisSource::SynodalProductiveRule,
+        FormSource::CallerSpecifiedPrediction { .. } => AnalysisSource::CallerSpecifiedPrediction,
         FormSource::InheritedPrediction { .. } => AnalysisSource::InheritedPrediction,
         FormSource::AnalogicalPrediction { .. } => AnalysisSource::AnalogicalPrediction,
     }

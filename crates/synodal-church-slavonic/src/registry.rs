@@ -1,8 +1,11 @@
 use synodal_church_slavonic_core::{
-    AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect, Confidence, Error, Gender,
-    GenerationPolicy, ImperativeFormation, ImperfectFormation, LexemeId, NounDeclension,
-    NounLexeme, ParticiplePrincipalPart, RecensionMappingId, Result, SynodalWord, VerbConjugation,
-    VerbLexeme, normalize_lookup_accentless,
+    AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope,
+    ActiveParticipleShortFormation, AdjectiveClass, AdjectiveForm, AdjectiveLexeme,
+    AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Comparison,
+    ComparisonFormation, Confidence, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind,
+    FiniteTense, Gender, GenerationPolicy, ImperativeFormation, ImperfectFormation, LexemeId,
+    NounDeclension, NounLexeme, Number, ParticiplePrincipalPart, Recension, RecensionMappingId,
+    Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme, normalize_lookup_accentless,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -17,6 +20,8 @@ pub(crate) struct RawAlignment(pub [&'static str; 11]);
 pub(crate) struct RawAbbreviation(pub [&'static str; 13]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawAccent(pub [&'static str; 8]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawAccentParadigm(pub [&'static str; 11]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawPositionalRule(pub [&'static str; 7]);
 #[derive(Clone, Copy, Debug)]
@@ -169,6 +174,7 @@ pub struct LexicalMetadataSummary {
     pub principal_parts: Vec<PrincipalPartSummary>,
     pub exact_forms: Vec<ExactFormSummary>,
     pub accents: Vec<AccentSummary>,
+    pub accent_paradigms: Vec<AccentParadigmSummary>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -199,6 +205,18 @@ pub struct AccentSummary {
     pub evidence_id: String,
     pub source_id: String,
     pub source_recension: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct AccentParadigmSummary {
+    pub paradigm_id: String,
+    pub scope: String,
+    pub placement: String,
+    pub mark: String,
+    pub breathing: Option<String>,
+    pub evidence_id: String,
+    pub source_id: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -313,9 +331,32 @@ pub(crate) fn has_principal_part_prefix(id: &LexemeId, prefix: &str) -> bool {
 
 pub(crate) fn has_accent_data(id: &LexemeId) -> bool {
     ACCENTS.iter().any(|row| row.0[0] == id.as_str())
+        || ACCENT_PARADIGMS.iter().any(|row| row.0[0] == id.as_str())
         || EXACT_FORMS
             .iter()
             .any(|row| row.0[0] == id.as_str() && row.0[2] != row.0[3])
+}
+
+pub(crate) fn irregular_evidence_for(id: &LexemeId, cell_key: &str) -> Option<&'static str> {
+    IRREGULAR_OVERRIDES
+        .iter()
+        .find(|row| {
+            if row.0[0] != id.as_str() {
+                return false;
+            }
+            match row.0[1] {
+                "present" => cell_key.starts_with("present:"),
+                "future" => cell_key.starts_with("future:"),
+                "aorist" => cell_key.starts_with("aorist:"),
+                "imperfect" => cell_key.starts_with("imperfect:"),
+                "imperative" => cell_key.starts_with("imperative:"),
+                "noun-singular-dative-and-plural" => {
+                    cell_key.starts_with("noun:dative:singular:") || cell_key.contains(":plural:")
+                }
+                _ => false,
+            }
+        })
+        .map(|row| row.0[3])
 }
 
 pub(crate) fn accent_for(id: &LexemeId, cell: &str, expanded: &str) -> Option<AccentRecord> {
@@ -328,6 +369,164 @@ pub(crate) fn accent_for(id: &LexemeId, cell: &str, expanded: &str) -> Option<Ac
             source_id: row.0[5],
             source_recension: row.0[6],
         })
+}
+
+pub(crate) fn accent_paradigm_for(
+    id: &LexemeId,
+    cell: synodal_church_slavonic_core::GrammarCell,
+) -> Result<Option<AccentParadigm>> {
+    let rows: Vec<&RawAccentParadigm> = ACCENT_PARADIGMS
+        .iter()
+        .filter(|row| row.0[0] == id.as_str())
+        .collect();
+    let mut applicable_ids = Vec::new();
+    for row in &rows {
+        if parse_accent_scope(row.0[2])?.applies_to(cell) {
+            applicable_ids.push(row.0[1]);
+        }
+    }
+    applicable_ids.sort_unstable();
+    applicable_ids.dedup();
+    let Some(paradigm_id) = applicable_ids.first().copied() else {
+        return Ok(None);
+    };
+    if applicable_ids.len() > 1 {
+        return Err(Error::ContradictoryMetadata {
+            reason: format!(
+                "multiple accent paradigms apply to {} in cell {cell:?}",
+                id.as_str()
+            ),
+        });
+    }
+    let selected: Vec<&RawAccentParadigm> = rows
+        .into_iter()
+        .filter(|row| row.0[1] == paradigm_id)
+        .collect();
+    let first = selected[0];
+    for row in &selected {
+        if row.0[6..] != first.0[6..] {
+            return Err(Error::ContradictoryMetadata {
+                reason: format!("accent paradigm {paradigm_id} has inconsistent evidence"),
+            });
+        }
+    }
+    let accent_rules = selected
+        .iter()
+        .map(|row| {
+            Ok(AccentRule {
+                scope: parse_accent_scope(row.0[2])?,
+                placement: parse_accent_placement(row.0[3])?,
+                mark: parse_accent_mark(row.0[4])?,
+            })
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let breathing_rules = selected
+        .iter()
+        .filter(|row| !row.0[5].is_empty())
+        .map(|row| {
+            let placement =
+                row.0[5]
+                    .strip_prefix("psili@")
+                    .ok_or_else(|| Error::ContradictoryMetadata {
+                        reason: format!("invalid breathing rule {:?}", row.0[5]),
+                    })?;
+            Ok(BreathingRule {
+                scope: parse_accent_scope(row.0[2])?,
+                placement: parse_accent_placement(placement)?,
+                mark: BreathingMark::Psili,
+            })
+        })
+        .collect::<Result<Vec<_>>>()?;
+    Ok(Some(AccentParadigm {
+        id: paradigm_id.into(),
+        accent_rules,
+        breathing_rules,
+        evidence: Evidence {
+            id: EvidenceId::from(first.0[6]),
+            source: SourceId::from(first.0[7]),
+            source_recension: Recension::SynodalRussian,
+            kind: EvidenceKind::AccentParadigm,
+            authority_roles: vec![AuthorityRole::Accentual, AuthorityRole::Orthographic],
+            epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+            citation: first.0[8].into(),
+            note: Some("reviewed reusable Synodal accent paradigm".into()),
+        },
+    }))
+}
+
+fn parse_accent_scope(value: &str) -> Result<AccentScope> {
+    let parts: Vec<&str> = value.split(':').collect();
+    match parts.as_slice() {
+        ["all"] => Ok(AccentScope::All),
+        ["noun", numbers] => Ok(AccentScope::Noun {
+            numbers: parse_accent_numbers(numbers)?,
+        }),
+        ["adjective", form, comparison, numbers] => Ok(AccentScope::Adjective {
+            form: match *form {
+                "short" => AdjectiveForm::Short,
+                "long" => AdjectiveForm::Long,
+                value => return invalid_metadata("accent adjective form", value),
+            },
+            comparison: match *comparison {
+                "positive" => Comparison::Positive,
+                "comparative" => Comparison::Comparative,
+                "superlative" => Comparison::Superlative,
+                value => return invalid_metadata("accent comparison", value),
+            },
+            numbers: parse_accent_numbers(numbers)?,
+        }),
+        ["finite", tense, numbers] => Ok(AccentScope::FiniteVerb {
+            tense: match *tense {
+                "present" => FiniteTense::Present,
+                "future" => FiniteTense::Future,
+                "past" => FiniteTense::Past,
+                "imperfect" => FiniteTense::Imperfect,
+                "aorist" => FiniteTense::Aorist,
+                value => return invalid_metadata("accent finite tense", value),
+            },
+            numbers: parse_accent_numbers(numbers)?,
+        }),
+        _ => invalid_metadata("accent scope", value),
+    }
+}
+
+fn parse_accent_numbers(value: &str) -> Result<Vec<Number>> {
+    value
+        .split(',')
+        .map(|number| match number {
+            "singular" => Ok(Number::Singular),
+            "dual" => Ok(Number::Dual),
+            "plural" => Ok(Number::Plural),
+            value => invalid_metadata("accent number", value),
+        })
+        .collect()
+}
+
+fn parse_accent_placement(value: &str) -> Result<AccentPlacement> {
+    let (kind, offset) = value
+        .rsplit_once(':')
+        .ok_or_else(|| Error::ContradictoryMetadata {
+            reason: format!("invalid accent placement {value:?}"),
+        })?;
+    let offset = offset
+        .parse::<u8>()
+        .map_err(|_| Error::ContradictoryMetadata {
+            reason: format!("invalid accent placement offset {offset:?}"),
+        })?;
+    match kind {
+        "stem-vowel-from-start" => Ok(AccentPlacement::StemVowelFromStart(offset)),
+        "ending-vowel-from-end" => Ok(AccentPlacement::EndingVowelFromEnd(offset)),
+        value => invalid_metadata("accent placement", value),
+    }
+}
+
+fn parse_accent_mark(value: &str) -> Result<AccentMark> {
+    match value {
+        "acute" => Ok(AccentMark::Acute),
+        "grave" => Ok(AccentMark::Grave),
+        "kamora" => Ok(AccentMark::Kamora),
+        value => invalid_metadata("accent mark", value),
+    }
 }
 
 pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
@@ -376,7 +575,37 @@ fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveL
             .find(|part| part.0[0] == id.as_str() && part.0[1] == "comparative-stem")
             .map(|part| SynodalWord::parse(part.0[2]))
             .transpose()?,
+        comparison_formation: PRINCIPAL_PARTS
+            .iter()
+            .find(|part| part.0[0] == id.as_str() && part.0[1] == "comparative-stem")
+            .map(|part| parse_comparison_formation(part.0[3]))
+            .transpose()?,
     })
+}
+
+fn parse_comparison_formation(value: &str) -> Result<ComparisonFormation> {
+    match value {
+        "ancient-hard" => Ok(ComparisonFormation::AncientHard),
+        "ancient-soft" => Ok(ComparisonFormation::AncientSoft),
+        "later-yat" => Ok(ComparisonFormation::LaterYat),
+        "later-ai" => Ok(ComparisonFormation::LaterAi),
+        value => invalid_metadata("comparison formation", value),
+    }
+}
+
+fn parse_active_participle_short_formation(value: &str) -> Result<ActiveParticipleShortFormation> {
+    match value {
+        "present-first-unpalatalized" => {
+            Ok(ActiveParticipleShortFormation::PresentFirstUnpalatalized)
+        }
+        "present-first-palatalized" => Ok(ActiveParticipleShortFormation::PresentFirstPalatalized),
+        "present-second" => Ok(ActiveParticipleShortFormation::PresentSecond),
+        "present-after-sibilant" => Ok(ActiveParticipleShortFormation::PresentAfterSibilant),
+        "past-consonant" => Ok(ActiveParticipleShortFormation::PastConsonant),
+        "past-vowel" => Ok(ActiveParticipleShortFormation::PastVowel),
+        "past-iotated" => Ok(ActiveParticipleShortFormation::PastIotated),
+        value => invalid_metadata("active participle short formation", value),
+    }
 }
 
 pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
@@ -411,14 +640,21 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
         if short.is_none() && long.is_none() {
             return Ok(None);
         }
-        let formation = short.or(long).map_or("", |entry| entry.0[3]);
-        let class = match formation {
+        let short_metadata = short.map(|entry| entry.0[3]);
+        let long_metadata = long.map(|entry| entry.0[3]);
+        let class_code = long_metadata
+            .or(short_metadata)
+            .unwrap_or("")
+            .split(':')
+            .next()
+            .unwrap_or("");
+        let class = match class_code {
             "hard" => AdjectiveClass::Hard,
             "soft" => AdjectiveClass::Soft,
             value => return invalid_metadata("participial adjective class", value),
         };
         for entry in [short, long].into_iter().flatten() {
-            if entry.0[3] != formation {
+            if entry.0[3].split(':').next() != Some(class_code) {
                 return Err(Error::ContradictoryMetadata {
                     reason: format!(
                         "participial stems for {} use inconsistent classes",
@@ -430,6 +666,10 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
         Ok(Some(ParticiplePrincipalPart {
             short_stem: short
                 .map(|entry| SynodalWord::parse(entry.0[2]))
+                .transpose()?,
+            short_formation: short_metadata
+                .and_then(|metadata| metadata.split_once(':').map(|(_, value)| value))
+                .map(parse_active_participle_short_formation)
                 .transpose()?,
             long_stem: long
                 .map(|entry| SynodalWord::parse(entry.0[2]))
@@ -514,6 +754,19 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
                 evidence_id: accent.0[4].into(),
                 source_id: accent.0[5].into(),
                 source_recension: accent.0[6].into(),
+            })
+            .collect(),
+        accent_paradigms: ACCENT_PARADIGMS
+            .iter()
+            .filter(|accent| accent.0[0] == id.as_str())
+            .map(|accent| AccentParadigmSummary {
+                paradigm_id: accent.0[1].into(),
+                scope: accent.0[2].into(),
+                placement: accent.0[3].into(),
+                mark: accent.0[4].into(),
+                breathing: optional(accent.0[5]),
+                evidence_id: accent.0[6].into(),
+                source_id: accent.0[7].into(),
             })
             .collect(),
     })

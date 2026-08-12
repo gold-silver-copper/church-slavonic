@@ -6,6 +6,23 @@ recension and normative evidence have been reviewed. The offline extractor
 validates and converts them to deterministic Rust; generated Rust must not be
 edited directly.
 
+`accent_paradigms.tsv` stores reusable, source-backed accent rules separately
+from the exact per-cell strings in `accents.tsv`. Its scope, stem/ending
+placement, mark, optional independently positioned breathing, evidence, and
+precise citation are validated before code generation. One paradigm may have
+several disjoint scope rows for documented mobility.
+
+`engine_capabilities.tsv` is the concise v0.8 engine contract. It distinguishes
+typed categories, productive rules, exact/irregular systems, reusable accent
+paradigms, and unsupported systems. `cargo xtask synodal-engine-audit` renders
+it into the human-readable v0.8 audit, while `--check` verifies byte currency.
+
+Active short-participle principal parts encode both adjective class and typed
+citation-edge formation, for example
+`hard:present-first-unpalatalized` or `hard:past-consonant`. Comparison stems use
+closed formation codes such as `later-yat`; runtime code never dispatches on
+unvalidated free-form class names.
+
 `exact_forms.tsv` contains both normative grammar-table forms and exact
 source-partition target attestations. `source_kind` distinguishes
 `normative-table`, `normative-variant`, and `synodal-attestation`; every

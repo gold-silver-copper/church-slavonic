@@ -657,10 +657,12 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
     for name in [
         "abbreviations.tsv",
         "abbreviation_evaluation.tsv",
+        "accent_paradigms.tsv",
         "accents.tsv",
         "alignments.tsv",
         "conflicts.tsv",
         "evaluation.tsv",
+        "engine_capabilities.tsv",
         "exact_forms.tsv",
         "examples.tsv",
         "irregular_overrides.tsv",
@@ -1657,12 +1659,14 @@ fn morphological_system(cell: GrammarCell) -> &'static str {
 fn provenance_path(forms: &synodal_church_slavonic::FormSet) -> &'static str {
     match &forms.variants()[0].source {
         FormSource::SynodalAttestation { .. } => "exact-synodal-attestation",
+        FormSource::SynodalIrregularOverride { .. } => "synodal-irregular-override",
         FormSource::SynodalNormativeGeneration { rule }
             if rule.as_str() == "SYN-REGISTRY-NORMATIVE-TABLE" =>
         {
             "synodal-normative-table"
         }
         FormSource::SynodalNormativeGeneration { .. } => "synodal-productive-rule",
+        FormSource::CallerSpecifiedPrediction { .. } => "caller-specified-prediction",
         FormSource::InheritedPrediction { .. } => "inherited-ocs-prediction",
         FormSource::AnalogicalPrediction { .. } => "analogical-prediction",
     }
@@ -1672,12 +1676,14 @@ fn abstention_reason(error: &synodal_church_slavonic::Error) -> &'static str {
     use synodal_church_slavonic::Error;
     match error {
         Error::MissingPrincipalPart { .. } => "missing-principal-part",
+        Error::MissingMetadata { .. } => "missing-metadata",
         Error::UnsupportedFormation { .. } => "unsupported-formation",
         Error::MissingRecensionMapping { .. } => "missing-recension-mapping",
         Error::AmbiguousRecensionMapping { .. } => "ambiguous-recension-mapping",
         Error::SemanticAlignmentNotEstablished { .. } => "semantic-alignment-not-established",
         Error::InheritedEvidenceContradicted { .. } => "inherited-evidence-contradicted",
         Error::HistoricallyInvalidCell { .. } => "historically-invalid-cell",
+        Error::EvidenceIncompleteCell { .. } => "evidence-incomplete-cell",
         Error::UnsupportedCell { .. } => "unsupported-cell",
         Error::OrthographicMetadataRequired { .. } => "orthographic-metadata-required",
         Error::UnknownLemma { .. } => "unknown-lemma",

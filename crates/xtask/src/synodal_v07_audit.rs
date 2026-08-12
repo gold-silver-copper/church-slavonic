@@ -6,8 +6,11 @@ use std::{
 };
 
 use serde_json::Value;
+use sha2::{Digest, Sha256};
 
 const OUTPUT: &str = "docs/SYNODAL_V07_70_PERCENT_TOP_K_COVERAGE_AUDIT.md";
+const FROZEN_OUTPUT_SHA256: &str =
+    "7cabe2bed7ae70089372446236ed48a8f0d5fc15cecd7805c1d8bb4ed056e938";
 const BASELINE: &str = "reports/synodal-v06-baseline.json";
 const COVERAGE: &str = "reports/synodal-coverage.json";
 const EVALUATION: &str = "reports/synodal-evaluation.json";
@@ -86,19 +89,28 @@ pub(crate) fn run(
             value => return Err(format!("unknown synodal-v07-audit argument {value:?}").into()),
         }
     }
-    let markdown = render(root)?;
     let output = root.join(OUTPUT);
-    if check {
-        if fs::read_to_string(&output).ok().as_deref() != Some(markdown.as_str()) {
-            return Err(format!("{} is stale", output.display()).into());
-        }
-    } else if fs::read_to_string(&output).ok().as_deref() != Some(markdown.as_str()) {
-        fs::write(&output, markdown)?;
+    let bytes = fs::read(&output)?;
+    let actual = format!("{:x}", Sha256::digest(&bytes));
+    if actual != FROZEN_OUTPUT_SHA256 {
+        return Err(format!(
+            "{} no longer matches the frozen v0.7 checkpoint: expected {}, found {}",
+            output.display(),
+            FROZEN_OUTPUT_SHA256,
+            actual
+        )
+        .into());
     }
-    println!("Synodal v0.7 evidence-backed 70% top-k coverage audit: current");
+    if !check {
+        println!(
+            "Synodal v0.7 audit is an immutable historical snapshot; no live v0.8 reports were rendered"
+        );
+    }
+    println!("Synodal v0.7 evidence-backed 70% top-k coverage audit: frozen and current");
     Ok(())
 }
 
+#[allow(dead_code)]
 fn render(root: &Path) -> Result<String, Box<dyn Error>> {
     let baseline = read_json(&root.join(BASELINE))?;
     let coverage = read_json(&root.join(COVERAGE))?;

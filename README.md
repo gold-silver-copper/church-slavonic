@@ -27,10 +27,27 @@ are gitignored and excluded from packages. See `docs/SYNODAL_RECENSION.md`,
 `docs/SYNODAL_DATA_PIPELINE.md` and `reports/synodal-evaluation.md` for the
 implemented boundary, reproducible commands, and measured held-out coverage.
 
-## Synodal dictionary and coverage CLI
+## Synodal inflection engine
 
-The v0.7 Synodal registry contains 855 reviewed lexemes, 855 reviewed senses,
-and 3,041 generated exact normative or target-attested forms. The `synodal-dict` executable
+The v0.8 engine accepts typed `NounSpec`, `AdjectiveSpec`, and `VerbSpec`
+metadata without requiring a dictionary row. Explicit and registry-backed words
+share one productive kernel, while exact and irregular cells retain deterministic
+precedence. New grammar-backed rules cover complete short comparison and short
+present/past active-participle declensions from Alypy §§58, 95–96, and 98. A
+typed, reusable accent-paradigm model now realizes reviewed stress across
+multiple generated cells.
+
+Complete specialized paradigms retain structured failures for historical
+invalidity, incomplete evidence, missing principal parts/formations, missing
+accent metadata, and unsupported systems. See
+[`docs/SYNODAL_V08_INFLECTION_ENGINE_AUDIT.md`](docs/SYNODAL_V08_INFLECTION_ENGINE_AUDIT.md)
+and the explicit API examples in
+[`crates/synodal-church-slavonic/README.md`](crates/synodal-church-slavonic/README.md).
+
+## Synodal dictionary and frozen coverage checkpoint
+
+The frozen v0.7 Synodal registry contains 855 reviewed lexemes, 855 reviewed senses,
+and 3,815 generated exact normative or target-attested forms. The `synodal-dict` executable
 searches and displays the registry, performs ambiguity-preserving reverse
 analysis, displays reviewed and proposed morphological families, validates
 application vocabulary, checks rendered text, and creates typed corpus-coverage
@@ -47,7 +64,8 @@ synodal-dict check-text rendered.txt --strict
 synodal-dict coverage passages.tsv --by-family --json-out coverage.json
 ```
 
-The committed full report is reproduced with
+Coverage work ended at the frozen v0.7 checkpoint; it is now only a downstream
+regression signal for registered behavior. The committed full report is reproduced with
 `cargo xtask synodal-coverage --offline`; review queues are reproduced with
 `cargo xtask synodal-lexical-review-queue` and
 `cargo xtask synodal-evaluation-queue`; the family queue, overlap-adjusted

@@ -4,16 +4,31 @@ use synodal_church_slavonic_core::{
     ParticipleTense, ParticipleVoice, Person, PronounCell, Result,
 };
 
-use crate::{Inflector, LexemeSummary};
+use crate::{Inflector, LexemeSummary, PartOfSpeech};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum ParadigmStatus {
     Attested,
+    IrregularOverride,
     SourcedPrediction,
+    CallerSpecifiedPrediction,
     InferredPrediction,
     AmbiguousPrediction,
     HistoricallyInvalid,
+    EvidenceIncomplete,
+    MissingMetadata,
+    OrthographicMetadataRequired,
     Unsupported,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum ParadigmIdentity {
+    Registered(LexemeSummary),
+    Explicit {
+        lemma: String,
+        part_of_speech: PartOfSpeech,
+    },
 }
 
 #[derive(Clone, Debug)]
@@ -41,7 +56,7 @@ impl ParadigmRow {
 
 #[derive(Clone, Debug)]
 pub struct Paradigm {
-    lexeme: LexemeSummary,
+    identity: ParadigmIdentity,
     rows: Vec<ParadigmRow>,
 }
 
@@ -63,12 +78,23 @@ impl Paradigm {
                 }
             })
             .collect();
-        Self { lexeme, rows }
+        Self {
+            identity: ParadigmIdentity::Registered(lexeme),
+            rows,
+        }
     }
 
     #[must_use]
-    pub fn lexeme(&self) -> &LexemeSummary {
-        &self.lexeme
+    pub fn identity(&self) -> &ParadigmIdentity {
+        &self.identity
+    }
+
+    #[must_use]
+    pub fn registered_lexeme(&self) -> Option<&LexemeSummary> {
+        match &self.identity {
+            ParadigmIdentity::Registered(lexeme) => Some(lexeme),
+            ParadigmIdentity::Explicit { .. } => None,
+        }
     }
 
     pub fn form(&self, cell: GrammarCell) -> Result<&FormSet> {
@@ -98,6 +124,7 @@ impl Paradigm {
             matches!(
                 row.status,
                 ParadigmStatus::SourcedPrediction
+                    | ParadigmStatus::CallerSpecifiedPrediction
                     | ParadigmStatus::InferredPrediction
                     | ParadigmStatus::AmbiguousPrediction
             )
@@ -111,6 +138,33 @@ impl Paradigm {
     #[must_use]
     pub fn into_rows(self) -> Vec<ParadigmRow> {
         self.rows
+    }
+
+    pub(crate) fn build_explicit(
+        lemma: String,
+        part_of_speech: PartOfSpeech,
+        cells: impl IntoIterator<Item = GrammarCell>,
+        mut generate: impl FnMut(GrammarCell) -> Result<FormSet>,
+    ) -> Self {
+        let rows = cells
+            .into_iter()
+            .map(|cell| {
+                let outcome = generate(cell);
+                let status = classify(&outcome);
+                ParadigmRow {
+                    cell,
+                    outcome,
+                    status,
+                }
+            })
+            .collect();
+        Self {
+            identity: ParadigmIdentity::Explicit {
+                lemma,
+                part_of_speech,
+            },
+            rows,
+        }
     }
 }
 
@@ -150,7 +204,12 @@ pub(crate) fn adjective_cells(form: AdjectiveForm) -> Vec<AdjectiveCell> {
         .flat_map(|number| {
             Case::ALL.into_iter().flat_map(move |case| {
                 Gender::ALL.into_iter().flat_map(move |gender| {
-                    Animacy::ALL.into_iter().map(move |animacy| AdjectiveCell {
+                    let animacies: &[Animacy] = if case == Case::Accusative {
+                        &Animacy::ALL
+                    } else {
+                        &[Animacy::Inanimate]
+                    };
+                    animacies.iter().copied().map(move |animacy| AdjectiveCell {
                         case,
                         number,
                         gender,
@@ -229,10 +288,20 @@ pub(crate) fn participle_cells(
         .collect()
 }
 
-fn classify(outcome: &Result<FormSet>) -> ParadigmStatus {
+pub(crate) fn classify(outcome: &Result<FormSet>) -> ParadigmStatus {
     match outcome {
         Ok(forms) if forms.variants().iter().any(|variant| variant.is_attested()) => {
             ParadigmStatus::Attested
+        }
+        Ok(forms)
+            if forms.variants().iter().any(|variant| {
+                matches!(
+                    variant.source,
+                    synodal_church_slavonic_core::FormSource::SynodalIrregularOverride { .. }
+                )
+            }) =>
+        {
+            ParadigmStatus::IrregularOverride
         }
         Ok(forms) if forms.variants().len() > 1 => ParadigmStatus::AmbiguousPrediction,
         Ok(forms)
@@ -243,8 +312,25 @@ fn classify(outcome: &Result<FormSet>) -> ParadigmStatus {
         {
             ParadigmStatus::InferredPrediction
         }
+        Ok(forms)
+            if forms.variants().iter().any(|variant| {
+                matches!(
+                    variant.source,
+                    synodal_church_slavonic_core::FormSource::CallerSpecifiedPrediction { .. }
+                )
+            }) =>
+        {
+            ParadigmStatus::CallerSpecifiedPrediction
+        }
         Ok(_) => ParadigmStatus::SourcedPrediction,
         Err(Error::HistoricallyInvalidCell { .. }) => ParadigmStatus::HistoricallyInvalid,
+        Err(Error::EvidenceIncompleteCell { .. }) => ParadigmStatus::EvidenceIncomplete,
+        Err(Error::MissingPrincipalPart { .. } | Error::MissingMetadata { .. }) => {
+            ParadigmStatus::MissingMetadata
+        }
+        Err(Error::OrthographicMetadataRequired { .. }) => {
+            ParadigmStatus::OrthographicMetadataRequired
+        }
         Err(_) => ParadigmStatus::Unsupported,
     }
 }

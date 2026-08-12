@@ -1,13 +1,210 @@
 use synodal_church_slavonic_core::{
-    AdjectiveCell, AdjectiveForm, Assumption, AuthorityRole, Comparison, Confidence, EpistemicRole,
-    Error, Evidence, EvidenceId, EvidenceKind, FiniteTense, FormSet, FormSource, FormVariant,
+    AccentParadigm, AdjectiveForm, Assumption, AuthorityRole, Confidence, EpistemicRole, Error,
+    Evidence, EvidenceId, EvidenceKind, FiniteTense, FormSet, FormSource, FormVariant,
     GenerationPolicy, GrammarCell, LexemeId, NumeralKind, OrthographyProfile, Recension, Result,
-    RuleId, RuleTrace, SourceId, TraceStep, aorist, decline_adjective, decline_noun,
-    decline_participle, imperative, imperfect, infinitive, l_participle,
-    normalize_lookup_accentless, present,
+    RuleId, RuleTrace, SourceId, TraceStep, normalize_lookup_accentless,
 };
 
-use crate::{Inflector, registry};
+use crate::{
+    DefectKind, Inflector, LexemeSpec, SpecificationSource, SpecifiedForm,
+    kernel::{ProductiveLexeme, generate_productive},
+    registry,
+    spec::LexemeSpecInner,
+};
+
+fn specified_form(
+    inflector: Inflector,
+    form: &SpecifiedForm,
+    accent: Option<&AccentParadigm>,
+) -> Result<FormSet> {
+    let expanded = form.expanded.canonical().to_owned();
+    let rule = RuleId::from("SYN-CALLER-IRREGULAR-OVERRIDE");
+    let evidence = form.source.evidence(EvidenceKind::LexicalMetadata);
+    let evidence_id = evidence.id.clone();
+    let (printed, accented, warnings) = match inflector.orthography() {
+        OrthographyProfile::Expanded => (expanded.clone(), None, vec![]),
+        OrthographyProfile::ExpandedAccentless => (
+            normalize_lookup_accentless(&expanded),
+            None,
+            vec!["accent and breathing marks removed by requested profile".into()],
+        ),
+        OrthographyProfile::SynodalLiturgical => {
+            if let Some(liturgical) = &form.liturgical {
+                (
+                    liturgical.as_str().to_owned(),
+                    Some(liturgical.as_str().to_owned()),
+                    vec![],
+                )
+            } else {
+                (expanded.clone(), None, vec![])
+            }
+        }
+    };
+    let forms = FormSet::new(FormVariant {
+        expanded: expanded.clone(),
+        accented,
+        printed: printed.clone(),
+        romanization: None,
+        source_recension: Some(Recension::SynodalRussian),
+        target_recension: Recension::SynodalRussian,
+        recension_mapping: None,
+        confidence: Confidence::from_basis_points(9_500).unwrap_or(Confidence::CERTAIN),
+        source: FormSource::CallerSpecifiedPrediction {
+            rule: rule.clone(),
+            evidence: evidence_id.clone(),
+        },
+        assumptions: vec![],
+        evidence: vec![evidence],
+        contradictions: vec![],
+        warnings,
+        rule_trace: RuleTrace::new(vec![TraceStep {
+            rule,
+            stage: "caller-irregular-override".into(),
+            input: expanded,
+            output: printed,
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: None,
+            evidence: vec![evidence_id],
+        }]),
+    })?;
+    if inflector.orthography() == OrthographyProfile::SynodalLiturgical && form.liturgical.is_none()
+    {
+        let accent = accent.ok_or(Error::OrthographicMetadataRequired {
+            field: synodal_church_slavonic_core::MetadataField::AccentParadigm,
+        })?;
+        apply_accent_paradigm(forms, form.cell, accent)
+    } else {
+        Ok(forms)
+    }
+}
+
+fn mark_caller_specified(forms: FormSet, source: &SpecificationSource) -> Result<FormSet> {
+    let metadata = source.evidence(EvidenceKind::LexicalMetadata);
+    let evidence_id = metadata.id.clone();
+    let mut variants = Vec::with_capacity(forms.variants().len());
+    for source_variant in forms.variants() {
+        let mut variant = source_variant.clone();
+        let rule = match &variant.source {
+            FormSource::SynodalNormativeGeneration { rule } => rule.clone(),
+            _ => {
+                return Err(Error::ContradictoryMetadata {
+                    reason: "caller metadata must enter the productive kernel before provenance classification"
+                        .into(),
+                });
+            }
+        };
+        variant.evidence.push(metadata.clone());
+        variant.source = FormSource::CallerSpecifiedPrediction {
+            rule: rule.clone(),
+            evidence: evidence_id.clone(),
+        };
+        variant.rule_trace.push(TraceStep {
+            rule,
+            stage: "caller-specified-lexical-metadata".into(),
+            input: source.citation().into(),
+            output: variant.printed.clone(),
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: None,
+            evidence: vec![evidence_id.clone()],
+        });
+        variants.push(variant);
+    }
+    FormSet::try_from_variants(variants)
+}
+
+pub(crate) fn apply_accent_paradigm(
+    forms: FormSet,
+    cell: GrammarCell,
+    paradigm: &AccentParadigm,
+) -> Result<FormSet> {
+    paradigm.validate()?;
+    let evidence_id = paradigm.evidence.id.clone();
+    let rule = RuleId::from(format!("SYN-ACCENT-PARADIGM:{}", paradigm.id));
+    let mut variants = Vec::with_capacity(forms.variants().len());
+    for source_variant in forms.variants() {
+        let mut variant = source_variant.clone();
+        let accented = paradigm.apply(cell, &variant.expanded)?;
+        variant.accented = Some(accented.clone());
+        variant.printed = accented.clone();
+        variant.evidence.push(paradigm.evidence.clone());
+        variant.rule_trace.push(TraceStep {
+            rule: rule.clone(),
+            stage: "accent-paradigm-realization".into(),
+            input: variant.expanded.clone(),
+            output: accented,
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: variant.recension_mapping.clone(),
+            evidence: vec![evidence_id.clone()],
+        });
+        variants.push(variant);
+    }
+    FormSet::try_from_variants(variants)
+}
+
+pub(crate) fn resolve_spec(
+    inflector: Inflector,
+    spec: &LexemeSpec,
+    cell: GrammarCell,
+) -> Result<FormSet> {
+    spec.validate()?;
+    let context = spec.context();
+    if let Some(form) = context
+        .irregular_forms
+        .iter()
+        .find(|form| form.cell == cell)
+    {
+        return specified_form(inflector, form, context.accent.as_ref());
+    }
+    if let Some(defect) = context
+        .defective_cells
+        .iter()
+        .find(|defect| defect.cell == cell)
+    {
+        return match defect.kind {
+            DefectKind::HistoricallyAbsent => Err(Error::HistoricallyInvalidCell {
+                reason: defect.reason.clone(),
+            }),
+            DefectKind::EvidenceIncomplete => Err(Error::EvidenceIncompleteCell {
+                field: defect.field,
+                reason: defect.reason.clone(),
+            }),
+        };
+    }
+
+    let rule_profile = if inflector.orthography() == OrthographyProfile::SynodalLiturgical {
+        OrthographyProfile::Expanded
+    } else {
+        inflector.orthography()
+    };
+    let forms = match spec.inner() {
+        LexemeSpecInner::Noun(spec) => {
+            generate_productive(ProductiveLexeme::Noun(&spec.lexeme), cell, rule_profile)
+        }
+        LexemeSpecInner::Adjective(spec) => generate_productive(
+            ProductiveLexeme::Adjective(&spec.lexeme),
+            cell,
+            rule_profile,
+        ),
+        LexemeSpecInner::Verb(spec) => {
+            generate_productive(ProductiveLexeme::Verb(&spec.lexeme), cell, rule_profile)
+        }
+    }?;
+    let forms = mark_caller_specified(forms, &context.source)?;
+    if inflector.orthography() == OrthographyProfile::SynodalLiturgical {
+        let accent = context
+            .accent
+            .as_ref()
+            .ok_or(Error::OrthographicMetadataRequired {
+                field: synodal_church_slavonic_core::MetadataField::AccentParadigm,
+            })?;
+        apply_accent_paradigm(forms, cell, accent)
+    } else {
+        Ok(forms)
+    }
+}
 
 pub(crate) fn resolve_cell(
     inflector: Inflector,
@@ -40,14 +237,9 @@ pub(crate) fn resolve_cell(
         inflector.orthography()
     };
     let forms = match cell {
-        GrammarCell::LexicalForm => Err(Error::UnsupportedCell {
-            reason: "a lexical-form cell must have exact reviewed target-recension evidence".into(),
-        }),
-        GrammarCell::Indeclinable => Err(Error::UnsupportedCell {
-            reason: "an indeclinable lexeme must have an exact reviewed lexical form".into(),
-        }),
-        GrammarCell::Noun(cell) => {
-            let forms = decline_noun(&registry::noun_lexeme(id)?, cell, rule_profile)?;
+        GrammarCell::Noun(_) => {
+            let lexeme = registry::noun_lexeme(id)?;
+            let forms = generate_productive(ProductiveLexeme::Noun(&lexeme), cell, rule_profile)?;
             if registry::noun_uses_inherited_class(id) {
                 if inflector.generation_policy() == GenerationPolicy::Strict {
                     return Err(Error::UnsupportedCell {
@@ -65,121 +257,118 @@ pub(crate) fn resolve_cell(
                 Ok(forms)
             }
         }
-        GrammarCell::Adjective(cell) => {
-            decline_adjective(&registry::adjective_lexeme(id)?, cell, rule_profile)
+        GrammarCell::Adjective(_) => {
+            let lexeme = registry::adjective_lexeme(id)?;
+            generate_productive(ProductiveLexeme::Adjective(&lexeme), cell, rule_profile)
         }
-        GrammarCell::FiniteVerb(cell) => {
-            let verb = registry::verb_lexeme(id)?;
-            match cell.tense {
-                FiniteTense::Present => present(&verb, cell.person, cell.number, rule_profile),
-                FiniteTense::Future => Err(Error::UnsupportedCell {
-                    reason: "a simple future must have an exact reviewed normative paradigm".into(),
-                }),
-                FiniteTense::Past => Err(Error::UnsupportedCell {
-                    reason: "an underspecified finite past must have exact reviewed evidence"
-                        .into(),
-                }),
-                FiniteTense::Imperfect => imperfect(&verb, cell.person, cell.number, rule_profile),
-                FiniteTense::Aorist => aorist(&verb, cell.person, cell.number, rule_profile),
-            }
-        }
-        GrammarCell::Imperative(cell) => {
-            imperative(&registry::verb_lexeme(id)?, cell, rule_profile)
-        }
-        GrammarCell::Infinitive => infinitive(&registry::verb_lexeme(id)?, rule_profile),
-        GrammarCell::LParticiple(cell) => {
-            l_participle(&registry::verb_lexeme(id)?, cell, rule_profile)
-        }
-        GrammarCell::Determiner(cell) => {
+        GrammarCell::Determiner(_) => {
             let lexeme = registry::determiner_lexeme(id).map_err(|_| Error::UnsupportedCell {
                 reason: "this determiner has no reviewed productive class for the requested cell"
                     .into(),
             })?;
-            decline_adjective(&lexeme, cell, rule_profile)
+            generate_productive(ProductiveLexeme::Adjective(&lexeme), cell, rule_profile)
         }
-        GrammarCell::Supine => Err(Error::UnsupportedCell {
-            reason: "the Synodal supine inventory remains under normative review".into(),
-        }),
-        GrammarCell::Participle(cell) => {
-            decline_participle(&registry::verb_lexeme(id)?, cell, rule_profile)
+        GrammarCell::Numeral(numeral) if numeral.kind == NumeralKind::Ordinal => {
+            let lexeme = registry::ordinal_lexeme(id)?;
+            generate_productive(ProductiveLexeme::Adjective(&lexeme), cell, rule_profile)
         }
-        GrammarCell::VerbalNoun(_) => Err(Error::UnsupportedCell {
-            reason: "productive verbal nouns require lexical suffix metadata".into(),
-        }),
-        GrammarCell::Numeral(cell) if cell.kind == NumeralKind::Ordinal => {
-            let gender = cell.gender.ok_or(Error::UnsupportedCell {
-                reason: "productive ordinal inflection requires grammatical gender".into(),
-            })?;
-            decline_adjective(
-                &registry::ordinal_lexeme(id)?,
-                AdjectiveCell {
-                    case: cell.case,
-                    number: cell.number,
-                    gender,
-                    animacy: cell.animacy,
-                    form: AdjectiveForm::Long,
-                    comparison: Comparison::Positive,
-                },
-                rule_profile,
-            )
+        cell @ (GrammarCell::FiniteVerb(_)
+        | GrammarCell::Imperative(_)
+        | GrammarCell::Infinitive
+        | GrammarCell::LParticiple(_)
+        | GrammarCell::Supine
+        | GrammarCell::Participle(_)
+        | GrammarCell::VerbalNoun(_)) => {
+            let lexeme = registry::verb_lexeme(id)?;
+            generate_productive(ProductiveLexeme::Verb(&lexeme), cell, rule_profile)
         }
         GrammarCell::Pronoun(_) | GrammarCell::Numeral(_) => Err(Error::UnsupportedCell {
             reason: "this pronoun or numeral cell is absent from the exact normative registry"
                 .into(),
         }),
+        GrammarCell::LexicalForm | GrammarCell::Indeclinable => Err(Error::UnsupportedCell {
+            reason: "the requested lexical cell has no exact reviewed form".into(),
+        }),
     }?;
-    apply_generated_presentation(inflector, id, &key, forms)
+    apply_generated_presentation(inflector, id, cell, &key, forms)
 }
 
 fn apply_generated_presentation(
     inflector: Inflector,
     id: &LexemeId,
+    cell: GrammarCell,
     key: &str,
     forms: FormSet,
 ) -> Result<FormSet> {
     if inflector.orthography() != OrthographyProfile::SynodalLiturgical {
         return Ok(forms);
     }
+    // Parse a reusable paradigm only when at least one generated variant lacks
+    // an exact reviewed accent. This keeps the documented lexical-override
+    // precedence semantic, including when reusable metadata is malformed.
+    let needs_paradigm = forms
+        .variants()
+        .iter()
+        .any(|variant| registry::accent_for(id, key, &variant.expanded).is_none());
+    let paradigm = if needs_paradigm {
+        registry::accent_paradigm_for(id, cell)?
+    } else {
+        None
+    };
     let mut variants = Vec::with_capacity(forms.variants().len());
     for source_variant in forms.variants() {
-        let accent = registry::accent_for(id, key, &source_variant.expanded).ok_or(
-            Error::OrthographicMetadataRequired {
-                field: synodal_church_slavonic_core::MetadataField::AccentClass,
-            },
-        )?;
         let mut variant = source_variant.clone();
-        variant.accented = Some(accent.accented.into());
-        variant.printed = accent.accented.into();
-        let evidence_id = EvidenceId::from(accent.evidence_id);
-        variant.evidence.push(Evidence {
-            id: evidence_id.clone(),
-            source: SourceId::from(accent.source_id),
-            source_recension: match accent.source_recension {
-                "synodal-russian" => Recension::SynodalRussian,
-                value => {
-                    return Err(Error::ContradictoryMetadata {
-                        reason: format!("accent evidence has non-Synodal recension {value:?}"),
-                    });
-                }
-            },
-            kind: EvidenceKind::AccentMetadata,
-            authority_roles: vec![AuthorityRole::Accentual, AuthorityRole::Orthographic],
-            epistemic_role: EpistemicRole::SynodalNormativeAuthority,
-            citation: accent.evidence_id.into(),
-            note: Some("target-recension accent realization".into()),
-        });
-        let mut steps = variant.rule_trace.steps().to_vec();
-        steps.push(TraceStep {
-            rule: RuleId::from("SYN-ACCENT-REGISTRY"),
-            stage: "accent-realization".into(),
-            input: variant.expanded.clone(),
-            output: accent.accented.into(),
-            source_recension: Some(Recension::SynodalRussian),
-            target_recension: Recension::SynodalRussian,
-            mapping: variant.recension_mapping.clone(),
-            evidence: vec![evidence_id],
-        });
-        variant.rule_trace = RuleTrace::new(steps);
+        if let Some(accent) = registry::accent_for(id, key, &source_variant.expanded) {
+            variant.accented = Some(accent.accented.into());
+            variant.printed = accent.accented.into();
+            let evidence_id = EvidenceId::from(accent.evidence_id);
+            variant.evidence.push(Evidence {
+                id: evidence_id.clone(),
+                source: SourceId::from(accent.source_id),
+                source_recension: match accent.source_recension {
+                    "synodal-russian" => Recension::SynodalRussian,
+                    value => {
+                        return Err(Error::ContradictoryMetadata {
+                            reason: format!("accent evidence has non-Synodal recension {value:?}"),
+                        });
+                    }
+                },
+                kind: EvidenceKind::AccentMetadata,
+                authority_roles: vec![AuthorityRole::Accentual, AuthorityRole::Orthographic],
+                epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+                citation: accent.evidence_id.into(),
+                note: Some("exact target-recension accent realization".into()),
+            });
+            variant.rule_trace.push(TraceStep {
+                rule: RuleId::from("SYN-ACCENT-REGISTRY"),
+                stage: "exact-accent-realization".into(),
+                input: variant.expanded.clone(),
+                output: accent.accented.into(),
+                source_recension: Some(Recension::SynodalRussian),
+                target_recension: Recension::SynodalRussian,
+                mapping: variant.recension_mapping.clone(),
+                evidence: vec![evidence_id],
+            });
+        } else if let Some(paradigm) = &paradigm {
+            let accented = paradigm.apply(cell, &variant.expanded)?;
+            variant.accented = Some(accented.clone());
+            variant.printed = accented.clone();
+            variant.evidence.push(paradigm.evidence.clone());
+            variant.rule_trace.push(TraceStep {
+                rule: RuleId::from(format!("SYN-ACCENT-PARADIGM:{}", paradigm.id)),
+                stage: "accent-paradigm-realization".into(),
+                input: variant.expanded.clone(),
+                output: accented,
+                source_recension: Some(Recension::SynodalRussian),
+                target_recension: Recension::SynodalRussian,
+                mapping: variant.recension_mapping.clone(),
+                evidence: vec![paradigm.evidence.id.clone()],
+            });
+        } else {
+            return Err(Error::OrthographicMetadataRequired {
+                field: synodal_church_slavonic_core::MetadataField::AccentParadigm,
+            });
+        }
         variants.push(variant);
     }
     FormSet::try_from_variants(variants)
@@ -388,6 +577,7 @@ fn exact_forms(
     records: &[registry::ExactFormRecord],
 ) -> Result<FormSet> {
     let summary = registry::from_id(id)?;
+    let irregular_evidence = registry::irregular_evidence_for(id, key);
     let variants = records
         .iter()
         .map(|record| {
@@ -419,16 +609,40 @@ fn exact_forms(
                 citation: record.evidence_id.into(),
                 note: Some(record.source_kind.into()),
             };
-            let rule_id = RuleId::from("SYN-REGISTRY-NORMATIVE-TABLE");
+            let rule_id = if irregular_evidence.is_some() {
+                RuleId::from("SYN-REGISTRY-IRREGULAR-OVERRIDE")
+            } else {
+                RuleId::from("SYN-REGISTRY-NORMATIVE-TABLE")
+            };
             let source = if record.source_kind == "synodal-attestation" {
                 FormSource::SynodalAttestation {
                     evidence: evidence_id.clone(),
+                }
+            } else if let Some(irregular_evidence) = irregular_evidence {
+                FormSource::SynodalIrregularOverride {
+                    evidence: EvidenceId::from(irregular_evidence),
                 }
             } else {
                 FormSource::SynodalNormativeGeneration {
                     rule: rule_id.clone(),
                 }
             };
+            let mut evidence = vec![evidence];
+            let mut trace_evidence = vec![evidence_id.clone()];
+            if let Some(irregular_evidence) = irregular_evidence {
+                let irregular_evidence = EvidenceId::from(irregular_evidence);
+                evidence.push(Evidence {
+                    id: irregular_evidence.clone(),
+                    source: SourceId::from(summary.source_id()),
+                    source_recension: Recension::SynodalRussian,
+                    kind: EvidenceKind::ReviewedIrregularOverride,
+                    authority_roles: vec![AuthorityRole::Morphological],
+                    epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+                    citation: irregular_evidence.to_string(),
+                    note: Some("reviewed irregular system override".into()),
+                });
+                trace_evidence.push(irregular_evidence);
+            }
             FormVariant {
                 expanded: record.expanded.into(),
                 accented,
@@ -440,18 +654,22 @@ fn exact_forms(
                 confidence: Confidence::CERTAIN,
                 source,
                 assumptions: vec![],
-                evidence: vec![evidence],
+                evidence,
                 contradictions: vec![],
                 warnings: warning.into_iter().collect(),
                 rule_trace: RuleTrace::new(vec![TraceStep {
                     rule: rule_id,
-                    stage: "exact-normative-registry".into(),
+                    stage: if irregular_evidence.is_some() {
+                        "irregular-override-registry".into()
+                    } else {
+                        "exact-normative-registry".into()
+                    },
                     input: format!("{}:{key}", id.as_str()),
                     output: printed,
                     source_recension: Some(Recension::SynodalRussian),
                     target_recension: Recension::SynodalRussian,
                     mapping: None,
-                    evidence: vec![evidence_id],
+                    evidence: trace_evidence,
                 }]),
             }
         })

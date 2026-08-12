@@ -1,0 +1,89 @@
+use synodal_church_slavonic_core::{
+    AdjectiveCell, AdjectiveForm, Comparison, Error, FiniteTense, FormSet, GrammarCell, NounLexeme,
+    NumeralKind, OrthographyProfile, Result, VerbLexeme, aorist, decline_adjective, decline_noun,
+    decline_participle, imperative, imperfect, infinitive, l_participle, present,
+};
+
+use synodal_church_slavonic_core::AdjectiveLexeme;
+
+/// Validated lexical metadata accepted by the one productive generation
+/// kernel used after either dictionary resolution or explicit specification.
+pub(crate) enum ProductiveLexeme<'a> {
+    Noun(&'a NounLexeme),
+    Adjective(&'a AdjectiveLexeme),
+    Verb(&'a VerbLexeme),
+}
+
+pub(crate) fn generate_productive(
+    lexeme: ProductiveLexeme<'_>,
+    cell: GrammarCell,
+    profile: OrthographyProfile,
+) -> Result<FormSet> {
+    match (lexeme, cell) {
+        (ProductiveLexeme::Noun(lexeme), GrammarCell::Noun(cell)) => {
+            decline_noun(lexeme, cell, profile)
+        }
+        (ProductiveLexeme::Adjective(lexeme), GrammarCell::Adjective(cell))
+        | (ProductiveLexeme::Adjective(lexeme), GrammarCell::Determiner(cell)) => {
+            decline_adjective(lexeme, cell, profile)
+        }
+        (ProductiveLexeme::Adjective(lexeme), GrammarCell::Numeral(cell))
+            if cell.kind == NumeralKind::Ordinal =>
+        {
+            let gender = cell.gender.ok_or(Error::MissingMetadata {
+                field: synodal_church_slavonic_core::MetadataField::Gender,
+            })?;
+            decline_adjective(
+                lexeme,
+                AdjectiveCell {
+                    case: cell.case,
+                    number: cell.number,
+                    gender,
+                    animacy: cell.animacy,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                },
+                profile,
+            )
+        }
+        (ProductiveLexeme::Verb(lexeme), GrammarCell::FiniteVerb(cell)) => match cell.tense {
+            FiniteTense::Present => present(lexeme, cell.person, cell.number, profile),
+            FiniteTense::Future => Err(Error::UnsupportedCell {
+                reason: "a simple future must have an exact reviewed normative paradigm".into(),
+            }),
+            FiniteTense::Past => Err(Error::UnsupportedCell {
+                reason: "an underspecified finite past must have exact reviewed evidence".into(),
+            }),
+            FiniteTense::Imperfect => imperfect(lexeme, cell.person, cell.number, profile),
+            FiniteTense::Aorist => aorist(lexeme, cell.person, cell.number, profile),
+        },
+        (ProductiveLexeme::Verb(lexeme), GrammarCell::Imperative(cell)) => {
+            imperative(lexeme, cell, profile)
+        }
+        (ProductiveLexeme::Verb(lexeme), GrammarCell::Infinitive) => infinitive(lexeme, profile),
+        (ProductiveLexeme::Verb(lexeme), GrammarCell::LParticiple(cell)) => {
+            l_participle(lexeme, cell, profile)
+        }
+        (ProductiveLexeme::Verb(lexeme), GrammarCell::Participle(cell)) => {
+            decline_participle(lexeme, cell, profile)
+        }
+        (ProductiveLexeme::Verb(_), GrammarCell::Supine) => Err(Error::UnsupportedCell {
+            reason: "the Synodal supine inventory remains under normative review".into(),
+        }),
+        (ProductiveLexeme::Verb(_), GrammarCell::VerbalNoun(_)) => {
+            Err(Error::UnsupportedCell {
+                reason: "productive verbal nouns require a reviewed realization rule in addition to lexical suffix metadata".into(),
+            })
+        }
+        (_, GrammarCell::LexicalForm) => Err(Error::UnsupportedCell {
+            reason: "a lexical-form cell requires an exact form".into(),
+        }),
+        (_, GrammarCell::Indeclinable) => Err(Error::UnsupportedCell {
+            reason: "an indeclinable cell requires an exact lexical form".into(),
+        }),
+        _ => Err(Error::UnsupportedCell {
+            reason: "the requested cell is outside this lexical specification's grammatical inventory"
+                .into(),
+        }),
+    }
+}

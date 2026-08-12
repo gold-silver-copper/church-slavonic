@@ -17,6 +17,7 @@ mod synodal_v06_review_packets;
 mod synodal_v07_apply;
 mod synodal_v07_audit;
 mod synodal_v07_review_packets;
+mod synodal_v08_engine_audit;
 
 use old_church_slavonic::advanced::cells::{
     AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, ImperativeCell, LParticipleCell,
@@ -123,6 +124,9 @@ fn run() -> Result<(), Box<dyn Error>> {
         }
         Some("synodal-v07-apply") => synodal_v07_apply::run(&mut args, &workspace_root()?),
         Some("synodal-v07-audit") => synodal_v07_audit::run(&mut args, &workspace_root()?),
+        Some("synodal-engine-audit") => {
+            synodal_v08_engine_audit::run(&mut args, &workspace_root()?)
+        }
         Some("check-all") => check_all(),
         Some("help") | Some("-h") | Some("--help") | None => {
             print_help();
@@ -2170,6 +2174,7 @@ fn check_all() -> Result<(), Box<dyn Error>> {
     check_runtime_boundaries(&root)?;
     check_attribution(&root)?;
     synodal::check(&root)?;
+    synodal_v08_engine_audit::run(&mut ["--check".to_owned()].into_iter(), &root)?;
     examples()
 }
 
@@ -3329,6 +3334,7 @@ fn print_help() {
     eprintln!("  synodal-v07-review-packets [--check]");
     eprintln!("  synodal-v07-apply [--check]");
     eprintln!("  synodal-v07-audit [--check]");
+    eprintln!("  synodal-engine-audit [--check]");
     eprintln!("  check-all");
 }
 

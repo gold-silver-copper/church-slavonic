@@ -60,15 +60,17 @@ impl AuthorityRole {
 pub enum EpistemicRole {
     SynodalNormativeAuthority,
     ExactSynodalAttestation,
+    CallerSuppliedMetadata,
     InheritedOcsEvidence,
     OtherRecensionComparativeEvidence,
     EvaluationOnlyEvidence,
 }
 
 impl EpistemicRole {
-    pub const ALL: [Self; 5] = [
+    pub const ALL: [Self; 6] = [
         Self::SynodalNormativeAuthority,
         Self::ExactSynodalAttestation,
+        Self::CallerSuppliedMetadata,
         Self::InheritedOcsEvidence,
         Self::OtherRecensionComparativeEvidence,
         Self::EvaluationOnlyEvidence,
@@ -80,6 +82,7 @@ impl EpistemicRole {
 pub enum EvidenceKind {
     ExactTableCell,
     NormativeRule,
+    LexicalMetadata,
     PrincipalPart,
     ReviewedIrregularOverride,
     CorpusObservation,
@@ -87,12 +90,14 @@ pub enum EvidenceKind {
     SemanticAlignment,
     ComparativeObservation,
     AccentMetadata,
+    AccentParadigm,
 }
 
 impl EvidenceKind {
-    pub const ALL: [Self; 9] = [
+    pub const ALL: [Self; 11] = [
         Self::ExactTableCell,
         Self::NormativeRule,
+        Self::LexicalMetadata,
         Self::PrincipalPart,
         Self::ReviewedIrregularOverride,
         Self::CorpusObservation,
@@ -100,6 +105,7 @@ impl EvidenceKind {
         Self::SemanticAlignment,
         Self::ComparativeObservation,
         Self::AccentMetadata,
+        Self::AccentParadigm,
     ];
 }
 
@@ -139,6 +145,13 @@ pub enum FormSource {
     SynodalNormativeGeneration {
         rule: RuleId,
     },
+    SynodalIrregularOverride {
+        evidence: EvidenceId,
+    },
+    CallerSpecifiedPrediction {
+        rule: RuleId,
+        evidence: EvidenceId,
+    },
     InheritedPrediction {
         source_recension: Recension,
         mapping: RecensionMappingId,
@@ -164,9 +177,11 @@ impl FormSource {
     pub const fn precedence(&self) -> u8 {
         match self {
             Self::SynodalAttestation { .. } => 0,
-            Self::SynodalNormativeGeneration { .. } => 1,
-            Self::InheritedPrediction { .. } => 2,
-            Self::AnalogicalPrediction { .. } => 3,
+            Self::SynodalIrregularOverride { .. } => 1,
+            Self::SynodalNormativeGeneration { .. } => 2,
+            Self::CallerSpecifiedPrediction { .. } => 3,
+            Self::InheritedPrediction { .. } => 4,
+            Self::AnalogicalPrediction { .. } => 5,
         }
     }
 }

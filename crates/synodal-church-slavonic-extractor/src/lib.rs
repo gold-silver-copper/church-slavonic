@@ -296,6 +296,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let alignment_path = data_directory.join("alignments.tsv");
     let abbreviation_path = data_directory.join("abbreviations.tsv");
     let accent_path = data_directory.join("accents.tsv");
+    let accent_paradigm_path = data_directory.join("accent_paradigms.tsv");
     let positional_path = data_directory.join("positional_rules.tsv");
     let transformation_path = data_directory.join("transformation_rules.tsv");
     let conflict_path = data_directory.join("conflicts.tsv");
@@ -331,6 +332,11 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         "lexeme_id\tcell\texpanded\taccented\tevidence_id\tsource_id\tsource_recension\ttarget_recension",
         8,
     )?;
+    let accent_paradigms = read_table(
+        &accent_paradigm_path,
+        "lexeme_id\tparadigm_id\tscope\tplacement\tmark\tbreathing\tevidence_id\tsource_id\tcitation\tsource_recension\ttarget_recension",
+        11,
+    )?;
     let positional_rules = read_table(
         &positional_path,
         "rule_id\tinput\tcontext\toutput\texceptions\tevidence_id\ttarget_recension",
@@ -365,6 +371,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     validate_alignments(&alignment_path, &alignments)?;
     validate_abbreviations(&abbreviation_path, &abbreviations)?;
     validate_accents(&accent_path, &accents)?;
+    validate_accent_paradigms(&accent_paradigm_path, &accent_paradigms)?;
     validate_positional_rules(&positional_path, &positional_rules)?;
     validate_transformation_rules(&transformation_path, &transformation_rules)?;
     validate_conflicts(&conflict_path, &conflicts)?;
@@ -380,6 +387,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&alignments, &[8][..]),
             (&abbreviations, &[6][..]),
             (&accents, &[4][..]),
+            (&accent_paradigms, &[6][..]),
             (&positional_rules, &[5][..]),
             (&transformation_rules, &[5][..]),
             (&irregular_overrides, &[3][..]),
@@ -393,6 +401,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&exact_path, &exact_forms, 0),
             (&abbreviation_path, &abbreviations, 0),
             (&accent_path, &accents, 0),
+            (&accent_paradigm_path, &accent_paradigms, 0),
             (&irregular_path, &irregular_overrides, 0),
         ],
     )?;
@@ -412,6 +421,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         alignments: alignments.clone(),
         abbreviations: abbreviations.clone(),
         accents: accents.clone(),
+        accent_paradigms: accent_paradigms.clone(),
         positional_rules: positional_rules.clone(),
         transformation_rules: transformation_rules.clone(),
         conflicts: conflicts.clone(),
@@ -867,12 +877,13 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
 }
 
 fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
-    let specifications: [(&str, &[usize]); 8] = [
+    let specifications: [(&str, &[usize]); 9] = [
         ("principal_parts.tsv", &[4]),
         ("exact_forms.tsv", &[4]),
         ("alignments.tsv", &[8]),
         ("abbreviations.tsv", &[6]),
         ("accents.tsv", &[4]),
+        ("accent_paradigms.tsv", &[6]),
         ("positional_rules.tsv", &[5]),
         ("transformation_rules.tsv", &[5]),
         ("irregular_overrides.tsv", &[3]),
@@ -981,6 +992,40 @@ fn validate_principal_parts(path: &Path, table: &Table) -> Result<()> {
                 offset + 2,
                 "principal parts require a system and normative evidence",
             );
+        }
+        if row[1] == "comparative-stem"
+            && !matches!(
+                row[3].as_str(),
+                "ancient-hard" | "ancient-soft" | "later-yat" | "later-ai"
+            )
+        {
+            return invalid(path, offset + 2, "unknown typed comparison formation");
+        }
+        if row[1].ends_with("active-participle-short-stem") {
+            let valid = matches!(
+                row[3].as_str(),
+                "hard:present-first-unpalatalized"
+                    | "soft:present-first-unpalatalized"
+                    | "hard:present-first-palatalized"
+                    | "soft:present-first-palatalized"
+                    | "hard:present-second"
+                    | "soft:present-second"
+                    | "hard:present-after-sibilant"
+                    | "soft:present-after-sibilant"
+                    | "hard:past-consonant"
+                    | "soft:past-consonant"
+                    | "hard:past-vowel"
+                    | "soft:past-vowel"
+                    | "hard:past-iotated"
+                    | "soft:past-iotated"
+            );
+            if !valid {
+                return invalid(
+                    path,
+                    offset + 2,
+                    "active short participles require a class and closed typed formation",
+                );
+            }
         }
     }
     Ok(())
@@ -1128,6 +1173,91 @@ fn validate_accents(path: &Path, table: &Table) -> Result<()> {
                 "accent metadata must add a presentation mark",
             );
         }
+    }
+    Ok(())
+}
+
+fn validate_accent_paradigms(path: &Path, table: &Table) -> Result<()> {
+    let mut ids = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        validate_target(path, offset + 2, &row[10])?;
+        if row[1].is_empty()
+            || row[6].is_empty()
+            || row[7].is_empty()
+            || row[8].is_empty()
+            || row[9] != TARGET
+        {
+            return invalid(
+                path,
+                offset + 2,
+                "accent paradigm requires stable IDs, evidence, a source, and Synodal source recension",
+            );
+        }
+        if !ids.insert((row[0].clone(), row[1].clone(), row[2].clone())) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: format!("{}:{}", row[0], row[1]),
+            });
+        }
+        if !matches!(row[4].as_str(), "acute" | "grave" | "kamora") {
+            return invalid(path, offset + 2, "unknown accent-paradigm mark");
+        }
+        if !row[3].starts_with("stem-vowel-from-start:")
+            && !row[3].starts_with("ending-vowel-from-end:")
+        {
+            return invalid(path, offset + 2, "unknown accent-paradigm placement");
+        }
+        validate_accent_placement_code(path, offset + 2, &row[3])?;
+        validate_accent_scope_code(path, offset + 2, &row[2])?;
+        if !row[5].is_empty() && !row[5].starts_with("psili@") {
+            return invalid(path, offset + 2, "unknown accent-paradigm breathing rule");
+        }
+        if let Some(placement) = row[5].strip_prefix("psili@") {
+            validate_accent_placement_code(path, offset + 2, placement)?;
+        }
+    }
+    Ok(())
+}
+
+fn validate_accent_scope_code(path: &Path, line: usize, value: &str) -> Result<()> {
+    let parts = value.split(':').collect::<Vec<_>>();
+    let numbers = match parts.as_slice() {
+        ["all"] => return Ok(()),
+        ["noun", numbers] => *numbers,
+        ["adjective", form, comparison, numbers]
+            if matches!(*form, "short" | "long")
+                && matches!(*comparison, "positive" | "comparative" | "superlative") =>
+        {
+            *numbers
+        }
+        ["finite", tense, numbers]
+            if matches!(
+                *tense,
+                "present" | "future" | "past" | "imperfect" | "aorist"
+            ) =>
+        {
+            *numbers
+        }
+        _ => return invalid(path, line, "unknown accent-paradigm scope"),
+    };
+    if numbers
+        .split(',')
+        .all(|number| matches!(number, "singular" | "dual" | "plural"))
+    {
+        Ok(())
+    } else {
+        invalid(path, line, "unknown number in accent-paradigm scope")
+    }
+}
+
+fn validate_accent_placement_code(path: &Path, line: usize, value: &str) -> Result<()> {
+    let Some((kind, offset)) = value.rsplit_once(':') else {
+        return invalid(path, line, "invalid accent-paradigm placement");
+    };
+    if !matches!(kind, "stem-vowel-from-start" | "ending-vowel-from-end")
+        || offset.parse::<u8>().is_err()
+    {
+        return invalid(path, line, "invalid accent-paradigm placement");
     }
     Ok(())
 }
@@ -1515,6 +1645,7 @@ struct RegistryTables {
     alignments: Table,
     abbreviations: Table,
     accents: Table,
+    accent_paradigms: Table,
     positional_rules: Table,
     transformation_rules: Table,
     conflicts: Table,
@@ -1529,6 +1660,7 @@ fn emit_registry(tables: RegistryTables) -> String {
         mut alignments,
         mut abbreviations,
         mut accents,
+        mut accent_paradigms,
         mut positional_rules,
         mut transformation_rules,
         mut conflicts,
@@ -1553,6 +1685,7 @@ fn emit_registry(tables: RegistryTables) -> String {
     alignments.rows.sort();
     abbreviations.rows.sort();
     accents.rows.sort();
+    accent_paradigms.rows.sort();
     positional_rules.rows.sort();
     transformation_rules.rows.sort();
     conflicts.rows.sort();
@@ -1583,6 +1716,12 @@ fn emit_registry(tables: RegistryTables) -> String {
         &abbreviations.rows,
     );
     emit_rows(&mut output, "ACCENTS", "RawAccent", &accents.rows);
+    emit_rows(
+        &mut output,
+        "ACCENT_PARADIGMS",
+        "RawAccentParadigm",
+        &accent_paradigms.rows,
+    );
     emit_rows(
         &mut output,
         "POSITIONAL_RULES",

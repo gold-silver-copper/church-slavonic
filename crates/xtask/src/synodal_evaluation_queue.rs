@@ -282,7 +282,9 @@ fn morphological_system(cell: GrammarCell) -> &'static str {
 fn provenance(source: &FormSource) -> &'static str {
     match source {
         FormSource::SynodalAttestation { .. } => "exact-attestation",
+        FormSource::SynodalIrregularOverride { .. } => "irregular-override",
         FormSource::SynodalNormativeGeneration { .. } => "normative",
+        FormSource::CallerSpecifiedPrediction { .. } => "caller-specified",
         FormSource::InheritedPrediction { .. } => "reviewed-inheritance",
         FormSource::AnalogicalPrediction { .. } => "analogical",
     }

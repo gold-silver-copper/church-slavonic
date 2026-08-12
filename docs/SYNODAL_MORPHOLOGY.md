@@ -65,14 +65,16 @@ candidates but may not hide precision or ambiguity.
 
 ## Canonical resolution
 
-Direct functions, stable-ID calls, resolved handles, reverse analysis, and
-paradigms delegate to one canonical cell resolver. The resolver applies:
+Direct functions, stable-ID calls, resolved handles, explicit specifications,
+reverse analysis, and paradigms share one productive generation kernel. The
+registry resolver and explicit-spec resolver apply the same precedence:
 
 1. validate target and input orthography;
-2. resolve a stable target lexeme identity;
-3. check an exact Synodal cell;
-4. check a reviewed target irregular override;
-5. run a supported Synodal normative rule from sourced target metadata;
+2. use either a stable target identity or validated `NounSpec`, `AdjectiveSpec`,
+   or `VerbSpec` metadata;
+3. check an exact or explicit cell;
+4. check a reviewed or caller-specified irregular override;
+5. run a supported Synodal normative rule from typed metadata;
 6. when policy permits, evaluate explicit inherited mappings and realize them
    with target rules;
 7. retain all compatible analyses, evidence, conflicts, assumptions, and trace;
@@ -80,9 +82,9 @@ paradigms delegate to one canonical cell resolver. The resolver applies:
 
 ## Implemented productive rule tables
 
-The first release implements the following target rules. `SynodalLiturgical`
-realization additionally requires a matching accent-registry row; the expanded
-rules do not invent stress.
+The engine implements the following target rules. `SynodalLiturgical`
+realization requires either an exact accent override or an applicable reviewed
+reusable accent paradigm; expanded rules never invent stress.
 
 | System | Stable rule IDs | Normative basis | Implemented input contract |
 |---|---|---|---|
@@ -93,19 +95,54 @@ rules do not invent stress.
 | Short adjectives, hard/soft | `SYN-ADJ-SHORT-{HARD,SOFT}-ALYPY-53` | Alypy §§53–55 | positive degree only; explicit stem/class/agreement |
 | Long adjectives, hard/soft | `SYN-ADJ-LONG-{HARD,SOFT}-ALYPY-57` | Alypy §§56–57 | positive degree only; explicit stem/class/agreement |
 | Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full forms only |
+| Short comparison | `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-98` | Alypy §58 citation edges and §98 complete declension | independent comparison stem plus `AncientHard`, `AncientSoft`, `LaterYat`, or `LaterAi`; 63 valid canonical cells; vocative invalid |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
 | Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
 | Imperative | `SYN-VERB-IMPERATIVE-ALYPY-93` | Alypy §93 | independent base and `first-unpalatalized`/`i-series` formation |
 | Infinitive | `SYN-VERB-INFINITIVE-LEXICAL` | Alypy §79 | resolved target lemma; no invented infinitive stem |
 | l-participle | `SYN-VERB-LPART-ALYPY-97` | Alypy §97 | independent base plus typed gender and number |
-| Declined active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-ALYPY-{95,96}` | Alypy §§95–96 | tense/voice-specific full-form stem and adjective class; special short nominatives remain exact-only |
+| Declined long active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-ALYPY-{95,96}` | Alypy §§95–96 | tense/voice-specific full-form stem and adjective class |
+| Declined short active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-SHORT-ALYPY-{95,96}-98` | Alypy §§95–96 citation edges and §98 complete declension | independent short stem plus `PresentFirstUnpalatalized`, `PresentFirstPalatalized`, `PresentSecond`, `PresentAfterSibilant`, `PastConsonant`, `PastVowel`, or `PastIotated`; source-ordered masculine/neuter citation variants; 63 valid canonical cells; vocative invalid |
 | Declined passive participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-PASSIVE-ALYPY-{99,100}` | Alypy §§99–100 | independent short/full stems; past-passive `н`/`нн` distinction is explicit metadata |
 
 Every productive variant carries `alypy-gamanovich-grammar-web-2023` as
 normative evidence and the rule ID as its exact citation. The core accepts these
 rules only from explicit metadata. The facade adds target lexeme resolution,
 exact-table precedence, accent metadata, irregular overrides, and mapping policy.
+
+## Explicit specifications and complete paradigms
+
+`NounSpec`, `AdjectiveSpec`, and `VerbSpec` are first-class facade inputs. They
+validate Church Slavonic Unicode and closed class/formation enums, preserve
+independent principal parts, attach caller provenance, and never label their
+outputs attestations. `Inflector::form_spec` delegates to the same pure kernel as
+registered words. Specialized noun, adjective, finite-verb, and participle
+paradigms retain the canonical inventory of attempted cells and structured
+failures.
+
+`ParadigmStatus` distinguishes attested, irregular, sourced, caller-specified,
+inherited, and ambiguous successes from historical invalidity, incomplete
+evidence, missing morphological metadata, missing orthographic metadata, and
+unsupported behavior. The underlying typed `Error` remains available on every
+row.
+
+## Reusable accent paradigms
+
+An `AccentParadigm` contains one or more typed, cell-scoped accent rules plus
+independently positioned breathing rules and source evidence. Placement retains
+the linguistic distinction between a fixed stem vowel counted from the left and
+an ending vowel counted from the right. Rules can be scoped by number and
+morphological system, so mobility and acute/grave/kamora choices do not require
+precomputed strings for every cell.
+
+Resolution order is exact reviewed accented cell, lexical irregular printed
+override, applicable reusable paradigm, then
+`OrthographicMetadataRequired { field: AccentParadigm }`. The first reviewed
+runtime paradigm, `synodal-accent:mudr-fixed-stem`, applies acute stress to the
+first stem vowel throughout the long positive singular of `мꙋдръ` (Alypy §57).
+The existing exact nominative row still wins; other licensed singular cells are
+generated by the one paradigm rule.
 
 ### Accusative variation
 
@@ -119,9 +156,9 @@ variation.
 
 ### Exact and irregular systems
 
-The generated v0.7 target registry contains 3,041 reviewable exact rows: normative
-tables and variants, plus passage-identified target attestations admitted by the
-v0.3 lexical review overlay. It includes the complete nine-cell present, simple
+The frozen v0.7 target registry retains its reviewable exact rows: normative
+tables and variants, plus passage-identified target attestations. It includes
+the complete nine-cell present, simple
 future, aorist, and imperfect paradigms of `быти`, its sourced imperative and
 representative active participles; the
 complete nine-cell future auxiliary present of `имати`; a full demonstrative
@@ -205,18 +242,18 @@ The closed grammar enums represent these gaps so paradigms retain failures:
   irregular/suppletive nouns;
 - automatic velar/sibilant alternation outside the narrowly reviewed aorist
   operation, and the several ending variants in Alypy §§34–44 not yet modeled;
-- automatic comparison-stem formation, short comparison series, and irregular
-  comparison stems other than the reviewed `мꙋдръ` series;
+- automatic comparison-stem formation and comparison stems other than explicitly
+  supplied typed series; short superlatives remain unsupported;
 - reflexive, relative, interrogative, indefinite, and negative pronouns beyond
   reviewed exact cells; the third-person paradigm is exact, not productive;
   velar-stem determiners such as full `всѧкъ`; collective,
   compound, and irregular cardinal numerals;
-- automatic participle stem formation from an undifferentiated verb stem and
-  active short-participle allomorphs outside reviewed exact cells;
+- automatic participle stem formation from an undifferentiated verb stem;
+  short active participles require an independent stem and typed formation;
 - the supine pending a target-recension normative inventory, productive verbal
   nouns pending lexical suffix metadata, and unregistered irregular verbs;
-- automatic productive accent classes, complete breathing/positional-letter
-  realization, and abbreviation families beyond the 159 individually typed
+- accent paradigms beyond reviewed lexical rules, complete breathing/positional-letter
+  realization, and abbreviation families beyond the individually typed
   contraction cells; and
 - automatic syntax, free agreement/government, dropped copulas, future
   auxiliaries `хотѣти`/`начати`, and the wider periphrastic inventory of Alypy
@@ -225,11 +262,8 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 These are coverage gaps, not invitations to guess. Direct calls return
 `MissingPrincipalPart`, `UnsupportedFormation`, `UnsupportedCell`,
 `HistoricallyInvalidCell`, or an orthographic metadata error as appropriate.
-The real-text evaluation now contains 2,291 passage-disjoint morphology cells plus
-five analytic phrase cases and 74 separately scored typed contractions. Under
-Productive and Exploratory, expanded output is 2,220/2,291 top-1 and 2,291/2,291 top-k;
-printed output is 2,135/2,291 top-1 and 2,291/2,291 top-k. Strict preserves the intended
-inherited-cell abstention. All 74 contraction cases pass expansion and typed
-reverse lookup, with 65/74 top-1, and all 501 masked-cell leakage controls retain
-the expected top-k result. These remain regression metrics for registered forms,
-not language-wide accuracy.
+Corpus and passage-disjoint evaluation reports remain downstream regression
+signals for registered behavior. The v0.8 capability source of truth is
+`data/synodal/engine_capabilities.tsv`, rendered deterministically in
+`docs/SYNODAL_V08_INFLECTION_ENGINE_AUDIT.md`; corpus percentages are not used to
+select or justify morphology work.

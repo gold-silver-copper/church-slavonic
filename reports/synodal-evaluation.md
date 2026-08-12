@@ -61,7 +61,8 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `exact-synodal-attestation` | 2182 | 2117 | 2182 | 0 | 2182 |
-| `synodal-normative-table` | 88 | 82 | 88 | 0 | 88 |
+| `synodal-irregular-override` | 17 | 15 | 17 | 0 | 17 |
+| `synodal-normative-table` | 71 | 67 | 71 | 0 | 71 |
 | `synodal-productive-rule` | 21 | 21 | 21 | 0 | 21 |
 
 ## Expanded accuracy by regularity

@@ -75,8 +75,10 @@ pub fn primary_gap(reasons: impl IntoIterator<Item = GapKind>) -> Option<GapKind
 #[serde(rename_all = "kebab-case")]
 pub enum TokenStatus {
     ExactSynodalAttestation,
+    SynodalIrregularOverride,
     SynodalNormativeTable,
     SynodalProductiveRule,
+    CallerSpecifiedPrediction,
     InheritedPrediction,
     AnalogicalPrediction,
     AbbreviationExpansion,
@@ -1850,19 +1852,23 @@ fn deduplicate_analyses(analyses: &mut Vec<Analysis>) {
 const fn source_rank(source: AnalysisSource) -> u8 {
     match source {
         AnalysisSource::ExactSynodalAttestation => 0,
-        AnalysisSource::SynodalNormativeTable => 1,
-        AnalysisSource::SynodalProductiveRule => 2,
-        AnalysisSource::AbbreviationExpansion => 3,
-        AnalysisSource::InheritedPrediction => 4,
-        AnalysisSource::AnalogicalPrediction => 5,
+        AnalysisSource::SynodalIrregularOverride => 1,
+        AnalysisSource::SynodalNormativeTable => 2,
+        AnalysisSource::SynodalProductiveRule => 3,
+        AnalysisSource::CallerSpecifiedPrediction => 4,
+        AnalysisSource::AbbreviationExpansion => 5,
+        AnalysisSource::InheritedPrediction => 6,
+        AnalysisSource::AnalogicalPrediction => 7,
     }
 }
 
 const fn status_for_source(source: AnalysisSource) -> TokenStatus {
     match source {
         AnalysisSource::ExactSynodalAttestation => TokenStatus::ExactSynodalAttestation,
+        AnalysisSource::SynodalIrregularOverride => TokenStatus::SynodalIrregularOverride,
         AnalysisSource::SynodalNormativeTable => TokenStatus::SynodalNormativeTable,
         AnalysisSource::SynodalProductiveRule => TokenStatus::SynodalProductiveRule,
+        AnalysisSource::CallerSpecifiedPrediction => TokenStatus::CallerSpecifiedPrediction,
         AnalysisSource::InheritedPrediction => TokenStatus::InheritedPrediction,
         AnalysisSource::AnalogicalPrediction => TokenStatus::AnalogicalPrediction,
         AnalysisSource::AbbreviationExpansion => TokenStatus::AbbreviationExpansion,
@@ -1872,8 +1878,10 @@ const fn status_for_source(source: AnalysisSource) -> TokenStatus {
 const fn status_label(status: TokenStatus) -> &'static str {
     match status {
         TokenStatus::ExactSynodalAttestation => "exact-synodal-attestation",
+        TokenStatus::SynodalIrregularOverride => "synodal-irregular-override",
         TokenStatus::SynodalNormativeTable => "synodal-normative-table",
         TokenStatus::SynodalProductiveRule => "synodal-productive-rule",
+        TokenStatus::CallerSpecifiedPrediction => "caller-specified-prediction",
         TokenStatus::InheritedPrediction => "inherited-prediction",
         TokenStatus::AnalogicalPrediction => "analogical-prediction",
         TokenStatus::AbbreviationExpansion => "abbreviation-expansion",

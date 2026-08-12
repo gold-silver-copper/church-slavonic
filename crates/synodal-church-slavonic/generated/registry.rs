@@ -860,7 +860,7 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
 ];
 
 pub(crate) const PRINCIPAL_PARTS: &[RawPrincipalPart] = &[
-    RawPrincipalPart(["synodal:adjective:mudr", "comparative-stem", "мꙋдрѣйш", "soft-comparison", "alypy-58-mudr-comparative", "synodal-russian"]),
+    RawPrincipalPart(["synodal:adjective:mudr", "comparative-stem", "мꙋдрѣйш", "later-yat", "alypy-58-mudr-comparative", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:dati", "l-participle-stem", "да", "", "alypy-103-dati-other", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:dati", "past-active-participle-long-stem", "давш", "hard", "alypy-103-dati-other", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:dati", "past-passive-participle-long-stem", "данн", "hard", "alypy-103-dati-other", "synodal-russian"]),
@@ -876,9 +876,11 @@ pub(crate) const PRINCIPAL_PARTS: &[RawPrincipalPart] = &[
     RawPrincipalPart(["synodal:verb:nesti", "imperfect-stem", "нес", "yah", "alypy-87-nesti-pattern", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "l-participle-stem", "нес", "", "alypy-97-nesti", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "past-active-participle-long-stem", "несш", "hard", "alypy-96-nesti-past-active", "synodal-russian"]),
+    RawPrincipalPart(["synodal:verb:nesti", "past-active-participle-short-stem", "несш", "hard:past-consonant", "alypy-96-nesti-past-active", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "past-passive-participle-long-stem", "несенн", "hard", "alypy-100-nesti-past-passive", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "past-passive-participle-short-stem", "несен", "hard", "alypy-100-nesti-past-passive", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "present-active-participle-long-stem", "несꙋщ", "hard", "alypy-95-nesti-present-active", "synodal-russian"]),
+    RawPrincipalPart(["synodal:verb:nesti", "present-active-participle-short-stem", "несꙋщ", "hard:present-first-unpalatalized", "alypy-95-nesti-present-active", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "present-first-singular", "несꙋ", "", "alypy-82-nesti", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "present-passive-participle-long-stem", "несом", "hard", "alypy-99-nesti-present-passive", "synodal-russian"]),
     RawPrincipalPart(["synodal:verb:nesti", "present-passive-participle-short-stem", "несом", "hard", "alypy-99-nesti-present-passive", "synodal-russian"]),
@@ -4926,6 +4928,10 @@ pub(crate) const ACCENTS: &[RawAccent] = &[
     RawAccent(["synodal:verb:nesti", "infinitive", "нести", "нестѝ", "alypy-85-nesti-infinitive", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "synodal-russian"]),
     RawAccent(["synodal:verb:nesti", "present:first:singular", "несꙋ", "несꙋ̀", "alypy-82-nesti", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "synodal-russian"]),
     RawAccent(["synodal:verb:pisati", "l-participle:masculine:singular", "писалъ", "писа́лъ", "alypy-79-97-pisati", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "synodal-russian"]),
+];
+
+pub(crate) const ACCENT_PARADIGMS: &[RawAccentParadigm] = &[
+    RawAccentParadigm(["synodal:adjective:mudr", "synodal-accent:mudr-fixed-stem", "adjective:long:positive:singular", "stem-vowel-from-start:0", "acute", "", "alypy-57-mudryi", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §57, мꙋ́дръ adjective paradigm", "synodal-russian", "synodal-russian"]),
 ];
 
 pub(crate) const POSITIONAL_RULES: &[RawPositionalRule] = &[

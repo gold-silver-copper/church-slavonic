@@ -4,21 +4,35 @@
 pub mod abbreviation;
 mod handles;
 mod inflector;
+mod kernel;
 mod paradigm;
 pub mod phrases;
 mod registry;
 mod resolver;
+mod spec;
 
 pub use abbreviation::Abbreviation;
 pub use handles::{Adjective, Capabilities, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use inflector::{Inflector, InflectorBuilder};
-pub use paradigm::{Paradigm, ParadigmRow, ParadigmStatus};
+pub use paradigm::{Paradigm, ParadigmIdentity, ParadigmRow, ParadigmStatus};
 pub use registry::{
-    AccentSummary, AlignmentSummary, ExactFormSummary, IrregularOverrideSummary, LexemeSummary,
-    LexicalMetadataSummary, PartOfSpeech, PositionalRuleSummary, PrincipalPartSummary,
-    RecensionConflictSummary, TransformationRuleSummary,
+    AccentParadigmSummary, AccentSummary, AlignmentSummary, ExactFormSummary,
+    IrregularOverrideSummary, LexemeSummary, LexicalMetadataSummary, PartOfSpeech,
+    PositionalRuleSummary, PrincipalPartSummary, RecensionConflictSummary,
+    TransformationRuleSummary,
+};
+pub use spec::{
+    AdjectiveSpec, DefectKind, DefectiveCell, LexemeSpec, NounSpec, SpecificationSource,
+    SpecifiedForm, VerbSpec, VerbSpecBuilder,
 };
 pub use synodal_church_slavonic_core as core;
+pub use synodal_church_slavonic_core::{
+    AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope,
+    ActiveParticipleShortFormation, AdjectiveClass, AoristFormation, Aspect, AuthorityRole,
+    BreathingMark, BreathingRule, ComparisonFormation, EpistemicRole, Evidence, EvidenceId,
+    EvidenceKind, ImperativeFormation, ImperfectFormation, NounDeclension, ParticiplePrincipalPart,
+    RuleId, SourceId, VerbConjugation,
+};
 pub use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Animacy, Case, CollationKey,
     CollationProfile, CollationStrength, Comparison, Confidence, CyrillicNumeral, Error,
@@ -219,7 +233,16 @@ mod tests {
         let forms =
             present("быти", Person::First, Number::Singular).expect("exact irregular present");
         assert_eq!(forms.primary_text(), "єсмь");
-        assert!(forms.variants()[0].evidence.len() == 1);
+        assert!(matches!(
+            forms.variants()[0].source,
+            FormSource::SynodalIrregularOverride { .. }
+        ));
+        assert!(
+            forms.variants()[0]
+                .evidence
+                .iter()
+                .any(|evidence| { evidence.kind == core::EvidenceKind::ReviewedIrregularOverride })
+        );
     }
 
     #[test]
@@ -234,6 +257,75 @@ mod tests {
                 .primary_text(),
             "є҆́смь"
         );
+    }
+
+    #[test]
+    fn registry_reusable_accent_paradigm_covers_non_exact_cells() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let adjective = Adjective::resolve_with("мꙋдръ", inflector).expect("known adjective");
+        for case in [Case::Genitive, Case::Dative, Case::Instrumental] {
+            let forms = adjective
+                .form(AdjectiveCell {
+                    case,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                })
+                .expect("accent paradigm cell");
+            assert!(forms.primary_text().starts_with("мꙋ́др"));
+            assert!(
+                forms
+                    .primary()
+                    .evidence
+                    .iter()
+                    .any(|evidence| { evidence.kind == core::EvidenceKind::AccentParadigm })
+            );
+        }
+        let exact = adjective
+            .form(AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+            })
+            .expect("exact accent override");
+        assert_eq!(exact.primary_text(), "мꙋ́дрый");
+        assert!(
+            exact
+                .primary()
+                .rule_trace
+                .steps()
+                .iter()
+                .any(|step| { step.rule.as_str() == "SYN-ACCENT-REGISTRY" })
+        );
+    }
+
+    #[test]
+    fn partial_registered_irregular_uses_regular_background_only_outside_override() {
+        let noun = Noun::resolve("сынъ").expect("reviewed partially irregular noun");
+        let irregular = noun
+            .form(Case::Dative, Number::Singular, Animacy::Animate)
+            .expect("irregular override");
+        assert_eq!(irregular.primary_text(), "сынови");
+        assert!(matches!(
+            irregular.primary().source,
+            FormSource::SynodalIrregularOverride { .. }
+        ));
+
+        let regular = noun
+            .form(Case::Genitive, Number::Dual, Animacy::Animate)
+            .expect("explicitly classed regular background");
+        assert_eq!(regular.primary_text(), "сынꙋ");
+        assert!(matches!(
+            regular.primary().source,
+            FormSource::SynodalNormativeGeneration { .. }
+        ));
     }
 
     #[test]
@@ -544,9 +636,9 @@ mod tests {
             ParticipleVoice::Active,
             AdjectiveForm::Long,
         );
-        assert_eq!(paradigm.iter().count(), 126);
+        assert_eq!(paradigm.iter().count(), 72);
         assert_eq!(paradigm.attested().count(), 0);
-        assert_eq!(paradigm.predicted().count(), 126);
+        assert_eq!(paradigm.predicted().count(), 72);
         assert_eq!(paradigm.failures().count(), 0);
     }
 

@@ -2,7 +2,7 @@ use synodal_church_slavonic_core::{
     FormSet, GenerationPolicy, GrammarCell, LexemeId, OrthographyProfile, Result, SynodalWord,
 };
 
-use crate::{LexemeSummary, registry, resolver};
+use crate::{LexemeSpec, LexemeSummary, registry, resolver};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -58,6 +58,12 @@ impl Inflector {
 
     pub fn form_by_id(self, id: &LexemeId, cell: GrammarCell) -> Result<FormSet> {
         resolver::resolve_cell(self, id, cell)
+    }
+
+    /// Inflects caller-supplied typed lexical metadata without dictionary
+    /// identity resolution.
+    pub fn form_spec(self, spec: &LexemeSpec, cell: GrammarCell) -> Result<FormSet> {
+        resolver::resolve_spec(self, spec, cell)
     }
 }
 

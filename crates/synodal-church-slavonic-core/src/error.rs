@@ -12,14 +12,26 @@ pub enum MetadataField {
     PresentThirdPlural,
     ImperfectStem,
     AoristStem,
+    AoristFormation,
     ImperativeStem,
+    ImperativeFormation,
+    ImperfectFormation,
     Infinitive,
     SupineStem,
     LParticipleStem,
     ParticipleStem,
+    ParticipleFormation,
     VerbalNounStem,
     ComparisonStem,
+    ComparisonFormation,
     AccentClass,
+    AccentParadigm,
+    LexemeClass,
+    Gender,
+    Aspect,
+    Formation,
+    RegularBackground,
+    IrregularOverride,
     SemanticIdentity,
     AbbreviationClass,
 }
@@ -45,6 +57,9 @@ pub enum Error {
     MissingPrincipalPart {
         field: MetadataField,
     },
+    MissingMetadata {
+        field: MetadataField,
+    },
     ContradictoryMetadata {
         reason: String,
     },
@@ -64,6 +79,10 @@ pub enum Error {
         mapping: RecensionMappingId,
     },
     HistoricallyInvalidCell {
+        reason: String,
+    },
+    EvidenceIncompleteCell {
+        field: MetadataField,
         reason: String,
     },
     UnsupportedCell {
@@ -107,6 +126,9 @@ impl fmt::Display for Error {
             Self::MissingPrincipalPart { field } => {
                 write!(formatter, "missing required principal part {field:?}")
             }
+            Self::MissingMetadata { field } => {
+                write!(formatter, "missing required lexical metadata {field:?}")
+            }
             Self::ContradictoryMetadata { reason } => {
                 write!(formatter, "contradictory lexical metadata: {reason}")
             }
@@ -136,6 +158,9 @@ impl fmt::Display for Error {
             ),
             Self::HistoricallyInvalidCell { reason } => {
                 write!(formatter, "historically invalid cell: {reason}")
+            }
+            Self::EvidenceIncompleteCell { field, reason } => {
+                write!(formatter, "evidence is incomplete for {field:?}: {reason}")
             }
             Self::UnsupportedCell { reason } => {
                 write!(
