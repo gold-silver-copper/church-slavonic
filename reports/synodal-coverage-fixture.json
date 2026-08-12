@@ -1062,7 +1062,8 @@
     "ambiguous": 1,
     "exact-synodal-attestation": 62,
     "spelling-variant": 1,
-    "synodal-normative-table": 24,
+    "synodal-irregular-override": 3,
+    "synodal-normative-table": 21,
     "synodal-productive-rule": 1,
     "unresolved": 39
   },
