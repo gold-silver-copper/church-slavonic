@@ -123,9 +123,12 @@ cargo xtask synodal-evaluation-queue
 cargo xtask synodal-family-review-queue
 cargo xtask synodal-marginal-recovery
 cargo xtask synodal-v06-review-packets
+cargo xtask synodal-v07-review-packets
+cargo xtask synodal-v07-apply --check
 cargo xtask synodal-v04-audit --check
 cargo xtask synodal-v05-audit
 cargo xtask synodal-v06-audit --check
+cargo xtask synodal-v07-audit --check
 ```
 
 The first command uses the committed ten-passage fixture. The full command uses
@@ -149,6 +152,12 @@ counts a proposal as analyzed. The v0.4 audit verifies the immutable committed
 baseline and its audit digest; it cannot be relabeled by later registry growth.
 The v0.5 audit is generated from the current registries, locked baseline,
 coverage/evaluation reports, marginal report, and durable review decisions.
+The v0.6 audit freezes the historical 65% result. The v0.7 packet command
+builds an exact-surface acquisition queue with separate identity, semantic,
+target-occurrence, source-morphology, and held-out roles. The apply gate
+materializes only admitted rows and rejects missing evidence or partition
+overlap; the v0.7 audit freezes the canonical 70% result and verification
+ledger.
 
 Reviewed admissions are made explicitly in `data/synodal/lexical_reviews.tsv`.
 They require a stable target identity, a reviewed semantic decision, a locked

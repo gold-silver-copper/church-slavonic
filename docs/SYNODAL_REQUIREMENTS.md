@@ -1,6 +1,6 @@
 # Synodal implementation requirements matrix
 
-This is the completion audit for the first reviewed release described by
+This is the requirements matrix for the current reviewed release descended from
 `SYNODAL_RUSSIAN_CHURCH_SLAVONIC_LIBRARY_PROMPT.md`. “Complete” means the
 architecture and seed implementation exist and are guarded. “Partial” means the
 typed contract exists but the explicitly listed linguistic/data surface is not
@@ -17,20 +17,20 @@ to make a row look complete.
 | Morphology specification and category inventory | complete | `SYNODAL_MORPHOLOGY.md` identifies every supported rule and remaining category |
 | Pure Synodal core crate | complete | `synodal-church-slavonic-core`; no registry or runtime I/O |
 | Dictionary-backed facade and handles | complete | `synodal-church-slavonic`; seven handle types, canonical resolver, direct APIs |
-| Semantic/reverse-analysis dictionary crate and CLI | complete for the reviewed registry | `synodal-church-slavonic-dictionary`; 580 reviewed senses, mark-sensitive multi-analysis lookup, reviewed/proposed family display, and `synodal-dict` search/show/families/show-family/analyze/lint/check-text/coverage commands |
+| Semantic/reverse-analysis dictionary crate and CLI | complete for the reviewed registry | `synodal-church-slavonic-dictionary`; 855 reviewed senses, mark-sensitive multi-analysis lookup, reviewed/proposed family display, and `synodal-dict` search/show/families/show-family/analyze/lint/check-text/coverage commands |
 | Streaming deterministic extractor | complete | atomic candidate/intermediate/quarantine/reviewed/generated layers plus adapters for Ponomar, Alypy, D’yachenko, exact-revision Wikisource, CrossWire, Polivanova, UD, Syntacticus, CCMH, DIACU, Kaikki, and the Ponomar frequency list |
 | Validated text and hostile Unicode guards | complete | other-script/private-use/control/combining-order tests and injected guard witnesses |
 | Provenance, evidence, traces, and policies | complete | per-variant evidence/source/recension/mapping/confidence/trace; three policies |
-| Independent registries | complete | 580 lexemes, 1,707 generated exact forms, 580 senses, typed principal parts, reviewed accent witnesses, 134 typed abbreviation cells, family decisions, positional, override, example, rejected-candidate, and reviewed-evidence tables |
+| Independent registries | complete | 855 lexemes, 3,041 generated exact forms, 855 senses, typed principal parts, reviewed accent witnesses, 159 typed abbreviation cells, family decisions, positional, override, example, rejected-candidate, and reviewed-evidence tables |
 | Reviewed OCS/Synodal alignment gold set | complete for current reuse | accepted and rejected mappings, false-friend controls, and separate semantic decisions/conflict registry; every runtime reuse fact names reviewed evidence |
 | Noun/adjective productive morphology | broad but not language-wide | seven noun classes, short/long positive adjectives, and full long comparative/superlative declension from independently reviewed stems; irregular alternants remain explicit data |
 | Pronoun/determiner/numeral morphology | broad closed-class coverage | full reviewed `той`, `азъ`, `ты`, and gendered third-person `онъ`; demonstrative `сей`, relative `иже`, interrogative `кто`/`что`, indefinite `нѣкто`; reviewed `два`, `три`, and `четыре`; productive regular non-velar determiners and ordinal adjectives; exceptional cells such as `всѧкъ` remain exact evidence |
 | Independent verb systems | broad but not language-wide | regular principal-part bundles, exact irregular auxiliaries including the nine-cell simple future of `быти`, reviewed `дати`, productive tense/voice-specific declined participles, and l-participles; supine and verbal-noun formation remain intentionally unsupported pending a Synodal rule |
 | Cyrillic numerals, transliteration, collation | complete for documented range | numeral 1–9,999 plus 100,000/1,000,000; two loss-reporting transliterations; UTN #41 word collation |
-| Abbreviation and printed orthography | partial | 134 individually reviewed contraction cells, reviewed accents and explicit positional operation; no blind/general contraction or inferred paradigm |
+| Abbreviation and printed orthography | partial | 159 individually reviewed contraction cells, reviewed accents and explicit positional operation; no blind/general contraction or inferred paradigm |
 | Analyzer, capabilities, phrases, manifest lint | complete for registered data | multi-analysis reverse lookup, missing metadata, five analytic constructions, and typed vocabulary lint without runtime data-format access |
 | Deterministic reports and structural guards | complete | generated/extraction/evaluation/coverage freshness, typed-gap precedence, corpus hashes, recension, forbidden-authority, PUA, I/O, review-queue, package, and witness guards |
-| Leakage-resistant real evaluation | complete for the current registry; still statistically limited | 537 passage-held-out morphology cells (537/537 Productive/Exploratory top-k), five analytic constructions, 49 typed contraction cases, 446 masked-cell controls, 331-row base exact-table round-trip, held-out exact-attestation rows, inherited-cell, strict abstention, hostile-Unicode, and partition-contamination checks; accent and abbreviation witnesses use disjoint source partitions |
+| Leakage-resistant real evaluation | complete for the current registry; still statistically limited | 2,291 passage-held-out morphology cells (2,291/2,291 Productive/Exploratory top-k), five analytic constructions, 74 typed contraction cases, 501 masked-cell controls, 3,041-row exact-table round-trip, held-out exact-attestation rows, inherited-cell, strict abstention, hostile-Unicode, and partition-contamination checks; accent and abbreviation witnesses use disjoint source partitions |
 | Native/no-default/WASM builds | complete | native all-feature tests, no-default checks, `wasm32-unknown-unknown` all-feature check |
 | Package content and publish dry-run | guarded, publication externally sequenced | runtime package lists are checked for required generated registries and for excluded raw/intermediate/reference data; publication remains a separate explicitly authorized operation |
 

@@ -380,13 +380,21 @@ mod tests {
             number: Number::Singular,
             animacy: Animacy::Animate,
         });
-        let result = contract_for_cell("богъ", "sense:deity:christian", nominative)
-            .expect("reviewed sense and cell");
-        assert_eq!(result.printed, "бг҃ъ");
-        assert_eq!(result.cell, nominative);
+        assert!(matches!(
+            contract_for_cell("богъ", "sense:deity:christian", nominative),
+            Err(Error::AmbiguousVariant { count: 2 })
+        ));
+        let nominatives = contractions("богъ", "sense:deity:christian")
+            .expect("reviewed semantic identity")
+            .into_iter()
+            .filter(|candidate| candidate.cell == nominative)
+            .collect::<Vec<_>>();
+        assert_eq!(nominatives.len(), 2);
+        assert!(nominatives.iter().any(|result| result.printed == "бг҃ъ"));
+        assert!(nominatives.iter().any(|result| result.printed == "Бг҃ъ"));
         assert!(matches!(
             contract("богъ", "sense:deity:christian"),
-            Err(Error::AmbiguousVariant { count: 7 })
+            Err(Error::AmbiguousVariant { count: 8 })
         ));
     }
 

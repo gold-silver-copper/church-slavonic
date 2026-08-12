@@ -12,7 +12,11 @@ mod synodal_v04_audit;
 mod synodal_v05_audit;
 mod synodal_v05_baseline;
 mod synodal_v06_audit;
+mod synodal_v06_baseline;
 mod synodal_v06_review_packets;
+mod synodal_v07_apply;
+mod synodal_v07_audit;
+mod synodal_v07_review_packets;
 
 use old_church_slavonic::advanced::cells::{
     AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, ImperativeCell, LParticipleCell,
@@ -112,6 +116,13 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-v05-baseline") => synodal_v05_baseline::run(&mut args, &workspace_root()?),
         Some("synodal-v05-audit") => synodal_v05_audit::run(&mut args, &workspace_root()?),
         Some("synodal-v06-audit") => synodal_v06_audit::run(&mut args, &workspace_root()?),
+        Some("synodal-v06-baseline") => synodal_v06_baseline::run(&mut args, &workspace_root()?),
+        Some("synodal-v07-baseline") => synodal_v06_baseline::run(&mut args, &workspace_root()?),
+        Some("synodal-v07-review-packets") => {
+            synodal_v07_review_packets::run(&mut args, &workspace_root()?)
+        }
+        Some("synodal-v07-apply") => synodal_v07_apply::run(&mut args, &workspace_root()?),
+        Some("synodal-v07-audit") => synodal_v07_audit::run(&mut args, &workspace_root()?),
         Some("check-all") => check_all(),
         Some("help") | Some("-h") | Some("--help") | None => {
             print_help();
@@ -3308,14 +3319,16 @@ fn print_help() {
     eprintln!("  synodal-evaluation-queue [--limit N] [--check]");
     eprintln!("  synodal-family-review-queue [--limit N] [--check]");
     eprintln!("  synodal-lexical-review-queue [--limit N] [--check]");
-    eprintln!(
-        "  synodal-marginal-recovery [--check] [--refresh-baseline] [--require-source-inputs]"
-    );
+    eprintln!("  synodal-marginal-recovery [--check] [--require-source-inputs]");
     eprintln!("  synodal-v06-review-packets [--check]");
     eprintln!("  synodal-v04-audit [--check]");
     eprintln!("  synodal-v05-baseline [--check]");
     eprintln!("  synodal-v05-audit [--check]");
     eprintln!("  synodal-v06-audit [--check]");
+    eprintln!("  synodal-v07-baseline [--check]");
+    eprintln!("  synodal-v07-review-packets [--check]");
+    eprintln!("  synodal-v07-apply [--check]");
+    eprintln!("  synodal-v07-audit [--check]");
     eprintln!("  check-all");
 }
 

@@ -29,7 +29,7 @@ orthography, known morphology, expected part of speech, required semantic sense,
 and surface ambiguity. The crate accepts typed manifests only; applications may
 choose their own serialization layer outside the runtime linguistic crate.
 
-The bundled semantic registry contains 506 reviewed target lexemes and senses.
+The bundled semantic registry contains 855 reviewed target lexemes and senses.
 The public `families` and `show_family_by_id` operations expose exact members,
 principal parts, supported systems, and missing family metadata without accepting
 diagnostic candidate IDs as runtime facts. The `synodal-dict` binary adds

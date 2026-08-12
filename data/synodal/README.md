@@ -18,6 +18,15 @@ predicted versus surface-realized gain, explicit deferrals and rejections, and
 precise evidence blockers. `v06_verification.tsv` records only checks actually
 run for the generated v0.6 completion audit.
 
+The v0.7 evidence-acquisition decisions are retained in the ordered
+`v07_exact_reviews*.tsv` waves, `v07_variant_reviews.tsv`, and
+`v07_abbreviation_reviews.tsv`. `v07_identity_reviews.tsv` and
+`v07_semantic_reviews.tsv` keep identity and sense alignment separate;
+`v07_identity_corrections.tsv` and `v07_evidence_corrections.tsv` preserve
+reviewed merges and passage-disjoint replacement witnesses. The generated
+completion audit reads `v07_verification.tsv` and rejects a missing or failed
+required gate.
+
 The alignment registry never imports an OCS surface cell. It connects stable
 lexeme identities and records morphology and semantics independently.
 

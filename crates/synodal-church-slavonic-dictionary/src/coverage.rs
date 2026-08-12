@@ -442,6 +442,15 @@ pub struct MarginalRecoveryBatch {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct CoverageMilestone {
+    pub percent: usize,
+    pub basis_points: usize,
+    pub target_top_k: usize,
+    pub tokens_needed: usize,
+    pub margin: usize,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct MarginalRecoveryReport {
     pub schema_version: u8,
     pub target_recension: String,
@@ -451,6 +460,8 @@ pub struct MarginalRecoveryReport {
     pub current_top_k: usize,
     pub target_top_k: usize,
     pub tokens_needed_for_target: usize,
+    #[serde(default)]
+    pub milestones: Vec<CoverageMilestone>,
     pub diagnostic_recovery: usize,
     pub diagnostic_projected_top_k: usize,
     pub batches: Vec<MarginalRecoveryBatch>,
@@ -597,6 +608,13 @@ pub fn marginal_recovery_report(
         current_top_k,
         target_top_k,
         tokens_needed_for_target: target_top_k.saturating_sub(current_top_k),
+        milestones: vec![CoverageMilestone {
+            percent: target_basis_points / 100,
+            basis_points: target_basis_points,
+            target_top_k,
+            tokens_needed: target_top_k.saturating_sub(current_top_k),
+            margin: current_top_k.saturating_sub(target_top_k),
+        }],
         diagnostic_recovery: cumulative,
         diagnostic_projected_top_k: current_top_k.saturating_add(cumulative),
         batches,
@@ -2118,6 +2136,12 @@ mod tests {
         );
         assert_eq!(report.target_top_k, 61);
         assert_eq!(report.tokens_needed_for_target, 21);
+        assert_eq!(report.milestones.len(), 1);
+        assert_eq!(report.milestones[0].percent, 60);
+        assert_eq!(report.milestones[0].basis_points, 6_000);
+        assert_eq!(report.milestones[0].target_top_k, 61);
+        assert_eq!(report.milestones[0].tokens_needed, 21);
+        assert_eq!(report.milestones[0].margin, 0);
         assert_eq!(report.diagnostic_recovery, 20);
         assert_eq!(report.batches[0].id, "b");
         assert_eq!(report.batches[0].expected_top_1_gain, 0);

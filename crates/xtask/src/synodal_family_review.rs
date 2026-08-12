@@ -513,7 +513,7 @@ fn validate_admitted_families(
                     .iter()
                     .filter(|member| member.source_kind == "abbreviation")
                     .count()
-                    == 1
+                    >= 1
             }
             "exact-abbreviation-variant" => family
                 .members

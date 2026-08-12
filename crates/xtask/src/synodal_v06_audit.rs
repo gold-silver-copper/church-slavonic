@@ -6,6 +6,7 @@ use std::{
 };
 
 use serde_json::Value;
+use sha2::{Digest, Sha256};
 
 const OUTPUT: &str = "docs/SYNODAL_V06_65_PERCENT_TOP_K_COVERAGE_AUDIT.md";
 const BASELINE: &str = "reports/synodal-v05-baseline.json";
@@ -38,6 +39,12 @@ pub(crate) fn run(
         }
     }
 
+    if check {
+        check_frozen_audit(root)?;
+        println!("Synodal v0.6 65% top-k coverage audit: frozen and current");
+        return Ok(());
+    }
+
     let markdown = render(root)?;
     let output = root.join(OUTPUT);
     if check {
@@ -48,6 +55,21 @@ pub(crate) fn run(
         fs::write(&output, markdown)?;
     }
     println!("Synodal v0.6 65% top-k coverage audit: current");
+    Ok(())
+}
+
+fn check_frozen_audit(root: &Path) -> Result<(), Box<dyn Error>> {
+    let baseline = read_json(&root.join("reports/synodal-v06-baseline.json"))?;
+    let expected = baseline
+        .pointer("/artifact_sha256/docs~1SYNODAL_V06_65_PERCENT_TOP_K_COVERAGE_AUDIT.md")
+        .and_then(Value::as_str)
+        .ok_or("v0.6 baseline omits its frozen audit digest")?;
+    let mut digest = Sha256::new();
+    digest.update(fs::read(root.join(OUTPUT))?);
+    let actual = format!("{:x}", digest.finalize());
+    if actual != expected {
+        return Err("frozen v0.6 audit digest changed".into());
+    }
     Ok(())
 }
 

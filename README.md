@@ -29,8 +29,8 @@ implemented boundary, reproducible commands, and measured held-out coverage.
 
 ## Synodal dictionary and coverage CLI
 
-The v0.5 Synodal registry contains 580 reviewed lexemes, 580 reviewed senses,
-and 1,707 generated exact normative or target-attested forms. The `synodal-dict` executable
+The v0.7 Synodal registry contains 855 reviewed lexemes, 855 reviewed senses,
+and 3,041 generated exact normative or target-attested forms. The `synodal-dict` executable
 searches and displays the registry, performs ambiguity-preserving reverse
 analysis, displays reviewed and proposed morphological families, validates
 application vocabulary, checks rendered text, and creates typed corpus-coverage
@@ -55,12 +55,17 @@ marginal-recovery report, and audits use
 `cargo xtask synodal-family-review-queue` and
 `cargo xtask synodal-marginal-recovery`,
 `cargo xtask synodal-v04-audit --check`, and
-`cargo xtask synodal-v05-audit`; v0.6 family packets and the completed 65% audit
+`cargo xtask synodal-v05-audit`; v0.6 family packets and its completed 65% audit
 use `cargo xtask synodal-v06-review-packets` and
-`cargo xtask synodal-v06-audit --check`. See
+`cargo xtask synodal-v06-audit --check`. The v0.7 exact-surface acquisition
+queue, reviewed-application gate, and completed 70% audit use
+`cargo xtask synodal-v07-review-packets`,
+`cargo xtask synodal-v07-apply --check`, and
+`cargo xtask synodal-v07-audit --check`. The locked corpus now
+has 919,752 of 1,313,344 tokens in canonical `Strict` top-k coverage (70.031%). See
 [`docs/SYNODAL_CLI_AND_COVERAGE.md`](docs/SYNODAL_CLI_AND_COVERAGE.md) for command
 and input formats, gap precedence, thresholds, and the evidence-review workflow.
-The 1,187-cell morphology evaluation, five analytic phrases, and 64 typed
+The 2,291-cell morphology evaluation, five analytic phrases, and 74 typed
 abbreviation cases remain registered-form regression suites, not claims of
 language-wide accuracy.
 

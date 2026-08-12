@@ -9,9 +9,9 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic::{GenerationPolicy, OrthographyProfile};
 use synodal_church_slavonic_dictionary::coverage::{
-    CoverageReport, EvidenceReadiness, GapKind, GapRecord, MarginalRecoveryReport,
-    RecoveryCandidateBatch, RecoveryRoute, RecoverySurfaceCandidate, ReviewEffort,
-    marginal_recovery_report,
+    CoverageMilestone, CoverageReport, EvidenceReadiness, GapKind, GapRecord,
+    MarginalRecoveryReport, RecoveryCandidateBatch, RecoveryRoute, RecoverySurfaceCandidate,
+    ReviewEffort, marginal_recovery_report,
 };
 
 const BASELINE_LOCK: &str = "reports/synodal-v04-baseline.json";
@@ -19,8 +19,8 @@ const BASELINE_MARGINAL: &str = "reports/synodal-v04-marginal-recovery.json";
 const CURRENT_JSON: &str = "reports/synodal-marginal-recovery.json";
 const CURRENT_MARKDOWN: &str = "reports/synodal-marginal-recovery.md";
 const CURRENT_TSV: &str = "reports/synodal-marginal-recovery.tsv";
-const TARGET_BASIS_POINTS: usize = 6_500;
-const STRETCH_TARGET_BASIS_POINTS: usize = 7_000;
+const TARGET_BASIS_POINTS: usize = 7_000;
+const MILESTONE_BASIS_POINTS: [usize; 5] = [6_600, 6_700, 6_800, 6_900, 7_000];
 
 const COVERAGE_SHA256: &str = "1fb8426b49d3a40f1b28c72f65a1d51f15916127fd85c22f88cdf71d12d01dbf";
 const EVALUATION_SHA256: &str = "2d83efd560601e7ddcac2e6fc65ac4376eb1640b0615ff73c93d431cbbb5eed2";
@@ -155,12 +155,10 @@ pub(crate) fn run(
     root: &Path,
 ) -> Result<(), Box<dyn Error>> {
     let mut check = false;
-    let mut refresh_baseline = false;
     let mut require_source_inputs = false;
     for argument in args {
         match argument.as_str() {
             "--check" => check = true,
-            "--refresh-baseline" => refresh_baseline = true,
             "--require-source-inputs" => require_source_inputs = true,
             value => {
                 return Err(format!("unknown synodal-marginal-recovery argument {value:?}").into());
@@ -173,7 +171,7 @@ pub(crate) fn run(
     let proposals: Vec<FamilyProposalInput> =
         read_json(&root.join("reports/synodal-family-review-queue.json"))?;
     let candidates = proposals_to_candidates(&coverage, proposals)?;
-    let report = marginal_recovery_report(
+    let mut report = marginal_recovery_report(
         coverage.summary.total_tokens,
         coverage.summary.top_k_analyzed,
         TARGET_BASIS_POINTS,
@@ -181,27 +179,17 @@ pub(crate) fn run(
         coverage.orthography_profile,
         candidates,
     );
+    report.milestones = coverage_milestones(&report);
     let json = format!("{}\n", serde_json::to_string_pretty(&report)?);
     let markdown = render_markdown(&report);
     let tsv = render_tsv(&report);
 
     let baseline_marginal_path = root.join(BASELINE_MARGINAL);
-    if refresh_baseline
-        && (coverage.summary.top_1_analyzed != 430_470
-            || coverage.summary.top_k_analyzed != 569_418
-            || coverage.summary.ambiguous != 13_510
-            || coverage.summary.unresolved != 742_721)
-    {
-        return Err(
-            "--refresh-baseline is allowed only on the exact locked v0.4 coverage state".into(),
-        );
-    }
-    if check {
-        if !baseline_marginal_path.is_file() {
-            return Err(format!("missing locked {BASELINE_MARGINAL}").into());
-        }
-    } else if refresh_baseline || !baseline_marginal_path.exists() {
-        write_if_changed(&baseline_marginal_path, &json)?;
+    if !baseline_marginal_path.is_file() {
+        return Err(format!(
+            "missing immutable {BASELINE_MARGINAL}; the sealed v0.4 baseline cannot be recreated from later state"
+        )
+        .into());
     }
     let baseline_marginal_sha256 = sha256_file(&baseline_marginal_path)?;
     let baseline_lock =
@@ -221,14 +209,11 @@ pub(crate) fn run(
         }
     }
 
-    let stretch_target =
-        strict_threshold(coverage.summary.total_tokens, STRETCH_TARGET_BASIS_POINTS);
     println!(
-        "Synodal marginal recovery: {} batches, {} overlap-adjusted diagnostic tokens, {} still needed for >65%, {} still needed for >70%",
+        "Synodal marginal recovery: {} batches, {} overlap-adjusted diagnostic tokens, {} still needed for >70%",
         report.batches.len(),
         report.diagnostic_recovery,
         report.tokens_needed_for_target,
-        stretch_target.saturating_sub(report.current_top_k),
     );
     Ok(())
 }
@@ -663,18 +648,22 @@ fn render_baseline_lock(
 }
 
 fn render_markdown(report: &MarginalRecoveryReport) -> String {
-    let stretch_target = strict_threshold(report.total_tokens, STRETCH_TARGET_BASIS_POINTS);
     let mut out = format!(
-        "# Synodal marginal top-k recovery\n\nThis is a diagnostic counterfactual under `Strict` and `SynodalLiturgical`; it does not count a proposal as an analysis. Only canonical resolver output changes actual coverage.\n\n- Corpus tokens: {}\n- Current top-k: {}\n- Strictly-more-than-65% threshold: {}\n- Tokens still needed for >65%: {}\n- Strictly-more-than-70% threshold: {}\n- Tokens still needed for >70%: {}\n- Overlap-adjusted diagnostic potential in this queue: {}\n- Diagnostic projected top-k if every batch were valid: {}\n\n| Rank | Batch | Route | Raw | Unique | Marginal | Cumulative | Readiness | Effort | Review status |\n|---:|---|---|---:|---:|---:|---:|---|---|---|\n",
+        "# Synodal marginal top-k recovery\n\nThis is a diagnostic counterfactual under `Strict` and `SynodalLiturgical`; it does not count a proposal as an analysis. Only canonical resolver output changes actual coverage.\n\n- Corpus tokens: {}\n- Current top-k: {}\n- Canonical target (>70%): {}\n- Tokens still needed for >70%: {}\n- Overlap-adjusted diagnostic potential in this queue: {}\n- Diagnostic projected top-k if every batch were valid: {}\n\n| Milestone | Minimum top-k | Tokens needed | Margin |\n|---:|---:|---:|---:|\n",
         report.total_tokens,
         report.current_top_k,
         report.target_top_k,
         report.tokens_needed_for_target,
-        stretch_target,
-        stretch_target.saturating_sub(report.current_top_k),
         report.diagnostic_recovery,
         report.diagnostic_projected_top_k,
     );
+    for milestone in coverage_milestones(report) {
+        out.push_str(&format!(
+            "| {}% | {} | {} | {} |\n",
+            milestone.percent, milestone.target_top_k, milestone.tokens_needed, milestone.margin,
+        ));
+    }
+    out.push_str("\n| Rank | Batch | Route | Raw | Unique | Marginal | Cumulative | Readiness | Effort | Review status |\n|---:|---|---|---:|---:|---:|---:|---|---|---|\n");
     for batch in &report.batches {
         out.push_str(&format!(
             "| {} | `{}` | `{}` | {} | {} | {} | {} | `{:?}` | `{:?}` | `{}` |\n",
@@ -691,6 +680,22 @@ fn render_markdown(report: &MarginalRecoveryReport) -> String {
         ));
     }
     out
+}
+
+fn coverage_milestones(report: &MarginalRecoveryReport) -> Vec<CoverageMilestone> {
+    MILESTONE_BASIS_POINTS
+        .into_iter()
+        .map(|basis_points| {
+            let target_top_k = strict_threshold(report.total_tokens, basis_points);
+            CoverageMilestone {
+                percent: basis_points / 100,
+                basis_points,
+                target_top_k,
+                tokens_needed: target_top_k.saturating_sub(report.current_top_k),
+                margin: report.current_top_k.saturating_sub(target_top_k),
+            }
+        })
+        .collect()
 }
 
 fn strict_threshold(total_tokens: usize, basis_points: usize) -> usize {

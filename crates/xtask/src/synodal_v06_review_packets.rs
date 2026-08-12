@@ -6,6 +6,7 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use synodal_church_slavonic::{GenerationPolicy, LexemeId, OrthographyProfile};
 use synodal_church_slavonic_dictionary::{
     Analysis, Entry, coverage::Analyzer, coverage::CoverageReport,
@@ -170,6 +171,12 @@ pub(crate) fn run(
         }
     }
 
+    if check {
+        check_frozen_v06_outputs(root)?;
+        println!("Synodal v0.6 review packets: frozen and current");
+        return Ok(());
+    }
+
     let coverage: CoverageReport = read_json(&root.join("reports/synodal-coverage.json"))?;
     let marginal: MarginalRecoveryReport =
         read_json(&root.join("reports/synodal-marginal-recovery.json"))?;
@@ -261,6 +268,30 @@ pub(crate) fn run(
         report.tokens_remaining_for_70_percent,
     );
     Ok(())
+}
+
+fn check_frozen_v06_outputs(root: &Path) -> Result<(), Box<dyn Error>> {
+    let baseline: serde_json::Value = read_json(&root.join("reports/synodal-v06-baseline.json"))?;
+    let expected = baseline
+        .pointer("/artifact_sha256/reports~1synodal-v06-review-packets.json")
+        .and_then(serde_json::Value::as_str)
+        .ok_or("v0.6 baseline omits its frozen review-packet digest")?;
+    let actual = file_sha256(&root.join(CURRENT_JSON))?;
+    if actual != expected {
+        return Err(format!("frozen {CURRENT_JSON} digest changed").into());
+    }
+    for relative in [CURRENT_TSV, CURRENT_MARKDOWN] {
+        if !root.join(relative).is_file() {
+            return Err(format!("frozen v0.6 output {relative} is missing").into());
+        }
+    }
+    Ok(())
+}
+
+fn file_sha256(path: &Path) -> Result<String, Box<dyn Error>> {
+    let mut digest = Sha256::new();
+    digest.update(fs::read(path)?);
+    Ok(format!("{:x}", digest.finalize()))
 }
 
 fn build_packet(

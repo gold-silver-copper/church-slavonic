@@ -119,7 +119,7 @@ variation.
 
 ### Exact and irregular systems
 
-The generated v0.5 target registry contains 1,707 reviewable exact rows: normative
+The generated v0.7 target registry contains 3,041 reviewable exact rows: normative
 tables and variants, plus passage-identified target attestations admitted by the
 v0.3 lexical review overlay. It includes the complete nine-cell present, simple
 future, aorist, and imperfect paradigms of `быти`, its sourced imperative and
@@ -180,7 +180,7 @@ government beyond these construction-specific constraints remain future work.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 580 target lexemes and 580 reviewed senses. The
+The reviewed registry has 855 target lexemes and 855 reviewed senses. The
 original productive seed remains deliberately small: corpus-prioritized hard and
 soft nouns, regular adjectives, six verbs, reviewed closed-class paradigms, and
 five numerals. The v0.3 additions are primarily high-frequency exact lexical
@@ -216,7 +216,7 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 - the supine pending a target-recension normative inventory, productive verbal
   nouns pending lexical suffix metadata, and unregistered irregular verbs;
 - automatic productive accent classes, complete breathing/positional-letter
-  realization, and abbreviation families beyond the 134 individually typed
+  realization, and abbreviation families beyond the 159 individually typed
   contraction cells; and
 - automatic syntax, free agreement/government, dropped copulas, future
   auxiliaries `хотѣти`/`начати`, and the wider periphrastic inventory of Alypy
@@ -225,11 +225,11 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 These are coverage gaps, not invitations to guess. Direct calls return
 `MissingPrincipalPart`, `UnsupportedFormation`, `UnsupportedCell`,
 `HistoricallyInvalidCell`, or an orthographic metadata error as appropriate.
-The real-text evaluation now contains 537 passage-disjoint morphology cells plus
-five analytic phrase cases and 49 separately scored typed contractions. Under
-Productive and Exploratory, expanded output is 532/537 top-1 and 537/537 top-k;
-printed output is 526/537 top-1 and 537/537 top-k. Strict preserves the intended
-inherited-cell abstention. All 49 contraction cases pass expansion and typed
-reverse lookup, with 40/49 top-1, and all 446 masked-cell leakage controls retain
+The real-text evaluation now contains 2,291 passage-disjoint morphology cells plus
+five analytic phrase cases and 74 separately scored typed contractions. Under
+Productive and Exploratory, expanded output is 2,220/2,291 top-1 and 2,291/2,291 top-k;
+printed output is 2,135/2,291 top-1 and 2,291/2,291 top-k. Strict preserves the intended
+inherited-cell abstention. All 74 contraction cases pass expansion and typed
+reverse lookup, with 65/74 top-1, and all 501 masked-cell leakage controls retain
 the expected top-k result. These remain regression metrics for registered forms,
 not language-wide accuracy.

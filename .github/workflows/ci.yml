@@ -38,6 +38,10 @@ jobs:
           cargo xtask synodal-v05-audit --check
           cargo xtask synodal-v06-review-packets --check
           cargo xtask synodal-v06-audit --check
+          cargo xtask synodal-v07-baseline --check
+          cargo xtask synodal-v07-review-packets --check
+          cargo xtask synodal-v07-apply --check
+          cargo xtask synodal-v07-audit --check
       - name: Package and publish dry runs
         run: |
           cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-core

@@ -31,6 +31,10 @@ jobs:
           cargo xtask synodal-v05-audit --check
           cargo xtask synodal-v06-review-packets --check
           cargo xtask synodal-v06-audit --check
+          cargo xtask synodal-v07-baseline --check
+          cargo xtask synodal-v07-review-packets --check
+          cargo xtask synodal-v07-apply --check
+          cargo xtask synodal-v07-audit --check
           cargo xtask synodal-check
           git diff --exit-code
       - name: Upload non-redistributable reports only

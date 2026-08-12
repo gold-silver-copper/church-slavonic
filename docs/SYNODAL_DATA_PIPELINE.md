@@ -126,9 +126,12 @@ cargo xtask synodal-evaluation-queue
 cargo xtask synodal-family-review-queue
 cargo xtask synodal-marginal-recovery
 cargo xtask synodal-v06-review-packets
+cargo xtask synodal-v07-review-packets
+cargo xtask synodal-v07-apply --check
 cargo xtask synodal-v04-audit --check
 cargo xtask synodal-v05-audit
 cargo xtask synodal-v06-audit --check
+cargo xtask synodal-v07-audit --check
 ```
 
 Full coverage reads only the Ponomar and exact-revision Wikisource records whose
@@ -155,6 +158,10 @@ the remaining token requirement explicit without granting coverage. The v0.4
 audit verifies a locked historical snapshot and digest. The v0.5 audit
 deterministically compares that baseline with the current registries, coverage,
 evaluation, family decisions, marginal diagnostics, and remaining gaps.
+The v0.6 audit remains an immutable 65% historical record. The v0.7 packet
+generator distinguishes current exact-surface work from prior decisions, the
+apply gate validates every admitted evidence role before regeneration, and the
+v0.7 audit freezes the 70% result plus its verification and full-diff review.
 
 See `SYNODAL_CLI_AND_COVERAGE.md` for normalized input formats, gap precedence,
 and consumer-facing commands.

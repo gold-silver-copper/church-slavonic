@@ -7,50 +7,50 @@
   "token_types": 113,
   "summary": {
     "total_tokens": 155,
-    "top_1_analyzed": 71,
-    "top_k_analyzed": 111,
+    "top_1_analyzed": 72,
+    "top_k_analyzed": 115,
     "ambiguous": 1,
-    "unresolved": 43
+    "unresolved": 39
   },
   "by_corpus": {
     "Church Slavonic Bible corpus": {
       "total_tokens": 70,
-      "top_1_analyzed": 31,
-      "top_k_analyzed": 51,
+      "top_1_analyzed": 32,
+      "top_k_analyzed": 53,
       "ambiguous": 0,
-      "unresolved": 19
+      "unresolved": 17
     },
     "Elizabeth Bible corpus": {
       "total_tokens": 85,
       "top_1_analyzed": 40,
-      "top_k_analyzed": 60,
+      "top_k_analyzed": 62,
       "ambiguous": 1,
-      "unresolved": 24
+      "unresolved": 22
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
       "total_tokens": 85,
       "top_1_analyzed": 40,
-      "top_k_analyzed": 60,
+      "top_k_analyzed": 62,
       "ambiguous": 1,
-      "unresolved": 24
+      "unresolved": 22
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
       "total_tokens": 70,
-      "top_1_analyzed": 31,
-      "top_k_analyzed": 51,
+      "top_1_analyzed": 32,
+      "top_k_analyzed": 53,
       "ambiguous": 0,
-      "unresolved": 19
+      "unresolved": 17
     }
   },
   "by_policy": {
     "strict": {
       "total_tokens": 155,
-      "top_1_analyzed": 71,
-      "top_k_analyzed": 111,
+      "top_1_analyzed": 72,
+      "top_k_analyzed": 115,
       "ambiguous": 1,
-      "unresolved": 43
+      "unresolved": 39
     }
   },
   "by_lexeme": {
@@ -187,13 +187,6 @@
       "ambiguous": 0,
       "unresolved": 0
     },
-    "synodal:noun:lyubov": {
-      "total_tokens": 1,
-      "top_1_analyzed": 0,
-      "top_k_analyzed": 0,
-      "ambiguous": 0,
-      "unresolved": 1
-    },
     "synodal:noun:slovo": {
       "total_tokens": 2,
       "top_1_analyzed": 1,
@@ -205,6 +198,20 @@
       "total_tokens": 2,
       "top_1_analyzed": 2,
       "top_k_analyzed": 2,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "synodal:noun:v07-c56f014c9d6102d1": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "synodal:noun:v07-e9a3939d37e191d7": {
+      "total_tokens": 1,
+      "top_1_analyzed": 1,
+      "top_k_analyzed": 1,
       "ambiguous": 0,
       "unresolved": 0
     },
@@ -460,6 +467,20 @@
       "ambiguous": 0,
       "unresolved": 0
     },
+    "synodal:verb:v07-35ce5d83583f3639": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "synodal:verb:v07-f40bf5c095d40411": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
     "synodal:verb:wikt-076d1c8a0add": {
       "total_tokens": 1,
       "top_1_analyzed": 0,
@@ -616,13 +637,6 @@
       "ambiguous": 0,
       "unresolved": 0
     },
-    "family:synodal:noun:lyubov": {
-      "total_tokens": 1,
-      "top_1_analyzed": 0,
-      "top_k_analyzed": 0,
-      "ambiguous": 0,
-      "unresolved": 1
-    },
     "family:synodal:noun:slovo": {
       "total_tokens": 2,
       "top_1_analyzed": 1,
@@ -634,6 +648,20 @@
       "total_tokens": 2,
       "top_1_analyzed": 2,
       "top_k_analyzed": 2,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "family:synodal:noun:v07-c56f014c9d6102d1": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "family:synodal:noun:v07-e9a3939d37e191d7": {
+      "total_tokens": 1,
+      "top_1_analyzed": 1,
+      "top_k_analyzed": 1,
       "ambiguous": 0,
       "unresolved": 0
     },
@@ -889,6 +917,20 @@
       "ambiguous": 0,
       "unresolved": 0
     },
+    "family:synodal:verb:v07-35ce5d83583f3639": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "family:synodal:verb:v07-f40bf5c095d40411": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
     "family:synodal:verb:wikt-076d1c8a0add": {
       "total_tokens": 1,
       "top_1_analyzed": 0,
@@ -941,18 +983,18 @@
       "unresolved": 0
     },
     "lexical-form": {
-      "total_tokens": 8,
+      "total_tokens": 11,
       "top_1_analyzed": 6,
-      "top_k_analyzed": 8,
+      "top_k_analyzed": 11,
       "ambiguous": 0,
       "unresolved": 0
     },
     "noun": {
       "total_tokens": 31,
-      "top_1_analyzed": 20,
-      "top_k_analyzed": 30,
+      "top_1_analyzed": 21,
+      "top_k_analyzed": 31,
       "ambiguous": 0,
-      "unresolved": 1
+      "unresolved": 0
     },
     "numeral": {
       "total_tokens": 1,
@@ -990,46 +1032,43 @@
       "unresolved": 0
     },
     "unresolved": {
-      "total_tokens": 43,
+      "total_tokens": 40,
       "top_1_analyzed": 0,
       "top_k_analyzed": 0,
       "ambiguous": 0,
-      "unresolved": 42
+      "unresolved": 39
     }
   },
   "by_corpus_gap": {
     "Church Slavonic Bible corpus": {
-      "missing-accent-or-orthographic-metadata": 1,
-      "unknown-lexeme": 18
+      "unknown-lexeme": 17
     },
     "Elizabeth Bible corpus": {
       "ambiguity-or-spelling-variant": 2,
-      "unknown-lexeme": 24
+      "unknown-lexeme": 22
     }
   },
   "by_source_gap": {
     "ponomar-elizabeth-bible-2026-08-09": {
       "ambiguity-or-spelling-variant": 2,
-      "unknown-lexeme": 24
+      "unknown-lexeme": 22
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
-      "missing-accent-or-orthographic-metadata": 1,
-      "unknown-lexeme": 18
+      "unknown-lexeme": 17
     }
   },
   "by_status": {
-    "abbreviation-expansion": 26,
+    "abbreviation-expansion": 27,
     "ambiguous": 1,
-    "exact-synodal-attestation": 59,
+    "exact-synodal-attestation": 62,
     "spelling-variant": 1,
     "synodal-normative-table": 24,
     "synodal-productive-rule": 1,
-    "unresolved": 43
+    "unresolved": 39
   },
   "by_gap": {
     "ambiguity-or-spelling-variant": 2,
-    "missing-accent-or-orthographic-metadata": 1,
-    "unknown-lexeme": 42
+    "unknown-lexeme": 39
   },
   "unresolved_by_probable_family": {
     "ambiguous-family:synodal:adverb:wikt-5471d4207f64+synodal:conjunction:wikt-47fa23a7ed6b": {
@@ -1046,20 +1085,6 @@
       ],
       "recovery_route": "spelling-variant",
       "assumption": "multiple reviewed lexemes remain compatible; no family was selected"
-    },
-    "family:synodal:noun:lyubov": {
-      "probable_family_id": "family:synodal:noun:lyubov",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "любо́вь"
-      ],
-      "candidate_lexeme_ids": [
-        "synodal:noun:lyubov"
-      ],
-      "recovery_route": "spelling-variant",
-      "assumption": "one reviewed lexeme is compatible with this diagnostic; the requested cell still requires review"
     },
     "family:synodal:preposition:wikt-3ed58a49777e": {
       "probable_family_id": "family:synodal:preposition:wikt-3ed58a49777e",
@@ -1121,18 +1146,6 @@
       ],
       "candidate_lexeme_ids": [],
       "recovery_route": "ungrouped-unknown",
-      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
-    },
-    "ungrouped:блгⷣть": {
-      "probable_family_id": "ungrouped:блгⷣть",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "блгⷣть"
-      ],
-      "candidate_lexeme_ids": [],
-      "recovery_route": "abbreviation-registry",
       "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
     },
     "ungrouped:бл҃говѣствованїѧ": {
@@ -1243,18 +1256,6 @@
       "recovery_route": "ungrouped-unknown",
       "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
     },
-    "ungrouped:избра": {
-      "probable_family_id": "ungrouped:избра",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "и҆збра̀"
-      ],
-      "candidate_lexeme_ids": [],
-      "recovery_route": "ungrouped-unknown",
-      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
-    },
     "ungrouped:истинныхъ": {
       "probable_family_id": "ungrouped:истинныхъ",
       "token_frequency": 1,
@@ -1310,18 +1311,6 @@
       "document_frequency": 1,
       "surfaces": [
         "молѧ́щесѧ"
-      ],
-      "candidate_lexeme_ids": [],
-      "recovery_route": "ungrouped-unknown",
-      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
-    },
-    "ungrouped:начатъ": {
-      "probable_family_id": "ungrouped:начатъ",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "нача́тъ"
       ],
       "candidate_lexeme_ids": [],
       "recovery_route": "ungrouped-unknown",
@@ -1557,19 +1546,18 @@
     }
   },
   "estimated_recovery_by_route": {
-    "abbreviation-registry": 8,
-    "spelling-variant": 2,
-    "ungrouped-unknown": 34
+    "abbreviation-registry": 7,
+    "spelling-variant": 1,
+    "ungrouped-unknown": 32
   },
   "abbreviation_family_tokens": 34,
-  "spelling_variant_family_tokens": 2,
-  "remaining_ungrouped_unknowns": 34,
+  "spelling_variant_family_tokens": 1,
+  "remaining_ungrouped_unknowns": 32,
   "gap_frequency_by_surface": {
     "апⷭ҇лъ": 1,
     "апⷭ҇лѡмъ": 1,
     "бж҃їею": 1,
     "благодаримъ": 1,
-    "блгⷣть": 1,
     "бл҃говѣствованїѧ": 1,
     "вознесесѧ": 1,
     "воньже": 1,
@@ -1579,14 +1567,11 @@
     "ждати": 1,
     "заповѣдавъ": 1,
     "знаменїихъ": 1,
-    "избра": 1,
     "истинныхъ": 1,
     "колоссаехъ": 1,
     "крестилъ": 1,
     "креститисѧ": 1,
-    "любовь": 1,
     "молѧщесѧ": 1,
-    "начатъ": 1,
     "нимиже": 2,
     "паѵелъ": 1,
     "слышавше": 1,
@@ -1614,7 +1599,6 @@
     "апⷭ҇лѡмъ": 1,
     "бж҃їею": 1,
     "благодаримъ": 1,
-    "блгⷣть": 1,
     "бл҃говѣствованїѧ": 1,
     "вознесесѧ": 1,
     "воньже": 1,
@@ -1624,14 +1608,11 @@
     "ждати": 1,
     "заповѣдавъ": 1,
     "знаменїихъ": 1,
-    "избра": 1,
     "истинныхъ": 1,
     "колоссаехъ": 1,
     "крестилъ": 1,
     "креститисѧ": 1,
-    "любовь": 1,
     "молѧщесѧ": 1,
-    "начатъ": 1,
     "нимиже": 2,
     "паѵелъ": 1,
     "слышавше": 1,
@@ -1653,7 +1634,7 @@
     "ꙗвлѧѧсѧ": 1,
     "ꙗдый": 1
   },
-  "total_gap_types": 43,
+  "total_gap_types": 39,
   "gaps": [
     {
       "kind": "unknown-lexeme",
@@ -2019,66 +2000,6 @@
       "byte_end": 153,
       "line": 1,
       "column": 71,
-      "candidate_lexeme_ids": [],
-      "requested_morphological_system": null,
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": []
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "no reviewed target lexeme or compatible generated form",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.3"
-      ],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "kind": "unknown-lexeme",
-      "original": "блгⷣть",
-      "normalized": "блгⷣть",
-      "corpus": "Church Slavonic Bible corpus",
-      "source_id": "wikisource-church-slavonic-bible-2026-08-09",
-      "work": "Church Slavonic Bible",
-      "edition": "Wikisource exact revisions",
-      "passage": "Col.1.3",
-      "partition": "source",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Church Slavonic Bible corpus"
-      ],
-      "source_ids": [
-        "wikisource-church-slavonic-bible-2026-08-09"
-      ],
-      "editions": [
-        "Wikisource exact revisions"
-      ],
-      "partitions": [
-        "source"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.3"
-      ],
-      "contexts": [
-        {
-          "document": "wikisource-church-slavonic-bible-2026-08-09:Col.1.3",
-          "passage": "Col.1.3",
-          "line": 1,
-          "column": 1,
-          "excerpt": "блгⷣть ва́мъ и"
-        }
-      ],
-      "byte_start": 0,
-      "byte_end": 13,
-      "line": 1,
-      "column": 1,
       "candidate_lexeme_ids": [],
       "requested_morphological_system": null,
       "generation_policy": "Strict",
@@ -2639,66 +2560,6 @@
     },
     {
       "kind": "unknown-lexeme",
-      "original": "и҆збра̀",
-      "normalized": "избра",
-      "corpus": "Elizabeth Bible corpus",
-      "source_id": "ponomar-elizabeth-bible-2026-08-09",
-      "work": "Elizabeth Bible",
-      "edition": "Ponomar Unicode text",
-      "passage": "Acts.1.2",
-      "partition": "evaluation",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Elizabeth Bible corpus"
-      ],
-      "source_ids": [
-        "ponomar-elizabeth-bible-2026-08-09"
-      ],
-      "editions": [
-        "Ponomar Unicode text"
-      ],
-      "partitions": [
-        "evaluation"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.2"
-      ],
-      "contexts": [
-        {
-          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.2",
-          "passage": "Acts.1.2",
-          "line": 1,
-          "column": 69,
-          "excerpt": ", и҆̀хже и҆збра̀, вознес"
-        }
-      ],
-      "byte_start": 125,
-      "byte_end": 139,
-      "line": 1,
-      "column": 69,
-      "candidate_lexeme_ids": [],
-      "requested_morphological_system": null,
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": []
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "no reviewed target lexeme or compatible generated form",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.2"
-      ],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "kind": "unknown-lexeme",
       "original": "и҆́стинныхъ",
       "normalized": "истинныхъ",
       "corpus": "Elizabeth Bible corpus",
@@ -2994,66 +2855,6 @@
       "top_k_uncovered_frequency": 1,
       "top_k_uncovered_documents": [
         "wikisource-church-slavonic-bible-2026-08-09:Col.1.3"
-      ],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "kind": "unknown-lexeme",
-      "original": "нача́тъ",
-      "normalized": "начатъ",
-      "corpus": "Elizabeth Bible corpus",
-      "source_id": "ponomar-elizabeth-bible-2026-08-09",
-      "work": "Elizabeth Bible",
-      "edition": "Ponomar Unicode text",
-      "passage": "Acts.1.1",
-      "partition": "evaluation",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Elizabeth Bible corpus"
-      ],
-      "source_ids": [
-        "ponomar-elizabeth-bible-2026-08-09"
-      ],
-      "editions": [
-        "Ponomar Unicode text"
-      ],
-      "partitions": [
-        "evaluation"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.1"
-      ],
-      "contexts": [
-        {
-          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.1",
-          "passage": "Acts.1.1",
-          "line": 1,
-          "column": 76,
-          "excerpt": "е, ꙗ҆̀же нача́тъ і҆и҃съ"
-        }
-      ],
-      "byte_start": 135,
-      "byte_end": 149,
-      "line": 1,
-      "column": 76,
-      "candidate_lexeme_ids": [],
-      "requested_morphological_system": null,
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": []
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "no reviewed target lexeme or compatible generated form",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.1"
       ],
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
@@ -4078,83 +3879,6 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "kind": "missing-accent-or-orthographic-metadata",
-      "original": "любо́вь",
-      "normalized": "любовь",
-      "corpus": "Church Slavonic Bible corpus",
-      "source_id": "wikisource-church-slavonic-bible-2026-08-09",
-      "work": "Church Slavonic Bible",
-      "edition": "Wikisource exact revisions",
-      "passage": "Col.1.4",
-      "partition": "source",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Church Slavonic Bible corpus"
-      ],
-      "source_ids": [
-        "wikisource-church-slavonic-bible-2026-08-09"
-      ],
-      "editions": [
-        "Wikisource exact revisions"
-      ],
-      "partitions": [
-        "source"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.4"
-      ],
-      "contexts": [
-        {
-          "document": "wikisource-church-slavonic-bible-2026-08-09:Col.1.4",
-          "passage": "Col.1.4",
-          "line": 1,
-          "column": 52,
-          "excerpt": "и҃сѣ, и҆ любо́вь, ю҆́же"
-        }
-      ],
-      "byte_start": 96,
-      "byte_end": 110,
-      "line": 1,
-      "column": 52,
-      "candidate_lexeme_ids": [
-        "synodal:noun:lyubov"
-      ],
-      "requested_morphological_system": "noun",
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": [
-          {
-            "rule": "SYN-NOUN-III-F-ALYPY-41",
-            "stage": "noun-declension",
-            "input": "любовь",
-            "output": "любовь",
-            "source_recension": "SynodalRussian",
-            "target_recension": "SynodalRussian",
-            "mapping": null,
-            "evidence": [
-              "normative:SYN-NOUN-III-F-ALYPY-41"
-            ]
-          }
-        ]
-      },
-      "missing_metadata": [
-        "AccentClass"
-      ],
-      "secondary_reasons": [],
-      "detail": "the accentless surface resolves, but the explicit presentation marks do not match reviewed evidence",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.4"
-      ],
-      "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
-    },
-    {
       "kind": "ambiguity-or-spelling-variant",
       "original": "ѽ",
       "normalized": "ѽ",
@@ -4355,16 +4079,6 @@
     {
       "rank": 7,
       "kind": "unknown-lexeme",
-      "normalized": "блгⷣть",
-      "sample": "блгⷣть",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "rank": 8,
-      "kind": "unknown-lexeme",
       "normalized": "бл҃говѣствованїѧ",
       "sample": "бл҃говѣствова́нїѧ",
       "frequency": 1,
@@ -4373,7 +4087,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 9,
+      "rank": 8,
       "kind": "unknown-lexeme",
       "normalized": "вознесесѧ",
       "sample": "вознесе́сѧ",
@@ -4383,7 +4097,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 10,
+      "rank": 9,
       "kind": "unknown-lexeme",
       "normalized": "воньже",
       "sample": "во́ньже",
@@ -4393,7 +4107,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 11,
+      "rank": 10,
       "kind": "unknown-lexeme",
       "normalized": "всегда",
       "sample": "всегда̀",
@@ -4403,7 +4117,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 12,
+      "rank": 11,
       "kind": "unknown-lexeme",
       "normalized": "вѣрнымъ",
       "sample": "вѣ̑рнымъ",
@@ -4413,7 +4127,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 13,
+      "rank": 12,
       "kind": "unknown-lexeme",
       "normalized": "деньми",
       "sample": "де́ньми",
@@ -4423,7 +4137,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 14,
+      "rank": 13,
       "kind": "unknown-lexeme",
       "normalized": "ждати",
       "sample": "жда́ти",
@@ -4433,7 +4147,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 15,
+      "rank": 14,
       "kind": "unknown-lexeme",
       "normalized": "заповѣдавъ",
       "sample": "заповѣ́давъ",
@@ -4443,7 +4157,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 16,
+      "rank": 15,
       "kind": "unknown-lexeme",
       "normalized": "знаменїихъ",
       "sample": "зна́менїихъ",
@@ -4453,17 +4167,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 17,
-      "kind": "unknown-lexeme",
-      "normalized": "избра",
-      "sample": "и҆збра̀",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "rank": 18,
+      "rank": 16,
       "kind": "unknown-lexeme",
       "normalized": "истинныхъ",
       "sample": "и҆́стинныхъ",
@@ -4473,7 +4177,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 19,
+      "rank": 17,
       "kind": "unknown-lexeme",
       "normalized": "колоссаехъ",
       "sample": "колосса́ехъ",
@@ -4483,7 +4187,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 20,
+      "rank": 18,
       "kind": "unknown-lexeme",
       "normalized": "крестилъ",
       "sample": "крести́лъ",
@@ -4493,7 +4197,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 21,
+      "rank": 19,
       "kind": "unknown-lexeme",
       "normalized": "креститисѧ",
       "sample": "крести́тисѧ",
@@ -4503,7 +4207,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 22,
+      "rank": 20,
       "kind": "unknown-lexeme",
       "normalized": "молѧщесѧ",
       "sample": "молѧ́щесѧ",
@@ -4513,17 +4217,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 23,
-      "kind": "unknown-lexeme",
-      "normalized": "начатъ",
-      "sample": "нача́тъ",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "rank": 24,
+      "rank": 21,
       "kind": "unknown-lexeme",
       "normalized": "паѵелъ",
       "sample": "Па́ѵелъ",
@@ -4533,7 +4227,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 25,
+      "rank": 22,
       "kind": "unknown-lexeme",
       "normalized": "слышавше",
       "sample": "слы́шавше",
@@ -4543,7 +4237,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 26,
+      "rank": 23,
       "kind": "unknown-lexeme",
       "normalized": "страданїи",
       "sample": "страда́нїи",
@@ -4553,7 +4247,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 27,
+      "rank": 24,
       "kind": "unknown-lexeme",
       "normalized": "ст҃ымъ",
       "sample": "ст҃ы̑мъ",
@@ -4563,7 +4257,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 28,
+      "rank": 25,
       "kind": "unknown-lexeme",
       "normalized": "сꙋщымъ",
       "sample": "сꙋ́щымъ",
@@ -4573,7 +4267,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 29,
+      "rank": 26,
       "kind": "unknown-lexeme",
       "normalized": "тїмоѳей",
       "sample": "тїмоѳе́й",
@@ -4583,7 +4277,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 30,
+      "rank": 27,
       "kind": "unknown-lexeme",
       "normalized": "хрⷭ҇товъ",
       "sample": "хрⷭ҇то́въ",
@@ -4593,7 +4287,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 31,
+      "rank": 28,
       "kind": "unknown-lexeme",
       "normalized": "четыредесѧтьми",
       "sample": "четы́редесѧтьми",
@@ -4603,7 +4297,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 32,
+      "rank": 29,
       "kind": "unknown-lexeme",
       "normalized": "ѡбѣтованїѧ",
       "sample": "ѡ҆бѣтова́нїѧ",
@@ -4613,7 +4307,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 33,
+      "rank": 30,
       "kind": "unknown-lexeme",
       "normalized": "ѳеофїле",
       "sample": "ѳео́фїле",
@@ -4623,7 +4317,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 34,
+      "rank": 31,
       "kind": "unknown-lexeme",
       "normalized": "ѹпованїе",
       "sample": "ѹ҆пова́нїе",
@@ -4633,7 +4327,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 35,
+      "rank": 32,
       "kind": "unknown-lexeme",
       "normalized": "ѻч҃а",
       "sample": "ѻ҆́ч҃а",
@@ -4643,7 +4337,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 36,
+      "rank": 33,
       "kind": "unknown-lexeme",
       "normalized": "ѿложенное",
       "sample": "ѿложе́нное",
@@ -4653,7 +4347,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 37,
+      "rank": 34,
       "kind": "unknown-lexeme",
       "normalized": "ѿлꙋчатисѧ",
       "sample": "ѿлꙋча́тисѧ",
@@ -4663,7 +4357,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 38,
+      "rank": 35,
       "kind": "unknown-lexeme",
       "normalized": "ᲂучити",
       "sample": "ᲂу҆чи́ти",
@@ -4673,7 +4367,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 39,
+      "rank": 36,
       "kind": "unknown-lexeme",
       "normalized": "ꙗвлѧѧсѧ",
       "sample": "ꙗ҆влѧ́ѧсѧ",
@@ -4683,7 +4377,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 40,
+      "rank": 37,
       "kind": "unknown-lexeme",
       "normalized": "ꙗдый",
       "sample": "ꙗ҆ды́й",
@@ -4693,19 +4387,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 41,
-      "kind": "missing-accent-or-orthographic-metadata",
-      "normalized": "любовь",
-      "sample": "любо́вь",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [
-        "synodal:noun:lyubov"
-      ],
-      "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
-    },
-    {
-      "rank": 42,
+      "rank": 38,
       "kind": "ambiguity-or-spelling-variant",
       "normalized": "ѽ",
       "sample": "ѽ",
@@ -4717,7 +4399,7 @@
       "suggested_action": "review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme"
     },
     {
-      "rank": 43,
+      "rank": 39,
       "kind": "ambiguity-or-spelling-variant",
       "normalized": "ꙗкѡ",
       "sample": "ꙗ҆́кѡ",

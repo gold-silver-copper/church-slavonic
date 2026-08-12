@@ -505,7 +505,7 @@ mod tests {
         assert!(capabilities.aorist);
         assert!(capabilities.imperative);
         assert!(capabilities.infinitive);
-        assert!(!capabilities.l_participle);
+        assert!(capabilities.l_participle);
         assert!(capabilities.participle);
         assert!(!capabilities.supine);
         assert!(!capabilities.verbal_noun);
