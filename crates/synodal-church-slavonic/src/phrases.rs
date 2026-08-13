@@ -1,9 +1,36 @@
 use synodal_church_slavonic_core::{
-    AnalyticConstruction, Aspect, Error, Gender, Number, ParticipleCell, ParticipleVoice, Person,
-    PhraseRole, PhraseToken, RealizedPhrase, Result,
+    AnalyticConstruction, Aspect, Error, FormSet, Gender, Number, ParticipleCell, ParticipleVoice,
+    Person, PhraseRole, PhraseToken, RealizedPhrase, Result,
 };
 
 use crate::{Inflector, Participle, Verb};
+
+fn token(role: PhraseRole, forms: FormSet) -> PhraseToken {
+    PhraseToken { role, forms }
+}
+
+fn copular_l_participle(
+    construction: AnalyticConstruction,
+    lemma: &str,
+    person: Person,
+    number: Number,
+    gender: Gender,
+    inflector: Inflector,
+    auxiliary_form: impl FnOnce(&Verb, Person, Number) -> Result<FormSet>,
+) -> Result<RealizedPhrase> {
+    let verb = Verb::resolve_with(lemma, inflector)?;
+    let copula = Verb::resolve_with("быти", inflector)?;
+    RealizedPhrase::new(
+        construction,
+        vec![
+            token(PhraseRole::LParticiple, verb.l_participle(gender, number)?),
+            token(
+                PhraseRole::Auxiliary,
+                auxiliary_form(&copula, person, number)?,
+            ),
+        ],
+    )
+}
 
 /// Realizes the Alypy §85 compound future: a present form of the auxiliary
 /// `имати` followed by the infinitive of an imperfective lexical verb.
@@ -27,14 +54,8 @@ pub fn compound_future_with(
     RealizedPhrase::new(
         AnalyticConstruction::CompoundFuture,
         vec![
-            PhraseToken {
-                role: PhraseRole::Auxiliary,
-                forms: auxiliary.present(person, number)?,
-            },
-            PhraseToken {
-                role: PhraseRole::Infinitive,
-                forms: verb.infinitive()?,
-            },
+            token(PhraseRole::Auxiliary, auxiliary.present(person, number)?),
+            token(PhraseRole::Infinitive, verb.infinitive()?),
         ],
     )
 }
@@ -56,20 +77,14 @@ pub fn perfect_with(
     gender: Gender,
     inflector: Inflector,
 ) -> Result<RealizedPhrase> {
-    let verb = Verb::resolve_with(lemma, inflector)?;
-    let copula = Verb::resolve_with("быти", inflector)?;
-    RealizedPhrase::new(
+    copular_l_participle(
         AnalyticConstruction::Perfect,
-        vec![
-            PhraseToken {
-                role: PhraseRole::LParticiple,
-                forms: verb.l_participle(gender, number)?,
-            },
-            PhraseToken {
-                role: PhraseRole::Auxiliary,
-                forms: copula.present(person, number)?,
-            },
-        ],
+        lemma,
+        person,
+        number,
+        gender,
+        inflector,
+        Verb::present,
     )
 }
 
@@ -91,20 +106,14 @@ pub fn pluperfect_with(
     gender: Gender,
     inflector: Inflector,
 ) -> Result<RealizedPhrase> {
-    let verb = Verb::resolve_with(lemma, inflector)?;
-    let copula = Verb::resolve_with("быти", inflector)?;
-    RealizedPhrase::new(
+    copular_l_participle(
         AnalyticConstruction::Pluperfect,
-        vec![
-            PhraseToken {
-                role: PhraseRole::LParticiple,
-                forms: verb.l_participle(gender, number)?,
-            },
-            PhraseToken {
-                role: PhraseRole::Auxiliary,
-                forms: copula.imperfect(person, number)?,
-            },
-        ],
+        lemma,
+        person,
+        number,
+        gender,
+        inflector,
+        Verb::imperfect,
     )
 }
 
@@ -126,20 +135,14 @@ pub fn conditional_with(
     gender: Gender,
     inflector: Inflector,
 ) -> Result<RealizedPhrase> {
-    let verb = Verb::resolve_with(lemma, inflector)?;
-    let copula = Verb::resolve_with("быти", inflector)?;
-    RealizedPhrase::new(
+    copular_l_participle(
         AnalyticConstruction::Conditional,
-        vec![
-            PhraseToken {
-                role: PhraseRole::LParticiple,
-                forms: verb.l_participle(gender, number)?,
-            },
-            PhraseToken {
-                role: PhraseRole::Auxiliary,
-                forms: copula.aorist(person, number)?,
-            },
-        ],
+        lemma,
+        person,
+        number,
+        gender,
+        inflector,
+        Verb::aorist,
     )
 }
 
@@ -171,14 +174,11 @@ pub fn analytic_passive_with(
     RealizedPhrase::new(
         AnalyticConstruction::AnalyticPassive,
         vec![
-            PhraseToken {
-                role: PhraseRole::PassiveParticiple,
-                forms: participle.form(participle_cell)?,
-            },
-            PhraseToken {
-                role: PhraseRole::Auxiliary,
-                forms: copula.present(person, number)?,
-            },
+            token(
+                PhraseRole::PassiveParticiple,
+                participle.form(participle_cell)?,
+            ),
+            token(PhraseRole::Auxiliary, copula.present(person, number)?),
         ],
     )
 }

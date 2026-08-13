@@ -42,6 +42,36 @@ impl ResolvedIdentity {
     }
 }
 
+macro_rules! resolved_identity {
+    ($name:ident, $part_of_speech:ident) => {
+        impl $name {
+            /// Resolve exactly one dictionary lexeme of this handle's part of speech.
+            pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
+                Ok(Self {
+                    identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::$part_of_speech)?,
+                })
+            }
+
+            /// Bind a stable dictionary ID after validating its part of speech.
+            pub fn from_id(id: &str) -> Result<Self, InflectionError> {
+                Ok(Self {
+                    identity: ResolvedIdentity::from_id(id, PartOfSpeech::$part_of_speech)?,
+                })
+            }
+
+            /// The canonical dictionary lemma.
+            pub fn lemma(&self) -> &str {
+                &self.identity.lemma
+            }
+
+            /// The stable dictionary lexeme ID.
+            pub fn id(&self) -> &str {
+                &self.identity.id
+            }
+        }
+    };
+}
+
 /// A uniquely resolved dictionary noun.
 ///
 /// ```
@@ -56,31 +86,9 @@ pub struct Noun {
     identity: ResolvedIdentity,
 }
 
+resolved_identity!(Noun, Noun);
+
 impl Noun {
-    /// Resolve exactly one dictionary noun by lemma.
-    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Noun)?,
-        })
-    }
-
-    /// Bind a stable dictionary ID after validating its part of speech.
-    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Noun)?,
-        })
-    }
-
-    /// The canonical dictionary lemma.
-    pub fn lemma(&self) -> &str {
-        &self.identity.lemma
-    }
-
-    /// The stable dictionary lexeme ID.
-    pub fn id(&self) -> &str {
-        &self.identity.id
-    }
-
     /// Resolve one case-number cell through the canonical by-ID path.
     pub fn form(&self, case: Case, number: Number) -> Result<FormSet, InflectionError> {
         resolver::noun_by_id(self.id(), NounCell { case, number })
@@ -109,31 +117,9 @@ pub struct Determiner {
     identity: ResolvedIdentity,
 }
 
+resolved_identity!(Determiner, Determiner);
+
 impl Determiner {
-    /// Resolve exactly one dictionary determiner by lemma.
-    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Determiner)?,
-        })
-    }
-
-    /// Bind a stable dictionary ID after validating its part of speech.
-    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Determiner)?,
-        })
-    }
-
-    /// The canonical dictionary lemma.
-    pub fn lemma(&self) -> &str {
-        &self.identity.lemma
-    }
-
-    /// The stable dictionary lexeme ID.
-    pub fn id(&self) -> &str {
-        &self.identity.id
-    }
-
     /// Resolve one case-number-gender cell.
     pub fn form(
         &self,
@@ -171,31 +157,9 @@ pub struct Pronoun {
     identity: ResolvedIdentity,
 }
 
+resolved_identity!(Pronoun, Pronoun);
+
 impl Pronoun {
-    /// Resolve exactly one dictionary pronoun by lemma.
-    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Pronoun)?,
-        })
-    }
-
-    /// Bind a stable dictionary ID after validating its part of speech.
-    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Pronoun)?,
-        })
-    }
-
-    /// The canonical dictionary lemma.
-    pub fn lemma(&self) -> &str {
-        &self.identity.lemma
-    }
-
-    /// The stable dictionary lexeme ID.
-    pub fn id(&self) -> &str {
-        &self.identity.id
-    }
-
     /// Resolve one case-number cell in an case-number-only pronoun table.
     pub fn form(&self, case: Case, number: Number) -> Result<FormSet, InflectionError> {
         resolver::pronoun_by_id(self.id(), UngenderedCell { case, number })
@@ -267,31 +231,9 @@ pub struct Numeral {
     identity: ResolvedIdentity,
 }
 
+resolved_identity!(Numeral, Numeral);
+
 impl Numeral {
-    /// Resolve exactly one dictionary numeral by lemma.
-    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Numeral)?,
-        })
-    }
-
-    /// Bind a stable dictionary ID after validating its part of speech.
-    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Numeral)?,
-        })
-    }
-
-    /// The canonical dictionary lemma.
-    pub fn lemma(&self) -> &str {
-        &self.identity.lemma
-    }
-
-    /// The stable dictionary lexeme ID.
-    pub fn id(&self) -> &str {
-        &self.identity.id
-    }
-
     /// Resolve one case-number cell in an case-number-only numeral table.
     pub fn form(&self, case: Case, number: Number) -> Result<FormSet, InflectionError> {
         resolver::numeral_by_id(self.id(), UngenderedCell { case, number })
@@ -355,31 +297,9 @@ pub struct Adjective {
     identity: ResolvedIdentity,
 }
 
+resolved_identity!(Adjective, Adjective);
+
 impl Adjective {
-    /// Resolve exactly one dictionary adjective by lemma.
-    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Adjective)?,
-        })
-    }
-
-    /// Bind a stable dictionary ID after validating its part of speech.
-    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Adjective)?,
-        })
-    }
-
-    /// The canonical dictionary lemma.
-    pub fn lemma(&self) -> &str {
-        &self.identity.lemma
-    }
-
-    /// The stable dictionary lexeme ID.
-    pub fn id(&self) -> &str {
-        &self.identity.id
-    }
-
     /// Resolve one long/compound adjective agreement cell.
     pub fn long(
         &self,
@@ -450,31 +370,9 @@ pub struct Verb {
     identity: ResolvedIdentity,
 }
 
+resolved_identity!(Verb, Verb);
+
 impl Verb {
-    /// Resolve exactly one dictionary verb by lemma.
-    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::Verb)?,
-        })
-    }
-
-    /// Bind a stable dictionary ID after validating its part of speech.
-    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
-        Ok(Self {
-            identity: ResolvedIdentity::from_id(id, PartOfSpeech::Verb)?,
-        })
-    }
-
-    /// The canonical dictionary lemma.
-    pub fn lemma(&self) -> &str {
-        &self.identity.lemma
-    }
-
-    /// The stable dictionary lexeme ID.
-    pub fn id(&self) -> &str {
-        &self.identity.id
-    }
-
     /// Resolve one present-indicative person-number cell.
     pub fn present(&self, person: Person, number: Number) -> Result<FormSet, InflectionError> {
         self.finite(FiniteTense::Present, person, number)
