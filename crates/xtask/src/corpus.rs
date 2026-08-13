@@ -832,23 +832,18 @@ fn evaluate_syntacticus(
     let mut outcomes = Vec::new();
     let mut metadata_sources_by_category = BTreeMap::new();
     for ((_lemma_key, tense), tokens) in groups {
+        let category = match tense {
+            FiniteTense::Imperfect => "imperfect",
+            FiniteTense::Aorist => "aorist-new",
+            FiniteTense::Present => {
+                return Err("native mapper returned a non-past finite cell".into());
+            }
+        };
         let metadata = choose_native_metadata(&tokens);
         if metadata.is_some() {
-            bump(
-                &mut metadata_sources_by_category,
-                match tense {
-                    FiniteTense::Imperfect => "imperfect",
-                    FiniteTense::Aorist => "aorist-new",
-                    FiniteTense::Present => unreachable!("native mapper only returns past cells"),
-                },
-            );
+            bump(&mut metadata_sources_by_category, category);
         }
         for token in tokens {
-            let category = match tense {
-                FiniteTense::Imperfect => "imperfect",
-                FiniteTense::Aorist => "aorist-new",
-                FiniteTense::Present => unreachable!("native mapper only returns past cells"),
-            };
             let feature_label = token.cell.key();
             let Some(metadata) = metadata.as_ref() else {
                 bump(
@@ -1307,8 +1302,8 @@ fn map_finite(map: &BTreeMap<&str, &str>) -> Result<MappedCell, &'static str> {
                 None => return Err("missing-imperative-tense"),
             }
             let cell = ImperativeCell {
-                person: map_person_enum(person),
-                number: map_number_code(number),
+                person: map_person_enum(person)?,
+                number: map_number_code(number)?,
             };
             if !cell.is_supported() {
                 return Err("unsupported-imperative-cell");
@@ -1361,21 +1356,21 @@ fn map_resultative(map: &BTreeMap<&str, &str>) -> Result<MappedCell, &'static st
     })
 }
 
-fn map_person_enum(person: &str) -> Person {
+fn map_person_enum(person: &str) -> Result<Person, &'static str> {
     match person {
-        "1" => Person::First,
-        "2" => Person::Second,
-        "3" => Person::Third,
-        _ => unreachable!("map_person returned an invalid code"),
+        "1" => Ok(Person::First),
+        "2" => Ok(Person::Second),
+        "3" => Ok(Person::Third),
+        _ => Err("invalid-person-code"),
     }
 }
 
-fn map_number_code(number: &str) -> Number {
+fn map_number_code(number: &str) -> Result<Number, &'static str> {
     match number {
-        "sg" => Number::Singular,
-        "du" => Number::Dual,
-        "pl" => Number::Plural,
-        _ => unreachable!("map_number returned an invalid code"),
+        "sg" => Ok(Number::Singular),
+        "du" => Ok(Number::Dual),
+        "pl" => Ok(Number::Plural),
+        _ => Err("invalid-number-code"),
     }
 }
 

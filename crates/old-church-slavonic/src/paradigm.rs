@@ -72,8 +72,8 @@ fn forms_for<'a, C: PartialEq>(
 }
 
 macro_rules! paradigm_common {
-    ($name:ident, $cell:ty) => {
-        impl $name {
+    ($name:ident $(<$generic:ident>)?, $cell:ty) => {
+        impl$(<$generic>)? $name$(<$generic>)? {
             /// The canonical dictionary lemma.
             pub fn lemma(&self) -> &str {
                 &self.lemma
@@ -127,7 +127,7 @@ macro_rules! paradigm_common {
             }
         }
 
-        impl<'a> IntoIterator for &'a $name {
+        impl<'a $(, $generic)?> IntoIterator for &'a $name$(<$generic>)? {
             type Item = &'a CellOutcome<$cell>;
             type IntoIter = std::slice::Iter<'a, CellOutcome<$cell>>;
 
@@ -136,7 +136,7 @@ macro_rules! paradigm_common {
             }
         }
 
-        impl IntoIterator for $name {
+        impl$(<$generic>)? IntoIterator for $name$(<$generic>)? {
             type Item = CellOutcome<$cell>;
             type IntoIter = std::vec::IntoIter<CellOutcome<$cell>>;
 
@@ -331,63 +331,13 @@ pub struct ClosedClassParadigm<C> {
 }
 
 impl<C> ClosedClassParadigm<C> {
-    /// The canonical dictionary lemma.
-    pub fn lemma(&self) -> &str {
-        &self.lemma
-    }
-
-    /// The stable dictionary lexeme ID.
-    pub fn id(&self) -> &str {
-        &self.lexeme_id
-    }
-
     /// The closed class represented by this table.
     pub fn part_of_speech(&self) -> PartOfSpeech {
         self.part_of_speech
     }
-
-    /// Iterate over represented rows in stable grammatical order.
-    pub fn iter(&self) -> std::slice::Iter<'_, CellOutcome<C>> {
-        self.cells.iter()
-    }
-
-    /// Iterate over successful cells without discarding their grammar.
-    pub fn successes(&self) -> impl Iterator<Item = (&C, &FormSet)> {
-        self.cells.iter().filter_map(|outcome| {
-            outcome
-                .result
-                .as_ref()
-                .ok()
-                .map(|forms| (&outcome.cell, forms))
-        })
-    }
-
-    /// Iterate over represented cells that retained a typed failure.
-    pub fn failures(&self) -> impl Iterator<Item = (&C, &InflectionError)> {
-        self.cells.iter().filter_map(|outcome| {
-            outcome
-                .result
-                .as_ref()
-                .err()
-                .map(|error| (&outcome.cell, error))
-        })
-    }
-
-    /// Number of represented rows, including typed failures.
-    pub fn len(&self) -> usize {
-        self.cells.len()
-    }
-
-    /// Whether this typed inventory has no represented rows.
-    pub fn is_empty(&self) -> bool {
-        self.cells.is_empty()
-    }
-
-    /// Consume the paradigm into its ordered cell rows.
-    pub fn into_rows(self) -> Vec<CellOutcome<C>> {
-        self.cells
-    }
 }
+
+paradigm_common!(ClosedClassParadigm<C>, C);
 
 impl ClosedClassParadigm<UngenderedCell> {
     /// Return one case-number form or distinguish an absent row from a failed row.
@@ -431,24 +381,6 @@ impl ClosedClassParadigm<PersonalPronounCell> {
                 person,
             },
         )
-    }
-}
-
-impl<'a, C> IntoIterator for &'a ClosedClassParadigm<C> {
-    type Item = &'a CellOutcome<C>;
-    type IntoIter = std::slice::Iter<'a, CellOutcome<C>>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.cells.iter()
-    }
-}
-
-impl<C> IntoIterator for ClosedClassParadigm<C> {
-    type Item = CellOutcome<C>;
-    type IntoIter = std::vec::IntoIter<CellOutcome<C>>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.cells.into_iter()
     }
 }
 

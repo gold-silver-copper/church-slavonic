@@ -10,6 +10,72 @@ use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::*;
 
+fn case_number_cells<C>(make: impl Fn(Case, Number) -> C + Copy) -> impl Iterator<Item = C> {
+    Number::ALL
+        .into_iter()
+        .flat_map(move |number| Case::ALL.into_iter().map(move |case| make(case, number)))
+}
+
+fn person_number_cells<C>(make: impl Fn(Person, Number) -> C + Copy) -> impl Iterator<Item = C> {
+    Number::ALL.into_iter().flat_map(move |number| {
+        Person::ALL
+            .into_iter()
+            .map(move |person| make(person, number))
+    })
+}
+
+fn adjective_cells(form: AdjectiveForm) -> impl Iterator<Item = AdjectiveCell> {
+    case_number_cells(move |case, number| (case, number)).flat_map(move |(case, number)| {
+        Gender::ALL.into_iter().flat_map(move |gender| {
+            Animacy::ALL.into_iter().map(move |animacy| AdjectiveCell {
+                case,
+                number,
+                gender,
+                animacy,
+                form,
+            })
+        })
+    })
+}
+
+fn resolve_cells<C: Copy>(
+    cells: impl IntoIterator<Item = C>,
+    mut resolve: impl FnMut(C) -> Result<FormSet, InflectionError>,
+) -> Vec<CellOutcome<C>> {
+    cells
+        .into_iter()
+        .map(|cell| CellOutcome {
+            cell,
+            result: resolve(cell),
+        })
+        .collect()
+}
+
+fn paradigm_lemma(id: &str, part_of_speech: PartOfSpeech) -> Result<&'static str, InflectionError> {
+    ensure_pos(id, part_of_speech)?;
+    lookup::find_lexeme(id)
+        .map(|record| record.lemma)
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(part_of_speech)))
+}
+
+fn resolve_verb_cell<C: Copy>(
+    id: &str,
+    cell: C,
+    key: impl FnOnce(C) -> String,
+    generate: impl FnOnce(&DictionaryVerbMetadata, C) -> Result<FormSet, InflectionError>,
+) -> Result<FormSet, InflectionError> {
+    ensure_pos(id, PartOfSpeech::Verb)?;
+    let key = key(cell);
+    if let Some(form) = lookup::table_form(id, &key) {
+        return Ok(form);
+    }
+    let metadata = verb_metadata_by_id(id)?;
+    if let Some(form) = lookup::override_form(id, &key) {
+        return Ok(form);
+    }
+    generate(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
+}
+
 pub fn noun(lemma: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
     let record = lookup::resolve_one(lemma, PartOfSpeech::Noun)?;
     queried_result(lemma, record, noun_by_id(record.id, cell))
@@ -34,28 +100,18 @@ pub fn noun_with(lexeme: &NounLexeme, cell: NounCell) -> Result<FormSet, Inflect
 }
 
 pub fn noun_paradigm_by_id(id: &str) -> Result<NounParadigm, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Noun)?;
-    let lemma = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Noun)))?
-        .lemma;
+    let lemma = paradigm_lemma(id, PartOfSpeech::Noun)?;
     Ok(build_noun_paradigm(id, lemma))
 }
 
 pub(crate) fn build_noun_paradigm(id: &str, lemma: &str) -> NounParadigm {
-    let mut cells = Vec::with_capacity(Case::ALL.len() * Number::ALL.len());
-    for number in Number::ALL {
-        for case in Case::ALL {
-            let cell = NounCell { case, number };
-            cells.push(CellOutcome {
-                cell,
-                result: noun_by_id(id, cell),
-            });
-        }
-    }
     NounParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
-        cells,
+        cells: resolve_cells(
+            case_number_cells(|case, number| NounCell { case, number }),
+            |cell| noun_by_id(id, cell),
+        ),
     }
 }
 
@@ -120,40 +176,18 @@ pub fn adjective_by_id(id: &str, cell: AdjectiveCell) -> Result<FormSet, Inflect
 }
 
 pub fn adjective_paradigm_by_id(id: &str) -> Result<AdjectiveParadigm, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Adjective)?;
-    let lemma = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Adjective)))?
-        .lemma;
+    let lemma = paradigm_lemma(id, PartOfSpeech::Adjective)?;
     Ok(build_adjective_paradigm(id, lemma))
 }
 
 pub(crate) fn build_adjective_paradigm(id: &str, lemma: &str) -> AdjectiveParadigm {
-    let mut cells = Vec::new();
-    for form in AdjectiveForm::ALL {
-        for number in Number::ALL {
-            for case in Case::ALL {
-                for gender in Gender::ALL {
-                    for animacy in Animacy::ALL {
-                        let cell = AdjectiveCell {
-                            case,
-                            number,
-                            gender,
-                            animacy,
-                            form,
-                        };
-                        cells.push(CellOutcome {
-                            cell,
-                            result: adjective_by_id(id, cell),
-                        });
-                    }
-                }
-            }
-        }
-    }
     AdjectiveParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
-        cells,
+        cells: resolve_cells(
+            AdjectiveForm::ALL.into_iter().flat_map(adjective_cells),
+            |cell| adjective_by_id(id, cell),
+        ),
     }
 }
 
@@ -184,15 +218,7 @@ pub fn finite_verb(lemma: &str, cell: FiniteVerbCell) -> Result<FormSet, Inflect
 }
 
 pub fn finite_by_id(id: &str, cell: FiniteVerbCell) -> Result<FormSet, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    if let Some(form) = lookup::table_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    let metadata = verb_metadata_by_id(id)?;
-    if let Some(form) = lookup::override_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    generate_finite_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
+    resolve_verb_cell(id, cell, FiniteVerbCell::key, generate_finite_from_metadata)
 }
 
 /// Generate through the same dictionary-metadata resolver after an offline
@@ -207,64 +233,44 @@ pub fn finite_verb_from_dictionary_metadata(
 }
 
 pub fn finite_paradigm_by_id(id: &str) -> Result<FiniteVerbParadigm, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    let lemma = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
-        .lemma;
+    let lemma = paradigm_lemma(id, PartOfSpeech::Verb)?;
     Ok(build_finite_paradigm(id, lemma))
 }
 
 pub(crate) fn build_finite_paradigm(id: &str, lemma: &str) -> FiniteVerbParadigm {
-    let mut cells = Vec::new();
-    for tense in FiniteTense::ALL {
-        for number in Number::ALL {
-            for person in Person::ALL {
-                let cell = FiniteVerbCell {
-                    tense,
-                    person,
-                    number,
-                };
-                cells.push(CellOutcome {
-                    cell,
-                    result: finite_by_id(id, cell),
-                });
-            }
-        }
-    }
     FiniteVerbParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
-        cells,
+        cells: resolve_cells(
+            FiniteTense::ALL.into_iter().flat_map(|tense| {
+                person_number_cells(move |person, number| FiniteVerbCell {
+                    tense,
+                    person,
+                    number,
+                })
+            }),
+            |cell| finite_by_id(id, cell),
+        ),
     }
 }
 
 pub(crate) fn build_present_paradigm(id: &str, lemma: &str) -> VerbParadigm {
-    let mut cells = Vec::with_capacity(Person::ALL.len() * Number::ALL.len());
-    for number in Number::ALL {
-        for person in Person::ALL {
-            let cell = FiniteVerbCell {
-                tense: FiniteTense::Present,
-                person,
-                number,
-            };
-            cells.push(CellOutcome {
-                cell,
-                result: finite_by_id(id, cell),
-            });
-        }
-    }
     VerbParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
-        cells,
+        cells: resolve_cells(
+            person_number_cells(|person, number| FiniteVerbCell {
+                tense: FiniteTense::Present,
+                person,
+                number,
+            }),
+            |cell| finite_by_id(id, cell),
+        ),
     }
 }
 
 pub fn present_paradigm_by_id(id: &str) -> Result<VerbParadigm, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    let lemma = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
-        .lemma;
+    let lemma = paradigm_lemma(id, PartOfSpeech::Verb)?;
     Ok(build_present_paradigm(id, lemma))
 }
 
@@ -283,15 +289,12 @@ pub fn imperative(lemma: &str, cell: ImperativeCell) -> Result<FormSet, Inflecti
 }
 
 pub fn imperative_by_id(id: &str, cell: ImperativeCell) -> Result<FormSet, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    if let Some(form) = lookup::table_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    let metadata = verb_metadata_by_id(id)?;
-    if let Some(form) = lookup::override_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    generate_imperative_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
+    resolve_verb_cell(
+        id,
+        cell,
+        ImperativeCell::key,
+        generate_imperative_from_metadata,
+    )
 }
 
 pub fn imperative_from_dictionary_metadata(
@@ -311,25 +314,15 @@ pub fn imperative_with(
 }
 
 pub fn imperative_paradigm_by_id(id: &str) -> Result<ImperativeParadigm, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    let lemma = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
-        .lemma;
+    let lemma = paradigm_lemma(id, PartOfSpeech::Verb)?;
     Ok(build_imperative_paradigm(id, lemma))
 }
 
 pub(crate) fn build_imperative_paradigm(id: &str, lemma: &str) -> ImperativeParadigm {
-    let mut cells = Vec::new();
-    for cell in ImperativeCell::SUPPORTED {
-        cells.push(CellOutcome {
-            cell,
-            result: imperative_by_id(id, cell),
-        });
-    }
     ImperativeParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
-        cells,
+        cells: resolve_cells(ImperativeCell::SUPPORTED, |cell| imperative_by_id(id, cell)),
     }
 }
 
@@ -339,15 +332,12 @@ pub fn l_participle(lemma: &str, cell: LParticipleCell) -> Result<FormSet, Infle
 }
 
 pub fn l_participle_by_id(id: &str, cell: LParticipleCell) -> Result<FormSet, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    if let Some(form) = lookup::table_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    let metadata = verb_metadata_by_id(id)?;
-    if let Some(form) = lookup::override_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    generate_l_participle_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
+    resolve_verb_cell(
+        id,
+        cell,
+        LParticipleCell::key,
+        generate_l_participle_from_metadata,
+    )
 }
 
 pub fn l_participle_from_dictionary_metadata(
@@ -367,28 +357,22 @@ pub fn l_participle_with(
 }
 
 pub fn l_participle_paradigm_by_id(id: &str) -> Result<LParticipleParadigm, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    let lemma = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
-        .lemma;
+    let lemma = paradigm_lemma(id, PartOfSpeech::Verb)?;
     Ok(build_l_participle_paradigm(id, lemma))
 }
 
 pub(crate) fn build_l_participle_paradigm(id: &str, lemma: &str) -> LParticipleParadigm {
-    let mut cells = Vec::new();
-    for number in Number::ALL {
-        for gender in Gender::ALL {
-            let cell = LParticipleCell { gender, number };
-            cells.push(CellOutcome {
-                cell,
-                result: l_participle_by_id(id, cell),
-            });
-        }
-    }
     LParticipleParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
-        cells,
+        cells: resolve_cells(
+            Number::ALL.into_iter().flat_map(|number| {
+                Gender::ALL
+                    .into_iter()
+                    .map(move |gender| LParticipleCell { gender, number })
+            }),
+            |cell| l_participle_by_id(id, cell),
+        ),
     }
 }
 
@@ -398,15 +382,12 @@ pub fn participle(lemma: &str, cell: ParticipleCell) -> Result<FormSet, Inflecti
 }
 
 pub fn participle_by_id(id: &str, cell: ParticipleCell) -> Result<FormSet, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    if let Some(form) = lookup::table_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    let metadata = verb_metadata_by_id(id)?;
-    if let Some(form) = lookup::override_form(id, &cell.key()) {
-        return Ok(form);
-    }
-    generate_participle_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
+    resolve_verb_cell(
+        id,
+        cell,
+        ParticipleCell::key,
+        generate_participle_from_metadata,
+    )
 }
 
 pub fn participle_from_dictionary_metadata(
@@ -429,10 +410,7 @@ pub fn participle_paradigm_by_id(
     id: &str,
     kind: ParticipleKind,
 ) -> Result<ParticipleParadigm, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    let lemma = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?
-        .lemma;
+    let lemma = paradigm_lemma(id, PartOfSpeech::Verb)?;
     Ok(build_participle_paradigm(id, lemma, kind))
 }
 
@@ -441,36 +419,17 @@ pub(crate) fn build_participle_paradigm(
     lemma: &str,
     kind: ParticipleKind,
 ) -> ParticipleParadigm {
-    let mut cells = Vec::new();
-    for form in AdjectiveForm::ALL {
-        for number in Number::ALL {
-            for case in Case::ALL {
-                for gender in Gender::ALL {
-                    for animacy in Animacy::ALL {
-                        let cell = ParticipleCell {
-                            kind,
-                            adjective: AdjectiveCell {
-                                case,
-                                number,
-                                gender,
-                                animacy,
-                                form,
-                            },
-                        };
-                        cells.push(CellOutcome {
-                            cell,
-                            result: participle_by_id(id, cell),
-                        });
-                    }
-                }
-            }
-        }
-    }
     ParticipleParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
         kind,
-        cells,
+        cells: resolve_cells(
+            AdjectiveForm::ALL
+                .into_iter()
+                .flat_map(adjective_cells)
+                .map(|adjective| ParticipleCell { kind, adjective }),
+            |cell| participle_by_id(id, cell),
+        ),
     }
 }
 
@@ -696,21 +655,14 @@ pub(crate) fn build_ungendered_closed_class_paradigm(
     lemma: &str,
     part_of_speech: PartOfSpeech,
 ) -> ClosedClassParadigm<UngenderedCell> {
-    let mut cells = Vec::with_capacity(Case::ALL.len() * Number::ALL.len());
-    for number in Number::ALL {
-        for case in Case::ALL {
-            let cell = UngenderedCell { case, number };
-            cells.push(CellOutcome {
-                cell,
-                result: closed_class_by_id(id, part_of_speech, cell.closed_class()),
-            });
-        }
-    }
     ClosedClassParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
         part_of_speech,
-        cells,
+        cells: resolve_cells(
+            case_number_cells(|case, number| UngenderedCell { case, number }),
+            |cell| closed_class_by_id(id, part_of_speech, cell.closed_class()),
+        ),
     }
 }
 
@@ -719,52 +671,40 @@ pub(crate) fn build_gendered_closed_class_paradigm(
     lemma: &str,
     part_of_speech: PartOfSpeech,
 ) -> ClosedClassParadigm<GenderedCell> {
-    let mut cells = Vec::with_capacity(Case::ALL.len() * Number::ALL.len() * Gender::ALL.len());
-    for number in Number::ALL {
-        for case in Case::ALL {
-            for gender in Gender::ALL {
-                let cell = GenderedCell {
-                    case,
-                    number,
-                    gender,
-                };
-                cells.push(CellOutcome {
-                    cell,
-                    result: closed_class_by_id(id, part_of_speech, cell.closed_class()),
-                });
-            }
-        }
-    }
     ClosedClassParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
         part_of_speech,
-        cells,
+        cells: resolve_cells(
+            case_number_cells(|case, number| (case, number)).flat_map(|(case, number)| {
+                Gender::ALL.into_iter().map(move |gender| GenderedCell {
+                    case,
+                    number,
+                    gender,
+                })
+            }),
+            |cell| closed_class_by_id(id, part_of_speech, cell.closed_class()),
+        ),
     }
 }
 
 pub(crate) fn build_personal_pronoun_paradigm(id: &str, lemma: &str) -> PersonalPronounParadigm {
-    let mut cells = Vec::with_capacity(Case::ALL.len() * Number::ALL.len() * Person::ALL.len());
-    for number in Number::ALL {
-        for case in Case::ALL {
-            for person in Person::ALL {
-                let cell = PersonalPronounCell {
-                    case,
-                    number,
-                    person,
-                };
-                cells.push(CellOutcome {
-                    cell,
-                    result: personal_pronoun_by_id(id, cell),
-                });
-            }
-        }
-    }
     ClosedClassParadigm {
         lexeme_id: id.to_string(),
         lemma: lemma.to_string(),
         part_of_speech: PartOfSpeech::Pronoun,
-        cells,
+        cells: resolve_cells(
+            case_number_cells(|case, number| (case, number)).flat_map(|(case, number)| {
+                Person::ALL
+                    .into_iter()
+                    .map(move |person| PersonalPronounCell {
+                        case,
+                        number,
+                        person,
+                    })
+            }),
+            |cell| personal_pronoun_by_id(id, cell),
+        ),
     }
 }
 

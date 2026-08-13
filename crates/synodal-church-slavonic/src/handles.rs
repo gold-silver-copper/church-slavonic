@@ -94,59 +94,61 @@ pub(crate) fn missing_metadata_by_id(id: &LexemeId) -> Result<Vec<MetadataField>
     Ok(missing_metadata(&summary))
 }
 
-macro_rules! identity_accessors {
-    () => {
-        #[must_use]
-        pub fn id(&self) -> &LexemeId {
-            self.summary.id()
+macro_rules! registered_handle {
+    ($name:ident, $part_of_speech:ident) => {
+        #[derive(Clone, Debug)]
+        pub struct $name {
+            summary: LexemeSummary,
+            inflector: Inflector,
         }
 
-        #[must_use]
-        pub fn lemma(&self) -> &str {
-            self.summary.lemma()
-        }
+        impl $name {
+            pub fn resolve(lemma: &str) -> Result<Self> {
+                Self::resolve_with(lemma, Inflector::default())
+            }
 
-        #[must_use]
-        pub fn capabilities(&self) -> Capabilities {
-            Capabilities::for_summary(&self.summary, self.inflector)
-        }
+            pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
+                let summary = inflector.resolve(lemma)?;
+                require_pos(&summary, PartOfSpeech::$part_of_speech)?;
+                Ok(Self { summary, inflector })
+            }
 
-        #[must_use]
-        pub fn missing_metadata(&self) -> Vec<MetadataField> {
-            missing_metadata(&self.summary)
+            pub fn from_id(id: &LexemeId) -> Result<Self> {
+                Self::from_id_with(id, Inflector::default())
+            }
+
+            pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
+                let summary = inflector.from_id(id)?;
+                require_pos(&summary, PartOfSpeech::$part_of_speech)?;
+                Ok(Self { summary, inflector })
+            }
+
+            #[must_use]
+            pub fn id(&self) -> &LexemeId {
+                self.summary.id()
+            }
+
+            #[must_use]
+            pub fn lemma(&self) -> &str {
+                self.summary.lemma()
+            }
+
+            #[must_use]
+            pub fn capabilities(&self) -> Capabilities {
+                Capabilities::for_summary(&self.summary, self.inflector)
+            }
+
+            #[must_use]
+            pub fn missing_metadata(&self) -> Vec<MetadataField> {
+                missing_metadata(&self.summary)
+            }
         }
     };
 }
 
-#[derive(Clone, Debug)]
-pub struct Noun {
-    summary: LexemeSummary,
-    inflector: Inflector,
-}
+registered_handle!(Noun, Noun);
 
 impl Noun {
-    pub fn resolve(lemma: &str) -> Result<Self> {
-        Self::resolve_with(lemma, Inflector::default())
-    }
-
-    pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
-        let summary = inflector.resolve(lemma)?;
-        require_pos(&summary, PartOfSpeech::Noun)?;
-        Ok(Self { summary, inflector })
-    }
-
-    pub fn from_id(id: &LexemeId) -> Result<Self> {
-        Self::from_id_with(id, Inflector::default())
-    }
-
-    pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
-        let summary = inflector.from_id(id)?;
-        require_pos(&summary, PartOfSpeech::Noun)?;
-        Ok(Self { summary, inflector })
-    }
-
-    identity_accessors!();
-
     pub fn form(&self, case: Case, number: Number, animacy: Animacy) -> Result<FormSet> {
         self.inflector.form_by_id(
             self.id(),
@@ -164,35 +166,9 @@ impl Noun {
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct Adjective {
-    summary: LexemeSummary,
-    inflector: Inflector,
-}
+registered_handle!(Adjective, Adjective);
 
 impl Adjective {
-    pub fn resolve(lemma: &str) -> Result<Self> {
-        Self::resolve_with(lemma, Inflector::default())
-    }
-
-    pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
-        let summary = inflector.resolve(lemma)?;
-        require_pos(&summary, PartOfSpeech::Adjective)?;
-        Ok(Self { summary, inflector })
-    }
-
-    pub fn from_id(id: &LexemeId) -> Result<Self> {
-        Self::from_id_with(id, Inflector::default())
-    }
-
-    pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
-        let summary = inflector.from_id(id)?;
-        require_pos(&summary, PartOfSpeech::Adjective)?;
-        Ok(Self { summary, inflector })
-    }
-
-    identity_accessors!();
-
     pub fn form(&self, cell: AdjectiveCell) -> Result<FormSet> {
         self.inflector
             .form_by_id(self.id(), GrammarCell::Adjective(cell))
@@ -207,35 +183,9 @@ impl Adjective {
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct Verb {
-    summary: LexemeSummary,
-    inflector: Inflector,
-}
+registered_handle!(Verb, Verb);
 
 impl Verb {
-    pub fn resolve(lemma: &str) -> Result<Self> {
-        Self::resolve_with(lemma, Inflector::default())
-    }
-
-    pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
-        let summary = inflector.resolve(lemma)?;
-        require_pos(&summary, PartOfSpeech::Verb)?;
-        Ok(Self { summary, inflector })
-    }
-
-    pub fn from_id(id: &LexemeId) -> Result<Self> {
-        Self::from_id_with(id, Inflector::default())
-    }
-
-    pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
-        let summary = inflector.from_id(id)?;
-        require_pos(&summary, PartOfSpeech::Verb)?;
-        Ok(Self { summary, inflector })
-    }
-
-    identity_accessors!();
-
     pub fn aspect(&self) -> Result<Aspect> {
         Ok(registry::verb_lexeme(self.id())?.aspect)
     }
@@ -321,36 +271,9 @@ impl Verb {
 }
 
 macro_rules! exact_handle {
-    ($name:ident, $pos:expr, $cell:ty, $variant:ident) => {
-        #[derive(Clone, Debug)]
-        pub struct $name {
-            summary: LexemeSummary,
-            inflector: Inflector,
-        }
-
+    ($name:ident, $part_of_speech:ident, $cell:ty, $variant:ident) => {
+        registered_handle!($name, $part_of_speech);
         impl $name {
-            pub fn resolve(lemma: &str) -> Result<Self> {
-                Self::resolve_with(lemma, Inflector::default())
-            }
-
-            pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
-                let summary = inflector.resolve(lemma)?;
-                require_pos(&summary, $pos)?;
-                Ok(Self { summary, inflector })
-            }
-
-            pub fn from_id(id: &LexemeId) -> Result<Self> {
-                Self::from_id_with(id, Inflector::default())
-            }
-
-            pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
-                let summary = inflector.from_id(id)?;
-                require_pos(&summary, $pos)?;
-                Ok(Self { summary, inflector })
-            }
-
-            identity_accessors!();
-
             pub fn form(&self, cell: $cell) -> Result<FormSet> {
                 self.inflector
                     .form_by_id(self.id(), GrammarCell::$variant(cell))
@@ -359,14 +282,9 @@ macro_rules! exact_handle {
     };
 }
 
-exact_handle!(Pronoun, PartOfSpeech::Pronoun, PronounCell, Pronoun);
-exact_handle!(Numeral, PartOfSpeech::Numeral, NumeralCell, Numeral);
-exact_handle!(
-    Determiner,
-    PartOfSpeech::Determiner,
-    AdjectiveCell,
-    Determiner
-);
+exact_handle!(Pronoun, Pronoun, PronounCell, Pronoun);
+exact_handle!(Numeral, Numeral, NumeralCell, Numeral);
+exact_handle!(Determiner, Determiner, AdjectiveCell, Determiner);
 
 impl Pronoun {
     #[must_use]

@@ -401,18 +401,9 @@ fn aorist(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, In
             .ok_or_else(|| InflectionError::MissingLexicalMetadata {
                 needed: vec![MetadataField::AoristFormation],
             })?;
-    if matches!(
-        formation,
-        AoristFormation::SigmaticPrimary | AoristFormation::SigmaticSecondary
-    ) {
-        return Err(InflectionError::UnsupportedFormation {
-            system: MetadataField::AoristFormation,
-            formation: format!("{formation:?}"),
-        });
-    }
-    let stem = required_stem(lexeme.stems.aorist.as_deref(), MetadataField::AoristStem)?;
     match formation {
         AoristFormation::Asigmatic => {
+            let stem = required_stem(lexeme.stems.aorist.as_deref(), MetadataField::AoristStem)?;
             let (changed, ending) = asigmatic_aorist_cell(&stem, cell);
             Ok(join(
                 &changed,
@@ -422,6 +413,7 @@ fn aorist(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, In
             ))
         }
         AoristFormation::New => {
+            let stem = required_stem(lexeme.stems.aorist.as_deref(), MetadataField::AoristStem)?;
             let (changed, ending) = new_aorist_cell(&stem, cell);
             Ok(join(
                 &changed,
@@ -431,7 +423,10 @@ fn aorist(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, In
             ))
         }
         AoristFormation::SigmaticPrimary | AoristFormation::SigmaticSecondary => {
-            unreachable!("sigmatic aorist returned above")
+            Err(InflectionError::UnsupportedFormation {
+                system: MetadataField::AoristFormation,
+                formation: format!("{formation:?}"),
+            })
         }
     }
 }
