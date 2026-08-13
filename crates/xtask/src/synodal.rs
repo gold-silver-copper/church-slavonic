@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::{
     collections::BTreeMap,
@@ -11,16 +11,51 @@ use std::{
     thread,
 };
 use synodal_church_slavonic::{
-    AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, FiniteTense, FiniteVerbCell, Gender,
-    GenerationPolicy, GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, Number,
-    NumeralCell, NumeralKind, OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice,
-    Person, PronounCell, RealizedPhrase, abbreviation, phrases,
+    Gender, GenerationPolicy, GrammarCell, Inflector, LexemeId, Number, OrthographyProfile, Person,
+    RealizedPhrase, abbreviation, phrases,
 };
 use synodal_church_slavonic_core::FormSource;
 
 const EVALUATION_HEADER: &str = "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
 const PHRASE_EVALUATION_HEADER: &str = "id\tconstruction\tlemma\tperson\tnumber\tgender\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
 const ABBREVIATION_EVALUATION_HEADER: &str = "id\tlexeme_id\tsense_id\tcell\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
+
+#[derive(Debug, Deserialize)]
+struct AuthoritativeSourceManifest {
+    #[serde(default)]
+    source: Vec<AuthoritativeSource>,
+}
+
+#[derive(Debug, Deserialize)]
+struct AuthoritativeSource {
+    id: String,
+    source_recension: String,
+    content_kind: String,
+    format: String,
+    license: String,
+    redistribution: String,
+    authority_roles: Vec<String>,
+    upstream_lineage: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SourceMirrorManifest {
+    #[serde(default)]
+    synodal_source: Vec<SourceMirror>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SourceMirror {
+    id: String,
+    source_recension: String,
+    content_kind: String,
+    format: String,
+    license: String,
+    redistribution: String,
+    authority_roles: Vec<String>,
+    upstream_lineage: Vec<String>,
+    normalization: String,
+}
 
 #[derive(Clone, Debug)]
 struct EvaluationRow {
@@ -859,26 +894,91 @@ fn check_source_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let source_manifest = fs::read_to_string(root.join("data/SOURCES.toml"))?;
-    let records = source_manifest.matches("[[synodal_source]]").count();
-    if records < 10 {
-        return Err("Synodal source manifest unexpectedly contains fewer than ten records".into());
+    check_source_manifests(root)?;
+    check_partition_disjointness(root)?;
+    Ok(())
+}
+
+fn check_source_manifests(root: &Path) -> Result<(), Box<dyn Error>> {
+    let authoritative: AuthoritativeSourceManifest =
+        toml::from_str(&fs::read_to_string(root.join("references/SOURCES.toml"))?)?;
+    let mirror: SourceMirrorManifest =
+        toml::from_str(&fs::read_to_string(root.join("data/SOURCES.toml"))?)?;
+    if authoritative.source.len() < 10 || mirror.synodal_source.len() < 10 {
+        return Err("Synodal source manifests unexpectedly contain fewer than ten records".into());
     }
-    for required in [
-        "source_recension =",
-        "content_kind =",
-        "format =",
-        "license =",
-        "redistribution =",
-        "authority_roles =",
-        "upstream_lineage =",
-        "normalization =",
-    ] {
-        if source_manifest.matches(required).count() < records {
-            return Err(format!("Synodal source manifest records are missing {required}").into());
+    let mut authoritative_pairs = BTreeMap::new();
+    for source in &authoritative.source {
+        validate_source_record(
+            &source.id,
+            &source.source_recension,
+            &source.content_kind,
+            &source.format,
+            &source.license,
+            &source.redistribution,
+            &source.authority_roles,
+        )?;
+        let _ = &source.upstream_lineage;
+        if authoritative_pairs
+            .insert(source.id.as_str(), source.source_recension.as_str())
+            .is_some()
+        {
+            return Err(format!("duplicate authoritative source ID {}", source.id).into());
         }
     }
-    check_partition_disjointness(root)?;
+    let mut mirror_pairs = BTreeMap::new();
+    for source in &mirror.synodal_source {
+        validate_source_record(
+            &source.id,
+            &source.source_recension,
+            &source.content_kind,
+            &source.format,
+            &source.license,
+            &source.redistribution,
+            &source.authority_roles,
+        )?;
+        if source.normalization.trim().is_empty() {
+            return Err(format!("source mirror {} has empty normalization", source.id).into());
+        }
+        let _ = &source.upstream_lineage;
+        if mirror_pairs
+            .insert(source.id.as_str(), source.source_recension.as_str())
+            .is_some()
+        {
+            return Err(format!("duplicate source-mirror ID {}", source.id).into());
+        }
+    }
+    if authoritative_pairs != mirror_pairs {
+        return Err(
+            "references/SOURCES.toml and data/SOURCES.toml disagree on source IDs or recensions"
+                .into(),
+        );
+    }
+    Ok(())
+}
+
+fn validate_source_record(
+    id: &str,
+    source_recension: &str,
+    content_kind: &str,
+    format: &str,
+    license: &str,
+    redistribution: &str,
+    authority_roles: &[String],
+) -> Result<(), Box<dyn Error>> {
+    if [id, content_kind, format, license, redistribution]
+        .into_iter()
+        .any(str::is_empty)
+        || authority_roles.is_empty()
+    {
+        return Err(format!("source manifest record {id:?} has empty required provenance").into());
+    }
+    if !matches!(
+        source_recension,
+        "old-church-slavonic" | "synodal-russian" | "mixed"
+    ) {
+        return Err(format!("source {id} has unknown recension {source_recension}").into());
+    }
     Ok(())
 }
 
@@ -1472,7 +1572,7 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
                 let matches = |candidate: &synodal_church_slavonic::abbreviation::Abbreviation| {
                     candidate.lexeme_id == row.lexeme_id
                         && candidate.sense_id == row.sense_id
-                        && candidate.cell == row.cell
+                        && candidate.matches_cell(row.cell)
                         && candidate.expanded == row.expected_expanded
                         && candidate.printed == row.expected_printed
                 };
@@ -1487,7 +1587,7 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
         }
         let reverse = abbreviation::contractions_by_id(&row.lexeme_id, &row.sense_id)?;
         if !reverse.iter().any(|candidate| {
-            candidate.cell == row.cell
+            candidate.matches_cell(row.cell)
                 && candidate.expanded == row.expected_expanded
                 && candidate.printed == row.expected_printed
         }) {
@@ -1639,13 +1739,7 @@ fn morphological_system(cell: GrammarCell) -> &'static str {
         GrammarCell::Indeclinable => "indeclinable",
         GrammarCell::Noun(_) => "noun",
         GrammarCell::Adjective(_) => "adjective",
-        GrammarCell::FiniteVerb(cell) => match cell.tense {
-            FiniteTense::Present => "present",
-            FiniteTense::Future => "future",
-            FiniteTense::Past => "past",
-            FiniteTense::Imperfect => "imperfect",
-            FiniteTense::Aorist => "aorist",
-        },
+        GrammarCell::FiniteVerb(cell) => cell.tense.code(),
         GrammarCell::Imperative(_) => "imperative",
         GrammarCell::Infinitive => "infinitive",
         GrammarCell::Supine => "supine",
@@ -1874,9 +1968,9 @@ fn load_phrase_evaluation(path: &Path) -> Result<Vec<PhraseEvaluationRow>, Box<d
             id: fields[0].into(),
             construction: fields[1].into(),
             lemma: fields[2].into(),
-            person: parse_person(fields[3])?,
-            number: parse_number(fields[4])?,
-            gender: parse_gender(fields[5])?,
+            person: parse_closed_code("person", fields[3], Person::from_code)?,
+            number: parse_closed_code("number", fields[4], Number::from_code)?,
+            gender: parse_closed_code("gender", fields[5], Gender::from_code)?,
             expected_expanded: fields[6].into(),
             expected_printed: fields[7].into(),
             source_id: fields[8].into(),
@@ -1930,225 +2024,15 @@ fn load_abbreviation_evaluation(
 }
 
 fn parse_cell(value: &str) -> Result<GrammarCell, Box<dyn Error>> {
-    let fields: Vec<&str> = value.split(':').collect();
-    let cell = match fields.as_slice() {
-        ["lexical-form"] => GrammarCell::LexicalForm,
-        ["indeclinable"] => GrammarCell::Indeclinable,
-        ["noun", case, number, animacy] => {
-            GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
-                case: parse_case(case)?,
-                number: parse_number(number)?,
-                animacy: parse_registry_animacy(animacy)?,
-            })
-        }
-        [
-            tense @ ("present" | "future" | "past" | "imperfect" | "aorist"),
-            person,
-            number,
-        ] => GrammarCell::FiniteVerb(FiniteVerbCell {
-            tense: match *tense {
-                "present" => FiniteTense::Present,
-                "future" => FiniteTense::Future,
-                "past" => FiniteTense::Past,
-                "imperfect" => FiniteTense::Imperfect,
-                _ => FiniteTense::Aorist,
-            },
-            person: parse_person(person)?,
-            number: parse_number(number)?,
-        }),
-        ["imperative", person, number] => GrammarCell::Imperative(ImperativeCell {
-            person: parse_person(person)?,
-            number: parse_number(number)?,
-        }),
-        ["pronoun", case, number, gender, animacy] => GrammarCell::Pronoun(PronounCell {
-            case: parse_case(case)?,
-            number: parse_number(number)?,
-            gender: parse_optional_gender(gender)?,
-            person: None,
-            animacy: parse_registry_animacy(animacy)?,
-        }),
-        ["pronoun", case, number, gender, person, animacy] => GrammarCell::Pronoun(PronounCell {
-            case: parse_case(case)?,
-            number: parse_number(number)?,
-            gender: parse_optional_gender(gender)?,
-            person: parse_optional_person(person)?,
-            animacy: parse_registry_animacy(animacy)?,
-        }),
-        ["numeral", kind, case, number, gender, animacy] => GrammarCell::Numeral(NumeralCell {
-            kind: match *kind {
-                "cardinal" => NumeralKind::Cardinal,
-                "ordinal" => NumeralKind::Ordinal,
-                "collective" => NumeralKind::Collective,
-                _ => return Err(format!("unknown numeral kind {kind}").into()),
-            },
-            case: parse_case(case)?,
-            number: parse_number(number)?,
-            gender: parse_optional_gender(gender)?,
-            animacy: parse_registry_animacy(animacy)?,
-        }),
-        ["adjective", case, number, gender, animacy, form, comparison] => {
-            GrammarCell::Adjective(AdjectiveCell {
-                case: parse_case(case)?,
-                number: parse_number(number)?,
-                gender: parse_gender(gender)?,
-                animacy: parse_registry_animacy(animacy)?,
-                form: match *form {
-                    "short" => AdjectiveForm::Short,
-                    "long" => AdjectiveForm::Long,
-                    _ => return Err(format!("unknown adjective form {form}").into()),
-                },
-                comparison: match *comparison {
-                    "positive" => Comparison::Positive,
-                    "comparative" => Comparison::Comparative,
-                    "superlative" => Comparison::Superlative,
-                    _ => return Err(format!("unknown comparison {comparison}").into()),
-                },
-            })
-        }
-        [
-            "determiner",
-            case,
-            number,
-            gender,
-            animacy,
-            form,
-            comparison,
-        ] => GrammarCell::Determiner(AdjectiveCell {
-            case: parse_case(case)?,
-            number: parse_number(number)?,
-            gender: parse_gender(gender)?,
-            animacy: parse_registry_animacy(animacy)?,
-            form: match *form {
-                "short" => AdjectiveForm::Short,
-                "long" => AdjectiveForm::Long,
-                _ => return Err(format!("unknown determiner form {form}").into()),
-            },
-            comparison: match *comparison {
-                "positive" => Comparison::Positive,
-                "comparative" => Comparison::Comparative,
-                "superlative" => Comparison::Superlative,
-                _ => return Err(format!("unknown determiner comparison {comparison}").into()),
-            },
-        }),
-        [
-            "participle",
-            tense,
-            voice,
-            case,
-            number,
-            gender,
-            animacy,
-            form,
-            comparison,
-        ] => GrammarCell::Participle(ParticipleCell {
-            tense: match *tense {
-                "present" => ParticipleTense::Present,
-                "past" => ParticipleTense::Past,
-                _ => return Err(format!("unknown participle tense {tense}").into()),
-            },
-            voice: match *voice {
-                "active" => ParticipleVoice::Active,
-                "passive" => ParticipleVoice::Passive,
-                _ => return Err(format!("unknown participle voice {voice}").into()),
-            },
-            agreement: AdjectiveCell {
-                case: parse_case(case)?,
-                number: parse_number(number)?,
-                gender: parse_gender(gender)?,
-                animacy: parse_registry_animacy(animacy)?,
-                form: match *form {
-                    "short" => AdjectiveForm::Short,
-                    "long" => AdjectiveForm::Long,
-                    _ => return Err(format!("unknown adjective form {form}").into()),
-                },
-                comparison: match *comparison {
-                    "positive" => Comparison::Positive,
-                    "comparative" => Comparison::Comparative,
-                    "superlative" => Comparison::Superlative,
-                    _ => return Err(format!("unknown comparison {comparison}").into()),
-                },
-            },
-        }),
-        ["l-participle", gender, number] => GrammarCell::LParticiple(LParticipleCell {
-            gender: parse_gender(gender)?,
-            number: parse_number(number)?,
-        }),
-        ["infinitive"] => GrammarCell::Infinitive,
-        _ => return Err(format!("unsupported evaluation cell {value}").into()),
-    };
-    Ok(cell)
+    value.parse().map_err(Into::into)
 }
 
-fn parse_case(value: &str) -> Result<Case, Box<dyn Error>> {
-    Ok(match value {
-        "nominative" => Case::Nominative,
-        "genitive" => Case::Genitive,
-        "dative" => Case::Dative,
-        "accusative" => Case::Accusative,
-        "instrumental" => Case::Instrumental,
-        "locative" => Case::Locative,
-        "vocative" => Case::Vocative,
-        _ => return Err(format!("unknown case {value}").into()),
-    })
-}
-
-fn parse_number(value: &str) -> Result<Number, Box<dyn Error>> {
-    Ok(match value {
-        "singular" => Number::Singular,
-        "dual" => Number::Dual,
-        "plural" => Number::Plural,
-        _ => return Err(format!("unknown number {value}").into()),
-    })
-}
-
-fn parse_person(value: &str) -> Result<Person, Box<dyn Error>> {
-    Ok(match value {
-        "first" => Person::First,
-        "second" => Person::Second,
-        "third" => Person::Third,
-        _ => return Err(format!("unknown person {value}").into()),
-    })
-}
-
-fn parse_gender(value: &str) -> Result<Gender, Box<dyn Error>> {
-    Ok(match value {
-        "masculine" => Gender::Masculine,
-        "feminine" => Gender::Feminine,
-        "neuter" => Gender::Neuter,
-        _ => return Err(format!("unknown gender {value}").into()),
-    })
-}
-
-fn parse_optional_gender(value: &str) -> Result<Option<Gender>, Box<dyn Error>> {
-    if value == "any" {
-        Ok(None)
-    } else {
-        parse_gender(value).map(Some)
-    }
-}
-
-fn parse_optional_person(value: &str) -> Result<Option<Person>, Box<dyn Error>> {
-    if value == "none" {
-        Ok(None)
-    } else {
-        parse_person(value).map(Some)
-    }
-}
-
-fn parse_animacy(value: &str) -> Result<Animacy, Box<dyn Error>> {
-    Ok(match value {
-        "animate" => Animacy::Animate,
-        "inanimate" => Animacy::Inanimate,
-        _ => return Err(format!("unknown animacy {value}").into()),
-    })
-}
-
-fn parse_registry_animacy(value: &str) -> Result<Animacy, Box<dyn Error>> {
-    if value == "any" {
-        Ok(Animacy::Inanimate)
-    } else {
-        parse_animacy(value)
-    }
+fn parse_closed_code<T>(
+    kind: &str,
+    value: &str,
+    parse: impl FnOnce(&str) -> Option<T>,
+) -> Result<T, Box<dyn Error>> {
+    parse(value).ok_or_else(|| format!("unknown {kind} {value}").into())
 }
 
 fn contains_accent(value: &str) -> bool {
@@ -2343,7 +2227,7 @@ fn push_metric_table(markdown: &mut String, heading: &str, slices: &BTreeMap<Str
     }
 }
 
-pub(crate) fn guard_witnesses(_root: &Path) -> Result<(), Box<dyn Error>> {
+pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
     let temporary = temporary_directory("guards");
     if temporary.exists() {
         fs::remove_dir_all(&temporary)?;
@@ -2365,6 +2249,27 @@ pub(crate) fn guard_witnesses(_root: &Path) -> Result<(), Box<dyn Error>> {
         let private_use = temporary.join("data/synodal/private.tsv");
         fs::write(&private_use, "text\n\u{e000}\n")?;
         require_failure("private-use Unicode", check_source_boundaries(&temporary))?;
+        fs::remove_file(&private_use)?;
+
+        fs::create_dir_all(temporary.join("references"))?;
+        fs::copy(
+            root.join("references/SOURCES.toml"),
+            temporary.join("references/SOURCES.toml"),
+        )?;
+        let mirror_path = temporary.join("data/SOURCES.toml");
+        let source_mirror = fs::read_to_string(root.join("data/SOURCES.toml"))?;
+        fs::write(
+            &mirror_path,
+            source_mirror.replacen(
+                "source_recension = \"mixed\"",
+                "source_recension = \"synodal-russian\"",
+                1,
+            ),
+        )?;
+        require_failure(
+            "source provenance mirror drift",
+            check_source_manifests(&temporary),
+        )?;
 
         let review = temporary.join("data/synodal/reviewed_evidence.tsv");
         fs::write(
@@ -2412,9 +2317,9 @@ pub(crate) fn guard_witnesses(_root: &Path) -> Result<(), Box<dyn Error>> {
         let strict = Inflector::default();
         let grad = LexemeId::from("synodal:noun:grad");
         let grad_cell = GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
-            case: Case::Dative,
+            case: synodal_church_slavonic::Case::Dative,
             number: Number::Dual,
-            animacy: Animacy::Inanimate,
+            animacy: synodal_church_slavonic::Animacy::Inanimate,
         });
         if strict.form_by_id(&grad, grad_cell).is_ok() {
             return Err("Strict admitted an inherited-only class analysis".into());

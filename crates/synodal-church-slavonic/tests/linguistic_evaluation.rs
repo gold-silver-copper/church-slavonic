@@ -1,10 +1,6 @@
 use std::collections::BTreeSet;
 
-use synodal_church_slavonic::{
-    AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, FiniteTense, FiniteVerbCell,
-    FormSource, Gender, GrammarCell, Inflector, LexemeId, NounCell, Number, ParticipleCell,
-    ParticipleTense, ParticipleVoice, Person,
-};
+use synodal_church_slavonic::{FormSource, GrammarCell, Inflector, LexemeId};
 
 const FIXTURE: &str = include_str!("../../../data/synodal/linguistic_evaluation.tsv");
 
@@ -75,115 +71,5 @@ fn curated_linguistic_contracts_pass_without_frequency_weighting() {
 }
 
 fn parse_cell(value: &str) -> GrammarCell {
-    let fields = value.split(':').collect::<Vec<_>>();
-    match fields.as_slice() {
-        ["noun", case, number, animacy] => GrammarCell::Noun(NounCell {
-            case: parse_case(case),
-            number: parse_number(number),
-            animacy: parse_animacy(animacy),
-        }),
-        [
-            tense @ ("present" | "future" | "past" | "imperfect" | "aorist"),
-            person,
-            number,
-        ] => GrammarCell::FiniteVerb(FiniteVerbCell {
-            tense: parse_tense(tense),
-            person: parse_person(person),
-            number: parse_number(number),
-        }),
-        [
-            "participle",
-            tense,
-            voice,
-            case,
-            number,
-            gender,
-            animacy,
-            form,
-            "positive",
-        ] => GrammarCell::Participle(ParticipleCell {
-            tense: match *tense {
-                "present" => ParticipleTense::Present,
-                "past" => ParticipleTense::Past,
-                _ => panic!("unknown participle tense {tense}"),
-            },
-            voice: match *voice {
-                "active" => ParticipleVoice::Active,
-                "passive" => ParticipleVoice::Passive,
-                _ => panic!("unknown participle voice {voice}"),
-            },
-            agreement: AdjectiveCell {
-                case: parse_case(case),
-                number: parse_number(number),
-                gender: parse_gender(gender),
-                animacy: parse_animacy(animacy),
-                form: match *form {
-                    "short" => AdjectiveForm::Short,
-                    "long" => AdjectiveForm::Long,
-                    _ => panic!("unknown adjective form {form}"),
-                },
-                comparison: Comparison::Positive,
-            },
-        }),
-        _ => panic!("unknown fixture cell {value}"),
-    }
-}
-
-fn parse_case(value: &str) -> Case {
-    match value {
-        "nominative" => Case::Nominative,
-        "genitive" => Case::Genitive,
-        "dative" => Case::Dative,
-        "accusative" => Case::Accusative,
-        "instrumental" => Case::Instrumental,
-        "locative" => Case::Locative,
-        "vocative" => Case::Vocative,
-        _ => panic!("unknown case {value}"),
-    }
-}
-
-fn parse_number(value: &str) -> Number {
-    match value {
-        "singular" => Number::Singular,
-        "dual" => Number::Dual,
-        "plural" => Number::Plural,
-        _ => panic!("unknown number {value}"),
-    }
-}
-
-fn parse_animacy(value: &str) -> Animacy {
-    match value {
-        "animate" => Animacy::Animate,
-        "inanimate" => Animacy::Inanimate,
-        _ => panic!("unknown animacy {value}"),
-    }
-}
-
-fn parse_person(value: &str) -> Person {
-    match value {
-        "first" => Person::First,
-        "second" => Person::Second,
-        "third" => Person::Third,
-        _ => panic!("unknown person {value}"),
-    }
-}
-
-fn parse_tense(value: &str) -> FiniteTense {
-    match value {
-        "present" => FiniteTense::Present,
-        "future" => FiniteTense::Future,
-        "past" => FiniteTense::Past,
-        "imperfect" => FiniteTense::Imperfect,
-        "aorist" => FiniteTense::Aorist,
-        _ => panic!("unknown finite tense {value}"),
-    }
-}
-
-fn parse_gender(value: &str) -> Gender {
-    match value {
-        "masculine" => Gender::Masculine,
-        "feminine" => Gender::Feminine,
-        "neuter" => Gender::Neuter,
-        _ => panic!("unknown gender {value}"),
-    }
+    value.parse().expect("valid typed evaluation cell")
 }

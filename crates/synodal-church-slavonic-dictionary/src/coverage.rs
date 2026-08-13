@@ -2322,7 +2322,7 @@ mod tests {
                 passage: "1".into(),
                 partition: "source".into(),
                 source_recension: "synodal-russian".into(),
-                text: "ꙗ҆́кѡ".into(),
+                text: "и".into(),
             }],
             CheckTextOptions {
                 generation_policy: GenerationPolicy::Strict,
@@ -2450,7 +2450,11 @@ mod tests {
         let homographs = analyzer
             .analyze_profile("ꙗ҆́кѡ", OrthographyProfile::SynodalLiturgical)
             .expect("reviewed marked homographs");
-        assert_eq!(analysis_ids(&homographs).len(), 2);
+        assert_eq!(analysis_ids(&homographs).len(), 1);
+        assert_eq!(
+            analysis_ids(&homographs),
+            vec![LexemeId::from("synodal:conjunction:wikt-47fa23a7ed6b")]
+        );
     }
 
     #[test]

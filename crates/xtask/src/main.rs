@@ -2497,12 +2497,11 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let outcome_builder = source_item(&resolver, "fn resolve_cells<")?;
+    let outcome_builder = source_item(&resolver, "fn cell_outcomes")?;
     if !outcome_builder.contains(".map(|cell| CellOutcome {")
-        || !outcome_builder.contains("result: resolve(cell)")
-        || !outcome_builder.contains(".collect()")
+        || !outcome_builder.contains("result: resolve(id, cell)")
     {
-        return Err("shared paradigm builder does not retain every canonical cell outcome".into());
+        return Err("canonical outcome builder no longer retains every cell result".into());
     }
     for dropping in [
         "if let Ok",
@@ -2513,47 +2512,65 @@ fn check_public_api_structure(root: &Path) -> Result<(), Box<dyn Error>> {
     ] {
         if outcome_builder.contains(dropping) {
             return Err(format!(
-                "shared paradigm builder can drop failed cells through `{dropping}`"
+                "canonical outcome builder can drop failed cells through `{dropping}`"
             )
             .into());
         }
     }
 
-    for (builder, resolver_call) in [
-        ("build_noun_paradigm", "|cell| noun_by_id(id, cell)"),
+    for (builder, inventory, resolver_call) in [
+        ("build_noun_paradigm", "NounCell::all()", "noun_by_id"),
         (
             "build_adjective_paradigm",
-            "|cell| adjective_by_id(id, cell)",
+            "AdjectiveCell::all()",
+            "adjective_by_id",
         ),
-        ("build_finite_paradigm", "|cell| finite_by_id(id, cell)"),
-        ("build_present_paradigm", "|cell| finite_by_id(id, cell)"),
+        (
+            "build_finite_paradigm",
+            "FiniteVerbCell::all()",
+            "finite_by_id",
+        ),
+        (
+            "build_present_paradigm",
+            "FiniteVerbCell::for_tense(FiniteTense::Present)",
+            "finite_by_id",
+        ),
         (
             "build_imperative_paradigm",
-            "|cell| imperative_by_id(id, cell)",
+            "ImperativeCell::SUPPORTED",
+            "imperative_by_id",
         ),
         (
             "build_l_participle_paradigm",
-            "|cell| l_participle_by_id(id, cell)",
+            "LParticipleCell::all()",
+            "l_participle_by_id",
         ),
         (
             "build_participle_paradigm",
-            "|cell| participle_by_id(id, cell)",
+            "ParticipleCell::for_kind(kind)",
+            "participle_by_id",
         ),
         (
             "build_ungendered_closed_class_paradigm",
-            "|cell| closed_class_by_id(id, part_of_speech, cell.closed_class())",
+            "UngenderedCell::all()",
+            "closed_class_by_id",
         ),
         (
             "build_gendered_closed_class_paradigm",
-            "|cell| closed_class_by_id(id, part_of_speech, cell.closed_class())",
+            "GenderedCell::all()",
+            "closed_class_by_id",
         ),
         (
             "build_personal_pronoun_paradigm",
-            "|cell| personal_pronoun_by_id(id, cell)",
+            "PersonalPronounCell::all()",
+            "personal_pronoun_by_id",
         ),
     ] {
         let item = source_item(&resolver, &format!("fn {builder}("))?;
-        if !item.contains("cells: resolve_cells(") || !item.contains(resolver_call) {
+        if !item.contains("cell_outcomes(")
+            || !item.contains(inventory)
+            || !item.contains(resolver_call)
+        {
             return Err(format!("{builder} does not retain every canonical cell outcome").into());
         }
         for dropping in [
@@ -2864,8 +2881,8 @@ fn guard_witnesses() -> Result<(), Box<dyn Error>> {
         let resolver_source = "crates/old-church-slavonic/src/resolver.rs";
         let mut changed = fs::read_to_string(witness_root.join(resolver_source))?;
         changed = changed.replacen(
-            "case_number_cells(|case, number| NounCell { case, number }),",
-            "case_number_cells(|case, number| NounCell { case, number })\n                .filter(|cell| noun_by_id(id, *cell).is_ok()),",
+            "result: resolve(id, cell),",
+            "result: if resolve(id, cell).is_ok() { resolve(id, cell) } else { continue },",
             1,
         );
         fs::write(witness_root.join(resolver_source), changed)?;
@@ -3359,7 +3376,7 @@ fn print_help() {
     eprintln!("  synodal-v06-audit [--check]");
     eprintln!("  synodal-v07-baseline [--check]");
     eprintln!("  synodal-v07-review-packets [--check]");
-    eprintln!("  synodal-v07-apply [--check]");
+    eprintln!("  synodal-v07-apply [--check | --refresh-ownership]");
     eprintln!("  synodal-v07-audit [--check]");
     eprintln!("  synodal-engine-audit [--check]");
     eprintln!("  check-all");

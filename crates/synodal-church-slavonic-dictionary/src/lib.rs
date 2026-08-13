@@ -192,7 +192,7 @@ fn family_for_lexeme(id: &LexemeId) -> Result<FamilySummary> {
     for sense in &entry.senses {
         for contraction in abbreviation::contractions_by_id(id, &sense.id)? {
             members.push(FamilyMember {
-                cell: morphology::grammar_cell_key(contraction.cell),
+                cell: contraction.cell_key,
                 expanded: contraction.expanded,
                 printed: contraction.printed,
                 evidence_id: contraction
@@ -212,22 +212,10 @@ fn family_for_lexeme(id: &LexemeId) -> Result<FamilySummary> {
             .then_with(|| left.evidence_id.cmp(&right.evidence_id))
     });
     let capabilities = &entry.capabilities;
-    let supported_systems = [
-        (capabilities.productive_noun, "noun"),
-        (capabilities.productive_adjective, "adjective"),
-        (capabilities.present, "present"),
-        (capabilities.imperfect, "imperfect"),
-        (capabilities.aorist, "aorist"),
-        (capabilities.imperative, "imperative"),
-        (capabilities.infinitive, "infinitive"),
-        (capabilities.l_participle, "l-participle"),
-        (capabilities.participle, "participle"),
-        (capabilities.supine, "supine"),
-        (capabilities.verbal_noun, "verbal-noun"),
-    ]
-    .into_iter()
-    .filter_map(|(supported, system)| supported.then_some(system.into()))
-    .collect();
+    let supported_systems = capabilities
+        .supported_systems()
+        .map(str::to_owned)
+        .collect();
     let exact_complete_table = metadata.class.as_deref() == Some("exact-complete-pronoun-table");
     let exact_only = metadata
         .class
@@ -1088,6 +1076,7 @@ fn verb_cells() -> Vec<GrammarCell> {
         })
         .collect();
     cells.push(GrammarCell::Infinitive);
+    cells.push(GrammarCell::Supine);
     for number in Number::ALL {
         for gender in Gender::ALL {
             cells.push(GrammarCell::LParticiple(LParticipleCell { gender, number }));
@@ -1119,6 +1108,17 @@ fn verb_cells() -> Vec<GrammarCell> {
                         }
                     }
                 }
+            }
+        }
+    }
+    for number in Number::ALL {
+        for case in Case::ALL {
+            for animacy in Animacy::ALL {
+                cells.push(GrammarCell::VerbalNoun(core::NounCell {
+                    case,
+                    number,
+                    animacy,
+                }));
             }
         }
     }
@@ -1190,6 +1190,17 @@ mod tests {
     }
 
     #[test]
+    fn verb_candidate_inventory_includes_every_represented_system() {
+        let cells = candidate_cells(PartOfSpeech::Verb);
+        assert!(cells.contains(&GrammarCell::Supine));
+        assert!(
+            cells
+                .iter()
+                .any(|cell| matches!(cell, GrammarCell::VerbalNoun(_)))
+        );
+    }
+
+    #[test]
     fn analyzer_uses_explicit_accents_to_disambiguate_homographs() {
         let conjunction = analyze("и҆").expect("valid conjunction");
         assert_eq!(conjunction.len(), 1);
@@ -1217,15 +1228,15 @@ mod tests {
     }
 
     #[test]
-    fn analyzer_canonicalizes_reviewed_variant_marks_without_erasing_ambiguity() {
+    fn analyzer_canonicalizes_reviewed_conjunction_marks_without_restoring_rejected_identity() {
         let analyses = analyze("ꙗ҆́кѡ").expect("valid reviewed marked form");
         let identities: BTreeSet<_> = analyses
             .iter()
             .map(|analysis| analysis.lexeme.id().as_str())
             .collect();
-        assert_eq!(identities.len(), 2);
-        assert!(identities.contains("synodal:adverb:wikt-5471d4207f64"));
+        assert_eq!(identities.len(), 1);
         assert!(identities.contains("synodal:conjunction:wikt-47fa23a7ed6b"));
+        assert!(!identities.contains("synodal:adverb:wikt-5471d4207f64"));
     }
 
     #[test]
@@ -1338,13 +1349,13 @@ mod tests {
     }
 
     #[test]
-    fn family_lookup_preserves_reviewed_homographs() {
+    fn family_lookup_excludes_rejected_contextual_homograph() {
         let results = families("ꙗкѡ").expect("reviewed families");
         let identities: BTreeSet<_> = results
             .iter()
             .map(|family| (family.lexeme.id().as_str(), family.lexeme.part_of_speech()))
             .collect();
-        assert!(identities.contains(&("synodal:adverb:wikt-5471d4207f64", PartOfSpeech::Adverb)));
+        assert!(!identities.contains(&("synodal:adverb:wikt-5471d4207f64", PartOfSpeech::Adverb)));
         assert!(identities.contains(&(
             "synodal:conjunction:wikt-47fa23a7ed6b",
             PartOfSpeech::Conjunction
@@ -1387,6 +1398,27 @@ mod tests {
                 .iter()
                 .any(|field| field.contains("inflection-class"))
         );
+    }
+
+    #[test]
+    fn family_supported_systems_cover_productive_and_exact_capabilities() {
+        for (id, expected) in [
+            ("synodal:determiner:sam", "adjective"),
+            ("synodal:numeral:pervyi", "adjective"),
+            ("synodal:verb:byti", "future"),
+            ("synodal:verb:wikt-78da2d05497d", "past"),
+        ] {
+            let family = show_family_by_id(&FamilyId::for_lexeme(&LexemeId::from(id)))
+                .expect("reviewed family");
+            assert!(
+                family
+                    .supported_systems
+                    .iter()
+                    .any(|system| system == expected),
+                "{id} should report {expected}: {:?}",
+                family.supported_systems
+            );
+        }
     }
 
     #[test]

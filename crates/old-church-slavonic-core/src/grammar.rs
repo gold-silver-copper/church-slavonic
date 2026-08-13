@@ -368,6 +368,13 @@ pub struct NounCell {
 }
 
 impl NounCell {
+    /// Canonical noun inventory, ordered by number and then case.
+    pub fn all() -> impl Iterator<Item = Self> {
+        Number::ALL
+            .into_iter()
+            .flat_map(|number| Case::ALL.into_iter().map(move |case| Self { case, number }))
+    }
+
     pub fn key(self) -> String {
         format!("noun:{}:{}", self.case.code(), self.number.code())
     }
@@ -383,6 +390,26 @@ pub struct AdjectiveCell {
 }
 
 impl AdjectiveCell {
+    /// Canonical agreement inventory, ordered by form, number, case, gender,
+    /// and animacy.
+    pub fn all() -> impl Iterator<Item = Self> {
+        AdjectiveForm::ALL.into_iter().flat_map(|form| {
+            Number::ALL.into_iter().flat_map(move |number| {
+                Case::ALL.into_iter().flat_map(move |case| {
+                    Gender::ALL.into_iter().flat_map(move |gender| {
+                        Animacy::ALL.into_iter().map(move |animacy| Self {
+                            case,
+                            number,
+                            gender,
+                            animacy,
+                            form,
+                        })
+                    })
+                })
+            })
+        })
+    }
+
     pub fn key(self) -> String {
         format!(
             "adj:{}:{}:{}:{}:{}",
@@ -403,6 +430,22 @@ pub struct FiniteVerbCell {
 }
 
 impl FiniteVerbCell {
+    /// Canonical finite inventory, ordered by tense, number, and person.
+    pub fn all() -> impl Iterator<Item = Self> {
+        FiniteTense::ALL.into_iter().flat_map(Self::for_tense)
+    }
+
+    /// Nine person-number cells for one finite tense.
+    pub fn for_tense(tense: FiniteTense) -> impl Iterator<Item = Self> {
+        Number::ALL.into_iter().flat_map(move |number| {
+            Person::ALL.into_iter().map(move |person| Self {
+                tense,
+                person,
+                number,
+            })
+        })
+    }
+
     pub fn key(self) -> String {
         format!(
             "verb:finite:{}:{}:{}",
@@ -474,6 +517,15 @@ pub struct LParticipleCell {
 }
 
 impl LParticipleCell {
+    /// Canonical gender-number inventory, ordered by number and gender.
+    pub fn all() -> impl Iterator<Item = Self> {
+        Number::ALL.into_iter().flat_map(|number| {
+            Gender::ALL
+                .into_iter()
+                .map(move |gender| Self { gender, number })
+        })
+    }
+
     pub fn key(self) -> String {
         format!(
             "verb:l-participle:{}:{}",
@@ -497,6 +549,14 @@ pub struct UngenderedCell {
 }
 
 impl UngenderedCell {
+    /// Canonical case-number inventory for an unpositioned closed class.
+    pub fn all() -> impl Iterator<Item = Self> {
+        NounCell::all().map(|cell| Self {
+            case: cell.case,
+            number: cell.number,
+        })
+    }
+
     pub fn closed_class(self) -> ClosedClassCell {
         ClosedClassCell {
             case: self.case,
@@ -516,6 +576,19 @@ pub struct GenderedCell {
 }
 
 impl GenderedCell {
+    /// Canonical case-number-gender inventory for an agreeing closed class.
+    pub fn all() -> impl Iterator<Item = Self> {
+        Number::ALL.into_iter().flat_map(|number| {
+            Case::ALL.into_iter().flat_map(move |case| {
+                Gender::ALL.into_iter().map(move |gender| Self {
+                    case,
+                    number,
+                    gender,
+                })
+            })
+        })
+    }
+
     pub fn closed_class(self) -> ClosedClassCell {
         ClosedClassCell {
             case: self.case,
@@ -535,6 +608,19 @@ pub struct PersonalPronounCell {
 }
 
 impl PersonalPronounCell {
+    /// Canonical case-number-person inventory for personal pronouns.
+    pub fn all() -> impl Iterator<Item = Self> {
+        Number::ALL.into_iter().flat_map(|number| {
+            Case::ALL.into_iter().flat_map(move |case| {
+                Person::ALL.into_iter().map(move |person| Self {
+                    case,
+                    number,
+                    person,
+                })
+            })
+        })
+    }
+
     pub fn closed_class(self) -> ClosedClassCell {
         ClosedClassCell {
             case: self.case,
@@ -596,6 +682,11 @@ impl ClosedClassCell {
 }
 
 impl ParticipleCell {
+    /// Canonical adjective-agreement inventory for one participle system.
+    pub fn for_kind(kind: ParticipleKind) -> impl Iterator<Item = Self> {
+        AdjectiveCell::all().map(move |adjective| Self { kind, adjective })
+    }
+
     pub fn key(self) -> String {
         format!(
             "verb:participle:{}:{}",

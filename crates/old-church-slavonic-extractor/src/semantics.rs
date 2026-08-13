@@ -1,13 +1,14 @@
 use crate::extract::{canonical_lemma, load_registry};
 use crate::normalize::lookup_key;
+use crate::output::atomic_write_batch;
 use crate::schema::{DictionaryExampleRow, DictionarySenseRow, Entry, Registry};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::{BufRead, BufReader, Read, Write};
-use std::path::{Path, PathBuf};
+use std::io::{BufRead, BufReader, Read};
+use std::path::Path;
 
 const DICTIONARY_SCHEMA: u32 = 1;
 const MAX_PARSE_FAILURE_FRACTION: f64 = 0.001;
@@ -487,26 +488,6 @@ fn source_metadata(path: &Path) -> Result<DictionarySourceMetadata, Box<dyn Erro
         bytes,
         sha256: format!("{:x}", digest.finalize()),
     })
-}
-
-fn atomic_write_batch(files: &[(PathBuf, &[u8])]) -> Result<(), Box<dyn Error>> {
-    let mut temporary = Vec::new();
-    for (index, (path, bytes)) in files.iter().enumerate() {
-        let parent = path.parent().ok_or("generated path has no parent")?;
-        fs::create_dir_all(parent)?;
-        let temp = parent.join(format!(
-            ".ocs-dictionary-{}-{index}.tmp",
-            std::process::id()
-        ));
-        let mut file = File::create(&temp)?;
-        file.write_all(bytes)?;
-        file.sync_all()?;
-        temporary.push((temp, path));
-    }
-    for (temp, path) in temporary {
-        fs::rename(temp, path)?;
-    }
-    Ok(())
 }
 
 fn fnv1a(bytes: &[u8]) -> u64 {

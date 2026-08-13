@@ -44,10 +44,10 @@ accent metadata, and unsupported systems. See
 and the explicit API examples in
 [`crates/synodal-church-slavonic/README.md`](crates/synodal-church-slavonic/README.md).
 
-## Synodal dictionary and frozen coverage checkpoint
+## Synodal dictionary and coverage checkpoints
 
-The frozen v0.7 Synodal registry contains 855 reviewed lexemes, 855 reviewed senses,
-and 3,815 generated exact normative or target-attested forms. The `synodal-dict` executable
+The current Synodal registry contains 833 reviewed lexemes, 833 reviewed senses,
+and 3,553 generated exact normative or target-attested forms. The `synodal-dict` executable
 searches and displays the registry, performs ambiguity-preserving reverse
 analysis, displays reviewed and proposed morphological families, validates
 application vocabulary, checks rendered text, and creates typed corpus-coverage
@@ -64,8 +64,8 @@ synodal-dict check-text rendered.txt --strict
 synodal-dict coverage passages.tsv --by-family --json-out coverage.json
 ```
 
-Coverage work ended at the frozen v0.7 checkpoint; it is now only a downstream
-regression signal for registered behavior. The committed full report is reproduced with
+Coverage is only a downstream regression signal for registered behavior. The
+committed live report is reproduced with
 `cargo xtask synodal-coverage --offline`; review queues are reproduced with
 `cargo xtask synodal-lexical-review-queue` and
 `cargo xtask synodal-evaluation-queue`; the family queue, overlap-adjusted
@@ -79,13 +79,15 @@ use `cargo xtask synodal-v06-review-packets` and
 queue, reviewed-application gate, and completed 70% audit use
 `cargo xtask synodal-v07-review-packets`,
 `cargo xtask synodal-v07-apply --check`, and
-`cargo xtask synodal-v07-audit --check`. The locked corpus now
-has 919,752 of 1,313,344 tokens in canonical `Strict` top-k coverage (70.031%). See
+`cargo xtask synodal-v07-audit --check`. That v0.7 audit is an immutable
+historical checkpoint; it does not describe the corrected live registry. The locked
+corpus now has 919,436 of 1,313,344 tokens in canonical `Strict` top-k coverage
+(70.007%), 95 tokens above the 70% gate. See
 [`docs/SYNODAL_CLI_AND_COVERAGE.md`](docs/SYNODAL_CLI_AND_COVERAGE.md) for command
 and input formats, gap precedence, thresholds, and the evidence-review workflow.
-The 2,291-cell morphology evaluation, five analytic phrases, and 74 typed
-abbreviation cases remain registered-form regression suites, not claims of
-language-wide accuracy.
+The 2,140-cell morphology evaluation (all expected variants present in top-k),
+five analytic phrases, and 74 typed abbreviation cases remain registered-form
+regression suites, not claims of language-wide accuracy.
 
 ## Old Church Slavonic inflection
 

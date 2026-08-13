@@ -69,6 +69,17 @@ fn search_show_and_analyze_are_deterministic() {
 }
 
 #[test]
+fn show_rejects_unknown_options_and_extra_queries() {
+    let unknown = run(&["show", "не", "--bogus"]);
+    assert!(!unknown.status.success());
+    assert!(String::from_utf8_lossy(&unknown.stderr).contains("unknown show option"));
+
+    let extra = run(&["show", "не", "ли"]);
+    assert!(!extra.status.success());
+    assert!(String::from_utf8_lossy(&extra.stderr).contains("show accepts exactly one"));
+}
+
+#[test]
 fn lint_and_check_text_enforce_exit_thresholds() {
     let vocabulary = fixture("vocabulary.json");
     let lint = run(&["lint", vocabulary.to_str().expect("UTF-8 path"), "--json"]);
@@ -182,7 +193,7 @@ fn family_commands_separate_reviewed_and_proposed_data() {
     );
     let reviewed_json: serde_json::Value =
         serde_json::from_slice(&reviewed.stdout).expect("reviewed family JSON");
-    assert_eq!(reviewed_json["reviewed"].as_array().map(Vec::len), Some(2));
+    assert_eq!(reviewed_json["reviewed"].as_array().map(Vec::len), Some(1));
     assert_eq!(reviewed_json["proposed"], serde_json::json!([]));
 
     let proposal_rows: serde_json::Value =
@@ -252,12 +263,12 @@ fn marginal_recovery_exposes_ranked_review_readiness() {
     );
     let value: serde_json::Value =
         serde_json::from_slice(&output.stdout).expect("marginal recovery JSON");
-    assert_eq!(value["current_top_k"], 919_786);
+    assert_eq!(value["current_top_k"], 919_436);
     assert_eq!(value["target_top_k"], 919_341);
     assert_eq!(value["tokens_needed_for_target"], 0);
     assert_eq!(value["milestones"].as_array().map(Vec::len), Some(5));
     assert_eq!(value["milestones"][4]["percent"], 70);
-    assert_eq!(value["milestones"][4]["margin"], 445);
+    assert_eq!(value["milestones"][4]["margin"], 95);
     let batches = value["batches"].as_array().expect("batches");
     assert_eq!(batches.len(), 2);
     assert!(

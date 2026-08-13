@@ -3,9 +3,9 @@
 - Passages: 10
 - Tokens: 155
 - Types: 113
-- Top-1 analyzed: 72 (4645 bp)
+- Top-1 analyzed: 73 (4709 bp)
 - Top-k analyzed: 115 (7419 bp)
-- Ambiguous: 1
+- Ambiguous: 0
 - Unresolved: 39
 
 ## Gap categories
@@ -17,7 +17,7 @@
 | `missing-verb-principal-part` | 0 |
 | `unsupported-formation` | 0 |
 | `missing-accent-or-orthographic-metadata` | 0 |
-| `ambiguity-or-spelling-variant` | 2 |
+| `ambiguity-or-spelling-variant` | 1 |
 
 ## Estimated recovery routes
 
@@ -81,13 +81,13 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
 | Church Slavonic Bible corpus | 70 | 32 | 53 | 0 | 17 |
-| Elizabeth Bible corpus | 85 | 40 | 62 | 1 | 22 |
+| Elizabeth Bible corpus | 85 | 41 | 62 | 0 | 22 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 85 | 40 | 62 | 1 | 22 |
+| `ponomar-elizabeth-bible-2026-08-09` | 85 | 41 | 62 | 0 | 22 |
 | `wikisource-church-slavonic-bible-2026-08-09` | 70 | 32 | 53 | 0 | 17 |
 
 ## Gap categories by source
@@ -95,7 +95,7 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | Source | Category | Tokens |
 |---|---|---:|
 | `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 22 |
-| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 2 |
+| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 1 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 17 |
 
 ## Review queue
@@ -140,4 +140,3 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | 36 | `unknown-lexeme` | `ꙗ҆влѧ́ѧсѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 37 | `unknown-lexeme` | `ꙗ҆ды́й` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 38 | `ambiguity-or-spelling-variant` | `ѽ` | 1 | 1 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
-| 39 | `ambiguity-or-spelling-variant` | `ꙗ҆́кѡ` | 1 | 1 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |

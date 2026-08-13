@@ -438,7 +438,6 @@ fn cell_matches_part_of_speech(cell: GrammarCell, part_of_speech: PartOfSpeech) 
     matches!(
         (cell, part_of_speech),
         (GrammarCell::LexicalForm, _)
-            | (GrammarCell::Indeclinable, _)
             | (GrammarCell::Noun(_), PartOfSpeech::Noun)
             | (GrammarCell::Adjective(_), PartOfSpeech::Adjective)
             | (
@@ -477,6 +476,8 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
             productive_noun: true,
             productive_adjective: false,
             present: false,
+            future: false,
+            past: false,
             imperfect: false,
             aorist: false,
             imperative: false,
@@ -492,6 +493,8 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
             productive_noun: false,
             productive_adjective: true,
             present: false,
+            future: false,
+            past: false,
             imperfect: false,
             aorist: false,
             imperative: false,
@@ -514,6 +517,12 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
                 || has_exact(
                     |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Present),
                 ),
+            future: has_exact(
+                |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Future),
+            ),
+            past: has_exact(
+                |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Past),
+            ),
             imperfect: verb
                 .missing_principal_parts(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Imperfect,
@@ -826,6 +835,18 @@ mod tests {
                     )
                     .expect("valid spec")
                 )
+            ),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+        assert!(matches!(
+            supplied_noun("application:noun:indeclinable", "даръ").with_exact_form(
+                SpecifiedForm::new(
+                    GrammarCell::Indeclinable,
+                    "даръ",
+                    None::<String>,
+                    source("invalid-indeclinable"),
+                )
+                .expect("well-formed but POS-incompatible exact form"),
             ),
             Err(Error::ContradictoryMetadata { .. })
         ));

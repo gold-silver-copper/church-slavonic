@@ -7,9 +7,9 @@
   "token_types": 113,
   "summary": {
     "total_tokens": 155,
-    "top_1_analyzed": 72,
+    "top_1_analyzed": 73,
     "top_k_analyzed": 115,
-    "ambiguous": 1,
+    "ambiguous": 0,
     "unresolved": 39
   },
   "by_corpus": {
@@ -22,18 +22,18 @@
     },
     "Elizabeth Bible corpus": {
       "total_tokens": 85,
-      "top_1_analyzed": 40,
+      "top_1_analyzed": 41,
       "top_k_analyzed": 62,
-      "ambiguous": 1,
+      "ambiguous": 0,
       "unresolved": 22
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
       "total_tokens": 85,
-      "top_1_analyzed": 40,
+      "top_1_analyzed": 41,
       "top_k_analyzed": 62,
-      "ambiguous": 1,
+      "ambiguous": 0,
       "unresolved": 22
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
@@ -47,9 +47,9 @@
   "by_policy": {
     "strict": {
       "total_tokens": 155,
-      "top_1_analyzed": 72,
+      "top_1_analyzed": 73,
       "top_k_analyzed": 115,
-      "ambiguous": 1,
+      "ambiguous": 0,
       "unresolved": 39
     }
   },
@@ -96,18 +96,11 @@
       "ambiguous": 0,
       "unresolved": 0
     },
-    "synodal:adverb:wikt-5471d4207f64": {
-      "total_tokens": 1,
-      "top_1_analyzed": 0,
-      "top_k_analyzed": 1,
-      "ambiguous": 1,
-      "unresolved": 0
-    },
     "synodal:conjunction:wikt-47fa23a7ed6b": {
       "total_tokens": 1,
-      "top_1_analyzed": 0,
+      "top_1_analyzed": 1,
       "top_k_analyzed": 1,
-      "ambiguous": 1,
+      "ambiguous": 0,
       "unresolved": 0
     },
     "synodal:conjunction:wikt-577896b0cbc6": {
@@ -546,18 +539,11 @@
       "ambiguous": 0,
       "unresolved": 0
     },
-    "family:synodal:adverb:wikt-5471d4207f64": {
-      "total_tokens": 1,
-      "top_1_analyzed": 0,
-      "top_k_analyzed": 1,
-      "ambiguous": 1,
-      "unresolved": 0
-    },
     "family:synodal:conjunction:wikt-47fa23a7ed6b": {
       "total_tokens": 1,
-      "top_1_analyzed": 0,
+      "top_1_analyzed": 1,
       "top_k_analyzed": 1,
-      "ambiguous": 1,
+      "ambiguous": 0,
       "unresolved": 0
     },
     "family:synodal:conjunction:wikt-577896b0cbc6": {
@@ -977,9 +963,9 @@
     },
     "indeclinable": {
       "total_tokens": 37,
-      "top_1_analyzed": 36,
+      "top_1_analyzed": 37,
       "top_k_analyzed": 37,
-      "ambiguous": 1,
+      "ambiguous": 0,
       "unresolved": 0
     },
     "lexical-form": {
@@ -1044,13 +1030,13 @@
       "unknown-lexeme": 17
     },
     "Elizabeth Bible corpus": {
-      "ambiguity-or-spelling-variant": 2,
+      "ambiguity-or-spelling-variant": 1,
       "unknown-lexeme": 22
     }
   },
   "by_source_gap": {
     "ponomar-elizabeth-bible-2026-08-09": {
-      "ambiguity-or-spelling-variant": 2,
+      "ambiguity-or-spelling-variant": 1,
       "unknown-lexeme": 22
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
@@ -1059,8 +1045,7 @@
   },
   "by_status": {
     "abbreviation-expansion": 27,
-    "ambiguous": 1,
-    "exact-synodal-attestation": 62,
+    "exact-synodal-attestation": 63,
     "spelling-variant": 1,
     "synodal-irregular-override": 3,
     "synodal-normative-table": 21,
@@ -1068,25 +1053,10 @@
     "unresolved": 39
   },
   "by_gap": {
-    "ambiguity-or-spelling-variant": 2,
+    "ambiguity-or-spelling-variant": 1,
     "unknown-lexeme": 39
   },
   "unresolved_by_probable_family": {
-    "ambiguous-family:synodal:adverb:wikt-5471d4207f64+synodal:conjunction:wikt-47fa23a7ed6b": {
-      "probable_family_id": "ambiguous-family:synodal:adverb:wikt-5471d4207f64+synodal:conjunction:wikt-47fa23a7ed6b",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 0,
-      "document_frequency": 0,
-      "surfaces": [
-        "ꙗ҆́кѡ"
-      ],
-      "candidate_lexeme_ids": [
-        "synodal:adverb:wikt-5471d4207f64",
-        "synodal:conjunction:wikt-47fa23a7ed6b"
-      ],
-      "recovery_route": "spelling-variant",
-      "assumption": "multiple reviewed lexemes remain compatible; no family was selected"
-    },
     "family:synodal:preposition:wikt-3ed58a49777e": {
       "probable_family_id": "family:synodal:preposition:wikt-3ed58a49777e",
       "token_frequency": 1,
@@ -1592,8 +1562,7 @@
     "ѿлꙋчатисѧ": 1,
     "ᲂучити": 1,
     "ꙗвлѧѧсѧ": 1,
-    "ꙗдый": 1,
-    "ꙗкѡ": 1
+    "ꙗдый": 1
   },
   "top_k_uncovered_frequency_by_surface": {
     "апⷭ҇лъ": 1,
@@ -1635,7 +1604,7 @@
     "ꙗвлѧѧсѧ": 1,
     "ꙗдый": 1
   },
-  "total_gap_types": 39,
+  "total_gap_types": 38,
   "gaps": [
     {
       "kind": "unknown-lexeme",
@@ -3940,80 +3909,6 @@
         "ponomar-elizabeth-bible-2026-08-09:Acts.1.1"
       ],
       "suggested_action": "review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme"
-    },
-    {
-      "kind": "ambiguity-or-spelling-variant",
-      "original": "ꙗ҆́кѡ",
-      "normalized": "ꙗкѡ",
-      "corpus": "Elizabeth Bible corpus",
-      "source_id": "ponomar-elizabeth-bible-2026-08-09",
-      "work": "Elizabeth Bible",
-      "edition": "Ponomar Unicode text",
-      "passage": "Acts.1.5",
-      "partition": "source",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Elizabeth Bible corpus"
-      ],
-      "source_ids": [
-        "ponomar-elizabeth-bible-2026-08-09"
-      ],
-      "editions": [
-        "Ponomar Unicode text"
-      ],
-      "partitions": [
-        "source"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.5"
-      ],
-      "contexts": [
-        {
-          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.5",
-          "passage": "Acts.1.5",
-          "line": 1,
-          "column": 1,
-          "excerpt": "ꙗ҆́кѡ і҆ѡа́нн"
-        }
-      ],
-      "byte_start": 0,
-      "byte_end": 11,
-      "line": 1,
-      "column": 1,
-      "candidate_lexeme_ids": [
-        "synodal:adverb:wikt-5471d4207f64",
-        "synodal:conjunction:wikt-47fa23a7ed6b"
-      ],
-      "requested_morphological_system": "indeclinable",
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": [
-          {
-            "rule": "SYN-REGISTRY-NORMATIVE-TABLE",
-            "stage": "exact-normative-registry",
-            "input": "synodal:adverb:wikt-5471d4207f64:indeclinable",
-            "output": "ꙗ҆́кѡ",
-            "source_recension": "SynodalRussian",
-            "target_recension": "SynodalRussian",
-            "mapping": null,
-            "evidence": [
-              "review:v03:5471d4207f64"
-            ]
-          }
-        ]
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "several target lexemes match this surface",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 0,
-      "top_k_uncovered_documents": [],
-      "suggested_action": "review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains"
     }
   ],
   "review_queue": [
@@ -4398,19 +4293,6 @@
         "synodal:preposition:wikt-3ed58a49777e"
       ],
       "suggested_action": "review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme"
-    },
-    {
-      "rank": 39,
-      "kind": "ambiguity-or-spelling-variant",
-      "normalized": "ꙗкѡ",
-      "sample": "ꙗ҆́кѡ",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [
-        "synodal:adverb:wikt-5471d4207f64",
-        "synodal:conjunction:wikt-47fa23a7ed6b"
-      ],
-      "suggested_action": "review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains"
     }
   ]
 }

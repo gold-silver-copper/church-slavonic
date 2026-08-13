@@ -35,7 +35,7 @@ orthography, known morphology, expected part of speech, required semantic sense,
 and surface ambiguity. The crate accepts typed manifests only; applications may
 choose their own serialization layer outside the runtime linguistic crate.
 
-The bundled registry contains 857 reviewed target lexemes and 857 reviewed
+The bundled registry contains 833 reviewed target lexemes and 833 reviewed
 senses. The v0.10 `камень` upgrade reuses its prior reviewed stable identity;
 it does not add a duplicate semantic entry.
 The public `families` and `show_family_by_id` operations expose exact members,

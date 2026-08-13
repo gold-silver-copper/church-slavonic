@@ -37,4 +37,3 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 36	unknown-lexeme	ꙗвлѧѧсѧ	ꙗ҆влѧ́ѧсѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
 37	unknown-lexeme	ꙗдый	ꙗ҆ды́й	1	1		review the token against target-recension evidence and create or reject a lexical candidate
 38	ambiguity-or-spelling-variant	ѽ	ѽ	1	1	synodal:preposition:wikt-3ed58a49777e	review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme
-39	ambiguity-or-spelling-variant	ꙗкѡ	ꙗ҆́кѡ	1	1	synodal:adverb:wikt-5471d4207f64,synodal:conjunction:wikt-47fa23a7ed6b	review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains

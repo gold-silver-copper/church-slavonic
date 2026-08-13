@@ -1,8 +1,8 @@
 use synodal_church_slavonic_core::{
-    AccentParadigm, AdjectiveForm, Assumption, AuthorityRole, Confidence, EpistemicRole, Error,
-    Evidence, EvidenceId, EvidenceKind, FiniteTense, FormSet, FormSource, FormVariant,
-    GenerationPolicy, GrammarCell, LexemeId, NumeralKind, OrthographyProfile, Recension, Result,
-    RuleId, RuleTrace, SourceId, TraceStep, normalize_lookup_accentless,
+    AccentParadigm, Assumption, AuthorityRole, Confidence, EpistemicRole, Error, Evidence,
+    EvidenceId, EvidenceKind, FormSet, FormSource, FormVariant, GenerationPolicy, GrammarCell,
+    LexemeId, NumeralKind, OrthographyProfile, Recension, Result, RuleId, RuleTrace, SourceId,
+    TraceStep, normalize_lookup_accentless,
 };
 
 use crate::{
@@ -483,75 +483,10 @@ fn mark_inherited(
 }
 
 pub(crate) fn cell_key(cell: GrammarCell) -> String {
-    match cell {
-        GrammarCell::LexicalForm => "lexical-form".into(),
-        GrammarCell::Indeclinable => "indeclinable".into(),
-        GrammarCell::Noun(cell) => format!(
-            "noun:{}:{}:{}",
-            case_name(cell.case),
-            number_name(cell.number),
-            animacy_name(cell.animacy)
-        ),
-        GrammarCell::Adjective(cell) => format!(
-            "adjective:{}:{}:{}:{}:{}:{}",
-            case_name(cell.case),
-            number_name(cell.number),
-            gender_name(cell.gender),
-            animacy_name(cell.animacy),
-            adjective_form_name(cell.form),
-            comparison_name(cell.comparison)
-        ),
-        GrammarCell::FiniteVerb(cell) => format!(
-            "{}:{}:{}",
-            tense_name(cell.tense),
-            person_name(cell.person),
-            number_name(cell.number)
-        ),
-        GrammarCell::Imperative(cell) => format!(
-            "imperative:{}:{}",
-            person_name(cell.person),
-            number_name(cell.number)
-        ),
-        GrammarCell::Infinitive => "infinitive".into(),
-        GrammarCell::Supine => "supine".into(),
-        GrammarCell::LParticiple(cell) => format!(
-            "l-participle:{}:{}",
-            gender_name(cell.gender),
-            number_name(cell.number)
-        ),
-        GrammarCell::Participle(cell) => format!(
-            "participle:{:?}:{:?}:{}:{}:{}:{}:{}:{}",
-            cell.tense,
-            cell.voice,
-            case_name(cell.agreement.case),
-            number_name(cell.agreement.number),
-            gender_name(cell.agreement.gender),
-            animacy_name(cell.agreement.animacy),
-            adjective_form_name(cell.agreement.form),
-            comparison_name(cell.agreement.comparison)
-        )
-        .to_lowercase(),
-        GrammarCell::VerbalNoun(cell) => format!(
-            "verbal-noun:{}:{}:{}",
-            case_name(cell.case),
-            number_name(cell.number),
-            animacy_name(cell.animacy)
-        ),
-        GrammarCell::Pronoun(cell) => pronoun_key(cell, Some(cell.animacy)),
-        GrammarCell::Determiner(cell) => format!(
-            "determiner:{}:{}:{}:{}:{}:{}",
-            case_name(cell.case),
-            number_name(cell.number),
-            gender_name(cell.gender),
-            animacy_name(cell.animacy),
-            adjective_form_name(cell.form),
-            comparison_name(cell.comparison)
-        ),
-        GrammarCell::Numeral(cell) => numeral_key(cell, cell.gender, Some(cell.animacy)),
-    }
+    cell.key()
 }
 
-fn exact_lookup_keys(cell: GrammarCell) -> Vec<String> {
+pub(crate) fn exact_lookup_keys(cell: GrammarCell) -> Vec<String> {
     let mut keys = vec![cell_key(cell)];
     match cell {
         GrammarCell::Adjective(_) | GrammarCell::Determiner(_) | GrammarCell::Participle(_) => {
@@ -586,11 +521,13 @@ fn pronoun_key(
 ) -> String {
     format!(
         "pronoun:{}:{}:{}:{}:{}",
-        case_name(cell.case),
-        number_name(cell.number),
-        cell.gender.map_or("any", gender_name),
-        cell.person.map_or("none", person_name),
-        animacy.map_or("any", animacy_name),
+        cell.case.code(),
+        cell.number.code(),
+        cell.gender
+            .map_or("any", synodal_church_slavonic_core::Gender::code),
+        cell.person
+            .map_or("none", synodal_church_slavonic_core::Person::code),
+        animacy.map_or("any", synodal_church_slavonic_core::Animacy::code),
     )
 }
 
@@ -601,11 +538,11 @@ fn numeral_key(
 ) -> String {
     format!(
         "numeral:{}:{}:{}:{}:{}",
-        numeral_kind_name(cell.kind),
-        case_name(cell.case),
-        number_name(cell.number),
-        gender.map_or("any", gender_name),
-        animacy.map_or("any", animacy_name),
+        cell.kind.code(),
+        cell.case.code(),
+        cell.number.code(),
+        gender.map_or("any", synodal_church_slavonic_core::Gender::code),
+        animacy.map_or("any", synodal_church_slavonic_core::Animacy::code),
     )
 }
 
@@ -615,8 +552,11 @@ fn exact_forms(
     key: &str,
     records: &[registry::ExactFormRecord],
 ) -> Result<FormSet> {
-    let summary = registry::from_id(id)?;
     let irregular_evidence = registry::irregular_evidence_for(id, key);
+    let irregular_records = irregular_evidence
+        .map(registry::reviewed_evidence)
+        .transpose()?
+        .unwrap_or_default();
     let variants = records
         .iter()
         .map(|record| {
@@ -633,21 +573,14 @@ fn exact_forms(
                     None,
                 ),
             };
-            let evidence_id = EvidenceId::from(record.evidence_id);
-            let evidence = Evidence {
-                id: evidence_id.clone(),
-                source: SourceId::from(summary.source_id()),
-                source_recension: Recension::SynodalRussian,
-                kind: EvidenceKind::ExactTableCell,
-                authority_roles: vec![AuthorityRole::Morphological, AuthorityRole::Orthographic],
-                epistemic_role: if record.source_kind == "synodal-attestation" {
-                    EpistemicRole::ExactSynodalAttestation
-                } else {
-                    EpistemicRole::SynodalNormativeAuthority
-                },
-                citation: record.evidence_id.into(),
-                note: Some(record.source_kind.into()),
-            };
+            let evidence_records = registry::reviewed_evidence(record.evidence_id)?;
+            let attestation_id = evidence_records
+                .iter()
+                .find(|evidence| {
+                    evidence.role == "target-attestation"
+                        || evidence.role.strip_prefix("reviewed-cell:") == Some(key)
+                })
+                .map(|evidence| EvidenceId::from(evidence.id));
             let rule_id = if irregular_evidence.is_some() {
                 RuleId::from("SYN-REGISTRY-IRREGULAR-OVERRIDE")
             } else {
@@ -655,34 +588,57 @@ fn exact_forms(
             };
             let source = if record.source_kind == "synodal-attestation" {
                 FormSource::SynodalAttestation {
-                    evidence: evidence_id.clone(),
+                    evidence: attestation_id.ok_or_else(|| Error::ContradictoryMetadata {
+                        reason: format!(
+                            "Synodal attestation {} has no target-recension evidence",
+                            record.evidence_id
+                        ),
+                    })?,
                 }
-            } else if let Some(irregular_evidence) = irregular_evidence {
+            } else if let Some(first_irregular) = irregular_records.first() {
+                let source_evidence = irregular_records
+                    .iter()
+                    .find(|candidate| {
+                        evidence_records
+                            .iter()
+                            .any(|evidence| evidence.id == candidate.id)
+                    })
+                    .unwrap_or(first_irregular);
                 FormSource::SynodalIrregularOverride {
-                    evidence: EvidenceId::from(irregular_evidence),
+                    evidence: EvidenceId::from(source_evidence.id),
                 }
             } else {
                 FormSource::SynodalNormativeGeneration {
                     rule: rule_id.clone(),
                 }
             };
-            let mut evidence = vec![evidence];
-            let mut trace_evidence = vec![evidence_id.clone()];
-            if let Some(irregular_evidence) = irregular_evidence {
-                let irregular_evidence = EvidenceId::from(irregular_evidence);
-                evidence.push(Evidence {
-                    id: irregular_evidence.clone(),
-                    source: SourceId::from(summary.source_id()),
-                    source_recension: Recension::SynodalRussian,
-                    kind: EvidenceKind::ReviewedIrregularOverride,
-                    authority_roles: vec![AuthorityRole::Morphological],
-                    epistemic_role: EpistemicRole::SynodalNormativeAuthority,
-                    citation: irregular_evidence.to_string(),
-                    note: Some("reviewed irregular system override".into()),
-                });
-                trace_evidence.push(irregular_evidence);
+            let mut evidence = evidence_records
+                .iter()
+                .map(|record| {
+                    let kind = if irregular_records
+                        .iter()
+                        .any(|irregular| irregular.id == record.id)
+                    {
+                        EvidenceKind::ReviewedIrregularOverride
+                    } else {
+                        EvidenceKind::ExactTableCell
+                    };
+                    reviewed_evidence(record, kind)
+                })
+                .collect::<Vec<_>>();
+            for record in &irregular_records {
+                if !evidence
+                    .iter()
+                    .any(|evidence| evidence.id.as_str() == record.id)
+                {
+                    evidence.push(reviewed_evidence(
+                        record,
+                        EvidenceKind::ReviewedIrregularOverride,
+                    ));
+                }
             }
-            FormVariant {
+            let trace_evidence = evidence.iter().map(|item| item.id.clone()).collect();
+            Ok(FormVariant {
                 expanded: record.expanded.into(),
                 accented,
                 printed: printed.clone(),
@@ -710,91 +666,54 @@ fn exact_forms(
                     mapping: None,
                     evidence: trace_evidence,
                 }]),
-            }
+            })
         })
-        .collect();
+        .collect::<Result<Vec<_>>>()?;
     FormSet::try_from_variants(variants)
 }
 
-fn case_name(value: synodal_church_slavonic_core::Case) -> &'static str {
-    use synodal_church_slavonic_core::Case;
-    match value {
-        Case::Nominative => "nominative",
-        Case::Genitive => "genitive",
-        Case::Dative => "dative",
-        Case::Accusative => "accusative",
-        Case::Instrumental => "instrumental",
-        Case::Locative => "locative",
-        Case::Vocative => "vocative",
-    }
-}
-
-fn number_name(value: synodal_church_slavonic_core::Number) -> &'static str {
-    use synodal_church_slavonic_core::Number;
-    match value {
-        Number::Singular => "singular",
-        Number::Dual => "dual",
-        Number::Plural => "plural",
-    }
-}
-
-fn gender_name(value: synodal_church_slavonic_core::Gender) -> &'static str {
-    use synodal_church_slavonic_core::Gender;
-    match value {
-        Gender::Masculine => "masculine",
-        Gender::Feminine => "feminine",
-        Gender::Neuter => "neuter",
-    }
-}
-
-fn person_name(value: synodal_church_slavonic_core::Person) -> &'static str {
-    use synodal_church_slavonic_core::Person;
-    match value {
-        Person::First => "first",
-        Person::Second => "second",
-        Person::Third => "third",
-    }
-}
-
-fn animacy_name(value: synodal_church_slavonic_core::Animacy) -> &'static str {
-    use synodal_church_slavonic_core::Animacy;
-    match value {
-        Animacy::Inanimate => "inanimate",
-        Animacy::Animate => "animate",
-    }
-}
-
-fn tense_name(value: FiniteTense) -> &'static str {
-    match value {
-        FiniteTense::Present => "present",
-        FiniteTense::Future => "future",
-        FiniteTense::Past => "past",
-        FiniteTense::Imperfect => "imperfect",
-        FiniteTense::Aorist => "aorist",
-    }
-}
-
-fn adjective_form_name(value: AdjectiveForm) -> &'static str {
-    match value {
-        AdjectiveForm::Short => "short",
-        AdjectiveForm::Long => "long",
-    }
-}
-
-fn comparison_name(value: synodal_church_slavonic_core::Comparison) -> &'static str {
-    use synodal_church_slavonic_core::Comparison;
-    match value {
-        Comparison::Positive => "positive",
-        Comparison::Comparative => "comparative",
-        Comparison::Superlative => "superlative",
-    }
-}
-
-fn numeral_kind_name(value: synodal_church_slavonic_core::NumeralKind) -> &'static str {
-    use synodal_church_slavonic_core::NumeralKind;
-    match value {
-        NumeralKind::Cardinal => "cardinal",
-        NumeralKind::Ordinal => "ordinal",
-        NumeralKind::Collective => "collective",
+fn reviewed_evidence(
+    record: &registry::ReviewedEvidenceRecord,
+    default_kind: EvidenceKind,
+) -> Evidence {
+    let (kind, authority_roles, epistemic_role) = match record.role {
+        role if role == "target-attestation" || role.starts_with("reviewed-cell:") => (
+            EvidenceKind::CorpusObservation,
+            vec![
+                AuthorityRole::ExactForm,
+                AuthorityRole::Orthographic,
+                AuthorityRole::Accentual,
+            ],
+            EpistemicRole::ExactSynodalAttestation,
+        ),
+        "synodal-authority" => (
+            default_kind,
+            vec![
+                AuthorityRole::Grammatical,
+                AuthorityRole::Morphological,
+                AuthorityRole::Orthographic,
+            ],
+            EpistemicRole::SynodalNormativeAuthority,
+        ),
+        "ocs-evidence" => (
+            EvidenceKind::ComparativeObservation,
+            vec![AuthorityRole::Lexical, AuthorityRole::Morphological],
+            EpistemicRole::InheritedOcsEvidence,
+        ),
+        _ => (
+            EvidenceKind::ComparativeObservation,
+            vec![AuthorityRole::Lexical, AuthorityRole::Morphological],
+            EpistemicRole::OtherRecensionComparativeEvidence,
+        ),
+    };
+    Evidence {
+        id: EvidenceId::from(record.id),
+        source: SourceId::from(record.source_id),
+        source_recension: record.source_recension,
+        kind,
+        authority_roles,
+        epistemic_role,
+        citation: record.citation.into(),
+        note: (!record.note.is_empty()).then(|| record.note.into()),
     }
 }

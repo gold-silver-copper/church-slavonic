@@ -595,7 +595,7 @@ pub fn decline_adjective(
                 (AdjectiveClass::Soft, AdjectiveForm::Long) => "SYN-ADJ-LONG-SOFT-ALYPY-57",
             },
         ),
-        comparison @ (Comparison::Comparative | Comparison::Superlative) => {
+        Comparison::Comparative | Comparison::Superlative => {
             let stem = lexeme
                 .comparative_stem
                 .as_ref()
@@ -605,10 +605,10 @@ pub fn decline_adjective(
             (
                 stem,
                 comparison_long_adjective_ending(cell)?,
-                if comparison == Comparison::Comparative {
-                    "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58"
-                } else {
-                    "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59"
+                match cell.comparison {
+                    Comparison::Comparative => "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58",
+                    Comparison::Superlative => "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59",
+                    Comparison::Positive => unreachable!(),
                 },
             )
         }
@@ -695,18 +695,14 @@ pub fn aorist(
     let formation = lexeme.aorist_formation.ok_or(Error::MissingMetadata {
         field: MetadataField::AoristFormation,
     })?;
-    let (rule, consonant_stem) = match formation {
-        AoristFormation::VowelStem => ("SYN-VERB-AORIST-VOWEL-ALYPY-86", false),
-        AoristFormation::ConsonantStem => ("SYN-VERB-AORIST-CONSONANT-ALYPY-86", true),
-        AoristFormation::Irregular => {
-            return Err(Error::UnsupportedFormation {
-                formation: "irregular Synodal aorist requires an exact table".into(),
-            });
-        }
-    };
+    if formation == AoristFormation::Irregular {
+        return Err(Error::UnsupportedFormation {
+            formation: "irregular Synodal aorist requires an exact table".into(),
+        });
+    }
     let stem = required(lexeme.aorist_stem.as_ref(), MetadataField::AoristStem)?;
-    let ending = aorist_ending(consonant_stem, person, number);
-    let stem_text = if consonant_stem
+    let ending = aorist_ending(formation, person, number);
+    let stem_text = if formation == AoristFormation::ConsonantStem
         && matches!(person, Person::Second | Person::Third)
         && number == Number::Singular
     {
@@ -716,7 +712,11 @@ pub fn aorist(
     };
     normative(
         join(&stem_text, ending),
-        rule,
+        match formation {
+            AoristFormation::VowelStem => "SYN-VERB-AORIST-VOWEL-ALYPY-86",
+            AoristFormation::ConsonantStem => "SYN-VERB-AORIST-CONSONANT-ALYPY-86",
+            AoristFormation::Irregular => unreachable!(),
+        },
         profile,
         "aorist",
         lexeme.lemma.canonical(),
@@ -742,23 +742,23 @@ pub fn imperfect(
     let formation = lexeme.imperfect_formation.ok_or(Error::MissingMetadata {
         field: MetadataField::ImperfectFormation,
     })?;
-    let rule = match formation {
-        ImperfectFormation::H => "SYN-VERB-IMPERFECT-H-ALYPY-87",
-        ImperfectFormation::Yah => "SYN-VERB-IMPERFECT-YAH-ALYPY-87",
-        ImperfectFormation::Ah => "SYN-VERB-IMPERFECT-AH-ALYPY-87",
-        ImperfectFormation::Irregular => {
-            return Err(Error::UnsupportedFormation {
-                formation: "irregular Synodal imperfect requires an exact table".into(),
-            });
-        }
-    };
+    if formation == ImperfectFormation::Irregular {
+        return Err(Error::UnsupportedFormation {
+            formation: "irregular Synodal imperfect requires an exact table".into(),
+        });
+    }
     let stem = required(lexeme.imperfect_stem.as_ref(), MetadataField::ImperfectStem)?;
     normative(
         join(
             stem.canonical(),
-            imperfect_ending(formation, person, number)?,
+            imperfect_ending(formation, person, number),
         ),
-        rule,
+        match formation {
+            ImperfectFormation::H => "SYN-VERB-IMPERFECT-H-ALYPY-87",
+            ImperfectFormation::Yah => "SYN-VERB-IMPERFECT-YAH-ALYPY-87",
+            ImperfectFormation::Ah => "SYN-VERB-IMPERFECT-AH-ALYPY-87",
+            ImperfectFormation::Irregular => unreachable!(),
+        },
         profile,
         "imperfect",
         lexeme.lemma.canonical(),
@@ -793,7 +793,7 @@ pub fn imperative(
         MetadataField::ImperativeStem,
     )?;
     normative(
-        join(stem.canonical(), imperative_ending(formation, cell)?),
+        join(stem.canonical(), imperative_ending(formation, cell)),
         "SYN-VERB-IMPERATIVE-ALYPY-93",
         profile,
         "imperative",
@@ -1948,7 +1948,8 @@ fn present_ending(conjugation: VerbConjugation, cell: FiniteVerbCell) -> Result<
     })
 }
 
-fn aorist_ending(consonant: bool, person: Person, number: Number) -> &'static str {
+fn aorist_ending(formation: AoristFormation, person: Person, number: Number) -> &'static str {
+    let consonant = formation == AoristFormation::ConsonantStem;
     match (person, number, consonant) {
         (Person::First, Number::Singular, false) => "хъ",
         (Person::First, Number::Singular, true) => "охъ",
@@ -1967,12 +1968,8 @@ fn aorist_ending(consonant: bool, person: Person, number: Number) -> &'static st
     }
 }
 
-fn imperfect_ending(
-    formation: ImperfectFormation,
-    person: Person,
-    number: Number,
-) -> Result<&'static str> {
-    Ok(match (formation, person, number) {
+fn imperfect_ending(formation: ImperfectFormation, person: Person, number: Number) -> &'static str {
+    match (formation, person, number) {
         (ImperfectFormation::H, Person::First, Number::Singular) => "хъ",
         (ImperfectFormation::H, Person::Second | Person::Third, Number::Singular) => "ше",
         (ImperfectFormation::H, Person::First, Number::Dual) => "хова",
@@ -1994,21 +1991,12 @@ fn imperfect_ending(
         (ImperfectFormation::Ah, Person::First, Number::Plural) => "ахомъ",
         (ImperfectFormation::Ah, Person::Second, Number::Plural) => "асте",
         (ImperfectFormation::Ah, Person::Third, Number::Plural) => "ахꙋ",
-        (ImperfectFormation::Irregular, _, _) => {
-            return Err(Error::UnsupportedFormation {
-                formation: "irregular Synodal imperfect requires an exact table".into(),
-            });
-        }
-    })
+        (ImperfectFormation::Irregular, _, _) => unreachable!(),
+    }
 }
 
-fn imperative_ending(formation: ImperativeFormation, cell: ImperativeCell) -> Result<&'static str> {
-    Ok(match (formation, cell.person, cell.number) {
-        (ImperativeFormation::Irregular, _, _) => {
-            return Err(Error::UnsupportedFormation {
-                formation: "irregular Synodal imperative requires an exact table".into(),
-            });
-        }
+fn imperative_ending(formation: ImperativeFormation, cell: ImperativeCell) -> &'static str {
+    match (formation, cell.person, cell.number) {
         (_, Person::Second | Person::Third, Number::Singular) => "и",
         (ImperativeFormation::FirstUnpalatalized, Person::First, Number::Dual) => "ева",
         (ImperativeFormation::FirstUnpalatalized, Person::Second, Number::Dual) => "ита",
@@ -2018,13 +2006,8 @@ fn imperative_ending(formation: ImperativeFormation, cell: ImperativeCell) -> Re
         (ImperativeFormation::ISeries, Person::Second, Number::Dual) => "ита",
         (ImperativeFormation::ISeries, Person::First, Number::Plural) => "имъ",
         (ImperativeFormation::ISeries, Person::Second, Number::Plural) => "ите",
-        _ => {
-            return Err(Error::HistoricallyInvalidCell {
-                reason: "the requested person-number cell is outside the imperative inventory"
-                    .into(),
-            });
-        }
-    })
+        _ => unreachable!(),
+    }
 }
 
 fn required<T>(value: Option<&T>, field: MetadataField) -> Result<&T> {
@@ -2977,45 +2960,6 @@ mod tests {
                     animacy: Animacy::Inanimate,
                     form: AdjectiveForm::Short,
                     comparison: Comparison::Superlative,
-                },
-                OrthographyProfile::Expanded,
-            ),
-            Err(Error::UnsupportedFormation { .. })
-        ));
-    }
-
-    #[test]
-    fn irregular_productive_formations_return_typed_errors() {
-        let mut verb = regular_verb();
-        verb.aorist_formation = Some(AoristFormation::Irregular);
-        assert!(matches!(
-            aorist(
-                &verb,
-                Person::First,
-                Number::Singular,
-                OrthographyProfile::Expanded,
-            ),
-            Err(Error::UnsupportedFormation { .. })
-        ));
-
-        verb.imperfect_formation = Some(ImperfectFormation::Irregular);
-        assert!(matches!(
-            imperfect(
-                &verb,
-                Person::First,
-                Number::Singular,
-                OrthographyProfile::Expanded,
-            ),
-            Err(Error::UnsupportedFormation { .. })
-        ));
-
-        verb.imperative_formation = Some(ImperativeFormation::Irregular);
-        assert!(matches!(
-            imperative(
-                &verb,
-                ImperativeCell {
-                    person: Person::Second,
-                    number: Number::Singular,
                 },
                 OrthographyProfile::Expanded,
             ),

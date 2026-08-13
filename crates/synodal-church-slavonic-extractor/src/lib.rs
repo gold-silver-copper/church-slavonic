@@ -11,8 +11,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use serde::Deserialize;
 use sha2::{Digest, Sha256};
-use synodal_church_slavonic_core::{RenderedText, SynodalWord};
+use synodal_church_slavonic_core::{GrammarCell, RenderedText, SynodalWord};
 use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
 
 /// Schema version for normalized Synodal registries.
@@ -110,6 +111,18 @@ struct CandidateLink {
     normalized_spelling: String,
 }
 
+#[derive(Debug, Deserialize)]
+struct SourceInventory {
+    #[serde(default)]
+    source: Vec<SourceProvenance>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SourceProvenance {
+    id: String,
+    source_recension: String,
+}
+
 impl CandidateLink {
     fn is_target_corpus_source(&self) -> bool {
         matches!(
@@ -166,10 +179,124 @@ fn read_lexical_reviews(data_directory: &Path) -> Result<Table> {
     )
 }
 
-fn validate_lexical_reviews(path: &Path, table: &Table) -> Result<()> {
+fn load_source_recensions(data_directory: &Path) -> Result<BTreeMap<String, String>> {
+    let workspace = data_directory
+        .parent()
+        .and_then(Path::parent)
+        .ok_or_else(|| ExtractionError::InvalidRow {
+            file: data_directory.to_owned(),
+            line: 1,
+            reason: "Synodal data directory is not under a workspace data directory".into(),
+        })?;
+    let path = workspace.join("references/SOURCES.toml");
+    let text = fs::read_to_string(&path)?;
+    let inventory =
+        toml::from_str::<SourceInventory>(&text).map_err(|error| ExtractionError::InvalidRow {
+            file: path.clone(),
+            line: 1,
+            reason: format!("invalid source inventory: {error}"),
+        })?;
+    let mut recensions = BTreeMap::new();
+    for source in inventory.source {
+        if recensions
+            .insert(source.id.clone(), source.source_recension)
+            .is_some()
+        {
+            return Err(ExtractionError::DuplicateId {
+                file: path,
+                id: source.id,
+            });
+        }
+    }
+    Ok(recensions)
+}
+
+fn target_identity_is_adjudicated(
+    ambiguities: &Table,
+    candidate_id: &str,
+    expanded: &str,
+    printed: &str,
+    left: (&str, &str),
+    right: (&str, &str),
+) -> bool {
+    let mut analyses = [left, right];
+    analyses.sort_unstable_by_key(|analysis| analysis.0);
+    ambiguities.rows.iter().any(|row| {
+        row[1] == candidate_id
+            && row[2] == expanded
+            && row[3] == printed
+            && row[4] == analyses[0].0
+            && row[5].split('|').any(|cell| cell == analyses[0].1)
+            && row[6] == analyses[1].0
+            && row[7].split('|').any(|cell| cell == analyses[1].1)
+            && row[8] == "adjudicated"
+    })
+}
+
+fn validate_target_identity_ambiguities(
+    path: &Path,
+    table: &Table,
+    reviewed_evidence: &Table,
+) -> Result<()> {
+    let target_evidence: BTreeMap<&str, (&str, &str, &str)> = reviewed_evidence
+        .rows
+        .iter()
+        .map(|row| {
+            (
+                row[0].as_str(),
+                (row[1].as_str(), row[2].as_str(), row[4].as_str()),
+            )
+        })
+        .collect();
+    let mut keys = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
+        if !row[0].starts_with("v")
+            || !row[0].contains("-target-")
+            || !row[1].starts_with("synodal:candidate:")
+            || !row[4].starts_with("synodal:")
+            || row[5].is_empty()
+            || !row[6].starts_with("synodal:")
+            || row[7].is_empty()
+            || row[4] >= row[6]
+            || row[8] != "adjudicated"
+            || row[9].is_empty()
+            || target_evidence.get(row[0].as_str()).is_none_or(
+                |(candidate_id, source_id, decision)| {
+                    *candidate_id != row[1]
+                        || !is_target_corpus_source(source_id)
+                        || *decision != "reviewed"
+                },
+            )
+        {
+            return invalid(
+                path,
+                line,
+                "target identity ambiguities require stable target/candidate IDs, sorted distinct lexemes, an adjudicated decision, and a review note",
+            );
+        }
+        validate_word(path, line, &row[2], "adjudicated expanded form")?;
+        validate_word(path, line, &row[3], "adjudicated printed form")?;
+        for cell in row[5].split('|').chain(row[7].split('|')) {
+            cell.parse::<GrammarCell>()
+                .map_err(|error| ExtractionError::InvalidRow {
+                    file: path.to_owned(),
+                    line,
+                    reason: format!("invalid adjudicated grammar cell {cell:?}: {error}"),
+                })?;
+        }
+        if !keys.insert(row[..9].to_vec()) {
+            return invalid(path, line, "duplicate target identity ambiguity");
+        }
+    }
+    Ok(())
+}
+
+fn validate_lexical_reviews(path: &Path, table: &Table, ambiguities: &Table) -> Result<()> {
     let mut review_ids = BTreeSet::new();
     let mut lexeme_ids = BTreeSet::new();
     let mut sense_ids = BTreeSet::new();
+    let mut attested_tokens: BTreeMap<_, BTreeSet<(String, String)>> = BTreeMap::new();
     for (offset, row) in table.rows.iter().enumerate() {
         let line = offset + 2;
         if !review_ids.insert(row[0].clone()) {
@@ -219,6 +346,29 @@ fn validate_lexical_reviews(path: &Path, table: &Table) -> Result<()> {
         validate_word(path, line, &row[3], "reviewed lemma")?;
         validate_word(path, line, &row[6], "reviewed expanded form")?;
         validate_word(path, line, &row[7], "reviewed printed form")?;
+        let attested_token = (row[13].clone(), row[6].clone(), row[7].clone());
+        let identities = attested_tokens.entry(attested_token.clone()).or_default();
+        for (previous_lexeme, previous_cell) in identities.iter() {
+            if previous_lexeme != &row[1]
+                && !target_identity_is_adjudicated(
+                    ambiguities,
+                    &row[13],
+                    &row[6],
+                    &row[7],
+                    (previous_lexeme, previous_cell),
+                    (&row[1], &row[5]),
+                )
+            {
+                return invalid(
+                    path,
+                    line,
+                    &format!(
+                        "target candidate/token {attested_token:?} cannot confirm incompatible lexical identities without contextual adjudication"
+                    ),
+                );
+            }
+        }
+        identities.insert((row[1].clone(), row[5].clone()));
         let closed = matches!(
             row[4].as_str(),
             "adverb" | "preposition" | "conjunction" | "particle" | "interjection"
@@ -284,11 +434,92 @@ fn extend_missing_lexemes(
     Ok(())
 }
 
-fn admitted_lexical_review_rows(reviews: &Table) -> AdmittedLexicalReviewRows {
+fn extend_reviewed_exact_forms(
+    path: &Path,
+    exact_forms: &mut Table,
+    reviewed: Vec<Vec<String>>,
+) -> Result<()> {
+    let mut rows_by_key = exact_forms
+        .rows
+        .iter()
+        .enumerate()
+        .map(|(offset, row)| {
+            (
+                (
+                    row[0].clone(),
+                    row[1].clone(),
+                    row[2].clone(),
+                    row[3].clone(),
+                ),
+                offset,
+            )
+        })
+        .collect::<BTreeMap<_, _>>();
+    for row in reviewed {
+        let key = (
+            row[0].clone(),
+            row[1].clone(),
+            row[2].clone(),
+            row[3].clone(),
+        );
+        if let Some(offset) = rows_by_key.get(&key).copied() {
+            let existing = &mut exact_forms.rows[offset];
+            if existing[5] != row[5] || existing[6] != row[6] {
+                return invalid(
+                    path,
+                    offset + 2,
+                    "reviewed lexical form conflicts with an exact row's source kind or target recension",
+                );
+            }
+            let mut evidence = existing[4]
+                .split(',')
+                .map(str::to_owned)
+                .collect::<Vec<_>>();
+            for id in row[4].split(',') {
+                if !evidence.iter().any(|existing| existing == id) {
+                    evidence.push(id.to_owned());
+                }
+            }
+            existing[4] = evidence.join(",");
+        } else {
+            rows_by_key.insert(key, exact_forms.rows.len());
+            exact_forms.rows.push(row);
+        }
+    }
+    Ok(())
+}
+
+fn admitted_lexical_review_rows(
+    reviews: &Table,
+    source_recensions: &BTreeMap<String, String>,
+) -> Result<AdmittedLexicalReviewRows> {
     let mut lexemes = Vec::new();
     let mut exact_forms = Vec::new();
     let mut senses = Vec::new();
     for row in reviews.rows.iter().filter(|row| row[15] == "reviewed") {
+        let source_recension =
+            source_recensions
+                .get(&row[10])
+                .ok_or_else(|| ExtractionError::InvalidRow {
+                    file: PathBuf::from("references/SOURCES.toml"),
+                    line: 1,
+                    reason: format!("reviewed semantic source {:?} is not registered", row[10]),
+                })?;
+        let semantic_status = match source_recension.as_str() {
+            "old-church-slavonic" => "reviewed-ocs-inheritance",
+            "mixed" => "reviewed-with-synodal-corpus",
+            "synodal-russian" => "normative",
+            value => {
+                return Err(ExtractionError::InvalidRow {
+                    file: PathBuf::from("references/SOURCES.toml"),
+                    line: 1,
+                    reason: format!(
+                        "semantic source {:?} has unsupported recension {value:?}",
+                        row[10]
+                    ),
+                });
+            }
+        };
         lexemes.push(vec![
             row[1].clone(),
             row[3].clone(),
@@ -315,11 +546,11 @@ fn admitted_lexical_review_rows(reviews: &Table) -> AdmittedLexicalReviewRows {
             row[8].clone(),
             row[9].clone(),
             row[10].clone(),
-            "old-church-slavonic".into(),
-            "reviewed-ocs-inheritance".into(),
+            source_recension.clone(),
+            semantic_status.into(),
         ]);
     }
-    (lexemes, exact_forms, senses)
+    Ok((lexemes, exact_forms, senses))
 }
 
 /// Validates reviewable TSV and atomically writes the generated Rust registry.
@@ -336,6 +567,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let transformation_path = data_directory.join("transformation_rules.tsv");
     let conflict_path = data_directory.join("conflicts.tsv");
     let irregular_path = data_directory.join("irregular_overrides.tsv");
+    let target_identity_ambiguity_path = data_directory.join("target_identity_ambiguities.tsv");
 
     let mut lexemes = read_table(
         &lexeme_path,
@@ -400,8 +632,26 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let reviewed_evidence = read_reviewed_evidence(data_directory)?;
     let lexical_review_path = data_directory.join("lexical_reviews.tsv");
     let lexical_reviews = read_lexical_reviews(data_directory)?;
-    validate_lexical_reviews(&lexical_review_path, &lexical_reviews)?;
-    let (review_lexemes, review_exact_forms, _) = admitted_lexical_review_rows(&lexical_reviews);
+    let target_identity_ambiguities = read_table(
+        &target_identity_ambiguity_path,
+        "evidence_id\tcandidate_id\texpanded\tprinted\tleft_lexeme_id\tleft_cells\tright_lexeme_id\tright_cells\tdecision\treview_note",
+        10,
+    )?;
+    validate_target_identity_ambiguities(
+        &target_identity_ambiguity_path,
+        &target_identity_ambiguities,
+        &reviewed_evidence,
+    )?;
+    validate_lexical_reviews(
+        &lexical_review_path,
+        &lexical_reviews,
+        &target_identity_ambiguities,
+    )?;
+    let source_recensions = load_source_recensions(data_directory)?;
+    let evidence_provenance =
+        evidence_provenance_rows(&reviewed_evidence, &lexical_reviews, &source_recensions)?;
+    let (review_lexemes, review_exact_forms, _) =
+        admitted_lexical_review_rows(&lexical_reviews, &source_recensions)?;
     // A later engine release may add independently reviewed productive
     // metadata for an identity first admitted by a lexical review. Preserve
     // that richer direct row instead of materializing a second exact-only
@@ -412,15 +662,23 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         review_lexemes,
         &review_exact_forms,
     )?;
-    exact_forms.rows.extend(review_exact_forms);
+    extend_reviewed_exact_forms(&exact_path, &mut exact_forms, review_exact_forms)?;
 
     validate_lexemes(&lexeme_path, &lexemes)?;
     validate_noun_restrictions(&noun_restriction_path, &noun_restrictions)?;
     validate_noun_restriction_lexemes(&noun_restriction_path, &noun_restrictions, &lexemes)?;
     validate_principal_parts(&principal_path, &principal_parts)?;
-    validate_exact_forms(&exact_path, &exact_forms)?;
+    validate_exact_forms(&exact_path, &exact_forms, &lexemes)?;
+    validate_exact_form_attestation_evidence(
+        &exact_path,
+        &exact_forms,
+        &evidence_provenance,
+        &reviewed_evidence,
+        &lexical_reviews,
+        &target_identity_ambiguities,
+    )?;
     validate_alignments(&alignment_path, &alignments)?;
-    validate_abbreviations(&abbreviation_path, &abbreviations)?;
+    validate_abbreviations(&abbreviation_path, &abbreviations, &lexemes)?;
     validate_accents(&accent_path, &accents)?;
     validate_accent_paradigms(&accent_paradigm_path, &accent_paradigms)?;
     validate_positional_rules(&positional_path, &positional_rules)?;
@@ -480,6 +738,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         transformation_rules: transformation_rules.clone(),
         conflicts: conflicts.clone(),
         irregular_overrides: irregular_overrides.clone(),
+        evidence_provenance,
     });
     let output_sha256 = hex_sha256(output.as_bytes());
     atomic_write(destination, output.as_bytes())?;
@@ -524,14 +783,30 @@ pub fn generate_dictionary_registry(
     )?;
     let lexical_review_path = data_directory.join("lexical_reviews.tsv");
     let lexical_reviews = read_lexical_reviews(data_directory)?;
-    validate_lexical_reviews(&lexical_review_path, &lexical_reviews)?;
+    let reviewed_evidence = read_reviewed_evidence(data_directory)?;
+    let target_identity_ambiguity_path = data_directory.join("target_identity_ambiguities.tsv");
+    let target_identity_ambiguities = read_table(
+        &target_identity_ambiguity_path,
+        "evidence_id\tcandidate_id\texpanded\tprinted\tleft_lexeme_id\tleft_cells\tright_lexeme_id\tright_cells\tdecision\treview_note",
+        10,
+    )?;
+    validate_target_identity_ambiguities(
+        &target_identity_ambiguity_path,
+        &target_identity_ambiguities,
+        &reviewed_evidence,
+    )?;
+    validate_lexical_reviews(
+        &lexical_review_path,
+        &lexical_reviews,
+        &target_identity_ambiguities,
+    )?;
+    let source_recensions = load_source_recensions(data_directory)?;
     let (review_lexemes, review_exact_forms, review_senses) =
-        admitted_lexical_review_rows(&lexical_reviews);
+        admitted_lexical_review_rows(&lexical_reviews, &source_recensions)?;
     senses.rows.extend(review_senses);
-    validate_senses(&sense_path, &senses)?;
+    validate_senses(&sense_path, &senses, &source_recensions)?;
     validate_examples(&example_path, &examples)?;
     validate_semantic_alignments(&semantic_alignment_path, &semantic_alignments)?;
-    let reviewed_evidence = read_reviewed_evidence(data_directory)?;
     validate_semantic_alignment_evidence(
         &semantic_alignment_path,
         &semantic_alignments,
@@ -656,6 +931,179 @@ fn validate_morphology_evidence<const N: usize>(
         }
     }
     Ok(())
+}
+
+fn evidence_provenance_rows(
+    reviewed: &Table,
+    lexical_reviews: &Table,
+    source_recensions: &BTreeMap<String, String>,
+) -> Result<Table> {
+    let mut rows = Vec::new();
+    let mut ids = BTreeSet::new();
+    for row in reviewed.rows.iter().filter(|row| row[4] == "reviewed") {
+        let source_recension =
+            source_recensions
+                .get(&row[2])
+                .ok_or_else(|| ExtractionError::InvalidRow {
+                    file: PathBuf::from("references/SOURCES.toml"),
+                    line: 0,
+                    reason: format!(
+                        "reviewed evidence {} uses unregistered source {}",
+                        row[0], row[2]
+                    ),
+                })?;
+        if !ids.insert(row[0].clone()) {
+            return invalid(
+                &PathBuf::from("data/synodal/reviewed_evidence.tsv"),
+                0,
+                "duplicate runtime evidence provenance ID",
+            );
+        }
+        let role = if is_target_corpus_source(&row[2]) {
+            "target-attestation"
+        } else if source_recension == TARGET {
+            "synodal-authority"
+        } else if source_recension == "old-church-slavonic" {
+            "ocs-evidence"
+        } else {
+            "comparative-evidence"
+        };
+        rows.push(vec![
+            row[0].clone(),
+            row[2].clone(),
+            source_recension.clone(),
+            row[3].clone(),
+            role.into(),
+            row[6].clone(),
+        ]);
+    }
+    for row in lexical_reviews
+        .rows
+        .iter()
+        .filter(|row| row[15] == "reviewed")
+    {
+        let source_recension =
+            source_recensions
+                .get(&row[12])
+                .ok_or_else(|| ExtractionError::InvalidRow {
+                    file: PathBuf::from("references/SOURCES.toml"),
+                    line: 0,
+                    reason: format!(
+                        "lexical review {} uses unregistered attestation source {}",
+                        row[0], row[12]
+                    ),
+                })?;
+        if !ids.insert(row[0].clone()) {
+            return invalid(
+                &PathBuf::from("data/synodal/lexical_reviews.tsv"),
+                0,
+                "duplicate runtime evidence provenance ID",
+            );
+        }
+        rows.push(vec![
+            row[0].clone(),
+            row[12].clone(),
+            source_recension.clone(),
+            row[14].clone(),
+            format!("reviewed-cell:{}", row[5]),
+            row[17].clone(),
+        ]);
+    }
+    rows.sort();
+    Ok(Table { rows })
+}
+
+fn validate_exact_form_attestation_evidence(
+    path: &Path,
+    exact_forms: &Table,
+    evidence_provenance: &Table,
+    reviewed_evidence: &Table,
+    lexical_reviews: &Table,
+    ambiguities: &Table,
+) -> Result<()> {
+    let roles: BTreeMap<&str, &str> = evidence_provenance
+        .rows
+        .iter()
+        .map(|row| (row[0].as_str(), row[4].as_str()))
+        .collect();
+    let target_candidates: BTreeMap<&str, &str> = reviewed_evidence
+        .rows
+        .iter()
+        .map(|row| (row[0].as_str(), row[1].as_str()))
+        .collect();
+    let reviewed_cell_owners: BTreeMap<&str, (&str, &str)> = lexical_reviews
+        .rows
+        .iter()
+        .filter(|row| row[15] == "reviewed")
+        .map(|row| (row[0].as_str(), (row[1].as_str(), row[5].as_str())))
+        .collect();
+    let mut attested_tokens: BTreeMap<_, BTreeSet<(String, String)>> = BTreeMap::new();
+    for (offset, row) in exact_forms.rows.iter().enumerate() {
+        let target_attestations = row[4]
+            .split(',')
+            .map(str::trim)
+            .filter(|evidence_id| roles.get(evidence_id) == Some(&"target-attestation"))
+            .collect::<Vec<_>>();
+        for evidence_id in &target_attestations {
+            let candidate_id = target_candidates.get(evidence_id).ok_or_else(|| {
+                ExtractionError::InvalidRow {
+                    file: path.to_owned(),
+                    line: offset + 2,
+                    reason: format!(
+                        "target-attestation evidence {evidence_id} has no reviewed candidate provenance"
+                    ),
+                }
+            })?;
+            let attested_token = ((*candidate_id).to_owned(), row[2].clone(), row[3].clone());
+            let identities = attested_tokens.entry(attested_token.clone()).or_default();
+            for (previous_lexeme, previous_cell) in identities.iter() {
+                if previous_lexeme != &row[0]
+                    && !target_identity_is_adjudicated(
+                        ambiguities,
+                        candidate_id,
+                        &row[2],
+                        &row[3],
+                        (previous_lexeme, previous_cell),
+                        (&row[0], &row[1]),
+                    )
+                {
+                    return invalid(
+                        path,
+                        offset + 2,
+                        &format!(
+                            "target evidence/token {attested_token:?} cannot license incompatible lexical identities without contextual adjudication"
+                        ),
+                    );
+                }
+            }
+            identities.insert((row[0].clone(), row[1].clone()));
+        }
+        let has_target_attestation = !target_attestations.is_empty();
+        let has_reviewed_cell_attestation = row[4].split(',').map(str::trim).any(|evidence_id| {
+            reviewed_cell_owners.get(evidence_id) == Some(&(row[0].as_str(), row[1].as_str()))
+        });
+        if row[5] == "synodal-attestation"
+            && !has_target_attestation
+            && !has_reviewed_cell_attestation
+        {
+            return invalid(
+                path,
+                offset + 2,
+                &format!(
+                    "Synodal attestation {} {} requires distinct target-recension evidence (found {})",
+                    row[0], row[1], row[4]
+                ),
+            );
+        }
+    }
+    Ok(())
+}
+
+fn is_target_corpus_source(source_id: &str) -> bool {
+    matches!(
+        source_id,
+        "ponomar-elizabeth-bible-2026-08-09" | "wikisource-church-slavonic-bible-2026-08-09"
+    )
 }
 
 /// Proves that committed review decisions still name candidates produced from
@@ -1228,8 +1676,23 @@ fn validate_principal_parts(path: &Path, table: &Table) -> Result<()> {
     Ok(())
 }
 
-fn validate_exact_forms(path: &Path, table: &Table) -> Result<()> {
+fn validate_exact_forms(path: &Path, table: &Table, lexemes: &Table) -> Result<()> {
+    let mut runtime_keys = BTreeSet::new();
     for (offset, row) in table.rows.iter().enumerate() {
+        if !runtime_keys.insert((
+            row[0].clone(),
+            row[1].clone(),
+            row[2].clone(),
+            row[3].clone(),
+        )) {
+            return invalid(
+                path,
+                offset + 2,
+                "duplicate lexeme/cell/expanded/printed exact-form tuple",
+            );
+        }
+        validate_grammar_cell(path, offset + 2, &row[1])?;
+        validate_cell_lexeme_pos(path, offset + 2, &row[0], &row[1], lexemes)?;
         validate_target(path, offset + 2, &row[6])?;
         validate_word(path, offset + 2, &row[2], "expanded form")?;
         validate_word(path, offset + 2, &row[3], "printed form")?;
@@ -1311,8 +1774,10 @@ fn validate_alignments(path: &Path, table: &Table) -> Result<()> {
     Ok(())
 }
 
-fn validate_abbreviations(path: &Path, table: &Table) -> Result<()> {
+fn validate_abbreviations(path: &Path, table: &Table, lexemes: &Table) -> Result<()> {
     for (offset, row) in table.rows.iter().enumerate() {
+        validate_grammar_cell(path, offset + 2, &row[2])?;
+        validate_cell_lexeme_pos(path, offset + 2, &row[0], &row[2], lexemes)?;
         validate_target(path, offset + 2, &row[12])?;
         validate_word(path, offset + 2, &row[3], "expanded abbreviation")?;
         validate_word(path, offset + 2, &row[4], "printed abbreviation")?;
@@ -1342,6 +1807,77 @@ fn validate_abbreviations(path: &Path, table: &Table) -> Result<()> {
         }
     }
     Ok(())
+}
+
+fn validate_grammar_cell(path: &Path, line: usize, value: &str) -> Result<()> {
+    value
+        .parse::<GrammarCell>()
+        .map(|_| ())
+        .map_err(|error| ExtractionError::InvalidRow {
+            file: path.to_owned(),
+            line,
+            reason: error.to_string(),
+        })
+}
+
+fn validate_cell_lexeme_pos(
+    path: &Path,
+    line: usize,
+    lexeme_id: &str,
+    value: &str,
+    lexemes: &Table,
+) -> Result<()> {
+    let part_of_speech = lexemes
+        .rows
+        .iter()
+        .find(|row| row[0] == lexeme_id)
+        .map(|row| row[2].as_str())
+        .ok_or_else(|| ExtractionError::InvalidRow {
+            file: path.to_owned(),
+            line,
+            reason: format!("grammar cell references unknown lexeme {lexeme_id}"),
+        })?;
+    let cell = value
+        .parse::<GrammarCell>()
+        .map_err(|error| ExtractionError::InvalidRow {
+            file: path.to_owned(),
+            line,
+            reason: error.to_string(),
+        })?;
+    let compatible = matches!(
+        (cell, part_of_speech),
+        (GrammarCell::LexicalForm, _)
+            | (
+                GrammarCell::Indeclinable,
+                "adverb" | "preposition" | "conjunction" | "particle" | "interjection"
+            )
+            | (GrammarCell::Noun(_), "noun" | "proper-noun")
+            | (GrammarCell::Adjective(_), "adjective")
+            | (GrammarCell::Determiner(_), "determiner")
+            | (GrammarCell::Pronoun(_), "pronoun")
+            | (GrammarCell::Numeral(_), "numeral")
+            | (
+                GrammarCell::FiniteVerb(_)
+                    | GrammarCell::Imperative(_)
+                    | GrammarCell::Infinitive
+                    | GrammarCell::LParticiple(_)
+                    | GrammarCell::Participle(_)
+                    | GrammarCell::Supine
+                    | GrammarCell::VerbalNoun(_),
+                "verb"
+            )
+    );
+    if compatible {
+        Ok(())
+    } else {
+        invalid(
+            path,
+            line,
+            &format!(
+                "grammar cell {value} is incompatible with {part_of_speech} lexeme {lexeme_id}"
+            ),
+        )
+    }
 }
 
 fn validate_accents(path: &Path, table: &Table) -> Result<()> {
@@ -1756,7 +2292,11 @@ fn validate_dictionary_references(
     Ok(())
 }
 
-fn validate_senses(path: &Path, table: &Table) -> Result<()> {
+fn validate_senses(
+    path: &Path,
+    table: &Table,
+    source_recensions: &BTreeMap<String, String>,
+) -> Result<()> {
     let mut ids = BTreeSet::new();
     for (offset, row) in table.rows.iter().enumerate() {
         if !ids.insert((row[0].clone(), row[1].clone())) {
@@ -1772,11 +2312,35 @@ fn validate_senses(path: &Path, table: &Table) -> Result<()> {
                 "sense requires a Synodal lexeme ID, stable sense ID, and gloss",
             );
         }
-        if row[5] == "mixed" && row[6] != "reviewed-with-synodal-corpus" {
+        let registered_recension =
+            source_recensions
+                .get(&row[4])
+                .ok_or_else(|| ExtractionError::InvalidRow {
+                    file: path.to_owned(),
+                    line: offset + 2,
+                    reason: format!("sense source {:?} is not registered", row[4]),
+                })?;
+        if registered_recension != &row[5] {
             return invalid(
                 path,
                 offset + 2,
-                "mixed-recension meanings require explicit target-corpus review",
+                "sense source recension disagrees with the source inventory",
+            );
+        }
+        let valid_status = match row[5].as_str() {
+            "mixed" => row[6] == "reviewed-with-synodal-corpus",
+            "old-church-slavonic" => matches!(
+                row[6].as_str(),
+                "reviewed-ocs-inheritance" | "reviewed-with-synodal-corpus"
+            ),
+            "synodal-russian" => row[6] == "normative",
+            _ => false,
+        };
+        if !valid_status {
+            return invalid(
+                path,
+                offset + 2,
+                "sense semantic status is incompatible with its source recension",
             );
         }
     }
@@ -1864,6 +2428,7 @@ struct RegistryTables {
     transformation_rules: Table,
     conflicts: Table,
     irregular_overrides: Table,
+    evidence_provenance: Table,
 }
 
 fn emit_registry(tables: RegistryTables) -> String {
@@ -1880,6 +2445,7 @@ fn emit_registry(tables: RegistryTables) -> String {
         mut transformation_rules,
         mut conflicts,
         mut irregular_overrides,
+        evidence_provenance,
     } = tables;
     lexemes.rows.sort();
     noun_restrictions.rows.sort();
@@ -1962,6 +2528,12 @@ fn emit_registry(tables: RegistryTables) -> String {
         "IRREGULAR_OVERRIDES",
         "RawIrregularOverride",
         &irregular_overrides.rows,
+    );
+    emit_rows(
+        &mut output,
+        "REVIEWED_EVIDENCE",
+        "RawReviewedEvidence",
+        &evidence_provenance.rows,
     );
     let _ = output.pop();
     output
@@ -2306,6 +2878,359 @@ mod tests {
                 "column {column} must be closed"
             );
         }
+    }
+
+    #[test]
+    fn grammar_cell_rows_fail_with_source_context_before_emission() {
+        let path = Path::new("exact_forms.tsv");
+        let error = validate_grammar_cell(path, 17, "noun:ablative:singular:inanimate")
+            .expect_err("unknown case must fail before registry emission");
+        assert!(matches!(
+            error,
+            ExtractionError::InvalidRow {
+                file,
+                line: 17,
+                ..
+            } if file == path
+        ));
+        validate_grammar_cell(
+            Path::new("abbreviations.tsv"),
+            2,
+            "pronoun:nominative:singular:any:any",
+        )
+        .expect("legacy wildcard cells remain accepted");
+    }
+
+    #[test]
+    fn exact_and_abbreviation_cells_must_match_lexeme_part_of_speech() {
+        let lexemes = Table {
+            rows: vec![vec![
+                "synodal:noun:test".into(),
+                "градъ".into(),
+                "noun".into(),
+                "first-hard-m".into(),
+                "град".into(),
+                "masculine".into(),
+                String::new(),
+                "test-source".into(),
+                TARGET.into(),
+            ]],
+        };
+        let exact = Table {
+            rows: vec![vec![
+                "synodal:noun:test".into(),
+                "indeclinable".into(),
+                "градъ".into(),
+                "гра́дъ".into(),
+                "test-evidence".into(),
+                "normative-table".into(),
+                TARGET.into(),
+            ]],
+        };
+        assert!(validate_exact_forms(Path::new("exact_forms.tsv"), &exact, &lexemes).is_err());
+
+        let abbreviations = Table {
+            rows: vec![vec![
+                "synodal:noun:test".into(),
+                "sense:test".into(),
+                "indeclinable".into(),
+                "градъ".into(),
+                "гра́дъ".into(),
+                "test-rule".into(),
+                "test-evidence".into(),
+                "true".into(),
+                "titlo".into(),
+                "unrestricted".into(),
+                "unambiguous".into(),
+                TARGET.into(),
+                TARGET.into(),
+            ]],
+        };
+        assert!(
+            validate_abbreviations(Path::new("abbreviations.tsv"), &abbreviations, &lexemes,)
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn exact_runtime_tuples_must_be_unique() {
+        let lexemes = Table {
+            rows: vec![vec![
+                "synodal:noun:test".into(),
+                "градъ".into(),
+                "noun".into(),
+                "first-hard-m".into(),
+                "град".into(),
+                "masculine".into(),
+                String::new(),
+                "test-source".into(),
+                TARGET.into(),
+            ]],
+        };
+        let row = vec![
+            "synodal:noun:test".into(),
+            "noun:nominative:singular:inanimate".into(),
+            "градъ".into(),
+            "гра́дъ".into(),
+            "test-evidence".into(),
+            "normative-table".into(),
+            TARGET.into(),
+        ];
+        let duplicate = Table {
+            rows: vec![row.clone(), row],
+        };
+        assert!(validate_exact_forms(Path::new("exact_forms.tsv"), &duplicate, &lexemes).is_err());
+    }
+
+    #[test]
+    fn one_target_token_cannot_confirm_incompatible_lexical_identities() {
+        let lexical_row = |suffix: &str| {
+            vec![
+                format!("review:{suffix}"),
+                format!("synodal:noun:{suffix}"),
+                format!("sense:{suffix}"),
+                "слово".into(),
+                "noun".into(),
+                "lexical-form".into(),
+                "слово".into(),
+                "сло́во".into(),
+                format!("sense {suffix}"),
+                "general".into(),
+                "semantic-source".into(),
+                format!("synodal:candidate:semantic:{suffix}"),
+                "target-source".into(),
+                "synodal:candidate:shared-target".into(),
+                "Passage.1".into(),
+                "reviewed".into(),
+                TARGET.into(),
+                "contextually reviewed".into(),
+            ]
+        };
+        let lexical = Table {
+            rows: vec![lexical_row("one"), lexical_row("two")],
+        };
+        let ambiguities = Table { rows: vec![] };
+        assert!(
+            validate_lexical_reviews(Path::new("lexical_reviews.tsv"), &lexical, &ambiguities)
+                .is_err()
+        );
+
+        let exact = Table {
+            rows: vec![
+                vec![
+                    "synodal:noun:one".into(),
+                    "noun:nominative:singular:inanimate".into(),
+                    "слово".into(),
+                    "сло́во".into(),
+                    "shared-target".into(),
+                    "synodal-attestation".into(),
+                    TARGET.into(),
+                ],
+                vec![
+                    "synodal:noun:two".into(),
+                    "noun:nominative:singular:inanimate".into(),
+                    "слово".into(),
+                    "сло́во".into(),
+                    "shared-target-alias".into(),
+                    "synodal-attestation".into(),
+                    TARGET.into(),
+                ],
+            ],
+        };
+        let provenance = Table {
+            rows: vec![
+                vec![
+                    "shared-target".into(),
+                    "target-source".into(),
+                    TARGET.into(),
+                    "Passage.1".into(),
+                    "target-attestation".into(),
+                    "contextually reviewed".into(),
+                ],
+                vec![
+                    "shared-target-alias".into(),
+                    "target-source".into(),
+                    TARGET.into(),
+                    "Passage.1".into(),
+                    "target-attestation".into(),
+                    "contextually reviewed".into(),
+                ],
+            ],
+        };
+        let reviewed_evidence = Table {
+            rows: vec![
+                vec![
+                    "shared-target".into(),
+                    "synodal:candidate:shared-target".into(),
+                ],
+                vec![
+                    "shared-target-alias".into(),
+                    "synodal:candidate:shared-target".into(),
+                ],
+            ],
+        };
+        let lexical_reviews = Table { rows: vec![] };
+        assert!(
+            validate_exact_form_attestation_evidence(
+                Path::new("exact_forms.tsv"),
+                &exact,
+                &provenance,
+                &reviewed_evidence,
+                &lexical_reviews,
+                &ambiguities,
+            )
+            .is_err()
+        );
+
+        let adjudicated = Table {
+            rows: vec![vec![
+                "v07-target-shared".into(),
+                "synodal:candidate:shared-target".into(),
+                "слово".into(),
+                "сло́во".into(),
+                "synodal:noun:one".into(),
+                "noun:nominative:singular:inanimate".into(),
+                "synodal:noun:two".into(),
+                "noun:genitive:singular:inanimate".into(),
+                "adjudicated".into(),
+                "the two exact cells are contextually ambiguous".into(),
+            ]],
+        };
+        let reviewed_ambiguity_evidence = Table {
+            rows: vec![vec![
+                "v07-target-shared".into(),
+                "synodal:candidate:shared-target".into(),
+                "ponomar-elizabeth-bible-2026-08-09".into(),
+                "Passage.1".into(),
+                "reviewed".into(),
+                TARGET.into(),
+                "contextually reviewed".into(),
+            ]],
+        };
+        validate_target_identity_ambiguities(
+            Path::new("ambiguities.tsv"),
+            &adjudicated,
+            &reviewed_ambiguity_evidence,
+        )
+        .expect("valid exact-cell adjudication");
+        assert!(
+            validate_exact_form_attestation_evidence(
+                Path::new("exact_forms.tsv"),
+                &exact,
+                &provenance,
+                &reviewed_evidence,
+                &lexical_reviews,
+                &adjudicated,
+            )
+            .is_err(),
+            "an adjudication for a different cell must not authorize this analysis"
+        );
+        let mut exact_adjudicated = exact.clone();
+        exact_adjudicated.rows[1][1] = "noun:genitive:singular:inanimate".into();
+        assert!(
+            validate_exact_form_attestation_evidence(
+                Path::new("exact_forms.tsv"),
+                &exact_adjudicated,
+                &provenance,
+                &reviewed_evidence,
+                &lexical_reviews,
+                &adjudicated,
+            )
+            .is_ok(),
+            "only the explicitly adjudicated cell pair is permitted"
+        );
+
+        let wrong_owner = lexical_row("one");
+        let exact = Table {
+            rows: vec![vec![
+                "synodal:noun:two".into(),
+                "lexical-form".into(),
+                "слово".into(),
+                "сло́во".into(),
+                "review:one".into(),
+                "synodal-attestation".into(),
+                TARGET.into(),
+            ]],
+        };
+        let provenance = Table {
+            rows: vec![vec![
+                "review:one".into(),
+                "target-source".into(),
+                TARGET.into(),
+                "Passage.1".into(),
+                "reviewed-cell:lexical-form".into(),
+                "contextually reviewed".into(),
+            ]],
+        };
+        assert!(
+            validate_exact_form_attestation_evidence(
+                Path::new("exact_forms.tsv"),
+                &exact,
+                &provenance,
+                &Table { rows: vec![] },
+                &Table {
+                    rows: vec![wrong_owner],
+                },
+                &ambiguities,
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn reviewed_senses_preserve_registered_source_recension() {
+        let reviewed_row = |review_id: &str, source_id: &str| {
+            vec![
+                review_id.into(),
+                format!("synodal:noun:{review_id}"),
+                format!("sense:{review_id}"),
+                "слово".into(),
+                "noun".into(),
+                "lexical-form".into(),
+                "слово".into(),
+                "сло́во".into(),
+                "word".into(),
+                "general".into(),
+                source_id.into(),
+                format!("synodal:candidate:{review_id}:semantic"),
+                "target-source".into(),
+                format!("synodal:candidate:{review_id}:attestation"),
+                "Passage.1".into(),
+                "reviewed".into(),
+                TARGET.into(),
+                "reviewed fixture".into(),
+            ]
+        };
+        let reviews = Table {
+            rows: vec![
+                reviewed_row("ocs", "ocs-source"),
+                reviewed_row("mixed", "mixed-source"),
+                reviewed_row("synodal", "synodal-source"),
+            ],
+        };
+        let source_recensions = BTreeMap::from([
+            ("ocs-source".into(), "old-church-slavonic".into()),
+            ("mixed-source".into(), "mixed".into()),
+            ("synodal-source".into(), "synodal-russian".into()),
+        ]);
+
+        let (_, _, senses) = admitted_lexical_review_rows(&reviews, &source_recensions)
+            .expect("registered semantic sources");
+        assert_eq!(
+            senses
+                .iter()
+                .map(|sense| (sense[5].as_str(), sense[6].as_str()))
+                .collect::<Vec<_>>(),
+            vec![
+                ("old-church-slavonic", "reviewed-ocs-inheritance"),
+                ("mixed", "reviewed-with-synodal-corpus"),
+                ("synodal-russian", "normative"),
+            ]
+        );
+        assert!(
+            admitted_lexical_review_rows(&reviews, &BTreeMap::new()).is_err(),
+            "unregistered semantic sources must fail closed"
+        );
     }
 
     #[test]

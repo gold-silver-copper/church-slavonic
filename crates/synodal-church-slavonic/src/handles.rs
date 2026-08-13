@@ -21,6 +21,8 @@ pub struct Capabilities {
     pub productive_noun: bool,
     pub productive_adjective: bool,
     pub present: bool,
+    pub future: bool,
+    pub past: bool,
     pub imperfect: bool,
     pub aorist: bool,
     pub imperative: bool,
@@ -33,11 +35,39 @@ pub struct Capabilities {
 }
 
 impl Capabilities {
+    /// Returns the supported coarse system families in stable public order.
+    /// Participles and verbal nouns are deliberately family-level capabilities;
+    /// individual [`VerbSystem`] subtypes remain inspectable through paradigms.
+    pub fn supported_systems(&self) -> impl Iterator<Item = &'static str> {
+        [
+            (self.productive_noun, "noun"),
+            (self.productive_adjective, "adjective"),
+            (self.present, "present"),
+            (self.future, "future"),
+            (self.past, "past"),
+            (self.imperfect, "imperfect"),
+            (self.aorist, "aorist"),
+            (self.imperative, "imperative"),
+            (self.infinitive, "infinitive"),
+            (self.l_participle, "l-participle"),
+            (self.participle, "participle"),
+            (self.supine, "supine"),
+            (self.verbal_noun, "verbal-noun"),
+        ]
+        .into_iter()
+        .filter_map(|(supported, name)| supported.then_some(name))
+    }
+
     pub(crate) fn for_summary(summary: &LexemeSummary, inflector: Inflector) -> Self {
         let noun = summary.part_of_speech() == PartOfSpeech::Noun;
-        let adjective = summary.part_of_speech() == PartOfSpeech::Adjective;
         let verb = summary.part_of_speech() == PartOfSpeech::Verb;
         let id = summary.id();
+        let productive_adjective = match summary.part_of_speech() {
+            PartOfSpeech::Adjective => registry::adjective_lexeme(id).is_ok(),
+            PartOfSpeech::Determiner => registry::determiner_lexeme(id).is_ok(),
+            PartOfSpeech::Numeral => registry::ordinal_lexeme(id).is_ok(),
+            _ => false,
+        };
         let verb_metadata = verb
             .then(|| registry::verb_lexeme(id))
             .transpose()
@@ -50,7 +80,7 @@ impl Capabilities {
                 && (!registry::noun_uses_inherited_class(id)
                     || inflector.generation_policy()
                         != synodal_church_slavonic_core::GenerationPolicy::Strict),
-            productive_adjective: adjective && registry::adjective_lexeme(id).is_ok(),
+            productive_adjective,
             present: verb
                 && (registry::has_exact_system(id, "present:")
                     || verb_metadata.as_ref().is_some_and(|metadata| {
@@ -58,6 +88,8 @@ impl Capabilities {
                             && metadata.present_first_singular.is_some()
                             && metadata.present_third_plural.is_some()
                     })),
+            future: verb && registry::has_exact_system(id, "future:"),
+            past: verb && registry::has_exact_system(id, "past:"),
             imperfect: verb
                 && (registry::has_exact_system(id, "imperfect:")
                     || registry::has_principal_part(id, "imperfect-stem")),
@@ -67,7 +99,8 @@ impl Capabilities {
             imperative: verb
                 && (registry::has_exact_system(id, "imperative:")
                     || registry::has_principal_part(id, "imperative-stem")),
-            infinitive: verb,
+            infinitive: verb
+                && (registry::has_exact_system(id, "infinitive") || verb_metadata.is_some()),
             l_participle: verb
                 && (registry::has_exact_system(id, "l-participle:")
                     || registry::has_principal_part(id, "l-participle-stem")),
@@ -94,22 +127,40 @@ pub(crate) fn missing_metadata_by_id(id: &LexemeId) -> Result<Vec<MetadataField>
     Ok(missing_metadata(&summary))
 }
 
-macro_rules! registered_handle {
-    ($name:ident, $part_of_speech:ident) => {
-        #[derive(Clone, Debug)]
-        pub struct $name {
-            summary: LexemeSummary,
-            inflector: Inflector,
+macro_rules! identity_accessors {
+    () => {
+        #[must_use]
+        pub fn id(&self) -> &LexemeId {
+            self.summary.id()
         }
 
-        impl $name {
+        #[must_use]
+        pub fn lemma(&self) -> &str {
+            self.summary.lemma()
+        }
+
+        #[must_use]
+        pub fn capabilities(&self) -> Capabilities {
+            Capabilities::for_summary(&self.summary, self.inflector)
+        }
+
+        #[must_use]
+        pub fn missing_metadata(&self) -> Vec<MetadataField> {
+            missing_metadata(&self.summary)
+        }
+    };
+}
+
+macro_rules! resolved_handle {
+    ($handle:ident, $part_of_speech:expr) => {
+        impl $handle {
             pub fn resolve(lemma: &str) -> Result<Self> {
                 Self::resolve_with(lemma, Inflector::default())
             }
 
             pub fn resolve_with(lemma: &str, inflector: Inflector) -> Result<Self> {
                 let summary = inflector.resolve(lemma)?;
-                require_pos(&summary, PartOfSpeech::$part_of_speech)?;
+                require_pos(&summary, $part_of_speech)?;
                 Ok(Self { summary, inflector })
             }
 
@@ -119,34 +170,22 @@ macro_rules! registered_handle {
 
             pub fn from_id_with(id: &LexemeId, inflector: Inflector) -> Result<Self> {
                 let summary = inflector.from_id(id)?;
-                require_pos(&summary, PartOfSpeech::$part_of_speech)?;
+                require_pos(&summary, $part_of_speech)?;
                 Ok(Self { summary, inflector })
             }
 
-            #[must_use]
-            pub fn id(&self) -> &LexemeId {
-                self.summary.id()
-            }
-
-            #[must_use]
-            pub fn lemma(&self) -> &str {
-                self.summary.lemma()
-            }
-
-            #[must_use]
-            pub fn capabilities(&self) -> Capabilities {
-                Capabilities::for_summary(&self.summary, self.inflector)
-            }
-
-            #[must_use]
-            pub fn missing_metadata(&self) -> Vec<MetadataField> {
-                missing_metadata(&self.summary)
-            }
+            identity_accessors!();
         }
     };
 }
 
-registered_handle!(Noun, Noun);
+#[derive(Clone, Debug)]
+pub struct Noun {
+    summary: LexemeSummary,
+    inflector: Inflector,
+}
+
+resolved_handle!(Noun, PartOfSpeech::Noun);
 
 impl Noun {
     pub fn form(&self, case: Case, number: Number, animacy: Animacy) -> Result<FormSet> {
@@ -166,7 +205,13 @@ impl Noun {
     }
 }
 
-registered_handle!(Adjective, Adjective);
+#[derive(Clone, Debug)]
+pub struct Adjective {
+    summary: LexemeSummary,
+    inflector: Inflector,
+}
+
+resolved_handle!(Adjective, PartOfSpeech::Adjective);
 
 impl Adjective {
     pub fn form(&self, cell: AdjectiveCell) -> Result<FormSet> {
@@ -183,7 +228,13 @@ impl Adjective {
     }
 }
 
-registered_handle!(Verb, Verb);
+#[derive(Clone, Debug)]
+pub struct Verb {
+    summary: LexemeSummary,
+    inflector: Inflector,
+}
+
+resolved_handle!(Verb, PartOfSpeech::Verb);
 
 impl Verb {
     pub fn aspect(&self) -> Result<Aspect> {
@@ -271,8 +322,15 @@ impl Verb {
 }
 
 macro_rules! exact_handle {
-    ($name:ident, $part_of_speech:ident, $cell:ty, $variant:ident) => {
-        registered_handle!($name, $part_of_speech);
+    ($name:ident, $pos:expr, $cell:ty, $variant:ident) => {
+        #[derive(Clone, Debug)]
+        pub struct $name {
+            summary: LexemeSummary,
+            inflector: Inflector,
+        }
+
+        resolved_handle!($name, $pos);
+
         impl $name {
             pub fn form(&self, cell: $cell) -> Result<FormSet> {
                 self.inflector
@@ -282,14 +340,24 @@ macro_rules! exact_handle {
     };
 }
 
-exact_handle!(Pronoun, Pronoun, PronounCell, Pronoun);
-exact_handle!(Numeral, Numeral, NumeralCell, Numeral);
-exact_handle!(Determiner, Determiner, AdjectiveCell, Determiner);
+exact_handle!(Pronoun, PartOfSpeech::Pronoun, PronounCell, Pronoun);
+exact_handle!(Numeral, PartOfSpeech::Numeral, NumeralCell, Numeral);
+exact_handle!(
+    Determiner,
+    PartOfSpeech::Determiner,
+    AdjectiveCell,
+    Determiner
+);
 
 impl Pronoun {
     #[must_use]
     pub fn paradigm(&self) -> Paradigm {
-        Paradigm::build(self.inflector, self.summary.clone(), pronoun_cells())
+        let profiles = registry::pronoun_profiles(self.id());
+        Paradigm::build(
+            self.inflector,
+            self.summary.clone(),
+            pronoun_cells(&profiles),
+        )
     }
 }
 
@@ -386,52 +454,34 @@ fn missing_metadata(summary: &LexemeSummary) -> Vec<MetadataField> {
         return missing;
     }
     let id = summary.id();
-    if !registry::has_exact_system(id, "present:") {
-        match registry::verb_lexeme(id) {
-            Ok(metadata) => {
-                if metadata.present_stem.is_none() {
-                    missing.push(MetadataField::PresentStem);
-                }
-                if metadata.present_first_singular.is_none() {
-                    missing.push(MetadataField::PresentFirstSingular);
-                }
-                if metadata.present_third_plural.is_none() {
-                    missing.push(MetadataField::PresentThirdPlural);
-                }
+    match registry::verb_lexeme(id) {
+        Ok(metadata) => {
+            if metadata.present_stem.is_none() {
+                missing.push(MetadataField::PresentStem);
             }
-            Err(_) => {
-                missing.extend([
-                    MetadataField::PresentStem,
-                    MetadataField::PresentFirstSingular,
-                    MetadataField::PresentThirdPlural,
-                ]);
+            if metadata.present_first_singular.is_none() {
+                missing.push(MetadataField::PresentFirstSingular);
+            }
+            if metadata.present_third_plural.is_none() {
+                missing.push(MetadataField::PresentThirdPlural);
             }
         }
+        Err(_) => {
+            missing.extend([
+                MetadataField::PresentStem,
+                MetadataField::PresentFirstSingular,
+                MetadataField::PresentThirdPlural,
+            ]);
+        }
     }
-    for (field, system, exact_prefix) in [
-        (MetadataField::ImperfectStem, "imperfect-stem", "imperfect:"),
-        (MetadataField::AoristStem, "aorist-stem", "aorist:"),
-        (
-            MetadataField::ImperativeStem,
-            "imperative-stem",
-            "imperative:",
-        ),
-        (
-            MetadataField::LParticipleStem,
-            "l-participle-stem",
-            "l-participle:",
-        ),
-        (MetadataField::SupineStem, "supine-stem", "supine"),
-        (
-            MetadataField::ParticipleStem,
-            "participle-stem",
-            "participle:",
-        ),
-        (
-            MetadataField::VerbalNounStem,
-            "verbal-noun-stem",
-            "verbal-noun:",
-        ),
+    for (field, system) in [
+        (MetadataField::ImperfectStem, "imperfect-stem"),
+        (MetadataField::AoristStem, "aorist-stem"),
+        (MetadataField::ImperativeStem, "imperative-stem"),
+        (MetadataField::LParticipleStem, "l-participle-stem"),
+        (MetadataField::SupineStem, "supine-stem"),
+        (MetadataField::ParticipleStem, "participle-stem"),
+        (MetadataField::VerbalNounStem, "verbal-noun-stem"),
     ] {
         let has_principal_part = if field == MetadataField::ParticipleStem {
             registry::has_principal_part_prefix(id, "present-active-participle-")
@@ -441,7 +491,7 @@ fn missing_metadata(summary: &LexemeSummary) -> Vec<MetadataField> {
         } else {
             registry::has_principal_part(id, system)
         };
-        if !has_principal_part && !registry::has_exact_system(id, exact_prefix) {
+        if !has_principal_part {
             missing.push(field);
         }
     }
