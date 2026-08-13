@@ -134,6 +134,11 @@ cargo xtask synodal-v06-audit --check
 cargo xtask synodal-v07-audit --check
 ```
 
+When a current packet decision changes to `admitted`, run
+`cargo xtask synodal-v07-apply --refresh-ownership` before ordinary
+materialization. The committed ownership ledger retains inactive historical
+packet facts so later rejection, deferral, or re-admission is reproducible.
+
 Full coverage reads only the Ponomar and exact-revision Wikisource records whose
 target recension is `synodal-russian`, retains source and passage identities,
 and writes deterministic JSON/Markdown plus the ordered gap TSV under

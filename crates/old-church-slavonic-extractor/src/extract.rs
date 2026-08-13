@@ -1,5 +1,6 @@
 use crate::emit::generated_rust;
 use crate::normalize::{has_wiki_markup, lookup_key};
+use crate::output::atomic_write_batch;
 use crate::report::ExtractionReport;
 use crate::schema::{AliasRow, Entry, FormRow, LexemeRow, Registry, SourceForm, VerbMetadataRow};
 use crate::validate;
@@ -11,7 +12,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::env;
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::{BufRead, BufReader, Read, Write};
+use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};
 
 const REGISTRY_SCHEMA: u32 = 2;
@@ -1433,100 +1434,6 @@ pub fn load_registry(dir: &Path) -> Result<Registry, Box<dyn Error>> {
         }
     }
     Ok(registry)
-}
-
-fn atomic_write_batch(artifacts: &[(PathBuf, &[u8])]) -> Result<(), Box<dyn Error>> {
-    let process = std::process::id();
-    let unique_targets = artifacts
-        .iter()
-        .map(|(target, _)| target)
-        .collect::<BTreeSet<_>>();
-    if unique_targets.len() != artifacts.len() {
-        return Err("atomic batch contains duplicate target paths".into());
-    }
-    for target in &unique_targets {
-        if target.exists() && !fs::metadata(target)?.is_file() {
-            return Err(format!("atomic batch target is not a file: {}", target.display()).into());
-        }
-    }
-    let prepared = artifacts
-        .iter()
-        .map(|(target, _)| {
-            let name = target
-                .file_name()
-                .and_then(|name| name.to_str())
-                .ok_or_else(|| format!("artifact has no UTF-8 filename: {}", target.display()))?;
-            Ok((
-                target.clone(),
-                target.with_file_name(format!("{name}.refresh-{process}.tmp")),
-                target.with_file_name(format!("{name}.refresh-{process}.bak")),
-            ))
-        })
-        .collect::<Result<Vec<_>, Box<dyn Error>>>()?;
-
-    let prepare = (|| -> Result<(), Box<dyn Error>> {
-        for ((_, bytes), (_, temp, backup)) in artifacts.iter().zip(&prepared) {
-            if temp.exists() {
-                fs::remove_file(temp)?;
-            }
-            if backup.exists() {
-                return Err(format!(
-                    "refusing to overwrite an existing refresh backup: {}",
-                    backup.display()
-                )
-                .into());
-            }
-            let mut file = File::create(temp)?;
-            file.write_all(bytes)?;
-            file.sync_all()?;
-        }
-        Ok(())
-    })();
-    if let Err(error) = prepare {
-        for (_, temp, _) in &prepared {
-            if temp.exists() {
-                let _ = fs::remove_file(temp);
-            }
-        }
-        return Err(error);
-    }
-
-    let commit = (|| -> Result<(), Box<dyn Error>> {
-        for (target, _, backup) in &prepared {
-            if target.exists() {
-                fs::rename(target, backup)?;
-            }
-        }
-        for (target, temp, _) in &prepared {
-            fs::rename(temp, target)?;
-        }
-        Ok(())
-    })();
-
-    if let Err(error) = commit {
-        for (target, temp, backup) in &prepared {
-            if backup.exists() {
-                if target.exists() {
-                    let _ = fs::remove_file(target);
-                }
-                let _ = fs::rename(backup, target);
-            } else if !temp.exists() && target.exists() {
-                // The target did not exist before the batch and its temporary
-                // file was already installed. Remove only that new artifact.
-                let _ = fs::remove_file(target);
-            }
-            if temp.exists() {
-                let _ = fs::remove_file(temp);
-            }
-        }
-        return Err(error);
-    }
-    for (_, _, backup) in &prepared {
-        if backup.exists() {
-            fs::remove_file(backup)?;
-        }
-    }
-    Ok(())
 }
 
 fn workspace_root() -> Result<PathBuf, Box<dyn Error>> {

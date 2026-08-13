@@ -3,6 +3,7 @@
 pub mod emit;
 pub mod extract;
 pub mod normalize;
+mod output;
 pub mod report;
 pub mod schema;
 pub mod semantics;

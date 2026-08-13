@@ -25,6 +25,20 @@ const TARGET_SOURCES: [&str; 2] = [
 const OUTPUT_JSON: &str = "reports/synodal-v07-review-packets.json";
 const OUTPUT_TSV: &str = "reports/synodal-v07-review-packets.tsv";
 const OUTPUT_MARKDOWN: &str = "reports/synodal-v07-review-packets.md";
+const FROZEN_OUTPUTS: [(&str, &str); 3] = [
+    (
+        OUTPUT_JSON,
+        "4020f668e1f75a107584d4fd061dd021663075fd7208bc9798e3da032efb9b12",
+    ),
+    (
+        OUTPUT_TSV,
+        "e41587938e4a450ee9486b44dbf8224a843c12c47cd730f0f1117e8036fb0867",
+    ),
+    (
+        OUTPUT_MARKDOWN,
+        "eb632c229f8ee2fd57b57b1d12ba4052fb95c41413937808a662040f69b32fc2",
+    ),
+];
 const BASELINE_TOP_K: usize = 853_770;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -221,6 +235,20 @@ pub(crate) fn run(
                 );
             }
         }
+    }
+
+    if check {
+        for (relative, expected) in FROZEN_OUTPUTS {
+            let actual = format!("{:x}", Sha256::digest(fs::read(root.join(relative))?));
+            if actual != expected {
+                return Err(format!(
+                    "historical v0.7 packet artifact {relative} changed: expected {expected}, found {actual}"
+                )
+                .into());
+            }
+        }
+        println!("Synodal v0.7 review packets: frozen and current");
+        return Ok(());
     }
 
     let report = build_report(root)?;

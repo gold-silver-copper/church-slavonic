@@ -66,76 +66,24 @@ pub struct Paradigm {
     rows: Vec<ParadigmRow>,
 }
 
-fn build_rows(
-    cells: impl IntoIterator<Item = GrammarCell>,
-    mut generate: impl FnMut(GrammarCell) -> Result<FormSet>,
-) -> Vec<ParadigmRow> {
-    cells
-        .into_iter()
-        .map(|cell| {
-            let outcome = generate(cell);
-            let status = classify(&outcome);
-            ParadigmRow {
-                cell,
-                outcome,
-                status,
-            }
-        })
-        .collect()
-}
-
-fn cells_by_case_number<C>(make: impl Fn(Case, Number) -> C + Copy) -> Vec<C> {
-    Number::ALL
-        .into_iter()
-        .flat_map(move |number| Case::ALL.into_iter().map(move |case| make(case, number)))
-        .collect()
-}
-
-fn cells_by_person_number<C>(make: impl Fn(Person, Number) -> C + Copy) -> Vec<C> {
-    Number::ALL
-        .into_iter()
-        .flat_map(move |number| {
-            Person::ALL
-                .into_iter()
-                .map(move |person| make(person, number))
-        })
-        .collect()
-}
-
-fn cells_by_gender_number<C>(make: impl Fn(Gender, Number) -> C + Copy) -> Vec<C> {
-    Number::ALL
-        .into_iter()
-        .flat_map(move |number| {
-            Gender::ALL
-                .into_iter()
-                .map(move |gender| make(gender, number))
-        })
-        .collect()
-}
-
 impl Paradigm {
     pub(crate) fn build(
         inflector: Inflector,
         lexeme: LexemeSummary,
         cells: impl IntoIterator<Item = GrammarCell>,
     ) -> Self {
-        let rows = build_rows(cells, |cell| inflector.form_by_id(lexeme.id(), cell));
-        Self {
-            identity: ParadigmIdentity::Registered(lexeme),
-            rows,
-        }
+        let id = lexeme.id().clone();
+        Self::build_for(ParadigmIdentity::Registered(lexeme), cells, |cell| {
+            inflector.form_by_id(&id, cell)
+        })
     }
 
     pub(crate) fn build_with(
         lexeme: LexemeSummary,
         cells: impl IntoIterator<Item = GrammarCell>,
-        mut generate: impl FnMut(GrammarCell) -> Result<FormSet>,
+        generate: impl FnMut(GrammarCell) -> Result<FormSet>,
     ) -> Self {
-        let rows = build_rows(cells, &mut generate);
-        Self {
-            identity: ParadigmIdentity::Registered(lexeme),
-            rows,
-        }
+        Self::build_for(ParadigmIdentity::Registered(lexeme), cells, generate)
     }
 
     #[must_use]
@@ -220,58 +168,103 @@ impl Paradigm {
         lemma: String,
         part_of_speech: PartOfSpeech,
         cells: impl IntoIterator<Item = GrammarCell>,
-        mut generate: impl FnMut(GrammarCell) -> Result<FormSet>,
+        generate: impl FnMut(GrammarCell) -> Result<FormSet>,
     ) -> Self {
-        let rows = build_rows(cells, &mut generate);
-        Self {
-            identity: ParadigmIdentity::Explicit {
+        Self::build_for(
+            ParadigmIdentity::Explicit {
                 lemma,
                 part_of_speech,
             },
-            rows,
-        }
+            cells,
+            generate,
+        )
+    }
+
+    fn build_for(
+        identity: ParadigmIdentity,
+        cells: impl IntoIterator<Item = GrammarCell>,
+        mut generate: impl FnMut(GrammarCell) -> Result<FormSet>,
+    ) -> Self {
+        let rows = cells
+            .into_iter()
+            .map(|cell| {
+                let outcome = generate(cell);
+                let status = classify(&outcome);
+                ParadigmRow {
+                    cell,
+                    outcome,
+                    status,
+                }
+            })
+            .collect();
+        Self { identity, rows }
     }
 }
 
 pub(crate) fn noun_cells(animacy: Animacy) -> Vec<GrammarCell> {
-    cells_by_case_number(|case, number| {
-        GrammarCell::Noun(synodal_church_slavonic_core::NounCell {
-            case,
-            number,
-            animacy,
+    Number::ALL
+        .into_iter()
+        .flat_map(|number| {
+            Case::ALL.into_iter().map(move |case| {
+                GrammarCell::Noun(synodal_church_slavonic_core::NounCell {
+                    case,
+                    number,
+                    animacy,
+                })
+            })
         })
-    })
+        .collect()
 }
 
 pub(crate) fn finite_cells(tense: FiniteTense) -> Vec<GrammarCell> {
-    cells_by_person_number(|person, number| {
-        GrammarCell::FiniteVerb(FiniteVerbCell {
-            tense,
-            person,
-            number,
+    Number::ALL
+        .into_iter()
+        .flat_map(|number| {
+            Person::ALL.into_iter().map(move |person| {
+                GrammarCell::FiniteVerb(FiniteVerbCell {
+                    tense,
+                    person,
+                    number,
+                })
+            })
         })
-    })
+        .collect()
 }
 
 pub(crate) fn verb_cells(system: VerbSystem) -> Vec<GrammarCell> {
     match system {
         VerbSystem::Finite(tense) => finite_cells(tense),
-        VerbSystem::Imperative => cells_by_person_number(|person, number| {
-            GrammarCell::Imperative(ImperativeCell { person, number })
-        }),
+        VerbSystem::Imperative => Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Person::ALL
+                    .into_iter()
+                    .map(move |person| GrammarCell::Imperative(ImperativeCell { person, number }))
+            })
+            .collect(),
         VerbSystem::Infinitive => vec![GrammarCell::Infinitive],
-        VerbSystem::LParticiple => cells_by_gender_number(|gender, number| {
-            GrammarCell::LParticiple(LParticipleCell { gender, number })
-        }),
+        VerbSystem::LParticiple => Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Gender::ALL
+                    .into_iter()
+                    .map(move |gender| GrammarCell::LParticiple(LParticipleCell { gender, number }))
+            })
+            .collect(),
         VerbSystem::Participle { tense, voice, form } => participle_cells(tense, voice, form),
         VerbSystem::Supine => vec![GrammarCell::Supine],
-        VerbSystem::VerbalNoun { animacy } => cells_by_case_number(|case, number| {
-            GrammarCell::VerbalNoun(NounCell {
-                case,
-                number,
-                animacy,
+        VerbSystem::VerbalNoun { animacy } => Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Case::ALL.into_iter().map(move |case| {
+                    GrammarCell::VerbalNoun(NounCell {
+                        case,
+                        number,
+                        animacy,
+                    })
+                })
             })
-        }),
+            .collect(),
     }
 }
 
@@ -300,18 +293,18 @@ pub(crate) fn adjective_cells(form: AdjectiveForm) -> Vec<AdjectiveCell> {
         .collect()
 }
 
-pub(crate) fn pronoun_cells() -> Vec<GrammarCell> {
+pub(crate) fn pronoun_cells(profiles: &[(Option<Gender>, Option<Person>)]) -> Vec<GrammarCell> {
     Number::ALL
         .into_iter()
         .flat_map(|number| {
             Case::ALL.into_iter().flat_map(move |case| {
-                Gender::ALL.into_iter().flat_map(move |gender| {
+                profiles.iter().copied().flat_map(move |(gender, person)| {
                     Animacy::ALL.into_iter().map(move |animacy| {
                         GrammarCell::Pronoun(PronounCell {
                             case,
                             number,
-                            gender: Some(gender),
-                            person: None,
+                            gender,
+                            person,
                             animacy,
                         })
                     })

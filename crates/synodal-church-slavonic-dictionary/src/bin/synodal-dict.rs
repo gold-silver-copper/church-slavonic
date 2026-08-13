@@ -231,7 +231,16 @@ fn show_command(mut args: impl Iterator<Item = String>) -> Result<(), Box<dyn Er
     let query = args
         .next()
         .ok_or("show requires a lemma or stable lexeme ID")?;
-    let json = args.any(|argument| argument == "--json");
+    let mut json = false;
+    for argument in args {
+        match argument.as_str() {
+            "--json" => json = true,
+            value if value.starts_with('-') => {
+                return Err(format!("unknown show option {value:?}").into());
+            }
+            _ => return Err("show accepts exactly one lemma or stable lexeme ID".into()),
+        }
+    }
     let entries = if query.starts_with("synodal:") {
         vec![lookup_by_id(&LexemeId::from(query.as_str()))?]
     } else {

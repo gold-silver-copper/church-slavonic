@@ -106,7 +106,9 @@ pub(crate) fn run(
             "Synodal v0.7 audit is an immutable historical snapshot; no live v0.8 reports were rendered"
         );
     }
-    println!("Synodal v0.7 evidence-backed 70% top-k coverage audit: frozen and current");
+    println!(
+        "Synodal v0.7 evidence-backed 70% top-k coverage audit: immutable historical checkpoint"
+    );
     Ok(())
 }
 

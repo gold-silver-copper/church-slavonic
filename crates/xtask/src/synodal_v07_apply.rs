@@ -11,10 +11,25 @@ use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
 
 const PACKETS: &str = "reports/synodal-v07-review-packets.json";
 const REVIEWS: &str = "data/synodal/v07_exact_reviews_wave9.tsv";
+const REVIEW_HISTORY: [&str; 10] = [
+    "data/synodal/v07_exact_reviews.tsv",
+    "data/synodal/v07_exact_reviews_wave2.tsv",
+    "data/synodal/v07_exact_reviews_wave3.tsv",
+    "data/synodal/v07_exact_reviews_wave4.tsv",
+    "data/synodal/v07_exact_reviews_wave5.tsv",
+    "data/synodal/v07_exact_reviews_wave6.tsv",
+    "data/synodal/v07_exact_reviews_wave7.tsv",
+    "data/synodal/v07_exact_reviews_wave8.tsv",
+    "data/synodal/v07_exact_reviews_wave9.tsv",
+    "data/synodal/v07_exact_reviews_wave10.tsv",
+];
 const VARIANT_REVIEWS: &str = "data/synodal/v07_variant_reviews.tsv";
 const ABBREVIATION_REVIEWS: &str = "data/synodal/v07_abbreviation_reviews.tsv";
 const IDENTITY_CORRECTIONS: &str = "data/synodal/v07_identity_corrections.tsv";
 const EVIDENCE_CORRECTIONS: &str = "data/synodal/v07_evidence_corrections.tsv";
+const PACKET_OWNERSHIP: &str = "data/synodal/v07_packet_ownership.tsv";
+const PACKET_EVIDENCE_OWNERSHIP: &str = "data/synodal/v07_packet_evidence_ownership.tsv";
+const PACKET_LEXICAL_OWNERSHIP: &str = "data/synodal/v07_packet_lexical_ownership.tsv";
 const PONOMAR: &str = "data/intermediate/synodal/ponomar-elizabeth-bible-2026-08-09.jsonl";
 const WIKISOURCE: &str =
     "data/intermediate/synodal/wikisource-church-slavonic-bible-2026-08-09.jsonl";
@@ -32,6 +47,11 @@ const LEXICAL_HEADER: &str = "review_id\tlexeme_id\tsense_id\tlemma\tpart_of_spe
 const EVIDENCE_HEADER: &str =
     "evidence_id\tcandidate_id\tsource_id\tcitation\tdecision\ttarget_recension\treview_note";
 const EVALUATION_HEADER: &str = "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
+const PACKET_OWNERSHIP_HEADER: &str = "owner_id\tlexeme_id\tcell\texpanded\tprinted\tevidence_id\tsource_kind\ttarget_recension\tevaluation_id\tpolicy\tevaluation_expanded\tevaluation_printed\tevaluation_source_id\tevaluation_passage\tevaluation_regularity\tsource_candidate_id";
+const MANUAL_PACKET_OWNERS: [&str; 1] = ["eval:identity-correction:on-acc-dual-masculine"];
+const HISTORICAL_PACKET_OWNER_COUNT: usize = 1_059;
+const HISTORICAL_PACKET_OWNER_DIGEST: &str =
+    "833758d269ddc3a8e18adf5c742eb9c73453571e810d847fac578c54521561f0";
 
 #[derive(Clone, Debug, Deserialize)]
 struct PacketReport {
@@ -137,6 +157,43 @@ struct EvidenceCorrection {
     review_note: String,
 }
 
+#[derive(Clone, Debug)]
+struct PacketOwnership {
+    fields: Vec<String>,
+}
+
+impl PacketOwnership {
+    fn owner_id(&self) -> &str {
+        &self.fields[0]
+    }
+
+    fn exact_row(&self) -> String {
+        self.fields[1..8].join("\t")
+    }
+
+    fn evaluation_row(&self) -> String {
+        [
+            self.fields[8].as_str(),
+            self.fields[1].as_str(),
+            self.fields[2].as_str(),
+            self.fields[9].as_str(),
+            self.fields[10].as_str(),
+            self.fields[11].as_str(),
+            self.fields[12].as_str(),
+            self.fields[13].as_str(),
+            self.fields[14].as_str(),
+        ]
+        .join("\t")
+    }
+
+    fn is_active(&self, latest_reviews: &BTreeMap<String, Review>) -> bool {
+        !self.owner_id().starts_with("v07-exact-")
+            || latest_reviews
+                .get(self.owner_id())
+                .is_some_and(|review| review.decision == "admitted")
+    }
+}
+
 #[derive(Clone, Debug, Deserialize)]
 struct TargetCandidate {
     candidate_id: String,
@@ -161,9 +218,11 @@ pub(crate) fn run(
     root: &Path,
 ) -> Result<(), Box<dyn Error>> {
     let mut check = false;
+    let mut refresh_ownership = false;
     for argument in args {
         match argument.as_str() {
             "--check" => check = true,
+            "--refresh-ownership" => refresh_ownership = true,
             value => return Err(format!("unknown synodal-v07-apply argument {value:?}").into()),
         }
     }
@@ -171,64 +230,160 @@ pub(crate) fn run(
     let report: PacketReport = serde_json::from_slice(&fs::read(root.join(PACKETS))?)?;
     let reviews = load_reviews(&root.join(REVIEWS))?;
     validate_review_coverage(&report, &reviews)?;
+    let latest_reviews = load_latest_reviews(root)?;
     let variant_reviews = load_variant_reviews(&root.join(VARIANT_REVIEWS))?;
     let abbreviation_reviews = load_abbreviation_reviews(&root.join(ABBREVIATION_REVIEWS))?;
     let identity_corrections = load_identity_corrections(&root.join(IDENTITY_CORRECTIONS))?;
     let evidence_corrections = load_evidence_corrections(&root.join(EVIDENCE_CORRECTIONS))?;
-    validate_identity_corrections(root, &identity_corrections)?;
-    let candidates = load_target_candidates(root)?;
-    validate_evidence_corrections(root, &evidence_corrections, &candidates)?;
-    validate_variant_reviews(root, &variant_reviews, &candidates)?;
-    validate_abbreviation_reviews(root, &abbreviation_reviews, &candidates)?;
-    let mut derived = derive_rows(&report, &reviews)?;
-    derive_variant_rows(root, &variant_reviews, &mut derived)?;
-    derive_abbreviation_rows(root, &abbreviation_reviews, &mut derived)?;
-    derive_evidence_correction_rows(&evidence_corrections, &mut derived)?;
-    let outputs = [
-        (
-            "data/synodal/exact_forms.tsv",
-            EXACT_HEADER,
-            derived.exact.into_iter().collect::<Vec<_>>(),
-        ),
-        (
-            "data/synodal/abbreviations.tsv",
-            ABBREVIATION_HEADER,
-            derived.abbreviation.into_iter().collect::<Vec<_>>(),
-        ),
-        (
-            "data/synodal/lexical_reviews.tsv",
-            LEXICAL_HEADER,
-            derived.lexical.into_values().collect::<Vec<_>>(),
-        ),
-        (
-            "data/synodal/reviewed_evidence.tsv",
-            EVIDENCE_HEADER,
-            derived.evidence.into_values().collect::<Vec<_>>(),
-        ),
-        (
-            "data/synodal/evaluation.tsv",
-            EVALUATION_HEADER,
-            derived.evaluation.into_iter().collect::<Vec<_>>(),
-        ),
-        (
-            "data/synodal/abbreviation_evaluation.tsv",
-            ABBREVIATION_EVALUATION_HEADER,
-            derived
-                .abbreviation_evaluation
-                .into_iter()
-                .collect::<Vec<_>>(),
-        ),
-    ];
-
-    for (relative, header, rows) in outputs {
-        let path = root.join(relative);
-        let desired = synchronized_table(
-            &path,
-            header,
-            &rows,
+    let initial_derived = derive_rows(&report, &reviews)?;
+    let packet_evidence_ownership =
+        load_owned_rows(&root.join(PACKET_EVIDENCE_OWNERSHIP), EVIDENCE_HEADER)?;
+    let packet_lexical_ownership =
+        load_owned_rows(&root.join(PACKET_LEXICAL_OWNERSHIP), LEXICAL_HEADER)?;
+    if refresh_ownership {
+        if check {
+            return Err("--refresh-ownership and --check are mutually exclusive".into());
+        }
+        let ownership = render_packet_ownership(
+            root,
+            &latest_reviews,
+            &initial_derived,
             &identity_corrections,
             &evidence_corrections,
         )?;
+        fs::write(root.join(PACKET_OWNERSHIP), ownership)?;
+        fs::write(
+            root.join(PACKET_EVIDENCE_OWNERSHIP),
+            merge_owned_rows(
+                EVIDENCE_HEADER,
+                &packet_evidence_ownership,
+                initial_derived.evidence.values().cloned(),
+            )?,
+        )?;
+        fs::write(
+            root.join(PACKET_LEXICAL_OWNERSHIP),
+            merge_owned_rows(
+                LEXICAL_HEADER,
+                &packet_lexical_ownership,
+                initial_derived.lexical.values().cloned(),
+            )?,
+        )?;
+        println!("refreshed durable v0.7 packet ownership");
+        return Ok(());
+    }
+    let packet_ownership = load_packet_ownership(&root.join(PACKET_OWNERSHIP))?;
+    let candidates = load_target_candidates(root)?;
+    validate_packet_ownership(
+        root,
+        &packet_ownership,
+        &latest_reviews,
+        &identity_corrections,
+        &packet_evidence_ownership,
+        &packet_lexical_ownership,
+        &candidates,
+    )?;
+    validate_identity_corrections(root, &identity_corrections)?;
+    validate_evidence_corrections(root, &evidence_corrections, &candidates)?;
+    validate_variant_reviews(root, &variant_reviews, &candidates)?;
+    validate_abbreviation_reviews(root, &abbreviation_reviews, &candidates)?;
+    let mut derived = initial_derived;
+    derive_evidence_correction_rows(&evidence_corrections, &mut derived)?;
+    activate_owned_dependencies(
+        &packet_ownership,
+        &latest_reviews,
+        &packet_evidence_ownership,
+        &packet_lexical_ownership,
+        &mut derived,
+    )?;
+    derive_variant_rows(root, &variant_reviews, &mut derived)?;
+    derive_abbreviation_rows(root, &abbreviation_reviews, &mut derived)?;
+    derived.evaluation.extend(
+        packet_ownership
+            .iter()
+            .filter(|row| row.is_active(&latest_reviews))
+            .map(PacketOwnership::evaluation_row),
+    );
+    derived.exact.extend(
+        packet_ownership
+            .iter()
+            .filter(|row| row.is_active(&latest_reviews))
+            .map(PacketOwnership::exact_row),
+    );
+    let evaluation_base = filter_table(
+        &fs::read_to_string(root.join("data/synodal/evaluation.tsv"))?,
+        EVALUATION_HEADER,
+        |fields| !is_packet_evaluation_id(fields[0]),
+    )?;
+    let evaluation = synchronized_table_text(
+        &root.join("data/synodal/evaluation.tsv"),
+        &evaluation_base,
+        EVALUATION_HEADER,
+        &derived.evaluation.into_iter().collect::<Vec<_>>(),
+        &identity_corrections,
+        &evidence_corrections,
+    )?;
+    let exact_base = filter_table(
+        &fs::read_to_string(root.join("data/synodal/exact_forms.tsv"))?,
+        EXACT_HEADER,
+        |fields| !is_packet_exact_row(fields),
+    )?;
+    let exact = synchronized_table_text(
+        &root.join("data/synodal/exact_forms.tsv"),
+        &exact_base,
+        EXACT_HEADER,
+        &derived.exact.into_iter().collect::<Vec<_>>(),
+        &identity_corrections,
+        &evidence_corrections,
+    )?;
+    let exact = merge_duplicate_exact_rows(&exact)?;
+    let abbreviation = synchronized_table(
+        &root.join("data/synodal/abbreviations.tsv"),
+        ABBREVIATION_HEADER,
+        &derived.abbreviation.into_iter().collect::<Vec<_>>(),
+        &identity_corrections,
+        &evidence_corrections,
+    )?;
+    let referenced_evidence = referenced_evidence_ids(&exact, &abbreviation)?;
+    let lexical = synchronized_table(
+        &root.join("data/synodal/lexical_reviews.tsv"),
+        LEXICAL_HEADER,
+        &derived.lexical.into_values().collect::<Vec<_>>(),
+        &identity_corrections,
+        &evidence_corrections,
+    )?;
+    let lexical = retain_referenced_v07_rows(&lexical, LEXICAL_HEADER, &referenced_evidence)?;
+    let evidence = synchronized_table(
+        &root.join("data/synodal/reviewed_evidence.tsv"),
+        EVIDENCE_HEADER,
+        &derived.evidence.into_values().collect::<Vec<_>>(),
+        &identity_corrections,
+        &evidence_corrections,
+    )?;
+    let evidence = retain_referenced_v07_rows(&evidence, EVIDENCE_HEADER, &referenced_evidence)?;
+    let abbreviation_evaluation = synchronized_table(
+        &root.join("data/synodal/abbreviation_evaluation.tsv"),
+        ABBREVIATION_EVALUATION_HEADER,
+        &derived
+            .abbreviation_evaluation
+            .into_iter()
+            .collect::<Vec<_>>(),
+        &identity_corrections,
+        &evidence_corrections,
+    )?;
+    let outputs = [
+        ("data/synodal/exact_forms.tsv", exact),
+        ("data/synodal/abbreviations.tsv", abbreviation),
+        ("data/synodal/lexical_reviews.tsv", lexical),
+        ("data/synodal/reviewed_evidence.tsv", evidence),
+        ("data/synodal/evaluation.tsv", evaluation),
+        (
+            "data/synodal/abbreviation_evaluation.tsv",
+            abbreviation_evaluation,
+        ),
+    ];
+
+    for (relative, desired) in outputs {
+        let path = root.join(relative);
         if check {
             if fs::read_to_string(&path)? != desired {
                 return Err(format!("stale {relative}; run cargo xtask synodal-v07-apply").into());
@@ -376,6 +531,18 @@ fn validate_identity_corrections(
         .filter(|line| !line.is_empty())
         .map(|line| line.split('\t').collect::<Vec<_>>())
         .collect::<Vec<_>>();
+    let lexeme_text = fs::read_to_string(root.join("data/synodal/lexemes.tsv"))?;
+    let lexemes = table_rows(
+        &lexeme_text,
+        "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension",
+    )?;
+    let sense_text = fs::read_to_string(root.join("data/synodal/senses.tsv"))?;
+    let senses = table_rows(
+        &sense_text,
+        "lexeme_id\tsense_id\tgloss\tdomains\tsource_id\tsource_recension\tsemantic_status",
+    )?;
+    let evidence_text = fs::read_to_string(root.join("data/synodal/reviewed_evidence.tsv"))?;
+    let reviewed_evidence = table_rows(&evidence_text, EVIDENCE_HEADER)?;
     for correction in corrections {
         let obsolete = rows.iter().find(|fields| {
             fields.first() == Some(&correction.obsolete_review_id.as_str())
@@ -387,23 +554,36 @@ fn validate_identity_corrections(
                 && fields.get(1) == Some(&correction.canonical_lexeme_id.as_str())
                 && fields.get(2) == Some(&correction.canonical_sense_id.as_str())
         });
-        let Some(canonical) = canonical else {
-            return Err(format!(
-                "{} does not resolve a canonical reviewed lexical identity",
-                correction.correction_id
-            )
-            .into());
-        };
-        let invalid_obsolete = obsolete.is_some_and(|obsolete| {
-            obsolete.get(11) != Some(&correction.semantic_candidate_id.as_str())
-                || !reviewed_glosses_overlap(obsolete.get(8), canonical.get(8))
-                || obsolete.get(4) != canonical.get(4)
-                || obsolete.get(15) != Some(&"reviewed")
+        let canonical_base_lexeme = lexemes
+            .iter()
+            .find(|fields| fields.first() == Some(&correction.canonical_lexeme_id.as_str()));
+        let canonical_base_sense = senses.iter().find(|fields| {
+            fields.first() == Some(&correction.canonical_lexeme_id.as_str())
+                && fields.get(1) == Some(&correction.canonical_sense_id.as_str())
         });
-        if invalid_obsolete
-            || canonical.get(11) != Some(&correction.semantic_candidate_id.as_str())
-            || canonical.get(15) != Some(&"reviewed")
-        {
+        let canonical_base_evidence = reviewed_evidence.iter().any(|fields| {
+            fields.first() == Some(&correction.canonical_review_id.as_str())
+                && fields.get(4) == Some(&"reviewed")
+        });
+        let invalid_obsolete = obsolete.is_some_and(|obsolete| {
+            let matches_review_overlay = canonical.is_some_and(|canonical| {
+                canonical.get(11) == Some(&correction.semantic_candidate_id.as_str())
+                    && canonical.get(15) == Some(&"reviewed")
+                    && obsolete.get(4) == canonical.get(4)
+                    && reviewed_glosses_overlap(obsolete.get(8), canonical.get(8))
+            });
+            let matches_base_identity = canonical_base_lexeme
+                .zip(canonical_base_sense)
+                .is_some_and(|(lexeme, sense)| {
+                    canonical_base_evidence
+                        && obsolete.get(4) == lexeme.get(2)
+                        && reviewed_glosses_overlap(obsolete.get(8), sense.get(2))
+                });
+            obsolete.get(11) != Some(&correction.semantic_candidate_id.as_str())
+                || obsolete.get(15) != Some(&"reviewed")
+                || !(matches_review_overlay || matches_base_identity)
+        });
+        if invalid_obsolete || (canonical.is_none() && canonical_base_lexeme.is_none()) {
             return Err(format!(
                 "{} does not prove a duplicate reviewed semantic identity",
                 correction.correction_id
@@ -423,7 +603,17 @@ fn reviewed_glosses_overlap(left: Option<&&str>, right: Option<&&str>) -> bool {
     };
     let left = left.to_lowercase();
     let right = right.to_lowercase();
-    left == right || left.contains(&right) || right.contains(&left)
+    left == right
+        || left.contains(&right)
+        || right.contains(&left)
+        || left
+            .split(|character: char| !character.is_alphabetic())
+            .filter(|word| word.len() > 2)
+            .any(|word| {
+                right
+                    .split(|character: char| !character.is_alphabetic())
+                    .any(|other| word == other)
+            })
 }
 
 fn validate_evidence_corrections(
@@ -530,6 +720,664 @@ fn load_reviews(path: &Path) -> Result<BTreeMap<String, Review>, Box<dyn Error>>
         }
     }
     Ok(reviews)
+}
+
+fn load_latest_reviews(root: &Path) -> Result<BTreeMap<String, Review>, Box<dyn Error>> {
+    let mut latest = BTreeMap::new();
+    for relative in REVIEW_HISTORY {
+        for (packet_id, review) in load_reviews(&root.join(relative))? {
+            latest.insert(packet_id, review);
+        }
+    }
+    Ok(latest)
+}
+
+type ExactTuple = (String, String, String, String);
+
+fn render_packet_ownership(
+    root: &Path,
+    latest_reviews: &BTreeMap<String, Review>,
+    derived: &DerivedRows,
+    identity_corrections: &[IdentityCorrection],
+    evidence_corrections: &[EvidenceCorrection],
+) -> Result<String, Box<dyn Error>> {
+    let existing_ownership = load_packet_ownership(&root.join(PACKET_OWNERSHIP))?;
+    let exact_path = root.join("data/synodal/exact_forms.tsv");
+    let evaluation_path = root.join("data/synodal/evaluation.tsv");
+    let exact_current = fs::read_to_string(&exact_path)?;
+    let evaluation_current = fs::read_to_string(&evaluation_path)?;
+    let exact_text = synchronized_table_text(
+        &exact_path,
+        &exact_current,
+        EXACT_HEADER,
+        &derived.exact.iter().cloned().collect::<Vec<_>>(),
+        identity_corrections,
+        evidence_corrections,
+    )?;
+    let evaluation_text = synchronized_table_text(
+        &evaluation_path,
+        &evaluation_current,
+        EVALUATION_HEADER,
+        &derived.evaluation.iter().cloned().collect::<Vec<_>>(),
+        identity_corrections,
+        evidence_corrections,
+    )?;
+    let refreshed = render_packet_ownership_from_tables(
+        &exact_text,
+        &evaluation_text,
+        latest_reviews,
+        &MANUAL_PACKET_OWNERS,
+        root,
+    )?;
+    merge_packet_ownership(&existing_ownership, &refreshed, latest_reviews)
+}
+
+fn render_packet_ownership_from_tables(
+    exact_text: &str,
+    evaluation_text: &str,
+    latest_reviews: &BTreeMap<String, Review>,
+    manual_owners: &[&str],
+    root: &Path,
+) -> Result<String, Box<dyn Error>> {
+    let exact_rows = table_rows(exact_text, EXACT_HEADER)?;
+    let evaluation_rows = table_rows(evaluation_text, EVALUATION_HEADER)?;
+    let evaluations = evaluation_rows
+        .into_iter()
+        .map(|fields| (fields[0].to_owned(), fields))
+        .collect::<BTreeMap<_, _>>();
+    let mut ownership = BTreeMap::new();
+
+    for (packet_id, review) in latest_reviews {
+        if review.decision != "admitted" {
+            continue;
+        }
+        let evaluation_id = format!("eval:v07:{}", &stable_hex(&[packet_id])[..16]);
+        let evaluation = evaluations.get(&evaluation_id).ok_or_else(|| {
+            format!("admitted packet {packet_id} has no materialized evaluation row")
+        })?;
+        let exact = exact_row_for_evaluation(&exact_rows, evaluation)?;
+        ownership.insert(
+            packet_id.clone(),
+            ownership_row(root, packet_id, exact, evaluation)?,
+        );
+    }
+
+    for &owner_id in manual_owners {
+        let evaluation = evaluations.get(owner_id).ok_or_else(|| {
+            format!("manual v0.7 ownership {owner_id} has no materialized evaluation row")
+        })?;
+        let exact = exact_row_for_evaluation(&exact_rows, evaluation)?;
+        ownership.insert(
+            owner_id.to_owned(),
+            ownership_row(root, owner_id, exact, evaluation)?,
+        );
+    }
+
+    let mut output = String::from(PACKET_OWNERSHIP_HEADER);
+    output.push('\n');
+    for row in ownership.into_values() {
+        output.push_str(&row);
+        output.push('\n');
+    }
+    Ok(output)
+}
+
+fn exact_row_for_evaluation<'a>(
+    exact_rows: &'a [Vec<&'a str>],
+    evaluation: &[&str],
+) -> Result<&'a Vec<&'a str>, Box<dyn Error>> {
+    let matches = exact_rows
+        .iter()
+        .filter(|fields| {
+            fields[0] == evaluation[1]
+                && fields[1] == evaluation[2]
+                && fields[2] == evaluation[4]
+                && fields[3] == evaluation[5]
+        })
+        .collect::<Vec<_>>();
+    match matches.as_slice() {
+        [row] => Ok(row),
+        [] => Err(format!(
+            "v0.7 evaluation {:?} has no materialized exact row",
+            evaluation[0]
+        )
+        .into()),
+        _ => Err(format!(
+            "v0.7 evaluation {:?} has multiple materialized exact rows",
+            evaluation[0]
+        )
+        .into()),
+    }
+}
+
+fn ownership_row(
+    root: &Path,
+    owner_id: &str,
+    exact: &[&str],
+    evaluation: &[&str],
+) -> Result<String, Box<dyn Error>> {
+    let source_candidate_id = source_candidate_for_exact(root, exact)?;
+    Ok([
+        owner_id,
+        exact[0],
+        exact[1],
+        exact[2],
+        exact[3],
+        exact[4],
+        exact[5],
+        exact[6],
+        evaluation[0],
+        evaluation[3],
+        evaluation[4],
+        evaluation[5],
+        evaluation[6],
+        evaluation[7],
+        evaluation[8],
+        source_candidate_id.as_str(),
+    ]
+    .join("\t"))
+}
+
+fn source_candidate_for_exact(root: &Path, exact: &[&str]) -> Result<String, Box<dyn Error>> {
+    let evidence = fs::read_to_string(root.join("data/synodal/reviewed_evidence.tsv"))?;
+    let candidates = table_rows(&evidence, EVIDENCE_HEADER)?
+        .into_iter()
+        .map(|fields| (fields[0], fields[1]))
+        .collect::<BTreeMap<_, _>>();
+    exact[4]
+        .split(',')
+        .find_map(|id| {
+            id.starts_with("v07-source-")
+                .then(|| candidates.get(id).copied())
+                .flatten()
+        })
+        .map(str::to_owned)
+        .ok_or_else(|| format!("durable row for {} has no source candidate", exact[0]).into())
+}
+
+fn merge_packet_ownership(
+    existing: &[PacketOwnership],
+    refreshed: &str,
+    latest_reviews: &BTreeMap<String, Review>,
+) -> Result<String, Box<dyn Error>> {
+    let mut rows = existing
+        .iter()
+        .map(|row| (row.owner_id().to_owned(), row.fields.join("\t")))
+        .collect::<BTreeMap<_, _>>();
+    for fields in table_rows(refreshed, PACKET_OWNERSHIP_HEADER)? {
+        rows.insert(fields[0].to_owned(), fields.join("\t"));
+    }
+    rows.retain(|owner_id, _| {
+        !owner_id.starts_with("v07-exact-") || latest_reviews.contains_key(owner_id)
+    });
+    let mut output = String::from(PACKET_OWNERSHIP_HEADER);
+    output.push('\n');
+    for row in rows.into_values() {
+        output.push_str(&row);
+        output.push('\n');
+    }
+    Ok(output)
+}
+
+fn load_packet_ownership(path: &Path) -> Result<Vec<PacketOwnership>, Box<dyn Error>> {
+    let text = fs::read_to_string(path)?;
+    let mut lines = text.lines();
+    if lines.next() != Some(PACKET_OWNERSHIP_HEADER) {
+        return Err(format!("invalid v0.7 packet-ownership header in {}", path.display()).into());
+    }
+    let mut owners = BTreeSet::new();
+    let mut ownership = Vec::new();
+    for (offset, line) in lines.enumerate() {
+        if line.is_empty() {
+            continue;
+        }
+        let fields = line.split('\t').map(str::to_owned).collect::<Vec<_>>();
+        if fields.len() != 16 || fields.iter().any(String::is_empty) {
+            return Err(format!("invalid v0.7 packet-ownership row {}", offset + 2).into());
+        }
+        if !owners.insert(fields[0].clone()) {
+            return Err(format!("duplicate v0.7 packet owner {:?}", fields[0]).into());
+        }
+        ownership.push(PacketOwnership { fields });
+    }
+    Ok(ownership)
+}
+
+fn load_owned_rows(path: &Path, header: &str) -> Result<BTreeMap<String, String>, Box<dyn Error>> {
+    let text = fs::read_to_string(path)?;
+    let mut rows = BTreeMap::new();
+    let expected_fields = header.split('\t').count();
+    for fields in table_rows(&text, header)? {
+        if fields.len() != expected_fields {
+            return Err(format!(
+                "invalid durable ownership row width in {}: expected {expected_fields}, found {}",
+                path.display(),
+                fields.len()
+            )
+            .into());
+        }
+        if fields.iter().any(|field| field.is_empty()) {
+            return Err(format!("empty durable ownership field in {}", path.display()).into());
+        }
+        let id = fields[0].to_owned();
+        if rows.insert(id.clone(), fields.join("\t")).is_some() {
+            return Err(format!(
+                "duplicate durable ownership row {id:?} in {}",
+                path.display()
+            )
+            .into());
+        }
+    }
+    Ok(rows)
+}
+
+fn merge_owned_rows(
+    header: &str,
+    existing: &BTreeMap<String, String>,
+    derived: impl IntoIterator<Item = String>,
+) -> Result<String, Box<dyn Error>> {
+    let mut rows = existing.clone();
+    for row in derived {
+        let id = row
+            .split('\t')
+            .next()
+            .ok_or("empty durable ownership row")?;
+        if rows
+            .insert(id.to_owned(), row.clone())
+            .is_some_and(|previous| previous != row)
+        {
+            return Err(format!("conflicting durable ownership row {id:?}").into());
+        }
+    }
+    let mut output = String::from(header);
+    output.push('\n');
+    for row in rows.into_values() {
+        output.push_str(&row);
+        output.push('\n');
+    }
+    Ok(output)
+}
+
+fn activate_owned_dependencies(
+    ownership: &[PacketOwnership],
+    latest_reviews: &BTreeMap<String, Review>,
+    evidence_ownership: &BTreeMap<String, String>,
+    lexical_ownership: &BTreeMap<String, String>,
+    derived: &mut DerivedRows,
+) -> Result<(), Box<dyn Error>> {
+    for row in ownership.iter().filter(|row| row.is_active(latest_reviews)) {
+        for id in row.fields[5].split(',') {
+            if let Some(owned) = evidence_ownership.get(id) {
+                if let Some(previous) = derived.evidence.get(id) {
+                    if previous != owned
+                        && !previous.split('\t').take(6).eq(owned.split('\t').take(6))
+                    {
+                        return Err(format!("conflicting active evidence ownership {id:?}").into());
+                    }
+                } else {
+                    derived.evidence.insert(id.to_owned(), owned.clone());
+                }
+            } else if let Some(owned) = lexical_ownership.get(id) {
+                let fields = owned.split('\t').collect::<Vec<_>>();
+                let lexeme_id = fields
+                    .get(1)
+                    .ok_or_else(|| format!("invalid active lexical ownership {id:?}"))?;
+                if derived
+                    .lexical
+                    .insert((*lexeme_id).to_owned(), owned.clone())
+                    .is_some_and(|previous| previous != *owned)
+                {
+                    return Err(format!("conflicting active lexical ownership {id:?}").into());
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn validate_packet_ownership(
+    root: &Path,
+    ownership: &[PacketOwnership],
+    latest_reviews: &BTreeMap<String, Review>,
+    identity_corrections: &[IdentityCorrection],
+    evidence_ownership: &BTreeMap<String, String>,
+    lexical_ownership: &BTreeMap<String, String>,
+    candidates: &BTreeMap<String, TargetCandidate>,
+) -> Result<(), Box<dyn Error>> {
+    let admitted = latest_reviews
+        .iter()
+        .filter(|(_, review)| review.decision == "admitted")
+        .map(|(packet_id, _)| packet_id.as_str())
+        .collect::<BTreeSet<_>>();
+    let packet_owners = ownership
+        .iter()
+        .filter(|row| row.owner_id().starts_with("v07-exact-"))
+        .map(PacketOwnership::owner_id)
+        .collect::<BTreeSet<_>>();
+    let owner_digest = stable_hex(&packet_owners.iter().copied().collect::<Vec<_>>());
+    if packet_owners.len() != HISTORICAL_PACKET_OWNER_COUNT
+        || owner_digest != HISTORICAL_PACKET_OWNER_DIGEST
+    {
+        return Err(format!(
+            "durable v0.7 ownership inventory drifted: found {} rows with digest {owner_digest}; expected {HISTORICAL_PACKET_OWNER_COUNT} rows with digest {HISTORICAL_PACKET_OWNER_DIGEST}",
+            packet_owners.len(),
+        )
+        .into());
+    }
+    if !packet_owners.is_superset(&admitted) {
+        let missing = admitted
+            .difference(&packet_owners)
+            .take(5)
+            .collect::<Vec<_>>();
+        return Err(format!(
+            "durable v0.7 ownership does not cover admitted review history; missing={missing:?}"
+        )
+        .into());
+    }
+    if let Some(stale) = packet_owners
+        .iter()
+        .find(|owner_id| !latest_reviews.contains_key(**owner_id))
+    {
+        return Err(format!("durable v0.7 ownership has unknown packet {stale}").into());
+    }
+
+    let manual = ownership
+        .iter()
+        .filter(|row| !row.owner_id().starts_with("v07-exact-"))
+        .map(PacketOwnership::owner_id)
+        .collect::<BTreeSet<_>>();
+    let expected_manual = MANUAL_PACKET_OWNERS.into_iter().collect::<BTreeSet<_>>();
+    if manual != expected_manual {
+        return Err(format!(
+            "durable v0.7 ownership has invalid manual owners {manual:?}; expected {expected_manual:?}"
+        )
+        .into());
+    }
+
+    let evidence_text = fs::read_to_string(root.join("data/synodal/reviewed_evidence.tsv"))?;
+    let lexical_text = fs::read_to_string(root.join("data/synodal/lexical_reviews.tsv"))?;
+    let evidence_rows = table_rows(&evidence_text, EVIDENCE_HEADER)?;
+    let lexical_rows = table_rows(&lexical_text, LEXICAL_HEADER)?;
+    let evidence_candidates = evidence_rows
+        .iter()
+        .map(|fields| (fields[0], fields[1]))
+        .collect::<BTreeMap<_, _>>();
+    let known_evidence = evidence_candidates
+        .keys()
+        .copied()
+        .chain(lexical_rows.iter().map(|fields| fields[0]))
+        .chain(evidence_ownership.keys().map(String::as_str))
+        .chain(lexical_ownership.keys().map(String::as_str))
+        .chain(
+            identity_corrections
+                .iter()
+                .map(|correction| correction.obsolete_review_id.as_str()),
+        )
+        .collect::<BTreeSet<_>>();
+
+    for row in ownership {
+        let fields = &row.fields;
+        if fields[3] != fields[10] || fields[4] != fields[11] {
+            return Err(
+                format!("{} has mismatched exact/evaluation tuples", row.owner_id()).into(),
+            );
+        }
+        if fields[6] != "synodal-attestation" || fields[7] != "synodal-russian" {
+            return Err(format!("{} has invalid exact provenance", row.owner_id()).into());
+        }
+        for id in fields[5].split(',') {
+            if id.starts_with("v07-source-") || id.starts_with("v07-target-") {
+                let owned = evidence_ownership.get(id).ok_or_else(|| {
+                    format!(
+                        "{} lacks durable evidence ownership for {id:?}",
+                        row.owner_id()
+                    )
+                })?;
+                let evidence = owned.split('\t').collect::<Vec<_>>();
+                if evidence[4] != "reviewed" || evidence[5] != "synodal-russian" {
+                    return Err(format!(
+                        "{} has unreviewed or wrong-recension durable evidence {id:?}",
+                        row.owner_id()
+                    )
+                    .into());
+                }
+                let expected = if id.starts_with("v07-source-") {
+                    if evidence[1] != fields[15] {
+                        return Err(format!(
+                            "{} source ownership candidate disagrees with {id:?}",
+                            row.owner_id()
+                        )
+                        .into());
+                    }
+                    stable_id("v07-source", &[evidence[1], &fields[2]])
+                } else {
+                    if !matches!(
+                        evidence[2],
+                        "ponomar-elizabeth-bible-2026-08-09"
+                            | "wikisource-church-slavonic-bible-2026-08-09"
+                    ) {
+                        return Err(format!(
+                            "{} target ownership uses a non-target source {id:?}",
+                            row.owner_id()
+                        )
+                        .into());
+                    }
+                    stable_id("v07-target", &[evidence[1], &fields[4]])
+                };
+                if id != expected {
+                    return Err(format!(
+                        "{} durable evidence ID {id:?} is not bound to its stored candidate and tuple",
+                        row.owner_id()
+                    )
+                    .into());
+                }
+            } else if id.starts_with("review:v07:") {
+                let owned = lexical_ownership.get(id).ok_or_else(|| {
+                    format!(
+                        "{} lacks durable lexical ownership for {id:?}",
+                        row.owner_id()
+                    )
+                })?;
+                validate_owned_lexical(
+                    row.owner_id(),
+                    &fields[1],
+                    id,
+                    owned,
+                    row.is_active(latest_reviews),
+                )?;
+            }
+        }
+        let evaluation_candidates = candidates
+            .values()
+            .filter(|candidate| {
+                candidate.source_id == fields[12]
+                    && candidate.passage == fields[13]
+                    && contains_whole_token(&candidate.normalized_spelling, &fields[11])
+            })
+            .take(2)
+            .collect::<Vec<_>>();
+        if evaluation_candidates.len() != 1 {
+            return Err(format!(
+                "{} does not bind to exactly one held-out evaluation candidate",
+                row.owner_id()
+            )
+            .into());
+        }
+        if row.is_active(latest_reviews)
+            && fields[5].split(',').any(|id| !known_evidence.contains(id))
+        {
+            return Err(format!("{} cites missing durable evidence", row.owner_id()).into());
+        }
+        if row.owner_id().starts_with("v07-exact-") {
+            let expected_evaluation = format!("eval:v07:{}", &stable_hex(&[row.owner_id()])[..16]);
+            if fields[8] != expected_evaluation {
+                return Err(
+                    format!("{} has a non-deterministic evaluation ID", row.owner_id()).into(),
+                );
+            }
+            let mut lexeme_ids = vec![fields[1].as_str()];
+            lexeme_ids.extend(
+                identity_corrections
+                    .iter()
+                    .filter(|correction| correction.canonical_lexeme_id == fields[1])
+                    .map(|correction| correction.obsolete_lexeme_id.as_str()),
+            );
+            let source_candidate_id = fields[15].as_str();
+            let expected_source_id = stable_id("v07-source", &[source_candidate_id, &fields[2]]);
+            let matches_owner = fields[5].split(',').any(|id| id == expected_source_id)
+                && lexeme_ids.iter().any(|lexeme_id| {
+                    stable_id(
+                        "v07-exact",
+                        &[source_candidate_id, lexeme_id, &fields[2], &fields[4]],
+                    ) == row.owner_id()
+                });
+            if !matches_owner {
+                return Err(format!(
+                    "{} cannot be reconstructed from its source evidence and exact tuple",
+                    row.owner_id()
+                )
+                .into());
+            }
+        } else if fields[8] != fields[0] || fields[14] != "v07-reviewed-identity-correction" {
+            return Err(format!("{} has invalid manual ownership metadata", row.owner_id()).into());
+        }
+    }
+    Ok(())
+}
+
+fn validate_owned_lexical(
+    owner_id: &str,
+    owner_lexeme_id: &str,
+    review_id: &str,
+    owned: &str,
+    active: bool,
+) -> Result<(), Box<dyn Error>> {
+    let lexical = owned.split('\t').collect::<Vec<_>>();
+    if lexical.len() != LEXICAL_HEADER.split('\t').count()
+        || lexical[0] != review_id
+        || lexical[1] != owner_lexeme_id
+        || !matches!(lexical[15], "reviewed" | "rejected")
+        || (active && lexical[15] != "reviewed")
+        || lexical[16] != "synodal-russian"
+    {
+        return Err(format!(
+            "{owner_id} has wrong-identity, unreviewed, or wrong-recension durable lexical ownership {review_id:?}"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+fn is_packet_evaluation_id(id: &str) -> bool {
+    id.strip_prefix("eval:v07:").is_some_and(|suffix| {
+        suffix.len() == 16 && suffix.bytes().all(|byte| byte.is_ascii_hexdigit())
+    }) || MANUAL_PACKET_OWNERS.contains(&id)
+}
+
+fn is_packet_exact_row(fields: &[&str]) -> bool {
+    fields.get(4).is_some_and(|evidence| {
+        let ids = evidence.split(',').collect::<Vec<_>>();
+        ids.iter().any(|id| id.starts_with("v07-source-"))
+            && ids.iter().any(|id| id.starts_with("v07-target-"))
+    })
+}
+
+fn merge_duplicate_exact_rows(exact: &str) -> Result<String, Box<dyn Error>> {
+    let mut order = Vec::<ExactTuple>::new();
+    let mut rows = BTreeMap::<ExactTuple, Vec<String>>::new();
+    for fields in table_rows(exact, EXACT_HEADER)? {
+        let key = (
+            fields[0].to_owned(),
+            fields[1].to_owned(),
+            fields[2].to_owned(),
+            fields[3].to_owned(),
+        );
+        if let Some(existing) = rows.get_mut(&key) {
+            if existing[5] != fields[5] || existing[6] != fields[6] {
+                return Err(format!(
+                    "duplicate exact tuple {key:?} disagrees on source kind or target recension"
+                )
+                .into());
+            }
+            let mut evidence = existing[4]
+                .split(',')
+                .map(str::to_owned)
+                .collect::<Vec<_>>();
+            for id in fields[4].split(',') {
+                if !evidence.iter().any(|existing| existing == id) {
+                    evidence.push(id.to_owned());
+                }
+            }
+            existing[4] = evidence.join(",");
+        } else {
+            order.push(key.clone());
+            rows.insert(key, fields.into_iter().map(str::to_owned).collect());
+        }
+    }
+    let mut output = String::from(EXACT_HEADER);
+    output.push('\n');
+    for key in order {
+        output.push_str(&rows[&key].join("\t"));
+        output.push('\n');
+    }
+    Ok(output)
+}
+
+fn referenced_evidence_ids(
+    exact: &str,
+    abbreviation: &str,
+) -> Result<BTreeSet<String>, Box<dyn Error>> {
+    let mut referenced = BTreeSet::new();
+    for fields in table_rows(exact, EXACT_HEADER)? {
+        referenced.extend(fields[4].split(',').map(str::to_owned));
+    }
+    for fields in table_rows(abbreviation, ABBREVIATION_HEADER)? {
+        referenced.extend(fields[6].split(',').map(str::to_owned));
+    }
+    Ok(referenced)
+}
+
+fn retain_referenced_v07_rows(
+    table: &str,
+    header: &str,
+    referenced: &BTreeSet<String>,
+) -> Result<String, Box<dyn Error>> {
+    filter_table(table, header, |fields| {
+        let id = fields[0];
+        let rejected_lexical_decision =
+            header == LEXICAL_HEADER && fields.get(15) == Some(&"rejected");
+        !(id.starts_with("v07-") || id.starts_with("review:v07:"))
+            || referenced.contains(id)
+            || rejected_lexical_decision
+    })
+}
+
+fn table_rows<'a>(table: &'a str, header: &str) -> Result<Vec<Vec<&'a str>>, Box<dyn Error>> {
+    let mut lines = table.lines();
+    if lines.next() != Some(header) {
+        return Err("invalid synchronized v0.7 table header".into());
+    }
+    Ok(lines
+        .filter(|line| !line.is_empty())
+        .map(|line| line.split('\t').collect())
+        .collect())
+}
+
+fn filter_table(
+    table: &str,
+    header: &str,
+    mut retain: impl FnMut(&[&str]) -> bool,
+) -> Result<String, Box<dyn Error>> {
+    let rows = table_rows(table, header)?;
+    let mut output = String::from(header);
+    output.push('\n');
+    for fields in rows {
+        if retain(&fields) {
+            output.push_str(&fields.join("\t"));
+            output.push('\n');
+        }
+    }
+    Ok(output)
 }
 
 fn load_variant_reviews(path: &Path) -> Result<Vec<VariantReview>, Box<dyn Error>> {
@@ -702,7 +1550,6 @@ fn validate_variant_reviews(
     reviews: &[VariantReview],
     candidates: &BTreeMap<String, TargetCandidate>,
 ) -> Result<(), Box<dyn Error>> {
-    let exact = fs::read_to_string(root.join("data/synodal/exact_forms.tsv"))?;
     let abbreviation = fs::read_to_string(root.join("data/synodal/abbreviations.tsv"))?;
     for review in reviews {
         if review.printed == review.base_printed
@@ -749,19 +1596,10 @@ fn validate_variant_reviews(
             return Err(format!("{} lacks an exact whole-token witness", review.review_id).into());
         }
         let base_found = if review.lane == "exact-form" {
-            table_has_base_row(
-                &exact,
-                EXACT_HEADER,
-                review,
-                &[0, 1, 2, 3, 4],
-                &[
-                    &review.lexeme_id,
-                    &review.cell,
-                    &review.expanded,
-                    &review.base_printed,
-                    &review.base_evidence_id,
-                ],
-            )?
+            // An admitted exact-form variant has its own source and held-out
+            // witnesses. Its bounded base spelling need not remain admitted
+            // when a later exact-packet wave rejects or defers that base cell.
+            true
         } else {
             table_has_base_row(
                 &abbreviation,
@@ -1172,9 +2010,8 @@ fn derive_variant_rows(
             &target_role,
             &review.review_note,
         )?;
-        let evidence = format!("{},{}", review.base_evidence_id, target_id);
         if review.lane == "exact-form" {
-            let base = find_base_fields(
+            let base = try_find_base_fields(
                 &exact_text,
                 EXACT_HEADER,
                 &[0, 1, 2, 3, 4],
@@ -1186,6 +2023,10 @@ fn derive_variant_rows(
                     &review.base_evidence_id,
                 ],
             )?;
+            let evidence = base.as_ref().map_or_else(
+                || target_id.clone(),
+                |_| format!("{},{}", review.base_evidence_id, target_id),
+            );
             rows.exact.insert(
                 [
                     review.lexeme_id.as_str(),
@@ -1193,8 +2034,9 @@ fn derive_variant_rows(
                     review.expanded.as_str(),
                     review.printed.as_str(),
                     evidence.as_str(),
-                    base[5],
-                    base[6],
+                    base.as_ref()
+                        .map_or("synodal-attestation", |fields| fields[5]),
+                    base.as_ref().map_or("synodal-russian", |fields| fields[6]),
                 ]
                 .join("\t"),
             );
@@ -1213,6 +2055,7 @@ fn derive_variant_rows(
                 .join("\t"),
             );
         } else {
+            let evidence = format!("{},{}", review.base_evidence_id, target_id);
             let base = find_base_fields(
                 &abbreviation_text,
                 ABBREVIATION_HEADER,
@@ -1339,11 +2182,21 @@ fn find_base_fields<'a>(
     indexes: &[usize],
     expected: &[&String],
 ) -> Result<Vec<&'a str>, Box<dyn Error>> {
+    try_find_base_fields(text, header, indexes, expected)?
+        .ok_or_else(|| "reviewed variant base row disappeared during derivation".into())
+}
+
+fn try_find_base_fields<'a>(
+    text: &'a str,
+    header: &str,
+    indexes: &[usize],
+    expected: &[&String],
+) -> Result<Option<Vec<&'a str>>, Box<dyn Error>> {
     let mut lines = text.lines();
     if lines.next() != Some(header) {
         return Err("invalid base registry header".into());
     }
-    lines
+    Ok(lines
         .filter(|line| !line.is_empty())
         .map(|line| line.split('\t').collect::<Vec<_>>())
         .find(|fields| {
@@ -1352,8 +2205,7 @@ fn find_base_fields<'a>(
                     .get(*index)
                     .is_some_and(|field| field == &value.as_str())
             })
-        })
-        .ok_or_else(|| "reviewed variant base row disappeared during derivation".into())
+        }))
 }
 
 fn role<'a>(packet: &'a Packet, name: &str) -> Result<&'a EvidenceRole, Box<dyn Error>> {
@@ -1410,6 +2262,24 @@ fn synchronized_table(
     evidence_corrections: &[EvidenceCorrection],
 ) -> Result<String, Box<dyn Error>> {
     let text = fs::read_to_string(path)?;
+    synchronized_table_text(
+        path,
+        &text,
+        header,
+        derived,
+        corrections,
+        evidence_corrections,
+    )
+}
+
+fn synchronized_table_text(
+    path: &Path,
+    text: &str,
+    header: &str,
+    derived: &[String],
+    corrections: &[IdentityCorrection],
+    evidence_corrections: &[EvidenceCorrection],
+) -> Result<String, Box<dyn Error>> {
     let mut lines = text.lines();
     if lines.next() != Some(header) {
         return Err(format!("invalid header in {}", path.display()).into());
@@ -1554,6 +2424,166 @@ mod tests {
             correct_reviewed_row(LEXICAL_HEADER, lexical, &[correction], &[])
                 .expect("valid lexical identity correction"),
             None
+        );
+    }
+
+    #[test]
+    fn durable_ownership_restores_admissions_and_retracts_reintroduced_rows() {
+        let admitted = "lexeme\tcell\texpanded\tprinted\tv07-source-admitted,v07-target-admitted\tsynodal-attestation\tsynodal-russian";
+        let rejected = "other\tcell\texpanded\tprinted\tv07-source-rejected,v07-target-rejected\tsynodal-attestation\tsynodal-russian";
+        let variant = "lexeme\tcell\texpanded\tvariant\tv07-variant-source-id,v07-variant-target-id\tsynodal-attestation\tsynodal-russian";
+        let dirty = format!("{EXACT_HEADER}\n{rejected}\n{variant}\n");
+        let base = filter_table(&dirty, EXACT_HEADER, |fields| !is_packet_exact_row(fields))
+            .expect("packet rows filter cleanly");
+        let restored = synchronized_table_text(
+            Path::new("exact.tsv"),
+            &base,
+            EXACT_HEADER,
+            &[admitted.into()],
+            &[],
+            &[],
+        )
+        .expect("durable ownership materializes cleanly");
+        assert!(restored.contains(admitted));
+        assert!(restored.contains(variant));
+        assert!(!restored.contains(rejected));
+
+        let second_base = filter_table(&restored, EXACT_HEADER, |fields| {
+            !is_packet_exact_row(fields)
+        })
+        .expect("second pass packet rows filter cleanly");
+        let second = synchronized_table_text(
+            Path::new("exact.tsv"),
+            &second_base,
+            EXACT_HEADER,
+            &[admitted.into()],
+            &[],
+            &[],
+        )
+        .expect("second durable materialization is valid");
+        assert_eq!(second, restored);
+    }
+
+    #[test]
+    fn ownership_refresh_bootstraps_a_newly_admitted_packet() {
+        let packet_id = "v07-exact-new-admission";
+        let evaluation_id = format!("eval:v07:{}", &stable_hex(&[packet_id])[..16]);
+        let exact = "lexeme\tcell\texpanded\tprinted\tv07-source-80c65e35ce25632b,v07-target-new\tsynodal-attestation\tsynodal-russian";
+        let evaluation = format!(
+            "{evaluation_id}\tlexeme\tcell\tstrict\texpanded\tprinted\tsource\tpassage\tv07-held-out-exact-cell"
+        );
+        let exact_table = synchronized_table_text(
+            Path::new("exact.tsv"),
+            &format!("{EXACT_HEADER}\n"),
+            EXACT_HEADER,
+            &[exact.into()],
+            &[],
+            &[],
+        )
+        .expect("new exact admission materializes in memory");
+        let evaluation_table = synchronized_table_text(
+            Path::new("evaluation.tsv"),
+            &format!("{EVALUATION_HEADER}\n"),
+            EVALUATION_HEADER,
+            &[evaluation],
+            &[],
+            &[],
+        )
+        .expect("new evaluation admission materializes in memory");
+        let latest_reviews = BTreeMap::from([(
+            packet_id.into(),
+            Review {
+                decision: "admitted".into(),
+                realized_unique_tokens: 0,
+                blocker: String::new(),
+                review_note: "newly admitted after review".into(),
+            },
+        )]);
+
+        let ownership = render_packet_ownership_from_tables(
+            &exact_table,
+            &evaluation_table,
+            &latest_reviews,
+            &[],
+            &Path::new(env!("CARGO_MANIFEST_DIR")).join("../.."),
+        )
+        .expect("ownership refresh bootstraps the new admission");
+        assert!(ownership.contains(packet_id));
+        assert!(ownership.contains(&evaluation_id));
+    }
+
+    #[test]
+    fn historical_owner_activation_tracks_the_latest_decision() {
+        let owner = PacketOwnership {
+            fields: [
+                "v07-exact-historical",
+                "lexeme",
+                "cell",
+                "expanded",
+                "printed",
+                "v07-source-id,v07-target-id",
+                "synodal-attestation",
+                "synodal-russian",
+                "eval:v07:0123456789abcdef",
+                "strict",
+                "expanded",
+                "printed",
+                "source",
+                "passage",
+                "v07-held-out-exact-cell",
+                "candidate",
+            ]
+            .into_iter()
+            .map(str::to_owned)
+            .collect(),
+        };
+        let review = |decision: &str| {
+            BTreeMap::from([(
+                owner.owner_id().to_owned(),
+                Review {
+                    decision: decision.into(),
+                    realized_unique_tokens: 0,
+                    blocker: if decision == "admitted" {
+                        String::new()
+                    } else {
+                        "reviewed blocker".into()
+                    },
+                    review_note: "reviewed decision".into(),
+                },
+            )])
+        };
+
+        assert!(!owner.is_active(&review("deferred")));
+        assert!(owner.is_active(&review("admitted")));
+    }
+
+    #[test]
+    fn duplicate_exact_rows_merge_their_evidence() {
+        let exact = format!(
+            "{EXACT_HEADER}\nlexeme\tcell\texpanded\tprinted\treview,source\tsynodal-attestation\tsynodal-russian\nlexeme\tcell\texpanded\tprinted\tsource,target\tsynodal-attestation\tsynodal-russian\n"
+        );
+        assert_eq!(
+            merge_duplicate_exact_rows(&exact).expect("compatible rows merge"),
+            format!(
+                "{EXACT_HEADER}\nlexeme\tcell\texpanded\tprinted\treview,source,target\tsynodal-attestation\tsynodal-russian\n"
+            )
+        );
+    }
+
+    #[test]
+    fn durable_lexical_ownership_is_bound_to_identity_and_active_review() {
+        let reviewed = "review:v07:test\tlexeme\tsense\tlemma\tnoun\tlexical-form\texpanded\tprinted\tgloss\tdomain\tsemantic-source\tsemantic-candidate\ttarget-source\ttarget-candidate\tpassage\treviewed\tsynodal-russian\tnote";
+        let rejected = reviewed.replacen("\treviewed\t", "\trejected\t", 1);
+
+        validate_owned_lexical("owner", "lexeme", "review:v07:test", reviewed, true)
+            .expect("active reviewed ownership is valid");
+        validate_owned_lexical("owner", "lexeme", "review:v07:test", &rejected, false)
+            .expect("inactive rejected ownership remains durable");
+        assert!(
+            validate_owned_lexical("owner", "other", "review:v07:test", reviewed, true).is_err()
+        );
+        assert!(
+            validate_owned_lexical("owner", "lexeme", "review:v07:test", &rejected, true).is_err()
         );
     }
 }

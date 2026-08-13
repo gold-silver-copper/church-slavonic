@@ -42,20 +42,23 @@ impl ResolvedIdentity {
     }
 }
 
-macro_rules! resolved_identity {
-    ($name:ident, $part_of_speech:ident) => {
-        impl $name {
-            /// Resolve exactly one dictionary lexeme of this handle's part of speech.
+// A trait would make these constructors available only when callers import
+// that trait. This small declaration macro keeps the ordinary inherent API
+// while leaving every linguistic operation in the explicit per-handle impl.
+macro_rules! identity_methods {
+    ($handle:ident, $part_of_speech:expr) => {
+        impl $handle {
+            /// Resolve exactly one dictionary identity of this lexical class.
             pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
                 Ok(Self {
-                    identity: ResolvedIdentity::resolve(lemma, PartOfSpeech::$part_of_speech)?,
+                    identity: ResolvedIdentity::resolve(lemma, $part_of_speech)?,
                 })
             }
 
-            /// Bind a stable dictionary ID after validating its part of speech.
+            /// Bind a stable dictionary ID after validating its lexical class.
             pub fn from_id(id: &str) -> Result<Self, InflectionError> {
                 Ok(Self {
-                    identity: ResolvedIdentity::from_id(id, PartOfSpeech::$part_of_speech)?,
+                    identity: ResolvedIdentity::from_id(id, $part_of_speech)?,
                 })
             }
 
@@ -86,7 +89,7 @@ pub struct Noun {
     identity: ResolvedIdentity,
 }
 
-resolved_identity!(Noun, Noun);
+identity_methods!(Noun, PartOfSpeech::Noun);
 
 impl Noun {
     /// Resolve one case-number cell through the canonical by-ID path.
@@ -117,7 +120,7 @@ pub struct Determiner {
     identity: ResolvedIdentity,
 }
 
-resolved_identity!(Determiner, Determiner);
+identity_methods!(Determiner, PartOfSpeech::Determiner);
 
 impl Determiner {
     /// Resolve one case-number-gender cell.
@@ -157,7 +160,7 @@ pub struct Pronoun {
     identity: ResolvedIdentity,
 }
 
-resolved_identity!(Pronoun, Pronoun);
+identity_methods!(Pronoun, PartOfSpeech::Pronoun);
 
 impl Pronoun {
     /// Resolve one case-number cell in an case-number-only pronoun table.
@@ -231,7 +234,7 @@ pub struct Numeral {
     identity: ResolvedIdentity,
 }
 
-resolved_identity!(Numeral, Numeral);
+identity_methods!(Numeral, PartOfSpeech::Numeral);
 
 impl Numeral {
     /// Resolve one case-number cell in an case-number-only numeral table.
@@ -297,7 +300,7 @@ pub struct Adjective {
     identity: ResolvedIdentity,
 }
 
-resolved_identity!(Adjective, Adjective);
+identity_methods!(Adjective, PartOfSpeech::Adjective);
 
 impl Adjective {
     /// Resolve one long/compound adjective agreement cell.
@@ -370,7 +373,7 @@ pub struct Verb {
     identity: ResolvedIdentity,
 }
 
-resolved_identity!(Verb, Verb);
+identity_methods!(Verb, PartOfSpeech::Verb);
 
 impl Verb {
     /// Resolve one present-indicative person-number cell.

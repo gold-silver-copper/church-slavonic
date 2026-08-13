@@ -78,7 +78,7 @@ pub fn missing_metadata_by_id(id: &LexemeId) -> Result<Vec<MetadataField>> {
 /// Returns the stable review/evaluation key for a typed grammar cell.
 #[must_use]
 pub fn grammar_cell_key(cell: GrammarCell) -> String {
-    resolver::cell_key(cell)
+    cell.key()
 }
 
 /// Returns the reviewed OCS-to-Synodal alignment gold registry, including
@@ -248,6 +248,73 @@ mod tests {
                 .iter()
                 .any(|evidence| { evidence.kind == core::EvidenceKind::ReviewedIrregularOverride })
         );
+    }
+
+    #[test]
+    fn exact_attestations_preserve_distinct_evidence_provenance() {
+        let verb =
+            Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti")).expect("reviewed exact verb");
+        let forms = verb
+            .past(Person::Third, Number::Singular)
+            .expect("reviewed exact past form");
+        let variant = forms.primary();
+        assert!(matches!(
+            &variant.source,
+            FormSource::SynodalAttestation { evidence }
+                if evidence.as_str() == "v06-manual-target-vze"
+        ));
+        assert_eq!(
+            variant
+                .evidence
+                .iter()
+                .map(|evidence| evidence.id.as_str())
+                .collect::<Vec<_>>(),
+            [
+                "v06-manual-semantic-vzeti",
+                "v06-manual-alypy-vzeti",
+                "v06-manual-target-vze",
+            ]
+        );
+        let inherited = &variant.evidence[0];
+        assert_eq!(
+            inherited.source.as_str(),
+            "english-wiktionary-ocs-kaikki-2026-08-07"
+        );
+        assert_eq!(inherited.source_recension, Recension::OldChurchSlavonic);
+        assert_eq!(
+            inherited.epistemic_role,
+            core::EpistemicRole::InheritedOcsEvidence
+        );
+        let target = &variant.evidence[2];
+        assert_eq!(target.source.as_str(), "ponomar-elizabeth-bible-2026-08-09");
+        assert_eq!(target.source_recension, Recension::SynodalRussian);
+        assert_eq!(
+            target.epistemic_role,
+            core::EpistemicRole::ExactSynodalAttestation
+        );
+
+        let plural = Inflector::default()
+            .form_by_id(
+                &LexemeId::from("synodal:verb:v06-c83e3264f4da24ce"),
+                GrammarCell::Participle(ParticipleCell {
+                    tense: ParticipleTense::Past,
+                    voice: ParticipleVoice::Passive,
+                    agreement: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Plural,
+                        gender: Gender::Neuter,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                        comparison: Comparison::Positive,
+                    },
+                }),
+            )
+            .expect("reviewed cell-specific plural attestation");
+        assert!(matches!(
+            &plural.primary().source,
+            FormSource::SynodalAttestation { evidence }
+                if evidence.as_str() == "v06-target-fae0dde305c6fff8"
+        ));
     }
 
     #[test]
@@ -983,6 +1050,8 @@ mod tests {
         let verb = Verb::resolve("быти").expect("known irregular verb");
         let capabilities = verb.capabilities();
         assert!(capabilities.present);
+        assert!(capabilities.future);
+        assert!(!capabilities.past);
         assert!(capabilities.imperfect);
         assert!(capabilities.aorist);
         assert!(capabilities.imperative);
@@ -1015,6 +1084,123 @@ mod tests {
                 .expect("reviewed simple-future table")
                 .primary_text(),
             "дастъ"
+        );
+
+        let exact_past = Verb::from_id(&LexemeId::from("synodal:verb:wikt-78da2d05497d"))
+            .expect("reviewed exact-past verb");
+        assert!(exact_past.capabilities().past);
+        assert!(!exact_past.capabilities().future);
+        assert!(!exact_past.capabilities().infinitive);
+
+        let sparse_exact = Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti"))
+            .expect("reviewed sparse exact verb");
+        let missing = sparse_exact.missing_metadata();
+        assert!(missing.contains(&core::MetadataField::AoristStem));
+        assert!(missing.contains(&core::MetadataField::ImperativeStem));
+        assert!(missing.contains(&core::MetadataField::ParticipleStem));
+
+        assert!(
+            Determiner::from_id(&LexemeId::from("synodal:determiner:sam"))
+                .expect("productive determiner")
+                .capabilities()
+                .productive_adjective
+        );
+        assert!(
+            Numeral::from_id(&LexemeId::from("synodal:numeral:pervyi"))
+                .expect("productive ordinal")
+                .capabilities()
+                .productive_adjective
+        );
+        assert!(
+            !Numeral::from_id(&LexemeId::from("synodal:numeral:dva"))
+                .expect("exact cardinal")
+                .capabilities()
+                .productive_adjective
+        );
+    }
+
+    #[test]
+    fn personal_pronoun_paradigms_use_reviewed_person_and_gender_profiles() {
+        let cases = [
+            (
+                "азъ",
+                PronounCell {
+                    case: Case::Genitive,
+                    number: Number::Dual,
+                    gender: None,
+                    person: Some(Person::First),
+                    animacy: Animacy::Inanimate,
+                },
+                "наю",
+            ),
+            (
+                "ты",
+                PronounCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: None,
+                    person: Some(Person::Second),
+                    animacy: Animacy::Inanimate,
+                },
+                "ты",
+            ),
+            (
+                "онъ",
+                PronounCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Some(Gender::Masculine),
+                    person: Some(Person::Third),
+                    animacy: Animacy::Inanimate,
+                },
+                "онъ",
+            ),
+        ];
+
+        for (lemma, cell, expected) in cases {
+            let paradigm = Pronoun::resolve(lemma)
+                .expect("reviewed personal pronoun")
+                .paradigm();
+            assert_eq!(
+                paradigm
+                    .form(GrammarCell::Pronoun(cell))
+                    .expect("profile-derived paradigm cell")
+                    .primary_text(),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn demonstrative_siya_is_not_attached_to_the_reflexive_pronoun() {
+        let contaminated_cell = PronounCell {
+            case: Case::Accusative,
+            number: Number::Singular,
+            gender: None,
+            person: Some(Person::Third),
+            animacy: Animacy::Inanimate,
+        };
+        assert!(matches!(
+            Pronoun::resolve("себе")
+                .expect("reviewed reflexive pronoun")
+                .form(contaminated_cell),
+            Err(Error::UnsupportedCell { .. })
+        ));
+
+        let demonstrative = Pronoun::from_id(&LexemeId::from("synodal:pronoun:sei"))
+            .expect("reviewed demonstrative pronoun");
+        assert_eq!(
+            demonstrative
+                .form(PronounCell {
+                    case: Case::Accusative,
+                    number: Number::Plural,
+                    gender: Some(Gender::Feminine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                })
+                .expect("reviewed demonstrative cell")
+                .primary_text(),
+            "сїѧ"
         );
     }
 

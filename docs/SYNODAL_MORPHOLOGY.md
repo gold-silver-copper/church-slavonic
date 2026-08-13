@@ -277,7 +277,7 @@ government beyond these construction-specific constraints remain future work.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 857 target lexemes and 857 reviewed senses. The
+The reviewed registry has 833 target lexemes and 833 reviewed senses. The
 original productive seed remains deliberately small: corpus-prioritized hard and
 soft nouns, regular adjectives, six verbs, reviewed closed-class paradigms, and
 five numerals. The v0.3 additions are primarily high-frequency exact lexical

@@ -53,6 +53,13 @@ source-partition target attestations. `source_kind` distinguishes
 attestation must cite a reviewed whole-token corpus candidate outside all
 held-out passages.
 
+`target_identity_ambiguities.tsv` is the explicit exception registry for a
+single target token that contextually supports more than one runtime lexical
+identity. Each row binds both the stable target evidence and candidate IDs,
+the exact NFC surfaces, a sorted lexeme pair, and a review note. Generation
+rejects unadjudicated cross-identity reuse even when separate evidence IDs
+alias the same target candidate.
+
 The v0.6 decision ledgers are `v06_exact_reviews.tsv`,
 `v06_abbreviation_reviews.tsv`, and `v06_spelling_reviews.tsv`. They retain
 predicted versus surface-realized gain, explicit deferrals and rejections, and
@@ -67,6 +74,22 @@ The v0.7 evidence-acquisition decisions are retained in the ordered
 reviewed merges and passage-disjoint replacement witnesses. The generated
 completion audit reads `v07_verification.tsv` and rejects a missing or failed
 required gate.
+
+The exact-review waves are cumulative: the latest packet decision is
+authoritative. Materialization retracts exact, evaluation, and exclusively
+owned evidence rows after a later rejection or deferral, while preserving the
+rejected review decision itself for audit history.
+`v07_packet_ownership.tsv` is the durable cumulative materialization ledger;
+the companion `v07_packet_evidence_ownership.tsv` and
+`v07_packet_lexical_ownership.tsv` retain its restorable provenance and lexical
+dependencies. Together they retain every historically materialized packet's
+exact tuple, source candidate, held-out evaluation witness, and owned review
+rows, including inactive decisions. Ordinary `synodal-v07-apply` strips
+packet-owned runtime rows and restores only current admissions.
+`synodal-v07-apply --refresh-ownership` merges newly admitted current packet
+facts into the ledgers without discarding historical tombstones. The complete
+historical owner set is count- and digest-locked so a truncated or malformed
+ledger fails closed.
 
 The alignment registry never imports an OCS surface cell. It connects stable
 lexeme identities and records morphology and semantics independently.

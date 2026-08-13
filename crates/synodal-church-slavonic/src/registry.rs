@@ -3,9 +3,9 @@ use synodal_church_slavonic_core::{
     ActiveParticipleShortFormation, AdjectiveClass, AdjectiveForm, AdjectiveLexeme,
     AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Case, Comparison,
     ComparisonFormation, Confidence, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind,
-    FiniteTense, Gender, GenerationPolicy, ImperativeFormation, ImperfectFormation, LexemeId,
-    NounDeclension, NounLexeme, NounNumberInventory, Number, ParticiplePrincipalPart, Recension,
-    RecensionMappingId, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
+    FiniteTense, Gender, GenerationPolicy, GrammarCell, ImperativeFormation, ImperfectFormation,
+    LexemeId, NounDeclension, NounLexeme, NounNumberInventory, Number, ParticiplePrincipalPart,
+    Recension, RecensionMappingId, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
     normalize_lookup_accentless,
 };
 
@@ -33,6 +33,8 @@ pub(crate) struct RawTransformationRule(pub [&'static str; 6]);
 pub(crate) struct RawConflict(pub [&'static str; 8]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawIrregularOverride(pub [&'static str; 5]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawReviewedEvidence(pub [&'static str; 6]);
 
 include!("../generated/registry.rs");
 
@@ -252,6 +254,16 @@ pub(crate) struct ExactFormRecord {
     pub source_kind: &'static str,
 }
 
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ReviewedEvidenceRecord {
+    pub id: &'static str,
+    pub source_id: &'static str,
+    pub source_recension: Recension,
+    pub citation: &'static str,
+    pub role: &'static str,
+    pub note: &'static str,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct AbbreviationRecord {
     pub lexeme_id: &'static str,
@@ -325,8 +337,59 @@ pub(crate) fn exact_forms(id: &LexemeId, cell: &str) -> Vec<ExactFormRecord> {
         .collect()
 }
 
+pub(crate) fn reviewed_evidence(evidence_ids: &str) -> Result<Vec<ReviewedEvidenceRecord>> {
+    evidence_ids
+        .split(',')
+        .map(str::trim)
+        .filter(|id| !id.is_empty())
+        .map(|id| {
+            let row = REVIEWED_EVIDENCE
+                .iter()
+                .find(|row| row.0[0] == id)
+                .ok_or_else(|| Error::ContradictoryMetadata {
+                    reason: format!("generated evidence provenance is missing {id}"),
+                })?;
+            let source_recension = match row.0[2] {
+                "old-church-slavonic" => Recension::OldChurchSlavonic,
+                "synodal-russian" => Recension::SynodalRussian,
+                "mixed" => Recension::Mixed,
+                value => {
+                    return Err(Error::ContradictoryMetadata {
+                        reason: format!("generated evidence {id} has unknown recension {value}"),
+                    });
+                }
+            };
+            Ok(ReviewedEvidenceRecord {
+                id: row.0[0],
+                source_id: row.0[1],
+                source_recension,
+                citation: row.0[3],
+                role: row.0[4],
+                note: row.0[5],
+            })
+        })
+        .collect()
+}
+
 pub(crate) fn has_exact_forms(id: &LexemeId) -> bool {
     EXACT_FORMS.iter().any(|row| row.0[0] == id.as_str())
+}
+
+pub(crate) fn pronoun_profiles(
+    id: &LexemeId,
+) -> Vec<(Option<Gender>, Option<synodal_church_slavonic_core::Person>)> {
+    EXACT_FORMS
+        .iter()
+        .filter(|row| row.0[0] == id.as_str() && row.0[1].starts_with("pronoun:"))
+        .filter_map(|row| {
+            let GrammarCell::Pronoun(cell) = row.0[1].parse::<GrammarCell>().ok()? else {
+                return None;
+            };
+            Some((cell.gender, cell.person))
+        })
+        .collect::<std::collections::BTreeSet<_>>()
+        .into_iter()
+        .collect()
 }
 
 pub(crate) fn is_exact_only(id: &LexemeId) -> bool {

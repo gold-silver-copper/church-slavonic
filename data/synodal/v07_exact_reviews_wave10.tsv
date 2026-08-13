@@ -1,0 +1,39 @@
+packet_id	decision	realized_unique_tokens	blocker	review_note
+v07-exact-df2bbd8e261ab850	rejected	0	target-context-semantic-identity-mismatch	Corrective review found Ezek.3.20 uses мꙋкꙋ as torment, not flour; the shared target token cannot license the flour identity.
+v07-exact-960130446fb63f20	rejected	0	target-context-semantic-identity-mismatch	Corrective review found Jerem.50.29 explicitly addresses archers drawing a bow; the shared target token cannot license the intrigue identity.
+v07-exact-3c7219b556cbc993	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-a9b572f7e9f34210	rejected	0	target-context-part-of-speech-mismatch	Corrective review found Дрꙋ́гъ вѣ́ренъ in Sirach.6.16 is the noun friend, not the adjective other.
+v07-exact-b00098cf7c8f0072	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-5b6abe593dea67b2	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-feac2295fd88c357	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-9d6bbb5fdfc956d1	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-2ef38913f3a91c8f	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-636f4a373726ca1d	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-856ab5c05762c690	rejected	0	target-context-cell-mismatch	Corrective review found Eph.2.14 is genitive singular feminine ѡ҆гра́ды; it cannot license this accusative plural masculine identity.
+v07-exact-acd05d299941ff53	rejected	0	target-context-cell-mismatch	Corrective review found Eph.2.14 is genitive singular feminine ѡ҆гра́ды; it cannot license this asserted cell from the shared token.
+v07-exact-02011da561cce865	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-80c7bcb586ee16d2	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-f71ed98b755e6618	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-2c51c2dedc8166dd	rejected	0	target-context-cell-mismatch	Corrective review found Eph.2.14 is genitive singular feminine ѡ҆гра́ды; it cannot license this asserted cell from the shared token.
+v07-exact-0c318c518289000f	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-4a0c9d42de7e6a28	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-268e8b27ae43d1aa	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-04b75131732ecac2	rejected	0	target-context-cell-mismatch	Corrective review found Eph.2.14 is genitive singular feminine ѡ҆гра́ды; it cannot license this asserted cell from the shared token.
+v07-exact-6f84cbd9af201558	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-a3eb59eb92056adb	rejected	0	target-context-cell-mismatch	Corrective review found Eph.2.14 is genitive singular feminine ѡ҆гра́ды; it cannot license this asserted cell from the shared token.
+v07-exact-9dfd5d29feadec0d	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-e2ef071460f5d65f	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found она is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-2b05cdc9dae0ccdd	rejected	0	target-context-cell-mismatch	Corrective review found Eph.2.14 is genitive singular feminine ѡ҆гра́ды; it cannot license this asserted cell from the shared token.
+v07-exact-65719af50d5aa6fc	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found оно is an inflected form of the existing онъ pronoun, not a separate runtime lexeme.
+v07-exact-c909a51eb86b9735	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found домове is a nominative plural form of the existing домъ identity, not a separate runtime lexeme.
+v07-exact-e29943e9075967b2	rejected	0	target-context-semantic-identity-mismatch	Corrective review found Rom.2.7 uses чести as genitive singular honour, not dative singular part or piece.
+v07-exact-97b5979567b74f46	rejected	0	target-context-semantic-identity-mismatch	Corrective review found Rom.2.7 uses чести as genitive singular honour, not accusative plural part or piece.
+v07-exact-a8513da5b4bd7a1d	rejected	0	inflected-form-is-not-a-lexical-identity	Corrective review found господине is the vocative singular of the existing господинъ identity, not a separate runtime lexeme.
+v07-exact-02290973bd3be5df	rejected	0	target-context-part-of-speech-mismatch	Corrective review found Jerem.30.8 uses выи as the noun neck, not the second-person plural pronoun.
+v07-exact-d7096f6a26f3e7a8	rejected	0	target-context-part-of-speech-mismatch	Corrective review found Jerem.30.8 uses выи as the noun neck, not the second-person plural pronoun.
+v07-exact-67330d9b4381782e	rejected	0	target-context-semantic-identity-mismatch	Corrective review found Apoc.19.20 ꙗтъ is a passive verbal form meaning seized, not genitive plural food.
+v07-exact-cf6caa915c151ca5	rejected	0	target-context-cell-mismatch	Corrective review found Apoc.19.20 ꙗтъ is a short past passive participle, not an aorist.
+v07-exact-87dbd1ecfdca3b89	rejected	0	target-context-part-of-speech-mismatch	Corrective review found Dan.3.21 uses пещи as the noun furnace, not a lexical form of the verb bake or care.
+v07-exact-9cbca02283cd3875	rejected	0	target-context-part-of-speech-mismatch	Corrective review found I_Macc.13.37 uses готови as a predicative plural adjective, not an imperative verb.
+v07-exact-569053785c81b7fc	rejected	0	target-context-cell-mismatch	Corrective review found Jerem.20.15 Про́клѧтъ permits the adjective and short past passive participle analyses, but not an aorist analysis.
+v07-exact-e58816b5cc4e3263	rejected	0	target-context-part-of-speech-mismatch	Corrective review found Mk.14.23 uses хвалꙋ as the accusative singular noun praise, not a first-person present verb.
