@@ -128,6 +128,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             synodal_v08_engine_audit::run(&mut args, &workspace_root()?)
         }
         Some("check-all") => check_all(),
+        Some("check-structure") => check_structure(),
         Some("help") | Some("-h") | Some("--help") | None => {
             print_help();
             Ok(())
@@ -2166,6 +2167,10 @@ fn check_all() -> Result<(), Box<dyn Error>> {
     ])?;
     run_cargo(&["test", "--workspace", "--all-features"])?;
     run_cargo(&["test", "--workspace", "--doc"])?;
+    check_structure()
+}
+
+fn check_structure() -> Result<(), Box<dyn Error>> {
     let root = workspace_root()?;
     check_registry(&root)?;
     check_dictionary(&root)?;
@@ -3358,6 +3363,7 @@ fn print_help() {
     eprintln!("  synodal-v07-audit [--check]");
     eprintln!("  synodal-engine-audit [--check]");
     eprintln!("  check-all");
+    eprintln!("  check-structure");
 }
 
 #[cfg(test)]
