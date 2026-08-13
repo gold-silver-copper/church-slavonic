@@ -4,14 +4,15 @@ use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentScope, ActiveParticipleShortFormation, AdjectiveClass,
     AdjectiveForm, AdjectiveLexeme, AoristFormation, Aspect, AuthorityRole, Comparison,
     ComparisonFormation, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind, FiniteTense,
-    FormSet, Gender, GrammarCell, ImperativeFormation, ImperfectFormation, NounDeclension,
-    NounLexeme, OrthographyProfile, ParticiplePrincipalPart, ParticipleTense, ParticipleVoice,
-    Recension, RenderedText, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
+    FormSet, Gender, GrammarCell, ImperativeFormation, ImperfectFormation, MetadataField,
+    NounDeclension, NounLexeme, OrthographyProfile, ParticiplePrincipalPart, ParticipleTense,
+    ParticipleVoice, PresentPrincipalParts, Recension, RenderedText, Result, SourceId, SynodalWord,
+    VerbConjugation, VerbLexeme, VerbSystem, validate_noun_lexeme,
 };
 
 use crate::{
     Inflector, Paradigm, PartOfSpeech,
-    paradigm::{adjective_cells, finite_cells, noun_cells, participle_cells},
+    paradigm::{adjective_cells, finite_cells, noun_cells, participle_cells, verb_cells},
 };
 
 /// Provenance attached to caller-supplied lexical metadata. It identifies a
@@ -250,6 +251,7 @@ impl NounSpec {
                 stem: SynodalWord::parse(stem)?,
                 gender,
                 declension,
+                number_inventory: synodal_church_slavonic_core::NounNumberInventory::All,
             },
             context: SpecContext::new(source),
         };
@@ -298,6 +300,18 @@ impl NounSpec {
         Ok(self)
     }
 
+    /// Restricts this noun to the historically licensed number inventory.
+    /// Complete paradigms retain requests outside that inventory as typed
+    /// `HistoricallyInvalidCell` outcomes.
+    pub fn with_number_inventory(
+        mut self,
+        inventory: synodal_church_slavonic_core::NounNumberInventory,
+    ) -> Result<Self> {
+        self.lexeme.number_inventory = inventory;
+        self.validate()?;
+        Ok(self)
+    }
+
     pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
         self.context.irregular_forms.push(form);
         self.validate()?;
@@ -313,7 +327,7 @@ impl NounSpec {
     pub fn validate(&self) -> Result<()> {
         self.context.validate()?;
         validate_context_cells(&self.context, |cell| matches!(cell, GrammarCell::Noun(_)))?;
-        validate_noun_class(self.lexeme.declension, self.lexeme.gender)
+        validate_noun_lexeme(&self.lexeme)
     }
 }
 
@@ -519,6 +533,37 @@ impl VerbSpec {
         )
     }
 
+    #[must_use]
+    pub fn system_paradigm(&self, system: VerbSystem) -> Paradigm {
+        self.system_paradigm_with(Inflector::default(), system)
+    }
+
+    #[must_use]
+    pub fn system_paradigm_with(&self, inflector: Inflector, system: VerbSystem) -> Paradigm {
+        let spec = LexemeSpec::from(self.clone());
+        Paradigm::build_explicit(
+            self.lemma().into(),
+            PartOfSpeech::Verb,
+            verb_cells(system),
+            |cell| inflector.form_spec(&spec, cell),
+        )
+    }
+
+    #[must_use]
+    pub fn all_system_paradigms(&self) -> Vec<(VerbSystem, Paradigm)> {
+        VerbSystem::ALL
+            .into_iter()
+            .map(|system| (system, self.system_paradigm(system)))
+            .collect()
+    }
+
+    /// Reports principal parts absent from this specification's productive
+    /// background. Caller-specified exact overrides may still satisfy cells.
+    #[must_use]
+    pub fn missing_principal_parts(&self, system: VerbSystem) -> Vec<MetadataField> {
+        self.lexeme.missing_principal_parts(system)
+    }
+
     pub fn participle_paradigm(
         &self,
         tense: ParticipleTense,
@@ -638,6 +683,30 @@ impl VerbSpecBuilder {
     word_setter!(present_third_plural, present_third_plural);
     word_setter!(l_participle_stem, l_participle_stem);
 
+    /// Installs a complete, independently specified present series atomically.
+    #[must_use]
+    pub fn present_parts(mut self, parts: PresentPrincipalParts) -> Self {
+        self.spec.lexeme.present_stem = Some(parts.stem);
+        self.spec.lexeme.present_first_singular = Some(parts.first_singular);
+        self.spec.lexeme.present_third_plural = Some(parts.third_plural);
+        self
+    }
+
+    /// Parses and installs all three required present principal parts without
+    /// deriving either lexical edge form from the medial stem.
+    pub fn present_series(
+        self,
+        stem: impl Into<String>,
+        first_singular: impl Into<String>,
+        third_plural: impl Into<String>,
+    ) -> Result<Self> {
+        Ok(self.present_parts(PresentPrincipalParts::parse(
+            stem,
+            first_singular,
+            third_plural,
+        )?))
+    }
+
     pub fn imperfect(
         mut self,
         stem: impl Into<String>,
@@ -748,6 +817,15 @@ impl LexemeSpec {
     }
 
     #[must_use]
+    pub fn part_of_speech(&self) -> PartOfSpeech {
+        match self.inner.as_ref() {
+            LexemeSpecInner::Noun(_) => PartOfSpeech::Noun,
+            LexemeSpecInner::Adjective(_) => PartOfSpeech::Adjective,
+            LexemeSpecInner::Verb(_) => PartOfSpeech::Verb,
+        }
+    }
+
+    #[must_use]
     pub fn orthography_ready(&self, profile: OrthographyProfile) -> bool {
         profile != OrthographyProfile::SynodalLiturgical || self.context().accent.is_some()
     }
@@ -820,14 +898,22 @@ fn validate_context_cells(
 
 fn validate_noun_class(declension: NounDeclension, gender: Gender) -> Result<()> {
     let valid = match declension {
-        NounDeclension::FirstHardMasculine | NounDeclension::FirstSoftMasculine => {
-            gender == Gender::Masculine
-        }
-        NounDeclension::FirstHardNeuter | NounDeclension::FirstSoftNeuter => {
-            gender == Gender::Neuter
-        }
+        NounDeclension::FirstHardMasculine
+        | NounDeclension::FirstHardVelarMasculine
+        | NounDeclension::FirstMixedMasculine
+        | NounDeclension::FirstSoftMasculine
+        | NounDeclension::ThirdMasculine
+        | NounDeclension::FourthMasculineEn
+        | NounDeclension::FourthMasculineEnKamen => gender == Gender::Masculine,
+        NounDeclension::FirstHardNeuter
+        | NounDeclension::FirstSoftNeuter
+        | NounDeclension::FourthNeuterEn
+        | NounDeclension::FourthNeuterEs
+        | NounDeclension::FourthNeuterAt => gender == Gender::Neuter,
         NounDeclension::SecondHard | NounDeclension::SecondSoft => gender == Gender::Feminine,
-        NounDeclension::ThirdFeminine => gender == Gender::Feminine,
+        NounDeclension::ThirdFeminine
+        | NounDeclension::FourthFeminineEr
+        | NounDeclension::FourthFeminineOv => gender == Gender::Feminine,
     };
     if valid {
         Ok(())
@@ -1200,6 +1286,105 @@ mod tests {
                 AdjectiveForm::Long,
             ),
             72,
+        );
+    }
+
+    #[test]
+    fn typed_present_parts_and_unified_verb_system_paradigms_are_complete() {
+        let incomplete = VerbSpec::builder(
+            "нести",
+            Aspect::Imperfective,
+            VerbConjugation::FirstUnpalatalized,
+            source(),
+        )
+        .expect("builder")
+        .build()
+        .expect("incomplete verb remains inspectable");
+        assert_eq!(
+            incomplete.missing_principal_parts(VerbSystem::Finite(FiniteTense::Present)),
+            vec![
+                MetadataField::PresentStem,
+                MetadataField::PresentFirstSingular,
+                MetadataField::PresentThirdPlural,
+            ]
+        );
+        let missing_present = incomplete.system_paradigm(VerbSystem::Finite(FiniteTense::Present));
+        assert_eq!(missing_present.iter().count(), 9);
+        assert_eq!(
+            missing_present
+                .iter()
+                .next()
+                .expect("present row")
+                .error_code(),
+            Some(synodal_church_slavonic_core::ErrorCode::MissingPrincipalPart)
+        );
+
+        let verb = VerbSpec::builder(
+            "нести",
+            Aspect::Imperfective,
+            VerbConjugation::FirstUnpalatalized,
+            source(),
+        )
+        .expect("builder")
+        .present_series("нес", "несꙋ", "несꙋтъ")
+        .expect("present parts")
+        .imperative("нес", ImperativeFormation::ISeries)
+        .expect("imperative parts")
+        .l_participle_stem("нес")
+        .expect("l-participle part")
+        .build()
+        .expect("verb");
+        assert!(
+            verb.missing_principal_parts(VerbSystem::Finite(FiniteTense::Present))
+                .is_empty()
+        );
+        assert_eq!(
+            verb.system_paradigm(VerbSystem::Infinitive)
+                .successes()
+                .count(),
+            1
+        );
+        assert_eq!(
+            verb.system_paradigm(VerbSystem::LParticiple)
+                .successes()
+                .count(),
+            9
+        );
+        let imperative = verb.system_paradigm(VerbSystem::Imperative);
+        assert_eq!(imperative.iter().count(), 9);
+        assert_eq!(
+            imperative
+                .with_status(crate::ParadigmStatus::HistoricallyInvalid)
+                .count(),
+            3
+        );
+        assert_eq!(verb.all_system_paradigms().len(), VerbSystem::ALL.len());
+
+        let absent = GrammarCell::Imperative(synodal_church_slavonic_core::ImperativeCell {
+            person: Person::Second,
+            number: Number::Singular,
+        });
+        let defective = VerbSpec::builder(
+            "нести",
+            Aspect::Imperfective,
+            VerbConjugation::FirstUnpalatalized,
+            source(),
+        )
+        .expect("builder")
+        .defective_cell(DefectiveCell::historically_absent(
+            absent,
+            "this caller-reviewed lexeme lacks an imperative",
+        ))
+        .build()
+        .expect("defective verb");
+        let paradigm = defective.system_paradigm(VerbSystem::Imperative);
+        assert_eq!(
+            paradigm
+                .iter()
+                .find(|row| row.cell() == absent)
+                .expect("defective cell retained")
+                .status(),
+            crate::ParadigmStatus::HistoricallyInvalid
         );
     }
 

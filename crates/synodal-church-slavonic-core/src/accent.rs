@@ -3,7 +3,7 @@
 use unicode_normalization::UnicodeNormalization;
 
 use crate::{
-    AdjectiveForm, AuthorityRole, Comparison, Error, Evidence, EvidenceKind, FiniteTense,
+    AdjectiveForm, AuthorityRole, Case, Comparison, Error, Evidence, EvidenceKind, FiniteTense,
     GrammarCell, MetadataField, Number, Recension, Result, SynodalWord,
 };
 
@@ -55,6 +55,12 @@ pub enum AccentScope {
     Noun {
         numbers: Vec<Number>,
     },
+    /// A reusable noun rule restricted by both number and case. This permits
+    /// genuine cell-conditioned mobility without storing accented strings.
+    NounCases {
+        numbers: Vec<Number>,
+        cases: Vec<Case>,
+    },
     Adjective {
         form: AdjectiveForm,
         comparison: Comparison,
@@ -73,6 +79,9 @@ impl AccentScope {
         match (self, cell) {
             (Self::All, _) => true,
             (Self::Noun { numbers }, GrammarCell::Noun(cell)) => numbers.contains(&cell.number),
+            (Self::NounCases { numbers, cases }, GrammarCell::Noun(cell)) => {
+                numbers.contains(&cell.number) && cases.contains(&cell.case)
+            }
             (
                 Self::Adjective {
                     form,
@@ -248,6 +257,7 @@ fn scope_is_empty(scope: &AccentScope) -> bool {
         AccentScope::Noun { numbers }
         | AccentScope::Adjective { numbers, .. }
         | AccentScope::FiniteVerb { numbers, .. } => numbers.is_empty(),
+        AccentScope::NounCases { numbers, cases } => numbers.is_empty() || cases.is_empty(),
         AccentScope::OtherCells(cells) => cells.is_empty(),
     }
 }
@@ -402,6 +412,70 @@ mod tests {
                 .expect("ending stress"),
             "рабамѝ"
         );
+    }
+
+    #[test]
+    fn noun_case_scopes_are_disjoint_and_detect_overlap() {
+        let cell = |case| {
+            GrammarCell::Noun(crate::NounCell {
+                case,
+                number: Number::Plural,
+                animacy: Animacy::Inanimate,
+            })
+        };
+        let mut paradigm = AccentParadigm {
+            id: "test-case-mobile".into(),
+            accent_rules: vec![
+                AccentRule {
+                    scope: AccentScope::NounCases {
+                        numbers: vec![Number::Plural],
+                        cases: vec![Case::Nominative, Case::Accusative],
+                    },
+                    placement: AccentPlacement::EndingVowelFromEnd(0),
+                    mark: AccentMark::Grave,
+                },
+                AccentRule {
+                    scope: AccentScope::NounCases {
+                        numbers: vec![Number::Plural],
+                        cases: vec![Case::Genitive],
+                    },
+                    placement: AccentPlacement::StemVowelFromStart(1),
+                    mark: AccentMark::Acute,
+                },
+            ],
+            breathing_rules: vec![],
+            evidence: evidence(),
+        };
+        assert_eq!(
+            paradigm
+                .apply(cell(Case::Nominative), "имена")
+                .expect("ending rule"),
+            "имена̀"
+        );
+        assert_eq!(
+            paradigm
+                .apply(cell(Case::Genitive), "именъ")
+                .expect("stem rule"),
+            "име́нъ"
+        );
+        assert!(matches!(
+            paradigm.apply(cell(Case::Dative), "именємъ"),
+            Err(Error::OrthographicMetadataRequired {
+                field: MetadataField::AccentParadigm
+            })
+        ));
+
+        paradigm.accent_rules.push(AccentRule {
+            scope: AccentScope::Noun {
+                numbers: vec![Number::Plural],
+            },
+            placement: AccentPlacement::StemVowelFromStart(0),
+            mark: AccentMark::Kamora,
+        });
+        assert!(matches!(
+            paradigm.apply(cell(Case::Nominative), "имена"),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
     }
 
     #[test]

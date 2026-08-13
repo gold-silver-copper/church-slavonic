@@ -4,6 +4,35 @@ use crate::{LexemeId, RecensionMappingId};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Stable machine-readable classification for [`Error`]. Human-readable
+/// diagnostics may improve without forcing callers to parse their wording.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum ErrorCode {
+    InvalidUnicode,
+    InvalidOrthography,
+    EmptyInput,
+    UnknownLemma,
+    AmbiguousLexeme,
+    ProviderConflict,
+    MissingPrincipalPart,
+    MissingMetadata,
+    ContradictoryMetadata,
+    UnsupportedFormation,
+    MissingRecensionMapping,
+    AmbiguousRecensionMapping,
+    SemanticAlignmentNotEstablished,
+    InheritedEvidenceContradicted,
+    HistoricallyInvalidCell,
+    EvidenceIncompleteCell,
+    UnsupportedCell,
+    OrthographicMetadataRequired,
+    EmptyFormSet,
+    AmbiguousVariant,
+    InvalidNumeral,
+    OutOfRange,
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum MetadataField {
@@ -53,6 +82,10 @@ pub enum Error {
     },
     AmbiguousLexeme {
         lexemes: Vec<LexemeId>,
+    },
+    ProviderConflict {
+        lexeme: LexemeId,
+        reason: String,
     },
     MissingPrincipalPart {
         field: MetadataField,
@@ -104,6 +137,38 @@ pub enum Error {
     },
 }
 
+impl Error {
+    #[must_use]
+    pub const fn code(&self) -> ErrorCode {
+        match self {
+            Self::InvalidUnicode { .. } => ErrorCode::InvalidUnicode,
+            Self::InvalidOrthography { .. } => ErrorCode::InvalidOrthography,
+            Self::EmptyInput => ErrorCode::EmptyInput,
+            Self::UnknownLemma { .. } => ErrorCode::UnknownLemma,
+            Self::AmbiguousLexeme { .. } => ErrorCode::AmbiguousLexeme,
+            Self::ProviderConflict { .. } => ErrorCode::ProviderConflict,
+            Self::MissingPrincipalPart { .. } => ErrorCode::MissingPrincipalPart,
+            Self::MissingMetadata { .. } => ErrorCode::MissingMetadata,
+            Self::ContradictoryMetadata { .. } => ErrorCode::ContradictoryMetadata,
+            Self::UnsupportedFormation { .. } => ErrorCode::UnsupportedFormation,
+            Self::MissingRecensionMapping { .. } => ErrorCode::MissingRecensionMapping,
+            Self::AmbiguousRecensionMapping { .. } => ErrorCode::AmbiguousRecensionMapping,
+            Self::SemanticAlignmentNotEstablished { .. } => {
+                ErrorCode::SemanticAlignmentNotEstablished
+            }
+            Self::InheritedEvidenceContradicted { .. } => ErrorCode::InheritedEvidenceContradicted,
+            Self::HistoricallyInvalidCell { .. } => ErrorCode::HistoricallyInvalidCell,
+            Self::EvidenceIncompleteCell { .. } => ErrorCode::EvidenceIncompleteCell,
+            Self::UnsupportedCell { .. } => ErrorCode::UnsupportedCell,
+            Self::OrthographicMetadataRequired { .. } => ErrorCode::OrthographicMetadataRequired,
+            Self::EmptyFormSet => ErrorCode::EmptyFormSet,
+            Self::AmbiguousVariant { .. } => ErrorCode::AmbiguousVariant,
+            Self::InvalidNumeral { .. } => ErrorCode::InvalidNumeral,
+            Self::OutOfRange { .. } => ErrorCode::OutOfRange,
+        }
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -122,6 +187,12 @@ impl fmt::Display for Error {
             Self::UnknownLemma { lookup } => write!(formatter, "unknown lemma {lookup:?}"),
             Self::AmbiguousLexeme { lexemes } => {
                 write!(formatter, "lemma resolves to {} lexemes", lexemes.len())
+            }
+            Self::ProviderConflict { lexeme, reason } => {
+                write!(
+                    formatter,
+                    "lexical provider conflict for {lexeme}: {reason}"
+                )
             }
             Self::MissingPrincipalPart { field } => {
                 write!(formatter, "missing required principal part {field:?}")

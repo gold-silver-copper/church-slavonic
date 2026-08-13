@@ -12,10 +12,34 @@ placement, mark, optional independently positioned breathing, evidence, and
 precise citation are validated before code generation. One paradigm may have
 several disjoint scope rows for documented mobility.
 
-`engine_capabilities.tsv` is the concise v0.8 engine contract. It distinguishes
+`engine_capabilities.tsv` is the concise v0.10 engine contract. It distinguishes
 typed categories, productive rules, exact/irregular systems, reusable accent
 paradigms, and unsupported systems. `cargo xtask synodal-engine-audit` renders
-it into the human-readable v0.8 audit, while `--check` verifies byte currency.
+it into the human-readable v0.10 audit, while `--check` verifies byte currency.
+
+`linguistic_evaluation.tsv` is a small, frequency-independent behavioral gate.
+Each row names one stable identity and typed cell, its ordered variants or
+stable error code, the expected provenance class, and its source citation. The
+facade integration test executes every row directly; it is not weighted by
+corpus frequency or token recovery.
+
+The v0.9 productive lexical upgrades in `lexemes.tsv` are individually reviewed:
+`мꙋжъ`, `имѧ`, `небо`, and `мати` carry explicit class, stem, gender, source,
+and target-recension metadata. Their existing exact cells remain separate and
+win first. No suffix guessing or corpus-frequency rule materializes additional
+productive lexemes.
+
+`noun_restrictions.tsv` carries independently evidenced number inventories for
+registered productive nouns. These rows compile to the closed
+`NounNumberInventory` enum; they are not inferred from a plural-looking lemma.
+
+The v0.10 noun additions are `ѻтроча : ѻтрочат-`, `свекры : свекров-`, and
+`камень : камен-`. Their stems are independent metadata. The ordinary
+`камень` plural deliberately does not absorb the separate collective
+`каменїе`; its cited `-їѧ` and `-ема` alternatives belong to a closed
+lexeme-specific contract and do not leak into the general masculine `-ен-`
+family. Further unmodeled lexeme-specific variants remain explicit evidence
+work.
 
 Active short-participle principal parts encode both adjective class and typed
 citation-edge formation, for example

@@ -2,13 +2,14 @@ use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Animacy, Aspect, Case, Error, FiniteTense, FiniteVerbCell,
     FormSet, Gender, GrammarCell, ImperativeCell, LParticipleCell, LexemeId, MetadataField, Number,
     NumeralCell, NumeralKind, ParticipleCell, ParticipleTense, ParticipleVoice, Person,
-    PronounCell, Result, SynodalWord,
+    PronounCell, Result, SynodalWord, VerbSystem,
 };
 
 use crate::{
     Inflector, LexemeSummary, Paradigm, PartOfSpeech,
     paradigm::{
         adjective_cells, finite_cells, noun_cells, numeral_cells, participle_cells, pronoun_cells,
+        verb_cells,
     },
     registry,
 };
@@ -283,6 +284,28 @@ impl Verb {
     #[must_use]
     pub fn paradigm(&self, tense: FiniteTense) -> Paradigm {
         Paradigm::build(self.inflector, self.summary.clone(), finite_cells(tense))
+    }
+
+    /// Builds one complete represented verb system, retaining invalid,
+    /// unsupported, defective, and metadata-incomplete cells as rows.
+    #[must_use]
+    pub fn system_paradigm(&self, system: VerbSystem) -> Paradigm {
+        Paradigm::build(self.inflector, self.summary.clone(), verb_cells(system))
+    }
+
+    /// Builds every represented verb-system inventory in stable order.
+    #[must_use]
+    pub fn all_system_paradigms(&self) -> Vec<(VerbSystem, Paradigm)> {
+        VerbSystem::ALL
+            .into_iter()
+            .map(|system| (system, self.system_paradigm(system)))
+            .collect()
+    }
+
+    /// Reports principal parts absent from this lexeme's productive
+    /// background. Reviewed exact cells can still override individual rows.
+    pub fn missing_principal_parts(&self, system: VerbSystem) -> Result<Vec<MetadataField>> {
+        Ok(registry::verb_lexeme(self.id())?.missing_principal_parts(system))
     }
 
     fn finite(&self, tense: FiniteTense, person: Person, number: Number) -> Result<FormSet> {

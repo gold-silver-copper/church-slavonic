@@ -1352,6 +1352,25 @@ mod tests {
     }
 
     #[test]
+    fn kamen_exact_and_productive_analyses_share_one_stable_identity() {
+        let analyses = analyze("камень").expect("reviewed камень analyses");
+        let identities: BTreeSet<_> = analyses
+            .iter()
+            .map(|analysis| analysis.lexeme.id().as_str())
+            .collect();
+
+        assert_eq!(
+            identities,
+            BTreeSet::from(["synodal:noun:v07-c27905de175a0cde"])
+        );
+        assert!(
+            analyses
+                .iter()
+                .any(|analysis| analysis.source == AnalysisSource::ExactSynodalAttestation)
+        );
+    }
+
+    #[test]
     fn family_summary_exposes_exact_cells_and_missing_metadata() {
         let id = FamilyId::for_lexeme(&LexemeId::from("synodal:determiner:ves"));
         let family = show_family_by_id(&id).expect("reviewed весь family");

@@ -666,8 +666,10 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         "exact_forms.tsv",
         "examples.tsv",
         "irregular_overrides.tsv",
+        "linguistic_evaluation.tsv",
         "lexical_reviews.tsv",
         "lexemes.tsv",
+        "noun_restrictions.tsv",
         "positional_rules.tsv",
         "principal_parts.tsv",
         "reviewed_evidence.tsv",
@@ -1688,6 +1690,7 @@ fn abstention_reason(error: &synodal_church_slavonic::Error) -> &'static str {
         Error::OrthographicMetadataRequired { .. } => "orthographic-metadata-required",
         Error::UnknownLemma { .. } => "unknown-lemma",
         Error::AmbiguousLexeme { .. } => "ambiguous-lexeme",
+        Error::ProviderConflict { .. } => "provider-conflict",
         Error::InvalidUnicode { .. } | Error::InvalidOrthography { .. } | Error::EmptyInput => {
             "invalid-input"
         }

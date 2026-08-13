@@ -7,6 +7,7 @@ mod inflector;
 mod kernel;
 mod paradigm;
 pub mod phrases;
+mod provider;
 mod registry;
 mod resolver;
 mod spec;
@@ -15,10 +16,14 @@ pub use abbreviation::Abbreviation;
 pub use handles::{Adjective, Capabilities, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use inflector::{Inflector, InflectorBuilder};
 pub use paradigm::{Paradigm, ParadigmIdentity, ParadigmRow, ParadigmStatus};
+pub use provider::{
+    BatchLexeme, BatchRequest, BatchResult, BatchRow, InMemoryLexemeProvider, LexemeProvider,
+    Lexicon, ProviderLexeme, StaticLexemeProvider,
+};
 pub use registry::{
     AccentParadigmSummary, AccentSummary, AlignmentSummary, ExactFormSummary,
-    IrregularOverrideSummary, LexemeSummary, LexicalMetadataSummary, PartOfSpeech,
-    PositionalRuleSummary, PrincipalPartSummary, RecensionConflictSummary,
+    IrregularOverrideSummary, LexemeSummary, LexicalMetadataSummary, NounRestrictionSummary,
+    PartOfSpeech, PositionalRuleSummary, PrincipalPartSummary, RecensionConflictSummary,
     TransformationRuleSummary,
 };
 pub use spec::{
@@ -30,17 +35,17 @@ pub use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope,
     ActiveParticipleShortFormation, AdjectiveClass, AoristFormation, Aspect, AuthorityRole,
     BreathingMark, BreathingRule, ComparisonFormation, EpistemicRole, Evidence, EvidenceId,
-    EvidenceKind, ImperativeFormation, ImperfectFormation, NounDeclension, ParticiplePrincipalPart,
-    RuleId, SourceId, VerbConjugation,
+    EvidenceKind, ImperativeFormation, ImperfectFormation, NounDeclension, NounNumberInventory,
+    ParticiplePrincipalPart, PresentPrincipalParts, RuleId, SourceId, VerbConjugation,
 };
 pub use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Animacy, Case, CollationKey,
-    CollationProfile, CollationStrength, Comparison, Confidence, CyrillicNumeral, Error,
+    CollationProfile, CollationStrength, Comparison, Confidence, CyrillicNumeral, Error, ErrorCode,
     FiniteTense, FiniteVerbCell, FormSet, FormSource, Gender, GenerationPolicy, GrammarCell,
     ImperativeCell, InitialPresentation, LParticipleCell, LexemeId, Loss, MetadataField, NounCell,
     Number, NumeralCell, NumeralKind, OrthographyProfile, ParticipleCell, ParticipleTense,
     ParticipleVoice, Person, PhraseRole, PhraseToken, PronounCell, RealizedPhrase, Recension,
-    RenderedText, Result, SynodalWord, TransliterationScheme, VariantPolicy,
+    RenderedText, Result, SynodalWord, TransliterationScheme, VariantPolicy, VerbSystem,
     apply_initial_presentation, collation_key, compare_synodal, format_cyrillic_numeral,
     normalize_lookup, normalize_lookup_accentless, parse_cyrillic_numeral, transliterate,
 };
@@ -246,6 +251,155 @@ mod tests {
     }
 
     #[test]
+    fn unified_registered_verb_paradigms_preserve_irregular_systems() {
+        let verb = Verb::resolve("быти").expect("registered irregular verb");
+        let present = verb.system_paradigm(VerbSystem::Finite(FiniteTense::Present));
+        assert_eq!(present.iter().count(), 9);
+        assert_eq!(present.failures().count(), 0);
+        assert_eq!(
+            present
+                .with_status(ParadigmStatus::IrregularOverride)
+                .count(),
+            8
+        );
+        assert_eq!(present.with_status(ParadigmStatus::Attested).count(), 1);
+
+        let future = verb.system_paradigm(VerbSystem::Finite(FiniteTense::Future));
+        assert_eq!(future.successes().count(), 9);
+        assert_eq!(future.failures().count(), 0);
+
+        let nesti = Verb::resolve("нести").expect("productive verb");
+        assert!(
+            nesti
+                .missing_principal_parts(VerbSystem::Finite(FiniteTense::Present))
+                .expect("registered metadata")
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn reviewed_regular_verbs_expose_complete_independent_finite_systems() {
+        for lemma in ["нести", "писати", "любити"] {
+            let verb = Verb::resolve(lemma).expect("reviewed productive verb");
+            for tense in [
+                FiniteTense::Present,
+                FiniteTense::Imperfect,
+                FiniteTense::Aorist,
+            ] {
+                assert!(
+                    verb.missing_principal_parts(VerbSystem::Finite(tense))
+                        .expect("registered metadata")
+                        .is_empty(),
+                    "{lemma} {tense:?}"
+                );
+                let paradigm = verb.system_paradigm(VerbSystem::Finite(tense));
+                assert_eq!(paradigm.successes().count(), 9, "{lemma} {tense:?}");
+                assert_eq!(paradigm.failures().count(), 0, "{lemma} {tense:?}");
+            }
+            assert!(
+                verb.missing_principal_parts(VerbSystem::Imperative)
+                    .expect("registered imperative metadata")
+                    .is_empty()
+            );
+            let imperative = verb.system_paradigm(VerbSystem::Imperative);
+            assert_eq!(imperative.successes().count(), 6, "{lemma} imperative");
+            assert_eq!(
+                imperative
+                    .with_error_code(ErrorCode::HistoricallyInvalidCell)
+                    .count(),
+                3,
+                "{lemma} imperative"
+            );
+            assert!(
+                verb.missing_principal_parts(VerbSystem::LParticiple)
+                    .expect("registered l-participle metadata")
+                    .is_empty()
+            );
+        }
+
+        let nesti = Verb::resolve("нести").expect("reviewed participial verb");
+        for tense in ParticipleTense::ALL {
+            for voice in ParticipleVoice::ALL {
+                for form in AdjectiveForm::ALL {
+                    assert!(
+                        nesti
+                            .missing_principal_parts(VerbSystem::Participle { tense, voice, form })
+                            .expect("registered participle metadata")
+                            .is_empty(),
+                        "нести {tense:?} {voice:?} {form:?}"
+                    );
+                }
+            }
+        }
+        let pisati = Verb::resolve("писати").expect("reviewed finite verb");
+        assert_eq!(
+            pisati
+                .missing_principal_parts(VerbSystem::Participle {
+                    tense: ParticipleTense::Present,
+                    voice: ParticipleVoice::Passive,
+                    form: AdjectiveForm::Short,
+                })
+                .expect("missing participle diagnostics"),
+            vec![MetadataField::ParticipleStem]
+        );
+    }
+
+    #[test]
+    fn additional_fourth_declension_nouns_are_productive_and_bounded() {
+        let otrocha = Noun::resolve("ѻтроча").expect("registered at-stem noun");
+        assert_eq!(otrocha.paradigm(Animacy::Inanimate).failures().count(), 0);
+        assert_eq!(
+            otrocha
+                .form(Case::Genitive, Number::Singular, Animacy::Inanimate)
+                .expect("extended oblique stem")
+                .primary_text(),
+            "ѻтрочате"
+        );
+
+        let svekry = Noun::resolve("свекры").expect("registered ov-stem noun");
+        assert_eq!(
+            svekry
+                .form(Case::Accusative, Number::Plural, Animacy::Animate)
+                .expect("ordered animate variants")
+                .texts()
+                .collect::<Vec<_>>(),
+            ["свекровей", "свекрови"]
+        );
+
+        let kamen = Noun::resolve("камень").expect("registered en-stem noun");
+        assert_eq!(kamen.id().as_str(), "synodal:noun:v07-c27905de175a0cde");
+        assert!(matches!(
+            kamen
+                .form(Case::Nominative, Number::Singular, Animacy::Inanimate)
+                .expect("reviewed exact citation")
+                .primary()
+                .source,
+            FormSource::SynodalAttestation { .. }
+        ));
+        let ordinary_plural = kamen
+            .form(Case::Nominative, Number::Plural, Animacy::Inanimate)
+            .expect("ordinary plural");
+        assert_eq!(
+            ordinary_plural.texts().collect::<Vec<_>>(),
+            ["камєни", "каменїѧ"]
+        );
+        assert!(ordinary_plural.texts().all(|form| form != "каменїе"));
+        assert!(matches!(
+            Noun::resolve_with(
+                "камень",
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+            )
+            .expect("registered noun")
+            .form(Case::Dative, Number::Plural, Animacy::Inanimate),
+            Err(Error::OrthographicMetadataRequired {
+                field: MetadataField::AccentParadigm
+            })
+        ));
+    }
+
+    #[test]
     fn liturgical_profile_preserves_printed_form() {
         let inflector = Inflector::builder()
             .orthography(OrthographyProfile::SynodalLiturgical)
@@ -307,6 +461,183 @@ mod tests {
     }
 
     #[test]
+    fn alpy_43_registry_accent_paradigms_cover_complete_productive_tables() {
+        fn assert_accented_paradigm(
+            id: &str,
+            lemma: &str,
+            stem: &str,
+            gender: Gender,
+            declension: NounDeclension,
+            animacy: Animacy,
+            expected: &[&str],
+        ) {
+            let id = LexemeId::from(id);
+            let seed = GrammarCell::Noun(NounCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                animacy,
+            });
+            let accent = registry::accent_paradigm_for(&id, seed)
+                .expect("valid accent metadata")
+                .expect("registered accent paradigm");
+            let source = SpecificationSource::new(
+                format!("test-metadata:{}", id.as_str()),
+                "alypy-gamanovich-grammar-web-2023",
+                "Alypy (Gamanovich), §43",
+            )
+            .expect("source metadata");
+            let spec = NounSpec::new(lemma, stem, gender, declension, source)
+                .expect("typed noun")
+                .with_accent_paradigm(accent)
+                .expect("accent contract");
+            let paradigm = spec.paradigm_with(
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+                animacy,
+            );
+            assert_eq!(expected.len(), Number::ALL.len() * Case::ALL.len());
+            for (index, (number, case)) in Number::ALL
+                .into_iter()
+                .flat_map(|number| Case::ALL.into_iter().map(move |case| (number, case)))
+                .enumerate()
+            {
+                let cell = GrammarCell::Noun(NounCell {
+                    case,
+                    number,
+                    animacy,
+                });
+                assert_eq!(
+                    paradigm
+                        .form(cell)
+                        .unwrap_or_else(|error| panic!("{lemma} {number:?} {case:?}: {error}"))
+                        .primary_text(),
+                    expected[index],
+                    "{lemma} {number:?} {case:?}"
+                );
+            }
+        }
+
+        assert_accented_paradigm(
+            "synodal:noun:wikt-551a03f1df94",
+            "имѧ",
+            "имен",
+            Gender::Neuter,
+            NounDeclension::FourthNeuterEn,
+            Animacy::Inanimate,
+            &[
+                "и҆́мѧ",
+                "и҆́мене",
+                "и҆́мени",
+                "и҆́мѧ",
+                "и҆́менемъ",
+                "и҆́мени",
+                "и҆́мѧ",
+                "и҆́мєни",
+                "и҆менꙋ̀",
+                "и҆мене́ма",
+                "и҆́мєни",
+                "и҆мене́ма",
+                "и҆менꙋ̀",
+                "и҆́мєни",
+                "и҆мена̀",
+                "и҆ме́нъ",
+                "и҆́менємъ",
+                "и҆мена̀",
+                "и҆мены̀",
+                "и҆́менѣхъ",
+                "и҆мена̀",
+            ],
+        );
+        assert_accented_paradigm(
+            "synodal:noun:wikt-7790891c2704",
+            "небо",
+            "небес",
+            Gender::Neuter,
+            NounDeclension::FourthNeuterEs,
+            Animacy::Inanimate,
+            &[
+                "не́бо",
+                "небесѐ",
+                "небесѝ",
+                "не́бо",
+                "небесе́мъ",
+                "небесѝ",
+                "не́бо",
+                "небєсѝ",
+                "небесꙋ̀",
+                "небесе́ма",
+                "небєсѝ",
+                "небесе́ма",
+                "небесꙋ̀",
+                "небєсѝ",
+                "небеса̀",
+                "небе́съ",
+                "небесє́мъ",
+                "небеса̀",
+                "небесы̀",
+                "небесѣ́хъ",
+                "небеса̀",
+            ],
+        );
+        assert_accented_paradigm(
+            "synodal:noun:wikt-a0a33dfa77c7",
+            "мати",
+            "матер",
+            Gender::Feminine,
+            NounDeclension::FourthFeminineEr,
+            Animacy::Animate,
+            &[
+                "ма́ти",
+                "ма́тере",
+                "ма́тери",
+                "ма́терь",
+                "ма́терїю",
+                "ма́тери",
+                "ма́ти",
+                "ма́тєри",
+                "ма́тєрїю",
+                "ма́терема",
+                "ма́тєри",
+                "ма́терема",
+                "ма́тєрїю",
+                "ма́тєри",
+                "ма́тєри",
+                "ма́терїй",
+                "ма́теремъ",
+                "ма́терей",
+                "ма́терьми",
+                "ма́терехъ",
+                "ма́тєри",
+            ],
+        );
+    }
+
+    #[test]
+    fn exact_noun_table_precedes_reusable_accent_and_productive_background() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let noun = Noun::from_id_with(&LexemeId::from("synodal:noun:wikt-551a03f1df94"), inflector)
+            .expect("registered noun");
+        let forms = noun
+            .form(Case::Nominative, Number::Singular, Animacy::Inanimate)
+            .expect("exact table cell");
+        assert_eq!(forms.primary_text(), "и҆́мѧ");
+        assert_eq!(
+            forms.primary().rule_trace.steps()[0].rule.as_str(),
+            "SYN-REGISTRY-NORMATIVE-TABLE"
+        );
+        assert!(
+            forms
+                .primary()
+                .evidence
+                .iter()
+                .all(|evidence| { evidence.kind != core::EvidenceKind::AccentParadigm })
+        );
+    }
+
+    #[test]
     fn partial_registered_irregular_uses_regular_background_only_outside_override() {
         let noun = Noun::resolve("сынъ").expect("reviewed partially irregular noun");
         let irregular = noun
@@ -326,6 +657,65 @@ mod tests {
             regular.primary().source,
             FormSource::SynodalNormativeGeneration { .. }
         ));
+    }
+
+    #[test]
+    fn upgraded_mixed_noun_is_exact_first_with_a_productive_background() {
+        let noun = Noun::from_id(&LexemeId::from("synodal:noun:man")).expect("reviewed mixed noun");
+        assert!(noun.capabilities().exact_forms);
+        assert!(noun.capabilities().productive_noun);
+
+        let exact = noun
+            .form(Case::Nominative, Number::Singular, Animacy::Animate)
+            .expect("reviewed exact cell");
+        assert_eq!(exact.primary_text(), "мꙋжъ");
+        assert!(matches!(
+            exact.primary().source,
+            FormSource::SynodalAttestation { .. }
+        ));
+
+        let productive = noun
+            .form(Case::Dative, Number::Dual, Animacy::Animate)
+            .expect("licensed mixed background");
+        assert_eq!(productive.primary_text(), "мꙋжема");
+        assert!(matches!(
+            productive.primary().source,
+            FormSource::SynodalNormativeGeneration { .. }
+        ));
+        assert_eq!(
+            productive.primary().rule_trace.steps()[0].rule.as_str(),
+            "SYN-NOUN-I-MIXED-M-ALYPY-33-34"
+        );
+    }
+
+    #[test]
+    fn registered_plural_only_noun_exposes_restriction_and_productive_cells() {
+        let id = LexemeId::from("synodal:noun:people");
+        let noun = Noun::from_id(&id).expect("reviewed plural-only noun");
+        assert!(noun.capabilities().productive_noun);
+
+        let genitive = noun
+            .form(Case::Genitive, Number::Plural, Animacy::Animate)
+            .expect("licensed plural background");
+        assert_eq!(
+            genitive
+                .variants()
+                .iter()
+                .map(|variant| variant.printed.as_str())
+                .collect::<Vec<_>>(),
+            ["людей", "людій"]
+        );
+        assert!(matches!(
+            noun.form(Case::Genitive, Number::Singular, Animacy::Animate),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+
+        let metadata = lexical_metadata(&id).expect("reviewable metadata");
+        let restriction = metadata
+            .noun_restriction
+            .expect("number restriction metadata");
+        assert_eq!(restriction.number_inventory, "plural-only");
+        assert_eq!(restriction.evidence_id, "alypy-32-41-people-table");
     }
 
     #[test]

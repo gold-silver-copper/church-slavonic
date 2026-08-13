@@ -66,8 +66,9 @@ candidates but may not hide precision or ambiguity.
 ## Canonical resolution
 
 Direct functions, stable-ID calls, resolved handles, explicit specifications,
-reverse analysis, and paradigms share one productive generation kernel. The
-registry resolver and explicit-spec resolver apply the same precedence:
+provider lexicons, reverse analysis, batches, and paradigms share one productive
+generation kernel. The registry, provider, and explicit-spec resolvers apply the
+same precedence:
 
 1. validate target and input orthography;
 2. use either a stable target identity or validated `NounSpec`, `AdjectiveSpec`,
@@ -89,9 +90,19 @@ reusable accent paradigm; expanded rules never invent stress.
 | System | Stable rule IDs | Normative basis | Implemented input contract |
 |---|---|---|---|
 | First-declension hard masculine/neuter nouns | `SYN-NOUN-I-HARD-M-ALYPY-34`, `SYN-NOUN-I-HARD-N-ALYPY-34` | Alypy §§34–35 | explicit stem, lexical gender, class, case, number, animacy |
+| First-declension velar masculine nouns | `SYN-NOUN-I-HARD-VELAR-M-ALYPY-34` | Alypy §§34–35 | explicit final-velar stem; reviewed г/к/х → з/ц/с and ж/ч/ш seams; no general phonological rewrite |
+| First-declension mixed masculine nouns | `SYN-NOUN-I-MIXED-M-ALYPY-33-34` | Alypy §§33–35 | explicit sibilant stem; complete mixed endings and ordered `-и`/`-їе` nominative plural; lexical `-(ь)ми` is not guessed |
 | First-declension soft masculine/neuter nouns | `SYN-NOUN-I-SOFT-M-ALYPY-34`, `SYN-NOUN-I-SOFT-N-ALYPY-34` | Alypy §§34–35 | explicit stem, lexical gender, class, case, number, animacy |
 | Second-declension hard/soft nouns | `SYN-NOUN-II-HARD-ALYPY-39`, `SYN-NOUN-II-SOFT-ALYPY-39` | Alypy §§39, 44 | explicit stem and class; no automatic sibilant/velar alternation |
 | Third-declension feminine nouns | `SYN-NOUN-III-F-ALYPY-41` | Alypy §41 | explicit feminine stem and class |
+| Third-declension masculine nouns | `SYN-NOUN-III-M-ALYPY-41` | Alypy §41 | explicit consonantal stem and masculine gender; ordered vocative and genitive-plural variants; optional closed number inventory |
+| Fourth-declension neuter `-ен-` nouns | `SYN-NOUN-IV-N-EN-ALYPY-42-43` | Alypy §§42–43 | citation lemma plus independent extended `-ен-` stem; wide-letter dual seam; ordered table variants |
+| Fourth-declension neuter `-ес-` nouns | `SYN-NOUN-IV-N-ES-ALYPY-42-43` | Alypy §§42–43 | citation lemma plus independent extended `-ес-` stem; wide-letter dual seam |
+| Fourth-declension neuter `-ат-` nouns | `SYN-NOUN-IV-N-AT-ALYPY-42-43` | Alypy §§42–43 | citation lemma plus independent extended `-ат-` stem; final stem `о` widens only in source-defined dual citation cells |
+| Fourth-declension feminine `-ер-` nouns | `SYN-NOUN-IV-F-ER-ALYPY-42-43` | Alypy §§42–43 | citation lemma plus independent extended `-ер-` stem; reviewed wide-letter seams and ordered plural variants |
+| Fourth-declension feminine `-ов-`/`-в-` nouns | `SYN-NOUN-IV-F-OV-ALYPY-42-44` | Alypy §§42–44 | citation lemma plus independent oblique stem; `свекры` endings, wide-letter seams, and ordered animate accusative variants |
+| Fourth-declension masculine `-ен-` nouns | `SYN-NOUN-IV-M-EN-ALYPY-42-44` | Alypy §§42–44 | citation lemma plus independent `-ен-` stem and regular table endings; no lexeme-specific variants |
+| Lexeme-specific `камень` contract | `SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43` | Alypy §43 | independently supplied `камен-`; ordered cited singular, dual, and plural alternatives; the separate `каменїе` collective is never emitted |
 | Short adjectives, hard/soft | `SYN-ADJ-SHORT-{HARD,SOFT}-ALYPY-53` | Alypy §§53–55 | positive degree only; explicit stem/class/agreement |
 | Long adjectives, hard/soft | `SYN-ADJ-LONG-{HARD,SOFT}-ALYPY-57` | Alypy §§56–57 | positive degree only; explicit stem/class/agreement |
 | Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full forms only |
@@ -117,15 +128,42 @@ exact-table precedence, accent metadata, irregular overrides, and mapping policy
 validate Church Slavonic Unicode and closed class/formation enums, preserve
 independent principal parts, attach caller provenance, and never label their
 outputs attestations. `Inflector::form_spec` delegates to the same pure kernel as
-registered words. Specialized noun, adjective, finite-verb, and participle
-paradigms retain the canonical inventory of attempted cells and structured
-failures.
+registered words. Specialized noun and adjective paradigms retain the canonical
+inventory of attempted cells and structured failures. `VerbSystem` provides one
+selector for every represented finite, imperative, infinitive, l-participle,
+participial, supine, and verbal-noun inventory; both `Verb` and `VerbSpec` expose
+`system_paradigm` and stable-order `all_system_paradigms`.
+
+`PresentPrincipalParts` and `VerbSpecBuilder::present_series` set the medial
+present stem, complete first-person singular, and complete third-person plural
+atomically. Neither edge is derived from the medial stem. Per-system
+`missing_principal_parts` diagnostics report the exact closed `MetadataField`
+values absent from the productive background; exact registered cells may still
+override individual rows.
 
 `ParadigmStatus` distinguishes attested, irregular, sourced, caller-specified,
 inherited, and ambiguous successes from historical invalidity, incomplete
 evidence, missing morphological metadata, missing orthographic metadata, and
 unsupported behavior. The underlying typed `Error` remains available on every
-row.
+row. `Error::code`, `ParadigmRow::error_code`, `Paradigm::successes`, and
+`Paradigm::with_status` provide stable machine-readable inspection without
+parsing English diagnostics.
+
+## Injectable lexical providers and batches
+
+`LexemeProvider` exposes deterministic snapshots of `ProviderLexeme` values;
+it has no filesystem, network, serialization-format, or database methods.
+`StaticLexemeProvider` adapts the generated registry to this contract, while
+`InMemoryLexemeProvider` is application-owned. `Lexicon` sorts composed entries
+by stable ID. Duplicate IDs return `ProviderConflict`; distinct homographs
+remain `AmbiguousLexeme` rather than being silently shadowed.
+
+A supplied entry contains a stable target identity, part of speech, source ID,
+typed `LexemeSpec`, and optional ordered exact cells. Resolution is exact
+provider cell, caller irregular cell, then the shared productive kernel.
+`Lexicon::batch` retains input order and one `Result<FormSet>` per request;
+filters expose successes, failures, and individual `ErrorCode` values. Provider
+noun and `VerbSystem` paradigms likewise retain all failed cells.
 
 ## Reusable accent paradigms
 
@@ -141,8 +179,12 @@ override, applicable reusable paradigm, then
 `OrthographicMetadataRequired { field: AccentParadigm }`. The first reviewed
 runtime paradigm, `synodal-accent:mudr-fixed-stem`, applies acute stress to the
 first stem vowel throughout the long positive singular of `мꙋдръ` (Alypy §57).
-The existing exact nominative row still wins; other licensed singular cells are
-generated by the one paradigm rule.
+The v0.9 registry adds the complete §43 `synodal-accent:mati-fixed-stem`,
+`synodal-accent:imya-mobile`, and `synodal-accent:nebo-mobile` paradigms. The two
+mobile paradigms use disjoint number-and-case scopes, acute/grave selection, and
+stem-versus-ending placement; `имѧ` also positions psili independently before
+the stress mark. Missing or overlapping rules are typed failures. Exact printed
+cells continue to win before all reusable paradigms.
 
 ### Accusative variation
 
@@ -191,6 +233,24 @@ unreviewed abbreviation cells.
 attestation. A future `synodal-attestation` row must carry edition and passage
 evidence before `FormVariant::is_attested()` can be true.
 
+The productive noun registry now gives `мꙋжъ`, `имѧ`, `небо`, `мати`, and
+plural-only `людїе` reviewed classes and independent stems in addition to their
+exact cells. The `людїе` restriction is a separately evidenced registry row,
+not an inference from its spelling. Exact normative or attested rows keep
+precedence, while an uncovered cell can use only its licensed productive
+background. No suffix inference or frequency-based bulk conversion is involved.
+
+The v0.10 registry adds complete productive backgrounds for `ѻтроча`,
+`свекры`, and `камень`. The source's collective `каменїе` remains a separate
+lexical item. The ordinary paradigm's cited `-їѧ`/`-ема` alternatives are
+licensed only by the closed `камень` contract and are not generalized.
+The productive upgrade reuses the existing reviewed `камꙑ`/`камень` stable
+identity and its exact target attestations rather than creating a second
+semantic identity.
+`любовь` retains its prior conservative analysis until its
+cell-specific `любв-`/`любов-` alternants and reviewed identities can be
+unified without producing unattested combinations.
+
 The productive verb registry contains independently sourced principal parts for
 `нести`, `писати`, `любити`, and the supported non-present systems of `дати`: the 1sg and 3pl present edges, imperfect base and
 formation, aorist base and formation, imperative base and formation, and
@@ -217,7 +277,7 @@ government beyond these construction-specific constraints remain future work.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 855 target lexemes and 855 reviewed senses. The
+The reviewed registry has 857 target lexemes and 857 reviewed senses. The
 original productive seed remains deliberately small: corpus-prioritized hard and
 soft nouns, regular adjectives, six verbs, reviewed closed-class paradigms, and
 five numerals. The v0.3 additions are primarily high-frequency exact lexical
@@ -238,10 +298,13 @@ string equality.
 
 The closed grammar enums represent these gaps so paradigms retain failures:
 
-- mixed, consonantal and heteroclitic nouns, lexical stem alternants, number restrictions, and most
+- fourth-declension families beyond the reviewed `-ен-`, `-ес-`, `-ат-`,
+  `-ер-`, and `-ов-` contracts; cell-specific `любовь` stem alternants;
+  further unreviewed lexeme-specific ending variants; and most
   irregular/suppletive nouns;
-- automatic velar/sibilant alternation outside the narrowly reviewed aorist
-  operation, and the several ending variants in Alypy §§34–44 not yet modeled;
+- automatic velar/sibilant alternation outside the narrowly reviewed noun and
+  aorist seams, and ending variants in Alypy §§34–44 that the source explicitly
+  makes lexeme-specific but that lack reviewed lexical licensing metadata;
 - automatic comparison-stem formation and comparison stems other than explicitly
   supplied typed series; short superlatives remain unsupported;
 - reflexive, relative, interrogative, indefinite, and negative pronouns beyond
@@ -252,7 +315,7 @@ The closed grammar enums represent these gaps so paradigms retain failures:
   short active participles require an independent stem and typed formation;
 - the supine pending a target-recension normative inventory, productive verbal
   nouns pending lexical suffix metadata, and unregistered irregular verbs;
-- accent paradigms beyond reviewed lexical rules, complete breathing/positional-letter
+- accent paradigms beyond the four reviewed lexical rules, complete breathing/positional-letter
   realization, and abbreviation families beyond the individually typed
   contraction cells; and
 - automatic syntax, free agreement/government, dropped copulas, future
@@ -263,7 +326,9 @@ These are coverage gaps, not invitations to guess. Direct calls return
 `MissingPrincipalPart`, `UnsupportedFormation`, `UnsupportedCell`,
 `HistoricallyInvalidCell`, or an orthographic metadata error as appropriate.
 Corpus and passage-disjoint evaluation reports remain downstream regression
-signals for registered behavior. The v0.8 capability source of truth is
+signals for registered behavior. The v0.10 capability source of truth is
 `data/synodal/engine_capabilities.tsv`, rendered deterministically in
-`docs/SYNODAL_V08_INFLECTION_ENGINE_AUDIT.md`; corpus percentages are not used to
-select or justify morphology work.
+`docs/SYNODAL_V10_PRODUCTIVE_MORPHOLOGY_AND_LEXICON_AUDIT.md`; the small
+`data/synodal/linguistic_evaluation.tsv` fixture is evaluated by behavioral
+contract, and corpus percentages are not used to select or justify morphology
+work.

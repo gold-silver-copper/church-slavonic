@@ -1,15 +1,18 @@
 use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope,
     ActiveParticipleShortFormation, AdjectiveClass, AdjectiveForm, AdjectiveLexeme,
-    AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Comparison,
+    AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Case, Comparison,
     ComparisonFormation, Confidence, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind,
     FiniteTense, Gender, GenerationPolicy, ImperativeFormation, ImperfectFormation, LexemeId,
-    NounDeclension, NounLexeme, Number, ParticiplePrincipalPart, Recension, RecensionMappingId,
-    Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme, normalize_lookup_accentless,
+    NounDeclension, NounLexeme, NounNumberInventory, Number, ParticiplePrincipalPart, Recension,
+    RecensionMappingId, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
+    normalize_lookup_accentless,
 };
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawLexeme(pub [&'static str; 9]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawNounRestriction(pub [&'static str; 4]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawPrincipalPart(pub [&'static str; 6]);
 #[derive(Clone, Copy, Debug)]
@@ -79,6 +82,20 @@ pub struct LexemeSummary {
 }
 
 impl LexemeSummary {
+    pub(crate) fn new(
+        id: LexemeId,
+        lemma: String,
+        part_of_speech: PartOfSpeech,
+        source_id: String,
+    ) -> Self {
+        Self {
+            id,
+            lemma,
+            part_of_speech,
+            source_id,
+        }
+    }
+
     #[must_use]
     pub fn id(&self) -> &LexemeId {
         &self.id
@@ -171,10 +188,18 @@ pub struct LexicalMetadataSummary {
     pub aspect: Option<String>,
     pub source_id: String,
     pub target_recension: String,
+    pub noun_restriction: Option<NounRestrictionSummary>,
     pub principal_parts: Vec<PrincipalPartSummary>,
     pub exact_forms: Vec<ExactFormSummary>,
     pub accents: Vec<AccentSummary>,
     pub accent_paradigms: Vec<AccentParadigmSummary>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct NounRestrictionSummary {
+    pub number_inventory: String,
+    pub evidence_id: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -461,6 +486,10 @@ fn parse_accent_scope(value: &str) -> Result<AccentScope> {
         ["noun", numbers] => Ok(AccentScope::Noun {
             numbers: parse_accent_numbers(numbers)?,
         }),
+        ["noun", numbers, cases] => Ok(AccentScope::NounCases {
+            numbers: parse_accent_numbers(numbers)?,
+            cases: parse_accent_cases(cases)?,
+        }),
         ["adjective", form, comparison, numbers] => Ok(AccentScope::Adjective {
             form: match *form {
                 "short" => AdjectiveForm::Short,
@@ -488,6 +517,22 @@ fn parse_accent_scope(value: &str) -> Result<AccentScope> {
         }),
         _ => invalid_metadata("accent scope", value),
     }
+}
+
+fn parse_accent_cases(value: &str) -> Result<Vec<Case>> {
+    value
+        .split(',')
+        .map(|case| match case {
+            "nominative" => Ok(Case::Nominative),
+            "genitive" => Ok(Case::Genitive),
+            "dative" => Ok(Case::Dative),
+            "accusative" => Ok(Case::Accusative),
+            "instrumental" => Ok(Case::Instrumental),
+            "locative" => Ok(Case::Locative),
+            "vocative" => Ok(Case::Vocative),
+            value => invalid_metadata("accent case", value),
+        })
+        .collect()
 }
 
 fn parse_accent_numbers(value: &str) -> Result<Vec<Number>> {
@@ -531,21 +576,50 @@ fn parse_accent_mark(value: &str) -> Result<AccentMark> {
 
 pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
     let row = require_pos(id, PartOfSpeech::Noun)?;
+    let number_inventory = NOUN_RESTRICTIONS
+        .iter()
+        .find(|restriction| restriction.0[0] == id.as_str())
+        .map_or(Ok(NounNumberInventory::All), |restriction| {
+            parse_noun_number_inventory(restriction.0[1])
+        })?;
     Ok(NounLexeme {
         lemma: SynodalWord::parse(row.0[1])?,
         stem: SynodalWord::parse(row.0[4])?,
         gender: parse_gender(row.0[5])?,
         declension: match row.0[3] {
             "first-hard-m" | "inherited-first-hard-m" => NounDeclension::FirstHardMasculine,
+            "first-hard-velar-m" => NounDeclension::FirstHardVelarMasculine,
+            "first-mixed-m" => NounDeclension::FirstMixedMasculine,
             "first-hard-n" => NounDeclension::FirstHardNeuter,
             "first-soft-m" => NounDeclension::FirstSoftMasculine,
             "first-soft-n" => NounDeclension::FirstSoftNeuter,
             "second-hard" => NounDeclension::SecondHard,
             "second-soft" => NounDeclension::SecondSoft,
             "third-f" => NounDeclension::ThirdFeminine,
+            "third-m" => NounDeclension::ThirdMasculine,
+            "fourth-neuter-en" => NounDeclension::FourthNeuterEn,
+            "fourth-neuter-es" => NounDeclension::FourthNeuterEs,
+            "fourth-neuter-at" => NounDeclension::FourthNeuterAt,
+            "fourth-feminine-er" => NounDeclension::FourthFeminineEr,
+            "fourth-feminine-ov" => NounDeclension::FourthFeminineOv,
+            "fourth-masculine-en" => NounDeclension::FourthMasculineEn,
+            "fourth-masculine-en-kamen" => NounDeclension::FourthMasculineEnKamen,
             value => return invalid_metadata("noun class", value),
         },
+        number_inventory,
     })
+}
+
+fn parse_noun_number_inventory(value: &str) -> Result<NounNumberInventory> {
+    match value {
+        "singular-only" => Ok(NounNumberInventory::SingularOnly),
+        "dual-only" => Ok(NounNumberInventory::DualOnly),
+        "plural-only" => Ok(NounNumberInventory::PluralOnly),
+        "singular-and-dual" => Ok(NounNumberInventory::SingularAndDual),
+        "singular-and-plural" => Ok(NounNumberInventory::SingularAndPlural),
+        "dual-and-plural" => Ok(NounNumberInventory::DualAndPlural),
+        value => invalid_metadata("noun number inventory", value),
+    }
 }
 
 pub(crate) fn adjective_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
@@ -723,6 +797,13 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
         aspect: optional(row.0[6]),
         source_id: row.0[7].into(),
         target_recension: row.0[8].into(),
+        noun_restriction: NOUN_RESTRICTIONS
+            .iter()
+            .find(|restriction| restriction.0[0] == id.as_str())
+            .map(|restriction| NounRestrictionSummary {
+                number_inventory: restriction.0[1].into(),
+                evidence_id: restriction.0[2].into(),
+            }),
         principal_parts: PRINCIPAL_PARTS
             .iter()
             .filter(|part| part.0[0] == id.as_str())

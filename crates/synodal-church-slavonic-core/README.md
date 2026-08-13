@@ -12,12 +12,12 @@ use synodal_church_slavonic_core::{
 };
 
 let forms = decline_noun(
-    &NounLexeme {
-        lemma: SynodalWord::parse("рабъ")?,
-        stem: SynodalWord::parse("раб")?,
-        gender: Gender::Masculine,
-        declension: NounDeclension::FirstHardMasculine,
-    },
+    &NounLexeme::new(
+        SynodalWord::parse("рабъ")?,
+        SynodalWord::parse("раб")?,
+        Gender::Masculine,
+        NounDeclension::FirstHardMasculine,
+    ),
     NounCell {
         case: Case::Accusative,
         number: Number::Plural,
@@ -35,17 +35,19 @@ assert_eq!(
 # Ok::<(), synodal_church_slavonic_core::Error>(())
 ```
 
-The current productive slice covers five reviewed noun classes; hard and soft,
-short and long positive adjectives; present, imperfect, aorist, imperative,
-infinitive, and l-participle formation from independent principal parts;
-traditional Cyrillic numerals; validated Synodal words and rendered text;
-loss-reporting transliteration; and versioned UTN #41 Synodal collation.
+The current productive slice covers seventeen reviewed noun contracts, including
+mixed/final-velar masculines and six explicit stem-extending families; hard
+and soft, short and long positive adjectives; present, imperfect, aorist,
+imperative, infinitive, and l-participle formation from independent principal
+parts; traditional Cyrillic numerals; validated Synodal words and rendered
+text; loss-reporting transliteration; and versioned UTN #41 Synodal collation.
 
 Every successful `FormSet` is nonempty and every variant records target
 recension, source kind, confidence, evidence, assumptions, warnings, and a rule
-trace. Generated forms are never called attested. Unsupported comparison stems,
-declined productive participles, supines, verbal nouns, irregular paradigms, and
-unreviewed declensions fail with typed errors.
+trace. Generated forms are never called attested. Unreviewed stem extensions or
+lexical ending variants, short superlatives, supines, verbal nouns, irregular
+paradigms, and unreviewed declensions fail with typed errors. Every error also
+exposes a stable machine-readable `ErrorCode`.
 
 `SynodalWord` rejects whitespace, other scripts, private-use code points,
 controls, leading combining marks, and invalid Church Slavonic mark order.

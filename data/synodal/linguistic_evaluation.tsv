@@ -1,0 +1,12 @@
+contract_id	lexeme_id	cell	expected_variants	expected_error	expected_source	normative_source	normative_citation
+v10:noun:otrocha-oblique	synodal:noun:otrocha	noun:genitive:singular:inanimate	ѻтрочате		productive	alypy-gamanovich-grammar-web-2023	§§42–43 complete ѻтроча table
+v10:noun:svekry-ordered-animate	synodal:noun:svekry	noun:accusative:plural:animate	свекровей|свекрови		productive	alypy-gamanovich-grammar-web-2023	§§42–44 complete свекры table
+v10:noun:kamen-ordinary-plural	synodal:noun:v07-c27905de175a0cde	noun:nominative:plural:inanimate	камєни|каменїѧ		productive	alypy-gamanovich-grammar-web-2023	§43 ordinary plural distinct from collective каменїе
+v10:noun:people-number-restriction	synodal:noun:people	noun:genitive:singular:animate		HistoricallyInvalidCell	error	alypy-gamanovich-grammar-web-2023	§§32 and 41 plural-only людїе
+v10:verb:nesti-present-edge	synodal:verb:nesti	present:first:singular	несꙋ		productive	alypy-gamanovich-grammar-web-2023	§§79–82 independent first-singular edge
+v10:verb:pisati-palatalized-edge	synodal:verb:pisati	present:first:singular	пишꙋ		productive	alypy-gamanovich-grammar-web-2023	§§79–83 independently reviewed palatalized edge
+v10:verb:lyubiti-second-edge	synodal:verb:lyubiti	present:first:singular	люблю		productive	alypy-gamanovich-grammar-web-2023	§§79–83 independently reviewed second-conjugation edge
+v10:verb:lyubiti-exact-first	synodal:verb:lyubiti	present:third:singular	любитъ		attested	alypy-gamanovich-grammar-web-2023	§82 plus exact Synodal witness
+v10:verb:byti-irregular-first	synodal:verb:byti	present:first:singular	єсмь		irregular	alypy-gamanovich-grammar-web-2023	§81 exact irregular table
+v10:verb:nesti-unsupported-future	synodal:verb:nesti	future:third:singular		UnsupportedCell	error	alypy-gamanovich-grammar-web-2023	no licensed simple-future contract for нести
+v10:verb:pisati-missing-participle	synodal:verb:pisati	participle:present:passive:nominative:singular:masculine:inanimate:short:positive		MissingPrincipalPart	error	alypy-gamanovich-grammar-web-2023	§99 relationship not promoted without stored participial principal part

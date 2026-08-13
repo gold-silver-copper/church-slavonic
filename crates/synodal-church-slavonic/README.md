@@ -50,6 +50,64 @@ assert_eq!(form.primary_text(), "псалтирника");
 # Ok::<(), synodal_church_slavonic::Error>(())
 ```
 
+The productive noun inventory has seventeen reviewed contracts, including mixed
+and final-velar masculines, third-declension masculines, and the independently
+stemmed `имѧ : имен-`, `небо : небес-`, `ѻтроча : ѻтрочат-`,
+`мати : матер-`, `свекры : свекров-`, and `камень : камен-` families.
+`NounSpec::with_number_inventory` represents plural-only or otherwise defective
+number inventories; absent numbers remain `HistoricallyInvalidCell` rows in a
+complete paradigm.
+
+## Injectable application lexicons
+
+The generated registry and application-owned entries compose through one
+fail-closed provider contract:
+
+```rust
+use synodal_church_slavonic::{
+    Animacy, BatchRequest, Case, Gender, GrammarCell, InMemoryLexemeProvider,
+    Inflector, LexemeSpec, Lexicon, NounCell, NounDeclension, NounSpec, Number,
+    ProviderLexeme, SpecificationSource, StaticLexemeProvider,
+};
+
+let source = SpecificationSource::new("app-1", "my-reviewed-lexicon", "entry 1")?;
+let spec = NounSpec::new(
+    "псалтирникъ",
+    "псалтирник",
+    Gender::Masculine,
+    NounDeclension::FirstHardMasculine,
+    source,
+)?;
+let provider = InMemoryLexemeProvider::new([ProviderLexeme::new(
+    "app:noun:psaltirnik",
+    "my-reviewed-lexicon",
+    LexemeSpec::from(spec),
+)?])?;
+let lexicon = Lexicon::compose(
+    Inflector::default(),
+    &[&StaticLexemeProvider, &provider],
+)?;
+let cell = GrammarCell::Noun(NounCell {
+    case: Case::Genitive,
+    number: Number::Singular,
+    animacy: Animacy::Animate,
+});
+assert_eq!(lexicon.form("псалтирникъ", cell)?.primary_text(), "псалтирника");
+
+let batch = lexicon.batch([
+    BatchRequest::lemma("псалтирникъ", cell),
+    BatchRequest::lemma("неизвѣстенъ", cell),
+]);
+assert_eq!(batch.successes().count(), 1);
+assert_eq!(batch.failures().count(), 1);
+# Ok::<(), synodal_church_slavonic::Error>(())
+```
+
+Provider exact cells precede the entry's caller-specified irregular cells,
+which precede its productive background. Ordered variants and failures are not
+collapsed. Duplicate stable IDs return `ErrorCode::ProviderConflict`; distinct
+homographs remain an explicit `AmbiguousLexeme`.
+
 Short comparison uses a typed, independently supplied formation:
 
 ```rust
@@ -88,9 +146,7 @@ let verb = VerbSpec::builder(
     VerbConjugation::FirstUnpalatalized,
     source,
 )?
-.present_stem("нес")?
-.present_first_singular("несꙋ")?
-.present_third_plural("несꙋтъ")?
+.present_series("нес", "несꙋ", "несꙋтъ")?
 .aorist("нес", AoristFormation::ConsonantStem)?
 .build()?;
 let form = verb.form(GrammarCell::FiniteVerb(FiniteVerbCell {
@@ -106,7 +162,8 @@ Specialized paradigms retain failures instead of dropping cells:
 
 ```rust
 use synodal_church_slavonic::{
-    Aspect, FiniteTense, ParadigmStatus, SpecificationSource, VerbConjugation, VerbSpec,
+    Aspect, ErrorCode, FiniteTense, ParadigmStatus, SpecificationSource,
+    VerbConjugation, VerbSpec, VerbSystem,
 };
 
 let source = SpecificationSource::new("local-verb", "local-lexicon", "entry 2")?;
@@ -117,11 +174,15 @@ let verb = VerbSpec::builder(
     source,
 )?
 .build()?;
-let paradigm = verb.finite_paradigm(FiniteTense::Aorist);
+let paradigm = verb.system_paradigm(VerbSystem::Finite(FiniteTense::Aorist));
 assert_eq!(paradigm.iter().count(), 9);
 assert!(paradigm
     .iter()
     .all(|row| row.status() == ParadigmStatus::MissingMetadata));
+assert_eq!(
+    paradigm.iter().next().and_then(|row| row.error_code()),
+    Some(ErrorCode::MissingMetadata),
+);
 # Ok::<(), synodal_church_slavonic::Error>(())
 ```
 
@@ -178,7 +239,11 @@ error; they never become placeholders or plausible guesses.
 
 `Noun`, `Adjective`, `Verb`, `Pronoun`, `Determiner`, `Numeral`, and `Participle`
 resolve one stable identity, accept a caller-configured `Inflector`, expose honest
-per-system capabilities and missing metadata, and build paradigms. Paradigms
+per-system capabilities and missing metadata, and build paradigms. `VerbSystem`
+covers every represented finite, imperative, infinitive, l-participle,
+participial, supine, and verbal-noun inventory through `system_paradigm`; the
+stable `ErrorCode` and per-system principal-part diagnostics are available
+without parsing display strings. Paradigms
 retain every requested cell and classify it as attested, sourced prediction,
 irregular override, caller-specified prediction, inferred/ambiguous prediction,
 historically invalid, evidence-incomplete, missing metadata, missing orthographic

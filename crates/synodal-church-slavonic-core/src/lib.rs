@@ -25,7 +25,7 @@ pub use accent::{
 pub use collation::{
     CollationKey, CollationProfile, CollationStrength, collation_key, compare_synodal,
 };
-pub use error::{Error, MetadataField, Result};
+pub use error::{Error, ErrorCode, MetadataField, Result};
 pub use evidence::{
     Assumption, AuthorityRole, Confidence, Contradiction, EpistemicRole, Evidence, EvidenceKind,
     FormSource,
@@ -39,8 +39,9 @@ pub use mapping::{
 pub use morphology::{
     ActiveParticipleShortFormation, AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect,
     ComparisonFormation, ImperativeFormation, ImperfectFormation, NounDeclension, NounLexeme,
-    ParticiplePrincipalPart, VerbConjugation, VerbLexeme, aorist, decline_adjective, decline_noun,
-    decline_participle, imperative, imperfect, infinitive, l_participle, present,
+    NounNumberInventory, ParticiplePrincipalPart, PresentPrincipalParts, VerbConjugation,
+    VerbLexeme, aorist, decline_adjective, decline_noun, decline_participle, imperative, imperfect,
+    infinitive, l_participle, present, validate_noun_lexeme,
 };
 pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
 pub use orthography::{

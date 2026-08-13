@@ -24,12 +24,20 @@ analogical predictions, and semantic abbreviation expansion. `lookup`,
 keep stable identity, source recension, passage, partition, and semantic-review
 status visible.
 
+Application-supplied lexemes use the facade's `LexemeProvider`/`Lexicon` API.
+They are intentionally not merged into this crate's static semantic and reverse
+analysis index: an application that needs reverse analysis for its own provider
+can build that index outside the runtime crates while continuing to use the
+same facade morphology kernel.
+
 `lint_vocabulary` validates a serializable game/application manifest for Unicode
 orthography, known morphology, expected part of speech, required semantic sense,
 and surface ambiguity. The crate accepts typed manifests only; applications may
 choose their own serialization layer outside the runtime linguistic crate.
 
-The bundled semantic registry contains 855 reviewed target lexemes and senses.
+The bundled registry contains 857 reviewed target lexemes and 857 reviewed
+senses. The v0.10 `камень` upgrade reuses its prior reviewed stable identity;
+it does not add a duplicate semantic entry.
 The public `families` and `show_family_by_id` operations expose exact members,
 principal parts, supported systems, and missing family metadata without accepting
 diagnostic candidate IDs as runtime facts. The `synodal-dict` binary adds

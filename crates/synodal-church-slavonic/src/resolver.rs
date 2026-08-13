@@ -17,8 +17,24 @@ fn specified_form(
     form: &SpecifiedForm,
     accent: Option<&AccentParadigm>,
 ) -> Result<FormSet> {
+    specified_form_with_rule(
+        inflector,
+        form,
+        accent,
+        "SYN-CALLER-IRREGULAR-OVERRIDE",
+        "caller-irregular-override",
+    )
+}
+
+fn specified_form_with_rule(
+    inflector: Inflector,
+    form: &SpecifiedForm,
+    accent: Option<&AccentParadigm>,
+    rule: &'static str,
+    stage: &'static str,
+) -> Result<FormSet> {
     let expanded = form.expanded.canonical().to_owned();
-    let rule = RuleId::from("SYN-CALLER-IRREGULAR-OVERRIDE");
+    let rule = RuleId::from(rule);
     let evidence = form.source.evidence(EvidenceKind::LexicalMetadata);
     let evidence_id = evidence.id.clone();
     let (printed, accented, warnings) = match inflector.orthography() {
@@ -59,7 +75,7 @@ fn specified_form(
         warnings,
         rule_trace: RuleTrace::new(vec![TraceStep {
             rule,
-            stage: "caller-irregular-override".into(),
+            stage: stage.into(),
             input: expanded,
             output: printed,
             source_recension: Some(Recension::SynodalRussian),
@@ -77,6 +93,29 @@ fn specified_form(
     } else {
         Ok(forms)
     }
+}
+
+pub(crate) fn provided_exact_forms(
+    inflector: Inflector,
+    forms: &[&SpecifiedForm],
+    accent: Option<&AccentParadigm>,
+) -> Result<FormSet> {
+    let mut variants = Vec::new();
+    for form in forms {
+        variants.extend(
+            specified_form_with_rule(
+                inflector,
+                form,
+                accent,
+                "SYN-PROVIDER-EXACT-OVERRIDE",
+                "provider-exact-override",
+            )?
+            .variants()
+            .iter()
+            .cloned(),
+        );
+    }
+    FormSet::try_from_variants(variants)
 }
 
 fn mark_caller_specified(forms: FormSet, source: &SpecificationSource) -> Result<FormSet> {

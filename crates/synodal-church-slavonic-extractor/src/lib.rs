@@ -250,6 +250,40 @@ fn validate_lexical_reviews(path: &Path, table: &Table) -> Result<()> {
 
 type AdmittedLexicalReviewRows = (Vec<Vec<String>>, Vec<Vec<String>>, Vec<Vec<String>>);
 
+fn extend_missing_lexemes(
+    path: &Path,
+    lexemes: &mut Table,
+    reviewed: Vec<Vec<String>>,
+    reviewed_exact_forms: &[Vec<String>],
+) -> Result<()> {
+    let mut rows_by_id = lexemes
+        .rows
+        .iter()
+        .enumerate()
+        .map(|(offset, row)| (row[0].clone(), offset))
+        .collect::<BTreeMap<_, _>>();
+    for row in reviewed {
+        if let Some(offset) = rows_by_id.get(&row[0]).copied() {
+            let existing = &lexemes.rows[offset];
+            let lemma_matches = existing[1] == row[1]
+                || reviewed_exact_forms.iter().any(|form| {
+                    form[0] == row[0] && form[1] == "lexical-form" && form[2] == existing[1]
+                });
+            if !lemma_matches || existing[2] != row[2] || existing[8] != row[8] {
+                return invalid(
+                    path,
+                    offset + 2,
+                    "a productive lexical upgrade must preserve the reviewed source or exact target citation, part of speech, and target recension",
+                );
+            }
+            continue;
+        }
+        rows_by_id.insert(row[0].clone(), lexemes.rows.len());
+        lexemes.rows.push(row);
+    }
+    Ok(())
+}
+
 fn admitted_lexical_review_rows(reviews: &Table) -> AdmittedLexicalReviewRows {
     let mut lexemes = Vec::new();
     let mut exact_forms = Vec::new();
@@ -291,6 +325,7 @@ fn admitted_lexical_review_rows(reviews: &Table) -> AdmittedLexicalReviewRows {
 /// Validates reviewable TSV and atomically writes the generated Rust registry.
 pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<GenerationReport> {
     let lexeme_path = data_directory.join("lexemes.tsv");
+    let noun_restriction_path = data_directory.join("noun_restrictions.tsv");
     let principal_path = data_directory.join("principal_parts.tsv");
     let exact_path = data_directory.join("exact_forms.tsv");
     let alignment_path = data_directory.join("alignments.tsv");
@@ -306,6 +341,11 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         &lexeme_path,
         "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension",
         9,
+    )?;
+    let noun_restrictions = read_table(
+        &noun_restriction_path,
+        "lexeme_id\tnumber_inventory\tevidence_id\ttarget_recension",
+        4,
     )?;
     let principal_parts = read_table(
         &principal_path,
@@ -362,10 +402,21 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let lexical_reviews = read_lexical_reviews(data_directory)?;
     validate_lexical_reviews(&lexical_review_path, &lexical_reviews)?;
     let (review_lexemes, review_exact_forms, _) = admitted_lexical_review_rows(&lexical_reviews);
-    lexemes.rows.extend(review_lexemes);
+    // A later engine release may add independently reviewed productive
+    // metadata for an identity first admitted by a lexical review. Preserve
+    // that richer direct row instead of materializing a second exact-only
+    // lexeme with the same stable ID.
+    extend_missing_lexemes(
+        &lexeme_path,
+        &mut lexemes,
+        review_lexemes,
+        &review_exact_forms,
+    )?;
     exact_forms.rows.extend(review_exact_forms);
 
     validate_lexemes(&lexeme_path, &lexemes)?;
+    validate_noun_restrictions(&noun_restriction_path, &noun_restrictions)?;
+    validate_noun_restriction_lexemes(&noun_restriction_path, &noun_restrictions, &lexemes)?;
     validate_principal_parts(&principal_path, &principal_parts)?;
     validate_exact_forms(&exact_path, &exact_forms)?;
     validate_alignments(&alignment_path, &alignments)?;
@@ -388,6 +439,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&abbreviations, &[6][..]),
             (&accents, &[4][..]),
             (&accent_paradigms, &[6][..]),
+            (&noun_restrictions, &[2][..]),
             (&positional_rules, &[5][..]),
             (&transformation_rules, &[5][..]),
             (&irregular_overrides, &[3][..]),
@@ -402,6 +454,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&abbreviation_path, &abbreviations, 0),
             (&accent_path, &accents, 0),
             (&accent_paradigm_path, &accent_paradigms, 0),
+            (&noun_restriction_path, &noun_restrictions, 0),
             (&irregular_path, &irregular_overrides, 0),
         ],
     )?;
@@ -416,6 +469,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
 
     let output = emit_registry(RegistryTables {
         lexemes: lexemes.clone(),
+        noun_restrictions: noun_restrictions.clone(),
         principal_parts: principal_parts.clone(),
         exact_forms: exact_forms.clone(),
         alignments: alignments.clone(),
@@ -471,7 +525,8 @@ pub fn generate_dictionary_registry(
     let lexical_review_path = data_directory.join("lexical_reviews.tsv");
     let lexical_reviews = read_lexical_reviews(data_directory)?;
     validate_lexical_reviews(&lexical_review_path, &lexical_reviews)?;
-    let (review_lexemes, _, review_senses) = admitted_lexical_review_rows(&lexical_reviews);
+    let (review_lexemes, review_exact_forms, review_senses) =
+        admitted_lexical_review_rows(&lexical_reviews);
     senses.rows.extend(review_senses);
     validate_senses(&sense_path, &senses)?;
     validate_examples(&example_path, &examples)?;
@@ -482,12 +537,18 @@ pub fn generate_dictionary_registry(
         &semantic_alignments,
         &reviewed_evidence,
     )?;
+    let lexeme_path = data_directory.join("lexemes.tsv");
     let mut lexemes = read_table(
-        &data_directory.join("lexemes.tsv"),
+        &lexeme_path,
         "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension",
         9,
     )?;
-    lexemes.rows.extend(review_lexemes);
+    extend_missing_lexemes(
+        &lexeme_path,
+        &mut lexemes,
+        review_lexemes,
+        &review_exact_forms,
+    )?;
     let morphology_alignments = read_table(
         &data_directory.join("alignments.tsv"),
         "mapping_id\tsource_lexeme_id\ttarget_lexeme_id\trelation\tstatus\tmorphology\tsemantics\tconfidence_bp\tevidence_ids\ttransformations\treview_note",
@@ -877,13 +938,14 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
 }
 
 fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
-    let specifications: [(&str, &[usize]); 9] = [
+    let specifications: [(&str, &[usize]); 10] = [
         ("principal_parts.tsv", &[4]),
         ("exact_forms.tsv", &[4]),
         ("alignments.tsv", &[8]),
         ("abbreviations.tsv", &[6]),
         ("accents.tsv", &[4]),
         ("accent_paradigms.tsv", &[6]),
+        ("noun_restrictions.tsv", &[2]),
         ("positional_rules.tsv", &[5]),
         ("transformation_rules.tsv", &[5]),
         ("irregular_overrides.tsv", &[3]),
@@ -960,22 +1022,157 @@ fn read_table(path: &Path, expected_header: &'static str, columns: usize) -> Res
 fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
     let mut ids = BTreeSet::new();
     for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
         if !ids.insert(row[0].clone()) {
             return Err(ExtractionError::DuplicateId {
                 file: path.to_owned(),
                 id: row[0].clone(),
             });
         }
-        validate_target(path, offset + 2, &row[8])?;
-        validate_word(path, offset + 2, &row[1], "lemma")?;
+        validate_target(path, line, &row[8])?;
+        validate_word(path, line, &row[1], "lemma")?;
         if !row[4].is_empty() {
-            validate_word(path, offset + 2, &row[4], "stem")?;
+            validate_word(path, line, &row[4], "stem")?;
         }
         if !row[0].starts_with("synodal:") {
             return invalid(
                 path,
-                offset + 2,
+                line,
                 "target lexeme IDs must use the synodal namespace",
+            );
+        }
+        if !matches!(
+            row[2].as_str(),
+            "adverb"
+                | "preposition"
+                | "conjunction"
+                | "particle"
+                | "interjection"
+                | "proper-noun"
+                | "noun"
+                | "adjective"
+                | "verb"
+                | "pronoun"
+                | "determiner"
+                | "numeral"
+                | "participle"
+        ) {
+            return invalid(path, line, "unknown lexeme part of speech");
+        }
+        let valid_class = matches!(
+            (row[2].as_str(), row[3].as_str()),
+            (_, "" | "exact")
+                | (
+                    "noun",
+                    "first-hard-m"
+                        | "inherited-first-hard-m"
+                        | "first-hard-velar-m"
+                        | "first-mixed-m"
+                        | "first-hard-n"
+                        | "first-soft-m"
+                        | "first-soft-n"
+                        | "second-hard"
+                        | "second-soft"
+                        | "third-f"
+                        | "third-m"
+                        | "fourth-neuter-en"
+                        | "fourth-neuter-es"
+                        | "fourth-neuter-at"
+                        | "fourth-feminine-er"
+                        | "fourth-feminine-ov"
+                        | "fourth-masculine-en"
+                        | "fourth-masculine-en-kamen",
+                )
+                | ("adjective", "hard-short" | "soft-short")
+                | ("determiner", "determiner-hard" | "determiner-soft")
+                | ("numeral", "ordinal-hard" | "ordinal-soft")
+                | ("pronoun", "exact-complete-pronoun-table")
+                | (
+                    "verb",
+                    "first-unpalatalized" | "first-palatalized" | "second" | "archaic"
+                )
+        );
+        if !valid_class {
+            return invalid(path, line, "unknown class for lexeme part of speech");
+        }
+        if !matches!(row[5].as_str(), "" | "masculine" | "feminine" | "neuter") {
+            return invalid(path, line, "unknown lexical gender");
+        }
+        if !matches!(
+            row[6].as_str(),
+            "" | "unknown" | "imperfective" | "perfective" | "biaspectual"
+        ) {
+            return invalid(path, line, "unknown lexical aspect");
+        }
+        if row[7].is_empty() {
+            return invalid(path, line, "a lexeme requires a source ID");
+        }
+    }
+    Ok(())
+}
+
+fn validate_noun_restrictions(path: &Path, table: &Table) -> Result<()> {
+    let mut lexeme_ids = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        if !lexeme_ids.insert(row[0].clone()) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: row[0].clone(),
+            });
+        }
+        if !matches!(
+            row[1].as_str(),
+            "singular-only"
+                | "dual-only"
+                | "plural-only"
+                | "singular-and-dual"
+                | "singular-and-plural"
+                | "dual-and-plural"
+        ) {
+            return invalid(path, offset + 2, "unknown noun number inventory");
+        }
+        if row[2].is_empty() {
+            return invalid(
+                path,
+                offset + 2,
+                "a noun restriction requires normative evidence",
+            );
+        }
+        validate_target(path, offset + 2, &row[3])?;
+    }
+    Ok(())
+}
+
+fn validate_noun_restriction_lexemes(
+    path: &Path,
+    restrictions: &Table,
+    lexemes: &Table,
+) -> Result<()> {
+    let lexemes_by_id = lexemes
+        .rows
+        .iter()
+        .map(|row| (row[0].as_str(), row))
+        .collect::<BTreeMap<_, _>>();
+    for (offset, restriction) in restrictions.rows.iter().enumerate() {
+        let Some(lexeme) = lexemes_by_id.get(restriction[0].as_str()) else {
+            return invalid(
+                path,
+                offset + 2,
+                "noun restriction references an unknown lexeme",
+            );
+        };
+        if lexeme[2] != "noun" {
+            return invalid(
+                path,
+                offset + 2,
+                "noun restriction references a non-noun lexeme",
+            );
+        }
+        if restriction[3] != lexeme[8] {
+            return invalid(
+                path,
+                offset + 2,
+                "noun restriction and lexeme target recensions disagree",
             );
         }
     }
@@ -1221,14 +1418,15 @@ fn validate_accent_paradigms(path: &Path, table: &Table) -> Result<()> {
 
 fn validate_accent_scope_code(path: &Path, line: usize, value: &str) -> Result<()> {
     let parts = value.split(':').collect::<Vec<_>>();
-    let numbers = match parts.as_slice() {
+    let (numbers, cases) = match parts.as_slice() {
         ["all"] => return Ok(()),
-        ["noun", numbers] => *numbers,
+        ["noun", numbers] => (*numbers, None),
+        ["noun", numbers, cases] => (*numbers, Some(*cases)),
         ["adjective", form, comparison, numbers]
             if matches!(*form, "short" | "long")
                 && matches!(*comparison, "positive" | "comparative" | "superlative") =>
         {
-            *numbers
+            (*numbers, None)
         }
         ["finite", tense, numbers]
             if matches!(
@@ -1236,18 +1434,33 @@ fn validate_accent_scope_code(path: &Path, line: usize, value: &str) -> Result<(
                 "present" | "future" | "past" | "imperfect" | "aorist"
             ) =>
         {
-            *numbers
+            (*numbers, None)
         }
         _ => return invalid(path, line, "unknown accent-paradigm scope"),
     };
-    if numbers
+    if !numbers
         .split(',')
         .all(|number| matches!(number, "singular" | "dual" | "plural"))
     {
-        Ok(())
-    } else {
-        invalid(path, line, "unknown number in accent-paradigm scope")
+        return invalid(path, line, "unknown number in accent-paradigm scope");
     }
+    if cases.is_some_and(|cases| {
+        cases.split(',').any(|case| {
+            !matches!(
+                case,
+                "nominative"
+                    | "genitive"
+                    | "dative"
+                    | "accusative"
+                    | "instrumental"
+                    | "locative"
+                    | "vocative"
+            )
+        })
+    }) {
+        return invalid(path, line, "unknown case in accent-paradigm scope");
+    }
+    Ok(())
 }
 
 fn validate_accent_placement_code(path: &Path, line: usize, value: &str) -> Result<()> {
@@ -1640,6 +1853,7 @@ fn invalid<T>(path: &Path, line: usize, reason: &str) -> Result<T> {
 
 struct RegistryTables {
     lexemes: Table,
+    noun_restrictions: Table,
     principal_parts: Table,
     exact_forms: Table,
     alignments: Table,
@@ -1655,6 +1869,7 @@ struct RegistryTables {
 fn emit_registry(tables: RegistryTables) -> String {
     let RegistryTables {
         mut lexemes,
+        mut noun_restrictions,
         mut principal_parts,
         mut exact_forms,
         mut alignments,
@@ -1667,6 +1882,7 @@ fn emit_registry(tables: RegistryTables) -> String {
         mut irregular_overrides,
     } = tables;
     lexemes.rows.sort();
+    noun_restrictions.rows.sort();
     principal_parts.rows.sort();
     exact_forms.rows.sort_by(|left, right| {
         let source_rank = |source: &str| match source {
@@ -1696,6 +1912,12 @@ fn emit_registry(tables: RegistryTables) -> String {
          // Source: data/synodal/*.tsv\n\n",
     );
     emit_rows(&mut output, "LEXEMES", "RawLexeme", &lexemes.rows);
+    emit_rows(
+        &mut output,
+        "NOUN_RESTRICTIONS",
+        "RawNounRestriction",
+        &noun_restrictions.rows,
+    );
     emit_rows(
         &mut output,
         "PRINCIPAL_PARTS",
@@ -1953,6 +2175,184 @@ mod tests {
                 ..candidate
             }
             .contains_exact("вѣ́рꙋ")
+        );
+    }
+
+    #[test]
+    fn productive_lexical_upgrades_must_preserve_reviewed_identity() {
+        let productive = vec![
+            "synodal:noun:test".into(),
+            "имѧ".into(),
+            "noun".into(),
+            "fourth-neuter-en".into(),
+            "имен".into(),
+            "neuter".into(),
+            String::new(),
+            "grammar".into(),
+            TARGET.into(),
+        ];
+        let reviewed = vec![
+            "synodal:noun:test".into(),
+            "небо".into(),
+            "noun".into(),
+            String::new(),
+            String::new(),
+            String::new(),
+            String::new(),
+            "attestation".into(),
+            TARGET.into(),
+        ];
+        let mut lexemes = Table {
+            rows: vec![productive.clone()],
+        };
+        let error =
+            extend_missing_lexemes(Path::new("lexemes.tsv"), &mut lexemes, vec![reviewed], &[])
+                .expect_err("identity mismatch must fail closed");
+        assert!(
+            error
+                .to_string()
+                .contains("must preserve the reviewed source or exact target citation")
+        );
+
+        let mut compatible = productive;
+        compatible[3] = String::new();
+        compatible[4] = String::new();
+        compatible[5] = String::new();
+        compatible[7] = "attestation".into();
+        extend_missing_lexemes(
+            Path::new("lexemes.tsv"),
+            &mut lexemes,
+            vec![compatible],
+            &[],
+        )
+        .expect("matching reviewed identity");
+        assert_eq!(lexemes.rows.len(), 1);
+        assert_eq!(lexemes.rows[0][3], "fourth-neuter-en");
+
+        let target = vec![
+            "synodal:noun:stone".into(),
+            "камень".into(),
+            "noun".into(),
+            "fourth-masculine-en-kamen".into(),
+            "камен".into(),
+            "masculine".into(),
+            String::new(),
+            "grammar".into(),
+            TARGET.into(),
+        ];
+        let source = vec![
+            "synodal:noun:stone".into(),
+            "камꙑ".into(),
+            "noun".into(),
+            String::new(),
+            String::new(),
+            String::new(),
+            String::new(),
+            "attestation".into(),
+            TARGET.into(),
+        ];
+        let exact = vec![
+            "synodal:noun:stone".into(),
+            "lexical-form".into(),
+            "камень".into(),
+            "Ка́мень".into(),
+            "review".into(),
+            "synodal-attestation".into(),
+            TARGET.into(),
+        ];
+        let alternate_exact = vec![
+            "synodal:noun:stone".into(),
+            "lexical-form".into(),
+            "камы".into(),
+            "Ка́мы".into(),
+            "review".into(),
+            "synodal-attestation".into(),
+            TARGET.into(),
+        ];
+        let mut target_lexemes = Table { rows: vec![target] };
+        extend_missing_lexemes(
+            Path::new("lexemes.tsv"),
+            &mut target_lexemes,
+            vec![source],
+            &[alternate_exact, exact],
+        )
+        .expect("reviewed exact target citation preserves the stable identity");
+        assert_eq!(target_lexemes.rows.len(), 1);
+    }
+
+    #[test]
+    fn lexeme_closed_codes_fail_before_registry_generation() {
+        let valid = vec![
+            "synodal:noun:test".into(),
+            "камень".into(),
+            "noun".into(),
+            "fourth-masculine-en-kamen".into(),
+            "камен".into(),
+            "masculine".into(),
+            String::new(),
+            "grammar".into(),
+            TARGET.into(),
+        ];
+        for (column, invalid_value) in [
+            (2, "unknown-pos"),
+            (3, "unknown-class"),
+            (5, "unknown-gender"),
+            (6, "unknown-aspect"),
+        ] {
+            let mut row = valid.clone();
+            row[column] = invalid_value.into();
+            assert!(
+                validate_lexemes(Path::new("lexemes.tsv"), &Table { rows: vec![row] }).is_err(),
+                "column {column} must be closed"
+            );
+        }
+    }
+
+    #[test]
+    fn noun_restrictions_require_a_matching_noun_recension() {
+        let restrictions = Table {
+            rows: vec![vec![
+                "synodal:test".into(),
+                "plural-only".into(),
+                "evidence:test".into(),
+                TARGET.into(),
+            ]],
+        };
+        let lexeme = |part_of_speech: &str, target: &str| Table {
+            rows: vec![vec![
+                "synodal:test".into(),
+                "тестъ".into(),
+                part_of_speech.into(),
+                "exact".into(),
+                String::new(),
+                String::new(),
+                String::new(),
+                "source:test".into(),
+                target.into(),
+            ]],
+        };
+
+        validate_noun_restriction_lexemes(
+            Path::new("noun_restrictions.tsv"),
+            &restrictions,
+            &lexeme("noun", TARGET),
+        )
+        .expect("matching noun restriction");
+        assert!(
+            validate_noun_restriction_lexemes(
+                Path::new("noun_restrictions.tsv"),
+                &restrictions,
+                &lexeme("verb", TARGET),
+            )
+            .is_err()
+        );
+        assert!(
+            validate_noun_restriction_lexemes(
+                Path::new("noun_restrictions.tsv"),
+                &restrictions,
+                &lexeme("noun", "old-church-slavonic"),
+            )
+            .is_err()
         );
     }
 }

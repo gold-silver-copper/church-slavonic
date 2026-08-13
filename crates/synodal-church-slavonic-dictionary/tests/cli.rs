@@ -252,12 +252,12 @@ fn marginal_recovery_exposes_ranked_review_readiness() {
     );
     let value: serde_json::Value =
         serde_json::from_slice(&output.stdout).expect("marginal recovery JSON");
-    assert_eq!(value["current_top_k"], 919_752);
+    assert_eq!(value["current_top_k"], 919_786);
     assert_eq!(value["target_top_k"], 919_341);
     assert_eq!(value["tokens_needed_for_target"], 0);
     assert_eq!(value["milestones"].as_array().map(Vec::len), Some(5));
     assert_eq!(value["milestones"][4]["percent"], 70);
-    assert_eq!(value["milestones"][4]["margin"], 411);
+    assert_eq!(value["milestones"][4]["margin"], 445);
     let batches = value["batches"].as_array().expect("batches");
     assert_eq!(batches.len(), 2);
     assert!(

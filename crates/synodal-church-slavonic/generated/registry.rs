@@ -152,15 +152,16 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
     RawLexeme(["synodal:noun:khram", "храмъ", "noun", "first-hard-m", "храм", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:kingdom", "царствїе", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:lyubov", "любовь", "noun", "third-f", "любов", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
-    RawLexeme(["synodal:noun:man", "мꙋжъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+    RawLexeme(["synodal:noun:man", "мꙋжъ", "noun", "first-mixed-m", "мꙋж", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:mesto", "мѣсто", "noun", "first-hard-n", "мѣст", "neuter", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:milost", "милость", "noun", "third-f", "милост", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:molitva", "молитва", "noun", "second-hard", "молитв", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:more", "море", "noun", "first-soft-n", "мор", "neuter", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:narod", "народъ", "noun", "first-hard-m", "народ", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:noch", "ночь", "noun", "third-f", "ноч", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
+    RawLexeme(["synodal:noun:otrocha", "ѻтроча", "noun", "fourth-neuter-at", "ѻтрочат", "neuter", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:path", "пꙋть", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
-    RawLexeme(["synodal:noun:people", "людїе", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+    RawLexeme(["synodal:noun:people", "людїе", "noun", "third-m", "люд", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:pustynya", "пустынѧ", "noun", "second-soft", "пустын", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:rab", "рабъ", "noun", "first-hard-m", "раб", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:selo", "село", "noun", "first-hard-n", "сел", "neuter", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
@@ -168,6 +169,7 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
     RawLexeme(["synodal:noun:slava", "слава", "noun", "second-hard", "слав", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:slovo", "слово", "noun", "first-hard-n", "слов", "neuter", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:spirit", "дꙋхъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+    RawLexeme(["synodal:noun:svekry", "свекры", "noun", "fourth-feminine-ov", "свекров", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:svet", "свѣтъ", "noun", "first-hard-m", "свѣт", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:syn", "сынъ", "noun", "first-hard-m", "сын", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:time", "времѧ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
@@ -294,7 +296,7 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
     RawLexeme(["synodal:noun:v07-bcdc26825740ef65", "оумъ", "noun", "", "", "", "", "wikisource-church-slavonic-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:v07-c1cd93a4f1e61aa0", "коза", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:v07-c21310e0a10b8651", "боурꙗ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
-    RawLexeme(["synodal:noun:v07-c27905de175a0cde", "камꙑ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+    RawLexeme(["synodal:noun:v07-c27905de175a0cde", "камень", "noun", "fourth-masculine-en-kamen", "камен", "masculine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:v07-c2d7f7cbabd89e59", "оутро", "noun", "", "", "", "", "wikisource-church-slavonic-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:v07-c56f014c9d6102d1", "любꙑ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:v07-c8464029a853f92d", "щедрота", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
@@ -413,7 +415,7 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
     RawLexeme(["synodal:noun:wikt-512a2b47758d", "колѣно", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-53bd0a6941e5", "легеѡнъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-53f0aace1342", "сѣнь", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
-    RawLexeme(["synodal:noun:wikt-551a03f1df94", "имѧ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+    RawLexeme(["synodal:noun:wikt-551a03f1df94", "имѧ", "noun", "fourth-neuter-en", "имен", "neuter", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-586163254439", "полъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-5889f47b19aa", "хвала", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-598268a54855", "храмина", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
@@ -450,7 +452,7 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
     RawLexeme(["synodal:noun:wikt-74cc67f3f26b", "садъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-75512ff48174", "гроздъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-776662ef739b", "ложе", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
-    RawLexeme(["synodal:noun:wikt-7790891c2704", "небо", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+    RawLexeme(["synodal:noun:wikt-7790891c2704", "небо", "noun", "fourth-neuter-es", "небес", "neuter", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-7aa6991d4c6b", "раи", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-7babd090b258", "дворъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-7d7a5288d389", "желѣзо", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
@@ -500,7 +502,7 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
     RawLexeme(["synodal:noun:wikt-9fbb97835974", "хвостъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-9fe1de3368c3", "хлѣбъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-a0460e26ad87", "скотъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
-    RawLexeme(["synodal:noun:wikt-a0a33dfa77c7", "мати", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+    RawLexeme(["synodal:noun:wikt-a0a33dfa77c7", "мати", "noun", "fourth-feminine-er", "матер", "feminine", "", "alypy-gamanovich-grammar-web-2023", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-a18629b39c2d", "видъ", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-a1a656a49417", "капище", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:noun:wikt-a261d72d93f6", "ѡбида", "noun", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
@@ -857,6 +859,10 @@ pub(crate) const LEXEMES: &[RawLexeme] = &[
     RawLexeme(["synodal:verb:wikt-f641099e2194", "познати", "verb", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:verb:wikt-fca54147b786", "раздѣлити", "verb", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
     RawLexeme(["synodal:verb:wikt-ffe65f68245a", "написати", "verb", "", "", "", "", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian"]),
+];
+
+pub(crate) const NOUN_RESTRICTIONS: &[RawNounRestriction] = &[
+    RawNounRestriction(["synodal:noun:people", "plural-only", "alypy-32-41-people-table", "synodal-russian"]),
 ];
 
 pub(crate) const PRINCIPAL_PARTS: &[RawPrincipalPart] = &[
@@ -4932,6 +4938,23 @@ pub(crate) const ACCENTS: &[RawAccent] = &[
 
 pub(crate) const ACCENT_PARADIGMS: &[RawAccentParadigm] = &[
     RawAccentParadigm(["synodal:adjective:mudr", "synodal-accent:mudr-fixed-stem", "adjective:long:positive:singular", "stem-vowel-from-start:0", "acute", "", "alypy-57-mudryi", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §57, мꙋ́дръ adjective paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:dual:dative,instrumental", "ending-vowel-from-end:1", "acute", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:dual:genitive,locative", "ending-vowel-from-end:0", "grave", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:dual:nominative,accusative,vocative", "stem-vowel-from-start:0", "acute", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:plural:dative,locative", "stem-vowel-from-start:0", "acute", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:plural:genitive", "stem-vowel-from-start:1", "acute", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:plural:instrumental", "ending-vowel-from-end:0", "grave", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:plural:nominative,accusative,vocative", "ending-vowel-from-end:0", "grave", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-551a03f1df94", "synodal-accent:imya-mobile", "noun:singular:nominative,genitive,dative,accusative,instrumental,locative,vocative", "stem-vowel-from-start:0", "acute", "psili@stem-vowel-from-start:0", "alypy-43-imya-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete и҆́мѧ paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:dual:dative,instrumental", "ending-vowel-from-end:1", "acute", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:dual:nominative,genitive,accusative,locative,vocative", "ending-vowel-from-end:0", "grave", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:plural:dative,locative", "ending-vowel-from-end:0", "acute", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:plural:genitive", "stem-vowel-from-start:1", "acute", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:plural:nominative,accusative,instrumental,vocative", "ending-vowel-from-end:0", "grave", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:singular:genitive,dative,locative", "ending-vowel-from-end:0", "grave", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:singular:instrumental", "ending-vowel-from-end:0", "acute", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-7790891c2704", "synodal-accent:nebo-mobile", "noun:singular:nominative,accusative,vocative", "stem-vowel-from-start:0", "acute", "", "alypy-43-nebo-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete не́бо paradigm", "synodal-russian", "synodal-russian"]),
+    RawAccentParadigm(["synodal:noun:wikt-a0a33dfa77c7", "synodal-accent:mati-fixed-stem", "noun:singular,dual,plural", "stem-vowel-from-start:0", "acute", "", "alypy-43-mati-table", "alypy-gamanovich-grammar-web-2023", "Alypy (Gamanovich), §43, complete ма́ти paradigm", "synodal-russian", "synodal-russian"]),
 ];
 
 pub(crate) const POSITIONAL_RULES: &[RawPositionalRule] = &[

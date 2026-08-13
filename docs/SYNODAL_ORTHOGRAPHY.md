@@ -53,8 +53,8 @@ reviewable tables and covered by hostile-input tests.
 ## Accent realization
 
 Liturgical generation resolves accent metadata in a fixed order: an exact
-reviewed accented/printed cell; an explicit lexical irregular printed override;
-a reviewed reusable `AccentParadigm`; otherwise a typed
+reviewed or provider-supplied accented/printed cell; an explicit lexical
+irregular printed override; a reviewed reusable `AccentParadigm`; otherwise a typed
 `OrthographicMetadataRequired` failure. A paradigm is not inferred from corpus
 frequency or one surface witness.
 
@@ -70,6 +70,19 @@ The reviewed `synodal-accent:mudr-fixed-stem` rule applies first-stem-vowel acut
 stress to multiple long positive singular forms of `мꙋдръ` under Alypy §57. It
 coexists with, and is lower precedence than, the existing exact nominative
 accent row.
+
+Alypy §43 additionally licenses `synodal-accent:mati-fixed-stem`,
+`synodal-accent:imya-mobile`, and `synodal-accent:nebo-mobile` across complete
+noun paradigms. `AccentScope::NounCases` restricts each mobile rule by both
+number and case. The `имѧ` rules place psili and stress independently on the
+initial vowel, so canonical output retains breathing before acute. Missing
+scopes return `OrthographicMetadataRequired`; overlapping scopes return
+`ContradictoryMetadata`.
+
+Injected providers do not receive a stress-guessing path. Their exact
+`SpecifiedForm` may carry an explicit liturgical realization; otherwise their
+`LexemeSpec` must carry a complete applicable accent paradigm. Composition
+cannot borrow an accent rule from another stable identity.
 
 ## Lookup and collation
 
@@ -129,8 +142,9 @@ round-trip canonical spelling. Other myriad notation is explicitly out of range.
 
 The validator recognizes standard combining marks, superscript Cyrillic letters,
 titlo/pokrytie, payerok, kavyka, and the standard Cyrillic repertoire while
-rejecting private-use glyph encodings. The renderer currently automates only
-reviewed accent rows and one semantic nomen-sacrum family. Initial `є`, broad
+rejecting private-use glyph encodings. The renderer currently automates reviewed
+exact accent rows, four reusable lexical paradigms, and one semantic
+nomen-sacrum family. Initial `є`, broad
 `ѻ`, iotated `ꙗ`, and digraph uk are available through an explicit
 `InitialPresentation` operation with a loss/change report. Automatic selection
 of those variants remains lexical and grammatical work because Alypy §2 records

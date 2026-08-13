@@ -1,7 +1,8 @@
 use synodal_church_slavonic_core::{
-    AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, Error, FiniteTense, FiniteVerbCell,
-    FormSet, Gender, GrammarCell, Number, NumeralCell, NumeralKind, ParticipleCell,
-    ParticipleTense, ParticipleVoice, Person, PronounCell, Result,
+    AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, Error, ErrorCode, FiniteTense,
+    FiniteVerbCell, FormSet, Gender, GrammarCell, ImperativeCell, LParticipleCell, NounCell,
+    Number, NumeralCell, NumeralKind, ParticipleCell, ParticipleTense, ParticipleVoice, Person,
+    PronounCell, Result, VerbSystem,
 };
 
 use crate::{Inflector, LexemeSummary, PartOfSpeech};
@@ -52,6 +53,11 @@ impl ParadigmRow {
     pub fn outcome(&self) -> &Result<FormSet> {
         &self.outcome
     }
+
+    #[must_use]
+    pub fn error_code(&self) -> Option<ErrorCode> {
+        self.outcome.as_ref().err().map(Error::code)
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -70,6 +76,29 @@ impl Paradigm {
             .into_iter()
             .map(|cell| {
                 let outcome = inflector.form_by_id(lexeme.id(), cell);
+                let status = classify(&outcome);
+                ParadigmRow {
+                    cell,
+                    outcome,
+                    status,
+                }
+            })
+            .collect();
+        Self {
+            identity: ParadigmIdentity::Registered(lexeme),
+            rows,
+        }
+    }
+
+    pub(crate) fn build_with(
+        lexeme: LexemeSummary,
+        cells: impl IntoIterator<Item = GrammarCell>,
+        mut generate: impl FnMut(GrammarCell) -> Result<FormSet>,
+    ) -> Self {
+        let rows = cells
+            .into_iter()
+            .map(|cell| {
+                let outcome = generate(cell);
                 let status = classify(&outcome);
                 ParadigmRow {
                     cell,
@@ -135,6 +164,28 @@ impl Paradigm {
         self.rows.iter().filter(|row| row.outcome.is_err())
     }
 
+    pub fn successes(&self) -> impl Iterator<Item = &ParadigmRow> {
+        self.rows.iter().filter(|row| row.outcome.is_ok())
+    }
+
+    pub fn with_status(&self, status: ParadigmStatus) -> impl Iterator<Item = &ParadigmRow> {
+        self.rows.iter().filter(move |row| row.status == status)
+    }
+
+    pub fn irregular(&self) -> impl Iterator<Item = &ParadigmRow> {
+        self.with_status(ParadigmStatus::IrregularOverride)
+    }
+
+    pub fn ambiguous(&self) -> impl Iterator<Item = &ParadigmRow> {
+        self.with_status(ParadigmStatus::AmbiguousPrediction)
+    }
+
+    pub fn with_error_code(&self, code: ErrorCode) -> impl Iterator<Item = &ParadigmRow> {
+        self.rows
+            .iter()
+            .filter(move |row| row.error_code() == Some(code))
+    }
+
     #[must_use]
     pub fn into_rows(self) -> Vec<ParadigmRow> {
         self.rows
@@ -196,6 +247,43 @@ pub(crate) fn finite_cells(tense: FiniteTense) -> Vec<GrammarCell> {
             })
         })
         .collect()
+}
+
+pub(crate) fn verb_cells(system: VerbSystem) -> Vec<GrammarCell> {
+    match system {
+        VerbSystem::Finite(tense) => finite_cells(tense),
+        VerbSystem::Imperative => Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Person::ALL
+                    .into_iter()
+                    .map(move |person| GrammarCell::Imperative(ImperativeCell { person, number }))
+            })
+            .collect(),
+        VerbSystem::Infinitive => vec![GrammarCell::Infinitive],
+        VerbSystem::LParticiple => Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Gender::ALL
+                    .into_iter()
+                    .map(move |gender| GrammarCell::LParticiple(LParticipleCell { gender, number }))
+            })
+            .collect(),
+        VerbSystem::Participle { tense, voice, form } => participle_cells(tense, voice, form),
+        VerbSystem::Supine => vec![GrammarCell::Supine],
+        VerbSystem::VerbalNoun { animacy } => Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Case::ALL.into_iter().map(move |case| {
+                    GrammarCell::VerbalNoun(NounCell {
+                        case,
+                        number,
+                        animacy,
+                    })
+                })
+            })
+            .collect(),
+    }
 }
 
 pub(crate) fn adjective_cells(form: AdjectiveForm) -> Vec<AdjectiveCell> {
@@ -296,8 +384,14 @@ pub(crate) fn classify(outcome: &Result<FormSet>) -> ParadigmStatus {
         Ok(forms)
             if forms.variants().iter().any(|variant| {
                 matches!(
-                    variant.source,
+                    &variant.source,
                     synodal_church_slavonic_core::FormSource::SynodalIrregularOverride { .. }
+                ) || matches!(
+                    &variant.source,
+                    synodal_church_slavonic_core::FormSource::CallerSpecifiedPrediction {
+                            rule,
+                            ..
+                        } if rule.as_str() == "SYN-CALLER-IRREGULAR-OVERRIDE"
                 )
             }) =>
         {

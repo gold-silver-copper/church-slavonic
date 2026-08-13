@@ -68,6 +68,87 @@ closed_enum!(NumeralKind {
     Collective,
 });
 
+/// A complete verb-system inventory understood by the public paradigm API.
+/// Exact-only systems remain represented here so their unsupported or missing
+/// cells stay visible instead of disappearing from a partial table.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum VerbSystem {
+    Finite(FiniteTense),
+    Imperative,
+    Infinitive,
+    LParticiple,
+    Participle {
+        tense: ParticipleTense,
+        voice: ParticipleVoice,
+        form: AdjectiveForm,
+    },
+    Supine,
+    VerbalNoun {
+        animacy: Animacy,
+    },
+}
+
+impl VerbSystem {
+    pub const ALL: [Self; 19] = [
+        Self::Finite(FiniteTense::Present),
+        Self::Finite(FiniteTense::Future),
+        Self::Finite(FiniteTense::Past),
+        Self::Finite(FiniteTense::Imperfect),
+        Self::Finite(FiniteTense::Aorist),
+        Self::Imperative,
+        Self::Infinitive,
+        Self::LParticiple,
+        Self::Participle {
+            tense: ParticipleTense::Present,
+            voice: ParticipleVoice::Active,
+            form: AdjectiveForm::Short,
+        },
+        Self::Participle {
+            tense: ParticipleTense::Present,
+            voice: ParticipleVoice::Active,
+            form: AdjectiveForm::Long,
+        },
+        Self::Participle {
+            tense: ParticipleTense::Present,
+            voice: ParticipleVoice::Passive,
+            form: AdjectiveForm::Short,
+        },
+        Self::Participle {
+            tense: ParticipleTense::Present,
+            voice: ParticipleVoice::Passive,
+            form: AdjectiveForm::Long,
+        },
+        Self::Participle {
+            tense: ParticipleTense::Past,
+            voice: ParticipleVoice::Active,
+            form: AdjectiveForm::Short,
+        },
+        Self::Participle {
+            tense: ParticipleTense::Past,
+            voice: ParticipleVoice::Active,
+            form: AdjectiveForm::Long,
+        },
+        Self::Participle {
+            tense: ParticipleTense::Past,
+            voice: ParticipleVoice::Passive,
+            form: AdjectiveForm::Short,
+        },
+        Self::Participle {
+            tense: ParticipleTense::Past,
+            voice: ParticipleVoice::Passive,
+            form: AdjectiveForm::Long,
+        },
+        Self::Supine,
+        Self::VerbalNoun {
+            animacy: Animacy::Inanimate,
+        },
+        Self::VerbalNoun {
+            animacy: Animacy::Animate,
+        },
+    ];
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct NounCell {

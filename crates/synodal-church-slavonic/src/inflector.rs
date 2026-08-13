@@ -2,7 +2,7 @@ use synodal_church_slavonic_core::{
     FormSet, GenerationPolicy, GrammarCell, LexemeId, OrthographyProfile, Result, SynodalWord,
 };
 
-use crate::{LexemeSpec, LexemeSummary, registry, resolver};
+use crate::{BatchRequest, BatchResult, LexemeSpec, LexemeSummary, Lexicon, registry, resolver};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -64,6 +64,12 @@ impl Inflector {
     /// identity resolution.
     pub fn form_spec(self, spec: &LexemeSpec, cell: GrammarCell) -> Result<FormSet> {
         resolver::resolve_spec(self, spec, cell)
+    }
+
+    /// Runs built-in registry requests in input order while retaining one
+    /// typed outcome per request.
+    pub fn batch(self, requests: impl IntoIterator<Item = BatchRequest>) -> Result<BatchResult> {
+        Ok(Lexicon::builtin(self)?.batch(requests))
     }
 }
 
