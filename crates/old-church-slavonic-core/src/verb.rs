@@ -15,6 +15,12 @@ pub struct VerbStems {
     pub present_first_singular: Option<String>,
     pub imperfect: Option<String>,
     pub aorist: Option<String>,
+    /// Independently supplied complete 2sg/3sg aorist principal part.
+    ///
+    /// Sigmatic aorists use a separate singular subbundle, including lexical
+    /// zero, `-тъ`, and `-стъ` realizations, so this value is never derived from
+    /// the main sigmatic stem.
+    pub aorist_second_third_singular: Option<String>,
     pub imperative: Option<String>,
     pub present_active_participle: Option<String>,
     pub present_passive_participle: Option<String>,
@@ -106,7 +112,54 @@ impl VerbLexemeBuilder {
         stem: impl Into<String>,
         formation: AoristFormation,
     ) -> Result<Self, InflectionError> {
+        if matches!(
+            formation,
+            AoristFormation::SigmaticPrimary
+                | AoristFormation::SigmaticSecondary
+                | AoristFormation::SigmaticVowel
+        ) {
+            return Err(InflectionError::InvalidInput {
+                reason: "a sigmatic aorist requires the independent 2sg/3sg principal part; use sigmatic_aorist"
+                    .to_string(),
+            });
+        }
         self.lexeme.stems.aorist = Some(validated_stem(stem)?);
+        self.lexeme.formations.aorist = Some(formation);
+        Ok(self)
+    }
+
+    /// Add a source-audited sigmatic main stem and complete 2sg/3sg form.
+    ///
+    /// `main_stem` is the surface stem after lexical vowel gradation and before
+    /// the formation's `с/х` endings: `нѣ-` for `нѣсъ`, `рѣ-` for `рѣхъ`.
+    /// `second_third_singular` is the complete syncretic form, such as `рече`,
+    /// `ѧ`, `ѧтъ`, or `быстъ`.
+    pub fn sigmatic_aorist(
+        mut self,
+        main_stem: impl Into<String>,
+        second_third_singular: impl Into<String>,
+        formation: AoristFormation,
+    ) -> Result<Self, InflectionError> {
+        if !matches!(
+            formation,
+            AoristFormation::SigmaticPrimary
+                | AoristFormation::SigmaticSecondary
+                | AoristFormation::SigmaticVowel
+        ) {
+            return Err(InflectionError::InvalidInput {
+                reason: "sigmatic_aorist accepts only a sigmatic aorist formation".to_string(),
+            });
+        }
+        let main_stem = validated_stem(main_stem)?;
+        if formation == AoristFormation::SigmaticVowel && !ends_in_ocs_vowel(&main_stem) {
+            return Err(InflectionError::InvalidInput {
+                reason: "the vowel-stem sigmatic formation requires a vowel-final main stem"
+                    .to_string(),
+            });
+        }
+        self.lexeme.stems.aorist = Some(main_stem);
+        self.lexeme.stems.aorist_second_third_singular =
+            Some(validated_stem(second_third_singular)?);
         self.lexeme.formations.aorist = Some(formation);
         Ok(self)
     }
@@ -422,13 +475,66 @@ fn aorist(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, In
                 "attach the new ox-aorist personal ending to the explicit aorist stem",
             ))
         }
-        AoristFormation::SigmaticPrimary | AoristFormation::SigmaticSecondary => {
-            Err(InflectionError::UnsupportedFormation {
-                system: MetadataField::AoristFormation,
-                formation: format!("{formation:?}"),
-            })
+        AoristFormation::SigmaticPrimary => sigmatic_aorist(lexeme, cell, SigmaticKind::Primary),
+        AoristFormation::SigmaticSecondary => {
+            sigmatic_aorist(lexeme, cell, SigmaticKind::Secondary)
+        }
+        AoristFormation::SigmaticVowel => sigmatic_aorist(lexeme, cell, SigmaticKind::VowelStem),
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SigmaticKind {
+    Primary,
+    Secondary,
+    VowelStem,
+}
+
+impl SigmaticKind {
+    const fn rule_id(self) -> RuleId {
+        match self {
+            Self::Primary => RuleId::VerbAoristSigmaticPrimary,
+            Self::Secondary => RuleId::VerbAoristSigmaticSecondary,
+            Self::VowelStem => RuleId::VerbAoristSigmaticVowel,
         }
     }
+}
+
+fn sigmatic_aorist(
+    lexeme: &VerbLexeme,
+    cell: FiniteVerbCell,
+    kind: SigmaticKind,
+) -> Result<PredictedForm, InflectionError> {
+    let stem = required_stem(lexeme.stems.aorist.as_deref(), MetadataField::AoristStem)?;
+    if kind == SigmaticKind::VowelStem && !ends_in_ocs_vowel(&stem) {
+        return Err(InflectionError::InvalidInput {
+            reason: "the vowel-stem sigmatic formation requires a vowel-final main stem"
+                .to_string(),
+        });
+    }
+    if matches!(
+        (cell.person, cell.number),
+        (Person::Second | Person::Third, Number::Singular)
+    ) {
+        let form = required_stem(
+            lexeme.stems.aorist_second_third_singular.as_deref(),
+            MetadataField::AoristSecondThirdSingular,
+        )?;
+        let rule_id = kind.rule_id();
+        return Ok(single_step(
+            &stem,
+            &form,
+            rule_id,
+            "select the independently supplied syncretic 2sg/3sg sigmatic-aorist principal part",
+        ));
+    }
+    let ending = sigmatic_aorist_ending(kind, cell);
+    Ok(join(
+        &stem,
+        ending,
+        kind.rule_id(),
+        "attach the selected old-sigmatic main-subbundle ending to the explicitly graded stem",
+    ))
 }
 
 fn present_active_participle(
@@ -715,11 +821,76 @@ fn new_aorist_cell(stem: &str, cell: FiniteVerbCell) -> (String, &'static str) {
     }
 }
 
+fn sigmatic_aorist_ending(kind: SigmaticKind, cell: FiniteVerbCell) -> &'static str {
+    match (kind, cell.person, cell.number) {
+        (SigmaticKind::Primary, Person::First, Number::Singular) => "съ",
+        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::First, Number::Singular) => {
+            "хъ"
+        }
+        (SigmaticKind::Primary, Person::First, Number::Dual) => "совѣ",
+        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::First, Number::Dual) => "ховѣ",
+        (
+            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
+            Person::Second,
+            Number::Dual,
+        ) => "ста",
+        (
+            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
+            Person::Third,
+            Number::Dual,
+        ) => "сте",
+        (SigmaticKind::Primary, Person::First, Number::Plural) => "сомъ",
+        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::First, Number::Plural) => {
+            "хомъ"
+        }
+        (
+            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
+            Person::Second,
+            Number::Plural,
+        ) => "сте",
+        (SigmaticKind::Primary, Person::Third, Number::Plural) => "сѧ",
+        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::Third, Number::Plural) => "шѧ",
+        (
+            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
+            Person::Second | Person::Third,
+            Number::Singular,
+        ) => "",
+    }
+}
+
 fn required_stem(value: Option<&str>, field: MetadataField) -> Result<String, InflectionError> {
     let value = value.ok_or_else(|| InflectionError::MissingLexicalMetadata {
         needed: vec![field],
     })?;
     crate::orthography::canonical_display(value)
+}
+
+fn ends_in_ocs_vowel(stem: &str) -> bool {
+    stem.chars().last().is_some_and(|last| {
+        matches!(
+            last,
+            'а' | 'е'
+                | 'є'
+                | 'и'
+                | 'і'
+                | 'ї'
+                | 'о'
+                | 'ѡ'
+                | 'ꙋ'
+                | 'у'
+                | 'ы'
+                | 'ꙑ'
+                | 'ь'
+                | 'ъ'
+                | 'ѣ'
+                | 'ю'
+                | 'ꙗ'
+                | 'ѧ'
+                | 'ѫ'
+                | 'ѩ'
+                | 'ѭ'
+        )
+    })
 }
 
 fn join(stem: &str, ending: &str, rule_id: RuleId, reason: &'static str) -> PredictedForm {
@@ -1003,23 +1174,170 @@ mod tests {
                 "пекѫ",
             ]
         );
-        verb.stems.aorist = None;
-        for formation in [
-            AoristFormation::SigmaticPrimary,
-            AoristFormation::SigmaticSecondary,
-        ] {
-            verb.formations.aorist = Some(formation);
-            assert!(matches!(
+    }
+
+    #[test]
+    fn sigmatic_aorists_use_independent_main_and_singular_principal_parts() {
+        // UT OCS Online, lesson 3, §14.2; Polivanova 2023 §§476–480.
+        let rese = VerbLexeme::builder("рєшти", VerbClass::IA1)
+            .expect("valid lemma")
+            .sigmatic_aorist("рѣ", "рєчє", AoristFormation::SigmaticSecondary)
+            .expect("source-audited old sigmatic 2 metadata")
+            .build();
+        assert_eq!(
+            finite_paradigm(&rese, FiniteTense::Aorist),
+            [
+                "рѣхъ",
+                "рєчє",
+                "рєчє",
+                "рѣховѣ",
+                "рѣста",
+                "рѣсте",
+                "рѣхомъ",
+                "рѣсте",
+                "рѣшѧ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &rese,
+                finite_cell(FiniteTense::Aorist, Person::First, Number::Singular)
+            )
+            .expect("old sigmatic 2")
+            .rule_id,
+            RuleId::VerbAoristSigmaticSecondary
+        );
+
+        let vesti = VerbLexeme::builder("вєсти", VerbClass::IA1)
+            .expect("valid lemma")
+            .sigmatic_aorist("вѣ", "вєдє", AoristFormation::SigmaticPrimary)
+            .expect("source-audited old sigmatic 1 metadata")
+            .build();
+        assert_eq!(
+            finite_paradigm(&vesti, FiniteTense::Aorist),
+            [
+                "вѣсъ",
+                "вєдє",
+                "вєдє",
+                "вѣсовѣ",
+                "вѣста",
+                "вѣсте",
+                "вѣсомъ",
+                "вѣсте",
+                "вѣсѧ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &vesti,
+                finite_cell(FiniteTense::Aorist, Person::Third, Number::Plural)
+            )
+            .expect("old sigmatic 1")
+            .rule_id,
+            RuleId::VerbAoristSigmaticPrimary
+        );
+
+        // The 2sg/3sg subbundle is a complete principal part. This permits the
+        // independently attested zero and -тъ variants without combining them.
+        for singular in ["ѧ", "ѧтъ"] {
+            let yati = VerbLexeme::builder("ѧти", VerbClass::Irregular)
+                .expect("valid lemma")
+                .sigmatic_aorist("ѧ", singular, AoristFormation::SigmaticPrimary)
+                .expect("source-audited singular variant")
+                .build();
+            assert_eq!(
                 finite(
-                    &verb,
-                    finite_cell(FiniteTense::Aorist, Person::First, Number::Singular)
-                ),
-                Err(InflectionError::UnsupportedFormation {
-                    system: MetadataField::AoristFormation,
-                    formation: expected,
-                }) if expected == format!("{formation:?}")
-            ));
+                    &yati,
+                    finite_cell(FiniteTense::Aorist, Person::Second, Number::Singular)
+                )
+                .expect("independent 2sg principal part")
+                .text,
+                singular
+            );
+            assert_eq!(
+                finite(
+                    &yati,
+                    finite_cell(FiniteTense::Aorist, Person::Third, Number::Singular)
+                )
+                .expect("independent 3sg principal part")
+                .text,
+                singular
+            );
         }
+
+        // Polivanova 2023 §§93, 455, 460: the standard aorist terminals
+        // select their zero-o allomorph after a vowel-final workstem.
+        let znati = VerbLexeme::builder("знати", VerbClass::IA1)
+            .expect("valid lemma")
+            .sigmatic_aorist("зна", "зна", AoristFormation::SigmaticVowel)
+            .expect("source-audited vowel-stem sigmatic metadata")
+            .build();
+        assert_eq!(
+            finite_paradigm(&znati, FiniteTense::Aorist),
+            [
+                "знахъ",
+                "зна",
+                "зна",
+                "знаховѣ",
+                "знаста",
+                "знасте",
+                "знахомъ",
+                "знасте",
+                "знашѧ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &znati,
+                finite_cell(FiniteTense::Aorist, Person::First, Number::Singular)
+            )
+            .expect("vowel-stem sigmatic")
+            .rule_id,
+            RuleId::VerbAoristSigmaticVowel
+        );
+    }
+
+    #[test]
+    fn sigmatic_aorists_fail_closed_when_principal_parts_conflict_or_are_missing() {
+        assert!(matches!(
+            VerbLexeme::builder("рещи", VerbClass::IA1)
+                .expect("valid lemma")
+                .aorist("рѣ", AoristFormation::SigmaticSecondary),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            VerbLexeme::builder("нести", VerbClass::IA1)
+                .expect("valid lemma")
+                .sigmatic_aorist("нес", "несе", AoristFormation::SigmaticVowel),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            VerbLexeme::builder("рещи", VerbClass::IA1)
+                .expect("valid lemma")
+                .sigmatic_aorist("рѣ", "рече", AoristFormation::New),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+
+        let mut incomplete = VerbLexeme::new("рещи", VerbClass::IA1);
+        incomplete.stems.aorist = Some("рѣ".to_string());
+        incomplete.formations.aorist = Some(AoristFormation::SigmaticSecondary);
+        assert!(matches!(
+            finite(
+                &incomplete,
+                finite_cell(FiniteTense::Aorist, Person::Third, Number::Singular)
+            ),
+            Err(InflectionError::MissingLexicalMetadata { needed })
+                if needed == vec![MetadataField::AoristSecondThirdSingular]
+        ));
+        assert_eq!(
+            finite(
+                &incomplete,
+                finite_cell(FiniteTense::Aorist, Person::First, Number::Plural)
+            )
+            .expect("main subbundle does not need the singular principal part")
+            .text,
+            "рѣхомъ"
+        );
     }
 
     #[test]

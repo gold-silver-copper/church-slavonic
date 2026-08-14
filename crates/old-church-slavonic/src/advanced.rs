@@ -47,9 +47,9 @@ pub mod rules {
 /// Source-backed dictionary principal parts and evaluation entry points.
 pub mod metadata {
     pub use crate::metadata::{
-        DictionaryVerbMetadata, ImperfectMetadataAnalysis, NormalizedVerbMetadataField,
-        PresentMetadataAnalysis, SourcedMetadata, VerbStemMetadata, VerbSystemMetadata,
-        verb_metadata_by_id,
+        AoristMetadataAnalysis, DictionaryVerbMetadata, ImperfectMetadataAnalysis,
+        NormalizedVerbMetadataField, PresentMetadataAnalysis, SourcedMetadata, VerbStemMetadata,
+        VerbSystemMetadata, verb_metadata_by_id,
     };
     pub use crate::resolver::{
         finite_verb_from_dictionary_metadata, imperative_from_dictionary_metadata,

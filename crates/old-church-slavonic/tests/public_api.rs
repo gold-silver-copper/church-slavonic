@@ -739,17 +739,24 @@ fn advanced_explicit_metadata_is_independent_and_typed() {
     .expect("explicit new aorist");
     assert_eq!(generated.primary_text(), "рече");
 
-    explicit.formations.aorist = Some(AoristFormation::SigmaticPrimary);
+    explicit.stems.aorist = Some("рѣ".to_string());
+    explicit.stems.aorist_second_third_singular = Some("рече".to_string());
+    explicit.formations.aorist = Some(AoristFormation::SigmaticSecondary);
+    let sigmatic = finite_verb_with(
+        &explicit,
+        FiniteVerbCell {
+            tense: FiniteTense::Aorist,
+            person: Person::First,
+            number: Number::Singular,
+        },
+    )
+    .expect("explicit old sigmatic 2 aorist");
+    assert_eq!(sigmatic.primary_text(), "рѣхъ");
     assert!(matches!(
-        finite_verb_with(
-            &explicit,
-            FiniteVerbCell {
-                tense: FiniteTense::Aorist,
-                person: Person::First,
-                number: Number::Singular,
-            },
-        ),
-        Err(InflectionError::UnsupportedFormation { .. })
+        sigmatic.source(),
+        FormSource::ExplicitMetadataRule {
+            rule_id: RuleId::VerbAoristSigmaticSecondary
+        }
     ));
 }
 
@@ -1144,4 +1151,74 @@ fn normalized_dictionary_metadata_remains_in_the_specialist_namespace() {
                 FormSource::DictionaryMetadataRule { .. }
             )
     }));
+}
+
+#[test]
+fn normalized_sigmatic_metadata_reaches_the_production_resolver() {
+    let field = |name: &str,
+                 value: &str,
+                 source_feature: &str,
+                 source_form: &str|
+     -> api_metadata::NormalizedVerbMetadataField {
+        api_metadata::NormalizedVerbMetadataField {
+            system: "aorist".to_string(),
+            analysis_rank: 0,
+            field: name.to_string(),
+            value: value.to_string(),
+            provenance: "dictionary-principal-part".to_string(),
+            source_feature: source_feature.to_string(),
+            source_form: source_form.to_string(),
+            crosscheck_features: vec!["verb:finite:aorist:3:pl".to_string()],
+            authority: "UT OCS Online lesson 3 §14.2; Polivanova 2023 §§476–480".to_string(),
+        }
+    };
+    let metadata = api_metadata::DictionaryVerbMetadata::from_normalized_fields(
+        "fixture:рєшти",
+        "рєшти",
+        [
+            field("stem", "рѣ", "verb:finite:aorist:1:sg", "рѣхъ"),
+            field(
+                "second-third-singular",
+                "рєчє",
+                "verb:finite:aorist:3:sg",
+                "рєчє",
+            ),
+            field(
+                "formation",
+                "sigmatic-secondary",
+                "verb:finite:aorist:1:sg",
+                "рѣхъ",
+            ),
+        ],
+    )
+    .expect("validated sigmatic metadata");
+
+    let first_singular = api_metadata::finite_verb_from_dictionary_metadata(
+        &metadata,
+        FiniteVerbCell {
+            tense: FiniteTense::Aorist,
+            person: Person::First,
+            number: Number::Singular,
+        },
+    )
+    .expect("metadata-driven old sigmatic 2 main subbundle");
+    assert_eq!(first_singular.primary_text(), "рѣхъ");
+
+    let third_singular = api_metadata::finite_verb_from_dictionary_metadata(
+        &metadata,
+        FiniteVerbCell {
+            tense: FiniteTense::Aorist,
+            person: Person::Third,
+            number: Number::Singular,
+        },
+    )
+    .expect("metadata-driven independent singular subbundle");
+    assert_eq!(third_singular.primary_text(), "рєчє");
+    assert!(
+        third_singular
+            .analyses()
+            .iter()
+            .flat_map(|analysis| &analysis.evidence)
+            .any(|evidence| { evidence.field == Some(MetadataField::AoristSecondThirdSingular) })
+    );
 }

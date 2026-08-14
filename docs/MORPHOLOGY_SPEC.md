@@ -132,7 +132,8 @@ always bypass citation-shape inference with an explicit `AdjectiveLexeme`.
 
 `VerbClass` owns only the present conjugation. `VerbLexeme` separately records the
 present stem and first-singular allomorph, imperfect stem, formation, and variant
-policy, aorist stem and formation, imperative stem and formation, and one
+policy, aorist main stem, independent sigmatic 2sg/3sg principal part, and
+formation, imperative stem and formation, and one
 stem/formation pair for each productive participle. Lexical aspect is metadata and
 never chooses an aorist.
 Root and irregular lexemes are explicit classes. A caller may use a productive
@@ -218,20 +219,30 @@ or manuscript distribution, so this version adds no global contracted variant.
 - `V-AOR-NEW-01` implements the new *ox*-aorist: `-охъ/-е`,
   `-оховѣ/-оста/-осте`, and `-охомъ/-осте/-ошѧ`. Only the 2sg/3sg seam applies
   first palatalization. For example, explicit `рек-` yields `рекохъ` but `рече`.
-- `SigmaticPrimary` and `SigmaticSecondary` are distinct typed formations so
-  normalized metadata cannot collapse them, but both remain explicitly unsupported.
-  UT lesson 3 §14.2 requires a pre-sigmatic long-grade/root alternation, `s/x` seam
-  selection, a distinct 2sg/3sg base, and a documented optional final `-тъ`. A
-  subtype name plus one supplied stem still cannot represent those independent
-  choices. A future implementation therefore needs non-singular and 2sg/3sg
-  allomorphs, seam policy, and `-тъ` variant policy backed by lexeme-level evidence.
-  Both return `UnsupportedFormation` before a stem is requested, so a represented
-  unsupported subtype cannot masquerade as missing metadata.
+- `V-AOR-SIG-PRIMARY-01` implements Polivanova's old sigmatic 1 `-с-` main
+  subbundle: `-съ/-совѣ/-ста/-сте/-сомъ/-сте/-сѧ`.
+- `V-AOR-SIG-SECONDARY-01` implements the old sigmatic 2 `-х-` main subbundle:
+  `-хъ/-ховѣ/-ста/-сте/-хомъ/-сте/-шѧ`.
+- `V-AOR-SIG-VOWEL-01` preserves the morphologically distinct standard
+  vowel-stem sigmatic analysis, which selects the zero-`о` `-х-` series. Thus
+  explicit `зна-` produces `знахъ, знаховѣ, знаста, ... , знашѧ`; it is not
+  relabeled as the old `рѣхъ` subtype merely because most endings coincide.
+
+All three sigmatic formations require an already graded surface main stem and a
+complete, independent syncretic 2sg/3sg principal part. The engine therefore does
+not guess compensatory lengthening, an `s/x` boundary, first palatalization, or the
+lexically restricted zero/`-тъ`/`-стъ` choice. For example, separate analyses with
+`ѧ` and `ѧтъ` produce those two sourced singular variants without admitting their
+cross-product. Missing singular metadata is a typed
+`AoristSecondThirdSingular` failure. The validated builder rejects a sigmatic
+formation passed through the one-stem `aorist` method and rejects a consonant-final
+stem for `SigmaticVowel`.
 
 Multiple aorist formations for one lemma remain separate lexical analyses; aspect
 never selects among them. Suppletive forms of `бꙑти`, `дати`, `ѣсти`, `вѣдѣти`,
 `хотѣти`, and motion verbs stay table-backed unless a caller supplies a deliberately
-audited root analysis. Authority: UT lesson 3 §§14.1–14.3,
+audited root analysis. Authority: UT lesson 3 §§14.1–14.3; Polivanova 2023
+§§93, 455, 460, 462, and 476–482,
 <https://lrc.la.utexas.edu/eieol/ocsol/30#grammar_987> and
 <https://lrc.la.utexas.edu/eieol/ocsol/30#grammar_989>.
 

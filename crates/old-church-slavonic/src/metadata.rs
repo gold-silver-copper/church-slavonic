@@ -32,6 +32,14 @@ pub struct VerbSystemMetadata<F> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AoristMetadataAnalysis {
+    pub analysis_rank: u16,
+    pub stem: SourcedMetadata<String>,
+    pub second_third_singular: Option<SourcedMetadata<String>>,
+    pub formation: SourcedMetadata<AoristFormation>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ImperfectMetadataAnalysis {
     pub analysis_rank: u16,
     pub stem: SourcedMetadata<String>,
@@ -52,7 +60,7 @@ pub struct DictionaryVerbMetadata {
     pub aspect: Option<SourcedMetadata<VerbAspect>>,
     pub present: Vec<PresentMetadataAnalysis>,
     pub imperfect: Vec<ImperfectMetadataAnalysis>,
-    pub aorist: Vec<VerbSystemMetadata<AoristFormation>>,
+    pub aorist: Vec<AoristMetadataAnalysis>,
     pub imperative: Vec<VerbSystemMetadata<ImperativeFormation>>,
     pub l_participle: Vec<VerbStemMetadata>,
     pub present_active_participle: Vec<VerbSystemMetadata<PresentActiveParticipleFormation>>,
@@ -183,7 +191,7 @@ impl DictionaryVerbMetadata {
             aspect,
             present,
             imperfect: parse_imperfect_groups(&groups)?,
-            aorist: parse_system_groups(&groups, "aorist", parse_aorist)?,
+            aorist: parse_aorist_groups(&groups)?,
             imperative: parse_system_groups(&groups, "imperative", parse_imperative)?,
             l_participle: parse_stem_groups(&groups, "l-participle")?,
             present_active_participle: parse_system_groups(
@@ -219,15 +227,19 @@ fn validate_field_shape(field: &NormalizedVerbMetadataField) -> Result<(), Infle
             reason: "normalized verb metadata contains an empty required value".to_string(),
         });
     }
-    if matches!(field.field.as_str(), "stem" | "first-singular-stem")
-        && old_church_slavonic_core::orthography::canonical_display(&field.value)? != field.value
+    if matches!(
+        field.field.as_str(),
+        "stem" | "first-singular-stem" | "second-third-singular"
+    ) && old_church_slavonic_core::orthography::canonical_display(&field.value)? != field.value
     {
         return Err(InflectionError::InvalidInput {
             reason: "normalized verb metadata stem is not NFC".to_string(),
         });
     }
-    if matches!(field.field.as_str(), "stem" | "first-singular-stem")
-        && detect_script(&field.value) != Script::Cyrillic
+    if matches!(
+        field.field.as_str(),
+        "stem" | "first-singular-stem" | "second-third-singular"
+    ) && detect_script(&field.value) != Script::Cyrillic
     {
         return Err(InflectionError::InvalidInput {
             reason: "normalized productive verb metadata stem is not Cyrillic".to_string(),
@@ -261,8 +273,11 @@ fn validate_field_shape(field: &NormalizedVerbMetadataField) -> Result<(), Infle
             field.field.as_str(),
             "stem" | "formation" | "variant-policy"
         ),
-        "aorist"
-        | "imperative"
+        "aorist" => matches!(
+            field.field.as_str(),
+            "stem" | "second-third-singular" | "formation"
+        ),
+        "imperative"
         | "present-active-participle"
         | "present-passive-participle"
         | "past-active-participle"
@@ -343,6 +358,56 @@ fn parse_system_groups<F: Copy>(
                 formation_field,
                 parse_formation(&formation.value)?,
             )?,
+        });
+    }
+    Ok(out)
+}
+
+fn parse_aorist_groups(
+    groups: &FieldGroups,
+) -> Result<Vec<AoristMetadataAnalysis>, InflectionError> {
+    let mut out = Vec::new();
+    for ((system, rank), group) in groups {
+        if system != "aorist" {
+            continue;
+        }
+        let stem = required(group, "stem", MetadataField::AoristStem)?;
+        let formation = required(group, "formation", MetadataField::AoristFormation)?;
+        let formation_value = parse_aorist(&formation.value)?;
+        let second_third_singular = group
+            .get("second-third-singular")
+            .map(|row| {
+                sourced(
+                    row,
+                    MetadataField::AoristSecondThirdSingular,
+                    row.value.clone(),
+                )
+            })
+            .transpose()?;
+        let is_sigmatic = matches!(
+            formation_value,
+            AoristFormation::SigmaticPrimary
+                | AoristFormation::SigmaticSecondary
+                | AoristFormation::SigmaticVowel
+        );
+        if is_sigmatic && second_third_singular.is_none() {
+            return Err(InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::AoristSecondThirdSingular],
+            });
+        }
+        if !is_sigmatic && second_third_singular.is_some() {
+            return Err(InflectionError::ContradictoryLexicalMetadata {
+                fields: vec![
+                    MetadataField::AoristFormation,
+                    MetadataField::AoristSecondThirdSingular,
+                ],
+            });
+        }
+        out.push(AoristMetadataAnalysis {
+            analysis_rank: *rank,
+            stem: sourced(stem, MetadataField::AoristStem, stem.value.clone())?,
+            second_third_singular,
+            formation: sourced(formation, MetadataField::AoristFormation, formation_value)?,
         });
     }
     Ok(out)
@@ -478,6 +543,7 @@ fn metadata_field(system: &str, field: &str) -> MetadataField {
         ("present", "stem") => MetadataField::PresentStem,
         ("present", "first-singular-stem") => MetadataField::PresentFirstSingularStem,
         ("imperfect", "variant-policy") => MetadataField::ImperfectVariantPolicy,
+        ("aorist", "second-third-singular") => MetadataField::AoristSecondThirdSingular,
         ("l-participle", "stem") => MetadataField::LParticipleStem,
         (_, "stem") => fields_for_system(system).0,
         (_, "formation") => fields_for_system(system).1,
@@ -511,6 +577,7 @@ fn parse_aorist(value: &str) -> Result<AoristFormation, InflectionError> {
         "new" => Ok(AoristFormation::New),
         "sigmatic-primary" => Ok(AoristFormation::SigmaticPrimary),
         "sigmatic-secondary" => Ok(AoristFormation::SigmaticSecondary),
+        "sigmatic-vowel" => Ok(AoristFormation::SigmaticVowel),
         value => invalid_code("aorist formation", value),
     }
 }
@@ -703,5 +770,58 @@ mod tests {
             analysis.stem.evidence.provenance == MetadataProvenance::DictionaryPrincipalPart
                 && analysis.stem.evidence.authority.as_deref() == Some("fixture-dictionary")
         }));
+    }
+
+    #[test]
+    fn sigmatic_aorist_metadata_requires_the_independent_singular_subbundle() {
+        let metadata = DictionaryVerbMetadata::from_normalized_fields(
+            "fixture",
+            "рєшти",
+            [
+                field("aorist", 0, "stem", "рѣ"),
+                field("aorist", 0, "second-third-singular", "рєчє"),
+                field("aorist", 0, "formation", "sigmatic-secondary"),
+            ],
+        )
+        .expect("complete sigmatic principal parts");
+        assert_eq!(metadata.aorist.len(), 1);
+        assert_eq!(metadata.aorist[0].stem.value, "рѣ");
+        assert_eq!(
+            metadata.aorist[0]
+                .second_third_singular
+                .as_ref()
+                .expect("sigmatic singular subbundle")
+                .value,
+            "рєчє"
+        );
+        assert_eq!(
+            metadata.aorist[0].formation.value,
+            AoristFormation::SigmaticSecondary
+        );
+
+        assert!(matches!(
+            DictionaryVerbMetadata::from_normalized_fields(
+                "fixture",
+                "рєшти",
+                [
+                    field("aorist", 0, "stem", "рѣ"),
+                    field("aorist", 0, "formation", "sigmatic-secondary"),
+                ],
+            ),
+            Err(InflectionError::MissingLexicalMetadata { needed })
+                if needed == vec![MetadataField::AoristSecondThirdSingular]
+        ));
+        assert!(matches!(
+            DictionaryVerbMetadata::from_normalized_fields(
+                "fixture",
+                "рещи",
+                [
+                    field("aorist", 0, "stem", "рек"),
+                    field("aorist", 0, "second-third-singular", "рече"),
+                    field("aorist", 0, "formation", "new"),
+                ],
+            ),
+            Err(InflectionError::ContradictoryLexicalMetadata { .. })
+        ));
     }
 }

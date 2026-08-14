@@ -6,15 +6,15 @@ Inventory date: `2026-08-14`. Source-frontier date: `2026-08-14`.
 
 ## Headline
 
-The matrix contains **51** required system contracts: **23** have final states and **28** remain non-final. Source discovery has 1 recorded pass and has not converged.
+The matrix contains **51** required system contracts: **24** have final states and **27** remain non-final. Source discovery has 1 recorded pass and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 22 |
+| `implementation-missing` | 21 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 21 |
+| `productive-complete` | 22 |
 | `source-review-open` | 6 |
 
 ## Recension totals
@@ -22,7 +22,7 @@ The matrix contains **51** required system contracts: **23** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 10 | 24 |
+| old-church-slavonic | 11 | 24 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -38,7 +38,7 @@ The matrix contains **51** required system contracts: **23** have final states a
 | old-church-slavonic | analytic-form | 0 | 1 |
 | old-church-slavonic | comparison | 0 | 1 |
 | old-church-slavonic | determiner | 0 | 1 |
-| old-church-slavonic | finite-verb | 3 | 5 |
+| old-church-slavonic | finite-verb | 4 | 5 |
 | old-church-slavonic | imperative | 1 | 2 |
 | old-church-slavonic | invariant | 1 | 1 |
 | old-church-slavonic | irregular-verb | 0 | 1 |
@@ -75,7 +75,6 @@ The matrix contains **51** required system contracts: **23** have final states a
 - `ocs.determiner` — **implementation-missing**: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.
 - `ocs.numeral` — **implementation-missing**: Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars.
 - `ocs.verb.imperfect.contracted` — **source-review-open**: Define typed contraction policies from independent grammar and witness evidence, then implement and test every licensed cell.
-- `ocs.verb.aorist.sigmatic` — **implementation-missing**: Add closed sigmatic metadata, use LOVe and independent grammar evidence, implement both formations, and exhaustively validate.
 - `ocs.verb.imperative.analytic` — **implementation-missing**: Add typed OCS analytic-form results and implement licensed da imperatives with component provenance.
 - `ocs.verb.irregular-root` — **implementation-missing**: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
 - `ocs.verb.analytic` — **implementation-missing**: Add structured phrase results and implement every licensed OCS analytic construction with component provenance.
@@ -113,7 +112,7 @@ The matrix contains **51** required system contracts: **23** have final states a
 | `ocs.verb.imperfect.uncontracted` | old-church-slavonic | finite-verb | `productive-complete` | `V-IMPF-A-01`<br>`V-IMPF-YAT-A-01`<br>`V-IMPF-PAL-A-01` | source-backed productive uncontracted prediction |
 | `ocs.verb.imperfect.contracted` | old-church-slavonic | finite-verb | `source-review-open` | `OCS-V-IMPERFECT-CONTRACTION-PENDING` | aggregate corpus mismatch evidence and sparse exact cells |
 | `ocs.verb.aorist.asigmatic-new` | old-church-slavonic | finite-verb | `productive-complete` | `V-AOR-ASIG-01`<br>`V-AOR-NEW-01` | source-backed productive prediction |
-| `ocs.verb.aorist.sigmatic` | old-church-slavonic | finite-verb | `implementation-missing` | `V-AOR-SIG-PRIMARY-PENDING`<br>`V-AOR-SIG-SECONDARY-PENDING` | grammar contract identified; lexical principal-part crosswalk incomplete |
+| `ocs.verb.aorist.sigmatic` | old-church-slavonic | finite-verb | `productive-complete` | `V-AOR-SIG-PRIMARY-01`<br>`V-AOR-SIG-SECONDARY-01`<br>`V-AOR-SIG-VOWEL-01` | independent grammar paradigms plus source-backed principal-part contract |
 | `ocs.verb.imperative.synthetic` | old-church-slavonic | imperative | `productive-complete` | `V-IMP-01` | source-backed productive prediction |
 | `ocs.verb.imperative.analytic` | old-church-slavonic | imperative | `implementation-missing` | `OCS-ANALYTIC-IMPERATIVE-PENDING` | category identified; structured phrase implementation absent |
 | `ocs.verb.infinitive-supine-lparticiple` | old-church-slavonic | nonfinite-verb | `productive-complete` | `V-INF-01`<br>`V-SUP-01`<br>`V-LPART-01` | source-backed productive prediction |
@@ -161,7 +160,7 @@ The frontier contains **14** source/lineage records. Authority policy: target-re
 | ID | Tier | Type | Recension | Access | Impact |
 |---|---:|---|---|---|---|
 | `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; exposes sigmatic-aorist and analytic-form gaps. |
-| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries that must be crosswalked against every OCS matrix entry. |
+| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. |
 | `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; requires a complete category/rule crosswalk and conflict ledger. |
 | `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; supplies independent lexeme-level allomorph evidence for sigmatic aorists and irregular/root verbs. |
 | `english-wiktionary-ocs-kaikki-2026-08-07` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-local | Current OCS exact registry and extraction target. |

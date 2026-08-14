@@ -560,6 +560,7 @@ impl From<AoristFormation> for FormationCode {
             AoristFormation::Asigmatic => "asigmatic",
             AoristFormation::SigmaticPrimary => "sigmatic-primary",
             AoristFormation::SigmaticSecondary => "sigmatic-secondary",
+            AoristFormation::SigmaticVowel => "sigmatic-vowel",
             AoristFormation::New => "new",
         })
     }

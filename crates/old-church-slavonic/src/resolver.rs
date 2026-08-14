@@ -873,12 +873,22 @@ fn generate_finite_from_metadata(
             for analysis in &metadata.aorist {
                 let mut lexeme = metadata_verb(metadata);
                 lexeme.stems.aorist = Some(analysis.stem.value.clone());
+                lexeme.stems.aorist_second_third_singular = analysis
+                    .second_third_singular
+                    .as_ref()
+                    .map(|principal_part| principal_part.value.clone());
                 lexeme.formations.aorist = Some(analysis.formation.value);
                 let predicted = old_church_slavonic_core::verb::finite(&lexeme, cell)?;
-                analyses.push(metadata_analysis(
-                    predicted,
-                    vec![used(&analysis.stem), used(&analysis.formation)],
-                ));
+                let mut selected = vec![used(&analysis.stem), used(&analysis.formation)];
+                if matches!(
+                    (cell.person, cell.number),
+                    (Person::Second | Person::Third, Number::Singular)
+                ) {
+                    if let Some(principal_part) = &analysis.second_third_singular {
+                        selected.push(used(principal_part));
+                    }
+                }
+                analyses.push(metadata_analysis(predicted, selected));
             }
         }
     }

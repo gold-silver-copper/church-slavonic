@@ -271,23 +271,23 @@ id = "ocs.verb.aorist.sigmatic"
 recension = "old-church-slavonic"
 category = "finite-verb"
 part_of_speech = "verb"
-scope = "Primary and secondary sigmatic aorists with independent allomorph and seam policies."
+scope = "Old s-sigmatic, old x-sigmatic, and standard vowel-stem sigmatic aorists with independent main and singular subbundles."
 profiles = ["abstract", "canonical-cyrillic"]
-features = ["tense=aorist", "person=3", "number=3", "formation=primary-sigmatic|secondary-sigmatic", "s-x-seam=typed", "final-t=variant-policy"]
-subtypes = ["sigmatic-primary", "sigmatic-secondary"]
+features = ["tense=aorist", "person=3", "number=3", "formation=old-s|old-x|vowel-sigmatic", "s-x-seam=typed", "2sg-3sg=independent-principal-part"]
+subtypes = ["sigmatic-primary", "sigmatic-secondary", "sigmatic-vowel"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "represented-unsupported"
-rule_ids = ["V-AOR-SIG-PRIMARY-PENDING", "V-AOR-SIG-SECONDARY-PENDING"]
-sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs"]
-citation = "UT lesson 3 §14.2; docs/MORPHOLOGY_SPEC.md explicitly records the missing allomorph contract."
-required_metadata = ["pre-sigmatic stem", "2sg/3sg allomorph", "non-singular allomorph", "s/x seam policy", "optional final -тъ policy"]
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-AOR-SIG-PRIMARY-01", "V-AOR-SIG-SECONDARY-01", "V-AOR-SIG-VOWEL-01"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "love-lmu-ocs-verbs"]
+citation = "UT lesson 3 §14.2; Polivanova 2023 §§93, 455, 460, 462, 476–482; docs/MORPHOLOGY_SPEC.md aorists."
+required_metadata = ["explicit graded main stem", "complete syncretic 2sg/3sg principal part", "typed sigmatic formation"]
 valid_inventory = "3 persons × singular/dual/plural, with source-licensed variants."
-invalid_inventory = "Requests lacking independently specified lexical allomorphs."
-implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic-core/src/verb.rs"]
-tests = ["crates/old-church-slavonic-core/src/verb.rs#missing_and_hostile_metadata_fail_without_panicking"]
-evidence_status = "grammar contract identified; lexical principal-part crosswalk incomplete"
-gap = "Add closed sigmatic metadata, use LOVe and independent grammar evidence, implement both formations, and exhaustively validate."
+invalid_inventory = "Requests lacking either independently specified subbundle, a consonant-final SigmaticVowel stem, or variants combined across separate lexical analyses."
+implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic/src/metadata.rs", "crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#sigmatic_aorists_use_independent_main_and_singular_principal_parts", "crates/old-church-slavonic-core/src/verb.rs#sigmatic_aorists_fail_closed_when_principal_parts_conflict_or_are_missing", "crates/old-church-slavonic/tests/public_api.rs#normalized_sigmatic_metadata_reaches_the_production_resolver"]
+evidence_status = "independent grammar paradigms plus source-backed principal-part contract"
+rationale = "Every valid person-number cell is generated for all three morphologically distinct sigmatic formations; exact singular variants remain separate analyses and incomplete or contradictory metadata fails closed."
 
 [[system]]
 id = "ocs.verb.imperative.synthetic"

@@ -297,10 +297,12 @@ pub enum ImperfectVariantPolicy {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AoristFormation {
     Asigmatic,
-    /// Primary sigmatic formation. Represented separately but not yet generated.
+    /// Old sigmatic 1 (`нѣсъ`) formation with an `-с-` main subbundle.
     SigmaticPrimary,
-    /// Secondary sigmatic formation. Represented separately but not yet generated.
+    /// Old sigmatic 2 (`рѣхъ`) formation with an `-х-` main subbundle.
     SigmaticSecondary,
+    /// Standard sigmatic aorist of a vowel-final workstem (`знахъ`).
+    SigmaticVowel,
     New,
 }
 

@@ -222,6 +222,7 @@ pub enum MetadataField {
     ImperfectFormation,
     ImperfectVariantPolicy,
     AoristStem,
+    AoristSecondThirdSingular,
     AoristFormation,
     LParticipleStem,
     ImperativeStem,

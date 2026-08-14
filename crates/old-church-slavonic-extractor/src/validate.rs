@@ -451,6 +451,7 @@ fn verb_metadata(registry: &Registry, lexeme_ids: &BTreeSet<&str>) -> Result<(),
         validate_metadata_code(&row.system, &row.field, &row.value)?;
         if row.field == "stem"
             || row.field == "first-singular-stem"
+            || row.field == "second-third-singular"
             || !row.source_feature.starts_with("headword:")
         {
             if canonical_display(&row.source_form).map_err(|error| error.to_string())?
@@ -471,7 +472,10 @@ fn verb_metadata(registry: &Registry, lexeme_ids: &BTreeSet<&str>) -> Result<(),
                 ));
             }
         }
-        if row.field == "stem" || row.field == "first-singular-stem" {
+        if matches!(
+            row.field.as_str(),
+            "stem" | "first-singular-stem" | "second-third-singular"
+        ) {
             if canonical_display(&row.value).map_err(|error| error.to_string())? != row.value {
                 return Err(format!(
                     "verb metadata stem is not NFC for {}",
@@ -553,6 +557,24 @@ fn verb_metadata(registry: &Registry, lexeme_ids: &BTreeSet<&str>) -> Result<(),
                 "incomplete verb metadata analysis {id} {system} {rank}: missing first-singular-stem"
             ));
         }
+        if system == "aorist" {
+            let is_sigmatic = fields.get("formation").is_some_and(|formation| {
+                matches!(
+                    *formation,
+                    "sigmatic-primary" | "sigmatic-secondary" | "sigmatic-vowel"
+                )
+            });
+            if is_sigmatic && !fields.contains_key("second-third-singular") {
+                return Err(format!(
+                    "incomplete verb metadata analysis {id} {system} {rank}: missing second-third-singular"
+                ));
+            }
+            if !is_sigmatic && fields.contains_key("second-third-singular") {
+                return Err(format!(
+                    "invalid non-sigmatic aorist metadata analysis {id} {system} {rank}: unexpected second-third-singular"
+                ));
+            }
+        }
         if system == "past-active-participle"
             && fields.get("formation") == Some(&"vush-after-ov-to-u")
             && fields.get("stem").is_none_or(|stem| !stem.ends_with("ов"))
@@ -581,7 +603,7 @@ fn validate_metadata_code(system: &str, field: &str, value: &str) -> Result<(), 
         ("present", "class") => matches!(value, "IA1" | "IA2" | "II1" | "II2" | "II3"),
         ("present", "stem" | "first-singular-stem") => true,
         ("imperfect", "stem")
-        | ("aorist", "stem")
+        | ("aorist", "stem" | "second-third-singular")
         | ("imperative", "stem")
         | ("l-participle", "stem")
         | ("present-active-participle", "stem")
@@ -592,7 +614,7 @@ fn validate_metadata_code(system: &str, field: &str, value: &str) -> Result<(), 
         ("imperfect", "variant-policy") => value == "uncontracted-only",
         ("aorist", "formation") => matches!(
             value,
-            "asigmatic" | "new" | "sigmatic-primary" | "sigmatic-secondary"
+            "asigmatic" | "new" | "sigmatic-primary" | "sigmatic-secondary" | "sigmatic-vowel"
         ),
         ("imperative", "formation") => matches!(value, "i-series" | "yat-series"),
         ("present-active-participle", "formation") => {
