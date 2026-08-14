@@ -24,8 +24,8 @@ prefer one coherent API over deprecated aliases.
 3. Preserve all source variants, romanizations, warnings, provenance, analyses,
    and rule traces.
 4. Keep runtime morphology free of file, network, JSON, TSV, XML, and Lua access.
-5. Do not use Interslavic, Slovowiki, Russian, or another later Slavic language
-   as lexical authority.
+5. Do not use modern constructed Slavic standards, Slovowiki, Russian, or
+   another later Slavic language as lexical authority.
 6. Regenerate dictionary artifacts through the existing extraction/xtask
    pipeline; never edit them manually.
 

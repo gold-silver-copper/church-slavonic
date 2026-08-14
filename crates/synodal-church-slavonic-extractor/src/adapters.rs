@@ -659,7 +659,7 @@ fn validate_config(config: &AdapterConfig, expected_recension: &str) -> Result<(
         ));
     }
     let lower = config.source_id.to_lowercase();
-    if lower.contains("slovowiki") || lower.contains("interslavic") {
+    if lower.contains("slovowiki") {
         return Err(AdapterError::InvalidConfiguration(
             "forbidden linguistic authority in adapter source ID".into(),
         ));

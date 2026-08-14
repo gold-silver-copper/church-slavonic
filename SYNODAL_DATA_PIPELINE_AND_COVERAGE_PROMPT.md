@@ -33,7 +33,8 @@ Do not claim reproducibility merely because the current cache happens to exist.
 ## Non-negotiable boundaries
 
 - The target recension is exclusively Synodal Russian Church Slavonic.
-- Interslavic and Slovowiki are forbidden as linguistic authorities.
+- Modern constructed Slavic standards and Slovowiki are forbidden as linguistic
+  authorities.
 - OCS may supply explicitly mapped inherited evidence, never unmarked Synodal
   attestation.
 - Runtime crates must perform no filesystem, network, archive, XML, JSON, TSV, or
@@ -375,7 +376,7 @@ Add guards proving:
 - evaluation-only or nonredistributable corpus text cannot enter packages;
 - all OCS inheritance uses explicit mappings;
 - other recensions cannot enter exact Synodal registries;
-- Interslavic and Slovowiki remain forbidden;
+- modern constructed Slavic standards and Slovowiki remain forbidden;
 - human-reviewed overlays cannot be silently orphaned;
 - generated artifacts and reports are current; and
 - runtime crates remain free of filesystem and network access.

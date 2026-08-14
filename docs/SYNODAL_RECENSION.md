@@ -20,9 +20,9 @@ The target includes:
   generation and the required Synodal principal parts or reviewed mappings exist.
 
 The target does not include Serbian, Ukrainian, Bulgarian, Croatian, or other
-Church Slavonic recensions, arbitrary Old Russian, modern Russian, Interslavic,
-or Slovowiki. The Russian Synodal Translation of the Bible is modern Russian and
-is not evidence for this target.
+Church Slavonic recensions, arbitrary Old Russian, modern Russian, modern
+constructed Slavic standards, or Slovowiki. The Russian Synodal Translation of
+the Bible is modern Russian and is not evidence for this target.
 
 ## Evidence boundary
 

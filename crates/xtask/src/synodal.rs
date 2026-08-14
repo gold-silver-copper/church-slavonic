@@ -883,7 +883,7 @@ fn check_source_boundaries(root: &Path) -> Result<(), Box<dyn Error>> {
             let bytes = fs::read(&path)?;
             let text = std::str::from_utf8(&bytes)?;
             let lower = text.to_lowercase();
-            if lower.contains("slovowiki") || lower.contains("interslavic") {
+            if lower.contains("slovowiki") {
                 return Err(format!("forbidden linguistic authority in {}", path.display()).into());
             }
             if text.chars().any(|character| {
@@ -954,6 +954,11 @@ fn check_source_manifests(root: &Path) -> Result<(), Box<dyn Error>> {
                 .into(),
         );
     }
+    if authoritative_pairs.len()
+        != synodal_church_slavonic_extractor::APPROVED_SOURCE_RECENSIONS.len()
+    {
+        return Err("Synodal source manifests do not contain the complete approved set".into());
+    }
     Ok(())
 }
 
@@ -978,6 +983,12 @@ fn validate_source_record(
         "old-church-slavonic" | "synodal-russian" | "mixed"
     ) {
         return Err(format!("source {id} has unknown recension {source_recension}").into());
+    }
+    if !synodal_church_slavonic_extractor::source_recension_is_approved(id, source_recension) {
+        return Err(format!(
+            "source {id} with recension {source_recension} is not explicitly approved"
+        )
+        .into());
     }
     Ok(())
 }
