@@ -6,6 +6,7 @@ use std::{
     path::Path,
 };
 
+use crate::report_io::{check_contents_for, read_json, write_if_changed};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic_core::normalize_lookup_accentless;
@@ -262,7 +263,7 @@ pub(crate) fn run(
     ];
     for (path, contents) in outputs {
         if check {
-            check_contents(&path, &contents)?;
+            check_contents_for(&path, &contents, "synodal-v07-review-packets")?;
         } else {
             write_if_changed(&path, &contents)?;
         }
@@ -1898,10 +1899,6 @@ fn render_markdown(report: &ReviewPacketReport) -> String {
     out
 }
 
-fn read_json<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, Box<dyn Error>> {
-    Ok(serde_json::from_slice(&fs::read(path)?)?)
-}
-
 fn read_json_lines<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<Vec<T>, Box<dyn Error>> {
     fs::read_to_string(path)?
         .lines()
@@ -1939,21 +1936,6 @@ fn tsv(value: &str) -> String {
 
 fn escape_markdown(value: &str) -> String {
     value.replace('|', "\\|").replace('`', "\\`")
-}
-
-fn write_if_changed(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() != Some(contents) {
-        fs::write(path, contents)?;
-    }
-    Ok(())
-}
-
-fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(expected) {
-        Ok(())
-    } else {
-        Err(format!("stale {}; rerun synodal-v07-review-packets", path.display()).into())
-    }
 }
 
 #[cfg(test)]

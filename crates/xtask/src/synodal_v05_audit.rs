@@ -5,6 +5,7 @@ use std::{
     path::Path,
 };
 
+use crate::report_io::read_json;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic_dictionary::{FamilyId, entries, show_family_by_id};
@@ -117,7 +118,7 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
     let coverage = read_json(&root.join(COVERAGE))?;
     let evaluation = read_json(&root.join(EVALUATION))?;
     let marginal = read_json(&root.join(MARGINAL))?;
-    let family_queue = read_json(&root.join(FAMILY_QUEUE))?;
+    let family_queue: Value = read_json(&root.join(FAMILY_QUEUE))?;
     validate_contract(&baseline, &coverage, &marginal)?;
 
     let summary = object(&coverage, "summary")?;
@@ -924,10 +925,6 @@ fn verification_commands() -> &'static [&'static str] {
         "cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-dictionary",
         "cargo xtask synodal-bootstrap --offline --cache references/downloads",
     ]
-}
-
-fn read_json(path: &Path) -> Result<Value, Box<dyn Error>> {
-    Ok(serde_json::from_str(&fs::read_to_string(path)?)?)
 }
 
 fn object<'a>(value: &'a Value, key: &str) -> Result<&'a Value, Box<dyn Error>> {

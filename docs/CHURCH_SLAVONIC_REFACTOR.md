@@ -178,3 +178,85 @@ The separate full-diff review confirmed and prompted fixes for:
 
 All were validated against the current code and addressed with regression
 coverage.
+
+## 2026-08-14 follow-up consolidation
+
+This follow-up started from merge commit `5ab1586` and re-audited all nine
+workspace members using the same architectural boundaries and physical-LOC
+method documented above. It did not change reviewed linguistic data, generated
+registries, morphology rules, normalization, provenance, or corpus coverage.
+
+### Follow-up LOC accounting
+
+| Member | Baseline prod | Final prod | Baseline tests | Final tests | Baseline generated | Final generated | Baseline tools | Final tools |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `old-church-slavonic-core` | 3,051 | 3,051 | 926 | 926 | 0 | 0 | 0 | 0 |
+| `old-church-slavonic` | 4,018 | 4,018 | 1,405 | 1,405 | 147,728 | 147,728 | 8 | 8 |
+| `old-church-slavonic-dictionary` | 1,298 | 1,298 | 182 | 182 | 5,177 | 5,177 | 9 | 9 |
+| `old-church-slavonic-extractor` | 0 | 0 | 744 | 744 | 0 | 0 | 3,949 | 3,949 |
+| `synodal-church-slavonic-core` | 5,251 | 5,403 | 2,610 | 2,674 | 0 | 0 | 0 | 0 |
+| `synodal-church-slavonic` | 5,167 | 5,117 | 2,240 | 2,275 | 8,657 | 8,657 | 0 | 0 |
+| `synodal-church-slavonic-dictionary` | 4,493 | 4,317 | 1,322 | 1,341 | 858 | 858 | 0 | 0 |
+| `synodal-church-slavonic-extractor` | 0 | 0 | 950 | 950 | 0 | 0 | 5,505 | 5,505 |
+| `xtask` | 0 | 0 | 1,179 | 1,213 | 0 | 0 | 21,082 | 20,996 |
+| **Total** | **23,278** | **23,204** | **11,558** | **11,710** | **162,420** | **162,420** | **30,553** | **30,467** |
+
+The primary metric fell by 74 handwritten production lines. Tooling fell by 86
+lines independently; production plus tools fell from 53,831 to 53,671 lines,
+a net reduction of 160 handwritten lines. The 152 added test lines exercise the
+new shared order, inventory bounds, wildcard lookup compatibility, and report
+I/O failure contracts. No code moved into generated output, data, macros, or
+tools to improve the production metric.
+
+### Follow-up decisions and implementation
+
+1. **Typed Synodal grammar inventories:** accepted. `NounCell`,
+   `AdjectiveCell`, `FiniteVerbCell`, `ParticipleCell`, `PronounCell`, and
+   `NumeralCell` now own ordered Cartesian inventory construction. The facade
+   supplies its canonical paradigm policies, while the dictionary explicitly
+   supplies exhaustive animacy, form, comparison, gender, and person ranges.
+   This shares traversal mechanics without pretending those two inventories
+   are linguistically identical.
+2. **Exact-registry compatibility keys:** accepted. The dictionary now calls
+   the facade's `grammar_cell_registry_keys` API instead of reproducing
+   wildcard animacy/gender compatibility and key order. Exact lookup and
+   reverse-analysis filtering therefore cannot drift independently.
+3. **Part-of-speech codes:** accepted. `PartOfSpeech::{code, from_code}` is the
+   single closed-code mapping used by registry parsing, CLI parsing, and CLI
+   display. CLI aliases remain a presentation-layer concern.
+4. **Report file plumbing:** accepted. Six Synodal report commands share
+   stale-content checks, seven share conditional direct/atomic writes, and six
+   report readers share typed JSON loading. Existing output paths, byte
+   content, atomic/direct modes, and stale-report messages remain explicit at
+   each call site.
+5. **A generic dictionary CLI option parser:** rejected after implementation
+   and measurement. It added production lines after formatting and obscured
+   command-specific positional and stdin rules, so the experiment was removed.
+6. **Standalone imperative and l-participle inventory helpers:** rejected after
+   comparison. The dictionary deliberately interleaves these cells by number,
+   so such helpers would have only one real caller and would not remove a
+   duplicated implementation.
+7. **A universal Old/Synodal inventory or resolver abstraction:** rejected.
+   Old and Synodal cells, animacy behavior, exact-table semantics, provenance,
+   and failure models remain separate recension-owned systems.
+
+Public API additions are limited to typed inventory constructors,
+`PartOfSpeech::{code, from_code}`, and `grammar_cell_registry_keys`. They expose
+already-existing stable order and registry compatibility; no accepted form,
+variant order, source, warning, trace, or failure category changes. No
+generated artifact required regeneration.
+
+### Follow-up regression coverage
+
+- typed inventory sizes, boundary order, caller-supplied animacy policy, and
+  grammar-profile cross products;
+- canonical-to-wildcard exact-registry key order for pronouns and numerals;
+- exhaustive dictionary candidate counts for every inflecting category and
+  every represented verb system; and
+- shared report direct/atomic writes, typed JSON loading, and both historical
+  stale-report diagnostic forms.
+
+Targeted all-feature tests passed for Synodal core, facade, dictionary, CLI,
+and `xtask`, including the independent exhaustive analyzer oracle. The final
+workspace commands, platform builds, documentation build, package checks, and
+independent diff review are recorded in the pull request completion gate.

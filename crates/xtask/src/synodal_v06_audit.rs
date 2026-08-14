@@ -5,6 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use crate::report_io::read_json;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 
@@ -59,7 +60,7 @@ pub(crate) fn run(
 }
 
 fn check_frozen_audit(root: &Path) -> Result<(), Box<dyn Error>> {
-    let baseline = read_json(&root.join("reports/synodal-v06-baseline.json"))?;
+    let baseline: Value = read_json(&root.join("reports/synodal-v06-baseline.json"))?;
     let expected = baseline
         .pointer("/artifact_sha256/docs~1SYNODAL_V06_65_PERCENT_TOP_K_COVERAGE_AUDIT.md")
         .and_then(Value::as_str)
@@ -844,10 +845,6 @@ fn read_tsv(path: &Path) -> Result<Table, Box<dyn Error>> {
         header,
         rows,
     })
-}
-
-fn read_json(path: &Path) -> Result<Value, Box<dyn Error>> {
-    Ok(serde_json::from_str(&fs::read_to_string(path)?)?)
 }
 
 fn object<'a>(

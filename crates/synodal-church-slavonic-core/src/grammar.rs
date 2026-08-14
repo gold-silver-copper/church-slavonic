@@ -184,6 +184,26 @@ pub struct NounCell {
     pub animacy: Animacy,
 }
 
+impl NounCell {
+    /// Enumerates the nominal case/number inventory for the supplied animacies.
+    #[must_use]
+    pub fn inventory(animacies: &[Animacy]) -> Vec<Self> {
+        let mut cells = Vec::new();
+        for number in Number::ALL {
+            for case in Case::ALL {
+                for &animacy in animacies {
+                    cells.push(Self {
+                        case,
+                        number,
+                        animacy,
+                    });
+                }
+            }
+        }
+        cells
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct AdjectiveCell {
@@ -195,12 +215,67 @@ pub struct AdjectiveCell {
     pub comparison: Comparison,
 }
 
+impl AdjectiveCell {
+    /// Enumerates agreement cells while leaving the caller's animacy policy
+    /// explicit. This keeps exhaustive analysis distinct from canonical
+    /// paradigm presentation.
+    #[must_use]
+    pub fn inventory<'a>(
+        forms: &[AdjectiveForm],
+        comparisons: &[Comparison],
+        animacies_for_case: impl Fn(Case) -> &'a [Animacy],
+    ) -> Vec<Self> {
+        let mut cells = Vec::new();
+        for number in Number::ALL {
+            for case in Case::ALL {
+                for gender in Gender::ALL {
+                    for &animacy in animacies_for_case(case) {
+                        for &form in forms {
+                            for &comparison in comparisons {
+                                cells.push(Self {
+                                    case,
+                                    number,
+                                    gender,
+                                    animacy,
+                                    form,
+                                    comparison,
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        cells
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct FiniteVerbCell {
     pub tense: FiniteTense,
     pub person: Person,
     pub number: Number,
+}
+
+impl FiniteVerbCell {
+    /// Enumerates finite cells for the supplied tenses.
+    #[must_use]
+    pub fn inventory(tenses: &[FiniteTense]) -> Vec<Self> {
+        let mut cells = Vec::new();
+        for &tense in tenses {
+            for number in Number::ALL {
+                for person in Person::ALL {
+                    cells.push(Self {
+                        tense,
+                        person,
+                        number,
+                    });
+                }
+            }
+        }
+        cells
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -225,6 +300,31 @@ pub struct ParticipleCell {
     pub agreement: AdjectiveCell,
 }
 
+impl ParticipleCell {
+    /// Combines supplied participial systems with an explicit agreement
+    /// inventory, preserving the order of every input dimension.
+    #[must_use]
+    pub fn inventory(
+        tenses: &[ParticipleTense],
+        voices: &[ParticipleVoice],
+        agreements: &[AdjectiveCell],
+    ) -> Vec<Self> {
+        let mut cells = Vec::new();
+        for &tense in tenses {
+            for &voice in voices {
+                for &agreement in agreements {
+                    cells.push(Self {
+                        tense,
+                        voice,
+                        agreement,
+                    });
+                }
+            }
+        }
+        cells
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct PronounCell {
@@ -235,6 +335,31 @@ pub struct PronounCell {
     pub animacy: Animacy,
 }
 
+impl PronounCell {
+    /// Enumerates case/number/animacy cells for the caller's validated
+    /// gender/person profiles.
+    #[must_use]
+    pub fn inventory(profiles: &[(Option<Gender>, Option<Person>)]) -> Vec<Self> {
+        let mut cells = Vec::new();
+        for number in Number::ALL {
+            for case in Case::ALL {
+                for &(gender, person) in profiles {
+                    for animacy in Animacy::ALL {
+                        cells.push(Self {
+                            case,
+                            number,
+                            gender,
+                            person,
+                            animacy,
+                        });
+                    }
+                }
+            }
+        }
+        cells
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct NumeralCell {
@@ -243,6 +368,33 @@ pub struct NumeralCell {
     pub number: Number,
     pub gender: Option<Gender>,
     pub animacy: Animacy,
+}
+
+impl NumeralCell {
+    /// Enumerates numeral cells for explicit kind and optional-gender
+    /// inventories.
+    #[must_use]
+    pub fn inventory(kinds: &[NumeralKind], genders: &[Option<Gender>]) -> Vec<Self> {
+        let mut cells = Vec::new();
+        for &kind in kinds {
+            for number in Number::ALL {
+                for case in Case::ALL {
+                    for &gender in genders {
+                        for animacy in Animacy::ALL {
+                            cells.push(Self {
+                                kind,
+                                case,
+                                number,
+                                gender,
+                                animacy,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        cells
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -513,6 +665,70 @@ fn invalid_cell_key(value: &str) -> crate::Error {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn typed_inventories_preserve_dimension_order_and_policy() {
+        let nouns = NounCell::inventory(&Animacy::ALL);
+        assert_eq!(nouns.len(), 42);
+        assert_eq!(
+            nouns.first(),
+            Some(&NounCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                animacy: Animacy::Inanimate,
+            })
+        );
+        assert_eq!(
+            nouns.last(),
+            Some(&NounCell {
+                case: Case::Vocative,
+                number: Number::Plural,
+                animacy: Animacy::Animate,
+            })
+        );
+
+        let canonical_agreement =
+            AdjectiveCell::inventory(&[AdjectiveForm::Long], &[Comparison::Positive], |case| {
+                if case == Case::Accusative {
+                    &Animacy::ALL
+                } else {
+                    &[Animacy::Inanimate]
+                }
+            });
+        assert_eq!(canonical_agreement.len(), 72);
+        assert!(
+            canonical_agreement.iter().all(|cell| {
+                cell.case == Case::Accusative || cell.animacy == Animacy::Inanimate
+            })
+        );
+
+        let exhaustive_agreement =
+            AdjectiveCell::inventory(&AdjectiveForm::ALL, &Comparison::ALL, |_| &Animacy::ALL);
+        assert_eq!(exhaustive_agreement.len(), 756);
+        assert_eq!(FiniteVerbCell::inventory(&FiniteTense::ALL).len(), 45);
+        assert_eq!(
+            ParticipleCell::inventory(
+                &ParticipleTense::ALL,
+                &ParticipleVoice::ALL,
+                &exhaustive_agreement,
+            )
+            .len(),
+            3_024,
+        );
+
+        let profiles = [(None, None), (Some(Gender::Neuter), Some(Person::Third))];
+        assert_eq!(PronounCell::inventory(&profiles).len(), 84);
+        let optional_genders = [
+            None,
+            Some(Gender::Masculine),
+            Some(Gender::Feminine),
+            Some(Gender::Neuter),
+        ];
+        assert_eq!(
+            NumeralCell::inventory(&NumeralKind::ALL, &optional_genders).len(),
+            504
+        );
+    }
 
     #[test]
     fn grammar_cell_keys_round_trip_through_one_typed_codec() {

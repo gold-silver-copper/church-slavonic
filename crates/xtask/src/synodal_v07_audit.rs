@@ -5,6 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use crate::report_io::read_json;
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 
@@ -497,7 +498,7 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
 
     out.push_str("## Leading uncovered work before and after\n\n");
     out.push_str("The initial v0.6 horizon is represented by its preserved packet queue. The final list is recomputed from the canonical post-v0.7 gaps. Neither list licenses admission.\n\n### Initial v0.6 packet horizon\n\n| Rank | Surface | Predicted tokens | Route | Decision |\n|---:|---|---:|---|---|\n");
-    let v06_packets = read_json(&root.join("reports/synodal-v06-review-packets.json"))?;
+    let v06_packets: Value = read_json(&root.join("reports/synodal-v06-review-packets.json"))?;
     for packet in v06_packets
         .get("packets")
         .and_then(Value::as_array)
@@ -1261,10 +1262,6 @@ fn read_tsv(path: &Path) -> Result<Table, Box<dyn Error>> {
         header,
         rows,
     })
-}
-
-fn read_json(path: &Path) -> Result<Value, Box<dyn Error>> {
-    Ok(serde_json::from_str(&fs::read_to_string(path)?)?)
 }
 
 fn object<'a>(

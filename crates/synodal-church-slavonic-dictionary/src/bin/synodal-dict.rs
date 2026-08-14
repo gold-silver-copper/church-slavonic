@@ -898,41 +898,24 @@ fn parse_part_of_speech(
     value: &str,
 ) -> Result<synodal_church_slavonic_dictionary::morphology::PartOfSpeech, Box<dyn Error>> {
     use synodal_church_slavonic_dictionary::morphology::PartOfSpeech;
-    match value {
-        "adverb" | "adv" => Ok(PartOfSpeech::Adverb),
-        "preposition" | "prep" => Ok(PartOfSpeech::Preposition),
-        "conjunction" | "conj" => Ok(PartOfSpeech::Conjunction),
-        "particle" => Ok(PartOfSpeech::Particle),
-        "interjection" | "intj" => Ok(PartOfSpeech::Interjection),
-        "proper-noun" | "name" => Ok(PartOfSpeech::ProperNoun),
-        "noun" => Ok(PartOfSpeech::Noun),
-        "adjective" | "adj" => Ok(PartOfSpeech::Adjective),
-        "verb" => Ok(PartOfSpeech::Verb),
-        "pronoun" | "pron" => Ok(PartOfSpeech::Pronoun),
-        "determiner" | "det" => Ok(PartOfSpeech::Determiner),
-        "numeral" | "num" => Ok(PartOfSpeech::Numeral),
-        "participle" => Ok(PartOfSpeech::Participle),
-        _ => Err(format!("unknown part of speech {value:?}").into()),
-    }
+    let canonical = match value {
+        "adv" => "adverb",
+        "prep" => "preposition",
+        "conj" => "conjunction",
+        "intj" => "interjection",
+        "name" => "proper-noun",
+        "adj" => "adjective",
+        "pron" => "pronoun",
+        "det" => "determiner",
+        "num" => "numeral",
+        other => other,
+    };
+    PartOfSpeech::from_code(canonical)
+        .ok_or_else(|| format!("unknown part of speech {value:?}").into())
 }
 
 fn pos_label(value: synodal_church_slavonic_dictionary::morphology::PartOfSpeech) -> &'static str {
-    use synodal_church_slavonic_dictionary::morphology::PartOfSpeech;
-    match value {
-        PartOfSpeech::Adverb => "adverb",
-        PartOfSpeech::Preposition => "preposition",
-        PartOfSpeech::Conjunction => "conjunction",
-        PartOfSpeech::Particle => "particle",
-        PartOfSpeech::Interjection => "interjection",
-        PartOfSpeech::ProperNoun => "proper-noun",
-        PartOfSpeech::Noun => "noun",
-        PartOfSpeech::Adjective => "adjective",
-        PartOfSpeech::Verb => "verb",
-        PartOfSpeech::Pronoun => "pronoun",
-        PartOfSpeech::Determiner => "determiner",
-        PartOfSpeech::Numeral => "numeral",
-        PartOfSpeech::Participle => "participle",
-    }
+    value.code()
 }
 
 fn read_input(path: &str, input: &mut dyn Read) -> Result<String, Box<dyn Error>> {

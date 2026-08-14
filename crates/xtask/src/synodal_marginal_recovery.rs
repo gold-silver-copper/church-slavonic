@@ -5,6 +5,7 @@ use std::{
     path::Path,
 };
 
+use crate::report_io::{check_contents_for, read_json, write_if_changed_atomic};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic::{GenerationPolicy, OrthographyProfile};
@@ -203,9 +204,9 @@ pub(crate) fn run(
     ];
     for (path, contents) in outputs {
         if check {
-            check_contents(&path, &contents)?;
+            check_contents_for(&path, &contents, "synodal-marginal-recovery")?;
         } else {
-            write_if_changed(&path, &contents)?;
+            write_if_changed_atomic(&path, &contents)?;
         }
     }
 
@@ -748,38 +749,8 @@ fn render_tsv(report: &MarginalRecoveryReport) -> String {
     out
 }
 
-fn read_json<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, Box<dyn Error>> {
-    Ok(serde_json::from_str(&fs::read_to_string(path)?)?)
-}
-
 fn sha256_file(path: &Path) -> Result<String, Box<dyn Error>> {
     Ok(format!("{:x}", Sha256::digest(fs::read(path)?)))
-}
-
-fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(expected) {
-        Ok(())
-    } else {
-        Err(format!("stale {}; rerun synodal-marginal-recovery", path.display()).into())
-    }
-}
-
-fn write_if_changed(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(contents) {
-        return Ok(());
-    }
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent)?;
-    }
-    let temporary = path.with_extension(format!(
-        "{}.tmp",
-        path.extension()
-            .and_then(|extension| extension.to_str())
-            .unwrap_or("new")
-    ));
-    fs::write(&temporary, contents)?;
-    fs::rename(temporary, path)?;
-    Ok(())
 }
 
 fn escape_markdown(value: &str) -> String {

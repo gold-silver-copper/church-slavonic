@@ -81,6 +81,15 @@ pub fn grammar_cell_key(cell: GrammarCell) -> String {
     cell.key()
 }
 
+/// Returns canonical and compatible wildcard registry keys in lookup order.
+///
+/// Dictionaries and other reverse-analysis layers should use this function
+/// instead of reconstructing the facade's exact-form compatibility rules.
+#[must_use]
+pub fn grammar_cell_registry_keys(cell: GrammarCell) -> Vec<String> {
+    resolver::exact_lookup_keys(cell)
+}
+
 /// Returns the reviewed OCS-to-Synodal alignment gold registry, including
 /// rejected negative rows.
 pub fn recension_alignments() -> Result<Vec<AlignmentSummary>> {
@@ -224,6 +233,41 @@ pub mod advanced {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn registry_key_compatibility_is_canonical_and_ordered() {
+        let pronoun = GrammarCell::Pronoun(PronounCell {
+            case: Case::Accusative,
+            number: Number::Plural,
+            gender: Some(Gender::Feminine),
+            person: Some(Person::Third),
+            animacy: Animacy::Animate,
+        });
+        assert_eq!(
+            grammar_cell_registry_keys(pronoun),
+            [
+                "pronoun:accusative:plural:feminine:third:animate",
+                "pronoun:accusative:plural:feminine:third:any",
+            ]
+        );
+
+        let numeral = GrammarCell::Numeral(NumeralCell {
+            kind: NumeralKind::Ordinal,
+            case: Case::Accusative,
+            number: Number::Plural,
+            gender: Some(Gender::Masculine),
+            animacy: Animacy::Animate,
+        });
+        assert_eq!(
+            grammar_cell_registry_keys(numeral),
+            [
+                "numeral:ordinal:accusative:plural:masculine:animate",
+                "numeral:ordinal:accusative:plural:any:animate",
+                "numeral:ordinal:accusative:plural:masculine:any",
+                "numeral:ordinal:accusative:plural:any:any",
+            ]
+        );
+    }
 
     #[test]
     fn ordinary_api_uses_synodal_not_ocs_noun_endings() {
