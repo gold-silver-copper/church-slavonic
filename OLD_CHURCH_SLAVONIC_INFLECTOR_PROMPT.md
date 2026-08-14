@@ -3,8 +3,8 @@
 Create a production-quality Rust workspace in this repository for **Old Church
 Slavonic** (ISO 639-1 `cu`, ISO 639-2 `chu`; Wiktionary/UD `lang_code` `cu`).
 The result should be a fast, embeddable
-inflection library in the same family as the sibling `english`, `interslavic-rs`,
-and `ruthenian` projects: deterministic offline data extraction,
+inflection library in the same family as the sibling `english` and `ruthenian`
+projects: deterministic offline data extraction,
 committed generated lookup data, a small rule engine for out-of-vocabulary words,
 an ergonomic public facade, and reproducible accuracy reports.
 
@@ -37,20 +37,6 @@ minimum, inspect these files and their associated tests:
 Learn from its table-first/rule-fallback split, deterministic homograph handling,
 parse-failure threshold, exception compaction, generated PHF tables, any-key versus
 bare-key accuracy metrics, and dump-free registry check.
-
-### `../interslavic-rs`
-
-- `README.md`, `INTEGRATION.md`, `Cargo.toml`
-- `crates/interslavic-core/src/{types,paradigm,cells,noun,adjective,verb,pronoun}.rs`
-- `crates/interslavic/src/{lib,dictionary,fingerprint}.rs`
-- `crates/interslavic-extractor/src/main.rs`
-- `crates/xtask/src/main.rs`
-- declension, conjugation, no-panic, variant-order, metadata, OOV, and paradigm tests
-
-Learn from its dependency-free core, dictionary-metadata facade, full-paradigm
-structs, clean-cell expansion, explicit overrides, whole-dictionary fingerprints,
-variant-order contract, OOV tests, and external parity benchmark. Do not copy its
-slash-delimited multi-form return convention; return structure instead.
 
 ### `../ruthenian`
 

@@ -2,8 +2,8 @@
 
 An offline, source-attributed Old Church Slavonic semantic dictionary for Rust.
 It provides OCS-to-English lookup, English-to-OCS search, attested examples, and
-a vocabulary-manifest lint designed for games. It contains no Interslavic or
-later-recension fallback data.
+a vocabulary-manifest lint designed for games. It contains no modern
+constructed-language or later-recension fallback data.
 
 ```rust
 use old_church_slavonic_dictionary::{search, SearchOptions};

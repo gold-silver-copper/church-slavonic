@@ -8,19 +8,17 @@ pub enum Recension {
     OtherChurchSlavonic,
     OldRussian,
     ModernRussian,
-    Interslavic,
     Mixed,
     Unknown,
 }
 
 impl Recension {
-    pub const ALL: [Self; 8] = [
+    pub const ALL: [Self; 7] = [
         Self::OldChurchSlavonic,
         Self::SynodalRussian,
         Self::OtherChurchSlavonic,
         Self::OldRussian,
         Self::ModernRussian,
-        Self::Interslavic,
         Self::Mixed,
         Self::Unknown,
     ];
@@ -32,6 +30,6 @@ impl Recension {
 
     #[must_use]
     pub const fn is_forbidden_authority(self) -> bool {
-        matches!(self, Self::ModernRussian | Self::Interslavic)
+        matches!(self, Self::ModernRussian)
     }
 }

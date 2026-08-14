@@ -756,7 +756,8 @@ diagnostics.
 ===========================================
 
 - Never describe a generated form as attested unless a pinned source contains it.
-- Never use Interslavic, Slovowiki, Russian, or another later Slavic language as OCS
+- Never use modern constructed Slavic standards, Slovowiki, Russian, or another
+  later Slavic language as OCS
   lexical authority.
 - Never select a verb formation from aspect alone.
 - Never silently collapse multiple source variants or competing analyses.

@@ -19,6 +19,43 @@ use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
 /// Schema version for normalized Synodal registries.
 pub const REGISTRY_SCHEMA_VERSION: u32 = 1;
 
+/// Sources admitted to the Synodal data pipeline, together with their locked
+/// recension classification. New sources require an explicit code review so a
+/// neutral manifest ID cannot bypass the source boundary.
+pub const APPROVED_SOURCE_RECENSIONS: &[(&str, &str)] = &[
+    ("unicode-tn41-revision-1", "mixed"),
+    (
+        "english-wiktionary-ocs-kaikki-2026-08-07",
+        "old-church-slavonic",
+    ),
+    ("english-wiktionary-ocs-lineage-2026-08-07", "mixed"),
+    ("polivanova-osd-source", "old-church-slavonic"),
+    ("polivanova-fup-2023", "old-church-slavonic"),
+    ("gorazd", "old-church-slavonic"),
+    ("ud-ocs-proiel-r2.18", "old-church-slavonic"),
+    ("syntacticus-20230428", "old-church-slavonic"),
+    ("ccmh-2021-04-23", "old-church-slavonic"),
+    ("diacu-1.0", "mixed"),
+    ("ponomar-elizabeth-bible-2026-08-09", "synodal-russian"),
+    ("crosswire-csl-elizabeth-1.5.2", "synodal-russian"),
+    (
+        "wikisource-church-slavonic-bible-2026-08-09",
+        "synodal-russian",
+    ),
+    ("ponomar-library-catalog-2026-08-09", "synodal-russian"),
+    ("russian-national-corpus-church-slavonic", "mixed"),
+    ("ponomar-modern-church-slavonic-corpus-2016", "mixed"),
+    ("alypy-gamanovich-grammar-web-2023", "synodal-russian"),
+    ("dyachenko-1900-scan", "mixed"),
+];
+
+/// Returns whether a source ID and recension are explicitly admitted to the
+/// Synodal data pipeline.
+#[must_use]
+pub fn source_recension_is_approved(id: &str, source_recension: &str) -> bool {
+    APPROVED_SOURCE_RECENSIONS.contains(&(id, source_recension))
+}
+
 const TARGET: &str = "synodal-russian";
 
 #[derive(Debug)]
@@ -198,6 +235,16 @@ fn load_source_recensions(data_directory: &Path) -> Result<BTreeMap<String, Stri
         })?;
     let mut recensions = BTreeMap::new();
     for source in inventory.source {
+        if !source_recension_is_approved(&source.id, &source.source_recension) {
+            return Err(ExtractionError::InvalidRow {
+                file: path,
+                line: 1,
+                reason: format!(
+                    "source {:?} with recension {:?} is not explicitly approved",
+                    source.id, source.source_recension
+                ),
+            });
+        }
         if recensions
             .insert(source.id.clone(), source.source_recension)
             .is_some()
@@ -207,6 +254,13 @@ fn load_source_recensions(data_directory: &Path) -> Result<BTreeMap<String, Stri
                 id: source.id,
             });
         }
+    }
+    if recensions.len() != APPROVED_SOURCE_RECENSIONS.len() {
+        return Err(ExtractionError::InvalidRow {
+            file: path,
+            line: 1,
+            reason: "source inventory does not contain the complete approved source set".into(),
+        });
     }
     Ok(recensions)
 }
@@ -497,6 +551,7 @@ fn admitted_lexical_review_rows(
     let mut exact_forms = Vec::new();
     let mut senses = Vec::new();
     for row in reviews.rows.iter().filter(|row| row[15] == "reviewed") {
+        require_direct_target_source(&row[12], source_recensions)?;
         let source_recension =
             source_recensions
                 .get(&row[10])
@@ -982,17 +1037,7 @@ fn evidence_provenance_rows(
         .iter()
         .filter(|row| row[15] == "reviewed")
     {
-        let source_recension =
-            source_recensions
-                .get(&row[12])
-                .ok_or_else(|| ExtractionError::InvalidRow {
-                    file: PathBuf::from("references/SOURCES.toml"),
-                    line: 0,
-                    reason: format!(
-                        "lexical review {} uses unregistered attestation source {}",
-                        row[0], row[12]
-                    ),
-                })?;
+        let source_recension = require_direct_target_source(&row[12], source_recensions)?;
         if !ids.insert(row[0].clone()) {
             return invalid(
                 &PathBuf::from("data/synodal/lexical_reviews.tsv"),
@@ -1003,7 +1048,7 @@ fn evidence_provenance_rows(
         rows.push(vec![
             row[0].clone(),
             row[12].clone(),
-            source_recension.clone(),
+            source_recension.into(),
             row[14].clone(),
             format!("reviewed-cell:{}", row[5]),
             row[17].clone(),
@@ -1104,6 +1149,30 @@ fn is_target_corpus_source(source_id: &str) -> bool {
         source_id,
         "ponomar-elizabeth-bible-2026-08-09" | "wikisource-church-slavonic-bible-2026-08-09"
     )
+}
+
+fn require_direct_target_source<'a>(
+    source_id: &str,
+    source_recensions: &'a BTreeMap<String, String>,
+) -> Result<&'a str> {
+    let source_recension =
+        source_recensions
+            .get(source_id)
+            .ok_or_else(|| ExtractionError::InvalidRow {
+                file: PathBuf::from("references/SOURCES.toml"),
+                line: 0,
+                reason: format!("unregistered lexical attestation source {source_id:?}"),
+            })?;
+    if !is_target_corpus_source(source_id) || source_recension != TARGET {
+        return Err(ExtractionError::InvalidRow {
+            file: PathBuf::from("data/synodal/lexical_reviews.tsv"),
+            line: 0,
+            reason: format!(
+                "lexical attestation source {source_id:?} is not an approved direct target corpus"
+            ),
+        });
+    }
+    Ok(source_recension)
 }
 
 /// Proves that committed review decisions still name candidates produced from
@@ -2396,12 +2465,8 @@ fn validate_word(path: &Path, line: usize, value: &str, label: &str) -> Result<(
 
 fn reject_forbidden_authority(path: &Path, line: usize, value: &str) -> Result<()> {
     let lower = value.to_lowercase();
-    if lower.contains("slovowiki") || lower.contains("interslavic") {
-        invalid(
-            path,
-            line,
-            "Interslavic and Slovowiki are forbidden linguistic authorities",
-        )
+    if lower.contains("slovowiki") {
+        invalid(path, line, "Slovowiki is a forbidden linguistic authority")
     } else {
         Ok(())
     }
@@ -2637,6 +2702,34 @@ mod tests {
         let error = reject_forbidden_authority(Path::new("source.tsv"), 2, "Slovowiki")
             .expect_err("forbidden authority");
         assert!(error.to_string().contains("forbidden"));
+    }
+
+    #[test]
+    fn source_approval_fails_closed_for_neutral_ids() {
+        assert!(!source_recension_is_approved(
+            "unreviewed-neutral-source",
+            "mixed"
+        ));
+        assert!(source_recension_is_approved(
+            "ponomar-elizabeth-bible-2026-08-09",
+            TARGET
+        ));
+    }
+
+    #[test]
+    fn lexical_attestations_require_a_direct_target_corpus() {
+        let source_recensions = BTreeMap::from([
+            ("neutral-comparative-source".into(), "mixed".into()),
+            ("ponomar-elizabeth-bible-2026-08-09".into(), TARGET.into()),
+        ]);
+        assert!(
+            require_direct_target_source("neutral-comparative-source", &source_recensions).is_err()
+        );
+        assert_eq!(
+            require_direct_target_source("ponomar-elizabeth-bible-2026-08-09", &source_recensions)
+                .expect("approved target source"),
+            TARGET
+        );
     }
 
     #[test]
@@ -2998,7 +3091,7 @@ mod tests {
                 "general".into(),
                 "semantic-source".into(),
                 format!("synodal:candidate:semantic:{suffix}"),
-                "target-source".into(),
+                "ponomar-elizabeth-bible-2026-08-09".into(),
                 "synodal:candidate:shared-target".into(),
                 "Passage.1".into(),
                 "reviewed".into(),
@@ -3193,7 +3286,7 @@ mod tests {
                 "general".into(),
                 source_id.into(),
                 format!("synodal:candidate:{review_id}:semantic"),
-                "target-source".into(),
+                "ponomar-elizabeth-bible-2026-08-09".into(),
                 format!("synodal:candidate:{review_id}:attestation"),
                 "Passage.1".into(),
                 "reviewed".into(),
@@ -3212,6 +3305,7 @@ mod tests {
             ("ocs-source".into(), "old-church-slavonic".into()),
             ("mixed-source".into(), "mixed".into()),
             ("synodal-source".into(), "synodal-russian".into()),
+            ("ponomar-elizabeth-bible-2026-08-09".into(), TARGET.into()),
         ]);
 
         let (_, _, senses) = admitted_lexical_review_rows(&reviews, &source_recensions)

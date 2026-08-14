@@ -33,11 +33,12 @@ Do not silently substitute forms from:
 - Serbian, Ukrainian, Bulgarian, Croatian, or other Church Slavonic recensions;
 - Old Russian;
 - modern Russian; or
-- Interslavic or Slovowiki data.
+- modern constructed Slavic or Slovowiki data.
 
-Interslavic and Slovowiki must never be used as linguistic authorities for this
-project. Modern Russian may be used only as explicitly labeled comparative or
-translation evidence, never as proof of a Church Slavonic form.
+Modern constructed Slavic standards and Slovowiki must never be used as
+linguistic authorities for this project. Modern Russian may be used only as
+explicitly labeled comparative or translation evidence, never as proof of a
+Church Slavonic form.
 
 Every source record must declare its source recension and every generated record
 must declare its target recension. Reject or quarantine data whose recension
@@ -926,8 +927,8 @@ Add structural guards proving:
 - no OCS surface form is labeled exact Synodal attestation;
 - exact Synodal evidence outranks inherited or analogical predictions;
 - other-recension surface records cannot enter Synodal exact-form registries;
-- Interslavic and Slovowiki cannot enter linguistic source manifests or generated
-  registries;
+- modern constructed Slavic standards and Slovowiki cannot enter linguistic
+  source manifests or generated registries;
 - generated forms are never labeled attested;
 - runtime crates perform no file or network access;
 - every public raw string passes through validated orthography;
