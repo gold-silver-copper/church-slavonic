@@ -202,21 +202,21 @@ id = "ocs.verb.imperfect.uncontracted"
 recension = "old-church-slavonic"
 category = "finite-verb"
 part_of_speech = "verb"
-scope = "Uncontracted A, YatA, and PalatalizedA imperfect series."
+scope = "Uncontracted infinitive-aorist- and present-platform imperfect series."
 profiles = ["abstract", "canonical-cyrillic"]
-features = ["tense=imperfect", "person=3", "number=3", "formation=A|YatA|PalatalizedA"]
-subtypes = ["A", "YatA", "PalatalizedA"]
+features = ["tense=imperfect", "person=3", "number=3", "formation=A|YatA|PalatalizedA|PresentA|PresentYatA"]
+subtypes = ["A", "YatA", "PalatalizedA", "PresentA", "PresentYatA"]
 realization = "synthetic"
 state = "productive-complete"
 implementation_kind = "productive"
-rule_ids = ["V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01"]
-sources = ["ut-ocs-online", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "UT lesson 1 §4.2; docs/MORPHOLOGY_SPEC.md imperfect section"
+rule_ids = ["V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01", "V-IMPF-PRESENT-01"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT lesson 1 §4.2; Polivanova 2023 §§455, 469–470; docs/MORPHOLOGY_SPEC.md imperfect section"
 required_metadata = ["imperfect stem", "formation", "UncontractedOnly variant policy"]
 valid_inventory = "3 persons × singular/dual/plural."
-invalid_inventory = "Contracted or suppletive variants not licensed by this policy."
+invalid_inventory = "Contracted, iotated, or suppletive variants not licensed by this policy."
 implementation = ["crates/old-church-slavonic-core/src/verb.rs"]
-tests = ["crates/old-church-slavonic-core/src/verb.rs#imperfect_has_all_person_number_cells_and_velar_seam"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#imperfect_has_all_person_number_cells_and_velar_seam", "crates/old-church-slavonic-core/src/verb.rs#imperfect_variant_matrix_covers_every_typed_platform_and_cell", "crates/old-church-slavonic-core/src/verb.rs#present_stem_and_iotated_imperfects_remain_distinct_typed_analyses"]
 evidence_status = "source-backed productive uncontracted prediction"
 rationale = "The explicitly bounded uncontracted contract is exhaustive and does not claim manuscript-specific contractions."
 
@@ -225,23 +225,46 @@ id = "ocs.verb.imperfect.contracted"
 recension = "old-church-slavonic"
 category = "finite-verb"
 part_of_speech = "verb"
-scope = "Source- and manuscript-licensed contracted/shortened imperfect variants."
+scope = "Source-licensed contracted terminals on infinitive-aorist and present-system platforms."
 profiles = ["canonical-cyrillic", "diplomatic"]
-features = ["tense=imperfect", "person=3", "number=3", "contraction-policy=typed", "witness-profile=typed"]
-subtypes = ["contracted", "shortened", "suppletive"]
+features = ["tense=imperfect", "person=3", "number=3", "formation=A|YatA|PalatalizedA|PresentA|PresentYatA", "policy=ContractedOnly"]
+subtypes = ["A", "YatA", "PalatalizedA", "PresentA", "PresentYatA"]
 realization = "synthetic"
-state = "source-review-open"
-implementation_kind = "exact-only-partial"
-rule_ids = ["OCS-V-IMPERFECT-CONTRACTION-PENDING"]
-sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "syntacticus-20230428"]
-citation = "docs/MORPHOLOGY_SPEC.md records 1,349 diplomatic mismatches and declines a global policy."
-required_metadata = ["lexeme", "manuscript/editorial profile", "contracted base", "variant policy"]
-valid_inventory = "Must be established per contraction type and witness distribution."
-invalid_inventory = "Global contraction inferred from aggregate corpus frequency."
-implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic-core/src/verb.rs"]
-tests = ["crates/xtask/src/corpus.rs#native_mapper_preserves_past_subtype_and_rejects_partial_bundles"]
-evidence_status = "aggregate corpus mismatch evidence and sparse exact cells"
-gap = "Define typed contraction policies from independent grammar and witness evidence, then implement and test every licensed cell."
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-IMPF-CONTRACTED-A-01", "V-IMPF-CONTRACTED-YAT-A-01", "V-IMPF-CONTRACTED-PAL-A-01", "V-IMPF-PRESENT-CONTRACTED-01"]
+sources = ["polivanova-fup-2023", "ut-ocs-online", "syntacticus-20230428"]
+citation = "Polivanova 2023 §§455, 467–470 and 914–915; docs/MORPHOLOGY_SPEC.md imperfect section."
+required_metadata = ["explicit imperfect or present-system platform base", "formation", "ContractedOnly variant policy"]
+valid_inventory = "3 persons × singular/dual/plural for every platform formation; separately sourced analyses preserve manuscript order."
+invalid_inventory = "Global contraction selected from frequency, unordered cross-products automatically emitted from one analysis, or a suppletive platform not supplied explicitly."
+implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic/src/metadata.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#contracted_imperfect_has_every_person_number_cell_for_each_platform", "crates/old-church-slavonic-core/src/verb.rs#imperfect_variant_matrix_covers_every_typed_platform_and_cell", "crates/old-church-slavonic/src/metadata.rs#contracted_imperfect_policy_is_typed_and_source_ordered"]
+evidence_status = "complete grammar terminal table, multi-manuscript examples, and explicit source-order metadata"
+rationale = "The productive contract covers every terminal cell without asserting that every source licenses every variant; callers and dictionary analyses must select ContractedOnly explicitly."
+
+[[system]]
+id = "ocs.verb.imperfect.iotated"
+recension = "old-church-slavonic"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Rare iotated -(ѣ)ꙗх- imperfect terminals on infinitive-aorist and present-system platforms."
+profiles = ["canonical-cyrillic", "diplomatic"]
+features = ["tense=imperfect", "person=3", "number=3", "formation=A|YatA|PalatalizedA|PresentA|PresentYatA", "policy=IotatedOnly"]
+subtypes = ["infinitive-aorist-platform", "present-platform", "short-initial", "yat-initial"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-IMPF-IOTATED-01"]
+sources = ["polivanova-fup-2023"]
+citation = "Polivanova 2023 §§455 and 471–472; docs/MORPHOLOGY_SPEC.md imperfect section."
+required_metadata = ["explicit workstem", "platform formation", "IotatedOnly variant policy"]
+valid_inventory = "3 persons × singular/dual/plural for each explicitly declared platform; fewer than 25 source forms establish the category but do not limit grammatical cells."
+invalid_inventory = "Automatic attachment to every lexeme or collapse with a homographic present/contracted imperfect analysis."
+implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic/src/metadata.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#imperfect_variant_matrix_covers_every_typed_platform_and_cell", "crates/old-church-slavonic-core/src/verb.rs#present_stem_and_iotated_imperfects_remain_distinct_typed_analyses"]
+evidence_status = "complete grammar terminal table and independently cited examples"
+rationale = "The rare attested category has a closed terminal set; explicit metadata permits grammatical unattested cells while preventing universal lexical inference."
 
 [[system]]
 id = "ocs.verb.aorist.asigmatic-new"

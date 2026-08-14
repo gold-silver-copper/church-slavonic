@@ -22,6 +22,7 @@ const REQUIRED_SYSTEM_IDS: &[&str] = &[
     "ocs.verb.present",
     "ocs.verb.imperfect.uncontracted",
     "ocs.verb.imperfect.contracted",
+    "ocs.verb.imperfect.iotated",
     "ocs.verb.aorist.asigmatic-new",
     "ocs.verb.aorist.sigmatic",
     "ocs.verb.imperative.synthetic",

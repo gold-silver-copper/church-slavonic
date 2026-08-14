@@ -173,14 +173,25 @@ stems remain dictionary-backed. Authority: UT lessons 2 and 7,
 
 The imperfect needs `ImperfectStem`, `ImperfectFormation`, and
 `ImperfectVariantPolicy`. The stem is the lexically selected base before the
-formation marker. The current only admitted policy is `UncontractedOnly`; it makes
-the deliberate absence of a generalized contracted variant explicit and sourced.
+formation marker. `UncontractedOnly`, `ContractedOnly`, and `IotatedOnly` are
+separate source-order analyses; the API never silently emits their cross-product.
+`PresentA` and `PresentYatA` record that the supplied base belongs to the present
+rather than the infinitive-aorist system; their separate short and yat-initial
+contracts ensure that stem spelling never guesses the terminal series.
 
-| Rule | Formation | Operation |
-|---|---|---|
-| `V-IMPF-A-01` | `A` | stem + `а` + personal ending |
-| `V-IMPF-YAT-A-01` | `YatA` | stem + `ѣа` + personal ending |
-| `V-IMPF-PAL-A-01` | `PalatalizedA` | final `к/г/х → ч/ж/ш`, then `аа` + personal ending |
+| Policy | Formation | Platform-to-ending seam | Rule |
+|---|---|---|---|
+| `UncontractedOnly` | `A` | `а` | `V-IMPF-A-01` |
+| `UncontractedOnly` | `YatA` | `ѣа` | `V-IMPF-YAT-A-01` |
+| `UncontractedOnly` | `PalatalizedA` | `к/г/х → ч/ж/ш`, then `аа` | `V-IMPF-PAL-A-01` |
+| `UncontractedOnly` | `PresentA` | `а` | `V-IMPF-PRESENT-01` |
+| `UncontractedOnly` | `PresentYatA` | `ѣа` | `V-IMPF-PRESENT-01` |
+| `ContractedOnly` | `A` | zero | `V-IMPF-CONTRACTED-A-01` |
+| `ContractedOnly` | `YatA` | `ѣ` | `V-IMPF-CONTRACTED-YAT-A-01` |
+| `ContractedOnly` | `PalatalizedA` | `к/г/х → ч/ж/ш`, then `а` | `V-IMPF-CONTRACTED-PAL-A-01` |
+| `ContractedOnly` | `PresentA` | zero | `V-IMPF-PRESENT-CONTRACTED-01` |
+| `ContractedOnly` | `PresentYatA` | `ѣ` | `V-IMPF-PRESENT-CONTRACTED-01` |
+| `IotatedOnly` | any platform | `ꙗ`, `ѣꙗ`, or `аꙗ` as typed by the formation | `V-IMPF-IOTATED-01` |
 
 | Cell | Personal ending after the marker |
 |---|---|
@@ -194,19 +205,29 @@ the deliberate absence of a generalized contracted variant explicit and sourced.
 | 3pl | `хѫ` |
 
 Thus `нес-` + `YatA` gives `несѣахъ, несѣаше, …, несѣахѫ`, while
-`мог-` + `PalatalizedA` gives `можаахъ`. Contracted, suppletive, and lexically
-exceptional imperfects require an explicit dictionary cell rather than a guessed
-variant. Authority: UT lesson 1 §4.2,
+`мог-` + `PalatalizedA` gives `можаахъ`. Their contracted analyses give
+`несѣхъ` and `можахъ` and use the same full person-number inventory. An explicit
+present stem `зов-` plus `PresentYatA` gives `зовѣаше` or contracted `зовѣше`.
+The rare iotated policy produces such sourced formations as `исъхнѣꙗше`,
+`трьпѣꙗхъ`, and present stem `раду-` plus `PresentA` as `радуꙗше`.
+Suppletive platforms and class-specific exceptions remain independent metadata or
+exact cells rather than guessed stems.
+Authority: UT lesson 1 §4.2,
 <https://lrc.la.utexas.edu/eieol/ocsol/10#grammar_967>.
 
-That section also records later shortened `-ах/-ѣх` forms and shortened dual and
-plural endings. The pinned native-corpus audit found 1,349 diplomatic mismatches in
+Polivanova 2023 §§455 and 467–472 supplies the complete contracted, present-stem,
+and iotated terminal sets. Contracted forms occur in every reviewed source, while
+Savvina kniga uses the contracted series almost exclusively; the policy therefore
+remains explicit per lexical/source analysis instead of becoming a global default.
+Sections 914–915 define the imperfect platform and document further exceptional
+analyses. The pinned native-corpus audit found 1,349 diplomatic mismatches in
 1,725 oracle-generated imperfect tokens: 890 in the `YatA` slice and 459 in the
 explicit-base `A` slice. Of those mismatches, 630 belong to suppletive `бꙑти` and
 235 to abbreviation-heavy `глаголати`; 1,100 occur in 3sg. The remainder mixes
 contraction, editorial marks, orthographic substitutions, and unsafe principal-part
-selection across manuscripts. Those aggregates do not establish a single lexical
-or manuscript distribution, so this version adds no global contracted variant.
+selection across manuscripts. Those aggregates still do not select one analysis;
+the newly implemented policies make the independently established rule available
+without treating frequency as lexical or manuscript evidence.
 
 ### Aorists
 

@@ -1222,3 +1222,74 @@ fn normalized_sigmatic_metadata_reaches_the_production_resolver() {
             .any(|evidence| { evidence.field == Some(MetadataField::AoristSecondThirdSingular) })
     );
 }
+
+#[test]
+fn normalized_imperfect_variants_reach_the_production_resolver_in_source_order() {
+    let field = |analysis_rank: u16,
+                 name: &str,
+                 value: &str,
+                 source_form: &str|
+     -> api_metadata::NormalizedVerbMetadataField {
+        api_metadata::NormalizedVerbMetadataField {
+            system: "imperfect".to_string(),
+            analysis_rank,
+            field: name.to_string(),
+            value: value.to_string(),
+            provenance: "dictionary-principal-part".to_string(),
+            source_feature: "verb:finite:imperfect:3:sg".to_string(),
+            source_form: source_form.to_string(),
+            crosscheck_features: vec!["verb:finite:imperfect:1:sg".to_string()],
+            authority: "Polivanova 2023 §§455, 467–472 and 914–915".to_string(),
+        }
+    };
+    let metadata = api_metadata::DictionaryVerbMetadata::from_normalized_fields(
+        "fixture:нести",
+        "нести",
+        [
+            field(0, "stem", "нес", "несѣше"),
+            field(0, "formation", "yat-a", "несѣше"),
+            field(0, "variant-policy", "contracted-only", "несѣше"),
+            field(1, "stem", "нес", "несѣаше"),
+            field(1, "formation", "yat-a", "несѣаше"),
+            field(1, "variant-policy", "uncontracted-only", "несѣаше"),
+        ],
+    )
+    .expect("validated source-ordered imperfect metadata");
+
+    let generated = api_metadata::finite_verb_from_dictionary_metadata(
+        &metadata,
+        FiniteVerbCell {
+            tense: FiniteTense::Imperfect,
+            person: Person::Third,
+            number: Number::Singular,
+        },
+    )
+    .expect("metadata-driven contracted and uncontracted variants");
+    assert_eq!(generated.primary_text(), "несѣше");
+    assert_eq!(
+        generated.texts().collect::<Vec<_>>(),
+        vec!["несѣше", "несѣаше"]
+    );
+    assert_eq!(
+        generated.analyses()[0]
+            .trace
+            .last()
+            .expect("productive imperfect step")
+            .rule_id,
+        RuleId::VerbImperfectContractedYatA
+    );
+    assert_eq!(
+        generated.analyses()[1]
+            .trace
+            .last()
+            .expect("productive imperfect step")
+            .rule_id,
+        RuleId::VerbImperfectYatA
+    );
+    assert!(generated.analyses().iter().all(|analysis| {
+        analysis
+            .evidence
+            .iter()
+            .any(|evidence| evidence.field == Some(MetadataField::ImperfectVariantPolicy))
+    }));
+}

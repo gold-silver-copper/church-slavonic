@@ -36,6 +36,8 @@ Source dictionary verb lexemes: 711.
 | `aorist/formation=new` | 0 |
 | `aorist/formation=sigmatic-primary` | 0 |
 | `aorist/formation=sigmatic-secondary` | 0 |
+| `aorist/formation=sigmatic-vowel` | 0 |
+| `aorist/second-third-singular` | 0 |
 | `aorist/stem` | 0 |
 | `aspect/aspect` | 647 |
 | `aspect/aspect=biaspectual` | 9 |
@@ -48,9 +50,13 @@ Source dictionary verb lexemes: 711.
 | `imperfect/formation` | 150 |
 | `imperfect/formation=a` | 44 |
 | `imperfect/formation=palatalized-a` | 0 |
+| `imperfect/formation=present-a` | 0 |
+| `imperfect/formation=present-yat-a` | 0 |
 | `imperfect/formation=yat-a` | 106 |
 | `imperfect/stem` | 150 |
 | `imperfect/variant-policy` | 150 |
+| `imperfect/variant-policy=contracted-only` | 0 |
+| `imperfect/variant-policy=iotated-only` | 0 |
 | `imperfect/variant-policy=uncontracted-only` | 150 |
 | `l-participle/stem` | 185 |
 | `past-active-participle/formation` | 185 |

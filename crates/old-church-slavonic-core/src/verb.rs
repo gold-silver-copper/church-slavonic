@@ -417,33 +417,88 @@ fn imperfect(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm,
             needed: vec![MetadataField::ImperfectVariantPolicy],
         }
     })?;
-    let ImperfectVariantPolicy::UncontractedOnly = variant_policy;
     let stem = required_stem(
         lexeme.stems.imperfect.as_deref(),
         MetadataField::ImperfectStem,
     )?;
-    let (stem, marker, rule_id) = match formation {
-        ImperfectFormation::A => (stem, "а", RuleId::VerbImperfectA),
-        ImperfectFormation::YatA => (stem, "ѣа", RuleId::VerbImperfectYatA),
-        ImperfectFormation::PalatalizedA => {
-            let changed = first_palatalize(&stem);
-            if changed == stem {
-                return Err(InflectionError::InvalidInput {
-                    reason: "the palatalized imperfect formation requires a final velar stem"
-                        .to_string(),
-                });
-            }
-            (changed, "аа", RuleId::VerbImperfectPalatalizedA)
+    let stem = if formation == ImperfectFormation::PalatalizedA {
+        let changed = first_palatalize(&stem);
+        if changed == stem {
+            return Err(InflectionError::InvalidInput {
+                reason: "the palatalized imperfect formation requires a final velar stem"
+                    .to_string(),
+            });
         }
+        changed
+    } else {
+        stem
+    };
+    let (marker, rule_id, reason) = match (formation, variant_policy) {
+        (ImperfectFormation::A, ImperfectVariantPolicy::UncontractedOnly) => (
+            "а",
+            RuleId::VerbImperfectA,
+            "attach the explicitly selected uncontracted imperfect marker and personal ending",
+        ),
+        (ImperfectFormation::A, ImperfectVariantPolicy::ContractedOnly) => (
+            "",
+            RuleId::VerbImperfectContractedA,
+            "attach the source-selected contracted imperfect terminal to the explicit platform",
+        ),
+        (ImperfectFormation::YatA, ImperfectVariantPolicy::UncontractedOnly) => (
+            "ѣа",
+            RuleId::VerbImperfectYatA,
+            "attach the explicitly selected uncontracted imperfect marker and personal ending",
+        ),
+        (ImperfectFormation::YatA, ImperfectVariantPolicy::ContractedOnly) => (
+            "ѣ",
+            RuleId::VerbImperfectContractedYatA,
+            "attach the source-selected contracted imperfect terminal to the explicit platform",
+        ),
+        (ImperfectFormation::PalatalizedA, ImperfectVariantPolicy::UncontractedOnly) => (
+            "аа",
+            RuleId::VerbImperfectPalatalizedA,
+            "attach the explicitly selected uncontracted imperfect marker and personal ending",
+        ),
+        (ImperfectFormation::PalatalizedA, ImperfectVariantPolicy::ContractedOnly) => (
+            "а",
+            RuleId::VerbImperfectContractedPalatalizedA,
+            "attach the source-selected contracted imperfect terminal to the explicit platform",
+        ),
+        (ImperfectFormation::PresentA, ImperfectVariantPolicy::UncontractedOnly) => (
+            "а",
+            RuleId::VerbImperfectPresent,
+            "attach the short uncontracted imperfect terminal to the explicit present-system stem",
+        ),
+        (ImperfectFormation::PresentA, ImperfectVariantPolicy::ContractedOnly) => (
+            "",
+            RuleId::VerbImperfectPresentContracted,
+            "attach the short contracted imperfect terminal to the explicit present-system stem",
+        ),
+        (ImperfectFormation::PresentYatA, ImperfectVariantPolicy::UncontractedOnly) => (
+            "ѣа",
+            RuleId::VerbImperfectPresent,
+            "attach the uncontracted imperfect terminal to the explicit present-system stem",
+        ),
+        (ImperfectFormation::PresentYatA, ImperfectVariantPolicy::ContractedOnly) => (
+            "ѣ",
+            RuleId::VerbImperfectPresentContracted,
+            "attach the contracted imperfect terminal to the explicit present-system stem",
+        ),
+        (formation, ImperfectVariantPolicy::IotatedOnly) => (
+            match formation {
+                ImperfectFormation::A => "ꙗ",
+                ImperfectFormation::YatA => "ѣꙗ",
+                ImperfectFormation::PalatalizedA => "аꙗ",
+                ImperfectFormation::PresentA => "ꙗ",
+                ImperfectFormation::PresentYatA => "ѣꙗ",
+            },
+            RuleId::VerbImperfectIotated,
+            "attach the source-selected iotated imperfect terminal to the explicit workstem",
+        ),
     };
     let personal = imperfect_personal_ending(cell);
     let ending = format!("{marker}{personal}");
-    Ok(join(
-        &stem,
-        &ending,
-        rule_id,
-        "attach the explicitly selected imperfect marker and personal ending",
-    ))
+    Ok(join(&stem, &ending, rule_id, reason))
 }
 
 fn aorist(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, InflectionError> {
@@ -1087,6 +1142,333 @@ mod tests {
             .expect("palatalized imperfect")
             .text,
             "можаахъ"
+        );
+    }
+
+    #[test]
+    fn contracted_imperfect_has_every_person_number_cell_for_each_platform() {
+        // Polivanova 2023 §§455, 467–468: contracted terminals omit the loose
+        // -а- between the same imperfect platform and the х-/ш-initial ending.
+        let mut verb = VerbLexeme::new("нести", VerbClass::IA1);
+        verb.stems.imperfect = Some("нес".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::YatA);
+        verb.formations.imperfect_variant_policy = Some(ImperfectVariantPolicy::ContractedOnly);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Imperfect),
+            [
+                "несѣхъ",
+                "несѣше",
+                "несѣше",
+                "несѣховѣ",
+                "несѣшета",
+                "несѣшете",
+                "несѣхомъ",
+                "несѣшете",
+                "несѣхѫ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::First, Number::Singular)
+            )
+            .expect("contracted yat platform")
+            .rule_id,
+            RuleId::VerbImperfectContractedYatA
+        );
+
+        verb.lemma = "вѣровати".to_string();
+        verb.stems.imperfect = Some("вѣрова".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::A);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Imperfect),
+            [
+                "вѣровахъ",
+                "вѣроваше",
+                "вѣроваше",
+                "вѣроваховѣ",
+                "вѣровашета",
+                "вѣровашете",
+                "вѣровахомъ",
+                "вѣровашете",
+                "вѣровахѫ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::First, Number::Singular)
+            )
+            .expect("contracted a platform")
+            .rule_id,
+            RuleId::VerbImperfectContractedA
+        );
+
+        verb.lemma = "мощи".to_string();
+        verb.stems.imperfect = Some("мог".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::PalatalizedA);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Imperfect),
+            [
+                "можахъ",
+                "можаше",
+                "можаше",
+                "можаховѣ",
+                "можашета",
+                "можашете",
+                "можахомъ",
+                "можашете",
+                "можахѫ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::Third, Number::Plural)
+            )
+            .expect("contracted palatalized platform")
+            .rule_id,
+            RuleId::VerbImperfectContractedPalatalizedA
+        );
+    }
+
+    #[test]
+    fn imperfect_variant_matrix_covers_every_typed_platform_and_cell() {
+        // Polivanova 2023 Table 455.2 and §§467–472: every terminal set has
+        // the same nine person-number cells. Platform type selects only the
+        // explicit seam before those terminals.
+        let endings = [
+            "хъ", "ше", "ше", "ховѣ", "шета", "шете", "хомъ", "шете", "хѫ",
+        ];
+        let cases = [
+            (
+                "вѣровати",
+                "вѣрова",
+                ImperfectFormation::A,
+                ImperfectVariantPolicy::UncontractedOnly,
+                "вѣроваа",
+            ),
+            (
+                "вѣровати",
+                "вѣрова",
+                ImperfectFormation::A,
+                ImperfectVariantPolicy::ContractedOnly,
+                "вѣрова",
+            ),
+            (
+                "вѣровати",
+                "вѣрова",
+                ImperfectFormation::A,
+                ImperfectVariantPolicy::IotatedOnly,
+                "вѣроваꙗ",
+            ),
+            (
+                "нести",
+                "нес",
+                ImperfectFormation::YatA,
+                ImperfectVariantPolicy::UncontractedOnly,
+                "несѣа",
+            ),
+            (
+                "нести",
+                "нес",
+                ImperfectFormation::YatA,
+                ImperfectVariantPolicy::ContractedOnly,
+                "несѣ",
+            ),
+            (
+                "нести",
+                "нес",
+                ImperfectFormation::YatA,
+                ImperfectVariantPolicy::IotatedOnly,
+                "несѣꙗ",
+            ),
+            (
+                "мощи",
+                "мог",
+                ImperfectFormation::PalatalizedA,
+                ImperfectVariantPolicy::UncontractedOnly,
+                "можаа",
+            ),
+            (
+                "мощи",
+                "мог",
+                ImperfectFormation::PalatalizedA,
+                ImperfectVariantPolicy::ContractedOnly,
+                "можа",
+            ),
+            (
+                "мощи",
+                "мог",
+                ImperfectFormation::PalatalizedA,
+                ImperfectVariantPolicy::IotatedOnly,
+                "можаꙗ",
+            ),
+            (
+                "радовати",
+                "раду",
+                ImperfectFormation::PresentA,
+                ImperfectVariantPolicy::UncontractedOnly,
+                "радуа",
+            ),
+            (
+                "радовати",
+                "раду",
+                ImperfectFormation::PresentA,
+                ImperfectVariantPolicy::ContractedOnly,
+                "раду",
+            ),
+            (
+                "радовати",
+                "раду",
+                ImperfectFormation::PresentA,
+                ImperfectVariantPolicy::IotatedOnly,
+                "радуꙗ",
+            ),
+            (
+                "зъвати",
+                "зов",
+                ImperfectFormation::PresentYatA,
+                ImperfectVariantPolicy::UncontractedOnly,
+                "зовѣа",
+            ),
+            (
+                "зъвати",
+                "зов",
+                ImperfectFormation::PresentYatA,
+                ImperfectVariantPolicy::ContractedOnly,
+                "зовѣ",
+            ),
+            (
+                "зъвати",
+                "зов",
+                ImperfectFormation::PresentYatA,
+                ImperfectVariantPolicy::IotatedOnly,
+                "зовѣꙗ",
+            ),
+        ];
+
+        for (lemma, stem, formation, policy, expected_base) in cases {
+            let mut verb = VerbLexeme::new(lemma, VerbClass::IA1);
+            verb.stems.imperfect = Some(stem.to_string());
+            verb.formations.imperfect = Some(formation);
+            verb.formations.imperfect_variant_policy = Some(policy);
+            let expected = endings
+                .iter()
+                .map(|ending| format!("{expected_base}{ending}"))
+                .collect::<Vec<_>>();
+            assert_eq!(
+                finite_paradigm(&verb, FiniteTense::Imperfect),
+                expected,
+                "{formation:?} with {policy:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn present_stem_and_iotated_imperfects_remain_distinct_typed_analyses() {
+        // Polivanova 2023 §§469–472: the present imperfect uses the explicit
+        // present workstem; the rare iotated series has its own -(ѣ)ꙗ- set.
+        let mut verb = VerbLexeme::new("зъвати", VerbClass::IA1);
+        verb.stems.imperfect = Some("зов".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::PresentYatA);
+        verb.formations.imperfect_variant_policy = Some(ImperfectVariantPolicy::UncontractedOnly);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Imperfect),
+            [
+                "зовѣахъ",
+                "зовѣаше",
+                "зовѣаше",
+                "зовѣаховѣ",
+                "зовѣашета",
+                "зовѣашете",
+                "зовѣахомъ",
+                "зовѣашете",
+                "зовѣахѫ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::Third, Number::Singular)
+            )
+            .expect("present imperfect")
+            .rule_id,
+            RuleId::VerbImperfectPresent
+        );
+
+        verb.formations.imperfect_variant_policy = Some(ImperfectVariantPolicy::ContractedOnly);
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::Third, Number::Singular)
+            )
+            .expect("contracted present imperfect")
+            .text,
+            "зовѣше"
+        );
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::Third, Number::Singular)
+            )
+            .expect("contracted present imperfect")
+            .rule_id,
+            RuleId::VerbImperfectPresentContracted
+        );
+
+        verb.lemma = "исъхнѫти".to_string();
+        verb.stems.imperfect = Some("исъхн".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::YatA);
+        verb.formations.imperfect_variant_policy = Some(ImperfectVariantPolicy::IotatedOnly);
+        assert_eq!(
+            finite_paradigm(&verb, FiniteTense::Imperfect),
+            [
+                "исъхнѣꙗхъ",
+                "исъхнѣꙗше",
+                "исъхнѣꙗше",
+                "исъхнѣꙗховѣ",
+                "исъхнѣꙗшета",
+                "исъхнѣꙗшете",
+                "исъхнѣꙗхомъ",
+                "исъхнѣꙗшете",
+                "исъхнѣꙗхѫ",
+            ]
+        );
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::Third, Number::Singular)
+            )
+            .expect("iotated imperfect")
+            .rule_id,
+            RuleId::VerbImperfectIotated
+        );
+
+        verb.lemma = "трьпѣти".to_string();
+        verb.stems.imperfect = Some("трьпѣ".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::A);
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::First, Number::Singular)
+            )
+            .expect("iotated expanded platform")
+            .text,
+            "трьпѣꙗхъ"
+        );
+
+        verb.lemma = "радовати".to_string();
+        verb.stems.imperfect = Some("раду".to_string());
+        verb.formations.imperfect = Some(ImperfectFormation::PresentA);
+        assert_eq!(
+            finite(
+                &verb,
+                finite_cell(FiniteTense::Imperfect, Person::Third, Number::Singular)
+            )
+            .expect("present iotated vowel platform")
+            .text,
+            "радуꙗше"
         );
     }
 

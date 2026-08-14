@@ -50,9 +50,9 @@ authority_justification = "The publication explicitly aims at a complete, consis
 license = "CC BY 4.0"
 redistribution = "allowed-with-attribution"
 upstream_lineage = ["polivanova-osd-source"]
-reviewed_sections = ["publisher metadata", "grammar/dictionary scope", "repository adapter coverage", "§§93 and 455–462 aorist terminals and boundary adjustment", "§§475–482 standard and nonstandard aorists"]
-rule_ids = ["V-AOR-ASIG-01", "V-AOR-NEW-01", "V-AOR-SIG-PRIMARY-01", "V-AOR-SIG-SECONDARY-01", "V-AOR-SIG-VOWEL-01", "pending-polivanova-crosswalk"]
-impact = "Adds a completeness-oriented independent grammar and grammatical dictionaries; its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts."
+reviewed_sections = ["publisher metadata", "grammar/dictionary scope", "repository adapter coverage", "§§93 and 455–462 aorist terminals and boundary adjustment", "§§475–482 standard and nonstandard aorists", "§455 and §§467–472 imperfect terminal variants", "§§914–915 imperfect platforms and special formations"]
+rule_ids = ["V-AOR-ASIG-01", "V-AOR-NEW-01", "V-AOR-SIG-PRIMARY-01", "V-AOR-SIG-SECONDARY-01", "V-AOR-SIG-VOWEL-01", "V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01", "V-IMPF-PRESENT-01", "V-IMPF-CONTRACTED-A-01", "V-IMPF-CONTRACTED-YAT-A-01", "V-IMPF-CONTRACTED-PAL-A-01", "V-IMPF-PRESENT-CONTRACTED-01", "V-IMPF-IOTATED-01", "pending-polivanova-crosswalk"]
+impact = "Adds a completeness-oriented independent grammar and grammatical dictionaries; its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default."
 conflicts = ["It analyzes canonical (o)x forms as the standard aorist and root/old sigmatic forms as secondary/nonstandard, while UT uses the pedagogical asigmatic/sigmatic/new taxonomy; the matrix preserves each morphological formation and records the terminology crosswalk."]
 access_status = "pinned-local"
 

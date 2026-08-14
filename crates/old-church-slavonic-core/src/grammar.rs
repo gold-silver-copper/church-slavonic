@@ -285,6 +285,10 @@ pub enum ImperfectFormation {
     YatA,
     /// A final velar is first-palatalized before the `-аах-` series.
     PalatalizedA,
+    /// A present-system stem takes the short `-ах-` terminal series.
+    PresentA,
+    /// A truncated present-system stem takes the `-ѣах-` terminal series.
+    PresentYatA,
 }
 
 /// Lexically/source-audited surface-variant policy for the imperfect system.
@@ -292,6 +296,10 @@ pub enum ImperfectFormation {
 pub enum ImperfectVariantPolicy {
     /// Emit only the independently specified uncontracted series.
     UncontractedOnly,
+    /// Emit only the source-licensed contracted terminal series.
+    ContractedOnly,
+    /// Emit only the rare source-licensed iotated `-(ѣ)ꙗх-` series.
+    IotatedOnly,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

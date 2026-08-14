@@ -610,8 +610,18 @@ fn validate_metadata_code(system: &str, field: &str, value: &str) -> Result<(), 
         | ("present-passive-participle", "stem")
         | ("past-active-participle", "stem")
         | ("past-passive-participle", "stem") => true,
-        ("imperfect", "formation") => matches!(value, "a" | "yat-a" | "palatalized-a"),
-        ("imperfect", "variant-policy") => value == "uncontracted-only",
+        ("imperfect", "formation") => {
+            matches!(
+                value,
+                "a" | "yat-a" | "palatalized-a" | "present-a" | "present-yat-a"
+            )
+        }
+        ("imperfect", "variant-policy") => {
+            matches!(
+                value,
+                "uncontracted-only" | "contracted-only" | "iotated-only"
+            )
+        }
         ("aorist", "formation") => matches!(
             value,
             "asigmatic" | "new" | "sigmatic-primary" | "sigmatic-secondary" | "sigmatic-vowel"

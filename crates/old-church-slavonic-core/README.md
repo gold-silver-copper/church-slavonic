@@ -12,7 +12,8 @@ silently selects a lexical class or principal part.
 Verb generation requires independent typed principal parts for the present,
 imperfect, aorist, imperative, l-participle, and each non-l participle system.
 Lexical aspect never chooses an aorist. The core supports explicit A/Yat-A/
-palatalized imperfects under an explicit `UncontractedOnly` variant policy;
+palatalized and present-stem imperfect platforms under explicit uncontracted,
+contracted, or iotated variant policies;
 asigmatic, new *ox*-, old `-с-`, old `-х-`, and vowel-stem sigmatic aorists;
 both historical imperative series; and audited participial seams including
 transformed i-stem `-ьш-`, declared final-j deletion, and `ov → u`. Every

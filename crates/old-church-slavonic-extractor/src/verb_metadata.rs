@@ -550,6 +550,8 @@ impl From<ImperfectFormation> for FormationCode {
             ImperfectFormation::A => "a",
             ImperfectFormation::YatA => "yat-a",
             ImperfectFormation::PalatalizedA => "palatalized-a",
+            ImperfectFormation::PresentA => "present-a",
+            ImperfectFormation::PresentYatA => "present-yat-a",
         })
     }
 }

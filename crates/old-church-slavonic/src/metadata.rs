@@ -430,6 +430,8 @@ fn parse_imperfect_groups(
         )?;
         let variant_policy_value = match variant_policy.value.as_str() {
             "uncontracted-only" => ImperfectVariantPolicy::UncontractedOnly,
+            "contracted-only" => ImperfectVariantPolicy::ContractedOnly,
+            "iotated-only" => ImperfectVariantPolicy::IotatedOnly,
             value => return invalid_code("imperfect variant policy", value),
         };
         out.push(ImperfectMetadataAnalysis {
@@ -567,6 +569,8 @@ fn parse_imperfect(value: &str) -> Result<ImperfectFormation, InflectionError> {
         "a" => Ok(ImperfectFormation::A),
         "yat-a" => Ok(ImperfectFormation::YatA),
         "palatalized-a" => Ok(ImperfectFormation::PalatalizedA),
+        "present-a" => Ok(ImperfectFormation::PresentA),
+        "present-yat-a" => Ok(ImperfectFormation::PresentYatA),
         value => invalid_code("imperfect formation", value),
     }
 }
@@ -823,5 +827,33 @@ mod tests {
             ),
             Err(InflectionError::ContradictoryLexicalMetadata { .. })
         ));
+    }
+
+    #[test]
+    fn contracted_imperfect_policy_is_typed_and_source_ordered() {
+        let metadata = DictionaryVerbMetadata::from_normalized_fields(
+            "fixture",
+            "нести",
+            [
+                field("imperfect", 0, "stem", "нес"),
+                field("imperfect", 0, "formation", "yat-a"),
+                field("imperfect", 0, "variant-policy", "contracted-only"),
+                field("imperfect", 1, "stem", "нес"),
+                field("imperfect", 1, "formation", "yat-a"),
+                field("imperfect", 1, "variant-policy", "uncontracted-only"),
+            ],
+        )
+        .expect("two separately sourced imperfect analyses");
+        assert_eq!(metadata.imperfect.len(), 2);
+        assert_eq!(metadata.imperfect[0].analysis_rank, 0);
+        assert_eq!(
+            metadata.imperfect[0].variant_policy.value,
+            ImperfectVariantPolicy::ContractedOnly
+        );
+        assert_eq!(metadata.imperfect[1].analysis_rank, 1);
+        assert_eq!(
+            metadata.imperfect[1].variant_policy.value,
+            ImperfectVariantPolicy::UncontractedOnly
+        );
     }
 }
