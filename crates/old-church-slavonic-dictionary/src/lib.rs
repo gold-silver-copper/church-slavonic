@@ -268,6 +268,39 @@ static FORM_INDEX: OnceLock<BTreeMap<String, Vec<DictionaryFormMatch>>> = OnceLo
 static GENERATED_FORM_INDEX: OnceLock<BTreeMap<String, Vec<DictionaryFormMatch>>> = OnceLock::new();
 static EXAMPLE_TOKEN_INDEX: OnceLock<BTreeMap<String, Vec<ExampleTokenMatch>>> = OnceLock::new();
 
+fn index_form_variant(
+    index: &mut BTreeMap<String, Vec<DictionaryFormMatch>>,
+    lexeme_id: &str,
+    lemma: &str,
+    part_of_speech: old_church_slavonic::PartOfSpeech,
+    feature: &str,
+    variant: &old_church_slavonic::FormVariant,
+) {
+    let Ok(key) = orthography::lookup_key(&variant.text) else {
+        return;
+    };
+    index.entry(key).or_default().push(DictionaryFormMatch {
+        lexeme_id: lexeme_id.into(),
+        lemma: lemma.into(),
+        part_of_speech,
+        feature: feature.into(),
+        form: variant.text.clone(),
+        romanization: variant.romanization.clone(),
+    });
+}
+
+fn add_generated_outcomes<'a, C: Copy + 'a>(
+    outcomes: impl IntoIterator<Item = &'a old_church_slavonic::CellOutcome<C>>,
+    add: &mut impl FnMut(String, &old_church_slavonic::FormSet),
+    feature: impl Fn(C) -> String,
+) {
+    for outcome in outcomes {
+        if let Ok(forms) = &outcome.result {
+            add(feature(outcome.cell), forms);
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExampleTokenMatch {
     pub lemma: String,
@@ -310,17 +343,14 @@ fn form_index() -> &'static BTreeMap<String, Vec<DictionaryFormMatch>> {
             };
             for (feature, forms) in paradigm.iter() {
                 for variant in forms.variants() {
-                    let Ok(key) = orthography::lookup_key(&variant.text) else {
-                        continue;
-                    };
-                    index.entry(key).or_default().push(DictionaryFormMatch {
-                        lexeme_id: paradigm.id().to_string(),
-                        lemma: paradigm.lemma().to_string(),
-                        part_of_speech: paradigm.part_of_speech(),
-                        feature: feature.to_string(),
-                        form: variant.text.clone(),
-                        romanization: variant.romanization.clone(),
-                    });
+                    index_form_variant(
+                        &mut index,
+                        paradigm.id(),
+                        paradigm.lemma(),
+                        paradigm.part_of_speech(),
+                        feature,
+                        variant,
+                    );
                 }
             }
         }
@@ -370,72 +400,33 @@ fn generated_form_index() -> &'static BTreeMap<String, Vec<DictionaryFormMatch>>
         for (id, (lemma, part_of_speech)) in identities {
             let mut add = |feature: String, forms: &old_church_slavonic::FormSet| {
                 for variant in forms.variants() {
-                    let Ok(key) = orthography::lookup_key(&variant.text) else {
-                        continue;
-                    };
-                    index.entry(key).or_default().push(DictionaryFormMatch {
-                        lexeme_id: id.clone(),
-                        lemma: lemma.clone(),
-                        part_of_speech,
-                        feature: feature.clone(),
-                        form: variant.text.clone(),
-                        romanization: variant.romanization.clone(),
-                    });
+                    index_form_variant(&mut index, &id, &lemma, part_of_speech, &feature, variant);
                 }
             };
             match part_of_speech {
                 PartOfSpeech::Noun => {
                     if let Ok(paradigm) = by_id::noun_paradigm_by_id(&id) {
-                        for outcome in paradigm.iter() {
-                            if let Ok(forms) = &outcome.result {
-                                add(outcome.cell.key(), forms);
-                            }
-                        }
+                        add_generated_outcomes(paradigm.iter(), &mut add, |cell| cell.key());
                     }
                 }
                 PartOfSpeech::Adjective => {
                     if let Ok(paradigm) = by_id::adjective_paradigm_by_id(&id) {
-                        for outcome in paradigm.iter() {
-                            if let Ok(forms) = &outcome.result {
-                                add(outcome.cell.key(), forms);
-                            }
-                        }
+                        add_generated_outcomes(paradigm.iter(), &mut add, |cell| cell.key());
                     }
                 }
                 PartOfSpeech::Verb => {
                     if let Ok(paradigm) = by_id::finite_paradigm_by_id(&id) {
-                        for outcome in paradigm.iter() {
-                            if let Ok(forms) = &outcome.result {
-                                add(outcome.cell.key(), forms);
-                            }
-                        }
+                        add_generated_outcomes(paradigm.iter(), &mut add, |cell| cell.key());
                     }
                     if let Ok(paradigm) = by_id::imperative_paradigm_by_id(&id) {
-                        for outcome in paradigm.iter() {
-                            if let Ok(forms) = &outcome.result {
-                                add(outcome.cell.key(), forms);
-                            }
-                        }
+                        add_generated_outcomes(paradigm.iter(), &mut add, |cell| cell.key());
                     }
                     if let Ok(paradigm) = by_id::l_participle_paradigm_by_id(&id) {
-                        for outcome in paradigm.iter() {
-                            if let Ok(forms) = &outcome.result {
-                                add(outcome.cell.key(), forms);
-                            }
-                        }
+                        add_generated_outcomes(paradigm.iter(), &mut add, |cell| cell.key());
                     }
-                    for kind in [
-                        old_church_slavonic::ParticipleKind::PresentActive,
-                        old_church_slavonic::ParticipleKind::PresentPassive,
-                        old_church_slavonic::ParticipleKind::PastActive,
-                        old_church_slavonic::ParticipleKind::PastPassive,
-                    ] {
+                    for kind in old_church_slavonic::ParticipleKind::ALL {
                         if let Ok(paradigm) = by_id::participle_paradigm_by_id(&id, kind) {
-                            for outcome in paradigm.iter() {
-                                if let Ok(forms) = &outcome.result {
-                                    add(outcome.cell.key(), forms);
-                                }
-                            }
+                            add_generated_outcomes(paradigm.iter(), &mut add, |cell| cell.key());
                         }
                     }
                 }

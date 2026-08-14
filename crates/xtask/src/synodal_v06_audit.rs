@@ -1,11 +1,9 @@
-use std::{
-    collections::BTreeMap,
-    error::Error,
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{collections::BTreeMap, error::Error, fs, path::Path};
 
-use crate::report_io::read_json;
+use crate::report_io::{
+    Table, escape, number, object, percent, pointer_number, read_json, read_tsv, require_header,
+    require_number, require_string, root_number, string, table_count,
+};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 
@@ -747,17 +745,6 @@ fn delta_row(out: &mut String, label: &str, before: u64, after: u64) {
     ));
 }
 
-fn percent(value: u64, total: u64) -> String {
-    format!("{:.3}%", value as f64 * 100.0 / total as f64)
-}
-
-fn table_count(value: &Value, name: &str) -> Result<u64, Box<dyn Error>> {
-    value
-        .pointer(&format!("/normalized_tables/{name}"))
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("extraction report omits {name}").into())
-}
-
 fn sum_column(
     table: &Table,
     column: &str,
@@ -789,120 +776,6 @@ fn value<'a>(table: &Table, row: &'a [String], column: &str) -> Result<&'a str, 
     Ok(row
         .get(table.index(column)?)
         .ok_or_else(|| format!("row omits column {column}"))?)
-}
-
-fn require_header(table: &Table, required: &[&str]) -> Result<(), Box<dyn Error>> {
-    for column in required {
-        table.index(column)?;
-    }
-    Ok(())
-}
-
-struct Table {
-    path: PathBuf,
-    header: Vec<String>,
-    rows: Vec<Vec<String>>,
-}
-
-impl Table {
-    fn index(&self, name: &str) -> Result<usize, Box<dyn Error>> {
-        self.header
-            .iter()
-            .position(|column| column == name)
-            .ok_or_else(|| format!("{} omits column {name:?}", self.path.display()).into())
-    }
-}
-
-fn read_tsv(path: &Path) -> Result<Table, Box<dyn Error>> {
-    let text = fs::read_to_string(path)?;
-    let mut lines = text.lines();
-    let header = lines
-        .next()
-        .ok_or_else(|| format!("{} is empty", path.display()))?
-        .split('\t')
-        .map(str::to_owned)
-        .collect::<Vec<_>>();
-    let rows = lines
-        .filter(|line| !line.is_empty())
-        .enumerate()
-        .map(|(offset, line)| {
-            let row = line.split('\t').map(str::to_owned).collect::<Vec<_>>();
-            if row.len() != header.len() {
-                Err(format!(
-                    "{}:{} has {} fields; expected {}",
-                    path.display(),
-                    offset + 2,
-                    row.len(),
-                    header.len()
-                ))
-            } else {
-                Ok(row)
-            }
-        })
-        .collect::<Result<Vec<_>, _>>()?;
-    Ok(Table {
-        path: path.to_owned(),
-        header,
-        rows,
-    })
-}
-
-fn object<'a>(
-    value: &'a Value,
-    key: &str,
-) -> Result<&'a serde_json::Map<String, Value>, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_object)
-        .ok_or_else(|| format!("JSON omits object {key:?}").into())
-}
-
-fn number(value: &serde_json::Map<String, Value>, key: &str) -> Result<u64, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("JSON omits number {key:?}").into())
-}
-
-fn root_number(value: &Value, key: &str) -> Result<u64, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("JSON omits number {key:?}").into())
-}
-
-fn pointer_number(value: &Value, pointer: &str) -> Result<u64, Box<dyn Error>> {
-    value
-        .pointer(pointer)
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("JSON omits number {pointer:?}").into())
-}
-
-fn string<'a>(value: &'a Value, key: &str) -> Result<&'a str, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_str)
-        .ok_or_else(|| format!("JSON omits string {key:?}").into())
-}
-
-fn require_string(value: &Value, key: &str, expected: &str) -> Result<(), Box<dyn Error>> {
-    let actual = string(value, key)?;
-    if actual != expected {
-        return Err(format!("field {key:?}: expected {expected:?}, found {actual:?}").into());
-    }
-    Ok(())
-}
-
-fn require_number(value: &Value, pointer: &str, expected: u64) -> Result<(), Box<dyn Error>> {
-    let actual = pointer_number(value, pointer)?;
-    if actual != expected {
-        return Err(format!("field {pointer:?}: expected {expected}, found {actual}").into());
-    }
-    Ok(())
-}
-
-fn escape(value: &str) -> String {
-    value.replace('|', "\\|").replace('\n', " ")
 }
 
 #[cfg(test)]

@@ -468,111 +468,55 @@ fn require_pos(summary: &LexemeSummary, expected: PartOfSpeech) -> Result<()> {
 }
 
 fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabilities {
+    let exact_forms_present = !exact_forms.is_empty();
     let has_exact =
         |predicate: fn(GrammarCell) -> bool| exact_forms.iter().any(|form| predicate(form.cell));
     match spec.inner() {
         LexemeSpecInner::Noun(_) => Capabilities {
-            exact_forms: !exact_forms.is_empty(),
+            exact_forms: exact_forms_present,
             productive_noun: true,
-            productive_adjective: false,
-            present: false,
-            future: false,
-            past: false,
-            imperfect: false,
-            aorist: false,
-            imperative: false,
-            infinitive: false,
-            l_participle: false,
-            participle: false,
-            supine: false,
-            verbal_noun: false,
-            reverse_analysis: false,
+            ..Capabilities::default()
         },
         LexemeSpecInner::Adjective(_) => Capabilities {
-            exact_forms: !exact_forms.is_empty(),
-            productive_noun: false,
+            exact_forms: exact_forms_present,
             productive_adjective: true,
-            present: false,
-            future: false,
-            past: false,
-            imperfect: false,
-            aorist: false,
-            imperative: false,
-            infinitive: false,
-            l_participle: false,
-            participle: false,
-            supine: false,
-            verbal_noun: false,
-            reverse_analysis: false,
+            ..Capabilities::default()
         },
-        LexemeSpecInner::Verb(verb) => Capabilities {
-            exact_forms: !exact_forms.is_empty(),
-            productive_noun: false,
-            productive_adjective: false,
-            present: verb
-                .missing_principal_parts(VerbSystem::Finite(
+        LexemeSpecInner::Verb(verb) => {
+            let complete = |system| verb.missing_principal_parts(system).is_empty();
+            let exact_finite = |tense| {
+                exact_forms.iter().any(
+                    |form| matches!(form.cell, GrammarCell::FiniteVerb(value) if value.tense == tense),
+                )
+            };
+            Capabilities {
+                exact_forms: exact_forms_present,
+                present: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Present,
-                ))
-                .is_empty()
-                || has_exact(
-                    |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Present),
-                ),
-            future: has_exact(
-                |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Future),
-            ),
-            past: has_exact(
-                |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Past),
-            ),
-            imperfect: verb
-                .missing_principal_parts(VerbSystem::Finite(
+                )) || exact_finite(synodal_church_slavonic_core::FiniteTense::Present),
+                future: exact_finite(synodal_church_slavonic_core::FiniteTense::Future),
+                past: exact_finite(synodal_church_slavonic_core::FiniteTense::Past),
+                imperfect: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Imperfect,
-                ))
-                .is_empty()
-                || has_exact(
-                    |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Imperfect),
-                ),
-            aorist: verb
-                .missing_principal_parts(VerbSystem::Finite(
+                )) || exact_finite(synodal_church_slavonic_core::FiniteTense::Imperfect),
+                aorist: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Aorist,
-                ))
-                .is_empty()
-                || has_exact(
-                    |cell| matches!(cell, GrammarCell::FiniteVerb(value) if value.tense == synodal_church_slavonic_core::FiniteTense::Aorist),
-                ),
-            imperative: verb
-                .missing_principal_parts(VerbSystem::Imperative)
-                .is_empty()
-                || has_exact(|cell| matches!(cell, GrammarCell::Imperative(_))),
-            infinitive: true,
-            l_participle: verb
-                .missing_principal_parts(VerbSystem::LParticiple)
-                .is_empty()
-                || has_exact(|cell| matches!(cell, GrammarCell::LParticiple(_))),
-            participle: exact_forms
-                .iter()
-                .any(|form| matches!(form.cell, GrammarCell::Participle(_)))
-                || synodal_church_slavonic_core::ParticipleTense::ALL
-                    .into_iter()
-                    .any(|tense| {
-                        synodal_church_slavonic_core::ParticipleVoice::ALL
-                            .into_iter()
-                            .any(|voice| {
-                                synodal_church_slavonic_core::AdjectiveForm::ALL
-                                    .into_iter()
-                                    .any(|form| {
-                                        verb.missing_principal_parts(VerbSystem::Participle {
-                                            tense,
-                                            voice,
-                                            form,
-                                        })
-                                        .is_empty()
-                                    })
-                            })
-                    }),
-            supine: has_exact(|cell| matches!(cell, GrammarCell::Supine)),
-            verbal_noun: has_exact(|cell| matches!(cell, GrammarCell::VerbalNoun(_))),
-            reverse_analysis: false,
-        },
+                )) || exact_finite(synodal_church_slavonic_core::FiniteTense::Aorist),
+                imperative: complete(VerbSystem::Imperative)
+                    || has_exact(|cell| matches!(cell, GrammarCell::Imperative(_))),
+                infinitive: true,
+                l_participle: complete(VerbSystem::LParticiple)
+                    || has_exact(|cell| matches!(cell, GrammarCell::LParticiple(_))),
+                participle: has_exact(|cell| matches!(cell, GrammarCell::Participle(_)))
+                    || VerbSystem::ALL
+                        .into_iter()
+                        .filter(|system| matches!(system, VerbSystem::Participle { .. }))
+                        .any(complete),
+                supine: has_exact(|cell| matches!(cell, GrammarCell::Supine)),
+                verbal_noun: has_exact(|cell| matches!(cell, GrammarCell::VerbalNoun(_))),
+                ..Capabilities::default()
+            }
+        }
     }
 }
 

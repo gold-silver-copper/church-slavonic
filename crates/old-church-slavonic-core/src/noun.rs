@@ -14,6 +14,72 @@ pub struct NounLexeme {
     pub number_restriction: NumberRestriction,
 }
 
+struct ConsonantDeclension {
+    citation_ending: char,
+    endings: [[&'static str; 7]; 3],
+    rule: RuleId,
+}
+
+const N_MASCULINE: ConsonantDeclension = ConsonantDeclension {
+    citation_ending: 'ꙑ',
+    endings: [
+        ["ꙑ", "ене", "ени", "ꙑ", "еньмь", "ене", "ꙑ"],
+        ["ени", "еноу", "еньма", "ени", "еньма", "еноу", "ени"],
+        ["ене", "енъ", "еньмъ", "ени", "еньми", "еньхъ", "ене"],
+    ],
+    rule: RuleId::NounNMasculine,
+};
+
+const N_NEUTER: ConsonantDeclension = ConsonantDeclension {
+    citation_ending: 'ѧ',
+    endings: [
+        ["ѧ", "ене", "ени", "ѧ", "еньмь", "ене", "ѧ"],
+        ["енѣ", "еноу", "еньма", "енѣ", "еньма", "еноу", "енѣ"],
+        ["ена", "енъ", "еньмъ", "ена", "енꙑ", "еньхъ", "ена"],
+    ],
+    rule: RuleId::NounNNeuter,
+};
+
+const NT_NEUTER: ConsonantDeclension = ConsonantDeclension {
+    citation_ending: 'ѧ',
+    endings: [
+        ["ѧ", "ѧте", "ѧти", "ѧ", "ѧтьмь", "ѧте", "ѧ"],
+        ["ѧтѣ", "ѧтоу", "ѧтьма", "ѧтѣ", "ѧтьма", "ѧтоу", "ѧтѣ"],
+        ["ѧта", "ѧтъ", "ѧтьмъ", "ѧта", "ѧтꙑ", "ѧтьхъ", "ѧта"],
+    ],
+    rule: RuleId::NounNtNeuter,
+};
+
+const R_STEM: ConsonantDeclension = ConsonantDeclension {
+    citation_ending: 'и',
+    endings: [
+        ["и", "ере", "ери", "ерь", "ерьѭ", "ери", "и"],
+        ["ери", "ероу", "ерьма", "ери", "ерьма", "ероу", "ери"],
+        ["ери", "еръ", "ерьмъ", "ери", "ерьми", "ерьхъ", "ери"],
+    ],
+    rule: RuleId::NounRStem,
+};
+
+const S_NEUTER: ConsonantDeclension = ConsonantDeclension {
+    citation_ending: 'о',
+    endings: [
+        ["о", "есе", "еси", "о", "есьмь", "есе", "о"],
+        ["есѣ", "есоу", "есьма", "есѣ", "есьма", "есоу", "есѣ"],
+        ["еса", "есъ", "есьмъ", "еса", "есꙑ", "есьхъ", "еса"],
+    ],
+    rule: RuleId::NounSNeuter,
+};
+
+const V_FEMININE: ConsonantDeclension = ConsonantDeclension {
+    citation_ending: 'ꙑ',
+    endings: [
+        ["ꙑ", "ъве", "ъви", "ъвь", "ъвьѭ", "ъве", "ꙑ"],
+        ["ъви", "ъвоу", "ъвама", "ъви", "ъвама", "ъвоу", "ъви"],
+        ["ъви", "ъвъ", "ъвамъ", "ъви", "ъвами", "ъвахъ", "ъви"],
+    ],
+    rule: RuleId::NounVFeminine,
+};
+
 pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
     let normalized_lexeme = NounLexeme {
         lemma: crate::orthography::canonical_display(&lexeme.lemma)?,
@@ -34,12 +100,12 @@ pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, Inf
         NounClass::IFeminine => decline_i_stem(lexeme, cell, false),
         NounClass::IMasculine => decline_i_stem(lexeme, cell, true),
         NounClass::UMasculine => decline_u_masculine(lexeme, cell),
-        NounClass::NMasculine => decline_n_masculine(lexeme, cell),
-        NounClass::NNeuter => decline_n_neuter(lexeme, cell),
-        NounClass::NtNeuter => decline_nt_neuter(lexeme, cell),
-        NounClass::RStem => decline_r_stem(lexeme, cell),
-        NounClass::SNeuter => decline_s_neuter(lexeme, cell),
-        NounClass::VFeminine => decline_v_feminine(lexeme, cell),
+        NounClass::NMasculine => decline_consonant_stem(lexeme, cell, &N_MASCULINE),
+        NounClass::NNeuter => decline_consonant_stem(lexeme, cell, &N_NEUTER),
+        NounClass::NtNeuter => decline_consonant_stem(lexeme, cell, &NT_NEUTER),
+        NounClass::RStem => decline_consonant_stem(lexeme, cell, &R_STEM),
+        NounClass::SNeuter => decline_consonant_stem(lexeme, cell, &S_NEUTER),
+        NounClass::VFeminine => decline_consonant_stem(lexeme, cell, &V_FEMININE),
         NounClass::Indeclinable => Ok(predicted(
             &lexeme.lemma,
             &lexeme.lemma,
@@ -188,187 +254,18 @@ fn decline_u_masculine(
     Ok(join(stem, ending, Mutation::None, RuleId::NounUMasculine))
 }
 
-fn decline_n_masculine(
+fn decline_consonant_stem(
     lexeme: &NounLexeme,
     cell: NounCell,
+    declension: &ConsonantDeclension,
 ) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_required(&lexeme.lemma, 'ꙑ')?;
-    let ending = consonant_ending(
-        cell,
-        "ꙑ",
-        "ене",
-        "ени",
-        "ꙑ",
-        "еньмь",
-        "ене",
-        "ꙑ",
-        "ени",
-        "еноу",
-        "еньма",
-        "ени",
-        "еньма",
-        "еноу",
-        "ени",
-        "ене",
-        "енъ",
-        "еньмъ",
-        "ени",
-        "еньми",
-        "еньхъ",
-        "ене",
-    );
-    Ok(join(stem, ending, Mutation::None, RuleId::NounNMasculine))
-}
-
-fn decline_n_neuter(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_required(&lexeme.lemma, 'ѧ')?;
-    let ending = consonant_ending(
-        cell,
-        "ѧ",
-        "ене",
-        "ени",
-        "ѧ",
-        "еньмь",
-        "ене",
-        "ѧ",
-        "енѣ",
-        "еноу",
-        "еньма",
-        "енѣ",
-        "еньма",
-        "еноу",
-        "енѣ",
-        "ена",
-        "енъ",
-        "еньмъ",
-        "ена",
-        "енꙑ",
-        "еньхъ",
-        "ена",
-    );
-    Ok(join(stem, ending, Mutation::None, RuleId::NounNNeuter))
-}
-
-fn decline_nt_neuter(
-    lexeme: &NounLexeme,
-    cell: NounCell,
-) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_required(&lexeme.lemma, 'ѧ')?;
-    let ending = consonant_ending(
-        cell,
-        "ѧ",
-        "ѧте",
-        "ѧти",
-        "ѧ",
-        "ѧтьмь",
-        "ѧте",
-        "ѧ",
-        "ѧтѣ",
-        "ѧтоу",
-        "ѧтьма",
-        "ѧтѣ",
-        "ѧтьма",
-        "ѧтоу",
-        "ѧтѣ",
-        "ѧта",
-        "ѧтъ",
-        "ѧтьмъ",
-        "ѧта",
-        "ѧтꙑ",
-        "ѧтьхъ",
-        "ѧта",
-    );
-    Ok(join(stem, ending, Mutation::None, RuleId::NounNtNeuter))
-}
-
-fn decline_r_stem(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_required(&lexeme.lemma, 'и')?;
-    let ending = consonant_ending(
-        cell,
-        "и",
-        "ере",
-        "ери",
-        "ерь",
-        "ерьѭ",
-        "ери",
-        "и",
-        "ери",
-        "ероу",
-        "ерьма",
-        "ери",
-        "ерьма",
-        "ероу",
-        "ери",
-        "ери",
-        "еръ",
-        "ерьмъ",
-        "ери",
-        "ерьми",
-        "ерьхъ",
-        "ери",
-    );
-    Ok(join(stem, ending, Mutation::None, RuleId::NounRStem))
-}
-
-fn decline_s_neuter(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_required(&lexeme.lemma, 'о')?;
-    let ending = consonant_ending(
-        cell,
-        "о",
-        "есе",
-        "еси",
-        "о",
-        "есьмь",
-        "есе",
-        "о",
-        "есѣ",
-        "есоу",
-        "есьма",
-        "есѣ",
-        "есьма",
-        "есоу",
-        "есѣ",
-        "еса",
-        "есъ",
-        "есьмъ",
-        "еса",
-        "есꙑ",
-        "есьхъ",
-        "еса",
-    );
-    Ok(join(stem, ending, Mutation::None, RuleId::NounSNeuter))
-}
-
-fn decline_v_feminine(
-    lexeme: &NounLexeme,
-    cell: NounCell,
-) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_required(&lexeme.lemma, 'ꙑ')?;
-    let ending = consonant_ending(
-        cell,
-        "ꙑ",
-        "ъве",
-        "ъви",
-        "ъвь",
-        "ъвьѭ",
-        "ъве",
-        "ꙑ",
-        "ъви",
-        "ъвоу",
-        "ъвама",
-        "ъви",
-        "ъвама",
-        "ъвоу",
-        "ъви",
-        "ъви",
-        "ъвъ",
-        "ъвамъ",
-        "ъви",
-        "ъвами",
-        "ъвахъ",
-        "ъви",
-    );
-    Ok(join(stem, ending, Mutation::None, RuleId::NounVFeminine))
+    let stem = strip_required(&lexeme.lemma, declension.citation_ending)?;
+    Ok(join(
+        stem,
+        consonant_ending(cell, &declension.endings),
+        Mutation::None,
+        declension.rule,
+    ))
 }
 
 fn enforce_number(
@@ -509,36 +406,7 @@ fn ends_in_sibilant(stem: &str) -> bool {
         .is_some_and(|letter| matches!(letter, 'ш' | 'щ' | 'ч' | 'ж' | 'ѕ' | 'ꙃ' | 'ц'))
 }
 
-#[allow(clippy::too_many_arguments)]
-fn consonant_ending(
-    cell: NounCell,
-    sg_nom: &'static str,
-    sg_gen: &'static str,
-    sg_dat: &'static str,
-    sg_acc: &'static str,
-    sg_ins: &'static str,
-    sg_loc: &'static str,
-    sg_voc: &'static str,
-    du_nom: &'static str,
-    du_gen: &'static str,
-    du_dat: &'static str,
-    du_acc: &'static str,
-    du_ins: &'static str,
-    du_loc: &'static str,
-    du_voc: &'static str,
-    pl_nom: &'static str,
-    pl_gen: &'static str,
-    pl_dat: &'static str,
-    pl_acc: &'static str,
-    pl_ins: &'static str,
-    pl_loc: &'static str,
-    pl_voc: &'static str,
-) -> &'static str {
-    let endings = [
-        [sg_nom, sg_gen, sg_dat, sg_acc, sg_ins, sg_loc, sg_voc],
-        [du_nom, du_gen, du_dat, du_acc, du_ins, du_loc, du_voc],
-        [pl_nom, pl_gen, pl_dat, pl_acc, pl_ins, pl_loc, pl_voc],
-    ];
+fn consonant_ending(cell: NounCell, endings: &[[&'static str; 7]; 3]) -> &'static str {
     let number = match cell.number {
         Number::Singular => 0,
         Number::Dual => 1,
