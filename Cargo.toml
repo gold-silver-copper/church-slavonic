@@ -46,3 +46,9 @@ unwrap_used = "deny"
 
 [profile.dev.package.sha2]
 opt-level = 3
+
+# The dictionary's exhaustive morphology checks are CPU-bound. Optimizing test
+# code preserves debug assertions and overflow checks while keeping the full
+# correctness inventory practical on local and CI runners.
+[profile.test]
+opt-level = 1

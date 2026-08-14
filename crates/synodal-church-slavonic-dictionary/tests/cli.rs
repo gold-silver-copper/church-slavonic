@@ -1,18 +1,85 @@
 use std::{
     fs,
-    io::Write,
+    io::{Cursor, Write},
     path::PathBuf,
     process::{Command, Stdio},
+    sync::LazyLock,
 };
 
-fn run(arguments: &[&str]) -> std::process::Output {
-    Command::new(env!("CARGO_BIN_EXE_synodal-dict"))
-        .args(arguments)
-        .output()
-        .expect("run synodal-dict")
+#[path = "../src/bin/synodal-dict.rs"]
+mod synodal_dict;
+
+use synodal_dict::CliContext;
+
+static CLI_CONTEXT: LazyLock<CliContext> = LazyLock::new(CliContext::new);
+
+struct TestStatus(bool);
+
+impl TestStatus {
+    const fn success(&self) -> bool {
+        self.0
+    }
 }
 
-fn run_stdin(arguments: &[&str], input: &str) -> std::process::Output {
+struct TestOutput {
+    status: TestStatus,
+    stdout: Vec<u8>,
+    stderr: Vec<u8>,
+}
+
+fn run(arguments: &[&str]) -> TestOutput {
+    run_stdin(arguments, "")
+}
+
+fn run_stdin(arguments: &[&str], input: &str) -> TestOutput {
+    let mut input = Cursor::new(input.as_bytes());
+    let mut stdout = Vec::new();
+    let mut stderr = Vec::new();
+    let result = synodal_dict::run(
+        arguments.iter().map(|argument| (*argument).to_owned()),
+        &mut input,
+        &mut stdout,
+        &mut stderr,
+        &CLI_CONTEXT,
+    );
+    if let Err(error) = &result {
+        writeln!(stderr, "error: {error}").expect("write command error");
+    }
+    TestOutput {
+        status: TestStatus(result.is_ok()),
+        stdout,
+        stderr,
+    }
+}
+
+#[test]
+fn command_dispatch_reuses_compatible_analyzers() {
+    let context = CliContext::new();
+    for word in ["є҆́смь", "бг҃ъ"] {
+        let mut input = Cursor::new(&[]);
+        let mut output = Vec::new();
+        let mut diagnostics = Vec::new();
+        synodal_dict::run(
+            [
+                "analyze".to_owned(),
+                word.to_owned(),
+                "--profile".to_owned(),
+                "printed".to_owned(),
+                "--json".to_owned(),
+            ],
+            &mut input,
+            &mut output,
+            &mut diagnostics,
+            &context,
+        )
+        .expect("in-process analysis");
+        assert!(diagnostics.is_empty());
+        assert!(!output.is_empty());
+    }
+    assert_eq!(context.analyzer_construction_count(), 1);
+}
+
+fn run_binary_stdin(arguments: &[&str], input: &str) -> std::process::Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_synodal-dict"))
         .args(arguments)
         .stdin(Stdio::piped())
@@ -27,6 +94,31 @@ fn run_stdin(arguments: &[&str], input: &str) -> std::process::Output {
         .write_all(input.as_bytes())
         .expect("write stdin");
     child.wait_with_output().expect("read synodal-dict")
+}
+
+#[test]
+fn binary_wiring_preserves_stdio_and_exit_status() {
+    let output = run_binary_stdin(
+        &[
+            "check-text",
+            "-",
+            "--profile",
+            "printed",
+            "--max-unknown",
+            "0",
+            "--json",
+        ],
+        "и\u{301}",
+    );
+    assert!(output.status.success());
+    let report: serde_json::Value =
+        serde_json::from_slice(&output.stdout).expect("binary JSON output");
+    assert_eq!(report["summary"]["unresolved_tokens"], 1);
+    assert!(output.stderr.is_empty());
+
+    let failure = run_binary_stdin(&["show", "не", "--bogus"], "");
+    assert!(!failure.status.success());
+    assert!(String::from_utf8_lossy(&failure.stderr).contains("unknown show option"));
 }
 
 fn fixture(name: &str) -> PathBuf {

@@ -1,6 +1,9 @@
 //! Indexed text analysis and deterministic corpus-coverage reporting.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    sync::{Arc, Mutex, OnceLock},
+};
 
 use serde::{Deserialize, Serialize};
 use synodal_church_slavonic::{
@@ -13,7 +16,9 @@ use synodal_church_slavonic_core::{
 };
 use unicode_normalization::char::is_combining_mark;
 
-use crate::{Analysis, AnalysisSource, FamilyId, analysis_source, candidate_cells};
+#[cfg(test)]
+use crate::candidate_cells;
+use crate::{Analysis, AnalysisSource, FamilyId, analysis_cells_for_lexeme, analysis_source};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
@@ -658,6 +663,7 @@ fn diagnostic_score(marginal: usize, candidate: &RecoveryCandidateBatch) -> usiz
 #[derive(Clone, Debug)]
 pub struct Analyzer {
     inflector: Inflector,
+    indexed_cells: usize,
     expanded_marked: BTreeMap<String, Vec<Analysis>>,
     expanded: BTreeMap<String, Vec<Analysis>>,
     printed_marked: BTreeMap<String, Vec<Analysis>>,
@@ -665,16 +671,159 @@ pub struct Analyzer {
     spelling_candidates: BTreeMap<String, BTreeSet<LexemeId>>,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct AnalyzerConfig {
+    generation_policy: GenerationPolicy,
+    orthography: OrthographyProfile,
+    productive_mapping_threshold_basis_points: u16,
+}
+
+impl From<Inflector> for AnalyzerConfig {
+    fn from(inflector: Inflector) -> Self {
+        Self {
+            generation_policy: inflector.generation_policy(),
+            orthography: inflector.orthography(),
+            productive_mapping_threshold_basis_points: inflector
+                .productive_mapping_threshold_basis_points(),
+        }
+    }
+}
+
+/// Process-local cache for immutable analyzers. Callers choose its lifetime,
+/// so custom configurations never leak into unrelated processes or tests.
+#[derive(Debug, Default)]
+pub struct AnalyzerCache {
+    analyzers: Mutex<BTreeMap<AnalyzerConfig, Arc<Analyzer>>>,
+    constructions: std::sync::atomic::AtomicUsize,
+}
+
+impl AnalyzerCache {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            analyzers: Mutex::new(BTreeMap::new()),
+            constructions: std::sync::atomic::AtomicUsize::new(0),
+        }
+    }
+
+    pub fn get(&self, inflector: Inflector) -> Result<Arc<Analyzer>> {
+        let key = AnalyzerConfig::from(inflector);
+        let mut analyzers = match self.analyzers.lock() {
+            Ok(analyzers) => analyzers,
+            Err(poisoned) => poisoned.into_inner(),
+        };
+        if let Some(analyzer) = analyzers.get(&key) {
+            return Ok(Arc::clone(analyzer));
+        }
+        let analyzer = Arc::new(Analyzer::new(inflector)?);
+        self.constructions
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        analyzers.insert(key, Arc::clone(&analyzer));
+        Ok(analyzer)
+    }
+
+    #[must_use]
+    pub fn len(&self) -> usize {
+        match self.analyzers.lock() {
+            Ok(analyzers) => analyzers.len(),
+            Err(poisoned) => poisoned.into_inner().len(),
+        }
+    }
+
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
+    /// Number of successful analyzer constructions performed by this cache.
+    #[must_use]
+    pub fn construction_count(&self) -> usize {
+        self.constructions
+            .load(std::sync::atomic::Ordering::Relaxed)
+    }
+}
+
+static DEFAULT_ANALYZERS: OnceLock<AnalyzerCache> = OnceLock::new();
+
+pub(crate) fn default_analyzer() -> Result<Arc<Analyzer>> {
+    DEFAULT_ANALYZERS
+        .get_or_init(AnalyzerCache::new)
+        .get(Inflector::default())
+}
+
 impl Analyzer {
     pub fn new(inflector: Inflector) -> Result<Self> {
         let mut analyzer = Self {
             inflector,
+            indexed_cells: 0,
             expanded_marked: BTreeMap::new(),
             expanded: BTreeMap::new(),
             printed_marked: BTreeMap::new(),
             printed: BTreeMap::new(),
             spelling_candidates: BTreeMap::new(),
         };
+        let expanded_inflector = Inflector::builder()
+            .generation_policy(inflector.generation_policy())
+            .orthography(OrthographyProfile::Expanded)
+            .productive_mapping_threshold_basis_points(
+                inflector.productive_mapping_threshold_basis_points(),
+            )
+            .build();
+        let printed_inflector = Inflector::builder()
+            .generation_policy(inflector.generation_policy())
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .productive_mapping_threshold_basis_points(
+                inflector.productive_mapping_threshold_basis_points(),
+            )
+            .build();
+        for lexeme in lexemes()? {
+            analyzer
+                .spelling_candidates
+                .entry(spelling_key(lexeme.lemma()))
+                .or_default()
+                .insert(lexeme.id().clone());
+            for cell in analysis_cells_for_lexeme(&lexeme, inflector)? {
+                analyzer.indexed_cells += 1;
+                analyzer.index_cell(&lexeme, cell, expanded_inflector);
+                analyzer.index_cell(&lexeme, cell, printed_inflector);
+            }
+        }
+        for index in [
+            &mut analyzer.expanded_marked,
+            &mut analyzer.expanded,
+            &mut analyzer.printed_marked,
+            &mut analyzer.printed,
+        ] {
+            sort_index(index);
+        }
+        Ok(analyzer)
+    }
+
+    #[cfg(test)]
+    fn new_exhaustive(inflector: Inflector) -> Result<Self> {
+        let mut analyzer = Self {
+            inflector,
+            indexed_cells: 0,
+            expanded_marked: BTreeMap::new(),
+            expanded: BTreeMap::new(),
+            printed_marked: BTreeMap::new(),
+            printed: BTreeMap::new(),
+            spelling_candidates: BTreeMap::new(),
+        };
+        let expanded_inflector = Inflector::builder()
+            .generation_policy(inflector.generation_policy())
+            .orthography(OrthographyProfile::Expanded)
+            .productive_mapping_threshold_basis_points(
+                inflector.productive_mapping_threshold_basis_points(),
+            )
+            .build();
+        let printed_inflector = Inflector::builder()
+            .generation_policy(inflector.generation_policy())
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .productive_mapping_threshold_basis_points(
+                inflector.productive_mapping_threshold_basis_points(),
+            )
+            .build();
         for lexeme in lexemes()? {
             analyzer
                 .spelling_candidates
@@ -682,8 +831,9 @@ impl Analyzer {
                 .or_default()
                 .insert(lexeme.id().clone());
             for cell in candidate_cells(lexeme.part_of_speech()) {
-                analyzer.index_cell(&lexeme, cell, OrthographyProfile::Expanded);
-                analyzer.index_cell(&lexeme, cell, OrthographyProfile::SynodalLiturgical);
+                analyzer.indexed_cells += 1;
+                analyzer.index_cell(&lexeme, cell, expanded_inflector);
+                analyzer.index_cell(&lexeme, cell, printed_inflector);
             }
         }
         for index in [
@@ -702,11 +852,85 @@ impl Analyzer {
         self.inflector
     }
 
+    /// Number of per-lexeme typed cells admitted to this reverse index.
+    #[must_use]
+    pub const fn indexed_cell_count(&self) -> usize {
+        self.indexed_cells
+    }
+
     pub fn analyze(&self, word: &str) -> Result<Vec<Analysis>> {
         let mut analyses = self.analyze_profile(word, OrthographyProfile::Expanded)?;
         analyses.extend(self.analyze_profile(word, OrthographyProfile::SynodalLiturgical)?);
         deduplicate_analyses(&mut analyses);
         Ok(analyses)
+    }
+
+    pub(crate) fn analyze_dictionary(&self, word: &str) -> Result<Vec<Analysis>> {
+        let parsed = SynodalWord::parse(word)?;
+        let marked_key = normalize_lookup(parsed.canonical());
+        let key = normalize_lookup_accentless(parsed.canonical());
+        let allow_fallback = marked_key == key
+            || self.inflector.orthography() == OrthographyProfile::ExpandedAccentless;
+        let mut analyses = self
+            .expanded_marked
+            .get(&marked_key)
+            .into_iter()
+            .flatten()
+            .cloned()
+            .chain(
+                self.printed_marked
+                    .get(&marked_key)
+                    .into_iter()
+                    .flatten()
+                    .cloned(),
+            )
+            .collect::<Vec<_>>();
+        let used_fallback = analyses.is_empty() && allow_fallback;
+        if used_fallback {
+            analyses.extend(self.expanded.get(&key).into_iter().flatten().cloned());
+            analyses.extend(self.printed.get(&key).into_iter().flatten().cloned());
+        }
+        if let Ok(expansions) = crate::morphology::abbreviation::expand(parsed.canonical()) {
+            if used_fallback && !expansions.is_empty() {
+                analyses.clear();
+            }
+            for expansion in expansions {
+                let lexeme = crate::morphology::advanced::lookup_by_id(&expansion.lexeme_id)?;
+                analyses.push(Analysis {
+                    lexeme,
+                    cell: Some(expansion.cell),
+                    matched_text: parsed.canonical().into(),
+                    source: AnalysisSource::AbbreviationExpansion,
+                    recension_mapping: None,
+                    confidence: synodal_church_slavonic_core::Confidence::CERTAIN,
+                    evidence_ids: expansion
+                        .evidence_ids
+                        .iter()
+                        .map(ToString::to_string)
+                        .collect(),
+                    assumptions: Vec::new(),
+                    contradictions: Vec::new(),
+                    warnings: Vec::new(),
+                    rule_trace: RuleTrace::default(),
+                });
+            }
+        }
+        let mut best_by_analysis = BTreeMap::new();
+        for mut analysis in analyses {
+            if used_fallback && analysis.source != AnalysisSource::AbbreviationExpansion {
+                analysis
+                    .warnings
+                    .push("analysis required accent-insensitive matching".into());
+            }
+            let key = (
+                analysis.lexeme.id().clone(),
+                analysis.cell,
+                analysis.source,
+                analysis.recension_mapping.clone(),
+            );
+            best_by_analysis.entry(key).or_insert(analysis);
+        }
+        Ok(best_by_analysis.into_values().collect())
     }
 
     pub fn analyze_profile(
@@ -768,22 +992,11 @@ impl Analyzer {
             .map_or_else(Vec::new, |ids| ids.iter().cloned().collect())
     }
 
-    fn index_cell(
-        &mut self,
-        lexeme: &LexemeSummary,
-        cell: GrammarCell,
-        profile: OrthographyProfile,
-    ) {
-        let inflector = Inflector::builder()
-            .generation_policy(self.inflector.generation_policy())
-            .orthography(profile)
-            .productive_mapping_threshold_basis_points(
-                self.inflector.productive_mapping_threshold_basis_points(),
-            )
-            .build();
+    fn index_cell(&mut self, lexeme: &LexemeSummary, cell: GrammarCell, inflector: Inflector) {
         let Ok(forms) = inflector.form_by_id(lexeme.id(), cell) else {
             return;
         };
+        let profile = inflector.orthography();
         for variant in forms.variants() {
             let surface = match profile {
                 OrthographyProfile::Expanded | OrthographyProfile::ExpandedAccentless => {
@@ -2073,6 +2286,121 @@ fn tsv_field(value: &str) -> String {
 mod tests {
     use super::*;
 
+    fn analyzer() -> Arc<Analyzer> {
+        default_analyzer().expect("shared default analyzer")
+    }
+
+    #[test]
+    fn optimized_indexes_match_the_exhaustive_reference() {
+        let configurations = [
+            Inflector::default(),
+            Inflector::builder()
+                .generation_policy(GenerationPolicy::Productive)
+                .build(),
+            Inflector::builder()
+                .generation_policy(GenerationPolicy::Exploratory)
+                .productive_mapping_threshold_basis_points(0)
+                .build(),
+        ];
+        for inflector in configurations {
+            let optimized = Analyzer::new(inflector).expect("optimized analyzer");
+            let exhaustive = Analyzer::new_exhaustive(inflector).expect("exhaustive analyzer");
+            assert_index_matches(
+                "expanded-marked",
+                &optimized.expanded_marked,
+                &exhaustive.expanded_marked,
+            );
+            assert_index_matches("expanded", &optimized.expanded, &exhaustive.expanded);
+            assert_index_matches(
+                "printed-marked",
+                &optimized.printed_marked,
+                &exhaustive.printed_marked,
+            );
+            assert_index_matches("printed", &optimized.printed, &exhaustive.printed);
+            assert_eq!(
+                optimized.spelling_candidates,
+                exhaustive.spelling_candidates
+            );
+            assert!(optimized.indexed_cell_count() < exhaustive.indexed_cell_count());
+        }
+    }
+
+    fn assert_index_matches(
+        label: &str,
+        optimized: &BTreeMap<String, Vec<Analysis>>,
+        exhaustive: &BTreeMap<String, Vec<Analysis>>,
+    ) {
+        let keys = optimized
+            .keys()
+            .chain(exhaustive.keys())
+            .collect::<BTreeSet<_>>();
+        for key in keys {
+            assert_eq!(
+                optimized.get(key),
+                exhaustive.get(key),
+                "{label} differs for surface {key:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn analyzer_cache_constructs_once_per_compatible_configuration() {
+        let cache = Arc::new(AnalyzerCache::new());
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        let analyzers = std::thread::scope(|scope| {
+            let handles = (0..8)
+                .map(|_| {
+                    let cache = Arc::clone(&cache);
+                    let barrier = Arc::clone(&barrier);
+                    scope.spawn(move || {
+                        barrier.wait();
+                        cache.get(Inflector::default()).expect("cached analyzer")
+                    })
+                })
+                .collect::<Vec<_>>();
+            handles
+                .into_iter()
+                .map(|handle| handle.join().expect("analyzer thread"))
+                .collect::<Vec<_>>()
+        });
+        assert_eq!(cache.construction_count(), 1);
+        assert_eq!(cache.len(), 1);
+        assert!(
+            analyzers
+                .iter()
+                .all(|analyzer| Arc::ptr_eq(&analyzers[0], analyzer))
+        );
+
+        let custom = cache
+            .get(
+                Inflector::builder()
+                    .generation_policy(GenerationPolicy::Productive)
+                    .build(),
+            )
+            .expect("custom analyzer");
+        assert!(!Arc::ptr_eq(&analyzers[0], &custom));
+
+        let printed = cache
+            .get(
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+            )
+            .expect("printed analyzer");
+        assert!(!Arc::ptr_eq(&analyzers[0], &printed));
+
+        let lower_threshold = cache
+            .get(
+                Inflector::builder()
+                    .productive_mapping_threshold_basis_points(0)
+                    .build(),
+            )
+            .expect("lower-threshold analyzer");
+        assert!(!Arc::ptr_eq(&analyzers[0], &lower_threshold));
+        assert_eq!(cache.construction_count(), 4);
+        assert_eq!(cache.len(), 4);
+    }
+
     fn recovery_candidate(
         id: &str,
         readiness: EvidenceReadiness,
@@ -2258,7 +2586,7 @@ mod tests {
 
     #[test]
     fn coverage_ranks_frequent_gaps_deterministically() {
-        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        let analyzer = analyzer();
         let report = coverage(
             &analyzer,
             &[CoveragePassage {
@@ -2281,7 +2609,7 @@ mod tests {
 
     #[test]
     fn spelling_variant_family_tokens_are_not_double_counted() {
-        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        let analyzer = analyzer();
         let report = coverage(
             &analyzer,
             &[CoveragePassage {
@@ -2311,7 +2639,7 @@ mod tests {
 
     #[test]
     fn covered_ambiguity_is_not_marginal_uncovered_work() {
-        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        let analyzer = analyzer();
         let report = coverage(
             &analyzer,
             &[CoveragePassage {
@@ -2347,7 +2675,7 @@ mod tests {
 
     #[test]
     fn coverage_preserves_contexts_and_true_document_unions() {
-        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        let analyzer = analyzer();
         let passages = [
             CoveragePassage {
                 corpus: "fixture-corpus".into(),
@@ -2395,7 +2723,7 @@ mod tests {
 
     #[test]
     fn probable_families_do_not_swallow_unrelated_prefix_matches() {
-        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        let analyzer = analyzer();
         let report = coverage(
             &analyzer,
             &[CoveragePassage {
@@ -2424,7 +2752,7 @@ mod tests {
 
     #[test]
     fn indexed_analyzer_prefers_mark_sensitive_matches() {
-        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        let analyzer = analyzer();
         let conjunction = analyzer
             .analyze_profile("и҆", OrthographyProfile::SynodalLiturgical)
             .expect("conjunction");
@@ -2459,7 +2787,7 @@ mod tests {
 
     #[test]
     fn check_text_reports_malformed_and_incompatible_marks() {
-        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        let analyzer = analyzer();
         let report = check_text(
             &analyzer,
             "а\u{301}\u{301} и\u{301}",
