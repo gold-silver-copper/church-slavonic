@@ -7,13 +7,12 @@ use serde::{Deserialize, Serialize};
 use synodal_church_slavonic::{
     AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, Error, FiniteTense, FiniteVerbCell,
     Gender, GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, LexemeSummary,
-    LexicalMetadataSummary, MetadataField, Number, NumeralCell, NumeralKind, OrthographyProfile,
-    PartOfSpeech, ParticipleCell, ParticipleTense, ParticipleVoice, Person, PronounCell, Result,
-    abbreviation, capabilities_by_id, lexemes, lexical_metadata, missing_metadata_by_id,
+    LexicalMetadataSummary, MetadataField, Number, NumeralCell, NumeralKind, PartOfSpeech,
+    ParticipleCell, ParticipleTense, ParticipleVoice, Person, PronounCell, Result, abbreviation,
+    capabilities_by_id, lexemes, lexical_metadata, missing_metadata_by_id,
 };
 use synodal_church_slavonic_core::{
-    Confidence, FormSource, RecensionMappingId, RuleTrace, SynodalWord, normalize_lookup,
-    normalize_lookup_accentless,
+    Confidence, FormSource, RecensionMappingId, RuleTrace, SynodalWord, normalize_lookup_accentless,
 };
 
 pub mod coverage;
@@ -492,133 +491,19 @@ pub struct Analysis {
     pub rule_trace: RuleTrace,
 }
 
-type AnalysisKey = (
-    LexemeId,
-    Option<GrammarCell>,
-    AnalysisSource,
-    Option<RecensionMappingId>,
-);
-type RankedAnalysis = (u8, AnalysisKey, Analysis);
-
 /// Returns every compatible curated analysis of an expanded or printed word.
 pub fn analyze(word: &str) -> Result<Vec<Analysis>> {
-    analyze_with(word, Inflector::default())
+    coverage::default_analyzer()?.analyze_dictionary(word)
 }
 
 /// Returns every compatible curated analysis admitted by the caller's
 /// generation and orthography policy. The default `analyze` remains Strict;
 /// callers must opt into inherited or exploratory predictions explicitly.
 pub fn analyze_with(word: &str, inflector: Inflector) -> Result<Vec<Analysis>> {
-    let word = SynodalWord::parse(word)?;
-    let marked_lookup = normalize_lookup(word.canonical());
-    let lookup = normalize_lookup_accentless(word.canonical());
-    let allow_accentless = marked_lookup == lookup
-        || inflector.orthography() == OrthographyProfile::ExpandedAccentless;
-    let expanded_inflector = Inflector::builder()
-        .generation_policy(inflector.generation_policy())
-        .orthography(OrthographyProfile::Expanded)
-        .productive_mapping_threshold_basis_points(
-            inflector.productive_mapping_threshold_basis_points(),
-        )
-        .build();
-    let printed_inflector = Inflector::builder()
-        .generation_policy(inflector.generation_policy())
-        .orthography(OrthographyProfile::SynodalLiturgical)
-        .productive_mapping_threshold_basis_points(
-            inflector.productive_mapping_threshold_basis_points(),
-        )
-        .build();
-
-    let mut ranked = Vec::new();
-    for lexeme in lexemes()? {
-        for cell in candidate_cells(lexeme.part_of_speech()) {
-            if let Ok(forms) = expanded_inflector.form_by_id(lexeme.id(), cell) {
-                collect_matching(
-                    &marked_lookup,
-                    &lookup,
-                    allow_accentless,
-                    &lexeme,
-                    cell,
-                    &forms,
-                    &mut ranked,
-                );
-            }
-            if let Ok(forms) = printed_inflector.form_by_id(lexeme.id(), cell) {
-                collect_matching(
-                    &marked_lookup,
-                    &lookup,
-                    allow_accentless,
-                    &lexeme,
-                    cell,
-                    &forms,
-                    &mut ranked,
-                );
-            }
-        }
+    if inflector == Inflector::default() {
+        return analyze(word);
     }
-
-    if let Ok(expansions) = abbreviation::expand(word.canonical()) {
-        for expansion in expansions {
-            let lexeme = morphology::advanced::lookup_by_id(&expansion.lexeme_id)?;
-            let key = (
-                lexeme.id().clone(),
-                Some(expansion.cell),
-                AnalysisSource::AbbreviationExpansion,
-                None,
-            );
-            ranked.push((
-                2_u8,
-                key,
-                Analysis {
-                    lexeme,
-                    cell: Some(expansion.cell),
-                    matched_text: word.canonical().into(),
-                    source: AnalysisSource::AbbreviationExpansion,
-                    recension_mapping: None,
-                    confidence: Confidence::CERTAIN,
-                    evidence_ids: expansion
-                        .evidence_ids
-                        .iter()
-                        .map(ToString::to_string)
-                        .collect(),
-                    assumptions: Vec::new(),
-                    contradictions: Vec::new(),
-                    warnings: Vec::new(),
-                    rule_trace: RuleTrace::default(),
-                },
-            ));
-        }
-    }
-    let mut best_by_analysis = BTreeMap::new();
-    for (quality, key, mut analysis) in ranked {
-        if quality == 1 {
-            analysis
-                .warnings
-                .push("analysis required accent-insensitive matching".into());
-        }
-        let replace = best_by_analysis
-            .get(&key)
-            .is_none_or(|(current, _)| quality > *current);
-        if replace {
-            best_by_analysis.insert(key, (quality, analysis));
-        }
-    }
-    let best_quality = best_by_analysis
-        .values()
-        .map(|(quality, _)| *quality)
-        .max()
-        .unwrap_or_default();
-    let mut analyses: Vec<_> = best_by_analysis
-        .into_values()
-        .filter_map(|(quality, analysis)| (quality == best_quality).then_some(analysis))
-        .collect();
-    analyses.sort_by(|left, right| {
-        left.lexeme
-            .id()
-            .cmp(right.lexeme.id())
-            .then_with(|| left.cell.cmp(&right.cell))
-    });
-    Ok(analyses)
+    coverage::Analyzer::new(inflector)?.analyze_dictionary(word)
 }
 
 pub fn lemmatize(word: &str) -> Result<Vec<Entry>> {
@@ -674,9 +559,36 @@ pub struct VocabularyIssue {
 
 #[must_use]
 pub fn lint_vocabulary(manifest: &VocabularyManifest) -> Vec<VocabularyIssue> {
+    let analyzer = match coverage::default_analyzer() {
+        Ok(analyzer) => analyzer,
+        Err(error) => {
+            let detail = error.to_string();
+            return manifest
+                .entries
+                .iter()
+                .enumerate()
+                .map(|(index, item)| VocabularyIssue {
+                    index,
+                    text: item.text.clone(),
+                    kind: VocabularyIssueKind::InvalidOrthography,
+                    detail: detail.clone(),
+                })
+                .collect();
+        }
+    };
+    lint_vocabulary_with(&analyzer, manifest)
+}
+
+/// Lints a batch with an already constructed analyzer so callers pay the
+/// reverse-index cost at most once.
+#[must_use]
+pub fn lint_vocabulary_with(
+    analyzer: &coverage::Analyzer,
+    manifest: &VocabularyManifest,
+) -> Vec<VocabularyIssue> {
     let mut issues = Vec::new();
     for (index, item) in manifest.entries.iter().enumerate() {
-        match analyze(&item.text) {
+        match analyzer.analyze_dictionary(&item.text) {
             Err(error) => issues.push(VocabularyIssue {
                 index,
                 text: item.text.clone(),
@@ -752,7 +664,7 @@ pub fn lint_vocabulary(manifest: &VocabularyManifest) -> Vec<VocabularyIssue> {
                     let mut errors = Vec::new();
                     let mut supported = false;
                     for id in ids {
-                        match Inflector::default().form_by_id(&id, cell) {
+                        match analyzer.inflector().form_by_id(&id, cell) {
                             Ok(_) => supported = true,
                             Err(error) => errors.push(error),
                         }
@@ -830,77 +742,6 @@ fn source_example(row: &RawExample) -> SourceExample {
         source_recension: row.0[6].into(),
         target_recension: row.0[7].into(),
         partition: row.0[8].into(),
-    }
-}
-
-fn collect_matching(
-    marked_lookup: &str,
-    lookup: &str,
-    allow_accentless: bool,
-    lexeme: &LexemeSummary,
-    cell: GrammarCell,
-    forms: &synodal_church_slavonic_core::FormSet,
-    analyses: &mut Vec<RankedAnalysis>,
-) {
-    for variant in forms.variants() {
-        let quality = [
-            variant.expanded.as_str(),
-            variant.printed.as_str(),
-            variant.accented.as_deref().unwrap_or_default(),
-        ]
-        .into_iter()
-        .filter(|value| !value.is_empty())
-        .filter_map(|value| {
-            let canonical = SynodalWord::parse(value).ok()?;
-            if normalize_lookup(canonical.canonical()) == marked_lookup {
-                Some(2_u8)
-            } else if allow_accentless
-                && normalize_lookup_accentless(canonical.canonical()) == lookup
-            {
-                Some(1_u8)
-            } else {
-                None
-            }
-        })
-        .max();
-        let source = analysis_source(&variant.source);
-        let key = (
-            lexeme.id().clone(),
-            Some(cell),
-            source,
-            variant.recension_mapping.clone(),
-        );
-        if let Some(quality) = quality {
-            analyses.push((
-                quality,
-                key,
-                Analysis {
-                    lexeme: lexeme.clone(),
-                    cell: Some(cell),
-                    matched_text: variant.printed.clone(),
-                    source,
-                    recension_mapping: variant.recension_mapping.clone(),
-                    confidence: variant.confidence,
-                    evidence_ids: variant
-                        .evidence
-                        .iter()
-                        .map(|evidence| evidence.id.to_string())
-                        .collect(),
-                    assumptions: variant
-                        .assumptions
-                        .iter()
-                        .map(|assumption| assumption.detail.clone())
-                        .collect(),
-                    contradictions: variant
-                        .contradictions
-                        .iter()
-                        .map(|contradiction| contradiction.detail.clone())
-                        .collect(),
-                    warnings: variant.warnings.clone(),
-                    rule_trace: variant.rule_trace.clone(),
-                },
-            ));
-        }
     }
 }
 
@@ -1058,6 +899,214 @@ pub fn candidate_cells(part_of_speech: PartOfSpeech) -> Vec<GrammarCell> {
     };
     cells.push(GrammarCell::LexicalForm);
     cells
+}
+
+/// Returns the exact-compatible and productively supported cells that can
+/// contribute to reverse analysis for one stable lexeme.
+///
+/// This is deliberately narrower than [`candidate_cells`], which remains the
+/// exhaustive typed inventory used by the independent correctness oracle.
+pub fn analysis_cells_by_id(id: &LexemeId, inflector: Inflector) -> Result<Vec<GrammarCell>> {
+    let lexeme = morphology::advanced::lookup_by_id(id)?;
+    analysis_cells_for_lexeme(&lexeme, inflector)
+}
+
+pub(crate) fn analysis_cells_for_lexeme(
+    lexeme: &LexemeSummary,
+    inflector: Inflector,
+) -> Result<Vec<GrammarCell>> {
+    let metadata = lexical_metadata(lexeme.id())?;
+    let capabilities = capabilities_by_id(lexeme.id(), inflector)?;
+    let exact_keys: BTreeSet<&str> = metadata
+        .exact_forms
+        .iter()
+        .map(|form| form.cell.as_str())
+        .collect();
+    let mut cells = BTreeSet::new();
+    for cell in candidate_cells(lexeme.part_of_speech()) {
+        if exact_lookup_keys(cell)
+            .iter()
+            .any(|key| exact_keys.contains(key.as_str()))
+            || productive_cell_is_supported(cell, &metadata, &capabilities)
+        {
+            cells.insert(cell);
+        }
+    }
+    Ok(cells.into_iter().collect())
+}
+
+fn productive_cell_is_supported(
+    cell: GrammarCell,
+    metadata: &LexicalMetadataSummary,
+    capabilities: &morphology::Capabilities,
+) -> bool {
+    let principal_part = |system: &str| {
+        metadata
+            .principal_parts
+            .iter()
+            .find(|part| part.system == system)
+    };
+    match cell {
+        GrammarCell::Noun(cell) => {
+            capabilities.productive_noun
+                && metadata
+                    .noun_restriction
+                    .as_ref()
+                    .is_none_or(|restriction| {
+                        number_is_licensed(&restriction.number_inventory, cell.number)
+                    })
+        }
+        GrammarCell::Adjective(cell) | GrammarCell::Determiner(cell) => {
+            capabilities.productive_adjective
+                && adjectival_cell_is_supported(cell, principal_part("comparative-stem").is_some())
+        }
+        GrammarCell::Numeral(cell) => {
+            capabilities.productive_adjective
+                && cell.kind == NumeralKind::Ordinal
+                && cell.gender.is_some()
+        }
+        GrammarCell::FiniteVerb(cell) if productive_verb_class(metadata.class.as_deref()) => {
+            match cell.tense {
+                FiniteTense::Present => {
+                    metadata.stem.is_some()
+                        && ["present-first-singular", "present-third-plural"]
+                            .into_iter()
+                            .all(|system| principal_part(system).is_some())
+                }
+                FiniteTense::Imperfect => {
+                    matches!(
+                        metadata.aspect.as_deref(),
+                        Some("imperfective" | "biaspectual")
+                    ) && principal_part("imperfect-stem")
+                        .and_then(|part| part.formation.as_deref())
+                        .is_some_and(|formation| formation != "irregular")
+                }
+                FiniteTense::Aorist => principal_part("aorist-stem")
+                    .and_then(|part| part.formation.as_deref())
+                    .is_some_and(|formation| formation != "irregular"),
+                FiniteTense::Future | FiniteTense::Past => false,
+            }
+        }
+        GrammarCell::Imperative(_) if productive_verb_class(metadata.class.as_deref()) => {
+            principal_part("imperative-stem")
+                .and_then(|part| part.formation.as_deref())
+                .is_some_and(|formation| formation != "irregular")
+        }
+        GrammarCell::Infinitive => productive_verb_class(metadata.class.as_deref()),
+        GrammarCell::LParticiple(_) if productive_verb_class(metadata.class.as_deref()) => {
+            principal_part("l-participle-stem").is_some()
+        }
+        GrammarCell::Participle(cell) if productive_verb_class(metadata.class.as_deref()) => {
+            if cell.agreement.comparison != Comparison::Positive
+                || (cell.tense == ParticipleTense::Present
+                    && !matches!(
+                        metadata.aspect.as_deref(),
+                        Some("imperfective" | "biaspectual")
+                    ))
+            {
+                return false;
+            }
+            let system = format!(
+                "{}-{}-participle-{}-stem",
+                cell.tense.code(),
+                cell.voice.code(),
+                cell.agreement.form.code()
+            );
+            let Some(part) = principal_part(&system) else {
+                return false;
+            };
+            cell.voice != ParticipleVoice::Active
+                || cell.agreement.form != AdjectiveForm::Short
+                || part.formation.is_some()
+        }
+        GrammarCell::LexicalForm
+        | GrammarCell::Indeclinable
+        | GrammarCell::Pronoun(_)
+        | GrammarCell::Supine
+        | GrammarCell::VerbalNoun(_)
+        | GrammarCell::FiniteVerb(_)
+        | GrammarCell::Imperative(_)
+        | GrammarCell::LParticiple(_)
+        | GrammarCell::Participle(_) => false,
+    }
+}
+
+fn adjectival_cell_is_supported(cell: AdjectiveCell, has_comparative_stem: bool) -> bool {
+    match (cell.comparison, cell.form) {
+        (Comparison::Positive, _) => true,
+        (Comparison::Comparative, _) => has_comparative_stem,
+        (Comparison::Superlative, AdjectiveForm::Long) => has_comparative_stem,
+        (Comparison::Superlative, AdjectiveForm::Short) => false,
+    }
+}
+
+fn productive_verb_class(class: Option<&str>) -> bool {
+    matches!(
+        class,
+        Some("first-unpalatalized" | "first-palatalized" | "second" | "archaic")
+    )
+}
+
+fn number_is_licensed(inventory: &str, number: Number) -> bool {
+    match inventory {
+        "singular-only" => number == Number::Singular,
+        "dual-only" => number == Number::Dual,
+        "plural-only" => number == Number::Plural,
+        "singular-and-dual" => matches!(number, Number::Singular | Number::Dual),
+        "singular-and-plural" => matches!(number, Number::Singular | Number::Plural),
+        "dual-and-plural" => matches!(number, Number::Dual | Number::Plural),
+        _ => true,
+    }
+}
+
+fn exact_lookup_keys(cell: GrammarCell) -> Vec<String> {
+    let mut keys = vec![cell.key()];
+    match cell {
+        GrammarCell::Adjective(_) | GrammarCell::Determiner(_) | GrammarCell::Participle(_) => {
+            let neutral = keys[0]
+                .replace(":inanimate:", ":any:")
+                .replace(":animate:", ":any:");
+            if neutral != keys[0] {
+                keys.push(neutral);
+            }
+        }
+        GrammarCell::Pronoun(cell) => keys.push(format!(
+            "pronoun:{}:{}:{}:{}:any",
+            cell.case.code(),
+            cell.number.code(),
+            cell.gender.map_or("any", Gender::code),
+            cell.person.map_or("none", Person::code),
+        )),
+        GrammarCell::Numeral(cell) => {
+            if cell.gender.is_some() {
+                keys.push(format!(
+                    "numeral:{}:{}:{}:any:{}",
+                    cell.kind.code(),
+                    cell.case.code(),
+                    cell.number.code(),
+                    cell.animacy.code(),
+                ));
+            }
+            keys.push(format!(
+                "numeral:{}:{}:{}:{}:any",
+                cell.kind.code(),
+                cell.case.code(),
+                cell.number.code(),
+                cell.gender.map_or("any", Gender::code),
+            ));
+            if cell.gender.is_some() {
+                keys.push(format!(
+                    "numeral:{}:{}:{}:any:any",
+                    cell.kind.code(),
+                    cell.case.code(),
+                    cell.number.code(),
+                ));
+            }
+        }
+        _ => {}
+    }
+    keys.dedup();
+    keys
 }
 
 fn verb_cells() -> Vec<GrammarCell> {
@@ -1335,6 +1384,38 @@ mod tests {
             issues
                 .iter()
                 .any(|issue| issue.kind == VocabularyIssueKind::MissingSemanticIdentity)
+        );
+    }
+
+    #[test]
+    fn vocabulary_lint_uses_the_supplied_analyzer_policy_for_requested_cells() {
+        let analyzer = coverage::Analyzer::new(
+            Inflector::builder()
+                .generation_policy(synodal_church_slavonic::GenerationPolicy::Productive)
+                .build(),
+        )
+        .expect("productive analyzer");
+        let issues = lint_vocabulary_with(
+            &analyzer,
+            &VocabularyManifest {
+                entries: vec![VocabularyItem {
+                    text: "граде".into(),
+                    expected_lexeme_id: Some(LexemeId::from("synodal:noun:grad")),
+                    expected_part_of_speech: Some(PartOfSpeech::Noun),
+                    required_sense_id: None,
+                    requested_cell: Some(GrammarCell::Noun(morphology::NounCell {
+                        case: Case::Vocative,
+                        number: Number::Singular,
+                        animacy: Animacy::Inanimate,
+                    })),
+                }],
+            },
+        );
+        assert!(
+            issues
+                .iter()
+                .all(|issue| issue.kind != VocabularyIssueKind::UnsupportedFormation),
+            "productive requested cell was rejected: {issues:?}"
         );
     }
 

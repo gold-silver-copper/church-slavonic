@@ -8,7 +8,15 @@ license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 readme = "README.md"
-include = ["Cargo.toml", "README.md", "ATTRIBUTION.md", "LICENSE-*", "generated/**", "src/**"]
+include = [
+    "Cargo.toml",
+    "README.md",
+    "ATTRIBUTION.md",
+    "LICENSE-*",
+    "examples/**",
+    "generated/**",
+    "src/**",
+]
 
 [features]
 default = ["serde", "cli"]

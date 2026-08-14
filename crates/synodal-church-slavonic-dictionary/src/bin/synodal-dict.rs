@@ -1,8 +1,7 @@
 use std::{
-    env,
     error::Error,
     fs,
-    io::{self, Read},
+    io::{self, Read, Write},
     path::{Path, PathBuf},
 };
 
@@ -10,43 +9,82 @@ use synodal_church_slavonic_dictionary::{
     Analysis, Entry, FamilyId, FamilySummary, SearchOptions, VocabularyManifest,
     core::{GenerationPolicy, LexemeId, OrthographyProfile, normalize_lookup_accentless},
     coverage::{
-        Analyzer, CheckTextOptions, CoveragePassage, EvidenceReadiness, GapKind,
+        Analyzer, AnalyzerCache, CheckTextOptions, CoveragePassage, EvidenceReadiness, GapKind,
         MarginalRecoveryReport, check_text, coverage,
     },
-    families, lint_vocabulary, lookup_all, lookup_by_id, search, show_family_by_id,
+    families, lint_vocabulary_with, lookup_all, lookup_by_id, search, show_family_by_id,
 };
 
 const DEFAULT_FAMILY_PROPOSALS: &str = "reports/synodal-family-review-queue.json";
 const DEFAULT_MARGINAL_RECOVERY: &str = "reports/synodal-marginal-recovery.json";
 
+#[cfg(not(test))]
 fn main() {
-    if let Err(error) = run() {
-        eprintln!("error: {error}");
+    let context = CliContext::new();
+    let mut input = io::stdin().lock();
+    let mut output = io::stdout().lock();
+    let mut diagnostics = io::stderr().lock();
+    if let Err(error) = run(
+        std::env::args().skip(1),
+        &mut input,
+        &mut output,
+        &mut diagnostics,
+        &context,
+    ) {
+        let _ = writeln!(diagnostics, "error: {error}");
         std::process::exit(1);
     }
 }
 
-fn run() -> Result<(), Box<dyn Error>> {
-    let mut args = env::args().skip(1);
+#[derive(Debug, Default)]
+pub struct CliContext {
+    analyzers: AnalyzerCache,
+}
+
+impl CliContext {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            analyzers: AnalyzerCache::new(),
+        }
+    }
+
+    #[must_use]
+    pub fn analyzer_construction_count(&self) -> usize {
+        self.analyzers.construction_count()
+    }
+}
+
+pub fn run(
+    args: impl IntoIterator<Item = String>,
+    input: &mut dyn Read,
+    output: &mut dyn io::Write,
+    diagnostics: &mut dyn io::Write,
+    context: &CliContext,
+) -> Result<(), Box<dyn Error>> {
+    let mut args = args.into_iter();
     match args.next().as_deref() {
-        Some("search") => search_command(args),
-        Some("show") => show_command(args),
-        Some("families") => families_command(args),
-        Some("show-family") => show_family_command(args),
-        Some("analyze") => analyze_command(args),
-        Some("lint") => lint_command(args),
-        Some("check-text") => check_text_command(args),
-        Some("coverage") => coverage_command(args),
-        Some("marginal-recovery") => marginal_recovery_command(args),
+        Some("search") => search_command(args, output),
+        Some("show") => show_command(args, output),
+        Some("families") => families_command(args, output),
+        Some("show-family") => show_family_command(args, output),
+        Some("analyze") => analyze_command(args, output, context),
+        Some("lint") => lint_command(args, input, output, context),
+        Some("check-text") => check_text_command(args, input, output, context),
+        Some("coverage") => coverage_command(args, input, output, context),
+        Some("marginal-recovery") => marginal_recovery_command(args, output),
         Some("help") | Some("-h") | Some("--help") | None => {
-            help();
+            help(diagnostics)?;
             Ok(())
         }
         Some(other) => Err(format!("unknown synodal-dict command {other:?}").into()),
     }
 }
 
-fn families_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn families_command(
+    args: impl Iterator<Item = String>,
+    output: &mut dyn Write,
+) -> Result<(), Box<dyn Error>> {
     let mut query = Vec::new();
     let mut json = false;
     let mut reviewed_only = false;
@@ -87,7 +125,8 @@ fn families_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Er
         Vec::new()
     };
     if json {
-        println!(
+        writeln!(
+            output,
             "{}",
             serde_json::to_string_pretty(&serde_json::json!({
                 "query": query,
@@ -95,21 +134,27 @@ fn families_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Er
                 "proposed": proposed,
                 "proposal_report": proposal_path,
             }))?
-        );
+        )?;
     } else if reviewed.is_empty() && proposed.is_empty() {
-        println!("No reviewed or proposed Synodal family matched {query:?}.");
+        writeln!(
+            output,
+            "No reviewed or proposed Synodal family matched {query:?}."
+        )?;
     } else {
         for family in &reviewed {
-            print_family(family);
+            print_family(output, family)?;
         }
         for proposal in &proposed {
-            print_proposed_family(proposal);
+            print_proposed_family(output, proposal)?;
         }
     }
     Ok(())
 }
 
-fn show_family_command(mut args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn show_family_command(
+    mut args: impl Iterator<Item = String>,
+    output: &mut dyn Write,
+) -> Result<(), Box<dyn Error>> {
     let id = args
         .next()
         .ok_or("show-family requires a stable family ID")?;
@@ -133,16 +178,16 @@ fn show_family_command(mut args: impl Iterator<Item = String>) -> Result<(), Box
             .find(|proposal| proposal["candidate_id"].as_str() == Some(id.as_str()))
             .ok_or_else(|| format!("unknown proposed family ID {id:?} in {}", path.display()))?;
         if json {
-            println!("{}", serde_json::to_string_pretty(&proposal)?);
+            writeln!(output, "{}", serde_json::to_string_pretty(&proposal)?)?;
         } else {
-            print_proposed_family(&proposal);
+            print_proposed_family(output, &proposal)?;
         }
     } else {
         let family = show_family_by_id(&FamilyId::from(id.as_str()))?;
         if json {
-            println!("{}", serde_json::to_string_pretty(&family)?);
+            writeln!(output, "{}", serde_json::to_string_pretty(&family)?)?;
         } else {
-            print_family(&family);
+            print_family(output, &family)?;
         }
     }
     Ok(())
@@ -177,7 +222,10 @@ fn proposal_matches(proposal: &serde_json::Value, query: &str) -> bool {
         .any(|value| value.contains(&query))
 }
 
-fn search_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn search_command(
+    args: impl Iterator<Item = String>,
+    output: &mut dyn Write,
+) -> Result<(), Box<dyn Error>> {
     let mut query = Vec::new();
     let mut options = SearchOptions::default();
     let mut json = false;
@@ -201,12 +249,13 @@ fn search_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Erro
     let query = query.join(" ");
     let results = search(&query, &options)?;
     if json {
-        println!("{}", serde_json::to_string_pretty(&results)?);
+        writeln!(output, "{}", serde_json::to_string_pretty(&results)?)?;
     } else if results.is_empty() {
-        println!("No reviewed Synodal entry matched {query:?}.");
+        writeln!(output, "No reviewed Synodal entry matched {query:?}.")?;
     } else {
         for (index, result) in results.iter().enumerate() {
-            println!(
+            writeln!(
+                output,
                 "{}. {} [{}] — {}\n   id: {} · score: {} · match: {:?}",
                 index + 1,
                 result.entry.lexeme.lemma(),
@@ -221,13 +270,16 @@ fn search_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Erro
                 result.entry.lexeme.id(),
                 result.score,
                 result.matched_on,
-            );
+            )?;
         }
     }
     Ok(())
 }
 
-fn show_command(mut args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn show_command(
+    mut args: impl Iterator<Item = String>,
+    output: &mut dyn Write,
+) -> Result<(), Box<dyn Error>> {
     let query = args
         .next()
         .ok_or("show requires a lemma or stable lexeme ID")?;
@@ -247,18 +299,22 @@ fn show_command(mut args: impl Iterator<Item = String>) -> Result<(), Box<dyn Er
         lookup_all(&query)?
     };
     if json {
-        println!("{}", serde_json::to_string_pretty(&entries)?);
+        writeln!(output, "{}", serde_json::to_string_pretty(&entries)?)?;
     } else if entries.is_empty() {
-        println!("No reviewed Synodal entry matched {query:?}.");
+        writeln!(output, "No reviewed Synodal entry matched {query:?}.")?;
     } else {
         for entry in &entries {
-            print_entry(entry);
+            print_entry(output, entry)?;
         }
     }
     Ok(())
 }
 
-fn analyze_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn analyze_command(
+    args: impl Iterator<Item = String>,
+    output: &mut dyn Write,
+    context: &CliContext,
+) -> Result<(), Box<dyn Error>> {
     let mut words = Vec::new();
     let mut policy = GenerationPolicy::Strict;
     let mut profile = OrthographyProfile::Expanded;
@@ -278,21 +334,26 @@ fn analyze_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Err
     if words.len() != 1 {
         return Err("analyze requires exactly one Synodal word".into());
     }
-    let analyzer = analyzer(policy, profile)?;
+    let analyzer = analyzer(policy, profile, context)?;
     let analyses = analyzer.analyze_profile(&words[0], profile)?;
     if json {
-        println!("{}", serde_json::to_string_pretty(&analyses)?);
+        writeln!(output, "{}", serde_json::to_string_pretty(&analyses)?)?;
     } else if analyses.is_empty() {
-        println!("No analysis under {policy:?}/{profile:?}.");
+        writeln!(output, "No analysis under {policy:?}/{profile:?}.")?;
     } else {
         for (index, analysis) in analyses.iter().enumerate() {
-            print_analysis(index + 1, analysis);
+            print_analysis(output, index + 1, analysis)?;
         }
     }
     Ok(())
 }
 
-fn lint_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn lint_command(
+    args: impl Iterator<Item = String>,
+    input: &mut dyn Read,
+    output: &mut dyn Write,
+    context: &CliContext,
+) -> Result<(), Box<dyn Error>> {
     let mut path = None;
     let mut json = false;
     for argument in args {
@@ -306,22 +367,29 @@ fn lint_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>
         }
     }
     let path = path.ok_or("lint requires a JSON vocabulary manifest")?;
-    let manifest: VocabularyManifest = serde_json::from_str(&read_input(&path)?)?;
-    let issues = lint_vocabulary(&manifest);
+    let manifest: VocabularyManifest = serde_json::from_str(&read_input(&path, input)?)?;
+    let analyzer = analyzer(
+        GenerationPolicy::Strict,
+        OrthographyProfile::Expanded,
+        context,
+    )?;
+    let issues = lint_vocabulary_with(&analyzer, &manifest);
     if json {
-        println!("{}", serde_json::to_string_pretty(&issues)?);
+        writeln!(output, "{}", serde_json::to_string_pretty(&issues)?)?;
     } else {
         for issue in &issues {
-            println!(
+            writeln!(
+                output,
                 "entry {} {:?} {:?}: {}",
                 issue.index, issue.text, issue.kind, issue.detail
-            );
+            )?;
         }
-        println!(
+        writeln!(
+            output,
             "vocabulary: {} entries, {} issue(s)",
             manifest.entries.len(),
             issues.len()
-        );
+        )?;
     }
     if issues.is_empty() {
         Ok(())
@@ -330,7 +398,12 @@ fn lint_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>
     }
 }
 
-fn check_text_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn check_text_command(
+    args: impl Iterator<Item = String>,
+    input: &mut dyn Read,
+    output: &mut dyn Write,
+    context: &CliContext,
+) -> Result<(), Box<dyn Error>> {
     let mut path = None;
     let mut policy = GenerationPolicy::Strict;
     let mut profile = OrthographyProfile::Expanded;
@@ -369,40 +442,42 @@ fn check_text_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn 
         max_ambiguous = 0;
     }
     let path = path.ok_or("check-text requires a text path or - for stdin")?;
-    let analyzer = analyzer(policy, profile)?;
+    let analyzer = analyzer(policy, profile, context)?;
     let report = check_text(
         &analyzer,
-        &read_input(&path)?,
+        &read_input(&path, input)?,
         CheckTextOptions {
             generation_policy: policy,
             orthography_profile: profile,
         },
     );
     if json {
-        println!("{}", serde_json::to_string_pretty(&report)?);
+        writeln!(output, "{}", serde_json::to_string_pretty(&report)?)?;
     } else {
         if !summary_only {
             for analysis in &report.tokens {
                 if let Some(gap) = &analysis.gap {
-                    println!(
+                    writeln!(
+                        output,
                         "{}:{} {:?}: {} ({})",
                         analysis.token.line,
                         analysis.token.column,
                         analysis.token.original,
                         gap.kind.label(),
                         gap.detail,
-                    );
+                    )?;
                 }
             }
         }
-        println!(
+        writeln!(
+            output,
             "text: {} tokens, {} types, {} top-k, {} ambiguous, {} unresolved",
             report.summary.total_tokens,
             report.summary.unique_tokens,
             report.summary.top_k_analyzed,
             report.summary.ambiguous_tokens,
             report.summary.unresolved_tokens,
-        );
+        )?;
     }
     let unknown_tokens = report
         .summary
@@ -431,7 +506,12 @@ fn check_text_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn 
     Ok(())
 }
 
-fn coverage_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn coverage_command(
+    args: impl Iterator<Item = String>,
+    input_reader: &mut dyn Read,
+    output: &mut dyn Write,
+    context: &CliContext,
+) -> Result<(), Box<dyn Error>> {
     let mut input = None;
     let mut policy = GenerationPolicy::Strict;
     let mut profile = OrthographyProfile::SynodalLiturgical;
@@ -467,8 +547,8 @@ fn coverage_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Er
         }
     }
     let input = input.ok_or("coverage requires a JSONL or TSV input")?;
-    let passages = parse_passages(&read_input(&input)?)?;
-    let analyzer = analyzer(policy, profile)?;
+    let passages = parse_passages(&read_input(&input, input_reader)?)?;
+    let analyzer = analyzer(policy, profile, context)?;
     let report = coverage(
         &analyzer,
         &passages,
@@ -490,14 +570,17 @@ fn coverage_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Er
         write_output(&path, &tsv)?;
     }
     if json {
-        print!("{json_text}");
+        write!(output, "{json_text}")?;
     } else {
-        print!("{markdown}");
+        write!(output, "{markdown}")?;
     }
     Ok(())
 }
 
-fn marginal_recovery_command(args: impl Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
+fn marginal_recovery_command(
+    args: impl Iterator<Item = String>,
+    output: &mut dyn Write,
+) -> Result<(), Box<dyn Error>> {
     let mut input = None;
     let mut json = false;
     let mut limit = 50_usize;
@@ -531,18 +614,20 @@ fn marginal_recovery_command(args: impl Iterator<Item = String>) -> Result<(), B
     });
     report.batches.truncate(limit);
     if json {
-        println!("{}", serde_json::to_string_pretty(&report)?);
+        writeln!(output, "{}", serde_json::to_string_pretty(&report)?)?;
     } else {
-        println!(
+        writeln!(
+            output,
             "Synodal marginal recovery: current top-k {}, target {}, {} token(s) still needed. Showing {} batch(es) from {}.",
             report.current_top_k,
             report.target_top_k,
             report.tokens_needed_for_target,
             report.batches.len(),
             path.display(),
-        );
+        )?;
         for batch in &report.batches {
-            println!(
+            writeln!(
+                output,
                 "{}. {} [{}] — {} marginal token(s), {} cumulative; {:?} readiness / {:?} effort; {}",
                 batch.rank,
                 batch.label,
@@ -552,9 +637,9 @@ fn marginal_recovery_command(args: impl Iterator<Item = String>) -> Result<(), B
                 batch.evidence_readiness,
                 batch.review_effort,
                 batch.review_status,
-            );
+            )?;
             if !batch.missing_evidence.is_empty() {
-                println!("   missing: {}", batch.missing_evidence.join(", "));
+                writeln!(output, "   missing: {}", batch.missing_evidence.join(", "))?;
             }
         }
     }
@@ -574,8 +659,9 @@ fn parse_evidence_readiness(value: &str) -> Result<EvidenceReadiness, Box<dyn Er
 fn analyzer(
     policy: GenerationPolicy,
     profile: OrthographyProfile,
-) -> Result<Analyzer, Box<dyn Error>> {
-    Ok(Analyzer::new(
+    context: &CliContext,
+) -> Result<std::sync::Arc<Analyzer>, Box<dyn Error>> {
+    Ok(context.analyzers.get(
         synodal_church_slavonic_dictionary::morphology::Inflector::builder()
             .generation_policy(policy)
             .orthography(profile)
@@ -633,8 +719,9 @@ fn parse_passage_tsv(input: &str) -> Result<Vec<CoveragePassage>, Box<dyn Error>
         .collect()
 }
 
-fn print_entry(entry: &Entry) {
-    println!(
+fn print_entry(output: &mut dyn Write, entry: &Entry) -> io::Result<()> {
+    writeln!(
+        output,
         "{} [{}]\n  id: {}\n  source: {}\n  class: {}\n  stem: {}\n  gender: {}\n  aspect: {}",
         entry.lexeme.lemma(),
         pos_label(entry.lexeme.part_of_speech()),
@@ -644,15 +731,17 @@ fn print_entry(entry: &Entry) {
         entry.metadata.stem.as_deref().unwrap_or("—"),
         entry.metadata.gender.as_deref().unwrap_or("—"),
         entry.metadata.aspect.as_deref().unwrap_or("—"),
-    );
+    )?;
     for sense in &entry.senses {
-        println!(
+        writeln!(
+            output,
             "  sense: {} — {} [{}; {}]",
             sense.id, sense.gloss, sense.source_recension, sense.semantic_status
-        );
+        )?;
     }
     for part in &entry.metadata.principal_parts {
-        println!(
+        writeln!(
+            output,
             "  principal part: {} = {}{} — {}",
             part.system,
             part.value,
@@ -660,24 +749,28 @@ fn print_entry(entry: &Entry) {
                 .as_deref()
                 .map_or_else(String::new, |formation| format!(" ({formation})")),
             part.evidence_id,
-        );
+        )?;
     }
-    println!(
+    writeln!(
+        output,
         "  exact forms: {} · accent rows: {} · missing metadata: {:?}",
         entry.metadata.exact_forms.len(),
         entry.metadata.accents.len(),
         entry.missing_metadata,
-    );
+    )?;
     for example in &entry.examples {
-        println!(
+        writeln!(
+            output,
             "  example: {} — {} ({}, {})",
             example.text, example.translation, example.source_id, example.passage
-        );
+        )?;
     }
+    Ok(())
 }
 
-fn print_family(family: &FamilySummary) {
-    println!(
+fn print_family(output: &mut dyn Write, family: &FamilySummary) -> io::Result<()> {
+    writeln!(
+        output,
         "{} [{}]\n  id: {}\n  lexeme: {}\n  class: {} · stem: {}\n  exact-only: {} · fully-classed: {}\n  systems: {}\n  missing metadata: {:?} {}",
         family.lexeme.lemma(),
         pos_label(family.lexeme.part_of_speech()),
@@ -690,17 +783,20 @@ fn print_family(family: &FamilySummary) {
         family.supported_systems.join(", "),
         family.missing_metadata,
         family.missing_family_metadata.join(", "),
-    );
+    )?;
     for member in &family.members {
-        println!(
+        writeln!(
+            output,
             "  {}: {} / {} [{}; {}]",
             member.cell, member.expanded, member.printed, member.source_kind, member.evidence_id,
-        );
+        )?;
     }
+    Ok(())
 }
 
-fn print_proposed_family(proposal: &serde_json::Value) {
-    println!(
+fn print_proposed_family(output: &mut dyn Write, proposal: &serde_json::Value) -> io::Result<()> {
+    writeln!(
+        output,
         "{} [{}]\n  proposed id: {}\n  status: {} · confidence: {} bp\n  frequency: {} tokens / {} documents\n  compatible reviewed lexemes: {}\n  missing metadata: {}\n  reason: {}",
         proposal["proposed_lemma"].as_str().unwrap_or("—"),
         proposal["part_of_speech"].as_str().unwrap_or("unknown"),
@@ -728,10 +824,11 @@ fn print_proposed_family(proposal: &serde_json::Value) {
                 .join(", "))
             .unwrap_or_default(),
         proposal["review_reason"].as_str().unwrap_or("—"),
-    );
+    )?;
     if let Some(surfaces) = proposal["surfaces"].as_array() {
         for surface in surfaces {
-            println!(
+            writeln!(
+                output,
                 "  surface: {} ({} tokens; cells: {})",
                 surface["original"].as_str().unwrap_or("—"),
                 surface["frequency"].as_u64().unwrap_or_default(),
@@ -743,13 +840,15 @@ fn print_proposed_family(proposal: &serde_json::Value) {
                         .collect::<Vec<_>>()
                         .join(", "))
                     .unwrap_or_default(),
-            );
+            )?;
         }
     }
+    Ok(())
 }
 
-fn print_analysis(index: usize, analysis: &Analysis) {
-    println!(
+fn print_analysis(output: &mut dyn Write, index: usize, analysis: &Analysis) -> io::Result<()> {
+    writeln!(
+        output,
         "{}. {} [{}] {:?}\n   cell: {:?} · confidence: {} bp · matched: {}",
         index,
         analysis.lexeme.lemma(),
@@ -758,16 +857,21 @@ fn print_analysis(index: usize, analysis: &Analysis) {
         analysis.cell,
         analysis.confidence.basis_points(),
         analysis.matched_text,
-    );
+    )?;
     if !analysis.evidence_ids.is_empty() {
-        println!("   evidence: {}", analysis.evidence_ids.join(", "));
+        writeln!(output, "   evidence: {}", analysis.evidence_ids.join(", "))?;
     }
     if let Some(mapping) = &analysis.recension_mapping {
-        println!("   recension mapping: {mapping}");
+        writeln!(output, "   recension mapping: {mapping}")?;
     }
     for step in analysis.rule_trace.steps() {
-        println!("   trace: {} {} → {}", step.stage, step.input, step.output);
+        writeln!(
+            output,
+            "   trace: {} {} → {}",
+            step.stage, step.input, step.output
+        )?;
     }
+    Ok(())
 }
 
 fn parse_policy(value: &str) -> Result<GenerationPolicy, Box<dyn Error>> {
@@ -831,11 +935,11 @@ fn pos_label(value: synodal_church_slavonic_dictionary::morphology::PartOfSpeech
     }
 }
 
-fn read_input(path: &str) -> Result<String, Box<dyn Error>> {
+fn read_input(path: &str, input: &mut dyn Read) -> Result<String, Box<dyn Error>> {
     if path == "-" {
-        let mut input = String::new();
-        io::stdin().read_to_string(&mut input)?;
-        Ok(input)
+        let mut contents = String::new();
+        input.read_to_string(&mut contents)?;
+        Ok(contents)
     } else {
         Ok(fs::read_to_string(path)?)
     }
@@ -849,22 +953,40 @@ fn write_output(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn help() {
-    eprintln!("synodal-dict <command>");
-    eprintln!("  search QUERY [--pos POS] [--limit N] [--exact] [--json]");
-    eprintln!("  show LEMMA_OR_ID [--json]");
-    eprintln!("  families QUERY [--reviewed-only] [--proposals FAMILY_QUEUE.json] [--json]");
-    eprintln!("  show-family FAMILY_ID [--proposals FAMILY_QUEUE.json] [--json]");
-    eprintln!("  analyze WORD [--policy POLICY] [--profile PROFILE] [--json]");
-    eprintln!("  lint MANIFEST.json [--json]");
-    eprintln!(
+fn help(diagnostics: &mut dyn Write) -> io::Result<()> {
+    writeln!(diagnostics, "synodal-dict <command>")?;
+    writeln!(
+        diagnostics,
+        "  search QUERY [--pos POS] [--limit N] [--exact] [--json]"
+    )?;
+    writeln!(diagnostics, "  show LEMMA_OR_ID [--json]")?;
+    writeln!(
+        diagnostics,
+        "  families QUERY [--reviewed-only] [--proposals FAMILY_QUEUE.json] [--json]"
+    )?;
+    writeln!(
+        diagnostics,
+        "  show-family FAMILY_ID [--proposals FAMILY_QUEUE.json] [--json]"
+    )?;
+    writeln!(
+        diagnostics,
+        "  analyze WORD [--policy POLICY] [--profile PROFILE] [--json]"
+    )?;
+    writeln!(diagnostics, "  lint MANIFEST.json [--json]")?;
+    writeln!(
+        diagnostics,
         "  check-text TEXT [--policy POLICY] [--profile PROFILE] [--max-unknown N] [--max-ambiguous N] [--strict] [--summary] [--json]"
-    );
-    eprintln!(
+    )?;
+    writeln!(
+        diagnostics,
         "  coverage CORPUS.jsonl [--policy POLICY] [--profile PROFILE] [--by-family] [--json] [--markdown-out PATH] [--json-out PATH] [--tsv-out PATH]"
-    );
-    eprintln!(
+    )?;
+    writeln!(
+        diagnostics,
         "  marginal-recovery [REPORT.json] [--route ROUTE] [--readiness LEVEL] [--limit N] [--json]"
-    );
-    eprintln!("  use - as an input path to read UTF-8 from stdin");
+    )?;
+    writeln!(
+        diagnostics,
+        "  use - as an input path to read UTF-8 from stdin"
+    )
 }
