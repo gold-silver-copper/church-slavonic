@@ -1,0 +1,1196 @@
+schema_version = 1
+as_of = "2026-08-14"
+source_frontier = "data/morphology/source_frontier.toml"
+generated_report = "docs/MORPHOLOGY_COMPLETION_PROGRESS.md"
+profiles = [
+  "old-church-slavonic:abstract",
+  "old-church-slavonic:canonical-cyrillic",
+  "old-church-slavonic:fully-accented",
+  "old-church-slavonic:glagolitic",
+  "synodal-russian:abstract",
+  "synodal-russian:expanded",
+  "synodal-russian:expanded-accentless",
+  "synodal-russian:liturgical",
+]
+
+[[system]]
+id = "ocs.noun.declension"
+recension = "old-church-slavonic"
+category = "noun"
+part_of_speech = "noun"
+scope = "All currently specified OCS nominal declensions, including explicit indeclinables and lexical number restrictions."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["case=7", "number=singular|dual|plural", "gender=lexical", "animacy=lexical", "number-restriction=typed"]
+subtypes = ["o-m-hard", "o-n-hard", "jo-m-soft", "jo-n-soft", "a-hard", "ja-soft", "i-f", "i-m", "u-m", "n-m", "n-n", "nt-n", "r-n", "s-n", "v-f", "indeclinable"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["N-O-M-HARD-01", "N-O-N-HARD-01", "N-JO-M-SOFT-01", "N-JO-N-SOFT-01", "N-A-HARD-01", "N-JA-SOFT-01", "N-I-F-01", "N-I-M-01", "N-U-M-01", "N-N-M-01", "N-N-N-01", "N-NT-N-01", "N-R-01", "N-S-N-01", "N-V-F-01", "N-INDECL-01"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "docs/MORPHOLOGY_SPEC.md noun sections; UT noun inflection; pinned Wiktionary template revisions"
+required_metadata = ["lemma", "noun class", "gender", "animacy where contrastive", "number restriction", "extended stem where class requires it"]
+valid_inventory = "Every case × number cell admitted by the lexical number inventory; masculine accusative animacy is explicit."
+invalid_inventory = "Cells outside a lexical number restriction; contradictory citation/class/gender metadata."
+implementation = ["crates/old-church-slavonic-core/src/noun.rs", "crates/old-church-slavonic-core/src/grammar.rs"]
+tests = ["crates/old-church-slavonic-core/src/noun.rs#every_documented_noun_class_matches_a_twenty_one_cell_golden"]
+evidence_status = "source-backed productive prediction; exact dictionary cells retain table provenance"
+rationale = "All sixteen closed noun classes have complete 21-cell goldens and typed invalid metadata behavior."
+
+[[system]]
+id = "ocs.adjective.positive"
+recension = "old-church-slavonic"
+category = "adjective"
+part_of_speech = "adjective"
+scope = "Hard/soft short and long positive adjective agreement."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["form=short|long", "class=hard|soft", "case=7", "number=3", "gender=3", "animacy=2"]
+subtypes = ["hard-short", "hard-long", "soft-short", "soft-long"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["ADJ-HARD-SHORT-01", "ADJ-HARD-LONG-01", "ADJ-SOFT-SHORT-01", "ADJ-SOFT-LONG-01"]
+sources = ["ut-ocs-online", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "docs/MORPHOLOGY_SPEC.md adjective rules"
+required_metadata = ["lemma", "adjective class", "short/long form", "agreement features", "animacy where contrastive"]
+valid_inventory = "Complete short/long case × number × gender agreement with explicit masculine accusative animacy."
+invalid_inventory = "Contradictory citation/class metadata and malformed orthography."
+implementation = ["crates/old-church-slavonic-core/src/adjective.rs"]
+tests = ["crates/old-church-slavonic-core/src/adjective.rs#long_and_soft_paradigms_are_distinct", "crates/old-church-slavonic-core/src/adjective.rs#hard_short_agreement_includes_dual"]
+evidence_status = "source-backed productive prediction"
+rationale = "All four closed positive agreement systems are implemented through one exhaustive typed inventory."
+
+[[system]]
+id = "ocs.adjective.comparison"
+recension = "old-church-slavonic"
+category = "comparison"
+part_of_speech = "adjective"
+scope = "Comparative and superlative formation and complete agreement, including irregular comparison."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["degree=comparative|superlative", "form=citation|short|long", "case=7", "number=3", "gender=3", "animacy=2"]
+subtypes = ["comparative", "superlative", "irregular-comparison"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "exact-citation-only"
+rule_ids = ["OCS-ADJ-COMPARISON-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001"]
+citation = "Current facade exposes comparative citation cells, but no complete productive comparison contract exists."
+required_metadata = ["positive lemma", "independent comparison stem or irregular paradigm", "formation", "agreement features"]
+valid_inventory = "To be established source-by-source for comparative and superlative short/long forms."
+invalid_inventory = "To be distinguished from unattested but licensed cells."
+implementation = ["crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic-core/src/adjective.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#grammar_all_inventories_are_complete_and_stably_ordered"]
+evidence_status = "partial exact dictionary evidence"
+gap = "Crosswalk Polivanova, Lunt, UT, and primary dictionary evidence; add typed degree/formation rules and exhaustive paradigms."
+
+[[system]]
+id = "ocs.pronoun.personal-reflexive"
+recension = "old-church-slavonic"
+category = "pronoun"
+part_of_speech = "pronoun"
+scope = "Personal and reflexive pronouns, including clitic and suppletive forms."
+profiles = ["canonical-cyrillic"]
+features = ["case=7", "number=3", "person=1|2|3|none", "gender=lexical-or-cell", "clitic=typed"]
+subtypes = ["personal", "reflexive", "third-person-gendered", "clitic"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "closed-exact-partial"
+rule_ids = ["OCS-PRONOUN-PERSONAL-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "docs/API_DESIGN.md closed-class inventory audit"
+required_metadata = ["stable lexical identity", "pronoun subtype", "person/gender profile", "ordered exact or productive contract"]
+valid_inventory = "Exact tables currently represent selected lexemes; complete source-licensed profiles remain to be inventoried."
+invalid_inventory = "Person/gender combinations not licensed by a lexical profile."
+implementation = ["crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic-core/src/pronoun.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
+evidence_status = "partial exact dictionary evidence"
+gap = "Implement a typed productive/closed-irregular pronoun model and classify every source-union pronoun."
+
+[[system]]
+id = "ocs.pronoun.other"
+recension = "old-church-slavonic"
+category = "pronoun"
+part_of_speech = "pronoun"
+scope = "Demonstrative, relative, interrogative, indefinite, negative, adjectival, and substantival pronouns."
+profiles = ["canonical-cyrillic"]
+features = ["subtype=7", "case=7", "number=3", "gender=optional", "animacy=optional"]
+subtypes = ["demonstrative", "relative", "interrogative", "indefinite", "negative", "adjectival", "substantival"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "closed-exact-partial"
+rule_ids = ["OCS-PRONOUN-OTHER-PENDING"]
+sources = ["polivanova-fup-2023", "lunt-ocs-grammar-2001", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "docs/API_DESIGN.md closed-class inventory audit"
+required_metadata = ["stable lexical identity", "pronoun subtype", "declension/profile", "suppletive cells"]
+valid_inventory = "Not yet source-complete."
+invalid_inventory = "Must be established per closed subtype."
+implementation = ["crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
+evidence_status = "partial exact dictionary evidence"
+gap = "Establish complete closed-class inventories, productive relationships, clitics, and irregular paradigms."
+
+[[system]]
+id = "ocs.determiner"
+recension = "old-church-slavonic"
+category = "determiner"
+part_of_speech = "determiner"
+scope = "Adjectival and exceptional determiners."
+profiles = ["canonical-cyrillic"]
+features = ["case=7", "number=3", "gender=3", "animacy=where-licensed"]
+subtypes = ["adjectival", "irregular"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "closed-exact-partial"
+rule_ids = ["OCS-DETERMINER-PENDING"]
+sources = ["polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "docs/API_DESIGN.md closed-class inventory audit"
+required_metadata = ["stable lexical identity", "agreement profile", "irregular cells"]
+valid_inventory = "One reviewed exact identity is currently exposed."
+invalid_inventory = "Unlicensed optional dimensions."
+implementation = ["crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
+evidence_status = "partial exact dictionary evidence"
+gap = "Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules."
+
+[[system]]
+id = "ocs.numeral"
+recension = "old-church-slavonic"
+category = "numeral"
+part_of_speech = "numeral"
+scope = "Cardinal, ordinal, collective, fractional, distributive, compound, agreeing, governing, and irregular numerals."
+profiles = ["canonical-cyrillic"]
+features = ["kind=cardinal|ordinal|collective|fractional|distributive|compound", "case=7", "number=licensed", "gender=optional", "government=typed"]
+subtypes = ["cardinal", "ordinal", "collective", "fractional", "distributive", "compound", "irregular"]
+realization = "synthetic-or-composed"
+state = "implementation-missing"
+implementation_kind = "closed-exact-partial"
+rule_ids = ["OCS-NUMERAL-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT numeral lesson; docs/API_DESIGN.md closed-class inventory audit"
+required_metadata = ["stable lexical identity", "numeral kind", "agreement/government pattern", "component identities for compounds"]
+valid_inventory = "Eight exact numeral identities are currently exposed; the productive universe is not complete."
+invalid_inventory = "Lexically impossible number/gender combinations and non-inflectional notation."
+implementation = ["crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
+evidence_status = "partial exact dictionary evidence"
+gap = "Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars."
+
+[[system]]
+id = "ocs.verb.present"
+recension = "old-church-slavonic"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Productive present for IA1, IA2, II1, II2, and II3 with independent edge allomorphs."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["tense=present", "person=3", "number=3", "class=5"]
+subtypes = ["IA1", "IA2", "II1", "II2", "II3"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-IA1-01", "V-IA2-01", "V-II1-01", "V-II2-01", "V-II3-01"]
+sources = ["ut-ocs-online", "love-lmu-ocs-verbs", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "docs/MORPHOLOGY_SPEC.md present section"
+required_metadata = ["present class", "present stem", "first-singular allomorph for second conjugation"]
+valid_inventory = "3 persons × singular/dual/plural."
+invalid_inventory = "Missing allomorphs and root/irregular classes without explicit overrides."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#explicit_present_allomorph_replaces_automatic_guessing"]
+evidence_status = "source-backed productive prediction"
+rationale = "All declared class cells are generated from explicit lexical inputs and exact cells retain precedence."
+
+[[system]]
+id = "ocs.verb.imperfect.uncontracted"
+recension = "old-church-slavonic"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Uncontracted A, YatA, and PalatalizedA imperfect series."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["tense=imperfect", "person=3", "number=3", "formation=A|YatA|PalatalizedA"]
+subtypes = ["A", "YatA", "PalatalizedA"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01"]
+sources = ["ut-ocs-online", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT lesson 1 §4.2; docs/MORPHOLOGY_SPEC.md imperfect section"
+required_metadata = ["imperfect stem", "formation", "UncontractedOnly variant policy"]
+valid_inventory = "3 persons × singular/dual/plural."
+invalid_inventory = "Contracted or suppletive variants not licensed by this policy."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#imperfect_has_all_person_number_cells_and_velar_seam"]
+evidence_status = "source-backed productive uncontracted prediction"
+rationale = "The explicitly bounded uncontracted contract is exhaustive and does not claim manuscript-specific contractions."
+
+[[system]]
+id = "ocs.verb.imperfect.contracted"
+recension = "old-church-slavonic"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Source- and manuscript-licensed contracted/shortened imperfect variants."
+profiles = ["canonical-cyrillic", "diplomatic"]
+features = ["tense=imperfect", "person=3", "number=3", "contraction-policy=typed", "witness-profile=typed"]
+subtypes = ["contracted", "shortened", "suppletive"]
+realization = "synthetic"
+state = "source-review-open"
+implementation_kind = "exact-only-partial"
+rule_ids = ["OCS-V-IMPERFECT-CONTRACTION-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "syntacticus-20230428"]
+citation = "docs/MORPHOLOGY_SPEC.md records 1,349 diplomatic mismatches and declines a global policy."
+required_metadata = ["lexeme", "manuscript/editorial profile", "contracted base", "variant policy"]
+valid_inventory = "Must be established per contraction type and witness distribution."
+invalid_inventory = "Global contraction inferred from aggregate corpus frequency."
+implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic-core/src/verb.rs"]
+tests = ["crates/xtask/src/corpus.rs#native_mapper_preserves_past_subtype_and_rejects_partial_bundles"]
+evidence_status = "aggregate corpus mismatch evidence and sparse exact cells"
+gap = "Define typed contraction policies from independent grammar and witness evidence, then implement and test every licensed cell."
+
+[[system]]
+id = "ocs.verb.aorist.asigmatic-new"
+recension = "old-church-slavonic"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Asigmatic and new ox-aorist formations."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["tense=aorist", "person=3", "number=3", "formation=asigmatic|new"]
+subtypes = ["asigmatic", "new"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-AOR-ASIG-01", "V-AOR-NEW-01"]
+sources = ["ut-ocs-online", "love-lmu-ocs-verbs", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT lesson 3 §§14.1–14.3; docs/MORPHOLOGY_SPEC.md aorists"
+required_metadata = ["independent aorist stem", "aorist formation"]
+valid_inventory = "3 persons × singular/dual/plural for each formation."
+invalid_inventory = "Suppletive lexemes without explicit data."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#new_and_asigmatic_aorists_keep_formation_separate_from_aspect"]
+evidence_status = "source-backed productive prediction"
+rationale = "Both closed formations have exhaustive typed cell generation and boundary tests."
+
+[[system]]
+id = "ocs.verb.aorist.sigmatic"
+recension = "old-church-slavonic"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Primary and secondary sigmatic aorists with independent allomorph and seam policies."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["tense=aorist", "person=3", "number=3", "formation=primary-sigmatic|secondary-sigmatic", "s-x-seam=typed", "final-t=variant-policy"]
+subtypes = ["sigmatic-primary", "sigmatic-secondary"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "represented-unsupported"
+rule_ids = ["V-AOR-SIG-PRIMARY-PENDING", "V-AOR-SIG-SECONDARY-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs"]
+citation = "UT lesson 3 §14.2; docs/MORPHOLOGY_SPEC.md explicitly records the missing allomorph contract."
+required_metadata = ["pre-sigmatic stem", "2sg/3sg allomorph", "non-singular allomorph", "s/x seam policy", "optional final -тъ policy"]
+valid_inventory = "3 persons × singular/dual/plural, with source-licensed variants."
+invalid_inventory = "Requests lacking independently specified lexical allomorphs."
+implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic-core/src/verb.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#missing_and_hostile_metadata_fail_without_panicking"]
+evidence_status = "grammar contract identified; lexical principal-part crosswalk incomplete"
+gap = "Add closed sigmatic metadata, use LOVe and independent grammar evidence, implement both formations, and exhaustively validate."
+
+[[system]]
+id = "ocs.verb.imperative.synthetic"
+recension = "old-church-slavonic"
+category = "imperative"
+part_of_speech = "verb"
+scope = "Synthetic ISeries and YatSeries imperative cells."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["mood=imperative", "person=licensed", "number=3", "formation=ISeries|YatSeries"]
+subtypes = ["i-series", "yat-series"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-IMP-01"]
+sources = ["ut-ocs-online", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT lesson 2 §9; docs/MORPHOLOGY_SPEC.md imperative"
+required_metadata = ["imperative stem", "imperative formation"]
+valid_inventory = "2sg, 3sg, 1du, 2du, 1pl, 2pl."
+invalid_inventory = "1sg, 3du, and 3pl are not synthetic cells."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic-core/src/grammar.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#imperative_exposes_only_the_historical_cell_inventory"]
+evidence_status = "source-backed productive prediction"
+rationale = "The six historical synthetic cells and invalid cells are explicitly enumerated."
+
+[[system]]
+id = "ocs.verb.imperative.analytic"
+recension = "old-church-slavonic"
+category = "imperative"
+part_of_speech = "verb"
+scope = "Periphrastic da imperatives for non-synthetic person/number values."
+profiles = ["canonical-cyrillic"]
+features = ["mood=imperative", "person=1|3", "number=licensed", "particle=da", "word-order=typed"]
+subtypes = ["da-periphrasis"]
+realization = "analytic"
+state = "implementation-missing"
+implementation_kind = "absent-from-word-api"
+rule_ids = ["OCS-ANALYTIC-IMPERATIVE-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001"]
+citation = "docs/MORPHOLOGY_SPEC.md states that 1sg, 3du, and 3pl periphrases are outside the word inflector."
+required_metadata = ["verb present/subjunctive principal parts", "particle identity", "person/number", "word-order profile"]
+valid_inventory = "To be source-crosswalked."
+invalid_inventory = "Synthetic cells represented by V-IMP-01."
+implementation = ["crates/old-church-slavonic/src/lib.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#imperative_exposes_only_the_historical_cell_inventory"]
+evidence_status = "category identified; structured phrase implementation absent"
+gap = "Add typed OCS analytic-form results and implement licensed da imperatives with component provenance."
+
+[[system]]
+id = "ocs.verb.infinitive-supine-lparticiple"
+recension = "old-church-slavonic"
+category = "nonfinite-verb"
+part_of_speech = "verb"
+scope = "Infinitive, regular supine, and l-participle."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["system=infinitive|supine|l-participle", "gender=3-for-lparticiple", "number=3-for-lparticiple"]
+subtypes = ["infinitive", "supine", "l-participle"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-INF-01", "V-SUP-01", "V-LPART-01"]
+sources = ["ut-ocs-online", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT lessons 2 and 7; docs/MORPHOLOGY_SPEC.md"
+required_metadata = ["validated -ти citation", "independent aorist/l-participle stem where required"]
+valid_inventory = "One infinitive, one regular supine, and gender × number l-participle cells."
+invalid_inventory = "Irregular/root systems without explicit overrides."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#missing_and_hostile_metadata_fail_without_panicking"]
+evidence_status = "source-backed productive prediction"
+rationale = "The bounded word-formation inputs and all l-participle agreement cells are implemented."
+
+[[system]]
+id = "ocs.verb.participle"
+recension = "old-church-slavonic"
+category = "participle"
+part_of_speech = "verb"
+scope = "Present/past active/passive participle stem formation and complete short/long adjective agreement."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["tense=present|past", "voice=active|passive", "form=short|long", "case=7", "number=3", "gender=3", "animacy=2"]
+subtypes = ["present-active", "present-passive", "past-active", "past-passive"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["V-PTCP-PRES-ACT-01", "V-PTCP-PRES-PASS-01", "V-PTCP-PAST-ACT-01", "V-PTCP-PAST-PASS-01"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT lesson 6 §26 and lesson 7 §§31.1–32; docs/MORPHOLOGY_SPEC.md"
+required_metadata = ["independent tense/voice stem", "typed formation", "agreement features"]
+valid_inventory = "All four participle kinds through the complete adjective inventory."
+invalid_inventory = "Missing tense/voice identity, malformed seam metadata, and source rows lacking safe attribution."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic-core/src/adjective.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#all_four_participles_form_stems_and_share_adjective_agreement", "crates/old-church-slavonic-dictionary/src/lib.rs#generated_form_index_covers_every_participle_system"]
+evidence_status = "source-backed productive prediction; unsafe extracted rows excluded"
+rationale = "Strict callers can generate every agreement cell from independently supplied formation metadata; extraction attribution is tracked separately as a lexical-data gap."
+
+[[system]]
+id = "ocs.verb.irregular-root"
+recension = "old-church-slavonic"
+category = "irregular-verb"
+part_of_speech = "verb"
+scope = "Root, athematic, suppletive, motion, impersonal, and other irregular verbs across every system."
+profiles = ["canonical-cyrillic"]
+features = ["system=all", "defectiveness=typed", "suppletion=typed", "principal-parts=independent"]
+subtypes = ["root", "athematic", "suppletive", "motion", "impersonal", "defective"]
+realization = "synthetic-or-analytic"
+state = "implementation-missing"
+implementation_kind = "exact-and-override-partial"
+rule_ids = ["OCS-VERB-IRREGULAR-INVENTORY-PENDING"]
+sources = ["polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs", "gorazd", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "docs/MORPHOLOGY_SPEC.md names бꙑти, дати, ѣсти, вѣдѣти, хотѣти, and motion verbs as conservative exact/unsupported cases."
+required_metadata = ["stable identity", "all principal parts", "defective inventory", "exact/suppletive cells", "source provenance"]
+valid_inventory = "Must be enumerated per lexeme and reusable irregular family."
+invalid_inventory = "Cells excluded by lexical defectiveness."
+implementation = ["crates/old-church-slavonic/src/resolver.rs", "data/overrides.tsv"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#reviewed_override_follows_exact_table_and_keeps_authority"]
+evidence_status = "partial exact tables and one curated imperfect family"
+gap = "Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm."
+
+[[system]]
+id = "ocs.verb.analytic"
+recension = "old-church-slavonic"
+category = "analytic-form"
+part_of_speech = "verb"
+scope = "Perfect, pluperfect, future, conditional/subjunctive, passive, and other source-licensed periphrases."
+profiles = ["canonical-cyrillic"]
+features = ["construction=typed", "auxiliary=stable-identity", "components=typed", "agreement=typed", "word-order=typed"]
+subtypes = ["future", "perfect", "pluperfect", "conditional", "subjunctive", "passive"]
+realization = "analytic"
+state = "implementation-missing"
+implementation_kind = "absent"
+rule_ids = ["OCS-ANALYTIC-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "ud-ocs-proiel-r2.18"]
+citation = "UT grammar inventory and current prompt completion scope"
+required_metadata = ["auxiliary identity/system", "main-verb principal parts", "agreement/control", "word-order variants"]
+valid_inventory = "To be crosswalked from independent grammars."
+invalid_inventory = "Non-grammatical free syntax and unattested source-specific calques outside the declared profiles."
+implementation = ["crates/old-church-slavonic/src/lib.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#grammar_all_inventories_are_complete_and_stably_ordered"]
+evidence_status = "corpus exact phrases only; no structured composition API"
+gap = "Add structured phrase results and implement every licensed OCS analytic construction with component provenance."
+
+[[system]]
+id = "ocs.verb.verbal-noun"
+recension = "old-church-slavonic"
+category = "verbal-noun"
+part_of_speech = "verb"
+scope = "Source-defined productive verbal-noun formation and subsequent noun declension."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["formation=typed", "noun-class=typed", "case=7", "number=licensed", "gender=lexical"]
+subtypes = ["verbal-noun"]
+realization = "synthetic"
+state = "source-review-open"
+implementation_kind = "exact-only"
+rule_ids = ["OCS-VERBAL-NOUN-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs"]
+citation = "Facade exposes verbal_noun exact lookup; productive derivational boundary remains unspecified."
+required_metadata = ["independent suffix/stem contract", "derived noun class", "gender", "number inventory"]
+valid_inventory = "Only if target grammars treat the formation as a closed grammatical system."
+invalid_inventory = "Unrestricted lexical derivation."
+implementation = ["crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic-dictionary/src/lib.rs#generated_form_index_covers_every_participle_system"]
+evidence_status = "sparse exact dictionary cells"
+gap = "Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts."
+
+[[system]]
+id = "ocs.orthography.canonical"
+recension = "old-church-slavonic"
+category = "orthography"
+part_of_speech = "cross"
+scope = "Validated canonical OCS Cyrillic input, NFC lookup, script separation, and hostile-input safety."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["script=church-slavonic-cyrillic", "normalization=NFC", "historical-letters=preserved"]
+subtypes = ["validated-lemma", "canonical-display", "lookup-key"]
+realization = "presentation"
+state = "productive-complete"
+implementation_kind = "pure-transform"
+rule_ids = ["OCS-ORTHOGRAPHY-CANONICAL"]
+sources = ["unicode-tn41-revision-1", "ut-ocs-online"]
+citation = "docs/ORTHOGRAPHY.md"
+required_metadata = ["validated source script"]
+valid_inventory = "Canonical Church Slavonic Cyrillic letters/marks accepted; meaningful distinctions preserved."
+invalid_inventory = "Mixed script, control, markup, punctuation in words, leading marks, private use."
+implementation = ["crates/old-church-slavonic-core/src/orthography.rs"]
+tests = ["crates/old-church-slavonic-core/src/orthography.rs#hostile_inputs_are_typed_errors", "crates/old-church-slavonic-core/src/orthography.rs#scripts_are_distinguished_without_transliteration"]
+evidence_status = "technical and source contract"
+rationale = "The bounded canonical Cyrillic profile is fully validated and deterministic."
+
+[[system]]
+id = "ocs.orthography.accent"
+recension = "old-church-slavonic"
+category = "accent"
+part_of_speech = "cross"
+scope = "Fully accented OCS output with lexical accent paradigms and breathing/mark behavior."
+profiles = ["fully-accented"]
+features = ["stress=lexical", "breathing=typed", "mark-order=typed", "scope=cell"]
+subtypes = ["fixed", "mobile", "irregular"]
+realization = "presentation"
+state = "implementation-missing"
+implementation_kind = "exact-source-only"
+rule_ids = ["OCS-ACCENT-PENDING"]
+sources = ["polivanova-fup-2023", "unicode-tn41-revision-1", "gorazd"]
+citation = "Current OCS core preserves marks but has no productive accent-paradigm layer."
+required_metadata = ["lexical accent paradigm", "cell scope", "mark type", "breathing"]
+valid_inventory = "Every morphological cell when complete lexical metadata is supplied."
+invalid_inventory = "Unaccented input without an explicit paradigm must remain missing metadata."
+implementation = ["crates/old-church-slavonic-core/src/orthography.rs"]
+tests = ["crates/old-church-slavonic-core/src/orthography.rs#lemma_is_normalized_single_script_and_letters_only"]
+evidence_status = "exact source spellings only"
+gap = "Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance."
+
+[[system]]
+id = "ocs.orthography.glagolitic"
+recension = "old-church-slavonic"
+category = "orthography"
+part_of_speech = "cross"
+scope = "Glagolitic strict specifications, inflection, and explicit transliteration profiles."
+profiles = ["glagolitic"]
+features = ["script=glagolitic", "transliteration=loss-reporting", "morphology-script=consistent"]
+subtypes = ["source-backed-exact", "productive-glagolitic", "cyrillic-glagolitic-transliteration"]
+realization = "presentation"
+state = "implementation-missing"
+implementation_kind = "exact-source-only"
+rule_ids = ["OCS-GLAGOLITIC-PENDING"]
+sources = ["polivanova-fup-2023", "unicode-tn41-revision-1"]
+citation = "docs/MORPHOLOGY_SPEC.md records Glagolitic as exact-source-only to prevent mixed-script output."
+required_metadata = ["source script", "script-specific stems/endings or explicit transliteration profile"]
+valid_inventory = "Source-backed exact forms today; productive coverage not implemented."
+invalid_inventory = "Attaching Cyrillic endings to a Glagolitic stem."
+implementation = ["crates/old-church-slavonic-core/src/orthography.rs", "crates/old-church-slavonic-core/src/verb.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#source_backed_glagolitic_and_hostile_inputs_are_panic_free"]
+evidence_status = "partial exact dictionary evidence"
+gap = "Establish a source-backed Glagolitic realization/transliteration contract for every productive rule."
+
+[[system]]
+id = "ocs.lexicon.classification"
+recension = "old-church-slavonic"
+category = "lexicon"
+part_of_speech = "cross"
+scope = "Every inflectable lexeme in the locked OCS source union receives a final typed classification and complete lexical metadata."
+profiles = ["all"]
+features = ["identity=stable", "classification=productive|irregular|defective|indeclinable|ambiguous|excluded", "provenance=complete"]
+subtypes = ["productive", "closed-irregular", "defective", "indeclinable", "ambiguous", "disputed", "out-of-scope"]
+realization = "lexical-metadata"
+state = "implementation-missing"
+implementation_kind = "registry-partial"
+rule_ids = ["OCS-LEXICON-UNION-PENDING"]
+sources = ["polivanova-fup-2023", "love-lmu-ocs-verbs", "gorazd", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "Current extracted registry and reports classify only the pinned Wiktionary pipeline, not the full reviewed source union."
+required_metadata = ["stable identity", "part of speech", "class/principal parts", "restrictions", "evidence"]
+valid_inventory = "Every inflectable source-union lemma."
+invalid_inventory = "Non-target or non-inflectional rows remain explicit exclusions."
+implementation = ["data/extracted/lexemes.tsv", "data/extracted/verb_metadata.tsv"]
+tests = ["crates/old-church-slavonic-extractor/src/validate.rs#coverage_floor_witness_is_rejected"]
+evidence_status = "single locked dictionary lineage plus partial external evaluation"
+gap = "Define the source-union merge, import lawful lexical metadata, and eliminate silent rejects/unclassified lexemes."
+
+[[system]]
+id = "ocs.invariant-parts-of-speech"
+recension = "old-church-slavonic"
+category = "invariant"
+part_of_speech = "cross"
+scope = "Adverbs, prepositions, conjunctions, particles, interjections, and other invariant lexical items."
+profiles = ["canonical-cyrillic"]
+features = ["inflection=none", "lexical-form=exact"]
+subtypes = ["adverb", "preposition", "conjunction", "particle", "interjection"]
+realization = "invariant"
+state = "not-inflectional"
+implementation_kind = "exact-lexical"
+rule_ids = ["OCS-NOT-INFLECTIONAL"]
+sources = ["english-wiktionary-ocs-kaikki-2026-08-07", "polivanova-fup-2023"]
+citation = "GrammarCell::Indeclinable and dictionary part-of-speech inventory."
+required_metadata = ["stable lexical identity", "part of speech"]
+valid_inventory = "The unchanged lexical form."
+invalid_inventory = "All inflectional feature requests."
+implementation = ["crates/old-church-slavonic-core/src/grammar.rs", "crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic-extractor/src/semantics.rs#supported_dictionary_parts_of_speech_are_explicit"]
+evidence_status = "lexical exact forms"
+rationale = "These categories are explicitly outside inflection rather than omitted grammar systems."
+
+[[system]]
+id = "syn.noun.declension"
+recension = "synodal-russian"
+category = "noun"
+part_of_speech = "noun"
+scope = "All seventeen reviewed Synodal productive noun contracts and typed number inventories."
+profiles = ["abstract", "expanded", "expanded-accentless"]
+features = ["case=7", "number=3", "gender=lexical", "animacy=2", "number-inventory=7"]
+subtypes = ["FirstHardMasculine", "FirstHardVelarMasculine", "FirstMixedMasculine", "FirstHardNeuter", "FirstSoftMasculine", "FirstSoftNeuter", "SecondHard", "SecondSoft", "ThirdFeminine", "ThirdMasculine", "FourthNeuterEn", "FourthNeuterEs", "FourthNeuterAt", "FourthFeminineEr", "FourthFeminineOv", "FourthMasculineEn", "FourthMasculineEnKamen"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-NOUN-I-HARD-M-ALYPY-34", "SYN-NOUN-I-HARD-VELAR-M-ALYPY-34", "SYN-NOUN-I-MIXED-M-ALYPY-33-34", "SYN-NOUN-I-HARD-N-ALYPY-34", "SYN-NOUN-I-SOFT-M-ALYPY-34", "SYN-NOUN-I-SOFT-N-ALYPY-34", "SYN-NOUN-II-HARD-ALYPY-39", "SYN-NOUN-II-SOFT-ALYPY-39", "SYN-NOUN-III-F-ALYPY-41", "SYN-NOUN-III-M-ALYPY-41", "SYN-NOUN-IV-N-EN-ALYPY-42-43", "SYN-NOUN-IV-N-ES-ALYPY-42-43", "SYN-NOUN-IV-N-AT-ALYPY-42-43", "SYN-NOUN-IV-F-ER-ALYPY-42-43", "SYN-NOUN-IV-F-OV-ALYPY-42-44", "SYN-NOUN-IV-M-EN-ALYPY-42-44", "SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §§33–44; docs/SYNODAL_MORPHOLOGY.md"
+required_metadata = ["lemma", "independent stem", "gender", "declension", "number inventory", "animacy"]
+valid_inventory = "Every case × number × animacy cell licensed by the lexical inventory."
+invalid_inventory = "Contradictory class/gender/stem shapes and absent lexical numbers."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_43_44_additional_extended_stem_goldens"]
+evidence_status = "normative productive prediction"
+rationale = "All seventeen closed contracts have complete inventories and strict caller metadata."
+
+[[system]]
+id = "syn.noun.irregular"
+recension = "synodal-russian"
+category = "noun"
+part_of_speech = "noun"
+scope = "Irregular, suppletive, defective, lexeme-specific, and remaining fourth-declension noun behavior."
+profiles = ["expanded", "liturgical"]
+features = ["class=irregular", "stem-alternants=ordered", "defectiveness=typed", "case=7", "number=3"]
+subtypes = ["любовь-alternants", "lexeme-specific-endings", "suppletive", "defective", "plural-only", "singular-only"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "exact-and-irregular-partial"
+rule_ids = ["SYN-NOUN-IRREGULAR-INVENTORY-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "dyachenko-1900-scan", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "docs/SYNODAL_MORPHOLOGY.md explicitly lists любовь alternants and most irregular/suppletive nouns as gaps."
+required_metadata = ["stable identity", "independent cell-specific stems", "ordered variants", "number restrictions", "accent"]
+valid_inventory = "To be completed per lexeme and reusable irregular family."
+invalid_inventory = "Unlicensed cross-product of cell-specific alternants."
+implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "data/synodal/irregular_overrides.tsv"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#partial_registered_irregular_uses_regular_background_only_outside_override"]
+evidence_status = "partial reviewed exact/override data"
+gap = "Complete irregular noun families and unify любовь identities without generating unattested alternant combinations."
+
+[[system]]
+id = "syn.adjective.positive-comparison"
+recension = "synodal-russian"
+category = "adjective"
+part_of_speech = "adjective"
+scope = "Hard/soft positive short/long adjectives, full comparative/superlative, and short comparative."
+profiles = ["abstract", "expanded", "expanded-accentless"]
+features = ["class=hard|soft", "form=short|long", "degree=positive|comparative|superlative", "case=7", "number=3", "gender=3", "animacy=2"]
+subtypes = ["short-hard-positive", "short-soft-positive", "long-hard-positive", "long-soft-positive", "long-comparative", "long-superlative", "short-comparative"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-ADJ-SHORT-HARD-ALYPY-53", "SYN-ADJ-SHORT-SOFT-ALYPY-53", "SYN-ADJ-LONG-HARD-ALYPY-57", "SYN-ADJ-LONG-SOFT-ALYPY-57", "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58", "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59", "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-98"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §§53–59 and §98; docs/SYNODAL_MORPHOLOGY.md"
+required_metadata = ["lemma", "stem", "class", "independent comparison stem/formation where required", "agreement features"]
+valid_inventory = "Complete documented positive and comparison agreement inventories; short comparison excludes vocative."
+invalid_inventory = "Missing comparison stem/formation, vocative short comparison, and contradictory participle degree."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#alpy_58_95_96_98_complete_short_comparison_goldens", "crates/synodal-church-slavonic-core/src/morphology.rs#declines_comparison_stem_with_alypy_58_mixed_endings"]
+evidence_status = "normative productive prediction"
+rationale = "Every currently licensed positive/comparison class has strict stem metadata and exhaustive inventories."
+
+[[system]]
+id = "syn.adjective.short-superlative"
+recension = "synodal-russian"
+category = "comparison"
+part_of_speech = "adjective"
+scope = "Whether Synodal short superlatives constitute a licensed productive category."
+profiles = ["abstract", "expanded"]
+features = ["degree=superlative", "form=short", "agreement=source-dependent"]
+subtypes = ["short-superlative"]
+realization = "synthetic"
+state = "source-review-open"
+implementation_kind = "represented-unsupported"
+rule_ids = ["SYN-ADJ-SHORT-SUPERLATIVE-REVIEW"]
+sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "Alypy §59 does not license the engine's guessed short formation; current negative test is not yet a full absence proof."
+required_metadata = ["independent normative category decision"]
+valid_inventory = "None if absent; otherwise a complete source-defined agreement contract."
+invalid_inventory = "All cells if the category is absent from the recension."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#short_superlative_remains_explicitly_unsupported"]
+evidence_status = "negative grammar evidence under review"
+gap = "Complete source discovery and either implement the category or finalize every cell as absent-from-recension with citations."
+
+[[system]]
+id = "syn.pronoun"
+recension = "synodal-russian"
+category = "pronoun"
+part_of_speech = "pronoun"
+scope = "Personal, reflexive, demonstrative, relative, interrogative, indefinite, negative, adjectival, substantival, and clitic pronouns."
+profiles = ["expanded", "liturgical"]
+features = ["case=7", "number=3", "person=optional", "gender=optional", "animacy=2", "clitic=typed"]
+subtypes = ["personal", "reflexive", "demonstrative", "relative", "interrogative", "indefinite", "negative", "adjectival", "substantival", "clitic"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "closed-exact-partial"
+rule_ids = ["SYN-PRONOUN-COMPLETE-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "Alypy §§60–78; docs/SYNODAL_MORPHOLOGY.md unsupported/partial formations"
+required_metadata = ["stable identity", "pronoun subtype", "person/gender profile", "ordered exact or productive contract", "accent"]
+valid_inventory = "Complete tables exist only for selected reviewed identities."
+invalid_inventory = "Unlicensed person/gender dimensions per lexical profile."
+implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic-core/src/grammar.rs"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#personal_pronoun_paradigms_use_reviewed_person_and_gender_profiles"]
+evidence_status = "broad but incomplete exact closed-class coverage"
+gap = "Complete all pronoun subtypes, productive relationships, clitics, lexical restrictions, and source-union identities."
+
+[[system]]
+id = "syn.determiner"
+recension = "synodal-russian"
+category = "determiner"
+part_of_speech = "determiner"
+scope = "Regular adjectival and exceptional/velar-stem determiners."
+profiles = ["expanded", "liturgical"]
+features = ["case=7", "number=3", "gender=3", "animacy=2", "class=regular|exceptional"]
+subtypes = ["regular-non-velar", "velar-stem", "irregular"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "productive-regular-and-exact-partial"
+rule_ids = ["SYN-DETERMINER-ADJECTIVAL", "SYN-DETERMINER-IRREGULAR-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "synodal-target-text-union"]
+citation = "docs/SYNODAL_MORPHOLOGY.md: productive regular non-velar determiners; всѧкъ exceptional cells remain exact."
+required_metadata = ["stable identity", "adjective stem/class or irregular table", "accent"]
+valid_inventory = "Regular non-velar agreement is productive; exceptional families are incomplete."
+invalid_inventory = "Unlicensed automatic velar alternation."
+implementation = ["crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/resolver.rs"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#determiner_handle_is_real_but_abstains_outside_exact_cells"]
+evidence_status = "productive regular background plus partial exact irregulars"
+gap = "Finish velar and exceptional determiner families, then separate final productive and irregular matrix entries."
+
+[[system]]
+id = "syn.numeral"
+recension = "synodal-russian"
+category = "numeral"
+part_of_speech = "numeral"
+scope = "Ordinal, cardinal, collective, fractional, distributive, compound, agreeing, governing, and irregular numerals."
+profiles = ["expanded", "liturgical"]
+features = ["kind=ordinal|cardinal|collective|fractional|distributive|compound", "case=7", "number=licensed", "gender=optional", "government=typed"]
+subtypes = ["ordinal-adjectival", "cardinal", "collective", "fractional", "distributive", "compound", "irregular"]
+realization = "synthetic-or-composed"
+state = "implementation-missing"
+implementation_kind = "productive-ordinal-and-exact-partial"
+rule_ids = ["SYN-NUMERAL-ORDINAL-ADJECTIVAL", "SYN-NUMERAL-COMPLETE-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "Alypy §§45–52; docs/SYNODAL_MORPHOLOGY.md"
+required_metadata = ["stable identity", "numeral kind", "agreement/government profile", "components for compounds", "accent"]
+valid_inventory = "Ordinal adjective background and selected exact cardinal paradigms are implemented."
+invalid_inventory = "Genderless ordinal requests and unlicensed modern agreement assumptions."
+implementation = ["crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/resolver.rs"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#exact_registries_respect_animacy_and_any_gender_numerals"]
+evidence_status = "productive ordinal plus partial exact cardinal/collective data"
+gap = "Implement complete cardinal, collective, fractional, distributive, compound, government, and irregular contracts."
+
+[[system]]
+id = "syn.verb.present"
+recension = "synodal-russian"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Productive present with independent 1sg, medial stem, and 3pl edges."
+profiles = ["abstract", "expanded", "expanded-accentless"]
+features = ["tense=present", "person=3", "number=3", "conjugation=4"]
+subtypes = ["first-unpalatalized", "first-palatalized", "second", "archaic"]
+verb_systems = ["finite:present"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-VERB-PRESENT-ALYPY-80"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §§79–82"
+required_metadata = ["conjugation", "medial present stem", "complete 1sg", "complete 3pl"]
+valid_inventory = "3 persons × singular/dual/plural."
+invalid_inventory = "Unknown aspect only where a requested rule needs it; missing independent edges."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#present_uses_independent_edge_principal_parts"]
+evidence_status = "normative productive prediction"
+rationale = "Every present cell uses complete independently supplied edge metadata."
+
+[[system]]
+id = "syn.verb.aorist"
+recension = "synodal-russian"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Vowel- and consonant-stem productive aorists."
+profiles = ["abstract", "expanded", "expanded-accentless"]
+features = ["tense=aorist", "person=3", "number=3", "formation=vowel|consonant"]
+subtypes = ["vowel-stem", "consonant-stem"]
+verb_systems = ["finite:aorist"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-VERB-AORIST-VOWEL-ALYPY-86", "SYN-VERB-AORIST-CONSONANT-ALYPY-86"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §86"
+required_metadata = ["independent aorist base", "formation"]
+valid_inventory = "3 persons × singular/dual/plural."
+invalid_inventory = "Irregular formation without exact data."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#conjugates_consonant_aorist_from_alypy_86"]
+evidence_status = "normative productive prediction"
+rationale = "Both documented regular formations are exhaustive and keep the past base independent."
+
+[[system]]
+id = "syn.verb.imperfect"
+recension = "synodal-russian"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "H, Yah, and Ah imperfect formations with aspect restrictions."
+profiles = ["abstract", "expanded", "expanded-accentless"]
+features = ["tense=imperfect", "person=3", "number=3", "formation=H|Yah|Ah", "aspect=imperfective|biaspectual"]
+subtypes = ["H", "Yah", "Ah"]
+verb_systems = ["finite:imperfect"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-VERB-IMPERFECT-H-ALYPY-87", "SYN-VERB-IMPERFECT-YAH-ALYPY-87", "SYN-VERB-IMPERFECT-AH-ALYPY-87"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §87"
+required_metadata = ["aspect", "independent imperfect base", "formation"]
+valid_inventory = "3 persons × singular/dual/plural for imperfective/biaspectual lexemes."
+invalid_inventory = "Perfective imperfect requests and irregular formation without exact data."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#rejects_perfective_imperfect"]
+evidence_status = "normative productive prediction"
+rationale = "Every regular formation and aspect boundary is typed and exhaustive."
+
+[[system]]
+id = "syn.verb.future"
+recension = "synodal-russian"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Simple future and lexeme-specific future paradigms."
+profiles = ["expanded", "liturgical"]
+features = ["tense=future", "person=3", "number=3", "formation=simple|suppletive"]
+subtypes = ["simple-future", "suppletive-future"]
+verb_systems = ["finite:future"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "exact-only-partial"
+rule_ids = ["SYN-VERB-FUTURE-EXACT", "SYN-VERB-FUTURE-PRODUCTIVE-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "synodal-target-text-union"]
+citation = "Current engine has the exact nine-cell simple future of быти but no general future formation."
+required_metadata = ["stable identity", "future formation", "future principal parts or complete irregular table"]
+valid_inventory = "3 persons × singular/dual/plural where licensed."
+invalid_inventory = "Inferring future from present or aspect alone."
+implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic-core/src/grammar.rs"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#byti_future_is_an_exact_normative_table"]
+evidence_status = "one complete exact irregular table and sparse exact cells"
+gap = "Determine the source-defined productive/simple-future classes and complete all irregular future inventories."
+
+[[system]]
+id = "syn.verb.past-underspecified"
+recension = "synodal-russian"
+category = "finite-verb"
+part_of_speech = "verb"
+scope = "Source rows typed only as finite past without an aorist/imperfect distinction."
+profiles = ["expanded", "liturgical"]
+features = ["tense=past-undifferentiated", "person=3", "number=3", "evidence-resolution=typed"]
+subtypes = ["source-underspecified-past"]
+verb_systems = ["finite:past"]
+realization = "synthetic"
+state = "source-review-open"
+implementation_kind = "exact-only-partial"
+rule_ids = ["SYN-VERB-PAST-EXACT"]
+sources = ["synodal-target-text-union", "russian-national-corpus-church-slavonic", "alypy-gamanovich-grammar-web-2023"]
+citation = "FiniteTense::Past is documented as exact-only evidence that does not distinguish aorist from imperfect."
+required_metadata = ["source cell", "resolved historical formation if possible"]
+valid_inventory = "Exact source cells only unless evidence resolves the grammatical category."
+invalid_inventory = "Productive generation from an undifferentiated past label."
+implementation = ["crates/synodal-church-slavonic-core/src/grammar.rs", "crates/synodal-church-slavonic/src/resolver.rs"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#v04_exact_families_abstain_outside_reviewed_cells"]
+evidence_status = "underspecified exact source evidence"
+gap = "Audit every such row; reclassify it to aorist/imperfect/analytic where evidence permits or finalize a closed exact evidential category."
+
+[[system]]
+id = "syn.verb.imperative-infinitive-lparticiple"
+recension = "synodal-russian"
+category = "nonfinite-and-mood"
+part_of_speech = "verb"
+scope = "Synthetic imperative, lexical infinitive, and productive l-participle."
+profiles = ["abstract", "expanded", "expanded-accentless"]
+features = ["system=imperative|infinitive|l-participle", "person/number=typed", "gender/number=typed"]
+subtypes = ["imperative-first-unpalatalized", "imperative-i-series", "infinitive", "l-participle"]
+verb_systems = ["imperative", "infinitive", "l-participle"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-VERB-IMPERATIVE-ALYPY-93", "SYN-VERB-INFINITIVE-LEXICAL", "SYN-VERB-LPART-ALYPY-97"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §§79, 93, 97"
+required_metadata = ["lexical infinitive", "imperative stem/formation", "l-participle stem"]
+valid_inventory = "Six synthetic imperative cells, lexical infinitive, and gender × number l-participle cells."
+invalid_inventory = "1sg/3du/3pl synthetic imperative and missing independent stems."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#declines_independently_specified_participle_stems", "crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete"]
+evidence_status = "normative productive prediction"
+rationale = "The bounded word systems and invalid imperative inventory are fully typed."
+
+[[system]]
+id = "syn.verb.supine"
+recension = "synodal-russian"
+category = "nonfinite-verb"
+part_of_speech = "verb"
+scope = "Whether a Synodal supine is normatively licensed and, if so, its complete formation."
+profiles = ["abstract", "expanded", "liturgical"]
+features = ["system=supine", "formation=source-defined"]
+subtypes = ["supine"]
+verb_systems = ["supine"]
+realization = "synthetic"
+state = "source-review-open"
+implementation_kind = "represented-unsupported"
+rule_ids = ["SYN-VERB-SUPINE-REVIEW"]
+sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "docs/SYNODAL_MORPHOLOGY.md: target-recension normative inventory pending."
+required_metadata = ["normative category decision", "formation inputs if licensed"]
+valid_inventory = "None if absent; otherwise the complete source-defined contract."
+invalid_inventory = "Borrowing the OCS -ти → -тъ rule without a Synodal source."
+implementation = ["crates/synodal-church-slavonic/src/kernel.rs"]
+tests = ["crates/synodal-church-slavonic/src/spec.rs#unsupported_productive_verb_systems_fail_honestly"]
+evidence_status = "open normative source review"
+gap = "Finish source discovery and encode either productive-complete or absent-from-recension with citations."
+
+[[system]]
+id = "syn.verb.participle"
+recension = "synodal-russian"
+category = "participle"
+part_of_speech = "verb"
+scope = "Present/past active/passive short/long participles with complete agreement."
+profiles = ["abstract", "expanded", "expanded-accentless"]
+features = ["tense=present|past", "voice=active|passive", "form=short|long", "case=7", "number=3", "gender=3", "animacy=2", "aspect=typed"]
+subtypes = ["present-active-short", "present-active-long", "present-passive-short", "present-passive-long", "past-active-short", "past-active-long", "past-passive-short", "past-passive-long"]
+verb_systems = ["participle:present:active:short", "participle:present:active:long", "participle:present:passive:short", "participle:present:passive:long", "participle:past:active:short", "participle:past:active:long", "participle:past:passive:short", "participle:past:passive:long"]
+realization = "synthetic"
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-VERB-PARTICIPLE-PRESENT-ACTIVE-ALYPY-95", "SYN-VERB-PARTICIPLE-PAST-ACTIVE-ALYPY-96", "SYN-VERB-PARTICIPLE-PRESENT-PASSIVE-ALYPY-99", "SYN-VERB-PARTICIPLE-PAST-PASSIVE-ALYPY-100", "SYN-VERB-PARTICIPLE-PRESENT-ACTIVE-SHORT-ALYPY-95-98", "SYN-VERB-PARTICIPLE-PAST-ACTIVE-SHORT-ALYPY-96-98"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §§95–100"
+required_metadata = ["independent tense/voice short and/or long stems", "short active formation", "class", "aspect"]
+valid_inventory = "All eight tense × voice × form systems over their complete valid agreement inventories."
+invalid_inventory = "Vocative short active forms, perfective present participles, and missing requested stems."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#alpy_58_95_96_98_complete_short_comparison_goldens", "crates/synodal-church-slavonic/src/lib.rs#declined_participle_paradigm_uses_reviewed_principal_parts"]
+evidence_status = "normative productive prediction"
+rationale = "Strict specifications cover every valid agreement cell from independent tense/voice principal parts."
+
+[[system]]
+id = "syn.verb.verbal-noun"
+recension = "synodal-russian"
+category = "verbal-noun"
+part_of_speech = "verb"
+scope = "Productive verbal-noun formation and complete animate/inanimate noun paradigms."
+profiles = ["abstract", "expanded", "liturgical"]
+features = ["system=verbal-noun", "animacy=2", "formation=typed", "noun-declension=typed", "case=7", "number=3"]
+subtypes = ["verbal-noun-inanimate", "verbal-noun-animate"]
+verb_systems = ["verbal-noun:inanimate", "verbal-noun:animate"]
+realization = "synthetic"
+state = "implementation-missing"
+implementation_kind = "represented-unsupported"
+rule_ids = ["SYN-VERB-VERBAL-NOUN-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "docs/SYNODAL_MORPHOLOGY.md: stem tuple is represented but suffix/declension realization is not established."
+required_metadata = ["verbal-noun stem/suffix formation", "noun declension", "gender", "number inventory", "accent"]
+valid_inventory = "Every resulting noun cell when the closed formation is licensed."
+invalid_inventory = "Unrestricted lexical derivation and guessed suffixes."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/kernel.rs"]
+tests = ["crates/synodal-church-slavonic/src/spec.rs#unsupported_productive_verb_systems_fail_honestly"]
+evidence_status = "typed metadata seam without productive realization"
+gap = "Review the target grammar's suffix/class contracts and implement the closed formations without expanding into unrestricted derivation."
+
+[[system]]
+id = "syn.verb.irregular"
+recension = "synodal-russian"
+category = "irregular-verb"
+part_of_speech = "verb"
+scope = "Irregular, suppletive, archaic, defective, impersonal, and lexeme-specific verb paradigms."
+profiles = ["expanded", "liturgical"]
+features = ["system=all", "suppletion=typed", "defectiveness=typed", "principal-parts=independent"]
+subtypes = ["быти", "дати", "рещи", "root", "suppletive", "defective", "impersonal"]
+realization = "synthetic-or-analytic"
+state = "implementation-missing"
+implementation_kind = "exact-and-productive-partial"
+rule_ids = ["SYN-REGISTRY-IRREGULAR-OVERRIDE", "SYN-VERB-IRREGULAR-COMPLETE-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "dyachenko-1900-scan", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "Alypy §§81, 103–104 and remaining verb sections"
+required_metadata = ["stable identity", "all principal parts", "complete exact irregular systems", "defective inventory", "accent"]
+valid_inventory = "Complete reviewed tables exist for selected systems of быти and дати."
+invalid_inventory = "Cells excluded by lexical defectiveness or absent evidence."
+implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "data/synodal/irregular_overrides.tsv"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#irregular_byti_is_exact_table_first", "crates/synodal-church-slavonic/src/lib.rs#reviewed_regular_verbs_expose_complete_independent_finite_systems"]
+evidence_status = "partial exact irregular and productive principal-part data"
+gap = "Complete the irregular source-union inventory and explicitly classify every missing/defective system."
+
+[[system]]
+id = "syn.analytic.current"
+recension = "synodal-russian"
+category = "analytic-form"
+part_of_speech = "verb"
+scope = "Compound future, perfect, pluperfect, conditional, and analytic passive."
+profiles = ["expanded", "liturgical"]
+features = ["construction=5", "components=typed", "roles=typed", "agreement=typed", "provenance=component"]
+subtypes = ["compound-future", "perfect", "pluperfect", "conditional", "analytic-passive"]
+realization = "analytic"
+state = "productive-complete"
+implementation_kind = "structured-composition"
+rule_ids = ["SYN-PHRASE-FUTURE-ALYPY-85", "SYN-PHRASE-PERFECT-ALYPY-88", "SYN-PHRASE-PLUPERFECT-ALYPY-89", "SYN-PHRASE-CONDITIONAL-ALYPY-91", "SYN-PHRASE-PASSIVE-ALYPY-101-102"]
+sources = ["alypy-gamanovich-grammar-web-2023"]
+citation = "Alypy §§85, 88–89, 91, 101–102"
+required_metadata = ["auxiliary identity/system", "main verb principal parts", "agreement features"]
+valid_inventory = "The five documented construction contracts."
+invalid_inventory = "Aspect/voice mismatches and missing component metadata."
+implementation = ["crates/synodal-church-slavonic/src/phrases.rs", "crates/synodal-church-slavonic-core/src/phrase.rs"]
+tests = ["crates/synodal-church-slavonic/src/phrases.rs#compound_future_uses_reviewed_auxiliary_and_infinitive", "crates/synodal-church-slavonic/src/phrases.rs#perfect_is_structured_not_a_fake_word", "crates/synodal-church-slavonic/src/phrases.rs#pluperfect_and_conditional_use_independent_copular_systems", "crates/synodal-church-slavonic/src/phrases.rs#analytic_passive_is_structured_and_voice_checked"]
+evidence_status = "normative structured prediction"
+rationale = "All five admitted constructions retain typed components, agreement checks, and provenance."
+
+[[system]]
+id = "syn.analytic.wider"
+recension = "synodal-russian"
+category = "analytic-form"
+part_of_speech = "verb"
+scope = "Wider Alypy §90 periphrastic inventory, dropped copulas, additional future auxiliaries, free agreement/government, and licensed word-order variants."
+profiles = ["expanded", "liturgical"]
+features = ["construction=typed", "auxiliary=typed", "copula-omission=typed", "agreement/government=typed", "word-order=typed"]
+subtypes = ["future-with-хотѣти", "future-with-начати", "dropped-copula", "wider-passive", "other-§90-periphrases"]
+realization = "analytic"
+state = "implementation-missing"
+implementation_kind = "partial-generic-token-builder"
+rule_ids = ["SYN-PHRASE-WIDER-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "docs/SYNODAL_MORPHOLOGY.md explicitly leaves these systems future work."
+required_metadata = ["auxiliary/particle identities", "component systems", "agreement/control", "word-order and omission policies"]
+valid_inventory = "To be established for each source-defined construction."
+invalid_inventory = "Unrestricted syntax and corpus co-occurrence without a grammatical rule."
+implementation = ["crates/synodal-church-slavonic/src/phrases.rs"]
+tests = ["crates/synodal-church-slavonic/src/phrases.rs#analytic_passive_is_structured_and_voice_checked"]
+evidence_status = "generic typed token support but no complete construction inventory"
+gap = "Crosswalk Alypy and target texts, then implement every licensed wider construction as a typed phrase."
+
+[[system]]
+id = "syn.orthography.canonical"
+recension = "synodal-russian"
+category = "orthography"
+part_of_speech = "cross"
+scope = "Validated Expanded and ExpandedAccentless word profiles, lookup normalization, Unicode safety, collation, and supported numeral notation."
+profiles = ["expanded", "expanded-accentless"]
+features = ["unicode=standard-only", "normalization=canonical", "historical-letters=preserved", "collation=UTN41-r1", "numerals=1-9999-plus-special"]
+subtypes = ["word-validation", "lookup", "collation", "transliteration", "cyrillic-numerals"]
+realization = "presentation"
+state = "productive-complete"
+implementation_kind = "pure-transform"
+rule_ids = ["SYN-ORTHOGRAPHY-EXPANDED", "SYN-COLLATION-UTN41-R1", "SYN-NUMERAL-NOTATION-ALYPY-5"]
+sources = ["unicode-tn41-revision-1", "alypy-gamanovich-grammar-web-2023"]
+citation = "docs/SYNODAL_ORTHOGRAPHY.md"
+required_metadata = ["validated word or explicit numeral context"]
+valid_inventory = "Documented expanded word validation, loss-reporting accent removal, collation, and numeral range."
+invalid_inventory = "Other scripts, private use, invalid combining sequences, unsupported myriad notation."
+implementation = ["crates/synodal-church-slavonic-core/src/orthography.rs", "crates/synodal-church-slavonic-core/src/collation.rs", "crates/synodal-church-slavonic-core/src/numeral.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/orthography.rs#validates_historical_letters_and_marks", "crates/synodal-church-slavonic-core/src/collation.rs#canonical_equivalents_get_identical_keys", "crates/synodal-church-slavonic-core/src/numeral.rs#matches_alypy_5_examples"]
+evidence_status = "normative technical and grammatical contract"
+rationale = "The declared bounded canonical profiles and notation range are fully implemented and fail closed outside scope."
+
+[[system]]
+id = "syn.orthography.liturgical-accent-abbreviation"
+recension = "synodal-russian"
+category = "orthography"
+part_of_speech = "cross"
+scope = "Language-wide liturgical accents, breathings, positional letters, titla, abbreviations, and printed realization."
+profiles = ["liturgical"]
+features = ["accent-paradigm=cell-scoped", "breathing=typed", "positional-letter=typed", "abbreviation=semantic", "combining-order=UTN41"]
+subtypes = ["fixed-accent", "mobile-accent", "irregular-accent", "positional-letters", "nomina-sacra", "other-abbreviations", "titla"]
+realization = "presentation"
+state = "implementation-missing"
+implementation_kind = "reviewed-exact-and-four-accent-paradigms"
+rule_ids = ["synodal-accent:mudr-fixed-stem", "synodal-accent:mati-fixed-stem", "synodal-accent:imya-mobile", "synodal-accent:nebo-mobile", "SYN-LITURGICAL-COMPLETE-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "unicode-tn41-revision-1", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "docs/SYNODAL_ORTHOGRAPHY.md current presentation limits"
+required_metadata = ["complete lexical accent paradigm", "breathing", "positional/abbreviation semantic identity", "exact printed overrides"]
+valid_inventory = "Four lexical accent paradigms and individually reviewed abbreviation cells today; language-wide inventory incomplete."
+invalid_inventory = "Stress guessing, blind substring contraction, or automatic positional rewrite across Alypy exceptions."
+implementation = ["crates/synodal-church-slavonic-core/src/accent.rs", "crates/synodal-church-slavonic/src/abbreviation.rs", "crates/synodal-church-slavonic-core/src/orthography.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/accent.rs#noun_case_scopes_are_disjoint_and_detect_overlap", "crates/synodal-church-slavonic/src/abbreviation.rs#contraction_requires_semantic_identity"]
+evidence_status = "small reviewed productive/exact subset"
+gap = "Classify every lexical accent/printed pattern in the source union and complete positional and abbreviation families without guessing."
+
+[[system]]
+id = "syn.lexicon.classification"
+recension = "synodal-russian"
+category = "lexicon"
+part_of_speech = "cross"
+scope = "Every inflectable lexeme in the locked Synodal source union receives a final typed classification and complete metadata."
+profiles = ["all"]
+features = ["identity=stable", "classification=productive|irregular|defective|indeclinable|ambiguous|excluded", "provenance=complete"]
+subtypes = ["productive", "closed-irregular", "defective", "indeclinable", "ambiguous", "disputed", "out-of-scope"]
+realization = "lexical-metadata"
+state = "implementation-missing"
+implementation_kind = "reviewed-registry-partial"
+rule_ids = ["SYN-LEXICON-UNION-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union", "dyachenko-1900-scan"]
+citation = "docs/SYNODAL_MORPHOLOGY.md current reviewed lexical surface: 833 lexemes, deliberately not language-wide."
+required_metadata = ["stable identity", "part of speech", "class/principal parts", "restrictions", "accent", "evidence"]
+valid_inventory = "Every inflectable lemma in the locked source union."
+invalid_inventory = "Other-recension, non-inflectional, or unresolved rows remain explicit classifications."
+implementation = ["data/synodal/lexemes.tsv", "data/synodal/principal_parts.tsv", "data/synodal/lexical_reviews.tsv"]
+tests = ["crates/synodal-church-slavonic-extractor/src/lib.rs#productive_lexical_upgrades_must_preserve_reviewed_identity"]
+evidence_status = "833 reviewed identities plus large unreviewed candidate queues"
+gap = "Define and exhaustively classify the locked source union; no candidate or rejected source row may remain silent."
+
+[[system]]
+id = "syn.invariant-parts-of-speech"
+recension = "synodal-russian"
+category = "invariant"
+part_of_speech = "cross"
+scope = "Adverbs, prepositions, conjunctions, particles, interjections, and other invariant lexical items."
+profiles = ["expanded", "liturgical"]
+features = ["inflection=none", "lexical-form=exact", "positional-variants=where-reviewed"]
+subtypes = ["adverb", "preposition", "conjunction", "particle", "interjection"]
+realization = "invariant"
+state = "not-inflectional"
+implementation_kind = "exact-lexical"
+rule_ids = ["SYN-NOT-INFLECTIONAL"]
+sources = ["alypy-gamanovich-grammar-web-2023", "synodal-target-text-union"]
+citation = "GrammarCell::Indeclinable and reviewed lexical registry."
+required_metadata = ["stable lexical identity", "part of speech", "printed override where needed"]
+valid_inventory = "The unchanged or explicitly printed lexical form."
+invalid_inventory = "All inflectional feature requests."
+implementation = ["crates/synodal-church-slavonic-core/src/grammar.rs", "crates/synodal-church-slavonic/src/resolver.rs"]
+tests = ["crates/synodal-church-slavonic-dictionary/src/coverage.rs#tokenizer_retains_abbreviations_numerals_and_hostile_marks"]
+evidence_status = "reviewed lexical exact forms"
+rationale = "These categories are explicitly outside inflection and must be lexically classified rather than productively declined."
+
+[[system]]
+id = "cross.open-lexicon-provider"
+recension = "cross-recension"
+category = "api"
+part_of_speech = "cross"
+scope = "Strict arbitrary-lexeme specifications and injectable lexical providers share the recension-owned productive kernels."
+profiles = ["all"]
+features = ["identity=stable", "specification=typed", "provider-composition=deterministic", "precedence=exact>irregular>productive"]
+subtypes = ["ocs-explicit-rules", "synodal-NounSpec", "synodal-AdjectiveSpec", "synodal-VerbSpec", "LexemeProvider", "ordered-batch"]
+realization = "api"
+state = "productive-complete"
+implementation_kind = "strict-api"
+rule_ids = ["OCS-ADVANCED-RULES", "SYN-LEXICON-PROVIDER-V10", "SYN-BATCH-V10"]
+sources = ["ut-ocs-online", "alypy-gamanovich-grammar-web-2023"]
+citation = "docs/API_DESIGN.md and docs/SYNODAL_MORPHOLOGY.md provider/spec sections"
+required_metadata = ["complete typed lexical specification", "stable identity/provenance for providers"]
+valid_inventory = "Every already implemented productive rule is available to a strict caller without registry membership."
+invalid_inventory = "Bare-spelling class guessing, provider identity conflicts, and contradictory metadata."
+implementation = ["crates/old-church-slavonic/src/advanced.rs", "crates/synodal-church-slavonic/src/spec.rs", "crates/synodal-church-slavonic/src/provider.rs"]
+tests = ["crates/old-church-slavonic/tests/public_api.rs#advanced_explicit_metadata_is_independent_and_typed", "crates/synodal-church-slavonic/src/provider.rs#provider_exact_irregular_productive_precedence_is_stable", "crates/synodal-church-slavonic/src/provider.rs#batch_retains_order_failures_and_error_codes"]
+evidence_status = "architecture/API contract"
+rationale = "Both stacks expose strict typed inputs for their current rules; provider composition and precedence are deterministic. New grammatical systems must extend these same seams."
+
+[[system]]
+id = "cross.provenance-and-prediction"
+recension = "cross-recension"
+category = "provenance"
+part_of_speech = "cross"
+scope = "Normative, exact, irregular, attested, inherited, predictive, disputed, and caller-specified outputs remain distinguishable."
+profiles = ["all"]
+features = ["source=stable", "evidence-role=typed", "target-recension=typed", "trace=ordered", "prediction=explicit"]
+subtypes = ["attested", "normative", "dictionary-table", "irregular", "inherited", "predictive", "disputed", "caller-specified"]
+realization = "result-metadata"
+state = "productive-complete"
+implementation_kind = "typed-result-contract"
+rule_ids = ["CROSS-PROVENANCE-CONTRACT"]
+sources = ["english-wiktionary-ocs-kaikki-2026-08-07", "alypy-gamanovich-grammar-web-2023", "synodal-target-text-union"]
+citation = "docs/ARCHITECTURE.md, docs/MORPHOLOGY_SPEC.md, and docs/SYNODAL_MORPHOLOGY.md"
+required_metadata = ["source", "target recension", "evidence kind", "rule/trace"]
+valid_inventory = "Every successful variant."
+invalid_inventory = "Cross-recension provenance or a generated form labeled attested without passage evidence."
+implementation = ["crates/old-church-slavonic-core/src/result.rs", "crates/synodal-church-slavonic-core/src/result.rs", "crates/synodal-church-slavonic-core/src/evidence.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/result.rs#attestation_outranks_generation", "crates/synodal-church-slavonic-core/src/result.rs#refuses_inconsistent_cross_recension_provenance"]
+evidence_status = "architecture invariant"
+rationale = "The current typed result systems preserve provenance and reject cross-recension evidence; completion work must retain this invariant."
+
+[[system]]
+id = "cross.source-frontier"
+recension = "cross-recension"
+category = "research"
+part_of_speech = "cross"
+scope = "Reproducible multilingual source discovery, lineage accounting, conflict retention, and two-pass convergence."
+profiles = ["all"]
+features = ["bibliography=stable", "revision/hash=recorded", "license=recorded", "lineage=recorded", "sections/rules=linked", "discovery-passes=converged"]
+subtypes = ["grammar", "dictionary", "critical-edition", "corpus", "technical-standard", "secondary-discovery"]
+realization = "research-ledger"
+state = "source-review-open"
+implementation_kind = "one-discovery-pass"
+rule_ids = ["SOURCE-FRONTIER-CONVERGENCE"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs", "english-wiktionary-ocs-kaikki-2026-08-07", "ud-ocs-proiel-r2.18", "syntacticus-20230428", "ccmh-2021-04-23", "alypy-gamanovich-grammar-web-2023", "unicode-tn41-revision-1", "russian-national-corpus-church-slavonic", "gorazd", "dyachenko-1900-scan", "synodal-target-text-union"]
+citation = "data/morphology/source_frontier.toml"
+required_metadata = ["complete source record", "authority and epistemic roles", "lineage", "reviewed sections", "impact/conflicts", "discovery pass"]
+valid_inventory = "All eligible and considered sources."
+invalid_inventory = "Mirrors counted as independent or inaccessible sources silently omitted."
+implementation = ["data/morphology/source_frontier.toml", "references/SOURCES.toml"]
+tests = ["crates/xtask/src/morphology_completeness.rs#source_frontier_is_complete_and_lineage_aware"]
+evidence_status = "seed plus multilingual discovery pass 1"
+gap = "Complete source crosswalks and at least two consecutive post-seed passes with no contract-changing eligible source."
+
+[[system]]
+id = "cross.corpus-and-heldout-evaluation"
+recension = "cross-recension"
+category = "evaluation"
+part_of_speech = "cross"
+scope = "Leakage-resistant goldens, held-out lexemes, corpus counterexamples, and deterministic evaluation independent of frequency optimization."
+profiles = ["all"]
+features = ["golden=complete", "heldout=independent", "corpus=counterexample-not-oracle", "partition=disjoint", "provenance=retained"]
+subtypes = ["complete-goldens", "heldout-lexemes", "UD/Syntacticus", "CCMH", "Synodal-target-text", "linguistic-contracts"]
+realization = "evaluation"
+state = "productive-complete"
+implementation_kind = "offline-evaluation"
+rule_ids = ["CROSS-EVALUATION-CONTRACT"]
+sources = ["ud-ocs-proiel-r2.18", "syntacticus-20230428", "ccmh-2021-04-23", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "docs/CORPUS_EVALUATION.md and data/synodal/linguistic_evaluation.tsv"
+required_metadata = ["pinned source", "partition", "cell mapping", "expected provenance or typed failure"]
+valid_inventory = "Current deterministic evaluators and fixtures."
+invalid_inventory = "Training/heldout leakage and corpus absence treated as ungrammaticality."
+implementation = ["crates/xtask/src/corpus.rs", "crates/synodal-church-slavonic/tests/linguistic_evaluation.rs"]
+tests = ["crates/xtask/src/corpus.rs#frozen_corpus_partition_witnesses_do_not_drift", "crates/synodal-church-slavonic/tests/linguistic_evaluation.rs#curated_linguistic_contracts_pass_without_frequency_weighting"]
+evidence_status = "method complete for current rules; validation set must grow with each new rule"
+rationale = "The evaluation architecture enforces disjointness and typed mappings; every new completion checkpoint must add independent coverage."

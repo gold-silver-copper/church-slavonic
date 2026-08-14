@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 mod corpus;
+mod morphology_completeness;
 mod report_io;
 mod sources;
 mod synodal;
@@ -127,6 +128,9 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-v07-audit") => synodal_v07_audit::run(&mut args, &workspace_root()?),
         Some("synodal-engine-audit") => {
             synodal_v08_engine_audit::run(&mut args, &workspace_root()?)
+        }
+        Some("morphology-completeness") => {
+            morphology_completeness::run(&mut args, &workspace_root()?)
         }
         Some("check-all") => check_all(),
         Some("check-structure") => check_structure(),
@@ -2181,6 +2185,7 @@ fn check_structure() -> Result<(), Box<dyn Error>> {
     check_attribution(&root)?;
     synodal::check(&root)?;
     synodal_v08_engine_audit::run(&mut ["--check".to_owned()].into_iter(), &root)?;
+    morphology_completeness::check_progress_artifacts(&root)?;
     examples()
 }
 
@@ -3380,6 +3385,7 @@ fn print_help() {
     eprintln!("  synodal-v07-apply [--check | --refresh-ownership]");
     eprintln!("  synodal-v07-audit [--check]");
     eprintln!("  synodal-engine-audit [--check]");
+    eprintln!("  morphology-completeness [--check]");
     eprintln!("  check-all");
     eprintln!("  check-structure");
 }
