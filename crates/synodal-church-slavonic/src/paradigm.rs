@@ -202,32 +202,16 @@ impl Paradigm {
 }
 
 pub(crate) fn noun_cells(animacy: Animacy) -> Vec<GrammarCell> {
-    Number::ALL
+    NounCell::inventory(&[animacy])
         .into_iter()
-        .flat_map(|number| {
-            Case::ALL.into_iter().map(move |case| {
-                GrammarCell::Noun(synodal_church_slavonic_core::NounCell {
-                    case,
-                    number,
-                    animacy,
-                })
-            })
-        })
+        .map(GrammarCell::Noun)
         .collect()
 }
 
 pub(crate) fn finite_cells(tense: FiniteTense) -> Vec<GrammarCell> {
-    Number::ALL
+    FiniteVerbCell::inventory(&[tense])
         .into_iter()
-        .flat_map(|number| {
-            Person::ALL.into_iter().map(move |person| {
-                GrammarCell::FiniteVerb(FiniteVerbCell {
-                    tense,
-                    person,
-                    number,
-                })
-            })
-        })
+        .map(GrammarCell::FiniteVerb)
         .collect()
 }
 
@@ -253,64 +237,27 @@ pub(crate) fn verb_cells(system: VerbSystem) -> Vec<GrammarCell> {
             .collect(),
         VerbSystem::Participle { tense, voice, form } => participle_cells(tense, voice, form),
         VerbSystem::Supine => vec![GrammarCell::Supine],
-        VerbSystem::VerbalNoun { animacy } => Number::ALL
+        VerbSystem::VerbalNoun { animacy } => NounCell::inventory(&[animacy])
             .into_iter()
-            .flat_map(|number| {
-                Case::ALL.into_iter().map(move |case| {
-                    GrammarCell::VerbalNoun(NounCell {
-                        case,
-                        number,
-                        animacy,
-                    })
-                })
-            })
+            .map(GrammarCell::VerbalNoun)
             .collect(),
     }
 }
 
 pub(crate) fn adjective_cells(form: AdjectiveForm) -> Vec<AdjectiveCell> {
-    Number::ALL
-        .into_iter()
-        .flat_map(|number| {
-            Case::ALL.into_iter().flat_map(move |case| {
-                Gender::ALL.into_iter().flat_map(move |gender| {
-                    let animacies: &[Animacy] = if case == Case::Accusative {
-                        &Animacy::ALL
-                    } else {
-                        &[Animacy::Inanimate]
-                    };
-                    animacies.iter().copied().map(move |animacy| AdjectiveCell {
-                        case,
-                        number,
-                        gender,
-                        animacy,
-                        form,
-                        comparison: Comparison::Positive,
-                    })
-                })
-            })
-        })
-        .collect()
+    AdjectiveCell::inventory(&[form], &[Comparison::Positive], |case| {
+        if case == Case::Accusative {
+            &Animacy::ALL
+        } else {
+            &[Animacy::Inanimate]
+        }
+    })
 }
 
 pub(crate) fn pronoun_cells(profiles: &[(Option<Gender>, Option<Person>)]) -> Vec<GrammarCell> {
-    Number::ALL
+    PronounCell::inventory(profiles)
         .into_iter()
-        .flat_map(|number| {
-            Case::ALL.into_iter().flat_map(move |case| {
-                profiles.iter().copied().flat_map(move |(gender, person)| {
-                    Animacy::ALL.into_iter().map(move |animacy| {
-                        GrammarCell::Pronoun(PronounCell {
-                            case,
-                            number,
-                            gender,
-                            person,
-                            animacy,
-                        })
-                    })
-                })
-            })
-        })
+        .map(GrammarCell::Pronoun)
         .collect()
 }
 
@@ -321,23 +268,9 @@ pub(crate) fn numeral_cells(kind: NumeralKind) -> Vec<GrammarCell> {
         Some(Gender::Neuter),
         None,
     ];
-    Number::ALL
+    NumeralCell::inventory(&[kind], &genders)
         .into_iter()
-        .flat_map(|number| {
-            Case::ALL.into_iter().flat_map(move |case| {
-                genders.into_iter().flat_map(move |gender| {
-                    Animacy::ALL.into_iter().map(move |animacy| {
-                        GrammarCell::Numeral(NumeralCell {
-                            kind,
-                            case,
-                            number,
-                            gender,
-                            animacy,
-                        })
-                    })
-                })
-            })
-        })
+        .map(GrammarCell::Numeral)
         .collect()
 }
 
@@ -346,15 +279,10 @@ pub(crate) fn participle_cells(
     voice: ParticipleVoice,
     form: AdjectiveForm,
 ) -> Vec<GrammarCell> {
-    adjective_cells(form)
+    let agreements = adjective_cells(form);
+    ParticipleCell::inventory(&[tense], &[voice], &agreements)
         .into_iter()
-        .map(|agreement| {
-            GrammarCell::Participle(ParticipleCell {
-                tense,
-                voice,
-                agreement,
-            })
-        })
+        .map(GrammarCell::Participle)
         .collect()
 }
 

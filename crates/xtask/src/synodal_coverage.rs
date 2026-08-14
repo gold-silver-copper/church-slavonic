@@ -4,6 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use crate::report_io::write_if_changed_atomic;
 use serde::Deserialize;
 use synodal_church_slavonic::{GenerationPolicy, Inflector, OrthographyProfile};
 use synodal_church_slavonic_dictionary::coverage::{
@@ -106,9 +107,9 @@ pub(crate) fn run(
         check_contents(&markdown_path, &markdown)?;
         check_contents(&queue_path, &queue)?;
     } else {
-        write_if_changed(&json_path, &json)?;
-        write_if_changed(&markdown_path, &markdown)?;
-        write_if_changed(&queue_path, &queue)?;
+        write_if_changed_atomic(&json_path, &json)?;
+        write_if_changed_atomic(&markdown_path, &markdown)?;
+        write_if_changed_atomic(&queue_path, &queue)?;
     }
     println!(
         "Synodal coverage: {} passages, {} tokens, {} types, {} top-k, {} unresolved",
@@ -229,24 +230,6 @@ fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
     } else {
         Err(format!("stale {}; rerun synodal-coverage", path.display()).into())
     }
-}
-
-fn write_if_changed(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).is_ok_and(|current| current == contents) {
-        return Ok(());
-    }
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent)?;
-    }
-    let temporary = path.with_extension(format!(
-        "{}.tmp",
-        path.extension()
-            .and_then(|value| value.to_str())
-            .unwrap_or("new")
-    ));
-    fs::write(&temporary, contents)?;
-    fs::rename(temporary, path)?;
-    Ok(())
 }
 
 #[cfg(test)]

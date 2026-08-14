@@ -5,11 +5,12 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use serde::{Deserialize, Serialize};
 use synodal_church_slavonic::{
-    AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, Error, FiniteTense, FiniteVerbCell,
-    Gender, GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, LexemeSummary,
+    AdjectiveCell, AdjectiveForm, Animacy, Comparison, Error, FiniteTense, FiniteVerbCell, Gender,
+    GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, LexemeSummary,
     LexicalMetadataSummary, MetadataField, Number, NumeralCell, NumeralKind, PartOfSpeech,
     ParticipleCell, ParticipleTense, ParticipleVoice, Person, PronounCell, Result, abbreviation,
-    capabilities_by_id, lexemes, lexical_metadata, missing_metadata_by_id,
+    capabilities_by_id, grammar_cell_registry_keys, lexemes, lexical_metadata,
+    missing_metadata_by_id,
 };
 use synodal_church_slavonic_core::{
     Confidence, FormSource, RecensionMappingId, RuleTrace, SynodalWord, normalize_lookup_accentless,
@@ -765,6 +766,18 @@ fn analysis_source(source: &FormSource) -> AnalysisSource {
 /// Unsupported cells still fail through the facade's typed error contract.
 #[must_use]
 pub fn candidate_cells(part_of_speech: PartOfSpeech) -> Vec<GrammarCell> {
+    const OPTIONAL_GENDERS: [Option<Gender>; 4] = [
+        None,
+        Some(Gender::Masculine),
+        Some(Gender::Feminine),
+        Some(Gender::Neuter),
+    ];
+    const OPTIONAL_PERSONS: [Option<Person>; 4] = [
+        None,
+        Some(Person::First),
+        Some(Person::Second),
+        Some(Person::Third),
+    ];
     let mut cells = match part_of_speech {
         PartOfSpeech::Adverb
         | PartOfSpeech::Preposition
@@ -773,128 +786,40 @@ pub fn candidate_cells(part_of_speech: PartOfSpeech) -> Vec<GrammarCell> {
         | PartOfSpeech::Interjection => {
             vec![GrammarCell::Indeclinable]
         }
-        PartOfSpeech::Noun | PartOfSpeech::ProperNoun => Number::ALL
+        PartOfSpeech::Noun | PartOfSpeech::ProperNoun => core::NounCell::inventory(&Animacy::ALL)
             .into_iter()
-            .flat_map(|number| {
-                Case::ALL.into_iter().flat_map(move |case| {
-                    Animacy::ALL.into_iter().map(move |animacy| {
-                        GrammarCell::Noun(core::NounCell {
-                            case,
-                            number,
-                            animacy,
-                        })
-                    })
-                })
-            })
+            .map(GrammarCell::Noun)
             .collect(),
-        PartOfSpeech::Adjective => Number::ALL
-            .into_iter()
-            .flat_map(|number| {
-                Case::ALL.into_iter().flat_map(move |case| {
-                    Gender::ALL.into_iter().flat_map(move |gender| {
-                        Animacy::ALL.into_iter().flat_map(move |animacy| {
-                            AdjectiveForm::ALL.into_iter().flat_map(move |form| {
-                                Comparison::ALL.into_iter().map(move |comparison| {
-                                    GrammarCell::Adjective(AdjectiveCell {
-                                        case,
-                                        number,
-                                        gender,
-                                        animacy,
-                                        form,
-                                        comparison,
-                                    })
-                                })
-                            })
-                        })
-                    })
-                })
-            })
-            .collect(),
+        PartOfSpeech::Adjective => {
+            AdjectiveCell::inventory(&AdjectiveForm::ALL, &Comparison::ALL, |_| &Animacy::ALL)
+                .into_iter()
+                .map(GrammarCell::Adjective)
+                .collect()
+        }
         PartOfSpeech::Verb => verb_cells(),
-        PartOfSpeech::Pronoun => Number::ALL
-            .into_iter()
-            .flat_map(|number| {
-                Case::ALL.into_iter().flat_map(move |case| {
-                    [
-                        None,
-                        Some(Gender::Masculine),
-                        Some(Gender::Feminine),
-                        Some(Gender::Neuter),
-                    ]
-                    .into_iter()
-                    .flat_map(move |gender| {
-                        [
-                            None,
-                            Some(Person::First),
-                            Some(Person::Second),
-                            Some(Person::Third),
-                        ]
+        PartOfSpeech::Pronoun => PronounCell::inventory(
+            &OPTIONAL_GENDERS
+                .into_iter()
+                .flat_map(|gender| {
+                    OPTIONAL_PERSONS
                         .into_iter()
-                        .flat_map(move |person| {
-                            Animacy::ALL.into_iter().map(move |animacy| {
-                                GrammarCell::Pronoun(PronounCell {
-                                    case,
-                                    number,
-                                    gender,
-                                    person,
-                                    animacy,
-                                })
-                            })
-                        })
-                    })
+                        .map(move |person| (gender, person))
                 })
-            })
-            .collect(),
-        PartOfSpeech::Numeral => NumeralKind::ALL
+                .collect::<Vec<_>>(),
+        )
+        .into_iter()
+        .map(GrammarCell::Pronoun)
+        .collect(),
+        PartOfSpeech::Numeral => NumeralCell::inventory(&NumeralKind::ALL, &OPTIONAL_GENDERS)
             .into_iter()
-            .flat_map(|kind| {
-                Number::ALL.into_iter().flat_map(move |number| {
-                    Case::ALL.into_iter().flat_map(move |case| {
-                        [
-                            None,
-                            Some(Gender::Masculine),
-                            Some(Gender::Feminine),
-                            Some(Gender::Neuter),
-                        ]
-                        .into_iter()
-                        .flat_map(move |gender| {
-                            Animacy::ALL.into_iter().map(move |animacy| {
-                                GrammarCell::Numeral(NumeralCell {
-                                    kind,
-                                    case,
-                                    number,
-                                    gender,
-                                    animacy,
-                                })
-                            })
-                        })
-                    })
-                })
-            })
+            .map(GrammarCell::Numeral)
             .collect(),
-        PartOfSpeech::Determiner => Number::ALL
-            .into_iter()
-            .flat_map(|number| {
-                Case::ALL.into_iter().flat_map(move |case| {
-                    Gender::ALL.into_iter().flat_map(move |gender| {
-                        Animacy::ALL.into_iter().flat_map(move |animacy| {
-                            AdjectiveForm::ALL.into_iter().flat_map(move |form| {
-                                Comparison::ALL.into_iter().map(move |comparison| {
-                                    GrammarCell::Determiner(AdjectiveCell {
-                                        case,
-                                        number,
-                                        gender,
-                                        animacy,
-                                        form,
-                                        comparison,
-                                    })
-                                })
-                            })
-                        })
-                    })
-                })
-            })
-            .collect(),
+        PartOfSpeech::Determiner => {
+            AdjectiveCell::inventory(&AdjectiveForm::ALL, &Comparison::ALL, |_| &Animacy::ALL)
+                .into_iter()
+                .map(GrammarCell::Determiner)
+                .collect()
+        }
         PartOfSpeech::Participle => Vec::new(),
     };
     cells.push(GrammarCell::LexicalForm);
@@ -924,7 +849,7 @@ pub(crate) fn analysis_cells_for_lexeme(
         .collect();
     let mut cells = BTreeSet::new();
     for cell in candidate_cells(lexeme.part_of_speech()) {
-        if exact_lookup_keys(cell)
+        if grammar_cell_registry_keys(cell)
             .iter()
             .any(|key| exact_keys.contains(key.as_str()))
             || productive_cell_is_supported(cell, &metadata, &capabilities)
@@ -1059,70 +984,10 @@ fn number_is_licensed(inventory: &str, number: Number) -> bool {
     }
 }
 
-fn exact_lookup_keys(cell: GrammarCell) -> Vec<String> {
-    let mut keys = vec![cell.key()];
-    match cell {
-        GrammarCell::Adjective(_) | GrammarCell::Determiner(_) | GrammarCell::Participle(_) => {
-            let neutral = keys[0]
-                .replace(":inanimate:", ":any:")
-                .replace(":animate:", ":any:");
-            if neutral != keys[0] {
-                keys.push(neutral);
-            }
-        }
-        GrammarCell::Pronoun(cell) => keys.push(format!(
-            "pronoun:{}:{}:{}:{}:any",
-            cell.case.code(),
-            cell.number.code(),
-            cell.gender.map_or("any", Gender::code),
-            cell.person.map_or("none", Person::code),
-        )),
-        GrammarCell::Numeral(cell) => {
-            if cell.gender.is_some() {
-                keys.push(format!(
-                    "numeral:{}:{}:{}:any:{}",
-                    cell.kind.code(),
-                    cell.case.code(),
-                    cell.number.code(),
-                    cell.animacy.code(),
-                ));
-            }
-            keys.push(format!(
-                "numeral:{}:{}:{}:{}:any",
-                cell.kind.code(),
-                cell.case.code(),
-                cell.number.code(),
-                cell.gender.map_or("any", Gender::code),
-            ));
-            if cell.gender.is_some() {
-                keys.push(format!(
-                    "numeral:{}:{}:{}:any:any",
-                    cell.kind.code(),
-                    cell.case.code(),
-                    cell.number.code(),
-                ));
-            }
-        }
-        _ => {}
-    }
-    keys.dedup();
-    keys
-}
-
 fn verb_cells() -> Vec<GrammarCell> {
-    let mut cells: Vec<GrammarCell> = FiniteTense::ALL
+    let mut cells: Vec<GrammarCell> = FiniteVerbCell::inventory(&FiniteTense::ALL)
         .into_iter()
-        .flat_map(|tense| {
-            Number::ALL.into_iter().flat_map(move |number| {
-                Person::ALL.into_iter().map(move |person| {
-                    GrammarCell::FiniteVerb(FiniteVerbCell {
-                        tense,
-                        person,
-                        number,
-                    })
-                })
-            })
-        })
+        .map(GrammarCell::FiniteVerb)
         .collect();
     cells.push(GrammarCell::Infinitive);
     cells.push(GrammarCell::Supine);
@@ -1134,43 +999,19 @@ fn verb_cells() -> Vec<GrammarCell> {
             cells.push(GrammarCell::Imperative(ImperativeCell { person, number }));
         }
     }
-    for tense in ParticipleTense::ALL {
-        for voice in ParticipleVoice::ALL {
-            for number in Number::ALL {
-                for case in Case::ALL {
-                    for gender in Gender::ALL {
-                        for animacy in Animacy::ALL {
-                            for form in AdjectiveForm::ALL {
-                                cells.push(GrammarCell::Participle(ParticipleCell {
-                                    tense,
-                                    voice,
-                                    agreement: AdjectiveCell {
-                                        case,
-                                        number,
-                                        gender,
-                                        animacy,
-                                        form,
-                                        comparison: Comparison::Positive,
-                                    },
-                                }));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    for number in Number::ALL {
-        for case in Case::ALL {
-            for animacy in Animacy::ALL {
-                cells.push(GrammarCell::VerbalNoun(core::NounCell {
-                    case,
-                    number,
-                    animacy,
-                }));
-            }
-        }
-    }
+    let agreements = AdjectiveCell::inventory(&AdjectiveForm::ALL, &[Comparison::Positive], |_| {
+        &Animacy::ALL
+    });
+    cells.extend(
+        ParticipleCell::inventory(&ParticipleTense::ALL, &ParticipleVoice::ALL, &agreements)
+            .into_iter()
+            .map(GrammarCell::Participle),
+    );
+    cells.extend(
+        core::NounCell::inventory(&Animacy::ALL)
+            .into_iter()
+            .map(GrammarCell::VerbalNoun),
+    );
     cells
 }
 
@@ -1218,6 +1059,7 @@ fn levenshtein(left: &str, right: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use synodal_church_slavonic::Case;
 
     #[test]
     fn semantic_lookup_keeps_source_recension_visible() {
@@ -1241,12 +1083,30 @@ mod tests {
     #[test]
     fn verb_candidate_inventory_includes_every_represented_system() {
         let cells = candidate_cells(PartOfSpeech::Verb);
+        assert_eq!(cells.len(), 1_116);
         assert!(cells.contains(&GrammarCell::Supine));
         assert!(
             cells
                 .iter()
                 .any(|cell| matches!(cell, GrammarCell::VerbalNoun(_)))
         );
+    }
+
+    #[test]
+    fn candidate_inventory_sizes_remain_exhaustive_and_stable() {
+        for (part_of_speech, expected) in [
+            (PartOfSpeech::Adverb, 2),
+            (PartOfSpeech::Noun, 43),
+            (PartOfSpeech::Adjective, 757),
+            (PartOfSpeech::Pronoun, 673),
+            (PartOfSpeech::Numeral, 505),
+            (PartOfSpeech::Determiner, 757),
+            (PartOfSpeech::Participle, 1),
+        ] {
+            let cells = candidate_cells(part_of_speech);
+            assert_eq!(cells.len(), expected, "{part_of_speech:?}");
+            assert_eq!(cells.last(), Some(&GrammarCell::LexicalForm));
+        }
     }
 
     #[test]

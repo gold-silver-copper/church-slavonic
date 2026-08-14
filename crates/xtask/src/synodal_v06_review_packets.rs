@@ -5,6 +5,7 @@ use std::{
     path::Path,
 };
 
+use crate::report_io::{check_contents_for, read_json, write_if_changed_atomic};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic::{GenerationPolicy, LexemeId, OrthographyProfile};
@@ -256,9 +257,9 @@ pub(crate) fn run(
     ];
     for (path, contents) in outputs {
         if check {
-            check_contents(&path, &contents)?;
+            check_contents_for(&path, &contents, "synodal-v06-review-packets")?;
         } else {
-            write_if_changed(&path, &contents)?;
+            write_if_changed_atomic(&path, &contents)?;
         }
     }
     println!(
@@ -750,33 +751,6 @@ fn union<'a>(items: impl Iterator<Item = &'a String>) -> Vec<String> {
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect()
-}
-
-fn read_json<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, Box<dyn Error>> {
-    Ok(serde_json::from_str(&fs::read_to_string(path)?)?)
-}
-
-fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(expected) {
-        Ok(())
-    } else {
-        Err(format!("stale {}; rerun synodal-v06-review-packets", path.display()).into())
-    }
-}
-
-fn write_if_changed(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(contents) {
-        return Ok(());
-    }
-    let temporary = path.with_extension(format!(
-        "{}.tmp",
-        path.extension()
-            .and_then(|extension| extension.to_str())
-            .unwrap_or("new")
-    ));
-    fs::write(&temporary, contents)?;
-    fs::rename(temporary, path)?;
-    Ok(())
 }
 
 fn tsv(value: &str) -> String {

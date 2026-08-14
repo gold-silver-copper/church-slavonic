@@ -6,6 +6,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use crate::report_io::{check_contents, write_if_changed};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic_core::normalize_lookup_accentless;
@@ -1213,21 +1214,6 @@ fn proposal_tsv(proposals: &[FamilyProposal]) -> String {
         output.push('\n');
     }
     output
-}
-
-fn write_if_changed(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() != Some(contents) {
-        fs::write(path, contents)?;
-    }
-    Ok(())
-}
-
-fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(expected) {
-        Ok(())
-    } else {
-        Err(format!("{} is stale", path.display()).into())
-    }
 }
 
 #[cfg(test)]

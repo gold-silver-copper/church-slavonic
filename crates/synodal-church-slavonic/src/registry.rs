@@ -72,6 +72,32 @@ impl PartOfSpeech {
         Self::Numeral,
         Self::Participle,
     ];
+
+    /// Returns the stable code used by reviewed registries and CLI output.
+    #[must_use]
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::Adverb => "adverb",
+            Self::Preposition => "preposition",
+            Self::Conjunction => "conjunction",
+            Self::Particle => "particle",
+            Self::Interjection => "interjection",
+            Self::ProperNoun => "proper-noun",
+            Self::Noun => "noun",
+            Self::Adjective => "adjective",
+            Self::Verb => "verb",
+            Self::Pronoun => "pronoun",
+            Self::Determiner => "determiner",
+            Self::Numeral => "numeral",
+            Self::Participle => "participle",
+        }
+    }
+
+    /// Parses an exact stable registry code.
+    #[must_use]
+    pub fn from_code(value: &str) -> Option<Self> {
+        Self::ALL.into_iter().find(|part| part.code() == value)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1127,22 +1153,9 @@ fn summary(row: &RawLexeme) -> Result<LexemeSummary> {
 }
 
 fn parse_pos(value: &str) -> Result<PartOfSpeech> {
-    match value {
-        "adverb" => Ok(PartOfSpeech::Adverb),
-        "preposition" => Ok(PartOfSpeech::Preposition),
-        "conjunction" => Ok(PartOfSpeech::Conjunction),
-        "particle" => Ok(PartOfSpeech::Particle),
-        "interjection" => Ok(PartOfSpeech::Interjection),
-        "proper-noun" => Ok(PartOfSpeech::ProperNoun),
-        "noun" => Ok(PartOfSpeech::Noun),
-        "adjective" => Ok(PartOfSpeech::Adjective),
-        "verb" => Ok(PartOfSpeech::Verb),
-        "pronoun" => Ok(PartOfSpeech::Pronoun),
-        "determiner" => Ok(PartOfSpeech::Determiner),
-        "numeral" => Ok(PartOfSpeech::Numeral),
-        "participle" => Ok(PartOfSpeech::Participle),
-        other => invalid_metadata("part of speech", other),
-    }
+    PartOfSpeech::from_code(value).ok_or_else(|| Error::ContradictoryMetadata {
+        reason: format!("unknown part of speech code {value:?}"),
+    })
 }
 
 fn parse_gender(value: &str) -> Result<Gender> {

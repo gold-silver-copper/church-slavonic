@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 mod corpus;
+mod report_io;
 mod sources;
 mod synodal;
 mod synodal_coverage;
