@@ -260,3 +260,83 @@ Targeted all-feature tests passed for Synodal core, facade, dictionary, CLI,
 and `xtask`, including the independent exhaustive analyzer oracle. The final
 workspace commands, platform builds, documentation build, package checks, and
 independent diff review are recorded in the pull request completion gate.
+
+## 2026-08-14 morphology-table and audit consolidation
+
+This pass started from commit `26b2449` and repeated the audit across all nine
+workspace members. It preserves reviewed linguistic data, generated
+registries, public resolution order, normalization, provenance, and corpus
+coverage. The same physical-LOC classifier documented above was run against
+`origin/main` and the formatted working tree.
+
+### Consolidation LOC accounting
+
+| Member | Baseline prod | Final prod | Baseline tests | Final tests | Baseline generated | Final generated | Baseline tools | Final tools |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `old-church-slavonic-core` | 3,051 | 2,919 | 926 | 926 | 0 | 0 | 0 | 0 |
+| `old-church-slavonic` | 4,018 | 4,002 | 1,405 | 1,405 | 147,728 | 147,728 | 8 | 8 |
+| `old-church-slavonic-dictionary` | 1,298 | 1,289 | 182 | 182 | 5,177 | 5,177 | 9 | 9 |
+| `old-church-slavonic-extractor` | 0 | 0 | 744 | 744 | 0 | 0 | 3,949 | 3,949 |
+| `synodal-church-slavonic-core` | 5,403 | 5,403 | 2,674 | 2,674 | 0 | 0 | 0 | 0 |
+| `synodal-church-slavonic` | 5,117 | 5,061 | 2,275 | 2,275 | 8,657 | 8,657 | 0 | 0 |
+| `synodal-church-slavonic-dictionary` | 4,317 | 4,317 | 1,341 | 1,341 | 858 | 858 | 0 | 0 |
+| `synodal-church-slavonic-extractor` | 0 | 0 | 950 | 950 | 0 | 0 | 5,505 | 5,505 |
+| `xtask` | 0 | 0 | 1,213 | 1,242 | 0 | 0 | 20,996 | 20,890 |
+| **Total** | **23,204** | **22,991** | **11,710** | **11,739** | **162,420** | **162,420** | **30,467** | **30,361** |
+
+The primary metric fell by 213 handwritten production lines. Tooling fell by
+106 lines independently, so production plus tools fell from 53,671 to 53,352
+lines, a net reduction of 319 handwritten lines. The 29 added test lines cover
+the newly shared report parsers and diagnostic helpers. Generated output and
+data are byte-for-byte outside the change set; no code was shifted into data,
+generated output, macros, or tools to improve the production metric.
+
+### Decisions and implementation
+
+1. **Old consonant-stem declensions:** accepted. Six structurally identical
+   declension functions and a 21-argument ending selector became six typed
+   3-by-7 ending tables interpreted by one resolver. Citation-ending checks,
+   extended-stem rules, palatalization seams, grammatical order, and rule IDs
+   remain class-owned and unchanged.
+2. **Old listed-form assembly:** accepted. Exact table rows and reviewed
+   override rows now use one ordered `FormSet` constructor. Exact forms still
+   precede overrides and productive generation; primary-variant selection,
+   alternatives, warnings, evidence, sources, and traces retain row order.
+3. **Old reverse-index generation:** accepted. Noun, adjective, finite,
+   imperative, l-participle, and declined-participle outcomes now share one
+   successful-cell traversal and one normalized variant insertion path.
+   Failures remain excluded, and the canonical `ParticipleKind` inventory
+   replaces a repeated local list.
+4. **Synodal capability derivation:** accepted. A false-by-default capability
+   value makes category-specific fields explicit, while one canonical
+   `VerbSystem` traversal derives productive participle support. Exact-table
+   presence, principal-part completeness, and each independently supported
+   finite system preserve their existing criteria. `Capabilities: Default` is
+   the only public API addition.
+5. **Historical audit report plumbing:** accepted. The v0.6 and v0.7 audit
+   commands now share TSV validation, JSON field access, percentage formatting,
+   Markdown escaping, and locked-table count access. Command-specific checks,
+   thresholds, output text, and frozen digest contracts remain local.
+6. **A cross-recension morphology abstraction:** rejected. Old and Synodal
+   cells, rules, evidence, and failure semantics remain recension-owned.
+7. **One global morphological-system classifier:** rejected. The evaluation,
+   queue, and participle callers intentionally operate at different levels of
+   grammatical detail.
+8. **Enum-generating macros or opaque encoded ending tables:** rejected. They
+   would reduce visible source without reducing domain complexity and would
+   make the linguistic inventories harder to audit.
+
+### Regression coverage
+
+The existing exhaustive 21-cell golden test for every Old noun class directly
+covers the table conversion. Existing facade tests cover exact/irregular/
+productive precedence, variant order, capability inventories, and all four
+participle systems. Dictionary reverse-analysis tests cover generated
+participle indexing. The shared report-I/O test now also covers required TSV
+headers and rows, nested/root JSON access, locked table counts, percentage
+formatting, and Markdown escaping. Both historical audit commands continue to
+pass their committed-output checks.
+
+The final workspace commands, native and WebAssembly builds, documentation and
+package checks, and independent full-diff reviews are recorded in the pull
+request completion gate.

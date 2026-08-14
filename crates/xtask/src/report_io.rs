@@ -1,9 +1,162 @@
-use std::{error::Error, fs, path::Path};
+use std::{
+    error::Error,
+    fs,
+    path::{Path, PathBuf},
+};
 
 use serde::de::DeserializeOwned;
+use serde_json::Value;
+
+pub(crate) struct Table {
+    path: PathBuf,
+    pub(crate) header: Vec<String>,
+    pub(crate) rows: Vec<Vec<String>>,
+}
+
+impl Table {
+    pub(crate) fn index(&self, name: &str) -> Result<usize, Box<dyn Error>> {
+        self.header
+            .iter()
+            .position(|column| column == name)
+            .ok_or_else(|| format!("{} omits column {name:?}", self.path.display()).into())
+    }
+}
 
 pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<T, Box<dyn Error>> {
     Ok(serde_json::from_slice(&fs::read(path)?)?)
+}
+
+pub(crate) fn read_tsv(path: &Path) -> Result<Table, Box<dyn Error>> {
+    let text = fs::read_to_string(path)?;
+    let mut lines = text.lines();
+    let header = lines
+        .next()
+        .ok_or_else(|| format!("{} is empty", path.display()))?
+        .split('\t')
+        .map(str::to_owned)
+        .collect::<Vec<_>>();
+    let rows = lines
+        .filter(|line| !line.is_empty())
+        .enumerate()
+        .map(|(offset, line)| {
+            let row = line.split('\t').map(str::to_owned).collect::<Vec<_>>();
+            if row.len() == header.len() {
+                Ok(row)
+            } else {
+                Err(format!(
+                    "{}:{} has {} fields; expected {}",
+                    path.display(),
+                    offset + 2,
+                    row.len(),
+                    header.len()
+                ))
+            }
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(Table {
+        path: path.into(),
+        header,
+        rows,
+    })
+}
+
+pub(crate) fn require_header(table: &Table, required: &[&str]) -> Result<(), Box<dyn Error>> {
+    for column in required {
+        table.index(column)?;
+    }
+    Ok(())
+}
+
+pub(crate) fn object<'a>(
+    value: &'a Value,
+    key: &str,
+) -> Result<&'a serde_json::Map<String, Value>, Box<dyn Error>> {
+    value
+        .get(key)
+        .and_then(Value::as_object)
+        .ok_or_else(|| format!("JSON omits object {key:?}").into())
+}
+
+pub(crate) fn map_object<'a>(
+    value: &'a serde_json::Map<String, Value>,
+    key: &str,
+) -> Result<&'a serde_json::Map<String, Value>, Box<dyn Error>> {
+    value
+        .get(key)
+        .and_then(Value::as_object)
+        .ok_or_else(|| format!("JSON omits object {key:?}").into())
+}
+
+pub(crate) fn number(
+    value: &serde_json::Map<String, Value>,
+    key: &str,
+) -> Result<u64, Box<dyn Error>> {
+    value
+        .get(key)
+        .and_then(Value::as_u64)
+        .ok_or_else(|| format!("JSON omits number {key:?}").into())
+}
+
+pub(crate) fn root_number(value: &Value, key: &str) -> Result<u64, Box<dyn Error>> {
+    value
+        .get(key)
+        .and_then(Value::as_u64)
+        .ok_or_else(|| format!("JSON omits number {key:?}").into())
+}
+
+pub(crate) fn pointer_number(value: &Value, pointer: &str) -> Result<u64, Box<dyn Error>> {
+    value
+        .pointer(pointer)
+        .and_then(Value::as_u64)
+        .ok_or_else(|| format!("JSON omits number {pointer:?}").into())
+}
+
+pub(crate) fn string<'a>(value: &'a Value, key: &str) -> Result<&'a str, Box<dyn Error>> {
+    value
+        .get(key)
+        .and_then(Value::as_str)
+        .ok_or_else(|| format!("JSON omits string {key:?}").into())
+}
+
+pub(crate) fn require_string(
+    value: &Value,
+    key: &str,
+    expected: &str,
+) -> Result<(), Box<dyn Error>> {
+    let actual = string(value, key)?;
+    if actual == expected {
+        Ok(())
+    } else {
+        Err(format!("field {key:?}: expected {expected:?}, found {actual:?}").into())
+    }
+}
+
+pub(crate) fn require_number(
+    value: &Value,
+    pointer: &str,
+    expected: u64,
+) -> Result<(), Box<dyn Error>> {
+    let actual = pointer_number(value, pointer)?;
+    if actual == expected {
+        Ok(())
+    } else {
+        Err(format!("field {pointer:?}: expected {expected}, found {actual}").into())
+    }
+}
+
+pub(crate) fn table_count(value: &Value, name: &str) -> Result<u64, Box<dyn Error>> {
+    value
+        .pointer(&format!("/normalized_tables/{name}"))
+        .and_then(Value::as_u64)
+        .ok_or_else(|| format!("extraction report omits {name}").into())
+}
+
+pub(crate) fn percent(value: u64, total: u64) -> String {
+    format!("{:.3}%", value as f64 * 100.0 / total as f64)
+}
+
+pub(crate) fn escape(value: &str) -> String {
+    value.replace('|', "\\|").replace('\n', " ")
 }
 
 pub(crate) fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
@@ -65,11 +218,40 @@ mod tests {
 
         write_if_changed(&path, "{\"value\":1}\n").expect("direct write");
         check_contents(&path, "{\"value\":1}\n").expect("current report");
-        write_if_changed_atomic(&path, "{\"value\":2}\n").expect("atomic update");
-        check_contents_for(&path, "{\"value\":2}\n", "example-command").expect("current report");
+        let json = concat!(
+            "{\"value\":2,\"kind\":\"audit\",\"nested\":{\"count\":3},",
+            "\"normalized_tables\":{\"forms\":4}}\n"
+        );
+        write_if_changed_atomic(&path, json).expect("atomic update");
+        check_contents_for(&path, json, "example-command").expect("current report");
 
         let value: serde_json::Value = read_json(&path).expect("valid JSON");
         assert_eq!(value["value"], 2);
+        assert_eq!(root_number(&value, "value").expect("root number"), 2);
+        assert_eq!(string(&value, "kind").expect("root string"), "audit");
+        require_string(&value, "kind", "audit").expect("matching string");
+        require_number(&value, "/nested/count", 3).expect("matching number");
+        assert_eq!(pointer_number(&value, "/nested/count").expect("pointer"), 3);
+        assert_eq!(table_count(&value, "forms").expect("table count"), 4);
+        let nested = object(&value, "nested").expect("nested object");
+        assert_eq!(number(nested, "count").expect("nested number"), 3);
+        let normalized = value["normalized_tables"]
+            .as_object()
+            .expect("normalized tables object");
+        let mapped_value = serde_json::json!({ "outer": { "count": 5 } });
+        let mapped_root = mapped_value.as_object().expect("outer object");
+        let mapped = map_object(mapped_root, "outer").expect("mapped object");
+        assert_eq!(number(mapped, "count").expect("mapped number"), 5);
+        assert_eq!(number(normalized, "forms").expect("normalized count"), 4);
+        assert_eq!(percent(1, 8), "12.500%");
+        assert_eq!(escape("a|b\nc"), "a\\|b c");
+
+        let table_path = root.join("review.tsv");
+        fs::write(&table_path, "lemma\tstatus\nслово\treviewed\n").expect("temporary TSV");
+        let table = read_tsv(&table_path).expect("valid TSV");
+        require_header(&table, &["lemma", "status"]).expect("required columns");
+        assert_eq!(table.index("status").expect("status column"), 1);
+        assert_eq!(table.rows, vec![vec!["слово", "reviewed"]]);
         assert_eq!(
             check_contents(&path, "different")
                 .expect_err("stale report")

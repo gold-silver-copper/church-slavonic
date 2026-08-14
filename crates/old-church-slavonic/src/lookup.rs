@@ -63,26 +63,6 @@ pub(crate) fn table_form(id: &str, feature: &str) -> Option<FormSet> {
     let requested = (id, feature);
     let start = FORMS.partition_point(|record| (record.lexeme_id, record.feature) < requested);
     let end = FORMS.partition_point(|record| (record.lexeme_id, record.feature) <= requested);
-    let rows = &FORMS[start..end];
-    if rows.is_empty() {
-        return None;
-    }
-    let mut variants = rows
-        .iter()
-        .enumerate()
-        .map(|(expected_rank, row)| {
-            debug_assert_eq!(usize::from(row.rank), expected_rank);
-            FormVariant {
-                text: row.form.to_string(),
-                romanization: (!row.romanization.is_empty()).then(|| row.romanization.to_string()),
-            }
-        })
-        .collect::<Vec<_>>();
-    let warnings = if variants.len() > 1 {
-        vec![InflectionWarning::MultipleDictionaryVariants]
-    } else {
-        Vec::new()
-    };
     let source = FormSource::DictionaryTable;
     let evidence = vec![MetadataEvidence {
         field: None,
@@ -92,22 +72,15 @@ pub(crate) fn table_form(id: &str, feature: &str) -> Option<FormSet> {
         crosscheck_features: Vec::new(),
         authority: Some("wiktionary-kaikki-2026-07-06".to_string()),
     }];
-    let analyses = vec![FormAnalysis {
-        variants: variants.clone(),
-        source: source.clone(),
-        evidence,
-        trace: Vec::new(),
-    }];
-    let primary = variants.remove(0);
-    Some(FormSet::new(
+    listed_form(
         lexeme.lemma,
-        primary,
-        variants,
+        FORMS[start..end]
+            .iter()
+            .map(|row| (row.rank, row.form, row.romanization)),
         source,
-        warnings,
+        evidence,
         Vec::new(),
-        analyses,
-    ))
+    )
 }
 
 pub(crate) fn override_form(id: &str, feature: &str) -> Option<FormSet> {
@@ -115,55 +88,66 @@ pub(crate) fn override_form(id: &str, feature: &str) -> Option<FormSet> {
     let requested = (id, feature);
     let start = OVERRIDES.partition_point(|record| (record.lexeme_id, record.feature) < requested);
     let end = OVERRIDES.partition_point(|record| (record.lexeme_id, record.feature) <= requested);
-    let rows = &OVERRIDES[start..end];
-    if rows.is_empty() {
-        return None;
-    }
-    let mut variants = rows
-        .iter()
-        .enumerate()
-        .map(|(expected_rank, row)| {
-            debug_assert_eq!(usize::from(row.rank), expected_rank);
-            FormVariant {
-                text: row.form.to_string(),
-                romanization: (!row.romanization.is_empty()).then(|| row.romanization.to_string()),
-            }
-        })
-        .collect::<Vec<_>>();
+    let rows = OVERRIDES.get(start..end)?;
+    let first = rows.first()?;
     let evidence = vec![MetadataEvidence {
         field: None,
         provenance: MetadataProvenance::CuratedGrammarOverride,
         source_feature: Some(feature.to_string()),
         source_form: None,
         crosscheck_features: Vec::new(),
-        authority: Some(rows[0].authority.to_string()),
+        authority: Some(first.authority.to_string()),
     }];
     let trace = vec![old_church_slavonic_core::RuleStep {
         rule_id: old_church_slavonic_core::RuleId::VerbDictionaryMetadata,
-        before: rows[0].reason.to_string(),
-        after: variants[0].text.clone(),
+        before: first.reason.to_string(),
+        after: first.form.to_string(),
         reason: "apply a reviewed cell-specific override after exact-table lookup",
     }];
+    listed_form(
+        lexeme.lemma,
+        rows.iter()
+            .map(|row| (row.rank, row.form, row.romanization)),
+        FormSource::ManualOverride,
+        evidence,
+        trace,
+    )
+}
+
+fn listed_form<'a>(
+    lemma: &str,
+    rows: impl IntoIterator<Item = (u16, &'a str, &'a str)>,
+    source: FormSource,
+    evidence: Vec<MetadataEvidence>,
+    trace: Vec<old_church_slavonic_core::RuleStep>,
+) -> Option<FormSet> {
+    let mut variants =
+        rows.into_iter()
+            .enumerate()
+            .map(|(expected_rank, (rank, form, romanization))| {
+                debug_assert_eq!(usize::from(rank), expected_rank);
+                FormVariant {
+                    text: form.into(),
+                    romanization: (!romanization.is_empty()).then(|| romanization.into()),
+                }
+            });
+    let primary = variants.next()?;
+    let variants = variants.collect::<Vec<_>>();
+    let warnings = (!variants.is_empty())
+        .then_some(InflectionWarning::MultipleDictionaryVariants)
+        .into_iter()
+        .collect();
+    let analysis_variants = std::iter::once(primary.clone())
+        .chain(variants.iter().cloned())
+        .collect();
     let analyses = vec![FormAnalysis {
-        variants: variants.clone(),
-        source: FormSource::ManualOverride,
+        variants: analysis_variants,
+        source: source.clone(),
         evidence,
         trace: trace.clone(),
     }];
-    let warnings = if variants.len() > 1 {
-        vec![InflectionWarning::MultipleDictionaryVariants]
-    } else {
-        Vec::new()
-    };
-    let primary = variants.remove(0);
     Some(FormSet::new(
-        lexeme.lemma,
-        primary,
-        variants,
-        FormSource::ManualOverride,
-        warnings,
-        trace,
-        analyses,
+        lemma, primary, variants, source, warnings, trace, analyses,
     ))
 }
 
