@@ -254,6 +254,8 @@ pub enum NounClass {
     TwofoldInMasculine,
     /// Polivanova class 2/f*: soft twofold feminines with nonstandard nominative `-и`.
     TwofoldFeminineI,
+    /// Polivanova's closed class-0 mixed substantive inventory.
+    UniqueMixed,
     Indeclinable,
 }
 
@@ -278,6 +280,7 @@ impl NounClass {
             Self::TwofoldAgentMasculine => "2-m-agent-deformation",
             Self::TwofoldInMasculine => "2-m-in-deformation",
             Self::TwofoldFeminineI => "2-f-i-deformation",
+            Self::UniqueMixed => "unique-mixed",
             Self::Indeclinable => "indeclinable",
         }
     }

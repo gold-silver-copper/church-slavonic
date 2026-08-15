@@ -46,8 +46,8 @@
     "productive": 6847
   },
   "by_support_state": {
-    "implementation-missing": 2595,
-    "implemented": 2396,
+    "implementation-missing": 2554,
+    "implemented": 2437,
     "metadata-incomplete": 6593,
     "not-applicable": 614,
     "source-ambiguous": 1916
@@ -55,7 +55,6 @@
   "implementation_gaps_by_route": {
     "polivanova-listed-irregular-verb": 250,
     "polivanova-regular-verb-specification": 2297,
-    "polivanova-unique-noun": 41,
     "polivanova-unique-verb-family": 7
   }
 }

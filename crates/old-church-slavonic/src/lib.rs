@@ -173,6 +173,7 @@ pub use old_church_slavonic_core::{
     RequestedCell, Script, StandardPronominalIdentity, TransliteratedForm,
     TransliterationDirection, TransliterationFidelity, TransliterationLoss,
     TransliterationLossKind, TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell,
+    UniqueNounFamilyMember, UniqueNounProfile, UniqueNounVariant, UniqueNounVariantStatus,
     UniqueVerbFamilyMember, UniqueVerbIdentity, UniqueVerbProfileKind, VariantPolicy,
     VariantSelectionError,
 };

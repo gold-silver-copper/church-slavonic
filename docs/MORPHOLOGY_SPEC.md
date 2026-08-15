@@ -41,8 +41,11 @@ runtime identity, source hashes, and the generated JSON and Markdown reports.
 
 The OSD class labels are requirements, not evidence that the current engine
 already implements a row. The complete `2/m*`, `2/m++` (grammar `2/m**`), and
-`2/f*` inventories are now assigned to dedicated noun rules; class `0` still
-contains 41 unique mixed paradigms. Verb class `0` contains unique lexemes; marked
+`2/f*` inventories are assigned to dedicated noun rules. All 41 class-`0`
+nominal rows also have explicit complete owners: 37 fixed-gender substantives
+use seven dedicated mixed profiles, `десѧть` belongs to the cardinal system,
+and `азъ`, `ты`, and `сѧ` belong to the personal/reflexive-pronoun system.
+Verb class `0` contains unique lexemes; marked
 class-3/class-4 rows include Table 434 anchors, prefixed derivatives, and
 isolated anomalies. Only the explicitly reviewed family members are currently
 implemented. The other marked rows remain `implementation-missing` until an
@@ -162,6 +165,36 @@ animacy substitution. Ordinary lemma and stable-ID APIs route source-only
 members through reviewed IDs. Exact dictionary cells and manual overrides stay
 ahead of the reviewed productive rules, so a copied table disagreement is
 retained as source evidence rather than silently overwritten.
+
+## N-UNIQUE-* — closed class-0 substantive profiles
+
+Polivanova Table 357 and §§358–372 divide the 37 fixed-gender class-`0`
+substantives into seven complete lexical profiles:
+
+| Rule | Profile | Members |
+|---|---|---:|
+| `N-UNIQUE-N-EN-01` | neuter `-ѧ/-ен-` | 7 |
+| `N-UNIQUE-N-YATT-01` | neuter young-being `-ѧ/-ѧт-` | 7 |
+| `N-UNIQUE-N-ES-01` | neuter `-о/-ес-` | 6 |
+| `N-UNIQUE-N-EYE-EAR-01` | suppletive `око/ухо` | 2 |
+| `N-UNIQUE-F-YV-01` | feminine `-ы/-ъв-` | 12 |
+| `N-UNIQUE-F-ER-01` | feminine `дъщи/мати` | 2 |
+| `N-UNIQUE-M-LORD-01` | mixed masculine `господь` | 1 |
+
+`UniqueNounFamilyMember` is the exhaustive lexical assignment. It licenses all
+21 case × number cells except that plural-only `букъви` licenses its seven
+plural cells. Printed source variants are tagged `ReviewedTable`; cells not
+printed in the group table are generated only from the profile's defined stem
+alternation and tagged `ReconstructedRule`. This allows grammatically coherent
+unattested forms without calling them attested. The resolver preserves ordered
+variants and their individual evidence, and exact dictionary cells and manual
+overrides retain precedence over the reviewed profile.
+
+Table 357 contains four further nominal rows whose complete morphology is
+owned elsewhere rather than duplicated as nouns: cardinal `десѧть` in §§373–374,
+and personal/reflexive `азъ`, `ты` (the source spelling of engine `тꙑ`),
+and `сѧ` in §§381–382. The source-union audit tests this 37 + 1 + 3
+partition exactly.
 
 ## N-INDECL-01 — explicit indeclinables
 

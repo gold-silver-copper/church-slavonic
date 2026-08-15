@@ -6,16 +6,16 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **37** have final states and **16** remain non-final. Source discovery has 7 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **38** have final states and **15** remain non-final. Source discovery has 7 recorded passes and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 12 |
+| `implementation-missing` | 11 |
 | `irregular-exact-complete` | 1 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 34 |
+| `productive-complete` | 35 |
 | `source-review-open` | 4 |
 
 ## Recension totals
@@ -23,7 +23,7 @@ The matrix contains **53** required system contracts: **37** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 24 | 26 |
+| old-church-slavonic | 25 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -45,7 +45,7 @@ The matrix contains **53** required system contracts: **37** have final states a
 | old-church-slavonic | irregular-verb | 1 | 1 |
 | old-church-slavonic | lexicon | 0 | 1 |
 | old-church-slavonic | nonfinite-verb | 1 | 1 |
-| old-church-slavonic | noun | 0 | 1 |
+| old-church-slavonic | noun | 1 | 1 |
 | old-church-slavonic | numeral | 1 | 1 |
 | old-church-slavonic | orthography | 2 | 2 |
 | old-church-slavonic | participle | 1 | 1 |
@@ -70,7 +70,6 @@ The matrix contains **53** required system contracts: **37** have final states a
 
 ## Non-final systems
 
-- `ocs.noun.declension` — **implementation-missing**: Crosswalk and exhaustively implement every one of Polivanova's 41 class-0 unique mixed nouns without treating a historical stem analogy as a complete paradigm.
 - `ocs.lexicon.classification` — **implementation-missing**: Close every implementation-missing route in reports/ocs-lexical-union.json, then review metadata-incomplete identities against OSD, LOVe, and lawful corpus evidence until every productive source identity has a complete typed specification or an evidence-backed final ambiguous/defective/indeclinable classification.
 - `syn.noun.irregular` — **implementation-missing**: Complete irregular noun families and unify любовь identities without generating unattested alternant combinations.
 - `syn.adjective.short-superlative` — **source-review-open**: Complete source discovery and either implement the category or finalize every cell as absent-from-recension with citations.
@@ -91,7 +90,7 @@ The matrix contains **53** required system contracts: **37** have final states a
 
 | ID | Recension | Category | State | Rule IDs | Evidence |
 |---|---|---|---|---|---|
-| `ocs.noun.declension` | old-church-slavonic | noun | `implementation-missing` | `N-O-M-HARD-01`<br>`N-O-N-HARD-01`<br>`N-JO-M-SOFT-01`<br>`N-JO-N-SOFT-01`<br>`N-A-HARD-01`<br>`N-JA-SOFT-01`<br>`N-I-F-01`<br>`N-I-M-01`<br>`N-U-M-01`<br>`N-N-M-01`<br>`N-N-N-01`<br>`N-NT-N-01`<br>`N-R-01`<br>`N-S-N-01`<br>`N-V-F-01`<br>`N-INDECL-01`<br>`N-2MSTAR-01`<br>`N-2MSTARSTAR-01`<br>`N-2FSTAR-01`<br>`N-UNIQUE-PENDING` | nineteen typed noun classes are productively tested; all 108 members of Polivanova's three deformed twofold families have exhaustive lexical assignments and 21-cell routing, while the source ledger now isolates the 41 class-0 unique mixed paradigms as the remaining noun implementation gap |
+| `ocs.noun.declension` | old-church-slavonic | noun | `productive-complete` | `N-O-M-HARD-01`<br>`N-O-N-HARD-01`<br>`N-JO-M-SOFT-01`<br>`N-JO-N-SOFT-01`<br>`N-A-HARD-01`<br>`N-JA-SOFT-01`<br>`N-I-F-01`<br>`N-I-M-01`<br>`N-U-M-01`<br>`N-N-M-01`<br>`N-N-N-01`<br>`N-NT-N-01`<br>`N-R-01`<br>`N-S-N-01`<br>`N-V-F-01`<br>`N-INDECL-01`<br>`N-2MSTAR-01`<br>`N-2MSTARSTAR-01`<br>`N-2FSTAR-01`<br>`N-UNIQUE-N-EN-01`<br>`N-UNIQUE-N-YATT-01`<br>`N-UNIQUE-N-ES-01`<br>`N-UNIQUE-N-EYE-EAR-01`<br>`N-UNIQUE-F-YV-01`<br>`N-UNIQUE-F-ER-01`<br>`N-UNIQUE-M-LORD-01`<br>`NUM-CARD-TEN-01`<br>`PRON-PERS-1-01`<br>`PRON-PERS-2-01`<br>`PRON-REFL-01` | all productive noun classes and closed irregular noun families are exhaustive: all 108 deformed-twofold members have complete routing; all 37 fixed-gender class-0 substantives have every lexically licensed cell, ordered source variants, and typed reconstruction boundaries; and the remaining four class-0 nominal rows route to already complete numeral or pronoun owners |
 | `ocs.adjective.positive` | old-church-slavonic | adjective | `productive-complete` | `ADJ-HARD-SHORT-01`<br>`ADJ-HARD-LONG-01`<br>`ADJ-SOFT-SHORT-01`<br>`ADJ-SOFT-LONG-01` | source-backed productive prediction with exhaustive reviewed lexical defectivity |
 | `ocs.adjective.comparison` | old-church-slavonic | comparison | `productive-complete` | `ADJ-COMP-NEW-01`<br>`ADJ-COMP-OLD-01` | independent grammar paradigms plus strict explicit-principal-part prediction; dictionary citations remain exact |
 | `ocs.adjective.superlative` | old-church-slavonic | comparison | `productive-complete` | `PHRASE-SUP-REL-GEN-01`<br>`PHRASE-SUP-ZELO-01`<br>`ADJ-SUP-PRE-01`<br>`ADJ-COMP-OLD-01` | independent grammar inventory with structured component provenance and productive derived realization |
@@ -115,7 +114,7 @@ The matrix contains **53** required system contracts: **37** have final states a
 | `ocs.orthography.canonical` | old-church-slavonic | orthography | `productive-complete` | `OCS-ORTHOGRAPHY-CANONICAL` | technical and source contract |
 | `ocs.orthography.accent` | old-church-slavonic | accent | `productive-complete` | `OCS-ACCENT-RECON-01` | The productive layer is explicitly reconstructed, never attested by implication. The locked dictionary independently preserves 231 acute-marked rows across 11 lexemes and 21 psili-marked rows for one lexeme as exact source spellings; no grave, kamora, or dasia rows occur. |
 | `ocs.orthography.glagolitic` | old-church-slavonic | orthography | `productive-complete` | `OCS-GLAG-JAGIC-01` | The locked dictionary preserves 28 exact Glagolitic inflection rows for one Glagolitic lemma and keeps them ahead of presentation. Productive output uses Polivanova's normalized table crosschecked against TN41's classical Jagić table; every extension beyond the reversible shared alphabet is explicitly loss-reported and never labeled attested. |
-| `ocs.lexicon.classification` | old-church-slavonic | lexicon | `implementation-missing` | `OCS-LEXICON-UNION-01` | exhaustive reproducible claim ledger with 2,595 confirmed missing implementation routes, 6,593 incomplete-metadata claims, and 1,916 source-ambiguous claims retained explicitly rather than silently dropped |
+| `ocs.lexicon.classification` | old-church-slavonic | lexicon | `implementation-missing` | `OCS-LEXICON-UNION-01` | exhaustive reproducible claim ledger with 2,554 confirmed missing implementation routes, 6,593 incomplete-metadata claims, and 1,916 source-ambiguous claims retained explicitly rather than silently dropped |
 | `ocs.invariant-parts-of-speech` | old-church-slavonic | invariant | `not-inflectional` | `OCS-NOT-INFLECTIONAL` | lexical exact forms |
 | `syn.noun.declension` | synodal-russian | noun | `productive-complete` | `SYN-NOUN-I-HARD-M-ALYPY-34`<br>`SYN-NOUN-I-HARD-VELAR-M-ALYPY-34`<br>`SYN-NOUN-I-MIXED-M-ALYPY-33-34`<br>`SYN-NOUN-I-HARD-N-ALYPY-34`<br>`SYN-NOUN-I-SOFT-M-ALYPY-34`<br>`SYN-NOUN-I-SOFT-N-ALYPY-34`<br>`SYN-NOUN-II-HARD-ALYPY-39`<br>`SYN-NOUN-II-SOFT-ALYPY-39`<br>`SYN-NOUN-III-F-ALYPY-41`<br>`SYN-NOUN-III-M-ALYPY-41`<br>`SYN-NOUN-IV-N-EN-ALYPY-42-43`<br>`SYN-NOUN-IV-N-ES-ALYPY-42-43`<br>`SYN-NOUN-IV-N-AT-ALYPY-42-43`<br>`SYN-NOUN-IV-F-ER-ALYPY-42-43`<br>`SYN-NOUN-IV-F-OV-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43` | normative productive prediction |
 | `syn.noun.irregular` | synodal-russian | noun | `implementation-missing` | `SYN-NOUN-IRREGULAR-INVENTORY-PENDING` | partial reviewed exact/override data |
@@ -190,4 +189,4 @@ The frontier contains **26** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.noun.declension`: Crosswalk and exhaustively implement every one of Polivanova's 41 class-0 unique mixed nouns without treating a historical stem analogy as a complete paradigm.
+`ocs.lexicon.classification`: Close every implementation-missing route in reports/ocs-lexical-union.json, then review metadata-incomplete identities against OSD, LOVe, and lawful corpus evidence until every productive source identity has a complete typed specification or an evidence-backed final ambiguous/defective/indeclinable classification.

@@ -24,22 +24,65 @@ fn cell_outcomes<C: Copy>(
         .collect()
 }
 
-const REVIEWED_NOUN_ID_PREFIX: &str = "reviewed:ocs:noun:twofold:";
+const REVIEWED_TWOFOLD_NOUN_ID_PREFIX: &str = "reviewed:ocs:noun:twofold:";
+const REVIEWED_UNIQUE_NOUN_ID_PREFIX: &str = "reviewed:ocs:noun:unique:";
 const REVIEWED_VERB_ID_PREFIX: &str = "reviewed:ocs:verb:";
 
-fn reviewed_noun_id(member: TwofoldNounFamilyMember) -> String {
-    format!("{REVIEWED_NOUN_ID_PREFIX}{}", member.canonical_lemma())
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ReviewedNounProfile {
+    Twofold(TwofoldNounFamilyMember),
+    Unique(UniqueNounFamilyMember),
 }
 
-fn reviewed_noun_from_id(id: &str) -> Option<TwofoldNounFamilyMember> {
-    let lemma = id.strip_prefix(REVIEWED_NOUN_ID_PREFIX)?;
-    TwofoldNounFamilyMember::classify_source_lemma(lemma)
+impl ReviewedNounProfile {
+    fn all() -> impl Iterator<Item = Self> {
+        TwofoldNounFamilyMember::all()
+            .map(Self::Twofold)
+            .chain(UniqueNounFamilyMember::all().map(Self::Unique))
+    }
+
+    fn classify(lemma: &str) -> Option<Self> {
+        TwofoldNounFamilyMember::classify_source_lemma(lemma)
+            .map(Self::Twofold)
+            .or_else(|| UniqueNounFamilyMember::classify_source_lemma(lemma).map(Self::Unique))
+    }
+
+    const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::Twofold(member) => member.canonical_lemma(),
+            Self::Unique(member) => member.canonical_lemma(),
+        }
+    }
+}
+
+fn reviewed_noun_id(profile: ReviewedNounProfile) -> String {
+    match profile {
+        ReviewedNounProfile::Twofold(member) => format!(
+            "{REVIEWED_TWOFOLD_NOUN_ID_PREFIX}{}",
+            member.canonical_lemma()
+        ),
+        ReviewedNounProfile::Unique(member) => format!(
+            "{REVIEWED_UNIQUE_NOUN_ID_PREFIX}{}",
+            member.canonical_lemma()
+        ),
+    }
+}
+
+fn reviewed_noun_from_id(id: &str) -> Option<ReviewedNounProfile> {
+    if let Some(lemma) = id.strip_prefix(REVIEWED_TWOFOLD_NOUN_ID_PREFIX) {
+        return TwofoldNounFamilyMember::classify_source_lemma(lemma)
+            .filter(|member| member.canonical_lemma() == lemma)
+            .map(ReviewedNounProfile::Twofold);
+    }
+    let lemma = id.strip_prefix(REVIEWED_UNIQUE_NOUN_ID_PREFIX)?;
+    UniqueNounFamilyMember::classify_source_lemma(lemma)
         .filter(|member| member.canonical_lemma() == lemma)
+        .map(ReviewedNounProfile::Unique)
 }
 
 fn reviewed_noun_for_dictionary_id(
     id: &str,
-) -> Result<Option<TwofoldNounFamilyMember>, InflectionError> {
+) -> Result<Option<ReviewedNounProfile>, InflectionError> {
     let record = lookup::find_lexeme(id)
         .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Noun)))?;
     if record.pos != PartOfSpeech::Noun.code() {
@@ -47,21 +90,21 @@ fn reviewed_noun_for_dictionary_id(
             reason: format!("lexeme {id} is {}, not noun", record.pos),
         });
     }
-    if let Some(member) = TwofoldNounFamilyMember::classify_source_lemma(record.lemma) {
-        return Ok(Some(member));
+    if let Some(profile) = ReviewedNounProfile::classify(record.lemma) {
+        return Ok(Some(profile));
     }
 
     let mut matches = Vec::new();
-    for member in TwofoldNounFamilyMember::all() {
-        if lookup::lemma_maps_to_id(member.canonical_lemma(), PartOfSpeech::Noun, id)?
-            && !matches.contains(&member)
+    for profile in ReviewedNounProfile::all() {
+        if lookup::lemma_maps_to_id(profile.canonical_lemma(), PartOfSpeech::Noun, id)?
+            && !matches.contains(&profile)
         {
-            matches.push(member);
+            matches.push(profile);
         }
     }
     match matches.as_slice() {
         [] => Ok(None),
-        [member] => Ok(Some(*member)),
+        [profile] => Ok(Some(*profile)),
         _ => Err(InflectionError::InvalidInput {
             reason: format!("dictionary identity {id} aliases multiple reviewed noun profiles"),
         }),
@@ -70,21 +113,21 @@ fn reviewed_noun_for_dictionary_id(
 
 fn reviewed_noun_dictionary_candidate(
     candidates: &[LexemeSummary],
-    member: TwofoldNounFamilyMember,
+    profile: ReviewedNounProfile,
 ) -> Option<&LexemeSummary> {
     let mut exact = candidates
         .iter()
-        .filter(|candidate| candidate.lemma == member.canonical_lemma());
+        .filter(|candidate| candidate.lemma == profile.canonical_lemma());
     let first = exact.next()?;
     exact.next().is_none().then_some(first)
 }
 
 fn resolve_queried_noun(query: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
     let normalized = orthography::lookup_key(query)?;
-    let reviewed = TwofoldNounFamilyMember::classify_source_lemma(&normalized);
+    let reviewed = ReviewedNounProfile::classify(&normalized);
     let candidates = lookup(query, PartOfSpeech::Noun)?;
-    if let Some(member) = reviewed {
-        if let Some(one) = reviewed_noun_dictionary_candidate(&candidates, member).or_else(|| {
+    if let Some(profile) = reviewed {
+        if let Some(one) = reviewed_noun_dictionary_candidate(&candidates, profile).or_else(|| {
             let [one] = candidates.as_slice() else {
                 return None;
             };
@@ -97,10 +140,10 @@ fn resolve_queried_noun(query: &str, cell: NounCell) -> Result<FormSet, Inflecti
             return queried_result(query, record, noun_by_id(record.id, cell));
         }
 
-        let mut result = reviewed_noun_form(member, member.canonical_lemma(), cell)?;
-        if normalized != member.canonical_lemma() {
+        let mut result = reviewed_noun_form(profile, profile.canonical_lemma(), cell)?;
+        if normalized != profile.canonical_lemma() {
             result.add_warning(InflectionWarning::LexicalAliasUsed {
-                canonical: member.canonical_lemma().to_string(),
+                canonical: profile.canonical_lemma().to_string(),
             });
         }
         return Ok(result);
@@ -120,10 +163,10 @@ fn resolve_queried_noun(query: &str, cell: NounCell) -> Result<FormSet, Inflecti
 
 pub(crate) fn resolve_noun_identity(query: &str) -> Result<(String, String), InflectionError> {
     let normalized = orthography::lookup_key(query)?;
-    let reviewed = TwofoldNounFamilyMember::classify_source_lemma(&normalized);
+    let reviewed = ReviewedNounProfile::classify(&normalized);
     let candidates = lookup(query, PartOfSpeech::Noun)?;
-    if let Some(member) = reviewed {
-        if let Some(one) = reviewed_noun_dictionary_candidate(&candidates, member).or_else(|| {
+    if let Some(profile) = reviewed {
+        if let Some(one) = reviewed_noun_dictionary_candidate(&candidates, profile).or_else(|| {
             let [one] = candidates.as_slice() else {
                 return None;
             };
@@ -132,8 +175,8 @@ pub(crate) fn resolve_noun_identity(query: &str) -> Result<(String, String), Inf
             return Ok((one.id.clone(), one.lemma.clone()));
         }
         return Ok((
-            reviewed_noun_id(member),
-            member.canonical_lemma().to_string(),
+            reviewed_noun_id(profile),
+            profile.canonical_lemma().to_string(),
         ));
     }
     match candidates.as_slice() {
@@ -144,8 +187,8 @@ pub(crate) fn resolve_noun_identity(query: &str) -> Result<(String, String), Inf
 }
 
 pub(crate) fn noun_identity_from_id(id: &str) -> Result<(String, String), InflectionError> {
-    if let Some(member) = reviewed_noun_from_id(id) {
-        return Ok((id.to_string(), member.canonical_lemma().to_string()));
+    if let Some(profile) = reviewed_noun_from_id(id) {
+        return Ok((id.to_string(), profile.canonical_lemma().to_string()));
     }
     let record = lexeme_identity(id, PartOfSpeech::Noun)?;
     Ok((record.id.to_string(), record.lemma.to_string()))
@@ -619,8 +662,8 @@ pub fn noun(lemma: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
 }
 
 pub fn noun_by_id(id: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
-    if let Some(member) = reviewed_noun_from_id(id) {
-        return reviewed_noun_form(member, member.canonical_lemma(), cell)
+    if let Some(profile) = reviewed_noun_from_id(id) {
+        return reviewed_noun_form(profile, profile.canonical_lemma(), cell)
             .map_err(|error| error.with_lexeme_id(id));
     }
     ensure_pos(id, PartOfSpeech::Noun)?;
@@ -632,8 +675,8 @@ pub fn noun_by_id(id: &str, cell: NounCell) -> Result<FormSet, InflectionError> 
     }
     let record = lookup::find_lexeme(id)
         .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Noun)))?;
-    if let Some(member) = reviewed_noun_for_dictionary_id(id)? {
-        return reviewed_noun_form(member, record.lemma, cell)
+    if let Some(profile) = reviewed_noun_for_dictionary_id(id)? {
+        return reviewed_noun_form(profile, record.lemma, cell)
             .map_err(|error| error.with_lexeme_id(id));
     }
     let lexeme = noun_lexeme(record)?;
@@ -641,6 +684,21 @@ pub fn noun_by_id(id: &str, cell: NounCell) -> Result<FormSet, InflectionError> 
 }
 
 fn reviewed_noun_form(
+    profile: ReviewedNounProfile,
+    display_lemma: &str,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    match profile {
+        ReviewedNounProfile::Twofold(member) => {
+            reviewed_twofold_noun_form(member, display_lemma, cell)
+        }
+        ReviewedNounProfile::Unique(member) => {
+            reviewed_unique_noun_form(member, display_lemma, cell)
+        }
+    }
+}
+
+fn reviewed_twofold_noun_form(
     member: TwofoldNounFamilyMember,
     display_lemma: &str,
     cell: NounCell,
@@ -703,6 +761,92 @@ fn reviewed_noun_form(
         warnings,
         predicted.trace,
         vec![analysis],
+    ))
+}
+
+fn reviewed_unique_noun_form(
+    member: UniqueNounFamilyMember,
+    display_lemma: &str,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    let reviewed = member.decline(cell)?;
+    let rule_id = member.profile().rule_id();
+    let source = FormSource::ReviewedGrammarTable { rule_id };
+    let authority = format!(
+        "Polivanova 2023 {}, class {} profile {}",
+        member.source_section(),
+        member.source_class(),
+        member.profile().code()
+    );
+    let mut variants = Vec::with_capacity(reviewed.len());
+    let mut analyses = Vec::with_capacity(reviewed.len());
+    let mut any_reconstructed = false;
+    for variant in reviewed {
+        let form = FormVariant {
+            text: orthography::canonical_display(&variant.prediction.text)?,
+            romanization: None,
+        };
+        let reconstructed = variant.status == UniqueNounVariantStatus::ReconstructedRule;
+        any_reconstructed |= reconstructed;
+        let mut evidence = vec![MetadataEvidence {
+            field: Some(MetadataField::NounClass),
+            provenance: MetadataProvenance::ReviewedGrammarTable,
+            source_feature: Some(format!(
+                "reviewed:noun:{}:{}:{}",
+                member.profile().code(),
+                cell.key(),
+                variant.status.code()
+            )),
+            source_form: (!reconstructed).then(|| form.text.clone()),
+            crosscheck_features: Vec::new(),
+            authority: Some(authority.clone()),
+        }];
+        if reconstructed {
+            evidence.push(MetadataEvidence {
+                field: None,
+                provenance: MetadataProvenance::ProductiveRuleOutput,
+                source_feature: Some(rule_id.code().to_string()),
+                source_form: None,
+                crosscheck_features: Vec::new(),
+                authority: Some("docs/MORPHOLOGY_SPEC.md".to_string()),
+            });
+        }
+        analyses.push(FormAnalysis {
+            variants: vec![form.clone()],
+            source: source.clone(),
+            evidence,
+            trace: variant.prediction.trace,
+        });
+        if !variants.contains(&form) {
+            variants.push(form);
+        }
+    }
+    let Some(primary) = variants.first().cloned() else {
+        return Err(InflectionError::InvalidInput {
+            reason: format!(
+                "reviewed unique noun {} produced no form",
+                member.canonical_lemma()
+            ),
+        });
+    };
+    let trace = if analyses.len() == 1 {
+        analyses[0].trace.clone()
+    } else {
+        Vec::new()
+    };
+    let mut warnings = Vec::new();
+    if any_reconstructed {
+        warnings.push(InflectionWarning::PredictedNotDictionaryBacked);
+        warnings.push(InflectionWarning::IncludesReconstructedForms);
+    }
+    Ok(FormSet::new(
+        orthography::canonical_display(display_lemma)?,
+        primary,
+        variants.into_iter().skip(1).collect(),
+        source,
+        warnings,
+        trace,
+        analyses,
     ))
 }
 
@@ -4928,6 +5072,7 @@ fn parse_noun_class(value: &str) -> Option<NounClass> {
         "2-m-agent-deformation" => Some(NounClass::TwofoldAgentMasculine),
         "2-m-in-deformation" => Some(NounClass::TwofoldInMasculine),
         "2-f-i-deformation" => Some(NounClass::TwofoldFeminineI),
+        "unique-mixed" => Some(NounClass::UniqueMixed),
         "indeclinable" => Some(NounClass::Indeclinable),
         _ => None,
     }
@@ -4979,7 +5124,7 @@ mod tests {
             let (id, lemma) = resolve_noun_identity(member.canonical_lemma())
                 .unwrap_or_else(|error| panic!("{member:?}: {error}"));
             assert_eq!(lemma, member.canonical_lemma());
-            synthetic += usize::from(id.starts_with(REVIEWED_NOUN_ID_PREFIX));
+            synthetic += usize::from(id.starts_with(REVIEWED_TWOFOLD_NOUN_ID_PREFIX));
             for cell in NounCell::all() {
                 noun_by_id(&id, cell)
                     .unwrap_or_else(|error| panic!("{member:?} {cell:?}: {error}"));
@@ -5014,6 +5159,59 @@ mod tests {
             source_only.source(),
             &FormSource::ReviewedGrammarTable {
                 rule_id: RuleId::NounTwofoldFeminineI,
+            }
+        );
+    }
+
+    #[test]
+    fn every_reviewed_unique_noun_routes_all_licensed_cells() {
+        let mut synthetic = 0;
+        for member in UniqueNounFamilyMember::all() {
+            let (id, lemma) = resolve_noun_identity(member.canonical_lemma())
+                .unwrap_or_else(|error| panic!("{member:?}: {error}"));
+            assert_eq!(lemma, member.canonical_lemma());
+            synthetic += usize::from(id.starts_with(REVIEWED_UNIQUE_NOUN_ID_PREFIX));
+            for cell in NounCell::all() {
+                let result = noun_by_id(&id, cell);
+                if member.canonical_lemma() == "букъви" && cell.number != Number::Plural {
+                    assert!(matches!(
+                        result,
+                        Err(InflectionError::UnsupportedCell { .. })
+                    ));
+                } else {
+                    result.unwrap_or_else(|error| panic!("{member:?} {cell:?}: {error}"));
+                }
+            }
+        }
+        assert!(synthetic > 0, "the source-only ID path must be exercised");
+    }
+
+    #[test]
+    fn exact_unique_noun_cell_precedes_the_reviewed_mixed_profile() {
+        let exact = noun(
+            "имѧ",
+            NounCell {
+                case: Case::Locative,
+                number: Number::Singular,
+            },
+        )
+        .expect("dictionary-backed unique noun");
+        assert_eq!(exact.primary_text(), "имене");
+        assert_eq!(exact.source(), &FormSource::DictionaryTable);
+
+        let reviewed = noun(
+            "л҄юбы",
+            NounCell {
+                case: Case::Genitive,
+                number: Number::Singular,
+            },
+        )
+        .expect("source-only unique noun");
+        assert_eq!(reviewed.texts().collect::<Vec<_>>(), ["л҄юбъве", "л҄юбъви"]);
+        assert_eq!(
+            reviewed.source(),
+            &FormSource::ReviewedGrammarTable {
+                rule_id: RuleId::NounUniqueYvFeminine,
             }
         );
     }

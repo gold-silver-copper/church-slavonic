@@ -309,7 +309,7 @@ and genuine historical gaps.
 
 | System | Ordinary API | Evidence behavior |
 |---|---|---|
-| Nouns | `noun`, `Noun`, `noun_paradigm` | Exact tables first; dictionary metadata, all 108 reviewed deformed-twofold family members, or explicit rules for supported classes |
+| Nouns | `noun`, `Noun`, `noun_paradigm` | Exact tables first; dictionary metadata, all 108 reviewed deformed-twofold members, all 37 fixed-gender class-0 substantives with typed reconstruction evidence, or explicit productive rules |
 | Adjectives | `long_adjective`, `short_adjective`, `Adjective` | Exact tables first; hard/soft metadata rules; citation comparatives only |
 | Determiners | `determiner`, `Determiner`, typed paradigm | Exact pinned dictionary cells only |
 | Pronouns | `personal_pronoun_with`, `reflexive_pronoun`, `anaphoric_pronoun`, compatible ordinary functions, `Pronoun` | Complete reviewed personal/reflexive/anaphoric tables; other pronouns use exact source cells |

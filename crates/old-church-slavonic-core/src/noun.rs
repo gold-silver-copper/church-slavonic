@@ -109,6 +109,7 @@ pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, Inf
         NounClass::TwofoldAgentMasculine => decline_twofold_agent_masculine(lexeme, cell),
         NounClass::TwofoldInMasculine => decline_twofold_in_masculine(lexeme, cell),
         NounClass::TwofoldFeminineI => decline_twofold_feminine_i(lexeme, cell),
+        NounClass::UniqueMixed => decline_unique_mixed(lexeme, cell),
         NounClass::Indeclinable => Ok(predicted(
             &lexeme.lemma,
             &lexeme.lemma,
@@ -233,6 +234,34 @@ fn relabel(mut form: PredictedForm, rule_id: RuleId) -> PredictedForm {
         step.rule_id = rule_id;
     }
     form
+}
+
+fn decline_unique_mixed(
+    lexeme: &NounLexeme,
+    cell: NounCell,
+) -> Result<PredictedForm, InflectionError> {
+    let member =
+        crate::UniqueNounFamilyMember::classify_source_lemma(&lexeme.lemma).ok_or_else(|| {
+            InflectionError::InvalidInput {
+                reason: "the unique-mixed noun class requires a reviewed class-0 substantive"
+                    .to_string(),
+            }
+        })?;
+    require_gender(
+        lexeme,
+        member.gender(),
+        "the reviewed class-0 substantive profile",
+    )?;
+    if lexeme.number_restriction != member.number_restriction() {
+        return Err(InflectionError::InvalidInput {
+            reason: format!(
+                "class-0 noun {} requires the reviewed {:?} number restriction",
+                member.canonical_lemma(),
+                member.number_restriction()
+            ),
+        });
+    }
+    member.decline_primary(cell)
 }
 
 fn decline_jo_masculine_soft(
@@ -770,6 +799,12 @@ mod tests {
                 NounClass::TwofoldFeminineI,
                 Gender::Feminine,
                 "рабын҄и|рабын҄и|рабын҄и|рабын҄ѭ|рабын҄еѭ|рабын҄и|рабын҄е|рабын҄и|рабын҄ю|рабын҄ꙗма|рабын҄и|рабын҄ꙗма|рабын҄ю|рабын҄и|рабын҄ѩ|рабын҄ь|рабын҄ꙗмъ|рабын҄ѩ|рабын҄ꙗми|рабын҄ꙗхъ|рабын҄ѩ",
+            ),
+            (
+                "имѧ",
+                NounClass::UniqueMixed,
+                Gender::Neuter,
+                "имѧ|имене|имени|имѧ|именемь|имени|имѧ|именѣ|именоу|именьма|именѣ|именьма|именоу|именѣ|имена|именъ|именемъ|имена|имены|именехъ|имена",
             ),
         ];
         for (lemma, class, gender, expected) in fixtures {

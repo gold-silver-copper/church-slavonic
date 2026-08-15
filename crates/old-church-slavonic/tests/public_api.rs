@@ -28,10 +28,11 @@ use old_church_slavonic::{
     PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
     Script, StandardPronominalIdentity, TransliterationDirection, TransliterationFidelity,
     TransliterationLossKind, TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell,
-    UniqueVerbFamilyMember, VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist,
-    cardinal_magnitude, cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
-    collective_numeral_identity, collective_numeral_paradigm, collective_numeral_paradigm_identity,
-    compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
+    UniqueNounFamilyMember, UniqueVerbFamilyMember, VariantPolicy, Verb, adjective_paradigm,
+    anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
+    cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
+    collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
+    compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
     compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
     compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm,
     distributive_cardinal, distributive_cardinal_paradigm, distributive_cardinal_paradigm_with_one,
@@ -92,6 +93,44 @@ fn every_reviewed_twofold_noun_is_complete_through_the_public_handle() {
             .expect("reviewed cell")
             .primary_text(),
         "рабын҄ѭ"
+    );
+}
+
+#[test]
+fn every_fixed_gender_unique_noun_is_complete_through_the_public_handle() {
+    for member in UniqueNounFamilyMember::all() {
+        let word = Noun::resolve(member.canonical_lemma())
+            .unwrap_or_else(|error| panic!("{member:?}: {error}"));
+        assert_eq!(word.lemma(), member.canonical_lemma());
+        assert_eq!(
+            Noun::from_id(word.id()).unwrap_or_else(|error| panic!("{}: {error}", word.id())),
+            word
+        );
+        let paradigm = word.paradigm();
+        assert_eq!(paradigm.len(), 21);
+        let expected_failures = usize::from(member.canonical_lemma() == "букъви") * 14;
+        assert_eq!(paradigm.failures().count(), expected_failures, "{member:?}");
+    }
+
+    let source_only = Noun::resolve("л҄юбы").expect("reviewed source-only noun");
+    assert!(source_only.id().starts_with("reviewed:ocs:noun:unique:"));
+    let direct = source_only
+        .form(Case::Genitive, Number::Singular)
+        .expect("reviewed variants");
+    assert_eq!(direct.texts().collect::<Vec<_>>(), ["л҄юбъве", "л҄юбъви"]);
+    assert!(
+        !direct
+            .warnings()
+            .contains(&InflectionWarning::IncludesReconstructedForms)
+    );
+
+    let reconstructed = source_only
+        .form(Case::Dative, Number::Dual)
+        .expect("grammatical reconstruction");
+    assert!(
+        reconstructed
+            .warnings()
+            .contains(&InflectionWarning::IncludesReconstructedForms)
     );
 }
 

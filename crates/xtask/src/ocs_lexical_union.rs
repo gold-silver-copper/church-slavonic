@@ -6,7 +6,8 @@
 //! collapsed.
 
 use old_church_slavonic_core::{
-    IrregularVerbFamilyMember, TwofoldNounFamilyMember, UniqueVerbFamilyMember,
+    CardinalNumeralIdentity, IrregularVerbFamilyMember, PersonalPronounIdentity,
+    TwofoldNounFamilyMember, UniqueNounFamilyMember, UniqueVerbFamilyMember,
     orthography::lookup_key,
 };
 use old_church_slavonic_extractor::{
@@ -528,13 +529,20 @@ fn classify_osd(claim: &mut Claim, runtime: Option<&LexemeRow>) {
                 "Polivanova defines a productive nominal deformation represented by a dedicated typed NounClass, complete twenty-one-cell rule, and exhaustive lexical family assignment.",
             );
         }
-        "n" if class.starts_with("0/") => classify(
-            claim,
-            "closed-irregular",
-            "polivanova-unique-noun",
-            "implementation-missing",
-            "The source places this lexeme in a unique mixed paradigm; a generic historical-stem label is not proof that every cell is routed.",
-        ),
+        "n" if class.starts_with("0/") => {
+            let route = unique_nominal_owner(&claim.lemma, class);
+            classify(
+                claim,
+                "closed-irregular",
+                route.unwrap_or("polivanova-unique-noun"),
+                if route.is_some() {
+                    "implemented"
+                } else {
+                    "implementation-missing"
+                },
+                "Polivanova's class-0 nominal is routed through its exhaustive fixed-gender unique-noun family or its already complete numeral/personal-pronoun lexical owner.",
+            );
+        }
         "n" if matches!(class, "2/m" | "2/n" | "2/f" | "1/m" | "1/f") => {
             if runtime.is_some_and(metadata_complete_noun) {
                 classify(
@@ -728,6 +736,31 @@ fn osd_noun_deformation_route(value: &str) -> Option<&'static str> {
 
 fn noun_deformation_class_matches(member: TwofoldNounFamilyMember, osd_class: &str) -> bool {
     member.source_class() == osd_class || (member.source_class() == "2/m**" && osd_class == "2/m++")
+}
+
+fn unique_nominal_owner(lemma: &str, osd_class: &str) -> Option<&'static str> {
+    if UniqueNounFamilyMember::classify_source_lemma(lemma)
+        .is_some_and(|member| member.source_class() == osd_class)
+    {
+        return Some("polivanova-unique-noun-family");
+    }
+    if osd_class == "0/m" && lemma == CardinalNumeralIdentity::Ten.canonical_lemma() {
+        return Some("reviewed-cardinal-ten");
+    }
+    if osd_class == "0/s" {
+        let identity = match lemma {
+            "азъ" => Some(PersonalPronounIdentity::First),
+            // The OSD uses the natural yeri spelling where the engine's
+            // normalized grammar identity uses the digraph.
+            "ты" => Some(PersonalPronounIdentity::Second),
+            "сѧ" => Some(PersonalPronounIdentity::Reflexive),
+            _ => None,
+        };
+        if identity.is_some() {
+            return Some("reviewed-personal-reflexive-pronoun");
+        }
+    }
+    None
 }
 
 fn is_irregular_osd_verb_class(value: &str) -> bool {
@@ -1070,6 +1103,29 @@ mod tests {
         let in_member = TwofoldNounFamilyMember::classify_source_lemma("гражданинъ")
             .expect("reviewed in-stem member");
         assert!(noun_deformation_class_matches(in_member, "2/m++"));
+    }
+
+    #[test]
+    fn unique_nominal_ownership_is_exhaustive_and_cross_pos_explicit() {
+        assert_eq!(
+            unique_nominal_owner("имѧ", "0/n"),
+            Some("polivanova-unique-noun-family")
+        );
+        assert_eq!(
+            unique_nominal_owner("господь", "0/m"),
+            Some("polivanova-unique-noun-family")
+        );
+        assert_eq!(
+            unique_nominal_owner("десѧть", "0/m"),
+            Some("reviewed-cardinal-ten")
+        );
+        for lemma in ["азъ", "ты", "сѧ"] {
+            assert_eq!(
+                unique_nominal_owner(lemma, "0/s"),
+                Some("reviewed-personal-reflexive-pronoun")
+            );
+        }
+        assert_eq!(unique_nominal_owner("неизвѣстъ", "0/m"), None);
     }
 
     #[test]
