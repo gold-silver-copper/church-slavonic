@@ -593,7 +593,7 @@ fn classify_osd(claim: &mut Claim, runtime: Option<&LexemeRow>) {
                 } else {
                     "implementation-missing"
                 },
-                "The source class marks a listed paradigmatic effect or anomalous cell. Existing Table 434 anchors resolve through the reviewed reusable-family API; additional prefixed members and isolated anomalies require an expanded family member or an exact lexical profile.",
+                "All 310 marked OSD rows resolve through the exhaustive §421 family inventory; the bounded §§464 and 509 anomalies have exact reviewed profiles.",
             );
         }
         "v" if is_regular_osd_verb_class(class) => classify(
@@ -1105,6 +1105,34 @@ mod tests {
             UniqueVerbFamilyMember::classify_source_union_lemma("вызгънати"),
             None
         );
+    }
+
+    #[test]
+    fn every_marked_osd_irregular_verb_has_an_exact_family_owner() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let claims = load_ledger(&root.join(LEDGER_PATH)).expect("committed lexical ledger");
+        let marked = claims
+            .iter()
+            .filter(|claim| {
+                claim.source_id == OSD_SOURCE
+                    && claim.source_pos == "v"
+                    && is_irregular_osd_verb_class(&claim.source_class)
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(marked.len(), 310);
+        for claim in marked {
+            assert_eq!(
+                IrregularVerbFamilyMember::classify_source_lemma(&claim.lemma)
+                    .map(IrregularVerbFamilyMember::canonical_lemma),
+                Some(claim.lemma.as_str()),
+                "{} {}",
+                claim.source_record,
+                claim.lemma
+            );
+            assert_eq!(claim.engine_route, "polivanova-listed-irregular-verb");
+            assert_eq!(claim.support_state, "implemented");
+        }
     }
 
     #[test]

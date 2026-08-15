@@ -280,10 +280,10 @@ impl ReviewedVerbAnalysis {
             ),
             Self::Irregular {
                 member,
-                analysis: IrregularVerbAnalysis::PolivanovaTable434,
+                analysis: IrregularVerbAnalysis::PolivanovaListedIrregularProfile,
             } => format!(
                 "{} and {}, with official LMU LOVe principal-part crosscheck",
-                IrregularVerbAnalysis::PolivanovaTable434.authority(),
+                IrregularVerbAnalysis::PolivanovaListedIrregularProfile.authority(),
                 member.source_section()
             ),
             Self::Irregular { analysis, .. } => analysis.authority().to_string(),
@@ -294,7 +294,7 @@ impl ReviewedVerbAnalysis {
         match self {
             Self::Unique(_)
             | Self::Irregular {
-                analysis: IrregularVerbAnalysis::PolivanovaTable434,
+                analysis: IrregularVerbAnalysis::PolivanovaListedIrregularProfile,
                 ..
             } => rule_id == RuleId::VerbIrregularExact || cell == VerbMorphologyCell::Infinitive,
             Self::Irregular { analysis, .. } => {

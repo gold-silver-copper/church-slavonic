@@ -781,9 +781,14 @@ oppositions that the ordinary hard/soft formations cannot express:
 formations rather than spelling postprocessing.
 
 `IrregularVerbGroup` inventories all thirteen reusable workstem groups of
-Polivanova Tables 434 and 440. `IrregularVerbFamilyMember` closes all seventy
-source-listed members with explicit prefix and root allomorph maps; every member
-realizes every finite, imperative, infinitive, supine, l-participle, and
+Polivanova Tables 434 and 440, the four-root anomalous imperative profile of
+§464, the isolated `видѣти` singular-imperative anomaly, and the `обути`
+past-passive anomaly of §509. `IrregularVerbFamilyMember` retains the seventy
+compact Table 434 anchors and closes all 310 marked OSD dictionary rows through
+§421's explicit simple/prefixed family-equivalence rule. Ten grammar or project
+spellings differ from their OSD citations and remain separately addressable, so
+the public reviewed inventory has 320 bounded spellings. Every member realizes
+every finite, imperative, infinitive, supine, l-participle, and
 declined-participle cell. The model keeps the table's subparadigm distributions
 explicit: for example, `крꙑти` uses `крꙑ-` in its present and past-active
 participle but `кръв-` in the past passive, while `мрѣти` distinguishes `мьр-`,
@@ -803,6 +808,14 @@ competing lexical analyses rather than being silently conflated. Ordinary
 facade calls return the ordered `метѫ`, `мещѫ`, and `метаѭ` analyses where the
 sources diverge. Cells with identical output merge into one surface analysis
 while retaining all source evidence.
+
+The §464 anomalous-imperative profile changes only imperative vocalism for the
+`рещи`, `тещи`, `пещи`, and `жещи` families; their remaining systems are
+productively assembled from the same bounded root map. `видѣти` similarly
+replaces only its syncretic singular imperative with `виждь`. Section 509's
+`обути` profile is ordinary class 4v outside its independently listed
+`обувен-` past-passive stem. These exceptions are lexical profiles, never
+suffix guesses over arbitrary input.
 
 All unique-family and reusable irregular-family members route through the
 ordinary facade. Resolution order is exact dictionary cell, reviewed manual
