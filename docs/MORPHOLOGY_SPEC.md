@@ -747,8 +747,12 @@ metadata and generic unsupported formation are forbidden inside this closed
 layer.
 
 `UniqueVerbFamilyMember` closes the dictionary family union listed in
-Polivanova §§520–604: 106 distinct source spellings across those nineteen
-profiles. It preserves source order and excludes nearby productive lexemes;
+Polivanova §§520–604: 106 lexical assignments across those nineteen profiles.
+Ninety-nine OSD citation spellings equal the normalized grammar identities;
+the other seven are an explicit natural-`ы` to canonical-`ꙑ` crosswalk for
+`быти` and its five listed prefixed members plus `выгънати`. This crosswalk is
+closed and does not act as fuzzy orthographic normalization. The inventory
+preserves source order and excludes nearby productive lexemes;
 notably, §604 lists five prefixed members of the `дѣти` profile but no
 prefixless dictionary headword. Family assembly prefixes the independent
 principal parts only where the profile permits it, and uses explicit

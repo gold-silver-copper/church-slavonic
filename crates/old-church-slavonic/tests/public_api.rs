@@ -3512,6 +3512,41 @@ fn every_reviewed_irregular_profile_routes_through_the_public_facade() {
 }
 
 #[test]
+fn unique_verb_source_yeri_spellings_route_to_their_canonical_profiles() {
+    for (source, canonical_lemma) in [
+        ("быти", "бꙑти"),
+        ("забыти", "забꙑти"),
+        ("избыти", "избꙑти"),
+        ("прибыти", "прибꙑти"),
+        ("прѣбыти", "прѣбꙑти"),
+        ("събыти", "събꙑти"),
+        ("выгънати", "вꙑгънати"),
+    ] {
+        let alias = Verb::resolve(source)
+            .unwrap_or_else(|error| panic!("source alias {source}: {error:?}"));
+        let canonical = Verb::resolve(canonical_lemma)
+            .unwrap_or_else(|error| panic!("canonical profile {canonical_lemma}: {error:?}"));
+        assert_eq!(alias.id(), canonical.id(), "{source}");
+        assert_eq!(alias.lemma(), canonical.lemma(), "{source}");
+
+        let alias_present = present(source, Person::First, Number::Singular)
+            .unwrap_or_else(|error| panic!("source alias present {source}: {error:?}"));
+        let canonical_present = canonical
+            .present(Person::First, Number::Singular)
+            .unwrap_or_else(|error| panic!("canonical present {source}: {error:?}"));
+        assert_eq!(
+            alias_present.primary_text(),
+            canonical_present.primary_text()
+        );
+        assert!(alias_present.warnings().iter().any(|warning| matches!(
+            warning,
+            InflectionWarning::LexicalAliasUsed { canonical: target }
+                if target == canonical.lemma()
+        )));
+    }
+}
+
+#[test]
 fn closed_classes_remain_lossless_in_the_advanced_dictionary_api() {
     let copied_second_person = raw_features::closed_class(
         "азъ",

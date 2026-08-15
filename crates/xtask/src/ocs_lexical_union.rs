@@ -1086,6 +1086,28 @@ mod tests {
     }
 
     #[test]
+    fn unique_verb_source_yeri_spellings_have_exact_family_owners() {
+        for lemma in [
+            "быти",
+            "забыти",
+            "избыти",
+            "прибыти",
+            "прѣбыти",
+            "събыти",
+            "выгънати",
+        ] {
+            assert!(
+                UniqueVerbFamilyMember::classify_source_union_lemma(lemma).is_some(),
+                "{lemma}"
+            );
+        }
+        assert_eq!(
+            UniqueVerbFamilyMember::classify_source_union_lemma("вызгънати"),
+            None
+        );
+    }
+
+    #[test]
     fn noun_deformation_partition_is_explicit() {
         assert_eq!(
             osd_noun_deformation_route("2/m*"),

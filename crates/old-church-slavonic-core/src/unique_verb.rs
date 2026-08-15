@@ -61,6 +61,19 @@ pub struct UniqueVerbFamilyMember {
     lemma: &'static str,
 }
 
+/// OSD uses natural `ы` in seven rows whose normalized grammar identities use
+/// the historical `ꙑ` digraph. Keep the crosswalk closed: these are spelling
+/// aliases of reviewed family members, not additional lexical paradigms.
+const SOURCE_UNION_SPELLING_ALIASES: [(&str, &str); 7] = [
+    ("быти", "бꙑти"),
+    ("забыти", "забꙑти"),
+    ("избыти", "избꙑти"),
+    ("прибыти", "прибꙑти"),
+    ("прѣбыти", "прѣбꙑти"),
+    ("събыти", "събꙑти"),
+    ("выгънати", "вꙑгънати"),
+];
+
 impl UniqueVerbFamilyMember {
     pub const COUNT: usize = 106;
 
@@ -75,7 +88,11 @@ impl UniqueVerbFamilyMember {
     }
 
     pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
-        Self::all().find(|member| member.lemma == lemma)
+        let canonical = SOURCE_UNION_SPELLING_ALIASES
+            .iter()
+            .find_map(|(source, canonical)| (*source == lemma).then_some(*canonical))
+            .unwrap_or(lemma);
+        Self::all().find(|member| member.lemma == canonical)
     }
 
     pub const fn profile(self) -> UniqueVerbIdentity {
@@ -1284,6 +1301,24 @@ mod tests {
                 "{excluded_near_neighbor} belongs to a different productive lexeme"
             );
         }
+    }
+
+    #[test]
+    fn source_union_natural_yeri_aliases_are_closed_and_identity_preserving() {
+        assert_eq!(SOURCE_UNION_SPELLING_ALIASES.len(), 7);
+        for (source, canonical) in SOURCE_UNION_SPELLING_ALIASES {
+            let aliased = UniqueVerbFamilyMember::classify_source_union_lemma(source)
+                .unwrap_or_else(|| panic!("missing OSD spelling {source}"));
+            let direct = UniqueVerbFamilyMember::classify_source_union_lemma(canonical)
+                .unwrap_or_else(|| panic!("missing canonical spelling {canonical}"));
+            assert_eq!(aliased, direct, "{source} -> {canonical}");
+            assert_eq!(aliased.canonical_lemma(), canonical);
+        }
+        assert_eq!(
+            UniqueVerbFamilyMember::classify_source_union_lemma("вызгънати"),
+            None,
+            "the spelling crosswalk must not become a fuzzy yeri normalizer"
+        );
     }
 
     #[test]

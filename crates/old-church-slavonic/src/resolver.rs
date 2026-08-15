@@ -378,6 +378,38 @@ fn reviewed_dictionary_candidate(
     exact.next().is_none().then_some(first)
 }
 
+fn owned_reviewed_dictionary_candidate(
+    candidates: &[LexemeSummary],
+    profile: ReviewedVerbProfile,
+) -> Option<LexemeSummary> {
+    reviewed_dictionary_candidate(candidates, profile)
+        .cloned()
+        .or_else(|| {
+            let [one] = candidates else {
+                return None;
+            };
+            Some(one.clone())
+        })
+}
+
+fn canonical_reviewed_dictionary_candidate(
+    query_candidates: &[LexemeSummary],
+    normalized_query: &str,
+    profile: ReviewedVerbProfile,
+) -> Result<Option<LexemeSummary>, InflectionError> {
+    if let Some(candidate) = owned_reviewed_dictionary_candidate(query_candidates, profile) {
+        return Ok(Some(candidate));
+    }
+    if !query_candidates.is_empty() || normalized_query == profile.canonical_lemma() {
+        return Ok(None);
+    }
+    let canonical_candidates = lookup(profile.canonical_lemma(), PartOfSpeech::Verb)?;
+    Ok(owned_reviewed_dictionary_candidate(
+        &canonical_candidates,
+        profile,
+    ))
+}
+
 fn resolve_queried_verb(
     query: &str,
     resolve: impl FnOnce(&str, Option<ReviewedVerbProfile>) -> Result<FormSet, InflectionError>,
@@ -386,17 +418,20 @@ fn resolve_queried_verb(
     let reviewed = ReviewedVerbProfile::classify(&normalized);
     let candidates = lookup(query, PartOfSpeech::Verb)?;
     if let Some(profile) = reviewed {
-        if let Some(one) = reviewed_dictionary_candidate(&candidates, profile).or_else(|| {
-            let [one] = candidates.as_slice() else {
-                return None;
-            };
-            Some(one)
-        }) {
+        if let Some(one) =
+            canonical_reviewed_dictionary_candidate(&candidates, &normalized, profile)?
+        {
             let record =
                 lookup::find_lexeme(&one.id).ok_or_else(|| InflectionError::InvalidInput {
                     reason: "generated alias points at a missing lexeme".to_string(),
                 })?;
-            return queried_result(query, record, resolve(record.id, Some(profile)));
+            let mut result = queried_result(query, record, resolve(record.id, Some(profile)))?;
+            if normalized != profile.canonical_lemma() {
+                result.add_warning(InflectionWarning::LexicalAliasUsed {
+                    canonical: profile.canonical_lemma().to_string(),
+                });
+            }
+            return Ok(result);
         }
 
         let mut result = resolve(&reviewed_verb_id(profile), Some(profile))?;
@@ -425,12 +460,9 @@ pub(crate) fn resolve_verb_identity(query: &str) -> Result<(String, String), Inf
     let reviewed = ReviewedVerbProfile::classify(&normalized);
     let candidates = lookup(query, PartOfSpeech::Verb)?;
     if let Some(profile) = reviewed {
-        if let Some(one) = reviewed_dictionary_candidate(&candidates, profile).or_else(|| {
-            let [one] = candidates.as_slice() else {
-                return None;
-            };
-            Some(one)
-        }) {
+        if let Some(one) =
+            canonical_reviewed_dictionary_candidate(&candidates, &normalized, profile)?
+        {
             return Ok((one.id.clone(), one.lemma.clone()));
         }
         return Ok((
