@@ -116,10 +116,10 @@
 //! | Nouns | [`noun`], [`Noun`], [`noun_paradigm`] | Table first; dictionary metadata or explicit rules when supported |
 //! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exact comparative citations plus productive comparison through [`advanced::rules`] |
 //! | Personal/reflexive/anaphoric pronouns | [`personal_pronoun_with`], [`reflexive_pronoun`], [`anaphoric_pronoun`] and compatible ordinary handles | Complete reviewed closed grammar tables with typed clitic/context selection |
-//! | Regular pronominal pronouns | [`gendered_pronoun`] and [`Pronoun`] | Reviewed hard, soft, and j-stem class `2/p`; explicit OOV metadata through [`advanced::rules`] |
+//! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Other closed classes | [`pronoun`], [`determiner`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells while remaining class `2/p` lexical allocation is under review |
+//! | Other closed classes | [`pronoun`], [`determiner`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
@@ -155,8 +155,8 @@ pub use old_church_slavonic_core::{
     LexemeSummary, Number, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
     PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
     PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
-    PronounFormSelection, RealizedPhrase, RequestedCell, Script, UngenderedCell, VariantPolicy,
-    VariantSelectionError,
+    PronounFormSelection, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
+    UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,
@@ -183,17 +183,17 @@ pub mod prelude {
         IrregularAgreeingIdentity, LParticipleParadigm, Lemma, Noun, NounParadigm, Number, Numeral,
         NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
         ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
-        PronounFormSelection, PronounParadigm, Script, VariantPolicy, VariantSelectionError, Verb,
-        VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist, comparative_citation,
-        determiner, determiner_paradigm, finite, finite_paradigm, gendered_numeral,
-        gendered_numeral_paradigm, gendered_pronoun, gendered_pronoun_paradigm, imperative,
-        imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
-        l_participle, l_participle_paradigm, long_adjective, lookup, noun, noun_paradigm, numeral,
-        numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
-        personal_pronoun, personal_pronoun_paradigm, personal_pronoun_with, present,
-        present_active_participle, present_paradigm, present_passive_participle, pronoun,
-        pronoun_paradigm, reflexive_pronoun, relative_pronoun, short_adjective, supine,
-        verbal_noun,
+        PronounFormSelection, PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy,
+        VariantSelectionError, Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
+        comparative_citation, determiner, determiner_paradigm, finite, finite_paradigm,
+        gendered_numeral, gendered_numeral_paradigm, gendered_pronoun, gendered_pronoun_paradigm,
+        imperative, imperative_paradigm, imperfect, infinitive, interrogative_pronoun,
+        irregular_agreeing, l_participle, l_participle_paradigm, long_adjective, lookup, noun,
+        noun_paradigm, numeral, numeral_paradigm, participle_paradigm, past_active_participle,
+        past_passive_participle, personal_pronoun, personal_pronoun_paradigm,
+        personal_pronoun_with, present, present_active_participle, present_paradigm,
+        present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
+        regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun,
     };
 }
 
@@ -470,6 +470,36 @@ pub fn gendered_pronoun(
         }
         .closed_class(),
     )
+}
+
+/// Decline any reviewed regular identity in Polivanova's class `2/p`.
+///
+/// The identity carries its reviewed morphological class, primary part of
+/// speech, and any number restriction, so this also covers class members that
+/// are absent from the bundled dictionary.
+///
+/// ```
+/// use old_church_slavonic::{
+///     Case, Gender, Number, StandardPronominalIdentity, regular_pronominal,
+/// };
+/// assert_eq!(
+///     regular_pronominal(
+///         StandardPronominalIdentity::NumeralDva,
+///         Case::Nominative,
+///         Number::Dual,
+///         Gender::Feminine,
+///     )?.primary_text(),
+///     "дъвѣ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn regular_pronominal(
+    identity: StandardPronominalIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> InflectionResult {
+    resolver::regular_pronominal(identity, case, number, gender)
 }
 
 /// Decline an case-number-only dictionary numeral cell.

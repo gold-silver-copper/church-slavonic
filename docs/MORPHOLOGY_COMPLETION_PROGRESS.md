@@ -6,7 +6,7 @@ Inventory date: `2026-08-14`. Source-frontier date: `2026-08-14`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **31** have final states and **22** remain non-final. Source discovery has 1 recorded pass and has not converged.
+The matrix contains **53** required system contracts: **32** have final states and **21** remain non-final. Source discovery has 1 recorded pass and has not converged.
 
 ## State totals
 
@@ -14,8 +14,7 @@ The matrix contains **53** required system contracts: **31** have final states a
 |---|---:|
 | `implementation-missing` | 16 |
 | `not-inflectional` | 2 |
-| `partial` | 1 |
-| `productive-complete` | 29 |
+| `productive-complete` | 30 |
 | `source-review-open` | 5 |
 
 ## Recension totals
@@ -23,7 +22,7 @@ The matrix contains **53** required system contracts: **31** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 18 | 26 |
+| old-church-slavonic | 19 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -49,7 +48,7 @@ The matrix contains **53** required system contracts: **31** have final states a
 | old-church-slavonic | numeral | 0 | 1 |
 | old-church-slavonic | orthography | 1 | 2 |
 | old-church-slavonic | participle | 1 | 1 |
-| old-church-slavonic | pronoun | 1 | 2 |
+| old-church-slavonic | pronoun | 2 | 2 |
 | old-church-slavonic | verbal-noun | 0 | 1 |
 | synodal-russian | adjective | 1 | 1 |
 | synodal-russian | analytic-form | 1 | 2 |
@@ -70,7 +69,6 @@ The matrix contains **53** required system contracts: **31** have final states a
 
 ## Non-final systems
 
-- `ocs.pronoun.other` — **partial**: Allocate every remaining Polivanova §314 class 2/p identity across the pronoun, determiner, and numeral systems, with explicit lexical semantics and source-union aliases.
 - `ocs.determiner` — **implementation-missing**: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.
 - `ocs.numeral` — **implementation-missing**: Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars.
 - `ocs.verb.irregular-root` — **implementation-missing**: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
@@ -102,7 +100,7 @@ The matrix contains **53** required system contracts: **31** have final states a
 | `ocs.adjective.comparison` | old-church-slavonic | comparison | `productive-complete` | `ADJ-COMP-NEW-01`<br>`ADJ-COMP-OLD-01` | independent grammar paradigms plus strict explicit-principal-part prediction; dictionary citations remain exact |
 | `ocs.adjective.superlative` | old-church-slavonic | comparison | `productive-complete` | `PHRASE-SUP-REL-GEN-01`<br>`PHRASE-SUP-ZELO-01`<br>`ADJ-SUP-PRE-01`<br>`ADJ-COMP-OLD-01` | independent grammar inventory with structured component provenance and productive derived realization |
 | `ocs.pronoun.personal-reflexive` | old-church-slavonic | pronoun | `productive-complete` | `PRON-PERS-1-01`<br>`PRON-PERS-2-01`<br>`PRON-REFL-01`<br>`PRON-PERS-CLITIC-01`<br>`PRON-ANAPH-3-01`<br>`PRON-ANAPH-PREP-N-01` | independently reviewed closed grammar inventory, conditioned allomorphy, explicit source dispute, and exhaustive source-union routing |
-| `ocs.pronoun.other` | old-church-slavonic | pronoun | `partial` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`PRON-2P-J-01`<br>`PRON-2P-VELAR-01`<br>`PRON-REL-IZHE-01`<br>`PRON-REL-PREP-N-01`<br>`PRON-2PSTAR-VES-01`<br>`PRON-2PSTAR-SIC-01`<br>`PRON-UNIQUE-SI-01`<br>`PRON-UNIQUE-KTO-01`<br>`PRON-UNIQUE-CHTO-01`<br>`PRON-DERIVED-FAMILY-01`<br>`DET-UNIQUE-KYI-01` | complete regular and exceptional grammar paradigms plus typed derived-particle composition; remaining class 2/p lexical allocation is partial |
+| `ocs.pronoun.other` | old-church-slavonic | pronoun | `productive-complete` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`PRON-2P-J-01`<br>`PRON-2P-VELAR-01`<br>`PRON-REL-IZHE-01`<br>`PRON-REL-PREP-N-01`<br>`PRON-2PSTAR-VES-01`<br>`PRON-2PSTAR-SIC-01`<br>`PRON-UNIQUE-SI-01`<br>`PRON-UNIQUE-KTO-01`<br>`PRON-UNIQUE-CHTO-01`<br>`PRON-DERIVED-FAMILY-01`<br>`DET-UNIQUE-KYI-01` | all 34 class 2/p identities allocated with exhaustive typed regular or exceptional inventories, source-union aliases, and structured derived-particle composition |
 | `ocs.determiner` | old-church-slavonic | determiner | `implementation-missing` | `OCS-DETERMINER-PENDING` | partial exact dictionary evidence |
 | `ocs.numeral` | old-church-slavonic | numeral | `implementation-missing` | `OCS-NUMERAL-PENDING` | partial exact dictionary evidence |
 | `ocs.verb.present` | old-church-slavonic | finite-verb | `productive-complete` | `V-IA1-01`<br>`V-IA2-01`<br>`V-II1-01`<br>`V-II2-01`<br>`V-II3-01` | source-backed productive prediction |
@@ -179,4 +177,4 @@ The frontier contains **15** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.pronoun.other`: Allocate every remaining Polivanova §314 class 2/p identity across the pronoun, determiner, and numeral systems, with explicit lexical semantics and source-union aliases.
+`ocs.determiner`: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.

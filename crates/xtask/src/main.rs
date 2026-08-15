@@ -1018,8 +1018,8 @@ fn public_cell_by_id(
     if let Some(cell) = parse_noun_cell(feature) {
         return Ok(by_id::noun_by_id(id, cell)?);
     }
-    if let Some(cell) = parse_adjective_cell(feature) {
-        return Ok(by_id::adjective_by_id(id, cell)?);
+    if parse_adjective_cell(feature).is_some() {
+        return Ok(raw_features::dictionary_form_by_id(id, feature)?);
     }
     if feature == "adj:comparative:citation" {
         return Ok(by_id::comparative_citation_by_id(id)?);

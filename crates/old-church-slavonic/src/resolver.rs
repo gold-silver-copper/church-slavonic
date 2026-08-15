@@ -118,14 +118,34 @@ pub fn adjective(lemma: &str, cell: AdjectiveCell) -> Result<FormSet, Inflection
 
 pub fn adjective_by_id(id: &str, cell: AdjectiveCell) -> Result<FormSet, InflectionError> {
     ensure_pos(id, PartOfSpeech::Adjective)?;
+    let record = lookup::find_lexeme(id)
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Adjective)))?;
+    let standard_pronominal = StandardPronominalIdentity::classify_source_union_lemma(record.lemma)
+        .filter(|identity| identity.part_of_speech() == PartOfSpeech::Adjective);
+    if let Some(identity) = standard_pronominal
+        && cell.form == AdjectiveForm::Short
+    {
+        let mut result = standard_pronominal_form(identity, cell.case, cell.number, cell.gender)
+            .map_err(|error| error.with_lexeme_id(id))?;
+        if record.lemma != identity.canonical_lemma() {
+            result.add_warning(InflectionWarning::LexicalAliasUsed {
+                canonical: identity.canonical_lemma().to_string(),
+            });
+        }
+        return Ok(result);
+    }
     if let Some(form) = lookup::table_form(id, &cell.key()) {
         return Ok(form);
     }
     if let Some(form) = lookup::override_form(id, &cell.key()) {
         return Ok(form);
     }
-    let record = lookup::find_lexeme(id)
-        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Adjective)))?;
+    if standard_pronominal.is_some() {
+        return Err(InflectionError::unsupported(
+            id,
+            RequestedCell::Adjective(cell),
+        ));
+    }
     let class = parse_adjective_class(record.class).ok_or_else(|| {
         InflectionError::MissingLexicalMetadata {
             needed: vec![MetadataField::AdjectiveClass],
@@ -472,17 +492,14 @@ pub fn pronominal_with(
     )
 }
 
-fn standard_pronominal_pronoun(
+fn standard_pronominal_form(
     identity: StandardPronominalIdentity,
     case: Case,
     number: Number,
     gender: Gender,
 ) -> Result<FormSet, InflectionError> {
-    let prediction = old_church_slavonic_core::pronoun::decline_pronominal(
-        &identity.lexeme(),
-        case,
-        number,
-        gender,
+    let prediction = old_church_slavonic_core::pronoun::decline_standard_pronominal(
+        identity, case, number, gender,
     )?;
     let rule_id = prediction.rule_id;
     let trace = prediction.trace;
@@ -498,7 +515,8 @@ fn standard_pronominal_pronoun(
             field: None,
             provenance: MetadataProvenance::ReviewedGrammarTable,
             source_feature: Some(format!(
-                "pronoun:2-p:{}:{}:{}:{}",
+                "{}:2-p:{}:{}:{}:{}",
+                identity.part_of_speech().code(),
                 identity.declension().code(),
                 case.code(),
                 number.code(),
@@ -523,6 +541,18 @@ fn standard_pronominal_pronoun(
         trace,
         vec![analysis],
     ))
+}
+
+/// Decline any reviewed regular identity in Polivanova's class `2/p`, including
+/// identities whose primary lexical ownership is adjective, determiner, or
+/// numeral rather than pronoun.
+pub fn regular_pronominal(
+    identity: StandardPronominalIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<FormSet, InflectionError> {
+    standard_pronominal_form(identity, case, number, gender)
 }
 
 /// Resolve the complete agreeing relative pronoun `иже`, including its
@@ -1129,9 +1159,33 @@ pub fn closed_class_by_id(
         });
     }
     ensure_pos(id, part_of_speech)?;
+    let record = lookup::find_lexeme(id)
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(part_of_speech)))?;
+    if let Some(identity) = StandardPronominalIdentity::classify_source_union_lemma(record.lemma)
+        .filter(|identity| identity.part_of_speech() == part_of_speech)
+    {
+        let gender = match (cell.person, cell.gender) {
+            (None, Some(gender)) => gender,
+            _ => {
+                return Err(InflectionError::historically_invalid(
+                    id,
+                    RequestedCell::ClosedClass {
+                        part_of_speech,
+                        cell,
+                    },
+                ));
+            }
+        };
+        let mut result = standard_pronominal_form(identity, cell.case, cell.number, gender)
+            .map_err(|error| error.with_lexeme_id(id))?;
+        if record.lemma != identity.canonical_lemma() {
+            result.add_warning(InflectionWarning::LexicalAliasUsed {
+                canonical: identity.canonical_lemma().to_string(),
+            });
+        }
+        return Ok(result);
+    }
     if part_of_speech == PartOfSpeech::Pronoun {
-        let record = lookup::find_lexeme(id)
-            .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Pronoun)))?;
         if let Some(identity) = PersonalPronounIdentity::classify_source_union_lemma(record.lemma) {
             let mut result = match identity {
                 PersonalPronounIdentity::First | PersonalPronounIdentity::Second => {
@@ -1182,30 +1236,6 @@ pub fn closed_class_by_id(
                     )),
                 },
             }?;
-            if record.lemma != identity.canonical_lemma() {
-                result.add_warning(InflectionWarning::LexicalAliasUsed {
-                    canonical: identity.canonical_lemma().to_string(),
-                });
-            }
-            return Ok(result);
-        }
-        if let Some(identity) =
-            StandardPronominalIdentity::classify_source_union_lemma(record.lemma)
-        {
-            let gender = match (cell.person, cell.gender) {
-                (None, Some(gender)) => gender,
-                _ => {
-                    return Err(InflectionError::historically_invalid(
-                        id,
-                        RequestedCell::ClosedClass {
-                            part_of_speech,
-                            cell,
-                        },
-                    ));
-                }
-            };
-            let mut result = standard_pronominal_pronoun(identity, cell.case, cell.number, gender)
-                .map_err(|error| error.with_lexeme_id(id))?;
             if record.lemma != identity.canonical_lemma() {
                 result.add_warning(InflectionWarning::LexicalAliasUsed {
                     canonical: identity.canonical_lemma().to_string(),
@@ -1286,27 +1316,23 @@ pub fn closed_class_by_id(
         };
         return reviewed.map_err(|error| error.with_lexeme_id(id));
     }
-    if part_of_speech == PartOfSpeech::Determiner {
-        let record = lookup::find_lexeme(id)
-            .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Determiner)))?;
-        if record.lemma == "кꙑи" {
-            return match (cell.person, cell.gender) {
-                (None, Some(gender)) => irregular_agreeing(
-                    IrregularAgreeingIdentity::InterrogativeKyi,
-                    cell.case,
-                    cell.number,
-                    gender,
-                )
-                .map_err(|error| error.with_lexeme_id(id)),
-                _ => Err(InflectionError::historically_invalid(
-                    id,
-                    RequestedCell::ClosedClass {
-                        part_of_speech,
-                        cell,
-                    },
-                )),
-            };
-        }
+    if part_of_speech == PartOfSpeech::Determiner && record.lemma == "кꙑи" {
+        return match (cell.person, cell.gender) {
+            (None, Some(gender)) => irregular_agreeing(
+                IrregularAgreeingIdentity::InterrogativeKyi,
+                cell.case,
+                cell.number,
+                gender,
+            )
+            .map_err(|error| error.with_lexeme_id(id)),
+            _ => Err(InflectionError::historically_invalid(
+                id,
+                RequestedCell::ClosedClass {
+                    part_of_speech,
+                    cell,
+                },
+            )),
+        };
     }
     lookup::table_form(id, &cell.key(part_of_speech)).ok_or_else(|| {
         InflectionError::unsupported(

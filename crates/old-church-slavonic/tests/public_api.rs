@@ -18,13 +18,14 @@ use old_church_slavonic::{
     GenderedCell, InflectionError, InflectionWarning, InterrogativePronounIdentity,
     IrregularAgreeingIdentity, Lemma, Noun, Number, Numeral, ParadigmLookupError, PartOfSpeech,
     ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
-    PronounFormSelection, RequestedCell, Script, UngenderedCell, VariantPolicy, Verb,
-    adjective_paradigm, anaphoric_pronoun, aorist, determiner, determiner_paradigm, finite,
-    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
-    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
-    l_participle_paradigm, long_adjective, noun, noun_paradigm, numeral, participle_paradigm,
-    past_active_participle, personal_pronoun, personal_pronoun_with, present, present_paradigm,
-    pronoun, reflexive_pronoun, relative_pronoun, short_adjective, supine,
+    PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
+    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, determiner,
+    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
+    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
+    l_participle, l_participle_paradigm, long_adjective, noun, noun_paradigm, numeral,
+    participle_paradigm, past_active_participle, personal_pronoun, personal_pronoun_with, present,
+    present_paradigm, pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun,
+    short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -613,6 +614,7 @@ fn regular_pronominal_pronouns_use_reviewed_grammar_before_source_tables() {
         ("мои", "моѥѩ", "мои"),
         ("твои", "твоѥѩ", "твои"),
         ("свои", "своѥѩ", "свои"),
+        ("вьсѣкъ", "вьсѣкоѩ", "вьсѣкъ"),
     ];
     for (lemma, expected, canonical) in goldens {
         let result = gendered_pronoun(lemma, Case::Genitive, Number::Singular, Gender::Feminine)
@@ -663,6 +665,154 @@ fn regular_pronominal_pronouns_use_reviewed_grammar_before_source_tables() {
         gendered_pronoun("тъ", Case::Vocative, Number::Singular, Gender::Masculine),
         Err(InflectionError::HistoricallyInvalidCell { .. })
     ));
+}
+
+#[test]
+fn every_regular_class_2_p_identity_is_available_through_the_typed_api() {
+    assert_eq!(StandardPronominalIdentity::ALL.len(), 32);
+    let mut successes = 0;
+    for identity in StandardPronominalIdentity::ALL {
+        for number in Number::ALL {
+            for case in Case::ALL {
+                for gender in Gender::ALL {
+                    let result = regular_pronominal(identity, case, number, gender);
+                    let supported = case != Case::Vocative
+                        && (identity.number_restriction() == NumberRestriction::All
+                            || number == Number::Dual);
+                    if supported {
+                        let result = result.unwrap_or_else(|error| {
+                            panic!("{identity:?} {case:?} {number:?} {gender:?}: {error}")
+                        });
+                        assert_eq!(result.lemma(), identity.canonical_lemma());
+                        assert!(matches!(
+                            result.source(),
+                            FormSource::ReviewedGrammarTable { .. }
+                        ));
+                        assert_eq!(result.analyses()[0].evidence[0].source_form, None);
+                        successes += 1;
+                    } else {
+                        let Err(InflectionError::HistoricallyInvalidCell {
+                            cell:
+                                RequestedCell::ClosedClass {
+                                    part_of_speech,
+                                    cell,
+                                },
+                            ..
+                        }) = result
+                        else {
+                            panic!(
+                                "expected typed invalid cell for {identity:?} {case:?} {number:?} {gender:?}"
+                            );
+                        };
+                        assert_eq!(part_of_speech, identity.part_of_speech());
+                        assert_eq!(cell.case, case);
+                        assert_eq!(cell.number, number);
+                        assert_eq!(cell.gender, Some(gender));
+                    }
+                }
+            }
+        }
+    }
+    assert_eq!(successes, 1_656);
+
+    assert_eq!(
+        regular_pronominal(
+            StandardPronominalIdentity::NumeralDva,
+            Case::Nominative,
+            Number::Dual,
+            Gender::Feminine,
+        )
+        .expect("dual-only source citation")
+        .primary_text(),
+        "дъвѣ"
+    );
+    assert_eq!(
+        regular_pronominal(
+            StandardPronominalIdentity::NumeralTroi,
+            Case::Nominative,
+            Number::Plural,
+            Gender::Masculine,
+        )
+        .expect("j-stem class member")
+        .primary_text(),
+        "трои"
+    );
+}
+
+#[test]
+fn pronominal_adjectives_use_reviewed_short_forms_and_preserve_long_and_raw_tables() {
+    for (lemma, canonical, reviewed, copied) in [
+        ("самъ", "самъ", "самого", "сама"),
+        ("единъ", "ѥдинъ", "ѥдиного", "едина"),
+        ("единакъ", "ѥдинакъ", "ѥдинакого", "единака"),
+    ] {
+        let reviewed_result = short_adjective(
+            lemma,
+            Case::Genitive,
+            Number::Singular,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        )
+        .expect("reviewed pronominal adjective");
+        assert_eq!(reviewed_result.lemma(), canonical, "{lemma}");
+        assert_eq!(reviewed_result.primary_text(), reviewed, "{lemma}");
+        assert!(matches!(
+            reviewed_result.source(),
+            FormSource::ReviewedGrammarTable { .. }
+        ));
+
+        let id = only_id(lemma, PartOfSpeech::Adjective);
+        let raw = raw_features::dictionary_form_by_id(&id, "adj:short:gen:sg:m:in")
+            .expect("copied diagnostic adjective cell");
+        assert_eq!(raw.primary_text(), copied, "{lemma}");
+    }
+
+    assert_eq!(
+        long_adjective(
+            "самъ",
+            Case::Genitive,
+            Number::Singular,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        )
+        .expect("attested aberrant long form")
+        .primary_text(),
+        "самаѥго"
+    );
+    assert_eq!(
+        noun("единакъ", Case::Genitive, Number::Singular)
+            .expect("homonymous monk noun remains nominal")
+            .primary_text(),
+        "единака"
+    );
+
+    let vsek_id = only_id("вьсѣкъ", PartOfSpeech::Pronoun);
+    assert_eq!(
+        gendered_pronoun(
+            "вьсѣкъ",
+            Case::Genitive,
+            Number::Singular,
+            Gender::Masculine,
+        )
+        .expect("reviewed hard-pronominal form")
+        .primary_text(),
+        "вьсѣкого"
+    );
+    assert_eq!(
+        raw_features::closed_class_by_id(
+            &vsek_id,
+            PartOfSpeech::Pronoun,
+            GenderedCell {
+                case: Case::Genitive,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+            }
+            .closed_class(),
+        )
+        .expect("copied diagnostic pronoun cell")
+        .primary_text(),
+        "вьсѣка"
+    );
 }
 
 #[test]
