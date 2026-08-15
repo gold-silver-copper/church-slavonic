@@ -236,6 +236,8 @@ pub enum MetadataField {
     VerbAspect,
     PresentStem,
     PresentFirstSingularStem,
+    PresentThirdPluralStem,
+    PresentFormation,
     ImperfectStem,
     ImperfectFormation,
     ImperfectVariantPolicy,

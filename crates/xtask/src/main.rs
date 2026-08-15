@@ -1666,6 +1666,9 @@ fn participle_rule_slice(lexeme: &VerbLexeme, kind: ParticipleKind) -> &'static 
         ParticipleKind::PastActive => match lexeme.formations.past_active_participle {
             Some(PastActiveParticipleFormation::Ush) => "verb-past-active-participle-ush",
             Some(PastActiveParticipleFormation::Ish) => "verb-past-active-participle-ish",
+            Some(PastActiveParticipleFormation::IshAfterGlide) => {
+                "verb-past-active-participle-ish-after-glide"
+            }
             Some(PastActiveParticipleFormation::VushAfterJDeletion) => {
                 "verb-past-active-participle-vush-j-deletion"
             }

@@ -25,14 +25,14 @@ use old_church_slavonic::{
     IrregularVerbFamilyMember, Lemma, LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE,
     MIN_COMPOUND_ORDINAL_VALUE, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
     OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
-    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
-    Script, StandardPronominalIdentity, TransliterationDirection, TransliterationFidelity,
-    TransliterationLossKind, TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell,
-    UniqueNounFamilyMember, UniqueVerbFamilyMember, VariantPolicy, Verb, adjective_paradigm,
-    anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
-    cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
-    collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
-    compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
+    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RegularVerbFamily,
+    RegularVerbSourceMember, RequestedCell, Script, StandardPronominalIdentity,
+    TransliterationDirection, TransliterationFidelity, TransliterationLossKind,
+    TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell, UniqueNounFamilyMember,
+    UniqueVerbFamilyMember, VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist,
+    cardinal_magnitude, cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
+    collective_numeral_identity, collective_numeral_paradigm, collective_numeral_paradigm_identity,
+    compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
     compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
     compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm,
     distributive_cardinal, distributive_cardinal_paradigm, distributive_cardinal_paradigm_with_one,
@@ -3512,6 +3512,65 @@ fn every_reviewed_irregular_profile_routes_through_the_public_facade() {
 }
 
 #[test]
+fn every_regular_osd_family_routes_through_the_public_facade() {
+    assert_eq!(RegularVerbSourceMember::all().count(), 2_297);
+    for family in RegularVerbFamily::all() {
+        let lemma = family.canonical_lemma();
+        let verb = Verb::resolve(lemma)
+            .unwrap_or_else(|error| panic!("regular facade identity {lemma}: {error:?}"));
+        assert_eq!(
+            Verb::from_id(verb.id()).expect("regular stable ID roundtrip"),
+            verb
+        );
+        verb.present(Person::First, Number::Singular)
+            .unwrap_or_else(|error| panic!("regular present {lemma}: {error:?}"));
+        verb.imperfect(Person::First, Number::Singular)
+            .unwrap_or_else(|error| panic!("regular imperfect {lemma}: {error:?}"));
+        verb.aorist(Person::First, Number::Singular)
+            .unwrap_or_else(|error| panic!("regular aorist {lemma}: {error:?}"));
+        verb.imperative(Person::Second, Number::Plural)
+            .unwrap_or_else(|error| panic!("regular imperative {lemma}: {error:?}"));
+    }
+}
+
+#[test]
+fn regular_osd_profiles_preserve_exact_precedence_and_homographic_analyses() {
+    let exact = present("боꙗти", Person::First, Number::Singular)
+        .expect("dictionary cell precedes the productive source profile");
+    assert_eq!(exact.primary_text(), "боѭ");
+    assert_eq!(exact.source(), &FormSource::DictionaryTable);
+
+    let source_only = present("л҄юбити", Person::First, Number::Singular)
+        .expect("source-only regular class profile");
+    assert_eq!(source_only.primary_text(), "л҄юблѭ");
+    assert!(matches!(
+        source_only.source(),
+        FormSource::ReviewedGrammarTable { .. }
+    ));
+
+    let homographs = present("вести", Person::First, Number::Singular)
+        .expect("both class-4c source roots remain visible");
+    assert_eq!(homographs.texts().collect::<Vec<_>>(), ["ведѫ", "везѫ"]);
+    assert_eq!(homographs.source(), &FormSource::ReviewedGrammarAnalyses);
+    assert!(
+        homographs
+            .warnings()
+            .contains(&InflectionWarning::MultipleMorphologicalAnalyses)
+    );
+
+    let composite = Verb::from_id("reviewed:ocs:verb:доити")
+        .expect("source-union composite identity")
+        .present(Person::First, Number::Singular)
+        .expect("unique and regular OSD homonyms remain parallel analyses");
+    assert!(composite.analyses().len() >= 2);
+    assert!(
+        composite
+            .warnings()
+            .contains(&InflectionWarning::MultipleMorphologicalAnalyses)
+    );
+}
+
+#[test]
 fn unique_verb_source_yeri_spellings_route_to_their_canonical_profiles() {
     for (source, canonical_lemma) in [
         ("быти", "бꙑти"),
@@ -4067,6 +4126,70 @@ fn normalized_sigmatic_metadata_reaches_the_production_resolver() {
             .iter()
             .flat_map(|analysis| &analysis.evidence)
             .any(|evidence| { evidence.field == Some(MetadataField::AoristSecondThirdSingular) })
+    );
+}
+
+#[test]
+fn normalized_present_metadata_preserves_surface_formation_and_both_edge_stems() {
+    let field =
+        |name: &str, value: &str, source_form: &str| -> api_metadata::NormalizedVerbMetadataField {
+            api_metadata::NormalizedVerbMetadataField {
+                system: "present".to_string(),
+                analysis_rank: 0,
+                field: name.to_string(),
+                value: value.to_string(),
+                provenance: "curated-grammar-override".to_string(),
+                source_feature: "polivanova:regular-present".to_string(),
+                source_form: source_form.to_string(),
+                crosscheck_features: vec![],
+                authority: "Polivanova 2023 §§409–462".to_string(),
+            }
+        };
+    let metadata = api_metadata::DictionaryVerbMetadata::from_normalized_fields(
+        "fixture:блажити",
+        "блажити",
+        [
+            field("class", "II1", "блажиши"),
+            field("stem", "блаж", "блажиши"),
+            field("first-singular-stem", "блаж", "блажѫ"),
+            field("third-plural-stem", "блаж", "блажѧтъ"),
+            field("formation", "hard-i", "блажѫ"),
+        ],
+    )
+    .expect("validated present edge metadata");
+
+    let first = api_metadata::finite_verb_from_dictionary_metadata(
+        &metadata,
+        FiniteVerbCell {
+            tense: FiniteTense::Present,
+            person: Person::First,
+            number: Number::Singular,
+        },
+    )
+    .expect("hard i-conjugation first singular");
+    assert_eq!(first.primary_text(), "блажѫ");
+    assert!(
+        first.analyses()[0]
+            .evidence
+            .iter()
+            .any(|evidence| evidence.field == Some(MetadataField::PresentFormation))
+    );
+
+    let third_plural = api_metadata::finite_verb_from_dictionary_metadata(
+        &metadata,
+        FiniteVerbCell {
+            tense: FiniteTense::Present,
+            person: Person::Third,
+            number: Number::Plural,
+        },
+    )
+    .expect("independent third plural edge");
+    assert_eq!(third_plural.primary_text(), "блажѧтъ");
+    assert!(
+        third_plural.analyses()[0]
+            .evidence
+            .iter()
+            .any(|evidence| evidence.field == Some(MetadataField::PresentThirdPluralStem))
     );
 }
 

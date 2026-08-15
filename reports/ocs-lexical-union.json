@@ -37,22 +37,19 @@
     "verb": 4724
   },
   "by_classification": {
-    "ambiguous": 5729,
+    "ambiguous": 5186,
     "closed-irregular": 770,
     "defective": 34,
     "disputed": 5,
     "indeclinable": 165,
     "out-of-scope": 614,
-    "productive": 6797
+    "productive": 7340
   },
   "by_support_state": {
-    "implementation-missing": 2297,
-    "implemented": 2786,
-    "metadata-incomplete": 6543,
+    "implemented": 5785,
+    "metadata-incomplete": 6384,
     "not-applicable": 614,
-    "source-ambiguous": 1874
+    "source-ambiguous": 1331
   },
-  "implementation_gaps_by_route": {
-    "polivanova-regular-verb-specification": 2297
-  }
+  "implementation_gaps_by_route": {}
 }

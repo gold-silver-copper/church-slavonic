@@ -203,23 +203,23 @@ id = "ocs.verb.present"
 recension = "old-church-slavonic"
 category = "finite-verb"
 part_of_speech = "verb"
-scope = "Productive present for IA1, IA2, II1, II2, and II3 with independent edge allomorphs."
+scope = "Productive present for IA1, IA2, II1, II2, and II3 with independent edge allomorphs and typed iotated-e/hard-i surface formations."
 profiles = ["abstract", "canonical-cyrillic"]
-features = ["tense=present", "person=3", "number=3", "class=5"]
+features = ["tense=present", "person=3", "number=3", "class=5", "edge-allomorph=1sg|3pl", "surface-formation=ordinary|iotated-e|hard-i"]
 subtypes = ["IA1", "IA2", "II1", "II2", "II3"]
 realization = "synthetic"
 state = "productive-complete"
 implementation_kind = "productive"
 rule_ids = ["V-IA1-01", "V-IA2-01", "V-II1-01", "V-II2-01", "V-II3-01"]
-sources = ["ut-ocs-online", "love-lmu-ocs-verbs", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "docs/MORPHOLOGY_SPEC.md present section"
-required_metadata = ["present class", "present stem", "first-singular allomorph for second conjugation"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "love-lmu-ocs-verbs", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "Polivanova 2023 §§409–462 and §§486–515; docs/MORPHOLOGY_SPEC.md present and source-bounded regular-profile sections"
+required_metadata = ["present class", "present stem", "first-singular allomorph for second conjugation", "third-plural allomorph and typed surface formation where lexically required"]
 valid_inventory = "3 persons × singular/dual/plural."
 invalid_inventory = "Missing allomorphs and root/irregular classes without explicit overrides."
-implementation = ["crates/old-church-slavonic-core/src/verb.rs"]
-tests = ["crates/old-church-slavonic-core/src/verb.rs#explicit_present_allomorph_replaces_automatic_guessing"]
-evidence_status = "source-backed productive prediction"
-rationale = "All declared class cells are generated from explicit lexical inputs and exact cells retain precedence."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic-core/src/regular_verb.rs", "data/ocs/polivanova_regular_verbs.tsv"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#explicit_present_allomorph_replaces_automatic_guessing", "crates/old-church-slavonic-core/src/verb.rs#present_surface_formations_and_third_plural_edge_are_complete_and_typed", "crates/old-church-slavonic-core/src/regular_verb.rs#class_representatives_match_table_429", "crates/old-church-slavonic-core/src/regular_verb.rs#every_source_analysis_generates_every_licensed_cell", "crates/old-church-slavonic/tests/public_api.rs#normalized_present_metadata_preserves_surface_formation_and_both_edge_stems"]
+evidence_status = "source-backed productive prediction over every one of the 2,297 regular OSD rows"
+rationale = "All declared class cells are generated from explicit lexical inputs, source-defined edge seams are typed, and exact cells retain precedence."
 
 [[system]]
 id = "ocs.verb.imperfect.uncontracted"
@@ -396,14 +396,14 @@ state = "productive-complete"
 implementation_kind = "productive"
 rule_ids = ["V-INF-01", "V-SUP-01", "V-LPART-01"]
 sources = ["ut-ocs-online", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "UT lessons 2 and 7; docs/MORPHOLOGY_SPEC.md"
-required_metadata = ["validated -ти citation", "independent aorist/l-participle stem where required"]
+citation = "UT lessons 2 and 7; Polivanova 2023 §§74, 88, 409–462, and 486–515; docs/MORPHOLOGY_SPEC.md"
+required_metadata = ["validated OCS infinitive citation ending in -ти or -щи", "independent aorist/l-participle stem where required"]
 valid_inventory = "One infinitive, one regular supine, and gender × number l-participle cells."
 invalid_inventory = "Irregular/root systems without explicit overrides."
-implementation = ["crates/old-church-slavonic-core/src/verb.rs"]
-tests = ["crates/old-church-slavonic-core/src/verb.rs#missing_and_hostile_metadata_fail_without_panicking"]
-evidence_status = "source-backed productive prediction"
-rationale = "The bounded word-formation inputs and all l-participle agreement cells are implemented."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic-core/src/regular_verb.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#missing_and_hostile_metadata_fail_without_panicking", "crates/old-church-slavonic-core/src/regular_verb.rs#every_source_analysis_generates_every_licensed_cell"]
+evidence_status = "source-backed productive prediction, including class-4c -щи/-сти infinitives, §88 supines, and the complete regular OSD inventory"
+rationale = "The bounded word-formation inputs, hard/soft supine seam, class-4c l-stem adjustment, and all l-participle agreement cells are implemented."
 
 [[system]]
 id = "ocs.verb.participle"
@@ -423,10 +423,10 @@ citation = "UT lesson 6 §26 and lesson 7 §§31.1–32; docs/MORPHOLOGY_SPEC.md
 required_metadata = ["independent tense/voice stem", "typed formation", "agreement features"]
 valid_inventory = "All four participle kinds through the complete adjective inventory."
 invalid_inventory = "Missing tense/voice identity, malformed seam metadata, and source rows lacking safe attribution."
-implementation = ["crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic-core/src/adjective.rs"]
-tests = ["crates/old-church-slavonic-core/src/verb.rs#all_four_participles_form_stems_and_share_adjective_agreement", "crates/old-church-slavonic-dictionary/src/lib.rs#generated_form_index_covers_every_participle_system"]
-evidence_status = "source-backed productive prediction; unsafe extracted rows excluded"
-rationale = "Strict callers can generate every agreement cell from independently supplied formation metadata; extraction attribution is tracked separately as a lexical-data gap."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic-core/src/adjective.rs", "crates/old-church-slavonic-core/src/regular_verb.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#all_four_participles_form_stems_and_share_adjective_agreement", "crates/old-church-slavonic-core/src/regular_verb.rs#every_source_analysis_generates_every_licensed_cell", "crates/old-church-slavonic-core/src/regular_verb.rs#homographs_and_lexical_t_participles_are_preserved", "crates/old-church-slavonic-dictionary/src/lib.rs#generated_form_index_covers_every_participle_system"]
+evidence_status = "source-backed productive prediction across all four systems and every regular OSD source analysis; unsafe extracted rows remain explicitly excluded"
+rationale = "Strict callers and all 2,297 regular OSD rows generate every agreement cell from independently supplied formation metadata; lexical n/t selection and extraction attribution remain typed."
 
 [[system]]
 id = "ocs.verb.irregular-root"
@@ -578,17 +578,17 @@ features = ["identity=stable", "classification=productive|irregular|defective|in
 subtypes = ["productive", "closed-irregular", "defective", "indeclinable", "ambiguous", "disputed", "out-of-scope"]
 realization = "lexical-metadata"
 state = "implementation-missing"
-implementation_kind = "exhaustive-source-claim-ledger-with-open-routes"
+implementation_kind = "exhaustive-source-claim-ledger-with-zero-confirmed-implementation-routes"
 rule_ids = ["OCS-LEXICON-UNION-01"]
 sources = ["polivanova-fup-2023", "love-lmu-ocs-verbs", "gorazd", "english-wiktionary-ocs-kaikki-2026-07-06", "english-wiktionary-ocs-kaikki-2026-08-07"]
 citation = "Polivanova 2023 §§249, 253, 255, 265, 299–302, 416–420 and the complete OSD paradigmatic dictionary; the retained runtime identities from the older Kaikki extraction and every row of the separately pinned refresh; official LMU LOVe 970-row export hash b36ce8d2…; GORAZD card-index and export-surface review 2026-08-15."
 required_metadata = ["stable identity", "part of speech", "class/principal parts", "restrictions", "evidence"]
 valid_inventory = "All 14,114 row-level source claims: 3,081 committed runtime identities from the older 4,615-row Kaikki extraction, every 4,626 row of the refreshed Kaikki artifact, and every 6,407 OSD dictionary row. Unique matches share runtime identities; every unsafe or homonymous match retains a source-qualified stable identity."
 invalid_inventory = "Form-of records, secondary OSD forms, non-target parts of speech, and invariant items remain explicit source claims with out-of-scope, indeclinable, or not-inflectional routes. LOVe and GORAZD remain attributed crosschecks rather than row-level denominator members because reviewed database redistribution terms do not permit a bundled snapshot."
-implementation = ["data/ocs/lexical_source_claims.tsv", "reports/ocs-lexical-union.json", "crates/xtask/src/ocs_lexical_union.rs", "data/extracted/lexemes.tsv", "data/extracted/verb_metadata.tsv"]
-tests = ["crates/xtask/src/ocs_lexical_union.rs#final_classifications_and_support_states_are_closed", "crates/xtask/src/ocs_lexical_union.rs#osd_homonym_markers_do_not_enter_lookup_keys", "crates/xtask/src/ocs_lexical_union.rs#verb_class_partition_is_explicit", "crates/old-church-slavonic-extractor/src/validate.rs#coverage_floor_witness_is_rejected"]
-evidence_status = "exhaustive reproducible claim ledger with 2,547 confirmed missing implementation routes, 6,593 incomplete-metadata claims, and 1,916 source-ambiguous claims retained explicitly rather than silently dropped"
-gap = "Close every implementation-missing route in reports/ocs-lexical-union.json, then review metadata-incomplete identities against OSD, LOVe, and lawful corpus evidence until every productive source identity has a complete typed specification or an evidence-backed final ambiguous/defective/indeclinable classification."
+implementation = ["data/ocs/lexical_source_claims.tsv", "data/ocs/polivanova_regular_verbs.tsv", "reports/ocs-lexical-union.json", "crates/xtask/src/ocs_lexical_union.rs", "crates/old-church-slavonic-core/src/regular_verb.rs", "crates/old-church-slavonic/src/resolver.rs", "data/extracted/lexemes.tsv", "data/extracted/verb_metadata.tsv"]
+tests = ["crates/xtask/src/ocs_lexical_union.rs#final_classifications_and_support_states_are_closed", "crates/xtask/src/ocs_lexical_union.rs#osd_homonym_markers_do_not_enter_lookup_keys", "crates/xtask/src/ocs_lexical_union.rs#verb_class_partition_is_explicit", "crates/xtask/src/ocs_lexical_union.rs#regular_osd_profiles_are_crosschecked_against_matching_dictionary_cells", "crates/old-church-slavonic-core/src/regular_verb.rs#embedded_inventory_is_exact_and_row_addressable", "crates/old-church-slavonic-core/src/regular_verb.rs#every_source_analysis_generates_every_licensed_cell", "crates/old-church-slavonic/src/resolver.rs#every_reviewed_verb_profile_id_round_trips_without_losing_composite_owners", "crates/old-church-slavonic/tests/public_api.rs#every_regular_osd_family_routes_through_the_public_facade", "crates/old-church-slavonic-extractor/src/validate.rs#coverage_floor_witness_is_rejected"]
+evidence_status = "exhaustive reproducible ledger: 5,785 implemented, 6,384 metadata-incomplete, 614 not-applicable, and 1,331 source-ambiguous claims; zero confirmed implementation-gap routes. All 2,297 listed regular OSD verb rows are source-addressable. Of 6,114 safely comparable rank-zero dictionary cells, 5,596 agree and the 518 retained source disagreements are digest-locked."
+gap = "Review the 6,384 metadata-incomplete and 1,331 source-ambiguous claims against OSD, LOVe, GORAZD, and lawful corpus evidence until every inflectable identity has a complete typed specification or an evidence-backed final ambiguous, disputed, defective, indeclinable, or out-of-scope classification. No confirmed implementation route remains open in the current ledger."
 
 [[system]]
 id = "ocs.invariant-parts-of-speech"

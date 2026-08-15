@@ -698,7 +698,20 @@ pub fn impersonal_predicate(
 ) -> Result<RealizedPhrase, InflectionError> {
     let cell = identity.predicate_cell(tense);
     let forms = match resolver::finite_verb(identity.lemma(), cell) {
-        Ok(forms) => forms,
+        Ok(forms)
+            if matches!(
+                forms.source(),
+                FormSource::DictionaryTable | FormSource::ManualOverride
+            ) =>
+        {
+            forms
+        }
+        // A generic source profile for the same spelling may belong to a
+        // distinct personal sense. Once no exact cell exists, the typed
+        // impersonal identity owns the productive principal parts.
+        Ok(_) => {
+            resolver::reviewed_finite_verb_with(&identity.lexeme(), cell, IMPERSONAL_AUTHORITY)?
+        }
         Err(
             InflectionError::MissingLexicalMetadata { .. }
             | InflectionError::UnsupportedFormation { .. }

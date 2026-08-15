@@ -310,6 +310,19 @@ pub enum VerbAspect {
     Biaspectual,
 }
 
+/// Surface realization selected for the present-system terminal set.
+///
+/// Most dictionary classes use the ordinary e- or i-conjugation terminals
+/// encoded by [`VerbClass`]. Vowel- and glide-final e-conjugation workstems
+/// insert `j`, producing the distinct `-ѭ/-ѥ-` surface series.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PresentFormation {
+    IotatedE,
+    /// The i-conjugation's morphophonological `-ѫ` first singular after a
+    /// non-glide stem (`блажѫ`, `важдѫ`), as distinct from `люблѭ`.
+    HardI,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ImperfectFormation {
     /// The infinitive-aorist stem takes the `-ах-` series.
@@ -383,6 +396,9 @@ pub enum PastActiveParticipleFormation {
     Ush,
     /// The primary transformed i-stem series with `-ьш-` obliques.
     Ish,
+    /// The primary transformed i-stem series after a final `j` or `i̯`:
+    /// `таj + ь/ьш-` surfaces as `таи/таишь-`.
+    IshAfterGlide,
     /// The underlying final `j` is declared by the formation and absent from
     /// the supplied Cyrillic orthographic base before `-въш-` is attached.
     VushAfterJDeletion,

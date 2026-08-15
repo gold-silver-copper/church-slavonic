@@ -353,7 +353,7 @@ The legacy oracle/core OOV diagnostic below may use the 2nd-singular present, ma
 | `verb-II3-present` | 14 | 14 | 14 | 100.00% | 100.00% |
 | `verb-imperative` | 459 | 459 | 536 | 85.63% | 85.63% |
 | `verb-imperfect` | 1104 | 1104 | 1104 | 100.00% | 100.00% |
-| `verb-infinitive` | 526 | 526 | 526 | 100.00% | 100.00% |
+| `verb-infinitive` | 559 | 559 | 559 | 100.00% | 100.00% |
 | `verb-l-participle` | 4432 | 4432 | 4432 | 100.00% | 100.00% |
 | `verb-past-active-participle-ush` | 29 | 29 | 69 | 42.03% | 42.03% |
 | `verb-past-active-participle-vush` | 65 | 65 | 71 | 91.55% | 91.55% |
@@ -362,9 +362,9 @@ The legacy oracle/core OOV diagnostic below may use the 2nd-singular present, ma
 | `verb-present-active-participle-yusht-hard` | 56 | 56 | 77 | 72.73% | 72.73% |
 | `verb-present-passive-participle-im` | 45 | 45 | 45 | 100.00% | 100.00% |
 | `verb-present-passive-participle-om` | 33 | 33 | 49 | 67.35% | 67.35% |
-| `verb-supine` | 511 | 511 | 526 | 97.15% | 97.15% |
+| `verb-supine` | 544 | 544 | 559 | 97.32% | 97.32% |
 
-Macro average across reported rule slices: 89.56% exact, 89.56% normalized.
+Macro average across reported rule slices: 89.57% exact, 89.57% normalized.
 
 ### POS, class, and cell detail
 
@@ -1223,7 +1223,7 @@ Macro average across reported rule slices: 89.56% exact, 89.56% normalized.
 | `verb/verb-imperfect/verb:finite:imperfect:3:du` | 138 | 138 | 138 | 100.00% | 100.00% |
 | `verb/verb-imperfect/verb:finite:imperfect:3:pl` | 138 | 138 | 138 | 100.00% | 100.00% |
 | `verb/verb-imperfect/verb:finite:imperfect:3:sg` | 138 | 138 | 138 | 100.00% | 100.00% |
-| `verb/verb-infinitive/verb:infinitive` | 526 | 526 | 526 | 100.00% | 100.00% |
+| `verb/verb-infinitive/verb:infinitive` | 559 | 559 | 559 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:du` | 554 | 554 | 554 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:pl` | 554 | 554 | 554 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:sg` | 554 | 554 | 554 | 100.00% | 100.00% |
@@ -1239,7 +1239,7 @@ Macro average across reported rule slices: 89.56% exact, 89.56% normalized.
 | `verb/verb-present-active-participle-yusht-hard/verb:participle:present-active:citation` | 56 | 56 | 77 | 72.73% | 72.73% |
 | `verb/verb-present-passive-participle-im/verb:participle:present-passive:citation` | 45 | 45 | 45 | 100.00% | 100.00% |
 | `verb/verb-present-passive-participle-om/verb:participle:present-passive:citation` | 33 | 33 | 49 | 67.35% | 67.35% |
-| `verb/verb-supine/verb:supine` | 511 | 511 | 526 | 97.15% | 97.15% |
+| `verb/verb-supine/verb:supine` | 544 | 544 | 559 | 97.32% | 97.32% |
 
 ## Held-out OOV
 
@@ -1270,7 +1270,7 @@ Macro average across reported rule slices: 89.56% exact, 89.56% normalized.
 | `verb-II3-present` | 14 | 14 | 14 | 100.00% | 100.00% |
 | `verb-imperative` | 157 | 157 | 188 | 83.51% | 83.51% |
 | `verb-imperfect` | 384 | 384 | 384 | 100.00% | 100.00% |
-| `verb-infinitive` | 146 | 146 | 146 | 100.00% | 100.00% |
+| `verb-infinitive` | 152 | 152 | 152 | 100.00% | 100.00% |
 | `verb-l-participle` | 1216 | 1216 | 1216 | 100.00% | 100.00% |
 | `verb-past-active-participle-ush` | 14 | 14 | 25 | 56.00% | 56.00% |
 | `verb-past-active-participle-vush` | 20 | 20 | 25 | 80.00% | 80.00% |
@@ -1279,9 +1279,9 @@ Macro average across reported rule slices: 89.56% exact, 89.56% normalized.
 | `verb-present-active-participle-yusht-hard` | 25 | 25 | 31 | 80.65% | 80.65% |
 | `verb-present-passive-participle-im` | 15 | 15 | 15 | 100.00% | 100.00% |
 | `verb-present-passive-participle-om` | 19 | 19 | 23 | 82.61% | 82.61% |
-| `verb-supine` | 139 | 139 | 145 | 95.86% | 95.86% |
+| `verb-supine` | 145 | 145 | 151 | 96.03% | 96.03% |
 
-Macro average across reported rule slices: 89.13% exact, 89.13% normalized.
+Macro average across reported rule slices: 89.14% exact, 89.14% normalized.
 
 ### POS, class, and cell detail
 
@@ -2119,7 +2119,7 @@ Macro average across reported rule slices: 89.13% exact, 89.13% normalized.
 | `verb/verb-imperfect/verb:finite:imperfect:3:du` | 48 | 48 | 48 | 100.00% | 100.00% |
 | `verb/verb-imperfect/verb:finite:imperfect:3:pl` | 48 | 48 | 48 | 100.00% | 100.00% |
 | `verb/verb-imperfect/verb:finite:imperfect:3:sg` | 48 | 48 | 48 | 100.00% | 100.00% |
-| `verb/verb-infinitive/verb:infinitive` | 146 | 146 | 146 | 100.00% | 100.00% |
+| `verb/verb-infinitive/verb:infinitive` | 152 | 152 | 152 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:du` | 152 | 152 | 152 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:pl` | 152 | 152 | 152 | 100.00% | 100.00% |
 | `verb/verb-l-participle/verb:l-participle:f:sg` | 152 | 152 | 152 | 100.00% | 100.00% |
@@ -2135,9 +2135,9 @@ Macro average across reported rule slices: 89.13% exact, 89.13% normalized.
 | `verb/verb-present-active-participle-yusht-hard/verb:participle:present-active:citation` | 25 | 25 | 31 | 80.65% | 80.65% |
 | `verb/verb-present-passive-participle-im/verb:participle:present-passive:citation` | 15 | 15 | 15 | 100.00% | 100.00% |
 | `verb/verb-present-passive-participle-om/verb:participle:present-passive:citation` | 19 | 19 | 23 | 82.61% | 82.61% |
-| `verb/verb-supine/verb:supine` | 139 | 139 | 145 | 95.86% | 95.86% |
+| `verb/verb-supine/verb:supine` | 145 | 145 | 151 | 96.03% | 96.03% |
 
-Skipped OOV cells requiring unavailable lexical metadata: 5085.
+Skipped OOV cells requiring unavailable lexical metadata: 5007.
 
 ## Extraction exclusions
 

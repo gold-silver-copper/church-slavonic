@@ -910,9 +910,9 @@
         "total": 1104
       },
       "verb-infinitive": {
-        "correct": 526,
-        "normalized_correct": 526,
-        "total": 526
+        "correct": 559,
+        "normalized_correct": 559,
+        "total": 559
       },
       "verb-l-participle": {
         "correct": 4432,
@@ -955,9 +955,9 @@
         "total": 49
       },
       "verb-supine": {
-        "correct": 511,
-        "normalized_correct": 511,
-        "total": 526
+        "correct": 544,
+        "normalized_correct": 544,
+        "total": 559
       }
     },
     "test": {
@@ -1087,9 +1087,9 @@
         "total": 384
       },
       "verb-infinitive": {
-        "correct": 146,
-        "normalized_correct": 146,
-        "total": 146
+        "correct": 152,
+        "normalized_correct": 152,
+        "total": 152
       },
       "verb-l-participle": {
         "correct": 1216,
@@ -1132,9 +1132,9 @@
         "total": 23
       },
       "verb-supine": {
-        "correct": 139,
-        "normalized_correct": 139,
-        "total": 145
+        "correct": 145,
+        "normalized_correct": 145,
+        "total": 151
       }
     },
     "development_by_cell": {
@@ -5404,9 +5404,9 @@
         "total": 138
       },
       "verb/verb-infinitive/verb:infinitive": {
-        "correct": 526,
-        "normalized_correct": 526,
-        "total": 526
+        "correct": 559,
+        "normalized_correct": 559,
+        "total": 559
       },
       "verb/verb-l-participle/verb:l-participle:f:du": {
         "correct": 554,
@@ -5484,9 +5484,9 @@
         "total": 49
       },
       "verb/verb-supine/verb:supine": {
-        "correct": 511,
-        "normalized_correct": 511,
-        "total": 526
+        "correct": 544,
+        "normalized_correct": 544,
+        "total": 559
       }
     },
     "test_by_cell": {
@@ -9651,9 +9651,9 @@
         "total": 48
       },
       "verb/verb-infinitive/verb:infinitive": {
-        "correct": 146,
-        "normalized_correct": 146,
-        "total": 146
+        "correct": 152,
+        "normalized_correct": 152,
+        "total": 152
       },
       "verb/verb-l-participle/verb:l-participle:f:du": {
         "correct": 152,
@@ -9731,12 +9731,12 @@
         "total": 23
       },
       "verb/verb-supine/verb:supine": {
-        "correct": 139,
-        "normalized_correct": 139,
-        "total": 145
+        "correct": 145,
+        "normalized_correct": 145,
+        "total": 151
       }
     },
-    "skipped_cells": 5085
+    "skipped_cells": 5007
   },
   "extraction_exclusions": {
     "adjective-missing-gender": 21,

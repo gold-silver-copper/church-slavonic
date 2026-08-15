@@ -5,8 +5,9 @@ use crate::{
     ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
     InflectionError, LParticipleCell, MetadataField, Number, ParticipleCell, ParticipleKind,
     PastActiveParticipleFormation, PastPassiveParticipleFormation, Person, PredictedForm,
-    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RequestedCell, RuleId,
-    RuleStep, VerbAspect, VerbClass, VerbDefectKind, VerbMorphologyCell, VerbMorphologySystem,
+    PresentActiveParticipleFormation, PresentFormation, PresentPassiveParticipleFormation,
+    RequestedCell, RuleId, RuleStep, VerbAspect, VerbClass, VerbDefectKind, VerbMorphologyCell,
+    VerbMorphologySystem,
 };
 use std::collections::BTreeMap;
 
@@ -14,6 +15,9 @@ use std::collections::BTreeMap;
 pub struct VerbStems {
     pub present: Option<String>,
     pub present_first_singular: Option<String>,
+    /// Independent 3pl edge allomorph, needed when a final velar remains
+    /// unpalatalized before `-ѫтъ` but palatalizes before e-initial terminals.
+    pub present_third_plural: Option<String>,
     pub imperfect: Option<String>,
     pub aorist: Option<String>,
     /// Independently supplied complete 2sg/3sg aorist principal part.
@@ -37,6 +41,7 @@ pub struct VerbStems {
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct VerbFormations {
+    pub present: Option<PresentFormation>,
     pub imperfect: Option<ImperfectFormation>,
     pub imperfect_variant_policy: Option<ImperfectVariantPolicy>,
     pub aorist: Option<AoristFormation>,
@@ -110,6 +115,22 @@ impl VerbLexemeBuilder {
         self.lexeme.stems.present = Some(validated_stem(stem)?);
         self.lexeme.stems.present_first_singular =
             first_singular.map(validated_stem).transpose()?;
+        Ok(self)
+    }
+
+    /// Select the iotated e-conjugation surface series and, where needed,
+    /// supply an independent 3pl edge allomorph.
+    pub fn iotated_present(
+        mut self,
+        stem: impl Into<String>,
+        first_singular: Option<String>,
+        third_plural: Option<String>,
+    ) -> Result<Self, InflectionError> {
+        self.lexeme.stems.present = Some(validated_stem(stem)?);
+        self.lexeme.stems.present_first_singular =
+            first_singular.map(validated_stem).transpose()?;
+        self.lexeme.stems.present_third_plural = third_plural.map(validated_stem).transpose()?;
+        self.lexeme.formations.present = Some(PresentFormation::IotatedE);
         Ok(self)
     }
 
@@ -395,9 +416,9 @@ pub fn infinitive(lexeme: &VerbLexeme) -> Result<PredictedForm, InflectionError>
     if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::Infinitive) {
         return result;
     }
-    if !lemma.ends_with("ти") || lemma.len() <= "ти".len() {
+    if !has_ocs_infinitive_ending(&lemma) {
         return Err(InflectionError::InvalidInput {
-            reason: "an OCS infinitive citation must end in ти".to_string(),
+            reason: "an OCS infinitive citation must end in -ти or -щи".to_string(),
         });
     }
     Ok(single_step(
@@ -413,18 +434,24 @@ pub fn supine(lexeme: &VerbLexeme) -> Result<PredictedForm, InflectionError> {
     if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::Supine) {
         return result;
     }
-    let stem = lemma
-        .strip_suffix("ти")
-        .filter(|stem| !stem.is_empty())
-        .ok_or_else(|| InflectionError::InvalidInput {
-            reason: "a regularly derived supine needs an infinitive ending in ти".to_string(),
-        })?;
-    let text = format!("{stem}тъ");
+    if !has_ocs_infinitive_ending(&lemma) {
+        return Err(InflectionError::InvalidInput {
+            reason: "a regularly derived supine needs an infinitive ending in -ти or -щи"
+                .to_string(),
+        });
+    }
+    let stem = &lemma[..lemma.len() - 'и'.len_utf8()];
+    let terminal = if ends_in_morphologically_soft_consonant(stem) {
+        "ь"
+    } else {
+        "ъ"
+    };
+    let text = format!("{stem}{terminal}");
     Ok(single_step(
         &lemma,
         &text,
         RuleId::VerbSupine,
-        "replace the regular infinitive ending ти with the supine ending тъ",
+        "replace infinitival final и with the supine terminal, fronted after a soft consonant",
     ))
 }
 
@@ -592,10 +619,38 @@ fn present(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, I
             }
             None => default_stem.clone(),
         }
+    } else if cell.person == Person::Third && cell.number == Number::Plural {
+        match lexeme.stems.present_third_plural.as_deref() {
+            Some(stem) => required_stem(Some(stem), MetadataField::PresentThirdPluralStem)?,
+            None => default_stem.clone(),
+        }
     } else {
         default_stem
     };
-    let (ending, rule_id) = present_ending(&lexeme.lemma, lexeme.class, cell)?;
+    let (ending, rule_id) = match lexeme.formations.present {
+        Some(PresentFormation::IotatedE) => {
+            if !matches!(lexeme.class, VerbClass::IA1 | VerbClass::IA2) {
+                return Err(InflectionError::UnsupportedFormation {
+                    system: MetadataField::PresentFormation,
+                    formation: format!("{:?} with {:?}", PresentFormation::IotatedE, lexeme.class),
+                });
+            }
+            (iotated_e_present_ending(cell), RuleId::VerbIA1)
+        }
+        Some(PresentFormation::HardI) => {
+            if !matches!(
+                lexeme.class,
+                VerbClass::II1 | VerbClass::II2 | VerbClass::II3
+            ) {
+                return Err(InflectionError::UnsupportedFormation {
+                    system: MetadataField::PresentFormation,
+                    formation: format!("{:?} with {:?}", PresentFormation::HardI, lexeme.class),
+                });
+            }
+            (hard_i_present_ending(cell), RuleId::VerbII1)
+        }
+        None => present_ending(&lexeme.lemma, lexeme.class, cell)?,
+    };
     Ok(join(
         &stem,
         ending,
@@ -851,6 +906,12 @@ fn past_active_participle(
             "ьш",
             "ь",
             "attach the fronted -ьш- suffix to the explicitly transformed i-stem",
+        ),
+        PastActiveParticipleFormation::IshAfterGlide => (
+            stem,
+            "ишь",
+            "и",
+            "realize final j or i-glide before the fronted -ьш- past-active suffix",
         ),
         PastActiveParticipleFormation::VushAfterJDeletion => (
             stem,
@@ -1155,6 +1216,14 @@ fn ends_in_ocs_vowel(stem: &str) -> bool {
     })
 }
 
+fn ends_in_morphologically_soft_consonant(stem: &str) -> bool {
+    stem.ends_with(['ч', 'ж', 'ш', 'щ', '҄']) || stem.ends_with("жд")
+}
+
+fn has_ocs_infinitive_ending(lemma: &str) -> bool {
+    lemma.ends_with("ти") || lemma.ends_with("щи")
+}
+
 fn join(stem: &str, ending: &str, rule_id: RuleId, reason: &'static str) -> PredictedForm {
     let text = format!("{stem}{ending}");
     single_step(stem, &text, rule_id, reason)
@@ -1237,6 +1306,34 @@ fn present_ending(
     Ok((ending, rule))
 }
 
+fn iotated_e_present_ending(cell: FiniteVerbCell) -> &'static str {
+    match (cell.person, cell.number) {
+        (Person::First, Number::Singular) => "ѭ",
+        (Person::Second, Number::Singular) => "ѥши",
+        (Person::Third, Number::Singular) => "ѥтъ",
+        (Person::First, Number::Dual) => "ѥвѣ",
+        (Person::Second, Number::Dual) => "ѥта",
+        (Person::Third, Number::Dual) => "ѥте",
+        (Person::First, Number::Plural) => "ѥмъ",
+        (Person::Second, Number::Plural) => "ѥте",
+        (Person::Third, Number::Plural) => "ѭтъ",
+    }
+}
+
+fn hard_i_present_ending(cell: FiniteVerbCell) -> &'static str {
+    match (cell.person, cell.number) {
+        (Person::First, Number::Singular) => "ѫ",
+        (Person::Second, Number::Singular) => "иши",
+        (Person::Third, Number::Singular) => "итъ",
+        (Person::First, Number::Dual) => "ивѣ",
+        (Person::Second, Number::Dual) => "ита",
+        (Person::Third, Number::Dual) => "ите",
+        (Person::First, Number::Plural) => "имъ",
+        (Person::Second, Number::Plural) => "ите",
+        (Person::Third, Number::Plural) => "ѧтъ",
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1298,6 +1395,71 @@ mod tests {
             finite(&verb, cell).expect("explicit allomorph").text,
             "правлѭ"
         );
+    }
+
+    #[test]
+    fn present_surface_formations_and_third_plural_edge_are_complete_and_typed() {
+        let mut iotated = VerbLexeme::new("дѣлати", VerbClass::IA1);
+        iotated.stems.present = Some("дѣла".to_string());
+        iotated.formations.present = Some(PresentFormation::IotatedE);
+        assert_eq!(
+            finite_paradigm(&iotated, FiniteTense::Present),
+            [
+                "дѣлаѭ",
+                "дѣлаѥши",
+                "дѣлаѥтъ",
+                "дѣлаѥвѣ",
+                "дѣлаѥта",
+                "дѣлаѥте",
+                "дѣлаѥмъ",
+                "дѣлаѥте",
+                "дѣлаѭтъ",
+            ]
+        );
+
+        let mut hard_i = VerbLexeme::new("блажити", VerbClass::II1);
+        hard_i.stems.present = Some("блаж".to_string());
+        hard_i.stems.present_first_singular = Some("блаж".to_string());
+        hard_i.formations.present = Some(PresentFormation::HardI);
+        assert_eq!(
+            finite_paradigm(&hard_i, FiniteTense::Present),
+            [
+                "блажѫ",
+                "блажиши",
+                "блажитъ",
+                "блаживѣ",
+                "блажита",
+                "блажите",
+                "блажимъ",
+                "блажите",
+                "блажѧтъ",
+            ]
+        );
+
+        let mut edge = VerbLexeme::new("пещи", VerbClass::IA1);
+        edge.stems.present = Some("печ".to_string());
+        edge.stems.present_third_plural = Some("пек".to_string());
+        assert_eq!(
+            finite(
+                &edge,
+                finite_cell(FiniteTense::Present, Person::Third, Number::Plural)
+            )
+            .expect("independent 3pl allomorph")
+            .text,
+            "пекѫтъ"
+        );
+
+        hard_i.formations.present = Some(PresentFormation::IotatedE);
+        assert!(matches!(
+            finite(
+                &hard_i,
+                finite_cell(FiniteTense::Present, Person::Second, Number::Singular)
+            ),
+            Err(InflectionError::UnsupportedFormation {
+                system: MetadataField::PresentFormation,
+                ..
+            })
+        ));
     }
 
     #[test]
@@ -2389,5 +2551,23 @@ mod tests {
                 .past_active_participle("пла", PastActiveParticipleFormation::VushAfterOvToU,)
                 .is_err()
         );
+        let regular = VerbLexeme::new("нести", VerbClass::IA1);
+        assert_eq!(
+            infinitive(&regular).expect("regular infinitive").text,
+            "нести"
+        );
+        assert_eq!(supine(&regular).expect("hard supine").text, "нестъ");
+        let velar = VerbLexeme::new("рещи", VerbClass::IA1);
+        assert_eq!(
+            infinitive(&velar).expect("class-4c infinitive").text,
+            "рещи"
+        );
+        assert_eq!(
+            supine(&velar).expect("fronted class-4c supine").text,
+            "рещь"
+        );
+        let non_infinitive = VerbLexeme::new("такси", VerbClass::IA1);
+        assert!(infinitive(&non_infinitive).is_err());
+        assert!(supine(&non_infinitive).is_err());
     }
 }

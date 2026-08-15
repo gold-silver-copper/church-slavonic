@@ -5,7 +5,8 @@ use old_church_slavonic_core::{
     AoristFormation, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
     InflectionError, MetadataEvidence, MetadataField, MetadataProvenance, PartOfSpeech,
     PastActiveParticipleFormation, PastPassiveParticipleFormation,
-    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, VerbAspect, VerbClass,
+    PresentActiveParticipleFormation, PresentFormation, PresentPassiveParticipleFormation,
+    VerbAspect, VerbClass,
     orthography::{Script, detect_script},
 };
 use std::collections::{BTreeMap, BTreeSet};
@@ -22,6 +23,8 @@ pub struct PresentMetadataAnalysis {
     pub class: SourcedMetadata<VerbClass>,
     pub stem: SourcedMetadata<String>,
     pub first_singular_stem: Option<SourcedMetadata<String>>,
+    pub third_plural_stem: Option<SourcedMetadata<String>>,
+    pub formation: Option<SourcedMetadata<PresentFormation>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -229,7 +232,7 @@ fn validate_field_shape(field: &NormalizedVerbMetadataField) -> Result<(), Infle
     }
     if matches!(
         field.field.as_str(),
-        "stem" | "first-singular-stem" | "second-third-singular"
+        "stem" | "first-singular-stem" | "third-plural-stem" | "second-third-singular"
     ) && old_church_slavonic_core::orthography::canonical_display(&field.value)? != field.value
     {
         return Err(InflectionError::InvalidInput {
@@ -238,7 +241,7 @@ fn validate_field_shape(field: &NormalizedVerbMetadataField) -> Result<(), Infle
     }
     if matches!(
         field.field.as_str(),
-        "stem" | "first-singular-stem" | "second-third-singular"
+        "stem" | "first-singular-stem" | "third-plural-stem" | "second-third-singular"
     ) && detect_script(&field.value) != Script::Cyrillic
     {
         return Err(InflectionError::InvalidInput {
@@ -266,7 +269,7 @@ fn validate_field_shape(field: &NormalizedVerbMetadataField) -> Result<(), Infle
         "aspect" => field.field == "aspect" && field.analysis_rank == 0,
         "present" => matches!(
             field.field.as_str(),
-            "class" | "stem" | "first-singular-stem"
+            "class" | "stem" | "first-singular-stem" | "third-plural-stem" | "formation"
         ),
         "l-participle" => field.field == "stem",
         "imperfect" => matches!(
@@ -327,11 +330,33 @@ fn parse_present_groups(
                 )
             })
             .transpose()?;
+        let third_plural_stem = group
+            .get("third-plural-stem")
+            .map(|row| {
+                sourced(
+                    row,
+                    MetadataField::PresentThirdPluralStem,
+                    row.value.clone(),
+                )
+            })
+            .transpose()?;
+        let formation = group
+            .get("formation")
+            .map(|row| {
+                sourced(
+                    row,
+                    MetadataField::PresentFormation,
+                    parse_present_formation(&row.value)?,
+                )
+            })
+            .transpose()?;
         out.push(PresentMetadataAnalysis {
             analysis_rank: *rank,
             class: sourced(class_row, MetadataField::VerbClass, class)?,
             stem: sourced(stem, MetadataField::PresentStem, stem.value.clone())?,
             first_singular_stem,
+            third_plural_stem,
+            formation,
         });
     }
     Ok(out)
@@ -544,6 +569,8 @@ fn metadata_field(system: &str, field: &str) -> MetadataField {
         ("present", "class") => MetadataField::VerbClass,
         ("present", "stem") => MetadataField::PresentStem,
         ("present", "first-singular-stem") => MetadataField::PresentFirstSingularStem,
+        ("present", "third-plural-stem") => MetadataField::PresentThirdPluralStem,
+        ("present", "formation") => MetadataField::PresentFormation,
         ("imperfect", "variant-policy") => MetadataField::ImperfectVariantPolicy,
         ("aorist", "second-third-singular") => MetadataField::AoristSecondThirdSingular,
         ("l-participle", "stem") => MetadataField::LParticipleStem,
@@ -561,6 +588,14 @@ fn parse_class(value: &str) -> Result<VerbClass, InflectionError> {
         "II2" => Ok(VerbClass::II2),
         "II3" => Ok(VerbClass::II3),
         value => invalid_code("present class", value),
+    }
+}
+
+fn parse_present_formation(value: &str) -> Result<PresentFormation, InflectionError> {
+    match value {
+        "iotated-e" => Ok(PresentFormation::IotatedE),
+        "hard-i" => Ok(PresentFormation::HardI),
+        value => invalid_code("present formation", value),
     }
 }
 
@@ -621,6 +656,7 @@ fn parse_past_active(value: &str) -> Result<PastActiveParticipleFormation, Infle
     match value {
         "ush" => Ok(PastActiveParticipleFormation::Ush),
         "ish" => Ok(PastActiveParticipleFormation::Ish),
+        "ish-after-glide" => Ok(PastActiveParticipleFormation::IshAfterGlide),
         "vush-after-j-deletion" => Ok(PastActiveParticipleFormation::VushAfterJDeletion),
         "vush-after-ov-to-u" => Ok(PastActiveParticipleFormation::VushAfterOvToU),
         "vush" => Ok(PastActiveParticipleFormation::Vush),

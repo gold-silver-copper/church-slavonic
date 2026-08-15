@@ -6,9 +6,9 @@
 //! collapsed.
 
 use old_church_slavonic_core::{
-    CardinalNumeralIdentity, IrregularVerbFamilyMember, PersonalPronounIdentity,
-    TwofoldNounFamilyMember, UniqueNounFamilyMember, UniqueVerbFamilyMember,
-    orthography::lookup_key,
+    CardinalNumeralIdentity, IrregularVerbFamilyMember, PersonalPronounIdentity, RegularVerbFamily,
+    RegularVerbSourceMember, TwofoldNounFamilyMember, UniqueNounFamilyMember,
+    UniqueVerbFamilyMember, orthography::lookup_key,
 };
 use old_church_slavonic_extractor::{
     extract::canonical_lemma,
@@ -25,6 +25,7 @@ use std::{
 };
 
 const LEDGER_PATH: &str = "data/ocs/lexical_source_claims.tsv";
+const REGULAR_VERB_PATH: &str = "data/ocs/polivanova_regular_verbs.tsv";
 const JSON_REPORT_PATH: &str = "reports/ocs-lexical-union.json";
 const MARKDOWN_REPORT_PATH: &str = "reports/ocs-lexical-union.md";
 const KAIKKI_RUNTIME_SOURCE: &str = "english-wiktionary-ocs-kaikki-2026-07-06";
@@ -126,6 +127,7 @@ pub(crate) fn run(
         validate(root, &claims)?;
         let report = report(&claims);
         require_report_current(root, &report)?;
+        require_regular_verbs_current(root, &osd)?;
         println!("OCS lexical source-union ledger: current");
         return Ok(());
     }
@@ -146,6 +148,10 @@ pub(crate) fn run(
         serde_json::to_vec_pretty(&report)?,
     )?;
     fs::write(root.join(MARKDOWN_REPORT_PATH), render_markdown(&report))?;
+    fs::write(
+        root.join(REGULAR_VERB_PATH),
+        render_regular_verbs(&read_regular_verbs(&osd)?)?,
+    )?;
     println!("wrote {LEDGER_PATH} ({} source claims)", claims.len());
     Ok(())
 }
@@ -154,7 +160,109 @@ pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
     let claims = load_ledger(&root.join(LEDGER_PATH))?;
     validate(root, &claims)?;
     require_report_current(root, &report(&claims))?;
+    require_regular_verbs_current(
+        root,
+        &root.join("data/intermediate/synodal/polivanova-osd-source.jsonl"),
+    )?;
     println!("OCS lexical source-union ledger: current");
+    Ok(())
+}
+
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct RegularVerbRow {
+    source_row: usize,
+    lemma: String,
+    class: String,
+    class_four_basic_stem: String,
+}
+
+fn read_regular_verbs(path: &Path) -> Result<Vec<RegularVerbRow>, Box<dyn Error>> {
+    let reader = BufReader::new(File::open(path)?);
+    let mut rows = Vec::new();
+    for (index, line) in reader.lines().enumerate() {
+        let row: IntermediateRow = serde_json::from_str(&line?)?;
+        if row.source_id != OSD_SOURCE
+            || row.source_revision != OSD_REVISION
+            || row.artifact_sha256 != OSD_XLS_SHA256
+            || row.source_order != index + 1
+        {
+            return Err(format!(
+                "OSD intermediate row {} has unexpected source provenance or order",
+                index + 1
+            )
+            .into());
+        }
+        if row.source_order == 1 {
+            continue;
+        }
+        let columns = row.raw_spelling.split('\t').collect::<Vec<_>>();
+        if columns.len() != 14 {
+            return Err(
+                format!("OSD row {} has {} columns", row.source_order, columns.len()).into(),
+            );
+        }
+        if columns[12] != "v"
+            || !is_regular_osd_verb_class(columns[11])
+            || columns[10].contains(['(', ')'])
+        {
+            continue;
+        }
+        let class_four_basic_stem = if columns[11] == "4c" {
+            let source = columns[7]
+                .strip_suffix(".т.и")
+                .ok_or_else(|| format!("class 4c OSD row {} lacks .т.и", row.source_order - 1))?;
+            let stem = source
+                .chars()
+                .filter(|character| !matches!(character, '.' | '(' | ')' | ' '))
+                .collect::<String>();
+            if stem.is_empty() {
+                return Err(format!(
+                    "class 4c OSD row {} has an empty basic stem",
+                    row.source_order - 1
+                )
+                .into());
+            }
+            stem
+        } else {
+            "-".to_string()
+        };
+        rows.push(RegularVerbRow {
+            source_row: row.source_order - 1,
+            lemma: clean_osd_lemma(columns[10]),
+            class: columns[11].to_string(),
+            class_four_basic_stem,
+        });
+    }
+    if rows.len() != 2_297 {
+        return Err(format!("expected 2297 regular OSD verbs, found {}", rows.len()).into());
+    }
+    Ok(rows)
+}
+
+fn render_regular_verbs(rows: &[RegularVerbRow]) -> Result<String, Box<dyn Error>> {
+    let mut output = String::from("source_row\tlemma\tclass\tclass_four_basic_stem\n");
+    for row in rows {
+        if row.lemma.contains(['\t', '\n'])
+            || row.class.contains(['\t', '\n'])
+            || row.class_four_basic_stem.contains(['\t', '\n'])
+        {
+            return Err(format!("OSD row {} contains a TSV delimiter", row.source_row).into());
+        }
+        output.push_str(&format!(
+            "{}\t{}\t{}\t{}\n",
+            row.source_row, row.lemma, row.class, row.class_four_basic_stem
+        ));
+    }
+    Ok(output)
+}
+
+fn require_regular_verbs_current(root: &Path, source: &Path) -> Result<(), Box<dyn Error>> {
+    let expected = render_regular_verbs(&read_regular_verbs(source)?)?;
+    if fs::read_to_string(root.join(REGULAR_VERB_PATH))? != expected {
+        return Err(
+            format!("stale {REGULAR_VERB_PATH}; rerun cargo xtask ocs-lexical-union").into(),
+        );
+    }
     Ok(())
 }
 
@@ -459,6 +567,13 @@ fn classify_runtime(claim: &mut Claim, row: &LexemeRow) {
             "implemented",
             "The lemma belongs to the exhaustively reviewed unique or reusable-irregular verb family inventory.",
         ),
+        "verb" if RegularVerbFamily::classify_source_lemma(&row.lemma).is_some() => classify(
+            claim,
+            "productive",
+            "polivanova-regular-verb-specification",
+            "implemented",
+            "The runtime spelling resolves through a source-listed productive Polivanova class and complete typed principal-part specification.",
+        ),
         "verb" if verb_class_is_runtime(&row.class) => classify(
             claim,
             "productive",
@@ -596,13 +711,27 @@ fn classify_osd(claim: &mut Claim, runtime: Option<&LexemeRow>) {
                 "All 310 marked OSD rows resolve through the exhaustive §421 family inventory; the bounded §§464 and 509 anomalies have exact reviewed profiles.",
             );
         }
-        "v" if is_regular_osd_verb_class(class) => classify(
-            claim,
-            "productive",
-            "polivanova-regular-verb-specification",
-            "implementation-missing",
-            "The source supplies a regular class and morphophonological infinitive, but no source-native adapter yet constructs the engine's complete typed principal-part specification.",
-        ),
+        "v" if is_regular_osd_verb_class(class) => {
+            let member = claim
+                .source_record
+                .strip_prefix("row:")
+                .and_then(|row| row.parse::<u16>().ok())
+                .and_then(RegularVerbSourceMember::from_source_row);
+            let implemented = member.is_some_and(|member| {
+                member.canonical_lemma() == claim.lemma && member.class().code() == class
+            });
+            classify(
+                claim,
+                "productive",
+                "polivanova-regular-verb-specification",
+                if implemented {
+                    "implemented"
+                } else {
+                    "implementation-missing"
+                },
+                "The OSD row has a row-addressed productive class specification; class 4c retains its otherwise unrecoverable morphophonological consonant stem.",
+            );
+        }
         _ => classify(
             claim,
             "ambiguous",
@@ -1066,6 +1195,106 @@ fn require_report_current(root: &Path, report: &Report) -> Result<(), Box<dyn Er
 mod tests {
     use super::*;
 
+    fn regular_profile_form(
+        lexeme: &old_church_slavonic_core::verb::VerbLexeme,
+        feature: &str,
+    ) -> Option<Result<String, old_church_slavonic_core::InflectionError>> {
+        use old_church_slavonic_core::{
+            AdjectiveCell, AdjectiveForm, Animacy, Case, FiniteTense, FiniteVerbCell, Gender,
+            ImperativeCell, LParticipleCell, NounCell, Number, ParticipleCell, ParticipleKind,
+            Person,
+        };
+        let person = |value| match value {
+            "1" => Some(Person::First),
+            "2" => Some(Person::Second),
+            "3" => Some(Person::Third),
+            _ => None,
+        };
+        let number = |value| match value {
+            "sg" => Some(Number::Singular),
+            "du" => Some(Number::Dual),
+            "pl" => Some(Number::Plural),
+            _ => None,
+        };
+        let gender = |value| match value {
+            "m" => Some(Gender::Masculine),
+            "f" => Some(Gender::Feminine),
+            "n" => Some(Gender::Neuter),
+            _ => None,
+        };
+        let fields = feature.split(':').collect::<Vec<_>>();
+        match fields.as_slice() {
+            ["verb", "finite", tense, person_code, number_code] => {
+                let tense = match *tense {
+                    "present" => FiniteTense::Present,
+                    "imperfect" => FiniteTense::Imperfect,
+                    "aorist" => FiniteTense::Aorist,
+                    _ => return None,
+                };
+                let cell = FiniteVerbCell {
+                    tense,
+                    person: person(person_code)?,
+                    number: number(number_code)?,
+                };
+                Some(old_church_slavonic_core::verb::finite(lexeme, cell).map(|form| form.text))
+            }
+            ["verb", "imperative", person_code, number_code] => {
+                let cell = ImperativeCell {
+                    person: person(person_code)?,
+                    number: number(number_code)?,
+                };
+                Some(old_church_slavonic_core::verb::imperative(lexeme, cell).map(|form| form.text))
+            }
+            ["verb", "infinitive"] => {
+                Some(old_church_slavonic_core::verb::infinitive(lexeme).map(|form| form.text))
+            }
+            ["verb", "supine"] => {
+                Some(old_church_slavonic_core::verb::supine(lexeme).map(|form| form.text))
+            }
+            ["verb", "l-participle", gender_code, number_code] => {
+                let cell = LParticipleCell {
+                    gender: gender(gender_code)?,
+                    number: number(number_code)?,
+                };
+                Some(
+                    old_church_slavonic_core::verb::l_participle(lexeme, cell)
+                        .map(|form| form.text),
+                )
+            }
+            ["verb", "participle", kind, "citation"] => {
+                let kind = match *kind {
+                    "present-active" => ParticipleKind::PresentActive,
+                    "present-passive" => ParticipleKind::PresentPassive,
+                    "past-active" => ParticipleKind::PastActive,
+                    "past-passive" => ParticipleKind::PastPassive,
+                    _ => return None,
+                };
+                let cell = ParticipleCell {
+                    kind,
+                    adjective: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                    },
+                };
+                Some(old_church_slavonic_core::verb::participle(lexeme, cell).map(|form| form.text))
+            }
+            ["verb", "verbal-noun"] => Some(
+                old_church_slavonic_core::verb::verbal_noun(
+                    lexeme,
+                    NounCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                    },
+                )
+                .map(|form| form.text),
+            ),
+            _ => None,
+        }
+    }
+
     #[test]
     fn osd_homonym_markers_do_not_enter_lookup_keys() {
         assert_eq!(clean_osd_lemma("притъкъ1"), "притъкъ");
@@ -1133,6 +1362,76 @@ mod tests {
             assert_eq!(claim.engine_route, "polivanova-listed-irregular-verb");
             assert_eq!(claim.support_state, "implemented");
         }
+    }
+
+    #[test]
+    fn regular_osd_profiles_are_crosschecked_against_matching_dictionary_cells() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let claims = load_ledger(&root.join(LEDGER_PATH)).expect("committed lexical ledger");
+        let registry =
+            old_church_slavonic_extractor::extract::load_registry(&root.join("data/extracted"))
+                .expect("committed extracted registry");
+        let identities = claims
+            .iter()
+            .filter(|claim| {
+                claim.source_id == OSD_SOURCE
+                    && claim.engine_route == "polivanova-regular-verb-specification"
+            })
+            .map(|claim| (claim.source_record.as_str(), claim.union_identity.as_str()))
+            .collect::<BTreeMap<_, _>>();
+        let mut compared = 0usize;
+        let mut mismatches = Vec::new();
+        for member in RegularVerbSourceMember::all() {
+            let source_record = format!("row:{}", member.source_row());
+            let Some(identity) = identities.get(source_record.as_str()).copied() else {
+                mismatches.push(format!("{} missing ledger identity", member.source_row()));
+                continue;
+            };
+            if identity.starts_with("polivanova-osd-source:") {
+                continue;
+            }
+            let lexemes = member.lexemes().expect("valid source specification");
+            for row in registry
+                .forms
+                .iter()
+                .filter(|row| row.lexeme_id == identity && row.rank == 0)
+            {
+                let generated = lexemes
+                    .iter()
+                    .filter_map(|lexeme| regular_profile_form(lexeme, &row.feature))
+                    .collect::<Vec<_>>();
+                if generated.is_empty() {
+                    continue;
+                }
+                compared += 1;
+                if !generated.iter().any(|result| {
+                    result
+                        .as_ref()
+                        .is_ok_and(|generated| generated == &row.form)
+                }) {
+                    mismatches.push(format!(
+                        "row {} {} {}: dictionary {:?}, generated {:?}",
+                        member.source_row(),
+                        member.canonical_lemma(),
+                        row.feature,
+                        row.form,
+                        generated
+                    ));
+                }
+            }
+        }
+        let divergence_digest = format!("{:x}", Sha256::digest(mismatches.join("\n")));
+        // The 518 divergences are retained, not discarded: public exact-table
+        // precedence exposes the pinned Kaikki spellings, while the reviewed
+        // source identity exposes Polivanova's canonical class prediction.
+        // Hashing every row/cell/form tuple makes this complete comparison a
+        // reproducible golden rather than accepting a sample or only a count.
+        assert_eq!(compared, 6_114);
+        assert_eq!(mismatches.len(), 518);
+        assert_eq!(
+            divergence_digest,
+            "4679ba61e97dfa2da74f3881a3232525938518fd2a3a2d1e8146cca24b2b219c"
+        );
     }
 
     #[test]

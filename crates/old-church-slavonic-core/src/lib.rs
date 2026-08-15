@@ -17,6 +17,7 @@ pub mod numeral;
 pub mod orthography;
 pub mod phrase;
 pub mod pronoun;
+pub mod regular_verb;
 pub mod result;
 pub mod trace;
 pub mod twofold_noun;
@@ -38,9 +39,9 @@ pub use grammar::{
     ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy, LParticipleCell, NounCell,
     NounClass, Number, NumberRestriction, NumeralCell, PartOfSpeech, ParticipleCell,
     ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
-    PersonalPronounCell, PresentActiveParticipleFormation, PresentPassiveParticipleFormation,
-    RequestedCell, UngenderedCell, VerbAspect, VerbClass, VerbDefectKind, VerbMorphologyCell,
-    VerbMorphologySystem,
+    PersonalPronounCell, PresentActiveParticipleFormation, PresentFormation,
+    PresentPassiveParticipleFormation, RequestedCell, UngenderedCell, VerbAspect, VerbClass,
+    VerbDefectKind, VerbMorphologyCell, VerbMorphologySystem,
 };
 pub use impersonal::{ImpersonalVerbIdentity, ImpersonalVerbStatus};
 pub use irregular_verb::{IrregularVerbAnalysis, IrregularVerbFamilyMember, IrregularVerbGroup};
@@ -67,6 +68,10 @@ pub use pronoun::{
     IrregularAgreeingIdentity, PersonalPronounIdentity, PronominalDeclension, PronominalFamilySpec,
     PronominalLexeme, PronominalPostpositive, PronominalPrefix, PronounFormSelection,
     PronounVariant, PronounVariantStatus, StandardPronominalIdentity,
+};
+pub use regular_verb::{
+    PolivanovaRegularVerbClass, PolivanovaRegularVerbSpecification, RegularVerbFamily,
+    RegularVerbSourceMember,
 };
 pub use result::{
     FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,

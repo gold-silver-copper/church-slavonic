@@ -49,8 +49,10 @@ pub mod rules {
     pub use old_church_slavonic_core::{
         AdjectiveClass, AoristFormation, ComparativeFormation, ImperativeFormation,
         ImperfectFormation, ImperfectVariantPolicy, NounClass, NumberRestriction,
-        PastActiveParticipleFormation, PastPassiveParticipleFormation,
-        PresentActiveParticipleFormation, PresentPassiveParticipleFormation, VerbAspect, VerbClass,
+        PastActiveParticipleFormation, PastPassiveParticipleFormation, PolivanovaRegularVerbClass,
+        PolivanovaRegularVerbSpecification, PresentActiveParticipleFormation, PresentFormation,
+        PresentPassiveParticipleFormation, RegularVerbFamily, RegularVerbSourceMember, VerbAspect,
+        VerbClass,
     };
 }
 

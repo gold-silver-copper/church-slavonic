@@ -9,6 +9,7 @@ use old_church_slavonic_core::adjective::{AdjectiveLexeme, ComparativeLexeme};
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::*;
+use std::{collections::BTreeMap, sync::OnceLock};
 
 fn cell_outcomes<C: Copy>(
     id: &str,
@@ -198,39 +199,114 @@ pub(crate) fn noun_identity_from_id(id: &str) -> Result<(String, String), Inflec
 enum ReviewedVerbProfile {
     Unique(UniqueVerbFamilyMember),
     Irregular(IrregularVerbFamilyMember),
+    Regular(RegularVerbFamily),
+    Composite {
+        canonical_lemma: &'static str,
+        unique: Option<UniqueVerbFamilyMember>,
+        irregular: Option<IrregularVerbFamilyMember>,
+        regular: Option<RegularVerbFamily>,
+    },
 }
 
 impl ReviewedVerbProfile {
     fn classify(lemma: &str) -> Option<Self> {
-        if let Some(member) = UniqueVerbFamilyMember::classify_source_union_lemma(lemma) {
-            return Some(Self::Unique(member));
-        }
-        if let Some(identity) = UniqueVerbIdentity::classify_source_union_lemma(lemma)
-            && let Some(member) =
+        let unique = UniqueVerbFamilyMember::classify_source_union_lemma(lemma).or_else(|| {
+            UniqueVerbIdentity::classify_source_union_lemma(lemma).and_then(|identity| {
                 UniqueVerbFamilyMember::classify_source_union_lemma(identity.canonical_lemma())
-        {
+            })
+        });
+        let irregular = IrregularVerbFamilyMember::classify_source_lemma(lemma);
+        let regular = RegularVerbFamily::classify_source_lemma(lemma);
+        let count = usize::from(unique.is_some())
+            + usize::from(irregular.is_some())
+            + usize::from(regular.is_some());
+        if count > 1 {
+            let canonical_lemma = unique
+                .map(UniqueVerbFamilyMember::canonical_lemma)
+                .or_else(|| irregular.map(IrregularVerbFamilyMember::canonical_lemma))
+                .or_else(|| regular.map(RegularVerbFamily::canonical_lemma))?;
+            return Some(Self::Composite {
+                canonical_lemma,
+                unique,
+                irregular,
+                regular,
+            });
+        }
+        if let Some(member) = unique {
             return Some(Self::Unique(member));
         }
-        IrregularVerbFamilyMember::classify_source_lemma(lemma).map(Self::Irregular)
+        irregular
+            .map(Self::Irregular)
+            .or_else(|| regular.map(Self::Regular))
     }
 
     const fn canonical_lemma(self) -> &'static str {
         match self {
             Self::Unique(member) => member.canonical_lemma(),
             Self::Irregular(member) => member.canonical_lemma(),
+            Self::Regular(family) => family.canonical_lemma(),
+            Self::Composite {
+                canonical_lemma, ..
+            } => canonical_lemma,
         }
     }
 
-    fn analyses(self) -> Vec<ReviewedVerbAnalysis> {
-        match self {
-            Self::Unique(member) => vec![ReviewedVerbAnalysis::Unique(member)],
-            Self::Irregular(member) => member
-                .analyses()
-                .iter()
-                .copied()
-                .map(|analysis| ReviewedVerbAnalysis::Irregular { member, analysis })
-                .collect(),
+    fn analyses(self) -> Result<Vec<ReviewedVerbAnalysis>, InflectionError> {
+        fn add_irregular(
+            analyses: &mut Vec<ReviewedVerbAnalysis>,
+            member: IrregularVerbFamilyMember,
+        ) {
+            analyses.extend(
+                member
+                    .analyses()
+                    .iter()
+                    .copied()
+                    .map(|analysis| ReviewedVerbAnalysis::Irregular { member, analysis }),
+            );
         }
+
+        fn add_regular(
+            analyses: &mut Vec<ReviewedVerbAnalysis>,
+            family: RegularVerbFamily,
+        ) -> Result<(), InflectionError> {
+            for member in family.members() {
+                for (variant_index, _) in member.lexemes()?.iter().enumerate() {
+                    analyses.push(ReviewedVerbAnalysis::Regular {
+                        member,
+                        variant_index: u8::try_from(variant_index).map_err(|_| {
+                            InflectionError::InvalidInput {
+                                reason: "a regular source row has too many analyses".to_string(),
+                            }
+                        })?,
+                    });
+                }
+            }
+            Ok(())
+        }
+
+        let mut analyses = Vec::new();
+        match self {
+            Self::Unique(member) => analyses.push(ReviewedVerbAnalysis::Unique(member)),
+            Self::Irregular(member) => add_irregular(&mut analyses, member),
+            Self::Regular(family) => add_regular(&mut analyses, family)?,
+            Self::Composite {
+                unique,
+                irregular,
+                regular,
+                ..
+            } => {
+                if let Some(member) = unique {
+                    analyses.push(ReviewedVerbAnalysis::Unique(member));
+                }
+                if let Some(member) = irregular {
+                    add_irregular(&mut analyses, member);
+                }
+                if let Some(family) = regular {
+                    add_regular(&mut analyses, family)?;
+                }
+            }
+        }
+        Ok(analyses)
     }
 }
 
@@ -240,6 +316,10 @@ enum ReviewedVerbAnalysis {
     Irregular {
         member: IrregularVerbFamilyMember,
         analysis: IrregularVerbAnalysis,
+    },
+    Regular {
+        member: RegularVerbSourceMember,
+        variant_index: u8,
     },
 }
 
@@ -256,6 +336,20 @@ impl ReviewedVerbAnalysis {
                         member.canonical_lemma()
                     ),
                 }),
+            Self::Regular {
+                member,
+                variant_index,
+            } => member
+                .lexemes()?
+                .into_iter()
+                .nth(usize::from(variant_index))
+                .ok_or_else(|| InflectionError::InvalidInput {
+                    reason: format!(
+                        "regular OSD row {} lacks analysis {}",
+                        member.source_row(),
+                        variant_index
+                    ),
+                }),
         }
     }
 
@@ -269,6 +363,15 @@ impl ReviewedVerbAnalysis {
             Self::Irregular { member, analysis } => {
                 format!("irregular:{}:{}", member.canonical_lemma(), analysis.code())
             }
+            Self::Regular {
+                member,
+                variant_index,
+            } => format!(
+                "regular:osd-row-{}:{}:{}",
+                member.source_row(),
+                member.class().code(),
+                variant_index
+            ),
         }
     }
 
@@ -287,6 +390,11 @@ impl ReviewedVerbAnalysis {
                 member.source_section()
             ),
             Self::Irregular { analysis, .. } => analysis.authority().to_string(),
+            Self::Regular { member, .. } => format!(
+                "Polivanova 2023 §§409–462 and {}; OSD paradigmatic dictionary row {}",
+                member.class().source_section(),
+                member.source_row()
+            ),
         }
     }
 
@@ -320,6 +428,7 @@ impl ReviewedVerbAnalysis {
                         })
                     ))
             }
+            Self::Regular { .. } => cell == VerbMorphologyCell::Infinitive,
         }
     }
 }
@@ -336,6 +445,10 @@ fn reviewed_profile_from_id(id: &str) -> Option<ReviewedVerbProfile> {
 fn reviewed_profile_for_dictionary_id(
     id: &str,
 ) -> Result<Option<ReviewedVerbProfile>, InflectionError> {
+    static ALIAS_PROFILE_INDEX: OnceLock<
+        Result<BTreeMap<String, Vec<ReviewedVerbProfile>>, InflectionError>,
+    > = OnceLock::new();
+
     let record = lookup::find_lexeme(id)
         .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?;
     if record.pos != PartOfSpeech::Verb.code() {
@@ -346,19 +459,28 @@ fn reviewed_profile_for_dictionary_id(
     if let Some(profile) = ReviewedVerbProfile::classify(record.lemma) {
         return Ok(Some(profile));
     }
-
-    let mut matches = Vec::new();
-    for profile in UniqueVerbFamilyMember::all()
-        .map(ReviewedVerbProfile::Unique)
-        .chain(IrregularVerbFamilyMember::all().map(ReviewedVerbProfile::Irregular))
-    {
-        if lookup::lemma_maps_to_id(profile.canonical_lemma(), PartOfSpeech::Verb, id)?
-            && !matches.contains(&profile)
+    let index = ALIAS_PROFILE_INDEX.get_or_init(|| {
+        let mut index: BTreeMap<String, Vec<ReviewedVerbProfile>> = BTreeMap::new();
+        for lemma in UniqueVerbFamilyMember::all()
+            .map(UniqueVerbFamilyMember::canonical_lemma)
+            .chain(IrregularVerbFamilyMember::all().map(IrregularVerbFamilyMember::canonical_lemma))
+            .chain(RegularVerbFamily::all().map(RegularVerbFamily::canonical_lemma))
         {
-            matches.push(profile);
+            let Some(profile) = ReviewedVerbProfile::classify(lemma) else {
+                continue;
+            };
+            for candidate in lookup::lookup(lemma, PartOfSpeech::Verb)? {
+                let profiles = index.entry(candidate.id).or_default();
+                if !profiles.contains(&profile) {
+                    profiles.push(profile);
+                }
+            }
         }
-    }
-    match matches.as_slice() {
+        Ok(index)
+    });
+    let index = index.as_ref().map_err(Clone::clone)?;
+    let matches = index.get(id).map_or(&[][..], Vec::as_slice);
+    match matches {
         [] => Ok(None),
         [profile] => Ok(Some(*profile)),
         _ => Err(InflectionError::InvalidInput {
@@ -541,7 +663,7 @@ fn reviewed_verb_form(
 ) -> Result<FormSet, InflectionError> {
     let mut analyses: Vec<FormAnalysis> = Vec::new();
     let mut any_prediction = false;
-    for reviewed in profile.analyses() {
+    for reviewed in profile.analyses()? {
         let lexeme = reviewed.lexeme()?;
         let predicted = generate(&lexeme)?;
         let direct = reviewed.is_direct_source_cell(cell, predicted.rule_id);
@@ -4485,12 +4607,26 @@ fn generate_finite_from_metadata(
                     .first_singular_stem
                     .as_ref()
                     .map(|stem| stem.value.clone());
+                lexeme.stems.present_third_plural = analysis
+                    .third_plural_stem
+                    .as_ref()
+                    .map(|stem| stem.value.clone());
+                lexeme.formations.present =
+                    analysis.formation.as_ref().map(|formation| formation.value);
                 let predicted = old_church_slavonic_core::verb::finite(&lexeme, cell)?;
                 let mut selected = vec![used(&analysis.class), used(&analysis.stem)];
                 if cell.person == Person::First && cell.number == Number::Singular {
                     if let Some(first) = &analysis.first_singular_stem {
                         selected.push(used(first));
                     }
+                }
+                if cell.person == Person::Third && cell.number == Number::Plural {
+                    if let Some(third) = &analysis.third_plural_stem {
+                        selected.push(used(third));
+                    }
+                }
+                if let Some(formation) = &analysis.formation {
+                    selected.push(used(formation));
                 }
                 analyses.push(metadata_analysis(predicted, selected));
             }
@@ -4750,6 +4886,7 @@ macro_rules! trace_debug_value {
 
 trace_debug_value!(
     VerbClass,
+    PresentFormation,
     ImperfectFormation,
     ImperfectVariantPolicy,
     AoristFormation,
@@ -5148,6 +5285,25 @@ fn parse_restriction(value: &str) -> NumberRestriction {
 mod tests {
     use super::*;
     use std::collections::BTreeSet;
+
+    #[test]
+    fn every_reviewed_verb_profile_id_round_trips_without_losing_composite_owners() {
+        let lemmas = UniqueVerbFamilyMember::all()
+            .map(UniqueVerbFamilyMember::canonical_lemma)
+            .chain(IrregularVerbFamilyMember::all().map(IrregularVerbFamilyMember::canonical_lemma))
+            .chain(RegularVerbFamily::all().map(RegularVerbFamily::canonical_lemma))
+            .collect::<BTreeSet<_>>();
+        for lemma in lemmas {
+            let profile = ReviewedVerbProfile::classify(lemma)
+                .unwrap_or_else(|| panic!("reviewed source lemma {lemma} lacks an owner"));
+            let id = reviewed_verb_id(profile);
+            assert_eq!(
+                reviewed_profile_from_id(&id),
+                Some(profile),
+                "{lemma} through {id}"
+            );
+        }
+    }
 
     #[test]
     fn every_reviewed_twofold_noun_resolves_every_cell() {

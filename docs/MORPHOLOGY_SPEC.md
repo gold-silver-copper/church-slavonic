@@ -39,19 +39,24 @@ source-qualified identities. `cargo xtask ocs-lexical-union --check` validates
 the 14,114 claims, their closed classifications and support states, every
 runtime identity, source hashes, and the generated JSON and Markdown reports.
 
-The OSD class labels are requirements, not evidence that the current engine
-already implements a row. The complete `2/m*`, `2/m++` (grammar `2/m**`), and
+The OSD class labels are requirements, not sufficient evidence that an arbitrary
+spelling belongs to a class. The complete `2/m*`, `2/m++` (grammar `2/m**`), and
 `2/f*` inventories are assigned to dedicated noun rules. All 41 class-`0`
 nominal rows also have explicit complete owners: 37 fixed-gender substantives
 use seven dedicated mixed profiles, `десѧть` belongs to the cardinal system,
 and `азъ`, `ты`, and `сѧ` belong to the personal/reflexive-pronoun system.
-Verb class `0` contains unique lexemes; marked
-class-3/class-4 rows include Table 434 anchors, prefixed derivatives, and
-isolated anomalies. Only the explicitly reviewed family members are currently
-implemented. The other marked rows remain `implementation-missing` until an
-expanded family or exact lexical profile models their actual paradigmatic
-effect. Unmarked regular classes likewise require a source-native principal-
-part adapter rather than inference from the infinitive spelling alone.
+
+The verb source boundary is likewise closed by exact row identity. Nineteen
+unique profiles own their 106-member spelling union, sixteen reviewed irregular
+families own every one of the 310 marked OSD rows, and the source-bounded regular
+adapter owns all 2,297 unmarked class-1–7 rows. The generated
+`data/ocs/polivanova_regular_verbs.tsv` retains OSD row, lemma, class, and the
+otherwise unrecoverable class-4c consonant stem. Its 2,283 spellings do not erase
+the fourteen duplicate rows or homographic analyses. Five parenthesized class-5
+reconstructions remain explicitly source-ambiguous rather than being admitted as
+ordinary listed members. The adapter never assigns a class from an unknown
+infinitive spelling; callers outside the closed inventory must still supply a
+complete typed specification.
 
 LOVe's official export and the GORAZD card index remain attributed rule and
 manual lexical crosschecks. They are not bundled row-level denominator members
@@ -535,9 +540,11 @@ Authority: UT lesson 5 §22.4 and Polivanova 2023 §§281 and 922.
 
 ### Independent lexical dimensions
 
-`VerbClass` owns only the present conjugation. `VerbLexeme` separately records the
-present stem and first-singular allomorph, imperfect stem, formation, and variant
-policy, aorist main stem, independent sigmatic 2sg/3sg principal part, and
+`VerbClass` owns only the generic present terminal family; it is not Polivanova's
+source class number. `VerbLexeme` separately records the present stem, optional
+first-singular and third-plural edge allomorphs, optional surface formation,
+imperfect stem, formation, and variant policy, aorist main stem, independent
+sigmatic 2sg/3sg principal part, and
 formation, imperative stem and formation, and one
 stem/formation pair for each productive participle. A complete verbal-noun
 platform is independent metadata, with the past-passive stem and formation as a
@@ -561,18 +568,61 @@ an unimplemented formation, and a historically invalid cell have separate typed
 errors. This model follows the separation of present, aorist, imperative, and
 participial systems in UT *Old Church Slavonic Online*.
 
+### Source-bounded Polivanova regular profiles
+
+`RegularVerbSourceMember` is the exact-row adapter for the unmarked OSD verb
+inventory. The embedded artifact is generated deterministically from the pinned
+OSD source by `cargo xtask ocs-lexical-union`; it is not a hand-curated lemma
+list. Polivanova §§409–462 define the workstem distribution, terminal systems,
+and boundary changes, while §§486–515 allocate the following rows:
+
+| Source class | Rows | Profile sections |
+|---|---:|---|
+| 1 | 826 | §§486–488 |
+| 2 | 137 | §§489–493 |
+| 3 | 164 | §§494–498 |
+| 4c | 122 | §§499–502 |
+| 4v | 23 | §§499–502 |
+| 5 | 132 | §§503–505 |
+| 6 | 136 | §§506–511 |
+| 7 | 757 | §§512–515 |
+
+Every source analysis supplies the complete present, imperfect, aorist,
+imperative, infinitive, supine, l-participle, and four declined participle
+systems. This is productive grammatical synthesis: unobserved cells are labeled
+as predictions, never as corpus attestations. Class 4c preserves its underlying
+consonant stem so that first- and second-palatalization, 1sg/3pl present edges,
+the §74/§460 `д/т + л → л` seam, and `-щи/-сти` citations remain recoverable.
+`PresentFormation::IotatedE` represents the `-ѭ/-ѥ-` surface series;
+`PresentFormation::HardI` distinguishes hard i-conjugation 1sg `-ѫ` from
+glide/soft `-ѭ`; and `IshAfterGlide` preserves the corresponding past-active
+`-и/-ишь-` seam. Polivanova §485 is retained lexically: the regular `сѣти`
+family exposes both n- and t-participial analyses, while `увѧсти` selects t.
+
+Exact dictionary cells still precede reviewed productive profiles. An exhaustive
+cross-source test compared all 6,114 rank-zero dictionary cells for which the
+facade has a safe cell mapping: 5,596 agree with a Polivanova source analysis.
+The remaining 518 are a locked, digest-checked disagreement set covering source
+homonymy, diplomatic spelling, alternate terminals, and genuine grammatical
+analysis conflicts. The engine keeps both authorities and their stable identities
+instead of changing one source to mimic the other.
+
 ### Present, infinitive, supine, and l-participle
 
 `V-IA1-01`, `V-IA2-01`, and `V-II1-01` through `V-II3-01` attach the e-series or
-i-series present endings to an explicit present stem. Second-conjugation 1sg cells
-require `present_first_singular`; this replaces the former broad consonant-mutation
-guess. A bare infinitive never selects a class or invents an allomorph. Known table
-cells still precede every rule.
+i-series present endings to an explicit present stem. The optional
+`PresentFormation` selects the source-defined iotated-e or hard-i surface series;
+independent 1sg and 3pl stems model edge allomorphs without mutating the other
+seven cells. A second-conjugation 1sg still requires an explicit allomorph. A bare
+infinitive never selects a class or invents an allomorph. Known table cells still
+precede every rule.
 
-`V-INF-01` validates and returns an explicit `-ти` citation. `V-SUP-01` supplies the
-regular `-ти → -тъ` supine component. `V-LPART-01` attaches l-participle gender and
-number endings to an explicitly supplied l-participle stem. Irregular/root supines and
-stems remain dictionary-backed. Authority: UT lessons 2 and 7,
+`V-INF-01` validates and returns an OCS infinitive citation ending in `-ти` or
+class-4c `-щи` (`-сти` is included by the `-ти` boundary). Following Polivanova
+§88, `V-SUP-01` replaces final infinitival `-и` with `-ъ`, fronted to `-ь` after
+a morphologically soft consonant. `V-LPART-01` attaches l-participle gender and
+number endings to an explicitly supplied l-participle stem. Irregular/root
+supines and stems remain dictionary-backed. Authority: UT lessons 2 and 7,
 <https://lrc.la.utexas.edu/eieol/ocsol/20#grammar_979> and
 <https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1023>.
 
