@@ -473,6 +473,40 @@ lesson 1 §4.2. The source 3sg remains `DictionaryTable`; overrides carry
 is inferred from the final lemma partition, and other high-value irregular verbs
 remain exact-table or explicitly unsupported until an equally specific audit exists.
 
+### Personal, reflexive, and anaphoric pronouns
+
+The reviewed closed grammar inventory has four intrinsic identities rather than one
+dictionary-shaped table: first person `азъ`, second person `тꙑ`, the numberless
+reflexive `сѧ`, and the defective third-person anaphoric `*и`. First and second
+person each license all 18 case-number cells except vocative. Their person is a
+lexical property, not a freely selectable cell dimension. The reflexive licenses
+only its five oblique cases and has no number dimension; it is not copied into three
+grammatical paradigms merely because a source adapter once exposed it that way.
+
+The anaphoric pronoun has 45 licensed oblique case-number-gender cells. Nominative
+and vocative are historically absent; demonstratives such as `тъ` and `онъ` fill
+nominative syntax and remain in the separate other-pronoun system. Every oblique
+cell has a free `j-` realization and a typed `н҄-` realization selected by
+`AnaphoricEnvironment::AfterPreposition`. The environment is part of the request,
+so the resolver never guesses from an absent preposition string.
+
+Grammar-table order is preserved with `PronounFormSelection`. `TablePrimary`
+selects forms not specially marked as clitics by the reviewed tables,
+`MarkedClitic` selects only explicitly marked variants, and `All` retains both.
+These names do not infer the prosody of unmarked short forms. UT lesson 2 §8.1
+lists first-person dual dative `на`, whereas Polivanova §382.3 reports no OCS
+clitic attestation in that cell and compares the later Church Slavonic form. The
+variant is retained with `DisputedGrammarTable` evidence and
+`IncludesDisputedForms`, never silently promoted or discarded.
+
+All 13 spellings in the pinned dictionary source union that belong to these four
+identities route through their canonical reviewed paradigm. A form-page spelling
+adds `LexicalAliasUsed` but cannot acquire the combined table copied onto that
+page. Raw dictionary APIs continue to expose the normalized extraction record for
+source audit. Exhaustive goldens cover the 36 first/second cells, five numberless
+reflexive cells, and both 45-cell anaphoric environments; exhaustive public
+paradigms retain every valid result and every historically invalid cell.
+
 ## Recorded source conflicts and limitations
 
 - Current Wiktextract verb rows often carry a spurious `l-participle` tag. A finite
@@ -488,7 +522,8 @@ remain exact-table or explicitly unsupported until an equally specific audit exi
   masculine accusative.
 - Glagolitic display forms are never generated from Cyrillic. Only source-backed
   Glagolitic records are returned.
-- Wiktextract repeats the combined personal/reflexive table on form-of pages. Those
-  pages are not independent lexemes. Personal rows retain their person dimension;
-  numberless reflexive rows belong to `сѧ` and are made available for singular, dual,
-  and plural without changing their surface variants.
+- Wiktextract repeats a combined first/second-person table on headword and form
+  pages and exposes reflexive rows without a number dimension. Ordinary resolution
+  classifies all 13 affected source-union spellings into four intrinsic identities
+  and uses the reviewed grammar tables above. The normalized raw dictionary record
+  remains available for source audit and does not define lexical ownership.

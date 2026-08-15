@@ -115,7 +115,8 @@
 //! |---|---|---|
 //! | Nouns | [`noun`], [`Noun`], [`noun_paradigm`] | Table first; dictionary metadata or explicit rules when supported |
 //! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exact comparative citations plus productive comparison through [`advanced::rules`] |
-//! | Closed classes | [`determiner`], [`pronoun`], [`personal_pronoun`], [`gendered_pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells only |
+//! | Personal/reflexive/anaphoric pronouns | [`personal_pronoun_with`], [`reflexive_pronoun`], [`anaphoric_pronoun`] and compatible ordinary handles | Complete reviewed closed grammar tables with typed clitic/context selection |
+//! | Other closed classes | [`determiner`], [`pronoun`], [`gendered_pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells only |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
@@ -142,11 +143,12 @@ mod resolver;
 pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
-    AdjectiveForm, AnalyticConstruction, Animacy, Case, ConditionalAuxiliary, CopulaSeries,
-    FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense,
-    Gender, GenderedCell, InflectionError, InflectionWarning, Lemma, LexemeSummary, Number,
-    PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell, PhraseOrder,
-    PhraseRole, PhraseToken, PluperfectAuxiliary, RealizedPhrase, RequestedCell, Script,
+    AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, Case, ConditionalAuxiliary,
+    CopulaSeries, FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary,
+    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning, Lemma,
+    LexemeSummary, Number, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
+    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
+    PluperfectAuxiliary, PronounFormSelection, RealizedPhrase, RequestedCell, Script,
     UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
@@ -167,21 +169,22 @@ pub mod trace {
 /// intentionally excluded; use [`advanced`] for those APIs.
 pub mod prelude {
     pub use crate::{
-        Adjective, AdjectiveForm, AdjectiveParadigm, Animacy, Case, Determiner, DeterminerParadigm,
-        FiniteTense, FiniteVerbParadigm, FormSet, FormSource, FormVariant, Gender,
-        GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm, InflectionError,
-        InflectionResult, InflectionWarning, LParticipleParadigm, Lemma, Noun, NounParadigm,
-        Number, Numeral, NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle,
-        ParticipleKind, ParticipleParadigm, Person, PersonalPronounParadigm, Pronoun,
-        PronounParadigm, Script, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
-        adjective_paradigm, aorist, comparative_citation, determiner, determiner_paradigm, finite,
+        Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy, Case,
+        Determiner, DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet, FormSource,
+        FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
+        InflectionError, InflectionResult, InflectionWarning, LParticipleParadigm, Lemma, Noun,
+        NounParadigm, Number, Numeral, NumeralParadigm, ParadigmLookupError, PartOfSpeech,
+        Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
+        PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
+        VariantPolicy, VariantSelectionError, Verb, VerbParadigm, adjective_paradigm,
+        anaphoric_pronoun, aorist, comparative_citation, determiner, determiner_paradigm, finite,
         finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
         gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
         l_participle, l_participle_paradigm, long_adjective, lookup, noun, noun_paradigm, numeral,
         numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
-        personal_pronoun, personal_pronoun_paradigm, present, present_active_participle,
-        present_paradigm, present_passive_participle, pronoun, pronoun_paradigm, short_adjective,
-        supine, verbal_noun,
+        personal_pronoun, personal_pronoun_paradigm, personal_pronoun_with, present,
+        present_active_participle, present_paradigm, present_passive_participle, pronoun,
+        pronoun_paradigm, reflexive_pronoun, short_adjective, supine, verbal_noun,
     };
 }
 
@@ -291,6 +294,74 @@ pub fn personal_pronoun(
         }
         .closed_class(),
     )
+}
+
+/// Resolve the canonical first- or second-person paradigm with an intrinsic
+/// lexical person and an explicit table-primary/marked-clitic selection.
+///
+/// ```
+/// use old_church_slavonic::{
+///     Case, Number, PersonalPronounIdentity, PronounFormSelection,
+///     personal_pronoun_with,
+/// };
+///
+/// let forms = personal_pronoun_with(
+///     PersonalPronounIdentity::First,
+///     Case::Dative,
+///     Number::Singular,
+///     PronounFormSelection::All,
+/// )?;
+/// assert_eq!(forms.texts().collect::<Vec<_>>(), ["мьнѣ", "ми"]);
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn personal_pronoun_with(
+    identity: PersonalPronounIdentity,
+    case: Case,
+    number: Number,
+    selection: PronounFormSelection,
+) -> InflectionResult {
+    resolver::personal_pronoun_with(identity, case, number, selection)
+}
+
+/// Resolve the numberless reflexive pronoun with an explicit
+/// table-primary/marked-clitic
+/// selection. Nominative and vocative requests are historically invalid.
+///
+/// ```
+/// use old_church_slavonic::{Case, PronounFormSelection, reflexive_pronoun};
+///
+/// let forms = reflexive_pronoun(Case::Dative, PronounFormSelection::MarkedClitic)?;
+/// assert_eq!(forms.primary_text(), "си");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn reflexive_pronoun(case: Case, selection: PronounFormSelection) -> InflectionResult {
+    resolver::reflexive_pronoun(case, selection)
+}
+
+/// Resolve the defective third-person anaphoric pronoun, including its
+/// obligatorily conditioned post-prepositional `н҄-` series.
+///
+/// ```
+/// use old_church_slavonic::{
+///     AnaphoricEnvironment, Case, Gender, Number, anaphoric_pronoun,
+/// };
+///
+/// let form = anaphoric_pronoun(
+///     Case::Accusative,
+///     Number::Singular,
+///     Gender::Masculine,
+///     AnaphoricEnvironment::AfterPreposition,
+/// )?;
+/// assert_eq!(form.primary_text(), "н҄ь");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn anaphoric_pronoun(
+    case: Case,
+    number: Number,
+    gender: Gender,
+    environment: AnaphoricEnvironment,
+) -> InflectionResult {
+    resolver::anaphoric_pronoun(case, number, gender, environment)
 }
 
 /// Decline one gender-indexed pronoun cell.

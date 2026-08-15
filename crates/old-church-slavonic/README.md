@@ -137,7 +137,7 @@ assert!(matches!(forms.source(), FormSource::ExplicitMetadataRule { .. }));
 | Nouns | `noun`, `Noun`, `noun_paradigm` | Tables first; supported dictionary metadata or explicit rules |
 | Adjectives | `long_adjective`, `short_adjective`, `Adjective` | Tables first; hard/soft metadata rules; citation comparatives only |
 | Determiners | `determiner`, `Determiner` | Exact pinned dictionary cells |
-| Pronouns | `pronoun`, `personal_pronoun`, `gendered_pronoun`, `Pronoun` | Separate source-backed cell shapes; unsupported cells fail |
+| Pronouns | `personal_pronoun_with`, `reflexive_pronoun`, `anaphoric_pronoun`, compatible ordinary functions, `Pronoun` | Complete reviewed personal/reflexive/anaphoric tables; other pronouns use exact source cells |
 | Numerals | `numeral`, `gendered_numeral`, `Numeral` | Pinned declension cells; no arbitrary numeral generator |
 | Finite verbs | `present`, `imperfect`, `aorist`, `finite`, `Verb` | Tables, independently sourced metadata, reviewed overrides |
 | Imperatives | `imperative` | Six historically represented person-number cells |

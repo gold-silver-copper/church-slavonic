@@ -314,6 +314,209 @@ pub fn copula(
     ))
 }
 
+/// Resolve the reviewed first- or second-person paradigm independently of the
+/// duplicated personal-pronoun tables found on dictionary form pages.
+pub fn personal_pronoun_with(
+    identity: PersonalPronounIdentity,
+    case: Case,
+    number: Number,
+    selection: PronounFormSelection,
+) -> Result<FormSet, InflectionError> {
+    let person = match identity {
+        PersonalPronounIdentity::First => Person::First,
+        PersonalPronounIdentity::Second => Person::Second,
+        PersonalPronounIdentity::Reflexive | PersonalPronounIdentity::AnaphoricThird => {
+            return Err(InflectionError::InvalidInput {
+                reason:
+                    "personal_pronoun_with requires the intrinsic first- or second-person identity"
+                        .to_string(),
+            });
+        }
+    };
+    let cell = PersonalPronounCell {
+        case,
+        number,
+        person,
+    }
+    .closed_class();
+    let forms =
+        old_church_slavonic_core::pronoun::personal_forms(identity, case, number, selection);
+    reviewed_pronoun_set(
+        identity,
+        cell,
+        forms,
+        format!(
+            "pronoun:{}:{}:{}:{}",
+            person.code(),
+            case.code(),
+            number.code(),
+            selection.code()
+        ),
+    )
+}
+
+/// Resolve the numberless reflexive pronoun. Number is intentionally absent
+/// from this API because the same lexeme refers back to any subject number.
+pub fn reflexive_pronoun(
+    case: Case,
+    selection: PronounFormSelection,
+) -> Result<FormSet, InflectionError> {
+    reviewed_pronoun_set(
+        PersonalPronounIdentity::Reflexive,
+        ClosedClassCell {
+            case,
+            number: Number::Singular,
+            gender: None,
+            person: None,
+        },
+        old_church_slavonic_core::pronoun::reflexive_forms(case, selection),
+        format!("pronoun:reflexive:{}:{}", case.code(), selection.code()),
+    )
+}
+
+/// Resolve the defective third-person anaphoric pronoun in either its free or
+/// obligatorily prepositional `н҄-` realization.
+pub fn anaphoric_pronoun(
+    case: Case,
+    number: Number,
+    gender: Gender,
+    environment: AnaphoricEnvironment,
+) -> Result<FormSet, InflectionError> {
+    let forms =
+        old_church_slavonic_core::pronoun::anaphoric_form(case, number, gender, environment)
+            .into_iter()
+            .collect();
+    reviewed_pronoun_set(
+        PersonalPronounIdentity::AnaphoricThird,
+        GenderedCell {
+            case,
+            number,
+            gender,
+        }
+        .closed_class(),
+        forms,
+        format!(
+            "pronoun:anaphoric-third:{}:{}:{}:{}",
+            case.code(),
+            number.code(),
+            gender.code(),
+            environment.code()
+        ),
+    )
+}
+
+fn reviewed_pronoun_set(
+    identity: PersonalPronounIdentity,
+    cell: ClosedClassCell,
+    variants: Vec<PronounVariant>,
+    source_feature: String,
+) -> Result<FormSet, InflectionError> {
+    if variants.is_empty() {
+        return Err(InflectionError::historically_invalid(
+            identity.canonical_lemma(),
+            RequestedCell::ClosedClass {
+                part_of_speech: PartOfSpeech::Pronoun,
+                cell,
+            },
+        ));
+    }
+    let analyses = variants
+        .iter()
+        .map(|variant| {
+            let rule_id = pronoun_variant_rule(identity, variant.status);
+            let source = FormSource::ReviewedGrammarTable { rule_id };
+            let text = orthography::canonical_display(variant.text)?;
+            let form = FormVariant {
+                text,
+                romanization: None,
+            };
+            Ok((
+                form.clone(),
+                FormAnalysis {
+                    variants: vec![form],
+                    source,
+                    evidence: vec![MetadataEvidence {
+                        field: None,
+                        provenance: if variant.status.is_disputed() {
+                            MetadataProvenance::DisputedGrammarTable
+                        } else {
+                            MetadataProvenance::ReviewedGrammarTable
+                        },
+                        source_feature: Some(format!(
+                            "{source_feature}:{}",
+                            pronoun_status_code(variant.status)
+                        )),
+                        source_form: Some(variant.text.to_string()),
+                        crosscheck_features: Vec::new(),
+                        authority: Some(pronoun_authority(variant.status).to_string()),
+                    }],
+                    trace: Vec::new(),
+                },
+            ))
+        })
+        .collect::<Result<Vec<_>, InflectionError>>()?;
+    let (primary, primary_analysis) =
+        analyses
+            .first()
+            .ok_or_else(|| InflectionError::InvalidInput {
+                reason: "a reviewed pronoun cell unexpectedly had no forms".to_string(),
+            })?;
+    Ok(FormSet::new(
+        orthography::canonical_display(identity.canonical_lemma())?,
+        primary.clone(),
+        analyses
+            .iter()
+            .skip(1)
+            .map(|(variant, _)| variant.clone())
+            .collect(),
+        primary_analysis.source.clone(),
+        variants
+            .iter()
+            .any(|variant| variant.status.is_disputed())
+            .then_some(InflectionWarning::IncludesDisputedForms)
+            .into_iter()
+            .collect(),
+        Vec::new(),
+        analyses.into_iter().map(|(_, analysis)| analysis).collect(),
+    ))
+}
+
+fn pronoun_variant_rule(identity: PersonalPronounIdentity, status: PronounVariantStatus) -> RuleId {
+    match status {
+        PronounVariantStatus::MarkedClitic | PronounVariantStatus::DisputedMarkedClitic => {
+            RuleId::PronounPersonalClitic
+        }
+        PronounVariantStatus::Adprepositional => RuleId::PronounAnaphoricPrepositional,
+        PronounVariantStatus::TablePrimary | PronounVariantStatus::FreeAnaphoric => {
+            identity.rule_id()
+        }
+    }
+}
+
+fn pronoun_status_code(status: PronounVariantStatus) -> &'static str {
+    match status {
+        PronounVariantStatus::TablePrimary => "table-primary",
+        PronounVariantStatus::MarkedClitic => "marked-clitic",
+        PronounVariantStatus::DisputedMarkedClitic => "disputed-marked-clitic",
+        PronounVariantStatus::FreeAnaphoric => "free-anaphoric",
+        PronounVariantStatus::Adprepositional => "adprepositional",
+    }
+}
+
+fn pronoun_authority(status: PronounVariantStatus) -> &'static str {
+    match status {
+        PronounVariantStatus::DisputedMarkedClitic => {
+            "UT OCS Online lesson 2 §8.1 lists first-person DDu на; Polivanova 2023 §382.3 says no OCS clitic is attested and compares Church Slavonic на"
+        }
+        PronounVariantStatus::FreeAnaphoric | PronounVariantStatus::Adprepositional => {
+            "Polivanova 2023 §318; UT OCS Online lesson 2 §8.3"
+        }
+        PronounVariantStatus::TablePrimary | PronounVariantStatus::MarkedClitic => {
+            "Polivanova 2023 §§381–382; UT OCS Online lesson 2 §§8.1–8.2"
+        }
+    }
+}
+
 pub fn adjective_comparatives(lemma: &str) -> Result<FormSet, InflectionError> {
     resolve_queried_lemma(lemma, PartOfSpeech::Adjective, comparative_citation_by_id)
 }
@@ -622,6 +825,115 @@ pub fn closed_class_by_id(
     ) {
         return Err(InflectionError::InvalidInput {
             reason: "closed_class_by_id accepts pronoun, numeral, or determiner".to_string(),
+        });
+    }
+    ensure_pos(id, part_of_speech)?;
+    if part_of_speech == PartOfSpeech::Pronoun {
+        let record = lookup::find_lexeme(id)
+            .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Pronoun)))?;
+        if let Some(identity) = PersonalPronounIdentity::classify_source_union_lemma(record.lemma) {
+            let mut result = match identity {
+                PersonalPronounIdentity::First | PersonalPronounIdentity::Second => {
+                    match (cell.person, cell.gender, identity.person()) {
+                        (Some(requested), None, Some(intrinsic)) if requested == intrinsic => {
+                            personal_pronoun_with(
+                                identity,
+                                cell.case,
+                                cell.number,
+                                PronounFormSelection::All,
+                            )
+                        }
+                        _ => Err(InflectionError::historically_invalid(
+                            id,
+                            RequestedCell::ClosedClass {
+                                part_of_speech,
+                                cell,
+                            },
+                        )),
+                    }
+                }
+                PersonalPronounIdentity::Reflexive => {
+                    if cell.person.is_none() && cell.gender.is_none() {
+                        reflexive_pronoun(cell.case, PronounFormSelection::All)
+                    } else {
+                        Err(InflectionError::historically_invalid(
+                            id,
+                            RequestedCell::ClosedClass {
+                                part_of_speech,
+                                cell,
+                            },
+                        ))
+                    }
+                }
+                PersonalPronounIdentity::AnaphoricThird => match (cell.person, cell.gender) {
+                    (None, Some(gender)) => anaphoric_pronoun(
+                        cell.case,
+                        cell.number,
+                        gender,
+                        AnaphoricEnvironment::Free,
+                    ),
+                    _ => Err(InflectionError::historically_invalid(
+                        id,
+                        RequestedCell::ClosedClass {
+                            part_of_speech,
+                            cell,
+                        },
+                    )),
+                },
+            }?;
+            if record.lemma != identity.canonical_lemma() {
+                result.add_warning(InflectionWarning::LexicalAliasUsed {
+                    canonical: identity.canonical_lemma().to_string(),
+                });
+            }
+            return Ok(result);
+        }
+    }
+    lookup::table_form(id, &cell.key(part_of_speech)).ok_or_else(|| {
+        InflectionError::unsupported(
+            id,
+            RequestedCell::ClosedClass {
+                part_of_speech,
+                cell,
+            },
+        )
+    })
+}
+
+/// Resolve exactly one normalized source-table closed-class cell. This
+/// diagnostic/raw path intentionally preserves duplicated source tables instead
+/// of applying reviewed lexical ownership.
+pub fn raw_closed_class(
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+    cell: ClosedClassCell,
+) -> Result<FormSet, InflectionError> {
+    if !matches!(
+        part_of_speech,
+        PartOfSpeech::Pronoun | PartOfSpeech::Numeral | PartOfSpeech::Determiner
+    ) {
+        return Err(InflectionError::InvalidInput {
+            reason: "raw closed-class access accepts pronoun, numeral, or determiner".to_string(),
+        });
+    }
+    resolve_queried_lemma(lemma, part_of_speech, |id| {
+        raw_closed_class_by_id(id, part_of_speech, cell)
+    })
+}
+
+/// Resolve one normalized source-table cell by stable dictionary identity,
+/// without applying grammar-table aliases or productive behavior.
+pub fn raw_closed_class_by_id(
+    id: &str,
+    part_of_speech: PartOfSpeech,
+    cell: ClosedClassCell,
+) -> Result<FormSet, InflectionError> {
+    if !matches!(
+        part_of_speech,
+        PartOfSpeech::Pronoun | PartOfSpeech::Numeral | PartOfSpeech::Determiner
+    ) {
+        return Err(InflectionError::InvalidInput {
+            reason: "raw closed-class access accepts pronoun, numeral, or determiner".to_string(),
         });
     }
     ensure_pos(id, part_of_speech)?;

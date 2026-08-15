@@ -138,19 +138,25 @@ No ordinary or game-facing call requires a key such as `decl:pron:gen:sg`.
 ## Closed-class inventory audit
 
 The pinned generated registry contains 29 pronoun lexemes, eight numeral lexemes,
-and one determiner lexeme. Its coherent feature shapes are:
+and one determiner lexeme. Its source-table feature shapes are:
 
-- case-number-only case-number tables, including the reflexive `сѧ`;
-- person-indexed case-number tables, including `азъ`;
+- case-number-only tables;
+- person-indexed case-number tables copied across personal-pronoun pages;
 - gender-indexed case-number tables, including `онъ`;
 - case-number-only numeral tables, including `девѧть`; and
 - gender-indexed agreeing numeral/determiner tables, including `прьвъ` and `кꙑи`.
 
-The public functions mirror those shapes. A typed paradigm enumerates the relevant
-grammatical product and retains `UnsupportedCell` for rows the source does not
-provide. The audit does not justify productive arbitrary numerals, a generalized
-pronoun declension engine, or treating every pronoun lexeme as all three shapes.
-Those remain explicit source-data limitations.
+First person, second person, reflexive, and the third-person anaphoric no longer
+mirror those duplicated source shapes. Their reviewed closed model exposes
+intrinsic identity, numberless reflexive inflection, marked clitics, and explicit
+free versus post-prepositional anaphoric forms. Dictionary form-page spellings route
+to the same canonical identity. Other pronouns, determiners, and numerals remain
+exact pinned-table APIs while their independent grammar inventories are open.
+
+A typed paradigm enumerates the relevant grammatical product and retains typed
+historical or unsupported failures rather than dropping rows. The audit does not
+yet justify productive arbitrary numerals or generalized productive relationships
+for every other-pronoun lexeme.
 
 ## Deliberate differences from Ruthenian
 
@@ -162,8 +168,9 @@ Those remain explicit source-data limitations.
 - Verb formations and principal parts remain independent lexical facts.
 - Participles retain their verbal formation and competing analyses before using
   the adjective agreement engine.
-- Closed classes and numerals remain exact-table APIs until independent productive
-  descriptions and evidence exist.
+- Reviewed personal/reflexive/anaphoric pronouns use closed grammar tables; other
+  pronouns, determiners, and numerals remain exact-table APIs until independent
+  productive descriptions and evidence exist.
 - Cyrillic and Glagolitic are detected but not automatically transliterated.
 
 These differences preserve the project's source-backed, fail-closed contract.

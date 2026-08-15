@@ -110,23 +110,23 @@ id = "ocs.pronoun.personal-reflexive"
 recension = "old-church-slavonic"
 category = "pronoun"
 part_of_speech = "pronoun"
-scope = "Personal and reflexive pronouns, including clitic and suppletive forms."
+scope = "First- and second-person pronouns, the numberless reflexive, and the defective third-person anaphoric pronoun, including grammar-table clitics and prepositional allomorphs."
 profiles = ["canonical-cyrillic"]
-features = ["case=7", "number=3", "person=1|2|3|none", "gender=lexical-or-cell", "clitic=typed"]
-subtypes = ["personal", "reflexive", "third-person-gendered", "clitic"]
+features = ["identity=first|second|reflexive|anaphoric-third", "case=7", "number=3-or-numberless", "person=intrinsic", "gender=anaphoric-only", "form-selection=all|table-primary|marked-clitic", "anaphoric-environment=free|after-preposition"]
+subtypes = ["first-person", "second-person", "reflexive", "anaphoric-third", "marked-clitic", "adprepositional"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "closed-exact-partial"
-rule_ids = ["OCS-PRONOUN-PERSONAL-PENDING"]
-sources = ["ut-ocs-online", "polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "docs/API_DESIGN.md closed-class inventory audit"
-required_metadata = ["stable lexical identity", "pronoun subtype", "person/gender profile", "ordered exact or productive contract"]
-valid_inventory = "Exact tables currently represent selected lexemes; complete source-licensed profiles remain to be inventoried."
-invalid_inventory = "Person/gender combinations not licensed by a lexical profile."
+state = "productive-complete"
+implementation_kind = "reviewed-closed-grammar-tables-with-source-union-alias-routing"
+rule_ids = ["PRON-PERS-1-01", "PRON-PERS-2-01", "PRON-REFL-01", "PRON-PERS-CLITIC-01", "PRON-ANAPH-3-01", "PRON-ANAPH-PREP-N-01"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "punco-lmu-reference-grammar", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT lesson 2 §§8.1–8.3; Polivanova 2023 §§318 and 381–382; LMU reference grammar §§3.1–3.1.3"
+required_metadata = ["intrinsic lexical identity", "case", "number for personal and anaphoric identities", "gender and syntactic environment for the anaphoric identity", "form selection for personal and reflexive identities"]
+valid_inventory = "First and second person each have 18 nonvocative case-number cells; reflexive has five numberless oblique cells; the third-person anaphoric has 45 oblique case-number-gender cells in each of two environments. Ordered grammar-table variants include marked clitics and the source-disputed first-person dual dative на."
+invalid_inventory = "All personal vocatives; reflexive nominative and vocative; anaphoric nominative and vocative; any person, gender, or number shape incompatible with the intrinsic identity; and requests for a marked clitic in a cell whose reviewed table marks none."
 implementation = ["crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic-core/src/pronoun.rs"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
-evidence_status = "partial exact dictionary evidence"
-gap = "Implement a typed productive/closed-irregular pronoun model and classify every source-union pronoun."
+tests = ["crates/old-church-slavonic-core/src/pronoun.rs#first_and_second_person_goldens_cover_every_nonvocative_cell", "crates/old-church-slavonic-core/src/pronoun.rs#reflexive_is_numberless_defective_and_has_a_typed_clitic", "crates/old-church-slavonic-core/src/pronoun.rs#anaphoric_free_and_adprepositional_inventories_are_complete", "crates/old-church-slavonic-core/src/pronoun.rs#source_union_aliases_are_exhaustive_and_nonoverlapping", "crates/old-church-slavonic/tests/public_api.rs#reviewed_personal_reflexive_and_anaphoric_pronouns_are_complete_and_typed", "crates/old-church-slavonic/tests/public_api.rs#dictionary_form_pages_route_to_intrinsic_pronoun_identities", "crates/old-church-slavonic/tests/public_api.rs#reviewed_pronoun_paradigms_expose_every_valid_and_invalid_cell"]
+evidence_status = "independently reviewed closed grammar inventory, conditioned allomorphy, explicit source dispute, and exhaustive source-union routing"
+rationale = "The four intrinsic identities and every licensed cell are closed and exhaustively tested. Dictionary form pages route to the canonical identity without treating a repeated combined table as multiple lexemes; raw extracted tables remain available as source evidence."
 
 [[system]]
 id = "ocs.pronoun.other"

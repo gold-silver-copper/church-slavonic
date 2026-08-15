@@ -31,6 +31,10 @@ pub use phrase::{
     AnalyticConstruction, ConditionalAuxiliary, FutureInfinitiveAuxiliary, FutureReferenceTense,
     PassiveAuxiliary, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, RealizedPhrase,
 };
+pub use pronoun::{
+    AnaphoricEnvironment, PersonalPronounIdentity, PronounFormSelection, PronounVariant,
+    PronounVariantStatus,
+};
 pub use result::{
     FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,
     LexemeSummary, MetadataEvidence, MetadataField, MetadataProvenance, VariantPolicy,

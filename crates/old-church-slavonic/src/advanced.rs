@@ -63,8 +63,8 @@ pub mod metadata {
 /// Generic feature-key access for extraction, evaluation, and diagnostics.
 pub mod raw_features {
     pub use crate::resolver::{
-        closed_class, closed_class_by_id, dictionary_form_by_id, dictionary_paradigm_by_id,
-        form_by_id,
+        dictionary_form_by_id, dictionary_paradigm_by_id, form_by_id,
+        raw_closed_class as closed_class, raw_closed_class_by_id as closed_class_by_id,
     };
 }
 

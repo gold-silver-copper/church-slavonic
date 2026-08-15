@@ -83,9 +83,13 @@ Its builder calls the same by-ID cell resolver as the corresponding handle. This
 why paradigm gaps remain visible and why no ergonomic wrapper owns a second
 morphology implementation.
 
-Determiner, pronoun, and numeral root APIs are exact-table views over audited
-feature shapes. Pronoun and numeral handles separate unpositioned, person-indexed,
-and gender-indexed cells instead of exposing the registry's catch-all optional
+Determiner, other-pronoun, and numeral root APIs are exact-table views over audited
+feature shapes. First-person, second-person, reflexive, and third-person anaphoric
+pronouns instead pass through reviewed closed grammar tables with intrinsic lexical
+identity, typed clitic selection, and conditioned prepositional allomorphy. Their
+source-union form pages alias the canonical identity before dictionary lookup.
+Pronoun and numeral handles otherwise separate unpositioned, person-indexed, and
+gender-indexed cells instead of exposing the registry's catch-all optional
 dimensions. Normalized raw keys remain confined to `advanced::raw_features`.
 
 ## Verb-system boundary

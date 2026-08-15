@@ -13,14 +13,16 @@ use old_church_slavonic::advanced::rules::{
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
-    Adjective, Animacy, Case, Determiner, FiniteTense, FormSource, Gender, GenderedCell,
-    InflectionError, InflectionWarning, Lemma, Noun, Number, Numeral, ParadigmLookupError,
-    PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, Pronoun, RequestedCell, Script,
-    UngenderedCell, VariantPolicy, Verb, adjective_paradigm, aorist, determiner,
+    Adjective, AnaphoricEnvironment, Animacy, Case, Determiner, FiniteTense, FormSource, Gender,
+    GenderedCell, InflectionError, InflectionWarning, Lemma, Noun, Number, Numeral,
+    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
+    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script, UngenderedCell,
+    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, determiner,
     determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
     imperative_paradigm, imperfect, infinitive, l_participle, l_participle_paradigm,
     long_adjective, noun, noun_paradigm, numeral, participle_paradigm, past_active_participle,
-    personal_pronoun, present, present_paradigm, pronoun, short_adjective, supine,
+    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
+    short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -405,6 +407,226 @@ fn ordinary_closed_class_handles_share_direct_by_id_and_paradigm_paths() {
             .gendered_paradigm()
             .form(numeral_cell.case, numeral_cell.number, numeral_cell.gender)
             .expect("gendered numeral paradigm row")
+    );
+}
+
+#[test]
+fn reviewed_personal_reflexive_and_anaphoric_pronouns_are_complete_and_typed() {
+    let first_dative = personal_pronoun_with(
+        PersonalPronounIdentity::First,
+        Case::Dative,
+        Number::Singular,
+        PronounFormSelection::All,
+    )
+    .expect("reviewed first-person dative");
+    assert_eq!(first_dative.texts().collect::<Vec<_>>(), ["мьнѣ", "ми"]);
+    assert!(
+        first_dative
+            .analyses()
+            .iter()
+            .flat_map(|analysis| &analysis.evidence)
+            .any(|evidence| {
+                evidence
+                    .source_feature
+                    .as_deref()
+                    .is_some_and(|feature| feature.ends_with("marked-clitic"))
+            })
+    );
+
+    let disputed = personal_pronoun_with(
+        PersonalPronounIdentity::First,
+        Case::Dative,
+        Number::Dual,
+        PronounFormSelection::MarkedClitic,
+    )
+    .expect("source-disputed first-person dual clitic");
+    assert_eq!(disputed.primary_text(), "на");
+    assert!(
+        disputed
+            .warnings()
+            .contains(&InflectionWarning::IncludesDisputedForms)
+    );
+    assert_eq!(
+        disputed.analyses()[0].evidence[0].provenance,
+        MetadataProvenance::DisputedGrammarTable
+    );
+    assert!(matches!(
+        personal_pronoun_with(
+            PersonalPronounIdentity::First,
+            Case::Nominative,
+            Number::Singular,
+            PronounFormSelection::MarkedClitic,
+        ),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+
+    for case in [
+        Case::Accusative,
+        Case::Genitive,
+        Case::Dative,
+        Case::Instrumental,
+        Case::Locative,
+    ] {
+        assert!(reflexive_pronoun(case, PronounFormSelection::All).is_ok());
+    }
+    assert!(matches!(
+        reflexive_pronoun(Case::Nominative, PronounFormSelection::All),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+    assert!(matches!(
+        reflexive_pronoun(Case::Vocative, PronounFormSelection::All),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+    assert!(matches!(
+        reflexive_pronoun(Case::Genitive, PronounFormSelection::MarkedClitic),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+
+    let mut anaphoric_cells = 0;
+    for environment in [
+        AnaphoricEnvironment::Free,
+        AnaphoricEnvironment::AfterPreposition,
+    ] {
+        for number in Number::ALL {
+            for gender in Gender::ALL {
+                for case in [
+                    Case::Accusative,
+                    Case::Genitive,
+                    Case::Dative,
+                    Case::Instrumental,
+                    Case::Locative,
+                ] {
+                    anaphoric_pronoun(case, number, gender, environment)
+                        .expect("reviewed anaphoric cell");
+                    anaphoric_cells += 1;
+                }
+                assert!(matches!(
+                    anaphoric_pronoun(Case::Nominative, number, gender, environment),
+                    Err(InflectionError::HistoricallyInvalidCell { .. })
+                ));
+                assert!(matches!(
+                    anaphoric_pronoun(Case::Vocative, number, gender, environment),
+                    Err(InflectionError::HistoricallyInvalidCell { .. })
+                ));
+            }
+        }
+    }
+    assert_eq!(anaphoric_cells, 90);
+    assert_eq!(
+        anaphoric_pronoun(
+            Case::Accusative,
+            Number::Singular,
+            Gender::Masculine,
+            AnaphoricEnvironment::AfterPreposition,
+        )
+        .expect("prepositional anaphoric")
+        .primary_text(),
+        "н҄ь"
+    );
+}
+
+#[test]
+fn dictionary_form_pages_route_to_intrinsic_pronoun_identities() {
+    assert!(matches!(
+        personal_pronoun("азъ", Case::Nominative, Number::Singular, Person::Second,),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+
+    for alias in ["азъ", "вѣ", "мꙑ", "наю"] {
+        let result = personal_pronoun(alias, Case::Genitive, Number::Plural, Person::First)
+            .expect("first-person source-union identity");
+        assert_eq!(result.lemma(), "азъ");
+        assert_eq!(result.primary_text(), "насъ");
+        assert_eq!(
+            result
+                .warnings()
+                .contains(&InflectionWarning::LexicalAliasUsed {
+                    canonical: "азъ".to_string(),
+                }),
+            alias != "азъ"
+        );
+    }
+
+    for alias in ["тꙑ", "ва", "вꙑ", "ваю"] {
+        let result = personal_pronoun(alias, Case::Genitive, Number::Plural, Person::Second)
+            .expect("second-person source-union identity");
+        assert_eq!(result.lemma(), "тꙑ");
+        assert_eq!(result.primary_text(), "васъ");
+        assert_eq!(
+            result
+                .warnings()
+                .contains(&InflectionWarning::LexicalAliasUsed {
+                    canonical: "тꙑ".to_string(),
+                }),
+            alias != "тꙑ"
+        );
+    }
+
+    let reflexive = pronoun("сѧ", Case::Instrumental, Number::Dual)
+        .expect("numberless reflexive source-union identity");
+    assert_eq!(reflexive.lemma(), "сѧ");
+    assert_eq!(reflexive.primary_text(), "собоѭ");
+
+    for alias in ["и", "ѥ", "ѭ", "ими"] {
+        let result = gendered_pronoun(alias, Case::Genitive, Number::Singular, Gender::Masculine)
+            .expect("anaphoric source-union identity");
+        assert_eq!(result.lemma(), "и");
+        assert_eq!(result.primary_text(), "ѥго");
+        assert_eq!(
+            result
+                .warnings()
+                .contains(&InflectionWarning::LexicalAliasUsed {
+                    canonical: "и".to_string(),
+                }),
+            alias != "и"
+        );
+    }
+
+    assert!(matches!(
+        gendered_pronoun("ѥ", Case::Nominative, Number::Singular, Gender::Masculine,),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+
+    let demonstrative =
+        gendered_pronoun("онъ", Case::Nominative, Number::Singular, Gender::Masculine)
+            .expect("independent demonstrative");
+    assert_eq!(demonstrative.primary_text(), "онъ");
+    assert_eq!(demonstrative.source(), &FormSource::DictionaryTable);
+}
+
+#[test]
+fn reviewed_pronoun_paradigms_expose_every_valid_and_invalid_cell() {
+    let first = Pronoun::resolve("азъ")
+        .expect("first-person identity")
+        .personal_paradigm();
+    assert_eq!(first.successes().count(), 18);
+    assert_eq!(first.failures().count(), 45);
+    assert!(
+        first
+            .failures()
+            .all(|(_, error)| matches!(error, InflectionError::HistoricallyInvalidCell { .. }))
+    );
+
+    let reflexive = Pronoun::resolve("сѧ")
+        .expect("reflexive identity")
+        .paradigm();
+    assert_eq!(reflexive.successes().count(), 15);
+    assert_eq!(reflexive.failures().count(), 6);
+    assert!(
+        reflexive
+            .failures()
+            .all(|(_, error)| matches!(error, InflectionError::HistoricallyInvalidCell { .. }))
+    );
+
+    let anaphoric = Pronoun::resolve("и")
+        .expect("third-person anaphoric identity")
+        .gendered_paradigm();
+    assert_eq!(anaphoric.successes().count(), 45);
+    assert_eq!(anaphoric.failures().count(), 18);
+    assert!(
+        anaphoric
+            .failures()
+            .all(|(_, error)| matches!(error, InflectionError::HistoricallyInvalidCell { .. }))
     );
 }
 
@@ -972,6 +1194,20 @@ fn reviewed_override_follows_exact_table_and_keeps_authority() {
 
 #[test]
 fn closed_classes_remain_lossless_in_the_advanced_dictionary_api() {
+    let copied_second_person = raw_features::closed_class(
+        "азъ",
+        PartOfSpeech::Pronoun,
+        ClosedClassCell {
+            case: Case::Accusative,
+            number: Number::Dual,
+            gender: None,
+            person: Some(Person::Second),
+        },
+    )
+    .expect("raw source table preserves its copied second-person row");
+    assert_eq!(copied_second_person.primary_text(), "ва");
+    assert_eq!(copied_second_person.source(), &FormSource::DictionaryTable);
+
     let reflexive = raw_features::closed_class(
         "сѧ",
         PartOfSpeech::Pronoun,

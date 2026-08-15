@@ -17,12 +17,16 @@ the network.
 ## Accepted extraction surface
 
 Entries must have `lang_code == "cu"`. Noun and adjective cells require complete
-case/number (and adjective gender) tags. Closed-class cells use the dimensions
-actually present, including person on combined personal-pronoun tables. Pages whose
+case/number (and adjective gender) tags. Closed-class extraction preserves the
+dimensions actually present, including person on combined personal-pronoun tables.
+Pages whose
 senses are all marked `form-of` are excluded as duplicate lexemes. The source's
 repeated personal/reflexive table is split: personal rows remain on personal entries,
 while `сѧ` retains only reflexive rows; its numberless source cells are exposed for all
-three numbers because reflexive agreement is number-invariant. Latin-only,
+three numbers in the raw exact registry because reflexive agreement is number-invariant.
+Ordinary resolution does not inherit those adapter shapes: a reviewed identity layer
+routes the 13 personal/reflexive/anaphoric source-union spellings to complete closed
+grammar tables, while raw dictionary access remains unchanged for audit. Latin-only,
 mixed-script, empty, and table-sentinel forms are never public variants. Literal
 MediaWiki rendering artifacts such as `{{{2}}}` are likewise rejected from
 page, lemma, alias, comparative, and paradigm spellings and reported under a

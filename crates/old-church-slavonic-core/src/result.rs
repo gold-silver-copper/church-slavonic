@@ -184,6 +184,7 @@ pub struct FormAnalysis {
 pub enum MetadataProvenance {
     ExactDictionaryTableCell,
     ReviewedGrammarTable,
+    DisputedGrammarTable,
     DictionaryPrincipalPart,
     CuratedGrammarOverride,
     ExplicitCallerMetadata,
@@ -208,6 +209,8 @@ pub enum InflectionWarning {
     PredictedNotDictionaryBacked,
     MultipleMorphologicalAnalyses,
     IncludesReconstructedForms,
+    IncludesDisputedForms,
+    LexicalAliasUsed { canonical: String },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

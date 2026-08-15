@@ -311,7 +311,7 @@ and genuine historical gaps.
 | Nouns | `noun`, `Noun`, `noun_paradigm` | Exact tables first; dictionary metadata or explicit rules for supported classes |
 | Adjectives | `long_adjective`, `short_adjective`, `Adjective` | Exact tables first; hard/soft metadata rules; citation comparatives only |
 | Determiners | `determiner`, `Determiner`, typed paradigm | Exact pinned dictionary cells only |
-| Pronouns | `pronoun`, `personal_pronoun`, `gendered_pronoun`, `Pronoun` | Separate source-backed cell shapes; no catch-all options API |
+| Pronouns | `personal_pronoun_with`, `reflexive_pronoun`, `anaphoric_pronoun`, compatible ordinary functions, `Pronoun` | Complete reviewed personal/reflexive/anaphoric tables; other pronouns use exact source cells |
 | Numerals | `numeral`, `gendered_numeral`, `Numeral` | Declension cells present in the pinned source; no arbitrary numeral generator |
 | Finite verbs | `present`, `imperfect`, `aorist`, `finite` | Exact tables, independently sourced metadata, then reviewed overrides |
 | Imperatives | `imperative` | Six historically represented person-number cells |
