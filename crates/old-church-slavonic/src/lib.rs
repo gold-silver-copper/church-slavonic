@@ -114,7 +114,7 @@
 //! | System | Ordinary API | Evidence behavior |
 //! |---|---|---|
 //! | Nouns | [`noun`], [`Noun`], [`noun_paradigm`] | Table first; dictionary metadata or explicit rules when supported |
-//! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; citation comparatives only |
+//! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exact comparative citations plus productive comparison through [`advanced::rules`] |
 //! | Closed classes | [`determiner`], [`pronoun`], [`personal_pronoun`], [`gendered_pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells only |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -146,9 +146,9 @@ pub use old_church_slavonic_core::{
     VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
-    AdjectiveParadigm, CellOutcome, ClosedClassParadigm, DeterminerParadigm, FiniteVerbParadigm,
-    GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm, LParticipleParadigm,
-    NounParadigm, NumeralParadigm, ParadigmLookupError, ParticipleParadigm,
+    AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,
+    FiniteVerbParadigm, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
+    LParticipleParadigm, NounParadigm, NumeralParadigm, ParadigmLookupError, ParticipleParadigm,
     PersonalPronounParadigm, PronounParadigm, VerbParadigm,
 };
 

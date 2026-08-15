@@ -6,7 +6,7 @@ Inventory date: `2026-08-14`. Source-frontier date: `2026-08-14`.
 
 ## Headline
 
-The matrix contains **52** required system contracts: **26** have final states and **26** remain non-final. Source discovery has 1 recorded pass and has not converged.
+The matrix contains **53** required system contracts: **27** have final states and **26** remain non-final. Source discovery has 1 recorded pass and has not converged.
 
 ## State totals
 
@@ -14,7 +14,7 @@ The matrix contains **52** required system contracts: **26** have final states a
 |---|---:|
 | `implementation-missing` | 21 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 24 |
+| `productive-complete` | 25 |
 | `source-review-open` | 5 |
 
 ## Recension totals
@@ -22,7 +22,7 @@ The matrix contains **52** required system contracts: **26** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 13 | 25 |
+| old-church-slavonic | 14 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -36,7 +36,7 @@ The matrix contains **52** required system contracts: **26** have final states a
 | old-church-slavonic | accent | 0 | 1 |
 | old-church-slavonic | adjective | 1 | 1 |
 | old-church-slavonic | analytic-form | 0 | 1 |
-| old-church-slavonic | comparison | 0 | 1 |
+| old-church-slavonic | comparison | 1 | 2 |
 | old-church-slavonic | determiner | 0 | 1 |
 | old-church-slavonic | finite-verb | 6 | 6 |
 | old-church-slavonic | imperative | 1 | 2 |
@@ -69,7 +69,7 @@ The matrix contains **52** required system contracts: **26** have final states a
 
 ## Non-final systems
 
-- `ocs.adjective.comparison` — **implementation-missing**: Crosswalk Polivanova, Lunt, UT, and primary dictionary evidence; add typed degree/formation rules and exhaustive paradigms.
+- `ocs.adjective.superlative` — **implementation-missing**: Implement typed phrase/derivation results and all four source-described strategies without flattening component provenance.
 - `ocs.pronoun.personal-reflexive` — **implementation-missing**: Implement a typed productive/closed-irregular pronoun model and classify every source-union pronoun.
 - `ocs.pronoun.other` — **implementation-missing**: Establish complete closed-class inventories, productive relationships, clitics, and irregular paradigms.
 - `ocs.determiner` — **implementation-missing**: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.
@@ -102,7 +102,8 @@ The matrix contains **52** required system contracts: **26** have final states a
 |---|---|---|---|---|---|
 | `ocs.noun.declension` | old-church-slavonic | noun | `productive-complete` | `N-O-M-HARD-01`<br>`N-O-N-HARD-01`<br>`N-JO-M-SOFT-01`<br>`N-JO-N-SOFT-01`<br>`N-A-HARD-01`<br>`N-JA-SOFT-01`<br>`N-I-F-01`<br>`N-I-M-01`<br>`N-U-M-01`<br>`N-N-M-01`<br>`N-N-N-01`<br>`N-NT-N-01`<br>`N-R-01`<br>`N-S-N-01`<br>`N-V-F-01`<br>`N-INDECL-01` | source-backed productive prediction; exact dictionary cells retain table provenance |
 | `ocs.adjective.positive` | old-church-slavonic | adjective | `productive-complete` | `ADJ-HARD-SHORT-01`<br>`ADJ-HARD-LONG-01`<br>`ADJ-SOFT-SHORT-01`<br>`ADJ-SOFT-LONG-01` | source-backed productive prediction |
-| `ocs.adjective.comparison` | old-church-slavonic | comparison | `implementation-missing` | `OCS-ADJ-COMPARISON-PENDING` | partial exact dictionary evidence |
+| `ocs.adjective.comparison` | old-church-slavonic | comparison | `productive-complete` | `ADJ-COMP-NEW-01`<br>`ADJ-COMP-OLD-01` | independent grammar paradigms plus strict explicit-principal-part prediction; dictionary citations remain exact |
+| `ocs.adjective.superlative` | old-church-slavonic | comparison | `implementation-missing` | `OCS-ADJ-SUPERLATIVE-PENDING` | source inventory established; structured composition API absent |
 | `ocs.pronoun.personal-reflexive` | old-church-slavonic | pronoun | `implementation-missing` | `OCS-PRONOUN-PERSONAL-PENDING` | partial exact dictionary evidence |
 | `ocs.pronoun.other` | old-church-slavonic | pronoun | `implementation-missing` | `OCS-PRONOUN-OTHER-PENDING` | partial exact dictionary evidence |
 | `ocs.determiner` | old-church-slavonic | determiner | `implementation-missing` | `OCS-DETERMINER-PENDING` | partial exact dictionary evidence |
@@ -159,9 +160,9 @@ The frontier contains **14** source/lineage records. Authority policy: target-re
 
 | ID | Tier | Type | Recension | Access | Impact |
 |---|---:|---|---|---|---|
-| `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; exposes sigmatic-aorist and analytic-form gaps. |
-| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. |
-| `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; requires a complete category/rule crosswalk and conflict ledger. |
+| `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; independently crosschecks old/new comparator formation and identifies analytic rather than universally synthetic superlative strategies. |
+| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. |
+| `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split; full-text comparison remains open and no rule claim relies on inaccessible content. |
 | `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; supplies independent lexeme-level allomorph evidence for sigmatic aorists and irregular/root verbs. |
 | `english-wiktionary-ocs-kaikki-2026-08-07` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-local | Current OCS exact registry and extraction target. |
 | `ud-ocs-proiel-r2.18` | 4 | manually based annotated corpus | old-church-slavonic | pinned-local | Independent real-text regression evidence. |
@@ -180,4 +181,4 @@ The frontier contains **14** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.adjective.comparison`: Crosswalk Polivanova, Lunt, UT, and primary dictionary evidence; add typed degree/formation rules and exhaustive paradigms.
+`ocs.adjective.superlative`: Implement typed phrase/derivation results and all four source-described strategies without flattening component provenance.

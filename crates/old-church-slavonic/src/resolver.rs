@@ -5,7 +5,7 @@
 //! or ambiguous lexical facts are returned as typed errors.
 
 use crate::{dictionary, lookup, metadata::*, paradigm::*};
-use old_church_slavonic_core::adjective::AdjectiveLexeme;
+use old_church_slavonic_core::adjective::{AdjectiveLexeme, ComparativeLexeme};
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::*;
@@ -166,6 +166,31 @@ pub fn adjective_with(
         old_church_slavonic_core::adjective::decline(lexeme, cell),
         FormSourceKind::Explicit,
     )
+}
+
+pub fn comparative_with(
+    lexeme: &ComparativeLexeme,
+    cell: AdjectiveCell,
+) -> Result<FormSet, InflectionError> {
+    canonical_prediction(
+        &lexeme.positive_lemma,
+        old_church_slavonic_core::adjective::decline_comparative(lexeme, cell),
+        FormSourceKind::Explicit,
+    )
+}
+
+pub fn comparative_paradigm_with(lexeme: &ComparativeLexeme) -> ComparativeParadigm {
+    ComparativeParadigm {
+        lemma: lexeme.positive_lemma.clone(),
+        syncopated_citation: lexeme.syncopated_citation.clone(),
+        expanded_citation: lexeme.expanded_citation.clone(),
+        cells: AdjectiveCell::all()
+            .map(|cell| CellOutcome {
+                cell,
+                result: comparative_with(lexeme, cell),
+            })
+            .collect(),
+    }
 }
 
 pub fn adjective_comparatives(lemma: &str) -> Result<FormSet, InflectionError> {

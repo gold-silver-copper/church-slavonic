@@ -1,14 +1,220 @@
 //! Rule-based adjective declension.
 
 use crate::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, Gender, InflectionError, Number,
-    PredictedForm, RuleId, RuleStep,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, ComparativeFormation, Gender,
+    InflectionError, Number, PredictedForm, RuleId, RuleStep,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AdjectiveLexeme {
     pub lemma: String,
     pub class: AdjectiveClass,
+}
+
+/// The two principal parts needed to inflect one OCS comparative.
+///
+/// `syncopated_citation` is the short masculine nominative singular (`новѣи`,
+/// `грѫбл҄ь`); `expanded_citation` is the short feminine nominative singular
+/// (`новѣиши`, `грѫбл҄ьши`). Requiring both prevents the engine from guessing
+/// the lexically restricted consonant alternations of old comparatives.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ComparativeLexeme {
+    pub positive_lemma: String,
+    pub syncopated_citation: String,
+    pub expanded_citation: String,
+    pub formation: ComparativeFormation,
+}
+
+/// Build the productive new comparative from an explicitly classified positive
+/// adjective. Final velars undergo first palatalization and select surface
+/// `-аи-`; all other bases select `-ѣи-`.
+pub fn productive_new_comparative(
+    positive: &AdjectiveLexeme,
+) -> Result<ComparativeLexeme, InflectionError> {
+    let lemma = crate::orthography::canonical_display(&positive.lemma)?;
+    let stem = match positive.class {
+        AdjectiveClass::Hard => strip_citation(&lemma, &["ъ"], "hard")?,
+        AdjectiveClass::Soft => strip_citation(&lemma, &["ь", "и"], "soft")?,
+    };
+    let (base, suffix) = if stem.ends_with(['к', 'г', 'х']) {
+        (palatalize(stem, [('к', "ч"), ('г', "ж"), ('х', "ш")]), "аи")
+    } else {
+        (stem.to_string(), "ѣи")
+    };
+    let syncopated_citation = format!("{base}{suffix}");
+    Ok(ComparativeLexeme {
+        positive_lemma: lemma,
+        expanded_citation: format!("{syncopated_citation}ши"),
+        syncopated_citation,
+        formation: ComparativeFormation::New,
+    })
+}
+
+/// Inflect a comparative from its independently supplied principal parts.
+///
+/// Comparatives use a syncopated stem in precisely three source-described
+/// direct cells and an expanded soft-adjective stem elsewhere. Four expanded
+/// cells take the alien endings `-и/-иꙗ` and `-е/-еи`.
+pub fn decline_comparative(
+    lexeme: &ComparativeLexeme,
+    cell: AdjectiveCell,
+) -> Result<PredictedForm, InflectionError> {
+    let lexeme = validate_comparative(lexeme)?;
+    let rule_id = match lexeme.formation {
+        ComparativeFormation::New => RuleId::AdjectiveComparativeNew,
+        ComparativeFormation::Old => RuleId::AdjectiveComparativeOld,
+    };
+
+    let text = if is_syncopated_comparative_cell(cell) {
+        syncopated_comparative_form(&lexeme, cell)?
+    } else {
+        let expanded_stem = lexeme
+            .expanded_citation
+            .strip_suffix('и')
+            .ok_or_else(|| contradictory_comparative(&lexeme))?;
+        if let Some(ending) = comparative_alien_ending(cell) {
+            format!("{expanded_stem}{ending}")
+        } else {
+            decline_validated_stem(
+                expanded_stem,
+                AdjectiveClass::Soft,
+                cell,
+                &lexeme.expanded_citation,
+            )?
+            .text
+        }
+    };
+
+    Ok(PredictedForm {
+        text: text.clone(),
+        rule_id,
+        trace: vec![RuleStep {
+            rule_id,
+            before: lexeme.positive_lemma,
+            after: text,
+            reason: "select the comparative principal-part stem and attach its agreement ending",
+        }],
+    })
+}
+
+fn validate_comparative(lexeme: &ComparativeLexeme) -> Result<ComparativeLexeme, InflectionError> {
+    let normalized = ComparativeLexeme {
+        positive_lemma: crate::orthography::canonical_display(&lexeme.positive_lemma)?,
+        syncopated_citation: crate::orthography::canonical_display(&lexeme.syncopated_citation)?,
+        expanded_citation: crate::orthography::canonical_display(&lexeme.expanded_citation)?,
+        formation: lexeme.formation,
+    };
+    let valid_syncopated_ending = match normalized.formation {
+        ComparativeFormation::New => normalized.syncopated_citation.ends_with('и'),
+        ComparativeFormation::Old => normalized.syncopated_citation.ends_with('ь'),
+    };
+    if !valid_syncopated_ending
+        || normalized.expanded_citation != format!("{}ши", normalized.syncopated_citation)
+    {
+        return Err(InflectionError::InvalidInput {
+            reason: format!(
+                "the {} comparative principal parts are contradictory",
+                normalized.formation.code()
+            ),
+        });
+    }
+    Ok(normalized)
+}
+
+fn is_syncopated_comparative_cell(cell: AdjectiveCell) -> bool {
+    if cell.number != Number::Singular {
+        return false;
+    }
+    matches!(
+        (cell.form, cell.case, cell.gender, cell.animacy),
+        (
+            AdjectiveForm::Short,
+            Case::Nominative,
+            Gender::Masculine | Gender::Neuter,
+            _
+        ) | (AdjectiveForm::Short, Case::Accusative, Gender::Neuter, _)
+            | (
+                AdjectiveForm::Short | AdjectiveForm::Long,
+                Case::Accusative,
+                Gender::Masculine,
+                Animacy::Inanimate,
+            )
+            | (AdjectiveForm::Long, Case::Nominative, Gender::Masculine, _)
+    )
+}
+
+fn syncopated_comparative_form(
+    lexeme: &ComparativeLexeme,
+    cell: AdjectiveCell,
+) -> Result<String, InflectionError> {
+    let text = match (lexeme.formation, cell.form, cell.gender) {
+        (_, AdjectiveForm::Short, Gender::Masculine) => lexeme.syncopated_citation.clone(),
+        (ComparativeFormation::New, AdjectiveForm::Short, Gender::Neuter) => {
+            let stem = lexeme
+                .syncopated_citation
+                .strip_suffix('и')
+                .ok_or_else(|| contradictory_comparative(lexeme))?;
+            format!("{stem}ѥ")
+        }
+        (ComparativeFormation::Old, AdjectiveForm::Short, Gender::Neuter) => {
+            let stem = lexeme
+                .syncopated_citation
+                .strip_suffix('ь')
+                .ok_or_else(|| contradictory_comparative(lexeme))?;
+            format!("{stem}е")
+        }
+        (ComparativeFormation::New, AdjectiveForm::Long, Gender::Masculine) => {
+            format!("{}и", lexeme.syncopated_citation)
+        }
+        (ComparativeFormation::Old, AdjectiveForm::Long, Gender::Masculine) => {
+            let stem = lexeme
+                .syncopated_citation
+                .strip_suffix('ь')
+                .ok_or_else(|| contradictory_comparative(lexeme))?;
+            format!("{stem}ии")
+        }
+        _ => return Err(contradictory_comparative(lexeme)),
+    };
+    Ok(text)
+}
+
+fn contradictory_comparative(lexeme: &ComparativeLexeme) -> InflectionError {
+    InflectionError::InvalidInput {
+        reason: format!(
+            "the {} comparative principal parts are contradictory",
+            lexeme.formation.code()
+        ),
+    }
+}
+
+fn comparative_alien_ending(cell: AdjectiveCell) -> Option<&'static str> {
+    match (cell.form, cell.case, cell.number, cell.gender) {
+        (
+            AdjectiveForm::Short,
+            Case::Nominative | Case::Vocative,
+            Number::Singular,
+            Gender::Feminine,
+        ) => Some("и"),
+        (
+            AdjectiveForm::Long,
+            Case::Nominative | Case::Vocative,
+            Number::Singular,
+            Gender::Feminine,
+        ) => Some("иꙗ"),
+        (
+            AdjectiveForm::Short,
+            Case::Nominative | Case::Vocative,
+            Number::Plural,
+            Gender::Masculine,
+        ) => Some("е"),
+        (
+            AdjectiveForm::Long,
+            Case::Nominative | Case::Vocative,
+            Number::Plural,
+            Gender::Masculine,
+        ) => Some("еи"),
+        _ => None,
+    }
 }
 
 pub fn decline(
@@ -383,5 +589,257 @@ mod tests {
             .text,
             "добра"
         );
+    }
+
+    fn cell(
+        form: AdjectiveForm,
+        case: Case,
+        number: Number,
+        gender: Gender,
+        animacy: Animacy,
+    ) -> AdjectiveCell {
+        AdjectiveCell {
+            case,
+            number,
+            gender,
+            animacy,
+            form,
+        }
+    }
+
+    #[test]
+    fn productive_new_comparative_forms_velar_and_nonvelar_principal_parts() {
+        for (lemma, expected_syncopated) in [
+            ("новъ", "новѣи"),
+            ("горькъ", "горьчаи"),
+            ("драгъ", "дражаи"),
+            ("тихъ", "тишаи"),
+        ] {
+            let comparative = productive_new_comparative(&AdjectiveLexeme {
+                lemma: lemma.to_string(),
+                class: AdjectiveClass::Hard,
+            })
+            .expect("productive new comparative");
+            assert_eq!(comparative.syncopated_citation, expected_syncopated);
+            assert_eq!(
+                comparative.expanded_citation,
+                format!("{expected_syncopated}ши")
+            );
+        }
+    }
+
+    #[test]
+    fn new_comparative_has_all_syncopated_and_alien_terminal_cells() {
+        let new = productive_new_comparative(&AdjectiveLexeme {
+            lemma: "новъ".to_string(),
+            class: AdjectiveClass::Hard,
+        })
+        .expect("productive new comparative");
+        let examples = [
+            (
+                cell(
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+                "новѣи",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Neuter,
+                    Animacy::Inanimate,
+                ),
+                "новѣѥ",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Long,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+                "новѣии",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Feminine,
+                    Animacy::Inanimate,
+                ),
+                "новѣиши",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Long,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Feminine,
+                    Animacy::Inanimate,
+                ),
+                "новѣишиꙗ",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Plural,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+                "новѣише",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Long,
+                    Case::Nominative,
+                    Number::Plural,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+                "новѣишеи",
+            ),
+        ];
+        for (cell, expected) in examples {
+            assert_eq!(
+                decline_comparative(&new, cell)
+                    .expect("source-described comparative cell")
+                    .text,
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn old_comparative_uses_its_independent_softened_principal_parts() {
+        let old = ComparativeLexeme {
+            positive_lemma: "грѫбъ".to_string(),
+            syncopated_citation: "грѫбл҄ь".to_string(),
+            expanded_citation: "грѫбл҄ьши".to_string(),
+            formation: ComparativeFormation::Old,
+        };
+        for (cell, expected) in [
+            (
+                cell(
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+                "грѫбл҄ь",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Neuter,
+                    Animacy::Inanimate,
+                ),
+                "грѫбл҄е",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Long,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+                "грѫбл҄ии",
+            ),
+            (
+                cell(
+                    AdjectiveForm::Short,
+                    Case::Genitive,
+                    Number::Singular,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+                "грѫбл҄ьша",
+            ),
+        ] {
+            let predicted = decline_comparative(&old, cell).expect("old comparative");
+            assert_eq!(predicted.text, expected);
+            assert_eq!(predicted.rule_id, RuleId::AdjectiveComparativeOld);
+        }
+    }
+
+    #[test]
+    fn comparative_inventory_is_exhaustive_and_keeps_accusative_animacy() {
+        let comparative = productive_new_comparative(&AdjectiveLexeme {
+            lemma: "новъ".to_string(),
+            class: AdjectiveClass::Hard,
+        })
+        .expect("new comparative");
+        let forms = AdjectiveCell::all()
+            .map(|cell| decline_comparative(&comparative, cell).expect("complete cell"))
+            .collect::<Vec<_>>();
+        assert_eq!(forms.len(), 252);
+
+        let inanimate = decline_comparative(
+            &comparative,
+            cell(
+                AdjectiveForm::Short,
+                Case::Accusative,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Inanimate,
+            ),
+        )
+        .expect("inanimate accusative");
+        let animate = decline_comparative(
+            &comparative,
+            cell(
+                AdjectiveForm::Short,
+                Case::Accusative,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Animate,
+            ),
+        )
+        .expect("animate accusative");
+        assert_eq!(inanimate.text, "новѣи");
+        assert_eq!(animate.text, "новѣиша");
+    }
+
+    #[test]
+    fn contradictory_comparative_principal_parts_are_rejected() {
+        for lexeme in [
+            ComparativeLexeme {
+                positive_lemma: "новъ".to_string(),
+                syncopated_citation: "новѣь".to_string(),
+                expanded_citation: "новѣиши".to_string(),
+                formation: ComparativeFormation::New,
+            },
+            ComparativeLexeme {
+                positive_lemma: "грѫбъ".to_string(),
+                syncopated_citation: "грѫбл҄ь".to_string(),
+                expanded_citation: "грѫбьши".to_string(),
+                formation: ComparativeFormation::Old,
+            },
+        ] {
+            assert!(matches!(
+                decline_comparative(
+                    &lexeme,
+                    cell(
+                        AdjectiveForm::Short,
+                        Case::Nominative,
+                        Number::Singular,
+                        Gender::Masculine,
+                        Animacy::Inanimate,
+                    ),
+                ),
+                Err(InflectionError::InvalidInput { .. })
+            ));
+        }
     }
 }

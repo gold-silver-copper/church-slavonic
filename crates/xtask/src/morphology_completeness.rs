@@ -15,6 +15,7 @@ const REQUIRED_SYSTEM_IDS: &[&str] = &[
     "ocs.noun.declension",
     "ocs.adjective.positive",
     "ocs.adjective.comparison",
+    "ocs.adjective.superlative",
     "ocs.pronoun.personal-reflexive",
     "ocs.pronoun.other",
     "ocs.determiner",

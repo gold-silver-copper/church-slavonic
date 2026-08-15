@@ -196,6 +196,116 @@ impl AdjectiveParadigm {
 
 paradigm_common!(AdjectiveParadigm, AdjectiveCell);
 
+/// A productive old or new comparative's complete agreement inventory.
+///
+/// Unlike a dictionary-backed [`AdjectiveParadigm`], this value retains
+/// explicit caller-supplied principal parts and therefore has no dictionary ID.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ComparativeParadigm {
+    pub(crate) lemma: String,
+    pub(crate) syncopated_citation: String,
+    pub(crate) expanded_citation: String,
+    pub(crate) cells: Vec<CellOutcome<AdjectiveCell>>,
+}
+
+impl ComparativeParadigm {
+    /// The positive adjective lemma associated with this comparison lexeme.
+    pub fn lemma(&self) -> &str {
+        &self.lemma
+    }
+
+    /// The short masculine nominative singular principal part.
+    pub fn syncopated_citation(&self) -> &str {
+        &self.syncopated_citation
+    }
+
+    /// The short feminine nominative singular principal part.
+    pub fn expanded_citation(&self) -> &str {
+        &self.expanded_citation
+    }
+
+    /// Return one comparative form or distinguish an absent row from a failed row.
+    pub fn form(
+        &self,
+        form: AdjectiveForm,
+        case: Case,
+        number: Number,
+        gender: Gender,
+        animacy: Animacy,
+    ) -> Result<&FormSet, ParadigmLookupError> {
+        forms_for(
+            &self.cells,
+            &AdjectiveCell {
+                case,
+                number,
+                gender,
+                animacy,
+                form,
+            },
+        )
+    }
+
+    /// Iterate in canonical adjective-cell order.
+    pub fn iter(&self) -> std::slice::Iter<'_, CellOutcome<AdjectiveCell>> {
+        self.cells.iter()
+    }
+
+    /// Iterate over successful cells without discarding their grammar.
+    pub fn successes(&self) -> impl Iterator<Item = (&AdjectiveCell, &FormSet)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|forms| (&outcome.cell, forms))
+        })
+    }
+
+    /// Iterate over retained typed failures.
+    pub fn failures(&self) -> impl Iterator<Item = (&AdjectiveCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    /// Consume the paradigm into its ordered cell rows.
+    pub fn into_rows(self) -> Vec<CellOutcome<AdjectiveCell>> {
+        self.cells
+    }
+
+    /// Number of represented cells, including typed failures.
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    /// Productive comparative paradigms always represent all adjective cells.
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a ComparativeParadigm {
+    type Item = &'a CellOutcome<AdjectiveCell>;
+    type IntoIter = std::slice::Iter<'a, CellOutcome<AdjectiveCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for ComparativeParadigm {
+    type Item = CellOutcome<AdjectiveCell>;
+    type IntoIter = std::vec::IntoIter<CellOutcome<AdjectiveCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
 /// Present, imperfect, and aorist person-number cells.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FiniteVerbParadigm {

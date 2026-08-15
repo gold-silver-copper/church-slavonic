@@ -146,6 +146,27 @@ pub enum AdjectiveForm {
     Long,
 }
 
+/// The two source-described Old Church Slavonic comparative strategies.
+///
+/// This is independent of [`AdjectiveForm`]: both an old and a new comparative
+/// have short/simple and long/compound declensional forms.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ComparativeFormation {
+    /// Productive `-ѣj-` (surface `-ѣи-`, or `-аи-` after a palatalized velar).
+    New,
+    /// Lexically restricted `-ьj-` with a substitutively softened base.
+    Old,
+}
+
+impl ComparativeFormation {
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::New => "new",
+            Self::Old => "old",
+        }
+    }
+}
+
 impl AdjectiveForm {
     pub const ALL: [Self; 2] = [Self::Short, Self::Long];
 
@@ -654,6 +675,7 @@ pub struct ClosedClassCell {
 pub enum RequestedCell {
     Noun(NounCell),
     Adjective(AdjectiveCell),
+    Comparative(AdjectiveCell),
     FiniteVerb(FiniteVerbCell),
     Imperative(ImperativeCell),
     LParticiple(LParticipleCell),

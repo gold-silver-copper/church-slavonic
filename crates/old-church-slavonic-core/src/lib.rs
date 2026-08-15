@@ -16,11 +16,12 @@ pub mod verb;
 
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
-    FiniteTense, FiniteVerbCell, Gender, GenderedCell, ImperativeCell, ImperativeFormation,
-    ImperfectFormation, ImperfectVariantPolicy, LParticipleCell, NounCell, NounClass, Number,
-    NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
-    PastPassiveParticipleFormation, Person, PersonalPronounCell, PresentActiveParticipleFormation,
-    PresentPassiveParticipleFormation, RequestedCell, UngenderedCell, VerbAspect, VerbClass,
+    ComparativeFormation, FiniteTense, FiniteVerbCell, Gender, GenderedCell, ImperativeCell,
+    ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy, LParticipleCell, NounCell,
+    NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation, Person, PersonalPronounCell,
+    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RequestedCell,
+    UngenderedCell, VerbAspect, VerbClass,
 };
 pub use orthography::{Lemma, Script};
 pub use result::{

@@ -5,9 +5,10 @@ use old_church_slavonic::advanced::cells::{
 use old_church_slavonic::advanced::metadata as api_metadata;
 use old_church_slavonic::advanced::raw_features;
 use old_church_slavonic::advanced::rules::{
-    AdjectiveClass, AdjectiveLexeme, AoristFormation, ImperativeFormation, NounClass, NounLexeme,
-    NumberRestriction, VerbClass, VerbLexeme, adjective_with, finite_verb_with, imperative_with,
-    noun_with, participle_with,
+    AdjectiveClass, AdjectiveLexeme, AoristFormation, ComparativeFormation, ComparativeLexeme,
+    ImperativeFormation, NounClass, NounLexeme, NumberRestriction, VerbClass, VerbLexeme,
+    adjective_with, comparative_paradigm_with, comparative_with, finite_verb_with, imperative_with,
+    noun_with, participle_with, productive_new_comparative,
 };
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
@@ -758,6 +759,73 @@ fn advanced_explicit_metadata_is_independent_and_typed() {
             rule_id: RuleId::VerbAoristSigmaticSecondary
         }
     ));
+}
+
+#[test]
+fn productive_comparatives_have_complete_typed_public_paradigms() {
+    let comparative = productive_new_comparative(&AdjectiveLexeme {
+        lemma: "новъ".to_string(),
+        class: AdjectiveClass::Hard,
+    })
+    .expect("productive new comparative");
+    let cell = AdjectiveCell {
+        case: Case::Nominative,
+        number: Number::Singular,
+        gender: Gender::Feminine,
+        animacy: Animacy::Inanimate,
+        form: AdjectiveForm::Long,
+    };
+    let form = comparative_with(&comparative, cell).expect("explicit comparative cell");
+    assert_eq!(form.primary_text(), "новѣишиꙗ");
+    assert!(matches!(
+        form.source(),
+        FormSource::ExplicitMetadataRule {
+            rule_id: RuleId::AdjectiveComparativeNew
+        }
+    ));
+
+    let paradigm = comparative_paradigm_with(&comparative);
+    assert_eq!(paradigm.lemma(), "новъ");
+    assert_eq!(paradigm.syncopated_citation(), "новѣи");
+    assert_eq!(paradigm.expanded_citation(), "новѣиши");
+    assert_eq!(paradigm.len(), 252);
+    assert_eq!(paradigm.successes().count(), 252);
+    assert_eq!(paradigm.failures().count(), 0);
+    assert_eq!(
+        paradigm
+            .form(
+                AdjectiveForm::Short,
+                Case::Accusative,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Animate,
+            )
+            .expect("animate comparative accusative")
+            .primary_text(),
+        "новѣиша"
+    );
+
+    let old = ComparativeLexeme {
+        positive_lemma: "грѫбъ".to_string(),
+        syncopated_citation: "грѫбл҄ь".to_string(),
+        expanded_citation: "грѫбл҄ьши".to_string(),
+        formation: ComparativeFormation::Old,
+    };
+    assert_eq!(
+        comparative_with(
+            &old,
+            AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+            },
+        )
+        .expect("old comparative")
+        .primary_text(),
+        "грѫбл҄ии"
+    );
 }
 
 #[test]

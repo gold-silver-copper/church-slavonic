@@ -126,6 +126,51 @@ canonical masculine citation has the unambiguous `-ъ` versus `-ь/-и` shape. E
 table cells still win; this metadata is used only for a missing cell. A caller can
 always bypass citation-shape inference with an explicit `AdjectiveLexeme`.
 
+### Comparatives
+
+`ComparativeFormation` records a word-formation strategy independently of
+`AdjectiveForm`, because both old and new comparatives decline in short/simple and
+long/compound forms. The two principal parts are the syncopated short masculine
+nominative singular and expanded short feminine nominative singular. The strict
+contract requires both for an old comparative because suffix deletion and
+substitutive consonant softening are lexical: `грѫбъ` therefore supplies
+`грѫбл҄ь` and `грѫбл҄ьши`. It never guesses the old alternation from the positive.
+
+- `ADJ-COMP-NEW-01` forms the productive new principal parts from an explicitly
+  classified positive workstem. It adds surface `-ѣи/-ѣиши`, or first-palatalizes
+  final `к/г/х → ч/ж/ш` and adds `-аи/-аиши`: `новъ → новѣи`,
+  `горькъ → горьчаи`, `драгъ → дражаи`.
+- `ADJ-COMP-OLD-01` inflects independently supplied old principal parts such as
+  `грѫбл҄ь/грѫбл҄ьши`. This includes the closed old-comparative and
+  *comparativum tantum* inventories without pretending their positive base or
+  consonant alternation is predictable.
+
+The short nominative/accusative singular masculine and neuter and the long
+nominative/accusative singular masculine use the syncopated stem; animate
+masculine accusatives instead use the expanded genitive-shaped form. Every other
+cell uses the expanded stem with ordinary soft-adjective endings, except short
+feminine nominative singular `-и`, long feminine nominative singular `-иꙗ`, short
+masculine nominative plural `-е`, and long masculine nominative plural `-еи`.
+Thus the canonical new forms include `новѣи`, `новѣѥ`, `новѣии`, `новѣиши`,
+`новѣишиꙗ`, `новѣише`, and `новѣишеи`. The engine deliberately preserves the
+canonical short/long contrast even though source spelling frequently collapses
+`-ии/-и`.
+
+Authority: Polivanova 2023 §§279–281, 307–313, and 919–924; UT lesson 5
+§§22.1–22.3, <https://lrc.la.utexas.edu/eieol/ocsol/50#grammar_1005>. UT's
+“short” versus “long” comparator suffix terminology corresponds to the old versus
+new formation strategy; it must not be confused with short versus long adjective
+declension. Lunt 2001 §§4.19, 4.31, and 4.7 are currently a contents-level
+crosswalk only; no claim here depends on inaccessible text.
+
+OCS superlative constructions are a separate system. UT lesson 5 §22.4 describes
+relative superlatives chiefly as a comparative plus a genitive reference and
+absolute superlatives as `ѕѣло` plus a positive or `прѣ-` plus a positive. Lexical
+`наи-` comparatives also occur in Polivanova's old-comparative inventory. The
+word-level comparator does not mislabel any of those as a universal synthetic
+superlative; they require the structured analytic/derivational contract tracked in
+the completion matrix.
+
 ## Verb rules
 
 ### Independent lexical dimensions

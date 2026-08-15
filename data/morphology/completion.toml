@@ -64,23 +64,46 @@ id = "ocs.adjective.comparison"
 recension = "old-church-slavonic"
 category = "comparison"
 part_of_speech = "adjective"
-scope = "Comparative and superlative formation and complete agreement, including irregular comparison."
+scope = "Productive new and lexically supplied old comparative formation with complete short/long agreement."
 profiles = ["abstract", "canonical-cyrillic"]
-features = ["degree=comparative|superlative", "form=citation|short|long", "case=7", "number=3", "gender=3", "animacy=2"]
-subtypes = ["comparative", "superlative", "irregular-comparison"]
+features = ["degree=comparative", "formation=new|old", "form=short|long", "case=7", "number=3", "gender=3", "animacy=2"]
+subtypes = ["new-productive", "old-lexical", "comparativum-tantum"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "exact-citation-only"
-rule_ids = ["OCS-ADJ-COMPARISON-PENDING"]
+state = "productive-complete"
+implementation_kind = "productive-with-explicit-principal-parts"
+rule_ids = ["ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01"]
 sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001"]
-citation = "Current facade exposes comparative citation cells, but no complete productive comparison contract exists."
-required_metadata = ["positive lemma", "independent comparison stem or irregular paradigm", "formation", "agreement features"]
-valid_inventory = "To be established source-by-source for comparative and superlative short/long forms."
-invalid_inventory = "To be distinguished from unattested but licensed cells."
-implementation = ["crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic-core/src/adjective.rs"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#grammar_all_inventories_are_complete_and_stably_ordered"]
-evidence_status = "partial exact dictionary evidence"
-gap = "Crosswalk Polivanova, Lunt, UT, and primary dictionary evidence; add typed degree/formation rules and exhaustive paradigms."
+citation = "Polivanova 2023 §§279–281, 307–313, 919–924; UT lesson 5 §§22.1–22.3; docs/MORPHOLOGY_SPEC.md comparatives"
+required_metadata = ["positive lemma", "formation", "syncopated and expanded principal parts for old comparatives", "agreement features"]
+valid_inventory = "Every represented short/long case × number × gender × animacy cell; canonical unattested syncopated forms remain licensed rule outputs."
+invalid_inventory = "Contradictory formation/principal-part endings and malformed orthography."
+implementation = ["crates/old-church-slavonic-core/src/adjective.rs", "crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic/src/paradigm.rs"]
+tests = ["crates/old-church-slavonic-core/src/adjective.rs#comparative_inventory_is_exhaustive_and_keeps_accusative_animacy", "crates/old-church-slavonic-core/src/adjective.rs#new_comparative_has_all_syncopated_and_alien_terminal_cells", "crates/old-church-slavonic/tests/public_api.rs#productive_comparatives_have_complete_typed_public_paradigms"]
+evidence_status = "independent grammar paradigms plus strict explicit-principal-part prediction; dictionary citations remain exact"
+rationale = "The productive new rule and closed old strategy are exhaustive without guessing lexical old-comparative softening or collapsing canonical short/long forms."
+
+[[system]]
+id = "ocs.adjective.superlative"
+recension = "old-church-slavonic"
+category = "comparison"
+part_of_speech = "adjective"
+scope = "Relative and absolute OCS superlative constructions, including comparative plus genitive reference, ѕѣло plus positive, прѣ- positive, and lexical наи- comparatives."
+profiles = ["abstract", "canonical-cyrillic"]
+features = ["degree=superlative", "strategy=relative-genitive|absolute-adverb|absolute-prefix|lexical-nai", "component-provenance=typed"]
+subtypes = ["comparative-plus-genitive", "zelo-positive", "pre-positive", "lexical-nai-comparative"]
+realization = "analytic-or-derived"
+state = "implementation-missing"
+implementation_kind = "inventory-established-api-missing"
+rule_ids = ["OCS-ADJ-SUPERLATIVE-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023"]
+citation = "UT lesson 5 §22.4; Polivanova 2023 §§281 and 922"
+required_metadata = ["superlative strategy", "positive or comparative lexeme", "genitive reference when relative", "component provenance"]
+valid_inventory = "Source-licensed analytic or derived construction with independently inflected components."
+invalid_inventory = "A universal synthetic superlative paradigm inferred merely from a comparative stem."
+implementation = ["crates/old-church-slavonic/src/lib.rs"]
+tests = ["crates/xtask/src/morphology_completeness.rs#committed_inventory_is_structurally_complete_and_deterministic"]
+evidence_status = "source inventory established; structured composition API absent"
+gap = "Implement typed phrase/derivation results and all four source-described strategies without flattening component provenance."
 
 [[system]]
 id = "ocs.pronoun.personal-reflexive"
