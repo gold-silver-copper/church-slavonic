@@ -4,7 +4,7 @@ use unicode_normalization::UnicodeNormalization;
 
 use crate::{
     AdjectiveForm, AuthorityRole, Case, Comparison, Error, Evidence, EvidenceKind, FiniteTense,
-    GrammarCell, MetadataField, Number, Recension, Result, SynodalWord,
+    Gender, GrammarCell, MetadataField, Number, Recension, Result, SynodalWord,
 };
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -61,6 +61,21 @@ pub enum AccentScope {
         numbers: Vec<Number>,
         cases: Vec<Case>,
     },
+    /// A reusable pronoun rule restricted by grammatical number and case.
+    /// Person, gender, and animacy remain part of the validated cell but do
+    /// not need to be duplicated when a source table gives one stress pattern.
+    PronounCases {
+        numbers: Vec<Number>,
+        cases: Vec<Case>,
+    },
+    /// A pronoun rule whose stress also depends on agreement gender or the
+    /// accusative animacy contrast.
+    PronounAgreement {
+        numbers: Vec<Number>,
+        cases: Vec<Case>,
+        genders: Vec<Gender>,
+        animacies: Vec<crate::Animacy>,
+    },
     Adjective {
         form: AdjectiveForm,
         comparison: Comparison,
@@ -81,6 +96,23 @@ impl AccentScope {
             (Self::Noun { numbers }, GrammarCell::Noun(cell)) => numbers.contains(&cell.number),
             (Self::NounCases { numbers, cases }, GrammarCell::Noun(cell)) => {
                 numbers.contains(&cell.number) && cases.contains(&cell.case)
+            }
+            (Self::PronounCases { numbers, cases }, GrammarCell::Pronoun(cell)) => {
+                numbers.contains(&cell.number) && cases.contains(&cell.case)
+            }
+            (
+                Self::PronounAgreement {
+                    numbers,
+                    cases,
+                    genders,
+                    animacies,
+                },
+                GrammarCell::Pronoun(cell),
+            ) => {
+                numbers.contains(&cell.number)
+                    && cases.contains(&cell.case)
+                    && cell.gender.is_some_and(|gender| genders.contains(&gender))
+                    && animacies.contains(&cell.animacy)
             }
             (
                 Self::Adjective {
@@ -257,7 +289,14 @@ fn scope_is_empty(scope: &AccentScope) -> bool {
         AccentScope::Noun { numbers }
         | AccentScope::Adjective { numbers, .. }
         | AccentScope::FiniteVerb { numbers, .. } => numbers.is_empty(),
-        AccentScope::NounCases { numbers, cases } => numbers.is_empty() || cases.is_empty(),
+        AccentScope::NounCases { numbers, cases }
+        | AccentScope::PronounCases { numbers, cases } => numbers.is_empty() || cases.is_empty(),
+        AccentScope::PronounAgreement {
+            numbers,
+            cases,
+            genders,
+            animacies,
+        } => numbers.is_empty() || cases.is_empty() || genders.is_empty() || animacies.is_empty(),
         AccentScope::OtherCells(cells) => cells.is_empty(),
     }
 }
@@ -325,7 +364,7 @@ mod tests {
     use super::*;
     use crate::{
         AdjectiveCell, Animacy, AuthorityRole, Case, EpistemicRole, EvidenceId, EvidenceKind,
-        Gender, Recension, SourceId,
+        Gender, Person, PronounCell, Recension, SourceId,
     };
 
     fn evidence() -> Evidence {
@@ -368,6 +407,49 @@ mod tests {
             });
             assert!(paradigm.apply(cell, "мꙋдрый").expect("accent").contains('́'));
         }
+    }
+
+    #[test]
+    fn pronoun_case_scope_applies_across_gender_and_animacy_dimensions() {
+        let paradigm = AccentParadigm::fixed_stem(
+            "test-pronoun-fixed-stem",
+            AccentScope::PronounCases {
+                numbers: vec![Number::Singular],
+                cases: vec![Case::Genitive, Case::Dative],
+            },
+            0,
+            AccentMark::Acute,
+            evidence(),
+        );
+        for (case, gender) in [
+            (Case::Genitive, Gender::Masculine),
+            (Case::Dative, Gender::Feminine),
+        ] {
+            let cell = GrammarCell::Pronoun(PronounCell {
+                case,
+                number: Number::Singular,
+                gender: Some(gender),
+                person: Some(Person::Third),
+                animacy: Animacy::Animate,
+            });
+            assert_eq!(
+                paradigm
+                    .apply(cell, "моего")
+                    .expect("scoped pronoun accent"),
+                "мо́его"
+            );
+        }
+        let plural = GrammarCell::Pronoun(PronounCell {
+            case: Case::Genitive,
+            number: Number::Plural,
+            gender: Some(Gender::Masculine),
+            person: Some(Person::Third),
+            animacy: Animacy::Animate,
+        });
+        assert!(matches!(
+            paradigm.apply(plural, "моихъ"),
+            Err(Error::OrthographicMetadataRequired { .. })
+        ));
     }
 
     #[test]

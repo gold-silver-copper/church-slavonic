@@ -29,13 +29,14 @@ implemented boundary, reproducible commands, and measured held-out coverage.
 
 ## Synodal inflection engine
 
-The v0.8 engine accepts typed `NounSpec`, `AdjectiveSpec`, and `VerbSpec`
+The engine accepts typed `NounSpec`, `AdjectiveSpec`, `PronounSpec`, and `VerbSpec`
 metadata without requiring a dictionary row. Explicit and registry-backed words
 share one productive kernel, while exact and irregular cells retain deterministic
-precedence. New grammar-backed rules cover complete short comparison and short
-present/past active-participle declensions from Alypy §§58, 95–96, and 98. A
-typed, reusable accent-paradigm model now realizes reviewed stress across
-multiple generated cells.
+precedence. Grammar-backed rules cover complete Synodal noun, adjective,
+pronoun, short-comparison, and participial declensions. Pronouns include the
+source-defined suppletive, regular, derived, clitic, and prepositional
+constructions in Alypy §§45–48. A typed, reusable accent-paradigm model realizes
+reviewed stress across multiple generated cells.
 
 Complete specialized paradigms retain structured failures for historical
 invalidity, incomplete evidence, missing principal parts/formations, missing
@@ -46,8 +47,8 @@ and the explicit API examples in
 
 ## Synodal dictionary and coverage checkpoints
 
-The current Synodal registry contains 833 reviewed lexemes, 833 reviewed senses,
-and 3,553 generated exact normative or target-attested forms. The `synodal-dict` executable
+The current Synodal registry contains 875 reviewed lexemes, 877 reviewed senses,
+and 3,557 generated exact normative or target-attested forms. The `synodal-dict` executable
 searches and displays the registry, performs ambiguity-preserving reverse
 analysis, displays reviewed and proposed morphological families, validates
 application vocabulary, checks rendered text, and creates typed corpus-coverage

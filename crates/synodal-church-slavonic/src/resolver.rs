@@ -230,6 +230,9 @@ pub(crate) fn resolve_spec(
             cell,
             rule_profile,
         ),
+        LexemeSpecInner::Pronoun(spec) => {
+            generate_productive(ProductiveLexeme::Pronoun(&spec.lexeme), cell, rule_profile)
+        }
         LexemeSpecInner::Verb(spec) => {
             generate_productive(ProductiveLexeme::Verb(&spec.lexeme), cell, rule_profile)
         }
@@ -314,6 +317,10 @@ pub(crate) fn resolve_cell(
             let lexeme = registry::ordinal_lexeme(id)?;
             generate_productive(ProductiveLexeme::Adjective(&lexeme), cell, rule_profile)
         }
+        GrammarCell::Pronoun(_) => {
+            let lexeme = registry::pronoun_lexeme(id)?;
+            generate_productive(ProductiveLexeme::Pronoun(&lexeme), cell, rule_profile)
+        }
         cell @ (GrammarCell::FiniteVerb(_)
         | GrammarCell::Imperative(_)
         | GrammarCell::Infinitive
@@ -324,9 +331,8 @@ pub(crate) fn resolve_cell(
             let lexeme = registry::verb_lexeme(id)?;
             generate_productive(ProductiveLexeme::Verb(&lexeme), cell, rule_profile)
         }
-        GrammarCell::Pronoun(_) | GrammarCell::Numeral(_) => Err(Error::UnsupportedCell {
-            reason: "this pronoun or numeral cell is absent from the exact normative registry"
-                .into(),
+        GrammarCell::Numeral(_) => Err(Error::UnsupportedCell {
+            reason: "this numeral cell is absent from the exact normative registry".into(),
         }),
         GrammarCell::LexicalForm | GrammarCell::Indeclinable => Err(Error::UnsupportedCell {
             reason: "the requested lexical cell has no exact reviewed form".into(),

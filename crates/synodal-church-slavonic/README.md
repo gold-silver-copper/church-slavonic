@@ -59,6 +59,14 @@ ethnonyms without allowing arbitrary stem cross-products.
 number inventories; absent numbers remain `HistoricallyInvalidCell` rows in a
 complete paradigm.
 
+Pronouns use the same explicit-metadata route. `PronounSpec` selects one of the
+closed suppletive or regular Alypy §§45–48 profiles and can carry a lexical
+number inventory, clitic selection, post-prepositional environment, productive
+`нѣ-/ни-` prefix, invariant postpositive, and reusable accent paradigm. The
+`phrases` module keeps enclitic prosody, negative-pronoun preposition
+interposition, and fused `нань`/`вонь` contractions as structured grammatical
+results rather than fake space-containing words.
+
 ## Injectable application lexicons
 
 The generated registry and application-owned entries compose through one

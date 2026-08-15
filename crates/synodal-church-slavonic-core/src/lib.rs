@@ -13,6 +13,7 @@ pub mod numeral;
 pub mod orthography;
 pub mod phrase;
 pub mod policy;
+pub mod pronoun;
 pub mod recension;
 pub mod result;
 pub mod trace;
@@ -48,8 +49,16 @@ pub use orthography::{
     InitialPresentation, Loss, NormalizationReport, OrthographyProfile, RenderedText, SynodalWord,
     apply_initial_presentation, normalize_lookup, normalize_lookup_accentless,
 };
-pub use phrase::{AnalyticConstruction, PhraseRole, PhraseToken, RealizedPhrase};
+pub use phrase::{
+    AnalyticConstruction, NegativePronounBase, PhraseRole, PhraseToken, PronounCliticProsody,
+    RealizedPhrase,
+};
 pub use policy::{GenerationPolicy, VariantPolicy};
+pub use pronoun::{
+    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
+    PronounNumberInventory, PronounPostpositive, PronounPrefix, decline_pronoun,
+    validate_pronoun_lexeme,
+};
 pub use recension::Recension;
 pub use result::{FormSet, FormVariant, Romanization, VariantSelection};
 pub use trace::{RuleTrace, TraceStep};

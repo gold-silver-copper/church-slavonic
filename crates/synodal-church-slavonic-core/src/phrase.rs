@@ -9,17 +9,50 @@ pub enum AnalyticConstruction {
     Conditional,
     AnalyticPassive,
     PeriphrasticTense,
+    EncliticPronoun,
+    ThirdPersonPrepositionalContraction,
+    NegativePronounPrepositional,
+}
+
+/// Accentual behavior of a short personal/reflexive pronoun after its host
+/// (Alypy §47).
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum PronounCliticProsody {
+    /// The host's final vowel receives an acute and the enclitic is unaccented.
+    AfterFinalVowelStress,
+    /// Logical emphasis retains the short pronoun's lexical accent.
+    LogicallyStressed,
+}
+
+/// Interrogative base retained after a negative `ни-` prefix is separated by
+/// a governing preposition (Alypy §48).
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum NegativePronounBase {
+    Who,
+    What,
+    Kii,
+    Kotoryi,
+}
+
+impl NegativePronounBase {
+    pub const ALL: [Self; 4] = [Self::Who, Self::What, Self::Kii, Self::Kotoryi];
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum PhraseRole {
+    Host,
+    FusedPrepositionPronoun,
     Auxiliary,
     Infinitive,
     LParticiple,
     ActiveParticiple,
     PassiveParticiple,
     Particle,
+    Preposition,
+    Pronoun,
     Complement,
 }
 

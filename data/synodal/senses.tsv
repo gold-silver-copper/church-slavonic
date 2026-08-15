@@ -69,24 +69,55 @@ synodal:numeral:pervyi	sense:first	first; ordinal one	number	alypy-gamanovich-gr
 synodal:numeral:tri	sense:three	three	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:v06-sto	sense:v06:sto	one hundred	number,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:vtoryi	sense:second	second; ordinal two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:particle:negative-ni	sense:negative-particle-ni	negative particle; negative pronoun component	grammar,negation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:az	sense:first-person	I; first-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:chii	sense:whose	whose; interrogative possessive pronoun	possession,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:chto	sense:what	what; interrogative pronoun	grammar,thing	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:demonstrative-onyi	sense:yonder-demonstrative	that; yonder; distal demonstrative	determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:elik	sense:relative-quantity-elik	as great as; as many as; relative quantity	quantity,grammar,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:elikii	sense:relative-quantity-elikii	as great as; as many as; full relative quantity	quantity,grammar,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:inyi	sense:other	other; another	determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:izhe	sense:relative-who	who; which; that as a relative pronoun	grammar,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kakii	sense:what-kind-full	what kind of; interrogative quality	quality,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kakov	sense:what-kind-short	what kind of; short interrogative quality	quality,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kakovyi	sense:what-kind-long	what kind of; long interrogative quality	quality,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kii	sense:which-kii	which; what; interrogative pronoun	grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kiizhdo	sense:each-kiizhdo	each; every one	determination,distributive,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kolik	sense:how-many-short	how many; how great; short interrogative quantity	quantity,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kolikii	sense:how-many-long	how many; how great; full interrogative quantity	quantity,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:kotoryi	sense:which-kotoryi	which; which one	grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:kto	sense:who	who; interrogative pronoun	grammar,person	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:moi	sense:possessive-first-singular	my; first-person singular possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:nash	sense:possessive-first-plural	our; first-person plural possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:nechto	sense:something	something; an indefinite thing	grammar,thing,indefinite	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:nekii	sense:some-kii	some; a certain one	grammar,indefinite	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:nekto	sense:someone	someone; a certain person	grammar,indefinite	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
-synodal:pronoun:on	sense:third-person	he; she; it; third-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:nichto	sense:nothing	nothing; no thing	grammar,thing,negative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:nikii	sense:no-kii	no; none; negative agreeing pronoun	grammar,negative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:nikotoryi	sense:no-kotoryi	no; not any; negative agreeing pronoun	grammar,negative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:nikto	sense:nobody	nobody; no one	grammar,person,negative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:on	sense:third-person	he; she; it; that one; third-person and distal demonstrative pronoun	person,determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:ovyi	sense:other-member	one; the other; another member of a contrasted pair	determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:sebe	sense:reflexive-self	self; reflexive personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:sei	sense:this	this; the present one	determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:sitsevyi	sense:such-sitsevyi	such; of this kind	quality,determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:svoi	sense:possessive-reflexive	one's own; reflexive possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:takii	sense:such-takii	such; of that kind	quality,determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:takov	sense:such-takov	such; of that kind; short form	quality,determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:takovyi	sense:such-takovyi	such; of that kind; full form	quality,determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:toi	sense:that	that; the aforementioned	determination	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:tolik	sense:so-many-short	so many; so great; short demonstrative quantity	quantity,determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:tolikii	sense:so-many-long	so many; so great; full demonstrative quantity	quantity,determination,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:tvoi	sense:possessive-second-singular	thy; your; second-person singular possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:ty	sense:second-person	you; second-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:v06-7cb9fbdd604c5a70	sense:v06:7cb9fbdd604c5a70	him; third-person oblique pronoun	grammar,person	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus
 synodal:pronoun:v06-nichtozhe	sense:v06:nichtozhe	nothing	grammar,thing	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:v06-niktozhe	sense:v06:niktozhe	nobody; no one	grammar,person	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:vash	sense:possessive-second-plural	your; second-person plural possessive	possession,person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:yak	sense:relative-quality-short	such as; short relative quality	quality,grammar,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:yakii	sense:relative-quality-long	such as; full relative quality	quality,grammar,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:yakov	sense:what-kind-yakov	what kind of; interrogative quality	quality,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:pronoun:yakovyi	sense:what-kind-yakovyi	what kind of; full interrogative quality	quality,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:verb:byti	sense:be	to be; exist	state	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:verb:dati	sense:give	to give; grant	action,society,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:verb:imati	sense:future-auxiliary	to be about to; compound-future auxiliary	grammar,auxiliary	alypy-gamanovich-grammar-web-2023	synodal-russian	normative

@@ -1625,7 +1625,42 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
                 | ("adjective", "hard-short" | "soft-short")
                 | ("determiner", "determiner-hard" | "determiner-soft")
                 | ("numeral", "ordinal-hard" | "ordinal-soft")
-                | ("pronoun", "exact-complete-pronoun-table")
+                | (
+                    "pronoun",
+                    "exact-complete-pronoun-table"
+                        | "pronoun-personal-first"
+                        | "pronoun-personal-second"
+                        | "pronoun-reflexive"
+                        | "pronoun-reflexive-clitic"
+                        | "pronoun-third-person"
+                        | "pronoun-third-person-demonstrative"
+                        | "pronoun-relative-izhe"
+                        | "pronoun-proximal-sei"
+                        | "pronoun-soft"
+                        | "pronoun-soft-i-alternating"
+                        | "pronoun-hard"
+                        | "pronoun-mixed-possessive"
+                        | "pronoun-short-hard"
+                        | "pronoun-short-ov-mixed"
+                        | "pronoun-short-velar"
+                        | "pronoun-quantity-velar"
+                        | "pronoun-full-hard"
+                        | "pronoun-full-soft"
+                        | "pronoun-full-velar"
+                        | "pronoun-interrogative-kii"
+                        | "pronoun-interrogative-who"
+                        | "pronoun-interrogative-what"
+                        | "pronoun-indefinite-kii"
+                        | "pronoun-indefinite-who"
+                        | "pronoun-indefinite-what"
+                        | "pronoun-negative-kii"
+                        | "pronoun-negative-full-hard"
+                        | "pronoun-negative-who"
+                        | "pronoun-negative-what"
+                        | "pronoun-kii-zhdo"
+                        | "pronoun-negative-who-zhe"
+                        | "pronoun-negative-what-zhe",
+                )
                 | (
                     "verb",
                     "first-unpalatalized" | "first-palatalized" | "second" | "archaic"

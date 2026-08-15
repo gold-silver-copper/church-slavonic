@@ -2666,7 +2666,10 @@ fn soft_short_adjective_ending(cell: AdjectiveCell) -> Result<&'static str> {
     })
 }
 
-fn long_adjective_ending(class: AdjectiveClass, cell: AdjectiveCell) -> Result<&'static str> {
+pub(crate) fn long_adjective_ending(
+    class: AdjectiveClass,
+    cell: AdjectiveCell,
+) -> Result<&'static str> {
     if class == AdjectiveClass::Soft {
         return soft_long_adjective_ending(cell);
     }
@@ -2979,7 +2982,7 @@ fn normative(
     normative_variants(vec![expanded], rule, profile, stage, input)
 }
 
-fn normative_variants(
+pub(crate) fn normative_variants(
     expanded: Vec<String>,
     rule: &'static str,
     profile: OrthographyProfile,
@@ -3107,6 +3110,48 @@ fn normative_citation(rule: &str) -> &'static str {
         "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59" => "Alypy (Gamanovich), §59",
         "SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128" => {
             "Alypy (Gamanovich), §§59–60, 125, and 128"
+        }
+        "SYN-PRONOUN-PERSONAL-FIRST-ALYPY-47"
+        | "SYN-PRONOUN-PERSONAL-SECOND-ALYPY-47"
+        | "SYN-PRONOUN-REFLEXIVE-ALYPY-47" => "Alypy (Gamanovich), §47 first group",
+        "SYN-PRONOUN-THIRD-PERSON-ALYPY-46-47" => {
+            "Alypy (Gamanovich), §§46–47 third-person paradigm"
+        }
+        "SYN-PRONOUN-SEI-ALYPY-45-48" => "Alypy (Gamanovich), §§45–48 сей/сій paradigm",
+        "SYN-PRONOUN-SOFT-ALYPY-47-48" | "SYN-PRONOUN-HARD-ALYPY-47-48" => {
+            "Alypy (Gamanovich), §§47–48 pronominal declension"
+        }
+        "SYN-PRONOUN-SOFT-I-ALTERNATING-ALYPY-45-48" => {
+            "Alypy (Gamanovich), §§45–48 чій paradigm and і/ї spelling"
+        }
+        "SYN-PRONOUN-MIXED-POSSESSIVE-ALYPY-48" => {
+            "Alypy (Gamanovich), §48 mixed possessive declension"
+        }
+        "SYN-PRONOUN-KII-ALYPY-48" => "Alypy (Gamanovich), §48 two-base кій paradigm",
+        "SYN-PRONOUN-SHORT-HARD-ALYPY-48" => "Alypy (Gamanovich), §48 short-pronoun paradigm",
+        "SYN-PRONOUN-SHORT-OV-MIXED-ALYPY-48" => {
+            "Alypy (Gamanovich), §48 compound -ов- mixed paradigm"
+        }
+        "SYN-PRONOUN-SHORT-VELAR-ALYPY-48" | "SYN-PRONOUN-QUANTITY-VELAR-ALYPY-48" => {
+            "Alypy (Gamanovich), §48 velar and quantity pronouns"
+        }
+        "SYN-PRONOUN-FULL-HARD-ALYPY-48-57"
+        | "SYN-PRONOUN-FULL-SOFT-ALYPY-48-57"
+        | "SYN-PRONOUN-FULL-VELAR-ALYPY-48-57" => {
+            "Alypy (Gamanovich), §§48 and 57 full adjectival pronouns"
+        }
+        "SYN-PRONOUN-KTO-ALYPY-48" | "SYN-PRONOUN-CHTO-ALYPY-48" => {
+            "Alypy (Gamanovich), §48 interrogative paradigms"
+        }
+        "SYN-PRONOUN-DERIVED-ALYPY-46-48" => "Alypy (Gamanovich), §§46–48 derived pronouns",
+        "SYN-PRONOUN-NEGATIVE-PREPOSITION-ALYPY-48" => {
+            "Alypy (Gamanovich), §48 negative-pronoun preposition interposition"
+        }
+        "SYN-PRONOUN-ENCLITIC-PROSODY-ALYPY-47" => {
+            "Alypy (Gamanovich), §47 short-pronoun enclisis and accent"
+        }
+        "SYN-PRONOUN-THIRD-PREPOSITION-CONTRACTION-ALYPY-47" => {
+            "Alypy (Gamanovich), §47 на(н)и/въ(н)и contractions"
         }
         "SYN-VERB-PRESENT-ALYPY-80" => "Alypy (Gamanovich), §§79–80",
         "SYN-VERB-AORIST-VOWEL-ALYPY-86" | "SYN-VERB-AORIST-CONSONANT-ALYPY-86" => {

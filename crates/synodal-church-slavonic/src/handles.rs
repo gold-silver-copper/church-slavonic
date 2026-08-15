@@ -20,6 +20,7 @@ pub struct Capabilities {
     pub exact_forms: bool,
     pub productive_noun: bool,
     pub productive_adjective: bool,
+    pub productive_pronoun: bool,
     pub present: bool,
     pub future: bool,
     pub past: bool,
@@ -42,6 +43,7 @@ impl Capabilities {
         [
             (self.productive_noun, "noun"),
             (self.productive_adjective, "adjective"),
+            (self.productive_pronoun, "pronoun"),
             (self.present, "present"),
             (self.future, "future"),
             (self.past, "past"),
@@ -81,6 +83,8 @@ impl Capabilities {
                     || inflector.generation_policy()
                         != synodal_church_slavonic_core::GenerationPolicy::Strict),
             productive_adjective,
+            productive_pronoun: summary.part_of_speech() == PartOfSpeech::Pronoun
+                && registry::pronoun_lexeme(id).is_ok(),
             present: verb
                 && (registry::has_exact_system(id, "present:")
                     || verb_metadata.as_ref().is_some_and(|metadata| {

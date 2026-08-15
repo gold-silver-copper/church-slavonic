@@ -90,24 +90,58 @@ synodal:numeral:pervyi	первый	numeral	ordinal-hard	перв			alypy-gamano
 synodal:numeral:tri	три	numeral	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:v06-sto	сто	numeral	exact		neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:vtoryi	вторый	numeral	ordinal-hard	втор			alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:az	азъ	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:chto	что	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:izhe	иже	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:kto	кто	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:moi	мой	pronoun	exact-complete-pronoun-table				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:nash	нашъ	pronoun	exact-complete-pronoun-table				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:nekto	нѣкто	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:on	онъ	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:sebe	себе	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:sei	сей	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:svoi	свой	pronoun	exact-complete-pronoun-table				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:toi	той	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:tvoi	твой	pronoun	exact-complete-pronoun-table				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:ty	ты	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:v06-7cb9fbdd604c5a70	и	pronoun	exact				english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
-synodal:pronoun:v06-nichtozhe	ничтоже	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:v06-niktozhe	никтоже	pronoun	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:pronoun:vash	вашъ	pronoun	exact-complete-pronoun-table				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:particle:negative-ni	ни	particle	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:az	азъ	pronoun	pronoun-personal-first				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:chii	чій	pronoun	pronoun-soft-i-alternating	чі			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:chto	что	pronoun	pronoun-interrogative-what				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:demonstrative-onyi	оный	pronoun	pronoun-full-hard	он			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:elik	єликъ	pronoun	pronoun-quantity-velar	єлик			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:elikii	єликїй	pronoun	pronoun-full-velar	єлик			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:inyi	иный	pronoun	pronoun-full-hard	ин			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:izhe	иже	pronoun	pronoun-relative-izhe				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kakii	какій	pronoun	pronoun-full-velar	как			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kakov	каковъ	pronoun	pronoun-short-ov-mixed	каков			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kakovyi	каковый	pronoun	pronoun-full-hard	каков			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kii	кій	pronoun	pronoun-interrogative-kii				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kiizhdo	кійждо	pronoun	pronoun-kii-zhdo				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kolik	коликъ	pronoun	pronoun-quantity-velar	колик			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kolikii	коликїй	pronoun	pronoun-full-velar	колик			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kotoryi	который	pronoun	pronoun-full-hard	котор			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:kto	кто	pronoun	pronoun-interrogative-who				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:moi	мой	pronoun	pronoun-soft	мо			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nash	нашъ	pronoun	pronoun-mixed-possessive	наш			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nechto	нѣчто	pronoun	pronoun-indefinite-what				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nekii	нѣкій	pronoun	pronoun-indefinite-kii				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nekto	нѣкто	pronoun	pronoun-indefinite-who				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nichto	ничто	pronoun	pronoun-negative-what				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nikii	никій	pronoun	pronoun-negative-kii				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nikotoryi	никоторый	pronoun	pronoun-negative-full-hard	котор			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:nikto	никто	pronoun	pronoun-negative-who				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:on	онъ	pronoun	pronoun-third-person-demonstrative	он			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:ovyi	овый	pronoun	pronoun-full-hard	ов			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:sebe	себе	pronoun	pronoun-reflexive				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:sei	сей	pronoun	pronoun-proximal-sei				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:sitsevyi	сицевый	pronoun	pronoun-full-hard	сицев			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:svoi	свой	pronoun	pronoun-soft	сво			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:takii	такій	pronoun	pronoun-full-velar	так			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:takov	таковъ	pronoun	pronoun-short-ov-mixed	таков			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:takovyi	таковый	pronoun	pronoun-full-hard	таков			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:toi	той	pronoun	pronoun-hard	т			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:tolik	толикъ	pronoun	pronoun-quantity-velar	толик			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:tolikii	толикїй	pronoun	pronoun-full-velar	толик			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:tvoi	твой	pronoun	pronoun-soft	тво			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:ty	ты	pronoun	pronoun-personal-second				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:v06-7cb9fbdd604c5a70	и	pronoun	pronoun-third-person				english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
+synodal:pronoun:v06-nichtozhe	ничтоже	pronoun	pronoun-negative-what-zhe				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:v06-niktozhe	никтоже	pronoun	pronoun-negative-who-zhe				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:v07-97002c43d9dd87c3	овъ	pronoun	pronoun-short-hard	ов			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:vash	вашъ	pronoun	pronoun-mixed-possessive	ваш			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:wikt-7c6914eff782	сѧ	pronoun	pronoun-reflexive-clitic				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:wikt-abc6b7472112	инъ	pronoun	pronoun-short-hard	ин			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:yak	ꙗкъ	pronoun	pronoun-short-velar	ꙗк			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:yakii	ꙗкій	pronoun	pronoun-full-velar	ꙗк			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:yakov	ꙗковъ	pronoun	pronoun-short-ov-mixed	ꙗков			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:pronoun:yakovyi	ꙗковый	pronoun	pronoun-full-hard	ꙗков			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:byti	быти	verb	archaic			biaspectual	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:dati	дати	verb	archaic			perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:imati	имати	verb	archaic			imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian

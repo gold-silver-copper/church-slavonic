@@ -27,8 +27,8 @@ pub use registry::{
     TransformationRuleSummary,
 };
 pub use spec::{
-    AdjectiveSpec, DefectKind, DefectiveCell, LexemeSpec, NounSpec, SpecificationSource,
-    SpecifiedForm, VerbSpec, VerbSpecBuilder,
+    AdjectiveSpec, DefectKind, DefectiveCell, LexemeSpec, NounSpec, PronounSpec,
+    SpecificationSource, SpecifiedForm, VerbSpec, VerbSpecBuilder,
 };
 pub use synodal_church_slavonic_core as core;
 pub use synodal_church_slavonic_core::{
@@ -42,9 +42,11 @@ pub use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Animacy, Case, CollationKey,
     CollationProfile, CollationStrength, Comparison, Confidence, CyrillicNumeral, Error, ErrorCode,
     FiniteTense, FiniteVerbCell, FormSet, FormSource, Gender, GenerationPolicy, GrammarCell,
-    ImperativeCell, InitialPresentation, LParticipleCell, LexemeId, Loss, MetadataField, NounCell,
-    Number, NumeralCell, NumeralKind, OrthographyProfile, ParticipleCell, ParticipleTense,
-    ParticipleVoice, Person, PhraseRole, PhraseToken, PronounCell, RealizedPhrase, Recension,
+    ImperativeCell, InitialPresentation, LParticipleCell, LexemeId, Loss, MetadataField,
+    NegativePronounBase, NounCell, Number, NumeralCell, NumeralKind, OrthographyProfile,
+    ParticipleCell, ParticipleTense, ParticipleVoice, Person, PhraseRole, PhraseToken, PronounCell,
+    PronounCliticProsody, PronounDeclension, PronounEnvironment, PronounFormSelection,
+    PronounNumberInventory, PronounPostpositive, PronounPrefix, RealizedPhrase, Recension,
     RenderedText, Result, SynodalWord, TransliterationScheme, VariantPolicy, VerbSystem,
     apply_initial_presentation, collation_key, compare_synodal, format_cyrillic_numeral,
     normalize_lookup, normalize_lookup_accentless, parse_cyrillic_numeral, transliterate,
@@ -1446,6 +1448,233 @@ mod tests {
     }
 
     #[test]
+    fn reviewed_pronouns_are_exact_first_with_productive_complete_backgrounds() {
+        let relative = Pronoun::resolve("иже").expect("reviewed relative pronoun");
+        let generated_dual = relative
+            .form(PronounCell {
+                case: Case::Dative,
+                number: Number::Dual,
+                gender: Some(Gender::Feminine),
+                person: None,
+                animacy: Animacy::Inanimate,
+            })
+            .expect("source-licensed dual relative cell");
+        assert_eq!(
+            generated_dual.texts().collect::<Vec<_>>(),
+            ["имаже", "нимаже"]
+        );
+        assert!(matches!(
+            &generated_dual.primary().source,
+            FormSource::SynodalNormativeGeneration { rule }
+                if rule.as_ref() == "SYN-PRONOUN-DERIVED-ALYPY-46-48"
+        ));
+
+        let exact = relative
+            .form(PronounCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Some(Gender::Masculine),
+                person: None,
+                animacy: Animacy::Inanimate,
+            })
+            .expect("reviewed exact relative cell");
+        assert!(matches!(
+            exact.primary().source,
+            FormSource::SynodalNormativeGeneration { ref rule }
+                if rule.as_ref() == "SYN-REGISTRY-NORMATIVE-TABLE"
+        ));
+
+        let negative = Pronoun::resolve("никтоже").expect("reviewed negative pronoun");
+        assert_eq!(
+            negative
+                .form(PronounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    gender: None,
+                    person: None,
+                    animacy: Animacy::Animate,
+                })
+                .expect("derived negative instrumental")
+                .primary_text(),
+            "никимъже"
+        );
+        assert!(negative.capabilities().productive_pronoun);
+
+        assert_eq!(
+            Pronoun::resolve("что")
+                .expect("reviewed interrogative")
+                .form(PronounCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    gender: None,
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                })
+                .expect("complete §48 genitive variants")
+                .texts()
+                .collect::<Vec<_>>(),
+            ["чегѡ", "чесѡ", "чесогѡ"]
+        );
+    }
+
+    #[test]
+    fn alpy_45_48_source_union_pronouns_route_through_productive_classes() {
+        let cases = [
+            (
+                "synodal:pronoun:sei",
+                PronounCell {
+                    case: Case::Dative,
+                    number: Number::Dual,
+                    gender: Some(Gender::Feminine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                vec!["сима"],
+            ),
+            (
+                "synodal:pronoun:v07-97002c43d9dd87c3",
+                PronounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    gender: Some(Gender::Neuter),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                vec!["овѣмъ"],
+            ),
+            (
+                "synodal:pronoun:wikt-abc6b7472112",
+                PronounCell {
+                    case: Case::Locative,
+                    number: Number::Plural,
+                    gender: Some(Gender::Masculine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                vec!["инѣхъ"],
+            ),
+            (
+                "synodal:pronoun:elik",
+                PronounCell {
+                    case: Case::Locative,
+                    number: Number::Singular,
+                    gender: Some(Gender::Masculine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                vec!["єлицѣ", "єлицѣмъ", "єликомъ"],
+            ),
+            (
+                "synodal:pronoun:kiizhdo",
+                PronounCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    gender: Some(Gender::Neuter),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                vec!["кіимъждо"],
+            ),
+            (
+                "synodal:pronoun:nekii",
+                PronounCell {
+                    case: Case::Genitive,
+                    number: Number::Plural,
+                    gender: Some(Gender::Feminine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                vec!["нѣкіихъ", "нѣкихъ"],
+            ),
+            (
+                "synodal:pronoun:yakov",
+                PronounCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    gender: Some(Gender::Masculine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                vec!["ꙗкова", "ꙗковогѡ"],
+            ),
+        ];
+        for (id, cell, expected) in cases {
+            let pronoun = Pronoun::from_id(&LexemeId::from(id)).expect("source-union pronoun");
+            assert!(pronoun.capabilities().productive_pronoun, "{id}");
+            assert_eq!(
+                pronoun
+                    .form(cell)
+                    .expect("source-licensed productive cell")
+                    .texts()
+                    .collect::<Vec<_>>(),
+                expected,
+                "{id}"
+            );
+        }
+
+        let agreeing_citations = [
+            ("synodal:pronoun:chii", "чій"),
+            // Exact target evidence precedes the productive demonstrative
+            // citation and preserves its source positional omega.
+            ("synodal:pronoun:on", "ѡнъ"),
+            ("synodal:pronoun:demonstrative-onyi", "оный"),
+            ("synodal:pronoun:elikii", "єликїй"),
+            ("synodal:pronoun:inyi", "иный"),
+            ("synodal:pronoun:kakii", "какій"),
+            ("synodal:pronoun:kakov", "каковъ"),
+            ("synodal:pronoun:kakovyi", "каковый"),
+            ("synodal:pronoun:kolik", "коликъ"),
+            ("synodal:pronoun:kolikii", "коликїй"),
+            ("synodal:pronoun:kotoryi", "который"),
+            ("synodal:pronoun:nikotoryi", "никоторый"),
+            ("synodal:pronoun:ovyi", "овый"),
+            ("synodal:pronoun:sitsevyi", "сицевый"),
+            ("synodal:pronoun:takii", "такій"),
+            ("synodal:pronoun:takov", "таковъ"),
+            ("synodal:pronoun:takovyi", "таковый"),
+            ("synodal:pronoun:tolik", "толикъ"),
+            ("synodal:pronoun:tolikii", "толикїй"),
+            ("synodal:pronoun:yak", "ꙗкъ"),
+            ("synodal:pronoun:yakii", "ꙗкій"),
+            ("synodal:pronoun:yakov", "ꙗковъ"),
+            ("synodal:pronoun:yakovyi", "ꙗковый"),
+        ];
+        for (id, citation) in agreeing_citations {
+            let pronoun = Pronoun::from_id(&LexemeId::from(id)).expect("Alypy §45 identity");
+            assert_eq!(
+                pronoun
+                    .form(PronounCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Some(Gender::Masculine),
+                        person: None,
+                        animacy: Animacy::Inanimate,
+                    })
+                    .expect("citation cell")
+                    .primary_text(),
+                citation,
+                "{id}"
+            );
+        }
+
+        let clitic = Pronoun::from_id(&LexemeId::from("synodal:pronoun:wikt-7c6914eff782"))
+            .expect("reviewed reflexive clitic");
+        assert_eq!(
+            clitic
+                .form(PronounCell {
+                    case: Case::Dative,
+                    number: Number::Singular,
+                    gender: None,
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                })
+                .expect("reflexive dative clitic")
+                .primary_text(),
+            "си"
+        );
+    }
+
+    #[test]
     fn demonstrative_siya_is_not_attached_to_the_reflexive_pronoun() {
         let contaminated_cell = PronounCell {
             case: Case::Accusative,
@@ -1458,7 +1687,7 @@ mod tests {
             Pronoun::resolve("себе")
                 .expect("reviewed reflexive pronoun")
                 .form(contaminated_cell),
-            Err(Error::UnsupportedCell { .. })
+            Err(Error::HistoricallyInvalidCell { .. })
         ));
 
         let demonstrative = Pronoun::from_id(&LexemeId::from("synodal:pronoun:sei"))

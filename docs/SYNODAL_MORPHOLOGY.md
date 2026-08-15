@@ -108,6 +108,8 @@ reusable accent paradigm; expanded rules never invent stress.
 | Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full agreement inventory |
 | Short comparison | `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | Alypy §§58 and 60 | independent comparison stem plus `AncientHard`, `AncientSoft`, `LaterYat`, or `LaterAi`; all 72 canonical cells, including the source-defined vocatives, locatives, dual endings, and masculine-plural variant |
 | Predicate short superlative | `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` | Alypy §§59–60, 125, 128 | nine nominative gender/number cells only; directly attested suffix-retaining singular masculine first, followed by the ordinary §60 citation form; oblique and vocative cells are historically invalid |
+| Pronouns | `SYN-PRONOUN-{PERSONAL-FIRST,PERSONAL-SECOND,REFLEXIVE,THIRD-PERSON,SEI,SOFT,SOFT-I-ALTERNATING,HARD,MIXED-POSSESSIVE,SHORT-HARD,SHORT-OV-MIXED,SHORT-VELAR,QUANTITY-VELAR,FULL-HARD,FULL-SOFT,FULL-VELAR,KII,KTO,CHTO,DERIVED}-ALYPY-*` | Alypy §§45–48 and §57 | all closed suppletive and regular pronoun profiles; complete licensed case/number/agreement products, number restrictions, ordered variants, typed prefixes, postpositives, clitic selection, and third-person environments |
+| Pronoun phrases and contractions | `SYN-PRONOUN-{ENCLITIC-PROSODY,THIRD-PREPOSITION-CONTRACTION,NEGATIVE-PREPOSITION}-ALYPY-*` | Alypy §§47–48 | typed host + enclitic prosody, exact fused `нань`/`вонь`, and structured `ни + preposition + pronoun` interposition |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
 | Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
@@ -123,9 +125,48 @@ normative evidence and the rule ID as its exact citation. The core accepts these
 rules only from explicit metadata. The facade adds target lexeme resolution,
 exact-table precedence, accent metadata, irregular overrides, and mapping policy.
 
+## Complete pronoun contract
+
+The Synodal pronoun kernel follows Alypy §§45–48 rather than treating the
+closed-class exact registry as the grammar. It has independent profiles for the
+suppletive personal, reflexive, third-person, `сей/сій`, two-base `кій`, `кто`,
+and `что` paradigms, plus explicit regular soft, hard, mixed possessive, short,
+velar, quantity, and full-form types. The `чій` profile makes the source-defined
+`і/ї` vowel-edge spelling explicit. Compound `-ов-` pronouns retain the
+noun-like genitive and dative alternatives stated in §48 before their ordinary
+pronominal forms.
+
+The lemma `онъ` has one stable lexical identity with two disjoint grammatical
+profiles: `person=third` selects the suppletive anaphoric series, while
+`person=none` selects the regular short demonstrative paradigm. This preserves
+the §46 relationship without making ordinary lemma lookup ambiguous.
+
+Every agreeing profile attempts all case × number × gender × animacy cells and
+rejects vocatives; the person-indexed and nonagreeing profiles enforce their own
+dimensions. `PronounNumberInventory`, `PronounFormSelection`, and
+`PronounEnvironment` keep lexical number defectiveness, table-primary versus
+enclitic forms, and the post-prepositional third-person `н-` series out of
+untyped booleans. Productive `нѣ-/ни-` prefixes and invariant `-же/-ждо`
+postpositives compose with the inflected base while preserving ordered variants
+and rule evidence.
+
+Phrase-valued behavior remains outside the single-word API.
+`pronoun_enclitic_after_host` realizes the §47 final-vowel host accent and
+unaccented clitic or retains the logically stressed short pronoun.
+`contracted_third_person_accusative` returns exact fused `нань` and `вонь`
+tokens. `negative_pronoun_prepositional` returns the §48 three-token
+`ни + preposition + inflected base` construction. Each component keeps its own
+evidence and receives a trace step for the construction rule.
+
+Expanded output never invents stress. Liturgical output uses exact reviewed
+cells or a caller/registry `AccentParadigm`; `AccentScope::PronounCases` and
+`AccentScope::PronounAgreement` can express case-, number-, gender-, and
+animacy-conditioned stress. A missing accent contract is an explicit
+`OrthographicMetadataRequired` result, not a guessed form.
+
 ## Explicit specifications and complete paradigms
 
-`NounSpec`, `AdjectiveSpec`, and `VerbSpec` are first-class facade inputs. They
+`NounSpec`, `AdjectiveSpec`, `PronounSpec`, and `VerbSpec` are first-class facade inputs. They
 validate Church Slavonic Unicode and closed class/formation enums, preserve
 independent principal parts, attach caller provenance, and never label their
 outputs attestations. `Inflector::form_spec` delegates to the same pure kernel as
@@ -281,7 +322,7 @@ government beyond these construction-specific constraints remain future work.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 846 target lexemes and 846 reviewed senses. The
+The reviewed registry has 875 target lexemes and 877 reviewed senses. The
 original productive seed remains deliberately small: corpus-prioritized hard and
 soft nouns, regular adjectives, six verbs, reviewed closed-class paradigms, and
 five numerals. The v0.3 additions are primarily high-frequency exact lexical

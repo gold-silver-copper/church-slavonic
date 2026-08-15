@@ -1,7 +1,8 @@
 use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Comparison, Error, FiniteTense, FormSet, GrammarCell, NounLexeme,
-    NumeralKind, OrthographyProfile, Result, VerbLexeme, aorist, decline_adjective, decline_noun,
-    decline_participle, imperative, imperfect, infinitive, l_participle, present,
+    NumeralKind, OrthographyProfile, PronounLexeme, Result, VerbLexeme, aorist, decline_adjective,
+    decline_noun, decline_participle, decline_pronoun, imperative, imperfect, infinitive,
+    l_participle, present,
 };
 
 use synodal_church_slavonic_core::AdjectiveLexeme;
@@ -11,6 +12,7 @@ use synodal_church_slavonic_core::AdjectiveLexeme;
 pub(crate) enum ProductiveLexeme<'a> {
     Noun(&'a NounLexeme),
     Adjective(&'a AdjectiveLexeme),
+    Pronoun(&'a PronounLexeme),
     Verb(&'a VerbLexeme),
 }
 
@@ -45,6 +47,9 @@ pub(crate) fn generate_productive(
                 },
                 profile,
             )
+        }
+        (ProductiveLexeme::Pronoun(lexeme), GrammarCell::Pronoun(cell)) => {
+            decline_pronoun(lexeme, cell, profile)
         }
         (ProductiveLexeme::Verb(lexeme), GrammarCell::FiniteVerb(cell)) => match cell.tense {
             FiniteTense::Present => present(lexeme, cell.person, cell.number, profile),

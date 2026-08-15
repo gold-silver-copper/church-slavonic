@@ -6,13 +6,17 @@ use synodal_church_slavonic_core::{
     ComparisonFormation, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind, FiniteTense,
     FormSet, Gender, GrammarCell, ImperativeFormation, ImperfectFormation, MetadataField,
     NounDeclension, NounLexeme, OrthographyProfile, ParticiplePrincipalPart, ParticipleTense,
-    ParticipleVoice, PresentPrincipalParts, Recension, RenderedText, Result, SourceId, SynodalWord,
-    VerbConjugation, VerbLexeme, VerbSystem, validate_noun_lexeme,
+    ParticipleVoice, PresentPrincipalParts, PronounDeclension, PronounEnvironment,
+    PronounFormSelection, PronounLexeme, PronounNumberInventory, PronounPostpositive,
+    PronounPrefix, Recension, RenderedText, Result, SourceId, SynodalWord, VerbConjugation,
+    VerbLexeme, VerbSystem, validate_noun_lexeme, validate_pronoun_lexeme,
 };
 
 use crate::{
     Inflector, Paradigm, PartOfSpeech,
-    paradigm::{adjective_cells, finite_cells, noun_cells, participle_cells, verb_cells},
+    paradigm::{
+        adjective_cells, finite_cells, noun_cells, participle_cells, pronoun_cells, verb_cells,
+    },
 };
 
 /// Provenance attached to caller-supplied lexical metadata. It identifies a
@@ -467,6 +471,180 @@ impl AdjectiveSpec {
     }
 }
 
+/// Caller-supplied typed metadata for a Synodal pronoun. The specification
+/// keeps lexical person/gender profiles, clitic selection, and conditioned
+/// third-person allomorphy separate from the requested case cell.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct PronounSpec {
+    pub(crate) lexeme: PronounLexeme,
+    pub(crate) context: SpecContext,
+}
+
+impl PronounSpec {
+    pub fn closed(
+        lemma: impl Into<String>,
+        declension: PronounDeclension,
+        source: SpecificationSource,
+    ) -> Result<Self> {
+        let spec = Self {
+            lexeme: PronounLexeme::closed(SynodalWord::parse(lemma)?, declension),
+            context: SpecContext::new(source),
+        };
+        spec.validate()?;
+        Ok(spec)
+    }
+
+    pub fn regular(
+        lemma: impl Into<String>,
+        stem: impl Into<String>,
+        declension: PronounDeclension,
+        source: SpecificationSource,
+    ) -> Result<Self> {
+        let spec = Self {
+            lexeme: PronounLexeme::regular(
+                SynodalWord::parse(lemma)?,
+                SynodalWord::parse(stem)?,
+                declension,
+            ),
+            context: SpecContext::new(source),
+        };
+        spec.validate()?;
+        Ok(spec)
+    }
+
+    #[must_use]
+    pub fn lemma(&self) -> &str {
+        self.lexeme.lemma.canonical()
+    }
+
+    pub fn with_selection(mut self, selection: PronounFormSelection) -> Result<Self> {
+        self.lexeme.selection = selection;
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_number_inventory(mut self, inventory: PronounNumberInventory) -> Result<Self> {
+        self.lexeme.number_inventory = inventory;
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_environment(mut self, environment: PronounEnvironment) -> Result<Self> {
+        self.lexeme.environment = environment;
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_prefix(mut self, prefix: PronounPrefix) -> Result<Self> {
+        self.lexeme.prefix = Some(prefix);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_postpositive(mut self, postpositive: PronounPostpositive) -> Result<Self> {
+        self.lexeme.postpositive = Some(postpositive);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_accent_paradigm(mut self, accent: AccentParadigm) -> Result<Self> {
+        self.context.accent = Some(accent);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
+        self.context.irregular_forms.push(form);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_defective_cell(mut self, cell: DefectiveCell) -> Result<Self> {
+        self.context.defective_cells.push(cell);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn form(&self, cell: synodal_church_slavonic_core::PronounCell) -> Result<FormSet> {
+        self.form_with(Inflector::default(), cell)
+    }
+
+    pub fn form_with(
+        &self,
+        inflector: Inflector,
+        cell: synodal_church_slavonic_core::PronounCell,
+    ) -> Result<FormSet> {
+        inflector.form_spec(&LexemeSpec::from(self.clone()), GrammarCell::Pronoun(cell))
+    }
+
+    #[must_use]
+    pub fn paradigm(&self) -> Paradigm {
+        self.paradigm_with(Inflector::default())
+    }
+
+    #[must_use]
+    pub fn paradigm_with(&self, inflector: Inflector) -> Paradigm {
+        let spec = LexemeSpec::from(self.clone());
+        let profiles = match self.lexeme.declension {
+            PronounDeclension::PersonalFirst => vec![(None, Some(crate::Person::First))],
+            PronounDeclension::PersonalSecond => vec![(None, Some(crate::Person::Second))],
+            PronounDeclension::Reflexive
+            | PronounDeclension::InterrogativeWho
+            | PronounDeclension::InterrogativeWhat => vec![(None, None)],
+            PronounDeclension::ThirdPerson => {
+                let person = if self.lexeme.postpositive == Some(PronounPostpositive::Zhe) {
+                    None
+                } else {
+                    Some(crate::Person::Third)
+                };
+                Gender::ALL
+                    .into_iter()
+                    .map(|gender| (Some(gender), person))
+                    .collect()
+            }
+            PronounDeclension::ThirdPersonAndDemonstrative => Gender::ALL
+                .into_iter()
+                .flat_map(|gender| {
+                    [None, Some(crate::Person::Third)]
+                        .into_iter()
+                        .map(move |person| (Some(gender), person))
+                })
+                .collect(),
+            PronounDeclension::Soft
+            | PronounDeclension::SoftIAlternating
+            | PronounDeclension::Hard
+            | PronounDeclension::MixedPossessive
+            | PronounDeclension::ShortHard
+            | PronounDeclension::ShortOvMixed
+            | PronounDeclension::ShortVelar
+            | PronounDeclension::QuantityVelar
+            | PronounDeclension::FullHard
+            | PronounDeclension::FullSoft
+            | PronounDeclension::FullVelar
+            | PronounDeclension::ProximalSei
+            | PronounDeclension::InterrogativeKii => Gender::ALL
+                .into_iter()
+                .map(|gender| (Some(gender), None))
+                .collect(),
+        };
+        Paradigm::build_explicit(
+            self.lemma().into(),
+            PartOfSpeech::Pronoun,
+            pronoun_cells(&profiles),
+            |cell| inflector.form_spec(&spec, cell),
+        )
+    }
+
+    pub fn validate(&self) -> Result<()> {
+        self.context.validate()?;
+        validate_context_cells(&self.context, |cell| {
+            matches!(cell, GrammarCell::Pronoun(_))
+        })?;
+        validate_pronoun_lexeme(&self.lexeme)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct VerbSpec {
@@ -797,6 +975,7 @@ pub struct LexemeSpec {
 pub(crate) enum LexemeSpecInner {
     Noun(NounSpec),
     Adjective(AdjectiveSpec),
+    Pronoun(PronounSpec),
     Verb(Box<VerbSpec>),
 }
 
@@ -805,6 +984,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(spec) => spec.validate(),
             LexemeSpecInner::Adjective(spec) => spec.validate(),
+            LexemeSpecInner::Pronoun(spec) => spec.validate(),
             LexemeSpecInner::Verb(spec) => spec.validate(),
         }
     }
@@ -814,6 +994,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(spec) => spec.lemma(),
             LexemeSpecInner::Adjective(spec) => spec.lemma(),
+            LexemeSpecInner::Pronoun(spec) => spec.lemma(),
             LexemeSpecInner::Verb(spec) => spec.lemma(),
         }
     }
@@ -823,6 +1004,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(_) => PartOfSpeech::Noun,
             LexemeSpecInner::Adjective(_) => PartOfSpeech::Adjective,
+            LexemeSpecInner::Pronoun(_) => PartOfSpeech::Pronoun,
             LexemeSpecInner::Verb(_) => PartOfSpeech::Verb,
         }
     }
@@ -836,6 +1018,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(spec) => &spec.context,
             LexemeSpecInner::Adjective(spec) => &spec.context,
+            LexemeSpecInner::Pronoun(spec) => &spec.context,
             LexemeSpecInner::Verb(spec) => &spec.context,
         }
     }
@@ -857,6 +1040,14 @@ impl From<AdjectiveSpec> for LexemeSpec {
     fn from(spec: AdjectiveSpec) -> Self {
         Self {
             inner: Box::new(LexemeSpecInner::Adjective(spec)),
+        }
+    }
+}
+
+impl From<PronounSpec> for LexemeSpec {
+    fn from(spec: PronounSpec) -> Self {
+        Self {
+            inner: Box::new(LexemeSpecInner::Pronoun(spec)),
         }
     }
 }
@@ -1164,6 +1355,123 @@ mod tests {
             }))
             .expect("short active participle");
         assert_eq!(participle.texts().collect::<Vec<_>>(), ["несый", "несꙋщь"]);
+    }
+
+    #[test]
+    fn explicit_pronoun_specs_preserve_profiles_clitics_and_context() {
+        let possessive = PronounSpec::regular("твой", "тво", PronounDeclension::Soft, source())
+            .expect("regular soft pronoun");
+        let form = possessive
+            .form(synodal_church_slavonic_core::PronounCell {
+                case: Case::Genitive,
+                number: Number::Singular,
+                gender: Some(Gender::Feminine),
+                person: None,
+                animacy: Animacy::Inanimate,
+            })
+            .expect("soft-pronoun genitive");
+        assert_eq!(form.primary_text(), "твоеѧ");
+        assert!(matches!(
+            &form.primary().source,
+            FormSource::CallerSpecifiedPrediction { .. }
+        ));
+        let paradigm = possessive.paradigm();
+        assert_eq!(paradigm.successes().count(), 108);
+        assert_eq!(
+            paradigm
+                .with_status(ParadigmStatus::HistoricallyInvalid)
+                .count(),
+            18
+        );
+
+        let clitic = PronounSpec::closed("азъ", PronounDeclension::PersonalFirst, source())
+            .expect("first-person specification")
+            .with_selection(PronounFormSelection::Enclitic)
+            .expect("clitic selection");
+        assert_eq!(
+            clitic
+                .form(synodal_church_slavonic_core::PronounCell {
+                    case: Case::Dative,
+                    number: Number::Singular,
+                    gender: None,
+                    person: Some(Person::First),
+                    animacy: Animacy::Inanimate,
+                })
+                .expect("first-person enclitic")
+                .primary_text(),
+            "ми"
+        );
+
+        let relative = PronounSpec::closed("иже", PronounDeclension::ThirdPerson, source())
+            .expect("third-person base")
+            .with_postpositive(PronounPostpositive::Zhe)
+            .expect("relative composition");
+        assert_eq!(
+            relative
+                .form(synodal_church_slavonic_core::PronounCell {
+                    case: Case::Nominative,
+                    number: Number::Plural,
+                    gender: Some(Gender::Feminine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                })
+                .expect("relative nominative")
+                .primary_text(),
+            "ꙗже"
+        );
+    }
+
+    #[test]
+    fn productive_pronominal_tables_match_every_reviewed_exact_cell() {
+        for (lemma, stem, declension) in [
+            ("мой", "мо", PronounDeclension::Soft),
+            ("твой", "тво", PronounDeclension::Soft),
+            ("свой", "сво", PronounDeclension::Soft),
+            ("нашъ", "наш", PronounDeclension::MixedPossessive),
+            ("вашъ", "ваш", PronounDeclension::MixedPossessive),
+            ("той", "т", PronounDeclension::Hard),
+        ] {
+            let explicit = PronounSpec::regular(lemma, stem, declension, source())
+                .expect("regular pronoun spec");
+            let reviewed = crate::Pronoun::resolve(lemma).expect("reviewed pronoun identity");
+            for number in Number::ALL {
+                for case in Case::ALL {
+                    if case == Case::Vocative {
+                        continue;
+                    }
+                    for gender in Gender::ALL {
+                        for animacy in if case == Case::Accusative {
+                            Animacy::ALL.as_slice()
+                        } else {
+                            &[Animacy::Inanimate]
+                        } {
+                            let cell = synodal_church_slavonic_core::PronounCell {
+                                case,
+                                number,
+                                gender: Some(gender),
+                                person: None,
+                                animacy: *animacy,
+                            };
+                            let mut predicted = explicit
+                                .form(cell)
+                                .expect("productive pronoun table cell")
+                                .texts()
+                                .map(str::to_owned)
+                                .collect::<Vec<_>>();
+                            let mut exact = reviewed
+                                .form(cell)
+                                .expect("reviewed exact pronoun table cell")
+                                .texts()
+                                .map(str::to_owned)
+                                .collect::<Vec<_>>();
+                            predicted.sort();
+                            exact.sort();
+                            assert_eq!(predicted, exact, "{lemma} {cell:?}");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     #[test]

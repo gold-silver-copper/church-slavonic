@@ -885,6 +885,10 @@ fn productive_cell_is_supported(
             capabilities.productive_adjective
                 && adjectival_cell_is_supported(cell, principal_part("comparative-stem").is_some())
         }
+        GrammarCell::Pronoun(cell) => {
+            capabilities.productive_pronoun
+                && pronoun_cell_is_supported(cell, metadata.class.as_deref())
+        }
         GrammarCell::Numeral(cell) => {
             capabilities.productive_adjective
                 && cell.kind == NumeralKind::Ordinal
@@ -946,13 +950,73 @@ fn productive_cell_is_supported(
         }
         GrammarCell::LexicalForm
         | GrammarCell::Indeclinable
-        | GrammarCell::Pronoun(_)
         | GrammarCell::Supine
         | GrammarCell::VerbalNoun(_)
         | GrammarCell::FiniteVerb(_)
         | GrammarCell::Imperative(_)
         | GrammarCell::LParticiple(_)
         | GrammarCell::Participle(_) => false,
+    }
+}
+
+fn pronoun_cell_is_supported(cell: PronounCell, class: Option<&str>) -> bool {
+    if cell.case == synodal_church_slavonic::Case::Vocative {
+        return false;
+    }
+    match class {
+        Some("pronoun-personal-first") => {
+            cell.gender.is_none() && cell.person == Some(Person::First)
+        }
+        Some("pronoun-personal-second") => {
+            cell.gender.is_none() && cell.person == Some(Person::Second)
+        }
+        Some("pronoun-reflexive") => {
+            cell.gender.is_none()
+                && cell.person.is_none()
+                && cell.number == Number::Singular
+                && cell.case != synodal_church_slavonic::Case::Nominative
+        }
+        Some("pronoun-reflexive-clitic") => {
+            cell.gender.is_none()
+                && cell.person.is_none()
+                && cell.number == Number::Singular
+                && matches!(cell.case, Case::Dative | Case::Accusative)
+        }
+        Some("pronoun-third-person") => cell.gender.is_some() && cell.person == Some(Person::Third),
+        Some("pronoun-third-person-demonstrative") => {
+            cell.gender.is_some() && matches!(cell.person, None | Some(Person::Third))
+        }
+        Some("pronoun-relative-izhe")
+        | Some(
+            "pronoun-proximal-sei"
+            | "pronoun-soft"
+            | "pronoun-soft-i-alternating"
+            | "pronoun-hard"
+            | "pronoun-mixed-possessive"
+            | "pronoun-short-hard"
+            | "pronoun-short-ov-mixed"
+            | "pronoun-short-velar"
+            | "pronoun-quantity-velar"
+            | "pronoun-full-hard"
+            | "pronoun-full-soft"
+            | "pronoun-full-velar"
+            | "pronoun-interrogative-kii"
+            | "pronoun-indefinite-kii"
+            | "pronoun-negative-kii"
+            | "pronoun-negative-full-hard"
+            | "pronoun-kii-zhdo",
+        ) => cell.gender.is_some() && cell.person.is_none(),
+        Some(
+            "pronoun-interrogative-who"
+            | "pronoun-interrogative-what"
+            | "pronoun-indefinite-who"
+            | "pronoun-indefinite-what"
+            | "pronoun-negative-who"
+            | "pronoun-negative-what"
+            | "pronoun-negative-who-zhe"
+            | "pronoun-negative-what-zhe",
+        ) => cell.gender.is_none() && cell.person.is_none() && cell.number == Number::Singular,
+        _ => false,
     }
 }
 
@@ -1108,6 +1172,47 @@ mod tests {
             let cells = candidate_cells(part_of_speech);
             assert_eq!(cells.len(), expected, "{part_of_speech:?}");
             assert_eq!(cells.last(), Some(&GrammarCell::LexicalForm));
+        }
+    }
+
+    #[test]
+    fn every_productive_pronoun_identity_realizes_every_licensed_analysis_cell() {
+        let inflector = Inflector::default();
+        for lexeme in synodal_church_slavonic::lexemes().expect("registry") {
+            if lexeme.part_of_speech() != PartOfSpeech::Pronoun {
+                continue;
+            }
+            let metadata = lexical_metadata(lexeme.id()).expect("pronoun metadata");
+            if !metadata
+                .class
+                .as_deref()
+                .is_some_and(|class| class.starts_with("pronoun-"))
+            {
+                continue;
+            }
+            let cells = analysis_cells_for_lexeme(&lexeme, inflector)
+                .unwrap_or_else(|error| panic!("{} inventory: {error}", lexeme.id()));
+            assert!(
+                cells
+                    .iter()
+                    .any(|cell| matches!(cell, GrammarCell::Pronoun(_))),
+                "{} has no productive pronoun cells",
+                lexeme.id()
+            );
+            for cell in cells {
+                if !matches!(cell, GrammarCell::Pronoun(_)) {
+                    continue;
+                }
+                let forms = inflector
+                    .form_by_id(lexeme.id(), cell)
+                    .unwrap_or_else(|error| panic!("{} {}: {error}", lexeme.id(), cell.key()));
+                assert!(
+                    !forms.variants().is_empty(),
+                    "{} {}",
+                    lexeme.id(),
+                    cell.key()
+                );
+            }
         }
     }
 
@@ -1365,11 +1470,11 @@ mod tests {
     }
 
     #[test]
-    fn complete_possessive_tables_are_truthfully_classed_and_closed() {
+    fn complete_possessive_tables_are_truthfully_classed_and_productive() {
         for lexeme in ["moi", "tvoi", "svoi", "nash", "vash"] {
             let id = FamilyId::for_lexeme(&LexemeId::from(format!("synodal:pronoun:{lexeme}")));
             let family = show_family_by_id(&id).expect("reviewed possessive family");
-            assert!(family.exact_only);
+            assert!(!family.exact_only);
             assert!(family.fully_classed);
             assert_eq!(family.members.len(), 57);
             assert!(family.missing_family_metadata.is_empty());

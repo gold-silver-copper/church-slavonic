@@ -492,9 +492,12 @@ fn validate_admitted_families(
             "exact-irregular-cells-only" => family.exact_only && family.members.len() >= 7,
             "exact-cell-table" => family.exact_only && family.members.len() >= 5,
             "exact-complete-pronoun-table" => {
-                family.exact_only
-                    && family.fully_classed
-                    && family.class.as_deref() == Some("exact-complete-pronoun-table")
+                family.fully_classed
+                    && matches!(
+                        (family.class.as_deref(), family.exact_only),
+                        (Some("exact-complete-pronoun-table"), true)
+                            | (Some("pronoun-soft" | "pronoun-mixed-possessive"), false)
+                    )
                     && family.members.len() == 57
             }
             "first-hard-m-with-exact-consonantal-overrides" => {

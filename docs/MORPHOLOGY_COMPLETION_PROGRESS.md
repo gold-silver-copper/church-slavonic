@@ -6,17 +6,17 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **41** have final states and **12** remain non-final. Source discovery has 7 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **42** have final states and **11** remain non-final. Source discovery has 7 recorded passes and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
 | `closed-exact-complete` | 1 |
-| `implementation-missing` | 9 |
+| `implementation-missing` | 8 |
 | `irregular-exact-complete` | 2 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 36 |
+| `productive-complete` | 37 |
 | `source-review-open` | 3 |
 
 ## Recension totals
@@ -25,7 +25,7 @@ The matrix contains **53** required system contracts: **41** have final states a
 |---|---:|---:|
 | cross-recension | 3 | 4 |
 | old-church-slavonic | 26 | 26 |
-| synodal-russian | 12 | 23 |
+| synodal-russian | 13 | 23 |
 
 ## Category totals
 
@@ -66,12 +66,11 @@ The matrix contains **53** required system contracts: **41** have final states a
 | synodal-russian | numeral | 0 | 1 |
 | synodal-russian | orthography | 1 | 2 |
 | synodal-russian | participle | 1 | 1 |
-| synodal-russian | pronoun | 0 | 1 |
+| synodal-russian | pronoun | 1 | 1 |
 | synodal-russian | verbal-noun | 0 | 1 |
 
 ## Non-final systems
 
-- `syn.pronoun` — **implementation-missing**: Complete all pronoun subtypes, productive relationships, clitics, lexical restrictions, and source-union identities.
 - `syn.determiner` — **implementation-missing**: Finish velar and exceptional determiner families, then separate final productive and irregular matrix entries.
 - `syn.numeral` — **implementation-missing**: Implement complete cardinal, collective, fractional, distributive, compound, government, and irregular contracts.
 - `syn.verb.future` — **implementation-missing**: Determine the source-defined productive/simple-future classes and complete all irregular future inventories.
@@ -118,7 +117,7 @@ The matrix contains **53** required system contracts: **41** have final states a
 | `syn.noun.irregular` | synodal-russian | noun | `irregular-exact-complete` | `SYN-REGISTRY-IRREGULAR-OVERRIDE`<br>`SYN-CALLER-IRREGULAR-OVERRIDE` | reviewed normative families plus exact target attestations; unattested cells remain visibly productive predictions |
 | `syn.adjective.positive-comparison` | synodal-russian | adjective | `productive-complete` | `SYN-ADJ-SHORT-HARD-ALYPY-53`<br>`SYN-ADJ-SHORT-SOFT-ALYPY-53`<br>`SYN-ADJ-LONG-HARD-ALYPY-57`<br>`SYN-ADJ-LONG-SOFT-ALYPY-57`<br>`SYN-ADJ-COMPARATIVE-LONG-ALYPY-58`<br>`SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59`<br>`SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | normative productive prediction |
 | `syn.adjective.short-superlative` | synodal-russian | comparison | `productive-complete` | `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` | one direct liturgical predicate form plus source-constrained productive agreement predictions |
-| `syn.pronoun` | synodal-russian | pronoun | `implementation-missing` | `SYN-PRONOUN-COMPLETE-PENDING` | broad but incomplete exact closed-class coverage |
+| `syn.pronoun` | synodal-russian | pronoun | `productive-complete` | `SYN-PRONOUN-PERSONAL-FIRST-ALYPY-47`<br>`SYN-PRONOUN-PERSONAL-SECOND-ALYPY-47`<br>`SYN-PRONOUN-REFLEXIVE-ALYPY-47`<br>`SYN-PRONOUN-THIRD-PERSON-ALYPY-46-47`<br>`SYN-PRONOUN-SEI-ALYPY-45-48`<br>`SYN-PRONOUN-SOFT-ALYPY-47-48`<br>`SYN-PRONOUN-SOFT-I-ALTERNATING-ALYPY-45-48`<br>`SYN-PRONOUN-HARD-ALYPY-47-48`<br>`SYN-PRONOUN-MIXED-POSSESSIVE-ALYPY-48`<br>`SYN-PRONOUN-SHORT-HARD-ALYPY-48`<br>`SYN-PRONOUN-SHORT-OV-MIXED-ALYPY-48`<br>`SYN-PRONOUN-SHORT-VELAR-ALYPY-48`<br>`SYN-PRONOUN-QUANTITY-VELAR-ALYPY-48`<br>`SYN-PRONOUN-FULL-HARD-ALYPY-48-57`<br>`SYN-PRONOUN-FULL-SOFT-ALYPY-48-57`<br>`SYN-PRONOUN-FULL-VELAR-ALYPY-48-57`<br>`SYN-PRONOUN-KII-ALYPY-48`<br>`SYN-PRONOUN-KTO-ALYPY-48`<br>`SYN-PRONOUN-CHTO-ALYPY-48`<br>`SYN-PRONOUN-DERIVED-ALYPY-46-48`<br>`SYN-PRONOUN-ENCLITIC-PROSODY-ALYPY-47`<br>`SYN-PRONOUN-THIRD-PREPOSITION-CONTRACTION-ALYPY-47`<br>`SYN-PRONOUN-NEGATIVE-PREPOSITION-ALYPY-48` | source-reviewed complete productive and closed-suppletive Synodal pronoun morphology, with exact target witnesses, typed prediction provenance, reusable caller accent metadata, and structured phrase-level behavior |
 | `syn.determiner` | synodal-russian | determiner | `implementation-missing` | `SYN-DETERMINER-ADJECTIVAL`<br>`SYN-DETERMINER-IRREGULAR-PENDING` | productive regular background plus partial exact irregulars |
 | `syn.numeral` | synodal-russian | numeral | `implementation-missing` | `SYN-NUMERAL-ORDINAL-ADJECTIVAL`<br>`SYN-NUMERAL-COMPLETE-PENDING` | productive ordinal plus partial exact cardinal/collective data |
 | `syn.verb.present` | synodal-russian | finite-verb | `productive-complete` | `SYN-VERB-PRESENT-ALYPY-80` | normative productive prediction |
@@ -187,4 +186,4 @@ The frontier contains **26** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`syn.pronoun`: Complete all pronoun subtypes, productive relationships, clitics, lexical restrictions, and source-union identities.
+`syn.determiner`: Finish velar and exceptional determiner families, then separate final productive and irregular matrix entries.

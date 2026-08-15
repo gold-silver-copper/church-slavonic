@@ -1,12 +1,13 @@
 use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope,
-    ActiveParticipleShortFormation, AdjectiveClass, AdjectiveForm, AdjectiveLexeme,
+    ActiveParticipleShortFormation, AdjectiveClass, AdjectiveForm, AdjectiveLexeme, Animacy,
     AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Case, Comparison,
     ComparisonFormation, Confidence, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind,
     FiniteTense, Gender, GenerationPolicy, GrammarCell, ImperativeFormation, ImperfectFormation,
     LexemeId, NounDeclension, NounLexeme, NounNumberInventory, Number, ParticiplePrincipalPart,
-    Recension, RecensionMappingId, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
-    normalize_lookup_accentless,
+    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
+    PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result, SourceId,
+    SynodalWord, VerbConjugation, VerbLexeme, normalize_lookup_accentless, validate_pronoun_lexeme,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -579,6 +580,18 @@ fn parse_accent_scope(value: &str) -> Result<AccentScope> {
             numbers: parse_accent_numbers(numbers)?,
             cases: parse_accent_cases(cases)?,
         }),
+        ["pronoun", numbers, cases] => Ok(AccentScope::PronounCases {
+            numbers: parse_accent_numbers(numbers)?,
+            cases: parse_accent_cases(cases)?,
+        }),
+        ["pronoun-agreeing", numbers, cases, genders, animacies] => {
+            Ok(AccentScope::PronounAgreement {
+                numbers: parse_accent_numbers(numbers)?,
+                cases: parse_accent_cases(cases)?,
+                genders: parse_accent_genders(genders)?,
+                animacies: parse_accent_animacies(animacies)?,
+            })
+        }
         ["adjective", form, comparison, numbers] => Ok(AccentScope::Adjective {
             form: match *form {
                 "short" => AdjectiveForm::Short,
@@ -632,6 +645,29 @@ fn parse_accent_numbers(value: &str) -> Result<Vec<Number>> {
             "dual" => Ok(Number::Dual),
             "plural" => Ok(Number::Plural),
             value => invalid_metadata("accent number", value),
+        })
+        .collect()
+}
+
+fn parse_accent_genders(value: &str) -> Result<Vec<Gender>> {
+    value
+        .split(',')
+        .map(|gender| match gender {
+            "masculine" => Ok(Gender::Masculine),
+            "feminine" => Ok(Gender::Feminine),
+            "neuter" => Ok(Gender::Neuter),
+            value => invalid_metadata("accent gender", value),
+        })
+        .collect()
+}
+
+fn parse_accent_animacies(value: &str) -> Result<Vec<Animacy>> {
+    value
+        .split(',')
+        .map(|animacy| match animacy {
+            "animate" => Ok(Animacy::Animate),
+            "inanimate" => Ok(Animacy::Inanimate),
+            value => invalid_metadata("accent animacy", value),
         })
         .collect()
 }
@@ -742,6 +778,138 @@ pub(crate) fn determiner_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
 
 pub(crate) fn ordinal_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
     adjectival_lexeme(id, PartOfSpeech::Numeral)
+}
+
+pub(crate) fn pronoun_lexeme(id: &LexemeId) -> Result<PronounLexeme> {
+    let row = require_pos(id, PartOfSpeech::Pronoun)?;
+    let lemma = SynodalWord::parse(row.0[1])?;
+    let class = row.0[3];
+    let lexeme = match class {
+        "pronoun-personal-first" => PronounLexeme::closed(lemma, PronounDeclension::PersonalFirst),
+        "pronoun-personal-second" => {
+            PronounLexeme::closed(lemma, PronounDeclension::PersonalSecond)
+        }
+        "pronoun-reflexive" => PronounLexeme::closed(lemma, PronounDeclension::Reflexive),
+        "pronoun-reflexive-clitic" => PronounLexeme::closed(lemma, PronounDeclension::Reflexive)
+            .with_selection(PronounFormSelection::Enclitic),
+        "pronoun-third-person" => PronounLexeme::closed(lemma, PronounDeclension::ThirdPerson)
+            .with_environment(PronounEnvironment::ContextualVariants),
+        "pronoun-third-person-demonstrative" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::ThirdPersonAndDemonstrative,
+        )
+        .with_environment(PronounEnvironment::ContextualVariants),
+        "pronoun-relative-izhe" => PronounLexeme::closed(lemma, PronounDeclension::ThirdPerson)
+            .with_environment(PronounEnvironment::ContextualVariants)
+            .with_postpositive(PronounPostpositive::Zhe),
+        "pronoun-proximal-sei" => PronounLexeme::closed(lemma, PronounDeclension::ProximalSei),
+        "pronoun-soft" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::Soft,
+        ),
+        "pronoun-soft-i-alternating" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::SoftIAlternating,
+        ),
+        "pronoun-hard" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::Hard,
+        ),
+        "pronoun-mixed-possessive" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::MixedPossessive,
+        ),
+        "pronoun-short-hard" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::ShortHard,
+        ),
+        "pronoun-short-ov-mixed" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::ShortOvMixed,
+        ),
+        "pronoun-short-velar" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::ShortVelar,
+        ),
+        "pronoun-quantity-velar" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::QuantityVelar,
+        ),
+        "pronoun-full-hard" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::FullHard,
+        ),
+        "pronoun-full-soft" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::FullSoft,
+        ),
+        "pronoun-full-velar" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::FullVelar,
+        ),
+        "pronoun-interrogative-kii" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeKii)
+        }
+        "pronoun-interrogative-who" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWho)
+        }
+        "pronoun-interrogative-what" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWhat)
+        }
+        "pronoun-indefinite-who" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWho)
+                .with_prefix(PronounPrefix::IndefiniteNe)
+        }
+        "pronoun-indefinite-what" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWhat)
+                .with_prefix(PronounPrefix::IndefiniteNe)
+        }
+        "pronoun-indefinite-kii" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeKii)
+                .with_prefix(PronounPrefix::IndefiniteNe)
+        }
+        "pronoun-negative-who" => PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWho)
+            .with_prefix(PronounPrefix::NegativeNi),
+        "pronoun-negative-what" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWhat)
+                .with_prefix(PronounPrefix::NegativeNi)
+        }
+        "pronoun-negative-kii" => PronounLexeme::closed(lemma, PronounDeclension::InterrogativeKii)
+            .with_prefix(PronounPrefix::NegativeNi),
+        "pronoun-negative-full-hard" => PronounLexeme::regular(
+            lemma,
+            SynodalWord::parse(row.0[4])?,
+            PronounDeclension::FullHard,
+        )
+        .with_prefix(PronounPrefix::NegativeNi),
+        "pronoun-kii-zhdo" => PronounLexeme::closed(lemma, PronounDeclension::InterrogativeKii)
+            .with_postpositive(PronounPostpositive::Zhdo),
+        "pronoun-negative-who-zhe" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWho)
+                .with_prefix(PronounPrefix::NegativeNi)
+                .with_postpositive(PronounPostpositive::Zhe)
+        }
+        "pronoun-negative-what-zhe" => {
+            PronounLexeme::closed(lemma, PronounDeclension::InterrogativeWhat)
+                .with_prefix(PronounPrefix::NegativeNi)
+                .with_postpositive(PronounPostpositive::Zhe)
+        }
+        value => return invalid_metadata("pronoun class", value),
+    };
+    validate_pronoun_lexeme(&lexeme)?;
+    Ok(lexeme)
 }
 
 fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveLexeme> {
