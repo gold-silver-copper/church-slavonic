@@ -31,6 +31,87 @@ pub enum IrregularVerbGroup {
     Chisti4UnstablePresentStemExpanded,
 }
 
+/// One source-listed member of the reusable irregular-workstem groups.
+///
+/// The identity is closed over Table 434. Each value therefore carries an
+/// explicit allomorph map; callers never have to infer a prefix boundary or a
+/// present stem from the infinitive spelling.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct IrregularVerbFamilyMember {
+    group: IrregularVerbGroup,
+    lemma: &'static str,
+}
+
+impl IrregularVerbFamilyMember {
+    pub const COUNT: usize = 70;
+
+    pub fn all() -> impl Iterator<Item = Self> {
+        IrregularVerbGroup::ALL.into_iter().flat_map(|group| {
+            group
+                .family_anchors()
+                .iter()
+                .copied()
+                .map(move |lemma| Self { group, lemma })
+        })
+    }
+
+    pub fn classify_source_lemma(lemma: &str) -> Option<Self> {
+        Self::all().find(|member| member.lemma == lemma)
+    }
+
+    pub const fn group(self) -> IrregularVerbGroup {
+        self.group
+    }
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        self.lemma
+    }
+
+    pub const fn source_section(self) -> &'static str {
+        self.group.source_section()
+    }
+
+    /// Lexical aspect cross-checked against the August 2026 LOVe export.
+    ///
+    /// Polivanova's group tables describe workstem distribution rather than
+    /// aspect. The few prefixed imperfectives and unprefixed perfective or
+    /// biaspectual members are therefore listed instead of inferred.
+    pub fn aspect(self) -> VerbAspect {
+        match self.lemma {
+            "пьсати" | "чрьпати" | "бити" | "пити" | "пѣти" => {
+                VerbAspect::Biaspectual
+            }
+            "уръвати"
+            | "обсновати"
+            | "възсльпати"
+            | "съжѧти"
+            | "начѧти"
+            | "распѧти"
+            | "възѧти"
+            | "натрути"
+            | "съвити"
+            | "вълити"
+            | "шити"
+            | "трьти"
+            | "заврѣти"
+            | "пожрѣти"
+            | "обпрѣти"
+            | "разскврѣти"
+            | "прострѣти"
+            | "отъврѣсти"
+            | "вънисти"
+            | "почрѣти" => VerbAspect::Perfective,
+            _ => VerbAspect::Imperfective,
+        }
+    }
+
+    /// Assemble every finite and nonfinite system from the member's explicit
+    /// Table 434 principal parts and its Table 440 group distribution.
+    pub fn lexeme(self) -> VerbLexeme {
+        assemble_family_member(self)
+    }
+}
+
 impl IrregularVerbGroup {
     pub const ALL: [Self; 13] = [
         Self::Metati3NoSoftening,
@@ -163,173 +244,500 @@ impl IrregularVerbGroup {
 
     /// Assemble the complete Table 454 profile of this group's representative.
     pub fn representative_lexeme(self) -> VerbLexeme {
-        let mut lexeme = VerbLexeme::new(self.representative(), VerbClass::Irregular);
-        lexeme.aspect = Some(self.representative_aspect());
-
-        match self {
-            Self::Metati3NoSoftening => {
-                insert_hard_present(&mut lexeme, "мет");
-                configure_class_three(&mut lexeme, "мета", "мет", PresentShape::Hard);
-            }
-            Self::Pisati3UnstableVocalism => {
-                insert_hard_present(&mut lexeme, "пиш");
-                configure_class_three(&mut lexeme, "пьса", "пиш", PresentShape::MixedSoft);
-            }
-            Self::Birati3NoSofteningUnstableVocalism => {
-                insert_hard_present(&mut lexeme, "бер");
-                configure_class_three(&mut lexeme, "бьра", "бер", PresentShape::Hard);
-            }
-            Self::Plivati3LabileArrested => {
-                insert_iotated_present(&mut lexeme, "плю");
-                configure_class_three(&mut lexeme, "пльва", "плю", PresentShape::Iotated);
-            }
-            Self::Kleti4Labile => {
-                insert_hard_present(&mut lexeme, "кльн");
-                set_imperfect(&mut lexeme, "кльн", ImperfectFormation::PresentYatA);
-                set_vowel_aorist(&mut lexeme, "клѧ");
-                set_imperative(&mut lexeme, "кльн", ImperativeFormation::YatSeries);
-                set_l_participle(&mut lexeme, "клѧ");
-                set_present_active(
-                    &mut lexeme,
-                    "кльн",
-                    PresentActiveParticipleFormation::YushtHard,
-                );
-                set_present_passive(&mut lexeme, "кльн", PresentPassiveParticipleFormation::Om);
-                set_past_active(&mut lexeme, "кльн", PastActiveParticipleFormation::Ush);
-                set_past_passive(&mut lexeme, "клѧ", PastPassiveParticipleFormation::T);
-            }
-            Self::Brati4LabileSoftened => {
-                insert_soft_present(&mut lexeme, "бор");
-                set_imperfect(&mut lexeme, "бор", ImperfectFormation::PresentYatA);
-                set_vowel_aorist(&mut lexeme, "бра");
-                set_imperative(&mut lexeme, "бор", ImperativeFormation::ISeries);
-                set_l_participle(&mut lexeme, "бра");
-                set_present_active(
-                    &mut lexeme,
-                    "бор",
-                    PresentActiveParticipleFormation::MixedYushtSoft,
-                );
-                set_present_passive(&mut lexeme, "бор", PresentPassiveParticipleFormation::Om);
-                set_past_active(&mut lexeme, "бор", PastActiveParticipleFormation::Ush);
-                set_past_passive(&mut lexeme, "бор", PastPassiveParticipleFormation::En);
-            }
-            Self::Pluti4InfStemExpanded => {
-                insert_hard_present(&mut lexeme, "плов");
-                set_imperfect(&mut lexeme, "плов", ImperfectFormation::PresentYatA);
-                set_vowel_aorist(&mut lexeme, "плу");
-                set_imperative(&mut lexeme, "плов", ImperativeFormation::YatSeries);
-                set_l_participle(&mut lexeme, "плу");
-                set_present_active(
-                    &mut lexeme,
-                    "плов",
-                    PresentActiveParticipleFormation::YushtHard,
-                );
-                set_present_passive(&mut lexeme, "плов", PresentPassiveParticipleFormation::Om);
-                set_past_active(&mut lexeme, "плу", PastActiveParticipleFormation::Vush);
-                set_past_passive(&mut lexeme, "плов", PastPassiveParticipleFormation::En);
-            }
-            Self::Biti4UnstableInfStemExpanded => {
-                insert_iotated_present(&mut lexeme, "би");
-                set_imperfect(&mut lexeme, "би", ImperfectFormation::PresentYatA);
-                set_vowel_aorist(&mut lexeme, "би");
-                set_imperative(&mut lexeme, "би", ImperativeFormation::ISeries);
-                insert_imperative_singular(&mut lexeme, "би");
-                set_l_participle(&mut lexeme, "би");
-                configure_iotated_present_participles(&mut lexeme, "би");
-                set_past_active(&mut lexeme, "би", PastActiveParticipleFormation::Vush);
-                // Table 454 licenses both бьјенъ and битъ; the productive core
-                // records the independently reconstructable t-variant here.
-                set_past_passive(&mut lexeme, "би", PastPassiveParticipleFormation::T);
-            }
-            Self::Kryti4UnstableArrestedInfStemExpanded => {
-                insert_iotated_present(&mut lexeme, "крꙑ");
-                set_imperfect(&mut lexeme, "крꙑ", ImperfectFormation::PresentYatA);
-                set_vowel_aorist(&mut lexeme, "крꙑ");
-                set_imperative(&mut lexeme, "крꙑ", ImperativeFormation::ISeries);
-                set_l_participle(&mut lexeme, "крꙑ");
-                configure_iotated_present_participles(&mut lexeme, "крꙑ");
-                set_past_active(&mut lexeme, "крꙑ", PastActiveParticipleFormation::Vush);
-                set_past_passive(&mut lexeme, "кръв", PastPassiveParticipleFormation::En);
-            }
-            Self::Peti4InfStemExpanded => {
-                insert_iotated_present(&mut lexeme, "по");
-                set_imperfect(&mut lexeme, "по", ImperfectFormation::PresentYatA);
-                set_vowel_aorist(&mut lexeme, "пѣ");
-                set_imperative(&mut lexeme, "по", ImperativeFormation::ISeries);
-                insert_imperative_singular(&mut lexeme, "пѣи");
-                set_l_participle(&mut lexeme, "пѣ");
-                configure_iotated_present_participles(&mut lexeme, "по");
-                set_past_active(&mut lexeme, "пѣ", PastActiveParticipleFormation::Vush);
-                set_past_passive(&mut lexeme, "пѣ", PastPassiveParticipleFormation::N);
-            }
-            Self::Mreti4UnstablePresentStemExpanded => {
-                insert_hard_present(&mut lexeme, "мьр");
-                set_imperfect(&mut lexeme, "мьр", ImperfectFormation::PresentYatA);
-                set_vowel_aorist(&mut lexeme, "мрѣ");
-                set_imperative(&mut lexeme, "мьр", ImperativeFormation::YatSeries);
-                set_l_participle(&mut lexeme, "мрь");
-                set_present_active(
-                    &mut lexeme,
-                    "мьр",
-                    PresentActiveParticipleFormation::YushtHard,
-                );
-                set_present_passive(&mut lexeme, "мьр", PresentPassiveParticipleFormation::Om);
-                set_past_active(&mut lexeme, "мьр", PastActiveParticipleFormation::Ush);
-                set_past_passive(&mut lexeme, "мрь", PastPassiveParticipleFormation::T);
-            }
-            Self::Vleshti4UnstablePresentStemExpanded => {
-                insert_velar_present(&mut lexeme, "влѣк", "влѣч");
-                lexeme
-                    .exact_forms
-                    .insert(VerbMorphologyCell::Infinitive, "влѣщи".to_string());
-                lexeme
-                    .exact_forms
-                    .insert(VerbMorphologyCell::Supine, "влѣщь".to_string());
-                set_imperfect(&mut lexeme, "влѣк", ImperfectFormation::PresentYatA);
-                set_new_aorist(&mut lexeme, "влѣк");
-                set_imperative(&mut lexeme, "влѣц", ImperativeFormation::YatSeries);
-                set_l_participle(&mut lexeme, "вльк");
-                set_present_active(
-                    &mut lexeme,
-                    "влѣк",
-                    PresentActiveParticipleFormation::YushtHard,
-                );
-                set_present_passive(&mut lexeme, "влѣк", PresentPassiveParticipleFormation::Om);
-                set_past_active(&mut lexeme, "вльк", PastActiveParticipleFormation::Ush);
-                set_past_passive(&mut lexeme, "вльч", PastPassiveParticipleFormation::En);
-            }
-            Self::Chisti4UnstablePresentStemExpanded => {
-                insert_hard_present(&mut lexeme, "чьт");
-                set_imperfect(&mut lexeme, "чьт", ImperfectFormation::PresentYatA);
-                set_new_aorist(&mut lexeme, "чьт");
-                set_imperative(&mut lexeme, "чьт", ImperativeFormation::YatSeries);
-                set_l_participle(&mut lexeme, "чьт");
-                set_present_active(
-                    &mut lexeme,
-                    "чьт",
-                    PresentActiveParticipleFormation::YushtHard,
-                );
-                set_present_passive(&mut lexeme, "чьт", PresentPassiveParticipleFormation::Om);
-                set_past_active(&mut lexeme, "чьт", PastActiveParticipleFormation::Ush);
-                set_past_passive(&mut lexeme, "чьт", PastPassiveParticipleFormation::En);
-            }
-        }
-        lexeme
+        assemble_family_member(IrregularVerbFamilyMember {
+            group: self,
+            lemma: self.representative(),
+        })
     }
+}
 
-    const fn representative_aspect(self) -> VerbAspect {
-        match self {
-            Self::Pisati3UnstableVocalism
-            | Self::Biti4UnstableInfStemExpanded
-            | Self::Peti4InfStemExpanded => VerbAspect::Biaspectual,
-            _ => VerbAspect::Imperfective,
+fn assemble_family_member(member: IrregularVerbFamilyMember) -> VerbLexeme {
+    let lemma = member.canonical_lemma();
+    let aspect = member.aspect();
+    match member.group() {
+        IrregularVerbGroup::Metati3NoSoftening => {
+            let (infinitive_stem, present_stem) = match lemma {
+                "искати" => ("иска", "иск"),
+                "ковати" => ("кова", "ков"),
+                "метати" => ("мета", "мет"),
+                "уръвати" => ("уръва", "уръв"),
+                "обсновати" => ("обснова", "обснов"),
+                "съсати" => ("съса", "със"),
+                "тъкати" => ("тъка", "тък"),
+                _ => ("мета", "мет"),
+            };
+            build_class_three_member(
+                lemma,
+                aspect,
+                infinitive_stem,
+                present_stem,
+                PresentShape::Hard,
+            )
         }
+        IrregularVerbGroup::Pisati3UnstableVocalism => {
+            let (infinitive_stem, present_stem, shape) = match lemma {
+                "дъхати" => ("дъха", "душ", PresentShape::MixedSoft),
+                "зиꙗти" => ("зиꙗ", "зѣ", PresentShape::Iotated),
+                "зьдати" => ("зьда", "зижд", PresentShape::MixedSoft),
+                "лиꙗти" => ("лиꙗ", "лѣ", PresentShape::Iotated),
+                "пльзати" => ("пльза", "плѣж", PresentShape::MixedSoft),
+                "пьсати" => ("пьса", "пиш", PresentShape::MixedSoft),
+                "възсльпати" => ("възсльпа", "възслѣпл", PresentShape::Soft),
+                "смиꙗти" => ("смиꙗ", "смѣ", PresentShape::Iotated),
+                "стръгати" => ("стръга", "струж", PresentShape::MixedSoft),
+                "стьлати" => ("стьла", "стел", PresentShape::Soft),
+                "трьѕати" => ("трьѕа", "трѣж", PresentShape::MixedSoft),
+                "чрьпати" => ("чрьпа", "чрѣпл", PresentShape::Soft),
+                "възьмати" => ("възьма", "въземл", PresentShape::Soft),
+                _ => ("пьса", "пиш", PresentShape::MixedSoft),
+            };
+            build_class_three_member(lemma, aspect, infinitive_stem, present_stem, shape)
+        }
+        IrregularVerbGroup::Birati3NoSofteningUnstableVocalism => {
+            let (infinitive_stem, present_stem) = match lemma {
+                "бьрати" => ("бьра", "бер"),
+                "дьрати" => ("дьра", "дер"),
+                "жьдати" => ("жьда", "жид"),
+                "зъвати" => ("зъва", "зов"),
+                "пьрати" => ("пьра", "пер"),
+                _ => ("бьра", "бер"),
+            };
+            build_class_three_member(
+                lemma,
+                aspect,
+                infinitive_stem,
+                present_stem,
+                PresentShape::Hard,
+            )
+        }
+        IrregularVerbGroup::Plivati3LabileArrested => {
+            let (infinitive_stem, present_stem) = match lemma {
+                "бльвати" => ("бльва", "блю"),
+                "пльвати" => ("пльва", "плю"),
+                _ => ("пльва", "плю"),
+            };
+            build_class_three_member(
+                lemma,
+                aspect,
+                infinitive_stem,
+                present_stem,
+                PresentShape::Iotated,
+            )
+        }
+        IrregularVerbGroup::Kleti4Labile => {
+            let (present_stem, infinitive_stem) = match lemma {
+                "дѫти" => ("дъм", "дѫ"),
+                "жити" => ("жив", "жи"),
+                "съжѧти" => ("съжьм", "съжѧ"),
+                "клѧти" => ("кльн", "клѧ"),
+                "начѧти" => ("начьн", "начѧ"),
+                "распѧти" => ("распьн", "распѧ"),
+                "възѧти" => ("възьм", "възѧ"),
+                _ => ("кльн", "клѧ"),
+            };
+            build_kleti_member(lemma, aspect, present_stem, infinitive_stem)
+        }
+        IrregularVerbGroup::Brati4LabileSoftened => {
+            let (present_stem, infinitive_stem) = match lemma {
+                "брати" => ("бор", "бра"),
+                "жрьти" => ("жьр", "жрь"),
+                "жѧти" => ("жьн", "жѧ"),
+                "клати" => ("кол", "кла"),
+                "млѣти" => ("мел", "млѣ"),
+                "трьти" => ("тьр", "трь"),
+                _ => ("бор", "бра"),
+            };
+            build_brati_member(lemma, aspect, present_stem, infinitive_stem)
+        }
+        IrregularVerbGroup::Pluti4InfStemExpanded => {
+            let (present_stem, infinitive_stem) = match lemma {
+                "плути" => ("плов", "плу"),
+                "рути" => ("ров", "ру"),
+                "слути" => ("слов", "слу"),
+                "натрути" => ("натров", "натру"),
+                _ => ("плов", "плу"),
+            };
+            build_pluti_member(lemma, aspect, present_stem, infinitive_stem)
+        }
+        IrregularVerbGroup::Biti4UnstableInfStemExpanded => {
+            let stem = match lemma {
+                "бити" => "би",
+                "съвити" => "съви",
+                "гнити" => "гни",
+                "вълити" => "въли",
+                "пити" => "пи",
+                _ => "би",
+            };
+            build_biti_member(lemma, aspect, stem)
+        }
+        IrregularVerbGroup::Kryti4UnstableArrestedInfStemExpanded => {
+            let (stem, past_passive_stem) = match lemma {
+                "крꙑти" => ("крꙑ", "кръв"),
+                "мꙑти" => ("мꙑ", "мъв"),
+                "рꙑти" => ("рꙑ", "ръв"),
+                "шити" => ("ши", "шьв"),
+                _ => ("крꙑ", "кръв"),
+            };
+            build_kryti_member(lemma, aspect, stem, past_passive_stem)
+        }
+        IrregularVerbGroup::Peti4InfStemExpanded => build_peti_member(lemma, aspect),
+        IrregularVerbGroup::Mreti4UnstablePresentStemExpanded => {
+            let (present_stem, infinitive_stem, past_stem) = match lemma {
+                "заврѣти" => ("завьр", "заврѣ", "заврь"),
+                "пожрѣти" => ("пожьр", "пожрѣ", "пожрь"),
+                "мрѣти" => ("мьр", "мрѣ", "мрь"),
+                "обпрѣти" => ("обпьр", "обпрѣ", "обпрь"),
+                "разскврѣти" => ("разсквьр", "разскврѣ", "разскврь"),
+                "прострѣти" => ("простьр", "прострѣ", "прострь"),
+                _ => ("мьр", "мрѣ", "мрь"),
+            };
+            build_mreti_member(lemma, aspect, present_stem, infinitive_stem, past_stem)
+        }
+        IrregularVerbGroup::Vleshti4UnstablePresentStemExpanded => {
+            let (first_present, other_present, imperative_stem, past_stem, passive_stem) =
+                match lemma {
+                    "влѣщи" => ("влѣк", "влѣч", "влѣц", "вльк", "вльч"),
+                    "брѣщи" => ("брѣг", "брѣж", "брѣѕ", "брьг", "брьж"),
+                    _ => ("влѣк", "влѣч", "влѣц", "вльк", "вльч"),
+                };
+            build_velar_shti_member(
+                lemma,
+                aspect,
+                first_present,
+                other_present,
+                imperative_stem,
+                past_stem,
+                passive_stem,
+            )
+        }
+        IrregularVerbGroup::Chisti4UnstablePresentStemExpanded => {
+            let (first_present, other_present, imperative_stem, past_stem, passive_stem) =
+                match lemma {
+                    "отъврѣсти" => ("отъврьз", "отъврьз", "отъврьз", "отъврьз", "отъврьз"),
+                    "врѣщи" => ("врьг", "врьж", "врьѕ", "врьг", "врьж"),
+                    "вънисти" => ("въньз", "въньз", "въньз", "въньз", "въньз"),
+                    "стрѣщи" => ("стриг", "стриж", "стриѕ", "стриг", "стриж"),
+                    "тлѣщи" => ("тльк", "тльч", "тльц", "тльк", "тльч"),
+                    "цвисти" => ("цвьт", "цвьт", "цвьт", "цвьт", "цвьт"),
+                    "чисти" => ("чьт", "чьт", "чьт", "чьт", "чьт"),
+                    "почрѣти" => ("почрьп", "почрьп", "почрьп", "почрьп", "почрьп"),
+                    _ => ("чьт", "чьт", "чьт", "чьт", "чьт"),
+                };
+            build_chisti_member(
+                lemma,
+                aspect,
+                first_present,
+                other_present,
+                imperative_stem,
+                past_stem,
+                passive_stem,
+            )
+        }
+    }
+}
+
+fn new_family_lexeme(lemma: &str, aspect: VerbAspect) -> VerbLexeme {
+    let mut lexeme = VerbLexeme::new(lemma, VerbClass::Irregular);
+    lexeme.aspect = Some(aspect);
+    lexeme
+}
+
+fn build_class_three_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    infinitive_stem: &str,
+    present_stem: &str,
+    shape: PresentShape,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_present_shape(&mut lexeme, present_stem, shape);
+    configure_class_three(&mut lexeme, infinitive_stem, present_stem, shape);
+    lexeme
+}
+
+fn build_kleti_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    present_stem: &str,
+    infinitive_stem: &str,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_hard_present(&mut lexeme, present_stem);
+    set_imperfect(&mut lexeme, present_stem, ImperfectFormation::PresentYatA);
+    set_vowel_aorist(&mut lexeme, infinitive_stem);
+    set_imperative(&mut lexeme, present_stem, ImperativeFormation::YatSeries);
+    set_l_participle(&mut lexeme, infinitive_stem);
+    set_present_active(
+        &mut lexeme,
+        present_stem,
+        PresentActiveParticipleFormation::YushtHard,
+    );
+    set_present_passive(
+        &mut lexeme,
+        present_stem,
+        PresentPassiveParticipleFormation::Om,
+    );
+    set_past_active(
+        &mut lexeme,
+        present_stem,
+        PastActiveParticipleFormation::Ush,
+    );
+    set_past_passive(
+        &mut lexeme,
+        infinitive_stem,
+        PastPassiveParticipleFormation::T,
+    );
+    lexeme
+}
+
+fn build_brati_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    present_stem: &str,
+    infinitive_stem: &str,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_soft_present(&mut lexeme, present_stem);
+    set_imperfect(&mut lexeme, present_stem, ImperfectFormation::PresentYatA);
+    set_vowel_aorist(&mut lexeme, infinitive_stem);
+    set_imperative(&mut lexeme, present_stem, ImperativeFormation::ISeries);
+    set_l_participle(&mut lexeme, infinitive_stem);
+    set_present_active(
+        &mut lexeme,
+        present_stem,
+        PresentActiveParticipleFormation::MixedYushtSoft,
+    );
+    set_present_passive(
+        &mut lexeme,
+        present_stem,
+        PresentPassiveParticipleFormation::Om,
+    );
+    set_past_active(
+        &mut lexeme,
+        present_stem,
+        PastActiveParticipleFormation::Ush,
+    );
+    set_past_passive(
+        &mut lexeme,
+        present_stem,
+        PastPassiveParticipleFormation::En,
+    );
+    lexeme
+}
+
+fn build_pluti_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    present_stem: &str,
+    infinitive_stem: &str,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_hard_present(&mut lexeme, present_stem);
+    set_imperfect(&mut lexeme, present_stem, ImperfectFormation::PresentYatA);
+    set_vowel_aorist(&mut lexeme, infinitive_stem);
+    set_imperative(&mut lexeme, present_stem, ImperativeFormation::YatSeries);
+    set_l_participle(&mut lexeme, infinitive_stem);
+    set_present_active(
+        &mut lexeme,
+        present_stem,
+        PresentActiveParticipleFormation::YushtHard,
+    );
+    set_present_passive(
+        &mut lexeme,
+        present_stem,
+        PresentPassiveParticipleFormation::Om,
+    );
+    set_past_active(
+        &mut lexeme,
+        infinitive_stem,
+        PastActiveParticipleFormation::Vush,
+    );
+    set_past_passive(
+        &mut lexeme,
+        present_stem,
+        PastPassiveParticipleFormation::En,
+    );
+    lexeme
+}
+
+fn build_biti_member(lemma: &str, aspect: VerbAspect, stem: &str) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_iotated_present(&mut lexeme, stem);
+    set_imperfect(&mut lexeme, stem, ImperfectFormation::PresentYatA);
+    set_vowel_aorist(&mut lexeme, stem);
+    set_imperative(&mut lexeme, stem, ImperativeFormation::ISeries);
+    insert_imperative_singular(&mut lexeme, stem);
+    set_l_participle(&mut lexeme, stem);
+    configure_iotated_present_participles(&mut lexeme, stem);
+    set_past_active(&mut lexeme, stem, PastActiveParticipleFormation::Vush);
+    // Table 454 licenses both бьјенъ and битъ for the representative. This
+    // productive family profile retains the independently reconstructable
+    // t-series; the facade must preserve source-listed en-variants separately.
+    set_past_passive(&mut lexeme, stem, PastPassiveParticipleFormation::T);
+    lexeme
+}
+
+fn build_kryti_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    stem: &str,
+    past_passive_stem: &str,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_iotated_present(&mut lexeme, stem);
+    set_imperfect(&mut lexeme, stem, ImperfectFormation::PresentYatA);
+    set_vowel_aorist(&mut lexeme, stem);
+    set_imperative(&mut lexeme, stem, ImperativeFormation::ISeries);
+    set_l_participle(&mut lexeme, stem);
+    configure_iotated_present_participles(&mut lexeme, stem);
+    set_past_active(&mut lexeme, stem, PastActiveParticipleFormation::Vush);
+    set_past_passive(
+        &mut lexeme,
+        past_passive_stem,
+        PastPassiveParticipleFormation::En,
+    );
+    lexeme
+}
+
+fn build_peti_member(lemma: &str, aspect: VerbAspect) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_iotated_present(&mut lexeme, "по");
+    set_imperfect(&mut lexeme, "по", ImperfectFormation::PresentYatA);
+    set_vowel_aorist(&mut lexeme, "пѣ");
+    set_imperative(&mut lexeme, "по", ImperativeFormation::ISeries);
+    insert_imperative_singular(&mut lexeme, "пѣи");
+    set_l_participle(&mut lexeme, "пѣ");
+    configure_iotated_present_participles(&mut lexeme, "по");
+    set_past_active(&mut lexeme, "пѣ", PastActiveParticipleFormation::Vush);
+    set_past_passive(&mut lexeme, "пѣ", PastPassiveParticipleFormation::N);
+    lexeme
+}
+
+fn build_mreti_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    present_stem: &str,
+    infinitive_stem: &str,
+    past_stem: &str,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_hard_present(&mut lexeme, present_stem);
+    set_imperfect(&mut lexeme, present_stem, ImperfectFormation::PresentYatA);
+    set_vowel_aorist(&mut lexeme, infinitive_stem);
+    set_imperative(&mut lexeme, present_stem, ImperativeFormation::YatSeries);
+    set_l_participle(&mut lexeme, past_stem);
+    set_present_active(
+        &mut lexeme,
+        present_stem,
+        PresentActiveParticipleFormation::YushtHard,
+    );
+    set_present_passive(
+        &mut lexeme,
+        present_stem,
+        PresentPassiveParticipleFormation::Om,
+    );
+    set_past_active(
+        &mut lexeme,
+        present_stem,
+        PastActiveParticipleFormation::Ush,
+    );
+    set_past_passive(&mut lexeme, past_stem, PastPassiveParticipleFormation::T);
+    lexeme
+}
+
+#[allow(clippy::too_many_arguments)]
+fn build_velar_shti_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    first_present: &str,
+    other_present: &str,
+    imperative_stem: &str,
+    past_stem: &str,
+    passive_stem: &str,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    insert_velar_present(&mut lexeme, first_present, other_present);
+    insert_shti_infinitive_and_supine(&mut lexeme, lemma);
+    set_imperfect(&mut lexeme, other_present, ImperfectFormation::PresentYatA);
+    set_new_aorist(&mut lexeme, first_present);
+    set_imperative(&mut lexeme, imperative_stem, ImperativeFormation::YatSeries);
+    set_l_participle(&mut lexeme, past_stem);
+    set_present_active(
+        &mut lexeme,
+        first_present,
+        PresentActiveParticipleFormation::YushtHard,
+    );
+    set_present_passive(
+        &mut lexeme,
+        first_present,
+        PresentPassiveParticipleFormation::Om,
+    );
+    set_past_active(&mut lexeme, past_stem, PastActiveParticipleFormation::Ush);
+    set_past_passive(
+        &mut lexeme,
+        passive_stem,
+        PastPassiveParticipleFormation::En,
+    );
+    lexeme
+}
+
+#[allow(clippy::too_many_arguments)]
+fn build_chisti_member(
+    lemma: &str,
+    aspect: VerbAspect,
+    first_present: &str,
+    other_present: &str,
+    imperative_stem: &str,
+    past_stem: &str,
+    passive_stem: &str,
+) -> VerbLexeme {
+    let mut lexeme = new_family_lexeme(lemma, aspect);
+    if first_present == other_present {
+        insert_hard_present(&mut lexeme, first_present);
+    } else {
+        insert_velar_present(&mut lexeme, first_present, other_present);
+    }
+    if lemma.ends_with("щи") {
+        insert_shti_infinitive_and_supine(&mut lexeme, lemma);
+    }
+    set_imperfect(&mut lexeme, other_present, ImperfectFormation::PresentYatA);
+    set_new_aorist(&mut lexeme, first_present);
+    set_imperative(&mut lexeme, imperative_stem, ImperativeFormation::YatSeries);
+    set_l_participle(&mut lexeme, past_stem);
+    set_present_active(
+        &mut lexeme,
+        first_present,
+        PresentActiveParticipleFormation::YushtHard,
+    );
+    set_present_passive(
+        &mut lexeme,
+        first_present,
+        PresentPassiveParticipleFormation::Om,
+    );
+    set_past_active(&mut lexeme, past_stem, PastActiveParticipleFormation::Ush);
+    set_past_passive(
+        &mut lexeme,
+        passive_stem,
+        PastPassiveParticipleFormation::En,
+    );
+    lexeme
+}
+
+fn insert_shti_infinitive_and_supine(lexeme: &mut VerbLexeme, lemma: &str) {
+    lexeme
+        .exact_forms
+        .insert(VerbMorphologyCell::Infinitive, lemma.to_string());
+    if let Some(stem) = lemma.strip_suffix("щи") {
+        lexeme
+            .exact_forms
+            .insert(VerbMorphologyCell::Supine, format!("{stem}щь"));
     }
 }
 
 #[derive(Debug, Clone, Copy)]
 enum PresentShape {
     Hard,
+    Soft,
     MixedSoft,
     Iotated,
 }
@@ -347,7 +755,9 @@ fn configure_class_three(
         present_stem,
         match shape {
             PresentShape::Hard => ImperativeFormation::YatSeries,
-            PresentShape::MixedSoft | PresentShape::Iotated => ImperativeFormation::ISeries,
+            PresentShape::Soft | PresentShape::MixedSoft | PresentShape::Iotated => {
+                ImperativeFormation::ISeries
+            }
         },
     );
     set_l_participle(lexeme, infinitive_stem);
@@ -360,7 +770,7 @@ fn configure_class_three(
             );
             set_present_passive(lexeme, present_stem, PresentPassiveParticipleFormation::Om);
         }
-        PresentShape::MixedSoft => {
+        PresentShape::Soft | PresentShape::MixedSoft => {
             set_present_active(
                 lexeme,
                 present_stem,
@@ -381,6 +791,14 @@ fn configure_iotated_present_participles(lexeme: &mut VerbLexeme, stem: &str) {
         PresentActiveParticipleFormation::IotatedYushtSoft,
     );
     set_present_passive(lexeme, stem, PresentPassiveParticipleFormation::IotatedEm);
+}
+
+fn insert_present_shape(lexeme: &mut VerbLexeme, stem: &str, shape: PresentShape) {
+    match shape {
+        PresentShape::Hard | PresentShape::MixedSoft => insert_hard_present(lexeme, stem),
+        PresentShape::Soft => insert_soft_present(lexeme, stem),
+        PresentShape::Iotated => insert_iotated_present(lexeme, stem),
+    }
 }
 
 fn insert_hard_present(lexeme: &mut VerbLexeme, stem: &str) {
@@ -676,7 +1094,7 @@ mod tests {
                 "влѣкѫ",
                 "влѣчеши",
                 "влѣцѣте",
-                "влѣкѣахъ",
+                "влѣчѣахъ",
                 "влѣкохъ",
                 "влѣче",
             ),
@@ -761,6 +1179,247 @@ mod tests {
                 for cell in ParticipleCell::for_kind(kind) {
                     participle(&lexeme, cell)
                         .unwrap_or_else(|error| panic!("{group:?} {cell:?}: {error:?}"));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn family_member_inventory_is_closed_and_source_ordered() {
+        let members = IrregularVerbFamilyMember::all().collect::<Vec<_>>();
+        assert_eq!(members.len(), IrregularVerbFamilyMember::COUNT);
+        let lemmas = members
+            .iter()
+            .map(|member| member.canonical_lemma())
+            .collect::<BTreeSet<_>>();
+        assert_eq!(lemmas.len(), IrregularVerbFamilyMember::COUNT);
+
+        for member in members {
+            assert_eq!(
+                IrregularVerbFamilyMember::classify_source_lemma(member.canonical_lemma()),
+                Some(member)
+            );
+            assert!(
+                member
+                    .group()
+                    .family_anchors()
+                    .contains(&member.canonical_lemma()),
+                "{:?}",
+                member
+            );
+            assert_eq!(member.source_section(), member.group().source_section());
+            assert_eq!(member.lexeme().aspect, Some(member.aspect()));
+        }
+
+        assert_eq!(
+            IrregularVerbFamilyMember::classify_source_lemma("възьмати")
+                .expect("source-listed imperfective")
+                .aspect(),
+            VerbAspect::Imperfective
+        );
+        assert_eq!(
+            IrregularVerbFamilyMember::classify_source_lemma("шити")
+                .expect("LOVe perfective")
+                .aspect(),
+            VerbAspect::Perfective
+        );
+        assert_eq!(
+            IrregularVerbFamilyMember::classify_source_lemma("чрьпати")
+                .expect("LOVe biaspectual")
+                .aspect(),
+            VerbAspect::Biaspectual
+        );
+    }
+
+    #[test]
+    fn every_family_member_matches_its_table_434_present_key() {
+        let first_present = finite_cell(FiniteTense::Present, Person::First, Number::Singular);
+        let goldens = [
+            ("искати", "искѫ"),
+            ("ковати", "ковѫ"),
+            ("метати", "метѫ"),
+            ("уръвати", "уръвѫ"),
+            ("обсновати", "обсновѫ"),
+            ("съсати", "съсѫ"),
+            ("тъкати", "тъкѫ"),
+            ("дъхати", "душѫ"),
+            ("зиꙗти", "зѣѭ"),
+            ("зьдати", "зиждѫ"),
+            ("лиꙗти", "лѣѭ"),
+            ("пльзати", "плѣжѫ"),
+            ("пьсати", "пишѫ"),
+            ("възсльпати", "възслѣплѭ"),
+            ("смиꙗти", "смѣѭ"),
+            ("стръгати", "стружѫ"),
+            ("стьлати", "стелѭ"),
+            ("трьѕати", "трѣжѫ"),
+            ("чрьпати", "чрѣплѭ"),
+            ("възьмати", "въземлѭ"),
+            ("бьрати", "берѫ"),
+            ("дьрати", "дерѫ"),
+            ("жьдати", "жидѫ"),
+            ("зъвати", "зовѫ"),
+            ("пьрати", "перѫ"),
+            ("бльвати", "блюѭ"),
+            ("пльвати", "плюѭ"),
+            ("дѫти", "дъмѫ"),
+            ("жити", "живѫ"),
+            ("съжѧти", "съжьмѫ"),
+            ("клѧти", "кльнѫ"),
+            ("начѧти", "начьнѫ"),
+            ("распѧти", "распьнѫ"),
+            ("възѧти", "възьмѫ"),
+            ("брати", "борѭ"),
+            ("жрьти", "жьрѭ"),
+            ("жѧти", "жьнѭ"),
+            ("клати", "колѭ"),
+            ("млѣти", "мелѭ"),
+            ("трьти", "тьрѭ"),
+            ("плути", "пловѫ"),
+            ("рути", "ровѫ"),
+            ("слути", "словѫ"),
+            ("натрути", "натровѫ"),
+            ("бити", "биѭ"),
+            ("съвити", "съвиѭ"),
+            ("гнити", "гниѭ"),
+            ("вълити", "вълиѭ"),
+            ("пити", "пиѭ"),
+            ("крꙑти", "крꙑѭ"),
+            ("мꙑти", "мꙑѭ"),
+            ("рꙑти", "рꙑѭ"),
+            ("шити", "шиѭ"),
+            ("пѣти", "поѭ"),
+            ("заврѣти", "завьрѫ"),
+            ("пожрѣти", "пожьрѫ"),
+            ("мрѣти", "мьрѫ"),
+            ("обпрѣти", "обпьрѫ"),
+            ("разскврѣти", "разсквьрѫ"),
+            ("прострѣти", "простьрѫ"),
+            ("влѣщи", "влѣкѫ"),
+            ("брѣщи", "брѣгѫ"),
+            ("отъврѣсти", "отъврьзѫ"),
+            ("врѣщи", "врьгѫ"),
+            ("вънисти", "въньзѫ"),
+            ("стрѣщи", "стригѫ"),
+            ("тлѣщи", "тлькѫ"),
+            ("цвисти", "цвьтѫ"),
+            ("чисти", "чьтѫ"),
+            ("почрѣти", "почрьпѫ"),
+        ];
+        assert_eq!(goldens.len(), IrregularVerbFamilyMember::COUNT);
+
+        for (lemma, expected) in goldens {
+            let member = IrregularVerbFamilyMember::classify_source_lemma(lemma)
+                .unwrap_or_else(|| panic!("missing source member {lemma}"));
+            assert_eq!(
+                finite(&member.lexeme(), first_present)
+                    .unwrap_or_else(|error| panic!("{lemma}: {error:?}"))
+                    .text,
+                expected,
+                "{lemma}"
+            );
+        }
+    }
+
+    #[test]
+    fn family_members_match_the_additional_table_434_principal_parts() {
+        let first_imperfect = finite_cell(FiniteTense::Imperfect, Person::First, Number::Singular);
+        for (lemma, expected) in [
+            ("брати", "борѣахъ"),
+            ("жрьти", "жьрѣахъ"),
+            ("жѧти", "жьнѣахъ"),
+            ("клати", "колѣахъ"),
+            ("млѣти", "мелѣахъ"),
+            ("трьти", "тьрѣахъ"),
+        ] {
+            let member = IrregularVerbFamilyMember::classify_source_lemma(lemma)
+                .unwrap_or_else(|| panic!("missing source member {lemma}"));
+            assert_eq!(
+                finite(&member.lexeme(), first_imperfect)
+                    .expect("Table 434 imperfect key")
+                    .text,
+                expected,
+                "{lemma}"
+            );
+        }
+
+        let past_passive = short_nominative(ParticipleKind::PastPassive);
+        for (lemma, expected) in [
+            ("крꙑти", "кръвенъ"),
+            ("мꙑти", "мъвенъ"),
+            ("рꙑти", "ръвенъ"),
+            ("шити", "шьвенъ"),
+            ("влѣщи", "вльченъ"),
+            ("брѣщи", "брьженъ"),
+        ] {
+            let member = IrregularVerbFamilyMember::classify_source_lemma(lemma)
+                .unwrap_or_else(|| panic!("missing source member {lemma}"));
+            assert_eq!(
+                participle(&member.lexeme(), past_passive)
+                    .expect("Table 434 past-passive key")
+                    .text,
+                expected,
+                "{lemma}"
+            );
+        }
+
+        let masculine_singular = LParticipleCell {
+            gender: Gender::Masculine,
+            number: Number::Singular,
+        };
+        // Table 434 transposes the мрѣти and разскврѣти past-stem labels.
+        // Their own roots and the uniform Table 440 distribution determine the
+        // corrected alignments used here.
+        for (lemma, expected_l, expected_passive) in [
+            ("заврѣти", "заврьлъ", "заврьтъ"),
+            ("пожрѣти", "пожрьлъ", "пожрьтъ"),
+            ("мрѣти", "мрьлъ", "мрьтъ"),
+            ("обпрѣти", "обпрьлъ", "обпрьтъ"),
+            ("разскврѣти", "разскврьлъ", "разскврьтъ"),
+            ("прострѣти", "прострьлъ", "прострьтъ"),
+        ] {
+            let member = IrregularVerbFamilyMember::classify_source_lemma(lemma)
+                .unwrap_or_else(|| panic!("missing source member {lemma}"));
+            let lexeme = member.lexeme();
+            assert_eq!(
+                l_participle(&lexeme, masculine_singular)
+                    .expect("Table 434 l-participle key")
+                    .text,
+                expected_l,
+                "{lemma}"
+            );
+            assert_eq!(
+                participle(&lexeme, past_passive)
+                    .expect("Table 434 past-passive key")
+                    .text,
+                expected_passive,
+                "{lemma}"
+            );
+        }
+    }
+
+    #[test]
+    fn every_family_member_reaches_every_licensed_cell() {
+        for member in IrregularVerbFamilyMember::all() {
+            let lexeme = member.lexeme();
+            for cell in FiniteVerbCell::all() {
+                finite(&lexeme, cell)
+                    .unwrap_or_else(|error| panic!("{member:?} {cell:?}: {error:?}"));
+            }
+            for cell in ImperativeCell::SUPPORTED {
+                imperative(&lexeme, cell)
+                    .unwrap_or_else(|error| panic!("{member:?} {cell:?}: {error:?}"));
+            }
+            infinitive(&lexeme).unwrap_or_else(|error| panic!("{member:?}: {error:?}"));
+            supine(&lexeme).unwrap_or_else(|error| panic!("{member:?}: {error:?}"));
+            for cell in LParticipleCell::all() {
+                l_participle(&lexeme, cell)
+                    .unwrap_or_else(|error| panic!("{member:?} {cell:?}: {error:?}"));
+            }
+            for kind in ParticipleKind::ALL {
+                for cell in ParticipleCell::for_kind(kind) {
+                    participle(&lexeme, cell)
+                        .unwrap_or_else(|error| panic!("{member:?} {cell:?}: {error:?}"));
                 }
             }
         }

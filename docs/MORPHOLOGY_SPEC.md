@@ -639,28 +639,30 @@ Two additional present-active participle seams preserve unique-profile
 oppositions that the ordinary hard/soft formations cannot express:
 `MixedYushtSoft` forms `-ѧ/-ѫшт-` (`дѣти`, `°рѣсти`), and
 `IotatedYushtSoft` forms `-ѩ/-ѭшт-` (`въпити`, `довьлѣти`). These are typed
-formations rather than spelling postprocessing. Reusable-workstem member
-expansion, impersonal verbs, and facade source-provenance routing remain
-separate completion checkpoints.
+formations rather than spelling postprocessing. Impersonal verbs and facade
+source-provenance routing remain separate completion checkpoints.
 
-`IrregularVerbGroup` now inventories all thirteen reusable workstem groups of
-Polivanova Tables 434 and 440 and all seventy source-listed family anchors.
-Each group representative realizes the complete Table 454 profile across all
-finite, imperative, infinitive, supine, l-participle, and declined-participle
-cells. The model keeps the table's subparadigm distributions explicit: for
-example, `крꙑти` uses `крꙑ-` in its present and past-active participle but
-`кръв-` in the past passive, while `мрѣти` distinguishes `мьр-`, `мрь-`, and
-`мрѣ-`. The vowel/j-present groups required a separate
+`IrregularVerbGroup` inventories all thirteen reusable workstem groups of
+Polivanova Tables 434 and 440. `IrregularVerbFamilyMember` closes all seventy
+source-listed members with explicit prefix and root allomorph maps; every member
+realizes every finite, imperative, infinitive, supine, l-participle, and
+declined-participle cell. The model keeps the table's subparadigm distributions
+explicit: for example, `крꙑти` uses `крꙑ-` in its present and past-active
+participle but `кръв-` in the past passive, while `мрѣти` distinguishes `мьр-`,
+`мрь-`, and `мрѣ-`. It likewise preserves prefixed root alternations such as
+`възѧти` / `възьмѫ`, `разскврѣти` / `разсквьрѫ`, and `брѣщи` / `брѣгѫ` /
+`брьженъ`. The vowel/j-present groups required a separate
 `PresentPassiveParticipleFormation::IotatedEm`, which forms `-ѥм-` directly
 (`плюѥмъ`, `крꙑѥмъ`, `поѥмъ`) and is also accepted by the typed metadata and
 extractor contracts.
 
-This representative layer does not yet claim every family member. The seventy
-anchors still need member-specific prefix and root allomorph assembly before
-the reusable-group checkpoint is closed. LOVe also assigns `метати` a
-`мещ-/метај-` present analysis, while Polivanova places it in the 3°
-`мет-/метѫ` group; these remain competing lexical analyses rather than being
-silently conflated.
+Table 434 appears to transpose the displayed past stems of `мрѣти` and
+`разскврѣти`. The implementation follows each lexeme's own root and the uniform
+Table 440 distribution (`мрьлъ/мрьтъ`, `разскврьлъ/разскврьтъ`) rather than
+copying the crossed labels. LOVe also assigns `метати` a `мещ-/метај-` present
+analysis, while Polivanova places it in the 3° `мет-/метѫ` group; these remain
+competing lexical analyses rather than being silently conflated. Impersonal
+verbs and facade-level per-cell provenance remain separate checkpoints.
 
 ### Imperative
 

@@ -34,7 +34,7 @@ pub use grammar::{
     RequestedCell, UngenderedCell, VerbAspect, VerbClass, VerbDefectKind, VerbMorphologyCell,
     VerbMorphologySystem,
 };
-pub use irregular_verb::IrregularVerbGroup;
+pub use irregular_verb::{IrregularVerbFamilyMember, IrregularVerbGroup};
 pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
     CardinalPhraseAnalysis, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
