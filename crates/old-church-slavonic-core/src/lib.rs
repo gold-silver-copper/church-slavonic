@@ -35,6 +35,7 @@ pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
     CardinalPhraseAnalysis, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
     DistributiveCardinalAnalysis, FractionalNumeralDeclension, FractionalNumeralIdentity,
+    IndefiniteNumeralIdentity, MAX_COMPOUND_ORDINAL_VALUE, MIN_COMPOUND_ORDINAL_VALUE,
     NumeralGovernment, NumeralVariant, NumeralVariantStatus, OrdinalComposition,
     OrdinalNumeralIdentity, OrdinalPhraseAnalysis, RealizedCardinal, RealizedDistributiveCardinal,
     RealizedOrdinal,

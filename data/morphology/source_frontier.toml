@@ -1,5 +1,5 @@
 schema_version = 1
-as_of = "2026-08-14"
+as_of = "2026-08-15"
 authority_policy = "target-recension normative grammars and critical editions; manuscript-grounded dictionaries; independent target texts; manually annotated corpora; explicitly labeled inherited/comparative evidence; automatic, crowd-edited, OCR, and generated evidence only as candidates or evaluation"
 
 [[source]]
@@ -77,10 +77,10 @@ authority_justification = "The grammar gives an explicit compact rule inventory 
 license = "copyrighted teaching grammar; bibliographic facts and short rule references only"
 redistribution = "metadata-only"
 upstream_lineage = []
-reviewed_sections = ["bibliographic identity", "§86 u-stem noun inventory and full declension", "§§115–117 cardinal structure and connector inventory", "§§118–119 simple, analytic-teen, decade, hundred, thousand, short/long, and compound ordinal formation"]
-rule_ids = ["N-U-M-01", "NUM-ORD-TEEN-01", "NUM-ORD-DECADE-01", "NUM-ORD-HUNDRED-01", "NUM-ORD-THOUSAND-01", "NUM-ORD-ADDITIVE-01", "NUM-FRAC-NOUN-01"]
-impact = "Independently lists полъ ‘half’ among the six secure masculine u-stem nouns and supplies that class's full singular, dual, and plural declension. It also states that hundredth and thousandth take -ьнъ, ordinals admit short and long adjective forms, teens use an inflected simple ordinal before invariant на десѧте, decades may use десѧтъ or десѧтьнъ, and compound ordinals follow cardinal composition principles."
-conflicts = ["Its compact description does not enumerate every fused teen and magnitude stem or settle the component-inflection variants of asyndetic additive ordinals."]
+reviewed_sections = ["bibliographic identity", "§86 u-stem noun inventory and full declension", "§§115–117 cardinal structure, connector inventory, and the тъма/несъвѣда lexical claim", "§§118–119 simple, analytic-teen, decade, hundred, thousand, short/long, and compound ordinal formation, including the terminal thousandth head"]
+rule_ids = ["N-U-M-01", "NUM-ORD-TEEN-01", "NUM-ORD-DECADE-01", "NUM-ORD-HUNDRED-01", "NUM-ORD-THOUSAND-01", "NUM-ORD-ADDITIVE-01", "NUM-FRAC-NOUN-01", "NUM-INDEF-NOUN-01", "NUM-SCOPE-BOUNDARY-01"]
+impact = "Independently lists полъ ‘half’ among the six secure masculine u-stem nouns and supplies that class's full singular, dual, and plural declension. It also states that hundredth and thousandth take -ьнъ, ordinals admit short and long adjective forms, teens use an inflected simple ordinal before invariant на десѧте, decades may use десѧтъ or десѧтьнъ, and compound ordinals follow cardinal composition principles. Its enumerated ordinal inventory ends at thousandth and supplies no stem or component-inflection rule for a higher magnitude. Section 115 calls both тъма and несъвѣда 10,000 but declines only тъма; the lexical monograph and manuscript studies below control the resulting semantic conflict."
+conflicts = ["Its compact description does not enumerate every fused teen and magnitude stem or settle the component-inflection variants of asyndetic additive ordinals; the general cardinal-composition statement is insufficient to choose among historically different post-thousand ordinal formations.", "Its parenthetical assignment of exact 10,000 to несъвѣда conflicts with Lvov's manuscript-grounded distinction between тъма ‘ten thousand’ and несъвѣда ‘incalculable quantity’, as well as later studies of Кирик's million-scale use. The engine retains несъвѣда as an inflectable indefinite-quantity noun but excludes it from exact integer composition."]
 access_status = "accessible-full-text"
 
 [[source]]
@@ -105,9 +105,144 @@ license = "copyright 2018 authors and NPU Dragomanov; bibliographic facts and sh
 redistribution = "metadata-only"
 upstream_lineage = []
 reviewed_sections = ["pp. 154–160 four-way numeral semantic inventory, cardinal structure and declension", "pp. 156 and 164 distributive по + dative examples and temporal по + locative contrast", "p. 155 cardinal/ordinal comparison table", "pp. 161–162 simple, fused, analytic, additive, and fractional numeral inventory", "p. 164 named manuscript exercises"]
-rule_ids = ["NUM-CARD-DISTRIBUTIVE-01", "NUM-ORD-TEEN-01", "NUM-ORD-DECADE-01", "NUM-ORD-HUNDRED-01", "NUM-ORD-THOUSAND-01", "NUM-ORD-ADDITIVE-01", "NUM-FRAC-NOUN-01"]
-impact = "Supplies the reviewed fused teen, decade, hundred, and thousand stem inventory, documents thematic -о- variants, licenses additive и, ти, and zero-connector constructions, names manuscript examples for analytic/fused teens and 20th, 70th, 100th, 500th, and 1000th, and identifies two rare alternative 21–29 constructions for separate review. Its four semantic numeral classes provide no independent synthetic distributive series, while по дьвѣма ли тремъ мѣрамъ supplies the analytic по + dative pattern and the temporal по дъвою дьнию locative supplies its case/meaning boundary. It closes the OCS fractional inventory as the noun-based полъ, половина, четврьть, and десѧтина system, assigns them respectively to u-, a-, i-, and a-stem declension, and places третина and compound fractions such as полътора in later Church Slavonic."
-conflicts = ["Its general statement that only the first component declines in an asyndetic ordinal conflicts with the same section's cited Suprasliensis сътьнааго четврьтааго, where both components carry genitive agreement; the engine currently exposes the directly attested all-agreeing analysis and leaves the competing rule open.", "The table mixes directly manuscript-cited stems with pedagogical reconstructions; runtime evidence distinguishes source-listed/productive and reconstructed outputs rather than calling every table member attested."]
+rule_ids = ["NUM-CARD-DISTRIBUTIVE-01", "NUM-ORD-TEEN-01", "NUM-ORD-DECADE-01", "NUM-ORD-HUNDRED-01", "NUM-ORD-THOUSAND-01", "NUM-ORD-ADDITIVE-01", "NUM-FRAC-NOUN-01", "NUM-SCOPE-BOUNDARY-01"]
+impact = "Supplies the reviewed fused teen, decade, hundred, and thousand stem inventory, documents thematic -о- variants, licenses additive и, ти, and zero-connector constructions, names manuscript examples for analytic/fused teens and 20th, 70th, 100th, 500th, and 1000th, and identifies two rare alternative 21–29 constructions. Its ordinal inventory terminates at the thousandth stem and gives no higher-magnitude formation. Its four semantic numeral classes provide no independent synthetic distributive series, while по дьвѣма ли тремъ мѣрамъ supplies the analytic по + dative pattern and the temporal по дъвою дьнию locative supplies its case/meaning boundary. It closes the OCS fractional inventory as the noun-based полъ, половина, четврьть, and десѧтина system, assigns them respectively to u-, a-, i-, and a-stem declension, and places третина and compound fractions such as полътора in later Church Slavonic."
+conflicts = ["Its general statement that only the first component declines in an asyndetic ordinal conflicts with the same section's cited Suprasliensis сътьнааго четврьтааго, where both components carry genitive agreement; the engine preserves both accounts as separately tagged analyses.", "The table mixes directly manuscript-cited stems with pedagogical reconstructions; runtime evidence distinguishes source-listed/productive and reconstructed outputs rather than calling every table member attested."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "elkina-ocs-1960"
+title = "Старославянский язык"
+author_editor = "M. N. Elkina"
+edition_revision = "1960 State Educational-Pedagogical Publishing House edition; ImWerden 2013 scan"
+publication_date = "1960"
+publisher_institution = "State Educational-Pedagogical Publishing House, Moscow; scan hosted by ImWerden"
+stable_url = "https://imwerden.de/pdf/elkina_staroslavyansky_yazyk_1960_taxt.pdf"
+retrieved_at = "2026-08-15"
+sha256 = "3377a48bee34813dc465f65de244b7e3a5ddbba30f19eed5f8057ae3f966fa7f"
+languages = ["Russian", "Old Church Slavonic"]
+periods = ["Old Church Slavonic"]
+recensions = ["old-church-slavonic"]
+orthographies = ["normalized Cyrillic and manuscript examples"]
+source_type = "historical-language textbook"
+epistemic_roles = ["productive-grammar-comparison", "construction-inventory", "boundary-evidence"]
+authority_tier = 2
+authority_justification = "The textbook gives a compact OCS-specific numeral inventory, paradigms, and manuscript examples independent of the newer grammars used by the implementation."
+license = "copyrighted 1960 textbook; bibliographic facts, checksum, and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["§§125–128 cardinal inventory, declension, and composition", "§129 short/long ordinal agreement, compound connectors, and explicitly listed stem examples through thousandth", "§130 collective inventory and declension"]
+rule_ids = ["NUM-CARD-*", "NUM-ORD-*", "NUM-COLL-*", "NUM-SCOPE-BOUNDARY-01"]
+impact = "Independently confirms the noun-like magnitude heads, cardinal composition, short and long ordinal agreement, additive ordinal connectors, and collective paradigms. Its OCS ordinal account and examples end with the thousandth head and do not specify how a multiplier combines morphologically with that head, so it corroborates a source-bounded stop at 1,000 rather than a later Russian extrapolation."
+conflicts = ["The hosted scan's OCR is noisy; rule claims were checked against the rendered pages, and no exact OCS surface is imported solely from OCR."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "suprun-slavic-numerals-1969"
+title = "Славянские числительные: Становление числительных как особой части речи"
+author_editor = "A. E. Suprun"
+edition_revision = "Belarusian State University 1969 edition; Klex scan"
+publication_date = "1969"
+publisher_institution = "Belarusian State University, Minsk"
+stable_url = "https://www.klex.ru/14dw"
+retrieved_at = "2026-08-15"
+sha256 = "3a6113667ea8288bd43e81a6f52beddca9e0c07665dce47f7d15ba3f2743e151"
+languages = ["Russian", "Old Church Slavonic", "comparative Slavic"]
+periods = ["Proto-Slavic", "Old Church Slavonic", "historical and modern Slavic comparison"]
+recensions = ["old-church-slavonic", "inherited-comparative"]
+orthographies = ["Cyrillic examples", "comparative transcription"]
+source_type = "scholarly historical monograph"
+epistemic_roles = ["semantic-classification", "word-formation-boundary", "productive-grammar-comparison"]
+authority_tier = 2
+authority_justification = "Suprun's monograph synthesizes the historical category and word-formation evidence, building on his dedicated 1961 study of OCS numerals, and is used here to distinguish inflection from numeral-related derivation."
+license = "copyrighted scholarly monograph; bibliographic facts, checksum, and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Suprun 1961 Старославянские числительные"]
+reviewed_sections = ["pp. 20–23 semantic status of ordinals and fractions", "pp. 34–39 cross-Slavic numeral-class taxonomy and part-of-speech boundaries", "pp. 45–81 compositional cardinal word formation", "pp. 89–90 word formation versus inflection", "pp. 121–124 OCS numeral declension"]
+rule_ids = ["NUM-SCOPE-BOUNDARY-01", "NUM-CARD-*", "NUM-COLL-*", "NUM-FRAC-NOUN-01"]
+impact = "Confirms that ordinal words inflect as adjectives, fractional quarter/tenth words as nouns, and apparent additional numeral series such as двоякий, дважды, and сам-третей types belong morphologically to adjectives or adverbs. This closes the supposed residual derived-numeral inventory by routing each formation to its owning part of speech rather than inventing another numeral paradigm."
+conflicts = ["The monograph is comparative across Slavic languages; only explicitly OCS claims or cross-Slavic part-of-speech conclusions are used for the OCS profile, never later-language surface forms."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "lvov-ocs-lexicon-1966"
+title = "Очерки по лексике памятников старославянской письменности"
+author_editor = "A. S. Lvov"
+edition_revision = "Nauka 1966 edition; Dnipro University of Technology repository scan"
+publication_date = "1966"
+publisher_institution = "Nauka, Moscow"
+stable_url = "https://libarch.nmu.org.ua/handle/GenofondUA/41966"
+retrieved_at = "2026-08-15"
+sha256 = "63e9a3beead42fd39a3f934f4e2981bda002cb3eb6f461b1b18024e58a258040"
+languages = ["Russian", "Old Church Slavonic", "Greek"]
+periods = ["Old Church Slavonic"]
+recensions = ["old-church-slavonic"]
+orthographies = ["diplomatic Cyrillic manuscript citations", "normalized discussion"]
+source_type = "scholarly manuscript-grounded lexical monograph"
+epistemic_roles = ["lexical-authority", "primary-text-attestation", "semantic-boundary", "declension-class-evidence"]
+authority_tier = 1
+authority_justification = "The monograph compares named oldest OCS witnesses and prints the exact Suprasliensis and John the Exarch forms used to establish the lexeme's semantics and declension."
+license = "copyrighted 1966 monograph; bibliographic facts, checksum, and short rule/form references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Codex Suprasliensis", "John the Exarch", "Sreznevsky Materials"]
+reviewed_sections = ["pp. 247–249 тъма—несъвѣда lexical comparison", "p. 248 Suprasliensis and John the Exarch citations, including instrumental plural несъвѣдами and derived adjective несъвѣдьнъ"]
+rule_ids = ["N-A-HARD-01", "NUM-CARD-MYRIAD-01", "NUM-INDEF-NOUN-01"]
+impact = "Distinguishes exact тъма ‘ten thousand’ or ‘thousands’ from несъвѣда ‘incalculable quantity’, and directly cites несъвѣдами in both the Suprasliensis and John the Exarch. This licenses the complete inherited hard a-stem noun paradigm while keeping the lexeme outside exact integer composition."
+conflicts = ["Gorshkov §115 compresses несъвѣда into the exact 10,000 inventory; Lvov's primary-text comparison instead treats it as the eastern-Bulgarian indefinite replacement for тъма."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "simonov-nesveda-2006"
+title = "Несъведа — что это такое?"
+author_editor = "R. A. Simonov"
+edition_revision = "Русская речь 2006 no. 4, pp. 81–85"
+publication_date = "2006"
+publisher_institution = "Vinogradov Russian Language Institute, Russian Academy of Sciences"
+stable_url = "https://russkayarech.ru/sites/default/files/journals/2006/2006-4.pdf"
+retrieved_at = "2026-08-15"
+sha256 = "6c2a043dd5b9cb32d68a45210025ea342ae739a72d5a941208c66b95b31d6a95"
+languages = ["Russian", "Old Russian"]
+periods = ["twelfth-century Old Russian"]
+recensions = ["old-russian-comparative"]
+orthographies = ["diplomatic Cyrillic citations", "modern Russian discussion"]
+source_type = "peer-reviewed historical-semantic article"
+epistemic_roles = ["semantic-boundary", "comparative-attestation", "conflict-resolution"]
+authority_tier = 2
+authority_justification = "The article analyzes the complete Кирик occurrence set and the numerical notation surrounding it; it is comparative boundary evidence rather than an OCS declension authority."
+license = "copyrighted journal article; bibliographic facts, checksum, and short rule/form references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Кирик Новгородец, Учение о числах, 1136"]
+reviewed_sections = ["pp. 81–85 all Кирик несъведии/носъведии occurrences and rejection of a fixed hundred-thousand value"]
+rule_ids = ["NUM-INDEF-NOUN-01", "NUM-SCOPE-BOUNDARY-01"]
+impact = "Shows that later exact-value readings do not fit Кирик's notation: the word marks million and ten-million ranks beyond the contemporary abacus rather than a stable power of ten. It corroborates exclusion from exact OCS cardinal composition without supplying OCS paradigm cells."
+conflicts = ["Earlier historical-mathematical literature assigned a fixed 100,000 value; the article rejects that interpretation from the full occurrence context."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "pronin-large-numerals-2024"
+title = "Точное значение в семантике наименований больших чисел в славяно-русских текстах"
+author_editor = "D. I. Pronin"
+edition_revision = "Палеоросия 2024 no. 3 (27), pp. 45–56; DOI 10.47132/2618-9674_2024_3_45"
+publication_date = "2024"
+publisher_institution = "Saint Petersburg Theological Academy"
+stable_url = "https://doi.org/10.47132/2618-9674_2024_3_45"
+retrieved_at = "2026-08-15"
+sha256 = "db4a98483e1f3769c6ca3648482d59e87c6ee017b83279772603bcb5dc1bb9a4"
+languages = ["Russian", "Old Church Slavonic", "Old Russian"]
+periods = ["Old Church Slavonic", "twelfth- through eighteenth-century Slavic-Russian"]
+recensions = ["old-church-slavonic", "old-russian-comparative", "later-russian-comparative"]
+orthographies = ["diplomatic and normalized Cyrillic"]
+source_type = "peer-reviewed historical-semantic synthesis"
+epistemic_roles = ["semantic-boundary", "chronological-contamination-control", "conflict-resolution"]
+authority_tier = 2
+authority_justification = "The peer-reviewed synthesis compares named manuscript systems and explicitly separates exact values by chronology; it confirms boundaries but does not define an OCS declension."
+license = "copyrighted journal article; bibliographic facts, checksum, and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Simonov 2006", "Кирик Новгородец", "named Slavic-Russian mathematical manuscripts"]
+reviewed_sections = ["pp. 47–52 competing large-number systems", "pp. 50–51 exact and indefinite meanings of тьма, легион, and несвѣда"]
+rule_ids = ["NUM-CARD-MYRIAD-01", "NUM-INDEF-NOUN-01", "NUM-SCOPE-BOUNDARY-01"]
+impact = "Confirms exact 10,000 for тьма in the small/church number system while documenting other chronological values; confirms that Кирик's несъведа replaces a stable magnitude only for million-scale out-of-range ranks. This prevents later numeral systems from contaminating the OCS integer API."
+conflicts = ["Large-number names have different exact values in small, middle, and great-number systems; no single value is imported without a declared chronological profile."]
 access_status = "accessible-full-text"
 
 [[source]]
@@ -532,3 +667,40 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "The pass added Lunt as an independent comprehensive grammar and LOVe as a 970-lemma principal-part/aspect source. Both require complete crosswalks, so convergence is not established."
+
+[[discovery_pass]]
+id = "ocs-numeral-frontier-pass-2"
+performed_at = "2026-08-15"
+languages = ["English", "Russian", "Ukrainian", "German"]
+queries = [
+  "Old Church Slavonic compound ordinal thousandth ten-thousandth",
+  "старославянские порядковые числительные тысячный двухтысячный",
+  "Супрун Старославянские числительные порядковые тысячи",
+  "старослов'янські числівники порядкові тисячний складені",
+  "Altkirchenslawisch Ordinalzahlen tausendste Zahlwörter",
+]
+catalogs = ["SPbU electronic catalog", "ImWerden", "Klex", "DjVu.Online", "Firenze University Press", "locked OCS corpora"]
+new_sources = ["elkina-ocs-1960", "suprun-slavic-numerals-1969"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "The pass added an independent OCS textbook and Suprun's historical synthesis. Together with Gorshkov, Polivanova, Leuta–Havryliuk, and the pinned corpora, they close the ordinal profile at the independently specified thousandth head and classify the apparent residual derived series under adjectives, nouns, or invariant adverbs. No deterministic OCS formation above 1,000 was found; later Russian forms were excluded as recension contamination. Because this pass changes the numeral contract, it does not count as a no-change convergence pass."
+
+[[discovery_pass]]
+id = "ocs-large-number-frontier-pass-3"
+performed_at = "2026-08-15"
+languages = ["Russian", "Old Church Slavonic"]
+queries = [
+  "несъвѣда старославянский числительное склонение",
+  "Тьма несъвѣда Львов 1966",
+  "Несъведа что это такое Симонов 2006",
+  "точное значение наименований больших чисел несъвѣда",
+]
+catalogs = ["Dnipro University of Technology repository", "Русская речь archive", "Палеоросия journal archive", "DjVu.Online"]
+new_sources = ["lvov-ocs-lexicon-1966", "simonov-nesveda-2006", "pronin-large-numerals-2024"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "The pass followed Suprun's bibliography to Lvov's primary-text lexical study and then checked Simonov and Pronin's complete-context semantic analyses. It adds the hard a-stem indefinite-quantity noun несъвѣда, preserves its directly cited instrumental plural, rejects a context-free exact magnitude value, and documents the chronological boundary around later large-number systems."

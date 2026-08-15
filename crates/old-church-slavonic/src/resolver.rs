@@ -519,6 +519,37 @@ pub fn fractional_numeral(lemma: &str, cell: NounCell) -> Result<FormSet, Inflec
     Ok(result)
 }
 
+/// Resolve one noun cell of a source-listed OCS indefinite-quantity numeral.
+pub fn reviewed_indefinite_numeral(
+    identity: IndefiniteNumeralIdentity,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    reviewed_numeral_variants(
+        identity.canonical_lemma(),
+        identity.authority(),
+        format!(
+            "numeral:indefinite-quantity:{}:{}",
+            cell.case.code(),
+            cell.number.code(),
+        ),
+        old_church_slavonic_core::numeral::decline_indefinite(identity, cell)?,
+    )
+}
+
+/// Resolve an indefinite-quantity numeral through the closed OCS source union.
+pub fn indefinite_numeral(lemma: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = IndefiniteNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    let mut result = reviewed_indefinite_numeral(identity, cell)?;
+    if normalized != identity.canonical_lemma() {
+        result.add_warning(InflectionWarning::LexicalAliasUsed {
+            canonical: identity.canonical_lemma().to_string(),
+        });
+    }
+    Ok(result)
+}
+
 /// Resolve one cell of a reviewed cardinal-magnitude head.
 pub fn reviewed_cardinal_magnitude(
     identity: CardinalMagnitudeIdentity,
@@ -572,6 +603,9 @@ fn reviewed_numeral_variants(
                         NumeralVariantStatus::CorpusAttestation => {
                             MetadataProvenance::CorpusEvaluationObservation
                         }
+                        NumeralVariantStatus::PrimaryTextAttestation => {
+                            MetadataProvenance::PrimaryTextAttestation
+                        }
                         NumeralVariantStatus::ReconstructedRule => {
                             MetadataProvenance::ProductiveRuleOutput
                         }
@@ -581,6 +615,7 @@ fn reviewed_numeral_variants(
                         variant.status,
                         NumeralVariantStatus::ReviewedTable
                             | NumeralVariantStatus::CorpusAttestation
+                            | NumeralVariantStatus::PrimaryTextAttestation
                     )
                     .then(|| form.text.clone()),
                     crosscheck_features: Vec::new(),
@@ -1279,9 +1314,18 @@ pub(crate) fn build_compound_ordinal_paradigm(
 }
 
 fn validate_compound_ordinal_value(value: u16) -> Result<(), InflectionError> {
-    if !(11..=1_000).contains(&value) {
+    if value < MIN_COMPOUND_ORDINAL_VALUE {
         return Err(InflectionError::InvalidInput {
-            reason: "the reviewed compound-ordinal range is 11 through 1,000".to_string(),
+            reason: format!(
+                "compound ordinals begin at {MIN_COMPOUND_ORDINAL_VALUE}; values one through ten use the simple-ordinal API"
+            ),
+        });
+    }
+    if value > MAX_COMPOUND_ORDINAL_VALUE {
+        return Err(InflectionError::InvalidInput {
+            reason: format!(
+                "the declared Old Church Slavonic source profile ends at {MAX_COMPOUND_ORDINAL_VALUE}; reviewed grammars do not determine higher-magnitude ordinal formation"
+            ),
         });
     }
     Ok(())
@@ -3041,6 +3085,30 @@ pub fn fractional_numeral_paradigm(
     let identity = FractionalNumeralIdentity::classify_source_union_lemma(&normalized)
         .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
     Ok(build_fractional_numeral_paradigm(identity))
+}
+
+pub(crate) fn build_indefinite_numeral_paradigm(
+    identity: IndefiniteNumeralIdentity,
+) -> IndefiniteNumeralParadigm {
+    IndefiniteNumeralParadigm {
+        identity,
+        lemma: identity.canonical_lemma().to_string(),
+        cells: NounCell::all()
+            .map(|cell| CellOutcome {
+                cell,
+                result: reviewed_indefinite_numeral(identity, cell),
+            })
+            .collect(),
+    }
+}
+
+pub fn indefinite_numeral_paradigm(
+    lemma: &str,
+) -> Result<IndefiniteNumeralParadigm, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = IndefiniteNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    Ok(build_indefinite_numeral_paradigm(identity))
 }
 
 fn lexeme_identity(

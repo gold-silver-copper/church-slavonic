@@ -9,6 +9,22 @@ use crate::{
     RuleId, RuleStep,
 };
 
+/// Lowest integer owned by the structured compound-ordinal API.
+///
+/// Values one through ten belong to [`OrdinalNumeralIdentity`] instead.
+pub const MIN_COMPOUND_ORDINAL_VALUE: u16 = 11;
+
+/// Highest compound ordinal licensed by the declared Old Church Slavonic
+/// source profile.
+///
+/// This is an evidential boundary, not an integer-storage limit. Gorshkov
+/// §§118–119, Elkina §§125 and 129, Polivanova's exhaustive grammatical
+/// dictionary, and Leuta–Havryliuk pp. 161–164 independently specify ordinal
+/// heads through `тꙑсѧщьнъ` “thousandth” but do not determine the stem shape or
+/// component inflection of higher magnitude ordinals. The engine therefore
+/// rejects larger values instead of importing later Russian formations.
+pub const MAX_COMPOUND_ORDINAL_VALUE: u16 = 1_000;
+
 /// The syntactic relation between a simple cardinal and the enumerated noun.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum NumeralGovernment {
@@ -27,6 +43,8 @@ pub enum NumeralVariantStatus {
     ProductiveRule,
     /// A noncanonical spelling or deformation observed in the pinned corpus.
     CorpusAttestation,
+    /// An exact form cited from a named primary manuscript witness.
+    PrimaryTextAttestation,
     /// A form generated from a historically established but unattested stem.
     ReconstructedRule,
 }
@@ -37,9 +55,100 @@ impl NumeralVariantStatus {
             Self::ReviewedTable => "reviewed-table",
             Self::ProductiveRule => "productive-rule",
             Self::CorpusAttestation => "corpus-attestation",
+            Self::PrimaryTextAttestation => "primary-text-attestation",
             Self::ReconstructedRule => "reconstructed-rule",
         }
     }
+}
+
+/// The source-bounded OCS indefinite-quantity numeral-noun inventory.
+///
+/// `несъвѣда` is not an exact integer synonym for `тъма`. Lvov's review of
+/// the Suprasliensis and John the Exarch distinguishes exact `тъма` “ten
+/// thousand” from `несъвѣда` “an incalculable quantity” and cites the hard
+/// a-stem instrumental plural `несъвѣдами`. The lexeme therefore declines as
+/// a noun but is deliberately unavailable to integer composition.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum IndefiniteNumeralIdentity {
+    Nesveda,
+}
+
+impl IndefiniteNumeralIdentity {
+    pub const ALL: [Self; 1] = [Self::Nesveda];
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::Nesveda => "несъвѣда",
+        }
+    }
+
+    pub const fn source_union_aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::Nesveda => &["несъвѣда"],
+        }
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|identity| identity.source_union_aliases().contains(&lemma))
+    }
+
+    pub const fn noun_class(self) -> NounClass {
+        match self {
+            Self::Nesveda => NounClass::AHard,
+        }
+    }
+
+    pub const fn gender(self) -> Gender {
+        match self {
+            Self::Nesveda => Gender::Feminine,
+        }
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        RuleId::NumeralIndefiniteNoun
+    }
+
+    pub const fn authority(self) -> &'static str {
+        match self {
+            Self::Nesveda => {
+                "Lvov 1966 pp. 247–249, citing Codex Suprasliensis and John the Exarch"
+            }
+        }
+    }
+
+    fn noun_lexeme(self) -> NounLexeme {
+        NounLexeme {
+            lemma: self.canonical_lemma().to_string(),
+            class: self.noun_class(),
+            gender: self.gender(),
+            animacy: Animacy::Inanimate,
+            number_restriction: NumberRestriction::All,
+        }
+    }
+}
+
+/// Decline one source-listed indefinite-quantity numeral noun.
+pub fn decline_indefinite(
+    identity: IndefiniteNumeralIdentity,
+    cell: NounCell,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    let mut prediction = crate::noun::decline(&identity.noun_lexeme(), cell)?;
+    let rule_id = identity.rule_id();
+    prediction.trace.push(RuleStep {
+        rule_id,
+        before: identity.canonical_lemma().to_string(),
+        after: prediction.text.clone(),
+        reason: "apply the source-identified indefinite numeral noun's inherited declension",
+    });
+    prediction.rule_id = rule_id;
+    let status = match (cell.case, cell.number) {
+        (Case::Nominative, Number::Singular) => NumeralVariantStatus::ReviewedTable,
+        (Case::Instrumental, Number::Plural) => NumeralVariantStatus::PrimaryTextAttestation,
+        _ => NumeralVariantStatus::ProductiveRule,
+    };
+    Ok(vec![NumeralVariant { prediction, status }])
 }
 
 /// One ordered numeral realization and its evidential status.
@@ -2795,6 +2904,82 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn indefinite_quantity_inventory_is_closed_and_not_an_exact_magnitude() {
+        assert_eq!(
+            IndefiniteNumeralIdentity::ALL,
+            [IndefiniteNumeralIdentity::Nesveda]
+        );
+        assert_eq!(
+            IndefiniteNumeralIdentity::classify_source_union_lemma("несъвѣда"),
+            Some(IndefiniteNumeralIdentity::Nesveda)
+        );
+        assert_eq!(
+            IndefiniteNumeralIdentity::Nesveda.noun_class(),
+            NounClass::AHard
+        );
+        assert_eq!(
+            IndefiniteNumeralIdentity::Nesveda.gender(),
+            Gender::Feminine
+        );
+        assert_eq!(
+            CardinalMagnitudeIdentity::classify_source_union_lemma("несъвѣда"),
+            None,
+            "an incalculable quantity must not enter exact integer composition"
+        );
+    }
+
+    #[test]
+    fn nesveda_reuses_every_a_stem_cell_and_keeps_primary_text_evidence_local() {
+        let identity = IndefiniteNumeralIdentity::Nesveda;
+        let mut reviewed = 0;
+        let mut attested = 0;
+        for cell in NounCell::all() {
+            let variants = decline_indefinite(identity, cell)
+                .unwrap_or_else(|error| panic!("{cell:?}: {error}"));
+            assert_eq!(variants.len(), 1, "{cell:?}");
+            let actual = &variants[0];
+            let expected = crate::noun::decline(&identity.noun_lexeme(), cell)
+                .expect("every hard a-stem noun cell is licensed");
+            assert_eq!(actual.prediction.text, expected.text, "{cell:?}");
+            assert_eq!(actual.prediction.rule_id, RuleId::NumeralIndefiniteNoun);
+            assert_eq!(
+                actual.prediction.trace.last().map(|step| step.rule_id),
+                Some(RuleId::NumeralIndefiniteNoun)
+            );
+            match actual.status {
+                NumeralVariantStatus::ReviewedTable => {
+                    reviewed += 1;
+                    assert_eq!(
+                        cell,
+                        NounCell {
+                            case: Case::Nominative,
+                            number: Number::Singular,
+                        }
+                    );
+                }
+                NumeralVariantStatus::PrimaryTextAttestation => {
+                    attested += 1;
+                    assert_eq!(
+                        cell,
+                        NounCell {
+                            case: Case::Instrumental,
+                            number: Number::Plural,
+                        }
+                    );
+                    assert_eq!(actual.prediction.text, "несъвѣдами");
+                }
+                NumeralVariantStatus::ProductiveRule => {}
+                NumeralVariantStatus::CorpusAttestation
+                | NumeralVariantStatus::ReconstructedRule => {
+                    panic!("wrong evidence status in {cell:?}")
+                }
+            }
+        }
+        assert_eq!(reviewed, 1);
+        assert_eq!(attested, 1);
     }
 
     #[test]

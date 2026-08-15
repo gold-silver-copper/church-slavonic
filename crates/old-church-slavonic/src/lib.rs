@@ -120,7 +120,7 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Cardinals and distributives through 10,000, ordinals 1–1,000, collectives 2–10, and OCS fractional nouns | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`compound_ordinal`], [`compound_ordinal_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`], [`distributive_cardinal`], [`distributive_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound and `по` + dative distributive, adjective-agreement ordinal, inherited collective, and period-bounded fractional-noun inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, disputed, and corpus variants |
+//! | Cardinals and distributives through 10,000, ordinals 1–1,000, collectives 2–10, fractional nouns, and indefinite quantities | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`compound_ordinal`], [`compound_ordinal_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`indefinite_numeral`], [`indefinite_numeral_identity`], [`indefinite_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`], [`distributive_cardinal`], [`distributive_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound and `по` + dative distributive, adjective-agreement ordinal, inherited collective, fractional-noun, and non-exact quantity inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, disputed, corpus, and primary-text evidence |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -157,9 +157,10 @@ pub use old_church_slavonic_core::{
     DeterminerIdentity, DeterminerLexeme, DirectToTreatment, DistributiveCardinalAnalysis,
     DistributiveCardinalCell, FiniteTense, FormSet, FormSource, FormVariant,
     FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
-    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning,
-    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LexemeSummary,
-    LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment, OrdinalComposition,
+    FutureReferenceTense, Gender, GenderedCell, IndefiniteNumeralIdentity, InflectionError,
+    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
+    LexemeSummary, LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE,
+    MIN_COMPOUND_ORDINAL_VALUE, Number, NumeralCell, NumeralGovernment, OrdinalComposition,
     OrdinalNumeralIdentity, OrdinalPhraseAnalysis, PartOfSpeech, ParticipleKind, PassiveAuxiliary,
     Person, PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
     PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
@@ -173,9 +174,9 @@ pub use paradigm::{
     CompoundCardinalParadigm, CompoundOrdinalOutcome, CompoundOrdinalParadigm, DeterminerParadigm,
     DistributiveCardinalOutcome, DistributiveCardinalParadigm, FiniteVerbParadigm,
     FractionalNumeralParadigm, GenderedNumeralParadigm, GenderedPronounParadigm,
-    ImperativeParadigm, LParticipleParadigm, NounParadigm, NumeralParadigm, OrdinalNumeralParadigm,
-    ParadigmLookupError, ParticipleParadigm, PersonalPronounParadigm, PronounParadigm,
-    VerbParadigm,
+    ImperativeParadigm, IndefiniteNumeralParadigm, LParticipleParadigm, NounParadigm,
+    NumeralParadigm, OrdinalNumeralParadigm, ParadigmLookupError, ParticipleParadigm,
+    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -197,14 +198,15 @@ pub mod prelude {
         DeterminerParadigm, DistributiveCardinalCell, DistributiveCardinalParadigm, FiniteTense,
         FiniteVerbParadigm, FormSet, FormSource, FormVariant, FractionalNumeralDeclension,
         FractionalNumeralIdentity, FractionalNumeralParadigm, Gender, GenderedNumeralParadigm,
-        GenderedPronounParadigm, ImperativeParadigm, InflectionError, InflectionResult,
-        InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-        LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral,
-        NumeralParadigm, OrdinalNumeralIdentity, OrdinalNumeralParadigm, ParadigmLookupError,
-        PartOfSpeech, Participle, ParticipleKind, ParticipleParadigm, Person,
-        PersonalPronounIdentity, PersonalPronounParadigm, Pronoun, PronounFormSelection,
-        PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy, VariantSelectionError,
-        Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+        GenderedPronounParadigm, ImperativeParadigm, IndefiniteNumeralIdentity,
+        IndefiniteNumeralParadigm, InflectionError, InflectionResult, InflectionWarning,
+        InterrogativePronounIdentity, IrregularAgreeingIdentity, LParticipleParadigm, Lemma,
+        LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral, NumeralParadigm,
+        OrdinalNumeralIdentity, OrdinalNumeralParadigm, ParadigmLookupError, PartOfSpeech,
+        Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
+        PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
+        StandardPronominalIdentity, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
+        adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
         cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
         collective_numeral_identity, collective_numeral_paradigm,
         collective_numeral_paradigm_identity, comparative_citation, compound_cardinal,
@@ -218,9 +220,11 @@ pub mod prelude {
         fractional_numeral_identity, fractional_numeral_paradigm,
         fractional_numeral_paradigm_identity, gendered_numeral, gendered_numeral_paradigm,
         gendered_pronoun, gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect,
-        infinitive, interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
-        long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
-        numeral_paradigm, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+        indefinite_numeral, indefinite_numeral_identity, indefinite_numeral_paradigm,
+        indefinite_numeral_paradigm_identity, infinitive, interrogative_pronoun,
+        irregular_agreeing, l_participle, l_participle_paradigm, long_adjective,
+        long_only_adjective, lookup, noun, noun_paradigm, numeral, numeral_paradigm,
+        ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
         ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
         past_passive_participle, personal_pronoun, personal_pronoun_paradigm,
         personal_pronoun_with, present, present_active_participle, present_paradigm,
@@ -885,6 +889,54 @@ pub fn fractional_numeral_identity(
     number: Number,
 ) -> InflectionResult {
     resolver::reviewed_fractional_numeral(
+        identity,
+        old_church_slavonic_core::NounCell { case, number },
+    )
+}
+
+/// Decline an OCS indefinite-quantity numeral noun.
+///
+/// The closed inventory currently contains `несъвѣда` “an incalculable
+/// quantity”. It follows the hard feminine a-stem paradigm. It is not an exact
+/// integer synonym for `тъма` and therefore never appears in composed cardinal
+/// output.
+///
+/// ```
+/// use old_church_slavonic::{indefinite_numeral, Case, Number};
+/// assert_eq!(
+///     indefinite_numeral("несъвѣда", Case::Instrumental, Number::Plural)?
+///         .primary_text(),
+///     "несъвѣдами",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn indefinite_numeral(lemma: &str, case: Case, number: Number) -> InflectionResult {
+    resolver::indefinite_numeral(lemma, old_church_slavonic_core::NounCell { case, number })
+}
+
+/// Decline an indefinite-quantity numeral noun by stable identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     indefinite_numeral_identity, Case, IndefiniteNumeralIdentity, Number,
+/// };
+/// assert_eq!(
+///     indefinite_numeral_identity(
+///         IndefiniteNumeralIdentity::Nesveda,
+///         Case::Accusative,
+///         Number::Singular,
+///     )?
+///     .primary_text(),
+///     "несъвѣдѫ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn indefinite_numeral_identity(
+    identity: IndefiniteNumeralIdentity,
+    case: Case,
+    number: Number,
+) -> InflectionResult {
+    resolver::reviewed_indefinite_numeral(
         identity,
         old_church_slavonic_core::NounCell { case, number },
     )
@@ -1778,6 +1830,44 @@ pub fn fractional_numeral_paradigm_identity(
     identity: FractionalNumeralIdentity,
 ) -> FractionalNumeralParadigm {
     resolver::build_fractional_numeral_paradigm(identity)
+}
+
+/// Enumerate all 21 noun cells for a source-listed indefinite quantity.
+///
+/// ```
+/// use old_church_slavonic::{indefinite_numeral_paradigm, Case, Number};
+/// let paradigm = indefinite_numeral_paradigm("несъвѣда")?;
+/// assert_eq!(paradigm.len(), 21);
+/// assert_eq!(
+///     paradigm.form(Case::Instrumental, Number::Plural)?.primary_text(),
+///     "несъвѣдами",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn indefinite_numeral_paradigm(
+    lemma: &str,
+) -> Result<IndefiniteNumeralParadigm, InflectionError> {
+    resolver::indefinite_numeral_paradigm(lemma)
+}
+
+/// Enumerate all 21 noun cells from a stable indefinite-quantity identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     indefinite_numeral_paradigm_identity, Case, IndefiniteNumeralIdentity, Number,
+/// };
+/// let paradigm =
+///     indefinite_numeral_paradigm_identity(IndefiniteNumeralIdentity::Nesveda);
+/// assert_eq!(
+///     paradigm.form(Case::Dative, Number::Dual)?.primary_text(),
+///     "несъвѣдама",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn indefinite_numeral_paradigm_identity(
+    identity: IndefiniteNumeralIdentity,
+) -> IndefiniteNumeralParadigm {
+    resolver::build_indefinite_numeral_paradigm(identity)
 }
 
 /// Enumerate gender-indexed numeral cells, retaining unsupported rows.

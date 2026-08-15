@@ -185,6 +185,7 @@ pub enum MetadataProvenance {
     ExactDictionaryTableCell,
     ReviewedGrammarTable,
     DisputedGrammarTable,
+    PrimaryTextAttestation,
     DictionaryPrincipalPart,
     CuratedGrammarOverride,
     ExplicitCallerMetadata,

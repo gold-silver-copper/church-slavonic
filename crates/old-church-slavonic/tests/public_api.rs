@@ -18,9 +18,10 @@ use old_church_slavonic::{
     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CollectiveNumeralCell,
     CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
     DeterminerCell, DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSource,
-    FractionalNumeralDeclension, FractionalNumeralIdentity, Gender, GenderedCell, InflectionError,
-    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
-    LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
+    FractionalNumeralDeclension, FractionalNumeralIdentity, Gender, GenderedCell,
+    IndefiniteNumeralIdentity, InflectionError, InflectionWarning, InterrogativePronounIdentity,
+    IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE,
+    MIN_COMPOUND_ORDINAL_VALUE, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
     OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
     PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
     Script, StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
@@ -34,12 +35,14 @@ use old_church_slavonic::{
     distributive_cardinal_paradigm_with_options, distributive_cardinal_with_one,
     distributive_cardinal_with_options, finite, finite_paradigm, fractional_numeral,
     fractional_numeral_identity, fractional_numeral_paradigm, fractional_numeral_paradigm_identity,
-    gendered_numeral, gendered_pronoun, imperative, imperative_paradigm, imperfect, infinitive,
-    interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm, long_adjective,
-    long_only_adjective, noun, noun_paradigm, numeral, ordinal_numeral, ordinal_numeral_identity,
-    ordinal_numeral_paradigm, ordinal_numeral_paradigm_identity, participle_paradigm,
-    past_active_participle, personal_pronoun, personal_pronoun_with, present, present_paradigm,
-    pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun, short_adjective, supine,
+    gendered_numeral, gendered_pronoun, imperative, imperative_paradigm, imperfect,
+    indefinite_numeral, indefinite_numeral_identity, indefinite_numeral_paradigm,
+    indefinite_numeral_paradigm_identity, infinitive, interrogative_pronoun, irregular_agreeing,
+    l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
+    numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+    ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
+    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
+    regular_pronominal, relative_pronoun, short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -790,6 +793,68 @@ fn fractional_numerals_are_complete_noun_paradigms_with_period_boundaries() {
 }
 
 #[test]
+fn indefinite_quantity_numeral_is_fully_declined_but_never_an_exact_integer() {
+    let identity = IndefiniteNumeralIdentity::Nesveda;
+    assert_eq!(identity.noun_class(), NounClass::AHard);
+    assert_eq!(identity.gender(), Gender::Feminine);
+    assert_eq!(RuleId::NumeralIndefiniteNoun.code(), "NUM-INDEF-NOUN-01");
+
+    let paradigm = indefinite_numeral_paradigm_identity(identity);
+    assert_eq!(paradigm.identity(), identity);
+    assert_eq!(paradigm.lemma(), "несъвѣда");
+    assert_eq!(paradigm.len(), 21);
+    assert_eq!(paradigm.successes().count(), 21);
+    assert_eq!(paradigm.failures().count(), 0);
+    assert_eq!(
+        paradigm
+            .form(Case::Accusative, Number::Singular)
+            .expect("productive hard a-stem cell")
+            .primary_text(),
+        "несъвѣдѫ"
+    );
+
+    let attested = indefinite_numeral("несъвѣда", Case::Instrumental, Number::Plural)
+        .expect("Suprasliensis instrumental plural");
+    assert_eq!(attested.primary_text(), "несъвѣдами");
+    assert_eq!(attested.analyses().len(), 1);
+    assert_eq!(
+        attested.analyses()[0].evidence[0].provenance,
+        MetadataProvenance::PrimaryTextAttestation
+    );
+    assert_eq!(
+        attested.analyses()[0].evidence[0].source_form.as_deref(),
+        Some("несъвѣдами")
+    );
+
+    let predicted = indefinite_numeral_identity(identity, Case::Dative, Number::Dual)
+        .expect("productive hard a-stem prediction");
+    assert_eq!(predicted.primary_text(), "несъвѣдама");
+    assert_eq!(
+        predicted.analyses()[0].evidence[0].provenance,
+        MetadataProvenance::ProductiveRuleOutput
+    );
+    assert!(predicted.analyses()[0].evidence[0].source_form.is_none());
+
+    assert_eq!(
+        indefinite_numeral_paradigm("несъвѣда")
+            .expect("closed identity lookup")
+            .identity(),
+        identity
+    );
+    assert_eq!(
+        CardinalMagnitudeIdentity::classify_source_union_lemma("несъвѣда"),
+        None
+    );
+    assert!(matches!(
+        indefinite_numeral("тъма", Case::Nominative, Number::Singular),
+        Err(InflectionError::UnknownLemma {
+            part_of_speech: PartOfSpeech::Numeral,
+            ..
+        })
+    ));
+}
+
+#[test]
 fn collective_numerals_reject_crossed_cell_classes() {
     let crossed = CollectiveNumeralCell::adjectival(
         AdjectiveForm::Long,
@@ -1250,6 +1315,30 @@ fn compound_ordinals_through_one_thousand_are_structured_and_exhaustive() {
             Err(InflectionError::InvalidInput { .. })
         ));
     }
+}
+
+#[test]
+fn compound_ordinal_source_boundary_is_explicit_and_final() {
+    assert_eq!(MIN_COMPOUND_ORDINAL_VALUE, 11);
+    assert_eq!(MAX_COMPOUND_ORDINAL_VALUE, 1_000);
+    assert_eq!(RuleId::NumeralScopeBoundary.code(), "NUM-SCOPE-BOUNDARY-01");
+
+    let low = compound_ordinal_paradigm(MIN_COMPOUND_ORDINAL_VALUE - 1)
+        .expect_err("simple ordinals use their own closed API");
+    assert!(matches!(
+        low,
+        InflectionError::InvalidInput { ref reason }
+            if reason.contains("simple-ordinal API")
+    ));
+
+    let high = compound_ordinal_paradigm(MAX_COMPOUND_ORDINAL_VALUE + 1)
+        .expect_err("higher OCS ordinal formation is source-underdetermined");
+    assert!(matches!(
+        high,
+        InflectionError::InvalidInput { ref reason }
+            if reason.contains("reviewed grammars do not determine")
+                && !reason.contains("not implemented")
+    ));
 }
 
 #[test]

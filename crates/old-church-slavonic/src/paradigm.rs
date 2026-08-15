@@ -5,8 +5,8 @@ use old_church_slavonic_core::{
     CardinalNumeralIdentity, Case, CollectiveNumeralCell, CollectiveNumeralIdentity,
     CompoundCardinalCell, DeterminerCell, DeterminerIdentity, DistributiveCardinalCell,
     FiniteTense, FiniteVerbCell, FormSet, FractionalNumeralIdentity, Gender, GenderedCell,
-    ImperativeCell, InflectionError, LParticipleCell, NounCell, Number, NumeralCell,
-    OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell, ParticipleKind, Person,
+    ImperativeCell, IndefiniteNumeralIdentity, InflectionError, LParticipleCell, NounCell, Number,
+    NumeralCell, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell, ParticipleKind, Person,
     PersonalPronounCell, RealizedCardinal, RealizedDistributiveCardinal, RealizedOrdinal,
     UngenderedCell,
 };
@@ -671,6 +671,82 @@ impl<'a> IntoIterator for &'a FractionalNumeralParadigm {
 }
 
 impl IntoIterator for FractionalNumeralParadigm {
+    type Item = CellOutcome<NounCell>;
+    type IntoIter = std::vec::IntoIter<CellOutcome<NounCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
+/// Complete 21-cell noun inventory for one OCS indefinite-quantity numeral.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IndefiniteNumeralParadigm {
+    pub(crate) identity: IndefiniteNumeralIdentity,
+    pub(crate) lemma: String,
+    pub(crate) cells: Vec<CellOutcome<NounCell>>,
+}
+
+impl IndefiniteNumeralParadigm {
+    pub const fn identity(&self) -> IndefiniteNumeralIdentity {
+        self.identity
+    }
+
+    pub fn lemma(&self) -> &str {
+        &self.lemma
+    }
+
+    pub fn form(&self, case: Case, number: Number) -> Result<&FormSet, ParadigmLookupError> {
+        forms_for(&self.cells, &NounCell { case, number })
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, CellOutcome<NounCell>> {
+        self.cells.iter()
+    }
+
+    pub fn successes(&self) -> impl Iterator<Item = (&NounCell, &FormSet)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|forms| (&outcome.cell, forms))
+        })
+    }
+
+    pub fn failures(&self) -> impl Iterator<Item = (&NounCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    pub fn into_rows(self) -> Vec<CellOutcome<NounCell>> {
+        self.cells
+    }
+
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a IndefiniteNumeralParadigm {
+    type Item = &'a CellOutcome<NounCell>;
+    type IntoIter = std::slice::Iter<'a, CellOutcome<NounCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for IndefiniteNumeralParadigm {
     type Item = CellOutcome<NounCell>;
     type IntoIter = std::vec::IntoIter<CellOutcome<NounCell>>;
 

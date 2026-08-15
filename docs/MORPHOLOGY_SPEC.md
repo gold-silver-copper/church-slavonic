@@ -279,8 +279,11 @@ construction evidence rather than being assigned to an underdetermined global
 adjective cell. Fixed tail tokens retain reviewed-table evidence and the exact
 source spellings.
 
-Ordinal magnitudes beyond 1,000 remain outside this checkpoint pending a
-source-bounded composition contract.
+The public range constants close this contract at 11–1,000. The reviewed OCS
+grammars independently enumerate the thousandth head but do not determine both
+the stem and component-inflection rule of a higher ordinal. Requests above
+1,000 therefore return an explicit `NUM-SCOPE-BOUNDARY-01` failure rather than
+silently importing later Russian composition.
 
 Authority: Gorshkov 2002 §§118–119; Leuta and Havryliuk 2018 pp. 155 and
 161–162; Polivanova OSD entries for `сътьнъ` and `тꙑсѧщьнъ`; pinned UD OCS
@@ -355,6 +358,28 @@ a source licenses a particular construction.
 Authority: Leuta and Havryliuk 2018 p. 162; Gorshkov 2002 §86; Polivanova OSD
 spreadsheet rows 1186 and 3629; pinned UD OCS PROIEL r2.18 as a cell-specific
 attestation crosscheck.
+
+### NUM-INDEF-NOUN-01 — indefinite quantity `несъвѣда`
+
+OCS `несъвѣда` denotes an incalculable or unbounded quantity, not a stable
+integer magnitude in the engine's small/church number profile. Lvov's
+manuscript-grounded lexical comparison distinguishes it from exact `тъма`
+“10,000” and cites instrumental plural `несъвѣдами` in both Codex
+Suprasliensis and John the Exarch. The identity therefore reuses the complete
+21-cell hard feminine a-stem noun paradigm. Nominative singular is reviewed
+lexical evidence, `несъвѣдами` carries primary-text-attestation provenance, and
+the remaining grammatically licensed cells are explicit productive predictions.
+
+`IndefiniteNumeralIdentity` deliberately exposes no numeric value. It cannot be
+selected as a cardinal magnitude or enter integer composition. This resolves
+Gorshkov §115's compressed exact-10,000 gloss in favor of Lvov's named primary
+texts; Simonov's complete-context study of Кирик and Pronin's chronological
+synthesis independently show why later exact-value systems must not be
+projected back into the OCS API.
+
+Authority: Lvov 1966 pp. 247–249; Gorshkov 2002 §115 as a recorded conflict;
+Simonov 2006 pp. 81–85 and Pronin 2024 pp. 47–52 as semantic-boundary
+crosschecks.
 
 ### Comparatives
 

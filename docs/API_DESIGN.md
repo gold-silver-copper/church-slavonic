@@ -208,8 +208,12 @@ cell-specific manuscript spellings therefore remain distinguishable. Distinct
 construction tags retain both conflicting asyndetic-declension accounts. Values
 21–29 additionally expose the productive `unit + междю десетма` and
 `unit + третиаго десѧте` turns with fixed, independently evidenced tails.
-Ordinal magnitudes above 1,000 and remaining irregular numeral inventories
-remain open.
+The public `MIN_COMPOUND_ORDINAL_VALUE` and `MAX_COMPOUND_ORDINAL_VALUE`
+constants make the source-bounded 11–1,000 contract explicit. Values above
+1,000 are not an implementation queue: the reviewed OCS grammars enumerate
+ordinal heads through `тꙑсѧщьнъ` but do not jointly determine the stem shape
+and component inflection of a higher formation. The API rejects them rather
+than importing the materially different later Russian `двухтысячный` model.
 
 Collectives have a separate typed cell because the inherited system has two
 real declension classes. `дъвои`, `обои`, and `трои` accept the complete 63-cell
@@ -224,6 +228,15 @@ separate evidence. In particular, the two inherited `-ер-/-ор-` stem series 
 five, six, and nine are explicitly reconstructed rather than presented as OCS
 attestations. Derived `-ица` group nouns remain noun lexemes.
 
+The remaining number-related derivatives do not constitute an unimplemented
+numeral declension. Suprun's cross-Slavic classification assigns `двоякий`-type
+words to adjectives and `дважды`/`сам-третей` types to adverbs; OCS group nouns
+likewise remain nouns. They are inflected, or explicitly invariant, through
+those owning parts of speech. The two spellings of one, the mixed paradigm of
+ten, both thousand spellings and declensions, the two 10,000 analyses, and all
+reviewed compound-stem variants account for the closed irregular numeral
+inventory.
+
 Fractional numerals have their own noun-cell API. `fractional_numeral` resolves
 the closed OCS source union, `fractional_numeral_identity` accepts one of four
 stable identities, and `FractionalNumeralParadigm` exposes every case × number
@@ -234,11 +247,20 @@ separate evidence. Later Church Slavonic `третина` and `полътора`
 by this OCS-specific resolver rather than silently admitted as period-neutral
 forms.
 
+Indefinite quantity likewise has an explicit noun-cell API, without pretending
+that every quantity word denotes an exact magnitude. `indefinite_numeral`
+resolves the closed OCS identity `несъвѣда`, and `IndefiniteNumeralParadigm`
+exposes all 21 hard feminine a-stem cells. The source-listed nominative, the
+directly cited manuscript instrumental plural `несъвѣдами`, and productive
+extensions of the inherited declension remain separate metadata evidence.
+Unlike exact `тъма` “10,000”, this identity has no integer value and is excluded
+from compound-cardinal construction.
+
 A typed paradigm enumerates the relevant grammatical product and retains typed
 historical or unsupported failures rather than dropping rows. The audit does not
-yet justify productive arbitrary numerals, compound construction without typed
-components, or generalized productive relationships for every other-pronoun
-lexeme.
+justify numeral values beyond each source-bounded range, compound construction
+without typed components, or generalized productive relationships for every
+other-pronoun lexeme.
 
 ## Deliberate differences from Ruthenian
 
