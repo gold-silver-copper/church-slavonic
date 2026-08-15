@@ -10,6 +10,7 @@ pub mod copula;
 pub mod determiner;
 pub mod grammar;
 pub mod noun;
+pub mod numeral;
 pub mod orthography;
 pub mod phrase;
 pub mod pronoun;
@@ -24,10 +25,13 @@ pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
     ComparativeFormation, DeterminerCell, FiniteTense, FiniteVerbCell, Gender, GenderedCell,
     ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
-    LParticipleCell, NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell,
-    ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
-    PersonalPronounCell, PresentActiveParticipleFormation, PresentPassiveParticipleFormation,
-    RequestedCell, UngenderedCell, VerbAspect, VerbClass,
+    LParticipleCell, NounCell, NounClass, Number, NumberRestriction, NumeralCell, PartOfSpeech,
+    ParticipleCell, ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation,
+    Person, PersonalPronounCell, PresentActiveParticipleFormation,
+    PresentPassiveParticipleFormation, RequestedCell, UngenderedCell, VerbAspect, VerbClass,
+};
+pub use numeral::{
+    CardinalNumeralIdentity, NumeralGovernment, NumeralVariant, NumeralVariantStatus,
 };
 pub use orthography::{Lemma, Script};
 pub use phrase::{

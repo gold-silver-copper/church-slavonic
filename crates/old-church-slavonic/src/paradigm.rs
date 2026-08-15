@@ -1,10 +1,10 @@
 //! Full paradigms assembled through the canonical one-cell resolvers.
 
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveForm, Animacy, Case, DeterminerCell, DeterminerIdentity, FiniteTense,
-    FiniteVerbCell, FormSet, Gender, GenderedCell, ImperativeCell, InflectionError,
-    LParticipleCell, NounCell, Number, PartOfSpeech, ParticipleCell, ParticipleKind, Person,
-    PersonalPronounCell, UngenderedCell,
+    AdjectiveCell, AdjectiveForm, Animacy, CardinalNumeralIdentity, Case, DeterminerCell,
+    DeterminerIdentity, FiniteTense, FiniteVerbCell, FormSet, Gender, GenderedCell, ImperativeCell,
+    InflectionError, LParticipleCell, NounCell, Number, NumeralCell, PartOfSpeech, ParticipleCell,
+    ParticipleKind, Person, PersonalPronounCell, UngenderedCell,
 };
 use std::fmt;
 
@@ -291,6 +291,106 @@ impl<'a> IntoIterator for &'a DeterminerParadigm {
 impl IntoIterator for DeterminerParadigm {
     type Item = CellOutcome<DeterminerCell>;
     type IntoIter = std::vec::IntoIter<CellOutcome<DeterminerCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
+/// Complete typed inventory for one reviewed simple cardinal.
+///
+/// The paradigm includes every optional-gender cell so historically impossible
+/// shapes remain visible as typed failures instead of silently disappearing.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CardinalNumeralParadigm {
+    pub(crate) identity: CardinalNumeralIdentity,
+    pub(crate) lemma: String,
+    pub(crate) cells: Vec<CellOutcome<NumeralCell>>,
+}
+
+impl CardinalNumeralParadigm {
+    /// The stable grammatical identity represented by this paradigm.
+    pub const fn identity(&self) -> CardinalNumeralIdentity {
+        self.identity
+    }
+
+    /// The canonical grammar lemma.
+    pub fn lemma(&self) -> &str {
+        &self.lemma
+    }
+
+    /// Return one cardinal form or distinguish an absent row from a failed row.
+    pub fn form(
+        &self,
+        case: Case,
+        number: Number,
+        gender: Option<Gender>,
+    ) -> Result<&FormSet, ParadigmLookupError> {
+        forms_for(
+            &self.cells,
+            &NumeralCell {
+                case,
+                number,
+                gender,
+            },
+        )
+    }
+
+    /// Iterate in number-case-optional-gender order.
+    pub fn iter(&self) -> std::slice::Iter<'_, CellOutcome<NumeralCell>> {
+        self.cells.iter()
+    }
+
+    /// Iterate over licensed cells without discarding their grammar.
+    pub fn successes(&self) -> impl Iterator<Item = (&NumeralCell, &FormSet)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|forms| (&outcome.cell, forms))
+        })
+    }
+
+    /// Iterate over historically impossible cells retained as typed failures.
+    pub fn failures(&self) -> impl Iterator<Item = (&NumeralCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    /// Consume the paradigm into its ordered cell rows.
+    pub fn into_rows(self) -> Vec<CellOutcome<NumeralCell>> {
+        self.cells
+    }
+
+    /// Number of represented cells, including typed failures.
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    /// Cardinal paradigms always represent the complete typed inventory.
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a CardinalNumeralParadigm {
+    type Item = &'a CellOutcome<NumeralCell>;
+    type IntoIter = std::slice::Iter<'a, CellOutcome<NumeralCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for CardinalNumeralParadigm {
+    type Item = CellOutcome<NumeralCell>;
+    type IntoIter = std::vec::IntoIter<CellOutcome<NumeralCell>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.cells.into_iter()

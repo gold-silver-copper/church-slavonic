@@ -7,8 +7,8 @@
 pub mod cells {
     pub use old_church_slavonic_core::{
         AdjectiveCell, AdjectiveForm, ClosedClassCell, DeterminerCell, FiniteVerbCell,
-        GenderedCell, ImperativeCell, LParticipleCell, NounCell, ParticipleCell, ParticipleKind,
-        PersonalPronounCell, UngenderedCell,
+        GenderedCell, ImperativeCell, LParticipleCell, NounCell, NumeralCell, ParticipleCell,
+        ParticipleKind, PersonalPronounCell, UngenderedCell,
     };
 }
 

@@ -14,13 +14,14 @@ use old_church_slavonic::advanced::rules::{
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
-    Adjective, AnaphoricEnvironment, Animacy, Case, Determiner, DeterminerCell, DeterminerIdentity,
-    FiniteTense, FormSource, Gender, GenderedCell, InflectionError, InflectionWarning,
-    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity,
-    Noun, Number, Numeral, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
-    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
-    Script, StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
-    anaphoric_pronoun, aorist, determiner, determiner_identity, determiner_paradigm, finite,
+    Adjective, AnaphoricEnvironment, Animacy, CardinalNumeralIdentity, Case, Determiner,
+    DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
+    InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, ParadigmLookupError,
+    PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
+    PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
+    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_numeral_identity,
+    cardinal_numeral_paradigm, determiner, determiner_identity, determiner_paradigm, finite,
     finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
     imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
     l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
@@ -332,6 +333,103 @@ fn determiner_inventory_is_exhaustive_across_all_real_declensional_profiles() {
                 })
         );
     }
+}
+
+#[test]
+fn simple_cardinals_have_exhaustive_typed_paradigms_and_evidence() {
+    let expected_successes = [18, 18, 18, 18, 18, 18, 7, 7, 7, 7, 7, 21];
+    assert_eq!(CardinalNumeralIdentity::ALL.len(), expected_successes.len());
+
+    for (identity, expected_successes) in CardinalNumeralIdentity::ALL
+        .into_iter()
+        .zip(expected_successes)
+    {
+        let paradigm = cardinal_numeral_paradigm(identity);
+        assert_eq!(paradigm.identity(), identity);
+        assert_eq!(paradigm.lemma(), identity.canonical_lemma());
+        assert_eq!(paradigm.len(), 84);
+        assert_eq!(
+            paradigm.successes().count(),
+            expected_successes,
+            "{identity:?}"
+        );
+        assert_eq!(
+            paradigm.failures().count(),
+            paradigm.len() - expected_successes,
+            "{identity:?}"
+        );
+        assert!(
+            paradigm.successes().all(|(_, forms)| matches!(
+                forms.source(),
+                FormSource::ReviewedGrammarTable { .. }
+            ))
+        );
+        assert!(paradigm.failures().all(|(cell, error)| matches!(
+            error,
+            InflectionError::HistoricallyInvalidCell {
+                cell: RequestedCell::Numeral(requested),
+                ..
+            } if requested == cell
+        )));
+    }
+
+    let three = cardinal_numeral_identity(
+        CardinalNumeralIdentity::Three,
+        Case::Instrumental,
+        Number::Plural,
+        Some(Gender::Neuter),
+    )
+    .expect("reviewed cardinal-three cell");
+    assert_eq!(three.primary_text(), "трьми");
+    assert_eq!(three.trace()[0].rule_id, RuleId::NumeralCardinalThree);
+
+    let ten = numeral("десѧть", Case::Nominative, Number::Plural)
+        .expect("reviewed mixed cardinal-ten cell");
+    assert_eq!(ten.texts().collect::<Vec<_>>(), ["десѧте", "десѧти"]);
+    assert_eq!(ten.analyses().len(), 2);
+    assert_eq!(
+        ten.analyses()[0].evidence[0].provenance,
+        MetadataProvenance::ReviewedGrammarTable
+    );
+    assert_eq!(
+        ten.analyses()[1].evidence[0].provenance,
+        MetadataProvenance::ProductiveRuleOutput
+    );
+    assert_eq!(
+        ten.analyses()[0].evidence[0].source_form.as_deref(),
+        Some("десѧте")
+    );
+    assert_eq!(ten.analyses()[1].evidence[0].source_form, None);
+
+    let alias = gendered_numeral("единъ", Case::Genitive, Number::Singular, Gender::Feminine)
+        .expect("source-union cardinal alias");
+    assert_eq!(alias.lemma(), "ѥдинъ");
+    assert_eq!(alias.primary_text(), "ѥдиноѩ");
+    assert!(
+        alias
+            .warnings()
+            .contains(&InflectionWarning::LexicalAliasUsed {
+                canonical: "ѥдинъ".to_string(),
+            })
+    );
+
+    let invalid = NumeralCell {
+        case: Case::Nominative,
+        number: Number::Singular,
+        gender: Some(Gender::Masculine),
+    };
+    assert!(matches!(
+        cardinal_numeral_identity(
+            CardinalNumeralIdentity::Three,
+            invalid.case,
+            invalid.number,
+            invalid.gender,
+        ),
+        Err(InflectionError::HistoricallyInvalidCell {
+            cell: RequestedCell::Numeral(requested),
+            ..
+        }) if requested == invalid
+    ));
 }
 
 #[test]

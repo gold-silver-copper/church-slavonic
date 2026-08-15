@@ -504,6 +504,54 @@ impl DeterminerCell {
     }
 }
 
+/// A case-number cell for a cardinal numeral, with gender only when the
+/// numeral agrees with the counted noun.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct NumeralCell {
+    pub case: Case,
+    pub number: Number,
+    pub gender: Option<Gender>,
+}
+
+impl NumeralCell {
+    /// Canonical numeral inventory, ordered by number, case, and then the
+    /// ungendered cell followed by masculine, feminine, and neuter cells.
+    pub fn all() -> impl Iterator<Item = Self> {
+        Number::ALL.into_iter().flat_map(|number| {
+            Case::ALL.into_iter().flat_map(move |case| {
+                core::iter::once(Self {
+                    case,
+                    number,
+                    gender: None,
+                })
+                .chain(Gender::ALL.into_iter().map(move |gender| Self {
+                    case,
+                    number,
+                    gender: Some(gender),
+                }))
+            })
+        })
+    }
+
+    pub fn key(self) -> String {
+        let mut key = format!("num:{}:{}", self.case.code(), self.number.code());
+        if let Some(gender) = self.gender {
+            key.push(':');
+            key.push_str(gender.code());
+        }
+        key
+    }
+
+    pub const fn closed_class(self) -> ClosedClassCell {
+        ClosedClassCell {
+            case: self.case,
+            number: self.number,
+            gender: self.gender,
+            person: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FiniteVerbCell {
     pub tense: FiniteTense,
@@ -727,6 +775,7 @@ pub enum RequestedCell {
     Noun(NounCell),
     Adjective(AdjectiveCell),
     Determiner(DeterminerCell),
+    Numeral(NumeralCell),
     Comparative(AdjectiveCell),
     FiniteVerb(FiniteVerbCell),
     Imperative(ImperativeCell),

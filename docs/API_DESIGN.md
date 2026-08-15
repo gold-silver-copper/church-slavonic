@@ -137,7 +137,7 @@ No ordinary or game-facing call requires a key such as `decl:pron:gen:sg`.
 
 ## Closed-class inventory audit
 
-The pinned generated registry contains 29 pronoun lexemes, eight numeral lexemes,
+The pinned generated registry contains 29 pronoun lexemes, eight numeral-tagged lexemes,
 and one determiner lexeme. Its source-table feature shapes are:
 
 - case-number-only tables;
@@ -158,13 +158,23 @@ First person, second person, reflexive, and the third-person anaphoric no longer
 mirror those duplicated source shapes. Their reviewed closed model exposes
 intrinsic identity, numberless reflexive inflection, marked clitics, and explicit
 free versus post-prepositional anaphoric forms. Dictionary form-page spellings route
-to the same canonical identity. Other pronouns and numerals remain exact
-pinned-table APIs while their independent grammar inventories are open.
+to the same canonical identity.
+
+Simple cardinals now have a reviewed twelve-identity grammar inventory: a
+two-form lexical doublet for one, two, both, three, four, and five through ten. A unified
+`NumeralCell` represents case, inherent number, and optional gender; one through
+four enforce agreement in singular, dual, or plural, while five through ten are
+substantival and expose typed genitive-plural government metadata. The complete
+84-row `CardinalNumeralParadigm` retains every invalid combination as a typed
+failure. Exact numeral tables outside this base remain accessible as fallbacks
+and through the raw API while compound and derived numeral inventories remain
+open.
 
 A typed paradigm enumerates the relevant grammatical product and retains typed
 historical or unsupported failures rather than dropping rows. The audit does not
-yet justify productive arbitrary numerals or generalized productive relationships
-for every other-pronoun lexeme.
+yet justify productive arbitrary numerals, compound construction without typed
+components, or generalized productive relationships for every other-pronoun
+lexeme.
 
 ## Deliberate differences from Ruthenian
 
@@ -176,9 +186,10 @@ for every other-pronoun lexeme.
 - Verb formations and principal parts remain independent lexical facts.
 - Participles retain their verbal formation and competing analyses before using
   the adjective agreement engine.
-- Reviewed personal/reflexive/anaphoric pronouns use closed grammar tables; other
-  pronouns, determiners, and numerals remain exact-table APIs until independent
-  productive descriptions and evidence exist.
+- Reviewed personal/reflexive/anaphoric pronouns, determiners, and simple
+  cardinals use closed grammar inventories; other closed-class identities retain
+  exact-table fallback until independent productive descriptions and evidence
+  exist.
 - Cyrillic and Glagolitic are detected but not automatically transliterated.
 
 These differences preserve the project's source-backed, fail-closed contract.

@@ -120,7 +120,8 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Other closed classes | [`pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
+//! | Simple cardinals | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_numeral_paradigm`] | Reviewed one-through-ten inventory with inherent-number agreement, typed genitive-plural government, and source-listed versus productive variants |
+//! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
@@ -149,22 +150,24 @@ mod resolver;
 pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
-    AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, Case, ConditionalAuxiliary,
-    CopulaSeries, DeterminerCell, DeterminerDeclension, DeterminerIdentity, DeterminerLexeme,
-    DirectToTreatment, FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary,
-    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning,
-    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LexemeSummary,
-    LongOnlyAdjectiveIdentity, Number, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
-    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
-    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
-    PronounFormSelection, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
-    UngenderedCell, VariantPolicy, VariantSelectionError,
+    AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, CardinalNumeralIdentity,
+    Case, ConditionalAuxiliary, CopulaSeries, DeterminerCell, DeterminerDeclension,
+    DeterminerIdentity, DeterminerLexeme, DirectToTreatment, FiniteTense, FormSet, FormSource,
+    FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell,
+    InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    Lemma, LexemeSummary, LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment,
+    PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell,
+    PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary,
+    PronominalFamilySpec, PronominalPostpositive, PronominalPrefix, PronounFormSelection,
+    RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
+    VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
-    AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,
-    FiniteVerbParadigm, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
-    LParticipleParadigm, NounParadigm, NumeralParadigm, ParadigmLookupError, ParticipleParadigm,
-    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
+    AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
+    ComparativeParadigm, DeterminerParadigm, FiniteVerbParadigm, GenderedNumeralParadigm,
+    GenderedPronounParadigm, ImperativeParadigm, LParticipleParadigm, NounParadigm,
+    NumeralParadigm, ParadigmLookupError, ParticipleParadigm, PersonalPronounParadigm,
+    PronounParadigm, VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -178,26 +181,27 @@ pub mod trace {
 /// intentionally excluded; use [`advanced`] for those APIs.
 pub mod prelude {
     pub use crate::{
-        Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy, Case,
-        Determiner, DeterminerCell, DeterminerIdentity, DeterminerParadigm, FiniteTense,
-        FiniteVerbParadigm, FormSet, FormSource, FormVariant, Gender, GenderedNumeralParadigm,
-        GenderedPronounParadigm, ImperativeParadigm, InflectionError, InflectionResult,
-        InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-        LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral,
-        NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
-        ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
-        PronounFormSelection, PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy,
-        VariantSelectionError, Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
-        comparative_citation, determiner, determiner_identity, determiner_paradigm, finite,
-        finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
-        gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
-        interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
-        long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
-        numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
-        personal_pronoun, personal_pronoun_paradigm, personal_pronoun_with, present,
-        present_active_participle, present_paradigm, present_passive_participle, pronoun,
-        pronoun_paradigm, reflexive_pronoun, regular_pronominal, relative_pronoun, short_adjective,
-        supine, verbal_noun,
+        Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy,
+        CardinalNumeralIdentity, CardinalNumeralParadigm, Case, Determiner, DeterminerCell,
+        DeterminerIdentity, DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet,
+        FormSource, FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm,
+        ImperativeParadigm, InflectionError, InflectionResult, InflectionWarning,
+        InterrogativePronounIdentity, IrregularAgreeingIdentity, LParticipleParadigm, Lemma,
+        LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral, NumeralParadigm,
+        ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind, ParticipleParadigm, Person,
+        PersonalPronounIdentity, PersonalPronounParadigm, Pronoun, PronounFormSelection,
+        PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy, VariantSelectionError,
+        Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
+        cardinal_numeral_identity, cardinal_numeral_paradigm, comparative_citation, determiner,
+        determiner_identity, determiner_paradigm, finite, finite_paradigm, gendered_numeral,
+        gendered_numeral_paradigm, gendered_pronoun, gendered_pronoun_paradigm, imperative,
+        imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
+        l_participle, l_participle_paradigm, long_adjective, long_only_adjective, lookup, noun,
+        noun_paradigm, numeral, numeral_paradigm, participle_paradigm, past_active_participle,
+        past_passive_participle, personal_pronoun, personal_pronoun_paradigm,
+        personal_pronoun_with, present, present_active_participle, present_paradigm,
+        present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
+        regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun,
     };
 }
 
@@ -602,10 +606,13 @@ pub fn regular_pronominal(
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn numeral(lemma: &str, case: Case, number: Number) -> InflectionResult {
-    resolver::closed_class(
+    resolver::numeral(
         lemma,
-        PartOfSpeech::Numeral,
-        UngenderedCell { case, number }.closed_class(),
+        NumeralCell {
+            case,
+            number,
+            gender: None,
+        },
     )
 }
 
@@ -623,15 +630,51 @@ pub fn gendered_numeral(
     number: Number,
     gender: Gender,
 ) -> InflectionResult {
-    resolver::closed_class(
+    resolver::numeral(
         lemma,
-        PartOfSpeech::Numeral,
-        GenderedCell {
+        NumeralCell {
+            case,
+            number,
+            gender: Some(gender),
+        },
+    )
+}
+
+/// Decline one simple cardinal by its stable reviewed grammatical identity.
+///
+/// Gender is required for agreeing cardinals (`one` through `four`) and absent
+/// for substantival cardinals (`five` through `ten`). Invalid combinations are
+/// reported as [`InflectionError::HistoricallyInvalidCell`].
+///
+/// ```
+/// use old_church_slavonic::{
+///     cardinal_numeral_identity, CardinalNumeralIdentity, Case, Gender, Number,
+/// };
+/// assert_eq!(
+///     cardinal_numeral_identity(
+///         CardinalNumeralIdentity::Three,
+///         Case::Instrumental,
+///         Number::Plural,
+///         Some(Gender::Feminine),
+///     )?
+///     .primary_text(),
+///     "трьми",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn cardinal_numeral_identity(
+    identity: CardinalNumeralIdentity,
+    case: Case,
+    number: Number,
+    gender: Option<Gender>,
+) -> InflectionResult {
+    resolver::reviewed_cardinal_numeral(
+        identity,
+        NumeralCell {
             case,
             number,
             gender,
-        }
-        .closed_class(),
+        },
     )
 }
 
@@ -947,6 +990,24 @@ pub fn gendered_pronoun_paradigm(lemma: &str) -> Result<GenderedPronounParadigm,
 /// ```
 pub fn numeral_paradigm(lemma: &str) -> Result<NumeralParadigm, InflectionError> {
     Ok(Numeral::resolve(lemma)?.paradigm())
+}
+
+/// Enumerate all typed cells for one reviewed simple cardinal.
+///
+/// ```
+/// use old_church_slavonic::{
+///     cardinal_numeral_paradigm, CardinalNumeralIdentity, Case, Number,
+/// };
+/// let paradigm = cardinal_numeral_paradigm(CardinalNumeralIdentity::Ten);
+/// assert_eq!(paradigm.len(), 84);
+/// assert_eq!(
+///     paradigm.form(Case::Nominative, Number::Plural, None)?.primary_text(),
+///     "десѧте",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn cardinal_numeral_paradigm(identity: CardinalNumeralIdentity) -> CardinalNumeralParadigm {
+    resolver::build_cardinal_numeral_paradigm(identity)
 }
 
 /// Enumerate gender-indexed numeral cells, retaining unsupported rows.

@@ -179,23 +179,23 @@ id = "ocs.numeral"
 recension = "old-church-slavonic"
 category = "numeral"
 part_of_speech = "numeral"
-scope = "Cardinal, ordinal, collective, fractional, distributive, compound, agreeing, governing, and irregular numerals."
+scope = "Cardinal, ordinal, collective, fractional, distributive, compound, agreeing, governing, and irregular numerals; the simple-cardinal base from one through ten is implemented and the wider system remains open."
 profiles = ["canonical-cyrillic"]
-features = ["kind=cardinal|ordinal|collective|fractional|distributive|compound", "case=7", "number=licensed", "gender=optional", "government=typed"]
+features = ["kind=cardinal-simple-reviewed|ordinal|collective|fractional|distributive|compound", "case=7", "number=singular|dual|plural-as-lexically-licensed", "gender=required-for-agreeing-cardinals|absent-for-governing-cardinals", "government=agreement-singular|agreement-dual|agreement-plural|genitive-plural"]
 subtypes = ["cardinal", "ordinal", "collective", "fractional", "distributive", "compound", "irregular"]
 realization = "synthetic-or-composed"
 state = "implementation-missing"
-implementation_kind = "closed-exact-partial"
-rule_ids = ["OCS-NUMERAL-PENDING"]
-sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "UT numeral lesson; docs/API_DESIGN.md closed-class inventory audit"
-required_metadata = ["stable lexical identity", "numeral kind", "agreement/government pattern", "component identities for compounds"]
-valid_inventory = "Eight exact numeral identities are currently exposed; the productive universe is not complete."
-invalid_inventory = "Lexically impossible number/gender combinations and non-inflectional notation."
-implementation = ["crates/old-church-slavonic/src/resolver.rs"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
-evidence_status = "partial exact dictionary evidence"
-gap = "Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars."
+implementation_kind = "productive-closed-partial"
+rule_ids = ["PRON-2P-HARD-01", "PRON-2P-SOFT-01", "N-I-F-01", "NUM-CARD-THREE-01", "NUM-CARD-FOUR-01", "NUM-CARD-TEN-01", "OCS-NUMERAL-COMPOUND-AND-DERIVED-PENDING"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "punco-lmu-reference-grammar", "lunt-ocs-grammar-2001", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT OCS Online §44.1–10; Polivanova 2023 §§314–316, 321–322, 349–351, 373–374, and 383–384; Punco/UZH Reference Grammar numeral syntax overview"
+required_metadata = ["stable lexical or grammatical identity", "numeral kind", "agreement/government pattern", "case", "licensed inherent number", "gender for agreeing simple cardinals", "component identities and construction type for compounds"]
+valid_inventory = "Twelve reviewed simple-cardinal identities cover a two-form lexical doublet for one, two, both, three, four, and five through ten. Each exposes all 84 case × number × optional-gender requests: one agrees only in the singular, two/both only in the dual, three/four only in the plural, five through nine decline substantivally in the singular and govern genitive plural, and mixed-declension ten exposes all three numbers without gender. Source-listed ten variants precede explicitly productive i-stem analogues. Exact dictionary numeral types outside this inventory remain available as raw or fallback evidence."
+invalid_inventory = "Wrong inherent number for agreeing one through four; absent gender on an agreeing cardinal; gender on substantival five through ten; non-singular five through nine; vocatives absent from the unique three/four tables; malformed orthography; and untyped compound composition."
+implementation = ["crates/old-church-slavonic-core/src/numeral.rs", "crates/old-church-slavonic-core/src/pronoun.rs", "crates/old-church-slavonic-core/src/noun.rs", "crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic/src/paradigm.rs"]
+tests = ["crates/old-church-slavonic-core/src/numeral.rs#simple_cardinal_inventory_is_exhaustive_and_nonoverlapping", "crates/old-church-slavonic-core/src/numeral.rs#one_through_nine_enforce_real_agreement_and_government_shapes", "crates/old-church-slavonic-core/src/numeral.rs#source_goldens_cover_each_simple_cardinal_profile", "crates/old-church-slavonic-core/src/numeral.rs#ten_preserves_mixed_attested_and_productive_variants", "crates/old-church-slavonic/tests/public_api.rs#simple_cardinals_have_exhaustive_typed_paradigms_and_evidence"]
+evidence_status = "source-reviewed simple-cardinal base with typed agreement/government and explicit attested-versus-productive variants; wider numeral grammar incomplete"
+gap = "Implement compound cardinals (teens, tens, hundreds, thousands), then the source-union ordinal, collective, fractional, distributive, and remaining irregular inventories."
 
 [[system]]
 id = "ocs.verb.present"

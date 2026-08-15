@@ -262,20 +262,12 @@ impl Numeral {
 
     /// Enumerate the case-number-only case-number inventory.
     pub fn paradigm(&self) -> NumeralParadigm {
-        resolver::build_ungendered_closed_class_paradigm(
-            self.id(),
-            self.lemma(),
-            PartOfSpeech::Numeral,
-        )
+        resolver::build_numeral_paradigm(self.id(), self.lemma())
     }
 
     /// Enumerate the gender-indexed inventory.
     pub fn gendered_paradigm(&self) -> GenderedNumeralParadigm {
-        resolver::build_gendered_closed_class_paradigm(
-            self.id(),
-            self.lemma(),
-            PartOfSpeech::Numeral,
-        )
+        resolver::build_gendered_numeral_paradigm(self.id(), self.lemma())
     }
 }
 

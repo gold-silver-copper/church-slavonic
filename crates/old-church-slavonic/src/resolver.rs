@@ -402,6 +402,106 @@ pub fn determiner_with(
     )
 }
 
+/// Resolve one cell of the reviewed simple-cardinal inventory from one through
+/// ten (including the independent cardinal `оба`).
+pub fn reviewed_cardinal_numeral(
+    identity: CardinalNumeralIdentity,
+    cell: NumeralCell,
+) -> Result<FormSet, InflectionError> {
+    let variants = old_church_slavonic_core::numeral::decline_cardinal(identity, cell)?
+        .into_iter()
+        .map(|variant| {
+            let rule_id = variant.prediction.rule_id;
+            let trace = variant.prediction.trace;
+            let form = FormVariant {
+                text: orthography::canonical_display(&variant.prediction.text)?,
+                romanization: None,
+            };
+            let source = FormSource::ReviewedGrammarTable { rule_id };
+            let analysis = FormAnalysis {
+                variants: vec![form.clone()],
+                source: source.clone(),
+                evidence: vec![MetadataEvidence {
+                    field: None,
+                    provenance: match variant.status {
+                        NumeralVariantStatus::ReviewedTable => {
+                            MetadataProvenance::ReviewedGrammarTable
+                        }
+                        NumeralVariantStatus::ProductiveRule => {
+                            MetadataProvenance::ProductiveRuleOutput
+                        }
+                    },
+                    source_feature: Some(format!(
+                        "numeral:cardinal:{}:{}:{}:{}",
+                        cell.case.code(),
+                        cell.number.code(),
+                        cell.gender.map_or("none", Gender::code),
+                        variant.status.code()
+                    )),
+                    source_form: (variant.status == NumeralVariantStatus::ReviewedTable)
+                        .then(|| form.text.clone()),
+                    crosscheck_features: Vec::new(),
+                    authority: Some(identity.authority().to_string()),
+                }],
+                trace: trace.clone(),
+            };
+            Ok((form, analysis, trace))
+        })
+        .collect::<Result<Vec<_>, InflectionError>>()?;
+    let (primary, primary_analysis, primary_trace) =
+        variants
+            .first()
+            .ok_or_else(|| InflectionError::InvalidInput {
+                reason: format!("the {identity:?} cardinal cell has no reviewed forms"),
+            })?;
+    Ok(FormSet::new(
+        orthography::canonical_display(identity.canonical_lemma())?,
+        primary.clone(),
+        variants
+            .iter()
+            .skip(1)
+            .map(|(form, _, _)| form.clone())
+            .collect(),
+        primary_analysis.source.clone(),
+        Vec::new(),
+        primary_trace.clone(),
+        variants
+            .into_iter()
+            .map(|(_, analysis, _)| analysis)
+            .collect(),
+    ))
+}
+
+/// Resolve a numeral lemma through the source-reviewed simple-cardinal
+/// inventory, retaining exact-table fallback for other numeral types.
+pub fn numeral(lemma: &str, cell: NumeralCell) -> Result<FormSet, InflectionError> {
+    let candidates = lookup(lemma, PartOfSpeech::Numeral)?;
+    match candidates.as_slice() {
+        [one] => {
+            let record =
+                lookup::find_lexeme(&one.id).ok_or_else(|| InflectionError::InvalidInput {
+                    reason: "generated lookup candidate is missing".to_string(),
+                })?;
+            queried_result(lemma, record, numeral_cell_by_id(&one.id, cell))
+        }
+        [] => {
+            let normalized = orthography::lookup_key(lemma)?;
+            let identity = CardinalNumeralIdentity::classify_source_union_lemma(&normalized)
+                .ok_or_else(|| {
+                    InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral)
+                })?;
+            let mut result = reviewed_cardinal_numeral(identity, cell)?;
+            if normalized != identity.canonical_lemma() {
+                result.add_warning(InflectionWarning::LexicalAliasUsed {
+                    canonical: identity.canonical_lemma().to_string(),
+                });
+            }
+            Ok(result)
+        }
+        _ => Err(InflectionError::AmbiguousLexeme { candidates }),
+    }
+}
+
 pub fn comparative_with(
     lexeme: &ComparativeLexeme,
     cell: AdjectiveCell,
@@ -1638,11 +1738,55 @@ pub fn gendered_pronoun_by_id(id: &str, cell: GenderedCell) -> Result<FormSet, I
 }
 
 pub fn numeral_by_id(id: &str, cell: UngenderedCell) -> Result<FormSet, InflectionError> {
-    closed_class_by_id(id, PartOfSpeech::Numeral, cell.closed_class())
+    numeral_cell_by_id(
+        id,
+        NumeralCell {
+            case: cell.case,
+            number: cell.number,
+            gender: None,
+        },
+    )
 }
 
 pub fn gendered_numeral_by_id(id: &str, cell: GenderedCell) -> Result<FormSet, InflectionError> {
+    numeral_cell_by_id(
+        id,
+        NumeralCell {
+            case: cell.case,
+            number: cell.number,
+            gender: Some(cell.gender),
+        },
+    )
+}
+
+fn numeral_cell_by_id(id: &str, cell: NumeralCell) -> Result<FormSet, InflectionError> {
+    let record = lexeme_identity(id, PartOfSpeech::Numeral)?;
+    if let Some(identity) = CardinalNumeralIdentity::classify_source_union_lemma(record.lemma) {
+        let mut result =
+            reviewed_cardinal_numeral(identity, cell).map_err(|error| error.with_lexeme_id(id))?;
+        if record.lemma != identity.canonical_lemma() {
+            result.add_warning(InflectionWarning::LexicalAliasUsed {
+                canonical: identity.canonical_lemma().to_string(),
+            });
+        }
+        return Ok(result);
+    }
     closed_class_by_id(id, PartOfSpeech::Numeral, cell.closed_class())
+}
+
+pub(crate) fn build_cardinal_numeral_paradigm(
+    identity: CardinalNumeralIdentity,
+) -> CardinalNumeralParadigm {
+    CardinalNumeralParadigm {
+        identity,
+        lemma: identity.canonical_lemma().to_string(),
+        cells: NumeralCell::all()
+            .map(|cell| CellOutcome {
+                cell,
+                result: reviewed_cardinal_numeral(identity, cell),
+            })
+            .collect(),
+    }
 }
 
 fn lexeme_identity(
@@ -1728,22 +1872,32 @@ pub fn gendered_pronoun_paradigm_by_id(
 
 pub fn numeral_paradigm_by_id(id: &str) -> Result<NumeralParadigm, InflectionError> {
     let record = lexeme_identity(id, PartOfSpeech::Numeral)?;
-    Ok(build_ungendered_closed_class_paradigm(
-        id,
-        record.lemma,
-        PartOfSpeech::Numeral,
-    ))
+    Ok(build_numeral_paradigm(id, record.lemma))
 }
 
 pub fn gendered_numeral_paradigm_by_id(
     id: &str,
 ) -> Result<GenderedNumeralParadigm, InflectionError> {
     let record = lexeme_identity(id, PartOfSpeech::Numeral)?;
-    Ok(build_gendered_closed_class_paradigm(
-        id,
-        record.lemma,
-        PartOfSpeech::Numeral,
-    ))
+    Ok(build_gendered_numeral_paradigm(id, record.lemma))
+}
+
+pub(crate) fn build_numeral_paradigm(id: &str, lemma: &str) -> NumeralParadigm {
+    ClosedClassParadigm {
+        lexeme_id: id.to_string(),
+        lemma: lemma.to_string(),
+        part_of_speech: PartOfSpeech::Numeral,
+        cells: cell_outcomes(id, UngenderedCell::all(), numeral_by_id),
+    }
+}
+
+pub(crate) fn build_gendered_numeral_paradigm(id: &str, lemma: &str) -> GenderedNumeralParadigm {
+    ClosedClassParadigm {
+        lexeme_id: id.to_string(),
+        lemma: lemma.to_string(),
+        part_of_speech: PartOfSpeech::Numeral,
+        cells: cell_outcomes(id, GenderedCell::all(), gendered_numeral_by_id),
+    }
 }
 
 pub(crate) fn build_ungendered_closed_class_paradigm(
