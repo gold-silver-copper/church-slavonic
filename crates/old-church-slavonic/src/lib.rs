@@ -120,7 +120,7 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Cardinals through 99 | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple and structured compound inventory with inherent-number agreement, typed government, correlated multiword alternatives, and source-listed versus productive variants |
+//! | Cardinals through 10,000 | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`cardinal_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, and structured compound inventory with inherent-number agreement, typed government, correlated multiword alternatives, and source-listed versus productive variants |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -150,17 +150,18 @@ mod resolver;
 pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
-    AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, CardinalNumeralIdentity,
-    CardinalPhraseAnalysis, Case, CompoundCardinalCell, ConditionalAuxiliary, CopulaSeries,
-    DeterminerCell, DeterminerDeclension, DeterminerIdentity, DeterminerLexeme, DirectToTreatment,
-    FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense,
-    Gender, GenderedCell, InflectionError, InflectionWarning, InterrogativePronounIdentity,
-    IrregularAgreeingIdentity, Lemma, LexemeSummary, LongOnlyAdjectiveIdentity, Number,
-    NumeralCell, NumeralGovernment, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
-    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
-    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
-    PronounFormSelection, RealizedCardinal, RealizedPhrase, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
+    AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
+    CardinalMagnitudeIdentity, CardinalNumeralIdentity, CardinalPhraseAnalysis, Case,
+    CompoundCardinalCell, ConditionalAuxiliary, CopulaSeries, DeterminerCell, DeterminerDeclension,
+    DeterminerIdentity, DeterminerLexeme, DirectToTreatment, FiniteTense, FormSet, FormSource,
+    FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell,
+    InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    Lemma, LexemeSummary, LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment,
+    PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell,
+    PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary,
+    PronominalFamilySpec, PronominalPostpositive, PronominalPrefix, PronounFormSelection,
+    RealizedCardinal, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
+    UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
@@ -182,20 +183,22 @@ pub mod trace {
 pub mod prelude {
     pub use crate::{
         Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy,
-        CardinalNumeralIdentity, CardinalNumeralParadigm, Case, CompoundCardinalParadigm,
-        Determiner, DeterminerCell, DeterminerIdentity, DeterminerParadigm, FiniteTense,
-        FiniteVerbParadigm, FormSet, FormSource, FormVariant, Gender, GenderedNumeralParadigm,
-        GenderedPronounParadigm, ImperativeParadigm, InflectionError, InflectionResult,
-        InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-        LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral,
-        NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
-        ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
-        PronounFormSelection, PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy,
-        VariantSelectionError, Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
+        CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
+        CardinalNumeralParadigm, Case, CompoundCardinalParadigm, Determiner, DeterminerCell,
+        DeterminerIdentity, DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet,
+        FormSource, FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm,
+        ImperativeParadigm, InflectionError, InflectionResult, InflectionWarning,
+        InterrogativePronounIdentity, IrregularAgreeingIdentity, LParticipleParadigm, Lemma,
+        LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral, NumeralParadigm,
+        ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind, ParticipleParadigm, Person,
+        PersonalPronounIdentity, PersonalPronounParadigm, Pronoun, PronounFormSelection,
+        PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy, VariantSelectionError,
+        Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
         cardinal_numeral_identity, cardinal_numeral_paradigm, comparative_citation,
         compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_one,
-        compound_cardinal_with_one, determiner, determiner_identity, determiner_paradigm, finite,
-        finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
+        compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
+        compound_cardinal_with_options, determiner, determiner_identity, determiner_paradigm,
+        finite, finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
         gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
         interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
         long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
@@ -680,7 +683,41 @@ pub fn cardinal_numeral_identity(
     )
 }
 
-/// Inflect a composed cardinal from 11 through 99.
+/// Decline a cardinal magnitude head as a noun-like numeral.
+///
+/// All magnitude heads govern a genitive-plural complement and therefore have
+/// no gender parameter. Both documented thousand spellings are stable lexical
+/// identities; each retains the reviewed compact and expanded graphic forms.
+///
+/// ```
+/// use old_church_slavonic::{cardinal_magnitude, CardinalMagnitudeIdentity, Case, Number};
+/// assert_eq!(
+///     cardinal_magnitude(
+///         CardinalMagnitudeIdentity::ThousandBackYus,
+///         Case::Nominative,
+///         Number::Plural,
+///     )?
+///     .primary_text(),
+///     "тꙑсѫщѩ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn cardinal_magnitude(
+    identity: CardinalMagnitudeIdentity,
+    case: Case,
+    number: Number,
+) -> InflectionResult {
+    resolver::reviewed_cardinal_magnitude(
+        identity,
+        NumeralCell {
+            case,
+            number,
+            gender: None,
+        },
+    )
+}
+
+/// Inflect a composed cardinal from 11 through 10,000.
 ///
 /// Gender follows the final unit: it is required when that unit is one through
 /// four and absent when the compound governs a genitive plural. This default
@@ -704,7 +741,7 @@ pub fn compound_cardinal(
     case: Case,
     gender: Option<Gender>,
 ) -> Result<RealizedCardinal, InflectionError> {
-    compound_cardinal_with_one(value, CardinalNumeralIdentity::OneYedin, case, gender)
+    compound_cardinal_with_options(value, CardinalCompositionOptions::DEFAULT, case, gender)
 }
 
 /// Inflect a composed cardinal while explicitly selecting the lexical doublet
@@ -735,8 +772,35 @@ pub fn compound_cardinal_with_one(
     resolver::compound_cardinal(value, CompoundCardinalCell { case, gender }, one_identity)
 }
 
+/// Inflect a composed cardinal while explicitly selecting its lexical one and
+/// thousand doublets.
+///
+/// ```
+/// use old_church_slavonic::{
+///     compound_cardinal_with_options, CardinalCompositionOptions,
+///     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case,
+/// };
+/// let options = CardinalCompositionOptions {
+///     one_identity: CardinalNumeralIdentity::OneYedyn,
+///     thousand_identity: CardinalMagnitudeIdentity::ThousandLittleYus,
+/// };
+/// assert_eq!(
+///     compound_cardinal_with_options(1000, options, Case::Nominative, None)?.primary_text(),
+///     "тꙑсѧщи",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn compound_cardinal_with_options(
+    value: u16,
+    options: CardinalCompositionOptions,
+    case: Case,
+    gender: Option<Gender>,
+) -> Result<RealizedCardinal, InflectionError> {
+    resolver::compound_cardinal_with_options(value, CompoundCardinalCell { case, gender }, options)
+}
+
 /// Enumerate every case and optional-gender request for a composed cardinal
-/// from 11 through 99, retaining invalid shapes as typed failures.
+/// from 11 through 10,000, retaining invalid shapes as typed failures.
 ///
 /// ```
 /// use old_church_slavonic::{compound_cardinal_paradigm, Case, Gender};
@@ -749,7 +813,7 @@ pub fn compound_cardinal_with_one(
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// ```
 pub fn compound_cardinal_paradigm(value: u16) -> Result<CompoundCardinalParadigm, InflectionError> {
-    compound_cardinal_paradigm_with_one(value, CardinalNumeralIdentity::OneYedin)
+    compound_cardinal_paradigm_with_options(value, CardinalCompositionOptions::DEFAULT)
 }
 
 /// Enumerate a composed cardinal while explicitly selecting its lexical
@@ -773,7 +837,39 @@ pub fn compound_cardinal_paradigm_with_one(
     value: u16,
     one_identity: CardinalNumeralIdentity,
 ) -> Result<CompoundCardinalParadigm, InflectionError> {
-    resolver::build_compound_cardinal_paradigm(value, one_identity)
+    compound_cardinal_paradigm_with_options(
+        value,
+        CardinalCompositionOptions {
+            one_identity,
+            ..CardinalCompositionOptions::DEFAULT
+        },
+    )
+}
+
+/// Enumerate every case and optional-gender request while explicitly selecting
+/// the compound cardinal's lexical one and thousand doublets.
+///
+/// ```
+/// use old_church_slavonic::{
+///     compound_cardinal_paradigm_with_options, CardinalCompositionOptions,
+///     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case,
+/// };
+/// let options = CardinalCompositionOptions {
+///     one_identity: CardinalNumeralIdentity::OneYedyn,
+///     thousand_identity: CardinalMagnitudeIdentity::ThousandLittleYus,
+/// };
+/// let paradigm = compound_cardinal_paradigm_with_options(2000, options)?;
+/// assert_eq!(
+///     paradigm.form(Case::Nominative, None)?.primary_text(),
+///     "дъвѣ тꙑсѧщи",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn compound_cardinal_paradigm_with_options(
+    value: u16,
+    options: CardinalCompositionOptions,
+) -> Result<CompoundCardinalParadigm, InflectionError> {
+    resolver::build_compound_cardinal_paradigm(value, options)
 }
 
 /// Decline one short/simple adjective cell.

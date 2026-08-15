@@ -31,8 +31,9 @@ pub use grammar::{
     PresentPassiveParticipleFormation, RequestedCell, UngenderedCell, VerbAspect, VerbClass,
 };
 pub use numeral::{
-    CardinalNumeralIdentity, CardinalPhraseAnalysis, NumeralGovernment, NumeralVariant,
-    NumeralVariantStatus, RealizedCardinal,
+    CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
+    CardinalPhraseAnalysis, NumeralGovernment, NumeralVariant, NumeralVariantStatus,
+    RealizedCardinal,
 };
 pub use orthography::{Lemma, Script};
 pub use phrase::{

@@ -304,6 +304,225 @@ impl CardinalNumeralIdentity {
     }
 }
 
+/// Lexical magnitude heads used by higher cardinal constructions.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum CardinalMagnitudeIdentity {
+    HundredSto,
+    ThousandBackYus,
+    ThousandLittleYus,
+    MyriadTma,
+}
+
+impl CardinalMagnitudeIdentity {
+    pub const ALL: [Self; 4] = [
+        Self::HundredSto,
+        Self::ThousandBackYus,
+        Self::ThousandLittleYus,
+        Self::MyriadTma,
+    ];
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::HundredSto => "съто",
+            Self::ThousandBackYus => "тꙑсѫщи",
+            Self::ThousandLittleYus => "тꙑсѧщи",
+            Self::MyriadTma => "тъма",
+        }
+    }
+
+    pub const fn source_union_aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::HundredSto => &["съто"],
+            Self::ThousandBackYus => &["тꙑсѫщи", "тысѫщи", "тꙑсѫшти", "тысѫшти"],
+            Self::ThousandLittleYus => &["тꙑсѧщи", "тысѧщи", "тꙑсѧшти", "тысѧшти"],
+            Self::MyriadTma => &["тъма"],
+        }
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|identity| identity.source_union_aliases().contains(&lemma))
+    }
+
+    pub const fn government(self) -> NumeralGovernment {
+        NumeralGovernment::GenitivePlural
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        match self {
+            Self::HundredSto => RuleId::NumeralCardinalHundred,
+            Self::ThousandBackYus | Self::ThousandLittleYus => RuleId::NumeralCardinalThousand,
+            Self::MyriadTma => RuleId::NumeralCardinalMyriad,
+        }
+    }
+
+    pub const fn authority(self) -> &'static str {
+        match self {
+            Self::HundredSto => "UT OCS Online §44.100",
+            Self::ThousandBackYus | Self::ThousandLittleYus => {
+                "Polivanova 2023 §§345–348; UT OCS Online §44.1000"
+            }
+            Self::MyriadTma => "UT OCS Online §44.10,000",
+        }
+    }
+}
+
+/// Lexical choices that remain independent of the integer being composed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct CardinalCompositionOptions {
+    pub one_identity: CardinalNumeralIdentity,
+    pub thousand_identity: CardinalMagnitudeIdentity,
+}
+
+impl CardinalCompositionOptions {
+    pub const DEFAULT: Self = Self {
+        one_identity: CardinalNumeralIdentity::OneYedin,
+        thousand_identity: CardinalMagnitudeIdentity::ThousandBackYus,
+    };
+}
+
+/// Decline one magnitude head independently of its multiplicative context.
+pub fn decline_magnitude(
+    identity: CardinalMagnitudeIdentity,
+    cell: NumeralCell,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    if cell.gender.is_some() {
+        return Err(InflectionError::historically_invalid(
+            identity.canonical_lemma(),
+            RequestedCell::Numeral(cell),
+        ));
+    }
+    let noun_cell = NounCell {
+        case: cell.case,
+        number: cell.number,
+    };
+    let result = match identity {
+        CardinalMagnitudeIdentity::HundredSto => {
+            decline_regular_magnitude(identity, noun_cell, NounClass::ONeuterHard, Gender::Neuter)
+        }
+        CardinalMagnitudeIdentity::MyriadTma => {
+            decline_regular_magnitude(identity, noun_cell, NounClass::AHard, Gender::Feminine)
+        }
+        CardinalMagnitudeIdentity::ThousandBackYus => decline_thousand(identity, noun_cell, 'ѫ'),
+        CardinalMagnitudeIdentity::ThousandLittleYus => decline_thousand(identity, noun_cell, 'ѧ'),
+    };
+    result.map_err(|error| remap_cell_error(error, identity.canonical_lemma(), cell))
+}
+
+fn decline_regular_magnitude(
+    identity: CardinalMagnitudeIdentity,
+    cell: NounCell,
+    class: NounClass,
+    gender: Gender,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    let prediction = crate::noun::decline(
+        &NounLexeme {
+            lemma: identity.canonical_lemma().to_string(),
+            class,
+            gender,
+            animacy: Animacy::Inanimate,
+            number_restriction: NumberRestriction::All,
+        },
+        cell,
+    )?;
+    if cell.case == Case::Nominative && cell.number == Number::Singular {
+        Ok(vec![NumeralVariant::reviewed(
+            &prediction.text,
+            identity.rule_id(),
+            identity.canonical_lemma(),
+            "select the source-listed cardinal-magnitude citation form",
+        )])
+    } else {
+        Ok(vec![productive_magnitude(identity, prediction)])
+    }
+}
+
+fn decline_thousand(
+    identity: CardinalMagnitudeIdentity,
+    cell: NounCell,
+    nasal: char,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    let canonical = identity.canonical_lemma();
+    let canonical_form = if cell.case == Case::Nominative && cell.number == Number::Singular {
+        NumeralVariant::reviewed(
+            canonical,
+            RuleId::NumeralCardinalThousand,
+            canonical,
+            "select the exceptional source-listed thousand nominative singular",
+        )
+    } else {
+        productive_magnitude(
+            identity,
+            crate::noun::decline(
+                &NounLexeme {
+                    lemma: canonical.to_string(),
+                    class: NounClass::JaSoft,
+                    gender: Gender::Feminine,
+                    animacy: Animacy::Inanimate,
+                    number_restriction: NumberRestriction::All,
+                },
+                cell,
+            )?,
+        )
+    };
+    let expanded_lemma = format!("тꙑс{nasal}шти");
+    let expanded_text = if cell.case == Case::Nominative && cell.number == Number::Singular {
+        expanded_lemma.clone()
+    } else if matches!(
+        cell.case,
+        Case::Nominative | Case::Accusative | Case::Vocative
+    ) && cell.number == Number::Plural
+    {
+        format!("тꙑс{nasal}штѧ")
+    } else {
+        crate::noun::decline(
+            &NounLexeme {
+                lemma: expanded_lemma.clone(),
+                class: NounClass::JaSoft,
+                gender: Gender::Feminine,
+                animacy: Animacy::Inanimate,
+                number_restriction: NumberRestriction::All,
+            },
+            cell,
+        )?
+        .text
+    };
+    let expanded = if cell.case == Case::Nominative
+        && matches!(cell.number, Number::Singular | Number::Plural)
+    {
+        NumeralVariant::reviewed(
+            &expanded_text,
+            RuleId::NumeralCardinalThousand,
+            canonical,
+            "retain the UT source spelling of the thousand profile",
+        )
+    } else {
+        NumeralVariant::productive_text(
+            &expanded_text,
+            RuleId::NumeralCardinalThousand,
+            canonical,
+            "apply the reviewed ja-stem oblique profile to the UT thousand spelling",
+        )
+    };
+    Ok(vec![canonical_form, expanded])
+}
+
+fn productive_magnitude(
+    identity: CardinalMagnitudeIdentity,
+    mut prediction: PredictedForm,
+) -> NumeralVariant {
+    let rule_id = identity.rule_id();
+    prediction.trace.push(RuleStep {
+        rule_id,
+        before: identity.canonical_lemma().to_string(),
+        after: prediction.text.clone(),
+        reason: "apply the reviewed declensional class of the cardinal magnitude",
+    });
+    prediction.rule_id = rule_id;
+    NumeralVariant::productive(prediction)
+}
+
 /// Return every source-ordered realization of one simple-cardinal cell.
 pub fn decline_cardinal(
     identity: CardinalNumeralIdentity,
@@ -631,6 +850,113 @@ mod tests {
                 assert!(aliases.insert(*alias), "duplicate cardinal alias {alias}");
             }
         }
+    }
+
+    #[test]
+    fn magnitude_inventory_is_exhaustive_nonoverlapping_and_ungendered() {
+        assert_eq!(CardinalMagnitudeIdentity::ALL.len(), 4);
+        let mut aliases = std::collections::BTreeSet::new();
+        for identity in CardinalMagnitudeIdentity::ALL {
+            assert_eq!(
+                CardinalMagnitudeIdentity::classify_source_union_lemma(identity.canonical_lemma()),
+                Some(identity)
+            );
+            for alias in identity.source_union_aliases() {
+                assert!(aliases.insert(*alias), "duplicate magnitude alias {alias}");
+            }
+            let outcomes = NumeralCell::all()
+                .map(|cell| (cell, decline_magnitude(identity, cell)))
+                .collect::<Vec<_>>();
+            assert_eq!(
+                outcomes.iter().filter(|(_, result)| result.is_ok()).count(),
+                21,
+                "{identity:?}"
+            );
+            assert!(
+                outcomes
+                    .iter()
+                    .filter(|(cell, _)| cell.gender.is_some())
+                    .all(|(_, result)| matches!(
+                        result,
+                        Err(InflectionError::HistoricallyInvalidCell { .. })
+                    ))
+            );
+        }
+    }
+
+    #[test]
+    fn magnitude_goldens_cover_hundred_thousand_and_myriad_profiles() {
+        let hundred = decline_magnitude(
+            CardinalMagnitudeIdentity::HundredSto,
+            cell(Case::Genitive, Number::Singular, None),
+        )
+        .expect("hundred genitive singular");
+        assert_eq!(hundred[0].prediction.text, "съта");
+        assert_eq!(
+            hundred[0].prediction.rule_id,
+            RuleId::NumeralCardinalHundred
+        );
+        assert_eq!(hundred[0].status, NumeralVariantStatus::ProductiveRule);
+
+        let thousand_nominative = decline_magnitude(
+            CardinalMagnitudeIdentity::ThousandBackYus,
+            cell(Case::Nominative, Number::Singular, None),
+        )
+        .expect("thousand nominative singular");
+        assert_eq!(
+            thousand_nominative
+                .iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["тꙑсѫщи", "тꙑсѫшти"]
+        );
+        assert!(
+            thousand_nominative
+                .iter()
+                .all(|variant| variant.status == NumeralVariantStatus::ReviewedTable)
+        );
+
+        let thousand_plural = decline_magnitude(
+            CardinalMagnitudeIdentity::ThousandLittleYus,
+            cell(Case::Nominative, Number::Plural, None),
+        )
+        .expect("thousand nominative plural");
+        assert_eq!(
+            thousand_plural
+                .iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["тꙑсѧщѩ", "тꙑсѧштѧ"]
+        );
+        assert_eq!(
+            thousand_plural[0].status,
+            NumeralVariantStatus::ProductiveRule
+        );
+        assert_eq!(
+            thousand_plural[1].status,
+            NumeralVariantStatus::ReviewedTable
+        );
+
+        let thousand_accusative = decline_magnitude(
+            CardinalMagnitudeIdentity::ThousandBackYus,
+            cell(Case::Accusative, Number::Singular, None),
+        )
+        .expect("thousand accusative singular");
+        assert_eq!(
+            thousand_accusative
+                .iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["тꙑсѫщѭ", "тꙑсѫштѭ"]
+        );
+
+        let myriad = decline_magnitude(
+            CardinalMagnitudeIdentity::MyriadTma,
+            cell(Case::Accusative, Number::Singular, None),
+        )
+        .expect("myriad accusative singular");
+        assert_eq!(myriad[0].prediction.text, "тъмѫ");
+        assert_eq!(myriad[0].prediction.rule_id, RuleId::NumeralCardinalMyriad);
     }
 
     #[test]

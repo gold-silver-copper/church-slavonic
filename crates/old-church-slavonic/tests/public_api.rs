@@ -14,20 +14,22 @@ use old_church_slavonic::advanced::rules::{
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
-    Adjective, AnaphoricEnvironment, Animacy, CardinalNumeralIdentity, Case, CompoundCardinalCell,
-    Determiner, DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
+    Adjective, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
+    CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CompoundCardinalCell, Determiner,
+    DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
     InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
     Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, ParadigmLookupError,
     PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
     PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
-    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_numeral_identity,
-    cardinal_numeral_paradigm, compound_cardinal, compound_cardinal_paradigm,
-    compound_cardinal_with_one, determiner, determiner_identity, determiner_paradigm, finite,
-    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
-    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
-    l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
-    participle_paradigm, past_active_participle, personal_pronoun, personal_pronoun_with, present,
-    present_paradigm, pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun,
+    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+    cardinal_numeral_identity, cardinal_numeral_paradigm, compound_cardinal,
+    compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
+    compound_cardinal_with_one, compound_cardinal_with_options, determiner, determiner_identity,
+    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
+    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
+    l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
+    numeral, participle_paradigm, past_active_participle, personal_pronoun, personal_pronoun_with,
+    present, present_paradigm, pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun,
     short_adjective, supine,
 };
 
@@ -532,6 +534,172 @@ fn compound_cardinals_through_ninety_nine_are_structured_and_exhaustive() {
                     ));
                 }
             }
+        }
+    }
+}
+
+#[test]
+fn cardinal_magnitudes_and_composition_through_ten_thousand_are_structured() {
+    let thousand = cardinal_magnitude(
+        CardinalMagnitudeIdentity::ThousandBackYus,
+        Case::Nominative,
+        Number::Plural,
+    )
+    .expect("thousand nominative plural");
+    assert_eq!(thousand.primary_text(), "тꙑсѫщѩ");
+    assert_eq!(
+        thousand
+            .variants()
+            .map(|variant| variant.text.as_str())
+            .collect::<Vec<_>>(),
+        ["тꙑсѫщѩ", "тꙑсѫштѧ"]
+    );
+
+    let goldens = [
+        (100, Case::Nominative, None, "съто"),
+        (100, Case::Genitive, None, "съта"),
+        (200, Case::Nominative, None, "дъвѣ сътѣ"),
+        (300, Case::Nominative, None, "три съта"),
+        (500, Case::Genitive, None, "пѧти сътъ"),
+        (1_000, Case::Nominative, None, "тꙑсѫщи"),
+        (2_000, Case::Nominative, None, "дъвѣ тꙑсѫщи"),
+        (3_000, Case::Nominative, None, "три тꙑсѫщѩ"),
+        (5_000, Case::Genitive, None, "пѧти тꙑсѫщь"),
+        (
+            153,
+            Case::Nominative,
+            Some(Gender::Masculine),
+            "съто и пѧть десѧтъ и триѥ",
+        ),
+        (
+            9_999,
+            Case::Nominative,
+            None,
+            "девѧть тꙑсѫщь и девѧть сътъ и девѧть десѧтъ и девѧть",
+        ),
+        (10_000, Case::Nominative, None, "десѧть тꙑсѫщь"),
+    ];
+    for (value, case, gender, expected) in goldens {
+        let realized = compound_cardinal(value, case, gender).expect("licensed higher cardinal");
+        assert_eq!(realized.primary_text(), expected, "{value}");
+        let remainder = value % 100;
+        let final_digit = if (11..=19).contains(&remainder) {
+            remainder - 10
+        } else {
+            remainder % 10
+        };
+        let expected_government = match final_digit {
+            1 => old_church_slavonic::NumeralGovernment::Agreement {
+                number: Number::Singular,
+            },
+            2 => old_church_slavonic::NumeralGovernment::Agreement {
+                number: Number::Dual,
+            },
+            3 | 4 => old_church_slavonic::NumeralGovernment::Agreement {
+                number: Number::Plural,
+            },
+            _ => old_church_slavonic::NumeralGovernment::GenitivePlural,
+        };
+        assert_eq!(realized.government(), expected_government);
+    }
+
+    let myriad =
+        compound_cardinal(10_000, Case::Nominative, None).expect("ten-thousand alternatives");
+    assert_eq!(myriad.analyses().len(), 2);
+    assert_eq!(myriad.analyses()[0].primary_text(), "десѧть тꙑсѫщь");
+    assert_eq!(myriad.analyses()[1].primary_text(), "тъма");
+
+    let one_hundred_thirty =
+        compound_cardinal(130, Case::Nominative, None).expect("higher correlated alternatives");
+    assert_eq!(one_hundred_thirty.analyses().len(), 2);
+    assert_eq!(
+        one_hundred_thirty.analyses()[0].primary_text(),
+        "съто и триѥ десѧте"
+    );
+    assert_eq!(
+        one_hundred_thirty.analyses()[1].primary_text(),
+        "съто и три десѧти"
+    );
+
+    let options = CardinalCompositionOptions {
+        one_identity: CardinalNumeralIdentity::OneYedyn,
+        thousand_identity: CardinalMagnitudeIdentity::ThousandLittleYus,
+    };
+    assert_eq!(
+        compound_cardinal_with_options(1_001, options, Case::Dative, Some(Gender::Feminine),)
+            .expect("selected compound lexical doublets")
+            .primary_text(),
+        "тꙑсѧщи и ѥдьнои",
+    );
+    let paradigm = compound_cardinal_paradigm_with_options(2_000, options)
+        .expect("selected-thousand paradigm");
+    assert_eq!(
+        paradigm
+            .form(Case::Nominative, None)
+            .expect("licensed two-thousand cell")
+            .primary_text(),
+        "дъвѣ тꙑсѧщи",
+    );
+    assert_eq!(
+        paradigm.thousand_identity(),
+        CardinalMagnitudeIdentity::ThousandLittleYus
+    );
+    assert_eq!(paradigm.options(), options);
+
+    assert!(matches!(
+        compound_cardinal_with_options(
+            1_000,
+            CardinalCompositionOptions {
+                one_identity: CardinalNumeralIdentity::OneYedin,
+                thousand_identity: CardinalMagnitudeIdentity::HundredSto,
+            },
+            Case::Nominative,
+            None,
+        ),
+        Err(InflectionError::InvalidInput { .. })
+    ));
+}
+
+#[test]
+fn every_integer_through_ten_thousand_has_a_well_formed_analysis() {
+    for value in 11..=10_000 {
+        let remainder = value % 100;
+        let final_digit = if (11..=19).contains(&remainder) {
+            remainder - 10
+        } else {
+            remainder % 10
+        };
+        let gender = matches!(final_digit, 1..=4).then_some(Gender::Masculine);
+        let realized = compound_cardinal(value, Case::Nominative, gender)
+            .unwrap_or_else(|error| panic!("{value} nominative failed: {error}"));
+        assert_eq!(realized.value(), value);
+        assert!(realized.analyses().iter().all(|analysis| {
+            !analysis.tokens.is_empty()
+                && analysis
+                    .tokens
+                    .iter()
+                    .all(|token| !token.forms.primary_text().is_empty())
+        }));
+    }
+
+    for value in [
+        100, 101, 104, 105, 110, 111, 119, 120, 121, 130, 153, 199, 200, 300, 400, 500, 999, 1_000,
+        1_001, 1_010, 1_011, 1_021, 1_100, 1_111, 2_000, 3_000, 4_000, 5_000, 9_999, 10_000,
+    ] {
+        let remainder = value % 100;
+        let final_digit = if (11..=19).contains(&remainder) {
+            remainder - 10
+        } else {
+            remainder % 10
+        };
+        let requires_gender = matches!(final_digit, 1..=4);
+        for cell in CompoundCardinalCell::all().filter(|cell| cell.case != Case::Vocative) {
+            let result = compound_cardinal(value, cell.case, cell.gender);
+            assert_eq!(
+                result.is_ok(),
+                cell.gender.is_some() == requires_gender,
+                "{value} {cell:?}: {result:?}",
+            );
         }
     }
 }

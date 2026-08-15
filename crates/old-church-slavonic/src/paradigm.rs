@@ -1,10 +1,11 @@
 //! Full paradigms assembled through the canonical one-cell resolvers.
 
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveForm, Animacy, CardinalNumeralIdentity, Case, CompoundCardinalCell,
-    DeterminerCell, DeterminerIdentity, FiniteTense, FiniteVerbCell, FormSet, Gender, GenderedCell,
-    ImperativeCell, InflectionError, LParticipleCell, NounCell, Number, NumeralCell, PartOfSpeech,
-    ParticipleCell, ParticipleKind, Person, PersonalPronounCell, RealizedCardinal, UngenderedCell,
+    AdjectiveCell, AdjectiveForm, Animacy, CardinalCompositionOptions, CardinalMagnitudeIdentity,
+    CardinalNumeralIdentity, Case, CompoundCardinalCell, DeterminerCell, DeterminerIdentity,
+    FiniteTense, FiniteVerbCell, FormSet, Gender, GenderedCell, ImperativeCell, InflectionError,
+    LParticipleCell, NounCell, Number, NumeralCell, PartOfSpeech, ParticipleCell, ParticipleKind,
+    Person, PersonalPronounCell, RealizedCardinal, UngenderedCell,
 };
 use std::fmt;
 
@@ -431,7 +432,7 @@ impl CompoundCardinalOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CompoundCardinalParadigm {
     pub(crate) value: u16,
-    pub(crate) one_identity: CardinalNumeralIdentity,
+    pub(crate) options: CardinalCompositionOptions,
     pub(crate) cells: Vec<CompoundCardinalOutcome>,
 }
 
@@ -441,7 +442,15 @@ impl CompoundCardinalParadigm {
     }
 
     pub const fn one_identity(&self) -> CardinalNumeralIdentity {
-        self.one_identity
+        self.options.one_identity
+    }
+
+    pub const fn thousand_identity(&self) -> CardinalMagnitudeIdentity {
+        self.options.thousand_identity
+    }
+
+    pub const fn options(&self) -> CardinalCompositionOptions {
+        self.options
     }
 
     pub fn form(
