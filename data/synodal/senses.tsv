@@ -155,6 +155,7 @@ synodal:pronoun:yakov	sense:what-kind-yakov	what kind of; interrogative quality	
 synodal:pronoun:yakovyi	sense:what-kind-yakovyi	what kind of; full interrogative quality	quality,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:verb:byti	sense:be	to be; exist	state	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:verb:dati	sense:give	to give; grant	action,society,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:verb:dostoyati	sense:dostoyati	to be worthy; to be fitting	religion,modal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:verb:imati	sense:future-auxiliary	to be about to; compound-future auxiliary	grammar,auxiliary	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:verb:lyubiti	sense:love	to love; cherish	emotion,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:verb:nesti	sense:carry	to carry; bear; bring	action	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus

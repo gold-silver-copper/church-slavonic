@@ -1021,46 +1021,46 @@ id = "syn.analytic.current"
 recension = "synodal-russian"
 category = "analytic-form"
 part_of_speech = "verb"
-scope = "Compound future, perfect, pluperfect, conditional, and analytic passive."
+scope = "Compatibility builders for the compound future, perfect, pluperfect, conditional, and analytic passive, backed by the closed wider analytic contract."
 profiles = ["expanded", "liturgical"]
-features = ["construction=5", "components=typed", "roles=typed", "agreement=typed", "provenance=component"]
+features = ["construction=5", "components=typed", "formation-subtype=typed", "roles=typed", "agreement=typed", "provenance=component"]
 subtypes = ["compound-future", "perfect", "pluperfect", "conditional", "analytic-passive"]
 realization = "analytic"
 state = "productive-complete"
-implementation_kind = "structured-composition"
-rule_ids = ["SYN-PHRASE-FUTURE-ALYPY-85", "SYN-PHRASE-PERFECT-ALYPY-88", "SYN-PHRASE-PLUPERFECT-ALYPY-89", "SYN-PHRASE-CONDITIONAL-ALYPY-91", "SYN-PHRASE-PASSIVE-ALYPY-101-102"]
-sources = ["alypy-gamanovich-grammar-web-2023"]
-citation = "Alypy §§85, 88–89, 91, 101–102"
+implementation_kind = "typed-closed-structured-compatibility"
+rule_ids = ["SYN-PHRASE-FUTURE-ALYPY-85-PK-13", "SYN-PHRASE-PERFECT-ALYPY-88", "SYN-PHRASE-PLUPERFECT-ALYPY-89-168", "SYN-PHRASE-CONDITIONAL-ALYPY-91", "SYN-PHRASE-PASSIVE-ALYPY-101-102"]
+sources = ["alypy-gamanovich-grammar-web-2023", "pletneva-kravetsky-church-slavonic-2005", "synodal-target-text-union"]
+citation = "Alypy §§85, 88–89, 91, 101–102, 168; Pletneva–Kravetsky lesson 13 table 36."
 required_metadata = ["auxiliary identity/system", "main verb principal parts", "agreement features"]
-valid_inventory = "The five documented construction contracts."
+valid_inventory = "The five original public builders retain their documented defaults while every source-defined subtype is available through the wider typed formation APIs."
 invalid_inventory = "Aspect/voice mismatches and missing component metadata."
 implementation = ["crates/synodal-church-slavonic/src/phrases.rs", "crates/synodal-church-slavonic-core/src/phrase.rs"]
 tests = ["crates/synodal-church-slavonic/src/phrases.rs#compound_future_uses_reviewed_auxiliary_and_infinitive", "crates/synodal-church-slavonic/src/phrases.rs#perfect_is_structured_not_a_fake_word", "crates/synodal-church-slavonic/src/phrases.rs#pluperfect_and_conditional_use_independent_copular_systems", "crates/synodal-church-slavonic/src/phrases.rs#analytic_passive_is_structured_and_voice_checked"]
-evidence_status = "normative structured prediction"
-rationale = "All five admitted constructions retain typed components, agreement checks, and provenance."
+evidence_status = "normative structured prediction over the exhaustive wider matrix"
+rationale = "All five compatibility entry points retain typed components, agreement checks, construction evidence, and rule traces; their formerly implicit defaults are explicit PhraseFormation values within syn.analytic.wider."
 
 [[system]]
 id = "syn.analytic.wider"
 recension = "synodal-russian"
 category = "analytic-form"
 part_of_speech = "verb"
-scope = "Wider Alypy §90 periphrastic inventory, dropped copulas, additional future auxiliaries, free agreement/government, and licensed word-order variants."
+scope = "Exhaustive source-defined analytic verb morphology: all compound-future auxiliaries; perfect, pluperfect, future-anterior, conditional, optative, passive, periphrastic-tense, copula-ellipsis, and composite-adverbial-participle formations; licensed order, agreement, and passive-agent government."
 profiles = ["expanded", "liturgical"]
-features = ["construction=typed", "auxiliary=typed", "copula-omission=typed", "agreement/government=typed", "word-order=typed"]
-subtypes = ["future-with-хотѣти", "future-with-начати", "dropped-copula", "wider-passive", "other-§90-periphrases"]
+features = ["construction=10", "formation-subtype=closed-enum", "auxiliary=typed", "copula-omission=typed", "agreement=short-positive-nominative", "passive-agent-government=instrumental-or-ot-genitive", "word-order=typed", "provenance=every-component"]
+subtypes = ["compound-future-four-auxiliaries", "perfect-present-omitted-or-shared-copula", "pluperfect-three-auxiliary-series", "future-anterior", "conditional-six-patterns", "optative-two-finite-systems", "passive-seventeen-row-table", "periphrastic-five-copular-and-eight-semi-auxiliary-patterns", "seven-copula-ellipsis-contexts", "three-composite-adverbial-participle-patterns"]
 realization = "analytic"
-state = "implementation-missing"
-implementation_kind = "partial-generic-token-builder"
-rule_ids = ["SYN-PHRASE-WIDER-PENDING"]
-sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
-citation = "docs/SYNODAL_MORPHOLOGY.md explicitly leaves these systems future work."
-required_metadata = ["auxiliary/particle identities", "component systems", "agreement/control", "word-order and omission policies"]
-valid_inventory = "To be established for each source-defined construction."
-invalid_inventory = "Unrestricted syntax and corpus co-occurrence without a grammatical rule."
-implementation = ["crates/synodal-church-slavonic/src/phrases.rs"]
-tests = ["crates/synodal-church-slavonic/src/phrases.rs#analytic_passive_is_structured_and_voice_checked"]
-evidence_status = "generic typed token support but no complete construction inventory"
-gap = "Crosswalk Alypy and target texts, then implement every licensed wider construction as a typed phrase."
+state = "productive-complete"
+implementation_kind = "typed-closed-structured-composition"
+rule_ids = ["SYN-PHRASE-FUTURE-ALYPY-85-PK-13", "SYN-PHRASE-PERFECT-ALYPY-88", "SYN-PHRASE-PLUPERFECT-ALYPY-89-168", "SYN-PHRASE-FUTURE-ANTERIOR-ALYPY-162", "SYN-PHRASE-CONDITIONAL-ALYPY-91", "SYN-PHRASE-OPTATIVE-ALYPY-92", "SYN-PHRASE-PASSIVE-ALYPY-101-102", "SYN-PHRASE-PERIPHRASTIC-ALYPY-90-163", "SYN-PHRASE-COPULA-ELLIPSIS-ALYPY-123-124", "SYN-PHRASE-ADVERBIAL-PARTICIPLE-ALYPY-146"]
+sources = ["alypy-gamanovich-grammar-web-2023", "pletneva-kravetsky-church-slavonic-2005", "petrukhin-byti-participle-2016", "synodal-target-text-union"]
+citation = "Alypy §§85, 88–92, 101–102, 123–124, 146, 162–163; Pletneva–Kravetsky lesson 13 table 36; Petrukhin 2016 pp. 179–207; Acts 5:42 locked Synodal witness."
+required_metadata = ["stable main and auxiliary identities or caller-evidenced semi-auxiliary forms", "aspect for compound future and optative simple future", "independent infinitive/l-participle/participle principal parts", "person and number for finite auxiliaries", "gender and number for agreeing participles", "typed order/omission/formation selector", "governed agent form or noun metadata", "exact accent or reusable accent metadata for liturgical output"]
+valid_inventory = "Four compound-future auxiliaries across all nine person/number cells and two orders; three perfect patterns; three pluperfect series including four nested orders; future anterior; personal, invariant, present-copula, infinitive, and three modal conditional patterns; present/simple-future optatives; all 17 §102 passive rows in both binary orders or all four compound orders with instrumental and ѿ-plus-genitive agents; five copular periphrastic systems; the closed eight-member semi-auxiliary inventory with its two negated identities and пребывати past-active exception; seven source-licensed copula omissions; and three composite adverbial-participle patterns."
+invalid_inventory = "Perfective main verbs in compound futures; omitted perfect copulas outside third singular; бы with modal auxiliaries other than подобаше; wrong participle tense, voice, comparison, form, case, or number; past-active semi-auxiliary predicates outside пребывати; malformed component-role sequences; mismatched agent government; and unrestricted sentence syntax or corpus co-occurrence without a cited rule."
+implementation = ["crates/synodal-church-slavonic-core/src/phrase.rs", "crates/synodal-church-slavonic/src/phrases.rs", "crates/synodal-church-slavonic/src/lib.rs", "crates/xtask/src/synodal.rs", "data/synodal/lexemes.tsv", "data/synodal/principal_parts.tsv", "data/synodal/exact_forms.tsv", "data/synodal/phrase_evaluation.tsv"]
+tests = ["crates/synodal-church-slavonic-core/src/phrase.rs#every_closed_analytic_formation_accepts_its_role_shape", "crates/synodal-church-slavonic-core/src/phrase.rs#typed_shapes_reject_malformed_roles_and_government", "crates/synodal-church-slavonic/src/phrases.rs#compound_future_covers_every_auxiliary_person_number_and_order", "crates/synodal-church-slavonic/src/phrases.rs#perfect_pluperfect_and_future_anterior_cover_every_source_subtype", "crates/synodal-church-slavonic/src/phrases.rs#conditional_and_optative_cover_every_source_subtype", "crates/synodal-church-slavonic/src/phrases.rs#periphrastic_ellipsis_and_composite_participles_are_closed_and_checked", "crates/synodal-church-slavonic/src/phrases.rs#passive_table_covers_all_seventeen_formations_orders_and_agent_government", "data/synodal/phrase_evaluation.tsv#eval:alypy-90-glagolati-periphrastic-future"]
+evidence_status = "exhaustive normative construction inventory with independent target-grammar and diachronic crosschecks, locked target witnesses, source-bounded unattested predictions, and 14/14 expanded/liturgical phrase evaluation"
+rationale = "The source contract is closed rather than corpus-enumerated: typed enums make every licensed formation and order inspectable, builders validate morphology and government before composition, every token retains its lexical evidence plus construction trace, and unattested but rule-licensed cells remain explicit normative predictions. General clause generation remains outside the inflection engine and is not a morphology gap."
 
 [[system]]
 id = "syn.orthography.canonical"

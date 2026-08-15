@@ -28,8 +28,9 @@ The typed inventory investigates and represents:
 - verbs: present, imperfect, independent aorist systems, imperative, infinitive,
   supine where normative, l-participles, active/passive participles, verbal nouns,
   and irregular/suppletive paradigms; and
-- structured analytic future, perfect, pluperfect, conditional, and passive
-  constructions.
+- structured compound-future, perfect, pluperfect, future-anterior,
+  conditional, optative, passive, periphrastic-tense, copula-ellipsis, and
+  composite-adverbial-participle constructions.
 
 Single-word morphology and phrase realization are distinct APIs. Analytic forms
 are structured tokens with agreement and provenance, never a space-containing
@@ -435,24 +436,34 @@ are:
 
 | Construction | Formation | Basis |
 |---|---|---|
-| Compound future | present of `имати` + imperfective infinitive | Alypy §85 |
-| Perfect | l-participle + present of `быти` | Alypy §88 |
-| Pluperfect | l-participle + either imperfect series of `быти` | Alypy §89 |
-| Conditional | l-participle + aorist of `быти` | Alypy §91 |
-| Analytic passive | nominative passive participle + selected copula present | Alypy §§101–102 |
+| Compound future | imperfective infinitive + finite `быти`, `имати`, `хотѣти`, or `начати`; both orders | Alypy §85; Pletneva–Kravetsky lesson 13 table 36 |
+| Perfect | l-participle + present `быти`, third-singular copula omission, or two predicates sharing one copula | Alypy §88 |
+| Pluperfect | l-participle + `бѣ` aorist series, `бѧ` imperfect series, or l-participle of `быти` + present copula | Alypy §§89, 168 |
+| Future anterior | required `аще` + l-participle + future `быти` | Alypy §162 |
+| Conditional | personal aorist or invariant `бы`, both present-copula orders, infinitive + `бы`, and the three fixed modal imperfects | Alypy §91 |
+| Optative | `да` + every person/number of present or simple future | Alypy §92 |
+| Analytic passive | all 17 participle/copula combinations, both binary orders or four nested compound orders, plus instrumental or `ѿ` + genitive agent | Alypy §§101–102 |
+| Periphrastic tense | short nominative present-active participle + five `быти` systems or the closed eight-member semi-auxiliary inventory | Alypy §§90, 163; Petrukhin 2016 |
+| Copula ellipsis | seven explicitly licensed zero-copula contexts, with no invented zero token | Alypy §§123–124 |
+| Composite adverbial participle | past passive + past active `быти`, or nominal predicate + present/past active `быти` | Alypy §146 |
 | Compound numeral | correlated inflected numeral components and optional `и` | Alypy §§63–64, 68 |
 | Repeated distributive | repeated inflected cardinal | Alypy §61; Mark 6:7 |
 | Multiplicative | inflected cardinal + invariant `кратъ` | Alypy §70 |
 | Fractional part | cardinal/ordinal/fractional adjective + inflected `часть` | Alypy §70; III Esdras 14:11–12 |
 
-The generic `phrases::from_tokens` retains a typed construction and roles for
-reviewed periphrases whose auxiliary lexeme is not yet registered. Free
-sentence-level syntax beyond these construction-specific constraints remains
-future work.
+`PhraseFormation` exposes the closed analytic subtype, while `PhraseRole`
+retains the role of every independently evidenced token. Builders reject wrong
+aspect, tense, voice, short/long form, case, comparison, agreement, role shape,
+agent government, or source-unlicensed omission/order. Every component receives
+the construction evidence and rule trace in addition to its word-level
+provenance. `phrases::from_tokens` remains a deliberately generic
+interoperability escape hatch; it is not needed to realize any documented
+analytic morphology above. Unrestricted clause generation remains outside the
+inflection engine.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 909 target lexemes and 912 reviewed senses. The
+The reviewed registry has 910 target lexemes and 913 reviewed senses. The
 productive layer now covers every source-reviewed noun, adjective, pronoun,
 determiner, and numeral class while retaining exact-only identities whose class
 or principal parts remain underdetermined. Inflectable additions use
@@ -489,9 +500,10 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 - accent paradigms beyond the four reviewed lexical rules, complete breathing/positional-letter
   realization, and abbreviation families beyond the individually typed
   contraction cells; and
-- automatic syntax, free agreement/government, dropped copulas, future
-  auxiliaries `хотѣти`/`начати`, and the wider periphrastic inventory of Alypy
-  §90.
+- unrestricted clause syntax and semantic control beyond the closed analytic
+  formations above. Agreement, passive-agent government, documented copula
+  omission, all four future auxiliaries, and Alypy §§90/163 periphrases are
+  represented by typed builders rather than delegated to a sentence generator.
 
 These are coverage gaps, not invitations to guess. Direct calls return
 `MissingPrincipalPart`, `UnsupportedFormation`, `UnsupportedCell`,

@@ -286,8 +286,10 @@ Inherited variants expose their OCS source lexeme, mapping ID, mapping evidence,
 target rule, and each transformation in the rule trace. No OCS surface form is
 copied into the target exact-form table.
 
-The `phrases` module realizes a typed compound future, perfect, pluperfect,
-conditional, and analytic passive. `abbreviation` contracts only a resolved
+The `phrases` module realizes the closed typed inventory of compound futures,
+perfects, pluperfects, future anterior, conditionals, optatives, analytic
+passives, periphrastic tenses, copula ellipses, and composite adverbial
+participles. `abbreviation` contracts only a resolved
 lexeme plus semantic sense and returns all compatible expansions. Static
 registries are generated offline; runtime code performs no file or network I/O.
 

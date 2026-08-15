@@ -8,7 +8,7 @@
     "eval:v06:exact-cf3b7adc62194922",
     "eval:v06:exact-fc2b61b3399c2100"
   ],
-  "phrase_fixture_rows": 5,
+  "phrase_fixture_rows": 14,
   "abbreviation_fixture_rows": 74,
   "expanded": {
     "total": 2136,
@@ -2151,18 +2151,18 @@
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 2946,
-    "returned": 2944,
-    "top_1_correct": 2711,
-    "top_k_correct": 2944,
-    "abstained": 2
+    "total": 2952,
+    "returned": 2952,
+    "top_1_correct": 2719,
+    "top_k_correct": 2952,
+    "abstained": 0
   },
   "exact_registry_printed_round_trip": {
-    "total": 2946,
-    "returned": 2944,
-    "top_1_correct": 2563,
-    "top_k_correct": 2944,
-    "abstained": 2
+    "total": 2952,
+    "returned": 2952,
+    "top_1_correct": 2571,
+    "top_k_correct": 2952,
+    "abstained": 0
   },
   "accent_bearing_rows": 2000,
   "exact_accent_agreement": 2000,
@@ -2635,17 +2635,17 @@
   },
   "abstention_reasons": {},
   "phrase_expanded": {
-    "total": 5,
-    "returned": 5,
-    "top_1_correct": 5,
-    "top_k_correct": 5,
+    "total": 14,
+    "returned": 14,
+    "top_1_correct": 14,
+    "top_k_correct": 14,
     "abstained": 0
   },
   "phrase_printed": {
-    "total": 5,
-    "returned": 5,
-    "top_1_correct": 5,
-    "top_k_correct": 5,
+    "total": 14,
+    "returned": 14,
+    "top_1_correct": 14,
+    "top_k_correct": 14,
     "abstained": 0
   },
   "abbreviation_expansion": {

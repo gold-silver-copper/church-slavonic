@@ -52,8 +52,8 @@ separate, inspectable outcomes.
 
 ## Synodal dictionary and coverage checkpoints
 
-The current Synodal registry contains 909 reviewed lexemes, 912 reviewed senses,
-and 3,668 generated exact normative or target-attested forms. The `synodal-dict` executable
+The current Synodal registry contains 910 reviewed lexemes, 913 reviewed senses,
+and 3,674 generated exact normative or target-attested forms. The `synodal-dict` executable
 searches and displays the registry, performs ambiguity-preserving reverse
 analysis, displays reviewed and proposed morphological families, validates
 application vocabulary, checks rendered text, and creates typed corpus-coverage
@@ -91,8 +91,8 @@ corpus now has 919,436 of 1,313,344 tokens in canonical `Strict` top-k coverage
 (70.007%), 95 tokens above the 70% gate. See
 [`docs/SYNODAL_CLI_AND_COVERAGE.md`](docs/SYNODAL_CLI_AND_COVERAGE.md) for command
 and input formats, gap precedence, thresholds, and the evidence-review workflow.
-The 2,140-cell morphology evaluation (all expected variants present in top-k),
-five analytic phrases, and 74 typed abbreviation cases remain registered-form
+The 2,136-cell morphology evaluation (all expected variants present in top-k),
+14 analytic phrases, and 74 typed abbreviation cases remain registered-form
 regression suites, not claims of language-wide accuracy.
 
 ## Old Church Slavonic inflection

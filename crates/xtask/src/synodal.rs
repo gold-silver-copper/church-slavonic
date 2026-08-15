@@ -11,7 +11,10 @@ use std::{
     thread,
 };
 use synodal_church_slavonic::{
-    Gender, GenerationPolicy, GrammarCell, Inflector, LexemeId, Number, OrthographyProfile, Person,
+    AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, CompoundFutureAuxiliary,
+    ConditionalFormation, Gender, GenerationPolicy, GrammarCell, Inflector, LexemeId, Number,
+    OptativeFiniteSystem, OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice,
+    PassiveFormation, PerfectFormation, PeriphrasticTenseFormation, Person, PhraseOrder,
     RealizedPhrase, abbreviation, phrases,
 };
 use synodal_church_slavonic_core::FormSource;
@@ -1842,15 +1845,100 @@ fn realize_phrase(
         "compound-future" => {
             phrases::compound_future_with(&row.lemma, row.person, row.number, inflector)
         }
+        "compound-future-byti" => phrases::compound_future_with_auxiliary(
+            &row.lemma,
+            CompoundFutureAuxiliary::Byti,
+            row.person,
+            row.number,
+            PhraseOrder::AuxiliaryFirst,
+            inflector,
+        ),
+        "compound-future-khoteti" => phrases::compound_future_with_auxiliary(
+            &row.lemma,
+            CompoundFutureAuxiliary::Khoteti,
+            row.person,
+            row.number,
+            PhraseOrder::AuxiliaryFirst,
+            inflector,
+        ),
+        "compound-future-nachati" => phrases::compound_future_with_auxiliary(
+            &row.lemma,
+            CompoundFutureAuxiliary::Nachati,
+            row.person,
+            row.number,
+            PhraseOrder::AuxiliaryFirst,
+            inflector,
+        ),
         "perfect" => {
             phrases::perfect_with(&row.lemma, row.person, row.number, row.gender, inflector)
         }
+        "perfect-elliptical" => phrases::perfect_with_formation(
+            &row.lemma,
+            row.person,
+            row.number,
+            row.gender,
+            PerfectFormation::OmittedThirdSingularCopula,
+            PhraseOrder::PredicateFirst,
+            inflector,
+        ),
         "pluperfect" => {
             phrases::pluperfect_with(&row.lemma, row.person, row.number, row.gender, inflector)
         }
         "conditional" => {
             phrases::conditional_with(&row.lemma, row.person, row.number, row.gender, inflector)
         }
+        "conditional-invariant" => phrases::conditional_with_formation(
+            &row.lemma,
+            row.person,
+            row.number,
+            row.gender,
+            ConditionalFormation::InvariantBy,
+            PhraseOrder::PredicateFirst,
+            inflector,
+        ),
+        "future-anterior" => phrases::future_anterior(
+            &row.lemma,
+            row.person,
+            row.number,
+            row.gender,
+            PhraseOrder::AuxiliaryFirst,
+            inflector,
+        ),
+        "optative-present" => phrases::optative(
+            &row.lemma,
+            OptativeFiniteSystem::Present,
+            row.person,
+            row.number,
+            inflector,
+        ),
+        "periphrastic-future" => phrases::periphrastic_tense(
+            &row.lemma,
+            evaluation_participle(
+                row,
+                ParticipleTense::Present,
+                ParticipleVoice::Active,
+                Animacy::Animate,
+            ),
+            PeriphrasticTenseFormation::Future,
+            row.person,
+            row.number,
+            PhraseOrder::PredicateFirst,
+            inflector,
+        ),
+        "analytic-passive-infinitive" => phrases::analytic_passive_formation(
+            &row.lemma,
+            evaluation_participle(
+                row,
+                ParticipleTense::Past,
+                ParticipleVoice::Passive,
+                Animacy::Inanimate,
+            ),
+            PassiveFormation::PastParticipleInfinitive,
+            row.person,
+            row.number,
+            PhraseOrder::PredicateFirst,
+            inflector,
+        ),
         "analytic-passive" => phrases::analytic_passive_with(
             &row.lemma,
             synodal_church_slavonic::ParticipleCell {
@@ -1872,6 +1960,26 @@ fn realize_phrase(
         _ => Err(synodal_church_slavonic::Error::UnsupportedFormation {
             formation: format!("evaluation phrase {}", row.construction),
         }),
+    }
+}
+
+fn evaluation_participle(
+    row: &PhraseEvaluationRow,
+    tense: ParticipleTense,
+    voice: ParticipleVoice,
+    animacy: Animacy,
+) -> ParticipleCell {
+    ParticipleCell {
+        tense,
+        voice,
+        agreement: AdjectiveCell {
+            case: Case::Nominative,
+            number: row.number,
+            gender: row.gender,
+            animacy,
+            form: AdjectiveForm::Short,
+            comparison: Comparison::Positive,
+        },
     }
 }
 

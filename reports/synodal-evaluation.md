@@ -9,11 +9,11 @@ The correction ledger excludes 3 historically preserved but grammatically retrac
 | Expanded | 2136 | 2075 | 2136 | 0 | 2136 |
 | Printed | 2136 | 1992 | 2136 | 0 | 2136 |
 
-Analytic phrases: expanded 5/5, printed 5/5 (5 held-out phrases).
+Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
 Typed abbreviations: top-1 65/74, top-k 74/74 (74 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 2944/2946, printed 2944/2946.
+Exact registry round trips (top-k, including reviewed variants): expanded 2952/2952, printed 2952/2952.
 
 Masked cells: expanded 501/502, printed 501/502. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 

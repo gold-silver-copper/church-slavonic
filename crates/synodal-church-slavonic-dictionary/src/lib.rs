@@ -905,6 +905,15 @@ fn productive_cell_is_supported(
                             .into_iter()
                             .all(|system| principal_part(system).is_some())
                 }
+                FiniteTense::Future => {
+                    matches!(
+                        metadata.aspect.as_deref(),
+                        Some("perfective" | "biaspectual")
+                    ) && metadata.stem.is_some()
+                        && ["present-first-singular", "present-third-plural"]
+                            .into_iter()
+                            .all(|system| principal_part(system).is_some())
+                }
                 FiniteTense::Imperfect => {
                     matches!(
                         metadata.aspect.as_deref(),
@@ -916,7 +925,7 @@ fn productive_cell_is_supported(
                 FiniteTense::Aorist => principal_part("aorist-stem")
                     .and_then(|part| part.formation.as_deref())
                     .is_some_and(|formation| formation != "irregular"),
-                FiniteTense::Future | FiniteTense::Past => false,
+                FiniteTense::Past => false,
             }
         }
         GrammarCell::Imperative(_) if productive_verb_class(metadata.class.as_deref()) => {
@@ -1243,6 +1252,32 @@ mod tests {
                 .iter()
                 .any(|cell| matches!(cell, GrammarCell::VerbalNoun(_)))
         );
+    }
+
+    #[test]
+    fn perfective_present_shaped_future_keeps_both_reverse_analyses() {
+        let id = LexemeId::from("synodal:verb:v07-35ce5d83583f3639");
+        let cells = analysis_cells_by_id(&id, Inflector::default())
+            .expect("productive perfective inventory");
+        for tense in [FiniteTense::Present, FiniteTense::Future] {
+            assert!(cells.contains(&GrammarCell::FiniteVerb(FiniteVerbCell {
+                tense,
+                person: Person::First,
+                number: Number::Dual,
+            })));
+        }
+
+        let analyses = analyze("начнева").expect("homographic present/future analysis");
+        let tenses = analyses
+            .iter()
+            .filter(|analysis| analysis.lexeme.id() == &id)
+            .filter_map(|analysis| match analysis.cell {
+                Some(GrammarCell::FiniteVerb(cell)) => Some(cell.tense),
+                _ => None,
+            })
+            .collect::<BTreeSet<_>>();
+        assert!(tenses.contains(&FiniteTense::Present));
+        assert!(tenses.contains(&FiniteTense::Future));
     }
 
     #[test]

@@ -4,3 +4,12 @@ eval:alypy-85-nesti-future	compound-future	нести	third	plural	masculine	и�
 eval:alypy-89-pisati-pluperfect	pluperfect	писати	third	singular	masculine	писалъ бѣ	писа́лъ бѣ̀	alypy-gamanovich-grammar-web-2023	§89	normative-construction-fixture
 eval:alypy-91-pisati-conditional	conditional	писати	first	singular	masculine	писалъ быхъ	писа́лъ бы́хъ	alypy-gamanovich-grammar-web-2023	§91	normative-construction-fixture
 eval:alypy-101-nesti-passive	analytic-passive	нести	third	singular	masculine	несенъ єсть	несе́нъ є҆́сть	alypy-gamanovich-grammar-web-2023	§§101–102	normative-construction-fixture
+eval:pk-13-nesti-future-byti	compound-future-byti	нести	third	plural	masculine	бꙋдꙋтъ нести	бꙋ́дꙋтъ нестѝ	pletneva-kravetsky-church-slavonic-2005	lesson 13 table 36	normative-construction-fixture
+eval:alypy-85-nesti-future-khoteti	compound-future-khoteti	нести	third	plural	masculine	хотѧтъ нести	хотѧ́тъ нестѝ	alypy-gamanovich-grammar-web-2023	§85	normative-construction-fixture
+eval:alypy-85-nesti-future-nachati	compound-future-nachati	нести	third	plural	masculine	начнꙋтъ нести	начнꙋ́тъ нестѝ	alypy-gamanovich-grammar-web-2023	§85	normative-construction-fixture
+eval:alypy-88-pisati-perfect-elliptical	perfect-elliptical	писати	third	singular	masculine	писалъ	писа́лъ	alypy-gamanovich-grammar-web-2023	§88	normative-construction-fixture
+eval:alypy-162-pisati-future-anterior	future-anterior	писати	third	singular	masculine	аще бꙋдетъ писалъ	а҆́ще бꙋ́детъ писа́лъ	alypy-gamanovich-grammar-web-2023	§162	normative-construction-fixture
+eval:alypy-91-pisati-invariant-conditional	conditional-invariant	писати	third	singular	masculine	писалъ бы	писа́лъ бы̀	alypy-gamanovich-grammar-web-2023	§91	normative-construction-fixture
+eval:alypy-92-nesti-optative	optative-present	нести	third	singular	masculine	да несетъ	да несе́тъ	alypy-gamanovich-grammar-web-2023	§92	normative-construction-fixture
+eval:alypy-90-glagolati-periphrastic-future	periphrastic-future	глаголати	third	plural	masculine	глаголюще бꙋдꙋтъ	глаго́люще бꙋ́дꙋтъ	alypy-gamanovich-grammar-web-2023	§90	normative-construction-fixture
+eval:alypy-102-nesti-passive-infinitive	analytic-passive-infinitive	нести	third	singular	masculine	несенъ быти	несе́нъ бы́ти	alypy-gamanovich-grammar-web-2023	§102	normative-construction-fixture

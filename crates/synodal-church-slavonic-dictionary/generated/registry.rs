@@ -751,6 +751,7 @@ pub(crate) const SENSES: &[RawSense] = &[
     RawSense(["synodal:proper-noun:wikt-ff9d5d56a476", "sense:v03:ff9d5d56a476", "a male given name from Hebrew, equivalent to English Michael", "general", "english-wiktionary-ocs-kaikki-2026-08-07", "old-church-slavonic", "reviewed-ocs-inheritance"]),
     RawSense(["synodal:verb:byti", "sense:be", "to be; exist", "state", "dyachenko-1900-scan", "mixed", "reviewed-with-synodal-corpus"]),
     RawSense(["synodal:verb:dati", "sense:give", "to give; grant", "action,society,religion", "dyachenko-1900-scan", "mixed", "reviewed-with-synodal-corpus"]),
+    RawSense(["synodal:verb:dostoyati", "sense:dostoyati", "to be worthy; to be fitting", "religion,modal", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
     RawSense(["synodal:verb:imati", "sense:future-auxiliary", "to be about to; compound-future auxiliary", "grammar,auxiliary", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
     RawSense(["synodal:verb:lyubiti", "sense:love", "to love; cherish", "emotion,religion", "dyachenko-1900-scan", "mixed", "reviewed-with-synodal-corpus"]),
     RawSense(["synodal:verb:negative-copula", "sense:v05:verb:negative-copula", "is not; there is not", "grammar,general", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),

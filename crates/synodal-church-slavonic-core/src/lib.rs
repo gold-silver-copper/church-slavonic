@@ -61,8 +61,12 @@ pub use orthography::{
     apply_initial_presentation, normalize_lookup, normalize_lookup_accentless,
 };
 pub use phrase::{
-    AnalyticConstruction, NegativePronounBase, PhraseRole, PhraseToken, PronounCliticProsody,
-    RealizedPhrase,
+    AdverbialParticipleFormation, AnalyticConstruction, CompoundAuxiliaryOrder,
+    CompoundFutureAuxiliary, ConditionalCopulaOrder, ConditionalFormation, CopulaOmissionContext,
+    ModalConditionalAuxiliary, NegativePronounBase, OptativeFiniteSystem, PassiveAgentGovernment,
+    PassiveFormation, PerfectFormation, PeriphrasticFormation, PeriphrasticSemiAuxiliary,
+    PeriphrasticTenseFormation, PhraseFormation, PhraseOrder, PhraseRole, PhraseToken,
+    PluperfectFormation, PronounCliticProsody, RealizedPhrase,
 };
 pub use policy::{GenerationPolicy, VariantPolicy};
 pub use pronoun::{

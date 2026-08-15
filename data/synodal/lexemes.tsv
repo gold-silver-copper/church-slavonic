@@ -187,13 +187,16 @@ synodal:pronoun:yakov	ꙗковъ	pronoun	pronoun-short-ov-mixed	ꙗков			aly
 synodal:pronoun:yakovyi	ꙗковый	pronoun	pronoun-full-hard	ꙗков			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:byti	быти	verb	archaic			biaspectual	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:dati	дати	verb	archaic			perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:dostoyati	достоꙗти	verb	exact			imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:imati	имати	verb	archaic			imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:lyubiti	любити	verb	second	люб		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:nesti	нести	verb	first-unpalatalized	нес		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:pisati	писати	verb	first-palatalized	пиш		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:v07-35ce5d83583f3639	начѧти	verb	first-unpalatalized	начн		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:v06-iziti	изити	verb	exact			perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
 synodal:verb:v06-vzeti	възѧти	verb	exact			perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
 synodal:verb:v06-vzyti	взыти	verb	exact			perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
 synodal:verb:wikt-0c6c8db63b7c	имѣти	verb	archaic	имѣ		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:wikt-070505e82800	хотѣти	verb	first-unpalatalized	хощ		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:wikt-6ceeefbe4e9e	ꙗсти	verb	archaic	ꙗд		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:wikt-8a084860d2ef	вѣдѣти	verb	archaic	вѣд		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian

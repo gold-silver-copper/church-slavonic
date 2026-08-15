@@ -2945,3 +2945,9 @@ synodal:verb:imati	infinitive	имати	и҆ма́ти	alypy-103-imati-other	no
 synodal:verb:wikt-0c6c8db63b7c	infinitive	имѣти	и҆мѣ́ти	alypy-103-imeti-other	normative-table	synodal-russian
 synodal:verb:v06-7572c074fcdb7753	infinitive	подобати	подоба́ти	alypy-104-defective-podobati	normative-table	synodal-russian
 synodal:verb:v07-15e3f31915cf0144	infinitive	довлѣти	довлѣ́ти	alypy-104-defective-dovleti	normative-table	synodal-russian
+synodal:verb:dostoyati	imperfect:third:singular	достоѧше	досто́ѧше	alypy-91-dostoyashe	normative-table	synodal-russian
+synodal:verb:wikt-070505e82800	present:third:plural	хотѧтъ	хотѧ́тъ	alypy-104-hoteti-present	normative-table	synodal-russian
+synodal:verb:v07-35ce5d83583f3639	future:third:plural	начнꙋтъ	начнꙋ́тъ	alypy-85-nachati-future	normative-table	synodal-russian
+synodal:verb:nesti	present:first:singular	несꙋ	несꙋ̀	alypy-92-nesti-optative	normative-table	synodal-russian
+synodal:verb:nesti	present:second:singular	несеши	несе́ши	alypy-92-nesti-optative	normative-table	synodal-russian
+synodal:verb:nesti	present:third:singular	несетъ	несе́тъ	alypy-92-nesti-optative	normative-table	synodal-russian
