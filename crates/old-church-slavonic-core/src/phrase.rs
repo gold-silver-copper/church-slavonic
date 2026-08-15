@@ -2,7 +2,7 @@
 
 use crate::{FormSet, InflectionError, RuleId};
 
-/// Source-described multiword grammatical constructions.
+/// Source-described structured grammatical constructions.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AnalyticConstruction {
     RelativeSuperlative,
@@ -18,6 +18,9 @@ pub enum AnalyticConstruction {
     EllipticalConditionalOptative,
     ConditionalOptativePassive,
     AnalyticPassive,
+    /// A word or structured sequence in the `ни-/нѣ-` and postpositive
+    /// pronominal families described by Polivanova §316.
+    PronominalFamily,
 }
 
 impl AnalyticConstruction {
@@ -36,6 +39,7 @@ impl AnalyticConstruction {
             Self::EllipticalConditionalOptative => RuleId::PhraseConditionalOptativeElliptical,
             Self::ConditionalOptativePassive => RuleId::PhraseConditionalOptativePassive,
             Self::AnalyticPassive => RuleId::PhraseAnalyticPassive,
+            Self::PronominalFamily => RuleId::PronounDerivedFamily,
         }
     }
 }
@@ -56,6 +60,10 @@ pub enum PhraseRole {
     ActiveParticiple,
     PassiveParticiple,
     Complement,
+    PrefixalFormative,
+    Preposition,
+    Pronoun,
+    Postpositive,
 }
 
 /// One phrase component with all of its variants, evidence, warnings, and trace.
@@ -203,6 +211,15 @@ fn valid_roles(construction: AnalyticConstruction, roles: &[PhraseRole]) -> bool
         EllipticalConditionalOptative => roles == [LParticiple],
         ConditionalOptativePassive => unordered_pair(roles, PassiveParticiple, Auxiliary),
         AnalyticPassive => unordered_pair(roles, PassiveParticiple, Auxiliary),
+        PronominalFamily => matches!(
+            roles,
+            [Pronoun]
+                | [Pronoun, Postpositive]
+                | [PrefixalFormative, Pronoun]
+                | [PrefixalFormative, Pronoun, Postpositive]
+                | [PrefixalFormative, Preposition, Pronoun]
+                | [PrefixalFormative, Preposition, Pronoun, Postpositive]
+        ),
     }
 }
 

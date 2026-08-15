@@ -5,6 +5,107 @@ use crate::{
     RequestedCell, RuleId, RuleStep,
 };
 
+/// Prefixal formatives used to derive negative and indefinite pronominal
+/// families from an independently inflected base.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PronominalPrefix {
+    /// Negative `ни-`.
+    Ni,
+    /// Indefinite `нѣ-`.
+    Ne,
+}
+
+impl PronominalPrefix {
+    pub const ALL: [Self; 2] = [Self::Ni, Self::Ne];
+
+    pub const fn text(self) -> &'static str {
+        match self {
+            Self::Ni => "ни",
+            Self::Ne => "нѣ",
+        }
+    }
+
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::Ni => "ni",
+            Self::Ne => "ne",
+        }
+    }
+}
+
+/// Source-described postpositive formatives in derived pronominal families.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PronominalPostpositive {
+    /// Bound `-же`.
+    Ze,
+    /// Bound `-жде`.
+    Zhde,
+    /// Bound `-жьдо`.
+    Zhydo,
+    /// Independently written `любо`.
+    Liubo,
+}
+
+impl PronominalPostpositive {
+    pub const ALL: [Self; 4] = [Self::Ze, Self::Zhde, Self::Zhydo, Self::Liubo];
+
+    pub const fn text(self) -> &'static str {
+        match self {
+            Self::Ze => "же",
+            Self::Zhde => "жде",
+            Self::Zhydo => "жьдо",
+            Self::Liubo => "любо",
+        }
+    }
+
+    /// Whether this formative is attached to the pronominal word rather than
+    /// realized as an independent phrase token.
+    pub const fn is_bound(self) -> bool {
+        !matches!(self, Self::Liubo)
+    }
+
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::Ze => "ze",
+            Self::Zhde => "zhde",
+            Self::Zhydo => "zhydo",
+            Self::Liubo => "liubo",
+        }
+    }
+}
+
+/// Treatment of the direct-case `-то` in `къто` and `чьто` before another
+/// bound postpositive. Both outcomes are source-described.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum DirectToTreatment {
+    Retain,
+    Drop,
+}
+
+impl DirectToTreatment {
+    pub const ALL: [Self; 2] = [Self::Retain, Self::Drop];
+
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::Retain => "retain",
+            Self::Drop => "drop",
+        }
+    }
+}
+
+/// Explicit composition choices for a derived pronominal family.
+///
+/// A preposition represents the source-described interposition between a
+/// prefixal formative and the inflected pronominal base. It is therefore valid
+/// only together with [`Self::prefix`].
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct PronominalFamilySpec {
+    pub prefix: Option<PronominalPrefix>,
+    pub postpositive: Option<PronominalPostpositive>,
+    pub preposition: Option<String>,
+    pub direct_to: Option<DirectToTreatment>,
+}
+
 /// The regular pronominal declensions conventionally grouped as OCS class
 /// `2/p`. `J` identifies possessives such as `мои`, whose citation `-и` is the
 /// surface result of a stem-final *j* rather than a soft consonant ending.

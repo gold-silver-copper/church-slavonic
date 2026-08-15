@@ -225,6 +225,41 @@ pub(crate) fn grammar_token(
     )
 }
 
+pub(crate) fn reviewed_grammar_token(
+    text: &str,
+    rule_id: RuleId,
+    source_feature: &str,
+    authority: &'static str,
+) -> Result<FormSet, InflectionError> {
+    let text = orthography::canonical_display(text)?;
+    let form = FormVariant {
+        text: text.clone(),
+        romanization: None,
+    };
+    let source = FormSource::ReviewedGrammarTable { rule_id };
+    Ok(FormSet::new(
+        text.clone(),
+        form.clone(),
+        Vec::new(),
+        source.clone(),
+        Vec::new(),
+        Vec::new(),
+        vec![FormAnalysis {
+            variants: vec![form],
+            source,
+            evidence: vec![MetadataEvidence {
+                field: None,
+                provenance: MetadataProvenance::ReviewedGrammarTable,
+                source_feature: Some(source_feature.to_string()),
+                source_form: Some(text),
+                crosscheck_features: Vec::new(),
+                authority: Some(authority.to_string()),
+            }],
+            trace: Vec::new(),
+        }],
+    ))
+}
+
 /// Resolve one independently reviewed suppletive copular series without
 /// conflating the OCS `ѥс-`, `бѫд-`, `бѣ-`, and `би-` systems.
 pub fn copula(
@@ -1206,15 +1241,29 @@ pub fn closed_class_by_id(
                     },
                 )),
             },
-            "къто" | "чьто" => match (cell.person, cell.gender) {
+            "къто" | "чьто" | "никъто" => match (cell.person, cell.gender) {
                 (None, None) => interrogative_pronoun(
-                    if record.lemma == "къто" {
+                    if record.lemma == "къто" || record.lemma == "никъто" {
                         InterrogativePronounIdentity::Kto
                     } else {
                         InterrogativePronounIdentity::Chto
                     },
                     cell.case,
-                ),
+                )
+                .and_then(|base| {
+                    if record.lemma == "никъто" {
+                        crate::phrases::single_token_pronominal_family_with(
+                            base,
+                            cell.case,
+                            PronominalFamilySpec {
+                                prefix: Some(PronominalPrefix::Ni),
+                                ..PronominalFamilySpec::default()
+                            },
+                        )
+                    } else {
+                        Ok(base)
+                    }
+                }),
                 _ => Err(InflectionError::historically_invalid(
                     id,
                     RequestedCell::ClosedClass {

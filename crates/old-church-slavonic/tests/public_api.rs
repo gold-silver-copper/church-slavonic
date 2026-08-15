@@ -783,6 +783,61 @@ fn exceptional_pronouns_use_complete_reviewed_inventories_and_keep_raw_tables() 
 }
 
 #[test]
+fn derived_negative_interrogative_uses_the_reviewed_family_not_the_raw_table() {
+    let expected = [
+        (Case::Nominative, "никъто"),
+        (Case::Genitive, "никого"),
+        (Case::Dative, "никому"),
+        (Case::Accusative, "никъто"),
+        (Case::Instrumental, "ницѣмь"),
+        (Case::Locative, "никомь"),
+    ];
+    for number in Number::ALL {
+        for (case, expected) in expected {
+            assert_eq!(
+                pronoun("никъто", case, number)
+                    .expect("complete reviewed negative-interrogative family")
+                    .primary_text(),
+                expected,
+            );
+        }
+        assert!(matches!(
+            pronoun("никъто", Case::Vocative, number),
+            Err(InflectionError::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    let reviewed = pronoun("никъто", Case::Dative, Number::Singular)
+        .expect("reviewed negative-interrogative family");
+    assert_eq!(reviewed.primary_text(), "никому");
+    assert_eq!(
+        reviewed.source(),
+        &FormSource::ReviewedGrammarTable {
+            rule_id: old_church_slavonic::trace::RuleId::PronounDerivedFamily,
+        }
+    );
+    assert!(reviewed.analyses()[0].evidence.iter().any(|evidence| {
+        evidence
+            .authority
+            .as_deref()
+            .is_some_and(|authority| authority.contains("Polivanova 2023 §§316, 380"))
+    }));
+
+    let id = only_id("никъто", PartOfSpeech::Pronoun);
+    let raw = raw_features::closed_class_by_id(
+        &id,
+        PartOfSpeech::Pronoun,
+        UngenderedCell {
+            case: Case::Dative,
+            number: Number::Singular,
+        }
+        .closed_class(),
+    )
+    .expect("raw copied table cell");
+    assert_eq!(raw.primary_text(), "никомоу");
+}
+
+#[test]
 fn no_dual_mixed_pronouns_and_ordered_doublets_are_typed() {
     let ves = irregular_agreeing(
         IrregularAgreeingIdentity::TotalVes,

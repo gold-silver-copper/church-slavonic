@@ -29,6 +29,7 @@ pub mod by_id {
 
 /// Explicit caller-supplied lexical metadata and productive rules.
 pub mod rules {
+    pub use crate::phrases::pronominal_family_with;
     pub use crate::resolver::{
         adjective_with, comparative_paradigm_with, comparative_with, finite_verb_with,
         imperative_with, infinitive_with, l_participle_with, noun_with, participle_with,
@@ -38,7 +39,10 @@ pub mod rules {
         AdjectiveLexeme, ComparativeLexeme, productive_new_comparative,
     };
     pub use old_church_slavonic_core::noun::NounLexeme;
-    pub use old_church_slavonic_core::pronoun::{PronominalDeclension, PronominalLexeme};
+    pub use old_church_slavonic_core::pronoun::{
+        DirectToTreatment, PronominalDeclension, PronominalFamilySpec, PronominalLexeme,
+        PronominalPostpositive, PronominalPrefix,
+    };
     pub use old_church_slavonic_core::verb::{VerbLexeme, VerbLexemeBuilder};
     pub use old_church_slavonic_core::{
         AdjectiveClass, AoristFormation, ComparativeFormation, ImperativeFormation,

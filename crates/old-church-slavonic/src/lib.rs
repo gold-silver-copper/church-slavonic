@@ -118,7 +118,8 @@
 //! | Personal/reflexive/anaphoric pronouns | [`personal_pronoun_with`], [`reflexive_pronoun`], [`anaphoric_pronoun`] and compatible ordinary handles | Complete reviewed closed grammar tables with typed clitic/context selection |
 //! | Regular pronominal pronouns | [`gendered_pronoun`] and [`Pronoun`] | Reviewed hard, soft, and j-stem class `2/p`; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
-//! | Other closed classes | [`pronoun`], [`determiner`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells while derived particle families and remaining lexical allocation are under review |
+//! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
+//! | Other closed classes | [`pronoun`], [`determiner`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells while remaining class `2/p` lexical allocation is under review |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
@@ -148,11 +149,12 @@ pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Ver
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
     AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, Case, ConditionalAuxiliary,
-    CopulaSeries, FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary,
-    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning,
-    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LexemeSummary, Number,
-    PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell,
-    PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary,
+    CopulaSeries, DirectToTreatment, FiniteTense, FormSet, FormSource, FormVariant,
+    FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell, InflectionError,
+    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
+    LexemeSummary, Number, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
+    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
+    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
     PronounFormSelection, RealizedPhrase, RequestedCell, Script, UngenderedCell, VariantPolicy,
     VariantSelectionError,
 };
@@ -398,6 +400,20 @@ pub fn relative_pronoun(
 
 /// Resolve one agreeing closed irregular identity. This covers no-dual
 /// `вьсь/сиць`, unique `сь`, and the syncopated/expanded determiner `кꙑи`.
+///
+/// ```
+/// use old_church_slavonic::{
+///     Case, Gender, IrregularAgreeingIdentity, Number, irregular_agreeing,
+/// };
+/// let forms = irregular_agreeing(
+///     IrregularAgreeingIdentity::TotalVes,
+///     Case::Nominative,
+///     Number::Singular,
+///     Gender::Feminine,
+/// )?;
+/// assert_eq!(forms.texts().collect::<Vec<_>>(), ["вьса", "вьсѣ"]);
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
 pub fn irregular_agreeing(
     identity: IrregularAgreeingIdentity,
     case: Case,

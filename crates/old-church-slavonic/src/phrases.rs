@@ -3,12 +3,331 @@
 use old_church_slavonic_core::adjective::{AdjectiveLexeme, ComparativeLexeme};
 use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Case, ConditionalAuxiliary, CopulaSeries,
-    FiniteTense, FormSet, FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, InflectionError,
-    Number, ParticipleKind, PassiveAuxiliary, Person, PhraseOrder, PhraseRole, PhraseToken,
-    PluperfectAuxiliary, RealizedPhrase, RuleId,
+    DirectToTreatment, FiniteTense, FormAnalysis, FormSet, FormSource, FormVariant,
+    FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, InflectionError,
+    InterrogativePronounIdentity, Lemma, MetadataEvidence, MetadataProvenance, Number,
+    ParticipleKind, PassiveAuxiliary, Person, PhraseOrder, PhraseRole, PhraseToken,
+    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
+    RealizedPhrase, RuleId, RuleStep, Script,
 };
 
 use crate::{Verb, resolver};
+
+const PRONOMINAL_FAMILY_AUTHORITY: &str =
+    "Polivanova 2023 §§316, 380; postpositive любо examples in §316 n. 61";
+
+/// Build a derived form of numberless `къто` or `чьто` with explicit
+/// prefixal, postpositive, direct-case, and preposition-interposition choices.
+///
+/// Bound formatives remain in the pronominal token. `любо` is independently
+/// written. If a preposition is interposed, the prefix and preposition are also
+/// independent tokens, faithfully retaining the construction's intermediate
+/// status between a free sequence and a unitary wordform.
+///
+/// ```
+/// use old_church_slavonic::{
+///     Case, DirectToTreatment, InterrogativePronounIdentity, PronominalFamilySpec,
+///     PronominalPostpositive, PronominalPrefix,
+/// };
+/// use old_church_slavonic::phrases::interrogative_pronoun_family;
+///
+/// let retained = interrogative_pronoun_family(
+///     InterrogativePronounIdentity::Chto,
+///     Case::Nominative,
+///     PronominalFamilySpec {
+///         prefix: Some(PronominalPrefix::Ni),
+///         postpositive: Some(PronominalPostpositive::Ze),
+///         direct_to: Some(DirectToTreatment::Retain),
+///         preposition: None,
+///     },
+/// )?;
+/// assert_eq!(retained.primary_text(), "ничьтоже");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn interrogative_pronoun_family(
+    identity: InterrogativePronounIdentity,
+    case: Case,
+    spec: PronominalFamilySpec,
+) -> Result<RealizedPhrase, InflectionError> {
+    pronominal_family_with(resolver::interrogative_pronoun(identity, case)?, case, spec)
+}
+
+/// Compose a source-backed inflected pronominal base into a §316 derived
+/// family. This generic entry point deliberately accepts a `FormSet`: callers
+/// can retain the lexical identity and full evidence of any independently
+/// resolved `2/p` base without asking this layer to guess its paradigm.
+pub fn pronominal_family_with(
+    base: FormSet,
+    case: Case,
+    spec: PronominalFamilySpec,
+) -> Result<RealizedPhrase, InflectionError> {
+    validate_pronominal_family_spec(&base, case, &spec)?;
+    let interposed_preposition = spec
+        .preposition
+        .as_deref()
+        .map(canonical_cyrillic_preposition)
+        .transpose()?;
+    let prefix_is_separate = interposed_preposition.is_some();
+    let bound_postpositive = spec.postpositive.filter(|particle| particle.is_bound());
+    let pronoun = compose_pronominal_token(
+        base,
+        case,
+        if prefix_is_separate {
+            None
+        } else {
+            spec.prefix
+        },
+        bound_postpositive,
+        spec.direct_to,
+    )?;
+
+    let mut tokens = Vec::with_capacity(4);
+    if prefix_is_separate {
+        let Some(prefix) = spec.prefix else {
+            return Err(InflectionError::InvalidInput {
+                reason: "an interposed preposition requires a prefixal formative".to_string(),
+            });
+        };
+        tokens.push(PhraseToken {
+            role: PhraseRole::PrefixalFormative,
+            forms: resolver::reviewed_grammar_token(
+                prefix.text(),
+                RuleId::PronounDerivedFamily,
+                "pronoun:derived-family:interposed-prefix",
+                PRONOMINAL_FAMILY_AUTHORITY,
+            )?,
+        });
+        tokens.push(PhraseToken {
+            role: PhraseRole::Preposition,
+            forms: resolver::grammar_token(
+                interposed_preposition
+                    .as_deref()
+                    .ok_or_else(|| InflectionError::InvalidInput {
+                        reason: "a separated prefix requires an interposed preposition".to_string(),
+                    })?,
+                RuleId::PronounDerivedFamily,
+                "supply the explicitly selected interposed preposition",
+            )?,
+        });
+    }
+    tokens.push(PhraseToken {
+        role: PhraseRole::Pronoun,
+        forms: pronoun,
+    });
+    if spec.postpositive == Some(PronominalPostpositive::Liubo) {
+        tokens.push(PhraseToken {
+            role: PhraseRole::Postpositive,
+            forms: resolver::reviewed_grammar_token(
+                PronominalPostpositive::Liubo.text(),
+                RuleId::PronounDerivedFamily,
+                "pronoun:derived-family:separate-liubo",
+                PRONOMINAL_FAMILY_AUTHORITY,
+            )?,
+        });
+    }
+    RealizedPhrase::new(AnalyticConstruction::PronominalFamily, tokens)
+}
+
+pub(crate) fn single_token_pronominal_family_with(
+    base: FormSet,
+    case: Case,
+    spec: PronominalFamilySpec,
+) -> Result<FormSet, InflectionError> {
+    let phrase = pronominal_family_with(base, case, spec)?;
+    if phrase.tokens().len() != 1 {
+        return Err(InflectionError::InvalidInput {
+            reason: "the requested pronominal family is not a single orthographic word".to_string(),
+        });
+    }
+    Ok(phrase.tokens()[0].forms.clone())
+}
+
+fn validate_pronominal_family_spec(
+    base: &FormSet,
+    case: Case,
+    spec: &PronominalFamilySpec,
+) -> Result<(), InflectionError> {
+    if spec.prefix.is_none() && spec.postpositive.is_none() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a derived pronominal family requires a prefix or postpositive".to_string(),
+        });
+    }
+    if spec.preposition.is_some() && spec.prefix.is_none() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a preposition can be interposed only between a prefixal formative and its pronominal base"
+                .to_string(),
+        });
+    }
+    if spec.preposition.is_some() && case == Case::Nominative {
+        return Err(InflectionError::InvalidInput {
+            reason: "an interposed preposition cannot govern a nominative pronominal form"
+                .to_string(),
+        });
+    }
+
+    let bound_postpositive = spec
+        .postpositive
+        .is_some_and(|particle| particle.is_bound());
+    let direct_case = matches!(case, Case::Nominative | Case::Accusative);
+    let all_to = base.lemma().ends_with("то") && base.texts().all(|text| text.ends_with("то"));
+    let any_to = base.lemma().ends_with("то") || base.texts().any(|text| text.ends_with("то"));
+    let explicit_treatment_is_licensed = direct_case && bound_postpositive && all_to;
+
+    if spec.direct_to.is_some() && !explicit_treatment_is_licensed {
+        return Err(InflectionError::InvalidInput {
+            reason: "direct-case -то treatment is valid only for a uniformly -то-final nominative or accusative base before a bound postpositive"
+                .to_string(),
+        });
+    }
+    if direct_case && bound_postpositive && any_to && spec.direct_to.is_none() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a direct -то-final base before a bound postpositive requires an explicit retain/drop treatment"
+                .to_string(),
+        });
+    }
+    Ok(())
+}
+
+fn canonical_cyrillic_preposition(preposition: &str) -> Result<String, InflectionError> {
+    let lemma = Lemma::parse(preposition)?;
+    if lemma.script() != Script::Cyrillic {
+        return Err(InflectionError::InvalidInput {
+            reason: "the interposed preposition must be one Cyrillic word".to_string(),
+        });
+    }
+    Ok(lemma.to_string())
+}
+
+fn compose_pronominal_token(
+    base: FormSet,
+    case: Case,
+    prefix: Option<PronominalPrefix>,
+    postpositive: Option<PronominalPostpositive>,
+    direct_to: Option<DirectToTreatment>,
+) -> Result<FormSet, InflectionError> {
+    let transform = |text: &str| -> Result<String, InflectionError> {
+        let stem = match direct_to {
+            Some(DirectToTreatment::Drop) => {
+                text.strip_suffix("то")
+                    .ok_or_else(|| InflectionError::InvalidInput {
+                        reason: format!("cannot drop direct-case -то from {text:?}"),
+                    })?
+            }
+            Some(DirectToTreatment::Retain) | None => text,
+        };
+        Ok(format!(
+            "{}{}{}",
+            prefix.map_or("", |value| value.text()),
+            stem,
+            postpositive.map_or("", |value| value.text())
+        ))
+    };
+    let lemma = transform(base.lemma())?;
+    let variants = base
+        .variants()
+        .map(|variant| {
+            Ok(FormVariant {
+                text: transform(&variant.text)?,
+                // Composition cannot safely infer a romanization for added or
+                // removed material from an arbitrary source romanization.
+                romanization: None,
+            })
+        })
+        .collect::<Result<Vec<_>, InflectionError>>()?;
+    let primary = variants
+        .first()
+        .cloned()
+        .ok_or_else(|| InflectionError::InvalidInput {
+            reason: "a pronominal base unexpectedly had no surface variants".to_string(),
+        })?;
+    let rule_id = RuleId::PronounDerivedFamily;
+    let operation = RuleStep {
+        rule_id,
+        before: base.primary_text().to_string(),
+        after: primary.text.clone(),
+        reason: "compose the inflected pronominal base with the explicitly selected §316 formatives",
+    };
+    let evidence = MetadataEvidence {
+        field: None,
+        provenance: MetadataProvenance::ReviewedGrammarTable,
+        source_feature: Some(format!(
+            "pronoun:derived-family:{}:{}:{}:{}",
+            case.code(),
+            prefix.map_or("none", PronominalPrefix::code),
+            postpositive.map_or("none", PronominalPostpositive::code),
+            direct_to.map_or("none", DirectToTreatment::code),
+        )),
+        // This licenses the composition, not every generated surface as an
+        // independent textual attestation.
+        source_form: None,
+        crosscheck_features: Vec::new(),
+        authority: Some(PRONOMINAL_FAMILY_AUTHORITY.to_string()),
+    };
+    let source = FormSource::ReviewedGrammarTable { rule_id };
+    let analyses = if base.analyses().is_empty() {
+        vec![FormAnalysis {
+            variants: variants.clone(),
+            source: source.clone(),
+            evidence: vec![evidence.clone()],
+            trace: vec![operation.clone()],
+        }]
+    } else {
+        base.analyses()
+            .iter()
+            .map(|analysis| {
+                let transformed_variants = analysis
+                    .variants
+                    .iter()
+                    .map(|variant| {
+                        Ok(FormVariant {
+                            text: transform(&variant.text)?,
+                            romanization: None,
+                        })
+                    })
+                    .collect::<Result<Vec<_>, InflectionError>>()?;
+                let mut analysis_evidence = analysis.evidence.clone();
+                analysis_evidence.push(evidence.clone());
+                let mut trace = analysis.trace.clone();
+                let analysis_before = analysis
+                    .variants
+                    .first()
+                    .map(|variant| variant.text.clone())
+                    .unwrap_or_else(|| base.primary_text().to_string());
+                let analysis_primary = transformed_variants
+                    .first()
+                    .map(|variant| variant.text.clone())
+                    .unwrap_or_else(|| primary.text.clone());
+                trace.push(RuleStep {
+                    before: analysis_before,
+                    after: analysis_primary,
+                    ..operation.clone()
+                });
+                Ok(FormAnalysis {
+                    variants: transformed_variants,
+                    source: source.clone(),
+                    evidence: analysis_evidence,
+                    trace,
+                })
+            })
+            .collect::<Result<Vec<_>, InflectionError>>()?
+    };
+    let trace = if analyses.len() == 1 {
+        let mut trace = base.trace().to_vec();
+        trace.push(operation);
+        trace
+    } else {
+        Vec::new()
+    };
+    Ok(FormSet::new(
+        lemma,
+        primary,
+        variants.into_iter().skip(1).collect(),
+        source,
+        base.warnings().to_vec(),
+        trace,
+        analyses,
+    ))
+}
 
 /// Build the usual relative superlative: a declined comparative together with
 /// an independently inflected genitive reference. The caller supplies the
@@ -478,7 +797,10 @@ fn ordered(dependent: PhraseToken, head: PhraseToken, order: PhraseOrder) -> Vec
 mod tests {
     use super::*;
     use old_church_slavonic_core::adjective::productive_new_comparative;
-    use old_church_slavonic_core::{AdjectiveClass, AdjectiveForm, Animacy, Case, Gender, Number};
+    use old_church_slavonic_core::{
+        AdjectiveClass, AdjectiveForm, Animacy, Case, DirectToTreatment, Gender, Number,
+        PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
+    };
 
     fn nominative_masculine_short() -> AdjectiveCell {
         AdjectiveCell {
@@ -533,6 +855,224 @@ mod tests {
         assert_eq!(relative.primary_text(), "вьсѣхъ свѧтѣи");
         assert_eq!(relative.tokens()[0].forms.primary_text(), "вьсѣхъ");
         assert_eq!(relative.tokens()[1].role, PhraseRole::ComparativeAdjective);
+    }
+
+    #[test]
+    fn derived_interrogative_families_cover_prefixes_and_bound_postpositives() {
+        let negative = interrogative_pronoun_family(
+            InterrogativePronounIdentity::Kto,
+            Case::Dative,
+            PronominalFamilySpec {
+                prefix: Some(PronominalPrefix::Ni),
+                ..PronominalFamilySpec::default()
+            },
+        )
+        .expect("negative family");
+        assert_eq!(negative.primary_text(), "никому");
+        assert_eq!(negative.tokens().len(), 1);
+        assert_eq!(negative.rule_id(), RuleId::PronounDerivedFamily);
+
+        let indefinite = interrogative_pronoun_family(
+            InterrogativePronounIdentity::Kto,
+            Case::Nominative,
+            PronominalFamilySpec {
+                prefix: Some(PronominalPrefix::Ne),
+                ..PronominalFamilySpec::default()
+            },
+        )
+        .expect("indefinite family");
+        assert_eq!(indefinite.primary_text(), "нѣкъто");
+
+        for (postpositive, expected) in [
+            (PronominalPostpositive::Ze, "къже"),
+            (PronominalPostpositive::Zhde, "къжде"),
+            (PronominalPostpositive::Zhydo, "къжьдо"),
+        ] {
+            let family = interrogative_pronoun_family(
+                InterrogativePronounIdentity::Kto,
+                Case::Nominative,
+                PronominalFamilySpec {
+                    postpositive: Some(postpositive),
+                    direct_to: Some(DirectToTreatment::Drop),
+                    ..PronominalFamilySpec::default()
+                },
+            )
+            .expect("bound postpositive family");
+            assert_eq!(family.primary_text(), expected);
+        }
+
+        let retained = interrogative_pronoun_family(
+            InterrogativePronounIdentity::Chto,
+            Case::Accusative,
+            PronominalFamilySpec {
+                prefix: Some(PronominalPrefix::Ni),
+                postpositive: Some(PronominalPostpositive::Ze),
+                direct_to: Some(DirectToTreatment::Retain),
+                ..PronominalFamilySpec::default()
+            },
+        )
+        .expect("retained direct -to");
+        assert_eq!(retained.primary_text(), "ничьтоже");
+        let dropped = interrogative_pronoun_family(
+            InterrogativePronounIdentity::Chto,
+            Case::Accusative,
+            PronominalFamilySpec {
+                prefix: Some(PronominalPrefix::Ni),
+                postpositive: Some(PronominalPostpositive::Ze),
+                direct_to: Some(DirectToTreatment::Drop),
+                ..PronominalFamilySpec::default()
+            },
+        )
+        .expect("dropped direct -to");
+        assert_eq!(dropped.primary_text(), "ничьже");
+    }
+
+    #[test]
+    fn derived_pronominal_sequences_preserve_token_and_variant_structure() {
+        let interposed = interrogative_pronoun_family(
+            InterrogativePronounIdentity::Kto,
+            Case::Locative,
+            PronominalFamilySpec {
+                prefix: Some(PronominalPrefix::Ni),
+                postpositive: Some(PronominalPostpositive::Ze),
+                preposition: Some("о".to_string()),
+                direct_to: None,
+            },
+        )
+        .expect("interposed preposition family");
+        assert_eq!(interposed.primary_text(), "ни о комьже");
+        assert_eq!(
+            interposed
+                .tokens()
+                .iter()
+                .map(|token| token.role)
+                .collect::<Vec<_>>(),
+            [
+                PhraseRole::PrefixalFormative,
+                PhraseRole::Preposition,
+                PhraseRole::Pronoun,
+            ]
+        );
+        assert_eq!(
+            interposed.tokens()[0].forms.source(),
+            &FormSource::ReviewedGrammarTable {
+                rule_id: RuleId::PronounDerivedFamily,
+            }
+        );
+        assert_eq!(
+            interposed.tokens()[1].forms.source(),
+            &FormSource::ExplicitMetadataRule {
+                rule_id: RuleId::PronounDerivedFamily,
+            }
+        );
+
+        let liubo = interrogative_pronoun_family(
+            InterrogativePronounIdentity::Chto,
+            Case::Genitive,
+            PronominalFamilySpec {
+                postpositive: Some(PronominalPostpositive::Liubo),
+                ..PronominalFamilySpec::default()
+            },
+        )
+        .expect("independent liubo family");
+        assert_eq!(liubo.primary_text(), "чесо любо");
+        assert_eq!(liubo.tokens().len(), 2);
+        assert_eq!(
+            liubo.tokens()[0].forms.texts().collect::<Vec<_>>(),
+            ["чесо", "чьсо", "чесого"]
+        );
+        assert_eq!(liubo.tokens()[1].role, PhraseRole::Postpositive);
+        assert_eq!(liubo.tokens()[0].forms.analyses().len(), 3);
+        assert!(liubo.tokens()[0].forms.trace().is_empty());
+        assert!(liubo.tokens()[0].forms.analyses().iter().all(|analysis| {
+            analysis.evidence.len() == 2
+                && analysis
+                    .trace
+                    .last()
+                    .is_some_and(|step| step.rule_id == RuleId::PronounDerivedFamily)
+        }));
+    }
+
+    #[test]
+    fn derived_pronominal_family_rejects_underspecified_or_malformed_choices() {
+        assert!(matches!(
+            interrogative_pronoun_family(
+                InterrogativePronounIdentity::Kto,
+                Case::Nominative,
+                PronominalFamilySpec::default(),
+            ),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            interrogative_pronoun_family(
+                InterrogativePronounIdentity::Kto,
+                Case::Nominative,
+                PronominalFamilySpec {
+                    prefix: Some(PronominalPrefix::Ni),
+                    preposition: Some("о".to_string()),
+                    ..PronominalFamilySpec::default()
+                },
+            ),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            interrogative_pronoun_family(
+                InterrogativePronounIdentity::Kto,
+                Case::Locative,
+                PronominalFamilySpec {
+                    postpositive: Some(PronominalPostpositive::Ze),
+                    preposition: Some("о".to_string()),
+                    ..PronominalFamilySpec::default()
+                },
+            ),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            interrogative_pronoun_family(
+                InterrogativePronounIdentity::Kto,
+                Case::Nominative,
+                PronominalFamilySpec {
+                    postpositive: Some(PronominalPostpositive::Ze),
+                    ..PronominalFamilySpec::default()
+                },
+            ),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            interrogative_pronoun_family(
+                InterrogativePronounIdentity::Kto,
+                Case::Genitive,
+                PronominalFamilySpec {
+                    postpositive: Some(PronominalPostpositive::Ze),
+                    direct_to: Some(DirectToTreatment::Drop),
+                    ..PronominalFamilySpec::default()
+                },
+            ),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            interrogative_pronoun_family(
+                InterrogativePronounIdentity::Kto,
+                Case::Dative,
+                PronominalFamilySpec {
+                    prefix: Some(PronominalPrefix::Ni),
+                    preposition: Some("о въ".to_string()),
+                    ..PronominalFamilySpec::default()
+                },
+            ),
+            Err(InflectionError::InvalidLemma { .. })
+        ));
+
+        let separate = interrogative_pronoun_family(
+            InterrogativePronounIdentity::Kto,
+            Case::Nominative,
+            PronominalFamilySpec {
+                postpositive: Some(PronominalPostpositive::Liubo),
+                ..PronominalFamilySpec::default()
+            },
+        )
+        .expect("separate postpositive does not trigger -to ambiguity");
+        assert_eq!(separate.primary_text(), "къто любо");
     }
 
     #[test]
