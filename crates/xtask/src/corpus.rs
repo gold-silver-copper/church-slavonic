@@ -593,6 +593,9 @@ fn evaluate_ud(
 fn form_source_label(source: &FormSource) -> String {
     match source {
         FormSource::DictionaryTable => "dictionary-table".to_string(),
+        FormSource::ReviewedGrammarTable { rule_id } => {
+            format!("reviewed-grammar-table:{}", rule_id.code())
+        }
         FormSource::DictionaryMetadataRule { rule_id } => {
             format!("dictionary-metadata-rule:{}", rule_id.code())
         }

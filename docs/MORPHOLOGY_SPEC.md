@@ -339,6 +339,61 @@ exists. The phrase never changes the six-cell synthetic inventory and never stor
 spaces in a `FormSet`. Authority: UT lesson 2 §9,
 <https://lrc.la.utexas.edu/eieol/ocsol/20#grammar_979>.
 
+### Analytic verb constructions
+
+Analytic tense, mood, and voice forms are `RealizedPhrase`s, never whitespace-
+bearing word forms. The engine first resolves every independently inflected token
+to a full `FormSet`, then validates the construction's exact role signature and
+agreement constraints. Both auxiliary-first and lexical-head-first orders are
+available where the reviewed sources license them.
+
+The auxiliary API keeps six historically distinct copular series separate:
+
+- `V-COP-ES-PRES-01`: present `ѥсмь, ѥси, ... сѫтъ`, used in the
+  perfect;
+- `V-COP-BUD-PRES-01`: future `бѫдѫ, бѫдеши, ... бѫдѫтъ`;
+- `V-COP-BE-IMPF-01` and `V-COP-BE-AOR-01`: the `бѣ-` imperfect and
+  aorist series used by the pluperfect;
+- `V-COP-BI-COND-01`: the dedicated `би-` conditional series, including
+  source-marked reconstructions for the unattested dual and expected plural
+  `бите`;
+- `V-COP-BY-COND-AOR-01`: the `бꙑ-` aorist series in its independently
+  licensed conditional function.
+
+Reviewed grammar-table forms use `FormSource::ReviewedGrammarTable`. A
+reconstructed alternative uses `ExplicitMetadataRule` with
+`ProductiveRuleOutput` evidence, a rule trace, and `IncludesReconstructedForms`;
+it is therefore usable without being presented as attested. This separation
+also prevents the dictionary's aggregated `бꙑти`
+record and its negative `нѣс-` spellings from leaking into positive perfects.
+
+The productive construction inventory is:
+
+- `PHRASE-PERFECT-01`: agreeing l-participle + present `ѥс-`;
+- `PHRASE-PLUPERFECT-01`: agreeing l-participle + imperfect `бѣ-`,
+  aorist `бѣ-`, or the three-token perfect of `be`;
+- `PHRASE-FUT-INF-01`: infinitive with present `въчѧти`, `начѧти`,
+  `имѣти`, or `хотѣти`; imperfect/aorist future-in-the-past is
+  admitted only for `имѣти` and `хотѣти`;
+- `PHRASE-FUT-PTCP-01`: short nominative present- or past-active participle
+  + future `бѫд-`;
+- `PHRASE-FUT-PERFECT-01`: agreeing l-participle + future `бѫд-`;
+- `PHRASE-COND-OPT-01`, `PHRASE-COND-OPT-DA-01`, and
+  `PHRASE-COND-OPT-ELLIP-01`: ordinary, `да`-marked, and auxiliary-elliptical
+  conditional-optatives;
+- `PHRASE-COND-OPT-PASS-01`: the source-attested conditional with a passive
+  predicate;
+- `PHRASE-PASSIVE-01`: a short nominative present/past passive participle
+  with explicitly selected present, past, future, or conditional copula.
+
+Predicative participles must be short nominatives and match the subject number;
+voice mismatches and unlicensed auxiliary/tense combinations are typed failures.
+The complete `имѣти` finite profile and missing `хотѣти` aorist cells
+are source-reviewed curated overrides rather than guessed regular forms.
+Authorities: UT OCS Online lessons 5 §24, 6 §27, 7 §§32/35, and 9
+§45.2; Polivanova 2023 §§516 and 532–555; LMU Digital Editions Reference
+Grammar §§5.3–5.5.
+
 The pinned Wiktionary target sometimes spells 1du with final `-ве`; such exact table
 variants still win, while the productive rule follows the grammar's `-вѣ`. Optional
 plural `-ꙗмъ/-ꙗте` variants for some types remain table-backed until the typed result

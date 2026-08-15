@@ -6,15 +6,15 @@ Inventory date: `2026-08-14`. Source-frontier date: `2026-08-14`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **29** have final states and **24** remain non-final. Source discovery has 1 recorded pass and has not converged.
+The matrix contains **53** required system contracts: **30** have final states and **23** remain non-final. Source discovery has 1 recorded pass and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 19 |
+| `implementation-missing` | 18 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 27 |
+| `productive-complete` | 28 |
 | `source-review-open` | 5 |
 
 ## Recension totals
@@ -22,7 +22,7 @@ The matrix contains **53** required system contracts: **29** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 16 | 26 |
+| old-church-slavonic | 17 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -35,7 +35,7 @@ The matrix contains **53** required system contracts: **29** have final states a
 | cross-recension | research | 0 | 1 |
 | old-church-slavonic | accent | 0 | 1 |
 | old-church-slavonic | adjective | 1 | 1 |
-| old-church-slavonic | analytic-form | 0 | 1 |
+| old-church-slavonic | analytic-form | 1 | 1 |
 | old-church-slavonic | comparison | 2 | 2 |
 | old-church-slavonic | determiner | 0 | 1 |
 | old-church-slavonic | finite-verb | 6 | 6 |
@@ -74,7 +74,6 @@ The matrix contains **53** required system contracts: **29** have final states a
 - `ocs.determiner` — **implementation-missing**: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.
 - `ocs.numeral` — **implementation-missing**: Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars.
 - `ocs.verb.irregular-root` — **implementation-missing**: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
-- `ocs.verb.analytic` — **implementation-missing**: Add structured phrase results and implement every licensed OCS analytic construction with component provenance.
 - `ocs.verb.verbal-noun` — **source-review-open**: Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts.
 - `ocs.orthography.accent` — **implementation-missing**: Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance.
 - `ocs.orthography.glagolitic` — **implementation-missing**: Establish a source-backed Glagolitic realization/transliteration contract for every productive rule.
@@ -117,7 +116,7 @@ The matrix contains **53** required system contracts: **29** have final states a
 | `ocs.verb.infinitive-supine-lparticiple` | old-church-slavonic | nonfinite-verb | `productive-complete` | `V-INF-01`<br>`V-SUP-01`<br>`V-LPART-01` | source-backed productive prediction |
 | `ocs.verb.participle` | old-church-slavonic | participle | `productive-complete` | `V-PTCP-PRES-ACT-01`<br>`V-PTCP-PRES-PASS-01`<br>`V-PTCP-PAST-ACT-01`<br>`V-PTCP-PAST-PASS-01` | source-backed productive prediction; unsafe extracted rows excluded |
 | `ocs.verb.irregular-root` | old-church-slavonic | irregular-verb | `implementation-missing` | `OCS-VERB-IRREGULAR-INVENTORY-PENDING` | partial exact tables and one curated imperfect family |
-| `ocs.verb.analytic` | old-church-slavonic | analytic-form | `implementation-missing` | `OCS-ANALYTIC-PENDING` | corpus exact phrases only; no structured composition API |
+| `ocs.verb.analytic` | old-church-slavonic | analytic-form | `productive-complete` | `V-COP-ES-PRES-01`<br>`V-COP-BUD-PRES-01`<br>`V-COP-BE-IMPF-01`<br>`V-COP-BE-AOR-01`<br>`V-COP-BI-COND-01`<br>`V-COP-BY-COND-AOR-01`<br>`PHRASE-PERFECT-01`<br>`PHRASE-PLUPERFECT-01`<br>`PHRASE-FUT-INF-01`<br>`PHRASE-FUT-PTCP-01`<br>`PHRASE-FUT-PERFECT-01`<br>`PHRASE-COND-OPT-01`<br>`PHRASE-COND-OPT-DA-01`<br>`PHRASE-COND-OPT-ELLIP-01`<br>`PHRASE-COND-OPT-PASS-01`<br>`PHRASE-PASSIVE-01` | independently crosschecked grammar inventory with reviewed tables, explicit reconstructions, curated irregular auxiliaries, and structured word-level provenance |
 | `ocs.verb.verbal-noun` | old-church-slavonic | verbal-noun | `source-review-open` | `OCS-VERBAL-NOUN-PENDING` | sparse exact dictionary cells |
 | `ocs.orthography.canonical` | old-church-slavonic | orthography | `productive-complete` | `OCS-ORTHOGRAPHY-CANONICAL` | technical and source contract |
 | `ocs.orthography.accent` | old-church-slavonic | accent | `implementation-missing` | `OCS-ACCENT-PENDING` | exact source spellings only |
@@ -158,11 +157,11 @@ The frontier contains **15** source/lineage records. Authority policy: target-re
 
 | ID | Tier | Type | Recension | Access | Impact |
 |---|---:|---|---|---|---|
-| `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; independently crosschecks old/new comparator formation, identifies analytic rather than universally synthetic superlative strategies, and licenses да plus present commands outside and alongside the synthetic imperative inventory. |
-| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. |
+| `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; independently crosschecks old/new comparator formation, identifies analytic rather than universally synthetic superlative strategies, licenses да plus present commands, and supplies the complete analytic tense, mood, future, and passive construction inventory. |
+| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions. |
 | `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split; full-text comparison remains open and no rule claim relies on inaccessible content. |
 | `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; supplies independent lexeme-level allomorph evidence for sigmatic aorists and irregular/root verbs. |
-| `punco-lmu-reference-grammar` | 2 | scholarly digital reference grammar and annotated-corpus documentation | old-church-slavonic, mixed | accessible-metadata | Independently confirms да plus present forms for commands in all persons, including the second person, and distinguishes Church Slavonic optative force. |
+| `punco-lmu-reference-grammar` | 2 | scholarly digital reference grammar and annotated-corpus documentation | old-church-slavonic, mixed | accessible-metadata | Independently confirms да plus present forms for commands in all persons and crosschecks the OCS-to-Church-Slavonic analytic inventory: perfect/pluperfect, infinitival future and future-in-the-past, future perfect, conditional/aorist oscillation, optative particles, auxiliary omission, and passive participial constructions. |
 | `english-wiktionary-ocs-kaikki-2026-08-07` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-local | Current OCS exact registry and extraction target. |
 | `ud-ocs-proiel-r2.18` | 4 | manually based annotated corpus | old-church-slavonic | pinned-local | Independent real-text regression evidence. |
 | `syntacticus-20230428` | 4 | native annotated corpus | old-church-slavonic | pinned-local | Independent evaluator input sharing one lineage with UD, not a second confirmation. |

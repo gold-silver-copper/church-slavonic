@@ -6,6 +6,7 @@
 #![forbid(unsafe_code)]
 
 pub mod adjective;
+pub mod copula;
 pub mod grammar;
 pub mod noun;
 pub mod orthography;
@@ -15,6 +16,7 @@ pub mod result;
 pub mod trace;
 pub mod verb;
 
+pub use copula::{CopulaSeries, CopulaVariant, CopulaVariantStatus};
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
     ComparativeFormation, FiniteTense, FiniteVerbCell, Gender, GenderedCell, ImperativeCell,
@@ -25,7 +27,10 @@ pub use grammar::{
     UngenderedCell, VerbAspect, VerbClass,
 };
 pub use orthography::{Lemma, Script};
-pub use phrase::{AnalyticConstruction, PhraseOrder, PhraseRole, PhraseToken, RealizedPhrase};
+pub use phrase::{
+    AnalyticConstruction, ConditionalAuxiliary, FutureInfinitiveAuxiliary, FutureReferenceTense,
+    PassiveAuxiliary, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, RealizedPhrase,
+};
 pub use result::{
     FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,
     LexemeSummary, MetadataEvidence, MetadataField, MetadataProvenance, VariantPolicy,

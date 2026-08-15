@@ -142,11 +142,12 @@ mod resolver;
 pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
-    AdjectiveForm, AnalyticConstruction, Animacy, Case, FiniteTense, FormSet, FormSource,
-    FormVariant, Gender, GenderedCell, InflectionError, InflectionWarning, Lemma, LexemeSummary,
-    Number, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PhraseOrder, PhraseRole,
-    PhraseToken, RealizedPhrase, RequestedCell, Script, UngenderedCell, VariantPolicy,
-    VariantSelectionError,
+    AdjectiveForm, AnalyticConstruction, Animacy, Case, ConditionalAuxiliary, CopulaSeries,
+    FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense,
+    Gender, GenderedCell, InflectionError, InflectionWarning, Lemma, LexemeSummary, Number,
+    PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell, PhraseOrder,
+    PhraseRole, PhraseToken, PluperfectAuxiliary, RealizedPhrase, RequestedCell, Script,
+    UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,

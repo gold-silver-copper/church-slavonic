@@ -458,20 +458,20 @@ part_of_speech = "verb"
 scope = "Perfect, pluperfect, future, conditional/subjunctive, passive, and other source-licensed periphrases."
 profiles = ["canonical-cyrillic"]
 features = ["construction=typed", "auxiliary=stable-identity", "components=typed", "agreement=typed", "word-order=typed"]
-subtypes = ["future", "perfect", "pluperfect", "conditional", "subjunctive", "passive"]
+subtypes = ["perfect", "pluperfect-imperfect", "pluperfect-aorist", "pluperfect-perfect", "future-infinitive", "future-in-the-past", "future-participle", "future-perfect", "conditional", "conditional-aorist-replacement", "da-optative", "elliptical-conditional", "conditional-passive", "analytic-passive"]
 realization = "analytic"
-state = "implementation-missing"
-implementation_kind = "absent"
-rule_ids = ["OCS-ANALYTIC-PENDING"]
-sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "ud-ocs-proiel-r2.18"]
-citation = "UT grammar inventory and current prompt completion scope"
-required_metadata = ["auxiliary identity/system", "main-verb principal parts", "agreement/control", "word-order variants"]
-valid_inventory = "To be crosswalked from independent grammars."
-invalid_inventory = "Non-grammatical free syntax and unattested source-specific calques outside the declared profiles."
-implementation = ["crates/old-church-slavonic/src/lib.rs"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#grammar_all_inventories_are_complete_and_stably_ordered"]
-evidence_status = "corpus exact phrases only; no structured composition API"
-gap = "Add structured phrase results and implement every licensed OCS analytic construction with component provenance."
+state = "productive-complete"
+implementation_kind = "structured-analytic-with-reviewed-auxiliary-tables"
+rule_ids = ["V-COP-ES-PRES-01", "V-COP-BUD-PRES-01", "V-COP-BE-IMPF-01", "V-COP-BE-AOR-01", "V-COP-BI-COND-01", "V-COP-BY-COND-AOR-01", "PHRASE-PERFECT-01", "PHRASE-PLUPERFECT-01", "PHRASE-FUT-INF-01", "PHRASE-FUT-PTCP-01", "PHRASE-FUT-PERFECT-01", "PHRASE-COND-OPT-01", "PHRASE-COND-OPT-DA-01", "PHRASE-COND-OPT-ELLIP-01", "PHRASE-COND-OPT-PASS-01", "PHRASE-PASSIVE-01"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "punco-lmu-reference-grammar", "ud-ocs-proiel-r2.18"]
+citation = "UT lessons 5 §24, 6 §27, 7 §§32/35, and 9 §45.2; Polivanova 2023 §§516 and 532–555; LMU Digital Editions Reference Grammar §§5.3–5.5"
+required_metadata = ["explicit construction", "typed copular or lexical auxiliary", "main-verb stable identity", "l-participle or participle agreement", "person and number", "word order"]
+valid_inventory = "All independently crosswalked perfect, three pluperfect, four infinitival-future, two active-participle-future, future-perfect, dedicated/aorist/da/elliptical/passive conditional, and present/past/future/modal passive combinations."
+invalid_inventory = "Non-grammatical free syntax; long or oblique predicative participles; number disagreement; active participles in passive constructions; passive participles in active futures; unlicensed past-reference begin-auxiliary futures."
+implementation = ["crates/old-church-slavonic-core/src/copula.rs", "crates/old-church-slavonic-core/src/phrase.rs", "crates/old-church-slavonic/src/phrases.rs", "data/overrides.tsv"]
+tests = ["crates/old-church-slavonic-core/src/copula.rs#every_copular_series_matches_the_reviewed_cell_golden", "crates/old-church-slavonic/src/phrases.rs#copular_series_are_complete_and_keep_reconstruction_visible", "crates/old-church-slavonic/src/phrases.rs#perfect_pluperfect_future_perfect_and_conditionals_cover_all_cells", "crates/old-church-slavonic/src/phrases.rs#all_licensed_infinitival_future_auxiliary_cells_are_realized", "crates/old-church-slavonic/src/phrases.rs#participial_futures_and_passives_enforce_and_cover_agreement"]
+evidence_status = "independently crosschecked grammar inventory with reviewed tables, explicit reconstructions, curated irregular auxiliaries, and structured word-level provenance"
+rationale = "Every construction in the converged analytic inventory is generated through typed tokens; the engine keeps the ѥс-, бѫд-, бѣ-, би-, and бꙑ- series distinct, flags reconstructed forms, and never stores a phrase as one word."
 
 [[system]]
 id = "ocs.verb.verbal-noun"

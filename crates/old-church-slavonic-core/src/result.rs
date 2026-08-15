@@ -164,6 +164,7 @@ impl std::error::Error for VariantSelectionError {}
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FormSource {
     DictionaryTable,
+    ReviewedGrammarTable { rule_id: RuleId },
     DictionaryMetadataRule { rule_id: RuleId },
     DictionaryMetadataAnalyses,
     ExplicitMetadataRule { rule_id: RuleId },
@@ -182,6 +183,7 @@ pub struct FormAnalysis {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MetadataProvenance {
     ExactDictionaryTableCell,
+    ReviewedGrammarTable,
     DictionaryPrincipalPart,
     CuratedGrammarOverride,
     ExplicitCallerMetadata,
@@ -205,6 +207,7 @@ pub enum InflectionWarning {
     OrthographicAliasUsed { canonical: String },
     PredictedNotDictionaryBacked,
     MultipleMorphologicalAnalyses,
+    IncludesReconstructedForms,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

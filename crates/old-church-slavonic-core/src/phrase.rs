@@ -14,6 +14,9 @@ pub enum AnalyticConstruction {
     FutureParticiple,
     FuturePerfect,
     ConditionalOptative,
+    DaConditionalOptative,
+    EllipticalConditionalOptative,
+    ConditionalOptativePassive,
     AnalyticPassive,
 }
 
@@ -29,6 +32,9 @@ impl AnalyticConstruction {
             Self::FutureParticiple => RuleId::PhraseFutureParticiple,
             Self::FuturePerfect => RuleId::PhraseFuturePerfect,
             Self::ConditionalOptative => RuleId::PhraseConditionalOptative,
+            Self::DaConditionalOptative => RuleId::PhraseConditionalOptativeDa,
+            Self::EllipticalConditionalOptative => RuleId::PhraseConditionalOptativeElliptical,
+            Self::ConditionalOptativePassive => RuleId::PhraseConditionalOptativePassive,
             Self::AnalyticPassive => RuleId::PhraseAnalyticPassive,
         }
     }
@@ -43,6 +49,7 @@ pub enum PhraseRole {
     ComparisonReference,
     Particle,
     Auxiliary,
+    AuxiliaryParticiple,
     FiniteVerb,
     Infinitive,
     LParticiple,
@@ -63,6 +70,64 @@ pub struct PhraseToken {
 pub enum PhraseOrder {
     DependentFirst,
     HeadFirst,
+}
+
+/// The three source-described auxiliary formations of the pluperfect.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PluperfectAuxiliary {
+    Imperfect,
+    Aorist,
+    Perfect,
+}
+
+/// Lexical auxiliaries licensed with an infinitive to express future time.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum FutureInfinitiveAuxiliary {
+    Vochati,
+    Nachati,
+    Imeti,
+    Khoteti,
+}
+
+impl FutureInfinitiveAuxiliary {
+    pub const ALL: [Self; 4] = [Self::Vochati, Self::Nachati, Self::Imeti, Self::Khoteti];
+
+    pub const fn lemma(self) -> &'static str {
+        match self {
+            Self::Vochati => "въчѧти",
+            Self::Nachati => "начѧти",
+            Self::Imeti => "имѣти",
+            Self::Khoteti => "хотѣти",
+        }
+    }
+}
+
+/// Whether an infinitival future is located from the speech time or from a
+/// past reference point. The past options are source-licensed only for
+/// `имѣти` and `хотѣти`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum FutureReferenceTense {
+    Present,
+    Imperfect,
+    Aorist,
+}
+
+/// The dedicated conditional series or the source-described aorist replacement.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum ConditionalAuxiliary {
+    Conditional,
+    AoristReplacement,
+}
+
+/// Copular series licensed with a passive participle.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PassiveAuxiliary {
+    Present,
+    Imperfect,
+    Aorist,
+    Future,
+    Conditional,
+    ConditionalAoristReplacement,
 }
 
 /// A typed phrase whose word-level components retain independent provenance.
@@ -121,11 +186,22 @@ fn valid_roles(construction: AnalyticConstruction, roles: &[PhraseRole]) -> bool
         RelativeSuperlative => unordered_pair(roles, ComparativeAdjective, ComparisonReference),
         AbsoluteSuperlativeAdverb => unordered_pair(roles, PositiveAdjective, Adverb),
         DaImperative => roles == [Particle, FiniteVerb],
-        Perfect | Pluperfect | FuturePerfect | ConditionalOptative => {
+        Perfect | FuturePerfect | ConditionalOptative => {
             unordered_pair(roles, LParticiple, Auxiliary)
+        }
+        Pluperfect => {
+            unordered_pair(roles, LParticiple, Auxiliary)
+                || roles == [LParticiple, AuxiliaryParticiple, Auxiliary]
+                || roles == [AuxiliaryParticiple, Auxiliary, LParticiple]
         }
         FutureInfinitive => unordered_pair(roles, Infinitive, Auxiliary),
         FutureParticiple => unordered_pair(roles, ActiveParticiple, Auxiliary),
+        DaConditionalOptative => {
+            roles == [Particle, LParticiple, Auxiliary]
+                || roles == [Particle, Auxiliary, LParticiple]
+        }
+        EllipticalConditionalOptative => roles == [LParticiple],
+        ConditionalOptativePassive => unordered_pair(roles, PassiveParticiple, Auxiliary),
         AnalyticPassive => unordered_pair(roles, PassiveParticiple, Auxiliary),
     }
 }

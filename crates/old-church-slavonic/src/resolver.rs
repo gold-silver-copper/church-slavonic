@@ -225,6 +225,95 @@ pub(crate) fn grammar_token(
     )
 }
 
+/// Resolve one independently reviewed suppletive copular series without
+/// conflating the OCS `ѥс-`, `бѫд-`, `бѣ-`, and `би-` systems.
+pub fn copula(
+    series: CopulaSeries,
+    person: Person,
+    number: Number,
+) -> Result<FormSet, InflectionError> {
+    let rule_id = series.rule_id();
+    let variants = series
+        .forms(person, number)
+        .iter()
+        .map(|variant| {
+            let text = orthography::canonical_display(variant.text)?;
+            let trace = if variant.status == CopulaVariantStatus::Reconstructed {
+                vec![RuleStep {
+                    rule_id,
+                    before: format!("{}:{}", person.code(), number.code()),
+                    after: text.clone(),
+                    reason: "realize the explicitly reconstructed OCS copular cell",
+                }]
+            } else {
+                Vec::new()
+            };
+            let form = FormVariant {
+                text,
+                romanization: None,
+            };
+            let source = match variant.status {
+                CopulaVariantStatus::SourceBacked => FormSource::ReviewedGrammarTable { rule_id },
+                CopulaVariantStatus::Reconstructed => FormSource::ExplicitMetadataRule { rule_id },
+            };
+            let analysis = FormAnalysis {
+                variants: vec![form.clone()],
+                source,
+                evidence: vec![MetadataEvidence {
+                    field: None,
+                    provenance: match variant.status {
+                        CopulaVariantStatus::SourceBacked => {
+                            MetadataProvenance::ReviewedGrammarTable
+                        }
+                        CopulaVariantStatus::Reconstructed => {
+                            MetadataProvenance::ProductiveRuleOutput
+                        }
+                    },
+                    source_feature: Some(format!(
+                        "copula:{series:?}:{}:{}",
+                        person.code(),
+                        number.code()
+                    )),
+                    source_form: (variant.status == CopulaVariantStatus::SourceBacked)
+                        .then(|| form.text.clone()),
+                    crosscheck_features: Vec::new(),
+                    authority: Some(series.authority().to_string()),
+                }],
+                trace,
+            };
+            Ok((form, analysis, variant.status))
+        })
+        .collect::<Result<Vec<_>, InflectionError>>()?;
+    let (primary, primary_analysis, _) =
+        variants
+            .first()
+            .ok_or_else(|| InflectionError::InvalidInput {
+                reason: format!("the {series:?} copular cell has no reviewed forms"),
+            })?;
+    let warnings = variants
+        .iter()
+        .any(|(_, _, status)| *status == CopulaVariantStatus::Reconstructed)
+        .then_some(InflectionWarning::IncludesReconstructedForms)
+        .into_iter()
+        .collect();
+    Ok(FormSet::new(
+        orthography::canonical_display(series.lemma())?,
+        primary.clone(),
+        variants
+            .iter()
+            .skip(1)
+            .map(|(form, _, _)| form.clone())
+            .collect(),
+        primary_analysis.source.clone(),
+        warnings,
+        Vec::new(),
+        variants
+            .into_iter()
+            .map(|(_, analysis, _)| analysis)
+            .collect(),
+    ))
+}
+
 pub fn adjective_comparatives(lemma: &str) -> Result<FormSet, InflectionError> {
     resolve_queried_lemma(lemma, PartOfSpeech::Adjective, comparative_citation_by_id)
 }
