@@ -15,7 +15,8 @@ use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
     Adjective, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
-    CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CompoundCardinalCell, Determiner,
+    CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CollectiveNumeralCell,
+    CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
     DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
     InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
     Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, OrdinalNumeralIdentity,
@@ -23,13 +24,14 @@ use old_church_slavonic::{
     PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script,
     StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
     anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
-    cardinal_numeral_paradigm, compound_cardinal, compound_cardinal_paradigm,
-    compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
-    compound_cardinal_with_options, determiner, determiner_identity, determiner_paradigm, finite,
-    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
-    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
-    l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
-    ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+    cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
+    collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
+    compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
+    compound_cardinal_with_one, compound_cardinal_with_options, determiner, determiner_identity,
+    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
+    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
+    l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
+    numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
     ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
     personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
     regular_pronominal, relative_pronoun, short_adjective, supine,
@@ -526,6 +528,173 @@ fn simple_ordinals_have_complete_adjective_paradigms_and_evidence() {
             .identity(),
         OrdinalNumeralIdentity::Third
     );
+}
+
+#[test]
+fn collective_numerals_preserve_their_two_real_inflectional_classes() {
+    for identity in CollectiveNumeralIdentity::ALL {
+        let paradigm = collective_numeral_paradigm_identity(identity);
+        assert_eq!(paradigm.identity(), identity);
+        assert_eq!(paradigm.lemma(), identity.canonical_lemma());
+        match identity.declension() {
+            CollectiveNumeralDeclension::Pronominal => {
+                assert_eq!(paradigm.len(), 63, "{identity:?}");
+                assert_eq!(paradigm.successes().count(), 54, "{identity:?}");
+                assert_eq!(paradigm.failures().count(), 9, "{identity:?}");
+            }
+            CollectiveNumeralDeclension::Adjectival => {
+                assert_eq!(paradigm.len(), 252, "{identity:?}");
+                assert_eq!(paradigm.successes().count(), 252, "{identity:?}");
+                assert_eq!(paradigm.failures().count(), 0, "{identity:?}");
+            }
+        }
+        assert!(paradigm.successes().all(|(_, forms)| matches!(
+            forms.source(),
+            FormSource::ReviewedGrammarTable { rule_id } if *rule_id == identity.rule_id()
+        )));
+    }
+
+    let low = collective_numeral_identity(
+        CollectiveNumeralIdentity::Two,
+        CollectiveNumeralCell::pronominal(Case::Accusative, Number::Singular, Gender::Neuter),
+    )
+    .expect("licensed collective-pronominal cell");
+    assert_eq!(low.primary_text(), "дъвоѥ");
+    assert_eq!(
+        low.trace().last().map(|step| step.rule_id),
+        Some(RuleId::NumeralCollectivePronominal)
+    );
+    assert_eq!(
+        low.analyses()[0].evidence[0].provenance,
+        MetadataProvenance::ProductiveRuleOutput
+    );
+
+    let direct = collective_numeral_identity(
+        CollectiveNumeralIdentity::Four,
+        CollectiveNumeralCell::adjectival(
+            AdjectiveForm::Short,
+            Case::Nominative,
+            Number::Singular,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        ),
+    )
+    .expect("directly cited collective adjective");
+    assert_eq!(direct.texts().collect::<Vec<_>>(), ["четворъ", "четвѣръ"]);
+    assert!(
+        !direct
+            .warnings()
+            .contains(&InflectionWarning::IncludesReconstructedForms)
+    );
+    assert!(direct.analyses().iter().all(|analysis| {
+        analysis.evidence[0].provenance == MetadataProvenance::ReviewedGrammarTable
+            && analysis.evidence[0].source_form.is_some()
+    }));
+
+    let reconstructed = collective_numeral_identity(
+        CollectiveNumeralIdentity::Five,
+        CollectiveNumeralCell::adjectival(
+            AdjectiveForm::Short,
+            Case::Nominative,
+            Number::Singular,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        ),
+    )
+    .expect("historically reconstructed collective adjective");
+    assert_eq!(
+        reconstructed.texts().collect::<Vec<_>>(),
+        ["пѧтеръ", "пѧторъ"]
+    );
+    assert!(
+        reconstructed
+            .warnings()
+            .contains(&InflectionWarning::IncludesReconstructedForms)
+    );
+    assert!(reconstructed.analyses().iter().all(|analysis| {
+        analysis.evidence[0].provenance == MetadataProvenance::ProductiveRuleOutput
+            && analysis.evidence[0].source_form.is_none()
+    }));
+
+    let corpus = collective_numeral_identity(
+        CollectiveNumeralIdentity::Ten,
+        CollectiveNumeralCell::adjectival(
+            AdjectiveForm::Short,
+            Case::Accusative,
+            Number::Singular,
+            Gender::Neuter,
+            Animacy::Inanimate,
+        ),
+    )
+    .expect("collective corpus cell");
+    assert_eq!(
+        corpus.texts().collect::<Vec<_>>(),
+        ["десѧторо", "десѧтеро", "десꙙторо"]
+    );
+    assert_eq!(
+        corpus.analyses()[2].evidence[0].provenance,
+        MetadataProvenance::CorpusEvaluationObservation
+    );
+    assert_eq!(
+        corpus.analyses()[2].evidence[0].source_form.as_deref(),
+        Some("десꙙторо")
+    );
+
+    let alias = collective_numeral(
+        "четвѣръ",
+        CollectiveNumeralCell::adjectival(
+            AdjectiveForm::Short,
+            Case::Nominative,
+            Number::Singular,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        ),
+    )
+    .expect("collective source-union alias");
+    assert_eq!(alias.lemma(), "четворъ");
+    assert!(
+        alias
+            .warnings()
+            .contains(&InflectionWarning::LexicalAliasUsed {
+                canonical: "четворъ".to_string(),
+            })
+    );
+    assert_eq!(
+        collective_numeral_paradigm("седмеръ")
+            .expect("collective reconstructed alias")
+            .identity(),
+        CollectiveNumeralIdentity::Seven
+    );
+}
+
+#[test]
+fn collective_numerals_reject_crossed_cell_classes() {
+    let crossed = CollectiveNumeralCell::adjectival(
+        AdjectiveForm::Long,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    );
+    assert!(matches!(
+        collective_numeral_identity(CollectiveNumeralIdentity::Three, crossed),
+        Err(InflectionError::HistoricallyInvalidCell {
+            cell: RequestedCell::CollectiveNumeral(cell),
+            ..
+        }) if cell == crossed
+    ));
+
+    let low = collective_numeral_paradigm_identity(CollectiveNumeralIdentity::Both);
+    assert!(matches!(
+        low.adjectival_form(
+            AdjectiveForm::Short,
+            Case::Nominative,
+            Number::Singular,
+            Gender::Neuter,
+            Animacy::Inanimate,
+        ),
+        Err(ParadigmLookupError::NotRepresented)
+    ));
 }
 
 #[test]

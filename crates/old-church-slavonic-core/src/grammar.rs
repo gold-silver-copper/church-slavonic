@@ -760,6 +760,62 @@ impl GenderedCell {
     }
 }
 
+/// A grammatically typed cell for a collective numeral.
+///
+/// `дъвои`, `обои`, and `трои` use the pronominal agreement system, which has
+/// no short/long or animacy dimension. Collectives from four through ten are
+/// adjectives and therefore use the complete adjective cell instead.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum CollectiveNumeralCell {
+    Pronominal(GenderedCell),
+    Adjectival(AdjectiveCell),
+}
+
+impl CollectiveNumeralCell {
+    pub const fn pronominal(case: Case, number: Number, gender: Gender) -> Self {
+        Self::Pronominal(GenderedCell {
+            case,
+            number,
+            gender,
+        })
+    }
+
+    pub const fn adjectival(
+        form: AdjectiveForm,
+        case: Case,
+        number: Number,
+        gender: Gender,
+        animacy: Animacy,
+    ) -> Self {
+        Self::Adjectival(AdjectiveCell {
+            case,
+            number,
+            gender,
+            animacy,
+            form,
+        })
+    }
+
+    pub fn key(self) -> String {
+        match self {
+            Self::Pronominal(cell) => format!(
+                "collective:pronominal:{}:{}:{}",
+                cell.case.code(),
+                cell.number.code(),
+                cell.gender.code()
+            ),
+            Self::Adjectival(cell) => format!(
+                "collective:adjectival:{}:{}:{}:{}:{}",
+                cell.form.code(),
+                cell.case.code(),
+                cell.number.code(),
+                cell.gender.code(),
+                cell.animacy.code()
+            ),
+        }
+    }
+}
+
 /// A case-number-person cell for a personal pronoun table.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct PersonalPronounCell {
@@ -807,6 +863,7 @@ pub enum RequestedCell {
     Adjective(AdjectiveCell),
     Determiner(DeterminerCell),
     Numeral(NumeralCell),
+    CollectiveNumeral(CollectiveNumeralCell),
     CompoundCardinal {
         value: u16,
         cell: CompoundCardinalCell,

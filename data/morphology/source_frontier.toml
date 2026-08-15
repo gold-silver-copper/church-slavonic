@@ -50,9 +50,9 @@ authority_justification = "The publication explicitly aims at a complete, consis
 license = "CC BY 4.0"
 redistribution = "allowed-with-attribution"
 upstream_lineage = ["polivanova-osd-source"]
-reviewed_sections = ["publisher metadata", "grammar/dictionary scope", "repository adapter coverage", "§§285 and 303–305 exhaustive long-only adjective inventory and profile", "§§70 and 72 epenthetic-glide and ьj boundary rules", "§§285, 299, and 303–306 class-2/a short/long adjective synthesis and j-stem profile", "OSD spreadsheet rows 939, 1181, 1188, 3073, 4224, 4525, 4864, 5596, 6149, and 6243: exhaustive ten-identity ordinal class-2/a inventory", "§§287–299 pronominal terminal sets and twofold rule", "§§314–318 regular class 2/p inventory, lexical allocation, families, *и, иже, and prepositional allomorphy", "§§321–322 unique plural-only cardinal триѥ paradigm", "§§345–348 feminine ja-stem class and both тꙑсѫщи/тꙑсѧщи lexical profiles", "§§349–351 feminine i-stem class including cardinal пѧть", "§§373–374 mixed десѧть paradigm and variants", "§§383–384 unique plural-only cardinal четыре paradigm", "§§319–320 special вьсь/сиць profiles", "§§375–380 unique кꙑи, сь, къто, and чьто profiles", "Paradigmatic Dictionary entry 343 classifies ѥтеръ as 2/a", "§318 complete third-person anaphoric inventory and prepositional n- allomorphs", "§§381–382 complete first-person, second-person, and reflexive inventories and marked clitics", "§§93 and 455–462 aorist terminals and boundary adjustment", "§§475–482 standard and nonstandard aorists", "§455 and §§467–472 imperfect terminal variants", "§§914–915 imperfect platforms and special formations", "§§279–281 comparative lexemes and comparativa tantum", "§§307–313 comparative syncopated/expanded declension", "§§919–924 old/new comparative formation, lexical inventory, spellings, and attestations", "§§516 and 538–549 independent ѥсмь/бꙑти profiles, imperfect/aorist bundles, conditional table, and corpus illustrations", "§§532–537 complete имѣти profile and future/deontic infinitive construction", "§§550–555 complete хотѣти profile and modal/future infinitive construction"]
-rule_ids = ["ADJ-*", "ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "NUM-CARD-*", "NUM-ORD-*", "PRON-PERS-*", "PRON-REFL-01", "PRON-ANAPH-*", "PRON-2P-*", "PRON-REL-*", "PRON-2PSTAR-*", "PRON-UNIQUE-*", "DET-UNIQUE-KYI-01", "V-AOR-ASIG-01", "V-AOR-NEW-01", "V-AOR-SIG-PRIMARY-01", "V-AOR-SIG-SECONDARY-01", "V-AOR-SIG-VOWEL-01", "V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01", "V-IMPF-PRESENT-01", "V-IMPF-CONTRACTED-A-01", "V-IMPF-CONTRACTED-YAT-A-01", "V-IMPF-CONTRACTED-PAL-A-01", "V-IMPF-PRESENT-CONTRACTED-01", "V-IMPF-IOTATED-01", "V-COP-*", "PHRASE-*", "pending-polivanova-crosswalk"]
-impact = "Adds a completeness-oriented independent grammar and grammatical dictionaries; §§285 and 303–305 define the exhaustive long-only adjective inventory, while §§287–320, 375–380, and Paradigmatic Dictionary entry 343 define the regular, exceptional, and adjectival profiles allocated to the determiner and pronoun facades. §§70, 72, 285, 299, and 303–306 plus the OSD spreadsheet define the exact ten-member simple-ordinal lexicon, its nine hard profiles, the трет.ьj boundary, and productive short/long agreement. §§321–322, 345–351, 373–374, and 383–384 independently define the unique three/four tables, both thousand identities over the productive feminine ja-stem profile, the feminine i-stem background of five through nine, and the attested mixed paradigm and variants of ten. §§318 and 381–382 define the four intrinsic personal/reflexive/anaphoric identities, their defective dimensions, grammar-table clitics, and conditioned prepositional allomorphs. Its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions."
+reviewed_sections = ["publisher metadata", "grammar/dictionary scope", "repository adapter coverage", "§§285 and 303–305 exhaustive long-only adjective inventory and profile", "§§70 and 72 epenthetic-glide and ьj boundary rules", "§§285, 299, and 303–306 class-2/a short/long adjective synthesis and j-stem profile", "OSD spreadsheet rows 939, 1181, 1188, 3073, 4224, 4525, 4864, 5596, 6149, and 6243: exhaustive ten-identity ordinal class-2/a inventory", "OSD spreadsheet rows 1111, 2552, and 5608: collective j-pronominals дъвои, обои, and трои", "OSD spreadsheet rows 1187, 4863, and 6148: directly listed higher collectives десѧторъ, седморъ, and четворъ", "§§287–299 pronominal terminal sets and twofold rule", "§§314–318 regular class 2/p inventory, lexical allocation, families, *и, иже, and prepositional allomorphy", "§§321–322 unique plural-only cardinal триѥ paradigm", "§§345–348 feminine ja-stem class and both тꙑсѫщи/тꙑсѧщи lexical profiles", "§§349–351 feminine i-stem class including cardinal пѧть", "§§373–374 mixed десѧть paradigm and variants", "§§383–384 unique plural-only cardinal четыре paradigm", "§§319–320 special вьсь/сиць profiles", "§§375–380 unique кꙑи, сь, къто, and чьто profiles", "Paradigmatic Dictionary entry 343 classifies ѥтеръ as 2/a", "§318 complete third-person anaphoric inventory and prepositional n- allomorphs", "§§381–382 complete first-person, second-person, and reflexive inventories and marked clitics", "§§93 and 455–462 aorist terminals and boundary adjustment", "§§475–482 standard and nonstandard aorists", "§455 and §§467–472 imperfect terminal variants", "§§914–915 imperfect platforms and special formations", "§§279–281 comparative lexemes and comparativa tantum", "§§307–313 comparative syncopated/expanded declension", "§§919–924 old/new comparative formation, lexical inventory, spellings, and attestations", "§§516 and 538–549 independent ѥсмь/бꙑти profiles, imperfect/aorist bundles, conditional table, and corpus illustrations", "§§532–537 complete имѣти profile and future/deontic infinitive construction", "§§550–555 complete хотѣти profile and modal/future infinitive construction"]
+rule_ids = ["ADJ-*", "ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "NUM-CARD-*", "NUM-ORD-*", "NUM-COLL-*", "PRON-PERS-*", "PRON-REFL-01", "PRON-ANAPH-*", "PRON-2P-*", "PRON-REL-*", "PRON-2PSTAR-*", "PRON-UNIQUE-*", "DET-UNIQUE-KYI-01", "V-AOR-ASIG-01", "V-AOR-NEW-01", "V-AOR-SIG-PRIMARY-01", "V-AOR-SIG-SECONDARY-01", "V-AOR-SIG-VOWEL-01", "V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01", "V-IMPF-PRESENT-01", "V-IMPF-CONTRACTED-A-01", "V-IMPF-CONTRACTED-YAT-A-01", "V-IMPF-CONTRACTED-PAL-A-01", "V-IMPF-PRESENT-CONTRACTED-01", "V-IMPF-IOTATED-01", "V-COP-*", "PHRASE-*", "pending-polivanova-crosswalk"]
+impact = "Adds a completeness-oriented independent grammar and grammatical dictionaries; §§285 and 303–305 define the exhaustive long-only adjective inventory, while §§287–320, 375–380, and Paradigmatic Dictionary entry 343 define the regular, exceptional, and adjectival profiles allocated to the determiner and pronoun facades. §§70, 72, 285, 299, and 303–306 plus the OSD spreadsheet define the exact ten-member simple-ordinal lexicon, its nine hard profiles, the трет.ьj boundary, and productive short/long agreement. The OSD also directly allocates дъвои, обои, and трои to j-pronominal class 2/p and четворъ, седморъ, and десѧторъ to hard adjectival class 2/a, establishing both inflectional halves of the collective system. §§321–322, 345–351, 373–374, and 383–384 independently define the unique three/four tables, both thousand identities over the productive feminine ja-stem profile, the feminine i-stem background of five through nine, and the attested mixed paradigm and variants of ten. §§318 and 381–382 define the four intrinsic personal/reflexive/anaphoric identities, their defective dimensions, grammar-table clitics, and conditioned prepositional allomorphs. Its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions."
 conflicts = ["It analyzes canonical (o)x forms as the standard aorist and root/old sigmatic forms as secondary/nonstandard, while UT uses the pedagogical asigmatic/sigmatic/new taxonomy; the matrix preserves each morphological formation and records the terminology crosswalk.", "§382.3 reports no attested OCS first-person dual dative clitic and compares later Church Slavonic на, whereas UT lists на in its OCS table; the engine marks that one variant disputed rather than silently choosing a source."]
 access_status = "pinned-local"
 
@@ -82,6 +82,60 @@ rule_ids = ["ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "pending-lunt-numeral-content-
 impact = "Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split, and locates the book's numeral declension, syntax, and historical sections for the open crosswalk. The available USC endpoint exposes only the front matter and contents, so no numeral rule claim relies on inaccessible body text."
 conflicts = []
 access_status = "accessible-metadata"
+
+[[source]]
+id = "krysko-collective-2020"
+title = "Dъvoi čepi: On the history of Slavic collective numerals"
+author_editor = "Vadim B. Krys'ko"
+edition_revision = "Voprosy Jazykoznanija 2020 no. 4, pp. 55–69; DOI 10.31857/0373-658X.2020.4.55-69"
+publication_date = "2020"
+publisher_institution = "Vinogradov Russian Language Institute, Russian Academy of Sciences"
+stable_url = "https://vja.ruslang.ru/en/archive/2020-4/55-69"
+retrieved_at = "2026-08-14"
+sha256 = ""
+languages = ["Russian", "English abstract", "Old Church Slavonic", "early Slavic"]
+periods = ["Old Church Slavonic", "Old Russian", "Old Serbian"]
+recensions = ["old-church-slavonic", "mixed"]
+orthographies = ["source manuscript spellings", "scholarly transliteration"]
+source_type = "peer-reviewed manuscript-grounded historical grammar article"
+epistemic_roles = ["productive-grammar-comparison", "primary-text-attestation", "semantic-classification"]
+authority_tier = 1
+authority_justification = "The article directly audits early Slavic manuscript constructions and explicitly establishes the full singular, dual, and plural paradigms and semantic uses of дъвои and обои."
+license = "journal copyright; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["pp. 55–64 manuscript attestations", "pp. 64–67 full-number-paradigm synthesis and grammatical-semantic classification"]
+rule_ids = ["NUM-COLL-PRON-01"]
+impact = "Independently confirms that the low collective numerical pronouns are not singularia or pluralia tantum: дъвои and обои have singular, dual, and plural uses, including attributive and substantivized functions."
+conflicts = ["The article deliberately includes Old Russian and Old Serbian evidence; only its explicitly Old Church Slavonic examples and cross-stage paradigm conclusion may crosscheck the OCS rule."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "essja-collective-series"
+title = "Etymological Dictionary of the Slavic Languages: Proto-Slavic Lexical Stock"
+author_editor = "O. N. Trubachev, A. F. Zhuravlev, and continuing Institute editors"
+edition_revision = "collective-numeral entries in volumes 4 and 36 and corresponding series volumes"
+publication_date = "1977–"
+publisher_institution = "Vinogradov Russian Language Institute, Russian Academy of Sciences"
+stable_url = "https://etymolog.ruslang.ru/index.php?act=essja"
+retrieved_at = "2026-08-14"
+sha256 = ""
+languages = ["Russian", "Proto-Slavic", "Old Church Slavonic", "comparative Slavic"]
+periods = ["Proto-Slavic", "Old Church Slavonic", "later comparative evidence"]
+recensions = ["old-church-slavonic", "inherited-comparative"]
+orthographies = ["reconstructed transliteration", "source Cyrillic"]
+source_type = "academy historical-etymological dictionary"
+epistemic_roles = ["inherited-grammar-authority", "lexical-attestation", "variant-analysis"]
+authority_tier = 2
+authority_justification = "The academy dictionary gives the reconstructed complete *-er-/*-or- series, identifies it as adjectival, and distinguishes direct Old Church Slavonic citations from comparative reconstruction."
+license = "institutional publication; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["*četverъ/*četvorъ and *četverica/*četvorica entries in volume 4", "*desętero/*desętorъ and *devętero/*devęterъ entries in volume 4", "*osmero and *osmerъ entries in volume 36", "cross-referenced *pęterъ, *šesterъ, and *sedmerъ series entries"]
+rule_ids = ["NUM-COLL-ADJ-01"]
+impact = "Establishes the inherited adjective series from four through ten, its parallel -er-/-or- stems, its upper bound at ten, and which spellings have direct Old Church Slavonic citation rather than reconstruction alone."
+conflicts = ["Proto-Slavic reconstruction and later comparative reflexes are not OCS attestations; the engine labels such outputs reconstructed instead of source-listed."]
+access_status = "accessible-full-text"
 
 [[source]]
 id = "love-lmu-ocs-verbs"
@@ -185,9 +239,9 @@ authority_justification = "Manual source annotation is valuable attestation evid
 license = "CC BY-NC-SA 4.0"
 redistribution = "noncommercial-evaluation-only"
 upstream_lineage = ["syntacticus-20230428", "PROIEL", "TOROT"]
-reviewed_sections = ["treebank metadata", "UD feature mapping", "held-out evaluator", "all forms lemmatized under the ten simple ordinals, including short третии direct/oblique cells and deformed long третии genitive, dative, and neuter accusative spellings"]
+reviewed_sections = ["treebank metadata", "UD feature mapping", "held-out evaluator", "all forms lemmatized under the ten simple ordinals, including short третии direct/oblique cells and deformed long третии genitive, dative, and neuter accusative spellings", "all дъвои and обои collective cells plus directly tagged четворъ and десѧторо and adverbial седморо/седморицеѭ observations"]
 rule_ids = ["corpus-evaluation"]
-impact = "Independent real-text regression evidence; the simple-ordinal audit confirms short forms throughout the ten-member lexicon and preserves cell-specific третии spellings as corpus evidence without promoting corpus sparsity into a productive rule."
+impact = "Independent real-text regression evidence; the simple-ordinal audit confirms short forms throughout the ten-member lexicon and preserves cell-specific третии spellings as corpus evidence without promoting corpus sparsity into a productive rule. The collective audit independently exercises singular and plural low collectives, short adjectival четворъ/десѧторъ cells, and derivative adverbs; the spelling десꙙторо remains a cell-specific corpus observation."
 conflicts = ["UD conversion can discard distinctions available in native data."]
 access_status = "pinned-local"
 

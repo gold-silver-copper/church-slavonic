@@ -6,9 +6,9 @@
 /// Typed cell structures used by generic tools and paradigms.
 pub mod cells {
     pub use old_church_slavonic_core::{
-        AdjectiveCell, AdjectiveForm, ClosedClassCell, CompoundCardinalCell, DeterminerCell,
-        FiniteVerbCell, GenderedCell, ImperativeCell, LParticipleCell, NounCell, NumeralCell,
-        ParticipleCell, ParticipleKind, PersonalPronounCell, UngenderedCell,
+        AdjectiveCell, AdjectiveForm, ClosedClassCell, CollectiveNumeralCell, CompoundCardinalCell,
+        DeterminerCell, FiniteVerbCell, GenderedCell, ImperativeCell, LParticipleCell, NounCell,
+        NumeralCell, ParticipleCell, ParticipleKind, PersonalPronounCell, UngenderedCell,
     };
 }
 

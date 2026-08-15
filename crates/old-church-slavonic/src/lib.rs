@@ -120,7 +120,7 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Cardinals through 10,000 and simple ordinals 1–10 | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound, and adjective-agreement ordinal inventories with typed government, correlated multiword alternatives, and source-listed versus productive variants |
+//! | Cardinals through 10,000, simple ordinals 1–10, and collectives 2–10 | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound, adjective-agreement ordinal, and inherited collective inventories with typed government, correlated multiword alternatives, two historical collective declension classes, and explicit source-listed, productive, reconstructed, and corpus variants |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -152,6 +152,7 @@ pub use lookup::lookup;
 pub use old_church_slavonic_core::{
     AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
     CardinalMagnitudeIdentity, CardinalNumeralIdentity, CardinalPhraseAnalysis, Case,
+    CollectiveNumeralCell, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
     CompoundCardinalCell, ConditionalAuxiliary, CopulaSeries, DeterminerCell, DeterminerDeclension,
     DeterminerIdentity, DeterminerLexeme, DirectToTreatment, FiniteTense, FormSet, FormSource,
     FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell,
@@ -165,11 +166,11 @@ pub use old_church_slavonic_core::{
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
-    ComparativeParadigm, CompoundCardinalOutcome, CompoundCardinalParadigm, DeterminerParadigm,
-    FiniteVerbParadigm, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
-    LParticipleParadigm, NounParadigm, NumeralParadigm, OrdinalNumeralParadigm,
-    ParadigmLookupError, ParticipleParadigm, PersonalPronounParadigm, PronounParadigm,
-    VerbParadigm,
+    CollectiveNumeralParadigm, ComparativeParadigm, CompoundCardinalOutcome,
+    CompoundCardinalParadigm, DeterminerParadigm, FiniteVerbParadigm, GenderedNumeralParadigm,
+    GenderedPronounParadigm, ImperativeParadigm, LParticipleParadigm, NounParadigm,
+    NumeralParadigm, OrdinalNumeralParadigm, ParadigmLookupError, ParticipleParadigm,
+    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -185,9 +186,10 @@ pub mod prelude {
     pub use crate::{
         Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy,
         CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
-        CardinalNumeralParadigm, Case, CompoundCardinalParadigm, Determiner, DeterminerCell,
-        DeterminerIdentity, DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet,
-        FormSource, FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm,
+        CardinalNumeralParadigm, Case, CollectiveNumeralCell, CollectiveNumeralDeclension,
+        CollectiveNumeralIdentity, CollectiveNumeralParadigm, CompoundCardinalParadigm, Determiner,
+        DeterminerCell, DeterminerIdentity, DeterminerParadigm, FiniteTense, FiniteVerbParadigm,
+        FormSet, FormSource, FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm,
         ImperativeParadigm, InflectionError, InflectionResult, InflectionWarning,
         InterrogativePronounIdentity, IrregularAgreeingIdentity, LParticipleParadigm, Lemma,
         LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral, NumeralParadigm,
@@ -196,8 +198,10 @@ pub mod prelude {
         PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
         StandardPronominalIdentity, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
         adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
-        cardinal_numeral_identity, cardinal_numeral_paradigm, comparative_citation,
-        compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_one,
+        cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
+        collective_numeral_identity, collective_numeral_paradigm,
+        collective_numeral_paradigm_identity, comparative_citation, compound_cardinal,
+        compound_cardinal_paradigm, compound_cardinal_paradigm_with_one,
         compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
         compound_cardinal_with_options, determiner, determiner_identity, determiner_paradigm,
         finite, finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
@@ -772,6 +776,61 @@ pub fn ordinal_numeral_identity(
     )
 }
 
+/// Decline a collective numeral from the inherited two-through-ten series.
+///
+/// The cell type records the real inflectional split: `дъвои`, `обои`, and
+/// `трои` take a pronominal cell, while four through ten take an adjectival
+/// cell with explicit short/long form and animacy.
+///
+/// ```
+/// use old_church_slavonic::{
+///     collective_numeral, Case, CollectiveNumeralCell, Gender, Number,
+/// };
+/// assert_eq!(
+///     collective_numeral(
+///         "дъвои",
+///         CollectiveNumeralCell::pronominal(
+///             Case::Accusative,
+///             Number::Singular,
+///             Gender::Neuter,
+///         ),
+///     )?
+///     .primary_text(),
+///     "дъвоѥ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn collective_numeral(lemma: &str, cell: CollectiveNumeralCell) -> InflectionResult {
+    resolver::collective_numeral(lemma, cell)
+}
+
+/// Decline a collective numeral by stable grammatical identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     collective_numeral_identity, AdjectiveForm, Animacy, Case,
+///     CollectiveNumeralCell, CollectiveNumeralIdentity, Gender, Number,
+/// };
+/// let forms = collective_numeral_identity(
+///     CollectiveNumeralIdentity::Four,
+///     CollectiveNumeralCell::adjectival(
+///         AdjectiveForm::Short,
+///         Case::Nominative,
+///         Number::Singular,
+///         Gender::Masculine,
+///         Animacy::Inanimate,
+///     ),
+/// )?;
+/// assert_eq!(forms.texts().collect::<Vec<_>>(), ["четворъ", "четвѣръ"]);
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn collective_numeral_identity(
+    identity: CollectiveNumeralIdentity,
+    cell: CollectiveNumeralCell,
+) -> InflectionResult {
+    resolver::reviewed_collective_numeral(identity, cell)
+}
+
 /// Decline a cardinal magnitude head as a noun-like numeral.
 ///
 /// All magnitude heads govern a genitive-plural complement and therefore have
@@ -1343,6 +1402,58 @@ pub fn ordinal_numeral_paradigm_identity(
     identity: OrdinalNumeralIdentity,
 ) -> OrdinalNumeralParadigm {
     resolver::build_ordinal_numeral_paradigm(identity)
+}
+
+/// Enumerate every licensed cell for a collective-numeral lemma.
+///
+/// ```
+/// use old_church_slavonic::{
+///     collective_numeral_paradigm, Case, Gender, Number,
+/// };
+/// let paradigm = collective_numeral_paradigm("обои")?;
+/// assert_eq!(paradigm.len(), 63);
+/// assert_eq!(
+///     paradigm
+///         .pronominal_form(Case::Nominative, Number::Singular, Gender::Neuter)?
+///         .primary_text(),
+///     "обоѥ",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn collective_numeral_paradigm(
+    lemma: &str,
+) -> Result<CollectiveNumeralParadigm, InflectionError> {
+    resolver::collective_numeral_paradigm(lemma)
+}
+
+/// Enumerate every licensed cell from a stable collective identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     collective_numeral_paradigm_identity, AdjectiveForm, Animacy, Case,
+///     CollectiveNumeralIdentity, Gender, Number,
+/// };
+/// let paradigm =
+///     collective_numeral_paradigm_identity(CollectiveNumeralIdentity::Seven);
+/// assert_eq!(paradigm.len(), 252);
+/// assert_eq!(
+///     paradigm
+///         .adjectival_form(
+///             AdjectiveForm::Short,
+///             Case::Nominative,
+///             Number::Singular,
+///             Gender::Masculine,
+///             Animacy::Inanimate,
+///         )?
+///         .primary_text(),
+///     "седморъ",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn collective_numeral_paradigm_identity(
+    identity: CollectiveNumeralIdentity,
+) -> CollectiveNumeralParadigm {
+    resolver::build_collective_numeral_paradigm(identity)
 }
 
 /// Enumerate gender-indexed numeral cells, retaining unsupported rows.

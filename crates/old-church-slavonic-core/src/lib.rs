@@ -23,8 +23,8 @@ pub use copula::{CopulaSeries, CopulaVariant, CopulaVariantStatus};
 pub use determiner::{DeterminerDeclension, DeterminerIdentity, DeterminerLexeme};
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
-    ComparativeFormation, CompoundCardinalCell, DeterminerCell, FiniteTense, FiniteVerbCell,
-    Gender, GenderedCell, ImperativeCell, ImperativeFormation, ImperfectFormation,
+    CollectiveNumeralCell, ComparativeFormation, CompoundCardinalCell, DeterminerCell, FiniteTense,
+    FiniteVerbCell, Gender, GenderedCell, ImperativeCell, ImperativeFormation, ImperfectFormation,
     ImperfectVariantPolicy, LParticipleCell, NounCell, NounClass, Number, NumberRestriction,
     NumeralCell, PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
     PastPassiveParticipleFormation, Person, PersonalPronounCell, PresentActiveParticipleFormation,
@@ -32,8 +32,9 @@ pub use grammar::{
 };
 pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
-    CardinalPhraseAnalysis, NumeralGovernment, NumeralVariant, NumeralVariantStatus,
-    OrdinalNumeralIdentity, RealizedCardinal,
+    CardinalPhraseAnalysis, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
+    NumeralGovernment, NumeralVariant, NumeralVariantStatus, OrdinalNumeralIdentity,
+    RealizedCardinal,
 };
 pub use orthography::{Lemma, Script};
 pub use phrase::{

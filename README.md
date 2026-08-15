@@ -231,9 +231,10 @@ assert!(matches!(
 
 ## Paradigms
 
-Lemma-oriented `noun_paradigm`, `adjective_paradigm`, `ordinal_numeral_paradigm`, `present_paradigm`,
-`finite_paradigm`, `imperative_paradigm`, `l_participle_paradigm`, and
-`participle_paradigm` enumerate the same by-ID resolver as one-cell calls. Typed
+Lemma-oriented `noun_paradigm`, `adjective_paradigm`, `ordinal_numeral_paradigm`,
+`collective_numeral_paradigm`, `present_paradigm`, `finite_paradigm`,
+`imperative_paradigm`, `l_participle_paradigm`, and `participle_paradigm`
+enumerate the same by-ID resolver as one-cell calls. Typed
 closed-class paradigms cover the source-supported determiner, pronoun, and numeral
 systems. Their `CellOutcome` entries retain per-cell errors rather than omitting
 gaps. Each type provides `lemma()`, `id()`, direct-dimension `form(...)`, `iter()`,
@@ -312,7 +313,7 @@ and genuine historical gaps.
 | Adjectives | `long_adjective`, `short_adjective`, `Adjective` | Exact tables first; hard/soft metadata rules; citation comparatives only |
 | Determiners | `determiner`, `Determiner`, typed paradigm | Exact pinned dictionary cells only |
 | Pronouns | `personal_pronoun_with`, `reflexive_pronoun`, `anaphoric_pronoun`, compatible ordinary functions, `Pronoun` | Complete reviewed personal/reflexive/anaphoric tables; other pronouns use exact source cells |
-| Numerals | `numeral`, `cardinal_numeral_identity`, `compound_cardinal`, `ordinal_numeral`, typed paradigms, `Numeral` | Reviewed cardinals through 10,000 and all ten simple ordinal adjective paradigms; exact fallback for other source-table numeral types |
+| Numerals | `numeral`, `cardinal_numeral_identity`, `compound_cardinal`, `ordinal_numeral`, `collective_numeral`, typed paradigms, `Numeral` | Reviewed cardinals through 10,000, all ten simple ordinal adjective paradigms, and the inherited collective series two through ten with pronominal/adjectival cells and direct versus reconstructed evidence; exact fallback for other source-table numeral types |
 | Finite verbs | `present`, `imperfect`, `aorist`, `finite` | Exact tables, independently sourced metadata, then reviewed overrides |
 | Imperatives | `imperative` | Six historically represented person-number cells |
 | Non-finite forms | `infinitive`, `supine`, `verbal_noun`, `l_participle` | Table or independently supported productive rule |
@@ -349,8 +350,8 @@ cargo xtask check-all
 ```
 
 The workspace also contains the offline extractor and `xtask`. It intentionally
-does not yet implement compound ordinals or the complete collective, fractional,
-and distributive numeral families, a catch-all pronoun API,
+does not yet implement compound ordinals or the complete fractional and
+distributive numeral families, a catch-all pronoun API,
 automatic Cyrillic/Glagolitic transliteration, syntax, phrase realization,
 manuscript transcription, OCR, abbreviation expansion, or later-recension
 normalization.

@@ -3,9 +3,9 @@
 use crate::noun::NounLexeme;
 use crate::pronoun::StandardPronominalIdentity;
 use crate::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, CompoundCardinalCell, Gender,
-    InflectionError, NounCell, NounClass, Number, NumberRestriction, NumeralCell, PhraseRole,
-    PhraseToken, PredictedForm, RequestedCell, RuleId, RuleStep,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, CollectiveNumeralCell,
+    CompoundCardinalCell, Gender, InflectionError, NounCell, NounClass, Number, NumberRestriction,
+    NumeralCell, PhraseRole, PhraseToken, PredictedForm, RequestedCell, RuleId, RuleStep,
 };
 
 /// The syntactic relation between a simple cardinal and the enumerated noun.
@@ -26,6 +26,8 @@ pub enum NumeralVariantStatus {
     ProductiveRule,
     /// A noncanonical spelling or deformation observed in the pinned corpus.
     CorpusAttestation,
+    /// A form generated from a historically established but unattested stem.
+    ReconstructedRule,
 }
 
 impl NumeralVariantStatus {
@@ -34,6 +36,7 @@ impl NumeralVariantStatus {
             Self::ReviewedTable => "reviewed-table",
             Self::ProductiveRule => "productive-rule",
             Self::CorpusAttestation => "corpus-attestation",
+            Self::ReconstructedRule => "reconstructed-rule",
         }
     }
 }
@@ -98,6 +101,13 @@ impl NumeralVariant {
                 }],
             },
             status: NumeralVariantStatus::CorpusAttestation,
+        }
+    }
+
+    fn reconstructed(prediction: PredictedForm) -> Self {
+        Self {
+            prediction,
+            status: NumeralVariantStatus::ReconstructedRule,
         }
     }
 }
@@ -378,6 +388,310 @@ fn third_ordinal_corpus_variant(cell: AdjectiveCell) -> Option<&'static str> {
         (AdjectiveForm::Long, Dative, Singular, Masculine, _) => Some("третию҄моу"),
         (AdjectiveForm::Long, Accusative, Singular, Neuter, _) => Some("третиее"),
         _ => None,
+    }
+}
+
+/// The two inflectional classes used by Old Church Slavonic collectives.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum CollectiveNumeralDeclension {
+    /// The `-ој-` members two, both, and three use class `2/p`.
+    Pronominal,
+    /// Four through ten use the hard class `2/a` `-ер-/-ор-` series.
+    Adjectival,
+}
+
+impl CollectiveNumeralDeclension {
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::Pronominal => "pronominal",
+            Self::Adjectival => "adjectival",
+        }
+    }
+}
+
+/// The complete inherited collective-numeral series from two through ten.
+///
+/// `Two`, `Both`, and `Three` are directly listed in Polivanova's class `2/p`.
+/// The higher `-ер-/-ор-` series is inherited and productive through ten, but
+/// its OCS attestation is uneven. Direct OCS dictionary citations remain
+/// distinguished from historically reconstructed members in every result.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum CollectiveNumeralIdentity {
+    Two,
+    Both,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Nine,
+    Ten,
+}
+
+impl CollectiveNumeralIdentity {
+    pub const ALL: [Self; 10] = [
+        Self::Two,
+        Self::Both,
+        Self::Three,
+        Self::Four,
+        Self::Five,
+        Self::Six,
+        Self::Seven,
+        Self::Eight,
+        Self::Nine,
+        Self::Ten,
+    ];
+
+    pub const fn value(self) -> u8 {
+        match self {
+            Self::Two | Self::Both => 2,
+            Self::Three => 3,
+            Self::Four => 4,
+            Self::Five => 5,
+            Self::Six => 6,
+            Self::Seven => 7,
+            Self::Eight => 8,
+            Self::Nine => 9,
+            Self::Ten => 10,
+        }
+    }
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::Two => "дъвои",
+            Self::Both => "обои",
+            Self::Three => "трои",
+            Self::Four => "четворъ",
+            Self::Five => "пѧтеръ",
+            Self::Six => "шестеръ",
+            Self::Seven => "седморъ",
+            Self::Eight => "осмеръ",
+            Self::Nine => "девѧтеръ",
+            Self::Ten => "десѧторъ",
+        }
+    }
+
+    pub const fn source_union_aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::Two => &["дъвои"],
+            Self::Both => &["обои"],
+            Self::Three => &["трои"],
+            Self::Four => &["четворъ", "четвѣръ"],
+            Self::Five => &["пѧтеръ", "пѧторъ"],
+            Self::Six => &["шестеръ", "шесторъ"],
+            Self::Seven => &["седморъ", "седмеръ"],
+            Self::Eight => &["осмеръ", "осморъ"],
+            Self::Nine => &["девѧтеръ", "девѧторъ"],
+            Self::Ten => &["десѧторъ", "десѧтеръ"],
+        }
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|identity| identity.source_union_aliases().contains(&lemma))
+    }
+
+    pub const fn declension(self) -> CollectiveNumeralDeclension {
+        match self {
+            Self::Two | Self::Both | Self::Three => CollectiveNumeralDeclension::Pronominal,
+            Self::Four
+            | Self::Five
+            | Self::Six
+            | Self::Seven
+            | Self::Eight
+            | Self::Nine
+            | Self::Ten => CollectiveNumeralDeclension::Adjectival,
+        }
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        match self.declension() {
+            CollectiveNumeralDeclension::Pronominal => RuleId::NumeralCollectivePronominal,
+            CollectiveNumeralDeclension::Adjectival => RuleId::NumeralCollectiveAdjective,
+        }
+    }
+
+    pub const fn authority(self) -> &'static str {
+        "Polivanova 2023 §§285, 287–299, 303–306, 314–316 and OSD spreadsheet; Krys'ko 2020; ESSJa collective-numeral entries"
+    }
+
+    const fn pronominal_identity(self) -> Option<StandardPronominalIdentity> {
+        match self {
+            Self::Two => Some(StandardPronominalIdentity::NumeralDvoi),
+            Self::Both => Some(StandardPronominalIdentity::NumeralOboi),
+            Self::Three => Some(StandardPronominalIdentity::NumeralTroi),
+            _ => None,
+        }
+    }
+
+    const fn adjective_stems(self) -> &'static [CollectiveAdjectiveStem] {
+        match self {
+            Self::Four => &COLLECTIVE_FOUR_STEMS,
+            Self::Five => &COLLECTIVE_FIVE_STEMS,
+            Self::Six => &COLLECTIVE_SIX_STEMS,
+            Self::Seven => &COLLECTIVE_SEVEN_STEMS,
+            Self::Eight => &COLLECTIVE_EIGHT_STEMS,
+            Self::Nine => &COLLECTIVE_NINE_STEMS,
+            Self::Ten => &COLLECTIVE_TEN_STEMS,
+            Self::Two | Self::Both | Self::Three => &[],
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum CollectiveStemEvidence {
+    DirectOcs,
+    Reconstructed,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct CollectiveAdjectiveStem {
+    stem: &'static str,
+    evidence: CollectiveStemEvidence,
+}
+
+impl CollectiveAdjectiveStem {
+    const fn new(stem: &'static str, evidence: CollectiveStemEvidence) -> Self {
+        Self { stem, evidence }
+    }
+}
+
+use CollectiveStemEvidence::{DirectOcs, Reconstructed};
+
+const COLLECTIVE_FOUR_STEMS: [CollectiveAdjectiveStem; 2] = [
+    CollectiveAdjectiveStem::new("четвор", DirectOcs),
+    CollectiveAdjectiveStem::new("четвѣр", DirectOcs),
+];
+const COLLECTIVE_FIVE_STEMS: [CollectiveAdjectiveStem; 2] = [
+    CollectiveAdjectiveStem::new("пѧтер", Reconstructed),
+    CollectiveAdjectiveStem::new("пѧтор", Reconstructed),
+];
+const COLLECTIVE_SIX_STEMS: [CollectiveAdjectiveStem; 2] = [
+    CollectiveAdjectiveStem::new("шестер", Reconstructed),
+    CollectiveAdjectiveStem::new("шестор", Reconstructed),
+];
+const COLLECTIVE_SEVEN_STEMS: [CollectiveAdjectiveStem; 2] = [
+    CollectiveAdjectiveStem::new("седмор", DirectOcs),
+    CollectiveAdjectiveStem::new("седмер", Reconstructed),
+];
+const COLLECTIVE_EIGHT_STEMS: [CollectiveAdjectiveStem; 2] = [
+    CollectiveAdjectiveStem::new("осмер", DirectOcs),
+    CollectiveAdjectiveStem::new("осмор", Reconstructed),
+];
+const COLLECTIVE_NINE_STEMS: [CollectiveAdjectiveStem; 2] = [
+    CollectiveAdjectiveStem::new("девѧтер", Reconstructed),
+    CollectiveAdjectiveStem::new("девѧтор", Reconstructed),
+];
+const COLLECTIVE_TEN_STEMS: [CollectiveAdjectiveStem; 2] = [
+    CollectiveAdjectiveStem::new("десѧтор", DirectOcs),
+    CollectiveAdjectiveStem::new("десѧтер", Reconstructed),
+];
+
+/// Decline one collective numeral in its lexically licensed cell system.
+pub fn decline_collective(
+    identity: CollectiveNumeralIdentity,
+    cell: CollectiveNumeralCell,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    match (identity.pronominal_identity(), cell) {
+        (Some(pronominal), CollectiveNumeralCell::Pronominal(cell)) => {
+            let requested = CollectiveNumeralCell::Pronominal(cell);
+            let mut prediction = crate::pronoun::decline_standard_pronominal(
+                pronominal,
+                cell.case,
+                cell.number,
+                cell.gender,
+            )
+            .map_err(|error| remap_collective_error(error, identity, requested))?;
+            let rule_id = identity.rule_id();
+            prediction.trace.push(RuleStep {
+                rule_id,
+                before: identity.canonical_lemma().to_string(),
+                after: prediction.text.clone(),
+                reason: "apply the reviewed collective numerical-pronoun profile",
+            });
+            prediction.rule_id = rule_id;
+            let status = if cell.case == Case::Nominative
+                && cell.number == Number::Singular
+                && cell.gender == Gender::Masculine
+            {
+                NumeralVariantStatus::ReviewedTable
+            } else {
+                NumeralVariantStatus::ProductiveRule
+            };
+            Ok(vec![NumeralVariant { prediction, status }])
+        }
+        (None, CollectiveNumeralCell::Adjectival(cell)) => {
+            let requested = CollectiveNumeralCell::Adjectival(cell);
+            let rule_id = identity.rule_id();
+            let mut variants = identity
+                .adjective_stems()
+                .iter()
+                .map(|stem| {
+                    let mut prediction =
+                        crate::adjective::decline_stem(stem.stem, AdjectiveClass::Hard, cell)
+                            .map_err(|error| remap_collective_error(error, identity, requested))?;
+                    prediction.trace.push(RuleStep {
+                        rule_id,
+                        before: identity.canonical_lemma().to_string(),
+                        after: prediction.text.clone(),
+                        reason: "apply the inherited collective -ер-/-ор- adjective profile",
+                    });
+                    prediction.rule_id = rule_id;
+                    let citation_cell = cell.form == AdjectiveForm::Short
+                        && cell.case == Case::Nominative
+                        && cell.number == Number::Singular
+                        && cell.gender == Gender::Masculine;
+                    Ok(match stem.evidence {
+                        CollectiveStemEvidence::DirectOcs if citation_cell => NumeralVariant {
+                            prediction,
+                            status: NumeralVariantStatus::ReviewedTable,
+                        },
+                        CollectiveStemEvidence::DirectOcs => NumeralVariant::productive(prediction),
+                        CollectiveStemEvidence::Reconstructed => {
+                            NumeralVariant::reconstructed(prediction)
+                        }
+                    })
+                })
+                .collect::<Result<Vec<_>, InflectionError>>()?;
+            if identity == CollectiveNumeralIdentity::Ten
+                && cell.form == AdjectiveForm::Short
+                && cell.case == Case::Accusative
+                && cell.number == Number::Singular
+                && cell.gender == Gender::Neuter
+            {
+                variants.push(NumeralVariant::corpus(
+                    "десꙙторо",
+                    rule_id,
+                    identity.canonical_lemma(),
+                    "retain the cell-specific spelling attested in UD OCS PROIEL r2.18",
+                ));
+            }
+            Ok(variants)
+        }
+        _ => Err(InflectionError::historically_invalid(
+            identity.canonical_lemma(),
+            RequestedCell::CollectiveNumeral(cell),
+        )),
+    }
+}
+
+fn remap_collective_error(
+    error: InflectionError,
+    identity: CollectiveNumeralIdentity,
+    cell: CollectiveNumeralCell,
+) -> InflectionError {
+    match error {
+        InflectionError::HistoricallyInvalidCell { .. } => InflectionError::historically_invalid(
+            identity.canonical_lemma(),
+            RequestedCell::CollectiveNumeral(cell),
+        ),
+        InflectionError::UnsupportedCell { .. } => InflectionError::unsupported(
+            identity.canonical_lemma(),
+            RequestedCell::CollectiveNumeral(cell),
+        ),
+        other => other,
     }
 }
 
@@ -1225,6 +1539,227 @@ mod tests {
             assert_eq!(forms[1].prediction.text, expected);
             assert_eq!(forms[1].status, NumeralVariantStatus::CorpusAttestation);
         }
+    }
+
+    #[test]
+    fn collective_inventory_is_complete_nonoverlapping_and_typed() {
+        assert_eq!(CollectiveNumeralIdentity::ALL.len(), 10);
+        let mut aliases = std::collections::BTreeSet::new();
+        for identity in CollectiveNumeralIdentity::ALL {
+            assert_eq!(
+                CollectiveNumeralIdentity::classify_source_union_lemma(identity.canonical_lemma()),
+                Some(identity)
+            );
+            for alias in identity.source_union_aliases() {
+                assert!(aliases.insert(*alias), "duplicate collective alias {alias}");
+            }
+        }
+        assert_eq!(CollectiveNumeralIdentity::Two.value(), 2);
+        assert_eq!(CollectiveNumeralIdentity::Both.value(), 2);
+        assert_eq!(CollectiveNumeralIdentity::Ten.value(), 10);
+        assert_eq!(
+            CollectiveNumeralIdentity::Three.declension(),
+            CollectiveNumeralDeclension::Pronominal
+        );
+        assert_eq!(
+            CollectiveNumeralIdentity::Four.declension(),
+            CollectiveNumeralDeclension::Adjectival
+        );
+    }
+
+    #[test]
+    fn collective_pronominals_reuse_every_reviewed_class_2_p_cell() {
+        for (identity, pronominal) in [
+            (
+                CollectiveNumeralIdentity::Two,
+                StandardPronominalIdentity::NumeralDvoi,
+            ),
+            (
+                CollectiveNumeralIdentity::Both,
+                StandardPronominalIdentity::NumeralOboi,
+            ),
+            (
+                CollectiveNumeralIdentity::Three,
+                StandardPronominalIdentity::NumeralTroi,
+            ),
+        ] {
+            let outcomes = crate::GenderedCell::all()
+                .map(|cell| {
+                    let expected = crate::pronoun::decline_standard_pronominal(
+                        pronominal,
+                        cell.case,
+                        cell.number,
+                        cell.gender,
+                    );
+                    let actual =
+                        decline_collective(identity, CollectiveNumeralCell::Pronominal(cell));
+                    (cell, expected, actual)
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(outcomes.len(), 63);
+            assert_eq!(
+                outcomes
+                    .iter()
+                    .filter(|(_, _, result)| result.is_ok())
+                    .count(),
+                54,
+                "{identity:?}"
+            );
+            for (cell, expected, actual) in outcomes {
+                match (expected, actual) {
+                    (Ok(expected), Ok(actual)) => {
+                        assert_eq!(actual.len(), 1, "{identity:?} {cell:?}");
+                        assert_eq!(
+                            actual[0].prediction.text, expected.text,
+                            "{identity:?} {cell:?}"
+                        );
+                        assert_eq!(
+                            actual[0].prediction.rule_id,
+                            RuleId::NumeralCollectivePronominal
+                        );
+                    }
+                    (
+                        Err(InflectionError::HistoricallyInvalidCell { .. }),
+                        Err(InflectionError::HistoricallyInvalidCell { .. }),
+                    ) => {}
+                    pair => {
+                        panic!("collective/pronominal mismatch for {identity:?} {cell:?}: {pair:?}")
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn higher_collectives_cover_every_adjective_cell_and_both_inherited_stems() {
+        for identity in CollectiveNumeralIdentity::ALL
+            .into_iter()
+            .filter(|identity| identity.declension() == CollectiveNumeralDeclension::Adjectival)
+        {
+            for cell in AdjectiveCell::all() {
+                let variants =
+                    decline_collective(identity, CollectiveNumeralCell::Adjectival(cell))
+                        .unwrap_or_else(|error| panic!("{identity:?} {cell:?}: {error}"));
+                let expected_count = if identity == CollectiveNumeralIdentity::Ten
+                    && cell.form == AdjectiveForm::Short
+                    && cell.case == Case::Accusative
+                    && cell.number == Number::Singular
+                    && cell.gender == Gender::Neuter
+                {
+                    3
+                } else {
+                    2
+                };
+                assert_eq!(variants.len(), expected_count, "{identity:?} {cell:?}");
+                for (variant, stem) in variants.iter().zip(identity.adjective_stems()) {
+                    let adjective =
+                        crate::adjective::decline_stem(stem.stem, AdjectiveClass::Hard, cell)
+                            .expect("licensed hard adjective");
+                    assert_eq!(variant.prediction.text, adjective.text);
+                    assert_eq!(
+                        variant.prediction.rule_id,
+                        RuleId::NumeralCollectiveAdjective
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn collective_cell_classes_fail_closed_when_crossed() {
+        let adjectival = CollectiveNumeralCell::adjectival(
+            AdjectiveForm::Short,
+            Case::Nominative,
+            Number::Singular,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        );
+        let pronominal = CollectiveNumeralCell::pronominal(
+            Case::Nominative,
+            Number::Singular,
+            Gender::Masculine,
+        );
+        assert!(matches!(
+            decline_collective(CollectiveNumeralIdentity::Two, adjectival),
+            Err(InflectionError::HistoricallyInvalidCell {
+                cell: RequestedCell::CollectiveNumeral(cell),
+                ..
+            }) if cell == adjectival
+        ));
+        assert!(matches!(
+            decline_collective(CollectiveNumeralIdentity::Four, pronominal),
+            Err(InflectionError::HistoricallyInvalidCell {
+                cell: RequestedCell::CollectiveNumeral(cell),
+                ..
+            }) if cell == pronominal
+        ));
+    }
+
+    #[test]
+    fn collective_goldens_distinguish_direct_reconstructed_and_corpus_forms() {
+        let citation = |identity| {
+            decline_collective(
+                identity,
+                CollectiveNumeralCell::adjectival(
+                    AdjectiveForm::Short,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                ),
+            )
+            .expect("collective citation")
+        };
+        assert_eq!(
+            citation(CollectiveNumeralIdentity::Four)
+                .iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["четворъ", "четвѣръ"]
+        );
+        assert!(
+            citation(CollectiveNumeralIdentity::Four)
+                .iter()
+                .all(|variant| variant.status == NumeralVariantStatus::ReviewedTable)
+        );
+        assert_eq!(
+            citation(CollectiveNumeralIdentity::Five)
+                .iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["пѧтеръ", "пѧторъ"]
+        );
+        assert!(
+            citation(CollectiveNumeralIdentity::Five)
+                .iter()
+                .all(|variant| variant.status == NumeralVariantStatus::ReconstructedRule)
+        );
+
+        let low = decline_collective(
+            CollectiveNumeralIdentity::Two,
+            CollectiveNumeralCell::pronominal(Case::Accusative, Number::Singular, Gender::Neuter),
+        )
+        .expect("collective two");
+        assert_eq!(low[0].prediction.text, "дъвоѥ");
+
+        let ten = decline_collective(
+            CollectiveNumeralIdentity::Ten,
+            CollectiveNumeralCell::adjectival(
+                AdjectiveForm::Short,
+                Case::Accusative,
+                Number::Singular,
+                Gender::Neuter,
+                Animacy::Inanimate,
+            ),
+        )
+        .expect("collective ten corpus cell");
+        assert_eq!(
+            ten.iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["десѧторо", "десѧтеро", "десꙙторо"]
+        );
+        assert_eq!(ten[2].status, NumeralVariantStatus::CorpusAttestation);
     }
 
     #[test]

@@ -176,8 +176,8 @@ expanded source forms; 10,000 retains the `десѧть тꙑсѧшть`-type co
 beside `тъма`. Nonzero decimal chunks are joined by `и`. Correlated 30/40 and
 10,000 alternatives remain distinct structural analyses, every word keeps its
 own `FormSet`, and the lowest nonzero component determines agreement or
-government. Compound ordinals, collective, fractional, distributive, and
-remaining irregular numeral inventories remain open.
+government. Compound ordinals, fractional, distributive, and remaining
+irregular numeral inventories remain open.
 
 Simple ordinals are a separate adjective-agreement API because the legacy
 gendered-numeral cell has neither short/long form nor animacy. `ordinal_numeral`
@@ -187,6 +187,19 @@ all 252 form × case × number × gender × animacy rows. Nine identities reuse 
 hard adjective engine, while `третии` follows its explicit `трет.ьj` workstem.
 The OSD citation, productive standard cells, and cell-specific PROIEL spellings
 retain distinct evidence classes.
+
+Collectives have a separate typed cell because the inherited system has two
+real declension classes. `дъвои`, `обои`, and `трои` accept the complete 63-cell
+case × number × gender pronominal product and preserve their nine vocatives as
+typed historical failures. `четворъ` through `десѧторъ` accept the complete
+252-cell short/long adjective product, including masculine-accusative animacy.
+`CollectiveNumeralCell` makes crossing those cell classes impossible to mistake
+for an ordinary missing form, while `CollectiveNumeralParadigm` enumerates the
+class-appropriate product. Direct OCS citations, productive extensions of a
+direct stem, comparative reconstruction, and exact corpus spellings retain
+separate evidence. In particular, the two inherited `-ер-/-ор-` stem series for
+five, six, and nine are explicitly reconstructed rather than presented as OCS
+attestations. Derived `-ица` group nouns remain noun lexemes.
 
 A typed paradigm enumerates the relevant grammatical product and retains typed
 historical or unsupported failures rather than dropping rows. The audit does not

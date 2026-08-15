@@ -456,6 +456,37 @@ pub fn ordinal_numeral(lemma: &str, cell: AdjectiveCell) -> Result<FormSet, Infl
     Ok(result)
 }
 
+/// Resolve one lexically compatible cell of a reviewed collective numeral.
+pub fn reviewed_collective_numeral(
+    identity: CollectiveNumeralIdentity,
+    cell: CollectiveNumeralCell,
+) -> Result<FormSet, InflectionError> {
+    reviewed_numeral_variants(
+        identity.canonical_lemma(),
+        identity.authority(),
+        format!("numeral:{}", cell.key()),
+        old_church_slavonic_core::numeral::decline_collective(identity, cell)?,
+    )
+}
+
+/// Resolve a collective numeral through the complete two-through-ten source
+/// union, while retaining its pronominal-versus-adjectival cell type.
+pub fn collective_numeral(
+    lemma: &str,
+    cell: CollectiveNumeralCell,
+) -> Result<FormSet, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = CollectiveNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    let mut result = reviewed_collective_numeral(identity, cell)?;
+    if normalized != identity.canonical_lemma() {
+        result.add_warning(InflectionWarning::LexicalAliasUsed {
+            canonical: identity.canonical_lemma().to_string(),
+        });
+    }
+    Ok(result)
+}
+
 /// Resolve one cell of a reviewed cardinal-magnitude head.
 pub fn reviewed_cardinal_magnitude(
     identity: CardinalMagnitudeIdentity,
@@ -481,6 +512,9 @@ fn reviewed_numeral_variants(
     source_feature: String,
     variants: Vec<NumeralVariant>,
 ) -> Result<FormSet, InflectionError> {
+    let includes_reconstructed = variants
+        .iter()
+        .any(|variant| variant.status == NumeralVariantStatus::ReconstructedRule);
     let variants = variants
         .into_iter()
         .map(|variant| {
@@ -505,6 +539,9 @@ fn reviewed_numeral_variants(
                         }
                         NumeralVariantStatus::CorpusAttestation => {
                             MetadataProvenance::CorpusEvaluationObservation
+                        }
+                        NumeralVariantStatus::ReconstructedRule => {
+                            MetadataProvenance::ProductiveRuleOutput
                         }
                     },
                     source_feature: Some(format!("{source_feature}:{}", variant.status.code())),
@@ -537,7 +574,10 @@ fn reviewed_numeral_variants(
             .map(|(form, _, _)| form.clone())
             .collect(),
         primary_analysis.source.clone(),
-        Vec::new(),
+        includes_reconstructed
+            .then_some(InflectionWarning::IncludesReconstructedForms)
+            .into_iter()
+            .collect(),
         primary_trace.clone(),
         variants
             .into_iter()
@@ -2395,6 +2435,41 @@ pub fn ordinal_numeral_paradigm(lemma: &str) -> Result<OrdinalNumeralParadigm, I
     let identity = OrdinalNumeralIdentity::classify_source_union_lemma(&normalized)
         .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
     Ok(build_ordinal_numeral_paradigm(identity))
+}
+
+pub(crate) fn build_collective_numeral_paradigm(
+    identity: CollectiveNumeralIdentity,
+) -> CollectiveNumeralParadigm {
+    let cells = match identity.declension() {
+        CollectiveNumeralDeclension::Pronominal => GenderedCell::all()
+            .map(CollectiveNumeralCell::Pronominal)
+            .map(|cell| CellOutcome {
+                cell,
+                result: reviewed_collective_numeral(identity, cell),
+            })
+            .collect(),
+        CollectiveNumeralDeclension::Adjectival => AdjectiveCell::all()
+            .map(CollectiveNumeralCell::Adjectival)
+            .map(|cell| CellOutcome {
+                cell,
+                result: reviewed_collective_numeral(identity, cell),
+            })
+            .collect(),
+    };
+    CollectiveNumeralParadigm {
+        identity,
+        lemma: identity.canonical_lemma().to_string(),
+        cells,
+    }
+}
+
+pub fn collective_numeral_paradigm(
+    lemma: &str,
+) -> Result<CollectiveNumeralParadigm, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = CollectiveNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    Ok(build_collective_numeral_paradigm(identity))
 }
 
 fn lexeme_identity(

@@ -212,6 +212,37 @@ Authority: Polivanova 2023 §§70, 72, 285, 299, and 303–306 plus OSD spreadsh
 rows 939, 1181, 1188, 3073, 4224, 4525, 4864, 5596, 6149, and 6243. UD OCS
 PROIEL r2.18 is an attestation crosscheck, not the productive authority.
 
+### NUM-COLL-PRON-01 and NUM-COLL-ADJ-01 — inherited collectives
+
+The inherited two-through-ten collective series divides between two historical
+declension classes. `дъвои`, `обои`, and `трои` use the full class-`2/p`
+j-pronominal case × singular/dual/plural × gender system. Their 63-cell typed
+product retains all nine vocatives as historical failures. Krys'ko's manuscript
+audit independently confirms that `дъвои` and `обои` are not restricted to one
+inherent number.
+
+Four through ten use class `2/a`: `четворъ`, `пѧтеръ`, `шестеръ`, `седморъ`,
+`осмеръ`, `девѧтеръ`, and `десѧторъ`. Each accepts all 252 adjective cells,
+including short/long form and masculine-accusative animacy. Polivanova's OSD
+directly lists `четворъ`, `седморъ`, and `десѧторъ`. ESSJa supplies the inherited
+parallel `-ер-/-ор-` series and direct OCS citations including `четвѣръ` and
+`осмеръ`. Cells productively extended from those direct stems remain productive
+rule output; the five, six, and nine stems and unattested parallel variants are
+marked reconstructed and always carry a reconstruction warning. The engine does
+not promote reconstruction to attestation.
+
+Pinned UD OCS PROIEL r2.18 supplies independent low-collective singular, dual,
+and plural checks and direct higher examples such as `четворо`, `четворꙑ`, and
+`десꙙторо`. The last spelling is preserved only in its observed short accusative
+singular neuter cell. Adverbial `седморо` and `седморицеѭ` remain derivative
+evidence, not adjective cells. Likewise, `дъвоица`, `троица`, `четворица`, and
+the other `-ица` group formations are noun lexemes rather than collective
+agreement forms.
+
+Authority: Polivanova 2023 §§285, 287–299, 303–306, and 314–316 plus OSD rows
+1111, 2552, 5608, 6148, 4863, and 1187; Krys'ko 2020 pp. 55–67; ESSJa
+collective-series entries; UD OCS PROIEL r2.18 as an attestation crosscheck.
+
 ### Comparatives
 
 `ComparativeFormation` records a word-formation strategy independently of

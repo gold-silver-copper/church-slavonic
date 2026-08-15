@@ -2,10 +2,11 @@
 
 use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Animacy, CardinalCompositionOptions, CardinalMagnitudeIdentity,
-    CardinalNumeralIdentity, Case, CompoundCardinalCell, DeterminerCell, DeterminerIdentity,
-    FiniteTense, FiniteVerbCell, FormSet, Gender, GenderedCell, ImperativeCell, InflectionError,
-    LParticipleCell, NounCell, Number, NumeralCell, OrdinalNumeralIdentity, PartOfSpeech,
-    ParticipleCell, ParticipleKind, Person, PersonalPronounCell, RealizedCardinal, UngenderedCell,
+    CardinalNumeralIdentity, Case, CollectiveNumeralCell, CollectiveNumeralIdentity,
+    CompoundCardinalCell, DeterminerCell, DeterminerIdentity, FiniteTense, FiniteVerbCell, FormSet,
+    Gender, GenderedCell, ImperativeCell, InflectionError, LParticipleCell, NounCell, Number,
+    NumeralCell, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell, ParticipleKind, Person,
+    PersonalPronounCell, RealizedCardinal, UngenderedCell,
 };
 use std::fmt;
 
@@ -493,6 +494,107 @@ impl<'a> IntoIterator for &'a OrdinalNumeralParadigm {
 impl IntoIterator for OrdinalNumeralParadigm {
     type Item = CellOutcome<AdjectiveCell>;
     type IntoIter = std::vec::IntoIter<CellOutcome<AdjectiveCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
+/// Complete licensed cell inventory for one collective numeral.
+///
+/// Pronominal collectives contain 63 case-number-gender rows. Adjectival
+/// collectives contain all 252 short/long agreement rows.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CollectiveNumeralParadigm {
+    pub(crate) identity: CollectiveNumeralIdentity,
+    pub(crate) lemma: String,
+    pub(crate) cells: Vec<CellOutcome<CollectiveNumeralCell>>,
+}
+
+impl CollectiveNumeralParadigm {
+    pub const fn identity(&self) -> CollectiveNumeralIdentity {
+        self.identity
+    }
+
+    pub fn lemma(&self) -> &str {
+        &self.lemma
+    }
+
+    pub fn form(&self, cell: CollectiveNumeralCell) -> Result<&FormSet, ParadigmLookupError> {
+        forms_for(&self.cells, &cell)
+    }
+
+    pub fn pronominal_form(
+        &self,
+        case: Case,
+        number: Number,
+        gender: Gender,
+    ) -> Result<&FormSet, ParadigmLookupError> {
+        self.form(CollectiveNumeralCell::pronominal(case, number, gender))
+    }
+
+    pub fn adjectival_form(
+        &self,
+        form: AdjectiveForm,
+        case: Case,
+        number: Number,
+        gender: Gender,
+        animacy: Animacy,
+    ) -> Result<&FormSet, ParadigmLookupError> {
+        self.form(CollectiveNumeralCell::adjectival(
+            form, case, number, gender, animacy,
+        ))
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, CellOutcome<CollectiveNumeralCell>> {
+        self.cells.iter()
+    }
+
+    pub fn successes(&self) -> impl Iterator<Item = (&CollectiveNumeralCell, &FormSet)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|forms| (&outcome.cell, forms))
+        })
+    }
+
+    pub fn failures(&self) -> impl Iterator<Item = (&CollectiveNumeralCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    pub fn into_rows(self) -> Vec<CellOutcome<CollectiveNumeralCell>> {
+        self.cells
+    }
+
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a CollectiveNumeralParadigm {
+    type Item = &'a CellOutcome<CollectiveNumeralCell>;
+    type IntoIter = std::slice::Iter<'a, CellOutcome<CollectiveNumeralCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for CollectiveNumeralParadigm {
+    type Item = CellOutcome<CollectiveNumeralCell>;
+    type IntoIter = std::vec::IntoIter<CellOutcome<CollectiveNumeralCell>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.cells.into_iter()
