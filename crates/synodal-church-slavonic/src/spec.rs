@@ -2132,7 +2132,7 @@ mod tests {
     }
 
     #[test]
-    fn unsupported_productive_verb_systems_fail_honestly() {
+    fn absent_and_unsupported_productive_verb_systems_fail_honestly() {
         let verb = VerbSpec::builder(
             "нести",
             Aspect::Imperfective,
@@ -2146,7 +2146,7 @@ mod tests {
         .expect("verb spec");
         assert!(matches!(
             verb.form(GrammarCell::Supine),
-            Err(Error::UnsupportedCell { .. })
+            Err(Error::HistoricallyInvalidCell { .. })
         ));
         assert!(matches!(
             verb.form(GrammarCell::VerbalNoun(NounCell {
@@ -2156,6 +2156,27 @@ mod tests {
             })),
             Err(Error::UnsupportedCell { .. })
         ));
+
+        let compatibility = VerbSpec::builder(
+            "нести",
+            Aspect::Imperfective,
+            VerbConjugation::FirstUnpalatalized,
+            source(),
+        )
+        .expect("verb")
+        .irregular_form(
+            SpecifiedForm::new(GrammarCell::Supine, "нестъ", None::<String>, source())
+                .expect("explicit compatibility cell"),
+        )
+        .build()
+        .expect("verb with explicit compatibility cell");
+        assert_eq!(
+            compatibility
+                .form(GrammarCell::Supine)
+                .expect("caller exact compatibility form")
+                .primary_text(),
+            "нестъ"
+        );
     }
 
     #[test]

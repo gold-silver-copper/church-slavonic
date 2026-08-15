@@ -402,6 +402,21 @@ fn validate_past_classification_reviews(
     Ok(())
 }
 
+fn validate_absent_target_cells(exact: (&Path, &Table), held_out: (&Path, &Table)) -> Result<()> {
+    for (path, table, cell_column) in [(exact.0, exact.1, 1), (held_out.0, held_out.1, 2)] {
+        for (offset, row) in table.rows.iter().enumerate() {
+            if row[cell_column] == "supine" {
+                return invalid(
+                    path,
+                    offset + 2,
+                    "the Russian/Synodal target registry cannot contain the historically merged supine category",
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
 fn load_source_recensions(data_directory: &Path) -> Result<BTreeMap<String, String>> {
     let workspace = data_directory
         .parent()
@@ -929,6 +944,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         (&exact_path, &exact_forms),
         (&evaluation_path, &evaluation),
     )?;
+    validate_absent_target_cells((&exact_path, &exact_forms), (&evaluation_path, &evaluation))?;
     validate_exact_form_attestation_evidence(
         &exact_path,
         &exact_forms,
@@ -3749,5 +3765,46 @@ mod tests {
         let mut surviving_past = evaluation.clone();
         surviving_past.rows[0][2] = "past:third:singular".into();
         assert!(validate(&reviews, &surviving_past).is_err());
+    }
+
+    #[test]
+    fn target_registry_rejects_the_historically_merged_supine_category() {
+        let exact = Table { rows: Vec::new() };
+        let evaluation = Table { rows: Vec::new() };
+        let validate = |exact: &Table, evaluation: &Table| {
+            validate_absent_target_cells(
+                (Path::new("exact_forms.tsv"), exact),
+                (Path::new("evaluation.tsv"), evaluation),
+            )
+        };
+        validate(&exact, &evaluation).expect("empty target supine inventory");
+
+        let exact_supine = Table {
+            rows: vec![vec![
+                "synodal:verb:test".into(),
+                "supine".into(),
+                "нестъ".into(),
+                "не́стъ".into(),
+                "evidence:test".into(),
+                "synodal-attestation".into(),
+                TARGET.into(),
+            ]],
+        };
+        assert!(validate(&exact_supine, &evaluation).is_err());
+
+        let evaluation_supine = Table {
+            rows: vec![vec![
+                "eval:test".into(),
+                "synodal:verb:test".into(),
+                "supine".into(),
+                "strict".into(),
+                "нестъ".into(),
+                "не́стъ".into(),
+                "source:test".into(),
+                "passage".into(),
+                "fixture".into(),
+            ]],
+        };
+        assert!(validate(&exact, &evaluation_supine).is_err());
     }
 }

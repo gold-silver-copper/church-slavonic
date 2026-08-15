@@ -60,6 +60,7 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
         .iter()
         .filter(|row| row.get(0) == "irregular")
         .count();
+    let unsupported_noun = if unsupported == 1 { "row" } else { "rows" };
 
     let mut out = String::new();
     out.push_str("# Synodal v0.10 productive morphology and lexicon audit\n\n");
@@ -72,8 +73,8 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
     out.push_str("`VerbSystem` selects every represented finite, imperative, infinitive, l-participle, participial, supine, and verbal-noun inventory through one paradigm API. Paradigms retain every attempted cell. `LexemeProvider`, `StaticLexemeProvider`, `InMemoryLexemeProvider`, and `Lexicon` add deterministic composition and capability inspection. `BatchResult`, `ParadigmStatus`, row-level error codes, and `ErrorCode` expose successes and failures without parsing diagnostic prose.\n\n");
     out.push_str("## Capability summary\n\n");
     out.push_str(&format!(
-        "The matrix contains {} reviewed system/subtype rows: {productive} productive rows, {exact} rows involving exact tables, {irregular} explicit irregular rows, and {unsupported} unsupported rows. Counts describe engine contracts, not corpus forms or tokens.\n\n",
-        capabilities.len()
+        "The matrix contains {} reviewed system/subtype rows: {productive} productive rows, {exact} rows involving exact tables, {irregular} explicit irregular rows, and {unsupported} unsupported {unsupported_noun}. Counts describe engine contracts, not corpus forms or tokens.\n\n",
+        capabilities.len(),
     ));
     out.push_str("The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. Every row records its target recension, valid and invalid inventory, required metadata, alternations, accent contract, source citation, golden/boundary example, implementation, test, and typed failure.\n\n");
     out.push_str("## Complete capability matrix\n\n");

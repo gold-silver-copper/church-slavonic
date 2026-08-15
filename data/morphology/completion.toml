@@ -926,24 +926,24 @@ id = "syn.verb.supine"
 recension = "synodal-russian"
 category = "nonfinite-verb"
 part_of_speech = "verb"
-scope = "Whether a Synodal supine is normatively licensed and, if so, its complete formation."
+scope = "Closed Russian/Synodal-recension boundary for the historically merged supine category."
 profiles = ["abstract", "expanded", "liturgical"]
-features = ["system=supine", "formation=source-defined"]
-subtypes = ["supine"]
+features = ["system=supine", "target-status=historically-merged-with-infinitive", "compatibility=caller-explicit-cell-only"]
+subtypes = ["absent-target-supine", "caller-supplied-provider-exact-or-irregular-compatibility"]
 verb_systems = ["supine"]
 realization = "synthetic"
-state = "source-review-open"
-implementation_kind = "represented-unsupported"
-rule_ids = ["SYN-VERB-SUPINE-REVIEW"]
-sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
-citation = "docs/SYNODAL_MORPHOLOGY.md: target-recension normative inventory pending."
-required_metadata = ["normative category decision", "formation inputs if licensed"]
-valid_inventory = "None if absent; otherwise the complete source-defined contract."
-invalid_inventory = "Borrowing the OCS -ти → -тъ rule without a Synodal source."
-implementation = ["crates/synodal-church-slavonic/src/kernel.rs"]
-tests = ["crates/synodal-church-slavonic/src/spec.rs#unsupported_productive_verb_systems_fail_honestly"]
-evidence_status = "open normative source review"
-gap = "Finish source discovery and encode either productive-complete or absent-from-recension with citations."
+state = "absent-from-recension"
+implementation_kind = "historically-invalid-target-category-with-explicit-caller-cell-compatibility"
+rule_ids = ["SYN-VERB-SUPINE-ABSENT-ALYPY-143"]
+sources = ["alypy-gamanovich-grammar-web-2023", "pletneva-kravetsky-church-slavonic-2005", "izotov-ocs-church-slavonic-2001", "synodal-target-text-union"]
+citation = "Alypy §143.7–8 and n.1; Pletneva and Kravetsky lesson 6 §II; Izotov 2001 p. 73; exhaustive target-registry invariant."
+required_metadata = ["an explicit caller-supplied provider exact or irregular compatibility form when preserving an external source category"]
+valid_inventory = "No bundled target cells. GrammarCell::Supine and VerbSystem::Supine remain represented for lossless source interoperability; only an explicit caller provider-exact or irregular cell can realize one."
+invalid_inventory = "Every productive Russian/Synodal supine request; every bundled target exact or held-out supine cell; and importing the OCS -ти/-щи → -тъ/-щь rule."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/handles.rs", "crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/provider.rs", "crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic-extractor/src/lib.rs"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems", "crates/synodal-church-slavonic/src/spec.rs#absent_and_unsupported_productive_verb_systems_fail_honestly", "crates/synodal-church-slavonic/src/provider.rs#exact_provider_supine_precedes_the_absent_target_category", "crates/synodal-church-slavonic-extractor/src/lib.rs#target_registry_rejects_the_historically_merged_supine_category"]
+evidence_status = "The target grammars use the infinitive for the motion-purpose function and explicitly identify the supine as ancient; the comparative grammar states that Russian history merged supine and infinitive and that Church Slavonic grammars normally do not distinguish the category. The generated target registry and held-out evaluation contain zero supine cells."
+rationale = "Alypy and Pletneva–Kravetsky directly describe the Synodal motion-purpose construction with infinitives, while Alypy's note assigns the supine only to the ancient language. Izotov independently states the historical merger. A typed historically invalid result prevents OCS surface transfer while preserving explicit exact-first caller seams for external source adapters that must retain the obsolete label."
 
 [[system]]
 id = "syn.verb.participle"
@@ -989,7 +989,7 @@ required_metadata = ["verbal-noun stem/suffix formation", "noun declension", "ge
 valid_inventory = "Every resulting noun cell when the closed formation is licensed."
 invalid_inventory = "Unrestricted lexical derivation and guessed suffixes."
 implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/kernel.rs"]
-tests = ["crates/synodal-church-slavonic/src/spec.rs#unsupported_productive_verb_systems_fail_honestly"]
+tests = ["crates/synodal-church-slavonic/src/spec.rs#absent_and_unsupported_productive_verb_systems_fail_honestly"]
 evidence_status = "typed metadata seam without productive realization"
 gap = "Review the target grammar's suffix/class contracts and implement the closed formations without expanding into unrestricted derivation."
 

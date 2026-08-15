@@ -18,6 +18,13 @@ pub(crate) enum ProductiveLexeme<'a> {
     Verb(&'a VerbLexeme),
 }
 
+pub(crate) fn absent_synodal_supine() -> Error {
+    Error::HistoricallyInvalidCell {
+        reason: "the Russian/Synodal recension has no distinct supine: the historical category merged with the infinitive, including in motion-purpose constructions"
+            .into(),
+    }
+}
+
 pub(crate) fn generate_productive(
     lexeme: ProductiveLexeme<'_>,
     cell: GrammarCell,
@@ -59,9 +66,7 @@ pub(crate) fn generate_productive(
         (ProductiveLexeme::Verb(lexeme), GrammarCell::Participle(cell)) => {
             decline_participle(lexeme, cell, profile)
         }
-        (ProductiveLexeme::Verb(_), GrammarCell::Supine) => Err(Error::UnsupportedCell {
-            reason: "the Synodal supine inventory remains under normative review".into(),
-        }),
+        (ProductiveLexeme::Verb(_), GrammarCell::Supine) => Err(absent_synodal_supine()),
         (ProductiveLexeme::Verb(_), GrammarCell::VerbalNoun(_)) => {
             Err(Error::UnsupportedCell {
                 reason: "productive verbal nouns require a reviewed realization rule in addition to lexical suffix metadata".into(),

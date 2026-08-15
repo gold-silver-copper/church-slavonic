@@ -255,8 +255,10 @@ assert_eq!(form.primary_text(), "мꙋ́драгѡ");
 Direct lemma-plus-dimension functions include `noun`, `long_adjective`,
 `short_adjective`, `present`, `imperfect`, `aorist`, `imperative`, `infinitive`,
 `l_participle`, `pronoun`, `determiner`, `numeral`, `participle`, `supine`, and
-`verbal_noun`. Conceptually represented but unsupported cells return a typed
-error; they never become placeholders or plausible guesses.
+`verbal_noun`. The distinct target supine is historically invalid (with
+explicit caller provider-exact and irregular interoperability seams);
+conceptually represented but unsupported cells return a typed error. Neither
+becomes a placeholder or plausible guess.
 
 `Noun`, `Adjective`, `Verb`, `Pronoun`, `Determiner`, `Numeral`, and `Participle`
 resolve one stable identity, accept a caller-configured `Inflector`, expose honest

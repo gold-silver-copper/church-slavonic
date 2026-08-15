@@ -468,7 +468,10 @@ impl VerbLexeme {
                     missing.push(MetadataField::ParticipleFormation);
                 }
             }
-            VerbSystem::Supine => missing.push(MetadataField::SupineStem),
+            // The Russian/Synodal target has no productive supine. An empty
+            // list means there is no principal part a caller can add to enable
+            // the historically absent category.
+            VerbSystem::Supine => {}
             VerbSystem::VerbalNoun { .. } => {
                 if self.verbal_noun.is_none() {
                     missing.push(MetadataField::VerbalNounStem);

@@ -16,7 +16,7 @@ Corpus coverage is not the optimization target. The frozen corpus checkpoint rem
 
 ## Capability summary
 
-The matrix contains 81 reviewed system/subtype rows: 73 productive rows, 3 rows involving exact tables, 2 explicit irregular rows, and 2 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
+The matrix contains 81 reviewed system/subtype rows: 73 productive rows, 3 rows involving exact tables, 2 explicit irregular rows, and 1 unsupported row. Counts describe engine contracts, not corpus forms or tokens.
 
 The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. Every row records its target recension, valid and invalid inventory, required metadata, alternations, accent contract, source citation, golden/boundary example, implementation, test, and typed failure.
 
@@ -85,7 +85,7 @@ The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. 
 | participle | past-active-short | productive | `SYN-VERB-PARTICIPLE-PAST-ACTIVE-SHORT-ALYPY-96-98` | 63 canonical cells; singular/dual/plural; six cases; accusative animacy | independent short stem; PastConsonant/PastVowel/PastIotated formation | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §96 formation and §98 complete declension | `HistoricallyInvalidCell / ContradictoryMetadata` |
 | verb | simple-future | exact-only | `SYN-VERB-FUTURE-EXACT` | reviewed exact table cells | stable lexeme identity | exact printed table | Alypy Gamanovich grammar lexeme-specific sections | `UnsupportedCell` |
 | verb | finite-past-underspecified | closed-source-normalization-audit | `SYN-VERB-PAST-AUDIT-ALYPY-86-87` | caller-supplied exact source tags | explicit source tag | exact caller-supplied form | exhaustive historical decision ledger Alypy §§86–87; Pletneva–Kravetsky lessons 5–6 | `UnsupportedCell` |
-| verb | supine | unsupported | `SYN-VERB-SUPINE-UNSUPPORTED` | none | independent sourced formation not established | unknown | source review open no complete Synodal input/output contract | `UnsupportedCell` |
+| verb | supine | absent-from-recension | `SYN-VERB-SUPINE-ABSENT-ALYPY-143` | caller provider-exact or irregular compatibility cell only | explicit caller cell for external source interoperability | caller exact presentation only | Alypy Gamanovich grammar; Pletneva–Kravetsky; Izotov Alypy §143.7–8 n.1; Pletneva–Kravetsky lesson 6 §II; Izotov p. 73 | `HistoricallyInvalidCell` |
 | verb | verbal-noun | unsupported | `SYN-VERB-VERBAL-NOUN-UNSUPPORTED` | none | stem tuple is represented but realization rule is not established | unknown | source review open no complete Synodal suffix/declension contract | `UnsupportedCell` |
 | provider | injectable-lexicon | productive-api | `SYN-LEXICON-PROVIDER-V10` | built-in or application supplied noun/adjective/verb identities and typed cells | stable ID; part of speech; source ID; LexemeSpec; optional ordered exact forms | explicit provider accent paradigm or exact liturgical form required for liturgical | v0.10 resolver design provider contract | `ProviderConflict / AmbiguousLexeme` |
 | api | ordered-batch | productive-api | `SYN-BATCH-V10` | one retained outcome per ordered request | lemma or stable ID; typed GrammarCell | inherits each request's accent contract | v0.10 API design batch result contract | `underlying typed ErrorCode` |
@@ -157,7 +157,6 @@ cargo xtask check-all
 
 ## Remaining source blockers
 
-- **verb / supine:** all cells Failure: `UnsupportedCell`.
 - **verb / verbal-noun:** all cells Failure: `UnsupportedCell`.
 
 The capability table distinguishes complete productive systems, closed source-normalization categories, exact irregular inventories, and remaining source blockers. The engine does not claim complete Church Slavonic support until the repository-wide completion matrix is final.

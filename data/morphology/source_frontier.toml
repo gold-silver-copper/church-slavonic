@@ -563,9 +563,9 @@ authority_justification = "Principal pinned normative anchor for the target Syno
 license = "Ponomar site and underlying edition notices must be preserved"
 redistribution = "evaluation-only"
 upstream_lineage = ["Alypy 1991 edition", "Ponomar corrected web transcription"]
-reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–83 present formation and lexical principal parts", "§84 simple future and contextual exceptions", "§85 compound future", "§§86–104 remaining verb systems and irregular inventory", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
+reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–83 present formation and lexical principal parts", "§84 simple future and contextual exceptions", "§85 compound future", "§§86–104 remaining verb systems and irregular inventory", "§143.7–8 and note 1: target motion-purpose infinitive and ancient-language-only supine boundary", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
 rule_ids = ["SYN-*"]
-impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Section 84 closes productive simple-future morphology as the complete present-shaped paradigm of independently typed perfective verbs, while preserving its listed contextual non-perfective exceptions as exact evidence; §§81, 103, and 104 supply irregular future cells. Sections 86–87 provide the normative aorist/imperfect distinction used to close every formerly underspecified finite-past row. Supine, verbal-noun, accent, and wider analytic reviews stay open."
+impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Section 84 closes productive simple-future morphology as the complete present-shaped paradigm of independently typed perfective verbs, while preserving its listed contextual non-perfective exceptions as exact evidence; §§81, 103, and 104 supply irregular future cells. Sections 86–87 provide the normative aorist/imperfect distinction used to close every formerly underspecified finite-past row. Section 143.7–8 uses the infinitive for target motion-purpose constructions and note 1 assigns the supine to the ancient language, closing the distinct target supine as absent. Verbal-noun, accent, and wider analytic reviews stay open."
 conflicts = ["Lexeme-specific variants must not be generalized to a class."]
 access_status = "pinned-local"
 
@@ -590,10 +590,37 @@ authority_justification = "The authors are Church Slavonic researchers at the Vi
 license = "copyrighted teaching grammar; bibliographic facts and short rule references only"
 redistribution = "metadata-only"
 upstream_lineage = ["Slavonic Bible", "Russian Orthodox liturgical books"]
-reviewed_sections = ["lesson 5 complete aorist tables, exceptional -тъ third singular, and contextual examples", "lesson 6 imperfect formation and aorist/imperfect homography", "lesson 13 simple future", "lesson 13 compound future table 36"]
-rule_ids = ["SYN-VERB-AORIST-VOWEL-ALYPY-86", "SYN-VERB-AORIST-CONSONANT-ALYPY-86", "SYN-VERB-IMPERFECT-H-ALYPY-87", "SYN-VERB-IMPERFECT-YAH-ALYPY-87", "SYN-VERB-IMPERFECT-AH-ALYPY-87", "SYN-VERB-PAST-AUDIT-ALYPY-86-87", "SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84", "SYN-PHRASE-FUTURE-ALYPY-85", "SYN-PHRASE-WIDER-PENDING"]
-impact = "Independently confirms the separate aorist and imperfect systems, complete person/number endings, exceptional -тъ only in third-singular aorists such as прїѧтъ, and the contextual resolution required for homographic -а-/‑ѣ-stem forms. Those constraints close the 73-row historical finite-past audit with no target past category. The manual also confirms that simple future and present share one complete person/number ending series and that perfective aspect is the productive future cue, while warning that Church Slavonic assigns future readings contextually to some formally present imperfective forms. Its complete compound-future table inventories имати, хотѣти, начати, and быти for the wider analytic review."
+reviewed_sections = ["lesson 5 complete aorist tables, exceptional -тъ third singular, and contextual examples", "lesson 6 imperfect formation and aorist/imperfect homography", "lesson 6 §II infinitive constructions of purpose after motion, sending, choosing, and related verbs", "lesson 13 simple future", "lesson 13 compound future table 36"]
+rule_ids = ["SYN-VERB-AORIST-VOWEL-ALYPY-86", "SYN-VERB-AORIST-CONSONANT-ALYPY-86", "SYN-VERB-IMPERFECT-H-ALYPY-87", "SYN-VERB-IMPERFECT-YAH-ALYPY-87", "SYN-VERB-IMPERFECT-AH-ALYPY-87", "SYN-VERB-PAST-AUDIT-ALYPY-86-87", "SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84", "SYN-VERB-SUPINE-ABSENT-ALYPY-143", "SYN-PHRASE-FUTURE-ALYPY-85", "SYN-PHRASE-WIDER-PENDING"]
+impact = "Independently confirms the separate aorist and imperfect systems, complete person/number endings, exceptional -тъ only in third-singular aorists such as прїѧтъ, and the contextual resolution required for homographic -а-/‑ѣ-stem forms. Those constraints close the 73-row historical finite-past audit with no target past category. Lesson 6 §II independently describes the target motion-purpose function with -ти/-щи infinitives after motion and related verbs and supplies examples from the Synodal Bible, corroborating Alypy's ancient-only supine boundary. The manual also confirms that simple future and present share one complete person/number ending series and that perfective aspect is the productive future cue, while warning that Church Slavonic assigns future readings contextually to some formally present imperfective forms. Its complete compound-future table inventories имати, хотѣти, начати, and быти for the wider analytic review."
 conflicts = ["The manual describes the aspect/tense association as a tendency rather than an exceptionless law; the implementation therefore does not extrapolate future readings for non-perfective verbs without exact contextual evidence.", "For -а-/‑ѣ-stem forms outside the differing third-singular and third-plural endings, surface shape alone cannot distinguish aorist from imperfect; the audit therefore requires passage context rather than a suffix-only heuristic."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "izotov-ocs-church-slavonic-2001"
+title = "Старославянский и церковнославянский языки: грамматика, упражнения, тексты"
+author_editor = "A. I. Izotov"
+edition_revision = "Moscow 2001 edition, 240 printed pages, ISBN 5-7552-0045-9; 232-page full-text PDF"
+publication_date = "2001"
+publisher_institution = "Institute of General Secondary Education, Russian Academy of Education, Moscow"
+stable_url = "https://xn--90anb0a.xn--p1ai/images/Bibl/CSJa.pdf"
+retrieved_at = "2026-08-15"
+sha256 = "fe683c2a9cf67da05e6f69ad38bcf6240529d604331c15e71c0b651e21089f31"
+languages = ["Russian", "Old Church Slavonic", "Church Slavonic"]
+periods = ["Old Church Slavonic", "Russian-recension Church Slavonic"]
+recensions = ["old-church-slavonic", "synodal-russian"]
+orthographies = ["normalized Old Church Slavonic", "Russian-recension Church Slavonic"]
+source_type = "comparative teaching grammar"
+epistemic_roles = ["diachronic-category-boundary", "morphological-crosscheck"]
+authority_tier = 2
+authority_justification = "The grammar explicitly compares Old Church Slavonic with the Church Slavonic language of Russian Orthodox worship and states the historical fate of the supine category."
+license = "copyrighted teaching grammar; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["title and bibliographic metadata", "p. 73 Infinitive and Supine: OCS formation/function and Russian/Church Slavonic merger boundary"]
+rule_ids = ["SYN-VERB-SUPINE-ABSENT-ALYPY-143"]
+impact = "Page 73 distinguishes the OCS -тъ/-щь motion-purpose supine from the infinitive, then states that Russian history eliminated their distinction and that Church Slavonic grammars normally do not identify a supine. This independently closes the Russian/Synodal target category as historically merged rather than productively underdocumented."
+conflicts = ["Its compact comparative statement does not define exact source-interoperability behavior; the public API therefore retains a caller-exact compatibility seam without admitting any bundled target cell."]
 access_status = "accessible-full-text"
 
 [[source]]
@@ -943,3 +970,21 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "Alypy §§86–87 and Pletneva–Kravetsky lessons 5–6 were checked against every one of the 73 historical v0.6 finite-past admissions and their passage-disjoint target witnesses. Sixty-four rows are directly aorist, four -ше rows are imperfect, and глаголахъ requires both analyses because Acts 25:20 is imperfect while Daniel 10:16 and an independent Deuteronomy 1:29 witness are aorist. Four admissions are invalid: two живи rows are predicates or imperatives, дѣла is nominal, and a source-adapter second-singular прїѧтъ contradicts the manual's third-singular-only -тъ rule and both cited contexts. The runtime now has 65 aorist and five imperfect rows from this set, zero target past rows, and an exhaustive validator-locked decision ledger. No additional eligible target-recension grammar was found; this contract-changing pass does not count toward convergence."
+
+[[discovery_pass]]
+id = "synodal-supine-frontier-pass-11"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "German", "Church Slavonic"]
+queries = [
+  "церковнославянский язык супин утрачен инфинитив русский извод грамматика",
+  "русский церковнославянский супин форма на тъ грамматика",
+  "Church Slavonic Russian recension supine infinitive grammar",
+  "Kirchenslawisch Supinum russische Redaktion Infinitiv",
+]
+catalogs = ["Ponomar Alypy grammar", "Azbyka full-text Pletneva–Kravetsky manual", "library bibliographic catalogs", "Izotov comparative grammar PDF", "locked Synodal target registry and held-out evaluation", "multilingual scholarly discovery indexes"]
+new_sources = ["izotov-ocs-church-slavonic-2001"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "Alypy §143.7–8 describes the target motion-purpose function with the infinitive and note 1 explicitly assigns the supine to the ancient language. Pletneva–Kravetsky lesson 6 §II independently gives the same target construction with -ти/-щи infinitives across multiple Synodal passages. Izotov p. 73 supplies the diachronic explanation: Russian history merged supine and infinitive, and Church Slavonic grammars normally do not distinguish a supine. The historical v0.6 видитъ candidate is finite present in both inspected target contexts, while the generated target registry and held-out evaluation contain no supine cells. The engine now returns HistoricallyInvalidCell for productive target requests, forbids bundled target supine data, retains only caller-supplied exact source interoperability, and never imports the OCS -тъ/-щь rule. This contract-changing pass does not count toward convergence."

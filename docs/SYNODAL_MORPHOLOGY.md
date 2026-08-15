@@ -119,6 +119,7 @@ reusable accent paradigm; expanded rules never invent stress.
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
 | Imperative | `SYN-VERB-IMPERATIVE-ALYPY-93` | Alypy §93 | independent base and `first-unpalatalized`/`i-series` formation |
 | Infinitive | `SYN-VERB-INFINITIVE-LEXICAL` | Alypy §79 | resolved target lemma; no invented infinitive stem |
+| Supine boundary | `SYN-VERB-SUPINE-ABSENT-ALYPY-143` | Alypy §143.7–8 n.1; Pletneva–Kravetsky lesson 6 §II; Izotov p. 73 | no distinct productive target category; explicit caller provider-exact or irregular compatibility only |
 | l-participle | `SYN-VERB-LPART-ALYPY-97` | Alypy §97 | independent base plus typed gender and number |
 | Declined long active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-ALYPY-{95,96}` | Alypy §§95–96 | tense/voice-specific full-form stem and adjective class |
 | Declined short active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-SHORT-ALYPY-{95,96}-98` | Alypy §§95–96 citation edges and §98 complete declension | independent short stem plus `PresentFirstUnpalatalized`, `PresentFirstPalatalized`, `PresentSecond`, `PresentAfterSibilant`, `PastConsonant`, `PastVowel`, or `PastIotated`; source-ordered masculine/neuter citation variants; 63 valid canonical cells; vocative invalid |
@@ -271,6 +272,27 @@ unsupported behavior. The underlying typed `Error` remains available on every
 row. `Error::code`, `ParadigmRow::error_code`, `Paradigm::successes`, and
 `Paradigm::with_status` provide stable machine-readable inspection without
 parsing English diagnostics.
+
+### Historically merged supine boundary
+
+The Russian/Synodal recension has no distinct productive supine. Alypy §143.7–8
+uses the infinitive after motion and related verbs to express purpose; its note 1
+assigns the supine construction to the ancient language. Pletneva–Kravetsky
+lesson 6 §II independently teaches the same target construction with `-ти` and
+`-щи` infinitives in Synodal passages. Izotov p. 73 gives the diachronic
+boundary explicitly: Russian history merged the supine and infinitive, and
+Church Slavonic grammars normally do not distinguish a supine.
+
+`GrammarCell::Supine` and `VerbSystem::Supine` remain in the public type system
+so source adapters can preserve an explicitly labeled external category. A
+productive target request returns `HistoricallyInvalidCell`, and the bundled
+target registry and held-out evaluation are guarded against every `supine`
+cell. Missing-metadata diagnostics do not request a `SupineStem`, because no
+principal part can enable an absent target category. An application-owned
+provider may still supply an exact cell, and an explicit specification may
+supply the same cell as a caller irregular override. Exact-first resolution
+returns that caller prediction without making it Synodal evidence. The OCS
+`-ти/-щи` → `-тъ/-щь` rule is never imported into this target.
 
 ## Injectable lexical providers and batches
 
@@ -441,8 +463,10 @@ The closed grammar enums represent these gaps so paradigms retain failures:
   predicate nominatives licensed by Alypy §§59, 125, and 128;
 - automatic participle stem formation from an undifferentiated verb stem;
   short active participles require an independent stem and typed formation;
-- the supine pending a target-recension normative inventory, productive verbal
-  nouns pending lexical suffix metadata, and unregistered irregular verbs;
+- productive verbal nouns pending lexical suffix metadata and unregistered
+  irregular verbs; the separately represented supine is closed as historically
+  merged with the infinitive and fails with `HistoricallyInvalidCell` unless a
+  caller supplies an explicit compatibility cell;
 - accent paradigms beyond the four reviewed lexical rules, complete breathing/positional-letter
   realization, and abbreviation families beyond the individually typed
   contraction cells; and

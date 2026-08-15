@@ -545,12 +545,12 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
 #[cfg(test)]
 mod tests {
     use synodal_church_slavonic_core::{
-        Animacy, Case, Error, ErrorCode, FormSource, Gender, GrammarCell, NounCell, NounDeclension,
-        NounNumberInventory, Number,
+        Animacy, Aspect, Case, Error, ErrorCode, FormSource, Gender, GrammarCell, NounCell,
+        NounDeclension, NounNumberInventory, Number, VerbConjugation,
     };
 
     use super::*;
-    use crate::{NounSpec, SpecificationSource};
+    use crate::{NounSpec, SpecificationSource, VerbSpec};
 
     fn source(label: &str) -> SpecificationSource {
         SpecificationSource::new(
@@ -657,6 +657,62 @@ mod tests {
             productive.primary().source,
             FormSource::CallerSpecifiedPrediction { .. }
         ));
+    }
+
+    #[test]
+    fn exact_provider_supine_precedes_the_absent_target_category() {
+        let spec = VerbSpec::builder(
+            "нести",
+            Aspect::Imperfective,
+            VerbConjugation::FirstUnpalatalized,
+            source("supine-compatibility"),
+        )
+        .expect("valid verb")
+        .build()
+        .expect("valid verb specification");
+        assert!(matches!(
+            spec.form(GrammarCell::Supine),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+
+        let entry = ProviderLexeme::new(
+            "application:verb:supine-compatibility",
+            "application-test-lexicon",
+            LexemeSpec::from(spec),
+        )
+        .expect("valid provider entry")
+        .with_exact_form(
+            SpecifiedForm::new(
+                GrammarCell::Supine,
+                "нестъ",
+                None::<String>,
+                source("explicit-supine"),
+            )
+            .expect("valid exact compatibility form"),
+        )
+        .expect("valid exact provider form");
+        let lexicon = Lexicon::from_provider(
+            Inflector::default(),
+            &InMemoryLexemeProvider::new([entry]).expect("valid provider"),
+        )
+        .expect("valid lexicon");
+        let id = LexemeId::from("application:verb:supine-compatibility");
+
+        let exact = lexicon
+            .form_by_id(&id, GrammarCell::Supine)
+            .expect("caller exact compatibility form");
+        assert_eq!(exact.primary_text(), "нестъ");
+        assert!(matches!(
+            &exact.primary().source,
+            FormSource::CallerSpecifiedPrediction { rule, .. }
+                if rule.as_str() == "SYN-PROVIDER-EXACT-OVERRIDE"
+        ));
+        assert!(
+            lexicon
+                .capabilities_by_id(&id)
+                .expect("capabilities")
+                .supine
+        );
     }
 
     #[test]

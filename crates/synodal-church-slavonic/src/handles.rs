@@ -497,7 +497,6 @@ fn missing_metadata(summary: &LexemeSummary) -> Vec<MetadataField> {
         (MetadataField::AoristStem, "aorist-stem"),
         (MetadataField::ImperativeStem, "imperative-stem"),
         (MetadataField::LParticipleStem, "l-participle-stem"),
-        (MetadataField::SupineStem, "supine-stem"),
         (MetadataField::ParticipleStem, "participle-stem"),
         (MetadataField::VerbalNounStem, "verbal-noun-stem"),
     ] {

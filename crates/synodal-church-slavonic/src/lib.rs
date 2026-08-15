@@ -1545,6 +1545,16 @@ mod tests {
         assert!(!capabilities.supine);
         assert!(!capabilities.verbal_noun);
         assert!(
+            verb.missing_principal_parts(VerbSystem::Supine)
+                .expect("represented absent system")
+                .is_empty()
+        );
+        assert!(!verb.missing_metadata().contains(&MetadataField::SupineStem));
+        assert!(matches!(
+            supine("быти"),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+        assert!(
             !verb
                 .missing_metadata()
                 .contains(&core::MetadataField::AccentClass)
@@ -1584,6 +1594,10 @@ mod tests {
         assert!(reclassified_past.capabilities().aorist);
         assert!(!reclassified_past.capabilities().future);
         assert!(!reclassified_past.capabilities().infinitive);
+        assert!(matches!(
+            Inflector::default().form_by_id(reclassified_past.id(), GrammarCell::Supine),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
 
         let sparse_exact = Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti"))
             .expect("reviewed sparse exact verb");

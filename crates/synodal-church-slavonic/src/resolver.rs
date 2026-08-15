@@ -7,7 +7,7 @@ use synodal_church_slavonic_core::{
 
 use crate::{
     DefectKind, Inflector, LexemeSpec, SpecificationSource, SpecifiedForm,
-    kernel::{ProductiveLexeme, generate_productive},
+    kernel::{ProductiveLexeme, absent_synodal_supine, generate_productive},
     registry,
     spec::LexemeSpecInner,
 };
@@ -276,6 +276,9 @@ pub(crate) fn resolve_cell(
     }
     if !exact.is_empty() {
         return exact_forms(inflector, id, &exact_key, &exact);
+    }
+    if cell == GrammarCell::Supine {
+        return Err(absent_synodal_supine());
     }
     if registry::is_exact_only(id) {
         return Err(Error::UnsupportedCell {
