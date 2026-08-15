@@ -868,6 +868,10 @@ pub enum RequestedCell {
         value: u16,
         cell: CompoundCardinalCell,
     },
+    CompoundOrdinal {
+        value: u16,
+        cell: AdjectiveCell,
+    },
     Comparative(AdjectiveCell),
     FiniteVerb(FiniteVerbCell),
     Imperative(ImperativeCell),

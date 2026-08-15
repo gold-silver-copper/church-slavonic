@@ -93,6 +93,34 @@ authority_roles = ["lexical", "morphological"]
 upstream_lineage = []
 
 [[source]]
+id = "gorshkov-ocs-2002"
+name = "A. I. Gorshkov, Old Church Slavonic (Ancient Church Slavonic) Language"
+url = "https://djvu.online/file/Y91FdTzILrtfZ"
+revision = "AST/Astrel 2002 edition, ISBN 5-17-014194-7 / 5-271-03568-9"
+source_recension = "old-church-slavonic"
+content_kind = "grammar"
+format = "web-scan/ocr"
+license = "Copyrighted teaching grammar; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+download_status = "metadata-only: full scan reviewed through the stable host; no source bytes committed"
+authority_roles = ["morphological", "construction-inventory", "lexical-example"]
+upstream_lineage = []
+
+[[source]]
+id = "leuta-havryliuk-ocs-2018"
+name = "O. I. Leuta and O. R. Havryliuk, Old Church Slavonic"
+url = "https://files.znu.edu.ua/files/Bibliobooks/Inshi84/0064400.pdf"
+revision = "NPU Dragomanov 2018 edition, ISBN 978-966-931-183-2"
+source_recension = "old-church-slavonic"
+content_kind = "grammar-and-primary-text-examples"
+format = "pdf"
+license = "Copyright 2018 O. I. Leuta, O. R. Havryliuk, and NPU Dragomanov; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+download_status = "metadata-only: institution-hosted full text reviewed; no source bytes committed"
+authority_roles = ["morphological", "construction-inventory", "primary-text-attestation"]
+upstream_lineage = []
+
+[[source]]
 id = "ud-ocs-proiel-r2.18"
 name = "UD Old Church Slavonic PROIEL"
 url = "https://github.com/UniversalDependencies/UD_Old_Church_Slavonic-PROIEL"

@@ -143,6 +143,167 @@ pub struct RealizedCardinal {
     analyses: Vec<CardinalPhraseAnalysis>,
 }
 
+/// The source-described outermost construction used by one compound-ordinal
+/// analysis.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum OrdinalComposition {
+    /// An inflected simple ordinal followed by invariant `на десѧте`.
+    AnalyticTeen,
+    /// One historically compounded ordinal-adjective stem.
+    FusedStem,
+    /// An outermost join of agreeing ordinal components without a conjunction.
+    Asyndetic,
+    /// An outermost join of agreeing ordinal components by `и`.
+    ConjunctionI,
+    /// An outermost join of agreeing ordinal components by `ти`.
+    ConjunctionTi,
+}
+
+/// One correlated structural realization of a compound ordinal.
+///
+/// When an ordinal has more than two chunks, [`Self::construction`] describes
+/// the outermost join; nested lower-chunk connectors remain explicit tokens.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OrdinalPhraseAnalysis {
+    pub construction: OrdinalComposition,
+    pub tokens: Vec<PhraseToken>,
+}
+
+impl OrdinalPhraseAnalysis {
+    /// Render each component's source-first form in token order.
+    pub fn primary_text(&self) -> String {
+        self.tokens
+            .iter()
+            .map(|token| token.forms.primary_text())
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+}
+
+/// A compound ordinal whose adjective components retain independent evidence.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RealizedOrdinal {
+    value: u16,
+    cell: AdjectiveCell,
+    analyses: Vec<OrdinalPhraseAnalysis>,
+}
+
+impl RealizedOrdinal {
+    pub fn new(
+        value: u16,
+        cell: AdjectiveCell,
+        analyses: Vec<OrdinalPhraseAnalysis>,
+    ) -> Result<Self, InflectionError> {
+        if value == 0 || analyses.is_empty() {
+            return Err(InflectionError::InvalidInput {
+                reason: "a realized ordinal requires a positive value and an analysis".to_string(),
+            });
+        }
+        if analyses
+            .iter()
+            .any(|analysis| !valid_ordinal_analysis(analysis))
+        {
+            return Err(InflectionError::InvalidInput {
+                reason: "an ordinal analysis has an invalid component sequence".to_string(),
+            });
+        }
+        Ok(Self {
+            value,
+            cell,
+            analyses,
+        })
+    }
+
+    pub const fn value(&self) -> u16 {
+        self.value
+    }
+
+    pub const fn cell(&self) -> AdjectiveCell {
+        self.cell
+    }
+
+    pub fn analyses(&self) -> &[OrdinalPhraseAnalysis] {
+        &self.analyses
+    }
+
+    /// Render the deterministic first structural analysis and token variants.
+    pub fn primary_text(&self) -> String {
+        self.analyses[0].primary_text()
+    }
+}
+
+fn valid_ordinal_tokens(tokens: &[PhraseToken]) -> bool {
+    if tokens.is_empty()
+        || tokens
+            .first()
+            .is_none_or(|token| token.role != PhraseRole::Numeral)
+        || tokens
+            .last()
+            .is_none_or(|token| token.role != PhraseRole::Numeral)
+    {
+        return false;
+    }
+
+    let mut index = 0;
+    while index < tokens.len() {
+        if tokens[index].role != PhraseRole::Numeral {
+            return false;
+        }
+        index += 1;
+
+        if index < tokens.len() && tokens[index].role == PhraseRole::Preposition {
+            index += 1;
+            if index >= tokens.len() || tokens[index].role != PhraseRole::Numeral {
+                return false;
+            }
+            index += 1;
+        }
+
+        if index == tokens.len() {
+            return true;
+        }
+        if tokens[index].role == PhraseRole::Conjunction {
+            index += 1;
+            if index == tokens.len() {
+                return false;
+            }
+        } else if tokens[index].role != PhraseRole::Numeral {
+            return false;
+        }
+    }
+    true
+}
+
+fn valid_ordinal_analysis(analysis: &OrdinalPhraseAnalysis) -> bool {
+    if !valid_ordinal_tokens(&analysis.tokens) {
+        return false;
+    }
+
+    let roles = analysis
+        .tokens
+        .iter()
+        .map(|token| token.role)
+        .collect::<Vec<_>>();
+    match analysis.construction {
+        OrdinalComposition::AnalyticTeen => {
+            roles
+                == [
+                    PhraseRole::Numeral,
+                    PhraseRole::Preposition,
+                    PhraseRole::Numeral,
+                ]
+        }
+        OrdinalComposition::FusedStem => roles == [PhraseRole::Numeral],
+        OrdinalComposition::Asyndetic => roles.get(1) == Some(&PhraseRole::Numeral),
+        OrdinalComposition::ConjunctionI => analysis.tokens.get(1).is_some_and(|token| {
+            token.role == PhraseRole::Conjunction && token.forms.primary_text() == "и"
+        }),
+        OrdinalComposition::ConjunctionTi => analysis.tokens.get(1).is_some_and(|token| {
+            token.role == PhraseRole::Conjunction && token.forms.primary_text() == "ти"
+        }),
+    }
+}
+
 impl RealizedCardinal {
     pub fn new(
         value: u16,
@@ -388,6 +549,304 @@ fn third_ordinal_corpus_variant(cell: AdjectiveCell) -> Option<&'static str> {
         (AdjectiveForm::Long, Dative, Singular, Masculine, _) => Some("третию҄моу"),
         (AdjectiveForm::Long, Accusative, Singular, Neuter, _) => Some("третиее"),
         _ => None,
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct CompoundOrdinalStem {
+    stem: &'static str,
+    source_listed: bool,
+}
+
+/// Decline one historically compounded ordinal-adjective head.
+///
+/// The accepted values are the fused teen stems, exact decades, exact
+/// hundreds, and thousand. Values between those heads are assembled by the
+/// facade as structured phrases so their independently inflected components
+/// retain provenance.
+pub fn decline_compound_ordinal_stem(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    let stems = compound_ordinal_stems(value).ok_or_else(|| InflectionError::InvalidInput {
+        reason: "a compound-ordinal stem must be a reviewed teen, decade, hundred, or thousand"
+            .to_string(),
+    })?;
+    let rule_id = compound_ordinal_rule_id(value);
+    let citation_cell = cell.form == AdjectiveForm::Short
+        && cell.case == Case::Nominative
+        && cell.number == Number::Singular
+        && cell.gender == Gender::Masculine;
+
+    let mut variants = Vec::with_capacity(stems.len() + 2);
+    for stem in stems {
+        let citation = format!("{}ъ", stem.stem);
+        let mut prediction = crate::adjective::decline_stem(stem.stem, AdjectiveClass::Hard, cell)?;
+        prediction.trace.push(RuleStep {
+            rule_id,
+            before: citation,
+            after: prediction.text.clone(),
+            reason: "apply the source-reviewed compound-ordinal stem and adjective agreement",
+        });
+        prediction.rule_id = rule_id;
+        variants.push(NumeralVariant {
+            prediction,
+            status: if stem.source_listed {
+                if citation_cell {
+                    NumeralVariantStatus::ReviewedTable
+                } else {
+                    NumeralVariantStatus::ProductiveRule
+                }
+            } else {
+                NumeralVariantStatus::ReconstructedRule
+            },
+        });
+    }
+
+    let lemma = compound_ordinal_lemma(value)?;
+    for text in compound_ordinal_corpus_forms(value, cell) {
+        variants.push(NumeralVariant::corpus(
+            text,
+            rule_id,
+            &lemma,
+            "retain the cell-specific manuscript spelling reported by the reviewed source union",
+        ));
+    }
+    Ok(variants)
+}
+
+/// Deterministic source-first citation used for a compound-ordinal head.
+pub fn compound_ordinal_lemma(value: u16) -> Result<String, InflectionError> {
+    compound_ordinal_stems(value)
+        .and_then(|stems| stems.first())
+        .map(|stem| format!("{}ъ", stem.stem))
+        .ok_or_else(|| InflectionError::InvalidInput {
+            reason: "a compound-ordinal lemma requires a reviewed compound head".to_string(),
+        })
+}
+
+fn compound_ordinal_rule_id(value: u16) -> RuleId {
+    match value {
+        11..=19 => RuleId::NumeralOrdinalTeen,
+        20..=90 => RuleId::NumeralOrdinalDecade,
+        100..=900 => RuleId::NumeralOrdinalHundred,
+        1_000 => RuleId::NumeralOrdinalThousand,
+        _ => RuleId::NumeralOrdinalAdditive,
+    }
+}
+
+fn compound_ordinal_stems(value: u16) -> Option<&'static [CompoundOrdinalStem]> {
+    use CompoundOrdinalStem as Stem;
+    match value {
+        11 => Some(&[Stem {
+            stem: "ѥднонадесѧт",
+            source_listed: true,
+        }]),
+        12 => Some(&[
+            Stem {
+                stem: "дъванадесѧтьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "дъванадесѧт",
+                source_listed: true,
+            },
+            Stem {
+                stem: "дъвонадесѧтьн",
+                source_listed: true,
+            },
+        ]),
+        13 => Some(&[Stem {
+            stem: "тринадесѧт",
+            source_listed: true,
+        }]),
+        14 => Some(&[Stem {
+            stem: "четꙑренадесѧт",
+            source_listed: false,
+        }]),
+        15 => Some(&[Stem {
+            stem: "пѧтьнадесѧтьн",
+            source_listed: true,
+        }]),
+        16 => Some(&[Stem {
+            stem: "шестонадесѧт",
+            source_listed: true,
+        }]),
+        17 => Some(&[
+            Stem {
+                stem: "седмънадесѧт",
+                source_listed: true,
+            },
+            Stem {
+                stem: "седмънадесѧтьн",
+                source_listed: true,
+            },
+        ]),
+        18 => Some(&[
+            Stem {
+                stem: "осмонадесѧт",
+                source_listed: true,
+            },
+            Stem {
+                stem: "осмонадесѧтьн",
+                source_listed: true,
+            },
+        ]),
+        19 => Some(&[Stem {
+            stem: "девѧтьнадесѧтьн",
+            source_listed: true,
+        }]),
+        20 => Some(&[
+            Stem {
+                stem: "дъвадесѧтьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "дъвадесѧт",
+                source_listed: true,
+            },
+            Stem {
+                stem: "дъводесѧт",
+                source_listed: true,
+            },
+        ]),
+        30 => Some(&[Stem {
+            stem: "тридесѧтьн",
+            source_listed: true,
+        }]),
+        40 => Some(&[
+            Stem {
+                stem: "четꙑридесѧтьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "четꙑридесѧт",
+                source_listed: true,
+            },
+        ]),
+        50 => Some(&[
+            Stem {
+                stem: "пѧтьдесѧтьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "пѧтьдесѧт",
+                source_listed: true,
+            },
+        ]),
+        60 => Some(&[
+            Stem {
+                stem: "шестьдесѧт",
+                source_listed: true,
+            },
+            Stem {
+                stem: "шестьдесѧтьн",
+                source_listed: false,
+            },
+        ]),
+        70 => Some(&[
+            Stem {
+                stem: "седмьдесѧтьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "седмодесѧтьн",
+                source_listed: true,
+            },
+        ]),
+        80 => Some(&[
+            Stem {
+                stem: "осмьдесѧтьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "осмьдесѧт",
+                source_listed: true,
+            },
+        ]),
+        90 => Some(&[
+            Stem {
+                stem: "девѧтьдесѧтьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "девѧтьдесѧт",
+                source_listed: true,
+            },
+        ]),
+        100 => Some(&[Stem {
+            stem: "сътьн",
+            source_listed: true,
+        }]),
+        200 => Some(&[
+            Stem {
+                stem: "дъвосътьн",
+                source_listed: true,
+            },
+            Stem {
+                stem: "дроугосътьн",
+                source_listed: true,
+            },
+        ]),
+        300 => Some(&[Stem {
+            stem: "трисътьн",
+            source_listed: true,
+        }]),
+        400 => Some(&[Stem {
+            stem: "четꙑрисътьн",
+            source_listed: true,
+        }]),
+        500 => Some(&[Stem {
+            stem: "пѧтьсътьн",
+            source_listed: true,
+        }]),
+        600 => Some(&[Stem {
+            stem: "шестосътьн",
+            source_listed: true,
+        }]),
+        700 => Some(&[Stem {
+            stem: "седмосътьн",
+            source_listed: false,
+        }]),
+        800 => Some(&[Stem {
+            stem: "осмосътьн",
+            source_listed: false,
+        }]),
+        900 => Some(&[Stem {
+            stem: "девѧтосътьн",
+            source_listed: false,
+        }]),
+        1_000 => Some(&[Stem {
+            stem: "тꙑсѧщьн",
+            source_listed: true,
+        }]),
+        _ => None,
+    }
+}
+
+fn compound_ordinal_corpus_forms(value: u16, cell: AdjectiveCell) -> &'static [&'static str] {
+    use Case::*;
+    use Gender::*;
+    use Number::*;
+    match (
+        value,
+        cell.form,
+        cell.case,
+        cell.number,
+        cell.gender,
+        cell.animacy,
+    ) {
+        (11, AdjectiveForm::Long, Genitive, Singular, Masculine, _) => &["ѥднонадесѧтааго"],
+        (18, AdjectiveForm::Long, Accusative, Singular, Neuter, _) => &["осмонадесѧтоѥ"],
+        (19, AdjectiveForm::Long, Locative, Singular, Neuter, _) => &["девꙙтънадесꙙть҆нѣꙿмь"],
+        (20, AdjectiveForm::Long, Dative, Singular, Neuter, _) => &["дъвадесꙙтъноуо̑умоу"],
+        (20, AdjectiveForm::Long, Accusative, Singular, Neuter, _) => {
+            &["двадесꙙтъноѥ", "дводесꙙтъноѥ"]
+        }
+        (70, AdjectiveForm::Long, Accusative, Singular, Neuter, _) => &["седмь҆десꙙтъноѥ"],
+        (100, AdjectiveForm::Long, Genitive, Singular, Neuter, _) => &["сътънааго"],
+        (1_000, AdjectiveForm::Short, Dative, Singular, Masculine, _) => &["тꙑсꙙштъноу"],
+        _ => &[],
     }
 }
 
@@ -1538,6 +1997,147 @@ mod tests {
             let forms = variants(AdjectiveForm::Long, case, gender);
             assert_eq!(forms[1].prediction.text, expected);
             assert_eq!(forms[1].status, NumeralVariantStatus::CorpusAttestation);
+        }
+    }
+
+    #[test]
+    fn compound_ordinal_heads_cover_every_agreement_cell_with_typed_evidence() {
+        let heads = [
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400,
+            500, 600, 700, 800, 900, 1_000,
+        ];
+        for value in heads {
+            let outcomes = AdjectiveCell::all()
+                .map(|cell| {
+                    (
+                        cell,
+                        decline_compound_ordinal_stem(value, cell)
+                            .unwrap_or_else(|error| panic!("{value} {cell:?}: {error}")),
+                    )
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(outcomes.len(), 252, "{value}");
+            assert!(outcomes.iter().all(|(_, variants)| !variants.is_empty()));
+            assert!(
+                outcomes
+                    .iter()
+                    .flat_map(|(_, variants)| variants)
+                    .all(|variant| variant.prediction.rule_id == compound_ordinal_rule_id(value))
+            );
+        }
+
+        let citation = AdjectiveCell {
+            form: AdjectiveForm::Short,
+            case: Case::Nominative,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+        };
+        assert_eq!(
+            decline_compound_ordinal_stem(20, citation)
+                .expect("twentieth citations")
+                .iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["дъвадесѧтьнъ", "дъвадесѧтъ", "дъводесѧтъ"]
+        );
+        assert!(
+            decline_compound_ordinal_stem(20, citation)
+                .expect("twentieth citations")
+                .iter()
+                .all(|variant| variant.status == NumeralVariantStatus::ReviewedTable)
+        );
+        assert_eq!(
+            decline_compound_ordinal_stem(200, citation)
+                .expect("two-hundredth citations")
+                .iter()
+                .map(|variant| variant.prediction.text.as_str())
+                .collect::<Vec<_>>(),
+            ["дъвосътьнъ", "дроугосътьнъ"]
+        );
+        assert!(
+            decline_compound_ordinal_stem(700, citation)
+                .expect("reconstructed seven-hundredth")
+                .iter()
+                .all(|variant| variant.status == NumeralVariantStatus::ReconstructedRule)
+        );
+    }
+
+    #[test]
+    fn compound_ordinal_heads_keep_cell_specific_manuscript_spellings() {
+        let variants = |value, form, case, gender| {
+            decline_compound_ordinal_stem(
+                value,
+                AdjectiveCell {
+                    form,
+                    case,
+                    number: Number::Singular,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                },
+            )
+            .expect("licensed compound-ordinal head")
+        };
+        for (value, form, case, gender, expected) in [
+            (
+                19,
+                AdjectiveForm::Long,
+                Case::Locative,
+                Gender::Neuter,
+                "девꙙтънадесꙙть҆нѣꙿмь",
+            ),
+            (
+                20,
+                AdjectiveForm::Long,
+                Case::Dative,
+                Gender::Neuter,
+                "дъвадесꙙтъноуо̑умоу",
+            ),
+            (
+                70,
+                AdjectiveForm::Long,
+                Case::Accusative,
+                Gender::Neuter,
+                "седмь҆десꙙтъноѥ",
+            ),
+            (
+                100,
+                AdjectiveForm::Long,
+                Case::Genitive,
+                Gender::Neuter,
+                "сътънааго",
+            ),
+            (
+                1_000,
+                AdjectiveForm::Short,
+                Case::Dative,
+                Gender::Masculine,
+                "тꙑсꙙштъноу",
+            ),
+        ] {
+            let forms = variants(value, form, case, gender);
+            let corpus = forms
+                .iter()
+                .find(|variant| variant.prediction.text == expected)
+                .unwrap_or_else(|| panic!("missing {value} corpus form {expected}"));
+            assert_eq!(corpus.status, NumeralVariantStatus::CorpusAttestation);
+        }
+
+        for (value, case, gender, excluded) in [
+            (11, Case::Genitive, Gender::Neuter, "ѥднонадесѧтааго"),
+            (18, Case::Nominative, Gender::Neuter, "осмонадесѧтоѥ"),
+            (20, Case::Nominative, Gender::Neuter, "двадесꙙтъноѥ"),
+            (70, Case::Nominative, Gender::Neuter, "седмь҆десꙙтъноѥ"),
+            (100, Case::Genitive, Gender::Masculine, "сътънааго"),
+            (500, Case::Accusative, Gender::Neuter, "пѧтьсьтное"),
+        ] {
+            assert!(
+                variants(value, AdjectiveForm::Long, case, gender)
+                    .iter()
+                    .filter(|variant| variant.prediction.text == excluded)
+                    .all(|variant| variant.status != NumeralVariantStatus::CorpusAttestation),
+                "ambiguous or context-excluded corpus spelling leaked into {value} {case:?} {gender:?}"
+            );
         }
     }
 

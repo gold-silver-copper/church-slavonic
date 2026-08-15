@@ -19,19 +19,20 @@ use old_church_slavonic::{
     CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
     DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
     InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-    Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, OrdinalNumeralIdentity,
-    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
-    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
+    Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
+    OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
+    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
+    Script, StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
     anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
     cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
     collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
     compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
-    compound_cardinal_with_one, compound_cardinal_with_options, determiner, determiner_identity,
-    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
-    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
-    l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
-    numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+    compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
+    compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm, finite,
+    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
+    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
+    l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
+    ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
     ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
     personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
     regular_pronominal, relative_pronoun, short_adjective, supine,
@@ -850,6 +851,166 @@ fn compound_cardinals_through_ninety_nine_are_structured_and_exhaustive() {
                 }
             }
         }
+    }
+}
+
+#[test]
+fn compound_ordinals_through_one_thousand_are_structured_and_exhaustive() {
+    let eighteenth = compound_ordinal(
+        18,
+        AdjectiveForm::Long,
+        Case::Accusative,
+        Number::Singular,
+        Gender::Neuter,
+        Animacy::Inanimate,
+    )
+    .expect("reviewed analytic and fused eighteenth");
+    assert_eq!(eighteenth.primary_text(), "осмоѥ на десѧте");
+    assert_eq!(eighteenth.analyses().len(), 2);
+    assert_eq!(
+        eighteenth.analyses()[0].construction,
+        OrdinalComposition::AnalyticTeen
+    );
+    assert_eq!(
+        eighteenth.analyses()[1].construction,
+        OrdinalComposition::FusedStem
+    );
+    assert!(
+        eighteenth.analyses()[1].tokens[0]
+            .forms
+            .texts()
+            .any(|text| text == "осмонадесѧтоѥ")
+    );
+    assert_eq!(
+        eighteenth.analyses()[1].tokens[0]
+            .forms
+            .texts()
+            .filter(|text| *text == "осмонадесѧтоѥ")
+            .count(),
+        1,
+        "identical productive and corpus surfaces retain separate evidence analyses, not duplicate choices"
+    );
+    assert_eq!(
+        eighteenth.analyses()[1].tokens[0].forms.analyses().len(),
+        3,
+        "both reviewed fused stems and the exact corpus observation remain inspectable"
+    );
+
+    let twenty_eighth = compound_ordinal(
+        28,
+        AdjectiveForm::Long,
+        Case::Accusative,
+        Number::Singular,
+        Gender::Neuter,
+        Animacy::Inanimate,
+    )
+    .expect("attested conjunctive twenty-eighth");
+    assert_eq!(twenty_eighth.primary_text(), "дъвадесѧтьноѥ и осмоѥ");
+    assert_eq!(twenty_eighth.analyses().len(), 3);
+    assert_eq!(
+        twenty_eighth
+            .analyses()
+            .iter()
+            .map(|analysis| analysis.construction)
+            .collect::<Vec<_>>(),
+        [
+            OrdinalComposition::ConjunctionI,
+            OrdinalComposition::Asyndetic,
+            OrdinalComposition::ConjunctionTi,
+        ]
+    );
+    assert_eq!(
+        twenty_eighth.analyses()[0]
+            .tokens
+            .iter()
+            .map(|token| token.role)
+            .collect::<Vec<_>>(),
+        [
+            old_church_slavonic::PhraseRole::Numeral,
+            old_church_slavonic::PhraseRole::Conjunction,
+            old_church_slavonic::PhraseRole::Numeral,
+        ]
+    );
+    assert!(
+        twenty_eighth.analyses()[0].tokens[0]
+            .forms
+            .texts()
+            .any(|text| text == "двадесꙙтъноѥ")
+    );
+    let mut mislabeled = twenty_eighth.analyses()[0].clone();
+    mislabeled.construction = OrdinalComposition::Asyndetic;
+    assert!(matches!(
+        old_church_slavonic::RealizedOrdinal::new(
+            twenty_eighth.value(),
+            twenty_eighth.cell(),
+            vec![mislabeled],
+        ),
+        Err(InflectionError::InvalidInput { .. })
+    ));
+
+    let hundred_fourth = compound_ordinal(
+        104,
+        AdjectiveForm::Long,
+        Case::Genitive,
+        Number::Singular,
+        Gender::Neuter,
+        Animacy::Inanimate,
+    )
+    .expect("attested asyndetic hundred-fourth");
+    assert_eq!(hundred_fourth.primary_text(), "сътьнаѥго четврьтаѥго");
+    assert_eq!(
+        hundred_fourth.analyses()[0].construction,
+        OrdinalComposition::Asyndetic
+    );
+    assert!(
+        hundred_fourth.analyses()[0].tokens[0]
+            .forms
+            .texts()
+            .any(|text| text == "сътънааго")
+    );
+
+    let reconstructed = compound_ordinal(
+        700,
+        AdjectiveForm::Short,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    )
+    .expect("productive inherited seven-hundredth");
+    assert_eq!(reconstructed.primary_text(), "седмосътьнъ");
+    assert!(
+        reconstructed.analyses()[0].tokens[0]
+            .forms
+            .warnings()
+            .contains(&InflectionWarning::IncludesReconstructedForms)
+    );
+
+    for value in 11..=1_000 {
+        let paradigm = compound_ordinal_paradigm(value)
+            .unwrap_or_else(|error| panic!("compound ordinal {value}: {error}"));
+        assert_eq!(paradigm.value(), value);
+        assert_eq!(paradigm.len(), 252, "{value}");
+        assert_eq!(paradigm.successes().count(), 252, "{value}");
+        assert_eq!(paradigm.failures().count(), 0, "{value}");
+        assert!(paradigm.successes().all(|(cell, ordinal)| {
+            ordinal.cell() == *cell
+                && ordinal.value() == value
+                && ordinal.analyses().iter().all(|analysis| {
+                    !analysis.tokens.is_empty()
+                        && analysis
+                            .tokens
+                            .iter()
+                            .all(|token| !token.forms.primary_text().is_empty())
+                })
+        }));
+    }
+
+    for invalid in [0, 10, 1_001, u16::MAX] {
+        assert!(matches!(
+            compound_ordinal_paradigm(invalid),
+            Err(InflectionError::InvalidInput { .. })
+        ));
     }
 }
 

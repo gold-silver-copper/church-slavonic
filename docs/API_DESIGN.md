@@ -176,8 +176,7 @@ expanded source forms; 10,000 retains the `десѧть тꙑсѧшть`-type co
 beside `тъма`. Nonzero decimal chunks are joined by `и`. Correlated 30/40 and
 10,000 alternatives remain distinct structural analyses, every word keeps its
 own `FormSet`, and the lowest nonzero component determines agreement or
-government. Compound ordinals, fractional, distributive, and remaining
-irregular numeral inventories remain open.
+government.
 
 Simple ordinals are a separate adjective-agreement API because the legacy
 gendered-numeral cell has neither short/long form nor animacy. `ordinal_numeral`
@@ -187,6 +186,18 @@ all 252 form × case × number × gender × animacy rows. Nine identities reuse 
 hard adjective engine, while `третии` follows its explicit `трет.ьj` workstem.
 The OSD citation, productive standard cells, and cell-specific PROIEL spellings
 retain distinct evidence classes.
+
+Values 11–1,000 use the separate structured `compound_ordinal` API.
+`RealizedOrdinal` contains source-ordered `OrdinalPhraseAnalysis` values for
+analytic teens, fused heads, and additive components joined by `и`, `ти`, or no
+connector. Each numeral and connector is a `PhraseToken` whose `FormSet`
+preserves its own variants, evidence, warnings, and trace. The accompanying
+`CompoundOrdinalParadigm` exposes all 252 adjective-agreement cells for each
+value. Source-listed stems, productive cells, reconstructed stems, and exact
+cell-specific manuscript spellings therefore remain distinguishable. The
+competing asyndetic-declension account, rare alternative 21–29 turns, ordinal
+magnitudes above 1,000, fractional, distributive, and remaining irregular
+numeral inventories remain open.
 
 Collectives have a separate typed cell because the inherited system has two
 real declension classes. `дъвои`, `обои`, and `трои` accept the complete 63-cell

@@ -212,6 +212,48 @@ Authority: Polivanova 2023 §§70, 72, 285, 299, and 303–306 plus OSD spreadsh
 rows 939, 1181, 1188, 3073, 4224, 4525, 4864, 5596, 6149, and 6243. UD OCS
 PROIEL r2.18 is an attestation crosscheck, not the productive authority.
 
+### NUM-ORD-TEEN-01 through NUM-ORD-ADDITIVE-01 — compound ordinals
+
+`compound_ordinal` covers every integer from 11 through 1,000 as a structured
+ordinal phrase. Every agreeing adjective component receives the same complete
+252-cell short/long × case × number × gender × animacy request, while invariant
+connectors remain separate tokens with their own provenance. `RealizedOrdinal`
+keeps correlated analyses intact instead of flattening their component variants
+into unattested cross-products.
+
+`NUM-ORD-TEEN-01` makes the analytic teen the deterministic first analysis: an
+inflected simple ordinal followed by invariant `на десѧте`. Reviewed fused teen
+stems remain alternative single-token analyses. `NUM-ORD-DECADE-01`,
+`NUM-ORD-HUNDRED-01`, and `NUM-ORD-THOUSAND-01` decline the reviewed fused
+decade, hundred, and thousand stems as hard adjectives. Forms productively
+extended from a source-listed stem remain productive evidence; the inferred
+fourteenth and the parallel sixtieth and seven- through nine-hundredth stems are
+explicitly reconstructed.
+
+`NUM-ORD-ADDITIVE-01` composes non-head values from independently agreeing
+ordinal components. Gorshkov's general composition account and Leuta–Havryliuk's
+inventory license `и`, `ти`, and zero-connector joins. The construction tag
+describes the outermost join, so a three-component analysis may retain a
+different source-licensed connector inside its lower chunk. Exact Suprasliensis
+spellings are added only to cells made unambiguous by their syntactic context;
+form-syncretic examples without such context remain source evidence for the
+stem, not corpus-cell variants.
+
+Two conflicts remain deliberately outside the implemented base contract.
+Leuta–Havryliuk state that only the first component declines in one asyndetic
+pattern, but their cited Suprasliensis `сътьнааго четврьтааго` has agreement on
+both components; the runtime currently exposes the directly attested
+all-agreeing analysis. Their rare 21–29 turns such as `четвръти междю десетма`
+and `въ четврьтии третьего десѧте` require a distinct typed construction rather
+than being forced through the ordinary additive API. Ordinal magnitudes beyond
+1,000 also remain outside this checkpoint pending a source-bounded composition
+contract.
+
+Authority: Gorshkov 2002 §§118–119; Leuta and Havryliuk 2018 pp. 155 and
+161–162; Polivanova OSD entries for `сътьнъ` and `тꙑсѧщьнъ`; pinned UD OCS
+PROIEL r2.18 and its native Syntacticus lineage for cell-specific manuscript
+crosschecks.
+
 ### NUM-COLL-PRON-01 and NUM-COLL-ADJ-01 — inherited collectives
 
 The inherited two-through-ten collective series divides between two historical

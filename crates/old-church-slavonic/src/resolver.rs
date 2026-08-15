@@ -565,14 +565,16 @@ fn reviewed_numeral_variants(
             .ok_or_else(|| InflectionError::InvalidInput {
                 reason: format!("the {lemma:?} numeral cell has no reviewed forms"),
             })?;
+    let mut surface_forms = Vec::with_capacity(variants.len());
+    for (form, _, _) in &variants {
+        if !surface_forms.contains(form) {
+            surface_forms.push(form.clone());
+        }
+    }
     Ok(FormSet::new(
         orthography::canonical_display(lemma)?,
         primary.clone(),
-        variants
-            .iter()
-            .skip(1)
-            .map(|(form, _, _)| form.clone())
-            .collect(),
+        surface_forms.into_iter().skip(1).collect(),
         primary_analysis.source.clone(),
         includes_reconstructed
             .then_some(InflectionWarning::IncludesReconstructedForms)
@@ -588,6 +590,10 @@ fn reviewed_numeral_variants(
 
 const COMPOUND_CARDINAL_AUTHORITY: &str = "UT OCS Online §44.11–10,000; Polivanova 2023 \
     §§321–322, 345–351, 373–374, 383–384";
+
+const COMPOUND_ORDINAL_AUTHORITY: &str = "Leuta and Havryliuk 2018 pp. 155, 161–162; \
+    Gorshkov 2002 §§118–119; Polivanova OSD spreadsheet; Syntacticus/PROIEL \
+    Suprasliensis ordinal crosscheck";
 
 /// Compose a reviewed cardinal from 11 through 10,000 while retaining correlated
 /// multiword analyses and each word's own provenance.
@@ -1094,6 +1100,281 @@ fn remap_compound_cardinal_error(
     match error {
         InflectionError::HistoricallyInvalidCell { .. }
         | InflectionError::UnsupportedCell { .. } => compound_cardinal_cell_error(value, cell),
+        other => other,
+    }
+}
+
+/// Compose a source-reviewed ordinal from 11 through 1,000 while retaining
+/// each adjective component and connector as an independently sourced token.
+pub fn compound_ordinal(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<RealizedOrdinal, InflectionError> {
+    validate_compound_ordinal_value(value)?;
+    let analyses = compose_ordinal_analyses(value, cell)
+        .map_err(|error| remap_compound_ordinal_error(error, value, cell))?;
+    RealizedOrdinal::new(value, cell, analyses)
+        .map_err(|error| remap_compound_ordinal_error(error, value, cell))
+}
+
+pub(crate) fn build_compound_ordinal_paradigm(
+    value: u16,
+) -> Result<CompoundOrdinalParadigm, InflectionError> {
+    validate_compound_ordinal_value(value)?;
+    Ok(CompoundOrdinalParadigm {
+        value,
+        cells: AdjectiveCell::all()
+            .map(|cell| CompoundOrdinalOutcome {
+                cell,
+                result: compound_ordinal(value, cell),
+            })
+            .collect(),
+    })
+}
+
+fn validate_compound_ordinal_value(value: u16) -> Result<(), InflectionError> {
+    if !(11..=1_000).contains(&value) {
+        return Err(InflectionError::InvalidInput {
+            reason: "the reviewed compound-ordinal range is 11 through 1,000".to_string(),
+        });
+    }
+    Ok(())
+}
+
+fn compose_ordinal_analyses(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<Vec<OrdinalPhraseAnalysis>, InflectionError> {
+    if (11..=19).contains(&value) {
+        return teen_ordinal_analyses(value, cell);
+    }
+    if is_compound_ordinal_head(value) {
+        return Ok(vec![compound_ordinal_head_analysis(value, cell)?]);
+    }
+
+    let mut chunks = Vec::new();
+    let hundreds = value / 100;
+    if hundreds != 0 {
+        chunks.push(vec![compound_ordinal_head_analysis(hundreds * 100, cell)?]);
+    }
+    let remainder = value % 100;
+    if remainder != 0 {
+        chunks.push(lower_ordinal_analyses(remainder, cell)?);
+    }
+    combine_ordinal_chunks(chunks, value < 100)
+}
+
+fn lower_ordinal_analyses(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<Vec<OrdinalPhraseAnalysis>, InflectionError> {
+    match value {
+        1..=10 => Ok(vec![simple_ordinal_analysis(value, cell)?]),
+        11..=19 => teen_ordinal_analyses(value, cell),
+        20..=99 if value % 10 == 0 => Ok(vec![compound_ordinal_head_analysis(value, cell)?]),
+        21..=99 => combine_ordinal_chunks(
+            vec![
+                vec![compound_ordinal_head_analysis((value / 10) * 10, cell)?],
+                vec![simple_ordinal_analysis(value % 10, cell)?],
+            ],
+            true,
+        ),
+        _ => Err(InflectionError::InvalidInput {
+            reason: "a lower ordinal chunk must be between one and ninety-nine".to_string(),
+        }),
+    }
+}
+
+fn simple_ordinal_analysis(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<OrdinalPhraseAnalysis, InflectionError> {
+    let identity = simple_ordinal_identity(value)?;
+    Ok(OrdinalPhraseAnalysis {
+        construction: OrdinalComposition::FusedStem,
+        tokens: vec![numeral_token(reviewed_ordinal_numeral(identity, cell)?)],
+    })
+}
+
+fn teen_ordinal_analyses(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<Vec<OrdinalPhraseAnalysis>, InflectionError> {
+    let unit = simple_ordinal_identity(value - 10)?;
+    let analytic = OrdinalPhraseAnalysis {
+        construction: OrdinalComposition::AnalyticTeen,
+        tokens: vec![
+            numeral_token(reviewed_ordinal_numeral(unit, cell)?),
+            PhraseToken {
+                role: PhraseRole::Preposition,
+                forms: reviewed_grammar_token(
+                    "на",
+                    RuleId::NumeralOrdinalTeen,
+                    "numeral:ordinal:teen:preposition",
+                    COMPOUND_ORDINAL_AUTHORITY,
+                )?,
+            },
+            PhraseToken {
+                role: PhraseRole::Numeral,
+                forms: reviewed_grammar_token(
+                    "десѧте",
+                    RuleId::NumeralOrdinalTeen,
+                    "numeral:ordinal:teen:invariant-ten",
+                    COMPOUND_ORDINAL_AUTHORITY,
+                )?,
+            },
+        ],
+    };
+    Ok(vec![analytic, compound_ordinal_head_analysis(value, cell)?])
+}
+
+fn compound_ordinal_head_analysis(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<OrdinalPhraseAnalysis, InflectionError> {
+    let lemma = old_church_slavonic_core::numeral::compound_ordinal_lemma(value)?;
+    let forms = reviewed_numeral_variants(
+        &lemma,
+        COMPOUND_ORDINAL_AUTHORITY,
+        format!("numeral:ordinal:compound:{value}:{}", cell.key()),
+        old_church_slavonic_core::numeral::decline_compound_ordinal_stem(value, cell)?,
+    )?;
+    Ok(OrdinalPhraseAnalysis {
+        construction: OrdinalComposition::FusedStem,
+        tokens: vec![numeral_token(forms)],
+    })
+}
+
+fn combine_ordinal_chunks(
+    chunks: Vec<Vec<OrdinalPhraseAnalysis>>,
+    prefer_conjunction_i: bool,
+) -> Result<Vec<OrdinalPhraseAnalysis>, InflectionError> {
+    if chunks.is_empty() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a compound ordinal requires at least one component".to_string(),
+        });
+    }
+    if chunks.len() == 1 {
+        return chunks
+            .into_iter()
+            .next()
+            .ok_or_else(|| InflectionError::InvalidInput {
+                reason: "a compound ordinal lost its only component".to_string(),
+            });
+    }
+
+    let mut combinations = vec![Vec::<OrdinalPhraseAnalysis>::new()];
+    for chunk in chunks {
+        let mut next = Vec::with_capacity(combinations.len() * chunk.len());
+        for prefix in &combinations {
+            for suffix in &chunk {
+                let mut analyses = prefix.clone();
+                analyses.push(suffix.clone());
+                next.push(analyses);
+            }
+        }
+        combinations = next;
+    }
+
+    let orders = if prefer_conjunction_i {
+        [
+            OrdinalComposition::ConjunctionI,
+            OrdinalComposition::Asyndetic,
+            OrdinalComposition::ConjunctionTi,
+        ]
+    } else {
+        [
+            OrdinalComposition::Asyndetic,
+            OrdinalComposition::ConjunctionI,
+            OrdinalComposition::ConjunctionTi,
+        ]
+    };
+    let mut analyses = Vec::with_capacity(combinations.len() * orders.len());
+    for chunks in combinations {
+        for construction in orders {
+            analyses.push(OrdinalPhraseAnalysis {
+                construction,
+                tokens: connect_ordinal_chunks(&chunks, construction)?,
+            });
+        }
+    }
+    Ok(analyses)
+}
+
+fn connect_ordinal_chunks(
+    chunks: &[OrdinalPhraseAnalysis],
+    construction: OrdinalComposition,
+) -> Result<Vec<PhraseToken>, InflectionError> {
+    let connector = match construction {
+        OrdinalComposition::Asyndetic => None,
+        OrdinalComposition::ConjunctionI => Some("и"),
+        OrdinalComposition::ConjunctionTi => Some("ти"),
+        OrdinalComposition::AnalyticTeen | OrdinalComposition::FusedStem => {
+            return Err(InflectionError::InvalidInput {
+                reason: "only additive ordinal constructions can connect chunks".to_string(),
+            });
+        }
+    };
+    let Some(connector) = connector else {
+        return Ok(chunks
+            .iter()
+            .flat_map(|chunk| chunk.tokens.clone())
+            .collect());
+    };
+
+    let token_count = chunks.iter().map(|chunk| chunk.tokens.len()).sum::<usize>();
+    let mut result = Vec::with_capacity(token_count + chunks.len().saturating_sub(1));
+    for (index, chunk) in chunks.iter().enumerate() {
+        if index != 0 {
+            result.push(PhraseToken {
+                role: PhraseRole::Conjunction,
+                forms: reviewed_grammar_token(
+                    connector,
+                    RuleId::NumeralOrdinalAdditive,
+                    if connector == "и" {
+                        "numeral:ordinal:additive-connector:i"
+                    } else {
+                        "numeral:ordinal:additive-connector:ti"
+                    },
+                    COMPOUND_ORDINAL_AUTHORITY,
+                )?,
+            });
+        }
+        result.extend(chunk.tokens.clone());
+    }
+    Ok(result)
+}
+
+fn simple_ordinal_identity(value: u16) -> Result<OrdinalNumeralIdentity, InflectionError> {
+    OrdinalNumeralIdentity::ALL
+        .into_iter()
+        .find(|identity| u16::from(identity.value()) == value)
+        .ok_or_else(|| InflectionError::InvalidInput {
+            reason: "a simple ordinal component must be between one and ten".to_string(),
+        })
+}
+
+fn is_compound_ordinal_head(value: u16) -> bool {
+    (20..=90).contains(&value) && value % 10 == 0
+        || (100..=900).contains(&value) && value % 100 == 0
+        || value == 1_000
+}
+
+fn compound_ordinal_cell_error(value: u16, cell: AdjectiveCell) -> InflectionError {
+    InflectionError::historically_invalid(
+        value.to_string(),
+        RequestedCell::CompoundOrdinal { value, cell },
+    )
+}
+
+fn remap_compound_ordinal_error(
+    error: InflectionError,
+    value: u16,
+    cell: AdjectiveCell,
+) -> InflectionError {
+    match error {
+        InflectionError::HistoricallyInvalidCell { .. }
+        | InflectionError::UnsupportedCell { .. } => compound_ordinal_cell_error(value, cell),
         other => other,
     }
 }

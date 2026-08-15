@@ -45,6 +45,10 @@ manifest; abbreviations above are only for readability.
 
 ## Metadata-only or pending sources
 
+- Gorshkov's 2002 OCS grammar and Leuta–Havryliuk's 2018 university
+  grammar were reviewed through stable full-text hosts for the compound-ordinal
+  contract. Their copyrighted bytes are not committed; only bibliography,
+  short rule references, conflicts, and source-linked tests are retained.
 - GORAZD has no confirmed bulk export mechanism or database redistribution terms,
   so it is used only for manual review and discovery.
 - The Russian National Corpus has no authorized bulk download in this workflow;

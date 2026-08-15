@@ -31,6 +31,8 @@ pub const APPROVED_SOURCE_RECENSIONS: &[(&str, &str)] = &[
     ("english-wiktionary-ocs-lineage-2026-08-07", "mixed"),
     ("polivanova-osd-source", "old-church-slavonic"),
     ("polivanova-fup-2023", "old-church-slavonic"),
+    ("gorshkov-ocs-2002", "old-church-slavonic"),
+    ("leuta-havryliuk-ocs-2018", "old-church-slavonic"),
     ("gorazd", "old-church-slavonic"),
     ("ud-ocs-proiel-r2.18", "old-church-slavonic"),
     ("syntacticus-20230428", "old-church-slavonic"),

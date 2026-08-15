@@ -158,19 +158,21 @@ pub use old_church_slavonic_core::{
     FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell,
     InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
     Lemma, LexemeSummary, LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment,
-    OrdinalNumeralIdentity, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
-    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
-    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
-    PronounFormSelection, RealizedCardinal, RealizedPhrase, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
+    OrdinalComposition, OrdinalNumeralIdentity, OrdinalPhraseAnalysis, PartOfSpeech,
+    ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell, PersonalPronounIdentity,
+    PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, PronominalFamilySpec,
+    PronominalPostpositive, PronominalPrefix, PronounFormSelection, RealizedCardinal,
+    RealizedOrdinal, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
+    UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
     CollectiveNumeralParadigm, ComparativeParadigm, CompoundCardinalOutcome,
-    CompoundCardinalParadigm, DeterminerParadigm, FiniteVerbParadigm, GenderedNumeralParadigm,
-    GenderedPronounParadigm, ImperativeParadigm, LParticipleParadigm, NounParadigm,
-    NumeralParadigm, OrdinalNumeralParadigm, ParadigmLookupError, ParticipleParadigm,
-    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
+    CompoundCardinalParadigm, CompoundOrdinalOutcome, CompoundOrdinalParadigm, DeterminerParadigm,
+    FiniteVerbParadigm, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
+    LParticipleParadigm, NounParadigm, NumeralParadigm, OrdinalNumeralParadigm,
+    ParadigmLookupError, ParticipleParadigm, PersonalPronounParadigm, PronounParadigm,
+    VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -187,32 +189,32 @@ pub mod prelude {
         Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy,
         CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
         CardinalNumeralParadigm, Case, CollectiveNumeralCell, CollectiveNumeralDeclension,
-        CollectiveNumeralIdentity, CollectiveNumeralParadigm, CompoundCardinalParadigm, Determiner,
-        DeterminerCell, DeterminerIdentity, DeterminerParadigm, FiniteTense, FiniteVerbParadigm,
-        FormSet, FormSource, FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm,
-        ImperativeParadigm, InflectionError, InflectionResult, InflectionWarning,
-        InterrogativePronounIdentity, IrregularAgreeingIdentity, LParticipleParadigm, Lemma,
-        LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral, NumeralParadigm,
-        OrdinalNumeralIdentity, OrdinalNumeralParadigm, ParadigmLookupError, PartOfSpeech,
-        Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
-        PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
-        StandardPronominalIdentity, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
-        adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
-        cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
-        collective_numeral_identity, collective_numeral_paradigm,
+        CollectiveNumeralIdentity, CollectiveNumeralParadigm, CompoundCardinalParadigm,
+        CompoundOrdinalParadigm, Determiner, DeterminerCell, DeterminerIdentity,
+        DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet, FormSource, FormVariant,
+        Gender, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
+        InflectionError, InflectionResult, InflectionWarning, InterrogativePronounIdentity,
+        IrregularAgreeingIdentity, LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun,
+        NounParadigm, Number, Numeral, NumeralParadigm, OrdinalNumeralIdentity,
+        OrdinalNumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
+        ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
+        PronounFormSelection, PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy,
+        VariantSelectionError, Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
+        cardinal_magnitude, cardinal_numeral_identity, cardinal_numeral_paradigm,
+        collective_numeral, collective_numeral_identity, collective_numeral_paradigm,
         collective_numeral_paradigm_identity, comparative_citation, compound_cardinal,
         compound_cardinal_paradigm, compound_cardinal_paradigm_with_one,
         compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
-        compound_cardinal_with_options, determiner, determiner_identity, determiner_paradigm,
-        finite, finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
-        gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
-        interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
-        long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
-        numeral_paradigm, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
-        ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
-        past_passive_participle, personal_pronoun, personal_pronoun_paradigm,
-        personal_pronoun_with, present, present_active_participle, present_paradigm,
-        present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
+        compound_cardinal_with_options, compound_ordinal, compound_ordinal_paradigm, determiner,
+        determiner_identity, determiner_paradigm, finite, finite_paradigm, gendered_numeral,
+        gendered_numeral_paradigm, gendered_pronoun, gendered_pronoun_paradigm, imperative,
+        imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
+        l_participle, l_participle_paradigm, long_adjective, long_only_adjective, lookup, noun,
+        noun_paradigm, numeral, numeral_paradigm, ordinal_numeral, ordinal_numeral_identity,
+        ordinal_numeral_paradigm, ordinal_numeral_paradigm_identity, participle_paradigm,
+        past_active_participle, past_passive_participle, personal_pronoun,
+        personal_pronoun_paradigm, personal_pronoun_with, present, present_active_participle,
+        present_paradigm, present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
         regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun,
     };
 }
@@ -1018,6 +1020,75 @@ pub fn compound_cardinal_paradigm_with_options(
     options: CardinalCompositionOptions,
 ) -> Result<CompoundCardinalParadigm, InflectionError> {
     resolver::build_compound_cardinal_paradigm(value, options)
+}
+
+/// Inflect a compound ordinal from 11 through 1,000 as a structured sequence.
+///
+/// Analytic teens, fused historical heads, and additive forms remain separate
+/// analyses; each token retains its own variants, evidence, warnings, and trace.
+///
+/// ```
+/// use old_church_slavonic::{
+///     compound_ordinal, AdjectiveForm, Animacy, Case, Gender, Number,
+/// };
+/// let ordinal = compound_ordinal(
+///     18,
+///     AdjectiveForm::Long,
+///     Case::Nominative,
+///     Number::Singular,
+///     Gender::Neuter,
+///     Animacy::Inanimate,
+/// )?;
+/// assert_eq!(ordinal.primary_text(), "осмоѥ на десѧте");
+/// assert!(ordinal.analyses().iter().any(|analysis| {
+///     analysis.primary_text().starts_with("осмонадесѧто")
+/// }));
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn compound_ordinal(
+    value: u16,
+    form: AdjectiveForm,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+) -> Result<RealizedOrdinal, InflectionError> {
+    resolver::compound_ordinal(
+        value,
+        old_church_slavonic_core::AdjectiveCell {
+            form,
+            case,
+            number,
+            gender,
+            animacy,
+        },
+    )
+}
+
+/// Enumerate all 252 adjective-agreement requests for one compound ordinal.
+///
+/// ```
+/// use old_church_slavonic::{
+///     compound_ordinal_paradigm, AdjectiveForm, Animacy, Case, Gender, Number,
+/// };
+/// let paradigm = compound_ordinal_paradigm(104)?;
+/// assert_eq!(paradigm.len(), 252);
+/// assert_eq!(
+///     paradigm
+///         .form(
+///             AdjectiveForm::Long,
+///             Case::Genitive,
+///             Number::Singular,
+///             Gender::Neuter,
+///             Animacy::Inanimate,
+///         )?
+///         .primary_text(),
+///     "сътьнаѥго четврьтаѥго",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn compound_ordinal_paradigm(value: u16) -> Result<CompoundOrdinalParadigm, InflectionError> {
+    resolver::build_compound_ordinal_paradigm(value)
 }
 
 /// Decline one short/simple adjective cell.

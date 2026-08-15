@@ -6,7 +6,7 @@ use old_church_slavonic_core::{
     CompoundCardinalCell, DeterminerCell, DeterminerIdentity, FiniteTense, FiniteVerbCell, FormSet,
     Gender, GenderedCell, ImperativeCell, InflectionError, LParticipleCell, NounCell, Number,
     NumeralCell, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell, ParticipleKind, Person,
-    PersonalPronounCell, RealizedCardinal, UngenderedCell,
+    PersonalPronounCell, RealizedCardinal, RealizedOrdinal, UngenderedCell,
 };
 use std::fmt;
 
@@ -720,6 +720,123 @@ impl<'a> IntoIterator for &'a CompoundCardinalParadigm {
 impl IntoIterator for CompoundCardinalParadigm {
     type Item = CompoundCardinalOutcome;
     type IntoIter = std::vec::IntoIter<CompoundCardinalOutcome>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
+/// One compound-ordinal agreement request and its structured outcome.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CompoundOrdinalOutcome {
+    pub cell: AdjectiveCell,
+    pub result: Result<RealizedOrdinal, InflectionError>,
+}
+
+impl CompoundOrdinalOutcome {
+    pub const fn cell(&self) -> &AdjectiveCell {
+        &self.cell
+    }
+
+    pub fn ordinal(&self) -> Result<&RealizedOrdinal, &InflectionError> {
+        self.result.as_ref()
+    }
+
+    pub fn error(&self) -> Option<&InflectionError> {
+        self.result.as_ref().err()
+    }
+
+    pub fn into_parts(self) -> (AdjectiveCell, Result<RealizedOrdinal, InflectionError>) {
+        (self.cell, self.result)
+    }
+}
+
+/// Complete short/long adjective-agreement inventory for one compound ordinal.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CompoundOrdinalParadigm {
+    pub(crate) value: u16,
+    pub(crate) cells: Vec<CompoundOrdinalOutcome>,
+}
+
+impl CompoundOrdinalParadigm {
+    pub const fn value(&self) -> u16 {
+        self.value
+    }
+
+    pub fn form(
+        &self,
+        form: AdjectiveForm,
+        case: Case,
+        number: Number,
+        gender: Gender,
+        animacy: Animacy,
+    ) -> Result<&RealizedOrdinal, ParadigmLookupError> {
+        let cell = AdjectiveCell {
+            form,
+            case,
+            number,
+            gender,
+            animacy,
+        };
+        let outcome = self
+            .cells
+            .iter()
+            .find(|outcome| outcome.cell == cell)
+            .ok_or(ParadigmLookupError::NotRepresented)?;
+        outcome
+            .ordinal()
+            .map_err(|error| ParadigmLookupError::Failed(error.clone()))
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, CompoundOrdinalOutcome> {
+        self.cells.iter()
+    }
+
+    pub fn successes(&self) -> impl Iterator<Item = (&AdjectiveCell, &RealizedOrdinal)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|ordinal| (&outcome.cell, ordinal))
+        })
+    }
+
+    pub fn failures(&self) -> impl Iterator<Item = (&AdjectiveCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    pub fn into_rows(self) -> Vec<CompoundOrdinalOutcome> {
+        self.cells
+    }
+
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a CompoundOrdinalParadigm {
+    type Item = &'a CompoundOrdinalOutcome;
+    type IntoIter = std::slice::Iter<'a, CompoundOrdinalOutcome>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for CompoundOrdinalParadigm {
+    type Item = CompoundOrdinalOutcome;
+    type IntoIter = std::vec::IntoIter<CompoundOrdinalOutcome>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.cells.into_iter()

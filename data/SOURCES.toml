@@ -117,6 +117,42 @@ upstream_lineage = ["polivanova-osd-source"]
 normalization = "normalization/lexical-references.toml"
 
 [[synodal_source]]
+id = "gorshkov-ocs-2002"
+name = "A. I. Gorshkov, Old Church Slavonic (Ancient Church Slavonic) Language"
+url = "https://djvu.online/file/Y91FdTzILrtfZ"
+retrieved_at = "2026-08-14"
+revision = "AST/Astrel 2002 edition, ISBN 5-17-014194-7 / 5-271-03568-9"
+sha256 = ""
+source_recension = "old-church-slavonic"
+content_kind = "grammar"
+format = "web-scan/ocr"
+license = "Copyrighted teaching grammar; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+authority_roles = ["morphological", "construction-inventory", "lexical-example"]
+epistemic_roles = ["inherited-ocs-evidence"]
+upstream_lineage = []
+normalization = "normalization/lexical-references.toml"
+download_status = "metadata-only"
+
+[[synodal_source]]
+id = "leuta-havryliuk-ocs-2018"
+name = "O. I. Leuta and O. R. Havryliuk, Old Church Slavonic"
+url = "https://files.znu.edu.ua/files/Bibliobooks/Inshi84/0064400.pdf"
+retrieved_at = "2026-08-14"
+revision = "NPU Dragomanov 2018 edition, ISBN 978-966-931-183-2"
+sha256 = ""
+source_recension = "old-church-slavonic"
+content_kind = "grammar-and-primary-text-examples"
+format = "pdf"
+license = "Copyright 2018 O. I. Leuta, O. R. Havryliuk, and NPU Dragomanov; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+authority_roles = ["morphological", "construction-inventory", "primary-text-attestation"]
+epistemic_roles = ["inherited-ocs-evidence"]
+upstream_lineage = []
+normalization = "normalization/lexical-references.toml"
+download_status = "metadata-only"
+
+[[synodal_source]]
 id = "gorazd"
 name = "GORAZD Old Church Slavonic Digital Hub"
 url = "https://www.slu.cas.cz/cs/on-line-slovniky-a-databaze"
