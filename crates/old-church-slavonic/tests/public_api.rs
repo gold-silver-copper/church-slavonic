@@ -14,18 +14,19 @@ use old_church_slavonic::advanced::rules::{
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
-    Adjective, AnaphoricEnvironment, Animacy, Case, Determiner, FiniteTense, FormSource, Gender,
-    GenderedCell, InflectionError, InflectionWarning, InterrogativePronounIdentity,
-    IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral,
-    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
-    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
-    anaphoric_pronoun, aorist, determiner, determiner_paradigm, finite, finite_paradigm,
-    gendered_numeral, gendered_pronoun, imperative, imperative_paradigm, imperfect, infinitive,
-    interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm, long_adjective,
-    long_only_adjective, noun, noun_paradigm, numeral, participle_paradigm, past_active_participle,
-    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
-    regular_pronominal, relative_pronoun, short_adjective, supine,
+    Adjective, AnaphoricEnvironment, Animacy, Case, Determiner, DeterminerCell, DeterminerIdentity,
+    FiniteTense, FormSource, Gender, GenderedCell, InflectionError, InflectionWarning,
+    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity,
+    Noun, Number, Numeral, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
+    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
+    Script, StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
+    anaphoric_pronoun, aorist, determiner, determiner_identity, determiner_paradigm, finite,
+    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
+    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
+    l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
+    participle_paradigm, past_active_participle, personal_pronoun, personal_pronoun_with, present,
+    present_paradigm, pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun,
+    short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -241,6 +242,150 @@ fn long_only_adjectives_have_complete_reviewed_long_paradigms() {
 }
 
 #[test]
+fn determiner_inventory_is_exhaustive_across_all_real_declensional_profiles() {
+    let nominative_plural = [
+        (DeterminerIdentity::RelativeMannerYak, "ꙗци"),
+        (DeterminerIdentity::RelativeQuantityYelik, "ѥлици"),
+        (DeterminerIdentity::InterrogativeMannerKak, "каци"),
+        (DeterminerIdentity::InterrogativeQuantityKolik, "колици"),
+        (DeterminerIdentity::DemonstrativeQuantitySelik, "селици"),
+        (DeterminerIdentity::DemonstrativeMannerTak, "таци"),
+        (DeterminerIdentity::DemonstrativeQuantityTolik, "толици"),
+        (DeterminerIdentity::InterrogativePossessiveChii, "чии"),
+        (DeterminerIdentity::InterrogativeKyi, "ции"),
+        (DeterminerIdentity::InterrogativeKotoryi, "котории"),
+        (DeterminerIdentity::IndefiniteYeter, "ѥтери"),
+    ];
+    assert_eq!(DeterminerIdentity::ALL.len(), nominative_plural.len());
+
+    for (identity, expected) in nominative_plural {
+        let paradigm = determiner_paradigm(identity.canonical_lemma())
+            .expect("every reviewed determiner has a paradigm");
+        assert_eq!(paradigm.identity(), identity);
+        assert_eq!(paradigm.lemma(), identity.canonical_lemma());
+        assert_eq!(paradigm.len(), 126);
+
+        let adjectival = matches!(
+            identity,
+            DeterminerIdentity::InterrogativeKotoryi | DeterminerIdentity::IndefiniteYeter
+        );
+        assert_eq!(
+            paradigm.successes().count(),
+            if adjectival { 126 } else { 108 }
+        );
+        assert_eq!(paradigm.failures().count(), if adjectival { 0 } else { 18 });
+        assert!(
+            paradigm.successes().all(|(_, forms)| matches!(
+                forms.source(),
+                FormSource::ReviewedGrammarTable { .. }
+            ))
+        );
+        assert!(paradigm.failures().all(|(cell, error)| {
+            cell.case == Case::Vocative
+                && matches!(
+                    error,
+                    InflectionError::HistoricallyInvalidCell {
+                        cell: RequestedCell::Determiner(requested),
+                        ..
+                    } if requested == cell
+                )
+        }));
+
+        let direct = determiner_identity(
+            identity,
+            Case::Nominative,
+            Number::Plural,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        )
+        .expect("reviewed identity route");
+        assert_eq!(direct.primary_text(), expected);
+        assert_eq!(
+            paradigm
+                .form(
+                    Case::Nominative,
+                    Number::Plural,
+                    Gender::Masculine,
+                    Animacy::Inanimate,
+                )
+                .expect("paradigm route"),
+            &direct
+        );
+    }
+
+    for (alias, canonical) in [("етеръ", "ѥтеръ"), ("которыи", "которꙑи")]
+    {
+        let forms = determiner(
+            alias,
+            Case::Nominative,
+            Number::Singular,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        )
+        .expect("source-union determiner alias");
+        assert_eq!(forms.lemma(), canonical);
+        assert!(
+            forms
+                .warnings()
+                .contains(&InflectionWarning::LexicalAliasUsed {
+                    canonical: canonical.to_string(),
+                })
+        );
+    }
+}
+
+#[test]
+fn explicit_determiner_metadata_supports_arbitrary_lexemes_without_guessing() {
+    use old_church_slavonic::advanced::rules::{
+        DeterminerDeclension, DeterminerLexeme, PronominalDeclension, determiner_with,
+    };
+
+    for (lexeme, cell, expected) in [
+        (
+            DeterminerLexeme {
+                lemma: "новъ".to_string(),
+                declension: DeterminerDeclension::Adjectival {
+                    class: AdjectiveClass::Hard,
+                    form: AdjectiveForm::Short,
+                },
+            },
+            DeterminerCell {
+                case: Case::Accusative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Animate,
+            },
+            "нова",
+        ),
+        (
+            DeterminerLexeme {
+                lemma: "вакъ".to_string(),
+                declension: DeterminerDeclension::Pronominal(PronominalDeclension::Hard),
+            },
+            DeterminerCell {
+                case: Case::Nominative,
+                number: Number::Plural,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+            },
+            "ваци",
+        ),
+    ] {
+        let forms = determiner_with(&lexeme, cell).expect("complete explicit metadata");
+        assert_eq!(forms.primary_text(), expected);
+        assert!(matches!(
+            forms.source(),
+            FormSource::ExplicitMetadataRule { .. }
+        ));
+        assert!(
+            forms
+                .warnings()
+                .contains(&InflectionWarning::PredictedNotDictionaryBacked)
+        );
+    }
+}
+
+#[test]
 fn source_order_primary_access_never_discards_alternatives() {
     let noun_variants = noun("аблань", Case::Genitive, Number::Dual).expect("variant noun cell");
     assert_eq!(noun_variants.primary_text(), "абланью");
@@ -344,23 +489,26 @@ fn ordinary_closed_class_handles_share_direct_by_id_and_paradigm_paths() {
         Determiner::from_id(which.id()).expect("rebound determiner"),
         which
     );
-    let determiner_cell = GenderedCell {
+    let determiner_cell = DeterminerCell {
         case: Case::Accusative,
         number: Number::Singular,
         gender: Gender::Feminine,
+        animacy: Animacy::Inanimate,
     };
     let direct = determiner(
         "кꙑи",
         determiner_cell.case,
         determiner_cell.number,
         determiner_cell.gender,
+        determiner_cell.animacy,
     );
     assert_eq!(
         direct,
         which.form(
             determiner_cell.case,
             determiner_cell.number,
-            determiner_cell.gender
+            determiner_cell.gender,
+            determiner_cell.animacy,
         )
     );
     assert_eq!(direct, by_id::determiner_by_id(which.id(), determiner_cell));
@@ -371,7 +519,8 @@ fn ordinary_closed_class_handles_share_direct_by_id_and_paradigm_paths() {
             .form(
                 determiner_cell.case,
                 determiner_cell.number,
-                determiner_cell.gender
+                determiner_cell.gender,
+                determiner_cell.animacy,
             )
             .expect("paradigm cell")
     );
@@ -991,8 +1140,14 @@ fn exceptional_pronouns_use_complete_reviewed_inventories_and_keep_raw_tables() 
         ["чесо", "чьсо", "чесого"]
     );
 
-    let kyi = determiner("кꙑи", Case::Dative, Number::Singular, Gender::Masculine)
-        .expect("reviewed unique determiner");
+    let kyi = determiner(
+        "кꙑи",
+        Case::Dative,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    )
+    .expect("reviewed unique determiner");
     assert_eq!(kyi.primary_text(), "коѥму");
     assert_eq!(
         kyi.source(),
@@ -1028,8 +1183,8 @@ fn exceptional_pronouns_use_complete_reviewed_inventories_and_keep_raw_tables() 
     assert_eq!(kto.successes().count(), 18);
     assert_eq!(kto.failures().count(), 3);
     let kyi = determiner_paradigm("кꙑи").expect("unique determiner paradigm");
-    assert_eq!(kyi.successes().count(), 54);
-    assert_eq!(kyi.failures().count(), 9);
+    assert_eq!(kyi.successes().count(), 108);
+    assert_eq!(kyi.failures().count(), 18);
 }
 
 #[test]
@@ -1177,19 +1332,27 @@ fn paradigm_access_distinguishes_unrepresented_and_failed_cells() {
             requested.case,
             requested.number,
             requested.gender.expect("gendered request"),
+            Animacy::Inanimate,
         ),
         Err(InflectionError::HistoricallyInvalidCell {
             lexeme_id: determiner_id,
-            cell: RequestedCell::ClosedClass {
-                part_of_speech: PartOfSpeech::Determiner,
-                cell: requested,
-            },
+            cell: RequestedCell::Determiner(DeterminerCell {
+                case: requested.case,
+                number: requested.number,
+                gender: requested.gender.expect("gendered request"),
+                animacy: Animacy::Inanimate,
+            }),
         })
     );
 
     let determiner_table = determiner_paradigm("кꙑи").expect("determiner table");
     assert!(matches!(
-        determiner_table.form(Case::Vocative, Number::Dual, Gender::Masculine),
+        determiner_table.form(
+            Case::Vocative,
+            Number::Dual,
+            Gender::Masculine,
+            Animacy::Inanimate,
+        ),
         Err(ParadigmLookupError::Failed(
             InflectionError::HistoricallyInvalidCell { .. }
         ))
@@ -1882,6 +2045,7 @@ fn exercise_public_surface(hostile: &str) {
         Case::Nominative,
         Number::Singular,
         Gender::Masculine,
+        Animacy::Inanimate,
     );
     let _ = pronoun(hostile, Case::Nominative, Number::Singular);
     let _ = personal_pronoun(hostile, Case::Nominative, Number::Singular, Person::First);

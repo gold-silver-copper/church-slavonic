@@ -263,6 +263,145 @@ pub fn long_only_adjective(
     long_only_adjective_form(identity, cell)
 }
 
+fn remap_determiner_error(
+    error: InflectionError,
+    lemma: &str,
+    cell: DeterminerCell,
+) -> InflectionError {
+    match error {
+        InflectionError::HistoricallyInvalidCell { .. } => {
+            InflectionError::historically_invalid(lemma, RequestedCell::Determiner(cell))
+        }
+        InflectionError::UnsupportedCell { .. } => {
+            InflectionError::unsupported(lemma, RequestedCell::Determiner(cell))
+        }
+        other => other,
+    }
+}
+
+fn reviewed_adjectival_determiner(
+    identity: DeterminerIdentity,
+    cell: DeterminerCell,
+) -> Result<FormSet, InflectionError> {
+    let lexeme = identity
+        .productive_lexeme()
+        .ok_or_else(|| InflectionError::InvalidInput {
+            reason: "the reviewed determiner identity has no productive adjectival profile"
+                .to_string(),
+        })?;
+    let prediction = old_church_slavonic_core::determiner::decline(&lexeme.to_owned(), cell)?;
+    let rule_id = prediction.rule_id;
+    let trace = prediction.trace;
+    let primary = FormVariant {
+        text: orthography::canonical_display(&prediction.text)?,
+        romanization: None,
+    };
+    let source = FormSource::ReviewedGrammarTable { rule_id };
+    let analysis = FormAnalysis {
+        variants: vec![primary.clone()],
+        source: source.clone(),
+        evidence: vec![MetadataEvidence {
+            field: None,
+            provenance: MetadataProvenance::ReviewedGrammarTable,
+            source_feature: Some(format!(
+                "determiner:{}:{}:{}:{}:{}",
+                lexeme.declension.code(),
+                cell.case.code(),
+                cell.number.code(),
+                cell.gender.code(),
+                cell.animacy.code()
+            )),
+            source_form: None,
+            crosscheck_features: Vec::new(),
+            authority: Some(
+                match identity {
+                    DeterminerIdentity::InterrogativeKotoryi => {
+                        "Polivanova 2023 §§285, 303–305, and 316"
+                    }
+                    DeterminerIdentity::IndefiniteYeter => {
+                        "Polivanova 2023 Paradigmatic Dictionary entry 343"
+                    }
+                    _ => {
+                        return Err(InflectionError::InvalidInput {
+                            reason: "the reviewed determiner identity is not adjectival"
+                                .to_string(),
+                        });
+                    }
+                }
+                .to_string(),
+            ),
+        }],
+        trace: trace.clone(),
+    };
+    Ok(FormSet::new(
+        identity.canonical_lemma().to_string(),
+        primary,
+        Vec::new(),
+        source,
+        Vec::new(),
+        trace,
+        vec![analysis],
+    ))
+}
+
+/// Resolve one member of the exhaustive reviewed determiner inventory.
+pub fn reviewed_determiner(
+    identity: DeterminerIdentity,
+    cell: DeterminerCell,
+) -> Result<FormSet, InflectionError> {
+    let result = if let Some(standard) = identity.standard_pronominal() {
+        standard_pronominal_form(standard, cell.case, cell.number, cell.gender)
+    } else if let Some(irregular) = identity.irregular_agreeing() {
+        irregular_agreeing(irregular, cell.case, cell.number, cell.gender)
+    } else {
+        reviewed_adjectival_determiner(identity, cell)
+    };
+    result.map_err(|error| remap_determiner_error(error, identity.canonical_lemma(), cell))
+}
+
+/// Resolve a determiner lemma through the source-exhaustive lexical inventory,
+/// falling back to a future exact dictionary determiner only when it has no
+/// reviewed grammatical identity.
+pub fn determiner(lemma: &str, cell: DeterminerCell) -> Result<FormSet, InflectionError> {
+    let candidates = lookup(lemma, PartOfSpeech::Determiner)?;
+    match candidates.as_slice() {
+        [one] => {
+            let record =
+                lookup::find_lexeme(&one.id).ok_or_else(|| InflectionError::InvalidInput {
+                    reason: "generated lookup candidate is missing".to_string(),
+                })?;
+            queried_result(lemma, record, determiner_by_id(&one.id, cell))
+        }
+        [] => {
+            let normalized = orthography::lookup_key(lemma)?;
+            let identity = DeterminerIdentity::classify_source_union_lemma(&normalized)
+                .ok_or_else(|| {
+                    InflectionError::unknown_lemma(&normalized, PartOfSpeech::Determiner)
+                })?;
+            let mut result = reviewed_determiner(identity, cell)?;
+            if normalized != identity.canonical_lemma() {
+                result.add_warning(InflectionWarning::LexicalAliasUsed {
+                    canonical: identity.canonical_lemma().to_string(),
+                });
+            }
+            Ok(result)
+        }
+        _ => Err(InflectionError::AmbiguousLexeme { candidates }),
+    }
+}
+
+/// Generate a productive determiner from complete caller-supplied metadata.
+pub fn determiner_with(
+    lexeme: &DeterminerLexeme,
+    cell: DeterminerCell,
+) -> Result<FormSet, InflectionError> {
+    canonical_prediction(
+        &lexeme.lemma,
+        old_church_slavonic_core::determiner::decline(lexeme, cell),
+        FormSourceKind::Explicit,
+    )
+}
+
 pub fn comparative_with(
     lexeme: &ComparativeLexeme,
     cell: AdjectiveCell,
@@ -1468,7 +1607,18 @@ pub fn raw_closed_class_by_id(
     })
 }
 
-pub fn determiner_by_id(id: &str, cell: GenderedCell) -> Result<FormSet, InflectionError> {
+pub fn determiner_by_id(id: &str, cell: DeterminerCell) -> Result<FormSet, InflectionError> {
+    let record = lexeme_identity(id, PartOfSpeech::Determiner)?;
+    if let Some(identity) = DeterminerIdentity::classify_source_union_lemma(record.lemma) {
+        let mut result =
+            reviewed_determiner(identity, cell).map_err(|error| error.with_lexeme_id(id))?;
+        if record.lemma != identity.canonical_lemma() {
+            result.add_warning(InflectionWarning::LexicalAliasUsed {
+                canonical: identity.canonical_lemma().to_string(),
+            });
+        }
+        return Ok(result);
+    }
     closed_class_by_id(id, PartOfSpeech::Determiner, cell.closed_class())
 }
 
@@ -1505,11 +1655,48 @@ fn lexeme_identity(
 
 pub fn determiner_paradigm_by_id(id: &str) -> Result<DeterminerParadigm, InflectionError> {
     let record = lexeme_identity(id, PartOfSpeech::Determiner)?;
-    Ok(build_gendered_closed_class_paradigm(
-        id,
-        record.lemma,
-        PartOfSpeech::Determiner,
-    ))
+    let identity =
+        DeterminerIdentity::classify_source_union_lemma(record.lemma).ok_or_else(|| {
+            InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::AdjectiveClass],
+            }
+        })?;
+    let mut paradigm = build_determiner_paradigm(identity);
+    for outcome in &mut paradigm.cells {
+        if let Err(error) = &outcome.result {
+            outcome.result = Err(error.clone().with_lexeme_id(id));
+        }
+    }
+    Ok(paradigm)
+}
+
+pub fn determiner_paradigm(lemma: &str) -> Result<DeterminerParadigm, InflectionError> {
+    let candidates = lookup(lemma, PartOfSpeech::Determiner)?;
+    match candidates.as_slice() {
+        [one] => determiner_paradigm_by_id(&one.id),
+        [] => {
+            let normalized = orthography::lookup_key(lemma)?;
+            let identity = DeterminerIdentity::classify_source_union_lemma(&normalized)
+                .ok_or_else(|| {
+                    InflectionError::unknown_lemma(normalized, PartOfSpeech::Determiner)
+                })?;
+            Ok(build_determiner_paradigm(identity))
+        }
+        _ => Err(InflectionError::AmbiguousLexeme { candidates }),
+    }
+}
+
+pub(crate) fn build_determiner_paradigm(identity: DeterminerIdentity) -> DeterminerParadigm {
+    DeterminerParadigm {
+        identity,
+        lemma: identity.canonical_lemma().to_string(),
+        cells: DeterminerCell::all()
+            .map(|cell| CellOutcome {
+                cell,
+                result: reviewed_determiner(identity, cell),
+            })
+            .collect(),
+    }
 }
 
 pub fn pronoun_paradigm_by_id(id: &str) -> Result<PronounParadigm, InflectionError> {

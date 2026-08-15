@@ -156,23 +156,23 @@ id = "ocs.determiner"
 recension = "old-church-slavonic"
 category = "determiner"
 part_of_speech = "determiner"
-scope = "Adjectival and exceptional determiners."
+scope = "The exhaustive reviewed determiner lexicon across regular pronominal, exceptional, short-adjectival, and long-only-adjectival profiles, plus strict arbitrary-lexeme metadata."
 profiles = ["canonical-cyrillic"]
-features = ["case=7", "number=3", "gender=3", "animacy=where-licensed"]
-subtypes = ["adjectival", "irregular"]
+features = ["identity=11", "declension=2-p-hard|2-p-soft|2-p-j|2-a-short|2-a-long|irregular-kyi", "case=7", "number=3", "gender=3", "animacy=where-licensed"]
+subtypes = ["regular-pronominal", "interrogative-irregular", "short-adjectival", "long-only-adjectival"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "closed-exact-partial"
-rule_ids = ["OCS-DETERMINER-PENDING"]
-sources = ["polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "docs/API_DESIGN.md closed-class inventory audit"
-required_metadata = ["stable lexical identity", "agreement profile", "irregular cells"]
-valid_inventory = "One reviewed exact identity is currently exposed."
-invalid_inventory = "Unlicensed optional dimensions."
-implementation = ["crates/old-church-slavonic/src/resolver.rs"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
-evidence_status = "partial exact dictionary evidence"
-gap = "Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules."
+state = "productive-complete"
+implementation_kind = "productive-closed-with-exhaustive-lexical-allocation"
+rule_ids = ["PRON-2P-HARD-01", "PRON-2P-SOFT-01", "PRON-2P-J-01", "PRON-2P-VELAR-01", "DET-UNIQUE-KYI-01", "ADJ-HARD-SHORT-01", "ADJ-HARD-LONG-01"]
+sources = ["polivanova-fup-2023", "ut-ocs-online", "punco-lmu-reference-grammar", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "Polivanova 2023 §§285, 303–305, 314–316, and 375–376 plus Paradigmatic Dictionary entry 343; UT OCS Online §§13 and 23.2; LMU OCS Reference Grammar §2.2.3"
+required_metadata = ["typed lexical identity or explicit DeterminerLexeme", "pronominal versus adjectival profile", "hard/soft/j-stem class", "explicit short versus long citation form for adjectival profiles", "case", "number", "gender", "animacy"]
+valid_inventory = "Eleven reviewed identities: eight regular class 2/p determiners (ꙗкъ, ѥликъ, какъ, коликъ, селикъ, такъ, толикъ, чии), exceptional кꙑи, long-only 2/a которꙑи, and short 2/a ѥтеръ. Every identity exposes all 126 typed case × number × gender × animacy requests; 2/p and кꙑи are animacy-syncretic, while adjectival profiles retain licensed masculine accusative contrasts. Arbitrary determiner lexemes use the same productive terminal kernels through explicit validated metadata."
+invalid_inventory = "All 18 animacy-expanded vocative requests for each regular 2/p identity and кꙑи; contradictory citation/profile metadata; malformed orthography; and any attempt to infer an arbitrary lexeme's profile from spelling."
+implementation = ["crates/old-church-slavonic-core/src/determiner.rs", "crates/old-church-slavonic-core/src/pronoun.rs", "crates/old-church-slavonic-core/src/adjective.rs", "crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic/src/paradigm.rs"]
+tests = ["crates/old-church-slavonic-core/src/determiner.rs#identity_inventory_is_exhaustive_nonoverlapping_and_morphologically_owned", "crates/old-church-slavonic-core/src/determiner.rs#productive_profiles_cover_every_cell_and_preserve_real_defectivity", "crates/old-church-slavonic-core/src/determiner.rs#adjective_backed_profiles_match_their_source_classes", "crates/old-church-slavonic-core/src/determiner.rs#strict_metadata_disambiguates_a_soft_long_citation", "crates/old-church-slavonic/tests/public_api.rs#determiner_inventory_is_exhaustive_across_all_real_declensional_profiles", "crates/old-church-slavonic/tests/public_api.rs#explicit_determiner_metadata_supports_arbitrary_lexemes_without_guessing"]
+evidence_status = "source-exhaustive reviewed lexical allocation over shared productive rules and one closed irregular paradigm"
+rationale = "Determiner is modeled as lexical/syntactic ownership over attested declensional systems rather than as invented terminals. The typed inventory unifies eight already reviewed 2/p identities, Polivanova's unique кꙑи and long-only которꙑи, and the Paradigmatic Dictionary's 2/a classification of ѥтеръ; exact raw dictionary evidence remains separately accessible."
 
 [[system]]
 id = "ocs.numeral"

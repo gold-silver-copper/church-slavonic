@@ -137,6 +137,32 @@ ambiguous (`прочии` is long-only, while `божии` is short-only), so on
 exhaustive typed inventory interprets that ending as a long citation. A
 productive comparative still requires a short positive citation.
 
+### Determiners
+
+Determiner is lexical and syntactic ownership, not a fifth declensional set.
+`DeterminerDeclension` therefore selects one of the grammar's actual productive
+profiles: regular hard/soft/j-stem class `2/p`, or short/long hard/soft class
+`2/a`. `DeterminerLexeme` is the strict arbitrary-lexeme contract and never
+infers one of those profiles from spelling. Its lemma must be a citation of the
+declared short/long type; this explicitly resolves otherwise ambiguous soft
+`-ии` citations.
+
+`DeterminerIdentity` exhaustively allocates eleven reviewed source identities:
+the eight determiner-owned members of Polivanova §314's regular `2/p` list
+(`ꙗкъ`, `ѥликъ`, `какъ`, `коликъ`, `селикъ`, `такъ`, `толикъ`, `чии`),
+exceptional `кꙑи`, long-only `которꙑи`, and `2/a` indefinite `ѥтеръ`.
+Polivanova §§285, 303–305, 314–316, and 375–376 plus Paradigmatic Dictionary
+entry 343 provide the lexical/class allocation; UT OCS Online §§13 and 23.2
+independently crosscheck the pronominal terminals and `кꙑи`/`чии` profiles. The terminal rules
+remain `PRON-2P-*`, `DET-UNIQUE-KYI-01`, and `ADJ-*-SHORT/LONG-01`; the facade
+does not duplicate them.
+
+`DeterminerCell` carries case, number, gender, and animacy. Regular `2/p` and
+`кꙑи` forms are animacy-syncretic and have no vocative. Adjectival `ѥтеръ` and
+`которꙑи` retain the adjective system's licensed animacy contrasts and cell
+inventory. Every reviewed identity has a complete 126-row paradigm containing
+both successful forms and typed historical failures.
+
 ### Comparatives
 
 `ComparativeFormation` records a word-formation strategy independently of

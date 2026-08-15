@@ -6,8 +6,8 @@
 /// Typed cell structures used by generic tools and paradigms.
 pub mod cells {
     pub use old_church_slavonic_core::{
-        AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, GenderedCell,
-        ImperativeCell, LParticipleCell, NounCell, ParticipleCell, ParticipleKind,
+        AdjectiveCell, AdjectiveForm, ClosedClassCell, DeterminerCell, FiniteVerbCell,
+        GenderedCell, ImperativeCell, LParticipleCell, NounCell, ParticipleCell, ParticipleKind,
         PersonalPronounCell, UngenderedCell,
     };
 }
@@ -31,13 +31,14 @@ pub mod by_id {
 pub mod rules {
     pub use crate::phrases::pronominal_family_with;
     pub use crate::resolver::{
-        adjective_with, comparative_paradigm_with, comparative_with, finite_verb_with,
-        imperative_with, infinitive_with, l_participle_with, long_only_adjective, noun_with,
-        participle_with, pre_superlative_with, pronominal_with, supine_with,
+        adjective_with, comparative_paradigm_with, comparative_with, determiner_with,
+        finite_verb_with, imperative_with, infinitive_with, l_participle_with, long_only_adjective,
+        noun_with, participle_with, pre_superlative_with, pronominal_with, supine_with,
     };
     pub use old_church_slavonic_core::adjective::{
         AdjectiveLexeme, ComparativeLexeme, LongOnlyAdjectiveIdentity, productive_new_comparative,
     };
+    pub use old_church_slavonic_core::determiner::{DeterminerDeclension, DeterminerLexeme};
     pub use old_church_slavonic_core::noun::NounLexeme;
     pub use old_church_slavonic_core::pronoun::{
         DirectToTreatment, PronominalDeclension, PronominalFamilySpec, PronominalLexeme,

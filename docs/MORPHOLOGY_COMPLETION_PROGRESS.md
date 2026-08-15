@@ -6,15 +6,15 @@ Inventory date: `2026-08-14`. Source-frontier date: `2026-08-14`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **32** have final states and **21** remain non-final. Source discovery has 1 recorded pass and has not converged.
+The matrix contains **53** required system contracts: **33** have final states and **20** remain non-final. Source discovery has 1 recorded pass and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 16 |
+| `implementation-missing` | 15 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 30 |
+| `productive-complete` | 31 |
 | `source-review-open` | 5 |
 
 ## Recension totals
@@ -22,7 +22,7 @@ The matrix contains **53** required system contracts: **32** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 19 | 26 |
+| old-church-slavonic | 20 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -37,7 +37,7 @@ The matrix contains **53** required system contracts: **32** have final states a
 | old-church-slavonic | adjective | 1 | 1 |
 | old-church-slavonic | analytic-form | 1 | 1 |
 | old-church-slavonic | comparison | 2 | 2 |
-| old-church-slavonic | determiner | 0 | 1 |
+| old-church-slavonic | determiner | 1 | 1 |
 | old-church-slavonic | finite-verb | 6 | 6 |
 | old-church-slavonic | imperative | 2 | 2 |
 | old-church-slavonic | invariant | 1 | 1 |
@@ -69,7 +69,6 @@ The matrix contains **53** required system contracts: **32** have final states a
 
 ## Non-final systems
 
-- `ocs.determiner` — **implementation-missing**: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.
 - `ocs.numeral` — **implementation-missing**: Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars.
 - `ocs.verb.irregular-root` — **implementation-missing**: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
 - `ocs.verb.verbal-noun` — **source-review-open**: Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts.
@@ -101,7 +100,7 @@ The matrix contains **53** required system contracts: **32** have final states a
 | `ocs.adjective.superlative` | old-church-slavonic | comparison | `productive-complete` | `PHRASE-SUP-REL-GEN-01`<br>`PHRASE-SUP-ZELO-01`<br>`ADJ-SUP-PRE-01`<br>`ADJ-COMP-OLD-01` | independent grammar inventory with structured component provenance and productive derived realization |
 | `ocs.pronoun.personal-reflexive` | old-church-slavonic | pronoun | `productive-complete` | `PRON-PERS-1-01`<br>`PRON-PERS-2-01`<br>`PRON-REFL-01`<br>`PRON-PERS-CLITIC-01`<br>`PRON-ANAPH-3-01`<br>`PRON-ANAPH-PREP-N-01` | independently reviewed closed grammar inventory, conditioned allomorphy, explicit source dispute, and exhaustive source-union routing |
 | `ocs.pronoun.other` | old-church-slavonic | pronoun | `productive-complete` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`PRON-2P-J-01`<br>`PRON-2P-VELAR-01`<br>`PRON-REL-IZHE-01`<br>`PRON-REL-PREP-N-01`<br>`PRON-2PSTAR-VES-01`<br>`PRON-2PSTAR-SIC-01`<br>`PRON-UNIQUE-SI-01`<br>`PRON-UNIQUE-KTO-01`<br>`PRON-UNIQUE-CHTO-01`<br>`PRON-DERIVED-FAMILY-01`<br>`DET-UNIQUE-KYI-01` | all 34 class 2/p identities allocated with exhaustive typed regular or exceptional inventories, source-union aliases, and structured derived-particle composition |
-| `ocs.determiner` | old-church-slavonic | determiner | `implementation-missing` | `OCS-DETERMINER-PENDING` | partial exact dictionary evidence |
+| `ocs.determiner` | old-church-slavonic | determiner | `productive-complete` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`PRON-2P-J-01`<br>`PRON-2P-VELAR-01`<br>`DET-UNIQUE-KYI-01`<br>`ADJ-HARD-SHORT-01`<br>`ADJ-HARD-LONG-01` | source-exhaustive reviewed lexical allocation over shared productive rules and one closed irregular paradigm |
 | `ocs.numeral` | old-church-slavonic | numeral | `implementation-missing` | `OCS-NUMERAL-PENDING` | partial exact dictionary evidence |
 | `ocs.verb.present` | old-church-slavonic | finite-verb | `productive-complete` | `V-IA1-01`<br>`V-IA2-01`<br>`V-II1-01`<br>`V-II2-01`<br>`V-II3-01` | source-backed productive prediction |
 | `ocs.verb.imperfect.uncontracted` | old-church-slavonic | finite-verb | `productive-complete` | `V-IMPF-A-01`<br>`V-IMPF-YAT-A-01`<br>`V-IMPF-PAL-A-01`<br>`V-IMPF-PRESENT-01` | source-backed productive uncontracted prediction |
@@ -155,8 +154,8 @@ The frontier contains **15** source/lineage records. Authority policy: target-re
 
 | ID | Tier | Type | Recension | Access | Impact |
 |---|---:|---|---|---|---|
-| `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; its pronoun tables independently enumerate first and second person, the numberless reflexive, marked clitics, the defective gendered third-person anaphoric with prepositional n- forms, and relative иже formed with же. It also crosschecks old/new comparator formation, identifies analytic rather than universally synthetic superlative strategies, licenses да plus present commands, and supplies the complete analytic tense, mood, future, and passive construction inventory. |
-| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; §§287–320 and 375–380 define the regular pronominal terminal system, twofold/velar behavior, derived families, and exceptional closed paradigms. §§318 and 381–382 define the four intrinsic personal/reflexive/anaphoric identities, their defective dimensions, grammar-table clitics, and conditioned prepositional allomorphs. Its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions. |
+| `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; its pronoun tables independently enumerate first and second person, the numberless reflexive, marked clitics, the defective gendered third-person anaphoric with prepositional n- forms, and relative иже formed with же. Its pronominal and interrogative-adjective chapters independently crosscheck the shared hard/soft/j-stem terminals and the exceptional кꙑи/чии profiles used by the determiner facade. It also crosschecks old/new comparator formation, identifies analytic rather than universally synthetic superlative strategies, licenses да plus present commands, and supplies the complete analytic tense, mood, future, and passive construction inventory. |
+| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; §§285 and 303–305 define the exhaustive long-only adjective inventory, while §§287–320, 375–380, and Paradigmatic Dictionary entry 343 define the regular, exceptional, and adjectival profiles allocated to the determiner and pronoun facades. §§318 and 381–382 define the four intrinsic personal/reflexive/anaphoric identities, their defective dimensions, grammar-table clitics, and conditioned prepositional allomorphs. Its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions. |
 | `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split; full-text comparison remains open and no rule claim relies on inaccessible content. |
 | `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; supplies independent lexeme-level allomorph evidence for sigmatic aorists and irregular/root verbs. |
 | `punco-lmu-reference-grammar` | 2 | scholarly digital reference grammar and annotated-corpus documentation | old-church-slavonic, mixed | accessible-metadata | Independently crosschecks the regular hard and soft pronominal class, the personal/reflexive inventory, and corpus-annotation distinctions, with mixed-period forms admitted only when separately licensed by OCS authorities. It also confirms да plus present forms for commands in all persons and crosschecks the OCS-to-Church-Slavonic analytic inventory: perfect/pluperfect, infinitival future and future-in-the-past, future perfect, conditional/aorist oscillation, optative particles, auxiliary omission, and passive participial constructions. |
@@ -177,4 +176,4 @@ The frontier contains **15** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.determiner`: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.
+`ocs.numeral`: Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars.

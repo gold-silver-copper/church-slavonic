@@ -356,6 +356,52 @@ pub fn decline(
     decline_validated_stem(stem, lexeme.class, cell, &lexeme.lemma)
 }
 
+/// Decline an adjective when the caller explicitly supplies whether the lemma
+/// itself is a short or long citation.
+///
+/// This strict path is useful for lexical categories such as determiners that
+/// fix one adjectival realization. In particular, it disambiguates soft `-ии`:
+/// a caller can state that it is a long citation instead of relying on lexical
+/// identity or spelling inference.
+pub fn decline_from_citation(
+    lexeme: &AdjectiveLexeme,
+    citation_form: AdjectiveForm,
+    cell: AdjectiveCell,
+) -> Result<PredictedForm, InflectionError> {
+    if cell.form != citation_form {
+        return Err(InflectionError::InvalidInput {
+            reason: "the requested adjective form contradicts the explicit citation form"
+                .to_string(),
+        });
+    }
+    let lemma = crate::orthography::canonical_display(&lexeme.lemma)?;
+    if let Some(identity) = LongOnlyAdjectiveIdentity::classify_source_union_lemma(&lemma) {
+        if identity.class() != lexeme.class || citation_form != AdjectiveForm::Long {
+            return Err(InflectionError::InvalidInput {
+                reason:
+                    "the reviewed long-only adjective identity has contradictory citation metadata"
+                        .to_string(),
+            });
+        }
+        return decline_long_only(identity, cell);
+    }
+    let stem = match (lexeme.class, citation_form) {
+        (AdjectiveClass::Hard, AdjectiveForm::Short) => {
+            strip_citation(&lemma, &["ъ"], "hard short")?
+        }
+        (AdjectiveClass::Soft, AdjectiveForm::Short) => {
+            strip_citation(&lemma, &["ь", "и"], "soft short")?
+        }
+        (AdjectiveClass::Hard, AdjectiveForm::Long) => {
+            strip_citation(&lemma, &["ꙑи", "ыи"], "hard long")?
+        }
+        (AdjectiveClass::Soft, AdjectiveForm::Long) => {
+            strip_citation(&lemma, &["ии"], "soft long")?
+        }
+    };
+    decline_validated_stem(stem, lexeme.class, cell, &lemma)
+}
+
 /// Declines an already selected adjective stem. Participles use this entry point so
 /// adjective agreement has one implementation without pretending the verbal stem is
 /// itself a dictionary adjective citation.
@@ -861,6 +907,41 @@ mod tests {
             class: AdjectiveClass::Soft,
         });
         assert!(matches!(result, Err(InflectionError::InvalidInput { .. })));
+    }
+
+    #[test]
+    fn explicit_citation_form_disambiguates_soft_ii() {
+        let cell = AdjectiveCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            form: AdjectiveForm::Long,
+        };
+        assert_eq!(
+            decline_from_citation(
+                &AdjectiveLexeme {
+                    lemma: "синии".to_string(),
+                    class: AdjectiveClass::Soft,
+                },
+                AdjectiveForm::Long,
+                cell,
+            )
+            .expect("explicit long citation")
+            .text,
+            "синии"
+        );
+        assert!(matches!(
+            decline_from_citation(
+                &AdjectiveLexeme {
+                    lemma: "синии".to_string(),
+                    class: AdjectiveClass::Soft,
+                },
+                AdjectiveForm::Short,
+                cell,
+            ),
+            Err(InflectionError::InvalidInput { .. })
+        ));
     }
 
     #[test]

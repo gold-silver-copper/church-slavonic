@@ -450,6 +450,27 @@ pub fn decline_pronominal(
     number: Number,
     gender: Gender,
 ) -> Result<PredictedForm, InflectionError> {
+    decline_pronominal_for_part_of_speech(lexeme, PartOfSpeech::Pronoun, case, number, gender)
+}
+
+/// Decline a regular `2/p` lexeme while retaining the owning public part of
+/// speech in typed failures. Determiners share these terminals with pronouns.
+pub(crate) fn decline_pronominal_for_part_of_speech(
+    lexeme: &PronominalLexeme,
+    part_of_speech: PartOfSpeech,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<PredictedForm, InflectionError> {
+    if !matches!(
+        part_of_speech,
+        PartOfSpeech::Pronoun | PartOfSpeech::Determiner
+    ) {
+        return Err(InflectionError::InvalidInput {
+            reason: "the pronominal declension requires pronoun or determiner ownership"
+                .to_string(),
+        });
+    }
     let lemma = crate::orthography::canonical_display(&lexeme.lemma)?;
     let citation_ending = match lexeme.declension {
         PronominalDeclension::Hard => 'ъ',
@@ -473,7 +494,7 @@ pub fn decline_pronominal(
         lemma.clone(),
         stem.to_string(),
         lexeme.declension,
-        PartOfSpeech::Pronoun,
+        part_of_speech,
         case,
         number,
         gender,

@@ -8,8 +8,8 @@ use crate::{
     PersonalPronounParadigm, PronounParadigm, VerbParadigm, lookup, resolver,
 };
 use old_church_slavonic_core::{
-    AdjectiveCell, FiniteVerbCell, GenderedCell, ImperativeCell, LParticipleCell, NounCell,
-    ParticipleCell, PersonalPronounCell, UngenderedCell,
+    AdjectiveCell, DeterminerCell, FiniteVerbCell, GenderedCell, ImperativeCell, LParticipleCell,
+    NounCell, ParticipleCell, PersonalPronounCell, UngenderedCell,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -106,10 +106,13 @@ impl Noun {
 /// A uniquely resolved dictionary determiner.
 ///
 /// ```
-/// use old_church_slavonic::{Case, Determiner, Gender, Number};
+/// use old_church_slavonic::{Animacy, Case, Determiner, Gender, Number};
 /// let word = Determiner::resolve("кꙑи")?;
 /// assert_eq!(
-///     word.form(Case::Accusative, Number::Singular, Gender::Feminine)?
+///     word.form(
+///         Case::Accusative, Number::Singular, Gender::Feminine,
+///         Animacy::Inanimate,
+///     )?
 ///         .primary_text(),
 ///     "кѫѭ",
 /// );
@@ -129,24 +132,22 @@ impl Determiner {
         case: Case,
         number: Number,
         gender: Gender,
+        animacy: Animacy,
     ) -> Result<FormSet, InflectionError> {
         resolver::determiner_by_id(
             self.id(),
-            GenderedCell {
+            DeterminerCell {
                 case,
                 number,
                 gender,
+                animacy,
             },
         )
     }
 
     /// Enumerate the typed determiner inventory through the canonical resolver.
-    pub fn paradigm(&self) -> DeterminerParadigm {
-        resolver::build_gendered_closed_class_paradigm(
-            self.id(),
-            self.lemma(),
-            PartOfSpeech::Determiner,
-        )
+    pub fn paradigm(&self) -> Result<DeterminerParadigm, InflectionError> {
+        resolver::determiner_paradigm_by_id(self.id())
     }
 }
 

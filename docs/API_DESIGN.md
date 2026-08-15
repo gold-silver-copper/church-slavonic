@@ -19,7 +19,7 @@ The root API groups calls by the grammatical system they actually request:
 noun(lemma, case, number)
 long_adjective(lemma, case, number, gender, animacy)
 short_adjective(lemma, case, number, gender, animacy)
-determiner(lemma, case, number, gender)
+determiner(lemma, case, number, gender, animacy)
 pronoun(lemma, case, number)
 personal_pronoun(lemma, case, number, person)
 gendered_pronoun(lemma, case, number, gender)
@@ -146,12 +146,20 @@ and one determiner lexeme. Its source-table feature shapes are:
 - case-number-only numeral tables, including `девѧть`; and
 - gender-indexed agreeing numeral/determiner tables, including `прьвъ` and `кꙑи`.
 
+The one dictionary determiner remains the exact-source/raw-data inventory, not
+the grammatical inventory. The ordinary determiner API now allocates eleven
+reviewed lexical identities across the regular pronominal, exceptional `кꙑи`,
+short adjectival, and long-only adjectival profiles. Its 126-cell paradigm makes
+animacy available where adjectival accusatives license it and retains typed
+vocative failures for pronominal identities. `DeterminerLexeme` provides the
+same productive profiles to arbitrary lexemes with explicit metadata.
+
 First person, second person, reflexive, and the third-person anaphoric no longer
 mirror those duplicated source shapes. Their reviewed closed model exposes
 intrinsic identity, numberless reflexive inflection, marked clitics, and explicit
 free versus post-prepositional anaphoric forms. Dictionary form-page spellings route
-to the same canonical identity. Other pronouns, determiners, and numerals remain
-exact pinned-table APIs while their independent grammar inventories are open.
+to the same canonical identity. Other pronouns and numerals remain exact
+pinned-table APIs while their independent grammar inventories are open.
 
 A typed paradigm enumerates the relevant grammatical product and retains typed
 historical or unsupported failures rather than dropping rows. The audit does not

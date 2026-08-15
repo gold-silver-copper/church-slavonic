@@ -7,6 +7,7 @@
 
 pub mod adjective;
 pub mod copula;
+pub mod determiner;
 pub mod grammar;
 pub mod noun;
 pub mod orthography;
@@ -18,14 +19,15 @@ pub mod verb;
 
 pub use adjective::LongOnlyAdjectiveIdentity;
 pub use copula::{CopulaSeries, CopulaVariant, CopulaVariantStatus};
+pub use determiner::{DeterminerDeclension, DeterminerIdentity, DeterminerLexeme};
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
-    ComparativeFormation, FiniteTense, FiniteVerbCell, Gender, GenderedCell, ImperativeCell,
-    ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy, LParticipleCell, NounCell,
-    NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell, ParticipleKind,
-    PastActiveParticipleFormation, PastPassiveParticipleFormation, Person, PersonalPronounCell,
-    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RequestedCell,
-    UngenderedCell, VerbAspect, VerbClass,
+    ComparativeFormation, DeterminerCell, FiniteTense, FiniteVerbCell, Gender, GenderedCell,
+    ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
+    LParticipleCell, NounCell, NounClass, Number, NumberRestriction, PartOfSpeech, ParticipleCell,
+    ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
+    PersonalPronounCell, PresentActiveParticipleFormation, PresentPassiveParticipleFormation,
+    RequestedCell, UngenderedCell, VerbAspect, VerbClass,
 };
 pub use orthography::{Lemma, Script};
 pub use phrase::{

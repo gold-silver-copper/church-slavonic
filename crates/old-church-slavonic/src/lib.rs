@@ -115,11 +115,12 @@
 //! |---|---|---|
 //! | Nouns | [`noun`], [`Noun`], [`noun_paradigm`] | Table first; dictionary metadata or explicit rules when supported |
 //! | Adjectives | [`long_adjective`], [`short_adjective`], [`long_only_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exhaustive typed long-only inventory; exact comparative citations plus productive comparison through [`advanced::rules`] |
+//! | Determiners | [`determiner`], [`determiner_identity`], [`determiner_paradigm`], [`Determiner`] | Exhaustive 11-identity reviewed inventory over regular `2/p`, exceptional `кꙑи`, and adjectival `2/a`; explicit OOV metadata through [`advanced::rules`] |
 //! | Personal/reflexive/anaphoric pronouns | [`personal_pronoun_with`], [`reflexive_pronoun`], [`anaphoric_pronoun`] and compatible ordinary handles | Complete reviewed closed grammar tables with typed clitic/context selection |
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Other closed classes | [`pronoun`], [`determiner`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
+//! | Other closed classes | [`pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
@@ -149,14 +150,15 @@ pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Ver
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
     AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, Case, ConditionalAuxiliary,
-    CopulaSeries, DirectToTreatment, FiniteTense, FormSet, FormSource, FormVariant,
-    FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell, InflectionError,
-    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
-    LexemeSummary, LongOnlyAdjectiveIdentity, Number, PartOfSpeech, ParticipleKind,
-    PassiveAuxiliary, Person, PersonalPronounCell, PersonalPronounIdentity, PhraseOrder,
-    PhraseRole, PhraseToken, PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive,
-    PronominalPrefix, PronounFormSelection, RealizedPhrase, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
+    CopulaSeries, DeterminerCell, DeterminerDeclension, DeterminerIdentity, DeterminerLexeme,
+    DirectToTreatment, FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary,
+    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning,
+    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LexemeSummary,
+    LongOnlyAdjectiveIdentity, Number, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
+    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
+    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
+    PronounFormSelection, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
+    UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,
@@ -177,18 +179,19 @@ pub mod trace {
 pub mod prelude {
     pub use crate::{
         Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy, Case,
-        Determiner, DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet, FormSource,
-        FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
-        InflectionError, InflectionResult, InflectionWarning, InterrogativePronounIdentity,
-        IrregularAgreeingIdentity, LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun,
-        NounParadigm, Number, Numeral, NumeralParadigm, ParadigmLookupError, PartOfSpeech,
-        Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
-        PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
-        StandardPronominalIdentity, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
-        adjective_paradigm, anaphoric_pronoun, aorist, comparative_citation, determiner,
-        determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_numeral_paradigm,
-        gendered_pronoun, gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect,
-        infinitive, interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
+        Determiner, DeterminerCell, DeterminerIdentity, DeterminerParadigm, FiniteTense,
+        FiniteVerbParadigm, FormSet, FormSource, FormVariant, Gender, GenderedNumeralParadigm,
+        GenderedPronounParadigm, ImperativeParadigm, InflectionError, InflectionResult,
+        InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+        LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral,
+        NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
+        ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
+        PronounFormSelection, PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy,
+        VariantSelectionError, Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
+        comparative_citation, determiner, determiner_identity, determiner_paradigm, finite,
+        finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
+        gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
+        interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
         long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
         numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
         personal_pronoun, personal_pronoun_paradigm, personal_pronoun_with, present,
@@ -278,29 +281,74 @@ pub fn long_only_adjective(
     )
 }
 
-/// Decline one dictionary determiner cell.
+/// Decline one source-reviewed determiner cell by lemma.
 ///
-/// This typed facade covers interrogative and pronominal adjectives whose
-/// source tables are tagged as determiners rather than ordinary adjectives.
+/// The exhaustive inventory spans regular pronominal, exceptional `кꙑи`,
+/// short adjectival `ѥтеръ`, and long-only adjectival `которꙑи` profiles.
 ///
 /// ```
-/// use old_church_slavonic::{determiner, Case, Gender, Number};
+/// use old_church_slavonic::{determiner, Animacy, Case, Gender, Number};
 /// assert_eq!(
-///     determiner("кꙑи", Case::Accusative, Number::Singular, Gender::Feminine)?
+///     determiner(
+///         "кꙑи", Case::Accusative, Number::Singular, Gender::Feminine,
+///         Animacy::Inanimate,
+///     )?
 ///         .primary_text(),
 ///     "кѫѭ",
 /// );
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
-pub fn determiner(lemma: &str, case: Case, number: Number, gender: Gender) -> InflectionResult {
-    resolver::closed_class(
+pub fn determiner(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+) -> InflectionResult {
+    resolver::determiner(
         lemma,
-        PartOfSpeech::Determiner,
-        old_church_slavonic_core::ClosedClassCell {
+        DeterminerCell {
             case,
             number,
-            gender: Some(gender),
-            person: None,
+            gender,
+            animacy,
+        },
+    )
+}
+
+/// Decline one determiner by its stable reviewed grammatical identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     determiner_identity, Animacy, Case, DeterminerIdentity, Gender, Number,
+/// };
+/// assert_eq!(
+///     determiner_identity(
+///         DeterminerIdentity::DemonstrativeMannerTak,
+///         Case::Nominative,
+///         Number::Plural,
+///         Gender::Masculine,
+///         Animacy::Inanimate,
+///     )?
+///     .primary_text(),
+///     "таци",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn determiner_identity(
+    identity: DeterminerIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+) -> InflectionResult {
+    resolver::reviewed_determiner(
+        identity,
+        DeterminerCell {
+            case,
+            number,
+            gender,
+            animacy,
         },
     )
 }
@@ -836,7 +884,7 @@ pub fn adjective_paradigm(lemma: &str) -> Result<AdjectiveParadigm, InflectionEr
     Ok(Adjective::resolve(lemma)?.paradigm())
 }
 
-/// Enumerate the gendered dictionary determiner inventory.
+/// Enumerate the complete source-reviewed determiner inventory.
 ///
 /// ```
 /// let paradigm = old_church_slavonic::determiner_paradigm("кꙑи")?;
@@ -844,7 +892,7 @@ pub fn adjective_paradigm(lemma: &str) -> Result<AdjectiveParadigm, InflectionEr
 /// # Ok::<(), old_church_slavonic::InflectionError>(())
 /// ```
 pub fn determiner_paradigm(lemma: &str) -> Result<DeterminerParadigm, InflectionError> {
-    Ok(Determiner::resolve(lemma)?.paradigm())
+    resolver::determiner_paradigm(lemma)
 }
 
 /// Enumerate case-number-only pronoun cells, retaining unsupported rows.

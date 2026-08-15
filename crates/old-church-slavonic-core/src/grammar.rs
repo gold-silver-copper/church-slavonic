@@ -453,6 +453,57 @@ impl AdjectiveCell {
     }
 }
 
+/// A case-number-gender-animacy cell for an agreeing determiner.
+///
+/// Animacy is explicit because adjectival determiners can distinguish the
+/// masculine accusative. Regular pronominal determiners accept the dimension
+/// but are syncretic across it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct DeterminerCell {
+    pub case: Case,
+    pub number: Number,
+    pub gender: Gender,
+    pub animacy: Animacy,
+}
+
+impl DeterminerCell {
+    /// Canonical determiner inventory, ordered by number, case, gender, and
+    /// animacy.
+    pub fn all() -> impl Iterator<Item = Self> {
+        Number::ALL.into_iter().flat_map(|number| {
+            Case::ALL.into_iter().flat_map(move |case| {
+                Gender::ALL.into_iter().flat_map(move |gender| {
+                    Animacy::ALL.into_iter().map(move |animacy| Self {
+                        case,
+                        number,
+                        gender,
+                        animacy,
+                    })
+                })
+            })
+        })
+    }
+
+    pub fn key(self) -> String {
+        format!(
+            "det:{}:{}:{}:{}",
+            self.case.code(),
+            self.number.code(),
+            self.gender.code(),
+            self.animacy.code()
+        )
+    }
+
+    pub const fn closed_class(self) -> ClosedClassCell {
+        ClosedClassCell {
+            case: self.case,
+            number: self.number,
+            gender: Some(self.gender),
+            person: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FiniteVerbCell {
     pub tense: FiniteTense,
@@ -675,6 +726,7 @@ pub struct ClosedClassCell {
 pub enum RequestedCell {
     Noun(NounCell),
     Adjective(AdjectiveCell),
+    Determiner(DeterminerCell),
     Comparative(AdjectiveCell),
     FiniteVerb(FiniteVerbCell),
     Imperative(ImperativeCell),
