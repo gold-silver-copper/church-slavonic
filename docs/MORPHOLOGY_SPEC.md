@@ -570,12 +570,35 @@ formation passed through the one-stem `aorist` method and rejects a consonant-fi
 stem for `SigmaticVowel`.
 
 Multiple aorist formations for one lemma remain separate lexical analyses; aspect
-never selects among them. Suppletive forms of `бꙑти`, `дати`, `ѣсти`, `вѣдѣти`,
-`хотѣти`, and motion verbs stay table-backed unless a caller supplies a deliberately
-audited root analysis. Authority: UT lesson 3 §§14.1–14.3; Polivanova 2023
+never selects among them. Authority: UT lesson 3 §§14.1–14.3; Polivanova 2023
 §§93, 455, 460, 462, and 476–482,
 <https://lrc.la.utexas.edu/eieol/ocsol/30#grammar_987> and
 <https://lrc.la.utexas.edu/eieol/ocsol/30#grammar_989>.
+
+### Irregular and defective lexical contract
+
+`VerbLexeme` can carry source-reviewed exact forms keyed by the typed
+`VerbMorphologyCell` inventory. It can also classify a complete
+`VerbMorphologySystem` or an individual cell as either historically invalid or
+unattested and unreconstructable. Resolution order is exact cell, cell defect,
+system defect, then productive principal-part rules. An attested survivor can
+therefore remain available inside an otherwise unreconstructable sparse system.
+The two defect classes remain observably different:
+`HistoricallyInvalidCell` states a grammatical exclusion, while
+`UnattestedUnreconstructableCell` states that the reviewed evidence and current
+analysis do not license an output. `UnsupportedCell` remains reserved for an
+engine path that has not been implemented.
+
+`V-IRREG-EXACT-01` records exact-cell selection in the rule trace. Exact forms
+are still rule-core values rather than claims of corpus provenance; the facade
+must attach the source evidence that licensed each form. Every productive
+subsystem retains its own independently supplied principal part. In particular,
+the l-participle now uses `VerbStems::l_participle`, never the aorist stem: this
+is required by suppletive profiles such as `ити` (`ид-` aorist versus `шь-`
+l-participle). The closed unique-verb inventory and reusable irregular workstem
+groups are separately source-audited lexical layers built on this contract.
+Authority: Polivanova 2023 §§417, 434–440, 516–605, especially Table 516.3 and
+§§561–562.
 
 ### Imperative
 

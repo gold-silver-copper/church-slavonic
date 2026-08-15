@@ -289,6 +289,13 @@ pub enum InflectionError {
         lexeme_id: String,
         cell: RequestedCell,
     },
+    /// A source-reviewed lexical gap for which neither attestation nor a
+    /// defensible productive reconstruction is available. This is distinct
+    /// from a historically impossible cell and an unimplemented engine path.
+    UnattestedUnreconstructableCell {
+        lexeme_id: String,
+        cell: RequestedCell,
+    },
     UnsupportedCell {
         /// Stable dictionary ID in facade calls; caller-supplied lemma in the
         /// rule-only core, which has no dictionary identity.
@@ -336,12 +343,22 @@ impl InflectionError {
         }
     }
 
+    pub fn unattested_unreconstructable(lexeme_id: impl Into<String>, cell: RequestedCell) -> Self {
+        Self::UnattestedUnreconstructableCell {
+            lexeme_id: lexeme_id.into(),
+            cell,
+        }
+    }
+
     /// Replace a rule-layer lemma context with a stable facade lexeme identity.
     pub fn with_lexeme_id(self, lexeme_id: impl Into<String>) -> Self {
         let lexeme_id = lexeme_id.into();
         match self {
             Self::HistoricallyInvalidCell { cell, .. } => {
                 Self::HistoricallyInvalidCell { lexeme_id, cell }
+            }
+            Self::UnattestedUnreconstructableCell { cell, .. } => {
+                Self::UnattestedUnreconstructableCell { lexeme_id, cell }
             }
             Self::UnsupportedCell { cell, .. } => Self::UnsupportedCell { lexeme_id, cell },
             other => other,
@@ -384,6 +401,10 @@ impl fmt::Display for InflectionError {
             Self::HistoricallyInvalidCell { lexeme_id, cell } => {
                 write!(f, "historically invalid cell {cell:?} for {lexeme_id:?}")
             }
+            Self::UnattestedUnreconstructableCell { lexeme_id, cell } => write!(
+                f,
+                "unattested and unreconstructable cell {cell:?} for {lexeme_id:?}"
+            ),
             Self::UnsupportedCell { lexeme_id, cell } => {
                 write!(f, "unsupported cell {cell:?} for {lexeme_id:?}")
             }

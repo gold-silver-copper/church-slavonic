@@ -853,6 +853,9 @@ fn metadata_error_reason(error: &InflectionError) -> &'static str {
         InflectionError::ContradictoryLexicalMetadata { .. } => "generation-contradictory-metadata",
         InflectionError::UnsupportedFormation { .. } => "represented-unsupported-formation",
         InflectionError::HistoricallyInvalidCell { .. } => "historically-invalid-cell",
+        InflectionError::UnattestedUnreconstructableCell { .. } => {
+            "unattested-unreconstructable-cell"
+        }
         InflectionError::UnsupportedCell { .. } => "unsupported-cell",
         InflectionError::InvalidLemma { .. } => "generation-invalid-lemma",
         InflectionError::InvalidInput { .. } => "generation-invalid-metadata",
@@ -1307,7 +1310,7 @@ fn evaluate_oov_verb(
                     .find_map(|form| derive_present_stem(class, &form.form))
             })
     });
-    let aorist_stem = grouped
+    let l_participle_stem = grouped
         .get(&(row.id.clone(), "verb:l-participle:m:sg".to_string()))
         .and_then(|forms| {
             forms
@@ -1337,7 +1340,11 @@ fn evaluate_oov_verb(
         });
     let mut lexeme = VerbLexeme::new(row.lemma.clone(), class.unwrap_or(VerbClass::Irregular));
     lexeme.stems.present = present_stem;
-    lexeme.stems.aorist = new_aorist_stem.clone().or(aorist_stem);
+    lexeme.stems.l_participle = l_participle_stem.clone();
+    // This legacy diagnostic may infer an infinitive-aorist platform from the
+    // held masculine l-participle, but the l-participle generator itself now
+    // consumes only its independently typed principal part.
+    lexeme.stems.aorist = new_aorist_stem.clone().or(l_participle_stem);
     if let Some((stem, formation)) = imperfect_metadata {
         lexeme.stems.imperfect = Some(stem);
         lexeme.formations.imperfect = Some(formation);

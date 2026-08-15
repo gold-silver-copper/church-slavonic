@@ -6,8 +6,9 @@ use crate::{
     InflectionError, LParticipleCell, MetadataField, Number, ParticipleCell, ParticipleKind,
     PastActiveParticipleFormation, PastPassiveParticipleFormation, Person, PredictedForm,
     PresentActiveParticipleFormation, PresentPassiveParticipleFormation, RequestedCell, RuleId,
-    RuleStep, VerbAspect, VerbClass,
+    RuleStep, VerbAspect, VerbClass, VerbDefectKind, VerbMorphologyCell, VerbMorphologySystem,
 };
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct VerbStems {
@@ -22,6 +23,7 @@ pub struct VerbStems {
     /// the main sigmatic stem.
     pub aorist_second_third_singular: Option<String>,
     pub imperative: Option<String>,
+    pub l_participle: Option<String>,
     pub present_active_participle: Option<String>,
     pub present_passive_participle: Option<String>,
     pub past_active_participle: Option<String>,
@@ -47,6 +49,14 @@ pub struct VerbLexeme {
     pub aspect: Option<VerbAspect>,
     pub stems: VerbStems,
     pub formations: VerbFormations,
+    /// Source-reviewed surface cells. Exact cells win before a declared defect
+    /// or productive fallback, allowing sparse paradigms to retain attested
+    /// forms without inventing an entire exceptional conjugation.
+    pub exact_forms: BTreeMap<VerbMorphologyCell, String>,
+    /// Defects applying to a whole subsystem unless an exact cell is present.
+    pub defective_systems: BTreeMap<VerbMorphologySystem, VerbDefectKind>,
+    /// Cell-specific defects, checked before a system-level defect.
+    pub defective_cells: BTreeMap<VerbMorphologyCell, VerbDefectKind>,
 }
 
 impl VerbLexeme {
@@ -57,6 +67,9 @@ impl VerbLexeme {
             aspect: None,
             stems: VerbStems::default(),
             formations: VerbFormations::default(),
+            exact_forms: BTreeMap::new(),
+            defective_systems: BTreeMap::new(),
+            defective_cells: BTreeMap::new(),
         }
     }
 
@@ -174,6 +187,48 @@ impl VerbLexemeBuilder {
         Ok(self)
     }
 
+    pub fn l_participle(mut self, stem: impl Into<String>) -> Result<Self, InflectionError> {
+        self.lexeme.stems.l_participle = Some(validated_stem(stem)?);
+        Ok(self)
+    }
+
+    /// Supply one source-reviewed exceptional surface cell.
+    pub fn exact_form(
+        mut self,
+        cell: VerbMorphologyCell,
+        form: impl Into<String>,
+    ) -> Result<Self, InflectionError> {
+        if let VerbMorphologyCell::Imperative(cell) = cell
+            && !cell.is_supported()
+        {
+            return Err(InflectionError::InvalidInput {
+                reason: "an exact imperative must use a historically licensed person-number cell"
+                    .to_string(),
+            });
+        }
+        let form = validated_form(form)?;
+        if let Some(previous) = self.lexeme.exact_forms.insert(cell, form.clone())
+            && previous != form
+        {
+            return Err(InflectionError::InvalidInput {
+                reason: format!("conflicting exact forms {previous:?} and {form:?} for {cell:?}"),
+            });
+        }
+        Ok(self)
+    }
+
+    /// Declare a whole subsystem lexically defective or unreconstructable.
+    pub fn defective_system(mut self, system: VerbMorphologySystem, kind: VerbDefectKind) -> Self {
+        self.lexeme.defective_systems.insert(system, kind);
+        self
+    }
+
+    /// Declare one grammatical cell lexically defective or unreconstructable.
+    pub fn defective_cell(mut self, cell: VerbMorphologyCell, kind: VerbDefectKind) -> Self {
+        self.lexeme.defective_cells.insert(cell, kind);
+        self
+    }
+
     pub fn present_active_participle(
         mut self,
         stem: impl Into<String>,
@@ -242,8 +297,27 @@ fn validated_stem(stem: impl Into<String>) -> Result<String, InflectionError> {
     Ok(stem)
 }
 
+fn validated_form(form: impl Into<String>) -> Result<String, InflectionError> {
+    let form = form.into();
+    if form.is_empty() {
+        return Err(InflectionError::InvalidInput {
+            reason: "an exact irregular verb form must not be empty".to_string(),
+        });
+    }
+    let form = crate::orthography::canonical_display(&form)?;
+    if crate::orthography::detect_script(&form) != crate::orthography::Script::Cyrillic {
+        return Err(InflectionError::InvalidInput {
+            reason: "an exact irregular verb form must be Cyrillic".to_string(),
+        });
+    }
+    Ok(form)
+}
+
 pub fn finite(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, InflectionError> {
     crate::orthography::canonical_display(&lexeme.lemma)?;
+    if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::Finite(cell)) {
+        return result;
+    }
     match cell.tense {
         FiniteTense::Present => present(lexeme, cell),
         FiniteTense::Imperfect => imperfect(lexeme, cell),
@@ -261,6 +335,9 @@ pub fn imperative(
             &lexeme.lemma,
             RequestedCell::Imperative(cell),
         ));
+    }
+    if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::Imperative(cell)) {
+        return result;
     }
     let formation =
         lexeme
@@ -300,6 +377,9 @@ pub fn imperative(
 
 pub fn infinitive(lexeme: &VerbLexeme) -> Result<PredictedForm, InflectionError> {
     let lemma = crate::orthography::canonical_display(&lexeme.lemma)?;
+    if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::Infinitive) {
+        return result;
+    }
     if !lemma.ends_with("ти") || lemma.len() <= "ти".len() {
         return Err(InflectionError::InvalidInput {
             reason: "an OCS infinitive citation must end in ти".to_string(),
@@ -315,6 +395,9 @@ pub fn infinitive(lexeme: &VerbLexeme) -> Result<PredictedForm, InflectionError>
 
 pub fn supine(lexeme: &VerbLexeme) -> Result<PredictedForm, InflectionError> {
     let lemma = crate::orthography::canonical_display(&lexeme.lemma)?;
+    if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::Supine) {
+        return result;
+    }
     let stem = lemma
         .strip_suffix("ти")
         .filter(|stem| !stem.is_empty())
@@ -335,7 +418,13 @@ pub fn l_participle(
     cell: LParticipleCell,
 ) -> Result<PredictedForm, InflectionError> {
     crate::orthography::canonical_display(&lexeme.lemma)?;
-    let stem = required_stem(lexeme.stems.aorist.as_deref(), MetadataField::AoristStem)?;
+    if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::LParticiple(cell)) {
+        return result;
+    }
+    let stem = required_stem(
+        lexeme.stems.l_participle.as_deref(),
+        MetadataField::LParticipleStem,
+    )?;
     let ending = match (cell.gender, cell.number) {
         (Gender::Masculine, Number::Singular) => "лъ",
         (Gender::Feminine, Number::Singular) => "ла",
@@ -350,7 +439,7 @@ pub fn l_participle(
         &stem,
         ending,
         RuleId::VerbLParticiple,
-        "attach the l-participle agreement ending to the explicit aorist stem",
+        "attach the l-participle agreement ending to the explicit l-participle stem",
     ))
 }
 
@@ -359,12 +448,44 @@ pub fn participle(
     cell: ParticipleCell,
 ) -> Result<PredictedForm, InflectionError> {
     crate::orthography::canonical_display(&lexeme.lemma)?;
+    if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::Participle(cell)) {
+        return result;
+    }
     match cell.kind {
         ParticipleKind::PresentActive => present_active_participle(lexeme, cell),
         ParticipleKind::PresentPassive => present_passive_participle(lexeme, cell),
         ParticipleKind::PastActive => past_active_participle(lexeme, cell),
         ParticipleKind::PastPassive => past_passive_participle(lexeme, cell),
     }
+}
+
+fn irregular_resolution(
+    lexeme: &VerbLexeme,
+    cell: VerbMorphologyCell,
+) -> Option<Result<PredictedForm, InflectionError>> {
+    if let Some(form) = lexeme.exact_forms.get(&cell) {
+        return Some(validated_form(form.clone()).map(|form| {
+            single_step(
+                &lexeme.lemma,
+                &form,
+                RuleId::VerbIrregularExact,
+                "select the source-reviewed exact cell before irregular or productive fallback",
+            )
+        }));
+    }
+    let defect = lexeme
+        .defective_cells
+        .get(&cell)
+        .or_else(|| lexeme.defective_systems.get(&cell.system()))?;
+    let error = match defect {
+        VerbDefectKind::HistoricallyInvalid => {
+            InflectionError::historically_invalid(&lexeme.lemma, cell.requested())
+        }
+        VerbDefectKind::UnattestedUnreconstructable => {
+            InflectionError::unattested_unreconstructable(&lexeme.lemma, cell.requested())
+        }
+    };
+    Some(Err(error))
 }
 
 fn present(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm, InflectionError> {
@@ -1946,6 +2067,101 @@ mod tests {
                 .expect("shared soft adjective agreement");
         assert_eq!(active.text, adjective.text);
         assert_eq!(active.trace[1].rule_id, RuleId::AdjectiveSoftLong);
+    }
+
+    #[test]
+    fn irregular_exact_cells_precede_typed_defects_and_productive_fallback() {
+        let exact = finite_cell(FiniteTense::Present, Person::First, Number::Singular);
+        let unsupported = finite_cell(FiniteTense::Present, Person::Second, Number::Singular);
+        let verb = VerbLexeme::builder("бꙑти", VerbClass::Irregular)
+            .expect("valid unique verb")
+            .exact_form(VerbMorphologyCell::Finite(exact), "ѥсмь")
+            .expect("source-reviewed exact present")
+            .defective_system(
+                VerbMorphologySystem::Finite(FiniteTense::Present),
+                VerbDefectKind::UnattestedUnreconstructable,
+            )
+            .build();
+
+        let realized = finite(&verb, exact).expect("exact cell wins over system defect");
+        assert_eq!(realized.text, "ѥсмь");
+        assert_eq!(realized.rule_id, RuleId::VerbIrregularExact);
+        assert!(matches!(
+            finite(&verb, unsupported),
+            Err(InflectionError::UnattestedUnreconstructableCell {
+                cell: RequestedCell::FiniteVerb(cell),
+                ..
+            }) if cell == unsupported
+        ));
+
+        let invalid = ImperativeCell {
+            person: Person::First,
+            number: Number::Singular,
+        };
+        assert!(
+            VerbLexeme::builder("бꙑти", VerbClass::Irregular)
+                .expect("valid unique verb")
+                .exact_form(VerbMorphologyCell::Imperative(invalid), "бꙑмь")
+                .is_err()
+        );
+
+        let mut direct = VerbLexeme::new("бꙑти", VerbClass::Irregular);
+        direct
+            .exact_forms
+            .insert(VerbMorphologyCell::Imperative(invalid), "бꙑмь".to_string());
+        assert!(matches!(
+            imperative(&direct, invalid),
+            Err(InflectionError::HistoricallyInvalidCell { .. })
+        ));
+        direct
+            .exact_forms
+            .insert(VerbMorphologyCell::Finite(exact), "\0".to_string());
+        assert!(matches!(
+            finite(&direct, exact),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+    }
+
+    #[test]
+    fn irregular_defect_kinds_and_l_participle_stem_are_independent() {
+        let l_cell = LParticipleCell {
+            gender: Gender::Masculine,
+            number: Number::Singular,
+        };
+        let mut iti = VerbLexeme::new("ити", VerbClass::Irregular);
+        iti.stems.aorist = Some("ид".to_string());
+        iti.stems.l_participle = Some("шь".to_string());
+        assert_eq!(
+            l_participle(&iti, l_cell)
+                .expect("independent suppletive l-participle stem")
+                .text,
+            "шьлъ"
+        );
+
+        let mut defective = VerbLexeme::new("довьлѣти", VerbClass::Irregular);
+        defective.defective_systems.insert(
+            VerbMorphologySystem::Imperative,
+            VerbDefectKind::HistoricallyInvalid,
+        );
+        let cell = ImperativeCell {
+            person: Person::Second,
+            number: Number::Singular,
+        };
+        assert!(matches!(
+            imperative(&defective, cell),
+            Err(InflectionError::HistoricallyInvalidCell {
+                cell: RequestedCell::Imperative(requested),
+                ..
+            }) if requested == cell
+        ));
+
+        let missing = VerbLexeme::new("нести", VerbClass::IA1);
+        assert_eq!(
+            l_participle(&missing, l_cell),
+            Err(InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::LParticipleStem]
+            })
+        );
     }
 
     #[test]

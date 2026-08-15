@@ -698,6 +698,69 @@ impl ImperativeCell {
     }
 }
 
+/// A complete Old Church Slavonic verb subsystem that can be independently
+/// supplied, generated, or declared defective.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum VerbMorphologySystem {
+    Finite(FiniteTense),
+    Imperative,
+    Infinitive,
+    Supine,
+    LParticiple,
+    Participle(ParticipleKind),
+}
+
+/// A typed cell in the rule-only verb engine.
+///
+/// Irregular lexemes use this inventory for source-reviewed exact forms and
+/// explicit lexical defects.  Keeping the keys grammatical prevents arbitrary
+/// feature strings from bypassing the public cell types.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum VerbMorphologyCell {
+    Finite(FiniteVerbCell),
+    Imperative(ImperativeCell),
+    Infinitive,
+    Supine,
+    LParticiple(LParticipleCell),
+    Participle(ParticipleCell),
+}
+
+impl VerbMorphologyCell {
+    pub const fn system(self) -> VerbMorphologySystem {
+        match self {
+            Self::Finite(cell) => VerbMorphologySystem::Finite(cell.tense),
+            Self::Imperative(_) => VerbMorphologySystem::Imperative,
+            Self::Infinitive => VerbMorphologySystem::Infinitive,
+            Self::Supine => VerbMorphologySystem::Supine,
+            Self::LParticiple(_) => VerbMorphologySystem::LParticiple,
+            Self::Participle(cell) => VerbMorphologySystem::Participle(cell.kind),
+        }
+    }
+
+    pub fn requested(self) -> RequestedCell {
+        match self {
+            Self::Finite(cell) => RequestedCell::FiniteVerb(cell),
+            Self::Imperative(cell) => RequestedCell::Imperative(cell),
+            Self::Infinitive => RequestedCell::Infinitive,
+            Self::Supine => RequestedCell::Supine,
+            Self::LParticiple(cell) => RequestedCell::LParticiple(cell),
+            Self::Participle(cell) => RequestedCell::Participle(cell),
+        }
+    }
+}
+
+/// Why a source-reviewed irregular verb cell cannot be generated.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum VerbDefectKind {
+    /// The form is excluded by the lexeme's grammar (for example, a genuinely
+    /// defective imperative or a passive participle of an incompatible verb).
+    HistoricallyInvalid,
+    /// The corpus does not license a reconstruction and no productive analysis
+    /// has been established. This is unsupported knowledge, not a claim that
+    /// the grammatical cell itself is impossible.
+    UnattestedUnreconstructable,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct LParticipleCell {
     pub gender: Gender,

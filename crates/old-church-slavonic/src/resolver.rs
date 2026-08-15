@@ -3580,7 +3580,7 @@ fn generate_l_participle_from_metadata(
     let mut analyses = Vec::new();
     for analysis in &metadata.l_participle {
         let mut lexeme = metadata_verb(metadata);
-        lexeme.stems.aorist = Some(analysis.stem.value.clone());
+        lexeme.stems.l_participle = Some(analysis.stem.value.clone());
         let predicted = old_church_slavonic_core::verb::l_participle(&lexeme, cell)?;
         analyses.push(metadata_analysis(predicted, vec![used(&analysis.stem)]));
     }

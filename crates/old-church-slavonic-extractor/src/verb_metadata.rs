@@ -414,7 +414,7 @@ fn derive_l_participle(
             continue;
         };
         let mut verb = VerbLexeme::new(&lexeme.lemma, class);
-        verb.stems.aorist = Some(stem.to_string());
+        verb.stems.l_participle = Some(stem.to_string());
         let Some(crosschecks) = l_participle_crosschecks(grouped, lexeme, &verb, source_feature)
         else {
             continue;

@@ -29,7 +29,8 @@ pub use grammar::{
     NounClass, Number, NumberRestriction, NumeralCell, PartOfSpeech, ParticipleCell,
     ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
     PersonalPronounCell, PresentActiveParticipleFormation, PresentPassiveParticipleFormation,
-    RequestedCell, UngenderedCell, VerbAspect, VerbClass,
+    RequestedCell, UngenderedCell, VerbAspect, VerbClass, VerbDefectKind, VerbMorphologyCell,
+    VerbMorphologySystem,
 };
 pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
