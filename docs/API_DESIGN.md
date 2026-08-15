@@ -176,7 +176,17 @@ expanded source forms; 10,000 retains the `десѧть тꙑсѧшть`-type co
 beside `тъма`. Nonzero decimal chunks are joined by `и`. Correlated 30/40 and
 10,000 alternatives remain distinct structural analyses, every word keeps its
 own `FormSet`, and the lowest nonzero component determines agreement or
-government. Derived numeral inventories remain open.
+government. Compound ordinals, collective, fractional, distributive, and
+remaining irregular numeral inventories remain open.
+
+Simple ordinals are a separate adjective-agreement API because the legacy
+gendered-numeral cell has neither short/long form nor animacy. `ordinal_numeral`
+resolves the source-union lemma; `ordinal_numeral_identity` accepts one of the
+ten stable `OrdinalNumeralIdentity` values. `OrdinalNumeralParadigm` exposes
+all 252 form × case × number × gender × animacy rows. Nine identities reuse the
+hard adjective engine, while `третии` follows its explicit `трет.ьj` workstem.
+The OSD citation, productive standard cells, and cell-specific PROIEL spellings
+retain distinct evidence classes.
 
 A typed paradigm enumerates the relevant grammatical product and retains typed
 historical or unsupported failures rather than dropping rows. The audit does not

@@ -3,9 +3,9 @@
 use crate::noun::NounLexeme;
 use crate::pronoun::StandardPronominalIdentity;
 use crate::{
-    Animacy, Case, CompoundCardinalCell, Gender, InflectionError, NounCell, NounClass, Number,
-    NumberRestriction, NumeralCell, PhraseRole, PhraseToken, PredictedForm, RequestedCell, RuleId,
-    RuleStep,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, CompoundCardinalCell, Gender,
+    InflectionError, NounCell, NounClass, Number, NumberRestriction, NumeralCell, PhraseRole,
+    PhraseToken, PredictedForm, RequestedCell, RuleId, RuleStep,
 };
 
 /// The syntactic relation between a simple cardinal and the enumerated noun.
@@ -17,13 +17,15 @@ pub enum NumeralGovernment {
     GenitivePlural,
 }
 
-/// Evidential status of one ordered cardinal realization.
+/// Evidential status of one ordered numeral realization.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum NumeralVariantStatus {
     /// A form explicitly present in the reviewed grammatical paradigm.
     ReviewedTable,
     /// A form licensed by a reviewed productive declensional profile.
     ProductiveRule,
+    /// A noncanonical spelling or deformation observed in the pinned corpus.
+    CorpusAttestation,
 }
 
 impl NumeralVariantStatus {
@@ -31,11 +33,12 @@ impl NumeralVariantStatus {
         match self {
             Self::ReviewedTable => "reviewed-table",
             Self::ProductiveRule => "productive-rule",
+            Self::CorpusAttestation => "corpus-attestation",
         }
     }
 }
 
-/// One ordered cardinal realization and its evidential status.
+/// One ordered numeral realization and its evidential status.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NumeralVariant {
     pub prediction: PredictedForm,
@@ -79,6 +82,22 @@ impl NumeralVariant {
                 }],
             },
             status: NumeralVariantStatus::ProductiveRule,
+        }
+    }
+
+    fn corpus(text: &str, rule_id: RuleId, lemma: &str, reason: &'static str) -> Self {
+        Self {
+            prediction: PredictedForm {
+                text: text.to_string(),
+                rule_id,
+                trace: vec![RuleStep {
+                    rule_id,
+                    before: lemma.to_string(),
+                    after: text.to_string(),
+                    reason,
+                }],
+            },
+            status: NumeralVariantStatus::CorpusAttestation,
         }
     }
 }
@@ -193,6 +212,173 @@ fn valid_cardinal_tokens(tokens: &[PhraseToken]) -> bool {
         && tokens
             .last()
             .is_some_and(|token| token.role == PhraseRole::Numeral)
+}
+
+/// The source-exhaustive simple ordinal identities from first through tenth.
+///
+/// Polivanova's paradigmatic dictionary lists exactly these ten numeral
+/// adjectives in class `2/a`. Nine use the hard subtype. `третии` instead has
+/// the explicit workstem `трет.ьj` and therefore requires its own boundary
+/// realization.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum OrdinalNumeralIdentity {
+    First,
+    Second,
+    Third,
+    Fourth,
+    Fifth,
+    Sixth,
+    Seventh,
+    Eighth,
+    Ninth,
+    Tenth,
+}
+
+impl OrdinalNumeralIdentity {
+    pub const ALL: [Self; 10] = [
+        Self::First,
+        Self::Second,
+        Self::Third,
+        Self::Fourth,
+        Self::Fifth,
+        Self::Sixth,
+        Self::Seventh,
+        Self::Eighth,
+        Self::Ninth,
+        Self::Tenth,
+    ];
+
+    pub const fn value(self) -> u8 {
+        match self {
+            Self::First => 1,
+            Self::Second => 2,
+            Self::Third => 3,
+            Self::Fourth => 4,
+            Self::Fifth => 5,
+            Self::Sixth => 6,
+            Self::Seventh => 7,
+            Self::Eighth => 8,
+            Self::Ninth => 9,
+            Self::Tenth => 10,
+        }
+    }
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::First => "прьвъ",
+            Self::Second => "въторъ",
+            Self::Third => "третии",
+            Self::Fourth => "четврьтъ",
+            Self::Fifth => "пѧтъ",
+            Self::Sixth => "шестъ",
+            Self::Seventh => "седмъ",
+            Self::Eighth => "осмъ",
+            Self::Ninth => "девѧтъ",
+            Self::Tenth => "десѧтъ",
+        }
+    }
+
+    pub const fn source_union_aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::First => &["прьвъ"],
+            Self::Second => &["въторъ"],
+            // `третии` is the Polivanova citation; `трети` is the dictionary
+            // and PROIEL graphic realization of the same ordinal identity.
+            Self::Third => &["третии", "трети"],
+            Self::Fourth => &["четврьтъ"],
+            Self::Fifth => &["пѧтъ"],
+            Self::Sixth => &["шестъ"],
+            Self::Seventh => &["седмъ"],
+            Self::Eighth => &["осмъ"],
+            Self::Ninth => &["девѧтъ"],
+            Self::Tenth => &["десѧтъ"],
+        }
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|identity| identity.source_union_aliases().contains(&lemma))
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        match self {
+            Self::Third => RuleId::NumeralOrdinalJ,
+            _ => RuleId::NumeralOrdinalHard,
+        }
+    }
+
+    pub const fn authority(self) -> &'static str {
+        "Polivanova 2023 §§70, 72, 285, 299, 303–306; Polivanova OSD spreadsheet; UD OCS PROIEL r2.18 crosscheck"
+    }
+
+    const fn stem(self) -> &'static str {
+        match self {
+            Self::First => "прьв",
+            Self::Second => "вътор",
+            Self::Third => "трет",
+            Self::Fourth => "четврьт",
+            Self::Fifth => "пѧт",
+            Self::Sixth => "шест",
+            Self::Seventh => "седм",
+            Self::Eighth => "осм",
+            Self::Ninth => "девѧт",
+            Self::Tenth => "десѧт",
+        }
+    }
+}
+
+/// Decline one simple ordinal through the complete adjective agreement space.
+pub fn decline_ordinal(
+    identity: OrdinalNumeralIdentity,
+    cell: AdjectiveCell,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    let mut prediction = if identity == OrdinalNumeralIdentity::Third {
+        crate::adjective::decline_j_stem(identity.stem(), cell)?
+    } else {
+        crate::adjective::decline_stem(identity.stem(), AdjectiveClass::Hard, cell)?
+    };
+    let rule_id = identity.rule_id();
+    prediction.trace.push(RuleStep {
+        rule_id,
+        before: identity.canonical_lemma().to_string(),
+        after: prediction.text.clone(),
+        reason: "apply the reviewed ordinal-adjective class and agreement profile",
+    });
+    prediction.rule_id = rule_id;
+    let status = if cell.form == AdjectiveForm::Short
+        && cell.case == Case::Nominative
+        && cell.number == Number::Singular
+        && cell.gender == Gender::Masculine
+    {
+        NumeralVariantStatus::ReviewedTable
+    } else {
+        NumeralVariantStatus::ProductiveRule
+    };
+    let mut variants = vec![NumeralVariant { prediction, status }];
+    if identity == OrdinalNumeralIdentity::Third {
+        if let Some(text) = third_ordinal_corpus_variant(cell) {
+            variants.push(NumeralVariant::corpus(
+                text,
+                rule_id,
+                identity.canonical_lemma(),
+                "retain the cell-specific spelling attested in UD OCS PROIEL r2.18",
+            ));
+        }
+    }
+    Ok(variants)
+}
+
+fn third_ordinal_corpus_variant(cell: AdjectiveCell) -> Option<&'static str> {
+    use Case::*;
+    use Gender::*;
+    use Number::*;
+    match (cell.form, cell.case, cell.number, cell.gender, cell.animacy) {
+        (AdjectiveForm::Long, Genitive, Singular, Masculine | Neuter, _) => Some("третиѣаго"),
+        (AdjectiveForm::Long, Dative, Singular, Masculine, _) => Some("третию҄моу"),
+        (AdjectiveForm::Long, Accusative, Singular, Neuter, _) => Some("третиее"),
+        _ => None,
+    }
 }
 
 /// The source-exhaustive simple cardinal identities from one through ten.
@@ -849,6 +1035,195 @@ mod tests {
             for alias in identity.source_union_aliases() {
                 assert!(aliases.insert(*alias), "duplicate cardinal alias {alias}");
             }
+        }
+    }
+
+    #[test]
+    fn simple_ordinal_inventory_is_exhaustive_and_nonoverlapping() {
+        let citations = [
+            "прьвъ",
+            "въторъ",
+            "третии",
+            "четврьтъ",
+            "пѧтъ",
+            "шестъ",
+            "седмъ",
+            "осмъ",
+            "девѧтъ",
+            "десѧтъ",
+        ];
+        assert_eq!(OrdinalNumeralIdentity::ALL.len(), citations.len());
+        let mut aliases = std::collections::BTreeSet::new();
+        for (index, (identity, citation)) in OrdinalNumeralIdentity::ALL
+            .into_iter()
+            .zip(citations)
+            .enumerate()
+        {
+            assert_eq!(identity.value(), (index + 1) as u8);
+            assert_eq!(identity.canonical_lemma(), citation);
+            assert_eq!(
+                OrdinalNumeralIdentity::classify_source_union_lemma(citation),
+                Some(identity)
+            );
+            for alias in identity.source_union_aliases() {
+                assert!(aliases.insert(*alias), "duplicate ordinal alias {alias}");
+            }
+        }
+        assert_eq!(
+            OrdinalNumeralIdentity::classify_source_union_lemma("трети"),
+            Some(OrdinalNumeralIdentity::Third)
+        );
+    }
+
+    #[test]
+    fn every_simple_ordinal_licenses_all_adjective_cells() {
+        for identity in OrdinalNumeralIdentity::ALL {
+            let outcomes = AdjectiveCell::all()
+                .map(|cell| {
+                    (
+                        cell,
+                        decline_ordinal(identity, cell)
+                            .unwrap_or_else(|error| panic!("{identity:?} {cell:?}: {error}")),
+                    )
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(outcomes.len(), 252, "{identity:?}");
+            assert!(
+                outcomes
+                    .iter()
+                    .flat_map(|(_, variants)| variants)
+                    .all(|variant| variant.prediction.rule_id == identity.rule_id())
+            );
+            assert_eq!(
+                outcomes
+                    .iter()
+                    .flat_map(|(_, variants)| variants)
+                    .filter(|variant| variant.status == NumeralVariantStatus::ReviewedTable)
+                    .count(),
+                2,
+                "the two animacy projections of the citation cell are reviewed"
+            );
+        }
+    }
+
+    #[test]
+    fn hard_ordinals_reuse_the_adjective_profile_exactly() {
+        for identity in OrdinalNumeralIdentity::ALL
+            .into_iter()
+            .filter(|identity| *identity != OrdinalNumeralIdentity::Third)
+        {
+            for cell in AdjectiveCell::all() {
+                let ordinal = decline_ordinal(identity, cell)
+                    .expect("licensed hard ordinal")
+                    .remove(0)
+                    .prediction
+                    .text;
+                let adjective =
+                    crate::adjective::decline_stem(identity.stem(), AdjectiveClass::Hard, cell)
+                        .expect("licensed hard adjective")
+                        .text;
+                assert_eq!(ordinal, adjective, "{identity:?} {cell:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn third_ordinal_uses_the_reviewed_yer_j_profile() {
+        let form = |case, number, gender, adjective_form| {
+            decline_ordinal(
+                OrdinalNumeralIdentity::Third,
+                AdjectiveCell {
+                    case,
+                    number,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    form: adjective_form,
+                },
+            )
+            .expect("licensed third-ordinal cell")[0]
+                .prediction
+                .text
+                .clone()
+        };
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+            ),
+            "третии"
+        );
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Singular,
+                Gender::Neuter,
+                AdjectiveForm::Short,
+            ),
+            "третиѥ"
+        );
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Singular,
+                Gender::Feminine,
+                AdjectiveForm::Short,
+            ),
+            "третиꙗ"
+        );
+        assert_eq!(
+            form(
+                Case::Accusative,
+                Number::Singular,
+                Gender::Feminine,
+                AdjectiveForm::Short,
+            ),
+            "третиѭ"
+        );
+        assert_eq!(
+            form(
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+            ),
+            "третиꙗ"
+        );
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Plural,
+                Gender::Feminine,
+                AdjectiveForm::Short,
+            ),
+            "третиѩ"
+        );
+    }
+
+    #[test]
+    fn third_ordinal_retains_cell_specific_proiel_spellings() {
+        let variants = |form, case, gender| {
+            decline_ordinal(
+                OrdinalNumeralIdentity::Third,
+                AdjectiveCell {
+                    case,
+                    number: Number::Singular,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    form,
+                },
+            )
+            .expect("licensed third-ordinal cell")
+        };
+        for (case, gender, expected) in [
+            (Case::Genitive, Gender::Masculine, "третиѣаго"),
+            (Case::Dative, Gender::Masculine, "третию҄моу"),
+            (Case::Accusative, Gender::Neuter, "третиее"),
+        ] {
+            let forms = variants(AdjectiveForm::Long, case, gender);
+            assert_eq!(forms[1].prediction.text, expected);
+            assert_eq!(forms[1].status, NumeralVariantStatus::CorpusAttestation);
         }
     }
 

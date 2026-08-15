@@ -421,6 +421,41 @@ pub fn reviewed_cardinal_numeral(
     )
 }
 
+/// Resolve one adjective-agreement cell of a reviewed simple ordinal.
+pub fn reviewed_ordinal_numeral(
+    identity: OrdinalNumeralIdentity,
+    cell: AdjectiveCell,
+) -> Result<FormSet, InflectionError> {
+    reviewed_numeral_variants(
+        identity.canonical_lemma(),
+        identity.authority(),
+        format!(
+            "numeral:ordinal:{}:{}:{}:{}:{}",
+            cell.form.code(),
+            cell.case.code(),
+            cell.number.code(),
+            cell.gender.code(),
+            cell.animacy.code(),
+        ),
+        old_church_slavonic_core::numeral::decline_ordinal(identity, cell)?,
+    )
+}
+
+/// Resolve a simple ordinal through the source-exhaustive first-through-tenth
+/// inventory.
+pub fn ordinal_numeral(lemma: &str, cell: AdjectiveCell) -> Result<FormSet, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = OrdinalNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    let mut result = reviewed_ordinal_numeral(identity, cell)?;
+    if normalized != identity.canonical_lemma() {
+        result.add_warning(InflectionWarning::LexicalAliasUsed {
+            canonical: identity.canonical_lemma().to_string(),
+        });
+    }
+    Ok(result)
+}
+
 /// Resolve one cell of a reviewed cardinal-magnitude head.
 pub fn reviewed_cardinal_magnitude(
     identity: CardinalMagnitudeIdentity,
@@ -468,10 +503,17 @@ fn reviewed_numeral_variants(
                         NumeralVariantStatus::ProductiveRule => {
                             MetadataProvenance::ProductiveRuleOutput
                         }
+                        NumeralVariantStatus::CorpusAttestation => {
+                            MetadataProvenance::CorpusEvaluationObservation
+                        }
                     },
                     source_feature: Some(format!("{source_feature}:{}", variant.status.code())),
-                    source_form: (variant.status == NumeralVariantStatus::ReviewedTable)
-                        .then(|| form.text.clone()),
+                    source_form: matches!(
+                        variant.status,
+                        NumeralVariantStatus::ReviewedTable
+                            | NumeralVariantStatus::CorpusAttestation
+                    )
+                    .then(|| form.text.clone()),
                     crosscheck_features: Vec::new(),
                     authority: Some(authority.to_string()),
                 }],
@@ -2331,6 +2373,28 @@ pub(crate) fn build_cardinal_numeral_paradigm(
             })
             .collect(),
     }
+}
+
+pub(crate) fn build_ordinal_numeral_paradigm(
+    identity: OrdinalNumeralIdentity,
+) -> OrdinalNumeralParadigm {
+    OrdinalNumeralParadigm {
+        identity,
+        lemma: identity.canonical_lemma().to_string(),
+        cells: AdjectiveCell::all()
+            .map(|cell| CellOutcome {
+                cell,
+                result: reviewed_ordinal_numeral(identity, cell),
+            })
+            .collect(),
+    }
+}
+
+pub fn ordinal_numeral_paradigm(lemma: &str) -> Result<OrdinalNumeralParadigm, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = OrdinalNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    Ok(build_ordinal_numeral_paradigm(identity))
 }
 
 fn lexeme_identity(

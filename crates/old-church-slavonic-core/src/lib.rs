@@ -33,7 +33,7 @@ pub use grammar::{
 pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
     CardinalPhraseAnalysis, NumeralGovernment, NumeralVariant, NumeralVariantStatus,
-    RealizedCardinal,
+    OrdinalNumeralIdentity, RealizedCardinal,
 };
 pub use orthography::{Lemma, Script};
 pub use phrase::{

@@ -120,7 +120,7 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Cardinals through 10,000 | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`cardinal_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, and structured compound inventory with inherent-number agreement, typed government, correlated multiword alternatives, and source-listed versus productive variants |
+//! | Cardinals through 10,000 and simple ordinals 1–10 | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound, and adjective-agreement ordinal inventories with typed government, correlated multiword alternatives, and source-listed versus productive variants |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -157,18 +157,19 @@ pub use old_church_slavonic_core::{
     FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell,
     InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
     Lemma, LexemeSummary, LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment,
-    PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell,
-    PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary,
-    PronominalFamilySpec, PronominalPostpositive, PronominalPrefix, PronounFormSelection,
-    RealizedCardinal, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
-    UngenderedCell, VariantPolicy, VariantSelectionError,
+    OrdinalNumeralIdentity, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
+    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
+    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
+    PronounFormSelection, RealizedCardinal, RealizedPhrase, RequestedCell, Script,
+    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
     ComparativeParadigm, CompoundCardinalOutcome, CompoundCardinalParadigm, DeterminerParadigm,
     FiniteVerbParadigm, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
-    LParticipleParadigm, NounParadigm, NumeralParadigm, ParadigmLookupError, ParticipleParadigm,
-    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
+    LParticipleParadigm, NounParadigm, NumeralParadigm, OrdinalNumeralParadigm,
+    ParadigmLookupError, ParticipleParadigm, PersonalPronounParadigm, PronounParadigm,
+    VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -190,10 +191,11 @@ pub mod prelude {
         ImperativeParadigm, InflectionError, InflectionResult, InflectionWarning,
         InterrogativePronounIdentity, IrregularAgreeingIdentity, LParticipleParadigm, Lemma,
         LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral, NumeralParadigm,
-        ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind, ParticipleParadigm, Person,
-        PersonalPronounIdentity, PersonalPronounParadigm, Pronoun, PronounFormSelection,
-        PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy, VariantSelectionError,
-        Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+        OrdinalNumeralIdentity, OrdinalNumeralParadigm, ParadigmLookupError, PartOfSpeech,
+        Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
+        PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
+        StandardPronominalIdentity, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
+        adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
         cardinal_numeral_identity, cardinal_numeral_paradigm, comparative_citation,
         compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_one,
         compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
@@ -202,11 +204,12 @@ pub mod prelude {
         gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
         interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
         long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
-        numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
-        personal_pronoun, personal_pronoun_paradigm, personal_pronoun_with, present,
-        present_active_participle, present_paradigm, present_passive_participle, pronoun,
-        pronoun_paradigm, reflexive_pronoun, regular_pronominal, relative_pronoun, short_adjective,
-        supine, verbal_noun,
+        numeral_paradigm, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+        ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
+        past_passive_participle, personal_pronoun, personal_pronoun_paradigm,
+        personal_pronoun_with, present, present_active_participle, present_paradigm,
+        present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
+        regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun,
     };
 }
 
@@ -679,6 +682,92 @@ pub fn cardinal_numeral_identity(
             case,
             number,
             gender,
+        },
+    )
+}
+
+/// Decline one simple ordinal from first through tenth by lemma.
+///
+/// Ordinals expose the complete short/long adjective agreement space, including
+/// animacy-sensitive masculine accusatives. `третии` is generated from its
+/// source-listed `трет.ьj` workstem rather than forced through an ordinary soft
+/// consonant profile.
+///
+/// ```
+/// use old_church_slavonic::{
+///     ordinal_numeral, AdjectiveForm, Animacy, Case, Gender, Number,
+/// };
+/// assert_eq!(
+///     ordinal_numeral(
+///         "четврьтъ",
+///         AdjectiveForm::Long,
+///         Case::Genitive,
+///         Number::Singular,
+///         Gender::Masculine,
+///         Animacy::Inanimate,
+///     )?
+///     .primary_text(),
+///     "четврьтаѥго",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn ordinal_numeral(
+    lemma: &str,
+    form: AdjectiveForm,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+) -> InflectionResult {
+    resolver::ordinal_numeral(
+        lemma,
+        old_church_slavonic_core::AdjectiveCell {
+            case,
+            number,
+            gender,
+            animacy,
+            form,
+        },
+    )
+}
+
+/// Decline one simple ordinal by its stable reviewed grammatical identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     ordinal_numeral_identity, AdjectiveForm, Animacy, Case, Gender, Number,
+///     OrdinalNumeralIdentity,
+/// };
+/// assert_eq!(
+///     ordinal_numeral_identity(
+///         OrdinalNumeralIdentity::Second,
+///         AdjectiveForm::Short,
+///         Case::Nominative,
+///         Number::Singular,
+///         Gender::Feminine,
+///         Animacy::Inanimate,
+///     )?
+///     .primary_text(),
+///     "вътора",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn ordinal_numeral_identity(
+    identity: OrdinalNumeralIdentity,
+    form: AdjectiveForm,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+) -> InflectionResult {
+    resolver::reviewed_ordinal_numeral(
+        identity,
+        old_church_slavonic_core::AdjectiveCell {
+            case,
+            number,
+            gender,
+            animacy,
+            form,
         },
     )
 }
@@ -1202,6 +1291,58 @@ pub fn numeral_paradigm(lemma: &str) -> Result<NumeralParadigm, InflectionError>
 /// ```
 pub fn cardinal_numeral_paradigm(identity: CardinalNumeralIdentity) -> CardinalNumeralParadigm {
     resolver::build_cardinal_numeral_paradigm(identity)
+}
+
+/// Enumerate all 252 short/long agreement cells for a simple ordinal lemma.
+///
+/// ```
+/// use old_church_slavonic::{
+///     ordinal_numeral_paradigm, AdjectiveForm, Animacy, Case, Gender, Number,
+/// };
+/// let paradigm = ordinal_numeral_paradigm("третии")?;
+/// assert_eq!(paradigm.len(), 252);
+/// assert_eq!(
+///     paradigm.form(
+///         AdjectiveForm::Short,
+///         Case::Nominative,
+///         Number::Singular,
+///         Gender::Neuter,
+///         Animacy::Inanimate,
+///     )?
+///     .primary_text(),
+///     "третиѥ",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn ordinal_numeral_paradigm(lemma: &str) -> Result<OrdinalNumeralParadigm, InflectionError> {
+    resolver::ordinal_numeral_paradigm(lemma)
+}
+
+/// Enumerate all ordinal agreement cells from a stable reviewed identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     ordinal_numeral_paradigm_identity, AdjectiveForm, Animacy, Case, Gender, Number,
+///     OrdinalNumeralIdentity,
+/// };
+/// let paradigm = ordinal_numeral_paradigm_identity(OrdinalNumeralIdentity::First);
+/// assert_eq!(
+///     paradigm.form(
+///         AdjectiveForm::Long,
+///         Case::Nominative,
+///         Number::Singular,
+///         Gender::Masculine,
+///         Animacy::Inanimate,
+///     )?
+///     .primary_text(),
+///     "прьвꙑи",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn ordinal_numeral_paradigm_identity(
+    identity: OrdinalNumeralIdentity,
+) -> OrdinalNumeralParadigm {
+    resolver::build_ordinal_numeral_paradigm(identity)
 }
 
 /// Enumerate gender-indexed numeral cells, retaining unsupported rows.

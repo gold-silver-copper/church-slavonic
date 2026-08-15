@@ -18,19 +18,21 @@ use old_church_slavonic::{
     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CompoundCardinalCell, Determiner,
     DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
     InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-    Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, ParadigmLookupError,
-    PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
-    PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
-    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
-    cardinal_numeral_identity, cardinal_numeral_paradigm, compound_cardinal,
-    compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
-    compound_cardinal_with_one, compound_cardinal_with_options, determiner, determiner_identity,
-    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
-    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
-    l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
-    numeral, participle_paradigm, past_active_participle, personal_pronoun, personal_pronoun_with,
-    present, present_paradigm, pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun,
-    short_adjective, supine,
+    Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, OrdinalNumeralIdentity,
+    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
+    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script,
+    StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
+    anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
+    cardinal_numeral_paradigm, compound_cardinal, compound_cardinal_paradigm,
+    compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
+    compound_cardinal_with_options, determiner, determiner_identity, determiner_paradigm, finite,
+    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
+    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
+    l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
+    ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+    ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
+    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
+    regular_pronominal, relative_pronoun, short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -433,6 +435,150 @@ fn simple_cardinals_have_exhaustive_typed_paradigms_and_evidence() {
             ..
         }) if requested == invalid
     ));
+}
+
+#[test]
+fn simple_ordinals_have_complete_adjective_paradigms_and_evidence() {
+    for identity in OrdinalNumeralIdentity::ALL {
+        let paradigm = ordinal_numeral_paradigm_identity(identity);
+        assert_eq!(paradigm.identity(), identity);
+        assert_eq!(paradigm.lemma(), identity.canonical_lemma());
+        assert_eq!(paradigm.len(), 252);
+        assert_eq!(paradigm.successes().count(), 252, "{identity:?}");
+        assert_eq!(paradigm.failures().count(), 0, "{identity:?}");
+        assert!(paradigm.successes().all(|(_, forms)| matches!(
+            forms.source(),
+            FormSource::ReviewedGrammarTable { rule_id } if *rule_id == identity.rule_id()
+        )));
+    }
+
+    let citation = ordinal_numeral_identity(
+        OrdinalNumeralIdentity::Third,
+        AdjectiveForm::Short,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    )
+    .expect("reviewed third-ordinal citation");
+    assert_eq!(citation.primary_text(), "третии");
+    assert_eq!(
+        citation.trace().last().map(|step| step.rule_id),
+        Some(RuleId::NumeralOrdinalJ)
+    );
+    assert_eq!(
+        citation.analyses()[0].evidence[0].provenance,
+        MetadataProvenance::ReviewedGrammarTable
+    );
+    assert_eq!(
+        citation.analyses()[0].evidence[0].source_form.as_deref(),
+        Some("третии")
+    );
+
+    let productive = ordinal_numeral_identity(
+        OrdinalNumeralIdentity::Third,
+        AdjectiveForm::Long,
+        Case::Genitive,
+        Number::Singular,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    )
+    .expect("productive third-ordinal long cell");
+    assert_eq!(
+        productive.texts().collect::<Vec<_>>(),
+        ["третиꙗѥго", "третиѣаго"]
+    );
+    assert_eq!(
+        productive.analyses()[0].evidence[0].provenance,
+        MetadataProvenance::ProductiveRuleOutput
+    );
+    assert_eq!(productive.analyses()[0].evidence[0].source_form, None);
+    assert_eq!(
+        productive.analyses()[1].evidence[0].provenance,
+        MetadataProvenance::CorpusEvaluationObservation
+    );
+    assert_eq!(
+        productive.analyses()[1].evidence[0].source_form.as_deref(),
+        Some("третиѣаго")
+    );
+
+    let alias = ordinal_numeral(
+        "трети",
+        AdjectiveForm::Short,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Neuter,
+        Animacy::Inanimate,
+    )
+    .expect("dictionary and corpus spelling alias");
+    assert_eq!(alias.lemma(), "третии");
+    assert_eq!(alias.primary_text(), "третиѥ");
+    assert!(
+        alias
+            .warnings()
+            .contains(&InflectionWarning::LexicalAliasUsed {
+                canonical: "третии".to_string(),
+            })
+    );
+    assert_eq!(
+        ordinal_numeral_paradigm("трети")
+            .expect("source-union ordinal paradigm")
+            .identity(),
+        OrdinalNumeralIdentity::Third
+    );
+}
+
+#[test]
+fn reviewed_hard_ordinals_match_existing_adjective_tables() {
+    for identity in [
+        OrdinalNumeralIdentity::Fourth,
+        OrdinalNumeralIdentity::Tenth,
+    ] {
+        for cell in AdjectiveCell::all() {
+            // The legacy copied adjective feature rows have neither a distinct
+            // vocative nor an animacy dimension. Cross-check the cells that
+            // those rows can encode independently.
+            if cell.case == Case::Vocative
+                || (cell.case == Case::Accusative
+                    && cell.gender == Gender::Masculine
+                    && cell.animacy == Animacy::Animate
+                    && matches!(cell.number, Number::Singular | Number::Plural))
+            {
+                continue;
+            }
+            let ordinal = ordinal_numeral_identity(
+                identity,
+                cell.form,
+                cell.case,
+                cell.number,
+                cell.gender,
+                cell.animacy,
+            )
+            .expect("reviewed ordinal cell");
+            let adjective = match cell.form {
+                AdjectiveForm::Short => short_adjective(
+                    identity.canonical_lemma(),
+                    cell.case,
+                    cell.number,
+                    cell.gender,
+                    cell.animacy,
+                ),
+                AdjectiveForm::Long => long_adjective(
+                    identity.canonical_lemma(),
+                    cell.case,
+                    cell.number,
+                    cell.gender,
+                    cell.animacy,
+                ),
+            }
+            .unwrap_or_else(|error| panic!("{identity:?} {cell:?}: {error}"));
+            assert_eq!(
+                ordinal.primary_text(),
+                adjective.primary_text(),
+                "{identity:?} {cell:?}"
+            );
+        }
+    }
 }
 
 #[test]

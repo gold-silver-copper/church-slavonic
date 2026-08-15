@@ -419,6 +419,65 @@ pub fn decline_stem(
     decline_validated_stem(&stem, class, cell, &stem)
 }
 
+/// Decline a soft adjective whose workstem ends in the suffix `ьj`.
+///
+/// The caller supplies the part of the workstem before `ьj`: `"бож"` for
+/// source workstem `бож.ьj`, or `"трет"` for `трет.ьj`. This boundary cannot
+/// be represented by ordinary [`AdjectiveClass::Soft`] concatenation. The yer
+/// on the stem side surfaces as `и`, while the following terminal is resolved
+/// after `j` (`а` -> `ꙗ`, `е` -> `ѥ`, `у` -> `ю`, and so on). Polivanova's
+/// §§70, 72, and Table 304 explicitly derive the resulting `божии`, `божиѥ`,
+/// `божиꙗ`, `божиѭ`, and `божиѩ` profile.
+pub fn decline_j_stem(
+    stem_before_yer_j: &str,
+    cell: AdjectiveCell,
+) -> Result<PredictedForm, InflectionError> {
+    let stem = crate::orthography::canonical_display(stem_before_yer_j)?;
+    if stem.is_empty() {
+        return Err(InflectionError::InvalidInput {
+            reason: "an adjective j-stem base cannot be empty".to_string(),
+        });
+    }
+    let (ending, rule_id) = match cell.form {
+        AdjectiveForm::Short => (soft_short_ending(cell), RuleId::AdjectiveSoftShort),
+        AdjectiveForm::Long => (soft_long_ending(cell), RuleId::AdjectiveSoftLong),
+    };
+    let text = join_yer_j_boundary(&stem, ending);
+    Ok(PredictedForm {
+        text: text.clone(),
+        rule_id,
+        trace: vec![RuleStep {
+            rule_id,
+            before: format!("{stem}.ьj"),
+            after: text,
+            reason: "attach the soft adjective terminal and resolve the ьj boundary",
+        }],
+    })
+}
+
+fn join_yer_j_boundary(stem: &str, ending: &str) -> String {
+    let (boundary_vowel, rest) = if let Some(rest) = ending.strip_prefix("оу") {
+        ("ю", rest)
+    } else {
+        let mut chars = ending.chars();
+        let Some(first) = chars.next() else {
+            return format!("{stem}и");
+        };
+        let replacement = match first {
+            'ь' | 'и' => "и",
+            'а' => "ꙗ",
+            'е' => "ѥ",
+            'ѣ' => "ꙗ",
+            'ѧ' => "ѩ",
+            'ѫ' => "ѭ",
+            'у' => "ю",
+            _ => return format!("{stem}и{ending}"),
+        };
+        (replacement, chars.as_str())
+    };
+    format!("{stem}и{boundary_vowel}{rest}")
+}
+
 fn decline_validated_stem(
     stem: &str,
     class: AdjectiveClass,
@@ -734,6 +793,91 @@ mod tests {
         )
         .expect("soft long");
         assert_eq!(soft_long.text, "синии");
+    }
+
+    #[test]
+    fn yer_j_workstem_reproduces_the_reviewed_direct_profile() {
+        let form = |case, number, gender, adjective_form| {
+            decline_j_stem(
+                "бож",
+                AdjectiveCell {
+                    case,
+                    number,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    form: adjective_form,
+                },
+            )
+            .expect("reviewed j-stem cell")
+            .text
+        };
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+            ),
+            "божии"
+        );
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Singular,
+                Gender::Neuter,
+                AdjectiveForm::Short,
+            ),
+            "божиѥ"
+        );
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Singular,
+                Gender::Feminine,
+                AdjectiveForm::Short,
+            ),
+            "божиꙗ"
+        );
+        assert_eq!(
+            form(
+                Case::Accusative,
+                Number::Singular,
+                Gender::Feminine,
+                AdjectiveForm::Short,
+            ),
+            "божиѭ"
+        );
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Plural,
+                Gender::Feminine,
+                AdjectiveForm::Short,
+            ),
+            "божиѩ"
+        );
+    }
+
+    #[test]
+    fn yer_j_workstem_remains_productive_in_long_cells() {
+        let form = |case, gender| {
+            decline_j_stem(
+                "трет",
+                AdjectiveCell {
+                    case,
+                    number: Number::Singular,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                },
+            )
+            .expect("productive j-stem long cell")
+            .text
+        };
+        assert_eq!(form(Case::Nominative, Gender::Masculine), "третиии");
+        assert_eq!(form(Case::Nominative, Gender::Neuter), "третиѥѥ");
+        assert_eq!(form(Case::Genitive, Gender::Masculine), "третиꙗѥго");
+        assert_eq!(form(Case::Dative, Gender::Masculine), "третиюѥмоу");
     }
 
     #[test]

@@ -163,6 +163,55 @@ does not duplicate them.
 inventory. Every reviewed identity has a complete 126-row paradigm containing
 both successful forms and typed historical failures.
 
+## Numeral rules
+
+### Cardinals through 10,000
+
+`CardinalNumeralIdentity` gives stable grammatical identities to the reviewed
+simple-cardinal lexicon. One agrees in the singular, two and both in the dual,
+three and four in the plural, and five through ten govern a genitive-plural
+complement. `NumeralCell` makes the inherent number and optional agreement
+gender explicit. The unique three, four, and mixed ten profiles use
+`NUM-CARD-THREE-01`, `NUM-CARD-FOUR-01`, and `NUM-CARD-TEN-01`; the other
+simple forms reuse independently reviewed nominal or pronominal kernels.
+
+Structured cardinal composition retains every component as a `PhraseToken`.
+The engine covers teens in `на десѧте`, multiplicative tens, hundreds,
+thousands, `тъма`, and additive `и` through 10,000. It never flattens correlated
+alternatives into invalid cross-products. Stable rules are `NUM-CARD-TEEN-01`,
+`NUM-CARD-TENS-01`, `NUM-CARD-HUNDRED-01`, `NUM-CARD-THOUSAND-01`,
+`NUM-CARD-MYRIAD-01`, and `NUM-CARD-ADDITIVE-01`.
+
+### NUM-ORD-HARD-01 and NUM-ORD-J-01 — simple ordinals
+
+Polivanova's OSD spreadsheet contains exactly ten ordinal class-`2/a` lexical
+identities: `прьвъ`, `въторъ`, `третии`, `четврьтъ`, `пѧтъ`, `шестъ`,
+`седмъ`, `осмъ`, `девѧтъ`, and `десѧтъ`. The first, second, and fourth through
+tenth use the ordinary hard short/long adjective kernels. Each agrees in case,
+number, gender, and masculine-accusative animacy.
+
+The third ordinal is not an ordinary consonant-soft adjective. Its source
+workstem is `трет.ьj`; Polivanova §§70 and 72 require the yer before `j` to
+surface as `и` and resolve the following terminal across the yod boundary.
+Thus the reviewed short profile includes `третии`, `третиѥ`, `третиꙗ`,
+`третиѭ`, and `третиѩ`. The same synthesis remains productive for every long
+cell. Where that suffix produces multiply adjacent vowels, the canonical rule
+output is retained even when unattested, for example `третиии`, `третиѥѥ`,
+`третиꙗѥго`, and `третиюѥмоу`; Polivanova §305 explicitly warns that `ьj`
+suffixes create morphophonological problems for long forms.
+
+`OrdinalNumeralParadigm` enumerates all 252 form × case × number × gender ×
+animacy requests for each identity. The OSD citation has reviewed-table
+evidence, productive standard cells have productive-rule evidence, and pinned
+UD OCS PROIEL r2.18 spellings remain separate corpus observations. In
+particular, the engine retains the unambiguously long `третиѣаго`,
+`третию҄моу`, and `третиее` only in their observed cells; it does not assign
+form-ambiguous corpus spellings or turn deformations into a global paradigm.
+
+Authority: Polivanova 2023 §§70, 72, 285, 299, and 303–306 plus OSD spreadsheet
+rows 939, 1181, 1188, 3073, 4224, 4525, 4864, 5596, 6149, and 6243. UD OCS
+PROIEL r2.18 is an attestation crosscheck, not the productive authority.
+
 ### Comparatives
 
 `ComparativeFormation` records a word-formation strategy independently of

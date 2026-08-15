@@ -4,8 +4,8 @@ use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Animacy, CardinalCompositionOptions, CardinalMagnitudeIdentity,
     CardinalNumeralIdentity, Case, CompoundCardinalCell, DeterminerCell, DeterminerIdentity,
     FiniteTense, FiniteVerbCell, FormSet, Gender, GenderedCell, ImperativeCell, InflectionError,
-    LParticipleCell, NounCell, Number, NumeralCell, PartOfSpeech, ParticipleCell, ParticipleKind,
-    Person, PersonalPronounCell, RealizedCardinal, UngenderedCell,
+    LParticipleCell, NounCell, Number, NumeralCell, OrdinalNumeralIdentity, PartOfSpeech,
+    ParticipleCell, ParticipleKind, Person, PersonalPronounCell, RealizedCardinal, UngenderedCell,
 };
 use std::fmt;
 
@@ -392,6 +392,107 @@ impl<'a> IntoIterator for &'a CardinalNumeralParadigm {
 impl IntoIterator for CardinalNumeralParadigm {
     type Item = CellOutcome<NumeralCell>;
     type IntoIter = std::vec::IntoIter<CellOutcome<NumeralCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
+/// Complete short-and-long agreement inventory for one simple ordinal.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OrdinalNumeralParadigm {
+    pub(crate) identity: OrdinalNumeralIdentity,
+    pub(crate) lemma: String,
+    pub(crate) cells: Vec<CellOutcome<AdjectiveCell>>,
+}
+
+impl OrdinalNumeralParadigm {
+    /// The stable grammatical identity represented by this paradigm.
+    pub const fn identity(&self) -> OrdinalNumeralIdentity {
+        self.identity
+    }
+
+    /// The canonical grammar lemma.
+    pub fn lemma(&self) -> &str {
+        &self.lemma
+    }
+
+    /// Return one ordinal-adjective form.
+    pub fn form(
+        &self,
+        form: AdjectiveForm,
+        case: Case,
+        number: Number,
+        gender: Gender,
+        animacy: Animacy,
+    ) -> Result<&FormSet, ParadigmLookupError> {
+        forms_for(
+            &self.cells,
+            &AdjectiveCell {
+                case,
+                number,
+                gender,
+                animacy,
+                form,
+            },
+        )
+    }
+
+    /// Iterate in form-number-case-gender-animacy order.
+    pub fn iter(&self) -> std::slice::Iter<'_, CellOutcome<AdjectiveCell>> {
+        self.cells.iter()
+    }
+
+    /// Iterate over successful cells without discarding their grammar.
+    pub fn successes(&self) -> impl Iterator<Item = (&AdjectiveCell, &FormSet)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|forms| (&outcome.cell, forms))
+        })
+    }
+
+    /// Iterate over retained typed failures.
+    pub fn failures(&self) -> impl Iterator<Item = (&AdjectiveCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    /// Consume the paradigm into its ordered cell rows.
+    pub fn into_rows(self) -> Vec<CellOutcome<AdjectiveCell>> {
+        self.cells
+    }
+
+    /// Number of represented cells, including typed failures.
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    /// Ordinal paradigms always represent the complete typed inventory.
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a OrdinalNumeralParadigm {
+    type Item = &'a CellOutcome<AdjectiveCell>;
+    type IntoIter = std::slice::Iter<'a, CellOutcome<AdjectiveCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for OrdinalNumeralParadigm {
+    type Item = CellOutcome<AdjectiveCell>;
+    type IntoIter = std::vec::IntoIter<CellOutcome<AdjectiveCell>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.cells.into_iter()
