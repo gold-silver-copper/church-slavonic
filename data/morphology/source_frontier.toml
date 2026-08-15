@@ -23,9 +23,9 @@ authority_justification = "The current OCS specification uses its explicitly sep
 license = "site copyright; bibliographic facts and short rule references only until reuse terms are reviewed"
 redistribution = "metadata-only"
 upstream_lineage = []
-reviewed_sections = ["noun inflection", "verb inflection", "imperfect", "aorist lesson 3 §§14.1–14.3", "imperative", "infinitive and supine", "participles", "aspect", "numerals", "lesson 5 §§22.1–22.4 comparatives and superlative strategies"]
+reviewed_sections = ["noun inflection", "verb inflection", "imperfect", "aorist lesson 3 §§14.1–14.3", "lesson 2 §9 synthetic and да imperatives", "infinitive and supine", "participles", "aspect", "numerals", "lesson 5 §§22.1–22.4 comparatives and superlative strategies"]
 rule_ids = ["N-*", "ADJ-*", "ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "V-*"]
-impact = "Defines the current OCS grammatical inventory and productive generalizations; independently crosschecks old/new comparator formation and identifies analytic rather than universally synthetic superlative strategies."
+impact = "Defines the current OCS grammatical inventory and productive generalizations; independently crosschecks old/new comparator formation, identifies analytic rather than universally synthetic superlative strategies, and licenses да plus present commands outside and alongside the synthetic imperative inventory."
 conflicts = ["Its normalized lesson forms do not by themselves settle manuscript-specific contraction and orthographic variants.", "Its diachronic asigmatic/sigmatic/new presentation crosswalks to, but does not share labels with, Polivanova's canonical standard versus secondary old-aorist analysis."]
 access_status = "accessible-metadata"
 
@@ -108,6 +108,33 @@ reviewed_sections = ["database description", "full stem inventory", "representat
 rule_ids = ["V-AOR-*", "V-PRESENT-*", "pending-love-lexeme-import"]
 impact = "Newly admitted in discovery pass 1; supplies independent lexeme-level allomorph evidence for sigmatic aorists and irregular/root verbs."
 conflicts = ["Historical/etymological roots and later Miklosich-only records must not be mistaken for canonical attestation."]
+access_status = "accessible-metadata"
+
+[[source]]
+id = "punco-lmu-reference-grammar"
+title = "Digital Editions: Reference Grammar"
+author_editor = "LMU Munich Slavic digital editions project"
+edition_revision = "live reference grammar reviewed 2026-08-14"
+publication_date = "web edition"
+publisher_institution = "Ludwig-Maximilians-Universität München"
+stable_url = "https://www.punco.slavistik.lmu.de/ref.html"
+retrieved_at = "2026-08-14"
+sha256 = ""
+languages = ["English", "Old Church Slavonic", "Church Slavonic", "Bulgarian", "Macedonian"]
+periods = ["Old Church Slavonic", "Church Slavonic", "early modern Balkan Slavic"]
+recensions = ["old-church-slavonic", "mixed"]
+orthographies = ["scholarly transliteration", "source Cyrillic"]
+source_type = "scholarly digital reference grammar and annotated-corpus documentation"
+epistemic_roles = ["productive-grammar-comparison", "construction-inventory", "corpus-annotation-authority"]
+authority_tier = 2
+authority_justification = "The reference grammar explicitly crosswalks Old Church Slavonic descriptions with tagged primary Church Slavonic corpus examples and is used as an independent comparison rather than the sole normative authority."
+license = "site and database reuse terms not stated on the reviewed page"
+redistribution = "metadata-only"
+upstream_lineage = ["Punčo's Sbornik", "Lunt 2001"]
+reviewed_sections = ["§5.4.2 analytic and synthetic imperative"]
+rule_ids = ["PHRASE-IMPV-DA-01", "pending-punco-analytic-crosswalk"]
+impact = "Independently confirms да plus present forms for commands in all persons, including the second person, and distinguishes Church Slavonic optative force."
+conflicts = ["Its scope spans Old Church Slavonic, Church Slavonic, and later Balkan varieties; only claims explicitly identified as Old Church Slavonic or Church Slavonic may define those contracts."]
 access_status = "accessible-metadata"
 
 [[source]]

@@ -163,13 +163,23 @@ new formation strategy; it must not be confused with short versus long adjective
 declension. Lunt 2001 §§4.19, 4.31, and 4.7 are currently a contents-level
 crosswalk only; no claim here depends on inaccessible text.
 
-OCS superlative constructions are a separate system. UT lesson 5 §22.4 describes
-relative superlatives chiefly as a comparative plus a genitive reference and
-absolute superlatives as `ѕѣло` plus a positive or `прѣ-` plus a positive. Lexical
-`наи-` comparatives also occur in Polivanova's old-comparative inventory. The
-word-level comparator does not mislabel any of those as a universal synthetic
-superlative; they require the structured analytic/derivational contract tracked in
-the completion matrix.
+OCS superlative constructions are a separate typed system:
+
+- `PHRASE-SUP-REL-GEN-01` keeps an inflected comparative and an independently
+  inflected genitive reference as separate `PhraseToken`s. Both reference-first
+  (`вьсѣхъ бол҄ии`) and head-first orders are representable.
+- `PHRASE-SUP-ZELO-01` combines invariant `ѕѣло` with an independently declined
+  positive adjective in either attested order.
+- `ADJ-SUP-PRE-01` prefixes `прѣ-` to the positive lexeme and then applies its
+  ordinary short/long declension, producing one derived word rather than a fake
+  phrase.
+
+Lexical `наи-` comparatives in Polivanova's inventory use the already typed old
+comparative principal-part contract; the engine does not mislabel them as a
+universal synthetic superlative. `RealizedPhrase` preserves the complete `FormSet`
+of every token, including variants, evidence, warnings, and word-level traces,
+while `primary_text()` is only a convenient source-first rendering.
+Authority: UT lesson 5 §22.4 and Polivanova 2023 §§281 and 922.
 
 ## Verb rules
 
@@ -320,6 +330,14 @@ audited root analysis. Authority: UT lesson 3 §§14.1–14.3; Polivanova 2023
 `-ѣвѣ/-ѣта/-ѣмъ/-ѣте` in 1du/2du/1pl/2pl. These are the only six morphological
 cells. First singular, third dual, and third plural periphrases with `да` are outside
 the word inflector and return `HistoricallyInvalidCell`.
+
+`PHRASE-IMPV-DA-01` represents the distinct analytic imperative/optative as the
+particle `да` followed by an independently resolved present-tense token. It
+covers all nine person-number combinations: the construction supplies missing
+first/third-person commands and can also be used where a synthetic imperative
+exists. The phrase never changes the six-cell synthetic inventory and never stores
+spaces in a `FormSet`. Authority: UT lesson 2 §9,
+<https://lrc.la.utexas.edu/eieol/ocsol/20#grammar_979>.
 
 The pinned Wiktionary target sometimes spells 1du with final `-ве`; such exact table
 variants still win, while the productive rule follows the grammar's `-вѣ`. Optional

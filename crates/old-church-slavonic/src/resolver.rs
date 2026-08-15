@@ -193,6 +193,38 @@ pub fn comparative_paradigm_with(lexeme: &ComparativeLexeme) -> ComparativeParad
     }
 }
 
+pub fn pre_superlative_with(
+    positive: &AdjectiveLexeme,
+    cell: AdjectiveCell,
+) -> Result<FormSet, InflectionError> {
+    canonical_prediction(
+        &positive.lemma,
+        old_church_slavonic_core::adjective::decline_pre_superlative(positive, cell),
+        FormSourceKind::Explicit,
+    )
+}
+
+pub(crate) fn grammar_token(
+    text: &str,
+    rule_id: RuleId,
+    reason: &'static str,
+) -> Result<FormSet, InflectionError> {
+    canonical_prediction(
+        text,
+        Ok(PredictedForm {
+            text: text.to_string(),
+            rule_id,
+            trace: vec![RuleStep {
+                rule_id,
+                before: text.to_string(),
+                after: text.to_string(),
+                reason,
+            }],
+        }),
+        FormSourceKind::Explicit,
+    )
+}
+
 pub fn adjective_comparatives(lemma: &str) -> Result<FormSet, InflectionError> {
     resolve_queried_lemma(lemma, PartOfSpeech::Adjective, comparative_citation_by_id)
 }

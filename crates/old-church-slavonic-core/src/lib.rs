@@ -9,6 +9,7 @@ pub mod adjective;
 pub mod grammar;
 pub mod noun;
 pub mod orthography;
+pub mod phrase;
 pub mod pronoun;
 pub mod result;
 pub mod trace;
@@ -24,6 +25,7 @@ pub use grammar::{
     UngenderedCell, VerbAspect, VerbClass,
 };
 pub use orthography::{Lemma, Script};
+pub use phrase::{AnalyticConstruction, PhraseOrder, PhraseRole, PhraseToken, RealizedPhrase};
 pub use result::{
     FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,
     LexemeSummary, MetadataEvidence, MetadataField, MetadataProvenance, VariantPolicy,

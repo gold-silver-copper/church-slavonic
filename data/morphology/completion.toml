@@ -92,18 +92,18 @@ profiles = ["abstract", "canonical-cyrillic"]
 features = ["degree=superlative", "strategy=relative-genitive|absolute-adverb|absolute-prefix|lexical-nai", "component-provenance=typed"]
 subtypes = ["comparative-plus-genitive", "zelo-positive", "pre-positive", "lexical-nai-comparative"]
 realization = "analytic-or-derived"
-state = "implementation-missing"
-implementation_kind = "inventory-established-api-missing"
-rule_ids = ["OCS-ADJ-SUPERLATIVE-PENDING"]
+state = "productive-complete"
+implementation_kind = "structured-analytic-and-productive-derived"
+rule_ids = ["PHRASE-SUP-REL-GEN-01", "PHRASE-SUP-ZELO-01", "ADJ-SUP-PRE-01", "ADJ-COMP-OLD-01"]
 sources = ["ut-ocs-online", "polivanova-fup-2023"]
 citation = "UT lesson 5 §22.4; Polivanova 2023 §§281 and 922"
 required_metadata = ["superlative strategy", "positive or comparative lexeme", "genitive reference when relative", "component provenance"]
-valid_inventory = "Source-licensed analytic or derived construction with independently inflected components."
+valid_inventory = "Relative comparative plus explicit genitive reference in either order; ѕѣло plus positive in either order; prefixed прѣ- positive; lexical наи- comparative through explicit principal parts."
 invalid_inventory = "A universal synthetic superlative paradigm inferred merely from a comparative stem."
-implementation = ["crates/old-church-slavonic/src/lib.rs"]
-tests = ["crates/xtask/src/morphology_completeness.rs#committed_inventory_is_structurally_complete_and_deterministic"]
-evidence_status = "source inventory established; structured composition API absent"
-gap = "Implement typed phrase/derivation results and all four source-described strategies without flattening component provenance."
+implementation = ["crates/old-church-slavonic-core/src/phrase.rs", "crates/old-church-slavonic-core/src/adjective.rs", "crates/old-church-slavonic/src/phrases.rs"]
+tests = ["crates/old-church-slavonic/src/phrases.rs#superlative_strategies_keep_component_provenance_and_order", "crates/old-church-slavonic/src/phrases.rs#prefixed_absolute_superlative_remains_one_inflected_word", "crates/old-church-slavonic-core/src/phrase.rs#phrases_keep_tokens_and_reject_wrong_role_shapes"]
+evidence_status = "independent grammar inventory with structured component provenance and productive derived realization"
+rationale = "Every source-described adjective superlative strategy is represented without inventing a universal synthetic degree or flattening phrases into word forms."
 
 [[system]]
 id = "ocs.pronoun.personal-reflexive"
@@ -363,23 +363,23 @@ id = "ocs.verb.imperative.analytic"
 recension = "old-church-slavonic"
 category = "imperative"
 part_of_speech = "verb"
-scope = "Periphrastic da imperatives for non-synthetic person/number values."
+scope = "Да plus present imperative/optative across the complete person-number inventory, including cells outside and alongside the synthetic imperative."
 profiles = ["canonical-cyrillic"]
-features = ["mood=imperative", "person=1|3", "number=licensed", "particle=da", "word-order=typed"]
-subtypes = ["da-periphrasis"]
+features = ["mood=imperative-or-optative", "realization=analytic", "particle=да", "person=3", "number=3"]
+subtypes = ["da-plus-present"]
 realization = "analytic"
-state = "implementation-missing"
-implementation_kind = "absent-from-word-api"
-rule_ids = ["OCS-ANALYTIC-IMPERATIVE-PENDING"]
-sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001"]
-citation = "docs/MORPHOLOGY_SPEC.md states that 1sg, 3du, and 3pl periphrases are outside the word inflector."
-required_metadata = ["verb present/subjunctive principal parts", "particle identity", "person/number", "word-order profile"]
-valid_inventory = "To be source-crosswalked."
-invalid_inventory = "Synthetic cells represented by V-IMP-01."
-implementation = ["crates/old-church-slavonic/src/lib.rs"]
-tests = ["crates/old-church-slavonic-core/src/verb.rs#imperative_exposes_only_the_historical_cell_inventory"]
-evidence_status = "category identified; structured phrase implementation absent"
-gap = "Add typed OCS analytic-form results and implement licensed da imperatives with component provenance."
+state = "productive-complete"
+implementation_kind = "structured-analytic"
+rule_ids = ["PHRASE-IMPV-DA-01"]
+sources = ["ut-ocs-online", "punco-lmu-reference-grammar"]
+citation = "UT lesson 2 §9; LMU Digital Editions Reference Grammar §5.4.2; docs/MORPHOLOGY_SPEC.md analytic imperative"
+required_metadata = ["finite verb identity", "person", "number"]
+valid_inventory = "Да plus the independently resolved present cell for all three persons in singular, dual, and plural."
+invalid_inventory = "Whitespace-bearing fake word forms or a да phrase stored as a synthetic imperative cell."
+implementation = ["crates/old-church-slavonic-core/src/phrase.rs", "crates/old-church-slavonic/src/phrases.rs"]
+tests = ["crates/old-church-slavonic/src/phrases.rs#da_imperative_covers_every_person_number_cell", "crates/old-church-slavonic-core/src/phrase.rs#phrases_keep_tokens_and_reject_wrong_role_shapes"]
+evidence_status = "independent grammar rule with structured dictionary-resolved present component provenance"
+rationale = "All nine person-number combinations are licensed by the analytic construction; the six-cell synthetic inventory remains separate."
 
 [[system]]
 id = "ocs.verb.infinitive-supine-lparticiple"

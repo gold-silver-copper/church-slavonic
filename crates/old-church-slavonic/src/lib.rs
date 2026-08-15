@@ -120,6 +120,7 @@
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
 //! | Participles | named participle functions and [`Participle`] | Four independently represented systems with adjective agreement |
+//! | Analytic constructions | [`phrases`] | Typed tokens retain independent word-level variants and provenance |
 //!
 //! Exact table cells take precedence over dictionary principal-part rules and
 //! reviewed overrides. Explicit caller metadata is a separate evidence class.
@@ -135,15 +136,17 @@ mod handles;
 mod lookup;
 mod metadata;
 mod paradigm;
+pub mod phrases;
 mod resolver;
 
 pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
-    AdjectiveForm, Animacy, Case, FiniteTense, FormSet, FormSource, FormVariant, Gender,
-    GenderedCell, InflectionError, InflectionWarning, Lemma, LexemeSummary, Number, PartOfSpeech,
-    ParticipleKind, Person, PersonalPronounCell, RequestedCell, Script, UngenderedCell,
-    VariantPolicy, VariantSelectionError,
+    AdjectiveForm, AnalyticConstruction, Animacy, Case, FiniteTense, FormSet, FormSource,
+    FormVariant, Gender, GenderedCell, InflectionError, InflectionWarning, Lemma, LexemeSummary,
+    Number, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PhraseOrder, PhraseRole,
+    PhraseToken, RealizedPhrase, RequestedCell, Script, UngenderedCell, VariantPolicy,
+    VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,

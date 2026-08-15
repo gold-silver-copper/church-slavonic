@@ -97,6 +97,35 @@ pub fn decline_comparative(
     })
 }
 
+/// Form and decline the source-described absolute superlative in `прѣ-`.
+///
+/// Prefixation leaves the positive adjective's lexical declension class intact.
+pub fn decline_pre_superlative(
+    positive: &AdjectiveLexeme,
+    cell: AdjectiveCell,
+) -> Result<PredictedForm, InflectionError> {
+    let lemma = crate::orthography::canonical_display(&positive.lemma)?;
+    let derived = AdjectiveLexeme {
+        lemma: format!("прѣ{lemma}"),
+        class: positive.class,
+    };
+    let declined = decline(&derived, cell)?;
+    let rule_id = RuleId::AdjectiveSuperlativePre;
+    let mut trace = Vec::with_capacity(declined.trace.len() + 1);
+    trace.push(RuleStep {
+        rule_id,
+        before: lemma,
+        after: derived.lemma,
+        reason: "prefix прѣ- to form an absolute superlative adjective",
+    });
+    trace.extend(declined.trace);
+    Ok(PredictedForm {
+        text: declined.text,
+        rule_id,
+        trace,
+    })
+}
+
 fn validate_comparative(lexeme: &ComparativeLexeme) -> Result<ComparativeLexeme, InflectionError> {
     let normalized = ComparativeLexeme {
         positive_lemma: crate::orthography::canonical_display(&lexeme.positive_lemma)?,
