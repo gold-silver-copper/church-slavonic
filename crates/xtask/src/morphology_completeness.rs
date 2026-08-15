@@ -318,7 +318,7 @@ fn validate_systems(
         "indeclinable",
         "2-m-agent-deformation",
         "2-m-in-deformation",
-        "2-f-yni-deformation",
+        "2-f-i-deformation",
         "unique-mixed",
     ]);
     let actual_ocs_nouns = ocs_nouns

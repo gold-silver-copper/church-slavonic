@@ -40,9 +40,9 @@ the 14,114 claims, their closed classifications and support states, every
 runtime identity, source hashes, and the generated JSON and Markdown reports.
 
 The OSD class labels are requirements, not evidence that the current engine
-already implements a row. In particular, `2/m*`, `2/m++`, and `2/f*` expose
-nominal deformations outside the current `NounClass` universe, while class `0`
-contains unique mixed paradigms. Verb class `0` contains unique lexemes; marked
+already implements a row. The complete `2/m*`, `2/m++` (grammar `2/m**`), and
+`2/f*` inventories are now assigned to dedicated noun rules; class `0` still
+contains 41 unique mixed paradigms. Verb class `0` contains unique lexemes; marked
 class-3/class-4 rows include Table 434 anchors, prefixed derivatives, and
 isolated anomalies. Only the explicitly reviewed family members are currently
 implemented. The other marked rows remain `implementation-missing` until an
@@ -67,6 +67,9 @@ description and is not an unconditional claim of semantic definiteness.
 Class selection is lexical. In particular, the core never infers an i-, u-, or
 consonant-stem class solely from the last letter. Callers use `NounLexeme` or
 dictionary metadata. Number restrictions are checked before an ending is selected.
+For substantives, `Gender` is morphological gender: it selects paradigmatic
+shape and need not equal the syntactic agreement gender. Polivanova §267 gives
+`кръмьчии` as explicitly masculine in syntax but feminine in morphology.
 
 ## N-O-M-HARD-01 and N-O-N-HARD-01 — hard o-stems
 
@@ -130,6 +133,35 @@ ending. They are deliberately explicit classes:
 
 The complete seven-case, three-number endings are directly golden-tested for every
 class. Rare lexical alternants stay dictionary-backed.
+
+## N-2MSTAR-01, N-2MSTARSTAR-01, and N-2FSTAR-01 — deformed twofold nouns
+
+Polivanova §§329–332 exhaustively assigns 69 nouns in `-тел҄ь/-ар҄ь` to class
+`2/m*`. They otherwise follow the soft twofold masculine paradigm, but
+nominative/vocative plural uses c-simplex `-ѥ`; an explicitly nonanimate
+accusative plural has `-ѩ`. The grammar's printed profile is reproduced by
+`дѣлател҄ь → дѣлател҄ѥ, дѣлател҄ѩ`.
+
+The same sections assign nine nouns in `-инъ` to `2/m**` (serialized as
+`2/m++` in the OSD workbook). Singular and dual retain expanded `-ин-`; every
+plural cell removes final `-ин-` and follows the hard twofold endings, with
+c-simplex nominative/vocative plural `-е`. Thus `гражданинъ` has plural
+`граждане, гражданъ, гражданомъ, гражданꙑ, гражданꙑ, гражданѣхъ, граждане`.
+The six explicitly excluded `-инъ` near-neighbors never enter this family.
+
+Polivanova §§345–348 exhaustively assigns 30 morphologically feminine nouns in
+`-и` to `2/f*`. The workstem ends in `j`, `н҄`, or `щ`; only nominative singular
+uses the nonstandard c-simplex terminal `-и`, while all other cells reuse the
+soft twofold a-stem endings. This is not an `-ын҄и` spelling heuristic: the
+closed inventory also includes such types as `сѫдии` and `тысѫщи`.
+
+`TwofoldNounFamilyMember` owns all 108 lexical assignments. Its source defaults
+reproduce the profiles' nominative-like masculine accusatives; explicit
+`NounLexeme` metadata can still select the engine's independently represented
+animacy substitution. Ordinary lemma and stable-ID APIs route source-only
+members through reviewed IDs. Exact dictionary cells and manual overrides stay
+ahead of the reviewed productive rules, so a copied table disagreement is
+retained as source evidence rather than silently overwritten.
 
 ## N-INDECL-01 — explicit indeclinables
 

@@ -248,6 +248,12 @@ pub enum NounClass {
     RStem,
     SNeuter,
     VFeminine,
+    /// Polivanova class 2/m*: soft twofold agent nouns in `-тел҄ь` and `-ар҄ь`.
+    TwofoldAgentMasculine,
+    /// Polivanova class 2/m**: hard twofold nouns in `-инъ` with plural syncopation.
+    TwofoldInMasculine,
+    /// Polivanova class 2/f*: soft twofold feminines with nonstandard nominative `-и`.
+    TwofoldFeminineI,
     Indeclinable,
 }
 
@@ -269,6 +275,9 @@ impl NounClass {
             Self::RStem => "r-n",
             Self::SNeuter => "s-n",
             Self::VFeminine => "v-f",
+            Self::TwofoldAgentMasculine => "2-m-agent-deformation",
+            Self::TwofoldInMasculine => "2-m-in-deformation",
+            Self::TwofoldFeminineI => "2-f-i-deformation",
             Self::Indeclinable => "indeclinable",
         }
     }

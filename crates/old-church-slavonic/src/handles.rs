@@ -89,9 +89,33 @@ pub struct Noun {
     identity: ResolvedIdentity,
 }
 
-identity_methods!(Noun, PartOfSpeech::Noun);
-
 impl Noun {
+    /// Resolve exactly one dictionary or reviewed source noun identity.
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
+        let (id, lemma) = resolver::resolve_noun_identity(lemma)?;
+        Ok(Self {
+            identity: ResolvedIdentity { id, lemma },
+        })
+    }
+
+    /// Bind a stable dictionary or reviewed source noun ID.
+    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
+        let (id, lemma) = resolver::noun_identity_from_id(id)?;
+        Ok(Self {
+            identity: ResolvedIdentity { id, lemma },
+        })
+    }
+
+    /// The canonical dictionary or reviewed source lemma.
+    pub fn lemma(&self) -> &str {
+        &self.identity.lemma
+    }
+
+    /// The stable dictionary or reviewed source lexeme ID.
+    pub fn id(&self) -> &str {
+        &self.identity.id
+    }
+
     /// Resolve one case-number cell through the canonical by-ID path.
     pub fn form(&self, case: Case, number: Number) -> Result<FormSet, InflectionError> {
         resolver::noun_by_id(self.id(), NounCell { case, number })

@@ -106,6 +106,9 @@ pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, Inf
         NounClass::RStem => decline_consonant_stem(lexeme, cell, &R_STEM),
         NounClass::SNeuter => decline_consonant_stem(lexeme, cell, &S_NEUTER),
         NounClass::VFeminine => decline_consonant_stem(lexeme, cell, &V_FEMININE),
+        NounClass::TwofoldAgentMasculine => decline_twofold_agent_masculine(lexeme, cell),
+        NounClass::TwofoldInMasculine => decline_twofold_in_masculine(lexeme, cell),
+        NounClass::TwofoldFeminineI => decline_twofold_feminine_i(lexeme, cell),
         NounClass::Indeclinable => Ok(predicted(
             &lexeme.lemma,
             &lexeme.lemma,
@@ -113,6 +116,123 @@ pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, Inf
             "the lexeme is explicitly marked indeclinable",
         )),
     }
+}
+
+fn require_gender(
+    lexeme: &NounLexeme,
+    expected: Gender,
+    class_name: &str,
+) -> Result<(), InflectionError> {
+    if lexeme.gender == expected {
+        Ok(())
+    } else {
+        Err(InflectionError::InvalidInput {
+            reason: format!("{class_name} requires {expected:?} gender"),
+        })
+    }
+}
+
+fn decline_twofold_agent_masculine(
+    lexeme: &NounLexeme,
+    cell: NounCell,
+) -> Result<PredictedForm, InflectionError> {
+    require_gender(lexeme, Gender::Masculine, "Polivanova class 2/m*")?;
+    let stem = strip_required(&lexeme.lemma, 'ь')?;
+    let base = decline_jo_masculine_soft(lexeme, cell)?;
+    if cell.number == Number::Plural {
+        let ending = match cell.case {
+            Case::Nominative | Case::Vocative => Some("ѥ"),
+            Case::Accusative if lexeme.animacy == Animacy::Inanimate => Some("ѩ"),
+            _ => None,
+        };
+        if let Some(ending) = ending {
+            return Ok(join(
+                stem,
+                ending,
+                Mutation::None,
+                RuleId::NounTwofoldAgentMasculine,
+            ));
+        }
+    }
+    Ok(relabel(base, RuleId::NounTwofoldAgentMasculine))
+}
+
+fn decline_twofold_in_masculine(
+    lexeme: &NounLexeme,
+    cell: NounCell,
+) -> Result<PredictedForm, InflectionError> {
+    require_gender(lexeme, Gender::Masculine, "Polivanova class 2/m**")?;
+    let expanded_stem = strip_required(&lexeme.lemma, 'ъ')?;
+    let syncopated_stem = expanded_stem
+        .strip_suffix("ин")
+        .filter(|stem| !stem.is_empty())
+        .ok_or_else(|| InflectionError::InvalidInput {
+            reason: "Polivanova class 2/m** requires a citation in -инъ".to_string(),
+        })?;
+    let (stem, ending, mutation) = if cell.number == Number::Plural {
+        let (ending, mutation) = match cell.case {
+            Case::Nominative | Case::Vocative => ("е", Mutation::None),
+            Case::Genitive => ("ъ", Mutation::None),
+            Case::Dative => ("омъ", Mutation::None),
+            Case::Accusative if lexeme.animacy == Animacy::Animate => ("ъ", Mutation::None),
+            Case::Accusative | Case::Instrumental => ("ꙑ", Mutation::None),
+            Case::Locative => ("ѣхъ", Mutation::SecondPalatalization),
+        };
+        (syncopated_stem, ending, mutation)
+    } else {
+        let (ending, mutation) = match (cell.case, cell.number) {
+            (Case::Nominative, Number::Singular) => ("ъ", Mutation::None),
+            (Case::Genitive, Number::Singular) => ("а", Mutation::None),
+            (Case::Dative, Number::Singular) => ("оу", Mutation::None),
+            (Case::Accusative, Number::Singular) if lexeme.animacy == Animacy::Animate => {
+                ("а", Mutation::None)
+            }
+            (Case::Accusative, Number::Singular) => ("ъ", Mutation::None),
+            (Case::Instrumental, Number::Singular) => ("омъ", Mutation::None),
+            (Case::Locative, Number::Singular) => ("ѣ", Mutation::SecondPalatalization),
+            (Case::Vocative, Number::Singular) => ("е", Mutation::FirstPalatalization),
+            (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => {
+                ("а", Mutation::None)
+            }
+            (Case::Genitive | Case::Locative, Number::Dual) => ("оу", Mutation::None),
+            (Case::Dative | Case::Instrumental, Number::Dual) => ("ома", Mutation::None),
+            (_, Number::Plural) => {
+                return Err(InflectionError::InvalidInput {
+                    reason: "internal class-2/m** number partition failure".to_string(),
+                });
+            }
+        };
+        (expanded_stem, ending, mutation)
+    };
+    Ok(join(stem, ending, mutation, RuleId::NounTwofoldInMasculine))
+}
+
+fn decline_twofold_feminine_i(
+    lexeme: &NounLexeme,
+    cell: NounCell,
+) -> Result<PredictedForm, InflectionError> {
+    require_gender(lexeme, Gender::Feminine, "Polivanova class 2/f*")?;
+    let stem = strip_required(&lexeme.lemma, 'и')?;
+    if cell.case == Case::Nominative && cell.number == Number::Singular {
+        return Ok(join(
+            stem,
+            "и",
+            Mutation::None,
+            RuleId::NounTwofoldFeminineI,
+        ));
+    }
+    Ok(relabel(
+        decline_ja_soft(lexeme, cell)?,
+        RuleId::NounTwofoldFeminineI,
+    ))
+}
+
+fn relabel(mut form: PredictedForm, rule_id: RuleId) -> PredictedForm {
+    form.rule_id = rule_id;
+    for step in &mut form.trace {
+        step.rule_id = rule_id;
+    }
+    form
 }
 
 fn decline_jo_masculine_soft(
@@ -632,6 +752,24 @@ mod tests {
                 NounClass::Indeclinable,
                 Gender::Masculine,
                 "аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь|аминь",
+            ),
+            (
+                "дѣлател҄ь",
+                NounClass::TwofoldAgentMasculine,
+                Gender::Masculine,
+                "дѣлател҄ь|дѣлател҄ꙗ|дѣлател҄ю|дѣлател҄ь|дѣлател҄емь|дѣлател҄и|дѣлател҄ю|дѣлател҄ꙗ|дѣлател҄ю|дѣлател҄ема|дѣлател҄ꙗ|дѣлател҄ема|дѣлател҄ю|дѣлател҄ꙗ|дѣлател҄ѥ|дѣлател҄ь|дѣлател҄емъ|дѣлател҄ѩ|дѣлател҄и|дѣлател҄ихъ|дѣлател҄ѥ",
+            ),
+            (
+                "гражданинъ",
+                NounClass::TwofoldInMasculine,
+                Gender::Masculine,
+                "гражданинъ|гражданина|гражданиноу|гражданинъ|гражданиномъ|гражданинѣ|гражданине|гражданина|гражданиноу|гражданинома|гражданина|гражданинома|гражданиноу|гражданина|граждане|гражданъ|гражданомъ|гражданꙑ|гражданꙑ|гражданѣхъ|граждане",
+            ),
+            (
+                "рабын҄и",
+                NounClass::TwofoldFeminineI,
+                Gender::Feminine,
+                "рабын҄и|рабын҄и|рабын҄и|рабын҄ѭ|рабын҄еѭ|рабын҄и|рабын҄е|рабын҄и|рабын҄ю|рабын҄ꙗма|рабын҄и|рабын҄ꙗма|рабын҄ю|рабын҄и|рабын҄ѩ|рабын҄ь|рабын҄ꙗмъ|рабын҄ѩ|рабын҄ꙗми|рабын҄ꙗхъ|рабын҄ѩ",
             ),
         ];
         for (lemma, class, gender, expected) in fixtures {

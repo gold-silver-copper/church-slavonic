@@ -19,6 +19,7 @@ pub mod phrase;
 pub mod pronoun;
 pub mod result;
 pub mod trace;
+pub mod twofold_noun;
 pub mod unique_verb;
 pub mod verb;
 
@@ -72,4 +73,5 @@ pub use result::{
     VariantSelectionError,
 };
 pub use trace::{PredictedForm, RuleId, RuleStep};
+pub use twofold_noun::TwofoldNounFamilyMember;
 pub use unique_verb::{UniqueVerbFamilyMember, UniqueVerbIdentity, UniqueVerbProfileKind};

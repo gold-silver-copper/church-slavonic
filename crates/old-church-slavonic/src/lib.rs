@@ -172,8 +172,9 @@ pub use old_church_slavonic_core::{
     RealizedDistributiveCardinal, RealizedOrdinal, RealizedPhrase, ReconstructedAccent,
     RequestedCell, Script, StandardPronominalIdentity, TransliteratedForm,
     TransliterationDirection, TransliterationFidelity, TransliterationLoss,
-    TransliterationLossKind, TransliterationLossPolicy, UngenderedCell, UniqueVerbFamilyMember,
-    UniqueVerbIdentity, UniqueVerbProfileKind, VariantPolicy, VariantSelectionError,
+    TransliterationLossKind, TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell,
+    UniqueVerbFamilyMember, UniqueVerbIdentity, UniqueVerbProfileKind, VariantPolicy,
+    VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,

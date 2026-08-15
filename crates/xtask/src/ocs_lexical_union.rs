@@ -6,7 +6,8 @@
 //! collapsed.
 
 use old_church_slavonic_core::{
-    IrregularVerbFamilyMember, UniqueVerbFamilyMember, orthography::lookup_key,
+    IrregularVerbFamilyMember, TwofoldNounFamilyMember, UniqueVerbFamilyMember,
+    orthography::lookup_key,
 };
 use old_church_slavonic_extractor::{
     extract::canonical_lemma,
@@ -512,13 +513,21 @@ fn classify_osd(claim: &mut Claim, runtime: Option<&LexemeRow>) {
             "metadata-incomplete",
             "The comparative class is implemented, but this source row alone does not serialize both required syncopated and expanded principal parts.",
         ),
-        "n" if osd_noun_deformation_route(class).is_some() => classify(
-            claim,
-            "productive",
-            osd_noun_deformation_route(class).unwrap_or("unrecognized-source-class"),
-            "implementation-missing",
-            "Polivanova defines a productive nominal deformation that is not represented by the current NounClass universe.",
-        ),
+        "n" if osd_noun_deformation_route(class).is_some() => {
+            let implemented = TwofoldNounFamilyMember::classify_source_lemma(&claim.lemma)
+                .is_some_and(|member| noun_deformation_class_matches(member, class));
+            classify(
+                claim,
+                "productive",
+                osd_noun_deformation_route(class).unwrap_or("unrecognized-source-class"),
+                if implemented {
+                    "implemented"
+                } else {
+                    "implementation-missing"
+                },
+                "Polivanova defines a productive nominal deformation represented by a dedicated typed NounClass, complete twenty-one-cell rule, and exhaustive lexical family assignment.",
+            );
+        }
         "n" if class.starts_with("0/") => classify(
             claim,
             "closed-irregular",
@@ -712,9 +721,13 @@ fn osd_noun_deformation_route(value: &str) -> Option<&'static str> {
     match value {
         "2/m*" => Some("polivanova-agent-noun-deformation"),
         "2/m++" => Some("polivanova-in-noun-deformation"),
-        "2/f*" => Some("polivanova-yni-noun-deformation"),
+        "2/f*" => Some("polivanova-feminine-i-deformation"),
         _ => None,
     }
+}
+
+fn noun_deformation_class_matches(member: TwofoldNounFamilyMember, osd_class: &str) -> bool {
+    member.source_class() == osd_class || (member.source_class() == "2/m**" && osd_class == "2/m++")
 }
 
 fn is_irregular_osd_verb_class(value: &str) -> bool {
@@ -1051,9 +1064,12 @@ mod tests {
         );
         assert_eq!(
             osd_noun_deformation_route("2/f*"),
-            Some("polivanova-yni-noun-deformation")
+            Some("polivanova-feminine-i-deformation")
         );
         assert_eq!(osd_noun_deformation_route("2/m"), None);
+        let in_member = TwofoldNounFamilyMember::classify_source_lemma("гражданинъ")
+            .expect("reviewed in-stem member");
+        assert!(noun_deformation_class_matches(in_member, "2/m++"));
     }
 
     #[test]

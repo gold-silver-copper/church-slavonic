@@ -27,9 +27,9 @@ use old_church_slavonic::{
     OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
     PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
     Script, StandardPronominalIdentity, TransliterationDirection, TransliterationFidelity,
-    TransliterationLossKind, TransliterationLossPolicy, UngenderedCell, UniqueVerbFamilyMember,
-    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
-    cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
+    TransliterationLossKind, TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell,
+    UniqueVerbFamilyMember, VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist,
+    cardinal_magnitude, cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
     collective_numeral_identity, collective_numeral_paradigm, collective_numeral_paradigm_identity,
     compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
     compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
@@ -68,6 +68,31 @@ fn assert_realized_or_reviewed_defect(
         ) => {}
         Err(error) => panic!("{context:?}: unexpected facade gap: {error:?}"),
     }
+}
+
+#[test]
+fn every_reviewed_twofold_noun_is_complete_through_the_public_handle() {
+    for member in TwofoldNounFamilyMember::all() {
+        let word = Noun::resolve(member.canonical_lemma())
+            .unwrap_or_else(|error| panic!("{member:?}: {error}"));
+        assert_eq!(word.lemma(), member.canonical_lemma());
+        let rebound =
+            Noun::from_id(word.id()).unwrap_or_else(|error| panic!("{}: {error}", word.id()));
+        assert_eq!(rebound, word);
+        let paradigm = word.paradigm();
+        assert_eq!(paradigm.len(), 21);
+        assert_eq!(paradigm.failures().count(), 0, "{member:?}");
+    }
+
+    let source_only = Noun::resolve("рабын҄и").expect("reviewed source-only noun");
+    assert!(source_only.id().starts_with("reviewed:ocs:noun:twofold:"));
+    assert_eq!(
+        source_only
+            .form(Case::Accusative, Number::Singular)
+            .expect("reviewed cell")
+            .primary_text(),
+        "рабын҄ѭ"
+    );
 }
 
 #[test]
