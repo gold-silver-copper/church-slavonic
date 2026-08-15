@@ -23,19 +23,21 @@ pub use copula::{CopulaSeries, CopulaVariant, CopulaVariantStatus};
 pub use determiner::{DeterminerDeclension, DeterminerIdentity, DeterminerLexeme};
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
-    CollectiveNumeralCell, ComparativeFormation, CompoundCardinalCell, DeterminerCell, FiniteTense,
-    FiniteVerbCell, Gender, GenderedCell, ImperativeCell, ImperativeFormation, ImperfectFormation,
-    ImperfectVariantPolicy, LParticipleCell, NounCell, NounClass, Number, NumberRestriction,
-    NumeralCell, PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
-    PastPassiveParticipleFormation, Person, PersonalPronounCell, PresentActiveParticipleFormation,
-    PresentPassiveParticipleFormation, RequestedCell, UngenderedCell, VerbAspect, VerbClass,
+    CollectiveNumeralCell, ComparativeFormation, CompoundCardinalCell, DeterminerCell,
+    DistributiveCardinalCell, FiniteTense, FiniteVerbCell, Gender, GenderedCell, ImperativeCell,
+    ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy, LParticipleCell, NounCell,
+    NounClass, Number, NumberRestriction, NumeralCell, PartOfSpeech, ParticipleCell,
+    ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
+    PersonalPronounCell, PresentActiveParticipleFormation, PresentPassiveParticipleFormation,
+    RequestedCell, UngenderedCell, VerbAspect, VerbClass,
 };
 pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
     CardinalPhraseAnalysis, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
-    FractionalNumeralDeclension, FractionalNumeralIdentity, NumeralGovernment, NumeralVariant,
-    NumeralVariantStatus, OrdinalComposition, OrdinalNumeralIdentity, OrdinalPhraseAnalysis,
-    RealizedCardinal, RealizedOrdinal,
+    DistributiveCardinalAnalysis, FractionalNumeralDeclension, FractionalNumeralIdentity,
+    NumeralGovernment, NumeralVariant, NumeralVariantStatus, OrdinalComposition,
+    OrdinalNumeralIdentity, OrdinalPhraseAnalysis, RealizedCardinal, RealizedDistributiveCardinal,
+    RealizedOrdinal,
 };
 pub use orthography::{Lemma, Script};
 pub use phrase::{

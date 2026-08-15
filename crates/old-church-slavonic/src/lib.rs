@@ -120,7 +120,7 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Cardinals through 10,000, simple ordinals 1–10, collectives 2–10, and OCS fractional nouns | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound, adjective-agreement ordinal, inherited collective, and period-bounded fractional-noun inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, and corpus variants |
+//! | Cardinals and distributives through 10,000, simple ordinals 1–10, collectives 2–10, and OCS fractional nouns | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`], [`distributive_cardinal`], [`distributive_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound and `по` + dative distributive, adjective-agreement ordinal, inherited collective, and period-bounded fractional-noun inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, and corpus variants |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -154,25 +154,28 @@ pub use old_church_slavonic_core::{
     CardinalMagnitudeIdentity, CardinalNumeralIdentity, CardinalPhraseAnalysis, Case,
     CollectiveNumeralCell, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
     CompoundCardinalCell, ConditionalAuxiliary, CopulaSeries, DeterminerCell, DeterminerDeclension,
-    DeterminerIdentity, DeterminerLexeme, DirectToTreatment, FiniteTense, FormSet, FormSource,
-    FormVariant, FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
+    DeterminerIdentity, DeterminerLexeme, DirectToTreatment, DistributiveCardinalAnalysis,
+    DistributiveCardinalCell, FiniteTense, FormSet, FormSource, FormVariant,
+    FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
     FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning,
     InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LexemeSummary,
     LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment, OrdinalComposition,
     OrdinalNumeralIdentity, OrdinalPhraseAnalysis, PartOfSpeech, ParticipleKind, PassiveAuxiliary,
     Person, PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
     PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
-    PronounFormSelection, RealizedCardinal, RealizedOrdinal, RealizedPhrase, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
+    PronounFormSelection, RealizedCardinal, RealizedDistributiveCardinal, RealizedOrdinal,
+    RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
+    VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
     CollectiveNumeralParadigm, ComparativeParadigm, CompoundCardinalOutcome,
     CompoundCardinalParadigm, CompoundOrdinalOutcome, CompoundOrdinalParadigm, DeterminerParadigm,
-    FiniteVerbParadigm, FractionalNumeralParadigm, GenderedNumeralParadigm,
-    GenderedPronounParadigm, ImperativeParadigm, LParticipleParadigm, NounParadigm,
-    NumeralParadigm, OrdinalNumeralParadigm, ParadigmLookupError, ParticipleParadigm,
-    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
+    DistributiveCardinalOutcome, DistributiveCardinalParadigm, FiniteVerbParadigm,
+    FractionalNumeralParadigm, GenderedNumeralParadigm, GenderedPronounParadigm,
+    ImperativeParadigm, LParticipleParadigm, NounParadigm, NumeralParadigm, OrdinalNumeralParadigm,
+    ParadigmLookupError, ParticipleParadigm, PersonalPronounParadigm, PronounParadigm,
+    VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -191,23 +194,27 @@ pub mod prelude {
         CardinalNumeralParadigm, Case, CollectiveNumeralCell, CollectiveNumeralDeclension,
         CollectiveNumeralIdentity, CollectiveNumeralParadigm, CompoundCardinalParadigm,
         CompoundOrdinalParadigm, Determiner, DeterminerCell, DeterminerIdentity,
-        DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet, FormSource, FormVariant,
-        FractionalNumeralDeclension, FractionalNumeralIdentity, FractionalNumeralParadigm, Gender,
-        GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm, InflectionError,
-        InflectionResult, InflectionWarning, InterrogativePronounIdentity,
-        IrregularAgreeingIdentity, LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun,
-        NounParadigm, Number, Numeral, NumeralParadigm, OrdinalNumeralIdentity,
-        OrdinalNumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
-        ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
-        PronounFormSelection, PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy,
-        VariantSelectionError, Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
-        cardinal_magnitude, cardinal_numeral_identity, cardinal_numeral_paradigm,
-        collective_numeral, collective_numeral_identity, collective_numeral_paradigm,
+        DeterminerParadigm, DistributiveCardinalCell, DistributiveCardinalParadigm, FiniteTense,
+        FiniteVerbParadigm, FormSet, FormSource, FormVariant, FractionalNumeralDeclension,
+        FractionalNumeralIdentity, FractionalNumeralParadigm, Gender, GenderedNumeralParadigm,
+        GenderedPronounParadigm, ImperativeParadigm, InflectionError, InflectionResult,
+        InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+        LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral,
+        NumeralParadigm, OrdinalNumeralIdentity, OrdinalNumeralParadigm, ParadigmLookupError,
+        PartOfSpeech, Participle, ParticipleKind, ParticipleParadigm, Person,
+        PersonalPronounIdentity, PersonalPronounParadigm, Pronoun, PronounFormSelection,
+        PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy, VariantSelectionError,
+        Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+        cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
+        collective_numeral_identity, collective_numeral_paradigm,
         collective_numeral_paradigm_identity, comparative_citation, compound_cardinal,
         compound_cardinal_paradigm, compound_cardinal_paradigm_with_one,
         compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
         compound_cardinal_with_options, compound_ordinal, compound_ordinal_paradigm, determiner,
-        determiner_identity, determiner_paradigm, finite, finite_paradigm, fractional_numeral,
+        determiner_identity, determiner_paradigm, distributive_cardinal,
+        distributive_cardinal_paradigm, distributive_cardinal_paradigm_with_one,
+        distributive_cardinal_paradigm_with_options, distributive_cardinal_with_one,
+        distributive_cardinal_with_options, finite, finite_paradigm, fractional_numeral,
         fractional_numeral_identity, fractional_numeral_paradigm,
         fractional_numeral_paradigm_identity, gendered_numeral, gendered_numeral_paradigm,
         gendered_pronoun, gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect,
@@ -1070,6 +1077,163 @@ pub fn compound_cardinal_paradigm_with_options(
     options: CardinalCompositionOptions,
 ) -> Result<CompoundCardinalParadigm, InflectionError> {
     resolver::build_compound_cardinal_paradigm(value, options)
+}
+
+/// Realize distributive `по` with a dative cardinal from one through 10,000.
+///
+/// This is a structured syntactic construction rather than a synthetic
+/// declension. Gender is required exactly when the cardinal's final unit is
+/// one through four. The fixed dative prevents temporal `по + locative` from
+/// being mistaken for a distributive.
+///
+/// ```
+/// use old_church_slavonic::{distributive_cardinal, Gender};
+/// assert_eq!(
+///     distributive_cardinal(2, Some(Gender::Masculine))?.primary_text(),
+///     "по дъвѣма",
+/// );
+/// assert_eq!(distributive_cardinal(50, None)?.primary_text(), "по пѧти десѧтъ");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn distributive_cardinal(
+    value: u16,
+    gender: Option<Gender>,
+) -> Result<RealizedDistributiveCardinal, InflectionError> {
+    distributive_cardinal_with_options(value, CardinalCompositionOptions::DEFAULT, gender)
+}
+
+/// Realize a distributive cardinal while selecting the lexical doublet used
+/// for one.
+///
+/// ```
+/// use old_church_slavonic::{
+///     distributive_cardinal_with_one, CardinalNumeralIdentity, Gender,
+/// };
+/// assert_eq!(
+///     distributive_cardinal_with_one(
+///         1,
+///         CardinalNumeralIdentity::OneYedyn,
+///         Some(Gender::Feminine),
+///     )?
+///     .primary_text(),
+///     "по ѥдьнои",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn distributive_cardinal_with_one(
+    value: u16,
+    one_identity: CardinalNumeralIdentity,
+    gender: Option<Gender>,
+) -> Result<RealizedDistributiveCardinal, InflectionError> {
+    distributive_cardinal_with_options(
+        value,
+        CardinalCompositionOptions {
+            one_identity,
+            ..CardinalCompositionOptions::DEFAULT
+        },
+        gender,
+    )
+}
+
+/// Realize a distributive cardinal while selecting both cardinal-composition
+/// lexical doublets.
+///
+/// ```
+/// use old_church_slavonic::{
+///     distributive_cardinal_with_options, CardinalCompositionOptions,
+///     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Gender,
+/// };
+/// let options = CardinalCompositionOptions {
+///     one_identity: CardinalNumeralIdentity::OneYedyn,
+///     thousand_identity: CardinalMagnitudeIdentity::ThousandLittleYus,
+/// };
+/// assert_eq!(
+///     distributive_cardinal_with_options(1_001, options, Some(Gender::Feminine))?
+///         .primary_text(),
+///     "по тꙑсѧщи и ѥдьнои",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn distributive_cardinal_with_options(
+    value: u16,
+    options: CardinalCompositionOptions,
+    gender: Option<Gender>,
+) -> Result<RealizedDistributiveCardinal, InflectionError> {
+    resolver::distributive_cardinal_with_options(
+        value,
+        DistributiveCardinalCell { gender },
+        options,
+    )
+}
+
+/// Enumerate all four optional-gender requests for one distributive cardinal,
+/// retaining invalid request shapes as typed historical failures.
+///
+/// ```
+/// use old_church_slavonic::distributive_cardinal_paradigm;
+/// let paradigm = distributive_cardinal_paradigm(50)?;
+/// assert_eq!(paradigm.len(), 4);
+/// assert_eq!(paradigm.successes().count(), 1);
+/// assert_eq!(paradigm.form(None)?.primary_text(), "по пѧти десѧтъ");
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn distributive_cardinal_paradigm(
+    value: u16,
+) -> Result<DistributiveCardinalParadigm, InflectionError> {
+    distributive_cardinal_paradigm_with_options(value, CardinalCompositionOptions::DEFAULT)
+}
+
+/// Enumerate a distributive cardinal while selecting its lexical doublet of
+/// one.
+///
+/// ```
+/// use old_church_slavonic::{
+///     distributive_cardinal_paradigm_with_one, CardinalNumeralIdentity, Gender,
+/// };
+/// let paradigm = distributive_cardinal_paradigm_with_one(
+///     1,
+///     CardinalNumeralIdentity::OneYedyn,
+/// )?;
+/// assert_eq!(
+///     paradigm.form(Some(Gender::Feminine))?.primary_text(),
+///     "по ѥдьнои",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn distributive_cardinal_paradigm_with_one(
+    value: u16,
+    one_identity: CardinalNumeralIdentity,
+) -> Result<DistributiveCardinalParadigm, InflectionError> {
+    distributive_cardinal_paradigm_with_options(
+        value,
+        CardinalCompositionOptions {
+            one_identity,
+            ..CardinalCompositionOptions::DEFAULT
+        },
+    )
+}
+
+/// Enumerate a distributive cardinal with explicit cardinal-composition
+/// lexical choices.
+///
+/// ```
+/// use old_church_slavonic::{
+///     distributive_cardinal_paradigm_with_options, CardinalCompositionOptions,
+///     CardinalMagnitudeIdentity, CardinalNumeralIdentity,
+/// };
+/// let options = CardinalCompositionOptions {
+///     one_identity: CardinalNumeralIdentity::OneYedyn,
+///     thousand_identity: CardinalMagnitudeIdentity::ThousandLittleYus,
+/// };
+/// let paradigm = distributive_cardinal_paradigm_with_options(2_000, options)?;
+/// assert_eq!(paradigm.options(), options);
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn distributive_cardinal_paradigm_with_options(
+    value: u16,
+    options: CardinalCompositionOptions,
+) -> Result<DistributiveCardinalParadigm, InflectionError> {
+    resolver::build_distributive_cardinal_paradigm(value, options)
 }
 
 /// Inflect a compound ordinal from 11 through 1,000 as a structured sequence.

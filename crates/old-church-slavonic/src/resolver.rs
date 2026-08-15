@@ -627,6 +627,11 @@ const COMPOUND_ORDINAL_AUTHORITY: &str = "Leuta and Havryliuk 2018 pp. 155, 161�
     Gorshkov 2002 §§118–119; Polivanova OSD spreadsheet; Syntacticus/PROIEL \
     Suprasliensis ordinal crosscheck";
 
+const DISTRIBUTIVE_CARDINAL_AUTHORITY: &str = "Leuta and Havryliuk 2018 pp. 154, \
+    156, 164; UD OCS PROIEL r2.18 and native Syntacticus: Codex Zographensis \
+    Mark 14:19 and 6:40, Codex Marianus Luke 9:14 and 10:1, John 8:9 and \
+    21:25, and Codex Suprasliensis sentences 245344 and 253762";
+
 /// Compose a reviewed cardinal from 11 through 10,000 while retaining correlated
 /// multiword analyses and each word's own provenance.
 pub fn compound_cardinal(
@@ -678,6 +683,12 @@ fn validate_compound_cardinal_spec(
             reason: "the reviewed compound-cardinal range is 11 through 10,000".to_string(),
         });
     }
+    validate_cardinal_composition_options(options)
+}
+
+fn validate_cardinal_composition_options(
+    options: CardinalCompositionOptions,
+) -> Result<(), InflectionError> {
     if !matches!(
         options.one_identity,
         CardinalNumeralIdentity::OneYedin | CardinalNumeralIdentity::OneYedyn
@@ -710,6 +721,90 @@ pub(crate) fn build_compound_cardinal_paradigm(
             .map(|cell| CompoundCardinalOutcome {
                 cell,
                 result: compound_cardinal_with_options(value, cell, options),
+            })
+            .collect(),
+    })
+}
+
+/// Compose source-backed distributive `по` with a dative cardinal from one
+/// through 10,000. The construction is syntactic; all cardinal components
+/// retain their ordinary inflection and provenance.
+pub fn distributive_cardinal_with_options(
+    value: u16,
+    cell: DistributiveCardinalCell,
+    options: CardinalCompositionOptions,
+) -> Result<RealizedDistributiveCardinal, InflectionError> {
+    if !(1..=10_000).contains(&value) {
+        return Err(InflectionError::InvalidInput {
+            reason: "the reviewed distributive-cardinal range is 1 through 10,000".to_string(),
+        });
+    }
+    validate_cardinal_composition_options(options)?;
+
+    let government = final_cardinal_digit(value)
+        .map(|digit| digit_identity(digit, options.one_identity))
+        .transpose()?
+        .map_or(NumeralGovernment::GenitivePlural, |identity| {
+            identity.government()
+        });
+    if cell.gender.is_some() != matches!(government, NumeralGovernment::Agreement { .. }) {
+        return Err(distributive_cardinal_cell_error(value, cell));
+    }
+
+    let cardinal_analyses = if value <= 10 {
+        lower_cardinal_analyses(value as u8, Case::Dative, cell.gender, options.one_identity)
+    } else {
+        compose_cardinal_analyses(
+            value,
+            CompoundCardinalCell {
+                case: Case::Dative,
+                gender: cell.gender,
+            },
+            options,
+        )
+    }
+    .map_err(|error| remap_distributive_cardinal_error(error, value, cell))?;
+
+    let preposition = reviewed_grammar_token(
+        "по",
+        RuleId::NumeralCardinalDistributive,
+        "numeral:cardinal:distributive:po-dative",
+        DISTRIBUTIVE_CARDINAL_AUTHORITY,
+    )?;
+    let analyses = cardinal_analyses
+        .into_iter()
+        .map(|analysis| {
+            let mut tokens = Vec::with_capacity(analysis.tokens.len() + 1);
+            tokens.push(PhraseToken {
+                role: PhraseRole::Preposition,
+                forms: preposition.clone(),
+            });
+            tokens.extend(analysis.tokens);
+            DistributiveCardinalAnalysis { tokens }
+        })
+        .collect();
+
+    RealizedDistributiveCardinal::new(value, cell, government, analyses)
+        .map_err(|error| remap_distributive_cardinal_error(error, value, cell))
+}
+
+pub(crate) fn build_distributive_cardinal_paradigm(
+    value: u16,
+    options: CardinalCompositionOptions,
+) -> Result<DistributiveCardinalParadigm, InflectionError> {
+    if !(1..=10_000).contains(&value) {
+        return Err(InflectionError::InvalidInput {
+            reason: "the reviewed distributive-cardinal range is 1 through 10,000".to_string(),
+        });
+    }
+    validate_cardinal_composition_options(options)?;
+    Ok(DistributiveCardinalParadigm {
+        value,
+        options,
+        cells: DistributiveCardinalCell::all()
+            .map(|cell| DistributiveCardinalOutcome {
+                cell,
+                result: distributive_cardinal_with_options(value, cell, options),
             })
             .collect(),
     })
@@ -1122,6 +1217,25 @@ fn compound_cardinal_cell_error(value: u16, cell: CompoundCardinalCell) -> Infle
         value.to_string(),
         RequestedCell::CompoundCardinal { value, cell },
     )
+}
+
+fn distributive_cardinal_cell_error(value: u16, cell: DistributiveCardinalCell) -> InflectionError {
+    InflectionError::historically_invalid(
+        value.to_string(),
+        RequestedCell::DistributiveCardinal { value, cell },
+    )
+}
+
+fn remap_distributive_cardinal_error(
+    error: InflectionError,
+    value: u16,
+    cell: DistributiveCardinalCell,
+) -> InflectionError {
+    match error {
+        InflectionError::HistoricallyInvalidCell { .. }
+        | InflectionError::UnsupportedCell { .. } => distributive_cardinal_cell_error(value, cell),
+        other => other,
+    }
 }
 
 fn remap_compound_cardinal_error(

@@ -583,6 +583,33 @@ impl CompoundCardinalCell {
     }
 }
 
+/// The only lexical agreement dimension of an OCS distributive-cardinal
+/// construction. Its case is not caller-selectable: distributive `по` selects
+/// the dative, while `по` with a locative cardinal has a different, commonly
+/// temporal meaning.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct DistributiveCardinalCell {
+    pub gender: Option<Gender>,
+}
+
+impl DistributiveCardinalCell {
+    /// Every optional-gender request in stable order.
+    pub fn all() -> impl Iterator<Item = Self> {
+        core::iter::once(Self { gender: None }).chain(Gender::ALL.into_iter().map(|gender| Self {
+            gender: Some(gender),
+        }))
+    }
+
+    pub fn key(self) -> String {
+        let mut key = "num:distributive:dat".to_string();
+        if let Some(gender) = self.gender {
+            key.push(':');
+            key.push_str(gender.code());
+        }
+        key
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FiniteVerbCell {
     pub tense: FiniteTense,
@@ -867,6 +894,10 @@ pub enum RequestedCell {
     CompoundCardinal {
         value: u16,
         cell: CompoundCardinalCell,
+    },
+    DistributiveCardinal {
+        value: u16,
+        cell: DistributiveCardinalCell,
     },
     CompoundOrdinal {
         value: u16,

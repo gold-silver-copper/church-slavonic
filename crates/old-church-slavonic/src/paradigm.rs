@@ -3,10 +3,11 @@
 use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Animacy, CardinalCompositionOptions, CardinalMagnitudeIdentity,
     CardinalNumeralIdentity, Case, CollectiveNumeralCell, CollectiveNumeralIdentity,
-    CompoundCardinalCell, DeterminerCell, DeterminerIdentity, FiniteTense, FiniteVerbCell, FormSet,
-    FractionalNumeralIdentity, Gender, GenderedCell, ImperativeCell, InflectionError,
-    LParticipleCell, NounCell, Number, NumeralCell, OrdinalNumeralIdentity, PartOfSpeech,
-    ParticipleCell, ParticipleKind, Person, PersonalPronounCell, RealizedCardinal, RealizedOrdinal,
+    CompoundCardinalCell, DeterminerCell, DeterminerIdentity, DistributiveCardinalCell,
+    FiniteTense, FiniteVerbCell, FormSet, FractionalNumeralIdentity, Gender, GenderedCell,
+    ImperativeCell, InflectionError, LParticipleCell, NounCell, Number, NumeralCell,
+    OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell, ParticipleKind, Person,
+    PersonalPronounCell, RealizedCardinal, RealizedDistributiveCardinal, RealizedOrdinal,
     UngenderedCell,
 };
 use std::fmt;
@@ -797,6 +798,133 @@ impl<'a> IntoIterator for &'a CompoundCardinalParadigm {
 impl IntoIterator for CompoundCardinalParadigm {
     type Item = CompoundCardinalOutcome;
     type IntoIter = std::vec::IntoIter<CompoundCardinalOutcome>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
+/// One distributive-cardinal gender request and its typed structural outcome.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DistributiveCardinalOutcome {
+    pub cell: DistributiveCardinalCell,
+    pub result: Result<RealizedDistributiveCardinal, InflectionError>,
+}
+
+impl DistributiveCardinalOutcome {
+    pub const fn cell(&self) -> &DistributiveCardinalCell {
+        &self.cell
+    }
+
+    pub fn distributive(&self) -> Result<&RealizedDistributiveCardinal, &InflectionError> {
+        self.result.as_ref()
+    }
+
+    pub fn error(&self) -> Option<&InflectionError> {
+        self.result.as_ref().err()
+    }
+
+    pub fn into_parts(
+        self,
+    ) -> (
+        DistributiveCardinalCell,
+        Result<RealizedDistributiveCardinal, InflectionError>,
+    ) {
+        (self.cell, self.result)
+    }
+}
+
+/// Complete optional-gender inventory for one `по + dative cardinal`
+/// construction. The fixed dative case is deliberately absent from the cell.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DistributiveCardinalParadigm {
+    pub(crate) value: u16,
+    pub(crate) options: CardinalCompositionOptions,
+    pub(crate) cells: Vec<DistributiveCardinalOutcome>,
+}
+
+impl DistributiveCardinalParadigm {
+    pub const fn value(&self) -> u16 {
+        self.value
+    }
+
+    pub const fn options(&self) -> CardinalCompositionOptions {
+        self.options
+    }
+
+    pub const fn one_identity(&self) -> CardinalNumeralIdentity {
+        self.options.one_identity
+    }
+
+    pub const fn thousand_identity(&self) -> CardinalMagnitudeIdentity {
+        self.options.thousand_identity
+    }
+
+    pub fn form(
+        &self,
+        gender: Option<Gender>,
+    ) -> Result<&RealizedDistributiveCardinal, ParadigmLookupError> {
+        let outcome = self
+            .cells
+            .iter()
+            .find(|outcome| outcome.cell == DistributiveCardinalCell { gender })
+            .ok_or(ParadigmLookupError::NotRepresented)?;
+        outcome
+            .distributive()
+            .map_err(|error| ParadigmLookupError::Failed(error.clone()))
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, DistributiveCardinalOutcome> {
+        self.cells.iter()
+    }
+
+    pub fn successes(
+        &self,
+    ) -> impl Iterator<Item = (&DistributiveCardinalCell, &RealizedDistributiveCardinal)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|distributive| (&outcome.cell, distributive))
+        })
+    }
+
+    pub fn failures(&self) -> impl Iterator<Item = (&DistributiveCardinalCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    pub fn into_rows(self) -> Vec<DistributiveCardinalOutcome> {
+        self.cells
+    }
+
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a DistributiveCardinalParadigm {
+    type Item = &'a DistributiveCardinalOutcome;
+    type IntoIter = std::slice::Iter<'a, DistributiveCardinalOutcome>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for DistributiveCardinalParadigm {
+    type Item = DistributiveCardinalOutcome;
+    type IntoIter = std::vec::IntoIter<DistributiveCardinalOutcome>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.cells.into_iter()

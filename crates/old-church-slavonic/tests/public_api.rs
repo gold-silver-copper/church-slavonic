@@ -17,27 +17,29 @@ use old_church_slavonic::{
     Adjective, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CollectiveNumeralCell,
     CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
-    DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, FractionalNumeralDeclension,
-    FractionalNumeralIdentity, Gender, GenderedCell, InflectionError, InflectionWarning,
-    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity,
-    Noun, Number, Numeral, NumeralCell, OrdinalComposition, OrdinalNumeralIdentity,
-    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
-    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
+    DeterminerCell, DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSource,
+    FractionalNumeralDeclension, FractionalNumeralIdentity, Gender, GenderedCell, InflectionError,
+    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
+    LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
+    OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
+    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
+    Script, StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
     anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
     cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
     collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
     compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
     compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
-    compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm, finite,
-    finite_paradigm, fractional_numeral, fractional_numeral_identity, fractional_numeral_paradigm,
-    fractional_numeral_paradigm_identity, gendered_numeral, gendered_pronoun, imperative,
-    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
-    l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
-    numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
-    ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
-    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
-    regular_pronominal, relative_pronoun, short_adjective, supine,
+    compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm,
+    distributive_cardinal, distributive_cardinal_paradigm, distributive_cardinal_paradigm_with_one,
+    distributive_cardinal_paradigm_with_options, distributive_cardinal_with_one,
+    distributive_cardinal_with_options, finite, finite_paradigm, fractional_numeral,
+    fractional_numeral_identity, fractional_numeral_paradigm, fractional_numeral_paradigm_identity,
+    gendered_numeral, gendered_pronoun, imperative, imperative_paradigm, imperfect, infinitive,
+    interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm, long_adjective,
+    long_only_adjective, noun, noun_paradigm, numeral, ordinal_numeral, ordinal_numeral_identity,
+    ordinal_numeral_paradigm, ordinal_numeral_paradigm_identity, participle_paradigm,
+    past_active_participle, personal_pronoun, personal_pronoun_with, present, present_paradigm,
+    pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun, short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -1295,6 +1297,245 @@ fn every_integer_through_ten_thousand_has_a_well_formed_analysis() {
                 cell.gender.is_some() == requires_gender,
                 "{value} {cell:?}: {result:?}",
             );
+        }
+    }
+}
+
+#[test]
+fn distributive_cardinals_are_fixed_dative_structures_and_exhaustive() {
+    assert_eq!(
+        DistributiveCardinalCell {
+            gender: Some(Gender::Feminine)
+        }
+        .key(),
+        "num:distributive:dat:f"
+    );
+    let goldens = [
+        (1, Some(Gender::Masculine), "по ѥдиному"),
+        (2, Some(Gender::Masculine), "по дъвѣма"),
+        (20, None, "по дъвѣма десѧтьма"),
+        (50, None, "по пѧти десѧтъ"),
+        (100, None, "по сътоу"),
+        (10_000, None, "по десѧти тꙑсѫщь"),
+    ];
+    for (value, gender, expected) in goldens {
+        let realized = distributive_cardinal(value, gender)
+            .unwrap_or_else(|error| panic!("distributive {value}: {error}"));
+        assert_eq!(realized.value(), value);
+        assert_eq!(realized.cell(), DistributiveCardinalCell { gender });
+        assert_eq!(realized.rule_id(), RuleId::NumeralCardinalDistributive);
+        assert_eq!(realized.primary_text(), expected);
+        assert!(realized.analyses().iter().all(|analysis| {
+            analysis.tokens.len() >= 2
+                && analysis.tokens[0].role == old_church_slavonic::PhraseRole::Preposition
+                && analysis.tokens[0].forms.primary_text() == "по"
+                && matches!(
+                    analysis.tokens[0].forms.source(),
+                    FormSource::ReviewedGrammarTable {
+                        rule_id: RuleId::NumeralCardinalDistributive
+                    }
+                )
+                && analysis.tokens[0]
+                    .forms
+                    .analyses()
+                    .iter()
+                    .any(|form_analysis| {
+                        form_analysis.evidence.iter().any(|evidence| {
+                            evidence.authority.as_deref().is_some_and(|authority| {
+                                authority.contains("Mark 14:19")
+                                    && authority.contains("10:1")
+                                    && authority.contains("245344")
+                            })
+                        })
+                    })
+        }));
+    }
+
+    let valid_structure =
+        distributive_cardinal(2, Some(Gender::Masculine)).expect("constructor-adversarial fixture");
+    let mut missing_preposition = valid_structure.analyses()[0].clone();
+    missing_preposition.tokens.remove(0);
+    assert!(matches!(
+        old_church_slavonic::RealizedDistributiveCardinal::new(
+            valid_structure.value(),
+            valid_structure.cell(),
+            valid_structure.government(),
+            vec![missing_preposition],
+        ),
+        Err(InflectionError::InvalidInput { .. })
+    ));
+
+    let alternate_one = distributive_cardinal_with_one(
+        1,
+        CardinalNumeralIdentity::OneYedyn,
+        Some(Gender::Feminine),
+    )
+    .expect("selected distributive-one doublet");
+    assert_eq!(alternate_one.primary_text(), "по ѥдьнои");
+    assert_eq!(
+        distributive_cardinal_paradigm_with_one(1, CardinalNumeralIdentity::OneYedyn)
+            .expect("selected distributive-one paradigm")
+            .form(Some(Gender::Feminine))
+            .expect("selected feminine row")
+            .primary_text(),
+        "по ѥдьнои"
+    );
+
+    let options = CardinalCompositionOptions {
+        one_identity: CardinalNumeralIdentity::OneYedyn,
+        thousand_identity: CardinalMagnitudeIdentity::ThousandLittleYus,
+    };
+    let alternate = distributive_cardinal_with_options(1_001, options, Some(Gender::Feminine))
+        .expect("selected distributive lexical doublets");
+    assert_eq!(alternate.primary_text(), "по тꙑсѧщи и ѥдьнои");
+    let alternate_paradigm = distributive_cardinal_paradigm_with_options(1_001, options)
+        .expect("selected distributive paradigm");
+    assert_eq!(alternate_paradigm.options(), options);
+    assert_eq!(alternate_paradigm.one_identity(), options.one_identity);
+    assert_eq!(
+        alternate_paradigm.thousand_identity(),
+        options.thousand_identity
+    );
+
+    let agreeing = distributive_cardinal_paradigm(2).expect("agreeing distributive paradigm");
+    assert_eq!(agreeing.len(), 4);
+    assert_eq!(agreeing.successes().count(), 3);
+    assert_eq!(agreeing.failures().count(), 1);
+    assert_eq!(
+        agreeing
+            .form(Some(Gender::Feminine))
+            .expect("feminine distributive row")
+            .primary_text(),
+        "по дъвѣма"
+    );
+
+    let governing = distributive_cardinal_paradigm(50).expect("governing distributive paradigm");
+    assert_eq!(governing.len(), 4);
+    assert_eq!(governing.successes().count(), 1);
+    assert_eq!(governing.failures().count(), 3);
+    assert_eq!(
+        governing
+            .form(None)
+            .expect("ungendered distributive row")
+            .primary_text(),
+        "по пѧти десѧтъ"
+    );
+
+    assert!(matches!(
+        distributive_cardinal_with_options(
+            1,
+            CardinalCompositionOptions {
+                one_identity: CardinalNumeralIdentity::TwoDva,
+                thousand_identity: CardinalMagnitudeIdentity::ThousandBackYus,
+            },
+            Some(Gender::Masculine),
+        ),
+        Err(InflectionError::InvalidInput { .. })
+    ));
+    assert!(matches!(
+        distributive_cardinal_with_options(
+            1_000,
+            CardinalCompositionOptions {
+                one_identity: CardinalNumeralIdentity::OneYedin,
+                thousand_identity: CardinalMagnitudeIdentity::HundredSto,
+            },
+            None,
+        ),
+        Err(InflectionError::InvalidInput { .. })
+    ));
+
+    for invalid in [0, 10_001, u16::MAX] {
+        assert!(matches!(
+            distributive_cardinal(invalid, None),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+        assert!(matches!(
+            distributive_cardinal_paradigm(invalid),
+            Err(InflectionError::InvalidInput { .. })
+        ));
+    }
+
+    for value in 1..=10_000 {
+        let remainder = value % 100;
+        let final_digit = if (11..=19).contains(&remainder) {
+            remainder - 10
+        } else {
+            remainder % 10
+        };
+        let requires_gender = matches!(final_digit, 1..=4);
+        let expected_government = match final_digit {
+            1 => old_church_slavonic::NumeralGovernment::Agreement {
+                number: Number::Singular,
+            },
+            2 => old_church_slavonic::NumeralGovernment::Agreement {
+                number: Number::Dual,
+            },
+            3 | 4 => old_church_slavonic::NumeralGovernment::Agreement {
+                number: Number::Plural,
+            },
+            _ => old_church_slavonic::NumeralGovernment::GenitivePlural,
+        };
+        for cell in DistributiveCardinalCell::all() {
+            let valid = cell.gender.is_some() == requires_gender;
+            match distributive_cardinal(value, cell.gender) {
+                Ok(realized) => {
+                    assert!(valid, "{value} {cell:?}");
+                    assert_eq!(realized.cell(), cell);
+                    assert_eq!(realized.government(), expected_government);
+                    let dative_cardinal = if value <= 10 {
+                        let (identity, number) = match value {
+                            1 => (CardinalNumeralIdentity::OneYedin, Number::Singular),
+                            2 => (CardinalNumeralIdentity::TwoDva, Number::Dual),
+                            3 => (CardinalNumeralIdentity::Three, Number::Plural),
+                            4 => (CardinalNumeralIdentity::Four, Number::Plural),
+                            5 => (CardinalNumeralIdentity::Five, Number::Singular),
+                            6 => (CardinalNumeralIdentity::Six, Number::Singular),
+                            7 => (CardinalNumeralIdentity::Seven, Number::Singular),
+                            8 => (CardinalNumeralIdentity::Eight, Number::Singular),
+                            9 => (CardinalNumeralIdentity::Nine, Number::Singular),
+                            10 => (CardinalNumeralIdentity::Ten, Number::Singular),
+                            _ => unreachable!("loop bounds constrain simple cardinals"),
+                        };
+                        cardinal_numeral_identity(identity, Case::Dative, number, cell.gender)
+                            .expect("licensed simple dative")
+                            .primary_text()
+                            .to_string()
+                    } else {
+                        compound_cardinal(value, Case::Dative, cell.gender)
+                            .expect("licensed compound dative")
+                            .primary_text()
+                    };
+                    assert_eq!(
+                        realized.primary_text(),
+                        format!("по {dative_cardinal}"),
+                        "{value} {cell:?}"
+                    );
+                    assert!(realized.analyses().iter().all(|analysis| {
+                        analysis.tokens.len() >= 2
+                            && analysis.tokens[0].role
+                                == old_church_slavonic::PhraseRole::Preposition
+                            && analysis.tokens[0].forms.primary_text() == "по"
+                            && analysis.tokens[1..].iter().all(|token| {
+                                !token.forms.primary_text().is_empty()
+                                    && (token.role != old_church_slavonic::PhraseRole::Preposition
+                                        || token.forms.primary_text() == "на")
+                            })
+                    }));
+                }
+                Err(error) => {
+                    assert!(!valid, "{value} {cell:?}: {error}");
+                    assert!(matches!(
+                        error,
+                        InflectionError::HistoricallyInvalidCell {
+                            cell: RequestedCell::DistributiveCardinal {
+                                value: requested_value,
+                                cell: requested_cell,
+                            },
+                            ..
+                        } if requested_value == value && requested_cell == cell
+                    ));
+                }
+            }
         }
     }
 }

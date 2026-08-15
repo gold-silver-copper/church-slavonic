@@ -178,6 +178,16 @@ beside `тъма`. Nonzero decimal chunks are joined by `и`. Correlated 30/40 a
 own `FormSet`, and the lowest nonzero component determines agreement or
 government.
 
+The distributive API models a source-backed construction rather than inventing
+a fifth inflectional class. `distributive_cardinal` and
+`DistributiveCardinalParadigm` prepend reviewed `по` to the ordinary dative
+realization of every cardinal from 1 through 10,000. The only caller-selectable
+cell dimension is the gender required by an agreeing final unit; the case is
+fixed, so temporal `по` with a locative cannot enter this API accidentally.
+Every preposition and cardinal component keeps its own evidence and variants,
+and lexical selections for one and thousand are shared with compound
+cardinals.
+
 Simple ordinals are a separate adjective-agreement API because the legacy
 gendered-numeral cell has neither short/long form nor animacy. `ordinal_numeral`
 resolves the source-union lemma; `ordinal_numeral_identity` accepts one of the
@@ -196,7 +206,7 @@ preserves its own variants, evidence, warnings, and trace. The accompanying
 value. Source-listed stems, productive cells, reconstructed stems, and exact
 cell-specific manuscript spellings therefore remain distinguishable. The
 competing asyndetic-declension account, rare alternative 21–29 turns, ordinal
-magnitudes above 1,000, distributive, and remaining irregular numeral
+magnitudes above 1,000, and remaining irregular numeral
 inventories remain open.
 
 Collectives have a separate typed cell because the inherited system has two

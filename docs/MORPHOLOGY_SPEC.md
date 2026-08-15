@@ -182,6 +182,31 @@ alternatives into invalid cross-products. Stable rules are `NUM-CARD-TEEN-01`,
 `NUM-CARD-TENS-01`, `NUM-CARD-HUNDRED-01`, `NUM-CARD-THOUSAND-01`,
 `NUM-CARD-MYRIAD-01`, and `NUM-CARD-ADDITIVE-01`.
 
+### NUM-CARD-DISTRIBUTIVE-01 — distributive `по` with dative cardinals
+
+OCS does not require an independent synthetic distributive paradigm. Leuta and
+Havryliuk's numeral inventory separates cardinal, ordinal, collective, and
+fractional classes, while primary-text witnesses realize distributive meaning
+with `по` plus a dative cardinal: `по ѥдиномоу`, `по дьвѣма`,
+`по пѧти десѧтъ`, and composed magnitude phrases. The engine therefore exposes
+`distributive_cardinal` as a structured phrase for every value from 1 through
+10,000, reusing the complete cardinal component machinery at dative case.
+
+`DistributiveCardinalCell` carries only optional gender. It requires a gender
+exactly when the lowest governing unit is one through four, retains the
+cardinal's agreement or genitive-plural government, and has no case field. That
+last boundary deliberately excludes temporal `по` plus a locative. The leading
+`по` receives reviewed-grammar evidence under `NUM-CARD-DISTRIBUTIVE-01`; every
+following token retains its own source, variants, warnings, and trace. Exact
+corpus values are attestations of the construction. Larger unattested values
+through the already bounded 10,000 cardinal inventory are labeled productive
+applications, not corpus forms.
+
+Authority: Leuta and Havryliuk 2018 pp. 154, 156, and 164; pinned UD OCS PROIEL
+r2.18 and native Syntacticus witnesses in Codex Zographensis Mark 14:19 and
+6:40, Codex Marianus Luke 9:14 and 10:1 and John 8:9 and 21:25, and Codex
+Suprasliensis sentences 245344 and 253762.
+
 ### NUM-ORD-HARD-01 and NUM-ORD-J-01 — simple ordinals
 
 Polivanova's OSD spreadsheet contains exactly ten ordinal class-`2/a` lexical

@@ -4,8 +4,9 @@ use crate::noun::NounLexeme;
 use crate::pronoun::StandardPronominalIdentity;
 use crate::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, CollectiveNumeralCell,
-    CompoundCardinalCell, Gender, InflectionError, NounCell, NounClass, Number, NumberRestriction,
-    NumeralCell, PhraseRole, PhraseToken, PredictedForm, RequestedCell, RuleId, RuleStep,
+    CompoundCardinalCell, DistributiveCardinalCell, Gender, InflectionError, NounCell, NounClass,
+    Number, NumberRestriction, NumeralCell, PhraseRole, PhraseToken, PredictedForm, RequestedCell,
+    RuleId, RuleStep,
 };
 
 /// The syntactic relation between a simple cardinal and the enumerated noun.
@@ -141,6 +142,36 @@ pub struct RealizedCardinal {
     cell: CompoundCardinalCell,
     government: NumeralGovernment,
     analyses: Vec<CardinalPhraseAnalysis>,
+}
+
+/// One correlated realization of distributive `по` and a dative cardinal.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DistributiveCardinalAnalysis {
+    pub tokens: Vec<PhraseToken>,
+}
+
+impl DistributiveCardinalAnalysis {
+    /// Render each independently sourced component in token order.
+    pub fn primary_text(&self) -> String {
+        self.tokens
+            .iter()
+            .map(|token| token.forms.primary_text())
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+}
+
+/// An OCS distributive-cardinal construction.
+///
+/// This is a syntactic `по` phrase, not a synthetic numeral paradigm. The
+/// preposition fixes the cardinal in the dative; the cell therefore carries
+/// only the gender required by an agreeing final unit.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RealizedDistributiveCardinal {
+    value: u16,
+    cell: DistributiveCardinalCell,
+    government: NumeralGovernment,
+    analyses: Vec<DistributiveCardinalAnalysis>,
 }
 
 /// The source-described outermost construction used by one compound-ordinal
@@ -350,6 +381,65 @@ impl RealizedCardinal {
 
     /// Render the deterministic first structural analysis and each token's
     /// source-first form without discarding the full analyses.
+    pub fn primary_text(&self) -> String {
+        self.analyses[0].primary_text()
+    }
+}
+
+impl RealizedDistributiveCardinal {
+    pub fn new(
+        value: u16,
+        cell: DistributiveCardinalCell,
+        government: NumeralGovernment,
+        analyses: Vec<DistributiveCardinalAnalysis>,
+    ) -> Result<Self, InflectionError> {
+        if value == 0 || analyses.is_empty() {
+            return Err(InflectionError::InvalidInput {
+                reason:
+                    "a realized distributive cardinal requires a positive value and an analysis"
+                        .to_string(),
+            });
+        }
+        if analyses.iter().any(|analysis| {
+            analysis.tokens.first().is_none_or(|token| {
+                token.role != PhraseRole::Preposition || token.forms.primary_text() != "по"
+            }) || !valid_cardinal_tokens(&analysis.tokens[1..])
+        }) {
+            return Err(InflectionError::InvalidInput {
+                reason:
+                    "a distributive cardinal must contain по followed by a valid cardinal analysis"
+                        .to_string(),
+            });
+        }
+        Ok(Self {
+            value,
+            cell,
+            government,
+            analyses,
+        })
+    }
+
+    pub const fn value(&self) -> u16 {
+        self.value
+    }
+
+    pub const fn cell(&self) -> DistributiveCardinalCell {
+        self.cell
+    }
+
+    /// The agreement or government inherited from the cardinal inside `по`.
+    pub const fn government(&self) -> NumeralGovernment {
+        self.government
+    }
+
+    pub const fn rule_id(&self) -> RuleId {
+        RuleId::NumeralCardinalDistributive
+    }
+
+    pub fn analyses(&self) -> &[DistributiveCardinalAnalysis] {
+        &self.analyses
+    }
+
     pub fn primary_text(&self) -> String {
         self.analyses[0].primary_text()
     }
