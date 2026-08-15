@@ -611,6 +611,20 @@ produce a form or to return one of the two lexical defect errors; missing
 metadata and generic unsupported formation are forbidden inside this closed
 layer.
 
+`UniqueVerbFamilyMember` closes the dictionary family union listed in
+Polivanova §§520–604: 106 distinct source spellings across those nineteen
+profiles. It preserves source order and excludes nearby productive lexemes;
+notably, §604 lists five prefixed members of the `дѣти` profile but no
+prefixless dictionary headword. Family assembly prefixes the independent
+principal parts only where the profile permits it, and uses explicit
+system-specific allomorph maps for `ꙗсти`, `ити`, `ꙗти`, `въпити`,
+`°рѣсти`, and `гънати`. Thus forms such as `придѫ` / `пришьлъ`,
+`сърѧщѫ` / `сърѣтохъ`, and `иженѫ` / `изгънахъ` do not rely on a single
+string-prefix heuristic. The source-specific defect contract also preserves
+the unattested imperfect of prefixed `бꙑти` members and the attested
+`забъвенъ` past passive. Exhaustive tests apply the same no-missing-metadata
+rule to every cell of all 106 members.
+
 Source dashes in Table 516 mean that no forms license reconstruction, so they
 map to `UnattestedUnreconstructableCell`, not automatically to grammatical
 impossibility. The independent `ѥсмь` profile is the stronger exception:
@@ -625,9 +639,9 @@ Two additional present-active participle seams preserve unique-profile
 oppositions that the ordinary hard/soft formations cannot express:
 `MixedYushtSoft` forms `-ѧ/-ѫшт-` (`дѣти`, `°рѣсти`), and
 `IotatedYushtSoft` forms `-ѩ/-ѭшт-` (`въпити`, `довьлѣти`). These are typed
-formations rather than spelling postprocessing. The wider prefix-family union,
-Polivanova's reusable irregular workstem groups, impersonal verbs, and facade
-source-provenance routing remain separate completion checkpoints.
+formations rather than spelling postprocessing. Polivanova's reusable irregular
+workstem groups, impersonal verbs, and facade source-provenance routing remain
+separate completion checkpoints.
 
 ### Imperative
 

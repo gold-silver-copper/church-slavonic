@@ -59,4 +59,4 @@ pub use result::{
     VariantSelectionError,
 };
 pub use trace::{PredictedForm, RuleId, RuleStep};
-pub use unique_verb::{UniqueVerbIdentity, UniqueVerbProfileKind};
+pub use unique_verb::{UniqueVerbFamilyMember, UniqueVerbIdentity, UniqueVerbProfileKind};

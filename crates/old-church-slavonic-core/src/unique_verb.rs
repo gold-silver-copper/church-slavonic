@@ -50,6 +50,112 @@ pub enum UniqueVerbIdentity {
     Deti,
 }
 
+/// One lexeme in the exhaustive family union of the unique profiles.
+///
+/// This value records source identity only. It deliberately does not infer a
+/// prefix boundary: several families have contraction, hiatus, or root
+/// allomorphy that must be supplied by the later system-specific profile.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct UniqueVerbFamilyMember {
+    profile: UniqueVerbIdentity,
+    lemma: &'static str,
+}
+
+impl UniqueVerbFamilyMember {
+    pub const COUNT: usize = 106;
+
+    pub fn all() -> impl Iterator<Item = Self> {
+        UniqueVerbIdentity::ALL.into_iter().flat_map(|profile| {
+            profile
+                .family_members()
+                .iter()
+                .copied()
+                .map(move |lemma| Self { profile, lemma })
+        })
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::all().find(|member| member.lemma == lemma)
+    }
+
+    pub const fn profile(self) -> UniqueVerbIdentity {
+        self.profile
+    }
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        self.lemma
+    }
+
+    pub const fn source_section(self) -> &'static str {
+        self.profile.source_section()
+    }
+
+    /// Lexical aspect after source-listed prefixation.
+    pub fn aspect(self) -> VerbAspect {
+        let is_profile_citation = self.lemma == self.profile.canonical_lemma();
+        match self.profile {
+            UniqueVerbIdentity::Imeti | UniqueVerbIdentity::Esmi | UniqueVerbIdentity::Dovleti => {
+                self.profile.aspect()
+            }
+            UniqueVerbIdentity::Jasti
+            | UniqueVerbIdentity::Vedeti
+            | UniqueVerbIdentity::Hoteti
+            | UniqueVerbIdentity::Iti
+            | UniqueVerbIdentity::Supati
+            | UniqueVerbIdentity::Vopiti
+            | UniqueVerbIdentity::Gnati
+            | UniqueVerbIdentity::Pleti
+                if !is_profile_citation =>
+            {
+                VerbAspect::Perfective
+            }
+            UniqueVerbIdentity::Deti => VerbAspect::Perfective,
+            _ => self.profile.aspect(),
+        }
+    }
+
+    /// Assemble the member's complete typed profile from its source-specific
+    /// allomorph mapping.
+    pub fn lexeme(self) -> VerbLexeme {
+        let mut lexeme = self.profile.lexeme();
+        match self.profile {
+            UniqueVerbIdentity::Jasti => {
+                let root = self.lemma.strip_suffix("сти").unwrap_or("ꙗ");
+                replace_all_initial(&mut lexeme, "ꙗ", root);
+            }
+            UniqueVerbIdentity::Iti => transform_iti_member(&mut lexeme, self.lemma),
+            UniqueVerbIdentity::Jati => {
+                let root = self.lemma.strip_suffix("ти").unwrap_or("ꙗ");
+                replace_all_initial(&mut lexeme, "ꙗ", root);
+            }
+            UniqueVerbIdentity::Vopiti => {
+                let root = self.lemma.strip_suffix("ти").unwrap_or("въпи");
+                replace_all_initial(&mut lexeme, "въпи", root);
+            }
+            UniqueVerbIdentity::Obresti => {
+                let root = match self.lemma {
+                    "изобрѣсти" => "изобр",
+                    "обрѣсти" => "обр",
+                    "приобрѣсти" => "приобр",
+                    "сърѣсти" => "сър",
+                    _ => "обр",
+                };
+                replace_all_initial(&mut lexeme, "обр", root);
+            }
+            UniqueVerbIdentity::Gnati => transform_gnati_member(&mut lexeme, self.lemma),
+            profile => {
+                if let Some(prefix) = self.lemma.strip_suffix(profile.canonical_lemma()) {
+                    prepend_all(&mut lexeme, prefix);
+                }
+            }
+        }
+        lexeme.lemma = self.lemma.to_string();
+        lexeme.aspect = Some(self.aspect());
+        configure_family_specific_defects(&mut lexeme, self);
+        lexeme
+    }
+}
+
 impl UniqueVerbIdentity {
     pub const ALL: [Self; 19] = [
         Self::Dati,
@@ -119,6 +225,105 @@ impl UniqueVerbIdentity {
             Self::Gnati => &["гънати"],
             Self::Pleti => &["плѣти"],
             Self::Deti => &["дѣти"],
+        }
+    }
+
+    /// Exact family membership from Polivanova §§520–604, in source order.
+    ///
+    /// The `дѣти` profile is intentionally represented only by its five
+    /// prefixed lexemes: §604 and its note exclude a prefixless dictionary
+    /// headword even though §602 uses `дѣти` as the grammatical profile label.
+    pub const fn family_members(self) -> &'static [&'static str] {
+        match self {
+            Self::Dati => &[
+                "дати",
+                "въдати",
+                "въздати",
+                "издати",
+                "отъдати",
+                "подати",
+                "придати",
+                "продати",
+                "прѣдати",
+            ],
+            Self::Jasti => &["ꙗсти", "изѣсти", "обѣсти", "поꙗсти", "сънѣсти"],
+            Self::Vedeti => &[
+                "вѣдѣти",
+                "заповѣдѣти",
+                "извѣдѣти",
+                "исповѣдѣти",
+                "навѣдѣти",
+                "недовѣдѣти",
+                "повѣдѣти",
+                "проповѣдѣти",
+                "проувѣдѣти",
+                "съвѣдѣти",
+                "съповѣдѣти",
+                "увѣдѣти",
+            ],
+            Self::Imeti => &["имѣти", "недоимѣти"],
+            Self::Esmi => &["ѥсмь"],
+            Self::Byti => &["бꙑти", "забꙑти", "избꙑти", "прибꙑти", "прѣбꙑти", "събꙑти"],
+            Self::Hoteti => &["хотѣти", "въсхотѣти", "похотѣти"],
+            Self::Dovleti => &["довьлѣти"],
+            Self::Iti => &[
+                "ити",
+                "възити",
+                "вънити",
+                "доити",
+                "заити",
+                "изити",
+                "наити",
+                "низъити",
+                "обити",
+                "отити",
+                "подъити",
+                "поити",
+                "прити",
+                "проити",
+                "прѣвъзити",
+                "прѣдъити",
+                "прѣити",
+                "разити",
+                "сънити",
+            ],
+            Self::Jati => &["ꙗти", "възѣти", "въꙗти", "приꙗти", "прѣꙗти"],
+            Self::Stati => &[
+                "стати",
+                "въстати",
+                "достати",
+                "настати",
+                "остати",
+                "пристати",
+                "прѣдъстати",
+                "прѣстати",
+                "състати",
+                "устати",
+            ],
+            Self::Supati => &["съпати", "посъпати"],
+            Self::Vopiti => &["въпити", "възъпити"],
+            Self::Sesti => &[
+                "сѣсти",
+                "въсѣсти",
+                "осѣсти",
+                "посѣсти",
+                "просѣсти",
+                "прѣдъсѣсти",
+                "съсѣсти",
+            ],
+            Self::Leshti => &["лещи", "възлещи", "облещи", "улещи"],
+            Self::Obresti => &["изобрѣсти", "обрѣсти", "приобрѣсти", "сърѣсти"],
+            Self::Gnati => &[
+                "гънати",
+                "вꙑгънати",
+                "изгънати",
+                "отъгънати",
+                "погънати",
+                "прогънати",
+                "разгънати",
+            ],
+            Self::Pleti => &["плѣти", "исплѣти"],
+            Self::Deti => &["въдѣти", "въздѣти", "задѣти", "одѣти", "придѣти"],
         }
     }
 
@@ -725,6 +930,153 @@ fn insert_present(lexeme: &mut VerbLexeme, forms: [&str; 9]) {
     }
 }
 
+fn map_all_surface_values(lexeme: &mut VerbLexeme, mut map: impl FnMut(&str) -> String) {
+    for form in lexeme.exact_forms.values_mut() {
+        *form = map(form);
+    }
+    for value in [
+        &mut lexeme.stems.present,
+        &mut lexeme.stems.present_first_singular,
+        &mut lexeme.stems.imperfect,
+        &mut lexeme.stems.aorist,
+        &mut lexeme.stems.aorist_second_third_singular,
+        &mut lexeme.stems.imperative,
+        &mut lexeme.stems.l_participle,
+        &mut lexeme.stems.present_active_participle,
+        &mut lexeme.stems.present_passive_participle,
+        &mut lexeme.stems.past_active_participle,
+        &mut lexeme.stems.past_passive_participle,
+    ]
+    .into_iter()
+    .flatten()
+    {
+        *value = map(value);
+    }
+}
+
+fn prepend_all(lexeme: &mut VerbLexeme, prefix: &str) {
+    if prefix.is_empty() {
+        return;
+    }
+    map_all_surface_values(lexeme, |value| format!("{prefix}{value}"));
+}
+
+fn replace_all_initial(lexeme: &mut VerbLexeme, from: &str, to: &str) {
+    if from == to {
+        return;
+    }
+    map_all_surface_values(lexeme, |value| {
+        value
+            .strip_prefix(from)
+            .map_or_else(|| value.to_string(), |suffix| format!("{to}{suffix}"))
+    });
+}
+
+fn transform_iti_member(lexeme: &mut VerbLexeme, lemma: &str) {
+    let finite_prefix = lemma.strip_suffix("ити").unwrap_or("");
+    let finite_root = format!("{finite_prefix}ид");
+    for form in lexeme.exact_forms.values_mut() {
+        if let Some(suffix) = form.strip_prefix("ид") {
+            *form = format!("{finite_root}{suffix}");
+        }
+    }
+    for stem in [
+        &mut lexeme.stems.imperfect,
+        &mut lexeme.stems.aorist,
+        &mut lexeme.stems.imperative,
+        &mut lexeme.stems.present_active_participle,
+        &mut lexeme.stems.present_passive_participle,
+    ] {
+        if stem.as_deref().is_some_and(|value| value.starts_with("ид")) {
+            *stem = Some(finite_root.clone());
+        }
+    }
+
+    let suppletive_prefix = match lemma {
+        "ити" => "",
+        "възити" => "въз",
+        "вънити" => "въ",
+        "доити" => "до",
+        "заити" => "за",
+        "изити" => "и",
+        "наити" => "на",
+        "низъити" => "низъ",
+        "обити" => "об",
+        "отити" => "от",
+        "подъити" => "подъ",
+        "поити" => "по",
+        "прити" => "при",
+        "проити" => "про",
+        "прѣвъзити" => "прѣвъз",
+        "прѣдъити" => "прѣдъ",
+        "прѣити" => "прѣ",
+        "разити" => "раз",
+        "сънити" => "съ",
+        _ => "",
+    };
+    lexeme.stems.l_participle = Some(format!("{suppletive_prefix}шь"));
+    lexeme.stems.past_active_participle = Some(format!("{suppletive_prefix}шьд"));
+}
+
+fn transform_gnati_member(lexeme: &mut VerbLexeme, lemma: &str) {
+    let nonpresent_root = lemma.strip_suffix("ти").unwrap_or("гъна");
+    let present_root = match lemma {
+        "гънати" => "жен",
+        "вꙑгънати" => "вꙑжен",
+        "изгънати" => "ижен",
+        "отъгънати" => "отъжен",
+        "погънати" => "пожен",
+        "прогънати" => "прожен",
+        "разгънати" => "ражен",
+        _ => "жен",
+    };
+    for form in lexeme.exact_forms.values_mut() {
+        if let Some(suffix) = form.strip_prefix("жен") {
+            *form = format!("{present_root}{suffix}");
+        }
+    }
+    for stem in [
+        &mut lexeme.stems.imperfect,
+        &mut lexeme.stems.imperative,
+        &mut lexeme.stems.present_active_participle,
+        &mut lexeme.stems.present_passive_participle,
+    ] {
+        if stem.is_some() {
+            *stem = Some(present_root.to_string());
+        }
+    }
+    for stem in [
+        &mut lexeme.stems.aorist,
+        &mut lexeme.stems.aorist_second_third_singular,
+        &mut lexeme.stems.l_participle,
+        &mut lexeme.stems.past_active_participle,
+        &mut lexeme.stems.past_passive_participle,
+    ] {
+        if stem.is_some() {
+            *stem = Some(nonpresent_root.to_string());
+        }
+    }
+}
+
+fn configure_family_specific_defects(lexeme: &mut VerbLexeme, member: UniqueVerbFamilyMember) {
+    if member.profile == UniqueVerbIdentity::Byti
+        && member.lemma != UniqueVerbIdentity::Byti.canonical_lemma()
+    {
+        lexeme.defective_systems.insert(
+            VerbMorphologySystem::Finite(FiniteTense::Imperfect),
+            VerbDefectKind::UnattestedUnreconstructable,
+        );
+    }
+    if member.lemma == "забꙑти" {
+        lexeme
+            .defective_systems
+            .remove(&VerbMorphologySystem::Participle(
+                ParticipleKind::PastPassive,
+            ));
+        set_past_passive(lexeme, "забъв", PastPassiveParticipleFormation::En);
+    }
+}
+
 fn insert_athematic_imperative(lexeme: &mut VerbLexeme, singular: &str, plural_stem: &str) {
     let forms = [
         singular.to_string(),
@@ -898,6 +1250,43 @@ mod tests {
     }
 
     #[test]
+    fn family_union_has_exact_source_counts_order_and_no_overlap() {
+        let expected_counts = [9, 5, 12, 2, 1, 6, 3, 1, 19, 5, 10, 2, 2, 7, 4, 4, 7, 2, 5];
+        for (identity, expected) in UniqueVerbIdentity::ALL.into_iter().zip(expected_counts) {
+            assert_eq!(identity.family_members().len(), expected, "{identity:?}");
+        }
+
+        let members = UniqueVerbFamilyMember::all().collect::<Vec<_>>();
+        assert_eq!(members.len(), UniqueVerbFamilyMember::COUNT);
+        let lemmas = members
+            .iter()
+            .map(|member| member.canonical_lemma())
+            .collect::<BTreeSet<_>>();
+        assert_eq!(lemmas.len(), UniqueVerbFamilyMember::COUNT);
+        for member in members {
+            assert_eq!(
+                UniqueVerbFamilyMember::classify_source_union_lemma(member.canonical_lemma()),
+                Some(member)
+            );
+            crate::Lemma::parse(member.canonical_lemma()).expect("source family lemma");
+        }
+
+        assert_eq!(
+            UniqueVerbIdentity::Obresti.family_members(),
+            &["изобрѣсти", "обрѣсти", "приобрѣсти", "сърѣсти"]
+        );
+        assert!(!UniqueVerbIdentity::Deti.family_members().contains(&"дѣти"));
+        for excluded_near_neighbor in ["даꙗти", "ꙗхати", "стоꙗти", "гонити", "дѣꙗти"]
+        {
+            assert_eq!(
+                UniqueVerbFamilyMember::classify_source_union_lemma(excluded_near_neighbor),
+                None,
+                "{excluded_near_neighbor} belongs to a different productive lexeme"
+            );
+        }
+    }
+
+    #[test]
     fn all_nineteen_source_present_goldens_are_exact() {
         for identity in UniqueVerbIdentity::ALL {
             let lexeme = identity.lexeme();
@@ -952,6 +1341,135 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn every_source_family_cell_is_realized_or_explicitly_defected() {
+        for member in UniqueVerbFamilyMember::all() {
+            let lexeme = member.lexeme();
+            assert_eq!(lexeme.lemma, member.canonical_lemma(), "{member:?}");
+            assert_eq!(lexeme.aspect, Some(member.aspect()), "{member:?}");
+
+            for cell in FiniteVerbCell::all() {
+                if let Err(error) = finite(&lexeme, cell) {
+                    assert!(is_explicit_defect(&error), "{member:?} {cell:?}: {error:?}");
+                }
+            }
+            for cell in ImperativeCell::SUPPORTED {
+                if let Err(error) = imperative(&lexeme, cell) {
+                    assert!(is_explicit_defect(&error), "{member:?} {cell:?}: {error:?}");
+                }
+            }
+            for result in [infinitive(&lexeme), supine(&lexeme)] {
+                if let Err(error) = result {
+                    assert!(is_explicit_defect(&error), "{member:?}: {error:?}");
+                }
+            }
+            for cell in LParticipleCell::all() {
+                if let Err(error) = l_participle(&lexeme, cell) {
+                    assert!(is_explicit_defect(&error), "{member:?} {cell:?}: {error:?}");
+                }
+            }
+            for kind in ParticipleKind::ALL {
+                for cell in ParticipleCell::for_kind(kind) {
+                    if let Err(error) = participle(&lexeme, cell) {
+                        assert!(is_explicit_defect(&error), "{member:?} {cell:?}: {error:?}");
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn family_allomorphs_and_source_specific_defects_are_exact() {
+        let present_first_singular = FiniteVerbCell {
+            tense: FiniteTense::Present,
+            person: Person::First,
+            number: Number::Singular,
+        };
+        let aorist_first_singular = FiniteVerbCell {
+            tense: FiniteTense::Aorist,
+            ..present_first_singular
+        };
+        let imperfect_first_singular = FiniteVerbCell {
+            tense: FiniteTense::Imperfect,
+            ..present_first_singular
+        };
+        let masculine_singular = LParticipleCell {
+            gender: Gender::Masculine,
+            number: Number::Singular,
+        };
+        let member = |lemma| {
+            UniqueVerbFamilyMember::classify_source_union_lemma(lemma)
+                .unwrap_or_else(|| panic!("source family member {lemma}"))
+                .lexeme()
+        };
+
+        for (lemma, expected) in [
+            ("изѣсти", "изѣмь"),
+            ("възѣти", "възѣдѫ"),
+            ("прити", "придѫ"),
+            ("възъпити", "възъпиѭ"),
+            ("сърѣсти", "сърѧщѫ"),
+            ("изгънати", "иженѫ"),
+            ("разгънати", "раженѫ"),
+            ("одѣти", "одежѫ"),
+        ] {
+            assert_eq!(
+                finite(&member(lemma), present_first_singular)
+                    .expect("family present")
+                    .text,
+                expected,
+                "{lemma}"
+            );
+        }
+        for (lemma, expected) in [("прити", "пришьлъ"), ("вънити", "въшьлъ")]
+        {
+            assert_eq!(
+                l_participle(&member(lemma), masculine_singular)
+                    .expect("suppletive family l-participle")
+                    .text,
+                expected,
+                "{lemma}"
+            );
+        }
+        for (lemma, expected) in [("сърѣсти", "сърѣтохъ"), ("изгънати", "изгънахъ")]
+        {
+            assert_eq!(
+                finite(&member(lemma), aorist_first_singular)
+                    .expect("family aorist")
+                    .text,
+                expected,
+                "{lemma}"
+            );
+        }
+        assert_eq!(
+            l_participle(&member("сърѣсти"), masculine_singular)
+                .expect("root family l-participle")
+                .text,
+            "сърѣлъ"
+        );
+
+        let past_passive_nominative = ParticipleCell {
+            kind: ParticipleKind::PastPassive,
+            adjective: AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Short,
+            },
+        };
+        assert_eq!(
+            participle(&member("забꙑти"), past_passive_nominative)
+                .expect("attested prefixed past passive")
+                .text,
+            "забъвенъ"
+        );
+        assert!(matches!(
+            finite(&member("избꙑти"), imperfect_first_singular),
+            Err(InflectionError::UnattestedUnreconstructableCell { .. })
+        ));
     }
 
     #[test]
