@@ -815,18 +815,18 @@
         "total": 450
       },
       "ja-soft": {
-        "correct": 955,
-        "normalized_correct": 955,
+        "correct": 1021,
+        "normalized_correct": 1021,
         "total": 1456
       },
       "jo-m-soft": {
-        "correct": 2384,
-        "normalized_correct": 2384,
+        "correct": 2544,
+        "normalized_correct": 2544,
         "total": 3048
       },
       "jo-n-soft": {
-        "correct": 2563,
-        "normalized_correct": 2563,
+        "correct": 2703,
+        "normalized_correct": 2703,
         "total": 3017
       },
       "n-m": {
@@ -997,18 +997,18 @@
         "total": 162
       },
       "ja-soft": {
-        "correct": 258,
-        "normalized_correct": 258,
+        "correct": 276,
+        "normalized_correct": 276,
         "total": 364
       },
       "jo-m-soft": {
-        "correct": 634,
-        "normalized_correct": 634,
+        "correct": 704,
+        "normalized_correct": 704,
         "total": 954
       },
       "jo-n-soft": {
-        "correct": 637,
-        "normalized_correct": 637,
+        "correct": 676,
+        "normalized_correct": 676,
         "total": 763
       },
       "n-m": {
@@ -3994,13 +3994,13 @@
         "total": 67
       },
       "noun/ja-soft/noun:gen:pl": {
-        "correct": 31,
-        "normalized_correct": 31,
+        "correct": 44,
+        "normalized_correct": 44,
         "total": 68
       },
       "noun/ja-soft/noun:gen:sg": {
-        "correct": 0,
-        "normalized_correct": 0,
+        "correct": 53,
+        "normalized_correct": 53,
         "total": 73
       },
       "noun/ja-soft/noun:ins:du": {
@@ -4064,13 +4064,13 @@
         "total": 73
       },
       "noun/jo-m-soft/noun:dat:du": {
-        "correct": 135,
-        "normalized_correct": 135,
+        "correct": 147,
+        "normalized_correct": 147,
         "total": 168
       },
       "noun/jo-m-soft/noun:dat:pl": {
-        "correct": 135,
-        "normalized_correct": 135,
+        "correct": 147,
+        "normalized_correct": 147,
         "total": 168
       },
       "noun/jo-m-soft/noun:dat:sg": {
@@ -4084,8 +4084,8 @@
         "total": 168
       },
       "noun/jo-m-soft/noun:gen:pl": {
-        "correct": 135,
-        "normalized_correct": 135,
+        "correct": 147,
+        "normalized_correct": 147,
         "total": 168
       },
       "noun/jo-m-soft/noun:gen:sg": {
@@ -4094,8 +4094,8 @@
         "total": 172
       },
       "noun/jo-m-soft/noun:ins:du": {
-        "correct": 135,
-        "normalized_correct": 135,
+        "correct": 147,
+        "normalized_correct": 147,
         "total": 168
       },
       "noun/jo-m-soft/noun:ins:pl": {
@@ -4104,8 +4104,8 @@
         "total": 168
       },
       "noun/jo-m-soft/noun:ins:sg": {
-        "correct": 135,
-        "normalized_correct": 135,
+        "correct": 149,
+        "normalized_correct": 149,
         "total": 172
       },
       "noun/jo-m-soft/noun:loc:du": {
@@ -4134,8 +4134,8 @@
         "total": 168
       },
       "noun/jo-m-soft/noun:nom:sg": {
-        "correct": 135,
-        "normalized_correct": 135,
+        "correct": 149,
+        "normalized_correct": 149,
         "total": 172
       },
       "noun/jo-m-soft/noun:voc:du": {
@@ -4149,8 +4149,8 @@
         "total": 168
       },
       "noun/jo-m-soft/noun:voc:sg": {
-        "correct": 47,
-        "normalized_correct": 47,
+        "correct": 131,
+        "normalized_correct": 131,
         "total": 172
       },
       "noun/jo-n-soft/noun:acc:du": {
@@ -4159,48 +4159,48 @@
         "total": 143
       },
       "noun/jo-n-soft/noun:acc:pl": {
-        "correct": 109,
-        "normalized_correct": 109,
+        "correct": 143,
+        "normalized_correct": 143,
         "total": 143
       },
       "noun/jo-n-soft/noun:acc:sg": {
-        "correct": 110,
-        "normalized_correct": 110,
+        "correct": 145,
+        "normalized_correct": 145,
         "total": 145
       },
       "noun/jo-n-soft/noun:dat:du": {
-        "correct": 143,
-        "normalized_correct": 143,
+        "correct": 75,
+        "normalized_correct": 75,
         "total": 143
       },
       "noun/jo-n-soft/noun:dat:pl": {
-        "correct": 143,
-        "normalized_correct": 143,
+        "correct": 75,
+        "normalized_correct": 75,
         "total": 143
       },
       "noun/jo-n-soft/noun:dat:sg": {
-        "correct": 110,
-        "normalized_correct": 110,
+        "correct": 145,
+        "normalized_correct": 145,
         "total": 145
       },
       "noun/jo-n-soft/noun:gen:du": {
-        "correct": 109,
-        "normalized_correct": 109,
+        "correct": 143,
+        "normalized_correct": 143,
         "total": 143
       },
       "noun/jo-n-soft/noun:gen:pl": {
-        "correct": 34,
-        "normalized_correct": 34,
+        "correct": 102,
+        "normalized_correct": 102,
         "total": 143
       },
       "noun/jo-n-soft/noun:gen:sg": {
-        "correct": 110,
-        "normalized_correct": 110,
+        "correct": 145,
+        "normalized_correct": 145,
         "total": 145
       },
       "noun/jo-n-soft/noun:ins:du": {
-        "correct": 143,
-        "normalized_correct": 143,
+        "correct": 75,
+        "normalized_correct": 75,
         "total": 143
       },
       "noun/jo-n-soft/noun:ins:pl": {
@@ -4209,13 +4209,13 @@
         "total": 143
       },
       "noun/jo-n-soft/noun:ins:sg": {
-        "correct": 145,
-        "normalized_correct": 145,
+        "correct": 76,
+        "normalized_correct": 76,
         "total": 145
       },
       "noun/jo-n-soft/noun:loc:du": {
-        "correct": 109,
-        "normalized_correct": 109,
+        "correct": 143,
+        "normalized_correct": 143,
         "total": 143
       },
       "noun/jo-n-soft/noun:loc:pl": {
@@ -4234,13 +4234,13 @@
         "total": 143
       },
       "noun/jo-n-soft/noun:nom:pl": {
-        "correct": 109,
-        "normalized_correct": 109,
+        "correct": 143,
+        "normalized_correct": 143,
         "total": 143
       },
       "noun/jo-n-soft/noun:nom:sg": {
-        "correct": 110,
-        "normalized_correct": 110,
+        "correct": 145,
+        "normalized_correct": 145,
         "total": 145
       },
       "noun/jo-n-soft/noun:voc:du": {
@@ -4249,13 +4249,13 @@
         "total": 143
       },
       "noun/jo-n-soft/noun:voc:pl": {
-        "correct": 109,
-        "normalized_correct": 109,
+        "correct": 143,
+        "normalized_correct": 143,
         "total": 143
       },
       "noun/jo-n-soft/noun:voc:sg": {
-        "correct": 110,
-        "normalized_correct": 110,
+        "correct": 145,
+        "normalized_correct": 145,
         "total": 145
       },
       "noun/n-m/noun:dat:du": {
@@ -8346,13 +8346,13 @@
         "total": 17
       },
       "noun/ja-soft/noun:gen:pl": {
-        "correct": 9,
-        "normalized_correct": 9,
+        "correct": 13,
+        "normalized_correct": 13,
         "total": 17
       },
       "noun/ja-soft/noun:gen:sg": {
-        "correct": 0,
-        "normalized_correct": 0,
+        "correct": 14,
+        "normalized_correct": 14,
         "total": 18
       },
       "noun/ja-soft/noun:ins:du": {
@@ -8416,38 +8416,38 @@
         "total": 18
       },
       "noun/jo-m-soft/noun:dat:du": {
-        "correct": 34,
-        "normalized_correct": 34,
+        "correct": 40,
+        "normalized_correct": 40,
         "total": 53
       },
       "noun/jo-m-soft/noun:dat:pl": {
-        "correct": 34,
-        "normalized_correct": 34,
+        "correct": 40,
+        "normalized_correct": 40,
         "total": 53
       },
       "noun/jo-m-soft/noun:dat:sg": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 38,
+        "normalized_correct": 38,
         "total": 53
       },
       "noun/jo-m-soft/noun:gen:du": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 38,
+        "normalized_correct": 38,
         "total": 53
       },
       "noun/jo-m-soft/noun:gen:pl": {
-        "correct": 34,
-        "normalized_correct": 34,
+        "correct": 40,
+        "normalized_correct": 40,
         "total": 53
       },
       "noun/jo-m-soft/noun:gen:sg": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 38,
+        "normalized_correct": 38,
         "total": 53
       },
       "noun/jo-m-soft/noun:ins:du": {
-        "correct": 34,
-        "normalized_correct": 34,
+        "correct": 40,
+        "normalized_correct": 40,
         "total": 53
       },
       "noun/jo-m-soft/noun:ins:pl": {
@@ -8456,13 +8456,13 @@
         "total": 53
       },
       "noun/jo-m-soft/noun:ins:sg": {
-        "correct": 34,
-        "normalized_correct": 34,
+        "correct": 40,
+        "normalized_correct": 40,
         "total": 53
       },
       "noun/jo-m-soft/noun:loc:du": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 38,
+        "normalized_correct": 38,
         "total": 53
       },
       "noun/jo-m-soft/noun:loc:pl": {
@@ -8476,8 +8476,8 @@
         "total": 53
       },
       "noun/jo-m-soft/noun:nom:du": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 38,
+        "normalized_correct": 38,
         "total": 53
       },
       "noun/jo-m-soft/noun:nom:pl": {
@@ -8486,13 +8486,13 @@
         "total": 53
       },
       "noun/jo-m-soft/noun:nom:sg": {
-        "correct": 34,
-        "normalized_correct": 34,
+        "correct": 40,
+        "normalized_correct": 40,
         "total": 53
       },
       "noun/jo-m-soft/noun:voc:du": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 38,
+        "normalized_correct": 38,
         "total": 53
       },
       "noun/jo-m-soft/noun:voc:pl": {
@@ -8501,8 +8501,8 @@
         "total": 53
       },
       "noun/jo-m-soft/noun:voc:sg": {
-        "correct": 14,
-        "normalized_correct": 14,
+        "correct": 36,
+        "normalized_correct": 36,
         "total": 53
       },
       "noun/jo-n-soft/noun:acc:du": {
@@ -8511,48 +8511,48 @@
         "total": 36
       },
       "noun/jo-n-soft/noun:acc:pl": {
-        "correct": 26,
-        "normalized_correct": 26,
+        "correct": 36,
+        "normalized_correct": 36,
         "total": 36
       },
       "noun/jo-n-soft/noun:acc:sg": {
-        "correct": 27,
-        "normalized_correct": 27,
+        "correct": 37,
+        "normalized_correct": 37,
         "total": 37
       },
       "noun/jo-n-soft/noun:dat:du": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 16,
+        "normalized_correct": 16,
         "total": 36
       },
       "noun/jo-n-soft/noun:dat:pl": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 16,
+        "normalized_correct": 16,
         "total": 36
       },
       "noun/jo-n-soft/noun:dat:sg": {
-        "correct": 27,
-        "normalized_correct": 27,
+        "correct": 37,
+        "normalized_correct": 37,
         "total": 37
       },
       "noun/jo-n-soft/noun:gen:du": {
-        "correct": 26,
-        "normalized_correct": 26,
+        "correct": 36,
+        "normalized_correct": 36,
         "total": 36
       },
       "noun/jo-n-soft/noun:gen:pl": {
-        "correct": 10,
-        "normalized_correct": 10,
+        "correct": 30,
+        "normalized_correct": 30,
         "total": 36
       },
       "noun/jo-n-soft/noun:gen:sg": {
-        "correct": 27,
-        "normalized_correct": 27,
+        "correct": 37,
+        "normalized_correct": 37,
         "total": 37
       },
       "noun/jo-n-soft/noun:ins:du": {
-        "correct": 36,
-        "normalized_correct": 36,
+        "correct": 16,
+        "normalized_correct": 16,
         "total": 36
       },
       "noun/jo-n-soft/noun:ins:pl": {
@@ -8561,13 +8561,13 @@
         "total": 36
       },
       "noun/jo-n-soft/noun:ins:sg": {
-        "correct": 37,
-        "normalized_correct": 37,
+        "correct": 16,
+        "normalized_correct": 16,
         "total": 37
       },
       "noun/jo-n-soft/noun:loc:du": {
-        "correct": 26,
-        "normalized_correct": 26,
+        "correct": 36,
+        "normalized_correct": 36,
         "total": 36
       },
       "noun/jo-n-soft/noun:loc:pl": {
@@ -8586,13 +8586,13 @@
         "total": 36
       },
       "noun/jo-n-soft/noun:nom:pl": {
-        "correct": 26,
-        "normalized_correct": 26,
+        "correct": 36,
+        "normalized_correct": 36,
         "total": 36
       },
       "noun/jo-n-soft/noun:nom:sg": {
-        "correct": 27,
-        "normalized_correct": 27,
+        "correct": 37,
+        "normalized_correct": 37,
         "total": 37
       },
       "noun/jo-n-soft/noun:voc:du": {
@@ -8601,13 +8601,13 @@
         "total": 36
       },
       "noun/jo-n-soft/noun:voc:pl": {
-        "correct": 26,
-        "normalized_correct": 26,
+        "correct": 36,
+        "normalized_correct": 36,
         "total": 36
       },
       "noun/jo-n-soft/noun:voc:sg": {
-        "correct": 27,
-        "normalized_correct": 27,
+        "correct": 37,
+        "normalized_correct": 37,
         "total": 37
       },
       "noun/n-m/noun:dat:du": {

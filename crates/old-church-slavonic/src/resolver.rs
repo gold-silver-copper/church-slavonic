@@ -27,12 +27,14 @@ fn cell_outcomes<C: Copy>(
 
 const REVIEWED_TWOFOLD_NOUN_ID_PREFIX: &str = "reviewed:ocs:noun:twofold:";
 const REVIEWED_UNIQUE_NOUN_ID_PREFIX: &str = "reviewed:ocs:noun:unique:";
+const REVIEWED_REGULAR_NOUN_ID_PREFIX: &str = "reviewed:ocs:noun:regular:";
 const REVIEWED_VERB_ID_PREFIX: &str = "reviewed:ocs:verb:";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ReviewedNounProfile {
     Twofold(TwofoldNounFamilyMember),
     Unique(UniqueNounFamilyMember),
+    Regular(RegularNounFamily),
 }
 
 impl ReviewedNounProfile {
@@ -40,18 +42,21 @@ impl ReviewedNounProfile {
         TwofoldNounFamilyMember::all()
             .map(Self::Twofold)
             .chain(UniqueNounFamilyMember::all().map(Self::Unique))
+            .chain(RegularNounFamily::all().map(Self::Regular))
     }
 
     fn classify(lemma: &str) -> Option<Self> {
         TwofoldNounFamilyMember::classify_source_lemma(lemma)
             .map(Self::Twofold)
             .or_else(|| UniqueNounFamilyMember::classify_source_lemma(lemma).map(Self::Unique))
+            .or_else(|| RegularNounFamily::classify_source_lemma(lemma).map(Self::Regular))
     }
 
     const fn canonical_lemma(self) -> &'static str {
         match self {
             Self::Twofold(member) => member.canonical_lemma(),
             Self::Unique(member) => member.canonical_lemma(),
+            Self::Regular(family) => family.canonical_lemma(),
         }
     }
 }
@@ -66,6 +71,10 @@ fn reviewed_noun_id(profile: ReviewedNounProfile) -> String {
             "{REVIEWED_UNIQUE_NOUN_ID_PREFIX}{}",
             member.canonical_lemma()
         ),
+        ReviewedNounProfile::Regular(family) => format!(
+            "{REVIEWED_REGULAR_NOUN_ID_PREFIX}{}",
+            family.canonical_lemma()
+        ),
     }
 }
 
@@ -75,15 +84,24 @@ fn reviewed_noun_from_id(id: &str) -> Option<ReviewedNounProfile> {
             .filter(|member| member.canonical_lemma() == lemma)
             .map(ReviewedNounProfile::Twofold);
     }
-    let lemma = id.strip_prefix(REVIEWED_UNIQUE_NOUN_ID_PREFIX)?;
-    UniqueNounFamilyMember::classify_source_lemma(lemma)
-        .filter(|member| member.canonical_lemma() == lemma)
-        .map(ReviewedNounProfile::Unique)
+    if let Some(lemma) = id.strip_prefix(REVIEWED_UNIQUE_NOUN_ID_PREFIX) {
+        return UniqueNounFamilyMember::classify_source_lemma(lemma)
+            .filter(|member| member.canonical_lemma() == lemma)
+            .map(ReviewedNounProfile::Unique);
+    }
+    let lemma = id.strip_prefix(REVIEWED_REGULAR_NOUN_ID_PREFIX)?;
+    RegularNounFamily::classify_source_lemma(lemma)
+        .filter(|family| family.canonical_lemma() == lemma)
+        .map(ReviewedNounProfile::Regular)
 }
 
 fn reviewed_noun_for_dictionary_id(
     id: &str,
 ) -> Result<Option<ReviewedNounProfile>, InflectionError> {
+    static ALIAS_PROFILE_INDEX: OnceLock<
+        Result<BTreeMap<String, Vec<ReviewedNounProfile>>, InflectionError>,
+    > = OnceLock::new();
+
     let record = lookup::find_lexeme(id)
         .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Noun)))?;
     if record.pos != PartOfSpeech::Noun.code() {
@@ -95,15 +113,21 @@ fn reviewed_noun_for_dictionary_id(
         return Ok(Some(profile));
     }
 
-    let mut matches = Vec::new();
-    for profile in ReviewedNounProfile::all() {
-        if lookup::lemma_maps_to_id(profile.canonical_lemma(), PartOfSpeech::Noun, id)?
-            && !matches.contains(&profile)
-        {
-            matches.push(profile);
+    let index = ALIAS_PROFILE_INDEX.get_or_init(|| {
+        let mut index: BTreeMap<String, Vec<ReviewedNounProfile>> = BTreeMap::new();
+        for profile in ReviewedNounProfile::all() {
+            for candidate in lookup::lookup(profile.canonical_lemma(), PartOfSpeech::Noun)? {
+                let profiles = index.entry(candidate.id).or_default();
+                if !profiles.contains(&profile) {
+                    profiles.push(profile);
+                }
+            }
         }
-    }
-    match matches.as_slice() {
+        Ok(index)
+    });
+    let index = index.as_ref().map_err(Clone::clone)?;
+    let matches = index.get(id).map_or(&[][..], Vec::as_slice);
+    match matches {
         [] => Ok(None),
         [profile] => Ok(Some(*profile)),
         _ => Err(InflectionError::InvalidInput {
@@ -849,7 +873,128 @@ fn reviewed_noun_form(
         ReviewedNounProfile::Unique(member) => {
             reviewed_unique_noun_form(member, display_lemma, cell)
         }
+        ReviewedNounProfile::Regular(family) => {
+            reviewed_regular_noun_form(family, display_lemma, cell)
+        }
     }
+}
+
+fn reviewed_regular_noun_form(
+    family: RegularNounFamily,
+    display_lemma: &str,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    let mut analyses = Vec::new();
+    let mut variants = Vec::new();
+    let mut any_prediction = false;
+    for member in family.members() {
+        let predicted = old_church_slavonic_core::noun::decline(&member.lexeme()?, cell)?;
+        let predicted_form = FormVariant {
+            text: orthography::canonical_display(&predicted.text)?,
+            romanization: None,
+        };
+        let source_cell = cell.case == Case::Nominative
+            && cell.number
+                == if member.number_restriction() == NumberRestriction::PluralOnly {
+                    Number::Plural
+                } else {
+                    Number::Singular
+                };
+        let source_form = source_cell
+            .then(|| orthography::canonical_display(member.canonical_lemma()))
+            .transpose()?
+            .map(|text| FormVariant {
+                text,
+                romanization: None,
+            });
+        let mut analysis_variants = Vec::new();
+        if let Some(source_form) = source_form {
+            analysis_variants.push(source_form);
+        }
+        if !analysis_variants.contains(&predicted_form) {
+            analysis_variants.push(predicted_form.clone());
+            any_prediction = true;
+        }
+        for variant in &analysis_variants {
+            if !variants.contains(variant) {
+                variants.push(variant.clone());
+            }
+        }
+        if !source_cell {
+            any_prediction = true;
+        }
+        let source = FormSource::ReviewedGrammarTable {
+            rule_id: predicted.rule_id,
+        };
+        let mut evidence = vec![MetadataEvidence {
+            field: Some(MetadataField::NounClass),
+            provenance: MetadataProvenance::ReviewedGrammarTable,
+            source_feature: Some(format!(
+                "reviewed:noun:regular:osd-row-{}:{}:{}",
+                member.source_row(),
+                member.class().code(),
+                cell.key()
+            )),
+            source_form: source_cell.then(|| member.canonical_lemma().to_string()),
+            crosscheck_features: Vec::new(),
+            authority: Some(format!(
+                "Polivanova 2023 §§267, 285–302 and {}; OSD paradigmatic dictionary row {}",
+                member.class().source_section(),
+                member.source_row()
+            )),
+        }];
+        if !source_cell || analysis_variants.len() > 1 {
+            evidence.push(MetadataEvidence {
+                field: None,
+                provenance: MetadataProvenance::ProductiveRuleOutput,
+                source_feature: Some(predicted.rule_id.code().to_string()),
+                source_form: None,
+                crosscheck_features: Vec::new(),
+                authority: Some("docs/MORPHOLOGY_SPEC.md".to_string()),
+            });
+        }
+        analyses.push(FormAnalysis {
+            variants: analysis_variants,
+            source,
+            evidence,
+            trace: predicted.trace,
+        });
+    }
+    let Some(primary) = variants.first().cloned() else {
+        return Err(InflectionError::InvalidInput {
+            reason: format!(
+                "regular noun family {} produced no analysis",
+                family.canonical_lemma()
+            ),
+        });
+    };
+    let multiple = analyses.len() > 1;
+    let source = if multiple {
+        FormSource::ReviewedGrammarAnalyses
+    } else {
+        analyses[0].source.clone()
+    };
+    let trace = if multiple {
+        Vec::new()
+    } else {
+        analyses[0].trace.clone()
+    };
+    let mut warnings = Vec::new();
+    if any_prediction {
+        warnings.push(InflectionWarning::PredictedNotDictionaryBacked);
+    }
+    if multiple {
+        warnings.push(InflectionWarning::MultipleMorphologicalAnalyses);
+    }
+    Ok(FormSet::new(
+        orthography::canonical_display(display_lemma)?,
+        primary,
+        variants.into_iter().skip(1).collect(),
+        source,
+        warnings,
+        trace,
+        analyses,
+    ))
 }
 
 fn reviewed_twofold_noun_form(
@@ -5285,6 +5430,15 @@ fn parse_restriction(value: &str) -> NumberRestriction {
 mod tests {
     use super::*;
     use std::collections::BTreeSet;
+
+    #[test]
+    fn every_reviewed_regular_noun_profile_has_a_stable_source_id() {
+        for family in RegularNounFamily::all() {
+            let profile = ReviewedNounProfile::Regular(family);
+            let id = reviewed_noun_id(profile);
+            assert_eq!(reviewed_noun_from_id(&id), Some(profile), "{id}");
+        }
+    }
 
     #[test]
     fn every_reviewed_verb_profile_id_round_trips_without_losing_composite_owners() {

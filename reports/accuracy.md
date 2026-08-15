@@ -334,9 +334,9 @@ The legacy oracle/core OOV diagnostic below may use the 2nd-singular present, ma
 | `adj-soft-short` | 1983 | 1983 | 2556 | 77.58% | 77.58% |
 | `i-f` | 2887 | 2887 | 3031 | 95.25% | 95.25% |
 | `i-m` | 448 | 448 | 450 | 99.56% | 99.56% |
-| `ja-soft` | 955 | 955 | 1456 | 65.59% | 65.59% |
-| `jo-m-soft` | 2384 | 2384 | 3048 | 78.22% | 78.22% |
-| `jo-n-soft` | 2563 | 2563 | 3017 | 84.95% | 84.95% |
+| `ja-soft` | 1021 | 1021 | 1456 | 70.12% | 70.12% |
+| `jo-m-soft` | 2544 | 2544 | 3048 | 83.46% | 83.46% |
+| `jo-n-soft` | 2703 | 2703 | 3017 | 89.59% | 89.59% |
 | `n-m` | 144 | 144 | 144 | 100.00% | 100.00% |
 | `n-n` | 147 | 147 | 147 | 100.00% | 100.00% |
 | `nt-n` | 126 | 126 | 126 | 100.00% | 100.00% |
@@ -364,7 +364,7 @@ The legacy oracle/core OOV diagnostic below may use the 2nd-singular present, ma
 | `verb-present-passive-participle-om` | 33 | 33 | 49 | 67.35% | 67.35% |
 | `verb-supine` | 544 | 544 | 559 | 97.32% | 97.32% |
 
-Macro average across reported rule slices: 89.57% exact, 89.57% normalized.
+Macro average across reported rule slices: 89.97% exact, 89.97% normalized.
 
 ### POS, class, and cell detail
 
@@ -941,8 +941,8 @@ Macro average across reported rule slices: 89.57% exact, 89.57% normalized.
 | `noun/ja-soft/noun:dat:pl` | 47 | 47 | 68 | 69.12% | 69.12% |
 | `noun/ja-soft/noun:dat:sg` | 57 | 57 | 73 | 78.08% | 78.08% |
 | `noun/ja-soft/noun:gen:du` | 47 | 47 | 67 | 70.15% | 70.15% |
-| `noun/ja-soft/noun:gen:pl` | 31 | 31 | 68 | 45.59% | 45.59% |
-| `noun/ja-soft/noun:gen:sg` | 0 | 0 | 73 | 0.00% | 0.00% |
+| `noun/ja-soft/noun:gen:pl` | 44 | 44 | 68 | 64.71% | 64.71% |
+| `noun/ja-soft/noun:gen:sg` | 53 | 53 | 73 | 72.60% | 72.60% |
 | `noun/ja-soft/noun:ins:du` | 47 | 47 | 67 | 70.15% | 70.15% |
 | `noun/ja-soft/noun:ins:pl` | 47 | 47 | 68 | 69.12% | 69.12% |
 | `noun/ja-soft/noun:ins:sg` | 44 | 44 | 73 | 60.27% | 60.27% |
@@ -955,45 +955,45 @@ Macro average across reported rule slices: 89.57% exact, 89.57% normalized.
 | `noun/ja-soft/noun:voc:du` | 52 | 52 | 67 | 77.61% | 77.61% |
 | `noun/ja-soft/noun:voc:pl` | 48 | 48 | 68 | 70.59% | 70.59% |
 | `noun/ja-soft/noun:voc:sg` | 44 | 44 | 73 | 60.27% | 60.27% |
-| `noun/jo-m-soft/noun:dat:du` | 135 | 135 | 168 | 80.36% | 80.36% |
-| `noun/jo-m-soft/noun:dat:pl` | 135 | 135 | 168 | 80.36% | 80.36% |
+| `noun/jo-m-soft/noun:dat:du` | 147 | 147 | 168 | 87.50% | 87.50% |
+| `noun/jo-m-soft/noun:dat:pl` | 147 | 147 | 168 | 87.50% | 87.50% |
 | `noun/jo-m-soft/noun:dat:sg` | 133 | 133 | 172 | 77.33% | 77.33% |
 | `noun/jo-m-soft/noun:gen:du` | 131 | 131 | 168 | 77.98% | 77.98% |
-| `noun/jo-m-soft/noun:gen:pl` | 135 | 135 | 168 | 80.36% | 80.36% |
+| `noun/jo-m-soft/noun:gen:pl` | 147 | 147 | 168 | 87.50% | 87.50% |
 | `noun/jo-m-soft/noun:gen:sg` | 133 | 133 | 172 | 77.33% | 77.33% |
-| `noun/jo-m-soft/noun:ins:du` | 135 | 135 | 168 | 80.36% | 80.36% |
+| `noun/jo-m-soft/noun:ins:du` | 147 | 147 | 168 | 87.50% | 87.50% |
 | `noun/jo-m-soft/noun:ins:pl` | 147 | 147 | 168 | 87.50% | 87.50% |
-| `noun/jo-m-soft/noun:ins:sg` | 135 | 135 | 172 | 78.49% | 78.49% |
+| `noun/jo-m-soft/noun:ins:sg` | 149 | 149 | 172 | 86.63% | 86.63% |
 | `noun/jo-m-soft/noun:loc:du` | 131 | 131 | 168 | 77.98% | 77.98% |
 | `noun/jo-m-soft/noun:loc:pl` | 147 | 147 | 168 | 87.50% | 87.50% |
 | `noun/jo-m-soft/noun:loc:sg` | 149 | 149 | 172 | 86.63% | 86.63% |
 | `noun/jo-m-soft/noun:nom:du` | 131 | 131 | 168 | 77.98% | 77.98% |
 | `noun/jo-m-soft/noun:nom:pl` | 147 | 147 | 168 | 87.50% | 87.50% |
-| `noun/jo-m-soft/noun:nom:sg` | 135 | 135 | 172 | 78.49% | 78.49% |
+| `noun/jo-m-soft/noun:nom:sg` | 149 | 149 | 172 | 86.63% | 86.63% |
 | `noun/jo-m-soft/noun:voc:du` | 131 | 131 | 168 | 77.98% | 77.98% |
 | `noun/jo-m-soft/noun:voc:pl` | 147 | 147 | 168 | 87.50% | 87.50% |
-| `noun/jo-m-soft/noun:voc:sg` | 47 | 47 | 172 | 27.33% | 27.33% |
+| `noun/jo-m-soft/noun:voc:sg` | 131 | 131 | 172 | 76.16% | 76.16% |
 | `noun/jo-n-soft/noun:acc:du` | 143 | 143 | 143 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:acc:pl` | 109 | 109 | 143 | 76.22% | 76.22% |
-| `noun/jo-n-soft/noun:acc:sg` | 110 | 110 | 145 | 75.86% | 75.86% |
-| `noun/jo-n-soft/noun:dat:du` | 143 | 143 | 143 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:dat:pl` | 143 | 143 | 143 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:dat:sg` | 110 | 110 | 145 | 75.86% | 75.86% |
-| `noun/jo-n-soft/noun:gen:du` | 109 | 109 | 143 | 76.22% | 76.22% |
-| `noun/jo-n-soft/noun:gen:pl` | 34 | 34 | 143 | 23.78% | 23.78% |
-| `noun/jo-n-soft/noun:gen:sg` | 110 | 110 | 145 | 75.86% | 75.86% |
-| `noun/jo-n-soft/noun:ins:du` | 143 | 143 | 143 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:acc:pl` | 143 | 143 | 143 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:acc:sg` | 145 | 145 | 145 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:dat:du` | 75 | 75 | 143 | 52.45% | 52.45% |
+| `noun/jo-n-soft/noun:dat:pl` | 75 | 75 | 143 | 52.45% | 52.45% |
+| `noun/jo-n-soft/noun:dat:sg` | 145 | 145 | 145 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:gen:du` | 143 | 143 | 143 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:gen:pl` | 102 | 102 | 143 | 71.33% | 71.33% |
+| `noun/jo-n-soft/noun:gen:sg` | 145 | 145 | 145 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:ins:du` | 75 | 75 | 143 | 52.45% | 52.45% |
 | `noun/jo-n-soft/noun:ins:pl` | 143 | 143 | 143 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:ins:sg` | 145 | 145 | 145 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:loc:du` | 109 | 109 | 143 | 76.22% | 76.22% |
+| `noun/jo-n-soft/noun:ins:sg` | 76 | 76 | 145 | 52.41% | 52.41% |
+| `noun/jo-n-soft/noun:loc:du` | 143 | 143 | 143 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:loc:pl` | 143 | 143 | 143 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:loc:sg` | 145 | 145 | 145 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:nom:du` | 143 | 143 | 143 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:nom:pl` | 109 | 109 | 143 | 76.22% | 76.22% |
-| `noun/jo-n-soft/noun:nom:sg` | 110 | 110 | 145 | 75.86% | 75.86% |
+| `noun/jo-n-soft/noun:nom:pl` | 143 | 143 | 143 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:nom:sg` | 145 | 145 | 145 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:voc:du` | 143 | 143 | 143 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:voc:pl` | 109 | 109 | 143 | 76.22% | 76.22% |
-| `noun/jo-n-soft/noun:voc:sg` | 110 | 110 | 145 | 75.86% | 75.86% |
+| `noun/jo-n-soft/noun:voc:pl` | 143 | 143 | 143 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:voc:sg` | 145 | 145 | 145 | 100.00% | 100.00% |
 | `noun/n-m/noun:dat:du` | 8 | 8 | 8 | 100.00% | 100.00% |
 | `noun/n-m/noun:dat:pl` | 8 | 8 | 8 | 100.00% | 100.00% |
 | `noun/n-m/noun:dat:sg` | 8 | 8 | 8 | 100.00% | 100.00% |
@@ -1252,9 +1252,9 @@ Macro average across reported rule slices: 89.57% exact, 89.57% normalized.
 | `adj-soft-short` | 186 | 186 | 378 | 49.21% | 49.21% |
 | `i-f` | 780 | 780 | 819 | 95.24% | 95.24% |
 | `i-m` | 158 | 158 | 162 | 97.53% | 97.53% |
-| `ja-soft` | 258 | 258 | 364 | 70.88% | 70.88% |
-| `jo-m-soft` | 634 | 634 | 954 | 66.46% | 66.46% |
-| `jo-n-soft` | 637 | 637 | 763 | 83.49% | 83.49% |
+| `ja-soft` | 276 | 276 | 364 | 75.82% | 75.82% |
+| `jo-m-soft` | 704 | 704 | 954 | 73.79% | 73.79% |
+| `jo-n-soft` | 676 | 676 | 763 | 88.60% | 88.60% |
 | `n-m` | 18 | 18 | 18 | 100.00% | 100.00% |
 | `n-n` | 21 | 21 | 21 | 100.00% | 100.00% |
 | `nt-n` | 84 | 84 | 84 | 100.00% | 100.00% |
@@ -1281,7 +1281,7 @@ Macro average across reported rule slices: 89.57% exact, 89.57% normalized.
 | `verb-present-passive-participle-om` | 19 | 19 | 23 | 82.61% | 82.61% |
 | `verb-supine` | 145 | 145 | 151 | 96.03% | 96.03% |
 
-Macro average across reported rule slices: 89.14% exact, 89.14% normalized.
+Macro average across reported rule slices: 89.64% exact, 89.64% normalized.
 
 ### POS, class, and cell detail
 
@@ -1858,8 +1858,8 @@ Macro average across reported rule slices: 89.14% exact, 89.14% normalized.
 | `noun/ja-soft/noun:dat:pl` | 13 | 13 | 17 | 76.47% | 76.47% |
 | `noun/ja-soft/noun:dat:sg` | 16 | 16 | 18 | 88.89% | 88.89% |
 | `noun/ja-soft/noun:gen:du` | 13 | 13 | 17 | 76.47% | 76.47% |
-| `noun/ja-soft/noun:gen:pl` | 9 | 9 | 17 | 52.94% | 52.94% |
-| `noun/ja-soft/noun:gen:sg` | 0 | 0 | 18 | 0.00% | 0.00% |
+| `noun/ja-soft/noun:gen:pl` | 13 | 13 | 17 | 76.47% | 76.47% |
+| `noun/ja-soft/noun:gen:sg` | 14 | 14 | 18 | 77.78% | 77.78% |
 | `noun/ja-soft/noun:ins:du` | 13 | 13 | 17 | 76.47% | 76.47% |
 | `noun/ja-soft/noun:ins:pl` | 13 | 13 | 17 | 76.47% | 76.47% |
 | `noun/ja-soft/noun:ins:sg` | 10 | 10 | 18 | 55.56% | 55.56% |
@@ -1872,45 +1872,45 @@ Macro average across reported rule slices: 89.14% exact, 89.14% normalized.
 | `noun/ja-soft/noun:voc:du` | 15 | 15 | 17 | 88.24% | 88.24% |
 | `noun/ja-soft/noun:voc:pl` | 13 | 13 | 17 | 76.47% | 76.47% |
 | `noun/ja-soft/noun:voc:sg` | 10 | 10 | 18 | 55.56% | 55.56% |
-| `noun/jo-m-soft/noun:dat:du` | 34 | 34 | 53 | 64.15% | 64.15% |
-| `noun/jo-m-soft/noun:dat:pl` | 34 | 34 | 53 | 64.15% | 64.15% |
-| `noun/jo-m-soft/noun:dat:sg` | 36 | 36 | 53 | 67.92% | 67.92% |
-| `noun/jo-m-soft/noun:gen:du` | 36 | 36 | 53 | 67.92% | 67.92% |
-| `noun/jo-m-soft/noun:gen:pl` | 34 | 34 | 53 | 64.15% | 64.15% |
-| `noun/jo-m-soft/noun:gen:sg` | 36 | 36 | 53 | 67.92% | 67.92% |
-| `noun/jo-m-soft/noun:ins:du` | 34 | 34 | 53 | 64.15% | 64.15% |
+| `noun/jo-m-soft/noun:dat:du` | 40 | 40 | 53 | 75.47% | 75.47% |
+| `noun/jo-m-soft/noun:dat:pl` | 40 | 40 | 53 | 75.47% | 75.47% |
+| `noun/jo-m-soft/noun:dat:sg` | 38 | 38 | 53 | 71.70% | 71.70% |
+| `noun/jo-m-soft/noun:gen:du` | 38 | 38 | 53 | 71.70% | 71.70% |
+| `noun/jo-m-soft/noun:gen:pl` | 40 | 40 | 53 | 75.47% | 75.47% |
+| `noun/jo-m-soft/noun:gen:sg` | 38 | 38 | 53 | 71.70% | 71.70% |
+| `noun/jo-m-soft/noun:ins:du` | 40 | 40 | 53 | 75.47% | 75.47% |
 | `noun/jo-m-soft/noun:ins:pl` | 40 | 40 | 53 | 75.47% | 75.47% |
-| `noun/jo-m-soft/noun:ins:sg` | 34 | 34 | 53 | 64.15% | 64.15% |
-| `noun/jo-m-soft/noun:loc:du` | 36 | 36 | 53 | 67.92% | 67.92% |
+| `noun/jo-m-soft/noun:ins:sg` | 40 | 40 | 53 | 75.47% | 75.47% |
+| `noun/jo-m-soft/noun:loc:du` | 38 | 38 | 53 | 71.70% | 71.70% |
 | `noun/jo-m-soft/noun:loc:pl` | 40 | 40 | 53 | 75.47% | 75.47% |
 | `noun/jo-m-soft/noun:loc:sg` | 40 | 40 | 53 | 75.47% | 75.47% |
-| `noun/jo-m-soft/noun:nom:du` | 36 | 36 | 53 | 67.92% | 67.92% |
+| `noun/jo-m-soft/noun:nom:du` | 38 | 38 | 53 | 71.70% | 71.70% |
 | `noun/jo-m-soft/noun:nom:pl` | 40 | 40 | 53 | 75.47% | 75.47% |
-| `noun/jo-m-soft/noun:nom:sg` | 34 | 34 | 53 | 64.15% | 64.15% |
-| `noun/jo-m-soft/noun:voc:du` | 36 | 36 | 53 | 67.92% | 67.92% |
+| `noun/jo-m-soft/noun:nom:sg` | 40 | 40 | 53 | 75.47% | 75.47% |
+| `noun/jo-m-soft/noun:voc:du` | 38 | 38 | 53 | 71.70% | 71.70% |
 | `noun/jo-m-soft/noun:voc:pl` | 40 | 40 | 53 | 75.47% | 75.47% |
-| `noun/jo-m-soft/noun:voc:sg` | 14 | 14 | 53 | 26.42% | 26.42% |
+| `noun/jo-m-soft/noun:voc:sg` | 36 | 36 | 53 | 67.92% | 67.92% |
 | `noun/jo-n-soft/noun:acc:du` | 36 | 36 | 36 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:acc:pl` | 26 | 26 | 36 | 72.22% | 72.22% |
-| `noun/jo-n-soft/noun:acc:sg` | 27 | 27 | 37 | 72.97% | 72.97% |
-| `noun/jo-n-soft/noun:dat:du` | 36 | 36 | 36 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:dat:pl` | 36 | 36 | 36 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:dat:sg` | 27 | 27 | 37 | 72.97% | 72.97% |
-| `noun/jo-n-soft/noun:gen:du` | 26 | 26 | 36 | 72.22% | 72.22% |
-| `noun/jo-n-soft/noun:gen:pl` | 10 | 10 | 36 | 27.78% | 27.78% |
-| `noun/jo-n-soft/noun:gen:sg` | 27 | 27 | 37 | 72.97% | 72.97% |
-| `noun/jo-n-soft/noun:ins:du` | 36 | 36 | 36 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:acc:pl` | 36 | 36 | 36 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:acc:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:dat:du` | 16 | 16 | 36 | 44.44% | 44.44% |
+| `noun/jo-n-soft/noun:dat:pl` | 16 | 16 | 36 | 44.44% | 44.44% |
+| `noun/jo-n-soft/noun:dat:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:gen:du` | 36 | 36 | 36 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:gen:pl` | 30 | 30 | 36 | 83.33% | 83.33% |
+| `noun/jo-n-soft/noun:gen:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:ins:du` | 16 | 16 | 36 | 44.44% | 44.44% |
 | `noun/jo-n-soft/noun:ins:pl` | 36 | 36 | 36 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:ins:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:loc:du` | 26 | 26 | 36 | 72.22% | 72.22% |
+| `noun/jo-n-soft/noun:ins:sg` | 16 | 16 | 37 | 43.24% | 43.24% |
+| `noun/jo-n-soft/noun:loc:du` | 36 | 36 | 36 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:loc:pl` | 36 | 36 | 36 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:loc:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:nom:du` | 36 | 36 | 36 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:nom:pl` | 26 | 26 | 36 | 72.22% | 72.22% |
-| `noun/jo-n-soft/noun:nom:sg` | 27 | 27 | 37 | 72.97% | 72.97% |
+| `noun/jo-n-soft/noun:nom:pl` | 36 | 36 | 36 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:nom:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
 | `noun/jo-n-soft/noun:voc:du` | 36 | 36 | 36 | 100.00% | 100.00% |
-| `noun/jo-n-soft/noun:voc:pl` | 26 | 26 | 36 | 72.22% | 72.22% |
-| `noun/jo-n-soft/noun:voc:sg` | 27 | 27 | 37 | 72.97% | 72.97% |
+| `noun/jo-n-soft/noun:voc:pl` | 36 | 36 | 36 | 100.00% | 100.00% |
+| `noun/jo-n-soft/noun:voc:sg` | 37 | 37 | 37 | 100.00% | 100.00% |
 | `noun/n-m/noun:dat:du` | 1 | 1 | 1 | 100.00% | 100.00% |
 | `noun/n-m/noun:dat:pl` | 1 | 1 | 1 | 100.00% | 100.00% |
 | `noun/n-m/noun:dat:sg` | 1 | 1 | 1 | 100.00% | 100.00% |

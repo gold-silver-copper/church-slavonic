@@ -268,29 +268,47 @@ fn decline_jo_masculine_soft(
     lexeme: &NounLexeme,
     cell: NounCell,
 ) -> Result<PredictedForm, InflectionError> {
+    let glide_citation = lexeme.lemma.ends_with('и');
     let stem = strip_any_required(&lexeme.lemma, &["ь", "и"])?;
     let sibilant = ends_in_sibilant(stem);
+    let vowel_glide = glide_citation;
     let (back, front) = if sibilant {
         ("а", "оу")
     } else {
         ("ꙗ", "ю")
     };
+    if cell.case == Case::Vocative && cell.number == Number::Singular && stem.ends_with('ц') {
+        let stem = stem.strip_suffix('ц').unwrap_or(stem);
+        return Ok(join(
+            stem,
+            "че",
+            Mutation::None,
+            RuleId::NounJoMasculineSoft,
+        ));
+    }
     let ending = match (cell.case, cell.number) {
+        (Case::Nominative, Number::Singular) if glide_citation => "и",
         (Case::Nominative, Number::Singular) => "ь",
         (Case::Genitive, Number::Singular) => back,
         (Case::Dative, Number::Singular) => front,
         (Case::Accusative, Number::Singular) if lexeme.animacy == Animacy::Animate => back,
+        (Case::Accusative, Number::Singular) if glide_citation => "и",
         (Case::Accusative, Number::Singular) => "ь",
+        (Case::Instrumental, Number::Singular) if vowel_glide => "ѥмь",
         (Case::Instrumental, Number::Singular) => "емь",
         (Case::Locative, Number::Singular) => "и",
         (Case::Vocative, Number::Singular) => front,
         (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => back,
         (Case::Genitive | Case::Locative, Number::Dual) => front,
+        (Case::Dative | Case::Instrumental, Number::Dual) if vowel_glide => "ѥма",
         (Case::Dative | Case::Instrumental, Number::Dual) => "ема",
         (Case::Nominative | Case::Vocative, Number::Plural) => "и",
+        (Case::Genitive, Number::Plural) if glide_citation => "и",
         (Case::Genitive, Number::Plural) => "ь",
+        (Case::Dative, Number::Plural) if vowel_glide => "ѥмъ",
         (Case::Dative, Number::Plural) => "емъ",
         (Case::Accusative, Number::Plural) if lexeme.animacy == Animacy::Animate => "ь",
+        (Case::Accusative, Number::Plural) if glide_citation => "ѩ",
         (Case::Accusative, Number::Plural) => "ѧ",
         (Case::Instrumental, Number::Plural) => "и",
         (Case::Locative, Number::Plural) => "ихъ",
@@ -307,18 +325,29 @@ fn decline_jo_neuter_soft(
     lexeme: &NounLexeme,
     cell: NounCell,
 ) -> Result<PredictedForm, InflectionError> {
+    let iotated = lexeme.lemma.ends_with('ѥ');
     let stem = strip_any_required(&lexeme.lemma, &["е", "ѥ"])?;
+    let yer_j_stem = iotated && stem.ends_with('и');
+    let (citation, back, front) = if iotated {
+        ("ѥ", "ꙗ", "ю")
+    } else {
+        ("е", "а", "оу")
+    };
     let ending = match (cell.case, cell.number) {
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Singular) => "ѥ",
-        (Case::Genitive, Number::Singular) => "ꙗ",
-        (Case::Dative, Number::Singular) => "ю",
+        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Singular) => citation,
+        (Case::Genitive, Number::Singular) => back,
+        (Case::Dative, Number::Singular) => front,
+        (Case::Instrumental, Number::Singular) if yer_j_stem => "ѥмь",
         (Case::Instrumental, Number::Singular) => "емь",
         (Case::Locative, Number::Singular) => "и",
         (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => "и",
-        (Case::Genitive | Case::Locative, Number::Dual) => "ю",
+        (Case::Genitive | Case::Locative, Number::Dual) => front,
+        (Case::Dative | Case::Instrumental, Number::Dual) if yer_j_stem => "ѥма",
         (Case::Dative | Case::Instrumental, Number::Dual) => "ема",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => "ꙗ",
+        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => back,
+        (Case::Genitive, Number::Plural) if iotated && stem.ends_with('и') => "и",
         (Case::Genitive, Number::Plural) => "ь",
+        (Case::Dative, Number::Plural) if yer_j_stem => "ѥмъ",
         (Case::Dative, Number::Plural) => "емъ",
         (Case::Instrumental, Number::Plural) => "и",
         (Case::Locative, Number::Plural) => "ихъ",
@@ -327,21 +356,38 @@ fn decline_jo_neuter_soft(
 }
 
 fn decline_ja_soft(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_any_required(&lexeme.lemma, &["ꙗ", "и"])?;
+    let (stem, iotated) = if let Some(stem) = lexeme.lemma.strip_suffix('ꙗ') {
+        (stem, true)
+    } else if let Some(stem) = lexeme.lemma.strip_suffix('и') {
+        (stem, true)
+    } else {
+        (strip_required(&lexeme.lemma, 'а')?, false)
+    };
     let ending = match (cell.case, cell.number) {
-        (Case::Nominative, Number::Singular) => "ꙗ",
-        (Case::Genitive | Case::Dative | Case::Locative, Number::Singular) => "и",
-        (Case::Accusative, Number::Singular) => "ѭ",
+        (Case::Nominative, Number::Singular) if iotated => "ꙗ",
+        (Case::Nominative, Number::Singular) => "а",
+        (Case::Genitive, Number::Singular) if iotated => "ѩ",
+        (Case::Genitive, Number::Singular) => "ѧ",
+        (Case::Dative | Case::Locative, Number::Singular) => "и",
+        (Case::Accusative, Number::Singular) if iotated => "ѭ",
+        (Case::Accusative, Number::Singular) => "ѫ",
         (Case::Instrumental, Number::Singular) => "еѭ",
         (Case::Vocative, Number::Singular) => "е",
         (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => "и",
-        (Case::Genitive | Case::Locative, Number::Dual) => "ю",
-        (Case::Dative | Case::Instrumental, Number::Dual) => "ꙗма",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => "ѩ",
+        (Case::Genitive | Case::Locative, Number::Dual) if iotated => "ю",
+        (Case::Genitive | Case::Locative, Number::Dual) => "оу",
+        (Case::Dative | Case::Instrumental, Number::Dual) if iotated => "ꙗма",
+        (Case::Dative | Case::Instrumental, Number::Dual) => "ама",
+        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) if iotated => "ѩ",
+        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => "ѧ",
+        (Case::Genitive, Number::Plural) if iotated && stem.ends_with('и') => "и",
         (Case::Genitive, Number::Plural) => "ь",
-        (Case::Dative, Number::Plural) => "ꙗмъ",
-        (Case::Instrumental, Number::Plural) => "ꙗми",
-        (Case::Locative, Number::Plural) => "ꙗхъ",
+        (Case::Dative, Number::Plural) if iotated => "ꙗмъ",
+        (Case::Dative, Number::Plural) => "амъ",
+        (Case::Instrumental, Number::Plural) if iotated => "ꙗми",
+        (Case::Instrumental, Number::Plural) => "ами",
+        (Case::Locative, Number::Plural) if iotated => "ꙗхъ",
+        (Case::Locative, Number::Plural) => "ахъ",
     };
     Ok(join(stem, ending, Mutation::None, RuleId::NounJaSoft))
 }
@@ -358,11 +404,11 @@ fn decline_i_stem(
         (Case::Instrumental, Number::Singular) if masculine => "ьмь",
         (Case::Instrumental, Number::Singular) => "ьѭ",
         (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => "и",
-        (Case::Genitive | Case::Locative, Number::Dual) => "ью",
+        (Case::Genitive | Case::Locative, Number::Dual) => "ию",
         (Case::Dative | Case::Instrumental, Number::Dual) => "ьма",
-        (Case::Nominative | Case::Vocative, Number::Plural) if masculine => "ьѥ",
+        (Case::Nominative | Case::Vocative, Number::Plural) if masculine => "иѥ",
         (Case::Nominative | Case::Vocative, Number::Plural) => "и",
-        (Case::Genitive, Number::Plural) => "ьи",
+        (Case::Genitive, Number::Plural) => "ии",
         (Case::Dative, Number::Plural) => "ьмъ",
         (Case::Accusative, Number::Plural) => "и",
         (Case::Instrumental, Number::Plural) => "ьми",
@@ -550,9 +596,11 @@ fn strip_any_required<'a>(lemma: &'a str, endings: &[&str]) -> Result<&'a str, I
 }
 
 fn ends_in_sibilant(stem: &str) -> bool {
-    stem.chars()
-        .last()
-        .is_some_and(|letter| matches!(letter, 'ш' | 'щ' | 'ч' | 'ж' | 'ѕ' | 'ꙃ' | 'ц'))
+    stem.ends_with("жд")
+        || stem
+            .chars()
+            .last()
+            .is_some_and(|letter| matches!(letter, 'ш' | 'щ' | 'ч' | 'ж' | 'ѕ' | 'ꙃ' | 'ц'))
 }
 
 fn consonant_ending(cell: NounCell, endings: &[[&'static str; 7]; 3]) -> &'static str {
@@ -682,6 +730,114 @@ mod tests {
     }
 
     #[test]
+    fn twofold_glide_and_soft_consonant_seams_follow_polivanova_normalization() {
+        let form = |lemma: &str, class, gender, case, number| {
+            decline(
+                &NounLexeme {
+                    lemma: lemma.to_string(),
+                    class,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    number_restriction: NumberRestriction::All,
+                },
+                NounCell { case, number },
+            )
+            .expect("licensed twofold cell")
+            .text
+        };
+
+        // §§326–328 and the canonical -j-e- spelling illustrated in §241.
+        assert_eq!(
+            form(
+                "гнои",
+                NounClass::JoMasculineSoft,
+                Gender::Masculine,
+                Case::Instrumental,
+                Number::Singular,
+            ),
+            "гноѥмь"
+        );
+        assert_eq!(
+            form(
+                "гнои",
+                NounClass::JoMasculineSoft,
+                Gender::Masculine,
+                Case::Accusative,
+                Number::Plural,
+            ),
+            "гноѩ"
+        );
+        assert_eq!(
+            form(
+                "змии",
+                NounClass::JoMasculineSoft,
+                Gender::Masculine,
+                Case::Genitive,
+                Number::Plural,
+            ),
+            "змии"
+        );
+        assert_eq!(
+            form(
+                "вождь",
+                NounClass::JoMasculineSoft,
+                Gender::Masculine,
+                Case::Genitive,
+                Number::Singular,
+            ),
+            "вожда"
+        );
+
+        // §§338–340: the ьj seam coalesces before ь but remains before е.
+        assert_eq!(
+            form(
+                "знаниѥ",
+                NounClass::JoNeuterSoft,
+                Gender::Neuter,
+                Case::Instrumental,
+                Number::Singular,
+            ),
+            "знаниѥмь"
+        );
+        assert_eq!(
+            form(
+                "знаниѥ",
+                NounClass::JoNeuterSoft,
+                Gender::Neuter,
+                Case::Genitive,
+                Number::Plural,
+            ),
+            "знании"
+        );
+
+        // §§342–344: ц selects the soft twofold cells, while invariant
+        // accusative/dual terminals keep their back vowel.
+        for (case, number, expected) in [
+            (Case::Genitive, Number::Singular, "овьцѧ"),
+            (Case::Accusative, Number::Singular, "овьцѫ"),
+            (Case::Dative, Number::Singular, "овьци"),
+            (Case::Genitive, Number::Dual, "овьцоу"),
+            (Case::Dative, Number::Dual, "овьцама"),
+            (Case::Nominative, Number::Plural, "овьцѧ"),
+        ] {
+            assert_eq!(
+                form("овьца", NounClass::JaSoft, Gender::Feminine, case, number,),
+                expected
+            );
+        }
+        assert_eq!(
+            form(
+                "змиꙗ",
+                NounClass::JaSoft,
+                Gender::Feminine,
+                Case::Genitive,
+                Number::Plural,
+            ),
+            "змии"
+        );
+    }
+
+    #[test]
     fn every_documented_noun_class_matches_a_twenty_one_cell_golden() {
         // Audited against the template revisions recorded in docs/MORPHOLOGY_SPEC.md.
         // Order is singular, dual, plural; within each number, Case::ALL.
@@ -720,19 +876,19 @@ mod tests {
                 "волꙗ",
                 NounClass::JaSoft,
                 Gender::Feminine,
-                "волꙗ|воли|воли|волѭ|волеѭ|воли|воле|воли|волю|волꙗма|воли|волꙗма|волю|воли|волѩ|воль|волꙗмъ|волѩ|волꙗми|волꙗхъ|волѩ",
+                "волꙗ|волѩ|воли|волѭ|волеѭ|воли|воле|воли|волю|волꙗма|воли|волꙗма|волю|воли|волѩ|воль|волꙗмъ|волѩ|волꙗми|волꙗхъ|волѩ",
             ),
             (
                 "кость",
                 NounClass::IFeminine,
                 Gender::Feminine,
-                "кость|кости|кости|кость|костьѭ|кости|кости|кости|костью|костьма|кости|костьма|костью|кости|кости|костьи|костьмъ|кости|костьми|костьхъ|кости",
+                "кость|кости|кости|кость|костьѭ|кости|кости|кости|костию|костьма|кости|костьма|костию|кости|кости|костии|костьмъ|кости|костьми|костьхъ|кости",
             ),
             (
                 "пѫть",
                 NounClass::IMasculine,
                 Gender::Masculine,
-                "пѫть|пѫти|пѫти|пѫть|пѫтьмь|пѫти|пѫти|пѫти|пѫтью|пѫтьма|пѫти|пѫтьма|пѫтью|пѫти|пѫтьѥ|пѫтьи|пѫтьмъ|пѫти|пѫтьми|пѫтьхъ|пѫтьѥ",
+                "пѫть|пѫти|пѫти|пѫть|пѫтьмь|пѫти|пѫти|пѫти|пѫтию|пѫтьма|пѫти|пѫтьма|пѫтию|пѫти|пѫтиѥ|пѫтии|пѫтьмъ|пѫти|пѫтьми|пѫтьхъ|пѫтиѥ",
             ),
             (
                 "сꙑнъ",
@@ -798,7 +954,7 @@ mod tests {
                 "рабын҄и",
                 NounClass::TwofoldFeminineI,
                 Gender::Feminine,
-                "рабын҄и|рабын҄и|рабын҄и|рабын҄ѭ|рабын҄еѭ|рабын҄и|рабын҄е|рабын҄и|рабын҄ю|рабын҄ꙗма|рабын҄и|рабын҄ꙗма|рабын҄ю|рабын҄и|рабын҄ѩ|рабын҄ь|рабын҄ꙗмъ|рабын҄ѩ|рабын҄ꙗми|рабын҄ꙗхъ|рабын҄ѩ",
+                "рабын҄и|рабын҄ѩ|рабын҄и|рабын҄ѭ|рабын҄еѭ|рабын҄и|рабын҄е|рабын҄и|рабын҄ю|рабын҄ꙗма|рабын҄и|рабын҄ꙗма|рабын҄ю|рабын҄и|рабын҄ѩ|рабын҄ь|рабын҄ꙗмъ|рабын҄ѩ|рабын҄ꙗми|рабын҄ꙗхъ|рабын҄ѩ",
             ),
             (
                 "имѧ",

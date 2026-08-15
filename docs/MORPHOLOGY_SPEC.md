@@ -46,6 +46,17 @@ nominal rows also have explicit complete owners: 37 fixed-gender substantives
 use seven dedicated mixed profiles, `десѧть` belongs to the cardinal system,
 and `азъ`, `ты`, and `сѧ` belong to the personal/reflexive-pronoun system.
 
+The five standard substantive classes are likewise closed by exact row identity.
+The source-bounded regular adapter owns all 2,423 OSD rows: 690 `2/m`, 1,054
+`2/n`, 460 `2/f`, 29 `1/m`, and 190 `1/f`. The generated
+`data/ocs/polivanova_regular_nouns.tsv` retains the row, exact citation, class,
+reconstructed singular citation for a plurale tantum, and its number restriction.
+Its 2,417 spellings retain six duplicate or homographic source analyses rather
+than collapsing them. Polivanova §285 n.2 supplies the exhaustive 24 regular
+pluralia tantum; `букъви`, the twenty-fifth item in that list, remains owned by
+its class-0 profile. The adapter does not infer membership for an unlisted word:
+outside this closed inventory, callers must still provide explicit noun metadata.
+
 The verb source boundary is likewise closed by exact row identity. Nineteen
 unique profiles own their 106-member spelling union, sixteen reviewed irregular
 families own every one of the 310 marked OSD rows, and the source-bounded regular
@@ -79,6 +90,28 @@ For substantives, `Gender` is morphological gender: it selects paradigmatic
 shape and need not equal the syntactic agreement gender. Polivanova §267 gives
 `кръмьчии` as explicitly masculine in syntax but feminine in morphology.
 
+### Source-bounded standard substantives
+
+`RegularNounSourceMember` addresses each of the 2,423 standard OSD rows without
+guessing from a citation suffix. `RegularNounFamily` groups only exact equal
+source spellings and supplies stable `reviewed:ocs:noun:regular:*` identities.
+Every licensed row generates all 21 modeled case × number cells, except the 24
+regular pluralia, which reject all nonplural calls. Since Polivanova's substantive
+profiles carry fixed morphological gender but no lexical animacy dimension, the
+source adapter uses the grammar's nominative-like masculine accusative. The
+lower-level explicit `NounLexeme` API continues to expose animate substitution.
+
+The source citation is an exact primary variant in its starting cell; other cells
+are marked as productive grammar predictions. Dictionary exact cells still run
+before manual overrides and reviewed source profiles. An exhaustive crosscheck
+compares 23,149 matching rank-zero Kaikki cells: 21,523 agree with the OSD
+prediction and 1,626 are retained disagreements (digest
+`144e1ec668d6bcf186722af098c689fd4bb822c517584095b86c7230b11941e7`).
+The disagreements include explicitly documented u-/consonant-stem alternants,
+contracted versus Polivanova-canonical `-иѥ-` spellings, palatalization notation,
+velar mutation, and malformed or differently aligned source tables. They remain
+evidence variants rather than being converted into silent rule exceptions.
+
 ## N-O-M-HARD-01 and N-O-N-HARD-01 — hard o-stems
 
 Masculine citations remove `-ъ`; neuters remove `-о`. The principal ending table is:
@@ -100,10 +133,12 @@ The first velar palatalization is `к/г/х → ч/ж/ш` before the masculine v
 
 Soft masculine citations remove `-ь` (or the template's `-и` citation spelling).
 The default front-vowel series is `-ꙗ, -ю, -емь, -и`; sibilant seams use the
-documented back-vowel alternatives. Soft neuters remove `-е/-ѥ` and use `-ѥ`
+documented back-vowel alternatives, including the source `жд` spelling of the
+sibilant cluster. Glide citations in `-и` preserve the canonical seams
+`-ѩ`, `-ѥмь/-ѥма/-ѥмъ`, and coalesced `-и` before yer. Soft neuters remove `-е/-ѥ` and use `-ѥ`
 singular, `-и` dual, and `-ꙗ` plural in nominative/accusative/vocative. The rule
-returns the default documented form; source-listed alternatives remain table
-variants. This seam convention is the largest measured soft-stem error source.
+uses canonical `-иѥмь/-иѥма/-иѥмъ` at a `-ьj- + е-` seam and coalesces
+`-ьj- + ь` to `-ии`. Source-listed contracted alternatives remain table variants.
 
 ## N-A-HARD-01 and N-JA-SOFT-01 — a-stems
 
@@ -111,15 +146,22 @@ Hard a-stems remove `-а` and use the `-а/-ꙑ/-ѣ/-ѫ/-оѭ` singular series,
 `-ѣ/-оу/-ама` dual series, and `-ꙑ/-ъ/-амъ/-ами/-ахъ` plural series. The second
 velar palatalization applies at `-ѣ`.
 
-Soft ja-stems remove `-ꙗ` (or a template `-и` spelling) and use the corresponding
-`-ꙗ/-и/-ѭ/-еѭ`, `-и/-ю/-ꙗма`, and `-ѩ/-ь/-ꙗмъ/-ꙗми/-ꙗхъ` series. Source tables
-contain additional orthographic seam choices; the OOV report measures the default.
+Soft ja-stems in `-ꙗ` (or a template `-и` spelling) use the corresponding
+`-ꙗ/-ѩ/-и/-ѭ/-еѭ`, `-и/-ю/-ꙗма`, and
+`-ѩ/-ь/-ꙗмъ/-ꙗми/-ꙗхъ` series. A citation in `-а` whose workstem ends in
+`ц/ѕ`, a shibilant, `жд`, or a palatalization mark selects the same soft
+twofold cells while retaining the invariant back-vowel accusative singular,
+genitive/locative dual, and `-ама/-амъ/-ами/-ахъ` cells. A `-ьj- + ь` genitive
+plural seam surfaces as `-ии`; palatalized consonant stems retain `-ь`.
 
 ## N-I-F-01 and N-I-M-01 — i-stems
 
-Both remove citation `-ь`. They share `-и` obliques, `-ью/-ьма` dual obliques,
-and `-ьи/-ьмъ/-ьми/-ьхъ` plural obliques. Masculines use instrumental singular
-`-ьмь` and nominative/vocative plural `-ьѥ`; feminines use `-ьѭ` and `-и`.
+Both remove citation `-ь`. They share `-и` singular obliques,
+`-ию/-ьма` dual obliques, and `-ии/-ьмъ/-ьми/-ьхъ` plural obliques. In Polivanova's canonical expanded
+normalization, the shared genitive/locative dual is `-ию`, genitive plural is
+`-ии`, and masculine nominative/vocative plural is `-иѥ`; contracted
+`-ью/-ьи/-ьѥ` spellings remain exact dictionary variants. Masculines use
+instrumental singular `-ьмь`; feminines use `-ьѭ` and nominative plural `-и`.
 
 ## N-U-M-01 — u-stems
 

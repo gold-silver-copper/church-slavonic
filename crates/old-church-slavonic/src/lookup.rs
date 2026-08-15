@@ -51,16 +51,6 @@ pub(crate) fn resolve_one(
     }
 }
 
-pub(crate) fn lemma_maps_to_id(
-    lemma: &str,
-    part_of_speech: PartOfSpeech,
-    id: &str,
-) -> Result<bool, InflectionError> {
-    Ok(lookup(lemma, part_of_speech)?
-        .iter()
-        .any(|candidate| candidate.id == id))
-}
-
 pub(crate) fn find_lexeme(id: &str) -> Option<&'static LexemeRecord> {
     LEXEMES
         .binary_search_by_key(&id, |record| record.id)

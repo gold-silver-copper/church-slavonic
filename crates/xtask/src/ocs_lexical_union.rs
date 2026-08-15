@@ -6,9 +6,9 @@
 //! collapsed.
 
 use old_church_slavonic_core::{
-    CardinalNumeralIdentity, IrregularVerbFamilyMember, PersonalPronounIdentity, RegularVerbFamily,
-    RegularVerbSourceMember, TwofoldNounFamilyMember, UniqueNounFamilyMember,
-    UniqueVerbFamilyMember, orthography::lookup_key,
+    CardinalNumeralIdentity, IrregularVerbFamilyMember, PersonalPronounIdentity, RegularNounFamily,
+    RegularNounSourceMember, RegularVerbFamily, RegularVerbSourceMember, TwofoldNounFamilyMember,
+    UniqueNounFamilyMember, UniqueVerbFamilyMember, orthography::lookup_key,
 };
 use old_church_slavonic_extractor::{
     extract::canonical_lemma,
@@ -25,6 +25,7 @@ use std::{
 };
 
 const LEDGER_PATH: &str = "data/ocs/lexical_source_claims.tsv";
+const REGULAR_NOUN_PATH: &str = "data/ocs/polivanova_regular_nouns.tsv";
 const REGULAR_VERB_PATH: &str = "data/ocs/polivanova_regular_verbs.tsv";
 const JSON_REPORT_PATH: &str = "reports/ocs-lexical-union.json";
 const MARKDOWN_REPORT_PATH: &str = "reports/ocs-lexical-union.md";
@@ -127,6 +128,7 @@ pub(crate) fn run(
         validate(root, &claims)?;
         let report = report(&claims);
         require_report_current(root, &report)?;
+        require_regular_nouns_current(root, &osd)?;
         require_regular_verbs_current(root, &osd)?;
         println!("OCS lexical source-union ledger: current");
         return Ok(());
@@ -149,6 +151,10 @@ pub(crate) fn run(
     )?;
     fs::write(root.join(MARKDOWN_REPORT_PATH), render_markdown(&report))?;
     fs::write(
+        root.join(REGULAR_NOUN_PATH),
+        render_regular_nouns(&read_regular_nouns(&osd)?)?,
+    )?;
+    fs::write(
         root.join(REGULAR_VERB_PATH),
         render_regular_verbs(&read_regular_verbs(&osd)?)?,
     )?;
@@ -160,11 +166,139 @@ pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
     let claims = load_ledger(&root.join(LEDGER_PATH))?;
     validate(root, &claims)?;
     require_report_current(root, &report(&claims))?;
+    require_regular_nouns_current(
+        root,
+        &root.join("data/intermediate/synodal/polivanova-osd-source.jsonl"),
+    )?;
     require_regular_verbs_current(
         root,
         &root.join("data/intermediate/synodal/polivanova-osd-source.jsonl"),
     )?;
     println!("OCS lexical source-union ledger: current");
+    Ok(())
+}
+
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct RegularNounRow {
+    source_row: usize,
+    lemma: String,
+    class: String,
+    inflection_lemma: String,
+    number_restriction: &'static str,
+}
+
+fn read_regular_nouns(path: &Path) -> Result<Vec<RegularNounRow>, Box<dyn Error>> {
+    let reader = BufReader::new(File::open(path)?);
+    let mut rows = Vec::new();
+    for (index, line) in reader.lines().enumerate() {
+        let row: IntermediateRow = serde_json::from_str(&line?)?;
+        if row.source_id != OSD_SOURCE
+            || row.source_revision != OSD_REVISION
+            || row.artifact_sha256 != OSD_XLS_SHA256
+            || row.source_order != index + 1
+        {
+            return Err(format!(
+                "OSD intermediate row {} has unexpected source provenance or order",
+                index + 1
+            )
+            .into());
+        }
+        if row.source_order == 1 {
+            continue;
+        }
+        let columns = row.raw_spelling.split('\t').collect::<Vec<_>>();
+        if columns.len() != 14 {
+            return Err(
+                format!("OSD row {} has {} columns", row.source_order, columns.len()).into(),
+            );
+        }
+        if columns[12] != "n"
+            || !is_regular_osd_noun_class(columns[11])
+            || columns[10].contains(['(', ')'])
+        {
+            continue;
+        }
+        let source_row = row.source_order - 1;
+        let lemma = clean_osd_lemma(columns[10]);
+        let inflection_lemma = plural_only_noun_inflection_lemma(source_row)
+            .unwrap_or(lemma.as_str())
+            .to_string();
+        rows.push(RegularNounRow {
+            source_row,
+            lemma,
+            class: columns[11].to_string(),
+            inflection_lemma,
+            number_restriction: if plural_only_noun_inflection_lemma(source_row).is_some() {
+                "pl"
+            } else {
+                "all"
+            },
+        });
+    }
+    if rows.len() != 2_423 {
+        return Err(format!("expected 2423 regular OSD nouns, found {}", rows.len()).into());
+    }
+    Ok(rows)
+}
+
+fn plural_only_noun_inflection_lemma(source_row: usize) -> Option<&'static str> {
+    // Polivanova 2023 §285 n.2 gives the exhaustive defective-nominal list.
+    // The class-0 member букъви has its own reviewed unique profile; these are
+    // the other twenty-four, all members of the five regular substantive classes.
+    match source_row {
+        9 => Some("ꙗдро"),
+        28 => Some("ꙗсль"),
+        63 => Some("л҄юдь"),
+        512 => Some("врато"),
+        1025 => Some("гѫсль"),
+        1250 => Some("дръво"),
+        1302 => Some("дѣть"),
+        2189 => Some("лѧдвиꙗ"),
+        2735 => Some("ноздрь"),
+        2949 => Some("оимъ"),
+        3108 => Some("осъпа"),
+        3361 => Some("плуще"),
+        4225 => Some("прьсь"),
+        4508 => Some("пѣгота"),
+        5963 => Some("усто"),
+        6138 => Some("чаръ"),
+        6193 => Some("чрѣсло"),
+        6281 => Some("вои"),
+        6288 => Some("носило"),
+        6297 => Some("кън҄ижицꙗ"),
+        6298 => Some("кън҄ига"),
+        6301 => Some("ножьницꙗ"),
+        6349 => Some("дрождиꙗ"),
+        6369 => Some("пѫто"),
+        _ => None,
+    }
+}
+
+fn render_regular_nouns(rows: &[RegularNounRow]) -> Result<String, Box<dyn Error>> {
+    let mut output =
+        String::from("source_row\tlemma\tclass\tinflection_lemma\tnumber_restriction\n");
+    for row in rows {
+        if row.lemma.contains(['\t', '\n'])
+            || row.class.contains(['\t', '\n'])
+            || row.inflection_lemma.contains(['\t', '\n'])
+        {
+            return Err(format!("OSD row {} contains a TSV delimiter", row.source_row).into());
+        }
+        output.push_str(&format!(
+            "{}\t{}\t{}\t{}\t{}\n",
+            row.source_row, row.lemma, row.class, row.inflection_lemma, row.number_restriction
+        ));
+    }
+    Ok(output)
+}
+
+fn require_regular_nouns_current(root: &Path, source: &Path) -> Result<(), Box<dyn Error>> {
+    let expected = render_regular_nouns(&read_regular_nouns(source)?)?;
+    if fs::read_to_string(root.join(REGULAR_NOUN_PATH))? != expected {
+        return Err(
+            format!("stale {REGULAR_NOUN_PATH}; rerun cargo xtask ocs-lexical-union").into(),
+        );
+    }
     Ok(())
 }
 
@@ -520,7 +654,7 @@ fn read_osd(path: &Path, runtime: &RuntimeIndex<'_>) -> Result<Vec<Claim>, Box<d
                 "The normalized headword retains a parenthesized segment; the engine must not silently choose whether that segment is present.",
             );
         } else {
-            classify_osd(&mut claim, runtime_row);
+            classify_osd(&mut claim);
         }
         if claim.union_identity == "-" {
             claim.union_identity = claim.claim_id.clone();
@@ -545,6 +679,13 @@ fn classify_runtime(claim: &mut Claim, row: &LexemeRow) {
             "dictionary-noun-metadata",
             "implemented",
             "The runtime identity has a typed noun class, gender, animacy, and number restriction.",
+        ),
+        "noun" if RegularNounFamily::classify_source_lemma(&row.lemma).is_some() => classify(
+            claim,
+            "productive",
+            "polivanova-regular-noun-specification",
+            "implemented",
+            "The runtime spelling resolves through a source-listed productive Polivanova class with fixed morphological gender and reviewed number inventory.",
         ),
         "noun" if noun_class_is_runtime(&row.class) => classify(
             claim,
@@ -598,7 +739,7 @@ fn classify_runtime(claim: &mut Claim, row: &LexemeRow) {
     }
 }
 
-fn classify_osd(claim: &mut Claim, runtime: Option<&LexemeRow>) {
+fn classify_osd(claim: &mut Claim) {
     let class = claim.source_class.as_str();
     match claim.source_pos.as_str() {
         "a" if class.starts_with("0/") || class == "1/a" => classify(
@@ -659,23 +800,25 @@ fn classify_osd(claim: &mut Claim, runtime: Option<&LexemeRow>) {
             );
         }
         "n" if matches!(class, "2/m" | "2/n" | "2/f" | "1/m" | "1/f") => {
-            if runtime.is_some_and(metadata_complete_noun) {
-                classify(
-                    claim,
-                    "productive",
-                    "dictionary-noun-metadata",
-                    "implemented",
-                    "The source-native class is crosswalked to a unique runtime noun identity with complete typed metadata.",
-                );
-            } else {
-                classify(
-                    claim,
-                    "productive",
-                    "polivanova-noun-specification",
-                    "metadata-incomplete",
-                    "The source supplies declension type and morphological gender, but the engine still needs a reviewed animacy and number-restriction crosswalk.",
-                );
-            }
+            let member = claim
+                .source_record
+                .strip_prefix("row:")
+                .and_then(|row| row.parse::<u16>().ok())
+                .and_then(RegularNounSourceMember::from_source_row);
+            let implemented = member.is_some_and(|member| {
+                member.canonical_lemma() == claim.lemma && member.class().code() == class
+            });
+            classify(
+                claim,
+                "productive",
+                "polivanova-regular-noun-specification",
+                if implemented {
+                    "implemented"
+                } else {
+                    "implementation-missing"
+                },
+                "The OSD row has a row-addressed productive class, fixed morphological gender, canonical nominative-like accusative, and reviewed all-number or plural-only inventory.",
+            );
         }
         "v" if class == "0" => {
             let implemented =
@@ -848,6 +991,10 @@ fn metadata_complete_noun(row: &LexemeRow) -> bool {
 
 fn verb_class_is_runtime(value: &str) -> bool {
     matches!(value, "IA1" | "IA2" | "II1" | "II2" | "II3")
+}
+
+fn is_regular_osd_noun_class(value: &str) -> bool {
+    matches!(value, "2/m" | "2/n" | "2/f" | "1/m" | "1/f")
 }
 
 fn is_regular_osd_verb_class(value: &str) -> bool {
@@ -1195,7 +1342,7 @@ fn require_report_current(root: &Path, report: &Report) -> Result<(), Box<dyn Er
 mod tests {
     use super::*;
 
-    fn regular_profile_form(
+    fn regular_verb_profile_form(
         lexeme: &old_church_slavonic_core::verb::VerbLexeme,
         feature: &str,
     ) -> Option<Result<String, old_church_slavonic_core::InflectionError>> {
@@ -1293,6 +1440,61 @@ mod tests {
             ),
             _ => None,
         }
+    }
+
+    fn regular_noun_profile_forms(
+        member: RegularNounSourceMember,
+        feature: &str,
+    ) -> Option<Result<Vec<String>, old_church_slavonic_core::InflectionError>> {
+        use old_church_slavonic_core::{Case, NounCell, Number};
+        let case = |value| match value {
+            "nom" => Some(Case::Nominative),
+            "gen" => Some(Case::Genitive),
+            "dat" => Some(Case::Dative),
+            "acc" => Some(Case::Accusative),
+            "ins" => Some(Case::Instrumental),
+            "loc" => Some(Case::Locative),
+            "voc" => Some(Case::Vocative),
+            _ => None,
+        };
+        let number = |value| match value {
+            "sg" => Some(Number::Singular),
+            "du" => Some(Number::Dual),
+            "pl" => Some(Number::Plural),
+            _ => None,
+        };
+        let fields = feature.split(':').collect::<Vec<_>>();
+        let ["noun", case_code, number_code] = fields.as_slice() else {
+            return None;
+        };
+        let cell = NounCell {
+            case: case(case_code)?,
+            number: number(number_code)?,
+        };
+        Some(
+            member
+                .lexeme()
+                .and_then(|lexeme| {
+                    old_church_slavonic_core::noun::decline(&lexeme, cell).map(|form| form.text)
+                })
+                .map(|predicted| {
+                    let mut forms = Vec::new();
+                    let source_number = if member.number_restriction()
+                        == old_church_slavonic_core::NumberRestriction::PluralOnly
+                    {
+                        Number::Plural
+                    } else {
+                        Number::Singular
+                    };
+                    if cell.case == Case::Nominative && cell.number == source_number {
+                        forms.push(member.canonical_lemma().to_string());
+                    }
+                    if !forms.contains(&predicted) {
+                        forms.push(predicted);
+                    }
+                    forms
+                }),
+        )
     }
 
     #[test]
@@ -1398,7 +1600,7 @@ mod tests {
             {
                 let generated = lexemes
                     .iter()
-                    .filter_map(|lexeme| regular_profile_form(lexeme, &row.feature))
+                    .filter_map(|lexeme| regular_verb_profile_form(lexeme, &row.feature))
                     .collect::<Vec<_>>();
                 if generated.is_empty() {
                     continue;
@@ -1431,6 +1633,71 @@ mod tests {
         assert_eq!(
             divergence_digest,
             "4679ba61e97dfa2da74f3881a3232525938518fd2a3a2d1e8146cca24b2b219c"
+        );
+    }
+
+    #[test]
+    fn regular_osd_noun_profiles_are_crosschecked_against_matching_dictionary_cells() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let claims = load_ledger(&root.join(LEDGER_PATH)).expect("committed lexical ledger");
+        let registry =
+            old_church_slavonic_extractor::extract::load_registry(&root.join("data/extracted"))
+                .expect("committed extracted registry");
+        let identities = claims
+            .iter()
+            .filter(|claim| {
+                claim.source_id == OSD_SOURCE
+                    && claim.engine_route == "polivanova-regular-noun-specification"
+            })
+            .map(|claim| (claim.source_record.as_str(), claim.union_identity.as_str()))
+            .collect::<BTreeMap<_, _>>();
+        let mut compared = 0usize;
+        let mut mismatches = Vec::new();
+        for member in RegularNounSourceMember::all() {
+            let source_record = format!("row:{}", member.source_row());
+            let Some(identity) = identities.get(source_record.as_str()).copied() else {
+                mismatches.push(format!("{} missing ledger identity", member.source_row()));
+                continue;
+            };
+            if identity.starts_with("polivanova-osd-source:") {
+                continue;
+            }
+            for row in registry
+                .forms
+                .iter()
+                .filter(|row| row.lexeme_id == identity && row.rank == 0)
+            {
+                let Some(generated) = regular_noun_profile_forms(member, &row.feature) else {
+                    continue;
+                };
+                compared += 1;
+                if !generated
+                    .as_ref()
+                    .is_ok_and(|generated| generated.contains(&row.form))
+                {
+                    mismatches.push(format!(
+                        "row {} {} {}: dictionary {:?}, generated {:?}",
+                        member.source_row(),
+                        member.canonical_lemma(),
+                        row.feature,
+                        row.form,
+                        generated
+                    ));
+                }
+            }
+        }
+        let divergence_digest = format!("{:x}", Sha256::digest(mismatches.join("\n")));
+        // These divergences are retained and ranked, not normalized away.
+        // They include Kaikki's u-/consonant-stem analyses where the OSD
+        // selects a standard twofold profile, abbreviated spellings where
+        // Polivanova selects the expanded canonical -иѥ- form, and source
+        // orthography such as л҄ versus ль. Exact dictionary rows keep public
+        // precedence; this digest locks every primary-table disagreement.
+        assert_eq!(compared, 23_149);
+        assert_eq!(mismatches.len(), 1_626);
+        assert_eq!(
+            divergence_digest,
+            "144e1ec668d6bcf186722af098c689fd4bb822c517584095b86c7230b11941e7"
         );
     }
 

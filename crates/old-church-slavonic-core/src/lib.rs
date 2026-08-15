@@ -17,6 +17,7 @@ pub mod numeral;
 pub mod orthography;
 pub mod phrase;
 pub mod pronoun;
+pub mod regular_noun;
 pub mod regular_verb;
 pub mod result;
 pub mod trace;
@@ -68,6 +69,10 @@ pub use pronoun::{
     IrregularAgreeingIdentity, PersonalPronounIdentity, PronominalDeclension, PronominalFamilySpec,
     PronominalLexeme, PronominalPostpositive, PronominalPrefix, PronounFormSelection,
     PronounVariant, PronounVariantStatus, StandardPronominalIdentity,
+};
+pub use regular_noun::{
+    PolivanovaRegularNounClass, PolivanovaRegularNounSpecification, RegularNounFamily,
+    RegularNounSourceMember,
 };
 pub use regular_verb::{
     PolivanovaRegularVerbClass, PolivanovaRegularVerbSpecification, RegularVerbFamily,

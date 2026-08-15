@@ -220,7 +220,7 @@ distinct.
 use old_church_slavonic::{imperative, noun, Case, InflectionError, Number, Person};
 
 assert!(matches!(
-    noun("блѧдь", Case::Nominative, Number::Singular),
+    noun("амемоурмнии", Case::Nominative, Number::Singular),
     Err(InflectionError::AmbiguousLexeme { .. }),
 ));
 assert!(matches!(

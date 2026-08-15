@@ -25,14 +25,15 @@ use old_church_slavonic::{
     IrregularVerbFamilyMember, Lemma, LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE,
     MIN_COMPOUND_ORDINAL_VALUE, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
     OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
-    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RegularVerbFamily,
-    RegularVerbSourceMember, RequestedCell, Script, StandardPronominalIdentity,
-    TransliterationDirection, TransliterationFidelity, TransliterationLossKind,
-    TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell, UniqueNounFamilyMember,
-    UniqueVerbFamilyMember, VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist,
-    cardinal_magnitude, cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
-    collective_numeral_identity, collective_numeral_paradigm, collective_numeral_paradigm_identity,
-    compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
+    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RegularNounFamily,
+    RegularNounSourceMember, RegularVerbFamily, RegularVerbSourceMember, RequestedCell, Script,
+    StandardPronominalIdentity, TransliterationDirection, TransliterationFidelity,
+    TransliterationLossKind, TransliterationLossPolicy, TwofoldNounFamilyMember, UngenderedCell,
+    UniqueNounFamilyMember, UniqueVerbFamilyMember, VariantPolicy, Verb, adjective_paradigm,
+    anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
+    cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
+    collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
+    compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
     compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
     compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm,
     distributive_cardinal, distributive_cardinal_paradigm, distributive_cardinal_paradigm_with_one,
@@ -3236,7 +3237,7 @@ fn productive_comparatives_have_complete_typed_public_paradigms() {
 
 #[test]
 fn ambiguity_unknown_missing_metadata_and_invalid_cells_remain_distinct() {
-    let ambiguity = noun("блѧдь", Case::Nominative, Number::Singular)
+    let ambiguity = noun("амемоурмнии", Case::Nominative, Number::Singular)
         .expect_err("fixture has multiple dictionary identities");
     let InflectionError::AmbiguousLexeme { candidates } = ambiguity else {
         panic!("expected ambiguity, got {ambiguity:?}");
@@ -3531,6 +3532,70 @@ fn every_regular_osd_family_routes_through_the_public_facade() {
         verb.imperative(Person::Second, Number::Plural)
             .unwrap_or_else(|error| panic!("regular imperative {lemma}: {error:?}"));
     }
+}
+
+#[test]
+fn every_regular_osd_noun_family_routes_through_the_public_facade() {
+    assert_eq!(RegularNounSourceMember::all().count(), 2_423);
+    for family in RegularNounFamily::all() {
+        let lemma = family.canonical_lemma();
+        let source_id = format!("reviewed:ocs:noun:regular:{lemma}");
+        let source_noun = Noun::from_id(&source_id)
+            .unwrap_or_else(|error| panic!("regular source identity {lemma}: {error:?}"));
+        assert_eq!(source_noun.id(), source_id);
+        assert_eq!(source_noun.lemma(), lemma);
+
+        let source_number = if family
+            .members()
+            .all(|member| member.number_restriction() == NumberRestriction::PluralOnly)
+        {
+            Number::Plural
+        } else {
+            Number::Singular
+        };
+        source_noun
+            .form(Case::Nominative, source_number)
+            .unwrap_or_else(|error| panic!("regular source form {lemma}: {error:?}"));
+
+        let resolved = Noun::resolve(lemma)
+            .unwrap_or_else(|error| panic!("regular facade identity {lemma}: {error:?}"));
+        assert_eq!(
+            Noun::from_id(resolved.id()).expect("stable ID roundtrip"),
+            resolved
+        );
+        resolved
+            .form(Case::Genitive, source_number)
+            .unwrap_or_else(|error| panic!("regular genitive {lemma}: {error:?}"));
+    }
+}
+
+#[test]
+fn regular_osd_nouns_preserve_exact_precedence_and_plural_restrictions() {
+    let exact = noun("богъ", Case::Genitive, Number::Singular)
+        .expect("dictionary cell precedes the productive source profile");
+    assert_eq!(exact.primary_text(), "бога");
+    assert_eq!(exact.source(), &FormSource::DictionaryTable);
+
+    let source_only = Noun::from_id("reviewed:ocs:noun:regular:чаръ")
+        .expect_err("the source citation is plural чари, not an invented singular lemma");
+    assert!(matches!(
+        source_only,
+        InflectionError::UnknownLexemeId { .. }
+    ));
+
+    let plural =
+        Noun::from_id("reviewed:ocs:noun:regular:чари").expect("source-listed plural noun");
+    assert_eq!(
+        plural
+            .form(Case::Nominative, Number::Plural)
+            .expect("exact source starting form")
+            .primary_text(),
+        "чари"
+    );
+    assert!(matches!(
+        plural.form(Case::Nominative, Number::Singular),
+        Err(InflectionError::UnsupportedCell { .. })
+    ));
 }
 
 #[test]
@@ -4030,7 +4095,7 @@ fn verbal_nouns_form_and_decline_without_conflating_derivation_with_participles(
         )
         .expect("productive explicit formation")
         .primary_text(),
-        "слутиема"
+        "слутиѥма"
     );
 }
 
@@ -4056,7 +4121,7 @@ fn verbal_noun_dictionary_metadata_and_raw_feature_routes_share_the_typed_rule()
 
     let raw =
         raw_features::form_by_id(&id, "verb:verbal-noun:dat:du").expect("typed raw-feature route");
-    assert_eq!(raw.primary_text(), "благословлѥниема");
+    assert_eq!(raw.primary_text(), "благословлѥниѥма");
 }
 
 #[test]

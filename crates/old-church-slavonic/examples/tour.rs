@@ -84,7 +84,7 @@ fn main() -> Result<(), InflectionError> {
 
     println!(
         "ambiguity: {:?}",
-        noun("блѧдь", Case::Nominative, Number::Singular)
+        noun("амемоурмнии", Case::Nominative, Number::Singular)
     );
     let variants = noun("аблань", Case::Genitive, Number::Dual)?;
     println!("source-ordered variants: {variants:?}");
