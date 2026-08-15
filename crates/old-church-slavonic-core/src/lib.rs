@@ -36,7 +36,7 @@ pub use grammar::{
     VerbMorphologySystem,
 };
 pub use impersonal::{ImpersonalVerbIdentity, ImpersonalVerbStatus};
-pub use irregular_verb::{IrregularVerbFamilyMember, IrregularVerbGroup};
+pub use irregular_verb::{IrregularVerbAnalysis, IrregularVerbFamilyMember, IrregularVerbGroup};
 pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
     CardinalPhraseAnalysis, CollectiveNumeralDeclension, CollectiveNumeralIdentity,

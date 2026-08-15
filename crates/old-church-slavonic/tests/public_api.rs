@@ -17,15 +17,16 @@ use old_church_slavonic::{
     Adjective, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CollectiveNumeralCell,
     CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
-    DeterminerCell, DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSource,
+    DeterminerCell, DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSet, FormSource,
     FractionalNumeralDeclension, FractionalNumeralIdentity, Gender, GenderedCell,
     ImpersonalVerbIdentity, ImpersonalVerbStatus, IndefiniteNumeralIdentity, InflectionError,
-    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
-    LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE, MIN_COMPOUND_ORDINAL_VALUE, Noun,
-    Number, Numeral, NumeralCell, OrdinalComposition, OrdinalNumeralIdentity, ParadigmLookupError,
-    PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
-    PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
-    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    IrregularVerbFamilyMember, Lemma, LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE,
+    MIN_COMPOUND_ORDINAL_VALUE, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
+    OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
+    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
+    Script, StandardPronominalIdentity, UngenderedCell, UniqueVerbFamilyMember, VariantPolicy,
+    Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
     cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
     collective_numeral_identity, collective_numeral_paradigm, collective_numeral_paradigm_identity,
     compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
@@ -49,6 +50,20 @@ fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
     let candidates = old_church_slavonic::lookup(lemma, part_of_speech).expect("valid lookup");
     assert_eq!(candidates.len(), 1, "fixture must remain unambiguous");
     candidates[0].id.clone()
+}
+
+fn assert_realized_or_reviewed_defect(
+    result: Result<FormSet, InflectionError>,
+    context: impl std::fmt::Debug,
+) {
+    match result {
+        Ok(forms) => assert!(!forms.primary_text().is_empty(), "{context:?}"),
+        Err(
+            InflectionError::HistoricallyInvalidCell { .. }
+            | InflectionError::UnattestedUnreconstructableCell { .. },
+        ) => {}
+        Err(error) => panic!("{context:?}: unexpected facade gap: {error:?}"),
+    }
 }
 
 #[test]
@@ -3291,6 +3306,143 @@ fn reviewed_override_follows_exact_table_and_keeps_authority() {
         .expect("exact source table precedes overrides");
     assert_eq!(exact.primary_text(), "бѣаше");
     assert_eq!(exact.source(), &FormSource::DictionaryTable);
+}
+
+#[test]
+fn reviewed_irregular_profiles_follow_exact_and_override_precedence() {
+    let exact = aorist("бꙑти", Person::First, Number::Singular)
+        .expect("copular dictionary aorist remains exact");
+    assert_eq!(exact.texts().collect::<Vec<_>>(), ["бѣхъ", "бꙑхъ"]);
+    assert_eq!(exact.source(), &FormSource::DictionaryTable);
+
+    let overridden = present("имѣти", Person::First, Number::Singular)
+        .expect("reviewed facade override remains authoritative");
+    assert_eq!(overridden.primary_text(), "имамь");
+    assert_eq!(overridden.source(), &FormSource::ManualOverride);
+
+    let disputed = present("метати", Person::First, Number::Singular)
+        .expect("all independently reviewed metati analyses");
+    assert_eq!(
+        disputed.texts().collect::<Vec<_>>(),
+        ["метѫ", "мещѫ", "метаѭ"]
+    );
+    assert_eq!(disputed.source(), &FormSource::ReviewedGrammarAnalyses);
+    assert_eq!(disputed.analyses().len(), 3);
+    assert!(
+        disputed
+            .warnings()
+            .contains(&InflectionWarning::MultipleMorphologicalAnalyses)
+    );
+    assert!(
+        disputed
+            .warnings()
+            .contains(&InflectionWarning::IncludesDisputedForms)
+    );
+    assert!(
+        disputed
+            .warnings()
+            .contains(&InflectionWarning::PredictedNotDictionaryBacked)
+    );
+    assert!(disputed.analyses().iter().all(|analysis| {
+        analysis.evidence.iter().any(|evidence| {
+            evidence.provenance == MetadataProvenance::DisputedGrammarTable
+                && evidence
+                    .source_feature
+                    .as_deref()
+                    .is_some_and(|feature| feature.contains("verb:finite:present:1:sg"))
+        })
+    }));
+
+    let convergent = aorist("метати", Person::Third, Number::Singular)
+        .expect("convergent source analyses collapse without false ambiguity");
+    assert_eq!(convergent.primary_text(), "мета");
+    assert!(matches!(
+        convergent.source(),
+        FormSource::ReviewedGrammarTable { .. }
+    ));
+    assert_eq!(convergent.analyses().len(), 1);
+    assert_eq!(
+        convergent.analyses()[0]
+            .evidence
+            .iter()
+            .filter(|evidence| { evidence.provenance == MetadataProvenance::ReviewedGrammarTable })
+            .count(),
+        3
+    );
+    assert!(
+        !convergent
+            .warnings()
+            .contains(&InflectionWarning::MultipleMorphologicalAnalyses)
+    );
+}
+
+#[test]
+fn every_reviewed_irregular_profile_routes_through_the_public_facade() {
+    for lemma in UniqueVerbFamilyMember::all()
+        .map(|member| member.canonical_lemma())
+        .chain(IrregularVerbFamilyMember::all().map(|member| member.canonical_lemma()))
+    {
+        let verb = Verb::resolve(lemma)
+            .unwrap_or_else(|error| panic!("reviewed facade identity {lemma}: {error:?}"));
+        let has_dictionary_identity = old_church_slavonic::lookup(lemma, PartOfSpeech::Verb)
+            .expect("reviewed lemma lookup")
+            .iter()
+            .any(|candidate| candidate.id == verb.id());
+        if !has_dictionary_identity {
+            assert_eq!(verb.lemma(), lemma);
+        }
+        assert_eq!(
+            Verb::from_id(verb.id()).expect("reviewed stable ID roundtrip"),
+            verb
+        );
+
+        for cell in FiniteVerbCell::all() {
+            assert_realized_or_reviewed_defect(
+                verb.finite(cell.tense, cell.person, cell.number),
+                (lemma, cell),
+            );
+        }
+        for cell in ImperativeCell::SUPPORTED {
+            assert_realized_or_reviewed_defect(
+                verb.imperative(cell.person, cell.number),
+                (lemma, cell),
+            );
+        }
+        assert_realized_or_reviewed_defect(verb.infinitive(), (lemma, "infinitive"));
+        assert_realized_or_reviewed_defect(verb.supine(), (lemma, "supine"));
+        for cell in LParticipleCell::all() {
+            assert_realized_or_reviewed_defect(
+                verb.l_participle(cell.gender, cell.number),
+                (lemma, cell),
+            );
+        }
+        for kind in ParticipleKind::ALL {
+            for cell in ParticipleCell::for_kind(kind) {
+                assert_realized_or_reviewed_defect(
+                    by_id::participle_by_id(verb.id(), cell),
+                    (lemma, cell),
+                );
+            }
+        }
+
+        match verb.verbal_noun() {
+            Ok(forms) if has_dictionary_identity => assert!(!forms.primary_text().is_empty()),
+            Err(InflectionError::UnsupportedCell {
+                cell: RequestedCell::VerbalNoun,
+                ..
+            }) => {}
+            other => panic!("{lemma}: unexpected verbal-noun result: {other:?}"),
+        }
+    }
+
+    let reviewed_only = Verb::resolve("плути").expect("Table 434 spelling absent from dictionary");
+    assert!(reviewed_only.id().starts_with("reviewed:ocs:verb:"));
+    assert_eq!(reviewed_only.lemma(), "плути");
+    assert_eq!(reviewed_only.present_paradigm().len(), 9);
+
+    let exact_spelling = Verb::resolve("пьсати")
+        .expect("reviewed canonical spelling disambiguates the orthographic alias set");
+    assert!(exact_spelling.id().starts_with("пьсати|verb|"));
 }
 
 #[test]

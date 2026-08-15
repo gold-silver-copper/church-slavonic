@@ -649,6 +649,9 @@ fn metadata_generation_path(forms: &old_church_slavonic::FormSet) -> String {
         old_church_slavonic::FormSource::ReviewedGrammarTable { rule_id } => {
             format!("reviewed-grammar-table:{}", rule_id.code())
         }
+        old_church_slavonic::FormSource::ReviewedGrammarAnalyses => {
+            "reviewed-grammar-analyses".to_string()
+        }
         old_church_slavonic::FormSource::DictionaryMetadataAnalyses => {
             "dictionary-metadata-analyses".to_string()
         }
@@ -959,6 +962,7 @@ fn dictionary_accuracy(registry: &Registry) -> Result<DictionaryAccuracy, Box<dy
             old_church_slavonic::FormSource::ReviewedGrammarTable { .. } => {
                 "reviewed-grammar-table"
             }
+            old_church_slavonic::FormSource::ReviewedGrammarAnalyses => "reviewed-grammar-analyses",
             old_church_slavonic::FormSource::ManualOverride => "manual-override",
             old_church_slavonic::FormSource::DictionaryMetadataRule { .. } => {
                 "dictionary-metadata-rule"

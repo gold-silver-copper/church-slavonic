@@ -6,15 +6,15 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **34** have final states and **19** remain non-final. Source discovery has 3 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **35** have final states and **18** remain non-final. Source discovery has 3 recorded passes and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
 | `implementation-missing` | 13 |
+| `irregular-exact-complete` | 1 |
 | `not-inflectional` | 2 |
-| `partial` | 1 |
 | `productive-complete` | 32 |
 | `source-review-open` | 5 |
 
@@ -23,7 +23,7 @@ The matrix contains **53** required system contracts: **34** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 21 | 26 |
+| old-church-slavonic | 22 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -42,7 +42,7 @@ The matrix contains **53** required system contracts: **34** have final states a
 | old-church-slavonic | finite-verb | 6 | 6 |
 | old-church-slavonic | imperative | 2 | 2 |
 | old-church-slavonic | invariant | 1 | 1 |
-| old-church-slavonic | irregular-verb | 0 | 1 |
+| old-church-slavonic | irregular-verb | 1 | 1 |
 | old-church-slavonic | lexicon | 0 | 1 |
 | old-church-slavonic | nonfinite-verb | 1 | 1 |
 | old-church-slavonic | noun | 1 | 1 |
@@ -70,7 +70,6 @@ The matrix contains **53** required system contracts: **34** have final states a
 
 ## Non-final systems
 
-- `ocs.verb.irregular-root` — **partial**: Route the unique and reusable irregular profiles through ordinary facade lookup with per-cell provenance without collapsing disputed analyses or independent ѥсмь and бꙑти profiles.
 - `ocs.verb.verbal-noun` — **source-review-open**: Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts.
 - `ocs.orthography.accent` — **implementation-missing**: Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance.
 - `ocs.orthography.glagolitic` — **implementation-missing**: Establish a source-backed Glagolitic realization/transliteration contract for every productive rule.
@@ -112,7 +111,7 @@ The matrix contains **53** required system contracts: **34** have final states a
 | `ocs.verb.imperative.analytic` | old-church-slavonic | imperative | `productive-complete` | `PHRASE-IMPV-DA-01` | independent grammar rule with structured dictionary-resolved present component provenance |
 | `ocs.verb.infinitive-supine-lparticiple` | old-church-slavonic | nonfinite-verb | `productive-complete` | `V-INF-01`<br>`V-SUP-01`<br>`V-LPART-01` | source-backed productive prediction |
 | `ocs.verb.participle` | old-church-slavonic | participle | `productive-complete` | `V-PTCP-PRES-ACT-01`<br>`V-PTCP-PRES-PASS-01`<br>`V-PTCP-PAST-ACT-01`<br>`V-PTCP-PAST-PASS-01` | source-backed productive prediction; unsafe extracted rows excluded |
-| `ocs.verb.irregular-root` | old-church-slavonic | irregular-verb | `partial` | `V-IRREG-EXACT-01`<br>`V-IMPF-PRESENT-01`<br>`V-PTCP-PRES-ACT-01`<br>`V-PTCP-PRES-PASS-01`<br>`PHRASE-IMPERSONAL-PRED-01` | closed nineteen-profile and 106-member unique-family union, all thirteen reusable groups and seventy source-listed family members as complete typed profiles, plus the complete two-identity impersonal sense inventory with structured finite predicates; general facade provenance partial |
+| `ocs.verb.irregular-root` | old-church-slavonic | irregular-verb | `irregular-exact-complete` | `V-IRREG-EXACT-01`<br>`V-IMPF-PRESENT-01`<br>`V-PTCP-PRES-ACT-01`<br>`V-PTCP-PRES-PASS-01`<br>`PHRASE-IMPERSONAL-PRED-01` | closed nineteen-profile and 106-member unique-family union, all thirteen reusable groups and seventy source-listed family members as complete typed profiles, complete two-identity impersonal sense inventory, and exhaustive ordinary-facade routing with per-cell provenance and explicit disputed analyses |
 | `ocs.verb.analytic` | old-church-slavonic | analytic-form | `productive-complete` | `V-COP-ES-PRES-01`<br>`V-COP-BUD-PRES-01`<br>`V-COP-BE-IMPF-01`<br>`V-COP-BE-AOR-01`<br>`V-COP-BI-COND-01`<br>`V-COP-BY-COND-AOR-01`<br>`PHRASE-PERFECT-01`<br>`PHRASE-PLUPERFECT-01`<br>`PHRASE-FUT-INF-01`<br>`PHRASE-FUT-PTCP-01`<br>`PHRASE-FUT-PERFECT-01`<br>`PHRASE-COND-OPT-01`<br>`PHRASE-COND-OPT-DA-01`<br>`PHRASE-COND-OPT-ELLIP-01`<br>`PHRASE-COND-OPT-PASS-01`<br>`PHRASE-PASSIVE-01` | independently crosschecked grammar inventory with reviewed tables, explicit reconstructions, curated irregular auxiliaries, and structured word-level provenance |
 | `ocs.verb.verbal-noun` | old-church-slavonic | verbal-noun | `source-review-open` | `OCS-VERBAL-NOUN-PENDING` | sparse exact dictionary cells |
 | `ocs.orthography.canonical` | old-church-slavonic | orthography | `productive-complete` | `OCS-ORTHOGRAPHY-CANONICAL` | technical and source contract |
@@ -187,4 +186,4 @@ The frontier contains **24** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.verb.irregular-root`: Route the unique and reusable irregular profiles through ordinary facade lookup with per-cell provenance without collapsing disputed analyses or independent ѥсмь and бꙑти profiles.
+`ocs.verb.verbal-noun`: Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts.

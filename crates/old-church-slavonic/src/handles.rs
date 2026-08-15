@@ -349,7 +349,7 @@ impl Adjective {
     }
 }
 
-/// A uniquely resolved dictionary verb.
+/// A uniquely resolved dictionary or reviewed closed-profile verb.
 ///
 /// ```
 /// use old_church_slavonic::{Number, Person, Verb};
@@ -366,9 +366,33 @@ pub struct Verb {
     identity: ResolvedIdentity,
 }
 
-identity_methods!(Verb, PartOfSpeech::Verb);
-
 impl Verb {
+    /// Resolve exactly one dictionary or reviewed closed-profile verb identity.
+    pub fn resolve(lemma: &str) -> Result<Self, InflectionError> {
+        let (id, lemma) = resolver::resolve_verb_identity(lemma)?;
+        Ok(Self {
+            identity: ResolvedIdentity { id, lemma },
+        })
+    }
+
+    /// Bind a stable dictionary or reviewed-profile ID.
+    pub fn from_id(id: &str) -> Result<Self, InflectionError> {
+        let (id, lemma) = resolver::verb_identity_from_id(id)?;
+        Ok(Self {
+            identity: ResolvedIdentity { id, lemma },
+        })
+    }
+
+    /// The canonical dictionary or reviewed-profile lemma.
+    pub fn lemma(&self) -> &str {
+        &self.identity.lemma
+    }
+
+    /// The stable dictionary or reviewed-profile lexeme ID.
+    pub fn id(&self) -> &str {
+        &self.identity.id
+    }
+
     /// Resolve one present-indicative person-number cell.
     pub fn present(&self, person: Person, number: Number) -> Result<FormSet, InflectionError> {
         self.finite(FiniteTense::Present, person, number)
@@ -477,7 +501,8 @@ impl Verb {
     }
 }
 
-/// One resolved verb and one independently represented participle system.
+/// One resolved dictionary or reviewed-profile verb and one independently
+/// represented participle system.
 ///
 /// ```
 /// use old_church_slavonic::{Animacy, Case, Gender, Number, Verb};
@@ -499,12 +524,12 @@ pub struct Participle {
 }
 
 impl Participle {
-    /// The canonical dictionary verb lemma.
+    /// The canonical dictionary or reviewed-profile verb lemma.
     pub fn lemma(&self) -> &str {
         &self.identity.lemma
     }
 
-    /// The stable dictionary verb ID.
+    /// The stable dictionary or reviewed-profile verb ID.
     pub fn id(&self) -> &str {
         &self.identity.id
     }

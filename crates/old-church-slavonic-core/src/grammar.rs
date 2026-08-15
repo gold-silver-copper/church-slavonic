@@ -756,6 +756,19 @@ impl VerbMorphologyCell {
             Self::Participle(cell) => RequestedCell::Participle(cell),
         }
     }
+
+    /// Canonical feature key shared by exact tables, reviewed profiles, and
+    /// productive rule provenance.
+    pub fn key(self) -> String {
+        match self {
+            Self::Finite(cell) => cell.key(),
+            Self::Imperative(cell) => cell.key(),
+            Self::Infinitive => "verb:infinitive".to_string(),
+            Self::Supine => "verb:supine".to_string(),
+            Self::LParticiple(cell) => cell.key(),
+            Self::Participle(cell) => cell.key(),
+        }
+    }
 }
 
 /// Why a source-reviewed irregular verb cell cannot be generated.

@@ -639,8 +639,7 @@ Two additional present-active participle seams preserve unique-profile
 oppositions that the ordinary hard/soft formations cannot express:
 `MixedYushtSoft` forms `-ѧ/-ѫшт-` (`дѣти`, `°рѣсти`), and
 `IotatedYushtSoft` forms `-ѩ/-ѭшт-` (`въпити`, `довьлѣти`). These are typed
-formations rather than spelling postprocessing. General facade
-source-provenance routing remains a separate completion checkpoint.
+formations rather than spelling postprocessing.
 
 `IrregularVerbGroup` inventories all thirteen reusable workstem groups of
 Polivanova Tables 434 and 440. `IrregularVerbFamilyMember` closes all seventy
@@ -661,9 +660,19 @@ Table 434 appears to transpose the displayed past stems of `мрѣти` and
 Table 440 distribution (`мрьлъ/мрьтъ`, `разскврьлъ/разскврьтъ`) rather than
 copying the crossed labels. LOVe also assigns `метати` a `мещ-/метај-` present
 analysis, while Polivanova places it in the 3° `мет-/метѫ` group; these remain
-competing lexical analyses rather than being silently conflated. Facade-level
-per-cell provenance for the general irregular inventories remains a separate
-checkpoint.
+competing lexical analyses rather than being silently conflated. Ordinary
+facade calls return the ordered `метѫ`, `мещѫ`, and `метаѭ` analyses where the
+sources diverge. Cells with identical output merge into one surface analysis
+while retaining all source evidence.
+
+All unique-family and reusable irregular-family members route through the
+ordinary facade. Resolution order is exact dictionary cell, reviewed manual
+override, closed reviewed profile, then open-class dictionary metadata.
+Reviewed source spellings absent from the bundled dictionary receive stable
+`reviewed:ocs:verb:*` identities, so free calls, handles, by-ID calls, and full
+paradigms share the same behavior. Every profile cell carries direct-table or
+productive-rule evidence; predicted continuations are warned as predictions,
+and source conflicts use `ReviewedGrammarAnalyses` without choosing a winner.
 
 `ImpersonalVerbIdentity` closes the two impersonal senses in the pinned OCS
 dictionary: lexically impersonal `достоꙗти` ‘befit’ and reflexive impersonal

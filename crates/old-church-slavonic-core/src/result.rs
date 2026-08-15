@@ -164,11 +164,21 @@ impl std::error::Error for VariantSelectionError {}
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FormSource {
     DictionaryTable,
-    ReviewedGrammarTable { rule_id: RuleId },
-    DictionaryMetadataRule { rule_id: RuleId },
+    ReviewedGrammarTable {
+        rule_id: RuleId,
+    },
+    /// Multiple independently sourced reviewed analyses remain viable.
+    ReviewedGrammarAnalyses,
+    DictionaryMetadataRule {
+        rule_id: RuleId,
+    },
     DictionaryMetadataAnalyses,
-    ExplicitMetadataRule { rule_id: RuleId },
-    OovPrediction { rule_id: RuleId },
+    ExplicitMetadataRule {
+        rule_id: RuleId,
+    },
+    OovPrediction {
+        rule_id: RuleId,
+    },
     ManualOverride,
 }
 

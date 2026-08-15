@@ -12,7 +12,7 @@ pub mod cells {
     };
 }
 
-/// Stable dictionary-identity operations.
+/// Stable dictionary- or reviewed-profile identity operations.
 pub mod by_id {
     pub use crate::resolver::{
         adjective_by_id, adjective_paradigm_by_id, comparative_citation_by_id, determiner_by_id,

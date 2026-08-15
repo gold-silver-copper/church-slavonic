@@ -24,6 +24,267 @@ fn cell_outcomes<C: Copy>(
         .collect()
 }
 
+const REVIEWED_VERB_ID_PREFIX: &str = "reviewed:ocs:verb:";
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ReviewedVerbProfile {
+    Unique(UniqueVerbFamilyMember),
+    Irregular(IrregularVerbFamilyMember),
+}
+
+impl ReviewedVerbProfile {
+    fn classify(lemma: &str) -> Option<Self> {
+        if let Some(member) = UniqueVerbFamilyMember::classify_source_union_lemma(lemma) {
+            return Some(Self::Unique(member));
+        }
+        if let Some(identity) = UniqueVerbIdentity::classify_source_union_lemma(lemma)
+            && let Some(member) =
+                UniqueVerbFamilyMember::classify_source_union_lemma(identity.canonical_lemma())
+        {
+            return Some(Self::Unique(member));
+        }
+        IrregularVerbFamilyMember::classify_source_lemma(lemma).map(Self::Irregular)
+    }
+
+    const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::Unique(member) => member.canonical_lemma(),
+            Self::Irregular(member) => member.canonical_lemma(),
+        }
+    }
+
+    fn analyses(self) -> Vec<ReviewedVerbAnalysis> {
+        match self {
+            Self::Unique(member) => vec![ReviewedVerbAnalysis::Unique(member)],
+            Self::Irregular(member) => member
+                .analyses()
+                .iter()
+                .copied()
+                .map(|analysis| ReviewedVerbAnalysis::Irregular { member, analysis })
+                .collect(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ReviewedVerbAnalysis {
+    Unique(UniqueVerbFamilyMember),
+    Irregular {
+        member: IrregularVerbFamilyMember,
+        analysis: IrregularVerbAnalysis,
+    },
+}
+
+impl ReviewedVerbAnalysis {
+    fn lexeme(self) -> Result<VerbLexeme, InflectionError> {
+        match self {
+            Self::Unique(member) => Ok(member.lexeme()),
+            Self::Irregular { member, analysis } => member
+                .lexeme_for_analysis(analysis)
+                .ok_or_else(|| InflectionError::InvalidInput {
+                    reason: format!(
+                        "reviewed analysis {} does not belong to {}",
+                        analysis.code(),
+                        member.canonical_lemma()
+                    ),
+                }),
+        }
+    }
+
+    fn code(self) -> String {
+        match self {
+            Self::Unique(member) => format!(
+                "unique:{}:{}",
+                member.profile().canonical_lemma(),
+                member.canonical_lemma()
+            ),
+            Self::Irregular { member, analysis } => {
+                format!("irregular:{}:{}", member.canonical_lemma(), analysis.code())
+            }
+        }
+    }
+
+    fn authority(self) -> String {
+        match self {
+            Self::Unique(member) => format!(
+                "Polivanova 2023 {}; official LMU LOVe principal-part crosscheck",
+                member.source_section()
+            ),
+            Self::Irregular {
+                member,
+                analysis: IrregularVerbAnalysis::PolivanovaTable434,
+            } => format!(
+                "{} and {}, with official LMU LOVe principal-part crosscheck",
+                IrregularVerbAnalysis::PolivanovaTable434.authority(),
+                member.source_section()
+            ),
+            Self::Irregular { analysis, .. } => analysis.authority().to_string(),
+        }
+    }
+
+    fn is_direct_source_cell(self, cell: VerbMorphologyCell, rule_id: RuleId) -> bool {
+        match self {
+            Self::Unique(_)
+            | Self::Irregular {
+                analysis: IrregularVerbAnalysis::PolivanovaTable434,
+                ..
+            } => rule_id == RuleId::VerbIrregularExact || cell == VerbMorphologyCell::Infinitive,
+            Self::Irregular { analysis, .. } => {
+                matches!(
+                    analysis,
+                    IrregularVerbAnalysis::LoveMetatiJePresent
+                        | IrregularVerbAnalysis::LoveMetatiAjePresent
+                ) && (cell == VerbMorphologyCell::Infinitive
+                    || matches!(
+                        cell,
+                        VerbMorphologyCell::Finite(FiniteVerbCell {
+                            tense: FiniteTense::Present,
+                            person: Person::Third,
+                            number: Number::Singular,
+                        })
+                    )
+                    || matches!(
+                        cell,
+                        VerbMorphologyCell::Finite(FiniteVerbCell {
+                            tense: FiniteTense::Aorist,
+                            person: Person::Second | Person::Third,
+                            number: Number::Singular,
+                        })
+                    ))
+            }
+        }
+    }
+}
+
+fn reviewed_verb_id(profile: ReviewedVerbProfile) -> String {
+    format!("{REVIEWED_VERB_ID_PREFIX}{}", profile.canonical_lemma())
+}
+
+fn reviewed_profile_from_id(id: &str) -> Option<ReviewedVerbProfile> {
+    let lemma = id.strip_prefix(REVIEWED_VERB_ID_PREFIX)?;
+    ReviewedVerbProfile::classify(lemma).filter(|profile| profile.canonical_lemma() == lemma)
+}
+
+fn reviewed_profile_for_dictionary_id(
+    id: &str,
+) -> Result<Option<ReviewedVerbProfile>, InflectionError> {
+    let record = lookup::find_lexeme(id)
+        .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?;
+    if record.pos != PartOfSpeech::Verb.code() {
+        return Err(InflectionError::InvalidInput {
+            reason: format!("lexeme {id} is {}, not verb", record.pos),
+        });
+    }
+    if let Some(profile) = ReviewedVerbProfile::classify(record.lemma) {
+        return Ok(Some(profile));
+    }
+
+    let mut matches = Vec::new();
+    for profile in UniqueVerbFamilyMember::all()
+        .map(ReviewedVerbProfile::Unique)
+        .chain(IrregularVerbFamilyMember::all().map(ReviewedVerbProfile::Irregular))
+    {
+        if lookup::lemma_maps_to_id(profile.canonical_lemma(), PartOfSpeech::Verb, id)?
+            && !matches.contains(&profile)
+        {
+            matches.push(profile);
+        }
+    }
+    match matches.as_slice() {
+        [] => Ok(None),
+        [profile] => Ok(Some(*profile)),
+        _ => Err(InflectionError::InvalidInput {
+            reason: format!("dictionary identity {id} aliases multiple reviewed verb profiles"),
+        }),
+    }
+}
+
+fn reviewed_dictionary_candidate(
+    candidates: &[LexemeSummary],
+    profile: ReviewedVerbProfile,
+) -> Option<&LexemeSummary> {
+    let mut exact = candidates
+        .iter()
+        .filter(|candidate| candidate.lemma == profile.canonical_lemma());
+    let first = exact.next()?;
+    exact.next().is_none().then_some(first)
+}
+
+fn resolve_queried_verb(
+    query: &str,
+    resolve: impl FnOnce(&str, Option<ReviewedVerbProfile>) -> Result<FormSet, InflectionError>,
+) -> Result<FormSet, InflectionError> {
+    let normalized = orthography::lookup_key(query)?;
+    let reviewed = ReviewedVerbProfile::classify(&normalized);
+    let candidates = lookup(query, PartOfSpeech::Verb)?;
+    if let Some(profile) = reviewed {
+        if let Some(one) = reviewed_dictionary_candidate(&candidates, profile).or_else(|| {
+            let [one] = candidates.as_slice() else {
+                return None;
+            };
+            Some(one)
+        }) {
+            let record =
+                lookup::find_lexeme(&one.id).ok_or_else(|| InflectionError::InvalidInput {
+                    reason: "generated alias points at a missing lexeme".to_string(),
+                })?;
+            return queried_result(query, record, resolve(record.id, Some(profile)));
+        }
+
+        let mut result = resolve(&reviewed_verb_id(profile), Some(profile))?;
+        if normalized != profile.canonical_lemma() {
+            result.add_warning(InflectionWarning::LexicalAliasUsed {
+                canonical: profile.canonical_lemma().to_string(),
+            });
+        }
+        return Ok(result);
+    }
+    match candidates.as_slice() {
+        [one] => {
+            let record =
+                lookup::find_lexeme(&one.id).ok_or_else(|| InflectionError::InvalidInput {
+                    reason: "generated alias points at a missing lexeme".to_string(),
+                })?;
+            queried_result(query, record, resolve(record.id, reviewed))
+        }
+        [] => Err(InflectionError::unknown_lemma(query, PartOfSpeech::Verb)),
+        _ => Err(InflectionError::AmbiguousLexeme { candidates }),
+    }
+}
+
+pub(crate) fn resolve_verb_identity(query: &str) -> Result<(String, String), InflectionError> {
+    let normalized = orthography::lookup_key(query)?;
+    let reviewed = ReviewedVerbProfile::classify(&normalized);
+    let candidates = lookup(query, PartOfSpeech::Verb)?;
+    if let Some(profile) = reviewed {
+        if let Some(one) = reviewed_dictionary_candidate(&candidates, profile).or_else(|| {
+            let [one] = candidates.as_slice() else {
+                return None;
+            };
+            Some(one)
+        }) {
+            return Ok((one.id.clone(), one.lemma.clone()));
+        }
+        return Ok((
+            reviewed_verb_id(profile),
+            profile.canonical_lemma().to_string(),
+        ));
+    }
+    match candidates.as_slice() {
+        [one] => Ok((one.id.clone(), one.lemma.clone())),
+        [] => Err(InflectionError::unknown_lemma(query, PartOfSpeech::Verb)),
+        _ => Err(InflectionError::AmbiguousLexeme { candidates }),
+    }
+}
+
+pub(crate) fn verb_identity_from_id(id: &str) -> Result<(String, String), InflectionError> {
+    if let Some(profile) = reviewed_profile_from_id(id) {
+        return Ok((id.to_string(), profile.canonical_lemma().to_string()));
+    }
+    let record = lexeme_identity(id, PartOfSpeech::Verb)?;
+    Ok((record.id.to_string(), record.lemma.to_string()))
+}
+
 fn resolve_queried_lemma(
     query: &str,
     part_of_speech: PartOfSpeech,
@@ -36,17 +297,196 @@ fn resolve_queried_lemma(
 fn verb_metadata_form(
     id: &str,
     feature: &str,
-    generate: impl FnOnce(&DictionaryVerbMetadata) -> Result<FormSet, InflectionError>,
+    supplied_profile: Option<ReviewedVerbProfile>,
+    cell: VerbMorphologyCell,
+    generate_reviewed: impl Fn(&VerbLexeme) -> Result<PredictedForm, InflectionError>,
+    generate_metadata: impl FnOnce(&DictionaryVerbMetadata) -> Result<FormSet, InflectionError>,
 ) -> Result<FormSet, InflectionError> {
+    if let Some(profile) = reviewed_profile_from_id(id) {
+        if supplied_profile.is_some_and(|supplied| supplied != profile) {
+            return Err(InflectionError::InvalidInput {
+                reason: format!("reviewed verb identity {id} conflicts with the supplied profile"),
+            });
+        }
+        return reviewed_verb_form(profile, profile.canonical_lemma(), cell, generate_reviewed)
+            .map_err(|error| error.with_lexeme_id(id));
+    }
+
     ensure_pos(id, PartOfSpeech::Verb)?;
     if let Some(form) = lookup::table_form(id, feature) {
         return Ok(form);
     }
-    let metadata = verb_metadata_by_id(id)?;
     if let Some(form) = lookup::override_form(id, feature) {
         return Ok(form);
     }
-    generate(&metadata).map_err(|error| error.with_lexeme_id(id))
+    let profile = match supplied_profile {
+        Some(profile) => Some(profile),
+        None => reviewed_profile_for_dictionary_id(id)?,
+    };
+    if let Some(profile) = profile {
+        let record = lookup::find_lexeme(id)
+            .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?;
+        return reviewed_verb_form(profile, record.lemma, cell, generate_reviewed)
+            .map_err(|error| error.with_lexeme_id(id));
+    }
+    let metadata = verb_metadata_by_id(id)?;
+    generate_metadata(&metadata).map_err(|error| error.with_lexeme_id(id))
+}
+
+fn reviewed_verb_form(
+    profile: ReviewedVerbProfile,
+    display_lemma: &str,
+    cell: VerbMorphologyCell,
+    generate: impl Fn(&VerbLexeme) -> Result<PredictedForm, InflectionError>,
+) -> Result<FormSet, InflectionError> {
+    let mut analyses: Vec<FormAnalysis> = Vec::new();
+    let mut any_prediction = false;
+    for reviewed in profile.analyses() {
+        let lexeme = reviewed.lexeme()?;
+        let predicted = generate(&lexeme)?;
+        let direct = reviewed.is_direct_source_cell(cell, predicted.rule_id);
+        any_prediction |= !direct;
+        let form = FormVariant {
+            text: orthography::canonical_display(&predicted.text)?,
+            romanization: None,
+        };
+        let source = FormSource::ReviewedGrammarTable {
+            rule_id: predicted.rule_id,
+        };
+        let mut evidence = vec![MetadataEvidence {
+            field: None,
+            provenance: MetadataProvenance::ReviewedGrammarTable,
+            source_feature: Some(format!("reviewed:verb:{}:{}", reviewed.code(), cell.key())),
+            source_form: direct.then(|| form.text.clone()),
+            crosscheck_features: Vec::new(),
+            authority: Some(reviewed.authority()),
+        }];
+        if !direct {
+            evidence.push(MetadataEvidence {
+                field: None,
+                provenance: MetadataProvenance::ProductiveRuleOutput,
+                source_feature: Some(predicted.rule_id.code().to_string()),
+                source_form: None,
+                crosscheck_features: Vec::new(),
+                authority: Some("docs/MORPHOLOGY_SPEC.md".to_string()),
+            });
+        }
+        let candidate = FormAnalysis {
+            variants: vec![form],
+            source,
+            evidence,
+            trace: predicted.trace,
+        };
+        if let Some(existing) = analyses.iter_mut().find(|existing| {
+            existing.variants == candidate.variants
+                && existing.source == candidate.source
+                && existing.trace == candidate.trace
+        }) {
+            for evidence in candidate.evidence {
+                if !existing.evidence.contains(&evidence) {
+                    existing.evidence.push(evidence);
+                }
+            }
+        } else {
+            analyses.push(candidate);
+        }
+    }
+
+    let multiple = analyses.len() > 1;
+    if multiple {
+        for analysis in &mut analyses {
+            for evidence in &mut analysis.evidence {
+                if evidence.provenance == MetadataProvenance::ReviewedGrammarTable {
+                    evidence.provenance = MetadataProvenance::DisputedGrammarTable;
+                }
+            }
+        }
+    }
+    let mut variants = Vec::new();
+    for analysis in &analyses {
+        for variant in &analysis.variants {
+            if !variants.contains(variant) {
+                variants.push(variant.clone());
+            }
+        }
+    }
+    let Some(primary) = variants.first().cloned() else {
+        return Err(InflectionError::InvalidInput {
+            reason: "a reviewed verb profile produced no analysis".to_string(),
+        });
+    };
+    let source = if multiple {
+        FormSource::ReviewedGrammarAnalyses
+    } else {
+        analyses
+            .first()
+            .map(|analysis| analysis.source.clone())
+            .ok_or_else(|| InflectionError::InvalidInput {
+                reason: "a reviewed verb profile produced no source".to_string(),
+            })?
+    };
+    let trace = if multiple {
+        Vec::new()
+    } else {
+        analyses
+            .first()
+            .map(|analysis| analysis.trace.clone())
+            .unwrap_or_default()
+    };
+    let mut warnings = Vec::new();
+    if any_prediction {
+        warnings.push(InflectionWarning::PredictedNotDictionaryBacked);
+    }
+    if multiple {
+        warnings.push(InflectionWarning::MultipleMorphologicalAnalyses);
+        warnings.push(InflectionWarning::IncludesDisputedForms);
+    }
+    Ok(FormSet::new(
+        orthography::canonical_display(display_lemma)?,
+        primary,
+        variants.into_iter().skip(1).collect(),
+        source,
+        warnings,
+        trace,
+        analyses,
+    ))
+}
+
+fn exact_or_reviewed_verb_form(
+    id: &str,
+    feature: &str,
+    supplied_profile: Option<ReviewedVerbProfile>,
+    cell: VerbMorphologyCell,
+    generate_reviewed: impl Fn(&VerbLexeme) -> Result<PredictedForm, InflectionError>,
+) -> Result<FormSet, InflectionError> {
+    if let Some(profile) = reviewed_profile_from_id(id) {
+        if supplied_profile.is_some_and(|supplied| supplied != profile) {
+            return Err(InflectionError::InvalidInput {
+                reason: format!("reviewed verb identity {id} conflicts with the supplied profile"),
+            });
+        }
+        return reviewed_verb_form(profile, profile.canonical_lemma(), cell, generate_reviewed)
+            .map_err(|error| error.with_lexeme_id(id));
+    }
+
+    ensure_pos(id, PartOfSpeech::Verb)?;
+    if let Some(form) = lookup::table_form(id, feature) {
+        return Ok(form);
+    }
+    if let Some(form) = lookup::override_form(id, feature) {
+        return Ok(form);
+    }
+    let profile = match supplied_profile {
+        Some(profile) => Some(profile),
+        None => reviewed_profile_for_dictionary_id(id)?,
+    };
+    if let Some(profile) = profile {
+        let record = lookup::find_lexeme(id)
+            .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?;
+        return reviewed_verb_form(profile, record.lemma, cell, generate_reviewed)
+            .map_err(|error| error.with_lexeme_id(id));
+    }
+    Err(InflectionError::unsupported(id, cell.requested()))
 }
 
 pub fn noun(lemma: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
@@ -2391,13 +2831,28 @@ pub fn comparative_citation_by_id(id: &str) -> Result<FormSet, InflectionError> 
 }
 
 pub fn finite_verb(lemma: &str, cell: FiniteVerbCell) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, |id| finite_by_id(id, cell))
+    resolve_queried_verb(lemma, |id, profile| {
+        finite_by_id_with_profile(id, cell, profile)
+    })
 }
 
 pub fn finite_by_id(id: &str, cell: FiniteVerbCell) -> Result<FormSet, InflectionError> {
-    verb_metadata_form(id, &cell.key(), |metadata| {
-        generate_finite_from_metadata(metadata, cell)
-    })
+    finite_by_id_with_profile(id, cell, None)
+}
+
+fn finite_by_id_with_profile(
+    id: &str,
+    cell: FiniteVerbCell,
+    profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
+    verb_metadata_form(
+        id,
+        &cell.key(),
+        profile,
+        VerbMorphologyCell::Finite(cell),
+        |lexeme| old_church_slavonic_core::verb::finite(lexeme, cell),
+        |metadata| generate_finite_from_metadata(metadata, cell),
+    )
 }
 
 /// Generate through the same dictionary-metadata resolver after an offline
@@ -2412,8 +2867,8 @@ pub fn finite_verb_from_dictionary_metadata(
 }
 
 pub fn finite_paradigm_by_id(id: &str) -> Result<FiniteVerbParadigm, InflectionError> {
-    let record = lexeme_identity(id, PartOfSpeech::Verb)?;
-    Ok(build_finite_paradigm(id, record.lemma))
+    let (_, lemma) = verb_identity_from_id(id)?;
+    Ok(build_finite_paradigm(id, &lemma))
 }
 
 pub(crate) fn build_finite_paradigm(id: &str, lemma: &str) -> FiniteVerbParadigm {
@@ -2437,8 +2892,8 @@ pub(crate) fn build_present_paradigm(id: &str, lemma: &str) -> VerbParadigm {
 }
 
 pub fn present_paradigm_by_id(id: &str) -> Result<VerbParadigm, InflectionError> {
-    let record = lexeme_identity(id, PartOfSpeech::Verb)?;
-    Ok(build_present_paradigm(id, record.lemma))
+    let (_, lemma) = verb_identity_from_id(id)?;
+    Ok(build_present_paradigm(id, &lemma))
 }
 
 pub fn finite_verb_with(
@@ -2465,13 +2920,28 @@ pub(crate) fn reviewed_finite_verb_with(
 }
 
 pub fn imperative(lemma: &str, cell: ImperativeCell) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, |id| imperative_by_id(id, cell))
+    resolve_queried_verb(lemma, |id, profile| {
+        imperative_by_id_with_profile(id, cell, profile)
+    })
 }
 
 pub fn imperative_by_id(id: &str, cell: ImperativeCell) -> Result<FormSet, InflectionError> {
-    verb_metadata_form(id, &cell.key(), |metadata| {
-        generate_imperative_from_metadata(metadata, cell)
-    })
+    imperative_by_id_with_profile(id, cell, None)
+}
+
+fn imperative_by_id_with_profile(
+    id: &str,
+    cell: ImperativeCell,
+    profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
+    verb_metadata_form(
+        id,
+        &cell.key(),
+        profile,
+        VerbMorphologyCell::Imperative(cell),
+        |lexeme| old_church_slavonic_core::verb::imperative(lexeme, cell),
+        |metadata| generate_imperative_from_metadata(metadata, cell),
+    )
 }
 
 pub fn imperative_from_dictionary_metadata(
@@ -2493,8 +2963,8 @@ pub fn imperative_with(
 }
 
 pub fn imperative_paradigm_by_id(id: &str) -> Result<ImperativeParadigm, InflectionError> {
-    let record = lexeme_identity(id, PartOfSpeech::Verb)?;
-    Ok(build_imperative_paradigm(id, record.lemma))
+    let (_, lemma) = verb_identity_from_id(id)?;
+    Ok(build_imperative_paradigm(id, &lemma))
 }
 
 pub(crate) fn build_imperative_paradigm(id: &str, lemma: &str) -> ImperativeParadigm {
@@ -2506,13 +2976,28 @@ pub(crate) fn build_imperative_paradigm(id: &str, lemma: &str) -> ImperativePara
 }
 
 pub fn l_participle(lemma: &str, cell: LParticipleCell) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, |id| l_participle_by_id(id, cell))
+    resolve_queried_verb(lemma, |id, profile| {
+        l_participle_by_id_with_profile(id, cell, profile)
+    })
 }
 
 pub fn l_participle_by_id(id: &str, cell: LParticipleCell) -> Result<FormSet, InflectionError> {
-    verb_metadata_form(id, &cell.key(), |metadata| {
-        generate_l_participle_from_metadata(metadata, cell)
-    })
+    l_participle_by_id_with_profile(id, cell, None)
+}
+
+fn l_participle_by_id_with_profile(
+    id: &str,
+    cell: LParticipleCell,
+    profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
+    verb_metadata_form(
+        id,
+        &cell.key(),
+        profile,
+        VerbMorphologyCell::LParticiple(cell),
+        |lexeme| old_church_slavonic_core::verb::l_participle(lexeme, cell),
+        |metadata| generate_l_participle_from_metadata(metadata, cell),
+    )
 }
 
 pub fn l_participle_from_dictionary_metadata(
@@ -2534,8 +3019,8 @@ pub fn l_participle_with(
 }
 
 pub fn l_participle_paradigm_by_id(id: &str) -> Result<LParticipleParadigm, InflectionError> {
-    let record = lexeme_identity(id, PartOfSpeech::Verb)?;
-    Ok(build_l_participle_paradigm(id, record.lemma))
+    let (_, lemma) = verb_identity_from_id(id)?;
+    Ok(build_l_participle_paradigm(id, &lemma))
 }
 
 pub(crate) fn build_l_participle_paradigm(id: &str, lemma: &str) -> LParticipleParadigm {
@@ -2547,13 +3032,28 @@ pub(crate) fn build_l_participle_paradigm(id: &str, lemma: &str) -> LParticipleP
 }
 
 pub fn participle(lemma: &str, cell: ParticipleCell) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, |id| participle_by_id(id, cell))
+    resolve_queried_verb(lemma, |id, profile| {
+        participle_by_id_with_profile(id, cell, profile)
+    })
 }
 
 pub fn participle_by_id(id: &str, cell: ParticipleCell) -> Result<FormSet, InflectionError> {
-    verb_metadata_form(id, &cell.key(), |metadata| {
-        generate_participle_from_metadata(metadata, cell)
-    })
+    participle_by_id_with_profile(id, cell, None)
+}
+
+fn participle_by_id_with_profile(
+    id: &str,
+    cell: ParticipleCell,
+    profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
+    verb_metadata_form(
+        id,
+        &cell.key(),
+        profile,
+        VerbMorphologyCell::Participle(cell),
+        |lexeme| old_church_slavonic_core::verb::participle(lexeme, cell),
+        |metadata| generate_participle_from_metadata(metadata, cell),
+    )
 }
 
 pub fn participle_from_dictionary_metadata(
@@ -2578,8 +3078,8 @@ pub fn participle_paradigm_by_id(
     id: &str,
     kind: ParticipleKind,
 ) -> Result<ParticipleParadigm, InflectionError> {
-    let record = lexeme_identity(id, PartOfSpeech::Verb)?;
-    Ok(build_participle_paradigm(id, record.lemma, kind))
+    let (_, lemma) = verb_identity_from_id(id)?;
+    Ok(build_participle_paradigm(id, &lemma, kind))
 }
 
 pub(crate) fn build_participle_paradigm(
@@ -2596,8 +3096,8 @@ pub(crate) fn build_participle_paradigm(
 }
 
 pub fn participle_citation(lemma: &str, kind: ParticipleKind) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, |id| {
-        participle_citation_by_id(id, kind)
+    resolve_queried_verb(lemma, |id, profile| {
+        participle_citation_by_id_with_profile(id, kind, profile)
     })
 }
 
@@ -2605,33 +3105,54 @@ pub fn participle_citation_by_id(
     id: &str,
     kind: ParticipleKind,
 ) -> Result<FormSet, InflectionError> {
+    participle_citation_by_id_with_profile(id, kind, None)
+}
+
+fn participle_citation_by_id_with_profile(
+    id: &str,
+    kind: ParticipleKind,
+    profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
     let feature = format!("verb:participle:{}:citation", kind.code());
-    verb_metadata_form(id, &feature, |metadata| {
-        generate_participle_from_metadata(
-            metadata,
-            ParticipleCell {
-                kind,
-                adjective: AdjectiveCell {
-                    case: Case::Nominative,
-                    number: Number::Singular,
-                    gender: Gender::Masculine,
-                    animacy: Animacy::Inanimate,
-                    form: AdjectiveForm::Short,
-                },
-            },
-        )
-    })
+    let cell = ParticipleCell {
+        kind,
+        adjective: AdjectiveCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            form: AdjectiveForm::Short,
+        },
+    };
+    verb_metadata_form(
+        id,
+        &feature,
+        profile,
+        VerbMorphologyCell::Participle(cell),
+        |lexeme| old_church_slavonic_core::verb::participle(lexeme, cell),
+        |metadata| generate_participle_from_metadata(metadata, cell),
+    )
 }
 
 pub fn infinitive(lemma: &str) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, infinitive_by_id)
+    resolve_queried_verb(lemma, infinitive_by_id_with_profile)
 }
 
 pub fn infinitive_by_id(id: &str) -> Result<FormSet, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, "verb:infinitive")
-        .or_else(|| lookup::override_form(id, "verb:infinitive"))
-        .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::Infinitive))
+    infinitive_by_id_with_profile(id, None)
+}
+
+fn infinitive_by_id_with_profile(
+    id: &str,
+    profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
+    exact_or_reviewed_verb_form(
+        id,
+        "verb:infinitive",
+        profile,
+        VerbMorphologyCell::Infinitive,
+        old_church_slavonic_core::verb::infinitive,
+    )
 }
 
 pub fn infinitive_with(lexeme: &VerbLexeme) -> Result<FormSet, InflectionError> {
@@ -2643,13 +3164,24 @@ pub fn infinitive_with(lexeme: &VerbLexeme) -> Result<FormSet, InflectionError> 
 }
 
 pub fn supine(lemma: &str) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, supine_by_id)
+    resolve_queried_verb(lemma, supine_by_id_with_profile)
 }
 
 pub fn supine_by_id(id: &str) -> Result<FormSet, InflectionError> {
-    ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, "verb:supine")
-        .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::Supine))
+    supine_by_id_with_profile(id, None)
+}
+
+fn supine_by_id_with_profile(
+    id: &str,
+    profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
+    exact_or_reviewed_verb_form(
+        id,
+        "verb:supine",
+        profile,
+        VerbMorphologyCell::Supine,
+        old_church_slavonic_core::verb::supine,
+    )
 }
 
 pub fn supine_with(lexeme: &VerbLexeme) -> Result<FormSet, InflectionError> {
@@ -2665,6 +3197,9 @@ pub fn verbal_noun(lemma: &str) -> Result<FormSet, InflectionError> {
 }
 
 pub fn verbal_noun_by_id(id: &str) -> Result<FormSet, InflectionError> {
+    if reviewed_profile_from_id(id).is_some() {
+        return Err(InflectionError::unsupported(id, RequestedCell::VerbalNoun));
+    }
     ensure_pos(id, PartOfSpeech::Verb)?;
     lookup::table_form(id, "verb:verbal-noun")
         .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::VerbalNoun))

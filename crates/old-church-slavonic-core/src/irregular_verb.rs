@@ -31,6 +31,44 @@ pub enum IrregularVerbGroup {
     Chisti4UnstablePresentStemExpanded,
 }
 
+/// Independently sourced lexical analyses within an irregular family.
+///
+/// Most Table 434 members have one reviewed analysis. `метати` is the
+/// exception: the official LOVe record lists competing `je`- and `aje`-stem
+/// presents alongside Polivanova's unsoftened `мет-` analysis.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum IrregularVerbAnalysis {
+    PolivanovaTable434,
+    LoveMetatiJePresent,
+    LoveMetatiAjePresent,
+}
+
+impl IrregularVerbAnalysis {
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::PolivanovaTable434 => "polivanova-table-434",
+            Self::LoveMetatiJePresent => "love-metati-je-present",
+            Self::LoveMetatiAjePresent => "love-metati-aje-present",
+        }
+    }
+
+    pub const fn authority(self) -> &'static str {
+        match self {
+            Self::PolivanovaTable434 => "Polivanova 2023 Tables 434 and 440",
+            Self::LoveMetatiJePresent | Self::LoveMetatiAjePresent => {
+                "LMU Lexicon of Old Church Slavonic Verbs, metati record, reviewed 2026-08-15"
+            }
+        }
+    }
+}
+
+const POLIVANOVA_ANALYSIS: [IrregularVerbAnalysis; 1] = [IrregularVerbAnalysis::PolivanovaTable434];
+const METATI_ANALYSES: [IrregularVerbAnalysis; 3] = [
+    IrregularVerbAnalysis::PolivanovaTable434,
+    IrregularVerbAnalysis::LoveMetatiJePresent,
+    IrregularVerbAnalysis::LoveMetatiAjePresent,
+];
+
 /// One source-listed member of the reusable irregular-workstem groups.
 ///
 /// The identity is closed over Table 434. Each value therefore carries an
@@ -109,6 +147,42 @@ impl IrregularVerbFamilyMember {
     /// Table 434 principal parts and its Table 440 group distribution.
     pub fn lexeme(self) -> VerbLexeme {
         assemble_family_member(self)
+    }
+
+    /// Every reviewed lexical analysis, in deterministic source order.
+    pub fn analyses(self) -> &'static [IrregularVerbAnalysis] {
+        if self.lemma == "метати" {
+            &METATI_ANALYSES
+        } else {
+            &POLIVANOVA_ANALYSIS
+        }
+    }
+
+    /// Assemble one explicitly selected source analysis.
+    pub fn lexeme_for_analysis(self, analysis: IrregularVerbAnalysis) -> Option<VerbLexeme> {
+        match analysis {
+            IrregularVerbAnalysis::PolivanovaTable434 => Some(self.lexeme()),
+            IrregularVerbAnalysis::LoveMetatiJePresent if self.lemma == "метати" => {
+                Some(build_class_three_member(
+                    self.lemma,
+                    self.aspect(),
+                    "мета",
+                    "мещ",
+                    PresentShape::MixedSoft,
+                ))
+            }
+            IrregularVerbAnalysis::LoveMetatiAjePresent if self.lemma == "метати" => {
+                Some(build_class_three_member(
+                    self.lemma,
+                    self.aspect(),
+                    "мета",
+                    "мета",
+                    PresentShape::Iotated,
+                ))
+            }
+            IrregularVerbAnalysis::LoveMetatiJePresent
+            | IrregularVerbAnalysis::LoveMetatiAjePresent => None,
+        }
     }
 }
 
@@ -1422,6 +1496,52 @@ mod tests {
                         .unwrap_or_else(|error| panic!("{member:?} {cell:?}: {error:?}"));
                 }
             }
+        }
+    }
+
+    #[test]
+    fn metati_keeps_all_three_reviewed_present_analyses() {
+        let member = IrregularVerbFamilyMember::classify_source_lemma("метати")
+            .expect("Table 434 metati member");
+        assert_eq!(member.analyses(), &METATI_ANALYSES);
+        let third_singular = finite_cell(FiniteTense::Present, Person::Third, Number::Singular);
+        let first_singular = finite_cell(FiniteTense::Present, Person::First, Number::Singular);
+        let actual = member
+            .analyses()
+            .iter()
+            .map(|analysis| {
+                let lexeme = member
+                    .lexeme_for_analysis(*analysis)
+                    .expect("analysis belongs to metati");
+                (
+                    finite(&lexeme, first_singular)
+                        .expect("first-singular analysis")
+                        .text,
+                    finite(&lexeme, third_singular)
+                        .expect("third-singular analysis")
+                        .text,
+                )
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            actual,
+            [
+                ("метѫ".to_string(), "мететъ".to_string()),
+                ("мещѫ".to_string(), "мещетъ".to_string()),
+                ("метаѭ".to_string(), "метаѥтъ".to_string()),
+            ]
+        );
+
+        for other in IrregularVerbFamilyMember::all()
+            .filter(|candidate| candidate.canonical_lemma() != "метати")
+        {
+            assert_eq!(other.analyses(), &POLIVANOVA_ANALYSIS, "{other:?}");
+            assert!(
+                other
+                    .lexeme_for_analysis(IrregularVerbAnalysis::LoveMetatiJePresent)
+                    .is_none(),
+                "{other:?}"
+            );
         }
     }
 

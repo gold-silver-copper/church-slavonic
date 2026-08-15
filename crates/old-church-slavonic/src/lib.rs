@@ -122,16 +122,18 @@
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
 //! | Cardinals and distributives through 10,000, ordinals 1–1,000, collectives 2–10, fractional nouns, and indefinite quantities | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`compound_ordinal`], [`compound_ordinal_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`indefinite_numeral`], [`indefinite_numeral_identity`], [`indefinite_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`], [`distributive_cardinal`], [`distributive_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound and `по` + dative distributive, adjective-agreement ordinal, inherited collective, fractional-noun, and non-exact quantity inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, disputed, corpus, and primary-text evidence |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
-//! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
+//! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Exact table, manual override, closed reviewed irregular profile, then independently sourced stem/formation metadata; competing profiles remain separate analyses |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
 //! | Participles | named participle functions and [`Participle`] | Four independently represented systems with adjective agreement |
 //! | Analytic constructions | [`phrases`] | Typed tokens retain independent word-level variants and provenance |
 //!
-//! Open-class exact table cells take precedence over dictionary principal-part
-//! rules and reviewed overrides. Reviewed closed-class identities instead own
-//! their complete grammar tables; diagnostic raw access preserves copied source
-//! tables. Explicit caller metadata is a separate evidence class.
+//! Open-class exact table cells take precedence over reviewed manual overrides,
+//! closed irregular profiles, and dictionary principal-part rules, in that order.
+//! Reviewed-only irregular verb spellings have stable lexical IDs and retain
+//! direct versus predictive evidence for every cell. Reviewed closed-class
+//! identities instead own their complete grammar tables; diagnostic raw access
+//! preserves copied source tables. Explicit caller metadata is a separate evidence class.
 //! Unsupported systems never fall back to another language or a plausible-looking
 //! substitute. See [`advanced`] for stable IDs, explicit rules, dictionary metadata,
 //! and diagnostic raw-feature access.
@@ -159,14 +161,16 @@ pub use old_church_slavonic_core::{
     FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
     FutureReferenceTense, Gender, GenderedCell, ImpersonalVerbIdentity, ImpersonalVerbStatus,
     IndefiniteNumeralIdentity, InflectionError, InflectionWarning, InterrogativePronounIdentity,
-    IrregularAgreeingIdentity, Lemma, LexemeSummary, LongOnlyAdjectiveIdentity,
+    IrregularAgreeingIdentity, IrregularVerbAnalysis, IrregularVerbFamilyMember,
+    IrregularVerbGroup, Lemma, LexemeSummary, LongOnlyAdjectiveIdentity,
     MAX_COMPOUND_ORDINAL_VALUE, MIN_COMPOUND_ORDINAL_VALUE, Number, NumeralCell, NumeralGovernment,
     OrdinalComposition, OrdinalNumeralIdentity, OrdinalPhraseAnalysis, PartOfSpeech,
     ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell, PersonalPronounIdentity,
     PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, PronominalFamilySpec,
     PronominalPostpositive, PronominalPrefix, PronounFormSelection, RealizedCardinal,
     RealizedDistributiveCardinal, RealizedOrdinal, RealizedPhrase, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
+    StandardPronominalIdentity, UngenderedCell, UniqueVerbFamilyMember, UniqueVerbIdentity,
+    UniqueVerbProfileKind, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
@@ -200,12 +204,14 @@ pub mod prelude {
         FractionalNumeralIdentity, FractionalNumeralParadigm, Gender, GenderedNumeralParadigm,
         GenderedPronounParadigm, ImperativeParadigm, IndefiniteNumeralIdentity,
         IndefiniteNumeralParadigm, InflectionError, InflectionResult, InflectionWarning,
-        InterrogativePronounIdentity, IrregularAgreeingIdentity, LParticipleParadigm, Lemma,
+        InterrogativePronounIdentity, IrregularAgreeingIdentity, IrregularVerbAnalysis,
+        IrregularVerbFamilyMember, IrregularVerbGroup, LParticipleParadigm, Lemma,
         LongOnlyAdjectiveIdentity, Noun, NounParadigm, Number, Numeral, NumeralParadigm,
         OrdinalNumeralIdentity, OrdinalNumeralParadigm, ParadigmLookupError, PartOfSpeech,
         Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
         PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
-        StandardPronominalIdentity, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
+        StandardPronominalIdentity, UniqueVerbFamilyMember, UniqueVerbIdentity,
+        UniqueVerbProfileKind, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
         adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
         cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
         collective_numeral_identity, collective_numeral_paradigm,
