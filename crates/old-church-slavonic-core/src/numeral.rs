@@ -1154,6 +1154,177 @@ fn remap_collective_error(
     }
 }
 
+/// The inherited noun declensions used by OCS fractional numerals.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum FractionalNumeralDeclension {
+    UStem,
+    AStem,
+    IStem,
+}
+
+impl FractionalNumeralDeclension {
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::UStem => "u-stem",
+            Self::AStem => "a-stem",
+            Self::IStem => "i-stem",
+        }
+    }
+}
+
+/// The source-bounded Old Church Slavonic fractional-numeral lexicon.
+///
+/// These are substantival numerals, not a productive arithmetic denominator
+/// system. Leuta and Havryliuk distinguish the four OCS noun identities from
+/// later Church Slavonic `третина` and compounds such as `полътора`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum FractionalNumeralIdentity {
+    /// The u-stem word `полъ` “one half”.
+    HalfPol,
+    /// The a-stem synonym `половина` “one half”.
+    HalfPolovina,
+    /// The feminine i-stem `четврьть` “one quarter”.
+    Quarter,
+    /// The feminine a-stem `десѧтина` “one tenth”.
+    Tenth,
+}
+
+impl FractionalNumeralIdentity {
+    pub const ALL: [Self; 4] = [
+        Self::HalfPol,
+        Self::HalfPolovina,
+        Self::Quarter,
+        Self::Tenth,
+    ];
+
+    pub const fn numerator(self) -> u8 {
+        1
+    }
+
+    pub const fn denominator(self) -> u8 {
+        match self {
+            Self::HalfPol | Self::HalfPolovina => 2,
+            Self::Quarter => 4,
+            Self::Tenth => 10,
+        }
+    }
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::HalfPol => "полъ",
+            Self::HalfPolovina => "половина",
+            Self::Quarter => "четврьть",
+            Self::Tenth => "десѧтина",
+        }
+    }
+
+    pub const fn source_union_aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::HalfPol => &["полъ"],
+            Self::HalfPolovina => &["половина"],
+            Self::Quarter => &["четврьть"],
+            Self::Tenth => &["десѧтина"],
+        }
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|identity| identity.source_union_aliases().contains(&lemma))
+    }
+
+    pub const fn declension(self) -> FractionalNumeralDeclension {
+        match self {
+            Self::HalfPol => FractionalNumeralDeclension::UStem,
+            Self::HalfPolovina | Self::Tenth => FractionalNumeralDeclension::AStem,
+            Self::Quarter => FractionalNumeralDeclension::IStem,
+        }
+    }
+
+    pub const fn gender(self) -> Gender {
+        match self {
+            Self::HalfPol => Gender::Masculine,
+            Self::HalfPolovina | Self::Quarter | Self::Tenth => Gender::Feminine,
+        }
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        RuleId::NumeralFractionalNoun
+    }
+
+    pub const fn authority(self) -> &'static str {
+        match self {
+            Self::HalfPol => {
+                "Leuta and Havryliuk 2018 p. 162; Gorshkov 2002 §86; \
+                Polivanova OSD spreadsheet; UD OCS PROIEL r2.18"
+            }
+            Self::Tenth => {
+                "Leuta and Havryliuk 2018 p. 162; Polivanova OSD spreadsheet; \
+                UD OCS PROIEL r2.18"
+            }
+            Self::HalfPolovina | Self::Quarter => "Leuta and Havryliuk 2018 p. 162",
+        }
+    }
+
+    fn noun_lexeme(self) -> NounLexeme {
+        NounLexeme {
+            lemma: self.canonical_lemma().to_string(),
+            class: match self.declension() {
+                FractionalNumeralDeclension::UStem => NounClass::UMasculine,
+                FractionalNumeralDeclension::AStem => NounClass::AHard,
+                FractionalNumeralDeclension::IStem => NounClass::IFeminine,
+            },
+            gender: self.gender(),
+            animacy: Animacy::Inanimate,
+            number_restriction: NumberRestriction::All,
+        }
+    }
+}
+
+/// Decline one source-listed fractional noun through all noun cells.
+pub fn decline_fractional(
+    identity: FractionalNumeralIdentity,
+    cell: NounCell,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    let mut prediction = crate::noun::decline(&identity.noun_lexeme(), cell)?;
+    let rule_id = identity.rule_id();
+    prediction.trace.push(RuleStep {
+        rule_id,
+        before: identity.canonical_lemma().to_string(),
+        after: prediction.text.clone(),
+        reason: "apply the source-listed fractional noun's inherited declension",
+    });
+    prediction.rule_id = rule_id;
+    let status = if cell.case == Case::Nominative && cell.number == Number::Singular {
+        NumeralVariantStatus::ReviewedTable
+    } else {
+        NumeralVariantStatus::ProductiveRule
+    };
+    let mut variants = vec![NumeralVariant { prediction, status }];
+
+    match (identity, cell.case, cell.number) {
+        (FractionalNumeralIdentity::HalfPol, Case::Accusative, Number::Singular) => {
+            variants.push(NumeralVariant::corpus(
+                "полъ",
+                rule_id,
+                identity.canonical_lemma(),
+                "retain the fractional use attested in Codex Marianus Luke 19:8",
+            ));
+        }
+        (FractionalNumeralIdentity::Tenth, Case::Accusative, Number::Singular) => {
+            variants.push(NumeralVariant::corpus(
+                "десѧтинѫ",
+                rule_id,
+                identity.canonical_lemma(),
+                "retain the tithe uses attested in Codex Marianus Luke 11:42 and 18:12",
+            ));
+        }
+        _ => {}
+    }
+
+    Ok(variants)
+}
+
 /// The source-exhaustive simple cardinal identities from one through ten.
 ///
 /// The two spellings of `ѥдинъ` are separate lexical doublets in Polivanova's
@@ -2360,6 +2531,131 @@ mod tests {
             ["десѧторо", "десѧтеро", "десꙙторо"]
         );
         assert_eq!(ten[2].status, NumeralVariantStatus::CorpusAttestation);
+    }
+
+    #[test]
+    fn fractional_inventory_is_closed_nonoverlapping_and_period_bounded() {
+        assert_eq!(FractionalNumeralIdentity::ALL.len(), 4);
+        let mut aliases = std::collections::BTreeSet::new();
+        for identity in FractionalNumeralIdentity::ALL {
+            assert_eq!(identity.numerator(), 1);
+            assert_eq!(
+                FractionalNumeralIdentity::classify_source_union_lemma(identity.canonical_lemma()),
+                Some(identity)
+            );
+            for alias in identity.source_union_aliases() {
+                assert!(aliases.insert(*alias), "duplicate fractional alias {alias}");
+            }
+        }
+        assert_eq!(FractionalNumeralIdentity::HalfPol.denominator(), 2);
+        assert_eq!(FractionalNumeralIdentity::HalfPolovina.denominator(), 2);
+        assert_eq!(FractionalNumeralIdentity::Quarter.denominator(), 4);
+        assert_eq!(FractionalNumeralIdentity::Tenth.denominator(), 10);
+        assert_eq!(
+            FractionalNumeralIdentity::classify_source_union_lemma("третина"),
+            None
+        );
+        assert_eq!(
+            FractionalNumeralIdentity::classify_source_union_lemma("полътора"),
+            None
+        );
+    }
+
+    #[test]
+    fn fractional_nouns_reuse_every_inherited_declension_cell() {
+        for identity in FractionalNumeralIdentity::ALL {
+            let mut reviewed = 0;
+            for cell in NounCell::all() {
+                let variants = decline_fractional(identity, cell)
+                    .unwrap_or_else(|error| panic!("{identity:?} {cell:?}: {error}"));
+                assert!(!variants.is_empty(), "{identity:?} {cell:?}");
+                let actual = &variants[0];
+                let expected = crate::noun::decline(&identity.noun_lexeme(), cell)
+                    .expect("licensed inherited noun cell");
+                assert_eq!(
+                    actual.prediction.text, expected.text,
+                    "{identity:?} {cell:?}"
+                );
+                assert_eq!(actual.prediction.rule_id, RuleId::NumeralFractionalNoun);
+                assert_eq!(
+                    actual.prediction.trace.last().map(|step| step.rule_id),
+                    Some(RuleId::NumeralFractionalNoun)
+                );
+                if actual.status == NumeralVariantStatus::ReviewedTable {
+                    reviewed += 1;
+                    assert_eq!(cell.case, Case::Nominative);
+                    assert_eq!(cell.number, Number::Singular);
+                }
+            }
+            assert_eq!(reviewed, 1, "{identity:?}");
+        }
+    }
+
+    #[test]
+    fn fractional_goldens_keep_source_classes_and_exact_corpus_evidence() {
+        let form = |identity, case, number| {
+            decline_fractional(identity, NounCell { case, number })
+                .expect("licensed fractional cell")
+        };
+        assert_eq!(
+            form(
+                FractionalNumeralIdentity::HalfPol,
+                Case::Genitive,
+                Number::Singular
+            )[0]
+            .prediction
+            .text,
+            "полоу"
+        );
+        assert_eq!(
+            form(
+                FractionalNumeralIdentity::HalfPolovina,
+                Case::Accusative,
+                Number::Singular
+            )[0]
+            .prediction
+            .text,
+            "половинѫ"
+        );
+        assert_eq!(
+            form(
+                FractionalNumeralIdentity::Quarter,
+                Case::Instrumental,
+                Number::Singular
+            )[0]
+            .prediction
+            .text,
+            "четврьтьѭ"
+        );
+        let half = form(
+            FractionalNumeralIdentity::HalfPol,
+            Case::Accusative,
+            Number::Singular,
+        );
+        assert_eq!(half.len(), 2);
+        assert_eq!(half[1].prediction.text, "полъ");
+        assert_eq!(half[1].status, NumeralVariantStatus::CorpusAttestation);
+        let tenth = form(
+            FractionalNumeralIdentity::Tenth,
+            Case::Accusative,
+            Number::Singular,
+        );
+        assert_eq!(tenth.len(), 2);
+        assert_eq!(tenth[1].prediction.text, "десѧтинѫ");
+        assert_eq!(tenth[1].status, NumeralVariantStatus::CorpusAttestation);
+
+        for identity in FractionalNumeralIdentity::ALL {
+            for cell in NounCell::all()
+                .filter(|cell| cell.case != Case::Accusative || cell.number != Number::Singular)
+            {
+                assert!(
+                    form(identity, cell.case, cell.number)
+                        .iter()
+                        .all(|variant| variant.status != NumeralVariantStatus::CorpusAttestation),
+                    "corpus evidence leaked into {identity:?} {cell:?}"
+                );
+            }
+        }
     }
 
     #[test]

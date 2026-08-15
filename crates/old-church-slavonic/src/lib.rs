@@ -120,7 +120,7 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Cardinals through 10,000, simple ordinals 1–10, and collectives 2–10 | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound, adjective-agreement ordinal, and inherited collective inventories with typed government, correlated multiword alternatives, two historical collective declension classes, and explicit source-listed, productive, reconstructed, and corpus variants |
+//! | Cardinals through 10,000, simple ordinals 1–10, collectives 2–10, and OCS fractional nouns | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound, adjective-agreement ordinal, inherited collective, and period-bounded fractional-noun inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, and corpus variants |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -155,24 +155,24 @@ pub use old_church_slavonic_core::{
     CollectiveNumeralCell, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
     CompoundCardinalCell, ConditionalAuxiliary, CopulaSeries, DeterminerCell, DeterminerDeclension,
     DeterminerIdentity, DeterminerLexeme, DirectToTreatment, FiniteTense, FormSet, FormSource,
-    FormVariant, FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell,
-    InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-    Lemma, LexemeSummary, LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment,
-    OrdinalComposition, OrdinalNumeralIdentity, OrdinalPhraseAnalysis, PartOfSpeech,
-    ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell, PersonalPronounIdentity,
-    PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, PronominalFamilySpec,
-    PronominalPostpositive, PronominalPrefix, PronounFormSelection, RealizedCardinal,
-    RealizedOrdinal, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
-    UngenderedCell, VariantPolicy, VariantSelectionError,
+    FormVariant, FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
+    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning,
+    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LexemeSummary,
+    LongOnlyAdjectiveIdentity, Number, NumeralCell, NumeralGovernment, OrdinalComposition,
+    OrdinalNumeralIdentity, OrdinalPhraseAnalysis, PartOfSpeech, ParticipleKind, PassiveAuxiliary,
+    Person, PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
+    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
+    PronounFormSelection, RealizedCardinal, RealizedOrdinal, RealizedPhrase, RequestedCell, Script,
+    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
     CollectiveNumeralParadigm, ComparativeParadigm, CompoundCardinalOutcome,
     CompoundCardinalParadigm, CompoundOrdinalOutcome, CompoundOrdinalParadigm, DeterminerParadigm,
-    FiniteVerbParadigm, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
-    LParticipleParadigm, NounParadigm, NumeralParadigm, OrdinalNumeralParadigm,
-    ParadigmLookupError, ParticipleParadigm, PersonalPronounParadigm, PronounParadigm,
-    VerbParadigm,
+    FiniteVerbParadigm, FractionalNumeralParadigm, GenderedNumeralParadigm,
+    GenderedPronounParadigm, ImperativeParadigm, LParticipleParadigm, NounParadigm,
+    NumeralParadigm, OrdinalNumeralParadigm, ParadigmLookupError, ParticipleParadigm,
+    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -192,8 +192,9 @@ pub mod prelude {
         CollectiveNumeralIdentity, CollectiveNumeralParadigm, CompoundCardinalParadigm,
         CompoundOrdinalParadigm, Determiner, DeterminerCell, DeterminerIdentity,
         DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet, FormSource, FormVariant,
-        Gender, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
-        InflectionError, InflectionResult, InflectionWarning, InterrogativePronounIdentity,
+        FractionalNumeralDeclension, FractionalNumeralIdentity, FractionalNumeralParadigm, Gender,
+        GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm, InflectionError,
+        InflectionResult, InflectionWarning, InterrogativePronounIdentity,
         IrregularAgreeingIdentity, LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun,
         NounParadigm, Number, Numeral, NumeralParadigm, OrdinalNumeralIdentity,
         OrdinalNumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
@@ -206,15 +207,17 @@ pub mod prelude {
         compound_cardinal_paradigm, compound_cardinal_paradigm_with_one,
         compound_cardinal_paradigm_with_options, compound_cardinal_with_one,
         compound_cardinal_with_options, compound_ordinal, compound_ordinal_paradigm, determiner,
-        determiner_identity, determiner_paradigm, finite, finite_paradigm, gendered_numeral,
-        gendered_numeral_paradigm, gendered_pronoun, gendered_pronoun_paradigm, imperative,
-        imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
-        l_participle, l_participle_paradigm, long_adjective, long_only_adjective, lookup, noun,
-        noun_paradigm, numeral, numeral_paradigm, ordinal_numeral, ordinal_numeral_identity,
-        ordinal_numeral_paradigm, ordinal_numeral_paradigm_identity, participle_paradigm,
-        past_active_participle, past_passive_participle, personal_pronoun,
-        personal_pronoun_paradigm, personal_pronoun_with, present, present_active_participle,
-        present_paradigm, present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
+        determiner_identity, determiner_paradigm, finite, finite_paradigm, fractional_numeral,
+        fractional_numeral_identity, fractional_numeral_paradigm,
+        fractional_numeral_paradigm_identity, gendered_numeral, gendered_numeral_paradigm,
+        gendered_pronoun, gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect,
+        infinitive, interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
+        long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
+        numeral_paradigm, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+        ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
+        past_passive_participle, personal_pronoun, personal_pronoun_paradigm,
+        personal_pronoun_with, present, present_active_participle, present_paradigm,
+        present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
         regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun,
     };
 }
@@ -831,6 +834,53 @@ pub fn collective_numeral_identity(
     cell: CollectiveNumeralCell,
 ) -> InflectionResult {
     resolver::reviewed_collective_numeral(identity, cell)
+}
+
+/// Decline one of the source-listed OCS fractional nouns.
+///
+/// The specialized inventory contains `полъ`, `половина`, `четврьть`, and
+/// `десѧтина`. They use ordinary noun declension; later Church Slavonic
+/// `третина` and `полътора` are intentionally outside this OCS API.
+///
+/// ```
+/// use old_church_slavonic::{fractional_numeral, Case, Number};
+/// assert_eq!(
+///     fractional_numeral("четврьть", Case::Instrumental, Number::Singular)?
+///         .primary_text(),
+///     "четврьтьѭ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn fractional_numeral(lemma: &str, case: Case, number: Number) -> InflectionResult {
+    resolver::fractional_numeral(lemma, old_church_slavonic_core::NounCell { case, number })
+}
+
+/// Decline an OCS fractional noun by stable grammatical identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     fractional_numeral_identity, Case, FractionalNumeralIdentity, Number,
+/// };
+/// assert_eq!(
+///     fractional_numeral_identity(
+///         FractionalNumeralIdentity::Tenth,
+///         Case::Accusative,
+///         Number::Singular,
+///     )?
+///     .primary_text(),
+///     "десѧтинѫ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn fractional_numeral_identity(
+    identity: FractionalNumeralIdentity,
+    case: Case,
+    number: Number,
+) -> InflectionResult {
+    resolver::reviewed_fractional_numeral(
+        identity,
+        old_church_slavonic_core::NounCell { case, number },
+    )
 }
 
 /// Decline a cardinal magnitude head as a noun-like numeral.
@@ -1525,6 +1575,44 @@ pub fn collective_numeral_paradigm_identity(
     identity: CollectiveNumeralIdentity,
 ) -> CollectiveNumeralParadigm {
     resolver::build_collective_numeral_paradigm(identity)
+}
+
+/// Enumerate all 21 noun cells for a source-listed fractional lemma.
+///
+/// ```
+/// use old_church_slavonic::{fractional_numeral_paradigm, Case, Number};
+/// let paradigm = fractional_numeral_paradigm("полъ")?;
+/// assert_eq!(paradigm.len(), 21);
+/// assert_eq!(
+///     paradigm.form(Case::Genitive, Number::Singular)?.primary_text(),
+///     "полоу",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn fractional_numeral_paradigm(
+    lemma: &str,
+) -> Result<FractionalNumeralParadigm, InflectionError> {
+    resolver::fractional_numeral_paradigm(lemma)
+}
+
+/// Enumerate all 21 noun cells from a stable fractional identity.
+///
+/// ```
+/// use old_church_slavonic::{
+///     fractional_numeral_paradigm_identity, Case, FractionalNumeralIdentity, Number,
+/// };
+/// let paradigm =
+///     fractional_numeral_paradigm_identity(FractionalNumeralIdentity::HalfPolovina);
+/// assert_eq!(
+///     paradigm.form(Case::Accusative, Number::Singular)?.primary_text(),
+///     "половинѫ",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn fractional_numeral_paradigm_identity(
+    identity: FractionalNumeralIdentity,
+) -> FractionalNumeralParadigm {
+    resolver::build_fractional_numeral_paradigm(identity)
 }
 
 /// Enumerate gender-indexed numeral cells, retaining unsupported rows.

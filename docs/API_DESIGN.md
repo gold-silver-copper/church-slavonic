@@ -196,8 +196,8 @@ preserves its own variants, evidence, warnings, and trace. The accompanying
 value. Source-listed stems, productive cells, reconstructed stems, and exact
 cell-specific manuscript spellings therefore remain distinguishable. The
 competing asyndetic-declension account, rare alternative 21–29 turns, ordinal
-magnitudes above 1,000, fractional, distributive, and remaining irregular
-numeral inventories remain open.
+magnitudes above 1,000, distributive, and remaining irregular numeral
+inventories remain open.
 
 Collectives have a separate typed cell because the inherited system has two
 real declension classes. `дъвои`, `обои`, and `трои` accept the complete 63-cell
@@ -211,6 +211,16 @@ direct stem, comparative reconstruction, and exact corpus spellings retain
 separate evidence. In particular, the two inherited `-ер-/-ор-` stem series for
 five, six, and nine are explicitly reconstructed rather than presented as OCS
 attestations. Derived `-ица` group nouns remain noun lexemes.
+
+Fractional numerals have their own noun-cell API. `fractional_numeral` resolves
+the closed OCS source union, `fractional_numeral_identity` accepts one of four
+stable identities, and `FractionalNumeralParadigm` exposes every case × number
+cell. `полъ` uses the u-stem noun kernel, `половина` and `десѧтина` the a-stem
+kernel, and `четврьть` the feminine i-stem kernel. Source-listed citations,
+productive class extensions, and exact PROIEL fractional/tithe uses retain
+separate evidence. Later Church Slavonic `третина` and `полътора` are rejected
+by this OCS-specific resolver rather than silently admitted as period-neutral
+forms.
 
 A typed paradigm enumerates the relevant grammatical product and retains typed
 historical or unsupported failures rather than dropping rows. The audit does not

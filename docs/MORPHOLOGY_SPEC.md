@@ -285,6 +285,44 @@ Authority: Polivanova 2023 §§285, 287–299, 303–306, and 314–316 plus OSD
 1111, 2552, 5608, 6148, 4863, and 1187; Krys'ko 2020 pp. 55–67; ESSJa
 collective-series entries; UD OCS PROIEL r2.18 as an attestation crosscheck.
 
+### NUM-FRAC-NOUN-01 — substantival fractional numerals
+
+The OCS fractional system is a closed lexical allocation over ordinary noun
+declension, not a productive rule that derives a numeral for every arithmetic
+denominator. Leuta and Havryliuk list `полъ` “one half”, `четврьть` “one
+quarter”, and `десѧтина` “one tenth” among the rare fractions of the oldest
+monuments, and their declensional account additionally names a-stem
+`половина` as the synonymous half noun. The resulting stable inventory has
+four identities: u-stem masculine `полъ`, a-stem feminine `половина`, i-stem
+feminine `четврьть`, and a-stem feminine `десѧтина`.
+
+`FractionalNumeralParadigm` exposes all 21 case × singular/dual/plural noun
+cells for each identity. The listed citation is reviewed source evidence;
+remaining cells are productive applications of the explicitly assigned noun
+class. This permits grammatically coherent but unattested dual and plural
+forms without presenting them as corpus observations. The specialized rule
+trace ends in `NUM-FRAC-NOUN-01` while retaining the inherited noun rule in its
+earlier steps.
+
+Pinned UD OCS PROIEL r2.18 independently attests fractional accusative singular
+`полъ` with a genitive whole in Codex Marianus Luke 19:8 and `десѧтинѫ` in
+Luke 11:42 and 18:12. Those exact uses remain separate corpus analyses even
+where their surface equals the productive output. The OSD spreadsheet also
+independently lists `полъ` and `десѧтина`; it does not supply the missing full
+fractional inventory. Gorshkov §86 independently lists `полъ` “half” among the
+six secure masculine u-stem nouns and gives that class's complete declension.
+
+The same source explicitly assigns `третина` “one third” to Church Slavonic
+redactions and compounds such as `полътора` and `полътретиꙗ` to later
+monuments. The OCS fractional resolver therefore rejects them. It also does
+not invent an arbitrary numerator/denominator composition API: ordinary
+cardinals and fractional nouns remain independently available for syntax once
+a source licenses a particular construction.
+
+Authority: Leuta and Havryliuk 2018 p. 162; Gorshkov 2002 §86; Polivanova OSD
+spreadsheet rows 1186 and 3629; pinned UD OCS PROIEL r2.18 as a cell-specific
+attestation crosscheck.
+
 ### Comparatives
 
 `ComparativeFormation` records a word-formation strategy independently of

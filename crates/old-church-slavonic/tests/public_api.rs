@@ -17,22 +17,24 @@ use old_church_slavonic::{
     Adjective, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
     CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CollectiveNumeralCell,
     CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
-    DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
-    InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-    Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
-    OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
-    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
-    Script, StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
+    DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, FractionalNumeralDeclension,
+    FractionalNumeralIdentity, Gender, GenderedCell, InflectionError, InflectionWarning,
+    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity,
+    Noun, Number, Numeral, NumeralCell, OrdinalComposition, OrdinalNumeralIdentity,
+    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
+    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script,
+    StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
     anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
     cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
     collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
     compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
     compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
     compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm, finite,
-    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
-    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
-    l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
-    ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
+    finite_paradigm, fractional_numeral, fractional_numeral_identity, fractional_numeral_paradigm,
+    fractional_numeral_paradigm_identity, gendered_numeral, gendered_pronoun, imperative,
+    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
+    l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
+    numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
     ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
     personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
     regular_pronominal, relative_pronoun, short_adjective, supine,
@@ -666,6 +668,123 @@ fn collective_numerals_preserve_their_two_real_inflectional_classes() {
             .identity(),
         CollectiveNumeralIdentity::Seven
     );
+}
+
+#[test]
+fn fractional_numerals_are_complete_noun_paradigms_with_period_boundaries() {
+    assert_eq!(
+        FractionalNumeralIdentity::HalfPol.declension(),
+        FractionalNumeralDeclension::UStem
+    );
+    assert_eq!(
+        FractionalNumeralIdentity::Quarter.declension(),
+        FractionalNumeralDeclension::IStem
+    );
+    assert_eq!(
+        FractionalNumeralIdentity::Tenth.declension(),
+        FractionalNumeralDeclension::AStem
+    );
+    for identity in FractionalNumeralIdentity::ALL {
+        let paradigm = fractional_numeral_paradigm_identity(identity);
+        assert_eq!(paradigm.identity(), identity);
+        assert_eq!(paradigm.lemma(), identity.canonical_lemma());
+        assert_eq!(paradigm.len(), 21, "{identity:?}");
+        assert_eq!(paradigm.successes().count(), 21, "{identity:?}");
+        assert_eq!(paradigm.failures().count(), 0, "{identity:?}");
+        assert!(paradigm.successes().all(|(_, forms)| matches!(
+            forms.source(),
+            FormSource::ReviewedGrammarTable { rule_id }
+                if *rule_id == RuleId::NumeralFractionalNoun
+        )));
+    }
+
+    for (identity, case, number, expected) in [
+        (
+            FractionalNumeralIdentity::HalfPol,
+            Case::Genitive,
+            Number::Singular,
+            "полоу",
+        ),
+        (
+            FractionalNumeralIdentity::HalfPolovina,
+            Case::Accusative,
+            Number::Singular,
+            "половинѫ",
+        ),
+        (
+            FractionalNumeralIdentity::Quarter,
+            Case::Instrumental,
+            Number::Singular,
+            "четврьтьѭ",
+        ),
+        (
+            FractionalNumeralIdentity::Tenth,
+            Case::Genitive,
+            Number::Plural,
+            "десѧтинъ",
+        ),
+    ] {
+        let forms = fractional_numeral_identity(identity, case, number)
+            .unwrap_or_else(|error| panic!("{identity:?}: {error}"));
+        assert_eq!(forms.primary_text(), expected);
+        assert_eq!(
+            forms.trace().last().map(|step| step.rule_id),
+            Some(RuleId::NumeralFractionalNoun)
+        );
+    }
+
+    for (identity, lemma) in [
+        (FractionalNumeralIdentity::HalfPol, "полъ"),
+        (FractionalNumeralIdentity::Tenth, "десѧтина"),
+    ] {
+        for number in Number::ALL {
+            for case in Case::ALL {
+                let fractional = fractional_numeral_identity(identity, case, number)
+                    .expect("licensed fractional noun cell");
+                let dictionary = noun(lemma, case, number).expect("dictionary noun cell");
+                assert_eq!(
+                    fractional.primary_text(),
+                    dictionary.primary_text(),
+                    "{identity:?} {case:?} {number:?}"
+                );
+            }
+        }
+    }
+
+    let half_attestation = fractional_numeral("полъ", Case::Accusative, Number::Singular)
+        .expect("fractional half corpus cell");
+    assert_eq!(half_attestation.texts().collect::<Vec<_>>(), ["полъ"]);
+    assert_eq!(half_attestation.analyses().len(), 2);
+    assert_eq!(
+        half_attestation.analyses()[1].evidence[0].provenance,
+        MetadataProvenance::CorpusEvaluationObservation
+    );
+
+    let tenth_attestation = fractional_numeral_identity(
+        FractionalNumeralIdentity::Tenth,
+        Case::Accusative,
+        Number::Singular,
+    )
+    .expect("fractional tenth corpus cell");
+    assert_eq!(tenth_attestation.texts().collect::<Vec<_>>(), ["десѧтинѫ"]);
+    assert_eq!(tenth_attestation.analyses().len(), 2);
+    assert_eq!(
+        tenth_attestation.analyses()[1].evidence[0].provenance,
+        MetadataProvenance::CorpusEvaluationObservation
+    );
+
+    assert_eq!(
+        fractional_numeral_paradigm("четврьть")
+            .expect("source-listed quarter")
+            .identity(),
+        FractionalNumeralIdentity::Quarter
+    );
+    for later in ["третина", "полътора", "полътретиꙗ"] {
+        assert!(matches!(
+            fractional_numeral(later, Case::Nominative, Number::Singular),
+            Err(InflectionError::UnknownLemma { .. })
+        ));
+    }
 }
 
 #[test]

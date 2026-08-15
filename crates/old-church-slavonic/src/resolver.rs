@@ -487,6 +487,38 @@ pub fn collective_numeral(
     Ok(result)
 }
 
+/// Resolve one noun cell of a source-listed OCS fractional numeral.
+pub fn reviewed_fractional_numeral(
+    identity: FractionalNumeralIdentity,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    reviewed_numeral_variants(
+        identity.canonical_lemma(),
+        identity.authority(),
+        format!(
+            "numeral:fractional:1-{}:{}:{}",
+            identity.denominator(),
+            cell.case.code(),
+            cell.number.code(),
+        ),
+        old_church_slavonic_core::numeral::decline_fractional(identity, cell)?,
+    )
+}
+
+/// Resolve a fractional numeral through the period-bounded OCS source union.
+pub fn fractional_numeral(lemma: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = FractionalNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    let mut result = reviewed_fractional_numeral(identity, cell)?;
+    if normalized != identity.canonical_lemma() {
+        result.add_warning(InflectionWarning::LexicalAliasUsed {
+            canonical: identity.canonical_lemma().to_string(),
+        });
+    }
+    Ok(result)
+}
+
 /// Resolve one cell of a reviewed cardinal-magnitude head.
 pub fn reviewed_cardinal_magnitude(
     identity: CardinalMagnitudeIdentity,
@@ -2751,6 +2783,30 @@ pub fn collective_numeral_paradigm(
     let identity = CollectiveNumeralIdentity::classify_source_union_lemma(&normalized)
         .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
     Ok(build_collective_numeral_paradigm(identity))
+}
+
+pub(crate) fn build_fractional_numeral_paradigm(
+    identity: FractionalNumeralIdentity,
+) -> FractionalNumeralParadigm {
+    FractionalNumeralParadigm {
+        identity,
+        lemma: identity.canonical_lemma().to_string(),
+        cells: NounCell::all()
+            .map(|cell| CellOutcome {
+                cell,
+                result: reviewed_fractional_numeral(identity, cell),
+            })
+            .collect(),
+    }
+}
+
+pub fn fractional_numeral_paradigm(
+    lemma: &str,
+) -> Result<FractionalNumeralParadigm, InflectionError> {
+    let normalized = orthography::lookup_key(lemma)?;
+    let identity = FractionalNumeralIdentity::classify_source_union_lemma(&normalized)
+        .ok_or_else(|| InflectionError::unknown_lemma(&normalized, PartOfSpeech::Numeral))?;
+    Ok(build_fractional_numeral_paradigm(identity))
 }
 
 fn lexeme_identity(
