@@ -4,6 +4,7 @@ synodal_fetch_manifest = "../references/SOURCES.toml"
 synodal_checksum_manifest = "../references/SHA256SUMS"
 
 [[source]]
+id = "english-wiktionary-ocs-kaikki-2026-07-06"
 name = "English Wiktionary Old Church Slavonic via Kaikki"
 url = "https://kaikki.org/dictionary/Old%20Church%20Slavonic/kaikki.org-dictionary-OldChurchSlavonic.jsonl"
 wiktionary_dump_date = "2026-07-06"
@@ -92,8 +93,8 @@ sha256 = "f412042aafdf2a6650f52f7c42a8a971127bfefe9dfd155b36347b3e11f7f38d"
 source_recension = "old-church-slavonic"
 content_kind = "dictionary"
 format = "zip/xls"
-license = "Publication is CC BY 4.0; exact spreadsheet notice requires preservation and review"
-redistribution = "unresolved"
+license = "Raw spreadsheet notice remains unresolved; normalized lexical facts reproduced in the 2023 FUP publication are used under its CC BY 4.0 content license and CC0 1.0 metadata license"
+redistribution = "normalized-published-content-only"
 authority_roles = ["lexical", "morphological"]
 epistemic_roles = ["inherited-ocs-evidence"]
 upstream_lineage = ["Anna Polivanova, Old Church Slavic: Grammar and Dictionaries"]

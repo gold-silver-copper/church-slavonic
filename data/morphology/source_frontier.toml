@@ -362,7 +362,7 @@ publication_date = "web database"
 publisher_institution = "Ludwig-Maximilians-Universität München"
 stable_url = "https://www.punco.slavistik.lmu.de/love.php"
 retrieved_at = "2026-08-15"
-sha256 = ""
+sha256 = "b36ce8d22f1ddb582e9e6a991f78f560fa21ed32e59bfb901cbcd4335f4b666d"
 languages = ["English", "German", "Old Church Slavonic"]
 periods = ["Old Church Slavonic", "Psalterium Sinaiticum"]
 recensions = ["old-church-slavonic"]
@@ -408,6 +408,33 @@ conflicts = ["Its scope spans Old Church Slavonic, Church Slavonic, and later Ba
 access_status = "accessible-metadata"
 
 [[source]]
+id = "english-wiktionary-ocs-kaikki-2026-07-06"
+title = "English Wiktionary Old Church Slavonic via Kaikki/Wiktextract (runtime extraction)"
+author_editor = "English Wiktionary contributors; Wiktextract/Kaikki extraction by Tatu Ylonen and contributors"
+edition_revision = "Wiktionary dump 2026-07-06; Kaikki extraction 2026-08-02"
+publication_date = "2026-07"
+publisher_institution = "Wikimedia/Kaikki"
+stable_url = "https://kaikki.org/dictionary/Old%20Church%20Slavonic/index.html"
+retrieved_at = "2026-08-02"
+sha256 = "5bd61e747aa7aeb677af92b4e32c65476e5c6ee74bff146269460c962be5456c"
+languages = ["English", "Old Church Slavonic"]
+periods = ["mixed dictionary evidence labeled Old Church Slavonic"]
+recensions = ["old-church-slavonic"]
+orthographies = ["Wiktionary template output"]
+source_type = "crowd-edited machine-readable dictionary"
+epistemic_roles = ["runtime-dictionary-target", "lexical-candidate", "exact-table-target"]
+authority_tier = 6
+authority_justification = "This is the exact source revision from which the committed runtime registry was derived; its generated tables remain evidence to preserve and evaluate, not an independent grammar oracle."
+license = "CC BY-SA 4.0; upstream also GFDL 1.1 or later"
+redistribution = "allowed-with-attribution-sharealike"
+upstream_lineage = ["English Wiktionary", "Wiktextract", "Kaikki"]
+reviewed_sections = ["all 4,615 input rows", "all 3,081 accepted runtime identities", "extraction rejection reports"]
+rule_ids = ["dictionary-table-precedence", "dictionary-principal-parts", "OCS-LEXICON-UNION-01"]
+impact = "Defines the exact committed runtime dictionary denominator and preserves every accepted identity as an independent source claim in the lexical-union ledger."
+conflicts = ["The separately pinned 2026-08-07 Kaikki refresh has 4,626 rows and is not byte-identical; the two revisions remain distinct source claims rather than being conflated."]
+access_status = "pinned-derived-local"
+
+[[source]]
 id = "english-wiktionary-ocs-kaikki-2026-08-07"
 title = "English Wiktionary Old Church Slavonic via Kaikki/Wiktextract"
 author_editor = "English Wiktionary contributors; Wiktextract/Kaikki extraction by Tatu Ylonen and contributors"
@@ -429,8 +456,8 @@ license = "CC BY-SA 4.0; upstream also GFDL 1.1 or later"
 redistribution = "allowed-with-attribution-sharealike"
 upstream_lineage = ["English Wiktionary", "Wiktextract", "Kaikki"]
 reviewed_sections = ["all extracted OCS records", "template revision anchors", "rejection reports", "impersonal tags and dated examples for достоꙗти and the reflexive sense of мьнѣти"]
-rule_ids = ["dictionary-table-precedence", "dictionary-principal-parts"]
-impact = "Current OCS exact registry and extraction target; its sense tags expose the closed impersonal candidate inventory, while grammar and LOVe independently determine morphology and the personal/impersonal distinction."
+rule_ids = ["dictionary-table-precedence", "dictionary-principal-parts", "OCS-LEXICON-UNION-01"]
+impact = "Supplies the complete 4,626-row refreshed lexical source frontier. It is inventoried separately from the earlier runtime extraction; its sense tags expose the closed impersonal candidate inventory, while grammar and LOVe independently determine morphology and the personal/impersonal distinction."
 conflicts = ["Malformed verb tags and declined participle rows lack safe tense/voice identity."]
 access_status = "pinned-local"
 
@@ -788,3 +815,21 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "The pinned Polivanova grammar §§131–133 supplies an exhaustive compositional Glagolitic/secondary-Cyrillic table and separates natural/standard allographs, while §866 explicitly states that early Glagolitic lacks matching iotated-vowel letters. TN41 Appendix A independently identifies the shared system as the classical Jagić 1879 convention and documents Unicode and rare-letter boundaries, so no lower-authority table was imported. The pass separates the reversible core and ꙑ/ы sequences from Cyrillic-only distinctions, literal yer-plus-i collisions, rare Glagolitic collisions, and manuscript superscripts. The API realizes complete words after morphology, preserves Polivanova's shared palatalization mark, reports or rejects every non-reversible normalization, preserves existing Glagolitic input without manufacturing source provenance, and leaves diplomatic transcription out of scope."
+
+[[discovery_pass]]
+id = "ocs-lexicon-frontier-pass-7"
+performed_at = "2026-08-15"
+languages = ["English", "German", "Czech", "Old Church Slavonic"]
+queries = [
+  "LOVe official love.txt export Old Church Slavonic verbs",
+  "GORAZD Old Church Slavonic database bulk export API",
+  "GORAZD Export whole database software public download",
+  "Polivanova OSD paradigmatic dictionary class inventory",
+]
+catalogs = ["LMU Punčo Digital Editions", "GORAZD card index", "Czech Academy of Sciences", "Firenze University Press", "locked source cache"]
+new_sources = []
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "The pass establishes a row-level denominator of 14,114 claims: all 3,081 committed identities derived from the older 4,615-row Kaikki runtime source, all 4,626 rows of the separately pinned 2026-08-07 Kaikki refresh, and all 6,407 OSD dictionary rows. Unique normalized matches merge with runtime identities; homonyms and unsafe matches remain source-qualified. LOVe's official 970-row export is reproducibly hashed and remains a principal-part crosscheck because the site states no database reuse license. GORAZD exposes search and card-index access but no confirmed public bulk snapshot or redistribution terms, so it remains manual discovery evidence. The ledger exposes rather than hides productive noun deformations, unique nouns, and source-native regular-verb routes that are still missing."

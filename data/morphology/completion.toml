@@ -18,23 +18,23 @@ id = "ocs.noun.declension"
 recension = "old-church-slavonic"
 category = "noun"
 part_of_speech = "noun"
-scope = "All currently specified OCS nominal declensions, including explicit indeclinables and lexical number restrictions."
+scope = "All source-union OCS nominal declensions, productive deformations, unique mixed paradigms, explicit indeclinables, and lexical number restrictions."
 profiles = ["abstract", "canonical-cyrillic"]
 features = ["case=7", "number=singular|dual|plural", "gender=lexical", "animacy=lexical", "number-restriction=typed"]
-subtypes = ["o-m-hard", "o-n-hard", "jo-m-soft", "jo-n-soft", "a-hard", "ja-soft", "i-f", "i-m", "u-m", "n-m", "n-n", "nt-n", "r-n", "s-n", "v-f", "indeclinable"]
+subtypes = ["o-m-hard", "o-n-hard", "jo-m-soft", "jo-n-soft", "a-hard", "ja-soft", "i-f", "i-m", "u-m", "n-m", "n-n", "nt-n", "r-n", "s-n", "v-f", "indeclinable", "2-m-agent-deformation", "2-m-in-deformation", "2-f-yni-deformation", "unique-mixed"]
 realization = "synthetic"
-state = "productive-complete"
-implementation_kind = "productive"
-rule_ids = ["N-O-M-HARD-01", "N-O-N-HARD-01", "N-JO-M-SOFT-01", "N-JO-N-SOFT-01", "N-A-HARD-01", "N-JA-SOFT-01", "N-I-F-01", "N-I-M-01", "N-U-M-01", "N-N-M-01", "N-N-N-01", "N-NT-N-01", "N-R-01", "N-S-N-01", "N-V-F-01", "N-INDECL-01"]
+state = "implementation-missing"
+implementation_kind = "productive-core-with-source-union-gaps"
+rule_ids = ["N-O-M-HARD-01", "N-O-N-HARD-01", "N-JO-M-SOFT-01", "N-JO-N-SOFT-01", "N-A-HARD-01", "N-JA-SOFT-01", "N-I-F-01", "N-I-M-01", "N-U-M-01", "N-N-M-01", "N-N-N-01", "N-NT-N-01", "N-R-01", "N-S-N-01", "N-V-F-01", "N-INDECL-01", "N-2MSTAR-PENDING", "N-2MPLUSPLUS-PENDING", "N-2FSTAR-PENDING", "N-UNIQUE-PENDING"]
 sources = ["ut-ocs-online", "polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
 citation = "docs/MORPHOLOGY_SPEC.md noun sections; UT noun inflection; pinned Wiktionary template revisions"
 required_metadata = ["lemma", "noun class", "gender", "animacy where contrastive", "number restriction", "extended stem where class requires it"]
-valid_inventory = "Every case × number cell admitted by the lexical number inventory; masculine accusative animacy is explicit."
+valid_inventory = "Every case × number cell admitted by the lexical number inventory; masculine accusative animacy is explicit. The source denominator additionally contains 69 class-2/m* agent nouns, nine class-2/m++ -in nouns, 30 class-2/f* -yni nouns, and 41 unique mixed nouns."
 invalid_inventory = "Cells outside a lexical number restriction; contradictory citation/class/gender metadata."
-implementation = ["crates/old-church-slavonic-core/src/noun.rs", "crates/old-church-slavonic-core/src/grammar.rs"]
-tests = ["crates/old-church-slavonic-core/src/noun.rs#every_documented_noun_class_matches_a_twenty_one_cell_golden"]
-evidence_status = "source-backed productive prediction; exact dictionary cells retain table provenance"
-rationale = "All sixteen closed noun classes have complete 21-cell goldens and typed invalid metadata behavior."
+implementation = ["crates/old-church-slavonic-core/src/noun.rs", "crates/old-church-slavonic-core/src/grammar.rs", "data/ocs/lexical_source_claims.tsv"]
+tests = ["crates/old-church-slavonic-core/src/noun.rs#every_documented_noun_class_matches_a_twenty_one_cell_golden", "crates/xtask/src/ocs_lexical_union.rs#noun_deformation_partition_is_explicit"]
+evidence_status = "sixteen historical stem classes are productively tested; the exhaustive lexical ledger identifies source-native deformations and unique mixed paradigms still awaiting implementation"
+gap = "Implement Polivanova classes 2/m*, 2/m++, and 2/f*, then crosswalk and exhaustively implement every class-0 unique mixed noun without treating a historical stem analogy as a complete paradigm."
 
 [[system]]
 id = "ocs.adjective.positive"
@@ -577,17 +577,17 @@ features = ["identity=stable", "classification=productive|irregular|defective|in
 subtypes = ["productive", "closed-irregular", "defective", "indeclinable", "ambiguous", "disputed", "out-of-scope"]
 realization = "lexical-metadata"
 state = "implementation-missing"
-implementation_kind = "registry-partial"
-rule_ids = ["OCS-LEXICON-UNION-PENDING"]
-sources = ["polivanova-fup-2023", "love-lmu-ocs-verbs", "gorazd", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "Current extracted registry and reports classify only the pinned Wiktionary pipeline, not the full reviewed source union."
+implementation_kind = "exhaustive-source-claim-ledger-with-open-routes"
+rule_ids = ["OCS-LEXICON-UNION-01"]
+sources = ["polivanova-fup-2023", "love-lmu-ocs-verbs", "gorazd", "english-wiktionary-ocs-kaikki-2026-07-06", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "Polivanova 2023 §§249, 253, 255, 265, 299–302, 416–420 and the complete OSD paradigmatic dictionary; the retained runtime identities from the older Kaikki extraction and every row of the separately pinned refresh; official LMU LOVe 970-row export hash b36ce8d2…; GORAZD card-index and export-surface review 2026-08-15."
 required_metadata = ["stable identity", "part of speech", "class/principal parts", "restrictions", "evidence"]
-valid_inventory = "Every inflectable source-union lemma."
-invalid_inventory = "Non-target or non-inflectional rows remain explicit exclusions."
-implementation = ["data/extracted/lexemes.tsv", "data/extracted/verb_metadata.tsv"]
-tests = ["crates/old-church-slavonic-extractor/src/validate.rs#coverage_floor_witness_is_rejected"]
-evidence_status = "single locked dictionary lineage plus partial external evaluation"
-gap = "Define the source-union merge, import lawful lexical metadata, and eliminate silent rejects/unclassified lexemes."
+valid_inventory = "All 14,114 row-level source claims: 3,081 committed runtime identities from the older 4,615-row Kaikki extraction, every 4,626 row of the refreshed Kaikki artifact, and every 6,407 OSD dictionary row. Unique matches share runtime identities; every unsafe or homonymous match retains a source-qualified stable identity."
+invalid_inventory = "Form-of records, secondary OSD forms, non-target parts of speech, and invariant items remain explicit source claims with out-of-scope, indeclinable, or not-inflectional routes. LOVe and GORAZD remain attributed crosschecks rather than row-level denominator members because reviewed database redistribution terms do not permit a bundled snapshot."
+implementation = ["data/ocs/lexical_source_claims.tsv", "reports/ocs-lexical-union.json", "crates/xtask/src/ocs_lexical_union.rs", "data/extracted/lexemes.tsv", "data/extracted/verb_metadata.tsv"]
+tests = ["crates/xtask/src/ocs_lexical_union.rs#final_classifications_and_support_states_are_closed", "crates/xtask/src/ocs_lexical_union.rs#osd_homonym_markers_do_not_enter_lookup_keys", "crates/xtask/src/ocs_lexical_union.rs#verb_class_partition_is_explicit", "crates/old-church-slavonic-extractor/src/validate.rs#coverage_floor_witness_is_rejected"]
+evidence_status = "exhaustive reproducible claim ledger with 2,703 confirmed missing implementation routes, 6,593 incomplete-metadata claims, and 1,916 source-ambiguous claims retained explicitly rather than silently dropped"
+gap = "Close every implementation-missing route in reports/ocs-lexical-union.json, then review metadata-incomplete identities against OSD, LOVe, and lawful corpus evidence until every productive source identity has a complete typed specification or an evidence-backed final ambiguous/defective/indeclinable classification."
 
 [[system]]
 id = "ocs.invariant-parts-of-speech"

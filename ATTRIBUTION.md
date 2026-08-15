@@ -10,6 +10,7 @@ licenses.
 | Generated Rust dictionary tables | `crates/old-church-slavonic/generated` | derived from English Wiktionary; CC BY-SA 4.0 |
 | Semantic dictionary snapshot | `data/dictionary`, `crates/old-church-slavonic-dictionary/generated` | derived from English Wiktionary; CC BY-SA 4.0 |
 | Extraction/accuracy reports containing forms | `reports` | derived from English Wiktionary; CC BY-SA 4.0 |
+| OCS lexical source-claim ledger and report | `data/ocs`, `reports/ocs-lexical-union.*` | combined derived database: English Wiktionary CC BY-SA 4.0 and Polivanova/Firenze University Press content CC BY 4.0 (metadata CC0 1.0) |
 | UD OCS PROIEL | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
 | Syntacticus native PROIEL/TOROT OCS selection | not bundled | CC BY-NC-SA 4.0; optional local evaluation only |
 | University of Texas *Old Church Slavonic Online* grammar | not bundled; cited as grammatical authority | reference only; no lesson text redistributed |
@@ -67,8 +68,17 @@ Online*: <https://lrc.la.utexas.edu/eieol_toc/ocsol>. Relevant lesson/section li
 are attached to the rules in `docs/MORPHOLOGY_SPEC.md`. No lesson text, exercise,
 or dataset from that site is copied into the registry or package.
 
+The OCS lexical-union ledger also uses the paradigmatic-dictionary content of
+Anna Polivanova, *Old Church Slavic: Grammar and Dictionaries*, translated by
+Lev Blumenfeld and edited by Artemij Keidan (Firenze University Press, 2023,
+DOI 10.36253/979-12-215-0104-9). The publication identifies its content as
+CC BY 4.0 and metadata as CC0 1.0. The project converts the dictionary rows into
+source-qualified identities, class/status codes, and implementation-route
+audits; it does not redistribute the raw XLS archive.
+
 ## Reuse
 
 Keep the MIT/Apache notices with code. When redistributing the registry, generated
-tables, or reports, credit English Wiktionary and its contributors, retain this
-attribution and modification notice, and comply with CC BY-SA 4.0.
+tables, lexical ledger, or reports, credit English Wiktionary and its contributors
+and Polivanova/Firenze University Press as applicable, retain this attribution and
+modification notice, and comply with CC BY-SA 4.0 and CC BY 4.0.

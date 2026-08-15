@@ -2,6 +2,7 @@
 
 mod corpus;
 mod morphology_completeness;
+mod ocs_lexical_union;
 mod report_io;
 mod sources;
 mod synodal;
@@ -132,6 +133,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("morphology-completeness") => {
             morphology_completeness::run(&mut args, &workspace_root()?)
         }
+        Some("ocs-lexical-union") => ocs_lexical_union::run(&mut args, &workspace_root()?),
         Some("check-all") => check_all(),
         Some("check-structure") => check_structure(),
         Some("help") | Some("-h") | Some("--help") | None => {
@@ -3422,6 +3424,7 @@ fn print_help() {
     eprintln!("  synodal-v07-audit [--check]");
     eprintln!("  synodal-engine-audit [--check]");
     eprintln!("  morphology-completeness [--check]");
+    eprintln!("  ocs-lexical-union [--check | --kaikki PATH --osd-jsonl PATH]");
     eprintln!("  check-all");
     eprintln!("  check-structure");
 }

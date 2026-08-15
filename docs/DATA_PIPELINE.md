@@ -9,10 +9,31 @@
 | `check-registry` | committed normalized TSV | nothing; compares deterministic generated Rust and validates semantics |
 | `accuracy` | committed registry and public facade | `reports/accuracy.{json,md}` when refreshed |
 | `accuracy-corpus` | explicit local paths to hash-pinned UD and/or Syntacticus data | aggregate `reports/corpus-accuracy.{json,md}` only with `--write`; optional token details stay local |
+| `ocs-lexical-union` | the committed runtime registry plus the pinned Kaikki refresh and Polivanova OSD intermediate | `data/ocs/lexical_source_claims.tsv` and `reports/ocs-lexical-union.{json,md}`; `--check` is fully offline |
 | runtime facade | generated Rust only | nothing |
 
 The raw dump is gitignored. No normal build, test, example, or package operation uses
 the network.
+
+## Lexical source-union ledger
+
+`cargo xtask ocs-lexical-union` inventories three versioned layers without
+pretending that equal spellings are automatically equal lexemes: all 3,081
+committed runtime identities derived from the older 4,615-row Kaikki input, all
+4,626 rows of the separately pinned 2026-08-07 Kaikki refresh, and all 6,407
+rows after the header in Polivanova's paradigmatic dictionary. A claim shares a
+runtime identity only when normalized spelling and part of speech select exactly
+one candidate. Homonyms, parenthesized reconstructions, unsafe table records,
+secondary forms, and form-of rows keep source-qualified identities and explicit
+classification reasons.
+
+The committed ledger stores lexical facts and audit metadata, not copied source
+paradigms. Its `support_state` is deliberately separate from its grammatical
+classification: a row may be productively classified while still naming an
+`implementation-missing` adapter or `metadata-incomplete` typed specification.
+`cargo xtask ocs-lexical-union --check` validates source counts, stable identities,
+closed vocabularies, coverage of every runtime identity, pinned hashes, and both
+generated reports without reading gitignored raw downloads.
 
 ## Accepted extraction surface
 

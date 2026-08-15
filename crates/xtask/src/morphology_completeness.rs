@@ -199,6 +199,7 @@ pub(crate) fn run(
     let report = render(&audit);
     let report_path = root.join(&audit.matrix.generated_report);
     if check {
+        crate::ocs_lexical_union::check(root)?;
         if fs::read_to_string(&report_path)? != report {
             return Err(format!(
                 "stale {}; rerun cargo xtask morphology-completeness",
@@ -227,6 +228,7 @@ pub(crate) fn run(
 /// Keeps the progress inventory and report structurally guarded while the
 /// long-running completion goal still contains honest non-final rows.
 pub(crate) fn check_progress_artifacts(root: &Path) -> Result<(), Box<dyn Error>> {
+    crate::ocs_lexical_union::check(root)?;
     let audit = load_and_validate(root)?;
     let expected = render(&audit);
     if fs::read_to_string(root.join(&audit.matrix.generated_report))? != expected {
@@ -314,6 +316,10 @@ fn validate_systems(
         "s-n",
         "v-f",
         "indeclinable",
+        "2-m-agent-deformation",
+        "2-m-in-deformation",
+        "2-f-yni-deformation",
+        "unique-mixed",
     ]);
     let actual_ocs_nouns = ocs_nouns
         .subtypes

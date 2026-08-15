@@ -28,6 +28,7 @@ than averaged away.
 | `english-wiktionary-ocs-lineage-2026-08-07` | mixed raw dump/templates/modules lineage | enwiktionary 20260801, Wiktextract `d9fa233`; aggregate `601ccbc…` | CC BY-SA/GFDL; same witness as Kaikki |
 | `polivanova-osd-source` | OCS grammar/root dictionary | 2020-01-10; `f412042a…` | exact spreadsheet notice unresolved; local research |
 | `polivanova-fup-2023` | OCS scholarly grammar TEI XML and PDF | 2023 XML/PDF eISBNs; aggregate `8838c88d…` | CC BY 4.0; same scholarly lineage as source spreadsheet |
+| `english-wiktionary-ocs-kaikki-2026-07-06` | exact OCS runtime-registry input | 2026-07-06 dump / 2026-08-02 extraction; `5bd61e74…` | CC BY-SA 4.0 distribution; 3,081 committed derived identities |
 | `ud-ocs-proiel-r2.18` | OCS morphology/evaluation | commit `64eddf8…`; `579b20ed…` | CC BY-NC-SA 4.0; optional local evaluation |
 | `syntacticus-20230428` | OCS native PROIEL/TOROT | commit `525cee4…`; `e328440…` | CC BY-NC-SA 4.0; same witness lineage as UD |
 | `ccmh-2021-04-23` | OCS corpus/counterexamples | 2021-04-23; aggregate `67a4bcc…` | version terms unresolved; evaluation only |
@@ -55,6 +56,9 @@ manifest; abbreviations above are only for readability.
   retained.
 - GORAZD has no confirmed bulk export mechanism or database redistribution terms,
   so it is used only for manual review and discovery.
+- LOVe's official 970-row `love.txt` export is reproducibly identified by SHA-256
+  `b36ce8d2…`, but the reviewed service states no database reuse license. It is
+  therefore a principal-part crosscheck rather than a bundled row-level union.
 - The Russian National Corpus has no authorized bulk download in this workflow;
   it remains a query/discovery and held-out check source.
 - Ponomar Library individual editions are not mirrored until work-level rights

@@ -26,6 +26,36 @@ The template revisions inspected on 2026-08-07 were: `cu-decl-noun-o-m`
 These are review anchors, not the revision identity of every page in the Kaikki
 dump. Kaikki does not provide per-page revision IDs in this export.
 
+### Lexical source-union boundary
+
+`data/ocs/lexical_source_claims.tsv` is the exhaustive, source-claim ledger for
+the current lexical completion denominator. It retains all 3,081 runtime
+identities accepted from the older 4,615-row Kaikki extraction, all 4,626 rows
+of the separately pinned August 2026 Kaikki refresh, and all 6,407 rows after
+the header in Polivanova's OSD paradigmatic dictionary. Equal normalized
+spellings merge only when they identify exactly one runtime lexeme; homonyms,
+unsafe spellings, cross-references, and otherwise unresolved records keep
+source-qualified identities. `cargo xtask ocs-lexical-union --check` validates
+the 14,114 claims, their closed classifications and support states, every
+runtime identity, source hashes, and the generated JSON and Markdown reports.
+
+The OSD class labels are requirements, not evidence that the current engine
+already implements a row. In particular, `2/m*`, `2/m++`, and `2/f*` expose
+nominal deformations outside the current `NounClass` universe, while class `0`
+contains unique mixed paradigms. Verb class `0` contains unique lexemes; marked
+class-3/class-4 rows include Table 434 anchors, prefixed derivatives, and
+isolated anomalies. Only the explicitly reviewed family members are currently
+implemented. The other marked rows remain `implementation-missing` until an
+expanded family or exact lexical profile models their actual paradigmatic
+effect. Unmarked regular classes likewise require a source-native principal-
+part adapter rather than inference from the infinitive spelling alone.
+
+LOVe's official export and the GORAZD card index remain attributed rule and
+manual lexical crosschecks. They are not bundled row-level denominator members
+because the reviewed services do not state database-snapshot redistribution
+terms. That licensing boundary never licenses the engine to call an unresolved
+lexeme implemented.
+
 ## Grammatical inventory
 
 Nominals distinguish nominative, genitive, dative, accusative, instrumental,

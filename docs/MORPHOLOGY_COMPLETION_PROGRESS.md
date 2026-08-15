@@ -6,16 +6,16 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **38** have final states and **15** remain non-final. Source discovery has 6 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **37** have final states and **16** remain non-final. Source discovery has 7 recorded passes and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 11 |
+| `implementation-missing` | 12 |
 | `irregular-exact-complete` | 1 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 35 |
+| `productive-complete` | 34 |
 | `source-review-open` | 4 |
 
 ## Recension totals
@@ -23,7 +23,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 25 | 26 |
+| old-church-slavonic | 24 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -45,7 +45,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 | old-church-slavonic | irregular-verb | 1 | 1 |
 | old-church-slavonic | lexicon | 0 | 1 |
 | old-church-slavonic | nonfinite-verb | 1 | 1 |
-| old-church-slavonic | noun | 1 | 1 |
+| old-church-slavonic | noun | 0 | 1 |
 | old-church-slavonic | numeral | 1 | 1 |
 | old-church-slavonic | orthography | 2 | 2 |
 | old-church-slavonic | participle | 1 | 1 |
@@ -70,7 +70,8 @@ The matrix contains **53** required system contracts: **38** have final states a
 
 ## Non-final systems
 
-- `ocs.lexicon.classification` — **implementation-missing**: Define the source-union merge, import lawful lexical metadata, and eliminate silent rejects/unclassified lexemes.
+- `ocs.noun.declension` — **implementation-missing**: Implement Polivanova classes 2/m*, 2/m++, and 2/f*, then crosswalk and exhaustively implement every class-0 unique mixed noun without treating a historical stem analogy as a complete paradigm.
+- `ocs.lexicon.classification` — **implementation-missing**: Close every implementation-missing route in reports/ocs-lexical-union.json, then review metadata-incomplete identities against OSD, LOVe, and lawful corpus evidence until every productive source identity has a complete typed specification or an evidence-backed final ambiguous/defective/indeclinable classification.
 - `syn.noun.irregular` — **implementation-missing**: Complete irregular noun families and unify любовь identities without generating unattested alternant combinations.
 - `syn.adjective.short-superlative` — **source-review-open**: Complete source discovery and either implement the category or finalize every cell as absent-from-recension with citations.
 - `syn.pronoun` — **implementation-missing**: Complete all pronoun subtypes, productive relationships, clitics, lexical restrictions, and source-union identities.
@@ -90,7 +91,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 
 | ID | Recension | Category | State | Rule IDs | Evidence |
 |---|---|---|---|---|---|
-| `ocs.noun.declension` | old-church-slavonic | noun | `productive-complete` | `N-O-M-HARD-01`<br>`N-O-N-HARD-01`<br>`N-JO-M-SOFT-01`<br>`N-JO-N-SOFT-01`<br>`N-A-HARD-01`<br>`N-JA-SOFT-01`<br>`N-I-F-01`<br>`N-I-M-01`<br>`N-U-M-01`<br>`N-N-M-01`<br>`N-N-N-01`<br>`N-NT-N-01`<br>`N-R-01`<br>`N-S-N-01`<br>`N-V-F-01`<br>`N-INDECL-01` | source-backed productive prediction; exact dictionary cells retain table provenance |
+| `ocs.noun.declension` | old-church-slavonic | noun | `implementation-missing` | `N-O-M-HARD-01`<br>`N-O-N-HARD-01`<br>`N-JO-M-SOFT-01`<br>`N-JO-N-SOFT-01`<br>`N-A-HARD-01`<br>`N-JA-SOFT-01`<br>`N-I-F-01`<br>`N-I-M-01`<br>`N-U-M-01`<br>`N-N-M-01`<br>`N-N-N-01`<br>`N-NT-N-01`<br>`N-R-01`<br>`N-S-N-01`<br>`N-V-F-01`<br>`N-INDECL-01`<br>`N-2MSTAR-PENDING`<br>`N-2MPLUSPLUS-PENDING`<br>`N-2FSTAR-PENDING`<br>`N-UNIQUE-PENDING` | sixteen historical stem classes are productively tested; the exhaustive lexical ledger identifies source-native deformations and unique mixed paradigms still awaiting implementation |
 | `ocs.adjective.positive` | old-church-slavonic | adjective | `productive-complete` | `ADJ-HARD-SHORT-01`<br>`ADJ-HARD-LONG-01`<br>`ADJ-SOFT-SHORT-01`<br>`ADJ-SOFT-LONG-01` | source-backed productive prediction with exhaustive reviewed lexical defectivity |
 | `ocs.adjective.comparison` | old-church-slavonic | comparison | `productive-complete` | `ADJ-COMP-NEW-01`<br>`ADJ-COMP-OLD-01` | independent grammar paradigms plus strict explicit-principal-part prediction; dictionary citations remain exact |
 | `ocs.adjective.superlative` | old-church-slavonic | comparison | `productive-complete` | `PHRASE-SUP-REL-GEN-01`<br>`PHRASE-SUP-ZELO-01`<br>`ADJ-SUP-PRE-01`<br>`ADJ-COMP-OLD-01` | independent grammar inventory with structured component provenance and productive derived realization |
@@ -114,7 +115,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 | `ocs.orthography.canonical` | old-church-slavonic | orthography | `productive-complete` | `OCS-ORTHOGRAPHY-CANONICAL` | technical and source contract |
 | `ocs.orthography.accent` | old-church-slavonic | accent | `productive-complete` | `OCS-ACCENT-RECON-01` | The productive layer is explicitly reconstructed, never attested by implication. The locked dictionary independently preserves 231 acute-marked rows across 11 lexemes and 21 psili-marked rows for one lexeme as exact source spellings; no grave, kamora, or dasia rows occur. |
 | `ocs.orthography.glagolitic` | old-church-slavonic | orthography | `productive-complete` | `OCS-GLAG-JAGIC-01` | The locked dictionary preserves 28 exact Glagolitic inflection rows for one Glagolitic lemma and keeps them ahead of presentation. Productive output uses Polivanova's normalized table crosschecked against TN41's classical Jagić table; every extension beyond the reversible shared alphabet is explicitly loss-reported and never labeled attested. |
-| `ocs.lexicon.classification` | old-church-slavonic | lexicon | `implementation-missing` | `OCS-LEXICON-UNION-PENDING` | single locked dictionary lineage plus partial external evaluation |
+| `ocs.lexicon.classification` | old-church-slavonic | lexicon | `implementation-missing` | `OCS-LEXICON-UNION-01` | exhaustive reproducible claim ledger with 2,703 confirmed missing implementation routes, 6,593 incomplete-metadata claims, and 1,916 source-ambiguous claims retained explicitly rather than silently dropped |
 | `ocs.invariant-parts-of-speech` | old-church-slavonic | invariant | `not-inflectional` | `OCS-NOT-INFLECTIONAL` | lexical exact forms |
 | `syn.noun.declension` | synodal-russian | noun | `productive-complete` | `SYN-NOUN-I-HARD-M-ALYPY-34`<br>`SYN-NOUN-I-HARD-VELAR-M-ALYPY-34`<br>`SYN-NOUN-I-MIXED-M-ALYPY-33-34`<br>`SYN-NOUN-I-HARD-N-ALYPY-34`<br>`SYN-NOUN-I-SOFT-M-ALYPY-34`<br>`SYN-NOUN-I-SOFT-N-ALYPY-34`<br>`SYN-NOUN-II-HARD-ALYPY-39`<br>`SYN-NOUN-II-SOFT-ALYPY-39`<br>`SYN-NOUN-III-F-ALYPY-41`<br>`SYN-NOUN-III-M-ALYPY-41`<br>`SYN-NOUN-IV-N-EN-ALYPY-42-43`<br>`SYN-NOUN-IV-N-ES-ALYPY-42-43`<br>`SYN-NOUN-IV-N-AT-ALYPY-42-43`<br>`SYN-NOUN-IV-F-ER-ALYPY-42-43`<br>`SYN-NOUN-IV-F-OV-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43` | normative productive prediction |
 | `syn.noun.irregular` | synodal-russian | noun | `implementation-missing` | `SYN-NOUN-IRREGULAR-INVENTORY-PENDING` | partial reviewed exact/override data |
@@ -146,7 +147,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 
 ## Source frontier
 
-The frontier contains **25** source/lineage records. Authority policy: target-recension normative grammars and critical editions; manuscript-grounded dictionaries; independent target texts; manually annotated corpora; explicitly labeled inherited/comparative evidence; automatic, crowd-edited, OCR, and generated evidence only as candidates or evaluation
+The frontier contains **26** source/lineage records. Authority policy: target-recension normative grammars and critical editions; manuscript-grounded dictionaries; independent target texts; manually annotated corpora; explicitly labeled inherited/comparative evidence; automatic, crowd-edited, OCR, and generated evidence only as candidates or evaluation
 
 | ID | Tier | Type | Recension | Access | Impact |
 |---|---:|---|---|---|---|
@@ -165,7 +166,8 @@ The frontier contains **25** source/lineage records. Authority policy: target-re
 | `essja-collective-series` | 2 | academy historical-etymological dictionary | old-church-slavonic, inherited-comparative | accessible-full-text | Establishes the inherited adjective series from four through ten, its parallel -er-/-or- stems, its upper bound at ten, and which spellings have direct Old Church Slavonic citation rather than reconstruction alone. |
 | `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-full-text | Supplies independent lemma-level present, aorist, imperative, aspect, and prefix-family principal parts. The official export crosschecks the reconstructable workstems of the closed unique-verb profiles, including comparative plěv-/plě-/plěvi for sparse plěti, and independently checks the reusable-group present roots and exceptional aspect assignments; it does not by itself turn predicted cells into attestations. Its explicit verb-record schema does not treat verbal nouns as finite or nonfinite verb cells, agreeing with Polivanova's derivational boundary; productive formation is therefore licensed by the grammars, not inferred from LOVe's derivative links. |
 | `punco-lmu-reference-grammar` | 2 | scholarly digital reference grammar and annotated-corpus documentation | old-church-slavonic, mixed | accessible-metadata | Independently crosschecks the regular hard and soft pronominal class, the personal/reflexive inventory, and corpus-annotation distinctions, with mixed-period forms admitted only when separately licensed by OCS authorities. Its numeral overview independently confirms the substantival treatment and genitive-plural government of five through ten and the corresponding higher constructions. It also confirms да plus present forms for commands in all persons and crosschecks the OCS-to-Church-Slavonic analytic inventory: perfect/pluperfect, infinitival future and future-in-the-past, future perfect, conditional/aorist oscillation, optative particles, auxiliary omission, and passive participial constructions. |
-| `english-wiktionary-ocs-kaikki-2026-08-07` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-local | Current OCS exact registry and extraction target; its sense tags expose the closed impersonal candidate inventory, while grammar and LOVe independently determine morphology and the personal/impersonal distinction. |
+| `english-wiktionary-ocs-kaikki-2026-07-06` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-derived-local | Defines the exact committed runtime dictionary denominator and preserves every accepted identity as an independent source claim in the lexical-union ledger. |
+| `english-wiktionary-ocs-kaikki-2026-08-07` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-local | Supplies the complete 4,626-row refreshed lexical source frontier. It is inventoried separately from the earlier runtime extraction; its sense tags expose the closed impersonal candidate inventory, while grammar and LOVe independently determine morphology and the personal/impersonal distinction. |
 | `ud-ocs-proiel-r2.18` | 4 | manually based annotated corpus | old-church-slavonic | pinned-local | Independent real-text regression evidence; the simple-ordinal audit confirms short forms throughout the ten-member lexicon and preserves cell-specific третии spellings as corpus evidence without promoting corpus sparsity into a productive rule. Compound-ordinal examples directly exercise analytic teens, fused 19th/20th/70th/100th/1000th heads, conjunction и in 28th and 79th, and zero-connector agreement in 104th. The collective audit independently exercises singular and plural low collectives, short adjectival четворъ/десѧторъ cells, and derivative adverbs; the spelling десꙙторо remains a cell-specific corpus observation. Fractional полъ and tithe десѧтинѫ provide exact accusative-singular semantic crosschecks without licensing sibling cells. Repeated по ѥдиномоу, по дьвѣма, по пѧти десѧтъ, по сътоу, and composed-tens witnesses directly establish distributive по selecting dative cardinal components; they license the construction while larger unattested values remain productive predictions. |
 | `syntacticus-20230428` | 4 | native annotated corpus | old-church-slavonic | pinned-local | Lossless morphology and token-order crosscheck for compound ordinals, the fractional полъ and десѧтинѫ cells, and distributive по immediately governing dative cardinal components; it shares one PROIEL/TOROT witness lineage with UD and therefore is not counted as a second confirmation. |
 | `ccmh-2021-04-23` | 3 | primary-text corpus | old-church-slavonic | pinned-local | Potential independent OCS held-out evidence; the current literal spelling scan found no usable compound-ordinal match and corpus absence was not treated as a grammatical counterexample. |
@@ -184,7 +186,8 @@ The frontier contains **25** source/lineage records. Authority policy: target-re
 - `ocs-verbal-noun-frontier-pass-4` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. UT lesson 8 §36 defines a productive past-passive-platform plus -ьj- formation and soft-neuter jo declension. Polivanova §§407, 483, and 865 independently place it outside the verb paradigm but inside explicitly modeled nominal derivation, while §276 n.4 requires an independent platform for nouns whose corresponding participle is unattested. LOVe confirms that these nouns are not verb-record paradigm cells. The locked dictionary supplies 191 exact citations; 134 have independent passive-platform metadata, of which 117 reproduce the -иѥ spelling exactly and 17 retain source -ьѥ. Lunt's body remained inaccessible, so no rule claim depends on it.
 - `ocs-accent-frontier-pass-5` (2026-08-15) — new sources: trager-kiev-fragment-1933; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass confirms that the Kiev Folia is an exceptional early accented witness, whereas most accented Church Slavonic evidence is later and recension-influenced. Polivanova describes OCS accent as unstable or unobservable in relevant contexts, Lunt's accessible contents locate historical Common Slavic accent but expose no surface rules, and Unicode TN41 defines mark encoding while explicitly leaving earlier-recension use incompletely standardized. The engine therefore keeps canonical OCS accentless, preserves 252 marked dictionary rows as exact source data, and adds only an explicit evidence-carrying comparative reconstruction layer.
 - `ocs-glagolitic-frontier-pass-6` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pinned Polivanova grammar §§131–133 supplies an exhaustive compositional Glagolitic/secondary-Cyrillic table and separates natural/standard allographs, while §866 explicitly states that early Glagolitic lacks matching iotated-vowel letters. TN41 Appendix A independently identifies the shared system as the classical Jagić 1879 convention and documents Unicode and rare-letter boundaries, so no lower-authority table was imported. The pass separates the reversible core and ꙑ/ы sequences from Cyrillic-only distinctions, literal yer-plus-i collisions, rare Glagolitic collisions, and manuscript superscripts. The API realizes complete words after morphology, preserves Polivanova's shared palatalization mark, reports or rejects every non-reversible normalization, preserves existing Glagolitic input without manufacturing source provenance, and leaves diplomatic transcription out of scope.
+- `ocs-lexicon-frontier-pass-7` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass establishes a row-level denominator of 14,114 claims: all 3,081 committed identities derived from the older 4,615-row Kaikki runtime source, all 4,626 rows of the separately pinned 2026-08-07 Kaikki refresh, and all 6,407 OSD dictionary rows. Unique normalized matches merge with runtime identities; homonyms and unsafe matches remain source-qualified. LOVe's official 970-row export is reproducibly hashed and remains a principal-part crosscheck because the site states no database reuse license. GORAZD exposes search and card-index access but no confirmed public bulk snapshot or redistribution terms, so it remains manual discovery evidence. The ledger exposes rather than hides productive noun deformations, unique nouns, and source-native regular-verb routes that are still missing.
 
 ## Next checkpoint
 
-`ocs.lexicon.classification`: Define the source-union merge, import lawful lexical metadata, and eliminate silent rejects/unclassified lexemes.
+`ocs.noun.declension`: Implement Polivanova classes 2/m*, 2/m++, and 2/f*, then crosswalk and exhaustively implement every class-0 unique mixed noun without treating a historical stem analogy as a complete paradigm.

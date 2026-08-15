@@ -682,7 +682,11 @@ fn pending_lexeme(
     }))
 }
 
-pub(crate) fn canonical_lemma<'a>(entry: &'a Entry, pos: &str) -> &'a str {
+/// Select the same canonical citation used by registry extraction.
+///
+/// This is public so source-union auditing can reproduce identity matching
+/// without maintaining a second, subtly different citation heuristic.
+pub fn canonical_lemma<'a>(entry: &'a Entry, pos: &str) -> &'a str {
     if let Some(form) = entry
         .forms
         .iter()
