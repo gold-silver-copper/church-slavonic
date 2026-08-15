@@ -8,7 +8,7 @@
     "accents.tsv": 45,
     "alignments.tsv": 6,
     "conflicts.tsv": 1,
-    "engine_capabilities.tsv": 56,
+    "engine_capabilities.tsv": 75,
     "evaluation.tsv": 2140,
     "exact_forms.tsv": 2828,
     "examples.tsv": 8,
@@ -24,9 +24,10 @@
     "semantic_alignments.tsv": 6,
     "senses.tsv": 97,
     "training_passages.tsv": 20,
-    "transformation_rules.tsv": 4
+    "transformation_rules.tsv": 4,
+    "v10_exact_cell_corrections.tsv": 3
   },
-  "normalized_rows": 9680,
+  "normalized_rows": 9702,
   "quarantined_rows": 0,
   "parse_failure_ceiling": 0,
   "morphology_registry_sha256": "b483efe9217fdfa30c5d5e18b2e3ccf54e3774db297ce9785521e37a7c41c733",

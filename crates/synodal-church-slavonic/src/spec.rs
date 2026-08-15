@@ -1008,6 +1008,7 @@ fn validate_participle(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ParadigmStatus;
     use synodal_church_slavonic_core::{
         AccentMark, AccentPlacement, AccentRule, AccentScope, AdjectiveCell, Animacy, Case,
         FormSource, MetadataField, NounCell, Number, ParticipleCell, Person,
@@ -1091,6 +1092,30 @@ mod tests {
             })
             .expect("short comparison");
         assert_eq!(comparison.primary_text(), "мꙋдрѣй");
+
+        let short_superlative = adjective
+            .form(AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Short,
+                comparison: Comparison::Superlative,
+            })
+            .expect("predicate short superlative");
+        assert_eq!(
+            short_superlative.texts().collect::<Vec<_>>(),
+            ["мꙋдрѣйшъ", "мꙋдрѣй"]
+        );
+        let short_superlative_paradigm =
+            adjective.paradigm(AdjectiveForm::Short, Comparison::Superlative);
+        assert_eq!(short_superlative_paradigm.successes().count(), 9);
+        assert_eq!(
+            short_superlative_paradigm
+                .with_status(ParadigmStatus::HistoricallyInvalid)
+                .count(),
+            63
+        );
 
         let present_part = ParticiplePrincipalPart {
             short_stem: Some(SynodalWord::parse("несꙋщ").expect("stem")),

@@ -6,7 +6,7 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **40** have final states and **13** remain non-final. Source discovery has 7 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **41** have final states and **12** remain non-final. Source discovery has 7 recorded passes and has not converged.
 
 ## State totals
 
@@ -16,8 +16,8 @@ The matrix contains **53** required system contracts: **40** have final states a
 | `implementation-missing` | 9 |
 | `irregular-exact-complete` | 2 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 35 |
-| `source-review-open` | 4 |
+| `productive-complete` | 36 |
+| `source-review-open` | 3 |
 
 ## Recension totals
 
@@ -25,7 +25,7 @@ The matrix contains **53** required system contracts: **40** have final states a
 |---|---:|---:|
 | cross-recension | 3 | 4 |
 | old-church-slavonic | 26 | 26 |
-| synodal-russian | 11 | 23 |
+| synodal-russian | 12 | 23 |
 
 ## Category totals
 
@@ -54,7 +54,7 @@ The matrix contains **53** required system contracts: **40** have final states a
 | old-church-slavonic | verbal-noun | 1 | 1 |
 | synodal-russian | adjective | 1 | 1 |
 | synodal-russian | analytic-form | 1 | 2 |
-| synodal-russian | comparison | 0 | 1 |
+| synodal-russian | comparison | 1 | 1 |
 | synodal-russian | determiner | 0 | 1 |
 | synodal-russian | finite-verb | 3 | 5 |
 | synodal-russian | invariant | 1 | 1 |
@@ -71,7 +71,6 @@ The matrix contains **53** required system contracts: **40** have final states a
 
 ## Non-final systems
 
-- `syn.adjective.short-superlative` — **source-review-open**: Complete source discovery and either implement the category or finalize every cell as absent-from-recension with citations.
 - `syn.pronoun` — **implementation-missing**: Complete all pronoun subtypes, productive relationships, clitics, lexical restrictions, and source-union identities.
 - `syn.determiner` — **implementation-missing**: Finish velar and exceptional determiner families, then separate final productive and irregular matrix entries.
 - `syn.numeral` — **implementation-missing**: Implement complete cardinal, collective, fractional, distributive, compound, government, and irregular contracts.
@@ -117,8 +116,8 @@ The matrix contains **53** required system contracts: **40** have final states a
 | `ocs.invariant-parts-of-speech` | old-church-slavonic | invariant | `not-inflectional` | `OCS-NOT-INFLECTIONAL` | lexical exact forms |
 | `syn.noun.declension` | synodal-russian | noun | `productive-complete` | `SYN-NOUN-I-HARD-M-ALYPY-34`<br>`SYN-NOUN-I-U-STEM-M-ALYPY-37-38`<br>`SYN-NOUN-I-HARD-M-IN-ETHNONYM-ALYPY-37`<br>`SYN-NOUN-I-M-UD-ES-ALYPY-44`<br>`SYN-NOUN-I-HARD-VELAR-M-ALYPY-34`<br>`SYN-NOUN-I-MIXED-M-ALYPY-33-34`<br>`SYN-NOUN-I-HARD-N-ALYPY-34`<br>`SYN-NOUN-I-SOFT-M-ALYPY-34`<br>`SYN-NOUN-I-SOFT-M-TEL-AGENT-ALYPY-37`<br>`SYN-NOUN-I-SOFT-M-LORD-ALYPY-35-41`<br>`SYN-NOUN-I-SOFT-J-M-ALYPY-34-37`<br>`SYN-NOUN-I-SOFT-EY-M-ALYPY-34-37`<br>`SYN-NOUN-I-SOFT-N-ALYPY-34`<br>`SYN-NOUN-I-SOFT-N-ISHCHE-ALYPY-37`<br>`SYN-NOUN-I-SOFT-IE-N-ALYPY-34-37`<br>`SYN-NOUN-II-HARD-ALYPY-39`<br>`SYN-NOUN-II-HARD-VELAR-ALYPY-39-40`<br>`SYN-NOUN-II-SOFT-ALYPY-39`<br>`SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40`<br>`SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40`<br>`SYN-NOUN-II-MIXED-ALYPY-39-40`<br>`SYN-NOUN-III-F-ALYPY-41`<br>`SYN-NOUN-III-M-ALYPY-41`<br>`SYN-NOUN-IV-N-EN-ALYPY-42-43`<br>`SYN-NOUN-IV-N-ES-ALYPY-42-43`<br>`SYN-NOUN-IV-N-ES-ALT-FIRST-ALYPY-42-44`<br>`SYN-NOUN-IV-N-ES-PAIRED-DUAL-ALYPY-44`<br>`SYN-NOUN-IV-N-AT-ALYPY-42-43`<br>`SYN-NOUN-IV-F-ER-ALYPY-42-43`<br>`SYN-NOUN-IV-F-ER-DAUGHTER-ALYPY-42-44`<br>`SYN-NOUN-IV-F-OV-ALYPY-42-44`<br>`SYN-NOUN-IV-F-OV-SYNCOPATING-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-DAY-ALYPY-43`<br>`SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43`<br>`SYN-NOUN-INDECLINABLE-ALYPY-37` | normative productive prediction |
 | `syn.noun.irregular` | synodal-russian | noun | `irregular-exact-complete` | `SYN-REGISTRY-IRREGULAR-OVERRIDE`<br>`SYN-CALLER-IRREGULAR-OVERRIDE` | reviewed normative families plus exact target attestations; unattested cells remain visibly productive predictions |
-| `syn.adjective.positive-comparison` | synodal-russian | adjective | `productive-complete` | `SYN-ADJ-SHORT-HARD-ALYPY-53`<br>`SYN-ADJ-SHORT-SOFT-ALYPY-53`<br>`SYN-ADJ-LONG-HARD-ALYPY-57`<br>`SYN-ADJ-LONG-SOFT-ALYPY-57`<br>`SYN-ADJ-COMPARATIVE-LONG-ALYPY-58`<br>`SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59`<br>`SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-98` | normative productive prediction |
-| `syn.adjective.short-superlative` | synodal-russian | comparison | `source-review-open` | `SYN-ADJ-SHORT-SUPERLATIVE-REVIEW` | negative grammar evidence under review |
+| `syn.adjective.positive-comparison` | synodal-russian | adjective | `productive-complete` | `SYN-ADJ-SHORT-HARD-ALYPY-53`<br>`SYN-ADJ-SHORT-SOFT-ALYPY-53`<br>`SYN-ADJ-LONG-HARD-ALYPY-57`<br>`SYN-ADJ-LONG-SOFT-ALYPY-57`<br>`SYN-ADJ-COMPARATIVE-LONG-ALYPY-58`<br>`SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59`<br>`SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | normative productive prediction |
+| `syn.adjective.short-superlative` | synodal-russian | comparison | `productive-complete` | `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` | one direct liturgical predicate form plus source-constrained productive agreement predictions |
 | `syn.pronoun` | synodal-russian | pronoun | `implementation-missing` | `SYN-PRONOUN-COMPLETE-PENDING` | broad but incomplete exact closed-class coverage |
 | `syn.determiner` | synodal-russian | determiner | `implementation-missing` | `SYN-DETERMINER-ADJECTIVAL`<br>`SYN-DETERMINER-IRREGULAR-PENDING` | productive regular background plus partial exact irregulars |
 | `syn.numeral` | synodal-russian | numeral | `implementation-missing` | `SYN-NUMERAL-ORDINAL-ADJECTIVAL`<br>`SYN-NUMERAL-COMPLETE-PENDING` | productive ordinal plus partial exact cardinal/collective data |
@@ -169,7 +168,7 @@ The frontier contains **26** source/lineage records. Authority policy: target-re
 | `ud-ocs-proiel-r2.18` | 4 | manually based annotated corpus | old-church-slavonic | pinned-local | Independent real-text regression evidence; the simple-ordinal audit confirms short forms throughout the ten-member lexicon and preserves cell-specific третии spellings as corpus evidence without promoting corpus sparsity into a productive rule. Compound-ordinal examples directly exercise analytic teens, fused 19th/20th/70th/100th/1000th heads, conjunction и in 28th and 79th, and zero-connector agreement in 104th. The collective audit independently exercises singular and plural low collectives, short adjectival четворъ/десѧторъ cells, and derivative adverbs; the spelling десꙙторо remains a cell-specific corpus observation. Fractional полъ and tithe десѧтинѫ provide exact accusative-singular semantic crosschecks without licensing sibling cells. Repeated по ѥдиномоу, по дьвѣма, по пѧти десѧтъ, по сътоу, and composed-tens witnesses directly establish distributive по selecting dative cardinal components; they license the construction while larger unattested values remain productive predictions. |
 | `syntacticus-20230428` | 4 | native annotated corpus | old-church-slavonic | pinned-local | Lossless morphology and token-order crosscheck for compound ordinals, the fractional полъ and десѧтинѫ cells, and distributive по immediately governing dative cardinal components; it shares one PROIEL/TOROT witness lineage with UD and therefore is not counted as a second confirmation. |
 | `ccmh-2021-04-23` | 3 | primary-text corpus | old-church-slavonic | pinned-local | Potential independent OCS held-out evidence; the current literal spelling scan found no usable compound-ordinal match and corpus absence was not treated as a grammatical counterexample. |
-| `alypy-gamanovich-grammar-web-2023` | 1 | normative grammar | synodal-russian | pinned-local | Defines all currently admitted Synodal productive rules and the open supine, verbal-noun, comparison, closed-class, accent, and analytic reviews. |
+| `alypy-gamanovich-grammar-web-2023` | 1 | normative grammar | synodal-russian | pinned-local | Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Supine, verbal-noun, remaining closed-class, accent, and analytic reviews stay open. |
 | `unicode-tn41-revision-1` | 1 | technical standard | mixed | pinned-local | Defines safe stored text, validation, mark ordering, numeral notation, and collation. For OCS reconstruction it licenses U+0301 as a neutral scholarly stress renderer and exact preservation of U+0485/U+0486 and related source marks, but it supplies no productive morphological accent rule. Appendix A identifies the Jagić 1879 Glagolitic/Cyrillic transcription as the classical scholarly system, specifies its shared-letter and two yeri-sequence mappings, distinguishes reversible from non-reversible conversion, and documents its Unicode and rare-letter boundaries. |
 | `russian-national-corpus-church-slavonic` | 4 | large annotated corpus | synodal-russian, mixed | accessible-metadata | 5,364,905-word, 1,447-text held-out discovery/evaluation frontier; never a sole grammar oracle. |
 | `gorazd` | 2 | scholarly digital dictionary/card index | old-church-slavonic | accessible-metadata | Manual lexeme and variant discovery frontier. |
@@ -188,4 +187,4 @@ The frontier contains **26** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`syn.adjective.short-superlative`: Complete source discovery and either implement the category or finalize every cell as absent-from-recension with citations.
+`syn.pronoun`: Complete all pronoun subtypes, productive relationships, clitics, lexical restrictions, and source-union identities.

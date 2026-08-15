@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     error::Error,
     fs,
     io::{Read, Write},
@@ -19,6 +19,7 @@ use synodal_church_slavonic_core::FormSource;
 const EVALUATION_HEADER: &str = "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
 const PHRASE_EVALUATION_HEADER: &str = "id\tconstruction\tlemma\tperson\tnumber\tgender\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
 const ABBREVIATION_EVALUATION_HEADER: &str = "id\tlexeme_id\tsense_id\tcell\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
+const EXACT_CELL_CORRECTION_HEADER: &str = "correction_id\tlexeme_id\tcell\tobsolete_expanded\thistorical_review_id\tobsolete_evaluation_id\treplacement_rule_id\tdecision\treview_note";
 
 #[derive(Debug, Deserialize)]
 struct AuthoritativeSourceManifest {
@@ -143,6 +144,7 @@ struct EvaluationReport {
     target_recension: &'static str,
     fixture_source: &'static str,
     fixture_rows: usize,
+    retracted_fixture_rows: Vec<String>,
     phrase_fixture_rows: usize,
     abbreviation_fixture_rows: usize,
     expanded: MetricSlice,
@@ -713,6 +715,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         "senses.tsv",
         "transformation_rules.tsv",
         "training_passages.tsv",
+        "v10_exact_cell_corrections.tsv",
     ] {
         let text = fs::read_to_string(root.join("data/synodal").join(name))?;
         let rows = text.lines().skip(1).filter(|line| !line.is_empty()).count();
@@ -1250,7 +1253,15 @@ fn check_evaluation_report(root: &Path) -> Result<(), Box<dyn Error>> {
 }
 
 fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
-    let rows = load_evaluation(&root.join("data/synodal/evaluation.tsv"))?;
+    let mut rows = load_evaluation(&root.join("data/synodal/evaluation.tsv"))?;
+    let retracted_evaluation_ids =
+        load_retracted_evaluation_ids(&root.join("data/synodal/v10_exact_cell_corrections.tsv"))?;
+    for id in &retracted_evaluation_ids {
+        if !rows.iter().any(|row| &row.id == id) {
+            return Err(format!("retracted Synodal evaluation row {id:?} does not exist").into());
+        }
+    }
+    rows.retain(|row| !retracted_evaluation_ids.contains(&row.id));
     let phrase_rows = load_phrase_evaluation(&root.join("data/synodal/phrase_evaluation.tsv"))?;
     let abbreviation_rows =
         load_abbreviation_evaluation(&root.join("data/synodal/abbreviation_evaluation.tsv"))?;
@@ -1658,10 +1669,11 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
         exact_registry_round_trip(root)?;
 
     Ok(EvaluationReport {
-        schema_version: 4,
+        schema_version: 5,
         target_recension: "synodal-russian",
         fixture_source: "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
         fixture_rows: rows.len(),
+        retracted_fixture_rows: retracted_evaluation_ids.into_iter().collect(),
         phrase_fixture_rows: phrase_rows.len(),
         abbreviation_fixture_rows: abbreviation_rows.len(),
         expanded,
@@ -1884,6 +1896,32 @@ fn load_exact_keys(
     Ok(keys)
 }
 
+fn load_retracted_evaluation_ids(path: &Path) -> Result<BTreeSet<String>, Box<dyn Error>> {
+    let text = fs::read_to_string(path)?;
+    let mut lines = text.lines();
+    if lines.next() != Some(EXACT_CELL_CORRECTION_HEADER) {
+        return Err(format!("invalid exact-cell correction header in {}", path.display()).into());
+    }
+    let mut ids = BTreeSet::new();
+    for (offset, line) in lines.enumerate() {
+        if line.is_empty() {
+            continue;
+        }
+        let fields = line.split('\t').collect::<Vec<_>>();
+        if fields.len() != 9
+            || fields[5].is_empty()
+            || fields[7] != "retracted"
+            || fields[8].trim().is_empty()
+        {
+            return Err(format!("invalid exact-cell correction row {}", offset + 2).into());
+        }
+        if !ids.insert(fields[5].to_owned()) {
+            return Err(format!("duplicate retracted evaluation ID {:?}", fields[5]).into());
+        }
+    }
+    Ok(ids)
+}
+
 fn load_evaluation(path: &Path) -> Result<Vec<EvaluationRow>, Box<dyn Error>> {
     let text = fs::read_to_string(path)?;
     let mut lines = text.lines();
@@ -2056,6 +2094,7 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
     let mut markdown = format!(
         "# Synodal evaluation\n\n\
          Target recension: `synodal-russian`. Fixture: {} ({} held-out token cells).\n\n\
+         The correction ledger excludes {} historically preserved but grammatically retracted evaluation rows from scoring.\n\n\
          | Metric | Returned | Top-1 | Top-k | Abstained | Total |\n\
          |---|---:|---:|---:|---:|---:|\n\
          | Expanded | {} | {} | {} | {} | {} |\n\
@@ -2068,6 +2107,7 @@ fn evaluation_markdown(report: &EvaluationReport) -> String {
          Inherited evidence contributed {}/{} returned held-out cells, with {}/{} exact expanded forms. The reviewed alignment registry has {} accepted mappings, {} aligned target lexemes, and {} rejected negative controls.\n",
         report.fixture_source,
         report.fixture_rows,
+        report.retracted_fixture_rows.len(),
         report.expanded.returned,
         report.expanded.top_1_correct,
         report.expanded.top_k_correct,

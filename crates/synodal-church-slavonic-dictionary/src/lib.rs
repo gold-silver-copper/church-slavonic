@@ -5,8 +5,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use serde::{Deserialize, Serialize};
 use synodal_church_slavonic::{
-    AdjectiveCell, AdjectiveForm, Animacy, Comparison, Error, FiniteTense, FiniteVerbCell, Gender,
-    GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, LexemeSummary,
+    AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, Error, FiniteTense, FiniteVerbCell,
+    Gender, GrammarCell, ImperativeCell, Inflector, LParticipleCell, LexemeId, LexemeSummary,
     LexicalMetadataSummary, MetadataField, Number, NumeralCell, NumeralKind, PartOfSpeech,
     ParticipleCell, ParticipleTense, ParticipleVoice, Person, PronounCell, Result, abbreviation,
     capabilities_by_id, grammar_cell_registry_keys, lexemes, lexical_metadata,
@@ -961,7 +961,9 @@ fn adjectival_cell_is_supported(cell: AdjectiveCell, has_comparative_stem: bool)
         (Comparison::Positive, _) => true,
         (Comparison::Comparative, _) => has_comparative_stem,
         (Comparison::Superlative, AdjectiveForm::Long) => has_comparative_stem,
-        (Comparison::Superlative, AdjectiveForm::Short) => false,
+        (Comparison::Superlative, AdjectiveForm::Short) => {
+            has_comparative_stem && cell.case == Case::Nominative
+        }
     }
 }
 

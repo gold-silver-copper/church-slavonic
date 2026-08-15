@@ -117,7 +117,7 @@ use synodal_church_slavonic::{
     Comparison, ComparisonFormation, Gender, Number, SpecificationSource,
 };
 
-let source = SpecificationSource::new("alypy-58", "alypy", "Alypy §§58, 98")?;
+let source = SpecificationSource::new("alypy-58", "alypy", "Alypy §§58, 60")?;
 let adjective = AdjectiveSpec::new("мꙋдръ", "мꙋдр", AdjectiveClass::Hard, source)?
     .comparison("мꙋдрѣйш", ComparisonFormation::LaterYat)?;
 let form = adjective.form(AdjectiveCell {
@@ -131,6 +131,11 @@ let form = adjective.form(AdjectiveCell {
 assert_eq!(form.primary_text(), "мꙋдрѣй");
 # Ok::<(), synodal_church_slavonic::Error>(())
 ```
+
+The same independent comparison metadata realizes the exceptional short
+superlative only in predicate-compatible nominative agreement cells. Alypy §59
+directly attests the suffix-retaining masculine pattern `и҆́стиннѣйшъ`; oblique
+and vocative short-superlative requests fail as historically invalid.
 
 A verb keeps its present edges and non-present stems independent:
 

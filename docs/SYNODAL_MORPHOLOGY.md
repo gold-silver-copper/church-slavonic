@@ -105,8 +105,9 @@ reusable accent paradigm; expanded rules never invent stress.
 | Lexeme-specific `камень` contract | `SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43` | Alypy §43 | independently supplied `камен-`; ordered cited singular, dual, and plural alternatives; the separate `каменїе` collective is never emitted |
 | Short adjectives, hard/soft | `SYN-ADJ-SHORT-{HARD,SOFT}-ALYPY-53` | Alypy §§53–55 | positive degree only; explicit stem/class/agreement |
 | Long adjectives, hard/soft | `SYN-ADJ-LONG-{HARD,SOFT}-ALYPY-57` | Alypy §§56–57 | positive degree only; explicit stem/class/agreement |
-| Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full forms only |
-| Short comparison | `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-98` | Alypy §58 citation edges and §98 complete declension | independent comparison stem plus `AncientHard`, `AncientSoft`, `LaterYat`, or `LaterAi`; 63 valid canonical cells; vocative invalid |
+| Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full agreement inventory |
+| Short comparison | `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | Alypy §§58 and 60 | independent comparison stem plus `AncientHard`, `AncientSoft`, `LaterYat`, or `LaterAi`; all 72 canonical cells, including the source-defined vocatives, locatives, dual endings, and masculine-plural variant |
+| Predicate short superlative | `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` | Alypy §§59–60, 125, 128 | nine nominative gender/number cells only; directly attested suffix-retaining singular masculine first, followed by the ordinary §60 citation form; oblique and vocative cells are historically invalid |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
 | Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
@@ -306,7 +307,8 @@ The closed grammar enums represent these gaps so paradigms retain failures:
   arbitrary irregulars require explicit ordered cell forms;
 - automatic velar/sibilant alternation outside the typed noun and aorist seams;
 - automatic comparison-stem formation and comparison stems other than explicitly
-  supplied typed series; short superlatives remain unsupported;
+  supplied typed series; short superlatives are restricted to the exceptional
+  predicate nominatives licensed by Alypy §§59, 125, and 128;
 - reflexive, relative, interrogative, indefinite, and negative pronouns beyond
   reviewed exact cells; the third-person paradigm is exact, not productive;
   velar-stem determiners such as full `всѧкъ`; collective,

@@ -563,9 +563,9 @@ authority_justification = "Principal pinned normative anchor for the target Syno
 license = "Ponomar site and underlying edition notices must be preserved"
 redistribution = "evaluation-only"
 upstream_lineage = ["Alypy 1991 edition", "Ponomar corrected web transcription"]
-reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§79–104"]
+reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§79–104", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
 rule_ids = ["SYN-*"]
-impact = "Defines all currently admitted Synodal productive rules and the open supine, verbal-noun, comparison, closed-class, accent, and analytic reviews."
+impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Supine, verbal-noun, remaining closed-class, accent, and analytic reviews stay open."
 conflicts = ["Lexeme-specific variants must not be generalized to a class."]
 access_status = "pinned-local"
 

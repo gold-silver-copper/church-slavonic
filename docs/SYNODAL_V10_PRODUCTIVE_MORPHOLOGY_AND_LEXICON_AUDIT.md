@@ -16,7 +16,7 @@ Corpus coverage is not the optimization target. The frozen corpus checkpoint rem
 
 ## Capability summary
 
-The matrix contains 75 reviewed system/subtype rows: 65 productive rows, 5 rows involving exact tables, 2 explicit irregular rows, and 3 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
+The matrix contains 75 reviewed system/subtype rows: 66 productive rows, 5 rows involving exact tables, 2 explicit irregular rows, and 2 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
 
 The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. Every row records its target recension, valid and invalid inventory, required metadata, alternations, accent contract, source citation, golden/boundary example, implementation, test, and typed failure.
 
@@ -65,9 +65,9 @@ The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. 
 | adjective | long-hard-positive | productive | `SYN-ADJ-LONG-HARD-ALYPY-57` | 72 canonical cells: 3 genders × 3 numbers × 7 cases, plus alternate-animacy accusatives | lemma; stem; hard class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §57 | `OrthographicMetadataRequired` |
 | adjective | long-soft-positive | productive | `SYN-ADJ-LONG-SOFT-ALYPY-57` | 72 canonical cells: 3 genders × 3 numbers × 7 cases, plus alternate-animacy accusatives | lemma; stem; soft class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §57 | `OrthographicMetadataRequired` |
 | adjective | long-comparative | productive | `SYN-ADJ-COMPARATIVE-LONG-ALYPY-58` | 72 canonical cells: 3 genders × 3 numbers × 7 cases, plus alternate-animacy accusatives | independent comparison stem; typed formation | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §58 | `MissingPrincipalPart` |
-| adjective | short-comparative | productive | `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-98` | 63 canonical cells; singular/dual/plural; six cases; accusative animacy | independent comparison stem; AncientHard/AncientSoft/LaterYat/LaterAi formation | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §58 citation forms and §98 complete declension | `HistoricallyInvalidCell / ContradictoryMetadata` |
+| adjective | short-comparative | productive | `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | 72 canonical cells; singular/dual/plural; seven cases including vocative; accusative animacy | independent comparison stem; AncientHard/AncientSoft/LaterYat/LaterAi formation | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §§58 and 60 complete short-comparison declension | `ContradictoryMetadata` |
 | adjective | long-superlative | productive | `SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59` | 72 canonical cells: 3 genders × 3 numbers × 7 cases, plus alternate-animacy accusatives | independent reviewed superlative/comparison stem | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §59 | `MissingPrincipalPart` |
-| adjective | short-superlative | unsupported | `SYN-ADJ-SHORT-SUPERLATIVE-UNSUPPORTED` | none | reviewed independent formation | unknown | Alypy Gamanovich grammar §59 does not license the engine's guessed short formation | `UnsupportedFormation` |
+| adjective | short-superlative-predicate | productive-source-bounded | `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` | 9 canonical nominative cells: 3 genders × singular/dual/plural | independent comparison stem; AncientHard/AncientSoft/LaterYat/LaterAi formation; nominative agreement | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §59 direct 27 February predicate witness; §§60, 125, 128 morphology and syntax | `HistoricallyInvalidCell / ContradictoryMetadata` |
 | verb | present | productive | `SYN-VERB-PRESENT-ALYPY-80` | 3 persons × singular/dual/plural | conjugation; present medial stem; independent 1sg and 3pl edges | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §§79–80 | `MissingPrincipalPart` |
 | verb | aorist-vowel | productive | `SYN-VERB-AORIST-VOWEL-ALYPY-86` | 3 persons × singular/dual/plural | aorist stem; VowelStem formation | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §86 | `UnsupportedFormation` |
 | verb | aorist-consonant | productive | `SYN-VERB-AORIST-CONSONANT-ALYPY-86` | 3 persons × singular/dual/plural | aorist stem; ConsonantStem formation | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §86 | `MissingPrincipalPart` |
@@ -112,6 +112,9 @@ The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. 
 - Fourth-declension contracts distinguish ordinary and first-declension-alternating `-ес-` neuters, paired-body duals, `дщи`, ordinary and syncopating `-ов-/-в-` feminines, general masculine `-ен-`, `день`, and `камень`. The collective `каменїе` remains separate.
 - `SYN-NOUN-INDECLINABLE-ALYPY-37` provides a typed invariant noun profile. Optional declension is expressed only by an explicitly selected productive class or caller irregular cells.
 
+- `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` follows the complete §60 adjective table rather than the distinct §98 active-participle table: all seven cases are represented, including vocatives, short-comparison locatives, dual endings, and the ordered masculine-plural nominative variant.
+- `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` represents the exceptional but directly attested short-superlative predicate. It exposes exactly nine nominative gender/number cells, preserves suffix-retaining singular masculine `и҆́стиннѣйшъ` first, and rejects every oblique or vocative request as historically invalid.
+
 ## Lexical providers and ordered batches
 
 `StaticLexemeProvider` adapts the generated registry to the same `LexemeProvider` snapshot contract as application entries. `Lexicon::compose` sorts by stable ID, rejects duplicate IDs with `ProviderConflict`, and preserves homographic ambiguity. Supplied exact cells win before irregular cells and productive fallback. `Lexicon::batch`, provider noun paradigms, and provider `VerbSystem` paradigms retain order, variants, provenance, and one typed outcome per request.
@@ -148,7 +151,6 @@ cargo xtask check-all
 
 ## Remaining source blockers
 
-- **adjective / short-superlative:** all cells Failure: `UnsupportedFormation`.
 - **verb / supine:** all cells Failure: `UnsupportedCell`.
 - **verb / verbal-noun:** all cells Failure: `UnsupportedCell`.
 

@@ -45,9 +45,11 @@ text; loss-reporting transliteration; and versioned UTN #41 Synodal collation.
 Every successful `FormSet` is nonempty and every variant records target
 recension, source kind, confidence, evidence, assumptions, warnings, and a rule
 trace. Generated forms are never called attested. Unreviewed stem extensions,
-short superlatives, supines, verbal nouns, and unreviewed declensions fail with
-typed errors. Arbitrary irregular paradigms are expressed by the facade's
-validated ordered cell overrides. Every error also
+unrestricted or oblique short superlatives, supines, verbal nouns, and
+unreviewed declensions fail with typed errors. The exceptional short-superlative
+predicate has a source-bounded nominative agreement contract. Arbitrary
+irregular paradigms are expressed by the facade's validated ordered cell
+overrides. Every error also
 exposes a stable machine-readable `ErrorCode`.
 
 `SynodalWord` rejects whitespace, other scripts, private-use code points,

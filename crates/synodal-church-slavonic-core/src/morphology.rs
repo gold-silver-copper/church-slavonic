@@ -850,10 +850,16 @@ pub fn decline_adjective(
         return decline_short_comparison(lexeme, stem, formation, cell, profile);
     }
     if cell.form == AdjectiveForm::Short && cell.comparison == Comparison::Superlative {
-        return Err(Error::UnsupportedFormation {
-            formation: "short superlative requires an independently reviewed Synodal formation"
-                .into(),
-        });
+        let stem = lexeme
+            .comparative_stem
+            .as_ref()
+            .ok_or(Error::MissingPrincipalPart {
+                field: MetadataField::ComparisonStem,
+            })?;
+        let formation = lexeme.comparison_formation.ok_or(Error::MissingMetadata {
+            field: MetadataField::ComparisonFormation,
+        })?;
+        return decline_short_superlative_predicate(lexeme, stem, formation, cell, profile);
     }
     let (stem, ending, rule) = match cell.comparison {
         Comparison::Positive => (
@@ -1202,9 +1208,42 @@ fn decline_short_comparison(
     let expanded = decline_short_comparison_stem(stem.canonical(), cell, citation)?;
     normative_variants(
         expanded,
-        "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-98",
+        "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60",
         profile,
         "short-comparison-declension",
+        lexeme.lemma.canonical(),
+    )
+}
+
+fn decline_short_superlative_predicate(
+    lexeme: &AdjectiveLexeme,
+    stem: &SynodalWord,
+    formation: ComparisonFormation,
+    cell: AdjectiveCell,
+    profile: OrthographyProfile,
+) -> Result<FormSet> {
+    if cell.case != Case::Nominative {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "Alypy §59 licenses the exceptional short superlative only as the nominal part of a compound predicate, and §125 assigns that predicate complement to the nominative"
+                .into(),
+        });
+    }
+
+    let citation = comparison_citation_variants(stem.canonical(), formation, cell.gender)?;
+    let mut expanded = decline_short_comparison_stem(stem.canonical(), cell, citation)?;
+    if cell.number == Number::Singular && cell.gender == Gender::Masculine {
+        // Alypy §59 directly attests и҆́стиннѣйшъ, with the comparison suffix
+        // retained before the short masculine ending. Keep that source-defined
+        // predicate pattern first, followed by the ordinary short-comparison
+        // citation form that §59 also permits to carry superlative semantics.
+        expanded.insert(0, join(stem.canonical(), "ъ"));
+        expanded.dedup();
+    }
+    normative_variants(
+        expanded,
+        "SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128",
+        profile,
+        "short-superlative-predicate",
         lexeme.lemma.canonical(),
     )
 }
@@ -1218,7 +1257,8 @@ fn decline_short_active_participle(
 ) -> Result<FormSet> {
     let citation =
         active_participle_citation_variants(stem.canonical(), formation, cell.agreement.gender)?;
-    let expanded = decline_short_comparison_stem(stem.canonical(), cell.agreement, citation)?;
+    let expanded =
+        decline_short_active_participle_stem(stem.canonical(), cell.agreement, citation)?;
     let rule = match cell.tense {
         ParticipleTense::Present => "SYN-VERB-PARTICIPLE-PRESENT-ACTIVE-SHORT-ALYPY-95-98",
         ParticipleTense::Past => "SYN-VERB-PARTICIPLE-PAST-ACTIVE-SHORT-ALYPY-96-98",
@@ -1237,12 +1277,10 @@ fn decline_short_comparison_stem(
     cell: AdjectiveCell,
     citation: Option<Vec<String>>,
 ) -> Result<Vec<String>> {
-    if cell.case == Case::Vocative {
-        return Err(Error::HistoricallyInvalidCell {
-            reason: "Alypy §98 gives no vocative in the short-comparison declension".into(),
-        });
-    }
-    if cell.number == Number::Singular && cell.case == Case::Nominative {
+    if cell.number == Number::Singular
+        && (matches!(cell.case, Case::Nominative | Case::Vocative)
+            || (cell.gender == Gender::Neuter && cell.case == Case::Accusative))
+    {
         return citation.ok_or_else(|| Error::ContradictoryMetadata {
             reason: "short comparison citation variants are missing".into(),
         });
@@ -1251,12 +1289,89 @@ fn decline_short_comparison_stem(
     let mut variants = vec![primary];
     if cell.case == Case::Accusative
         && cell.animacy == Animacy::Animate
+        && cell.number == Number::Singular
+        && cell.gender == Gender::Masculine
+    {
+        let genitive = join(
+            stem,
+            short_comparison_ending(AdjectiveCell {
+                case: Case::Genitive,
+                ..cell
+            })?,
+        );
+        if !variants.contains(&genitive) {
+            variants.push(genitive);
+        }
+    }
+    if cell.number == Number::Plural
+        && matches!(cell.case, Case::Nominative | Case::Vocative)
+        && cell.gender == Gender::Masculine
+    {
+        variants.push(join(stem, "и"));
+    }
+    Ok(variants)
+}
+
+fn short_comparison_ending(cell: AdjectiveCell) -> Result<&'static str> {
+    use Case::{
+        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
+        Nominative as Nom, Vocative as Voc,
+    };
+    use Gender::{Feminine as F, Masculine as M, Neuter as N};
+    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+    Ok(match (cell.number, cell.gender, cell.case) {
+        (Sg, _, Nom | Voc) | (Sg, N, Acc) => {
+            return Err(Error::ContradictoryMetadata {
+                reason: "short comparison citation cells require a typed citation edge".into(),
+            });
+        }
+        (Sg, M | N, Gen) => "а",
+        (Sg, F, Gen | Dat | Loc) => "и",
+        (Sg, M | N, Dat) => "ꙋ",
+        (Sg, M, Acc) => "ъ",
+        (Sg, F, Acc) => "ꙋ",
+        (Sg, M | N, Ins) => "имъ",
+        (Sg, F, Ins) => "ею",
+        (Sg, M | N, Loc) => "и",
+        (Du, M, Nom | Acc | Voc) => "а",
+        (Du, F | N, Nom | Acc | Voc) => "и",
+        (Du, _, Gen | Loc) => "ꙋ",
+        (Du, _, Dat | Ins) => "има",
+        (Pl, M, Nom | Voc) => "е",
+        (Pl, F, Nom | Voc) => "ѧ",
+        (Pl, N, Nom | Acc | Voc) => "а",
+        (Pl, _, Gen | Loc) => "ихъ",
+        (Pl, _, Dat) => "ымъ",
+        (Pl, M | F, Acc) => "ѧ",
+        (Pl, _, Ins) => "ими",
+    })
+}
+
+fn decline_short_active_participle_stem(
+    stem: &str,
+    cell: AdjectiveCell,
+    citation: Option<Vec<String>>,
+) -> Result<Vec<String>> {
+    if cell.case == Case::Vocative {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "Alypy §98 gives no vocative in the short active-participle declension".into(),
+        });
+    }
+    if cell.number == Number::Singular && cell.case == Case::Nominative {
+        return citation.ok_or_else(|| Error::ContradictoryMetadata {
+            reason: "short active-participle citation variants are missing".into(),
+        });
+    }
+    let primary = join(stem, short_active_participle_ending(cell)?);
+    let mut variants = vec![primary];
+    if cell.case == Case::Accusative
+        && cell.animacy == Animacy::Animate
         && (cell.gender == Gender::Masculine
             || (cell.gender == Gender::Feminine && cell.number == Number::Plural))
     {
         let genitive = join(
             stem,
-            short_comparison_ending(AdjectiveCell {
+            short_active_participle_ending(AdjectiveCell {
                 case: Case::Genitive,
                 ..cell
             })?,
@@ -1274,7 +1389,7 @@ fn decline_short_comparison_stem(
     Ok(variants)
 }
 
-fn short_comparison_ending(cell: AdjectiveCell) -> Result<&'static str> {
+fn short_active_participle_ending(cell: AdjectiveCell) -> Result<&'static str> {
     use Case::{
         Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
         Nominative as Nom, Vocative as Voc,
@@ -1284,7 +1399,7 @@ fn short_comparison_ending(cell: AdjectiveCell) -> Result<&'static str> {
     Ok(match (cell.number, cell.gender, cell.case) {
         (Sg, _, Nom) => {
             return Err(Error::ContradictoryMetadata {
-                reason: "short comparison nominatives require a typed citation edge".into(),
+                reason: "short active-participle nominatives require a typed citation edge".into(),
             });
         }
         (Sg, M | N, Gen) => "а",
@@ -1309,7 +1424,7 @@ fn short_comparison_ending(cell: AdjectiveCell) -> Result<&'static str> {
         (Pl, _, Ins) => "ими",
         (_, _, Voc) => {
             return Err(Error::HistoricallyInvalidCell {
-                reason: "short comparison has no vocative cell".into(),
+                reason: "short active participle has no vocative cell".into(),
             });
         }
     })
@@ -2986,10 +3101,13 @@ fn normative_citation(rule: &str) -> &'static str {
             "Alypy (Gamanovich), §§56–57"
         }
         "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58" => "Alypy (Gamanovich), §58",
-        "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-98" => {
-            "Alypy (Gamanovich), §58 citation forms and §98 complete declension"
+        "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60" => {
+            "Alypy (Gamanovich), §§58 and 60 short-comparison declension"
         }
         "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59" => "Alypy (Gamanovich), §59",
+        "SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128" => {
+            "Alypy (Gamanovich), §§59–60, 125, and 128"
+        }
         "SYN-VERB-PRESENT-ALYPY-80" => "Alypy (Gamanovich), §§79–80",
         "SYN-VERB-AORIST-VOWEL-ALYPY-86" | "SYN-VERB-AORIST-CONSONANT-ALYPY-86" => {
             "Alypy (Gamanovich), §86"
@@ -4298,29 +4416,70 @@ mod tests {
     }
 
     #[test]
-    fn short_superlative_remains_explicitly_unsupported() {
+    fn short_superlative_is_bounded_to_nominative_predicate_agreement() {
         let lexeme = AdjectiveLexeme {
-            lemma: word("мꙋдръ"),
-            stem: word("мꙋдр"),
+            lemma: word("истиннъ"),
+            stem: word("истинн"),
             class: AdjectiveClass::Hard,
-            comparative_stem: Some(word("мꙋдрѣйш")),
+            comparative_stem: Some(word("истиннѣйш")),
             comparison_formation: Some(ComparisonFormation::LaterYat),
         };
-        assert!(matches!(
-            decline_adjective(
+        let expected = [
+            (Number::Singular, Gender::Masculine, "истиннѣйшъ|истиннѣй"),
+            (Number::Singular, Gender::Feminine, "истиннѣйши"),
+            (Number::Singular, Gender::Neuter, "истиннѣе|истиннѣйше"),
+            (Number::Dual, Gender::Masculine, "истиннѣйша"),
+            (Number::Dual, Gender::Feminine, "истиннѣйши"),
+            (Number::Dual, Gender::Neuter, "истиннѣйши"),
+            (Number::Plural, Gender::Masculine, "истиннѣйше|истиннѣйши"),
+            (Number::Plural, Gender::Feminine, "истиннѣйшѧ"),
+            (Number::Plural, Gender::Neuter, "истиннѣйша"),
+        ];
+        for (number, gender, expected) in expected {
+            let forms = decline_adjective(
                 &lexeme,
                 AdjectiveCell {
                     case: Case::Nominative,
-                    number: Number::Singular,
-                    gender: Gender::Masculine,
+                    number,
+                    gender,
                     animacy: Animacy::Inanimate,
                     form: AdjectiveForm::Short,
                     comparison: Comparison::Superlative,
                 },
                 OrthographyProfile::Expanded,
-            ),
-            Err(Error::UnsupportedFormation { .. })
-        ));
+            )
+            .expect("Alypy §59 predicate short superlative");
+            assert_eq!(
+                forms.texts().collect::<Vec<_>>(),
+                expected.split('|').collect::<Vec<_>>()
+            );
+            assert_productive_contract(&forms);
+        }
+
+        for number in Number::ALL {
+            for gender in Gender::ALL {
+                for case in Case::ALL {
+                    if case == Case::Nominative {
+                        continue;
+                    }
+                    assert!(matches!(
+                        decline_adjective(
+                            &lexeme,
+                            AdjectiveCell {
+                                case,
+                                number,
+                                gender,
+                                animacy: Animacy::Inanimate,
+                                form: AdjectiveForm::Short,
+                                comparison: Comparison::Superlative,
+                            },
+                            OrthographyProfile::Expanded,
+                        ),
+                        Err(Error::HistoricallyInvalidCell { .. })
+                    ));
+                }
+            }
+        }
     }
 
     #[test]
@@ -4653,15 +4812,11 @@ mod tests {
                 comparison_formation: Some(ComparisonFormation::LaterYat),
             };
             for form in [AdjectiveForm::Short, AdjectiveForm::Long] {
-                for comparison in if form == AdjectiveForm::Short {
-                    &[Comparison::Positive][..]
-                } else {
-                    &[
-                        Comparison::Positive,
-                        Comparison::Comparative,
-                        Comparison::Superlative,
-                    ][..]
-                } {
+                for comparison in [
+                    Comparison::Positive,
+                    Comparison::Comparative,
+                    Comparison::Superlative,
+                ] {
                     for number in Number::ALL {
                         for case in Case::ALL {
                             for gender in Gender::ALL {
@@ -4670,21 +4825,31 @@ mod tests {
                                 } else {
                                     &[Animacy::Inanimate]
                                 } {
-                                    assert_productive_contract(
-                                        &decline_adjective(
-                                            &lexeme,
-                                            AdjectiveCell {
-                                                case,
-                                                number,
-                                                gender,
-                                                animacy: *animacy,
-                                                form,
-                                                comparison: *comparison,
-                                            },
-                                            OrthographyProfile::Expanded,
-                                        )
-                                        .expect("declared adjective inventory"),
+                                    let outcome = decline_adjective(
+                                        &lexeme,
+                                        AdjectiveCell {
+                                            case,
+                                            number,
+                                            gender,
+                                            animacy: *animacy,
+                                            form,
+                                            comparison,
+                                        },
+                                        OrthographyProfile::Expanded,
                                     );
+                                    if form == AdjectiveForm::Short
+                                        && comparison == Comparison::Superlative
+                                        && case != Case::Nominative
+                                    {
+                                        assert!(matches!(
+                                            outcome,
+                                            Err(Error::HistoricallyInvalidCell { .. })
+                                        ));
+                                    } else {
+                                        assert_productive_contract(
+                                            &outcome.expect("declared adjective inventory"),
+                                        );
+                                    }
                                 }
                             }
                         }
@@ -4800,7 +4965,134 @@ mod tests {
     }
 
     #[test]
-    fn alpy_58_95_96_98_complete_short_comparison_goldens() {
+    fn alpy_60_complete_short_comparison_golden() {
+        struct Row {
+            number: Number,
+            gender: Gender,
+            cells: [&'static str; 7],
+        }
+
+        use Gender::{Feminine as F, Masculine as M, Neuter as N};
+        use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+
+        // Case order is nominative, genitive, dative, accusative,
+        // instrumental, locative, vocative. `@` denotes the typed §58
+        // citation edge; the other entries are §60 suffixes.
+        let rows = [
+            Row {
+                number: Sg,
+                gender: M,
+                cells: ["@", "а", "ꙋ", "ъ", "имъ", "и", "@"],
+            },
+            Row {
+                number: Sg,
+                gender: F,
+                cells: ["@", "и", "и", "ꙋ", "ею", "и", "@"],
+            },
+            Row {
+                number: Sg,
+                gender: N,
+                cells: ["@", "а", "ꙋ", "@", "имъ", "и", "@"],
+            },
+            Row {
+                number: Du,
+                gender: M,
+                cells: ["а", "ꙋ", "има", "а", "има", "ꙋ", "а"],
+            },
+            Row {
+                number: Du,
+                gender: F,
+                cells: ["и", "ꙋ", "има", "и", "има", "ꙋ", "и"],
+            },
+            Row {
+                number: Du,
+                gender: N,
+                cells: ["и", "ꙋ", "има", "и", "има", "ꙋ", "и"],
+            },
+            Row {
+                number: Pl,
+                gender: M,
+                cells: ["е|и", "ихъ", "ымъ", "ѧ", "ими", "ихъ", "е|и"],
+            },
+            Row {
+                number: Pl,
+                gender: F,
+                cells: ["ѧ", "ихъ", "ымъ", "ѧ", "ими", "ихъ", "ѧ"],
+            },
+            Row {
+                number: Pl,
+                gender: N,
+                cells: ["а", "ихъ", "ымъ", "а", "ими", "ихъ", "а"],
+            },
+        ];
+        let lexeme = AdjectiveLexeme {
+            lemma: word("мꙋдръ"),
+            stem: word("мꙋдр"),
+            class: AdjectiveClass::Hard,
+            comparative_stem: Some(word("мꙋдрѣйш")),
+            comparison_formation: Some(ComparisonFormation::LaterYat),
+        };
+
+        for row in rows {
+            for (case, cell_golden) in Case::ALL.into_iter().zip(row.cells) {
+                for animacy in if case == Case::Accusative {
+                    Animacy::ALL.as_slice()
+                } else {
+                    &[Animacy::Inanimate]
+                } {
+                    let forms = decline_adjective(
+                        &lexeme,
+                        AdjectiveCell {
+                            case,
+                            number: row.number,
+                            gender: row.gender,
+                            animacy: *animacy,
+                            form: AdjectiveForm::Short,
+                            comparison: Comparison::Comparative,
+                        },
+                        OrthographyProfile::Expanded,
+                    )
+                    .expect("complete Alypy §60 short-comparison cell");
+                    let mut expected = if cell_golden == "@" {
+                        match row.gender {
+                            M => vec!["мꙋдрѣй".to_owned()],
+                            F => vec!["мꙋдрѣйши".to_owned()],
+                            N => vec!["мꙋдрѣе".to_owned(), "мꙋдрѣйше".to_owned()],
+                        }
+                    } else {
+                        cell_golden
+                            .split('|')
+                            .map(|suffix| format!("мꙋдрѣйш{suffix}"))
+                            .collect::<Vec<_>>()
+                    };
+                    if case == Case::Accusative
+                        && row.number == Sg
+                        && row.gender == M
+                        && *animacy == Animacy::Animate
+                    {
+                        expected.push("мꙋдрѣйша".to_owned());
+                    }
+                    assert_eq!(
+                        forms.texts().collect::<Vec<_>>(),
+                        expected.iter().map(String::as_str).collect::<Vec<_>>()
+                    );
+                    assert!(forms.variants().iter().all(|variant| {
+                        matches!(
+                            &variant.source,
+                            FormSource::SynodalNormativeGeneration { rule }
+                                if rule.as_ref() == "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60"
+                        ) && variant
+                            .evidence
+                            .iter()
+                            .all(|evidence| evidence.citation.contains("§§58 and 60"))
+                    }));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn alpy_98_complete_short_active_participle_goldens() {
         #[derive(Clone, Copy)]
         struct Golden {
             number: Number,
@@ -4817,9 +5109,9 @@ mod tests {
         use Gender::{Feminine as F, Masculine as M, Neuter as N};
         use Number::{Dual as Du, Plural as Pl, Singular as Sg};
 
-        // Alypy §98's complete short-comparison table, represented as suffixes
-        // after the independently supplied comparison/participle stem. The
-        // three singular nominative citation edges are checked separately.
+        // Alypy §98's complete short-active-participle table, represented as
+        // suffixes after the independently supplied participle stem. The three
+        // singular nominative citation edges are checked separately.
         let goldens = [
             Golden {
                 number: Sg,
@@ -5201,13 +5493,6 @@ mod tests {
             },
         ];
 
-        let adjective = AdjectiveLexeme {
-            lemma: word("мꙋдръ"),
-            stem: word("мꙋдр"),
-            class: AdjectiveClass::Hard,
-            comparative_stem: Some(word("мꙋдрѣйш")),
-            comparison_formation: Some(ComparisonFormation::LaterYat),
-        };
         let verb = regular_verb();
 
         for golden in goldens {
@@ -5222,45 +5507,13 @@ mod tests {
                     gender: golden.gender,
                     animacy: *animacy,
                     form: AdjectiveForm::Short,
-                    comparison: Comparison::Comparative,
+                    comparison: Comparison::Positive,
                 };
                 let suffixes = if *animacy == Animacy::Animate {
                     golden.animate_variants.unwrap_or(golden.variants)
                 } else {
                     golden.variants
                 };
-                let comparison_expected = if golden.number == Sg && golden.case == Nom {
-                    match golden.gender {
-                        M => vec!["мꙋдрѣй".to_owned()],
-                        F => vec!["мꙋдрѣйши".to_owned()],
-                        N => vec!["мꙋдрѣе".to_owned(), "мꙋдрѣйше".to_owned()],
-                    }
-                } else {
-                    suffixes
-                        .iter()
-                        .map(|suffix| format!("мꙋдрѣйш{suffix}"))
-                        .collect()
-                };
-                let comparison =
-                    decline_adjective(&adjective, adjective_cell, OrthographyProfile::Expanded)
-                        .expect("Alypy §§58, 98 comparison cell");
-                assert_eq!(
-                    comparison.texts().collect::<Vec<_>>(),
-                    comparison_expected
-                        .iter()
-                        .map(String::as_str)
-                        .collect::<Vec<_>>()
-                );
-                assert!(comparison.variants().iter().all(|variant| {
-                    variant.target_recension == Recension::SynodalRussian
-                        && !variant.evidence.is_empty()
-                        && variant
-                            .evidence
-                            .iter()
-                            .all(|evidence| evidence.citation.contains("Alypy"))
-                        && !variant.rule_trace.steps().is_empty()
-                }));
-
                 for (tense, stem, citation) in [
                     (
                         ParticipleTense::Present,
@@ -5273,14 +5526,12 @@ mod tests {
                         ["несъ|несшъ", "несши", "несъ|несше|несшо"],
                     ),
                 ] {
-                    let mut agreement = adjective_cell;
-                    agreement.comparison = Comparison::Positive;
                     let forms = decline_participle(
                         &verb,
                         ParticipleCell {
                             tense,
                             voice: ParticipleVoice::Active,
-                            agreement,
+                            agreement: adjective_cell,
                         },
                         OrthographyProfile::Expanded,
                     )
@@ -5319,21 +5570,15 @@ mod tests {
 
         for number in Number::ALL {
             for gender in Gender::ALL {
-                let comparison_cell = AdjectiveCell {
+                let agreement = AdjectiveCell {
                     case: Case::Vocative,
                     number,
                     gender,
                     animacy: Animacy::Inanimate,
                     form: AdjectiveForm::Short,
-                    comparison: Comparison::Comparative,
+                    comparison: Comparison::Positive,
                 };
-                assert!(matches!(
-                    decline_adjective(&adjective, comparison_cell, OrthographyProfile::Expanded),
-                    Err(Error::HistoricallyInvalidCell { .. })
-                ));
                 for tense in ParticipleTense::ALL {
-                    let mut agreement = comparison_cell;
-                    agreement.comparison = Comparison::Positive;
                     assert!(matches!(
                         decline_participle(
                             &verb,
