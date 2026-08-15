@@ -6,13 +6,14 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **38** have final states and **15** remain non-final. Source discovery has 7 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **39** have final states and **14** remain non-final. Source discovery has 7 recorded passes and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 11 |
+| `closed-exact-complete` | 1 |
+| `implementation-missing` | 10 |
 | `irregular-exact-complete` | 1 |
 | `not-inflectional` | 2 |
 | `productive-complete` | 35 |
@@ -23,7 +24,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 25 | 26 |
+| old-church-slavonic | 26 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -43,7 +44,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 | old-church-slavonic | imperative | 2 | 2 |
 | old-church-slavonic | invariant | 1 | 1 |
 | old-church-slavonic | irregular-verb | 1 | 1 |
-| old-church-slavonic | lexicon | 0 | 1 |
+| old-church-slavonic | lexicon | 1 | 1 |
 | old-church-slavonic | nonfinite-verb | 1 | 1 |
 | old-church-slavonic | noun | 1 | 1 |
 | old-church-slavonic | numeral | 1 | 1 |
@@ -70,7 +71,6 @@ The matrix contains **53** required system contracts: **38** have final states a
 
 ## Non-final systems
 
-- `ocs.lexicon.classification` — **implementation-missing**: Review the 6,384 metadata-incomplete and 1,331 source-ambiguous claims against OSD, LOVe, GORAZD, and lawful corpus evidence until every inflectable identity has a complete typed specification or an evidence-backed final ambiguous, disputed, defective, indeclinable, or out-of-scope classification. No confirmed implementation route remains open in the current ledger.
 - `syn.noun.irregular` — **implementation-missing**: Complete irregular noun families and unify любовь identities without generating unattested alternant combinations.
 - `syn.adjective.short-superlative` — **source-review-open**: Complete source discovery and either implement the category or finalize every cell as absent-from-recension with citations.
 - `syn.pronoun` — **implementation-missing**: Complete all pronoun subtypes, productive relationships, clitics, lexical restrictions, and source-union identities.
@@ -114,7 +114,7 @@ The matrix contains **53** required system contracts: **38** have final states a
 | `ocs.orthography.canonical` | old-church-slavonic | orthography | `productive-complete` | `OCS-ORTHOGRAPHY-CANONICAL` | technical and source contract |
 | `ocs.orthography.accent` | old-church-slavonic | accent | `productive-complete` | `OCS-ACCENT-RECON-01` | The productive layer is explicitly reconstructed, never attested by implication. The locked dictionary independently preserves 231 acute-marked rows across 11 lexemes and 21 psili-marked rows for one lexeme as exact source spellings; no grave, kamora, or dasia rows occur. |
 | `ocs.orthography.glagolitic` | old-church-slavonic | orthography | `productive-complete` | `OCS-GLAG-JAGIC-01` | The locked dictionary preserves 28 exact Glagolitic inflection rows for one Glagolitic lemma and keeps them ahead of presentation. Productive output uses Polivanova's normalized table crosschecked against TN41's classical Jagić table; every extension beyond the reversible shared alphabet is explicitly loss-reported and never labeled attested. |
-| `ocs.lexicon.classification` | old-church-slavonic | lexicon | `implementation-missing` | `OCS-LEXICON-UNION-01` | exhaustive reproducible ledger: 5,785 implemented, 6,384 metadata-incomplete, 614 not-applicable, and 1,331 source-ambiguous claims; zero confirmed implementation-gap routes. All 2,297 listed regular OSD verb rows are source-addressable. Of 6,114 safely comparable rank-zero dictionary cells, 5,596 agree and the 518 retained source disagreements are digest-locked. |
+| `ocs.lexicon.classification` | old-church-slavonic | lexicon | `closed-exact-complete` | `OCS-LEXICON-UNION-01` | Exhaustive reproducible terminal ledger: 11,417 implemented claims, 2,083 evidence-final ambiguous or disputed claims, 614 not-applicable claims, and zero non-final or confirmed implementation-gap routes across all 14,114 source claims and 9,150 stable union identities. All 2,423 regular OSD noun rows and 2,297 regular OSD verb rows are source-addressable. Exact head metadata preserves refresh homonyms; class-intrinsic gender and noncontrastive animacy are derived without guessing; genuinely contrastive animacy and missing verb/comparative principal parts remain explicit final ambiguities. |
 | `ocs.invariant-parts-of-speech` | old-church-slavonic | invariant | `not-inflectional` | `OCS-NOT-INFLECTIONAL` | lexical exact forms |
 | `syn.noun.declension` | synodal-russian | noun | `productive-complete` | `SYN-NOUN-I-HARD-M-ALYPY-34`<br>`SYN-NOUN-I-HARD-VELAR-M-ALYPY-34`<br>`SYN-NOUN-I-MIXED-M-ALYPY-33-34`<br>`SYN-NOUN-I-HARD-N-ALYPY-34`<br>`SYN-NOUN-I-SOFT-M-ALYPY-34`<br>`SYN-NOUN-I-SOFT-N-ALYPY-34`<br>`SYN-NOUN-II-HARD-ALYPY-39`<br>`SYN-NOUN-II-SOFT-ALYPY-39`<br>`SYN-NOUN-III-F-ALYPY-41`<br>`SYN-NOUN-III-M-ALYPY-41`<br>`SYN-NOUN-IV-N-EN-ALYPY-42-43`<br>`SYN-NOUN-IV-N-ES-ALYPY-42-43`<br>`SYN-NOUN-IV-N-AT-ALYPY-42-43`<br>`SYN-NOUN-IV-F-ER-ALYPY-42-43`<br>`SYN-NOUN-IV-F-OV-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43` | normative productive prediction |
 | `syn.noun.irregular` | synodal-russian | noun | `implementation-missing` | `SYN-NOUN-IRREGULAR-INVENTORY-PENDING` | partial reviewed exact/override data |
@@ -185,8 +185,8 @@ The frontier contains **26** source/lineage records. Authority policy: target-re
 - `ocs-verbal-noun-frontier-pass-4` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. UT lesson 8 §36 defines a productive past-passive-platform plus -ьj- formation and soft-neuter jo declension. Polivanova §§407, 483, and 865 independently place it outside the verb paradigm but inside explicitly modeled nominal derivation, while §276 n.4 requires an independent platform for nouns whose corresponding participle is unattested. LOVe confirms that these nouns are not verb-record paradigm cells. The locked dictionary supplies 191 exact citations; 134 have independent passive-platform metadata, of which 117 reproduce the -иѥ spelling exactly and 17 retain source -ьѥ. Lunt's body remained inaccessible, so no rule claim depends on it.
 - `ocs-accent-frontier-pass-5` (2026-08-15) — new sources: trager-kiev-fragment-1933; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass confirms that the Kiev Folia is an exceptional early accented witness, whereas most accented Church Slavonic evidence is later and recension-influenced. Polivanova describes OCS accent as unstable or unobservable in relevant contexts, Lunt's accessible contents locate historical Common Slavic accent but expose no surface rules, and Unicode TN41 defines mark encoding while explicitly leaving earlier-recension use incompletely standardized. The engine therefore keeps canonical OCS accentless, preserves 252 marked dictionary rows as exact source data, and adds only an explicit evidence-carrying comparative reconstruction layer.
 - `ocs-glagolitic-frontier-pass-6` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pinned Polivanova grammar §§131–133 supplies an exhaustive compositional Glagolitic/secondary-Cyrillic table and separates natural/standard allographs, while §866 explicitly states that early Glagolitic lacks matching iotated-vowel letters. TN41 Appendix A independently identifies the shared system as the classical Jagić 1879 convention and documents Unicode and rare-letter boundaries, so no lower-authority table was imported. The pass separates the reversible core and ꙑ/ы sequences from Cyrillic-only distinctions, literal yer-plus-i collisions, rare Glagolitic collisions, and manuscript superscripts. The API realizes complete words after morphology, preserves Polivanova's shared palatalization mark, reports or rejects every non-reversible normalization, preserves existing Glagolitic input without manufacturing source provenance, and leaves diplomatic transcription out of scope.
-- `ocs-lexicon-frontier-pass-7` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass establishes a row-level denominator of 14,114 claims: all 3,081 committed identities derived from the older 4,615-row Kaikki runtime source, all 4,626 rows of the separately pinned 2026-08-07 Kaikki refresh, and all 6,407 OSD dictionary rows. Unique normalized matches merge with runtime identities; homonyms and unsafe matches remain source-qualified. LOVe's official 970-row export is reproducibly hashed and remains a principal-part crosscheck because the site states no database reuse license. GORAZD exposes search and card-index access but no confirmed public bulk snapshot or redistribution terms, so it remains manual discovery evidence. The ledger exposed rather than hid the then-missing productive noun deformations, unique nouns, and source-native regular-verb routes; subsequent implementation checkpoints closed every confirmed implementation route while retaining incomplete-metadata and source-ambiguous claims.
+- `ocs-lexicon-frontier-pass-7` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass establishes a row-level denominator of 14,114 claims: all 3,081 committed identities derived from the older 4,615-row Kaikki runtime source, all 4,626 rows of the separately pinned 2026-08-07 Kaikki refresh, and all 6,407 OSD dictionary rows. Unique normalized matches merge with runtime identities; exact head metadata preserves homonyms, and unsafe matches remain source-qualified. LOVe's official 970-row export is reproducibly hashed and remains a principal-part crosscheck because the site states no database reuse license. GORAZD exposes search and card-index access but no confirmed public bulk snapshot or redistribution terms, so it remains manual discovery evidence. Subsequent checkpoints closed every confirmed implementation route, derived only class-intrinsic gender and noncontrastive animacy, and finalized genuinely underdetermined animacy, principal-part, class, and reconstruction claims as evidence-backed ambiguities or disputes.
 
 ## Next checkpoint
 
-`ocs.lexicon.classification`: Review the 6,384 metadata-incomplete and 1,331 source-ambiguous claims against OSD, LOVe, GORAZD, and lawful corpus evidence until every inflectable identity has a complete typed specification or an evidence-backed final ambiguous, disputed, defective, indeclinable, or out-of-scope classification. No confirmed implementation route remains open in the current ledger.
+`syn.noun.irregular`: Complete irregular noun families and unify любовь identities without generating unattested alternant combinations.

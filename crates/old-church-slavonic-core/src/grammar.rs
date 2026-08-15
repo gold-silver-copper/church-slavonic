@@ -284,6 +284,60 @@ impl NounClass {
             Self::Indeclinable => "indeclinable",
         }
     }
+
+    /// Gender encoded by the declension class itself.
+    ///
+    /// `None` means that gender is lexically contrastive (as with productive
+    /// a-/ja-stems), profile-specific, or irrelevant to an indeclinable item.
+    pub const fn intrinsic_gender(self) -> Option<Gender> {
+        match self {
+            Self::OMasculineHard
+            | Self::JoMasculineSoft
+            | Self::IMasculine
+            | Self::UMasculine
+            | Self::NMasculine
+            | Self::TwofoldAgentMasculine
+            | Self::TwofoldInMasculine => Some(Gender::Masculine),
+            Self::ONeuterHard
+            | Self::JoNeuterSoft
+            | Self::NNeuter
+            | Self::NtNeuter
+            | Self::SNeuter => Some(Gender::Neuter),
+            Self::IFeminine | Self::RStem | Self::VFeminine | Self::TwofoldFeminineI => {
+                Some(Gender::Feminine)
+            }
+            Self::AHard | Self::JaSoft | Self::UniqueMixed | Self::Indeclinable => None,
+        }
+    }
+
+    /// Whether animacy can change any surface cell in this class.
+    pub const fn has_animacy_contrast(self) -> bool {
+        matches!(
+            self,
+            Self::OMasculineHard
+                | Self::JoMasculineSoft
+                | Self::TwofoldAgentMasculine
+                | Self::TwofoldInMasculine
+        )
+    }
+
+    /// Whether a caller-supplied gender is compatible with this class.
+    ///
+    /// The productive a-/ja-stems admit masculine and feminine lexemes. The
+    /// unique mixed class validates gender against its lexical profile, while
+    /// gender is not an inflectional constraint for indeclinables.
+    pub fn accepts_gender(self, gender: Gender) -> bool {
+        match self.intrinsic_gender() {
+            Some(intrinsic) => gender == intrinsic,
+            None => match self {
+                Self::AHard | Self::JaSoft => {
+                    matches!(gender, Gender::Masculine | Gender::Feminine)
+                }
+                Self::UniqueMixed | Self::Indeclinable => true,
+                _ => false,
+            },
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1076,5 +1130,58 @@ impl ParticipleCell {
             self.kind.code(),
             self.adjective.key()
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn noun_classes_expose_only_grammatically_contrastive_metadata() {
+        for class in [
+            NounClass::OMasculineHard,
+            NounClass::JoMasculineSoft,
+            NounClass::TwofoldAgentMasculine,
+            NounClass::TwofoldInMasculine,
+        ] {
+            assert!(class.has_animacy_contrast(), "{class:?}");
+            assert_eq!(class.intrinsic_gender(), Some(Gender::Masculine));
+        }
+        for class in [
+            NounClass::ONeuterHard,
+            NounClass::JoNeuterSoft,
+            NounClass::IFeminine,
+            NounClass::IMasculine,
+            NounClass::UMasculine,
+            NounClass::NMasculine,
+            NounClass::NNeuter,
+            NounClass::NtNeuter,
+            NounClass::RStem,
+            NounClass::SNeuter,
+            NounClass::VFeminine,
+            NounClass::TwofoldFeminineI,
+        ] {
+            assert!(!class.has_animacy_contrast(), "{class:?}");
+            assert!(class.intrinsic_gender().is_some(), "{class:?}");
+        }
+        for class in [
+            NounClass::AHard,
+            NounClass::JaSoft,
+            NounClass::UniqueMixed,
+            NounClass::Indeclinable,
+        ] {
+            assert!(!class.has_animacy_contrast(), "{class:?}");
+            assert_eq!(class.intrinsic_gender(), None, "{class:?}");
+        }
+
+        assert!(NounClass::AHard.accepts_gender(Gender::Masculine));
+        assert!(NounClass::AHard.accepts_gender(Gender::Feminine));
+        assert!(!NounClass::AHard.accepts_gender(Gender::Neuter));
+        assert!(NounClass::JaSoft.accepts_gender(Gender::Masculine));
+        assert!(NounClass::JaSoft.accepts_gender(Gender::Feminine));
+        assert!(!NounClass::JaSoft.accepts_gender(Gender::Neuter));
+        assert!(NounClass::Indeclinable.accepts_gender(Gender::Neuter));
+        assert!(NounClass::UniqueMixed.accepts_gender(Gender::Neuter));
     }
 }

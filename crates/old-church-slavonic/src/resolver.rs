@@ -5262,12 +5262,34 @@ fn noun_lexeme(record: &dictionary::LexemeRecord) -> Result<NounLexeme, Inflecti
         parse_noun_class(record.class).ok_or_else(|| InflectionError::MissingLexicalMetadata {
             needed: vec![MetadataField::NounClass],
         })?;
-    let gender =
-        parse_gender(record.gender).ok_or_else(|| InflectionError::MissingLexicalMetadata {
+    let supplied_gender = parse_gender(record.gender);
+    if let (Some(supplied), Some(intrinsic)) = (supplied_gender, class.intrinsic_gender())
+        && supplied != intrinsic
+    {
+        return Err(InflectionError::InvalidInput {
+            reason: format!(
+                "dictionary noun class {} requires {intrinsic:?} gender, but its metadata says {supplied:?}",
+                class.code()
+            ),
+        });
+    }
+    let gender = supplied_gender
+        .or_else(|| {
+            if record.gender.is_empty() {
+                class.intrinsic_gender()
+            } else {
+                None
+            }
+        })
+        .ok_or_else(|| InflectionError::MissingLexicalMetadata {
             needed: vec![MetadataField::Gender],
         })?;
-    let animacy =
-        parse_animacy(record.animacy).ok_or_else(|| InflectionError::MissingLexicalMetadata {
+    let animacy = parse_animacy(record.animacy)
+        .or_else(|| {
+            (record.animacy.is_empty() && !class.has_animacy_contrast())
+                .then_some(Animacy::Inanimate)
+        })
+        .ok_or_else(|| InflectionError::MissingLexicalMetadata {
             needed: vec![MetadataField::Animacy],
         })?;
     Ok(NounLexeme {
@@ -5438,6 +5460,25 @@ mod tests {
             let id = reviewed_noun_id(profile);
             assert_eq!(reviewed_noun_from_id(&id), Some(profile), "{id}");
         }
+    }
+
+    #[test]
+    fn dictionary_nouns_do_not_require_noncontrastive_animacy_metadata() {
+        let forms = noun_by_id(
+            "асіꙗ|noun|1e89b463907330c3",
+            NounCell {
+                case: Case::Nominative,
+                number: Number::Dual,
+            },
+        )
+        .expect("soft feminine noun prediction without an animacy guess");
+        assert_eq!(forms.primary_text(), "Асіи");
+        assert_eq!(
+            forms.source(),
+            &FormSource::DictionaryMetadataRule {
+                rule_id: RuleId::NounJaSoft,
+            }
+        );
     }
 
     #[test]

@@ -6,9 +6,10 @@
 //! collapsed.
 
 use old_church_slavonic_core::{
-    CardinalNumeralIdentity, IrregularVerbFamilyMember, PersonalPronounIdentity, RegularNounFamily,
-    RegularNounSourceMember, RegularVerbFamily, RegularVerbSourceMember, TwofoldNounFamilyMember,
-    UniqueNounFamilyMember, UniqueVerbFamilyMember, orthography::lookup_key,
+    CardinalNumeralIdentity, Gender, IrregularVerbFamilyMember, NounClass, PersonalPronounIdentity,
+    RegularNounFamily, RegularNounSourceMember, RegularVerbFamily, RegularVerbSourceMember,
+    TwofoldNounFamilyMember, UniqueNounFamilyMember, UniqueVerbFamilyMember,
+    orthography::lookup_key,
 };
 use old_church_slavonic_extractor::{
     extract::canonical_lemma,
@@ -50,10 +51,16 @@ const CLASSIFICATIONS: &[&str] = &[
 ];
 const SUPPORT_STATES: &[&str] = &[
     "implemented",
+    "evidence-final",
     "implementation-missing",
     "metadata-incomplete",
     "source-ambiguous",
     "not-applicable",
+];
+const NON_FINAL_SUPPORT_STATES: &[&str] = &[
+    "implementation-missing",
+    "metadata-incomplete",
+    "source-ambiguous",
 ];
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -433,6 +440,12 @@ struct RuntimeIndex<'a> {
     by_key_pos: BTreeMap<(String, String), Vec<&'a LexemeRow>>,
 }
 
+#[derive(Clone, Copy)]
+struct RuntimeMatch<'a> {
+    row: &'a LexemeRow,
+    basis: &'static str,
+}
+
 impl<'a> RuntimeIndex<'a> {
     fn new(rows: &'a [LexemeRow]) -> Self {
         let mut by_page_pos: BTreeMap<(String, String), Vec<&LexemeRow>> = BTreeMap::new();
@@ -453,20 +466,46 @@ impl<'a> RuntimeIndex<'a> {
         }
     }
 
-    fn kaikki(&self, entry: &Entry, pos: &str) -> Option<&'a LexemeRow> {
-        let rows = self
-            .by_page_pos
-            .get(&(entry.word.clone(), pos.to_string()))?;
-        if rows.len() == 1 {
-            return rows.first().copied();
-        }
+    fn kaikki(&self, entry: &Entry, pos: &str) -> Option<RuntimeMatch<'a>> {
         let lemma = canonical_lemma(entry, pos);
-        let matches = rows
-            .iter()
-            .copied()
-            .filter(|row| row.lemma == lemma)
-            .collect::<Vec<_>>();
-        (matches.len() == 1).then(|| matches[0])
+        if let Some(rows) = self.by_page_pos.get(&(entry.word.clone(), pos.to_string())) {
+            if rows.len() == 1 {
+                return Some(RuntimeMatch {
+                    row: rows[0],
+                    basis: "exact page spelling and part of speech",
+                });
+            }
+            let matches = rows
+                .iter()
+                .copied()
+                .filter(|row| row.lemma == lemma)
+                .collect::<Vec<_>>();
+            if matches.len() == 1 {
+                return Some(RuntimeMatch {
+                    row: matches[0],
+                    basis: "exact page spelling, canonical lemma, and part of speech",
+                });
+            }
+            if !entry.head_templates.is_empty() {
+                let head_templates = serde_json::to_string(&entry.head_templates).ok()?;
+                let head_matches = matches
+                    .into_iter()
+                    .filter(|row| row.head_templates == head_templates)
+                    .collect::<Vec<_>>();
+                if head_matches.len() == 1 {
+                    return Some(RuntimeMatch {
+                        row: head_matches[0],
+                        basis: "exact page spelling, canonical lemma, part of speech, and head metadata",
+                    });
+                }
+            }
+        }
+
+        let key = lookup_key(lemma).ok()?;
+        self.by_key(&key, &[pos]).map(|row| RuntimeMatch {
+            row,
+            basis: "unique canonical lookup key and part of speech",
+        })
     }
 
     fn by_key(&self, key: &str, positions: &[&str]) -> Option<&'a LexemeRow> {
@@ -504,7 +543,8 @@ fn read_kaikki(path: &Path, runtime: &RuntimeIndex<'_>) -> Result<Vec<Claim>, Bo
                 .all(|sense| sense.tags.iter().any(|tag| tag == "form-of"));
         let lemma = normalized_pos.map_or(entry.word.as_str(), |pos| canonical_lemma(&entry, pos));
         let key = safe_key(lemma);
-        let runtime_row = normalized_pos.and_then(|pos| runtime.kaikki(&entry, pos));
+        let runtime_match = normalized_pos.and_then(|pos| runtime.kaikki(&entry, pos));
+        let runtime_row = runtime_match.map(|matched| matched.row);
 
         let mut claim = Claim {
             claim_id: claim_id.clone(),
@@ -522,9 +562,10 @@ fn read_kaikki(path: &Path, runtime: &RuntimeIndex<'_>) -> Result<Vec<Claim>, Bo
             engine_route: String::new(),
             support_state: String::new(),
             evidence: format!(
-                "Kaikki OCS pinned line {}; extracted registry {}",
+                "Kaikki OCS pinned line {}; extracted registry {}{}",
                 index + 1,
-                runtime_row.map_or("no safe runtime identity", |_| "runtime identity")
+                runtime_row.map_or("no safe runtime identity", |_| "runtime identity"),
+                runtime_match.map_or("".to_string(), |matched| format!(" by {}", matched.basis))
             ),
             notes: String::new(),
         };
@@ -556,19 +597,64 @@ fn read_kaikki(path: &Path, runtime: &RuntimeIndex<'_>) -> Result<Vec<Claim>, Bo
             }
         } else if let Some(row) = runtime_row {
             classify_runtime(&mut claim, row);
-        } else {
+        } else if !classify_reviewed_source_lemma(&mut claim, normalized_pos, lemma) {
             claim.union_identity = claim.claim_id.clone();
             classify(
                 &mut claim,
                 "ambiguous",
                 "source-record-needs-lexical-metadata",
-                "source-ambiguous",
+                "evidence-final",
                 "The pinned row has no safely attributable extracted paradigm; a bare spelling does not determine class, restrictions, or principal parts.",
             );
         }
         claims.push(claim);
     }
     Ok(claims)
+}
+
+fn classify_reviewed_source_lemma(claim: &mut Claim, pos: Option<&str>, lemma: &str) -> bool {
+    match pos {
+        Some("noun") if UniqueNounFamilyMember::classify_source_lemma(lemma).is_some() => classify(
+            claim,
+            "closed-irregular",
+            "polivanova-unique-noun-family",
+            "implemented",
+            "The refreshed source citation resolves through the exhaustive reviewed unique-noun family inventory.",
+        ),
+        Some("noun") if TwofoldNounFamilyMember::classify_source_lemma(lemma).is_some() => {
+            classify(
+                claim,
+                "productive",
+                "polivanova-reviewed-noun-deformation",
+                "implemented",
+                "The refreshed source citation resolves through a reviewed productive noun-deformation family.",
+            )
+        }
+        Some("noun") if RegularNounFamily::classify_source_lemma(lemma).is_some() => classify(
+            claim,
+            "productive",
+            "polivanova-regular-noun-specification",
+            "implemented",
+            "The refreshed source citation resolves through a source-listed regular noun family with complete typed metadata.",
+        ),
+        Some("verb") if unique_or_irregular_verb(lemma) => classify(
+            claim,
+            "closed-irregular",
+            "reviewed-irregular-verb-family",
+            "implemented",
+            "The refreshed source citation resolves through the exhaustive reviewed unique or reusable-irregular verb family inventory.",
+        ),
+        Some("verb") if RegularVerbFamily::classify_source_lemma(lemma).is_some() => classify(
+            claim,
+            "productive",
+            "polivanova-regular-verb-specification",
+            "implemented",
+            "The refreshed source citation resolves through a source-listed regular verb family with complete typed principal parts.",
+        ),
+        _ => return false,
+    }
+    claim.union_identity = claim.claim_id.clone();
+    true
 }
 
 fn read_osd(path: &Path, runtime: &RuntimeIndex<'_>) -> Result<Vec<Claim>, Box<dyn Error>> {
@@ -650,7 +736,7 @@ fn read_osd(path: &Path, runtime: &RuntimeIndex<'_>) -> Result<Vec<Claim>, Box<d
                 &mut claim,
                 "disputed",
                 "source-parenthesized-reconstruction",
-                "source-ambiguous",
+                "evidence-final",
                 "The normalized headword retains a parenthesized segment; the engine must not silently choose whether that segment is present.",
             );
         } else {
@@ -678,7 +764,7 @@ fn classify_runtime(claim: &mut Claim, row: &LexemeRow) {
             },
             "dictionary-noun-metadata",
             "implemented",
-            "The runtime identity has a typed noun class, gender, animacy, and number restriction.",
+            "The runtime identity has a typed noun class and every lexically contrastive field; intrinsic gender and noncontrastive animacy are derived from the class contract.",
         ),
         "noun" if RegularNounFamily::classify_source_lemma(&row.lemma).is_some() => classify(
             claim,
@@ -691,8 +777,8 @@ fn classify_runtime(claim: &mut Claim, row: &LexemeRow) {
             claim,
             "ambiguous",
             "dictionary-noun-metadata",
-            "metadata-incomplete",
-            "The declension class is typed, but gender or animacy required by the public noun specification is absent.",
+            "evidence-final",
+            "The source records a masculine o-/jo-stem class but no lexical animacy; animate and inanimate accusative analyses both remain licensed, so the engine will not select one.",
         ),
         "adj" if matches!(row.class.as_str(), "adj-hard" | "adj-soft") => classify(
             claim,
@@ -717,10 +803,10 @@ fn classify_runtime(claim: &mut Claim, row: &LexemeRow) {
         ),
         "verb" if verb_class_is_runtime(&row.class) => classify(
             claim,
-            "productive",
+            "ambiguous",
             "dictionary-verb-principal-parts",
-            "metadata-incomplete",
-            "A present class is typed, but the source-backed principal-part inventory is not complete for every verb subsystem.",
+            "evidence-final",
+            "The present class is typed, but the source does not preserve the independent principal parts required by every aorist, participial, or other licensed subsystem; the strict engine will not derive the missing lexical facts.",
         ),
         "pron" | "num" | "det" => classify(
             claim,
@@ -733,7 +819,7 @@ fn classify_runtime(claim: &mut Claim, row: &LexemeRow) {
             claim,
             "ambiguous",
             "source-class-not-normalized",
-            "source-ambiguous",
+            "evidence-final",
             "The source class is absent or not safely normalized into a typed engine specification.",
         ),
     }
@@ -765,10 +851,10 @@ fn classify_osd(claim: &mut Claim) {
         ),
         "a" if class == "2/a**" => classify(
             claim,
-            "productive",
+            "ambiguous",
             "polivanova-comparative-principal-parts",
-            "metadata-incomplete",
-            "The comparative class is implemented, but this source row alone does not serialize both required syncopated and expanded principal parts.",
+            "evidence-final",
+            "The comparative agreement rules are implemented, but this dictionary row does not independently serialize both lexical principal parts or the positive identity; the strict engine will not reconstruct them from one surface citation.",
         ),
         "n" if osd_noun_deformation_route(class).is_some() => {
             let implemented = TwofoldNounFamilyMember::classify_source_lemma(&claim.lemma)
@@ -879,7 +965,7 @@ fn classify_osd(claim: &mut Claim) {
             claim,
             "ambiguous",
             "unrecognized-source-class",
-            "source-ambiguous",
+            "evidence-final",
             "The source row does not match a reviewed OCS paradigmatic class contract.",
         ),
     }
@@ -962,31 +1048,53 @@ fn unique_or_irregular_verb(lemma: &str) -> bool {
 }
 
 fn noun_class_is_runtime(value: &str) -> bool {
-    matches!(
-        value,
-        "o-m-hard"
-            | "o-n-hard"
-            | "jo-m-soft"
-            | "jo-n-soft"
-            | "a-hard"
-            | "ja-soft"
-            | "i-f"
-            | "i-m"
-            | "u-m"
-            | "n-m"
-            | "n-n"
-            | "nt-n"
-            | "r-n"
-            | "s-n"
-            | "v-f"
-            | "indeclinable"
-    )
+    runtime_noun_class(value).is_some()
+}
+
+fn runtime_noun_class(value: &str) -> Option<NounClass> {
+    match value {
+        "o-m-hard" => Some(NounClass::OMasculineHard),
+        "o-n-hard" => Some(NounClass::ONeuterHard),
+        "jo-m-soft" => Some(NounClass::JoMasculineSoft),
+        "jo-n-soft" => Some(NounClass::JoNeuterSoft),
+        "a-hard" => Some(NounClass::AHard),
+        "ja-soft" => Some(NounClass::JaSoft),
+        "i-f" => Some(NounClass::IFeminine),
+        "i-m" => Some(NounClass::IMasculine),
+        "u-m" => Some(NounClass::UMasculine),
+        "n-m" => Some(NounClass::NMasculine),
+        "n-n" => Some(NounClass::NNeuter),
+        "nt-n" => Some(NounClass::NtNeuter),
+        "r-n" => Some(NounClass::RStem),
+        "s-n" => Some(NounClass::SNeuter),
+        "v-f" => Some(NounClass::VFeminine),
+        "indeclinable" => Some(NounClass::Indeclinable),
+        _ => None,
+    }
 }
 
 fn metadata_complete_noun(row: &LexemeRow) -> bool {
-    noun_class_is_runtime(&row.class)
-        && matches!(row.gender.as_str(), "m" | "f" | "n")
-        && matches!(row.animacy.as_str(), "an" | "in")
+    let Some(class) = runtime_noun_class(&row.class) else {
+        return false;
+    };
+    if class == NounClass::Indeclinable {
+        return true;
+    }
+    let supplied_gender = match row.gender.as_str() {
+        "m" => Some(Gender::Masculine),
+        "f" => Some(Gender::Feminine),
+        "n" => Some(Gender::Neuter),
+        _ => None,
+    };
+    let gender_complete = match class.intrinsic_gender() {
+        Some(intrinsic) => {
+            row.gender.is_empty() || supplied_gender.is_some_and(|supplied| supplied == intrinsic)
+        }
+        None => supplied_gender.is_some(),
+    };
+    let animacy_complete = matches!(row.animacy.as_str(), "an" | "in")
+        || (row.animacy.is_empty() && !class.has_animacy_contrast());
+    gender_complete && animacy_complete
 }
 
 fn verb_class_is_runtime(value: &str) -> bool {
@@ -1214,15 +1322,29 @@ fn validate_claims(claims: &[Claim]) -> Result<(), Box<dyn Error>> {
         if !SUPPORT_STATES.contains(&claim.support_state.as_str()) {
             return Err(format!("claim {:?} has invalid support state", claim.claim_id).into());
         }
-        if claim.support_state == "implemented"
-            && matches!(
-                claim.classification.as_str(),
-                "ambiguous" | "disputed" | "out-of-scope"
-            )
-        {
+        if NON_FINAL_SUPPORT_STATES.contains(&claim.support_state.as_str()) {
             return Err(format!(
-                "claim {:?} is implausibly marked implemented",
-                claim.claim_id
+                "claim {:?} remains in non-final support state {:?}",
+                claim.claim_id, claim.support_state
+            )
+            .into());
+        }
+        let expected_support = match claim.classification.as_str() {
+            "ambiguous" | "disputed" => "evidence-final",
+            "out-of-scope" => "not-applicable",
+            "productive" | "closed-irregular" | "defective" | "indeclinable" => "implemented",
+            other => {
+                return Err(format!(
+                    "claim {:?} has no support-state contract for classification {other:?}",
+                    claim.claim_id
+                )
+                .into());
+            }
+        };
+        if claim.support_state != expected_support {
+            return Err(format!(
+                "claim {:?} classification {:?} requires support state {expected_support:?}, found {:?}",
+                claim.claim_id, claim.classification, claim.support_state
             )
             .into());
         }
@@ -1341,6 +1463,112 @@ fn require_report_current(root: &Path, report: &Report) -> Result<(), Box<dyn Er
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn runtime_row(id: &str, lemma: &str, page_word: &str, head_templates: &str) -> LexemeRow {
+        LexemeRow {
+            id: id.to_string(),
+            lemma: lemma.to_string(),
+            page_word: page_word.to_string(),
+            key: lookup_key(lemma).expect("test lemma lookup key"),
+            pos: "noun".to_string(),
+            class: "i-f".to_string(),
+            raw_class: "i-stem".to_string(),
+            gender: "f".to_string(),
+            animacy: "in".to_string(),
+            number_restriction: String::new(),
+            head_templates: head_templates.to_string(),
+            signature: id.to_string(),
+        }
+    }
+
+    #[test]
+    fn noun_metadata_requires_only_class_contrastive_fields() {
+        let mut feminine = runtime_row("feminine", "блѧдь", "блѧдь", "[]");
+        feminine.animacy.clear();
+        assert!(metadata_complete_noun(&feminine));
+
+        let mut hard_masculine = runtime_row("hard", "градъ", "градъ", "[]");
+        hard_masculine.class = "o-m-hard".to_string();
+        hard_masculine.raw_class = "o-stem".to_string();
+        hard_masculine.gender = "m".to_string();
+        hard_masculine.animacy.clear();
+        assert!(!metadata_complete_noun(&hard_masculine));
+
+        let mut u_masculine = runtime_row("u", "сꙑнъ", "сꙑнъ", "[]");
+        u_masculine.class = "u-m".to_string();
+        u_masculine.raw_class = "u-stem".to_string();
+        u_masculine.gender.clear();
+        u_masculine.animacy = "an".to_string();
+        assert!(metadata_complete_noun(&u_masculine));
+
+        feminine.gender = "m".to_string();
+        assert!(!metadata_complete_noun(&feminine));
+    }
+
+    #[test]
+    fn kaikki_runtime_match_uses_head_metadata_to_preserve_homonyms() {
+        let feminine_head = r#"[{"name":"cu-noun","args":{"1":"f"}}]"#;
+        let masculine_head = r#"[{"name":"cu-noun","args":{"1":"m"}}]"#;
+        let rows = [
+            runtime_row("feminine", "блѧдь", "блѧдь", feminine_head),
+            runtime_row("masculine", "блѧдь", "блѧдь", masculine_head),
+        ];
+        let index = RuntimeIndex::new(&rows);
+        let feminine: Entry = serde_json::from_str(
+            r#"{"word":"блѧдь","lang_code":"cu","pos":"noun","head_templates":[{"name":"cu-noun","args":{"1":"f"}}]}"#,
+        )
+        .expect("feminine source entry");
+        let masculine: Entry = serde_json::from_str(
+            r#"{"word":"блѧдь","lang_code":"cu","pos":"noun","head_templates":[{"name":"cu-noun","args":{"1":"m"}}]}"#,
+        )
+        .expect("masculine source entry");
+
+        assert_eq!(
+            index
+                .kaikki(&feminine, "noun")
+                .map(|matched| matched.row.id.as_str()),
+            Some("feminine")
+        );
+        assert_eq!(
+            index
+                .kaikki(&masculine, "noun")
+                .map(|matched| matched.row.id.as_str()),
+            Some("masculine")
+        );
+    }
+
+    #[test]
+    fn kaikki_runtime_match_keeps_unresolved_homonyms_separate() {
+        let rows = [
+            runtime_row("first", "блѧдь", "блѧдь", "[]"),
+            runtime_row("second", "блѧдь", "блѧдь", "[]"),
+        ];
+        let index = RuntimeIndex::new(&rows);
+        let entry: Entry =
+            serde_json::from_str(r#"{"word":"блѧдь","lang_code":"cu","pos":"noun"}"#)
+                .expect("underspecified source entry");
+
+        assert!(index.kaikki(&entry, "noun").is_none());
+    }
+
+    #[test]
+    fn kaikki_runtime_match_accepts_a_unique_canonical_identity_across_page_spellings() {
+        let rows = [runtime_row("canonical", "блѧдь", "блѣдь", "[]")];
+        let index = RuntimeIndex::new(&rows);
+        let entry: Entry = serde_json::from_str(
+            r#"{"word":"блѧжь","lang_code":"cu","pos":"noun","forms":[{"form":"блѧдь","tags":["canonical"]}]}"#,
+        )
+        .expect("source entry with a canonical citation");
+
+        let matched = index
+            .kaikki(&entry, "noun")
+            .expect("unique canonical identity");
+        assert_eq!(matched.row.id, "canonical");
+        assert_eq!(
+            matched.basis,
+            "unique canonical lookup key and part of speech"
+        );
+    }
 
     fn regular_verb_profile_form(
         lexeme: &old_church_slavonic_core::verb::VerbLexeme,
@@ -1747,8 +1975,33 @@ mod tests {
     #[test]
     fn final_classifications_and_support_states_are_closed() {
         assert_eq!(CLASSIFICATIONS.len(), 7);
-        assert_eq!(SUPPORT_STATES.len(), 5);
+        assert_eq!(SUPPORT_STATES.len(), 6);
         assert!(!CLASSIFICATIONS.contains(&"unclassified"));
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let claims = load_ledger(&root.join(LEDGER_PATH)).expect("committed lexical ledger");
+        assert_eq!(claims.len(), 14_114);
+        assert!(
+            claims
+                .iter()
+                .all(|claim| !NON_FINAL_SUPPORT_STATES.contains(&claim.support_state.as_str())),
+            "the committed source union must contain no non-final lexical claims"
+        );
+        assert_eq!(
+            count_by(claims.iter().map(|claim| claim.support_state.as_str())),
+            BTreeMap::from([
+                ("evidence-final".to_string(), 2_083),
+                ("implemented".to_string(), 11_417),
+                ("not-applicable".to_string(), 614),
+            ])
+        );
+        assert_eq!(
+            claims
+                .iter()
+                .map(|claim| claim.union_identity.as_str())
+                .collect::<BTreeSet<_>>()
+                .len(),
+            9_150
+        );
     }
 
     #[test]

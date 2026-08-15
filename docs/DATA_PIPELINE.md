@@ -29,11 +29,17 @@ classification reasons.
 
 The committed ledger stores lexical facts and audit metadata, not copied source
 paradigms. Its `support_state` is deliberately separate from its grammatical
-classification: a row may be productively classified while still naming an
-`implementation-missing` adapter or `metadata-incomplete` typed specification.
-`cargo xtask ocs-lexical-union --check` validates source counts, stable identities,
-closed vocabularies, coverage of every runtime identity, pinned hashes, and both
-generated reports without reading gitignored raw downloads.
+classification: supported productive and closed paradigms are `implemented`,
+genuinely underdetermined or disputed records are `evidence-final`, and explicit
+exclusions are `not-applicable`. The generator retains closed vocabulary entries
+for `implementation-missing`, `metadata-incomplete`, and `source-ambiguous`, but
+validation rejects every committed occurrence of those non-final states. Final
+ambiguity is limited to a source fact that the strict API cannot safely invent,
+such as contrastive masculine animacy or independent verb/comparative principal
+parts. `cargo xtask ocs-lexical-union --check` validates that terminal-state
+contract, source counts, stable identities, coverage of every runtime identity,
+pinned hashes, and both generated reports without reading gitignored raw
+downloads.
 
 ## Accepted extraction surface
 

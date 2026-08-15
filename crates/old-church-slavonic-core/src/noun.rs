@@ -89,6 +89,15 @@ pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, Inf
         number_restriction: lexeme.number_restriction,
     };
     let lexeme = &normalized_lexeme;
+    if !lexeme.class.accepts_gender(lexeme.gender) {
+        return Err(InflectionError::InvalidInput {
+            reason: format!(
+                "noun class {} is incompatible with {:?} gender",
+                lexeme.class.code(),
+                lexeme.gender
+            ),
+        });
+    }
     enforce_number(&lexeme.lemma, lexeme.number_restriction, cell)?;
     match lexeme.class {
         NounClass::OMasculineHard => decline_o_masculine_hard(lexeme, cell),
@@ -1030,6 +1039,36 @@ mod tests {
                 decline(&lexeme, cell),
                 Err(InflectionError::InvalidInput { .. })
             ));
+        }
+    }
+
+    #[test]
+    fn productive_classes_reject_contradictory_gender_metadata() {
+        let cell = NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+        };
+        for (lemma, class, gender) in [
+            ("градъ", NounClass::OMasculineHard, Gender::Neuter),
+            ("село", NounClass::ONeuterHard, Gender::Masculine),
+            ("жена", NounClass::AHard, Gender::Neuter),
+            ("душа", NounClass::JaSoft, Gender::Neuter),
+        ] {
+            let error = decline(
+                &NounLexeme {
+                    lemma: lemma.to_string(),
+                    class,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    number_restriction: NumberRestriction::All,
+                },
+                cell,
+            )
+            .expect_err("contradictory class and gender must be rejected");
+            assert!(
+                matches!(error, InflectionError::InvalidInput { .. }),
+                "{lemma}: {error:?}"
+            );
         }
     }
 }
