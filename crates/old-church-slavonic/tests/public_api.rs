@@ -15,15 +15,16 @@ use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
     Adjective, AnaphoricEnvironment, Animacy, Case, Determiner, FiniteTense, FormSource, Gender,
-    GenderedCell, InflectionError, InflectionWarning, Lemma, Noun, Number, Numeral,
-    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
-    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script, UngenderedCell,
-    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, determiner,
-    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
-    imperative_paradigm, imperfect, infinitive, l_participle, l_participle_paradigm,
-    long_adjective, noun, noun_paradigm, numeral, participle_paradigm, past_active_participle,
-    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
-    short_adjective, supine,
+    GenderedCell, InflectionError, InflectionWarning, InterrogativePronounIdentity,
+    IrregularAgreeingIdentity, Lemma, Noun, Number, Numeral, ParadigmLookupError, PartOfSpeech,
+    ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
+    PronounFormSelection, RequestedCell, Script, UngenderedCell, VariantPolicy, Verb,
+    adjective_paradigm, anaphoric_pronoun, aorist, determiner, determiner_paradigm, finite,
+    finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
+    imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
+    l_participle_paradigm, long_adjective, noun, noun_paradigm, numeral, participle_paradigm,
+    past_active_participle, personal_pronoun, personal_pronoun_with, present, present_paradigm,
+    pronoun, reflexive_pronoun, relative_pronoun, short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -684,6 +685,137 @@ fn explicit_pronominal_rules_support_oov_lexemes_and_trace_velar_palatalization(
 }
 
 #[test]
+fn exceptional_pronouns_use_complete_reviewed_inventories_and_keep_raw_tables() {
+    let relative = gendered_pronoun("иже", Case::Genitive, Number::Singular, Gender::Feminine)
+        .expect("free relative pronoun");
+    assert_eq!(relative.primary_text(), "ѥѩже");
+    assert_eq!(
+        relative_pronoun(
+            Case::Dative,
+            Number::Singular,
+            Gender::Feminine,
+            AnaphoricEnvironment::AfterPreposition,
+        )
+        .expect("post-prepositional relative pronoun")
+        .primary_text(),
+        "н҄ѥиже"
+    );
+
+    let proximal = gendered_pronoun("сь", Case::Accusative, Number::Plural, Gender::Masculine)
+        .expect("reviewed proximal pronoun");
+    assert_eq!(proximal.primary_text(), "сиѩ");
+    assert_eq!(
+        proximal.source(),
+        &FormSource::ReviewedGrammarTable {
+            rule_id: RuleId::PronounUniqueSi
+        }
+    );
+    let si_id = only_id("сь", PartOfSpeech::Pronoun);
+    let raw_si = raw_features::closed_class_by_id(
+        &si_id,
+        PartOfSpeech::Pronoun,
+        GenderedCell {
+            case: Case::Accusative,
+            number: Number::Plural,
+            gender: Gender::Masculine,
+        }
+        .closed_class(),
+    )
+    .expect("raw source table remains inspectable");
+    assert_eq!(raw_si.primary_text(), "сиꙗ");
+    assert_eq!(raw_si.source(), &FormSource::DictionaryTable);
+
+    for number in Number::ALL {
+        assert_eq!(
+            pronoun("къто", Case::Accusative, number)
+                .expect("numberless interrogative")
+                .primary_text(),
+            "къто"
+        );
+    }
+    assert_eq!(
+        interrogative_pronoun(InterrogativePronounIdentity::Chto, Case::Genitive)
+            .expect("variant-rich interrogative")
+            .texts()
+            .collect::<Vec<_>>(),
+        ["чесо", "чьсо", "чесого"]
+    );
+
+    let kyi = determiner("кꙑи", Case::Dative, Number::Singular, Gender::Masculine)
+        .expect("reviewed unique determiner");
+    assert_eq!(kyi.primary_text(), "коѥму");
+    assert_eq!(
+        kyi.source(),
+        &FormSource::ReviewedGrammarTable {
+            rule_id: RuleId::DeterminerInterrogativeKyi
+        }
+    );
+
+    assert!(matches!(
+        pronoun("иже", Case::Nominative, Number::Singular),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+    assert!(matches!(
+        gendered_pronoun(
+            "къто",
+            Case::Nominative,
+            Number::Singular,
+            Gender::Masculine
+        ),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+
+    for lemma in ["иже", "сь"] {
+        let paradigm = Pronoun::resolve(lemma)
+            .expect("reviewed agreeing identity")
+            .gendered_paradigm();
+        assert_eq!(paradigm.successes().count(), 54, "{lemma}");
+        assert_eq!(paradigm.failures().count(), 9, "{lemma}");
+    }
+    let kto = Pronoun::resolve("къто")
+        .expect("numberless interrogative identity")
+        .paradigm();
+    assert_eq!(kto.successes().count(), 18);
+    assert_eq!(kto.failures().count(), 3);
+    let kyi = determiner_paradigm("кꙑи").expect("unique determiner paradigm");
+    assert_eq!(kyi.successes().count(), 54);
+    assert_eq!(kyi.failures().count(), 9);
+}
+
+#[test]
+fn no_dual_mixed_pronouns_and_ordered_doublets_are_typed() {
+    let ves = irregular_agreeing(
+        IrregularAgreeingIdentity::TotalVes,
+        Case::Nominative,
+        Number::Singular,
+        Gender::Feminine,
+    )
+    .expect("mixed totalizing pronoun");
+    assert_eq!(ves.texts().collect::<Vec<_>>(), ["вьса", "вьсѣ"]);
+    assert_eq!(ves.analyses().len(), 2);
+    assert!(matches!(
+        irregular_agreeing(
+            IrregularAgreeingIdentity::TotalVes,
+            Case::Nominative,
+            Number::Dual,
+            Gender::Feminine,
+        ),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+    assert_eq!(
+        irregular_agreeing(
+            IrregularAgreeingIdentity::DemonstrativeSic,
+            Case::Instrumental,
+            Number::Plural,
+            Gender::Neuter,
+        )
+        .expect("mixed demonstrative pronoun")
+        .primary_text(),
+        "сицѣми"
+    );
+}
+
+#[test]
 fn reviewed_pronoun_paradigms_expose_every_valid_and_invalid_cell() {
     let first = Pronoun::resolve("азъ")
         .expect("first-person identity")
@@ -741,7 +873,7 @@ fn paradigm_access_distinguishes_unrepresented_and_failed_cells() {
             requested.number,
             requested.gender.expect("gendered request"),
         ),
-        Err(InflectionError::UnsupportedCell {
+        Err(InflectionError::HistoricallyInvalidCell {
             lexeme_id: determiner_id,
             cell: RequestedCell::ClosedClass {
                 part_of_speech: PartOfSpeech::Determiner,
@@ -754,7 +886,7 @@ fn paradigm_access_distinguishes_unrepresented_and_failed_cells() {
     assert!(matches!(
         determiner_table.form(Case::Vocative, Number::Dual, Gender::Masculine),
         Err(ParadigmLookupError::Failed(
-            InflectionError::UnsupportedCell { .. }
+            InflectionError::HistoricallyInvalidCell { .. }
         ))
     ));
     assert!(!determiner_table.successes().collect::<Vec<_>>().is_empty());

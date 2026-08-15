@@ -490,6 +490,184 @@ fn standard_pronominal_pronoun(
     ))
 }
 
+/// Resolve the complete agreeing relative pronoun `иже`, including its
+/// obligatorily conditioned post-prepositional `н҄-` allomorph.
+pub fn relative_pronoun(
+    case: Case,
+    number: Number,
+    gender: Gender,
+    environment: AnaphoricEnvironment,
+) -> Result<FormSet, InflectionError> {
+    let rule_id = match environment {
+        AnaphoricEnvironment::Free => RuleId::PronounRelativeIzhe,
+        AnaphoricEnvironment::AfterPreposition => RuleId::PronounRelativePrepositional,
+    };
+    let variants =
+        old_church_slavonic_core::pronoun::relative_izhe_form(case, number, gender, environment)
+            .map(|text| vec![(text, PronounVariantStatus::TablePrimary)])
+            .unwrap_or_default();
+    reviewed_closed_set(
+        "иже",
+        PartOfSpeech::Pronoun,
+        GenderedCell {
+            case,
+            number,
+            gender,
+        }
+        .closed_class(),
+        variants,
+        rule_id,
+        format!(
+            "pronoun:relative-izhe:{}:{}:{}:{}",
+            case.code(),
+            number.code(),
+            gender.code(),
+            environment.code()
+        ),
+        "Polivanova 2023 §318; UT OCS Online lesson 2 §8.3",
+    )
+}
+
+/// Resolve one complete closed irregular agreeing paradigm. The identity owns
+/// its grammatical part of speech: `кꙑи` is a determiner; the other identities
+/// are pronouns.
+pub fn irregular_agreeing(
+    identity: IrregularAgreeingIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<FormSet, InflectionError> {
+    let part_of_speech = identity.part_of_speech();
+    let variants =
+        old_church_slavonic_core::pronoun::irregular_agreeing_forms(identity, case, number, gender)
+            .into_iter()
+            .map(|variant| (variant.text.to_string(), variant.status))
+            .collect();
+    let authority = match identity {
+        IrregularAgreeingIdentity::TotalVes | IrregularAgreeingIdentity::DemonstrativeSic => {
+            "Polivanova 2023 §§319–320"
+        }
+        IrregularAgreeingIdentity::ProximalSi => "Polivanova 2023 §§377–378",
+        IrregularAgreeingIdentity::InterrogativeKyi => "Polivanova 2023 §§375–376",
+    };
+    reviewed_closed_set(
+        identity.canonical_lemma(),
+        part_of_speech,
+        GenderedCell {
+            case,
+            number,
+            gender,
+        }
+        .closed_class(),
+        variants,
+        identity.rule_id(),
+        format!(
+            "{}:irregular-agreeing:{}:{}:{}",
+            part_of_speech.code(),
+            case.code(),
+            number.code(),
+            gender.code()
+        ),
+        authority,
+    )
+}
+
+/// Resolve one case of numberless, genderless `къто` or `чьто`, preserving
+/// every grammar-table variant in source order.
+pub fn interrogative_pronoun(
+    identity: InterrogativePronounIdentity,
+    case: Case,
+) -> Result<FormSet, InflectionError> {
+    let variants = old_church_slavonic_core::pronoun::interrogative_forms(identity, case)
+        .into_iter()
+        .map(|variant| (variant.text.to_string(), variant.status))
+        .collect();
+    reviewed_closed_set(
+        identity.canonical_lemma(),
+        PartOfSpeech::Pronoun,
+        ClosedClassCell {
+            case,
+            // This structural placeholder is not a grammatical singular: the
+            // API deliberately has no number argument for these identities.
+            number: Number::Singular,
+            gender: None,
+            person: None,
+        },
+        variants,
+        identity.rule_id(),
+        format!("pronoun:interrogative:numberless:{}", case.code()),
+        "Polivanova 2023 §§379–380",
+    )
+}
+
+fn reviewed_closed_set(
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+    cell: ClosedClassCell,
+    variants: Vec<(String, PronounVariantStatus)>,
+    rule_id: RuleId,
+    source_feature: String,
+    authority: &'static str,
+) -> Result<FormSet, InflectionError> {
+    if variants.is_empty() {
+        return Err(InflectionError::historically_invalid(
+            lemma,
+            RequestedCell::ClosedClass {
+                part_of_speech,
+                cell,
+            },
+        ));
+    }
+    let analyses = variants
+        .iter()
+        .map(|(text, status)| {
+            let source = FormSource::ReviewedGrammarTable { rule_id };
+            let form = FormVariant {
+                text: orthography::canonical_display(text)?,
+                romanization: None,
+            };
+            Ok((
+                form.clone(),
+                FormAnalysis {
+                    variants: vec![form],
+                    source,
+                    evidence: vec![MetadataEvidence {
+                        field: None,
+                        provenance: MetadataProvenance::ReviewedGrammarTable,
+                        source_feature: Some(format!(
+                            "{source_feature}:{}",
+                            pronoun_status_code(*status)
+                        )),
+                        source_form: Some(text.clone()),
+                        crosscheck_features: Vec::new(),
+                        authority: Some(authority.to_string()),
+                    }],
+                    trace: Vec::new(),
+                },
+            ))
+        })
+        .collect::<Result<Vec<_>, InflectionError>>()?;
+    let (primary, primary_analysis) =
+        analyses
+            .first()
+            .ok_or_else(|| InflectionError::InvalidInput {
+                reason: "a reviewed closed-class cell unexpectedly had no forms".to_string(),
+            })?;
+    Ok(FormSet::new(
+        orthography::canonical_display(lemma)?,
+        primary.clone(),
+        analyses
+            .iter()
+            .skip(1)
+            .map(|(variant, _)| variant.clone())
+            .collect(),
+        primary_analysis.source.clone(),
+        Vec::new(),
+        Vec::new(),
+        analyses.into_iter().map(|(_, analysis)| analysis).collect(),
+    ))
+}
+
 fn reviewed_pronoun_set(
     identity: PersonalPronounIdentity,
     cell: ClosedClassCell,
@@ -572,15 +750,16 @@ fn pronoun_variant_rule(identity: PersonalPronounIdentity, status: PronounVarian
             RuleId::PronounPersonalClitic
         }
         PronounVariantStatus::Adprepositional => RuleId::PronounAnaphoricPrepositional,
-        PronounVariantStatus::TablePrimary | PronounVariantStatus::FreeAnaphoric => {
-            identity.rule_id()
-        }
+        PronounVariantStatus::TablePrimary
+        | PronounVariantStatus::TableVariant
+        | PronounVariantStatus::FreeAnaphoric => identity.rule_id(),
     }
 }
 
 fn pronoun_status_code(status: PronounVariantStatus) -> &'static str {
     match status {
         PronounVariantStatus::TablePrimary => "table-primary",
+        PronounVariantStatus::TableVariant => "table-variant",
         PronounVariantStatus::MarkedClitic => "marked-clitic",
         PronounVariantStatus::DisputedMarkedClitic => "disputed-marked-clitic",
         PronounVariantStatus::FreeAnaphoric => "free-anaphoric",
@@ -596,7 +775,9 @@ fn pronoun_authority(status: PronounVariantStatus) -> &'static str {
         PronounVariantStatus::FreeAnaphoric | PronounVariantStatus::Adprepositional => {
             "Polivanova 2023 §318; UT OCS Online lesson 2 §8.3"
         }
-        PronounVariantStatus::TablePrimary | PronounVariantStatus::MarkedClitic => {
+        PronounVariantStatus::TablePrimary
+        | PronounVariantStatus::TableVariant
+        | PronounVariantStatus::MarkedClitic => {
             "Polivanova 2023 §§381–382; UT OCS Online lesson 2 §§8.1–8.2"
         }
     }
@@ -996,6 +1177,86 @@ pub fn closed_class_by_id(
                 });
             }
             return Ok(result);
+        }
+        let reviewed = match record.lemma {
+            "иже" => match (cell.person, cell.gender) {
+                (None, Some(gender)) => {
+                    relative_pronoun(cell.case, cell.number, gender, AnaphoricEnvironment::Free)
+                }
+                _ => Err(InflectionError::historically_invalid(
+                    id,
+                    RequestedCell::ClosedClass {
+                        part_of_speech,
+                        cell,
+                    },
+                )),
+            },
+            "сь" => match (cell.person, cell.gender) {
+                (None, Some(gender)) => irregular_agreeing(
+                    IrregularAgreeingIdentity::ProximalSi,
+                    cell.case,
+                    cell.number,
+                    gender,
+                ),
+                _ => Err(InflectionError::historically_invalid(
+                    id,
+                    RequestedCell::ClosedClass {
+                        part_of_speech,
+                        cell,
+                    },
+                )),
+            },
+            "къто" | "чьто" => match (cell.person, cell.gender) {
+                (None, None) => interrogative_pronoun(
+                    if record.lemma == "къто" {
+                        InterrogativePronounIdentity::Kto
+                    } else {
+                        InterrogativePronounIdentity::Chto
+                    },
+                    cell.case,
+                ),
+                _ => Err(InflectionError::historically_invalid(
+                    id,
+                    RequestedCell::ClosedClass {
+                        part_of_speech,
+                        cell,
+                    },
+                )),
+            },
+            _ => {
+                return lookup::table_form(id, &cell.key(part_of_speech)).ok_or_else(|| {
+                    InflectionError::unsupported(
+                        id,
+                        RequestedCell::ClosedClass {
+                            part_of_speech,
+                            cell,
+                        },
+                    )
+                });
+            }
+        };
+        return reviewed.map_err(|error| error.with_lexeme_id(id));
+    }
+    if part_of_speech == PartOfSpeech::Determiner {
+        let record = lookup::find_lexeme(id)
+            .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Determiner)))?;
+        if record.lemma == "кꙑи" {
+            return match (cell.person, cell.gender) {
+                (None, Some(gender)) => irregular_agreeing(
+                    IrregularAgreeingIdentity::InterrogativeKyi,
+                    cell.case,
+                    cell.number,
+                    gender,
+                )
+                .map_err(|error| error.with_lexeme_id(id)),
+                _ => Err(InflectionError::historically_invalid(
+                    id,
+                    RequestedCell::ClosedClass {
+                        part_of_speech,
+                        cell,
+                    },
+                )),
+            };
         }
     }
     lookup::table_form(id, &cell.key(part_of_speech)).ok_or_else(|| {

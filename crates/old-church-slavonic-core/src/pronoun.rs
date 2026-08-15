@@ -314,6 +314,315 @@ fn palatalize_final_velar(stem: &str) -> Option<String> {
     Some(format!("{base}{replacement}"))
 }
 
+/// Closed agreeing paradigms whose stem distribution or terminal mixture is
+/// not reducible to the regular `2/p` generator.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum IrregularAgreeingIdentity {
+    /// Totalizing `вьсь`, with mixed terminals, two canonical doublets, and no dual.
+    TotalVes,
+    /// Demonstrative `сиць`, with mixed terminals and no dual.
+    DemonstrativeSic,
+    /// Proximal demonstrative `сь`, with a unique complete paradigm.
+    ProximalSi,
+    /// Interrogative determiner `кꙑи`, with syncopated and expanded stems.
+    InterrogativeKyi,
+}
+
+impl IrregularAgreeingIdentity {
+    pub const ALL: [Self; 4] = [
+        Self::TotalVes,
+        Self::DemonstrativeSic,
+        Self::ProximalSi,
+        Self::InterrogativeKyi,
+    ];
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::TotalVes => "вьсь",
+            Self::DemonstrativeSic => "сиць",
+            Self::ProximalSi => "сь",
+            Self::InterrogativeKyi => "кꙑи",
+        }
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        match self {
+            Self::TotalVes => RuleId::PronounSpecialVes,
+            Self::DemonstrativeSic => RuleId::PronounSpecialSic,
+            Self::ProximalSi => RuleId::PronounUniqueSi,
+            Self::InterrogativeKyi => RuleId::DeterminerInterrogativeKyi,
+        }
+    }
+
+    pub const fn part_of_speech(self) -> PartOfSpeech {
+        match self {
+            Self::InterrogativeKyi => PartOfSpeech::Determiner,
+            Self::TotalVes | Self::DemonstrativeSic | Self::ProximalSi => PartOfSpeech::Pronoun,
+        }
+    }
+}
+
+/// The numberless, genderless interrogative pronouns.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum InterrogativePronounIdentity {
+    Kto,
+    Chto,
+}
+
+impl InterrogativePronounIdentity {
+    pub const ALL: [Self; 2] = [Self::Kto, Self::Chto];
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::Kto => "къто",
+            Self::Chto => "чьто",
+        }
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        match self {
+            Self::Kto => RuleId::PronounInterrogativeKto,
+            Self::Chto => RuleId::PronounInterrogativeChto,
+        }
+    }
+}
+
+/// Return the complete relative-pronoun cell. Free forms are `*и` plus `же`;
+/// forms governed by a preposition use the conditioned `н҄-` allomorph. A
+/// preposition cannot govern a nominative, and no vocative exists.
+pub fn relative_izhe_form(
+    case: Case,
+    number: Number,
+    gender: Gender,
+    environment: AnaphoricEnvironment,
+) -> Option<String> {
+    use AnaphoricEnvironment::AfterPreposition;
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Dual, Plural, Singular};
+
+    if case == Case::Vocative {
+        return None;
+    }
+    if case == Case::Nominative {
+        if environment == AfterPreposition {
+            return None;
+        }
+        return Some(
+            match (number, gender) {
+                (Singular, Masculine) => "иже",
+                (Singular, Neuter) => "ѥже",
+                (Singular, Feminine) => "ꙗже",
+                (Dual, Masculine) => "ꙗже",
+                (Dual, Feminine | Neuter) => "иже",
+                (Plural, Masculine) => "иже",
+                (Plural, Neuter) => "ꙗже",
+                (Plural, Feminine) => "ѩже",
+            }
+            .to_string(),
+        );
+    }
+    let anaphoric = anaphoric_form(case, number, gender, environment)?;
+    let mut text = anaphoric.text.to_string();
+    text.push_str("же");
+    Some(text)
+}
+
+/// Return every source-ordered form in one closed irregular agreeing cell.
+/// Empty output denotes a historically invalid vocative or, for `вьсь` and
+/// `сиць`, any dual cell.
+pub fn irregular_agreeing_forms(
+    identity: IrregularAgreeingIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Vec<PronounVariant> {
+    match identity {
+        IrregularAgreeingIdentity::TotalVes => ves_forms(case, number, gender),
+        IrregularAgreeingIdentity::DemonstrativeSic => sic_forms(case, number, gender),
+        IrregularAgreeingIdentity::ProximalSi => si_forms(case, number, gender),
+        IrregularAgreeingIdentity::InterrogativeKyi => kyi_forms(case, number, gender),
+    }
+}
+
+/// Return every source-ordered form in one numberless and genderless
+/// interrogative cell. Nominative and accusative are syncretic; vocative is
+/// historically invalid.
+pub fn interrogative_forms(
+    identity: InterrogativePronounIdentity,
+    case: Case,
+) -> Vec<PronounVariant> {
+    use PronounVariantStatus::{TablePrimary, TableVariant};
+    match (identity, case) {
+        (InterrogativePronounIdentity::Kto, Case::Nominative | Case::Accusative) => {
+            vec![PronounVariant::new("къто", TablePrimary)]
+        }
+        (InterrogativePronounIdentity::Kto, Case::Genitive) => {
+            vec![PronounVariant::new("кого", TablePrimary)]
+        }
+        (InterrogativePronounIdentity::Kto, Case::Locative) => {
+            vec![PronounVariant::new("комь", TablePrimary)]
+        }
+        (InterrogativePronounIdentity::Kto, Case::Dative) => {
+            vec![PronounVariant::new("кому", TablePrimary)]
+        }
+        (InterrogativePronounIdentity::Kto, Case::Instrumental) => {
+            vec![PronounVariant::new("цѣмь", TablePrimary)]
+        }
+        (InterrogativePronounIdentity::Chto, Case::Nominative | Case::Accusative) => {
+            vec![PronounVariant::new("чьто", TablePrimary)]
+        }
+        (InterrogativePronounIdentity::Chto, Case::Genitive) => vec![
+            PronounVariant::new("чесо", TablePrimary),
+            PronounVariant::new("чьсо", TableVariant),
+            PronounVariant::new("чесого", TableVariant),
+        ],
+        (InterrogativePronounIdentity::Chto, Case::Locative) => vec![
+            PronounVariant::new("чемь", TablePrimary),
+            PronounVariant::new("чесомь", TableVariant),
+        ],
+        (InterrogativePronounIdentity::Chto, Case::Dative) => vec![
+            PronounVariant::new("чему", TablePrimary),
+            PronounVariant::new("чесому", TableVariant),
+            PronounVariant::new("чьсому", TableVariant),
+        ],
+        (InterrogativePronounIdentity::Chto, Case::Instrumental) => {
+            vec![PronounVariant::new("чимь", TablePrimary)]
+        }
+        (_, Case::Vocative) => Vec::new(),
+    }
+}
+
+fn form(text: &'static str) -> Vec<PronounVariant> {
+    vec![PronounVariant::new(
+        text,
+        PronounVariantStatus::TablePrimary,
+    )]
+}
+
+fn ves_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Plural, Singular};
+    use PronounVariantStatus::{TablePrimary, TableVariant};
+    match (case, number, gender) {
+        (Nominative, Singular, Masculine) | (Accusative, Singular, Masculine) => form("вьсь"),
+        (Nominative, Singular, Neuter) | (Accusative, Singular, Neuter) => form("вьсе"),
+        (Nominative, Singular, Feminine) => vec![
+            PronounVariant::new("вьса", TablePrimary),
+            PronounVariant::new("вьсѣ", TableVariant),
+        ],
+        (Accusative, Singular, Feminine) => form("вьсѫ"),
+        (Genitive, Singular, Masculine | Neuter) => form("вьсего"),
+        (Genitive, Singular, Feminine) => form("вьсеѩ"),
+        (Locative, Singular, Masculine | Neuter) => form("вьсемь"),
+        (Dative | Locative, Singular, Feminine) => form("вьсеи"),
+        (Dative, Singular, Masculine | Neuter) => form("вьсему"),
+        (Instrumental, Singular, Masculine | Neuter) => form("вьсѣмь"),
+        (Instrumental, Singular, Feminine) => form("вьсеѭ"),
+        (Nominative, Plural, Masculine) => form("вьси"),
+        (Nominative | Accusative, Plural, Neuter) => vec![
+            PronounVariant::new("вьса", TablePrimary),
+            PronounVariant::new("вьсѣ", TableVariant),
+        ],
+        (Nominative | Accusative, Plural, Feminine) | (Accusative, Plural, Masculine) => {
+            form("вьсѧ")
+        }
+        (Genitive | Locative, Plural, _) => form("вьсѣхъ"),
+        (Dative, Plural, _) => form("вьсѣмъ"),
+        (Instrumental, Plural, _) => form("вьсѣми"),
+        (Case::Vocative, _, _) | (_, Number::Dual, _) => Vec::new(),
+    }
+}
+
+fn sic_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Plural, Singular};
+    let text = match (case, number, gender) {
+        (Nominative, Singular, Masculine) | (Accusative, Singular, Masculine) => "сиць",
+        (Nominative, Singular, Neuter) | (Accusative, Singular, Neuter) => "сице",
+        (Nominative, Singular, Feminine) => "сица",
+        (Accusative, Singular, Feminine) => "сицѫ",
+        (Genitive, Singular, Masculine | Neuter) => "сицего",
+        (Genitive, Singular, Feminine) => "сицеѩ",
+        (Locative, Singular, Masculine | Neuter) => "сицемь",
+        (Dative | Locative, Singular, Feminine) => "сицеи",
+        (Dative, Singular, Masculine | Neuter) => "сицему",
+        (Instrumental, Singular, Masculine | Neuter) => "сицѣмь",
+        (Instrumental, Singular, Feminine) => "сицеѭ",
+        (Nominative, Plural, Masculine) => "сици",
+        (Nominative | Accusative, Plural, Neuter) => "сица",
+        (Nominative | Accusative, Plural, Feminine) | (Accusative, Plural, Masculine) => "сицѧ",
+        (Genitive | Locative, Plural, _) => "сицѣхъ",
+        (Dative, Plural, _) => "сицѣмъ",
+        (Instrumental, Plural, _) => "сицѣми",
+        (Case::Vocative, _, _) | (_, Number::Dual, _) => return Vec::new(),
+    };
+    form(text)
+}
+
+fn si_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Dual, Plural, Singular};
+    let text = match (case, number, gender) {
+        (Nominative, Singular, Masculine) | (Accusative, Singular, Masculine) => "сь",
+        (Nominative, Singular, Neuter) | (Accusative, Singular, Neuter) => "се",
+        (Nominative, Singular, Feminine) => "си",
+        (Accusative, Singular, Feminine) => "сиѭ",
+        (Genitive, Singular, Masculine | Neuter) => "сего",
+        (Genitive, Singular, Feminine) => "сеѩ",
+        (Locative, Singular, Masculine | Neuter) => "семь",
+        (Dative | Locative, Singular, Feminine) => "сеи",
+        (Dative, Singular, Masculine | Neuter) => "сему",
+        (Instrumental, Singular, Masculine | Neuter) => "симь",
+        (Instrumental, Singular, Feminine) => "сеѭ",
+        (Nominative | Accusative, Dual, Masculine) => "сиꙗ",
+        (Nominative | Accusative, Dual, Feminine | Neuter) => "си",
+        (Genitive | Locative, Dual, _) => "сею",
+        (Dative | Instrumental, Dual, _) => "сима",
+        (Nominative, Plural, Masculine) => "сии",
+        (Nominative | Accusative, Plural, Neuter) => "си",
+        (Nominative | Accusative, Plural, Feminine) | (Accusative, Plural, Masculine) => "сиѩ",
+        (Genitive | Locative, Plural, _) => "сихъ",
+        (Dative, Plural, _) => "симъ",
+        (Instrumental, Plural, _) => "сими",
+        (Case::Vocative, _, _) => return Vec::new(),
+    };
+    form(text)
+}
+
+fn kyi_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Dual, Plural, Singular};
+    let text = match (case, number, gender) {
+        (Nominative | Accusative, Singular, Masculine) => "кꙑи",
+        (Nominative | Accusative, Singular, Neuter) => "коѥ",
+        (Nominative, Singular, Feminine) => "каꙗ",
+        (Accusative, Singular, Feminine) => "кѫѭ",
+        (Genitive, Singular, Masculine | Neuter) => "коѥго",
+        (Genitive, Singular, Feminine) => "коѥѩ",
+        (Locative, Singular, Masculine | Neuter) => "коѥмь",
+        (Dative | Locative, Singular, Feminine) => "коѥи",
+        (Dative, Singular, Masculine | Neuter) => "коѥму",
+        (Instrumental, Singular, Masculine | Neuter) => "кꙑимь",
+        (Instrumental, Singular, Feminine) => "коѥѭ",
+        (Nominative | Accusative, Dual, Masculine) => "каꙗ",
+        (Nominative | Accusative, Dual, Feminine | Neuter) => "цѣи",
+        (Genitive | Locative, Dual, _) => "коѥю",
+        (Dative | Instrumental, Dual, _) => "кꙑима",
+        (Nominative, Plural, Masculine) => "ции",
+        (Nominative | Accusative, Plural, Neuter) => "каꙗ",
+        (Nominative | Accusative, Plural, Feminine) | (Accusative, Plural, Masculine) => "кꙑѩ",
+        (Genitive | Locative, Plural, _) => "кꙑихъ",
+        (Dative, Plural, _) => "кꙑимъ",
+        (Instrumental, Plural, _) => "кꙑими",
+        (Case::Vocative, _, _) => return Vec::new(),
+    };
+    form(text)
+}
+
 /// One closed personal-pronoun identity. First- and second-person identities
 /// carry number but have intrinsic person; the reflexive is numberless; the
 /// third-person anaphoric identity carries gender and is defective in the
@@ -420,6 +729,8 @@ impl AnaphoricEnvironment {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum PronounVariantStatus {
     TablePrimary,
+    /// A co-listed grammar-table realization after the source-ordered primary.
+    TableVariant,
     MarkedClitic,
     /// UT lists the form in its OCS table, while Polivanova finds no OCS
     /// attestation and compares the later Church Slavonic form.
@@ -625,6 +936,351 @@ fn second_person_forms(case: Case, number: Number) -> Vec<PronounVariant> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn irregular_goldens(
+        identity: IrregularAgreeingIdentity,
+        expected_valid_cells: usize,
+        expected: &[&str],
+    ) {
+        let actual = Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Case::ALL.into_iter().flat_map(move |case| {
+                    Gender::ALL.into_iter().filter_map(move |gender| {
+                        let forms = irregular_agreeing_forms(identity, case, number, gender);
+                        (!forms.is_empty()).then(|| {
+                            forms
+                                .iter()
+                                .map(|form| form.text)
+                                .collect::<Vec<_>>()
+                                .join(" || ")
+                        })
+                    })
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(actual.len(), expected_valid_cells, "{identity:?}");
+        assert_eq!(actual, expected, "{identity:?}");
+    }
+
+    #[test]
+    fn relative_izhe_inventory_is_complete_in_both_environments() {
+        let expected_free = [
+            "иже",
+            "ꙗже",
+            "ѥже",
+            "ѥгоже",
+            "ѥѩже",
+            "ѥгоже",
+            "ѥмуже",
+            "ѥиже",
+            "ѥмуже",
+            "иже",
+            "ѭже",
+            "ѥже",
+            "имьже",
+            "ѥѭже",
+            "имьже",
+            "ѥмьже",
+            "ѥиже",
+            "ѥмьже",
+            "ꙗже",
+            "иже",
+            "иже",
+            "ѥюже",
+            "ѥюже",
+            "ѥюже",
+            "имаже",
+            "имаже",
+            "имаже",
+            "ꙗже",
+            "иже",
+            "иже",
+            "имаже",
+            "имаже",
+            "имаже",
+            "ѥюже",
+            "ѥюже",
+            "ѥюже",
+            "иже",
+            "ѩже",
+            "ꙗже",
+            "ихъже",
+            "ихъже",
+            "ихъже",
+            "имъже",
+            "имъже",
+            "имъже",
+            "ѩже",
+            "ѩже",
+            "ꙗже",
+            "имиже",
+            "имиже",
+            "имиже",
+            "ихъже",
+            "ихъже",
+            "ихъже",
+        ];
+        let actual_free = Number::ALL
+            .into_iter()
+            .flat_map(|number| {
+                Case::ALL.into_iter().flat_map(move |case| {
+                    Gender::ALL.into_iter().filter_map(move |gender| {
+                        relative_izhe_form(case, number, gender, AnaphoricEnvironment::Free)
+                    })
+                })
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(actual_free.len(), 54);
+        assert_eq!(actual_free, expected_free);
+
+        let mut prepositional_count = 0;
+        for number in Number::ALL {
+            for case in Case::ALL {
+                for gender in Gender::ALL {
+                    let form = relative_izhe_form(
+                        case,
+                        number,
+                        gender,
+                        AnaphoricEnvironment::AfterPreposition,
+                    );
+                    if matches!(case, Case::Nominative | Case::Vocative) {
+                        assert!(form.is_none());
+                    } else {
+                        let form = form.expect("valid ad-prepositional relative cell");
+                        assert!(form.starts_with("н҄"));
+                        assert!(form.ends_with("же"));
+                        prepositional_count += 1;
+                    }
+                }
+            }
+        }
+        assert_eq!(prepositional_count, 45);
+        assert_eq!(
+            relative_izhe_form(
+                Case::Dative,
+                Number::Singular,
+                Gender::Feminine,
+                AnaphoricEnvironment::AfterPreposition,
+            )
+            .as_deref(),
+            Some("н҄ѥиже")
+        );
+    }
+
+    #[test]
+    fn mixed_and_unique_agreeing_pronoun_goldens_are_exhaustive() {
+        irregular_goldens(
+            IrregularAgreeingIdentity::TotalVes,
+            36,
+            &[
+                "вьсь",
+                "вьса || вьсѣ",
+                "вьсе",
+                "вьсего",
+                "вьсеѩ",
+                "вьсего",
+                "вьсему",
+                "вьсеи",
+                "вьсему",
+                "вьсь",
+                "вьсѫ",
+                "вьсе",
+                "вьсѣмь",
+                "вьсеѭ",
+                "вьсѣмь",
+                "вьсемь",
+                "вьсеи",
+                "вьсемь",
+                "вьси",
+                "вьсѧ",
+                "вьса || вьсѣ",
+                "вьсѣхъ",
+                "вьсѣхъ",
+                "вьсѣхъ",
+                "вьсѣмъ",
+                "вьсѣмъ",
+                "вьсѣмъ",
+                "вьсѧ",
+                "вьсѧ",
+                "вьса || вьсѣ",
+                "вьсѣми",
+                "вьсѣми",
+                "вьсѣми",
+                "вьсѣхъ",
+                "вьсѣхъ",
+                "вьсѣхъ",
+            ],
+        );
+        irregular_goldens(
+            IrregularAgreeingIdentity::DemonstrativeSic,
+            36,
+            &[
+                "сиць",
+                "сица",
+                "сице",
+                "сицего",
+                "сицеѩ",
+                "сицего",
+                "сицему",
+                "сицеи",
+                "сицему",
+                "сиць",
+                "сицѫ",
+                "сице",
+                "сицѣмь",
+                "сицеѭ",
+                "сицѣмь",
+                "сицемь",
+                "сицеи",
+                "сицемь",
+                "сици",
+                "сицѧ",
+                "сица",
+                "сицѣхъ",
+                "сицѣхъ",
+                "сицѣхъ",
+                "сицѣмъ",
+                "сицѣмъ",
+                "сицѣмъ",
+                "сицѧ",
+                "сицѧ",
+                "сица",
+                "сицѣми",
+                "сицѣми",
+                "сицѣми",
+                "сицѣхъ",
+                "сицѣхъ",
+                "сицѣхъ",
+            ],
+        );
+        for identity in [
+            IrregularAgreeingIdentity::TotalVes,
+            IrregularAgreeingIdentity::DemonstrativeSic,
+        ] {
+            for case in Case::ALL {
+                for gender in Gender::ALL {
+                    assert!(
+                        irregular_agreeing_forms(identity, case, Number::Dual, gender).is_empty()
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn si_and_kyi_goldens_cover_all_fifty_four_nonvocative_cells() {
+        irregular_goldens(
+            IrregularAgreeingIdentity::ProximalSi,
+            54,
+            &[
+                "сь", "си", "се", "сего", "сеѩ", "сего", "сему", "сеи", "сему", "сь", "сиѭ", "се",
+                "симь", "сеѭ", "симь", "семь", "сеи", "семь", "сиꙗ", "си", "си", "сею", "сею",
+                "сею", "сима", "сима", "сима", "сиꙗ", "си", "си", "сима", "сима", "сима", "сею",
+                "сею", "сею", "сии", "сиѩ", "си", "сихъ", "сихъ", "сихъ", "симъ", "симъ", "симъ",
+                "сиѩ", "сиѩ", "си", "сими", "сими", "сими", "сихъ", "сихъ", "сихъ",
+            ],
+        );
+        irregular_goldens(
+            IrregularAgreeingIdentity::InterrogativeKyi,
+            54,
+            &[
+                "кꙑи",
+                "каꙗ",
+                "коѥ",
+                "коѥго",
+                "коѥѩ",
+                "коѥго",
+                "коѥму",
+                "коѥи",
+                "коѥму",
+                "кꙑи",
+                "кѫѭ",
+                "коѥ",
+                "кꙑимь",
+                "коѥѭ",
+                "кꙑимь",
+                "коѥмь",
+                "коѥи",
+                "коѥмь",
+                "каꙗ",
+                "цѣи",
+                "цѣи",
+                "коѥю",
+                "коѥю",
+                "коѥю",
+                "кꙑима",
+                "кꙑима",
+                "кꙑима",
+                "каꙗ",
+                "цѣи",
+                "цѣи",
+                "кꙑима",
+                "кꙑима",
+                "кꙑима",
+                "коѥю",
+                "коѥю",
+                "коѥю",
+                "ции",
+                "кꙑѩ",
+                "каꙗ",
+                "кꙑихъ",
+                "кꙑихъ",
+                "кꙑихъ",
+                "кꙑимъ",
+                "кꙑимъ",
+                "кꙑимъ",
+                "кꙑѩ",
+                "кꙑѩ",
+                "каꙗ",
+                "кꙑими",
+                "кꙑими",
+                "кꙑими",
+                "кꙑихъ",
+                "кꙑихъ",
+                "кꙑихъ",
+            ],
+        );
+    }
+
+    #[test]
+    fn numberless_interrogative_goldens_preserve_ordered_variants() {
+        let expected = [
+            (
+                InterrogativePronounIdentity::Kto,
+                ["къто", "кого", "кому", "къто", "цѣмь", "комь"].as_slice(),
+            ),
+            (
+                InterrogativePronounIdentity::Chto,
+                [
+                    "чьто",
+                    "чесо || чьсо || чесого",
+                    "чему || чесому || чьсому",
+                    "чьто",
+                    "чимь",
+                    "чемь || чесомь",
+                ]
+                .as_slice(),
+            ),
+        ];
+        for (identity, expected_cells) in expected {
+            let actual = Case::ALL
+                .into_iter()
+                .filter_map(|case| {
+                    let forms = interrogative_forms(identity, case);
+                    (!forms.is_empty()).then(|| {
+                        forms
+                            .iter()
+                            .map(|form| form.text)
+                            .collect::<Vec<_>>()
+                            .join(" || ")
+                    })
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(actual, expected_cells, "{identity:?}");
+            assert!(interrogative_forms(identity, Case::Vocative).is_empty());
+        }
+    }
 
     fn complete_pronominal_goldens(lexeme: PronominalLexeme, expected: [&str; 54]) -> Vec<String> {
         let mut actual = Vec::new();

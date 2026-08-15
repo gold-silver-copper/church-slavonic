@@ -32,8 +32,9 @@ pub use phrase::{
     PassiveAuxiliary, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, RealizedPhrase,
 };
 pub use pronoun::{
-    AnaphoricEnvironment, PersonalPronounIdentity, PronominalDeclension, PronominalLexeme,
-    PronounFormSelection, PronounVariant, PronounVariantStatus, StandardPronominalIdentity,
+    AnaphoricEnvironment, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    PersonalPronounIdentity, PronominalDeclension, PronominalLexeme, PronounFormSelection,
+    PronounVariant, PronounVariantStatus, StandardPronominalIdentity,
 };
 pub use result::{
     FormAnalysis, FormSet, FormSource, FormVariant, InflectionError, InflectionWarning,

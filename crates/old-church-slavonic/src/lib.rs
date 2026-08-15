@@ -117,7 +117,8 @@
 //! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exact comparative citations plus productive comparison through [`advanced::rules`] |
 //! | Personal/reflexive/anaphoric pronouns | [`personal_pronoun_with`], [`reflexive_pronoun`], [`anaphoric_pronoun`] and compatible ordinary handles | Complete reviewed closed grammar tables with typed clitic/context selection |
 //! | Regular pronominal pronouns | [`gendered_pronoun`] and [`Pronoun`] | Reviewed hard, soft, and j-stem class `2/p`; explicit OOV metadata through [`advanced::rules`] |
-//! | Other closed classes | [`determiner`], [`pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells only while exceptional inventories remain under review |
+//! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
+//! | Other closed classes | [`pronoun`], [`determiner`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells while derived particle families and remaining lexical allocation are under review |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
@@ -148,11 +149,12 @@ pub use lookup::lookup;
 pub use old_church_slavonic_core::{
     AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, Case, ConditionalAuxiliary,
     CopulaSeries, FiniteTense, FormSet, FormSource, FormVariant, FutureInfinitiveAuxiliary,
-    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning, Lemma,
-    LexemeSummary, Number, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
-    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
-    PluperfectAuxiliary, PronounFormSelection, RealizedPhrase, RequestedCell, Script,
-    UngenderedCell, VariantPolicy, VariantSelectionError,
+    FutureReferenceTense, Gender, GenderedCell, InflectionError, InflectionWarning,
+    InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma, LexemeSummary, Number,
+    PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell,
+    PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary,
+    PronounFormSelection, RealizedPhrase, RequestedCell, Script, UngenderedCell, VariantPolicy,
+    VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,
@@ -175,19 +177,21 @@ pub mod prelude {
         Adjective, AdjectiveForm, AdjectiveParadigm, AnaphoricEnvironment, Animacy, Case,
         Determiner, DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet, FormSource,
         FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
-        InflectionError, InflectionResult, InflectionWarning, LParticipleParadigm, Lemma, Noun,
-        NounParadigm, Number, Numeral, NumeralParadigm, ParadigmLookupError, PartOfSpeech,
-        Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
-        PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
-        VariantPolicy, VariantSelectionError, Verb, VerbParadigm, adjective_paradigm,
-        anaphoric_pronoun, aorist, comparative_citation, determiner, determiner_paradigm, finite,
-        finite_paradigm, gendered_numeral, gendered_numeral_paradigm, gendered_pronoun,
-        gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect, infinitive,
+        InflectionError, InflectionResult, InflectionWarning, InterrogativePronounIdentity,
+        IrregularAgreeingIdentity, LParticipleParadigm, Lemma, Noun, NounParadigm, Number, Numeral,
+        NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
+        ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
+        PronounFormSelection, PronounParadigm, Script, VariantPolicy, VariantSelectionError, Verb,
+        VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist, comparative_citation,
+        determiner, determiner_paradigm, finite, finite_paradigm, gendered_numeral,
+        gendered_numeral_paradigm, gendered_pronoun, gendered_pronoun_paradigm, imperative,
+        imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
         l_participle, l_participle_paradigm, long_adjective, lookup, noun, noun_paradigm, numeral,
         numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
         personal_pronoun, personal_pronoun_paradigm, personal_pronoun_with, present,
         present_active_participle, present_paradigm, present_passive_participle, pronoun,
-        pronoun_paradigm, reflexive_pronoun, short_adjective, supine, verbal_noun,
+        pronoun_paradigm, reflexive_pronoun, relative_pronoun, short_adjective, supine,
+        verbal_noun,
     };
 }
 
@@ -365,6 +369,62 @@ pub fn anaphoric_pronoun(
     environment: AnaphoricEnvironment,
 ) -> InflectionResult {
     resolver::anaphoric_pronoun(case, number, gender, environment)
+}
+
+/// Resolve the complete relative pronoun `иже` in a free or post-prepositional
+/// environment.
+///
+/// ```
+/// use old_church_slavonic::{
+///     AnaphoricEnvironment, Case, Gender, Number, relative_pronoun,
+/// };
+/// let form = relative_pronoun(
+///     Case::Dative,
+///     Number::Singular,
+///     Gender::Feminine,
+///     AnaphoricEnvironment::AfterPreposition,
+/// )?;
+/// assert_eq!(form.primary_text(), "н҄ѥиже");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn relative_pronoun(
+    case: Case,
+    number: Number,
+    gender: Gender,
+    environment: AnaphoricEnvironment,
+) -> InflectionResult {
+    resolver::relative_pronoun(case, number, gender, environment)
+}
+
+/// Resolve one agreeing closed irregular identity. This covers no-dual
+/// `вьсь/сиць`, unique `сь`, and the syncopated/expanded determiner `кꙑи`.
+pub fn irregular_agreeing(
+    identity: IrregularAgreeingIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> InflectionResult {
+    resolver::irregular_agreeing(identity, case, number, gender)
+}
+
+/// Resolve the numberless and genderless interrogative `къто` or `чьто`.
+///
+/// ```
+/// use old_church_slavonic::{
+///     Case, InterrogativePronounIdentity, interrogative_pronoun,
+/// };
+/// let forms = interrogative_pronoun(InterrogativePronounIdentity::Chto, Case::Genitive)?;
+/// assert_eq!(
+///     forms.texts().collect::<Vec<_>>(),
+///     ["чесо", "чьсо", "чесого"],
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn interrogative_pronoun(
+    identity: InterrogativePronounIdentity,
+    case: Case,
+) -> InflectionResult {
+    resolver::interrogative_pronoun(identity, case)
 }
 
 /// Decline one gender-indexed pronoun cell.
