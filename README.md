@@ -333,6 +333,13 @@ palatalization marks. Cyrillic and Glagolitic remain distinct; there is no lossy
 automatic transliteration. See
 [docs/ORTHOGRAPHY.md](docs/ORTHOGRAPHY.md).
 
+OCS stress reconstruction is deliberately separate from canonical output. A
+caller may apply an explicit, complete `AccentParadigm` to any generated Cyrillic
+cell with `reconstruct_accent`; the returned `ReconstructedAccent` carries its
+comparative or disputed status, source citation, paradigm identity, and rule
+trace. Existing source accent or breathing marks are preserved only by exact
+dictionary lookup and are never overwritten or generalized.
+
 The current pinned snapshot contains 3,081 lexemes, 134,761 public feature cells,
 137,406 ordered variants, and 3,157 normalized verb metadata fields. Accuracy,
 corpus, and extraction reports remain separate in [reports](reports). The source

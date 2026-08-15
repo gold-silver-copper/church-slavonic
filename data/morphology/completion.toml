@@ -524,23 +524,23 @@ id = "ocs.orthography.accent"
 recension = "old-church-slavonic"
 category = "accent"
 part_of_speech = "cross"
-scope = "Fully accented OCS output with lexical accent paradigms and breathing/mark behavior."
-profiles = ["fully-accented"]
-features = ["stress=lexical", "breathing=typed", "mark-order=typed", "scope=cell"]
-subtypes = ["fixed", "mobile", "irregular"]
+scope = "Canonical OCS remains accentless; source-marked spellings are exact-only; explicit cell-scoped comparative stress reconstructions compose after morphology."
+profiles = ["canonical-cyrillic", "exact-source-diacritics", "reconstructed-stress"]
+features = ["stress=explicit-cell-scoped|atonic", "evidence=comparative|disputed", "mark=scholarly-acute", "breathing=exact-source-only", "mark-order=unicode"]
+subtypes = ["fixed", "mobile", "cell-specific", "atonic", "source-diacritic-exact"]
 realization = "presentation"
-state = "implementation-missing"
-implementation_kind = "exact-source-only"
-rule_ids = ["OCS-ACCENT-PENDING"]
-sources = ["polivanova-fup-2023", "unicode-tn41-revision-1", "gorazd"]
-citation = "Current OCS core preserves marks but has no productive accent-paradigm layer."
-required_metadata = ["lexical accent paradigm", "cell scope", "mark type", "breathing"]
-valid_inventory = "Every morphological cell when complete lexical metadata is supplied."
-invalid_inventory = "Unaccented input without an explicit paradigm must remain missing metadata."
-implementation = ["crates/old-church-slavonic-core/src/orthography.rs"]
-tests = ["crates/old-church-slavonic-core/src/orthography.rs#lemma_is_normalized_single_script_and_letters_only"]
-evidence_status = "exact source spellings only"
-gap = "Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance."
+state = "productive-complete"
+implementation_kind = "typed-compositional-reconstruction-plus-exact-source-preservation"
+rule_ids = ["OCS-ACCENT-RECON-01"]
+sources = ["polivanova-fup-2023", "unicode-tn41-revision-1", "trager-kiev-fragment-1933", "lunt-ocs-grammar-2001", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "Polivanova 2023 §§648 and 842 establish that OCS accent is unstable and often unobservable; Trager 1933 identifies the Kiev Folia as an exceptional early accented witness; Unicode TN41 rev. 1 §§2, 3.2–3.3, and 5.2 defines encoding while warning that earlier-recension marks are incompletely standardized."
+required_metadata = ["nonempty paradigm id", "nonoverlapping complete cell scopes", "left- or right-counted vowel placement or explicit atonic status", "source id and citation", "comparative or disputed reconstruction status"]
+valid_inventory = "Every canonical Cyrillic wordform and requested morphology cell when a complete explicit reconstruction is supplied; exact source marks remain untouched."
+invalid_inventory = "Bare-spelling inference, reconstructed output labeled attested, generated historical breathing, applying over an already marked form, overlapping or incomplete scopes, an out-of-range vowel, and Glagolitic input under the Cyrillic reconstruction profile."
+implementation = ["crates/old-church-slavonic-core/src/accent.rs", "crates/old-church-slavonic/src/lib.rs", "crates/old-church-slavonic/src/advanced.rs", "crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic-core/src/accent.rs#fixed_reconstruction_covers_all_twenty_one_noun_cells", "crates/old-church-slavonic-core/src/accent.rs#mobile_and_cell_specific_reconstructions_are_explicit", "crates/old-church-slavonic-core/src/accent.rs#missing_overlapping_out_of_range_and_source_marks_fail_closed", "crates/old-church-slavonic-core/src/accent.rs#yers_are_valid_reconstructed_stress_bearers", "crates/old-church-slavonic-core/src/accent.rs#explicitly_unaccented_cells_and_vowelless_forms_are_supported", "crates/old-church-slavonic/tests/public_api.rs#reconstructed_ocs_accent_composes_after_morphology_and_never_masks_exact_marks", "crates/old-church-slavonic/src/resolver.rs#exact_source_diacritics_remain_bounded_dictionary_spellings"]
+evidence_status = "The productive layer is explicitly reconstructed, never attested by implication. The locked dictionary independently preserves 231 acute-marked rows across 11 lexemes and 21 psili-marked rows for one lexeme as exact source spellings; no grave, kamora, or dasia rows occur."
+rationale = "A complete caller-supplied stress paradigm is deterministic and composable for any productive form, while the provenance-bearing result type preserves the material distinction between comparative reconstruction and attested orthography."
 
 [[system]]
 id = "ocs.orthography.glagolitic"

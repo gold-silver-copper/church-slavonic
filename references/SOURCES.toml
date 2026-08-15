@@ -93,6 +93,20 @@ authority_roles = ["lexical", "morphological"]
 upstream_lineage = []
 
 [[source]]
+id = "trager-kiev-fragment-1933"
+name = "George L. Trager, The Old Church Slavonic Kiev Fragment: Its Accents and Their Relation to Modern Slavonic Accentuation"
+url = "https://www.cambridge.org/core/journals/language/issue/79B5897D98F3C489D02A180BD856C695"
+revision = "Language Monograph No. 13; Language 9(1), Part 2, March 1933, pp. 4–28"
+source_recension = "old-church-slavonic"
+content_kind = "accentological-monograph"
+format = "publisher-metadata-and-public-extract"
+license = "Publisher copyright; bibliographic metadata and short public extract only"
+redistribution = "metadata-only"
+download_status = "metadata-only: full monograph body was not accessed or committed"
+authority_roles = ["accentological-boundary", "manuscript-diacritic-analysis", "comparative-reconstruction"]
+upstream_lineage = ["Kiev Folia manuscript"]
+
+[[source]]
 id = "gorshkov-ocs-2002"
 name = "A. I. Gorshkov, Old Church Slavonic (Ancient Church Slavonic) Language"
 url = "https://djvu.online/file/Y91FdTzILrtfZ"

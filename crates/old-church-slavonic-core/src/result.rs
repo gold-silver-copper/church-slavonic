@@ -226,6 +226,7 @@ pub enum InflectionWarning {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MetadataField {
+    AccentParadigm,
     PartOfSpeech,
     NounClass,
     AdjectiveClass,

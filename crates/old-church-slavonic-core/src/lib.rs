@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod accent;
 pub mod adjective;
 pub mod copula;
 pub mod determiner;
@@ -21,6 +22,10 @@ pub mod trace;
 pub mod unique_verb;
 pub mod verb;
 
+pub use accent::{
+    AccentEvidence, AccentParadigm, AccentPlacement, AccentReconstructionStatus, AccentRule,
+    AccentScope, ReconstructedAccent,
+};
 pub use adjective::LongOnlyAdjectiveIdentity;
 pub use copula::{CopulaSeries, CopulaVariant, CopulaVariantStatus};
 pub use determiner::{DeterminerDeclension, DeterminerIdentity, DeterminerLexeme};

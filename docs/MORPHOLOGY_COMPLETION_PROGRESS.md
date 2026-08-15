@@ -6,16 +6,16 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **36** have final states and **17** remain non-final. Source discovery has 4 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **37** have final states and **16** remain non-final. Source discovery has 5 recorded passes and has not converged.
 
 ## State totals
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 13 |
+| `implementation-missing` | 12 |
 | `irregular-exact-complete` | 1 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 33 |
+| `productive-complete` | 34 |
 | `source-review-open` | 4 |
 
 ## Recension totals
@@ -23,7 +23,7 @@ The matrix contains **53** required system contracts: **36** have final states a
 | Recension | Final | Total |
 |---|---:|---:|
 | cross-recension | 3 | 4 |
-| old-church-slavonic | 23 | 26 |
+| old-church-slavonic | 24 | 26 |
 | synodal-russian | 10 | 23 |
 
 ## Category totals
@@ -34,7 +34,7 @@ The matrix contains **53** required system contracts: **36** have final states a
 | cross-recension | evaluation | 1 | 1 |
 | cross-recension | provenance | 1 | 1 |
 | cross-recension | research | 0 | 1 |
-| old-church-slavonic | accent | 0 | 1 |
+| old-church-slavonic | accent | 1 | 1 |
 | old-church-slavonic | adjective | 1 | 1 |
 | old-church-slavonic | analytic-form | 1 | 1 |
 | old-church-slavonic | comparison | 2 | 2 |
@@ -70,7 +70,6 @@ The matrix contains **53** required system contracts: **36** have final states a
 
 ## Non-final systems
 
-- `ocs.orthography.accent` — **implementation-missing**: Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance.
 - `ocs.orthography.glagolitic` — **implementation-missing**: Establish a source-backed Glagolitic realization/transliteration contract for every productive rule.
 - `ocs.lexicon.classification` — **implementation-missing**: Define the source-union merge, import lawful lexical metadata, and eliminate silent rejects/unclassified lexemes.
 - `syn.noun.irregular` — **implementation-missing**: Complete irregular noun families and unify любовь identities without generating unattested alternant combinations.
@@ -114,7 +113,7 @@ The matrix contains **53** required system contracts: **36** have final states a
 | `ocs.verb.analytic` | old-church-slavonic | analytic-form | `productive-complete` | `V-COP-ES-PRES-01`<br>`V-COP-BUD-PRES-01`<br>`V-COP-BE-IMPF-01`<br>`V-COP-BE-AOR-01`<br>`V-COP-BI-COND-01`<br>`V-COP-BY-COND-AOR-01`<br>`PHRASE-PERFECT-01`<br>`PHRASE-PLUPERFECT-01`<br>`PHRASE-FUT-INF-01`<br>`PHRASE-FUT-PTCP-01`<br>`PHRASE-FUT-PERFECT-01`<br>`PHRASE-COND-OPT-01`<br>`PHRASE-COND-OPT-DA-01`<br>`PHRASE-COND-OPT-ELLIP-01`<br>`PHRASE-COND-OPT-PASS-01`<br>`PHRASE-PASSIVE-01` | independently crosschecked grammar inventory with reviewed tables, explicit reconstructions, curated irregular auxiliaries, and structured word-level provenance |
 | `ocs.verb.verbal-noun` | old-church-slavonic | verbal-noun | `productive-complete` | `V-VERBAL-NOUN-01`<br>`N-JO-N-SOFT-01` | converged grammar contract; 191 exact citations each seed 21 cells; 134 passive-platform crosschecks split into 117 exact -иѥ matches and 17 retained-source -ьѥ spellings; generated reverse index includes declined forms |
 | `ocs.orthography.canonical` | old-church-slavonic | orthography | `productive-complete` | `OCS-ORTHOGRAPHY-CANONICAL` | technical and source contract |
-| `ocs.orthography.accent` | old-church-slavonic | accent | `implementation-missing` | `OCS-ACCENT-PENDING` | exact source spellings only |
+| `ocs.orthography.accent` | old-church-slavonic | accent | `productive-complete` | `OCS-ACCENT-RECON-01` | The productive layer is explicitly reconstructed, never attested by implication. The locked dictionary independently preserves 231 acute-marked rows across 11 lexemes and 21 psili-marked rows for one lexeme as exact source spellings; no grave, kamora, or dasia rows occur. |
 | `ocs.orthography.glagolitic` | old-church-slavonic | orthography | `implementation-missing` | `OCS-GLAGOLITIC-PENDING` | partial exact dictionary evidence |
 | `ocs.lexicon.classification` | old-church-slavonic | lexicon | `implementation-missing` | `OCS-LEXICON-UNION-PENDING` | single locked dictionary lineage plus partial external evaluation |
 | `ocs.invariant-parts-of-speech` | old-church-slavonic | invariant | `not-inflectional` | `OCS-NOT-INFLECTIONAL` | lexical exact forms |
@@ -148,7 +147,7 @@ The matrix contains **53** required system contracts: **36** have final states a
 
 ## Source frontier
 
-The frontier contains **24** source/lineage records. Authority policy: target-recension normative grammars and critical editions; manuscript-grounded dictionaries; independent target texts; manually annotated corpora; explicitly labeled inherited/comparative evidence; automatic, crowd-edited, OCR, and generated evidence only as candidates or evaluation
+The frontier contains **25** source/lineage records. Authority policy: target-recension normative grammars and critical editions; manuscript-grounded dictionaries; independent target texts; manually annotated corpora; explicitly labeled inherited/comparative evidence; automatic, crowd-edited, OCR, and generated evidence only as candidates or evaluation
 
 | ID | Tier | Type | Recension | Access | Impact |
 |---|---:|---|---|---|---|
@@ -161,7 +160,8 @@ The frontier contains **24** source/lineage records. Authority policy: target-re
 | `lvov-ocs-lexicon-1966` | 1 | scholarly manuscript-grounded lexical monograph | old-church-slavonic | accessible-full-text | Distinguishes exact тъма ‘ten thousand’ or ‘thousands’ from несъвѣда ‘incalculable quantity’, and directly cites несъвѣдами in both the Suprasliensis and John the Exarch. This licenses the complete inherited hard a-stem noun paradigm while keeping the lexeme outside exact integer composition. |
 | `simonov-nesveda-2006` | 2 | peer-reviewed historical-semantic article | old-russian-comparative | accessible-full-text | Shows that later exact-value readings do not fit Кирик's notation: the word marks million and ten-million ranks beyond the contemporary abacus rather than a stable power of ten. It corroborates exclusion from exact OCS cardinal composition without supplying OCS paradigm cells. |
 | `pronin-large-numerals-2024` | 2 | peer-reviewed historical-semantic synthesis | old-church-slavonic, old-russian-comparative, later-russian-comparative | accessible-full-text | Confirms exact 10,000 for тьма in the small/church number system while documenting other chronological values; confirms that Кирик's несъведа replaces a stable magnitude only for million-scale out-of-range ranks. This prevents later numeral systems from contaminating the OCS integer API. |
-| `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split, and locates the book's numeral declension, syntax, and historical sections for the open crosswalk. The available USC endpoint exposes only the front matter and contents, so no numeral rule claim relies on inaccessible body text. |
+| `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split, the book's numeral declension, syntax, and historical sections, and historical Common Slavic accent in §§51–52 for the open crosswalk. The available USC endpoint exposes only the front matter and contents, so no numeral or accent rule claim relies on inaccessible body text. |
+| `trager-kiev-fragment-1933` | 2 | scholarly accentological monograph | old-church-slavonic, comparative | accessible-metadata | Identifies the Kiev Folia as an exceptional early accented witness and contrasts it with Church Slavonic accent marks that are generally post-fourteenth-century and recension-influenced. This rules out treating later marked spelling as a complete canonical OCS orthography while permitting explicitly labeled comparative reconstruction. |
 | `krysko-collective-2020` | 1 | peer-reviewed manuscript-grounded historical grammar article | old-church-slavonic, mixed | accessible-full-text | Independently confirms that the low collective numerical pronouns are not singularia or pluralia tantum: дъвои and обои have singular, dual, and plural uses, including attributive and substantivized functions. |
 | `essja-collective-series` | 2 | academy historical-etymological dictionary | old-church-slavonic, inherited-comparative | accessible-full-text | Establishes the inherited adjective series from four through ten, its parallel -er-/-or- stems, its upper bound at ten, and which spellings have direct Old Church Slavonic citation rather than reconstruction alone. |
 | `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-full-text | Supplies independent lemma-level present, aorist, imperative, aspect, and prefix-family principal parts. The official export crosschecks the reconstructable workstems of the closed unique-verb profiles, including comparative plěv-/plě-/plěvi for sparse plěti, and independently checks the reusable-group present roots and exceptional aspect assignments; it does not by itself turn predicted cells into attestations. Its explicit verb-record schema does not treat verbal nouns as finite or nonfinite verb cells, agreeing with Polivanova's derivational boundary; productive formation is therefore licensed by the grammars, not inferred from LOVe's derivative links. |
@@ -171,7 +171,7 @@ The frontier contains **24** source/lineage records. Authority policy: target-re
 | `syntacticus-20230428` | 4 | native annotated corpus | old-church-slavonic | pinned-local | Lossless morphology and token-order crosscheck for compound ordinals, the fractional полъ and десѧтинѫ cells, and distributive по immediately governing dative cardinal components; it shares one PROIEL/TOROT witness lineage with UD and therefore is not counted as a second confirmation. |
 | `ccmh-2021-04-23` | 3 | primary-text corpus | old-church-slavonic | pinned-local | Potential independent OCS held-out evidence; the current literal spelling scan found no usable compound-ordinal match and corpus absence was not treated as a grammatical counterexample. |
 | `alypy-gamanovich-grammar-web-2023` | 1 | normative grammar | synodal-russian | pinned-local | Defines all currently admitted Synodal productive rules and the open supine, verbal-noun, comparison, closed-class, accent, and analytic reviews. |
-| `unicode-tn41-revision-1` | 1 | technical standard | mixed | pinned-local | Defines safe stored text, validation, mark ordering, numeral notation, and collation. |
+| `unicode-tn41-revision-1` | 1 | technical standard | mixed | pinned-local | Defines safe stored text, validation, mark ordering, numeral notation, and collation. For OCS reconstruction it licenses U+0301 as a neutral scholarly stress renderer and exact preservation of U+0485/U+0486 and related source marks, but it supplies no productive morphological accent rule. |
 | `russian-national-corpus-church-slavonic` | 4 | large annotated corpus | synodal-russian, mixed | accessible-metadata | 5,364,905-word, 1,447-text held-out discovery/evaluation frontier; never a sole grammar oracle. |
 | `gorazd` | 2 | scholarly digital dictionary/card index | old-church-slavonic | accessible-metadata | Manual lexeme and variant discovery frontier. |
 | `dyachenko-1900-scan` | 6 | historical dictionary scan | mixed | pinned-local | Candidate source for irregular lexemes and meanings, not direct productive authority. |
@@ -183,7 +183,8 @@ The frontier contains **24** source/lineage records. Authority policy: target-re
 - `ocs-numeral-frontier-pass-2` (2026-08-15) — new sources: elkina-ocs-1960, suprun-slavic-numerals-1969; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass added an independent OCS textbook and Suprun's historical synthesis. Together with Gorshkov, Polivanova, Leuta–Havryliuk, and the pinned corpora, they close the ordinal profile at the independently specified thousandth head and classify the apparent residual derived series under adjectives, nouns, or invariant adverbs. No deterministic OCS formation above 1,000 was found; later Russian forms were excluded as recension contamination. Because this pass changes the numeral contract, it does not count as a no-change convergence pass.
 - `ocs-large-number-frontier-pass-3` (2026-08-15) — new sources: lvov-ocs-lexicon-1966, simonov-nesveda-2006, pronin-large-numerals-2024; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass followed Suprun's bibliography to Lvov's primary-text lexical study and then checked Simonov and Pronin's complete-context semantic analyses. It adds the hard a-stem indefinite-quantity noun несъвѣда, preserves its directly cited instrumental plural, rejects a context-free exact magnitude value, and documents the chronological boundary around later large-number systems.
 - `ocs-verbal-noun-frontier-pass-4` (2026-08-15) — new sources: none; changed inventory/contracts/conflicts/validation: `true/true/true/true`. UT lesson 8 §36 defines a productive past-passive-platform plus -ьj- formation and soft-neuter jo declension. Polivanova §§407, 483, and 865 independently place it outside the verb paradigm but inside explicitly modeled nominal derivation, while §276 n.4 requires an independent platform for nouns whose corresponding participle is unattested. LOVe confirms that these nouns are not verb-record paradigm cells. The locked dictionary supplies 191 exact citations; 134 have independent passive-platform metadata, of which 117 reproduce the -иѥ spelling exactly and 17 retain source -ьѥ. Lunt's body remained inaccessible, so no rule claim depends on it.
+- `ocs-accent-frontier-pass-5` (2026-08-15) — new sources: trager-kiev-fragment-1933; changed inventory/contracts/conflicts/validation: `true/true/true/true`. The pass confirms that the Kiev Folia is an exceptional early accented witness, whereas most accented Church Slavonic evidence is later and recension-influenced. Polivanova describes OCS accent as unstable or unobservable in relevant contexts, Lunt's accessible contents locate historical Common Slavic accent but expose no surface rules, and Unicode TN41 defines mark encoding while explicitly leaving earlier-recension use incompletely standardized. The engine therefore keeps canonical OCS accentless, preserves 252 marked dictionary rows as exact source data, and adds only an explicit evidence-carrying comparative reconstruction layer.
 
 ## Next checkpoint
 
-`ocs.orthography.accent`: Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance.
+`ocs.orthography.glagolitic`: Establish a source-backed Glagolitic realization/transliteration contract for every productive rule.

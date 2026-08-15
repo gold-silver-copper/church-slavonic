@@ -50,8 +50,8 @@ authority_justification = "The publication explicitly aims at a complete, consis
 license = "CC BY 4.0"
 redistribution = "allowed-with-attribution"
 upstream_lineage = ["polivanova-osd-source"]
-reviewed_sections = ["publisher metadata", "grammar/dictionary scope", "repository adapter coverage", "§§285 and 303–305 exhaustive long-only adjective inventory and profile", "§§70 and 72 epenthetic-glide and ьj boundary rules", "§§285, 299, and 303–306 class-2/a short/long adjective synthesis and j-stem profile", "OSD spreadsheet rows 939, 1181, 1188, 3073, 4224, 4525, 4864, 5596, 6149, and 6243: exhaustive ten-identity ordinal class-2/a inventory", "OSD spreadsheet rows 1111, 2552, and 5608: collective j-pronominals дъвои, обои, and трои", "OSD spreadsheet rows 1187, 4863, and 6148: directly listed higher collectives десѧторъ, седморъ, and четворъ", "OSD spreadsheet rows 1186 and 3629: fractional noun lexemes десѧтина and полъ", "§§287–299 pronominal terminal sets and twofold rule", "§§314–318 regular class 2/p inventory, lexical allocation, families, *и, иже, and prepositional allomorphy", "§§321–322 unique plural-only cardinal триѥ paradigm", "§§345–348 feminine ja-stem class and both тꙑсѫщи/тꙑсѧщи lexical profiles", "§§349–351 feminine i-stem class including cardinal пѧть", "§§373–374 mixed десѧть paradigm and variants", "§§383–384 unique plural-only cardinal четыре paradigm", "§§319–320 special вьсь/сиць profiles", "§§375–380 unique кꙑи, сь, къто, and чьто profiles", "Paradigmatic Dictionary entry 343 classifies ѥтеръ as 2/a", "§318 complete third-person anaphoric inventory and prepositional n- allomorphs", "§§381–382 complete first-person, second-person, and reflexive inventories and marked clitics", "§§93 and 455–462 aorist terminals and boundary adjustment", "§§434–454 exhaustive reusable irregular-workstem inventory, all seventy member principal-part keys, distribution, and representative profiles", "§§475–482 standard and nonstandard aorists", "§455 and §§467–472 imperfect terminal variants", "§§914–915 imperfect platforms and special formations", "§§279–281 comparative lexemes and comparativa tantum", "§§307–313 comparative syncopated/expanded declension", "§§919–924 old/new comparative formation, lexical inventory, spellings, and attestations", "§§516 and 538–549 independent ѥсмь/бꙑти profiles, imperfect/aorist bundles, conditional table, and corpus illustrations", "§§532–537 complete имѣти profile and future/deontic infinitive construction", "§§550–555 complete хотѣти profile and modal/future infinitive construction", "§407 exhaustive verb representation inventory excluding derived verbal nouns", "§483 verbal nouns in -ьј=е as the most common nominal derivation from n/t-participial platforms", "§865 bicomponential verbal-platform plus nominal-suffix analysis and -аниѥ/-ениѥ/-тиѥ patterns", "§276 n.4 притѧжаниѥ and слутиѥ without an attested corresponding participle"]
-rule_ids = ["ADJ-*", "ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "NUM-CARD-*", "NUM-ORD-*", "NUM-COLL-*", "NUM-FRAC-NOUN-01", "PRON-PERS-*", "PRON-REFL-01", "PRON-ANAPH-*", "PRON-2P-*", "PRON-REL-*", "PRON-2PSTAR-*", "PRON-UNIQUE-*", "DET-UNIQUE-KYI-01", "V-AOR-ASIG-01", "V-AOR-NEW-01", "V-AOR-SIG-PRIMARY-01", "V-AOR-SIG-SECONDARY-01", "V-AOR-SIG-VOWEL-01", "V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01", "V-IMPF-PRESENT-01", "V-IMPF-CONTRACTED-A-01", "V-IMPF-CONTRACTED-YAT-A-01", "V-IMPF-CONTRACTED-PAL-A-01", "V-IMPF-PRESENT-CONTRACTED-01", "V-IMPF-IOTATED-01", "V-VERBAL-NOUN-01", "V-COP-*", "PHRASE-*", "pending-polivanova-crosswalk"]
+reviewed_sections = ["publisher metadata", "grammar/dictionary scope", "repository adapter coverage", "§§285 and 303–305 exhaustive long-only adjective inventory and profile", "§§70 and 72 epenthetic-glide and ьj boundary rules", "§§285, 299, and 303–306 class-2/a short/long adjective synthesis and j-stem profile", "OSD spreadsheet rows 939, 1181, 1188, 3073, 4224, 4525, 4864, 5596, 6149, and 6243: exhaustive ten-identity ordinal class-2/a inventory", "OSD spreadsheet rows 1111, 2552, and 5608: collective j-pronominals дъвои, обои, and трои", "OSD spreadsheet rows 1187, 4863, and 6148: directly listed higher collectives десѧторъ, седморъ, and четворъ", "OSD spreadsheet rows 1186 and 3629: fractional noun lexemes десѧтина and полъ", "§§287–299 pronominal terminal sets and twofold rule", "§§314–318 regular class 2/p inventory, lexical allocation, families, *и, иже, and prepositional allomorphy", "§§321–322 unique plural-only cardinal триѥ paradigm", "§§345–348 feminine ja-stem class and both тꙑсѫщи/тꙑсѧщи lexical profiles", "§§349–351 feminine i-stem class including cardinal пѧть", "§§373–374 mixed десѧть paradigm and variants", "§§383–384 unique plural-only cardinal четыре paradigm", "§§319–320 special вьсь/сиць profiles", "§§375–380 unique кꙑи, сь, къто, and чьто profiles", "Paradigmatic Dictionary entry 343 classifies ѥтеръ as 2/a", "§318 complete third-person anaphoric inventory and prepositional n- allomorphs", "§§381–382 complete first-person, second-person, and reflexive inventories and marked clitics", "§§93 and 455–462 aorist terminals and boundary adjustment", "§§434–454 exhaustive reusable irregular-workstem inventory, all seventy member principal-part keys, distribution, and representative profiles", "§§475–482 standard and nonstandard aorists", "§455 and §§467–472 imperfect terminal variants", "§§914–915 imperfect platforms and special formations", "§§279–281 comparative lexemes and comparativa tantum", "§§307–313 comparative syncopated/expanded declension", "§§919–924 old/new comparative formation, lexical inventory, spellings, and attestations", "§§516 and 538–549 independent ѥсмь/бꙑти profiles, imperfect/aorist bundles, conditional table, and corpus illustrations", "§§532–537 complete имѣти profile and future/deontic infinitive construction", "§§550–555 complete хотѣти profile and modal/future infinitive construction", "§407 exhaustive verb representation inventory excluding derived verbal nouns", "§483 verbal nouns in -ьј=е as the most common nominal derivation from n/t-participial platforms", "§865 bicomponential verbal-platform plus nominal-suffix analysis and -аниѥ/-ениѥ/-тиѥ patterns", "§276 n.4 притѧжаниѥ and слутиѥ without an attested corresponding participle", "§481 accentological basis for one bounded nonstandard aorist pattern", "§648 accent as an unstable parameter requiring limited-corpus analysis", "§842 context: accentual properties of suffixes may be unobservable or unknown for OCS", "chapter 24 supplement: clitics have comparative accentual behavior without a complete synchronically observed cell inventory"]
+rule_ids = ["ADJ-*", "ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "NUM-CARD-*", "NUM-ORD-*", "NUM-COLL-*", "NUM-FRAC-NOUN-01", "PRON-PERS-*", "PRON-REFL-01", "PRON-ANAPH-*", "PRON-2P-*", "PRON-REL-*", "PRON-2PSTAR-*", "PRON-UNIQUE-*", "DET-UNIQUE-KYI-01", "V-AOR-ASIG-01", "V-AOR-NEW-01", "V-AOR-SIG-PRIMARY-01", "V-AOR-SIG-SECONDARY-01", "V-AOR-SIG-VOWEL-01", "V-IMPF-A-01", "V-IMPF-YAT-A-01", "V-IMPF-PAL-A-01", "V-IMPF-PRESENT-01", "V-IMPF-CONTRACTED-A-01", "V-IMPF-CONTRACTED-YAT-A-01", "V-IMPF-CONTRACTED-PAL-A-01", "V-IMPF-PRESENT-CONTRACTED-01", "V-IMPF-IOTATED-01", "V-VERBAL-NOUN-01", "V-COP-*", "PHRASE-*", "OCS-ACCENT-RECON-01", "pending-polivanova-crosswalk"]
 impact = "Adds a completeness-oriented independent grammar and grammatical dictionaries; §§285 and 303–305 define the exhaustive long-only adjective inventory, while §§287–320, 375–380, and Paradigmatic Dictionary entry 343 define the regular, exceptional, and adjectival profiles allocated to the determiner and pronoun facades. §§70, 72, 285, 299, and 303–306 plus the OSD spreadsheet define the exact ten-member simple-ordinal lexicon, its nine hard profiles, the трет.ьj boundary, and productive short/long agreement. The OSD also directly allocates дъвои, обои, and трои to j-pronominal class 2/p and четворъ, седморъ, and десѧторъ to hard adjectival class 2/a, establishing both inflectional halves of the collective system, and independently lists the fractional noun lexemes полъ and десѧтина. §§321–322, 345–351, 373–374, and 383–384 independently define the unique three/four tables, both thousand identities over the productive feminine ja-stem profile, the feminine i-stem background of five through nine, and the attested mixed paradigm and variants of ten. §§318 and 381–382 define the four intrinsic personal/reflexive/anaphoric identities, their defective dimensions, grammar-table clitics, and conditioned prepositional allomorphs. Its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. §§407, 483, and 865 place verbal nouns outside the verb paradigm but define their source-bounded nominal derivation from participial or independent verbal platforms; §276 n.4 proves that an engine input cannot require an actually attested participle. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions."
 conflicts = ["It analyzes canonical (o)x forms as the standard aorist and root/old sigmatic forms as secondary/nonstandard, while UT uses the pedagogical asigmatic/sigmatic/new taxonomy; the matrix preserves each morphological formation and records the terminology crosswalk.", "§382.3 reports no attested OCS first-person dual dative clitic and compares later Church Slavonic на, whereas UT lists на in its OCS table; the engine marks that one variant disputed rather than silently choosing a source.", "Polivanova Table 434 assigns метати to the 3° мет-/метѫ group, whereas the official LOVe record supplies мещ-/метај- presents for its метати analysis; the reusable group profile follows Polivanova and the facade retains the two LOVe present profiles as competing lexical analyses, merging them only in cells with identical output.", "Table 434 visually crosses the displayed past stems of мрѣти and разскврѣти; the engine restores each root to its own lexeme under the table's uniform group distribution and records the correction instead of generating cross-lexeme forms."]
 access_status = "pinned-local"
@@ -266,10 +266,37 @@ authority_justification = "A major reference grammar explicitly identified by Po
 license = "copyrighted scholarly book; metadata and rule comparison only"
 redistribution = "metadata-only"
 upstream_lineage = []
-reviewed_sections = ["bibliographic identity and stated descriptive scope", "contents-level crosswalk for §§4.19, 4.31, and 4.7 comparative declension and formation", "contents-level numeral crosswalk locating declension on pp. 62–75, syntax in §20 on p. 153, and historical discussion on p. 233"]
-rule_ids = ["ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "pending-lunt-numeral-content-crosswalk", "pending-lunt-content-crosswalk"]
-impact = "Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split, and locates the book's numeral declension, syntax, and historical sections for the open crosswalk. The available USC endpoint exposes only the front matter and contents, so no numeral rule claim relies on inaccessible body text."
+reviewed_sections = ["bibliographic identity and stated descriptive scope", "contents-level crosswalk for §§4.19, 4.31, and 4.7 comparative declension and formation", "contents-level numeral crosswalk locating declension on pp. 62–75, syntax in §20 on p. 153, and historical discussion on p. 233", "contents-level location of historical Common Slavic accent in §§51–52; body text remained inaccessible"]
+rule_ids = ["ADJ-COMP-NEW-01", "ADJ-COMP-OLD-01", "OCS-ACCENT-RECON-01", "pending-lunt-numeral-content-crosswalk", "pending-lunt-content-crosswalk"]
+impact = "Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split, the book's numeral declension, syntax, and historical sections, and historical Common Slavic accent in §§51–52 for the open crosswalk. The available USC endpoint exposes only the front matter and contents, so no numeral or accent rule claim relies on inaccessible body text."
 conflicts = []
+access_status = "accessible-metadata"
+
+[[source]]
+id = "trager-kiev-fragment-1933"
+title = "The Old Church Slavonic Kiev Fragment: Its Accents and Their Relation to Modern Slavonic Accentuation"
+author_editor = "George L. Trager"
+edition_revision = "Language Monograph No. 13; Language 9(1), Part 2, March 1933, pp. 4–28; Cambridge Core digitization"
+publication_date = "1933"
+publisher_institution = "Linguistic Society of America; Cambridge University Press digital host"
+stable_url = "https://www.cambridge.org/core/journals/language/issue/79B5897D98F3C489D02A180BD856C695"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["English", "Old Church Slavonic"]
+periods = ["tenth-century Kiev Folia", "comparative Slavic"]
+recensions = ["old-church-slavonic", "comparative"]
+orthographies = ["Glagolitic manuscript diacritics"]
+source_type = "scholarly accentological monograph"
+epistemic_roles = ["accentological-boundary", "manuscript-diacritic-analysis", "comparative-reconstruction"]
+authority_tier = 2
+authority_justification = "A dedicated scholarly analysis of the exceptional early accented OCS witness establishes the manuscript boundary; the accessible public extract does not define a complete normalized paradigm."
+license = "publisher copyright; bibliographic metadata and a short public extract only"
+redistribution = "metadata-only"
+upstream_lineage = ["Kiev Folia manuscript"]
+reviewed_sections = ["Cambridge Core bibliographic record and public extract"]
+rule_ids = ["OCS-ACCENT-RECON-01"]
+impact = "Identifies the Kiev Folia as an exceptional early accented witness and contrasts it with Church Slavonic accent marks that are generally post-fourteenth-century and recension-influenced. This rules out treating later marked spelling as a complete canonical OCS orthography while permitting explicitly labeled comparative reconstruction."
+conflicts = ["The monograph body was not accessible in this review, so no exact cell placement or productive surface paradigm is imported from it."]
 access_status = "accessible-metadata"
 
 [[source]]
@@ -530,16 +557,16 @@ periods = ["Unicode Church Slavonic encoding"]
 recensions = ["mixed"]
 orthographies = ["Unicode Church Slavonic"]
 source_type = "technical standard"
-epistemic_roles = ["encoding-authority", "combining-order-authority", "collation-authority", "numeral-authority"]
+epistemic_roles = ["encoding-authority", "combining-order-authority", "collation-authority", "numeral-authority", "accent-encoding-authority"]
 authority_tier = 1
 authority_justification = "Normative encoding and typography contract, not a productive morphology source."
 license = "Unicode Terms of Use"
 redistribution = "evaluation-only"
 upstream_lineage = []
-reviewed_sections = ["encoding", "combining order", "collation", "numerals", "presentation"]
-rule_ids = ["orthography-unicode"]
-impact = "Defines safe stored text, validation, mark ordering, numeral notation, and collation."
-conflicts = []
+reviewed_sections = ["§2 historical emergence of accent and breathing marks, especially in later poluustav", "§§3.2–3.3 combining marks and canonical storage order", "§5.2 incomplete research and standardization of earlier-recension marks", "collation", "numerals", "presentation"]
+rule_ids = ["orthography-unicode", "OCS-ACCENT-RECON-01"]
+impact = "Defines safe stored text, validation, mark ordering, numeral notation, and collation. For OCS reconstruction it licenses U+0301 as a neutral scholarly stress renderer and exact preservation of U+0485/U+0486 and related source marks, but it supplies no productive morphological accent rule."
+conflicts = ["The note's later printed Church Slavonic mark semantics cannot be imported as canonical OCS morphology, and it explicitly reports that earlier-recension mark use remains incompletely researched and standardized."]
 access_status = "pinned-local"
 
 [[source]]
@@ -723,3 +750,23 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "UT lesson 8 §36 defines a productive past-passive-platform plus -ьj- formation and soft-neuter jo declension. Polivanova §§407, 483, and 865 independently place it outside the verb paradigm but inside explicitly modeled nominal derivation, while §276 n.4 requires an independent platform for nouns whose corresponding participle is unattested. LOVe confirms that these nouns are not verb-record paradigm cells. The locked dictionary supplies 191 exact citations; 134 have independent passive-platform metadata, of which 117 reproduce the -иѥ spelling exactly and 17 retain source -ьѥ. Lunt's body remained inaccessible, so no rule claim depends on it."
+
+[[discovery_pass]]
+id = "ocs-accent-frontier-pass-5"
+performed_at = "2026-08-15"
+languages = ["English", "Russian", "German", "French"]
+queries = [
+  "Old Church Slavonic accentology Dybo 2000 accent paradigm PDF",
+  "старославянская акцентология Дыбо 2000 pdf ударение",
+  "Altkirchenslavisch Akzent Akzentparadigma",
+  "GORAZD Old Church Slavonic accent marks",
+  "Vaillant vieux slave accentuation",
+  "Kiev Folia accent marks Old Church Slavonic",
+]
+catalogs = ["Cambridge Core", "USC Slavic Collection", "Library of Congress", "Unicode Consortium", "Firenze University Press", "WorldCat", "GORAZD"]
+new_sources = ["trager-kiev-fragment-1933"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "The pass confirms that the Kiev Folia is an exceptional early accented witness, whereas most accented Church Slavonic evidence is later and recension-influenced. Polivanova describes OCS accent as unstable or unobservable in relevant contexts, Lunt's accessible contents locate historical Common Slavic accent but expose no surface rules, and Unicode TN41 defines mark encoding while explicitly leaving earlier-recension use incompletely standardized. The engine therefore keeps canonical OCS accentless, preserves 252 marked dictionary rows as exact source data, and adds only an explicit evidence-carrying comparative reconstruction layer."

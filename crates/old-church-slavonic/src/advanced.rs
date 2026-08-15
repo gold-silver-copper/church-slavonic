@@ -76,6 +76,15 @@ pub mod raw_features {
     };
 }
 
+/// Explicit source-bounded orthographic reconstruction.
+pub mod orthography {
+    pub use crate::reconstruct_accent;
+    pub use old_church_slavonic_core::{
+        AccentEvidence, AccentParadigm, AccentPlacement, AccentReconstructionStatus, AccentRule,
+        AccentScope, ReconstructedAccent,
+    };
+}
+
 pub use crate::resolver::{
     adjective as adjective_form, finite_verb as finite_verb_form, imperative as imperative_form,
     l_participle as l_participle_form, noun as noun_form, participle as participle_form,

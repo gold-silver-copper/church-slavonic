@@ -14,10 +14,11 @@ use old_church_slavonic::advanced::rules::{
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
-    Adjective, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
-    CardinalMagnitudeIdentity, CardinalNumeralIdentity, Case, CollectiveNumeralCell,
-    CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
-    DeterminerCell, DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSet, FormSource,
+    AccentEvidence, AccentParadigm, AccentPlacement, AccentReconstructionStatus, Adjective,
+    AnaphoricEnvironment, Animacy, CardinalCompositionOptions, CardinalMagnitudeIdentity,
+    CardinalNumeralIdentity, Case, CollectiveNumeralCell, CollectiveNumeralDeclension,
+    CollectiveNumeralIdentity, CompoundCardinalCell, Determiner, DeterminerCell,
+    DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSet, FormSource,
     FractionalNumeralDeclension, FractionalNumeralIdentity, Gender, GenderedCell,
     ImpersonalVerbIdentity, ImpersonalVerbStatus, IndefiniteNumeralIdentity, InflectionError,
     InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
@@ -42,9 +43,9 @@ use old_church_slavonic::{
     l_participle, l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm,
     numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
     ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
-    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
-    regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun_form,
-    verbal_noun_paradigm,
+    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun,
+    reconstruct_accent, reflexive_pronoun, regular_pronominal, relative_pronoun, short_adjective,
+    supine, verbal_noun_form, verbal_noun_paradigm,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -3984,4 +3985,89 @@ fn impersonal_predicates_are_typed_without_deleting_word_morphology() {
             .primary_text(),
         "мьнѭ"
     );
+}
+
+#[test]
+fn reconstructed_ocs_accent_composes_after_morphology_and_never_masks_exact_marks() {
+    let cell = NounCell {
+        case: Case::Genitive,
+        number: Number::Singular,
+    };
+    let morphology = noun_with(
+        &NounLexeme {
+            lemma: "градъ".to_string(),
+            class: NounClass::OMasculineHard,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            number_restriction: NumberRestriction::All,
+        },
+        cell,
+    )
+    .expect("productive accentless morphology");
+    assert_eq!(morphology.primary_text(), "града");
+
+    let paradigm = AccentParadigm::fixed(
+        "reviewed-comparative-fixed-root",
+        AccentPlacement::VowelFromStart(0),
+        AccentEvidence {
+            source_id: "caller-reviewed-accentology".to_string(),
+            citation: "explicit comparative reconstruction".to_string(),
+            status: AccentReconstructionStatus::Comparative,
+        },
+    );
+    let accented = reconstruct_accent(
+        morphology.primary_text(),
+        &RequestedCell::Noun(cell),
+        &paradigm,
+    )
+    .expect("explicit reconstruction");
+    assert_eq!(accented.text(), "гра́да");
+    assert_eq!(
+        accented.evidence().status,
+        AccentReconstructionStatus::Comparative
+    );
+    assert_eq!(
+        accented.trace()[0].rule_id,
+        RuleId::OrthographyReconstructedAccent
+    );
+
+    let aaron = only_id("Аарѡ́нъ", PartOfSpeech::Noun);
+    let exact_accent = by_id::noun_by_id(
+        &aaron,
+        NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+        },
+    )
+    .expect("source-listed acute spelling");
+    assert_eq!(exact_accent.primary_text(), "Аарѡ́нъ");
+    assert_eq!(exact_accent.source(), &FormSource::DictionaryTable);
+    assert!(matches!(
+        reconstruct_accent(
+            exact_accent.primary_text(),
+            &RequestedCell::Noun(cell),
+            &paradigm,
+        ),
+        Err(InflectionError::ContradictoryLexicalMetadata { .. })
+    ));
+
+    let elephant = only_id("елефа́нтъ", PartOfSpeech::Noun);
+    let exact_breathing = by_id::noun_by_id(
+        &elephant,
+        NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+        },
+    )
+    .expect("source-listed breathing spelling");
+    assert_eq!(exact_breathing.primary_text(), "е҆лефантъ");
+    assert_eq!(exact_breathing.source(), &FormSource::DictionaryTable);
+    assert!(matches!(
+        reconstruct_accent(
+            exact_breathing.primary_text(),
+            &RequestedCell::Noun(cell),
+            &paradigm,
+        ),
+        Err(InflectionError::ContradictoryLexicalMetadata { .. })
+    ));
 }

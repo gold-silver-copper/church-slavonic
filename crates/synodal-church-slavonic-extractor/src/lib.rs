@@ -34,6 +34,7 @@ pub const APPROVED_SOURCE_RECENSIONS: &[(&str, &str)] = &[
     ("gorshkov-ocs-2002", "old-church-slavonic"),
     ("leuta-havryliuk-ocs-2018", "old-church-slavonic"),
     ("gorazd", "old-church-slavonic"),
+    ("trager-kiev-fragment-1933", "old-church-slavonic"),
     ("ud-ocs-proiel-r2.18", "old-church-slavonic"),
     ("syntacticus-20230428", "old-church-slavonic"),
     ("ccmh-2021-04-23", "old-church-slavonic"),

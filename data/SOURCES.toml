@@ -171,6 +171,24 @@ normalization = "normalization/lexical-references.toml"
 download_status = "metadata-only"
 
 [[synodal_source]]
+id = "trager-kiev-fragment-1933"
+name = "George L. Trager, The Old Church Slavonic Kiev Fragment: Its Accents and Their Relation to Modern Slavonic Accentuation"
+url = "https://www.cambridge.org/core/journals/language/issue/79B5897D98F3C489D02A180BD856C695"
+retrieved_at = "2026-08-15"
+revision = "Language Monograph No. 13; Language 9(1), Part 2, March 1933, pp. 4–28"
+sha256 = ""
+source_recension = "old-church-slavonic"
+content_kind = "accentological-monograph"
+format = "publisher-metadata-and-public-extract"
+license = "Publisher copyright; bibliographic metadata and short public extract only"
+redistribution = "metadata-only"
+authority_roles = ["accentological-boundary", "manuscript-diacritic-analysis", "comparative-reconstruction"]
+epistemic_roles = ["inherited-ocs-evidence"]
+upstream_lineage = ["Kiev Folia manuscript"]
+normalization = "normalization/lexical-references.toml"
+download_status = "metadata-only"
+
+[[synodal_source]]
 id = "ud-ocs-proiel-r2.18"
 name = "UD Old Church Slavonic PROIEL"
 url = "https://github.com/UniversalDependencies/UD_Old_Church_Slavonic-PROIEL"

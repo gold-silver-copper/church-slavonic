@@ -842,6 +842,42 @@ selection of the two special seams from a spelling remains deliberately absent;
 dictionary extraction admits only what the citation itself diagnoses, while an
 explicit caller may select the more precise typed seam.
 
+### OCS accent boundary and explicit reconstruction
+
+Canonical OCS Cyrillic remains unaccented. The canonical manuscripts do not
+provide a complete, standardized surface-accent orthography from which every
+morphological cell can be recovered: Polivanova §§648 and 842 describe accent as
+unstable and sometimes unobservable, and Trager's public description of the Kiev
+Folia treats that manuscript as an exceptional early accented witness while most
+accented Church Slavonic texts are later and recension-influenced. Lunt's
+accessible contents locate historical Common Slavic accent in §§51–52, but the
+body was inaccessible and no rule claim is inferred from a heading.
+
+`OCS-ACCENT-RECON-01` is therefore a separate compositional analysis, exposed as
+`reconstruct_accent`. An `AccentParadigm` must name its evidence and assign every
+requested cell exactly one nonoverlapping rule. Each rule either declares the
+cell atonic or addresses a vowel from the left or right edge of the complete
+generated wordform; yers remain possible stress bearers because placement is an
+explicit scholarly analysis rather than a spelling heuristic. The atonic state
+also covers clitics and vowel-less orthographic words without inventing a mark.
+Stressed results use U+0301 as a neutral scholarly stress mark, and every path
+returns `ReconstructedAccent`, whose comparative or disputed status, source
+citation, paradigm identity, and trace prevent the form from being mistaken for
+attested spelling.
+
+Unicode TN41 revision 1 §§2, 3.2–3.3, and 5.2 controls code points and combining
+order, not morphology. This profile never generates historical breathing marks,
+never overwrites an already accented or breathing-marked form, and does not
+accept Glagolitic input; Glagolitic orthography is a separate system. Missing,
+overlapping, or out-of-range metadata fails with a typed error instead of falling
+back to inference.
+
+Exact source spellings retain precedence. The locked Wiktionary snapshot contains
+231 acute-marked form rows across 11 lexemes and 21 psili-marked rows for one
+lexeme, with no grave, kamora, or dasia rows. Those 252 rows remain exact
+dictionary evidence and are never generalized into an OCS-wide accent or
+breathing rule.
+
 ### Dictionary principal-part derivation contracts
 
 All contracts run after held-cell exclusions. An available non-source diagnostic

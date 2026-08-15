@@ -152,13 +152,14 @@ mod resolver;
 pub use handles::{Adjective, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use lookup::lookup;
 pub use old_church_slavonic_core::{
-    AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy, CardinalCompositionOptions,
-    CardinalMagnitudeIdentity, CardinalNumeralIdentity, CardinalPhraseAnalysis, Case,
-    CollectiveNumeralCell, CollectiveNumeralDeclension, CollectiveNumeralIdentity,
-    CompoundCardinalCell, ConditionalAuxiliary, CopulaSeries, DeterminerCell, DeterminerDeclension,
-    DeterminerIdentity, DeterminerLexeme, DirectToTreatment, DistributiveCardinalAnalysis,
-    DistributiveCardinalCell, FiniteTense, FormSet, FormSource, FormVariant,
-    FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
+    AccentEvidence, AccentParadigm, AccentPlacement, AccentReconstructionStatus, AccentRule,
+    AccentScope, AdjectiveForm, AnalyticConstruction, AnaphoricEnvironment, Animacy,
+    CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,
+    CardinalPhraseAnalysis, Case, CollectiveNumeralCell, CollectiveNumeralDeclension,
+    CollectiveNumeralIdentity, CompoundCardinalCell, ConditionalAuxiliary, CopulaSeries,
+    DeterminerCell, DeterminerDeclension, DeterminerIdentity, DeterminerLexeme, DirectToTreatment,
+    DistributiveCardinalAnalysis, DistributiveCardinalCell, FiniteTense, FormSet, FormSource,
+    FormVariant, FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
     FutureReferenceTense, Gender, GenderedCell, ImpersonalVerbIdentity, ImpersonalVerbStatus,
     IndefiniteNumeralIdentity, InflectionError, InflectionWarning, InterrogativePronounIdentity,
     IrregularAgreeingIdentity, IrregularVerbAnalysis, IrregularVerbFamilyMember,
@@ -168,9 +169,9 @@ pub use old_church_slavonic_core::{
     ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell, PersonalPronounIdentity,
     PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, PronominalFamilySpec,
     PronominalPostpositive, PronominalPrefix, PronounFormSelection, RealizedCardinal,
-    RealizedDistributiveCardinal, RealizedOrdinal, RealizedPhrase, RequestedCell, Script,
-    StandardPronominalIdentity, UngenderedCell, UniqueVerbFamilyMember, UniqueVerbIdentity,
-    UniqueVerbProfileKind, VariantPolicy, VariantSelectionError,
+    RealizedDistributiveCardinal, RealizedOrdinal, RealizedPhrase, ReconstructedAccent,
+    RequestedCell, Script, StandardPronominalIdentity, UngenderedCell, UniqueVerbFamilyMember,
+    UniqueVerbIdentity, UniqueVerbProfileKind, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CardinalNumeralParadigm, CellOutcome, ClosedClassParadigm,
@@ -242,6 +243,45 @@ pub mod prelude {
 
 /// The structured result returned by ordinary inflection calls.
 pub type InflectionResult = Result<FormSet, InflectionError>;
+
+/// Apply an explicit, evidence-carrying reconstruction of OCS stress.
+///
+/// This function composes after morphology. It never infers stress from a bare
+/// spelling and always returns [`ReconstructedAccent`], keeping the output
+/// distinct from source-attested diacritics.
+///
+/// ```
+/// use old_church_slavonic::{
+///     reconstruct_accent, AccentEvidence, AccentParadigm, AccentPlacement,
+///     AccentReconstructionStatus, Case, Number, RequestedCell,
+/// };
+/// use old_church_slavonic::advanced::cells::NounCell;
+/// let cell = RequestedCell::Noun(NounCell {
+///     case: Case::Genitive,
+///     number: Number::Singular,
+/// });
+/// let paradigm = AccentParadigm::fixed(
+///     "comparative-fixed-root",
+///     AccentPlacement::VowelFromStart(0),
+///     AccentEvidence {
+///         source_id: "caller-reviewed-accentology".into(),
+///         citation: "caller-supplied comparative reconstruction".into(),
+///         status: AccentReconstructionStatus::Comparative,
+///     },
+/// );
+/// assert_eq!(
+///     reconstruct_accent("града", &cell, &paradigm)?.text(),
+///     "гра́да",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn reconstruct_accent(
+    form: &str,
+    cell: &RequestedCell,
+    paradigm: &AccentParadigm,
+) -> Result<ReconstructedAccent, InflectionError> {
+    paradigm.apply(cell, form)
+}
 
 /// Decline one dictionary noun cell.
 ///

@@ -4849,4 +4849,50 @@ mod tests {
         assert_eq!(exact_spelling, 117, "locked canonical -иѥ spellings");
         assert_eq!(retained_jer_spelling, 17, "locked retained -ьѥ spellings");
     }
+
+    #[test]
+    fn exact_source_diacritics_remain_bounded_dictionary_spellings() {
+        let acute = crate::dictionary::FORMS
+            .iter()
+            .filter(|row| row.form.contains('\u{0301}'))
+            .collect::<Vec<_>>();
+        let breathing = crate::dictionary::FORMS
+            .iter()
+            .filter(|row| row.form.contains('\u{0486}'))
+            .collect::<Vec<_>>();
+        assert_eq!(acute.len(), 231, "locked exact acute-marked rows");
+        assert_eq!(
+            acute
+                .iter()
+                .map(|row| row.lexeme_id)
+                .collect::<BTreeSet<_>>()
+                .len(),
+            11,
+            "locked acute-marked identities"
+        );
+        assert_eq!(breathing.len(), 21, "locked exact psili-marked rows");
+        assert_eq!(
+            breathing
+                .iter()
+                .map(|row| row.lexeme_id)
+                .collect::<BTreeSet<_>>()
+                .len(),
+            1,
+            "locked psili-marked identity"
+        );
+        assert!(crate::dictionary::FORMS.iter().all(|row| {
+            !row.form.chars().any(|character| {
+                matches!(
+                    character,
+                    '\u{0300}'
+                        | '\u{0311}'
+                        | '\u{0485}'
+                        | '\u{0400}'
+                        | '\u{0450}'
+                        | '\u{040d}'
+                        | '\u{045d}'
+                )
+            })
+        }));
+    }
 }
