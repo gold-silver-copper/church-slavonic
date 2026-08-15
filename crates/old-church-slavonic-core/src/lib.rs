@@ -9,6 +9,7 @@ pub mod adjective;
 pub mod copula;
 pub mod determiner;
 pub mod grammar;
+pub mod impersonal;
 pub mod irregular_verb;
 pub mod noun;
 pub mod numeral;
@@ -34,6 +35,7 @@ pub use grammar::{
     RequestedCell, UngenderedCell, VerbAspect, VerbClass, VerbDefectKind, VerbMorphologyCell,
     VerbMorphologySystem,
 };
+pub use impersonal::{ImpersonalVerbIdentity, ImpersonalVerbStatus};
 pub use irregular_verb::{IrregularVerbFamilyMember, IrregularVerbGroup};
 pub use numeral::{
     CardinalCompositionOptions, CardinalMagnitudeIdentity, CardinalNumeralIdentity,

@@ -19,16 +19,16 @@ use old_church_slavonic::{
     CollectiveNumeralDeclension, CollectiveNumeralIdentity, CompoundCardinalCell, Determiner,
     DeterminerCell, DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSource,
     FractionalNumeralDeclension, FractionalNumeralIdentity, Gender, GenderedCell,
-    IndefiniteNumeralIdentity, InflectionError, InflectionWarning, InterrogativePronounIdentity,
-    IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE,
-    MIN_COMPOUND_ORDINAL_VALUE, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
-    OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
-    PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
-    Script, StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
-    anaphoric_pronoun, aorist, cardinal_magnitude, cardinal_numeral_identity,
-    cardinal_numeral_paradigm, collective_numeral, collective_numeral_identity,
-    collective_numeral_paradigm, collective_numeral_paradigm_identity, compound_cardinal,
-    compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
+    ImpersonalVerbIdentity, ImpersonalVerbStatus, IndefiniteNumeralIdentity, InflectionError,
+    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
+    LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE, MIN_COMPOUND_ORDINAL_VALUE, Noun,
+    Number, Numeral, NumeralCell, OrdinalComposition, OrdinalNumeralIdentity, ParadigmLookupError,
+    PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
+    PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
+    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+    cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
+    collective_numeral_identity, collective_numeral_paradigm, collective_numeral_paradigm_identity,
+    compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
     compound_cardinal_with_one, compound_cardinal_with_options, compound_ordinal,
     compound_ordinal_paradigm, determiner, determiner_identity, determiner_paradigm,
     distributive_cardinal, distributive_cardinal_paradigm, distributive_cardinal_paradigm_with_one,
@@ -3698,4 +3698,36 @@ fn normalized_imperfect_variants_reach_the_production_resolver_in_source_order()
             .iter()
             .any(|evidence| evidence.field == Some(MetadataField::ImperfectVariantPolicy))
     }));
+}
+
+#[test]
+fn impersonal_predicates_are_typed_without_deleting_word_morphology() {
+    assert_eq!(
+        ImpersonalVerbIdentity::Dostojati.status(),
+        ImpersonalVerbStatus::LexicallyImpersonal
+    );
+    assert_eq!(
+        old_church_slavonic::phrases::impersonal_predicate(
+            ImpersonalVerbIdentity::Dostojati,
+            FiniteTense::Present,
+        )
+        .expect("dictionary-backed impersonal predicate")
+        .primary_text(),
+        "достоитъ"
+    );
+    assert_eq!(
+        old_church_slavonic::phrases::impersonal_predicate(
+            ImpersonalVerbIdentity::MnetiReflexive,
+            FiniteTense::Present,
+        )
+        .expect("reflexive impersonal sense")
+        .primary_text(),
+        "мьнитъ сѧ"
+    );
+    assert_eq!(
+        present("мьнѣти", Person::First, Number::Singular)
+            .expect("personal sense remains available")
+            .primary_text(),
+        "мьнѭ"
+    );
 }

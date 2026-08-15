@@ -639,8 +639,8 @@ Two additional present-active participle seams preserve unique-profile
 oppositions that the ordinary hard/soft formations cannot express:
 `MixedYushtSoft` forms `-ѧ/-ѫшт-` (`дѣти`, `°рѣсти`), and
 `IotatedYushtSoft` forms `-ѩ/-ѭшт-` (`въпити`, `довьлѣти`). These are typed
-formations rather than spelling postprocessing. Impersonal verbs and facade
-source-provenance routing remain separate completion checkpoints.
+formations rather than spelling postprocessing. General facade
+source-provenance routing remains a separate completion checkpoint.
 
 `IrregularVerbGroup` inventories all thirteen reusable workstem groups of
 Polivanova Tables 434 and 440. `IrregularVerbFamilyMember` closes all seventy
@@ -661,8 +661,21 @@ Table 434 appears to transpose the displayed past stems of `мрѣти` and
 Table 440 distribution (`мрьлъ/мрьтъ`, `разскврьлъ/разскврьтъ`) rather than
 copying the crossed labels. LOVe also assigns `метати` a `мещ-/метај-` present
 analysis, while Polivanova places it in the 3° `мет-/метѫ` group; these remain
-competing lexical analyses rather than being silently conflated. Impersonal
-verbs and facade-level per-cell provenance remain separate checkpoints.
+competing lexical analyses rather than being silently conflated. Facade-level
+per-cell provenance for the general irregular inventories remains a separate
+checkpoint.
+
+`ImpersonalVerbIdentity` closes the two impersonal senses in the pinned OCS
+dictionary: lexically impersonal `достоꙗти` ‘befit’ and reflexive impersonal
+`мьнѣти сѧ` ‘seem’. Both govern a dative experiencer. Impersonality is modeled
+as syntactic third-person-singular selection, not as deletion of mechanically
+possible word forms: the personal senses and full morphology of `мьнѣти` remain
+available. `достоꙗти` and `мьнѣти` retain their dictionary-backed present and
+imperfect forms, and their regular vowel aorists are explicit reviewed
+reconstructions. Passive participles of intransitive `достоꙗти` are typed as
+historically invalid; all source-listed passive forms of personal `мьнѣти`
+remain available. `PHRASE-IMPERSONAL-PRED-01` preserves the finite word's exact
+or reviewed provenance and keeps reflexive `сѧ` as a separate token.
 
 ### Imperative
 
@@ -726,7 +739,10 @@ The productive construction inventory is:
 - `PHRASE-COND-OPT-PASS-01`: the source-attested conditional with a passive
   predicate;
 - `PHRASE-PASSIVE-01`: a short nominative present/past passive participle
-  with explicitly selected present, past, future, or conditional copula.
+  with explicitly selected present, past, future, or conditional copula;
+- `PHRASE-IMPERSONAL-PRED-01`: third-person-singular `достоꙗти`, or
+  third-person-singular `мьнѣти` plus independently written reflexive `сѧ`, in
+  the present, imperfect, or reconstructable aorist.
 
 Predicative participles must be short nominatives and match the subject number;
 voice mismatches and unlicensed auxiliary/tense combinations are typed failures.

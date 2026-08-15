@@ -79,6 +79,7 @@ Source dictionary verb lexemes: 711.
 | `present-passive-participle/formation` | 134 |
 | `present-passive-participle/formation=em` | 0 |
 | `present-passive-participle/formation=im` | 62 |
+| `present-passive-participle/formation=iotated-em` | 0 |
 | `present-passive-participle/formation=om` | 72 |
 | `present-passive-participle/stem` | 134 |
 | `present/class` | 121 |

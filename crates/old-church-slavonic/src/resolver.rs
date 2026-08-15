@@ -2452,6 +2452,18 @@ pub fn finite_verb_with(
     )
 }
 
+pub(crate) fn reviewed_finite_verb_with(
+    lexeme: &VerbLexeme,
+    cell: FiniteVerbCell,
+    authority: &'static str,
+) -> Result<FormSet, InflectionError> {
+    canonical_prediction(
+        &lexeme.lemma,
+        old_church_slavonic_core::verb::finite(lexeme, cell),
+        FormSourceKind::ReviewedGrammar(authority),
+    )
+}
+
 pub fn imperative(lemma: &str, cell: ImperativeCell) -> Result<FormSet, InflectionError> {
     resolve_queried_lemma(lemma, PartOfSpeech::Verb, |id| imperative_by_id(id, cell))
 }
@@ -3879,6 +3891,7 @@ enum FormSourceKind {
     DictionaryMetadata,
     Explicit,
     Oov,
+    ReviewedGrammar(&'static str),
 }
 
 fn canonical_prediction(
@@ -3903,6 +3916,9 @@ fn predicted_set(lemma: &str, predicted: PredictedForm, kind: FormSourceKind) ->
         FormSourceKind::Oov => FormSource::OovPrediction {
             rule_id: predicted.rule_id,
         },
+        FormSourceKind::ReviewedGrammar(_) => FormSource::ReviewedGrammarTable {
+            rule_id: predicted.rule_id,
+        },
     };
     let primary = FormVariant {
         text: predicted.text,
@@ -3914,11 +3930,15 @@ fn predicted_set(lemma: &str, predicted: PredictedForm, kind: FormSourceKind) ->
             FormSourceKind::DictionaryMetadata => MetadataProvenance::DictionaryPrincipalPart,
             FormSourceKind::Explicit => MetadataProvenance::ExplicitCallerMetadata,
             FormSourceKind::Oov => MetadataProvenance::ProductiveRuleOutput,
+            FormSourceKind::ReviewedGrammar(_) => MetadataProvenance::ReviewedGrammarTable,
         },
         source_feature: None,
         source_form: None,
         crosscheck_features: Vec::new(),
-        authority: None,
+        authority: match kind {
+            FormSourceKind::ReviewedGrammar(authority) => Some(authority.to_string()),
+            _ => None,
+        },
     }];
     let analyses = vec![FormAnalysis {
         variants: vec![primary.clone()],

@@ -4,9 +4,9 @@ use old_church_slavonic_core::adjective::{AdjectiveLexeme, ComparativeLexeme};
 use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Case, ConditionalAuxiliary, CopulaSeries,
     DirectToTreatment, FiniteTense, FormAnalysis, FormSet, FormSource, FormVariant,
-    FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, InflectionError,
-    InterrogativePronounIdentity, Lemma, MetadataEvidence, MetadataProvenance, Number,
-    ParticipleKind, PassiveAuxiliary, Person, PhraseOrder, PhraseRole, PhraseToken,
+    FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, ImpersonalVerbIdentity,
+    InflectionError, InterrogativePronounIdentity, Lemma, MetadataEvidence, MetadataProvenance,
+    Number, ParticipleKind, PassiveAuxiliary, Person, PhraseOrder, PhraseRole, PhraseToken,
     PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
     RealizedPhrase, RuleId, RuleStep, Script,
 };
@@ -15,6 +15,7 @@ use crate::{Verb, resolver};
 
 const PRONOMINAL_FAMILY_AUTHORITY: &str =
     "Polivanova 2023 §§316, 380; postpositive любо examples in §316 n. 61";
+const IMPERSONAL_AUTHORITY: &str = "English Wiktionary OCS impersonal sense inventory, pinned 2026-08-07; official LOVe mьněti record; Polivanova 2023 §§455–482 and OSD entries 879 and 550";
 
 /// Build a derived form of numberless `къто` or `чьто` with explicit
 /// prefixal, postpositive, direct-case, and preposition-interposition choices.
@@ -682,6 +683,46 @@ pub fn analytic_passive(
         },
         order,
     )
+}
+
+/// Build the finite predicate of a source-identified impersonal construction.
+///
+/// The construction always selects third-person singular. `достоꙗти` is a
+/// one-token lexically impersonal predicate; impersonal `мьнѣти` retains the
+/// independently written reflexive particle `сѧ`. Dictionary cells keep their
+/// exact provenance, while a missing but regular aorist is reconstructed from
+/// the reviewed lexical profile.
+pub fn impersonal_predicate(
+    identity: ImpersonalVerbIdentity,
+    tense: FiniteTense,
+) -> Result<RealizedPhrase, InflectionError> {
+    let cell = identity.predicate_cell(tense);
+    let forms = match resolver::finite_verb(identity.lemma(), cell) {
+        Ok(forms) => forms,
+        Err(
+            InflectionError::MissingLexicalMetadata { .. }
+            | InflectionError::UnsupportedFormation { .. }
+            | InflectionError::UnsupportedCell { .. }
+            | InflectionError::UnattestedUnreconstructableCell { .. },
+        ) => resolver::reviewed_finite_verb_with(&identity.lexeme(), cell, IMPERSONAL_AUTHORITY)?,
+        Err(error) => return Err(error),
+    };
+    let mut tokens = vec![PhraseToken {
+        role: PhraseRole::FiniteVerb,
+        forms,
+    }];
+    if let Some(particle) = identity.reflexive_particle() {
+        tokens.push(PhraseToken {
+            role: PhraseRole::Particle,
+            forms: resolver::reviewed_grammar_token(
+                particle,
+                RuleId::PhraseImpersonalPredicate,
+                "verb:impersonal:reflexive-particle",
+                IMPERSONAL_AUTHORITY,
+            )?,
+        });
+    }
+    RealizedPhrase::new(AnalyticConstruction::ImpersonalPredicate, tokens)
 }
 
 fn conditional_optative_tokens(
@@ -1478,5 +1519,57 @@ mod tests {
             ),
             Err(InflectionError::InvalidInput { .. })
         ));
+    }
+
+    #[test]
+    fn impersonal_predicates_keep_lexical_and_reflexive_structures_distinct() {
+        let dostojati =
+            impersonal_predicate(ImpersonalVerbIdentity::Dostojati, FiniteTense::Present)
+                .expect("lexically impersonal predicate");
+        assert_eq!(dostojati.primary_text(), "достоитъ");
+        assert_eq!(dostojati.tokens().len(), 1);
+        assert_eq!(dostojati.tokens()[0].role, PhraseRole::FiniteVerb);
+        assert_eq!(
+            dostojati.tokens()[0].forms.source(),
+            &FormSource::DictionaryTable
+        );
+
+        let mneti =
+            impersonal_predicate(ImpersonalVerbIdentity::MnetiReflexive, FiniteTense::Present)
+                .expect("reflexive impersonal predicate");
+        assert_eq!(mneti.primary_text(), "мьнитъ сѧ");
+        assert_eq!(mneti.tokens().len(), 2);
+        assert_eq!(mneti.tokens()[0].role, PhraseRole::FiniteVerb);
+        assert_eq!(mneti.tokens()[1].role, PhraseRole::Particle);
+        assert_eq!(mneti.rule_id(), RuleId::PhraseImpersonalPredicate);
+    }
+
+    #[test]
+    fn impersonal_predicate_covers_every_finite_tense_with_provenance() {
+        for identity in ImpersonalVerbIdentity::ALL {
+            for tense in FiniteTense::ALL {
+                let phrase = impersonal_predicate(identity, tense)
+                    .unwrap_or_else(|error| panic!("{identity:?} {tense:?}: {error:?}"));
+                assert_eq!(
+                    phrase.tokens().len(),
+                    usize::from(identity.reflexive_particle().is_some()) + 1
+                );
+            }
+        }
+
+        let reconstructed =
+            impersonal_predicate(ImpersonalVerbIdentity::Dostojati, FiniteTense::Aorist)
+                .expect("reviewed reconstructable aorist");
+        assert_eq!(reconstructed.primary_text(), "достоꙗ");
+        assert!(matches!(
+            reconstructed.tokens()[0].forms.source(),
+            FormSource::ReviewedGrammarTable { .. }
+        ));
+        assert_eq!(
+            reconstructed.tokens()[0].forms.analyses()[0].evidence[0]
+                .authority
+                .as_deref(),
+            Some(IMPERSONAL_AUTHORITY)
+        );
     }
 }

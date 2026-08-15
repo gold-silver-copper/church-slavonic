@@ -18,6 +18,7 @@ pub enum AnalyticConstruction {
     EllipticalConditionalOptative,
     ConditionalOptativePassive,
     AnalyticPassive,
+    ImpersonalPredicate,
     /// A word or structured sequence in the `ни-/нѣ-` and postpositive
     /// pronominal families described by Polivanova §316.
     PronominalFamily,
@@ -39,6 +40,7 @@ impl AnalyticConstruction {
             Self::EllipticalConditionalOptative => RuleId::PhraseConditionalOptativeElliptical,
             Self::ConditionalOptativePassive => RuleId::PhraseConditionalOptativePassive,
             Self::AnalyticPassive => RuleId::PhraseAnalyticPassive,
+            Self::ImpersonalPredicate => RuleId::PhraseImpersonalPredicate,
             Self::PronominalFamily => RuleId::PronounDerivedFamily,
         }
     }
@@ -213,6 +215,7 @@ fn valid_roles(construction: AnalyticConstruction, roles: &[PhraseRole]) -> bool
         EllipticalConditionalOptative => roles == [LParticiple],
         ConditionalOptativePassive => unordered_pair(roles, PassiveParticiple, Auxiliary),
         AnalyticPassive => unordered_pair(roles, PassiveParticiple, Auxiliary),
+        ImpersonalPredicate => roles == [FiniteVerb] || roles == [FiniteVerb, Particle],
         PronominalFamily => matches!(
             roles,
             [Pronoun]
