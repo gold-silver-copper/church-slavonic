@@ -277,6 +277,17 @@ pub(crate) fn resolve_cell(
     if !exact.is_empty() {
         return exact_forms(inflector, id, &exact_key, &exact);
     }
+    if let Some(defect) = registry::defect_for(id, &key)? {
+        return match defect.kind {
+            DefectKind::HistoricallyAbsent => Err(Error::HistoricallyInvalidCell {
+                reason: defect.reason.into(),
+            }),
+            DefectKind::EvidenceIncomplete => Err(Error::EvidenceIncompleteCell {
+                field: defect.field,
+                reason: defect.reason.into(),
+            }),
+        };
+    }
     if cell == GrammarCell::Supine {
         return Err(absent_synodal_supine());
     }

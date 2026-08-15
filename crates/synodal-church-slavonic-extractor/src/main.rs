@@ -94,13 +94,15 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let report = generate_registry(Path::new(&data_directory), Path::new(&destination))?;
     println!(
-        "generated {} lexemes, {} principal parts, {} exact forms, {} accents, {} alignments, {} abbreviations; sha256 {}",
+        "generated {} lexemes, {} principal parts, {} exact forms, {} accents, {} alignments, {} abbreviations, {} defective inventories, {} irregular inventory entries; sha256 {}",
         report.lexemes,
         report.principal_parts,
         report.exact_forms,
         report.accents,
         report.alignments,
         report.abbreviations,
+        report.defective_inventories,
+        report.irregular_inventory_entries,
         report.output_sha256
     );
     if let Some(dictionary_destination) = dictionary_destination {

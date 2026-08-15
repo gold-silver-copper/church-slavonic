@@ -45,10 +45,15 @@ accent metadata, and unsupported systems. See
 and the explicit API examples in
 [`crates/synodal-church-slavonic/README.md`](crates/synodal-church-slavonic/README.md).
 
+The public `irregular_verb_inventory()` also exposes all 98 verb entries in
+Alypy §104 in source order. Closed archaic tables, productive principal-part
+contracts, historically impossible cells, and merely incomplete evidence remain
+separate, inspectable outcomes.
+
 ## Synodal dictionary and coverage checkpoints
 
-The current Synodal registry contains 875 reviewed lexemes, 877 reviewed senses,
-and 3,557 generated exact normative or target-attested forms. The `synodal-dict` executable
+The current Synodal registry contains 909 reviewed lexemes, 912 reviewed senses,
+and 3,668 generated exact normative or target-attested forms. The `synodal-dict` executable
 searches and displays the registry, performs ambiguity-preserving reverse
 analysis, displays reviewed and proposed morphological families, validates
 application vocabulary, checks rendered text, and creates typed corpus-coverage

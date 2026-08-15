@@ -37,6 +37,10 @@ pub(crate) struct RawConflict(pub [&'static str; 8]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawIrregularOverride(pub [&'static str; 5]);
 #[derive(Clone, Copy, Debug)]
+pub(crate) struct RawDefectiveInventory(pub [&'static str; 8]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawIrregularVerbInventory(pub [&'static str; 8]);
+#[derive(Clone, Copy, Debug)]
 pub(crate) struct RawReviewedEvidence(pub [&'static str; 6]);
 
 include!("../generated/registry.rs");
@@ -207,6 +211,19 @@ pub struct IrregularOverrideSummary {
     pub evidence_id: String,
 }
 
+/// One exhaustively reviewed entry from Alypy §104's irregular-verb inventory.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct IrregularVerbInventorySummary {
+    pub source_order: u8,
+    pub headword: String,
+    pub systems: Vec<String>,
+    pub strategy: String,
+    pub implementation_status: String,
+    pub evidence_id: String,
+    pub note: String,
+}
+
 /// Reviewable lexical metadata exposed without leaking the generated registry
 /// representation. Empty source fields stay `None` rather than being guessed.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -327,6 +344,13 @@ pub(crate) struct InheritedAlignment {
     pub transformations: Vec<String>,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct DefectiveInventoryRecord {
+    pub kind: crate::DefectKind,
+    pub field: synodal_church_slavonic_core::MetadataField,
+    pub reason: &'static str,
+}
+
 pub(crate) fn resolve(lemma: &SynodalWord) -> Result<LexemeSummary> {
     let lookup = normalize_lookup_accentless(lemma.canonical());
     let matches: Vec<&RawLexeme> = LEXEMES
@@ -364,6 +388,71 @@ pub(crate) fn exact_forms(id: &LexemeId, cell: &str) -> Vec<ExactFormRecord> {
             source_kind: row.0[5],
         })
         .collect()
+}
+
+pub(crate) fn defect_for(id: &LexemeId, cell: &str) -> Result<Option<DefectiveInventoryRecord>> {
+    let row = DEFECTIVE_INVENTORIES.iter().find(|row| {
+        if row.0[0] != id.as_str() {
+            return false;
+        }
+        match row.0[1] {
+            "outside-inventory" => !row.0[2]
+                .split(',')
+                .map(str::trim)
+                .any(|allowed| allowed == cell),
+            "cell-prefix" => cell.starts_with(row.0[2]),
+            _ => true,
+        }
+    });
+    let Some(row) = row else {
+        return Ok(None);
+    };
+    let kind = match row.0[3] {
+        "historically-absent" => crate::DefectKind::HistoricallyAbsent,
+        "evidence-incomplete" => crate::DefectKind::EvidenceIncomplete,
+        value => {
+            return Err(Error::ContradictoryMetadata {
+                reason: format!("generated defect inventory has unknown kind {value:?}"),
+            });
+        }
+    };
+    let field = parse_metadata_field(row.0[4])?;
+    Ok(Some(DefectiveInventoryRecord {
+        kind,
+        field,
+        reason: row.0[5],
+    }))
+}
+
+fn parse_metadata_field(value: &str) -> Result<synodal_church_slavonic_core::MetadataField> {
+    use synodal_church_slavonic_core::MetadataField;
+    let field = match value {
+        "present-stem" => MetadataField::PresentStem,
+        "present-first-singular" => MetadataField::PresentFirstSingular,
+        "present-third-plural" => MetadataField::PresentThirdPlural,
+        "imperfect-stem" => MetadataField::ImperfectStem,
+        "aorist-stem" => MetadataField::AoristStem,
+        "aorist-formation" => MetadataField::AoristFormation,
+        "imperative-stem" => MetadataField::ImperativeStem,
+        "imperative-formation" => MetadataField::ImperativeFormation,
+        "imperfect-formation" => MetadataField::ImperfectFormation,
+        "infinitive" => MetadataField::Infinitive,
+        "supine-stem" => MetadataField::SupineStem,
+        "l-participle-stem" => MetadataField::LParticipleStem,
+        "participle-stem" => MetadataField::ParticipleStem,
+        "participle-formation" => MetadataField::ParticipleFormation,
+        "verbal-noun-stem" => MetadataField::VerbalNounStem,
+        "aspect" => MetadataField::Aspect,
+        "formation" => MetadataField::Formation,
+        "regular-background" => MetadataField::RegularBackground,
+        "irregular-override" => MetadataField::IrregularOverride,
+        value => {
+            return Err(Error::ContradictoryMetadata {
+                reason: format!("generated defect inventory has unknown metadata field {value:?}"),
+            });
+        }
+    };
+    Ok(field)
 }
 
 pub(crate) fn reviewed_evidence(evidence_ids: &str) -> Result<Vec<ReviewedEvidenceRecord>> {
@@ -1256,6 +1345,29 @@ pub(crate) fn irregular_overrides() -> Vec<IrregularOverrideSummary> {
             system: row.0[1].into(),
             cell_set: row.0[2].into(),
             evidence_id: row.0[3].into(),
+        })
+        .collect()
+}
+
+pub(crate) fn irregular_verb_inventory() -> Result<Vec<IrregularVerbInventorySummary>> {
+    IRREGULAR_VERB_INVENTORY
+        .iter()
+        .map(|row| {
+            let source_order =
+                row.0[0]
+                    .parse::<u8>()
+                    .map_err(|_| Error::ContradictoryMetadata {
+                        reason: format!("invalid Alypy §104 source order {:?}", row.0[0]),
+                    })?;
+            Ok(IrregularVerbInventorySummary {
+                source_order,
+                headword: row.0[1].into(),
+                systems: split_list(row.0[2]),
+                strategy: row.0[3].into(),
+                implementation_status: row.0[4].into(),
+                evidence_id: row.0[5].into(),
+                note: row.0[6].into(),
+            })
         })
         .collect()
 }

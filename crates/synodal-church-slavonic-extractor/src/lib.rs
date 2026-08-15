@@ -125,6 +125,8 @@ pub struct GenerationReport {
     pub transformation_rules: usize,
     pub conflicts: usize,
     pub irregular_overrides: usize,
+    pub defective_inventories: usize,
+    pub irregular_inventory_entries: usize,
     pub output_sha256: String,
 }
 
@@ -823,6 +825,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let transformation_path = data_directory.join("transformation_rules.tsv");
     let conflict_path = data_directory.join("conflicts.tsv");
     let irregular_path = data_directory.join("irregular_overrides.tsv");
+    let defective_inventory_path = data_directory.join("verb_defectiveness.tsv");
+    let irregular_inventory_path = data_directory.join("irregular_verb_inventory.tsv");
     let target_identity_ambiguity_path = data_directory.join("target_identity_ambiguities.tsv");
     let past_classification_review_path = data_directory.join("past_classification_reviews.tsv");
     let v06_exact_review_path = data_directory.join("v06_exact_reviews.tsv");
@@ -887,6 +891,16 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         &irregular_path,
         "lexeme_id\tsystem\tcell_set\tevidence_id\ttarget_recension",
         5,
+    )?;
+    let defective_inventories = read_table(
+        &defective_inventory_path,
+        "lexeme_id\tmode\tselector\tkind\tmetadata_field\treason\tevidence_id\ttarget_recension",
+        8,
+    )?;
+    let irregular_inventory = read_table(
+        &irregular_inventory_path,
+        "source_order\theadword\tsystems\tstrategy\timplementation_status\tevidence_id\tnote\ttarget_recension",
+        8,
     )?;
     let reviewed_evidence = read_reviewed_evidence(data_directory)?;
     let past_classification_reviews = read_table(
@@ -962,6 +976,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     validate_conflicts(&conflict_path, &conflicts)?;
     validate_conflict_evidence(&conflict_path, &conflicts, &reviewed_evidence)?;
     validate_irregular_overrides(&irregular_path, &irregular_overrides)?;
+    validate_defective_inventories(&defective_inventory_path, &defective_inventories, &lexemes)?;
+    validate_irregular_verb_inventory(&irregular_inventory_path, &irregular_inventory)?;
     validate_morphology_evidence(
         data_directory,
         &reviewed_evidence,
@@ -977,6 +993,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&positional_rules, &[5][..]),
             (&transformation_rules, &[5][..]),
             (&irregular_overrides, &[3][..]),
+            (&defective_inventories, &[6][..]),
+            (&irregular_inventory, &[5][..]),
         ],
     )?;
     validate_morphology_references(
@@ -990,6 +1008,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&accent_paradigm_path, &accent_paradigms, 0),
             (&noun_restriction_path, &noun_restrictions, 0),
             (&irregular_path, &irregular_overrides, 0),
+            (&defective_inventory_path, &defective_inventories, 0),
         ],
     )?;
     validate_alignment_references(
@@ -1014,6 +1033,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         transformation_rules: transformation_rules.clone(),
         conflicts: conflicts.clone(),
         irregular_overrides: irregular_overrides.clone(),
+        defective_inventories: defective_inventories.clone(),
+        irregular_inventory: irregular_inventory.clone(),
         evidence_provenance,
     });
     let output_sha256 = hex_sha256(output.as_bytes());
@@ -1030,6 +1051,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         transformation_rules: transformation_rules.rows.len(),
         conflicts: conflicts.rows.len(),
         irregular_overrides: irregular_overrides.rows.len(),
+        defective_inventories: defective_inventories.rows.len(),
+        irregular_inventory_entries: irregular_inventory.rows.len(),
         output_sha256,
     })
 }
@@ -1676,7 +1699,7 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
 }
 
 fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
-    let specifications: [(&str, &[usize]); 10] = [
+    let specifications: [(&str, &[usize]); 12] = [
         ("principal_parts.tsv", &[4]),
         ("exact_forms.tsv", &[4]),
         ("alignments.tsv", &[8]),
@@ -1687,6 +1710,8 @@ fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
         ("positional_rules.tsv", &[5]),
         ("transformation_rules.tsv", &[5]),
         ("irregular_overrides.tsv", &[3]),
+        ("verb_defectiveness.tsv", &[6]),
+        ("irregular_verb_inventory.tsv", &[5]),
     ];
     let mut ids = BTreeSet::new();
     for (file_name, columns) in specifications {
@@ -2495,6 +2520,215 @@ fn validate_irregular_overrides(path: &Path, table: &Table) -> Result<()> {
     Ok(())
 }
 
+fn validate_defective_inventories(path: &Path, table: &Table, lexemes: &Table) -> Result<()> {
+    let mut keys = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
+        validate_target(path, line, &row[7])?;
+        if !keys.insert((row[0].clone(), row[1].clone(), row[2].clone())) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: format!("{}:{}:{}", row[0], row[1], row[2]),
+            });
+        }
+        let Some(lexeme) = lexemes.rows.iter().find(|lexeme| lexeme[0] == row[0]) else {
+            return invalid(
+                path,
+                line,
+                "defective inventory references an unknown lexeme",
+            );
+        };
+        if lexeme[2] != "verb" {
+            return invalid(
+                path,
+                line,
+                "defective inventory references a non-verb lexeme",
+            );
+        }
+        match row[1].as_str() {
+            "outside-inventory" => {
+                let mut cells = BTreeSet::new();
+                for cell in row[2]
+                    .split(',')
+                    .map(str::trim)
+                    .filter(|cell| !cell.is_empty())
+                {
+                    validate_grammar_cell(path, line, cell)?;
+                    validate_cell_lexeme_pos(path, line, &row[0], cell, lexemes)?;
+                    if !cells.insert(cell) {
+                        return invalid(path, line, "defective inventory repeats an allowed cell");
+                    }
+                }
+                if cells.is_empty() {
+                    return invalid(
+                        path,
+                        line,
+                        "defective inventory requires at least one allowed cell",
+                    );
+                }
+            }
+            "cell-prefix" => {
+                if !matches!(
+                    row[2].as_str(),
+                    "present:"
+                        | "future:"
+                        | "past:"
+                        | "imperfect:"
+                        | "aorist:"
+                        | "imperative:"
+                        | "l-participle:"
+                        | "participle:present:active:"
+                        | "participle:present:passive:"
+                        | "participle:past:active:"
+                        | "participle:past:passive:"
+                        | "verbal-noun:"
+                ) {
+                    return invalid(path, line, "unknown defective cell-system prefix");
+                }
+            }
+            _ => return invalid(path, line, "unknown defective inventory mode"),
+        }
+        if !matches!(
+            row[3].as_str(),
+            "historically-absent" | "evidence-incomplete"
+        ) {
+            return invalid(path, line, "unknown defect kind");
+        }
+        if !matches!(
+            row[4].as_str(),
+            "present-stem"
+                | "present-first-singular"
+                | "present-third-plural"
+                | "imperfect-stem"
+                | "aorist-stem"
+                | "aorist-formation"
+                | "imperative-stem"
+                | "imperative-formation"
+                | "imperfect-formation"
+                | "infinitive"
+                | "supine-stem"
+                | "l-participle-stem"
+                | "participle-stem"
+                | "participle-formation"
+                | "verbal-noun-stem"
+                | "aspect"
+                | "formation"
+                | "regular-background"
+                | "irregular-override"
+        ) {
+            return invalid(path, line, "unknown defect metadata field");
+        }
+        if row[5].trim().is_empty() || row[6].trim().is_empty() {
+            return invalid(
+                path,
+                line,
+                "defective inventory requires a reason and evidence",
+            );
+        }
+    }
+    Ok(())
+}
+
+fn validate_irregular_verb_inventory(path: &Path, table: &Table) -> Result<()> {
+    let expected_orders = (2_u8..=100)
+        .filter(|order| *order != 97)
+        .collect::<BTreeSet<_>>();
+    let mut orders = BTreeSet::new();
+    let mut headword_orders = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
+        validate_target(path, line, &row[7])?;
+        let source_order = row[0]
+            .parse::<u8>()
+            .map_err(|_| ExtractionError::InvalidRow {
+                file: path.to_owned(),
+                line,
+                reason: "irregular inventory source_order must be an integer".into(),
+            })?;
+        if !orders.insert(source_order) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: row[0].clone(),
+            });
+        }
+        if row[1].trim().is_empty() || !headword_orders.insert((row[1].clone(), source_order)) {
+            return invalid(path, line, "irregular inventory requires a source headword");
+        }
+        let systems = row[2]
+            .split(',')
+            .map(str::trim)
+            .filter(|system| !system.is_empty())
+            .collect::<BTreeSet<_>>();
+        if systems.is_empty()
+            || systems.iter().any(|system| {
+                !matches!(
+                    *system,
+                    "present"
+                        | "future"
+                        | "aorist"
+                        | "imperfect"
+                        | "imperative"
+                        | "l-participle"
+                        | "present-active-participle"
+                        | "present-passive-participle"
+                        | "past-active-participle"
+                        | "past-passive-participle"
+                        | "stem-alternation"
+                        | "defectiveness"
+                )
+            })
+        {
+            return invalid(path, line, "irregular inventory has an unknown system code");
+        }
+        if !matches!(
+            row[3].as_str(),
+            "bundled-exact-and-productive"
+                | "bundled-exact-and-defective"
+                | "caller-exact-principal-parts"
+                | "typed-defective-inventory"
+        ) {
+            return invalid(path, line, "irregular inventory has an unknown strategy");
+        }
+        if !matches!(
+            row[4].as_str(),
+            "implemented-bundled"
+                | "implemented-by-metadata-contract"
+                | "source-evidence-incomplete"
+        ) {
+            return invalid(
+                path,
+                line,
+                "irregular inventory has an unknown implementation status",
+            );
+        }
+        if row[5].trim().is_empty() || row[6].trim().is_empty() {
+            return invalid(
+                path,
+                line,
+                "irregular inventory requires evidence and a note",
+            );
+        }
+    }
+    if orders != expected_orders {
+        let missing = expected_orders
+            .difference(&orders)
+            .copied()
+            .collect::<Vec<_>>();
+        let extra = orders
+            .difference(&expected_orders)
+            .copied()
+            .collect::<Vec<_>>();
+        return invalid(
+            path,
+            1,
+            &format!(
+                "irregular inventory must cover all 98 Alypy §104 verb entries; missing {missing:?}, extra {extra:?}"
+            ),
+        );
+    }
+    Ok(())
+}
+
 fn validate_morphology_references<const N: usize>(
     lexeme_path: &Path,
     lexemes: &Table,
@@ -2799,6 +3033,8 @@ struct RegistryTables {
     transformation_rules: Table,
     conflicts: Table,
     irregular_overrides: Table,
+    defective_inventories: Table,
+    irregular_inventory: Table,
     evidence_provenance: Table,
 }
 
@@ -2816,6 +3052,8 @@ fn emit_registry(tables: RegistryTables) -> String {
         mut transformation_rules,
         mut conflicts,
         mut irregular_overrides,
+        mut defective_inventories,
+        mut irregular_inventory,
         evidence_provenance,
     } = tables;
     lexemes.rows.sort();
@@ -2843,6 +3081,10 @@ fn emit_registry(tables: RegistryTables) -> String {
     transformation_rules.rows.sort();
     conflicts.rows.sort();
     irregular_overrides.rows.sort();
+    defective_inventories.rows.sort();
+    irregular_inventory
+        .rows
+        .sort_by_key(|row| row[0].parse::<u8>().ok());
 
     let mut output = String::from(
         "// @generated by synodal-church-slavonic-extractor; do not edit.\n\
@@ -2899,6 +3141,18 @@ fn emit_registry(tables: RegistryTables) -> String {
         "IRREGULAR_OVERRIDES",
         "RawIrregularOverride",
         &irregular_overrides.rows,
+    );
+    emit_rows(
+        &mut output,
+        "DEFECTIVE_INVENTORIES",
+        "RawDefectiveInventory",
+        &defective_inventories.rows,
+    );
+    emit_rows(
+        &mut output,
+        "IRREGULAR_VERB_INVENTORY",
+        "RawIrregularVerbInventory",
+        &irregular_inventory.rows,
     );
     emit_rows(
         &mut output,
@@ -3806,5 +4060,115 @@ mod tests {
             ]],
         };
         assert!(validate(&exact, &evaluation_supine).is_err());
+    }
+
+    #[test]
+    fn defective_inventories_are_closed_typed_and_verb_only() {
+        let path = Path::new("verb_defectiveness.tsv");
+        let verb = vec![
+            "synodal:verb:test".into(),
+            "подобати".into(),
+            "verb".into(),
+            "exact".into(),
+            String::new(),
+            String::new(),
+            String::new(),
+            "source".into(),
+            TARGET.into(),
+        ];
+        let noun = vec![
+            "synodal:noun:test".into(),
+            "слово".into(),
+            "noun".into(),
+            "exact".into(),
+            String::new(),
+            "neuter".into(),
+            String::new(),
+            "source".into(),
+            TARGET.into(),
+        ];
+        let lexemes = Table {
+            rows: vec![verb, noun],
+        };
+        let valid = Table {
+            rows: vec![vec![
+                "synodal:verb:test".into(),
+                "outside-inventory".into(),
+                "infinitive,present:third:singular".into(),
+                "historically-absent".into(),
+                "irregular-override".into(),
+                "closed impersonal inventory".into(),
+                "evidence:test".into(),
+                TARGET.into(),
+            ]],
+        };
+        validate_defective_inventories(path, &valid, &lexemes)
+            .expect("valid typed defect inventory");
+
+        let mutate = |column: usize, value: &str| {
+            let mut table = valid.clone();
+            table.rows[0][column] = value.into();
+            table
+        };
+        assert!(validate_defective_inventories(path, &mutate(1, "unknown"), &lexemes).is_err());
+        assert!(
+            validate_defective_inventories(path, &mutate(2, "present:fourth:singular"), &lexemes)
+                .is_err()
+        );
+        assert!(validate_defective_inventories(path, &mutate(3, "unknown"), &lexemes).is_err());
+        assert!(
+            validate_defective_inventories(path, &mutate(4, "untyped-field"), &lexemes).is_err()
+        );
+        assert!(
+            validate_defective_inventories(path, &mutate(0, "synodal:noun:test"), &lexemes)
+                .is_err()
+        );
+
+        let prefix = Table {
+            rows: vec![vec![
+                "synodal:verb:test".into(),
+                "cell-prefix".into(),
+                "participle:present:passive:".into(),
+                "historically-absent".into(),
+                "participle-formation".into(),
+                "explicitly absent system".into(),
+                "evidence:test".into(),
+                TARGET.into(),
+            ]],
+        };
+        validate_defective_inventories(path, &prefix, &lexemes).expect("valid system-level defect");
+    }
+
+    #[test]
+    fn irregular_inventory_requires_all_98_source_order_entries() {
+        let row = |order: u8| {
+            vec![
+                order.to_string(),
+                format!("headword-{order}"),
+                "present".into(),
+                "caller-exact-principal-parts".into(),
+                "implemented-by-metadata-contract".into(),
+                "evidence:test".into(),
+                "reviewed source entry".into(),
+                TARGET.into(),
+            ]
+        };
+        let complete = Table {
+            rows: (2_u8..=100).filter(|order| *order != 97).map(row).collect(),
+        };
+        let path = Path::new("irregular_verb_inventory.tsv");
+        validate_irregular_verb_inventory(path, &complete).expect("complete §104 inventory");
+
+        let mut missing = complete.clone();
+        missing.rows.retain(|row| row[0] != "55");
+        assert!(validate_irregular_verb_inventory(path, &missing).is_err());
+
+        let mut unknown_system = complete.clone();
+        unknown_system.rows[0][2] = "invented-system".into();
+        assert!(validate_irregular_verb_inventory(path, &unknown_system).is_err());
+
+        let mut unknown_strategy = complete;
+        unknown_strategy.rows[0][3] = "guess".into();
+        assert!(validate_irregular_verb_inventory(path, &unknown_strategy).is_err());
     }
 }

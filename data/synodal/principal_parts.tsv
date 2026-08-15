@@ -30,3 +30,41 @@ synodal:verb:dati	l-participle-stem	да		alypy-103-dati-other	synodal-russian
 synodal:verb:dati	past-active-participle-long-stem	давш	hard	alypy-103-dati-other	synodal-russian
 synodal:verb:dati	past-passive-participle-short-stem	дан	hard	alypy-103-dati-other	synodal-russian
 synodal:verb:dati	past-passive-participle-long-stem	данн	hard	alypy-103-dati-other	synodal-russian
+synodal:verb:byti	l-participle-stem	бы		alypy-81-byti-l-participle	synodal-russian
+synodal:verb:byti	present-active-participle-short-stem	сꙋщ	hard:present-first-unpalatalized	alypy-81-byti-present-active	synodal-russian
+synodal:verb:byti	present-active-participle-long-stem	сꙋщ	hard	alypy-81-byti-present-active	synodal-russian
+synodal:verb:byti	past-active-participle-short-stem	бывш	hard:past-vowel	alypy-81-byti-past-active	synodal-russian
+synodal:verb:byti	past-active-participle-long-stem	бывш	hard	alypy-81-byti-past-active	synodal-russian
+synodal:verb:imati	imperfect-stem	имѣѧ	h	alypy-103-imati-other	synodal-russian
+synodal:verb:imati	aorist-stem	имѣ	vowel	alypy-103-imati-other	synodal-russian
+synodal:verb:imati	l-participle-stem	имѣ		alypy-103-imati-other	synodal-russian
+synodal:verb:imati	present-active-participle-short-stem	имꙋщ	hard:present-first-unpalatalized	alypy-103-imati-present-participles	synodal-russian
+synodal:verb:imati	present-active-participle-long-stem	имꙋщ	hard	alypy-103-imati-present-participles	synodal-russian
+synodal:verb:imati	past-active-participle-short-stem	имѣвш	hard:past-vowel	alypy-103-imati-other	synodal-russian
+synodal:verb:imati	past-active-participle-long-stem	имѣвш	hard	alypy-103-imati-other	synodal-russian
+synodal:verb:wikt-0c6c8db63b7c	imperfect-stem	имѣѧ	h	alypy-103-imeti-other	synodal-russian
+synodal:verb:wikt-0c6c8db63b7c	aorist-stem	имѣ	vowel	alypy-103-imeti-other	synodal-russian
+synodal:verb:wikt-0c6c8db63b7c	l-participle-stem	имѣ		alypy-103-imeti-other	synodal-russian
+synodal:verb:wikt-0c6c8db63b7c	present-active-participle-short-stem	имꙋщ	hard:present-first-unpalatalized	alypy-103-imati-present-participles	synodal-russian
+synodal:verb:wikt-0c6c8db63b7c	present-active-participle-long-stem	имꙋщ	hard	alypy-103-imati-present-participles	synodal-russian
+synodal:verb:wikt-0c6c8db63b7c	past-active-participle-short-stem	имѣвш	hard:past-vowel	alypy-103-imeti-other	synodal-russian
+synodal:verb:wikt-0c6c8db63b7c	past-active-participle-long-stem	имѣвш	hard	alypy-103-imeti-other	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	imperfect-stem	ꙗд	yah	alypy-103-yasti-other	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	aorist-stem	ꙗд	consonant	alypy-103-yasti-other	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	present-active-participle-short-stem	ꙗдꙋщ	hard:present-first-unpalatalized	alypy-103-yasti-present-participles	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	present-active-participle-long-stem	ꙗдꙋщ	hard	alypy-103-yasti-present-participles	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	present-passive-participle-short-stem	ꙗдом	hard	alypy-103-yasti-present-participles	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	present-passive-participle-long-stem	ꙗдом	hard	alypy-103-yasti-present-participles	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	past-active-participle-short-stem	ꙗдш	hard:past-consonant	alypy-104-yasti-past-participles	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	past-active-participle-long-stem	ꙗдш	hard	alypy-104-yasti-past-participles	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	past-passive-participle-short-stem	снѣден	hard	alypy-104-yasti-past-participles	synodal-russian
+synodal:verb:wikt-6ceeefbe4e9e	past-passive-participle-long-stem	снѣденн	hard	alypy-104-yasti-past-participles	synodal-russian
+synodal:verb:wikt-8a084860d2ef	imperfect-stem	вѣд	yah	alypy-103-vedeti-other	synodal-russian
+synodal:verb:wikt-8a084860d2ef	aorist-stem	вѣдѣ	vowel	alypy-103-vedeti-other	synodal-russian
+synodal:verb:wikt-8a084860d2ef	l-participle-stem	вѣдѣ		alypy-103-vedeti-other	synodal-russian
+synodal:verb:wikt-8a084860d2ef	present-active-participle-short-stem	вѣдꙋщ	hard:present-first-unpalatalized	alypy-103-vedeti-present-participles	synodal-russian
+synodal:verb:wikt-8a084860d2ef	present-active-participle-long-stem	вѣдꙋщ	hard	alypy-103-vedeti-present-participles	synodal-russian
+synodal:verb:wikt-8a084860d2ef	present-passive-participle-short-stem	вѣдом	hard	alypy-103-vedeti-present-participles	synodal-russian
+synodal:verb:wikt-8a084860d2ef	present-passive-participle-long-stem	вѣдом	hard	alypy-103-vedeti-present-participles	synodal-russian
+synodal:verb:wikt-8a084860d2ef	past-active-participle-short-stem	вѣдѣвш	hard:past-vowel	alypy-103-vedeti-other	synodal-russian
+synodal:verb:wikt-8a084860d2ef	past-active-participle-long-stem	вѣдѣвш	hard	alypy-103-vedeti-other	synodal-russian

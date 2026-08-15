@@ -703,6 +703,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         "exact_forms.tsv",
         "examples.tsv",
         "irregular_overrides.tsv",
+        "irregular_verb_inventory.tsv",
         "linguistic_evaluation.tsv",
         "lexical_reviews.tsv",
         "lexemes.tsv",
@@ -717,6 +718,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         "transformation_rules.tsv",
         "training_passages.tsv",
         "v10_exact_cell_corrections.tsv",
+        "verb_defectiveness.tsv",
     ] {
         let text = fs::read_to_string(root.join("data/synodal").join(name))?;
         let rows = text.lines().skip(1).filter(|line| !line.is_empty()).count();

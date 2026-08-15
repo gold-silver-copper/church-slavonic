@@ -20,7 +20,7 @@
   "printed": {
     "total": 2136,
     "returned": 2136,
-    "top_1_correct": 1993,
+    "top_1_correct": 1992,
     "top_k_correct": 2136,
     "abstained": 0
   },
@@ -1808,6 +1808,16 @@
       ]
     },
     {
+      "id": "eval:v07:0eeb1b98741062bf",
+      "cell": "present:first:plural",
+      "expected": "Вѣ́мы",
+      "returned_top_1": "вѣ́мы",
+      "returned_top_k": [
+        "вѣ́мы",
+        "Вѣ́мы"
+      ]
+    },
+    {
       "id": "eval:v07:12d883c01f5428e4",
       "cell": "noun:instrumental:plural:inanimate",
       "expected": "ᲂу҆сты̀",
@@ -2141,18 +2151,18 @@
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 2838,
-    "returned": 2838,
-    "top_1_correct": 2652,
-    "top_k_correct": 2838,
-    "abstained": 0
+    "total": 2946,
+    "returned": 2944,
+    "top_1_correct": 2711,
+    "top_k_correct": 2944,
+    "abstained": 2
   },
   "exact_registry_printed_round_trip": {
-    "total": 2838,
-    "returned": 2838,
-    "top_1_correct": 2505,
-    "top_k_correct": 2838,
-    "abstained": 0
+    "total": 2946,
+    "returned": 2944,
+    "top_1_correct": 2563,
+    "top_k_correct": 2944,
+    "abstained": 2
   },
   "accent_bearing_rows": 2000,
   "exact_accent_agreement": 2000,
@@ -2449,10 +2459,10 @@
   },
   "by_attestation_status": {
     "attested": {
-      "total": 2029,
-      "returned": 2029,
-      "top_1_correct": 1969,
-      "top_k_correct": 2029,
+      "total": 2028,
+      "returned": 2028,
+      "top_1_correct": 1968,
+      "top_k_correct": 2028,
       "abstained": 0
     },
     "expected-form-not-returned": {
@@ -2463,10 +2473,10 @@
       "abstained": 0
     },
     "predicted": {
-      "total": 107,
-      "returned": 107,
-      "top_1_correct": 106,
-      "top_k_correct": 107,
+      "total": 108,
+      "returned": 108,
+      "top_1_correct": 107,
+      "top_k_correct": 108,
       "abstained": 0
     }
   },
@@ -2579,17 +2589,17 @@
   },
   "by_provenance_path": {
     "exact-synodal-attestation": {
-      "total": 2023,
-      "returned": 2023,
-      "top_1_correct": 1969,
-      "top_k_correct": 2023,
+      "total": 2022,
+      "returned": 2022,
+      "top_1_correct": 1968,
+      "top_k_correct": 2022,
       "abstained": 0
     },
     "synodal-irregular-override": {
-      "total": 18,
-      "returned": 18,
-      "top_1_correct": 15,
-      "top_k_correct": 18,
+      "total": 19,
+      "returned": 19,
+      "top_1_correct": 16,
+      "top_k_correct": 19,
       "abstained": 0
     },
     "synodal-normative-table": {

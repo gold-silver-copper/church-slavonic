@@ -29,9 +29,9 @@ pub use provider::{
 };
 pub use registry::{
     AccentParadigmSummary, AccentSummary, AlignmentSummary, ExactFormSummary,
-    IrregularOverrideSummary, LexemeSummary, LexicalMetadataSummary, NounRestrictionSummary,
-    PartOfSpeech, PositionalRuleSummary, PrincipalPartSummary, RecensionConflictSummary,
-    TransformationRuleSummary,
+    IrregularOverrideSummary, IrregularVerbInventorySummary, LexemeSummary, LexicalMetadataSummary,
+    NounRestrictionSummary, PartOfSpeech, PositionalRuleSummary, PrincipalPartSummary,
+    RecensionConflictSummary, TransformationRuleSummary,
 };
 pub use spec::{
     AdjectiveSpec, DefectKind, DefectiveCell, DeterminerSpec, LexemeSpec, NounSpec, NumeralSpec,
@@ -130,6 +130,11 @@ pub fn positional_rules() -> Vec<PositionalRuleSummary> {
 #[must_use]
 pub fn irregular_overrides() -> Vec<IrregularOverrideSummary> {
     registry::irregular_overrides()
+}
+
+/// Returns all 98 verb entries in Alypy §104's source order.
+pub fn irregular_verb_inventory() -> Result<Vec<IrregularVerbInventorySummary>> {
+    registry::irregular_verb_inventory()
 }
 
 pub fn noun(lemma: &str, case: Case, number: Number, animacy: Animacy) -> Result<FormSet> {
@@ -2032,5 +2037,292 @@ mod tests {
             ),
             Err(Error::UnsupportedCell { .. })
         ));
+    }
+
+    #[test]
+    fn registered_impersonal_verbs_preserve_exact_first_typed_defectiveness() {
+        let podobati = Verb::from_id(&LexemeId::from("synodal:verb:v06-7572c074fcdb7753"))
+            .expect("reviewed impersonal verb");
+        assert_eq!(
+            podobati
+                .present(Person::Third, Number::Singular)
+                .expect("reviewed exact form")
+                .primary_text(),
+            "подобаетъ"
+        );
+        assert_eq!(
+            podobati
+                .infinitive()
+                .expect("cited lexical infinitive")
+                .primary_text(),
+            "подобати"
+        );
+        assert!(matches!(
+            podobati.present(Person::First, Number::Singular),
+            Err(Error::HistoricallyInvalidCell { reason })
+                if reason.contains("§104") && reason.contains("only third-singular")
+        ));
+        assert_eq!(
+            podobati
+                .paradigm(FiniteTense::Present)
+                .with_status(ParadigmStatus::HistoricallyInvalid)
+                .count(),
+            8
+        );
+
+        let dovleti = Verb::from_id(&LexemeId::from("synodal:verb:v07-15e3f31915cf0144"))
+            .expect("reviewed evidence-bounded verb");
+        assert_eq!(
+            dovleti
+                .present(Person::Third, Number::Singular)
+                .expect("reviewed exact form")
+                .primary_text(),
+            "довлѣетъ"
+        );
+        assert_eq!(
+            dovleti
+                .infinitive()
+                .expect("cited lexical infinitive")
+                .primary_text(),
+            "довлѣти"
+        );
+        assert!(matches!(
+            dovleti.present(Person::Third, Number::Plural),
+            Err(Error::EvidenceIncompleteCell {
+                field: MetadataField::IrregularOverride,
+                reason,
+            }) if reason.contains("prints only the singular surface")
+        ));
+        assert!(matches!(
+            dovleti.imperfect(Person::Third, Number::Singular),
+            Err(Error::EvidenceIncompleteCell {
+                field: MetadataField::IrregularOverride,
+                reason,
+            }) if reason.contains("all other uncited cells")
+        ));
+    }
+
+    #[test]
+    fn alpy_103_archaic_verbs_have_closed_exact_present_and_imperative_tables() {
+        let cases = [
+            (
+                "synodal:verb:wikt-6ceeefbe4e9e",
+                "ꙗмъ",
+                "ꙗдѧтъ",
+                "ꙗждь",
+                "ꙗдитѣ",
+            ),
+            (
+                "synodal:verb:wikt-8a084860d2ef",
+                "вѣмъ",
+                "вѣдѧтъ",
+                "вѣждь",
+                "вѣдитѣ",
+            ),
+            (
+                "synodal:verb:wikt-0c6c8db63b7c",
+                "имамъ",
+                "имꙋтъ",
+                "имѣй",
+                "имѣитѣ",
+            ),
+            ("synodal:verb:imati", "имамъ", "имꙋтъ", "имѣй", "имѣитѣ"),
+        ];
+        for (id, first_singular, third_plural, imperative_singular, imperative_dual_variant) in
+            cases
+        {
+            let verb = Verb::from_id(&LexemeId::from(id)).expect("reviewed archaic identity");
+            let present = verb.paradigm(FiniteTense::Present);
+            assert_eq!(present.iter().count(), 9, "{id}");
+            assert_eq!(present.failures().count(), 0, "{id}");
+            assert_eq!(
+                verb.present(Person::First, Number::Singular)
+                    .expect("first singular")
+                    .primary_text(),
+                first_singular,
+                "{id}"
+            );
+            assert_eq!(
+                verb.present(Person::Third, Number::Plural)
+                    .expect("third plural")
+                    .primary_text(),
+                third_plural,
+                "{id}"
+            );
+            let imperative = verb.system_paradigm(VerbSystem::Imperative);
+            assert_eq!(imperative.successes().count(), 7, "{id}");
+            assert_eq!(imperative.failures().count(), 2, "{id}");
+            assert_eq!(
+                verb.imperative(Person::Second, Number::Singular)
+                    .expect("second singular imperative")
+                    .primary_text(),
+                imperative_singular,
+                "{id}"
+            );
+            let dual = verb
+                .imperative(Person::Third, Number::Dual)
+                .expect("source-licensed third-dual imperative");
+            assert_eq!(dual.variants().len(), 2, "{id}");
+            assert!(
+                dual.variants()
+                    .iter()
+                    .any(|variant| variant.expanded == imperative_dual_variant),
+                "{id}"
+            );
+        }
+
+        let dati = Verb::from_id(&LexemeId::from("synodal:verb:dati")).expect("дати");
+        assert_eq!(
+            dati.future(Person::First, Number::Dual)
+                .expect("dual future")
+                .variants()
+                .len(),
+            2
+        );
+        let byti = Verb::from_id(&LexemeId::from("synodal:verb:byti")).expect("быти");
+        assert_eq!(
+            byti.system_paradigm(VerbSystem::Imperative)
+                .successes()
+                .count(),
+            6
+        );
+        assert_eq!(
+            byti.present(Person::First, Number::Dual)
+                .expect("dual present")
+                .variants()
+                .len(),
+            2
+        );
+
+        for id in ["synodal:verb:imati", "synodal:verb:wikt-0c6c8db63b7c"] {
+            let verb = Verb::from_id(&LexemeId::from(id)).expect("имати/имѣти identity");
+            let passive = verb.system_paradigm(VerbSystem::Participle {
+                tense: ParticipleTense::Present,
+                voice: ParticipleVoice::Passive,
+                form: AdjectiveForm::Long,
+            });
+            assert_eq!(passive.successes().count(), 0, "{id}");
+            assert_eq!(
+                passive
+                    .with_status(ParadigmStatus::HistoricallyInvalid)
+                    .count(),
+                72,
+                "{id}"
+            );
+            assert!(passive.iter().all(|row| matches!(
+                row.outcome(),
+                Err(Error::HistoricallyInvalidCell { reason })
+                    if reason.contains("§103") && reason.contains("present passive")
+            )));
+        }
+    }
+
+    #[test]
+    fn archaic_principal_parts_cover_every_source_licensed_participle_system() {
+        let yasti = Verb::from_id(&LexemeId::from("synodal:verb:wikt-6ceeefbe4e9e")).expect("ꙗсти");
+        for (tense, voice) in [
+            (ParticipleTense::Present, ParticipleVoice::Active),
+            (ParticipleTense::Present, ParticipleVoice::Passive),
+            (ParticipleTense::Past, ParticipleVoice::Active),
+            (ParticipleTense::Past, ParticipleVoice::Passive),
+        ] {
+            let paradigm = yasti.system_paradigm(VerbSystem::Participle {
+                tense,
+                voice,
+                form: AdjectiveForm::Long,
+            });
+            assert_eq!(paradigm.successes().count(), 72, "{tense:?} {voice:?}");
+            assert_eq!(paradigm.failures().count(), 0, "{tense:?} {voice:?}");
+        }
+        let cited = Participle::from_id(yasti.id())
+            .expect("participle handle")
+            .form(ParticipleCell {
+                tense: ParticipleTense::Present,
+                voice: ParticipleVoice::Active,
+                agreement: AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                },
+            })
+            .expect("short present active citation");
+        assert_eq!(cited.primary_text(), "ꙗдый");
+
+        let vedeti = Participle::from_id(&LexemeId::from("synodal:verb:wikt-8a084860d2ef"))
+            .expect("вѣдѣти participle");
+        assert_eq!(
+            vedeti
+                .form(ParticipleCell {
+                    tense: ParticipleTense::Present,
+                    voice: ParticipleVoice::Passive,
+                    agreement: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                        comparison: Comparison::Positive,
+                    },
+                })
+                .expect("present passive citation")
+                .primary_text(),
+            "вѣдомъ"
+        );
+    }
+
+    #[test]
+    fn alpy_104_irregular_inventory_is_public_exhaustive_and_source_ordered() {
+        let inventory = irregular_verb_inventory().expect("validated generated inventory");
+        assert_eq!(inventory.len(), 98);
+        assert_eq!(inventory.first().map(|entry| entry.source_order), Some(2));
+        assert_eq!(inventory.last().map(|entry| entry.source_order), Some(100));
+        assert!(inventory.windows(2).all(|pair| {
+            pair[0].source_order < pair[1].source_order && pair[1].source_order != 97
+        }));
+        assert_eq!(
+            inventory
+                .iter()
+                .filter(|entry| entry.implementation_status == "source-evidence-incomplete")
+                .map(|entry| entry.source_order)
+                .collect::<Vec<_>>(),
+            vec![4, 32, 55, 73]
+        );
+        assert!(inventory.iter().all(|entry| {
+            matches!(
+                entry.implementation_status.as_str(),
+                "implemented-bundled"
+                    | "implemented-by-metadata-contract"
+                    | "source-evidence-incomplete"
+            )
+        }));
+        let yati = inventory
+            .iter()
+            .find(|entry| entry.source_order == 100)
+            .expect("prefixed ꙗти family");
+        assert!(yati.systems.contains(&"stem-alternation".into()));
+        assert_eq!(yati.strategy, "caller-exact-principal-parts");
+
+        let systems = |order| {
+            inventory
+                .iter()
+                .find(|entry| entry.source_order == order)
+                .map(|entry| entry.systems.as_slice())
+                .expect("reviewed source order")
+        };
+        assert_eq!(systems(20), ["future", "aorist"]);
+        assert!(systems(11).contains(&"past-active-participle".into()));
+        for order in [18, 19, 22, 23, 72] {
+            assert!(systems(order).contains(&"present".into()), "order {order}");
+        }
+        for order in [18, 41, 92] {
+            assert!(
+                systems(order).contains(&"stem-alternation".into()),
+                "order {order}"
+            );
+        }
+        assert!(systems(69).contains(&"defectiveness".into()));
     }
 }

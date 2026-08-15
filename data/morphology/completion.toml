@@ -1003,18 +1003,18 @@ profiles = ["expanded", "liturgical"]
 features = ["system=all", "suppletion=typed", "defectiveness=typed", "principal-parts=independent"]
 subtypes = ["быти", "дати", "рещи", "root", "suppletive", "defective", "impersonal"]
 realization = "synthetic-or-analytic"
-state = "implementation-missing"
-implementation_kind = "exact-and-productive-partial"
-rule_ids = ["SYN-REGISTRY-IRREGULAR-OVERRIDE", "SYN-VERB-IRREGULAR-COMPLETE-PENDING"]
-sources = ["alypy-gamanovich-grammar-web-2023", "dyachenko-1900-scan", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
-citation = "Alypy §§81, 103–104 and remaining verb sections"
-required_metadata = ["stable identity", "all principal parts", "complete exact irregular systems", "defective inventory", "accent"]
-valid_inventory = "Complete reviewed tables exist for selected systems of быти and дати."
-invalid_inventory = "Cells excluded by lexical defectiveness or absent evidence."
-implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "data/synodal/irregular_overrides.tsv"]
-tests = ["crates/synodal-church-slavonic/src/lib.rs#irregular_byti_is_exact_table_first", "crates/synodal-church-slavonic/src/lib.rs#reviewed_regular_verbs_expose_complete_independent_finite_systems"]
-evidence_status = "partial exact irregular and productive principal-part data"
-gap = "Complete the irregular source-union inventory and explicitly classify every missing/defective system."
+state = "irregular-exact-complete"
+implementation_kind = "closed-exact-productive-and-defective-inventory"
+rule_ids = ["SYN-REGISTRY-IRREGULAR-OVERRIDE", "SYN-VERB-IRREGULAR-ALYPY-81-103", "SYN-VERB-IRREGULAR-INVENTORY-ALYPY-104", "SYN-VERB-DEFECTIVENESS-ALYPY-103-104"]
+sources = ["alypy-gamanovich-grammar-web-2023", "pletneva-kravetsky-church-slavonic-2005", "smirnova-church-slavonic-tables", "dyachenko-1900-scan", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+citation = "Alypy §§81 and 103 complete archaic tables; §104 exhaustive 98-entry irregular inventory and source disclaimer; Smirnova five-table crosscheck."
+required_metadata = ["stable lexical identity", "source-ordered irregular inventory entry", "complete exact cells for closed systems", "independent principal parts for productive subsystems", "typed defect selector and reason", "ordered variants", "accent or exact liturgical form"]
+valid_inventory = "All five §103 archaic paradigms, represented by six distinct registry identities because имати and lexical имѣти are not merged, have complete source-licensed exact finite and imperative tables; every one of §104's 98 verb entries is source ordered and routes through bundled exact cells, independently supplied principal parts, or a typed defective inventory. Caller metadata can realize every grammatically licensed subsystem without merging lexical identities."
+invalid_inventory = "Only explicitly impossible cells are historically invalid; source-limited attestations and the four question-marked §104 entries remain evidence-incomplete. Exact survivors precede system or cell defects, and omitted rare forms are never treated as negative evidence solely because §104 does not print them."
+implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic/src/registry.rs", "crates/synodal-church-slavonic/src/lib.rs", "crates/synodal-church-slavonic-extractor/src/lib.rs", "data/synodal/exact_forms.tsv", "data/synodal/principal_parts.tsv", "data/synodal/verb_defectiveness.tsv", "data/synodal/irregular_verb_inventory.tsv"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#irregular_byti_is_exact_table_first", "crates/synodal-church-slavonic/src/lib.rs#registered_impersonal_verbs_preserve_exact_first_typed_defectiveness", "crates/synodal-church-slavonic/src/lib.rs#alpy_103_archaic_verbs_have_closed_exact_present_and_imperative_tables", "crates/synodal-church-slavonic/src/lib.rs#archaic_principal_parts_cover_every_source_licensed_participle_system", "crates/synodal-church-slavonic/src/lib.rs#alpy_104_irregular_inventory_is_public_exhaustive_and_source_ordered", "crates/synodal-church-slavonic-extractor/src/lib.rs#irregular_inventory_requires_all_98_source_order_entries"]
+evidence_status = "exhaustive normative source inventory with exact, productive-metadata, historically defective, and evidence-incomplete routes kept distinct"
+rationale = "Alypy's complete printed irregular corpus is now represented without treating silence as absence: §§81/103 close their exact archaic tables, all 98 §104 verbs have an explicit public route, independent principal parts cover productive subsystems, and typed defect records preserve the source's three distinct claims of impossibility, sparse attestation, and uncertainty."
 
 [[system]]
 id = "syn.analytic.current"

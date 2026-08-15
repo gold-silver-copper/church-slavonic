@@ -1154,6 +1154,38 @@ lesson 1 §4.2. The source 3sg remains `DictionaryTable`; overrides carry
 is inferred from the final lemma partition, and other high-value irregular verbs
 remain exact-table or explicitly unsupported until an equally specific audit exists.
 
+### Synodal irregular and defective verb inventory
+
+`SYN-VERB-IRREGULAR-INVENTORY-ALYPY-81-104` closes the Russian Synodal
+irregular-verb grammar without pretending that every irregularity is the same
+kind of fact. Alypy §§81 and 103 provide closed exact finite and imperative
+tables for `быти`, `дати`, `ꙗсти`, `вѣдѣти`, and the separately addressable
+`имати` and lexical `имѣти` identities. Their source-licensed dual alternatives
+remain ordered variants. Independent imperfect, aorist, l-participle, and all
+four participial platforms are declared per lexeme; the present passive of
+`имати`/`имѣти`, which §103 prints as absent, is a typed historical exclusion.
+
+Section 104 contains 100 printed paragraphs but exactly 98 verb entries:
+paragraph 1 is a source disclaimer and paragraph 97 is a semantic note. The
+public `irregular_verb_inventory()` preserves source order 2–96 and 98–100 and
+records, for every entry, the licensed systems, implementation strategy,
+evidence, and target recension. Bundled exact systems, productive realization
+from independent caller principal parts, and typed defect records are distinct
+routes. The four question-marked entries at source orders 4, 32, 55, and 73 are
+explicitly evidence-incomplete rather than silently normalized.
+
+The resolver order is exact form, declared defect, then productive subsystem.
+Thus the cited survivors of sparse paradigms remain usable. `подобати`, which
+the source explicitly limits to third-singular present and imperfect, returns
+`HistoricallyInvalidCell` elsewhere. For `довлѣти`, the source reports use in
+both third-person numbers but prints only the singular surface. The bundled
+third plural and every other uncited cell therefore return
+`EvidenceIncompleteCell`; a caller may supply the missing exact plural. The
+§104 disclaimer prevents absence from being promoted to impossibility.
+Smirnova's public five-verb tables reproduce the §103 present inventory but may
+share its pedagogical lineage, so they are an external crosscheck rather than an
+independent source of runtime rows.
+
 ### Personal, reflexive, and anaphoric pronouns
 
 The reviewed closed grammar inventory has four intrinsic identities rather than one

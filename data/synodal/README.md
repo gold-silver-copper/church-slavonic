@@ -53,6 +53,12 @@ source-partition target attestations. `source_kind` distinguishes
 attestation must cite a reviewed whole-token corpus candidate outside all
 held-out passages.
 
+`irregular_verb_inventory.tsv` exhaustively preserves the 98 verb entries in
+Alypy §104 and names the typed implementation route for each source-listed
+system. `verb_defectiveness.tsv` separately records cell/system selectors,
+historical versus evidential defect kind, the corresponding metadata field,
+and reviewed evidence. Exact surviving cells resolve before these defects.
+
 `target_identity_ambiguities.tsv` is the explicit exception registry for a
 single target token that contextually supports more than one runtime lexical
 identity. Each row binds both the stable target evidence and candidate IDs,

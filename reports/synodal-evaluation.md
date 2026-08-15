@@ -7,13 +7,13 @@ The correction ledger excludes 3 historically preserved but grammatically retrac
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | Expanded | 2136 | 2075 | 2136 | 0 | 2136 |
-| Printed | 2136 | 1993 | 2136 | 0 | 2136 |
+| Printed | 2136 | 1992 | 2136 | 0 | 2136 |
 
 Analytic phrases: expanded 5/5, printed 5/5 (5 held-out phrases).
 
 Typed abbreviations: top-1 65/74, top-k 74/74 (74 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 2838/2838, printed 2838/2838.
+Exact registry round trips (top-k, including reviewed variants): expanded 2944/2946, printed 2944/2946.
 
 Masked cells: expanded 501/502, printed 501/502. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
@@ -33,9 +33,9 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `attested` | 2029 | 1969 | 2029 | 0 | 2029 |
+| `attested` | 2028 | 1968 | 2028 | 0 | 2028 |
 | `expected-form-not-returned` | 0 | 0 | 0 | 0 | 0 |
-| `predicted` | 107 | 106 | 107 | 0 | 107 |
+| `predicted` | 108 | 107 | 108 | 0 | 108 |
 
 ## Expanded accuracy by morphological system
 
@@ -61,8 +61,8 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exact-synodal-attestation` | 2023 | 1969 | 2023 | 0 | 2023 |
-| `synodal-irregular-override` | 18 | 15 | 18 | 0 | 18 |
+| `exact-synodal-attestation` | 2022 | 1968 | 2022 | 0 | 2022 |
+| `synodal-irregular-override` | 19 | 16 | 19 | 0 | 19 |
 | `synodal-normative-table` | 74 | 70 | 74 | 0 | 74 |
 | `synodal-productive-rule` | 21 | 21 | 21 | 0 | 21 |
 
@@ -283,6 +283,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v07:0bc7c0760a8f536c` (`adjective:accusative:plural:neuter:any:short:positive`): expected `Бла́га`, top-1 `бла̑га`.
 - Printed `eval:v07:0cc4625dd2086f15` (`noun:genitive:singular:inanimate`): expected `ро́дꙋ`, top-1 `ро́да`.
 - Printed `eval:v07:0e2a9ef0e3118fa9` (`pronoun:dative:plural:neuter:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
+- Printed `eval:v07:0eeb1b98741062bf` (`present:first:plural`): expected `Вѣ́мы`, top-1 `вѣ́мы`.
 - Printed `eval:v07:12d883c01f5428e4` (`noun:instrumental:plural:inanimate`): expected `ᲂу҆сты̀`, top-1 `ѹ҆́сты̑`.
 - Printed `eval:v07:264e1313b5a9fce0` (`future:second:plural`): expected `Бꙋ́дите`, top-1 `бꙋ́дете`.
 - Printed `eval:v07:3ae1ab6559aeee91` (`noun:accusative:plural:inanimate`): expected `ᲂу҆ста̀`, top-1 `Ѹ҆ста̀`.
