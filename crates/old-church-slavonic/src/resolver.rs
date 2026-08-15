@@ -1307,7 +1307,12 @@ fn compose_ordinal_analyses(
     if remainder != 0 {
         chunks.push(lower_ordinal_analyses(remainder, cell)?);
     }
-    combine_ordinal_chunks(chunks, value < 100)
+    let mut analyses = combine_ordinal_chunks(chunks, value < 100)?;
+    analyses.extend(first_component_asyndetic_analyses(value, cell)?);
+    if (21..=29).contains(&value) {
+        analyses.extend(twenty_first_through_twenty_ninth_turns(value, cell)?);
+    }
+    Ok(analyses)
 }
 
 fn lower_ordinal_analyses(
@@ -1395,32 +1400,16 @@ fn combine_ordinal_chunks(
     chunks: Vec<Vec<OrdinalPhraseAnalysis>>,
     prefer_conjunction_i: bool,
 ) -> Result<Vec<OrdinalPhraseAnalysis>, InflectionError> {
-    if chunks.is_empty() {
-        return Err(InflectionError::InvalidInput {
-            reason: "a compound ordinal requires at least one component".to_string(),
-        });
-    }
     if chunks.len() == 1 {
         return chunks
             .into_iter()
             .next()
+            .filter(|chunk| !chunk.is_empty())
             .ok_or_else(|| InflectionError::InvalidInput {
                 reason: "a compound ordinal lost its only component".to_string(),
             });
     }
-
-    let mut combinations = vec![Vec::<OrdinalPhraseAnalysis>::new()];
-    for chunk in chunks {
-        let mut next = Vec::with_capacity(combinations.len() * chunk.len());
-        for prefix in &combinations {
-            for suffix in &chunk {
-                let mut analyses = prefix.clone();
-                analyses.push(suffix.clone());
-                next.push(analyses);
-            }
-        }
-        combinations = next;
-    }
+    let combinations = ordinal_chunk_combinations(chunks)?;
 
     let orders = if prefer_conjunction_i {
         [
@@ -1447,6 +1436,133 @@ fn combine_ordinal_chunks(
     Ok(analyses)
 }
 
+fn ordinal_chunk_combinations(
+    chunks: Vec<Vec<OrdinalPhraseAnalysis>>,
+) -> Result<Vec<Vec<OrdinalPhraseAnalysis>>, InflectionError> {
+    if chunks.is_empty() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a compound ordinal requires at least one component".to_string(),
+        });
+    }
+    if chunks.len() == 1 {
+        return chunks
+            .into_iter()
+            .next()
+            .map(|chunk| chunk.into_iter().map(|analysis| vec![analysis]).collect())
+            .ok_or_else(|| InflectionError::InvalidInput {
+                reason: "a compound ordinal lost its only component".to_string(),
+            });
+    }
+
+    let mut combinations = vec![Vec::<OrdinalPhraseAnalysis>::new()];
+    for chunk in chunks {
+        let mut next = Vec::with_capacity(combinations.len() * chunk.len());
+        for prefix in &combinations {
+            for suffix in &chunk {
+                let mut analyses = prefix.clone();
+                analyses.push(suffix.clone());
+                next.push(analyses);
+            }
+        }
+        combinations = next;
+    }
+    Ok(combinations)
+}
+
+fn first_component_asyndetic_analyses(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<Vec<OrdinalPhraseAnalysis>, InflectionError> {
+    let citation = ordinal_component_citation_cell();
+    let chunks = if value < 100 {
+        vec![
+            vec![compound_ordinal_head_analysis((value / 10) * 10, cell)?],
+            vec![simple_ordinal_analysis(value % 10, citation)?],
+        ]
+    } else {
+        vec![
+            vec![compound_ordinal_head_analysis((value / 100) * 100, cell)?],
+            lower_ordinal_analyses(value % 100, citation)?,
+        ]
+    };
+
+    ordinal_chunk_combinations(chunks).map(|combinations| {
+        combinations
+            .into_iter()
+            .map(|chunks| OrdinalPhraseAnalysis {
+                construction: OrdinalComposition::AsyndeticFirstComponent,
+                tokens: chunks.into_iter().flat_map(|chunk| chunk.tokens).collect(),
+            })
+            .collect()
+    })
+}
+
+fn ordinal_component_citation_cell() -> AdjectiveCell {
+    AdjectiveCell {
+        form: AdjectiveForm::Short,
+        case: Case::Nominative,
+        number: Number::Singular,
+        gender: Gender::Masculine,
+        animacy: Animacy::Inanimate,
+    }
+}
+
+fn twenty_first_through_twenty_ninth_turns(
+    value: u16,
+    cell: AdjectiveCell,
+) -> Result<Vec<OrdinalPhraseAnalysis>, InflectionError> {
+    let unit = simple_ordinal_identity(value - 20)?;
+    let agreeing_unit = numeral_token(reviewed_ordinal_numeral(unit, cell)?);
+    let grammar_token = |text, feature| {
+        reviewed_grammar_token(
+            text,
+            RuleId::NumeralOrdinalCircumlocutive,
+            feature,
+            COMPOUND_ORDINAL_AUTHORITY,
+        )
+    };
+
+    Ok(vec![
+        OrdinalPhraseAnalysis {
+            construction: OrdinalComposition::BetweenTens,
+            tokens: vec![
+                agreeing_unit.clone(),
+                PhraseToken {
+                    role: PhraseRole::Preposition,
+                    forms: grammar_token(
+                        "междю",
+                        "numeral:ordinal:circumlocutive:between-tens:preposition",
+                    )?,
+                },
+                PhraseToken {
+                    role: PhraseRole::Numeral,
+                    forms: grammar_token(
+                        "десетма",
+                        "numeral:ordinal:circumlocutive:between-tens:dual",
+                    )?,
+                },
+            ],
+        },
+        OrdinalPhraseAnalysis {
+            construction: OrdinalComposition::UnitWithinThirdTen,
+            tokens: vec![
+                agreeing_unit,
+                PhraseToken {
+                    role: PhraseRole::Numeral,
+                    forms: grammar_token(
+                        "третиаго",
+                        "numeral:ordinal:circumlocutive:third-ten:ordinal",
+                    )?,
+                },
+                PhraseToken {
+                    role: PhraseRole::Numeral,
+                    forms: grammar_token("десѧте", "numeral:ordinal:circumlocutive:third-ten:ten")?,
+                },
+            ],
+        },
+    ])
+}
+
 fn connect_ordinal_chunks(
     chunks: &[OrdinalPhraseAnalysis],
     construction: OrdinalComposition,
@@ -1455,7 +1571,11 @@ fn connect_ordinal_chunks(
         OrdinalComposition::Asyndetic => None,
         OrdinalComposition::ConjunctionI => Some("и"),
         OrdinalComposition::ConjunctionTi => Some("ти"),
-        OrdinalComposition::AnalyticTeen | OrdinalComposition::FusedStem => {
+        OrdinalComposition::AnalyticTeen
+        | OrdinalComposition::FusedStem
+        | OrdinalComposition::AsyndeticFirstComponent
+        | OrdinalComposition::BetweenTens
+        | OrdinalComposition::UnitWithinThirdTen => {
             return Err(InflectionError::InvalidInput {
                 reason: "only additive ordinal constructions can connect chunks".to_string(),
             });

@@ -204,10 +204,12 @@ connector. Each numeral and connector is a `PhraseToken` whose `FormSet`
 preserves its own variants, evidence, warnings, and trace. The accompanying
 `CompoundOrdinalParadigm` exposes all 252 adjective-agreement cells for each
 value. Source-listed stems, productive cells, reconstructed stems, and exact
-cell-specific manuscript spellings therefore remain distinguishable. The
-competing asyndetic-declension account, rare alternative 21–29 turns, ordinal
-magnitudes above 1,000, and remaining irregular numeral
-inventories remain open.
+cell-specific manuscript spellings therefore remain distinguishable. Distinct
+construction tags retain both conflicting asyndetic-declension accounts. Values
+21–29 additionally expose the productive `unit + междю десетма` and
+`unit + третиаго десѧте` turns with fixed, independently evidenced tails.
+Ordinal magnitudes above 1,000 and remaining irregular numeral inventories
+remain open.
 
 Collectives have a separate typed cell because the inherited system has two
 real declension classes. `дъвои`, `обои`, and `трои` accept the complete 63-cell

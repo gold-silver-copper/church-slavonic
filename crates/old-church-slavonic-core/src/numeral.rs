@@ -184,10 +184,26 @@ pub enum OrdinalComposition {
     FusedStem,
     /// An outermost join of agreeing ordinal components without a conjunction.
     Asyndetic,
+    /// An asyndetic join under the competing account where only its first
+    /// component declines and every later component remains in citation form.
+    AsyndeticFirstComponent,
     /// An outermost join of agreeing ordinal components by `и`.
     ConjunctionI,
     /// An outermost join of agreeing ordinal components by `ти`.
     ConjunctionTi,
+    /// A unit ordinal followed by fixed `междю десетма` “between two tens”.
+    BetweenTens,
+    /// A unit ordinal followed by fixed genitival `третиаго десѧте` “of the
+    /// third ten”; a governing preposition such as attested `въ` is external.
+    UnitWithinThirdTen,
+}
+
+impl OrdinalComposition {
+    /// Whether this construction preserves the source account contradicted by
+    /// the same grammar's directly cited all-agreeing manuscript example.
+    pub const fn is_disputed(self) -> bool {
+        matches!(self, Self::AsyndeticFirstComponent)
+    }
 }
 
 /// One correlated structural realization of a compound ordinal.
@@ -230,12 +246,21 @@ impl RealizedOrdinal {
                 reason: "a realized ordinal requires a positive value and an analysis".to_string(),
             });
         }
-        if analyses
+        if let Some((index, analysis)) = analyses
             .iter()
-            .any(|analysis| !valid_ordinal_analysis(analysis))
+            .enumerate()
+            .find(|(_, analysis)| !valid_ordinal_analysis(value, analysis))
         {
             return Err(InflectionError::InvalidInput {
-                reason: "an ordinal analysis has an invalid component sequence".to_string(),
+                reason: format!(
+                    "ordinal analysis {index} ({:?}) has an invalid component sequence: {:?}",
+                    analysis.construction,
+                    analysis
+                        .tokens
+                        .iter()
+                        .map(|token| (token.role, token.forms.primary_text()))
+                        .collect::<Vec<_>>()
+                ),
             });
         }
         Ok(Self {
@@ -305,7 +330,7 @@ fn valid_ordinal_tokens(tokens: &[PhraseToken]) -> bool {
     true
 }
 
-fn valid_ordinal_analysis(analysis: &OrdinalPhraseAnalysis) -> bool {
+fn valid_ordinal_analysis(value: u16, analysis: &OrdinalPhraseAnalysis) -> bool {
     if !valid_ordinal_tokens(&analysis.tokens) {
         return false;
     }
@@ -325,13 +350,37 @@ fn valid_ordinal_analysis(analysis: &OrdinalPhraseAnalysis) -> bool {
                 ]
         }
         OrdinalComposition::FusedStem => roles == [PhraseRole::Numeral],
-        OrdinalComposition::Asyndetic => roles.get(1) == Some(&PhraseRole::Numeral),
+        OrdinalComposition::Asyndetic | OrdinalComposition::AsyndeticFirstComponent => {
+            roles.get(1) == Some(&PhraseRole::Numeral)
+        }
         OrdinalComposition::ConjunctionI => analysis.tokens.get(1).is_some_and(|token| {
             token.role == PhraseRole::Conjunction && token.forms.primary_text() == "и"
         }),
         OrdinalComposition::ConjunctionTi => analysis.tokens.get(1).is_some_and(|token| {
             token.role == PhraseRole::Conjunction && token.forms.primary_text() == "ти"
         }),
+        OrdinalComposition::BetweenTens => {
+            (21..=29).contains(&value)
+                && roles
+                    == [
+                        PhraseRole::Numeral,
+                        PhraseRole::Preposition,
+                        PhraseRole::Numeral,
+                    ]
+                && analysis.tokens[1].forms.primary_text() == "междю"
+                && analysis.tokens[2].forms.primary_text() == "десетма"
+        }
+        OrdinalComposition::UnitWithinThirdTen => {
+            (21..=29).contains(&value)
+                && roles
+                    == [
+                        PhraseRole::Numeral,
+                        PhraseRole::Numeral,
+                        PhraseRole::Numeral,
+                    ]
+                && analysis.tokens[1].forms.primary_text() == "третиаго"
+                && analysis.tokens[2].forms.primary_text() == "десѧте"
+        }
     }
 }
 

@@ -120,7 +120,7 @@
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
 //! | Derived pronominal families | [`phrases::interrogative_pronoun_family`], [`phrases::pronominal_family_with`] | Typed `ни-/нѣ-`, bound and independent postpositives, direct `-то` alternation, and preposition interposition |
-//! | Cardinals and distributives through 10,000, simple ordinals 1–10, collectives 2–10, and OCS fractional nouns | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`], [`distributive_cardinal`], [`distributive_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound and `по` + dative distributive, adjective-agreement ordinal, inherited collective, and period-bounded fractional-noun inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, and corpus variants |
+//! | Cardinals and distributives through 10,000, ordinals 1–1,000, collectives 2–10, and OCS fractional nouns | [`numeral`], [`gendered_numeral`], [`cardinal_numeral_identity`], [`cardinal_magnitude`], [`ordinal_numeral`], [`ordinal_numeral_identity`], [`ordinal_numeral_paradigm`], [`compound_ordinal`], [`compound_ordinal_paradigm`], [`collective_numeral`], [`collective_numeral_identity`], [`collective_numeral_paradigm`], [`fractional_numeral`], [`fractional_numeral_identity`], [`fractional_numeral_paradigm`], [`compound_cardinal`], [`compound_cardinal_paradigm`], [`distributive_cardinal`], [`distributive_cardinal_paradigm`] | Reviewed simple, magnitude, structured compound and `по` + dative distributive, adjective-agreement ordinal, inherited collective, and period-bounded fractional-noun inventories with typed government, correlated multiword alternatives, historical declension classes, and explicit source-listed, productive, reconstructed, disputed, and corpus variants |
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
@@ -1238,7 +1238,8 @@ pub fn distributive_cardinal_paradigm_with_options(
 
 /// Inflect a compound ordinal from 11 through 1,000 as a structured sequence.
 ///
-/// Analytic teens, fused historical heads, and additive forms remain separate
+/// Analytic teens, fused historical heads, additive forms, competing asyndetic
+/// declension accounts, and the alternative 21–29 turns remain separate
 /// analyses; each token retains its own variants, evidence, warnings, and trace.
 ///
 /// ```

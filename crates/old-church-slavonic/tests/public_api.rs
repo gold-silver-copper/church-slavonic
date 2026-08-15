@@ -1027,7 +1027,7 @@ fn compound_ordinals_through_one_thousand_are_structured_and_exhaustive() {
     )
     .expect("attested conjunctive twenty-eighth");
     assert_eq!(twenty_eighth.primary_text(), "дъвадесѧтьноѥ и осмоѥ");
-    assert_eq!(twenty_eighth.analyses().len(), 3);
+    assert_eq!(twenty_eighth.analyses().len(), 6);
     assert_eq!(
         twenty_eighth
             .analyses()
@@ -1038,7 +1038,34 @@ fn compound_ordinals_through_one_thousand_are_structured_and_exhaustive() {
             OrdinalComposition::ConjunctionI,
             OrdinalComposition::Asyndetic,
             OrdinalComposition::ConjunctionTi,
+            OrdinalComposition::AsyndeticFirstComponent,
+            OrdinalComposition::BetweenTens,
+            OrdinalComposition::UnitWithinThirdTen,
         ]
+    );
+    assert_eq!(
+        twenty_eighth.analyses()[3].primary_text(),
+        "дъвадесѧтьноѥ осмъ"
+    );
+    assert_eq!(
+        twenty_eighth.analyses()[4].primary_text(),
+        "осмоѥ междю десетма"
+    );
+    assert_eq!(
+        twenty_eighth.analyses()[5].primary_text(),
+        "осмоѥ третиаго десѧте"
+    );
+    assert_eq!(
+        twenty_eighth.analyses()[4].tokens[1].forms.source(),
+        &FormSource::ReviewedGrammarTable {
+            rule_id: RuleId::NumeralOrdinalCircumlocutive,
+        }
+    );
+    assert_eq!(
+        twenty_eighth.analyses()[4].tokens[2].forms.analyses()[0].evidence[0]
+            .source_form
+            .as_deref(),
+        Some("десетма")
     );
     assert_eq!(
         twenty_eighth.analyses()[0]
@@ -1068,6 +1095,24 @@ fn compound_ordinals_through_one_thousand_are_structured_and_exhaustive() {
         ),
         Err(InflectionError::InvalidInput { .. })
     ));
+    let mut wrong_turn = twenty_eighth.analyses()[4].clone();
+    wrong_turn.construction = OrdinalComposition::UnitWithinThirdTen;
+    assert!(matches!(
+        old_church_slavonic::RealizedOrdinal::new(
+            twenty_eighth.value(),
+            twenty_eighth.cell(),
+            vec![wrong_turn],
+        ),
+        Err(InflectionError::InvalidInput { .. })
+    ));
+    assert!(matches!(
+        old_church_slavonic::RealizedOrdinal::new(
+            30,
+            twenty_eighth.cell(),
+            vec![twenty_eighth.analyses()[4].clone()],
+        ),
+        Err(InflectionError::InvalidInput { .. })
+    ));
 
     let hundred_fourth = compound_ordinal(
         104,
@@ -1088,6 +1133,33 @@ fn compound_ordinals_through_one_thousand_are_structured_and_exhaustive() {
             .forms
             .texts()
             .any(|text| text == "сътънааго")
+    );
+    let first_only = hundred_fourth
+        .analyses()
+        .iter()
+        .find(|analysis| analysis.construction == OrdinalComposition::AsyndeticFirstComponent)
+        .expect("the competing first-component-only declension account");
+    assert!(first_only.construction.is_disputed());
+    assert!(!hundred_fourth.analyses()[0].construction.is_disputed());
+    assert_eq!(first_only.primary_text(), "сътьнаѥго четврьтъ");
+
+    let hundred_twenty_eighth = compound_ordinal(
+        128,
+        AdjectiveForm::Long,
+        Case::Genitive,
+        Number::Singular,
+        Gender::Neuter,
+        Animacy::Inanimate,
+    )
+    .expect("nested first-component-only account");
+    let nested_first_only = hundred_twenty_eighth
+        .analyses()
+        .iter()
+        .find(|analysis| analysis.construction == OrdinalComposition::AsyndeticFirstComponent)
+        .expect("nested disputed asyndetic analysis");
+    assert_eq!(
+        nested_first_only.primary_text(),
+        "сътьнаѥго дъвадесѧтьнъ и осмъ"
     );
 
     let reconstructed = compound_ordinal(
@@ -1125,6 +1197,51 @@ fn compound_ordinals_through_one_thousand_are_structured_and_exhaustive() {
                             .all(|token| !token.forms.primary_text().is_empty())
                 })
         }));
+        let is_head = ((20..=90).contains(&value) && value % 10 == 0)
+            || ((100..=900).contains(&value) && value % 100 == 0)
+            || value == 1_000;
+        let expects_first_component_only = !(11..=19).contains(&value) && !is_head;
+        let expects_rare_turns = (21..=29).contains(&value);
+        assert!(paradigm.successes().all(|(_, ordinal)| {
+            ordinal.analyses().iter().any(|analysis| {
+                analysis.construction == OrdinalComposition::AsyndeticFirstComponent
+            }) == expects_first_component_only
+                && ordinal
+                    .analyses()
+                    .iter()
+                    .any(|analysis| analysis.construction == OrdinalComposition::BetweenTens)
+                    == expects_rare_turns
+                && ordinal
+                    .analyses()
+                    .iter()
+                    .any(|analysis| analysis.construction == OrdinalComposition::UnitWithinThirdTen)
+                    == expects_rare_turns
+        }));
+        if expects_rare_turns {
+            let unit = OrdinalNumeralIdentity::ALL[usize::from(value - 21)];
+            for (cell, ordinal) in paradigm.successes() {
+                let expected_unit = ordinal_numeral_identity(
+                    unit,
+                    cell.form,
+                    cell.case,
+                    cell.number,
+                    cell.gender,
+                    cell.animacy,
+                )
+                .expect("every simple ordinal has the complete adjective product");
+                for construction in [
+                    OrdinalComposition::BetweenTens,
+                    OrdinalComposition::UnitWithinThirdTen,
+                ] {
+                    let turn = ordinal
+                        .analyses()
+                        .iter()
+                        .find(|analysis| analysis.construction == construction)
+                        .expect("the rare turn is licensed for every 21–29 agreement cell");
+                    assert_eq!(turn.tokens[0].forms, expected_unit, "{value} {cell:?}");
+                }
+            }
+        }
     }
 
     for invalid in [0, 10, 1_001, u16::MAX] {
