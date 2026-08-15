@@ -114,7 +114,7 @@
 //! | System | Ordinary API | Evidence behavior |
 //! |---|---|---|
 //! | Nouns | [`noun`], [`Noun`], [`noun_paradigm`] | Table first; dictionary metadata or explicit rules when supported |
-//! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exact comparative citations plus productive comparison through [`advanced::rules`] |
+//! | Adjectives | [`long_adjective`], [`short_adjective`], [`long_only_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exhaustive typed long-only inventory; exact comparative citations plus productive comparison through [`advanced::rules`] |
 //! | Personal/reflexive/anaphoric pronouns | [`personal_pronoun_with`], [`reflexive_pronoun`], [`anaphoric_pronoun`] and compatible ordinary handles | Complete reviewed closed grammar tables with typed clitic/context selection |
 //! | Regular class `2/p` identities | [`regular_pronominal`] and compatible adjective, pronoun, determiner, or numeral calls | All 32 regular identities have reviewed lexical ownership, hard/soft/j-stem class, aliases, and typed number restrictions; explicit OOV metadata through [`advanced::rules`] |
 //! | Exceptional pronouns/determiner | [`relative_pronoun`], [`interrogative_pronoun`], [`irregular_agreeing`] and compatible ordinary handles | Complete reviewed relative, no-dual, numberless, mixed, and unique grammar tables |
@@ -152,11 +152,11 @@ pub use old_church_slavonic_core::{
     CopulaSeries, DirectToTreatment, FiniteTense, FormSet, FormSource, FormVariant,
     FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, GenderedCell, InflectionError,
     InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity, Lemma,
-    LexemeSummary, Number, PartOfSpeech, ParticipleKind, PassiveAuxiliary, Person,
-    PersonalPronounCell, PersonalPronounIdentity, PhraseOrder, PhraseRole, PhraseToken,
-    PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
-    PronounFormSelection, RealizedPhrase, RequestedCell, Script, StandardPronominalIdentity,
-    UngenderedCell, VariantPolicy, VariantSelectionError,
+    LexemeSummary, LongOnlyAdjectiveIdentity, Number, PartOfSpeech, ParticipleKind,
+    PassiveAuxiliary, Person, PersonalPronounCell, PersonalPronounIdentity, PhraseOrder,
+    PhraseRole, PhraseToken, PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive,
+    PronominalPrefix, PronounFormSelection, RealizedPhrase, RequestedCell, Script,
+    StandardPronominalIdentity, UngenderedCell, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
     AdjectiveParadigm, CellOutcome, ClosedClassParadigm, ComparativeParadigm, DeterminerParadigm,
@@ -180,20 +180,21 @@ pub mod prelude {
         Determiner, DeterminerParadigm, FiniteTense, FiniteVerbParadigm, FormSet, FormSource,
         FormVariant, Gender, GenderedNumeralParadigm, GenderedPronounParadigm, ImperativeParadigm,
         InflectionError, InflectionResult, InflectionWarning, InterrogativePronounIdentity,
-        IrregularAgreeingIdentity, LParticipleParadigm, Lemma, Noun, NounParadigm, Number, Numeral,
-        NumeralParadigm, ParadigmLookupError, PartOfSpeech, Participle, ParticipleKind,
-        ParticipleParadigm, Person, PersonalPronounIdentity, PersonalPronounParadigm, Pronoun,
-        PronounFormSelection, PronounParadigm, Script, StandardPronominalIdentity, VariantPolicy,
-        VariantSelectionError, Verb, VerbParadigm, adjective_paradigm, anaphoric_pronoun, aorist,
-        comparative_citation, determiner, determiner_paradigm, finite, finite_paradigm,
-        gendered_numeral, gendered_numeral_paradigm, gendered_pronoun, gendered_pronoun_paradigm,
-        imperative, imperative_paradigm, imperfect, infinitive, interrogative_pronoun,
-        irregular_agreeing, l_participle, l_participle_paradigm, long_adjective, lookup, noun,
-        noun_paradigm, numeral, numeral_paradigm, participle_paradigm, past_active_participle,
-        past_passive_participle, personal_pronoun, personal_pronoun_paradigm,
-        personal_pronoun_with, present, present_active_participle, present_paradigm,
-        present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
-        regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun,
+        IrregularAgreeingIdentity, LParticipleParadigm, Lemma, LongOnlyAdjectiveIdentity, Noun,
+        NounParadigm, Number, Numeral, NumeralParadigm, ParadigmLookupError, PartOfSpeech,
+        Participle, ParticipleKind, ParticipleParadigm, Person, PersonalPronounIdentity,
+        PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
+        StandardPronominalIdentity, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
+        adjective_paradigm, anaphoric_pronoun, aorist, comparative_citation, determiner,
+        determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_numeral_paradigm,
+        gendered_pronoun, gendered_pronoun_paradigm, imperative, imperative_paradigm, imperfect,
+        infinitive, interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm,
+        long_adjective, long_only_adjective, lookup, noun, noun_paradigm, numeral,
+        numeral_paradigm, participle_paradigm, past_active_participle, past_passive_participle,
+        personal_pronoun, personal_pronoun_paradigm, personal_pronoun_with, present,
+        present_active_participle, present_paradigm, present_passive_participle, pronoun,
+        pronoun_paradigm, reflexive_pronoun, regular_pronominal, relative_pronoun, short_adjective,
+        supine, verbal_noun,
     };
 }
 
@@ -232,6 +233,49 @@ pub fn long_adjective(
     animacy: Animacy,
 ) -> InflectionResult {
     adjective_form(lemma, AdjectiveForm::Long, case, number, gender, animacy)
+}
+
+/// Decline one of the three source-listed adjectives that has only long forms.
+///
+/// This typed entry point carries the lexical defectivity explicitly. The
+/// ordinary [`long_adjective`] call recognizes the same canonical lemmas and
+/// source-spelling aliases.
+///
+/// ```
+/// use old_church_slavonic::{
+///     Animacy, Case, Gender, LongOnlyAdjectiveIdentity, Number,
+///     long_only_adjective,
+/// };
+/// assert_eq!(
+///     long_only_adjective(
+///         LongOnlyAdjectiveIdentity::OtherProchii,
+///         Case::Nominative,
+///         Number::Singular,
+///         Gender::Neuter,
+///         Animacy::Inanimate,
+///     )?
+///     .primary_text(),
+///     "прочеѥ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn long_only_adjective(
+    identity: LongOnlyAdjectiveIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+) -> InflectionResult {
+    resolver::long_only_adjective(
+        identity,
+        old_church_slavonic_core::AdjectiveCell {
+            case,
+            number,
+            gender,
+            animacy,
+            form: AdjectiveForm::Long,
+        },
+    )
 }
 
 /// Decline one dictionary determiner cell.

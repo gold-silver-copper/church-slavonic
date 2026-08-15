@@ -135,7 +135,7 @@ assert!(matches!(forms.source(), FormSource::ExplicitMetadataRule { .. }));
 | System | Ordinary API | Evidence behavior |
 |---|---|---|
 | Nouns | `noun`, `Noun`, `noun_paradigm` | Tables first; supported dictionary metadata or explicit rules |
-| Adjectives | `long_adjective`, `short_adjective`, `Adjective` | Tables first; hard/soft metadata rules; citation comparatives only |
+| Adjectives | `long_adjective`, `short_adjective`, `long_only_adjective`, `Adjective` | Tables first; hard/soft metadata rules; exhaustive typed long-only inventory; citation comparatives |
 | Determiners | `determiner`, `Determiner` | Exact pinned dictionary cells |
 | Pronouns | `personal_pronoun_with`, `reflexive_pronoun`, `anaphoric_pronoun`, compatible ordinary functions, `Pronoun` | Complete reviewed personal/reflexive/anaphoric tables; other pronouns use exact source cells |
 | Numerals | `numeral`, `gendered_numeral`, `Numeral` | Pinned declension cells; no arbitrary numeral generator |

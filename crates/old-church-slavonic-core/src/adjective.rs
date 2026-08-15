@@ -11,6 +11,79 @@ pub struct AdjectiveLexeme {
     pub class: AdjectiveClass,
 }
 
+/// The three ordinary class `2/a` adjectives whose dictionary citation is the
+/// long masculine nominative singular because their short paradigm is absent.
+///
+/// Polivanova lists this inventory exhaustively in §§285 and 305. Keeping it
+/// typed prevents a citation such as `прочии` from being misread as a short
+/// soft adjective in `-и`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum LongOnlyAdjectiveIdentity {
+    InterrogativeKotoryi,
+    OtherProkyi,
+    OtherProchii,
+}
+
+impl LongOnlyAdjectiveIdentity {
+    pub const ALL: [Self; 3] = [
+        Self::InterrogativeKotoryi,
+        Self::OtherProkyi,
+        Self::OtherProchii,
+    ];
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::InterrogativeKotoryi => "которꙑи",
+            Self::OtherProkyi => "прокꙑи",
+            Self::OtherProchii => "прочии",
+        }
+    }
+
+    pub const fn class(self) -> AdjectiveClass {
+        match self {
+            Self::InterrogativeKotoryi | Self::OtherProkyi => AdjectiveClass::Hard,
+            Self::OtherProchii => AdjectiveClass::Soft,
+        }
+    }
+
+    pub const fn source_union_aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::InterrogativeKotoryi => &["которꙑи", "которыи"],
+            Self::OtherProkyi => &["прокꙑи", "прокыи"],
+            Self::OtherProchii => &["прочии"],
+        }
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|identity| identity.source_union_aliases().contains(&lemma))
+    }
+
+    const fn stem(self) -> &'static str {
+        match self {
+            Self::InterrogativeKotoryi => "котор",
+            Self::OtherProkyi => "прок",
+            Self::OtherProchii => "проч",
+        }
+    }
+}
+
+/// Decline one member of the exhaustively listed `plenum tantum` inventory.
+pub fn decline_long_only(
+    identity: LongOnlyAdjectiveIdentity,
+    cell: AdjectiveCell,
+) -> Result<PredictedForm, InflectionError> {
+    let lemma = crate::orthography::canonical_display(identity.canonical_lemma())?;
+    if cell.form != AdjectiveForm::Long {
+        return Err(InflectionError::historically_invalid(
+            lemma,
+            crate::RequestedCell::Adjective(cell),
+        ));
+    }
+    decline_validated_stem(identity.stem(), identity.class(), cell, &lemma)
+}
+
 /// The two principal parts needed to inflect one OCS comparative.
 ///
 /// `syncopated_citation` is the short masculine nominative singular (`новѣи`,
@@ -32,10 +105,19 @@ pub fn productive_new_comparative(
     positive: &AdjectiveLexeme,
 ) -> Result<ComparativeLexeme, InflectionError> {
     let lemma = crate::orthography::canonical_display(&positive.lemma)?;
-    let stem = match positive.class {
-        AdjectiveClass::Hard => strip_citation(&lemma, &["ъ"], "hard")?,
-        AdjectiveClass::Soft => strip_citation(&lemma, &["ь", "и"], "soft")?,
-    };
+    if LongOnlyAdjectiveIdentity::classify_source_union_lemma(&lemma).is_some() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a productive comparative requires a short positive adjective citation"
+                .to_string(),
+        });
+    }
+    let (stem, long_only) = adjective_citation_stem(&lemma, positive.class)?;
+    if long_only {
+        return Err(InflectionError::InvalidInput {
+            reason: "a productive comparative requires a short positive adjective citation"
+                .to_string(),
+        });
+    }
     let (base, suffix) = if stem.ends_with(['к', 'г', 'х']) {
         (palatalize(stem, [('к', "ч"), ('г', "ж"), ('х', "ш")]), "аи")
     } else {
@@ -255,10 +337,22 @@ pub fn decline(
         class: lexeme.class,
     };
     let lexeme = &normalized_lexeme;
-    let stem = match lexeme.class {
-        AdjectiveClass::Hard => strip_citation(&lexeme.lemma, &["ъ"], "hard")?,
-        AdjectiveClass::Soft => strip_citation(&lexeme.lemma, &["ь", "и"], "soft")?,
-    };
+    if let Some(identity) = LongOnlyAdjectiveIdentity::classify_source_union_lemma(&lexeme.lemma) {
+        if identity.class() != lexeme.class {
+            return Err(InflectionError::InvalidInput {
+                reason: "the reviewed long-only adjective identity has a contradictory class"
+                    .to_string(),
+            });
+        }
+        return decline_long_only(identity, cell);
+    }
+    let (stem, long_only) = adjective_citation_stem(&lexeme.lemma, lexeme.class)?;
+    if long_only && cell.form != AdjectiveForm::Long {
+        return Err(InflectionError::historically_invalid(
+            &lexeme.lemma,
+            crate::RequestedCell::Adjective(cell),
+        ));
+    }
     decline_validated_stem(stem, lexeme.class, cell, &lexeme.lemma)
 }
 
@@ -333,6 +427,31 @@ fn strip_citation<'a>(
         .ok_or_else(|| InflectionError::InvalidInput {
             reason: format!("a {class} adjective citation has an incompatible ending"),
         })
+}
+
+fn strip_long_citation<'a>(lemma: &'a str, endings: &[&str]) -> Option<&'a str> {
+    endings
+        .iter()
+        .find_map(|ending| lemma.strip_suffix(ending))
+        .filter(|stem| !stem.is_empty())
+}
+
+fn adjective_citation_stem(
+    lemma: &str,
+    class: AdjectiveClass,
+) -> Result<(&str, bool), InflectionError> {
+    match class {
+        AdjectiveClass::Hard => {
+            if let Some(stem) = strip_long_citation(lemma, &["ꙑи", "ыи"]) {
+                Ok((stem, true))
+            } else {
+                Ok((strip_citation(lemma, &["ъ"], "hard")?, false))
+            }
+        }
+        // `-ии` is ambiguous: compare long-only прочии with short-only божии.
+        // The exhaustive lexical inventory is routed before this generic path.
+        AdjectiveClass::Soft => Ok((strip_citation(lemma, &["ь", "и"], "soft")?, false)),
+    }
 }
 
 fn hard_long_ending(cell: AdjectiveCell) -> &'static str {
@@ -590,6 +709,158 @@ mod tests {
             );
             assert!(matches!(result, Err(InflectionError::InvalidInput { .. })));
         }
+    }
+
+    #[test]
+    fn long_only_inventory_is_exhaustive_and_rejects_every_short_cell() {
+        assert_eq!(LongOnlyAdjectiveIdentity::ALL.len(), 3);
+        for identity in LongOnlyAdjectiveIdentity::ALL {
+            let mut long = 0;
+            let mut short = 0;
+            for cell in AdjectiveCell::all() {
+                match cell.form {
+                    AdjectiveForm::Long => {
+                        let form = decline_long_only(identity, cell)
+                            .expect("every long-only adjective has a complete long paradigm");
+                        assert!(!form.text.is_empty());
+                        long += 1;
+                    }
+                    AdjectiveForm::Short => {
+                        assert!(matches!(
+                            decline_long_only(identity, cell),
+                            Err(InflectionError::HistoricallyInvalidCell { .. })
+                        ));
+                        short += 1;
+                    }
+                }
+            }
+            assert_eq!((long, short), (126, 126));
+        }
+    }
+
+    #[test]
+    fn prochii_profile_matches_polivanova_section_304() {
+        let identity = LongOnlyAdjectiveIdentity::OtherProchii;
+        for (case, number, gender, expected) in [
+            (
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                "прочии",
+            ),
+            (Case::Nominative, Number::Singular, Gender::Neuter, "прочеѥ"),
+            (
+                Case::Nominative,
+                Number::Singular,
+                Gender::Feminine,
+                "прочаꙗ",
+            ),
+            (
+                Case::Accusative,
+                Number::Singular,
+                Gender::Feminine,
+                "прочѫѭ",
+            ),
+            (
+                Case::Nominative,
+                Number::Plural,
+                Gender::Masculine,
+                "прочии",
+            ),
+            (Case::Nominative, Number::Plural, Gender::Neuter, "прочаꙗ"),
+            (Case::Nominative, Number::Plural, Gender::Feminine, "прочѧѩ"),
+            (
+                Case::Accusative,
+                Number::Plural,
+                Gender::Masculine,
+                "прочѧѩ",
+            ),
+        ] {
+            let form = decline_long_only(
+                identity,
+                AdjectiveCell {
+                    case,
+                    number,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                },
+            )
+            .expect("source-profile cell");
+            assert_eq!(form.text, expected);
+        }
+    }
+
+    #[test]
+    fn long_citations_are_parsed_without_inventing_short_lemmas() {
+        for (lemma, class, expected) in [
+            ("которꙑи", AdjectiveClass::Hard, "котории"),
+            ("которыи", AdjectiveClass::Hard, "котории"),
+            ("прокꙑи", AdjectiveClass::Hard, "проции"),
+            ("прочии", AdjectiveClass::Soft, "прочии"),
+        ] {
+            let lexeme = AdjectiveLexeme {
+                lemma: lemma.to_string(),
+                class,
+            };
+            let long = decline(
+                &lexeme,
+                AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                },
+            )
+            .expect("long citation");
+            assert_eq!(long.text, expected);
+
+            assert!(matches!(
+                decline(
+                    &lexeme,
+                    AdjectiveCell {
+                        form: AdjectiveForm::Short,
+                        ..cell(
+                            AdjectiveForm::Long,
+                            Case::Nominative,
+                            Number::Plural,
+                            Gender::Masculine,
+                            Animacy::Inanimate,
+                        )
+                    }
+                ),
+                Err(InflectionError::HistoricallyInvalidCell { .. })
+            ));
+        }
+    }
+
+    #[test]
+    fn long_only_aliases_are_exhaustive_and_nonoverlapping() {
+        let mut aliases = std::collections::BTreeSet::new();
+        for identity in LongOnlyAdjectiveIdentity::ALL {
+            assert_eq!(
+                LongOnlyAdjectiveIdentity::classify_source_union_lemma(identity.canonical_lemma()),
+                Some(identity)
+            );
+            for alias in identity.source_union_aliases() {
+                assert!(aliases.insert(*alias), "duplicate alias {alias}");
+                assert_eq!(
+                    LongOnlyAdjectiveIdentity::classify_source_union_lemma(alias),
+                    Some(identity)
+                );
+            }
+        }
+        assert_eq!(aliases.len(), 5);
+    }
+
+    #[test]
+    fn productive_comparison_rejects_a_long_only_citation() {
+        let result = productive_new_comparative(&AdjectiveLexeme {
+            lemma: "прочии".to_string(),
+            class: AdjectiveClass::Soft,
+        });
+        assert!(matches!(result, Err(InflectionError::InvalidInput { .. })));
     }
 
     #[test]

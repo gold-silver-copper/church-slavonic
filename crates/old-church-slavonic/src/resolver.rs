@@ -89,7 +89,21 @@ pub fn adjective(lemma: &str, cell: AdjectiveCell) -> Result<FormSet, Inflection
     match candidates.as_slice() {
         [] => {
             let normalized = orthography::lookup_key(lemma)?;
-            let class = if normalized.ends_with('ъ') {
+            if let Some(identity) =
+                LongOnlyAdjectiveIdentity::classify_source_union_lemma(&normalized)
+            {
+                let mut result = long_only_adjective(identity, cell)?;
+                if normalized != identity.canonical_lemma() {
+                    result.add_warning(InflectionWarning::LexicalAliasUsed {
+                        canonical: identity.canonical_lemma().to_string(),
+                    });
+                }
+                return Ok(result);
+            }
+            let class = if normalized.ends_with('ъ')
+                || normalized.ends_with("ꙑи")
+                || normalized.ends_with("ыи")
+            {
                 AdjectiveClass::Hard
             } else if normalized.ends_with(['ь', 'и']) {
                 AdjectiveClass::Soft
@@ -146,6 +160,16 @@ pub fn adjective_by_id(id: &str, cell: AdjectiveCell) -> Result<FormSet, Inflect
             RequestedCell::Adjective(cell),
         ));
     }
+    if let Some(identity) = LongOnlyAdjectiveIdentity::classify_source_union_lemma(record.lemma) {
+        let mut result =
+            long_only_adjective(identity, cell).map_err(|error| error.with_lexeme_id(id))?;
+        if record.lemma != identity.canonical_lemma() {
+            result.add_warning(InflectionWarning::LexicalAliasUsed {
+                canonical: identity.canonical_lemma().to_string(),
+            });
+        }
+        return Ok(result);
+    }
     let class = parse_adjective_class(record.class).ok_or_else(|| {
         InflectionError::MissingLexicalMetadata {
             needed: vec![MetadataField::AdjectiveClass],
@@ -186,6 +210,57 @@ pub fn adjective_with(
         old_church_slavonic_core::adjective::decline(lexeme, cell),
         FormSourceKind::Explicit,
     )
+}
+
+fn long_only_adjective_form(
+    identity: LongOnlyAdjectiveIdentity,
+    cell: AdjectiveCell,
+) -> Result<FormSet, InflectionError> {
+    let prediction = old_church_slavonic_core::adjective::decline_long_only(identity, cell)?;
+    let rule_id = prediction.rule_id;
+    let trace = prediction.trace;
+    let primary = FormVariant {
+        text: orthography::canonical_display(&prediction.text)?,
+        romanization: None,
+    };
+    let source = FormSource::ReviewedGrammarTable { rule_id };
+    let analysis = FormAnalysis {
+        variants: vec![primary.clone()],
+        source: source.clone(),
+        evidence: vec![MetadataEvidence {
+            field: None,
+            provenance: MetadataProvenance::ReviewedGrammarTable,
+            source_feature: Some(format!(
+                "adjective:2-a:plenum-tantum:{}:{}:{}:{}",
+                cell.case.code(),
+                cell.number.code(),
+                cell.gender.code(),
+                cell.animacy.code()
+            )),
+            source_form: None,
+            crosscheck_features: Vec::new(),
+            authority: Some("Polivanova 2023 §§285 and 303–305".to_string()),
+        }],
+        trace: trace.clone(),
+    };
+    Ok(FormSet::new(
+        identity.canonical_lemma().to_string(),
+        primary,
+        Vec::new(),
+        source,
+        Vec::new(),
+        trace,
+        vec![analysis],
+    ))
+}
+
+/// Resolve one cell of the exhaustive source-listed `plenum tantum`
+/// adjective inventory.
+pub fn long_only_adjective(
+    identity: LongOnlyAdjectiveIdentity,
+    cell: AdjectiveCell,
+) -> Result<FormSet, InflectionError> {
+    long_only_adjective_form(identity, cell)
 }
 
 pub fn comparative_with(

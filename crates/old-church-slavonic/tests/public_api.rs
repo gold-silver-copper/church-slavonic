@@ -16,16 +16,16 @@ use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
     Adjective, AnaphoricEnvironment, Animacy, Case, Determiner, FiniteTense, FormSource, Gender,
     GenderedCell, InflectionError, InflectionWarning, InterrogativePronounIdentity,
-    IrregularAgreeingIdentity, Lemma, Noun, Number, Numeral, ParadigmLookupError, PartOfSpeech,
-    ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
-    PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
-    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, determiner,
-    determiner_paradigm, finite, finite_paradigm, gendered_numeral, gendered_pronoun, imperative,
-    imperative_paradigm, imperfect, infinitive, interrogative_pronoun, irregular_agreeing,
-    l_participle, l_participle_paradigm, long_adjective, noun, noun_paradigm, numeral,
-    participle_paradigm, past_active_participle, personal_pronoun, personal_pronoun_with, present,
-    present_paradigm, pronoun, reflexive_pronoun, regular_pronominal, relative_pronoun,
-    short_adjective, supine,
+    IrregularAgreeingIdentity, Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral,
+    ParadigmLookupError, PartOfSpeech, ParticipleKind, Person, PersonalPronounCell,
+    PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell, Script,
+    StandardPronominalIdentity, UngenderedCell, VariantPolicy, Verb, adjective_paradigm,
+    anaphoric_pronoun, aorist, determiner, determiner_paradigm, finite, finite_paradigm,
+    gendered_numeral, gendered_pronoun, imperative, imperative_paradigm, imperfect, infinitive,
+    interrogative_pronoun, irregular_agreeing, l_participle, l_participle_paradigm, long_adjective,
+    long_only_adjective, noun, noun_paradigm, numeral, participle_paradigm, past_active_participle,
+    personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
+    regular_pronominal, relative_pronoun, short_adjective, supine,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -138,6 +138,106 @@ fn ordinary_calls_take_direct_grammar_and_keep_structured_results() {
         supine("бости").expect("root supine").primary_text(),
         "бостъ"
     );
+}
+
+#[test]
+fn long_only_adjectives_have_complete_reviewed_long_paradigms() {
+    let selected = [
+        (
+            LongOnlyAdjectiveIdentity::InterrogativeKotoryi,
+            "которꙑи",
+            "котороую",
+        ),
+        (LongOnlyAdjectiveIdentity::OtherProkyi, "прокꙑи", "прокоую"),
+        (LongOnlyAdjectiveIdentity::OtherProchii, "прочии", "прочоую"),
+    ];
+    for (identity, lemma, expected_dual_genitive) in selected {
+        let mut cells = 0;
+        for cell in AdjectiveCell::all().filter(|cell| cell.form == AdjectiveForm::Long) {
+            let forms =
+                long_only_adjective(identity, cell.case, cell.number, cell.gender, cell.animacy)
+                    .expect("every long cell is represented");
+            assert_eq!(forms.lemma(), lemma);
+            assert!(matches!(
+                forms.source(),
+                FormSource::ReviewedGrammarTable { .. }
+            ));
+            assert_eq!(
+                forms.analyses()[0].evidence[0].authority.as_deref(),
+                Some("Polivanova 2023 §§285 and 303–305")
+            );
+            cells += 1;
+        }
+        assert_eq!(cells, 126);
+        assert_eq!(
+            long_adjective(
+                lemma,
+                Case::Genitive,
+                Number::Dual,
+                Gender::Masculine,
+                Animacy::Inanimate,
+            )
+            .expect("ordinary long-only routing")
+            .primary_text(),
+            expected_dual_genitive
+        );
+        assert!(matches!(
+            short_adjective(
+                lemma,
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Inanimate,
+            ),
+            Err(InflectionError::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    let source_spelling = long_adjective(
+        "которыи",
+        Case::Nominative,
+        Number::Plural,
+        Gender::Masculine,
+        Animacy::Inanimate,
+    )
+    .expect("source spelling alias");
+    assert_eq!(source_spelling.lemma(), "которꙑи");
+    assert_eq!(source_spelling.primary_text(), "котории");
+    assert!(
+        source_spelling
+            .warnings()
+            .contains(&InflectionWarning::LexicalAliasUsed {
+                canonical: "которꙑи".to_string(),
+            })
+    );
+
+    let explicit = AdjectiveLexeme {
+        lemma: "прочии".to_string(),
+        class: AdjectiveClass::Soft,
+    };
+    let long_cell = AdjectiveCell {
+        case: Case::Nominative,
+        number: Number::Singular,
+        gender: Gender::Neuter,
+        animacy: Animacy::Inanimate,
+        form: AdjectiveForm::Long,
+    };
+    assert_eq!(
+        adjective_with(&explicit, long_cell)
+            .expect("explicit long citation")
+            .primary_text(),
+        "прочеѥ"
+    );
+    assert!(matches!(
+        adjective_with(
+            &explicit,
+            AdjectiveCell {
+                form: AdjectiveForm::Short,
+                ..long_cell
+            },
+        ),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
 }
 
 #[test]

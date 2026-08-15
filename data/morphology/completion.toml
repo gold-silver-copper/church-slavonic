@@ -41,23 +41,23 @@ id = "ocs.adjective.positive"
 recension = "old-church-slavonic"
 category = "adjective"
 part_of_speech = "adjective"
-scope = "Hard/soft short and long positive adjective agreement."
+scope = "Hard/soft short and long positive adjective agreement, including the exhaustive long-only lexical inventory."
 profiles = ["abstract", "canonical-cyrillic"]
-features = ["form=short|long", "class=hard|soft", "case=7", "number=3", "gender=3", "animacy=2"]
-subtypes = ["hard-short", "hard-long", "soft-short", "soft-long"]
+features = ["form=short|long", "class=hard|soft", "defectivity=none|plenum-tantum", "case=7", "number=3", "gender=3", "animacy=2"]
+subtypes = ["hard-short", "hard-long", "soft-short", "soft-long", "plenum-tantum"]
 realization = "synthetic"
 state = "productive-complete"
 implementation_kind = "productive"
 rule_ids = ["ADJ-HARD-SHORT-01", "ADJ-HARD-LONG-01", "ADJ-SOFT-SHORT-01", "ADJ-SOFT-LONG-01"]
-sources = ["ut-ocs-online", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "docs/MORPHOLOGY_SPEC.md adjective rules"
-required_metadata = ["lemma", "adjective class", "short/long form", "agreement features", "animacy where contrastive"]
-valid_inventory = "Complete short/long case × number × gender agreement with explicit masculine accusative animacy."
-invalid_inventory = "Contradictory citation/class metadata and malformed orthography."
-implementation = ["crates/old-church-slavonic-core/src/adjective.rs"]
-tests = ["crates/old-church-slavonic-core/src/adjective.rs#long_and_soft_paradigms_are_distinct", "crates/old-church-slavonic-core/src/adjective.rs#hard_short_agreement_includes_dual"]
-evidence_status = "source-backed productive prediction"
-rationale = "All four closed positive agreement systems are implemented through one exhaustive typed inventory."
+sources = ["ut-ocs-online", "polivanova-fup-2023", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "Polivanova 2023 §§285 and 303–305; docs/MORPHOLOGY_SPEC.md adjective rules"
+required_metadata = ["lemma or typed long-only identity", "adjective class", "citation form and lexical defectivity", "short/long form", "agreement features", "animacy where contrastive"]
+valid_inventory = "Complete short/long case × number × gender agreement with explicit masculine accusative animacy. The source-exhaustive plenum-tantum identities которꙑи, прокꙑи, and прочии expose every long cell from their actual long citation form."
+invalid_inventory = "Every short cell of a plenum-tantum identity; contradictory citation/class metadata; productive comparative formation from a long-only citation; and malformed orthography."
+implementation = ["crates/old-church-slavonic-core/src/adjective.rs", "crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic-core/src/adjective.rs#long_and_soft_paradigms_are_distinct", "crates/old-church-slavonic-core/src/adjective.rs#hard_short_agreement_includes_dual", "crates/old-church-slavonic-core/src/adjective.rs#long_only_inventory_is_exhaustive_and_rejects_every_short_cell", "crates/old-church-slavonic-core/src/adjective.rs#prochii_profile_matches_polivanova_section_304", "crates/old-church-slavonic/tests/public_api.rs#long_only_adjectives_have_complete_reviewed_long_paradigms"]
+evidence_status = "source-backed productive prediction with exhaustive reviewed lexical defectivity"
+rationale = "All four positive agreement systems are implemented through one exhaustive typed inventory. Unambiguous hard long citations in -ꙑи/-ыи are parsed without inventing short lemmas; ambiguous soft -ии is interpreted as long only for Polivanova's complete typed three-item plenum-tantum list, preserving short божии and related citations."
 
 [[system]]
 id = "ocs.adjective.comparison"

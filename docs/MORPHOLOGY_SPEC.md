@@ -126,6 +126,17 @@ canonical masculine citation has the unambiguous `-ъ` versus `-ь/-и` shape. E
 table cells still win; this metadata is used only for a missing cell. A caller can
 always bypass citation-shape inference with an explicit `AdjectiveLexeme`.
 
+Polivanova §§285 and 305 exhaustively list three *plenum tantum* adjectives:
+`которыи`, `прокыи`, and `прочии` (canonical engine spellings `которꙑи`,
+`прокꙑи`, `прочии`). Their starting form is already the long masculine
+nominative singular. `LongOnlyAdjectiveIdentity` records those lexical facts;
+all long cells use the ordinary hard or soft compound endings, while every short
+cell is historically invalid. Generic explicit metadata likewise recognizes
+unambiguous hard long citations in `-ꙑи/-ыи`. Soft `-ии` remains lexically
+ambiguous (`прочии` is long-only, while `божии` is short-only), so only the
+exhaustive typed inventory interprets that ending as a long citation. A
+productive comparative still requires a short positive citation.
+
 ### Comparatives
 
 `ComparativeFormation` records a word-formation strategy independently of

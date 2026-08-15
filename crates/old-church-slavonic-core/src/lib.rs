@@ -16,6 +16,7 @@ pub mod result;
 pub mod trace;
 pub mod verb;
 
+pub use adjective::LongOnlyAdjectiveIdentity;
 pub use copula::{CopulaSeries, CopulaVariant, CopulaVariantStatus};
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
