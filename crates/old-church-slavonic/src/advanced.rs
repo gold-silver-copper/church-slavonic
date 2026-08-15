@@ -23,7 +23,7 @@ pub mod by_id {
         numeral_paradigm_by_id, participle_by_id, participle_citation_by_id,
         participle_paradigm_by_id, personal_pronoun_by_id, personal_pronoun_paradigm_by_id,
         present_paradigm_by_id, pronoun_by_id, pronoun_paradigm_by_id, supine_by_id,
-        verbal_noun_by_id,
+        verbal_noun_by_id, verbal_noun_form_by_id, verbal_noun_paradigm_by_id,
     };
 }
 
@@ -34,6 +34,7 @@ pub mod rules {
         adjective_with, comparative_paradigm_with, comparative_with, determiner_with,
         finite_verb_with, imperative_with, infinitive_with, l_participle_with, long_only_adjective,
         noun_with, participle_with, pre_superlative_with, pronominal_with, supine_with,
+        verbal_noun_with,
     };
     pub use old_church_slavonic_core::adjective::{
         AdjectiveLexeme, ComparativeLexeme, LongOnlyAdjectiveIdentity, productive_new_comparative,
@@ -63,6 +64,7 @@ pub mod metadata {
     pub use crate::resolver::{
         finite_verb_from_dictionary_metadata, imperative_from_dictionary_metadata,
         l_participle_from_dictionary_metadata, participle_from_dictionary_metadata,
+        verbal_noun_from_dictionary_metadata,
     };
 }
 

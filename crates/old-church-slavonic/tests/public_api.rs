@@ -9,7 +9,7 @@ use old_church_slavonic::advanced::rules::{
     ImperativeFormation, NounClass, NounLexeme, NumberRestriction, PronominalDeclension,
     PronominalLexeme, VerbClass, VerbLexeme, adjective_with, comparative_paradigm_with,
     comparative_with, finite_verb_with, imperative_with, noun_with, participle_with,
-    productive_new_comparative, pronominal_with,
+    productive_new_comparative, pronominal_with, verbal_noun_with,
 };
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
@@ -43,7 +43,8 @@ use old_church_slavonic::{
     numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
     ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
     personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun, reflexive_pronoun,
-    regular_pronominal, relative_pronoun, short_adjective, supine,
+    regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun_form,
+    verbal_noun_paradigm,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -3426,11 +3427,9 @@ fn every_reviewed_irregular_profile_routes_through_the_public_facade() {
         }
 
         match verb.verbal_noun() {
-            Ok(forms) if has_dictionary_identity => assert!(!forms.primary_text().is_empty()),
-            Err(InflectionError::UnsupportedCell {
-                cell: RequestedCell::VerbalNoun,
-                ..
-            }) => {}
+            Ok(forms) => assert!(!forms.primary_text().is_empty()),
+            Err(InflectionError::MissingLexicalMetadata { needed })
+                if needed == vec![MetadataField::VerbalNounStem] => {}
             other => panic!("{lemma}: unexpected verbal-noun result: {other:?}"),
         }
     }
@@ -3640,6 +3639,7 @@ fn exercise_public_surface(hostile: &str) {
     let _ = infinitive(hostile);
     let _ = supine(hostile);
     let _ = old_church_slavonic::verbal_noun(hostile);
+    let _ = verbal_noun_form(hostile, Case::Nominative, Number::Singular);
     let _ = old_church_slavonic::comparative_citation(hostile);
     let _ = old_church_slavonic::present_active_participle(hostile);
     let _ = old_church_slavonic::present_passive_participle(hostile);
@@ -3664,6 +3664,7 @@ fn exercise_public_surface(hostile: &str) {
     let _ = imperative_paradigm(hostile);
     let _ = l_participle_paradigm(hostile);
     let _ = participle_paradigm(hostile, ParticipleKind::PresentActive);
+    let _ = verbal_noun_paradigm(hostile);
 
     let _ = by_id::noun_by_id(hostile, noun_cell);
     let _ = by_id::adjective_by_id(hostile, adjective_cell);
@@ -3671,11 +3672,13 @@ fn exercise_public_surface(hostile: &str) {
     let _ = by_id::imperative_by_id(hostile, imperative_cell);
     let _ = by_id::l_participle_by_id(hostile, l_cell);
     let _ = by_id::participle_by_id(hostile, participle_cell);
+    let _ = by_id::verbal_noun_form_by_id(hostile, noun_cell);
     let _ = noun_with(&noun_lexeme, noun_cell);
     let _ = adjective_with(&adjective_lexeme, adjective_cell);
     let _ = finite_verb_with(&verb_lexeme, finite_cell);
     let _ = imperative_with(&verb_lexeme, imperative_cell);
     let _ = participle_with(&verb_lexeme, participle_cell);
+    let _ = verbal_noun_with(&verb_lexeme, noun_cell);
     let _ = participle_form(hostile, participle_cell);
     let _ = raw_features::dictionary_form_by_id(hostile, hostile);
     let _ = raw_features::dictionary_paradigm_by_id(hostile);
@@ -3709,6 +3712,105 @@ fn normalized_dictionary_metadata_remains_in_the_specialist_namespace() {
                 FormSource::DictionaryMetadataRule { .. }
             )
     }));
+}
+
+#[test]
+fn verbal_nouns_form_and_decline_without_conflating_derivation_with_participles() {
+    let citation =
+        old_church_slavonic::verbal_noun("благословити").expect("source-listed verbal noun");
+    assert_eq!(citation.primary_text(), "благословлѥниѥ");
+    assert_eq!(citation.source(), &FormSource::DictionaryTable);
+
+    let genitive = verbal_noun_form("благословити", Case::Genitive, Number::Singular)
+        .expect("declined listed verbal noun");
+    assert_eq!(genitive.primary_text(), "благословлѥниꙗ");
+    assert_eq!(
+        genitive.source(),
+        &FormSource::DictionaryMetadataRule {
+            rule_id: RuleId::VerbVerbalNoun,
+        }
+    );
+    assert!(
+        genitive
+            .warnings()
+            .contains(&InflectionWarning::PredictedNotDictionaryBacked)
+    );
+    assert!(genitive.analyses()[0].evidence.iter().any(|evidence| {
+        evidence.provenance == MetadataProvenance::ExactDictionaryTableCell
+            && evidence.source_form.as_deref() == Some("благословлѥниѥ")
+    }));
+
+    let paradigm = verbal_noun_paradigm("благословити").expect("complete derived paradigm");
+    assert_eq!(paradigm.len(), 21);
+    assert_eq!(paradigm.successes().count(), 21);
+    assert_eq!(
+        paradigm
+            .form(Case::Locative, Number::Plural)
+            .expect("locative plural")
+            .primary_text(),
+        "благословлѥниихъ"
+    );
+
+    // Exact retained-jer spelling wins over the productive -иѥ realization
+    // and remains the base of the rest of that lexical noun's paradigm.
+    assert_eq!(
+        old_church_slavonic::verbal_noun("възѧти")
+            .expect("listed retained-jer citation")
+            .primary_text(),
+        "възѧтьѥ"
+    );
+    assert_eq!(
+        verbal_noun_form("възѧти", Case::Genitive, Number::Singular)
+            .expect("declined retained-jer citation")
+            .primary_text(),
+        "възѧтьꙗ"
+    );
+
+    // The independent platform is the complete caller metadata for cases in
+    // which the source grammar licenses a noun without an attested passive
+    // participle (Polivanova 2023 §276 n.4 and §865).
+    let intransitive = VerbLexeme::builder("слути", VerbClass::Root)
+        .expect("builder")
+        .verbal_noun("слут")
+        .expect("independent nominal platform")
+        .build();
+    assert_eq!(
+        verbal_noun_with(
+            &intransitive,
+            NounCell {
+                case: Case::Instrumental,
+                number: Number::Dual,
+            },
+        )
+        .expect("productive explicit formation")
+        .primary_text(),
+        "слутиема"
+    );
+}
+
+#[test]
+fn verbal_noun_dictionary_metadata_and_raw_feature_routes_share_the_typed_rule() {
+    let id = only_id("благословити", PartOfSpeech::Verb);
+    let metadata = api_metadata::verb_metadata_by_id(&id).expect("typed dictionary metadata");
+    let generated = api_metadata::verbal_noun_from_dictionary_metadata(
+        &metadata,
+        NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+        },
+    )
+    .expect("past-passive platform can feed the nominal derivation");
+    assert_eq!(generated.primary_text(), "благословлѥниѥ");
+    assert_eq!(
+        generated.source(),
+        &FormSource::DictionaryMetadataRule {
+            rule_id: RuleId::VerbVerbalNoun,
+        }
+    );
+
+    let raw =
+        raw_features::form_by_id(&id, "verb:verbal-noun:dat:du").expect("typed raw-feature route");
+    assert_eq!(raw.primary_text(), "благословлѥниема");
 }
 
 #[test]

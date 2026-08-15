@@ -444,7 +444,9 @@ Authority: UT lesson 5 §22.4 and Polivanova 2023 §§281 and 922.
 present stem and first-singular allomorph, imperfect stem, formation, and variant
 policy, aorist main stem, independent sigmatic 2sg/3sg principal part, and
 formation, imperative stem and formation, and one
-stem/formation pair for each productive participle. Lexical aspect is metadata and
+stem/formation pair for each productive participle. A complete verbal-noun
+platform is independent metadata, with the past-passive stem and formation as a
+convenience fallback when they are available. Lexical aspect is metadata and
 never chooses an aorist.
 Root and irregular lexemes are explicit classes. A caller may use a productive
 past-system formation with a root only by declaring the needed stem and formation;
@@ -478,6 +480,44 @@ number endings to an explicitly supplied l-participle stem. Irregular/root supin
 stems remain dictionary-backed. Authority: UT lessons 2 and 7,
 <https://lrc.la.utexas.edu/eieol/ocsol/20#grammar_979> and
 <https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1023>.
+
+### V-VERBAL-NOUN-01 — productive derived soft-neuter noun
+
+This is the one productive derivational system included in the OCS completeness
+claim. UT lesson 8 §36 defines the verbal substantive from the past-passive
+platform plus tense `-ьj-` and assigns the result to the soft neuter `jo`-stem
+declension. Polivanova §§483 and 865 independently analyze `-аниѥ`, `-ениѥ`,
+and `-тиѥ` as a verbal platform plus a nominal suffix. Polivanova §407 excludes
+the result from the verb's finite and nominal representations, so the engine
+models a derived noun paradigm attached to a verb identity rather than a
+nonfinite verb cell.
+
+`V-VERBAL-NOUN-01` forms a canonical citation in `-иѥ`; `N-JO-N-SOFT-01`
+then supplies all seven cases in singular, dual, and plural. The fixed noun
+features are neuter and inanimate. A caller may supply either the complete
+platform before `-иѥ` or a past-passive stem plus `T`, `N`, or `En`. The
+independent input is essential: UT licenses the same formation for intransitive
+verbs without an actual passive participle, and Polivanova §276 n.4 cites
+`притѧжаниѥ` and `слутиѥ` where the corresponding participle is absent.
+
+Exact citation spelling always precedes the productive profile. In the locked
+dictionary, 191 citations seed complete 21-cell paradigms. Of the 134 citations
+with an independently extracted passive platform, 117 equal the productive
+`-иѥ` output and 17 retain `-ьѥ`; UT describes tense-jer realization as frequent,
+not exceptionless. Oblique or number-expanded cells derived from either exact
+citation spelling are predictions and carry the citation plus productive-rule
+evidence. The generated reverse index includes those declined forms.
+
+The boundary is intentionally narrow. The engine does not derive unrestricted
+agent, instrument, result, diminutive, or other nominal lexemes, and a verbal
+noun never proves that a passive participle was attested. LOVe's official verb
+schema likewise records verbal stems, aspect, arguments, and derivative links
+without treating verbal nouns as verb-paradigm cells. Lunt's accessible endpoint
+did not expose the relevant body text, so no rule claim depends on it.
+
+Authorities: UT OCS Online lesson 8 §36,
+<https://lrc.la.utexas.edu/eieol/ocsol/80>; Polivanova 2023 §§407,
+483, and 865 plus §276 n.4; official LMU LOVe schema reviewed 2026-08-15.
 
 ### Imperfect
 
@@ -824,6 +864,7 @@ Glagolitic remains exact-source-only rather than producing mixed-script forms.
 | present passive citation | remove `-имъ/-емъ/-омъ` | suffix directly selects `Im/Em/Om`; ambiguous or empty bases reject |
 | past active citation | remove `-ъ/-ь/-въ` | selects `Ush/Ish/Vush`; special j-loss and `ov → u` are never guessed from this source |
 | past passive citation | remove `-тъ/-нъ/-енъ` longest suffix first | selects `T/N/En`; empty bases reject |
+| verbal-noun citation | preserve the exact listed `-иѥ/-ьѥ` noun identity; otherwise reuse a complete past-passive platform | exact citation precedes production; every non-citation case-number cell is declined as soft neuter and labeled predictive; an independent caller platform covers nouns without an attested participle |
 
 Citation-participle contracts intentionally have no independent table cross-check in
 this snapshot. Leakage-controlled evaluation removes the citation target before
@@ -881,6 +922,9 @@ paradigms retain every valid result and every historically invalid cell.
   Rows with `error-unrecognized-form` are always rejected.
 - Declined participles cannot be safely assigned to a participle kind from this
   snapshot and are excluded with a counted reason; citation participles are kept.
+- Verbal nouns are nominal derivations, not an extra participle or absolutive.
+  Only the explicitly sourced `-ьj-/-иѥ` system is productive; exact retained-jer
+  spelling remains lexical evidence and all other nominal derivation is out of scope.
 - The adjective export flattens short and long table blocks without per-row form
   tags. The extractor uses the two sentinel-delimited blocks and fixture-tests that
   positional interpretation.

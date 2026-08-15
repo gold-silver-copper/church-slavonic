@@ -28,6 +28,11 @@ pub struct VerbStems {
     pub present_passive_participle: Option<String>,
     pub past_active_participle: Option<String>,
     pub past_passive_participle: Option<String>,
+    /// Complete nominal derivational platform before `-иѥ`.
+    ///
+    /// This is independent because OCS verbal nouns can exist without an
+    /// attested past passive participle.
+    pub verbal_noun: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -276,6 +281,16 @@ impl VerbLexemeBuilder {
         Ok(self)
     }
 
+    /// Supply the complete source-reviewed verbal-noun platform before `-иѥ`.
+    ///
+    /// For example, `знан` produces citation `знаниѥ`. This independent input
+    /// also represents intransitive formations for which no passive participle
+    /// is attested.
+    pub fn verbal_noun(mut self, stem: impl Into<String>) -> Result<Self, InflectionError> {
+        self.lexeme.stems.verbal_noun = Some(validated_stem(stem)?);
+        Ok(self)
+    }
+
     pub fn build(self) -> VerbLexeme {
         self.lexeme
     }
@@ -411,6 +426,70 @@ pub fn supine(lexeme: &VerbLexeme) -> Result<PredictedForm, InflectionError> {
         RuleId::VerbSupine,
         "replace the regular infinitive ending ти with the supine ending тъ",
     ))
+}
+
+/// Form and decline the productive OCS verbal noun in `-иѥ`.
+///
+/// UT OCS Online lesson 8 §36 defines the noun as a past-passive platform plus
+/// `-ьj-` and assigns it to the soft neuter `jo` declension. Polivanova 2023
+/// §§483 and 865 independently classify the same pattern as nominal
+/// derivation and show why an independent platform is necessary when the
+/// corresponding participle is unattested.
+pub fn verbal_noun(
+    lexeme: &VerbLexeme,
+    cell: crate::NounCell,
+) -> Result<PredictedForm, InflectionError> {
+    crate::orthography::canonical_display(&lexeme.lemma)?;
+    if let Some(result) = irregular_resolution(lexeme, VerbMorphologyCell::VerbalNoun(cell)) {
+        return result;
+    }
+
+    let (platform, formation_reason) = if let Some(stem) = lexeme.stems.verbal_noun.as_deref() {
+        (
+            required_stem(Some(stem), MetadataField::VerbalNounStem)?,
+            "form the deverbal soft-neuter citation from the independent nominal platform",
+        )
+    } else {
+        let stem = required_stem(
+            lexeme.stems.past_passive_participle.as_deref(),
+            MetadataField::VerbalNounStem,
+        )?;
+        let formation = lexeme.formations.past_passive_participle.ok_or_else(|| {
+            InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::VerbalNounStem],
+            }
+        })?;
+        let platform = match formation {
+            PastPassiveParticipleFormation::T => format!("{stem}т"),
+            PastPassiveParticipleFormation::N => format!("{stem}н"),
+            PastPassiveParticipleFormation::En => format!("{stem}ен"),
+        };
+        (
+            platform,
+            "form the deverbal soft-neuter citation from the typed past-passive platform",
+        )
+    };
+    let citation = format!("{platform}иѥ");
+    let noun = crate::noun::NounLexeme {
+        lemma: citation.clone(),
+        class: crate::NounClass::JoNeuterSoft,
+        gender: Gender::Neuter,
+        animacy: crate::Animacy::Inanimate,
+        number_restriction: crate::NumberRestriction::All,
+    };
+    let declined = crate::noun::decline(&noun, cell)?;
+    Ok(PredictedForm {
+        text: declined.text.clone(),
+        rule_id: RuleId::VerbVerbalNoun,
+        trace: std::iter::once(RuleStep {
+            rule_id: RuleId::VerbVerbalNoun,
+            before: lexeme.lemma.clone(),
+            after: citation,
+            reason: formation_reason,
+        })
+        .chain(declined.trace)
+        .collect(),
+    })
 }
 
 pub fn l_participle(
@@ -1218,6 +1297,86 @@ mod tests {
         assert_eq!(
             finite(&verb, cell).expect("explicit allomorph").text,
             "правлѭ"
+        );
+    }
+
+    #[test]
+    fn verbal_noun_has_the_complete_soft_neuter_paradigm() {
+        // UT OCS Online lesson 8 §36: verbal nouns use the soft neuter jo
+        // declension. Potentially unattested cells remain rule-licensed
+        // predictions rather than being omitted from the inventory.
+        let verb = VerbLexeme::builder("знати", VerbClass::IA1)
+            .expect("builder")
+            .verbal_noun("знан")
+            .expect("independent verbal-noun platform")
+            .build();
+        let expected = [
+            "знаниѥ",
+            "знаниꙗ",
+            "знанию",
+            "знаниѥ",
+            "знаниемь",
+            "знании",
+            "знаниѥ",
+            "знании",
+            "знанию",
+            "знаниема",
+            "знании",
+            "знаниема",
+            "знанию",
+            "знании",
+            "знаниꙗ",
+            "знаниь",
+            "знаниемъ",
+            "знаниꙗ",
+            "знании",
+            "знаниихъ",
+            "знаниꙗ",
+        ];
+        let actual = crate::NounCell::all()
+            .map(|cell| verbal_noun(&verb, cell).expect("licensed cell").text)
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn verbal_noun_accepts_independent_or_past_passive_platforms() {
+        // Polivanova 2023 §276 n.4 and §865: a derived noun need not imply an
+        // attested participle, hence the independent platform.
+        let intransitive = VerbLexeme::builder("слути", VerbClass::Root)
+            .expect("builder")
+            .verbal_noun("слут")
+            .expect("independent platform")
+            .build();
+        let citation = crate::NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+        };
+        assert_eq!(
+            verbal_noun(&intransitive, citation)
+                .expect("independent derivation")
+                .text,
+            "слутиѥ"
+        );
+
+        let from_participle = VerbLexeme::builder("знати", VerbClass::IA1)
+            .expect("builder")
+            .past_passive_participle("зна", PastPassiveParticipleFormation::N)
+            .expect("past-passive platform")
+            .build();
+        assert_eq!(
+            verbal_noun(&from_participle, citation)
+                .expect("shared platform")
+                .text,
+            "знаниѥ"
+        );
+
+        let missing = VerbLexeme::new("слути", VerbClass::Root);
+        assert_eq!(
+            verbal_noun(&missing, citation),
+            Err(InflectionError::MissingLexicalMetadata {
+                needed: vec![MetadataField::VerbalNounStem],
+            })
         );
     }
 

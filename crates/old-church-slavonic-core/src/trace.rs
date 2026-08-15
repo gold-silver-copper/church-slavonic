@@ -116,6 +116,7 @@ pub enum RuleId {
     VerbParticiplePresentPassive,
     VerbParticiplePastActive,
     VerbParticiplePastPassive,
+    VerbVerbalNoun,
 }
 
 impl RuleId {
@@ -235,6 +236,7 @@ impl RuleId {
             Self::VerbParticiplePresentPassive => "V-PTCP-PRES-PASS-01",
             Self::VerbParticiplePastActive => "V-PTCP-PAST-ACT-01",
             Self::VerbParticiplePastPassive => "V-PTCP-PAST-PASS-01",
+            Self::VerbVerbalNoun => "V-VERBAL-NOUN-01",
         }
     }
 }

@@ -480,21 +480,21 @@ category = "verbal-noun"
 part_of_speech = "verb"
 scope = "Source-defined productive verbal-noun formation and subsequent noun declension."
 profiles = ["abstract", "canonical-cyrillic"]
-features = ["formation=typed", "noun-class=typed", "case=7", "number=licensed", "gender=lexical"]
-subtypes = ["verbal-noun"]
+features = ["formation=typed-independent-platform-or-past-passive-platform", "noun-class=jo-neuter-soft", "case=7", "number=singular-dual-plural", "gender=neuter", "animacy=inanimate"]
+subtypes = ["n-platform", "t-platform", "en-platform", "independent-platform-without-attested-participle"]
 realization = "synthetic"
-state = "source-review-open"
-implementation_kind = "exact-only"
-rule_ids = ["OCS-VERBAL-NOUN-PENDING"]
-sources = ["ut-ocs-online", "polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs"]
-citation = "Facade exposes verbal_noun exact lookup; productive derivational boundary remains unspecified."
-required_metadata = ["independent suffix/stem contract", "derived noun class", "gender", "number inventory"]
-valid_inventory = "Only if target grammars treat the formation as a closed grammatical system."
-invalid_inventory = "Unrestricted lexical derivation."
-implementation = ["crates/old-church-slavonic/src/resolver.rs"]
-tests = ["crates/old-church-slavonic-dictionary/src/lib.rs#generated_form_index_covers_every_participle_system"]
-evidence_status = "sparse exact dictionary cells"
-gap = "Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts."
+state = "productive-complete"
+implementation_kind = "productive-derived-noun-plus-complete-noun-declension-with-exact-citation-precedence"
+rule_ids = ["V-VERBAL-NOUN-01", "N-JO-N-SOFT-01"]
+sources = ["ut-ocs-online", "polivanova-fup-2023", "love-lmu-ocs-verbs", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "UT OCS Online lesson 8 §36; Polivanova 2023 §§407, 483, and 865 plus §276 n.4; official LOVe verb-record schema reviewed 2026-08-15."
+required_metadata = ["exact listed citation, or independent complete nominal platform before -иѥ, or past-passive stem plus typed T/N/En formation", "fixed JoNeuterSoft noun class", "fixed neuter inanimate agreement", "complete case-number cell"]
+valid_inventory = "Exactly the source-defined -ьj-/-иѥ derived soft-neuter system: seven cases in singular, dual, and plural. Exact -ьѥ/-иѥ citations precede productive spelling; potentially unattested declined cells remain predictive."
+invalid_inventory = "Other agent, action, result, diminutive, or unrestricted lexical derivations; assuming that a derived noun proves an attested passive participle; treating the noun as a finite or nonfinite verb cell."
+implementation = ["crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic-core/src/noun.rs", "crates/old-church-slavonic/src/resolver.rs", "crates/old-church-slavonic/src/paradigm.rs", "crates/old-church-slavonic-dictionary/src/lib.rs"]
+tests = ["crates/old-church-slavonic-core/src/verb.rs#verbal_noun_has_the_complete_soft_neuter_paradigm", "crates/old-church-slavonic-core/src/verb.rs#verbal_noun_accepts_independent_or_past_passive_platforms", "crates/old-church-slavonic/src/resolver.rs#every_locked_verbal_noun_citation_seeds_all_twenty_one_cells", "crates/old-church-slavonic/src/resolver.rs#every_dictionary_past_passive_platform_reproduces_its_exact_verbal_noun", "crates/old-church-slavonic/tests/public_api.rs#verbal_nouns_form_and_decline_without_conflating_derivation_with_participles", "crates/old-church-slavonic-dictionary/src/lib.rs#generated_form_index_covers_declined_verbal_nouns"]
+evidence_status = "converged grammar contract; 191 exact citations each seed 21 cells; 134 passive-platform crosschecks split into 117 exact -иѥ matches and 17 retained-source -ьѥ spellings; generated reverse index includes declined forms"
+rationale = "UT explicitly defines productive formation and soft-neuter declension. Polivanova explicitly classifies it as nominal derivation rather than a verb representation, but independently defines the platform-plus-suffix patterns and proves that the noun can exist without an attested participle. The API therefore returns a derived noun paradigm attached to a verb identity, accepts an independent nominal platform, and does not generalize beyond this one grammar-defined derivational system."
 
 [[system]]
 id = "ocs.orthography.canonical"

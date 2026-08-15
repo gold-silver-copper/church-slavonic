@@ -717,6 +717,8 @@ pub enum VerbMorphologySystem {
     Supine,
     LParticiple,
     Participle(ParticipleKind),
+    /// The productive deverbal noun in `-иѥ`, declined as a soft neuter noun.
+    VerbalNoun,
 }
 
 /// A typed cell in the rule-only verb engine.
@@ -732,6 +734,7 @@ pub enum VerbMorphologyCell {
     Supine,
     LParticiple(LParticipleCell),
     Participle(ParticipleCell),
+    VerbalNoun(NounCell),
 }
 
 impl VerbMorphologyCell {
@@ -743,6 +746,7 @@ impl VerbMorphologyCell {
             Self::Supine => VerbMorphologySystem::Supine,
             Self::LParticiple(_) => VerbMorphologySystem::LParticiple,
             Self::Participle(cell) => VerbMorphologySystem::Participle(cell.kind),
+            Self::VerbalNoun(_) => VerbMorphologySystem::VerbalNoun,
         }
     }
 
@@ -754,6 +758,7 @@ impl VerbMorphologyCell {
             Self::Supine => RequestedCell::Supine,
             Self::LParticiple(cell) => RequestedCell::LParticiple(cell),
             Self::Participle(cell) => RequestedCell::Participle(cell),
+            Self::VerbalNoun(cell) => RequestedCell::VerbalNoun(cell),
         }
     }
 
@@ -767,6 +772,11 @@ impl VerbMorphologyCell {
             Self::Supine => "verb:supine".to_string(),
             Self::LParticiple(cell) => cell.key(),
             Self::Participle(cell) => cell.key(),
+            Self::VerbalNoun(cell) => format!(
+                "verb:verbal-noun:{}:{}",
+                cell.case.code(),
+                cell.number.code()
+            ),
         }
     }
 }
@@ -999,7 +1009,7 @@ pub enum RequestedCell {
     },
     Infinitive,
     Supine,
-    VerbalNoun,
+    VerbalNoun(NounCell),
     ComparativeCitation,
     RawFeature {
         feature: String,

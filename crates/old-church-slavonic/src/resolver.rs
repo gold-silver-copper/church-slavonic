@@ -3192,17 +3192,103 @@ pub fn supine_with(lexeme: &VerbLexeme) -> Result<FormSet, InflectionError> {
     )
 }
 
+fn verbal_noun_citation_cell() -> NounCell {
+    NounCell {
+        case: Case::Nominative,
+        number: Number::Singular,
+    }
+}
+
+/// Resolve the source-listed or productively formed citation (nominative
+/// singular) of an OCS verbal noun.
 pub fn verbal_noun(lemma: &str) -> Result<FormSet, InflectionError> {
-    resolve_queried_lemma(lemma, PartOfSpeech::Verb, verbal_noun_by_id)
+    verbal_noun_form(lemma, verbal_noun_citation_cell())
+}
+
+/// Resolve one declined cell of the derived soft-neuter noun.
+pub fn verbal_noun_form(lemma: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
+    resolve_queried_verb(lemma, |id, profile| {
+        verbal_noun_form_by_id_with_profile(id, cell, profile)
+    })
 }
 
 pub fn verbal_noun_by_id(id: &str) -> Result<FormSet, InflectionError> {
-    if reviewed_profile_from_id(id).is_some() {
-        return Err(InflectionError::unsupported(id, RequestedCell::VerbalNoun));
+    verbal_noun_form_by_id(id, verbal_noun_citation_cell())
+}
+
+pub fn verbal_noun_form_by_id(id: &str, cell: NounCell) -> Result<FormSet, InflectionError> {
+    verbal_noun_form_by_id_with_profile(id, cell, None)
+}
+
+fn verbal_noun_form_by_id_with_profile(
+    id: &str,
+    cell: NounCell,
+    supplied_profile: Option<ReviewedVerbProfile>,
+) -> Result<FormSet, InflectionError> {
+    if let Some(profile) = reviewed_profile_from_id(id) {
+        if supplied_profile.is_some_and(|supplied| supplied != profile) {
+            return Err(InflectionError::InvalidInput {
+                reason: format!("reviewed verb identity {id} conflicts with the supplied profile"),
+            });
+        }
+        return reviewed_verb_form(
+            profile,
+            profile.canonical_lemma(),
+            VerbMorphologyCell::VerbalNoun(cell),
+            |lexeme| old_church_slavonic_core::verb::verbal_noun(lexeme, cell),
+        )
+        .map_err(|error| error.with_lexeme_id(id));
     }
+
     ensure_pos(id, PartOfSpeech::Verb)?;
-    lookup::table_form(id, "verb:verbal-noun")
-        .ok_or_else(|| InflectionError::unsupported(id, RequestedCell::VerbalNoun))
+    let listed = lookup::table_form(id, "verb:verbal-noun")
+        .or_else(|| lookup::override_form(id, "verb:verbal-noun"));
+    if let Some(citation) = listed {
+        if cell == verbal_noun_citation_cell() {
+            return Ok(citation);
+        }
+        return decline_listed_verbal_noun(&citation, cell)
+            .map_err(|error| error.with_lexeme_id(id));
+    }
+
+    let profile = match supplied_profile {
+        Some(profile) => Some(profile),
+        None => reviewed_profile_for_dictionary_id(id)?,
+    };
+    if let Some(profile) = profile {
+        let record = lookup::find_lexeme(id)
+            .ok_or_else(|| InflectionError::unknown_id(id, Some(PartOfSpeech::Verb)))?;
+        return reviewed_verb_form(
+            profile,
+            record.lemma,
+            VerbMorphologyCell::VerbalNoun(cell),
+            |lexeme| old_church_slavonic_core::verb::verbal_noun(lexeme, cell),
+        )
+        .map_err(|error| error.with_lexeme_id(id));
+    }
+    let metadata = verb_metadata_by_id(id)?;
+    generate_verbal_noun_from_metadata(&metadata, cell).map_err(|error| error.with_lexeme_id(id))
+}
+
+pub fn verbal_noun_with(lexeme: &VerbLexeme, cell: NounCell) -> Result<FormSet, InflectionError> {
+    canonical_prediction(
+        &lexeme.lemma,
+        old_church_slavonic_core::verb::verbal_noun(lexeme, cell),
+        FormSourceKind::Explicit,
+    )
+}
+
+pub fn verbal_noun_paradigm_by_id(id: &str) -> Result<VerbalNounParadigm, InflectionError> {
+    let (_, lemma) = verb_identity_from_id(id)?;
+    Ok(build_verbal_noun_paradigm(id, &lemma))
+}
+
+pub(crate) fn build_verbal_noun_paradigm(id: &str, lemma: &str) -> VerbalNounParadigm {
+    VerbalNounParadigm {
+        lexeme_id: id.to_string(),
+        lemma: lemma.to_string(),
+        cells: cell_outcomes(id, NounCell::all(), verbal_noun_form_by_id),
+    }
 }
 
 pub fn closed_class(
@@ -3899,6 +3985,13 @@ pub fn form_by_id(id: &str, feature: &str) -> Result<FormSet, InflectionError> {
         ["verb", "infinitive"] if record.pos == "verb" => infinitive_by_id(id),
         ["verb", "supine"] if record.pos == "verb" => supine_by_id(id),
         ["verb", "verbal-noun"] if record.pos == "verb" => verbal_noun_by_id(id),
+        ["verb", "verbal-noun", case, number] if record.pos == "verb" => verbal_noun_form_by_id(
+            id,
+            NounCell {
+                case: parse_feature_case(case)?,
+                number: parse_feature_number(number)?,
+            },
+        ),
         _ => lookup::override_form(id, feature).ok_or_else(|| {
             InflectionError::unsupported(
                 id,
@@ -4212,6 +4305,35 @@ fn generate_participle_from_metadata(
     metadata_form_set(&metadata.lemma, analyses)
 }
 
+pub fn verbal_noun_from_dictionary_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    generate_verbal_noun_from_metadata(metadata, cell)
+}
+
+fn generate_verbal_noun_from_metadata(
+    metadata: &DictionaryVerbMetadata,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    if metadata.past_passive_participle.is_empty() {
+        return Err(InflectionError::MissingLexicalMetadata {
+            needed: vec![MetadataField::VerbalNounStem],
+        });
+    }
+    let mut analyses = Vec::new();
+    for analysis in &metadata.past_passive_participle {
+        let mut lexeme = metadata_verb(metadata);
+        lexeme.stems.past_passive_participle = Some(analysis.stem.value.clone());
+        lexeme.formations.past_passive_participle = Some(analysis.formation.value);
+        analyses.push(metadata_analysis(
+            old_church_slavonic_core::verb::verbal_noun(&lexeme, cell)?,
+            vec![used(&analysis.stem), used(&analysis.formation)],
+        ));
+    }
+    metadata_form_set(&metadata.lemma, analyses)
+}
+
 fn missing_participle<T>(
     stem: MetadataField,
     formation: MetadataField,
@@ -4346,6 +4468,101 @@ fn metadata_form_set(lemma: &str, analyses: Vec<FormAnalysis>) -> Result<FormSet
     Ok(FormSet::new(
         lemma, primary, variants, source, warnings, trace, analyses,
     ))
+}
+
+fn decline_listed_verbal_noun(
+    citations: &FormSet,
+    cell: NounCell,
+) -> Result<FormSet, InflectionError> {
+    let mut variants = Vec::new();
+    let mut variant_traces = Vec::new();
+    for citation in citations.variants() {
+        let noun = NounLexeme {
+            lemma: citation.text.clone(),
+            class: NounClass::JoNeuterSoft,
+            gender: Gender::Neuter,
+            animacy: Animacy::Inanimate,
+            number_restriction: NumberRestriction::All,
+        };
+        let predicted = old_church_slavonic_core::noun::decline(&noun, cell)?;
+        let variant = FormVariant {
+            text: predicted.text,
+            romanization: None,
+        };
+        if !variants.contains(&variant) {
+            variants.push(variant);
+            variant_traces.push(
+                std::iter::once(RuleStep {
+                    rule_id: RuleId::VerbVerbalNoun,
+                    before: citations.lemma().to_string(),
+                    after: citation.text.clone(),
+                    reason: "select the source-listed derived noun as the declensional citation",
+                })
+                .chain(predicted.trace)
+                .collect::<Vec<_>>(),
+            );
+        }
+    }
+    if variants.is_empty() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a listed verbal noun unexpectedly had no citation spelling".to_string(),
+        });
+    }
+
+    let mut evidence = citations
+        .analyses()
+        .iter()
+        .flat_map(|analysis| analysis.evidence.iter().cloned())
+        .collect::<Vec<_>>();
+    for (index, citation) in citations.variants().enumerate() {
+        evidence.push(MetadataEvidence {
+            field: Some(MetadataField::VerbalNounStem),
+            provenance: match citations.source() {
+                FormSource::ManualOverride => MetadataProvenance::CuratedGrammarOverride,
+                _ => MetadataProvenance::ExactDictionaryTableCell,
+            },
+            source_feature: Some(format!("verb:verbal-noun:variant:{index}")),
+            source_form: Some(citation.text.clone()),
+            crosscheck_features: Vec::new(),
+            authority: Some(
+                match citations.source() {
+                    FormSource::ManualOverride => "data/overrides.tsv",
+                    _ => "wiktionary-kaikki-2026-07-06",
+                }
+                .to_string(),
+            ),
+        });
+    }
+    evidence.push(MetadataEvidence {
+        field: None,
+        provenance: MetadataProvenance::ProductiveRuleOutput,
+        source_feature: Some(RuleId::VerbVerbalNoun.code().to_string()),
+        source_form: None,
+        crosscheck_features: Vec::new(),
+        authority: Some(
+            "UT OCS Online lesson 8 §36; Polivanova 2023 §§407, 483, and 865".to_string(),
+        ),
+    });
+    let trace = if variant_traces.len() == 1 {
+        variant_traces.remove(0)
+    } else {
+        Vec::new()
+    };
+    let analysis = FormAnalysis {
+        variants,
+        source: FormSource::DictionaryMetadataRule {
+            rule_id: RuleId::VerbVerbalNoun,
+        },
+        evidence,
+        trace,
+    };
+    let mut result = metadata_form_set(citations.lemma(), vec![analysis])?;
+    for warning in citations.warnings() {
+        if !result.warnings().contains(warning) {
+            result.add_warning(warning.clone());
+        }
+    }
+    Ok(result)
 }
 
 fn ensure_pos(id: &str, expected: PartOfSpeech) -> Result<(), InflectionError> {
@@ -4545,5 +4762,91 @@ fn parse_restriction(value: &str) -> NumberRestriction {
         "du" => NumberRestriction::DualOnly,
         "pl" => NumberRestriction::PluralOnly,
         _ => NumberRestriction::All,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::BTreeSet;
+
+    #[test]
+    fn every_locked_verbal_noun_citation_seeds_all_twenty_one_cells() {
+        let rows = crate::dictionary::FORMS
+            .iter()
+            .filter(|row| row.feature == "verb:verbal-noun")
+            .collect::<Vec<_>>();
+        let ids = rows
+            .iter()
+            .map(|row| row.lexeme_id)
+            .collect::<BTreeSet<_>>();
+        assert_eq!(rows.len(), 191, "locked exact verbal-noun row count");
+        assert_eq!(ids.len(), 191, "locked verbal-noun identity count");
+
+        for row in rows {
+            for cell in NounCell::all() {
+                let forms = verbal_noun_form_by_id(row.lexeme_id, cell)
+                    .unwrap_or_else(|error| panic!("{} {cell:?}: {error}", row.lexeme_id));
+                let expected = old_church_slavonic_core::noun::decline(
+                    &NounLexeme {
+                        lemma: row.form.to_string(),
+                        class: NounClass::JoNeuterSoft,
+                        gender: Gender::Neuter,
+                        animacy: Animacy::Inanimate,
+                        number_restriction: NumberRestriction::All,
+                    },
+                    cell,
+                )
+                .expect("source-listed citation is a valid soft-neuter noun");
+                assert!(
+                    forms.texts().any(|text| text == expected.text),
+                    "{} {cell:?}: expected {} in {:?}",
+                    row.lexeme_id,
+                    expected.text,
+                    forms.texts().collect::<Vec<_>>()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn every_dictionary_past_passive_platform_reproduces_its_exact_verbal_noun() {
+        let ids = crate::dictionary::FORMS
+            .iter()
+            .filter(|row| row.feature == "verb:verbal-noun")
+            .map(|row| row.lexeme_id)
+            .collect::<BTreeSet<_>>();
+        let citation = verbal_noun_citation_cell();
+        let mut checked = 0;
+        let mut exact_spelling = 0;
+        let mut retained_jer_spelling = 0;
+        for id in ids {
+            let metadata = verb_metadata_by_id(id).expect("validated generated metadata");
+            if metadata.past_passive_participle.is_empty() {
+                continue;
+            }
+            let exact = lookup::table_form(id, "verb:verbal-noun").expect("locked exact citation");
+            let generated = generate_verbal_noun_from_metadata(&metadata, citation)
+                .expect("complete past-passive platform");
+            let generated = generated.texts().collect::<Vec<_>>();
+            let exact = exact.texts().collect::<Vec<_>>();
+            if generated == exact {
+                exact_spelling += 1;
+            } else {
+                assert_eq!(generated.len(), exact.len(), "{id}");
+                for (productive, listed) in generated.into_iter().zip(exact) {
+                    assert_eq!(
+                        productive.strip_suffix("иѥ"),
+                        listed.strip_suffix("ьѥ"),
+                        "{id}: only the source-licensed tense-jer realization may differ"
+                    );
+                }
+                retained_jer_spelling += 1;
+            }
+            checked += 1;
+        }
+        assert_eq!(checked, 134, "locked independently crosschecked platforms");
+        assert_eq!(exact_spelling, 117, "locked canonical -иѥ spellings");
+        assert_eq!(retained_jer_spelling, 17, "locked retained -ьѥ spellings");
     }
 }

@@ -5,7 +5,7 @@ use crate::{
     FiniteVerbParadigm, FormSet, Gender, GenderedNumeralParadigm, GenderedPronounParadigm,
     ImperativeParadigm, InflectionError, LParticipleParadigm, NounParadigm, Number,
     NumeralParadigm, PartOfSpeech, ParticipleKind, ParticipleParadigm, Person,
-    PersonalPronounParadigm, PronounParadigm, VerbParadigm, lookup, resolver,
+    PersonalPronounParadigm, PronounParadigm, VerbParadigm, VerbalNounParadigm, lookup, resolver,
 };
 use old_church_slavonic_core::{
     AdjectiveCell, DeterminerCell, FiniteVerbCell, GenderedCell, ImperativeCell, LParticipleCell,
@@ -440,9 +440,19 @@ impl Verb {
         resolver::supine_by_id(self.id())
     }
 
-    /// Resolve a dictionary-listed verbal noun.
+    /// Resolve a source-listed or productively formed verbal-noun citation.
     pub fn verbal_noun(&self) -> Result<FormSet, InflectionError> {
         resolver::verbal_noun_by_id(self.id())
+    }
+
+    /// Resolve one declined case-number cell of the derived verbal noun.
+    pub fn verbal_noun_form(&self, case: Case, number: Number) -> Result<FormSet, InflectionError> {
+        resolver::verbal_noun_form_by_id(self.id(), NounCell { case, number })
+    }
+
+    /// Enumerate all 21 soft-neuter cells of the derived verbal noun.
+    pub fn verbal_noun_paradigm(&self) -> VerbalNounParadigm {
+        resolver::build_verbal_noun_paradigm(self.id(), self.lemma())
     }
 
     /// Resolve one gender-number l-participle cell.

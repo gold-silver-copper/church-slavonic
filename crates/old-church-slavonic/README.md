@@ -141,7 +141,7 @@ assert!(matches!(forms.source(), FormSource::ExplicitMetadataRule { .. }));
 | Numerals | `numeral`, `cardinal_numeral_identity`, `compound_cardinal`, `ordinal_numeral`, `collective_numeral`, ordinal and collective paradigms, typed cardinal paradigms, `Numeral` | Reviewed cardinals through 10,000, all ten simple ordinal adjective paradigms, and inherited collectives two through ten with typed agreement, government, evidence, correlated alternatives, and explicit reconstruction warnings; exact fallback for other numeral types |
 | Finite verbs | `present`, `imperfect`, `aorist`, `finite`, `Verb` | Tables, independently sourced metadata, reviewed overrides |
 | Imperatives | `imperative` | Six historically represented person-number cells |
-| Non-finite forms | `infinitive`, `supine`, `verbal_noun`, `l_participle` | Table or independently supported rule |
+| Non-finite and derived forms | `infinitive`, `supine`, `l_participle`; `verbal_noun`, `verbal_noun_form`, `verbal_noun_paradigm` | Table or independently supported rule; verbal nouns are derived soft-neuter nouns with complete case/number inflection |
 | Participles | four named binders and `Participle` | Four separate verbal formations with adjective agreement |
 
 The crate root is the ordinary API and includes a restrained `prelude`.

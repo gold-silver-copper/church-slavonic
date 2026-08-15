@@ -252,6 +252,8 @@ pub enum MetadataField {
     PastActiveParticipleFormation,
     PastPassiveParticipleStem,
     PastPassiveParticipleFormation,
+    /// Complete deverbal platform before the productive suffix `-иѥ`.
+    VerbalNounStem,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1319,6 +1319,23 @@ impl LParticipleParadigm {
 
 paradigm_common!(LParticipleParadigm, LParticipleCell);
 
+/// Seven cases by three numbers for one productively derived verbal noun.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct VerbalNounParadigm {
+    pub(crate) lexeme_id: String,
+    pub(crate) lemma: String,
+    pub(crate) cells: Vec<CellOutcome<NounCell>>,
+}
+
+impl VerbalNounParadigm {
+    /// Return one declined verbal-noun form or distinguish a failed row.
+    pub fn form(&self, case: Case, number: Number) -> Result<&FormSet, ParadigmLookupError> {
+        forms_for(&self.cells, &NounCell { case, number })
+    }
+}
+
+paradigm_common!(VerbalNounParadigm, NounCell);
+
 /// Full adjective agreement for one verbal participle kind.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ParticipleParadigm {

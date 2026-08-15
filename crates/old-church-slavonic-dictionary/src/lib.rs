@@ -429,6 +429,15 @@ fn generated_form_index() -> &'static BTreeMap<String, Vec<DictionaryFormMatch>>
                             add_generated_outcomes(paradigm.iter(), &mut add, |cell| cell.key());
                         }
                     }
+                    if let Ok(paradigm) = by_id::verbal_noun_paradigm_by_id(&id) {
+                        add_generated_outcomes(paradigm.iter(), &mut add, |cell| {
+                            format!(
+                                "verb:verbal-noun:{}:{}",
+                                cell.case.code(),
+                                cell.number.code()
+                            )
+                        });
+                    }
                 }
                 _ => {}
             }
@@ -843,5 +852,19 @@ mod tests {
                 "missing {feature_name} analysis for {form}"
             );
         }
+    }
+
+    #[test]
+    fn generated_form_index_covers_declined_verbal_nouns() {
+        let id = "благословити|verb|9d3c95ce56eb87f0";
+        let form = "благословлѥниꙗ";
+        assert!(
+            analyze_generated_form(form)
+                .expect("generated-form analysis")
+                .iter()
+                .any(|analysis| analysis.lexeme_id == id
+                    && analysis.feature == "verb:verbal-noun:gen:sg"),
+            "missing generated verbal-noun analysis for {form}"
+        );
     }
 }

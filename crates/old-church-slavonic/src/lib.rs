@@ -124,7 +124,7 @@
 //! | Other closed classes | [`pronoun`] and numeral fallbacks through [`Numeral`] | Exact pinned dictionary cells outside the reviewed productive and exceptional systems |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Exact table, manual override, closed reviewed irregular profile, then independently sourced stem/formation metadata; competing profiles remain separate analyses |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
-//! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
+//! | Non-finite and derived forms | [`infinitive`], [`supine`], [`l_participle`]; [`verbal_noun`], [`verbal_noun_form`], [`verbal_noun_paradigm`] | Table or independently supported productive rule; verbal nouns are complete derived soft-neuter paradigms |
 //! | Participles | named participle functions and [`Participle`] | Four independently represented systems with adjective agreement |
 //! | Analytic constructions | [`phrases`] | Typed tokens retain independent word-level variants and provenance |
 //!
@@ -180,7 +180,7 @@ pub use paradigm::{
     FractionalNumeralParadigm, GenderedNumeralParadigm, GenderedPronounParadigm,
     ImperativeParadigm, IndefiniteNumeralParadigm, LParticipleParadigm, NounParadigm,
     NumeralParadigm, OrdinalNumeralParadigm, ParadigmLookupError, ParticipleParadigm,
-    PersonalPronounParadigm, PronounParadigm, VerbParadigm,
+    PersonalPronounParadigm, PronounParadigm, VerbParadigm, VerbalNounParadigm,
 };
 
 /// Rule traces and source-evidence diagnostics.
@@ -212,7 +212,7 @@ pub mod prelude {
         PersonalPronounParadigm, Pronoun, PronounFormSelection, PronounParadigm, Script,
         StandardPronominalIdentity, UniqueVerbFamilyMember, UniqueVerbIdentity,
         UniqueVerbProfileKind, VariantPolicy, VariantSelectionError, Verb, VerbParadigm,
-        adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+        VerbalNounParadigm, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
         cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
         collective_numeral_identity, collective_numeral_paradigm,
         collective_numeral_paradigm_identity, comparative_citation, compound_cardinal,
@@ -236,6 +236,7 @@ pub mod prelude {
         personal_pronoun_with, present, present_active_participle, present_paradigm,
         present_passive_participle, pronoun, pronoun_paradigm, reflexive_pronoun,
         regular_pronominal, relative_pronoun, short_adjective, supine, verbal_noun,
+        verbal_noun_form, verbal_noun_paradigm,
     };
 }
 
@@ -1523,7 +1524,7 @@ pub fn supine(lemma: &str) -> InflectionResult {
     resolver::supine(lemma)
 }
 
-/// Return a dictionary-listed verbal noun.
+/// Return a source-listed or productively formed verbal-noun citation.
 ///
 /// ```
 /// let forms = old_church_slavonic::verbal_noun("благословити")?;
@@ -1532,6 +1533,37 @@ pub fn supine(lemma: &str) -> InflectionResult {
 /// ```
 pub fn verbal_noun(lemma: &str) -> InflectionResult {
     resolver::verbal_noun(lemma)
+}
+
+/// Decline one case-number cell of the verbal noun derived from a verb.
+///
+/// ```
+/// use old_church_slavonic::{verbal_noun_form, Case, Number};
+/// assert_eq!(
+///     verbal_noun_form("благословити", Case::Genitive, Number::Singular)?
+///         .primary_text(),
+///     "благословлѥниꙗ",
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn verbal_noun_form(lemma: &str, case: Case, number: Number) -> InflectionResult {
+    resolver::verbal_noun_form(lemma, old_church_slavonic_core::NounCell { case, number })
+}
+
+/// Enumerate all seven cases in singular, dual, and plural for a verbal noun.
+///
+/// ```
+/// use old_church_slavonic::{verbal_noun_paradigm, Case, Number};
+/// let paradigm = verbal_noun_paradigm("благословити")?;
+/// assert_eq!(paradigm.len(), 21);
+/// assert_eq!(
+///     paradigm.form(Case::Genitive, Number::Singular)?.primary_text(),
+///     "благословлѥниꙗ",
+/// );
+/// # Ok::<(), Box<dyn std::error::Error>>(())
+/// ```
+pub fn verbal_noun_paradigm(lemma: &str) -> Result<VerbalNounParadigm, InflectionError> {
+    Verb::resolve(lemma).map(|verb| verb.verbal_noun_paradigm())
 }
 
 /// Return dictionary-listed comparative citations.
