@@ -116,15 +116,18 @@
 //! | Nouns | [`noun`], [`Noun`], [`noun_paradigm`] | Table first; dictionary metadata or explicit rules when supported |
 //! | Adjectives | [`long_adjective`], [`short_adjective`], [`Adjective`] | Table first; hard/soft metadata rules; exact comparative citations plus productive comparison through [`advanced::rules`] |
 //! | Personal/reflexive/anaphoric pronouns | [`personal_pronoun_with`], [`reflexive_pronoun`], [`anaphoric_pronoun`] and compatible ordinary handles | Complete reviewed closed grammar tables with typed clitic/context selection |
-//! | Other closed classes | [`determiner`], [`pronoun`], [`gendered_pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells only |
+//! | Regular pronominal pronouns | [`gendered_pronoun`] and [`Pronoun`] | Reviewed hard, soft, and j-stem class `2/p`; explicit OOV metadata through [`advanced::rules`] |
+//! | Other closed classes | [`determiner`], [`pronoun`], [`numeral`], [`gendered_numeral`] | Exact pinned dictionary cells only while exceptional inventories remain under review |
 //! | Finite verbs | [`present`], [`imperfect`], [`aorist`], [`finite`] | Table first; independently sourced stem/formation metadata; reviewed overrides |
 //! | Imperatives | [`imperative`] | Six historical person-number cells; invalid cells fail explicitly |
 //! | Non-finite forms | [`infinitive`], [`supine`], [`verbal_noun`], [`l_participle`] | Table or independently supported productive rule |
 //! | Participles | named participle functions and [`Participle`] | Four independently represented systems with adjective agreement |
 //! | Analytic constructions | [`phrases`] | Typed tokens retain independent word-level variants and provenance |
 //!
-//! Exact table cells take precedence over dictionary principal-part rules and
-//! reviewed overrides. Explicit caller metadata is a separate evidence class.
+//! Open-class exact table cells take precedence over dictionary principal-part
+//! rules and reviewed overrides. Reviewed closed-class identities instead own
+//! their complete grammar tables; diagnostic raw access preserves copied source
+//! tables. Explicit caller metadata is a separate evidence class.
 //! Unsupported systems never fall back to another language or a plausible-looking
 //! substitute. See [`advanced`] for stable IDs, explicit rules, dictionary metadata,
 //! and diagnostic raw-feature access.

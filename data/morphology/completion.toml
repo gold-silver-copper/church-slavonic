@@ -138,18 +138,18 @@ profiles = ["canonical-cyrillic"]
 features = ["subtype=7", "case=7", "number=3", "gender=optional", "animacy=optional"]
 subtypes = ["demonstrative", "relative", "interrogative", "indefinite", "negative", "adjectival", "substantival"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "closed-exact-partial"
-rule_ids = ["OCS-PRONOUN-OTHER-PENDING"]
-sources = ["polivanova-fup-2023", "lunt-ocs-grammar-2001", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "docs/API_DESIGN.md closed-class inventory audit"
+state = "partial"
+implementation_kind = "productive-and-closed-exact-partial"
+rule_ids = ["PRON-2P-HARD-01", "PRON-2P-SOFT-01", "PRON-2P-J-01", "PRON-2P-VELAR-01", "OCS-PRONOUN-OTHER-EXCEPTIONAL-PENDING"]
+sources = ["polivanova-fup-2023", "punco-lmu-reference-grammar", "english-wiktionary-ocs-kaikki-2026-08-07"]
+citation = "Polivanova 2023 §§287–299 and 314–318; LMU OCS Reference Grammar §2.2.3"
 required_metadata = ["stable lexical identity", "pronoun subtype", "declension/profile", "suppletive cells"]
-valid_inventory = "Not yet source-complete."
-invalid_inventory = "Must be established per closed subtype."
-implementation = ["crates/old-church-slavonic/src/resolver.rs"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#closed_classes_remain_lossless_in_the_advanced_dictionary_api"]
-evidence_status = "partial exact dictionary evidence"
-gap = "Establish complete closed-class inventories, productive relationships, clitics, and irregular paradigms."
+valid_inventory = "All 54 nonvocative gendered cells for regular hard, soft, and j-stem class 2/p pronouns; reviewed dictionary identities тъ, онъ/она/оно, вашь, нашь, мои, твои, and свои."
+invalid_inventory = "All regular class 2/p vocatives; person-indexed or ungendered requests for agreeing identities."
+implementation = ["crates/old-church-slavonic-core/src/pronoun.rs", "crates/old-church-slavonic/src/resolver.rs"]
+tests = ["crates/old-church-slavonic-core/src/pronoun.rs#regular_pronominal_goldens_cover_every_nonvocative_cell", "crates/old-church-slavonic/tests/public_api.rs#regular_pronominal_pronouns_use_reviewed_grammar_before_source_tables"]
+evidence_status = "complete regular class 2/p terminal table and partial exceptional closed inventories"
+gap = "Complete иже and the derived ni-/ně-/particle families; special вьсь/сиць; unique сь, къто/чьто, and кꙑи; then allocate the remaining class 2/p identities across pronoun, determiner, and numeral systems."
 
 [[system]]
 id = "ocs.determiner"

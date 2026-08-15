@@ -6,9 +6,10 @@ use old_church_slavonic::advanced::metadata as api_metadata;
 use old_church_slavonic::advanced::raw_features;
 use old_church_slavonic::advanced::rules::{
     AdjectiveClass, AdjectiveLexeme, AoristFormation, ComparativeFormation, ComparativeLexeme,
-    ImperativeFormation, NounClass, NounLexeme, NumberRestriction, VerbClass, VerbLexeme,
-    adjective_with, comparative_paradigm_with, comparative_with, finite_verb_with, imperative_with,
-    noun_with, participle_with, productive_new_comparative,
+    ImperativeFormation, NounClass, NounLexeme, NumberRestriction, PronominalDeclension,
+    PronominalLexeme, VerbClass, VerbLexeme, adjective_with, comparative_paradigm_with,
+    comparative_with, finite_verb_with, imperative_with, noun_with, participle_with,
+    productive_new_comparative, pronominal_with,
 };
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
@@ -591,7 +592,95 @@ fn dictionary_form_pages_route_to_intrinsic_pronoun_identities() {
         gendered_pronoun("онъ", Case::Nominative, Number::Singular, Gender::Masculine)
             .expect("independent demonstrative");
     assert_eq!(demonstrative.primary_text(), "онъ");
-    assert_eq!(demonstrative.source(), &FormSource::DictionaryTable);
+    assert_eq!(
+        demonstrative.source(),
+        &FormSource::ReviewedGrammarTable {
+            rule_id: RuleId::PronounPronominalHard
+        }
+    );
+}
+
+#[test]
+fn regular_pronominal_pronouns_use_reviewed_grammar_before_source_tables() {
+    let goldens = [
+        ("тъ", "тоѩ", "тъ"),
+        ("онъ", "оноѩ", "онъ"),
+        ("она", "оноѩ", "онъ"),
+        ("оно", "оноѩ", "онъ"),
+        ("вашь", "вашеѩ", "вашь"),
+        ("нашь", "нашеѩ", "нашь"),
+        ("мои", "моѥѩ", "мои"),
+        ("твои", "твоѥѩ", "твои"),
+        ("свои", "своѥѩ", "свои"),
+    ];
+    for (lemma, expected, canonical) in goldens {
+        let result = gendered_pronoun(lemma, Case::Genitive, Number::Singular, Gender::Feminine)
+            .expect("regular pronominal identity");
+        assert_eq!(result.lemma(), canonical, "{lemma}");
+        assert_eq!(result.primary_text(), expected, "{lemma}");
+        assert!(matches!(
+            result.source(),
+            FormSource::ReviewedGrammarTable { .. }
+        ));
+        assert_eq!(
+            result.analyses()[0].evidence[0].provenance,
+            MetadataProvenance::ReviewedGrammarTable
+        );
+        assert_eq!(result.analyses()[0].evidence[0].source_form, None);
+        assert!(
+            result
+                .warnings()
+                .contains(&InflectionWarning::LexicalAliasUsed {
+                    canonical: canonical.to_string(),
+                })
+                == (lemma != canonical)
+        );
+    }
+
+    let on_id = only_id("онъ", PartOfSpeech::Pronoun);
+    let cell = GenderedCell {
+        case: Case::Nominative,
+        number: Number::Singular,
+        gender: Gender::Masculine,
+    };
+    assert_eq!(
+        raw_features::closed_class_by_id(&on_id, PartOfSpeech::Pronoun, cell.closed_class())
+            .expect("raw dictionary diagnostic")
+            .source(),
+        &FormSource::DictionaryTable
+    );
+
+    assert!(matches!(
+        pronoun("тъ", Case::Nominative, Number::Singular),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+    assert!(matches!(
+        personal_pronoun("тъ", Case::Nominative, Number::Singular, Person::Third),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+    assert!(matches!(
+        gendered_pronoun("тъ", Case::Vocative, Number::Singular, Gender::Masculine),
+        Err(InflectionError::HistoricallyInvalidCell { .. })
+    ));
+}
+
+#[test]
+fn explicit_pronominal_rules_support_oov_lexemes_and_trace_velar_palatalization() {
+    let lexeme = PronominalLexeme {
+        lemma: "такъ".to_string(),
+        declension: PronominalDeclension::Hard,
+    };
+    let form = pronominal_with(&lexeme, Case::Nominative, Number::Plural, Gender::Masculine)
+        .expect("explicit regular pronominal lexeme");
+    assert_eq!(form.primary_text(), "таци");
+    assert_eq!(
+        form.source(),
+        &FormSource::ExplicitMetadataRule {
+            rule_id: RuleId::PronounPronominalHard
+        }
+    );
+    assert_eq!(form.trace().len(), 2);
+    assert_eq!(form.trace()[0].rule_id, RuleId::PronounPronominalVelar);
 }
 
 #[test]

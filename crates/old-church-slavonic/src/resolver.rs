@@ -405,6 +405,91 @@ pub fn anaphoric_pronoun(
     )
 }
 
+/// Decline a regular pronominal lexeme from explicit caller-supplied class
+/// metadata, independently of the bundled dictionary.
+///
+/// ```
+/// use old_church_slavonic::{Case, Gender, Number};
+/// use old_church_slavonic::advanced::rules::{
+///     PronominalDeclension, PronominalLexeme, pronominal_with,
+/// };
+///
+/// let lexeme = PronominalLexeme {
+///     lemma: "такъ".to_string(),
+///     declension: PronominalDeclension::Hard,
+/// };
+/// let form = pronominal_with(
+///     &lexeme, Case::Nominative, Number::Plural, Gender::Masculine,
+/// )?;
+/// assert_eq!(form.primary_text(), "таци");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn pronominal_with(
+    lexeme: &PronominalLexeme,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<FormSet, InflectionError> {
+    canonical_prediction(
+        &lexeme.lemma,
+        old_church_slavonic_core::pronoun::decline_pronominal(lexeme, case, number, gender),
+        FormSourceKind::Explicit,
+    )
+}
+
+fn standard_pronominal_pronoun(
+    identity: StandardPronominalIdentity,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<FormSet, InflectionError> {
+    let prediction = old_church_slavonic_core::pronoun::decline_pronominal(
+        &identity.lexeme(),
+        case,
+        number,
+        gender,
+    )?;
+    let rule_id = prediction.rule_id;
+    let trace = prediction.trace;
+    let primary = FormVariant {
+        text: orthography::canonical_display(&prediction.text)?,
+        romanization: None,
+    };
+    let source = FormSource::ReviewedGrammarTable { rule_id };
+    let analysis = FormAnalysis {
+        variants: vec![primary.clone()],
+        source: source.clone(),
+        evidence: vec![MetadataEvidence {
+            field: None,
+            provenance: MetadataProvenance::ReviewedGrammarTable,
+            source_feature: Some(format!(
+                "pronoun:2-p:{}:{}:{}:{}",
+                identity.declension().code(),
+                case.code(),
+                number.code(),
+                gender.code()
+            )),
+            // The authorities license the productive terminal combination;
+            // do not mislabel the generated surface as a corpus attestation.
+            source_form: None,
+            crosscheck_features: Vec::new(),
+            authority: Some(
+                "Polivanova 2023 §§287–299, 314–318; LMU OCS Reference Grammar §2.2.3".to_string(),
+            ),
+        }],
+        trace: trace.clone(),
+    };
+    Ok(FormSet::new(
+        orthography::canonical_display(identity.canonical_lemma())?,
+        primary,
+        Vec::new(),
+        source,
+        Vec::new(),
+        trace,
+        vec![analysis],
+    ))
+}
+
 fn reviewed_pronoun_set(
     identity: PersonalPronounIdentity,
     cell: ClosedClassCell,
@@ -881,6 +966,30 @@ pub fn closed_class_by_id(
                     )),
                 },
             }?;
+            if record.lemma != identity.canonical_lemma() {
+                result.add_warning(InflectionWarning::LexicalAliasUsed {
+                    canonical: identity.canonical_lemma().to_string(),
+                });
+            }
+            return Ok(result);
+        }
+        if let Some(identity) =
+            StandardPronominalIdentity::classify_source_union_lemma(record.lemma)
+        {
+            let gender = match (cell.person, cell.gender) {
+                (None, Some(gender)) => gender,
+                _ => {
+                    return Err(InflectionError::historically_invalid(
+                        id,
+                        RequestedCell::ClosedClass {
+                            part_of_speech,
+                            cell,
+                        },
+                    ));
+                }
+            };
+            let mut result = standard_pronominal_pronoun(identity, cell.case, cell.number, gender)
+                .map_err(|error| error.with_lexeme_id(id))?;
             if record.lemma != identity.canonical_lemma() {
                 result.add_warning(InflectionWarning::LexicalAliasUsed {
                     canonical: identity.canonical_lemma().to_string(),

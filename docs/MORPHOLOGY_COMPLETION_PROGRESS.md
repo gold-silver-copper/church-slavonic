@@ -12,8 +12,9 @@ The matrix contains **53** required system contracts: **31** have final states a
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 17 |
+| `implementation-missing` | 16 |
 | `not-inflectional` | 2 |
+| `partial` | 1 |
 | `productive-complete` | 29 |
 | `source-review-open` | 5 |
 
@@ -69,7 +70,7 @@ The matrix contains **53** required system contracts: **31** have final states a
 
 ## Non-final systems
 
-- `ocs.pronoun.other` — **implementation-missing**: Establish complete closed-class inventories, productive relationships, clitics, and irregular paradigms.
+- `ocs.pronoun.other` — **partial**: Complete иже and the derived ni-/ně-/particle families; special вьсь/сиць; unique сь, къто/чьто, and кꙑи; then allocate the remaining class 2/p identities across pronoun, determiner, and numeral systems.
 - `ocs.determiner` — **implementation-missing**: Complete the lexical inventory and productive adjectival relation without treating exact tables as class rules.
 - `ocs.numeral` — **implementation-missing**: Implement the source-backed numeral subtype inventory, agreement/government, compounds, and irregulars.
 - `ocs.verb.irregular-root` — **implementation-missing**: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
@@ -101,7 +102,7 @@ The matrix contains **53** required system contracts: **31** have final states a
 | `ocs.adjective.comparison` | old-church-slavonic | comparison | `productive-complete` | `ADJ-COMP-NEW-01`<br>`ADJ-COMP-OLD-01` | independent grammar paradigms plus strict explicit-principal-part prediction; dictionary citations remain exact |
 | `ocs.adjective.superlative` | old-church-slavonic | comparison | `productive-complete` | `PHRASE-SUP-REL-GEN-01`<br>`PHRASE-SUP-ZELO-01`<br>`ADJ-SUP-PRE-01`<br>`ADJ-COMP-OLD-01` | independent grammar inventory with structured component provenance and productive derived realization |
 | `ocs.pronoun.personal-reflexive` | old-church-slavonic | pronoun | `productive-complete` | `PRON-PERS-1-01`<br>`PRON-PERS-2-01`<br>`PRON-REFL-01`<br>`PRON-PERS-CLITIC-01`<br>`PRON-ANAPH-3-01`<br>`PRON-ANAPH-PREP-N-01` | independently reviewed closed grammar inventory, conditioned allomorphy, explicit source dispute, and exhaustive source-union routing |
-| `ocs.pronoun.other` | old-church-slavonic | pronoun | `implementation-missing` | `OCS-PRONOUN-OTHER-PENDING` | partial exact dictionary evidence |
+| `ocs.pronoun.other` | old-church-slavonic | pronoun | `partial` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`PRON-2P-J-01`<br>`PRON-2P-VELAR-01`<br>`OCS-PRONOUN-OTHER-EXCEPTIONAL-PENDING` | complete regular class 2/p terminal table and partial exceptional closed inventories |
 | `ocs.determiner` | old-church-slavonic | determiner | `implementation-missing` | `OCS-DETERMINER-PENDING` | partial exact dictionary evidence |
 | `ocs.numeral` | old-church-slavonic | numeral | `implementation-missing` | `OCS-NUMERAL-PENDING` | partial exact dictionary evidence |
 | `ocs.verb.present` | old-church-slavonic | finite-verb | `productive-complete` | `V-IA1-01`<br>`V-IA2-01`<br>`V-II1-01`<br>`V-II2-01`<br>`V-II3-01` | source-backed productive prediction |
@@ -157,10 +158,10 @@ The frontier contains **15** source/lineage records. Authority policy: target-re
 | ID | Tier | Type | Recension | Access | Impact |
 |---|---:|---|---|---|---|
 | `ut-ocs-online` | 1 | teaching grammar with primary-text lessons | old-church-slavonic | accessible-metadata | Defines the current OCS grammatical inventory and productive generalizations; its pronoun tables independently enumerate first and second person, the numberless reflexive, marked clitics, and the defective gendered third-person anaphoric with prepositional n- forms. It also crosschecks old/new comparator formation, identifies analytic rather than universally synthetic superlative strategies, licenses да plus present commands, and supplies the complete analytic tense, mood, future, and passive construction inventory. |
-| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; §§318 and 381–382 define the four intrinsic personal/reflexive/anaphoric identities, their defective dimensions, grammar-table clitics, and conditioned prepositional allomorphs. Its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions. |
+| `polivanova-fup-2023` | 1 | scholarly grammar and grammatical dictionaries | old-church-slavonic | pinned-local | Adds a completeness-oriented independent grammar and grammatical dictionaries; §§287–320 and 375–380 define the regular pronominal terminal system, twofold/velar behavior, derived families, and exceptional closed paradigms. §§318 and 381–382 define the four intrinsic personal/reflexive/anaphoric identities, their defective dimensions, grammar-table clitics, and conditioned prepositional allomorphs. Its comparative chapters establish the two principal parts, three syncopated cell families, four alien endings, productive new formation, and closed old inventory. Its aorist inventory established the independent main/singular subbundles and the distinct standard vowel, old s-, and old x-sigmatic contracts. Its imperfect terminal table and manuscript discussion establish explicit uncontracted, contracted, iotated, and present-platform analyses without treating source frequency as a global default. Its unique-verb profiles independently establish the suppletive copular series and the complete имѣти/хотѣти auxiliary paradigms used by analytic constructions. |
 | `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split; full-text comparison remains open and no rule claim relies on inaccessible content. |
 | `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; supplies independent lexeme-level allomorph evidence for sigmatic aorists and irregular/root verbs. |
-| `punco-lmu-reference-grammar` | 2 | scholarly digital reference grammar and annotated-corpus documentation | old-church-slavonic, mixed | accessible-metadata | Independently crosschecks the personal/reflexive inventory and its corpus-annotation distinctions, with mixed-period forms admitted only when separately licensed by OCS authorities. It also confirms да plus present forms for commands in all persons and crosschecks the OCS-to-Church-Slavonic analytic inventory: perfect/pluperfect, infinitival future and future-in-the-past, future perfect, conditional/aorist oscillation, optative particles, auxiliary omission, and passive participial constructions. |
+| `punco-lmu-reference-grammar` | 2 | scholarly digital reference grammar and annotated-corpus documentation | old-church-slavonic, mixed | accessible-metadata | Independently crosschecks the regular hard and soft pronominal class, the personal/reflexive inventory, and corpus-annotation distinctions, with mixed-period forms admitted only when separately licensed by OCS authorities. It also confirms да plus present forms for commands in all persons and crosschecks the OCS-to-Church-Slavonic analytic inventory: perfect/pluperfect, infinitival future and future-in-the-past, future perfect, conditional/aorist oscillation, optative particles, auxiliary omission, and passive participial constructions. |
 | `english-wiktionary-ocs-kaikki-2026-08-07` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-local | Current OCS exact registry and extraction target. |
 | `ud-ocs-proiel-r2.18` | 4 | manually based annotated corpus | old-church-slavonic | pinned-local | Independent real-text regression evidence. |
 | `syntacticus-20230428` | 4 | native annotated corpus | old-church-slavonic | pinned-local | Independent evaluator input sharing one lineage with UD, not a second confirmation. |
@@ -178,4 +179,4 @@ The frontier contains **15** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.pronoun.other`: Establish complete closed-class inventories, productive relationships, clitics, and irregular paradigms.
+`ocs.pronoun.other`: Complete иже and the derived ni-/ně-/particle families; special вьсь/сиць; unique сь, къто/чьто, and кꙑи; then allocate the remaining class 2/p identities across pronoun, determiner, and numeral systems.

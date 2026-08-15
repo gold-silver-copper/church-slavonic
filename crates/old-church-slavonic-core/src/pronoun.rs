@@ -1,6 +1,318 @@
-//! Source-reviewed Old Church Slavonic personal and reflexive pronouns.
+//! Source-reviewed Old Church Slavonic pronouns.
 
-use crate::{Case, Gender, Number, Person, RuleId};
+use crate::{
+    Case, ClosedClassCell, Gender, InflectionError, Number, PartOfSpeech, Person, PredictedForm,
+    RequestedCell, RuleId, RuleStep,
+};
+
+/// The regular pronominal declensions conventionally grouped as OCS class
+/// `2/p`. `J` identifies possessives such as `мои`, whose citation `-и` is the
+/// surface result of a stem-final *j* rather than a soft consonant ending.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PronominalDeclension {
+    Hard,
+    Soft,
+    J,
+}
+
+impl PronominalDeclension {
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::Hard => "hard",
+            Self::Soft => "soft",
+            Self::J => "j",
+        }
+    }
+
+    pub const fn rule_id(self) -> RuleId {
+        match self {
+            Self::Hard => RuleId::PronounPronominalHard,
+            Self::Soft => RuleId::PronounPronominalSoft,
+            Self::J => RuleId::PronounPronominalJ,
+        }
+    }
+}
+
+/// Explicit lexical metadata sufficient to decline one regular agreeing
+/// pronoun without a dictionary lookup.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PronominalLexeme {
+    pub lemma: String,
+    pub declension: PronominalDeclension,
+}
+
+/// Reviewed regular dictionary identities routed through the productive `2/p`
+/// system. Gendered source pages such as `она` and `оно` are aliases of the
+/// single grammatical identity `онъ`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum StandardPronominalIdentity {
+    DemonstrativeT,
+    DemonstrativeOn,
+    PossessiveVash,
+    PossessiveNash,
+    PossessiveMoi,
+    PossessiveTvoi,
+    PossessiveSvoi,
+}
+
+impl StandardPronominalIdentity {
+    pub const ALL: [Self; 7] = [
+        Self::DemonstrativeT,
+        Self::DemonstrativeOn,
+        Self::PossessiveVash,
+        Self::PossessiveNash,
+        Self::PossessiveMoi,
+        Self::PossessiveTvoi,
+        Self::PossessiveSvoi,
+    ];
+
+    pub const fn canonical_lemma(self) -> &'static str {
+        match self {
+            Self::DemonstrativeT => "тъ",
+            Self::DemonstrativeOn => "онъ",
+            Self::PossessiveVash => "вашь",
+            Self::PossessiveNash => "нашь",
+            Self::PossessiveMoi => "мои",
+            Self::PossessiveTvoi => "твои",
+            Self::PossessiveSvoi => "свои",
+        }
+    }
+
+    pub const fn declension(self) -> PronominalDeclension {
+        match self {
+            Self::DemonstrativeT | Self::DemonstrativeOn => PronominalDeclension::Hard,
+            Self::PossessiveVash | Self::PossessiveNash => PronominalDeclension::Soft,
+            Self::PossessiveMoi | Self::PossessiveTvoi | Self::PossessiveSvoi => {
+                PronominalDeclension::J
+            }
+        }
+    }
+
+    pub const fn source_union_aliases(self) -> &'static [&'static str] {
+        match self {
+            Self::DemonstrativeOn => &["онъ", "она", "оно"],
+            Self::DemonstrativeT => &["тъ"],
+            Self::PossessiveVash => &["вашь"],
+            Self::PossessiveNash => &["нашь"],
+            Self::PossessiveMoi => &["мои"],
+            Self::PossessiveTvoi => &["твои"],
+            Self::PossessiveSvoi => &["свои"],
+        }
+    }
+
+    pub fn classify_source_union_lemma(lemma: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|identity| identity.source_union_aliases().contains(&lemma))
+    }
+
+    pub fn lexeme(self) -> PronominalLexeme {
+        PronominalLexeme {
+            lemma: self.canonical_lemma().to_string(),
+            declension: self.declension(),
+        }
+    }
+}
+
+/// Decline one complete gendered cell of the regular `2/p` pronominal system.
+/// The source paradigm has no vocative; such requests return a typed
+/// historically-invalid result rather than silently copying the nominative.
+pub fn decline_pronominal(
+    lexeme: &PronominalLexeme,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<PredictedForm, InflectionError> {
+    let lemma = crate::orthography::canonical_display(&lexeme.lemma)?;
+    if case == Case::Vocative {
+        return Err(InflectionError::historically_invalid(
+            lemma,
+            RequestedCell::ClosedClass {
+                part_of_speech: PartOfSpeech::Pronoun,
+                cell: ClosedClassCell {
+                    case,
+                    number,
+                    gender: Some(gender),
+                    person: None,
+                },
+            },
+        ));
+    }
+
+    let citation_ending = match lexeme.declension {
+        PronominalDeclension::Hard => 'ъ',
+        PronominalDeclension::Soft => 'ь',
+        PronominalDeclension::J => 'и',
+    };
+    let mut stem = lemma
+        .strip_suffix(citation_ending)
+        .filter(|stem| !stem.is_empty())
+        .ok_or_else(|| {
+            InflectionError::invalid_lemma(
+                &lemma,
+                format!(
+                    "the {} pronominal declension requires a nonempty stem and citation -{}",
+                    lexeme.declension.code(),
+                    citation_ending
+                ),
+            )
+        })?
+        .to_string();
+    let Some(ending) = pronominal_ending(lexeme.declension, case, number, gender) else {
+        return Err(InflectionError::historically_invalid(
+            lemma,
+            RequestedCell::ClosedClass {
+                part_of_speech: PartOfSpeech::Pronoun,
+                cell: ClosedClassCell {
+                    case,
+                    number,
+                    gender: Some(gender),
+                    person: None,
+                },
+            },
+        ));
+    };
+    let rule_id = lexeme.declension.rule_id();
+    let mut trace = Vec::with_capacity(2);
+
+    if lexeme.declension == PronominalDeclension::Hard && ending.starts_with(['и', 'ѣ']) {
+        if let Some(palatalized) = palatalize_final_velar(&stem) {
+            trace.push(RuleStep {
+                rule_id: RuleId::PronounPronominalVelar,
+                before: stem,
+                after: palatalized.clone(),
+                reason: "palatalize a final velar before a pronominal ending beginning in и or ѣ",
+            });
+            stem = palatalized;
+        }
+    }
+
+    let text = format!("{stem}{ending}");
+    trace.push(RuleStep {
+        rule_id,
+        before: stem,
+        after: text.clone(),
+        reason: "attach the regular pronominal ending to the stem selected from the masculine citation",
+    });
+    Ok(PredictedForm {
+        text,
+        rule_id,
+        trace,
+    })
+}
+
+fn pronominal_ending(
+    declension: PronominalDeclension,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Option<&'static str> {
+    if declension == PronominalDeclension::J {
+        return j_pronominal_ending(case, number, gender);
+    }
+    let soft = declension == PronominalDeclension::Soft;
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Dual, Plural, Singular};
+    Some(match (case, number, gender, soft) {
+        (Nominative, Singular, Masculine, false) => "ъ",
+        (Nominative, Singular, Masculine, true) => "ь",
+        (Nominative, Singular, Feminine, _) => "а",
+        (Nominative, Singular, Neuter, false) => "о",
+        (Nominative, Singular, Neuter, true) => "е",
+        (Accusative, Singular, Masculine, false) => "ъ",
+        (Accusative, Singular, Masculine, true) => "ь",
+        (Accusative, Singular, Feminine, _) => "ѫ",
+        (Accusative, Singular, Neuter, false) => "о",
+        (Accusative, Singular, Neuter, true) => "е",
+        (Genitive, Singular, Masculine | Neuter, false) => "ого",
+        (Genitive, Singular, Masculine | Neuter, true) => "его",
+        (Genitive, Singular, Feminine, false) => "оѩ",
+        (Genitive, Singular, Feminine, true) => "еѩ",
+        (Dative, Singular, Masculine | Neuter, false) => "ому",
+        (Dative, Singular, Masculine | Neuter, true) => "ему",
+        (Dative | Locative, Singular, Feminine, false) => "ои",
+        (Dative | Locative, Singular, Feminine, true) => "еи",
+        (Instrumental, Singular, Masculine | Neuter, false) => "ѣмь",
+        (Instrumental, Singular, Masculine | Neuter, true) => "имь",
+        (Instrumental, Singular, Feminine, false) => "оѭ",
+        (Instrumental, Singular, Feminine, true) => "еѭ",
+        (Locative, Singular, Masculine | Neuter, false) => "омь",
+        (Locative, Singular, Masculine | Neuter, true) => "емь",
+
+        (Nominative | Accusative, Dual, Masculine, _) => "а",
+        (Nominative | Accusative, Dual, Feminine | Neuter, false) => "ѣ",
+        (Nominative | Accusative, Dual, Feminine | Neuter, true) => "и",
+        (Genitive | Locative, Dual, _, false) => "ою",
+        (Genitive | Locative, Dual, _, true) => "ею",
+        (Dative | Instrumental, Dual, _, false) => "ѣма",
+        (Dative | Instrumental, Dual, _, true) => "има",
+
+        (Nominative, Plural, Masculine, _) => "и",
+        (Nominative, Plural, Feminine, false) => "ы",
+        (Nominative, Plural, Feminine, true) => "ѧ",
+        (Nominative, Plural, Neuter, _) => "а",
+        (Accusative, Plural, Masculine | Feminine, false) => "ы",
+        (Accusative, Plural, Masculine | Feminine, true) => "ѧ",
+        (Accusative, Plural, Neuter, _) => "а",
+        (Genitive | Locative, Plural, _, false) => "ѣхъ",
+        (Genitive | Locative, Plural, _, true) => "ихъ",
+        (Dative, Plural, _, false) => "ѣмъ",
+        (Dative, Plural, _, true) => "имъ",
+        (Instrumental, Plural, _, false) => "ѣми",
+        (Instrumental, Plural, _, true) => "ими",
+        (Case::Vocative, _, _, _) => return None,
+    })
+}
+
+fn j_pronominal_ending(case: Case, number: Number, gender: Gender) -> Option<&'static str> {
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Dual, Plural, Singular};
+    Some(match (case, number, gender) {
+        (Nominative, Singular, Masculine) => "и",
+        (Nominative, Singular, Feminine) => "ꙗ",
+        (Nominative, Singular, Neuter) => "ѥ",
+        (Accusative, Singular, Masculine) => "и",
+        (Accusative, Singular, Feminine) => "ѭ",
+        (Accusative, Singular, Neuter) => "ѥ",
+        (Genitive, Singular, Masculine | Neuter) => "ѥго",
+        (Genitive, Singular, Feminine) => "ѥѩ",
+        (Dative, Singular, Masculine | Neuter) => "ѥму",
+        (Dative | Locative, Singular, Feminine) => "ѥи",
+        (Instrumental, Singular, Masculine | Neuter) => "имь",
+        (Instrumental, Singular, Feminine) => "ѥѭ",
+        (Locative, Singular, Masculine | Neuter) => "ѥмь",
+
+        (Nominative | Accusative, Dual, Masculine) => "ꙗ",
+        (Nominative | Accusative, Dual, Feminine | Neuter) => "и",
+        (Genitive | Locative, Dual, _) => "ѥю",
+        (Dative | Instrumental, Dual, _) => "има",
+
+        (Nominative, Plural, Masculine) => "и",
+        (Nominative, Plural, Feminine) => "ѩ",
+        (Nominative, Plural, Neuter) => "ꙗ",
+        (Accusative, Plural, Masculine | Feminine) => "ѩ",
+        (Accusative, Plural, Neuter) => "ꙗ",
+        (Genitive | Locative, Plural, _) => "ихъ",
+        (Dative, Plural, _) => "имъ",
+        (Instrumental, Plural, _) => "ими",
+        (Case::Vocative, _, _) => return None,
+    })
+}
+
+fn palatalize_final_velar(stem: &str) -> Option<String> {
+    let (base, replacement) = if let Some(base) = stem.strip_suffix('к') {
+        (base, "ц")
+    } else if let Some(base) = stem.strip_suffix('г') {
+        (base, "ѕ")
+    } else if let Some(base) = stem.strip_suffix('х') {
+        (base, "с")
+    } else {
+        return None;
+    };
+    Some(format!("{base}{replacement}"))
+}
 
 /// One closed personal-pronoun identity. First- and second-person identities
 /// carry number but have intrinsic person; the reflexive is numberless; the
@@ -313,6 +625,236 @@ fn second_person_forms(case: Case, number: Number) -> Vec<PronounVariant> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn complete_pronominal_goldens(lexeme: PronominalLexeme, expected: [&str; 54]) -> Vec<String> {
+        let mut actual = Vec::new();
+        for number in Number::ALL {
+            for case in Case::ALL {
+                for gender in Gender::ALL {
+                    let form = decline_pronominal(&lexeme, case, number, gender);
+                    if case == Case::Vocative {
+                        assert!(
+                            matches!(form, Err(InflectionError::HistoricallyInvalidCell { .. })),
+                            "{lexeme:?} {case:?} {number:?} {gender:?}"
+                        );
+                    } else {
+                        actual.push(
+                            form.unwrap_or_else(|error| {
+                                panic!("{lexeme:?} {case:?} {number:?} {gender:?}: {error}")
+                            })
+                            .text,
+                        );
+                    }
+                }
+            }
+        }
+        assert_eq!(actual, expected, "{lexeme:?}");
+        actual
+    }
+
+    #[test]
+    fn regular_pronominal_goldens_cover_every_nonvocative_cell() {
+        complete_pronominal_goldens(
+            StandardPronominalIdentity::DemonstrativeT.lexeme(),
+            [
+                "тъ", "та", "то", "того", "тоѩ", "того", "тому", "тои", "тому", "тъ", "тѫ", "то",
+                "тѣмь", "тоѭ", "тѣмь", "томь", "тои", "томь", "та", "тѣ", "тѣ", "тою", "тою",
+                "тою", "тѣма", "тѣма", "тѣма", "та", "тѣ", "тѣ", "тѣма", "тѣма", "тѣма", "тою",
+                "тою", "тою", "ти", "ты", "та", "тѣхъ", "тѣхъ", "тѣхъ", "тѣмъ", "тѣмъ", "тѣмъ",
+                "ты", "ты", "та", "тѣми", "тѣми", "тѣми", "тѣхъ", "тѣхъ", "тѣхъ",
+            ],
+        );
+        complete_pronominal_goldens(
+            StandardPronominalIdentity::PossessiveNash.lexeme(),
+            [
+                "нашь",
+                "наша",
+                "наше",
+                "нашего",
+                "нашеѩ",
+                "нашего",
+                "нашему",
+                "нашеи",
+                "нашему",
+                "нашь",
+                "нашѫ",
+                "наше",
+                "нашимь",
+                "нашеѭ",
+                "нашимь",
+                "нашемь",
+                "нашеи",
+                "нашемь",
+                "наша",
+                "наши",
+                "наши",
+                "нашею",
+                "нашею",
+                "нашею",
+                "нашима",
+                "нашима",
+                "нашима",
+                "наша",
+                "наши",
+                "наши",
+                "нашима",
+                "нашима",
+                "нашима",
+                "нашею",
+                "нашею",
+                "нашею",
+                "наши",
+                "нашѧ",
+                "наша",
+                "нашихъ",
+                "нашихъ",
+                "нашихъ",
+                "нашимъ",
+                "нашимъ",
+                "нашимъ",
+                "нашѧ",
+                "нашѧ",
+                "наша",
+                "нашими",
+                "нашими",
+                "нашими",
+                "нашихъ",
+                "нашихъ",
+                "нашихъ",
+            ],
+        );
+        complete_pronominal_goldens(
+            StandardPronominalIdentity::PossessiveMoi.lexeme(),
+            [
+                "мои",
+                "моꙗ",
+                "моѥ",
+                "моѥго",
+                "моѥѩ",
+                "моѥго",
+                "моѥму",
+                "моѥи",
+                "моѥму",
+                "мои",
+                "моѭ",
+                "моѥ",
+                "моимь",
+                "моѥѭ",
+                "моимь",
+                "моѥмь",
+                "моѥи",
+                "моѥмь",
+                "моꙗ",
+                "мои",
+                "мои",
+                "моѥю",
+                "моѥю",
+                "моѥю",
+                "моима",
+                "моима",
+                "моима",
+                "моꙗ",
+                "мои",
+                "мои",
+                "моима",
+                "моима",
+                "моима",
+                "моѥю",
+                "моѥю",
+                "моѥю",
+                "мои",
+                "моѩ",
+                "моꙗ",
+                "моихъ",
+                "моихъ",
+                "моихъ",
+                "моимъ",
+                "моимъ",
+                "моимъ",
+                "моѩ",
+                "моѩ",
+                "моꙗ",
+                "моими",
+                "моими",
+                "моими",
+                "моихъ",
+                "моихъ",
+                "моихъ",
+            ],
+        );
+    }
+
+    #[test]
+    fn hard_pronominal_velars_palatalize_only_in_conditioning_cells() {
+        let lexeme = PronominalLexeme {
+            lemma: "такъ".to_string(),
+            declension: PronominalDeclension::Hard,
+        };
+        let nominative_plural =
+            decline_pronominal(&lexeme, Case::Nominative, Number::Plural, Gender::Masculine)
+                .expect("regular velar pronoun");
+        assert_eq!(nominative_plural.text, "таци");
+        assert_eq!(nominative_plural.trace.len(), 2);
+        assert_eq!(
+            nominative_plural.trace[0].rule_id,
+            RuleId::PronounPronominalVelar
+        );
+        assert_eq!(
+            decline_pronominal(&lexeme, Case::Genitive, Number::Singular, Gender::Masculine,)
+                .expect("unconditioned hard cell")
+                .text,
+            "такого"
+        );
+    }
+
+    #[test]
+    fn standard_pronominal_source_aliases_are_exhaustive_and_nonoverlapping() {
+        let mut aliases = Vec::new();
+        for identity in StandardPronominalIdentity::ALL {
+            for alias in identity.source_union_aliases() {
+                assert_eq!(
+                    StandardPronominalIdentity::classify_source_union_lemma(alias),
+                    Some(identity)
+                );
+                aliases.push(*alias);
+            }
+        }
+        aliases.sort_unstable();
+        aliases.dedup();
+        assert_eq!(aliases.len(), 9);
+    }
+
+    #[test]
+    fn regular_pronominal_lexical_shape_is_validated() {
+        for invalid in [
+            PronominalLexeme {
+                lemma: "мои".to_string(),
+                declension: PronominalDeclension::Hard,
+            },
+            PronominalLexeme {
+                lemma: "тъ".to_string(),
+                declension: PronominalDeclension::Soft,
+            },
+            PronominalLexeme {
+                lemma: "нашь".to_string(),
+                declension: PronominalDeclension::J,
+            },
+            PronominalLexeme {
+                lemma: "ъ".to_string(),
+                declension: PronominalDeclension::Hard,
+            },
+        ] {
+            assert!(matches!(
+                decline_pronominal(
+                    &invalid,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine
+                ),
+                Err(InflectionError::InvalidLemma { .. })
+            ));
+        }
+    }
 
     #[test]
     fn first_and_second_person_goldens_cover_every_nonvocative_cell() {

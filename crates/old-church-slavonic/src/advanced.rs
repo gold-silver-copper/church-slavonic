@@ -32,12 +32,13 @@ pub mod rules {
     pub use crate::resolver::{
         adjective_with, comparative_paradigm_with, comparative_with, finite_verb_with,
         imperative_with, infinitive_with, l_participle_with, noun_with, participle_with,
-        pre_superlative_with, supine_with,
+        pre_superlative_with, pronominal_with, supine_with,
     };
     pub use old_church_slavonic_core::adjective::{
         AdjectiveLexeme, ComparativeLexeme, productive_new_comparative,
     };
     pub use old_church_slavonic_core::noun::NounLexeme;
+    pub use old_church_slavonic_core::pronoun::{PronominalDeclension, PronominalLexeme};
     pub use old_church_slavonic_core::verb::{VerbLexeme, VerbLexemeBuilder};
     pub use old_church_slavonic_core::{
         AdjectiveClass, AoristFormation, ComparativeFormation, ImperativeFormation,
