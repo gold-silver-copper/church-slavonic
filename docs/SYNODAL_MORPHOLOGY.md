@@ -110,6 +110,9 @@ reusable accent paradigm; expanded rules never invent stress.
 | Predicate short superlative | `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` | Alypy §§59–60, 125, 128 | nine nominative gender/number cells only; directly attested suffix-retaining singular masculine first, followed by the ordinary §60 citation form; oblique and vocative cells are historically invalid |
 | Pronouns | `SYN-PRONOUN-{PERSONAL-FIRST,PERSONAL-SECOND,REFLEXIVE,THIRD-PERSON,SEI,SOFT,SOFT-I-ALTERNATING,HARD,MIXED-POSSESSIVE,SHORT-HARD,SHORT-OV-MIXED,SHORT-VELAR,QUANTITY-VELAR,FULL-HARD,FULL-SOFT,FULL-VELAR,KII,KTO,CHTO,DERIVED}-ALYPY-*` | Alypy §§45–48 and §57 | all closed suppletive and regular pronoun profiles; complete licensed case/number/agreement products, number restrictions, ordered variants, typed prefixes, postpositives, clitic selection, and third-person environments |
 | Pronoun phrases and contractions | `SYN-PRONOUN-{ENCLITIC-PROSODY,THIRD-PREPOSITION-CONTRACTION,NEGATIVE-PREPOSITION}-ALYPY-*` | Alypy §§47–48 | typed host + enclitic prosody, exact fused `нань`/`вонь`, and structured `ни + preposition + pronoun` interposition |
+| Simple numeral words | `SYN-NUMERAL-{CARDINAL,ORDINAL,COLLECTIVE,MULTIPLICATIVE,FRACTIONAL}-*` | Alypy §§61–70; Synodal Bible III Esdras 14:11–12 | 23 typed declensions over cardinal, ordinal, collective, multiplicative, substantival-fractional, and adjectival-fractional words; lexical number and agreement dimensions are enforced |
+| Composed cardinals and ordinals | `SYN-NUMERAL-{CARDINAL,ORDINAL}-*-ALYPY-{63,64,68}` | Alypy §§63–64, 68 and appendix | correlated teen, tens, hundreds, ordinary-thousands, named-magnitude, additive, and compound-ordinal analyses; cardinals 1–1,000,000 and ordinals 1–1,000 |
+| Numeral government and phrases | `SYN-NUMERAL-{GOVERNMENT,DISTRIBUTIVE,MULTIPLICATIVE,FRACTION}-*` | Alypy §§61, 65–70; locked target texts | typed following/preceding agreement and government; repeated distributives; invariant `кратъ`; cardinal, ordinal, and `полдесѧтый` expressions with inflected `часть` |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
 | Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
@@ -164,10 +167,45 @@ cells or a caller/registry `AccentParadigm`; `AccentScope::PronounCases` and
 animacy-conditioned stress. A missing accent contract is an explicit
 `OrthographicMetadataRequired` result, not a guessed form.
 
+## Complete numeral contract
+
+`NumeralDeclension` has 23 source-typed word profiles. The closed lower
+cardinals and their ordered variants are independent of noun-like five through
+ten, hundred, and the large magnitude nouns. Ordinals, collectives,
+multiplicatives, fractional nouns, and the target-attested fractional adjective
+`полдесѧтый` retain their own grammatical kind, lexical number inventory, and
+agreement dimensions. `NumeralSpec` exposes the same kernel for unregistered
+caller lexemes. Exact registry cells win first; every other licensed cell is a
+normative prediction and never an implied attestation.
+
+`numeral_phrases` keeps component alternatives correlated. It covers every
+cardinal from 1 through 1,000,000 and every ordinal from 1 through 1,000,
+including Alypy's alternative teen and decade inflection, fused/spaced
+hundreds, ordinary complete multipliers of `тысѧща`, distributed thousand
+heads found in the Synodal Bible, and the named `тьма`, `легеѡнъ`, and `леѡдръ`
+analyses. Additive `и`, all-component `и`, and asyndetic orders are separate
+analyses rather than cross-token variant mixing.
+
+`CompoundNumeralCell` makes cardinal case, required agreement gender, and
+animacy explicit. `RealizedCardinal::government` distinguishes a following
+from a preceding counted noun and returns agreement, genitive-plural
+government, and the marked contextual nominative-plural alternative with
+source evidence. Repeated distributives, cardinal + invariant `кратъ`, and
+cardinal/ordinal/fractional + inflected `часть` are structured phrase values.
+The exact target witnesses include `два два`, ordinary and distributed
+thousands, asyndetic `двадесѧть два`, compound ordinals, modern neuter `два`,
+and `полдесѧтыѧ части`.
+
+Expanded output is total across the licensed word and composition inventories.
+The liturgical profile uses exact accents where available and otherwise returns
+`OrthographicMetadataRequired`; composition never guesses stress by joining
+accentless components.
+
 ## Explicit specifications and complete paradigms
 
-`NounSpec`, `AdjectiveSpec`, `PronounSpec`, and `VerbSpec` are first-class facade inputs. They
-validate Church Slavonic Unicode and closed class/formation enums, preserve
+`NounSpec`, `AdjectiveSpec`, `DeterminerSpec`, `NumeralSpec`, `PronounSpec`, and
+`VerbSpec` are first-class facade inputs. They validate Church Slavonic Unicode
+and closed class/formation enums, preserve
 independent principal parts, attach caller provenance, and never label their
 outputs attestations. `Inflector::form_spec` delegates to the same pure kernel as
 registered words. Specialized noun and adjective paradigms retain the canonical
@@ -318,18 +356,23 @@ are:
 | Pluperfect | l-participle + either imperfect series of `быти` | Alypy §89 |
 | Conditional | l-participle + aorist of `быти` | Alypy §91 |
 | Analytic passive | nominative passive participle + selected copula present | Alypy §§101–102 |
+| Compound numeral | correlated inflected numeral components and optional `и` | Alypy §§63–64, 68 |
+| Repeated distributive | repeated inflected cardinal | Alypy §61; Mark 6:7 |
+| Multiplicative | inflected cardinal + invariant `кратъ` | Alypy §70 |
+| Fractional part | cardinal/ordinal/fractional adjective + inflected `часть` | Alypy §70; III Esdras 14:11–12 |
 
 The generic `phrases::from_tokens` retains a typed construction and roles for
-reviewed periphrases whose auxiliary lexeme is not yet registered. Agreement and
-government beyond these construction-specific constraints remain future work.
+reviewed periphrases whose auxiliary lexeme is not yet registered. Free
+sentence-level syntax beyond these construction-specific constraints remains
+future work.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 875 target lexemes and 877 reviewed senses. The
-original productive seed remains deliberately small: corpus-prioritized hard and
-soft nouns, regular adjectives, six verbs, reviewed closed-class paradigms, and
-five numerals. The v0.3 additions are primarily high-frequency exact lexical
-evidence. Inflectable additions use `LexicalForm` unless a class or independent
+The reviewed registry has 909 target lexemes and 912 reviewed senses. The
+productive layer now covers every source-reviewed noun, adjective, pronoun,
+determiner, and numeral class while retaining exact-only identities whose class
+or principal parts remain underdetermined. Inflectable additions use
+`LexicalForm` unless a class or independent
 principal parts have actually been reviewed; that cell supports only its exact
 target form and never enables a productive rule. Productive rules can fill many
 cells of a resolved regular lexeme, but they do not infer an unknown lexeme's
@@ -353,8 +396,6 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 - automatic comparison-stem formation and comparison stems other than explicitly
   supplied typed series; short superlatives are restricted to the exceptional
   predicate nominatives licensed by Alypy §§59, 125, and 128;
-- collective, compound, and irregular cardinal numerals beyond the reviewed
-  exact cells and productive ordinal background;
 - automatic participle stem formation from an undifferentiated verb stem;
   short active participles require an independent stem and typed formation;
 - the supine pending a target-recension normative inventory, productive verbal

@@ -563,11 +563,38 @@ authority_justification = "Principal pinned normative anchor for the target Syno
 license = "Ponomar site and underlying edition notices must be preserved"
 redistribution = "evaluation-only"
 upstream_lineage = ["Alypy 1991 edition", "Ponomar corrected web transcription"]
-reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§79–104", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
+reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–104", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
 rule_ids = ["SYN-*"]
-impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Supine, verbal-noun, remaining closed-class, accent, and analytic reviews stay open."
+impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Supine, verbal-noun, accent, and wider analytic reviews stay open."
 conflicts = ["Lexeme-specific variants must not be generalized to a class."]
 access_status = "pinned-local"
+
+[[source]]
+id = "deschler-liturgical-slavonic-2018"
+title = "Manuel du slavon liturgique, volume I: Grammaire"
+author_editor = "Jean-Paul Deschler"
+edition_revision = "3rd corrected edition, ISBN 978-2-7204-0364-4, 127 pages"
+publication_date = "2018"
+publisher_institution = "Institut d’Études Slaves, Paris"
+stable_url = "https://institut-etudes-slaves.fr/products-page/langues/manuel-du-slavon-liturgique-grammaire/"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["French", "Church Slavonic"]
+periods = ["modern liturgical Church Slavonic"]
+recensions = ["synodal-russian", "mixed"]
+orthographies = ["printed liturgical Church Slavonic"]
+source_type = "liturgical Church Slavonic grammar"
+epistemic_roles = ["grammar-discovery", "target-recension-crosscheck"]
+authority_tier = 2
+authority_justification = "The publisher describes a grammar specifically for modern liturgical recensions with biblical and liturgical examples, but the chapter body was not accessible in the current review."
+license = "copyrighted handbook; publisher metadata and table-of-contents facts only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["publisher bibliographic record", "prefaces", "table of contents including Les noms de nombre"]
+rule_ids = ["pending-deschler-full-text-crosswalk"]
+impact = "Adds an independently authored target-period French grammar to the discovery frontier and confirms that number words receive a dedicated treatment. No morphology rule or surface form is imported without access to the chapter body."
+conflicts = []
+access_status = "accessible-metadata"
 
 [[source]]
 id = "unicode-tn41-revision-1"
@@ -833,3 +860,22 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "The pass establishes a row-level denominator of 14,114 claims: all 3,081 committed identities derived from the older 4,615-row Kaikki runtime source, all 4,626 rows of the separately pinned 2026-08-07 Kaikki refresh, and all 6,407 OSD dictionary rows. Unique normalized matches merge with runtime identities; exact head metadata preserves homonyms, and unsafe matches remain source-qualified. LOVe's official 970-row export is reproducibly hashed and remains a principal-part crosscheck because the site states no database reuse license. GORAZD exposes search and card-index access but no confirmed public bulk snapshot or redistribution terms, so it remains manual discovery evidence. Subsequent checkpoints closed every confirmed implementation route, derived only class-intrinsic gender and noncontrastive animacy, and finalized genuinely underdetermined animacy, principal-part, class, and reconstruction claims as evidence-backed ambiguities or disputes."
+
+[[discovery_pass]]
+id = "synodal-numeral-frontier-pass-8"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "German", "French", "Church Slavonic"]
+queries = [
+  "церковнославянские числительные склонение составные дробные",
+  "Church Slavonic compound numeral grammar government fractions",
+  "Kirchenslawisch Zahlwörter Deklination Bruchzahlen",
+  "slavon liturgique noms de nombre grammaire fractions",
+  "полдесѧтый полдесѧтыѧ церковнославянский",
+]
+catalogs = ["Ponomar Alypy grammar", "LMU/UZH Punčo Digital Editions", "Institut d’Études Slaves", "locked Synodal target-text union", "multilingual scholarly discovery indexes"]
+new_sources = ["deschler-liturgical-slavonic-2018"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "Alypy §§61–70 and the appendix were reviewed end to end and independently crosschecked against the LMU reference grammar's numeral hierarchy. Focused scans of the locked target union changed the implementation: ordinary thousands now take complete lower-cardinal multipliers; distributed thousand heads remain correlated alternatives; тысѧща uses the target hard second-declension outputs; neuter два is preserved beside Alypy's двѣ in directly attested cells; and III Esdras adds exact полдесѧтыѧ plus a complete productive hard-adjective fractional profile. The French Deschler handbook is an eligible modern-liturgical crosscheck, but only publisher metadata and its Les noms de nombre chapter listing were accessible, so it contributes no rule claim. This contract-changing pass does not count toward source-frontier convergence."

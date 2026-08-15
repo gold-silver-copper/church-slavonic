@@ -1630,7 +1630,32 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
                         | "determiner-vsyak-mixed"
                         | "determiner-full-sk"
                 )
-                | ("numeral", "ordinal-hard" | "ordinal-soft")
+                | (
+                    "numeral",
+                    "numeral-cardinal-one"
+                        | "numeral-cardinal-two"
+                        | "numeral-cardinal-both"
+                        | "numeral-cardinal-three"
+                        | "numeral-cardinal-four"
+                        | "numeral-cardinal-i-stem"
+                        | "numeral-cardinal-ten"
+                        | "numeral-cardinal-hundred"
+                        | "numeral-cardinal-second-hard"
+                        | "numeral-cardinal-second-mixed"
+                        | "numeral-cardinal-first-hard-m"
+                        | "numeral-cardinal-third-f"
+                        | "ordinal-hard"
+                        | "ordinal-soft"
+                        | "numeral-collective-agreeing"
+                        | "numeral-collective-governing-neuter"
+                        | "numeral-collective-hard-plural"
+                        | "numeral-multiplicative-hard"
+                        | "numeral-multiplicative-soft"
+                        | "numeral-fractional-hard"
+                        | "numeral-fractional-first-u"
+                        | "numeral-fractional-second-hard"
+                        | "numeral-fractional-third-f"
+                )
                 | (
                     "pronoun",
                     "exact-complete-pronoun-table"

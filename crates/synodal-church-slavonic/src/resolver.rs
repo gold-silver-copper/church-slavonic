@@ -1,8 +1,8 @@
 use synodal_church_slavonic_core::{
     AccentParadigm, Assumption, AuthorityRole, Confidence, EpistemicRole, Error, Evidence,
     EvidenceId, EvidenceKind, FormSet, FormSource, FormVariant, GenerationPolicy, GrammarCell,
-    LexemeId, NumeralKind, OrthographyProfile, Recension, Result, RuleId, RuleTrace, SourceId,
-    TraceStep, normalize_lookup_accentless,
+    LexemeId, OrthographyProfile, Recension, Result, RuleId, RuleTrace, SourceId, TraceStep,
+    normalize_lookup_accentless,
 };
 
 use crate::{
@@ -235,6 +235,9 @@ pub(crate) fn resolve_spec(
             cell,
             rule_profile,
         ),
+        LexemeSpecInner::Numeral(spec) => {
+            generate_productive(ProductiveLexeme::Numeral(&spec.lexeme), cell, rule_profile)
+        }
         LexemeSpecInner::Pronoun(spec) => {
             generate_productive(ProductiveLexeme::Pronoun(&spec.lexeme), cell, rule_profile)
         }
@@ -318,9 +321,9 @@ pub(crate) fn resolve_cell(
             })?;
             generate_productive(ProductiveLexeme::Determiner(&lexeme), cell, rule_profile)
         }
-        GrammarCell::Numeral(numeral) if numeral.kind == NumeralKind::Ordinal => {
-            let lexeme = registry::ordinal_lexeme(id)?;
-            generate_productive(ProductiveLexeme::Adjective(&lexeme), cell, rule_profile)
+        GrammarCell::Numeral(_) => {
+            let lexeme = registry::numeral_lexeme(id)?;
+            generate_productive(ProductiveLexeme::Numeral(&lexeme), cell, rule_profile)
         }
         GrammarCell::Pronoun(_) => {
             let lexeme = registry::pronoun_lexeme(id)?;
@@ -336,9 +339,6 @@ pub(crate) fn resolve_cell(
             let lexeme = registry::verb_lexeme(id)?;
             generate_productive(ProductiveLexeme::Verb(&lexeme), cell, rule_profile)
         }
-        GrammarCell::Numeral(_) => Err(Error::UnsupportedCell {
-            reason: "this numeral cell is absent from the exact normative registry".into(),
-        }),
         GrammarCell::LexicalForm | GrammarCell::Indeclinable => Err(Error::UnsupportedCell {
             reason: "the requested lexical cell has no exact reviewed form".into(),
         }),

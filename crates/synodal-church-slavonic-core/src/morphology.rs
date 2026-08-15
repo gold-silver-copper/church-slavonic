@@ -3123,6 +3123,31 @@ fn normative_citation(rule: &str) -> &'static str {
         "SYN-DETERMINER-FULL-SK-ALYPY-45-57" => {
             "Alypy (Gamanovich), §§45 and 57 full -скїй declension and -ск-/-ст- alternation"
         }
+        "SYN-NUMERAL-CARDINAL-ONE-ALYPY-62"
+        | "SYN-NUMERAL-CARDINAL-TWO-BOTH-ALYPY-62"
+        | "SYN-NUMERAL-CARDINAL-THREE-ALYPY-62"
+        | "SYN-NUMERAL-CARDINAL-FOUR-ALYPY-62"
+        | "SYN-NUMERAL-CARDINAL-I-STEM-ALYPY-62"
+        | "SYN-NUMERAL-CARDINAL-TEN-ALYPY-62"
+        | "SYN-NUMERAL-CARDINAL-HUNDRED-ALYPY-62"
+        | "SYN-NUMERAL-CARDINAL-MAGNITUDE-NOUN-ALYPY-61-62" => {
+            "Alypy (Gamanovich), §§61–62 simple cardinal and magnitude paradigms"
+        }
+        "SYN-NUMERAL-ORDINAL-ADJECTIVAL-ALYPY-68" => {
+            "Alypy (Gamanovich), §68 ordinal formation and full-adjective declension"
+        }
+        "SYN-NUMERAL-COLLECTIVE-AGREEING-ALYPY-69"
+        | "SYN-NUMERAL-COLLECTIVE-GOVERNING-ALYPY-69"
+        | "SYN-NUMERAL-COLLECTIVE-HARD-PLURAL-ALYPY-69" => {
+            "Alypy (Gamanovich), §69 collective numeral inventories and government"
+        }
+        "SYN-NUMERAL-MULTIPLICATIVE-ADJECTIVAL-ALYPY-61-70"
+        | "SYN-NUMERAL-FRACTIONAL-NOUN-ALYPY-61-70" => {
+            "Alypy (Gamanovich), §§61 and 70 multiplicative and fractional numerals"
+        }
+        "SYN-NUMERAL-FRACTIONAL-ADJECTIVAL-ALYPY-51-TARGET" => {
+            "Alypy (Gamanovich), §51 full hard-adjective declension; Synodal Bible, III Esdras 14:11–12 полдесѧтый"
+        }
         "SYN-PRONOUN-PERSONAL-FIRST-ALYPY-47"
         | "SYN-PRONOUN-PERSONAL-SECOND-ALYPY-47"
         | "SYN-PRONOUN-REFLEXIVE-ALYPY-47" => "Alypy (Gamanovich), §47 first group",

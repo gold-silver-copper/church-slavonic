@@ -5,10 +5,11 @@ use synodal_church_slavonic_core::{
     ComparisonFormation, Confidence, DeterminerDeclension, DeterminerLexeme, EpistemicRole, Error,
     Evidence, EvidenceId, EvidenceKind, FiniteTense, Gender, GenerationPolicy, GrammarCell,
     ImperativeFormation, ImperfectFormation, LexemeId, NounDeclension, NounLexeme,
-    NounNumberInventory, Number, ParticiplePrincipalPart, PronounDeclension, PronounEnvironment,
-    PronounFormSelection, PronounLexeme, PronounPostpositive, PronounPrefix, Recension,
-    RecensionMappingId, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
-    normalize_lookup_accentless, validate_determiner_lexeme, validate_pronoun_lexeme,
+    NounNumberInventory, Number, NumeralDeclension, NumeralLexeme, ParticiplePrincipalPart,
+    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
+    PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result, SourceId,
+    SynodalWord, VerbConjugation, VerbLexeme, normalize_lookup_accentless,
+    validate_determiner_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -790,8 +791,40 @@ pub(crate) fn determiner_lexeme(id: &LexemeId) -> Result<DeterminerLexeme> {
     Ok(lexeme)
 }
 
-pub(crate) fn ordinal_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
-    adjectival_lexeme(id, PartOfSpeech::Numeral)
+pub(crate) fn numeral_lexeme(id: &LexemeId) -> Result<NumeralLexeme> {
+    let row = require_pos(id, PartOfSpeech::Numeral)?;
+    let lexeme = NumeralLexeme::new(
+        SynodalWord::parse(row.0[1])?,
+        SynodalWord::parse(row.0[4])?,
+        match row.0[3] {
+            "numeral-cardinal-one" => NumeralDeclension::CardinalOne,
+            "numeral-cardinal-two" => NumeralDeclension::CardinalTwo,
+            "numeral-cardinal-both" => NumeralDeclension::CardinalBoth,
+            "numeral-cardinal-three" => NumeralDeclension::CardinalThree,
+            "numeral-cardinal-four" => NumeralDeclension::CardinalFour,
+            "numeral-cardinal-i-stem" => NumeralDeclension::CardinalIStem,
+            "numeral-cardinal-ten" => NumeralDeclension::CardinalTen,
+            "numeral-cardinal-hundred" => NumeralDeclension::CardinalHundred,
+            "numeral-cardinal-second-hard" => NumeralDeclension::CardinalSecondHard,
+            "numeral-cardinal-second-mixed" => NumeralDeclension::CardinalSecondMixed,
+            "numeral-cardinal-first-hard-m" => NumeralDeclension::CardinalFirstHardMasculine,
+            "numeral-cardinal-third-f" => NumeralDeclension::CardinalThirdFeminine,
+            "ordinal-hard" => NumeralDeclension::OrdinalHard,
+            "ordinal-soft" => NumeralDeclension::OrdinalSoft,
+            "numeral-collective-agreeing" => NumeralDeclension::CollectiveAgreeing,
+            "numeral-collective-governing-neuter" => NumeralDeclension::CollectiveGoverningNeuter,
+            "numeral-collective-hard-plural" => NumeralDeclension::CollectiveHardPlural,
+            "numeral-multiplicative-hard" => NumeralDeclension::MultiplicativeHard,
+            "numeral-multiplicative-soft" => NumeralDeclension::MultiplicativeSoft,
+            "numeral-fractional-hard" => NumeralDeclension::FractionalHard,
+            "numeral-fractional-first-u" => NumeralDeclension::FractionalFirstHardUStem,
+            "numeral-fractional-second-hard" => NumeralDeclension::FractionalSecondHard,
+            "numeral-fractional-third-f" => NumeralDeclension::FractionalThirdFeminine,
+            value => return invalid_metadata("numeral class", value),
+        },
+    );
+    validate_numeral_lexeme(&lexeme)?;
+    Ok(lexeme)
 }
 
 pub(crate) fn pronoun_lexeme(id: &LexemeId) -> Result<PronounLexeme> {
@@ -932,8 +965,8 @@ fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveL
         lemma: SynodalWord::parse(row.0[1])?,
         stem: SynodalWord::parse(row.0[4])?,
         class: match row.0[3] {
-            "hard-short" | "ordinal-hard" => AdjectiveClass::Hard,
-            "soft-short" | "ordinal-soft" => AdjectiveClass::Soft,
+            "hard-short" => AdjectiveClass::Hard,
+            "soft-short" => AdjectiveClass::Soft,
             value => return invalid_metadata("adjective class", value),
         },
         comparative_stem: PRINCIPAL_PARTS

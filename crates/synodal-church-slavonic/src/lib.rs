@@ -5,6 +5,7 @@ pub mod abbreviation;
 mod handles;
 mod inflector;
 mod kernel;
+pub mod numeral_phrases;
 mod paradigm;
 pub mod phrases;
 mod provider;
@@ -15,6 +16,12 @@ mod spec;
 pub use abbreviation::Abbreviation;
 pub use handles::{Adjective, Capabilities, Determiner, Noun, Numeral, Participle, Pronoun, Verb};
 pub use inflector::{Inflector, InflectorBuilder};
+pub use numeral_phrases::{
+    CardinalPhraseAnalysis, CompoundNumeralCell, NumeralComposition, NumeralGovernment,
+    NumeralNounPosition, OrdinalPhraseAnalysis, RealizedCardinal, RealizedOrdinal, fraction,
+    fractional_cardinal_parts, fractional_half_tenth_parts, fractional_ordinal_parts,
+    multiplicative_krat, repeated_distributive,
+};
 pub use paradigm::{Paradigm, ParadigmIdentity, ParadigmRow, ParadigmStatus};
 pub use provider::{
     BatchLexeme, BatchRequest, BatchResult, BatchRow, InMemoryLexemeProvider, LexemeProvider,
@@ -27,8 +34,8 @@ pub use registry::{
     TransformationRuleSummary,
 };
 pub use spec::{
-    AdjectiveSpec, DefectKind, DefectiveCell, DeterminerSpec, LexemeSpec, NounSpec, PronounSpec,
-    SpecificationSource, SpecifiedForm, VerbSpec, VerbSpecBuilder,
+    AdjectiveSpec, DefectKind, DefectiveCell, DeterminerSpec, LexemeSpec, NounSpec, NumeralSpec,
+    PronounSpec, SpecificationSource, SpecifiedForm, VerbSpec, VerbSpecBuilder,
 };
 pub use synodal_church_slavonic_core as core;
 pub use synodal_church_slavonic_core::{
@@ -36,7 +43,8 @@ pub use synodal_church_slavonic_core::{
     ActiveParticipleShortFormation, AdjectiveClass, AoristFormation, Aspect, AuthorityRole,
     BreathingMark, BreathingRule, ComparisonFormation, EpistemicRole, Evidence, EvidenceId,
     EvidenceKind, ImperativeFormation, ImperfectFormation, NounDeclension, NounNumberInventory,
-    ParticiplePrincipalPart, PresentPrincipalParts, RuleId, SourceId, VerbConjugation,
+    NumeralDeclension, NumeralLexeme, NumeralNumberInventory, ParticiplePrincipalPart,
+    PresentPrincipalParts, RuleId, SourceId, VerbConjugation,
 };
 pub use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Animacy, Case, CollationKey,
@@ -1235,6 +1243,39 @@ mod tests {
     }
 
     #[test]
+    fn numeral_exact_attestation_precedes_productive_background() {
+        let forms = numeral(
+            "первый",
+            NumeralCell {
+                kind: NumeralKind::Ordinal,
+                case: Case::Genitive,
+                number: Number::Singular,
+                gender: Some(Gender::Masculine),
+                animacy: Animacy::Inanimate,
+            },
+        )
+        .expect("reviewed first-ordinal cell");
+        assert_eq!(forms.primary_text(), "первагѡ");
+        assert!(forms.primary().is_attested());
+
+        let productive = numeral(
+            "первый",
+            NumeralCell {
+                kind: NumeralKind::Ordinal,
+                case: Case::Dative,
+                number: Number::Dual,
+                gender: Some(Gender::Feminine),
+                animacy: Animacy::Inanimate,
+            },
+        )
+        .expect("productive ordinal background");
+        assert!(matches!(
+            productive.primary().source,
+            core::FormSource::SynodalNormativeGeneration { .. }
+        ));
+    }
+
+    #[test]
     fn determiner_handle_generates_reviewed_short_and_long_cells() {
         let nominative = determiner(
             "всѧкъ",
@@ -1545,13 +1586,13 @@ mod tests {
             Numeral::from_id(&LexemeId::from("synodal:numeral:pervyi"))
                 .expect("productive ordinal")
                 .capabilities()
-                .productive_adjective
+                .productive_numeral
         );
         assert!(
-            !Numeral::from_id(&LexemeId::from("synodal:numeral:dva"))
+            Numeral::from_id(&LexemeId::from("synodal:numeral:dva"))
                 .expect("exact cardinal")
                 .capabilities()
-                .productive_adjective
+                .productive_numeral
         );
     }
 

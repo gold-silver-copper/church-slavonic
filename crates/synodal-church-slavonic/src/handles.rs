@@ -21,6 +21,7 @@ pub struct Capabilities {
     pub productive_noun: bool,
     pub productive_adjective: bool,
     pub productive_determiner: bool,
+    pub productive_numeral: bool,
     pub productive_pronoun: bool,
     pub present: bool,
     pub future: bool,
@@ -45,6 +46,7 @@ impl Capabilities {
             (self.productive_noun, "noun"),
             (self.productive_adjective, "adjective"),
             (self.productive_determiner, "determiner"),
+            (self.productive_numeral, "numeral"),
             (self.productive_pronoun, "pronoun"),
             (self.present, "present"),
             (self.future, "future"),
@@ -66,11 +68,8 @@ impl Capabilities {
         let noun = summary.part_of_speech() == PartOfSpeech::Noun;
         let verb = summary.part_of_speech() == PartOfSpeech::Verb;
         let id = summary.id();
-        let productive_adjective = match summary.part_of_speech() {
-            PartOfSpeech::Adjective => registry::adjective_lexeme(id).is_ok(),
-            PartOfSpeech::Numeral => registry::ordinal_lexeme(id).is_ok(),
-            _ => false,
-        };
+        let productive_adjective = summary.part_of_speech() == PartOfSpeech::Adjective
+            && registry::adjective_lexeme(id).is_ok();
         let verb_metadata = verb
             .then(|| registry::verb_lexeme(id))
             .transpose()
@@ -86,6 +85,8 @@ impl Capabilities {
             productive_adjective,
             productive_determiner: summary.part_of_speech() == PartOfSpeech::Determiner
                 && registry::determiner_lexeme(id).is_ok(),
+            productive_numeral: summary.part_of_speech() == PartOfSpeech::Numeral
+                && registry::numeral_lexeme(id).is_ok(),
             productive_pronoun: summary.part_of_speech() == PartOfSpeech::Pronoun
                 && registry::pronoun_lexeme(id).is_ok(),
             present: verb

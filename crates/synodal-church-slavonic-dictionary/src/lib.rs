@@ -894,9 +894,8 @@ fn productive_cell_is_supported(
                 && pronoun_cell_is_supported(cell, metadata.class.as_deref())
         }
         GrammarCell::Numeral(cell) => {
-            capabilities.productive_adjective
-                && cell.kind == NumeralKind::Ordinal
-                && cell.gender.is_some()
+            capabilities.productive_numeral
+                && numeral_cell_is_supported(cell, metadata.class.as_deref())
         }
         GrammarCell::FiniteVerb(cell) if productive_verb_class(metadata.class.as_deref()) => {
             match cell.tense {
@@ -1050,6 +1049,72 @@ fn determiner_cell_is_supported(cell: AdjectiveCell, class: Option<&str>) -> boo
     }
 }
 
+fn numeral_cell_is_supported(cell: NumeralCell, class: Option<&str>) -> bool {
+    let nonvocative = cell.case != Case::Vocative;
+    match class {
+        Some("numeral-cardinal-one") => {
+            cell.kind == NumeralKind::Cardinal
+                && cell.number == Number::Singular
+                && cell.gender.is_some()
+                && nonvocative
+        }
+        Some("numeral-cardinal-two" | "numeral-cardinal-both") => {
+            cell.kind == NumeralKind::Cardinal
+                && cell.number == Number::Dual
+                && cell.gender.is_some()
+                && nonvocative
+        }
+        Some("numeral-cardinal-three" | "numeral-cardinal-four") => {
+            cell.kind == NumeralKind::Cardinal
+                && cell.number == Number::Plural
+                && cell.gender.is_some()
+                && nonvocative
+        }
+        Some("numeral-cardinal-i-stem") => {
+            cell.kind == NumeralKind::Cardinal
+                && cell.gender.is_none()
+                && nonvocative
+                && (cell.number == Number::Singular
+                    || cell.number == Number::Plural
+                        && matches!(cell.case, Case::Genitive | Case::Dative | Case::Locative))
+        }
+        Some(
+            "numeral-cardinal-ten"
+            | "numeral-cardinal-hundred"
+            | "numeral-cardinal-second-hard"
+            | "numeral-cardinal-second-mixed"
+            | "numeral-cardinal-first-hard-m"
+            | "numeral-cardinal-third-f",
+        ) => cell.kind == NumeralKind::Cardinal && cell.gender.is_none() && nonvocative,
+        Some("ordinal-hard" | "ordinal-soft") => {
+            cell.kind == NumeralKind::Ordinal && cell.gender.is_some()
+        }
+        Some("numeral-collective-agreeing" | "numeral-collective-hard-plural") => {
+            cell.kind == NumeralKind::Collective
+                && cell.number == Number::Plural
+                && cell.gender.is_some()
+        }
+        Some("numeral-collective-governing-neuter") => {
+            cell.kind == NumeralKind::Collective
+                && cell.number == Number::Singular
+                && cell.gender == Some(Gender::Neuter)
+                && nonvocative
+        }
+        Some("numeral-multiplicative-hard" | "numeral-multiplicative-soft") => {
+            cell.kind == NumeralKind::Multiplicative && cell.gender.is_some()
+        }
+        Some("numeral-fractional-hard") => {
+            cell.kind == NumeralKind::Fractional && cell.gender.is_some()
+        }
+        Some(
+            "numeral-fractional-first-u"
+            | "numeral-fractional-second-hard"
+            | "numeral-fractional-third-f",
+        ) => cell.kind == NumeralKind::Fractional && cell.gender.is_none() && nonvocative,
+        _ => false,
+    }
+}
+
 fn productive_verb_class(class: Option<&str>) -> bool {
     matches!(
         class,
@@ -1184,7 +1249,7 @@ mod tests {
             (PartOfSpeech::Noun, 43),
             (PartOfSpeech::Adjective, 757),
             (PartOfSpeech::Pronoun, 673),
-            (PartOfSpeech::Numeral, 505),
+            (PartOfSpeech::Numeral, 841),
             (PartOfSpeech::Determiner, 757),
             (PartOfSpeech::Participle, 1),
         ] {
@@ -1261,6 +1326,47 @@ mod tests {
             );
             for cell in cells {
                 if !matches!(cell, GrammarCell::Determiner(_)) {
+                    continue;
+                }
+                let forms = inflector
+                    .form_by_id(lexeme.id(), cell)
+                    .unwrap_or_else(|error| panic!("{} {}: {error}", lexeme.id(), cell.key()));
+                assert!(
+                    !forms.variants().is_empty(),
+                    "{} {}",
+                    lexeme.id(),
+                    cell.key()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn every_productive_numeral_identity_realizes_every_licensed_analysis_cell() {
+        let inflector = Inflector::default();
+        for lexeme in synodal_church_slavonic::lexemes().expect("registry") {
+            if lexeme.part_of_speech() != PartOfSpeech::Numeral {
+                continue;
+            }
+            let metadata = lexical_metadata(lexeme.id()).expect("numeral metadata");
+            if !metadata
+                .class
+                .as_deref()
+                .is_some_and(|class| class.starts_with("numeral-") || class.starts_with("ordinal-"))
+            {
+                continue;
+            }
+            let cells = analysis_cells_for_lexeme(&lexeme, inflector)
+                .unwrap_or_else(|error| panic!("{} inventory: {error}", lexeme.id()));
+            assert!(
+                cells
+                    .iter()
+                    .any(|cell| matches!(cell, GrammarCell::Numeral(_))),
+                "{} has no productive numeral cells",
+                lexeme.id()
+            );
+            for cell in cells {
+                if !matches!(cell, GrammarCell::Numeral(_)) {
                     continue;
                 }
                 let forms = inflector
@@ -1509,7 +1615,7 @@ mod tests {
     fn family_supported_systems_cover_productive_and_exact_capabilities() {
         for (id, expected) in [
             ("synodal:determiner:sam", "determiner"),
-            ("synodal:numeral:pervyi", "adjective"),
+            ("synodal:numeral:pervyi", "numeral"),
             ("synodal:verb:byti", "future"),
             ("synodal:verb:wikt-78da2d05497d", "past"),
         ] {

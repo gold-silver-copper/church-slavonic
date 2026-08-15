@@ -11,6 +11,7 @@ pub mod ids;
 pub mod mapping;
 pub mod morphology;
 pub mod numeral;
+pub mod numeral_morphology;
 pub mod orthography;
 pub mod phrase;
 pub mod policy;
@@ -50,6 +51,10 @@ pub use morphology::{
     infinitive, l_participle, present, validate_noun_lexeme,
 };
 pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
+pub use numeral_morphology::{
+    NumeralDeclension, NumeralLexeme, NumeralNumberInventory, decline_numeral,
+    validate_numeral_lexeme,
+};
 pub use orthography::{
     InitialPresentation, Loss, NormalizationReport, OrthographyProfile, RenderedText, SynodalWord,
     apply_initial_presentation, normalize_lookup, normalize_lookup_accentless,

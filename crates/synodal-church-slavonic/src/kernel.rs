@@ -1,8 +1,8 @@
 use synodal_church_slavonic_core::{
-    AdjectiveCell, AdjectiveForm, Comparison, DeterminerLexeme, Error, FiniteTense, FormSet,
-    GrammarCell, NounLexeme, NumeralKind, OrthographyProfile, PronounLexeme, Result, VerbLexeme,
-    aorist, decline_adjective, decline_determiner, decline_noun, decline_participle,
-    decline_pronoun, imperative, imperfect, infinitive, l_participle, present,
+    DeterminerLexeme, Error, FiniteTense, FormSet, GrammarCell, NounLexeme, NumeralLexeme,
+    OrthographyProfile, PronounLexeme, Result, VerbLexeme, aorist, decline_adjective,
+    decline_determiner, decline_noun, decline_numeral, decline_participle, decline_pronoun,
+    imperative, imperfect, infinitive, l_participle, present,
 };
 
 use synodal_church_slavonic_core::AdjectiveLexeme;
@@ -13,6 +13,7 @@ pub(crate) enum ProductiveLexeme<'a> {
     Noun(&'a NounLexeme),
     Adjective(&'a AdjectiveLexeme),
     Determiner(&'a DeterminerLexeme),
+    Numeral(&'a NumeralLexeme),
     Pronoun(&'a PronounLexeme),
     Verb(&'a VerbLexeme),
 }
@@ -32,24 +33,8 @@ pub(crate) fn generate_productive(
         (ProductiveLexeme::Determiner(lexeme), GrammarCell::Determiner(cell)) => {
             decline_determiner(lexeme, cell, profile)
         }
-        (ProductiveLexeme::Adjective(lexeme), GrammarCell::Numeral(cell))
-            if cell.kind == NumeralKind::Ordinal =>
-        {
-            let gender = cell.gender.ok_or(Error::MissingMetadata {
-                field: synodal_church_slavonic_core::MetadataField::Gender,
-            })?;
-            decline_adjective(
-                lexeme,
-                AdjectiveCell {
-                    case: cell.case,
-                    number: cell.number,
-                    gender,
-                    animacy: cell.animacy,
-                    form: AdjectiveForm::Long,
-                    comparison: Comparison::Positive,
-                },
-                profile,
-            )
+        (ProductiveLexeme::Numeral(lexeme), GrammarCell::Numeral(cell)) => {
+            decline_numeral(lexeme, cell, profile)
         }
         (ProductiveLexeme::Pronoun(lexeme), GrammarCell::Pronoun(cell)) => {
             decline_pronoun(lexeme, cell, profile)

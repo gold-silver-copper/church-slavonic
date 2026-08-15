@@ -65,11 +65,45 @@ synodal:noun:zemlya	sense:earth-land	earth; land; ground	nature,place	dyachenko-
 synodal:noun:zhena	sense:woman-wife	woman; wife	person,family	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:zhizn	sense:life	life	nature,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:numeral:chetyre	sense:four	four	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-chetvery	sense:collective-four	four taken together; fourfold set	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-dvoe	sense:collective-two-governing	two taken together, governing a genitive plural	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-dvoi	sense:collective-two-agreeing	two sets; two taken together, agreeing	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-oboe	sense:collective-both-governing	both as one collective whole	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-oboi	sense:collective-both-agreeing	both sets, agreeing	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-pyatery	sense:collective-five	five taken together; fivefold set	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-shestery	sense:collective-six	six taken together; sixfold set	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-troe	sense:collective-three-governing	three taken together, governing a genitive plural	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:collective-troi	sense:collective-three-agreeing	three sets; three taken together, agreeing	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:desyatyi	sense:tenth	tenth; ordinal ten	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:devyatyi	sense:ninth	ninth; ordinal nine	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:dva	sense:two	two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:edin	sense:one	one	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:fractional-chetvert	sense:quarter	one quarter	number,fraction	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:fractional-desyatina	sense:tenth-fraction	one tenth; tithe	number,fraction	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:fractional-pol	sense:half	one half	number,fraction	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:fractional-poludesyatyi	sense:half-tenth	half-to-the-tenth; fractional half-unit expression	number,fraction	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:numeral:legeon	sense:hundred-thousand	one hundred thousand	number,magnitude	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:leodr	sense:million	one million	number,magnitude	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:multiplicative-dvokratnyi	sense:twofold	twofold; occurring twice	number,multiplicative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:multiplicative-edinokratnyi	sense:once-adjectival	once; single-occurrence adjective	number,multiplicative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:multiplicative-pyatikratnyi	sense:fivefold	fivefold; occurring five times	number,multiplicative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:multiplicative-sugubyi	sense:double	double; twofold	number,multiplicative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:multiplicative-tregubyi	sense:triple	triple; threefold	number,multiplicative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:multiplicative-troekratnyi	sense:threefold	threefold; occurring three times	number,multiplicative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:nesved	sense:innumerable	an uncountably large number; normative but absent from church books	number,magnitude	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:oba	sense:both	both	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:osmyi	sense:eighth	eighth; ordinal eight	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:pervyi	sense:first	first; ordinal one	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:pyatyi	sense:fifth	fifth; ordinal five	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:sedmyi	sense:seventh	seventh; ordinal seven	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:shestyi	sense:sixth	sixth; ordinal six	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:tma	sense:ten-thousand	ten thousand; a myriad	number,magnitude	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:tretii	sense:third	third; ordinal three	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:tri	sense:three	three	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:tysiascha	sense:thousand	one thousand	number,magnitude	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:v06-sto	sense:v06:sto	one hundred	number,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:vtoryi	sense:second	second; ordinal two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:numeral:chetvertyi	sense:fourth	fourth; ordinal four	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:particle:negative-ni	sense:negative-particle-ni	negative particle; negative pronoun component	grammar,negation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:az	sense:first-person	I; first-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:chii	sense:whose	whose; interrogative possessive pronoun	possession,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative

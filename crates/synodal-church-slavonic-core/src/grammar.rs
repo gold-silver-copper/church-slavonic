@@ -93,6 +93,8 @@ closed_enum!(NumeralKind {
     Cardinal => "cardinal",
     Ordinal => "ordinal",
     Collective => "collective",
+    Multiplicative => "multiplicative",
+    Fractional => "fractional",
 });
 
 /// A complete verb-system inventory understood by the public paradigm API.
@@ -726,7 +728,7 @@ mod tests {
         ];
         assert_eq!(
             NumeralCell::inventory(&NumeralKind::ALL, &optional_genders).len(),
-            504
+            840
         );
     }
 

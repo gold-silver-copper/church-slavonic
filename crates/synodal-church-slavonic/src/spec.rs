@@ -6,17 +6,19 @@ use synodal_church_slavonic_core::{
     ComparisonFormation, DeterminerDeclension, DeterminerLexeme, DeterminerNumberInventory,
     EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind, FiniteTense, FormSet, Gender,
     GrammarCell, ImperativeFormation, ImperfectFormation, MetadataField, NounDeclension,
-    NounLexeme, OrthographyProfile, ParticiplePrincipalPart, ParticipleTense, ParticipleVoice,
-    PresentPrincipalParts, PronounDeclension, PronounEnvironment, PronounFormSelection,
-    PronounLexeme, PronounNumberInventory, PronounPostpositive, PronounPrefix, Recension,
-    RenderedText, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme, VerbSystem,
-    validate_determiner_lexeme, validate_noun_lexeme, validate_pronoun_lexeme,
+    NounLexeme, NumeralDeclension, NumeralLexeme, NumeralNumberInventory, OrthographyProfile,
+    ParticiplePrincipalPart, ParticipleTense, ParticipleVoice, PresentPrincipalParts,
+    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
+    PronounNumberInventory, PronounPostpositive, PronounPrefix, Recension, RenderedText, Result,
+    SourceId, SynodalWord, VerbConjugation, VerbLexeme, VerbSystem, validate_determiner_lexeme,
+    validate_noun_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
 };
 
 use crate::{
     Inflector, Paradigm, PartOfSpeech,
     paradigm::{
-        adjective_cells, finite_cells, noun_cells, participle_cells, pronoun_cells, verb_cells,
+        adjective_cells, finite_cells, noun_cells, numeral_cells, participle_cells, pronoun_cells,
+        verb_cells,
     },
 };
 
@@ -573,6 +575,102 @@ impl DeterminerSpec {
     }
 }
 
+/// Caller-supplied typed metadata for a Synodal numeral word. Compound,
+/// distributive, and periphrastic numeral constructions use the separate
+/// structured composition API because their realizations may contain several
+/// independently inflected words.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct NumeralSpec {
+    pub(crate) lexeme: NumeralLexeme,
+    pub(crate) context: SpecContext,
+}
+
+impl NumeralSpec {
+    pub fn new(
+        lemma: impl Into<String>,
+        stem: impl Into<String>,
+        declension: NumeralDeclension,
+        source: SpecificationSource,
+    ) -> Result<Self> {
+        let spec = Self {
+            lexeme: NumeralLexeme::new(
+                SynodalWord::parse(lemma)?,
+                SynodalWord::parse(stem)?,
+                declension,
+            ),
+            context: SpecContext::new(source),
+        };
+        spec.validate()?;
+        Ok(spec)
+    }
+
+    #[must_use]
+    pub fn lemma(&self) -> &str {
+        self.lexeme.lemma.canonical()
+    }
+
+    pub fn with_number_inventory(mut self, inventory: NumeralNumberInventory) -> Result<Self> {
+        self.lexeme.number_inventory = inventory;
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_accent_paradigm(mut self, accent: AccentParadigm) -> Result<Self> {
+        self.context.accent = Some(accent);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
+        self.context.irregular_forms.push(form);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_defective_cell(mut self, cell: DefectiveCell) -> Result<Self> {
+        self.context.defective_cells.push(cell);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn form(&self, cell: synodal_church_slavonic_core::NumeralCell) -> Result<FormSet> {
+        self.form_with(Inflector::default(), cell)
+    }
+
+    pub fn form_with(
+        &self,
+        inflector: Inflector,
+        cell: synodal_church_slavonic_core::NumeralCell,
+    ) -> Result<FormSet> {
+        inflector.form_spec(&LexemeSpec::from(self.clone()), GrammarCell::Numeral(cell))
+    }
+
+    #[must_use]
+    pub fn paradigm(&self) -> Paradigm {
+        self.paradigm_with(Inflector::default())
+    }
+
+    #[must_use]
+    pub fn paradigm_with(&self, inflector: Inflector) -> Paradigm {
+        let spec = LexemeSpec::from(self.clone());
+        Paradigm::build_explicit(
+            self.lemma().into(),
+            PartOfSpeech::Numeral,
+            numeral_cells(self.lexeme.declension.kind()),
+            |cell| inflector.form_spec(&spec, cell),
+        )
+    }
+
+    pub fn validate(&self) -> Result<()> {
+        self.context.validate()?;
+        validate_context_cells(&self.context, |cell| {
+            matches!(cell, GrammarCell::Numeral(_))
+        })?;
+        validate_numeral_lexeme(&self.lexeme)
+    }
+}
+
 /// Caller-supplied typed metadata for a Synodal pronoun. The specification
 /// keeps lexical person/gender profiles, clitic selection, and conditioned
 /// third-person allomorphy separate from the requested case cell.
@@ -1078,6 +1176,7 @@ pub(crate) enum LexemeSpecInner {
     Noun(NounSpec),
     Adjective(AdjectiveSpec),
     Determiner(DeterminerSpec),
+    Numeral(NumeralSpec),
     Pronoun(PronounSpec),
     Verb(Box<VerbSpec>),
 }
@@ -1088,6 +1187,7 @@ impl LexemeSpec {
             LexemeSpecInner::Noun(spec) => spec.validate(),
             LexemeSpecInner::Adjective(spec) => spec.validate(),
             LexemeSpecInner::Determiner(spec) => spec.validate(),
+            LexemeSpecInner::Numeral(spec) => spec.validate(),
             LexemeSpecInner::Pronoun(spec) => spec.validate(),
             LexemeSpecInner::Verb(spec) => spec.validate(),
         }
@@ -1099,6 +1199,7 @@ impl LexemeSpec {
             LexemeSpecInner::Noun(spec) => spec.lemma(),
             LexemeSpecInner::Adjective(spec) => spec.lemma(),
             LexemeSpecInner::Determiner(spec) => spec.lemma(),
+            LexemeSpecInner::Numeral(spec) => spec.lemma(),
             LexemeSpecInner::Pronoun(spec) => spec.lemma(),
             LexemeSpecInner::Verb(spec) => spec.lemma(),
         }
@@ -1110,6 +1211,7 @@ impl LexemeSpec {
             LexemeSpecInner::Noun(_) => PartOfSpeech::Noun,
             LexemeSpecInner::Adjective(_) => PartOfSpeech::Adjective,
             LexemeSpecInner::Determiner(_) => PartOfSpeech::Determiner,
+            LexemeSpecInner::Numeral(_) => PartOfSpeech::Numeral,
             LexemeSpecInner::Pronoun(_) => PartOfSpeech::Pronoun,
             LexemeSpecInner::Verb(_) => PartOfSpeech::Verb,
         }
@@ -1125,6 +1227,7 @@ impl LexemeSpec {
             LexemeSpecInner::Noun(spec) => &spec.context,
             LexemeSpecInner::Adjective(spec) => &spec.context,
             LexemeSpecInner::Determiner(spec) => &spec.context,
+            LexemeSpecInner::Numeral(spec) => &spec.context,
             LexemeSpecInner::Pronoun(spec) => &spec.context,
             LexemeSpecInner::Verb(spec) => &spec.context,
         }
@@ -1155,6 +1258,14 @@ impl From<DeterminerSpec> for LexemeSpec {
     fn from(spec: DeterminerSpec) -> Self {
         Self {
             inner: Box::new(LexemeSpecInner::Determiner(spec)),
+        }
+    }
+}
+
+impl From<NumeralSpec> for LexemeSpec {
+    fn from(spec: NumeralSpec) -> Self {
+        Self {
+            inner: Box::new(LexemeSpecInner::Numeral(spec)),
         }
     }
 }
@@ -1317,7 +1428,8 @@ mod tests {
     use crate::ParadigmStatus;
     use synodal_church_slavonic_core::{
         AccentMark, AccentPlacement, AccentRule, AccentScope, AdjectiveCell, Animacy, Case,
-        FormSource, MetadataField, NounCell, Number, ParticipleCell, Person,
+        FormSource, MetadataField, NounCell, Number, NumeralCell, NumeralKind, ParticipleCell,
+        Person,
     };
 
     fn source() -> SpecificationSource {
@@ -1379,6 +1491,41 @@ mod tests {
             FormSource::CallerSpecifiedPrediction { .. }
         ));
         assert_eq!(spec.paradigm(Animacy::Animate).iter().count(), 21);
+    }
+
+    #[test]
+    fn unregistered_numeral_uses_the_same_typed_kernel_as_registry_numerals() {
+        let spec = NumeralSpec::new(
+            "девѧть",
+            "девѧт",
+            NumeralDeclension::CardinalIStem,
+            source(),
+        )
+        .expect("valid numeral spec");
+        let genitive = spec
+            .form(NumeralCell {
+                kind: NumeralKind::Cardinal,
+                case: Case::Genitive,
+                number: Number::Singular,
+                gender: None,
+                animacy: Animacy::Inanimate,
+            })
+            .expect("productive numeral cell");
+        assert_eq!(genitive.primary_text(), "девѧти");
+        assert!(matches!(
+            genitive.primary().source,
+            FormSource::CallerSpecifiedPrediction { .. }
+        ));
+        assert!(matches!(
+            spec.form(NumeralCell {
+                kind: NumeralKind::Cardinal,
+                case: Case::Accusative,
+                number: Number::Plural,
+                gender: None,
+                animacy: Animacy::Inanimate,
+            }),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
     }
 
     #[test]

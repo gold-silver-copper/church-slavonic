@@ -12,6 +12,11 @@ pub enum AnalyticConstruction {
     EncliticPronoun,
     ThirdPersonPrepositionalContraction,
     NegativePronounPrepositional,
+    CompoundCardinal,
+    CompoundOrdinal,
+    RepeatedDistributive,
+    MultiplicativeKrat,
+    FractionalPart,
 }
 
 /// Accentual behavior of a short personal/reflexive pronoun after its host
@@ -53,6 +58,10 @@ pub enum PhraseRole {
     Particle,
     Preposition,
     Pronoun,
+    Numeral,
+    Conjunction,
+    MultiplicativeUnit,
+    FractionNoun,
     Complement,
 }
 
