@@ -951,6 +951,9 @@ fn productive_cell_is_supported(
                 || cell.agreement.form != AdjectiveForm::Short
                 || part.formation.is_some()
         }
+        GrammarCell::VerbalNoun(_) if productive_verb_class(metadata.class.as_deref()) => {
+            capabilities.verbal_noun
+        }
         GrammarCell::LexicalForm
         | GrammarCell::Indeclinable
         | GrammarCell::Supine
@@ -1240,6 +1243,30 @@ mod tests {
                 .iter()
                 .any(|cell| matches!(cell, GrammarCell::VerbalNoun(_)))
         );
+    }
+
+    #[test]
+    fn generated_reverse_index_covers_complete_verbal_noun_paradigms() {
+        let id = LexemeId::from("synodal:verb:nesti");
+        let cells = analysis_cells_by_id(&id, Inflector::default())
+            .expect("reviewed productive verb inventory");
+        let verbal_nouns = cells
+            .iter()
+            .filter(|cell| matches!(cell, GrammarCell::VerbalNoun(_)))
+            .count();
+        assert_eq!(verbal_nouns, 42);
+
+        let analyses = analyze("несенїѧ").expect("productive reverse analysis");
+        assert!(analyses.iter().any(|analysis| {
+            analysis.lexeme.id() == &id
+                && analysis.cell
+                    == Some(GrammarCell::VerbalNoun(core::NounCell {
+                        case: Case::Genitive,
+                        number: Number::Singular,
+                        animacy: Animacy::Inanimate,
+                    }))
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
     }
 
     #[test]

@@ -283,6 +283,25 @@ lesson 6 §II independently teaches the same target construction with `-ти` an
 boundary explicitly: Russian history merged the supine and infinitive, and
 Church Slavonic grammars normally do not distinguish a supine.
 
+### Source-bounded verbal nouns
+
+Alypy §27 defines action/state nouns in `-їе` from the complete base of a
+past passive participle, including `осꙋжденїе`, `ѹченїе`, `моленїе`,
+`распѧтїе`, and `житїе`. Alypy §34 supplies the complete soft-neuter
+`-їе` declension. `VerbalNounPrincipalPart::past_passive_ie` encodes an
+independent platform; when a verb already has a reviewed short past-passive
+principal part, the same typed platform is reused automatically. Every case,
+number, and animacy request then delegates to the noun inflector and retains a
+separate verbal-noun formation step in its evidence and trace.
+
+Section 27 also lists `-ота/-ета`, `-ба`, `-ежъ`, `-нь/-снь/-знь`, `-тва`,
+`-ть`, and `-изна` families, but gives no rule that selects one of them for an arbitrary
+verb. `VerbalNounPrincipalPart::explicit_lexical` therefore requires the
+resulting noun's complete lemma, stem, declension, gender, number inventory,
+and—when liturgical output is requested—accent. This closes their inflection
+without claiming unrestricted derivational morphology. The locked target data
+independently crosscheck the productive analysis with `моленїе`.
+
 `GrammarCell::Supine` and `VerbSystem::Supine` remain in the public type system
 so source adapters can preserve an explicitly labeled external category. A
 productive target request returns `HistoricallyInvalidCell`, and the bundled
@@ -463,8 +482,8 @@ The closed grammar enums represent these gaps so paradigms retain failures:
   predicate nominatives licensed by Alypy §§59, 125, and 128;
 - automatic participle stem formation from an undifferentiated verb stem;
   short active participles require an independent stem and typed formation;
-- productive verbal nouns pending lexical suffix metadata and unregistered
-  irregular verbs; the separately represented supine is closed as historically
+- lexical verbal-noun suffix selection without a complete derived noun and
+  unregistered irregular verbs; the separately represented supine is closed as historically
   merged with the infinitive and fails with `HistoricallyInvalidCell` unless a
   caller supplies an explicit compatibility cell;
 - accent paradigms beyond the four reviewed lexical rules, complete breathing/positional-letter

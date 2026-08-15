@@ -9,4 +9,5 @@ v10:verb:lyubiti-second-edge	synodal:verb:lyubiti	present:first:singular	люб�
 v10:verb:lyubiti-exact-first	synodal:verb:lyubiti	present:third:singular	любитъ		attested	alypy-gamanovich-grammar-web-2023	§82 plus exact Synodal witness
 v10:verb:byti-irregular-first	synodal:verb:byti	present:first:singular	єсмь		irregular	alypy-gamanovich-grammar-web-2023	§81 exact irregular table
 v10:verb:nesti-unsupported-future	synodal:verb:nesti	future:third:singular		EvidenceIncompleteCell	error	alypy-gamanovich-grammar-web-2023	§84 contextual future reading cannot be inferred for imperfective нести
+v11:verb:nesti-verbal-noun	synodal:verb:nesti	verbal-noun:genitive:singular:inanimate	несенїѧ		productive	alypy-gamanovich-grammar-web-2023	§27 past-passive base plus -їе; §34 soft-neuter declension
 v10:verb:pisati-missing-participle	synodal:verb:pisati	participle:present:passive:nominative:singular:masculine:inanimate:short:positive		MissingPrincipalPart	error	alypy-gamanovich-grammar-web-2023	§99 relationship not promoted without stored participial principal part

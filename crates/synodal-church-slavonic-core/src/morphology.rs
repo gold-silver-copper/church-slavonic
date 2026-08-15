@@ -266,6 +266,119 @@ pub struct ParticiplePrincipalPart {
     pub class: AdjectiveClass,
 }
 
+/// Source-bounded formation used to connect a verb to a completely specified
+/// derived noun.
+///
+/// Alypy §27 makes only the `-їе` family mechanically recoverable from a
+/// past-passive base. Its other deverbal suffixes are lexical choices, so they
+/// remain productive only after the resulting noun itself has been supplied.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum VerbalNounFormation {
+    PastPassiveIe,
+    ExplicitLexicalNoun,
+}
+
+/// Complete typed metadata for one Synodal verbal noun.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct VerbalNounPrincipalPart {
+    noun: NounLexeme,
+    formation: VerbalNounFormation,
+}
+
+impl VerbalNounPrincipalPart {
+    /// Forms the productive abstract noun in `-їе` from the complete
+    /// short past-passive platform, for example `молен- : моленїе`.
+    pub fn past_passive_ie(platform: impl Into<String>) -> Result<Self> {
+        let platform = SynodalWord::parse(platform)?;
+        if !matches!(platform.canonical().chars().last(), Some('н' | 'т')) {
+            return Err(Error::ContradictoryMetadata {
+                reason: "a productive verbal noun in -їе requires a short past-passive platform ending in н or т"
+                    .into(),
+            });
+        }
+        let lemma = SynodalWord::parse(format!("{}їе", platform.canonical()))?;
+        let stem = SynodalWord::parse(format!("{}ї", platform.canonical()))?;
+        let noun = NounLexeme::new(
+            lemma,
+            stem,
+            Gender::Neuter,
+            NounDeclension::FirstSoftNeuterIe,
+        );
+        let principal_part = Self {
+            noun,
+            formation: VerbalNounFormation::PastPassiveIe,
+        };
+        principal_part.validate()?;
+        Ok(principal_part)
+    }
+
+    /// Admits one of Alypy §27's lexical suffix families only after the
+    /// caller has supplied its complete noun identity and declensional class.
+    pub fn explicit_lexical(noun: NounLexeme) -> Result<Self> {
+        let principal_part = Self {
+            noun,
+            formation: VerbalNounFormation::ExplicitLexicalNoun,
+        };
+        principal_part.validate()?;
+        Ok(principal_part)
+    }
+
+    #[must_use]
+    pub const fn noun(&self) -> &NounLexeme {
+        &self.noun
+    }
+
+    #[must_use]
+    pub const fn formation(&self) -> VerbalNounFormation {
+        self.formation
+    }
+
+    /// Rejects deserialized or internally assembled metadata that does not
+    /// satisfy the selected source-bounded formation.
+    pub fn validate(&self) -> Result<()> {
+        validate_noun_lexeme(&self.noun)?;
+        match self.formation {
+            VerbalNounFormation::PastPassiveIe => {
+                let stem = self.noun.stem.canonical();
+                let platform =
+                    stem.strip_suffix('ї')
+                        .ok_or_else(|| Error::ContradictoryMetadata {
+                            reason: "a productive verbal noun in -їе requires a stem ending in ї"
+                                .into(),
+                        })?;
+                if self.noun.declension != NounDeclension::FirstSoftNeuterIe
+                    || self.noun.gender != Gender::Neuter
+                    || self.noun.number_inventory != NounNumberInventory::All
+                    || self.noun.lemma.canonical() != format!("{stem}е")
+                    || !matches!(platform.chars().last(), Some('н' | 'т'))
+                {
+                    return Err(Error::ContradictoryMetadata {
+                        reason: "a productive verbal noun in -їе requires a neuter all-number -їе noun built on a short past-passive platform ending in н or т"
+                            .into(),
+                    });
+                }
+            }
+            VerbalNounFormation::ExplicitLexicalNoun => {
+                let lemma = strip_presentation_marks(self.noun.lemma.canonical()).to_lowercase();
+                if ![
+                    "ота", "ета", "ба", "ежъ", "нь", "снь", "знь", "тва", "ть", "изна",
+                ]
+                .into_iter()
+                .any(|suffix| lemma.ends_with(suffix))
+                {
+                    return Err(Error::ContradictoryMetadata {
+                        reason: "an explicit lexical verbal noun must belong to one of Alypy §27's -ота/-ета/-ба/-ежъ/-нь/-снь/-знь/-тва/-ть/-изна families"
+                            .into(),
+                    });
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum ActiveParticipleShortFormation {
@@ -386,10 +499,23 @@ pub struct VerbLexeme {
     pub past_active_participle: Option<ParticiplePrincipalPart>,
     pub present_passive_participle: Option<ParticiplePrincipalPart>,
     pub past_passive_participle: Option<ParticiplePrincipalPart>,
-    pub verbal_noun: Option<(SynodalWord, NounDeclension, Gender)>,
+    pub verbal_noun: Option<VerbalNounPrincipalPart>,
 }
 
 impl VerbLexeme {
+    fn verbal_noun_is_complete(&self) -> bool {
+        match &self.verbal_noun {
+            Some(principal_part) => principal_part.validate().is_ok(),
+            None => self
+                .past_passive_participle
+                .as_ref()
+                .and_then(|part| part.short_stem.as_ref())
+                .is_some_and(|platform| {
+                    VerbalNounPrincipalPart::past_passive_ie(platform.canonical()).is_ok()
+                }),
+        }
+    }
+
     /// Reports principal parts absent from the productive background for one
     /// system. Exact overrides can still satisfy individual registered cells.
     #[must_use]
@@ -473,13 +599,86 @@ impl VerbLexeme {
             // the historically absent category.
             VerbSystem::Supine => {}
             VerbSystem::VerbalNoun { .. } => {
-                if self.verbal_noun.is_none() {
+                if !self.verbal_noun_is_complete() {
                     missing.push(MetadataField::VerbalNounStem);
                 }
             }
         }
         missing
     }
+}
+
+/// Forms and completely declines a source-bounded Synodal verbal noun.
+///
+/// Alypy §27 licenses `-їе` on a past-passive base; §34 supplies the
+/// full soft-neuter paradigm. Other §27 suffix families are accepted only as
+/// explicitly specified noun lexemes, preventing arbitrary suffix guessing.
+pub fn decline_verbal_noun(
+    lexeme: &VerbLexeme,
+    cell: crate::NounCell,
+    profile: OrthographyProfile,
+) -> Result<FormSet> {
+    let principal_part = if let Some(principal_part) = &lexeme.verbal_noun {
+        principal_part.clone()
+    } else if let Some(platform) = lexeme
+        .past_passive_participle
+        .as_ref()
+        .and_then(|part| part.short_stem.as_ref())
+    {
+        VerbalNounPrincipalPart::past_passive_ie(platform.canonical())?
+    } else {
+        return Err(Error::MissingPrincipalPart {
+            field: MetadataField::VerbalNounStem,
+        });
+    };
+    principal_part.validate()?;
+
+    let (rule, stage, citation) = match principal_part.formation() {
+        VerbalNounFormation::PastPassiveIe => (
+            "SYN-VERB-VERBAL-NOUN-IE-ALYPY-27",
+            "verbal-noun-formation-past-passive-ie",
+            "Alypy (Gamanovich), §27 `-їе` from past-passive bases; §34 declension",
+        ),
+        VerbalNounFormation::ExplicitLexicalNoun => (
+            "SYN-VERB-VERBAL-NOUN-LEXICAL-ALYPY-27",
+            "verbal-noun-explicit-lexical-formation",
+            "Alypy (Gamanovich), §27 lexical deverbal suffix families; noun declension §§34–44",
+        ),
+    };
+    let rule_id = RuleId::from(rule);
+    let evidence_id = EvidenceId::from(format!("normative:{rule}"));
+    let evidence = Evidence {
+        id: evidence_id.clone(),
+        source: SourceId::from("alypy-gamanovich-grammar-web-2023"),
+        source_recension: Recension::SynodalRussian,
+        kind: EvidenceKind::NormativeRule,
+        authority_roles: vec![AuthorityRole::Grammatical, AuthorityRole::Morphological],
+        epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+        citation: citation.into(),
+        note: Some(format!("stable rule {rule}")),
+    };
+    let citation_form = principal_part.noun().lemma.canonical().to_owned();
+    let declined = decline_noun(principal_part.noun(), cell, profile)?;
+    let mut variants = Vec::<FormVariant>::from(declined);
+    for variant in &mut variants {
+        variant.source = FormSource::SynodalNormativeGeneration {
+            rule: rule_id.clone(),
+        };
+        variant.evidence.insert(0, evidence.clone());
+        let mut steps = vec![TraceStep {
+            rule: rule_id.clone(),
+            stage: stage.into(),
+            input: lexeme.lemma.canonical().into(),
+            output: citation_form.clone(),
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: None,
+            evidence: vec![evidence_id.clone()],
+        }];
+        steps.extend(variant.rule_trace.steps().iter().cloned());
+        variant.rule_trace = RuleTrace::new(steps);
+    }
+    FormSet::try_from_variants(variants)
 }
 
 pub fn decline_noun(
@@ -4905,6 +5104,263 @@ mod tests {
             }),
             verbal_noun: None,
         }
+    }
+
+    #[test]
+    fn verbal_noun_ie_has_the_complete_alypy_27_34_paradigm() {
+        let mut verb = regular_verb();
+        verb.lemma = word("молити");
+        verb.past_passive_participle = Some(ParticiplePrincipalPart {
+            short_stem: Some(word("молен")),
+            short_formation: None,
+            long_stem: Some(word("моленн")),
+            class: AdjectiveClass::Hard,
+        });
+        let expected: &[&[&str]] = &[
+            &["моленїе"],
+            &["моленїѧ"],
+            &["моленїю"],
+            &["моленїе"],
+            &["моленїемъ"],
+            &["моленїи"],
+            &["моленїе"],
+            &["молєнїи"],
+            &["молєнїю"],
+            &["моленїема"],
+            &["молєнїи"],
+            &["моленїема"],
+            &["молєнїю"],
+            &["молєнїи"],
+            &["молєнїѧ"],
+            &["моленїй"],
+            &["моленїємъ"],
+            &["молєнїѧ"],
+            &["моленїи", "моленьми", "моленми"],
+            &["моленїихъ"],
+            &["молєнїѧ"],
+        ];
+
+        for animacy in Animacy::ALL {
+            for (index, (number, case)) in Number::ALL
+                .into_iter()
+                .flat_map(|number| Case::ALL.into_iter().map(move |case| (number, case)))
+                .enumerate()
+            {
+                let forms = decline_verbal_noun(
+                    &verb,
+                    NounCell {
+                        case,
+                        number,
+                        animacy,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .unwrap_or_else(|error| panic!("{animacy:?} {number:?} {case:?}: {error}"));
+                assert_eq!(
+                    forms.texts().collect::<Vec<_>>().as_slice(),
+                    expected[index],
+                    "{animacy:?} {number:?} {case:?}"
+                );
+                assert!(matches!(
+                    &forms.primary().source,
+                    FormSource::SynodalNormativeGeneration { rule }
+                        if rule.as_str() == "SYN-VERB-VERBAL-NOUN-IE-ALYPY-27"
+                ));
+                assert_eq!(
+                    forms.primary().rule_trace.steps()[0].stage,
+                    "verbal-noun-formation-past-passive-ie"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn verbal_noun_keeps_lexical_suffix_choice_explicit() {
+        let mut verb = regular_verb();
+        verb.lemma = word("молитися");
+        verb.past_passive_participle = None;
+        assert_eq!(
+            decline_verbal_noun(
+                &verb,
+                NounCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::MissingPrincipalPart {
+                field: MetadataField::VerbalNounStem,
+            })
+        );
+
+        verb.verbal_noun = Some(
+            VerbalNounPrincipalPart::explicit_lexical(
+                NounLexeme::new(
+                    word("молитва"),
+                    word("молитв"),
+                    Gender::Feminine,
+                    NounDeclension::SecondHard,
+                )
+                .with_number_inventory(NounNumberInventory::SingularAndPlural),
+            )
+            .expect("complete lexical deverbal noun"),
+        );
+        let nominative = decline_verbal_noun(
+            &verb,
+            NounCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                animacy: Animacy::Inanimate,
+            },
+            OrthographyProfile::Expanded,
+        )
+        .expect("explicit lexical suffix family");
+        assert_eq!(nominative.primary_text(), "молитва");
+        assert!(matches!(
+            &nominative.primary().source,
+            FormSource::SynodalNormativeGeneration { rule }
+                if rule.as_str() == "SYN-VERB-VERBAL-NOUN-LEXICAL-ALYPY-27"
+        ));
+        assert!(matches!(
+            decline_verbal_noun(
+                &verb,
+                NounCell {
+                    case: Case::Nominative,
+                    number: Number::Dual,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
+    fn productive_verbal_noun_rejects_a_non_participial_platform() {
+        assert!(matches!(
+            VerbalNounPrincipalPart::past_passive_ie("моли"),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+
+        let mut verb = regular_verb();
+        verb.verbal_noun = None;
+        verb.past_passive_participle = Some(ParticiplePrincipalPart {
+            short_stem: Some(word("моли")),
+            short_formation: None,
+            long_stem: Some(word("моленн")),
+            class: AdjectiveClass::Hard,
+        });
+        assert_eq!(
+            verb.missing_principal_parts(VerbSystem::VerbalNoun {
+                animacy: Animacy::Inanimate,
+            }),
+            [MetadataField::VerbalNounStem]
+        );
+    }
+
+    #[test]
+    fn lexical_verbal_noun_requires_an_alypy_27_suffix_family() {
+        for (lemma, stem, gender, declension) in [
+            (
+                "работа",
+                "работ",
+                Gender::Feminine,
+                NounDeclension::SecondHard,
+            ),
+            (
+                "сꙋета",
+                "сꙋет",
+                Gender::Feminine,
+                NounDeclension::SecondHard,
+            ),
+            (
+                "слꙋжба",
+                "слꙋжб",
+                Gender::Feminine,
+                NounDeclension::SecondHard,
+            ),
+            (
+                "падежъ",
+                "падеж",
+                Gender::Masculine,
+                NounDeclension::FirstMixedMasculine,
+            ),
+            (
+                "дань",
+                "дан",
+                Gender::Feminine,
+                NounDeclension::ThirdFeminine,
+            ),
+            (
+                "пѣснь",
+                "пѣсн",
+                Gender::Feminine,
+                NounDeclension::ThirdFeminine,
+            ),
+            (
+                "жизнь",
+                "жизн",
+                Gender::Feminine,
+                NounDeclension::ThirdFeminine,
+            ),
+            (
+                "молитва",
+                "молитв",
+                Gender::Feminine,
+                NounDeclension::SecondHard,
+            ),
+            (
+                "власть",
+                "власт",
+                Gender::Feminine,
+                NounDeclension::ThirdFeminine,
+            ),
+            (
+                "ꙋкоризна",
+                "ꙋкоризн",
+                Gender::Feminine,
+                NounDeclension::SecondHard,
+            ),
+        ] {
+            VerbalNounPrincipalPart::explicit_lexical(NounLexeme::new(
+                word(lemma),
+                word(stem),
+                gender,
+                declension,
+            ))
+            .unwrap_or_else(|error| panic!("{lemma}: {error}"));
+        }
+
+        assert!(matches!(
+            VerbalNounPrincipalPart::explicit_lexical(NounLexeme::new(
+                word("столъ"),
+                word("стол"),
+                Gender::Masculine,
+                NounDeclension::FirstHardMasculine,
+            )),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+    }
+
+    #[test]
+    fn accented_verbal_noun_platform_supports_the_liturgical_profile() {
+        let mut verb = regular_verb();
+        verb.lemma = word("молити");
+        verb.verbal_noun = Some(
+            VerbalNounPrincipalPart::past_passive_ie("моле́н").expect("accented source platform"),
+        );
+        let forms = decline_verbal_noun(
+            &verb,
+            NounCell {
+                case: Case::Genitive,
+                number: Number::Singular,
+                animacy: Animacy::Inanimate,
+            },
+            OrthographyProfile::SynodalLiturgical,
+        )
+        .expect("accented productive verbal noun");
+        assert_eq!(forms.primary_text(), "моле́нїѧ");
     }
 
     fn assert_productive_contract(forms: &FormSet) {

@@ -52,11 +52,12 @@ pub use synodal_church_slavonic_core::{
     DeterminerDeclension, DeterminerLexeme, DeterminerNumberInventory, Error, ErrorCode,
     FiniteTense, FiniteVerbCell, FormSet, FormSource, Gender, GenerationPolicy, GrammarCell,
     ImperativeCell, InitialPresentation, LParticipleCell, LexemeId, Loss, MetadataField,
-    NegativePronounBase, NounCell, Number, NumeralCell, NumeralKind, OrthographyProfile,
-    ParticipleCell, ParticipleTense, ParticipleVoice, Person, PhraseRole, PhraseToken, PronounCell,
-    PronounCliticProsody, PronounDeclension, PronounEnvironment, PronounFormSelection,
-    PronounNumberInventory, PronounPostpositive, PronounPrefix, RealizedPhrase, Recension,
-    RenderedText, Result, SynodalWord, TransliterationScheme, VariantPolicy, VerbSystem,
+    NegativePronounBase, NounCell, NounLexeme, Number, NumeralCell, NumeralKind,
+    OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice, Person, PhraseRole,
+    PhraseToken, PronounCell, PronounCliticProsody, PronounDeclension, PronounEnvironment,
+    PronounFormSelection, PronounNumberInventory, PronounPostpositive, PronounPrefix,
+    RealizedPhrase, Recension, RenderedText, Result, SynodalWord, TransliterationScheme,
+    VariantPolicy, VerbSystem, VerbalNounFormation, VerbalNounPrincipalPart,
     apply_initial_presentation, collation_key, compare_synodal, format_cyrillic_numeral,
     normalize_lookup, normalize_lookup_accentless, parse_cyrillic_numeral, transliterate,
 };
@@ -1554,6 +1555,36 @@ mod tests {
             supine("быти"),
             Err(Error::HistoricallyInvalidCell { .. })
         ));
+
+        let nesti = Verb::resolve("нести").expect("reviewed regular verb");
+        assert!(nesti.capabilities().verbal_noun);
+        assert!(
+            nesti
+                .missing_principal_parts(VerbSystem::VerbalNoun {
+                    animacy: Animacy::Inanimate,
+                })
+                .expect("represented productive system")
+                .is_empty()
+        );
+        for animacy in Animacy::ALL {
+            let paradigm = nesti.system_paradigm(VerbSystem::VerbalNoun { animacy });
+            assert_eq!(paradigm.iter().count(), 21);
+            assert_eq!(paradigm.successes().count(), 21);
+            assert_eq!(paradigm.failures().count(), 0);
+        }
+        assert_eq!(
+            verbal_noun(
+                "нести",
+                NounCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    animacy: Animacy::Inanimate,
+                },
+            )
+            .expect("past-passive-platform verbal noun")
+            .primary_text(),
+            "несенїѧ"
+        );
         assert!(
             !verb
                 .missing_metadata()

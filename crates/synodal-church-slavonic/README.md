@@ -257,8 +257,9 @@ Direct lemma-plus-dimension functions include `noun`, `long_adjective`,
 `l_participle`, `pronoun`, `determiner`, `numeral`, `participle`, `supine`, and
 `verbal_noun`. The distinct target supine is historically invalid (with
 explicit caller provider-exact and irregular interoperability seams);
-conceptually represented but unsupported cells return a typed error. Neither
-becomes a placeholder or plausible guess.
+verbal nouns use Alypy §27's past-passive-platform `-їе` rule or a complete
+caller-supplied lexical noun. Neither category becomes a placeholder or
+plausible guess.
 
 `Noun`, `Adjective`, `Verb`, `Pronoun`, `Determiner`, `Numeral`, and `Participle`
 resolve one stable identity, accept a caller-configured `Inflector`, expose honest

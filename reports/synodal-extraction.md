@@ -1,6 +1,6 @@
 # Synodal extraction report
 
-Target recension: `synodal-russian`. The curated normalized layer contains 9944 rows across 25 tables; 0 rows are quarantined (ceiling 0).
+Target recension: `synodal-russian`. The curated normalized layer contains 9946 rows across 25 tables; 0 rows are quarantined (ceiling 0).
 
 | Table | Rows |
 |---|---:|
@@ -10,14 +10,14 @@ Target recension: `synodal-russian`. The curated normalized layer contains 9944 
 | `accents.tsv` | 45 |
 | `alignments.tsv` | 6 |
 | `conflicts.tsv` | 1 |
-| `engine_capabilities.tsv` | 81 |
+| `engine_capabilities.tsv` | 82 |
 | `evaluation.tsv` | 2139 |
 | `exact_forms.tsv` | 2838 |
 | `examples.tsv` | 8 |
 | `irregular_overrides.tsv` | 9 |
 | `lexemes.tsv` | 195 |
 | `lexical_reviews.tsv` | 831 |
-| `linguistic_evaluation.tsv` | 11 |
+| `linguistic_evaluation.tsv` | 12 |
 | `noun_restrictions.tsv` | 2 |
 | `past_classification_reviews.tsv` | 73 |
 | `phrase_evaluation.tsv` | 5 |

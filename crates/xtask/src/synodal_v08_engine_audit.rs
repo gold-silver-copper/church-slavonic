@@ -107,6 +107,7 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
     out.push_str("- `SYN-NOUN-INDECLINABLE-ALYPY-37` provides a typed invariant noun profile. Optional declension is expressed only by an explicitly selected productive class or caller irregular cells.\n\n");
     out.push_str("- `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` follows the complete §60 adjective table rather than the distinct §98 active-participle table: all seven cases are represented, including vocatives, short-comparison locatives, dual endings, and the ordered masculine-plural nominative variant.\n");
     out.push_str("- `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` represents the exceptional but directly attested short-superlative predicate. It exposes exactly nine nominative gender/number cells, preserves suffix-retaining singular masculine `и҆́стиннѣйшъ` first, and rejects every oblique or vocative request as historically invalid.\n\n");
+    out.push_str("- `SYN-VERB-VERBAL-NOUN-IE-ALYPY-27` forms `-їе` action/state nouns from complete past-passive platforms and reuses the exhaustive soft-neuter noun paradigm. `SYN-VERB-VERBAL-NOUN-LEXICAL-ALYPY-27` admits the other listed suffix families only after the complete derived noun is supplied, so the engine never guesses a suffix. The locked target `моленїе` crosschecks the normative example, and reverse analysis traverses all 42 generated case/number/animacy cells.\n\n");
     out.push_str("## Lexical providers and ordered batches\n\n");
     out.push_str("`StaticLexemeProvider` adapts the generated registry to the same `LexemeProvider` snapshot contract as application entries. `Lexicon::compose` sorts by stable ID, rejects duplicate IDs with `ProviderConflict`, and preserves homographic ambiguity. Supplied exact cells win before irregular cells and productive fallback. `Lexicon::batch`, provider noun paradigms, and provider `VerbSystem` paradigms retain order, variants, provenance, and one typed outcome per request.\n\n");
     out.push_str("## Reusable accent realization\n\n");
@@ -118,10 +119,14 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
     out.push_str("The completion gate includes the package-specific and complete workspace suites, doctests, clippy with warnings denied, native no-default-feature builds, `wasm32-unknown-unknown` builds, byte-current generated registries and audit, package dry-runs, and a separate full-diff review.\n\n");
     out.push_str("The completion gate is:\n\n```text\ncargo fmt --all -- --check\ncargo clippy --workspace --all-targets --all-features -- -D warnings\ncargo test -p synodal-church-slavonic-core --all-features\ncargo test -p synodal-church-slavonic --all-features\ncargo test -p synodal-church-slavonic-dictionary --all-features\ncargo test -p synodal-church-slavonic-extractor --all-features\ncargo test --workspace --all-targets --all-features\ncargo test --workspace --doc\ncargo xtask synodal-engine-audit --check\ncargo xtask synodal-check\ncargo xtask check-all\n```\n\n");
     out.push_str("## Remaining source blockers\n\n");
-    for row in capabilities
+    let blockers = capabilities
         .iter()
         .filter(|row| row.get(4) == "unsupported")
-    {
+        .collect::<Vec<_>>();
+    if blockers.is_empty() {
+        out.push_str("- None in this engine-capability matrix; repository-wide frontier systems remain listed in `docs/MORPHOLOGY_COMPLETION_PROGRESS.md`.\n");
+    }
+    for row in blockers {
         out.push_str(&format!(
             "- **{} / {}:** {} Failure: `{}`.\n",
             row.get(0),

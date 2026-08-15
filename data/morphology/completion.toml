@@ -941,7 +941,7 @@ required_metadata = ["an explicit caller-supplied provider exact or irregular co
 valid_inventory = "No bundled target cells. GrammarCell::Supine and VerbSystem::Supine remain represented for lossless source interoperability; only an explicit caller provider-exact or irregular cell can realize one."
 invalid_inventory = "Every productive Russian/Synodal supine request; every bundled target exact or held-out supine cell; and importing the OCS -ти/-щи → -тъ/-щь rule."
 implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/handles.rs", "crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/provider.rs", "crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic-extractor/src/lib.rs"]
-tests = ["crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems", "crates/synodal-church-slavonic/src/spec.rs#absent_and_unsupported_productive_verb_systems_fail_honestly", "crates/synodal-church-slavonic/src/provider.rs#exact_provider_supine_precedes_the_absent_target_category", "crates/synodal-church-slavonic-extractor/src/lib.rs#target_registry_rejects_the_historically_merged_supine_category"]
+tests = ["crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems", "crates/synodal-church-slavonic/src/spec.rs#absent_supine_and_productive_verbal_noun_are_distinguished", "crates/synodal-church-slavonic/src/provider.rs#exact_provider_supine_precedes_the_absent_target_category", "crates/synodal-church-slavonic-extractor/src/lib.rs#target_registry_rejects_the_historically_merged_supine_category"]
 evidence_status = "The target grammars use the infinitive for the motion-purpose function and explicitly identify the supine as ancient; the comparative grammar states that Russian history merged supine and infinitive and that Church Slavonic grammars normally do not distinguish the category. The generated target registry and held-out evaluation contain zero supine cells."
 rationale = "Alypy and Pletneva–Kravetsky directly describe the Synodal motion-purpose construction with infinitives, while Alypy's note assigns the supine only to the ancient language. Izotov independently states the historical merger. A typed historically invalid result prevents OCS surface transfer while preserving explicit exact-first caller seams for external source adapters that must retain the obsolete label."
 
@@ -980,18 +980,18 @@ features = ["system=verbal-noun", "animacy=2", "formation=typed", "noun-declensi
 subtypes = ["verbal-noun-inanimate", "verbal-noun-animate"]
 verb_systems = ["verbal-noun:inanimate", "verbal-noun:animate"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "represented-unsupported"
-rule_ids = ["SYN-VERB-VERBAL-NOUN-PENDING"]
+state = "productive-complete"
+implementation_kind = "productive"
+rule_ids = ["SYN-VERB-VERBAL-NOUN-IE-ALYPY-27", "SYN-VERB-VERBAL-NOUN-LEXICAL-ALYPY-27", "SYN-NOUN-I-SOFT-IE-N-ALYPY-34-37"]
 sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
-citation = "docs/SYNODAL_MORPHOLOGY.md: stem tuple is represented but suffix/declension realization is not established."
-required_metadata = ["verbal-noun stem/suffix formation", "noun declension", "gender", "number inventory", "accent"]
-valid_inventory = "Every resulting noun cell when the closed formation is licensed."
-invalid_inventory = "Unrestricted lexical derivation and guessed suffixes."
-implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/kernel.rs"]
-tests = ["crates/synodal-church-slavonic/src/spec.rs#absent_and_unsupported_productive_verb_systems_fail_honestly"]
-evidence_status = "typed metadata seam without productive realization"
-gap = "Review the target grammar's suffix/class contracts and implement the closed formations without expanding into unrestricted derivation."
+citation = "Alypy §27 derives -їе action/state nouns from past-passive bases and enumerates the remaining lexical suffix families; §34 gives the complete -їе soft-neuter paradigm."
+required_metadata = ["past-passive short platform or explicit complete derived noun", "typed formation", "noun declension", "gender", "number inventory", "accent for liturgical output"]
+valid_inventory = "All 42 case × number × animacy requests for -їе nouns formed from a complete past-passive platform, plus every licensed cell of an explicitly supplied lexical deverbal noun."
+invalid_inventory = "Suffix selection for lexical -ота/-ета/-ба/-ежъ/-нь/-снь/-знь/-тва/-ть/-изна families without a complete derived noun; nouns outside those §27 families; number cells excluded by explicit lexical inventory."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic-dictionary/src/lib.rs"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#verbal_noun_ie_has_the_complete_alypy_27_34_paradigm", "crates/synodal-church-slavonic-core/src/morphology.rs#verbal_noun_keeps_lexical_suffix_choice_explicit", "crates/synodal-church-slavonic-core/src/morphology.rs#productive_verbal_noun_rejects_a_non_participial_platform", "crates/synodal-church-slavonic-core/src/morphology.rs#lexical_verbal_noun_requires_an_alypy_27_suffix_family", "crates/synodal-church-slavonic-core/src/morphology.rs#accented_verbal_noun_platform_supports_the_liturgical_profile", "crates/synodal-church-slavonic/src/provider.rs#exact_provider_verbal_noun_precedes_productive_formation", "crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems", "crates/synodal-church-slavonic/tests/linguistic_evaluation.rs#alypy_27_molen_ie_matches_the_locked_target_attestation", "crates/synodal-church-slavonic-dictionary/src/lib.rs#generated_reverse_index_covers_complete_verbal_noun_paradigms"]
+evidence_status = "normative productive prediction crosschecked by locked target моленїе"
+rationale = "The only automatically selected suffix is §27's compositional -їе on a complete past-passive base. Every other listed suffix family requires an explicit, fully validated noun identity and then reuses the exhaustive noun engine."
 
 [[system]]
 id = "syn.verb.irregular"

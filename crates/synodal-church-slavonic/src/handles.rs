@@ -126,7 +126,15 @@ impl Capabilities {
                     || registry::has_principal_part_prefix(id, "present-passive-participle-")
                     || registry::has_principal_part_prefix(id, "past-passive-participle-")),
             supine: verb && registry::has_exact_system(id, "supine"),
-            verbal_noun: verb && registry::has_exact_system(id, "verbal-noun:"),
+            verbal_noun: verb
+                && (registry::has_exact_system(id, "verbal-noun:")
+                    || verb_metadata.as_ref().is_some_and(|metadata| {
+                        metadata
+                            .missing_principal_parts(VerbSystem::VerbalNoun {
+                                animacy: Animacy::Inanimate,
+                            })
+                            .is_empty()
+                    })),
             reverse_analysis: true,
         }
     }

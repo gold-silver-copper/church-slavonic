@@ -40,13 +40,14 @@ regular, mixed, final-velar, invariant, and lexeme-bounded stem-alternating fami
 and soft, short and long positive adjectives; complete short/full pronominal,
 mixed dual-less, velar, and full `-скїй` determiner classes; present, imperfect, aorist,
 imperative, infinitive, and l-participle formation from independent principal
-parts; traditional Cyrillic numerals; validated Synodal words and rendered
+parts; source-bounded verbal nouns in `-їе` from past-passive platforms and
+explicitly supplied lexical deverbal nouns; traditional Cyrillic numerals; validated Synodal words and rendered
 text; loss-reporting transliteration; and versioned UTN #41 Synodal collation.
 
 Every successful `FormSet` is nonempty and every variant records target
 recension, source kind, confidence, evidence, assumptions, warnings, and a rule
 trace. Generated forms are never called attested. Unreviewed stem extensions,
-unrestricted or oblique short superlatives, verbal nouns, and unreviewed
+unrestricted or oblique short superlatives, guessed deverbal suffixes, and unreviewed
 declensions fail with typed errors. The distinct supine is historically absent
 from the target recension and returns `HistoricallyInvalidCell`. The exceptional
 short-superlative predicate has a source-bounded nominative agreement contract.

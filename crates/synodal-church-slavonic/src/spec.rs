@@ -1036,8 +1036,8 @@ impl VerbSpec {
             false,
             self.lexeme.conjugation,
         )?;
-        if let Some((_, declension, gender)) = &self.lexeme.verbal_noun {
-            validate_noun_class(*declension, *gender)?;
+        if let Some(principal_part) = &self.lexeme.verbal_noun {
+            principal_part.validate()?;
         }
         Ok(())
     }
@@ -1133,13 +1133,19 @@ impl VerbSpecBuilder {
         self
     }
 
-    pub fn verbal_noun(
-        mut self,
-        stem: impl Into<String>,
-        declension: NounDeclension,
-        gender: Gender,
-    ) -> Result<Self> {
-        self.spec.lexeme.verbal_noun = Some((SynodalWord::parse(stem)?, declension, gender));
+    /// Supplies an independently reviewed past-passive platform for the
+    /// productive Alypy §27 `-їе` formation.
+    pub fn verbal_noun_ie(mut self, platform: impl Into<String>) -> Result<Self> {
+        self.spec.lexeme.verbal_noun =
+            Some(synodal_church_slavonic_core::VerbalNounPrincipalPart::past_passive_ie(platform)?);
+        Ok(self)
+    }
+
+    /// Supplies a complete lexical deverbal noun when §27 does not license
+    /// selection of its suffix from the verb alone.
+    pub fn lexical_verbal_noun(mut self, noun: NounLexeme) -> Result<Self> {
+        self.spec.lexeme.verbal_noun =
+            Some(synodal_church_slavonic_core::VerbalNounPrincipalPart::explicit_lexical(noun)?);
         Ok(self)
     }
 
@@ -1313,54 +1319,6 @@ fn validate_context_cells(
         });
     }
     Ok(())
-}
-
-fn validate_noun_class(declension: NounDeclension, gender: Gender) -> Result<()> {
-    let valid = match declension {
-        NounDeclension::FirstHardMasculine
-        | NounDeclension::FirstHardMasculineUStem
-        | NounDeclension::FirstHardMasculineInEthnonym
-        | NounDeclension::FirstHardMasculineUdEs
-        | NounDeclension::FirstHardVelarMasculine
-        | NounDeclension::FirstMixedMasculine
-        | NounDeclension::FirstSoftMasculine
-        | NounDeclension::FirstSoftMasculineAgentTel
-        | NounDeclension::FirstSoftMasculineLord
-        | NounDeclension::FirstSoftMasculineJ
-        | NounDeclension::FirstSoftMasculineEy
-        | NounDeclension::ThirdMasculine
-        | NounDeclension::FourthMasculineEn
-        | NounDeclension::FourthMasculineEnDay
-        | NounDeclension::FourthMasculineEnKamen => gender == Gender::Masculine,
-        NounDeclension::FirstHardNeuter
-        | NounDeclension::FirstSoftNeuter
-        | NounDeclension::FirstSoftNeuterIshche
-        | NounDeclension::FirstSoftNeuterIe
-        | NounDeclension::FourthNeuterEn
-        | NounDeclension::FourthNeuterEs
-        | NounDeclension::FourthNeuterEsAlternatingFirst
-        | NounDeclension::FourthNeuterEsPairedDual
-        | NounDeclension::FourthNeuterAt => gender == Gender::Neuter,
-        NounDeclension::SecondHard
-        | NounDeclension::SecondHardVelar
-        | NounDeclension::SecondSoft
-        | NounDeclension::SecondSoftPostvocalicAncientPlural
-        | NounDeclension::SecondMixed => matches!(gender, Gender::Masculine | Gender::Feminine),
-        NounDeclension::SecondSoftMasculineIa => gender == Gender::Masculine,
-        NounDeclension::ThirdFeminine
-        | NounDeclension::FourthFeminineEr
-        | NounDeclension::FourthFeminineErDaughter
-        | NounDeclension::FourthFeminineOv
-        | NounDeclension::FourthFeminineOvSyncopating => gender == Gender::Feminine,
-        NounDeclension::Indeclinable => true,
-    };
-    if valid {
-        Ok(())
-    } else {
-        Err(Error::ContradictoryMetadata {
-            reason: format!("declension {declension:?} is incompatible with gender {gender:?}"),
-        })
-    }
 }
 
 fn validate_participle(
@@ -2132,7 +2090,7 @@ mod tests {
     }
 
     #[test]
-    fn absent_and_unsupported_productive_verb_systems_fail_honestly() {
+    fn absent_supine_and_productive_verbal_noun_are_distinguished() {
         let verb = VerbSpec::builder(
             "нести",
             Aspect::Imperfective,
@@ -2140,22 +2098,24 @@ mod tests {
             source(),
         )
         .expect("verb")
-        .verbal_noun("ношени", NounDeclension::FirstHardNeuter, Gender::Neuter)
-        .expect("represented metadata")
+        .verbal_noun_ie("молен")
+        .expect("reviewed Alypy §27 platform")
         .build()
         .expect("verb spec");
         assert!(matches!(
             verb.form(GrammarCell::Supine),
             Err(Error::HistoricallyInvalidCell { .. })
         ));
-        assert!(matches!(
+        assert_eq!(
             verb.form(GrammarCell::VerbalNoun(NounCell {
                 case: Case::Nominative,
                 number: Number::Singular,
                 animacy: Animacy::Inanimate,
-            })),
-            Err(Error::UnsupportedCell { .. })
-        ));
+            }))
+            .expect("productive verbal noun")
+            .primary_text(),
+            "моленїе"
+        );
 
         let compatibility = VerbSpec::builder(
             "нести",

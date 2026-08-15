@@ -1,6 +1,9 @@
 use std::collections::BTreeSet;
 
-use synodal_church_slavonic::{FormSource, GrammarCell, Inflector, LexemeId};
+use synodal_church_slavonic::{
+    Animacy, Aspect, Case, FormSource, GrammarCell, Inflector, LexemeId, NounCell, Number,
+    SpecificationSource, VerbConjugation, VerbSpec,
+};
 
 const FIXTURE: &str = include_str!("../../../data/synodal/linguistic_evaluation.tsv");
 
@@ -67,7 +70,45 @@ fn curated_linguistic_contracts_pass_without_frequency_weighting() {
         }
         checked += 1;
     }
-    assert_eq!(checked, 11);
+    assert_eq!(checked, 12);
+}
+
+#[test]
+fn alypy_27_molen_ie_matches_the_locked_target_attestation() {
+    const EXACT_FORMS: &str = include_str!("../../../data/synodal/exact_forms.tsv");
+    assert!(EXACT_FORMS.lines().any(|line| {
+        line.starts_with(
+            "synodal:noun:v06-4b5409194023ee78\tnoun:accusative:singular:inanimate\tмоленїе\t",
+        )
+    }));
+
+    let source = SpecificationSource::new(
+        "alypy-27-verbal-noun",
+        "alypy-gamanovich-grammar-web-2023",
+        "§27 молен-ї-е; independently locked target моленїе",
+    )
+    .expect("reviewed source");
+    let verb = VerbSpec::builder(
+        "молити",
+        Aspect::Imperfective,
+        VerbConjugation::Second,
+        source,
+    )
+    .expect("typed verb")
+    .verbal_noun_ie("молен")
+    .expect("Alypy platform")
+    .build()
+    .expect("complete derived-noun metadata");
+    assert_eq!(
+        verb.form(GrammarCell::VerbalNoun(NounCell {
+            case: Case::Accusative,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        }))
+        .expect("productive verbal noun")
+        .primary_text(),
+        "моленїе"
+    );
 }
 
 fn parse_cell(value: &str) -> GrammarCell {

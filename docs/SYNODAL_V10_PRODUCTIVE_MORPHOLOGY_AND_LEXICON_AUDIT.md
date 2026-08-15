@@ -16,7 +16,7 @@ Corpus coverage is not the optimization target. The frozen corpus checkpoint rem
 
 ## Capability summary
 
-The matrix contains 81 reviewed system/subtype rows: 73 productive rows, 3 rows involving exact tables, 2 explicit irregular rows, and 1 unsupported row. Counts describe engine contracts, not corpus forms or tokens.
+The matrix contains 82 reviewed system/subtype rows: 75 productive rows, 3 rows involving exact tables, 2 explicit irregular rows, and 0 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
 
 The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. Every row records its target recension, valid and invalid inventory, required metadata, alternations, accent contract, source citation, golden/boundary example, implementation, test, and typed failure.
 
@@ -86,10 +86,11 @@ The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. 
 | verb | simple-future | exact-only | `SYN-VERB-FUTURE-EXACT` | reviewed exact table cells | stable lexeme identity | exact printed table | Alypy Gamanovich grammar lexeme-specific sections | `UnsupportedCell` |
 | verb | finite-past-underspecified | closed-source-normalization-audit | `SYN-VERB-PAST-AUDIT-ALYPY-86-87` | caller-supplied exact source tags | explicit source tag | exact caller-supplied form | exhaustive historical decision ledger Alypy §§86–87; Pletneva–Kravetsky lessons 5–6 | `UnsupportedCell` |
 | verb | supine | absent-from-recension | `SYN-VERB-SUPINE-ABSENT-ALYPY-143` | caller provider-exact or irregular compatibility cell only | explicit caller cell for external source interoperability | caller exact presentation only | Alypy Gamanovich grammar; Pletneva–Kravetsky; Izotov Alypy §143.7–8 n.1; Pletneva–Kravetsky lesson 6 §II; Izotov p. 73 | `HistoricallyInvalidCell` |
-| verb | verbal-noun | unsupported | `SYN-VERB-VERBAL-NOUN-UNSUPPORTED` | none | stem tuple is represented but realization rule is not established | unknown | source review open no complete Synodal suffix/declension contract | `UnsupportedCell` |
+| verb | verbal-noun-ie | productive | `SYN-VERB-VERBAL-NOUN-IE-ALYPY-27` | 7 cases × singular/dual/plural × animate/inanimate | complete past-passive short platform | explicit accent required for direct liturgical output | Alypy Gamanovich grammar §27 formation and §34 declension | `MissingPrincipalPart` |
+| verb | verbal-noun-lexical | productive-typed | `SYN-VERB-VERBAL-NOUN-LEXICAL-ALYPY-27` | all noun cells licensed by explicit number inventory | complete derived noun lemma; stem; declension; gender; number inventory | explicit accent required for direct liturgical output | Alypy Gamanovich grammar §27 lexical suffix families and §§34–44 noun declension | `MissingPrincipalPart` |
 | provider | injectable-lexicon | productive-api | `SYN-LEXICON-PROVIDER-V10` | built-in or application supplied noun/adjective/verb identities and typed cells | stable ID; part of speech; source ID; LexemeSpec; optional ordered exact forms | explicit provider accent paradigm or exact liturgical form required for liturgical | v0.10 resolver design provider contract | `ProviderConflict / AmbiguousLexeme` |
 | api | ordered-batch | productive-api | `SYN-BATCH-V10` | one retained outcome per ordered request | lemma or stable ID; typed GrammarCell | inherits each request's accent contract | v0.10 API design batch result contract | `underlying typed ErrorCode` |
-| evaluation | linguistic-contracts | deterministic-evaluation | `SYN-EVAL-LINGUISTIC-V10` | 11 small source-linked noun/verb contracts | stable identity; typed cell; ordered expectation; expected source/error | explicitly tested where contract requires or rejects accent | Alypy Gamanovich grammar and v0.10 design data/synodal/linguistic_evaluation.tsv | `fixture-declared stable ErrorCode` |
+| evaluation | linguistic-contracts | deterministic-evaluation | `SYN-EVAL-LINGUISTIC-V10` | 12 small source-linked noun/verb contracts | stable identity; typed cell; ordered expectation; expected source/error | explicitly tested where contract requires or rejects accent | Alypy Gamanovich grammar and v0.10 design data/synodal/linguistic_evaluation.tsv | `fixture-declared stable ErrorCode` |
 | pronoun | closed-suppletive-regular-and-composed | productive-complete | `SYN-PRONOUN-ALYPY-45-48` | every lexically licensed personal/reflexive/agreement case × number × gender × person × animacy cell | stable identity; typed declension; explicit regular stem; lexical profile; conditioned composition | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §§45–48 and §57 full-adjective endings | `HistoricallyInvalidCell / ContradictoryMetadata / OrthographicMetadataRequired` |
 | determiner | pronominal-hard | productive | `SYN-DETERMINER-HARD-ALYPY-45-48` | short and long case × singular/dual/plural × gender × animacy | explicit stem; PronominalHard class | exact accent or reusable paradigm required for liturgical | Alypy Gamanovich grammar §§45 and 48 | `HistoricallyInvalidCell / OrthographicMetadataRequired` |
 | determiner | ves-mixed | productive-closed | `SYN-DETERMINER-VES-MIXED-ALYPY-45-48` | short singular/plural case × gender × animacy | reviewed весь identity; вс stem; VesMixed class | exact accent or reusable paradigm required for liturgical | Alypy Gamanovich grammar §§45 and 48.7 | `HistoricallyInvalidCell / OrthographicMetadataRequired` |
@@ -120,6 +121,8 @@ The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. 
 
 - `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` follows the complete §60 adjective table rather than the distinct §98 active-participle table: all seven cases are represented, including vocatives, short-comparison locatives, dual endings, and the ordered masculine-plural nominative variant.
 - `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` represents the exceptional but directly attested short-superlative predicate. It exposes exactly nine nominative gender/number cells, preserves suffix-retaining singular masculine `и҆́стиннѣйшъ` first, and rejects every oblique or vocative request as historically invalid.
+
+- `SYN-VERB-VERBAL-NOUN-IE-ALYPY-27` forms `-їе` action/state nouns from complete past-passive platforms and reuses the exhaustive soft-neuter noun paradigm. `SYN-VERB-VERBAL-NOUN-LEXICAL-ALYPY-27` admits the other listed suffix families only after the complete derived noun is supplied, so the engine never guesses a suffix. The locked target `моленїе` crosschecks the normative example, and reverse analysis traverses all 42 generated case/number/animacy cells.
 
 ## Lexical providers and ordered batches
 
@@ -157,7 +160,7 @@ cargo xtask check-all
 
 ## Remaining source blockers
 
-- **verb / verbal-noun:** all cells Failure: `UnsupportedCell`.
+- None in this engine-capability matrix; repository-wide frontier systems remain listed in `docs/MORPHOLOGY_COMPLETION_PROGRESS.md`.
 
 The capability table distinguishes complete productive systems, closed source-normalization categories, exact irregular inventories, and remaining source blockers. The engine does not claim complete Church Slavonic support until the repository-wide completion matrix is final.
 

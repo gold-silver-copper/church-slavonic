@@ -535,7 +535,9 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
                         .filter(|system| matches!(system, VerbSystem::Participle { .. }))
                         .any(complete),
                 supine: has_exact(|cell| matches!(cell, GrammarCell::Supine)),
-                verbal_noun: has_exact(|cell| matches!(cell, GrammarCell::VerbalNoun(_))),
+                verbal_noun: complete(VerbSystem::VerbalNoun {
+                    animacy: synodal_church_slavonic_core::Animacy::Inanimate,
+                }) || has_exact(|cell| matches!(cell, GrammarCell::VerbalNoun(_))),
                 ..Capabilities::default()
             }
         }
@@ -712,6 +714,73 @@ mod tests {
                 .capabilities_by_id(&id)
                 .expect("capabilities")
                 .supine
+        );
+    }
+
+    #[test]
+    fn exact_provider_verbal_noun_precedes_productive_formation() {
+        let cell = GrammarCell::VerbalNoun(NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        });
+        let spec = VerbSpec::builder(
+            "молити",
+            Aspect::Imperfective,
+            VerbConjugation::Second,
+            source("verbal-noun-precedence"),
+        )
+        .expect("valid verb")
+        .verbal_noun_ie("молен")
+        .expect("complete verbal-noun platform")
+        .build()
+        .expect("valid verb specification");
+        assert!(matches!(
+            &spec.form(cell)
+                .expect("productive verbal noun")
+                .primary()
+                .source,
+            FormSource::CallerSpecifiedPrediction { rule, .. }
+                if rule.as_str() == "SYN-VERB-VERBAL-NOUN-IE-ALYPY-27"
+        ));
+
+        let entry = ProviderLexeme::new(
+            "application:verb:verbal-noun-precedence",
+            "application-test-lexicon",
+            LexemeSpec::from(spec),
+        )
+        .expect("valid provider entry")
+        .with_exact_form(
+            SpecifiedForm::new(
+                cell,
+                "моленїе",
+                Some("моле́нїе"),
+                source("explicit-verbal-noun"),
+            )
+            .expect("valid exact verbal noun"),
+        )
+        .expect("valid exact provider form");
+        let lexicon = Lexicon::from_provider(
+            Inflector::default(),
+            &InMemoryLexemeProvider::new([entry]).expect("valid provider"),
+        )
+        .expect("valid lexicon");
+        let id = LexemeId::from("application:verb:verbal-noun-precedence");
+
+        let exact = lexicon
+            .form_by_id(&id, cell)
+            .expect("caller exact verbal noun");
+        assert_eq!(exact.primary_text(), "моленїе");
+        assert!(matches!(
+            &exact.primary().source,
+            FormSource::CallerSpecifiedPrediction { rule, .. }
+                if rule.as_str() == "SYN-PROVIDER-EXACT-OVERRIDE"
+        ));
+        assert!(
+            lexicon
+                .capabilities_by_id(&id)
+                .expect("capabilities")
+                .verbal_noun
         );
     }
 

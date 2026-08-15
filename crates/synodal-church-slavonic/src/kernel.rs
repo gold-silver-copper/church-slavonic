@@ -1,8 +1,8 @@
 use synodal_church_slavonic_core::{
     DeterminerLexeme, Error, FiniteTense, FormSet, GrammarCell, NounLexeme, NumeralLexeme,
     OrthographyProfile, PronounLexeme, Result, VerbLexeme, aorist, decline_adjective,
-    decline_determiner, decline_noun, decline_numeral, decline_participle, decline_pronoun, future,
-    imperative, imperfect, infinitive, l_participle, present,
+    decline_determiner, decline_noun, decline_numeral, decline_participle, decline_pronoun,
+    decline_verbal_noun, future, imperative, imperfect, infinitive, l_participle, present,
 };
 
 use synodal_church_slavonic_core::AdjectiveLexeme;
@@ -67,10 +67,8 @@ pub(crate) fn generate_productive(
             decline_participle(lexeme, cell, profile)
         }
         (ProductiveLexeme::Verb(_), GrammarCell::Supine) => Err(absent_synodal_supine()),
-        (ProductiveLexeme::Verb(_), GrammarCell::VerbalNoun(_)) => {
-            Err(Error::UnsupportedCell {
-                reason: "productive verbal nouns require a reviewed realization rule in addition to lexical suffix metadata".into(),
-            })
+        (ProductiveLexeme::Verb(lexeme), GrammarCell::VerbalNoun(cell)) => {
+            decline_verbal_noun(lexeme, cell, profile)
         }
         (_, GrammarCell::LexicalForm) => Err(Error::UnsupportedCell {
             reason: "a lexical-form cell requires an exact form".into(),
