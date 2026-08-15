@@ -71,9 +71,9 @@ closed_enum!(Voice {
     Middle => "middle",
     Passive => "passive",
 });
-// `Past` represents a source-typed finite past whose evidence does not
-// distinguish aorist from imperfect. It is exact-only and is never
-// productively generated.
+// `Past` is retained only as a source-adapter normalization tag for
+// caller-supplied exact specifications. The audited target registry contains
+// no `past:*` cells: target forms are classified as aorist or imperfect.
 closed_enum!(FiniteTense {
     Present => "present",
     Future => "future",

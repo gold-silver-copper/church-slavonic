@@ -43,7 +43,8 @@ pub(crate) fn generate_productive(
             FiniteTense::Present => present(lexeme, cell.person, cell.number, profile),
             FiniteTense::Future => future(lexeme, cell.person, cell.number, profile),
             FiniteTense::Past => Err(Error::UnsupportedCell {
-                reason: "an underspecified finite past must have exact reviewed evidence".into(),
+                reason: "the audited source-normalization past category has no productive target realization; request aorist or imperfect"
+                    .into(),
             }),
             FiniteTense::Imperfect => imperfect(lexeme, cell.person, cell.number, profile),
             FiniteTense::Aorist => aorist(lexeme, cell.person, cell.number, profile),

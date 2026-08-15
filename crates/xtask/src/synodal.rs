@@ -707,6 +707,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         "lexical_reviews.tsv",
         "lexemes.tsv",
         "noun_restrictions.tsv",
+        "past_classification_reviews.tsv",
         "positional_rules.tsv",
         "principal_parts.tsv",
         "reviewed_evidence.tsv",

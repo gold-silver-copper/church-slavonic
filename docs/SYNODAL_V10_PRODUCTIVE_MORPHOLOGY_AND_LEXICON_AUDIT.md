@@ -16,7 +16,7 @@ Corpus coverage is not the optimization target. The frozen corpus checkpoint rem
 
 ## Capability summary
 
-The matrix contains 81 reviewed system/subtype rows: 73 productive rows, 4 rows involving exact tables, 2 explicit irregular rows, and 2 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
+The matrix contains 81 reviewed system/subtype rows: 73 productive rows, 3 rows involving exact tables, 2 explicit irregular rows, and 2 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
 
 The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. Every row records its target recension, valid and invalid inventory, required metadata, alternations, accent contract, source citation, golden/boundary example, implementation, test, and typed failure.
 
@@ -84,7 +84,7 @@ The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. 
 | participle | present-active-short | productive | `SYN-VERB-PARTICIPLE-PRESENT-ACTIVE-SHORT-ALYPY-95-98` | 63 canonical cells; singular/dual/plural; six cases; accusative animacy | independent short stem; PresentFirstUnpalatalized/PresentFirstPalatalized/PresentSecond/PresentAfterSibilant formation; aspect | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §95 formation and §98 complete declension | `HistoricallyInvalidCell / ContradictoryMetadata` |
 | participle | past-active-short | productive | `SYN-VERB-PARTICIPLE-PAST-ACTIVE-SHORT-ALYPY-96-98` | 63 canonical cells; singular/dual/plural; six cases; accusative animacy | independent short stem; PastConsonant/PastVowel/PastIotated formation | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §96 formation and §98 complete declension | `HistoricallyInvalidCell / ContradictoryMetadata` |
 | verb | simple-future | exact-only | `SYN-VERB-FUTURE-EXACT` | reviewed exact table cells | stable lexeme identity | exact printed table | Alypy Gamanovich grammar lexeme-specific sections | `UnsupportedCell` |
-| verb | finite-past-underspecified | exact-only | `SYN-VERB-PAST-EXACT` | reviewed exact cells | stable lexeme identity | exact printed table | reviewed target evidence cell-specific citation | `UnsupportedCell` |
+| verb | finite-past-underspecified | closed-source-normalization-audit | `SYN-VERB-PAST-AUDIT-ALYPY-86-87` | caller-supplied exact source tags | explicit source tag | exact caller-supplied form | exhaustive historical decision ledger Alypy §§86–87; Pletneva–Kravetsky lessons 5–6 | `UnsupportedCell` |
 | verb | supine | unsupported | `SYN-VERB-SUPINE-UNSUPPORTED` | none | independent sourced formation not established | unknown | source review open no complete Synodal input/output contract | `UnsupportedCell` |
 | verb | verbal-noun | unsupported | `SYN-VERB-VERBAL-NOUN-UNSUPPORTED` | none | stem tuple is represented but realization rule is not established | unknown | source review open no complete Synodal suffix/declension contract | `UnsupportedCell` |
 | provider | injectable-lexicon | productive-api | `SYN-LEXICON-PROVIDER-V10` | built-in or application supplied noun/adjective/verb identities and typed cells | stable ID; part of speech; source ID; LexemeSpec; optional ordered exact forms | explicit provider accent paradigm or exact liturgical form required for liturgical | v0.10 resolver design provider contract | `ProviderConflict / AmbiguousLexeme` |
@@ -160,7 +160,7 @@ cargo xtask check-all
 - **verb / supine:** all cells Failure: `UnsupportedCell`.
 - **verb / verbal-noun:** all cells Failure: `UnsupportedCell`.
 
-Simple future, underspecified finite past, pronouns, and cardinal/collective numerals remain exact-table systems. The engine does not claim complete Church Slavonic support.
+The capability table distinguishes complete productive systems, closed source-normalization categories, exact irregular inventories, and remaining source blockers. The engine does not claim complete Church Slavonic support until the repository-wide completion matrix is final.
 
 ## Corpus regression policy
 

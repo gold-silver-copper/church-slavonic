@@ -211,12 +211,195 @@ fn is_token_component(character: char) -> bool {
 
 const LEXICAL_REVIEW_HEADER: &str = "review_id\tlexeme_id\tsense_id\tlemma\tpart_of_speech\tcell\texpanded\tprinted\tgloss\tdomains\tsemantic_source_id\tsemantic_candidate_id\tattestation_source_id\tattestation_candidate_id\tcitation\tdecision\ttarget_recension\treview_note";
 
+const V06_EXACT_REVIEW_HEADER: &str = "review_id\tdecision\troute\tfamily_id\tlexeme_id\tlemma\tpart_of_speech\tsurface\tfrequency\tcell\tsemantic_evidence_id\tmorphology_evidence_id\ttarget_evidence_id\tevaluation_candidate_id\tsource_passage\tevaluation_passage\tpredicted_unique_tokens\trealized_unique_tokens\tblocker\treview_note";
+
+const PAST_CLASSIFICATION_REVIEW_HEADER: &str = "historical_review_id\tlexeme_id\tlemma\tobsolete_cell\tprinted\tdecision\treplacement_cells\tsource_passage\tevaluation_passage\treview_note";
+
+const EVALUATION_HEADER: &str = "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity";
+
 fn read_lexical_reviews(data_directory: &Path) -> Result<Table> {
     read_table(
         &data_directory.join("lexical_reviews.tsv"),
         LEXICAL_REVIEW_HEADER,
         18,
     )
+}
+
+fn expected_past_classification(review_id: &str) -> &'static str {
+    match review_id {
+        "v06-exact-206a4cdecc4a38cd"
+        | "v06-exact-3a3b6193679c4dea"
+        | "v06-exact-6849b215c9f1b25b"
+        | "v06-exact-bd469ab8bd4cf924" => "historical-invalid",
+        "v06-exact-42beb1ca352eb0f0"
+        | "v06-exact-6807a650d5010ffb"
+        | "v06-exact-92d7b7c9ee19885f"
+        | "v06-exact-cf7b435c4026e187" => "reclassified-imperfect",
+        "v06-exact-ea4b694b16e6b4f9" => "split-contextual-homograph",
+        _ => "reclassified-aorist",
+    }
+}
+
+fn validate_past_classification_reviews(
+    audit: (&Path, &Table),
+    historical: (&Path, &Table),
+    exact: (&Path, &Table),
+    held_out: (&Path, &Table),
+) -> Result<()> {
+    let (path, reviews) = audit;
+    let (historical_path, historical_reviews) = historical;
+    let (exact_path, exact_forms) = exact;
+    let (evaluation_path, evaluation) = held_out;
+    let mut historical_past = BTreeMap::new();
+    for (offset, row) in historical_reviews.rows.iter().enumerate() {
+        if !row[9].starts_with("past:") {
+            continue;
+        }
+        if historical_past.insert(row[0].as_str(), row).is_some() {
+            return Err(ExtractionError::DuplicateId {
+                file: historical_path.to_owned(),
+                id: row[0].clone(),
+            });
+        }
+        if row[1] != "admitted" {
+            return invalid(
+                historical_path,
+                offset + 2,
+                "historical past audit may cover only admitted v0.6 reviews",
+            );
+        }
+    }
+
+    let mut seen = BTreeSet::new();
+    for (offset, row) in reviews.rows.iter().enumerate() {
+        let line = offset + 2;
+        if !seen.insert(row[0].as_str()) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: row[0].clone(),
+            });
+        }
+        let historical =
+            historical_past
+                .get(row[0].as_str())
+                .ok_or_else(|| ExtractionError::InvalidRow {
+                    file: path.to_owned(),
+                    line,
+                    reason: "audit row does not name a historical v0.6 past admission".into(),
+                })?;
+        if row[1] != historical[4]
+            || row[2] != historical[5]
+            || row[3] != historical[9]
+            || row[4] != historical[7]
+            || row[7] != historical[14]
+            || row[8] != historical[15]
+        {
+            return invalid(
+                path,
+                line,
+                "audit identity, form, or passage differs from its historical review",
+            );
+        }
+        if row[9].is_empty() {
+            return invalid(
+                path,
+                line,
+                "past-classification audit requires a review note",
+            );
+        }
+
+        let expected_decision = expected_past_classification(&row[0]);
+        if row[5] != expected_decision {
+            return invalid(
+                path,
+                line,
+                "past-classification decision differs from the locked linguistic audit",
+            );
+        }
+        let Some(suffix) = row[3].strip_prefix("past:") else {
+            return invalid(path, line, "historical audit cell is not finite past");
+        };
+        let expected_replacements = match expected_decision {
+            "historical-invalid" => String::new(),
+            "reclassified-aorist" => format!("aorist:{suffix}"),
+            "reclassified-imperfect" => format!("imperfect:{suffix}"),
+            "split-contextual-homograph" => {
+                format!("aorist:{suffix},imperfect:{suffix}")
+            }
+            _ => return invalid(path, line, "unknown past-classification decision"),
+        };
+        if row[6] != expected_replacements {
+            return invalid(
+                path,
+                line,
+                "replacement cells do not agree with the audited decision",
+            );
+        }
+        for replacement in row[6].split(',').filter(|cell| !cell.is_empty()) {
+            if !exact_forms
+                .rows
+                .iter()
+                .any(|form| form[0] == row[1] && form[1] == replacement && form[3] == row[4])
+            {
+                return invalid(
+                    exact_path,
+                    1,
+                    "audited finite-past replacement is absent from exact forms",
+                );
+            }
+        }
+
+        if expected_decision == "historical-invalid"
+            && row[0].strip_prefix("v06-exact-").is_some_and(|suffix| {
+                let evaluation_id = format!("eval:v06:exact-{suffix}");
+                evaluation
+                    .rows
+                    .iter()
+                    .any(|evaluation_row| evaluation_row[0] == evaluation_id)
+            })
+        {
+            return invalid(
+                evaluation_path,
+                1,
+                "evaluation retains a historically invalid finite-past admission",
+            );
+        }
+    }
+
+    if seen.len() != historical_past.len()
+        || historical_past
+            .keys()
+            .any(|review_id| !seen.contains(review_id))
+    {
+        return invalid(
+            path,
+            1,
+            "past-classification ledger does not exhaust historical v0.6 past admissions",
+        );
+    }
+    if exact_forms
+        .rows
+        .iter()
+        .any(|row| row[1].starts_with("past:"))
+    {
+        return invalid(
+            exact_path,
+            1,
+            "target exact registry retains an underspecified finite-past cell",
+        );
+    }
+    if evaluation
+        .rows
+        .iter()
+        .any(|row| row[2].starts_with("past:"))
+    {
+        return invalid(
+            evaluation_path,
+            1,
+            "evaluation retains an underspecified finite-past cell",
+        );
+    }
+    Ok(())
 }
 
 fn load_source_recensions(data_directory: &Path) -> Result<BTreeMap<String, String>> {
@@ -626,6 +809,9 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let conflict_path = data_directory.join("conflicts.tsv");
     let irregular_path = data_directory.join("irregular_overrides.tsv");
     let target_identity_ambiguity_path = data_directory.join("target_identity_ambiguities.tsv");
+    let past_classification_review_path = data_directory.join("past_classification_reviews.tsv");
+    let v06_exact_review_path = data_directory.join("v06_exact_reviews.tsv");
+    let evaluation_path = data_directory.join("evaluation.tsv");
 
     let mut lexemes = read_table(
         &lexeme_path,
@@ -688,6 +874,13 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         5,
     )?;
     let reviewed_evidence = read_reviewed_evidence(data_directory)?;
+    let past_classification_reviews = read_table(
+        &past_classification_review_path,
+        PAST_CLASSIFICATION_REVIEW_HEADER,
+        10,
+    )?;
+    let v06_exact_reviews = read_table(&v06_exact_review_path, V06_EXACT_REVIEW_HEADER, 20)?;
+    let evaluation = read_table(&evaluation_path, EVALUATION_HEADER, 9)?;
     let lexical_review_path = data_directory.join("lexical_reviews.tsv");
     let lexical_reviews = read_lexical_reviews(data_directory)?;
     let target_identity_ambiguities = read_table(
@@ -727,6 +920,15 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     validate_noun_restriction_lexemes(&noun_restriction_path, &noun_restrictions, &lexemes)?;
     validate_principal_parts(&principal_path, &principal_parts)?;
     validate_exact_forms(&exact_path, &exact_forms, &lexemes)?;
+    validate_past_classification_reviews(
+        (
+            &past_classification_review_path,
+            &past_classification_reviews,
+        ),
+        (&v06_exact_review_path, &v06_exact_reviews),
+        (&exact_path, &exact_forms),
+        (&evaluation_path, &evaluation),
+    )?;
     validate_exact_form_attestation_evidence(
         &exact_path,
         &exact_forms,
@@ -3461,5 +3663,91 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn finite_past_audit_is_exhaustive_locked_and_leaves_no_past_cells() {
+        let historical = Table {
+            rows: vec![vec![
+                "v06-exact-03a1ca3817d4918e".into(),
+                "admitted".into(),
+                "source-typed-exact".into(),
+                "family:test".into(),
+                "synodal:verb:test".into(),
+                "избити".into(),
+                "verb".into(),
+                "и҆збѝ".into(),
+                "1".into(),
+                "past:third:singular".into(),
+                "semantic:test".into(),
+                "morphology:test".into(),
+                "target:test".into(),
+                "candidate:test".into(),
+                "source passage".into(),
+                "evaluation passage".into(),
+                "1".into(),
+                "1".into(),
+                String::new(),
+                "historical review".into(),
+            ]],
+        };
+        let reviews = Table {
+            rows: vec![vec![
+                "v06-exact-03a1ca3817d4918e".into(),
+                "synodal:verb:test".into(),
+                "избити".into(),
+                "past:third:singular".into(),
+                "и҆збѝ".into(),
+                "reclassified-aorist".into(),
+                "aorist:third:singular".into(),
+                "source passage".into(),
+                "evaluation passage".into(),
+                "reviewed against the aorist grammar".into(),
+            ]],
+        };
+        let exact = Table {
+            rows: vec![vec![
+                "synodal:verb:test".into(),
+                "aorist:third:singular".into(),
+                "изби".into(),
+                "и҆збѝ".into(),
+                "evidence:test".into(),
+                "synodal-attestation".into(),
+                TARGET.into(),
+            ]],
+        };
+        let evaluation = Table {
+            rows: vec![vec![
+                "eval:test".into(),
+                "synodal:verb:test".into(),
+                "aorist:third:singular".into(),
+                "strict".into(),
+                "изби".into(),
+                "и҆збѝ".into(),
+                "source:test".into(),
+                "evaluation passage".into(),
+                "fixture".into(),
+            ]],
+        };
+        let validate = |reviews: &Table, evaluation: &Table| {
+            validate_past_classification_reviews(
+                (Path::new("past_classification_reviews.tsv"), reviews),
+                (Path::new("v06_exact_reviews.tsv"), &historical),
+                (Path::new("exact_forms.tsv"), &exact),
+                (Path::new("evaluation.tsv"), evaluation),
+            )
+        };
+
+        validate(&reviews, &evaluation).expect("complete reclassification audit");
+        assert!(validate(&Table { rows: Vec::new() }, &evaluation).is_err());
+
+        let mut altered = reviews.clone();
+        altered.rows[0][5] = "reclassified-imperfect".into();
+        altered.rows[0][6] = "imperfect:third:singular".into();
+        assert!(validate(&altered, &evaluation).is_err());
+
+        let mut surviving_past = evaluation.clone();
+        surviving_past.rows[0][2] = "past:third:singular".into();
+        assert!(validate(&reviews, &surviving_past).is_err());
     }
 }

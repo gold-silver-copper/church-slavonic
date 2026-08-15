@@ -129,7 +129,7 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
             row.get(16)
         ));
     }
-    out.push_str("\nSimple future, underspecified finite past, pronouns, and cardinal/collective numerals remain exact-table systems. The engine does not claim complete Church Slavonic support.\n\n");
+    out.push_str("\nThe capability table distinguishes complete productive systems, closed source-normalization categories, exact irregular inventories, and remaining source blockers. The engine does not claim complete Church Slavonic support until the repository-wide completion matrix is final.\n\n");
     out.push_str("## Corpus regression policy\n\n");
     out.push_str("Corpus evaluation remains available only as a regression signal. The v0.10 implementation was selected and validated from complete target-recension grammatical tables, explicit API invariants, and independently reviewed lexical metadata; no frequency-ranked exact forms were added to simulate morphology.\n");
     Ok(out)

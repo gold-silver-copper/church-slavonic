@@ -314,8 +314,8 @@ mod tests {
         let verb =
             Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti")).expect("reviewed exact verb");
         let forms = verb
-            .past(Person::Third, Number::Singular)
-            .expect("reviewed exact past form");
+            .aorist(Person::Third, Number::Singular)
+            .expect("reviewed exact aorist form");
         let variant = forms.primary();
         assert!(matches!(
             &variant.source,
@@ -1578,11 +1578,12 @@ mod tests {
             })
         ));
 
-        let exact_past = Verb::from_id(&LexemeId::from("synodal:verb:wikt-78da2d05497d"))
-            .expect("reviewed exact-past verb");
-        assert!(exact_past.capabilities().past);
-        assert!(!exact_past.capabilities().future);
-        assert!(!exact_past.capabilities().infinitive);
+        let reclassified_past = Verb::from_id(&LexemeId::from("synodal:verb:wikt-78da2d05497d"))
+            .expect("reviewed reclassified-past verb");
+        assert!(!reclassified_past.capabilities().past);
+        assert!(reclassified_past.capabilities().aorist);
+        assert!(!reclassified_past.capabilities().future);
+        assert!(!reclassified_past.capabilities().infinitive);
 
         let sparse_exact = Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti"))
             .expect("reviewed sparse exact verb");

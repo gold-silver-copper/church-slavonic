@@ -1,13 +1,13 @@
 # Synodal evaluation
 
-Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2137 held-out token cells).
+Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2136 held-out token cells).
 
 The correction ledger excludes 3 historically preserved but grammatically retracted evaluation rows from scoring.
 
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| Expanded | 2137 | 2076 | 2137 | 0 | 2137 |
-| Printed | 2137 | 1995 | 2137 | 0 | 2137 |
+| Expanded | 2136 | 2075 | 2136 | 0 | 2136 |
+| Printed | 2136 | 1993 | 2136 | 0 | 2136 |
 
 Analytic phrases: expanded 5/5, printed 5/5 (5 held-out phrases).
 
@@ -17,7 +17,7 @@ Exact registry round trips (top-k, including reviewed variants): expanded 2838/2
 
 Masked cells: expanded 501/502, printed 501/502. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
-Accent agreement: 2001/2001 accent-bearing rows.
+Accent agreement: 2000/2000 accent-bearing rows.
 
 Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expanded forms. The reviewed alignment registry has 5 accepted mappings, 5 aligned target lexemes, and 1 rejected negative controls.
 
@@ -25,15 +25,15 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exploratory` | 2137 | 2076 | 2137 | 0 | 2137 |
-| `productive` | 2137 | 2076 | 2137 | 0 | 2137 |
-| `strict` | 2137 | 2076 | 2137 | 0 | 2137 |
+| `exploratory` | 2136 | 2075 | 2136 | 0 | 2136 |
+| `productive` | 2136 | 2075 | 2136 | 0 | 2136 |
+| `strict` | 2136 | 2075 | 2136 | 0 | 2136 |
 
 ## Expanded accuracy by attestation status
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `attested` | 2030 | 1970 | 2030 | 0 | 2030 |
+| `attested` | 2029 | 1969 | 2029 | 0 | 2029 |
 | `expected-form-not-returned` | 0 | 0 | 0 | 0 | 0 |
 | `predicted` | 107 | 106 | 107 | 0 | 107 |
 
@@ -42,11 +42,11 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `adjective` | 106 | 102 | 106 | 0 | 106 |
-| `aorist` | 134 | 133 | 134 | 0 | 134 |
+| `aorist` | 199 | 194 | 199 | 0 | 199 |
 | `determiner` | 20 | 19 | 20 | 0 | 20 |
 | `future` | 61 | 58 | 61 | 0 | 61 |
 | `imperative` | 57 | 55 | 57 | 0 | 57 |
-| `imperfect` | 27 | 25 | 27 | 0 | 27 |
+| `imperfect` | 31 | 29 | 31 | 0 | 31 |
 | `indeclinable` | 76 | 70 | 76 | 0 | 76 |
 | `infinitive` | 5 | 5 | 5 | 0 | 5 |
 | `l-participle` | 18 | 18 | 18 | 0 | 18 |
@@ -54,7 +54,6 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `noun` | 879 | 849 | 879 | 0 | 879 |
 | `numeral` | 20 | 19 | 20 | 0 | 20 |
 | `participle` | 73 | 73 | 73 | 0 | 73 |
-| `past` | 70 | 66 | 70 | 0 | 70 |
 | `present` | 57 | 56 | 57 | 0 | 57 |
 | `pronoun` | 99 | 97 | 99 | 0 | 99 |
 
@@ -62,8 +61,8 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exact-synodal-attestation` | 2025 | 1970 | 2025 | 0 | 2025 |
-| `synodal-irregular-override` | 17 | 15 | 17 | 0 | 17 |
+| `exact-synodal-attestation` | 2023 | 1969 | 2023 | 0 | 2023 |
+| `synodal-irregular-override` | 18 | 15 | 18 | 0 | 18 |
 | `synodal-normative-table` | 74 | 70 | 74 | 0 | 74 |
 | `synodal-productive-rule` | 21 | 21 | 21 | 0 | 21 |
 
@@ -105,8 +104,8 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `v06-held-out-lexical-identity` | 61 | 60 | 61 | 0 | 61 |
 | `v06-held-out-manual-exact` | 13 | 12 | 13 | 0 | 13 |
 | `v06-held-out-normative-table` | 5 | 5 | 5 | 0 | 5 |
-| `v06-held-out-source-typed-exact` | 475 | 457 | 475 | 0 | 475 |
-| `v07-held-out-exact-cell` | 916 | 885 | 916 | 0 | 916 |
+| `v06-held-out-source-typed-exact` | 474 | 457 | 474 | 0 | 474 |
+| `v07-held-out-exact-cell` | 916 | 884 | 916 | 0 | 916 |
 | `v07-held-out-explicit-accent-case-variant` | 44 | 40 | 44 | 0 | 44 |
 | `v07-reviewed-identity-correction` | 1 | 1 | 1 | 0 | 1 |
 
@@ -121,20 +120,19 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Expanded `eval:v06:exact-32b0b5e0e7691641` (`adjective:nominative:singular:feminine:any:short:positive`): expected `добрѣ`, top-1 `добра`.
 - Expanded `eval:v06:exact-3dbd30879a2731eb` (`adjective:accusative:singular:neuter:inanimate:short:positive`): expected `малѡ`, top-1 `мало`.
 - Expanded `eval:v06:exact-3ebf5549ab4f08a3` (`noun:nominative:plural:inanimate`): expected `бѡлѣзни`, top-1 `болѣзни`.
-- Expanded `eval:v06:exact-42beb1ca352eb0f0` (`past:third:singular`): expected `хождаше`, top-1 `ходи`.
 - Expanded `eval:v06:exact-42d54c80b1e9c917` (`noun:accusative:singular:animate`): expected `рабъ`, top-1 `раба`.
 - Expanded `eval:v06:exact-4939a19e5ab27dde` (`future:third:singular`): expected `избавитъ`, top-1 `избави`.
 - Expanded `eval:v06:exact-614fe964ac48a0dd` (`imperative:second:singular`): expected `иди`, top-1 `идеши`.
-- Expanded `eval:v06:exact-6849b215c9f1b25b` (`past:second:singular`): expected `прїѧтъ`, top-1 `прїѧ`.
 - Expanded `eval:v06:exact-6996fc14230302dc` (`noun:locative:singular:inanimate`): expected `тьмѣ`, top-1 `тмѣ`.
-- Expanded `eval:v06:exact-70859d2e90da66bc` (`past:third:singular`): expected `прїѧтъ`, top-1 `прїѧ`.
+- Expanded `eval:v06:exact-70859d2e90da66bc` (`aorist:third:singular`): expected `прїѧтъ`, top-1 `прїѧ`.
 - Expanded `eval:v06:exact-7def29284314daa1` (`adjective:nominative:singular:neuter:any:short:positive`): expected `малѡ`, top-1 `мало`.
 - Expanded `eval:v06:exact-8ee7fc72e685652e` (`noun:dative:singular:inanimate`): expected `бѡлѣзни`, top-1 `болѣзни`.
-- Expanded `eval:v06:exact-9bae23a5cc72b118` (`past:third:dual`): expected `рѣсте`, top-1 `рѣста`.
+- Expanded `eval:v06:exact-9bae23a5cc72b118` (`aorist:third:dual`): expected `рѣсте`, top-1 `рѣста`.
 - Expanded `eval:v06:exact-a52b4e1dc0f77849` (`noun:accusative:singular:animate`): expected `рабъ`, top-1 `раба`.
 - Expanded `eval:v06:exact-a9355c2daae719d5` (`noun:genitive:singular:inanimate`): expected `словеси`, top-1 `слова`.
 - Expanded `eval:v06:exact-b058ee586f2816e8` (`noun:genitive:singular:inanimate`): expected `бѡлѣзни`, top-1 `болѣзни`.
 - Expanded `eval:v06:exact-c123b072b6cbc74e` (`noun:accusative:plural:inanimate`): expected `бѡлѣзни`, top-1 `болѣзни`.
+- Expanded `eval:v06:exact-ec9f03ea8db3f50f` (`aorist:first:singular`): expected `Рѣхъ`, top-1 `рѣкъ`.
 - Expanded `eval:v06:lexical-8897d4e2e9679e01` (`lexical-form`): expected `илїи`, top-1 `илїа`.
 - Expanded `eval:v06:manual:resha` (`aorist:third:plural`): expected `рѣша`, top-1 `рекоша`.
 - Expanded `eval:v06:slovo-gen-sg` (`noun:genitive:singular:inanimate`): expected `словесе`, top-1 `слова`.
@@ -142,6 +140,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Expanded `eval:v07:variant-601b77a623ca9eaf` (`indeclinable`): expected `ᲂуже`, top-1 `оуже`.
 - Expanded `eval:v07:variant-b8c1513b6bda88c9` (`indeclinable`): expected `ѹже`, top-1 `оуже`.
 - Expanded `eval:v07:variant-8df2b6ab8a91ffa0` (`noun:genitive:plural:inanimate`): expected `ꙗзыкъ`, top-1 `ѧзыкъ`.
+- Expanded `eval:v07:05506371f37c63d6` (`aorist:third:singular`): expected `бѣжа`, top-1 `Бѣжа`.
 - Expanded `eval:v07:0cc4625dd2086f15` (`noun:genitive:singular:inanimate`): expected `родꙋ`, top-1 `рода`.
 - Expanded `eval:v07:12d883c01f5428e4` (`noun:instrumental:plural:inanimate`): expected `ᲂусты`, top-1 `ѹсты`.
 - Expanded `eval:v07:264e1313b5a9fce0` (`future:second:plural`): expected `бꙋдите`, top-1 `бꙋдете`.
@@ -196,29 +195,27 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v06:exact-228dbb9a4fc0132b` (`adjective:genitive:singular:neuter:any:short:positive`): expected `блага̀`, top-1 `бла̑га`.
 - Printed `eval:v06:exact-29b870dbecaf8434` (`noun:nominative:plural:inanimate`): expected `стада̀`, top-1 `ста́да`.
 - Printed `eval:v06:exact-2b01c52cf32cfd85` (`noun:genitive:plural:inanimate`): expected `бѡлѣ́зни`, top-1 `болѣ́зни`.
-- Printed `eval:v06:exact-2b60f46e88d4822a` (`past:third:singular`): expected `родѝ`, top-1 `ро́ди`.
+- Printed `eval:v06:exact-2b60f46e88d4822a` (`aorist:third:singular`): expected `родѝ`, top-1 `ро́ди`.
 - Printed `eval:v06:exact-32b0b5e0e7691641` (`adjective:nominative:singular:feminine:any:short:positive`): expected `до́брѣ`, top-1 `добра̀`.
 - Printed `eval:v06:exact-3dbd30879a2731eb` (`adjective:accusative:singular:neuter:inanimate:short:positive`): expected `ма́лѡ`, top-1 `ма́ло`.
 - Printed `eval:v06:exact-3ebf5549ab4f08a3` (`noun:nominative:plural:inanimate`): expected `бѡлѣ́зни`, top-1 `болѣ́зни`.
-- Printed `eval:v06:exact-42beb1ca352eb0f0` (`past:third:singular`): expected `хожда́ше`, top-1 `ходѝ`.
 - Printed `eval:v06:exact-42d54c80b1e9c917` (`noun:accusative:singular:animate`): expected `ра̑бъ`, top-1 `раба̀`.
 - Printed `eval:v06:exact-44358b64f9d85332` (`noun:accusative:plural:inanimate`): expected `си̑лы`, top-1 `си́лы`.
 - Printed `eval:v06:exact-4939a19e5ab27dde` (`future:third:singular`): expected `и҆зба́витъ`, top-1 `и҆зба́ви`.
 - Printed `eval:v06:exact-4ffbc7e7b44507f2` (`adjective:genitive:singular:neuter:any:short:positive`): expected `жи̑ва`, top-1 `жи́ва`.
-- Printed `eval:v06:exact-50c0d10124bc5a8f` (`past:third:singular`): expected `ста́`, top-1 `ста̀`.
+- Printed `eval:v06:exact-50c0d10124bc5a8f` (`aorist:third:singular`): expected `ста́`, top-1 `ста̀`.
 - Printed `eval:v06:exact-56b5d1fe76029244` (`noun:genitive:singular:animate`): expected `лица̑`, top-1 `ли́ца`.
 - Printed `eval:v06:exact-5e52ffe3a03b4b11` (`noun:genitive:singular:inanimate`): expected `си̑лы`, top-1 `си́лы`.
 - Printed `eval:v06:exact-614fe964ac48a0dd` (`imperative:second:singular`): expected `и҆дѝ`, top-1 `и҆́деши`.
-- Printed `eval:v06:exact-6849b215c9f1b25b` (`past:second:singular`): expected `прїѧ́тъ`, top-1 `прїѧ̀`.
 - Printed `eval:v06:exact-6996fc14230302dc` (`noun:locative:singular:inanimate`): expected `тьмѣ̀`, top-1 `тмѣ̀`.
-- Printed `eval:v06:exact-70859d2e90da66bc` (`past:third:singular`): expected `прїѧ́тъ`, top-1 `прїѧ̀`.
+- Printed `eval:v06:exact-70859d2e90da66bc` (`aorist:third:singular`): expected `прїѧ́тъ`, top-1 `прїѧ̀`.
 - Printed `eval:v06:exact-78d7153e6e0f1e23` (`noun:accusative:plural:animate`): expected `лица̑`, top-1 `ли́ца`.
 - Printed `eval:v06:exact-79ad51711e4ee737` (`noun:genitive:singular:inanimate`): expected `бра̑ни`, top-1 `бра́ни`.
 - Printed `eval:v06:exact-7def29284314daa1` (`adjective:nominative:singular:neuter:any:short:positive`): expected `ма́лѡ`, top-1 `ма́ло`.
 - Printed `eval:v06:exact-85d3804bb10296b1` (`adjective:nominative:singular:feminine:any:short:positive`): expected `блага̀`, top-1 `бла̑га`.
 - Printed `eval:v06:exact-8ee7fc72e685652e` (`noun:dative:singular:inanimate`): expected `бѡлѣ́зни`, top-1 `болѣ́зни`.
 - Printed `eval:v06:exact-95a1539bff67061b` (`adjective:genitive:singular:neuter:any:short:positive`): expected `жива̀`, top-1 `жи́ва`.
-- Printed `eval:v06:exact-9bae23a5cc72b118` (`past:third:dual`): expected `рѣ́сте`, top-1 `рѣ́ста`.
+- Printed `eval:v06:exact-9bae23a5cc72b118` (`aorist:third:dual`): expected `рѣ́сте`, top-1 `рѣ́ста`.
 - Printed `eval:v06:exact-9cb2f89f209d1b7f` (`imperative:second:plural`): expected `творитѐ`, top-1 `твори́те`.
 - Printed `eval:v06:exact-a52b4e1dc0f77849` (`noun:accusative:singular:animate`): expected `ра́бъ`, top-1 `раба̀`.
 - Printed `eval:v06:exact-a6f75ecf9d155583` (`adjective:nominative:plural:neuter:any:short:positive`): expected `жива̀`, top-1 `жи́ва`.
@@ -228,16 +225,18 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v06:exact-c123b072b6cbc74e` (`noun:accusative:plural:inanimate`): expected `бѡлѣ́зни`, top-1 `болѣ́зни`.
 - Printed `eval:v06:exact-c906e786922f2016` (`adjective:accusative:plural:neuter:inanimate:short:positive`): expected `блага̀`, top-1 `бла̑га`.
 - Printed `eval:v06:exact-cb89ed83a7628524` (`adjective:genitive:singular:masculine:any:short:positive`): expected `блага̀`, top-1 `бла̑га`.
-- Printed `eval:v06:exact-cccf40d2cf68ed75` (`past:third:singular`): expected `ста̑`, top-1 `ста̀`.
+- Printed `eval:v06:exact-cccf40d2cf68ed75` (`aorist:third:singular`): expected `ста̑`, top-1 `ста̀`.
 - Printed `eval:v06:exact-d0b0242925123bef` (`noun:nominative:plural:inanimate`): expected `ри̑зы`, top-1 `ри́зы`.
 - Printed `eval:v06:exact-de69e9e2163ace8a` (`noun:locative:singular:inanimate`): expected `кораблѝ`, top-1 `корабли̑`.
 - Printed `eval:v06:exact-e2353dc398fa9ef6` (`noun:genitive:singular:inanimate`): expected `стада̀`, top-1 `ста́да`.
 - Printed `eval:v06:exact-eb79ebbd741a24c4` (`noun:accusative:plural:inanimate`): expected `ри̑зы`, top-1 `ри́зы`.
+- Printed `eval:v06:exact-ec9f03ea8db3f50f` (`aorist:first:singular`): expected `Рѣ́хъ`, top-1 `рѣ́къ`.
 - Printed `eval:v06:exact-f3432698526965a8` (`noun:nominative:singular:animate`): expected `ра̑бъ`, top-1 `ра́бъ`.
 - Printed `eval:v06:exact-f4d20f271a374033` (`adjective:nominative:singular:feminine:any:short:positive`): expected `жива̀`, top-1 `жи́ва`.
 - Printed `eval:v06:exact-f9412ea965195abe` (`present:second:plural`): expected `творитѐ`, top-1 `твори́те`.
 - Printed `eval:v06:exact-fa7076f43321c9ce` (`adjective:nominative:plural:neuter:any:short:positive`): expected `жи̑ва`, top-1 `жи́ва`.
 - Printed `eval:v06:lexical-8897d4e2e9679e01` (`lexical-form`): expected `и҆лїѝ`, top-1 `И҆лїа̀`.
+- Printed `eval:v06:manual:posla` (`aorist:third:singular`): expected `посла̀`, top-1 `Посла̀`.
 - Printed `eval:v06:manual:resha` (`aorist:third:plural`): expected `рѣ́ша`, top-1 `реко́ша`.
 - Printed `eval:v06:noshch-gen-sg` (`noun:genitive:singular:inanimate`): expected `нощѝ`, top-1 `но́щи`.
 - Printed `eval:v06:slovo-gen-sg` (`noun:genitive:singular:inanimate`): expected `словесѐ`, top-1 `сло́ва`.
@@ -280,6 +279,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v07:variant-8994884681e33a81` (`noun:nominative:plural:animate`): expected `ры̑бы`, top-1 `ры́бы`.
 - Printed `eval:v07:variant-d27aebd153616ed5` (`noun:accusative:plural:inanimate`): expected `да̑ни`, top-1 `да́ни`.
 - Printed `eval:v07:variant-334f7c3d9fbe2389` (`noun:locative:singular:animate`): expected `царѝ`, top-1 `цари̑`.
+- Printed `eval:v07:05506371f37c63d6` (`aorist:third:singular`): expected `бѣжа̀`, top-1 `Бѣжа́`.
 - Printed `eval:v07:0bc7c0760a8f536c` (`adjective:accusative:plural:neuter:any:short:positive`): expected `Бла́га`, top-1 `бла̑га`.
 - Printed `eval:v07:0cc4625dd2086f15` (`noun:genitive:singular:inanimate`): expected `ро́дꙋ`, top-1 `ро́да`.
 - Printed `eval:v07:0e2a9ef0e3118fa9` (`pronoun:dative:plural:neuter:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.

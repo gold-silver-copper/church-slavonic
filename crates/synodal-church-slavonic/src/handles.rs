@@ -264,8 +264,11 @@ impl Verb {
         self.finite(FiniteTense::Future, person, number)
     }
 
-    /// Looks up a reviewed exact finite-past form whose evidence does not
-    /// distinguish aorist from imperfect.
+    /// Looks up a caller-supplied exact source-normalization form.
+    ///
+    /// The bundled target registry has exhaustively reclassified its former
+    /// `past:*` rows as aorist or imperfect, so registered lexemes deliberately
+    /// return [`Error::UnsupportedCell`] for this compatibility category.
     pub fn past(&self, person: Person, number: Number) -> Result<FormSet> {
         self.finite(FiniteTense::Past, person, number)
     }

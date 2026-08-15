@@ -1617,7 +1617,7 @@ mod tests {
             ("synodal:determiner:sam", "determiner"),
             ("synodal:numeral:pervyi", "numeral"),
             ("synodal:verb:byti", "future"),
-            ("synodal:verb:wikt-78da2d05497d", "past"),
+            ("synodal:verb:wikt-78da2d05497d", "aorist"),
         ] {
             let family = show_family_by_id(&FamilyId::for_lexeme(&LexemeId::from(id)))
                 .expect("reviewed family");

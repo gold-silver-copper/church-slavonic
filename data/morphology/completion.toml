@@ -878,24 +878,24 @@ id = "syn.verb.past-underspecified"
 recension = "synodal-russian"
 category = "finite-verb"
 part_of_speech = "verb"
-scope = "Source rows typed only as finite past without an aorist/imperfect distinction."
-profiles = ["expanded", "liturgical"]
-features = ["tense=past-undifferentiated", "person=3", "number=3", "evidence-resolution=typed"]
-subtypes = ["source-underspecified-past"]
+scope = "Closed source-adapter normalization category after exhaustive target-registry reclassification."
+profiles = ["abstract", "expanded", "expanded-accentless", "liturgical"]
+features = ["tense=past-undifferentiated", "person=3", "number=3", "evidence-resolution=exhaustively-audited"]
+subtypes = ["caller-supplied-exact-source-tag", "historical-aorist-reclassification", "historical-imperfect-reclassification", "contextual-homograph-split", "historical-invalid"]
 verb_systems = ["finite:past"]
 realization = "synthetic"
-state = "source-review-open"
-implementation_kind = "exact-only-partial"
-rule_ids = ["SYN-VERB-PAST-EXACT"]
-sources = ["synodal-target-text-union", "russian-national-corpus-church-slavonic", "alypy-gamanovich-grammar-web-2023"]
-citation = "FiniteTense::Past is documented as exact-only evidence that does not distinguish aorist from imperfect."
-required_metadata = ["source cell", "resolved historical formation if possible"]
-valid_inventory = "Exact source cells only unless evidence resolves the grammatical category."
-invalid_inventory = "Productive generation from an undifferentiated past label."
-implementation = ["crates/synodal-church-slavonic-core/src/grammar.rs", "crates/synodal-church-slavonic/src/resolver.rs"]
-tests = ["crates/synodal-church-slavonic/src/lib.rs#v04_exact_families_abstain_outside_reviewed_cells"]
-evidence_status = "underspecified exact source evidence"
-gap = "Audit every such row; reclassify it to aorist/imperfect/analytic where evidence permits or finalize a closed exact evidential category."
+state = "closed-exact-complete"
+implementation_kind = "closed-source-normalization-audit"
+rule_ids = ["SYN-VERB-PAST-AUDIT-ALYPY-86-87", "SYN-VERB-PAST-EXACT-CALLER"]
+sources = ["alypy-gamanovich-grammar-web-2023", "pletneva-kravetsky-church-slavonic-2005", "synodal-target-text-union", "ud-ocs-proiel-r2.18"]
+citation = "Alypy §§86–87; Pletneva and Kravetsky lessons 5–6; exhaustive data/synodal/past_classification_reviews.tsv decision ledger."
+required_metadata = ["an explicit caller-supplied exact source tag, or a resolved aorist/imperfect target cell", "context sufficient to distinguish homographic -а-/‑ѣ-stem aorists and imperfects"]
+valid_inventory = "Caller-supplied exact source-normalization tags remain representable; every bundled historical target row is instead classified as aorist, imperfect, a contextual split, or invalid."
+invalid_inventory = "Productive target generation from an undifferentiated past label; retaining a resolvable aorist or imperfect as past; using a homographic surface without contextual evidence; and exceptional прїѧтъ outside third singular."
+implementation = ["crates/synodal-church-slavonic-core/src/grammar.rs", "crates/synodal-church-slavonic-extractor/src/lib.rs", "crates/synodal-church-slavonic/src/handles.rs", "crates/synodal-church-slavonic/src/kernel.rs", "data/synodal/past_classification_reviews.tsv", "data/synodal/exact_forms.tsv", "data/synodal/evaluation.tsv"]
+tests = ["crates/synodal-church-slavonic-extractor/src/lib.rs#finite_past_audit_is_exhaustive_locked_and_leaves_no_past_cells", "crates/synodal-church-slavonic/src/lib.rs#exact_attestations_preserve_distinct_evidence_provenance", "crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems"]
+evidence_status = "closed exhaustive 73-row historical audit: 64 direct aorist decisions, four direct imperfect decisions, one contextual aorist/imperfect split, and four invalid admissions; the bundled target registry consequently contains 65 reviewed aorist rows, five reviewed imperfect rows, and zero finite past rows from this historical set"
+rationale = "Alypy and Pletneva–Kravetsky define distinct aorist and imperfect systems. Passage context resolves the formally identical глаголахъ in opposite directions, four -ше forms are imperfect, sixty-four rows are aorist, and four source-adapter admissions are grammatically invalid. FiniteTense::Past remains only so external source adapters can preserve an explicitly underspecified exact input without inventing a target analysis."
 
 [[system]]
 id = "syn.verb.imperative-infinitive-lparticiple"

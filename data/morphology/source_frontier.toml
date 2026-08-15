@@ -565,7 +565,7 @@ redistribution = "evaluation-only"
 upstream_lineage = ["Alypy 1991 edition", "Ponomar corrected web transcription"]
 reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–83 present formation and lexical principal parts", "§84 simple future and contextual exceptions", "§85 compound future", "§§86–104 remaining verb systems and irregular inventory", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
 rule_ids = ["SYN-*"]
-impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Section 84 closes productive simple-future morphology as the complete present-shaped paradigm of independently typed perfective verbs, while preserving its listed contextual non-perfective exceptions as exact evidence; §§81, 103, and 104 supply irregular future cells. Supine, verbal-noun, accent, and wider analytic reviews stay open."
+impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Section 84 closes productive simple-future morphology as the complete present-shaped paradigm of independently typed perfective verbs, while preserving its listed contextual non-perfective exceptions as exact evidence; §§81, 103, and 104 supply irregular future cells. Sections 86–87 provide the normative aorist/imperfect distinction used to close every formerly underspecified finite-past row. Supine, verbal-noun, accent, and wider analytic reviews stay open."
 conflicts = ["Lexeme-specific variants must not be generalized to a class."]
 access_status = "pinned-local"
 
@@ -590,10 +590,10 @@ authority_justification = "The authors are Church Slavonic researchers at the Vi
 license = "copyrighted teaching grammar; bibliographic facts and short rule references only"
 redistribution = "metadata-only"
 upstream_lineage = ["Slavonic Bible", "Russian Orthodox liturgical books"]
-reviewed_sections = ["lesson 13 simple future", "lesson 13 compound future table 36"]
-rule_ids = ["SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84", "SYN-PHRASE-FUTURE-ALYPY-85", "SYN-PHRASE-WIDER-PENDING"]
-impact = "Independently confirms that simple future and present share one complete person/number ending series and that perfective aspect is the productive future cue, while warning that Church Slavonic also assigns future readings contextually to some formally present imperfective forms. This establishes productive perfective generation and requires non-perfective simple-future readings to remain exact/evidence-bound. Its complete compound-future table also inventories имати, хотѣти, начати, and быти for the wider analytic review."
-conflicts = ["The manual describes the aspect/tense association as a tendency rather than an exceptionless law; the implementation therefore does not extrapolate future readings for non-perfective verbs without exact contextual evidence."]
+reviewed_sections = ["lesson 5 complete aorist tables, exceptional -тъ third singular, and contextual examples", "lesson 6 imperfect formation and aorist/imperfect homography", "lesson 13 simple future", "lesson 13 compound future table 36"]
+rule_ids = ["SYN-VERB-AORIST-VOWEL-ALYPY-86", "SYN-VERB-AORIST-CONSONANT-ALYPY-86", "SYN-VERB-IMPERFECT-H-ALYPY-87", "SYN-VERB-IMPERFECT-YAH-ALYPY-87", "SYN-VERB-IMPERFECT-AH-ALYPY-87", "SYN-VERB-PAST-AUDIT-ALYPY-86-87", "SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84", "SYN-PHRASE-FUTURE-ALYPY-85", "SYN-PHRASE-WIDER-PENDING"]
+impact = "Independently confirms the separate aorist and imperfect systems, complete person/number endings, exceptional -тъ only in third-singular aorists such as прїѧтъ, and the contextual resolution required for homographic -а-/‑ѣ-stem forms. Those constraints close the 73-row historical finite-past audit with no target past category. The manual also confirms that simple future and present share one complete person/number ending series and that perfective aspect is the productive future cue, while warning that Church Slavonic assigns future readings contextually to some formally present imperfective forms. Its complete compound-future table inventories имати, хотѣти, начати, and быти for the wider analytic review."
+conflicts = ["The manual describes the aspect/tense association as a tendency rather than an exceptionless law; the implementation therefore does not extrapolate future readings for non-perfective verbs without exact contextual evidence.", "For -а-/‑ѣ-stem forms outside the differing third-singular and third-plural endings, surface shape alone cannot distinguish aorist from imperfect; the audit therefore requires passage context rather than a suffix-only heuristic."]
 access_status = "accessible-full-text"
 
 [[source]]
@@ -924,3 +924,22 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "Alypy §§84–85 were reread against the independently authored Pletneva–Kravetsky lesson 13 and the locked exact future inventory. The sources agree on a complete present-shaped nine-cell simple future and on perfective aspect as its productive cue, but Pletneva–Kravetsky explicitly cautions that the association is contextual rather than exceptionless. The engine now generates every perfective cell from independently supplied present-shaped principal parts, preserves non-perfective contextual readings only as exact evidence, and reclassifies Alypy §103's complete да́ти table from the misleading present key to future. This contract-changing pass does not count toward source-frontier convergence."
+
+[[discovery_pass]]
+id = "synodal-past-frontier-pass-10"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "German", "French", "Church Slavonic"]
+queries = [
+  "церковнославянский аорист имперфект омонимия формы глаголахъ",
+  "церковнославянский прїѧтъ аорист третье лицо единственное",
+  "Church Slavonic aorist imperfect homographic forms finite past",
+  "Kirchenslawisch Aorist Imperfekt gleichlautende Formen",
+  "slavon liturgique aoriste imparfait formes homographes",
+]
+catalogs = ["Ponomar Alypy grammar", "Azbyka full-text Pletneva–Kravetsky manual", "Vinogradov Russian Language Institute", "LMU/UZH Punčo Digital Editions", "locked Synodal target-text union", "UD PROIEL OCS source partition", "multilingual scholarly discovery indexes"]
+new_sources = []
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "Alypy §§86–87 and Pletneva–Kravetsky lessons 5–6 were checked against every one of the 73 historical v0.6 finite-past admissions and their passage-disjoint target witnesses. Sixty-four rows are directly aorist, four -ше rows are imperfect, and глаголахъ requires both analyses because Acts 25:20 is imperfect while Daniel 10:16 and an independent Deuteronomy 1:29 witness are aorist. Four admissions are invalid: two живи rows are predicates or imperatives, дѣла is nominal, and a source-adapter second-singular прїѧтъ contradicts the manual's third-singular-only -тъ rule and both cited contexts. The runtime now has 65 aorist and five imperfect rows from this set, zero target past rows, and an exhaustive validator-locked decision ledger. No additional eligible target-recension grammar was found; this contract-changing pass does not count toward convergence."

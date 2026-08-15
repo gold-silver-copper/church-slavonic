@@ -2,7 +2,7 @@
   "schema_version": 5,
   "target_recension": "synodal-russian",
   "fixture_source": "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
-  "fixture_rows": 2137,
+  "fixture_rows": 2136,
   "retracted_fixture_rows": [
     "eval:v06:exact-93e43107a26fd7a1",
     "eval:v06:exact-cf3b7adc62194922",
@@ -11,17 +11,17 @@
   "phrase_fixture_rows": 5,
   "abbreviation_fixture_rows": 74,
   "expanded": {
-    "total": 2137,
-    "returned": 2137,
-    "top_1_correct": 2076,
-    "top_k_correct": 2137,
+    "total": 2136,
+    "returned": 2136,
+    "top_1_correct": 2075,
+    "top_k_correct": 2136,
     "abstained": 0
   },
   "printed": {
-    "total": 2137,
-    "returned": 2137,
-    "top_1_correct": 1995,
-    "top_k_correct": 2137,
+    "total": 2136,
+    "returned": 2136,
+    "top_1_correct": 1993,
+    "top_k_correct": 2136,
     "abstained": 0
   },
   "expanded_disagreements": [
@@ -116,16 +116,6 @@
       ]
     },
     {
-      "id": "eval:v06:exact-42beb1ca352eb0f0",
-      "cell": "past:third:singular",
-      "expected": "хождаше",
-      "returned_top_1": "ходи",
-      "returned_top_k": [
-        "ходи",
-        "хождаше"
-      ]
-    },
-    {
       "id": "eval:v06:exact-42d54c80b1e9c917",
       "cell": "noun:accusative:singular:animate",
       "expected": "рабъ",
@@ -157,16 +147,6 @@
       ]
     },
     {
-      "id": "eval:v06:exact-6849b215c9f1b25b",
-      "cell": "past:second:singular",
-      "expected": "прїѧтъ",
-      "returned_top_1": "прїѧ",
-      "returned_top_k": [
-        "прїѧ",
-        "прїѧтъ"
-      ]
-    },
-    {
       "id": "eval:v06:exact-6996fc14230302dc",
       "cell": "noun:locative:singular:inanimate",
       "expected": "тьмѣ",
@@ -178,7 +158,7 @@
     },
     {
       "id": "eval:v06:exact-70859d2e90da66bc",
-      "cell": "past:third:singular",
+      "cell": "aorist:third:singular",
       "expected": "прїѧтъ",
       "returned_top_1": "прїѧ",
       "returned_top_k": [
@@ -208,7 +188,7 @@
     },
     {
       "id": "eval:v06:exact-9bae23a5cc72b118",
-      "cell": "past:third:dual",
+      "cell": "aorist:third:dual",
       "expected": "рѣсте",
       "returned_top_1": "рѣста",
       "returned_top_k": [
@@ -256,6 +236,17 @@
       "returned_top_k": [
         "болѣзни",
         "бѡлѣзни"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-ec9f03ea8db3f50f",
+      "cell": "aorist:first:singular",
+      "expected": "Рѣхъ",
+      "returned_top_1": "рѣкъ",
+      "returned_top_k": [
+        "рѣкъ",
+        "Рѣхъ",
+        "рекохъ"
       ]
     },
     {
@@ -336,6 +327,16 @@
         "ѧзыкъ",
         "ꙗзыкъ",
         "ꙗзыкъ"
+      ]
+    },
+    {
+      "id": "eval:v07:05506371f37c63d6",
+      "cell": "aorist:third:singular",
+      "expected": "бѣжа",
+      "returned_top_1": "Бѣжа",
+      "returned_top_k": [
+        "Бѣжа",
+        "бѣжа"
       ]
     },
     {
@@ -898,7 +899,7 @@
     },
     {
       "id": "eval:v06:exact-2b60f46e88d4822a",
-      "cell": "past:third:singular",
+      "cell": "aorist:third:singular",
       "expected": "родѝ",
       "returned_top_1": "ро́ди",
       "returned_top_k": [
@@ -934,16 +935,6 @@
       "returned_top_k": [
         "болѣ́зни",
         "бѡлѣ́зни"
-      ]
-    },
-    {
-      "id": "eval:v06:exact-42beb1ca352eb0f0",
-      "cell": "past:third:singular",
-      "expected": "хожда́ше",
-      "returned_top_1": "ходѝ",
-      "returned_top_k": [
-        "ходѝ",
-        "хожда́ше"
       ]
     },
     {
@@ -990,7 +981,7 @@
     },
     {
       "id": "eval:v06:exact-50c0d10124bc5a8f",
-      "cell": "past:third:singular",
+      "cell": "aorist:third:singular",
       "expected": "ста́",
       "returned_top_1": "ста̀",
       "returned_top_k": [
@@ -1030,16 +1021,6 @@
       ]
     },
     {
-      "id": "eval:v06:exact-6849b215c9f1b25b",
-      "cell": "past:second:singular",
-      "expected": "прїѧ́тъ",
-      "returned_top_1": "прїѧ̀",
-      "returned_top_k": [
-        "прїѧ̀",
-        "прїѧ́тъ"
-      ]
-    },
-    {
       "id": "eval:v06:exact-6996fc14230302dc",
       "cell": "noun:locative:singular:inanimate",
       "expected": "тьмѣ̀",
@@ -1051,7 +1032,7 @@
     },
     {
       "id": "eval:v06:exact-70859d2e90da66bc",
-      "cell": "past:third:singular",
+      "cell": "aorist:third:singular",
       "expected": "прїѧ́тъ",
       "returned_top_1": "прїѧ̀",
       "returned_top_k": [
@@ -1122,7 +1103,7 @@
     },
     {
       "id": "eval:v06:exact-9bae23a5cc72b118",
-      "cell": "past:third:dual",
+      "cell": "aorist:third:dual",
       "expected": "рѣ́сте",
       "returned_top_1": "рѣ́ста",
       "returned_top_k": [
@@ -1227,7 +1208,7 @@
     },
     {
       "id": "eval:v06:exact-cccf40d2cf68ed75",
-      "cell": "past:third:singular",
+      "cell": "aorist:third:singular",
       "expected": "ста̑",
       "returned_top_1": "ста̀",
       "returned_top_k": [
@@ -1274,6 +1255,17 @@
       "returned_top_k": [
         "ри́зы",
         "ри̑зы"
+      ]
+    },
+    {
+      "id": "eval:v06:exact-ec9f03ea8db3f50f",
+      "cell": "aorist:first:singular",
+      "expected": "Рѣ́хъ",
+      "returned_top_1": "рѣ́къ",
+      "returned_top_k": [
+        "рѣ́къ",
+        "Рѣ́хъ",
+        "реко́хъ"
       ]
     },
     {
@@ -1326,6 +1318,17 @@
       "returned_top_k": [
         "И҆лїа̀",
         "и҆лїѝ"
+      ]
+    },
+    {
+      "id": "eval:v06:manual:posla",
+      "cell": "aorist:third:singular",
+      "expected": "посла̀",
+      "returned_top_1": "Посла̀",
+      "returned_top_k": [
+        "Посла̀",
+        "посла̀",
+        "посла́"
       ]
     },
     {
@@ -1659,6 +1662,7 @@
       "returned_top_1": "Посла̀",
       "returned_top_k": [
         "Посла̀",
+        "посла̀",
         "посла́"
       ]
     },
@@ -1760,6 +1764,16 @@
       "returned_top_k": [
         "цари̑",
         "царѝ"
+      ]
+    },
+    {
+      "id": "eval:v07:05506371f37c63d6",
+      "cell": "aorist:third:singular",
+      "expected": "бѣжа̀",
+      "returned_top_1": "Бѣжа́",
+      "returned_top_k": [
+        "Бѣжа́",
+        "бѣжа̀"
       ]
     },
     {
@@ -2136,12 +2150,12 @@
   "exact_registry_printed_round_trip": {
     "total": 2838,
     "returned": 2838,
-    "top_1_correct": 2506,
+    "top_1_correct": 2505,
     "top_k_correct": 2838,
     "abstained": 0
   },
-  "accent_bearing_rows": 2001,
-  "exact_accent_agreement": 2001,
+  "accent_bearing_rows": 2000,
+  "exact_accent_agreement": 2000,
   "by_regularity": {
     "closed-class-held-out-exact-cell": {
       "total": 25,
@@ -2382,16 +2396,16 @@
       "abstained": 0
     },
     "v06-held-out-source-typed-exact": {
-      "total": 475,
-      "returned": 475,
+      "total": 474,
+      "returned": 474,
       "top_1_correct": 457,
-      "top_k_correct": 475,
+      "top_k_correct": 474,
       "abstained": 0
     },
     "v07-held-out-exact-cell": {
       "total": 916,
       "returned": 916,
-      "top_1_correct": 885,
+      "top_1_correct": 884,
       "top_k_correct": 916,
       "abstained": 0
     },
@@ -2412,33 +2426,33 @@
   },
   "by_policy": {
     "exploratory": {
-      "total": 2137,
-      "returned": 2137,
-      "top_1_correct": 2076,
-      "top_k_correct": 2137,
+      "total": 2136,
+      "returned": 2136,
+      "top_1_correct": 2075,
+      "top_k_correct": 2136,
       "abstained": 0
     },
     "productive": {
-      "total": 2137,
-      "returned": 2137,
-      "top_1_correct": 2076,
-      "top_k_correct": 2137,
+      "total": 2136,
+      "returned": 2136,
+      "top_1_correct": 2075,
+      "top_k_correct": 2136,
       "abstained": 0
     },
     "strict": {
-      "total": 2137,
-      "returned": 2137,
-      "top_1_correct": 2076,
-      "top_k_correct": 2137,
+      "total": 2136,
+      "returned": 2136,
+      "top_1_correct": 2075,
+      "top_k_correct": 2136,
       "abstained": 0
     }
   },
   "by_attestation_status": {
     "attested": {
-      "total": 2030,
-      "returned": 2030,
-      "top_1_correct": 1970,
-      "top_k_correct": 2030,
+      "total": 2029,
+      "returned": 2029,
+      "top_1_correct": 1969,
+      "top_k_correct": 2029,
       "abstained": 0
     },
     "expected-form-not-returned": {
@@ -2465,10 +2479,10 @@
       "abstained": 0
     },
     "aorist": {
-      "total": 134,
-      "returned": 134,
-      "top_1_correct": 133,
-      "top_k_correct": 134,
+      "total": 199,
+      "returned": 199,
+      "top_1_correct": 194,
+      "top_k_correct": 199,
       "abstained": 0
     },
     "determiner": {
@@ -2493,10 +2507,10 @@
       "abstained": 0
     },
     "imperfect": {
-      "total": 27,
-      "returned": 27,
-      "top_1_correct": 25,
-      "top_k_correct": 27,
+      "total": 31,
+      "returned": 31,
+      "top_1_correct": 29,
+      "top_k_correct": 31,
       "abstained": 0
     },
     "indeclinable": {
@@ -2548,13 +2562,6 @@
       "top_k_correct": 73,
       "abstained": 0
     },
-    "past": {
-      "total": 70,
-      "returned": 70,
-      "top_1_correct": 66,
-      "top_k_correct": 70,
-      "abstained": 0
-    },
     "present": {
       "total": 57,
       "returned": 57,
@@ -2572,17 +2579,17 @@
   },
   "by_provenance_path": {
     "exact-synodal-attestation": {
-      "total": 2025,
-      "returned": 2025,
-      "top_1_correct": 1970,
-      "top_k_correct": 2025,
+      "total": 2023,
+      "returned": 2023,
+      "top_1_correct": 1969,
+      "top_k_correct": 2023,
       "abstained": 0
     },
     "synodal-irregular-override": {
-      "total": 17,
-      "returned": 17,
+      "total": 18,
+      "returned": 18,
       "top_1_correct": 15,
-      "top_k_correct": 17,
+      "top_k_correct": 18,
       "abstained": 0
     },
     "synodal-normative-table": {
@@ -2602,10 +2609,10 @@
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
-      "total": 2025,
-      "returned": 2025,
-      "top_1_correct": 1970,
-      "top_k_correct": 2025,
+      "total": 2024,
+      "returned": 2024,
+      "top_1_correct": 1969,
+      "top_k_correct": 2024,
       "abstained": 0
     },
     "wikisource-church-slavonic-bible-2026-08-09": {

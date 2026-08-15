@@ -66,6 +66,13 @@ predicted versus surface-realized gain, explicit deferrals and rejections, and
 precise evidence blockers. `v06_verification.tsv` records only checks actually
 run for the generated v0.6 completion audit.
 
+`past_classification_reviews.tsv` is the exhaustive post-v0.6 audit of every
+historical `past:*` admission. It binds all 73 source-adapter rows to their
+original identity, printed form, and source/evaluation passages, then records
+the reviewed aorist, imperfect, contextual split, or invalid decision. The
+extractor rejects an incomplete or altered ledger, any missing replacement,
+and every surviving underspecified `past:*` target or evaluation cell.
+
 The v0.7 evidence-acquisition decisions are retained in the ordered
 `v07_exact_reviews*.tsv` waves, `v07_variant_reviews.tsv`, and
 `v07_abbreviation_reviews.tsv`. `v07_identity_reviews.tsv` and

@@ -129,6 +129,27 @@ normative evidence and the rule ID as its exact citation. The core accepts these
 rules only from explicit metadata. The facade adds target lexeme resolution,
 exact-table precedence, accent metadata, irregular overrides, and mapping policy.
 
+## Complete finite-past classification audit
+
+The generic `FiniteTense::Past` is a source-adapter compatibility tag, not a
+target grammatical tense. Alypy §§86–87 and Pletneva–Kravetsky lessons 5–6
+define separate aorist and imperfect systems, so the bundled registry contains
+no `past:*` cells and advertises no finite-past capability. Caller-supplied exact
+specifications may retain the tag when their external source genuinely lacks
+the distinction; productive target generation rejects it and directs callers to
+aorist or imperfect.
+
+`data/synodal/past_classification_reviews.tsv` exhausts all 73 historical v0.6
+admissions. Sixty-four rows reclassify directly as aorist, four `-ше` rows as
+imperfect, and `глаголахъ` splits contextually: Acts 25:20 is imperfect, while
+Daniel 10:16 and an independent Deuteronomy 1:29 witness are aorist. Four old
+admissions are invalid: two `живи` analyses are predicates or imperatives,
+`дѣла` is nominal, and the second-singular `прїѧтъ` contradicts both cited
+third-singular contexts and the lesson 5 rule restricting exceptional `-тъ` to
+third singular. The resulting historical set contributes 65 aorist and five
+imperfect exact rows. Extraction fails if the ledger is incomplete or changed,
+if a replacement disappears, or if any `past:*` target/evaluation row returns.
+
 ## Complete simple-future contract
 
 Alypy §84 and Pletneva–Kravetsky lesson 13 independently establish that the
