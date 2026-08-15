@@ -35,8 +35,8 @@ assert_eq!(
 # Ok::<(), synodal_church_slavonic_core::Error>(())
 ```
 
-The current productive slice covers seventeen reviewed noun contracts, including
-mixed/final-velar masculines and six explicit stem-extending families; hard
+The current productive slice covers thirty-six reviewed noun contracts, including
+regular, mixed, final-velar, invariant, and lexeme-bounded stem-alternating families; hard
 and soft, short and long positive adjectives; present, imperfect, aorist,
 imperative, infinitive, and l-participle formation from independent principal
 parts; traditional Cyrillic numerals; validated Synodal words and rendered
@@ -44,9 +44,10 @@ text; loss-reporting transliteration; and versioned UTN #41 Synodal collation.
 
 Every successful `FormSet` is nonempty and every variant records target
 recension, source kind, confidence, evidence, assumptions, warnings, and a rule
-trace. Generated forms are never called attested. Unreviewed stem extensions or
-lexical ending variants, short superlatives, supines, verbal nouns, irregular
-paradigms, and unreviewed declensions fail with typed errors. Every error also
+trace. Generated forms are never called attested. Unreviewed stem extensions,
+short superlatives, supines, verbal nouns, and unreviewed declensions fail with
+typed errors. Arbitrary irregular paradigms are expressed by the facade's
+validated ordered cell overrides. Every error also
 exposes a stable machine-readable `ErrorCode`.
 
 `SynodalWord` rejects whitespace, other scripts, private-use code points,

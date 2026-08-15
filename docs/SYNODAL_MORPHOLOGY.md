@@ -247,9 +247,12 @@ licensed only by the closed `камень` contract and are not generalized.
 The productive upgrade reuses the existing reviewed `камꙑ`/`камень` stable
 identity and its exact target attestations rather than creating a second
 semantic identity.
-`любовь` retains its prior conservative analysis until its
-cell-specific `любв-`/`любов-` alternants and reviewed identities can be
-unified without producing unattested combinations.
+The §§35–44 completion adds typed u-stems, `-инъ` ethnonyms, `-тель` agents,
+`-й`/`-ей` and `-їе` profiles, `-ище` locative variants, second-declension
+velar/mixed/postvocalic families, paired `ѻко`/`ꙋхо`, `дщерь`, `день`,
+`ꙋдъ : ꙋдес-`, invariant Hebrew loans, and complete cell-scoped
+`церковь`/`любовь` alternation. The public specification API additionally
+accepts multiple ordered irregular forms per cell and typed defective cells.
 
 The productive verb registry contains independently sourced principal parts for
 `нести`, `писати`, `любити`, and the supported non-present systems of `дати`: the 1sg and 3pl present edges, imperfect base and
@@ -277,7 +280,7 @@ government beyond these construction-specific constraints remain future work.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 833 target lexemes and 833 reviewed senses. The
+The reviewed registry has 846 target lexemes and 846 reviewed senses. The
 original productive seed remains deliberately small: corpus-prioritized hard and
 soft nouns, regular adjectives, six verbs, reviewed closed-class paradigms, and
 five numerals. The v0.3 additions are primarily high-frequency exact lexical
@@ -298,13 +301,10 @@ string equality.
 
 The closed grammar enums represent these gaps so paradigms retain failures:
 
-- fourth-declension families beyond the reviewed `-ен-`, `-ес-`, `-ат-`,
-  `-ер-`, and `-ов-` contracts; cell-specific `любовь` stem alternants;
-  further unreviewed lexeme-specific ending variants; and most
-  irregular/suppletive nouns;
-- automatic velar/sibilant alternation outside the narrowly reviewed noun and
-  aorist seams, and ending variants in Alypy §§34–44 that the source explicitly
-  makes lexeme-specific but that lack reviewed lexical licensing metadata;
+- noun accent paradigms and lexical identities beyond the reviewed registry;
+  unknown lexemes still require caller-supplied class/stem metadata, while
+  arbitrary irregulars require explicit ordered cell forms;
+- automatic velar/sibilant alternation outside the typed noun and aorist seams;
 - automatic comparison-stem formation and comparison stems other than explicitly
   supplied typed series; short superlatives remain unsupported;
 - reflexive, relative, interrogative, indefinite, and negative pronouns beyond

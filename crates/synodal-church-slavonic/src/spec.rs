@@ -206,10 +206,12 @@ impl SpecContext {
             }
         }
         let mut irregular = BTreeSet::new();
+        let mut irregular_cells = BTreeSet::new();
         for form in &self.irregular_forms {
-            if !irregular.insert(form.cell) {
+            irregular_cells.insert(form.cell);
+            if !irregular.insert((form.cell, &form.expanded, &form.liturgical)) {
                 return Err(Error::ContradictoryMetadata {
-                    reason: "an explicit specification contains duplicate irregular cells".into(),
+                    reason: "an explicit specification contains a duplicate irregular form".into(),
                 });
             }
         }
@@ -220,7 +222,7 @@ impl SpecContext {
                     reason: "a defective cell must include a nonempty diagnostic reason".into(),
                 });
             }
-            if !defective.insert(cell.cell) || irregular.contains(&cell.cell) {
+            if !defective.insert(cell.cell) || irregular_cells.contains(&cell.cell) {
                 return Err(Error::ContradictoryMetadata {
                     reason: "a cell cannot be both irregular and defective, or listed twice".into(),
                 });
@@ -899,21 +901,41 @@ fn validate_context_cells(
 fn validate_noun_class(declension: NounDeclension, gender: Gender) -> Result<()> {
     let valid = match declension {
         NounDeclension::FirstHardMasculine
+        | NounDeclension::FirstHardMasculineUStem
+        | NounDeclension::FirstHardMasculineInEthnonym
+        | NounDeclension::FirstHardMasculineUdEs
         | NounDeclension::FirstHardVelarMasculine
         | NounDeclension::FirstMixedMasculine
         | NounDeclension::FirstSoftMasculine
+        | NounDeclension::FirstSoftMasculineAgentTel
+        | NounDeclension::FirstSoftMasculineLord
+        | NounDeclension::FirstSoftMasculineJ
+        | NounDeclension::FirstSoftMasculineEy
         | NounDeclension::ThirdMasculine
         | NounDeclension::FourthMasculineEn
+        | NounDeclension::FourthMasculineEnDay
         | NounDeclension::FourthMasculineEnKamen => gender == Gender::Masculine,
         NounDeclension::FirstHardNeuter
         | NounDeclension::FirstSoftNeuter
+        | NounDeclension::FirstSoftNeuterIshche
+        | NounDeclension::FirstSoftNeuterIe
         | NounDeclension::FourthNeuterEn
         | NounDeclension::FourthNeuterEs
+        | NounDeclension::FourthNeuterEsAlternatingFirst
+        | NounDeclension::FourthNeuterEsPairedDual
         | NounDeclension::FourthNeuterAt => gender == Gender::Neuter,
-        NounDeclension::SecondHard | NounDeclension::SecondSoft => gender == Gender::Feminine,
+        NounDeclension::SecondHard
+        | NounDeclension::SecondHardVelar
+        | NounDeclension::SecondSoft
+        | NounDeclension::SecondSoftPostvocalicAncientPlural
+        | NounDeclension::SecondMixed => matches!(gender, Gender::Masculine | Gender::Feminine),
+        NounDeclension::SecondSoftMasculineIa => gender == Gender::Masculine,
         NounDeclension::ThirdFeminine
         | NounDeclension::FourthFeminineEr
-        | NounDeclension::FourthFeminineOv => gender == Gender::Feminine,
+        | NounDeclension::FourthFeminineErDaughter
+        | NounDeclension::FourthFeminineOv
+        | NounDeclension::FourthFeminineOvSyncopating => gender == Gender::Feminine,
+        NounDeclension::Indeclinable => true,
     };
     if valid {
         Ok(())
@@ -1220,6 +1242,59 @@ mod tests {
     }
 
     #[test]
+    fn caller_irregular_variants_preserve_declared_order_per_cell() {
+        let cell = GrammarCell::Noun(NounCell {
+            case: Case::Genitive,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        });
+        let first =
+            SpecifiedForm::new(cell, "любве", Some("любве́"), source()).expect("first variant");
+        let second =
+            SpecifiedForm::new(cell, "любви", Some("любвѝ"), source()).expect("second variant");
+        let spec = NounSpec::new(
+            "любовь",
+            "любв",
+            Gender::Feminine,
+            NounDeclension::FourthFeminineOvSyncopating,
+            source(),
+        )
+        .expect("noun")
+        .with_irregular_form(first.clone())
+        .expect("first override")
+        .with_irregular_form(second)
+        .expect("ordered override");
+
+        assert_eq!(
+            spec.form(match cell {
+                GrammarCell::Noun(cell) => cell,
+                _ => unreachable!(),
+            })
+            .expect("ordered caller variants")
+            .texts()
+            .collect::<Vec<_>>(),
+            ["любве", "любви"]
+        );
+        assert!(matches!(
+            spec.clone().with_irregular_form(first),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+
+        let liturgical = spec
+            .form_with(
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+                match cell {
+                    GrammarCell::Noun(cell) => cell,
+                    _ => unreachable!(),
+                },
+            )
+            .expect("ordered accented caller variants");
+        assert_eq!(liturgical.texts().collect::<Vec<_>>(), ["любве́", "любвѝ"]);
+    }
+
+    #[test]
     fn paradigm_distinguishes_missing_metadata_from_invalid_cells() {
         let verb = VerbSpec::builder(
             "нести",
@@ -1512,7 +1587,7 @@ mod tests {
             NounSpec::new(
                 "жена",
                 "жен",
-                Gender::Masculine,
+                Gender::Neuter,
                 NounDeclension::SecondHard,
                 source(),
             ),

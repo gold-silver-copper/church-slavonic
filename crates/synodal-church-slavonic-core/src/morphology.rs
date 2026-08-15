@@ -13,6 +13,17 @@ use crate::{
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum NounDeclension {
     FirstHardMasculine,
+    /// Historical `u`-stem members of the first declension, retaining the
+    /// ordered `-ꙋ`, `-ови`, `-ове`, `-ов-`, and `-ми` alternatives described
+    /// in Alypy §§37–38 (for example `сынъ` and `домъ`).
+    FirstHardMasculineUStem,
+    /// Ethnonyms in `-инъ`, whose plural drops `-ин-` and has nominative and
+    /// vocative `-е`, for example `галїлеанинъ : галїлеане` (Alypy §37).
+    FirstHardMasculineInEthnonym,
+    /// The lexeme-specific mixed historical profile of `ꙋдъ`, which keeps
+    /// its ordinary first-declension forms and can additionally use an
+    /// extended `ꙋдес-` stem after the fourth-declension neuter analogy.
+    FirstHardMasculineUdEs,
     /// First declension with a final velar and the reviewed first/second
     /// palatalizations of Alypy §34.
     FirstHardVelarMasculine,
@@ -20,9 +31,38 @@ pub enum NounDeclension {
     FirstMixedMasculine,
     FirstHardNeuter,
     FirstSoftMasculine,
+    /// Agent nouns in `-тель`, retaining the ordinary soft paradigm plus the
+    /// `-е` / `-їе` nominative-vocative plural variants of Alypy §37.
+    FirstSoftMasculineAgentTel,
+    /// The mixed `господь` profile: hard singular obliques, historical
+    /// i-stem dual/plural endings, and the lexical vocative `господи`.
+    FirstSoftMasculineLord,
+    /// Masculine `j`-stems with a surface citation in `-й`, for example
+    /// `край : кра-` and `славїй : славї-`.
+    FirstSoftMasculineJ,
+    /// Masculine nouns in `-ей` with the distinct `їерей` pattern from Alypy
+    /// §§34 and 37, including genitive singular `-а` and plural `-є`.
+    FirstSoftMasculineEy,
     FirstSoftNeuter,
+    /// Soft neuters in `-ище`, whose locative plural admits ordered `-ахъ`,
+    /// `-ихъ`, and `-ехъ` variants (Alypy §37).
+    FirstSoftNeuterIshche,
+    /// Soft neuters in `-їе`, whose dual/plural spelling and endings differ
+    /// from the ordinary `море` pattern (for example `знаменїе`).
+    FirstSoftNeuterIe,
     SecondHard,
+    /// Second declension with a final velar and the §39 palatalization before
+    /// `ѣ` in singular dative/locative and dual citation cells.
+    SecondHardVelar,
     SecondSoft,
+    /// Soft nouns in `-ѧ` after a vowel that retain the ancient `-ѧ`
+    /// nominative/accusative plural, for example `молнїѧ` and `ѕмїѧ`.
+    SecondSoftPostvocalicAncientPlural,
+    /// Masculine names in `-їа`, with the §40 instrumental singular `-емъ`.
+    SecondSoftMasculineIa,
+    /// Second-declension stems ending in a sibilant, with the mixed endings
+    /// printed in Alypy §§39–40 (for example `юноша`).
+    SecondMixed,
     ThirdFeminine,
     ThirdMasculine,
     /// Fourth-declension neuter whose citation form in `-ѧ` has an oblique
@@ -31,43 +71,83 @@ pub enum NounDeclension {
     /// Fourth-declension neuter whose citation form in `-о` has an oblique
     /// stem in `-ес-`, for example `небо : небес-`.
     FourthNeuterEs,
+    /// Extended `-ес-` neuters in `-о` that also admit a complete ordinary
+    /// first-declension background without `-ес-` (Alypy §44).
+    FourthNeuterEsAlternatingFirst,
+    /// The paired-body `ѻко` / `ꙋхо` contract from Alypy §44: singular and
+    /// plural use the independently supplied `-ес-` stem, while every dual
+    /// cell uses its corresponding short `-ч-` / `-ш-` stem.
+    FourthNeuterEsPairedDual,
     /// Fourth-declension neuter with an independently supplied extended stem
     /// in `-ат-`, for example `ѻтроча : ѻтрочат-`.
     FourthNeuterAt,
     /// Fourth-declension feminine whose citation form in `-и` has an oblique
     /// stem in `-ер-`, for example `мати : матер-`.
     FourthFeminineEr,
+    /// The lexeme-specific modern `дщерь` identity with the historical
+    /// nominative/vocative citation `дщи` and oblique `дщер-` stem.
+    FourthFeminineErDaughter,
     /// Fourth-declension feminine with an independently supplied oblique stem
     /// in `-ов-` or `-в-`, for example `свекры : свекров-`.
     FourthFeminineOv,
+    /// Modern `-овь` members of the `свекры` family whose full `-ов-` and
+    /// syncopated `-в-` stems are distributed by cell, for example
+    /// `церковь : церков- / церкв-` and `любовь : любов- / любв-`.
+    /// `stem` is the independently supplied short `-в-` stem; the full stem
+    /// is recoverable without ambiguity from the validated citation form.
+    FourthFeminineOvSyncopating,
     /// Fourth-declension masculine with an independently supplied stem in
     /// `-ен-`, for example `степень : степен-`.
     FourthMasculineEn,
+    /// The lexeme-specific syncopating paradigm of `день : дн- / ден-`.
+    FourthMasculineEnDay,
     /// The lexeme-specific `камень` contract: the ordinary masculine `-ен-`
     /// paradigm plus only the alternatives cited in Alypy §43. The separate
     /// collective `каменїе` is never emitted by this contract.
     FourthMasculineEnKamen,
+    /// Borrowed nouns whose supplied lemma is invariant in every licensed
+    /// case and number, including the Hebrew names described in Alypy §37.
+    Indeclinable,
 }
 
 impl NounDeclension {
-    pub const ALL: [Self; 17] = [
+    pub const ALL: [Self; 36] = [
         Self::FirstHardMasculine,
+        Self::FirstHardMasculineUStem,
+        Self::FirstHardMasculineInEthnonym,
+        Self::FirstHardMasculineUdEs,
         Self::FirstHardVelarMasculine,
         Self::FirstMixedMasculine,
         Self::FirstHardNeuter,
         Self::FirstSoftMasculine,
+        Self::FirstSoftMasculineAgentTel,
+        Self::FirstSoftMasculineLord,
+        Self::FirstSoftMasculineJ,
+        Self::FirstSoftMasculineEy,
         Self::FirstSoftNeuter,
+        Self::FirstSoftNeuterIshche,
+        Self::FirstSoftNeuterIe,
         Self::SecondHard,
+        Self::SecondHardVelar,
         Self::SecondSoft,
+        Self::SecondSoftPostvocalicAncientPlural,
+        Self::SecondSoftMasculineIa,
+        Self::SecondMixed,
         Self::ThirdFeminine,
         Self::ThirdMasculine,
         Self::FourthNeuterEn,
         Self::FourthNeuterEs,
+        Self::FourthNeuterEsAlternatingFirst,
+        Self::FourthNeuterEsPairedDual,
         Self::FourthNeuterAt,
         Self::FourthFeminineEr,
+        Self::FourthFeminineErDaughter,
         Self::FourthFeminineOv,
+        Self::FourthFeminineOvSyncopating,
         Self::FourthMasculineEn,
+        Self::FourthMasculineEnDay,
         Self::FourthMasculineEnKamen,
+        Self::Indeclinable,
     ];
 }
 
@@ -427,7 +507,10 @@ pub fn decline_noun(
         if cell.number == Number::Plural
             && !matches!(
                 lexeme.declension,
-                NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineOv
+                NounDeclension::FourthFeminineEr
+                    | NounDeclension::FourthFeminineErDaughter
+                    | NounDeclension::FourthFeminineOv
+                    | NounDeclension::FourthFeminineOvSyncopating
             )
         {
             let mut ordered = nominative_like;
@@ -455,25 +538,85 @@ fn noun_surfaces(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<Strin
     use Case::{Accusative as Acc, Nominative as Nom, Vocative as Voc};
     use Number::Singular as Sg;
 
+    if lexeme.declension == NounDeclension::Indeclinable {
+        return Ok(vec![lexeme.lemma.canonical().to_owned()]);
+    }
+    if lexeme.declension == NounDeclension::FirstHardMasculineUdEs {
+        let short_stem = lexeme.lemma.canonical().strip_suffix('ъ').ok_or_else(|| {
+            Error::ContradictoryMetadata {
+                reason: "the ꙋдъ mixed profile requires a citation in -ъ".into(),
+            }
+        })?;
+        let ordinary = NounLexeme::new(
+            lexeme.lemma.clone(),
+            SynodalWord::parse(short_stem)?,
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculine,
+        );
+        let mut surfaces = noun_surfaces(&ordinary, cell)?;
+        if !matches!((cell.number, cell.case), (Sg, Nom | Acc | Voc)) {
+            let extended = NounLexeme::new(
+                SynodalWord::parse(join(short_stem, "о"))?,
+                lexeme.stem.clone(),
+                Gender::Neuter,
+                NounDeclension::FourthNeuterEs,
+            );
+            surfaces.extend(noun_surfaces(&extended, cell)?);
+            surfaces.dedup();
+        }
+        return Ok(surfaces);
+    }
+    if lexeme.declension == NounDeclension::FourthMasculineEnDay
+        && cell.number == Sg
+        && cell.case == Acc
+    {
+        return Ok(vec![if cell.animacy == Animacy::Animate {
+            "дне".to_owned()
+        } else {
+            lexeme.lemma.canonical().to_owned()
+        }]);
+    }
+
     let citation_form = matches!(
         (lexeme.declension, cell.number, cell.case),
         (
             NounDeclension::FourthNeuterEn
                 | NounDeclension::FourthNeuterEs
+                | NounDeclension::FourthNeuterEsAlternatingFirst
+                | NounDeclension::FourthNeuterEsPairedDual
                 | NounDeclension::FourthNeuterAt,
             Sg,
             Nom | Acc | Voc
         ) | (
-            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineOv,
+            NounDeclension::FourthFeminineEr
+                | NounDeclension::FourthFeminineErDaughter
+                | NounDeclension::FourthFeminineOv
+                | NounDeclension::FourthFeminineOvSyncopating,
             Sg,
             Nom | Voc
         ) | (
-            NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
+            NounDeclension::FourthMasculineEn
+                | NounDeclension::FourthMasculineEnDay
+                | NounDeclension::FourthMasculineEnKamen,
             Sg,
             Nom | Voc
         )
     );
     if citation_form {
+        if lexeme.declension == NounDeclension::FourthFeminineErDaughter {
+            let short_stem = lexeme
+                .stem
+                .canonical()
+                .strip_suffix("ер")
+                .unwrap_or_default();
+            return Ok(vec![join(short_stem, "и")]);
+        }
+        if lexeme.declension == NounDeclension::FourthFeminineOvSyncopating && cell.case == Voc {
+            return Ok(vec![
+                lexeme.lemma.canonical().to_owned(),
+                join(lexeme.stem.canonical(), "е"),
+            ]);
+        }
         return Ok(vec![lexeme.lemma.canonical().to_owned()]);
     }
 
@@ -482,6 +625,21 @@ fn noun_surfaces(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<Strin
         .into_iter()
         .map(|ending| join(&stem, ending))
         .collect::<Vec<_>>();
+    if lexeme.declension == NounDeclension::FourthNeuterEsAlternatingFirst {
+        let short_stem = lexeme.stem.canonical().strip_suffix("ес").ok_or_else(|| {
+            Error::ContradictoryMetadata {
+                reason: "alternating -ес- neuters require an extended stem in -ес-".into(),
+            }
+        })?;
+        let ordinary = NounLexeme::new(
+            lexeme.lemma.clone(),
+            SynodalWord::parse(short_stem)?,
+            Gender::Neuter,
+            NounDeclension::FirstHardNeuter,
+        );
+        surfaces.extend(noun_surfaces(&ordinary, cell)?);
+        surfaces.dedup();
+    }
     if lexeme.declension == NounDeclension::FourthMasculineEnKamen {
         let lexical_stem = lexeme.stem.canonical();
         let alternative = match (cell.number, cell.case, cell.animacy) {
@@ -495,6 +653,45 @@ fn noun_surfaces(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<Strin
             surfaces.push(alternative);
         }
     }
+    if lexeme.declension == NounDeclension::FourthNeuterEsPairedDual
+        && cell.number == Number::Dual
+        && matches!(cell.case, Nom | Acc | Voc)
+        && lexeme
+            .stem
+            .canonical()
+            .strip_suffix("ес")
+            .is_some_and(|stem| stem.ends_with('ч'))
+    {
+        if let Some(short_stem) = lexeme.stem.canonical().strip_suffix("ес") {
+            let mut alternative = short_stem.to_owned();
+            alternative.pop();
+            alternative.push('ц');
+            surfaces.push(join(&alternative, "ѣ"));
+        }
+    }
+    if lexeme.declension == NounDeclension::FourthNeuterEsPairedDual
+        && cell.number == Sg
+        && cell.case == crate::Case::Locative
+    {
+        if let Some(short_stem) = lexeme.lemma.canonical().strip_suffix('о') {
+            surfaces.push(join(&second_palatalize_final_velar(short_stem), "ѣ"));
+        }
+    }
+    if lexeme.declension == NounDeclension::FirstSoftNeuterIe
+        && cell.number == Number::Plural
+        && cell.case == crate::Case::Instrumental
+    {
+        if let Some(short_stem) = lexeme
+            .stem
+            .canonical()
+            .strip_suffix('ї')
+            .or_else(|| lexeme.stem.canonical().strip_suffix('і'))
+        {
+            surfaces.push(join(short_stem, "ьми"));
+            surfaces.push(join(short_stem, "ми"));
+        }
+    }
+    surfaces.dedup();
     Ok(surfaces)
 }
 
@@ -504,6 +701,18 @@ fn noun_stem(lexeme: &NounLexeme, cell: crate::NounCell) -> String {
 
     let stem = lexeme.stem.canonical();
     match lexeme.declension {
+        NounDeclension::FirstHardMasculineInEthnonym if cell.number == Pl => {
+            stem.strip_suffix("ин").unwrap_or(stem).to_owned()
+        }
+        NounDeclension::FourthMasculineEnDay
+            if matches!(
+                (cell.number, cell.case),
+                (Du, crate::Case::Dative | crate::Case::Instrumental)
+                    | (Pl, crate::Case::Instrumental)
+            ) =>
+        {
+            "ден".to_owned()
+        }
         NounDeclension::FirstHardVelarMasculine => match (cell.number, cell.case) {
             (Sg, Voc) => palatalize_final_velar(stem),
             (Sg, crate::Case::Locative) | (Pl, Nom | Voc | crate::Case::Locative) => {
@@ -511,7 +720,42 @@ fn noun_stem(lexeme: &NounLexeme, cell: crate::NounCell) -> String {
             }
             _ => stem.to_owned(),
         },
-        NounDeclension::FourthNeuterEn | NounDeclension::FourthNeuterEs
+        NounDeclension::SecondHardVelar => match (cell.number, cell.case) {
+            (Sg, crate::Case::Dative | crate::Case::Locative) | (Du, Nom | Acc | Voc) => {
+                second_palatalize_final_velar(stem)
+            }
+            _ => stem.to_owned(),
+        },
+        NounDeclension::SecondMixed
+            if matches!((cell.number, cell.case), (Du, Nom | Acc | Voc)) =>
+        {
+            last_o_as_omega(stem)
+        }
+        NounDeclension::FirstSoftMasculineEy
+            if matches!(
+                (cell.number, cell.case),
+                (
+                    Du,
+                    Nom | Acc | Voc | crate::Case::Genitive | crate::Case::Locative
+                ) | (Pl, crate::Case::Genitive | Acc | crate::Case::Instrumental)
+            ) =>
+        {
+            last_e_as_wide_e(stem)
+        }
+        NounDeclension::FirstSoftNeuterIe
+            if matches!(
+                (cell.number, cell.case),
+                (
+                    Du,
+                    Nom | Acc | Voc | crate::Case::Genitive | crate::Case::Locative
+                ) | (Pl, Nom | Acc | Voc)
+            ) =>
+        {
+            last_e_as_wide_e(stem)
+        }
+        NounDeclension::FourthNeuterEn
+        | NounDeclension::FourthNeuterEs
+        | NounDeclension::FourthNeuterEsAlternatingFirst
             if matches!((cell.number, cell.case), (Du, Nom | Acc | Voc)) =>
         {
             last_e_as_wide_e(stem)
@@ -521,7 +765,7 @@ fn noun_stem(lexeme: &NounLexeme, cell: crate::NounCell) -> String {
         {
             last_o_as_omega(stem)
         }
-        NounDeclension::FourthFeminineEr
+        NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter
             if matches!(
                 (cell.number, cell.case),
                 (
@@ -542,6 +786,36 @@ fn noun_stem(lexeme: &NounLexeme, cell: crate::NounCell) -> String {
             ) =>
         {
             last_o_as_omega(stem)
+        }
+        NounDeclension::FourthNeuterEsPairedDual if cell.number == Du => {
+            stem.strip_suffix("ес").unwrap_or(stem).to_owned()
+        }
+        NounDeclension::FourthFeminineOvSyncopating => {
+            let use_full_stem = matches!(
+                (cell.number, cell.case),
+                (Sg, Acc | crate::Case::Instrumental)
+                    | (Du, crate::Case::Genitive | crate::Case::Locative)
+            );
+            let selected = if use_full_stem {
+                lexeme
+                    .lemma
+                    .canonical()
+                    .strip_suffix('ь')
+                    .unwrap_or(lexeme.lemma.canonical())
+            } else {
+                stem
+            };
+            if matches!(
+                (cell.number, cell.case),
+                (
+                    Du,
+                    Nom | Acc | Voc | crate::Case::Genitive | crate::Case::Locative
+                ) | (Pl, Nom | Voc)
+            ) {
+                last_e_as_wide_e(selected)
+            } else {
+                selected.to_owned()
+            }
         }
         NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen
             if matches!(
@@ -1203,32 +1477,62 @@ fn decline_adjectival_stem(
 pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
     let valid = matches!(
         (lexeme.declension, lexeme.gender),
-        (NounDeclension::FirstHardMasculine, Gender::Masculine)
-            | (NounDeclension::FirstHardVelarMasculine, Gender::Masculine)
+        (
+            NounDeclension::FirstHardMasculine
+                | NounDeclension::FirstHardMasculineUStem
+                | NounDeclension::FirstHardMasculineInEthnonym
+                | NounDeclension::FirstHardMasculineUdEs,
+            Gender::Masculine,
+        ) | (NounDeclension::FirstHardVelarMasculine, Gender::Masculine)
             | (NounDeclension::FirstMixedMasculine, Gender::Masculine)
             | (NounDeclension::FirstHardNeuter, Gender::Neuter)
-            | (NounDeclension::FirstSoftMasculine, Gender::Masculine)
-            | (NounDeclension::FirstSoftNeuter, Gender::Neuter)
             | (
-                NounDeclension::SecondHard | NounDeclension::SecondSoft,
-                Gender::Feminine
+                NounDeclension::FirstSoftMasculine
+                    | NounDeclension::FirstSoftMasculineAgentTel
+                    | NounDeclension::FirstSoftMasculineLord
+                    | NounDeclension::FirstSoftMasculineJ
+                    | NounDeclension::FirstSoftMasculineEy,
+                Gender::Masculine,
             )
+            | (
+                NounDeclension::FirstSoftNeuter
+                    | NounDeclension::FirstSoftNeuterIshche
+                    | NounDeclension::FirstSoftNeuterIe,
+                Gender::Neuter,
+            )
+            | (
+                NounDeclension::SecondHard
+                    | NounDeclension::SecondHardVelar
+                    | NounDeclension::SecondSoft
+                    | NounDeclension::SecondSoftPostvocalicAncientPlural
+                    | NounDeclension::SecondMixed,
+                Gender::Feminine | Gender::Masculine
+            )
+            | (NounDeclension::SecondSoftMasculineIa, Gender::Masculine)
             | (NounDeclension::ThirdFeminine, Gender::Feminine)
             | (NounDeclension::ThirdMasculine, Gender::Masculine)
             | (
                 NounDeclension::FourthNeuterEn
                     | NounDeclension::FourthNeuterEs
+                    | NounDeclension::FourthNeuterEsAlternatingFirst
+                    | NounDeclension::FourthNeuterEsPairedDual
                     | NounDeclension::FourthNeuterAt,
                 Gender::Neuter
             )
             | (
-                NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineOv,
+                NounDeclension::FourthFeminineEr
+                    | NounDeclension::FourthFeminineErDaughter
+                    | NounDeclension::FourthFeminineOv
+                    | NounDeclension::FourthFeminineOvSyncopating,
                 Gender::Feminine
             )
             | (
-                NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
+                NounDeclension::FourthMasculineEn
+                    | NounDeclension::FourthMasculineEnDay
+                    | NounDeclension::FourthMasculineEnKamen,
                 Gender::Masculine
             )
+            | (NounDeclension::Indeclinable, _)
     );
     if !valid {
         return Err(Error::ContradictoryMetadata {
@@ -1238,6 +1542,11 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
     let lemma = lexeme.lemma.canonical();
     let stem = lexeme.stem.canonical();
     let valid_shape = match lexeme.declension {
+        NounDeclension::FirstHardMasculineUStem => lemma.ends_with('ъ'),
+        NounDeclension::FirstHardMasculineInEthnonym => {
+            lemma.strip_suffix('ъ').is_some_and(|base| base == stem) && stem.ends_with("ин")
+        }
+        NounDeclension::FirstHardMasculineUdEs => lemma == "ꙋдъ" && stem == "ꙋдес",
         NounDeclension::FirstHardVelarMasculine => {
             lemma.ends_with('ъ')
                 && stem
@@ -1252,21 +1561,96 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
                     .last()
                     .is_some_and(|final_char| matches!(final_char, 'ж' | 'ч' | 'ш' | 'щ' | 'ц'))
         }
+        NounDeclension::FirstSoftMasculineJ => {
+            lemma.strip_suffix('й').is_some_and(|prefix| prefix == stem) && !lemma.ends_with("ей")
+        }
+        NounDeclension::FirstSoftMasculineEy => {
+            lemma.strip_suffix('й').is_some_and(|prefix| prefix == stem) && stem.ends_with('е')
+        }
+        NounDeclension::FirstSoftNeuterIe => {
+            lemma.strip_suffix('е').is_some_and(|prefix| prefix == stem)
+                && (stem.ends_with('ї') || stem.ends_with('і'))
+        }
+        NounDeclension::FirstSoftMasculineAgentTel => {
+            lemma.strip_suffix('ь').is_some_and(|prefix| prefix == stem) && stem.ends_with("тел")
+        }
+        NounDeclension::FirstSoftMasculineLord => lemma == "господь" && stem == "господ",
+        NounDeclension::FirstSoftNeuterIshche => {
+            lemma.strip_suffix('е').is_some_and(|prefix| prefix == stem) && stem.ends_with("ищ")
+        }
+        NounDeclension::SecondHardVelar => {
+            lemma.ends_with('а')
+                && stem
+                    .chars()
+                    .last()
+                    .is_some_and(|final_char| matches!(final_char, 'г' | 'к' | 'х'))
+        }
+        NounDeclension::SecondMixed => {
+            lemma.ends_with('а')
+                && stem
+                    .chars()
+                    .last()
+                    .is_some_and(|final_char| matches!(final_char, 'ж' | 'ч' | 'ш' | 'щ' | 'ц'))
+        }
+        NounDeclension::SecondSoftPostvocalicAncientPlural => {
+            lemma.ends_with('ѧ')
+                && lemma.strip_suffix('ѧ').is_some_and(|prefix| prefix == stem)
+                && stem.chars().last().is_some_and(|character| {
+                    matches!(
+                        character,
+                        'а' | 'е'
+                            | 'є'
+                            | 'и'
+                            | 'і'
+                            | 'ї'
+                            | 'о'
+                            | 'ѡ'
+                            | 'ꙋ'
+                            | 'ѹ'
+                            | 'ы'
+                            | 'ѣ'
+                            | 'ѧ'
+                            | 'ю'
+                            | 'ѵ'
+                    )
+                })
+        }
+        NounDeclension::SecondSoftMasculineIa => {
+            lemma.strip_suffix('а').is_some_and(|prefix| prefix == stem)
+                && (stem.ends_with('ї') || stem.ends_with('і'))
+        }
         NounDeclension::FourthNeuterEn => lemma.ends_with('ѧ') && stem.ends_with("ен"),
-        NounDeclension::FourthNeuterEs => lemma.ends_with('о') && stem.ends_with("ес"),
+        NounDeclension::FourthNeuterEs | NounDeclension::FourthNeuterEsAlternatingFirst => {
+            lemma.strip_suffix('о').is_some_and(|short| {
+                stem.strip_suffix("ес")
+                    .is_some_and(|extended_short| extended_short == short)
+            })
+        }
+        NounDeclension::FourthNeuterEsPairedDual => {
+            lemma.ends_with('о')
+                && stem
+                    .strip_suffix("ес")
+                    .is_some_and(|short| short.ends_with('ч') || short.ends_with('ш'))
+        }
         NounDeclension::FourthNeuterAt => {
             (lemma.ends_with('а') || lemma.ends_with('ѧ')) && stem.ends_with("ат")
         }
         NounDeclension::FourthFeminineEr => lemma.ends_with('и') && stem.ends_with("ер"),
+        NounDeclension::FourthFeminineErDaughter => lemma == "дщерь" && stem == "дщер",
         NounDeclension::FourthFeminineOv => {
             (lemma.ends_with('ы') || lemma.ends_with('ь'))
                 && (stem.ends_with("ов") || stem.ends_with('в'))
                 && !matches!(lemma, "любовь" | "любы")
         }
+        NounDeclension::FourthFeminineOvSyncopating => lemma
+            .strip_suffix("овь")
+            .is_some_and(|prefix| stem == format!("{prefix}в")),
         NounDeclension::FourthMasculineEn => {
             lemma.ends_with("ень") && stem.ends_with("ен") && lemma != "камень"
         }
+        NounDeclension::FourthMasculineEnDay => lemma == "день" && stem == "дн",
         NounDeclension::FourthMasculineEnKamen => lemma == "камень" && stem == "камен",
+        NounDeclension::Indeclinable => !lemma.is_empty() && lemma == stem,
         _ => true,
     };
     if !valid_shape {
@@ -1283,22 +1667,43 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
 fn noun_rule(declension: NounDeclension) -> &'static str {
     match declension {
         NounDeclension::FirstHardMasculine => "SYN-NOUN-I-HARD-M-ALYPY-34",
+        NounDeclension::FirstHardMasculineUStem => "SYN-NOUN-I-U-STEM-M-ALYPY-37-38",
+        NounDeclension::FirstHardMasculineInEthnonym => "SYN-NOUN-I-HARD-M-IN-ETHNONYM-ALYPY-37",
+        NounDeclension::FirstHardMasculineUdEs => "SYN-NOUN-I-M-UD-ES-ALYPY-44",
         NounDeclension::FirstHardVelarMasculine => "SYN-NOUN-I-HARD-VELAR-M-ALYPY-34",
         NounDeclension::FirstMixedMasculine => "SYN-NOUN-I-MIXED-M-ALYPY-33-34",
         NounDeclension::FirstHardNeuter => "SYN-NOUN-I-HARD-N-ALYPY-34",
         NounDeclension::FirstSoftMasculine => "SYN-NOUN-I-SOFT-M-ALYPY-34",
+        NounDeclension::FirstSoftMasculineAgentTel => "SYN-NOUN-I-SOFT-M-TEL-AGENT-ALYPY-37",
+        NounDeclension::FirstSoftMasculineLord => "SYN-NOUN-I-SOFT-M-LORD-ALYPY-35-41",
+        NounDeclension::FirstSoftMasculineJ => "SYN-NOUN-I-SOFT-J-M-ALYPY-34-37",
+        NounDeclension::FirstSoftMasculineEy => "SYN-NOUN-I-SOFT-EY-M-ALYPY-34-37",
         NounDeclension::FirstSoftNeuter => "SYN-NOUN-I-SOFT-N-ALYPY-34",
+        NounDeclension::FirstSoftNeuterIshche => "SYN-NOUN-I-SOFT-N-ISHCHE-ALYPY-37",
+        NounDeclension::FirstSoftNeuterIe => "SYN-NOUN-I-SOFT-IE-N-ALYPY-34-37",
         NounDeclension::SecondHard => "SYN-NOUN-II-HARD-ALYPY-39",
+        NounDeclension::SecondHardVelar => "SYN-NOUN-II-HARD-VELAR-ALYPY-39-40",
         NounDeclension::SecondSoft => "SYN-NOUN-II-SOFT-ALYPY-39",
+        NounDeclension::SecondSoftPostvocalicAncientPlural => {
+            "SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40"
+        }
+        NounDeclension::SecondSoftMasculineIa => "SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40",
+        NounDeclension::SecondMixed => "SYN-NOUN-II-MIXED-ALYPY-39-40",
         NounDeclension::ThirdFeminine => "SYN-NOUN-III-F-ALYPY-41",
         NounDeclension::ThirdMasculine => "SYN-NOUN-III-M-ALYPY-41",
         NounDeclension::FourthNeuterEn => "SYN-NOUN-IV-N-EN-ALYPY-42-43",
         NounDeclension::FourthNeuterEs => "SYN-NOUN-IV-N-ES-ALYPY-42-43",
+        NounDeclension::FourthNeuterEsAlternatingFirst => "SYN-NOUN-IV-N-ES-ALT-FIRST-ALYPY-42-44",
+        NounDeclension::FourthNeuterEsPairedDual => "SYN-NOUN-IV-N-ES-PAIRED-DUAL-ALYPY-44",
         NounDeclension::FourthNeuterAt => "SYN-NOUN-IV-N-AT-ALYPY-42-43",
         NounDeclension::FourthFeminineEr => "SYN-NOUN-IV-F-ER-ALYPY-42-43",
+        NounDeclension::FourthFeminineErDaughter => "SYN-NOUN-IV-F-ER-DAUGHTER-ALYPY-42-44",
         NounDeclension::FourthFeminineOv => "SYN-NOUN-IV-F-OV-ALYPY-42-44",
+        NounDeclension::FourthFeminineOvSyncopating => "SYN-NOUN-IV-F-OV-SYNCOPATING-ALYPY-42-44",
         NounDeclension::FourthMasculineEn => "SYN-NOUN-IV-M-EN-ALYPY-42-44",
+        NounDeclension::FourthMasculineEnDay => "SYN-NOUN-IV-M-EN-DAY-ALYPY-43",
         NounDeclension::FourthMasculineEnKamen => "SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43",
+        NounDeclension::Indeclinable => "SYN-NOUN-INDECLINABLE-ALYPY-37",
     }
 }
 
@@ -1315,23 +1720,116 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
             nominative
         }
     };
-    let ending = match (lexeme.declension, cell.number, cell.case) {
-        (NounDeclension::FirstHardMasculine, Sg, Nom) => "ъ",
-        (NounDeclension::FirstHardMasculine, Sg, Gen) => "а",
-        (NounDeclension::FirstHardMasculine, Sg, Dat) => "ꙋ",
-        (NounDeclension::FirstHardMasculine, Sg, Acc) => animate_acc("ъ", "а"),
-        (NounDeclension::FirstHardMasculine, Sg, Ins) => "омъ",
-        (NounDeclension::FirstHardMasculine, Sg, Loc) => "ѣ",
-        (NounDeclension::FirstHardMasculine, Sg, Voc) => "е",
-        (NounDeclension::FirstHardMasculine, Du, Nom | Acc | Voc) => "а",
-        (NounDeclension::FirstHardMasculine, Du, Gen | Loc) => "ꙋ",
-        (NounDeclension::FirstHardMasculine, Du, Dat | Ins) => "ома",
-        (NounDeclension::FirstHardMasculine, Pl, Nom | Voc) => "и",
-        (NounDeclension::FirstHardMasculine, Pl, Gen) => "овъ",
-        (NounDeclension::FirstHardMasculine, Pl, Dat) => "омъ",
-        (NounDeclension::FirstHardMasculine, Pl, Acc) => animate_acc("ы", "овъ"),
-        (NounDeclension::FirstHardMasculine, Pl, Ins) => "ы",
-        (NounDeclension::FirstHardMasculine, Pl, Loc) => "ѣхъ",
+    if lexeme.declension == NounDeclension::Indeclinable {
+        return Ok(vec![""]);
+    }
+    if lexeme.declension == NounDeclension::FirstHardMasculineInEthnonym && cell.number == Pl {
+        return Ok(vec![match cell.case {
+            Nom | Voc => "е",
+            Gen => "ъ",
+            Dat => "омъ",
+            Acc => animate_acc("е", "ъ"),
+            Ins => "ы",
+            Loc => "ѣхъ",
+        }]);
+    }
+    if lexeme.declension == NounDeclension::FirstSoftMasculineLord {
+        return Ok(match (cell.number, cell.case) {
+            (Sg, Nom) => vec!["ь"],
+            (Sg, Gen) => vec!["а"],
+            (Sg, Dat) => vec!["ꙋ", "еви"],
+            (Sg, Acc) => vec![animate_acc("ь", "а")],
+            (Sg, Ins) => vec!["омъ"],
+            (Sg, Loc) => vec!["ѣ"],
+            (Sg, Voc) => vec!["и"],
+            (Du, Nom | Acc | Voc) => vec!["и"],
+            (Du, Gen | Loc) => vec!["їю", "ю"],
+            (Du, Dat | Ins) => vec!["ьма"],
+            (Pl, Nom | Voc) => vec!["їе"],
+            (Pl, Gen) => vec!["ій", "ей"],
+            (Pl, Dat) => vec!["ємъ"],
+            (Pl, Acc) => vec![animate_acc("и", "ій")],
+            (Pl, Ins) => vec!["ьми"],
+            (Pl, Loc) => vec!["ехъ"],
+        });
+    }
+    if lexeme.declension == NounDeclension::FirstSoftNeuterIshche
+        && matches!((cell.number, cell.case), (Pl, Loc))
+    {
+        return Ok(vec!["ахъ", "ихъ", "ехъ"]);
+    }
+    if lexeme.declension == NounDeclension::FourthMasculineEnDay
+        && matches!((cell.number, cell.case), (Du, Gen | Loc))
+    {
+        return Ok(vec!["їю", "ю"]);
+    }
+    let base_declension = match lexeme.declension {
+        NounDeclension::FirstHardMasculineInEthnonym | NounDeclension::FirstHardMasculineUdEs => {
+            NounDeclension::FirstHardMasculine
+        }
+        NounDeclension::FirstSoftMasculineAgentTel => NounDeclension::FirstSoftMasculine,
+        NounDeclension::FirstSoftNeuterIshche => NounDeclension::FirstSoftNeuter,
+        NounDeclension::FourthNeuterEsAlternatingFirst => NounDeclension::FourthNeuterEs,
+        NounDeclension::FourthMasculineEnDay => NounDeclension::FourthMasculineEn,
+        declension => declension,
+    };
+    let ending = match (base_declension, cell.number, cell.case) {
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Nom) => {
+            "ъ"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Gen) => {
+            "а"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Dat) => {
+            "ꙋ"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Acc) => {
+            animate_acc("ъ", "а")
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Ins) => {
+            "омъ"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Loc) => {
+            "ѣ"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Voc) => {
+            "е"
+        }
+        (
+            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
+            Du,
+            Nom | Acc | Voc,
+        ) => "а",
+        (
+            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
+            Du,
+            Gen | Loc,
+        ) => "ꙋ",
+        (
+            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
+            Du,
+            Dat | Ins,
+        ) => "ома",
+        (
+            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
+            Pl,
+            Nom | Voc,
+        ) => "и",
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Gen) => {
+            "овъ"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Dat) => {
+            "омъ"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Acc) => {
+            animate_acc("ы", "овъ")
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Ins) => {
+            "ы"
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Loc) => {
+            "ѣхъ"
+        }
 
         (NounDeclension::FirstHardVelarMasculine, Sg, Nom) => "ъ",
         (NounDeclension::FirstHardVelarMasculine, Sg, Gen) => "а",
@@ -1404,6 +1902,46 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (NounDeclension::FirstSoftMasculine, Pl, Ins) => "и",
         (NounDeclension::FirstSoftMasculine, Pl, Loc) => "ехъ",
 
+        (NounDeclension::FirstSoftMasculineJ, Sg, Nom) => "й",
+        (NounDeclension::FirstSoftMasculineJ, Sg, Gen) => "ѧ",
+        (NounDeclension::FirstSoftMasculineJ, Sg, Dat) => "ю",
+        (NounDeclension::FirstSoftMasculineJ, Sg, Acc) => animate_acc("й", "ѧ"),
+        (NounDeclension::FirstSoftMasculineJ, Sg, Ins) => "емъ",
+        (NounDeclension::FirstSoftMasculineJ, Sg, Loc) => "и",
+        (NounDeclension::FirstSoftMasculineJ, Sg, Voc) => {
+            if lexeme.stem.canonical().ends_with('ї') {
+                "е"
+            } else {
+                "ю"
+            }
+        }
+        (NounDeclension::FirstSoftMasculineJ, Du, Nom | Acc | Voc) => "ѧ",
+        (NounDeclension::FirstSoftMasculineJ, Du, Gen | Loc) => "ю",
+        (NounDeclension::FirstSoftMasculineJ, Du, Dat | Ins) => "ема",
+        (NounDeclension::FirstSoftMasculineJ, Pl, Nom | Voc) => "и",
+        (NounDeclension::FirstSoftMasculineJ, Pl, Gen) => "євъ",
+        (NounDeclension::FirstSoftMasculineJ, Pl, Dat) => "ємъ",
+        (NounDeclension::FirstSoftMasculineJ, Pl, Acc) => animate_acc("и", "євъ"),
+        (NounDeclension::FirstSoftMasculineJ, Pl, Ins) => "и",
+        (NounDeclension::FirstSoftMasculineJ, Pl, Loc) => "ехъ",
+
+        (NounDeclension::FirstSoftMasculineEy, Sg, Nom) => "й",
+        (NounDeclension::FirstSoftMasculineEy, Sg, Gen) => "а",
+        (NounDeclension::FirstSoftMasculineEy, Sg, Dat) => "ю",
+        (NounDeclension::FirstSoftMasculineEy, Sg, Acc) => animate_acc("й", "а"),
+        (NounDeclension::FirstSoftMasculineEy, Sg, Ins) => "емъ",
+        (NounDeclension::FirstSoftMasculineEy, Sg, Loc) => "и",
+        (NounDeclension::FirstSoftMasculineEy, Sg, Voc) => "ю",
+        (NounDeclension::FirstSoftMasculineEy, Du, Nom | Acc | Voc) => "а",
+        (NounDeclension::FirstSoftMasculineEy, Du, Gen | Loc) => "ю",
+        (NounDeclension::FirstSoftMasculineEy, Du, Dat | Ins) => "ема",
+        (NounDeclension::FirstSoftMasculineEy, Pl, Nom | Voc) => "є",
+        (NounDeclension::FirstSoftMasculineEy, Pl, Gen) => "й",
+        (NounDeclension::FirstSoftMasculineEy, Pl, Dat) => "ємъ",
+        (NounDeclension::FirstSoftMasculineEy, Pl, Acc) => animate_acc("и", "й"),
+        (NounDeclension::FirstSoftMasculineEy, Pl, Ins) => "и",
+        (NounDeclension::FirstSoftMasculineEy, Pl, Loc) => "ехъ",
+
         (NounDeclension::FirstSoftNeuter, Sg, Nom | Acc | Voc) => "е",
         (NounDeclension::FirstSoftNeuter, Sg, Gen) => "ѧ",
         (NounDeclension::FirstSoftNeuter, Sg, Dat) => "ю",
@@ -1418,21 +1956,38 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (NounDeclension::FirstSoftNeuter, Pl, Ins) => "и",
         (NounDeclension::FirstSoftNeuter, Pl, Loc) => "ѧхъ",
 
-        (NounDeclension::SecondHard, Sg, Nom) => "а",
+        (NounDeclension::FirstSoftNeuterIe, Sg, Nom | Acc | Voc) => "е",
+        (NounDeclension::FirstSoftNeuterIe, Sg, Gen) => "ѧ",
+        (NounDeclension::FirstSoftNeuterIe, Sg, Dat) => "ю",
+        (NounDeclension::FirstSoftNeuterIe, Sg, Ins) => "емъ",
+        (NounDeclension::FirstSoftNeuterIe, Sg, Loc) => "и",
+        (NounDeclension::FirstSoftNeuterIe, Du, Nom | Acc | Voc) => "и",
+        (NounDeclension::FirstSoftNeuterIe, Du, Gen | Loc) => "ю",
+        (NounDeclension::FirstSoftNeuterIe, Du, Dat | Ins) => "ема",
+        (NounDeclension::FirstSoftNeuterIe, Pl, Nom | Acc | Voc) => "ѧ",
+        (NounDeclension::FirstSoftNeuterIe, Pl, Gen) => "й",
+        (NounDeclension::FirstSoftNeuterIe, Pl, Dat) => "ємъ",
+        (NounDeclension::FirstSoftNeuterIe, Pl, Ins) => "и",
+        (NounDeclension::FirstSoftNeuterIe, Pl, Loc) => "ихъ",
+
+        (NounDeclension::SecondHardVelar, Sg, Gen) => "и",
+        (NounDeclension::SecondHardVelar, Pl, Nom | Voc) => "и",
+        (NounDeclension::SecondHardVelar, Pl, Acc) => animate_acc("и", "ъ"),
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Nom) => "а",
         (NounDeclension::SecondHard, Sg, Gen) => "ы",
-        (NounDeclension::SecondHard, Sg, Dat | Loc) => "ѣ",
-        (NounDeclension::SecondHard, Sg, Acc) => "ꙋ",
-        (NounDeclension::SecondHard, Sg, Ins) => "ою",
-        (NounDeclension::SecondHard, Sg, Voc) => "о",
-        (NounDeclension::SecondHard, Du, Nom | Acc | Voc) => "ѣ",
-        (NounDeclension::SecondHard, Du, Gen | Loc) => "ꙋ",
-        (NounDeclension::SecondHard, Du, Dat | Ins) => "ама",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Dat | Loc) => "ѣ",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Acc) => "ꙋ",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Ins) => "ою",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Voc) => "о",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Du, Nom | Acc | Voc) => "ѣ",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Du, Gen | Loc) => "ꙋ",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Du, Dat | Ins) => "ама",
         (NounDeclension::SecondHard, Pl, Nom | Voc) => "ы",
-        (NounDeclension::SecondHard, Pl, Gen) => "ъ",
-        (NounDeclension::SecondHard, Pl, Dat) => "амъ",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Gen) => "ъ",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Dat) => "амъ",
         (NounDeclension::SecondHard, Pl, Acc) => animate_acc("ы", "ъ"),
-        (NounDeclension::SecondHard, Pl, Ins) => "ами",
-        (NounDeclension::SecondHard, Pl, Loc) => "ахъ",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Ins) => "ами",
+        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Loc) => "ахъ",
 
         (NounDeclension::SecondSoft, Sg, Nom) => "ѧ",
         (NounDeclension::SecondSoft, Sg, Gen | Dat | Loc) => "и",
@@ -1448,6 +2003,51 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (NounDeclension::SecondSoft, Pl, Acc) => animate_acc("и", "ь"),
         (NounDeclension::SecondSoft, Pl, Ins) => "ѧми",
         (NounDeclension::SecondSoft, Pl, Loc) => "ѧхъ",
+
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Nom) => "ѧ",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Gen | Dat | Loc) => "и",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Acc) => "ю",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Ins) => "ею",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Voc) => "е",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Du, Nom | Acc | Voc) => "и",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Du, Gen | Loc) => "ю",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Du, Dat | Ins) => "ѧма",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Nom | Voc) => "ѧ",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Acc) => animate_acc("ѧ", "й"),
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Gen) => "й",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Dat) => "ѧмъ",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Ins) => "ѧми",
+        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Loc) => "ѧхъ",
+
+        (NounDeclension::SecondSoftMasculineIa, Sg, Nom) => "а",
+        (NounDeclension::SecondSoftMasculineIa, Sg, Gen | Dat | Loc) => "и",
+        (NounDeclension::SecondSoftMasculineIa, Sg, Acc) => "ю",
+        (NounDeclension::SecondSoftMasculineIa, Sg, Ins) => "емъ",
+        (NounDeclension::SecondSoftMasculineIa, Sg, Voc) => "е",
+        (NounDeclension::SecondSoftMasculineIa, Du, Nom | Acc | Voc) => "и",
+        (NounDeclension::SecondSoftMasculineIa, Du, Gen | Loc) => "ю",
+        (NounDeclension::SecondSoftMasculineIa, Du, Dat | Ins) => "ѧма",
+        (NounDeclension::SecondSoftMasculineIa, Pl, Nom | Voc) => "и",
+        (NounDeclension::SecondSoftMasculineIa, Pl, Gen) => "й",
+        (NounDeclension::SecondSoftMasculineIa, Pl, Dat) => "ѧмъ",
+        (NounDeclension::SecondSoftMasculineIa, Pl, Acc) => animate_acc("и", "й"),
+        (NounDeclension::SecondSoftMasculineIa, Pl, Ins) => "ѧми",
+        (NounDeclension::SecondSoftMasculineIa, Pl, Loc) => "ѧхъ",
+
+        (NounDeclension::SecondMixed, Sg, Nom) => "а",
+        (NounDeclension::SecondMixed, Sg, Gen | Dat | Loc) => "и",
+        (NounDeclension::SecondMixed, Sg, Acc) => "ꙋ",
+        (NounDeclension::SecondMixed, Sg, Ins) => "ею",
+        (NounDeclension::SecondMixed, Sg, Voc) => "е",
+        (NounDeclension::SecondMixed, Du, Nom | Acc | Voc) => "и",
+        (NounDeclension::SecondMixed, Du, Gen | Loc) => "ꙋ",
+        (NounDeclension::SecondMixed, Du, Dat | Ins) => "ама",
+        (NounDeclension::SecondMixed, Pl, Nom | Voc) => "и",
+        (NounDeclension::SecondMixed, Pl, Gen) => "ъ",
+        (NounDeclension::SecondMixed, Pl, Dat) => "амъ",
+        (NounDeclension::SecondMixed, Pl, Acc) => animate_acc("ы", "ъ"),
+        (NounDeclension::SecondMixed, Pl, Ins) => "ами",
+        (NounDeclension::SecondMixed, Pl, Loc) => "ахъ",
 
         (NounDeclension::ThirdFeminine, Sg, Nom | Acc) => "ь",
         (NounDeclension::ThirdFeminine, Sg, Gen | Dat | Loc) => "и",
@@ -1476,9 +2076,14 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (NounDeclension::ThirdMasculine, Pl, Ins) => "ьми",
         (NounDeclension::ThirdMasculine, Pl, Loc) => "ехъ",
 
+        (NounDeclension::FourthNeuterEsPairedDual, Du, Nom | Acc | Voc) => "и",
+        (NounDeclension::FourthNeuterEsPairedDual, Du, Gen | Loc) => "їю",
+        (NounDeclension::FourthNeuterEsPairedDual, Du, Dat | Ins) => "има",
+
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Sg,
             Gen,
@@ -1486,6 +2091,7 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Sg,
             Dat | Loc,
@@ -1493,6 +2099,7 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Sg,
             Ins,
@@ -1521,6 +2128,7 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Pl,
             Nom | Acc | Voc,
@@ -1528,6 +2136,7 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Pl,
             Gen,
@@ -1535,6 +2144,7 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Pl,
             Dat,
@@ -1542,6 +2152,7 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Pl,
             Ins,
@@ -1549,38 +2160,127 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Pl,
             Loc,
         ) => "ѣхъ",
 
-        (NounDeclension::FourthFeminineEr, Sg, Gen) => "е",
-        (NounDeclension::FourthFeminineEr, Sg, Dat | Loc) => "и",
-        (NounDeclension::FourthFeminineEr, Sg, Acc) => "ь",
-        (NounDeclension::FourthFeminineEr, Sg, Ins) => "їю",
-        (NounDeclension::FourthFeminineEr, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::FourthFeminineEr, Du, Gen | Loc) => "їю",
-        (NounDeclension::FourthFeminineEr, Du, Dat | Ins) => "ема",
-        (NounDeclension::FourthFeminineEr, Pl, Nom | Voc) => "и",
-        (NounDeclension::FourthFeminineEr, Pl, Gen) => "їй",
-        (NounDeclension::FourthFeminineEr, Pl, Dat) => "емъ",
-        (NounDeclension::FourthFeminineEr, Pl, Acc) => animate_acc("и", "ей"),
-        (NounDeclension::FourthFeminineEr, Pl, Ins) => "ьми",
-        (NounDeclension::FourthFeminineEr, Pl, Loc) => "ехъ",
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Sg, Gen) => {
+            "е"
+        }
+        (
+            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
+            Sg,
+            Dat | Loc,
+        ) => "и",
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Sg, Acc) => {
+            "ь"
+        }
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Sg, Ins) => {
+            "їю"
+        }
+        (
+            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
+            Du,
+            Nom | Acc | Voc,
+        ) => "и",
+        (
+            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
+            Du,
+            Gen | Loc,
+        ) => "їю",
+        (
+            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
+            Du,
+            Dat | Ins,
+        ) => "ема",
+        (
+            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
+            Pl,
+            Nom | Voc,
+        ) => "и",
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Gen) => {
+            "їй"
+        }
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Dat) => {
+            "емъ"
+        }
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Acc) => {
+            animate_acc("и", "ей")
+        }
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Ins) => {
+            "ьми"
+        }
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Loc) => {
+            "ехъ"
+        }
 
-        (NounDeclension::FourthFeminineOv, Sg, Gen) => "е",
-        (NounDeclension::FourthFeminineOv, Sg, Dat | Loc) => "и",
-        (NounDeclension::FourthFeminineOv, Sg, Acc) => "ь",
-        (NounDeclension::FourthFeminineOv, Sg, Ins) => "їю",
-        (NounDeclension::FourthFeminineOv, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::FourthFeminineOv, Du, Gen | Loc) => "їю",
-        (NounDeclension::FourthFeminineOv, Du, Dat | Ins) => "ама",
-        (NounDeclension::FourthFeminineOv, Pl, Nom | Voc) => "и",
-        (NounDeclension::FourthFeminineOv, Pl, Gen) => "ей",
-        (NounDeclension::FourthFeminineOv, Pl, Dat) => "амъ",
-        (NounDeclension::FourthFeminineOv, Pl, Acc) => animate_acc("и", "ей"),
-        (NounDeclension::FourthFeminineOv, Pl, Ins) => "ами",
-        (NounDeclension::FourthFeminineOv, Pl, Loc) => "ахъ",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Sg,
+            Gen,
+        ) => "е",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Sg,
+            Dat | Loc,
+        ) => "и",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Sg,
+            Acc,
+        ) => "ь",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Sg,
+            Ins,
+        ) => "їю",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Du,
+            Nom | Acc | Voc,
+        ) => "и",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Du,
+            Gen | Loc,
+        ) => "їю",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Du,
+            Dat | Ins,
+        ) => "ама",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Pl,
+            Nom | Voc,
+        ) => "и",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Pl,
+            Gen,
+        ) => "ей",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Pl,
+            Dat,
+        ) => "амъ",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Pl,
+            Acc,
+        ) => animate_acc("и", "ей"),
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Pl,
+            Ins,
+        ) => "ами",
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Pl,
+            Loc,
+        ) => "ахъ",
 
         (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Sg, Gen) => {
             "е"
@@ -1637,11 +2337,19 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (
             NounDeclension::FourthNeuterEn
             | NounDeclension::FourthNeuterEs
+            | NounDeclension::FourthNeuterEsPairedDual
             | NounDeclension::FourthNeuterAt,
             Sg,
             Nom | Acc | Voc,
         )
-        | (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineOv, Sg, Nom | Voc)
+        | (
+            NounDeclension::FourthFeminineEr
+            | NounDeclension::FourthFeminineErDaughter
+            | NounDeclension::FourthFeminineOv
+            | NounDeclension::FourthFeminineOvSyncopating,
+            Sg,
+            Nom | Voc,
+        )
         | (
             NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
             Sg,
@@ -1652,10 +2360,77 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
                     .into(),
             });
         }
+        _ => {
+            return Err(Error::ContradictoryMetadata {
+                reason: format!("unmapped noun declension base {base_declension:?}"),
+            });
+        }
     };
     let mut endings = vec![ending];
     match (lexeme.declension, cell.number, cell.case) {
+        (
+            NounDeclension::FirstHardMasculine
+            | NounDeclension::FirstHardMasculineUStem
+            | NounDeclension::FirstHardMasculineInEthnonym
+            | NounDeclension::FirstHardVelarMasculine,
+            Sg,
+            Dat,
+        ) => endings.push("ови"),
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardVelarMasculine, Pl, Gen) => {
+            endings.push("ъ")
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardVelarMasculine, Pl, Ins) => {
+            endings.extend(["ми", "ами"])
+        }
+        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardVelarMasculine, Pl, Loc) => {
+            endings.push("ахъ")
+        }
+        (NounDeclension::FirstHardNeuter, Pl, Ins) => endings.push("ами"),
+        (NounDeclension::FirstHardNeuter, Pl, Loc) => endings.push("ахъ"),
+        (NounDeclension::FirstMixedMasculine, Sg, Dat) => endings.push("еви"),
+        (NounDeclension::FirstMixedMasculine, Sg, Loc) => endings.push("ѣ"),
+        (NounDeclension::FirstMixedMasculine, Pl, Ins) => endings.extend(["ьми", "ами"]),
+        (
+            NounDeclension::FirstSoftMasculine | NounDeclension::FirstSoftMasculineAgentTel,
+            Sg,
+            Dat,
+        ) => endings.push("еви"),
+        (
+            NounDeclension::FirstSoftMasculine | NounDeclension::FirstSoftMasculineAgentTel,
+            Sg,
+            Loc,
+        ) => endings.push("ѣ"),
+        (NounDeclension::FirstSoftMasculine, Pl, Nom | Voc) => endings.push("їе"),
+        (NounDeclension::FirstSoftMasculineAgentTel, Pl, Nom | Voc) => endings.extend(["е", "їе"]),
+        (
+            NounDeclension::FirstSoftMasculine | NounDeclension::FirstSoftMasculineAgentTel,
+            Pl,
+            Ins,
+        ) => endings.extend(["ьми", "ами"]),
+        (
+            NounDeclension::FirstSoftMasculine | NounDeclension::FirstSoftMasculineAgentTel,
+            Pl,
+            Loc,
+        ) => endings.push("ѧхъ"),
+        (NounDeclension::FirstSoftMasculineJ, Sg, Loc) => endings.push("ѣ"),
+        (NounDeclension::FirstSoftMasculineEy, Sg, Dat) => endings.push("ови"),
+        (NounDeclension::FirstSoftMasculineEy, Sg, Loc) => endings.push("ѣ"),
+        (NounDeclension::FirstSoftNeuter | NounDeclension::FirstSoftNeuterIshche, Pl, Ins) => {
+            endings.extend(["ьми", "ами"])
+        }
+        (NounDeclension::FirstHardMasculineUStem, Sg, Gen | Loc) => endings.push("ꙋ"),
+        (NounDeclension::FirstHardMasculineUStem, Pl, Nom | Voc) => endings.push("ове"),
+        (NounDeclension::FirstHardMasculineUStem, Pl, Dat) => endings.push("овомъ"),
+        (NounDeclension::FirstHardMasculineUStem, Pl, Ins) => endings.push("ми"),
+        (NounDeclension::FirstHardMasculineUStem, Pl, Loc) => endings.extend(["овѣхъ", "ахъ"]),
+        (NounDeclension::FirstSoftMasculineEy, Sg, Voc) => endings.push("е"),
+        (NounDeclension::FirstSoftMasculineEy, Du, Dat | Ins) => endings.push("ома"),
+        (NounDeclension::FirstSoftMasculineEy, Pl, Dat) => endings.push("ѡмъ"),
+        (NounDeclension::FourthMasculineEnDay, Sg, Dat) => endings.push("еви"),
+        (NounDeclension::FourthMasculineEnDay, Pl, Nom | Voc) => endings.push("іе"),
+        (NounDeclension::FourthMasculineEnDay, Pl, Gen) => endings.push("ей"),
         (NounDeclension::FirstMixedMasculine, Pl, Nom | Voc) => endings.push("їе"),
+        (NounDeclension::SecondMixed, Sg, Dat) => endings.push("ѣ"),
         (NounDeclension::ThirdFeminine, Du, Dat | Ins) => endings.push("ьма"),
         (NounDeclension::ThirdMasculine, Sg, Voc) => endings.push("ю"),
         (NounDeclension::ThirdMasculine, Pl, Gen) => endings.push("ей"),
@@ -1663,11 +2438,19 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (NounDeclension::FourthNeuterEn, Pl, Dat) => endings.push("ѡмъ"),
         (NounDeclension::FourthNeuterAt, Du, Dat | Ins) => endings.push("ама"),
         (NounDeclension::FourthNeuterAt, Pl, Dat) => endings.push("ѡмъ"),
-        (NounDeclension::FourthFeminineEr, Pl, Gen) => endings.push("ей"),
-        (NounDeclension::FourthFeminineEr, Pl, Acc) if cell.animacy == Animacy::Animate => {
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Gen) => {
+            endings.push("ей")
+        }
+        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Acc)
+            if cell.animacy == Animacy::Animate =>
+        {
             endings.push("и");
         }
-        (NounDeclension::FourthFeminineOv, Pl, Acc) if cell.animacy == Animacy::Animate => {
+        (
+            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
+            Pl,
+            Acc,
+        ) if cell.animacy == Animacy::Animate => {
             endings.push("и");
         }
         (NounDeclension::FourthMasculineEnKamen, Du, Dat | Ins) => endings.push("ема"),
@@ -2163,18 +2946,39 @@ fn normative_citation(rule: &str) -> &'static str {
         | "SYN-NOUN-I-HARD-N-ALYPY-34"
         | "SYN-NOUN-I-SOFT-M-ALYPY-34"
         | "SYN-NOUN-I-SOFT-N-ALYPY-34" => "Alypy (Gamanovich), §§34–38",
+        "SYN-NOUN-I-U-STEM-M-ALYPY-37-38" => "Alypy (Gamanovich), §§37–38",
+        "SYN-NOUN-I-HARD-M-IN-ETHNONYM-ALYPY-37"
+        | "SYN-NOUN-I-SOFT-M-TEL-AGENT-ALYPY-37"
+        | "SYN-NOUN-I-SOFT-N-ISHCHE-ALYPY-37"
+        | "SYN-NOUN-INDECLINABLE-ALYPY-37" => "Alypy (Gamanovich), §37",
+        "SYN-NOUN-I-SOFT-M-LORD-ALYPY-35-41" => "Alypy (Gamanovich), §§35, 38, and 41",
+        "SYN-NOUN-I-M-UD-ES-ALYPY-44" => "Alypy (Gamanovich), §44 ꙋдъ : ꙋдес-",
+        "SYN-NOUN-I-SOFT-J-M-ALYPY-34-37"
+        | "SYN-NOUN-I-SOFT-EY-M-ALYPY-34-37"
+        | "SYN-NOUN-I-SOFT-IE-N-ALYPY-34-37" => "Alypy (Gamanovich), §§34–37",
         "SYN-NOUN-II-HARD-ALYPY-39" | "SYN-NOUN-II-SOFT-ALYPY-39" => {
             "Alypy (Gamanovich), §§39–40, 44"
         }
+        "SYN-NOUN-II-HARD-VELAR-ALYPY-39-40" | "SYN-NOUN-II-MIXED-ALYPY-39-40" => {
+            "Alypy (Gamanovich), §§39–40"
+        }
+        "SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40"
+        | "SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40" => "Alypy (Gamanovich), §§39–40",
         "SYN-NOUN-III-F-ALYPY-41" | "SYN-NOUN-III-M-ALYPY-41" => "Alypy (Gamanovich), §41",
         "SYN-NOUN-IV-N-EN-ALYPY-42-43"
         | "SYN-NOUN-IV-N-ES-ALYPY-42-43"
         | "SYN-NOUN-IV-N-AT-ALYPY-42-43"
         | "SYN-NOUN-IV-F-ER-ALYPY-42-43" => "Alypy (Gamanovich), §§42–43",
-        "SYN-NOUN-IV-F-OV-ALYPY-42-44" | "SYN-NOUN-IV-M-EN-ALYPY-42-44" => {
-            "Alypy (Gamanovich), §§42–44"
+        "SYN-NOUN-IV-N-ES-PAIRED-DUAL-ALYPY-44" => "Alypy (Gamanovich), §44 ѻко/ꙋхо",
+        "SYN-NOUN-IV-N-ES-ALT-FIRST-ALYPY-42-44" => {
+            "Alypy (Gamanovich), §§42–44 -ес- / first-declension alternatives"
         }
+        "SYN-NOUN-IV-F-ER-DAUGHTER-ALYPY-42-44" => "Alypy (Gamanovich), §§42–44 дщи : дщер-",
+        "SYN-NOUN-IV-F-OV-ALYPY-42-44"
+        | "SYN-NOUN-IV-F-OV-SYNCOPATING-ALYPY-42-44"
+        | "SYN-NOUN-IV-M-EN-ALYPY-42-44" => "Alypy (Gamanovich), §§42–44",
         "SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43" => "Alypy (Gamanovich), §43 камень notes",
+        "SYN-NOUN-IV-M-EN-DAY-ALYPY-43" => "Alypy (Gamanovich), §43 день table",
         "SYN-ADJ-SHORT-HARD-ALYPY-53" | "SYN-ADJ-SHORT-SOFT-ALYPY-53" => {
             "Alypy (Gamanovich), §§53–55"
         }
@@ -2291,11 +3095,153 @@ mod tests {
     }
 
     #[test]
-    fn rejects_second_declension_with_non_feminine_gender() {
+    fn alpy_37_38_complete_u_stem_background_is_bounded() {
+        let son = NounLexeme::new(
+            word("сынъ"),
+            word("сын"),
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculineUStem,
+        );
+        assert_noun_paradigm(
+            &son,
+            Animacy::Animate,
+            &[
+                &["сынъ"],
+                &["сына", "сынꙋ"],
+                &["сынꙋ", "сынови"],
+                &["сына", "сынъ"],
+                &["сыномъ"],
+                &["сынѣ", "сынꙋ"],
+                &["сыне"],
+                &["сына"],
+                &["сынꙋ"],
+                &["сынома"],
+                &["сына"],
+                &["сынома"],
+                &["сынꙋ"],
+                &["сына"],
+                &["сыни", "сынове"],
+                &["сыновъ"],
+                &["сыномъ", "сыновомъ"],
+                &["сыны", "сыновъ"],
+                &["сыны", "сынми"],
+                &["сынѣхъ", "сыновѣхъ", "сынахъ"],
+                &["сыни", "сынове"],
+            ],
+        );
+    }
+
+    #[test]
+    fn alpy_34_37_j_ey_and_ie_stem_goldens() {
+        let kraj = NounLexeme::new(
+            word("край"),
+            word("кра"),
+            Gender::Masculine,
+            NounDeclension::FirstSoftMasculineJ,
+        );
+        assert_noun_paradigm(
+            &kraj,
+            Animacy::Animate,
+            &[
+                &["край"],
+                &["краѧ"],
+                &["краю"],
+                &["краѧ", "край"],
+                &["краемъ"],
+                &["краи", "краѣ"],
+                &["краю"],
+                &["краѧ"],
+                &["краю"],
+                &["краема"],
+                &["краѧ"],
+                &["краема"],
+                &["краю"],
+                &["краѧ"],
+                &["краи"],
+                &["краєвъ"],
+                &["краємъ"],
+                &["краи", "краєвъ"],
+                &["краи"],
+                &["краехъ"],
+                &["краи"],
+            ],
+        );
+
+        let priest = NounLexeme::new(
+            word("їерей"),
+            word("їере"),
+            Gender::Masculine,
+            NounDeclension::FirstSoftMasculineEy,
+        );
+        assert_noun_paradigm(
+            &priest,
+            Animacy::Animate,
+            &[
+                &["їерей"],
+                &["їереа"],
+                &["їерею", "їереови"],
+                &["їереа", "їерей"],
+                &["їереемъ"],
+                &["їереи", "їереѣ"],
+                &["їерею", "їерее"],
+                &["їерєа"],
+                &["їерєю"],
+                &["їереема", "їереома"],
+                &["їерєа"],
+                &["їереема", "їереома"],
+                &["їерєю"],
+                &["їерєа"],
+                &["їереє"],
+                &["їерєй"],
+                &["їереємъ", "їереѡмъ"],
+                &["їерєи", "їерєй"],
+                &["їерєи"],
+                &["їереехъ"],
+                &["їереє"],
+            ],
+        );
+
+        let sign = NounLexeme::new(
+            word("знаменїе"),
+            word("знаменї"),
+            Gender::Neuter,
+            NounDeclension::FirstSoftNeuterIe,
+        );
+        assert_noun_paradigm(
+            &sign,
+            Animacy::Inanimate,
+            &[
+                &["знаменїе"],
+                &["знаменїѧ"],
+                &["знаменїю"],
+                &["знаменїе"],
+                &["знаменїемъ"],
+                &["знаменїи"],
+                &["знаменїе"],
+                &["знамєнїи"],
+                &["знамєнїю"],
+                &["знаменїема"],
+                &["знамєнїи"],
+                &["знаменїема"],
+                &["знамєнїю"],
+                &["знамєнїи"],
+                &["знамєнїѧ"],
+                &["знаменїй"],
+                &["знаменїємъ"],
+                &["знамєнїѧ"],
+                &["знаменїи", "знаменьми", "знаменми"],
+                &["знаменїихъ"],
+                &["знамєнїѧ"],
+            ],
+        );
+    }
+
+    #[test]
+    fn rejects_second_declension_with_neuter_gender() {
         let lexeme = NounLexeme {
             lemma: word("жена"),
             stem: word("жен"),
-            gender: Gender::Masculine,
+            gender: Gender::Neuter,
             declension: NounDeclension::SecondHard,
             number_inventory: NounNumberInventory::All,
         };
@@ -2311,6 +3257,138 @@ mod tests {
             ),
             Err(Error::ContradictoryMetadata { .. })
         ));
+    }
+
+    #[test]
+    fn alpy_39_40_velar_and_mixed_second_declension_goldens() {
+        let hand = NounLexeme::new(
+            word("рꙋка"),
+            word("рꙋк"),
+            Gender::Feminine,
+            NounDeclension::SecondHardVelar,
+        );
+        assert_noun_paradigm(
+            &hand,
+            Animacy::Inanimate,
+            &[
+                &["рꙋка"],
+                &["рꙋки"],
+                &["рꙋцѣ"],
+                &["рꙋкꙋ"],
+                &["рꙋкою"],
+                &["рꙋцѣ"],
+                &["рꙋко"],
+                &["рꙋцѣ"],
+                &["рꙋкꙋ"],
+                &["рꙋкама"],
+                &["рꙋцѣ"],
+                &["рꙋкама"],
+                &["рꙋкꙋ"],
+                &["рꙋцѣ"],
+                &["рꙋки"],
+                &["рꙋкъ"],
+                &["рꙋкамъ"],
+                &["рꙋки"],
+                &["рꙋками"],
+                &["рꙋкахъ"],
+                &["рꙋки"],
+            ],
+        );
+
+        let youth = NounLexeme::new(
+            word("юноша"),
+            word("юнош"),
+            Gender::Masculine,
+            NounDeclension::SecondMixed,
+        );
+        assert_noun_paradigm(
+            &youth,
+            Animacy::Animate,
+            &[
+                &["юноша"],
+                &["юноши"],
+                &["юноши", "юношѣ"],
+                &["юношꙋ"],
+                &["юношею"],
+                &["юноши"],
+                &["юноше"],
+                &["юнѡши"],
+                &["юношꙋ"],
+                &["юношама"],
+                &["юнѡши"],
+                &["юношама"],
+                &["юношꙋ"],
+                &["юнѡши"],
+                &["юноши"],
+                &["юношъ"],
+                &["юношамъ"],
+                &["юношы", "юношъ"],
+                &["юношами"],
+                &["юношахъ"],
+                &["юноши"],
+            ],
+        );
+    }
+
+    #[test]
+    fn alpy_40_postvocalic_plural_and_masculine_ia_boundaries() {
+        let lightning = NounLexeme::new(
+            word("молнїѧ"),
+            word("молнї"),
+            Gender::Feminine,
+            NounDeclension::SecondSoftPostvocalicAncientPlural,
+        );
+        for case in [Case::Nominative, Case::Accusative, Case::Vocative] {
+            assert_eq!(
+                decline_noun(
+                    &lightning,
+                    NounCell {
+                        case,
+                        number: Number::Plural,
+                        animacy: Animacy::Inanimate,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("ancient postvocalic plural")
+                .primary_text(),
+                "молнїѧ"
+            );
+        }
+        assert_eq!(
+            decline_noun(
+                &lightning,
+                NounCell {
+                    case: Case::Genitive,
+                    number: Number::Plural,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("ordinary noncitation plural")
+            .primary_text(),
+            "молнїй"
+        );
+
+        let isaiah = NounLexeme::new(
+            word("исаїа"),
+            word("исаї"),
+            Gender::Masculine,
+            NounDeclension::SecondSoftMasculineIa,
+        );
+        assert_eq!(
+            decline_noun(
+                &isaiah,
+                NounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    animacy: Animacy::Animate,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("§40 masculine -їа instrumental")
+            .primary_text(),
+            "исаїемъ"
+        );
     }
 
     #[test]
@@ -2381,10 +3459,10 @@ mod tests {
             &[
                 &["мꙋжъ"],
                 &["мꙋжа"],
-                &["мꙋжꙋ"],
+                &["мꙋжꙋ", "мꙋжеви"],
                 &["мꙋжа", "мꙋжъ"],
                 &["мꙋжемъ"],
-                &["мꙋжи"],
+                &["мꙋжи", "мꙋжѣ"],
                 &["мꙋжꙋ"],
                 &["мꙋжа"],
                 &["мꙋжꙋ"],
@@ -2397,7 +3475,7 @@ mod tests {
                 &["мꙋжей"],
                 &["мꙋжемъ"],
                 &["мꙋжы", "мꙋжей"],
-                &["мꙋжы"],
+                &["мꙋжы", "мꙋжьми", "мꙋжами"],
                 &["мꙋжахъ"],
                 &["мꙋжи", "мꙋжїе"],
             ],
@@ -2451,10 +3529,88 @@ mod tests {
                 NounDeclension::FirstHardVelarMasculine,
             ),
             NounLexeme::new(
+                word("сынь"),
+                word("сын"),
+                Gender::Masculine,
+                NounDeclension::FirstHardMasculineUStem,
+            ),
+            NounLexeme::new(
+                word("галїлеанъ"),
+                word("галїлеан"),
+                Gender::Masculine,
+                NounDeclension::FirstHardMasculineInEthnonym,
+            ),
+            NounLexeme::new(
+                word("удъ"),
+                word("удес"),
+                Gender::Masculine,
+                NounDeclension::FirstHardMasculineUdEs,
+            ),
+            NounLexeme::new(
+                word("свидѣтель"),
+                word("свидѣт"),
+                Gender::Masculine,
+                NounDeclension::FirstSoftMasculineAgentTel,
+            ),
+            NounLexeme::new(
+                word("господинъ"),
+                word("господин"),
+                Gender::Masculine,
+                NounDeclension::FirstSoftMasculineLord,
+            ),
+            NounLexeme::new(
+                word("краь"),
+                word("кра"),
+                Gender::Masculine,
+                NounDeclension::FirstSoftMasculineJ,
+            ),
+            NounLexeme::new(
+                word("їерей"),
+                word("їер"),
+                Gender::Masculine,
+                NounDeclension::FirstSoftMasculineEy,
+            ),
+            NounLexeme::new(
+                word("знаменїе"),
+                word("знамен"),
+                Gender::Neuter,
+                NounDeclension::FirstSoftNeuterIe,
+            ),
+            NounLexeme::new(
+                word("море"),
+                word("мор"),
+                Gender::Neuter,
+                NounDeclension::FirstSoftNeuterIshche,
+            ),
+            NounLexeme::new(
                 word("домъ"),
                 word("дом"),
                 Gender::Masculine,
                 NounDeclension::FirstMixedMasculine,
+            ),
+            NounLexeme::new(
+                word("жена"),
+                word("жен"),
+                Gender::Feminine,
+                NounDeclension::SecondHardVelar,
+            ),
+            NounLexeme::new(
+                word("жена"),
+                word("жен"),
+                Gender::Feminine,
+                NounDeclension::SecondMixed,
+            ),
+            NounLexeme::new(
+                word("землѧ"),
+                word("земл"),
+                Gender::Feminine,
+                NounDeclension::SecondSoftPostvocalicAncientPlural,
+            ),
+            NounLexeme::new(
+                word("исаїѧ"),
+                word("исаї"),
+                Gender::Masculine,
+                NounDeclension::SecondSoftMasculineIa,
             ),
             NounLexeme::new(
                 word("имѧ"),
@@ -2469,10 +3625,28 @@ mod tests {
                 NounDeclension::FourthNeuterEs,
             ),
             NounLexeme::new(
+                word("чꙋдо"),
+                word("чꙋден"),
+                Gender::Neuter,
+                NounDeclension::FourthNeuterEsAlternatingFirst,
+            ),
+            NounLexeme::new(
+                word("ѻко"),
+                word("очен"),
+                Gender::Neuter,
+                NounDeclension::FourthNeuterEsPairedDual,
+            ),
+            NounLexeme::new(
                 word("мати"),
                 word("матес"),
                 Gender::Feminine,
                 NounDeclension::FourthFeminineEr,
+            ),
+            NounLexeme::new(
+                word("дщи"),
+                word("дщер"),
+                Gender::Feminine,
+                NounDeclension::FourthFeminineErDaughter,
             ),
             NounLexeme::new(
                 word("ѻтроча"),
@@ -2505,10 +3679,28 @@ mod tests {
                 NounDeclension::FourthMasculineEnKamen,
             ),
             NounLexeme::new(
+                word("день"),
+                word("ден"),
+                Gender::Masculine,
+                NounDeclension::FourthMasculineEnDay,
+            ),
+            NounLexeme::new(
+                word("адѡнаі"),
+                word("адонаи"),
+                Gender::Masculine,
+                NounDeclension::Indeclinable,
+            ),
+            NounLexeme::new(
                 word("любовь"),
                 word("любов"),
                 Gender::Feminine,
                 NounDeclension::FourthFeminineOv,
+            ),
+            NounLexeme::new(
+                word("любовь"),
+                word("любов"),
+                Gender::Feminine,
+                NounDeclension::FourthFeminineOvSyncopating,
             ),
         ] {
             assert!(matches!(
@@ -2795,6 +3987,170 @@ mod tests {
             .collect::<Vec<_>>(),
             ["камєни", "каменїѧ", "каменїй"]
         );
+    }
+
+    #[test]
+    fn alpy_43_44_cell_scoped_irregular_stem_goldens() {
+        let eye = NounLexeme::new(
+            word("ѻко"),
+            word("очес"),
+            Gender::Neuter,
+            NounDeclension::FourthNeuterEsPairedDual,
+        );
+        assert_noun_paradigm(
+            &eye,
+            Animacy::Inanimate,
+            &[
+                &["ѻко"],
+                &["очесе"],
+                &["очеси"],
+                &["ѻко"],
+                &["очесемъ"],
+                &["очеси", "ѻцѣ"],
+                &["ѻко"],
+                &["очи", "оцѣ"],
+                &["очїю"],
+                &["очима"],
+                &["очи", "оцѣ"],
+                &["очима"],
+                &["очїю"],
+                &["очи", "оцѣ"],
+                &["очеса"],
+                &["очесъ"],
+                &["очесємъ"],
+                &["очеса"],
+                &["очесы"],
+                &["очесѣхъ"],
+                &["очеса"],
+            ],
+        );
+
+        let ear = NounLexeme::new(
+            word("ꙋхо"),
+            word("ушес"),
+            Gender::Neuter,
+            NounDeclension::FourthNeuterEsPairedDual,
+        );
+        assert_eq!(
+            decline_noun(
+                &ear,
+                NounCell {
+                    case: Case::Genitive,
+                    number: Number::Dual,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("Alypy §44 paired dual")
+            .primary_text(),
+            "ушїю"
+        );
+        assert_eq!(
+            decline_noun(
+                &ear,
+                NounCell {
+                    case: Case::Nominative,
+                    number: Number::Plural,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("Alypy §44 extended plural")
+            .primary_text(),
+            "ушеса"
+        );
+
+        let church = NounLexeme::new(
+            word("церковь"),
+            word("церкв"),
+            Gender::Feminine,
+            NounDeclension::FourthFeminineOvSyncopating,
+        );
+        assert_noun_paradigm(
+            &church,
+            Animacy::Inanimate,
+            &[
+                &["церковь"],
+                &["церкве"],
+                &["церкви"],
+                &["церковь"],
+                &["церковїю"],
+                &["церкви"],
+                &["церковь", "церкве"],
+                &["цєркви"],
+                &["цєрковїю"],
+                &["церквама"],
+                &["цєркви"],
+                &["церквама"],
+                &["цєрковїю"],
+                &["цєркви"],
+                &["цєркви"],
+                &["церквей"],
+                &["церквамъ"],
+                &["церкви"],
+                &["церквами"],
+                &["церквахъ"],
+                &["цєркви"],
+            ],
+        );
+
+        let love = NounLexeme::new(
+            word("любовь"),
+            word("любв"),
+            Gender::Feminine,
+            NounDeclension::FourthFeminineOvSyncopating,
+        );
+        let cells = [
+            (Number::Singular, Case::Genitive, "любве"),
+            (Number::Singular, Case::Instrumental, "любовїю"),
+            (Number::Dual, Case::Genitive, "любовїю"),
+            (Number::Dual, Case::Dative, "любвама"),
+            (Number::Plural, Case::Genitive, "любвей"),
+        ];
+        for (number, case, expected) in cells {
+            assert_eq!(
+                decline_noun(
+                    &love,
+                    NounCell {
+                        case,
+                        number,
+                        animacy: Animacy::Inanimate,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("cell-scoped любовь stem")
+                .primary_text(),
+                expected
+            );
+        }
+
+        let daughter = NounLexeme::new(
+            word("дщерь"),
+            word("дщер"),
+            Gender::Feminine,
+            NounDeclension::FourthFeminineErDaughter,
+        );
+        for (case, expected) in [
+            (Case::Nominative, "дщи"),
+            (Case::Accusative, "дщерь"),
+            (Case::Genitive, "дщере"),
+            (Case::Vocative, "дщи"),
+        ] {
+            assert_eq!(
+                decline_noun(
+                    &daughter,
+                    NounCell {
+                        case,
+                        number: Number::Singular,
+                        animacy: Animacy::Animate,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("Alypy §44 daughter family")
+                .primary_text(),
+                expected
+            );
+        }
     }
 
     #[test]
@@ -3213,22 +4569,49 @@ mod tests {
         for declension in NounDeclension::ALL {
             let (lemma, stem, gender) = match declension {
                 NounDeclension::FirstHardMasculine => ("рабъ", "раб", Gender::Masculine),
+                NounDeclension::FirstHardMasculineUStem => ("сынъ", "сын", Gender::Masculine),
+                NounDeclension::FirstHardMasculineInEthnonym => {
+                    ("галїлеанинъ", "галїлеанин", Gender::Masculine)
+                }
+                NounDeclension::FirstHardMasculineUdEs => ("ꙋдъ", "ꙋдес", Gender::Masculine),
                 NounDeclension::FirstHardVelarMasculine => ("ѻтрокъ", "ѻтрок", Gender::Masculine),
                 NounDeclension::FirstMixedMasculine => ("мꙋжъ", "мꙋж", Gender::Masculine),
                 NounDeclension::FirstHardNeuter => ("слово", "слов", Gender::Neuter),
                 NounDeclension::FirstSoftMasculine => ("царь", "цар", Gender::Masculine),
+                NounDeclension::FirstSoftMasculineAgentTel => {
+                    ("свидѣтель", "свидѣтел", Gender::Masculine)
+                }
+                NounDeclension::FirstSoftMasculineLord => ("господь", "господ", Gender::Masculine),
+                NounDeclension::FirstSoftMasculineJ => ("край", "кра", Gender::Masculine),
+                NounDeclension::FirstSoftMasculineEy => ("їерей", "їере", Gender::Masculine),
                 NounDeclension::FirstSoftNeuter => ("море", "мор", Gender::Neuter),
+                NounDeclension::FirstSoftNeuterIshche => ("соборище", "соборищ", Gender::Neuter),
+                NounDeclension::FirstSoftNeuterIe => ("знаменїе", "знаменї", Gender::Neuter),
                 NounDeclension::SecondHard => ("жена", "жен", Gender::Feminine),
+                NounDeclension::SecondHardVelar => ("рꙋка", "рꙋк", Gender::Feminine),
                 NounDeclension::SecondSoft => ("землѧ", "земл", Gender::Feminine),
+                NounDeclension::SecondSoftPostvocalicAncientPlural => {
+                    ("молнїѧ", "молнї", Gender::Feminine)
+                }
+                NounDeclension::SecondSoftMasculineIa => ("исаїа", "исаї", Gender::Masculine),
+                NounDeclension::SecondMixed => ("юноша", "юнош", Gender::Masculine),
                 NounDeclension::ThirdFeminine => ("кость", "кост", Gender::Feminine),
                 NounDeclension::ThirdMasculine => ("пꙋть", "пꙋт", Gender::Masculine),
                 NounDeclension::FourthNeuterEn => ("имѧ", "имен", Gender::Neuter),
                 NounDeclension::FourthNeuterEs => ("небо", "небес", Gender::Neuter),
+                NounDeclension::FourthNeuterEsAlternatingFirst => ("чꙋдо", "чꙋдес", Gender::Neuter),
+                NounDeclension::FourthNeuterEsPairedDual => ("ѻко", "очес", Gender::Neuter),
                 NounDeclension::FourthNeuterAt => ("ѻтроча", "ѻтрочат", Gender::Neuter),
                 NounDeclension::FourthFeminineEr => ("мати", "матер", Gender::Feminine),
+                NounDeclension::FourthFeminineErDaughter => ("дщерь", "дщер", Gender::Feminine),
                 NounDeclension::FourthFeminineOv => ("свекры", "свекров", Gender::Feminine),
+                NounDeclension::FourthFeminineOvSyncopating => {
+                    ("церковь", "церкв", Gender::Feminine)
+                }
                 NounDeclension::FourthMasculineEn => ("степень", "степен", Gender::Masculine),
+                NounDeclension::FourthMasculineEnDay => ("день", "дн", Gender::Masculine),
                 NounDeclension::FourthMasculineEnKamen => ("камень", "камен", Gender::Masculine),
+                NounDeclension::Indeclinable => ("адѡнаі", "адѡнаі", Gender::Masculine),
             };
             let lexeme = NounLexeme {
                 lemma: word(lemma),
@@ -4183,5 +5566,247 @@ mod tests {
             ),
             Err(Error::ContradictoryMetadata { .. })
         ));
+    }
+
+    #[test]
+    fn alpy_37_44_remaining_productive_noun_profiles_are_bounded() {
+        let ethnonym = NounLexeme::new(
+            word("галїлеанинъ"),
+            word("галїлеанин"),
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculineInEthnonym,
+        );
+        assert_noun_paradigm(
+            &ethnonym,
+            Animacy::Animate,
+            &[
+                &["галїлеанинъ"],
+                &["галїлеанина"],
+                &["галїлеанинꙋ", "галїлеанинови"],
+                &["галїлеанина", "галїлеанинъ"],
+                &["галїлеаниномъ"],
+                &["галїлеанинѣ"],
+                &["галїлеанине"],
+                &["галїлеанина"],
+                &["галїлеанинꙋ"],
+                &["галїлеанинома"],
+                &["галїлеанина"],
+                &["галїлеанинома"],
+                &["галїлеанинꙋ"],
+                &["галїлеанина"],
+                &["галїлеане"],
+                &["галїлеанъ"],
+                &["галїлеаномъ"],
+                &["галїлеане", "галїлеанъ"],
+                &["галїлеаны"],
+                &["галїлеанѣхъ"],
+                &["галїлеане"],
+            ],
+        );
+
+        let ud = NounLexeme::new(
+            word("ꙋдъ"),
+            word("ꙋдес"),
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculineUdEs,
+        );
+        assert_noun_paradigm(
+            &ud,
+            Animacy::Inanimate,
+            &[
+                &["ꙋдъ"],
+                &["ꙋда", "ꙋдесе"],
+                &["ꙋдꙋ", "ꙋдови", "ꙋдеси"],
+                &["ꙋдъ"],
+                &["ꙋдомъ", "ꙋдесемъ"],
+                &["ꙋдѣ", "ꙋдеси"],
+                &["ꙋде"],
+                &["ꙋда", "ꙋдєси"],
+                &["ꙋдꙋ", "ꙋдесꙋ"],
+                &["ꙋдома", "ꙋдесема"],
+                &["ꙋда", "ꙋдєси"],
+                &["ꙋдома", "ꙋдесема"],
+                &["ꙋдꙋ", "ꙋдесꙋ"],
+                &["ꙋда", "ꙋдєси"],
+                &["ꙋди", "ꙋдеса"],
+                &["ꙋдовъ", "ꙋдъ", "ꙋдесъ"],
+                &["ꙋдомъ", "ꙋдесємъ"],
+                &["ꙋды", "ꙋдеса"],
+                &["ꙋды", "ꙋдми", "ꙋдами", "ꙋдесы"],
+                &["ꙋдѣхъ", "ꙋдахъ", "ꙋдесѣхъ"],
+                &["ꙋди", "ꙋдеса"],
+            ],
+        );
+
+        let lord = NounLexeme::new(
+            word("господь"),
+            word("господ"),
+            Gender::Masculine,
+            NounDeclension::FirstSoftMasculineLord,
+        );
+        assert_noun_paradigm(
+            &lord,
+            Animacy::Animate,
+            &[
+                &["господь"],
+                &["господа"],
+                &["господꙋ", "господеви"],
+                &["господа", "господь"],
+                &["господомъ"],
+                &["господѣ"],
+                &["господи"],
+                &["господи"],
+                &["господїю", "господю"],
+                &["господьма"],
+                &["господи"],
+                &["господьма"],
+                &["господїю", "господю"],
+                &["господи"],
+                &["господїе"],
+                &["господій", "господей"],
+                &["господємъ"],
+                &["господи", "господій"],
+                &["господьми"],
+                &["господехъ"],
+                &["господїе"],
+            ],
+        );
+
+        let alternating = NounLexeme::new(
+            word("чꙋдо"),
+            word("чꙋдес"),
+            Gender::Neuter,
+            NounDeclension::FourthNeuterEsAlternatingFirst,
+        );
+        assert_noun_paradigm(
+            &alternating,
+            Animacy::Inanimate,
+            &[
+                &["чꙋдо"],
+                &["чꙋдесе", "чꙋда"],
+                &["чꙋдеси", "чꙋдꙋ"],
+                &["чꙋдо"],
+                &["чꙋдесемъ", "чꙋдомъ"],
+                &["чꙋдеси", "чꙋдѣ"],
+                &["чꙋдо"],
+                &["чꙋдєси", "чꙋда"],
+                &["чꙋдесꙋ", "чꙋдꙋ"],
+                &["чꙋдесема", "чꙋдома"],
+                &["чꙋдєси", "чꙋда"],
+                &["чꙋдесема", "чꙋдома"],
+                &["чꙋдесꙋ", "чꙋдꙋ"],
+                &["чꙋдєси", "чꙋда"],
+                &["чꙋдеса", "чꙋда"],
+                &["чꙋдесъ", "чꙋдъ"],
+                &["чꙋдесємъ", "чꙋдомъ"],
+                &["чꙋдеса", "чꙋда"],
+                &["чꙋдесы", "чꙋды", "чꙋдами"],
+                &["чꙋдесѣхъ", "чꙋдѣхъ", "чꙋдахъ"],
+                &["чꙋдеса", "чꙋда"],
+            ],
+        );
+
+        let day = NounLexeme::new(
+            word("день"),
+            word("дн"),
+            Gender::Masculine,
+            NounDeclension::FourthMasculineEnDay,
+        );
+        assert_noun_paradigm(
+            &day,
+            Animacy::Inanimate,
+            &[
+                &["день"],
+                &["дне"],
+                &["дни", "дневи"],
+                &["день"],
+                &["днемъ"],
+                &["дни"],
+                &["день"],
+                &["дни"],
+                &["днїю", "дню"],
+                &["деньма"],
+                &["дни"],
+                &["деньма"],
+                &["днїю", "дню"],
+                &["дни"],
+                &["дни", "дніе"],
+                &["днїй", "дней"],
+                &["днємъ"],
+                &["дни"],
+                &["деньми"],
+                &["днехъ"],
+                &["дни", "дніе"],
+            ],
+        );
+
+        for (lexeme, case, number, expected) in [
+            (
+                NounLexeme::new(
+                    word("свидѣтель"),
+                    word("свидѣтел"),
+                    Gender::Masculine,
+                    NounDeclension::FirstSoftMasculineAgentTel,
+                ),
+                Case::Nominative,
+                Number::Plural,
+                vec!["свидѣтели", "свидѣтеле", "свидѣтелїе"],
+            ),
+            (
+                NounLexeme::new(
+                    word("соборище"),
+                    word("соборищ"),
+                    Gender::Neuter,
+                    NounDeclension::FirstSoftNeuterIshche,
+                ),
+                Case::Locative,
+                Number::Plural,
+                vec!["соборищахъ", "соборищихъ", "соборищехъ"],
+            ),
+        ] {
+            let forms = decline_noun(
+                &lexeme,
+                NounCell {
+                    case,
+                    number,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("bounded lexical subclass");
+            assert_eq!(
+                forms
+                    .variants()
+                    .iter()
+                    .map(|variant| variant.printed.as_str())
+                    .collect::<Vec<_>>(),
+                expected
+            );
+        }
+
+        let invariant = NounLexeme::new(
+            word("адѡнаі"),
+            word("адѡнаі"),
+            Gender::Masculine,
+            NounDeclension::Indeclinable,
+        );
+        for number in Number::ALL {
+            for case in Case::ALL {
+                assert_eq!(
+                    decline_noun(
+                        &invariant,
+                        NounCell {
+                            case,
+                            number,
+                            animacy: Animacy::Animate,
+                        },
+                        OrthographyProfile::Expanded,
+                    )
+                    .expect("invariant noun cell")
+                    .primary_text(),
+                    "адѡнаі"
+                );
+            }
+        }
     }
 }

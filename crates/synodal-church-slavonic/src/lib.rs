@@ -511,6 +511,236 @@ mod tests {
     }
 
     #[test]
+    fn alpy_42_44_irregular_noun_families_have_exact_first_complete_backgrounds() {
+        let eye = Noun::resolve("око").expect("reviewed eye identity");
+        assert_eq!(
+            eye.form(Case::Nominative, Number::Dual, Animacy::Inanimate)
+                .expect("reviewed paired dual")
+                .primary_text(),
+            "очи"
+        );
+        assert_eq!(
+            eye.form(Case::Nominative, Number::Plural, Animacy::Inanimate)
+                .expect("extended plural background")
+                .primary_text(),
+            "очеса"
+        );
+
+        let ear = Noun::resolve("ѹхо").expect("reviewed ear identity");
+        assert_eq!(
+            ear.form(Case::Genitive, Number::Dual, Animacy::Inanimate)
+                .expect("suffixless paired dual")
+                .primary_text(),
+            "ушїю"
+        );
+        assert_eq!(ear.paradigm(Animacy::Inanimate).failures().count(), 0);
+
+        let church = Noun::resolve("церковь").expect("reviewed church identity");
+        let exact = church
+            .form(Case::Genitive, Number::Singular, Animacy::Inanimate)
+            .expect("target-attested exact form");
+        assert_eq!(exact.primary_text(), "церкви");
+        assert!(matches!(
+            exact.primary().source,
+            FormSource::SynodalAttestation { .. }
+        ));
+        assert_eq!(
+            church
+                .form(Case::Genitive, Number::Dual, Animacy::Inanimate)
+                .expect("full-stem dual background")
+                .primary_text(),
+            "цєрковїю"
+        );
+        assert_eq!(
+            church
+                .form(Case::Dative, Number::Plural, Animacy::Inanimate)
+                .expect("syncopated plural background")
+                .primary_text(),
+            "церквамъ"
+        );
+
+        let love = Noun::resolve("любовь").expect("one unified love identity");
+        assert_eq!(love.id().as_str(), "synodal:noun:lyubov");
+        assert_eq!(
+            love.form(Case::Genitive, Number::Singular, Animacy::Inanimate)
+                .expect("ordered exact variants")
+                .texts()
+                .collect::<Vec<_>>(),
+            ["любве", "любве", "любви"]
+        );
+        assert_eq!(
+            love.form(Case::Genitive, Number::Plural, Animacy::Inanimate)
+                .expect("bounded productive background")
+                .primary_text(),
+            "любвей"
+        );
+
+        let daughter = Noun::resolve("дщерь").expect("reviewed daughter identity");
+        assert_eq!(
+            daughter
+                .form(Case::Nominative, Number::Singular, Animacy::Animate)
+                .expect("historical citation")
+                .primary_text(),
+            "дщи"
+        );
+        assert_eq!(
+            daughter
+                .form(Case::Genitive, Number::Plural, Animacy::Animate)
+                .expect("complete daughter background")
+                .texts()
+                .collect::<Vec<_>>(),
+            ["дщерїй", "дщерей"]
+        );
+
+        for (lemma, expected) in [
+            ("кровь", "кровей"),
+            ("пламень", "пламенїй"),
+            ("ремень", "ременїй"),
+            ("кремень", "кременїй"),
+            ("корень", "коренїй"),
+        ] {
+            let noun = Noun::resolve(lemma).expect("Alypy §44 named family member");
+            assert_eq!(
+                noun.paradigm(Animacy::Inanimate).failures().count(),
+                0,
+                "{lemma}"
+            );
+            assert_eq!(
+                noun.form(Case::Genitive, Number::Plural, Animacy::Inanimate)
+                    .expect("complete named-family background")
+                    .primary_text(),
+                expected,
+                "{lemma}"
+            );
+        }
+
+        let brethren = Noun::resolve("братїѧ").expect("distinct collective identity");
+        assert_eq!(
+            brethren
+                .form(Case::Genitive, Number::Singular, Animacy::Animate)
+                .expect("collective singular")
+                .primary_text(),
+            "братїи"
+        );
+        assert!(matches!(
+            brethren.form(Case::Genitive, Number::Plural, Animacy::Animate),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
+    fn alpy_37_44_remaining_named_noun_families_route_through_the_facade() {
+        for (lemma, case, number, animacy, expected) in [
+            (
+                "галїлеанинъ",
+                Case::Nominative,
+                Number::Plural,
+                Animacy::Animate,
+                vec!["галїлеане"],
+            ),
+            (
+                "ꙋдъ",
+                Case::Instrumental,
+                Number::Plural,
+                Animacy::Inanimate,
+                vec!["ꙋды", "ꙋдми", "ꙋдами", "ꙋдесы"],
+            ),
+            (
+                "свидѣтель",
+                Case::Nominative,
+                Number::Plural,
+                Animacy::Animate,
+                vec!["свидѣтели", "свидѣтеле", "свидѣтелїе"],
+            ),
+            (
+                "соборище",
+                Case::Locative,
+                Number::Plural,
+                Animacy::Inanimate,
+                vec!["соборищахъ", "соборищихъ", "соборищехъ"],
+            ),
+            (
+                "чꙋдо",
+                Case::Genitive,
+                Number::Singular,
+                Animacy::Inanimate,
+                vec!["чꙋдесе", "чꙋда"],
+            ),
+            (
+                "день",
+                Case::Dative,
+                Number::Singular,
+                Animacy::Inanimate,
+                vec!["дни", "дневи"],
+            ),
+            (
+                "адѡнаі",
+                Case::Instrumental,
+                Number::Dual,
+                Animacy::Animate,
+                vec!["адѡнаі"],
+            ),
+            (
+                "исаїа",
+                Case::Instrumental,
+                Number::Singular,
+                Animacy::Animate,
+                vec!["исаїемъ"],
+            ),
+            (
+                "молнїѧ",
+                Case::Nominative,
+                Number::Plural,
+                Animacy::Inanimate,
+                vec!["молнїѧ"],
+            ),
+            (
+                "кормчїй",
+                Case::Dative,
+                Number::Singular,
+                Animacy::Animate,
+                vec!["кормчїю"],
+            ),
+            (
+                "пастырь",
+                Case::Nominative,
+                Number::Plural,
+                Animacy::Animate,
+                vec!["пастыри", "пастырїе"],
+            ),
+        ] {
+            let noun = Noun::resolve(lemma).expect("normative named-family identity");
+            assert_eq!(
+                noun.form(case, number, animacy)
+                    .expect("complete productive cell")
+                    .texts()
+                    .collect::<Vec<_>>(),
+                expected,
+                "{lemma}"
+            );
+            assert_eq!(noun.paradigm(animacy).failures().count(), 0, "{lemma}");
+        }
+
+        let lord = Noun::resolve("господь").expect("reviewed lord identity");
+        let dative = lord
+            .form(Case::Dative, Number::Singular, Animacy::Animate)
+            .expect("normative dative variants");
+        assert!(matches!(
+            dative.primary().source,
+            FormSource::SynodalNormativeGeneration { .. }
+        ));
+        assert_eq!(dative.texts().collect::<Vec<_>>(), ["господꙋ", "господеви"]);
+        assert!(matches!(
+            lord.form(Case::Vocative, Number::Singular, Animacy::Animate)
+                .expect("reviewed vocative")
+                .primary()
+                .source,
+            FormSource::SynodalAttestation { .. }
+        ));
+        assert_eq!(lord.paradigm(Animacy::Animate).failures().count(), 0);
+    }
+
+    #[test]
     fn liturgical_profile_preserves_printed_form() {
         let inflector = Inflector::builder()
             .orthography(OrthographyProfile::SynodalLiturgical)

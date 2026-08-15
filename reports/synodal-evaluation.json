@@ -8,14 +8,14 @@
   "expanded": {
     "total": 2140,
     "returned": 2140,
-    "top_1_correct": 2078,
+    "top_1_correct": 2079,
     "top_k_correct": 2140,
     "abstained": 0
   },
   "printed": {
     "total": 2140,
     "returned": 2140,
-    "top_1_correct": 1997,
+    "top_1_correct": 1998,
     "top_k_correct": 2140,
     "abstained": 0
   },
@@ -383,16 +383,6 @@
       "returned_top_k": [
         "глаголю",
         "глаголꙋ"
-      ]
-    },
-    {
-      "id": "eval:v07:445b9796dd4052da",
-      "cell": "lexical-form",
-      "expected": "любы",
-      "returned_top_1": "любовь",
-      "returned_top_k": [
-        "любовь",
-        "любы"
       ]
     },
     {
@@ -1841,16 +1831,6 @@
       ]
     },
     {
-      "id": "eval:v07:445b9796dd4052da",
-      "cell": "lexical-form",
-      "expected": "Любы̀",
-      "returned_top_1": "любо́вь",
-      "returned_top_k": [
-        "любо́вь",
-        "Любы̀"
-      ]
-    },
-    {
       "id": "eval:v07:44aeeb943ebc7c26",
       "cell": "indeclinable",
       "expected": "Ѹ҆",
@@ -2142,17 +2122,17 @@
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 2830,
-    "returned": 2830,
-    "top_1_correct": 2651,
-    "top_k_correct": 2830,
+    "total": 2828,
+    "returned": 2828,
+    "top_1_correct": 2650,
+    "top_k_correct": 2828,
     "abstained": 0
   },
   "exact_registry_printed_round_trip": {
-    "total": 2830,
-    "returned": 2830,
-    "top_1_correct": 2505,
-    "top_k_correct": 2830,
+    "total": 2828,
+    "returned": 2828,
+    "top_1_correct": 2504,
+    "top_k_correct": 2828,
     "abstained": 0
   },
   "accent_bearing_rows": 2004,
@@ -2406,7 +2386,7 @@
     "v07-held-out-exact-cell": {
       "total": 916,
       "returned": 916,
-      "top_1_correct": 884,
+      "top_1_correct": 885,
       "top_k_correct": 916,
       "abstained": 0
     },
@@ -2429,21 +2409,21 @@
     "exploratory": {
       "total": 2140,
       "returned": 2140,
-      "top_1_correct": 2078,
+      "top_1_correct": 2079,
       "top_k_correct": 2140,
       "abstained": 0
     },
     "productive": {
       "total": 2140,
       "returned": 2140,
-      "top_1_correct": 2078,
+      "top_1_correct": 2079,
       "top_k_correct": 2140,
       "abstained": 0
     },
     "strict": {
       "total": 2140,
       "returned": 2140,
-      "top_1_correct": 2078,
+      "top_1_correct": 2079,
       "top_k_correct": 2140,
       "abstained": 0
     }
@@ -2452,7 +2432,7 @@
     "attested": {
       "total": 2033,
       "returned": 2033,
-      "top_1_correct": 1972,
+      "top_1_correct": 1973,
       "top_k_correct": 2033,
       "abstained": 0
     },
@@ -2538,7 +2518,7 @@
     "lexical-form": {
       "total": 435,
       "returned": 435,
-      "top_1_correct": 430,
+      "top_1_correct": 431,
       "top_k_correct": 435,
       "abstained": 0
     },
@@ -2589,7 +2569,7 @@
     "exact-synodal-attestation": {
       "total": 2028,
       "returned": 2028,
-      "top_1_correct": 1972,
+      "top_1_correct": 1973,
       "top_k_correct": 2028,
       "abstained": 0
     },
@@ -2626,7 +2606,7 @@
     "wikisource-church-slavonic-bible-2026-08-09": {
       "total": 112,
       "returned": 112,
-      "top_1_correct": 105,
+      "top_1_correct": 106,
       "top_k_correct": 112,
       "abstained": 0
     }
@@ -2655,17 +2635,17 @@
   },
   "leakage": {
     "masked_expanded": {
-      "total": 502,
-      "returned": 502,
-      "top_1_correct": 501,
-      "top_k_correct": 502,
+      "total": 505,
+      "returned": 505,
+      "top_1_correct": 504,
+      "top_k_correct": 505,
       "abstained": 0
     },
     "masked_printed": {
-      "total": 502,
-      "returned": 502,
-      "top_1_correct": 501,
-      "top_k_correct": 502,
+      "total": 505,
+      "returned": 505,
+      "top_1_correct": 504,
+      "top_k_correct": 505,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_expanded": {

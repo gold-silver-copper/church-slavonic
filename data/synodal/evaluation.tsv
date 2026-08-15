@@ -1181,7 +1181,7 @@ eval:v06:zhivot-genitive-singular	synodal:noun:wikt-2e0496e36fd3	noun:genitive:s
 eval:v07:variant-09f6b1e7fbe3a545	synodal:noun:wikt-f7edd7b689ae	noun:accusative:plural:inanimate	strict	грѣхи	грѣхѝ	ponomar-elizabeth-bible-2026-08-09	Acts.22.16	v07-held-out-explicit-accent-case-variant
 eval:v07:variant-213e7569dddbe2b5	synodal:noun:v07-316703a3d6b168cf	noun:locative:singular:inanimate	strict	ѻлтари	ѻ҆лтарѝ	ponomar-elizabeth-bible-2026-08-09	Ex.29.38	v07-held-out-explicit-accent-case-variant
 eval:v07:variant-369f932e734ff9e7	synodal:noun:wikt-329fdac29b56	noun:instrumental:plural:inanimate	strict	ᲂусты	ᲂу҆сты̑	ponomar-elizabeth-bible-2026-08-09	Acts.1.16	v07-held-out-explicit-accent-case-variant
-eval:v07:variant-4b91c8d4008feaa0	synodal:noun:v07-c56f014c9d6102d1	noun:genitive:singular:inanimate	strict	любве	любвѐ	ponomar-elizabeth-bible-2026-08-09	Heb.10.24	v07-held-out-explicit-accent-case-variant
+eval:v07:variant-4b91c8d4008feaa0	synodal:noun:lyubov	noun:genitive:singular:inanimate	strict	любве	любвѐ	ponomar-elizabeth-bible-2026-08-09	Heb.10.24	v07-held-out-explicit-accent-case-variant
 eval:v07:variant-4ed0042b1a68e15f	synodal:noun:wikt-6581de9ff070	noun:accusative:plural:animate	strict	враги	врагѝ	ponomar-elizabeth-bible-2026-08-09	Deut.23.14	v07-held-out-explicit-accent-case-variant
 eval:v07:variant-52b05b9208c3a6b2	synodal:verb:v07-b2353faaea08f340	imperative:second:singular	strict	помѧни	Помѧнѝ	ponomar-elizabeth-bible-2026-08-09	Job.4.7	v07-held-out-explicit-accent-case-variant
 eval:v07:variant-601b77a623ca9eaf	synodal:adverb:wikt-0f90480ac003	indeclinable	strict	ᲂуже	ᲂу҆жѐ	ponomar-elizabeth-bible-2026-08-09	Acts.27.9	v07-held-out-explicit-accent-case-variant
@@ -1374,7 +1374,7 @@ eval:v07:2eecb74a3fe85c9b	synodal:determiner:vsyak	determiner:accusative:singula
 eval:v07:2ef785364ac83543	synodal:verb:v07-0581788f82e9c268	future:second:plural	strict	ѹзрите	ѹ҆́зрите	wikisource-church-slavonic-bible-2026-08-09	IV_Kings.10.3	v07-held-out-exact-cell
 eval:v07:2f230a745e4d6bfd	synodal:noun:v07-09072ac82b797b2b	lexical-form	strict	мꙋдрость	мꙋ́дрость	ponomar-elizabeth-bible-2026-08-09	Eccles.7.26	v07-held-out-exact-cell
 eval:v07:2f672fda2f1b666c	synodal:verb:v07-496708c3508480e4	future:third:singular	strict	разꙋмѣетъ	разꙋмѣ́етъ	ponomar-elizabeth-bible-2026-08-09	Jn.7.17	v07-held-out-exact-cell
-eval:v07:2ffcad4d3782885f	synodal:noun:v07-c56f014c9d6102d1	noun:locative:singular:inanimate	strict	любви	любвѝ	ponomar-elizabeth-bible-2026-08-09	I_Jn.4.18	v07-held-out-exact-cell
+eval:v07:2ffcad4d3782885f	synodal:noun:lyubov	noun:locative:singular:inanimate	strict	любви	любвѝ	ponomar-elizabeth-bible-2026-08-09	I_Jn.4.18	v07-held-out-exact-cell
 eval:v07:300d5bc8f4756957	synodal:noun:v07-6dd9144981954c80	noun:genitive:plural:inanimate	strict	лꙋкъ	лꙋ́къ	ponomar-elizabeth-bible-2026-08-09	IV_Kings.13.15	v07-held-out-exact-cell
 eval:v07:304bfe2d3772d873	synodal:noun:wikt-63d3fffebc66	noun:nominative:plural:inanimate	strict	крила	кри́ла	ponomar-elizabeth-bible-2026-08-09	Ezek.1.24	v07-held-out-exact-cell
 eval:v07:3077280233a927ed	synodal:verb:v07-c0328a5d7bb7db3c	lexical-form	strict	стрещи	стрещѝ	ponomar-elizabeth-bible-2026-08-09	Acts.25.4	v07-held-out-exact-cell
@@ -1445,7 +1445,7 @@ eval:v07:42cbf2c36e5d97b9	synodal:noun:v07-dc1fad6a14b44ac1	noun:nominative:sing
 eval:v07:436edfcdb7c53164	synodal:noun:v07-0623a17d2a0d20e9	noun:accusative:plural:inanimate	strict	нѡсила	носи̑ла	ponomar-elizabeth-bible-2026-08-09	Num.4.14	v07-held-out-exact-cell
 eval:v07:43a5bac8d61dcb3b	synodal:verb:v07-a3edec94042e18a0	future:first:singular	strict	прострꙋ	прострꙋ̀	ponomar-elizabeth-bible-2026-08-09	Ezek.25.7	v07-held-out-exact-cell
 eval:v07:44290a2a823e9b26	synodal:verb:wikt-833c90610c4d	present:third:plural	strict	глаголютъ	Глаго́лютъ	ponomar-elizabeth-bible-2026-08-09	Jerem.23.17	v07-held-out-exact-cell
-eval:v07:445b9796dd4052da	synodal:noun:v07-c56f014c9d6102d1	lexical-form	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
+eval:v07:445b9796dd4052da	synodal:noun:lyubov	lexical-form	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
 eval:v07:447f8a7cea069a3a	synodal:noun:v07-35d61ae8e4953502	noun:accusative:singular:inanimate	strict	песокъ	песо́къ	ponomar-elizabeth-bible-2026-08-09	Jerem.5.22	v07-held-out-exact-cell
 eval:v07:4496df82dc6e8701	synodal:noun:v07-a23d3fc4f7962988	noun:accusative:singular:inanimate	strict	трꙋдъ	трꙋ́дъ	ponomar-elizabeth-bible-2026-08-09	Isa.55.2	v07-held-out-exact-cell
 eval:v07:44a1c4a37561fee6	synodal:adjective:vechn	adjective:accusative:singular:masculine:any:short:positive	strict	вѣченъ	вѣ́ченъ	ponomar-elizabeth-bible-2026-08-09	Psalm.138.24	v07-held-out-exact-cell
@@ -1455,7 +1455,7 @@ eval:v07:44cbead0b612c420	synodal:noun:dom	noun:vocative:plural:inanimate	strict
 eval:v07:4508dca70c31dd7b	synodal:noun:wikt-0cf369042ac9	noun:accusative:plural:inanimate	strict	дани	да́ни	ponomar-elizabeth-bible-2026-08-09	II_Esdra.2.19	v07-held-out-exact-cell
 eval:v07:456f892750cae025	synodal:verb:v07-c86c24d867ae77d6	participle:past:active:nominative:singular:masculine:any:short:positive	strict	воставъ	Воста́въ	ponomar-elizabeth-bible-2026-08-09	Mt.1.24	v07-held-out-exact-cell
 eval:v07:45d6c46c533ae95f	synodal:noun:wikt-f5010315b352	noun:locative:plural:inanimate	strict	пѣснехъ	пѣ́снехъ	ponomar-elizabeth-bible-2026-08-09	I_Macc.13.51	v07-held-out-exact-cell
-eval:v07:465e4d0cb2d9e2cc	synodal:noun:v07-c56f014c9d6102d1	noun:genitive:singular:inanimate	strict	любви	любвѝ	ponomar-elizabeth-bible-2026-08-09	I_Jn.4.18	v07-held-out-exact-cell
+eval:v07:465e4d0cb2d9e2cc	synodal:noun:lyubov	noun:genitive:singular:inanimate	strict	любви	любвѝ	ponomar-elizabeth-bible-2026-08-09	I_Jn.4.18	v07-held-out-exact-cell
 eval:v07:4664bf6b1a994c71	synodal:noun:wikt-66c1248b9c23	noun:accusative:plural:inanimate	strict	вещи	ве́щи	ponomar-elizabeth-bible-2026-08-09	II_Paral.23.19	v07-held-out-exact-cell
 eval:v07:470c7db60b3a3b3a	synodal:noun:v07-c8464029a853f92d	noun:genitive:singular:inanimate	strict	щедрѡты	щедрѡ́ты	ponomar-elizabeth-bible-2026-08-09	Psalm.144.9	v07-held-out-exact-cell
 eval:v07:472028d6fac5bdd7	synodal:verb:wikt-070505e82800	present:first:singular	strict	хощꙋ	Хощꙋ̀	ponomar-elizabeth-bible-2026-08-09	I_Tim.2.8	v07-held-out-exact-cell
@@ -1534,7 +1534,7 @@ eval:v07:59ec386e4e3c50b9	synodal:proper-noun:wikt-246df9e425fa	noun:vocative:du
 eval:v07:5a5671e05f269d28	synodal:adjective:wikt-7bbc11a3d55b	adjective:nominative:plural:masculine:any:short:positive	strict	готови	гото́ви	ponomar-elizabeth-bible-2026-08-09	I_Macc.3.58	v07-held-out-exact-cell
 eval:v07:5a6af96711bc7332	synodal:verb:v06-e66ef6e1727178e2	aorist:third:plural	strict	погребоша	погребо́ша	ponomar-elizabeth-bible-2026-08-09	II_Kings.3.32	v07-held-out-exact-cell
 eval:v07:5a8fecf7e376a1d4	synodal:noun:wikt-d49b358ae9fa	noun:nominative:dual:inanimate	strict	пещи	пе́щи	ponomar-elizabeth-bible-2026-08-09	Dan.3.88	v07-held-out-exact-cell
-eval:v07:5a909bf2060e8893	synodal:noun:v07-c56f014c9d6102d1	noun:accusative:singular:inanimate	strict	любовь	любо́вь	ponomar-elizabeth-bible-2026-08-09	Eccles.9.6	v07-held-out-exact-cell
+eval:v07:5a909bf2060e8893	synodal:noun:lyubov	noun:accusative:singular:inanimate	strict	любовь	любо́вь	ponomar-elizabeth-bible-2026-08-09	Eccles.9.6	v07-held-out-exact-cell
 eval:v07:5b2b9d69eb8735e0	synodal:adverb:wikt-0f90480ac003	indeclinable	strict	ᲂуже	ᲂу҆́же	ponomar-elizabeth-bible-2026-08-09	Zech.2.1	v07-held-out-exact-cell
 eval:v07:5b5db44e250e3ad3	synodal:noun:v06-44fe6aceed3a2563	noun:instrumental:singular:inanimate	strict	разꙋмомъ	ра́зꙋмомъ	ponomar-elizabeth-bible-2026-08-09	Sirach.3.13	v07-held-out-exact-cell
 eval:v07:5b618f1ec25455ca	synodal:verb:v07-b4d42124734cba64	aorist:third:singular	strict	ѿпꙋсти	Ѿпꙋсти́	ponomar-elizabeth-bible-2026-08-09	Ex.18.27	v07-held-out-exact-cell
@@ -1680,8 +1680,8 @@ eval:v07:7e8e8c5805e4d9f7	synodal:adjective:wikt-e406458f5df6	adjective:locative
 eval:v07:7eae7faad17d45bf	synodal:verb:wikt-a40ccf1752e6	aorist:third:plural	strict	проидоша	проидо́ша	ponomar-elizabeth-bible-2026-08-09	Heb.11.37	v07-held-out-exact-cell
 eval:v07:7ef40f1ba05677a2	synodal:verb:wikt-f641099e2194	future:third:plural	strict	познаютъ	позна́ютъ	ponomar-elizabeth-bible-2026-08-09	Jerem.28.9	v07-held-out-exact-cell
 eval:v07:7f14765fe92f04dd	synodal:noun:wikt-598268a54855	noun:accusative:plural:inanimate	strict	храмины	хра́мины	ponomar-elizabeth-bible-2026-08-09	Gen.19.10	v07-held-out-exact-cell
-eval:v07:7f237ffcb059bdea	synodal:noun:v07-c56f014c9d6102d1	noun:genitive:singular:inanimate	strict	любве	любве́	ponomar-elizabeth-bible-2026-08-09	I_Cor.13.1	v07-held-out-exact-cell
-eval:v07:7f7dbce17439fd25	synodal:noun:v07-c56f014c9d6102d1	noun:nominative:singular:inanimate	strict	любовь	любо́вь	ponomar-elizabeth-bible-2026-08-09	Eccles.9.6	v07-held-out-exact-cell
+eval:v07:7f237ffcb059bdea	synodal:noun:lyubov	noun:genitive:singular:inanimate	strict	любве	любве́	ponomar-elizabeth-bible-2026-08-09	I_Cor.13.1	v07-held-out-exact-cell
+eval:v07:7f7dbce17439fd25	synodal:noun:lyubov	noun:nominative:singular:inanimate	strict	любовь	любо́вь	ponomar-elizabeth-bible-2026-08-09	Eccles.9.6	v07-held-out-exact-cell
 eval:v07:7fe38eac3c12e410	synodal:verb:wikt-833c90610c4d	imperfect:third:plural	strict	глаголахꙋ	Глаго́лахꙋ	ponomar-elizabeth-bible-2026-08-09	Jn.11.36	v07-held-out-exact-cell
 eval:v07:7fe4095d7582f6fe	synodal:verb:wikt-eb542a45226b	aorist:third:plural	strict	ѡбрѣтоша	Ѡ҆брѣто́ша	wikisource-church-slavonic-bible-2026-08-09	II_Macc.12.40	v07-held-out-exact-cell
 eval:v07:807420ee5d3a6363	synodal:noun:v07-bcdc26825740ef65	noun:nominative:singular:inanimate	strict	ѹмъ	ѹ҆́мъ	wikisource-church-slavonic-bible-2026-08-09	Judith.8.14	v07-held-out-exact-cell
@@ -1745,7 +1745,7 @@ eval:v07:91da2e9afad9e559	synodal:verb:v06-bba31c88723cae5c	participle:present:a
 eval:v07:9215686c595d0558	synodal:noun:sila	noun:locative:plural:inanimate	strict	силахъ	си́лахъ	ponomar-elizabeth-bible-2026-08-09	I_Macc.7.14	v07-held-out-exact-cell
 eval:v07:92180a7e444ba4b8	synodal:verb:wikt-77c5af0d1191	present:third:plural	strict	идꙋтъ	и҆́дꙋтъ	ponomar-elizabeth-bible-2026-08-09	Judith.5.9	v07-held-out-exact-cell
 eval:v07:921f416942e4aa8a	synodal:adjective:wikt-e406458f5df6	adjective:genitive:singular:masculine:any:long:positive	strict	великагѡ	вели́каго	ponomar-elizabeth-bible-2026-08-09	III_Macc.5.16	v07-held-out-exact-cell
-eval:v07:922e6f2723af3ee9	synodal:noun:v07-c56f014c9d6102d1	noun:nominative:singular:inanimate	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
+eval:v07:922e6f2723af3ee9	synodal:noun:lyubov	noun:nominative:singular:inanimate	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
 eval:v07:9261a7d8e2639922	synodal:preposition:wikt-888f1052c6db	indeclinable	strict	ᲂу	ᲂу҆	ponomar-elizabeth-bible-2026-08-09	Gen.21.33	v07-held-out-exact-cell
 eval:v07:93046f6d32db9afd	synodal:verb:wikt-e0c91b5eb837	future:first:singular	strict	ѡставлю	ѡ҆ста́влю	ponomar-elizabeth-bible-2026-08-09	Sirach.24.36	v07-held-out-exact-cell
 eval:v07:935c37d7df632e23	synodal:noun:v07-b1224fb84749a272	noun:nominative:plural:inanimate	strict	мысли	мы́сли	ponomar-elizabeth-bible-2026-08-09	Tobit.6.16	v07-held-out-exact-cell
@@ -1782,7 +1782,7 @@ eval:v07:9c5ef176126fad96	synodal:verb:wikt-e35b3112c729	participle:present:acti
 eval:v07:9c98f06c441407fd	synodal:adjective:wikt-e406458f5df6	adjective:accusative:singular:feminine:any:short:positive	strict	великꙋ	вели́кꙋ	ponomar-elizabeth-bible-2026-08-09	IV_Kings.10.21	v07-held-out-exact-cell
 eval:v07:9cafc69415230a54	synodal:noun:volya	noun:vocative:plural:inanimate	strict	волѧ	во́лѧ	ponomar-elizabeth-bible-2026-08-09	I_Cor.16.12	v07-held-out-exact-cell
 eval:v07:9cd57b7c748f4d09	synodal:noun:v07-a615c3c82bac7f9b	noun:genitive:singular:inanimate	strict	злата	зла́та	ponomar-elizabeth-bible-2026-08-09	I_Paral.20.2	v07-held-out-exact-cell
-eval:v07:9d8d45b8cc9b361b	synodal:noun:v07-c56f014c9d6102d1	noun:instrumental:singular:inanimate	strict	любовїю	любо́вїю	ponomar-elizabeth-bible-2026-08-09	Rom.15.30	v07-held-out-exact-cell
+eval:v07:9d8d45b8cc9b361b	synodal:noun:lyubov	noun:instrumental:singular:inanimate	strict	любовїю	любо́вїю	ponomar-elizabeth-bible-2026-08-09	Rom.15.30	v07-held-out-exact-cell
 eval:v07:9e4d47c2404f090b	synodal:verb:v07-6fb4b87f3e230e11	aorist:third:plural	strict	забыша	забы́ша	ponomar-elizabeth-bible-2026-08-09	Jerem.2.32	v07-held-out-exact-cell
 eval:v07:9e5cf0eae2e2ae21	synodal:noun:v07-bac2c01e0731daaf	noun:accusative:singular:inanimate	strict	снѣдь	снѣ́дь	ponomar-elizabeth-bible-2026-08-09	Jerem.16.4	v07-held-out-exact-cell
 eval:v07:9e771eb1a8789789	synodal:noun:wikt-3379a6fab3cf	noun:dative:plural:animate	strict	фараѡномъ	фараѡ́номъ	ponomar-elizabeth-bible-2026-08-09	Gen.12.15	v07-held-out-exact-cell
@@ -1855,7 +1855,7 @@ eval:v07:b345a6c547f9d2a7	synodal:noun:v07-bcdc26825740ef65	noun:accusative:sing
 eval:v07:b353c2a57d760637	synodal:noun:v07-c2d7f7cbabd89e59	noun:genitive:singular:inanimate	strict	ѹтра	ѹ҆́тра	wikisource-church-slavonic-bible-2026-08-09	I_Kings.25.22	v07-held-out-exact-cell
 eval:v07:b3553f5d8294fd73	synodal:verb:wikt-3109ff501cc5	aorist:third:singular	strict	моли	молѝ	ponomar-elizabeth-bible-2026-08-09	II_Macc.13.23	v07-held-out-exact-cell
 eval:v07:b3604be2fb36303c	synodal:pronoun:v07-2f384f6138f1b4bd	lexical-form	strict	нань	на́нь	ponomar-elizabeth-bible-2026-08-09	Judg.9.25	v07-held-out-exact-cell
-eval:v07:b3608f28a8993de5	synodal:noun:v07-c56f014c9d6102d1	noun:vocative:singular:inanimate	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
+eval:v07:b3608f28a8993de5	synodal:noun:lyubov	noun:vocative:singular:inanimate	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
 eval:v07:b39d9fd9b39f3294	synodal:noun:v07-6ef4c1b12b34ac8c	noun:genitive:singular:inanimate	strict	части	ча́сти	ponomar-elizabeth-bible-2026-08-09	Sirach.24.13	v07-held-out-exact-cell
 eval:v07:b3d772eb20abc41a	synodal:noun:v07-44075006050c1854	noun:accusative:singular:inanimate	strict	соборъ	собо́ръ	ponomar-elizabeth-bible-2026-08-09	II_Paral.30.23	v07-held-out-exact-cell
 eval:v07:b44dce0a983b7e12	synodal:noun:v07-513e598404690573	noun:nominative:singular:animate	strict	вождь	во́ждь	ponomar-elizabeth-bible-2026-08-09	II_Paral.9.26	v07-held-out-exact-cell
@@ -2038,7 +2038,7 @@ eval:v07:e4103efe1059e8b2	synodal:noun:v07-9e67fe4feee072bd	noun:accusative:sing
 eval:v07:e462fcd8c09080ca	synodal:verb:v06-9c74840d41a83b98	aorist:third:plural	strict	падоша	падо́ша	ponomar-elizabeth-bible-2026-08-09	Apoc.7.11	v07-held-out-exact-cell
 eval:v07:e463651bd4ee1c33	synodal:noun:wikt-5889f47b19aa	noun:vocative:plural:inanimate	strict	хвалы	хвалы̀	ponomar-elizabeth-bible-2026-08-09	Ezek.16.12	v07-held-out-exact-cell
 eval:v07:e4775bf517bbb990	synodal:verb:wikt-833c90610c4d	participle:present:active:genitive:singular:masculine:any:short:positive	strict	глаголюща	глаго́люща	ponomar-elizabeth-bible-2026-08-09	Acts.24.12	v07-held-out-exact-cell
-eval:v07:e48eca6f14f7c825	synodal:noun:v07-c56f014c9d6102d1	noun:accusative:singular:inanimate	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
+eval:v07:e48eca6f14f7c825	synodal:noun:lyubov	noun:accusative:singular:inanimate	strict	любы	Любы̀	wikisource-church-slavonic-bible-2026-08-09	I_Cor.13.4	v07-held-out-exact-cell
 eval:v07:e4a3566932033476	synodal:noun:v07-b1224fb84749a272	noun:accusative:dual:inanimate	strict	мысли	мы́сли	ponomar-elizabeth-bible-2026-08-09	Tobit.6.16	v07-held-out-exact-cell
 eval:v07:e4d336d475ebcff0	synodal:noun:v07-6b68e3c8ab1b77c2	noun:accusative:singular:inanimate	strict	источникъ	И҆сто́чникъ	ponomar-elizabeth-bible-2026-08-09	Sirach.1.5	v07-held-out-exact-cell
 eval:v07:e53b7e56a9231b1c	synodal:noun:v07-dc1fad6a14b44ac1	noun:instrumental:singular:inanimate	strict	смертїю	сме́ртїю	ponomar-elizabeth-bible-2026-08-09	Ezek.33.14	v07-held-out-exact-cell

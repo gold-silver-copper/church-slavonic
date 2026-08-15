@@ -12,20 +12,6 @@ use crate::{
     spec::LexemeSpecInner,
 };
 
-fn specified_form(
-    inflector: Inflector,
-    form: &SpecifiedForm,
-    accent: Option<&AccentParadigm>,
-) -> Result<FormSet> {
-    specified_form_with_rule(
-        inflector,
-        form,
-        accent,
-        "SYN-CALLER-IRREGULAR-OVERRIDE",
-        "caller-irregular-override",
-    )
-}
-
 fn specified_form_with_rule(
     inflector: Inflector,
     form: &SpecifiedForm,
@@ -100,19 +86,29 @@ pub(crate) fn provided_exact_forms(
     forms: &[&SpecifiedForm],
     accent: Option<&AccentParadigm>,
 ) -> Result<FormSet> {
+    specified_forms_with_rule(
+        inflector,
+        forms,
+        accent,
+        "SYN-PROVIDER-EXACT-OVERRIDE",
+        "provider-exact-override",
+    )
+}
+
+fn specified_forms_with_rule(
+    inflector: Inflector,
+    forms: &[&SpecifiedForm],
+    accent: Option<&AccentParadigm>,
+    rule: &'static str,
+    stage: &'static str,
+) -> Result<FormSet> {
     let mut variants = Vec::new();
     for form in forms {
         variants.extend(
-            specified_form_with_rule(
-                inflector,
-                form,
-                accent,
-                "SYN-PROVIDER-EXACT-OVERRIDE",
-                "provider-exact-override",
-            )?
-            .variants()
-            .iter()
-            .cloned(),
+            specified_form_with_rule(inflector, form, accent, rule, stage)?
+                .variants()
+                .iter()
+                .cloned(),
         );
     }
     FormSet::try_from_variants(variants)
@@ -190,12 +186,19 @@ pub(crate) fn resolve_spec(
 ) -> Result<FormSet> {
     spec.validate()?;
     let context = spec.context();
-    if let Some(form) = context
+    let irregular = context
         .irregular_forms
         .iter()
-        .find(|form| form.cell == cell)
-    {
-        return specified_form(inflector, form, context.accent.as_ref());
+        .filter(|form| form.cell == cell)
+        .collect::<Vec<_>>();
+    if !irregular.is_empty() {
+        return specified_forms_with_rule(
+            inflector,
+            &irregular,
+            context.accent.as_ref(),
+            "SYN-CALLER-IRREGULAR-OVERRIDE",
+            "caller-irregular-override",
+        );
     }
     if let Some(defect) = context
         .defective_cells

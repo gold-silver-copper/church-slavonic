@@ -619,46 +619,46 @@ id = "syn.noun.declension"
 recension = "synodal-russian"
 category = "noun"
 part_of_speech = "noun"
-scope = "All seventeen reviewed Synodal productive noun contracts and typed number inventories."
+scope = "All thirty-six reviewed Synodal productive, invariant, stem-alternating, and lexeme-bounded noun contracts plus typed number inventories."
 profiles = ["abstract", "expanded", "expanded-accentless"]
 features = ["case=7", "number=3", "gender=lexical", "animacy=2", "number-inventory=7"]
-subtypes = ["FirstHardMasculine", "FirstHardVelarMasculine", "FirstMixedMasculine", "FirstHardNeuter", "FirstSoftMasculine", "FirstSoftNeuter", "SecondHard", "SecondSoft", "ThirdFeminine", "ThirdMasculine", "FourthNeuterEn", "FourthNeuterEs", "FourthNeuterAt", "FourthFeminineEr", "FourthFeminineOv", "FourthMasculineEn", "FourthMasculineEnKamen"]
+subtypes = ["FirstHardMasculine", "FirstHardMasculineUStem", "FirstHardMasculineInEthnonym", "FirstHardMasculineUdEs", "FirstHardVelarMasculine", "FirstMixedMasculine", "FirstHardNeuter", "FirstSoftMasculine", "FirstSoftMasculineAgentTel", "FirstSoftMasculineLord", "FirstSoftMasculineJ", "FirstSoftMasculineEy", "FirstSoftNeuter", "FirstSoftNeuterIshche", "FirstSoftNeuterIe", "SecondHard", "SecondHardVelar", "SecondSoft", "SecondSoftPostvocalicAncientPlural", "SecondSoftMasculineIa", "SecondMixed", "ThirdFeminine", "ThirdMasculine", "FourthNeuterEn", "FourthNeuterEs", "FourthNeuterEsAlternatingFirst", "FourthNeuterEsPairedDual", "FourthNeuterAt", "FourthFeminineEr", "FourthFeminineErDaughter", "FourthFeminineOv", "FourthFeminineOvSyncopating", "FourthMasculineEn", "FourthMasculineEnDay", "FourthMasculineEnKamen", "Indeclinable"]
 realization = "synthetic"
 state = "productive-complete"
 implementation_kind = "productive"
-rule_ids = ["SYN-NOUN-I-HARD-M-ALYPY-34", "SYN-NOUN-I-HARD-VELAR-M-ALYPY-34", "SYN-NOUN-I-MIXED-M-ALYPY-33-34", "SYN-NOUN-I-HARD-N-ALYPY-34", "SYN-NOUN-I-SOFT-M-ALYPY-34", "SYN-NOUN-I-SOFT-N-ALYPY-34", "SYN-NOUN-II-HARD-ALYPY-39", "SYN-NOUN-II-SOFT-ALYPY-39", "SYN-NOUN-III-F-ALYPY-41", "SYN-NOUN-III-M-ALYPY-41", "SYN-NOUN-IV-N-EN-ALYPY-42-43", "SYN-NOUN-IV-N-ES-ALYPY-42-43", "SYN-NOUN-IV-N-AT-ALYPY-42-43", "SYN-NOUN-IV-F-ER-ALYPY-42-43", "SYN-NOUN-IV-F-OV-ALYPY-42-44", "SYN-NOUN-IV-M-EN-ALYPY-42-44", "SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43"]
+rule_ids = ["SYN-NOUN-I-HARD-M-ALYPY-34", "SYN-NOUN-I-U-STEM-M-ALYPY-37-38", "SYN-NOUN-I-HARD-M-IN-ETHNONYM-ALYPY-37", "SYN-NOUN-I-M-UD-ES-ALYPY-44", "SYN-NOUN-I-HARD-VELAR-M-ALYPY-34", "SYN-NOUN-I-MIXED-M-ALYPY-33-34", "SYN-NOUN-I-HARD-N-ALYPY-34", "SYN-NOUN-I-SOFT-M-ALYPY-34", "SYN-NOUN-I-SOFT-M-TEL-AGENT-ALYPY-37", "SYN-NOUN-I-SOFT-M-LORD-ALYPY-35-41", "SYN-NOUN-I-SOFT-J-M-ALYPY-34-37", "SYN-NOUN-I-SOFT-EY-M-ALYPY-34-37", "SYN-NOUN-I-SOFT-N-ALYPY-34", "SYN-NOUN-I-SOFT-N-ISHCHE-ALYPY-37", "SYN-NOUN-I-SOFT-IE-N-ALYPY-34-37", "SYN-NOUN-II-HARD-ALYPY-39", "SYN-NOUN-II-HARD-VELAR-ALYPY-39-40", "SYN-NOUN-II-SOFT-ALYPY-39", "SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40", "SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40", "SYN-NOUN-II-MIXED-ALYPY-39-40", "SYN-NOUN-III-F-ALYPY-41", "SYN-NOUN-III-M-ALYPY-41", "SYN-NOUN-IV-N-EN-ALYPY-42-43", "SYN-NOUN-IV-N-ES-ALYPY-42-43", "SYN-NOUN-IV-N-ES-ALT-FIRST-ALYPY-42-44", "SYN-NOUN-IV-N-ES-PAIRED-DUAL-ALYPY-44", "SYN-NOUN-IV-N-AT-ALYPY-42-43", "SYN-NOUN-IV-F-ER-ALYPY-42-43", "SYN-NOUN-IV-F-ER-DAUGHTER-ALYPY-42-44", "SYN-NOUN-IV-F-OV-ALYPY-42-44", "SYN-NOUN-IV-F-OV-SYNCOPATING-ALYPY-42-44", "SYN-NOUN-IV-M-EN-ALYPY-42-44", "SYN-NOUN-IV-M-EN-DAY-ALYPY-43", "SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43", "SYN-NOUN-INDECLINABLE-ALYPY-37"]
 sources = ["alypy-gamanovich-grammar-web-2023"]
 citation = "Alypy §§33–44; docs/SYNODAL_MORPHOLOGY.md"
 required_metadata = ["lemma", "independent stem", "gender", "declension", "number inventory", "animacy"]
 valid_inventory = "Every case × number × animacy cell licensed by the lexical inventory."
 invalid_inventory = "Contradictory class/gender/stem shapes and absent lexical numbers."
 implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
-tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_43_44_additional_extended_stem_goldens"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_37_44_remaining_productive_noun_profiles_are_bounded", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_43_44_cell_scoped_irregular_stem_goldens", "crates/synodal-church-slavonic/src/lib.rs#alpy_37_44_remaining_named_noun_families_route_through_the_facade"]
 evidence_status = "normative productive prediction"
-rationale = "All seventeen closed contracts have complete inventories and strict caller metadata."
+rationale = "All thirty-six closed contracts have complete cell inventories, strict caller metadata, stable provenance, and exact-before-productive facade coverage for registered exemplars."
 
 [[system]]
 id = "syn.noun.irregular"
 recension = "synodal-russian"
 category = "noun"
 part_of_speech = "noun"
-scope = "Irregular, suppletive, defective, lexeme-specific, and remaining fourth-declension noun behavior."
+scope = "Irregular, suppletive, defective, lexeme-specific, and cell-scoped noun behavior that cannot be selected safely from citation shape alone."
 profiles = ["expanded", "liturgical"]
 features = ["class=irregular", "stem-alternants=ordered", "defectiveness=typed", "case=7", "number=3"]
-subtypes = ["любовь-alternants", "lexeme-specific-endings", "suppletive", "defective", "plural-only", "singular-only"]
+subtypes = ["ordered-multiple-forms-per-cell", "exact-first-registry-overrides", "cell-scoped-stem-alternants", "lexeme-specific-productive-contracts", "historically-absent-cells", "evidence-incomplete-cells", "seven-number-inventories"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "exact-and-irregular-partial"
-rule_ids = ["SYN-NOUN-IRREGULAR-INVENTORY-PENDING"]
+state = "irregular-exact-complete"
+implementation_kind = "exact-first-plus-typed-irregular-and-productive"
+rule_ids = ["SYN-REGISTRY-IRREGULAR-OVERRIDE", "SYN-CALLER-IRREGULAR-OVERRIDE"]
 sources = ["alypy-gamanovich-grammar-web-2023", "dyachenko-1900-scan", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
-citation = "docs/SYNODAL_MORPHOLOGY.md explicitly lists любовь alternants and most irregular/suppletive nouns as gaps."
+citation = "Alypy §§35–44; reviewed exact target cells; typed caller specification contract."
 required_metadata = ["stable identity", "independent cell-specific stems", "ordered variants", "number restrictions", "accent"]
-valid_inventory = "To be completed per lexeme and reusable irregular family."
-invalid_inventory = "Unlicensed cross-product of cell-specific alternants."
-implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "data/synodal/irregular_overrides.tsv"]
-tests = ["crates/synodal-church-slavonic/src/lib.rs#partial_registered_irregular_uses_regular_background_only_outside_override"]
-evidence_status = "partial reviewed exact/override data"
-gap = "Complete irregular noun families and unify любовь identities without generating unattested alternant combinations."
+valid_inventory = "Any caller-supplied ordered set of one or more validated expanded/liturgical forms for a typed cell; any typed historically absent or evidence-incomplete cell; exact registry cells; every reusable lexeme-bounded family named in Alypy §§35–44; and every lexical number inventory."
+invalid_inventory = "Exact duplicate irregular form triples, irregular/defective overlap, malformed Unicode, cross-part-of-speech cells, contradictory class metadata, and unlicensed free cross-products of cell-specific stems."
+implementation = ["crates/synodal-church-slavonic/src/spec.rs", "crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic/src/registry.rs", "crates/synodal-church-slavonic-core/src/morphology.rs", "data/synodal/exact_forms.tsv", "data/synodal/noun_restrictions.tsv", "data/synodal/v10_exact_cell_corrections.tsv"]
+tests = ["crates/synodal-church-slavonic/src/spec.rs#caller_irregular_variants_preserve_declared_order_per_cell", "crates/synodal-church-slavonic/src/lib.rs#alpy_42_44_irregular_noun_families_have_exact_first_complete_backgrounds", "crates/synodal-church-slavonic/src/lib.rs#alpy_37_44_remaining_named_noun_families_route_through_the_facade"]
+evidence_status = "reviewed normative families plus exact target attestations; unattested cells remain visibly productive predictions"
+rationale = "The public specification can express any validated full irregular paradigm with ordered same-cell variants and typed defects. Registry exact cells retain precedence, while rule-governed families use validated classes with bounded stem selection. The duplicate любовь identity is unified, and the господи source-to-target cell transfer is explicitly retracted without rewriting its historical review ledger."
 
 [[system]]
 id = "syn.adjective.positive-comparison"

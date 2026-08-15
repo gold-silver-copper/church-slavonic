@@ -50,10 +50,11 @@ assert_eq!(form.primary_text(), "псалтирника");
 # Ok::<(), synodal_church_slavonic::Error>(())
 ```
 
-The productive noun inventory has seventeen reviewed contracts, including mixed
-and final-velar masculines, third-declension masculines, and the independently
-stemmed `имѧ : имен-`, `небо : небес-`, `ѻтроча : ѻтрочат-`,
-`мати : матер-`, `свекры : свекров-`, and `камень : камен-` families.
+The productive noun inventory has thirty-six reviewed contracts, covering the
+regular tables plus Alypy's typed stem-changing, invariant, and lexeme-bounded
+families through §44. These include `господь`, `день`, `любовь`, `церковь`,
+`ѻко`/`ꙋхо`, `ꙋдъ : ꙋдес-`, postvocalic ancient plurals, and `-инъ`
+ethnonyms without allowing arbitrary stem cross-products.
 `NounSpec::with_number_inventory` represents plural-only or otherwise defective
 number inventories; absent numbers remain `HistoricallyInvalidCell` rows in a
 complete paradigm.
