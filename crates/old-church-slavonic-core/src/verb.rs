@@ -730,6 +730,12 @@ fn present_active_participle(
         PresentActiveParticipleFormation::YushtHard => (format!("{stem}ѫшт"), format!("{stem}ꙑ")),
         PresentActiveParticipleFormation::YushtSoft => (format!("{stem}ѫшт"), format!("{stem}ѩ")),
         PresentActiveParticipleFormation::YeshtSoft => (format!("{stem}ѧшт"), format!("{stem}ѧ")),
+        PresentActiveParticipleFormation::MixedYushtSoft => {
+            (format!("{stem}ѫшт"), format!("{stem}ѧ"))
+        }
+        PresentActiveParticipleFormation::IotatedYushtSoft => {
+            (format!("{stem}ѭшт"), format!("{stem}ѩ"))
+        }
     };
     decline_active_participle(
         lexeme,

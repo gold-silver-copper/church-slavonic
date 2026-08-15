@@ -1636,6 +1636,12 @@ fn participle_rule_slice(lexeme: &VerbLexeme, kind: ParticipleKind) -> &'static 
             Some(PresentActiveParticipleFormation::YeshtSoft) => {
                 "verb-present-active-participle-yesht-soft"
             }
+            Some(PresentActiveParticipleFormation::MixedYushtSoft) => {
+                "verb-present-active-participle-mixed-yusht-soft"
+            }
+            Some(PresentActiveParticipleFormation::IotatedYushtSoft) => {
+                "verb-present-active-participle-iotated-yusht-soft"
+            }
             None => "verb-present-active-participle-missing-formation",
         },
         ParticipleKind::PresentPassive => match lexeme.formations.present_passive_participle {

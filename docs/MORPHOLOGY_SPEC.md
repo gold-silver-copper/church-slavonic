@@ -474,7 +474,7 @@ cells still precede every rule.
 
 `V-INF-01` validates and returns an explicit `-ти` citation. `V-SUP-01` supplies the
 regular `-ти → -тъ` supine component. `V-LPART-01` attaches l-participle gender and
-number endings to an explicitly supplied aorist stem. Irregular/root supines and
+number endings to an explicitly supplied l-participle stem. Irregular/root supines and
 stems remain dictionary-backed. Authority: UT lessons 2 and 7,
 <https://lrc.la.utexas.edu/eieol/ocsol/20#grammar_979> and
 <https://lrc.la.utexas.edu/eieol/ocsol/70#grammar_1023>.
@@ -599,6 +599,35 @@ l-participle). The closed unique-verb inventory and reusable irregular workstem
 groups are separately source-audited lexical layers built on this contract.
 Authority: Polivanova 2023 §§417, 434–440, 516–605, especially Table 516.3 and
 §§561–562.
+
+`UniqueVerbIdentity` now closes the first of those layers over exactly nineteen
+base profiles: `дати`, `ꙗсти`, `вѣдѣти`, `имѣти`, independent defective
+`ѥсмь`, `бꙑти`, `хотѣти`, `довьлѣти`, `ити`, `ꙗти`, `стати`, `съпати`,
+`въпити`, `сѣсти`, `лещи`, `обрѣсти`, `гънати`, `плѣти`, and `дѣти`.
+Every identity supplies a nine-cell reviewed present profile, aspect, profile
+kind, source section, and independent metadata for each reconstructable
+subsystem. The exhaustive profile test requires every public cell either to
+produce a form or to return one of the two lexical defect errors; missing
+metadata and generic unsupported formation are forbidden inside this closed
+layer.
+
+Source dashes in Table 516 mean that no forms license reconstruction, so they
+map to `UnattestedUnreconstructableCell`, not automatically to grammatical
+impossibility. The independent `ѥсмь` profile is the stronger exception:
+Polivanova §539 defines it as genuinely defective outside its present and
+present-active participle, and those cells return `HistoricallyInvalidCell`.
+For the extremely sparse `плѣти`, Polivanova §598 directly supports only
+`плѣвемъ` and `плѣвом-`; LOVe supplies the comparative `plěv-/plě-/plěvi`
+principal parts used for its reviewed reconstruction, while the remaining
+systems stay explicitly unreconstructable.
+
+Two additional present-active participle seams preserve unique-profile
+oppositions that the ordinary hard/soft formations cannot express:
+`MixedYushtSoft` forms `-ѧ/-ѫшт-` (`дѣти`, `°рѣсти`), and
+`IotatedYushtSoft` forms `-ѩ/-ѭшт-` (`въпити`, `довьлѣти`). These are typed
+formations rather than spelling postprocessing. The wider prefix-family union,
+Polivanova's reusable irregular workstem groups, impersonal verbs, and facade
+source-provenance routing remain separate completion checkpoints.
 
 ### Imperative
 

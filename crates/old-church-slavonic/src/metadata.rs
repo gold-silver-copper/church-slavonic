@@ -599,6 +599,8 @@ fn parse_present_active(value: &str) -> Result<PresentActiveParticipleFormation,
         "yusht-hard" => Ok(PresentActiveParticipleFormation::YushtHard),
         "yusht-soft" => Ok(PresentActiveParticipleFormation::YushtSoft),
         "yesht-soft" => Ok(PresentActiveParticipleFormation::YeshtSoft),
+        "mixed-yusht-soft" => Ok(PresentActiveParticipleFormation::MixedYushtSoft),
+        "iotated-yusht-soft" => Ok(PresentActiveParticipleFormation::IotatedYushtSoft),
         value => invalid_code("present active participle formation", value),
     }
 }
@@ -854,6 +856,18 @@ mod tests {
         assert_eq!(
             metadata.imperfect[1].variant_policy.value,
             ImperfectVariantPolicy::UncontractedOnly
+        );
+    }
+
+    #[test]
+    fn unique_present_active_seams_have_stable_metadata_codes() {
+        assert_eq!(
+            parse_present_active("mixed-yusht-soft").expect("mixed root seam"),
+            PresentActiveParticipleFormation::MixedYushtSoft
+        );
+        assert_eq!(
+            parse_present_active("iotated-yusht-soft").expect("iotated vowel seam"),
+            PresentActiveParticipleFormation::IotatedYushtSoft
         );
     }
 }

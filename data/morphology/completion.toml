@@ -437,18 +437,18 @@ profiles = ["canonical-cyrillic"]
 features = ["system=all", "defectiveness=typed", "suppletion=typed", "principal-parts=independent"]
 subtypes = ["root", "athematic", "suppletive", "motion", "impersonal", "defective"]
 realization = "synthetic-or-analytic"
-state = "implementation-missing"
+state = "partial"
 implementation_kind = "exact-and-override-partial"
-rule_ids = ["OCS-VERB-IRREGULAR-INVENTORY-PENDING"]
+rule_ids = ["V-IRREG-EXACT-01", "V-PTCP-PRES-ACT-01"]
 sources = ["polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs", "gorazd", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "docs/MORPHOLOGY_SPEC.md names бꙑти, дати, ѣсти, вѣдѣти, хотѣти, and motion verbs as conservative exact/unsupported cases."
+citation = "Polivanova 2023 §§417 and 516–605 close nineteen unique base profiles; official LOVe principal parts independently crosscheck the reconstructable irregular workstems."
 required_metadata = ["stable identity", "all principal parts", "defective inventory", "exact/suppletive cells", "source provenance"]
 valid_inventory = "Must be enumerated per lexeme and reusable irregular family."
 invalid_inventory = "Cells excluded by lexical defectiveness."
-implementation = ["crates/old-church-slavonic/src/resolver.rs", "data/overrides.tsv"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#reviewed_override_follows_exact_table_and_keeps_authority"]
-evidence_status = "partial exact tables and one curated imperfect family"
-gap = "Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm."
+implementation = ["crates/old-church-slavonic-core/src/unique_verb.rs", "crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic/src/resolver.rs", "data/overrides.tsv"]
+tests = ["crates/old-church-slavonic-core/src/unique_verb.rs#all_nineteen_source_present_goldens_are_exact", "crates/old-church-slavonic-core/src/unique_verb.rs#every_profile_cell_is_realized_or_explicitly_defected", "crates/old-church-slavonic/tests/public_api.rs#reviewed_override_follows_exact_table_and_keeps_authority"]
+evidence_status = "closed nineteen-base-profile inventory with typed source gaps; facade and family union partial"
+gap = "Expand the nineteen base profiles over every source-listed prefix family, crosswalk the reusable irregular workstem groups and impersonal verbs, and attach per-cell facade provenance without merging independent ѥсмь and бꙑти analyses."
 
 [[system]]
 id = "ocs.verb.analytic"

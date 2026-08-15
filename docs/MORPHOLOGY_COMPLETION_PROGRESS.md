@@ -12,8 +12,9 @@ The matrix contains **53** required system contracts: **34** have final states a
 
 | State | Systems |
 |---|---:|
-| `implementation-missing` | 14 |
+| `implementation-missing` | 13 |
 | `not-inflectional` | 2 |
+| `partial` | 1 |
 | `productive-complete` | 32 |
 | `source-review-open` | 5 |
 
@@ -69,7 +70,7 @@ The matrix contains **53** required system contracts: **34** have final states a
 
 ## Non-final systems
 
-- `ocs.verb.irregular-root` — **implementation-missing**: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
+- `ocs.verb.irregular-root` — **partial**: Expand the nineteen base profiles over every source-listed prefix family, crosswalk the reusable irregular workstem groups and impersonal verbs, and attach per-cell facade provenance without merging independent ѥсмь and бꙑти analyses.
 - `ocs.verb.verbal-noun` — **source-review-open**: Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts.
 - `ocs.orthography.accent` — **implementation-missing**: Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance.
 - `ocs.orthography.glagolitic` — **implementation-missing**: Establish a source-backed Glagolitic realization/transliteration contract for every productive rule.
@@ -111,7 +112,7 @@ The matrix contains **53** required system contracts: **34** have final states a
 | `ocs.verb.imperative.analytic` | old-church-slavonic | imperative | `productive-complete` | `PHRASE-IMPV-DA-01` | independent grammar rule with structured dictionary-resolved present component provenance |
 | `ocs.verb.infinitive-supine-lparticiple` | old-church-slavonic | nonfinite-verb | `productive-complete` | `V-INF-01`<br>`V-SUP-01`<br>`V-LPART-01` | source-backed productive prediction |
 | `ocs.verb.participle` | old-church-slavonic | participle | `productive-complete` | `V-PTCP-PRES-ACT-01`<br>`V-PTCP-PRES-PASS-01`<br>`V-PTCP-PAST-ACT-01`<br>`V-PTCP-PAST-PASS-01` | source-backed productive prediction; unsafe extracted rows excluded |
-| `ocs.verb.irregular-root` | old-church-slavonic | irregular-verb | `implementation-missing` | `OCS-VERB-IRREGULAR-INVENTORY-PENDING` | partial exact tables and one curated imperfect family |
+| `ocs.verb.irregular-root` | old-church-slavonic | irregular-verb | `partial` | `V-IRREG-EXACT-01`<br>`V-PTCP-PRES-ACT-01` | closed nineteen-base-profile inventory with typed source gaps; facade and family union partial |
 | `ocs.verb.analytic` | old-church-slavonic | analytic-form | `productive-complete` | `V-COP-ES-PRES-01`<br>`V-COP-BUD-PRES-01`<br>`V-COP-BE-IMPF-01`<br>`V-COP-BE-AOR-01`<br>`V-COP-BI-COND-01`<br>`V-COP-BY-COND-AOR-01`<br>`PHRASE-PERFECT-01`<br>`PHRASE-PLUPERFECT-01`<br>`PHRASE-FUT-INF-01`<br>`PHRASE-FUT-PTCP-01`<br>`PHRASE-FUT-PERFECT-01`<br>`PHRASE-COND-OPT-01`<br>`PHRASE-COND-OPT-DA-01`<br>`PHRASE-COND-OPT-ELLIP-01`<br>`PHRASE-COND-OPT-PASS-01`<br>`PHRASE-PASSIVE-01` | independently crosschecked grammar inventory with reviewed tables, explicit reconstructions, curated irregular auxiliaries, and structured word-level provenance |
 | `ocs.verb.verbal-noun` | old-church-slavonic | verbal-noun | `source-review-open` | `OCS-VERBAL-NOUN-PENDING` | sparse exact dictionary cells |
 | `ocs.orthography.canonical` | old-church-slavonic | orthography | `productive-complete` | `OCS-ORTHOGRAPHY-CANONICAL` | technical and source contract |
@@ -165,7 +166,7 @@ The frontier contains **24** source/lineage records. Authority policy: target-re
 | `lunt-ocs-grammar-2001` | 1 | scholarly reference grammar | old-church-slavonic | accessible-metadata | Contents independently locates twofold and compound comparative declension and the -ьj/-ěj formation split, and locates the book's numeral declension, syntax, and historical sections for the open crosswalk. The available USC endpoint exposes only the front matter and contents, so no numeral rule claim relies on inaccessible body text. |
 | `krysko-collective-2020` | 1 | peer-reviewed manuscript-grounded historical grammar article | old-church-slavonic, mixed | accessible-full-text | Independently confirms that the low collective numerical pronouns are not singularia or pluralia tantum: дъвои and обои have singular, dual, and plural uses, including attributive and substantivized functions. |
 | `essja-collective-series` | 2 | academy historical-etymological dictionary | old-church-slavonic, inherited-comparative | accessible-full-text | Establishes the inherited adjective series from four through ten, its parallel -er-/-or- stems, its upper bound at ten, and which spellings have direct Old Church Slavonic citation rather than reconstruction alone. |
-| `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-metadata | Newly admitted in discovery pass 1; supplies independent lexeme-level allomorph evidence for sigmatic aorists and irregular/root verbs. |
+| `love-lmu-ocs-verbs` | 2 | scholarly lexical database | old-church-slavonic | accessible-full-text | Supplies independent lemma-level present, aorist, imperative, aspect, and prefix-family principal parts. The official export crosschecks the reconstructable workstems of the closed unique-verb profiles, including comparative plěv-/plě-/plěvi for sparse plěti; it does not by itself turn predicted cells into attestations. |
 | `punco-lmu-reference-grammar` | 2 | scholarly digital reference grammar and annotated-corpus documentation | old-church-slavonic, mixed | accessible-metadata | Independently crosschecks the regular hard and soft pronominal class, the personal/reflexive inventory, and corpus-annotation distinctions, with mixed-period forms admitted only when separately licensed by OCS authorities. Its numeral overview independently confirms the substantival treatment and genitive-plural government of five through ten and the corresponding higher constructions. It also confirms да plus present forms for commands in all persons and crosschecks the OCS-to-Church-Slavonic analytic inventory: perfect/pluperfect, infinitival future and future-in-the-past, future perfect, conditional/aorist oscillation, optative particles, auxiliary omission, and passive participial constructions. |
 | `english-wiktionary-ocs-kaikki-2026-08-07` | 6 | crowd-edited machine-readable dictionary | old-church-slavonic | pinned-local | Current OCS exact registry and extraction target. |
 | `ud-ocs-proiel-r2.18` | 4 | manually based annotated corpus | old-church-slavonic | pinned-local | Independent real-text regression evidence; the simple-ordinal audit confirms short forms throughout the ten-member lexicon and preserves cell-specific третии spellings as corpus evidence without promoting corpus sparsity into a productive rule. Compound-ordinal examples directly exercise analytic teens, fused 19th/20th/70th/100th/1000th heads, conjunction и in 28th and 79th, and zero-connector agreement in 104th. The collective audit independently exercises singular and plural low collectives, short adjectival четворъ/десѧторъ cells, and derivative adverbs; the spelling десꙙторо remains a cell-specific corpus observation. Fractional полъ and tithe десѧтинѫ provide exact accusative-singular semantic crosschecks without licensing sibling cells. Repeated по ѥдиномоу, по дьвѣма, по пѧти десѧтъ, по сътоу, and composed-tens witnesses directly establish distributive по selecting dative cardinal components; they license the construction while larger unattested values remain productive predictions. |
@@ -186,4 +187,4 @@ The frontier contains **24** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.verb.irregular-root`: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
+`ocs.verb.irregular-root`: Expand the nineteen base profiles over every source-listed prefix family, crosswalk the reusable irregular workstem groups and impersonal verbs, and attach per-cell facade provenance without merging independent ѥсмь and бꙑти analyses.

@@ -16,6 +16,7 @@ pub mod phrase;
 pub mod pronoun;
 pub mod result;
 pub mod trace;
+pub mod unique_verb;
 pub mod verb;
 
 pub use adjective::LongOnlyAdjectiveIdentity;
@@ -58,3 +59,4 @@ pub use result::{
     VariantSelectionError,
 };
 pub use trace::{PredictedForm, RuleId, RuleStep};
+pub use unique_verb::{UniqueVerbIdentity, UniqueVerbProfileKind};

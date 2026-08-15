@@ -345,9 +345,16 @@ pub enum ImperativeFormation {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum PresentActiveParticipleFormation {
+    /// Hard thematic `-ꙑ/-ѫщ-` alternation.
     YushtHard,
+    /// Soft thematic `-ѩ/-ѫщ-` alternation.
     YushtSoft,
+    /// Soft `-ѧ/-ѧщ-` alternation.
     YeshtSoft,
+    /// Mixed root-verb `-ѧ/-ѫщ-` alternation (`дѣти`, `°рѣсти`).
+    MixedYushtSoft,
+    /// Iotated vowel-stem `-ѩ/-ѭщ-` alternation (`въпити`, `довьлѣти`).
+    IotatedYushtSoft,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
