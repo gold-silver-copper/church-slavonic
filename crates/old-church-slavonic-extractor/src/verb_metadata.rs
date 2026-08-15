@@ -726,7 +726,12 @@ fn strip_present_active(class: VerbClass, form: &str) -> Option<(String, &'stati
 }
 
 fn strip_present_passive(form: &str) -> Option<(String, &'static str)> {
-    for (suffix, formation) in [("имъ", "im"), ("емъ", "em"), ("омъ", "om")] {
+    for (suffix, formation) in [
+        ("ѥмъ", "iotated-em"),
+        ("имъ", "im"),
+        ("емъ", "em"),
+        ("омъ", "om"),
+    ] {
         if let Some(stem) = form.strip_suffix(suffix).filter(|stem| !stem.is_empty()) {
             return Some((stem.to_string(), formation));
         }
@@ -872,6 +877,10 @@ mod tests {
         assert_eq!(
             strip_present_passive("несомъ"),
             Some(("нес".to_string(), "om"))
+        );
+        assert_eq!(
+            strip_present_passive("плюѥмъ"),
+            Some(("плю".to_string(), "iotated-em"))
         );
         assert_eq!(
             strip_past_active("правль"),

@@ -611,6 +611,7 @@ fn parse_present_passive(
     match value {
         "im" => Ok(PresentPassiveParticipleFormation::Im),
         "em" => Ok(PresentPassiveParticipleFormation::Em),
+        "iotated-em" => Ok(PresentPassiveParticipleFormation::IotatedEm),
         "om" => Ok(PresentPassiveParticipleFormation::Om),
         value => invalid_code("present passive participle formation", value),
     }
@@ -860,7 +861,7 @@ mod tests {
     }
 
     #[test]
-    fn unique_present_active_seams_have_stable_metadata_codes() {
+    fn unique_participle_seams_have_stable_metadata_codes() {
         assert_eq!(
             parse_present_active("mixed-yusht-soft").expect("mixed root seam"),
             PresentActiveParticipleFormation::MixedYushtSoft
@@ -868,6 +869,10 @@ mod tests {
         assert_eq!(
             parse_present_active("iotated-yusht-soft").expect("iotated vowel seam"),
             PresentActiveParticipleFormation::IotatedYushtSoft
+        );
+        assert_eq!(
+            parse_present_passive("iotated-em").expect("iotated passive seam"),
+            PresentPassiveParticipleFormation::IotatedEm
         );
     }
 }

@@ -829,6 +829,7 @@ fn present_passive_participle(
     let adjectival_stem = match formation {
         PresentPassiveParticipleFormation::Im => format!("{stem}им"),
         PresentPassiveParticipleFormation::Em => format!("{stem}ем"),
+        PresentPassiveParticipleFormation::IotatedEm => format!("{stem}ѥм"),
         PresentPassiveParticipleFormation::Om => format!("{stem}ом"),
     };
     decline_passive_participle(

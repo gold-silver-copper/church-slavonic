@@ -745,6 +745,7 @@ fn metadata_coverage(registry: &Registry) -> BTreeMap<String, usize> {
         "present-passive-participle/formation",
         "present-passive-participle/formation=im",
         "present-passive-participle/formation=em",
+        "present-passive-participle/formation=iotated-em",
         "present-passive-participle/formation=om",
         "past-active-participle/stem",
         "past-active-participle/formation",
@@ -1647,6 +1648,9 @@ fn participle_rule_slice(lexeme: &VerbLexeme, kind: ParticipleKind) -> &'static 
         ParticipleKind::PresentPassive => match lexeme.formations.present_passive_participle {
             Some(PresentPassiveParticipleFormation::Im) => "verb-present-passive-participle-im",
             Some(PresentPassiveParticipleFormation::Em) => "verb-present-passive-participle-em",
+            Some(PresentPassiveParticipleFormation::IotatedEm) => {
+                "verb-present-passive-participle-iotated-em"
+            }
             Some(PresentPassiveParticipleFormation::Om) => "verb-present-passive-participle-om",
             None => "verb-present-passive-participle-missing-formation",
         },

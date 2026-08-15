@@ -628,9 +628,18 @@ fn validate_metadata_code(system: &str, field: &str, value: &str) -> Result<(), 
         ),
         ("imperative", "formation") => matches!(value, "i-series" | "yat-series"),
         ("present-active-participle", "formation") => {
-            matches!(value, "yusht-hard" | "yusht-soft" | "yesht-soft")
+            matches!(
+                value,
+                "yusht-hard"
+                    | "yusht-soft"
+                    | "yesht-soft"
+                    | "mixed-yusht-soft"
+                    | "iotated-yusht-soft"
+            )
         }
-        ("present-passive-participle", "formation") => matches!(value, "im" | "em" | "om"),
+        ("present-passive-participle", "formation") => {
+            matches!(value, "im" | "em" | "iotated-em" | "om")
+        }
         ("past-active-participle", "formation") => matches!(
             value,
             "ush" | "ish" | "vush" | "vush-after-j-deletion" | "vush-after-ov-to-u"

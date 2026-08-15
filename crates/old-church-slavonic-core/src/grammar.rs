@@ -361,6 +361,8 @@ pub enum PresentActiveParticipleFormation {
 pub enum PresentPassiveParticipleFormation {
     Im,
     Em,
+    /// Iotated `-ѥм-` after a surface vowel stem (`плюѥмъ`, `поѥмъ`).
+    IotatedEm,
     Om,
 }
 

@@ -439,16 +439,16 @@ subtypes = ["root", "athematic", "suppletive", "motion", "impersonal", "defectiv
 realization = "synthetic-or-analytic"
 state = "partial"
 implementation_kind = "exact-and-override-partial"
-rule_ids = ["V-IRREG-EXACT-01", "V-PTCP-PRES-ACT-01"]
+rule_ids = ["V-IRREG-EXACT-01", "V-IMPF-PRESENT-01", "V-PTCP-PRES-ACT-01", "V-PTCP-PRES-PASS-01"]
 sources = ["polivanova-fup-2023", "lunt-ocs-grammar-2001", "love-lmu-ocs-verbs", "gorazd", "english-wiktionary-ocs-kaikki-2026-08-07"]
-citation = "Polivanova 2023 §§417 and 516–605 close nineteen unique profiles and their 106-member dictionary family union; official LOVe principal parts independently crosscheck the reconstructable irregular workstems."
+citation = "Polivanova 2023 §§417, 434–454, and 516–605 close nineteen unique profiles, their 106-member dictionary family union, and thirteen reusable irregular-workstem groups with seventy source anchors; official LOVe principal parts independently crosscheck the reconstructable workstems and expose lexical-analysis conflicts."
 required_metadata = ["stable identity", "all principal parts", "defective inventory", "exact/suppletive cells", "source provenance"]
 valid_inventory = "Must be enumerated per lexeme and reusable irregular family."
 invalid_inventory = "Cells excluded by lexical defectiveness."
-implementation = ["crates/old-church-slavonic-core/src/unique_verb.rs", "crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic/src/resolver.rs", "data/overrides.tsv"]
-tests = ["crates/old-church-slavonic-core/src/unique_verb.rs#all_nineteen_source_present_goldens_are_exact", "crates/old-church-slavonic-core/src/unique_verb.rs#every_profile_cell_is_realized_or_explicitly_defected", "crates/old-church-slavonic-core/src/unique_verb.rs#family_union_has_exact_source_counts_order_and_no_overlap", "crates/old-church-slavonic-core/src/unique_verb.rs#every_source_family_cell_is_realized_or_explicitly_defected", "crates/old-church-slavonic-core/src/unique_verb.rs#family_allomorphs_and_source_specific_defects_are_exact", "crates/old-church-slavonic/tests/public_api.rs#reviewed_override_follows_exact_table_and_keeps_authority"]
-evidence_status = "closed nineteen-profile and 106-member source-family union with typed source gaps; reusable workstem groups and facade partial"
-gap = "Crosswalk Polivanova's reusable irregular workstem groups and impersonal verbs, then attach per-cell facade provenance without merging independent ѥсмь and бꙑти analyses."
+implementation = ["crates/old-church-slavonic-core/src/unique_verb.rs", "crates/old-church-slavonic-core/src/irregular_verb.rs", "crates/old-church-slavonic-core/src/verb.rs", "crates/old-church-slavonic/src/resolver.rs", "data/overrides.tsv"]
+tests = ["crates/old-church-slavonic-core/src/unique_verb.rs#all_nineteen_source_present_goldens_are_exact", "crates/old-church-slavonic-core/src/unique_verb.rs#every_source_family_cell_is_realized_or_explicitly_defected", "crates/old-church-slavonic-core/src/irregular_verb.rs#group_and_family_anchor_inventories_are_closed_and_nonoverlapping", "crates/old-church-slavonic-core/src/irregular_verb.rs#representative_profiles_match_table_454_key_forms", "crates/old-church-slavonic-core/src/irregular_verb.rs#representative_workstem_distribution_reaches_every_cell", "crates/old-church-slavonic/tests/public_api.rs#reviewed_override_follows_exact_table_and_keeps_authority"]
+evidence_status = "closed nineteen-profile and 106-member unique-family union plus thirteen complete reusable group representatives and seventy source anchors; group members, impersonals, and facade partial"
+gap = "Expand the seventy irregular-workstem anchors over their member and prefix allomorphs, crosswalk impersonal verbs, and attach per-cell facade provenance without collapsing disputed analyses or independent ѥсмь and бꙑти profiles."
 
 [[system]]
 id = "ocs.verb.analytic"
