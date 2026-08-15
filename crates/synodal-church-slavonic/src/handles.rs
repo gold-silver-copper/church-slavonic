@@ -96,7 +96,14 @@ impl Capabilities {
                             && metadata.present_first_singular.is_some()
                             && metadata.present_third_plural.is_some()
                     })),
-            future: verb && registry::has_exact_system(id, "future:"),
+            future: verb
+                && (registry::has_exact_system(id, "future:")
+                    || verb_metadata.as_ref().is_some_and(|metadata| {
+                        metadata.aspect == Aspect::Perfective
+                            && metadata.present_stem.is_some()
+                            && metadata.present_first_singular.is_some()
+                            && metadata.present_third_plural.is_some()
+                    })),
             past: verb && registry::has_exact_system(id, "past:"),
             imperfect: verb
                 && (registry::has_exact_system(id, "imperfect:")

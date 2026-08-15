@@ -1,7 +1,7 @@
 use synodal_church_slavonic_core::{
     DeterminerLexeme, Error, FiniteTense, FormSet, GrammarCell, NounLexeme, NumeralLexeme,
     OrthographyProfile, PronounLexeme, Result, VerbLexeme, aorist, decline_adjective,
-    decline_determiner, decline_noun, decline_numeral, decline_participle, decline_pronoun,
+    decline_determiner, decline_noun, decline_numeral, decline_participle, decline_pronoun, future,
     imperative, imperfect, infinitive, l_participle, present,
 };
 
@@ -41,9 +41,7 @@ pub(crate) fn generate_productive(
         }
         (ProductiveLexeme::Verb(lexeme), GrammarCell::FiniteVerb(cell)) => match cell.tense {
             FiniteTense::Present => present(lexeme, cell.person, cell.number, profile),
-            FiniteTense::Future => Err(Error::UnsupportedCell {
-                reason: "a simple future must have an exact reviewed normative paradigm".into(),
-            }),
+            FiniteTense::Future => future(lexeme, cell.person, cell.number, profile),
             FiniteTense::Past => Err(Error::UnsupportedCell {
                 reason: "an underspecified finite past must have exact reviewed evidence".into(),
             }),

@@ -2479,10 +2479,10 @@
       "abstained": 0
     },
     "future": {
-      "total": 60,
-      "returned": 60,
-      "top_1_correct": 57,
-      "top_k_correct": 60,
+      "total": 61,
+      "returned": 61,
+      "top_1_correct": 58,
+      "top_k_correct": 61,
       "abstained": 0
     },
     "imperative": {
@@ -2556,10 +2556,10 @@
       "abstained": 0
     },
     "present": {
-      "total": 58,
-      "returned": 58,
-      "top_1_correct": 57,
-      "top_k_correct": 58,
+      "total": 57,
+      "returned": 57,
+      "top_1_correct": 56,
+      "top_k_correct": 57,
       "abstained": 0
     },
     "pronoun": {

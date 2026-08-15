@@ -44,7 +44,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `adjective` | 106 | 102 | 106 | 0 | 106 |
 | `aorist` | 134 | 133 | 134 | 0 | 134 |
 | `determiner` | 20 | 19 | 20 | 0 | 20 |
-| `future` | 60 | 57 | 60 | 0 | 60 |
+| `future` | 61 | 58 | 61 | 0 | 61 |
 | `imperative` | 57 | 55 | 57 | 0 | 57 |
 | `imperfect` | 27 | 25 | 27 | 0 | 27 |
 | `indeclinable` | 76 | 70 | 76 | 0 | 76 |
@@ -55,7 +55,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `numeral` | 20 | 19 | 20 | 0 | 20 |
 | `participle` | 73 | 73 | 73 | 0 | 73 |
 | `past` | 70 | 66 | 70 | 0 | 70 |
-| `present` | 58 | 57 | 58 | 0 | 58 |
+| `present` | 57 | 56 | 57 | 0 | 57 |
 | `pronoun` | 99 | 97 | 99 | 0 | 99 |
 
 ## Expanded accuracy by provenance path

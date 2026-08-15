@@ -396,7 +396,7 @@ impl VerbLexeme {
     pub fn missing_principal_parts(&self, system: VerbSystem) -> Vec<MetadataField> {
         let mut missing = Vec::new();
         match system {
-            VerbSystem::Finite(crate::FiniteTense::Present) => {
+            VerbSystem::Finite(crate::FiniteTense::Present | crate::FiniteTense::Future) => {
                 if self.present_stem.is_none() {
                     missing.push(MetadataField::PresentStem);
                 }
@@ -423,8 +423,7 @@ impl VerbLexeme {
                     missing.push(MetadataField::AoristFormation);
                 }
             }
-            VerbSystem::Finite(crate::FiniteTense::Future | crate::FiniteTense::Past)
-            | VerbSystem::Infinitive => {}
+            VerbSystem::Finite(crate::FiniteTense::Past) | VerbSystem::Infinitive => {}
             VerbSystem::Imperative => {
                 if self.imperative_stem.is_none() {
                     missing.push(MetadataField::ImperativeStem);
@@ -934,6 +933,50 @@ pub fn present(
     number: Number,
     profile: OrthographyProfile,
 ) -> Result<FormSet> {
+    let text = present_shape(lexeme, person, number)?;
+    normative(
+        text,
+        "SYN-VERB-PRESENT-ALYPY-80",
+        profile,
+        "present",
+        lexeme.lemma.canonical(),
+    )
+}
+
+/// Realizes the Alypy §84 simple future. Its morphology is the complete
+/// present-shaped person × number paradigm, but only independently classified
+/// perfective verbs license that temporal interpretation productively.
+pub fn future(
+    lexeme: &VerbLexeme,
+    person: Person,
+    number: Number,
+    profile: OrthographyProfile,
+) -> Result<FormSet> {
+    match lexeme.aspect {
+        Aspect::Unknown => {
+            return Err(Error::MissingMetadata {
+                field: MetadataField::Aspect,
+            });
+        }
+        Aspect::Imperfective | Aspect::Biaspectual => {
+            return Err(Error::EvidenceIncompleteCell {
+                field: MetadataField::Aspect,
+                reason: "Alypy §84 and Pletneva–Kravetsky lesson 13 require contextual or exact evidence before a non-perfective present-shaped form can be typed as future"
+                    .into(),
+            });
+        }
+        Aspect::Perfective => {}
+    }
+    normative(
+        present_shape(lexeme, person, number)?,
+        "SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84",
+        profile,
+        "simple-future",
+        lexeme.lemma.canonical(),
+    )
+}
+
+fn present_shape(lexeme: &VerbLexeme, person: Person, number: Number) -> Result<String> {
     let cell = FiniteVerbCell {
         tense: FiniteTense::Present,
         person,
@@ -957,13 +1000,7 @@ pub fn present(
             join(stem.canonical(), present_ending(lexeme.conjugation, cell)?)
         }
     };
-    normative(
-        text,
-        "SYN-VERB-PRESENT-ALYPY-80",
-        profile,
-        "present",
-        lexeme.lemma.canonical(),
-    )
+    Ok(text)
 }
 
 pub fn aorist(
@@ -3191,6 +3228,9 @@ fn normative_citation(rule: &str) -> &'static str {
             "Alypy (Gamanovich), §47 на(н)и/въ(н)и contractions"
         }
         "SYN-VERB-PRESENT-ALYPY-80" => "Alypy (Gamanovich), §§79–80",
+        "SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84" => {
+            "Alypy (Gamanovich), §84 simple future of perfective verbs"
+        }
         "SYN-VERB-AORIST-VOWEL-ALYPY-86" | "SYN-VERB-AORIST-CONSONANT-ALYPY-86" => {
             "Alypy (Gamanovich), §86"
         }
@@ -4588,6 +4628,82 @@ mod tests {
             .expect("third plural")
             .primary_text(),
             "несꙋтъ"
+        );
+    }
+
+    #[test]
+    fn simple_future_is_the_complete_perfective_present_shape() {
+        let present_lexeme = regular_verb();
+        let mut future_lexeme = present_lexeme.clone();
+        future_lexeme.lemma = word("понести");
+        future_lexeme.aspect = Aspect::Perfective;
+
+        for number in Number::ALL {
+            for person in Person::ALL {
+                let present_form = present(
+                    &present_lexeme,
+                    person,
+                    number,
+                    OrthographyProfile::Expanded,
+                )
+                .expect("complete present-shaped source paradigm");
+                let future_form =
+                    future(&future_lexeme, person, number, OrthographyProfile::Expanded)
+                        .expect("Alypy §84 perfective simple future");
+                assert_eq!(
+                    future_form.texts().collect::<Vec<_>>(),
+                    present_form.texts().collect::<Vec<_>>()
+                );
+                assert!(future_form.variants().iter().all(|variant| {
+                    matches!(
+                        &variant.source,
+                        FormSource::SynodalNormativeGeneration { rule }
+                            if rule.as_str() == "SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84"
+                    )
+                }));
+            }
+        }
+
+        assert!(matches!(
+            future(
+                &present_lexeme,
+                Person::Third,
+                Number::Singular,
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::EvidenceIncompleteCell {
+                field: MetadataField::Aspect,
+                ..
+            })
+        ));
+
+        let mut biaspectual = present_lexeme.clone();
+        biaspectual.aspect = Aspect::Biaspectual;
+        assert!(matches!(
+            future(
+                &biaspectual,
+                Person::Third,
+                Number::Singular,
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::EvidenceIncompleteCell {
+                field: MetadataField::Aspect,
+                ..
+            })
+        ));
+
+        let mut unknown = present_lexeme;
+        unknown.aspect = Aspect::Unknown;
+        assert_eq!(
+            future(
+                &unknown,
+                Person::Third,
+                Number::Singular,
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::MissingMetadata {
+                field: MetadataField::Aspect,
+            })
         );
     }
 

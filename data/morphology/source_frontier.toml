@@ -563,11 +563,38 @@ authority_justification = "Principal pinned normative anchor for the target Syno
 license = "Ponomar site and underlying edition notices must be preserved"
 redistribution = "evaluation-only"
 upstream_lineage = ["Alypy 1991 edition", "Ponomar corrected web transcription"]
-reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–104", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
+reviewed_sections = ["§§1–5", "§§33–44", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–83 present formation and lexical principal parts", "§84 simple future and contextual exceptions", "§85 compound future", "§§86–104 remaining verb systems and irregular inventory", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
 rule_ids = ["SYN-*"]
-impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Supine, verbal-noun, accent, and wider analytic reviews stay open."
+impact = "Defines all currently admitted Synodal productive rules. In particular, §§58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Section 84 closes productive simple-future morphology as the complete present-shaped paradigm of independently typed perfective verbs, while preserving its listed contextual non-perfective exceptions as exact evidence; §§81, 103, and 104 supply irregular future cells. Supine, verbal-noun, accent, and wider analytic reviews stay open."
 conflicts = ["Lexeme-specific variants must not be generalized to a class."]
 access_status = "pinned-local"
+
+[[source]]
+id = "pletneva-kravetsky-church-slavonic-2005"
+title = "Учебное руководство по церковнославянскому языку"
+author_editor = "A. A. Pletneva and A. G. Kravetsky"
+edition_revision = "Moscow 2005 edition, 272 pages, ISBN 5-88017-079-9; full-text web transcription and official institute PDF"
+publication_date = "2005"
+publisher_institution = "Publishing Council of the Russian Orthodox Church; bibliographic record and PDF hosted by the Vinogradov Russian Language Institute"
+stable_url = "https://ruslang.ru/book/pletneva-g-kraveckiy-cerkovnoslavyanskiy-yazyk"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["Russian", "Church Slavonic"]
+periods = ["modern Russian-recension Church Slavonic"]
+recensions = ["synodal-russian"]
+orthographies = ["Synodal printed Church Slavonic"]
+source_type = "scholarly teaching grammar with primary-text exercises"
+epistemic_roles = ["morphological-crosscheck", "aspectual-semantic-boundary", "construction-inventory", "primary-text-example-index"]
+authority_tier = 2
+authority_justification = "The authors are Church Slavonic researchers at the Vinogradov Russian Language Institute; the manual explicitly targets the Russian Orthodox Church's liturgical language and derives its examples from the Slavonic Bible and service books."
+license = "copyrighted teaching grammar; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Slavonic Bible", "Russian Orthodox liturgical books"]
+reviewed_sections = ["lesson 13 simple future", "lesson 13 compound future table 36"]
+rule_ids = ["SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84", "SYN-PHRASE-FUTURE-ALYPY-85", "SYN-PHRASE-WIDER-PENDING"]
+impact = "Independently confirms that simple future and present share one complete person/number ending series and that perfective aspect is the productive future cue, while warning that Church Slavonic also assigns future readings contextually to some formally present imperfective forms. This establishes productive perfective generation and requires non-perfective simple-future readings to remain exact/evidence-bound. Its complete compound-future table also inventories имати, хотѣти, начати, and быти for the wider analytic review."
+conflicts = ["The manual describes the aspect/tense association as a tendency rather than an exceptionless law; the implementation therefore does not extrapolate future readings for non-perfective verbs without exact contextual evidence."]
+access_status = "accessible-full-text"
 
 [[source]]
 id = "deschler-liturgical-slavonic-2018"
@@ -879,3 +906,21 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "Alypy §§61–70 and the appendix were reviewed end to end and independently crosschecked against the LMU reference grammar's numeral hierarchy. Focused scans of the locked target union changed the implementation: ordinary thousands now take complete lower-cardinal multipliers; distributed thousand heads remain correlated alternatives; тысѧща uses the target hard second-declension outputs; neuter два is preserved beside Alypy's двѣ in directly attested cells; and III Esdras adds exact полдесѧтыѧ plus a complete productive hard-adjective fractional profile. The French Deschler handbook is an eligible modern-liturgical crosscheck, but only publisher metadata and its Les noms de nombre chapter listing were accessible, so it contributes no rule claim. This contract-changing pass does not count toward source-frontier convergence."
+
+[[discovery_pass]]
+id = "synodal-future-frontier-pass-9"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "German", "French", "Church Slavonic"]
+queries = [
+  "церковнославянский язык простое будущее время совершенный вид",
+  "Church Slavonic simple future perfective present forms grammar",
+  "Kirchenslawisch Futur perfektive Verben Präsensformen Grammatik",
+  "slavon liturgique futur simple verbes perfectifs grammaire",
+]
+catalogs = ["Ponomar Alypy grammar", "Vinogradov Russian Language Institute", "Azbyka full-text library", "LMU/UZH Punčo Digital Editions", "multilingual scholarly discovery indexes"]
+new_sources = ["pletneva-kravetsky-church-slavonic-2005"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "Alypy §§84–85 were reread against the independently authored Pletneva–Kravetsky lesson 13 and the locked exact future inventory. The sources agree on a complete present-shaped nine-cell simple future and on perfective aspect as its productive cue, but Pletneva–Kravetsky explicitly cautions that the association is contextual rather than exceptionless. The engine now generates every perfective cell from independently supplied present-shaped principal parts, preserves non-perfective contextual readings only as exact evidence, and reclassifies Alypy §103's complete да́ти table from the misleading present key to future. This contract-changing pass does not count toward source-frontier convergence."

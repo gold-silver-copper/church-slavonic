@@ -855,23 +855,23 @@ recension = "synodal-russian"
 category = "finite-verb"
 part_of_speech = "verb"
 scope = "Simple future and lexeme-specific future paradigms."
-profiles = ["expanded", "liturgical"]
-features = ["tense=future", "person=3", "number=3", "formation=simple|suppletive"]
-subtypes = ["simple-future", "suppletive-future"]
+profiles = ["abstract", "expanded", "expanded-accentless", "liturgical"]
+features = ["tense=future", "person=3", "number=3", "formation=perfective-present-shape|exact-contextual|suppletive", "aspect=typed"]
+subtypes = ["perfective-simple-future", "contextual-present-shaped-future", "suppletive-future"]
 verb_systems = ["finite:future"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "exact-only-partial"
-rule_ids = ["SYN-VERB-FUTURE-EXACT", "SYN-VERB-FUTURE-PRODUCTIVE-PENDING"]
-sources = ["alypy-gamanovich-grammar-web-2023", "synodal-target-text-union"]
-citation = "Current engine has the exact nine-cell simple future of быти but no general future formation."
-required_metadata = ["stable identity", "future formation", "future principal parts or complete irregular table"]
-valid_inventory = "3 persons × singular/dual/plural where licensed."
-invalid_inventory = "Inferring future from present or aspect alone."
-implementation = ["crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic-core/src/grammar.rs"]
-tests = ["crates/synodal-church-slavonic/src/lib.rs#byti_future_is_an_exact_normative_table"]
-evidence_status = "one complete exact irregular table and sparse exact cells"
-gap = "Determine the source-defined productive/simple-future classes and complete all irregular future inventories."
+state = "productive-complete"
+implementation_kind = "productive-present-shape-with-exact-contextual-and-irregular-overrides"
+rule_ids = ["SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84", "SYN-VERB-FUTURE-EXACT", "SYN-REGISTRY-IRREGULAR-OVERRIDE"]
+sources = ["alypy-gamanovich-grammar-web-2023", "pletneva-kravetsky-church-slavonic-2005", "synodal-target-text-union"]
+citation = "Alypy §§84–85; Pletneva and Kravetsky lesson 13; Alypy §§81, 103–104 irregular tables; locked target texts"
+required_metadata = ["stable identity", "aspect", "complete independently supplied present-shaped principal parts, or a complete exact irregular table", "exact contextual evidence for a non-perfective simple-future reading"]
+valid_inventory = "Every person × singular/dual/plural cell of an independently classified perfective verb; complete exact suppletive tables; and exact cell-specific contextual future readings for imperfective or biaspectual verbs."
+invalid_inventory = "Unknown aspect; missing 1sg, medial stem, or 3pl principal part; non-perfective future typing without contextual/exact evidence; and incomplete irregular overrides."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/spec.rs", "crates/synodal-church-slavonic/src/resolver.rs", "data/synodal/exact_forms.tsv"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#simple_future_is_the_complete_perfective_present_shape", "crates/synodal-church-slavonic/src/spec.rs#perfective_spec_exposes_the_complete_productive_simple_future", "crates/synodal-church-slavonic/src/lib.rs#byti_future_is_an_exact_normative_table", "crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems"]
+evidence_status = "normative productive prediction for perfectives; exact provenance for contextual and irregular cells"
+rationale = "The sources agree that simple-future morphology is the present-shaped nine-cell series. Perfective aspect licenses the complete productive temporal interpretation, while the documented non-perfective/contextual exceptions fail as evidence-incomplete unless an exact override supplies that reading. The complete быти and да́ти futures and all reviewed sparse irregular cells retain exact-first precedence."
 
 [[system]]
 id = "syn.verb.past-underspecified"

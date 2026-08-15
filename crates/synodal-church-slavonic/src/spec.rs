@@ -2096,6 +2096,42 @@ mod tests {
     }
 
     #[test]
+    fn perfective_spec_exposes_the_complete_productive_simple_future() {
+        let verb = VerbSpec::builder(
+            "понести",
+            Aspect::Perfective,
+            VerbConjugation::FirstUnpalatalized,
+            source(),
+        )
+        .expect("builder")
+        .present_series("понес", "понесꙋ", "понесꙋтъ")
+        .expect("complete present-shaped principal parts")
+        .build()
+        .expect("perfective verb");
+
+        assert!(
+            verb.missing_principal_parts(VerbSystem::Finite(FiniteTense::Future))
+                .is_empty()
+        );
+        let future = verb.finite_paradigm(FiniteTense::Future);
+        assert_eq!(future.iter().count(), 9);
+        assert_eq!(future.successes().count(), 9);
+        assert_eq!(future.failures().count(), 0);
+        assert_eq!(
+            verb.form(GrammarCell::FiniteVerb(
+                synodal_church_slavonic_core::FiniteVerbCell {
+                    tense: FiniteTense::Future,
+                    person: Person::Third,
+                    number: Number::Singular,
+                }
+            ))
+            .expect("productive simple future")
+            .primary_text(),
+            "понесетъ"
+        );
+    }
+
+    #[test]
     fn unsupported_productive_verb_systems_fail_honestly() {
         let verb = VerbSpec::builder(
             "нести",

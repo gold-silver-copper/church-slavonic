@@ -114,6 +114,7 @@ reusable accent paradigm; expanded rules never invent stress.
 | Composed cardinals and ordinals | `SYN-NUMERAL-{CARDINAL,ORDINAL}-*-ALYPY-{63,64,68}` | Alypy §§63–64, 68 and appendix | correlated teen, tens, hundreds, ordinary-thousands, named-magnitude, additive, and compound-ordinal analyses; cardinals 1–1,000,000 and ordinals 1–1,000 |
 | Numeral government and phrases | `SYN-NUMERAL-{GOVERNMENT,DISTRIBUTIVE,MULTIPLICATIVE,FRACTION}-*` | Alypy §§61, 65–70; locked target texts | typed following/preceding agreement and government; repeated distributives; invariant `кратъ`; cardinal, ordinal, and `полдесѧтый` expressions with inflected `часть` |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
+| Simple future | `SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84` | Alypy §84; Pletneva–Kravetsky lesson 13 | perfective aspect plus the same independently supplied full 1sg, medial present stem, and 3pl; contextual non-perfective readings require exact evidence |
 | Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
 | Imperative | `SYN-VERB-IMPERATIVE-ALYPY-93` | Alypy §93 | independent base and `first-unpalatalized`/`i-series` formation |
@@ -127,6 +128,27 @@ Every productive variant carries `alypy-gamanovich-grammar-web-2023` as
 normative evidence and the rule ID as its exact citation. The core accepts these
 rules only from explicit metadata. The facade adds target lexeme resolution,
 exact-table precedence, accent metadata, irregular overrides, and mapping policy.
+
+## Complete simple-future contract
+
+Alypy §84 and Pletneva–Kravetsky lesson 13 independently establish that the
+simple future has no separate endings: it uses the complete present-shaped
+person × singular/dual/plural paradigm. `future`, `Verb::future`, and
+`VerbSpec::finite_paradigm(FiniteTense::Future)` therefore reuse the same three
+independent lexical inputs as the present system—the complete first singular,
+the medial stem, and the complete third plural—but classify their output under
+`SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84` only for a lexeme explicitly typed as
+perfective.
+
+The same sources document contextual future readings of formally present
+imperfective forms. Those cannot be predicted from aspect or shape alone:
+without a reviewed exact override they return `EvidenceIncompleteCell`. Unknown
+aspect returns `MissingMetadata`; missing present-shaped principal parts retain
+their specific `MissingPrincipalPart` failures. Exact future cells always win
+before productive generation. The registry includes complete exact nine-cell
+suppletive futures for `быти` and archaic `дати`; `дати` is no longer
+misclassified as a present table. Other irregular or contextual cells retain
+their own source evidence and do not license unattested siblings.
 
 ## Complete pronoun contract
 
@@ -289,8 +311,8 @@ paradigm for `той`; reviewed exact cells for `сей`, `иже`, `кто`, `�
 exceptional determiner cell; representative active/passive participle cells for
 `нести`; the first-, second-, and complete gendered third-person
 personal-pronoun paradigms; and the
-complete reviewed present, imperative, and aorist tables of archaic `дати` from
-Alypy §103. The determiner registry also has complete productive backgrounds
+complete reviewed simple-future, imperative, and aorist tables of archaic
+`дати` from Alypy §103. The determiner registry also has complete productive backgrounds
 for `самъ`/`самый`, mixed dual-less `весь`, short/full dual-less
 `всѧкъ`/`всѧкїй`, and full `всѧческїй`; its older exact rows remain
 higher-precedence spelling, accent, and attestation evidence.

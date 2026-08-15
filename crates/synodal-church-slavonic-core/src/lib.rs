@@ -47,8 +47,8 @@ pub use morphology::{
     ActiveParticipleShortFormation, AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect,
     ComparisonFormation, ImperativeFormation, ImperfectFormation, NounDeclension, NounLexeme,
     NounNumberInventory, ParticiplePrincipalPart, PresentPrincipalParts, VerbConjugation,
-    VerbLexeme, aorist, decline_adjective, decline_noun, decline_participle, imperative, imperfect,
-    infinitive, l_participle, present, validate_noun_lexeme,
+    VerbLexeme, aorist, decline_adjective, decline_noun, decline_participle, future, imperative,
+    imperfect, infinitive, l_participle, present, validate_noun_lexeme,
 };
 pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
 pub use numeral_morphology::{

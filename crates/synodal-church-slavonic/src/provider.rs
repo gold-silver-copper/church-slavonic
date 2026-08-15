@@ -512,7 +512,11 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
                 present: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Present,
                 )) || exact_finite(synodal_church_slavonic_core::FiniteTense::Present),
-                future: exact_finite(synodal_church_slavonic_core::FiniteTense::Future),
+                future: (verb.lexeme.aspect == synodal_church_slavonic_core::Aspect::Perfective
+                    && complete(VerbSystem::Finite(
+                        synodal_church_slavonic_core::FiniteTense::Future,
+                    )))
+                    || exact_finite(synodal_church_slavonic_core::FiniteTense::Future),
                 past: exact_finite(synodal_church_slavonic_core::FiniteTense::Past),
                 imperfect: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Imperfect,

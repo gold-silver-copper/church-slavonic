@@ -181,6 +181,10 @@ pub fn present(lemma: &str, person: Person, number: Number) -> Result<FormSet> {
     Verb::resolve(lemma)?.present(person, number)
 }
 
+pub fn future(lemma: &str, person: Person, number: Number) -> Result<FormSet> {
+    Verb::resolve(lemma)?.future(person, number)
+}
+
 pub fn imperfect(lemma: &str, person: Person, number: Number) -> Result<FormSet> {
     Verb::resolve(lemma)?.imperfect(person, number)
 }
@@ -1088,7 +1092,10 @@ mod tests {
         let unsupported = Verb::resolve("нести")
             .expect("known verb")
             .future(Person::Third, Number::Singular);
-        assert!(matches!(unsupported, Err(Error::UnsupportedCell { .. })));
+        assert!(matches!(
+            unsupported,
+            Err(Error::EvidenceIncompleteCell { .. })
+        ));
     }
 
     #[test]
@@ -1556,12 +1563,20 @@ mod tests {
 
         let dati = Verb::resolve("дати").expect("reviewed archaic verb");
         assert!(dati.capabilities().participle);
+        assert!(!dati.capabilities().present);
+        assert!(dati.capabilities().future);
         assert_eq!(
-            dati.present(Person::Third, Number::Singular)
+            dati.future(Person::Third, Number::Singular)
                 .expect("reviewed simple-future table")
                 .primary_text(),
             "дастъ"
         );
+        assert!(matches!(
+            dati.present(Person::Third, Number::Singular),
+            Err(Error::MissingPrincipalPart {
+                field: MetadataField::PresentStem,
+            })
+        ));
 
         let exact_past = Verb::from_id(&LexemeId::from("synodal:verb:wikt-78da2d05497d"))
             .expect("reviewed exact-past verb");
