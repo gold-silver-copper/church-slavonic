@@ -3,6 +3,7 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum RuleId {
     OrthographyReconstructedAccent,
+    OrthographyGlagoliticJagic,
     NounOMasculineHard,
     NounONeuterHard,
     NounJoMasculineSoft,
@@ -124,6 +125,7 @@ impl RuleId {
     pub const fn code(self) -> &'static str {
         match self {
             Self::OrthographyReconstructedAccent => "OCS-ACCENT-RECON-01",
+            Self::OrthographyGlagoliticJagic => "OCS-GLAG-JAGIC-01",
             Self::NounOMasculineHard => "N-O-M-HARD-01",
             Self::NounONeuterHard => "N-O-N-HARD-01",
             Self::NounJoMasculineSoft => "N-JO-M-SOFT-01",

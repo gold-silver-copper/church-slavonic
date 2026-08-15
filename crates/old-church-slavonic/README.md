@@ -21,6 +21,14 @@ Every raw lemma goes through `Lemma::parse`: input is NFC-normalized, historical
 characters and diacritics are preserved, Cyrillic and Glagolitic are detected,
 and empty, mixed-script, markup-bearing, or malformed input is rejected.
 
+Inflection remains canonical Cyrillic unless the caller explicitly composes
+`realize_glagolitic` after morphology. Its normalized Jagić/TN41 profile preserves
+the reversible shared alphabet and requires an explicit report-or-reject policy
+for Cyrillic distinctions without a unique Glagolitic counterpart. Existing
+Glagolitic input remains unchanged; the function does not claim diplomatic
+manuscript transcription. `realize_glagolitic_variants` preserves every ordered
+`FormSet` alternative.
+
 ## Resolve once
 
 Use a handle when several cells belong to the same unambiguous dictionary identity:

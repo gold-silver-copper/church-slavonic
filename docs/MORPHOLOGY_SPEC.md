@@ -878,6 +878,37 @@ lexeme, with no grave, kamora, or dasia rows. Those 252 rows remain exact
 dictionary evidence and are never generalized into an OCS-wide accent or
 breathing rule.
 
+### Normalized Glagolitic realization
+
+`OCS-GLAG-JAGIC-01` is the explicit presentation layer for productive
+Glagolitic. `realize_glagolitic` accepts a complete generated Cyrillic word and
+applies the Jagić 1879 correspondence reproduced in Unicode TN41 revision 1,
+Appendix A; it never runs inside a stem-and-ending rule. The shared alphabet and
+the distinct `ꙑ`/`ы` yer-plus-i sequences are reversible. Existing Glagolitic
+input is returned unchanged so a source-backed exact form can retain precedence,
+but unchanged caller input acquires no attestation claim.
+
+The source tables also establish an asymmetric boundary: Cyrillic has letters
+or presentation variants without a unique Glagolitic code point. Polivanova
+§§132 and 866 map natural Cyrillic iotated `ꙗ` to Glagolitic a and `ѥ` to
+Glagolitic e because early Glagolitic has no matching iotated-vowel letters;
+modern `у` shares Glagolitic uk, and xi, psi, and ot require sequences. Round/ornamental o, broad
+omega, closed-yus, zemlya, and dzelo variants likewise normalize to the shared
+letter. Every such fold is either rejected by `TransliterationLossPolicy::Reject`
+or returned with an ordered scalar-indexed loss under `Report`; there is no silent
+normalization. `transliterate_glagolitic_to_cyrillic` exposes the normalized
+reverse table and treats TN41's disputed or colliding Glagolitic letters the same
+way.
+
+This is normalized scholarly script realization, not recovery of a manuscript
+hand. Later Croatian letters, abbreviations, superscripts, and breathing or
+abbreviation marks remain outside the profile and fail with
+`UnrepresentableOrthography`. The OCS palatalization mark U+0484 shown on
+Glagolitic `l`, `n`, and `r` in Polivanova §132 and neutral combining marks are
+retained. Exact source
+spellings and their dictionary provenance remain a separate, higher-precedence
+path.
+
 ### Dictionary principal-part derivation contracts
 
 All contracts run after held-cell exclusions. An available non-source diagnostic
@@ -885,8 +916,10 @@ cell must reproduce exactly; any contradiction rejects the analysis. Source orde
 sets `analysis_rank`, and every output stores authority
 `wiktionary-kaikki-2026-07-06` plus either `dictionary-principal-part` or
 `dictionary-headword-metadata` provenance. Productive metadata derivation admits
-only Cyrillic lemmas and stems because the current rules emit Cyrillic endings;
-Glagolitic remains exact-source-only rather than producing mixed-script forms.
+only Cyrillic lemmas and stems because the abstract rules emit canonical Cyrillic
+endings. A caller requests normalized Glagolitic only after the complete word has
+been generated, preventing mixed-script forms while leaving exact Glagolitic
+dictionary cells untouched.
 
 | Field/system | Admitted source and operation | Prerequisite, cross-check, and rejection policy |
 |---|---|---|
@@ -967,8 +1000,9 @@ paradigms retain every valid result and every historically invalid cell.
 - Source tables sometimes omit lexical animacy. The dictionary returns only the
   source-listed forms; the rule engine requires explicit animacy where it changes a
   masculine accusative.
-- Glagolitic display forms are never generated from Cyrillic. Only source-backed
-  Glagolitic records are returned.
+- Glagolitic is never generated implicitly during inflection. Exact source rows
+  retain precedence; an explicit post-morphology Jagić/TN41 profile realizes a
+  complete word and reports or rejects every non-reversible distinction.
 - Wiktextract repeats a combined first/second-person table on headword and form
   pages and exposes reflexive rows without a number dimension. Ordinary resolution
   classifies all 13 affected source-union spellings into four intrinsic identities

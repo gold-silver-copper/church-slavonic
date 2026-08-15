@@ -160,17 +160,19 @@ pub use old_church_slavonic_core::{
     DeterminerCell, DeterminerDeclension, DeterminerIdentity, DeterminerLexeme, DirectToTreatment,
     DistributiveCardinalAnalysis, DistributiveCardinalCell, FiniteTense, FormSet, FormSource,
     FormVariant, FractionalNumeralDeclension, FractionalNumeralIdentity, FutureInfinitiveAuxiliary,
-    FutureReferenceTense, Gender, GenderedCell, ImpersonalVerbIdentity, ImpersonalVerbStatus,
-    IndefiniteNumeralIdentity, InflectionError, InflectionWarning, InterrogativePronounIdentity,
-    IrregularAgreeingIdentity, IrregularVerbAnalysis, IrregularVerbFamilyMember,
-    IrregularVerbGroup, Lemma, LexemeSummary, LongOnlyAdjectiveIdentity,
+    FutureReferenceTense, Gender, GenderedCell, GlagoliticProfile, ImpersonalVerbIdentity,
+    ImpersonalVerbStatus, IndefiniteNumeralIdentity, InflectionError, InflectionWarning,
+    InterrogativePronounIdentity, IrregularAgreeingIdentity, IrregularVerbAnalysis,
+    IrregularVerbFamilyMember, IrregularVerbGroup, Lemma, LexemeSummary, LongOnlyAdjectiveIdentity,
     MAX_COMPOUND_ORDINAL_VALUE, MIN_COMPOUND_ORDINAL_VALUE, Number, NumeralCell, NumeralGovernment,
     OrdinalComposition, OrdinalNumeralIdentity, OrdinalPhraseAnalysis, PartOfSpeech,
     ParticipleKind, PassiveAuxiliary, Person, PersonalPronounCell, PersonalPronounIdentity,
     PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, PronominalFamilySpec,
     PronominalPostpositive, PronominalPrefix, PronounFormSelection, RealizedCardinal,
     RealizedDistributiveCardinal, RealizedOrdinal, RealizedPhrase, ReconstructedAccent,
-    RequestedCell, Script, StandardPronominalIdentity, UngenderedCell, UniqueVerbFamilyMember,
+    RequestedCell, Script, StandardPronominalIdentity, TransliteratedForm,
+    TransliterationDirection, TransliterationFidelity, TransliterationLoss,
+    TransliterationLossKind, TransliterationLossPolicy, UngenderedCell, UniqueVerbFamilyMember,
     UniqueVerbIdentity, UniqueVerbProfileKind, VariantPolicy, VariantSelectionError,
 };
 pub use paradigm::{
@@ -281,6 +283,93 @@ pub fn reconstruct_accent(
     paradigm: &AccentParadigm,
 ) -> Result<ReconstructedAccent, InflectionError> {
     paradigm.apply(cell, form)
+}
+
+/// Realize one complete generated or exact OCS word in normalized Glagolitic.
+///
+/// Already-Glagolitic input is retained unchanged without manufacturing a
+/// source-attestation claim. Cyrillic-only distinctions are rejected or returned
+/// with ordered loss metadata according to `loss_policy`.
+///
+/// ```
+/// use old_church_slavonic::{
+///     realize_glagolitic, GlagoliticProfile, TransliterationFidelity,
+///     TransliterationLossPolicy,
+/// };
+/// let realized = realize_glagolitic(
+///     "слово",
+///     GlagoliticProfile::Jagic1879NormalizedOcs,
+///     TransliterationLossPolicy::Reject,
+/// )?;
+/// assert_eq!(realized.text(), "ⱄⰾⱁⰲⱁ");
+/// assert_eq!(realized.fidelity(), TransliterationFidelity::Reversible);
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn realize_glagolitic(
+    form: &str,
+    profile: GlagoliticProfile,
+    loss_policy: TransliterationLossPolicy,
+) -> Result<TransliteratedForm, InflectionError> {
+    old_church_slavonic_core::realize_glagolitic(form, profile, loss_policy)
+}
+
+/// Realize every ordered variant of one morphology result in normalized
+/// Glagolitic without selecting or discarding a variant.
+///
+/// The returned vector is one-to-one with [`FormSet::variants`]. Keep the
+/// original `FormSet` to inspect dictionary or productive provenance; each
+/// returned item adds only its orthographic fidelity, losses, and trace.
+///
+/// ```
+/// use old_church_slavonic::{
+///     aorist, realize_glagolitic_variants, GlagoliticProfile, Number, Person,
+///     TransliterationLossPolicy,
+/// };
+/// let forms = aorist("бꙑти", Person::First, Number::Singular)?;
+/// let realized = realize_glagolitic_variants(
+///     &forms,
+///     GlagoliticProfile::Jagic1879NormalizedOcs,
+///     TransliterationLossPolicy::Reject,
+/// )?;
+/// assert_eq!(
+///     realized.iter().map(|form| form.text()).collect::<Vec<_>>(),
+///     ["ⰱⱑⱈⱏ", "ⰱⱏⰹⱈⱏ"],
+/// );
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn realize_glagolitic_variants(
+    forms: &FormSet,
+    profile: GlagoliticProfile,
+    loss_policy: TransliterationLossPolicy,
+) -> Result<Vec<TransliteratedForm>, InflectionError> {
+    forms
+        .texts()
+        .map(|form| old_church_slavonic_core::realize_glagolitic(form, profile, loss_policy))
+        .collect()
+}
+
+/// Transliterate normalized OCS Glagolitic to the canonical Cyrillic choices
+/// of the selected profile.
+///
+/// ```
+/// use old_church_slavonic::{
+///     transliterate_glagolitic_to_cyrillic, GlagoliticProfile,
+///     TransliterationLossPolicy,
+/// };
+/// let cyrillic = transliterate_glagolitic_to_cyrillic(
+///     "ⱄⰾⱁⰲⱁ",
+///     GlagoliticProfile::Jagic1879NormalizedOcs,
+///     TransliterationLossPolicy::Reject,
+/// )?;
+/// assert_eq!(cyrillic.text(), "слово");
+/// # Ok::<(), old_church_slavonic::InflectionError>(())
+/// ```
+pub fn transliterate_glagolitic_to_cyrillic(
+    form: &str,
+    profile: GlagoliticProfile,
+    loss_policy: TransliterationLossPolicy,
+) -> Result<TransliteratedForm, InflectionError> {
+    old_church_slavonic_core::transliterate_glagolitic_to_cyrillic(form, profile, loss_policy)
 }
 
 /// Decline one dictionary noun cell.

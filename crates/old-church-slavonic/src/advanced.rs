@@ -78,10 +78,15 @@ pub mod raw_features {
 
 /// Explicit source-bounded orthographic reconstruction.
 pub mod orthography {
-    pub use crate::reconstruct_accent;
+    pub use crate::{
+        realize_glagolitic, realize_glagolitic_variants, reconstruct_accent,
+        transliterate_glagolitic_to_cyrillic,
+    };
     pub use old_church_slavonic_core::{
         AccentEvidence, AccentParadigm, AccentPlacement, AccentReconstructionStatus, AccentRule,
-        AccentScope, ReconstructedAccent,
+        AccentScope, GlagoliticProfile, ReconstructedAccent, TransliteratedForm,
+        TransliterationDirection, TransliterationFidelity, TransliterationLoss,
+        TransliterationLossKind, TransliterationLossPolicy,
     };
 }
 

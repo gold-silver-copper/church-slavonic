@@ -51,7 +51,11 @@ pub use numeral::{
     OrdinalNumeralIdentity, OrdinalPhraseAnalysis, RealizedCardinal, RealizedDistributiveCardinal,
     RealizedOrdinal,
 };
-pub use orthography::{Lemma, Script};
+pub use orthography::{
+    GlagoliticProfile, Lemma, Script, TransliteratedForm, TransliterationDirection,
+    TransliterationFidelity, TransliterationLoss, TransliterationLossKind,
+    TransliterationLossPolicy, realize_glagolitic, transliterate_glagolitic_to_cyrillic,
+};
 pub use phrase::{
     AnalyticConstruction, ConditionalAuxiliary, FutureInfinitiveAuxiliary, FutureReferenceTense,
     PassiveAuxiliary, PhraseOrder, PhraseRole, PhraseToken, PluperfectAuxiliary, RealizedPhrase,

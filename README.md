@@ -329,8 +329,10 @@ sufficient.
 `Script::Glagolitic`, and rejects empty, mixed-script, markup-bearing, or malformed
 input. Every ordinary raw-string call passes through that validation. Lookup then
 applies Unicode lowercase without stripping historical letters, accents, titla, or
-palatalization marks. Cyrillic and Glagolitic remain distinct; there is no lossy
-automatic transliteration. See
+palatalization marks. Cyrillic and Glagolitic remain distinct and transliteration is
+never automatic. The explicit `realize_glagolitic` and
+`transliterate_glagolitic_to_cyrillic` APIs use the normalized Jagić/TN41 profile;
+every non-reversible mapping is reported or rejected. See
 [docs/ORTHOGRAPHY.md](docs/ORTHOGRAPHY.md).
 
 OCS stress reconstruction is deliberately separate from canonical output. A
@@ -357,8 +359,6 @@ cargo xtask check-all
 ```
 
 The workspace also contains the offline extractor and `xtask`. It intentionally
-does not yet implement compound ordinals or the complete fractional and
-distributive numeral families, a catch-all pronoun API,
-automatic Cyrillic/Glagolitic transliteration, syntax, phrase realization,
-manuscript transcription, OCR, abbreviation expansion, or later-recension
-normalization.
+does not perform implicit script conversion, diplomatic manuscript transcription,
+OCR, or abbreviation expansion. Syntax and phrase-valued morphology use separate
+typed construction APIs rather than the single-word inflector.

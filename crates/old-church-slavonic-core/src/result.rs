@@ -296,6 +296,16 @@ pub enum InflectionError {
         system: MetadataField,
         formation: String,
     },
+    /// A validated spelling cannot be represented by the requested explicit
+    /// orthographic profile, or its representation would be lossy under a
+    /// reject-loss policy.
+    UnrepresentableOrthography {
+        input: String,
+        profile: &'static str,
+        character: char,
+        scalar_index: usize,
+        reason: String,
+    },
     HistoricallyInvalidCell {
         /// Stable dictionary ID in facade calls; caller-supplied lemma in the
         /// rule-only core, which has no dictionary identity.
@@ -411,6 +421,16 @@ impl fmt::Display for InflectionError {
             Self::UnsupportedFormation { system, formation } => {
                 write!(f, "unsupported {system:?}: {formation}")
             }
+            Self::UnrepresentableOrthography {
+                input,
+                profile,
+                character,
+                scalar_index,
+                reason,
+            } => write!(
+                f,
+                "cannot represent character {character:?} at scalar index {scalar_index} in {input:?} with orthographic profile {profile}: {reason}"
+            ),
             Self::HistoricallyInvalidCell { lexeme_id, cell } => {
                 write!(f, "historically invalid cell {cell:?} for {lexeme_id:?}")
             }

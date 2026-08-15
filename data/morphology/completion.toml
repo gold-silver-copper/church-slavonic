@@ -548,22 +548,23 @@ recension = "old-church-slavonic"
 category = "orthography"
 part_of_speech = "cross"
 scope = "Glagolitic strict specifications, inflection, and explicit transliteration profiles."
-profiles = ["glagolitic"]
-features = ["script=glagolitic", "transliteration=loss-reporting", "morphology-script=consistent"]
-subtypes = ["source-backed-exact", "productive-glagolitic", "cyrillic-glagolitic-transliteration"]
+profiles = ["source-exact-glagolitic", "jagic-1879-normalized-ocs"]
+features = ["script=glagolitic", "transliteration=reversible-shared-alphabet|loss-reporting", "loss-policy=reject|report", "morphology-script=whole-word-consistent", "provenance=input-unchanged|normalized"]
+subtypes = ["source-backed-exact", "productive-whole-word-glagolitic", "cyrillic-to-glagolitic", "glagolitic-to-cyrillic"]
 realization = "presentation"
-state = "implementation-missing"
-implementation_kind = "exact-source-only"
-rule_ids = ["OCS-GLAGOLITIC-PENDING"]
+state = "productive-complete"
+implementation_kind = "exact-first-plus-explicit-compositional-profile"
+rule_ids = ["OCS-GLAG-JAGIC-01"]
 sources = ["polivanova-fup-2023", "unicode-tn41-revision-1"]
-citation = "docs/MORPHOLOGY_SPEC.md records Glagolitic as exact-source-only to prevent mixed-script output."
-required_metadata = ["source script", "script-specific stems/endings or explicit transliteration profile"]
-valid_inventory = "Source-backed exact forms today; productive coverage not implemented."
-invalid_inventory = "Attaching Cyrillic endings to a Glagolitic stem."
-implementation = ["crates/old-church-slavonic-core/src/orthography.rs", "crates/old-church-slavonic-core/src/verb.rs"]
-tests = ["crates/old-church-slavonic/tests/public_api.rs#source_backed_glagolitic_and_hostile_inputs_are_panic_free"]
-evidence_status = "partial exact dictionary evidence"
-gap = "Establish a source-backed Glagolitic realization/transliteration contract for every productive rule."
+citation = "Polivanova §§131–133 defines the reversible Glagolitic/secondary-Cyrillic table, natural/standard allographs, palatalization marks, and manuscript boundary, while §866 explains why early Glagolitic has no matching iotated-vowel letters. Unicode TN41 revision 1 Appendix A independently identifies the classical Jagić 1879 table, its reversible core, missing combining counterparts, and rare disputed or colliding letters; docs/MORPHOLOGY_SPEC.md#normalized-glagolitic-realization defines the engine boundary."
+required_metadata = ["complete single-word morphology output or unchanged Glagolitic input", "GlagoliticProfile::Jagic1879NormalizedOcs", "TransliterationLossPolicy::Reject or Report"]
+valid_inventory = "Every letter in the productive OCS Cyrillic rule inventory, the complete shared Jagić alphabet in both cases, distinct ꙑ/ы sequences, unchanged already-Glagolitic input, the OCS palatalization mark and neutral combining marks, and explicit reported folds, expansions, or sequence collisions for Cyrillic-only distinctions."
+invalid_inventory = "Implicit transliteration during lookup or inflection; mixed-script stem-plus-ending output; silent lossy folding; diplomatic manuscript recovery; abbreviations, superscripts, breathing and abbreviation marks, and later Croatian Glagolitic outside the normalized OCS profile."
+implementation = ["crates/old-church-slavonic-core/src/orthography.rs", "crates/old-church-slavonic-core/src/result.rs", "crates/old-church-slavonic-core/src/trace.rs", "crates/old-church-slavonic/src/lib.rs", "crates/old-church-slavonic/src/advanced.rs"]
+tests = ["crates/old-church-slavonic-core/src/orthography.rs#normalized_jagic_core_is_reversible_and_complete_word_scoped", "crates/old-church-slavonic-core/src/orthography.rs#every_shared_jagic_letter_round_trips_in_both_cases", "crates/old-church-slavonic-core/src/orthography.rs#yeri_sequences_preserve_the_two_cyrillic_spellings", "crates/old-church-slavonic-core/src/orthography.rs#literal_yer_i_sequences_are_not_mislabeled_reversible", "crates/old-church-slavonic-core/src/orthography.rs#cyrillic_only_distinctions_are_reported_or_rejected", "crates/old-church-slavonic-core/src/orthography.rs#every_reviewed_cyrillic_fold_or_expansion_is_loss_reported", "crates/old-church-slavonic-core/src/orthography.rs#rare_glagolitic_collisions_are_never_silent", "crates/old-church-slavonic-core/src/orthography.rs#unicode_composites_and_source_allographs_have_explicit_fidelity", "crates/old-church-slavonic-core/src/orthography.rs#productive_cyrillic_inventory_has_no_silent_glagolitic_holes", "crates/old-church-slavonic-core/src/orthography.rs#neutral_and_palatalization_marks_are_preserved_but_diplomatic_marks_fail", "crates/old-church-slavonic-core/src/orthography.rs#late_or_mixed_script_input_never_falls_through", "crates/old-church-slavonic/tests/public_api.rs#source_backed_glagolitic_and_hostile_inputs_are_panic_free", "crates/old-church-slavonic/tests/public_api.rs#normalized_glagolitic_realization_composes_after_morphology_without_mixed_script"]
+evidence_status = "The locked dictionary preserves 28 exact Glagolitic inflection rows for one Glagolitic lemma and keeps them ahead of presentation. Productive output uses Polivanova's normalized table crosschecked against TN41's classical Jagić table; every extension beyond the reversible shared alphabet is explicitly loss-reported and never labeled attested."
+gap = ""
+rationale = "Whole-word post-morphology realization makes every productive Cyrillic rule composable with a single-script Glagolitic result without inventing script-specific endings. Polivanova's normalization and the independent Jagić/TN41 crosscheck determine the shared alphabet and the iotated-vowel boundary. A typed loss policy preserves the distinction between reversible transliteration and historically necessary normalization, while exact dictionary spellings retain their own provenance."
 
 [[system]]
 id = "ocs.lexicon.classification"

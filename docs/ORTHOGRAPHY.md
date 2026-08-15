@@ -25,9 +25,56 @@ Lookup never strips or substitutes:
 - Glagolitic letters;
 - manuscript abbreviations.
 
-Cyrillic and Glagolitic are not automatically transliterated into one another. Source
-romanization is metadata and remains distinct from any future algorithmic
-romanization.
+Cyrillic and Glagolitic are never implicitly transliterated during lookup or
+inflection. Source romanization remains separate metadata. A caller may explicitly
+apply the normalized Glagolitic profile described below after morphology.
+
+## Explicit normalized Glagolitic realization
+
+`realize_glagolitic` composes after any single-word morphology result. The
+`Jagic1879NormalizedOcs` profile follows the classical Glagolitic/Cyrillic table
+reproduced in Unicode TN41 revision 1, Appendix A. It converts the complete word,
+never a Glagolitic stem plus Cyrillic endings, and returns `TransliteratedForm`
+with rule `OCS-GLAG-JAGIC-01`, direction, fidelity, ordered loss records, and a
+trace. `transliterate_glagolitic_to_cyrillic` supplies the reverse normalized
+operation and matches the two yer-plus-i sequences for `ꙑ` and `ы` before their
+component letters.
+
+`realize_glagolitic_variants` maps every `FormSet` variant one-to-one in source
+order; it never chooses the primary spelling or discards alternatives. The caller
+keeps the original `FormSet` for dictionary or productive provenance, while each
+orthographic result records its own fidelity and losses.
+
+The shared alphabet, including both yers, yat, uk, all four yuses, fita, izhitsa,
+and the two yeri sequences, is reversible. The scripts do not encode every
+Cyrillic distinction one-to-one. The following paths therefore require
+`TransliterationLossPolicy::Report`; `Reject` returns
+`InflectionError::UnrepresentableOrthography` at the first such scalar:
+
+- Cyrillic presentation variants such as `є`, modern `у`, round or ornamental
+  `о`, broad omega, closed yuses, zemlya, dzelo, and Polivanova's `ї`
+  allograph of initial izhe;
+- Polivanova's natural-to-secondary normalization of Cyrillic iotated `ꙗ` to
+  Glagolitic a and `ѥ` to Glagolitic e, because early Glagolitic has no matching
+  iotated-vowel letters; and
+- Cyrillic xi, psi, and ot, which expand to Glagolitic letter sequences.
+
+Existing Glagolitic input is validated and returned unchanged. That status says
+only that caller input was preserved; source attestation still belongs to the
+dictionary result. The locked exact `ⱁⰽⱁ` paradigm therefore keeps all of its
+source spellings ahead of normalized realization.
+
+This profile is not diplomatic transcription. Later Croatian Glagolitic letters,
+manuscript abbreviations, superscripts, breathing marks, and the two rare
+colliding Glagolitic letters identified by TN41 are rejected or, where the
+sources define a normalized fold, explicitly loss-reported. The OCS
+palatalization mark U+0484 used with Glagolitic `l`, `n`, and `r` in Polivanova
+§132 and neutral Unicode combining marks such as U+0301 are preserved. Phrase results
+remain typed multi-token objects; realize each word token explicitly rather than
+passing whitespace through this word-level API.
+
+Unicode composites `й` and `ѷ` are decomposed onto their mapped base letters and
+recomposed on the reverse path, so their code-point spellings remain reversible.
 
 ## Validation
 

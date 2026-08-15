@@ -856,6 +856,9 @@ fn metadata_error_reason(error: &InflectionError) -> &'static str {
         InflectionError::MissingLexicalMetadata { .. } => "generation-missing-metadata",
         InflectionError::ContradictoryLexicalMetadata { .. } => "generation-contradictory-metadata",
         InflectionError::UnsupportedFormation { .. } => "represented-unsupported-formation",
+        InflectionError::UnrepresentableOrthography { .. } => {
+            "generation-unrepresentable-orthography"
+        }
         InflectionError::HistoricallyInvalidCell { .. } => "historically-invalid-cell",
         InflectionError::UnattestedUnreconstructableCell { .. } => {
             "unattested-unreconstructable-cell"

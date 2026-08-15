@@ -20,14 +20,15 @@ use old_church_slavonic::{
     CollectiveNumeralIdentity, CompoundCardinalCell, Determiner, DeterminerCell,
     DeterminerIdentity, DistributiveCardinalCell, FiniteTense, FormSet, FormSource,
     FractionalNumeralDeclension, FractionalNumeralIdentity, Gender, GenderedCell,
-    ImpersonalVerbIdentity, ImpersonalVerbStatus, IndefiniteNumeralIdentity, InflectionError,
-    InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    GlagoliticProfile, ImpersonalVerbIdentity, ImpersonalVerbStatus, IndefiniteNumeralIdentity,
+    InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
     IrregularVerbFamilyMember, Lemma, LongOnlyAdjectiveIdentity, MAX_COMPOUND_ORDINAL_VALUE,
     MIN_COMPOUND_ORDINAL_VALUE, Noun, Number, Numeral, NumeralCell, OrdinalComposition,
     OrdinalNumeralIdentity, ParadigmLookupError, PartOfSpeech, ParticipleKind, Person,
     PersonalPronounCell, PersonalPronounIdentity, Pronoun, PronounFormSelection, RequestedCell,
-    Script, StandardPronominalIdentity, UngenderedCell, UniqueVerbFamilyMember, VariantPolicy,
-    Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
+    Script, StandardPronominalIdentity, TransliterationDirection, TransliterationFidelity,
+    TransliterationLossKind, TransliterationLossPolicy, UngenderedCell, UniqueVerbFamilyMember,
+    VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_magnitude,
     cardinal_numeral_identity, cardinal_numeral_paradigm, collective_numeral,
     collective_numeral_identity, collective_numeral_paradigm, collective_numeral_paradigm_identity,
     compound_cardinal, compound_cardinal_paradigm, compound_cardinal_paradigm_with_options,
@@ -44,8 +45,9 @@ use old_church_slavonic::{
     numeral, ordinal_numeral, ordinal_numeral_identity, ordinal_numeral_paradigm,
     ordinal_numeral_paradigm_identity, participle_paradigm, past_active_participle,
     personal_pronoun, personal_pronoun_with, present, present_paradigm, pronoun,
-    reconstruct_accent, reflexive_pronoun, regular_pronominal, relative_pronoun, short_adjective,
-    supine, verbal_noun_form, verbal_noun_paradigm,
+    realize_glagolitic, realize_glagolitic_variants, reconstruct_accent, reflexive_pronoun,
+    regular_pronominal, relative_pronoun, short_adjective, supine,
+    transliterate_glagolitic_to_cyrillic, verbal_noun_form, verbal_noun_paradigm,
 };
 
 fn only_id(lemma: &str, part_of_speech: PartOfSpeech) -> String {
@@ -3522,6 +3524,23 @@ fn source_backed_glagolitic_and_hostile_inputs_are_panic_free() {
     .expect("source-backed Glagolitic paradigm");
     assert!(glagolitic.primary_text().contains('ⰵ'));
 
+    let exact_paradigm = by_id::noun_paradigm_by_id(&glagolitic_id)
+        .expect("complete source-backed Glagolitic paradigm");
+    let exact_variants = exact_paradigm
+        .successes()
+        .flat_map(|(_, forms)| forms.texts())
+        .collect::<Vec<_>>();
+    assert_eq!(exact_paradigm.len(), 21);
+    assert_eq!(exact_variants.len(), 28);
+    assert!(exact_variants.iter().all(|form| {
+        realize_glagolitic(
+            form,
+            GlagoliticProfile::Jagic1879NormalizedOcs,
+            TransliterationLossPolicy::Reject,
+        )
+        .is_ok_and(|realized| realized.fidelity() == TransliterationFidelity::InputUnchanged)
+    }));
+
     let decomposed = "и\u{306}";
     let mixed_script = "слоword";
     for hostile in [
@@ -3540,6 +3559,74 @@ fn source_backed_glagolitic_and_hostile_inputs_are_panic_free() {
             "hostile input unexpectedly produced a noun for {hostile:?}"
         );
     }
+}
+
+#[test]
+fn normalized_glagolitic_realization_composes_after_morphology_without_mixed_script() {
+    let profile = GlagoliticProfile::Jagic1879NormalizedOcs;
+    let productive =
+        noun("обѣдъ", Case::Dative, Number::Dual).expect("productive Cyrillic noun cell");
+    let realized = realize_glagolitic(
+        productive.primary_text(),
+        profile,
+        TransliterationLossPolicy::Reject,
+    )
+    .expect("shared Jagić alphabet");
+    assert_eq!(realized.text(), "ⱁⰱⱑⰴⱁⰿⰰ");
+    assert_eq!(
+        Script::Glagolitic,
+        Lemma::parse(realized.text())
+            .expect("single-script realization")
+            .script()
+    );
+    assert_eq!(realized.fidelity(), TransliterationFidelity::Reversible);
+    assert_eq!(
+        realized.direction(),
+        TransliterationDirection::CyrillicToGlagolitic
+    );
+    assert_eq!(
+        realized.trace()[0].rule_id,
+        RuleId::OrthographyGlagoliticJagic
+    );
+
+    let exact = realize_glagolitic("ⱁⰽⱁ", profile, TransliterationLossPolicy::Reject)
+        .expect("existing Glagolitic input");
+    assert_eq!(exact.text(), "ⱁⰽⱁ");
+    assert_eq!(exact.fidelity(), TransliterationFidelity::InputUnchanged);
+    assert!(exact.trace().is_empty());
+
+    let folded = realize_glagolitic("землꙗ", profile, TransliterationLossPolicy::Report)
+        .expect("explicit historical fold");
+    assert_eq!(folded.text(), "ⰸⰵⰿⰾⰰ");
+    assert_eq!(folded.fidelity(), TransliterationFidelity::LossReported);
+    assert_eq!(
+        folded.losses()[0].kind,
+        TransliterationLossKind::CyrillicVariantFold
+    );
+    assert_eq!(
+        transliterate_glagolitic_to_cyrillic(
+            folded.text(),
+            profile,
+            TransliterationLossPolicy::Reject,
+        )
+        .expect("canonical reverse")
+        .text(),
+        "земла"
+    );
+
+    let source_ordered =
+        aorist("бꙑти", Person::First, Number::Singular).expect("source-ordered aorist variants");
+    let all_variants =
+        realize_glagolitic_variants(&source_ordered, profile, TransliterationLossPolicy::Reject)
+            .expect("every variant is representable");
+    assert_eq!(all_variants.len(), source_ordered.variants().len());
+    assert_eq!(
+        all_variants
+            .iter()
+            .map(|form| form.text())
+            .collect::<Vec<_>>(),
+        ["ⰱⱑⱈⱏ", "ⰱⱏⰹⱈⱏ"]
+    );
 }
 
 fn exercise_public_surface(hostile: &str) {
