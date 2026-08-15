@@ -138,7 +138,7 @@ assert!(matches!(forms.source(), FormSource::ExplicitMetadataRule { .. }));
 | Adjectives | `long_adjective`, `short_adjective`, `long_only_adjective`, `Adjective` | Tables first; hard/soft metadata rules; exhaustive typed long-only inventory; citation comparatives |
 | Determiners | `determiner`, `determiner_identity`, `determiner_paradigm`, `Determiner` | Exhaustive 11-identity reviewed inventory over regular `2/p`, exceptional `кꙑи`, and adjectival `2/a`; explicit OOV metadata |
 | Pronouns | `personal_pronoun_with`, `reflexive_pronoun`, `anaphoric_pronoun`, compatible ordinary functions, `Pronoun` | Complete reviewed personal/reflexive/anaphoric tables; other pronouns use exact source cells |
-| Numerals | `numeral`, `gendered_numeral`, `cardinal_numeral_identity`, `cardinal_numeral_paradigm`, `Numeral` | Reviewed simple cardinals one through ten with typed agreement/government and source-versus-productive evidence; exact fallback for other numeral types |
+| Numerals | `numeral`, `gendered_numeral`, `cardinal_numeral_identity`, `cardinal_numeral_paradigm`, `compound_cardinal`, `compound_cardinal_paradigm`, `Numeral` | Reviewed cardinals through 99 with typed agreement/government, structured components and correlated alternatives; exact fallback for other numeral types |
 | Finite verbs | `present`, `imperfect`, `aorist`, `finite`, `Verb` | Tables, independently sourced metadata, reviewed overrides |
 | Imperatives | `imperative` | Six historically represented person-number cells |
 | Non-finite forms | `infinitive`, `supine`, `verbal_noun`, `l_participle` | Table or independently supported rule |

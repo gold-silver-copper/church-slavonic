@@ -167,8 +167,13 @@ four enforce agreement in singular, dual, or plural, while five through ten are
 substantival and expose typed genitive-plural government metadata. The complete
 84-row `CardinalNumeralParadigm` retains every invalid combination as a typed
 failure. Exact numeral tables outside this base remain accessible as fallbacks
-and through the raw API while compound and derived numeral inventories remain
-open.
+and through the raw API. Values 11–99 are separate structured cardinals rather
+than fake wordforms: teens retain inflected units plus invariant `на десѧте`,
+20–40 inflect both components, 50–90 retain invariant genitive-plural
+`десѧтъ`, and nonzero final digits are joined by `и`. Correlated 30/40
+alternatives remain distinct structural analyses, every word keeps its own
+`FormSet`, and the final digit determines agreement or government. Higher and
+derived numeral inventories remain open.
 
 A typed paradigm enumerates the relevant grammatical product and retains typed
 historical or unsupported failures rather than dropping rows. The audit does not

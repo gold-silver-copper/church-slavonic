@@ -69,7 +69,7 @@ The matrix contains **53** required system contracts: **33** have final states a
 
 ## Non-final systems
 
-- `ocs.numeral` — **implementation-missing**: Implement compound cardinals (teens, tens, hundreds, thousands), then the source-union ordinal, collective, fractional, distributive, and remaining irregular inventories.
+- `ocs.numeral` — **implementation-missing**: Implement hundred, the 200–900 multiplicative series, thousand and 2000–9000, 10,000, and additive combinations through that range; then complete the source-union ordinal, collective, fractional, distributive, and remaining irregular inventories.
 - `ocs.verb.irregular-root` — **implementation-missing**: Lock the irregular/root lexeme union, import independent LOVe principal parts, and complete or explicitly defect every paradigm.
 - `ocs.verb.verbal-noun` — **source-review-open**: Resolve the inflection-versus-derivation boundary and implement only complete source-backed contracts.
 - `ocs.orthography.accent` — **implementation-missing**: Design reusable OCS accent metadata, crosswalk lexical paradigms, and preserve exact/source/predictive provenance.
@@ -101,7 +101,7 @@ The matrix contains **53** required system contracts: **33** have final states a
 | `ocs.pronoun.personal-reflexive` | old-church-slavonic | pronoun | `productive-complete` | `PRON-PERS-1-01`<br>`PRON-PERS-2-01`<br>`PRON-REFL-01`<br>`PRON-PERS-CLITIC-01`<br>`PRON-ANAPH-3-01`<br>`PRON-ANAPH-PREP-N-01` | independently reviewed closed grammar inventory, conditioned allomorphy, explicit source dispute, and exhaustive source-union routing |
 | `ocs.pronoun.other` | old-church-slavonic | pronoun | `productive-complete` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`PRON-2P-J-01`<br>`PRON-2P-VELAR-01`<br>`PRON-REL-IZHE-01`<br>`PRON-REL-PREP-N-01`<br>`PRON-2PSTAR-VES-01`<br>`PRON-2PSTAR-SIC-01`<br>`PRON-UNIQUE-SI-01`<br>`PRON-UNIQUE-KTO-01`<br>`PRON-UNIQUE-CHTO-01`<br>`PRON-DERIVED-FAMILY-01`<br>`DET-UNIQUE-KYI-01` | all 34 class 2/p identities allocated with exhaustive typed regular or exceptional inventories, source-union aliases, and structured derived-particle composition |
 | `ocs.determiner` | old-church-slavonic | determiner | `productive-complete` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`PRON-2P-J-01`<br>`PRON-2P-VELAR-01`<br>`DET-UNIQUE-KYI-01`<br>`ADJ-HARD-SHORT-01`<br>`ADJ-HARD-LONG-01` | source-exhaustive reviewed lexical allocation over shared productive rules and one closed irregular paradigm |
-| `ocs.numeral` | old-church-slavonic | numeral | `implementation-missing` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`N-I-F-01`<br>`NUM-CARD-THREE-01`<br>`NUM-CARD-FOUR-01`<br>`NUM-CARD-TEN-01`<br>`OCS-NUMERAL-COMPOUND-AND-DERIVED-PENDING` | source-reviewed simple-cardinal base with typed agreement/government and explicit attested-versus-productive variants; wider numeral grammar incomplete |
+| `ocs.numeral` | old-church-slavonic | numeral | `implementation-missing` | `PRON-2P-HARD-01`<br>`PRON-2P-SOFT-01`<br>`N-I-F-01`<br>`NUM-CARD-THREE-01`<br>`NUM-CARD-FOUR-01`<br>`NUM-CARD-TEN-01`<br>`NUM-CARD-TEEN-01`<br>`NUM-CARD-TENS-01`<br>`NUM-CARD-ADDITIVE-01`<br>`OCS-NUMERAL-HIGHER-AND-DERIVED-PENDING` | source-reviewed cardinal grammar through 99 with typed agreement/government, correlated multiword analyses, and explicit attested-versus-productive variants; higher and derived numeral grammar incomplete |
 | `ocs.verb.present` | old-church-slavonic | finite-verb | `productive-complete` | `V-IA1-01`<br>`V-IA2-01`<br>`V-II1-01`<br>`V-II2-01`<br>`V-II3-01` | source-backed productive prediction |
 | `ocs.verb.imperfect.uncontracted` | old-church-slavonic | finite-verb | `productive-complete` | `V-IMPF-A-01`<br>`V-IMPF-YAT-A-01`<br>`V-IMPF-PAL-A-01`<br>`V-IMPF-PRESENT-01` | source-backed productive uncontracted prediction |
 | `ocs.verb.imperfect.contracted` | old-church-slavonic | finite-verb | `productive-complete` | `V-IMPF-CONTRACTED-A-01`<br>`V-IMPF-CONTRACTED-YAT-A-01`<br>`V-IMPF-CONTRACTED-PAL-A-01`<br>`V-IMPF-PRESENT-CONTRACTED-01` | complete grammar terminal table, multi-manuscript examples, and explicit source-order metadata |
@@ -176,4 +176,4 @@ The frontier contains **15** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`ocs.numeral`: Implement compound cardinals (teens, tens, hundreds, thousands), then the source-union ordinal, collective, fractional, distributive, and remaining irregular inventories.
+`ocs.numeral`: Implement hundred, the 200–900 multiplicative series, thousand and 2000–9000, 10,000, and additive combinations through that range; then complete the source-union ordinal, collective, fractional, distributive, and remaining irregular inventories.

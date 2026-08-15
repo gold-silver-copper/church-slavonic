@@ -1,10 +1,10 @@
 //! Full paradigms assembled through the canonical one-cell resolvers.
 
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveForm, Animacy, CardinalNumeralIdentity, Case, DeterminerCell,
-    DeterminerIdentity, FiniteTense, FiniteVerbCell, FormSet, Gender, GenderedCell, ImperativeCell,
-    InflectionError, LParticipleCell, NounCell, Number, NumeralCell, PartOfSpeech, ParticipleCell,
-    ParticipleKind, Person, PersonalPronounCell, UngenderedCell,
+    AdjectiveCell, AdjectiveForm, Animacy, CardinalNumeralIdentity, Case, CompoundCardinalCell,
+    DeterminerCell, DeterminerIdentity, FiniteTense, FiniteVerbCell, FormSet, Gender, GenderedCell,
+    ImperativeCell, InflectionError, LParticipleCell, NounCell, Number, NumeralCell, PartOfSpeech,
+    ParticipleCell, ParticipleKind, Person, PersonalPronounCell, RealizedCardinal, UngenderedCell,
 };
 use std::fmt;
 
@@ -391,6 +391,123 @@ impl<'a> IntoIterator for &'a CardinalNumeralParadigm {
 impl IntoIterator for CardinalNumeralParadigm {
     type Item = CellOutcome<NumeralCell>;
     type IntoIter = std::vec::IntoIter<CellOutcome<NumeralCell>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.into_iter()
+    }
+}
+
+/// One composed-cardinal request and its typed structural outcome.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CompoundCardinalOutcome {
+    pub cell: CompoundCardinalCell,
+    pub result: Result<RealizedCardinal, InflectionError>,
+}
+
+impl CompoundCardinalOutcome {
+    pub const fn cell(&self) -> &CompoundCardinalCell {
+        &self.cell
+    }
+
+    pub fn cardinal(&self) -> Result<&RealizedCardinal, &InflectionError> {
+        self.result.as_ref()
+    }
+
+    pub fn error(&self) -> Option<&InflectionError> {
+        self.result.as_ref().err()
+    }
+
+    pub fn into_parts(
+        self,
+    ) -> (
+        CompoundCardinalCell,
+        Result<RealizedCardinal, InflectionError>,
+    ) {
+        (self.cell, self.result)
+    }
+}
+
+/// Complete optional-gender case inventory for one composed cardinal.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CompoundCardinalParadigm {
+    pub(crate) value: u16,
+    pub(crate) one_identity: CardinalNumeralIdentity,
+    pub(crate) cells: Vec<CompoundCardinalOutcome>,
+}
+
+impl CompoundCardinalParadigm {
+    pub const fn value(&self) -> u16 {
+        self.value
+    }
+
+    pub const fn one_identity(&self) -> CardinalNumeralIdentity {
+        self.one_identity
+    }
+
+    pub fn form(
+        &self,
+        case: Case,
+        gender: Option<Gender>,
+    ) -> Result<&RealizedCardinal, ParadigmLookupError> {
+        let outcome = self
+            .cells
+            .iter()
+            .find(|outcome| outcome.cell == CompoundCardinalCell { case, gender })
+            .ok_or(ParadigmLookupError::NotRepresented)?;
+        outcome
+            .cardinal()
+            .map_err(|error| ParadigmLookupError::Failed(error.clone()))
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, CompoundCardinalOutcome> {
+        self.cells.iter()
+    }
+
+    pub fn successes(&self) -> impl Iterator<Item = (&CompoundCardinalCell, &RealizedCardinal)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .ok()
+                .map(|cardinal| (&outcome.cell, cardinal))
+        })
+    }
+
+    pub fn failures(&self) -> impl Iterator<Item = (&CompoundCardinalCell, &InflectionError)> {
+        self.cells.iter().filter_map(|outcome| {
+            outcome
+                .result
+                .as_ref()
+                .err()
+                .map(|error| (&outcome.cell, error))
+        })
+    }
+
+    pub fn into_rows(self) -> Vec<CompoundCardinalOutcome> {
+        self.cells
+    }
+
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+}
+
+impl<'a> IntoIterator for &'a CompoundCardinalParadigm {
+    type Item = &'a CompoundCardinalOutcome;
+    type IntoIter = std::slice::Iter<'a, CompoundCardinalOutcome>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.cells.iter()
+    }
+}
+
+impl IntoIterator for CompoundCardinalParadigm {
+    type Item = CompoundCardinalOutcome;
+    type IntoIter = std::vec::IntoIter<CompoundCardinalOutcome>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.cells.into_iter()

@@ -3,8 +3,9 @@
 use crate::noun::NounLexeme;
 use crate::pronoun::StandardPronominalIdentity;
 use crate::{
-    Animacy, Case, Gender, InflectionError, NounCell, NounClass, Number, NumberRestriction,
-    NumeralCell, PredictedForm, RequestedCell, RuleId, RuleStep,
+    Animacy, Case, CompoundCardinalCell, Gender, InflectionError, NounCell, NounClass, Number,
+    NumberRestriction, NumeralCell, PhraseRole, PhraseToken, PredictedForm, RequestedCell, RuleId,
+    RuleStep,
 };
 
 /// The syntactic relation between a simple cardinal and the enumerated noun.
@@ -64,6 +65,134 @@ impl NumeralVariant {
             status: NumeralVariantStatus::ProductiveRule,
         }
     }
+
+    fn productive_text(text: &str, rule_id: RuleId, lemma: &str, reason: &'static str) -> Self {
+        Self {
+            prediction: PredictedForm {
+                text: text.to_string(),
+                rule_id,
+                trace: vec![RuleStep {
+                    rule_id,
+                    before: lemma.to_string(),
+                    after: text.to_string(),
+                    reason,
+                }],
+            },
+            status: NumeralVariantStatus::ProductiveRule,
+        }
+    }
+}
+
+/// One correlated structural realization of a composed cardinal.
+///
+/// Separate analyses are used when variants in different words must remain
+/// paired, as in `триѥ десѧте` beside `три десѧти`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CardinalPhraseAnalysis {
+    pub tokens: Vec<PhraseToken>,
+}
+
+impl CardinalPhraseAnalysis {
+    /// Render each component's source-first form within this correlated
+    /// structural analysis.
+    pub fn primary_text(&self) -> String {
+        self.tokens
+            .iter()
+            .map(|token| token.forms.primary_text())
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+}
+
+/// A composed cardinal whose component words retain independent morphology,
+/// provenance, warnings, and traces.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RealizedCardinal {
+    value: u16,
+    cell: CompoundCardinalCell,
+    government: NumeralGovernment,
+    analyses: Vec<CardinalPhraseAnalysis>,
+}
+
+impl RealizedCardinal {
+    pub fn new(
+        value: u16,
+        cell: CompoundCardinalCell,
+        government: NumeralGovernment,
+        analyses: Vec<CardinalPhraseAnalysis>,
+    ) -> Result<Self, InflectionError> {
+        if value == 0 || analyses.is_empty() {
+            return Err(InflectionError::InvalidInput {
+                reason: "a realized cardinal requires a positive value and an analysis".to_string(),
+            });
+        }
+        if analyses
+            .iter()
+            .any(|analysis| !valid_cardinal_tokens(&analysis.tokens))
+        {
+            return Err(InflectionError::InvalidInput {
+                reason: "a cardinal analysis has an invalid component sequence".to_string(),
+            });
+        }
+        Ok(Self {
+            value,
+            cell,
+            government,
+            analyses,
+        })
+    }
+
+    pub const fn value(&self) -> u16 {
+        self.value
+    }
+
+    pub const fn cell(&self) -> CompoundCardinalCell {
+        self.cell
+    }
+
+    pub const fn government(&self) -> NumeralGovernment {
+        self.government
+    }
+
+    pub fn analyses(&self) -> &[CardinalPhraseAnalysis] {
+        &self.analyses
+    }
+
+    /// Render the deterministic first structural analysis and each token's
+    /// source-first form without discarding the full analyses.
+    pub fn primary_text(&self) -> String {
+        self.analyses[0].primary_text()
+    }
+}
+
+fn valid_cardinal_tokens(tokens: &[PhraseToken]) -> bool {
+    if tokens.is_empty() {
+        return false;
+    }
+    tokens
+        .split(|token| token.role == PhraseRole::Conjunction)
+        .all(|segment| {
+            matches!(
+                segment
+                    .iter()
+                    .map(|token| token.role)
+                    .collect::<Vec<_>>()
+                    .as_slice(),
+                [PhraseRole::Numeral]
+                    | [PhraseRole::Numeral, PhraseRole::Numeral]
+                    | [
+                        PhraseRole::Numeral,
+                        PhraseRole::Preposition,
+                        PhraseRole::Numeral
+                    ]
+            )
+        })
+        && tokens
+            .first()
+            .is_some_and(|token| token.role == PhraseRole::Numeral)
+        && tokens
+            .last()
+            .is_some_and(|token| token.role == PhraseRole::Numeral)
 }
 
 /// The source-exhaustive simple cardinal identities from one through ten.
@@ -373,6 +502,86 @@ fn decline_ten(cell: NumeralCell) -> Result<Vec<NumeralVariant>, InflectionError
     Ok(forms)
 }
 
+/// Decline `десѧть` when it is itself counted by two, three, or four in a
+/// multiplicative tens construction.
+///
+/// The dual genitive `десѧту` is explicitly listed by UT §44.20; the locative
+/// and vocative extend that dual GL/NA pattern productively. The plural reuses
+/// the reviewed mixed simple-ten table.
+pub fn decline_counted_ten(
+    case: Case,
+    number: Number,
+) -> Result<Vec<NumeralVariant>, InflectionError> {
+    if number == Number::Plural {
+        if case == Case::Nominative {
+            let lemma = CardinalNumeralIdentity::Ten.canonical_lemma();
+            return Ok(vec![
+                NumeralVariant::reviewed(
+                    "десѧте",
+                    RuleId::NumeralCardinalTens,
+                    lemma,
+                    "select the source-listed masculine nominative plural form of counted ten",
+                ),
+                NumeralVariant::reviewed(
+                    "десѧти",
+                    RuleId::NumeralCardinalTens,
+                    lemma,
+                    "retain the source-listed alternative nominative plural form of counted ten",
+                ),
+            ]);
+        }
+        return decline_ten(NumeralCell {
+            case,
+            number,
+            gender: None,
+        });
+    }
+    let lemma = CardinalNumeralIdentity::Ten.canonical_lemma();
+    if number != Number::Dual {
+        return Err(InflectionError::historically_invalid(
+            lemma,
+            RequestedCell::Numeral(NumeralCell {
+                case,
+                number,
+                gender: None,
+            }),
+        ));
+    }
+    let variant = match case {
+        Case::Nominative | Case::Accusative => NumeralVariant::reviewed(
+            "десѧти",
+            RuleId::NumeralCardinalTens,
+            lemma,
+            "select the source-listed dual direct-case form of counted ten",
+        ),
+        Case::Genitive => NumeralVariant::reviewed(
+            "десѧту",
+            RuleId::NumeralCardinalTens,
+            lemma,
+            "select the source-listed genitive dual form of counted ten",
+        ),
+        Case::Dative | Case::Instrumental => NumeralVariant::reviewed(
+            "десѧтьма",
+            RuleId::NumeralCardinalTens,
+            lemma,
+            "select the source-listed dual oblique form of counted ten",
+        ),
+        Case::Locative => NumeralVariant::productive_text(
+            "десѧту",
+            RuleId::NumeralCardinalTens,
+            lemma,
+            "extend the dual genitive-locative syncretism to counted ten",
+        ),
+        Case::Vocative => NumeralVariant::productive_text(
+            "десѧти",
+            RuleId::NumeralCardinalTens,
+            lemma,
+            "extend the dual nominative-vocative syncretism to counted ten",
+        ),
+    };
+    Ok(vec![variant])
+}
+
 fn required_gender(
     identity: CardinalNumeralIdentity,
     cell: NumeralCell,
@@ -566,5 +775,17 @@ mod tests {
                 .count(),
             21
         );
+    }
+
+    #[test]
+    fn counted_ten_preserves_the_attested_twenty_genitive() {
+        let genitive =
+            decline_counted_ten(Case::Genitive, Number::Dual).expect("counted ten genitive dual");
+        assert_eq!(genitive[0].prediction.text, "десѧту");
+        assert_eq!(genitive[0].status, NumeralVariantStatus::ReviewedTable);
+        let locative =
+            decline_counted_ten(Case::Locative, Number::Dual).expect("counted ten locative dual");
+        assert_eq!(locative[0].prediction.text, "десѧту");
+        assert_eq!(locative[0].status, NumeralVariantStatus::ProductiveRule);
     }
 }

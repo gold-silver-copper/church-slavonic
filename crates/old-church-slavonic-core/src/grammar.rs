@@ -552,6 +552,37 @@ impl NumeralCell {
     }
 }
 
+/// A case cell for a composed cardinal, with gender present only when its
+/// final governing unit agrees with the enumerated noun.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct CompoundCardinalCell {
+    pub case: Case,
+    pub gender: Option<Gender>,
+}
+
+impl CompoundCardinalCell {
+    /// All case and optional-gender requests in stable order.
+    pub fn all() -> impl Iterator<Item = Self> {
+        Case::ALL.into_iter().flat_map(|case| {
+            core::iter::once(Self { case, gender: None }).chain(Gender::ALL.into_iter().map(
+                move |gender| Self {
+                    case,
+                    gender: Some(gender),
+                },
+            ))
+        })
+    }
+
+    pub fn key(self) -> String {
+        let mut key = format!("num:compound:{}", self.case.code());
+        if let Some(gender) = self.gender {
+            key.push(':');
+            key.push_str(gender.code());
+        }
+        key
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FiniteVerbCell {
     pub tense: FiniteTense,
@@ -776,6 +807,10 @@ pub enum RequestedCell {
     Adjective(AdjectiveCell),
     Determiner(DeterminerCell),
     Numeral(NumeralCell),
+    CompoundCardinal {
+        value: u16,
+        cell: CompoundCardinalCell,
+    },
     Comparative(AdjectiveCell),
     FiniteVerb(FiniteVerbCell),
     Imperative(ImperativeCell),

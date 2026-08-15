@@ -52,6 +52,7 @@ pub enum PhraseRole {
     ComparativeAdjective,
     ComparisonReference,
     Particle,
+    Conjunction,
     Auxiliary,
     AuxiliaryParticiple,
     FiniteVerb,
@@ -63,6 +64,7 @@ pub enum PhraseRole {
     PrefixalFormative,
     Preposition,
     Pronoun,
+    Numeral,
     Postpositive,
 }
 

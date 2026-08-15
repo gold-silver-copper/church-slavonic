@@ -23,15 +23,16 @@ pub use copula::{CopulaSeries, CopulaVariant, CopulaVariantStatus};
 pub use determiner::{DeterminerDeclension, DeterminerIdentity, DeterminerLexeme};
 pub use grammar::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, ClosedClassCell,
-    ComparativeFormation, DeterminerCell, FiniteTense, FiniteVerbCell, Gender, GenderedCell,
-    ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
-    LParticipleCell, NounCell, NounClass, Number, NumberRestriction, NumeralCell, PartOfSpeech,
-    ParticipleCell, ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation,
-    Person, PersonalPronounCell, PresentActiveParticipleFormation,
+    ComparativeFormation, CompoundCardinalCell, DeterminerCell, FiniteTense, FiniteVerbCell,
+    Gender, GenderedCell, ImperativeCell, ImperativeFormation, ImperfectFormation,
+    ImperfectVariantPolicy, LParticipleCell, NounCell, NounClass, Number, NumberRestriction,
+    NumeralCell, PartOfSpeech, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
+    PastPassiveParticipleFormation, Person, PersonalPronounCell, PresentActiveParticipleFormation,
     PresentPassiveParticipleFormation, RequestedCell, UngenderedCell, VerbAspect, VerbClass,
 };
 pub use numeral::{
-    CardinalNumeralIdentity, NumeralGovernment, NumeralVariant, NumeralVariantStatus,
+    CardinalNumeralIdentity, CardinalPhraseAnalysis, NumeralGovernment, NumeralVariant,
+    NumeralVariantStatus, RealizedCardinal,
 };
 pub use orthography::{Lemma, Script};
 pub use phrase::{

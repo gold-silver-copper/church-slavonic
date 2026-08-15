@@ -14,14 +14,15 @@ use old_church_slavonic::advanced::rules::{
 use old_church_slavonic::advanced::{by_id, participle_form};
 use old_church_slavonic::trace::{MetadataField, MetadataProvenance, RuleId};
 use old_church_slavonic::{
-    Adjective, AnaphoricEnvironment, Animacy, CardinalNumeralIdentity, Case, Determiner,
-    DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
+    Adjective, AnaphoricEnvironment, Animacy, CardinalNumeralIdentity, Case, CompoundCardinalCell,
+    Determiner, DeterminerCell, DeterminerIdentity, FiniteTense, FormSource, Gender, GenderedCell,
     InflectionError, InflectionWarning, InterrogativePronounIdentity, IrregularAgreeingIdentity,
     Lemma, LongOnlyAdjectiveIdentity, Noun, Number, Numeral, NumeralCell, ParadigmLookupError,
     PartOfSpeech, ParticipleKind, Person, PersonalPronounCell, PersonalPronounIdentity, Pronoun,
     PronounFormSelection, RequestedCell, Script, StandardPronominalIdentity, UngenderedCell,
     VariantPolicy, Verb, adjective_paradigm, anaphoric_pronoun, aorist, cardinal_numeral_identity,
-    cardinal_numeral_paradigm, determiner, determiner_identity, determiner_paradigm, finite,
+    cardinal_numeral_paradigm, compound_cardinal, compound_cardinal_paradigm,
+    compound_cardinal_with_one, determiner, determiner_identity, determiner_paradigm, finite,
     finite_paradigm, gendered_numeral, gendered_pronoun, imperative, imperative_paradigm,
     imperfect, infinitive, interrogative_pronoun, irregular_agreeing, l_participle,
     l_participle_paradigm, long_adjective, long_only_adjective, noun, noun_paradigm, numeral,
@@ -430,6 +431,109 @@ fn simple_cardinals_have_exhaustive_typed_paradigms_and_evidence() {
             ..
         }) if requested == invalid
     ));
+}
+
+#[test]
+fn compound_cardinals_through_ninety_nine_are_structured_and_exhaustive() {
+    let goldens = [
+        (
+            12,
+            Case::Genitive,
+            Some(Gender::Masculine),
+            "дъвою на десѧте",
+        ),
+        (15, Case::Nominative, None, "пѧть на десѧте"),
+        (20, Case::Nominative, None, "дъва десѧти"),
+        (20, Case::Genitive, None, "дъвою десѧту"),
+        (30, Case::Nominative, None, "триѥ десѧте"),
+        (40, Case::Nominative, None, "четыре десѧте"),
+        (50, Case::Genitive, None, "пѧти десѧтъ"),
+        (
+            53,
+            Case::Nominative,
+            Some(Gender::Masculine),
+            "пѧть десѧтъ и триѥ",
+        ),
+        (
+            91,
+            Case::Dative,
+            Some(Gender::Feminine),
+            "девѧти десѧтъ и ѥдинои",
+        ),
+    ];
+    for (value, case, gender, expected) in goldens {
+        let realized = compound_cardinal(value, case, gender).expect("licensed compound cardinal");
+        assert_eq!(realized.value(), value);
+        assert_eq!(realized.cell(), CompoundCardinalCell { case, gender });
+        assert_eq!(realized.primary_text(), expected);
+        assert!(!realized.analyses().is_empty());
+    }
+
+    let thirty =
+        compound_cardinal(30, Case::Nominative, None).expect("thirty nominative alternatives");
+    assert_eq!(thirty.analyses().len(), 2);
+    assert_eq!(thirty.analyses()[0].primary_text(), "триѥ десѧте");
+    assert_eq!(thirty.analyses()[1].primary_text(), "три десѧти");
+
+    let alternate_one = compound_cardinal_with_one(
+        21,
+        CardinalNumeralIdentity::OneYedyn,
+        Case::Dative,
+        Some(Gender::Feminine),
+    )
+    .expect("explicit compound-one doublet");
+    assert_eq!(alternate_one.primary_text(), "дъвѣма десѧтьма и ѥдьнои");
+
+    let paradigm = compound_cardinal_paradigm(53).expect("compound-cardinal paradigm");
+    assert_eq!(paradigm.value(), 53);
+    assert_eq!(paradigm.len(), 28);
+    assert_eq!(
+        paradigm
+            .form(Case::Nominative, Some(Gender::Masculine))
+            .expect("licensed paradigm row")
+            .primary_text(),
+        "пѧть десѧтъ и триѥ"
+    );
+
+    for value in 11..=99 {
+        let final_digit = if value < 20 { value - 10 } else { value % 10 };
+        let requires_gender = matches!(final_digit, 1..=4);
+        for cell in CompoundCardinalCell::all() {
+            let gender_shape_valid = cell.gender.is_some() == requires_gender;
+            let vocative_valid = cell.case != Case::Vocative
+                || (value < 20 && final_digit >= 5)
+                || (value >= 50 && (final_digit == 0 || final_digit >= 5));
+            match compound_cardinal(value, cell.case, cell.gender) {
+                Ok(realized) => {
+                    assert!(gender_shape_valid && vocative_valid, "{value} {cell:?}");
+                    assert_eq!(realized.cell(), cell);
+                    assert!(realized.analyses().iter().all(|analysis| {
+                        !analysis.tokens.is_empty()
+                            && analysis
+                                .tokens
+                                .iter()
+                                .all(|token| !token.forms.primary_text().is_empty())
+                    }));
+                }
+                Err(error) => {
+                    assert!(
+                        !gender_shape_valid || !vocative_valid,
+                        "{value} {cell:?}: {error}"
+                    );
+                    assert!(matches!(
+                        error,
+                        InflectionError::HistoricallyInvalidCell {
+                            cell: RequestedCell::CompoundCardinal {
+                                value: requested_value,
+                                cell: requested_cell,
+                            },
+                            ..
+                        } if requested_value == value && requested_cell == cell
+                    ));
+                }
+            }
+        }
+    }
 }
 
 #[test]
