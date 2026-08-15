@@ -3,6 +3,7 @@
 
 pub mod accent;
 pub mod collation;
+pub mod determiner;
 pub mod error;
 pub mod evidence;
 pub mod grammar;
@@ -25,6 +26,10 @@ pub use accent::{
 };
 pub use collation::{
     CollationKey, CollationProfile, CollationStrength, collation_key, compare_synodal,
+};
+pub use determiner::{
+    DeterminerDeclension, DeterminerLexeme, DeterminerNumberInventory, decline_determiner,
+    validate_determiner_lexeme,
 };
 pub use error::{Error, ErrorCode, MetadataField, Result};
 pub use evidence::{

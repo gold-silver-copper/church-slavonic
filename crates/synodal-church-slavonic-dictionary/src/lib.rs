@@ -881,9 +881,13 @@ fn productive_cell_is_supported(
                         number_is_licensed(&restriction.number_inventory, cell.number)
                     })
         }
-        GrammarCell::Adjective(cell) | GrammarCell::Determiner(cell) => {
+        GrammarCell::Adjective(cell) => {
             capabilities.productive_adjective
                 && adjectival_cell_is_supported(cell, principal_part("comparative-stem").is_some())
+        }
+        GrammarCell::Determiner(cell) => {
+            capabilities.productive_determiner
+                && determiner_cell_is_supported(cell, metadata.class.as_deref())
         }
         GrammarCell::Pronoun(cell) => {
             capabilities.productive_pronoun
@@ -1028,6 +1032,21 @@ fn adjectival_cell_is_supported(cell: AdjectiveCell, has_comparative_stem: bool)
         (Comparison::Superlative, AdjectiveForm::Short) => {
             has_comparative_stem && cell.case == Case::Nominative
         }
+    }
+}
+
+fn determiner_cell_is_supported(cell: AdjectiveCell, class: Option<&str>) -> bool {
+    if cell.comparison != Comparison::Positive {
+        return false;
+    }
+    match class {
+        Some("determiner-pronominal-hard") => true,
+        Some("determiner-ves-mixed") => {
+            cell.number != Number::Dual && cell.form == AdjectiveForm::Short
+        }
+        Some("determiner-vsyak-mixed") => cell.number != Number::Dual,
+        Some("determiner-full-sk") => cell.form == AdjectiveForm::Long,
+        _ => false,
     }
 }
 
@@ -1201,6 +1220,47 @@ mod tests {
             );
             for cell in cells {
                 if !matches!(cell, GrammarCell::Pronoun(_)) {
+                    continue;
+                }
+                let forms = inflector
+                    .form_by_id(lexeme.id(), cell)
+                    .unwrap_or_else(|error| panic!("{} {}: {error}", lexeme.id(), cell.key()));
+                assert!(
+                    !forms.variants().is_empty(),
+                    "{} {}",
+                    lexeme.id(),
+                    cell.key()
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn every_productive_determiner_identity_realizes_every_licensed_analysis_cell() {
+        let inflector = Inflector::default();
+        for lexeme in synodal_church_slavonic::lexemes().expect("registry") {
+            if lexeme.part_of_speech() != PartOfSpeech::Determiner {
+                continue;
+            }
+            let metadata = lexical_metadata(lexeme.id()).expect("determiner metadata");
+            if !metadata
+                .class
+                .as_deref()
+                .is_some_and(|class| class.starts_with("determiner-"))
+            {
+                continue;
+            }
+            let cells = analysis_cells_for_lexeme(&lexeme, inflector)
+                .unwrap_or_else(|error| panic!("{} inventory: {error}", lexeme.id()));
+            assert!(
+                cells
+                    .iter()
+                    .any(|cell| matches!(cell, GrammarCell::Determiner(_))),
+                "{} has no productive determiner cells",
+                lexeme.id()
+            );
+            for cell in cells {
+                if !matches!(cell, GrammarCell::Determiner(_)) {
                     continue;
                 }
                 let forms = inflector
@@ -1430,28 +1490,25 @@ mod tests {
     }
 
     #[test]
-    fn family_summary_exposes_exact_cells_and_missing_metadata() {
+    fn family_summary_exposes_exact_cells_and_productive_determiner_metadata() {
         let id = FamilyId::for_lexeme(&LexemeId::from("synodal:determiner:ves"));
         let family = show_family_by_id(&id).expect("reviewed весь family");
         assert_eq!(family.id.as_str(), "family:synodal:determiner:ves");
-        assert!(family.exact_only);
-        assert!(!family.fully_classed);
+        assert!(!family.exact_only);
+        assert!(family.fully_classed);
+        assert_eq!(family.class.as_deref(), Some("determiner-ves-mixed"));
+        assert_eq!(family.stem.as_deref(), Some("вс"));
         assert!(family.members.iter().any(|member| {
             member.cell == "determiner:nominative:singular:feminine:inanimate:short:positive"
                 && member.printed == "всѧ̀"
         }));
-        assert!(
-            family
-                .missing_family_metadata
-                .iter()
-                .any(|field| field.contains("inflection-class"))
-        );
+        assert!(family.missing_family_metadata.is_empty());
     }
 
     #[test]
     fn family_supported_systems_cover_productive_and_exact_capabilities() {
         for (id, expected) in [
-            ("synodal:determiner:sam", "adjective"),
+            ("synodal:determiner:sam", "determiner"),
             ("synodal:numeral:pervyi", "adjective"),
             ("synodal:verb:byti", "future"),
             ("synodal:verb:wikt-78da2d05497d", "past"),

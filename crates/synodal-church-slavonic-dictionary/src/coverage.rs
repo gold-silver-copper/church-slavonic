@@ -1902,6 +1902,8 @@ fn classify_token(
                         && !capabilities.productive_noun
                         || matches!(summary.part_of_speech(), PartOfSpeech::Adjective)
                             && !capabilities.productive_adjective
+                        || matches!(summary.part_of_speech(), PartOfSpeech::Determiner)
+                            && !capabilities.productive_determiner
                 })
             {
                 GapKind::MissingDeclensionOrClass

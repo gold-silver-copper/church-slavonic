@@ -1,8 +1,8 @@
 use synodal_church_slavonic_core::{
-    AdjectiveCell, AdjectiveForm, Comparison, Error, FiniteTense, FormSet, GrammarCell, NounLexeme,
-    NumeralKind, OrthographyProfile, PronounLexeme, Result, VerbLexeme, aorist, decline_adjective,
-    decline_noun, decline_participle, decline_pronoun, imperative, imperfect, infinitive,
-    l_participle, present,
+    AdjectiveCell, AdjectiveForm, Comparison, DeterminerLexeme, Error, FiniteTense, FormSet,
+    GrammarCell, NounLexeme, NumeralKind, OrthographyProfile, PronounLexeme, Result, VerbLexeme,
+    aorist, decline_adjective, decline_determiner, decline_noun, decline_participle,
+    decline_pronoun, imperative, imperfect, infinitive, l_participle, present,
 };
 
 use synodal_church_slavonic_core::AdjectiveLexeme;
@@ -12,6 +12,7 @@ use synodal_church_slavonic_core::AdjectiveLexeme;
 pub(crate) enum ProductiveLexeme<'a> {
     Noun(&'a NounLexeme),
     Adjective(&'a AdjectiveLexeme),
+    Determiner(&'a DeterminerLexeme),
     Pronoun(&'a PronounLexeme),
     Verb(&'a VerbLexeme),
 }
@@ -25,9 +26,11 @@ pub(crate) fn generate_productive(
         (ProductiveLexeme::Noun(lexeme), GrammarCell::Noun(cell)) => {
             decline_noun(lexeme, cell, profile)
         }
-        (ProductiveLexeme::Adjective(lexeme), GrammarCell::Adjective(cell))
-        | (ProductiveLexeme::Adjective(lexeme), GrammarCell::Determiner(cell)) => {
+        (ProductiveLexeme::Adjective(lexeme), GrammarCell::Adjective(cell)) => {
             decline_adjective(lexeme, cell, profile)
+        }
+        (ProductiveLexeme::Determiner(lexeme), GrammarCell::Determiner(cell)) => {
+            decline_determiner(lexeme, cell, profile)
         }
         (ProductiveLexeme::Adjective(lexeme), GrammarCell::Numeral(cell))
             if cell.kind == NumeralKind::Ordinal =>

@@ -27,7 +27,7 @@ pub use registry::{
     TransformationRuleSummary,
 };
 pub use spec::{
-    AdjectiveSpec, DefectKind, DefectiveCell, LexemeSpec, NounSpec, PronounSpec,
+    AdjectiveSpec, DefectKind, DefectiveCell, DeterminerSpec, LexemeSpec, NounSpec, PronounSpec,
     SpecificationSource, SpecifiedForm, VerbSpec, VerbSpecBuilder,
 };
 pub use synodal_church_slavonic_core as core;
@@ -40,7 +40,8 @@ pub use synodal_church_slavonic_core::{
 };
 pub use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Animacy, Case, CollationKey,
-    CollationProfile, CollationStrength, Comparison, Confidence, CyrillicNumeral, Error, ErrorCode,
+    CollationProfile, CollationStrength, Comparison, Confidence, CyrillicNumeral,
+    DeterminerDeclension, DeterminerLexeme, DeterminerNumberInventory, Error, ErrorCode,
     FiniteTense, FiniteVerbCell, FormSet, FormSource, Gender, GenerationPolicy, GrammarCell,
     ImperativeCell, InitialPresentation, LParticipleCell, LexemeId, Loss, MetadataField,
     NegativePronounBase, NounCell, Number, NumeralCell, NumeralKind, OrthographyProfile,
@@ -1234,7 +1235,7 @@ mod tests {
     }
 
     #[test]
-    fn determiner_handle_is_real_but_abstains_outside_exact_cells() {
+    fn determiner_handle_generates_reviewed_short_and_long_cells() {
         let nominative = determiner(
             "всѧкъ",
             AdjectiveCell {
@@ -1249,20 +1250,179 @@ mod tests {
         .expect("reviewed determiner cell");
         assert_eq!(nominative.primary_text(), "всѧкъ");
 
+        let long = determiner(
+            "всѧкъ",
+            AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+            },
+        )
+        .expect("reviewed full determiner cell");
+        assert_eq!(long.primary_text(), "всѧкїй");
+
         assert!(matches!(
             determiner(
                 "всѧкъ",
                 AdjectiveCell {
                     case: Case::Nominative,
+                    number: Number::Dual,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                },
+            ),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
+    fn productive_determiner_background_contains_every_reviewed_exact_surface() {
+        for id in [
+            "synodal:determiner:sam",
+            "synodal:determiner:ves",
+            "synodal:determiner:vsyak",
+        ] {
+            let id = LexemeId::from(id);
+            let lexeme = registry::determiner_lexeme(&id).expect("productive determiner metadata");
+            for cell in
+                AdjectiveCell::inventory(&AdjectiveForm::ALL, &[Comparison::Positive], |_| {
+                    &Animacy::ALL
+                })
+            {
+                let Ok(predicted) =
+                    core::decline_determiner(&lexeme, cell, OrthographyProfile::Expanded)
+                else {
+                    continue;
+                };
+                let predicted = predicted.texts().collect::<Vec<_>>();
+                for key in grammar_cell_registry_keys(GrammarCell::Determiner(cell)) {
+                    for exact in registry::exact_forms(&id, &key) {
+                        assert!(
+                            predicted.contains(&exact.expanded),
+                            "{} {key} exact {:?} absent from {predicted:?}",
+                            id,
+                            exact.expanded,
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn determiner_exact_cells_precede_the_complete_productive_background() {
+        let vsyak = Determiner::resolve("всѧкъ").expect("reviewed determiner");
+        let exact = vsyak
+            .form(AdjectiveCell {
+                case: Case::Genitive,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Short,
+                comparison: Comparison::Positive,
+            })
+            .expect("reviewed exact cell");
+        assert_eq!(exact.texts().collect::<Vec<_>>(), ["всѧкаго", "всѧкагѡ"]);
+        assert!(
+            exact
+                .variants()
+                .iter()
+                .all(|variant| !matches!(variant.source, FormSource::SynodalNormativeGeneration { ref rule } if rule.as_ref().starts_with("SYN-DETERMINER-")))
+        );
+
+        let generated = vsyak
+            .form(AdjectiveCell {
+                case: Case::Dative,
+                number: Number::Plural,
+                gender: Gender::Feminine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+            })
+            .expect("productive background cell");
+        assert_eq!(generated.primary_text(), "всѧкимъ");
+        assert!(matches!(
+            &generated.primary().source,
+            FormSource::SynodalNormativeGeneration { rule }
+                if rule.as_ref() == "SYN-DETERMINER-VSYAK-MIXED-ALYPY-45-48-57"
+        ));
+    }
+
+    #[test]
+    fn determiner_liturgical_output_uses_reviewed_accent_or_fails_typed() {
+        let liturgical = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let vsyak =
+            Determiner::resolve_with("всѧкъ", liturgical).expect("fixed-stress mixed determiner");
+        assert_eq!(
+            vsyak
+                .form(AdjectiveCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    gender: Gender::Feminine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                })
+                .expect("reusable accent paradigm")
+                .primary_text(),
+            "всѧ́кимъ"
+        );
+        assert_eq!(
+            Determiner::resolve_with("всѧческїй", liturgical)
+                .expect("fixed-stress full determiner")
+                .form(AdjectiveCell {
+                    case: Case::Locative,
                     number: Number::Singular,
                     gender: Gender::Masculine,
                     animacy: Animacy::Inanimate,
                     form: AdjectiveForm::Long,
                     comparison: Comparison::Positive,
+                })
+                .expect("reviewed -ск-/-ст- accent realization")
+                .primary_text(),
+            "всѧ́честѣмъ"
+        );
+
+        for (id, cell) in [
+            (
+                "synodal:determiner:sam",
+                AdjectiveCell {
+                    case: Case::Dative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
                 },
             ),
-            Err(Error::UnsupportedCell { .. })
-        ));
+            (
+                "synodal:determiner:ves",
+                AdjectiveCell {
+                    case: Case::Locative,
+                    number: Number::Plural,
+                    gender: Gender::Feminine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                },
+            ),
+        ] {
+            assert!(matches!(
+                Determiner::from_id_with(&LexemeId::from(id), liturgical)
+                    .expect("reviewed determiner")
+                    .form(cell),
+                Err(Error::OrthographicMetadataRequired {
+                    field: MetadataField::AccentParadigm
+                })
+            ));
+        }
     }
 
     #[test]
@@ -1379,7 +1539,7 @@ mod tests {
             Determiner::from_id(&LexemeId::from("synodal:determiner:sam"))
                 .expect("productive determiner")
                 .capabilities()
-                .productive_adjective
+                .productive_determiner
         );
         assert!(
             Numeral::from_id(&LexemeId::from("synodal:numeral:pervyi"))
@@ -1737,7 +1897,7 @@ mod tests {
         });
         assert!(matches!(
             strict.form_by_id(&ves, unsupported_dual),
-            Err(Error::UnsupportedCell { .. })
+            Err(Error::HistoricallyInvalidCell { .. })
         ));
 
         let reshchi = LexemeId::from("synodal:verb:wikt-06af096688df");

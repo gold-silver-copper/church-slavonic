@@ -440,6 +440,7 @@ fn cell_matches_part_of_speech(cell: GrammarCell, part_of_speech: PartOfSpeech) 
         (GrammarCell::LexicalForm, _)
             | (GrammarCell::Noun(_), PartOfSpeech::Noun)
             | (GrammarCell::Adjective(_), PartOfSpeech::Adjective)
+            | (GrammarCell::Determiner(_), PartOfSpeech::Determiner)
             | (GrammarCell::Pronoun(_), PartOfSpeech::Pronoun)
             | (
                 GrammarCell::FiniteVerb(_)
@@ -481,6 +482,11 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
         LexemeSpecInner::Adjective(_) => Capabilities {
             exact_forms: exact_forms_present,
             productive_adjective: true,
+            ..Capabilities::default()
+        },
+        LexemeSpecInner::Determiner(_) => Capabilities {
+            exact_forms: exact_forms_present,
+            productive_determiner: true,
             ..Capabilities::default()
         },
         LexemeSpecInner::Pronoun(_) => Capabilities {

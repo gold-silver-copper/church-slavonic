@@ -2,12 +2,13 @@ use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope,
     ActiveParticipleShortFormation, AdjectiveClass, AdjectiveForm, AdjectiveLexeme, Animacy,
     AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Case, Comparison,
-    ComparisonFormation, Confidence, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind,
-    FiniteTense, Gender, GenerationPolicy, GrammarCell, ImperativeFormation, ImperfectFormation,
-    LexemeId, NounDeclension, NounLexeme, NounNumberInventory, Number, ParticiplePrincipalPart,
-    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
-    PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result, SourceId,
-    SynodalWord, VerbConjugation, VerbLexeme, normalize_lookup_accentless, validate_pronoun_lexeme,
+    ComparisonFormation, Confidence, DeterminerDeclension, DeterminerLexeme, EpistemicRole, Error,
+    Evidence, EvidenceId, EvidenceKind, FiniteTense, Gender, GenerationPolicy, GrammarCell,
+    ImperativeFormation, ImperfectFormation, LexemeId, NounDeclension, NounLexeme,
+    NounNumberInventory, Number, ParticiplePrincipalPart, PronounDeclension, PronounEnvironment,
+    PronounFormSelection, PronounLexeme, PronounPostpositive, PronounPrefix, Recension,
+    RecensionMappingId, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
+    normalize_lookup_accentless, validate_determiner_lexeme, validate_pronoun_lexeme,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -772,8 +773,21 @@ pub(crate) fn adjective_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
     adjectival_lexeme(id, PartOfSpeech::Adjective)
 }
 
-pub(crate) fn determiner_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
-    adjectival_lexeme(id, PartOfSpeech::Determiner)
+pub(crate) fn determiner_lexeme(id: &LexemeId) -> Result<DeterminerLexeme> {
+    let row = require_pos(id, PartOfSpeech::Determiner)?;
+    let lexeme = DeterminerLexeme::new(
+        SynodalWord::parse(row.0[1])?,
+        SynodalWord::parse(row.0[4])?,
+        match row.0[3] {
+            "determiner-pronominal-hard" => DeterminerDeclension::PronominalHard,
+            "determiner-ves-mixed" => DeterminerDeclension::VesMixed,
+            "determiner-vsyak-mixed" => DeterminerDeclension::VsyakMixed,
+            "determiner-full-sk" => DeterminerDeclension::FullSk,
+            value => return invalid_metadata("determiner class", value),
+        },
+    );
+    validate_determiner_lexeme(&lexeme)?;
+    Ok(lexeme)
 }
 
 pub(crate) fn ordinal_lexeme(id: &LexemeId) -> Result<AdjectiveLexeme> {
@@ -918,8 +932,8 @@ fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveL
         lemma: SynodalWord::parse(row.0[1])?,
         stem: SynodalWord::parse(row.0[4])?,
         class: match row.0[3] {
-            "hard-short" | "determiner-hard" | "ordinal-hard" => AdjectiveClass::Hard,
-            "soft-short" | "determiner-soft" | "ordinal-soft" => AdjectiveClass::Soft,
+            "hard-short" | "ordinal-hard" => AdjectiveClass::Hard,
+            "soft-short" | "ordinal-soft" => AdjectiveClass::Soft,
             value => return invalid_metadata("adjective class", value),
         },
         comparative_stem: PRINCIPAL_PARTS

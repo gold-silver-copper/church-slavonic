@@ -734,23 +734,24 @@ id = "syn.determiner"
 recension = "synodal-russian"
 category = "determiner"
 part_of_speech = "determiner"
-scope = "Regular adjectival and exceptional/velar-stem determiners."
+scope = "The complete Alypy §45 determiner-owned inventory: short and full самъ/самый, mixed весь, mixed short/full всѧкъ/всѧкїй, and full всѧческїй."
 profiles = ["expanded", "liturgical"]
-features = ["case=7", "number=3", "gender=3", "animacy=2", "class=regular|exceptional"]
-subtypes = ["regular-non-velar", "velar-stem", "irregular"]
+features = ["case=7", "number=lexical", "gender=3", "animacy=2", "form=short|long", "degree=positive", "class=pronominal-hard|весь-mixed|всѧкъ-mixed|full--скїй"]
+subtypes = ["PronominalHard", "VesMixed", "VsyakMixed", "FullSk"]
 realization = "synthetic"
-state = "implementation-missing"
-implementation_kind = "productive-regular-and-exact-partial"
-rule_ids = ["SYN-DETERMINER-ADJECTIVAL", "SYN-DETERMINER-IRREGULAR-PENDING"]
+state = "productive-complete"
+implementation_kind = "productive-closed-mixed-complete"
+rule_ids = ["SYN-DETERMINER-HARD-ALYPY-45-48", "SYN-DETERMINER-VES-MIXED-ALYPY-45-48", "SYN-DETERMINER-VSYAK-MIXED-ALYPY-45-48-57", "SYN-DETERMINER-FULL-SK-ALYPY-45-57"]
 sources = ["alypy-gamanovich-grammar-web-2023", "synodal-target-text-union"]
-citation = "docs/SYNODAL_MORPHOLOGY.md: productive regular non-velar determiners; всѧкъ exceptional cells remain exact."
-required_metadata = ["stable identity", "adjective stem/class or irregular table", "accent"]
-valid_inventory = "Regular non-velar agreement is productive; exceptional families are incomplete."
-invalid_inventory = "Unlicensed automatic velar alternation."
-implementation = ["crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/resolver.rs"]
-tests = ["crates/synodal-church-slavonic/src/lib.rs#determiner_handle_is_real_but_abstains_outside_exact_cells"]
-evidence_status = "productive regular background plus partial exact irregulars"
-gap = "Finish velar and exceptional determiner families, then separate final productive and irregular matrix entries."
+citation = "Alypy §§45 and 48 enumerate the determinative-pronoun identities, short/full distinction, pronominal obliques, весь mixed endings and no-dual restriction; §57 supplies complete full-adjective endings, final-velar palatalization, and -ск-/-ст- alternation. Reviewed target rows preserve exact variants and accents."
+required_metadata = ["stable identity", "explicit stem", "typed determiner declension", "lexical number inventory", "short/long form", "positive agreement features", "accent paradigm or exact liturgical form when accented output is requested"]
+valid_inventory = "самъ/самый licenses every short and long case × singular/dual/plural × gender × animacy cell. весь licenses only short singular/plural cells, with its source-defined hard/soft mixture and exact всего/всегѡ variants. всѧкъ/всѧкїй licenses short and long singular/plural cells, including к/ц alternation, -аго/-агѡ variants, diaeresis in -кїй/-кїѧ, and explicit no dual. всѧческїй licenses every long singular/dual/plural agreement cell with -ск- → -ст- before ѣ-initial endings. Vocatives are agreeing nominative-equivalent forms. Every reviewed exact determiner surface is contained in its productive background and retains exact-first precedence. Fixed-stem accent paradigms cover all productive всѧкъ and всѧческїй cells; самъ and весь fail with typed missing accent metadata outside their exact liturgical cells."
+invalid_inventory = "Comparative or superlative determiners; dual весь or всѧкъ; long весь; short всѧческїй; a non-к stem in the всѧкъ class; a non--ск stem in the full -скїй class; contradictory custom number inventories; malformed orthography; or liturgical output without exact/reusable accent metadata."
+implementation = ["crates/synodal-church-slavonic-core/src/determiner.rs", "crates/synodal-church-slavonic-core/src/accent.rs", "crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/registry.rs", "crates/synodal-church-slavonic/src/resolver.rs", "crates/synodal-church-slavonic/src/spec.rs", "crates/synodal-church-slavonic-dictionary/src/lib.rs", "data/synodal/lexemes.tsv", "data/synodal/exact_forms.tsv", "data/synodal/accent_paradigms.tsv"]
+tests = ["crates/synodal-church-slavonic-core/src/determiner.rs#mixed_determiners_cover_source_diagnostic_cells", "crates/synodal-church-slavonic-core/src/determiner.rs#sam_and_full_sk_have_distinct_short_and_long_behavior", "crates/synodal-church-slavonic-core/src/determiner.rs#invalid_forms_and_numbers_fail_typed", "crates/synodal-church-slavonic-core/src/determiner.rs#exhaustive_inventory_is_total_over_licensed_cells", "crates/synodal-church-slavonic/src/spec.rs#explicit_determiner_specs_preserve_class_and_number_restrictions", "crates/synodal-church-slavonic/src/lib.rs#productive_determiner_background_contains_every_reviewed_exact_surface", "crates/synodal-church-slavonic/src/lib.rs#determiner_exact_cells_precede_the_complete_productive_background", "crates/synodal-church-slavonic/src/lib.rs#determiner_liturgical_output_uses_reviewed_accent_or_fails_typed", "crates/synodal-church-slavonic-dictionary/src/lib.rs#every_productive_determiner_identity_realizes_every_licensed_analysis_cell"]
+evidence_status = "source-reviewed complete productive determiner morphology with exact target variants, typed invalid inventories, fixed-stem accent paradigms where established, and explicit missing-accent failures elsewhere"
+gap = ""
+rationale = "Alypy explicitly allocates the four determiner-owned families and supplies the exceptional behavior that cannot be inherited safely from ordinary adjectives. A dedicated kernel prevents самъ obliques from collapsing into short-adjective endings, prevents invented duals for весь and всѧкъ, preserves velar and diaeresis spelling, and confines -ск-/-ст- alternation to the reviewed class. Unattested but grammatically licensed cells remain clearly marked normative predictions."
 
 [[system]]
 id = "syn.numeral"

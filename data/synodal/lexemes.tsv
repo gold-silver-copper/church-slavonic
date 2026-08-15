@@ -9,9 +9,10 @@ synodal:adjective:pravedn	праведнъ	adjective	hard-short	праведн		
 synodal:adjective:svyat	свѧтъ	adjective	hard-short	свѧт			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:v06-israel	израилевъ	adjective	exact		masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:vechn	вѣчнъ	adjective	hard-short	вѣчн			alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:determiner:sam	самъ	determiner	determiner-hard	сам			alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:determiner:ves	весь	determiner	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:determiner:vsyak	всѧкъ	determiner	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:determiner:sam	самъ	determiner	determiner-pronominal-hard	сам			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:determiner:ves	весь	determiner	determiner-ves-mixed	вс			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:determiner:vsyacheskii	всѧческїй	determiner	determiner-full-sk	всѧческ			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:determiner:vsyak	всѧкъ	determiner	determiner-vsyak-mixed	всѧк			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:adonai	адѡнаі	noun	indeclinable	адѡнаі	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:bog	богъ	noun	first-hard-m	бог	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:brethren-collective	братїѧ	noun	second-soft	братї	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian

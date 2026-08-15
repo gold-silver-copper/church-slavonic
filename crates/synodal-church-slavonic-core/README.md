@@ -37,7 +37,8 @@ assert_eq!(
 
 The current productive slice covers thirty-six reviewed noun contracts, including
 regular, mixed, final-velar, invariant, and lexeme-bounded stem-alternating families; hard
-and soft, short and long positive adjectives; present, imperfect, aorist,
+and soft, short and long positive adjectives; complete short/full pronominal,
+mixed dual-less, velar, and full `-скїй` determiner classes; present, imperfect, aorist,
 imperative, infinitive, and l-participle formation from independent principal
 parts; traditional Cyrillic numerals; validated Synodal words and rendered
 text; loss-reporting transliteration; and versioned UTN #41 Synodal collation.

@@ -983,7 +983,7 @@ fn full_velar_forms(stem: &str, cell: PronounCell, diaeresis_direct: bool) -> Re
         (Sg, F, Nom, _) => raw("аѧ"),
         (Sg, N, Nom, _) => raw("ое"),
         (Sg, M | N, Gen, _) => raw("агѡ"),
-        (Sg, F, Gen, _) => raw("іѧ"),
+        (Sg, F, Gen, _) => raw(if diaeresis_direct { "їѧ" } else { "іѧ" }),
         (Sg, M | N, Dat, _) => raw("омꙋ"),
         (Sg, F, Dat | Loc, _) => soft("ѣй"),
         (Sg, M, Acc, Animacy::Inanimate) => raw(if diaeresis_direct { "їй" } else { "ій" }),
@@ -998,12 +998,12 @@ fn full_velar_forms(stem: &str, cell: PronounCell, diaeresis_direct: bool) -> Re
         (Du, _, Gen | Loc, _) => raw("ꙋю"),
         (Du, _, Dat | Ins, _) => raw("има"),
         (Pl, M, Nom, _) => soft("іи"),
-        (Pl, F, Nom, _) => raw("іѧ"),
+        (Pl, F, Nom, _) => raw(if diaeresis_direct { "їѧ" } else { "іѧ" }),
         (Pl, N, Nom, _) => raw("аѧ"),
         (Pl, _, Gen | Loc, _) => raw("ихъ"),
         (Pl, _, Dat, _) => raw("имъ"),
         (Pl, M, Acc, Animacy::Animate) => raw("ихъ"),
-        (Pl, M | F, Acc, _) => raw("іѧ"),
+        (Pl, M | F, Acc, _) => raw(if diaeresis_direct { "їѧ" } else { "іѧ" }),
         (Pl, N, Acc, _) => raw("аѧ"),
         (Pl, _, Ins, _) => raw("ими"),
         (_, _, Case::Vocative, _) => unreachable!(),
@@ -1863,6 +1863,31 @@ mod tests {
             .primary_text(),
             "толицы"
         );
+    }
+
+    #[test]
+    fn full_velar_diaeresis_is_preserved_in_feminine_iya_endings() {
+        let lexeme =
+            PronounLexeme::regular(word("єликїй"), word("єлик"), PronounDeclension::FullVelar);
+        for (number, case, expected) in [
+            (Number::Singular, Case::Genitive, "єликїѧ"),
+            (Number::Plural, Case::Nominative, "єликїѧ"),
+            (Number::Plural, Case::Accusative, "єликїѧ"),
+        ] {
+            let forms = decline_pronoun(
+                &lexeme,
+                PronounCell {
+                    case,
+                    number,
+                    gender: Some(Gender::Feminine),
+                    person: None,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("full velar cell");
+            assert_eq!(forms.primary_text(), expected);
+        }
     }
 
     #[test]

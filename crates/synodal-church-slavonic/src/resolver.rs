@@ -230,6 +230,11 @@ pub(crate) fn resolve_spec(
             cell,
             rule_profile,
         ),
+        LexemeSpecInner::Determiner(spec) => generate_productive(
+            ProductiveLexeme::Determiner(&spec.lexeme),
+            cell,
+            rule_profile,
+        ),
         LexemeSpecInner::Pronoun(spec) => {
             generate_productive(ProductiveLexeme::Pronoun(&spec.lexeme), cell, rule_profile)
         }
@@ -311,7 +316,7 @@ pub(crate) fn resolve_cell(
                 reason: "this determiner has no reviewed productive class for the requested cell"
                     .into(),
             })?;
-            generate_productive(ProductiveLexeme::Adjective(&lexeme), cell, rule_profile)
+            generate_productive(ProductiveLexeme::Determiner(&lexeme), cell, rule_profile)
         }
         GrammarCell::Numeral(numeral) if numeral.kind == NumeralKind::Ordinal => {
             let lexeme = registry::ordinal_lexeme(id)?;

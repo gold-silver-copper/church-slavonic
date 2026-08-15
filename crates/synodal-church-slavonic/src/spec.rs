@@ -3,13 +3,14 @@ use std::collections::BTreeSet;
 use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentScope, ActiveParticipleShortFormation, AdjectiveClass,
     AdjectiveForm, AdjectiveLexeme, AoristFormation, Aspect, AuthorityRole, Comparison,
-    ComparisonFormation, EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind, FiniteTense,
-    FormSet, Gender, GrammarCell, ImperativeFormation, ImperfectFormation, MetadataField,
-    NounDeclension, NounLexeme, OrthographyProfile, ParticiplePrincipalPart, ParticipleTense,
-    ParticipleVoice, PresentPrincipalParts, PronounDeclension, PronounEnvironment,
-    PronounFormSelection, PronounLexeme, PronounNumberInventory, PronounPostpositive,
-    PronounPrefix, Recension, RenderedText, Result, SourceId, SynodalWord, VerbConjugation,
-    VerbLexeme, VerbSystem, validate_noun_lexeme, validate_pronoun_lexeme,
+    ComparisonFormation, DeterminerDeclension, DeterminerLexeme, DeterminerNumberInventory,
+    EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind, FiniteTense, FormSet, Gender,
+    GrammarCell, ImperativeFormation, ImperfectFormation, MetadataField, NounDeclension,
+    NounLexeme, OrthographyProfile, ParticiplePrincipalPart, ParticipleTense, ParticipleVoice,
+    PresentPrincipalParts, PronounDeclension, PronounEnvironment, PronounFormSelection,
+    PronounLexeme, PronounNumberInventory, PronounPostpositive, PronounPrefix, Recension,
+    RenderedText, Result, SourceId, SynodalWord, VerbConjugation, VerbLexeme, VerbSystem,
+    validate_determiner_lexeme, validate_noun_lexeme, validate_pronoun_lexeme,
 };
 
 use crate::{
@@ -468,6 +469,107 @@ impl AdjectiveSpec {
             }
         }
         Ok(())
+    }
+}
+
+/// Caller-supplied typed metadata for a Synodal determiner. Determiner form
+/// and number restrictions remain lexical facts rather than adjective
+/// defaults inferred from the requested agreement cell.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct DeterminerSpec {
+    pub(crate) lexeme: DeterminerLexeme,
+    pub(crate) context: SpecContext,
+}
+
+impl DeterminerSpec {
+    pub fn new(
+        lemma: impl Into<String>,
+        stem: impl Into<String>,
+        declension: DeterminerDeclension,
+        source: SpecificationSource,
+    ) -> Result<Self> {
+        let spec = Self {
+            lexeme: DeterminerLexeme::new(
+                SynodalWord::parse(lemma)?,
+                SynodalWord::parse(stem)?,
+                declension,
+            ),
+            context: SpecContext::new(source),
+        };
+        spec.validate()?;
+        Ok(spec)
+    }
+
+    #[must_use]
+    pub fn lemma(&self) -> &str {
+        self.lexeme.lemma.canonical()
+    }
+
+    pub fn with_number_inventory(mut self, inventory: DeterminerNumberInventory) -> Result<Self> {
+        self.lexeme.number_inventory = inventory;
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_accent_paradigm(mut self, accent: AccentParadigm) -> Result<Self> {
+        self.context.accent = Some(accent);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
+        self.context.irregular_forms.push(form);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_defective_cell(mut self, cell: DefectiveCell) -> Result<Self> {
+        self.context.defective_cells.push(cell);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn form(&self, cell: synodal_church_slavonic_core::AdjectiveCell) -> Result<FormSet> {
+        self.form_with(Inflector::default(), cell)
+    }
+
+    pub fn form_with(
+        &self,
+        inflector: Inflector,
+        cell: synodal_church_slavonic_core::AdjectiveCell,
+    ) -> Result<FormSet> {
+        inflector.form_spec(
+            &LexemeSpec::from(self.clone()),
+            GrammarCell::Determiner(cell),
+        )
+    }
+
+    #[must_use]
+    pub fn paradigm(&self, form: AdjectiveForm) -> Paradigm {
+        self.paradigm_with(Inflector::default(), form)
+    }
+
+    #[must_use]
+    pub fn paradigm_with(&self, inflector: Inflector, form: AdjectiveForm) -> Paradigm {
+        let spec = LexemeSpec::from(self.clone());
+        let cells = adjective_cells(form)
+            .into_iter()
+            .map(GrammarCell::Determiner);
+        Paradigm::build_explicit(
+            self.lemma().into(),
+            PartOfSpeech::Determiner,
+            cells,
+            |cell| inflector.form_spec(&spec, cell),
+        )
+    }
+
+    pub fn validate(&self) -> Result<()> {
+        self.context.validate()?;
+        validate_context_cells(&self.context, |cell| {
+            matches!(cell, GrammarCell::Determiner(_))
+        })?;
+        validate_determiner_lexeme(&self.lexeme)
     }
 }
 
@@ -975,6 +1077,7 @@ pub struct LexemeSpec {
 pub(crate) enum LexemeSpecInner {
     Noun(NounSpec),
     Adjective(AdjectiveSpec),
+    Determiner(DeterminerSpec),
     Pronoun(PronounSpec),
     Verb(Box<VerbSpec>),
 }
@@ -984,6 +1087,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(spec) => spec.validate(),
             LexemeSpecInner::Adjective(spec) => spec.validate(),
+            LexemeSpecInner::Determiner(spec) => spec.validate(),
             LexemeSpecInner::Pronoun(spec) => spec.validate(),
             LexemeSpecInner::Verb(spec) => spec.validate(),
         }
@@ -994,6 +1098,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(spec) => spec.lemma(),
             LexemeSpecInner::Adjective(spec) => spec.lemma(),
+            LexemeSpecInner::Determiner(spec) => spec.lemma(),
             LexemeSpecInner::Pronoun(spec) => spec.lemma(),
             LexemeSpecInner::Verb(spec) => spec.lemma(),
         }
@@ -1004,6 +1109,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(_) => PartOfSpeech::Noun,
             LexemeSpecInner::Adjective(_) => PartOfSpeech::Adjective,
+            LexemeSpecInner::Determiner(_) => PartOfSpeech::Determiner,
             LexemeSpecInner::Pronoun(_) => PartOfSpeech::Pronoun,
             LexemeSpecInner::Verb(_) => PartOfSpeech::Verb,
         }
@@ -1018,6 +1124,7 @@ impl LexemeSpec {
         match self.inner.as_ref() {
             LexemeSpecInner::Noun(spec) => &spec.context,
             LexemeSpecInner::Adjective(spec) => &spec.context,
+            LexemeSpecInner::Determiner(spec) => &spec.context,
             LexemeSpecInner::Pronoun(spec) => &spec.context,
             LexemeSpecInner::Verb(spec) => &spec.context,
         }
@@ -1040,6 +1147,14 @@ impl From<AdjectiveSpec> for LexemeSpec {
     fn from(spec: AdjectiveSpec) -> Self {
         Self {
             inner: Box::new(LexemeSpecInner::Adjective(spec)),
+        }
+    }
+}
+
+impl From<DeterminerSpec> for LexemeSpec {
+    fn from(spec: DeterminerSpec) -> Self {
+        Self {
+            inner: Box::new(LexemeSpecInner::Determiner(spec)),
         }
     }
 }
@@ -1419,6 +1534,43 @@ mod tests {
                 .primary_text(),
             "ꙗже"
         );
+    }
+
+    #[test]
+    fn explicit_determiner_specs_preserve_class_and_number_restrictions() {
+        let vsyak =
+            DeterminerSpec::new("всѧкъ", "всѧк", DeterminerDeclension::VsyakMixed, source())
+                .expect("mixed determiner specification");
+        let generated = vsyak
+            .form(AdjectiveCell {
+                case: Case::Dative,
+                number: Number::Singular,
+                gender: Gender::Feminine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Short,
+                comparison: Comparison::Positive,
+            })
+            .expect("licensed mixed cell");
+        assert_eq!(generated.texts().collect::<Vec<_>>(), ["всѧцѣй", "всѧкой"]);
+        assert!(matches!(
+            generated.primary().source,
+            FormSource::CallerSpecifiedPrediction { .. }
+        ));
+        let paradigm = vsyak.paradigm(AdjectiveForm::Short);
+        assert_eq!(paradigm.successes().count(), 48);
+        assert_eq!(
+            paradigm
+                .with_status(ParadigmStatus::HistoricallyInvalid)
+                .count(),
+            24
+        );
+
+        assert!(matches!(
+            DeterminerSpec::new("всѧкъ", "всѧк", DeterminerDeclension::VsyakMixed, source(),)
+                .expect("default no-dual specification")
+                .with_number_inventory(DeterminerNumberInventory::All),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
     }
 
     #[test]

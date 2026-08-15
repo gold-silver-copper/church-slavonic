@@ -126,6 +126,7 @@ pub(crate) const SENSES: &[RawSense] = &[
     RawSense(["synodal:conjunction:yakozhe", "sense:v05:conjunction:yakozhe", "as; just as", "general", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
     RawSense(["synodal:determiner:sam", "sense:self", "self; the same person or thing", "determination,emphasis", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
     RawSense(["synodal:determiner:ves", "sense:all-whole", "all; whole; every member of a set", "determination,quantity", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
+    RawSense(["synodal:determiner:vsyacheskii", "sense:every-kind", "every kind of; of every sort", "determination,distributive", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
     RawSense(["synodal:determiner:vsyak", "sense:every", "every; each", "determination,distributive", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
     RawSense(["synodal:interjection:amin", "sense:v05:interjection:amin", "amen; truly", "religion,discourse", "english-wiktionary-ocs-kaikki-2026-08-07", "old-church-slavonic", "reviewed-ocs-inheritance"]),
     RawSense(["synodal:interjection:ni", "sense:v05:interjection:ni", "no; by no means", "general", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),

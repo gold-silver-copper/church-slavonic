@@ -1623,7 +1623,13 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
                         | "indeclinable",
                 )
                 | ("adjective", "hard-short" | "soft-short")
-                | ("determiner", "determiner-hard" | "determiner-soft")
+                | (
+                    "determiner",
+                    "determiner-pronominal-hard"
+                        | "determiner-ves-mixed"
+                        | "determiner-vsyak-mixed"
+                        | "determiner-full-sk"
+                )
                 | ("numeral", "ordinal-hard" | "ordinal-soft")
                 | (
                     "pronoun",

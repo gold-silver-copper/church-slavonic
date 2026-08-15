@@ -67,6 +67,13 @@ number inventory, clitic selection, post-prepositional environment, productive
 interposition, and fused `нань`/`вонь` contractions as structured grammatical
 results rather than fake space-containing words.
 
+Determiners have their own explicit-metadata route rather than masquerading as
+ordinary adjectives. `DeterminerSpec` selects the complete source-owned
+`самъ`/`самый`, mixed `весь`, mixed `всѧкъ`/`всѧкїй`, or full
+`всѧческїй` class. The facade retains exact spellings first, rejects the
+source-excluded dual of `весь` and `всѧкъ`, and exposes a separate
+`productive_determiner` capability.
+
 ## Injectable application lexicons
 
 The generated registry and application-owned entries compose through one

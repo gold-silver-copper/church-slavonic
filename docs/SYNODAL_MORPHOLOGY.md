@@ -252,7 +252,10 @@ exceptional determiner cell; representative active/passive participle cells for
 `нести`; the first-, second-, and complete gendered third-person
 personal-pronoun paradigms; and the
 complete reviewed present, imperative, and aorist tables of archaic `дати` from
-Alypy §103.
+Alypy §103. The determiner registry also has complete productive backgrounds
+for `самъ`/`самый`, mixed dual-less `весь`, short/full dual-less
+`всѧкъ`/`всѧкїй`, and full `всѧческїй`; its older exact rows remain
+higher-precedence spelling, accent, and attestation evidence.
 
 The v0.4 family review adds the complete, accent-specified `землѧ` paradigm from
 Alypy §39; independently delimited exact future/aorist/imperative cells for
@@ -350,10 +353,8 @@ The closed grammar enums represent these gaps so paradigms retain failures:
 - automatic comparison-stem formation and comparison stems other than explicitly
   supplied typed series; short superlatives are restricted to the exceptional
   predicate nominatives licensed by Alypy §§59, 125, and 128;
-- reflexive, relative, interrogative, indefinite, and negative pronouns beyond
-  reviewed exact cells; the third-person paradigm is exact, not productive;
-  velar-stem determiners such as full `всѧкъ`; collective,
-  compound, and irregular cardinal numerals;
+- collective, compound, and irregular cardinal numerals beyond the reviewed
+  exact cells and productive ordinal background;
 - automatic participle stem formation from an undifferentiated verb stem;
   short active participles require an independent stem and typed formation;
 - the supine pending a target-recension normative inventory, productive verbal

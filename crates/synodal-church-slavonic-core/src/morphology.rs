@@ -3111,6 +3111,18 @@ fn normative_citation(rule: &str) -> &'static str {
         "SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128" => {
             "Alypy (Gamanovich), §§59–60, 125, and 128"
         }
+        "SYN-DETERMINER-HARD-ALYPY-45-48" => {
+            "Alypy (Gamanovich), §§45 and 48 short and full determinative pronouns"
+        }
+        "SYN-DETERMINER-VES-MIXED-ALYPY-45-48" => {
+            "Alypy (Gamanovich), §§45 and 48.7 весь mixed paradigm and no-dual restriction"
+        }
+        "SYN-DETERMINER-VSYAK-MIXED-ALYPY-45-48-57" => {
+            "Alypy (Gamanovich), §§45, 48, and 57 всѧкъ/всѧкїй paradigms"
+        }
+        "SYN-DETERMINER-FULL-SK-ALYPY-45-57" => {
+            "Alypy (Gamanovich), §§45 and 57 full -скїй declension and -ск-/-ст- alternation"
+        }
         "SYN-PRONOUN-PERSONAL-FIRST-ALYPY-47"
         | "SYN-PRONOUN-PERSONAL-SECOND-ALYPY-47"
         | "SYN-PRONOUN-REFLEXIVE-ALYPY-47" => "Alypy (Gamanovich), §47 first group",
