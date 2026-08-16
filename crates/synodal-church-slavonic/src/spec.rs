@@ -10,8 +10,9 @@ use synodal_church_slavonic_core::{
     ParticiplePrincipalPart, ParticipleTense, ParticipleVoice, PresentPrincipalParts,
     PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
     PronounNumberInventory, PronounPostpositive, PronounPrefix, Recension, RenderedText, Result,
-    SourceId, SynodalWord, VerbConjugation, VerbLexeme, VerbSystem, validate_determiner_lexeme,
-    validate_noun_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
+    ShortMasculineStemFormation, SourceId, SynodalWord, VerbConjugation, VerbLexeme, VerbSystem,
+    validate_adjective_lexeme, validate_determiner_lexeme, validate_noun_lexeme,
+    validate_numeral_lexeme, validate_pronoun_lexeme,
 };
 
 use crate::{
@@ -359,6 +360,8 @@ impl AdjectiveSpec {
                 lemma: SynodalWord::parse(lemma)?,
                 stem: SynodalWord::parse(stem)?,
                 class,
+                short_masculine_stem: None,
+                short_masculine_formation: None,
                 comparative_stem: None,
                 comparison_formation: None,
             },
@@ -373,6 +376,20 @@ impl AdjectiveSpec {
     ) -> Result<Self> {
         self.lexeme.comparative_stem = Some(SynodalWord::parse(stem)?);
         self.lexeme.comparison_formation = Some(formation);
+        self.validate()?;
+        Ok(self)
+    }
+
+    /// Supplies the independently reviewed positive stem used before the
+    /// short masculine citation ending and the source-defined relation to the
+    /// ordinary stem.
+    pub fn short_masculine_stem(
+        mut self,
+        stem: impl Into<String>,
+        formation: ShortMasculineStemFormation,
+    ) -> Result<Self> {
+        self.lexeme.short_masculine_stem = Some(SynodalWord::parse(stem)?);
+        self.lexeme.short_masculine_formation = Some(formation);
         self.validate()?;
         Ok(self)
     }
@@ -443,6 +460,7 @@ impl AdjectiveSpec {
         validate_context_cells(&self.context, |cell| {
             matches!(cell, GrammarCell::Adjective(_))
         })?;
+        validate_adjective_lexeme(&self.lexeme)?;
         if self.lexeme.comparative_stem.is_some() != self.lexeme.comparison_formation.is_some() {
             return Err(Error::ContradictoryMetadata {
                 reason: "comparison stem and typed comparison formation must be supplied together"

@@ -7,9 +7,10 @@ use synodal_church_slavonic_core::{
     ImperativeFormation, ImperfectFormation, LexemeId, NounDeclension, NounLexeme,
     NounNumberInventory, Number, NumeralDeclension, NumeralLexeme, ParticiplePrincipalPart,
     PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
-    PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result, SourceId,
-    SynodalWord, VerbConjugation, VerbLexeme, normalize_lookup_accentless,
-    validate_determiner_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
+    PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result,
+    ShortMasculineStemFormation, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
+    normalize_lookup_accentless, validate_adjective_lexeme, validate_determiner_lexeme,
+    validate_numeral_lexeme, validate_pronoun_lexeme,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -827,6 +828,7 @@ pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
             "first-hard-ud-es-m" => NounDeclension::FirstHardMasculineUdEs,
             "first-hard-velar-m" => NounDeclension::FirstHardVelarMasculine,
             "first-mixed-m" => NounDeclension::FirstMixedMasculine,
+            "first-mixed-ts-m" => NounDeclension::FirstMixedTsMasculine,
             "first-hard-n" => NounDeclension::FirstHardNeuter,
             "first-soft-m" => NounDeclension::FirstSoftMasculine,
             "first-soft-agent-tel-m" => NounDeclension::FirstSoftMasculineAgentTel,
@@ -1069,14 +1071,24 @@ pub(crate) fn pronoun_lexeme(id: &LexemeId) -> Result<PronounLexeme> {
 
 fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveLexeme> {
     let row = require_pos(id, expected)?;
-    Ok(AdjectiveLexeme {
+    let short_masculine = PRINCIPAL_PARTS
+        .iter()
+        .find(|part| part.0[0] == id.as_str() && part.0[1] == "short-masculine-stem");
+    let lexeme = AdjectiveLexeme {
         lemma: SynodalWord::parse(row.0[1])?,
         stem: SynodalWord::parse(row.0[4])?,
         class: match row.0[3] {
             "hard-short" => AdjectiveClass::Hard,
             "soft-short" => AdjectiveClass::Soft,
+            "velar-short" => AdjectiveClass::Velar,
             value => return invalid_metadata("adjective class", value),
         },
+        short_masculine_stem: short_masculine
+            .map(|part| SynodalWord::parse(part.0[2]))
+            .transpose()?,
+        short_masculine_formation: short_masculine
+            .map(|part| parse_short_masculine_formation(part.0[3]))
+            .transpose()?,
         comparative_stem: PRINCIPAL_PARTS
             .iter()
             .find(|part| part.0[0] == id.as_str() && part.0[1] == "comparative-stem")
@@ -1087,7 +1099,17 @@ fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveL
             .find(|part| part.0[0] == id.as_str() && part.0[1] == "comparative-stem")
             .map(|part| parse_comparison_formation(part.0[3]))
             .transpose()?,
-    })
+    };
+    validate_adjective_lexeme(&lexeme)?;
+    Ok(lexeme)
+}
+
+fn parse_short_masculine_formation(value: &str) -> Result<ShortMasculineStemFormation> {
+    match value {
+        "double-n-reduction" => Ok(ShortMasculineStemFormation::DoubleNReduction),
+        "mobile-e-insertion" => Ok(ShortMasculineStemFormation::MobileEInsertion),
+        value => invalid_metadata("short masculine formation", value),
+    }
 }
 
 fn parse_comparison_formation(value: &str) -> Result<ComparisonFormation> {

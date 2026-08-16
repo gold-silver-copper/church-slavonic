@@ -1,4 +1,10 @@
 lexeme_id	system	value	formation	evidence_id	target_recension
+synodal:adjective:blagoslovenn	short-masculine-stem	благословен	double-n-reduction	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
+synodal:adjective:blazhenn	short-masculine-stem	блажен	double-n-reduction	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
+synodal:adjective:bozhestvenn	short-masculine-stem	божествен	double-n-reduction	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
+synodal:adjective:chestn	short-masculine-stem	честен	mobile-e-insertion	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
+synodal:adjective:prepodobn	short-masculine-stem	преподобен	mobile-e-insertion	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
+synodal:adjective:wikt-a9cef2fd54e7	comparative-stem	унш	ancient-hard	alypy-58-suppletive-good-comparison	synodal-russian
 synodal:verb:nesti	present-first-singular	несꙋ		alypy-82-nesti	synodal-russian
 synodal:verb:nesti	present-third-plural	несꙋтъ		alypy-82-nesti	synodal-russian
 synodal:verb:nesti	imperfect-stem	нес	yah	alypy-87-nesti-pattern	synodal-russian

@@ -1863,6 +1863,7 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
                         | "first-hard-ud-es-m"
                         | "first-hard-velar-m"
                         | "first-mixed-m"
+                        | "first-mixed-ts-m"
                         | "first-hard-n"
                         | "first-soft-m"
                         | "first-soft-agent-tel-m"
@@ -1895,7 +1896,7 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
                         | "fourth-masculine-en-kamen"
                         | "indeclinable",
                 )
-                | ("adjective", "hard-short" | "soft-short")
+                | ("adjective", "hard-short" | "soft-short" | "velar-short")
                 | (
                     "determiner",
                     "determiner-pronominal-hard"
@@ -2075,6 +2076,11 @@ fn validate_principal_parts(path: &Path, table: &Table) -> Result<()> {
             )
         {
             return invalid(path, offset + 2, "unknown typed comparison formation");
+        }
+        if row[1] == "short-masculine-stem"
+            && !matches!(row[3].as_str(), "double-n-reduction" | "mobile-e-insertion")
+        {
+            return invalid(path, offset + 2, "unknown typed short-masculine formation");
         }
         if row[1].ends_with("active-participle-short-stem") {
             let valid = matches!(

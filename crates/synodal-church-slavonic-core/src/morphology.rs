@@ -29,6 +29,11 @@ pub enum NounDeclension {
     FirstHardVelarMasculine,
     /// First-declension masculine with a sibilant stem and mixed endings.
     FirstMixedMasculine,
+    /// First-declension masculine with a `ц`-final oblique stem and an
+    /// independently supplied citation form, including mobile-`е` nouns such
+    /// as `младенецъ : младенц-`. Synodal `ц` combines with `ы`/`ъ` but not
+    /// `о` (Alypy §8.c); the remaining mixed endings follow §§33–37.
+    FirstMixedTsMasculine,
     FirstHardNeuter,
     FirstSoftMasculine,
     /// Agent nouns in `-тель`, retaining the ordinary soft paradigm plus the
@@ -114,13 +119,14 @@ pub enum NounDeclension {
 }
 
 impl NounDeclension {
-    pub const ALL: [Self; 37] = [
+    pub const ALL: [Self; 38] = [
         Self::FirstHardMasculine,
         Self::FirstHardMasculineUStem,
         Self::FirstHardMasculineInEthnonym,
         Self::FirstHardMasculineUdEs,
         Self::FirstHardVelarMasculine,
         Self::FirstMixedMasculine,
+        Self::FirstMixedTsMasculine,
         Self::FirstHardNeuter,
         Self::FirstSoftMasculine,
         Self::FirstSoftMasculineAgentTel,
@@ -228,6 +234,27 @@ impl NounLexeme {
 pub enum AdjectiveClass {
     Hard,
     Soft,
+    /// Hard adjective with a final velar stem. Its complete positive
+    /// paradigm has the ending spellings and palatalizations printed
+    /// separately in Alypy §57 (`благїй : блазїи`).
+    Velar,
+}
+
+/// Source-defined relation between the ordinary positive stem and the stem
+/// used before the short masculine citation ending.
+///
+/// The alternant remains an independently supplied principal part. The enum
+/// validates why it differs, preventing a caller from smuggling an arbitrary
+/// irregular stem through either productive rule.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum ShortMasculineStemFormation {
+    /// Alypy §52: a full/general `-нн-` stem loses one `н` at the short
+    /// masculine citation edge (`блаженн- : блаженъ`).
+    DoubleNReduction,
+    /// A mobile `е` appears before the final stem consonant at the short
+    /// masculine citation edge (`преподобн- : преподобенъ`).
+    MobileEInsertion,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -236,6 +263,10 @@ pub struct AdjectiveLexeme {
     pub lemma: SynodalWord,
     pub stem: SynodalWord,
     pub class: AdjectiveClass,
+    /// Independently supplied positive stem used before the short masculine
+    /// citation ending. It must be paired with `short_masculine_formation`.
+    pub short_masculine_stem: Option<SynodalWord>,
+    pub short_masculine_formation: Option<ShortMasculineStemFormation>,
     /// Fully specified stem before comparison endings (for example `мꙋдрѣйш`).
     pub comparative_stem: Option<SynodalWord>,
     /// Formation of the independently supplied comparison stem. This is
@@ -746,6 +777,23 @@ fn noun_surfaces(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<Strin
     if lexeme.declension == NounDeclension::Indeclinable {
         return Ok(vec![lexeme.lemma.canonical().to_owned()]);
     }
+    if lexeme.declension == NounDeclension::FirstMixedTsMasculine
+        && cell.number == Sg
+        && matches!(cell.case, Nom | Acc)
+        && (cell.case == Nom || cell.animacy == Animacy::Inanimate)
+    {
+        return Ok(vec![lexeme.lemma.canonical().to_owned()]);
+    }
+    if lexeme.declension == NounDeclension::FirstMixedTsMasculine
+        && cell.number == Sg
+        && cell.case == Voc
+    {
+        let stem = lexeme.stem.canonical();
+        let palatalized = stem
+            .strip_suffix('ц')
+            .map_or_else(|| stem.to_owned(), |prefix| join(prefix, "ч"));
+        return Ok(vec![join(&palatalized, "е")]);
+    }
     if lexeme.declension == NounDeclension::FirstHardMasculineUdEs {
         let short_stem = lexeme.lemma.canonical().strip_suffix('ъ').ok_or_else(|| {
             Error::ContradictoryMetadata {
@@ -1037,11 +1085,92 @@ fn noun_stem(lexeme: &NounLexeme, cell: crate::NounCell) -> String {
     }
 }
 
+fn positive_adjective_surface(lexeme: &AdjectiveLexeme, cell: AdjectiveCell) -> Result<String> {
+    if lexeme.class == AdjectiveClass::Velar {
+        return velar_positive_adjective_surface(lexeme, cell);
+    }
+    let ending = match cell.form {
+        AdjectiveForm::Short => short_adjective_ending(lexeme.class, cell)?,
+        AdjectiveForm::Long => long_adjective_ending(lexeme.class, cell)?,
+    };
+    let stem = if cell.form == AdjectiveForm::Short
+        && cell.number == Number::Singular
+        && cell.gender == Gender::Masculine
+        && matches!(ending, "ъ" | "ь")
+    {
+        lexeme.short_masculine_stem.as_ref().unwrap_or(&lexeme.stem)
+    } else {
+        &lexeme.stem
+    };
+    Ok(join(stem.canonical(), ending))
+}
+
+fn velar_positive_adjective_surface(
+    lexeme: &AdjectiveLexeme,
+    cell: AdjectiveCell,
+) -> Result<String> {
+    let mut stem = lexeme.stem.canonical().to_owned();
+    let ending = match cell.form {
+        AdjectiveForm::Short => {
+            let hard = short_adjective_ending(AdjectiveClass::Hard, cell)?;
+            if hard == "ѣ"
+                || matches!(
+                    (cell.number, cell.gender, cell.case),
+                    (
+                        Number::Plural,
+                        Gender::Masculine,
+                        Case::Nominative | Case::Vocative
+                    )
+                )
+            {
+                stem = second_palatalize_final_velar(&stem);
+            } else if hard == "е" {
+                stem = palatalize_final_velar(&stem);
+            }
+            match hard {
+                "ы" => "и",
+                "ымъ" => "имъ",
+                "ыма" => "има",
+                "ыхъ" => "ихъ",
+                "ыми" => "ими",
+                other => other,
+            }
+        }
+        AdjectiveForm::Long => {
+            if matches!(
+                (cell.number, cell.gender, cell.case),
+                (
+                    Number::Singular,
+                    Gender::Feminine,
+                    Case::Dative | Case::Locative
+                ) | (
+                    Number::Singular,
+                    Gender::Masculine | Gender::Neuter,
+                    Case::Locative
+                ) | (
+                    Number::Dual,
+                    Gender::Feminine | Gender::Neuter,
+                    Case::Nominative | Case::Accusative | Case::Vocative
+                ) | (
+                    Number::Plural,
+                    Gender::Masculine,
+                    Case::Nominative | Case::Vocative
+                )
+            ) {
+                stem = second_palatalize_final_velar(&stem);
+            }
+            velar_long_adjective_ending(cell)?
+        }
+    };
+    Ok(join(&stem, ending))
+}
+
 pub fn decline_adjective(
     lexeme: &AdjectiveLexeme,
     cell: AdjectiveCell,
     profile: OrthographyProfile,
 ) -> Result<FormSet> {
+    validate_adjective_lexeme(lexeme)?;
     if cell.form == AdjectiveForm::Short && cell.comparison == Comparison::Comparative {
         let stem = lexeme
             .comparative_stem
@@ -1066,18 +1195,16 @@ pub fn decline_adjective(
         })?;
         return decline_short_superlative_predicate(lexeme, stem, formation, cell, profile);
     }
-    let (stem, ending, rule) = match cell.comparison {
+    let (mut expanded, rule) = match cell.comparison {
         Comparison::Positive => (
-            &lexeme.stem,
-            match cell.form {
-                AdjectiveForm::Short => short_adjective_ending(lexeme.class, cell)?,
-                AdjectiveForm::Long => long_adjective_ending(lexeme.class, cell)?,
-            },
+            vec![positive_adjective_surface(lexeme, cell)?],
             match (lexeme.class, cell.form) {
                 (AdjectiveClass::Hard, AdjectiveForm::Short) => "SYN-ADJ-SHORT-HARD-ALYPY-53",
                 (AdjectiveClass::Soft, AdjectiveForm::Short) => "SYN-ADJ-SHORT-SOFT-ALYPY-53",
+                (AdjectiveClass::Velar, AdjectiveForm::Short) => "SYN-ADJ-SHORT-VELAR-ALYPY-53-57",
                 (AdjectiveClass::Hard, AdjectiveForm::Long) => "SYN-ADJ-LONG-HARD-ALYPY-57",
                 (AdjectiveClass::Soft, AdjectiveForm::Long) => "SYN-ADJ-LONG-SOFT-ALYPY-57",
+                (AdjectiveClass::Velar, AdjectiveForm::Long) => "SYN-ADJ-LONG-VELAR-ALYPY-57",
             },
         ),
         Comparison::Comparative | Comparison::Superlative => {
@@ -1088,8 +1215,10 @@ pub fn decline_adjective(
                     field: MetadataField::ComparisonStem,
                 })?;
             (
-                stem,
-                comparison_long_adjective_ending(cell)?,
+                vec![join(
+                    stem.canonical(),
+                    comparison_long_adjective_ending(cell)?,
+                )],
                 match cell.comparison {
                     Comparison::Comparative => "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58",
                     Comparison::Superlative => "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59",
@@ -1098,22 +1227,24 @@ pub fn decline_adjective(
             )
         }
     };
-    let mut expanded = vec![join(stem.canonical(), ending)];
     if cell.case == Case::Accusative && cell.animacy == Animacy::Animate {
         let nominative_cell = AdjectiveCell {
             animacy: Animacy::Inanimate,
             ..cell
         };
-        let nominative_ending = match cell.comparison {
-            Comparison::Positive => match cell.form {
-                AdjectiveForm::Short => short_adjective_ending(lexeme.class, nominative_cell)?,
-                AdjectiveForm::Long => long_adjective_ending(lexeme.class, nominative_cell)?,
-            },
-            Comparison::Comparative | Comparison::Superlative => {
-                comparison_long_adjective_ending(nominative_cell)?
-            }
+        let nominative_like = match cell.comparison {
+            Comparison::Positive => positive_adjective_surface(lexeme, nominative_cell)?,
+            Comparison::Comparative | Comparison::Superlative => join(
+                lexeme
+                    .comparative_stem
+                    .as_ref()
+                    .ok_or(Error::MissingPrincipalPart {
+                        field: MetadataField::ComparisonStem,
+                    })?
+                    .canonical(),
+                comparison_long_adjective_ending(nominative_cell)?,
+            ),
         };
-        let nominative_like = join(stem.canonical(), nominative_ending);
         if cell.number == Number::Plural {
             expanded.insert(0, nominative_like);
         } else if !expanded.contains(&nominative_like) {
@@ -1842,7 +1973,10 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
                 | NounDeclension::FirstHardMasculineUdEs,
             Gender::Masculine,
         ) | (NounDeclension::FirstHardVelarMasculine, Gender::Masculine)
-            | (NounDeclension::FirstMixedMasculine, Gender::Masculine)
+            | (
+                NounDeclension::FirstMixedMasculine | NounDeclension::FirstMixedTsMasculine,
+                Gender::Masculine,
+            )
             | (NounDeclension::FirstHardNeuter, Gender::Neuter)
             | (
                 NounDeclension::FirstSoftMasculine
@@ -1919,6 +2053,14 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
                     .chars()
                     .last()
                     .is_some_and(|final_char| matches!(final_char, 'ж' | 'ч' | 'ш' | 'щ' | 'ц'))
+        }
+        NounDeclension::FirstMixedTsMasculine => {
+            let citation_stem = lemma.strip_suffix('ъ').unwrap_or_default();
+            let direct = citation_stem == stem;
+            let mobile_e = stem
+                .strip_suffix('ц')
+                .is_some_and(|prefix| citation_stem == format!("{prefix}ец"));
+            stem.ends_with('ц') && (direct || mobile_e)
         }
         NounDeclension::FirstSoftMasculineJ => {
             lemma.strip_suffix('й').is_some_and(|prefix| prefix == stem) && !lemma.ends_with("ей")
@@ -2023,6 +2165,57 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
     Ok(())
 }
 
+/// Validates source-defined positive-stem allomorphy independently of any
+/// lexical registry. This is intentionally available to explicit callers as
+/// well as the bundled facade.
+pub fn validate_adjective_lexeme(lexeme: &AdjectiveLexeme) -> Result<()> {
+    if lexeme.class == AdjectiveClass::Velar
+        && !lexeme
+            .stem
+            .canonical()
+            .chars()
+            .last()
+            .is_some_and(|character| matches!(character, 'г' | 'к' | 'х'))
+    {
+        return Err(Error::ContradictoryMetadata {
+            reason: "a velar adjective requires a stem ending in г, к, or х".into(),
+        });
+    }
+    if lexeme.short_masculine_stem.is_some() != lexeme.short_masculine_formation.is_some() {
+        return Err(Error::ContradictoryMetadata {
+            reason: "short masculine stem and typed formation must be supplied together".into(),
+        });
+    }
+    if let (Some(short), Some(formation)) = (
+        &lexeme.short_masculine_stem,
+        lexeme.short_masculine_formation,
+    ) {
+        let stem = lexeme.stem.canonical();
+        let valid = match formation {
+            ShortMasculineStemFormation::DoubleNReduction => stem
+                .strip_suffix('н')
+                .is_some_and(|single_n| stem.ends_with("нн") && single_n == short.canonical()),
+            ShortMasculineStemFormation::MobileEInsertion => stem
+                .char_indices()
+                .last()
+                .is_some_and(|(offset, final_character)| {
+                    short.canonical() == format!("{}е{final_character}", &stem[..offset])
+                }),
+        };
+        if !valid {
+            return Err(Error::ContradictoryMetadata {
+                reason: format!(
+                    "short masculine stem {:?} does not match {:?} from {:?}",
+                    short.canonical(),
+                    formation,
+                    stem
+                ),
+            });
+        }
+    }
+    Ok(())
+}
+
 fn noun_rule(declension: NounDeclension) -> &'static str {
     match declension {
         NounDeclension::FirstHardMasculine => "SYN-NOUN-I-HARD-M-ALYPY-34",
@@ -2031,6 +2224,7 @@ fn noun_rule(declension: NounDeclension) -> &'static str {
         NounDeclension::FirstHardMasculineUdEs => "SYN-NOUN-I-M-UD-ES-ALYPY-44",
         NounDeclension::FirstHardVelarMasculine => "SYN-NOUN-I-HARD-VELAR-M-ALYPY-34",
         NounDeclension::FirstMixedMasculine => "SYN-NOUN-I-MIXED-M-ALYPY-33-34",
+        NounDeclension::FirstMixedTsMasculine => "SYN-NOUN-I-MIXED-TS-M-ALYPY-8-33-37",
         NounDeclension::FirstHardNeuter => "SYN-NOUN-I-HARD-N-ALYPY-34",
         NounDeclension::FirstSoftMasculine => "SYN-NOUN-I-SOFT-M-ALYPY-34",
         NounDeclension::FirstSoftMasculineAgentTel => "SYN-NOUN-I-SOFT-M-TEL-AGENT-ALYPY-37",
@@ -2080,6 +2274,26 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
             nominative
         }
     };
+    if lexeme.declension == NounDeclension::FirstMixedTsMasculine {
+        return Ok(match (cell.number, cell.case) {
+            (Sg, Nom) => vec!["ъ"],
+            (Sg, Gen) => vec!["а"],
+            (Sg, Dat) => vec!["ꙋ", "еви"],
+            (Sg, Acc) => vec![animate_acc("ъ", "а")],
+            (Sg, Ins) => vec!["емъ"],
+            (Sg, Loc) => vec!["и", "ѣ"],
+            (Sg, Voc) => vec!["е"],
+            (Du, Nom | Acc | Voc) => vec!["а"],
+            (Du, Gen | Loc) => vec!["ꙋ"],
+            (Du, Dat | Ins) => vec!["ема"],
+            (Pl, Nom | Voc) => vec!["ы"],
+            (Pl, Gen) => vec!["євъ"],
+            (Pl, Dat) => vec!["ємъ"],
+            (Pl, Acc) => vec![animate_acc("ы", "євъ")],
+            (Pl, Ins) => vec!["ы", "ьми", "ами"],
+            (Pl, Loc) => vec!["ѣхъ"],
+        });
+    }
     if lexeme.declension == NounDeclension::Indeclinable {
         return Ok(vec![""]);
     }
@@ -2127,6 +2341,7 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         NounDeclension::FirstHardMasculineInEthnonym | NounDeclension::FirstHardMasculineUdEs => {
             NounDeclension::FirstHardMasculine
         }
+        NounDeclension::FirstMixedTsMasculine => NounDeclension::FirstMixedMasculine,
         NounDeclension::FirstSoftMasculineAgentTel => NounDeclension::FirstSoftMasculine,
         NounDeclension::FirstSoftNeuterIshche => NounDeclension::FirstSoftNeuter,
         NounDeclension::FourthNeuterEsAlternatingFirst => NounDeclension::FourthNeuterEs,
@@ -2933,6 +3148,9 @@ pub(crate) fn long_adjective_ending(
     if class == AdjectiveClass::Soft {
         return soft_long_adjective_ending(cell);
     }
+    if class == AdjectiveClass::Velar {
+        return velar_long_adjective_ending(cell);
+    }
     use Case::{
         Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
         Nominative as Nom, Vocative as Voc,
@@ -2974,6 +3192,51 @@ pub(crate) fn long_adjective_ending(
         (Pl, _, Dat) => "ымъ",
         (Pl, M | F, Acc) => animate("ыѧ", "ыхъ"),
         (Pl, _, Ins) => "ыми",
+    })
+}
+
+fn velar_long_adjective_ending(cell: AdjectiveCell) -> Result<&'static str> {
+    use Case::{
+        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
+        Nominative as Nom, Vocative as Voc,
+    };
+    use Gender::{Feminine as F, Masculine as M, Neuter as N};
+    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+    let animate = |nominative, genitive| {
+        if cell.animacy == Animacy::Animate {
+            genitive
+        } else {
+            nominative
+        }
+    };
+    Ok(match (cell.number, cell.gender, cell.case) {
+        (Sg, M, Nom | Voc) => "їй",
+        (Sg, M, Gen) => "агѡ",
+        (Sg, M, Dat) => "омꙋ",
+        (Sg, M, Acc) => animate("їй", "аго"),
+        (Sg, M, Ins) => "имъ",
+        (Sg, M, Loc) => "ѣмъ",
+        (Sg, F, Nom | Voc) => "аѧ",
+        (Sg, F, Gen) => "їѧ",
+        (Sg, F, Dat | Loc) => "ѣй",
+        (Sg, F, Acc) => "ꙋю",
+        (Sg, F, Ins) => "ою",
+        (Sg, N, Nom | Acc | Voc) => "ое",
+        (Sg, N, Gen) => "агѡ",
+        (Sg, N, Dat) => "омꙋ",
+        (Sg, N, Ins) => "имъ",
+        (Sg, N, Loc) => "ѣмъ",
+        (Du, M, Nom | Acc | Voc) => "аѧ",
+        (Du, F | N, Nom | Acc | Voc) => "ѣи",
+        (Du, _, Gen | Loc) => "ꙋю",
+        (Du, _, Dat | Ins) => "има",
+        (Pl, M, Nom | Voc) => "їи",
+        (Pl, F, Nom | Voc) => "їѧ",
+        (Pl, N, Nom | Acc | Voc) => "аѧ",
+        (Pl, _, Gen | Loc) => "ихъ",
+        (Pl, _, Dat) => "имъ",
+        (Pl, M | F, Acc) => animate("їѧ", "ихъ"),
+        (Pl, _, Ins) => "ими",
     })
 }
 
@@ -3324,6 +3587,7 @@ fn normative_citation(rule: &str) -> &'static str {
         | "SYN-NOUN-I-HARD-N-ALYPY-34"
         | "SYN-NOUN-I-SOFT-M-ALYPY-34"
         | "SYN-NOUN-I-SOFT-N-ALYPY-34" => "Alypy (Gamanovich), §§34–38",
+        "SYN-NOUN-I-MIXED-TS-M-ALYPY-8-33-37" => "Alypy (Gamanovich), §§8 and 33–37",
         "SYN-NOUN-I-U-STEM-M-ALYPY-37-38" => "Alypy (Gamanovich), §§37–38",
         "SYN-NOUN-I-HARD-M-IN-ETHNONYM-ALYPY-37"
         | "SYN-NOUN-I-SOFT-M-TEL-AGENT-ALYPY-37"
@@ -3361,9 +3625,11 @@ fn normative_citation(rule: &str) -> &'static str {
         "SYN-ADJ-SHORT-HARD-ALYPY-53" | "SYN-ADJ-SHORT-SOFT-ALYPY-53" => {
             "Alypy (Gamanovich), §§53–55"
         }
+        "SYN-ADJ-SHORT-VELAR-ALYPY-53-57" => "Alypy (Gamanovich), §§53–57",
         "SYN-ADJ-LONG-HARD-ALYPY-57" | "SYN-ADJ-LONG-SOFT-ALYPY-57" => {
             "Alypy (Gamanovich), §§56–57"
         }
+        "SYN-ADJ-LONG-VELAR-ALYPY-57" => "Alypy (Gamanovich), §57 velar table",
         "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58" => "Alypy (Gamanovich), §58",
         "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60" => {
             "Alypy (Gamanovich), §§58 and 60 short-comparison declension"
@@ -4695,11 +4961,120 @@ mod tests {
     }
 
     #[test]
+    fn alpy_8_33_37_mobile_e_ts_noun_is_complete() {
+        let infant = NounLexeme::new(
+            word("младенецъ"),
+            word("младенц"),
+            Gender::Masculine,
+            NounDeclension::FirstMixedTsMasculine,
+        );
+        validate_noun_lexeme(&infant).expect("source-defined -ецъ : -ц- contract");
+        assert_noun_paradigm(
+            &infant,
+            Animacy::Animate,
+            &[
+                &["младенецъ"],
+                &["младенца"],
+                &["младенцꙋ", "младенцеви"],
+                &["младенца", "младенецъ"],
+                &["младенцемъ"],
+                &["младенци", "младенцѣ"],
+                &["младенче"],
+                &["младенца"],
+                &["младенцꙋ"],
+                &["младенцема"],
+                &["младенца"],
+                &["младенцема"],
+                &["младенцꙋ"],
+                &["младенца"],
+                &["младенцы"],
+                &["младенцєвъ"],
+                &["младенцємъ"],
+                &["младенцы", "младенцєвъ"],
+                &["младенцы", "младенцьми", "младенцами"],
+                &["младенцѣхъ"],
+                &["младенцы"],
+            ],
+        );
+    }
+
+    #[test]
+    fn alpy_52_short_masculine_stem_formations_are_typed() {
+        let blessed = AdjectiveLexeme {
+            lemma: word("блаженъ"),
+            stem: word("блаженн"),
+            class: AdjectiveClass::Hard,
+            short_masculine_stem: Some(word("блажен")),
+            short_masculine_formation: Some(ShortMasculineStemFormation::DoubleNReduction),
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        let venerable = AdjectiveLexeme {
+            lemma: word("преподобенъ"),
+            stem: word("преподобн"),
+            class: AdjectiveClass::Hard,
+            short_masculine_stem: Some(word("преподобен")),
+            short_masculine_formation: Some(ShortMasculineStemFormation::MobileEInsertion),
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        for adjective in [&blessed, &venerable] {
+            validate_adjective_lexeme(adjective).expect("typed positive principal part");
+        }
+        let form = |lexeme: &AdjectiveLexeme, gender, adjective_form| {
+            decline_adjective(
+                lexeme,
+                AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender,
+                    animacy: Animacy::Inanimate,
+                    form: adjective_form,
+                    comparison: Comparison::Positive,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("productive positive cell")
+            .primary_text()
+            .to_owned()
+        };
+        assert_eq!(
+            form(&blessed, Gender::Masculine, AdjectiveForm::Short),
+            "блаженъ"
+        );
+        assert_eq!(
+            form(&blessed, Gender::Feminine, AdjectiveForm::Short),
+            "блаженна"
+        );
+        assert_eq!(
+            form(&blessed, Gender::Masculine, AdjectiveForm::Long),
+            "блаженный"
+        );
+        assert_eq!(
+            form(&venerable, Gender::Masculine, AdjectiveForm::Short),
+            "преподобенъ"
+        );
+        assert_eq!(
+            form(&venerable, Gender::Feminine, AdjectiveForm::Short),
+            "преподобна"
+        );
+
+        let mut contradictory = blessed.clone();
+        contradictory.short_masculine_stem = Some(word("блаженн"));
+        assert!(matches!(
+            validate_adjective_lexeme(&contradictory),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+    }
+
+    #[test]
     fn declines_long_hard_adjective_from_alypy_57() {
         let lexeme = AdjectiveLexeme {
             lemma: word("мꙋдръ"),
             stem: word("мꙋдр"),
             class: AdjectiveClass::Hard,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
             comparative_stem: None,
             comparison_formation: None,
         };
@@ -4720,11 +5095,104 @@ mod tests {
     }
 
     #[test]
+    fn alpy_57_velar_adjective_table_controls_endings_and_palatalization() {
+        let good = AdjectiveLexeme {
+            lemma: word("благъ"),
+            stem: word("благ"),
+            class: AdjectiveClass::Velar,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        validate_adjective_lexeme(&good).expect("velar stem");
+        let form = |number, gender, case, adjective_form, animacy| {
+            decline_adjective(
+                &good,
+                AdjectiveCell {
+                    case,
+                    number,
+                    gender,
+                    animacy,
+                    form: adjective_form,
+                    comparison: Comparison::Positive,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("Alypy velar cell")
+            .variants()
+            .iter()
+            .map(|variant| variant.expanded.clone())
+            .collect::<Vec<_>>()
+        };
+        use AdjectiveForm::{Long, Short};
+        use Case::{
+            Accusative as Acc, Dative as Dat, Genitive as Gen, Locative as Loc, Nominative as Nom,
+            Vocative as Voc,
+        };
+        use Gender::{Feminine as F, Masculine as M, Neuter as N};
+        use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+
+        for (number, gender, case, adjective_form, expected) in [
+            (Sg, M, Nom, Short, &["благъ"][..]),
+            (Sg, M, Voc, Short, &["блаже"]),
+            (Sg, F, Dat, Short, &["блазѣ"]),
+            (Pl, M, Nom, Short, &["блази"]),
+            (Pl, F, Nom, Short, &["благи"]),
+            (Sg, M, Nom, Long, &["благїй"]),
+            (Sg, F, Gen, Long, &["благїѧ"]),
+            (Sg, M, Loc, Long, &["блазѣмъ"]),
+            (Du, F, Nom, Long, &["блазѣи"]),
+            (Pl, M, Nom, Long, &["блазїи"]),
+            (Pl, F, Nom, Long, &["благїѧ"]),
+            (Pl, N, Nom, Long, &["благаѧ"]),
+        ] {
+            assert_eq!(
+                form(number, gender, case, adjective_form, Animacy::Inanimate),
+                expected,
+                "{number:?} {gender:?} {case:?} {adjective_form:?}"
+            );
+        }
+        assert_eq!(
+            form(Sg, M, Acc, Long, Animacy::Animate),
+            ["благаго", "благїй"]
+        );
+        assert_eq!(
+            form(Pl, M, Acc, Long, Animacy::Animate),
+            ["благїѧ", "благихъ"]
+        );
+
+        let mut contradictory = good;
+        contradictory.stem = word("мꙋдр");
+        assert!(matches!(
+            validate_adjective_lexeme(&contradictory),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+        assert!(matches!(
+            decline_adjective(
+                &contradictory,
+                AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                },
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+    }
+
+    #[test]
     fn declines_comparison_stem_with_alypy_58_mixed_endings() {
         let lexeme = AdjectiveLexeme {
             lemma: word("мꙋдръ"),
             stem: word("мꙋдр"),
             class: AdjectiveClass::Hard,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
             comparative_stem: Some(word("мꙋдрѣйш")),
             comparison_formation: Some(ComparisonFormation::LaterYat),
         };
@@ -4807,6 +5275,8 @@ mod tests {
             lemma: word("истиннъ"),
             stem: word("истинн"),
             class: AdjectiveClass::Hard,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
             comparative_stem: Some(word("истиннѣйш")),
             comparison_formation: Some(ComparisonFormation::LaterYat),
         };
@@ -5454,6 +5924,9 @@ mod tests {
                 NounDeclension::FirstHardMasculineUdEs => ("ꙋдъ", "ꙋдес", Gender::Masculine),
                 NounDeclension::FirstHardVelarMasculine => ("ѻтрокъ", "ѻтрок", Gender::Masculine),
                 NounDeclension::FirstMixedMasculine => ("мꙋжъ", "мꙋж", Gender::Masculine),
+                NounDeclension::FirstMixedTsMasculine => {
+                    ("младенецъ", "младенц", Gender::Masculine)
+                }
                 NounDeclension::FirstHardNeuter => ("слово", "слов", Gender::Neuter),
                 NounDeclension::FirstSoftMasculine => ("царь", "цар", Gender::Masculine),
                 NounDeclension::FirstSoftMasculineAgentTel => {
@@ -5523,11 +5996,17 @@ mod tests {
             }
         }
 
-        for class in [AdjectiveClass::Hard, AdjectiveClass::Soft] {
+        for (class, lemma, stem) in [
+            (AdjectiveClass::Hard, "мꙋдръ", "мꙋдр"),
+            (AdjectiveClass::Soft, "синь", "син"),
+            (AdjectiveClass::Velar, "благъ", "благ"),
+        ] {
             let lexeme = AdjectiveLexeme {
-                lemma: word("мꙋдръ"),
-                stem: word("мꙋдр"),
+                lemma: word(lemma),
+                stem: word(stem),
                 class,
+                short_masculine_stem: None,
+                short_masculine_formation: None,
                 comparative_stem: Some(word("мꙋдрѣйш")),
                 comparison_formation: Some(ComparisonFormation::LaterYat),
             };
@@ -5749,6 +6228,8 @@ mod tests {
             lemma: word("мꙋдръ"),
             stem: word("мꙋдр"),
             class: AdjectiveClass::Hard,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
             comparative_stem: Some(word("мꙋдрѣйш")),
             comparison_formation: Some(ComparisonFormation::LaterYat),
         };
@@ -6484,6 +6965,8 @@ mod tests {
                 lemma: word("высокъ"),
                 stem: word("высок"),
                 class: AdjectiveClass::Hard,
+                short_masculine_stem: None,
+                short_masculine_formation: None,
                 comparative_stem: Some(word(citation.stem)),
                 comparison_formation: Some(citation.formation),
             };
@@ -6513,6 +6996,8 @@ mod tests {
             lemma: word("высокъ"),
             stem: word("высок"),
             class: AdjectiveClass::Hard,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
             comparative_stem: Some(word("высочайш")),
             comparison_formation: Some(ComparisonFormation::AncientSoft),
         };

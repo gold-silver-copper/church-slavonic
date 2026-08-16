@@ -572,13 +572,13 @@ mod tests {
     #[test]
     fn semantic_families_reproduce_every_reviewed_exact_contraction_shape() {
         let families = families().expect("reviewed abbreviation families");
-        assert_eq!(families.len(), 45);
+        assert_eq!(families.len(), 55);
         assert_eq!(
             families
                 .iter()
                 .map(|family| family.patterns.len())
                 .sum::<usize>(),
-            50
+            61
         );
         for family in families {
             let exact = contractions_by_id(&family.lexeme_id, &family.sense_id)
@@ -707,5 +707,107 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn remaining_source_listed_families_cover_their_typed_inventories() {
+        let adjectives = [
+            ("synodal:adjective:bozhestvenn", "sense:divine-quality"),
+            (
+                "synodal:adjective:wikt-a9cef2fd54e7",
+                "sense:v03:a9cef2fd54e7",
+            ),
+            ("synodal:adjective:blazhenn", "sense:blessed"),
+            ("synodal:adjective:blagoslovenn", "sense:blessed-spoken"),
+            ("synodal:adjective:prepodobn", "sense:venerable-saint"),
+            ("synodal:adjective:chestn", "sense:honorable"),
+            ("synodal:adjective:chist", "sense:pure"),
+        ];
+        for (lexeme_id, sense_id) in adjectives {
+            for cell in
+                AdjectiveCell::inventory(&AdjectiveForm::ALL, &[Comparison::Positive], |_| {
+                    &Animacy::ALL
+                })
+            {
+                let contractions = contract_variants_for_cell_by_id(
+                    &LexemeId::from(lexeme_id),
+                    sense_id,
+                    GrammarCell::Adjective(cell),
+                )
+                .unwrap_or_else(|error| panic!("{lexeme_id} {cell:?}: {error}"));
+                assert!(!contractions.is_empty(), "{lexeme_id} {cell:?}");
+                assert!(
+                    contractions
+                        .iter()
+                        .all(|entry| entry.printed != entry.expanded)
+                );
+            }
+        }
+
+        for cell in NounCell::inventory(&[Animacy::Animate]) {
+            let result = contract_variants_for_cell_by_id(
+                &LexemeId::from("synodal:noun:infant"),
+                "sense:infant",
+                GrammarCell::Noun(cell),
+            );
+            if cell.case == Case::Vocative && cell.number == Number::Singular {
+                assert!(matches!(result, Err(Error::UnsupportedCell { .. })));
+                continue;
+            }
+            let contractions = result.unwrap_or_else(|error| panic!("младенецъ {cell:?}: {error}"));
+            assert!(!contractions.is_empty(), "младенецъ {cell:?}");
+        }
+
+        for (lexeme_id, sense_id, cell, expected) in [
+            (
+                "synodal:adverb:blagochestno",
+                "sense:piously",
+                GrammarCell::Indeclinable,
+                "Бл҃гочⷭ҇тнѡ",
+            ),
+            (
+                "synodal:noun:imyarek",
+                "sense:name-placeholder",
+                GrammarCell::LexicalForm,
+                "И҆́м҃рекъ",
+            ),
+        ] {
+            let contractions =
+                contract_variants_for_cell_by_id(&LexemeId::from(lexeme_id), sense_id, cell)
+                    .expect("closed source-listed abbreviation cell");
+            assert_eq!(contractions.len(), 1);
+            assert_eq!(contractions[0].printed, expected);
+            assert_eq!(
+                contractions[0].realization,
+                AbbreviationRealization::ReviewedExact
+            );
+        }
+    }
+
+    #[test]
+    fn good_adjective_keeps_suppletive_comparison_outside_its_abbreviation_base() {
+        let masculine = AdjectiveCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            form: AdjectiveForm::Short,
+            comparison: Comparison::Comparative,
+        };
+        let forms = Inflector::default()
+            .form_by_id(
+                &LexemeId::from("synodal:adjective:wikt-a9cef2fd54e7"),
+                GrammarCell::Adjective(masculine),
+            )
+            .expect("Alypy §58 suppletive comparison");
+        assert_eq!(forms.texts().collect::<Vec<_>>(), ["унїй"]);
+        assert!(matches!(
+            contract_variants_for_cell_by_id(
+                &LexemeId::from("synodal:adjective:wikt-a9cef2fd54e7"),
+                "sense:v03:a9cef2fd54e7",
+                GrammarCell::Adjective(masculine),
+            ),
+            Err(Error::UnsupportedCell { .. })
+        ));
     }
 }

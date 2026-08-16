@@ -46,10 +46,11 @@ pub use mapping::{
 pub use morphology::{
     ActiveParticipleShortFormation, AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect,
     ComparisonFormation, ImperativeFormation, ImperfectFormation, NounDeclension, NounLexeme,
-    NounNumberInventory, ParticiplePrincipalPart, PresentPrincipalParts, VerbConjugation,
-    VerbLexeme, VerbalNounFormation, VerbalNounPrincipalPart, aorist, decline_adjective,
-    decline_noun, decline_participle, decline_verbal_noun, future, imperative, imperfect,
-    infinitive, l_participle, present, validate_noun_lexeme,
+    NounNumberInventory, ParticiplePrincipalPart, PresentPrincipalParts,
+    ShortMasculineStemFormation, VerbConjugation, VerbLexeme, VerbalNounFormation,
+    VerbalNounPrincipalPart, aorist, decline_adjective, decline_noun, decline_participle,
+    decline_verbal_noun, future, imperative, imperfect, infinitive, l_participle, present,
+    validate_adjective_lexeme, validate_noun_lexeme,
 };
 pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
 pub use numeral_morphology::{

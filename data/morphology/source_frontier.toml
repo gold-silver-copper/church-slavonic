@@ -1144,3 +1144,21 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "Alypy §§2–3 were reviewed end to end: psili is a language-wide initial-vowel rule; a word-final varia becomes acute before же, бо, ли and short personal or reflexive pronouns; the same written base can license or forbid titlo by semantics (the Christian God or angel versus an idol or evil spirit); and several positional-letter choices are lexical, grammatical, or semantic rather than blind character substitution. The engine now realizes automatic initial psili, types the closed accent environment, constructs separate host-plus-particle phrases for all three named particles, and gives 45 stable semantic abbreviation identities 50 productive stem allomorphs beneath 180 exact cells. Extractor validation proves every reviewed exact contraction shape, forbids identity-free substring rewriting, and locks all 48 §3.c entries in source order: 38 productive-family decisions and 10 explicit implementation gaps. Twenty regular nominal entries are now linked to complete Alypy §§32, 34–44 declensions, and an exhaustive 840-cell test proves their contraction skeletons survive productive case, number, animacy, palatalization, and positional-letter output. Alypy §32 and the locked Ponomar target corpus distinguish feminine маріа : марі- (including exact маріею → мр҃і́ею) from the separate марїамъ/марїамь identity; the source-table мр҃і́ѧ head therefore remains exact while its productive family uses the dedicated feminine -іа contract. Polyakov adds a roughly 30,000-lexeme, 150,000-form corpus-derived counterexample frontier for stress and paradigm coverage, but its simplified display omits breathings, titla, and fully traditional positional forms and shares the RNC lineage, so it is metadata-only evaluation evidence rather than an independent normative oracle. Karaga's compact contemporary abbreviation list is useful for inventory discovery but remains secondary, personal, and potentially pedagogically lineage-dependent; it was not imported without firmer bibliographic, legal, and lineage review. The 10 missing families and full lexical accent and positional semantic classification remain open. This contract-changing pass does not count toward convergence."
+
+[[discovery_pass]]
+id = "synodal-orthography-frontier-pass-16"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "Church Slavonic"]
+queries = [
+  "Alypy §§8, 33–37 младенецъ ц-final declension",
+  "Alypy §§52–58 short adjectives velar palatalization suppletive благїй comparison",
+  "имярекъ grammatical status replacement rubric inflection",
+  "locked Synodal corpus младенец благочестно abbreviation witnesses",
+]
+catalogs = ["Ponomar Alypy grammar", "D’yachenko 1900 scan", "locked Ponomar Elizabeth Bible", "locked Wikisource Church Slavonic Bible", "Ponomar modern Church Slavonic frequency list"]
+new_sources = []
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "The ten remaining Alypy §3.c entries were reconciled against §§8, 33–37, 52–53, 57–58 and the locked Ponomar/Wikisource target corpora. All 48 source-table entries now resolve to stable semantic families: 55 runtime families expose 61 source-backed stem patterns beneath 191 exact cells. The new morphology contracts are a complete mobile-е младенецъ : младенц- noun with cell-scoped ц → ч vocative, a complete velar adjective class with both palatalizations, typed -нн- reduction and mobile-е short-masculine principal parts, and the suppletive благїй : ᲂу҆́н- comparison. благочестно is an attested invariant adverb; имярекъ is a closed replacement rubric whose substituted name—not the rubric—bears syntactic case. Exact rows still precede productive families, semantic collisions such as честный/чистый remain separate identities, and the unattested младенче contraction is deliberately unsupported while the noun inflection itself remains productive. Full lexical accent and positional-semantic classification remains open, so this contract-changing pass does not count toward convergence."

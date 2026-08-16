@@ -94,9 +94,9 @@ the corresponding §47 rule after validating the pronoun identity and cell.
 ### Semantic abbreviation families
 
 The reviewed exact abbreviation registry remains the highest-precedence layer:
-180 cells preserve their complete accent, breathing, capitalization,
+191 cells preserve their complete accent, breathing, capitalization,
 positional-letter, superscript, and titlo spelling. Beneath it,
-`abbreviation_families.tsv` records 45 stable lexical/sense identities and 50
+`abbreviation_families.tsv` records 55 stable lexical/sense identities and 61
 source-backed stem allomorphs. Each family replaces only an initial stem
 pattern after semantic identity and a typed grammatical cell are already known;
 it is never a global substring rewrite. The extractor proves that the family
@@ -185,18 +185,21 @@ The validator recognizes standard combining marks, superscript Cyrillic letters,
 titlo/pokrytie, payerok, kavyka, and the standard Cyrillic repertoire while
 rejecting private-use glyph encodings. The renderer currently automates reviewed
 exact accent rows, six reusable lexical paradigms, the language-wide
-initial-breathing and contextual final-accent rules, 180 exact abbreviation
-cells, and 45 semantic contraction families with 50 allomorphs. Initial `є`, broad
+initial-breathing and contextual final-accent rules, 191 exact abbreviation
+cells, and 55 semantic contraction families with 61 allomorphs. Initial `є`, broad
 `ѻ`, iotated `ꙗ`, and digraph uk are available through an explicit
 `InitialPresentation` operation with a loss/change report. Automatic selection
 of those variants remains lexical and grammatical work because Alypy §2 records
 exceptions; the engine does not apply a blind spelling rewrite.
 
 Alypy §3.c's printed inventory contains 48 named abbreviation entries.
-`abbreviation_inventory.tsv` classifies all 48 in source order: 38 now map to
-productive semantic families and 10 remain explicit implementation gaps. The
-current 45-family runtime also includes seven independently reviewed derivatives
-or corpus-listed contractions, so the family and source-table counts are not a
-one-to-one denominator. Until the 10 missing source entries and the remaining
-accent/positional inventories are closed, the liturgical presentation system
-remains non-final.
+`abbreviation_inventory.tsv` classifies all 48 in source order and now maps every
+entry to a stable semantic family. The current 55-family runtime additionally
+includes seven independently reviewed derivatives or corpus-listed contractions,
+so the family and source-table counts are not a one-to-one denominator. The ten
+last source entries introduced a typed mobile-`е`/`ц` noun, velar-adjective
+palatalization, `-нн-` reduction and mobile-`е` short-masculine principal parts,
+the suppletive `благїй : ᲂу҆́н-` comparison, and closed invariant policies for
+`благочестно` and the `имярекъ` rubric. The remaining lexical accent and
+positional-semantic inventories keep the liturgical presentation system
+non-final.

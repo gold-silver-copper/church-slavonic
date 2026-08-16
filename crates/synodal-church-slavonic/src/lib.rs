@@ -44,7 +44,8 @@ pub use synodal_church_slavonic_core::{
     AuthorityRole, BreathingMark, BreathingRule, ComparisonFormation, EncliticParticle,
     EpistemicRole, Evidence, EvidenceId, EvidenceKind, ImperativeFormation, ImperfectFormation,
     NounDeclension, NounNumberInventory, NumeralDeclension, NumeralLexeme, NumeralNumberInventory,
-    ParticiplePrincipalPart, PresentPrincipalParts, RuleId, SourceId, VerbConjugation,
+    ParticiplePrincipalPart, PresentPrincipalParts, RuleId, ShortMasculineStemFormation, SourceId,
+    VerbConjugation,
 };
 pub use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AdverbialParticipleFormation, AnalyticConstruction, Animacy,

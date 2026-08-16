@@ -1,4 +1,7 @@
 lexeme_id	cell	expanded	printed	evidence_id	source_kind	target_recension
+synodal:adverb:blagochestno	indeclinable	благочестно	благоче́стно	synodal-blagochestno-tobit-source	synodal-attestation	synodal-russian
+synodal:adverb:blagochestno	indeclinable	благочестно	благоче́стнѡ	synodal-blagochestno-wikisource-source	synodal-attestation	synodal-russian
+synodal:noun:imyarek	lexical-form	имярекъ	И҆́м҃рекъ	alypy-3-imyarek-placeholder	normative-table	synodal-russian
 synodal:adjective:mnog	adjective:accusative:plural:masculine:animate:long:positive	многихъ	мно́гихъ	v05-alypy-mnog,v05-target-mnog-genitive-plural	synodal-attestation	synodal-russian
 synodal:adjective:mnog	adjective:accusative:plural:neuter:inanimate:short:positive	мнѡга	мнѡ́га	v05-alypy-mnog,v05-target-mnog-mnoga-omega	synodal-attestation	synodal-russian
 synodal:adjective:mnog	adjective:genitive:plural:feminine:animate:long:positive	многихъ	мно́гихъ	v05-alypy-mnog,v05-target-mnog-genitive-plural	synodal-attestation	synodal-russian

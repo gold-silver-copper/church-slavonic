@@ -673,6 +673,8 @@ fn adjective_like_forms(
         lemma: lexeme.lemma.clone(),
         stem: lexeme.stem.clone(),
         class,
+        short_masculine_stem: None,
+        short_masculine_formation: None,
         comparative_stem: None,
         comparison_formation: None,
     };

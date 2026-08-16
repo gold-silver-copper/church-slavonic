@@ -1,14 +1,21 @@
 id	lemma	part_of_speech	class	stem	gender	aspect	source_id	target_recension
-synodal:adjective:blazhenn	блаженнъ	adjective	hard-short	блаженн			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:blazhenn	блаженъ	adjective	hard-short	блаженн			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:blagoslovenn	благословенъ	adjective	hard-short	благословенн			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:bozhestvenn	божественный	adjective	hard-short	божественн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:bozhii	божїй	adjective	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:gospoden	господень	adjective	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:greshn	грѣшнъ	adjective	hard-short	грѣшн			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:chestn	честный	adjective	hard-short	честн			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:chist	чистый	adjective	hard-short	чист			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:mudr	мꙋдръ	adjective	hard-short	мꙋдр			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:nebesn	небеснъ	adjective	hard-short	небесн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:pravedn	праведнъ	adjective	hard-short	праведн			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:prepodobn	преподобенъ	adjective	hard-short	преподобн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:svyat	свѧтъ	adjective	hard-short	свѧт			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:v06-israel	израилевъ	adjective	exact		masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:vechn	вѣчнъ	adjective	hard-short	вѣчн			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:wikt-a9cef2fd54e7	благъ	adjective	velar-short	благ			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adverb:blagochestno	благочестно	adverb					alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:determiner:sam	самъ	determiner	determiner-pronominal-hard	сам			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:determiner:ves	весь	determiner	determiner-ves-mixed	вс			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:determiner:vsyacheskii	всѧческїй	determiner	determiner-full-sk	всѧческ			alypy-gamanovich-grammar-web-2023	synodal-russian
@@ -28,6 +35,7 @@ synodal:noun:glava	глава	noun	second-hard	глав	feminine		alypy-gamanovi
 synodal:noun:grad	градъ	noun	inherited-first-hard-m	град	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:hand	рꙋка	noun	second-hard-velar	рꙋк	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:ierei	їерей	noun	first-soft-ey-m	їере	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:imyarek	имярекъ	noun	exact		masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:isaiah	исаїа	noun	second-soft-m-ia	исаї	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:istina	истина	noun	second-hard	истин	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:v07-c27905de175a0cde	камень	noun	fourth-masculine-en-kamen	камен	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
@@ -42,6 +50,7 @@ synodal:noun:molitva	молитва	noun	second-hard	молитв	feminine		alyp
 synodal:noun:molniya	молнїѧ	noun	second-soft-postvocalic-ancient-pl	молнї	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:more	море	noun	first-soft-n	мор	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:man	мꙋжъ	noun	first-mixed-m	мꙋж	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:infant	младенецъ	noun	first-mixed-ts-m	младенц	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:narod	народъ	noun	first-hard-m	народ	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:neplody	неплоды	noun	fourth-feminine-ov	неплодов	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:noch	ночь	noun	third-f	ноч	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian

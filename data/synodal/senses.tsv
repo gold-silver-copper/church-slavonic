@@ -1,14 +1,20 @@
 lexeme_id	sense_id	gloss	domains	source_id	source_recension	semantic_status
 synodal:adjective:blazhenn	sense:blessed	blessed; beatified	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:blagoslovenn	sense:blessed-spoken	blessed; having received or expressing a blessing	religion,quality	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adjective:bozhestvenn	sense:divine-quality	divine; pertaining to the divine	religion,quality	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:adjective:bozhii	sense:v05:adjective:bozhii	divine; God's	religion,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:adjective:gospoden	sense:v05:adjective:gospoden	of the Lord; Lord's	religion,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:adjective:greshn	sense:sinful	sinful	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:chestn	sense:honorable	honorable; venerable	quality,religion	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adjective:chist	sense:pure	pure; clean	quality,religion	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:adjective:mudr	sense:wise	wise; prudent	quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:adjective:nebesn	sense:heavenly	heavenly; celestial	religion,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:adjective:pravedn	sense:righteous	righteous; just	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:prepodobn	sense:venerable-saint	venerable; saintly	religion,title,quality	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:adjective:svyat	sense:holy	holy; sacred	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:adjective:v06-israel	sense:v06:israel-adjective	of Israel; Israelite	place,people,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:adjective:vechn	sense:eternal	eternal; everlasting	time,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adverb:blagochestno	sense:piously	piously; in a godly manner	religion,manner	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:determiner:sam	sense:self	self; the same person or thing	determination,emphasis	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:determiner:ves	sense:all-whole	all; whole; every member of a set	determination,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:determiner:vsyacheskii	sense:every-kind	every kind of; of every sort	determination,distributive	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
@@ -24,6 +30,8 @@ synodal:noun:glas	sense:voice	voice; sound	body,communication	dyachenko-1900-sca
 synodal:noun:glava	sense:head	head; chief	body,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:grad	sense:city	city; town	place,society	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:ierei	sense:v10:priest	priest; presbyter	person,religion	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:imyarek	sense:name-placeholder	so-and-so; rubric placeholder for a personal name	rubric,person,communication	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:infant	sense:infant	infant; young child	person,age	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:noun:isaiah	sense:v10:isaiah	Isaiah; the prophet Isaiah	person,religion	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:noun:istina	sense:truth	truth	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:khram	sense:temple	temple; sanctuary	religion,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
