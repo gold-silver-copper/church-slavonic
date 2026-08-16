@@ -2494,607 +2494,344 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         NounDeclension::FourthMasculineEnDay => NounDeclension::FourthMasculineEn,
         declension => declension,
     };
-    let ending = match (base_declension, cell.number, cell.case) {
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Nom) => {
-            "ъ"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Gen) => {
-            "а"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Dat) => {
-            "ꙋ"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Acc) => {
-            animate_acc("ъ", "а")
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Ins) => {
-            "омъ"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Loc) => {
-            "ѣ"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Sg, Voc) => {
-            "е"
-        }
-        (
-            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
-            Du,
-            Nom | Acc | Voc,
-        ) => "а",
-        (
-            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
-            Du,
-            Gen | Loc,
-        ) => "ꙋ",
-        (
-            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
-            Du,
-            Dat | Ins,
-        ) => "ома",
-        (
-            NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem,
-            Pl,
-            Nom | Voc,
-        ) => "и",
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Gen) => {
-            "овъ"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Dat) => {
-            "омъ"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Acc) => {
-            animate_acc("ы", "овъ")
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Ins) => {
-            "ы"
-        }
-        (NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem, Pl, Loc) => {
-            "ѣхъ"
-        }
-
-        (NounDeclension::FirstHardVelarMasculine, Sg, Nom) => "ъ",
-        (NounDeclension::FirstHardVelarMasculine, Sg, Gen) => "а",
-        (NounDeclension::FirstHardVelarMasculine, Sg, Dat) => "ꙋ",
-        (NounDeclension::FirstHardVelarMasculine, Sg, Acc) => animate_acc("ъ", "а"),
-        (NounDeclension::FirstHardVelarMasculine, Sg, Ins) => "омъ",
-        (NounDeclension::FirstHardVelarMasculine, Sg, Loc) => "ѣ",
-        (NounDeclension::FirstHardVelarMasculine, Sg, Voc) => "е",
-        (NounDeclension::FirstHardVelarMasculine, Du, Nom | Acc | Voc) => "а",
-        (NounDeclension::FirstHardVelarMasculine, Du, Gen | Loc) => "ꙋ",
-        (NounDeclension::FirstHardVelarMasculine, Du, Dat | Ins) => "ома",
-        (NounDeclension::FirstHardVelarMasculine, Pl, Nom | Voc) => {
-            if lexeme.stem.canonical().ends_with('к') {
-                "ы"
-            } else {
-                "и"
+    let ending = match base_declension {
+        NounDeclension::FirstHardMasculine | NounDeclension::FirstHardMasculineUStem => {
+            match (cell.number, cell.case) {
+                (Sg, Nom) => "ъ",
+                (Sg, Gen) => "а",
+                (Sg, Dat) => "ꙋ",
+                (Sg, Acc) => animate_acc("ъ", "а"),
+                (Sg, Ins) => "омъ",
+                (Sg, Loc) => "ѣ",
+                (Sg, Voc) => "е",
+                (Du, Nom | Acc | Voc) => "а",
+                (Du, Gen | Loc) => "ꙋ",
+                (Du, Dat | Ins) => "ома",
+                (Pl, Nom | Voc) => "и",
+                (Pl, Gen) => "овъ",
+                (Pl, Dat) => "омъ",
+                (Pl, Acc) => animate_acc("ы", "овъ"),
+                (Pl, Ins) => "ы",
+                (Pl, Loc) => "ѣхъ",
             }
         }
-        (NounDeclension::FirstHardVelarMasculine, Pl, Gen) => "овъ",
-        (NounDeclension::FirstHardVelarMasculine, Pl, Dat) => "омъ",
-        (NounDeclension::FirstHardVelarMasculine, Pl, Acc) => animate_acc("и", "овъ"),
-        (NounDeclension::FirstHardVelarMasculine, Pl, Ins) => "и",
-        (NounDeclension::FirstHardVelarMasculine, Pl, Loc) => "ѣхъ",
-
-        (NounDeclension::FirstMixedMasculine, Sg, Nom) => "ъ",
-        (NounDeclension::FirstMixedMasculine, Sg, Gen) => "а",
-        (NounDeclension::FirstMixedMasculine, Sg, Dat) => "ꙋ",
-        (NounDeclension::FirstMixedMasculine, Sg, Acc) => animate_acc("ъ", "а"),
-        (NounDeclension::FirstMixedMasculine, Sg, Ins) => "емъ",
-        (NounDeclension::FirstMixedMasculine, Sg, Loc) => "и",
-        (NounDeclension::FirstMixedMasculine, Sg, Voc) => "ꙋ",
-        (NounDeclension::FirstMixedMasculine, Du, Nom | Acc | Voc) => "а",
-        (NounDeclension::FirstMixedMasculine, Du, Gen | Loc) => "ꙋ",
-        (NounDeclension::FirstMixedMasculine, Du, Dat | Ins) => "ема",
-        (NounDeclension::FirstMixedMasculine, Pl, Nom | Voc) => "и",
-        (NounDeclension::FirstMixedMasculine, Pl, Gen) => "ей",
-        (NounDeclension::FirstMixedMasculine, Pl, Dat) => "емъ",
-        (NounDeclension::FirstMixedMasculine, Pl, Acc) => animate_acc("ы", "ей"),
-        (NounDeclension::FirstMixedMasculine, Pl, Ins) => "ы",
-        (NounDeclension::FirstMixedMasculine, Pl, Loc) => "ахъ",
-
-        (NounDeclension::FirstHardNeuter, Sg, Nom | Acc | Voc) => "о",
-        (NounDeclension::FirstHardNeuter, Sg, Gen) => "а",
-        (NounDeclension::FirstHardNeuter, Sg, Dat) => "ꙋ",
-        (NounDeclension::FirstHardNeuter, Sg, Ins) => "омъ",
-        (NounDeclension::FirstHardNeuter, Sg, Loc) => "ѣ",
-        (NounDeclension::FirstHardNeuter, Du, Nom | Acc | Voc) => "а",
-        (NounDeclension::FirstHardNeuter, Du, Gen | Loc) => "ꙋ",
-        (NounDeclension::FirstHardNeuter, Du, Dat | Ins) => "ома",
-        (NounDeclension::FirstHardNeuter, Pl, Nom | Acc | Voc) => "а",
-        (NounDeclension::FirstHardNeuter, Pl, Gen) => "ъ",
-        (NounDeclension::FirstHardNeuter, Pl, Dat) => "омъ",
-        (NounDeclension::FirstHardNeuter, Pl, Ins) => "ы",
-        (NounDeclension::FirstHardNeuter, Pl, Loc) => "ѣхъ",
-
-        (NounDeclension::FirstSoftMasculine, Sg, Nom) => "ь",
-        (NounDeclension::FirstSoftMasculine, Sg, Gen) => "ѧ",
-        (NounDeclension::FirstSoftMasculine, Sg, Dat) => "ю",
-        (NounDeclension::FirstSoftMasculine, Sg, Acc) => animate_acc("ь", "ѧ"),
-        (NounDeclension::FirstSoftMasculine, Sg, Ins) => "емъ",
-        (NounDeclension::FirstSoftMasculine, Sg, Loc) => "и",
-        (NounDeclension::FirstSoftMasculine, Sg, Voc) => "ю",
-        (NounDeclension::FirstSoftMasculine, Du, Nom | Acc | Voc) => "ѧ",
-        (NounDeclension::FirstSoftMasculine, Du, Gen | Loc) => "ю",
-        (NounDeclension::FirstSoftMasculine, Du, Dat | Ins) => "ема",
-        (NounDeclension::FirstSoftMasculine, Pl, Nom | Voc) => "и",
-        (NounDeclension::FirstSoftMasculine, Pl, Gen) => "ей",
-        (NounDeclension::FirstSoftMasculine, Pl, Dat) => "емъ",
-        (NounDeclension::FirstSoftMasculine, Pl, Acc) => animate_acc("и", "ей"),
-        (NounDeclension::FirstSoftMasculine, Pl, Ins) => "и",
-        (NounDeclension::FirstSoftMasculine, Pl, Loc) => "ехъ",
-
-        (NounDeclension::FirstSoftMasculineJ, Sg, Nom) => "й",
-        (NounDeclension::FirstSoftMasculineJ, Sg, Gen) => "ѧ",
-        (NounDeclension::FirstSoftMasculineJ, Sg, Dat) => "ю",
-        (NounDeclension::FirstSoftMasculineJ, Sg, Acc) => animate_acc("й", "ѧ"),
-        (NounDeclension::FirstSoftMasculineJ, Sg, Ins) => "емъ",
-        (NounDeclension::FirstSoftMasculineJ, Sg, Loc) => "и",
-        (NounDeclension::FirstSoftMasculineJ, Sg, Voc) => {
-            if lexeme.stem.canonical().ends_with('ї') {
-                "е"
-            } else {
-                "ю"
+        NounDeclension::FirstHardVelarMasculine => match (cell.number, cell.case) {
+            (Sg, Nom) => "ъ",
+            (Sg, Gen) => "а",
+            (Sg, Dat) => "ꙋ",
+            (Sg, Acc) => animate_acc("ъ", "а"),
+            (Sg, Ins) => "омъ",
+            (Sg, Loc) => "ѣ",
+            (Sg, Voc) => "е",
+            (Du, Nom | Acc | Voc) => "а",
+            (Du, Gen | Loc) => "ꙋ",
+            (Du, Dat | Ins) => "ома",
+            (Pl, Nom | Voc) if lexeme.stem.canonical().ends_with('к') => "ы",
+            (Pl, Nom | Voc) => "и",
+            (Pl, Gen) => "овъ",
+            (Pl, Dat) => "омъ",
+            (Pl, Acc) => animate_acc("и", "овъ"),
+            (Pl, Ins) => "и",
+            (Pl, Loc) => "ѣхъ",
+        },
+        NounDeclension::FirstMixedMasculine => match (cell.number, cell.case) {
+            (Sg, Nom) => "ъ",
+            (Sg, Gen) => "а",
+            (Sg, Dat) => "ꙋ",
+            (Sg, Acc) => animate_acc("ъ", "а"),
+            (Sg, Ins) => "емъ",
+            (Sg, Loc) => "и",
+            (Sg, Voc) => "ꙋ",
+            (Du, Nom | Acc | Voc) => "а",
+            (Du, Gen | Loc) => "ꙋ",
+            (Du, Dat | Ins) => "ема",
+            (Pl, Nom | Voc) => "и",
+            (Pl, Gen) => "ей",
+            (Pl, Dat) => "емъ",
+            (Pl, Acc) => animate_acc("ы", "ей"),
+            (Pl, Ins) => "ы",
+            (Pl, Loc) => "ахъ",
+        },
+        NounDeclension::FirstHardNeuter => match (cell.number, cell.case) {
+            (Sg, Nom | Acc | Voc) => "о",
+            (Sg, Gen) => "а",
+            (Sg, Dat) => "ꙋ",
+            (Sg, Ins) => "омъ",
+            (Sg, Loc) => "ѣ",
+            (Du, Nom | Acc | Voc) => "а",
+            (Du, Gen | Loc) => "ꙋ",
+            (Du, Dat | Ins) => "ома",
+            (Pl, Nom | Acc | Voc) => "а",
+            (Pl, Gen) => "ъ",
+            (Pl, Dat) => "омъ",
+            (Pl, Ins) => "ы",
+            (Pl, Loc) => "ѣхъ",
+        },
+        NounDeclension::FirstSoftMasculine => match (cell.number, cell.case) {
+            (Sg, Nom) => "ь",
+            (Sg, Gen) => "ѧ",
+            (Sg, Dat) => "ю",
+            (Sg, Acc) => animate_acc("ь", "ѧ"),
+            (Sg, Ins) => "емъ",
+            (Sg, Loc) => "и",
+            (Sg, Voc) => "ю",
+            (Du, Nom | Acc | Voc) => "ѧ",
+            (Du, Gen | Loc) => "ю",
+            (Du, Dat | Ins) => "ема",
+            (Pl, Nom | Voc) => "и",
+            (Pl, Gen) => "ей",
+            (Pl, Dat) => "емъ",
+            (Pl, Acc) => animate_acc("и", "ей"),
+            (Pl, Ins) => "и",
+            (Pl, Loc) => "ехъ",
+        },
+        NounDeclension::FirstSoftMasculineJ => match (cell.number, cell.case) {
+            (Sg, Nom) => "й",
+            (Sg, Gen) => "ѧ",
+            (Sg, Dat) => "ю",
+            (Sg, Acc) => animate_acc("й", "ѧ"),
+            (Sg, Ins) => "емъ",
+            (Sg, Loc) => "и",
+            (Sg, Voc) if lexeme.stem.canonical().ends_with('ї') => "е",
+            (Sg, Voc) => "ю",
+            (Du, Nom | Acc | Voc) => "ѧ",
+            (Du, Gen | Loc) => "ю",
+            (Du, Dat | Ins) => "ема",
+            (Pl, Nom | Voc) => "и",
+            (Pl, Gen) => "євъ",
+            (Pl, Dat) => "ємъ",
+            (Pl, Acc) => animate_acc("и", "євъ"),
+            (Pl, Ins) => "и",
+            (Pl, Loc) => "ехъ",
+        },
+        NounDeclension::FirstSoftMasculineEy => match (cell.number, cell.case) {
+            (Sg, Nom) => "й",
+            (Sg, Gen) => "а",
+            (Sg, Dat) => "ю",
+            (Sg, Acc) => animate_acc("й", "а"),
+            (Sg, Ins) => "емъ",
+            (Sg, Loc) => "и",
+            (Sg, Voc) => "ю",
+            (Du, Nom | Acc | Voc) => "а",
+            (Du, Gen | Loc) => "ю",
+            (Du, Dat | Ins) => "ема",
+            (Pl, Nom | Voc) => "є",
+            (Pl, Gen) => "й",
+            (Pl, Dat) => "ємъ",
+            (Pl, Acc) => animate_acc("и", "й"),
+            (Pl, Ins) => "и",
+            (Pl, Loc) => "ехъ",
+        },
+        NounDeclension::FirstSoftNeuter | NounDeclension::FirstSoftNeuterIe => {
+            match (cell.number, cell.case) {
+                (Sg, Nom | Acc | Voc) => "е",
+                (Sg, Gen) => "ѧ",
+                (Sg, Dat) => "ю",
+                (Sg, Ins) => "емъ",
+                (Sg, Loc) => "и",
+                (Du, Nom | Acc | Voc) => "и",
+                (Du, Gen | Loc) => "ю",
+                (Du, Dat | Ins) => "ема",
+                (Pl, Nom | Acc | Voc) => "ѧ",
+                (Pl, Gen) if base_declension == NounDeclension::FirstSoftNeuterIe => "й",
+                (Pl, Gen) => "ей",
+                (Pl, Dat) if base_declension == NounDeclension::FirstSoftNeuterIe => "ємъ",
+                (Pl, Dat) => "емъ",
+                (Pl, Ins) => "и",
+                (Pl, Loc) if base_declension == NounDeclension::FirstSoftNeuterIe => "ихъ",
+                (Pl, Loc) => "ѧхъ",
             }
         }
-        (NounDeclension::FirstSoftMasculineJ, Du, Nom | Acc | Voc) => "ѧ",
-        (NounDeclension::FirstSoftMasculineJ, Du, Gen | Loc) => "ю",
-        (NounDeclension::FirstSoftMasculineJ, Du, Dat | Ins) => "ема",
-        (NounDeclension::FirstSoftMasculineJ, Pl, Nom | Voc) => "и",
-        (NounDeclension::FirstSoftMasculineJ, Pl, Gen) => "євъ",
-        (NounDeclension::FirstSoftMasculineJ, Pl, Dat) => "ємъ",
-        (NounDeclension::FirstSoftMasculineJ, Pl, Acc) => animate_acc("и", "євъ"),
-        (NounDeclension::FirstSoftMasculineJ, Pl, Ins) => "и",
-        (NounDeclension::FirstSoftMasculineJ, Pl, Loc) => "ехъ",
-
-        (NounDeclension::FirstSoftMasculineEy, Sg, Nom) => "й",
-        (NounDeclension::FirstSoftMasculineEy, Sg, Gen) => "а",
-        (NounDeclension::FirstSoftMasculineEy, Sg, Dat) => "ю",
-        (NounDeclension::FirstSoftMasculineEy, Sg, Acc) => animate_acc("й", "а"),
-        (NounDeclension::FirstSoftMasculineEy, Sg, Ins) => "емъ",
-        (NounDeclension::FirstSoftMasculineEy, Sg, Loc) => "и",
-        (NounDeclension::FirstSoftMasculineEy, Sg, Voc) => "ю",
-        (NounDeclension::FirstSoftMasculineEy, Du, Nom | Acc | Voc) => "а",
-        (NounDeclension::FirstSoftMasculineEy, Du, Gen | Loc) => "ю",
-        (NounDeclension::FirstSoftMasculineEy, Du, Dat | Ins) => "ема",
-        (NounDeclension::FirstSoftMasculineEy, Pl, Nom | Voc) => "є",
-        (NounDeclension::FirstSoftMasculineEy, Pl, Gen) => "й",
-        (NounDeclension::FirstSoftMasculineEy, Pl, Dat) => "ємъ",
-        (NounDeclension::FirstSoftMasculineEy, Pl, Acc) => animate_acc("и", "й"),
-        (NounDeclension::FirstSoftMasculineEy, Pl, Ins) => "и",
-        (NounDeclension::FirstSoftMasculineEy, Pl, Loc) => "ехъ",
-
-        (NounDeclension::FirstSoftNeuter, Sg, Nom | Acc | Voc) => "е",
-        (NounDeclension::FirstSoftNeuter, Sg, Gen) => "ѧ",
-        (NounDeclension::FirstSoftNeuter, Sg, Dat) => "ю",
-        (NounDeclension::FirstSoftNeuter, Sg, Ins) => "емъ",
-        (NounDeclension::FirstSoftNeuter, Sg, Loc) => "и",
-        (NounDeclension::FirstSoftNeuter, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::FirstSoftNeuter, Du, Gen | Loc) => "ю",
-        (NounDeclension::FirstSoftNeuter, Du, Dat | Ins) => "ема",
-        (NounDeclension::FirstSoftNeuter, Pl, Nom | Acc | Voc) => "ѧ",
-        (NounDeclension::FirstSoftNeuter, Pl, Gen) => "ей",
-        (NounDeclension::FirstSoftNeuter, Pl, Dat) => "емъ",
-        (NounDeclension::FirstSoftNeuter, Pl, Ins) => "и",
-        (NounDeclension::FirstSoftNeuter, Pl, Loc) => "ѧхъ",
-
-        (NounDeclension::FirstSoftNeuterIe, Sg, Nom | Acc | Voc) => "е",
-        (NounDeclension::FirstSoftNeuterIe, Sg, Gen) => "ѧ",
-        (NounDeclension::FirstSoftNeuterIe, Sg, Dat) => "ю",
-        (NounDeclension::FirstSoftNeuterIe, Sg, Ins) => "емъ",
-        (NounDeclension::FirstSoftNeuterIe, Sg, Loc) => "и",
-        (NounDeclension::FirstSoftNeuterIe, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::FirstSoftNeuterIe, Du, Gen | Loc) => "ю",
-        (NounDeclension::FirstSoftNeuterIe, Du, Dat | Ins) => "ема",
-        (NounDeclension::FirstSoftNeuterIe, Pl, Nom | Acc | Voc) => "ѧ",
-        (NounDeclension::FirstSoftNeuterIe, Pl, Gen) => "й",
-        (NounDeclension::FirstSoftNeuterIe, Pl, Dat) => "ємъ",
-        (NounDeclension::FirstSoftNeuterIe, Pl, Ins) => "и",
-        (NounDeclension::FirstSoftNeuterIe, Pl, Loc) => "ихъ",
-
-        (NounDeclension::SecondHardVelar, Sg, Gen) => "и",
-        (NounDeclension::SecondHardVelar, Pl, Nom | Voc) => "и",
-        (NounDeclension::SecondHardVelar, Pl, Acc) => animate_acc("и", "ъ"),
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Nom) => "а",
-        (NounDeclension::SecondHard, Sg, Gen) => "ы",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Dat | Loc) => "ѣ",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Acc) => "ꙋ",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Ins) => "ою",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Sg, Voc) => "о",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Du, Nom | Acc | Voc) => "ѣ",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Du, Gen | Loc) => "ꙋ",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Du, Dat | Ins) => "ама",
-        (NounDeclension::SecondHard, Pl, Nom | Voc) => "ы",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Gen) => "ъ",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Dat) => "амъ",
-        (NounDeclension::SecondHard, Pl, Acc) => animate_acc("ы", "ъ"),
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Ins) => "ами",
-        (NounDeclension::SecondHard | NounDeclension::SecondHardVelar, Pl, Loc) => "ахъ",
-
-        (NounDeclension::SecondSoft, Sg, Nom) => "ѧ",
-        (NounDeclension::SecondSoft, Sg, Gen | Dat | Loc) => "и",
-        (NounDeclension::SecondSoft, Sg, Acc) => "ю",
-        (NounDeclension::SecondSoft, Sg, Ins) => "ею",
-        (NounDeclension::SecondSoft, Sg, Voc) => "е",
-        (NounDeclension::SecondSoft, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::SecondSoft, Du, Gen | Loc) => "ю",
-        (NounDeclension::SecondSoft, Du, Dat | Ins) => "ѧма",
-        (NounDeclension::SecondSoft, Pl, Nom | Voc) => "и",
-        (NounDeclension::SecondSoft, Pl, Gen) => "ь",
-        (NounDeclension::SecondSoft, Pl, Dat) => "ѧмъ",
-        (NounDeclension::SecondSoft, Pl, Acc) => animate_acc("и", "ь"),
-        (NounDeclension::SecondSoft, Pl, Ins) => "ѧми",
-        (NounDeclension::SecondSoft, Pl, Loc) => "ѧхъ",
-
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Nom) => "ѧ",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Gen | Dat | Loc) => "и",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Acc) => "ю",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Ins) => "ею",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Sg, Voc) => "е",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Du, Gen | Loc) => "ю",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Du, Dat | Ins) => "ѧма",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Nom | Voc) => "ѧ",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Acc) => animate_acc("ѧ", "й"),
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Gen) => "й",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Dat) => "ѧмъ",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Ins) => "ѧми",
-        (NounDeclension::SecondSoftPostvocalicAncientPlural, Pl, Loc) => "ѧхъ",
-
-        (NounDeclension::SecondSoftMasculineIa, Sg, Nom) => "а",
-        (NounDeclension::SecondSoftMasculineIa, Sg, Gen | Dat | Loc) => "и",
-        (NounDeclension::SecondSoftMasculineIa, Sg, Acc) => "ю",
-        (NounDeclension::SecondSoftMasculineIa, Sg, Ins) => "емъ",
-        (NounDeclension::SecondSoftMasculineIa, Sg, Voc) => "е",
-        (NounDeclension::SecondSoftMasculineIa, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::SecondSoftMasculineIa, Du, Gen | Loc) => "ю",
-        (NounDeclension::SecondSoftMasculineIa, Du, Dat | Ins) => "ѧма",
-        (NounDeclension::SecondSoftMasculineIa, Pl, Nom | Voc) => "и",
-        (NounDeclension::SecondSoftMasculineIa, Pl, Gen) => "й",
-        (NounDeclension::SecondSoftMasculineIa, Pl, Dat) => "ѧмъ",
-        (NounDeclension::SecondSoftMasculineIa, Pl, Acc) => animate_acc("и", "й"),
-        (NounDeclension::SecondSoftMasculineIa, Pl, Ins) => "ѧми",
-        (NounDeclension::SecondSoftMasculineIa, Pl, Loc) => "ѧхъ",
-
-        (NounDeclension::SecondSoftFeminineIa, Sg, Nom) => "а",
-        (NounDeclension::SecondSoftFeminineIa, Sg, Gen | Dat | Loc) => "и",
-        (NounDeclension::SecondSoftFeminineIa, Sg, Acc) => "ю",
-        (NounDeclension::SecondSoftFeminineIa, Sg, Ins) => "ею",
-        (NounDeclension::SecondSoftFeminineIa, Sg, Voc) => "е",
-        (NounDeclension::SecondSoftFeminineIa, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::SecondSoftFeminineIa, Du, Gen | Loc) => "ю",
-        (NounDeclension::SecondSoftFeminineIa, Du, Dat | Ins) => "ѧма",
-        (NounDeclension::SecondSoftFeminineIa, Pl, Nom | Voc) => "и",
-        (NounDeclension::SecondSoftFeminineIa, Pl, Gen) => "й",
-        (NounDeclension::SecondSoftFeminineIa, Pl, Dat) => "ѧмъ",
-        (NounDeclension::SecondSoftFeminineIa, Pl, Acc) => animate_acc("и", "й"),
-        (NounDeclension::SecondSoftFeminineIa, Pl, Ins) => "ѧми",
-        (NounDeclension::SecondSoftFeminineIa, Pl, Loc) => "ѧхъ",
-
-        (NounDeclension::SecondMixed, Sg, Nom) => "а",
-        (NounDeclension::SecondMixed, Sg, Gen | Dat | Loc) => "и",
-        (NounDeclension::SecondMixed, Sg, Acc) => "ꙋ",
-        (NounDeclension::SecondMixed, Sg, Ins) => "ею",
-        (NounDeclension::SecondMixed, Sg, Voc) => "е",
-        (NounDeclension::SecondMixed, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::SecondMixed, Du, Gen | Loc) => "ꙋ",
-        (NounDeclension::SecondMixed, Du, Dat | Ins) => "ама",
-        (NounDeclension::SecondMixed, Pl, Nom | Voc) => "и",
-        (NounDeclension::SecondMixed, Pl, Gen) => "ъ",
-        (NounDeclension::SecondMixed, Pl, Dat) => "амъ",
-        (NounDeclension::SecondMixed, Pl, Acc) => animate_acc("ы", "ъ"),
-        (NounDeclension::SecondMixed, Pl, Ins) => "ами",
-        (NounDeclension::SecondMixed, Pl, Loc) => "ахъ",
-
-        (NounDeclension::ThirdFeminine, Sg, Nom | Acc) => "ь",
-        (NounDeclension::ThirdFeminine, Sg, Gen | Dat | Loc) => "и",
-        (NounDeclension::ThirdFeminine, Sg, Ins) => "їю",
-        (NounDeclension::ThirdFeminine, Sg, Voc) => "е",
-        (NounDeclension::ThirdFeminine, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::ThirdFeminine, Du, Gen | Loc) => "їю",
-        (NounDeclension::ThirdFeminine, Du, Dat | Ins) => "ема",
-        (NounDeclension::ThirdFeminine, Pl, Nom | Voc | Acc) => "и",
-        (NounDeclension::ThirdFeminine, Pl, Gen) => "ей",
-        (NounDeclension::ThirdFeminine, Pl, Dat) => "емъ",
-        (NounDeclension::ThirdFeminine, Pl, Ins) => "ьми",
-        (NounDeclension::ThirdFeminine, Pl, Loc) => "ехъ",
-
-        (NounDeclension::ThirdMasculine, Sg, Nom | Acc) => "ь",
-        (NounDeclension::ThirdMasculine, Sg, Gen | Dat | Loc) => "и",
-        (NounDeclension::ThirdMasculine, Sg, Ins) => "емъ",
-        (NounDeclension::ThirdMasculine, Sg, Voc) => "ь",
-        (NounDeclension::ThirdMasculine, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::ThirdMasculine, Du, Gen | Loc) => "їю",
-        (NounDeclension::ThirdMasculine, Du, Dat | Ins) => "ьма",
-        (NounDeclension::ThirdMasculine, Pl, Nom | Voc) => "їе",
-        (NounDeclension::ThirdMasculine, Pl, Gen) => "ій",
-        (NounDeclension::ThirdMasculine, Pl, Dat) => "ємъ",
-        (NounDeclension::ThirdMasculine, Pl, Acc) => animate_acc("и", "ій"),
-        (NounDeclension::ThirdMasculine, Pl, Ins) => "ьми",
-        (NounDeclension::ThirdMasculine, Pl, Loc) => "ехъ",
-
-        (NounDeclension::FourthNeuterEsPairedDual, Du, Nom | Acc | Voc) => "и",
-        (NounDeclension::FourthNeuterEsPairedDual, Du, Gen | Loc) => "їю",
-        (NounDeclension::FourthNeuterEsPairedDual, Du, Dat | Ins) => "има",
-
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Sg,
-            Gen,
-        ) => "е",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Sg,
-            Dat | Loc,
-        ) => "и",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Sg,
-            Ins,
-        ) => "емъ",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterAt,
-            Du,
-            Nom | Acc | Voc,
-        ) => "и",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterAt,
-            Du,
-            Gen | Loc,
-        ) => "ꙋ",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterAt,
-            Du,
-            Dat | Ins,
-        ) => "ема",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Pl,
-            Nom | Acc | Voc,
-        ) => "а",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Pl,
-            Gen,
-        ) => "ъ",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Pl,
-            Dat,
-        ) => "ємъ",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Pl,
-            Ins,
-        ) => "ы",
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Pl,
-            Loc,
-        ) => "ѣхъ",
-
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Sg, Gen) => {
-            "е"
+        NounDeclension::SecondHard | NounDeclension::SecondHardVelar => {
+            let velar = base_declension == NounDeclension::SecondHardVelar;
+            match (cell.number, cell.case) {
+                (Sg, Nom) => "а",
+                (Sg, Gen) if velar => "и",
+                (Sg, Gen) => "ы",
+                (Sg, Dat | Loc) => "ѣ",
+                (Sg, Acc) => "ꙋ",
+                (Sg, Ins) => "ою",
+                (Sg, Voc) => "о",
+                (Du, Nom | Acc | Voc) => "ѣ",
+                (Du, Gen | Loc) => "ꙋ",
+                (Du, Dat | Ins) => "ама",
+                (Pl, Nom | Voc) if velar => "и",
+                (Pl, Nom | Voc) => "ы",
+                (Pl, Gen) => "ъ",
+                (Pl, Dat) => "амъ",
+                (Pl, Acc) => animate_acc(if velar { "и" } else { "ы" }, "ъ"),
+                (Pl, Ins) => "ами",
+                (Pl, Loc) => "ахъ",
+            }
         }
-        (
-            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
-            Sg,
-            Dat | Loc,
-        ) => "и",
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Sg, Acc) => {
-            "ь"
+        NounDeclension::SecondSoft => match (cell.number, cell.case) {
+            (Sg, Nom) => "ѧ",
+            (Sg, Gen | Dat | Loc) => "и",
+            (Sg, Acc) => "ю",
+            (Sg, Ins) => "ею",
+            (Sg, Voc) => "е",
+            (Du, Nom | Acc | Voc) => "и",
+            (Du, Gen | Loc) => "ю",
+            (Du, Dat | Ins) => "ѧма",
+            (Pl, Nom | Voc) => "и",
+            (Pl, Gen) => "ь",
+            (Pl, Dat) => "ѧмъ",
+            (Pl, Acc) => animate_acc("и", "ь"),
+            (Pl, Ins) => "ѧми",
+            (Pl, Loc) => "ѧхъ",
+        },
+        NounDeclension::SecondSoftPostvocalicAncientPlural => match (cell.number, cell.case) {
+            (Sg, Nom) => "ѧ",
+            (Sg, Gen | Dat | Loc) => "и",
+            (Sg, Acc) => "ю",
+            (Sg, Ins) => "ею",
+            (Sg, Voc) => "е",
+            (Du, Nom | Acc | Voc) => "и",
+            (Du, Gen | Loc) => "ю",
+            (Du, Dat | Ins) => "ѧма",
+            (Pl, Nom | Voc) => "ѧ",
+            (Pl, Gen) => "й",
+            (Pl, Dat) => "ѧмъ",
+            (Pl, Acc) => animate_acc("ѧ", "й"),
+            (Pl, Ins) => "ѧми",
+            (Pl, Loc) => "ѧхъ",
+        },
+        NounDeclension::SecondSoftMasculineIa | NounDeclension::SecondSoftFeminineIa => {
+            match (cell.number, cell.case) {
+                (Sg, Nom) => "а",
+                (Sg, Gen | Dat | Loc) => "и",
+                (Sg, Acc) => "ю",
+                (Sg, Ins) if base_declension == NounDeclension::SecondSoftMasculineIa => "емъ",
+                (Sg, Ins) => "ею",
+                (Sg, Voc) => "е",
+                (Du, Nom | Acc | Voc) => "и",
+                (Du, Gen | Loc) => "ю",
+                (Du, Dat | Ins) => "ѧма",
+                (Pl, Nom | Voc) => "и",
+                (Pl, Gen) => "й",
+                (Pl, Dat) => "ѧмъ",
+                (Pl, Acc) => animate_acc("и", "й"),
+                (Pl, Ins) => "ѧми",
+                (Pl, Loc) => "ѧхъ",
+            }
         }
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Sg, Ins) => {
-            "їю"
+        NounDeclension::SecondMixed => match (cell.number, cell.case) {
+            (Sg, Nom) => "а",
+            (Sg, Gen | Dat | Loc) => "и",
+            (Sg, Acc) => "ꙋ",
+            (Sg, Ins) => "ею",
+            (Sg, Voc) => "е",
+            (Du, Nom | Acc | Voc) => "и",
+            (Du, Gen | Loc) => "ꙋ",
+            (Du, Dat | Ins) => "ама",
+            (Pl, Nom | Voc) => "и",
+            (Pl, Gen) => "ъ",
+            (Pl, Dat) => "амъ",
+            (Pl, Acc) => animate_acc("ы", "ъ"),
+            (Pl, Ins) => "ами",
+            (Pl, Loc) => "ахъ",
+        },
+        NounDeclension::ThirdFeminine => match (cell.number, cell.case) {
+            (Sg, Nom | Acc) => "ь",
+            (Sg, Gen | Dat | Loc) => "и",
+            (Sg, Ins) => "їю",
+            (Sg, Voc) => "е",
+            (Du, Nom | Acc | Voc) => "и",
+            (Du, Gen | Loc) => "їю",
+            (Du, Dat | Ins) => "ема",
+            (Pl, Nom | Acc | Voc) => "и",
+            (Pl, Gen) => "ей",
+            (Pl, Dat) => "емъ",
+            (Pl, Ins) => "ьми",
+            (Pl, Loc) => "ехъ",
+        },
+        NounDeclension::ThirdMasculine => match (cell.number, cell.case) {
+            (Sg, Nom | Acc) => "ь",
+            (Sg, Gen | Dat | Loc) => "и",
+            (Sg, Ins) => "емъ",
+            (Sg, Voc) => "ь",
+            (Du, Nom | Acc | Voc) => "и",
+            (Du, Gen | Loc) => "їю",
+            (Du, Dat | Ins) => "ьма",
+            (Pl, Nom | Voc) => "їе",
+            (Pl, Gen) => "ій",
+            (Pl, Dat) => "ємъ",
+            (Pl, Acc) => animate_acc("и", "ій"),
+            (Pl, Ins) => "ьми",
+            (Pl, Loc) => "ехъ",
+        },
+        NounDeclension::FourthNeuterEn
+        | NounDeclension::FourthNeuterEs
+        | NounDeclension::FourthNeuterEsPairedDual
+        | NounDeclension::FourthNeuterAt => match (cell.number, cell.case) {
+            (Sg, Nom | Acc | Voc) => return Err(fourth_declension_citation_error()),
+            (Sg, Gen) => "е",
+            (Sg, Dat | Loc) => "и",
+            (Sg, Ins) => "емъ",
+            (Du, Nom | Acc | Voc) => "и",
+            (Du, Gen | Loc) if base_declension == NounDeclension::FourthNeuterEsPairedDual => "їю",
+            (Du, Gen | Loc) => "ꙋ",
+            (Du, Dat | Ins) if base_declension == NounDeclension::FourthNeuterEsPairedDual => "има",
+            (Du, Dat | Ins) => "ема",
+            (Pl, Nom | Acc | Voc) => "а",
+            (Pl, Gen) => "ъ",
+            (Pl, Dat) => "ємъ",
+            (Pl, Ins) => "ы",
+            (Pl, Loc) => "ѣхъ",
+        },
+        NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter => {
+            match (cell.number, cell.case) {
+                (Sg, Nom | Voc) => return Err(fourth_declension_citation_error()),
+                (Sg, Gen) => "е",
+                (Sg, Dat | Loc) => "и",
+                (Sg, Acc) => "ь",
+                (Sg, Ins) => "їю",
+                (Du, Nom | Acc | Voc) => "и",
+                (Du, Gen | Loc) => "їю",
+                (Du, Dat | Ins) => "ема",
+                (Pl, Nom | Voc) => "и",
+                (Pl, Gen) => "їй",
+                (Pl, Dat) => "емъ",
+                (Pl, Acc) => animate_acc("и", "ей"),
+                (Pl, Ins) => "ьми",
+                (Pl, Loc) => "ехъ",
+            }
         }
-        (
-            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
-            Du,
-            Nom | Acc | Voc,
-        ) => "и",
-        (
-            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
-            Du,
-            Gen | Loc,
-        ) => "їю",
-        (
-            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
-            Du,
-            Dat | Ins,
-        ) => "ема",
-        (
-            NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter,
-            Pl,
-            Nom | Voc,
-        ) => "и",
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Gen) => {
-            "їй"
+        NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating => {
+            match (cell.number, cell.case) {
+                (Sg, Nom | Voc) => return Err(fourth_declension_citation_error()),
+                (Sg, Gen) => "е",
+                (Sg, Dat | Loc) => "и",
+                (Sg, Acc) => "ь",
+                (Sg, Ins) => "їю",
+                (Du, Nom | Acc | Voc) => "и",
+                (Du, Gen | Loc) => "їю",
+                (Du, Dat | Ins) => "ама",
+                (Pl, Nom | Voc) => "и",
+                (Pl, Gen) => "ей",
+                (Pl, Dat) => "амъ",
+                (Pl, Acc) => animate_acc("и", "ей"),
+                (Pl, Ins) => "ами",
+                (Pl, Loc) => "ахъ",
+            }
         }
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Dat) => {
-            "емъ"
-        }
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Acc) => {
-            animate_acc("и", "ей")
-        }
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Ins) => {
-            "ьми"
-        }
-        (NounDeclension::FourthFeminineEr | NounDeclension::FourthFeminineErDaughter, Pl, Loc) => {
-            "ехъ"
-        }
-
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Sg,
-            Gen,
-        ) => "е",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Sg,
-            Dat | Loc,
-        ) => "и",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Sg,
-            Acc,
-        ) => "ь",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Sg,
-            Ins,
-        ) => "їю",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Du,
-            Nom | Acc | Voc,
-        ) => "и",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Du,
-            Gen | Loc,
-        ) => "їю",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Du,
-            Dat | Ins,
-        ) => "ама",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Pl,
-            Nom | Voc,
-        ) => "и",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Pl,
-            Gen,
-        ) => "ей",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Pl,
-            Dat,
-        ) => "амъ",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Pl,
-            Acc,
-        ) => animate_acc("и", "ей"),
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Pl,
-            Ins,
-        ) => "ами",
-        (
-            NounDeclension::FourthFeminineOv | NounDeclension::FourthFeminineOvSyncopating,
-            Pl,
-            Loc,
-        ) => "ахъ",
-
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Sg, Gen) => {
-            "е"
-        }
-        (
-            NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
-            Sg,
-            Dat | Loc,
-        ) => "и",
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Sg, Acc) => {
-            animate_acc("ь", "е")
-        }
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Sg, Ins) => {
-            "емъ"
-        }
-        (
-            NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
-            Du,
-            Nom | Acc | Voc,
-        ) => "и",
-        (
-            NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
-            Du,
-            Gen | Loc,
-        ) => "ꙋ",
-        (
-            NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
-            Du,
-            Dat | Ins,
-        ) => "ьма",
-        (
-            NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
-            Pl,
-            Nom | Voc,
-        ) => "и",
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Pl, Gen) => {
-            "їй"
-        }
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Pl, Dat) => {
-            "ємъ"
-        }
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Pl, Acc) => {
-            animate_acc("и", "їй")
-        }
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Pl, Ins) => {
-            "ьми"
-        }
-        (NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen, Pl, Loc) => {
-            "ехъ"
-        }
-
-        // Citation forms of fourth-declension nouns are emitted directly from
-        // the independently supplied lemma before this table is consulted.
-        (
-            NounDeclension::FourthNeuterEn
-            | NounDeclension::FourthNeuterEs
-            | NounDeclension::FourthNeuterEsPairedDual
-            | NounDeclension::FourthNeuterAt,
-            Sg,
-            Nom | Acc | Voc,
-        )
-        | (
-            NounDeclension::FourthFeminineEr
-            | NounDeclension::FourthFeminineErDaughter
-            | NounDeclension::FourthFeminineOv
-            | NounDeclension::FourthFeminineOvSyncopating,
-            Sg,
-            Nom | Voc,
-        )
-        | (
-            NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen,
-            Sg,
-            Nom | Voc,
-        ) => {
-            return Err(Error::UnsupportedCell {
-                reason: "fourth-declension citation cells must be emitted from the supplied lemma"
-                    .into(),
-            });
+        NounDeclension::FourthMasculineEn | NounDeclension::FourthMasculineEnKamen => {
+            match (cell.number, cell.case) {
+                (Sg, Nom | Voc) => return Err(fourth_declension_citation_error()),
+                (Sg, Gen) => "е",
+                (Sg, Dat | Loc) => "и",
+                (Sg, Acc) => animate_acc("ь", "е"),
+                (Sg, Ins) => "емъ",
+                (Du, Nom | Acc | Voc) => "и",
+                (Du, Gen | Loc) => "ꙋ",
+                (Du, Dat | Ins) => "ьма",
+                (Pl, Nom | Voc) => "и",
+                (Pl, Gen) => "їй",
+                (Pl, Dat) => "ємъ",
+                (Pl, Acc) => animate_acc("и", "їй"),
+                (Pl, Ins) => "ьми",
+                (Pl, Loc) => "ехъ",
+            }
         }
         _ => {
             return Err(Error::ContradictoryMetadata {
@@ -3193,6 +2930,12 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         _ => {}
     }
     Ok(endings)
+}
+
+fn fourth_declension_citation_error() -> Error {
+    Error::UnsupportedCell {
+        reason: "fourth-declension citation cells must be emitted from the supplied lemma".into(),
+    }
 }
 
 fn short_adjective_ending(class: AdjectiveClass, cell: AdjectiveCell) -> Result<&'static str> {
