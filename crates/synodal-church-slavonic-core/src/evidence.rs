@@ -91,10 +91,11 @@ pub enum EvidenceKind {
     ComparativeObservation,
     AccentMetadata,
     AccentParadigm,
+    OrthographicParadigm,
 }
 
 impl EvidenceKind {
-    pub const ALL: [Self; 11] = [
+    pub const ALL: [Self; 12] = [
         Self::ExactTableCell,
         Self::NormativeRule,
         Self::LexicalMetadata,
@@ -106,6 +107,7 @@ impl EvidenceKind {
         Self::ComparativeObservation,
         Self::AccentMetadata,
         Self::AccentParadigm,
+        Self::OrthographicParadigm,
     ];
 }
 

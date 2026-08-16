@@ -54,8 +54,11 @@ reviewable tables and covered by hostile-input tests.
 
 Liturgical generation resolves accent metadata in a fixed order: an exact
 reviewed or provider-supplied accented/printed cell; an explicit lexical
-irregular printed override; a reviewed reusable `AccentParadigm`; otherwise a typed
-`OrthographicMetadataRequired` failure. A paradigm is not inferred from corpus
+irregular printed override; caller-supplied positional presentation followed by
+a reviewed reusable `AccentParadigm`; otherwise a typed
+`OrthographicMetadataRequired` failure. Positional presentation runs before
+initial breathing and accent so `его` can become canonical `є҆́го`, never a
+misordered combining sequence. Neither paradigm is inferred from corpus
 frequency or one surface witness.
 
 The typed model distinguishes a stem vowel counted from the lexical left edge
@@ -162,6 +165,33 @@ Initial/medial/final variants (including broad on, omega, uk, and dotted/decimal
 `і`) are presentation rules with stable IDs. A rule records the lexical input,
 context, output, evidence, and whether reversal is unique.
 
+`PositionalParadigm` is the complete arbitrary-lexeme interface. Its disjoint
+`AccentScope` rules cover typed grammar cells and compose explicit operations:
+preserve; initial wide `є`, broad `ѻ`, iotated `ꙗ`, or digraph uk; `и → ї`
+before a vowel; the §36 wide plural ending; and a checked occurrence-specific
+`е → є`, `о → ѻ/ѡ`, `и → ї`, or `ѧ → ꙗ` replacement. An empty operation list
+is an affirmative preserve decision. A missing scope returns
+`OrthographicMetadataRequired(PositionalParadigm)`; overlapping scopes or a
+replacement whose input occurrence is absent return `ContradictoryMetadata`.
+Every noun, adjective, determiner, numeral, pronoun, and verb specification
+exposes this same contract, including injected-provider fallthrough.
+
+The occurrence operation does not license arbitrary Cyrillic rewriting. Alypy
+§2's closed `ѕ` families and foreign-word `і/ї`, `ѡ`, `ѳ`, `ѯ`, `ѱ`, and `ѵ`
+spellings remain validated lexical stem/lemma metadata because they depend on
+identity and Greek etymology. Likewise, `ѧзыкъ` “organ” versus `ꙗзыкъ`
+“people,” and `сиѡна` the king versus `сїѡнъ` the holy mountain, require the
+caller's resolved semantic identity. The engine can express either result but
+never chooses by string shape alone.
+
+Alypy §36 calls `-ѡвъ/-євъ` and `-ѡмъ/-ємъ` obligatory, while the same
+grammar's §43 extended-stem tables print ordinary `-емъ` in forms such as
+plural dative `матеремъ`. The engine retains this conflict: reviewed exact
+tables win, and arbitrary lexemes opt into `WidePluralEnding` through sourced,
+cell-scoped metadata. It does not erase a table reading with a global rewrite.
+`AccentMark::Kamora` supplies §36's alternative case distinction where a
+reviewed paradigm selects it.
+
 Contraction requires a resolved lexical identity and semantic sense. Nomina sacra
 are never produced by blind substring replacement. If semantic metadata is absent
 or several expansions fit a printed form, contraction/expansion returns a typed
@@ -179,18 +209,19 @@ special examples for 100,000 and 1,000,000. It validates exactly one balanced
 titlo, the thousands sign, letter order, the reversed 11–19 sequence, and
 round-trip canonical spelling. Other myriad notation is explicitly out of range.
 
-## Current presentation limits
+## Presentation completion boundary
 
 The validator recognizes standard combining marks, superscript Cyrillic letters,
 titlo/pokrytie, payerok, kavyka, and the standard Cyrillic repertoire while
 rejecting private-use glyph encodings. The renderer currently automates reviewed
-exact accent rows, six reusable lexical paradigms, the language-wide
+exact accent rows, six bundled reusable lexical paradigms, the language-wide
 initial-breathing and contextual final-accent rules, 191 exact abbreviation
-cells, and 55 semantic contraction families with 61 allomorphs. Initial `є`, broad
-`ѻ`, iotated `ꙗ`, and digraph uk are available through an explicit
-`InitialPresentation` operation with a loss/change report. Automatic selection
-of those variants remains lexical and grammatical work because Alypy §2 records
-exceptions; the engine does not apply a blind spelling rewrite.
+cells, and 55 semantic contraction families with 61 allomorphs. The reusable
+`AccentParadigm` and `PositionalParadigm` APIs are not limited to those bundled
+rows: a caller can source every cell of any arbitrary lexeme, including fixed
+or mobile stress, breathing, initial variants, contextual `ї`, case-distinguishing
+`є/ѡ` or kamora, etymological spelling retained in the stem, and exact printed
+exceptions. Exact printed cells always win before reusable metadata.
 
 Alypy §3.c's printed inventory contains 48 named abbreviation entries.
 `abbreviation_inventory.tsv` classifies all 48 in source order and now maps every
@@ -200,6 +231,13 @@ so the family and source-table counts are not a one-to-one denominator. The ten
 last source entries introduced a typed mobile-`е`/`ц` noun, velar-adjective
 palatalization, `-нн-` reduction and mobile-`е` short-masculine principal parts,
 the suppletive `благїй : ᲂу҆́н-` comparison, and closed invariant policies for
-`благочестно` and the `имярекъ` rubric. The remaining lexical accent and
-positional-semantic inventories keep the liturgical presentation system
-non-final.
+`благочестно` and the `имярекъ` rubric.
+
+Unknown lexical stress, semantics, or Greek etymology is intentionally not a
+grammar implementation gap. For an arbitrary caller specification it is a
+typed metadata boundary; for a bundled lexeme an exact row or reviewed reusable
+paradigm supplies the known result, and an uncovered cell fails rather than
+guessing. The finite source inventory in `positional_rules.tsv` records all
+Alypy §§2 and 36 decision classes and their exception boundaries. Thus the
+presentation engine is operationally complete for complete lexical metadata
+without claiming that six bundled accent paradigms exhaust an open lexicon.

@@ -6,7 +6,7 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **51** have final states and **2** remain non-final. Source discovery has 16 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **52** have final states and **1** remain non-final. Source discovery has 16 recorded passes and has not converged.
 
 ## State totals
 
@@ -14,10 +14,9 @@ The matrix contains **53** required system contracts: **51** have final states a
 |---|---:|
 | `absent-from-recension` | 1 |
 | `closed-exact-complete` | 2 |
-| `implementation-missing` | 1 |
 | `irregular-exact-complete` | 3 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 43 |
+| `productive-complete` | 44 |
 | `source-review-open` | 1 |
 
 ## Recension totals
@@ -26,7 +25,7 @@ The matrix contains **53** required system contracts: **51** have final states a
 |---|---:|---:|
 | cross-recension | 3 | 4 |
 | old-church-slavonic | 26 | 26 |
-| synodal-russian | 22 | 23 |
+| synodal-russian | 23 | 23 |
 
 ## Category totals
 
@@ -65,14 +64,13 @@ The matrix contains **53** required system contracts: **51** have final states a
 | synodal-russian | nonfinite-verb | 1 | 1 |
 | synodal-russian | noun | 2 | 2 |
 | synodal-russian | numeral | 1 | 1 |
-| synodal-russian | orthography | 1 | 2 |
+| synodal-russian | orthography | 2 | 2 |
 | synodal-russian | participle | 1 | 1 |
 | synodal-russian | pronoun | 1 | 1 |
 | synodal-russian | verbal-noun | 1 | 1 |
 
 ## Non-final systems
 
-- `syn.orthography.liturgical-accent-abbreviation` — **implementation-missing**: Classify every remaining lexical accent/printed pattern and complete positional semantics without guessing; the Alypy §3.c abbreviation inventory itself is fully linked.
 - `cross.source-frontier` — **source-review-open**: Complete source crosswalks and at least two consecutive post-seed passes with no contract-changing eligible source.
 
 ## Complete matrix
@@ -125,7 +123,7 @@ The matrix contains **53** required system contracts: **51** have final states a
 | `syn.analytic.current` | synodal-russian | analytic-form | `productive-complete` | `SYN-PHRASE-FUTURE-ALYPY-85-PK-13`<br>`SYN-PHRASE-PERFECT-ALYPY-88`<br>`SYN-PHRASE-PLUPERFECT-ALYPY-89-168`<br>`SYN-PHRASE-CONDITIONAL-ALYPY-91`<br>`SYN-PHRASE-PASSIVE-ALYPY-101-102` | normative structured prediction over the exhaustive wider matrix |
 | `syn.analytic.wider` | synodal-russian | analytic-form | `productive-complete` | `SYN-PHRASE-FUTURE-ALYPY-85-PK-13`<br>`SYN-PHRASE-PERFECT-ALYPY-88`<br>`SYN-PHRASE-PLUPERFECT-ALYPY-89-168`<br>`SYN-PHRASE-FUTURE-ANTERIOR-ALYPY-162`<br>`SYN-PHRASE-CONDITIONAL-ALYPY-91`<br>`SYN-PHRASE-OPTATIVE-ALYPY-92`<br>`SYN-PHRASE-PASSIVE-ALYPY-101-102`<br>`SYN-PHRASE-PERIPHRASTIC-ALYPY-90-163`<br>`SYN-PHRASE-COPULA-ELLIPSIS-ALYPY-123-124`<br>`SYN-PHRASE-ADVERBIAL-PARTICIPLE-ALYPY-146` | exhaustive normative construction inventory with independent target-grammar and diachronic crosschecks, locked target witnesses, source-bounded unattested predictions, and 14/14 expanded/liturgical phrase evaluation |
 | `syn.orthography.canonical` | synodal-russian | orthography | `productive-complete` | `SYN-ORTHOGRAPHY-EXPANDED`<br>`SYN-COLLATION-UTN41-R1`<br>`SYN-NUMERAL-NOTATION-ALYPY-5` | normative technical and grammatical contract |
-| `syn.orthography.liturgical-accent-abbreviation` | synodal-russian | orthography | `implementation-missing` | `synodal-accent:mudr-fixed-stem`<br>`synodal-accent:vsyacheskii-fixed-stem`<br>`synodal-accent:vsyak-fixed-stem`<br>`synodal-accent:mati-fixed-stem`<br>`synodal-accent:imya-mobile`<br>`synodal-accent:nebo-mobile`<br>`SYN-ORTH-FINAL-ACUTE-BEFORE-ENCLITIC-ALYPY-3`<br>`SYN-ABBR-FAMILY-ANGEL`<br>`SYN-ABBR-FAMILY-APOSTOL`<br>`SYN-ABBR-FAMILY-BLAG`<br>`SYN-ABBR-FAMILY-BLAGOCHESTNO`<br>`SYN-ABBR-FAMILY-BLAGOSLOVENN`<br>`SYN-ABBR-FAMILY-BLAZHENN`<br>`SYN-ABBR-FAMILY-BOG`<br>`SYN-ABBR-FAMILY-BOGORODITSA`<br>`SYN-ABBR-FAMILY-BOZHII`<br>`SYN-ABBR-FAMILY-BOZHESTVENN`<br>`SYN-ABBR-FAMILY-CHESTN`<br>`SYN-ABBR-FAMILY-CHIST`<br>`SYN-ABBR-FAMILY-CHRIST`<br>`SYN-ABBR-FAMILY-CHURCH`<br>`SYN-ABBR-FAMILY-DEVA`<br>`SYN-ABBR-FAMILY-EPISKOP`<br>`SYN-ABBR-FAMILY-EVANGELIE`<br>`SYN-ABBR-FAMILY-FATHER`<br>`SYN-ABBR-FAMILY-GLAGOL-NOUN`<br>`SYN-ABBR-FAMILY-GLAGOL-VERB`<br>`SYN-ABBR-FAMILY-GOSPOD`<br>`SYN-ABBR-FAMILY-GOSPODEN`<br>`SYN-ABBR-FAMILY-GRACE`<br>`SYN-ABBR-FAMILY-HEAVEN`<br>`SYN-ABBR-FAMILY-IMYAREK`<br>`SYN-ABBR-FAMILY-ISRAEL-ADJECTIVE`<br>`SYN-ABBR-FAMILY-ISRAEL-NOUN`<br>`SYN-ABBR-FAMILY-JERUSALEM`<br>`SYN-ABBR-FAMILY-JESUS`<br>`SYN-ABBR-FAMILY-KINGDOM`<br>`SYN-ABBR-FAMILY-KREST`<br>`SYN-ABBR-FAMILY-KRESTITEL`<br>`SYN-ABBR-FAMILY-MARY`<br>`SYN-ABBR-FAMILY-MATI`<br>`SYN-ABBR-FAMILY-MILOSERDIE`<br>`SYN-ABBR-FAMILY-MILOST`<br>`SYN-ABBR-FAMILY-MLADENETS`<br>`SYN-ABBR-FAMILY-MOLITVA`<br>`SYN-ABBR-FAMILY-MUCHENIK`<br>`SYN-ABBR-FAMILY-NEDELYA`<br>`SYN-ABBR-FAMILY-NYNYE`<br>`SYN-ABBR-FAMILY-PRAVEDNIK`<br>`SYN-ABBR-FAMILY-PREPODOBN`<br>`SYN-ABBR-FAMILY-PRESTOL`<br>`SYN-ABBR-FAMILY-PROPHET`<br>`SYN-ABBR-FAMILY-RESURRECTION`<br>`SYN-ABBR-FAMILY-SON`<br>`SYN-ABBR-FAMILY-SPAS`<br>`SYN-ABBR-FAMILY-SPIRIT`<br>`SYN-ABBR-FAMILY-SVYAT`<br>`SYN-ABBR-FAMILY-SVYATITEL`<br>`SYN-ABBR-FAMILY-TROITSA`<br>`SYN-ABBR-FAMILY-TSAR`<br>`SYN-ABBR-FAMILY-VLADYCHITSA`<br>`SYN-ABBR-FAMILY-VLADYKA`<br>`SYN-LITURGICAL-COMPLETE-PENDING` | language-wide prosodic context plus reviewed exact rows, 55 source-backed semantic families, and an exhaustive fully linked 48-entry Alypy abbreviation decision ledger |
+| `syn.orthography.liturgical-accent-abbreviation` | synodal-russian | orthography | `productive-complete` | `SYN-ACCENT-PARADIGM`<br>`SYN-POSITIONAL-PARADIGM`<br>`SYN-ORTH-I-BEFORE-VOWEL`<br>`SYN-ORTH-WIDE-PLURAL-ENDING-ALYPY-36`<br>`SYN-ORTH-FINAL-ACUTE-BEFORE-ENCLITIC-ALYPY-3`<br>`synodal-accent:mudr-fixed-stem`<br>`synodal-accent:vsyacheskii-fixed-stem`<br>`synodal-accent:vsyak-fixed-stem`<br>`synodal-accent:mati-fixed-stem`<br>`synodal-accent:imya-mobile`<br>`synodal-accent:nebo-mobile`<br>`SYN-ABBR-FAMILY-ANGEL`<br>`SYN-ABBR-FAMILY-APOSTOL`<br>`SYN-ABBR-FAMILY-BLAG`<br>`SYN-ABBR-FAMILY-BLAGOCHESTNO`<br>`SYN-ABBR-FAMILY-BLAGOSLOVENN`<br>`SYN-ABBR-FAMILY-BLAZHENN`<br>`SYN-ABBR-FAMILY-BOG`<br>`SYN-ABBR-FAMILY-BOGORODITSA`<br>`SYN-ABBR-FAMILY-BOZHII`<br>`SYN-ABBR-FAMILY-BOZHESTVENN`<br>`SYN-ABBR-FAMILY-CHESTN`<br>`SYN-ABBR-FAMILY-CHIST`<br>`SYN-ABBR-FAMILY-CHRIST`<br>`SYN-ABBR-FAMILY-CHURCH`<br>`SYN-ABBR-FAMILY-DEVA`<br>`SYN-ABBR-FAMILY-EPISKOP`<br>`SYN-ABBR-FAMILY-EVANGELIE`<br>`SYN-ABBR-FAMILY-FATHER`<br>`SYN-ABBR-FAMILY-GLAGOL-NOUN`<br>`SYN-ABBR-FAMILY-GLAGOL-VERB`<br>`SYN-ABBR-FAMILY-GOSPOD`<br>`SYN-ABBR-FAMILY-GOSPODEN`<br>`SYN-ABBR-FAMILY-GRACE`<br>`SYN-ABBR-FAMILY-HEAVEN`<br>`SYN-ABBR-FAMILY-IMYAREK`<br>`SYN-ABBR-FAMILY-ISRAEL-ADJECTIVE`<br>`SYN-ABBR-FAMILY-ISRAEL-NOUN`<br>`SYN-ABBR-FAMILY-JERUSALEM`<br>`SYN-ABBR-FAMILY-JESUS`<br>`SYN-ABBR-FAMILY-KINGDOM`<br>`SYN-ABBR-FAMILY-KREST`<br>`SYN-ABBR-FAMILY-KRESTITEL`<br>`SYN-ABBR-FAMILY-MARY`<br>`SYN-ABBR-FAMILY-MATI`<br>`SYN-ABBR-FAMILY-MILOSERDIE`<br>`SYN-ABBR-FAMILY-MILOST`<br>`SYN-ABBR-FAMILY-MLADENETS`<br>`SYN-ABBR-FAMILY-MOLITVA`<br>`SYN-ABBR-FAMILY-MUCHENIK`<br>`SYN-ABBR-FAMILY-NEDELYA`<br>`SYN-ABBR-FAMILY-NYNYE`<br>`SYN-ABBR-FAMILY-PRAVEDNIK`<br>`SYN-ABBR-FAMILY-PREPODOBN`<br>`SYN-ABBR-FAMILY-PRESTOL`<br>`SYN-ABBR-FAMILY-PROPHET`<br>`SYN-ABBR-FAMILY-RESURRECTION`<br>`SYN-ABBR-FAMILY-SON`<br>`SYN-ABBR-FAMILY-SPAS`<br>`SYN-ABBR-FAMILY-SPIRIT`<br>`SYN-ABBR-FAMILY-SVYAT`<br>`SYN-ABBR-FAMILY-SVYATITEL`<br>`SYN-ABBR-FAMILY-TROITSA`<br>`SYN-ABBR-FAMILY-TSAR`<br>`SYN-ABBR-FAMILY-VLADYCHITSA`<br>`SYN-ABBR-FAMILY-VLADYKA` | complete typed arbitrary-lexeme presentation interface plus language-wide prosody, an exhaustive Alypy §§2/36 positional decision ledger, reviewed exact rows, 55 source-backed semantic families, and an exhaustive fully linked 48-entry Alypy abbreviation ledger |
 | `syn.lexicon.classification` | synodal-russian | lexicon | `productive-complete` | `SYN-LEXICON-SOURCE-UNION-1` | Exhaustive deterministic 1,258-claim source union with 852 evidence-final ambiguities/disputes, 82 explicit exclusions, 324 implemented claims, and zero implementation gaps. |
 | `syn.invariant-parts-of-speech` | synodal-russian | invariant | `not-inflectional` | `SYN-NOT-INFLECTIONAL` | reviewed lexical exact forms |
 | `cross.open-lexicon-provider` | cross-recension | api | `productive-complete` | `OCS-ADVANCED-RULES`<br>`SYN-LEXICON-PROVIDER-V10`<br>`SYN-BATCH-V10` | architecture/API contract |
@@ -193,4 +191,4 @@ The frontier contains **32** source/lineage records. Authority policy: target-re
 
 ## Next checkpoint
 
-`syn.orthography.liturgical-accent-abbreviation`: Classify every remaining lexical accent/printed pattern and complete positional semantics without guessing; the Alypy §3.c abbreviation inventory itself is fully linked.
+`cross.source-frontier`: Complete source crosswalks and at least two consecutive post-seed passes with no contract-changing eligible source.

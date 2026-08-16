@@ -240,6 +240,7 @@ impl Lexicon {
                         self.inflector,
                         &exact,
                         spec.context().accent.as_ref(),
+                        spec.context().positional.as_ref(),
                     )
                 }
             }

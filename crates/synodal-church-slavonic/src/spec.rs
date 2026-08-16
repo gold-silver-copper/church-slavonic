@@ -7,12 +7,12 @@ use synodal_church_slavonic_core::{
     EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind, FiniteTense, FormSet, Gender,
     GrammarCell, ImperativeFormation, ImperfectFormation, MetadataField, NounDeclension,
     NounLexeme, NumeralDeclension, NumeralLexeme, NumeralNumberInventory, OrthographyProfile,
-    ParticiplePrincipalPart, ParticipleTense, ParticipleVoice, PresentPrincipalParts,
-    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
-    PronounNumberInventory, PronounPostpositive, PronounPrefix, Recension, RenderedText, Result,
-    ShortMasculineStemFormation, SourceId, SynodalWord, VerbConjugation, VerbLexeme, VerbSystem,
-    validate_adjective_lexeme, validate_determiner_lexeme, validate_noun_lexeme,
-    validate_numeral_lexeme, validate_pronoun_lexeme,
+    ParticiplePrincipalPart, ParticipleTense, ParticipleVoice, PositionalParadigm, PositionalRule,
+    PresentPrincipalParts, PronounDeclension, PronounEnvironment, PronounFormSelection,
+    PronounLexeme, PronounNumberInventory, PronounPostpositive, PronounPrefix, Recension,
+    RenderedText, Result, ShortMasculineStemFormation, SourceId, SynodalWord, VerbConjugation,
+    VerbLexeme, VerbSystem, validate_adjective_lexeme, validate_determiner_lexeme,
+    validate_noun_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
 };
 
 use crate::{
@@ -75,10 +75,12 @@ impl SpecificationSource {
     }
 
     pub(crate) fn evidence(&self, kind: EvidenceKind) -> Evidence {
-        let authority_roles = if kind == EvidenceKind::AccentParadigm {
-            vec![AuthorityRole::Accentual, AuthorityRole::Orthographic]
-        } else {
-            vec![AuthorityRole::Lexical, AuthorityRole::Morphological]
+        let authority_roles = match kind {
+            EvidenceKind::AccentParadigm => {
+                vec![AuthorityRole::Accentual, AuthorityRole::Orthographic]
+            }
+            EvidenceKind::OrthographicParadigm => vec![AuthorityRole::Orthographic],
+            _ => vec![AuthorityRole::Lexical, AuthorityRole::Morphological],
         };
         Evidence {
             id: self.evidence_id.clone(),
@@ -109,6 +111,21 @@ impl SpecificationSource {
             mark,
             self.evidence(EvidenceKind::AccentParadigm),
         )
+    }
+
+    /// Builds a completely sourced positional-letter paradigm for an
+    /// arbitrary caller-supplied lexeme.
+    #[must_use]
+    pub fn positional_paradigm(
+        &self,
+        paradigm_id: impl Into<String>,
+        rules: Vec<PositionalRule>,
+    ) -> PositionalParadigm {
+        PositionalParadigm {
+            id: paradigm_id.into(),
+            rules,
+            evidence: self.evidence(EvidenceKind::OrthographicParadigm),
+        }
     }
 }
 
@@ -188,6 +205,7 @@ impl SpecifiedForm {
 pub(crate) struct SpecContext {
     pub source: SpecificationSource,
     pub accent: Option<AccentParadigm>,
+    pub positional: Option<PositionalParadigm>,
     pub irregular_forms: Vec<SpecifiedForm>,
     pub defective_cells: Vec<DefectiveCell>,
 }
@@ -197,6 +215,7 @@ impl SpecContext {
         Self {
             source,
             accent: None,
+            positional: None,
             irregular_forms: vec![],
             defective_cells: vec![],
         }
@@ -209,6 +228,16 @@ impl SpecContext {
                 return Err(Error::ContradictoryMetadata {
                     reason:
                         "an explicit Synodal specification cannot use a non-Synodal accent paradigm"
+                            .into(),
+                });
+            }
+        }
+        if let Some(positional) = &self.positional {
+            positional.validate()?;
+            if positional.evidence.source_recension != Recension::SynodalRussian {
+                return Err(Error::ContradictoryMetadata {
+                    reason:
+                        "an explicit Synodal specification cannot use a non-Synodal positional paradigm"
                             .into(),
                 });
             }
@@ -306,6 +335,12 @@ impl NounSpec {
 
     pub fn with_accent_paradigm(mut self, accent: AccentParadigm) -> Result<Self> {
         self.context.accent = Some(accent);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
+        self.context.positional = Some(positional);
         self.validate()?;
         Ok(self)
     }
@@ -443,6 +478,12 @@ impl AdjectiveSpec {
         Ok(self)
     }
 
+    pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
+        self.context.positional = Some(positional);
+        self.validate()?;
+        Ok(self)
+    }
+
     pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
         self.context.irregular_forms.push(form);
         self.validate()?;
@@ -534,6 +575,12 @@ impl DeterminerSpec {
 
     pub fn with_accent_paradigm(mut self, accent: AccentParadigm) -> Result<Self> {
         self.context.accent = Some(accent);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
+        self.context.positional = Some(positional);
         self.validate()?;
         Ok(self)
     }
@@ -636,6 +683,12 @@ impl NumeralSpec {
 
     pub fn with_accent_paradigm(mut self, accent: AccentParadigm) -> Result<Self> {
         self.context.accent = Some(accent);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
+        self.context.positional = Some(positional);
         self.validate()?;
         Ok(self)
     }
@@ -768,6 +821,12 @@ impl PronounSpec {
 
     pub fn with_accent_paradigm(mut self, accent: AccentParadigm) -> Result<Self> {
         self.context.accent = Some(accent);
+        self.validate()?;
+        Ok(self)
+    }
+
+    pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
+        self.context.positional = Some(positional);
         self.validate()?;
         Ok(self)
     }
@@ -1230,6 +1289,11 @@ impl VerbSpecBuilder {
         self
     }
 
+    pub fn positional_paradigm(mut self, positional: PositionalParadigm) -> Self {
+        self.spec.context.positional = Some(positional);
+        self
+    }
+
     pub fn irregular_form(mut self, form: SpecifiedForm) -> Self {
         self.spec.context.irregular_forms.push(form);
         self
@@ -1301,7 +1365,8 @@ impl LexemeSpec {
 
     #[must_use]
     pub fn orthography_ready(&self, profile: OrthographyProfile) -> bool {
-        profile != OrthographyProfile::SynodalLiturgical || self.context().accent.is_some()
+        profile != OrthographyProfile::SynodalLiturgical
+            || (self.context().accent.is_some() && self.context().positional.is_some())
     }
 
     pub(crate) fn context(&self) -> &SpecContext {
@@ -1462,8 +1527,8 @@ mod tests {
     use crate::ParadigmStatus;
     use synodal_church_slavonic_core::{
         AccentMark, AccentPlacement, AccentRule, AccentScope, AdjectiveCell, Animacy, Case,
-        FormSource, MetadataField, NounCell, Number, NumeralCell, NumeralKind, ParticipleCell,
-        Person,
+        FormSource, InitialPresentation, MetadataField, NounCell, Number, NumeralCell, NumeralKind,
+        ParticipleCell, Person, PositionalOperation,
     };
 
     fn source() -> SpecificationSource {
@@ -1473,6 +1538,16 @@ mod tests {
             "caller lexicon, entry 1",
         )
         .expect("source")
+    }
+
+    fn preserve_positional() -> PositionalParadigm {
+        source().positional_paradigm(
+            "caller-positional-preserve",
+            vec![PositionalRule {
+                scope: AccentScope::All,
+                operations: vec![],
+            }],
+        )
     }
 
     fn mudr_accent() -> AccentParadigm {
@@ -1812,7 +1887,9 @@ mod tests {
         let spec = AdjectiveSpec::new("мꙋдръ", "мꙋдр", AdjectiveClass::Hard, source())
             .expect("adjective")
             .with_accent_paradigm(mudr_accent())
-            .expect("accent");
+            .expect("accent")
+            .with_positional_paradigm(preserve_positional())
+            .expect("positional contract");
         let inflector = Inflector::builder()
             .orthography(OrthographyProfile::SynodalLiturgical)
             .build();
@@ -1839,6 +1916,192 @@ mod tests {
                     .any(|evidence| { evidence.kind == EvidenceKind::AccentParadigm })
             );
         }
+    }
+
+    #[test]
+    fn positional_realization_precedes_breathing_and_accent_for_arbitrary_lexemes() {
+        let source = source();
+        let accent = source.fixed_stem_accent(
+            "ezero-initial-accent",
+            AccentScope::Noun {
+                numbers: Number::ALL.to_vec(),
+            },
+            0,
+            AccentMark::Acute,
+        );
+        let positional = source.positional_paradigm(
+            "ezero-initial-wide-e",
+            vec![PositionalRule {
+                scope: AccentScope::All,
+                operations: vec![PositionalOperation::Initial(InitialPresentation::WideE)],
+            }],
+        );
+        let spec = NounSpec::new(
+            "езеро",
+            "езер",
+            Gender::Neuter,
+            NounDeclension::FirstHardNeuter,
+            source,
+        )
+        .expect("valid ezero noun specification")
+        .with_accent_paradigm(accent)
+        .expect("valid ezero accent paradigm")
+        .with_positional_paradigm(positional)
+        .expect("valid ezero positional paradigm");
+        let cell = NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        };
+        let forms = spec
+            .form_with(
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+                cell,
+            )
+            .expect("liturgical ezero form");
+        assert_eq!(forms.primary().expanded, "езеро");
+        assert_eq!(forms.primary_text(), "є҆́зеро");
+        assert_eq!(
+            forms
+                .primary()
+                .rule_trace
+                .steps()
+                .iter()
+                .map(|step| step.stage.as_str())
+                .filter(|stage| {
+                    matches!(
+                        *stage,
+                        "lexical-positional-realization" | "accent-paradigm-realization"
+                    )
+                })
+                .collect::<Vec<_>>(),
+            [
+                "lexical-positional-realization",
+                "accent-paradigm-realization"
+            ]
+        );
+    }
+
+    #[test]
+    fn liturgical_specs_require_both_accent_and_positional_metadata() {
+        let source = source();
+        let accent =
+            source.fixed_stem_accent("mudr-test-accent", AccentScope::All, 0, AccentMark::Acute);
+        let spec = AdjectiveSpec::new("мꙋдръ", "мꙋдр", AdjectiveClass::Hard, source)
+            .expect("valid mudr adjective specification")
+            .with_accent_paradigm(accent)
+            .expect("valid mudr accent paradigm");
+        let error = spec
+            .form_with(
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+                AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                },
+            )
+            .expect_err("missing positional contract");
+        assert!(matches!(
+            error,
+            Error::OrthographicMetadataRequired {
+                field: MetadataField::PositionalParadigm
+            }
+        ));
+        assert!(!LexemeSpec::from(spec).orthography_ready(OrthographyProfile::SynodalLiturgical));
+    }
+
+    #[test]
+    fn source_selected_wide_ending_is_applied_before_accent() {
+        let source = source();
+        let accent =
+            source.fixed_stem_accent("rab-test-accent", AccentScope::All, 0, AccentMark::Acute);
+        let positional = source.positional_paradigm(
+            "rab-alypy-36-wide-ending",
+            vec![PositionalRule {
+                scope: AccentScope::All,
+                operations: vec![PositionalOperation::WidePluralEnding],
+            }],
+        );
+        let spec = NounSpec::new(
+            "рабъ",
+            "раб",
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculine,
+            source,
+        )
+        .expect("valid rab noun specification")
+        .with_accent_paradigm(accent)
+        .expect("valid rab accent paradigm")
+        .with_positional_paradigm(positional)
+        .expect("valid rab positional paradigm");
+        let forms = spec
+            .form_with(
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+                NounCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    animacy: Animacy::Animate,
+                },
+            )
+            .expect("liturgical rab dative plural");
+        assert_eq!(forms.primary().expanded, "рабомъ");
+        assert_eq!(forms.primary_text(), "ра́бѡмъ");
+    }
+
+    #[test]
+    fn exact_liturgical_override_precedes_reusable_positional_metadata() {
+        let source = source();
+        let cell = GrammarCell::Noun(NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        });
+        let positional = source.positional_paradigm(
+            "yazyk-people-rule",
+            vec![PositionalRule {
+                scope: AccentScope::All,
+                operations: vec![PositionalOperation::Initial(InitialPresentation::IotatedYa)],
+            }],
+        );
+        let exact = SpecifiedForm::new(cell, "ѧзыкъ", Some("ѧ҆зы́къ"), source.clone())
+            .expect("valid exact yazyk form");
+        let spec = NounSpec::new(
+            "ѧзыкъ",
+            "ѧзык",
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculine,
+            source,
+        )
+        .expect("valid yazyk noun specification")
+        .with_positional_paradigm(positional)
+        .expect("valid yazyk positional paradigm")
+        .with_irregular_form(exact)
+        .expect("valid exact yazyk override");
+        let forms = spec
+            .form_with(
+                Inflector::builder()
+                    .orthography(OrthographyProfile::SynodalLiturgical)
+                    .build(),
+                match cell {
+                    GrammarCell::Noun(cell) => cell,
+                    _ => unreachable!(),
+                },
+            )
+            .expect("exact yazyk liturgical form");
+        assert_eq!(forms.primary_text(), "ѧ҆зы́къ");
+        assert!(forms.primary().rule_trace.steps().iter().all(|step| {
+            step.stage != "lexical-positional-realization"
+                && step.stage != "accent-paradigm-realization"
+        }));
     }
 
     #[test]

@@ -228,6 +228,13 @@ cells or a caller/registry `AccentParadigm`; `AccentScope::PronounCases` and
 animacy-conditioned stress. A missing accent contract is an explicit
 `OrthographicMetadataRequired` result, not a guessed form.
 
+Arbitrary `LexemeSpec` liturgical generation also requires a complete
+`PositionalParadigm`. Its scoped, source-backed operations realize semantic,
+etymological, initial, and case-conditioned letter choices before breathing and
+accent. Exact printed cells precede both reusable paradigms. Missing positional
+metadata and overlapping or incompatible rules remain distinct typed failures;
+the engine never derives `ѧзыкъ/ꙗзыкъ` or foreign spelling from surface shape.
+
 ## Complete numeral contract
 
 `NumeralDeclension` has 23 source-typed word profiles. The closed lower
@@ -346,7 +353,7 @@ provider cell, caller irregular cell, then the shared productive kernel.
 filters expose successes, failures, and individual `ErrorCode` values. Provider
 noun and `VerbSystem` paradigms likewise retain all failed cells.
 
-## Reusable accent paradigms
+## Reusable accent and positional paradigms
 
 An `AccentParadigm` contains one or more typed, cell-scoped accent rules plus
 independently positioned breathing rules and source evidence. Placement retains
@@ -356,8 +363,9 @@ morphological system, so mobility and acute/grave/kamora choices do not require
 precomputed strings for every cell.
 
 Resolution order is exact reviewed accented cell, lexical irregular printed
-override, applicable reusable paradigm, then
-`OrthographicMetadataRequired { field: AccentParadigm }`. The first reviewed
+override, applicable positional paradigm, applicable accent paradigm, then a
+field-specific `OrthographicMetadataRequired`. Positional operations always run
+before breathing and accent. The first reviewed
 runtime paradigm, `synodal-accent:mudr-fixed-stem`, applies acute stress to the
 first stem vowel throughout the long positive singular of `мꙋдръ` (Alypy §57).
 The v0.9 registry adds the complete §43 `synodal-accent:mati-fixed-stem`,
@@ -365,7 +373,9 @@ The v0.9 registry adds the complete §43 `synodal-accent:mati-fixed-stem`,
 mobile paradigms use disjoint number-and-case scopes, acute/grave selection, and
 stem-versus-ending placement; `имѧ` also positions psili independently before
 the stress mark. Missing or overlapping rules are typed failures. Exact printed
-cells continue to win before all reusable paradigms.
+cells continue to win before all reusable paradigms. The complete positional
+operation inventory and the retained Alypy §36/§43 conflict are specified in
+`docs/SYNODAL_ORTHOGRAPHY.md`.
 
 ### Accusative variation
 

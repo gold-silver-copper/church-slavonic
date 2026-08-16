@@ -5086,10 +5086,23 @@ pub(crate) const ACCENT_PARADIGMS: &[RawAccentParadigm] = &[
 ];
 
 pub(crate) const POSITIONAL_RULES: &[RawPositionalRule] = &[
+    RawPositionalRule(["SYN-ORTH-CASE-KAMORA", "рабъ", "dual-or-plural case distinction without usable о or е", "ра̑бъ", "implemented by a cell-scoped AccentParadigm with AccentMark::Kamora", "alypy-36-case-orthography", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-CASE-OMEGA", "рабомъ", "selected plural-or-dual case distinction", "рабѡмъ", "§43 tables preserve ordinary vowels in some classes; exact table or scoped PositionalParadigm controls", "alypy-36-case-orthography", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-CASE-WIDE-E", "фарисей", "dual-or-plural-case-distinction", "фарисєй", "exact cell or scoped PositionalParadigm; not inferred from a homograph", "alypy-2-letter-e", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-FOREIGN-DECIMAL-I", "идолъ", "foreign Greek-etymological spelling", "ідѡлъ", "stable lexical identity and source spelling required", "alypy-2-letter-i", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-FOREIGN-IZHITSA", "миро", "foreign etymological spelling", "мѵро", "pronunciation and diacritic depend on Greek etymology", "alypy-2-foreign-letters", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-FOREIGN-OMEGA", "иоаннъ", "foreign etymological spelling", "іѡаннъ", "stable lexical identity required", "alypy-2-letter-o", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-FOREIGN-THETA-XI-PSI", "феодоръ", "foreign etymological spelling", "ѳеодоръ", "closed lexical spelling; ѯ and ѱ follow the same metadata boundary", "alypy-2-foreign-letters", "synodal-russian"]),
     RawPositionalRule(["SYN-ORTH-I-BEFORE-VOWEL", "и", "before-vowel", "ї", "foreign-etymology-may-also-require-decimal-i", "alypy-2-letter-i", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-I-BEFORE-VOWEL-SEMANTIC-EXCEPTION", "сиѡна", "Sihon-king identity", "сиѡна", "Sion-mountain identity uses сїѡнъ", "alypy-2-letter-i", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-INITIAL-DIGRAPH-UK", "ꙋ", "word-initial", "ᲂу", "medial and final positions preserve monograph uk", "alypy-2-letter-uk", "synodal-russian"]),
     RawPositionalRule(["SYN-ORTH-INITIAL-E", "е", "word-initial", "є", "lexically-contrastive-case-forms", "alypy-2-letter-e", "synodal-russian"]),
     RawPositionalRule(["SYN-ORTH-INITIAL-O", "о", "word-initial", "ѻ", "lexical-and-compound-exceptions", "alypy-2-letter-o", "synodal-russian"]),
     RawPositionalRule(["SYN-ORTH-INITIAL-YA", "ѧ", "word-initial", "ꙗ", "organ-yazyk-and-third-person-pronoun", "alypy-2-letter-ya", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-INITIAL-YA-SEMANTIC-EXCEPTION", "ѧзыкъ", "body-organ identity", "ѧзыкъ", "people/nation identity instead selects initial ꙗ; third-person plural accusative ѧ is also preserved", "alypy-2-letter-ya", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-LEXICAL-DZE", "зло", "closed lexical family and derivatives", "ѕло", "lexical identity required; numeral six is a separate notation system", "alypy-2-letter-dze", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-MEDIAL-BROAD-O", "праотецъ", "listed foreign word or compound member", "праѻтецъ", "lexical/compound identity required", "alypy-2-letter-o", "synodal-russian"]),
+    RawPositionalRule(["SYN-ORTH-PREFIX-OMEGA", "окропленїе", "lexical prefix ѡ-", "ѡкропленїе", "must not rewrite ordinary initial о words", "alypy-2-letter-o", "synodal-russian"]),
 ];
 
 pub(crate) const TRANSFORMATION_RULES: &[RawTransformationRule] = &[
@@ -5264,9 +5277,12 @@ pub(crate) const REVIEWED_EVIDENCE: &[RawReviewedEvidence] = &[
     RawReviewedEvidence(["alypy-110-preposition-variants", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§110", "synodal-authority", "Normative preposition inventory reviewed, including the positional pair съ (со) and printed hard-sign-mark forms."]),
     RawReviewedEvidence(["alypy-114-ubo", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§114", "synodal-authority", "Normative conjunction inventory and exact marked ᲂу҆̀бо spelling reviewed."]),
     RawReviewedEvidence(["alypy-146-glagolyushche", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§146", "synodal-authority", "The normative example Ѻ҆ни́ ... глаго́люще independently establishes the masculine animate nominative plural present-active participle cell."]),
+    RawReviewedEvidence(["alypy-2-foreign-letters", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§2.4, §2.7–9", "synodal-authority", "Foreign-word decimal i, omega, theta, xi, psi, and izhitsa spellings were reviewed as etymological lexical metadata, never phonological guesses."]),
+    RawReviewedEvidence(["alypy-2-letter-dze", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§2.3", "synodal-authority", "The closed ѕ lexical-family inventory and numeral-six use were reviewed; productive spelling remains identity metadata rather than a з rewrite."]),
     RawReviewedEvidence(["alypy-2-letter-e", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§2", "synodal-authority", "Positional-letter rule reviewed against the locked section."]),
     RawReviewedEvidence(["alypy-2-letter-i", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§2", "synodal-authority", "Positional-letter rule reviewed against the locked section."]),
     RawReviewedEvidence(["alypy-2-letter-o", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§2", "synodal-authority", "Positional-letter rule reviewed against the locked section."]),
+    RawReviewedEvidence(["alypy-2-letter-uk", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§2.5", "synodal-authority", "Initial digraph uk versus medial/final monograph uk was reviewed against the locked section."]),
     RawReviewedEvidence(["alypy-2-letter-ya", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§2", "synodal-authority", "Positional-letter rule reviewed against the locked section."]),
     RawReviewedEvidence(["alypy-3-abbreviation-inventory", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§3.c", "synodal-authority", "Full normative titlo inventory and distinction between simple and letter titla reviewed, including frequent-word глагол- contractions."]),
     RawReviewedEvidence(["alypy-3-bozhii-expansion", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§3", "synodal-authority", "Normative titlo inventory explicitly expands мт҃и бж҃їѧ as Матерь Божия and establishes the semantic identity and required titlo."]),
@@ -5286,6 +5302,7 @@ pub(crate) const REVIEWED_EVIDENCE: &[RawReviewedEvidence] = &[
     RawReviewedEvidence(["alypy-34-neuter-face-year-table", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§34", "synodal-authority", "Hard and soft neuter first-declension mappings reviewed for лице and лѣто; lexeme-specific accents remain target-witnessed."]),
     RawReviewedEvidence(["alypy-34-rab", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§34", "synodal-authority", "Normative noun paradigm reviewed."]),
     RawReviewedEvidence(["alypy-35-heart-table", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§35", "synodal-authority", "Neuter soft-stem table and the explicit locative singular въ се́рдцы reviewed for the admitted heart cells."]),
+    RawReviewedEvidence(["alypy-36-case-orthography", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§36 with §34 and §43 tables", "synodal-authority", "Wide е/о and kamora distinguish selected dual/plural cases. The §36 generalization and ordinary-е rows in the §43 extended-stem tables are retained as a source conflict controlled by exact cells or scoped metadata."]),
     RawReviewedEvidence(["alypy-37-brother-table", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§37.12", "synodal-authority", "Reviewer mapped the explicit plural table for бра́тъ and kept the separately described collective бра́тїѧ as a distinct lexical identity; no regular singular paradigm is inferred."]),
     RawReviewedEvidence(["alypy-37-synov-oblique", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§37.9", "synodal-authority", "The -ов- alternant in сынѡ́въ, сыновѡ́мъ, and сы́новѣхъ was reviewed; it is admitted only in the cited exact cells."]),
     RawReviewedEvidence(["alypy-37-synove", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "§37.5", "synodal-authority", "Irregular nominative plural сы́нове reviewed against the locked normative section."]),

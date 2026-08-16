@@ -1,6 +1,6 @@
 # Synodal extraction report
 
-Target recension: `synodal-russian`. The curated normalized layer contains 10512 rows across 29 tables; 0 rows are quarantined (ceiling 0).
+Target recension: `synodal-russian`. The curated normalized layer contains 10531 rows across 29 tables; 0 rows are quarantined (ceiling 0).
 
 | Table | Rows |
 |---|---:|
@@ -12,7 +12,7 @@ Target recension: `synodal-russian`. The curated normalized layer contains 10512
 | `accents.tsv` | 45 |
 | `alignments.tsv` | 6 |
 | `conflicts.tsv` | 1 |
-| `engine_capabilities.tsv` | 87 |
+| `engine_capabilities.tsv` | 89 |
 | `evaluation.tsv` | 2139 |
 | `exact_forms.tsv` | 2962 |
 | `examples.tsv` | 8 |
@@ -24,9 +24,9 @@ Target recension: `synodal-russian`. The curated normalized layer contains 10512
 | `noun_restrictions.tsv` | 3 |
 | `past_classification_reviews.tsv` | 73 |
 | `phrase_evaluation.tsv` | 14 |
-| `positional_rules.tsv` | 4 |
+| `positional_rules.tsv` | 17 |
 | `principal_parts.tsv` | 109 |
-| `reviewed_evidence.tsv` | 3251 |
+| `reviewed_evidence.tsv` | 3255 |
 | `semantic_alignments.tsv` | 6 |
 | `senses.tsv` | 191 |
 | `training_passages.tsv` | 20 |
@@ -34,7 +34,7 @@ Target recension: `synodal-russian`. The curated normalized layer contains 10512
 | `v10_exact_cell_corrections.tsv` | 3 |
 | `verb_defectiveness.tsv` | 5 |
 
-Generated morphology SHA-256: `db4049a3eaa894d59d8713a4f3a3a928b2d88e77d13e9474fc2b70d71b867492`.
+Generated morphology SHA-256: `a6ee19e94727d68d34bfb0f2363140e7926f1a9cb28f93fb32f528536693d9e2`.
 
 Generated dictionary SHA-256: `b2c1b080aafcd482fbe1b2ba457490dc88c20ee9069d7d67e206a6e9133ed4a4`.
 

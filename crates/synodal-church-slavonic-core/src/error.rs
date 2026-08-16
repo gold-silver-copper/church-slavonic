@@ -58,6 +58,7 @@ pub enum MetadataField {
     ComparisonFormation,
     AccentClass,
     AccentParadigm,
+    PositionalParadigm,
     LexemeClass,
     Gender,
     Aspect,

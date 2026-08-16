@@ -59,8 +59,8 @@ exposes a stable machine-readable `ErrorCode`.
 controls, leading combining marks, and invalid Church Slavonic mark order.
 `RenderedText` is the separate validator for phrases and punctuation. The three
 presentation profiles are `Expanded`, `ExpandedAccentless`, and
-`SynodalLiturgical`; the last one refuses productive rendering when accent
-metadata is unavailable.
+`SynodalLiturgical`; the facade refuses arbitrary-lexeme productive rendering
+when a complete accent or positional paradigm is unavailable.
 
 Default features enable `serde`. The crate also builds with
 `--no-default-features` and for `wasm32-unknown-unknown`.

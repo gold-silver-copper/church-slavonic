@@ -177,6 +177,28 @@ impl AccentScope {
             _ => false,
         }
     }
+
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        match self {
+            Self::All => false,
+            Self::Noun { numbers }
+            | Self::Adjective { numbers, .. }
+            | Self::FiniteVerb { numbers, .. } => numbers.is_empty(),
+            Self::NounCases { numbers, cases } | Self::PronounCases { numbers, cases } => {
+                numbers.is_empty() || cases.is_empty()
+            }
+            Self::PronounAgreement {
+                numbers,
+                cases,
+                genders,
+                animacies,
+            } => {
+                numbers.is_empty() || cases.is_empty() || genders.is_empty() || animacies.is_empty()
+            }
+            Self::OtherCells(cells) => cells.is_empty(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -269,14 +291,11 @@ impl AccentParadigm {
                 reason: "an accent paradigm requires nonempty Synodal accentual evidence".into(),
             });
         }
-        if self
-            .accent_rules
-            .iter()
-            .any(|rule| scope_is_empty(&rule.scope))
+        if self.accent_rules.iter().any(|rule| rule.scope.is_empty())
             || self
                 .breathing_rules
                 .iter()
-                .any(|rule| scope_is_empty(&rule.scope))
+                .any(|rule| rule.scope.is_empty())
         {
             return Err(Error::ContradictoryMetadata {
                 reason: "an accent or breathing rule cannot have an empty cell scope".into(),
@@ -418,24 +437,6 @@ fn initial_digraph_uk_indices(value: &str) -> Option<(usize, usize)> {
     let (second_index, second) = characters.next()?;
     (matches!(first, 'ᲂ' | 'О') && matches!(second, 'у' | 'У'))
         .then_some((first_index, second_index))
-}
-
-fn scope_is_empty(scope: &AccentScope) -> bool {
-    match scope {
-        AccentScope::All => false,
-        AccentScope::Noun { numbers }
-        | AccentScope::Adjective { numbers, .. }
-        | AccentScope::FiniteVerb { numbers, .. } => numbers.is_empty(),
-        AccentScope::NounCases { numbers, cases }
-        | AccentScope::PronounCases { numbers, cases } => numbers.is_empty() || cases.is_empty(),
-        AccentScope::PronounAgreement {
-            numbers,
-            cases,
-            genders,
-            animacies,
-        } => numbers.is_empty() || cases.is_empty() || genders.is_empty() || animacies.is_empty(),
-        AccentScope::OtherCells(cells) => cells.is_empty(),
-    }
 }
 
 fn unique_rule<'a, T>(

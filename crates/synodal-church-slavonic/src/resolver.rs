@@ -1,8 +1,8 @@
 use synodal_church_slavonic_core::{
     AccentParadigm, Assumption, AuthorityRole, Confidence, EpistemicRole, Error, Evidence,
     EvidenceId, EvidenceKind, FormSet, FormSource, FormVariant, GenerationPolicy, GrammarCell,
-    LexemeId, OrthographyProfile, Recension, Result, RuleId, RuleTrace, SourceId, TraceStep,
-    normalize_lookup_accentless,
+    LexemeId, OrthographyProfile, PositionalParadigm, Recension, Result, RuleId, RuleTrace,
+    SourceId, TraceStep, normalize_lookup_accentless,
 };
 
 use crate::{
@@ -16,6 +16,7 @@ fn specified_form_with_rule(
     inflector: Inflector,
     form: &SpecifiedForm,
     accent: Option<&AccentParadigm>,
+    positional: Option<&PositionalParadigm>,
     rule: &'static str,
     stage: &'static str,
 ) -> Result<FormSet> {
@@ -75,6 +76,10 @@ fn specified_form_with_rule(
         let accent = accent.ok_or(Error::OrthographicMetadataRequired {
             field: synodal_church_slavonic_core::MetadataField::AccentParadigm,
         })?;
+        let positional = positional.ok_or(Error::OrthographicMetadataRequired {
+            field: synodal_church_slavonic_core::MetadataField::PositionalParadigm,
+        })?;
+        let forms = apply_positional_paradigm(forms, form.cell, positional)?;
         apply_accent_paradigm(forms, form.cell, accent)
     } else {
         Ok(forms)
@@ -85,11 +90,13 @@ pub(crate) fn provided_exact_forms(
     inflector: Inflector,
     forms: &[&SpecifiedForm],
     accent: Option<&AccentParadigm>,
+    positional: Option<&PositionalParadigm>,
 ) -> Result<FormSet> {
     specified_forms_with_rule(
         inflector,
         forms,
         accent,
+        positional,
         "SYN-PROVIDER-EXACT-OVERRIDE",
         "provider-exact-override",
     )
@@ -99,13 +106,14 @@ fn specified_forms_with_rule(
     inflector: Inflector,
     forms: &[&SpecifiedForm],
     accent: Option<&AccentParadigm>,
+    positional: Option<&PositionalParadigm>,
     rule: &'static str,
     stage: &'static str,
 ) -> Result<FormSet> {
     let mut variants = Vec::new();
     for form in forms {
         variants.extend(
-            specified_form_with_rule(inflector, form, accent, rule, stage)?
+            specified_form_with_rule(inflector, form, accent, positional, rule, stage)?
                 .variants()
                 .iter()
                 .cloned(),
@@ -160,20 +168,50 @@ pub(crate) fn apply_accent_paradigm(
     let mut variants = Vec::with_capacity(forms.variants().len());
     for source_variant in forms.variants() {
         let mut variant = source_variant.clone();
-        let accented = paradigm.apply(cell, &variant.expanded)?;
+        let presentation = variant.printed.clone();
+        let accented = paradigm.apply(cell, &presentation)?;
         variant.accented = Some(accented.clone());
         variant.printed = accented.clone();
         variant.evidence.push(paradigm.evidence.clone());
         variant.rule_trace.push(TraceStep {
             rule: rule.clone(),
             stage: "accent-paradigm-realization".into(),
-            input: variant.expanded.clone(),
+            input: presentation,
             output: accented,
             source_recension: Some(Recension::SynodalRussian),
             target_recension: Recension::SynodalRussian,
             mapping: variant.recension_mapping.clone(),
             evidence: vec![evidence_id.clone()],
         });
+        variants.push(variant);
+    }
+    FormSet::try_from_variants(variants)
+}
+
+fn apply_positional_paradigm(
+    forms: FormSet,
+    cell: GrammarCell,
+    paradigm: &PositionalParadigm,
+) -> Result<FormSet> {
+    paradigm.validate()?;
+    let evidence_id = paradigm.evidence.id.clone();
+    let rule = RuleId::from(format!("SYN-POSITIONAL-PARADIGM:{}", paradigm.id));
+    let mut variants = Vec::with_capacity(forms.variants().len());
+    for source_variant in forms.variants() {
+        let mut variant = source_variant.clone();
+        let presented = paradigm.apply(cell, &variant.printed)?;
+        variant.evidence.push(paradigm.evidence.clone());
+        variant.rule_trace.push(TraceStep {
+            rule: rule.clone(),
+            stage: "lexical-positional-realization".into(),
+            input: variant.printed.clone(),
+            output: presented.clone(),
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: variant.recension_mapping.clone(),
+            evidence: vec![evidence_id.clone()],
+        });
+        variant.printed = presented;
         variants.push(variant);
     }
     FormSet::try_from_variants(variants)
@@ -196,6 +234,7 @@ pub(crate) fn resolve_spec(
             inflector,
             &irregular,
             context.accent.as_ref(),
+            context.positional.as_ref(),
             "SYN-CALLER-IRREGULAR-OVERRIDE",
             "caller-irregular-override",
         );
@@ -253,6 +292,14 @@ pub(crate) fn resolve_spec(
             .ok_or(Error::OrthographicMetadataRequired {
                 field: synodal_church_slavonic_core::MetadataField::AccentParadigm,
             })?;
+        let positional =
+            context
+                .positional
+                .as_ref()
+                .ok_or(Error::OrthographicMetadataRequired {
+                    field: synodal_church_slavonic_core::MetadataField::PositionalParadigm,
+                })?;
+        let forms = apply_positional_paradigm(forms, cell, positional)?;
         apply_accent_paradigm(forms, cell, accent)
     } else {
         Ok(forms)

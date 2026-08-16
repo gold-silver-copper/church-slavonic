@@ -214,7 +214,7 @@ A reusable accent paradigm can realize several liturgical cells:
 use synodal_church_slavonic::{
     AccentMark, AccentScope, AdjectiveCell, AdjectiveClass, AdjectiveForm,
     AdjectiveSpec, Animacy, Case, Comparison, Gender, Inflector, Number,
-    OrthographyProfile, SpecificationSource,
+    OrthographyProfile, PositionalRule, SpecificationSource,
 };
 
 let source = SpecificationSource::new("alypy-57", "alypy", "Alypy §57")?;
@@ -228,13 +228,21 @@ let accent = source.fixed_stem_accent(
     0,
     AccentMark::Acute,
 );
+let positional = source.positional_paradigm(
+    "mudr-positional-preserve",
+    vec![PositionalRule {
+        scope: AccentScope::All,
+        operations: vec![],
+    }],
+);
 let adjective = AdjectiveSpec::new(
     "мꙋдръ",
     "мꙋдр",
     AdjectiveClass::Hard,
     source,
 )?
-.with_accent_paradigm(accent)?;
+.with_accent_paradigm(accent)?
+.with_positional_paradigm(positional)?;
 let inflector = Inflector::builder()
     .orthography(OrthographyProfile::SynodalLiturgical)
     .build();

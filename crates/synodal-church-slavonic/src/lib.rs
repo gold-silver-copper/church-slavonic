@@ -54,17 +54,18 @@ pub use synodal_church_slavonic_core::{
     CopulaOmissionContext, CyrillicNumeral, DeterminerDeclension, DeterminerLexeme,
     DeterminerNumberInventory, Error, ErrorCode, FiniteTense, FiniteVerbCell, FormSet, FormSource,
     Gender, GenerationPolicy, GrammarCell, ImperativeCell, InitialPresentation, LParticipleCell,
-    LexemeId, Loss, MetadataField, ModalConditionalAuxiliary, NegativePronounBase, NounCell,
-    NounLexeme, Number, NumeralCell, NumeralKind, OptativeFiniteSystem, OrthographyProfile,
-    ParticipleCell, ParticipleTense, ParticipleVoice, PassiveAgentGovernment, PassiveFormation,
-    PerfectFormation, PeriphrasticFormation, PeriphrasticSemiAuxiliary, PeriphrasticTenseFormation,
-    Person, PhraseFormation, PhraseOrder, PhraseRole, PhraseToken, PluperfectFormation,
-    PronounCell, PronounCliticProsody, PronounDeclension, PronounEnvironment, PronounFormSelection,
-    PronounNumberInventory, PronounPostpositive, PronounPrefix, RealizedPhrase, Recension,
-    RenderedText, Result, SynodalWord, TransliterationScheme, VariantPolicy, VerbSystem,
-    VerbalNounFormation, VerbalNounPrincipalPart, apply_initial_presentation, collation_key,
-    compare_synodal, format_cyrillic_numeral, normalize_lookup, normalize_lookup_accentless,
-    parse_cyrillic_numeral, transliterate,
+    LetterOccurrence, LexemeId, Loss, MetadataField, ModalConditionalAuxiliary,
+    NegativePronounBase, NounCell, NounLexeme, Number, NumeralCell, NumeralKind,
+    OptativeFiniteSystem, OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice,
+    PassiveAgentGovernment, PassiveFormation, PerfectFormation, PeriphrasticFormation,
+    PeriphrasticSemiAuxiliary, PeriphrasticTenseFormation, Person, PhraseFormation, PhraseOrder,
+    PhraseRole, PhraseToken, PluperfectFormation, PositionalOperation, PositionalParadigm,
+    PositionalReplacement, PositionalRule, PronounCell, PronounCliticProsody, PronounDeclension,
+    PronounEnvironment, PronounFormSelection, PronounNumberInventory, PronounPostpositive,
+    PronounPrefix, RealizedPhrase, Recension, RenderedText, Result, SynodalWord,
+    TransliterationScheme, VariantPolicy, VerbSystem, VerbalNounFormation, VerbalNounPrincipalPart,
+    apply_initial_presentation, collation_key, compare_synodal, format_cyrillic_numeral,
+    normalize_lookup, normalize_lookup_accentless, parse_cyrillic_numeral, transliterate,
 };
 
 /// Resolves a lemma while retaining its stable target identity.
@@ -853,10 +854,19 @@ mod tests {
                 "Alypy (Gamanovich), §43",
             )
             .expect("source metadata");
+            let positional = source.positional_paradigm(
+                format!("test-positional:{}", id.as_str()),
+                vec![PositionalRule {
+                    scope: AccentScope::All,
+                    operations: vec![],
+                }],
+            );
             let spec = NounSpec::new(lemma, stem, gender, declension, source)
                 .expect("typed noun")
                 .with_accent_paradigm(accent)
-                .expect("accent contract");
+                .expect("accent contract")
+                .with_positional_paradigm(positional)
+                .expect("positional contract");
             let paradigm = spec.paradigm_with(
                 Inflector::builder()
                     .orthography(OrthographyProfile::SynodalLiturgical)

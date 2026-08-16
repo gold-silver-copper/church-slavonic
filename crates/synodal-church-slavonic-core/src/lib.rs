@@ -58,8 +58,9 @@ pub use numeral_morphology::{
     validate_numeral_lexeme,
 };
 pub use orthography::{
-    InitialPresentation, Loss, NormalizationReport, OrthographyProfile, RenderedText, SynodalWord,
-    apply_initial_presentation, normalize_lookup, normalize_lookup_accentless,
+    InitialPresentation, LetterOccurrence, Loss, NormalizationReport, OrthographyProfile,
+    PositionalOperation, PositionalParadigm, PositionalReplacement, PositionalRule, RenderedText,
+    SynodalWord, apply_initial_presentation, normalize_lookup, normalize_lookup_accentless,
 };
 pub use phrase::{
     AdverbialParticipleFormation, AnalyticConstruction, CompoundAuxiliaryOrder,
