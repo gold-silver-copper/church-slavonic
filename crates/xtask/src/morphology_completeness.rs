@@ -200,6 +200,7 @@ pub(crate) fn run(
     let report_path = root.join(&audit.matrix.generated_report);
     if check {
         crate::ocs_lexical_union::check(root)?;
+        crate::synodal_lexical_union::check_complete(root)?;
         if fs::read_to_string(&report_path)? != report {
             return Err(format!(
                 "stale {}; rerun cargo xtask morphology-completeness",
@@ -229,6 +230,7 @@ pub(crate) fn run(
 /// long-running completion goal still contains honest non-final rows.
 pub(crate) fn check_progress_artifacts(root: &Path) -> Result<(), Box<dyn Error>> {
     crate::ocs_lexical_union::check(root)?;
+    crate::synodal_lexical_union::check_progress(root)?;
     let audit = load_and_validate(root)?;
     let expected = render(&audit);
     if fs::read_to_string(root.join(&audit.matrix.generated_report))? != expected {

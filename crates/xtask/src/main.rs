@@ -10,6 +10,7 @@ mod synodal_coverage;
 mod synodal_evaluation_queue;
 mod synodal_family_review;
 mod synodal_lexical_review;
+mod synodal_lexical_union;
 mod synodal_marginal_recovery;
 mod synodal_v04_audit;
 mod synodal_v05_audit;
@@ -110,6 +111,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-lexical-review-queue") => {
             synodal_lexical_review::run(&mut args, &workspace_root()?)
         }
+        Some("synodal-lexical-union") => synodal_lexical_union::run(&mut args, &workspace_root()?),
         Some("synodal-marginal-recovery") => {
             synodal_marginal_recovery::run(&mut args, &workspace_root()?)
         }
@@ -3415,6 +3417,7 @@ fn print_help() {
     eprintln!("  synodal-evaluation-queue [--limit N] [--check]");
     eprintln!("  synodal-family-review-queue [--limit N] [--check]");
     eprintln!("  synodal-lexical-review-queue [--limit N] [--check]");
+    eprintln!("  synodal-lexical-union [--check]");
     eprintln!("  synodal-marginal-recovery [--check] [--require-source-inputs]");
     eprintln!("  synodal-v06-review-packets [--check]");
     eprintln!("  synodal-v04-audit [--check]");

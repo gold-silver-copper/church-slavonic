@@ -52,8 +52,8 @@ separate, inspectable outcomes.
 
 ## Synodal dictionary and coverage checkpoints
 
-The current Synodal registry contains 910 reviewed lexemes, 913 reviewed senses,
-and 3,674 generated exact normative or target-attested forms. The `synodal-dict` executable
+The current Synodal registry contains 937 reviewed lexemes, 940 reviewed senses,
+and 3,677 generated exact normative or target-attested forms. The `synodal-dict` executable
 searches and displays the registry, performs ambiguity-preserving reverse
 analysis, displays reviewed and proposed morphological families, validates
 application vocabulary, checks rendered text, and creates typed corpus-coverage
@@ -74,7 +74,9 @@ Coverage is only a downstream regression signal for registered behavior. The
 committed live report is reproduced with
 `cargo xtask synodal-coverage --offline`; review queues are reproduced with
 `cargo xtask synodal-lexical-review-queue` and
-`cargo xtask synodal-evaluation-queue`; the family queue, overlap-adjusted
+`cargo xtask synodal-evaluation-queue`; the locked 1,258-claim lexical union is
+reproduced and checked with `cargo xtask synodal-lexical-union`; the family
+queue, overlap-adjusted
 marginal-recovery report, and audits use
 `cargo xtask synodal-family-review-queue` and
 `cargo xtask synodal-marginal-recovery`,

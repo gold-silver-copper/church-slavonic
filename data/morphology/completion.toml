@@ -1120,16 +1120,16 @@ subtypes = ["productive", "closed-irregular", "defective", "indeclinable", "ambi
 realization = "lexical-metadata"
 state = "implementation-missing"
 implementation_kind = "reviewed-registry-partial"
-rule_ids = ["SYN-LEXICON-UNION-PENDING"]
+rule_ids = ["SYN-LEXICON-SOURCE-UNION-1"]
 sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union", "dyachenko-1900-scan"]
-citation = "docs/SYNODAL_MORPHOLOGY.md current reviewed lexical surface: 833 lexemes, deliberately not language-wide."
+citation = "reports/synodal-lexical-union.md and docs/SYNODAL_MORPHOLOGY.md current reviewed lexical surface."
 required_metadata = ["stable identity", "part of speech", "class/principal parts", "restrictions", "accent", "evidence"]
-valid_inventory = "Every inflectable lemma in the locked source union."
-invalid_inventory = "Other-recension, non-inflectional, or unresolved rows remain explicit classifications."
-implementation = ["data/synodal/lexemes.tsv", "data/synodal/principal_parts.tsv", "data/synodal/lexical_reviews.tsv"]
-tests = ["crates/synodal-church-slavonic-extractor/src/lib.rs#productive_lexical_upgrades_must_preserve_reviewed_identity"]
-evidence_status = "833 reviewed identities plus large unreviewed candidate queues"
-gap = "Define and exhaustively classify the locked source union; no candidate or rejected source row may remain silent."
+valid_inventory = "All 1,258 locked source claims: 229 curated seed rows, 831 admitted or rejected cross-source reviews, and 198 preserved cross-source proposals."
+invalid_inventory = "Unannotated corpus token types are evaluation witnesses rather than stable lemma/POS identities; other-recension, non-inflectional, ambiguous, disputed, and rejected claims remain explicit classifications."
+implementation = ["crates/xtask/src/synodal_lexical_union.rs", "data/synodal/lexemes.tsv", "data/synodal/principal_parts.tsv", "data/synodal/lexical_reviews.tsv", "data/synodal/lexical_source_decisions.tsv", "data/synodal/lexical_source_claims.tsv", "reports/synodal-lexical-review-queue.tsv", "reports/synodal-lexical-union.json", "reports/synodal-lexical-union.md"]
+tests = ["crates/synodal-church-slavonic-extractor/src/lib.rs#productive_lexical_upgrades_must_preserve_reviewed_identity", "crates/xtask/src/synodal_lexical_union.rs#final_support_states_match_final_classifications"]
+evidence_status = "Exhaustive deterministic 1,258-claim source union with 852 evidence-final ambiguities/disputes, 82 explicit exclusions, and nine visible implementation gaps."
+gap = "Replace the nine curated exact-only gaps with complete typed specifications: three possessive/relational adjectives, Israel and thousand nominal paradigms, and four irregular verbs."
 
 [[system]]
 id = "syn.invariant-parts-of-speech"
