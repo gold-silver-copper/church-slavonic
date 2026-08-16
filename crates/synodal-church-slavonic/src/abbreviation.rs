@@ -1,8 +1,17 @@
+use std::collections::{BTreeMap, BTreeSet};
+
 use synodal_church_slavonic_core::{
     Error, EvidenceId, GrammarCell, LexemeId, MetadataField, Result, RuleId, SynodalWord,
 };
 
-use crate::registry;
+use crate::{Inflector, registry};
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum AbbreviationRealization {
+    ReviewedExact,
+    ProductiveFamily,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -15,6 +24,33 @@ pub struct Abbreviation {
     pub cell_key: String,
     pub expanded: String,
     pub printed: String,
+    pub rule_id: RuleId,
+    pub evidence_ids: Vec<EvidenceId>,
+    pub reversible: bool,
+    pub required_marks: Vec<String>,
+    pub context_restrictions: Vec<String>,
+    pub ambiguity: String,
+    pub source_recension: String,
+    pub target_recension: String,
+    pub realization: AbbreviationRealization,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct AbbreviationPattern {
+    pub expanded_prefix: String,
+    pub printed_prefix: String,
+}
+
+/// A semantic, source-backed contraction family. Patterns are applied only
+/// after stable lexical and sense identity are known; they are never global
+/// substring rewrites.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub struct AbbreviationFamily {
+    pub lexeme_id: LexemeId,
+    pub sense_id: String,
+    pub patterns: Vec<AbbreviationPattern>,
     pub rule_id: RuleId,
     pub evidence_ids: Vec<EvidenceId>,
     pub reversible: bool,
@@ -55,6 +91,108 @@ pub fn contractions_by_id(id: &LexemeId, sense_id: &str) -> Result<Vec<Abbreviat
         .collect()
 }
 
+/// Returns every reviewed semantic contraction family in stable identity
+/// order. Multiple stem allomorphs remain patterns inside one family.
+pub fn families() -> Result<Vec<AbbreviationFamily>> {
+    let mut grouped = BTreeMap::<(String, String), Vec<registry::AbbreviationFamilyRecord>>::new();
+    for record in registry::abbreviation_family_records() {
+        grouped
+            .entry((record.lexeme_id.into(), record.sense_id.into()))
+            .or_default()
+            .push(record);
+    }
+    grouped.into_values().map(from_family_records).collect()
+}
+
+pub fn family(lemma: &str, sense_id: &str) -> Result<AbbreviationFamily> {
+    let summary = registry::resolve(&SynodalWord::parse(lemma)?)?;
+    family_by_id(summary.id(), sense_id)
+}
+
+pub fn family_by_id(id: &LexemeId, sense_id: &str) -> Result<AbbreviationFamily> {
+    let _ = registry::from_id(id)?;
+    let records = registry::abbreviation_families_for(id, sense_id);
+    if records.is_empty() {
+        return Err(Error::OrthographicMetadataRequired {
+            field: MetadataField::AbbreviationClass,
+        });
+    }
+    from_family_records(records)
+}
+
+/// Returns all contractions for a cell with reviewed exact rows first. A
+/// productive family is used only when no exact row accepts the request.
+pub fn contract_variants_for_cell(
+    lemma: &str,
+    sense_id: &str,
+    cell: GrammarCell,
+) -> Result<Vec<Abbreviation>> {
+    let summary = registry::resolve(&SynodalWord::parse(lemma)?)?;
+    contract_variants_for_cell_by_id_with(summary.id(), sense_id, cell, Inflector::default())
+}
+
+pub fn contract_variants_for_cell_by_id(
+    id: &LexemeId,
+    sense_id: &str,
+    cell: GrammarCell,
+) -> Result<Vec<Abbreviation>> {
+    contract_variants_for_cell_by_id_with(id, sense_id, cell, Inflector::default())
+}
+
+pub fn contract_variants_for_cell_by_id_with(
+    id: &LexemeId,
+    sense_id: &str,
+    cell: GrammarCell,
+    inflector: Inflector,
+) -> Result<Vec<Abbreviation>> {
+    let exact = contractions_by_id(id, sense_id)?
+        .into_iter()
+        .filter(|candidate| candidate.matches_cell(cell))
+        .collect::<Vec<_>>();
+    if !exact.is_empty() {
+        return Ok(exact);
+    }
+
+    let family = family_by_id(id, sense_id)?;
+    let forms = inflector.form_by_id(id, cell)?;
+    let mut seen = BTreeSet::new();
+    let mut generated = Vec::new();
+    for variant in forms.variants() {
+        let printed = family.contract_expanded(&variant.expanded)?;
+        if !seen.insert((variant.expanded.clone(), printed.clone())) {
+            continue;
+        }
+        let mut evidence_ids = family.evidence_ids.clone();
+        evidence_ids.extend(variant.evidence.iter().map(|evidence| evidence.id.clone()));
+        evidence_ids.sort();
+        evidence_ids.dedup();
+        generated.push(Abbreviation {
+            lexeme_id: id.clone(),
+            sense_id: sense_id.into(),
+            cell,
+            cell_key: crate::resolver::cell_key(cell),
+            expanded: variant.expanded.clone(),
+            printed,
+            rule_id: family.rule_id.clone(),
+            evidence_ids,
+            reversible: family.reversible,
+            required_marks: family.required_marks.clone(),
+            context_restrictions: family.context_restrictions.clone(),
+            ambiguity: family.ambiguity.clone(),
+            source_recension: family.source_recension.clone(),
+            target_recension: family.target_recension.clone(),
+            realization: AbbreviationRealization::ProductiveFamily,
+        });
+    }
+    if generated.is_empty() {
+        Err(Error::UnsupportedCell {
+            reason: "the productive abbreviation family yielded no form for this cell".into(),
+        })
+    } else {
+        Ok(generated)
+    }
+}
+
 pub fn contract_for_cell(lemma: &str, sense_id: &str, cell: GrammarCell) -> Result<Abbreviation> {
     let candidates: Vec<_> = contractions(lemma, sense_id)?
         .into_iter()
@@ -77,6 +215,40 @@ impl Abbreviation {
     #[must_use]
     pub fn matches_cell(&self, cell: GrammarCell) -> bool {
         crate::resolver::exact_lookup_keys(cell).contains(&self.cell_key)
+    }
+}
+
+impl AbbreviationFamily {
+    /// Contracts an unaccented expanded form with the longest matching stem
+    /// allomorph. This private applicator is called only after the high-level
+    /// API has resolved stable lexical and semantic identity.
+    fn contract_expanded(&self, expanded: &str) -> Result<String> {
+        let expanded = SynodalWord::parse(expanded)?;
+        let pattern = self
+            .patterns
+            .iter()
+            .filter_map(|pattern| {
+                expanded
+                    .canonical()
+                    .strip_prefix(&pattern.expanded_prefix)
+                    .map(|suffix| (pattern, suffix))
+            })
+            .max_by(|(left, _), (right, _)| {
+                left.expanded_prefix
+                    .len()
+                    .cmp(&right.expanded_prefix.len())
+                    .then_with(|| right.expanded_prefix.cmp(&left.expanded_prefix))
+            })
+            .ok_or_else(|| Error::UnsupportedCell {
+                reason: format!(
+                    "expanded form {:?} does not match abbreviation family {}",
+                    expanded.canonical(),
+                    self.rule_id.as_ref()
+                ),
+            })?;
+        let printed = format!("{}{}", pattern.0.printed_prefix, pattern.1);
+        SynodalWord::parse(printed.clone())?;
+        Ok(printed)
     }
 }
 
@@ -114,6 +286,62 @@ fn from_record(record: registry::AbbreviationRecord) -> Result<Abbreviation> {
         ambiguity: record.ambiguity.into(),
         source_recension: record.source_recension.into(),
         target_recension: record.target_recension.into(),
+        realization: AbbreviationRealization::ReviewedExact,
+    })
+}
+
+fn from_family_records(
+    records: Vec<registry::AbbreviationFamilyRecord>,
+) -> Result<AbbreviationFamily> {
+    let first = records.first().ok_or(Error::OrthographicMetadataRequired {
+        field: MetadataField::AbbreviationClass,
+    })?;
+    if records.iter().any(|record| {
+        record.lexeme_id != first.lexeme_id
+            || record.sense_id != first.sense_id
+            || record.rule_id != first.rule_id
+            || record.evidence_id != first.evidence_id
+            || record.reversible != first.reversible
+            || record.required_marks != first.required_marks
+            || record.context_restrictions != first.context_restrictions
+            || record.ambiguity != first.ambiguity
+            || record.source_recension != first.source_recension
+            || record.target_recension != first.target_recension
+    }) {
+        return Err(Error::ContradictoryMetadata {
+            reason: "one abbreviation family has inconsistent pattern metadata".into(),
+        });
+    }
+    let mut patterns = records
+        .iter()
+        .map(|record| AbbreviationPattern {
+            expanded_prefix: record.expanded_prefix.into(),
+            printed_prefix: record.printed_prefix.into(),
+        })
+        .collect::<Vec<_>>();
+    patterns.sort_by(|left, right| {
+        right
+            .expanded_prefix
+            .len()
+            .cmp(&left.expanded_prefix.len())
+            .then_with(|| left.expanded_prefix.cmp(&right.expanded_prefix))
+    });
+    patterns.dedup();
+    Ok(AbbreviationFamily {
+        lexeme_id: LexemeId::from(first.lexeme_id),
+        sense_id: first.sense_id.into(),
+        patterns,
+        rule_id: RuleId::from(first.rule_id),
+        evidence_ids: split_list(first.evidence_id)
+            .into_iter()
+            .map(EvidenceId::from)
+            .collect(),
+        reversible: first.reversible,
+        required_marks: split_list(first.required_marks),
+        context_restrictions: split_list(first.context_restrictions),
+        ambiguity: first.ambiguity.into(),
+        source_recension: first.source_recension.into(),
+        target_recension: first.target_recension.into(),
     })
 }
 
@@ -137,6 +365,24 @@ mod tests {
         AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, FiniteTense, FiniteVerbCell,
         Gender, NounCell, Number, ParticipleCell, ParticipleTense, ParticipleVoice, Person,
     };
+    use unicode_normalization::UnicodeNormalization;
+
+    fn structural_shape(value: &str) -> String {
+        value
+            .nfd()
+            .filter(|character| !matches!(character, '\u{0300}' | '\u{0301}' | '\u{0311}'))
+            .flat_map(char::to_lowercase)
+            .map(|character| match character {
+                'ѡ' | 'ѻ' | 'ꙍ' => 'о',
+                'і' | 'ї' => 'и',
+                'є' => 'е',
+                'ꙋ' => 'у',
+                'ꙗ' | 'я' => 'ѧ',
+                other => other,
+            })
+            .nfc()
+            .collect()
+    }
 
     #[test]
     fn contraction_requires_semantic_identity() {
@@ -291,5 +537,91 @@ mod tests {
             expand("гдⷭ҇а\u{e000}"),
             Err(Error::InvalidUnicode { .. })
         ));
+    }
+
+    #[test]
+    fn semantic_families_reproduce_every_reviewed_exact_contraction_shape() {
+        let families = families().expect("reviewed abbreviation families");
+        assert_eq!(families.len(), 25);
+        assert_eq!(
+            families
+                .iter()
+                .map(|family| family.patterns.len())
+                .sum::<usize>(),
+            29
+        );
+        for family in families {
+            let exact = contractions_by_id(&family.lexeme_id, &family.sense_id)
+                .expect("reviewed exact family cells");
+            assert!(!exact.is_empty());
+            for row in exact {
+                let generated = family
+                    .contract_expanded(&row.expanded)
+                    .expect("family must accept exact expanded form");
+                assert_eq!(
+                    structural_shape(&generated),
+                    structural_shape(&row.printed),
+                    "{} {:?}",
+                    family.rule_id.as_ref(),
+                    row.cell
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn productive_families_are_exact_first_and_semantically_bounded() {
+        let nominative_singular = GrammarCell::Noun(NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            animacy: Animacy::Animate,
+        });
+        let exact = contract_variants_for_cell_by_id(
+            &LexemeId::from("synodal:noun:bog"),
+            "sense:deity:christian",
+            nominative_singular,
+        )
+        .expect("reviewed exact contractions");
+        assert_eq!(exact.len(), 2);
+        assert!(
+            exact
+                .iter()
+                .all(|entry| { entry.realization == AbbreviationRealization::ReviewedExact })
+        );
+
+        let nominative_plural = GrammarCell::Noun(NounCell {
+            case: Case::Nominative,
+            number: Number::Plural,
+            animacy: Animacy::Animate,
+        });
+        let generated = contract_variants_for_cell_by_id(
+            &LexemeId::from("synodal:noun:bog"),
+            "sense:deity:christian",
+            nominative_plural,
+        )
+        .expect("productive Christian-deity contraction");
+        assert!(!generated.is_empty());
+        assert!(generated.iter().all(|entry| {
+            entry.realization == AbbreviationRealization::ProductiveFamily
+                && entry.printed.contains('\u{0483}')
+                && entry.printed != entry.expanded
+        }));
+        assert!(family("богъ", "sense:idol").is_err());
+    }
+
+    #[test]
+    fn family_allomorphs_use_longest_prefix_without_blind_replacement() {
+        let bog = family("богъ", "sense:deity:christian").expect("Christian God family");
+        assert_eq!(
+            bog.contract_expanded("бозѣ").expect("velar alternation"),
+            "бз҃ѣ"
+        );
+        assert!(bog.contract_expanded("многобозѣ").is_err());
+
+        let heaven = family("небо", "sense:v03:7790891c2704").expect("heaven family");
+        assert_eq!(
+            heaven.contract_expanded("небесемъ").expect("extended stem"),
+            "нб҃семъ"
+        );
     }
 }

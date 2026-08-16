@@ -820,6 +820,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let exact_path = data_directory.join("exact_forms.tsv");
     let alignment_path = data_directory.join("alignments.tsv");
     let abbreviation_path = data_directory.join("abbreviations.tsv");
+    let abbreviation_family_path = data_directory.join("abbreviation_families.tsv");
+    let abbreviation_inventory_path = data_directory.join("abbreviation_inventory.tsv");
     let accent_path = data_directory.join("accents.tsv");
     let accent_paradigm_path = data_directory.join("accent_paradigms.tsv");
     let positional_path = data_directory.join("positional_rules.tsv");
@@ -862,6 +864,16 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         &abbreviation_path,
         "lexeme_id\tsense_id\tcell\texpanded\tprinted\trule_id\tevidence_id\treversible\trequired_marks\tcontext_restrictions\tambiguity\tsource_recension\ttarget_recension",
         13,
+    )?;
+    let abbreviation_families = read_table(
+        &abbreviation_family_path,
+        "lexeme_id\tsense_id\texpanded_prefix\tprinted_prefix\trule_id\tevidence_id\treversible\trequired_marks\tcontext_restrictions\tambiguity\tsource_recension\ttarget_recension",
+        12,
+    )?;
+    let abbreviation_inventory = read_table(
+        &abbreviation_inventory_path,
+        "source_order\tprinted_head\texpanded_head\tsemantic_scope\tdecision\tlexeme_id\tsense_id\trule_id\tevidence_id\treview_note\ttarget_recension",
+        11,
     )?;
     let accents = read_table(
         &accent_path,
@@ -970,6 +982,17 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     )?;
     validate_alignments(&alignment_path, &alignments)?;
     validate_abbreviations(&abbreviation_path, &abbreviations, &lexemes)?;
+    validate_abbreviation_families(
+        &abbreviation_family_path,
+        &abbreviation_families,
+        &abbreviations,
+        &lexemes,
+    )?;
+    validate_abbreviation_inventory(
+        &abbreviation_inventory_path,
+        &abbreviation_inventory,
+        &abbreviation_families,
+    )?;
     validate_accents(&accent_path, &accents)?;
     validate_accent_paradigms(&accent_paradigm_path, &accent_paradigms)?;
     validate_positional_rules(&positional_path, &positional_rules)?;
@@ -988,6 +1011,8 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&exact_forms, &[4][..]),
             (&alignments, &[8][..]),
             (&abbreviations, &[6][..]),
+            (&abbreviation_families, &[5][..]),
+            (&abbreviation_inventory, &[8][..]),
             (&accents, &[4][..]),
             (&accent_paradigms, &[6][..]),
             (&noun_restrictions, &[2][..]),
@@ -1005,6 +1030,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&principal_path, &principal_parts, 0),
             (&exact_path, &exact_forms, 0),
             (&abbreviation_path, &abbreviations, 0),
+            (&abbreviation_family_path, &abbreviation_families, 0),
             (&accent_path, &accents, 0),
             (&accent_paradigm_path, &accent_paradigms, 0),
             (&noun_restriction_path, &noun_restrictions, 0),
@@ -1028,6 +1054,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         exact_forms: exact_forms.clone(),
         alignments: alignments.clone(),
         abbreviations: abbreviations.clone(),
+        abbreviation_families: abbreviation_families.clone(),
         accents: accents.clone(),
         accent_paradigms: accent_paradigms.clone(),
         positional_rules: positional_rules.clone(),
@@ -1700,11 +1727,12 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
 }
 
 fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
-    let specifications: [(&str, &[usize]); 12] = [
+    let specifications: [(&str, &[usize]); 13] = [
         ("principal_parts.tsv", &[4]),
         ("exact_forms.tsv", &[4]),
         ("alignments.tsv", &[8]),
         ("abbreviations.tsv", &[6]),
+        ("abbreviation_families.tsv", &[5]),
         ("accents.tsv", &[4]),
         ("accent_paradigms.tsv", &[6]),
         ("noun_restrictions.tsv", &[2]),
@@ -2208,6 +2236,284 @@ fn validate_abbreviations(path: &Path, table: &Table, lexemes: &Table) -> Result
         }
     }
     Ok(())
+}
+
+fn validate_abbreviation_families(
+    path: &Path,
+    table: &Table,
+    abbreviations: &Table,
+    lexemes: &Table,
+) -> Result<()> {
+    let mut patterns = BTreeSet::new();
+    let mut metadata = BTreeMap::<(String, String), Vec<String>>::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
+        if !lexemes.rows.iter().any(|lexeme| lexeme[0] == row[0]) {
+            return invalid(
+                path,
+                line,
+                &format!("abbreviation family references unknown lexeme {}", row[0]),
+            );
+        }
+        validate_word(path, line, &row[2], "expanded abbreviation-family prefix")?;
+        validate_word(path, line, &row[3], "printed abbreviation-family prefix")?;
+        validate_target(path, line, &row[11])?;
+        if row[1].is_empty()
+            || row[2].is_empty()
+            || row[3].is_empty()
+            || row[4].is_empty()
+            || row[5].is_empty()
+            || row[7].is_empty()
+            || row[8].is_empty()
+            || row[9].is_empty()
+            || row[10] != TARGET
+        {
+            return invalid(
+                path,
+                line,
+                "abbreviation families require identity, nonempty prefixes, rule, evidence, marks, context, ambiguity, and Synodal recensions",
+            );
+        }
+        if !matches!(row[6].as_str(), "true" | "false") {
+            return invalid(path, line, "reversible must be true or false");
+        }
+        validate_abbreviation_family_marks(path, line, &row[3], &row[7])?;
+        if !patterns.insert((row[0].clone(), row[1].clone(), row[2].clone())) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: format!("{}:{}:{}", row[0], row[1], row[2]),
+            });
+        }
+        let key = (row[0].clone(), row[1].clone());
+        let family_metadata = row[4..].to_vec();
+        if let Some(first) = metadata.get(&key) {
+            if first != &family_metadata {
+                return invalid(
+                    path,
+                    line,
+                    "all patterns in one abbreviation family must share rule and review metadata",
+                );
+            }
+        } else {
+            metadata.insert(key, family_metadata);
+        }
+    }
+
+    for ((lexeme_id, sense_id), _) in metadata {
+        let family_patterns = table
+            .rows
+            .iter()
+            .filter(|row| row[0] == lexeme_id && row[1] == sense_id)
+            .collect::<Vec<_>>();
+        let exact = abbreviations
+            .rows
+            .iter()
+            .filter(|row| row[0] == lexeme_id && row[1] == sense_id)
+            .collect::<Vec<_>>();
+        if exact.is_empty() {
+            return invalid(
+                path,
+                1,
+                &format!(
+                    "abbreviation family {lexeme_id}:{sense_id} requires at least one reviewed exact cell"
+                ),
+            );
+        }
+        for exact_row in exact {
+            let expected = normalize_abbreviation_family_shape(&exact_row[4]);
+            let covered = family_patterns.iter().any(|pattern| {
+                exact_row[3]
+                    .strip_prefix(&pattern[2])
+                    .map(|suffix| format!("{}{suffix}", pattern[3]))
+                    .is_some_and(|generated| {
+                        normalize_abbreviation_family_shape(&generated) == expected
+                    })
+            });
+            if !covered {
+                return invalid(
+                    path,
+                    1,
+                    &format!(
+                        "abbreviation family {lexeme_id}:{sense_id} does not reproduce reviewed exact shape {:?} -> {:?}",
+                        exact_row[3], exact_row[4]
+                    ),
+                );
+            }
+        }
+        for pattern in family_patterns {
+            if !abbreviations.rows.iter().any(|exact_row| {
+                exact_row[0] == lexeme_id
+                    && exact_row[1] == sense_id
+                    && abbreviation_pattern_covers(&exact_row[3], &exact_row[4], pattern)
+            }) {
+                return invalid(
+                    path,
+                    1,
+                    &format!(
+                        "abbreviation-family pattern {:?} -> {:?} has no reviewed exact witness",
+                        pattern[2], pattern[3]
+                    ),
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+fn validate_abbreviation_family_marks(
+    path: &Path,
+    line: usize,
+    printed_prefix: &str,
+    required_marks: &str,
+) -> Result<()> {
+    let characters = printed_prefix.nfd().collect::<Vec<_>>();
+    for mark in required_marks.split(',') {
+        let present = match mark {
+            "titlo" => characters.iter().any(|character| {
+                *character == '\u{0483}' || ('\u{2de0}'..='\u{2dff}').contains(character)
+            }),
+            "initial-breathing" => characters.contains(&'\u{0486}'),
+            "pokrytie" => characters.contains(&'\u{0487}'),
+            "superscript-s" => characters.contains(&'\u{2ded}'),
+            "superscript-o" => characters.contains(&'\u{2dea}'),
+            "superscript-d" => characters.contains(&'\u{2de3}'),
+            _ => return invalid(path, line, "unknown required abbreviation-family mark"),
+        };
+        if !present {
+            return invalid(
+                path,
+                line,
+                &format!("printed family prefix is missing required mark {mark:?}"),
+            );
+        }
+    }
+    Ok(())
+}
+
+fn abbreviation_pattern_covers(expanded: &str, printed: &str, pattern: &[String]) -> bool {
+    expanded
+        .strip_prefix(&pattern[2])
+        .map(|suffix| format!("{}{suffix}", pattern[3]))
+        .is_some_and(|generated| {
+            normalize_abbreviation_family_shape(&generated)
+                == normalize_abbreviation_family_shape(printed)
+        })
+}
+
+fn normalize_abbreviation_family_shape(value: &str) -> String {
+    value
+        .nfd()
+        .filter(|character| !matches!(character, '\u{0300}' | '\u{0301}' | '\u{0311}'))
+        .flat_map(char::to_lowercase)
+        .map(|character| match character {
+            'ѡ' | 'ѻ' | 'ꙍ' => 'о',
+            'і' | 'ї' => 'и',
+            'є' => 'е',
+            'ꙋ' => 'у',
+            'ꙗ' | 'я' => 'ѧ',
+            other => other,
+        })
+        .nfc()
+        .collect()
+}
+
+fn validate_abbreviation_inventory(path: &Path, table: &Table, families: &Table) -> Result<()> {
+    if table.rows.len() != 48 {
+        return invalid(
+            path,
+            1,
+            "Alypy §3.c abbreviation inventory must classify all 48 named entries",
+        );
+    }
+    let mut orders = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
+        let order = row[0]
+            .parse::<u8>()
+            .map_err(|_| ExtractionError::InvalidRow {
+                file: path.to_owned(),
+                line,
+                reason: "source_order must be an integer from 1 through 48".into(),
+            })?;
+        if !(1..=48).contains(&order) || !orders.insert(order) {
+            return invalid(path, line, "source_order must uniquely cover 1 through 48");
+        }
+        validate_word(path, line, &row[1], "source abbreviation head")?;
+        validate_word(path, line, &row[2], "source abbreviation expansion")?;
+        validate_target(path, line, &row[10])?;
+        if row[3].is_empty() || row[8].is_empty() || row[9].is_empty() {
+            return invalid(
+                path,
+                line,
+                "every abbreviation inventory row requires semantic scope, evidence, and a review note",
+            );
+        }
+        match row[4].as_str() {
+            "productive-family" => {
+                if row[5].is_empty() || row[6].is_empty() || row[7].is_empty() {
+                    return invalid(
+                        path,
+                        line,
+                        "productive abbreviation decisions require lexeme, sense, and rule IDs",
+                    );
+                }
+                if !families.rows.iter().any(|family| {
+                    family[0] == row[5]
+                        && family[1] == row[6]
+                        && family[4] == row[7]
+                        && abbreviation_inventory_pattern_covers(&row[2], &row[1], family)
+                }) {
+                    return invalid(
+                        path,
+                        line,
+                        "productive abbreviation decision does not structurally match a generated family",
+                    );
+                }
+            }
+            "implementation-missing" => {
+                if row[5..8].iter().any(|value| !value.is_empty()) {
+                    return invalid(
+                        path,
+                        line,
+                        "missing abbreviation decisions cannot claim runtime IDs",
+                    );
+                }
+            }
+            _ => {
+                return invalid(
+                    path,
+                    line,
+                    "abbreviation decision must be productive-family or implementation-missing",
+                );
+            }
+        }
+    }
+    if orders != (1_u8..=48).collect() {
+        return invalid(
+            path,
+            1,
+            "source_order does not exhaustively cover 1 through 48",
+        );
+    }
+    Ok(())
+}
+
+fn abbreviation_inventory_pattern_covers(
+    expanded_head: &str,
+    printed_head: &str,
+    family: &[String],
+) -> bool {
+    let expanded = normalize_abbreviation_family_shape(expanded_head);
+    let expanded_prefix = normalize_abbreviation_family_shape(&family[2]);
+    expanded
+        .strip_prefix(&expanded_prefix)
+        .map(|suffix| {
+            format!(
+                "{}{suffix}",
+                normalize_abbreviation_family_shape(&family[3])
+            )
+        })
+        .is_some_and(|generated| generated == normalize_abbreviation_family_shape(printed_head))
 }
 
 fn validate_grammar_cell(path: &Path, line: usize, value: &str) -> Result<()> {
@@ -3028,6 +3334,7 @@ struct RegistryTables {
     exact_forms: Table,
     alignments: Table,
     abbreviations: Table,
+    abbreviation_families: Table,
     accents: Table,
     accent_paradigms: Table,
     positional_rules: Table,
@@ -3047,6 +3354,7 @@ fn emit_registry(tables: RegistryTables) -> String {
         mut exact_forms,
         mut alignments,
         mut abbreviations,
+        mut abbreviation_families,
         mut accents,
         mut accent_paradigms,
         mut positional_rules,
@@ -3076,6 +3384,7 @@ fn emit_registry(tables: RegistryTables) -> String {
     });
     alignments.rows.sort();
     abbreviations.rows.sort();
+    abbreviation_families.rows.sort();
     accents.rows.sort();
     accent_paradigms.rows.sort();
     positional_rules.rows.sort();
@@ -3116,6 +3425,12 @@ fn emit_registry(tables: RegistryTables) -> String {
         "ABBREVIATIONS",
         "RawAbbreviation",
         &abbreviations.rows,
+    );
+    emit_rows(
+        &mut output,
+        "ABBREVIATION_FAMILIES",
+        "RawAbbreviationFamily",
+        &abbreviation_families.rows,
     );
     emit_rows(&mut output, "ACCENTS", "RawAccent", &accents.rows);
     emit_rows(
@@ -3603,6 +3918,90 @@ mod tests {
         assert!(
             validate_abbreviations(Path::new("abbreviations.tsv"), &abbreviations, &lexemes,)
                 .is_err()
+        );
+    }
+
+    #[test]
+    fn abbreviation_families_must_reproduce_every_reviewed_exact_shape() {
+        let lexemes = Table {
+            rows: vec![vec![
+                "synodal:noun:test".into(),
+                "градъ".into(),
+                "noun".into(),
+                "first-hard-m".into(),
+                "град".into(),
+                "masculine".into(),
+                String::new(),
+                "test-source".into(),
+                TARGET.into(),
+            ]],
+        };
+        let abbreviations = Table {
+            rows: vec![vec![
+                "synodal:noun:test".into(),
+                "sense:test".into(),
+                "noun:nominative:singular:inanimate".into(),
+                "градъ".into(),
+                "гр҃дъ".into(),
+                "test-exact-rule".into(),
+                "test-evidence".into(),
+                "false".into(),
+                "titlo".into(),
+                "test identity".into(),
+                "non-reversible".into(),
+                TARGET.into(),
+                TARGET.into(),
+            ]],
+        };
+        let mut family_row = vec![
+            "synodal:noun:test".into(),
+            "sense:test".into(),
+            "гра".into(),
+            "гр҃".into(),
+            "test-family-rule".into(),
+            "test-evidence".into(),
+            "false".into(),
+            "titlo".into(),
+            "test identity".into(),
+            "non-reversible".into(),
+            TARGET.into(),
+            TARGET.into(),
+        ];
+        validate_abbreviation_families(
+            Path::new("abbreviation_families.tsv"),
+            &Table {
+                rows: vec![family_row.clone()],
+            },
+            &abbreviations,
+            &lexemes,
+        )
+        .expect("matching family skeleton");
+
+        let mut unused = family_row.clone();
+        unused[2] = "гро".into();
+        assert!(
+            validate_abbreviation_families(
+                Path::new("abbreviation_families.tsv"),
+                &Table {
+                    rows: vec![family_row.clone(), unused],
+                },
+                &abbreviations,
+                &lexemes,
+            )
+            .is_err()
+        );
+
+        family_row[3] = "гд҃".into();
+        assert!(
+            validate_abbreviation_families(
+                Path::new("abbreviation_families.tsv"),
+                &Table {
+                    rows: vec![family_row],
+                },
+                &abbreviations,
+                &lexemes,
+            )
+            .is_err()
         );
     }
 

@@ -3,6 +3,8 @@
   "target_recension": "synodal-russian",
   "normalized_tables": {
     "abbreviation_evaluation.tsv": 74,
+    "abbreviation_families.tsv": 29,
+    "abbreviation_inventory.tsv": 48,
     "abbreviations.tsv": 159,
     "accent_paradigms.tsv": 21,
     "accents.tsv": 45,
@@ -30,10 +32,10 @@
     "v10_exact_cell_corrections.tsv": 3,
     "verb_defectiveness.tsv": 4
   },
-  "normalized_rows": 10252,
+  "normalized_rows": 10329,
   "quarantined_rows": 0,
   "parse_failure_ceiling": 0,
-  "morphology_registry_sha256": "6af3cc97450dcbe9a10115d6f81fb24b3fbc4a378c1af16ed2f95bee2ae4e420",
+  "morphology_registry_sha256": "b6b22f7c4cd21c89bc6244ad936b60d24198e5f77068ec724d7418c4b104ed09",
   "dictionary_registry_sha256": "1b8c7d9dcfddf0ee4a45e1a8bba31f82820799a0b2005a8838f3d224d4155036",
   "source_adapter_contracts": [
     "streaming Ponomar verse adapter with source order and quarantine",

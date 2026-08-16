@@ -1,10 +1,12 @@
 # Synodal extraction report
 
-Target recension: `synodal-russian`. The curated normalized layer contains 10252 rows across 27 tables; 0 rows are quarantined (ceiling 0).
+Target recension: `synodal-russian`. The curated normalized layer contains 10329 rows across 29 tables; 0 rows are quarantined (ceiling 0).
 
 | Table | Rows |
 |---|---:|
 | `abbreviation_evaluation.tsv` | 74 |
+| `abbreviation_families.tsv` | 29 |
+| `abbreviation_inventory.tsv` | 48 |
 | `abbreviations.tsv` | 159 |
 | `accent_paradigms.tsv` | 21 |
 | `accents.tsv` | 45 |
@@ -32,7 +34,7 @@ Target recension: `synodal-russian`. The curated normalized layer contains 10252
 | `v10_exact_cell_corrections.tsv` | 3 |
 | `verb_defectiveness.tsv` | 4 |
 
-Generated morphology SHA-256: `6af3cc97450dcbe9a10115d6f81fb24b3fbc4a378c1af16ed2f95bee2ae4e420`.
+Generated morphology SHA-256: `b6b22f7c4cd21c89bc6244ad936b60d24198e5f77068ec724d7418c4b104ed09`.
 
 Generated dictionary SHA-256: `1b8c7d9dcfddf0ee4a45e1a8bba31f82820799a0b2005a8838f3d224d4155036`.
 

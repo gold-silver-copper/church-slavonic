@@ -695,6 +695,8 @@ fn check_verse_disagreement_report(root: &Path) -> Result<(), Box<dyn Error>> {
 fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
     let mut normalized_tables = BTreeMap::new();
     for name in [
+        "abbreviation_families.tsv",
+        "abbreviation_inventory.tsv",
         "abbreviations.tsv",
         "abbreviation_evaluation.tsv",
         "accent_paradigms.tsv",

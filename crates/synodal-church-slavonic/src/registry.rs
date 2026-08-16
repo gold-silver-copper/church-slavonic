@@ -25,6 +25,8 @@ pub(crate) struct RawAlignment(pub [&'static str; 11]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawAbbreviation(pub [&'static str; 13]);
 #[derive(Clone, Copy, Debug)]
+pub(crate) struct RawAbbreviationFamily(pub [&'static str; 12]);
+#[derive(Clone, Copy, Debug)]
 pub(crate) struct RawAccent(pub [&'static str; 8]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawAccentParadigm(pub [&'static str; 11]);
@@ -317,6 +319,22 @@ pub(crate) struct AbbreviationRecord {
     pub cell: &'static str,
     pub expanded: &'static str,
     pub printed: &'static str,
+    pub rule_id: &'static str,
+    pub evidence_id: &'static str,
+    pub reversible: bool,
+    pub required_marks: &'static str,
+    pub context_restrictions: &'static str,
+    pub ambiguity: &'static str,
+    pub source_recension: &'static str,
+    pub target_recension: &'static str,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct AbbreviationFamilyRecord {
+    pub lexeme_id: &'static str,
+    pub sense_id: &'static str,
+    pub expanded_prefix: &'static str,
+    pub printed_prefix: &'static str,
     pub rule_id: &'static str,
     pub evidence_id: &'static str,
     pub reversible: bool,
@@ -1414,6 +1432,41 @@ pub(crate) fn abbreviations_for_printed(printed: &str) -> Vec<AbbreviationRecord
             target_recension: row.0[12],
         })
         .collect()
+}
+
+pub(crate) fn abbreviation_families_for(
+    id: &LexemeId,
+    sense_id: &str,
+) -> Vec<AbbreviationFamilyRecord> {
+    ABBREVIATION_FAMILIES
+        .iter()
+        .filter(|row| row.0[0] == id.as_str() && row.0[1] == sense_id)
+        .map(abbreviation_family_record)
+        .collect()
+}
+
+pub(crate) fn abbreviation_family_records() -> Vec<AbbreviationFamilyRecord> {
+    ABBREVIATION_FAMILIES
+        .iter()
+        .map(abbreviation_family_record)
+        .collect()
+}
+
+fn abbreviation_family_record(row: &RawAbbreviationFamily) -> AbbreviationFamilyRecord {
+    AbbreviationFamilyRecord {
+        lexeme_id: row.0[0],
+        sense_id: row.0[1],
+        expanded_prefix: row.0[2],
+        printed_prefix: row.0[3],
+        rule_id: row.0[4],
+        evidence_id: row.0[5],
+        reversible: row.0[6] == "true",
+        required_marks: row.0[7],
+        context_restrictions: row.0[8],
+        ambiguity: row.0[9],
+        source_recension: row.0[10],
+        target_recension: row.0[11],
+    }
 }
 
 pub(crate) fn noun_uses_inherited_class(id: &LexemeId) -> bool {
