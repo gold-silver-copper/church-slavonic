@@ -31,8 +31,9 @@ pub enum NounDeclension {
     FirstMixedMasculine,
     /// First-declension masculine with a `ц`-final oblique stem and an
     /// independently supplied citation form, including mobile-`е` nouns such
-    /// as `младенецъ : младенц-`. Synodal `ц` combines with `ы`/`ъ` but not
-    /// `о` (Alypy §8.c); the remaining mixed endings follow §§33–37.
+    /// as `младенецъ : младенц-` and the bounded metathesized profile
+    /// `жрецъ : жерц-`. Synodal `ц` combines with `ы`/`ъ` but not `о` (Alypy
+    /// §8.c); the remaining mixed endings follow §§33–37.
     FirstMixedTsMasculine,
     FirstHardNeuter,
     FirstSoftMasculine,
@@ -193,6 +194,30 @@ impl NounNumberInventory {
     }
 }
 
+/// Animacy values in which a noun is lexically licensed. This is independent
+/// of the accusative-form request: an animate noun cannot acquire an
+/// inanimate reverse analysis merely because the two surfaces are syncretic.
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum NounAnimacyInventory {
+    #[default]
+    All,
+    AnimateOnly,
+    InanimateOnly,
+}
+
+impl NounAnimacyInventory {
+    #[must_use]
+    pub const fn contains(self, animacy: Animacy) -> bool {
+        matches!(
+            (self, animacy),
+            (Self::All, _)
+                | (Self::AnimateOnly, Animacy::Animate)
+                | (Self::InanimateOnly, Animacy::Inanimate)
+        )
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct NounLexeme {
@@ -203,6 +228,7 @@ pub struct NounLexeme {
     pub gender: Gender,
     pub declension: NounDeclension,
     pub number_inventory: NounNumberInventory,
+    pub animacy_inventory: NounAnimacyInventory,
 }
 
 impl NounLexeme {
@@ -219,12 +245,19 @@ impl NounLexeme {
             gender,
             declension,
             number_inventory: NounNumberInventory::All,
+            animacy_inventory: NounAnimacyInventory::All,
         }
     }
 
     #[must_use]
     pub const fn with_number_inventory(mut self, inventory: NounNumberInventory) -> Self {
         self.number_inventory = inventory;
+        self
+    }
+
+    #[must_use]
+    pub const fn with_animacy_inventory(mut self, inventory: NounAnimacyInventory) -> Self {
+        self.animacy_inventory = inventory;
         self
     }
 }
@@ -246,6 +279,18 @@ pub enum AdjectiveClass {
     /// A mobile vowel is supplied through the ordinary typed short-masculine
     /// principal part rather than inferred from spelling.
     PossessiveSoft,
+    /// Possessives formed with the historical `-jь` suffix. These retain the
+    /// soft-sign citation edge but otherwise use a mixed short paradigm:
+    /// hard vowel endings alongside soft `-имъ`, `-ихъ`, and `-ими`
+    /// (`человѣчь : человѣча : человѣчимъ`).
+    PossessiveJ,
+    /// Possessive and relational adjectives in `-ин-`. Alypy §51 explicitly
+    /// licenses both the short and the long paradigm (`голубинъ : голубиный`).
+    PossessiveIn,
+    /// Possessive and relational adjectives in `-ск-`. Alypy §§11, 51, and
+    /// 57 license both forms and require the cell-scoped `-ск- : -ст-`
+    /// alternation before the soft endings (`человѣческїй : человѣчестѣмъ`).
+    PossessiveSk,
     /// Possessives in `-їй`, whose `-ї-` belongs to the derivational suffix
     /// and whose complete predominantly short declension is printed
     /// separately in Alypy §56. That section also licenses occasional
@@ -254,12 +299,15 @@ pub enum AdjectiveClass {
 }
 
 impl AdjectiveClass {
-    pub const ALL: [Self; 6] = [
+    pub const ALL: [Self; 9] = [
         Self::Hard,
         Self::Soft,
         Self::Velar,
         Self::PossessiveHard,
         Self::PossessiveSoft,
+        Self::PossessiveJ,
+        Self::PossessiveIn,
+        Self::PossessiveSk,
         Self::PossessiveIi,
     ];
 }
@@ -279,6 +327,9 @@ pub enum ShortMasculineStemFormation {
     /// A mobile `е` appears before the final stem consonant at the short
     /// masculine citation edge (`преподобн- : преподобенъ`).
     MobileEInsertion,
+    /// A mobile `о` appears before the final stem consonant at the short
+    /// masculine citation edge (`ѕл- : ѕолъ`).
+    MobileOInsertion,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -792,6 +843,15 @@ pub fn decline_noun(
             ),
         });
     }
+    if !lexeme.animacy_inventory.contains(cell.animacy) {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: format!(
+                "noun {:?} is not licensed with {:?} animacy",
+                lexeme.lemma.canonical(),
+                cell.animacy
+            ),
+        });
+    }
     let mut expanded = noun_surfaces(lexeme, cell)?;
     if cell.case == Case::Accusative && cell.animacy == Animacy::Animate {
         let nominative_like = noun_surfaces(
@@ -1147,8 +1207,18 @@ fn noun_stem(lexeme: &NounLexeme, cell: crate::NounCell) -> String {
 }
 
 fn positive_adjective_surface(lexeme: &AdjectiveLexeme, cell: AdjectiveCell) -> Result<String> {
-    if lexeme.class == AdjectiveClass::Velar {
-        return velar_positive_adjective_surface(lexeme, cell);
+    match lexeme.class {
+        AdjectiveClass::Velar => return velar_positive_adjective_surface(lexeme, cell),
+        AdjectiveClass::PossessiveSk => return sk_positive_adjective_surface(lexeme, cell),
+        AdjectiveClass::PossessiveJ => {
+            return possessive_j_positive_adjective_surface(lexeme, cell);
+        }
+        AdjectiveClass::Hard
+        | AdjectiveClass::Soft
+        | AdjectiveClass::PossessiveHard
+        | AdjectiveClass::PossessiveSoft
+        | AdjectiveClass::PossessiveIn
+        | AdjectiveClass::PossessiveIi => {}
     }
     let ending = match cell.form {
         AdjectiveForm::Short => short_adjective_ending(lexeme.class, cell)?,
@@ -1164,6 +1234,92 @@ fn positive_adjective_surface(lexeme: &AdjectiveLexeme, cell: AdjectiveCell) -> 
         &lexeme.stem
     };
     Ok(join(stem.canonical(), ending))
+}
+
+fn possessive_j_positive_adjective_surface(
+    lexeme: &AdjectiveLexeme,
+    cell: AdjectiveCell,
+) -> Result<String> {
+    if cell.form == AdjectiveForm::Long {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "the possessive -jь suffix licenses only the short paradigm; exceptional compound forms require exact lexical evidence".into(),
+        });
+    }
+    let hard = short_adjective_ending(AdjectiveClass::Hard, cell)?;
+    let ending = match hard {
+        "ъ" if cell.number == Number::Singular && cell.gender == Gender::Masculine => "ь",
+        "ымъ" => "имъ",
+        "ыма" => "има",
+        "ыхъ" => "ихъ",
+        "ыми" => "ими",
+        ending => ending,
+    };
+    Ok(join(lexeme.stem.canonical(), ending))
+}
+
+fn sk_positive_adjective_surface(lexeme: &AdjectiveLexeme, cell: AdjectiveCell) -> Result<String> {
+    let mut stem = lexeme.stem.canonical().to_owned();
+    let ending = match cell.form {
+        AdjectiveForm::Short => {
+            let hard = short_adjective_ending(AdjectiveClass::Hard, cell)?;
+            if hard == "ѣ"
+                || hard == "е"
+                || matches!(
+                    (cell.number, cell.gender, cell.case),
+                    (
+                        Number::Plural,
+                        Gender::Masculine,
+                        Case::Nominative | Case::Vocative
+                    )
+                )
+            {
+                stem = replace_final_sk_with_st(&stem)?;
+            }
+            match hard {
+                "ы" => "и",
+                "ымъ" => "имъ",
+                "ыма" => "има",
+                "ыхъ" => "ихъ",
+                "ыми" => "ими",
+                other => other,
+            }
+        }
+        AdjectiveForm::Long => {
+            if matches!(
+                (cell.number, cell.gender, cell.case),
+                (
+                    Number::Singular,
+                    Gender::Feminine,
+                    Case::Dative | Case::Locative
+                ) | (
+                    Number::Singular,
+                    Gender::Masculine | Gender::Neuter,
+                    Case::Locative
+                ) | (
+                    Number::Dual,
+                    Gender::Feminine | Gender::Neuter,
+                    Case::Nominative | Case::Accusative | Case::Vocative
+                ) | (
+                    Number::Plural,
+                    Gender::Masculine,
+                    Case::Nominative | Case::Vocative
+                )
+            ) {
+                stem = replace_final_sk_with_st(&stem)?;
+            }
+            velar_long_adjective_ending(cell)?
+        }
+    };
+    Ok(join(&stem, ending))
+}
+
+fn replace_final_sk_with_st(stem: &str) -> Result<String> {
+    let Some(base) = stem.strip_suffix("ск") else {
+        return Err(Error::ContradictoryMetadata {
+            reason: "a possessive -ск- adjective requires a stem ending in -ск".into(),
+        });
+    };
+    Ok(join(base, "ст"))
 }
 
 fn velar_positive_adjective_surface(
@@ -1236,6 +1392,9 @@ pub fn decline_adjective(
         lexeme.class,
         AdjectiveClass::PossessiveHard
             | AdjectiveClass::PossessiveSoft
+            | AdjectiveClass::PossessiveJ
+            | AdjectiveClass::PossessiveIn
+            | AdjectiveClass::PossessiveSk
             | AdjectiveClass::PossessiveIi
     ) && cell.comparison != Comparison::Positive
     {
@@ -1245,7 +1404,9 @@ pub fn decline_adjective(
     }
     if matches!(
         lexeme.class,
-        AdjectiveClass::PossessiveHard | AdjectiveClass::PossessiveSoft
+        AdjectiveClass::PossessiveHard
+            | AdjectiveClass::PossessiveSoft
+            | AdjectiveClass::PossessiveJ
     ) && cell.form == AdjectiveForm::Long
     {
         return Err(Error::HistoricallyInvalidCell {
@@ -1292,6 +1453,21 @@ pub fn decline_adjective(
                 (AdjectiveClass::PossessiveSoft, AdjectiveForm::Short) => {
                     "SYN-ADJ-POSSESSIVE-SOFT-SHORT-ALYPY-50-53"
                 }
+                (AdjectiveClass::PossessiveJ, AdjectiveForm::Short) => {
+                    "SYN-ADJ-POSSESSIVE-J-SHORT-ALYPY-50-53"
+                }
+                (AdjectiveClass::PossessiveIn, AdjectiveForm::Short) => {
+                    "SYN-ADJ-POSSESSIVE-IN-SHORT-ALYPY-50-53"
+                }
+                (AdjectiveClass::PossessiveIn, AdjectiveForm::Long) => {
+                    "SYN-ADJ-POSSESSIVE-IN-LONG-ALYPY-50-57"
+                }
+                (AdjectiveClass::PossessiveSk, AdjectiveForm::Short) => {
+                    "SYN-ADJ-POSSESSIVE-SK-SHORT-ALYPY-11-50-53"
+                }
+                (AdjectiveClass::PossessiveSk, AdjectiveForm::Long) => {
+                    "SYN-ADJ-POSSESSIVE-SK-LONG-ALYPY-11-50-57"
+                }
                 (AdjectiveClass::PossessiveIi, AdjectiveForm::Short) => {
                     "SYN-ADJ-POSSESSIVE-II-SHORT-ALYPY-56"
                 }
@@ -1299,7 +1475,9 @@ pub fn decline_adjective(
                     "SYN-ADJ-POSSESSIVE-II-LONG-ALYPY-56"
                 }
                 (
-                    AdjectiveClass::PossessiveHard | AdjectiveClass::PossessiveSoft,
+                    AdjectiveClass::PossessiveHard
+                    | AdjectiveClass::PossessiveSoft
+                    | AdjectiveClass::PossessiveJ,
                     AdjectiveForm::Long,
                 ) => unreachable!("long possessive cells are rejected above"),
             },
@@ -2206,7 +2384,10 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
             let mobile_e = stem
                 .strip_suffix('ц')
                 .is_some_and(|prefix| citation_stem == format!("{prefix}ец"));
-            stem.ends_with('ц') && (direct || mobile_e)
+            let transposed_e = stem
+                .strip_suffix("ерц")
+                .is_some_and(|prefix| citation_stem == format!("{prefix}рец"));
+            stem.ends_with('ц') && (direct || mobile_e || transposed_e)
         }
         NounDeclension::FirstSoftMasculineJ => {
             lemma.strip_suffix('й').is_some_and(|prefix| prefix == stem) && !lemma.ends_with("ей")
@@ -2327,6 +2508,24 @@ pub fn validate_adjective_lexeme(lexeme: &AdjectiveLexeme) -> Result<()> {
             reason: "a velar adjective requires a stem ending in г, к, or х".into(),
         });
     }
+    if lexeme.class == AdjectiveClass::PossessiveIn && !lexeme.stem.canonical().ends_with("ин") {
+        return Err(Error::ContradictoryMetadata {
+            reason: "a possessive -ин- adjective requires a stem ending in -ин".into(),
+        });
+    }
+    if lexeme.class == AdjectiveClass::PossessiveJ
+        && (!lexeme.lemma.canonical().ends_with('ь')
+            || lexeme.lemma.canonical().strip_suffix('ь') != Some(lexeme.stem.canonical()))
+    {
+        return Err(Error::ContradictoryMetadata {
+            reason: "a possessive -jь adjective requires a soft-sign lemma built directly on the supplied stem".into(),
+        });
+    }
+    if lexeme.class == AdjectiveClass::PossessiveSk && !lexeme.stem.canonical().ends_with("ск") {
+        return Err(Error::ContradictoryMetadata {
+            reason: "a possessive -ск- adjective requires a stem ending in -ск".into(),
+        });
+    }
     if lexeme.short_masculine_stem.is_some() != lexeme.short_masculine_formation.is_some() {
         return Err(Error::ContradictoryMetadata {
             reason: "short masculine stem and typed formation must be supplied together".into(),
@@ -2346,6 +2545,12 @@ pub fn validate_adjective_lexeme(lexeme: &AdjectiveLexeme) -> Result<()> {
                 .last()
                 .is_some_and(|(offset, final_character)| {
                     short.canonical() == format!("{}е{final_character}", &stem[..offset])
+                }),
+            ShortMasculineStemFormation::MobileOInsertion => stem
+                .char_indices()
+                .last()
+                .is_some_and(|(offset, final_character)| {
+                    short.canonical() == format!("{}о{final_character}", &stem[..offset])
                 }),
         };
         if !valid {
@@ -2943,8 +3148,17 @@ fn short_adjective_ending(class: AdjectiveClass, cell: AdjectiveCell) -> Result<
         AdjectiveClass::Soft | AdjectiveClass::PossessiveSoft => {
             return soft_short_adjective_ending(cell);
         }
+        AdjectiveClass::PossessiveJ => {
+            return Err(Error::ContradictoryMetadata {
+                reason: "the possessive -jь class requires its mixed surface builder".into(),
+            });
+        }
         AdjectiveClass::PossessiveIi => return possessive_ii_short_ending(cell),
-        AdjectiveClass::Hard | AdjectiveClass::Velar | AdjectiveClass::PossessiveHard => {}
+        AdjectiveClass::Hard
+        | AdjectiveClass::Velar
+        | AdjectiveClass::PossessiveHard
+        | AdjectiveClass::PossessiveIn
+        | AdjectiveClass::PossessiveSk => {}
     }
     use Case::{
         Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
@@ -3087,12 +3301,14 @@ pub(crate) fn long_adjective_ending(
         AdjectiveClass::Soft => return soft_long_adjective_ending(cell),
         AdjectiveClass::Velar => return velar_long_adjective_ending(cell),
         AdjectiveClass::PossessiveIi => return possessive_ii_long_ending(cell),
-        AdjectiveClass::PossessiveHard | AdjectiveClass::PossessiveSoft => {
+        AdjectiveClass::PossessiveHard
+        | AdjectiveClass::PossessiveSoft
+        | AdjectiveClass::PossessiveJ => {
             return Err(Error::HistoricallyInvalidCell {
                 reason: "this possessive suffix has no productive long paradigm".into(),
             });
         }
-        AdjectiveClass::Hard => {}
+        AdjectiveClass::Hard | AdjectiveClass::PossessiveIn | AdjectiveClass::PossessiveSk => {}
     }
     use Case::{
         Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
@@ -3793,6 +4009,7 @@ mod tests {
             gender: Gender::Masculine,
             declension: NounDeclension::FirstHardMasculine,
             number_inventory: NounNumberInventory::All,
+            animacy_inventory: NounAnimacyInventory::All,
         };
         let form = decline_noun(
             &lexeme,
@@ -3957,6 +4174,7 @@ mod tests {
             gender: Gender::Neuter,
             declension: NounDeclension::SecondHard,
             number_inventory: NounNumberInventory::All,
+            animacy_inventory: NounAnimacyInventory::All,
         };
         assert!(matches!(
             decline_noun(
@@ -4146,6 +4364,7 @@ mod tests {
             gender: Gender::Masculine,
             declension: NounDeclension::FirstHardMasculine,
             number_inventory: NounNumberInventory::All,
+            animacy_inventory: NounAnimacyInventory::All,
         };
         let singular = decline_noun(
             &lexeme,
@@ -4944,6 +5163,41 @@ mod tests {
     }
 
     #[test]
+    fn lexical_noun_animacy_rejects_syncretic_incompatible_requests() {
+        let prince = NounLexeme::new(
+            word("кнѧзь"),
+            word("кнѧз"),
+            Gender::Masculine,
+            NounDeclension::FirstSoftMasculine,
+        )
+        .with_animacy_inventory(NounAnimacyInventory::AnimateOnly);
+        assert!(
+            decline_noun(
+                &prince,
+                NounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    animacy: Animacy::Animate,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .is_ok()
+        );
+        assert!(matches!(
+            decline_noun(
+                &prince,
+                NounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
     fn alpy_8_33_37_mobile_e_ts_noun_is_complete() {
         let infant = NounLexeme::new(
             word("младенецъ"),
@@ -4982,6 +5236,57 @@ mod tests {
     }
 
     #[test]
+    fn alpy_8_33_37_transposed_e_ts_noun_is_complete() {
+        let priest = NounLexeme::new(
+            word("жрецъ"),
+            word("жерц"),
+            Gender::Masculine,
+            NounDeclension::FirstMixedTsMasculine,
+        )
+        .with_animacy_inventory(NounAnimacyInventory::AnimateOnly);
+        validate_noun_lexeme(&priest).expect("source-defined -рецъ : -ерц- contract");
+        assert_noun_paradigm(
+            &priest,
+            Animacy::Animate,
+            &[
+                &["жрецъ"],
+                &["жерца"],
+                &["жерцꙋ", "жерцеви"],
+                &["жерца", "жрецъ"],
+                &["жерцемъ"],
+                &["жерци", "жерцѣ"],
+                &["жерче"],
+                &["жерца"],
+                &["жерцꙋ"],
+                &["жерцема"],
+                &["жерца"],
+                &["жерцема"],
+                &["жерцꙋ"],
+                &["жерца"],
+                &["жерцы"],
+                &["жерцєвъ"],
+                &["жерцємъ"],
+                &["жерцы", "жерцєвъ"],
+                &["жерцы", "жерцьми", "жерцами"],
+                &["жерцѣхъ"],
+                &["жерцы"],
+            ],
+        );
+        assert!(matches!(
+            decline_noun(
+                &priest,
+                NounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    animacy: Animacy::Inanimate,
+                },
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
     fn alpy_52_short_masculine_stem_formations_are_typed() {
         let blessed = AdjectiveLexeme {
             lemma: word("блаженъ"),
@@ -5001,7 +5306,16 @@ mod tests {
             comparative_stem: None,
             comparison_formation: None,
         };
-        for adjective in [&blessed, &venerable] {
+        let evil = AdjectiveLexeme {
+            lemma: word("ѕлый"),
+            stem: word("ѕл"),
+            class: AdjectiveClass::Hard,
+            short_masculine_stem: Some(word("ѕол")),
+            short_masculine_formation: Some(ShortMasculineStemFormation::MobileOInsertion),
+            comparative_stem: Some(word("ѕлѣйш")),
+            comparison_formation: Some(ComparisonFormation::LaterYat),
+        };
+        for adjective in [&blessed, &venerable, &evil] {
             validate_adjective_lexeme(adjective).expect("typed positive principal part");
         }
         let form = |lexeme: &AdjectiveLexeme, gender, adjective_form| {
@@ -5041,11 +5355,20 @@ mod tests {
             form(&venerable, Gender::Feminine, AdjectiveForm::Short),
             "преподобна"
         );
+        assert_eq!(form(&evil, Gender::Masculine, AdjectiveForm::Short), "ѕолъ");
+        assert_eq!(form(&evil, Gender::Neuter, AdjectiveForm::Short), "ѕло");
+        assert_eq!(form(&evil, Gender::Masculine, AdjectiveForm::Long), "ѕлый");
 
         let mut contradictory = blessed.clone();
         contradictory.short_masculine_stem = Some(word("блаженн"));
         assert!(matches!(
             validate_adjective_lexeme(&contradictory),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+        let mut contradictory_mobile_o = evil;
+        contradictory_mobile_o.short_masculine_stem = Some(word("ѕел"));
+        assert!(matches!(
+            validate_adjective_lexeme(&contradictory_mobile_o),
             Err(Error::ContradictoryMetadata { .. })
         ));
     }
@@ -5129,9 +5452,20 @@ mod tests {
             (Pl, M, Nom, Long, &["блазїи"]),
             (Pl, F, Nom, Long, &["благїѧ"]),
             (Pl, N, Nom, Long, &["благаѧ"]),
+            (Pl, M, Acc, Long, &["благїѧ", "благихъ"]),
         ] {
             assert_eq!(
-                form(number, gender, case, adjective_form, Animacy::Inanimate),
+                form(
+                    number,
+                    gender,
+                    case,
+                    adjective_form,
+                    if (number, gender, case) == (Pl, M, Acc) {
+                        Animacy::Animate
+                    } else {
+                        Animacy::Inanimate
+                    },
+                ),
                 expected,
                 "{number:?} {gender:?} {case:?} {adjective_form:?}"
             );
@@ -5322,7 +5656,7 @@ mod tests {
     }
 
     #[test]
-    fn alpy_50_56_possessive_adjective_contracts_are_complete_and_bounded() {
+    fn alpy_50_57_possessive_adjective_contracts_are_complete_and_bounded() {
         let bozhii = AdjectiveLexeme {
             lemma: word("божїй"),
             stem: word("бож"),
@@ -5560,6 +5894,300 @@ mod tests {
                 }
             }
         }
+        let iudin = AdjectiveLexeme {
+            lemma: word("іꙋдинъ"),
+            stem: word("іꙋдин"),
+            class: AdjectiveClass::PossessiveIn,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        let egipetskii = AdjectiveLexeme {
+            lemma: word("єгѵпетскїй"),
+            stem: word("єгѵпетск"),
+            class: AdjectiveClass::PossessiveSk,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        for (lexeme, form, case, number, gender, expected) in [
+            (
+                &iudin,
+                AdjectiveForm::Short,
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                "іꙋдина",
+            ),
+            (
+                &iudin,
+                AdjectiveForm::Long,
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                "іꙋдинагѡ",
+            ),
+            (
+                &egipetskii,
+                AdjectiveForm::Short,
+                Case::Genitive,
+                Number::Singular,
+                Gender::Feminine,
+                "єгѵпетски",
+            ),
+            (
+                &egipetskii,
+                AdjectiveForm::Short,
+                Case::Locative,
+                Number::Singular,
+                Gender::Feminine,
+                "єгѵпетстѣ",
+            ),
+            (
+                &egipetskii,
+                AdjectiveForm::Long,
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                "єгѵпетскїй",
+            ),
+            (
+                &egipetskii,
+                AdjectiveForm::Long,
+                Case::Genitive,
+                Number::Singular,
+                Gender::Feminine,
+                "єгѵпетскїѧ",
+            ),
+            (
+                &egipetskii,
+                AdjectiveForm::Long,
+                Case::Locative,
+                Number::Singular,
+                Gender::Feminine,
+                "єгѵпетстѣй",
+            ),
+            (
+                &egipetskii,
+                AdjectiveForm::Long,
+                Case::Nominative,
+                Number::Plural,
+                Gender::Masculine,
+                "єгѵпетстїи",
+            ),
+            (
+                &egipetskii,
+                AdjectiveForm::Long,
+                Case::Genitive,
+                Number::Plural,
+                Gender::Masculine,
+                "єгѵпетскихъ",
+            ),
+        ] {
+            assert_eq!(
+                decline_adjective(
+                    lexeme,
+                    AdjectiveCell {
+                        case,
+                        number,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form,
+                        comparison: Comparison::Positive,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("source-licensed -ин-/-ск- cell")
+                .primary_text(),
+                expected
+            );
+        }
+        for lexeme in [&iudin, &egipetskii] {
+            validate_adjective_lexeme(lexeme).expect("typed possessive suffix");
+            for form in AdjectiveForm::ALL {
+                for number in Number::ALL {
+                    for gender in Gender::ALL {
+                        for case in Case::ALL {
+                            assert_productive_contract(
+                                &decline_adjective(
+                                    lexeme,
+                                    AdjectiveCell {
+                                        case,
+                                        number,
+                                        gender,
+                                        animacy: Animacy::Animate,
+                                        form,
+                                        comparison: Comparison::Positive,
+                                    },
+                                    OrthographyProfile::Expanded,
+                                )
+                                .expect("complete short and long possessive paradigms"),
+                            );
+                        }
+                    }
+                }
+            }
+            assert!(matches!(
+                decline_adjective(
+                    lexeme,
+                    AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Long,
+                        comparison: Comparison::Comparative,
+                    },
+                    OrthographyProfile::Expanded,
+                ),
+                Err(Error::HistoricallyInvalidCell { .. })
+            ));
+        }
+        for (class, stem) in [
+            (AdjectiveClass::PossessiveIn, "іꙋд"),
+            (AdjectiveClass::PossessiveSk, "єгѵпет"),
+        ] {
+            assert!(matches!(
+                validate_adjective_lexeme(&AdjectiveLexeme {
+                    lemma: word("неправиленъ"),
+                    stem: word(stem),
+                    class,
+                    short_masculine_stem: None,
+                    short_masculine_formation: None,
+                    comparative_stem: None,
+                    comparison_formation: None,
+                }),
+                Err(Error::ContradictoryMetadata { .. })
+            ));
+        }
+        let chelovech = AdjectiveLexeme {
+            lemma: word("человѣчь"),
+            stem: word("человѣч"),
+            class: AdjectiveClass::PossessiveJ,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        for (case, number, gender, expected) in [
+            (
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                "человѣчь",
+            ),
+            (
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                "человѣча",
+            ),
+            (
+                Case::Instrumental,
+                Number::Singular,
+                Gender::Masculine,
+                "человѣчимъ",
+            ),
+            (
+                Case::Accusative,
+                Number::Singular,
+                Gender::Feminine,
+                "человѣчꙋ",
+            ),
+            (
+                Case::Nominative,
+                Number::Singular,
+                Gender::Neuter,
+                "человѣчо",
+            ),
+            (
+                Case::Nominative,
+                Number::Plural,
+                Gender::Masculine,
+                "человѣчи",
+            ),
+            (
+                Case::Nominative,
+                Number::Plural,
+                Gender::Feminine,
+                "человѣчы",
+            ),
+            (Case::Genitive, Number::Plural, Gender::Neuter, "человѣчихъ"),
+            (
+                Case::Instrumental,
+                Number::Plural,
+                Gender::Feminine,
+                "человѣчими",
+            ),
+        ] {
+            assert_eq!(
+                decline_adjective(
+                    &chelovech,
+                    AdjectiveCell {
+                        case,
+                        number,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                        comparison: Comparison::Positive,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("source-licensed mixed -jь possessive cell")
+                .primary_text(),
+                expected
+            );
+        }
+        for number in Number::ALL {
+            for gender in Gender::ALL {
+                for case in Case::ALL {
+                    assert_productive_contract(
+                        &decline_adjective(
+                            &chelovech,
+                            AdjectiveCell {
+                                case,
+                                number,
+                                gender,
+                                animacy: Animacy::Animate,
+                                form: AdjectiveForm::Short,
+                                comparison: Comparison::Positive,
+                            },
+                            OrthographyProfile::Expanded,
+                        )
+                        .expect("complete mixed -jь possessive paradigm"),
+                    );
+                }
+            }
+        }
+        assert!(matches!(
+            decline_adjective(
+                &chelovech,
+                AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                },
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+        assert!(matches!(
+            validate_adjective_lexeme(&AdjectiveLexeme {
+                lemma: word("неправильнь"),
+                stem: word("человѣч"),
+                class: AdjectiveClass::PossessiveJ,
+                short_masculine_stem: None,
+                short_masculine_formation: None,
+                comparative_stem: None,
+                comparison_formation: None,
+            }),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
         assert!(matches!(
             decline_adjective(
                 &bozhii,
@@ -6298,6 +6926,7 @@ mod tests {
                 gender,
                 declension,
                 number_inventory: NounNumberInventory::All,
+                animacy_inventory: NounAnimacyInventory::All,
             };
             for number in Number::ALL {
                 for case in Case::ALL {

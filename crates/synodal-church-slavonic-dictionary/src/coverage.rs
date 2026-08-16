@@ -7,12 +7,13 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 use synodal_church_slavonic::{
-    GenerationPolicy, GrammarCell, Inflector, LexemeId, LexemeSummary, MetadataField,
-    OrthographyProfile, PartOfSpeech, Result, SynodalWord, capabilities_by_id, lexemes,
-    lexical_metadata, missing_metadata_by_id,
+    Animacy, Case, CompoundNumeralCell, Gender, GenerationPolicy, GrammarCell, Inflector, LexemeId,
+    LexemeSummary, MetadataField, NumeralComposition, OrthographyProfile, PartOfSpeech, Result,
+    SynodalWord, capabilities_by_id, lexemes, lexical_metadata, missing_metadata_by_id,
+    numeral_phrases::cardinal_with,
 };
 use synodal_church_slavonic_core::{
-    RuleTrace, normalize_lookup, normalize_lookup_accentless, parse_cyrillic_numeral,
+    CyrillicNumeral, RuleTrace, normalize_lookup, normalize_lookup_accentless,
 };
 use unicode_normalization::char::is_combining_mark;
 
@@ -115,11 +116,40 @@ pub struct GapOccurrence {
     pub suggested_action: String,
 }
 
+/// A typed reverse analysis of one fused Church Slavonic cardinal word.
+///
+/// Compound cardinals are grammatical constructions rather than synthetic
+/// dictionary lexemes, so their numeric value, licensed cell, and composition
+/// are preserved independently of [`Analysis`].
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct CardinalWordAnalysis {
+    pub value: u32,
+    pub cell: CompoundNumeralCell,
+    pub construction: NumeralComposition,
+    pub matched_text: String,
+    pub source: AnalysisSource,
+    pub confidence: synodal_church_slavonic_core::Confidence,
+    pub evidence_ids: Vec<String>,
+    pub assumptions: Vec<String>,
+    pub contradictions: Vec<String>,
+    pub warnings: Vec<String>,
+    pub rule_trace: RuleTrace,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct TextTokenAnalysis {
     pub token: TextToken,
     pub status: TokenStatus,
     pub analyses: Vec<Analysis>,
+    /// A typed non-lexical analysis for a canonical Church Slavonic number.
+    /// Numerals do not fabricate a dictionary lexeme, but a successfully
+    /// parsed value is a real strict analysis and therefore counts in top-k.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub numeral: Option<CyrillicNumeral>,
+    /// Typed analyses for fused lexical cardinal words such as
+    /// `двана́десѧть` and `пѧтьдесѧ́тъ`; no artificial lexeme is created.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cardinal_words: Vec<CardinalWordAnalysis>,
     pub gap: Option<GapOccurrence>,
 }
 
@@ -295,6 +325,30 @@ pub struct ReviewQueueItem {
     pub suggested_action: String,
 }
 
+/// One complete, top-k-uncovered surface/status row for evidence review.
+///
+/// Unlike the bounded human-facing gap queue, this inventory includes every
+/// uncovered surface whether or not it carries a [`GapOccurrence`]. Document
+/// frequency is computed from the true union of source/passage identities;
+/// contexts remain bounded review aids.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CoverageFrontierItem {
+    pub status: TokenStatus,
+    pub kind: Option<GapKind>,
+    pub normalized: String,
+    pub sample: String,
+    pub token_frequency: usize,
+    pub document_frequency: usize,
+    pub corpora: Vec<String>,
+    pub source_ids: Vec<String>,
+    pub partitions: Vec<String>,
+    pub candidate_lexeme_ids: Vec<LexemeId>,
+    pub requested_morphological_system: Option<String>,
+    pub missing_metadata: Vec<MetadataField>,
+    pub suggested_action: String,
+    pub contexts: Vec<GapContext>,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct CoverageReport {
     pub schema_version: u8,
@@ -306,12 +360,20 @@ pub struct CoverageReport {
     pub summary: CoverageSlice,
     pub by_corpus: BTreeMap<String, CoverageSlice>,
     pub by_source: BTreeMap<String, CoverageSlice>,
+    #[serde(default)]
+    pub by_partition: BTreeMap<String, CoverageSlice>,
+    #[serde(default)]
+    pub by_source_partition: BTreeMap<String, CoverageSlice>,
     pub by_policy: BTreeMap<String, CoverageSlice>,
     pub by_lexeme: BTreeMap<String, CoverageSlice>,
     pub by_family: BTreeMap<String, CoverageSlice>,
     pub by_morphological_system: BTreeMap<String, CoverageSlice>,
     pub by_corpus_gap: BTreeMap<String, BTreeMap<String, usize>>,
     pub by_source_gap: BTreeMap<String, BTreeMap<String, usize>>,
+    #[serde(default)]
+    pub by_partition_gap: BTreeMap<String, BTreeMap<String, usize>>,
+    #[serde(default)]
+    pub by_source_partition_gap: BTreeMap<String, BTreeMap<String, usize>>,
     pub by_status: BTreeMap<String, usize>,
     pub by_gap: BTreeMap<String, usize>,
     /// Diagnostic grouping only. Entries do not establish lexical identity and
@@ -332,6 +394,11 @@ pub struct CoverageReport {
     pub total_gap_types: usize,
     pub gaps: Vec<GapRecord>,
     pub review_queue: Vec<ReviewQueueItem>,
+    /// Complete in-memory frontier used to render the separately committed TSV.
+    /// Keeping it out of JSON avoids duplicating tens of thousands of detailed
+    /// rows in the already-large coverage report.
+    #[serde(skip)]
+    pub uncovered_frontier: Vec<CoverageFrontierItem>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
@@ -668,6 +735,10 @@ pub struct Analyzer {
     expanded: BTreeMap<String, Vec<Analysis>>,
     printed_marked: BTreeMap<String, Vec<Analysis>>,
     printed: BTreeMap<String, Vec<Analysis>>,
+    cardinal_expanded_marked: BTreeMap<String, Vec<CardinalWordAnalysis>>,
+    cardinal_expanded: BTreeMap<String, Vec<CardinalWordAnalysis>>,
+    cardinal_printed_marked: BTreeMap<String, Vec<CardinalWordAnalysis>>,
+    cardinal_printed: BTreeMap<String, Vec<CardinalWordAnalysis>>,
     spelling_candidates: BTreeMap<String, BTreeSet<LexemeId>>,
 }
 
@@ -760,6 +831,10 @@ impl Analyzer {
             expanded: BTreeMap::new(),
             printed_marked: BTreeMap::new(),
             printed: BTreeMap::new(),
+            cardinal_expanded_marked: BTreeMap::new(),
+            cardinal_expanded: BTreeMap::new(),
+            cardinal_printed_marked: BTreeMap::new(),
+            cardinal_printed: BTreeMap::new(),
             spelling_candidates: BTreeMap::new(),
         };
         let expanded_inflector = Inflector::builder()
@@ -788,6 +863,8 @@ impl Analyzer {
                 analyzer.index_cell(&lexeme, cell, printed_inflector);
             }
         }
+        analyzer.index_cardinal_words(expanded_inflector);
+        analyzer.index_cardinal_words(printed_inflector);
         for index in [
             &mut analyzer.expanded_marked,
             &mut analyzer.expanded,
@@ -795,6 +872,14 @@ impl Analyzer {
             &mut analyzer.printed,
         ] {
             sort_index(index);
+        }
+        for index in [
+            &mut analyzer.cardinal_expanded_marked,
+            &mut analyzer.cardinal_expanded,
+            &mut analyzer.cardinal_printed_marked,
+            &mut analyzer.cardinal_printed,
+        ] {
+            sort_cardinal_word_index(index);
         }
         Ok(analyzer)
     }
@@ -808,6 +893,10 @@ impl Analyzer {
             expanded: BTreeMap::new(),
             printed_marked: BTreeMap::new(),
             printed: BTreeMap::new(),
+            cardinal_expanded_marked: BTreeMap::new(),
+            cardinal_expanded: BTreeMap::new(),
+            cardinal_printed_marked: BTreeMap::new(),
+            cardinal_printed: BTreeMap::new(),
             spelling_candidates: BTreeMap::new(),
         };
         let expanded_inflector = Inflector::builder()
@@ -836,6 +925,8 @@ impl Analyzer {
                 analyzer.index_cell(&lexeme, cell, printed_inflector);
             }
         }
+        analyzer.index_cardinal_words(expanded_inflector);
+        analyzer.index_cardinal_words(printed_inflector);
         for index in [
             &mut analyzer.expanded_marked,
             &mut analyzer.expanded,
@@ -843,6 +934,14 @@ impl Analyzer {
             &mut analyzer.printed,
         ] {
             sort_index(index);
+        }
+        for index in [
+            &mut analyzer.cardinal_expanded_marked,
+            &mut analyzer.cardinal_expanded,
+            &mut analyzer.cardinal_printed_marked,
+            &mut analyzer.cardinal_printed,
+        ] {
+            sort_cardinal_word_index(index);
         }
         Ok(analyzer)
     }
@@ -862,6 +961,53 @@ impl Analyzer {
         let mut analyses = self.analyze_profile(word, OrthographyProfile::Expanded)?;
         analyses.extend(self.analyze_profile(word, OrthographyProfile::SynodalLiturgical)?);
         deduplicate_analyses(&mut analyses);
+        Ok(analyses)
+    }
+
+    /// Returns every typed one-token cardinal construction compatible with
+    /// either expanded or liturgical presentation.
+    pub fn analyze_cardinal_word(&self, word: &str) -> Result<Vec<CardinalWordAnalysis>> {
+        let mut analyses =
+            self.analyze_cardinal_word_profile(word, OrthographyProfile::Expanded)?;
+        analyses.extend(
+            self.analyze_cardinal_word_profile(word, OrthographyProfile::SynodalLiturgical)?,
+        );
+        deduplicate_cardinal_word_analyses(&mut analyses);
+        Ok(analyses)
+    }
+
+    /// Returns typed fused-cardinal analyses under one explicit orthographic
+    /// profile. Marked input is exact: accent-insensitive fallback is allowed
+    /// only for genuinely unmarked input or the explicit accentless profile.
+    pub fn analyze_cardinal_word_profile(
+        &self,
+        word: &str,
+        profile: OrthographyProfile,
+    ) -> Result<Vec<CardinalWordAnalysis>> {
+        let parsed = SynodalWord::parse(word)?;
+        let marked_key = normalize_lookup(parsed.canonical());
+        let key = normalize_lookup_accentless(parsed.canonical());
+        let allow_fallback = profile == OrthographyProfile::ExpandedAccentless || marked_key == key;
+        let (marked, fallback) = match profile {
+            OrthographyProfile::Expanded | OrthographyProfile::ExpandedAccentless => {
+                (&self.cardinal_expanded_marked, &self.cardinal_expanded)
+            }
+            OrthographyProfile::SynodalLiturgical => {
+                (&self.cardinal_printed_marked, &self.cardinal_printed)
+            }
+        };
+        let mut analyses = marked
+            .get(&marked_key)
+            .cloned()
+            .filter(|analyses| !analyses.is_empty())
+            .unwrap_or_else(|| {
+                if allow_fallback {
+                    fallback.get(&key).cloned().unwrap_or_default()
+                } else {
+                    Vec::new()
+                }
+            });
+        deduplicate_cardinal_word_analyses(&mut analyses);
         Ok(analyses)
     }
 
@@ -992,6 +1138,98 @@ impl Analyzer {
             .map_or_else(Vec::new, |ids| ids.iter().cloned().collect())
     }
 
+    fn index_cardinal_words(&mut self, inflector: Inflector) {
+        const VALUES: [u32; 26] = [
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400,
+            500, 600, 700, 800, 900,
+        ];
+        let profile = inflector.orthography();
+        for value in VALUES {
+            for case in Case::ALL.into_iter().filter(|case| *case != Case::Vocative) {
+                for animacy in Animacy::ALL {
+                    let genders: &[Option<Gender>] = if (11..=14).contains(&value) {
+                        &[
+                            Some(Gender::Masculine),
+                            Some(Gender::Feminine),
+                            Some(Gender::Neuter),
+                        ]
+                    } else {
+                        &[None]
+                    };
+                    for gender in genders {
+                        let cell = CompoundNumeralCell {
+                            case,
+                            gender: *gender,
+                            animacy,
+                        };
+                        let Ok(realized) = cardinal_with(value, cell, inflector) else {
+                            continue;
+                        };
+                        for phrase in realized
+                            .analyses()
+                            .iter()
+                            .filter(|phrase| phrase.tokens.len() == 1)
+                        {
+                            let Some(token) = phrase.tokens.first() else {
+                                continue;
+                            };
+                            for variant in token.forms.variants() {
+                                let surface = match profile {
+                                    OrthographyProfile::Expanded
+                                    | OrthographyProfile::ExpandedAccentless => &variant.expanded,
+                                    OrthographyProfile::SynodalLiturgical => &variant.printed,
+                                };
+                                let Ok(canonical) = SynodalWord::parse(surface) else {
+                                    continue;
+                                };
+                                let analysis = CardinalWordAnalysis {
+                                    value,
+                                    cell,
+                                    construction: phrase.construction,
+                                    matched_text: surface.clone(),
+                                    source: analysis_source(&variant.source),
+                                    confidence: variant.confidence,
+                                    evidence_ids: variant
+                                        .evidence
+                                        .iter()
+                                        .map(|evidence| evidence.id.to_string())
+                                        .collect(),
+                                    assumptions: variant
+                                        .assumptions
+                                        .iter()
+                                        .map(|assumption| assumption.detail.clone())
+                                        .collect(),
+                                    contradictions: variant
+                                        .contradictions
+                                        .iter()
+                                        .map(|contradiction| contradiction.detail.clone())
+                                        .collect(),
+                                    warnings: variant.warnings.clone(),
+                                    rule_trace: variant.rule_trace.clone(),
+                                };
+                                let marked_key = normalize_lookup(canonical.canonical());
+                                let key = normalize_lookup_accentless(canonical.canonical());
+                                let (marked, fallback) = match profile {
+                                    OrthographyProfile::Expanded
+                                    | OrthographyProfile::ExpandedAccentless => (
+                                        &mut self.cardinal_expanded_marked,
+                                        &mut self.cardinal_expanded,
+                                    ),
+                                    OrthographyProfile::SynodalLiturgical => (
+                                        &mut self.cardinal_printed_marked,
+                                        &mut self.cardinal_printed,
+                                    ),
+                                };
+                                marked.entry(marked_key).or_default().push(analysis.clone());
+                                fallback.entry(key).or_default().push(analysis);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fn index_cell(&mut self, lexeme: &LexemeSummary, cell: GrammarCell, inflector: Inflector) {
         let Ok(forms) = inflector.form_by_id(lexeme.id(), cell) else {
             return;
@@ -1076,16 +1314,24 @@ pub fn coverage(
     let mut summary = CoverageSlice::default();
     let mut by_corpus = BTreeMap::new();
     let mut by_source = BTreeMap::new();
+    let mut by_partition = BTreeMap::new();
+    let mut by_source_partition = BTreeMap::new();
     let mut by_policy = BTreeMap::new();
     let mut by_lexeme = BTreeMap::new();
     let mut by_family = BTreeMap::new();
     let mut by_system = BTreeMap::new();
     let mut by_corpus_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     let mut by_source_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
+    let mut by_partition_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
+    let mut by_source_partition_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     let mut by_status = BTreeMap::new();
     let mut by_gap = BTreeMap::new();
     let mut types = BTreeSet::new();
     let mut aggregates: BTreeMap<(GapKind, String), GapAggregate> = BTreeMap::new();
+    let mut frontier_aggregates: BTreeMap<
+        (String, TokenStatus, Option<GapKind>),
+        CoverageFrontierAggregate,
+    > = BTreeMap::new();
     let mut cache: BTreeMap<String, TextTokenAnalysis> = BTreeMap::new();
     let mut probable_aggregates: BTreeMap<String, ProbableFamilyAggregate> = BTreeMap::new();
     let mut recovery_estimates = BTreeMap::new();
@@ -1095,6 +1341,7 @@ pub fn coverage(
 
     for passage in passages {
         let document = format!("{}:{}", passage.source_id, passage.passage);
+        let source_partition = format!("{}:{}", passage.source_id, passage.partition);
         for token in tokenize(&passage.text) {
             types.insert(token.normalized.clone());
             let template = cache
@@ -1110,6 +1357,16 @@ pub fn coverage(
             );
             update_slice(
                 by_source.entry(passage.source_id.clone()).or_default(),
+                &analysis,
+            );
+            update_slice(
+                by_partition.entry(passage.partition.clone()).or_default(),
+                &analysis,
+            );
+            update_slice(
+                by_source_partition
+                    .entry(source_partition.clone())
+                    .or_default(),
                 &analysis,
             );
             update_slice(
@@ -1135,15 +1392,32 @@ pub fn coverage(
                 let family_id = FamilyId::for_lexeme(lexeme_id).to_string();
                 update_slice(by_family.entry(family_id).or_default(), &analysis);
             }
-            let system = analysis
-                .analyses
-                .first()
-                .and_then(|candidate| candidate.cell)
-                .map_or_else(|| "unresolved".into(), morphological_system);
+            let system = if analysis.numeral.is_some() {
+                "cyrillic-numeral".into()
+            } else if !analysis.cardinal_words.is_empty() {
+                "compound-cardinal-word".into()
+            } else {
+                analysis
+                    .analyses
+                    .first()
+                    .and_then(|candidate| candidate.cell)
+                    .map_or_else(|| "unresolved".into(), morphological_system)
+            };
             update_slice(by_system.entry(system).or_default(), &analysis);
             *by_status
                 .entry(status_label(analysis.status).into())
                 .or_default() += 1;
+            if !is_top_k_analyzed(&analysis) {
+                let frontier_key = (
+                    analysis.token.original.clone(),
+                    analysis.status,
+                    analysis.gap.as_ref().map(|gap| gap.kind),
+                );
+                frontier_aggregates
+                    .entry(frontier_key)
+                    .or_insert_with(|| CoverageFrontierAggregate::new(&analysis))
+                    .observe(passage, &document, &analysis);
+            }
             if analysis.status == TokenStatus::AbbreviationExpansion {
                 abbreviation_family_tokens += 1;
             }
@@ -1173,6 +1447,16 @@ pub fn coverage(
                     .or_default() += 1;
                 *by_source_gap
                     .entry(passage.source_id.clone())
+                    .or_default()
+                    .entry(gap.kind.label().into())
+                    .or_default() += 1;
+                *by_partition_gap
+                    .entry(passage.partition.clone())
+                    .or_default()
+                    .entry(gap.kind.label().into())
+                    .or_default() += 1;
+                *by_source_partition_gap
+                    .entry(source_partition.clone())
                     .or_default()
                     .entry(gap.kind.label().into())
                     .or_default() += 1;
@@ -1213,6 +1497,19 @@ pub fn coverage(
         .into_iter()
         .map(|(id, aggregate)| (id, aggregate.finish()))
         .collect();
+    let mut uncovered_frontier: Vec<_> = frontier_aggregates
+        .into_values()
+        .map(CoverageFrontierAggregate::finish)
+        .collect();
+    uncovered_frontier.sort_by(|left, right| {
+        right
+            .token_frequency
+            .cmp(&left.token_frequency)
+            .then_with(|| right.document_frequency.cmp(&left.document_frequency))
+            .then_with(|| left.status.cmp(&right.status))
+            .then_with(|| left.kind.cmp(&right.kind))
+            .then_with(|| left.normalized.cmp(&right.normalized))
+    });
     let review_queue = gaps
         .iter()
         .take(500)
@@ -1239,12 +1536,16 @@ pub fn coverage(
         summary,
         by_corpus,
         by_source,
+        by_partition,
+        by_source_partition,
         by_policy,
         by_lexeme,
         by_family,
         by_morphological_system: by_system,
         by_corpus_gap,
         by_source_gap,
+        by_partition_gap,
+        by_source_partition_gap,
         by_status,
         by_gap,
         unresolved_by_probable_family,
@@ -1257,6 +1558,7 @@ pub fn coverage(
         total_gap_types,
         gaps,
         review_queue,
+        uncovered_frontier,
     }
 }
 
@@ -1353,6 +1655,34 @@ impl CoverageReport {
             ));
         }
         output.push_str(
+            "\n## Coverage by partition\n\n| Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |\n|---|---:|---:|---:|---:|---:|\n",
+        );
+        for (partition, slice) in &self.by_partition {
+            output.push_str(&format!(
+                "| `{}` | {} | {} | {} | {} | {} |\n",
+                escape_markdown(partition),
+                slice.total_tokens,
+                slice.top_1_analyzed,
+                slice.top_k_analyzed,
+                slice.ambiguous,
+                slice.unresolved,
+            ));
+        }
+        output.push_str(
+            "\n## Coverage by source and partition\n\n| Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |\n|---|---:|---:|---:|---:|---:|\n",
+        );
+        for (source_partition, slice) in &self.by_source_partition {
+            output.push_str(&format!(
+                "| `{}` | {} | {} | {} | {} | {} |\n",
+                escape_markdown(source_partition),
+                slice.total_tokens,
+                slice.top_1_analyzed,
+                slice.top_k_analyzed,
+                slice.ambiguous,
+                slice.unresolved,
+            ));
+        }
+        output.push_str(
             "\n## Gap categories by source\n\n| Source | Category | Tokens |\n|---|---|---:|\n",
         );
         for (source, gaps) in &self.by_source_gap {
@@ -1362,6 +1692,22 @@ impl CoverageReport {
                     output.push_str(&format!(
                         "| `{}` | `{}` | {} |\n",
                         escape_markdown(source),
+                        kind.label(),
+                        count,
+                    ));
+                }
+            }
+        }
+        output.push_str(
+            "\n## Gap categories by partition\n\n| Partition | Category | Tokens |\n|---|---|---:|\n",
+        );
+        for (partition, gaps) in &self.by_partition_gap {
+            for kind in GapKind::ALL {
+                let count = gaps.get(kind.label()).copied().unwrap_or_default();
+                if count > 0 {
+                    output.push_str(&format!(
+                        "| `{}` | `{}` | {} |\n",
+                        escape_markdown(partition),
                         kind.label(),
                         count,
                     ));
@@ -1404,6 +1750,60 @@ impl CoverageReport {
                     .map(ToString::to_string)
                     .collect::<Vec<_>>()
                     .join(","),
+                tsv_field(&item.suggested_action),
+            ));
+        }
+        output
+    }
+
+    /// Renders every strict top-k-uncovered surface/status row. This is the
+    /// authoritative work frontier; unlike [`Self::gaps_tsv`], it is not
+    /// truncated and also accounts for any uncovered status without a gap.
+    #[must_use]
+    pub fn uncovered_frontier_tsv(&self) -> String {
+        let mut output = String::from(
+            "rank\tstatus\tkind\tnormalized\tsample\ttoken_frequency\tdocument_frequency\tcorpora\tsource_ids\tpartitions\tcandidate_lexeme_ids\trequested_morphological_system\tmissing_metadata\tcontexts\tsuggested_action\n",
+        );
+        for (index, item) in self.uncovered_frontier.iter().enumerate() {
+            let contexts = item
+                .contexts
+                .iter()
+                .map(|context| {
+                    format!(
+                        "{}@{}:{}:{} {}",
+                        context.document,
+                        context.passage,
+                        context.line,
+                        context.column,
+                        context.excerpt,
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join(" | ");
+            output.push_str(&format!(
+                "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n",
+                index + 1,
+                status_label(item.status),
+                item.kind.map_or("", GapKind::label),
+                tsv_field(&item.normalized),
+                tsv_field(&item.sample),
+                item.token_frequency,
+                item.document_frequency,
+                item.corpora.join(","),
+                item.source_ids.join(","),
+                item.partitions.join(","),
+                item.candidate_lexeme_ids
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(","),
+                item.requested_morphological_system.as_deref().unwrap_or(""),
+                item.missing_metadata
+                    .iter()
+                    .map(|field| format!("{field:?}"))
+                    .collect::<Vec<_>>()
+                    .join(","),
+                tsv_field(&contexts),
                 tsv_field(&item.suggested_action),
             ));
         }
@@ -1586,6 +1986,106 @@ fn has_abbreviation_marks(value: &str) -> bool {
 }
 
 #[derive(Clone, Debug)]
+struct CoverageFrontierAggregate {
+    item: CoverageFrontierItem,
+    documents: BTreeSet<String>,
+    corpora: BTreeSet<String>,
+    source_ids: BTreeSet<String>,
+    partitions: BTreeSet<String>,
+    contexts: BTreeSet<(String, String, usize, usize, String)>,
+}
+
+impl CoverageFrontierAggregate {
+    fn new(analysis: &TextTokenAnalysis) -> Self {
+        let gap = analysis.gap.as_ref();
+        Self {
+            item: CoverageFrontierItem {
+                status: analysis.status,
+                kind: gap.map(|gap| gap.kind),
+                normalized: analysis.token.normalized.clone(),
+                sample: analysis.token.original.clone(),
+                token_frequency: 0,
+                document_frequency: 0,
+                corpora: Vec::new(),
+                source_ids: Vec::new(),
+                partitions: Vec::new(),
+                candidate_lexeme_ids: gap
+                    .map(|gap| gap.candidate_lexeme_ids.clone())
+                    .unwrap_or_default(),
+                requested_morphological_system: gap
+                    .and_then(|gap| gap.requested_morphological_system.clone()),
+                missing_metadata: gap
+                    .map(|gap| gap.missing_metadata.clone())
+                    .unwrap_or_default(),
+                suggested_action: gap.map_or_else(
+                    || "review why this status remains outside strict top-k".into(),
+                    |gap| gap.suggested_action.clone(),
+                ),
+                contexts: Vec::new(),
+            },
+            documents: BTreeSet::new(),
+            corpora: BTreeSet::new(),
+            source_ids: BTreeSet::new(),
+            partitions: BTreeSet::new(),
+            contexts: BTreeSet::new(),
+        }
+    }
+
+    fn observe(&mut self, passage: &CoveragePassage, document: &str, analysis: &TextTokenAnalysis) {
+        self.item.token_frequency += 1;
+        self.documents.insert(document.into());
+        self.corpora.insert(passage.corpus.clone());
+        self.source_ids.insert(passage.source_id.clone());
+        self.partitions.insert(passage.partition.clone());
+        if self.contexts.len() < 4 {
+            self.contexts.insert((
+                document.into(),
+                passage.passage.clone(),
+                analysis.token.line,
+                analysis.token.column,
+                context_excerpt(
+                    &passage.text,
+                    analysis.token.byte_start,
+                    analysis.token.byte_end,
+                ),
+            ));
+        }
+        if let Some(gap) = &analysis.gap {
+            self.item
+                .candidate_lexeme_ids
+                .extend(gap.candidate_lexeme_ids.iter().cloned());
+            self.item.candidate_lexeme_ids.sort();
+            self.item.candidate_lexeme_ids.dedup();
+            self.item
+                .missing_metadata
+                .extend(gap.missing_metadata.iter().copied());
+            self.item.missing_metadata.sort();
+            self.item.missing_metadata.dedup();
+        }
+    }
+
+    fn finish(mut self) -> CoverageFrontierItem {
+        self.item.document_frequency = self.documents.len();
+        self.item.corpora = self.corpora.into_iter().collect();
+        self.item.source_ids = self.source_ids.into_iter().collect();
+        self.item.partitions = self.partitions.into_iter().collect();
+        self.item.contexts = self
+            .contexts
+            .into_iter()
+            .take(2)
+            .map(|(document, passage, line, column, excerpt)| GapContext {
+                document,
+                passage,
+                line,
+                column,
+                excerpt,
+            })
+            .collect();
+        self.item
+    }
+}
+
+#[derive(Clone, Debug)]
 struct GapAggregate {
     record: GapRecord,
     documents: BTreeSet<String>,
@@ -1746,11 +2246,13 @@ fn classify_token(
     token: TextToken,
     options: &CheckTextOptions,
 ) -> TextTokenAnalysis {
-    if parse_cyrillic_numeral(&token.original).is_ok() {
+    if let Ok(numeral) = CyrillicNumeral::parse(&token.original) {
         return TextTokenAnalysis {
             token,
             status: TokenStatus::CyrillicNumeral,
             analyses: Vec::new(),
+            numeral: Some(numeral),
+            cardinal_words: Vec::new(),
             gap: None,
         };
     }
@@ -1766,6 +2268,8 @@ fn classify_token(
             token,
             status: TokenStatus::Unresolved,
             analyses: Vec::new(),
+            numeral: None,
+            cardinal_words: Vec::new(),
             gap: Some(GapOccurrence {
                 kind,
                 secondary_reasons: Vec::new(),
@@ -1784,6 +2288,9 @@ fn classify_token(
             }),
         };
     }
+    let cardinal_words = analyzer
+        .analyze_cardinal_word_profile(&token.original, options.orthography_profile)
+        .unwrap_or_default();
     let analyses = analyzer
         .analyze_profile(&token.original, options.orthography_profile)
         .unwrap_or_default();
@@ -1801,6 +2308,8 @@ fn classify_token(
                 token,
                 status: TokenStatus::Ambiguous,
                 analyses,
+                numeral: None,
+                cardinal_words,
             };
         }
         let status = analyses
@@ -1812,7 +2321,35 @@ fn classify_token(
             token,
             status,
             analyses,
+            numeral: None,
+            cardinal_words,
             gap: None,
+        };
+    }
+
+    if !cardinal_words.is_empty() {
+        let values = cardinal_words
+            .iter()
+            .map(|analysis| analysis.value)
+            .collect::<BTreeSet<_>>();
+        let status = cardinal_words
+            .iter()
+            .min_by_key(|analysis| source_rank(analysis.source))
+            .map_or(TokenStatus::Unresolved, |analysis| {
+                status_for_source(analysis.source)
+            });
+        let gap = (values.len() > 1).then(|| cardinal_word_ambiguity_gap(&cardinal_words));
+        return TextTokenAnalysis {
+            token,
+            status: if gap.is_some() {
+                TokenStatus::Ambiguous
+            } else {
+                status
+            },
+            analyses: Vec::new(),
+            numeral: None,
+            cardinal_words,
+            gap,
         };
     }
 
@@ -1824,6 +2361,8 @@ fn classify_token(
             return TextTokenAnalysis {
                 token,
                 status: TokenStatus::Unresolved,
+                numeral: None,
+                cardinal_words: Vec::new(),
                 gap: Some(GapOccurrence {
                     kind: GapKind::MissingAccentOrOrthographicMetadata,
                     secondary_reasons: Vec::new(),
@@ -1854,6 +2393,8 @@ fn classify_token(
                 token,
                 status: TokenStatus::Unresolved,
                 analyses: expanded,
+                numeral: None,
+                cardinal_words: Vec::new(),
                 gap: Some(GapOccurrence {
                     kind: GapKind::MissingAccentOrOrthographicMetadata,
                     secondary_reasons: Vec::new(),
@@ -1928,6 +2469,8 @@ fn classify_token(
             token,
             status: TokenStatus::Unresolved,
             analyses: Vec::new(),
+            numeral: None,
+            cardinal_words: Vec::new(),
             gap: Some(GapOccurrence {
                 kind,
                 secondary_reasons: Vec::new(),
@@ -1954,6 +2497,8 @@ fn classify_token(
             token,
             status: TokenStatus::SpellingVariant,
             analyses: Vec::new(),
+            numeral: None,
+            cardinal_words: Vec::new(),
             gap: Some(GapOccurrence {
                 kind: GapKind::AmbiguityOrSpellingVariant,
                 secondary_reasons: Vec::new(),
@@ -1971,6 +2516,8 @@ fn classify_token(
         token,
         status: TokenStatus::Unresolved,
         analyses: Vec::new(),
+        numeral: None,
+        cardinal_words: Vec::new(),
         gap: Some(GapOccurrence {
             kind: GapKind::UnknownLexeme,
             secondary_reasons: Vec::new(),
@@ -2050,6 +2597,30 @@ fn sort_index(index: &mut BTreeMap<String, Vec<Analysis>>) {
     for analyses in index.values_mut() {
         deduplicate_analyses(analyses);
     }
+}
+
+fn sort_cardinal_word_index(index: &mut BTreeMap<String, Vec<CardinalWordAnalysis>>) {
+    for analyses in index.values_mut() {
+        deduplicate_cardinal_word_analyses(analyses);
+    }
+}
+
+fn deduplicate_cardinal_word_analyses(analyses: &mut Vec<CardinalWordAnalysis>) {
+    analyses.sort_by(|left, right| {
+        source_rank(left.source)
+            .cmp(&source_rank(right.source))
+            .then_with(|| left.value.cmp(&right.value))
+            .then_with(|| left.cell.cmp(&right.cell))
+            .then_with(|| left.construction.cmp(&right.construction))
+            .then_with(|| left.matched_text.cmp(&right.matched_text))
+    });
+    analyses.dedup_by(|left, right| {
+        left.value == right.value
+            && left.cell == right.cell
+            && left.construction == right.construction
+            && left.source == right.source
+            && left.matched_text == right.matched_text
+    });
 }
 
 fn deduplicate_analyses(analyses: &mut Vec<Analysis>) {
@@ -2138,6 +2709,29 @@ fn ambiguity_gap(analyses: &[Analysis], detail: &str) -> GapOccurrence {
     }
 }
 
+fn cardinal_word_ambiguity_gap(analyses: &[CardinalWordAnalysis]) -> GapOccurrence {
+    let values = analyses
+        .iter()
+        .map(|analysis| analysis.value.to_string())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect::<Vec<_>>()
+        .join(", ");
+    GapOccurrence {
+        kind: GapKind::AmbiguityOrSpellingVariant,
+        secondary_reasons: Vec::new(),
+        detail: format!("the fused cardinal surface has multiple numeric values: {values}"),
+        candidate_lexeme_ids: Vec::new(),
+        requested_morphological_system: Some("compound-cardinal-word".into()),
+        missing_metadata: Vec::new(),
+        resolver_trace: analyses
+            .first()
+            .map_or_else(RuleTrace::default, |analysis| analysis.rule_trace.clone()),
+        suggested_action:
+            "preserve every grammar-licensed numeric analysis until syntax selects one value".into(),
+    }
+}
+
 fn analysis_ids(analyses: &[Analysis]) -> Vec<LexemeId> {
     analyses
         .iter()
@@ -2155,7 +2749,7 @@ fn update_text_summary(summary: &mut TextSummary, analysis: &TextTokenAnalysis) 
     if analysis.status == TokenStatus::CyrillicNumeral {
         summary.numerals += 1;
     }
-    if analysis.analyses.len() == 1 && analysis.gap.is_none() {
+    if is_top_1_analyzed(analysis) {
         summary.top_1_analyzed += 1;
     }
     if is_top_k_analyzed(analysis) {
@@ -2174,7 +2768,7 @@ fn update_text_summary(summary: &mut TextSummary, analysis: &TextTokenAnalysis) 
 
 fn update_slice(slice: &mut CoverageSlice, analysis: &TextTokenAnalysis) {
     slice.total_tokens += 1;
-    if analysis.analyses.len() == 1 && analysis.gap.is_none() {
+    if is_top_1_analyzed(analysis) {
         slice.top_1_analyzed += 1;
     }
     if is_top_k_analyzed(analysis) {
@@ -2193,8 +2787,25 @@ fn update_slice(slice: &mut CoverageSlice, analysis: &TextTokenAnalysis) {
 }
 
 fn is_top_k_analyzed(analysis: &TextTokenAnalysis) -> bool {
-    !analysis.analyses.is_empty()
-        && (analysis.gap.is_none() || analysis.status == TokenStatus::Ambiguous)
+    let lexical = !analysis.analyses.is_empty()
+        && (analysis.gap.is_none() || analysis.status == TokenStatus::Ambiguous);
+    let numeric = analysis.status == TokenStatus::CyrillicNumeral
+        && analysis.numeral.is_some()
+        && analysis.gap.is_none();
+    let cardinal_word = !analysis.cardinal_words.is_empty()
+        && (analysis.gap.is_none() || analysis.status == TokenStatus::Ambiguous);
+    lexical || numeric || cardinal_word
+}
+
+fn is_top_1_analyzed(analysis: &TextTokenAnalysis) -> bool {
+    analysis.gap.is_none()
+        && (analysis.analyses.len() == 1
+            || (analysis.status == TokenStatus::CyrillicNumeral
+                && analysis.numeral.is_some()
+                && analysis.analyses.is_empty())
+            || (analysis.analyses.is_empty()
+                && analysis.cardinal_words.len() == 1
+                && analysis.numeral.is_none()))
 }
 
 fn morphological_system(cell: GrammarCell) -> String {
@@ -2324,6 +2935,26 @@ mod tests {
                 &exhaustive.printed_marked,
             );
             assert_index_matches("printed", &optimized.printed, &exhaustive.printed);
+            assert_cardinal_word_index_matches(
+                "cardinal-expanded-marked",
+                &optimized.cardinal_expanded_marked,
+                &exhaustive.cardinal_expanded_marked,
+            );
+            assert_cardinal_word_index_matches(
+                "cardinal-expanded",
+                &optimized.cardinal_expanded,
+                &exhaustive.cardinal_expanded,
+            );
+            assert_cardinal_word_index_matches(
+                "cardinal-printed-marked",
+                &optimized.cardinal_printed_marked,
+                &exhaustive.cardinal_printed_marked,
+            );
+            assert_cardinal_word_index_matches(
+                "cardinal-printed",
+                &optimized.cardinal_printed,
+                &exhaustive.cardinal_printed,
+            );
             assert_eq!(
                 optimized.spelling_candidates,
                 exhaustive.spelling_candidates
@@ -2336,6 +2967,24 @@ mod tests {
         label: &str,
         optimized: &BTreeMap<String, Vec<Analysis>>,
         exhaustive: &BTreeMap<String, Vec<Analysis>>,
+    ) {
+        let keys = optimized
+            .keys()
+            .chain(exhaustive.keys())
+            .collect::<BTreeSet<_>>();
+        for key in keys {
+            assert_eq!(
+                optimized.get(key),
+                exhaustive.get(key),
+                "{label} differs for surface {key:?}"
+            );
+        }
+    }
+
+    fn assert_cardinal_word_index_matches(
+        label: &str,
+        optimized: &BTreeMap<String, Vec<CardinalWordAnalysis>>,
+        exhaustive: &BTreeMap<String, Vec<CardinalWordAnalysis>>,
     ) {
         let keys = optimized
             .keys()
@@ -2615,7 +3264,161 @@ mod tests {
     }
 
     #[test]
-    fn spelling_variant_family_tokens_are_not_double_counted() {
+    fn typed_numerals_are_covered_and_frontier_preserves_partition_slices() {
+        let analyzer = analyzer();
+        let passages = [
+            CoveragePassage {
+                corpus: "fixture-corpus".into(),
+                source_id: "fixture".into(),
+                work: "fixture".into(),
+                edition: "fixture".into(),
+                passage: "1".into(),
+                partition: "source".into(),
+                source_recension: "synodal-russian".into(),
+                text: "неизвѣстно ҂а҃".into(),
+            },
+            CoveragePassage {
+                corpus: "fixture-corpus".into(),
+                source_id: "fixture".into(),
+                work: "fixture".into(),
+                edition: "fixture".into(),
+                passage: "2".into(),
+                partition: "evaluation".into(),
+                source_recension: "synodal-russian".into(),
+                text: "неизвѣстно неизвѣ́стно".into(),
+            },
+        ];
+        let report = coverage(&analyzer, &passages, CheckTextOptions::default());
+        let numeral_report = check_text(&analyzer, "҂а҃", CheckTextOptions::default());
+
+        assert_eq!(report.summary.total_tokens, 4);
+        assert_eq!(report.summary.top_1_analyzed, 1);
+        assert_eq!(report.summary.top_k_analyzed, 1);
+        assert_eq!(report.by_status["cyrillic-numeral"], 1);
+        assert_eq!(
+            report.by_morphological_system["cyrillic-numeral"].top_k_analyzed,
+            1
+        );
+        let numeral = numeral_report.tokens[0]
+            .numeral
+            .as_ref()
+            .expect("typed numeral analysis");
+        assert_eq!(numeral.value(), 1_000);
+        assert_eq!(numeral.text(), "҂а҃");
+        assert_eq!(numeral_report.summary.top_1_analyzed, 1);
+        assert_eq!(numeral_report.summary.top_k_analyzed, 1);
+        assert_eq!(
+            report
+                .uncovered_frontier
+                .iter()
+                .map(|item| item.token_frequency)
+                .sum::<usize>(),
+            report.summary.total_tokens - report.summary.top_k_analyzed
+        );
+        let unknown = report
+            .uncovered_frontier
+            .iter()
+            .find(|item| item.kind == Some(GapKind::UnknownLexeme))
+            .expect("unknown frontier row");
+        assert_eq!(unknown.token_frequency, 2);
+        assert_eq!(unknown.document_frequency, 2);
+        assert_eq!(unknown.partitions, ["evaluation", "source"]);
+        assert!(
+            report
+                .uncovered_frontier
+                .iter()
+                .all(|item| item.status != TokenStatus::CyrillicNumeral)
+        );
+        assert_eq!(report.by_partition["source"].total_tokens, 2);
+        assert_eq!(report.by_partition["evaluation"].total_tokens, 2);
+        assert_eq!(report.by_source_partition["fixture:source"].total_tokens, 2);
+        assert_eq!(report.by_partition_gap["source"]["unknown-lexeme"], 1);
+        assert_eq!(
+            report.by_source_partition_gap["fixture:evaluation"]["unknown-lexeme"],
+            2
+        );
+        let frontier = report.uncovered_frontier_tsv();
+        assert!(frontier.contains("unknown-lexeme"));
+        assert_eq!(frontier.lines().count(), 3);
+        assert_eq!(
+            report
+                .uncovered_frontier
+                .iter()
+                .filter(|item| item.normalized == "неизвѣстно")
+                .count(),
+            2,
+            "mark-distinct printed surfaces must remain separate frontier rows"
+        );
+    }
+
+    #[test]
+    fn fused_cardinal_words_are_typed_mark_sensitive_and_top_k_covered() {
+        let analyzer = analyzer();
+        let indexed_values = analyzer
+            .cardinal_printed_marked
+            .values()
+            .flatten()
+            .map(|analysis| analysis.value)
+            .collect::<BTreeSet<_>>();
+        assert_eq!(
+            indexed_values,
+            BTreeSet::from([
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300,
+                400, 500, 600, 700, 800, 900,
+            ])
+        );
+        let options = CheckTextOptions {
+            generation_policy: GenerationPolicy::Strict,
+            orthography_profile: OrthographyProfile::SynodalLiturgical,
+        };
+        let report = check_text(
+            &analyzer,
+            "двана́десѧть три́десѧть пѧтьдесѧ́тъ се́дмьдесѧтъ пѧ́тьдесѧтъ неизвѣстно",
+            options.clone(),
+        );
+        assert_eq!(report.summary.total_tokens, 6);
+        assert_eq!(report.summary.top_k_analyzed, 4);
+        for token in &report.tokens[..4] {
+            assert!(!token.cardinal_words.is_empty(), "{}", token.token.original);
+            assert!(token.cardinal_words.iter().all(|analysis| {
+                analysis
+                    .evidence_ids
+                    .iter()
+                    .any(|id| id.contains("SYN-NUMERAL-CARDINAL"))
+            }));
+            assert!(token.gap.is_none());
+        }
+        assert!(
+            report.tokens[0]
+                .cardinal_words
+                .iter()
+                .all(|analysis| analysis.value == 12)
+        );
+        assert!(
+            report.tokens[2]
+                .cardinal_words
+                .iter()
+                .all(|analysis| analysis.value == 50)
+        );
+        assert!(
+            report.tokens[4].cardinal_words.is_empty(),
+            "marked input with the wrong stress must not use accentless fallback"
+        );
+        assert_eq!(report.tokens[4].status, TokenStatus::Unresolved);
+
+        let unmarked = check_text(&analyzer, "пѧтьдесѧтъ", options);
+        assert_eq!(unmarked.summary.top_k_analyzed, 1);
+        assert!(
+            unmarked.tokens[0]
+                .cardinal_words
+                .iter()
+                .all(|analysis| analysis.value == 50)
+        );
+        assert!(unmarked.tokens[0].cardinal_words.len() > 1);
+    }
+
+    #[test]
+    fn covered_exact_family_tokens_are_not_counted_as_spelling_variant_work() {
         let analyzer = analyzer();
         let report = coverage(
             &analyzer,
@@ -2631,16 +3434,14 @@ mod tests {
             }],
             CheckTextOptions::default(),
         );
-        assert_eq!(report.spelling_variant_family_tokens, 2);
-        assert_eq!(report.gaps.len(), 1);
-        assert_eq!(report.gaps[0].frequency, 2);
-        assert_eq!(report.gaps[0].top_k_uncovered_frequency, 2);
-        assert_eq!(report.gaps[0].top_k_uncovered_documents.len(), 1);
+        assert_eq!(report.summary.top_k_analyzed, 2);
+        assert_eq!(report.spelling_variant_family_tokens, 0);
+        assert!(report.gaps.is_empty());
         assert_eq!(
             report
                 .estimated_recovery_by_route
                 .get(RecoveryRoute::SpellingVariant.label()),
-            Some(&2)
+            None
         );
     }
 
@@ -2670,6 +3471,7 @@ mod tests {
         assert_eq!(report.gaps[0].frequency, 1);
         assert_eq!(report.gaps[0].top_k_uncovered_frequency, 0);
         assert!(report.gaps[0].top_k_uncovered_documents.is_empty());
+        assert!(report.uncovered_frontier.is_empty());
         let probable = report
             .unresolved_by_probable_family
             .values()

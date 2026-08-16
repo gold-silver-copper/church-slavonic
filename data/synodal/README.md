@@ -10,7 +10,10 @@ edited directly.
 from the exact per-cell strings in `accents.tsv`. Its scope, stem/ending
 placement, mark, optional independently positioned breathing, evidence, and
 precise citation are validated before code generation. One paradigm may have
-several disjoint scope rows for documented mobility.
+several disjoint scope rows for documented mobility. Typed number scopes cover
+nouns (`noun:*`), numerals (`numeral:*`), finite and nonfinite verb systems,
+and the agreement categories; a numeral scope cannot accidentally apply to an
+adjective-like use represented by another grammar cell.
 
 `engine_capabilities.tsv` is the concise v0.10 engine contract. It distinguishes
 typed categories, productive rules, exact/irregular systems, reusable accent
@@ -29,9 +32,10 @@ and target-recension metadata. Their existing exact cells remain separate and
 win first. No suffix guessing or corpus-frequency rule materializes additional
 productive lexemes.
 
-`noun_restrictions.tsv` carries independently evidenced number inventories for
-registered productive nouns. These rows compile to the closed
-`NounNumberInventory` enum; they are not inferred from a plural-looking lemma.
+`noun_restrictions.tsv` carries independently evidenced number and lexical
+animacy inventories for registered productive nouns. These rows compile to the
+closed `NounNumberInventory` and `NounAnimacyInventory` enums; neither property
+is inferred from a surface ending or from accidental case syncretism.
 
 The v0.10 noun additions are `ѻтроча : ѻтрочат-`, `свекры : свекров-`, and
 `камень : камен-`. Their stems are independent metadata. The ordinary

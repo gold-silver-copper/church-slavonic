@@ -235,12 +235,65 @@ fn lint_and_check_text_enforce_exit_thresholds() {
 
     let strict_spelling_variant = run_stdin(
         &["check-text", "-", "--profile", "printed", "--strict"],
-        "ѽ",
+        "нѣ́кїй",
     );
     assert!(!strict_spelling_variant.status.success());
     assert!(
         String::from_utf8_lossy(&strict_spelling_variant.stderr)
             .contains("top-k-uncovered token(s) under --strict")
+    );
+
+    let strict_cardinal_and_gap = run_stdin(
+        &["check-text", "-", "--profile", "printed", "--strict"],
+        "пѧтьдесѧ́тъ нѣ́кїй",
+    );
+    assert!(!strict_cardinal_and_gap.status.success());
+    assert!(
+        String::from_utf8_lossy(&strict_cardinal_and_gap.stderr)
+            .contains("1 top-k-uncovered token(s) under --strict")
+    );
+
+    // Typed numerals count as top-k analyses. They must not also be subtracted
+    // from the remaining uncovered count, which would let another gap pass.
+    let numeral_and_non_unknown_gap = run_stdin(
+        &[
+            "check-text",
+            "-",
+            "--profile",
+            "printed",
+            "--max-unknown",
+            "0",
+            "--json",
+        ],
+        "҂а҃ нѣ́кїй",
+    );
+    assert!(numeral_and_non_unknown_gap.status.success());
+    let report: serde_json::Value = serde_json::from_slice(&numeral_and_non_unknown_gap.stdout)
+        .expect("mixed numeral/gap JSON");
+    assert_eq!(report["summary"]["total_tokens"], 2);
+    assert_eq!(report["summary"]["top_k_analyzed"], 1);
+    assert_eq!(report["summary"]["numerals"], 1);
+    assert_eq!(report["summary"]["unresolved_tokens"], 0);
+    assert_eq!(
+        report["summary"]["by_gap"]
+            .get("unknown-lexeme")
+            .and_then(serde_json::Value::as_u64)
+            .unwrap_or_default(),
+        0
+    );
+    assert_eq!(
+        report["summary"]["by_gap"]["ambiguity-or-spelling-variant"],
+        1
+    );
+
+    let strict_numeral_and_gap = run_stdin(
+        &["check-text", "-", "--profile", "printed", "--strict"],
+        "҂а҃ нѣ́кїй",
+    );
+    assert!(!strict_numeral_and_gap.status.success());
+    assert!(
+        String::from_utf8_lossy(&strict_numeral_and_gap.stderr)
+            .contains("1 top-k-uncovered token(s) under --strict")
     );
 }
 
@@ -339,6 +392,9 @@ fn family_commands_separate_reviewed_and_proposed_data() {
 fn marginal_recovery_exposes_ranked_review_readiness() {
     let report = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../reports/synodal-marginal-recovery.json");
+    let report_value: serde_json::Value =
+        serde_json::from_slice(&fs::read(&report).expect("read marginal recovery report"))
+            .expect("marginal recovery report JSON");
     let output = run(&[
         "marginal-recovery",
         report.to_str().expect("UTF-8 path"),
@@ -355,12 +411,15 @@ fn marginal_recovery_exposes_ranked_review_readiness() {
     );
     let value: serde_json::Value =
         serde_json::from_slice(&output.stdout).expect("marginal recovery JSON");
-    assert_eq!(value["current_top_k"], 920_924);
+    assert_eq!(value["current_top_k"], report_value["current_top_k"]);
     assert_eq!(value["target_top_k"], 919_341);
     assert_eq!(value["tokens_needed_for_target"], 0);
     assert_eq!(value["milestones"].as_array().map(Vec::len), Some(5));
     assert_eq!(value["milestones"][4]["percent"], 70);
-    assert_eq!(value["milestones"][4]["margin"], 1_583);
+    assert_eq!(
+        value["milestones"][4]["margin"],
+        report_value["milestones"][4]["margin"]
+    );
     let batches = value["batches"].as_array().expect("batches");
     assert_eq!(batches.len(), 2);
     assert!(

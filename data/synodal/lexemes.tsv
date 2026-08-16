@@ -15,6 +15,7 @@ synodal:adjective:svyat	свѧтъ	adjective	hard-short	свѧт			alypy-gamanov
 synodal:adjective:v06-israel	израилевъ	adjective	possessive-hard-short	израилев			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:vechn	вѣчнъ	adjective	hard-short	вѣчн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:wikt-a9cef2fd54e7	благъ	adjective	velar-short	благ			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:zlyi	ѕлый	adjective	hard-short	ѕл			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adverb:blagochestno	благочестно	adverb					alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:determiner:sam	самъ	determiner	determiner-pronominal-hard	сам			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:determiner:ves	весь	determiner	determiner-ves-mixed	вс			alypy-gamanovich-grammar-web-2023	synodal-russian
@@ -149,7 +150,7 @@ synodal:numeral:pyatyi	пѧтый	numeral	ordinal-hard	пѧт			alypy-gamanovich
 synodal:numeral:sedmyi	седмый	numeral	ordinal-hard	седм			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:shestyi	шестый	numeral	ordinal-hard	шест			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:tma	тьма	numeral	numeral-cardinal-second-hard	тьм			alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:numeral:tretii	третїй	numeral	ordinal-soft	трет			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:numeral:tretii	третїй	numeral	ordinal-ii	трет			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:tri	три	numeral	numeral-cardinal-three	тр			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:tysiascha	тысѧща	numeral	numeral-cardinal-second-hard	тысѧщ			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:v06-7391e80a474691c3	осмь	numeral	numeral-cardinal-i-stem	осм			alypy-gamanovich-grammar-web-2023	synodal-russian
@@ -220,6 +221,7 @@ synodal:verb:imati	имати	verb	archaic			imperfective	alypy-gamanovich-gramm
 synodal:verb:lyubiti	любити	verb	second	люб		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:nesti	нести	verb	first-unpalatalized	нес		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:pisati	писати	verb	first-palatalized	пиш		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:sotvoriti	сотворити	verb	second	сотвор		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:v07-35ce5d83583f3639	начѧти	verb	first-unpalatalized	начн		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:v06-iziti	изити	verb	first-unpalatalized	изыд		perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
 synodal:verb:v06-vzeti	възѧти	verb	first-palatalized	вземл		perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
@@ -228,3 +230,52 @@ synodal:verb:wikt-0c6c8db63b7c	имѣти	verb	archaic	имѣ		imperfective	alyp
 synodal:verb:wikt-070505e82800	хотѣти	verb	first-unpalatalized	хощ		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:wikt-6ceeefbe4e9e	ꙗсти	verb	archaic	ꙗд		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:wikt-8a084860d2ef	вѣдѣти	verb	archaic	вѣд		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v07-549dec12f8aeb0c9	дꙋша	noun	second-mixed	дꙋш	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:svidenie	свидѣнїе	noun	first-soft-ie-n	свидѣнї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:nasledie	наслѣдїе	noun	first-soft-ie-n	наслѣдї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:predel	предѣлъ	noun	first-hard-m	предѣл	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:sosud	сосꙋдъ	noun	first-hard-m	сосꙋд	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:noun:yazyk	ꙗзыкъ	noun	first-hard-velar-m	ꙗзык	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:proper-noun:iuda	іꙋда	noun	second-hard	іꙋд	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:mesyats	мѣсѧцъ	noun	first-mixed-ts-m	мѣсѧц	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:vsesozhzhenie	всесожженїе	noun	first-soft-ie-n	всесожженї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:sretenie	срѣтенїе	noun	first-soft-ie-n	срѣтенї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:vino	вїно	noun	first-hard-n	вїн	neuter		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:verb:polozhiti	положити	verb	second	полож		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v07-328e6c95540b4c81	царство	noun	first-hard-n	царств	neuter		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:noun:v07-345d6105fdd39fce	кънязь	noun	first-soft-m	кнѧз	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:otechestvo	ѻтечество	noun	first-hard-n	ѻтечеств	neuter		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:noun:bezzakonie	беззаконїе	noun	first-soft-ie-n	беззаконї	neuter		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:egipet	єгѵпетъ	noun	first-hard-m	єгѵпт	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adjective:egipetskii	єгѵпетскїй	adjective	possessive-sk	єгѵпетск			ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adjective:iudin	іꙋдинъ	adjective	possessive-in	іꙋдин			ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adjective:chelovech	человѣчь	adjective	possessive-j-short	человѣч			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:chelovecheskii	человѣческїй	adjective	possessive-sk	человѣческ			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:proper-noun:iosif	іѡсифъ	noun	first-hard-m	іѡсиф	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adjective:iosifov	іѡсифовъ	adjective	possessive-hard-short	іѡсифов			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:proper-noun:iordan	іѻрданъ	noun	first-hard-m	іѻрдан	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adjective:iordanskii	іѻрданскїй	adjective	possessive-sk	іѻрданск			ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:noun:levit	леѵітъ	noun	first-hard-m	леѵіт	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adjective:levitskii	леѵітскїй	adjective	possessive-sk	леѵітск			ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adverb:vne	внѣ	adverb					ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adverb:vsegda	всегда	adverb					alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:conjunction:temzhe	тѣмже	conjunction					alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:preposition:predo	предо	preposition					alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adverb:vskuyu	вскꙋю	adverb					alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adverb:dokole	доколѣ	adverb					ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:preposition:ob	ѡбъ	preposition					alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:proper-noun:samuil	самꙋилъ	noun	first-hard-m	самꙋил	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:vavylon	вавѷлѡнъ	noun	first-hard-m	вавѷлѡн	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:avraam	авраамъ	noun	first-hard-m	авраам	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:ioav	іѡавъ	noun	first-hard-m	іѡав	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:iakov	іаковъ	noun	first-hard-m	іаков	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:aaron	аарѡнъ	noun	first-hard-m	аарѡн	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:daniil	данїилъ	noun	first-hard-m	данїил	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:proper-noun:petr	петръ	noun	first-hard-m	петр	masculine		ponomar-elizabeth-bible-2026-08-09	synodal-russian
+synodal:adjective:mertv	мертвъ	adjective	hard-short	мертв			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:skonchanie	скончанїе	noun	first-soft-ie-n	скончанї	neuter		ponomar-modern-church-slavonic-corpus-2016	synodal-russian
+synodal:noun:videnie	видѣнїе	noun	first-soft-ie-n	видѣнї	neuter		ponomar-modern-church-slavonic-corpus-2016	synodal-russian
+synodal:noun:spasenie	спасенїе	noun	first-soft-ie-n	спасенї	neuter		ponomar-modern-church-slavonic-corpus-2016	synodal-russian
+synodal:noun:ponoshenie	поношенїе	noun	first-soft-ie-n	поношенї	neuter		ponomar-modern-church-slavonic-corpus-2016	synodal-russian
+synodal:noun:otmshchenie	ѿмщенїе	noun	first-soft-ie-n	ѿмщенї	neuter		ponomar-modern-church-slavonic-corpus-2016	synodal-russian
+synodal:noun:v11-332e30b022aa	жрецъ	noun	first-mixed-ts-m	жерц	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian

@@ -498,8 +498,7 @@ fn check_text_command(
     let top_k_uncovered = report
         .summary
         .total_tokens
-        .saturating_sub(report.summary.top_k_analyzed)
-        .saturating_sub(report.summary.numerals);
+        .saturating_sub(report.summary.top_k_analyzed);
     if strict && top_k_uncovered > 0 {
         return Err(format!("{top_k_uncovered} top-k-uncovered token(s) under --strict").into());
     }

@@ -310,7 +310,7 @@ fn run_selected(
         ("english-wiktionary-ocs-kaikki-2026-08-07", adapt_wiktionary),
         (
             "ponomar-modern-church-slavonic-corpus-2016",
-            adapt_frequency_list,
+            adapt_modern_dictionary_and_frequency,
         ),
     ];
     let mut report = PipelineReport::default();
@@ -1218,7 +1218,15 @@ fn adapt_wiktionary(
     sink.finish(&output_path)
 }
 
-fn adapt_frequency_list(
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+struct PonomarDictionaryEntry {
+    id: String,
+    word: String,
+    transcription: String,
+    definition: String,
+}
+
+fn adapt_modern_dictionary_and_frequency(
     options: &PipelineOptions,
     output: &Path,
     quarantine: &Path,
@@ -1227,22 +1235,137 @@ fn adapt_frequency_list(
 ) -> PipelineResult<SourceReport> {
     let spec = SourceSpec {
         id: "ponomar-modern-church-slavonic-corpus-2016",
-        revision: "wordlist-2016-02-25",
+        revision: "wordlist-2016-02-25;dictionary-2016-04-01",
         recension: "mixed",
         target: None,
-        work: "Modern Church Slavonic corpus frequency list",
-        edition: "SCI Ponomar wordlist",
+        work: "Modern Church Slavonic corpus frequency list and dictionary",
+        edition: "SCI Ponomar 2016 wordlist and dictionary",
         license: "component lineage requires per-work audit",
         redistribution: "evaluation-only",
-        authority: &["frequency", "lexical"],
+        authority: &[
+            "frequency",
+            "lexical",
+            "semantic",
+            "orthographic",
+            "accentual",
+        ],
         epistemic: &["mixed-recension-candidate"],
         lineage: &["Ponomar modern Church Slavonic corpus"],
     };
     let (mut sink, output_path) =
         new_sink(output, quarantine, spec, locked, options.failure_ceiling)?;
     let path = source_path(&options.cache, locked, "wordlist.tsv")?;
-    stream_lines(&path, &mut sink, "frequency-row")?;
+    let mut lines = BufReader::new(File::open(&path)?).lines();
+    if lines.next().transpose()?.as_deref() != Some("Word\tFreq") {
+        return Err("unexpected Ponomar frequency-list header".into());
+    }
+    for (offset, line) in lines.enumerate() {
+        let row_number = offset + 2;
+        let line = line?;
+        match parse_ponomar_frequency_row(&line) {
+            Ok((word, frequency)) => sink.accept(
+                &format!("wordlist.tsv:{row_number}"),
+                row_number,
+                &format!("wordlist.tsv:line:{row_number}"),
+                &line,
+                &word,
+                "frequency-row",
+                &format!("frequency={frequency}"),
+                vec!["TSV-field-extraction".into()],
+            )?,
+            Err(reason) => sink.reject(
+                &format!("wordlist.tsv:{row_number}"),
+                row_number,
+                &reason,
+                &line,
+            )?,
+        }
+    }
+
+    let dictionary = source_path(&options.cache, locked, "dictout.xls")?;
+    let mut workbook: Xls<_> = open_workbook(&dictionary)?;
+    let sheet = workbook
+        .sheet_names()
+        .first()
+        .cloned()
+        .ok_or("Ponomar dictionary workbook has no sheets")?;
+    let range = workbook.worksheet_range(&sheet)?;
+    let mut rows = range.rows();
+    let header = rows
+        .next()
+        .ok_or("Ponomar dictionary workbook has no header")?
+        .iter()
+        .map(data_to_string)
+        .collect::<Vec<_>>();
+    if header != ["Id", "Word", "Transcription", "Definition"] {
+        return Err(format!("unexpected Ponomar dictionary header {header:?}").into());
+    }
+    for (offset, row) in rows.enumerate() {
+        let row_number = offset + 2;
+        let cells = row.iter().map(data_to_string).collect::<Vec<_>>();
+        match parse_ponomar_dictionary_entry(&cells) {
+            Ok(entry) => {
+                let raw = serde_json::to_string(&entry)?;
+                sink.accept(
+                    &format!("dictout.xls:{sheet}:{row_number}:{}", entry.id),
+                    1_000_000 + row_number,
+                    &format!("dictout.xls:{sheet}:row:{row_number};entry:{}", entry.id),
+                    &raw,
+                    &entry.word,
+                    "dictionary-entry",
+                    "headword-with-definition",
+                    vec![
+                        "XLS-cell-extraction".into(),
+                        "structured-dictionary-entry".into(),
+                    ],
+                )?;
+            }
+            Err(reason) => sink.reject(
+                &format!("dictout.xls:{sheet}:{row_number}"),
+                1_000_000 + row_number,
+                &reason,
+                &cells.join("\t"),
+            )?,
+        }
+    }
     sink.finish(&output_path)
+}
+
+fn parse_ponomar_frequency_row(line: &str) -> Result<(String, u64), String> {
+    let fields = line.split('\t').collect::<Vec<_>>();
+    if fields.len() != 2 {
+        return Err("frequency-row-width".into());
+    }
+    let word = fields[0].trim();
+    if !word.chars().any(char::is_alphabetic) {
+        return Err("frequency-missing-word".into());
+    }
+    let frequency = fields[1]
+        .parse::<u64>()
+        .map_err(|_| "frequency-invalid-count".to_owned())?;
+    Ok((word.into(), frequency))
+}
+
+fn parse_ponomar_dictionary_entry(cells: &[String]) -> Result<PonomarDictionaryEntry, String> {
+    if cells.len() != 4 {
+        return Err("dictionary-row-width".into());
+    }
+    let entry = PonomarDictionaryEntry {
+        id: cells[0].trim().to_owned(),
+        word: cells[1].trim().to_owned(),
+        transcription: cells[2].trim().to_owned(),
+        definition: cells[3].split_whitespace().collect::<Vec<_>>().join(" "),
+    };
+    if entry.id.parse::<u64>().is_err() {
+        return Err("dictionary-invalid-id".into());
+    }
+    if !entry.word.chars().any(char::is_alphabetic) {
+        return Err("dictionary-missing-headword".into());
+    }
+    if entry.definition.is_empty() {
+        return Err("dictionary-missing-definition".into());
+    }
+    Ok(entry)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -2038,6 +2161,47 @@ mod tests {
         assert_eq!(
             passage_partition("source", "passage"),
             passage_partition("source", "passage")
+        );
+    }
+
+    #[test]
+    fn ponomar_dictionary_rows_preserve_identity_marks_and_meaning() {
+        let entry = parse_ponomar_dictionary_entry(&[
+            "18040".into(),
+            "А҆ба́че".into(),
+            "абаче".into(),
+            "впрочем,   однако, но".into(),
+        ])
+        .expect("dictionary row");
+        assert_eq!(entry.id, "18040");
+        assert_eq!(entry.word, "А҆ба́че");
+        assert_eq!(entry.transcription, "абаче");
+        assert_eq!(entry.definition, "впрочем, однако, но");
+        assert_eq!(
+            serde_json::from_str::<PonomarDictionaryEntry>(
+                &serde_json::to_string(&entry).expect("serialize dictionary row")
+            )
+            .expect("deserialize dictionary row"),
+            entry
+        );
+
+        assert_eq!(
+            parse_ponomar_dictionary_entry(&[
+                "not-an-id".into(),
+                "слово".into(),
+                "слово".into(),
+                "meaning".into(),
+            ]),
+            Err("dictionary-invalid-id".into())
+        );
+
+        assert_eq!(
+            parse_ponomar_frequency_row("є҆сѝ\t50272"),
+            Ok(("є҆сѝ".into(), 50_272))
+        );
+        assert_eq!(
+            parse_ponomar_frequency_row("Word\tFreq"),
+            Err("frequency-invalid-count".into())
         );
     }
 

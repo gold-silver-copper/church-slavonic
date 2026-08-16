@@ -483,6 +483,90 @@ mod tests {
     }
 
     #[test]
+    fn sotvoriti_promotes_reviewed_principal_parts_to_complete_typed_systems() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let verb = Verb::resolve_with("сотворити", inflector).expect("reviewed perfective verb");
+
+        assert_eq!(
+            verb.future(Person::First, Number::Plural)
+                .expect("productive future")
+                .primary_text(),
+            "сотвори́мъ"
+        );
+        assert_eq!(
+            verb.aorist(Person::Second, Number::Plural)
+                .expect("productive aorist")
+                .primary_text(),
+            "сотвори́сте"
+        );
+        assert_eq!(
+            verb.imperative(Person::First, Number::Plural)
+                .expect("productive imperative")
+                .primary_text(),
+            "сотвори́мъ"
+        );
+        assert_eq!(
+            verb.l_participle(Gender::Feminine, Number::Singular)
+                .expect("productive l-participle")
+                .primary_text(),
+            "сотвори́ла"
+        );
+
+        assert_eq!(
+            verb.future(Person::Second, Number::Plural)
+                .expect("exact ending-stressed future")
+                .primary_text(),
+            "сотворитѐ"
+        );
+        assert_eq!(
+            verb.imperative(Person::Second, Number::Plural)
+                .expect("exact imperative")
+                .primary_text(),
+            "сотвори́те"
+        );
+
+        for system in [
+            VerbSystem::Finite(FiniteTense::Future),
+            VerbSystem::Finite(FiniteTense::Aorist),
+            VerbSystem::Imperative,
+            VerbSystem::LParticiple,
+        ] {
+            assert!(
+                verb.missing_principal_parts(system)
+                    .expect("typed metadata query")
+                    .is_empty(),
+                "{system:?}"
+            );
+        }
+        assert_eq!(
+            verb.system_paradigm(VerbSystem::Finite(FiniteTense::Future))
+                .successes()
+                .count(),
+            9
+        );
+        assert_eq!(
+            verb.system_paradigm(VerbSystem::Finite(FiniteTense::Aorist))
+                .successes()
+                .count(),
+            9
+        );
+        assert_eq!(
+            verb.system_paradigm(VerbSystem::Imperative)
+                .successes()
+                .count(),
+            6
+        );
+        assert_eq!(
+            verb.system_paradigm(VerbSystem::LParticiple)
+                .successes()
+                .count(),
+            9
+        );
+    }
+
+    #[test]
     fn additional_fourth_declension_nouns_are_productive_and_bounded() {
         let otrocha = Noun::resolve("ѻтроча").expect("registered at-stem noun");
         assert_eq!(otrocha.paradigm(Animacy::Inanimate).failures().count(), 0);
@@ -534,6 +618,47 @@ mod tests {
             Err(Error::OrthographicMetadataRequired {
                 field: MetadataField::AccentParadigm
             })
+        ));
+    }
+
+    #[test]
+    fn otrocha_has_a_complete_mobile_at_stem_accent_paradigm() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let otrocha =
+            Noun::resolve_with("ѻтроча", inflector).expect("reviewed fourth-neuter child noun");
+
+        let nominative = otrocha
+            .form(Case::Nominative, Number::Singular, Animacy::Inanimate)
+            .expect("exact singular nominative variants");
+        assert!(matches!(
+            nominative.primary().source,
+            FormSource::SynodalNormativeGeneration { .. }
+        ));
+        assert_eq!(nominative.texts().collect::<Vec<_>>(), ["ѻ҆троча̀", "Ѻ҆троча́"]);
+
+        for (case, number, expected) in [
+            (Case::Accusative, Number::Singular, "ѻ҆троча̀"),
+            (Case::Genitive, Number::Singular, "ѻ҆троча́те"),
+            (Case::Dative, Number::Singular, "ѻ҆троча́ти"),
+            (Case::Instrumental, Number::Singular, "ѻ҆троча́темъ"),
+            (Case::Nominative, Number::Plural, "ѻ҆троча́та"),
+            (Case::Genitive, Number::Plural, "ѻ҆троча́тъ"),
+        ] {
+            assert_eq!(
+                otrocha
+                    .form(case, number, Animacy::Inanimate)
+                    .expect("complete reviewed fourth-neuter cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(otrocha.paradigm(Animacy::Inanimate).failures().count(), 0);
+        assert!(matches!(
+            otrocha.form(Case::Dative, Number::Singular, Animacy::Animate),
+            Err(Error::HistoricallyInvalidCell { .. })
         ));
     }
 
@@ -616,7 +741,7 @@ mod tests {
                 .expect("complete daughter background")
                 .texts()
                 .collect::<Vec<_>>(),
-            ["дщерїй", "дщерей"]
+            ["дщерей"]
         );
 
         for (lemma, expected) in [
@@ -826,6 +951,660 @@ mod tests {
                 .iter()
                 .any(|step| { step.rule.as_str() == "SYN-ACCENT-REGISTRY" })
         );
+    }
+
+    #[test]
+    fn zlyi_mobile_o_and_comparison_stems_cover_productive_paradigms() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let adjective = Adjective::resolve_with("ѕлый", inflector).expect("registered adjective");
+
+        let form = |cell| {
+            adjective
+                .form(cell)
+                .expect("productive adjective cell")
+                .primary_text()
+                .to_owned()
+        };
+        assert_eq!(
+            form(AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Short,
+                comparison: Comparison::Positive,
+            }),
+            "ѕо́лъ"
+        );
+        assert_eq!(
+            form(AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+            }),
+            "ѕлы́й"
+        );
+        for (case, animacy) in [
+            (Case::Nominative, Animacy::Inanimate),
+            (Case::Accusative, Animacy::Inanimate),
+        ] {
+            assert_eq!(
+                form(AdjectiveCell {
+                    case,
+                    number: Number::Plural,
+                    gender: Gender::Neuter,
+                    animacy,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                }),
+                "ѕла̑ѧ"
+            );
+        }
+        assert_eq!(
+            form(AdjectiveCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Comparative,
+            }),
+            "ѕлѣ́йшїй"
+        );
+
+        assert_eq!(
+            adjective.paradigm(AdjectiveForm::Short).failures().count(),
+            0
+        );
+        assert_eq!(
+            adjective.paradigm(AdjectiveForm::Long).failures().count(),
+            0
+        );
+    }
+
+    #[test]
+    fn blagii_uses_the_complete_cell_conditioned_alypy_57_accent_paradigm() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let adjective = Adjective::resolve_with("благъ", inflector).expect("registered adjective");
+        let form = |case, number, gender, animacy| {
+            adjective
+                .form(AdjectiveCell {
+                    case,
+                    number,
+                    gender,
+                    animacy,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive §57 adjective cell")
+                .primary_text()
+                .to_owned()
+        };
+        use Case::{
+            Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins,
+            Locative as Loc, Nominative as Nom,
+        };
+        use Gender::{Feminine as F, Masculine as M, Neuter as N};
+        use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+
+        let expected = [
+            (Nom, Sg, M, Animacy::Inanimate, "благї́й"),
+            (Loc, Sg, M, Animacy::Inanimate, "бла́зѣмъ"),
+            (Nom, Du, M, Animacy::Inanimate, "блага̑ѧ"),
+            (Nom, Du, F, Animacy::Inanimate, "блазѣ́и"),
+            (Gen, Du, N, Animacy::Inanimate, "благꙋ̑ю"),
+            (Dat, Du, M, Animacy::Inanimate, "благи́ма"),
+            (Nom, Pl, M, Animacy::Inanimate, "блазї́и"),
+            (Nom, Pl, F, Animacy::Inanimate, "благї̑ѧ"),
+            (Nom, Pl, N, Animacy::Inanimate, "блага̑ѧ"),
+            (Gen, Pl, F, Animacy::Inanimate, "благи́хъ"),
+            (Dat, Pl, N, Animacy::Inanimate, "благи̑мъ"),
+            (Acc, Pl, M, Animacy::Animate, "благї́ѧ"),
+            (Acc, Pl, F, Animacy::Inanimate, "благї̑ѧ"),
+            (Acc, Pl, N, Animacy::Inanimate, "блага̑ѧ"),
+            (Ins, Pl, M, Animacy::Inanimate, "благи́ми"),
+        ];
+        let actual = expected
+            .iter()
+            .map(|(case, number, gender, animacy, _)| form(*case, *number, *gender, *animacy))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            actual,
+            expected
+                .iter()
+                .map(|(_, _, _, _, expected)| (*expected).to_owned())
+                .collect::<Vec<_>>()
+        );
+
+        assert_eq!(
+            adjective.paradigm(AdjectiveForm::Long).failures().count(),
+            0
+        );
+    }
+
+    #[test]
+    fn mertv_has_complete_fixed_stem_short_and_long_paradigms() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let adjective = Adjective::resolve_with("мертвъ", inflector).expect("registered adjective");
+        let form = |case, number, gender, animacy, adjective_form| {
+            adjective
+                .form(AdjectiveCell {
+                    case,
+                    number,
+                    gender,
+                    animacy,
+                    form: adjective_form,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive adjective cell")
+                .primary_text()
+                .to_owned()
+        };
+
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Inanimate,
+                AdjectiveForm::Short,
+            ),
+            "ме́ртвъ"
+        );
+        assert_eq!(
+            form(
+                Case::Accusative,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Animate,
+                AdjectiveForm::Short,
+            ),
+            "ме́ртва"
+        );
+        assert_eq!(
+            form(
+                Case::Genitive,
+                Number::Plural,
+                Gender::Masculine,
+                Animacy::Inanimate,
+                AdjectiveForm::Long,
+            ),
+            "ме́ртвыхъ"
+        );
+        assert_eq!(
+            form(
+                Case::Nominative,
+                Number::Plural,
+                Gender::Masculine,
+                Animacy::Inanimate,
+                AdjectiveForm::Long,
+            ),
+            "ме́ртвїи"
+        );
+        assert_eq!(
+            adjective.paradigm(AdjectiveForm::Short).failures().count(),
+            0
+        );
+        assert_eq!(
+            adjective.paradigm(AdjectiveForm::Long).failures().count(),
+            0
+        );
+    }
+
+    #[test]
+    fn dusha_exact_cells_overlay_a_complete_mobile_accent_paradigm() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let noun = Noun::resolve_with("дꙋша", inflector).expect("upgraded stable noun identity");
+
+        for (case, number, expected) in [
+            (Case::Genitive, Number::Singular, "дꙋшѝ"),
+            (Case::Accusative, Number::Plural, "дꙋ́шы"),
+            (Case::Genitive, Number::Plural, "дꙋ́шъ"),
+            (Case::Locative, Number::Plural, "дꙋша́хъ"),
+            (Case::Instrumental, Number::Plural, "дꙋша́ми"),
+            (Case::Nominative, Number::Plural, "дꙋ́ши"),
+            (Case::Nominative, Number::Dual, "дꙋши̑"),
+            (Case::Vocative, Number::Singular, "дꙋшѐ"),
+        ] {
+            assert_eq!(
+                noun.form(case, number, Animacy::Inanimate)
+                    .expect("complete mixed-declension cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Inanimate).failures().count(), 0);
+    }
+
+    #[test]
+    fn adonai_is_a_fully_accented_indeclinable_noun() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let noun = Noun::resolve_with("адѡнаі", inflector).expect("classed divine title");
+
+        for number in Number::ALL {
+            for case in Case::ALL {
+                assert_eq!(
+                    noun.form(case, number, Animacy::Animate)
+                        .expect("complete indeclinable cell")
+                        .primary_text(),
+                    "а҆дѡнаі̀",
+                    "{case:?} {number:?}"
+                );
+            }
+        }
+        assert_eq!(noun.paradigm(Animacy::Animate).failures().count(), 0);
+    }
+
+    #[test]
+    fn zhena_preserves_wide_e_plural_and_narrow_e_genitive_surfaces() {
+        let noun = Noun::resolve_with(
+            "жена",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("classed feminine noun");
+
+        assert_eq!(
+            noun.form(Case::Nominative, Number::Plural, Animacy::Animate)
+                .expect("reviewed nominative plural")
+                .primary_text(),
+            "жєны̀"
+        );
+        assert_eq!(
+            noun.form(Case::Accusative, Number::Plural, Animacy::Animate)
+                .expect("reviewed accusative plural")
+                .primary_text(),
+            "жєны̀"
+        );
+        assert_eq!(
+            noun.form(Case::Genitive, Number::Singular, Animacy::Animate)
+                .expect("reviewed genitive singular")
+                .primary_text(),
+            "жены̀"
+        );
+    }
+
+    #[test]
+    fn svidenie_has_a_complete_fixed_accent_soft_ie_paradigm() {
+        let noun = Noun::resolve_with(
+            "свидѣнїе",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed testimony noun");
+
+        for (case, number, expected) in [
+            (Case::Accusative, Number::Singular, "свидѣ́нїе"),
+            (Case::Genitive, Number::Singular, "свидѣ́нїѧ"),
+            (Case::Nominative, Number::Plural, "свидѣ́нїѧ"),
+            (Case::Dative, Number::Plural, "свидѣ́нїємъ"),
+        ] {
+            assert_eq!(
+                noun.form(case, number, Animacy::Inanimate)
+                    .expect("complete soft -їе noun cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Inanimate).failures().count(), 0);
+    }
+
+    #[test]
+    fn skonchanie_has_a_complete_fixed_accent_soft_ie_paradigm() {
+        let noun = Noun::resolve_with(
+            "скончанїе",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed completion noun");
+
+        for (case, number, expected) in [
+            (Case::Nominative, Number::Singular, "сконча́нїе"),
+            (Case::Genitive, Number::Singular, "сконча́нїѧ"),
+            (Case::Locative, Number::Singular, "сконча́нїи"),
+            (Case::Nominative, Number::Plural, "сконча́нїѧ"),
+            (Case::Dative, Number::Plural, "сконча́нїємъ"),
+        ] {
+            assert_eq!(
+                noun.form(case, number, Animacy::Inanimate)
+                    .expect("complete soft -їе noun cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Inanimate).failures().count(), 0);
+    }
+
+    #[test]
+    fn reviewed_v21_soft_ie_nouns_have_complete_fixed_accent_paradigms() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+
+        for (lemma, representative_forms) in [
+            (
+                "видѣнїе",
+                [
+                    (Case::Nominative, Number::Singular, "видѣ́нїе"),
+                    (Case::Locative, Number::Singular, "видѣ́нїи"),
+                    (Case::Accusative, Number::Plural, "видѣ̑нїѧ"),
+                    (Case::Dative, Number::Plural, "видѣ́нїємъ"),
+                ],
+            ),
+            (
+                "спасенїе",
+                [
+                    (Case::Nominative, Number::Singular, "спасе́нїе"),
+                    (Case::Genitive, Number::Singular, "спасе́нїѧ"),
+                    (Case::Locative, Number::Singular, "спасе́нїи"),
+                    (Case::Dative, Number::Plural, "спасе́нїємъ"),
+                ],
+            ),
+            (
+                "поношенїе",
+                [
+                    (Case::Nominative, Number::Singular, "поноше́нїе"),
+                    (Case::Genitive, Number::Singular, "поноше́нїѧ"),
+                    (Case::Locative, Number::Singular, "поноше́нїи"),
+                    (Case::Dative, Number::Plural, "поноше́нїємъ"),
+                ],
+            ),
+            (
+                "ѿмщенїе",
+                [
+                    (Case::Nominative, Number::Singular, "ѿмще́нїе"),
+                    (Case::Genitive, Number::Singular, "ѿмще́нїѧ"),
+                    (Case::Locative, Number::Singular, "ѿмще́нїи"),
+                    (Case::Dative, Number::Plural, "ѿмще́нїємъ"),
+                ],
+            ),
+        ] {
+            let noun = Noun::resolve_with(lemma, inflector.clone())
+                .expect("reviewed productive soft -їе noun");
+            for (case, number, expected) in representative_forms {
+                assert_eq!(
+                    noun.form(case, number, Animacy::Inanimate)
+                        .expect("complete soft -їе noun cell")
+                        .primary_text(),
+                    expected,
+                    "{lemma}: {case:?} {number:?}"
+                );
+            }
+            assert_eq!(
+                noun.paradigm(Animacy::Inanimate).failures().count(),
+                0,
+                "{lemma}"
+            );
+        }
+    }
+
+    #[test]
+    fn knyaz_is_a_complete_mobile_soft_masculine_with_bounded_variants() {
+        let liturgical = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let noun = Noun::from_id_with(
+            &LexemeId::from("synodal:noun:v07-345d6105fdd39fce"),
+            liturgical,
+        )
+        .expect("reviewed productive prince noun");
+
+        let texts = |case, number| {
+            noun.form(case, number, Animacy::Animate)
+                .expect("complete prince-noun cell")
+                .texts()
+                .map(str::to_owned)
+                .collect::<Vec<_>>()
+        };
+
+        assert!(texts(Case::Nominative, Number::Singular).contains(&"кнѧ́зь".to_owned()));
+        assert_eq!(texts(Case::Instrumental, Number::Singular), ["кнѧ́земъ"]);
+        assert!(texts(Case::Genitive, Number::Plural).contains(&"кнѧзе́й".to_owned()));
+        assert!(texts(Case::Genitive, Number::Plural).contains(&"кнѧ̑зь".to_owned()));
+        assert_eq!(texts(Case::Dative, Number::Plural), ["кнѧзє́мъ"]);
+        assert!(texts(Case::Locative, Number::Singular).contains(&"кнѧ́зи".to_owned()));
+        assert!(texts(Case::Locative, Number::Singular).contains(&"кнѧ́зѣ".to_owned()));
+        assert!(texts(Case::Nominative, Number::Plural).contains(&"Кнѧ̑зи".to_owned()));
+        assert!(texts(Case::Nominative, Number::Plural).contains(&"кнѧ́зїе".to_owned()));
+        assert_eq!(texts(Case::Accusative, Number::Dual), ["кнѧ̑зѧ"]);
+        assert_eq!(noun.paradigm(Animacy::Animate).failures().count(), 0);
+        assert!(matches!(
+            noun.form(Case::Instrumental, Number::Singular, Animacy::Inanimate),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
+    fn zhrets_is_a_complete_animate_mixed_ts_noun_with_bounded_variants() {
+        let liturgical = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let noun = Noun::from_id_with(&LexemeId::from("synodal:noun:v11-332e30b022aa"), liturgical)
+            .expect("reviewed productive priest noun");
+
+        let texts = |case, number| {
+            noun.form(case, number, Animacy::Animate)
+                .expect("complete priest-noun cell")
+                .texts()
+                .map(str::to_owned)
+                .collect::<Vec<_>>()
+        };
+
+        let nominative = noun
+            .form(Case::Nominative, Number::Singular, Animacy::Animate)
+            .expect("reviewed exact priest nominative");
+        assert!(matches!(
+            &nominative.primary().source,
+            FormSource::SynodalAttestation { evidence }
+                if evidence.as_str() == "review:v11:332e30b022aa"
+        ));
+        assert_eq!(texts(Case::Nominative, Number::Singular), ["жре́цъ"]);
+        assert_eq!(texts(Case::Instrumental, Number::Singular), ["жерце́мъ"]);
+        for expected in ["жерцꙋ̀", "жрецꙋ̀", "жерце́ви"] {
+            assert!(
+                texts(Case::Dative, Number::Singular).contains(&expected.to_owned()),
+                "missing dative variant {expected}"
+            );
+        }
+        for expected in ["жерцы̀", "жерцы́", "жєрцы̀"] {
+            assert!(
+                texts(Case::Nominative, Number::Plural).contains(&expected.to_owned()),
+                "missing nominative-plural variant {expected}"
+            );
+        }
+        for expected in ["жерцє́въ", "жерцѡ́въ", "жрє́цъ"] {
+            assert!(
+                texts(Case::Genitive, Number::Plural).contains(&expected.to_owned()),
+                "missing genitive-plural variant {expected}"
+            );
+        }
+        for expected in ["жерцы̀", "жерцьмѝ", "жерца́ми"] {
+            assert!(
+                texts(Case::Instrumental, Number::Plural).contains(&expected.to_owned()),
+                "missing instrumental-plural variant {expected}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Animate).failures().count(), 0);
+        assert!(matches!(
+            noun.form(Case::Instrumental, Number::Singular, Animacy::Inanimate),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
+    fn prestol_is_a_complete_inanimate_fixed_accent_hard_masculine() {
+        let noun = Noun::from_id_with(
+            &LexemeId::from("synodal:noun:prestol"),
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed productive throne noun");
+
+        let texts = |case, number| {
+            noun.form(case, number, Animacy::Inanimate)
+                .expect("complete throne-noun cell")
+                .texts()
+                .map(str::to_owned)
+                .collect::<Vec<_>>()
+        };
+
+        assert_eq!(texts(Case::Nominative, Number::Singular), ["престо́лъ"]);
+        assert_eq!(texts(Case::Genitive, Number::Singular), ["престо́ла"]);
+        assert!(texts(Case::Dative, Number::Singular).contains(&"престо́лꙋ".to_owned()));
+        assert_eq!(texts(Case::Instrumental, Number::Singular), ["престо́ломъ"]);
+        assert_eq!(texts(Case::Locative, Number::Singular), ["престо́лѣ"]);
+        assert_eq!(texts(Case::Nominative, Number::Plural), ["престо́ли"]);
+        assert_eq!(texts(Case::Accusative, Number::Plural), ["престо́лы"]);
+        assert!(texts(Case::Instrumental, Number::Plural).contains(&"престо́лами".to_owned()));
+
+        let genitive_plural = noun
+            .form(Case::Genitive, Number::Plural, Animacy::Inanimate)
+            .expect("complete throne genitive plural");
+        assert_eq!(genitive_plural.primary_text(), "престо́лѡвъ");
+        assert!(matches!(
+            &genitive_plural.primary().source,
+            FormSource::SynodalAttestation { evidence }
+                if evidence.as_str()
+                    == "ponomar-iv-kings-25-28-prestol-genitive-plural-wide-omega"
+        ));
+        assert!(genitive_plural.texts().any(|form| form == "престо́ловъ"));
+        assert!(genitive_plural.texts().any(|form| form == "престо́лъ"));
+
+        assert_eq!(noun.paradigm(Animacy::Inanimate).failures().count(), 0);
+        assert!(matches!(
+            noun.form(Case::Instrumental, Number::Singular, Animacy::Animate),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
+    fn rab_preserves_the_bounded_wide_omega_animate_plural_variant() {
+        let noun = Noun::from_id_with(
+            &LexemeId::from("synodal:noun:rab"),
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed servant noun");
+
+        for case in [Case::Genitive, Case::Accusative] {
+            let forms = noun
+                .form(case, Number::Plural, Animacy::Animate)
+                .expect("reviewed animate plural cell");
+            assert!(
+                forms.texts().any(|surface| surface == "рабѡ́въ"),
+                "missing wide-omega {case:?} plural"
+            );
+        }
+    }
+
+    #[test]
+    fn dshcher_has_a_complete_fixed_oblique_accent_paradigm() {
+        let noun = Noun::resolve_with(
+            "дщерь",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed daughter noun");
+
+        for (case, number, expected) in [
+            (Case::Nominative, Number::Singular, "Дщѝ"),
+            (Case::Genitive, Number::Singular, "дще́ре"),
+            (Case::Instrumental, Number::Singular, "дще́рїю"),
+            (Case::Nominative, Number::Plural, "дщє́ри"),
+            (Case::Genitive, Number::Plural, "дще́рей"),
+            (Case::Instrumental, Number::Plural, "дще́рьми"),
+            (Case::Locative, Number::Plural, "дще́рехъ"),
+        ] {
+            assert_eq!(
+                noun.form(case, number, Animacy::Animate)
+                    .expect("complete daughter cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Animate).failures().count(), 0);
+    }
+
+    #[test]
+    fn sosud_has_a_complete_fixed_accent_hard_masculine_paradigm() {
+        let noun = Noun::resolve_with(
+            "сосꙋдъ",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed vessel noun");
+
+        for (case, number, expected) in [
+            (Case::Nominative, Number::Singular, "сосꙋ́дъ"),
+            (Case::Genitive, Number::Singular, "сосꙋ́да"),
+            (Case::Instrumental, Number::Singular, "сосꙋ́домъ"),
+            (Case::Nominative, Number::Plural, "сосꙋ́ди"),
+            (Case::Genitive, Number::Plural, "сосꙋ́дѡвъ"),
+            (Case::Locative, Number::Plural, "сосꙋ́дѣхъ"),
+        ] {
+            assert_eq!(
+                noun.form(case, number, Animacy::Inanimate)
+                    .expect("complete vessel cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Inanimate).failures().count(), 0);
+    }
+
+    #[test]
+    fn iuda_has_a_complete_masculine_second_declension_paradigm() {
+        let noun = Noun::resolve_with(
+            "іꙋда",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("reviewed Judah/Judas identity");
+
+        for (case, number, expected) in [
+            (Case::Nominative, Number::Singular, "і҆ꙋ́да"),
+            (Case::Genitive, Number::Singular, "і҆ꙋ́ды"),
+            (Case::Dative, Number::Singular, "і҆ꙋ́дѣ"),
+            (Case::Accusative, Number::Singular, "і҆ꙋ́дꙋ"),
+            (Case::Instrumental, Number::Singular, "і҆ꙋ́дою"),
+            (Case::Vocative, Number::Singular, "і҆ꙋ́до"),
+            (Case::Genitive, Number::Plural, "і҆ꙋ́дъ"),
+        ] {
+            assert_eq!(
+                noun.form(case, number, Animacy::Animate)
+                    .expect("complete Judah/Judas cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Animate).failures().count(), 0);
     }
 
     #[test]
@@ -1090,8 +1869,9 @@ mod tests {
         let metadata = lexical_metadata(&id).expect("reviewable metadata");
         let restriction = metadata
             .noun_restriction
-            .expect("number restriction metadata");
+            .expect("noun restriction metadata");
         assert_eq!(restriction.number_inventory, "plural-only");
+        assert_eq!(restriction.animacy_inventory, "any");
         assert_eq!(restriction.evidence_id, "alypy-32-41-people-table");
     }
 
@@ -1157,6 +1937,41 @@ mod tests {
                 .expect("reviewed positional variant")
                 .primary_text(),
             "ко"
+        );
+    }
+
+    #[test]
+    fn o_interjection_is_an_exact_invariant_identity() {
+        let form = Inflector::default()
+            .form_by_id(
+                &LexemeId::from("synodal:interjection:o"),
+                GrammarCell::Indeclinable,
+            )
+            .expect("reviewed exact interjection");
+
+        assert_eq!(form.primary_text(), "ѽ");
+        assert!(matches!(
+            &form.primary().source,
+            FormSource::SynodalAttestation { .. }
+        ));
+    }
+
+    #[test]
+    fn dokole_is_an_exact_interrogative_temporal_adverb() {
+        let form = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build()
+            .form_by_id(
+                &LexemeId::from("synodal:adverb:dokole"),
+                GrammarCell::Indeclinable,
+            )
+            .expect("reviewed invariant temporal adverb");
+
+        assert_eq!(form.texts().collect::<Vec<_>>(), ["доко́лѣ"]);
+        assert!(
+            form.variants()
+                .iter()
+                .all(|variant| matches!(&variant.source, FormSource::SynodalAttestation { .. }))
         );
     }
 
@@ -1381,6 +2196,458 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn vino_has_complete_mobile_accent_hard_neuter_paradigm() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let noun = Noun::resolve_with("вїно", inflector).expect("reviewed wine noun");
+
+        for (case, number, expected) in [
+            (Case::Nominative, Number::Singular, "вїно̀"),
+            (Case::Genitive, Number::Singular, "вїна̀"),
+            (Case::Dative, Number::Singular, "вїнꙋ̀"),
+            (Case::Instrumental, Number::Singular, "вїно́мъ"),
+            (Case::Locative, Number::Singular, "вїнѣ̀"),
+            (Case::Nominative, Number::Plural, "вї́на"),
+            (Case::Genitive, Number::Plural, "вї́нъ"),
+            (Case::Instrumental, Number::Plural, "вї́ны"),
+        ] {
+            assert_eq!(
+                noun.form(case, number, Animacy::Inanimate)
+                    .expect("complete hard-neuter cell")
+                    .primary_text(),
+                expected,
+                "{case:?} {number:?}"
+            );
+        }
+        assert_eq!(noun.paradigm(Animacy::Inanimate).failures().count(), 0);
+    }
+
+    #[test]
+    fn polozhiti_has_complete_reviewed_perfective_systems() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let verb = Verb::resolve_with("положити", inflector).expect("reviewed perfective verb");
+
+        assert_eq!(
+            verb.future(Person::First, Number::Singular)
+                .expect("future first singular")
+                .primary_text(),
+            "положꙋ̀"
+        );
+        assert_eq!(
+            verb.future(Person::Third, Number::Plural)
+                .expect("future third plural")
+                .primary_text(),
+            "положа́тъ"
+        );
+        assert_eq!(
+            verb.aorist(Person::Second, Number::Plural)
+                .expect("productive vowel aorist")
+                .primary_text(),
+            "положи́сте"
+        );
+        assert_eq!(
+            verb.imperative(Person::Second, Number::Singular)
+                .expect("exact imperative")
+                .primary_text(),
+            "положѝ"
+        );
+        assert_eq!(
+            verb.l_participle(Gender::Feminine, Number::Singular)
+                .expect("productive l-participle")
+                .primary_text(),
+            "положи́ла"
+        );
+
+        for system in [
+            VerbSystem::Finite(FiniteTense::Future),
+            VerbSystem::Finite(FiniteTense::Aorist),
+            VerbSystem::Imperative,
+            VerbSystem::LParticiple,
+        ] {
+            assert!(
+                verb.missing_principal_parts(system)
+                    .expect("registered system metadata")
+                    .is_empty(),
+                "{system:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn high_frequency_v15_families_are_productive_and_source_bounded() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+
+        let tsar = Noun::resolve_with("царь", inflector).expect("reviewed tsar noun");
+        assert!(
+            tsar.form(Case::Nominative, Number::Plural, Animacy::Animate)
+                .expect("reviewed -їе nominative plural")
+                .texts()
+                .any(|text| text == "ца́рїе")
+        );
+
+        let sushchym = inflector
+            .form_by_id(
+                &LexemeId::from("synodal:verb:byti"),
+                GrammarCell::Participle(ParticipleCell {
+                    tense: ParticipleTense::Present,
+                    voice: ParticipleVoice::Active,
+                    agreement: AdjectiveCell {
+                        case: Case::Dative,
+                        number: Number::Plural,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Animate,
+                        form: AdjectiveForm::Long,
+                        comparison: Comparison::Positive,
+                    },
+                }),
+            )
+            .expect("productive present-active participle accent");
+        assert_eq!(sushchym.primary_text(), "сꙋ́щымъ");
+
+        let vzeti = Verb::resolve_with("възѧти", inflector).expect("reviewed vzeti verb");
+        assert_eq!(
+            vzeti
+                .future(Person::Third, Number::Singular)
+                .expect("future third singular")
+                .primary_text(),
+            "во́зметъ"
+        );
+        assert_eq!(
+            vzeti
+                .future(Person::Second, Number::Plural)
+                .expect("productive future second plural")
+                .primary_text(),
+            "во́змете"
+        );
+
+        let iziti = Verb::resolve_with("изити", inflector).expect("reviewed iziti verb");
+        assert_eq!(
+            iziti
+                .present(Person::Third, Number::Plural)
+                .expect("productive perfective finite third plural")
+                .primary_text(),
+            "и҆зы́дꙋтъ"
+        );
+
+        let tsarstvo = Noun::resolve_with("царство", inflector).expect("reviewed kingdom noun");
+        assert_eq!(
+            tsarstvo
+                .form(Case::Genitive, Number::Singular, Animacy::Inanimate)
+                .expect("productive hard-neuter genitive")
+                .primary_text(),
+            "ца́рства"
+        );
+
+        let otechestvo = Noun::resolve_with("ѻтечество", inflector).expect("reviewed lineage noun");
+        assert_eq!(
+            otechestvo
+                .form(Case::Genitive, Number::Plural, Animacy::Inanimate)
+                .expect("productive zero-ending genitive plural")
+                .primary_text(),
+            "ѻ҆те́чествъ"
+        );
+        assert_eq!(
+            otechestvo.paradigm(Animacy::Inanimate).failures().count(),
+            0
+        );
+    }
+
+    #[test]
+    fn high_frequency_v16_nominal_families_use_complete_typed_paradigms() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+
+        let lawlessness =
+            Noun::resolve_with("беззаконїе", inflector).expect("reviewed lawlessness noun");
+        assert_eq!(
+            lawlessness
+                .form(Case::Dative, Number::Plural, Animacy::Inanimate)
+                .expect("productive soft -їе dative plural")
+                .primary_text(),
+            "беззако́нїємъ"
+        );
+        assert_eq!(
+            lawlessness
+                .form(Case::Accusative, Number::Plural, Animacy::Inanimate)
+                .expect("reviewed exact wide-omega plural")
+                .primary_text(),
+            "беззакѡ́нїѧ"
+        );
+        assert_eq!(
+            lawlessness.paradigm(Animacy::Inanimate).failures().count(),
+            0
+        );
+
+        let egypt = Noun::from_id_with(&LexemeId::from("synodal:proper-noun:egipet"), inflector)
+            .expect("reviewed place name");
+        assert_eq!(
+            egypt
+                .form(Case::Accusative, Number::Singular, Animacy::Inanimate)
+                .expect("exact fleeting-vowel citation cell")
+                .primary_text(),
+            "є҆гѵ́петъ"
+        );
+        assert_eq!(
+            egypt
+                .form(Case::Dative, Number::Plural, Animacy::Inanimate)
+                .expect("productive oblique-stem cell")
+                .primary_text(),
+            "є҆гѵ́птомъ"
+        );
+
+        let egyptian =
+            Adjective::resolve_with("єгѵпетскїй", inflector).expect("reviewed -ск- adjective");
+        for (case, number, gender, form, expected) in [
+            (
+                Case::Genitive,
+                Number::Singular,
+                Gender::Feminine,
+                AdjectiveForm::Short,
+                "є҆гѵ́петски",
+            ),
+            (
+                Case::Locative,
+                Number::Singular,
+                Gender::Feminine,
+                AdjectiveForm::Long,
+                "є҆гѵ́петстѣй",
+            ),
+            (
+                Case::Nominative,
+                Number::Plural,
+                Gender::Masculine,
+                AdjectiveForm::Long,
+                "є҆гѵ́петстїи",
+            ),
+            (
+                Case::Genitive,
+                Number::Plural,
+                Gender::Masculine,
+                AdjectiveForm::Long,
+                "є҆гѵ́петскихъ",
+            ),
+        ] {
+            assert_eq!(
+                egyptian
+                    .form(AdjectiveCell {
+                        case,
+                        number,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form,
+                        comparison: Comparison::Positive,
+                    })
+                    .expect("productive -ск- cell")
+                    .primary_text(),
+                expected
+            );
+        }
+        assert_eq!(
+            egyptian.paradigm(AdjectiveForm::Short).failures().count(),
+            0
+        );
+        assert_eq!(egyptian.paradigm(AdjectiveForm::Long).failures().count(), 0);
+
+        let judahite =
+            Adjective::resolve_with("іꙋдинъ", inflector).expect("reviewed -ин- adjective");
+        for (case, number, gender, form, expected) in [
+            (
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+                "і҆ꙋ́дина",
+            ),
+            (
+                Case::Instrumental,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Long,
+                "і҆ꙋ́динымъ",
+            ),
+            (
+                Case::Genitive,
+                Number::Plural,
+                Gender::Masculine,
+                AdjectiveForm::Long,
+                "і҆ꙋ́диныхъ",
+            ),
+        ] {
+            assert_eq!(
+                judahite
+                    .form(AdjectiveCell {
+                        case,
+                        number,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form,
+                        comparison: Comparison::Positive,
+                    })
+                    .expect("productive -ин- cell")
+                    .primary_text(),
+                expected
+            );
+        }
+        assert_eq!(
+            judahite.paradigm(AdjectiveForm::Short).failures().count(),
+            0
+        );
+        assert_eq!(judahite.paradigm(AdjectiveForm::Long).failures().count(), 0);
+    }
+
+    #[test]
+    fn high_frequency_v17_nominal_families_use_source_bounded_typed_paradigms() {
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+
+        let human = Adjective::resolve_with("человѣчь", inflector)
+            .expect("reviewed historical -jь possessive adjective");
+        for (case, number, gender, expected) in [
+            (
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                "человѣ́ча",
+            ),
+            (
+                Case::Instrumental,
+                Number::Plural,
+                Gender::Masculine,
+                "человѣ́чими",
+            ),
+        ] {
+            assert_eq!(
+                human
+                    .form(AdjectiveCell {
+                        case,
+                        number,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                        comparison: Comparison::Positive,
+                    })
+                    .expect("productive historical -jь cell")
+                    .primary_text(),
+                expected
+            );
+        }
+        assert_eq!(human.paradigm(AdjectiveForm::Short).failures().count(), 0);
+        assert!(
+            human
+                .form(AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                })
+                .is_err()
+        );
+
+        let human_relational = Adjective::resolve_with("человѣческїй", inflector)
+            .expect("reviewed human relational adjective");
+        assert_eq!(
+            human_relational
+                .form(AdjectiveCell {
+                    case: Case::Instrumental,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive human relational cell")
+                .primary_text(),
+            "человѣ́ческими"
+        );
+
+        let joseph = Noun::from_id_with(&LexemeId::from("synodal:proper-noun:iosif"), inflector)
+            .expect("reviewed Joseph proper name");
+        assert_eq!(
+            joseph
+                .form(Case::Instrumental, Number::Singular, Animacy::Animate)
+                .expect("productive Joseph instrumental")
+                .primary_text(),
+            "і҆ѡ́сифомъ"
+        );
+        let josephs = Adjective::resolve_with("іѡсифовъ", inflector)
+            .expect("reviewed Joseph possessive adjective");
+        assert_eq!(
+            josephs
+                .form(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive Joseph possessive cell")
+                .primary_text(),
+            "і҆ѡ́сифова"
+        );
+
+        let jordan = Noun::from_id_with(&LexemeId::from("synodal:proper-noun:iordan"), inflector)
+            .expect("reviewed Jordan river name");
+        assert_eq!(
+            jordan
+                .form(Case::Instrumental, Number::Singular, Animacy::Inanimate)
+                .expect("productive Jordan instrumental")
+                .primary_text(),
+            "і҆ѻрда́номъ"
+        );
+        let jordanian = Adjective::resolve_with("іѻрданскїй", inflector)
+            .expect("reviewed Jordan relational adjective");
+        assert_eq!(
+            jordanian
+                .form(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive Jordan relational cell")
+                .primary_text(),
+            "і҆ѻрда́нскихъ"
+        );
+
+        let levite = Noun::resolve_with("леѵітъ", inflector).expect("reviewed Levite noun");
+        assert_eq!(
+            levite
+                .form(Case::Dative, Number::Singular, Animacy::Animate)
+                .expect("productive Levite dative")
+                .primary_text(),
+            "леѵі́тꙋ"
+        );
+        let levitical =
+            Adjective::resolve_with("леѵітскїй", inflector).expect("reviewed Levitical adjective");
+        assert_eq!(
+            levitical
+                .form(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive Levitical cell")
+                .primary_text(),
+            "леѵі́тскихъ"
+        );
     }
 
     #[test]
@@ -1677,6 +2944,198 @@ mod tests {
                 .capabilities()
                 .productive_numeral
         );
+    }
+
+    #[test]
+    fn high_frequency_v18_numerals_realize_complete_source_backed_patterns() {
+        let liturgical = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let oba = Numeral::from_id_with(&LexemeId::from("synodal:numeral:oba"), liturgical)
+            .expect("reviewed cardinal both");
+        let third = Numeral::from_id_with(&LexemeId::from("synodal:numeral:tretii"), liturgical)
+            .expect("reviewed third ordinal");
+        let seventh = Numeral::from_id_with(&LexemeId::from("synodal:numeral:sedmyi"), liturgical)
+            .expect("reviewed seventh ordinal");
+
+        let form = |numeral: &Numeral, kind, case, number, gender, animacy| -> String {
+            numeral
+                .form(NumeralCell {
+                    kind,
+                    case,
+                    number,
+                    gender,
+                    animacy,
+                })
+                .expect("licensed numeral cell")
+                .primary_text()
+                .into()
+        };
+
+        assert_eq!(
+            form(
+                &oba,
+                NumeralKind::Cardinal,
+                Case::Nominative,
+                Number::Dual,
+                Some(Gender::Masculine),
+                Animacy::Inanimate,
+            ),
+            "ѻ҆́ба"
+        );
+        assert_eq!(
+            form(
+                &oba,
+                NumeralKind::Cardinal,
+                Case::Genitive,
+                Number::Dual,
+                Some(Gender::Feminine),
+                Animacy::Inanimate,
+            ),
+            "ѻ҆бою̀"
+        );
+        assert_eq!(
+            form(
+                &oba,
+                NumeralKind::Cardinal,
+                Case::Dative,
+                Number::Dual,
+                Some(Gender::Neuter),
+                Animacy::Inanimate,
+            ),
+            "ѻ҆бѣ́ма"
+        );
+        assert_eq!(
+            form(
+                &third,
+                NumeralKind::Ordinal,
+                Case::Genitive,
+                Number::Singular,
+                Some(Gender::Masculine),
+                Animacy::Inanimate,
+            ),
+            "тре́тїѧгѡ"
+        );
+        assert_eq!(
+            form(
+                &third,
+                NumeralKind::Ordinal,
+                Case::Accusative,
+                Number::Singular,
+                Some(Gender::Feminine),
+                Animacy::Inanimate,
+            ),
+            "тре́тїю"
+        );
+        assert_eq!(
+            form(
+                &seventh,
+                NumeralKind::Ordinal,
+                Case::Genitive,
+                Number::Singular,
+                Some(Gender::Masculine),
+                Animacy::Inanimate,
+            ),
+            "седма́гѡ"
+        );
+        assert_eq!(
+            form(
+                &seventh,
+                NumeralKind::Ordinal,
+                Case::Nominative,
+                Number::Singular,
+                Some(Gender::Neuter),
+                Animacy::Inanimate,
+            ),
+            "седмо́е"
+        );
+    }
+
+    #[test]
+    fn cardinal_one_has_a_complete_source_bounded_singular_accent_paradigm() {
+        let liturgical = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let one = Numeral::from_id_with(&LexemeId::from("synodal:numeral:edin"), liturgical)
+            .expect("reviewed cardinal one");
+        let cell = |case, gender| NumeralCell {
+            kind: NumeralKind::Cardinal,
+            case,
+            number: Number::Singular,
+            gender: Some(gender),
+            animacy: Animacy::Inanimate,
+        };
+
+        let neuter_instrumental = one
+            .form(cell(Case::Instrumental, Gender::Neuter))
+            .expect("source-attested neuter instrumental");
+        assert_eq!(neuter_instrumental.primary_text(), "є҆ди́нѣмъ");
+        assert!(neuter_instrumental.primary().is_attested());
+
+        let feminine_instrumental = one
+            .form(cell(Case::Instrumental, Gender::Feminine))
+            .expect("source-attested feminine instrumental");
+        assert_eq!(feminine_instrumental.primary_text(), "є҆ди́ною");
+        assert!(feminine_instrumental.primary().is_attested());
+
+        let masculine_instrumental = one
+            .form(cell(Case::Instrumental, Gender::Masculine))
+            .expect("productive masculine instrumental");
+        assert_eq!(masculine_instrumental.primary_text(), "є҆ди́нѣмъ");
+        assert!(matches!(
+            masculine_instrumental.primary().source,
+            core::FormSource::SynodalNormativeGeneration { .. }
+        ));
+
+        assert_eq!(
+            one.form(cell(Case::Genitive, Gender::Feminine))
+                .expect("productive feminine genitive")
+                .primary_text(),
+            "є҆ди́ноѧ"
+        );
+        assert_eq!(
+            one.form(cell(Case::Locative, Gender::Masculine))
+                .expect("productive masculine locative")
+                .primary_text(),
+            "є҆ди́номъ"
+        );
+
+        let dual = NumeralCell {
+            number: Number::Dual,
+            ..cell(Case::Instrumental, Gender::Masculine)
+        };
+        assert!(matches!(
+            one.form(dual),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
+    fn high_frequency_v19_peter_name_has_complete_mobile_paradigm() {
+        let liturgical = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let peter = Noun::from_id_with(&LexemeId::from("synodal:proper-noun:petr"), liturgical)
+            .expect("reviewed Peter proper noun");
+
+        let form = |case| {
+            peter
+                .form(case, Number::Singular, Animacy::Animate)
+                .expect("licensed Peter singular cell")
+        };
+        assert_eq!(form(Case::Nominative).primary_text(), "пе́тръ");
+        assert_eq!(form(Case::Genitive).primary_text(), "петра̀");
+        assert_eq!(form(Case::Accusative).primary_text(), "петра̀");
+        assert_eq!(form(Case::Instrumental).primary_text(), "петро́мъ");
+        assert_eq!(form(Case::Vocative).primary_text(), "пе́тре");
+        assert_eq!(
+            form(Case::Dative).texts().collect::<Vec<_>>(),
+            vec!["петро́ви", "петрꙋ̀"]
+        );
+
+        let paradigm = peter.paradigm(Animacy::Animate);
+        assert_eq!(paradigm.iter().count(), 21);
+        assert_eq!(paradigm.failures().count(), 0);
     }
 
     #[test]

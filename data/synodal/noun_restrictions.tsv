@@ -1,4 +1,8 @@
-lexeme_id	number_inventory	evidence_id	target_recension
-synodal:noun:brethren-collective	singular-only	alypy-37-brother-table	synodal-russian
-synodal:noun:people	plural-only	alypy-32-41-people-table	synodal-russian
-synodal:noun:v06-israel	singular-only	v06-manual-alypy-israel	synodal-russian
+lexeme_id	number_inventory	animacy_inventory	evidence_id	target_recension
+synodal:noun:brethren-collective	singular-only	any	alypy-37-brother-table	synodal-russian
+synodal:noun:people	plural-only	any	alypy-32-41-people-table	synodal-russian
+synodal:noun:v06-israel	singular-only	any	v06-manual-alypy-israel	synodal-russian
+synodal:noun:v07-345d6105fdd39fce	all	animate	ponomar-deut-33-5-knyaz-mobile-accent	synodal-russian
+synodal:noun:v11-332e30b022aa	all	animate	ponomar-deut-17-12-zhrets-accusative-singular	synodal-russian
+synodal:noun:otrocha	all	inanimate	alypy-43-otrocha-table	synodal-russian
+synodal:noun:prestol	all	inanimate	ponomar-iii-kings-2-45-prestol-nominative-singular	synodal-russian

@@ -754,7 +754,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
             "CCMH text/XML historical-comparison adapter",
             "DIACU JSON recension-classification adapter",
             "streaming Kaikki OCS JSONL adapter with content IDs and no target surface rows",
-            "Ponomar modern Church Slavonic frequency-list adapter",
+            "Ponomar modern Church Slavonic structured frequency-list and dictionary adapter",
         ],
     })
 }

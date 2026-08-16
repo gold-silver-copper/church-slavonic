@@ -291,6 +291,7 @@ impl NounSpec {
                 gender,
                 declension,
                 number_inventory: synodal_church_slavonic_core::NounNumberInventory::All,
+                animacy_inventory: synodal_church_slavonic_core::NounAnimacyInventory::All,
             },
             context: SpecContext::new(source),
         };
@@ -357,6 +358,17 @@ impl NounSpec {
         Ok(self)
     }
 
+    /// Restricts this noun to its independently reviewed lexical animacy.
+    /// Incompatible requests remain visible as typed historical-cell errors.
+    pub fn with_animacy_inventory(
+        mut self,
+        inventory: synodal_church_slavonic_core::NounAnimacyInventory,
+    ) -> Result<Self> {
+        self.lexeme.animacy_inventory = inventory;
+        self.validate()?;
+        Ok(self)
+    }
+
     pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
         self.context.irregular_forms.push(form);
         self.validate()?;
@@ -372,6 +384,20 @@ impl NounSpec {
     pub fn validate(&self) -> Result<()> {
         self.context.validate()?;
         validate_context_cells(&self.context, |cell| matches!(cell, GrammarCell::Noun(_)))?;
+        for form in &self.context.irregular_forms {
+            let GrammarCell::Noun(cell) = form.cell else {
+                continue;
+            };
+            if !self.lexeme.number_inventory.contains(cell.number)
+                || !self.lexeme.animacy_inventory.contains(cell.animacy)
+            {
+                return Err(Error::ContradictoryMetadata {
+                    reason: format!(
+                        "irregular noun cell {cell:?} is outside the licensed number or animacy inventory"
+                    ),
+                });
+            }
+        }
         validate_noun_lexeme(&self.lexeme)
     }
 }
@@ -2055,6 +2081,53 @@ mod tests {
             .expect("liturgical rab dative plural");
         assert_eq!(forms.primary().expanded, "рабомъ");
         assert_eq!(forms.primary_text(), "ра́бѡмъ");
+    }
+
+    #[test]
+    fn noun_irregular_forms_cannot_bypass_lexical_inventories() {
+        let inanimate = GrammarCell::Noun(NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        });
+        let inanimate_form =
+            SpecifiedForm::new(inanimate, "врагъ", None::<String>, source()).expect("form");
+        let animate_only = NounSpec::new(
+            "врагъ",
+            "враг",
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculine,
+            source(),
+        )
+        .expect("noun")
+        .with_animacy_inventory(synodal_church_slavonic_core::NounAnimacyInventory::AnimateOnly)
+        .expect("animate restriction");
+        assert!(matches!(
+            animate_only.with_irregular_form(inanimate_form),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
+
+        let plural = GrammarCell::Noun(NounCell {
+            case: Case::Nominative,
+            number: Number::Plural,
+            animacy: Animacy::Animate,
+        });
+        let plural_form =
+            SpecifiedForm::new(plural, "врази", None::<String>, source()).expect("form");
+        let singular_only = NounSpec::new(
+            "врагъ",
+            "враг",
+            Gender::Masculine,
+            NounDeclension::FirstHardMasculine,
+            source(),
+        )
+        .expect("noun")
+        .with_number_inventory(synodal_church_slavonic_core::NounNumberInventory::SingularOnly)
+        .expect("singular restriction");
+        assert!(matches!(
+            singular_only.with_irregular_form(plural_form),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
     }
 
     #[test]

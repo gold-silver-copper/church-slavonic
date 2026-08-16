@@ -838,12 +838,16 @@ mod tests {
             },
             by_corpus: BTreeMap::new(),
             by_source: BTreeMap::new(),
+            by_partition: BTreeMap::new(),
+            by_source_partition: BTreeMap::new(),
             by_policy: BTreeMap::new(),
             by_lexeme: BTreeMap::new(),
             by_family: BTreeMap::new(),
             by_morphological_system: BTreeMap::new(),
             by_corpus_gap: BTreeMap::new(),
             by_source_gap: BTreeMap::new(),
+            by_partition_gap: BTreeMap::new(),
+            by_source_partition_gap: BTreeMap::new(),
             by_status: BTreeMap::new(),
             by_gap: BTreeMap::new(),
             unresolved_by_probable_family: BTreeMap::new(),
@@ -856,6 +860,7 @@ mod tests {
             total_gap_types: 0,
             gaps: Vec::new(),
             review_queue: Vec::new(),
+            uncovered_frontier: Vec::new(),
         };
         assert!(validate_coverage_contract(&report).is_err());
     }

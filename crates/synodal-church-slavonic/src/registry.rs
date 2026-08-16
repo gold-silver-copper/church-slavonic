@@ -4,19 +4,20 @@ use synodal_church_slavonic_core::{
     AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Case, Comparison,
     ComparisonFormation, Confidence, DeterminerDeclension, DeterminerLexeme, EpistemicRole, Error,
     Evidence, EvidenceId, EvidenceKind, FiniteTense, Gender, GenerationPolicy, GrammarCell,
-    ImperativeFormation, ImperfectFormation, LexemeId, NounDeclension, NounLexeme,
-    NounNumberInventory, Number, NumeralDeclension, NumeralLexeme, ParticiplePrincipalPart,
-    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
-    PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result,
-    ShortMasculineStemFormation, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
-    VerbalNounPrincipalPart, normalize_lookup_accentless, validate_adjective_lexeme,
-    validate_determiner_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
+    ImperativeFormation, ImperfectFormation, LexemeId, NounAnimacyInventory, NounDeclension,
+    NounLexeme, NounNumberInventory, Number, NumeralDeclension, NumeralLexeme,
+    ParticiplePrincipalPart, ParticipleTense, ParticipleVoice, PronounDeclension,
+    PronounEnvironment, PronounFormSelection, PronounLexeme, PronounPostpositive, PronounPrefix,
+    Recension, RecensionMappingId, Result, ShortMasculineStemFormation, SourceId, SynodalWord,
+    VerbConjugation, VerbLexeme, VerbalNounPrincipalPart, normalize_lookup_accentless,
+    validate_adjective_lexeme, validate_determiner_lexeme, validate_numeral_lexeme,
+    validate_pronoun_lexeme,
 };
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawLexeme(pub [&'static str; 9]);
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct RawNounRestriction(pub [&'static str; 4]);
+pub(crate) struct RawNounRestriction(pub [&'static str; 5]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawPrincipalPart(pub [&'static str; 6]);
 #[derive(Clone, Copy, Debug)]
@@ -250,6 +251,7 @@ pub struct LexicalMetadataSummary {
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct NounRestrictionSummary {
     pub number_inventory: String,
+    pub animacy_inventory: String,
     pub evidence_id: String,
 }
 
@@ -705,6 +707,9 @@ fn parse_accent_scope(value: &str) -> Result<AccentScope> {
                 animacies: parse_accent_animacies(animacies)?,
             })
         }
+        ["numeral", numbers] => Ok(AccentScope::Numeral {
+            numbers: parse_accent_numbers(numbers)?,
+        }),
         ["adjective", form, comparison, numbers] => Ok(AccentScope::Adjective {
             form: match *form {
                 "short" => AdjectiveForm::Short,
@@ -719,6 +724,31 @@ fn parse_accent_scope(value: &str) -> Result<AccentScope> {
             },
             numbers: parse_accent_numbers(numbers)?,
         }),
+        [
+            "adjective-agreeing",
+            form,
+            comparison,
+            numbers,
+            cases,
+            genders,
+            animacies,
+        ] => Ok(AccentScope::AdjectiveAgreement {
+            form: match *form {
+                "short" => AdjectiveForm::Short,
+                "long" => AdjectiveForm::Long,
+                value => return invalid_metadata("accent adjective form", value),
+            },
+            comparison: match *comparison {
+                "positive" => Comparison::Positive,
+                "comparative" => Comparison::Comparative,
+                "superlative" => Comparison::Superlative,
+                value => return invalid_metadata("accent comparison", value),
+            },
+            numbers: parse_accent_numbers(numbers)?,
+            cases: parse_accent_cases(cases)?,
+            genders: parse_accent_genders(genders)?,
+            animacies: parse_accent_animacies(animacies)?,
+        }),
         ["finite", tense, numbers] => Ok(AccentScope::FiniteVerb {
             tense: match *tense {
                 "present" => FiniteTense::Present,
@@ -728,6 +758,33 @@ fn parse_accent_scope(value: &str) -> Result<AccentScope> {
                 "aorist" => FiniteTense::Aorist,
                 value => return invalid_metadata("accent finite tense", value),
             },
+            numbers: parse_accent_numbers(numbers)?,
+        }),
+        ["participle", tense, voice, form, comparison, numbers] => Ok(AccentScope::Participle {
+            tense: ParticipleTense::from_code(tense).ok_or_else(|| {
+                Error::ContradictoryMetadata {
+                    reason: format!("invalid accent participle tense {tense:?}"),
+                }
+            })?,
+            voice: ParticipleVoice::from_code(voice).ok_or_else(|| {
+                Error::ContradictoryMetadata {
+                    reason: format!("invalid accent participle voice {voice:?}"),
+                }
+            })?,
+            form: AdjectiveForm::from_code(form).ok_or_else(|| Error::ContradictoryMetadata {
+                reason: format!("invalid accent participle form {form:?}"),
+            })?,
+            comparison: Comparison::from_code(comparison).ok_or_else(|| {
+                Error::ContradictoryMetadata {
+                    reason: format!("invalid accent participle comparison {comparison:?}"),
+                }
+            })?,
+            numbers: parse_accent_numbers(numbers)?,
+        }),
+        ["imperative", numbers] => Ok(AccentScope::Imperative {
+            numbers: parse_accent_numbers(numbers)?,
+        }),
+        ["l-participle", numbers] => Ok(AccentScope::LParticiple {
             numbers: parse_accent_numbers(numbers)?,
         }),
         _ => invalid_metadata("accent scope", value),
@@ -798,6 +855,7 @@ fn parse_accent_placement(value: &str) -> Result<AccentPlacement> {
         })?;
     match kind {
         "stem-vowel-from-start" => Ok(AccentPlacement::StemVowelFromStart(offset)),
+        "word-vowel-from-start" => Ok(AccentPlacement::WordVowelFromStart(offset)),
         "ending-vowel-from-end" => Ok(AccentPlacement::EndingVowelFromEnd(offset)),
         value => invalid_metadata("accent placement", value),
     }
@@ -814,12 +872,15 @@ fn parse_accent_mark(value: &str) -> Result<AccentMark> {
 
 pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
     let row = require_pos(id, PartOfSpeech::Noun)?;
-    let number_inventory = NOUN_RESTRICTIONS
+    let restriction = NOUN_RESTRICTIONS
         .iter()
-        .find(|restriction| restriction.0[0] == id.as_str())
-        .map_or(Ok(NounNumberInventory::All), |restriction| {
-            parse_noun_number_inventory(restriction.0[1])
-        })?;
+        .find(|restriction| restriction.0[0] == id.as_str());
+    let number_inventory = restriction.map_or(Ok(NounNumberInventory::All), |restriction| {
+        parse_noun_number_inventory(restriction.0[1])
+    })?;
+    let animacy_inventory = restriction.map_or(Ok(NounAnimacyInventory::All), |restriction| {
+        parse_noun_animacy_inventory(restriction.0[2])
+    })?;
     Ok(NounLexeme {
         lemma: SynodalWord::parse(row.0[1])?,
         stem: SynodalWord::parse(row.0[4])?,
@@ -868,11 +929,13 @@ pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
             value => return invalid_metadata("noun class", value),
         },
         number_inventory,
+        animacy_inventory,
     })
 }
 
 fn parse_noun_number_inventory(value: &str) -> Result<NounNumberInventory> {
     match value {
+        "all" => Ok(NounNumberInventory::All),
         "singular-only" => Ok(NounNumberInventory::SingularOnly),
         "dual-only" => Ok(NounNumberInventory::DualOnly),
         "plural-only" => Ok(NounNumberInventory::PluralOnly),
@@ -880,6 +943,15 @@ fn parse_noun_number_inventory(value: &str) -> Result<NounNumberInventory> {
         "singular-and-plural" => Ok(NounNumberInventory::SingularAndPlural),
         "dual-and-plural" => Ok(NounNumberInventory::DualAndPlural),
         value => invalid_metadata("noun number inventory", value),
+    }
+}
+
+fn parse_noun_animacy_inventory(value: &str) -> Result<NounAnimacyInventory> {
+    match value {
+        "any" => Ok(NounAnimacyInventory::All),
+        "animate" => Ok(NounAnimacyInventory::AnimateOnly),
+        "inanimate" => Ok(NounAnimacyInventory::InanimateOnly),
+        value => invalid_metadata("noun animacy inventory", value),
     }
 }
 
@@ -923,7 +995,7 @@ pub(crate) fn numeral_lexeme(id: &LexemeId) -> Result<NumeralLexeme> {
             "numeral-cardinal-first-hard-m" => NumeralDeclension::CardinalFirstHardMasculine,
             "numeral-cardinal-third-f" => NumeralDeclension::CardinalThirdFeminine,
             "ordinal-hard" => NumeralDeclension::OrdinalHard,
-            "ordinal-soft" => NumeralDeclension::OrdinalSoft,
+            "ordinal-ii" => NumeralDeclension::OrdinalIi,
             "numeral-collective-agreeing" => NumeralDeclension::CollectiveAgreeing,
             "numeral-collective-governing-neuter" => NumeralDeclension::CollectiveGoverningNeuter,
             "numeral-collective-hard-plural" => NumeralDeclension::CollectiveHardPlural,
@@ -1086,6 +1158,9 @@ fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveL
             "velar-short" => AdjectiveClass::Velar,
             "possessive-hard-short" => AdjectiveClass::PossessiveHard,
             "possessive-soft-short" => AdjectiveClass::PossessiveSoft,
+            "possessive-j-short" => AdjectiveClass::PossessiveJ,
+            "possessive-in" => AdjectiveClass::PossessiveIn,
+            "possessive-sk" => AdjectiveClass::PossessiveSk,
             "possessive-ii" => AdjectiveClass::PossessiveIi,
             value => return invalid_metadata("adjective class", value),
         },
@@ -1114,6 +1189,7 @@ fn parse_short_masculine_formation(value: &str) -> Result<ShortMasculineStemForm
     match value {
         "double-n-reduction" => Ok(ShortMasculineStemFormation::DoubleNReduction),
         "mobile-e-insertion" => Ok(ShortMasculineStemFormation::MobileEInsertion),
+        "mobile-o-insertion" => Ok(ShortMasculineStemFormation::MobileOInsertion),
         value => invalid_metadata("short masculine formation", value),
     }
 }
@@ -1286,7 +1362,8 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
             .find(|restriction| restriction.0[0] == id.as_str())
             .map(|restriction| NounRestrictionSummary {
                 number_inventory: restriction.0[1].into(),
-                evidence_id: restriction.0[2].into(),
+                animacy_inventory: restriction.0[2].into(),
+                evidence_id: restriction.0[3].into(),
             }),
         principal_parts: PRINCIPAL_PARTS
             .iter()

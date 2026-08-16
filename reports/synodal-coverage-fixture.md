@@ -90,6 +90,22 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `ponomar-elizabeth-bible-2026-08-09` | 85 | 40 | 62 | 1 | 22 |
 | `wikisource-church-slavonic-bible-2026-08-09` | 70 | 31 | 53 | 1 | 17 |
 
+## Coverage by partition
+
+| Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
+|---|---:|---:|---:|---:|---:|
+| `evaluation` | 60 | 29 | 42 | 0 | 17 |
+| `source` | 95 | 42 | 73 | 2 | 22 |
+
+## Coverage by source and partition
+
+| Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
+|---|---:|---:|---:|---:|---:|
+| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 50 | 23 | 36 | 0 | 13 |
+| `ponomar-elizabeth-bible-2026-08-09:source` | 35 | 17 | 26 | 1 | 9 |
+| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 10 | 6 | 6 | 0 | 4 |
+| `wikisource-church-slavonic-bible-2026-08-09:source` | 60 | 25 | 47 | 1 | 13 |
+
 ## Gap categories by source
 
 | Source | Category | Tokens |
@@ -100,6 +116,17 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 16 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 1 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 1 |
+
+## Gap categories by partition
+
+| Partition | Category | Tokens |
+|---|---|---:|
+| `evaluation` | `unknown-lexeme` | 14 |
+| `evaluation` | `missing-accent-or-orthographic-metadata` | 3 |
+| `evaluation` | `ambiguity-or-spelling-variant` | 1 |
+| `source` | `unknown-lexeme` | 21 |
+| `source` | `missing-accent-or-orthographic-metadata` | 1 |
+| `source` | `ambiguity-or-spelling-variant` | 2 |
 
 ## Review queue
 

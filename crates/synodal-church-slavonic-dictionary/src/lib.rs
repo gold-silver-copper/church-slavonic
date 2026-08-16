@@ -507,6 +507,23 @@ pub fn analyze_with(word: &str, inflector: Inflector) -> Result<Vec<Analysis>> {
     coverage::Analyzer::new(inflector)?.analyze_dictionary(word)
 }
 
+/// Returns typed analyses of a fused cardinal word without fabricating a
+/// dictionary lexeme for the grammatical construction.
+pub fn analyze_cardinal_word(word: &str) -> Result<Vec<coverage::CardinalWordAnalysis>> {
+    coverage::default_analyzer()?.analyze_cardinal_word(word)
+}
+
+/// Returns typed fused-cardinal analyses under a caller-selected policy.
+pub fn analyze_cardinal_word_with(
+    word: &str,
+    inflector: Inflector,
+) -> Result<Vec<coverage::CardinalWordAnalysis>> {
+    if inflector == Inflector::default() {
+        return analyze_cardinal_word(word);
+    }
+    coverage::Analyzer::new(inflector)?.analyze_cardinal_word(word)
+}
+
 pub fn lemmatize(word: &str) -> Result<Vec<Entry>> {
     lemmatize_with(word, Inflector::default())
 }
@@ -879,6 +896,7 @@ fn productive_cell_is_supported(
                     .as_ref()
                     .is_none_or(|restriction| {
                         number_is_licensed(&restriction.number_inventory, cell.number)
+                            && animacy_is_licensed(&restriction.animacy_inventory, cell.animacy)
                     })
         }
         GrammarCell::Adjective(cell) => {
@@ -905,9 +923,17 @@ fn productive_cell_is_supported(
             match cell.tense {
                 FiniteTense::Present => {
                     metadata.stem.is_some()
-                        && ["present-first-singular", "present-third-plural"]
+                        && (["present-first-singular", "present-third-plural"]
                             .into_iter()
                             .all(|system| principal_part(system).is_some())
+                            || (metadata.aspect.as_deref() == Some("perfective")
+                                && [
+                                    "future-stem",
+                                    "future-first-singular",
+                                    "future-third-plural",
+                                ]
+                                .into_iter()
+                                .all(|system| principal_part(system).is_some())))
                 }
                 FiniteTense::Future => {
                     metadata.aspect.as_deref() == Some("perfective")
@@ -1050,10 +1076,12 @@ fn adjectival_cell_is_supported(
     has_comparative_stem: bool,
 ) -> bool {
     match class {
-        Some("possessive-hard-short" | "possessive-soft-short") => {
+        Some("possessive-hard-short" | "possessive-soft-short" | "possessive-j-short") => {
             return cell.comparison == Comparison::Positive && cell.form == AdjectiveForm::Short;
         }
-        Some("possessive-ii") => return cell.comparison == Comparison::Positive,
+        Some("possessive-in" | "possessive-sk" | "possessive-ii") => {
+            return cell.comparison == Comparison::Positive;
+        }
         _ => {}
     }
     match (cell.comparison, cell.form) {
@@ -1118,7 +1146,7 @@ fn numeral_cell_is_supported(cell: NumeralCell, class: Option<&str>) -> bool {
             | "numeral-cardinal-first-hard-m"
             | "numeral-cardinal-third-f",
         ) => cell.kind == NumeralKind::Cardinal && cell.gender.is_none() && nonvocative,
-        Some("ordinal-hard" | "ordinal-soft") => {
+        Some("ordinal-hard" | "ordinal-ii") => {
             cell.kind == NumeralKind::Ordinal && cell.gender.is_some()
         }
         Some("numeral-collective-agreeing" | "numeral-collective-hard-plural") => {
@@ -1162,6 +1190,14 @@ fn number_is_licensed(inventory: &str, number: Number) -> bool {
         "singular-and-dual" => matches!(number, Number::Singular | Number::Dual),
         "singular-and-plural" => matches!(number, Number::Singular | Number::Plural),
         "dual-and-plural" => matches!(number, Number::Dual | Number::Plural),
+        _ => true,
+    }
+}
+
+fn animacy_is_licensed(inventory: &str, animacy: Animacy) -> bool {
+    match inventory {
+        "animate" => animacy == Animacy::Animate,
+        "inanimate" => animacy == Animacy::Inanimate,
         _ => true,
     }
 }
@@ -1241,7 +1277,7 @@ fn levenshtein(left: &str, right: &str) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use synodal_church_slavonic::Case;
+    use synodal_church_slavonic::{Case, NounCell};
 
     #[test]
     fn semantic_lookup_keeps_source_recension_visible() {
@@ -1276,28 +1312,33 @@ mod tests {
 
     #[test]
     fn perfective_present_shaped_future_keeps_both_reverse_analyses() {
-        let id = LexemeId::from("synodal:verb:v07-35ce5d83583f3639");
-        let cells = analysis_cells_by_id(&id, Inflector::default())
-            .expect("productive perfective inventory");
-        for tense in [FiniteTense::Present, FiniteTense::Future] {
-            assert!(cells.contains(&GrammarCell::FiniteVerb(FiniteVerbCell {
-                tense,
-                person: Person::First,
-                number: Number::Dual,
-            })));
-        }
+        for (id, surface) in [
+            ("synodal:verb:v07-35ce5d83583f3639", "начнева"),
+            ("synodal:verb:polozhiti", "положива"),
+        ] {
+            let id = LexemeId::from(id);
+            let cells = analysis_cells_by_id(&id, Inflector::default())
+                .expect("productive perfective inventory");
+            for tense in [FiniteTense::Present, FiniteTense::Future] {
+                assert!(cells.contains(&GrammarCell::FiniteVerb(FiniteVerbCell {
+                    tense,
+                    person: Person::First,
+                    number: Number::Dual,
+                })));
+            }
 
-        let analyses = analyze("начнева").expect("homographic present/future analysis");
-        let tenses = analyses
-            .iter()
-            .filter(|analysis| analysis.lexeme.id() == &id)
-            .filter_map(|analysis| match analysis.cell {
-                Some(GrammarCell::FiniteVerb(cell)) => Some(cell.tense),
-                _ => None,
-            })
-            .collect::<BTreeSet<_>>();
-        assert!(tenses.contains(&FiniteTense::Present));
-        assert!(tenses.contains(&FiniteTense::Future));
+            let analyses = analyze(surface).expect("homographic present/future analysis");
+            let tenses = analyses
+                .iter()
+                .filter(|analysis| analysis.lexeme.id() == &id)
+                .filter_map(|analysis| match analysis.cell {
+                    Some(GrammarCell::FiniteVerb(cell)) => Some(cell.tense),
+                    _ => None,
+                })
+                .collect::<BTreeSet<_>>();
+            assert!(tenses.contains(&FiniteTense::Present));
+            assert!(tenses.contains(&FiniteTense::Future));
+        }
     }
 
     #[test]
@@ -1501,6 +1542,1581 @@ mod tests {
         assert_eq!(identities.len(), 1);
         assert!(identities.contains("synodal:conjunction:wikt-47fa23a7ed6b"));
         assert!(!identities.contains("synodal:adverb:wikt-5471d4207f64"));
+    }
+
+    #[test]
+    fn ponomar_dictionary_reviews_admit_only_the_attested_exact_forms() {
+        let reviewed = [
+            ("жре́цъ", "synodal:noun:v11-332e30b022aa"),
+            ("саꙋ́лъ", "synodal:proper-noun:v11-1c75360357d9"),
+            ("со́нмъ", "synodal:noun:v11-ba59d1e727b5"),
+            ("совѣ́тъ", "synodal:noun:v11-c3606bfd87d5"),
+            ("і҆ѡнаѳа́нъ", "synodal:proper-noun:v11-4e8cbf1465b4"),
+            ("ѕло̀", "synodal:noun:v11-112ca1130b42"),
+            ("премꙋ́дрость", "synodal:noun:v11-160c9fb86c0f"),
+            ("то́чїю", "synodal:adverb:v11-da873f6ae112"),
+            ("прѧ́мѡ", "synodal:adverb:v11-8f3d7ab0c925"),
+            ("сквозѣ̀", "synodal:preposition:v11-2b9f7f3a2990"),
+        ];
+        for (surface, expected_id) in reviewed {
+            let analyses = analyze(surface).expect("valid reviewed Ponomar form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == expected_id
+                        && analysis.source == AnalysisSource::ExactSynodalAttestation
+                }),
+                "missing exact analysis for {surface:?}"
+            );
+        }
+
+        for (surface, excluded_id) in [
+            ("жрѐцъ", "synodal:noun:v11-332e30b022aa"),
+            ("ѕло́", "synodal:noun:v11-112ca1130b42"),
+            ("сквозѣ́", "synodal:preposition:v11-2b9f7f3a2990"),
+        ] {
+            let analyses = analyze(surface).expect("valid mark-sensitive negative control");
+            assert!(
+                analyses
+                    .iter()
+                    .all(|analysis| analysis.lexeme.id().as_str() != excluded_id),
+                "unattested marked variant reached exact review {excluded_id}"
+            );
+        }
+    }
+
+    #[test]
+    fn vosled_preposition_is_exact_mark_sensitive_and_distinct_from_sled_noun() {
+        for surface in ["в̾слѣ́дъ", "вослѣ́дъ", "вослѣдъ"] {
+            let analyses = analyze(surface).expect("valid reviewed preposition form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:preposition:vosled"
+                        && analysis.cell == Some(GrammarCell::Indeclinable)
+                }),
+                "missing exact preposition analysis for {surface:?}"
+            );
+        }
+
+        let wrong_mark = analyze("вслѣ́дъ").expect("valid mark-sensitive negative control");
+        assert!(
+            wrong_mark
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:preposition:vosled")
+        );
+
+        let noun = analyze("слѣ́дъ").expect("valid noun control");
+        assert!(
+            noun.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:noun:wikt-c96e00520110"
+            })
+        );
+        assert!(
+            noun.iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:preposition:vosled")
+        );
+    }
+
+    #[test]
+    fn bez_preposition_is_exact_mark_sensitive_and_not_a_prefix_fallback() {
+        for surface in ["без̾", "безъ"] {
+            let analyses = analyze(surface).expect("reviewed primary preposition");
+            assert!(analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:preposition:bez"
+                    && analysis.cell == Some(GrammarCell::Indeclinable)
+                    && analysis.source == AnalysisSource::ExactSynodalAttestation
+            }));
+        }
+
+        for surface in ["без", "без̾мѣры"] {
+            let analyses = analyze(surface).expect("valid mark-sensitive negative control");
+            assert!(
+                analyses
+                    .iter()
+                    .all(|analysis| analysis.lexeme.id().as_str() != "synodal:preposition:bez"),
+                "unreviewed spelling or substring reached exact без̾ analysis: {surface:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn srede_preposition_is_exact_and_does_not_license_accentless_or_substring_forms() {
+        for surface in ["средѣ̀", "средѣ"] {
+            let analyses = analyze(surface).expect("reviewed medial preposition");
+            assert!(analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:preposition:srede"
+                    && analysis.cell == Some(GrammarCell::Indeclinable)
+                    && analysis.source == AnalysisSource::ExactSynodalAttestation
+            }));
+        }
+
+        for surface in ["средѣ́", "посре́дѣ"] {
+            let analyses = analyze(surface).expect("valid exact negative control");
+            assert!(
+                analyses
+                    .iter()
+                    .all(|analysis| analysis.lexeme.id().as_str() != "synodal:preposition:srede"),
+                "unreviewed accent or substring reached exact средѣ̀ analysis: {surface:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn nasledie_soft_neuter_round_trips_exact_and_productive_cells() {
+        for surface in ["наслѣ́дїе", "наслѣ́дїѧ", "наслѣ́дїю", "наслѣ́дїемъ", "наслѣ́дїи"]
+        {
+            let analyses = analyze(surface).expect("reviewed inheritance noun form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:nasledie"
+                        && matches!(analysis.cell, Some(GrammarCell::Noun(_)))
+                }),
+                "missing typed inheritance-noun analysis for {surface:?}"
+            );
+        }
+
+        for surface in ["наслѣ́дїе", "наслѣ́дїѧ", "наслѣ́дїемъ", "наслѣ́дїи"]
+        {
+            let analyses = analyze(surface).expect("source-backed inheritance noun form");
+            assert!(analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:noun:nasledie"
+                    && analysis.source == AnalysisSource::ExactSynodalAttestation
+            }));
+        }
+
+        let plural_kamora = analyze("наслѣ̑дїѧ").expect("reviewed plural kamora variant");
+        assert!(plural_kamora.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:nasledie"
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let wrong_accent = analyze("на́слѣдїе").expect("valid accent negative control");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:noun:nasledie")
+        );
+    }
+
+    #[test]
+    fn predel_hard_masculine_preserves_exact_genitive_plural_kamora() {
+        for surface in [
+            "предѣ́лъ",
+            "предѣ́ла",
+            "предѣ́лы",
+            "предѣ̑лъ",
+            "предѣ́лѡвъ",
+            "предѣ́лѣхъ",
+        ] {
+            let analyses = analyze(surface).expect("reviewed boundary noun form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:predel"
+                        && matches!(analysis.cell, Some(GrammarCell::Noun(_)))
+                }),
+                "missing typed boundary-noun analysis for {surface:?}"
+            );
+        }
+
+        let genitive_plural = analyze("предѣ̑лъ").expect("exact genitive plural kamora");
+        assert!(genitive_plural.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:predel"
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+        let genitive_plural_ov = analyze("предѣ́лѡвъ").expect("exact genitive plural -ov variant");
+        assert!(genitive_plural_ov.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:predel"
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let wrong_accent = analyze("пре́дѣлы").expect("valid accent negative control");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:noun:predel")
+        );
+    }
+
+    #[test]
+    fn yazyk_velar_family_round_trips_productive_and_exact_target_cells() {
+        for surface in [
+            "ꙗ҆зы́къ",
+            "ꙗ҆зы́кꙋ",
+            "ꙗ҆зы́че",
+            "ꙗ҆зы́цы",
+            "ꙗ҆зы́кѡвъ",
+            "ꙗ҆зы́кѡмъ",
+            "ꙗ҆зы́цѣхъ",
+        ] {
+            let analyses = analyze(surface).expect("reviewed language or people noun form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:yazyk"
+                        && matches!(analysis.cell, Some(GrammarCell::Noun(_)))
+                }),
+                "missing typed ꙗзыкъ-family analysis for {surface:?}"
+            );
+        }
+
+        for surface in ["ꙗ҆зы́кѡвъ", "ꙗ҆зы́кѡмъ", "ꙗ҆зы́цѣхъ"] {
+            let analyses = analyze(surface).expect("source-backed ꙗзыкъ target variant");
+            assert!(analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:noun:yazyk"
+                    && analysis.source == AnalysisSource::ExactSynodalAttestation
+            }));
+        }
+
+        let wrong_accent = analyze("ꙗ҆́зыкѡвъ").expect("valid accent negative control");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:noun:yazyk")
+        );
+    }
+
+    #[test]
+    fn mesyats_productive_noun_and_typed_abbreviations_round_trip() {
+        for surface in [
+            "мѣ́сѧцъ",
+            "мѣ́сѧца",
+            "мѣ́сѧцꙋ",
+            "мѣ́сѧцѣ",
+            "мѣ́сѧцы",
+            "мѣ́сѧцей",
+            "мѣ́сѧцамъ",
+            "мѣ́сѧцѣхъ",
+        ] {
+            let analyses = analyze(surface).expect("reviewed month noun form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:mesyats"
+                        && matches!(analysis.cell, Some(GrammarCell::Noun(_)))
+                }),
+                "missing typed month analysis for {surface:?}"
+            );
+        }
+
+        for surface in [
+            "мцⷭ҇ъ",
+            "мцⷭ҇а",
+            "мцⷭ҇ꙋ",
+            "мцⷭ҇ѣ",
+            "мцⷭ҇ы",
+            "мцⷭ҇ей",
+            "мцⷭ҇євъ",
+            "мцⷭ҇амъ",
+            "мцⷭ҇ѣхъ",
+        ] {
+            let analyses = analyze(surface).expect("reviewed month abbreviation");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:mesyats"
+                        && analysis.source == AnalysisSource::AbbreviationExpansion
+                        && matches!(analysis.cell, Some(GrammarCell::Noun(_)))
+                }),
+                "missing typed month-abbreviation analysis for {surface:?}"
+            );
+        }
+
+        let genitive = abbreviation::contract_variants_for_cell_by_id(
+            &LexemeId::from("synodal:noun:mesyats"),
+            "sense:v13:noun:mesyats",
+            GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                case: Case::Genitive,
+                number: Number::Singular,
+                animacy: Animacy::Inanimate,
+            }),
+        )
+        .expect("typed month contraction");
+        assert!(
+            genitive
+                .iter()
+                .any(|form| { form.expanded == "мѣсѧца" && form.printed == "мцⷭ҇а" })
+        );
+
+        assert!(
+            analyze("мцса")
+                .expect("valid missing-mark negative control")
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:noun:mesyats")
+        );
+    }
+
+    #[test]
+    fn salvation_contraction_traditions_preserve_exact_reverse_cells() {
+        for surface in [
+            "спⷭ҇нїе",
+            "спⷭ҇нїѧ",
+            "спⷭ҇нїи",
+            "спⷭ҇нїемъ",
+            "спⷭ҇нїй",
+            "сп҃се́нїе",
+            "сп҃се́нїѧ",
+            "сп҃се́нїи",
+            "сп҃се́нїемъ",
+            "сп҃се́нїю",
+            "сп҃се́нїй",
+            "Сп҃се́нїе",
+        ] {
+            let analyses = analyze(surface).expect("reviewed salvation abbreviation");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:spasenie"
+                        && analysis.source == AnalysisSource::AbbreviationExpansion
+                        && matches!(analysis.cell, Some(GrammarCell::Noun(_)))
+                }),
+                "missing typed salvation-abbreviation analysis for {surface:?}"
+            );
+        }
+
+        for surface in ["спⷭ҇нїе́", "спснїе"] {
+            assert!(
+                analyze(surface)
+                    .expect("orthographically valid negative control")
+                    .iter()
+                    .all(|analysis| analysis.lexeme.id().as_str() != "synodal:noun:spasenie"),
+                "unreviewed spelling must not reach the salvation identity: {surface:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn newly_admitted_soft_ie_neuters_round_trip_productively() {
+        for (id, surfaces) in [
+            (
+                "synodal:noun:vsesozhzhenie",
+                &[
+                    "всесожже́нїе",
+                    "всесожже́нїѧ",
+                    "всесожже́нїю",
+                    "всесожже́нїемъ",
+                    "всесожжє́нїѧ",
+                ][..],
+            ),
+            (
+                "synodal:noun:sretenie",
+                &["срѣ́тенїе", "срѣ́тенїѧ", "срѣ́тенїю", "срѣ́тенїемъ", "срѣ́тенїи"][..],
+            ),
+        ] {
+            for surface in surfaces {
+                let analyses = analyze(surface).expect("reviewed soft -їе noun form");
+                assert!(
+                    analyses.iter().any(|analysis| {
+                        analysis.lexeme.id().as_str() == id
+                            && matches!(analysis.cell, Some(GrammarCell::Noun(_)))
+                    }),
+                    "missing {id} analysis for {surface:?}"
+                );
+            }
+        }
+
+        for (wrong, id) in [
+            ("все́сожженїе", "synodal:noun:vsesozhzhenie"),
+            ("срѣте́нїе", "synodal:noun:sretenie"),
+        ] {
+            assert!(
+                analyze(wrong)
+                    .expect("valid wrong-accent negative control")
+                    .iter()
+                    .all(|analysis| analysis.lexeme.id().as_str() != id)
+            );
+        }
+    }
+
+    #[test]
+    fn vino_mobile_accent_and_polozhiti_systems_round_trip_productively() {
+        for (id, surfaces) in [
+            (
+                "synodal:noun:vino",
+                &["вїно̀", "вїна̀", "вїнꙋ̀", "вїно́мъ", "вїнѣ̀"][..],
+            ),
+            (
+                "synodal:verb:polozhiti",
+                &[
+                    "положи́ти",
+                    "положꙋ̀",
+                    "положи́ши",
+                    "положи́тъ",
+                    "положа́тъ",
+                    "положи́хъ",
+                    "положи́сте",
+                    "положи́ша",
+                    "положи́ла",
+                ][..],
+            ),
+        ] {
+            for surface in surfaces {
+                assert!(
+                    analyze(surface)
+                        .expect("reviewed productive surface")
+                        .iter()
+                        .any(|analysis| analysis.lexeme.id().as_str() == id),
+                    "missing {id} analysis for {surface:?}"
+                );
+            }
+        }
+
+        let polozhi = analyze("положѝ").expect("reviewed syncretic verb surface");
+        let cells = polozhi
+            .iter()
+            .filter(|analysis| analysis.lexeme.id().as_str() == "synodal:verb:polozhiti")
+            .filter_map(|analysis| analysis.cell)
+            .collect::<BTreeSet<_>>();
+        assert!(cells.contains(&GrammarCell::FiniteVerb(FiniteVerbCell {
+            tense: FiniteTense::Aorist,
+            person: Person::Third,
+            number: Number::Singular,
+        })));
+        assert!(cells.contains(&GrammarCell::Imperative(ImperativeCell {
+            person: Person::Second,
+            number: Number::Singular,
+        })));
+
+        assert!(
+            analyze("ви́на")
+                .expect("valid wrong positional spelling")
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:noun:vino")
+        );
+    }
+
+    #[test]
+    fn no_yat_vsem_and_titlecase_month_abbreviations_remain_exactly_scoped() {
+        let vsem = analyze("все́мъ").expect("reviewed no-yat locative");
+        let ves_cells = vsem
+            .iter()
+            .filter(|analysis| analysis.lexeme.id().as_str() == "synodal:determiner:ves")
+            .filter_map(|analysis| analysis.cell)
+            .collect::<BTreeSet<_>>();
+        assert_eq!(ves_cells.len(), 2);
+        assert!(ves_cells.iter().all(|cell| matches!(
+            cell,
+            GrammarCell::Determiner(AdjectiveCell {
+                case: Case::Locative,
+                number: Number::Singular,
+                ..
+            })
+        )));
+
+        for (surface, case) in [("Мцⷭ҇а", Case::Genitive), ("Мцⷭ҇ъ", Case::Nominative)]
+        {
+            assert!(
+                analyze(surface)
+                    .expect("reviewed titlecase abbreviation")
+                    .iter()
+                    .any(|analysis| {
+                        analysis.lexeme.id().as_str() == "synodal:noun:mesyats"
+                            && analysis.source == AnalysisSource::AbbreviationExpansion
+                            && matches!(
+                                analysis.cell,
+                                Some(GrammarCell::Noun(NounCell {
+                                    case: found,
+                                    number: Number::Singular,
+                                    ..
+                                })) if found == case
+                            )
+                    }),
+                "missing titlecase month analysis for {surface:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn sotvoriti_productive_systems_round_trip_with_exact_precedence() {
+        for (surface, expected_cells) in [
+            ("сотвори́те", 1_usize),
+            ("сотворитѐ", 1),
+            ("сотвори́мъ", 2),
+            ("сотвори́хомъ", 1),
+            ("сотвори́ла", 2),
+        ] {
+            let analyses = analyze(surface).expect("reviewed сотвори́ти system surface");
+            let matching = analyses
+                .iter()
+                .filter(|analysis| analysis.lexeme.id().as_str() == "synodal:verb:sotvoriti")
+                .collect::<Vec<_>>();
+            assert_eq!(matching.len(), expected_cells, "{surface:?}");
+        }
+
+        let exact = analyze("сотворитѐ").expect("exact future accent variant");
+        assert!(exact.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:verb:sotvoriti"
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+        let wrong_mark = analyze("сотворите́").expect("mark-sensitive negative control");
+        assert!(
+            wrong_mark
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:verb:sotvoriti")
+        );
+    }
+
+    #[test]
+    fn zlyi_is_productive_mark_sensitive_and_preserves_zlo_homonymy() {
+        for (surface, expected_cell) in [
+            (
+                "ѕла̑ѧ",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Plural,
+                    gender: Gender::Neuter,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+            (
+                "ѕо́лъ",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+        ] {
+            let analyses = analyze(surface).expect("valid reviewed adjective form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:adjective:zlyi"
+                        && analysis.cell == Some(expected_cell)
+                        && analysis.source == AnalysisSource::ExactSynodalAttestation
+                }),
+                "missing exact adjective analysis for {surface:?}"
+            );
+        }
+
+        let wrong_mark = analyze("ѕла́ѧ").expect("valid mark-sensitive negative control");
+        assert!(
+            wrong_mark.iter().all(|analysis| {
+                analysis.lexeme.id().as_str() != "synodal:adjective:zlyi"
+                    || analysis.source != AnalysisSource::ExactSynodalAttestation
+            }),
+            "the acute form must not inherit the exact kamora attestation: {wrong_mark:#?}"
+        );
+
+        let noun = analyze("ѕло̀").expect("valid noun control");
+        assert!(
+            noun.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:noun:v11-112ca1130b42"
+            })
+        );
+        assert!(noun.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:adjective:zlyi"
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+    }
+
+    #[test]
+    fn dusha_upgrade_preserves_exact_cells_and_exposes_productive_background() {
+        for (surface, expected_cell) in [
+            (
+                "дꙋшѝ",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    animacy: Animacy::Inanimate,
+                }),
+            ),
+            (
+                "дꙋ́шы",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Accusative,
+                    number: Number::Plural,
+                    animacy: Animacy::Inanimate,
+                }),
+            ),
+            (
+                "дꙋши̑",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Nominative,
+                    number: Number::Dual,
+                    animacy: Animacy::Inanimate,
+                }),
+            ),
+            (
+                "дꙋ́ши",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Nominative,
+                    number: Number::Plural,
+                    animacy: Animacy::Inanimate,
+                }),
+            ),
+        ] {
+            let analyses = analyze(surface).expect("valid reviewed soul form");
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:v07-549dec12f8aeb0c9"
+                        && analysis.cell == Some(expected_cell)
+                        && analysis.source == AnalysisSource::ExactSynodalAttestation
+                }),
+                "missing exact soul analysis for {surface:?}"
+            );
+        }
+
+        let productive = analyze("дꙋшѐ").expect("valid productive vocative");
+        assert!(productive.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:v07-549dec12f8aeb0c9"
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+    }
+
+    #[test]
+    fn adonai_analysis_preserves_exact_and_productive_indeclinable_readings() {
+        let analyses = analyze("а҆дѡнаі̀").expect("reviewed divine title");
+        assert!(analyses.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:adonai"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        animacy: Animacy::Animate,
+                    }))
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+        assert!(analyses.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:adonai"
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+    }
+
+    #[test]
+    fn zhena_wide_e_plural_keeps_both_exact_direct_case_analyses() {
+        let analyses = analyze("жєны̀").expect("reviewed wide-e plural");
+        for case in [Case::Nominative, Case::Accusative] {
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == "synodal:noun:zhena"
+                        && analysis.cell
+                            == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                                case,
+                                number: Number::Plural,
+                                animacy: Animacy::Animate,
+                            }))
+                        && analysis.source == AnalysisSource::ExactSynodalAttestation
+                }),
+                "missing {case:?} plural analysis"
+            );
+        }
+
+        let narrow = analyze("жены̀").expect("reviewed narrow-e genitive");
+        assert!(narrow.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:zhena"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Genitive,
+                        number: Number::Singular,
+                        animacy: Animacy::Animate,
+                    }))
+        }));
+    }
+
+    #[test]
+    fn svidenie_analysis_combines_exact_genitive_and_productive_plural() {
+        let analyses = analyze("свидѣ́нїѧ").expect("reviewed testimony form");
+        assert!(analyses.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:svidenie"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Genitive,
+                        number: Number::Singular,
+                        animacy: Animacy::Inanimate,
+                    }))
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+        assert!(analyses.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:svidenie"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Nominative,
+                        number: Number::Plural,
+                        animacy: Animacy::Inanimate,
+                    }))
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+    }
+
+    #[test]
+    fn dshcher_analysis_combines_exact_and_productive_oblique_cells() {
+        let exact = analyze("дщє́ри").expect("reviewed daughter plural");
+        assert!(exact.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:v07-db06c7a6afdd2e88"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Nominative,
+                        number: Number::Plural,
+                        animacy: Animacy::Animate,
+                    }))
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let productive = analyze("дще́рїй").expect("productive daughter genitive plural");
+        assert!(productive.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:v07-db06c7a6afdd2e88"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Genitive,
+                        number: Number::Plural,
+                        animacy: Animacy::Inanimate,
+                    }))
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+    }
+
+    #[test]
+    fn sosud_analysis_preserves_exact_variants_and_productive_cells() {
+        let ordinary = analyze("сосꙋ́ды").expect("reviewed vessel plural");
+        for case in [Case::Nominative, Case::Accusative] {
+            assert!(ordinary.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:noun:sosud"
+                    && analysis.cell
+                        == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                            case,
+                            number: Number::Plural,
+                            animacy: Animacy::Inanimate,
+                        }))
+                    && analysis.source == AnalysisSource::ExactSynodalAttestation
+            }));
+        }
+
+        let alternative = analyze("сосꙋ́ди").expect("reviewed alternative nominative plural");
+        assert!(alternative.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:sosud"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Nominative,
+                        number: Number::Plural,
+                        animacy: Animacy::Inanimate,
+                    }))
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let productive = analyze("сосꙋ́дꙋ").expect("productive vessel dative singular");
+        assert!(productive.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:noun:sosud"
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+    }
+
+    #[test]
+    fn iuda_analysis_preserves_exact_singular_and_productive_number_cells() {
+        let genitive = analyze("і҆ꙋ́ды").expect("reviewed Judah/Judas genitive");
+        assert!(genitive.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:proper-noun:iuda"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Genitive,
+                        number: Number::Singular,
+                        animacy: Animacy::Animate,
+                    }))
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+        assert!(genitive.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:proper-noun:iuda"
+                && analysis.cell
+                    == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                        case: Case::Nominative,
+                        number: Number::Plural,
+                        animacy: Animacy::Inanimate,
+                    }))
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+
+        let productive = analyze("і҆ꙋ́дъ").expect("productive Judah/Judas genitive plural");
+        assert!(productive.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:proper-noun:iuda"
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+    }
+
+    #[test]
+    fn v16_productive_nominal_families_round_trip_through_the_reverse_index() {
+        for (surface, id, expected_cell) in [
+            (
+                "беззако́нїємъ",
+                "synodal:noun:bezzakonie",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    animacy: Animacy::Inanimate,
+                }),
+            ),
+            (
+                "є҆гѵ́птомъ",
+                "synodal:proper-noun:egipet",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    animacy: Animacy::Inanimate,
+                }),
+            ),
+            (
+                "є҆гѵ́петстїи",
+                "synodal:adjective:egipetskii",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+            (
+                "є҆гѵ́петскихъ",
+                "synodal:adjective:egipetskii",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+            (
+                "і҆ꙋ́дина",
+                "synodal:adjective:iudin",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+        ] {
+            let analyses = analyze(surface).unwrap_or_else(|error| panic!("{surface}: {error}"));
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == id
+                        && analysis.cell == Some(expected_cell)
+                        && analysis.source == AnalysisSource::SynodalProductiveRule
+                }),
+                "missing productive reverse analysis for {surface}: {analyses:?}"
+            );
+        }
+
+        for id in ["synodal:adjective:egipetskii", "synodal:adjective:iudin"] {
+            let cells = analysis_cells_by_id(&LexemeId::from(id), Inflector::default())
+                .expect("typed positive adjective inventory");
+            assert!(cells.iter().any(|cell| matches!(
+                cell,
+                GrammarCell::Adjective(AdjectiveCell {
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                    ..
+                })
+            )));
+            assert!(cells.iter().any(|cell| matches!(
+                cell,
+                GrammarCell::Adjective(AdjectiveCell {
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                    ..
+                })
+            )));
+            assert!(!cells.iter().any(|cell| matches!(
+                cell,
+                GrammarCell::Adjective(AdjectiveCell {
+                    comparison: Comparison::Comparative | Comparison::Superlative,
+                    ..
+                })
+            )));
+        }
+    }
+
+    #[test]
+    fn v17_productive_nominal_families_round_trip_through_the_reverse_index() {
+        for (surface, id, expected_cell) in [
+            (
+                "человѣ́чими",
+                "synodal:adjective:chelovech",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Instrumental,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+            (
+                "человѣ́ческими",
+                "synodal:adjective:chelovecheskii",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Instrumental,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+            (
+                "і҆ѡ́сифомъ",
+                "synodal:proper-noun:iosif",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    animacy: Animacy::Animate,
+                }),
+            ),
+            (
+                "і҆ѡ́сифова",
+                "synodal:adjective:iosifov",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+            (
+                "і҆ѻрда́номъ",
+                "synodal:proper-noun:iordan",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Instrumental,
+                    number: Number::Singular,
+                    animacy: Animacy::Inanimate,
+                }),
+            ),
+            (
+                "і҆ѻрда́нскихъ",
+                "synodal:adjective:iordanskii",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+            (
+                "леѵі́тꙋ",
+                "synodal:noun:levit",
+                GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                    case: Case::Dative,
+                    number: Number::Singular,
+                    animacy: Animacy::Animate,
+                }),
+            ),
+            (
+                "леѵі́тскихъ",
+                "synodal:adjective:levitskii",
+                GrammarCell::Adjective(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                }),
+            ),
+        ] {
+            let analyses = analyze(surface).unwrap_or_else(|error| panic!("{surface}: {error}"));
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == id
+                        && analysis.cell == Some(expected_cell)
+                        && analysis.source == AnalysisSource::SynodalProductiveRule
+                }),
+                "missing productive reverse analysis for {surface}: {analyses:?}"
+            );
+        }
+
+        let vne = analyze("внѣ̀").expect("reviewed invariant adverb");
+        assert!(vne.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:adverb:vne"
+                && analysis.cell == Some(GrammarCell::Indeclinable)
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let human_cells = analysis_cells_by_id(
+            &LexemeId::from("synodal:adjective:chelovech"),
+            Inflector::default(),
+        )
+        .expect("typed historical -jь adjective inventory");
+        assert!(human_cells.iter().any(|cell| matches!(
+            cell,
+            GrammarCell::Adjective(AdjectiveCell {
+                form: AdjectiveForm::Short,
+                comparison: Comparison::Positive,
+                ..
+            })
+        )));
+        assert!(!human_cells.iter().any(|cell| matches!(
+            cell,
+            GrammarCell::Adjective(AdjectiveCell {
+                form: AdjectiveForm::Long,
+                ..
+            })
+        )));
+    }
+
+    #[test]
+    fn ottudu_is_an_exact_mark_sensitive_indeclinable_adverb() {
+        let marked = analyze("ѿтꙋ́дꙋ").expect("reviewed pronominal adverb");
+        assert!(marked.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:adverb:ottudu"
+                && analysis.cell == Some(GrammarCell::Indeclinable)
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let wrongly_accented = analyze("ѿтꙋдꙋ́").expect("orthographically valid negative control");
+        assert!(
+            wrongly_accented
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:adverb:ottudu")
+        );
+    }
+
+    #[test]
+    fn dokole_is_an_exact_mark_sensitive_interrogative_adverb() {
+        let marked = analyze("доко́лѣ").expect("reviewed interrogative temporal adverb");
+        assert!(marked.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:adverb:dokole"
+                && analysis.cell == Some(GrammarCell::Indeclinable)
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let wrongly_accented = analyze("доколѣ́").expect("orthographically valid negative control");
+        assert!(
+            wrongly_accented
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:adverb:dokole")
+        );
+    }
+
+    #[test]
+    fn o_interjection_is_exact_and_distinct_from_the_o_preposition() {
+        let interjection = analyze("ѽ").expect("reviewed exact interjection");
+        assert!(interjection.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == "synodal:interjection:o"
+                && analysis.cell == Some(GrammarCell::Indeclinable)
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        let preposition = analyze("ѡ҆").expect("reviewed exact preposition");
+        assert!(
+            preposition
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:interjection:o")
+        );
+    }
+
+    #[test]
+    fn skonchanie_reverse_index_preserves_exact_and_productive_cells() {
+        for (surface, case, number, source) in [
+            (
+                "сконча́нїи",
+                Case::Locative,
+                Number::Singular,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "сконча́нїємъ",
+                Case::Dative,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+        ] {
+            let analyses = analyze(surface).expect("valid completion-noun form");
+            assert!(analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == "synodal:noun:skonchanie"
+                    && analysis.cell
+                        == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                            case,
+                            number,
+                            animacy: Animacy::Inanimate,
+                        }))
+                    && analysis.source == source
+            }));
+        }
+    }
+
+    #[test]
+    fn reviewed_v21_soft_ie_nouns_preserve_exact_and_productive_reverse_cells() {
+        for (lexeme_id, exact_surface, exact_case, productive_surface) in [
+            (
+                "synodal:noun:videnie",
+                "видѣ́нїи",
+                Case::Locative,
+                "видѣ́нїємъ",
+            ),
+            (
+                "synodal:noun:spasenie",
+                "спасе́нїи",
+                Case::Locative,
+                "спасе́нїємъ",
+            ),
+            (
+                "synodal:noun:ponoshenie",
+                "поноше́нїи",
+                Case::Locative,
+                "поноше́нїємъ",
+            ),
+            (
+                "synodal:noun:otmshchenie",
+                "ѿмще́нїи",
+                Case::Locative,
+                "ѿмще́нїємъ",
+            ),
+        ] {
+            let exact = analyze(exact_surface).expect("reviewed exact soft -їе form");
+            assert!(exact.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && analysis.cell
+                        == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                            case: exact_case,
+                            number: Number::Singular,
+                            animacy: Animacy::Inanimate,
+                        }))
+                    && analysis.source == AnalysisSource::ExactSynodalAttestation
+            }));
+
+            let productive =
+                analyze(productive_surface).expect("reviewed productive soft -їе form");
+            assert!(productive.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && analysis.cell
+                        == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                            case: Case::Dative,
+                            number: Number::Plural,
+                            animacy: Animacy::Inanimate,
+                        }))
+                    && analysis.source == AnalysisSource::SynodalProductiveRule
+            }));
+        }
+    }
+
+    #[test]
+    fn knyaz_reverse_index_preserves_exact_variants_and_productive_cells() {
+        let lexeme_id = "synodal:noun:v07-345d6105fdd39fce";
+        for (surface, case, number, source) in [
+            (
+                "кнѧзе́й",
+                Case::Genitive,
+                Number::Plural,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "кнѧзє́мъ",
+                Case::Dative,
+                Number::Plural,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "кнѧ́зїе",
+                Case::Nominative,
+                Number::Plural,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "кнѧ́земъ",
+                Case::Instrumental,
+                Number::Singular,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "кнѧ́зи",
+                Case::Locative,
+                Number::Singular,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "кнѧ̑зь",
+                Case::Genitive,
+                Number::Plural,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "кнѧзе́хъ",
+                Case::Locative,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "кнѧ́зѣ",
+                Case::Locative,
+                Number::Singular,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "кнѧ̑зѧ",
+                Case::Accusative,
+                Number::Dual,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+        ] {
+            let analyses = analyze(surface).unwrap_or_else(|error| panic!("{surface}: {error}"));
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == lexeme_id
+                        && analysis.cell
+                            == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                                case,
+                                number,
+                                animacy: Animacy::Animate,
+                            }))
+                        && analysis.source == source
+                }),
+                "missing {source:?} {case:?} {number:?} analysis for {surface}: {analyses:?}"
+            );
+        }
+
+        for surface in ["кнѧ́зь", "кнѧ́зѧ", "кнѧ́земъ"] {
+            let analyses = analyze(surface).expect("reviewed animate prince analysis");
+            assert!(analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && matches!(
+                        analysis.cell,
+                        Some(GrammarCell::Noun(cell)) if cell.animacy == Animacy::Animate
+                    )
+            }));
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && matches!(
+                        analysis.cell,
+                        Some(GrammarCell::Noun(cell)) if cell.animacy == Animacy::Inanimate
+                    )
+            }));
+        }
+
+        let wrong_accent = analyze("кнѧ́зей").expect("valid but wrongly accented surface");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != lexeme_id)
+        );
+    }
+
+    #[test]
+    fn zhrets_reverse_index_preserves_exact_variants_and_productive_cells() {
+        let lexeme_id = "synodal:noun:v11-332e30b022aa";
+        for (surface, case, number, source) in [
+            (
+                "жре́цъ",
+                Case::Nominative,
+                Number::Singular,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "жерцꙋ̀",
+                Case::Dative,
+                Number::Singular,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "жерце́мъ",
+                Case::Instrumental,
+                Number::Singular,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "жерцє́мъ",
+                Case::Dative,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "жерцє́въ",
+                Case::Genitive,
+                Number::Plural,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "жрє́цъ",
+                Case::Genitive,
+                Number::Plural,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "жерцѣ́хъ",
+                Case::Locative,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "жерца́ми",
+                Case::Instrumental,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+        ] {
+            let analyses = analyze(surface).unwrap_or_else(|error| panic!("{surface}: {error}"));
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == lexeme_id
+                        && analysis.cell
+                            == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                                case,
+                                number,
+                                animacy: Animacy::Animate,
+                            }))
+                        && analysis.source == source
+                }),
+                "missing {source:?} {case:?} {number:?} analysis for {surface}: {analyses:?}"
+            );
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && matches!(
+                        analysis.cell,
+                        Some(GrammarCell::Noun(cell)) if cell.animacy == Animacy::Inanimate
+                    )
+            }));
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && analysis.cell == Some(GrammarCell::LexicalForm)
+            }));
+        }
+
+        let wrong_accent = analyze("же́рцꙋ").expect("valid but wrongly accented surface");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != lexeme_id)
+        );
+    }
+
+    #[test]
+    fn prestol_reverse_index_preserves_exact_wide_omega_and_inanimate_productivity() {
+        let lexeme_id = "synodal:noun:prestol";
+        for (surface, case, number, source) in [
+            (
+                "престо́лъ",
+                Case::Nominative,
+                Number::Singular,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "престо́ломъ",
+                Case::Instrumental,
+                Number::Singular,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "престо́лы",
+                Case::Accusative,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "престо́лѡвъ",
+                Case::Genitive,
+                Number::Plural,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+        ] {
+            let analyses = analyze(surface).unwrap_or_else(|error| panic!("{surface}: {error}"));
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == lexeme_id
+                        && analysis.cell
+                            == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                                case,
+                                number,
+                                animacy: Animacy::Inanimate,
+                            }))
+                        && analysis.source == source
+                }),
+                "missing {source:?} {case:?} {number:?} analysis for {surface}: {analyses:?}"
+            );
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && matches!(
+                        analysis.cell,
+                        Some(GrammarCell::Noun(cell)) if cell.animacy == Animacy::Animate
+                    )
+            }));
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && analysis.cell == Some(GrammarCell::LexicalForm)
+            }));
+        }
+
+        let wrong_accent = analyze("пре́столомъ").expect("valid but wrongly accented surface");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != lexeme_id)
+        );
+    }
+
+    #[test]
+    fn otrocha_reverse_index_preserves_exact_short_and_productive_extended_cells() {
+        let lexeme_id = "synodal:noun:otrocha";
+        for (surface, case, number, source) in [
+            (
+                "ѻ҆троча̀",
+                Case::Nominative,
+                Number::Singular,
+                AnalysisSource::SynodalNormativeTable,
+            ),
+            (
+                "Ѻ҆троча́",
+                Case::Nominative,
+                Number::Singular,
+                AnalysisSource::ExactSynodalAttestation,
+            ),
+            (
+                "ѻ҆троча́те",
+                Case::Genitive,
+                Number::Singular,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "ѻ҆троча́ти",
+                Case::Dative,
+                Number::Singular,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "ѻ҆троча́та",
+                Case::Nominative,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+            (
+                "ѻ҆троча́тъ",
+                Case::Genitive,
+                Number::Plural,
+                AnalysisSource::SynodalProductiveRule,
+            ),
+        ] {
+            let analyses = analyze(surface).unwrap_or_else(|error| panic!("{surface}: {error}"));
+            assert!(
+                analyses.iter().any(|analysis| {
+                    analysis.lexeme.id().as_str() == lexeme_id
+                        && analysis.cell
+                            == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                                case,
+                                number,
+                                animacy: Animacy::Inanimate,
+                            }))
+                        && analysis.source == source
+                }),
+                "missing {source:?} {case:?} {number:?} analysis for {surface}: {analyses:?}"
+            );
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && matches!(
+                        analysis.cell,
+                        Some(GrammarCell::Noun(cell)) if cell.animacy == Animacy::Animate
+                    )
+            }));
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && analysis.cell == Some(GrammarCell::LexicalForm)
+            }));
+        }
+
+        let wrong_accent = analyze("ѻ҆тро́чати").expect("valid but wrongly accented surface");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != lexeme_id)
+        );
+    }
+
+    #[test]
+    fn edin_reverse_index_preserves_exact_witnesses_and_singular_only_productivity() {
+        let lexeme_id = "synodal:numeral:edin";
+        let instrumental = analyze("є҆ди́нѣмъ").expect("reviewed cardinal-one instrumental");
+        assert!(instrumental.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == lexeme_id
+                && matches!(
+                    analysis.cell,
+                    Some(GrammarCell::Numeral(NumeralCell {
+                        kind: NumeralKind::Cardinal,
+                        case: Case::Instrumental,
+                        number: Number::Singular,
+                        gender: Some(Gender::Neuter),
+                        ..
+                    }))
+                )
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+        assert!(instrumental.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == lexeme_id
+                && matches!(
+                    analysis.cell,
+                    Some(GrammarCell::Numeral(NumeralCell {
+                        kind: NumeralKind::Cardinal,
+                        case: Case::Instrumental,
+                        number: Number::Singular,
+                        gender: Some(Gender::Masculine),
+                        ..
+                    }))
+                )
+                && analysis.source == AnalysisSource::SynodalProductiveRule
+        }));
+
+        let feminine = analyze("є҆ди́ною").expect("reviewed feminine cardinal-one instrumental");
+        assert!(feminine.iter().any(|analysis| {
+            analysis.lexeme.id().as_str() == lexeme_id
+                && matches!(
+                    analysis.cell,
+                    Some(GrammarCell::Numeral(NumeralCell {
+                        kind: NumeralKind::Cardinal,
+                        case: Case::Instrumental,
+                        number: Number::Singular,
+                        gender: Some(Gender::Feminine),
+                        ..
+                    }))
+                )
+                && analysis.source == AnalysisSource::ExactSynodalAttestation
+        }));
+
+        for analyses in [&instrumental, &feminine] {
+            assert!(analyses.iter().all(|analysis| {
+                analysis.lexeme.id().as_str() != lexeme_id
+                    || matches!(
+                        analysis.cell,
+                        Some(GrammarCell::Numeral(NumeralCell {
+                            number: Number::Singular,
+                            ..
+                        }))
+                    )
+            }));
+            assert!(!analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && analysis.cell == Some(GrammarCell::LexicalForm)
+            }));
+        }
+
+        let wrong_accent = analyze("є҆́динѣмъ").expect("valid but wrongly accented numeral");
+        assert!(
+            wrong_accent
+                .iter()
+                .all(|analysis| analysis.lexeme.id().as_str() != lexeme_id)
+        );
+    }
+
+    #[test]
+    fn rab_wide_omega_plural_keeps_attested_genitive_and_normative_accusative() {
+        let lexeme_id = "synodal:noun:rab";
+        let analyses = analyze("рабѡ́въ").expect("reviewed wide-omega servant form");
+        for (case, source) in [
+            (Case::Genitive, AnalysisSource::ExactSynodalAttestation),
+            (Case::Accusative, AnalysisSource::SynodalNormativeTable),
+        ] {
+            assert!(analyses.iter().any(|analysis| {
+                analysis.lexeme.id().as_str() == lexeme_id
+                    && analysis.cell
+                        == Some(GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
+                            case,
+                            number: Number::Plural,
+                            animacy: Animacy::Animate,
+                        }))
+                    && analysis.source == source
+            }));
+        }
     }
 
     #[test]

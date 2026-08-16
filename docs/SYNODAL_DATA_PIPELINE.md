@@ -140,19 +140,39 @@ materialization. The committed ownership ledger retains inactive historical
 packet facts so later rejection, deferral, or re-admission is reproducible.
 
 Full coverage reads only the Ponomar and exact-revision Wikisource records whose
-target recension is `synodal-russian`, retains source and passage identities,
-and writes deterministic JSON/Markdown plus the ordered gap TSV under
-`reports/`. The fixture is committed in `data/synodal/coverage_passages.tsv` and
+target recension is `synodal-russian`, retains source, passage, and partition
+identities, and writes deterministic JSON/Markdown plus two TSVs under
+`reports/`. The review queue is intentionally bounded for human triage. The
+separate `*-frontier.tsv` is the complete, untruncated inventory of every
+strict-top-k-uncovered surface/status combination with true document frequency,
+source/partition provenance, and bounded contexts. `--check` validates all four
+artifacts. The fixture is committed in `data/synodal/coverage_passages.tsv` and
 has a stable hash test.
 
+The final acceptance command is
+`cargo xtask synodal-coverage --offline --check --require-complete`. Its locked
+input hashes and denominator prevent a fixture, custom input, truncated source
+set, alternate policy, or aggregate-only success from satisfying the 100%
+claim.
+
 The lexical queue cross-matches target source-partition frequency with English
-Wiktionary OCS semantics. The OCS candidate contributes only a proposed meaning;
-it is never target surface evidence. Already admitted `(lemma, part of speech)`
-pairs are excluded, ambiguous OCS paradigm owners are retained as blocked rows,
-and output is candidate-only. The evaluation queue searches evaluation-partition
-passages that are disjoint from training and lexical-review evidence. It blocks
-surface matches shared by multiple generated cells and never promotes a match
-without context review.
+Wiktionary OCS semantics and exact-headword semantics from the locked SCI
+Ponomar dictionary. An OCS candidate contributes only a proposed meaning; a
+Ponomar dictionary candidate remains `unknown`/`untyped` until a reviewer
+establishes its part of speech and target cell. Neither is target surface
+evidence, and neither is admitted automatically. Already admitted `(lemma,
+part of speech)` pairs are excluded, ambiguous paradigm or dictionary owners are
+retained as blocked rows, and output is candidate-only. The evaluation queue
+searches evaluation-partition passages that are disjoint from training and
+lexical-review evidence. It blocks surface matches shared by multiple generated
+cells and never promotes a match without context review.
+
+The locked SCI Ponomar source adapter preserves both the frequency list and the
+21,104-row dictionary workbook as distinct structured candidate records. The
+dictionary contributes mixed-recension headword and semantic evidence for
+review; it does not supply a target-recension grammatical cell, and no workbook
+row is admitted automatically. The corpus archive remains unexpanded until its
+component lineage and evidence role are reviewed.
 
 The family queue groups repeated unresolved surfaces conservatively for human
 review and records contexts, possible cells, known and dictionary candidates,

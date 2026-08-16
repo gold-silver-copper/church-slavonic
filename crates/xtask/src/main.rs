@@ -3412,7 +3412,7 @@ fn print_help() {
     );
     eprintln!("  synodal-fixture-bootstrap");
     eprintln!(
-        "  synodal-coverage --offline [--fixture] [--source ID] [--policy POLICY] [--profile PROFILE] [--check]"
+        "  synodal-coverage --offline [--fixture] [--source ID] [--policy POLICY] [--profile PROFILE] [--check] [--require-complete]"
     );
     eprintln!("  synodal-evaluation-queue [--limit N] [--check]");
     eprintln!("  synodal-family-review-queue [--limit N] [--check]");

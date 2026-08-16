@@ -44,6 +44,52 @@
       "unresolved": 17
     }
   },
+  "by_partition": {
+    "evaluation": {
+      "total_tokens": 60,
+      "top_1_analyzed": 29,
+      "top_k_analyzed": 42,
+      "ambiguous": 0,
+      "unresolved": 17
+    },
+    "source": {
+      "total_tokens": 95,
+      "top_1_analyzed": 42,
+      "top_k_analyzed": 73,
+      "ambiguous": 2,
+      "unresolved": 22
+    }
+  },
+  "by_source_partition": {
+    "ponomar-elizabeth-bible-2026-08-09:evaluation": {
+      "total_tokens": 50,
+      "top_1_analyzed": 23,
+      "top_k_analyzed": 36,
+      "ambiguous": 0,
+      "unresolved": 13
+    },
+    "ponomar-elizabeth-bible-2026-08-09:source": {
+      "total_tokens": 35,
+      "top_1_analyzed": 17,
+      "top_k_analyzed": 26,
+      "ambiguous": 1,
+      "unresolved": 9
+    },
+    "wikisource-church-slavonic-bible-2026-08-09:evaluation": {
+      "total_tokens": 10,
+      "top_1_analyzed": 6,
+      "top_k_analyzed": 6,
+      "ambiguous": 0,
+      "unresolved": 4
+    },
+    "wikisource-church-slavonic-bible-2026-08-09:source": {
+      "total_tokens": 60,
+      "top_1_analyzed": 25,
+      "top_k_analyzed": 47,
+      "ambiguous": 1,
+      "unresolved": 13
+    }
+  },
   "by_policy": {
     "strict": {
       "total_tokens": 155,
@@ -1082,6 +1128,38 @@
       "ambiguity-or-spelling-variant": 1,
       "missing-accent-or-orthographic-metadata": 1,
       "unknown-lexeme": 16
+    }
+  },
+  "by_partition_gap": {
+    "evaluation": {
+      "ambiguity-or-spelling-variant": 1,
+      "missing-accent-or-orthographic-metadata": 3,
+      "unknown-lexeme": 14
+    },
+    "source": {
+      "ambiguity-or-spelling-variant": 2,
+      "missing-accent-or-orthographic-metadata": 1,
+      "unknown-lexeme": 21
+    }
+  },
+  "by_source_partition_gap": {
+    "ponomar-elizabeth-bible-2026-08-09:evaluation": {
+      "ambiguity-or-spelling-variant": 1,
+      "missing-accent-or-orthographic-metadata": 2,
+      "unknown-lexeme": 11
+    },
+    "ponomar-elizabeth-bible-2026-08-09:source": {
+      "ambiguity-or-spelling-variant": 1,
+      "missing-accent-or-orthographic-metadata": 1,
+      "unknown-lexeme": 8
+    },
+    "wikisource-church-slavonic-bible-2026-08-09:evaluation": {
+      "missing-accent-or-orthographic-metadata": 1,
+      "unknown-lexeme": 3
+    },
+    "wikisource-church-slavonic-bible-2026-08-09:source": {
+      "ambiguity-or-spelling-variant": 1,
+      "unknown-lexeme": 13
     }
   },
   "by_status": {

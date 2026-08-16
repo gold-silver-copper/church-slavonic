@@ -82,8 +82,16 @@ exact header:
 corpus\tsource_id\twork\tedition\tpassage\tpartition\tsource_recension\ttext
 ```
 
-Newlines inside the final TSV field use the literal escape `\n`. Output is
-deterministic JSON, Markdown, and a frequency-ranked gap TSV.
+Newlines inside the final TSV field use the literal escape `\n`. The consumer
+`coverage` command emits deterministic JSON or Markdown and can write those
+formats plus its bounded frequency-ranked review queue to explicitly requested
+paths. The canonical `cargo xtask synodal-coverage` workflow additionally
+writes a complete `*-frontier.tsv`. That frontier has one row per
+strict-top-k-uncovered surface/status combination, is never truncated, retains
+true document frequency and bounded contexts, and is the authoritative
+inventory for work toward 100% coverage. JSON and Markdown also report every
+partition and every source/partition slice so aggregate gains cannot hide
+held-out regressions.
 
 ## Gap model and precedence
 
@@ -103,8 +111,11 @@ IDs, inferred system, policy/profile, resolver detail, missing fields,
 frequency, true document frequency, bounded source contexts, and the next review
 action. Aggregated rows list all contributing corpora, sources, editions,
 partitions, and recensions, and
-the report includes per-corpus and per-source gap matrices. Non-lexical
-punctuation and recognized numeral tokens are accounted for separately.
+the report includes per-corpus, per-source, per-partition, and
+per-source/partition gap matrices. Non-lexical punctuation is excluded by the
+tokenizer. A canonical Cyrillic numeral receives a typed numeric analysis with
+its parsed value and canonical spelling; it counts only after that parse
+succeeds and never fabricates a dictionary lexeme.
 
 With `--by-family`, coverage also reports reviewed family slices, unresolved
 probable-family diagnostics, and recovery-route estimates for exact evidence,
@@ -131,12 +142,17 @@ cargo xtask synodal-v06-audit --check
 cargo xtask synodal-v07-audit --check
 ```
 
-The first command uses the committed ten-passage fixture. The full command uses
+Each coverage command writes `{stem}.json`, `{stem}.md`,
+`{stem}-review-queue.tsv`, and `{stem}-frontier.tsv`; `--check` validates all
+four byte-for-byte. The first command uses the committed ten-passage fixture. The full command uses
 the locked Ponomar Elizabeth Bible and exact-revision Wikisource adaptations in
 `data/intermediate/synodal/`; it does not treat OCS or modern Russian text as
 target attestation. The lexical queue cross-matches source-partition target
-frequency with independently sourced OCS semantics, excludes admitted target
-lexemes, and preserves ambiguous rejections. It never edits reviewed TSVs. The
+frequency with independently sourced OCS semantics and exact-headword semantics
+from the locked SCI Ponomar dictionary. Ponomar proposals remain
+`unknown`/`untyped` until human part-of-speech and cell review. The queue
+excludes admitted target lexemes, preserves ambiguous rejections, never treats
+dictionary rows as target surface evidence, and never edits reviewed TSVs. The
 evaluation queue uses only held-out passages, blocks generated surface forms
 that correspond to more than one cell, and likewise remains candidate-only.
 
@@ -158,6 +174,14 @@ target-occurrence, source-morphology, and held-out roles. The apply gate
 materializes only admitted rows and rejects missing evidence or partition
 overlap; the v0.7 audit freezes the canonical 70% result and verification
 ledger.
+
+`cargo xtask synodal-coverage --offline --check --require-complete` is the
+non-gameable final gate. It accepts only the default full sources, locked
+intermediate hashes, strict policy, and liturgical profile; rejects fixture,
+custom-source, alternate-intermediate, and truncated runs; locks the passage,
+token, and type denominator; and requires zero uncovered tokens in every
+corpus, source, partition, source/partition, and policy slice. It is expected to
+fail until the 100% program is genuinely finished.
 
 Reviewed admissions are made explicitly in `data/synodal/lexical_reviews.tsv`.
 They require a stable target identity, a reviewed semantic decision, a locked

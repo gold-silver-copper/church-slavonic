@@ -13,6 +13,7 @@ use synodal_church_slavonic_dictionary::coverage::tokenize;
 use unicode_normalization::UnicodeNormalization;
 
 const SEMANTIC_SOURCE: &str = "english-wiktionary-ocs-kaikki-2026-08-07";
+const PONOMAR_SEMANTIC_SOURCE: &str = "ponomar-modern-church-slavonic-corpus-2016";
 const ATTESTATION_SOURCE: &str = "ponomar-elizabeth-bible-2026-08-09";
 type FrequencyIndex = (BTreeMap<String, usize>, BTreeMap<String, String>);
 
@@ -25,6 +26,8 @@ struct Candidate {
     normalized_spelling: String,
     partition: String,
     raw_spelling: String,
+    part_of_speech: String,
+    grammatical_cell: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -46,6 +49,11 @@ struct WiktionarySense {
 #[derive(Clone, Debug, Deserialize)]
 struct WiktionaryForm {
     form: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct PonomarDictionaryEntry {
+    definition: String,
 }
 
 #[derive(Clone, Debug)]
@@ -211,6 +219,78 @@ fn proposals(
         if replace {
             selected.insert(group, proposal);
         }
+    }
+
+    let selected_keys = selected
+        .values()
+        .map(|proposal| spelling_key(&proposal.lemma))
+        .collect::<BTreeSet<_>>();
+    let mut ponomar_entries = BTreeMap::<String, Vec<(Candidate, PonomarDictionaryEntry)>>::new();
+    for line in
+        fs::read_to_string(intermediate.join(format!("{PONOMAR_SEMANTIC_SOURCE}.jsonl")))?.lines()
+    {
+        let candidate: Candidate = serde_json::from_str(line)?;
+        if candidate.source_id != PONOMAR_SEMANTIC_SOURCE
+            || candidate.part_of_speech != "dictionary-entry"
+            || candidate.grammatical_cell != "headword-with-definition"
+        {
+            continue;
+        }
+        let entry: PonomarDictionaryEntry = serde_json::from_str(&candidate.raw_spelling)?;
+        ponomar_entries
+            .entry(spelling_key(&candidate.normalized_spelling))
+            .or_default()
+            .push((candidate, entry));
+    }
+    for (key, mut candidates) in ponomar_entries {
+        if selected_keys.contains(&key)
+            || existing
+                .iter()
+                .any(|(existing_key, _)| existing_key == &key)
+        {
+            continue;
+        }
+        let (Some(&frequency), Some(attestation)) = (frequencies.get(&key), attestations.get(&key))
+        else {
+            continue;
+        };
+        candidates.sort_by(|left, right| left.0.candidate_id.cmp(&right.0.candidate_id));
+        let ambiguous = candidates.len() > 1;
+        let (candidate, entry) = candidates.remove(0);
+        let gloss = sanitize(&entry.definition);
+        if gloss.is_empty() {
+            continue;
+        }
+        let (decision, review_reason) = if ambiguous {
+            (
+                "blocked-ambiguous-homograph".into(),
+                "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication".into(),
+            )
+        } else {
+            (
+                "candidate-unreviewed".into(),
+                "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation".into(),
+            )
+        };
+        let lemma = normalize_lookup_accentless(&attestation.printed);
+        selected.insert(
+            (spelling_key(&lemma), "unknown".into()),
+            Proposal {
+                rank: 0,
+                frequency,
+                lemma,
+                printed: attestation.printed.clone(),
+                part_of_speech: "unknown".into(),
+                cell: "untyped".into(),
+                gloss,
+                semantic_candidate_id: candidate.candidate_id,
+                attestation_candidate_id: attestation.candidate_id.clone(),
+                passage: attestation.passage.clone(),
+                context: sanitize(&attestation.context),
+                decision,
+                review_reason,
+            },
+        );
     }
     let mut proposals: Vec<_> = selected.into_values().collect();
     proposals.sort_by_key(|proposal| {
@@ -437,5 +517,14 @@ mod tests {
     fn spelling_key_normalizes_marks_and_positional_letters() {
         assert_eq!(spelling_key("ꙗ҆́кѡ"), spelling_key("ꙗко"));
         assert_eq!(spelling_key("и҆"), spelling_key("і"));
+    }
+
+    #[test]
+    fn ponomar_dictionary_candidate_keeps_reviewable_semantics() {
+        let entry: PonomarDictionaryEntry = serde_json::from_str(
+            r#"{"id":"18040","word":"А҆ба́че","transcription":"абаче","definition":"впрочем, однако, но"}"#,
+        )
+        .expect("Ponomar dictionary entry");
+        assert_eq!(entry.definition, "впрочем, однако, но");
     }
 }

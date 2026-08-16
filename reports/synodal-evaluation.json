@@ -2,26 +2,26 @@
   "schema_version": 5,
   "target_recension": "synodal-russian",
   "fixture_source": "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
-  "fixture_rows": 2136,
+  "fixture_rows": 2267,
   "retracted_fixture_rows": [
     "eval:v06:exact-93e43107a26fd7a1",
     "eval:v06:exact-cf3b7adc62194922",
     "eval:v06:exact-fc2b61b3399c2100"
   ],
   "phrase_fixture_rows": 14,
-  "abbreviation_fixture_rows": 74,
+  "abbreviation_fixture_rows": 81,
   "expanded": {
-    "total": 2136,
-    "returned": 2136,
-    "top_1_correct": 2075,
-    "top_k_correct": 2136,
+    "total": 2267,
+    "returned": 2267,
+    "top_1_correct": 2203,
+    "top_k_correct": 2267,
     "abstained": 0
   },
   "printed": {
-    "total": 2136,
-    "returned": 2136,
-    "top_1_correct": 1992,
-    "top_k_correct": 2136,
+    "total": 2267,
+    "returned": 2267,
+    "top_1_correct": 2119,
+    "top_k_correct": 2267,
     "abstained": 0
   },
   "expanded_disagreements": [
@@ -326,7 +326,8 @@
       "returned_top_k": [
         "ѧзыкъ",
         "ꙗзыкъ",
-        "ꙗзыкъ"
+        "ꙗзыкъ",
+        "ꙗзыкѡвъ"
       ]
     },
     {
@@ -538,7 +539,8 @@
       "returned_top_k": [
         "ѧзыкъ",
         "ꙗзыкъ",
-        "ꙗзыкъ"
+        "ꙗзыкъ",
+        "ꙗзыкѡвъ"
       ]
     },
     {
@@ -659,6 +661,36 @@
       "returned_top_k": [
         "тмы",
         "тьмы"
+      ]
+    },
+    {
+      "id": "eval:v15:noun:tsar-nominative-plural-tsarie",
+      "cell": "noun:nominative:plural:animate",
+      "expected": "царїе",
+      "returned_top_1": "цари",
+      "returned_top_k": [
+        "цари",
+        "царїе"
+      ]
+    },
+    {
+      "id": "eval:v17:noun:levit-accusative-plural-omega",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "леѵітѡвъ",
+      "returned_top_1": "леѵіты",
+      "returned_top_k": [
+        "леѵіты",
+        "леѵітѡвъ"
+      ]
+    },
+    {
+      "id": "eval:v24:noun:rab-wide-omega-accusative-plural",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "рабѡвъ",
+      "returned_top_1": "рабы",
+      "returned_top_k": [
+        "рабы",
+        "рабѡвъ"
       ]
     }
   ],
@@ -811,7 +843,8 @@
       "returned_top_1": "ра́бъ",
       "returned_top_k": [
         "ра́бъ",
-        "ра̑бъ"
+        "ра̑бъ",
+        "рабѡ́въ"
       ]
     },
     {
@@ -1602,7 +1635,8 @@
       "returned_top_k": [
         "Ѧ҆зы́къ",
         "ꙗ҆зы́къ",
-        "ꙗ҆зы̑къ"
+        "ꙗ҆зы̑къ",
+        "ꙗ҆зы́кѡвъ"
       ]
     },
     {
@@ -2006,7 +2040,8 @@
       "returned_top_k": [
         "Ѧ҆зы́къ",
         "ꙗ҆зы́къ",
-        "ꙗ҆зы̑къ"
+        "ꙗ҆зы̑къ",
+        "ꙗ҆зы́кѡвъ"
       ]
     },
     {
@@ -2148,24 +2183,64 @@
         "си̑мъ",
         "Си́мъ"
       ]
+    },
+    {
+      "id": "eval:v11:preposition:vosled",
+      "cell": "indeclinable",
+      "expected": "в̾слѣ́дъ",
+      "returned_top_1": "вослѣ́дъ",
+      "returned_top_k": [
+        "вослѣ́дъ",
+        "в̾слѣ́дъ"
+      ]
+    },
+    {
+      "id": "eval:v15:noun:tsar-nominative-plural-tsarie",
+      "cell": "noun:nominative:plural:animate",
+      "expected": "ца́рїе",
+      "returned_top_1": "цари̑",
+      "returned_top_k": [
+        "цари̑",
+        "ца́рїе"
+      ]
+    },
+    {
+      "id": "eval:v17:noun:levit-accusative-plural-omega",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "леѵі́тѡвъ",
+      "returned_top_1": "леѵі́ты",
+      "returned_top_k": [
+        "леѵі́ты",
+        "леѵі́тѡвъ"
+      ]
+    },
+    {
+      "id": "eval:v24:noun:rab-wide-omega-accusative-plural",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "рабѡ́въ",
+      "returned_top_1": "рабы̑",
+      "returned_top_k": [
+        "рабы̑",
+        "рабѡ́въ"
+      ]
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 2962,
-    "returned": 2962,
-    "top_1_correct": 2729,
-    "top_k_correct": 2962,
+    "total": 3237,
+    "returned": 3237,
+    "top_1_correct": 2978,
+    "top_k_correct": 3237,
     "abstained": 0
   },
   "exact_registry_printed_round_trip": {
-    "total": 2962,
-    "returned": 2962,
-    "top_1_correct": 2580,
-    "top_k_correct": 2962,
+    "total": 3237,
+    "returned": 3237,
+    "top_1_correct": 2826,
+    "top_k_correct": 3237,
     "abstained": 0
   },
-  "accent_bearing_rows": 2000,
-  "exact_accent_agreement": 2000,
+  "accent_bearing_rows": 2124,
+  "exact_accent_agreement": 2124,
   "by_regularity": {
     "closed-class-held-out-exact-cell": {
       "total": 25,
@@ -2181,11 +2256,221 @@
       "top_k_correct": 30,
       "abstained": 0
     },
+    "exact-held-out-animate-accusative-plural-omega": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 0,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-aorist-third-singular-grave": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-cardinal-one-instrumental-singular-feminine": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-conclusive-conjunction": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-fleeting-vowel-place-name": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-fourth-neuter-at-accusative-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-future-ending-stress": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-future-first-singular-grave": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-genitive-plural-kamora": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-imperative-homograph": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-infinitive": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-interrogative-adverb": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-interrogative-temporal-adverb": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-invariant-adverb": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-invariant-interjection": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
     "exact-held-out-lexical": {
       "total": 383,
       "returned": 383,
       "top_1_correct": 383,
       "top_k_correct": 383,
+      "abstained": 0
+    },
+    "exact-held-out-no-yat-locative-variant": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-nominative-plural-variant": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 0,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-normative-preposition": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-positional-plural": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "exact-held-out-preposition": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-primary-preposition": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-primary-preposition-with-yerok": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-pronominal-adverb": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-temporal-adverb": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-vocalized-preposition": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-wide-e-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "exact-held-out-wide-omega-soft-ie-neuter": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "held-out-exact-wide-omega-cell": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "held-out-productive-velar-cell": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "held-out-velar-palatalization-cell": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
       "abstained": 0
     },
     "irregular": {
@@ -2203,6 +2488,461 @@
       "abstained": 0
     },
     "irregular-participle": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "normative-held-out-wide-omega-animate-accusative-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 0,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-animate-hard-masculine": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-cardinal-one-instrumental-singular-masculine": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-city-name-locative": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-city-name-nominative": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-first-conjugation-future-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-first-conjugation-future-principal-part": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-first-hard-masculine-accusative-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-first-hard-masculine-genitive-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-first-hard-masculine-instrumental-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-first-hard-masculine-nominative-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-first-soft-masculine-instrumental-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-fixed-accent": {
+      "total": 4,
+      "returned": 4,
+      "top_1_correct": 4,
+      "top_k_correct": 4,
+      "abstained": 0
+    },
+    "productive-held-out-fixed-accent-and-breathing": {
+      "total": 3,
+      "returned": 3,
+      "top_1_correct": 3,
+      "top_k_correct": 3,
+      "abstained": 0
+    },
+    "productive-held-out-fixed-oblique-accent": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-fourth-neuter-at-dative-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-fourth-neuter-at-nominative-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-future-third-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-future-third-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-genitive-ending-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-hard-adjective-fixed-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-hard-adjective-sk-st-alternation": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-hard-masculine-fixed-accent": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-hard-masculine-oblique": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-hard-masculine-wide-yat": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-hard-neuter-ending-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-hard-neuter-fixed-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-hard-neuter-zero-ending": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-historical-j-possessive-citation": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-historical-j-possessive-hard-vowel-ending": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-indeclinable-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-instrumental-acute": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-l-participle": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-locative-ending-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-long-adjective-accusative-plural-neuter": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-long-adjective-genitive-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-long-adjective-nominative-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-long-adjective-nominative-plural-neuter": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-mixed-ts-masculine-nominative-plural": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-mobile-accent": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-perfective-finite-accent-and-breathing": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-perfective-finite-principal-part": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-personal-name-accusative": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-personal-name-dative": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "productive-held-out-personal-name-genitive": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-personal-name-nominative": {
+      "total": 7,
+      "returned": 7,
+      "top_1_correct": 7,
+      "top_k_correct": 7,
+      "abstained": 0
+    },
+    "productive-held-out-personal-name-vocative": {
+      "total": 3,
+      "returned": 3,
+      "top_1_correct": 3,
+      "top_k_correct": 3,
+      "abstained": 0
+    },
+    "productive-held-out-possessive-in-adjective": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-possessive-in-adjective-fixed-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-present-active-participle-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-proper-name-dative-ovi": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-relational-adjective": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-river-name-genitive": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-second-conjugation-imperative": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-short-adjective-accusative-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-short-adjective-nominative-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-short-relational-adjective": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-soft-ie-fixed-accent": {
+      "total": 5,
+      "returned": 5,
+      "top_1_correct": 5,
+      "top_k_correct": 5,
+      "abstained": 0
+    },
+    "productive-held-out-soft-ie-genitive": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-soft-ie-neuter-fixed-accent": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-soft-ie-neuter-genitive-singular": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-soft-ie-neuter-instrumental-singular": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-soft-ie-neuter-nominative-singular": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "productive-held-out-substantivized-adjective": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "productive-held-out-vowel-aorist": {
       "total": 1,
       "returned": 1,
       "top_1_correct": 1,
@@ -2432,37 +3172,58 @@
       "top_1_correct": 1,
       "top_k_correct": 1,
       "abstained": 0
+    },
+    "v18-held-out-productive-accent": {
+      "total": 2,
+      "returned": 2,
+      "top_1_correct": 2,
+      "top_k_correct": 2,
+      "abstained": 0
+    },
+    "v18-held-out-source-typed-exact": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
+    },
+    "v19-held-out-normative-short-feminine-accusative": {
+      "total": 1,
+      "returned": 1,
+      "top_1_correct": 1,
+      "top_k_correct": 1,
+      "abstained": 0
     }
   },
   "by_policy": {
     "exploratory": {
-      "total": 2136,
-      "returned": 2136,
-      "top_1_correct": 2075,
-      "top_k_correct": 2136,
+      "total": 2267,
+      "returned": 2267,
+      "top_1_correct": 2203,
+      "top_k_correct": 2267,
       "abstained": 0
     },
     "productive": {
-      "total": 2136,
-      "returned": 2136,
-      "top_1_correct": 2075,
-      "top_k_correct": 2136,
+      "total": 2267,
+      "returned": 2267,
+      "top_1_correct": 2203,
+      "top_k_correct": 2267,
       "abstained": 0
     },
     "strict": {
-      "total": 2136,
-      "returned": 2136,
-      "top_1_correct": 2075,
-      "top_k_correct": 2136,
+      "total": 2267,
+      "returned": 2267,
+      "top_1_correct": 2203,
+      "top_k_correct": 2267,
       "abstained": 0
     }
   },
   "by_attestation_status": {
     "attested": {
-      "total": 2028,
-      "returned": 2028,
-      "top_1_correct": 1968,
-      "top_k_correct": 2028,
+      "total": 2125,
+      "returned": 2125,
+      "top_1_correct": 2063,
+      "top_k_correct": 2125,
       "abstained": 0
     },
     "expected-form-not-returned": {
@@ -2473,47 +3234,47 @@
       "abstained": 0
     },
     "predicted": {
-      "total": 108,
-      "returned": 108,
-      "top_1_correct": 107,
-      "top_k_correct": 108,
+      "total": 142,
+      "returned": 142,
+      "top_1_correct": 140,
+      "top_k_correct": 142,
       "abstained": 0
     }
   },
   "by_morphological_system": {
     "adjective": {
-      "total": 106,
-      "returned": 106,
-      "top_1_correct": 102,
-      "top_k_correct": 106,
+      "total": 122,
+      "returned": 122,
+      "top_1_correct": 118,
+      "top_k_correct": 122,
       "abstained": 0
     },
     "aorist": {
-      "total": 199,
-      "returned": 199,
-      "top_1_correct": 194,
-      "top_k_correct": 199,
+      "total": 201,
+      "returned": 201,
+      "top_1_correct": 196,
+      "top_k_correct": 201,
       "abstained": 0
     },
     "determiner": {
-      "total": 20,
-      "returned": 20,
-      "top_1_correct": 19,
-      "top_k_correct": 20,
+      "total": 21,
+      "returned": 21,
+      "top_1_correct": 20,
+      "top_k_correct": 21,
       "abstained": 0
     },
     "future": {
-      "total": 61,
-      "returned": 61,
-      "top_1_correct": 58,
-      "top_k_correct": 61,
+      "total": 67,
+      "returned": 67,
+      "top_1_correct": 64,
+      "top_k_correct": 67,
       "abstained": 0
     },
     "imperative": {
-      "total": 57,
-      "returned": 57,
-      "top_1_correct": 55,
-      "top_k_correct": 57,
+      "total": 60,
+      "returned": 60,
+      "top_1_correct": 58,
+      "top_k_correct": 60,
       "abstained": 0
     },
     "imperfect": {
@@ -2524,24 +3285,24 @@
       "abstained": 0
     },
     "indeclinable": {
-      "total": 76,
-      "returned": 76,
-      "top_1_correct": 70,
-      "top_k_correct": 76,
+      "total": 88,
+      "returned": 88,
+      "top_1_correct": 82,
+      "top_k_correct": 88,
       "abstained": 0
     },
     "infinitive": {
-      "total": 5,
-      "returned": 5,
-      "top_1_correct": 5,
-      "top_k_correct": 5,
+      "total": 6,
+      "returned": 6,
+      "top_1_correct": 6,
+      "top_k_correct": 6,
       "abstained": 0
     },
     "l-participle": {
-      "total": 18,
-      "returned": 18,
-      "top_1_correct": 18,
-      "top_k_correct": 18,
+      "total": 20,
+      "returned": 20,
+      "top_1_correct": 20,
+      "top_k_correct": 20,
       "abstained": 0
     },
     "lexical-form": {
@@ -2552,31 +3313,31 @@
       "abstained": 0
     },
     "noun": {
-      "total": 879,
-      "returned": 879,
-      "top_1_correct": 849,
-      "top_k_correct": 879,
+      "total": 958,
+      "returned": 958,
+      "top_1_correct": 925,
+      "top_k_correct": 958,
       "abstained": 0
     },
     "numeral": {
-      "total": 20,
-      "returned": 20,
-      "top_1_correct": 19,
-      "top_k_correct": 20,
+      "total": 26,
+      "returned": 26,
+      "top_1_correct": 25,
+      "top_k_correct": 26,
       "abstained": 0
     },
     "participle": {
-      "total": 73,
-      "returned": 73,
-      "top_1_correct": 73,
-      "top_k_correct": 73,
+      "total": 74,
+      "returned": 74,
+      "top_1_correct": 74,
+      "top_k_correct": 74,
       "abstained": 0
     },
     "present": {
-      "total": 57,
-      "returned": 57,
-      "top_1_correct": 56,
-      "top_k_correct": 57,
+      "total": 59,
+      "returned": 59,
+      "top_1_correct": 58,
+      "top_k_correct": 59,
       "abstained": 0
     },
     "pronoun": {
@@ -2589,10 +3350,10 @@
   },
   "by_provenance_path": {
     "exact-synodal-attestation": {
-      "total": 2022,
-      "returned": 2022,
-      "top_1_correct": 1968,
-      "top_k_correct": 2022,
+      "total": 2120,
+      "returned": 2120,
+      "top_1_correct": 2063,
+      "top_k_correct": 2120,
       "abstained": 0
     },
     "synodal-irregular-override": {
@@ -2603,26 +3364,26 @@
       "abstained": 0
     },
     "synodal-normative-table": {
-      "total": 74,
-      "returned": 74,
-      "top_1_correct": 70,
-      "top_k_correct": 74,
+      "total": 78,
+      "returned": 78,
+      "top_1_correct": 74,
+      "top_k_correct": 78,
       "abstained": 0
     },
     "synodal-productive-rule": {
-      "total": 21,
-      "returned": 21,
-      "top_1_correct": 21,
-      "top_k_correct": 21,
+      "total": 50,
+      "returned": 50,
+      "top_1_correct": 50,
+      "top_k_correct": 50,
       "abstained": 0
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
-      "total": 2024,
-      "returned": 2024,
-      "top_1_correct": 1969,
-      "top_k_correct": 2024,
+      "total": 2155,
+      "returned": 2155,
+      "top_1_correct": 2097,
+      "top_k_correct": 2155,
       "abstained": 0
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
@@ -2649,25 +3410,25 @@
     "abstained": 0
   },
   "abbreviation_expansion": {
-    "total": 74,
-    "returned": 74,
-    "top_1_correct": 65,
-    "top_k_correct": 74,
+    "total": 81,
+    "returned": 81,
+    "top_1_correct": 71,
+    "top_k_correct": 81,
     "abstained": 0
   },
   "leakage": {
     "masked_expanded": {
-      "total": 502,
-      "returned": 502,
-      "top_1_correct": 501,
-      "top_k_correct": 502,
+      "total": 536,
+      "returned": 536,
+      "top_1_correct": 535,
+      "top_k_correct": 536,
       "abstained": 0
     },
     "masked_printed": {
-      "total": 502,
-      "returned": 502,
-      "top_1_correct": 501,
-      "top_k_correct": 502,
+      "total": 536,
+      "returned": 536,
+      "top_1_correct": 535,
+      "top_k_correct": 536,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_expanded": {

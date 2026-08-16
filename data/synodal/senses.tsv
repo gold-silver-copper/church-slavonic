@@ -14,6 +14,7 @@ synodal:adjective:prepodobn	sense:venerable-saint	venerable; saintly	religion,ti
 synodal:adjective:svyat	sense:holy	holy; sacred	religion,quality	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:adjective:v06-israel	sense:v06:israel-adjective	of Israel; Israelite	place,people,relation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:adjective:vechn	sense:eternal	eternal; everlasting	time,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:adjective:zlyi	sense:v11:adjective:zlyi	evil; bad	quality,morality,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
 synodal:adverb:blagochestno	sense:piously	piously; in a godly manner	religion,manner	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:determiner:sam	sense:self	self; the same person or thing	determination,emphasis	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:determiner:ves	sense:all-whole	all; whole; every member of a set	determination,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
@@ -190,3 +191,47 @@ synodal:verb:pisati	sense:write	to write	action,communication	dyachenko-1900-sca
 synodal:verb:v06-iziti	sense:v06:iziti	go out	motion	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus
 synodal:verb:v06-vzeti	sense:v06:vzeti	take; pick up	action,possession	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus
 synodal:verb:v06-vzyti	sense:v06:vzyti	go up; ascend	motion	english-wiktionary-ocs-kaikki-2026-08-07	old-church-slavonic	reviewed-with-synodal-corpus
+synodal:noun:svidenie	sense:v11:noun:svidenie	testimony; revelation; commandment	religion,communication,law	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:nasledie	sense:v12:noun:nasledie	inheritance; heritage; possession	law,religion,property	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:predel	sense:v12:noun:predel	boundary; border; limit; ordinance	place,law,relation	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:sosud	sense:v11:noun:sosud	vessel; implement; receptacle; chosen instrument	object,religion,metaphor	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:iuda	sense:v11:proper-noun:iuda	Judah; Judas; the tribe or land of Judah	person,place,biblical	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:mesyats	sense:v13:noun:mesyats	month; moon; lunar or calendar period	time,astronomy,calendar	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:vsesozhzhenie	sense:v13:noun:vsesozhzhenie	whole burnt offering; sacrifice consumed by fire	religion,sacrifice	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:sretenie	sense:v13:noun:sretenie	meeting; encounter; going to meet	action,motion,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:vino	sense:v14:noun:vino	wine; fermented grape drink	food,drink,religion	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:verb:polozhiti	sense:v14:verb:polozhiti	to put; place; set; appoint	action,position,causation	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:noun:otechestvo	sense:v15:noun:otechestvo	lineage; clan; family; native country	person,society,place	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:noun:bezzakonie	sense:v16:noun:bezzakonie	lawlessness; iniquity; violation of divine law	law,religion,ethics	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:egipet	sense:v16:proper-noun:egipet	Egypt	place,biblical	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:adjective:egipetskii	sense:v16:adjective:egipetskii	Egyptian; of Egypt	place,relation,biblical	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:adjective:iudin	sense:v16:adjective:iudin	of Judah; Judahite; Judean	person,place,people,relation,biblical	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:adjective:chelovech	sense:v17:adjective:chelovech	human; belonging or proper to a person	person,relation,humankind	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adjective:chelovecheskii	sense:v17:adjective:chelovecheskii	human; pertaining to humankind	person,relation,humankind	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:proper-noun:iosif	sense:v17:proper-noun:iosif	Joseph; biblical personal name	person,biblical	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:adjective:iosifov	sense:v17:adjective:iosifov	of Joseph; Joseph's	person,relation,biblical	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:proper-noun:iordan	sense:v17:proper-noun:iordan	Jordan; the river Jordan	place,geography,biblical	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:adjective:iordanskii	sense:v17:adjective:iordanskii	Jordanian; of the Jordan	place,geography,relation,biblical	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:noun:levit	sense:v17:noun:levit	Levite; member of the tribe or order of Levi	person,people,religion,biblical	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:adjective:levitskii	sense:v17:adjective:levitskii	Levitical; pertaining to the Levites	people,religion,relation,biblical	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:adverb:vne	sense:v17:adverb:vne	outside; beyond; out of	place,relation	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:adverb:vsegda	sense:v18:adverb:vsegda	always; at all times	time,frequency	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:conjunction:temzhe	sense:v18:conjunction:temzhe	therefore; for that reason	conclusion,discourse	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:preposition:predo	sense:v18:preposition:predo	before; in front of	relation,place	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adverb:vskuyu	sense:v18:adverb:vskuyu	why; for what reason	reason,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:adverb:dokole	sense:v23:adverb:dokole	how long; until when	time,interrogative	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:preposition:ob	sense:v18:preposition:ob	about; around; on the other side of	relation,topic,place	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:proper-noun:samuil	sense:v18:proper-noun:samuil	Samuel; biblical prophet and judge	person,biblical,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:vavylon	sense:v18:proper-noun:vavylon	Babylon; biblical city and symbolic city	place,biblical,geography	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:avraam	sense:v18:proper-noun:avraam	Abraham; biblical patriarch	person,biblical,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:ioav	sense:v18:proper-noun:ioav	Joab; nephew and commander of David	person,biblical	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:iakov	sense:v18:proper-noun:iakov	Jacob or James; biblical personal name	person,biblical,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:aaron	sense:v18:proper-noun:aaron	Aaron; first high priest of Israel	person,biblical,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:daniil	sense:v18:proper-noun:daniil	Daniel; biblical prophet	person,biblical,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:proper-noun:petr	sense:v19:proper-noun:petr	Peter; biblical apostle	person,biblical,religion	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:adjective:mertv	sense:v19:adjective:mertv	dead; deceased; substantivized the dead	state,life-death,religion	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:skonchanie	sense:v20:noun:skonchanie	completion; ending; conclusion	time,event	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:videnie	sense:v21:noun:videnie	vision; appearance; sight	perception,vision	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:spasenie	sense:v21:noun:spasenie	salvation; deliverance; protection	religion,deliverance	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:ponoshenie	sense:v21:noun:ponoshenie	reproach; disgrace; shame	social,shame	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:noun:otmshchenie	sense:v21:noun:otmshchenie	vengeance; retribution; punishment	justice,retribution	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus

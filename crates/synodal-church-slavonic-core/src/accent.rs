@@ -4,7 +4,8 @@ use unicode_normalization::{UnicodeNormalization, char::canonical_combining_clas
 
 use crate::{
     AdjectiveForm, AuthorityRole, Case, Comparison, Error, Evidence, EvidenceKind, FiniteTense,
-    Gender, GrammarCell, MetadataField, Number, Recension, Result, SynodalWord,
+    Gender, GrammarCell, MetadataField, Number, ParticipleTense, ParticipleVoice, Recension,
+    Result, SynodalWord,
 };
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -84,11 +85,13 @@ pub enum AccentEnvironment {
 }
 
 /// A vowel position in the generated expanded form. Stem positions count from
-/// the lexical left edge; ending positions count from the word's right edge.
+/// the lexical left edge, word positions count from the realized left edge,
+/// and ending positions count from the word's right edge.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum AccentPlacement {
     StemVowelFromStart(u8),
+    WordVowelFromStart(u8),
     EndingVowelFromEnd(u8),
 }
 
@@ -120,13 +123,50 @@ pub enum AccentScope {
         genders: Vec<Gender>,
         animacies: Vec<crate::Animacy>,
     },
+    /// A reusable numeral rule restricted by grammatical number. Numeral
+    /// systems such as cardinal `one` can have source-defined accent contrasts
+    /// between their cardinal singular inventory and adjective-like dual or
+    /// plural uses of the same historical stem.
+    Numeral {
+        numbers: Vec<Number>,
+    },
     Adjective {
         form: AdjectiveForm,
         comparison: Comparison,
         numbers: Vec<Number>,
     },
+    /// An adjective or determiner rule whose stress depends on the complete
+    /// agreement cell. This is needed for paradigms such as Alypy §57
+    /// `благі́й`, where number-only scopes cannot distinguish singular
+    /// locative stem stress, dual gender contrasts, or plural accusative
+    /// animacy.
+    AdjectiveAgreement {
+        form: AdjectiveForm,
+        comparison: Comparison,
+        numbers: Vec<Number>,
+        cases: Vec<Case>,
+        genders: Vec<Gender>,
+        animacies: Vec<crate::Animacy>,
+    },
     FiniteVerb {
         tense: FiniteTense,
+        numbers: Vec<Number>,
+    },
+    /// A reusable participle rule restricted to one tense, voice, adjective
+    /// form, comparison, and set of grammatical numbers.
+    Participle {
+        tense: ParticipleTense,
+        voice: ParticipleVoice,
+        form: AdjectiveForm,
+        comparison: Comparison,
+        numbers: Vec<Number>,
+    },
+    /// A reusable imperative rule restricted by grammatical number.
+    Imperative {
+        numbers: Vec<Number>,
+    },
+    /// A reusable l-participle rule restricted by grammatical number.
+    LParticiple {
         numbers: Vec<Number>,
     },
     OtherCells(Vec<GrammarCell>),
@@ -158,6 +198,9 @@ impl AccentScope {
                     && cell.gender.is_some_and(|gender| genders.contains(&gender))
                     && animacies.contains(&cell.animacy)
             }
+            (Self::Numeral { numbers }, GrammarCell::Numeral(cell)) => {
+                numbers.contains(&cell.number)
+            }
             (
                 Self::Adjective {
                     form,
@@ -170,8 +213,48 @@ impl AccentScope {
                     && cell.comparison == *comparison
                     && numbers.contains(&cell.number)
             }
+            (
+                Self::AdjectiveAgreement {
+                    form,
+                    comparison,
+                    numbers,
+                    cases,
+                    genders,
+                    animacies,
+                },
+                GrammarCell::Adjective(cell) | GrammarCell::Determiner(cell),
+            ) => {
+                cell.form == *form
+                    && cell.comparison == *comparison
+                    && numbers.contains(&cell.number)
+                    && cases.contains(&cell.case)
+                    && genders.contains(&cell.gender)
+                    && animacies.contains(&cell.animacy)
+            }
             (Self::FiniteVerb { tense, numbers }, GrammarCell::FiniteVerb(cell)) => {
                 cell.tense == *tense && numbers.contains(&cell.number)
+            }
+            (
+                Self::Participle {
+                    tense,
+                    voice,
+                    form,
+                    comparison,
+                    numbers,
+                },
+                GrammarCell::Participle(cell),
+            ) => {
+                cell.tense == *tense
+                    && cell.voice == *voice
+                    && cell.agreement.form == *form
+                    && cell.agreement.comparison == *comparison
+                    && numbers.contains(&cell.agreement.number)
+            }
+            (Self::Imperative { numbers }, GrammarCell::Imperative(cell)) => {
+                numbers.contains(&cell.number)
+            }
+            (Self::LParticiple { numbers }, GrammarCell::LParticiple(cell)) => {
+                numbers.contains(&cell.number)
             }
             (Self::OtherCells(cells), cell) => cells.contains(&cell),
             _ => false,
@@ -183,8 +266,12 @@ impl AccentScope {
         match self {
             Self::All => false,
             Self::Noun { numbers }
+            | Self::Numeral { numbers }
             | Self::Adjective { numbers, .. }
-            | Self::FiniteVerb { numbers, .. } => numbers.is_empty(),
+            | Self::FiniteVerb { numbers, .. }
+            | Self::Participle { numbers, .. }
+            | Self::Imperative { numbers }
+            | Self::LParticiple { numbers } => numbers.is_empty(),
             Self::NounCases { numbers, cases } | Self::PronounCases { numbers, cases } => {
                 numbers.is_empty() || cases.is_empty()
             }
@@ -193,6 +280,13 @@ impl AccentScope {
                 cases,
                 genders,
                 animacies,
+            }
+            | Self::AdjectiveAgreement {
+                numbers,
+                cases,
+                genders,
+                animacies,
+                ..
             } => {
                 numbers.is_empty() || cases.is_empty() || genders.is_empty() || animacies.is_empty()
             }
@@ -461,7 +555,8 @@ fn vowel_index(value: &str, placement: AccentPlacement) -> Result<usize> {
         })
         .collect();
     let selected = match placement {
-        AccentPlacement::StemVowelFromStart(offset) => vowels.get(usize::from(offset)).copied(),
+        AccentPlacement::StemVowelFromStart(offset)
+        | AccentPlacement::WordVowelFromStart(offset) => vowels.get(usize::from(offset)).copied(),
         AccentPlacement::EndingVowelFromEnd(offset) => vowels
             .len()
             .checked_sub(usize::from(offset) + 1)
@@ -482,6 +577,7 @@ fn is_vowel(character: char) -> bool {
             | 'і'
             | 'ї'
             | 'о'
+            | 'ѻ'
             | 'ѡ'
             | 'ꙍ'
             | 'у'
@@ -490,6 +586,7 @@ fn is_vowel(character: char) -> bool {
             | 'э'
             | 'ю'
             | 'я'
+            | 'ꙗ'
             | 'ѧ'
             | 'ѩ'
             | 'ѣ'
@@ -548,6 +645,33 @@ mod tests {
             });
             assert!(paradigm.apply(cell, "мꙋдрый").expect("accent").contains('́'));
         }
+    }
+
+    #[test]
+    fn adjective_agreement_scope_distinguishes_case_gender_and_animacy() {
+        let scope = AccentScope::AdjectiveAgreement {
+            form: AdjectiveForm::Long,
+            comparison: Comparison::Positive,
+            numbers: vec![Number::Plural],
+            cases: vec![Case::Accusative],
+            genders: vec![Gender::Masculine],
+            animacies: vec![Animacy::Animate],
+        };
+        let cell = |gender, animacy| {
+            GrammarCell::Adjective(AdjectiveCell {
+                case: Case::Accusative,
+                number: Number::Plural,
+                gender,
+                animacy,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+            })
+        };
+
+        assert!(scope.applies_to(cell(Gender::Masculine, Animacy::Animate)));
+        assert!(!scope.applies_to(cell(Gender::Masculine, Animacy::Inanimate)));
+        assert!(!scope.applies_to(cell(Gender::Feminine, Animacy::Animate)));
+        assert!(!scope.is_empty());
     }
 
     #[test]
@@ -634,6 +758,65 @@ mod tests {
                 .apply(cell(Number::Plural), "рабами")
                 .expect("ending stress"),
             "рабамѝ"
+        );
+    }
+
+    #[test]
+    fn word_initial_vowel_placement_supports_vowelless_stems() {
+        let paradigm = AccentParadigm {
+            id: "test-vowelless-stem".into(),
+            accent_rules: vec![AccentRule {
+                scope: AccentScope::Adjective {
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                    numbers: vec![Number::Singular],
+                },
+                placement: AccentPlacement::WordVowelFromStart(0),
+                mark: AccentMark::Acute,
+            }],
+            breathing_rules: vec![],
+            evidence: evidence(),
+        };
+        let cell = GrammarCell::Adjective(AdjectiveCell {
+            case: Case::Genitive,
+            number: Number::Singular,
+            gender: Gender::Masculine,
+            animacy: Animacy::Inanimate,
+            form: AdjectiveForm::Long,
+            comparison: Comparison::Positive,
+        });
+        assert_eq!(paradigm.apply(cell, "ѕлагѡ").expect("word accent"), "ѕла́гѡ");
+    }
+
+    #[test]
+    fn broad_on_is_a_vowel_for_accent_and_automatic_psili() {
+        let paradigm = AccentParadigm {
+            id: "test-broad-on".into(),
+            accent_rules: vec![AccentRule {
+                scope: AccentScope::All,
+                placement: AccentPlacement::WordVowelFromStart(0),
+                mark: AccentMark::Acute,
+            }],
+            breathing_rules: vec![],
+            evidence: evidence(),
+        };
+        assert_eq!(
+            paradigm
+                .apply(GrammarCell::LexicalForm, "ѻсмь")
+                .expect("broad-on accent"),
+            "ѻ҆́смь"
+        );
+        assert_eq!(
+            AccentParadigm::fixed_stem(
+                "test-iotated-ya",
+                AccentScope::All,
+                1,
+                AccentMark::Acute,
+                evidence(),
+            )
+            .apply(GrammarCell::LexicalForm, "ꙗзыкъ")
+            .expect("iotated-ya breathing and second-vowel accent"),
+            "ꙗ҆зы́къ"
         );
     }
 
@@ -894,6 +1077,114 @@ mod tests {
                 field: MetadataField::AccentParadigm
             })
         ));
+    }
+
+    #[test]
+    fn verb_system_scopes_are_number_bounded() {
+        let imperative = AccentScope::Imperative {
+            numbers: vec![Number::Plural],
+        };
+        assert!(
+            imperative.applies_to(GrammarCell::Imperative(crate::ImperativeCell {
+                person: Person::Second,
+                number: Number::Plural,
+            }))
+        );
+        assert!(
+            !imperative.applies_to(GrammarCell::Imperative(crate::ImperativeCell {
+                person: Person::Second,
+                number: Number::Singular,
+            }))
+        );
+
+        let l_participle = AccentScope::LParticiple {
+            numbers: vec![Number::Singular],
+        };
+        assert!(
+            l_participle.applies_to(GrammarCell::LParticiple(crate::LParticipleCell {
+                gender: Gender::Feminine,
+                number: Number::Singular,
+            }))
+        );
+        assert!(
+            !l_participle.applies_to(GrammarCell::LParticiple(crate::LParticipleCell {
+                gender: Gender::Feminine,
+                number: Number::Plural,
+            }))
+        );
+        assert!(AccentScope::Imperative { numbers: vec![] }.is_empty());
+        assert!(AccentScope::LParticiple { numbers: vec![] }.is_empty());
+
+        let participle = AccentScope::Participle {
+            tense: crate::ParticipleTense::Present,
+            voice: crate::ParticipleVoice::Active,
+            form: AdjectiveForm::Long,
+            comparison: Comparison::Positive,
+            numbers: vec![Number::Plural],
+        };
+        assert!(
+            participle.applies_to(GrammarCell::Participle(crate::ParticipleCell {
+                tense: crate::ParticipleTense::Present,
+                voice: crate::ParticipleVoice::Active,
+                agreement: crate::AdjectiveCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: crate::Animacy::Animate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                },
+            }))
+        );
+        assert!(
+            !participle.applies_to(GrammarCell::Participle(crate::ParticipleCell {
+                tense: crate::ParticipleTense::Past,
+                voice: crate::ParticipleVoice::Active,
+                agreement: crate::AdjectiveCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    gender: Gender::Masculine,
+                    animacy: crate::Animacy::Animate,
+                    form: AdjectiveForm::Long,
+                    comparison: Comparison::Positive,
+                },
+            }))
+        );
+        assert!(
+            AccentScope::Participle {
+                tense: crate::ParticipleTense::Present,
+                voice: crate::ParticipleVoice::Active,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+                numbers: vec![],
+            }
+            .is_empty()
+        );
+    }
+
+    #[test]
+    fn numeral_scopes_are_number_bounded_and_part_of_speech_typed() {
+        let scope = AccentScope::Numeral {
+            numbers: vec![Number::Singular],
+        };
+        let numeral = |number| {
+            GrammarCell::Numeral(crate::NumeralCell {
+                kind: crate::NumeralKind::Cardinal,
+                case: Case::Instrumental,
+                number,
+                gender: Some(Gender::Masculine),
+                animacy: crate::Animacy::Inanimate,
+            })
+        };
+
+        assert!(scope.applies_to(numeral(Number::Singular)));
+        assert!(!scope.applies_to(numeral(Number::Plural)));
+        assert!(!scope.applies_to(GrammarCell::Noun(crate::NounCell {
+            case: Case::Instrumental,
+            number: Number::Singular,
+            animacy: crate::Animacy::Inanimate,
+        })));
+        assert!(AccentScope::Numeral { numbers: vec![] }.is_empty());
     }
 
     #[test]

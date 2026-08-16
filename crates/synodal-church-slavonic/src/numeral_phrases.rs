@@ -8,12 +8,16 @@
 use std::collections::BTreeSet;
 
 use synodal_church_slavonic_core::{
-    AnalyticConstruction, Animacy, AuthorityRole, Case, Confidence, EpistemicRole, Error, Evidence,
-    EvidenceId, EvidenceKind, FormSet, FormSource, FormVariant, Gender, GrammarCell, LexemeId,
-    MetadataField, NounCell, Number, NumeralCell, NumeralDeclension, NumeralKind, NumeralLexeme,
-    OrthographyProfile, PhraseRole, PhraseToken, RealizedPhrase, Recension, Result, RuleId,
-    RuleTrace, SourceId, SynodalWord, TraceStep, decline_numeral, normalize_lookup_accentless,
+    AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope, AnalyticConstruction,
+    Animacy, AuthorityRole, Case, Confidence, EpistemicRole, Error, Evidence, EvidenceId,
+    EvidenceKind, FormSet, FormSource, FormVariant, Gender, GrammarCell, InitialPresentation,
+    LetterOccurrence, LexemeId, MetadataField, NounCell, Number, NumeralCell, NumeralDeclension,
+    NumeralKind, NumeralLexeme, OrthographyProfile, PhraseRole, PhraseToken, PositionalOperation,
+    PositionalParadigm, PositionalReplacement, PositionalRule, RealizedPhrase, Recension, Result,
+    RuleId, RuleTrace, SourceId, SynodalWord, TraceStep, apply_initial_presentation,
+    decline_numeral, normalize_lookup_accentless,
 };
+use unicode_normalization::UnicodeNormalization;
 
 use crate::Inflector;
 
@@ -820,21 +824,16 @@ fn teen_analyses(
     inflector: Inflector,
 ) -> Result<Vec<CardinalPhraseAnalysis>> {
     let profile = inflector.orthography();
-    if profile == OrthographyProfile::SynodalLiturgical {
-        return Err(Error::OrthographicMetadataRequired {
-            field: MetadataField::AccentParadigm,
-        });
-    }
     let prefix_gender = if unit <= 4 { cell.gender } else { None };
     let declined_unit = digit_form(unit, cell.case, prefix_gender, cell.animacy, inflector)?;
     let citation_unit = digit_form(
         unit,
         Case::Nominative,
         if unit <= 4 {
-            Some(if unit == 1 {
-                Gender::Neuter
-            } else {
-                Gender::Masculine
+            Some(match unit {
+                1 => Gender::Neuter,
+                3 => Gender::Feminine,
+                _ => Gender::Masculine,
             })
         } else {
             None
@@ -910,6 +909,7 @@ fn push_fused_teen(
 ) -> Result<()> {
     let fused = fuse_form_sets(
         &[unit, na, ten],
+        1,
         "SYN-NUMERAL-CARDINAL-TEEN-ALYPY-63-64",
         "Alypy (Gamanovich), §§63–64 teen formation and inflection",
         profile,
@@ -938,16 +938,15 @@ fn tens_analyses(
     inflector: Inflector,
 ) -> Result<Vec<CardinalPhraseAnalysis>> {
     let profile = inflector.orthography();
-    if profile == OrthographyProfile::SynodalLiturgical {
-        return Err(Error::OrthographicMetadataRequired {
-            field: MetadataField::AccentParadigm,
-        });
-    }
     let citation = digit_form(
         multiplier,
         Case::Nominative,
         if multiplier <= 4 {
-            Some(Gender::Masculine)
+            Some(if multiplier == 3 {
+                Gender::Feminine
+            } else {
+                Gender::Masculine
+            })
         } else {
             None
         },
@@ -960,6 +959,7 @@ fn tens_analyses(
             let ten = ten_form(case, number, animacy, inflector)?;
             let fused = fuse_form_sets(
                 &[&citation, &ten],
+                0,
                 "SYN-NUMERAL-CARDINAL-TENS-AGREEMENT-ALYPY-63-64",
                 "Alypy (Gamanovich), §§63–64 twenty through forty",
                 profile,
@@ -972,10 +972,12 @@ fn tens_analyses(
     } else {
         let declined = digit_form(multiplier, case, None, animacy, inflector)?;
         let governed_ten = fixed_genitive_plural_ten(profile)?;
+        let accent_component = tens_government_accent_component(multiplier, case);
         results.push(single_cardinal_analysis(
             NumeralComposition::TensGovernment,
             fuse_form_sets(
                 &[&declined, &governed_ten],
+                accent_component,
                 "SYN-NUMERAL-CARDINAL-TENS-GOVERNMENT-ALYPY-63-64",
                 "Alypy (Gamanovich), §§63–64 fifty through ninety",
                 profile,
@@ -993,6 +995,7 @@ fn tens_analyses(
                 construction,
                 fuse_form_sets(
                     &[&declined, &ten],
+                    accent_component,
                     "SYN-NUMERAL-CARDINAL-TENS-BOTH-ALYPY-64",
                     "Alypy (Gamanovich), §64 both-component alternative for fifty through ninety",
                     profile,
@@ -1002,6 +1005,22 @@ fn tens_analyses(
     }
     deduplicate_analyses(&mut results);
     Ok(results)
+}
+
+/// Alypy §§62–64 preserve the declined first component's stress in oblique
+/// forms. In the direct cases the reviewed Synodal inventory has governed
+/// tail stress for fifty and sixty, but lexical first-component stress for
+/// seventy through ninety.
+const fn tens_government_accent_component(multiplier: u8, case: Case) -> usize {
+    if matches!(
+        case,
+        Case::Genitive | Case::Dative | Case::Instrumental | Case::Locative
+    ) || multiplier >= 7
+    {
+        0
+    } else {
+        1
+    }
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -1145,6 +1164,7 @@ fn magnitude_chunk(
                 construction,
                 fuse_form_sets(
                     &[&leading_tokens[0].forms, &magnitude_forms],
+                    usize::from(multiplier >= 5),
                     "SYN-NUMERAL-CARDINAL-HUNDREDS-ALYPY-63-64",
                     "Alypy (Gamanovich), §§63–64 hundreds formation and spelling",
                     inflector.orthography(),
@@ -1239,13 +1259,14 @@ fn compose_ordinal(
         let ordinal_unit = simple_ordinal_form(unit, cell, inflector)?;
         let tail = grammar_form(
             "надесѧть",
-            None,
+            Some("на́десѧть"),
             "SYN-NUMERAL-ORDINAL-TEEN-ALYPY-68",
             "Alypy (Gamanovich), §68 and appendix, ordinal teens",
             inflector.orthography(),
         )?;
         let analytic = fuse_form_sets(
             &[&ordinal_unit, &tail],
+            1,
             "SYN-NUMERAL-ORDINAL-TEEN-ALYPY-68",
             "Alypy (Gamanovich), §68 ordinal ending on the first teen component",
             inflector.orthography(),
@@ -1433,29 +1454,216 @@ fn digit_form(
             });
         }
     };
-    inflector.form_by_id(
-        &LexemeId::from(id),
-        GrammarCell::Numeral(NumeralCell {
-            kind: NumeralKind::Cardinal,
-            case,
-            number,
-            gender,
-            animacy,
-        }),
-    )
+    let cell = GrammarCell::Numeral(NumeralCell {
+        kind: NumeralKind::Cardinal,
+        case,
+        number,
+        gender,
+        animacy,
+    });
+    let id = LexemeId::from(id);
+    match inflector.form_by_id(&id, cell) {
+        Ok(forms) => Ok(forms),
+        Err(Error::OrthographicMetadataRequired {
+            field: MetadataField::AccentParadigm | MetadataField::PositionalParadigm,
+        }) if inflector.orthography() == OrthographyProfile::SynodalLiturgical
+            && (digit == 1 || (5..=9).contains(&digit)) =>
+        {
+            let expanded = expanded_composition_inflector(inflector).form_by_id(&id, cell)?;
+            if digit == 1 {
+                accent_component_form_set(
+                    &expanded,
+                    cell,
+                    AccentPlacement::WordVowelFromStart(0),
+                    AccentMark::Acute,
+                    "SYN-NUMERAL-CARDINAL-ONE-ALYPY-62",
+                    "Alypy (Gamanovich), §62 complete є҆ди́нъ cardinal paradigm",
+                )
+            } else {
+                accent_cardinal_i_stem_digit_form(&expanded, cell, digit, case)
+            }
+        }
+        Err(error) => Err(error),
+    }
+}
+
+fn accent_cardinal_i_stem_digit_form(
+    forms: &FormSet,
+    cell: GrammarCell,
+    digit: u8,
+    case: Case,
+) -> Result<FormSet> {
+    let accent_evidence = fused_accent_evidence(
+        "SYN-NUMERAL-CARDINAL-I-STEM-ALYPY-62",
+        "Alypy (Gamanovich), §62 pѧ́ть–де́вѧть third-declension cardinal paradigm",
+    );
+    let accent_evidence_id = accent_evidence.id.clone();
+    let rule_id = RuleId::from("SYN-NUMERAL-CARDINAL-I-STEM-ALYPY-62");
+    let placement = if matches!(case, Case::Nominative | Case::Accusative) {
+        AccentPlacement::WordVowelFromStart(0)
+    } else {
+        AccentPlacement::EndingVowelFromEnd(0)
+    };
+    let paradigm = AccentParadigm {
+        id: "component-accent:SYN-NUMERAL-CARDINAL-I-STEM-ALYPY-62".into(),
+        accent_rules: vec![AccentRule {
+            scope: AccentScope::All,
+            placement,
+            mark: AccentMark::Acute,
+        }],
+        breathing_rules: Vec::new(),
+        evidence: accent_evidence.clone(),
+    };
+    let positional_evidence = (digit == 8).then(|| Evidence {
+        id: EvidenceId::from("orthography:SYN-NUMERAL-CARDINAL-OSM-BROAD-ON-ALYPY-2-62"),
+        source: SourceId::from("alypy-gamanovich-grammar-web-2023"),
+        source_recension: Recension::SynodalRussian,
+        kind: EvidenceKind::OrthographicParadigm,
+        authority_roles: vec![AuthorityRole::Orthographic],
+        epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+        citation: "Alypy (Gamanovich), §§2 and 62 initial ѻ҆́смь presentation".into(),
+        note: Some("initial broad-on presentation is restricted to the numeral осмь".into()),
+    });
+    let mut variants = Vec::new();
+    for source in forms.variants() {
+        let positional = if digit == 8 {
+            apply_initial_presentation(
+                &SynodalWord::parse(&source.expanded)?,
+                InitialPresentation::BroadOn,
+            )?
+            .normalized
+        } else {
+            source.expanded.clone()
+        };
+        let printed = paradigm.apply(cell, &positional)?;
+        let mut variant = source.clone();
+        variant.accented = Some(printed.clone());
+        variant.printed = printed.clone();
+        if !variant
+            .evidence
+            .iter()
+            .any(|known| known.id == accent_evidence_id)
+        {
+            variant.evidence.push(accent_evidence.clone());
+        }
+        if let Some(evidence) = &positional_evidence
+            && !variant.evidence.iter().any(|known| known.id == evidence.id)
+        {
+            variant.evidence.push(evidence.clone());
+        }
+        variant.rule_trace.push(TraceStep {
+            rule: rule_id.clone(),
+            stage: "numeral-component-liturgical-presentation".into(),
+            input: source.expanded.clone(),
+            output: printed,
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: None,
+            evidence: variant
+                .evidence
+                .iter()
+                .map(|item| item.id.clone())
+                .collect(),
+        });
+        variants.push(variant);
+    }
+    FormSet::try_from_variants(variants)
 }
 
 fn ten_form(case: Case, number: Number, animacy: Animacy, inflector: Inflector) -> Result<FormSet> {
-    inflector.form_by_id(
-        &LexemeId::from("synodal:numeral:wikt-bc270882d39d"),
-        GrammarCell::Numeral(NumeralCell {
-            kind: NumeralKind::Cardinal,
-            case,
-            number,
-            gender: None,
-            animacy,
-        }),
+    let cell = GrammarCell::Numeral(NumeralCell {
+        kind: NumeralKind::Cardinal,
+        case,
+        number,
+        gender: None,
+        animacy,
+    });
+    if inflector.orthography() != OrthographyProfile::SynodalLiturgical {
+        return inflector.form_by_id(&LexemeId::from("synodal:numeral:wikt-bc270882d39d"), cell);
+    }
+    let expanded = expanded_composition_inflector(inflector)
+        .form_by_id(&LexemeId::from("synodal:numeral:wikt-bc270882d39d"), cell)?;
+    let (placement, mark) = match (number, case) {
+        (Number::Singular, Case::Nominative | Case::Accusative) => {
+            (AccentPlacement::WordVowelFromStart(0), AccentMark::Acute)
+        }
+        (Number::Singular, _) => (AccentPlacement::EndingVowelFromEnd(0), AccentMark::Acute),
+        (Number::Dual, Case::Nominative | Case::Genitive | Case::Accusative | Case::Locative) => {
+            (AccentPlacement::WordVowelFromStart(1), AccentMark::Acute)
+        }
+        (Number::Dual, _) => (AccentPlacement::EndingVowelFromEnd(0), AccentMark::Acute),
+        (Number::Plural, Case::Instrumental) => {
+            (AccentPlacement::EndingVowelFromEnd(0), AccentMark::Acute)
+        }
+        (Number::Plural, _) => (AccentPlacement::WordVowelFromStart(1), AccentMark::Acute),
+    };
+    accent_component_form_set(
+        &expanded,
+        cell,
+        placement,
+        mark,
+        "SYN-NUMERAL-CARDINAL-TEN-ALYPY-62",
+        "Alypy (Gamanovich), §62 complete де́сѧть paradigm",
     )
+}
+
+fn expanded_composition_inflector(inflector: Inflector) -> Inflector {
+    Inflector::builder()
+        .generation_policy(inflector.generation_policy())
+        .orthography(OrthographyProfile::Expanded)
+        .productive_mapping_threshold_basis_points(
+            inflector.productive_mapping_threshold_basis_points(),
+        )
+        .build()
+}
+
+fn accent_component_form_set(
+    forms: &FormSet,
+    cell: GrammarCell,
+    placement: AccentPlacement,
+    mark: AccentMark,
+    rule: &'static str,
+    citation: &'static str,
+) -> Result<FormSet> {
+    let evidence = fused_accent_evidence(rule, citation);
+    let evidence_id = evidence.id.clone();
+    let rule_id = RuleId::from(rule);
+    let paradigm = AccentParadigm {
+        id: format!("component-accent:{rule}"),
+        accent_rules: vec![AccentRule {
+            scope: AccentScope::All,
+            placement,
+            mark,
+        }],
+        breathing_rules: Vec::new(),
+        evidence: evidence.clone(),
+    };
+    let mut variants = Vec::new();
+    for source in forms.variants() {
+        let printed = paradigm.apply(cell, &source.expanded)?;
+        let mut variant = source.clone();
+        variant.accented = Some(printed.clone());
+        variant.printed = printed.clone();
+        if !variant.evidence.iter().any(|known| known.id == evidence_id) {
+            variant.evidence.push(evidence.clone());
+        }
+        variant.rule_trace.push(TraceStep {
+            rule: rule_id.clone(),
+            stage: "numeral-component-accent".into(),
+            input: source.expanded.clone(),
+            output: printed,
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: None,
+            evidence: variant
+                .evidence
+                .iter()
+                .map(|item| item.id.clone())
+                .collect(),
+        });
+        variants.push(variant);
+    }
+    FormSet::try_from_variants(variants)
 }
 
 fn magnitude_form(
@@ -1464,21 +1672,152 @@ fn magnitude_form(
     number: Number,
     inflector: Inflector,
 ) -> Result<FormSet> {
-    inflector.form_by_id(
-        &LexemeId::from(magnitude.id()),
-        GrammarCell::Numeral(NumeralCell {
-            kind: NumeralKind::Cardinal,
-            case,
-            number,
-            gender: None,
-            animacy: Animacy::Inanimate,
-        }),
-    )
+    let cell = GrammarCell::Numeral(NumeralCell {
+        kind: NumeralKind::Cardinal,
+        case,
+        number,
+        gender: None,
+        animacy: Animacy::Inanimate,
+    });
+    let id = LexemeId::from(magnitude.id());
+    match inflector.form_by_id(&id, cell) {
+        Ok(forms) => Ok(forms),
+        Err(Error::OrthographicMetadataRequired {
+            field: MetadataField::AccentParadigm | MetadataField::PositionalParadigm,
+        }) if magnitude == Magnitude::Hundred
+            && inflector.orthography() == OrthographyProfile::SynodalLiturgical =>
+        {
+            let expanded = expanded_composition_inflector(inflector).form_by_id(&id, cell)?;
+            accent_hundred_form(&expanded, cell, case, number)
+        }
+        Err(error) => Err(error),
+    }
+}
+
+fn accent_hundred_form(
+    forms: &FormSet,
+    cell: GrammarCell,
+    case: Case,
+    number: Number,
+) -> Result<FormSet> {
+    let (placement, mark) = match (number, case) {
+        (Number::Singular, Case::Instrumental) => {
+            (AccentPlacement::WordVowelFromStart(0), AccentMark::Acute)
+        }
+        (Number::Singular, _) => (AccentPlacement::EndingVowelFromEnd(0), AccentMark::Acute),
+        (Number::Dual, Case::Nominative | Case::Genitive | Case::Accusative | Case::Locative)
+        | (Number::Plural, Case::Nominative | Case::Accusative) => {
+            (AccentPlacement::EndingVowelFromEnd(0), AccentMark::Kamora)
+        }
+        (Number::Dual, _) | (Number::Plural, Case::Genitive | Case::Dative | Case::Locative) => {
+            (AccentPlacement::WordVowelFromStart(0), AccentMark::Acute)
+        }
+        (Number::Plural, Case::Instrumental) => {
+            (AccentPlacement::EndingVowelFromEnd(0), AccentMark::Acute)
+        }
+        (_, Case::Vocative) => {
+            return Err(Error::HistoricallyInvalidCell {
+                reason: "Alypy §62 does not license a cardinal hundred vocative".into(),
+            });
+        }
+    };
+    let accent_evidence = fused_accent_evidence(
+        "SYN-NUMERAL-CARDINAL-HUNDRED-ALYPY-62",
+        "Alypy (Gamanovich), §62 complete сто̀ paradigm",
+    );
+    let positional_evidence = Evidence {
+        id: EvidenceId::from("orthography:SYN-NUMERAL-CARDINAL-HUNDRED-OMEGA-ALYPY-62"),
+        source: SourceId::from("alypy-gamanovich-grammar-web-2023"),
+        source_recension: Recension::SynodalRussian,
+        kind: EvidenceKind::OrthographicParadigm,
+        authority_roles: vec![AuthorityRole::Orthographic],
+        epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+        citation: "Alypy (Gamanovich), §62 plural сѡ́тъ / стѡ́мъ hundred forms".into(),
+        note: Some("omega presentation is restricted to the cited plural cells".into()),
+    };
+    let positional = PositionalParadigm {
+        id: "component-position:SYN-NUMERAL-CARDINAL-HUNDRED-OMEGA-ALYPY-62".into(),
+        rules: vec![PositionalRule {
+            scope: AccentScope::All,
+            operations: if number == Number::Plural && matches!(case, Case::Genitive | Case::Dative)
+            {
+                vec![PositionalOperation::Replace {
+                    replacement: PositionalReplacement::Omega,
+                    occurrence: LetterOccurrence::FromStart(0),
+                }]
+            } else {
+                Vec::new()
+            },
+        }],
+        evidence: positional_evidence.clone(),
+    };
+    let accent = AccentParadigm {
+        id: "component-accent:SYN-NUMERAL-CARDINAL-HUNDRED-ALYPY-62".into(),
+        accent_rules: vec![AccentRule {
+            scope: AccentScope::All,
+            placement,
+            mark,
+        }],
+        breathing_rules: Vec::new(),
+        evidence: accent_evidence.clone(),
+    };
+    let rule_id = RuleId::from("SYN-NUMERAL-CARDINAL-HUNDRED-ALYPY-62");
+    let two_hundred_variant_evidence = numeral_evidence(
+        "SYN-NUMERAL-CARDINAL-TWO-HUNDRED-STI-ALYPY-63",
+        "Alypy (Gamanovich), §63 двѣ́стѣ / двѣ́сти alternatives",
+    );
+    let mut variants = Vec::new();
+    for source in forms.variants() {
+        let mut expanded_forms = vec![source.expanded.clone()];
+        if number == Number::Dual
+            && matches!(case, Case::Nominative | Case::Accusative)
+            && source.expanded == "стѣ"
+        {
+            expanded_forms.push("сти".into());
+        }
+        for expanded in expanded_forms {
+            let positioned = positional.apply(cell, &expanded)?;
+            let printed = accent.apply(cell, &positioned)?;
+            let mut variant = source.clone();
+            variant.expanded = expanded.clone();
+            variant.accented = Some(printed.clone());
+            variant.printed = printed.clone();
+            for evidence in [&accent_evidence, &positional_evidence] {
+                if !variant.evidence.iter().any(|known| known.id == evidence.id) {
+                    variant.evidence.push(evidence.clone());
+                }
+            }
+            if expanded == "сти"
+                && !variant
+                    .evidence
+                    .iter()
+                    .any(|known| known.id == two_hundred_variant_evidence.id)
+            {
+                variant.evidence.push(two_hundred_variant_evidence.clone());
+            }
+            variant.rule_trace.push(TraceStep {
+                rule: rule_id.clone(),
+                stage: "numeral-hundred-liturgical-presentation".into(),
+                input: source.expanded.clone(),
+                output: printed,
+                source_recension: Some(Recension::SynodalRussian),
+                target_recension: Recension::SynodalRussian,
+                mapping: None,
+                evidence: variant
+                    .evidence
+                    .iter()
+                    .map(|evidence| evidence.id.clone())
+                    .collect(),
+            });
+            variants.push(variant);
+        }
+    }
+    FormSet::try_from_variants(variants)
 }
 
 fn fixed_ten_accusative(profile: OrthographyProfile) -> Result<FormSet> {
     grammar_forms(
-        &["десѧть", "десѧте"],
+        &[("десѧть", "де́сѧть"), ("десѧте", "де́сѧте")],
         "SYN-NUMERAL-CARDINAL-TEEN-ALYPY-63-64",
         "Alypy (Gamanovich), §§63–64 invariant accusative ten in teens",
         profile,
@@ -1496,20 +1835,15 @@ fn fixed_genitive_plural_ten(profile: OrthographyProfile) -> Result<FormSet> {
 }
 
 fn grammar_forms(
-    forms: &[&str],
+    forms: &[(&str, &str)],
     rule: &'static str,
     citation: &'static str,
     profile: OrthographyProfile,
 ) -> Result<FormSet> {
-    if profile == OrthographyProfile::SynodalLiturgical {
-        return Err(Error::OrthographicMetadataRequired {
-            field: MetadataField::AccentParadigm,
-        });
-    }
     let mut variants = Vec::new();
-    for form in forms {
+    for (form, accented) in forms {
         variants.extend(
-            grammar_form(form, None, rule, citation, profile)?
+            grammar_form(form, Some(accented), rule, citation, profile)?
                 .variants()
                 .to_vec(),
         );
@@ -1577,13 +1911,17 @@ fn grammar_form(
 
 fn fuse_form_sets(
     parts: &[&FormSet],
+    accent_component: usize,
     rule: &'static str,
     citation: &'static str,
     profile: OrthographyProfile,
 ) -> Result<FormSet> {
-    if profile == OrthographyProfile::SynodalLiturgical {
-        return Err(Error::OrthographicMetadataRequired {
-            field: MetadataField::AccentParadigm,
+    if accent_component >= parts.len() {
+        return Err(Error::ContradictoryMetadata {
+            reason: format!(
+                "fused numeral accent component {accent_component} is outside {} components",
+                parts.len()
+            ),
         });
     }
     let mut products = vec![Vec::<FormVariant>::new()];
@@ -1608,10 +1946,41 @@ fn fuse_form_sets(
             .iter()
             .map(|item| item.expanded.as_str())
             .collect::<String>();
-        let printed = product
+        let component_printed = product
             .iter()
             .map(|item| item.printed.as_str())
             .collect::<String>();
+        let (accented, printed) = if profile == OrthographyProfile::SynodalLiturgical {
+            let local_accent = accented_vowel_from_start(&product[accent_component].printed)
+                .ok_or(Error::OrthographicMetadataRequired {
+                    field: MetadataField::AccentParadigm,
+                })?;
+            let preceding_vowels: usize = product[..accent_component]
+                .iter()
+                .map(|item| synodal_vowel_count(&item.expanded))
+                .sum();
+            let word_vowel = preceding_vowels
+                .checked_add(usize::from(local_accent))
+                .and_then(|index| u8::try_from(index).ok())
+                .ok_or_else(|| Error::ContradictoryMetadata {
+                    reason: "fused numeral accent index exceeds the typed word-vowel range".into(),
+                })?;
+            let unmarked = strip_accent_and_breathing(&component_printed);
+            let paradigm = AccentParadigm {
+                id: format!("fused-accent:{rule}:{accent_component}"),
+                accent_rules: vec![AccentRule {
+                    scope: AccentScope::All,
+                    placement: AccentPlacement::WordVowelFromStart(word_vowel),
+                    mark: AccentMark::Acute,
+                }],
+                breathing_rules: Vec::new(),
+                evidence: fused_accent_evidence(rule, citation),
+            };
+            let printed = paradigm.apply(GrammarCell::LexicalForm, &unmarked)?;
+            (Some(printed.clone()), printed)
+        } else {
+            (None, component_printed)
+        };
         let mut evidence = Vec::new();
         let mut evidence_ids = Vec::new();
         let mut trace = Vec::new();
@@ -1654,7 +2023,7 @@ fn fuse_form_sets(
         });
         variants.push(FormVariant {
             expanded,
-            accented: None,
+            accented,
             printed,
             romanization: None,
             source_recension: Some(Recension::SynodalRussian),
@@ -1672,6 +2041,82 @@ fn fuse_form_sets(
         });
     }
     FormSet::try_from_variants(variants)
+}
+
+fn fused_accent_evidence(rule: &'static str, citation: &'static str) -> Evidence {
+    Evidence {
+        id: EvidenceId::from(format!("accent:{rule}")),
+        source: SourceId::from("alypy-gamanovich-grammar-web-2023"),
+        source_recension: Recension::SynodalRussian,
+        kind: EvidenceKind::AccentParadigm,
+        authority_roles: vec![AuthorityRole::Accentual, AuthorityRole::Morphological],
+        epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+        citation: citation.into(),
+        note: Some(format!(
+            "fused numeral stress licensed by stable rule {rule}"
+        )),
+    }
+}
+
+fn accented_vowel_from_start(value: &str) -> Option<u8> {
+    let mut next_vowel = 0_u8;
+    let mut current_vowel = None;
+    for character in value.nfd() {
+        if is_synodal_vowel(character) {
+            current_vowel = Some(next_vowel);
+            next_vowel = next_vowel.checked_add(1)?;
+        } else if matches!(character, '\u{0300}' | '\u{0301}' | '\u{0311}') {
+            return current_vowel;
+        }
+    }
+    None
+}
+
+fn synodal_vowel_count(value: &str) -> usize {
+    value
+        .nfd()
+        .filter(|character| is_synodal_vowel(*character))
+        .count()
+}
+
+fn strip_accent_and_breathing(value: &str) -> String {
+    value
+        .nfd()
+        .filter(|character| {
+            !matches!(
+                character,
+                '\u{0300}' | '\u{0301}' | '\u{0311}' | '\u{0484}' | '\u{0485}' | '\u{0486}'
+            )
+        })
+        .nfc()
+        .collect()
+}
+
+const fn is_synodal_vowel(character: char) -> bool {
+    matches!(
+        character,
+        'а' | 'е'
+            | 'є'
+            | 'и'
+            | 'і'
+            | 'ї'
+            | 'о'
+            | 'ѻ'
+            | 'ѡ'
+            | 'ꙍ'
+            | 'у'
+            | 'ꙋ'
+            | 'ы'
+            | 'ю'
+            | 'я'
+            | 'ѧ'
+            | 'ѩ'
+            | 'ѣ'
+            | 'ѥ'
+            | 'ѫ'
+            | 'ѭ'
+            | 'ѵ'
+    )
 }
 
 fn numeral_evidence(rule: &'static str, citation: &'static str) -> Evidence {
@@ -1894,6 +2339,15 @@ mod tests {
                 })
     }
 
+    fn realizes_printed_token_surface(analysis: &CardinalPhraseAnalysis, expected: &str) -> bool {
+        analysis.tokens.len() == 1
+            && analysis.tokens[0]
+                .forms
+                .variants()
+                .iter()
+                .any(|variant| variant.printed == expected)
+    }
+
     #[test]
     fn cardinals_cover_simple_teens_tens_hundreds_and_all_named_magnitudes() {
         assert_eq!(
@@ -2088,7 +2542,7 @@ mod tests {
     }
 
     #[test]
-    fn structurally_invalid_gender_vocative_and_accent_guesses_fail_typed() {
+    fn structurally_invalid_gender_and_vocative_fail_typed() {
         assert!(matches!(
             cardinal(21, cardinal_cell(Case::Nominative, None)),
             Err(Error::HistoricallyInvalidCell { .. })
@@ -2104,10 +2558,110 @@ mod tests {
         let liturgical = Inflector::builder()
             .orthography(OrthographyProfile::SynodalLiturgical)
             .build();
-        assert!(matches!(
-            cardinal_with(20, cardinal_cell(Case::Nominative, None), liturgical),
-            Err(Error::OrthographicMetadataRequired { .. })
-        ));
+        let twenty = cardinal_with(20, cardinal_cell(Case::Nominative, None), liturgical)
+            .expect("§§62–64 license fused liturgical decades");
+        assert!(
+            twenty
+                .analyses()
+                .iter()
+                .any(|analysis| analysis.primary_text() == "два́десѧть")
+        );
+    }
+
+    #[test]
+    fn liturgical_fused_cardinals_follow_alypy_accent_rules() {
+        let liturgical = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        let nominative = CompoundNumeralCell {
+            case: Case::Nominative,
+            gender: None,
+            animacy: Animacy::Inanimate,
+        };
+        for (value, expected) in [
+            (30, "три́десѧть"),
+            (40, "четы́редесѧть"),
+            (50, "пѧтьдесѧ́тъ"),
+            (60, "шестьдесѧ́тъ"),
+            (70, "се́дмьдесѧтъ"),
+            (80, "ѻ҆́смьдесѧтъ"),
+            (90, "де́вѧтьдесѧтъ"),
+            (200, "двѣ́сти"),
+            (300, "три́ста"),
+            (400, "четы́реста"),
+        ] {
+            let realized = cardinal_with(value, nominative, liturgical)
+                .unwrap_or_else(|error| panic!("{value}: {error}"));
+            assert!(
+                realized
+                    .analyses()
+                    .iter()
+                    .any(|analysis| realizes_printed_token_surface(analysis, expected)),
+                "{value}: {:?}",
+                realized
+                    .analyses()
+                    .iter()
+                    .map(CardinalPhraseAnalysis::primary_text)
+                    .collect::<Vec<_>>()
+            );
+        }
+
+        let twelve = cardinal_with(
+            12,
+            CompoundNumeralCell {
+                gender: Some(Gender::Masculine),
+                ..nominative
+            },
+            liturgical,
+        )
+        .expect("Alypy §§63–64 license fused liturgical teens");
+        assert!(
+            twelve
+                .analyses()
+                .iter()
+                .any(|analysis| analysis.primary_text() == "двана́десѧть")
+        );
+        for value in 11..=19 {
+            cardinal_with(
+                value,
+                CompoundNumeralCell {
+                    gender: (value <= 14).then_some(Gender::Masculine),
+                    ..nominative
+                },
+                liturgical,
+            )
+            .unwrap_or_else(|error| panic!("liturgical teen {value}: {error}"));
+        }
+
+        for (value, expected) in [
+            (50, "пѧти́десѧтъ"),
+            (60, "шести́десѧтъ"),
+            (70, "седми́десѧтъ"),
+            (80, "ѻ҆сми́десѧтъ"),
+            (90, "девѧти́десѧтъ"),
+        ] {
+            let realized = cardinal_with(
+                value,
+                CompoundNumeralCell {
+                    case: Case::Genitive,
+                    ..nominative
+                },
+                liturgical,
+            )
+            .unwrap_or_else(|error| panic!("genitive {value}: {error}"));
+            assert!(
+                realized
+                    .analyses()
+                    .iter()
+                    .any(|analysis| analysis.primary_text() == expected),
+                "genitive {value}: {:?}",
+                realized
+                    .analyses()
+                    .iter()
+                    .map(CardinalPhraseAnalysis::primary_text)
+                    .collect::<Vec<_>>()
+            );
+        }
     }
 
     #[test]

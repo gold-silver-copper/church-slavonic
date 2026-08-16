@@ -1,23 +1,23 @@
 # Synodal evaluation
 
-Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2136 held-out token cells).
+Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2267 held-out token cells).
 
 The correction ledger excludes 3 historically preserved but grammatically retracted evaluation rows from scoring.
 
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| Expanded | 2136 | 2075 | 2136 | 0 | 2136 |
-| Printed | 2136 | 1992 | 2136 | 0 | 2136 |
+| Expanded | 2267 | 2203 | 2267 | 0 | 2267 |
+| Printed | 2267 | 2119 | 2267 | 0 | 2267 |
 
 Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
-Typed abbreviations: top-1 65/74, top-k 74/74 (74 held-out contractions; reverse lookup also required).
+Typed abbreviations: top-1 71/81, top-k 81/81 (81 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 2962/2962, printed 2962/2962.
+Exact registry round trips (top-k, including reviewed variants): expanded 3237/3237, printed 3237/3237.
 
-Masked cells: expanded 501/502, printed 501/502. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
+Masked cells: expanded 535/536, printed 535/536. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
-Accent agreement: 2000/2000 accent-bearing rows.
+Accent agreement: 2124/2124 accent-bearing rows.
 
 Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expanded forms. The reviewed alignment registry has 5 accepted mappings, 5 aligned target lexemes, and 1 rejected negative controls.
 
@@ -25,46 +25,46 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exploratory` | 2136 | 2075 | 2136 | 0 | 2136 |
-| `productive` | 2136 | 2075 | 2136 | 0 | 2136 |
-| `strict` | 2136 | 2075 | 2136 | 0 | 2136 |
+| `exploratory` | 2267 | 2203 | 2267 | 0 | 2267 |
+| `productive` | 2267 | 2203 | 2267 | 0 | 2267 |
+| `strict` | 2267 | 2203 | 2267 | 0 | 2267 |
 
 ## Expanded accuracy by attestation status
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `attested` | 2028 | 1968 | 2028 | 0 | 2028 |
+| `attested` | 2125 | 2063 | 2125 | 0 | 2125 |
 | `expected-form-not-returned` | 0 | 0 | 0 | 0 | 0 |
-| `predicted` | 108 | 107 | 108 | 0 | 108 |
+| `predicted` | 142 | 140 | 142 | 0 | 142 |
 
 ## Expanded accuracy by morphological system
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `adjective` | 106 | 102 | 106 | 0 | 106 |
-| `aorist` | 199 | 194 | 199 | 0 | 199 |
-| `determiner` | 20 | 19 | 20 | 0 | 20 |
-| `future` | 61 | 58 | 61 | 0 | 61 |
-| `imperative` | 57 | 55 | 57 | 0 | 57 |
+| `adjective` | 122 | 118 | 122 | 0 | 122 |
+| `aorist` | 201 | 196 | 201 | 0 | 201 |
+| `determiner` | 21 | 20 | 21 | 0 | 21 |
+| `future` | 67 | 64 | 67 | 0 | 67 |
+| `imperative` | 60 | 58 | 60 | 0 | 60 |
 | `imperfect` | 31 | 29 | 31 | 0 | 31 |
-| `indeclinable` | 76 | 70 | 76 | 0 | 76 |
-| `infinitive` | 5 | 5 | 5 | 0 | 5 |
-| `l-participle` | 18 | 18 | 18 | 0 | 18 |
+| `indeclinable` | 88 | 82 | 88 | 0 | 88 |
+| `infinitive` | 6 | 6 | 6 | 0 | 6 |
+| `l-participle` | 20 | 20 | 20 | 0 | 20 |
 | `lexical-form` | 435 | 431 | 435 | 0 | 435 |
-| `noun` | 879 | 849 | 879 | 0 | 879 |
-| `numeral` | 20 | 19 | 20 | 0 | 20 |
-| `participle` | 73 | 73 | 73 | 0 | 73 |
-| `present` | 57 | 56 | 57 | 0 | 57 |
+| `noun` | 958 | 925 | 958 | 0 | 958 |
+| `numeral` | 26 | 25 | 26 | 0 | 26 |
+| `participle` | 74 | 74 | 74 | 0 | 74 |
+| `present` | 59 | 58 | 59 | 0 | 59 |
 | `pronoun` | 99 | 97 | 99 | 0 | 99 |
 
 ## Expanded accuracy by provenance path
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exact-synodal-attestation` | 2022 | 1968 | 2022 | 0 | 2022 |
+| `exact-synodal-attestation` | 2120 | 2063 | 2120 | 0 | 2120 |
 | `synodal-irregular-override` | 19 | 16 | 19 | 0 | 19 |
-| `synodal-normative-table` | 74 | 70 | 74 | 0 | 74 |
-| `synodal-productive-rule` | 21 | 21 | 21 | 0 | 21 |
+| `synodal-normative-table` | 78 | 74 | 78 | 0 | 78 |
+| `synodal-productive-rule` | 50 | 50 | 50 | 0 | 50 |
 
 ## Expanded accuracy by regularity
 
@@ -72,10 +72,105 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 |---|---:|---:|---:|---:|---:|
 | `closed-class-held-out-exact-cell` | 25 | 25 | 25 | 0 | 25 |
 | `closed-class-held-out-normative` | 30 | 30 | 30 | 0 | 30 |
+| `exact-held-out-animate-accusative-plural-omega` | 1 | 0 | 1 | 0 | 1 |
+| `exact-held-out-aorist-third-singular-grave` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-cardinal-one-instrumental-singular-feminine` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-conclusive-conjunction` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-fleeting-vowel-place-name` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-fourth-neuter-at-accusative-singular` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-future-ending-stress` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-future-first-singular-grave` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-genitive-plural-kamora` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-imperative-homograph` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-infinitive` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-interrogative-adverb` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-interrogative-temporal-adverb` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-invariant-adverb` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-invariant-interjection` | 1 | 1 | 1 | 0 | 1 |
 | `exact-held-out-lexical` | 383 | 383 | 383 | 0 | 383 |
+| `exact-held-out-no-yat-locative-variant` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-nominative-plural-variant` | 1 | 0 | 1 | 0 | 1 |
+| `exact-held-out-normative-preposition` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-positional-plural` | 2 | 2 | 2 | 0 | 2 |
+| `exact-held-out-preposition` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-primary-preposition` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-primary-preposition-with-yerok` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-pronominal-adverb` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-temporal-adverb` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-vocalized-preposition` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-wide-e-plural` | 1 | 1 | 1 | 0 | 1 |
+| `exact-held-out-wide-omega-soft-ie-neuter` | 1 | 1 | 1 | 0 | 1 |
+| `held-out-exact-wide-omega-cell` | 1 | 1 | 1 | 0 | 1 |
+| `held-out-productive-velar-cell` | 1 | 1 | 1 | 0 | 1 |
+| `held-out-velar-palatalization-cell` | 1 | 1 | 1 | 0 | 1 |
 | `irregular` | 7 | 7 | 7 | 0 | 7 |
 | `irregular-held-out` | 10 | 9 | 10 | 0 | 10 |
 | `irregular-participle` | 1 | 1 | 1 | 0 | 1 |
+| `normative-held-out-wide-omega-animate-accusative-plural` | 1 | 0 | 1 | 0 | 1 |
+| `productive-held-out-animate-hard-masculine` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-cardinal-one-instrumental-singular-masculine` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-city-name-locative` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-city-name-nominative` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-first-conjugation-future-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-first-conjugation-future-principal-part` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-first-hard-masculine-accusative-plural` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-first-hard-masculine-genitive-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-first-hard-masculine-instrumental-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-first-hard-masculine-nominative-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-first-soft-masculine-instrumental-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-fixed-accent` | 4 | 4 | 4 | 0 | 4 |
+| `productive-held-out-fixed-accent-and-breathing` | 3 | 3 | 3 | 0 | 3 |
+| `productive-held-out-fixed-oblique-accent` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-fourth-neuter-at-dative-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-fourth-neuter-at-nominative-plural` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-future-third-plural` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-future-third-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-genitive-ending-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-hard-adjective-fixed-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-hard-adjective-sk-st-alternation` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-hard-masculine-fixed-accent` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-hard-masculine-oblique` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-hard-masculine-wide-yat` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-hard-neuter-ending-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-hard-neuter-fixed-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-hard-neuter-zero-ending` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-historical-j-possessive-citation` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-historical-j-possessive-hard-vowel-ending` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-indeclinable-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-instrumental-acute` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-l-participle` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-locative-ending-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-long-adjective-accusative-plural-neuter` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-long-adjective-genitive-plural` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-long-adjective-nominative-plural` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-long-adjective-nominative-plural-neuter` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-mixed-ts-masculine-nominative-plural` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-mobile-accent` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-perfective-finite-accent-and-breathing` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-perfective-finite-principal-part` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-personal-name-accusative` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-personal-name-dative` | 5 | 5 | 5 | 0 | 5 |
+| `productive-held-out-personal-name-genitive` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-personal-name-nominative` | 7 | 7 | 7 | 0 | 7 |
+| `productive-held-out-personal-name-vocative` | 3 | 3 | 3 | 0 | 3 |
+| `productive-held-out-possessive-in-adjective` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-possessive-in-adjective-fixed-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-present-active-participle-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-proper-name-dative-ovi` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-relational-adjective` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-river-name-genitive` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-second-conjugation-imperative` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-short-adjective-accusative-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-short-adjective-nominative-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-short-relational-adjective` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-soft-ie-fixed-accent` | 5 | 5 | 5 | 0 | 5 |
+| `productive-held-out-soft-ie-genitive` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-soft-ie-neuter-fixed-accent` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-soft-ie-neuter-genitive-singular` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-soft-ie-neuter-instrumental-singular` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-soft-ie-neuter-nominative-singular` | 2 | 2 | 2 | 0 | 2 |
+| `productive-held-out-substantivized-adjective` | 1 | 1 | 1 | 0 | 1 |
+| `productive-held-out-vowel-aorist` | 1 | 1 | 1 | 0 | 1 |
 | `regular` | 2 | 2 | 2 | 0 | 2 |
 | `regular-held-out` | 17 | 17 | 17 | 0 | 17 |
 | `regular-inherited` | 1 | 1 | 1 | 0 | 1 |
@@ -108,6 +203,9 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `v07-held-out-exact-cell` | 916 | 884 | 916 | 0 | 916 |
 | `v07-held-out-explicit-accent-case-variant` | 44 | 40 | 44 | 0 | 44 |
 | `v07-reviewed-identity-correction` | 1 | 1 | 1 | 0 | 1 |
+| `v18-held-out-productive-accent` | 2 | 2 | 2 | 0 | 2 |
+| `v18-held-out-source-typed-exact` | 1 | 1 | 1 | 0 | 1 |
+| `v19-held-out-normative-short-feminine-accusative` | 1 | 1 | 1 | 0 | 1 |
 
 ## Top-1 disagreements
 
@@ -172,6 +270,9 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Expanded `eval:v07:e48eca6f14f7c825` (`noun:accusative:singular:inanimate`): expected `любы`, top-1 `любовь`.
 - Expanded `eval:v07:e72eb04dce8a642d` (`noun:nominative:singular:inanimate`): expected `ᲂумъ`, top-1 `ѹмъ`.
 - Expanded `eval:v07:f6a8afc17586cb5c` (`noun:genitive:singular:inanimate`): expected `тьмы`, top-1 `тмы`.
+- Expanded `eval:v15:noun:tsar-nominative-plural-tsarie` (`noun:nominative:plural:animate`): expected `царїе`, top-1 `цари`.
+- Expanded `eval:v17:noun:levit-accusative-plural-omega` (`noun:accusative:plural:animate`): expected `леѵітѡвъ`, top-1 `леѵіты`.
+- Expanded `eval:v24:noun:rab-wide-omega-accusative-plural` (`noun:accusative:plural:animate`): expected `рабѡвъ`, top-1 `рабы`.
 - Printed `eval:acts-3-16-dati-aorist` (`aorist:third:singular`): expected `дадѐ`, top-1 `даде́`.
 - Printed `eval:acts-9-9-tri` (`numeral:cardinal:nominative:plural:masculine:inanimate`): expected `трѝ`, top-1 `трїѐ`.
 - Printed `eval:v04:reshchi-aorist-acute` (`aorist:third:singular`): expected `рече́`, top-1 `речѐ`.
@@ -316,6 +417,10 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v07:f2da2578054f271e` (`pronoun:dative:plural:masculine:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
 - Printed `eval:v07:f6a8afc17586cb5c` (`noun:genitive:singular:inanimate`): expected `тьмы̀`, top-1 `тмы̀`.
 - Printed `eval:v07:fdcd7d9ef5505c86` (`pronoun:dative:plural:feminine:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
+- Printed `eval:v11:preposition:vosled` (`indeclinable`): expected `в̾слѣ́дъ`, top-1 `вослѣ́дъ`.
+- Printed `eval:v15:noun:tsar-nominative-plural-tsarie` (`noun:nominative:plural:animate`): expected `ца́рїе`, top-1 `цари̑`.
+- Printed `eval:v17:noun:levit-accusative-plural-omega` (`noun:accusative:plural:animate`): expected `леѵі́тѡвъ`, top-1 `леѵі́ты`.
+- Printed `eval:v24:noun:rab-wide-omega-accusative-plural` (`noun:accusative:plural:animate`): expected `рабѡ́въ`, top-1 `рабы̑`.
 
 ## Inherited OCS evaluation
 

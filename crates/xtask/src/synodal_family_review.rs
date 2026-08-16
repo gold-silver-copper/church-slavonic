@@ -16,6 +16,7 @@ use synodal_church_slavonic_dictionary::coverage::{
 use synodal_church_slavonic_dictionary::{FamilyId, show_family_by_id};
 
 const DICTIONARY_SOURCE: &str = "english-wiktionary-ocs-kaikki-2026-08-07";
+const PONOMAR_DICTIONARY_SOURCE: &str = "ponomar-modern-church-slavonic-corpus-2016";
 const UD_SOURCE: &str = "ud-ocs-proiel-r2.18";
 const REVIEW_HEADER: &str = "candidate_id\tdecision\tlinked_lexeme_id\tadmitted_class\tadmitted_stem\tgender\taspect\tnumber_restriction\tanimacy\tstem_alternants\tprincipal_parts\taccent_metadata\tpositional_metadata\tabbreviation_metadata\tnormative_source\tnormative_citation\ttarget_evidence\tsemantic_evidence\tconfidence_bp\tassumptions\treview_note";
 
@@ -51,6 +52,17 @@ struct DictionaryForm {
 struct DictionarySense {
     #[serde(default)]
     glosses: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct PonomarDictionaryEntry {
+    definition: String,
+}
+
+#[derive(Clone, Debug)]
+struct SupplementalDictionaryEvidence {
+    candidate_id: String,
+    definition: String,
 }
 
 #[derive(Clone, Debug)]
@@ -178,6 +190,8 @@ pub(crate) fn run(
     }
     let report: CoverageReport = serde_json::from_str(&fs::read_to_string(coverage_path)?)?;
     let dictionary = load_dictionary(&intermediate.join(format!("{DICTIONARY_SOURCE}.jsonl")))?;
+    let supplemental_dictionary =
+        load_ponomar_dictionary(&intermediate.join(format!("{PONOMAR_DICTIONARY_SOURCE}.jsonl")))?;
     let morphological_witnesses =
         load_morphological_witnesses(&intermediate.join(format!("{UD_SOURCE}.jsonl")))?;
     let reviewed_lexemes = reviewed_lexemes_by_lemma()?;
@@ -188,6 +202,7 @@ pub(crate) fn run(
     let proposals = build_proposals(
         &report.gaps,
         &dictionary,
+        &supplemental_dictionary,
         &morphological_witnesses,
         &reviewed_lexemes,
         &reviewed_dictionary_lexemes,
@@ -329,6 +344,38 @@ fn load_dictionary(path: &Path) -> Result<BTreeMap<String, Vec<DictionaryFamily>
     for families in index.values_mut() {
         families.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
         families.dedup_by(|left, right| left.candidate_id == right.candidate_id);
+    }
+    Ok(index)
+}
+
+fn load_ponomar_dictionary(
+    path: &Path,
+) -> Result<BTreeMap<String, Vec<SupplementalDictionaryEvidence>>, Box<dyn Error>> {
+    let mut index: BTreeMap<String, Vec<SupplementalDictionaryEvidence>> = BTreeMap::new();
+    for line in fs::read_to_string(path)?.lines() {
+        let candidate: CandidateRecord = serde_json::from_str(line)?;
+        if candidate.source_id != PONOMAR_DICTIONARY_SOURCE
+            || candidate.part_of_speech != "dictionary-entry"
+            || candidate.grammatical_cell != "headword-with-definition"
+        {
+            continue;
+        }
+        let entry: PonomarDictionaryEntry = serde_json::from_str(&candidate.raw_spelling)?;
+        let definition = sanitize(&entry.definition);
+        if definition.is_empty() {
+            continue;
+        }
+        index
+            .entry(spelling_key(&candidate.normalized_spelling))
+            .or_default()
+            .push(SupplementalDictionaryEvidence {
+                candidate_id: candidate.candidate_id,
+                definition,
+            });
+    }
+    for evidence in index.values_mut() {
+        evidence.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+        evidence.dedup_by(|left, right| left.candidate_id == right.candidate_id);
     }
     Ok(index)
 }
@@ -489,6 +536,49 @@ fn validate_admitted_families(
                     && family.class.as_deref() == Some("second-soft")
                     && family.members.len() >= 21
             }
+            "first-hard-m"
+            | "first-hard-n"
+            | "first-hard-velar-m"
+            | "first-mixed-ts-m"
+            | "first-soft-m"
+            | "first-soft-ie-n"
+            | "fourth-feminine-er-daughter"
+            | "fourth-neuter-at"
+            | "second-hard" => {
+                family.fully_classed
+                    && family.class.as_deref() == Some(review.admitted_class.as_str())
+                    && !family.members.is_empty()
+            }
+            "possessive-j-short" | "possessive-in" | "possessive-sk" | "hard-short"
+            | "velar-short" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some(review.admitted_class.as_str())
+                    && family
+                        .supported_systems
+                        .iter()
+                        .any(|system| system == "adjective")
+            }
+            "numeral-cardinal-one" | "numeral-cardinal-both" | "ordinal-hard" | "ordinal-ii" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some(review.admitted_class.as_str())
+                    && family
+                        .supported_systems
+                        .iter()
+                        .any(|system| system == "numeral")
+            }
+            "indeclinable" => {
+                family.fully_classed
+                    && family.class.as_deref() == Some("indeclinable")
+                    && !family.members.is_empty()
+            }
+            "exact-typed-positional-cells" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("second-hard")
+                    && family.members.len() >= 2
+            }
             "exact-irregular-cells-only" => family.exact_only && family.members.len() >= 7,
             "exact-cell-table" => family.exact_only && family.members.len() >= 5,
             "determiner-ves-mixed-with-exact-overrides" => {
@@ -527,6 +617,42 @@ fn validate_admitted_families(
             "first-hard-u-stem-m-with-exact-consonantal-overrides" => {
                 family.class.as_deref() == Some("first-hard-u-stem-m") && family.members.len() >= 5
             }
+            "second-verb-system-with-exact-overrides" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("second")
+                    && family.members.len() >= 15
+            }
+            "first-palatalized-verb-system-with-exact-overrides" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("first-palatalized")
+                    && family.members.len() >= 5
+            }
+            "first-unpalatalized-verb-system-with-exact-overrides" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("first-unpalatalized")
+                    && family.members.len() >= 5
+            }
+            "archaic-verb-participle-system-with-exact-overrides" => {
+                !family.exact_only
+                    && family.lexeme.part_of_speech() == synodal_church_slavonic::PartOfSpeech::Verb
+                    && family.class.as_deref() == Some("archaic")
+                    && family.members.len() >= 15
+                    && family
+                        .supported_systems
+                        .iter()
+                        .any(|system| system == "participle")
+                    && family
+                        .principal_parts
+                        .get("present-active-participle-short-stem")
+                        .is_some_and(|stem| stem == "сꙋщ")
+                    && family
+                        .principal_parts
+                        .get("present-active-participle-long-stem")
+                        .is_some_and(|stem| stem == "сꙋщ")
+            }
             "exact-typed-abbreviation-cells" => {
                 family
                     .members
@@ -543,6 +669,22 @@ fn validate_admitted_families(
                     .count()
                     >= 1
             }
+            "exact-indeclinable-adverb" => exact_indeclinable_family_matches(
+                &family,
+                synodal_church_slavonic::PartOfSpeech::Adverb,
+            ),
+            "exact-indeclinable-conjunction" => exact_indeclinable_family_matches(
+                &family,
+                synodal_church_slavonic::PartOfSpeech::Conjunction,
+            ),
+            "exact-indeclinable-interjection" => exact_indeclinable_family_matches(
+                &family,
+                synodal_church_slavonic::PartOfSpeech::Interjection,
+            ),
+            "exact-indeclinable-preposition" => exact_indeclinable_family_matches(
+                &family,
+                synodal_church_slavonic::PartOfSpeech::Preposition,
+            ),
             "exact-abbreviation-variant" => family
                 .members
                 .iter()
@@ -560,9 +702,19 @@ fn validate_admitted_families(
     Ok(())
 }
 
+fn exact_indeclinable_family_matches(
+    family: &synodal_church_slavonic_dictionary::FamilySummary,
+    expected_part_of_speech: synodal_church_slavonic::PartOfSpeech,
+) -> bool {
+    family.exact_only
+        && family.lexeme.part_of_speech() == expected_part_of_speech
+        && matches!(family.members.as_slice(), [member] if member.cell == "indeclinable")
+}
+
 fn build_proposals(
     gaps: &[GapRecord],
     dictionary: &BTreeMap<String, Vec<DictionaryFamily>>,
+    supplemental_dictionary: &BTreeMap<String, Vec<SupplementalDictionaryEvidence>>,
     morphological_witnesses: &BTreeMap<String, Vec<MorphologicalWitness>>,
     reviewed_lexemes: &BTreeMap<String, Vec<ReviewedLexeme>>,
     reviewed_dictionary_lexemes: &BTreeMap<String, String>,
@@ -573,6 +725,10 @@ fn build_proposals(
     for gap in gaps.iter().filter(|gap| gap.top_k_uncovered_frequency > 0) {
         let family_key = diagnostic_family_key(gap, dictionary);
         let dictionary_matches = dictionary
+            .get(&spelling_key(&gap.normalized))
+            .cloned()
+            .unwrap_or_default();
+        let supplemental_dictionary_matches = supplemental_dictionary
             .get(&spelling_key(&gap.normalized))
             .cloned()
             .unwrap_or_default();
@@ -689,6 +845,21 @@ fn build_proposals(
                         .into(),
                 );
             }
+        }
+        for evidence in &supplemental_dictionary_matches {
+            aggregate
+                .dictionary_candidate_ids
+                .insert(evidence.candidate_id.clone());
+            aggregate.supporting_evidence.insert(format!(
+                "{PONOMAR_DICTIONARY_SOURCE}:{} supplies a mixed-recension Church Slavonic headword and semantic candidate ({})",
+                evidence.candidate_id, evidence.definition
+            ));
+        }
+        if !supplemental_dictionary_matches.is_empty() {
+            aggregate.contradicting_evidence.insert(
+                "the SCI Ponomar dictionary is mixed-recension semantic evidence and does not type a target Synodal cell"
+                    .into(),
+            );
         }
         for witness in &morphological_matches {
             if let Some(lexemes) = reviewed_lexemes.get(&spelling_key(&witness.lemma)) {
@@ -1325,5 +1496,58 @@ mod tests {
             .iter()
             .any(|assumption| assumption.contains("does not establish"))
         );
+    }
+
+    #[test]
+    fn productive_adjective_family_does_not_require_an_exact_member() {
+        let family = show_family_by_id(&FamilyId::for_lexeme(
+            &synodal_church_slavonic_core::LexemeId::from("synodal:adjective:mertv"),
+        ))
+        .expect("reviewed productive adjective family");
+
+        assert!(family.fully_classed);
+        assert!(!family.exact_only);
+        assert_eq!(family.class.as_deref(), Some("hard-short"));
+        assert!(family.members.is_empty());
+        assert!(
+            family
+                .supported_systems
+                .iter()
+                .any(|system| system == "adjective")
+        );
+    }
+
+    #[test]
+    fn exact_indeclinable_family_labels_require_matching_pos_and_cell() {
+        let family = show_family_by_id(&FamilyId::for_lexeme(
+            &synodal_church_slavonic_core::LexemeId::from("synodal:adverb:dokole"),
+        ))
+        .expect("reviewed exact indeclinable adverb");
+        assert!(exact_indeclinable_family_matches(
+            &family,
+            synodal_church_slavonic::PartOfSpeech::Adverb
+        ));
+        assert!(!exact_indeclinable_family_matches(
+            &family,
+            synodal_church_slavonic::PartOfSpeech::Preposition
+        ));
+
+        let mut wrong_cell = family;
+        wrong_cell.members[0].cell = "lexical-form".into();
+        assert!(!exact_indeclinable_family_matches(
+            &wrong_cell,
+            synodal_church_slavonic::PartOfSpeech::Adverb
+        ));
+
+        let reviews = BTreeMap::from([(
+            "fixture:wrong-pos".into(),
+            ReviewDecision {
+                decision: "admitted".into(),
+                linked_lexeme_id: "synodal:adverb:dokole".into(),
+                admitted_class: "exact-indeclinable-preposition".into(),
+                reason: "fixture".into(),
+            },
+        )]);
+        assert!(validate_admitted_families(&reviews).is_err());
     }
 }

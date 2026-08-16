@@ -115,7 +115,8 @@ reusable accent paradigm; expanded rules never invent stress.
 | Lexeme-specific `камень` contract | `SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43` | Alypy §43 | independently supplied `камен-`; ordered cited singular, dual, and plural alternatives; the separate `каменїе` collective is never emitted |
 | Short adjectives, hard/soft/velar | `SYN-ADJ-SHORT-{HARD,SOFT}-ALYPY-53`, `SYN-ADJ-SHORT-VELAR-ALYPY-53-57` | Alypy §§53–55, 57 | positive degree only; explicit stem/class/agreement; the velar class owns its post-velar `и` spellings |
 | Short masculine principal parts | `SYN-ADJ-SHORT-MASCULINE-STEM-ALYPY-52` | Alypy §52 | optional independent masculine-nominative short stem plus typed `DoubleNReduction` or `MobileEInsertion`; every other short cell retains the general stem |
-| Short possessive adjectives in `-овъ/-евъ` and soft consonants | `SYN-ADJ-POSSESSIVE-{OV-EV,SOFT}-SHORT-ALYPY-50-53` | Alypy §§50–53 | explicit hard or soft possessive stem; short positive agreement only; optional typed mobile-`е` masculine citation edge |
+| Short possessive adjectives in `-овъ/-евъ`, historical `-jь`, and soft consonants | `SYN-ADJ-POSSESSIVE-{OV-EV,J,SOFT}-SHORT-ALYPY-50-53` | Alypy §§50–53 | explicit typed possessive stem; short positive agreement only; the historical `-jь` class keeps hard vowel endings beside the soft `-имъ/-ихъ/-ими` series; optional typed mobile-`е` masculine citation edge |
+| Short and long possessive/relational adjectives in `-ин-` and `-ск-` | `SYN-ADJ-POSSESSIVE-{IN,SK}-{SHORT,LONG}-ALYPY-*` | Alypy §§11, 50–53, 57 | explicit suffix-final typed stem; positive agreement only; `-ск- → -ст-` is restricted to the source-defined soft-ending cells |
 | Possessive adjectives in `-їй` | `SYN-ADJ-POSSESSIVE-II-{SHORT,LONG}-ALYPY-56` | Alypy §56 | explicit pre-`-їй` stem; complete source-table short agreement and source-bounded occasional full forms; comparison is invalid |
 | Long adjectives, hard/soft/velar | `SYN-ADJ-LONG-{HARD,SOFT}-ALYPY-57`, `SYN-ADJ-LONG-VELAR-ALYPY-57` | Alypy §§56–57 | positive degree only; explicit stem/class/agreement; velar first/second palatalization is cell-scoped rather than a global rewrite |
 | Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full agreement inventory |
@@ -225,7 +226,8 @@ evidence and receives a trace step for the construction rule.
 Expanded output never invents stress. Liturgical output uses exact reviewed
 cells or a caller/registry `AccentParadigm`; `AccentScope::PronounCases` and
 `AccentScope::PronounAgreement` can express case-, number-, gender-, and
-animacy-conditioned stress. A missing accent contract is an explicit
+animacy-conditioned stress, while `AccentScope::Numeral` confines a rule to a
+reviewed number inventory such as singular-only cardinal `єдинъ`. A missing accent contract is an explicit
 `OrthographicMetadataRequired` result, not a guessed form.
 
 Arbitrary `LexemeSpec` liturgical generation also requires a complete
@@ -357,10 +359,12 @@ noun and `VerbSystem` paradigms likewise retain all failed cells.
 
 An `AccentParadigm` contains one or more typed, cell-scoped accent rules plus
 independently positioned breathing rules and source evidence. Placement retains
-the linguistic distinction between a fixed stem vowel counted from the left and
-an ending vowel counted from the right. Rules can be scoped by number and
-morphological system, so mobility and acute/grave/kamora choices do not require
-precomputed strings for every cell.
+the linguistic distinction between a fixed stem vowel counted from the left, a
+realized-word vowel counted from the left, and an ending vowel counted from the
+right. The word-relative placement covers sourced first-vowel stress for
+vowel-less stems such as `ѕл-`. Rules can be scoped by number and morphological
+system, so mobility and acute/grave/kamora choices do not require precomputed
+strings for every cell.
 
 Resolution order is exact reviewed accented cell, lexical irregular printed
 override, applicable positional paradigm, applicable accent paradigm, then a

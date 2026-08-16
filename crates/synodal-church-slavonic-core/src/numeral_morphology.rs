@@ -28,7 +28,7 @@ pub enum NumeralDeclension {
     CardinalFirstHardMasculine,
     CardinalThirdFeminine,
     OrdinalHard,
-    OrdinalSoft,
+    OrdinalIi,
     CollectiveAgreeing,
     CollectiveGoverningNeuter,
     CollectiveHardPlural,
@@ -55,7 +55,7 @@ impl NumeralDeclension {
         Self::CardinalFirstHardMasculine,
         Self::CardinalThirdFeminine,
         Self::OrdinalHard,
-        Self::OrdinalSoft,
+        Self::OrdinalIi,
         Self::CollectiveAgreeing,
         Self::CollectiveGoverningNeuter,
         Self::CollectiveHardPlural,
@@ -82,7 +82,7 @@ impl NumeralDeclension {
             | Self::CardinalSecondMixed
             | Self::CardinalFirstHardMasculine
             | Self::CardinalThirdFeminine => NumeralKind::Cardinal,
-            Self::OrdinalHard | Self::OrdinalSoft => NumeralKind::Ordinal,
+            Self::OrdinalHard | Self::OrdinalIi => NumeralKind::Ordinal,
             Self::CollectiveAgreeing
             | Self::CollectiveGoverningNeuter
             | Self::CollectiveHardPlural => NumeralKind::Collective,
@@ -112,7 +112,7 @@ impl NumeralDeclension {
             | Self::CardinalFirstHardMasculine
             | Self::CardinalThirdFeminine
             | Self::OrdinalHard
-            | Self::OrdinalSoft
+            | Self::OrdinalIi
             | Self::MultiplicativeHard
             | Self::MultiplicativeSoft
             | Self::FractionalHard
@@ -269,7 +269,7 @@ pub fn validate_numeral_lexeme(lexeme: &NumeralLexeme) -> Result<()> {
         | NumeralDeclension::CardinalTen
         | NumeralDeclension::CardinalHundred
         | NumeralDeclension::OrdinalHard
-        | NumeralDeclension::OrdinalSoft
+        | NumeralDeclension::OrdinalIi
         | NumeralDeclension::CollectiveAgreeing
         | NumeralDeclension::CollectiveGoverningNeuter
         | NumeralDeclension::CollectiveHardPlural
@@ -357,8 +357,8 @@ pub fn decline_numeral(
             adjective_like_forms(lexeme, cell, AdjectiveClass::Hard)?,
             "SYN-NUMERAL-ORDINAL-ADJECTIVAL-ALYPY-68",
         ),
-        NumeralDeclension::OrdinalSoft => (
-            adjective_like_forms(lexeme, cell, AdjectiveClass::Soft)?,
+        NumeralDeclension::OrdinalIi => (
+            adjective_like_forms(lexeme, cell, AdjectiveClass::PossessiveIi)?,
             "SYN-NUMERAL-ORDINAL-ADJECTIVAL-ALYPY-68",
         ),
         NumeralDeclension::CollectiveAgreeing => (
@@ -834,6 +834,60 @@ mod tests {
                     .texts()
                     .collect::<Vec<_>>(),
                 expected
+            );
+        }
+    }
+
+    #[test]
+    fn third_ordinal_uses_the_full_ii_agreement_table() {
+        let third = lexeme("третїй", "трет", NumeralDeclension::OrdinalIi);
+        for (case, number, gender, animacy, expected) in [
+            (
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Inanimate,
+                "третїй",
+            ),
+            (
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Inanimate,
+                "третїѧгѡ",
+            ),
+            (
+                Case::Accusative,
+                Number::Singular,
+                Gender::Feminine,
+                Animacy::Inanimate,
+                "третїю",
+            ),
+            (
+                Case::Nominative,
+                Number::Singular,
+                Gender::Neuter,
+                Animacy::Inanimate,
+                "третїе",
+            ),
+            (
+                Case::Genitive,
+                Number::Plural,
+                Gender::Feminine,
+                Animacy::Inanimate,
+                "третїихъ",
+            ),
+        ] {
+            let form = decline_numeral(
+                &third,
+                cell(NumeralKind::Ordinal, case, number, Some(gender), animacy),
+                OrthographyProfile::Expanded,
+            )
+            .expect("licensed third-ordinal cell");
+            assert_eq!(
+                form.primary_text(),
+                expected,
+                "{case:?} {number:?} {gender:?}"
             );
         }
     }

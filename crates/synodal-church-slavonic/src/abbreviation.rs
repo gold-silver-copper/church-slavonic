@@ -526,6 +526,70 @@ mod tests {
     }
 
     #[test]
+    fn salvation_contraction_traditions_remain_exact_typed_and_mark_sensitive() {
+        let lexeme_id = LexemeId::from("synodal:noun:spasenie");
+        let contractions = contractions_by_id(&lexeme_id, "sense:v21:noun:spasenie")
+            .expect("reviewed salvation contractions");
+        assert_eq!(contractions.len(), 14);
+        assert!(contractions.iter().all(|entry| {
+            entry.lexeme_id == lexeme_id
+                && entry.sense_id == "sense:v21:noun:spasenie"
+                && matches!(entry.cell, GrammarCell::Noun(_))
+                && entry.realization == AbbreviationRealization::ReviewedExact
+                && entry.evidence_ids.len() >= 2
+                && entry.required_marks.iter().any(|mark| mark == "titlo")
+        }));
+
+        let typed = contractions
+            .iter()
+            .map(|entry| (entry.printed.as_str(), entry.cell))
+            .collect::<BTreeSet<_>>();
+        for (printed, case, number) in [
+            ("спⷭ҇нїе", Case::Nominative, Number::Singular),
+            ("спⷭ҇нїе", Case::Accusative, Number::Singular),
+            ("спⷭ҇нїѧ", Case::Genitive, Number::Singular),
+            ("спⷭ҇нїи", Case::Locative, Number::Singular),
+            ("спⷭ҇нїемъ", Case::Instrumental, Number::Singular),
+            ("спⷭ҇нїй", Case::Genitive, Number::Plural),
+            ("сп҃се́нїе", Case::Nominative, Number::Singular),
+            ("сп҃се́нїе", Case::Accusative, Number::Singular),
+            ("сп҃се́нїѧ", Case::Genitive, Number::Singular),
+            ("сп҃се́нїи", Case::Locative, Number::Singular),
+            ("сп҃се́нїемъ", Case::Instrumental, Number::Singular),
+            ("сп҃се́нїю", Case::Dative, Number::Singular),
+            ("сп҃се́нїй", Case::Genitive, Number::Plural),
+            ("Сп҃се́нїе", Case::Nominative, Number::Singular),
+        ] {
+            assert!(
+                typed.contains(&(
+                    printed,
+                    GrammarCell::Noun(NounCell {
+                        case,
+                        number,
+                        animacy: Animacy::Inanimate,
+                    }),
+                )),
+                "missing exact typed salvation contraction {printed:?} {case:?} {number:?}"
+            );
+        }
+
+        assert!(
+            contractions
+                .iter()
+                .filter(|entry| entry.printed.starts_with("спⷭ"))
+                .all(|entry| {
+                    entry
+                        .required_marks
+                        .iter()
+                        .any(|mark| mark == "superscript-s")
+                        && entry.required_marks.iter().any(|mark| mark == "pokrytie")
+                })
+        );
+        assert!(family_by_id(&lexeme_id, "sense:v21:noun:spasenie").is_err());
+        assert!(matches!(expand("спⷭ҇нїе́"), Err(Error::UnknownLemma { .. })));
+    }
+
+    #[test]
     fn typed_cell_parser_covers_verbal_and_agreement_cells() {
         assert_eq!(
             parse_cell("aorist:first:singular").expect("finite verb cell"),
@@ -570,15 +634,41 @@ mod tests {
     }
 
     #[test]
+    fn pericope_label_contraction_is_exact_typed_and_mark_sensitive() {
+        let candidates = expand("Заⷱ҇").expect("reviewed pericope-label abbreviation");
+        assert_eq!(candidates.len(), 1);
+        let candidate = &candidates[0];
+        assert_eq!(
+            candidate.lexeme_id.as_str(),
+            "synodal:noun:wikt-217128dc4931"
+        );
+        assert_eq!(candidate.sense_id, "sense:v03:217128dc4931");
+        assert_eq!(candidate.cell, GrammarCell::LexicalForm);
+        assert_eq!(candidate.expanded, "зачало");
+        assert_eq!(candidate.printed, "Заⷱ҇");
+        assert_eq!(
+            candidate.realization,
+            AbbreviationRealization::ReviewedExact
+        );
+        assert!(!candidate.reversible);
+
+        let reverse = contractions_by_id(&candidate.lexeme_id, &candidate.sense_id)
+            .expect("typed reverse registry");
+        assert!(reverse.iter().any(|row| row == candidate));
+        assert!(matches!(expand("Заⷱ"), Err(Error::UnknownLemma { .. })));
+        assert!(matches!(expand("За҇"), Err(Error::UnknownLemma { .. })));
+    }
+
+    #[test]
     fn semantic_families_reproduce_every_reviewed_exact_contraction_shape() {
         let families = families().expect("reviewed abbreviation families");
-        assert_eq!(families.len(), 55);
+        assert_eq!(families.len(), 56);
         assert_eq!(
             families
                 .iter()
                 .map(|family| family.patterns.len())
                 .sum::<usize>(),
-            61
+            62
         );
         for family in families {
             let exact = contractions_by_id(&family.lexeme_id, &family.sense_id)
@@ -691,13 +781,19 @@ mod tests {
             ("synodal:noun:mary", "sense:proper:mary"),
         ];
         for (lexeme_id, sense_id) in identities {
-            for cell in NounCell::inventory(&Animacy::ALL) {
-                let contractions = contract_variants_for_cell_by_id(
-                    &LexemeId::from(lexeme_id),
-                    sense_id,
-                    GrammarCell::Noun(cell),
-                )
-                .unwrap_or_else(|error| panic!("{lexeme_id} {cell:?}: {error}"));
+            let lexeme_id = LexemeId::from(lexeme_id);
+            let noun = registry::noun_lexeme(&lexeme_id)
+                .unwrap_or_else(|error| panic!("{lexeme_id}: {error}"));
+            for cell in NounCell::inventory(&Animacy::ALL)
+                .into_iter()
+                .filter(|cell| {
+                    noun.number_inventory.contains(cell.number)
+                        && noun.animacy_inventory.contains(cell.animacy)
+                })
+            {
+                let contractions =
+                    contract_variants_for_cell_by_id(&lexeme_id, sense_id, GrammarCell::Noun(cell))
+                        .unwrap_or_else(|error| panic!("{lexeme_id} {cell:?}: {error}"));
                 assert!(!contractions.is_empty(), "{lexeme_id} {cell:?}");
                 assert!(
                     contractions

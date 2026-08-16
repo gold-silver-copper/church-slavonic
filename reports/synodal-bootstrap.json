@@ -5,7 +5,7 @@
   "source_verification": "all selected artifacts matched immutable SHA-256 locks",
   "candidate_pipeline": {
     "schema_version": 1,
-    "accepted_records": 1179847,
+    "accepted_records": 1200950,
     "quarantined_records": 3,
     "skipped_records": 149018,
     "source_reports": {
@@ -75,11 +75,11 @@
         "output_sha256": "ef0323df940c93c9b72a3cbb6f7adfb062ba38ffcdcf401eff5cf369c4869c26"
       },
       "ponomar-modern-church-slavonic-corpus-2016": {
-        "accepted_records": 134392,
+        "accepted_records": 155495,
         "quarantined_records": 0,
         "skipped_records": 0,
         "rejection_reasons": {},
-        "output_sha256": "09574842f778e3c9b0081f7c1f395a9a754bab2e732bd39d6aa8ada9ce0c3e8d"
+        "output_sha256": "42e8727df21d20fbc91d536e39469e8c2ccd60651cd5cb8726f21b11111002b5"
       },
       "syntacticus-20230428": {
         "accepted_records": 472798,

@@ -298,7 +298,7 @@ content_kind = "corpus/dictionary/frequency-list"
 format = "zip/text/tsv/xls"
 license = "Ponomar site terms apply; component text lineage and redistribution require per-work audit"
 redistribution = "evaluation-only"
-authority_roles = ["lexical", "orthographic", "accentual", "frequency", "evaluation"]
+authority_roles = ["lexical", "semantic", "orthographic", "accentual", "frequency", "evaluation"]
 upstream_lineage = ["Ponomar modern Church Slavonic corpus"]
 
 [[source]]
