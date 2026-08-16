@@ -843,6 +843,7 @@ pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
                 NounDeclension::SecondSoftPostvocalicAncientPlural
             }
             "second-soft-m-ia" => NounDeclension::SecondSoftMasculineIa,
+            "second-soft-f-ia" => NounDeclension::SecondSoftFeminineIa,
             "second-mixed" => NounDeclension::SecondMixed,
             "third-f" => NounDeclension::ThirdFeminine,
             "third-m" => NounDeclension::ThirdMasculine,

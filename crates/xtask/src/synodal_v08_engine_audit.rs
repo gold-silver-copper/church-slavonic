@@ -65,7 +65,7 @@ fn render(root: &Path) -> Result<String, Box<dyn Error>> {
     let mut out = String::new();
     out.push_str("# Synodal v0.10 productive morphology and lexicon audit\n\n");
     out.push_str("## Headline result\n\n");
-    out.push_str("The engine now productively covers thirty-six reviewed noun contracts, including all regular tables and every reusable or lexeme-bounded exception named in Alypy §§35–44. Cell-scoped `любовь` / `церковь`, paired `ѻко` / `ꙋхо`, syncopating `день`, mixed `господь`, ethnonyms in `-инъ`, invariant Hebrew loans, and the `ꙋдъ : ꙋдес-` analogy are complete without permitting arbitrary stem cross-products.\n\n");
+    out.push_str("The engine now productively covers thirty-seven reviewed noun contracts, including all regular tables and every reusable or lexeme-bounded exception named in Alypy §§32–44. Cell-scoped `любовь` / `церковь`, paired `ѻко` / `ꙋхо`, syncopating `день`, mixed `господь`, gendered `-іа` names, ethnonyms in `-инъ`, invariant Hebrew loans, and the `ꙋдъ : ꙋдес-` analogy are complete without permitting arbitrary stem cross-products.\n\n");
     out.push_str("A public provider layer now composes generated and application-owned lexicons without runtime I/O. Exact provider cells, caller irregular cells, and productive fallback share the existing kernel; duplicate identities fail closed. Ordered batch and provider-paradigm APIs retain every typed failure.\n\n");
     out.push_str("Corpus coverage is not the optimization target. The frozen corpus checkpoint remains a regression baseline only; no v0.10 rule, lexical upgrade, or accent pattern was selected from frequency or coverage movement.\n\n");
     out.push_str("## Public engine contract\n\n");

@@ -32,6 +32,14 @@ The typed inventory investigates and represents:
   conditional, optative, passive, periphrastic-tense, copula-ellipsis, and
   composite-adverbial-participle constructions.
 
+Alypy §32's feminine `маріа : марі-` contract is kept distinct from masculine
+names such as `исаїа : исаї-`: its instrumental singular is `маріею`, not the
+masculine `-емъ`. It is also a separate lexical identity from `марїамъ` /
+`марїамь`, whose third-declension or invariant treatment and borrowed oblique
+forms require their own policy. The source-table contraction `мр҃і́ѧ` remains an
+exact orthographic form of `маріа`; productive fallback uses the validated
+feminine paradigm in every cell without a reviewed exact contraction.
+
 Single-word morphology and phrase realization are distinct APIs. Analytic forms
 are structured tokens with agreement and provenance, never a space-containing
 word result.
@@ -463,7 +471,7 @@ inflection engine.
 
 ## Current reviewed lexical surface
 
-The reviewed registry has 910 target lexemes and 913 reviewed senses. The
+The reviewed registry has 929 target lexemes and 932 reviewed senses. The
 productive layer now covers every source-reviewed noun, adjective, pronoun,
 determiner, and numeral class while retaining exact-only identities whose class
 or principal parts remain underdetermined. Inflectable additions use

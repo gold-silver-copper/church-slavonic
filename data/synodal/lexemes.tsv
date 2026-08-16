@@ -87,6 +87,25 @@ synodal:noun:zapoved	заповѣдь	noun	third-f	заповѣд	feminine		alyp
 synodal:noun:zemlya	землѧ	noun	second-soft	земл	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:zhena	жена	noun	second-hard	жен	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:zhizn	жизнь	noun	third-f	жизн	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:apostol	апостолъ	noun	first-hard-m	апостол	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:bogoroditsa	богородица	noun	second-mixed	богородиц	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:deva-title	дѣва	noun	second-hard	дѣв	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:episkop	єпископъ	noun	first-hard-m	єпископ	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:evangelie	єѵангелїе	noun	first-soft-ie-n	єѵангелї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:krest	крестъ	noun	first-hard-m	крест	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:krestitel	креститель	noun	first-soft-agent-tel-m	крестител	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:mary	маріа	noun	second-soft-f-ia	марі	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:miloserdie	милосердїе	noun	first-soft-ie-n	милосердї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:muchenik	мꙋченикъ	noun	first-hard-velar-m	мꙋченик	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:nedelya	недѣлѧ	noun	second-soft	недѣл	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:pravednik	праведникъ	noun	first-hard-velar-m	праведник	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:prestol	престолъ	noun	first-hard-m	престол	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:resurrection	воскресенїе	noun	first-soft-ie-n	воскресенї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:spas-title	спасъ	noun	first-hard-m	спас	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:svyatitel	свѧтитель	noun	first-soft-agent-tel-m	свѧтител	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:troitsa	троица	noun	second-mixed	троиц	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:vladychitsa	владычица	noun	second-mixed	владычиц	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:vladyka	владыка	noun	second-hard-velar	владык	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:chetyre	четыре	numeral	numeral-cardinal-four	четыр			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:collective-chetvery	четверы	numeral	numeral-collective-hard-plural	четвер			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:collective-dvoe	двое	numeral	numeral-collective-governing-neuter	дво			alypy-gamanovich-grammar-web-2023	synodal-russian

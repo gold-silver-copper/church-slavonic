@@ -94,9 +94,9 @@ the corresponding §47 rule after validating the pronoun identity and cell.
 ### Semantic abbreviation families
 
 The reviewed exact abbreviation registry remains the highest-precedence layer:
-159 cells preserve their complete accent, breathing, capitalization,
+180 cells preserve their complete accent, breathing, capitalization,
 positional-letter, superscript, and titlo spelling. Beneath it,
-`abbreviation_families.tsv` records 25 stable lexical/sense identities and 29
+`abbreviation_families.tsv` records 45 stable lexical/sense identities and 50
 source-backed stem allomorphs. Each family replaces only an initial stem
 pattern after semantic identity and a typed grammatical cell are already known;
 it is never a global substring rewrite. The extractor proves that the family
@@ -109,8 +109,11 @@ morphology and a family pattern, and the result is labeled
 `AbbreviationRealization::ProductiveFamily`. Family evidence is combined with
 the productive form's morphological evidence. Multiple allomorphs, such as
 `бог-/боз-`, `отец-/отц-/отч-`, and `небо-/небес-`, use a deterministic
-longest-prefix rule. Unknown senses, compounds that merely contain a listed
-stem, and forms that do not match a licensed allomorph fail typed.
+longest-prefix rule. The matcher recognizes only the engine's closed
+positional-letter equivalences at that initial boundary, so productive forms
+such as soft-neuter `е/є` alternants keep their original suffix without opening
+a general spelling rewrite. Unknown senses, compounds that merely contain a
+listed stem, and forms that do not match a licensed allomorph fail typed.
 
 The family layer supplies the contraction skeleton and its required titlo,
 superscript, pokrytie, or initial breathing. It does not guess missing lexical
@@ -182,18 +185,18 @@ The validator recognizes standard combining marks, superscript Cyrillic letters,
 titlo/pokrytie, payerok, kavyka, and the standard Cyrillic repertoire while
 rejecting private-use glyph encodings. The renderer currently automates reviewed
 exact accent rows, six reusable lexical paradigms, the language-wide
-initial-breathing and contextual final-accent rules, 159 exact abbreviation
-cells, and 25 semantic contraction families with 29 allomorphs. Initial `є`, broad
+initial-breathing and contextual final-accent rules, 180 exact abbreviation
+cells, and 45 semantic contraction families with 50 allomorphs. Initial `є`, broad
 `ѻ`, iotated `ꙗ`, and digraph uk are available through an explicit
 `InitialPresentation` operation with a loss/change report. Automatic selection
 of those variants remains lexical and grammatical work because Alypy §2 records
 exceptions; the engine does not apply a blind spelling rewrite.
 
 Alypy §3.c's printed inventory contains 48 named abbreviation entries.
-`abbreviation_inventory.tsv` classifies all 48 in source order: 18 now map to
-productive semantic families and 30 remain explicit implementation gaps. The
-current 25-family runtime also includes seven independently reviewed derivatives
+`abbreviation_inventory.tsv` classifies all 48 in source order: 38 now map to
+productive semantic families and 10 remain explicit implementation gaps. The
+current 45-family runtime also includes seven independently reviewed derivatives
 or corpus-listed contractions, so the family and source-table counts are not a
-one-to-one denominator. Until the 30 missing source entries and the remaining
+one-to-one denominator. Until the 10 missing source entries and the remaining
 accent/positional inventories are closed, the liturgical presentation system
 remains non-final.

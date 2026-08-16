@@ -60,6 +60,9 @@ pub enum NounDeclension {
     SecondSoftPostvocalicAncientPlural,
     /// Masculine names in `-їа`, with the §40 instrumental singular `-емъ`.
     SecondSoftMasculineIa,
+    /// Feminine names in `-іа`, with the feminine instrumental singular
+    /// `-іею`, for example `маріа : марі-` (Alypy §§32, 39–40).
+    SecondSoftFeminineIa,
     /// Second-declension stems ending in a sibilant, with the mixed endings
     /// printed in Alypy §§39–40 (for example `юноша`).
     SecondMixed,
@@ -111,7 +114,7 @@ pub enum NounDeclension {
 }
 
 impl NounDeclension {
-    pub const ALL: [Self; 36] = [
+    pub const ALL: [Self; 37] = [
         Self::FirstHardMasculine,
         Self::FirstHardMasculineUStem,
         Self::FirstHardMasculineInEthnonym,
@@ -132,6 +135,7 @@ impl NounDeclension {
         Self::SecondSoft,
         Self::SecondSoftPostvocalicAncientPlural,
         Self::SecondSoftMasculineIa,
+        Self::SecondSoftFeminineIa,
         Self::SecondMixed,
         Self::ThirdFeminine,
         Self::ThirdMasculine,
@@ -1863,6 +1867,7 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
                 Gender::Feminine | Gender::Masculine
             )
             | (NounDeclension::SecondSoftMasculineIa, Gender::Masculine)
+            | (NounDeclension::SecondSoftFeminineIa, Gender::Feminine)
             | (NounDeclension::ThirdFeminine, Gender::Feminine)
             | (NounDeclension::ThirdMasculine, Gender::Masculine)
             | (
@@ -1969,7 +1974,7 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
                     )
                 })
         }
-        NounDeclension::SecondSoftMasculineIa => {
+        NounDeclension::SecondSoftMasculineIa | NounDeclension::SecondSoftFeminineIa => {
             lemma.strip_suffix('а').is_some_and(|prefix| prefix == stem)
                 && (stem.ends_with('ї') || stem.ends_with('і'))
         }
@@ -2042,6 +2047,7 @@ fn noun_rule(declension: NounDeclension) -> &'static str {
             "SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40"
         }
         NounDeclension::SecondSoftMasculineIa => "SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40",
+        NounDeclension::SecondSoftFeminineIa => "SYN-NOUN-II-SOFT-F-IA-ALYPY-32-39-40",
         NounDeclension::SecondMixed => "SYN-NOUN-II-MIXED-ALYPY-39-40",
         NounDeclension::ThirdFeminine => "SYN-NOUN-III-F-ALYPY-41",
         NounDeclension::ThirdMasculine => "SYN-NOUN-III-M-ALYPY-41",
@@ -2387,6 +2393,21 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
         (NounDeclension::SecondSoftMasculineIa, Pl, Acc) => animate_acc("и", "й"),
         (NounDeclension::SecondSoftMasculineIa, Pl, Ins) => "ѧми",
         (NounDeclension::SecondSoftMasculineIa, Pl, Loc) => "ѧхъ",
+
+        (NounDeclension::SecondSoftFeminineIa, Sg, Nom) => "а",
+        (NounDeclension::SecondSoftFeminineIa, Sg, Gen | Dat | Loc) => "и",
+        (NounDeclension::SecondSoftFeminineIa, Sg, Acc) => "ю",
+        (NounDeclension::SecondSoftFeminineIa, Sg, Ins) => "ею",
+        (NounDeclension::SecondSoftFeminineIa, Sg, Voc) => "е",
+        (NounDeclension::SecondSoftFeminineIa, Du, Nom | Acc | Voc) => "и",
+        (NounDeclension::SecondSoftFeminineIa, Du, Gen | Loc) => "ю",
+        (NounDeclension::SecondSoftFeminineIa, Du, Dat | Ins) => "ѧма",
+        (NounDeclension::SecondSoftFeminineIa, Pl, Nom | Voc) => "и",
+        (NounDeclension::SecondSoftFeminineIa, Pl, Gen) => "й",
+        (NounDeclension::SecondSoftFeminineIa, Pl, Dat) => "ѧмъ",
+        (NounDeclension::SecondSoftFeminineIa, Pl, Acc) => animate_acc("и", "й"),
+        (NounDeclension::SecondSoftFeminineIa, Pl, Ins) => "ѧми",
+        (NounDeclension::SecondSoftFeminineIa, Pl, Loc) => "ѧхъ",
 
         (NounDeclension::SecondMixed, Sg, Nom) => "а",
         (NounDeclension::SecondMixed, Sg, Gen | Dat | Loc) => "и",
@@ -3321,6 +3342,7 @@ fn normative_citation(rule: &str) -> &'static str {
         }
         "SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40"
         | "SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40" => "Alypy (Gamanovich), §§39–40",
+        "SYN-NOUN-II-SOFT-F-IA-ALYPY-32-39-40" => "Alypy (Gamanovich), §§32 and 39–40",
         "SYN-NOUN-III-F-ALYPY-41" | "SYN-NOUN-III-M-ALYPY-41" => "Alypy (Gamanovich), §41",
         "SYN-NOUN-IV-N-EN-ALYPY-42-43"
         | "SYN-NOUN-IV-N-ES-ALYPY-42-43"
@@ -3773,7 +3795,7 @@ mod tests {
     }
 
     #[test]
-    fn alpy_40_postvocalic_plural_and_masculine_ia_boundaries() {
+    fn alpy_32_40_postvocalic_and_gendered_ia_boundaries() {
         let lightning = NounLexeme::new(
             word("молнїѧ"),
             word("молнї"),
@@ -3830,6 +3852,40 @@ mod tests {
             .expect("§40 masculine -їа instrumental")
             .primary_text(),
             "исаїемъ"
+        );
+
+        let mary = NounLexeme::new(
+            word("маріа"),
+            word("марі"),
+            Gender::Feminine,
+            NounDeclension::SecondSoftFeminineIa,
+        );
+        assert_noun_paradigm(
+            &mary,
+            Animacy::Animate,
+            &[
+                &["маріа"],
+                &["маріи"],
+                &["маріи"],
+                &["марію"],
+                &["маріею"],
+                &["маріи"],
+                &["маріе"],
+                &["маріи"],
+                &["марію"],
+                &["маріѧма"],
+                &["маріи"],
+                &["маріѧма"],
+                &["марію"],
+                &["маріи"],
+                &["маріи"],
+                &["марій"],
+                &["маріѧмъ"],
+                &["маріи", "марій"],
+                &["маріѧми"],
+                &["маріѧхъ"],
+                &["маріи"],
+            ],
         );
     }
 
@@ -4053,6 +4109,12 @@ mod tests {
                 word("исаї"),
                 Gender::Masculine,
                 NounDeclension::SecondSoftMasculineIa,
+            ),
+            NounLexeme::new(
+                word("маріѧ"),
+                word("марі"),
+                Gender::Feminine,
+                NounDeclension::SecondSoftFeminineIa,
             ),
             NounLexeme::new(
                 word("имѧ"),
@@ -5410,6 +5472,7 @@ mod tests {
                     ("молнїѧ", "молнї", Gender::Feminine)
                 }
                 NounDeclension::SecondSoftMasculineIa => ("исаїа", "исаї", Gender::Masculine),
+                NounDeclension::SecondSoftFeminineIa => ("маріа", "марі", Gender::Feminine),
                 NounDeclension::SecondMixed => ("юноша", "юнош", Gender::Masculine),
                 NounDeclension::ThirdFeminine => ("кость", "кост", Gender::Feminine),
                 NounDeclension::ThirdMasculine => ("пꙋть", "пꙋт", Gender::Masculine),

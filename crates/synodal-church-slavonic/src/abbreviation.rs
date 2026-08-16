@@ -228,9 +228,7 @@ impl AbbreviationFamily {
             .patterns
             .iter()
             .filter_map(|pattern| {
-                expanded
-                    .canonical()
-                    .strip_prefix(&pattern.expanded_prefix)
+                strip_family_prefix(expanded.canonical(), &pattern.expanded_prefix)
                     .map(|suffix| (pattern, suffix))
             })
             .max_by(|(left, _), (right, _)| {
@@ -249,6 +247,36 @@ impl AbbreviationFamily {
         let printed = format!("{}{}", pattern.0.printed_prefix, pattern.1);
         SynodalWord::parse(printed.clone())?;
         Ok(printed)
+    }
+}
+
+fn strip_family_prefix<'a>(expanded: &'a str, prefix: &str) -> Option<&'a str> {
+    if let Some(suffix) = expanded.strip_prefix(prefix) {
+        return Some(suffix);
+    }
+    let mut expanded_characters = expanded.char_indices();
+    for prefix_character in prefix.chars() {
+        let (_, expanded_character) = expanded_characters.next()?;
+        if abbreviation_family_base(expanded_character)
+            != abbreviation_family_base(prefix_character)
+        {
+            return None;
+        }
+    }
+    let suffix_start = expanded_characters
+        .next()
+        .map_or(expanded.len(), |(offset, _)| offset);
+    Some(&expanded[suffix_start..])
+}
+
+fn abbreviation_family_base(character: char) -> char {
+    match character {
+        'ѡ' | 'ѻ' | 'ꙍ' => 'о',
+        'і' | 'ї' => 'и',
+        'є' => 'е',
+        'ꙋ' => 'у',
+        'ꙗ' | 'я' => 'ѧ',
+        other => other,
     }
 }
 
@@ -370,7 +398,9 @@ mod tests {
     fn structural_shape(value: &str) -> String {
         value
             .nfd()
-            .filter(|character| !matches!(character, '\u{0300}' | '\u{0301}' | '\u{0311}'))
+            .filter(|character| {
+                !matches!(character, '\u{0300}' | '\u{0301}' | '\u{0308}' | '\u{0311}')
+            })
             .flat_map(char::to_lowercase)
             .map(|character| match character {
                 'ѡ' | 'ѻ' | 'ꙍ' => 'о',
@@ -542,13 +572,13 @@ mod tests {
     #[test]
     fn semantic_families_reproduce_every_reviewed_exact_contraction_shape() {
         let families = families().expect("reviewed abbreviation families");
-        assert_eq!(families.len(), 25);
+        assert_eq!(families.len(), 45);
         assert_eq!(
             families
                 .iter()
                 .map(|family| family.patterns.len())
                 .sum::<usize>(),
-            29
+            50
         );
         for family in families {
             let exact = contractions_by_id(&family.lexeme_id, &family.sense_id)
@@ -589,6 +619,17 @@ mod tests {
                 .all(|entry| { entry.realization == AbbreviationRealization::ReviewedExact })
         );
 
+        let mary = contract_variants_for_cell_by_id(
+            &LexemeId::from("synodal:noun:mary"),
+            "sense:proper:mary",
+            nominative_singular,
+        )
+        .expect("reviewed Marian source-table contraction");
+        assert_eq!(mary.len(), 1);
+        assert_eq!(mary[0].expanded, "маріа");
+        assert_eq!(mary[0].printed, "мр҃і́ѧ");
+        assert_eq!(mary[0].realization, AbbreviationRealization::ReviewedExact);
+
         let nominative_plural = GrammarCell::Noun(NounCell {
             case: Case::Nominative,
             number: Number::Plural,
@@ -623,5 +664,48 @@ mod tests {
             heaven.contract_expanded("небесемъ").expect("extended stem"),
             "нб҃семъ"
         );
+    }
+
+    #[test]
+    fn source_listed_nominal_families_cover_every_productive_noun_cell() {
+        let identities = [
+            ("synodal:noun:molitva", "sense:prayer"),
+            ("synodal:noun:apostol", "sense:title:apostle"),
+            ("synodal:noun:miloserdie", "sense:mercy-compassion"),
+            ("synodal:noun:muchenik", "sense:title:martyr"),
+            ("synodal:noun:nedelya", "sense:week-sunday"),
+            ("synodal:noun:pravednik", "sense:righteous-person"),
+            ("synodal:noun:bogoroditsa", "sense:title:theotokos"),
+            ("synodal:noun:resurrection", "sense:resurrection"),
+            ("synodal:noun:prestol", "sense:throne-altar"),
+            ("synodal:noun:vladyka", "sense:title:vladyka"),
+            ("synodal:noun:vladychitsa", "sense:title:lady"),
+            ("synodal:noun:svyatitel", "sense:title:hierarch"),
+            ("synodal:noun:deva-title", "sense:title:virgin-theotokos"),
+            ("synodal:noun:spas-title", "sense:title:savior"),
+            ("synodal:noun:episkop", "sense:title:bishop"),
+            ("synodal:noun:troitsa", "sense:trinity-christian"),
+            ("synodal:noun:evangelie", "sense:gospel"),
+            ("synodal:noun:krest", "sense:cross-religious"),
+            ("synodal:noun:krestitel", "sense:title:baptist"),
+            ("synodal:noun:mary", "sense:proper:mary"),
+        ];
+        for (lexeme_id, sense_id) in identities {
+            for cell in NounCell::inventory(&Animacy::ALL) {
+                let contractions = contract_variants_for_cell_by_id(
+                    &LexemeId::from(lexeme_id),
+                    sense_id,
+                    GrammarCell::Noun(cell),
+                )
+                .unwrap_or_else(|error| panic!("{lexeme_id} {cell:?}: {error}"));
+                assert!(!contractions.is_empty(), "{lexeme_id} {cell:?}");
+                assert!(
+                    contractions
+                        .iter()
+                        .all(|entry| entry.printed != entry.expanded),
+                    "{lexeme_id} {cell:?}"
+                );
+            }
+        }
     }
 }

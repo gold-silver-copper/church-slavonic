@@ -64,6 +64,25 @@ synodal:noun:zapoved	sense:commandment	commandment; injunction	religion,law	dyac
 synodal:noun:zemlya	sense:earth-land	earth; land; ground	nature,place	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:zhena	sense:woman-wife	woman; wife	person,family	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
 synodal:noun:zhizn	sense:life	life	nature,religion	dyachenko-1900-scan	mixed	reviewed-with-synodal-corpus
+synodal:noun:apostol	sense:title:apostle	apostle; commissioned religious messenger	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:bogoroditsa	sense:title:theotokos	Theotokos; Mother of God title	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:deva-title	sense:title:virgin-theotokos	Virgin; reverential title of the Theotokos	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:episkop	sense:title:bishop	bishop; episcopal title	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:evangelie	sense:gospel	Gospel; gospel book or message	text,religion	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:krest	sense:cross-religious	cross; Christian cross	religion,object	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:krestitel	sense:title:baptist	Baptist; religious agent title	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:mary	sense:proper:mary	Mary; female biblical personal name	person,religion,name	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:miloserdie	sense:mercy-compassion	mercy; compassion	religion,quality	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:muchenik	sense:title:martyr	martyr; reverential religious title	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:nedelya	sense:week-sunday	week; Sunday	calendar,time,religion	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:pravednik	sense:righteous-person	righteous person; just person	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:prestol	sense:throne-altar	throne; altar or holy table	religion,object	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:resurrection	sense:resurrection	resurrection; rising from the dead	religion,event	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:spas-title	sense:title:savior	Savior; title of Christ	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:svyatitel	sense:title:hierarch	hierarch; bishop-saint title	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:troitsa	sense:trinity-christian	Trinity; Christian triune God	religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:vladychitsa	sense:title:lady	Lady; reverential female ruler or Theotokos title	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:noun:vladyka	sense:title:vladyka	Lord, master, or bishop title	person,religion,title	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:chetyre	sense:four	four	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:collective-chetvery	sense:collective-four	four taken together; fourfold set	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:collective-dvoe	sense:collective-two-governing	two taken together, governing a genitive plural	number,collective	alypy-gamanovich-grammar-web-2023	synodal-russian	normative

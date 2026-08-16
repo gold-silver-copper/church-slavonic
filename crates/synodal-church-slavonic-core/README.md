@@ -35,7 +35,7 @@ assert_eq!(
 # Ok::<(), synodal_church_slavonic_core::Error>(())
 ```
 
-The current productive slice covers thirty-six reviewed noun contracts, including
+The current productive slice covers thirty-seven reviewed noun contracts, including
 regular, mixed, final-velar, invariant, and lexeme-bounded stem-alternating families; hard
 and soft, short and long positive adjectives; complete short/full pronominal,
 mixed dual-less, velar, and full `-скїй` determiner classes; present, imperfect, aorist,

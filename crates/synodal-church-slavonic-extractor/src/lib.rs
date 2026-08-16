@@ -1877,6 +1877,7 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
                         | "second-soft"
                         | "second-soft-postvocalic-ancient-pl"
                         | "second-soft-m-ia"
+                        | "second-soft-f-ia"
                         | "second-mixed"
                         | "third-f"
                         | "third-m"
@@ -2375,6 +2376,7 @@ fn validate_abbreviation_family_marks(
             "initial-breathing" => characters.contains(&'\u{0486}'),
             "pokrytie" => characters.contains(&'\u{0487}'),
             "superscript-s" => characters.contains(&'\u{2ded}'),
+            "superscript-g" => characters.contains(&'\u{2de2}'),
             "superscript-o" => characters.contains(&'\u{2dea}'),
             "superscript-d" => characters.contains(&'\u{2de3}'),
             _ => return invalid(path, line, "unknown required abbreviation-family mark"),
@@ -2403,7 +2405,7 @@ fn abbreviation_pattern_covers(expanded: &str, printed: &str, pattern: &[String]
 fn normalize_abbreviation_family_shape(value: &str) -> String {
     value
         .nfd()
-        .filter(|character| !matches!(character, '\u{0300}' | '\u{0301}' | '\u{0311}'))
+        .filter(|character| !matches!(character, '\u{0300}' | '\u{0301}' | '\u{0308}' | '\u{0311}'))
         .flat_map(char::to_lowercase)
         .map(|character| match character {
             'ѡ' | 'ѻ' | 'ꙍ' => 'о',

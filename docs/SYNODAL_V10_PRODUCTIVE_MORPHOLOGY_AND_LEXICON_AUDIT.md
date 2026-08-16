@@ -2,7 +2,7 @@
 
 ## Headline result
 
-The engine now productively covers thirty-six reviewed noun contracts, including all regular tables and every reusable or lexeme-bounded exception named in Alypy §§35–44. Cell-scoped `любовь` / `церковь`, paired `ѻко` / `ꙋхо`, syncopating `день`, mixed `господь`, ethnonyms in `-инъ`, invariant Hebrew loans, and the `ꙋдъ : ꙋдес-` analogy are complete without permitting arbitrary stem cross-products.
+The engine now productively covers thirty-seven reviewed noun contracts, including all regular tables and every reusable or lexeme-bounded exception named in Alypy §§32–44. Cell-scoped `любовь` / `церковь`, paired `ѻко` / `ꙋхо`, syncopating `день`, mixed `господь`, gendered `-іа` names, ethnonyms in `-инъ`, invariant Hebrew loans, and the `ꙋдъ : ꙋдес-` analogy are complete without permitting arbitrary stem cross-products.
 
 A public provider layer now composes generated and application-owned lexicons without runtime I/O. Exact provider cells, caller irregular cells, and productive fallback share the existing kernel; duplicate identities fail closed. Ordered batch and provider-paradigm APIs retain every typed failure.
 
@@ -16,7 +16,7 @@ Corpus coverage is not the optimization target. The frozen corpus checkpoint rem
 
 ## Capability summary
 
-The matrix contains 82 reviewed system/subtype rows: 75 productive rows, 3 rows involving exact tables, 2 explicit irregular rows, and 0 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
+The matrix contains 83 reviewed system/subtype rows: 76 productive rows, 3 rows involving exact tables, 2 explicit irregular rows, and 0 unsupported rows. Counts describe engine contracts, not corpus forms or tokens.
 
 The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. Every row records its target recension, valid and invalid inventory, required metadata, alternations, accent contract, source citation, golden/boundary example, implementation, test, and typed failure.
 
@@ -44,6 +44,7 @@ The machine-readable source of truth is `data/synodal/engine_capabilities.tsv`. 
 | noun | second-soft | productive | `SYN-NOUN-II-SOFT-ALYPY-39` | 7 cases × singular/dual/plural | lemma; stem; masculine or feminine; class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §§39–40 | `ContradictoryMetadata` |
 | noun | second-soft-postvocalic-ancient-plural | productive | `SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40` | 7 cases × singular/dual/plural | lemma in postvocalic -ѧ; stem ending in a vowel; masculine or feminine; class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §40 | `ContradictoryMetadata` |
 | noun | second-soft-masculine-ia | productive | `SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40` | 7 cases × singular/dual/plural | lemma in -їа; stem in -ї; masculine; class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §§39–40 | `ContradictoryMetadata` |
+| noun | second-soft-feminine-ia | productive | `SYN-NOUN-II-SOFT-F-IA-ALYPY-32-39-40` | 7 cases × singular/dual/plural | lemma in -іа; stem in -і; feminine; class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §§32, 39–40 | `ContradictoryMetadata` |
 | noun | second-mixed | productive | `SYN-NOUN-II-MIXED-ALYPY-39-40` | 7 cases × singular/dual/plural | lemma in -а; sibilant stem; masculine or feminine; class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §§39–40 | `ContradictoryMetadata` |
 | noun | third-feminine | productive | `SYN-NOUN-III-F-ALYPY-41` | 7 cases × singular/dual/plural | lemma; stem; feminine; class | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §41 | `ContradictoryMetadata` |
 | noun | third-masculine | productive | `SYN-NOUN-III-M-ALYPY-41` | 7 cases × licensed singular/dual/plural inventory | lemma; consonantal stem; masculine; class; number inventory | reusable paradigm or exact accent required for liturgical | Alypy Gamanovich grammar §41 | `HistoricallyInvalidCell / ContradictoryMetadata` |
