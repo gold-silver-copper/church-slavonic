@@ -229,7 +229,7 @@ pub(crate) fn run(
 /// Keeps the progress inventory and report structurally guarded while the
 /// long-running completion goal still contains honest non-final rows.
 pub(crate) fn check_progress_artifacts(root: &Path) -> Result<(), Box<dyn Error>> {
-    crate::ocs_lexical_union::check(root)?;
+    crate::ocs_lexical_union::check_progress(root)?;
     crate::synodal_lexical_union::check_progress(root)?;
     let audit = load_and_validate(root)?;
     let expected = render(&audit);

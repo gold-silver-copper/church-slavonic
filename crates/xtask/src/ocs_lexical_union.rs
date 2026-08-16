@@ -170,9 +170,7 @@ pub(crate) fn run(
 }
 
 pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
-    let claims = load_ledger(&root.join(LEDGER_PATH))?;
-    validate(root, &claims)?;
-    require_report_current(root, &report(&claims))?;
+    require_committed_current(root)?;
     require_regular_nouns_current(
         root,
         &root.join("data/intermediate/synodal/polivanova-osd-source.jsonl"),
@@ -185,6 +183,21 @@ pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Checks committed completion artifacts without requiring ignored source
+/// intermediates that are intentionally absent from a fresh checkout.
+pub(crate) fn check_progress(root: &Path) -> Result<(), Box<dyn Error>> {
+    require_committed_current(root)?;
+    println!("OCS lexical source-union ledger: current");
+    Ok(())
+}
+
+fn require_committed_current(root: &Path) -> Result<(), Box<dyn Error>> {
+    let claims = load_ledger(&root.join(LEDGER_PATH))?;
+    validate(root, &claims)?;
+    require_report_current(root, &report(&claims))?;
+    Ok(())
+}
+
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 struct RegularNounRow {
     source_row: usize,
@@ -194,7 +207,10 @@ struct RegularNounRow {
     number_restriction: &'static str,
 }
 
-fn read_regular_nouns(path: &Path) -> Result<Vec<RegularNounRow>, Box<dyn Error>> {
+fn read_osd_rows<T>(
+    path: &Path,
+    mut parse: impl FnMut(&IntermediateRow, &[&str]) -> Result<Option<T>, Box<dyn Error>>,
+) -> Result<Vec<T>, Box<dyn Error>> {
     let reader = BufReader::new(File::open(path)?);
     let mut rows = Vec::new();
     for (index, line) in reader.lines().enumerate() {
@@ -219,29 +235,32 @@ fn read_regular_nouns(path: &Path) -> Result<Vec<RegularNounRow>, Box<dyn Error>
                 format!("OSD row {} has {} columns", row.source_order, columns.len()).into(),
             );
         }
+        if let Some(parsed) = parse(&row, &columns)? {
+            rows.push(parsed);
+        }
+    }
+    Ok(rows)
+}
+
+fn read_regular_nouns(path: &Path) -> Result<Vec<RegularNounRow>, Box<dyn Error>> {
+    let rows = read_osd_rows(path, |row, columns| {
         if columns[12] != "n"
             || !is_regular_osd_noun_class(columns[11])
             || columns[10].contains(['(', ')'])
         {
-            continue;
+            return Ok(None);
         }
         let source_row = row.source_order - 1;
         let lemma = clean_osd_lemma(columns[10]);
-        let inflection_lemma = plural_only_noun_inflection_lemma(source_row)
-            .unwrap_or(lemma.as_str())
-            .to_string();
-        rows.push(RegularNounRow {
+        let plural_lemma = plural_only_noun_inflection_lemma(source_row);
+        Ok(Some(RegularNounRow {
             source_row,
+            inflection_lemma: plural_lemma.unwrap_or(lemma.as_str()).to_string(),
             lemma,
             class: columns[11].to_string(),
-            inflection_lemma,
-            number_restriction: if plural_only_noun_inflection_lemma(source_row).is_some() {
-                "pl"
-            } else {
-                "all"
-            },
-        });
-    }
+            number_restriction: if plural_lemma.is_some() { "pl" } else { "all" },
+        }))
+    })?;
     if rows.len() != 2_423 {
         return Err(format!("expected 2423 regular OSD nouns, found {}", rows.len()).into());
     }
@@ -285,28 +304,23 @@ fn render_regular_nouns(rows: &[RegularNounRow]) -> Result<String, Box<dyn Error
     let mut output =
         String::from("source_row\tlemma\tclass\tinflection_lemma\tnumber_restriction\n");
     for row in rows {
-        if row.lemma.contains(['\t', '\n'])
-            || row.class.contains(['\t', '\n'])
-            || row.inflection_lemma.contains(['\t', '\n'])
-        {
-            return Err(format!("OSD row {} contains a TSV delimiter", row.source_row).into());
-        }
-        output.push_str(&format!(
-            "{}\t{}\t{}\t{}\t{}\n",
-            row.source_row, row.lemma, row.class, row.inflection_lemma, row.number_restriction
-        ));
+        push_tsv_row(
+            &mut output,
+            row.source_row,
+            &[
+                &row.lemma,
+                &row.class,
+                &row.inflection_lemma,
+                row.number_restriction,
+            ],
+        )?;
     }
     Ok(output)
 }
 
 fn require_regular_nouns_current(root: &Path, source: &Path) -> Result<(), Box<dyn Error>> {
     let expected = render_regular_nouns(&read_regular_nouns(source)?)?;
-    if fs::read_to_string(root.join(REGULAR_NOUN_PATH))? != expected {
-        return Err(
-            format!("stale {REGULAR_NOUN_PATH}; rerun cargo xtask ocs-lexical-union").into(),
-        );
-    }
-    Ok(())
+    require_current(root, REGULAR_NOUN_PATH, &expected)
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -318,35 +332,12 @@ struct RegularVerbRow {
 }
 
 fn read_regular_verbs(path: &Path) -> Result<Vec<RegularVerbRow>, Box<dyn Error>> {
-    let reader = BufReader::new(File::open(path)?);
-    let mut rows = Vec::new();
-    for (index, line) in reader.lines().enumerate() {
-        let row: IntermediateRow = serde_json::from_str(&line?)?;
-        if row.source_id != OSD_SOURCE
-            || row.source_revision != OSD_REVISION
-            || row.artifact_sha256 != OSD_XLS_SHA256
-            || row.source_order != index + 1
-        {
-            return Err(format!(
-                "OSD intermediate row {} has unexpected source provenance or order",
-                index + 1
-            )
-            .into());
-        }
-        if row.source_order == 1 {
-            continue;
-        }
-        let columns = row.raw_spelling.split('\t').collect::<Vec<_>>();
-        if columns.len() != 14 {
-            return Err(
-                format!("OSD row {} has {} columns", row.source_order, columns.len()).into(),
-            );
-        }
+    let rows = read_osd_rows(path, |row, columns| {
         if columns[12] != "v"
             || !is_regular_osd_verb_class(columns[11])
             || columns[10].contains(['(', ')'])
         {
-            continue;
+            return Ok(None);
         }
         let class_four_basic_stem = if columns[11] == "4c" {
             let source = columns[7]
@@ -367,13 +358,13 @@ fn read_regular_verbs(path: &Path) -> Result<Vec<RegularVerbRow>, Box<dyn Error>
         } else {
             "-".to_string()
         };
-        rows.push(RegularVerbRow {
+        Ok(Some(RegularVerbRow {
             source_row: row.source_order - 1,
             lemma: clean_osd_lemma(columns[10]),
             class: columns[11].to_string(),
             class_four_basic_stem,
-        });
-    }
+        }))
+    })?;
     if rows.len() != 2_297 {
         return Err(format!("expected 2297 regular OSD verbs, found {}", rows.len()).into());
     }
@@ -383,26 +374,40 @@ fn read_regular_verbs(path: &Path) -> Result<Vec<RegularVerbRow>, Box<dyn Error>
 fn render_regular_verbs(rows: &[RegularVerbRow]) -> Result<String, Box<dyn Error>> {
     let mut output = String::from("source_row\tlemma\tclass\tclass_four_basic_stem\n");
     for row in rows {
-        if row.lemma.contains(['\t', '\n'])
-            || row.class.contains(['\t', '\n'])
-            || row.class_four_basic_stem.contains(['\t', '\n'])
-        {
-            return Err(format!("OSD row {} contains a TSV delimiter", row.source_row).into());
-        }
-        output.push_str(&format!(
-            "{}\t{}\t{}\t{}\n",
-            row.source_row, row.lemma, row.class, row.class_four_basic_stem
-        ));
+        push_tsv_row(
+            &mut output,
+            row.source_row,
+            &[&row.lemma, &row.class, &row.class_four_basic_stem],
+        )?;
     }
     Ok(output)
 }
 
 fn require_regular_verbs_current(root: &Path, source: &Path) -> Result<(), Box<dyn Error>> {
     let expected = render_regular_verbs(&read_regular_verbs(source)?)?;
-    if fs::read_to_string(root.join(REGULAR_VERB_PATH))? != expected {
-        return Err(
-            format!("stale {REGULAR_VERB_PATH}; rerun cargo xtask ocs-lexical-union").into(),
-        );
+    require_current(root, REGULAR_VERB_PATH, &expected)
+}
+
+fn push_tsv_row(
+    output: &mut String,
+    source_row: usize,
+    fields: &[&str],
+) -> Result<(), Box<dyn Error>> {
+    if fields.iter().any(|field| field.contains(['\t', '\n'])) {
+        return Err(format!("OSD row {source_row} contains a TSV delimiter").into());
+    }
+    output.push_str(&source_row.to_string());
+    for field in fields {
+        output.push('\t');
+        output.push_str(field);
+    }
+    output.push('\n');
+    Ok(())
+}
+
+fn require_current(root: &Path, path: &str, expected: &str) -> Result<(), Box<dyn Error>> {
+    if fs::read_to_string(root.join(path))? != expected {
+        return Err(format!("stale {path}; rerun cargo xtask ocs-lexical-union").into());
     }
     Ok(())
 }

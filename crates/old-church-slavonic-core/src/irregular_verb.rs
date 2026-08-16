@@ -7,12 +7,16 @@
 //! same paradigmatic behavior, so the inventory includes both Table 434's
 //! compact anchors and every additional marked OSD dictionary member.
 
-use crate::verb::VerbLexeme;
+use crate::verb::{
+    VerbLexeme, insert_imperative_singular, set_imperative, set_imperfect, set_l_participle,
+    set_new_aorist, set_past_active, set_past_passive, set_present_active, set_present_passive,
+    set_sigmatic_vowel_aorist,
+};
 use crate::{
-    AoristFormation, FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation,
-    ImperfectFormation, ImperfectVariantPolicy, Number, PastActiveParticipleFormation,
-    PastPassiveParticipleFormation, Person, PresentActiveParticipleFormation,
-    PresentPassiveParticipleFormation, VerbAspect, VerbClass, VerbMorphologyCell,
+    FiniteTense, FiniteVerbCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation,
+    PresentActiveParticipleFormation, PresentPassiveParticipleFormation, VerbAspect, VerbClass,
+    VerbMorphologyCell,
 };
 
 /// The exhaustive listed irregular-profile inventory of §§434–464 and §509.
@@ -902,10 +906,9 @@ fn assemble_source_family_member(member: IrregularVerbFamilyMember) -> Option<Ve
             let (other_present, imperative_stem) =
                 if let Some(base) = first_present.strip_suffix("ек") {
                     (format!("{base}еч"), format!("{base}ьц"))
-                } else if let Some(base) = first_present.strip_suffix("ег") {
-                    (format!("{base}еж"), format!("{base}ьѕ"))
                 } else {
-                    return None;
+                    let base = first_present.strip_suffix("ег")?;
+                    (format!("{base}еж"), format!("{base}ьѕ"))
                 };
             Some(build_rekti_member(
                 lemma,
@@ -1488,74 +1491,8 @@ fn insert_present_forms(lexeme: &mut VerbLexeme, forms: [String; 9]) {
     }
 }
 
-fn insert_imperative_singular(lexeme: &mut VerbLexeme, form: &str) {
-    for person in [Person::Second, Person::Third] {
-        lexeme.exact_forms.insert(
-            VerbMorphologyCell::Imperative(ImperativeCell {
-                person,
-                number: Number::Singular,
-            }),
-            form.to_string(),
-        );
-    }
-}
-
-fn set_imperfect(lexeme: &mut VerbLexeme, stem: &str, formation: ImperfectFormation) {
-    lexeme.stems.imperfect = Some(stem.to_string());
-    lexeme.formations.imperfect = Some(formation);
-    lexeme.formations.imperfect_variant_policy = Some(ImperfectVariantPolicy::UncontractedOnly);
-}
-
 fn set_vowel_aorist(lexeme: &mut VerbLexeme, stem: &str) {
-    lexeme.stems.aorist = Some(stem.to_string());
-    lexeme.stems.aorist_second_third_singular = Some(stem.to_string());
-    lexeme.formations.aorist = Some(AoristFormation::SigmaticVowel);
-}
-
-fn set_new_aorist(lexeme: &mut VerbLexeme, stem: &str) {
-    lexeme.stems.aorist = Some(stem.to_string());
-    lexeme.formations.aorist = Some(AoristFormation::New);
-}
-
-fn set_imperative(lexeme: &mut VerbLexeme, stem: &str, formation: ImperativeFormation) {
-    lexeme.stems.imperative = Some(stem.to_string());
-    lexeme.formations.imperative = Some(formation);
-}
-
-fn set_l_participle(lexeme: &mut VerbLexeme, stem: &str) {
-    lexeme.stems.l_participle = Some(stem.to_string());
-}
-
-fn set_present_active(
-    lexeme: &mut VerbLexeme,
-    stem: &str,
-    formation: PresentActiveParticipleFormation,
-) {
-    lexeme.stems.present_active_participle = Some(stem.to_string());
-    lexeme.formations.present_active_participle = Some(formation);
-}
-
-fn set_present_passive(
-    lexeme: &mut VerbLexeme,
-    stem: &str,
-    formation: PresentPassiveParticipleFormation,
-) {
-    lexeme.stems.present_passive_participle = Some(stem.to_string());
-    lexeme.formations.present_passive_participle = Some(formation);
-}
-
-fn set_past_active(lexeme: &mut VerbLexeme, stem: &str, formation: PastActiveParticipleFormation) {
-    lexeme.stems.past_active_participle = Some(stem.to_string());
-    lexeme.formations.past_active_participle = Some(formation);
-}
-
-fn set_past_passive(
-    lexeme: &mut VerbLexeme,
-    stem: &str,
-    formation: PastPassiveParticipleFormation,
-) {
-    lexeme.stems.past_passive_participle = Some(stem.to_string());
-    lexeme.formations.past_passive_participle = Some(formation);
+    set_sigmatic_vowel_aorist(lexeme, stem, stem);
 }
 
 #[cfg(test)]
@@ -1563,8 +1500,8 @@ mod tests {
     use super::*;
     use crate::verb::{finite, imperative, infinitive, l_participle, participle, supine};
     use crate::{
-        AdjectiveCell, AdjectiveForm, Animacy, Case, Gender, LParticipleCell, ParticipleCell,
-        ParticipleKind,
+        AdjectiveCell, AdjectiveForm, Animacy, Case, Gender, ImperativeCell, LParticipleCell,
+        Number, ParticipleCell, ParticipleKind, Person,
     };
     use std::collections::BTreeSet;
 

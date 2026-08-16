@@ -340,3 +340,90 @@ pass their committed-output checks.
 The final workspace commands, native and WebAssembly builds, documentation and
 package checks, and independent full-diff reviews are recorded in the pull
 request completion gate.
+
+## 2026-08-16 declension and source-pipeline consolidation
+
+This pass started from commit `d83ea28` and re-audited all nine workspace
+members. It preserves reviewed linguistic data, generated registries, public
+APIs, resolution precedence, variant order, normalization, provenance, and
+corpus coverage. The same physical-LOC classifier documented above was run
+against the starting commit and the formatted working tree.
+
+### Consolidation LOC accounting
+
+| Member | Baseline prod | Final prod | Baseline tests | Final tests | Baseline generated | Final generated | Baseline tools | Final tools |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `old-church-slavonic-core` | 14,849 | 14,792 | 7,383 | 7,383 | 0 | 0 | 0 | 0 |
+| `old-church-slavonic` | 11,570 | 11,570 | 5,818 | 5,818 | 147,765 | 147,765 | 8 | 8 |
+| `old-church-slavonic-dictionary` | 1,298 | 1,298 | 196 | 196 | 5,177 | 5,177 | 9 | 9 |
+| `old-church-slavonic-extractor` | 0 | 0 | 748 | 748 | 0 | 0 | 4,002 | 4,002 |
+| `synodal-church-slavonic-core` | 10,644 | 10,387 | 6,384 | 6,384 | 0 | 0 | 0 | 0 |
+| `synodal-church-slavonic` | 10,115 | 10,115 | 5,881 | 5,881 | 9,252 | 9,252 | 0 | 0 |
+| `synodal-church-slavonic-dictionary` | 4,506 | 4,506 | 1,549 | 1,549 | 965 | 965 | 0 | 0 |
+| `synodal-church-slavonic-extractor` | 0 | 0 | 1,299 | 1,299 | 0 | 0 | 6,458 | 6,458 |
+| `xtask` | 0 | 0 | 1,860 | 1,860 | 0 | 0 | 24,030 | 24,035 |
+| **Total** | **52,982** | **52,668** | **31,118** | **31,118** | **163,159** | **163,159** | **34,507** | **34,512** |
+
+The primary metric fell by 314 handwritten production lines. Tooling rose by
+5 lines because the completion gate now distinguishes committed-artifact
+validation from the explicit source-backed regeneration check, so production
+plus tools fell from 87,489 to 87,180 lines, a net reduction of 309 handwritten
+lines. Test and generated LOC are unchanged. No production code moved into
+tests, generated output, data, macros, or tools to improve the primary metric,
+and generated Rust and linguistic data are unchanged. The deterministic
+fixture-bootstrap report is refreshed to the hashes and evaluation counts
+reproduced by the current committed registries.
+
+### Ranked decisions and implementation
+
+1. **Synodal noun-ending cross-product:** accepted. The flat match repeated a
+   declension tag in every one of its hundreds of arms. It is now a
+   declension-owned match whose nested cell tables retain every class-specific
+   ending, conditional seam, animacy choice, fourth-declension citation
+   failure, and ordered alternate ending.
+2. **Old closed-inventory verb principal-part mutators:** accepted. The unique
+   and irregular inventories duplicated the same ten exact-form, stem, and
+   formation setters. Their shared mutations now live beside `VerbLexeme`;
+   inventory-specific assembly, source order, and defects remain local.
+3. **Polivanova regular noun/verb ledger plumbing:** accepted. The two readers
+   now share provenance, row-order, header, and source-column validation. Their
+   distinct lexical filters and metadata parsing remain explicit closures.
+   Deterministic TSV-row construction and stale-file checks are likewise
+   shared without changing output bytes or diagnostics.
+4. **A cross-recension morphology/result abstraction:** rejected. Old and
+   Synodal cells, evidence, normalization, and failure semantics remain
+   recension-owned.
+5. **Generated builder macros for public `with_*` methods:** rejected. They
+   would hide visible API and domain structure without removing runtime
+   behavior or improving invariants.
+6. **Universal phrase, numeral, or resolver types:** rejected. The apparent
+   structural overlap masks different composition validation, evidence, and
+   precedence contracts; the remaining resolver wrappers are already thin
+   public delegation.
+7. **Fresh-checkout OCS progress validation:** accepted. Morphology completion
+   now validates the committed OCS ledger and report without requiring the
+   ignored 7.7 MB Polivanova intermediate. The explicit
+   `ocs-lexical-union --check` command remains source-backed and still
+   re-renders both committed regular-family tables before declaring them
+   current.
+
+### Regression coverage
+
+The Old core's full 149-test suite covers every closed unique and irregular
+verb family, every licensed system cell, independent participle stems,
+defectivity, and exact-before-productive precedence. The Synodal core's full
+105-test suite includes complete noun-class goldens and a totality contract
+over all 38 productive declensions, every case and number, and relevant
+animacy. The 14 focused `xtask` source-union tests and
+`cargo xtask ocs-lexical-union --check` confirm the shared reader and renderer
+preserve the committed ledger byte-for-byte. A clean-checkout structural run
+with the ignored Polivanova intermediate absent covers the lighter completion
+route, while a consecutive strict check with the intermediate restored covers
+the full source-derived currentness contract. Rust 1.97.1 Clippy with warnings
+denied covers the two equivalent final-branch `?` rewrites required by CI. The
+full CI structural sequence also reproduces the committed fixture-bootstrap
+report and leaves the generated tree clean.
+
+The final workspace commands, native and WebAssembly builds, documentation and
+package checks, and independent full-diff review are recorded in the pull
+request completion gate.
