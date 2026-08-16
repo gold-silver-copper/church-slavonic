@@ -673,10 +673,9 @@ fn palatalize_final_velar(stem: &str) -> Option<String> {
         (base, "ц")
     } else if let Some(base) = stem.strip_suffix('г') {
         (base, "ѕ")
-    } else if let Some(base) = stem.strip_suffix('х') {
-        (base, "с")
     } else {
-        return None;
+        let base = stem.strip_suffix('х')?;
+        (base, "с")
     };
     Some(format!("{base}{replacement}"))
 }

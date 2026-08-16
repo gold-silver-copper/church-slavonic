@@ -906,10 +906,9 @@ fn assemble_source_family_member(member: IrregularVerbFamilyMember) -> Option<Ve
             let (other_present, imperative_stem) =
                 if let Some(base) = first_present.strip_suffix("ек") {
                     (format!("{base}еч"), format!("{base}ьц"))
-                } else if let Some(base) = first_present.strip_suffix("ег") {
-                    (format!("{base}еж"), format!("{base}ьѕ"))
                 } else {
-                    return None;
+                    let base = first_present.strip_suffix("ег")?;
+                    (format!("{base}еж"), format!("{base}ьѕ"))
                 };
             Some(build_rekti_member(
                 lemma,

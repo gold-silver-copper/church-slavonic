@@ -170,9 +170,7 @@ pub(crate) fn run(
 }
 
 pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
-    let claims = load_ledger(&root.join(LEDGER_PATH))?;
-    validate(root, &claims)?;
-    require_report_current(root, &report(&claims))?;
+    require_committed_current(root)?;
     require_regular_nouns_current(
         root,
         &root.join("data/intermediate/synodal/polivanova-osd-source.jsonl"),
@@ -182,6 +180,21 @@ pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
         &root.join("data/intermediate/synodal/polivanova-osd-source.jsonl"),
     )?;
     println!("OCS lexical source-union ledger: current");
+    Ok(())
+}
+
+/// Checks committed completion artifacts without requiring ignored source
+/// intermediates that are intentionally absent from a fresh checkout.
+pub(crate) fn check_progress(root: &Path) -> Result<(), Box<dyn Error>> {
+    require_committed_current(root)?;
+    println!("OCS lexical source-union ledger: current");
+    Ok(())
+}
+
+fn require_committed_current(root: &Path) -> Result<(), Box<dyn Error>> {
+    let claims = load_ledger(&root.join(LEDGER_PATH))?;
+    validate(root, &claims)?;
+    require_report_current(root, &report(&claims))?;
     Ok(())
 }
 
