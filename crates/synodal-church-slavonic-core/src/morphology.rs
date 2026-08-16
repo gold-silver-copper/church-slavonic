@@ -238,6 +238,30 @@ pub enum AdjectiveClass {
     /// paradigm has the ending spellings and palatalizations printed
     /// separately in Alypy §57 (`благїй : блазїи`).
     Velar,
+    /// Short possessives in `-ов-` / `-ев-` (Alypy §§50 and 53). Any
+    /// independently attested compound-form cell remains a lexical exact
+    /// override rather than licensing a long paradigm for every member.
+    PossessiveHard,
+    /// Short possessives in palatal `-ь` / `-ень` (Alypy §§50 and 53).
+    /// A mobile vowel is supplied through the ordinary typed short-masculine
+    /// principal part rather than inferred from spelling.
+    PossessiveSoft,
+    /// Possessives in `-їй`, whose `-ї-` belongs to the derivational suffix
+    /// and whose complete predominantly short declension is printed
+    /// separately in Alypy §56. That section also licenses occasional
+    /// compound forms.
+    PossessiveIi,
+}
+
+impl AdjectiveClass {
+    pub const ALL: [Self; 6] = [
+        Self::Hard,
+        Self::Soft,
+        Self::Velar,
+        Self::PossessiveHard,
+        Self::PossessiveSoft,
+        Self::PossessiveIi,
+    ];
 }
 
 /// Source-defined relation between the ordinary positive stem and the stem
@@ -519,6 +543,13 @@ pub struct VerbLexeme {
     pub present_first_singular: Option<SynodalWord>,
     /// The complete third-person plural, including `ꙋтъ/ютъ/атъ/ѧтъ` choice.
     pub present_third_plural: Option<SynodalWord>,
+    /// Optional independently suppletive base for the simple future. When this
+    /// complete triple is absent, perfective verbs reuse the present triple.
+    pub future_stem: Option<SynodalWord>,
+    /// Complete suppletive simple-future first-person singular.
+    pub future_first_singular: Option<SynodalWord>,
+    /// Complete suppletive simple-future third-person plural.
+    pub future_third_plural: Option<SynodalWord>,
     /// Base selected independently for the imperfect marker.
     pub imperfect_stem: Option<SynodalWord>,
     pub imperfect_formation: Option<ImperfectFormation>,
@@ -530,6 +561,10 @@ pub struct VerbLexeme {
     pub imperative_formation: Option<ImperativeFormation>,
     /// Base after any lexical consonant deletion, before `л`.
     pub l_participle_stem: Option<SynodalWord>,
+    /// Optional masculine-singular base before `л` when the citation form
+    /// preserves a mobile vowel absent from the rest of the paradigm (Alypy
+    /// §104 `шелъ : шли`).
+    pub l_participle_masculine_singular_stem: Option<SynodalWord>,
     pub present_active_participle: Option<ParticiplePrincipalPart>,
     pub past_active_participle: Option<ParticiplePrincipalPart>,
     pub present_passive_participle: Option<ParticiplePrincipalPart>,
@@ -557,7 +592,7 @@ impl VerbLexeme {
     pub fn missing_principal_parts(&self, system: VerbSystem) -> Vec<MetadataField> {
         let mut missing = Vec::new();
         match system {
-            VerbSystem::Finite(crate::FiniteTense::Present | crate::FiniteTense::Future) => {
+            VerbSystem::Finite(crate::FiniteTense::Present) => {
                 if self.present_stem.is_none() {
                     missing.push(MetadataField::PresentStem);
                 }
@@ -566,6 +601,32 @@ impl VerbLexeme {
                 }
                 if self.present_third_plural.is_none() {
                     missing.push(MetadataField::PresentThirdPlural);
+                }
+            }
+            VerbSystem::Finite(crate::FiniteTense::Future) => {
+                let has_independent_future = self.future_stem.is_some()
+                    || self.future_first_singular.is_some()
+                    || self.future_third_plural.is_some();
+                if has_independent_future {
+                    if self.future_stem.is_none() {
+                        missing.push(MetadataField::FutureStem);
+                    }
+                    if self.future_first_singular.is_none() {
+                        missing.push(MetadataField::FutureFirstSingular);
+                    }
+                    if self.future_third_plural.is_none() {
+                        missing.push(MetadataField::FutureThirdPlural);
+                    }
+                } else {
+                    if self.present_stem.is_none() {
+                        missing.push(MetadataField::PresentStem);
+                    }
+                    if self.present_first_singular.is_none() {
+                        missing.push(MetadataField::PresentFirstSingular);
+                    }
+                    if self.present_third_plural.is_none() {
+                        missing.push(MetadataField::PresentThirdPlural);
+                    }
                 }
             }
             VerbSystem::Finite(crate::FiniteTense::Imperfect) => {
@@ -1171,6 +1232,26 @@ pub fn decline_adjective(
     profile: OrthographyProfile,
 ) -> Result<FormSet> {
     validate_adjective_lexeme(lexeme)?;
+    if matches!(
+        lexeme.class,
+        AdjectiveClass::PossessiveHard
+            | AdjectiveClass::PossessiveSoft
+            | AdjectiveClass::PossessiveIi
+    ) && cell.comparison != Comparison::Positive
+    {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "possessive adjectives do not license comparison".into(),
+        });
+    }
+    if matches!(
+        lexeme.class,
+        AdjectiveClass::PossessiveHard | AdjectiveClass::PossessiveSoft
+    ) && cell.form == AdjectiveForm::Long
+    {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "this possessive suffix licenses only the short paradigm; exceptional compound forms require exact lexical evidence".into(),
+        });
+    }
     if cell.form == AdjectiveForm::Short && cell.comparison == Comparison::Comparative {
         let stem = lexeme
             .comparative_stem
@@ -1205,6 +1286,22 @@ pub fn decline_adjective(
                 (AdjectiveClass::Hard, AdjectiveForm::Long) => "SYN-ADJ-LONG-HARD-ALYPY-57",
                 (AdjectiveClass::Soft, AdjectiveForm::Long) => "SYN-ADJ-LONG-SOFT-ALYPY-57",
                 (AdjectiveClass::Velar, AdjectiveForm::Long) => "SYN-ADJ-LONG-VELAR-ALYPY-57",
+                (AdjectiveClass::PossessiveHard, AdjectiveForm::Short) => {
+                    "SYN-ADJ-POSSESSIVE-OV-EV-SHORT-ALYPY-50-53"
+                }
+                (AdjectiveClass::PossessiveSoft, AdjectiveForm::Short) => {
+                    "SYN-ADJ-POSSESSIVE-SOFT-SHORT-ALYPY-50-53"
+                }
+                (AdjectiveClass::PossessiveIi, AdjectiveForm::Short) => {
+                    "SYN-ADJ-POSSESSIVE-II-SHORT-ALYPY-56"
+                }
+                (AdjectiveClass::PossessiveIi, AdjectiveForm::Long) => {
+                    "SYN-ADJ-POSSESSIVE-II-LONG-ALYPY-56"
+                }
+                (
+                    AdjectiveClass::PossessiveHard | AdjectiveClass::PossessiveSoft,
+                    AdjectiveForm::Long,
+                ) => unreachable!("long possessive cells are rejected above"),
             },
         ),
         Comparison::Comparative | Comparison::Superlative => {
@@ -1305,7 +1402,7 @@ pub fn future(
         Aspect::Perfective => {}
     }
     normative(
-        present_shape(lexeme, person, number)?,
+        future_shape(lexeme, person, number)?,
         "SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84",
         profile,
         "simple-future",
@@ -1314,26 +1411,67 @@ pub fn future(
 }
 
 fn present_shape(lexeme: &VerbLexeme, person: Person, number: Number) -> Result<String> {
+    finite_shape(
+        lexeme,
+        person,
+        number,
+        lexeme.present_stem.as_ref(),
+        lexeme.present_first_singular.as_ref(),
+        lexeme.present_third_plural.as_ref(),
+        [
+            MetadataField::PresentStem,
+            MetadataField::PresentFirstSingular,
+            MetadataField::PresentThirdPlural,
+        ],
+    )
+}
+
+fn future_shape(lexeme: &VerbLexeme, person: Person, number: Number) -> Result<String> {
+    let has_independent_future = lexeme.future_stem.is_some()
+        || lexeme.future_first_singular.is_some()
+        || lexeme.future_third_plural.is_some();
+    if has_independent_future {
+        finite_shape(
+            lexeme,
+            person,
+            number,
+            lexeme.future_stem.as_ref(),
+            lexeme.future_first_singular.as_ref(),
+            lexeme.future_third_plural.as_ref(),
+            [
+                MetadataField::FutureStem,
+                MetadataField::FutureFirstSingular,
+                MetadataField::FutureThirdPlural,
+            ],
+        )
+    } else {
+        present_shape(lexeme, person, number)
+    }
+}
+
+fn finite_shape(
+    lexeme: &VerbLexeme,
+    person: Person,
+    number: Number,
+    stem: Option<&SynodalWord>,
+    first_singular: Option<&SynodalWord>,
+    third_plural: Option<&SynodalWord>,
+    fields: [MetadataField; 3],
+) -> Result<String> {
     let cell = FiniteVerbCell {
         tense: FiniteTense::Present,
         person,
         number,
     };
     let text = match (person, number) {
-        (Person::First, Number::Singular) => required(
-            lexeme.present_first_singular.as_ref(),
-            MetadataField::PresentFirstSingular,
-        )?
-        .canonical()
-        .to_owned(),
-        (Person::Third, Number::Plural) => required(
-            lexeme.present_third_plural.as_ref(),
-            MetadataField::PresentThirdPlural,
-        )?
-        .canonical()
-        .to_owned(),
+        (Person::First, Number::Singular) => {
+            required(first_singular, fields[1])?.canonical().to_owned()
+        }
+        (Person::Third, Number::Plural) => {
+            required(third_plural, fields[2])?.canonical().to_owned()
+        }
         _ => {
-            let stem = required(lexeme.present_stem.as_ref(), MetadataField::PresentStem)?;
+            let stem = required(stem, fields[0])?;
             join(stem.canonical(), present_ending(lexeme.conjugation, cell)?)
         }
     };
@@ -1470,10 +1608,18 @@ pub fn l_participle(
     cell: LParticipleCell,
     profile: OrthographyProfile,
 ) -> Result<FormSet> {
-    let stem = required(
+    let general_stem = required(
         lexeme.l_participle_stem.as_ref(),
         MetadataField::LParticipleStem,
     )?;
+    let stem = if cell.number == Number::Singular && cell.gender == Gender::Masculine {
+        lexeme
+            .l_participle_masculine_singular_stem
+            .as_ref()
+            .unwrap_or(general_stem)
+    } else {
+        general_stem
+    };
     let ending = match (cell.number, cell.gender) {
         (Number::Singular, Gender::Masculine) => "лъ",
         (Number::Singular, Gender::Feminine) => "ла",
@@ -3050,8 +3196,12 @@ fn noun_endings(lexeme: &NounLexeme, cell: crate::NounCell) -> Result<Vec<&'stat
 }
 
 fn short_adjective_ending(class: AdjectiveClass, cell: AdjectiveCell) -> Result<&'static str> {
-    if class == AdjectiveClass::Soft {
-        return soft_short_adjective_ending(cell);
+    match class {
+        AdjectiveClass::Soft | AdjectiveClass::PossessiveSoft => {
+            return soft_short_adjective_ending(cell);
+        }
+        AdjectiveClass::PossessiveIi => return possessive_ii_short_ending(cell),
+        AdjectiveClass::Hard | AdjectiveClass::Velar | AdjectiveClass::PossessiveHard => {}
     }
     use Case::{
         Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
@@ -3095,6 +3245,51 @@ fn short_adjective_ending(class: AdjectiveClass, cell: AdjectiveCell) -> Result<
         (Pl, _, Dat) => "ымъ",
         (Pl, M, Acc) => animate("ы", "ыхъ"),
         (Pl, _, Ins) => "ыми",
+    })
+}
+
+fn possessive_ii_short_ending(cell: AdjectiveCell) -> Result<&'static str> {
+    use Case::{
+        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
+        Nominative as Nom, Vocative as Voc,
+    };
+    use Gender::{Feminine as F, Masculine as M, Neuter as N};
+    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+    let animate = |nominative, genitive| {
+        if cell.animacy == Animacy::Animate {
+            genitive
+        } else {
+            nominative
+        }
+    };
+    Ok(match (cell.number, cell.gender, cell.case) {
+        (Sg, M, Nom | Voc) => "їй",
+        (Sg, M, Gen) => "їѧ",
+        (Sg, M, Dat) => "їю",
+        (Sg, M, Acc) => animate("їй", "їѧ"),
+        (Sg, M, Ins) => "їимъ",
+        (Sg, M, Loc) => "їи",
+        (Sg, F, Nom | Gen | Voc) => "їѧ",
+        (Sg, F, Dat | Loc) => "їи",
+        (Sg, F, Acc) => "їю",
+        (Sg, F, Ins) => "їею",
+        (Sg, N, Nom | Acc | Voc) => "їе",
+        (Sg, N, Gen) => "їѧ",
+        (Sg, N, Dat) => "їю",
+        (Sg, N, Ins) => "їимъ",
+        (Sg, N, Loc) => "їи",
+        (Du, M, Nom | Acc | Voc) => "їѧ",
+        (Du, F | N, Nom | Acc | Voc) => "їи",
+        (Du, _, Gen | Loc) => "їю",
+        (Du, _, Dat | Ins) => "їима",
+        (Pl, M, Nom | Voc) => "їи",
+        (Pl, F | N, Nom | Voc) => "їѧ",
+        (Pl, _, Gen | Loc) => "їихъ",
+        (Pl, _, Dat) => "їимъ",
+        (Pl, M | F, Acc) => animate(if cell.gender == M { "їи" } else { "їѧ" }, "їихъ"),
+        (Pl, N, Acc) => "їѧ",
+        (Pl, M | N, Ins) => "їи",
+        (Pl, F, Ins) => "їими",
     })
 }
 
@@ -3145,11 +3340,16 @@ pub(crate) fn long_adjective_ending(
     class: AdjectiveClass,
     cell: AdjectiveCell,
 ) -> Result<&'static str> {
-    if class == AdjectiveClass::Soft {
-        return soft_long_adjective_ending(cell);
-    }
-    if class == AdjectiveClass::Velar {
-        return velar_long_adjective_ending(cell);
+    match class {
+        AdjectiveClass::Soft => return soft_long_adjective_ending(cell),
+        AdjectiveClass::Velar => return velar_long_adjective_ending(cell),
+        AdjectiveClass::PossessiveIi => return possessive_ii_long_ending(cell),
+        AdjectiveClass::PossessiveHard | AdjectiveClass::PossessiveSoft => {
+            return Err(Error::HistoricallyInvalidCell {
+                reason: "this possessive suffix has no productive long paradigm".into(),
+            });
+        }
+        AdjectiveClass::Hard => {}
     }
     use Case::{
         Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
@@ -3192,6 +3392,46 @@ pub(crate) fn long_adjective_ending(
         (Pl, _, Dat) => "ымъ",
         (Pl, M | F, Acc) => animate("ыѧ", "ыхъ"),
         (Pl, _, Ins) => "ыми",
+    })
+}
+
+/// Occasional compound forms of the `-їй` class (Alypy §56). Direct-case,
+/// dual, and plural cells are syncretic with the short table; singular
+/// obliques take the source-licensed pronominal extensions, including the
+/// explicitly cited `божїѧгѡ`.
+fn possessive_ii_long_ending(cell: AdjectiveCell) -> Result<&'static str> {
+    use Case::{
+        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
+        Nominative as Nom, Vocative as Voc,
+    };
+    use Gender::{Feminine as F, Masculine as M, Neuter as N};
+    use Number::Singular as Sg;
+    if cell.number != Sg {
+        return possessive_ii_short_ending(cell);
+    }
+    let animate = |nominative, genitive| {
+        if cell.animacy == Animacy::Animate {
+            genitive
+        } else {
+            nominative
+        }
+    };
+    Ok(match (cell.gender, cell.case) {
+        (M, Nom | Voc) => "їй",
+        (M, Gen) => "їѧгѡ",
+        (M, Dat) => "їемꙋ",
+        (M, Acc) => animate("їй", "їѧго"),
+        (M, Ins) => "їимъ",
+        (M, Loc) => "їемъ",
+        (F, Nom | Voc) => "їѧ",
+        (F, Gen | Dat | Loc) => "їей",
+        (F, Acc) => "їю",
+        (F, Ins) => "їею",
+        (N, Nom | Acc | Voc) => "їе",
+        (N, Gen) => "їѧгѡ",
+        (N, Dat) => "їемꙋ",
+        (N, Ins) => "їимъ",
+        (N, Loc) => "їемъ",
     })
 }
 
@@ -5339,6 +5579,262 @@ mod tests {
     }
 
     #[test]
+    fn alpy_50_56_possessive_adjective_contracts_are_complete_and_bounded() {
+        let bozhii = AdjectiveLexeme {
+            lemma: word("божїй"),
+            stem: word("бож"),
+            class: AdjectiveClass::PossessiveIi,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        let short_goldens = [
+            [
+                "божїй",
+                "божїѧ",
+                "божїю",
+                "божїѧ",
+                "божїимъ",
+                "божїи",
+                "божїй",
+                "божїѧ",
+                "божїю",
+                "божїима",
+                "божїѧ",
+                "божїима",
+                "божїю",
+                "божїѧ",
+                "божїи",
+                "божїихъ",
+                "божїимъ",
+                "божїи",
+                "божїи",
+                "божїихъ",
+                "божїи",
+            ],
+            [
+                "божїѧ",
+                "божїѧ",
+                "божїи",
+                "божїю",
+                "божїею",
+                "божїи",
+                "божїѧ",
+                "божїи",
+                "божїю",
+                "божїима",
+                "божїи",
+                "божїима",
+                "божїю",
+                "божїи",
+                "божїѧ",
+                "божїихъ",
+                "божїимъ",
+                "божїѧ",
+                "божїими",
+                "божїихъ",
+                "божїѧ",
+            ],
+            [
+                "божїе",
+                "божїѧ",
+                "божїю",
+                "божїе",
+                "божїимъ",
+                "божїи",
+                "божїе",
+                "божїи",
+                "божїю",
+                "божїима",
+                "божїи",
+                "божїима",
+                "божїю",
+                "божїи",
+                "божїѧ",
+                "божїихъ",
+                "божїимъ",
+                "божїѧ",
+                "божїи",
+                "божїихъ",
+                "божїѧ",
+            ],
+        ];
+        for (gender, expected) in Gender::ALL.into_iter().zip(short_goldens) {
+            for ((number, case), expected) in Number::ALL
+                .into_iter()
+                .flat_map(|number| Case::ALL.into_iter().map(move |case| (number, case)))
+                .zip(expected)
+            {
+                assert_eq!(
+                    decline_adjective(
+                        &bozhii,
+                        AdjectiveCell {
+                            case,
+                            number,
+                            gender,
+                            animacy: Animacy::Animate,
+                            form: AdjectiveForm::Short,
+                            comparison: Comparison::Positive,
+                        },
+                        OrthographyProfile::Expanded,
+                    )
+                    .expect("complete Alypy §56 short table")
+                    .primary_text(),
+                    expected,
+                    "{gender:?} {number:?} {case:?}"
+                );
+            }
+        }
+        for (case, gender, expected) in [
+            (Case::Genitive, Gender::Masculine, "божїѧгѡ"),
+            (Case::Dative, Gender::Masculine, "божїемꙋ"),
+            (Case::Genitive, Gender::Feminine, "божїей"),
+            (Case::Instrumental, Gender::Feminine, "божїею"),
+            (Case::Locative, Gender::Neuter, "божїемъ"),
+        ] {
+            assert_eq!(
+                decline_adjective(
+                    &bozhii,
+                    AdjectiveCell {
+                        case,
+                        number: Number::Singular,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Long,
+                        comparison: Comparison::Positive,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("Alypy §56 compound possessive")
+                .primary_text(),
+                expected
+            );
+        }
+
+        let gospoden = AdjectiveLexeme {
+            lemma: word("господень"),
+            stem: word("господн"),
+            class: AdjectiveClass::PossessiveSoft,
+            short_masculine_stem: Some(word("господен")),
+            short_masculine_formation: Some(ShortMasculineStemFormation::MobileEInsertion),
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        let israel = AdjectiveLexeme {
+            lemma: word("израилевъ"),
+            stem: word("израилев"),
+            class: AdjectiveClass::PossessiveHard,
+            short_masculine_stem: None,
+            short_masculine_formation: None,
+            comparative_stem: None,
+            comparison_formation: None,
+        };
+        for (lexeme, expected) in [(&gospoden, "господень"), (&israel, "израилевъ")]
+        {
+            assert_eq!(
+                decline_adjective(
+                    lexeme,
+                    AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                        comparison: Comparison::Positive,
+                    },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("productive short possessive")
+                .primary_text(),
+                expected
+            );
+            assert!(matches!(
+                decline_adjective(
+                    lexeme,
+                    AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Long,
+                        comparison: Comparison::Positive,
+                    },
+                    OrthographyProfile::Expanded,
+                ),
+                Err(Error::HistoricallyInvalidCell { .. })
+            ));
+        }
+        for lexeme in [&gospoden, &israel] {
+            for number in Number::ALL {
+                for gender in Gender::ALL {
+                    for case in Case::ALL {
+                        let cell = AdjectiveCell {
+                            case,
+                            number,
+                            gender,
+                            animacy: Animacy::Animate,
+                            form: AdjectiveForm::Short,
+                            comparison: Comparison::Positive,
+                        };
+                        assert_productive_contract(
+                            &decline_adjective(lexeme, cell, OrthographyProfile::Expanded)
+                                .expect("complete short possessive paradigm"),
+                        );
+                        assert!(matches!(
+                            decline_adjective(
+                                lexeme,
+                                AdjectiveCell {
+                                    form: AdjectiveForm::Long,
+                                    ..cell
+                                },
+                                OrthographyProfile::Expanded,
+                            ),
+                            Err(Error::HistoricallyInvalidCell { .. })
+                        ));
+                    }
+                }
+            }
+        }
+        for number in Number::ALL {
+            for gender in Gender::ALL {
+                for case in Case::ALL {
+                    assert_productive_contract(
+                        &decline_adjective(
+                            &bozhii,
+                            AdjectiveCell {
+                                case,
+                                number,
+                                gender,
+                                animacy: Animacy::Animate,
+                                form: AdjectiveForm::Long,
+                                comparison: Comparison::Positive,
+                            },
+                            OrthographyProfile::Expanded,
+                        )
+                        .expect("complete compound -їй possessive paradigm"),
+                    );
+                }
+            }
+        }
+        assert!(matches!(
+            decline_adjective(
+                &bozhii,
+                AdjectiveCell {
+                    case: Case::Nominative,
+                    number: Number::Singular,
+                    gender: Gender::Masculine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Comparative,
+                },
+                OrthographyProfile::Expanded,
+            ),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+    }
+
+    #[test]
     fn present_uses_independent_edge_principal_parts() {
         let lexeme = regular_verb();
         assert_eq!(
@@ -5398,6 +5894,43 @@ mod tests {
             }
         }
 
+        let mut suppletive = future_lexeme.clone();
+        suppletive.lemma = word("възѧти");
+        suppletive.present_stem = Some(word("вземл"));
+        suppletive.present_first_singular = Some(word("вземлю"));
+        suppletive.present_third_plural = Some(word("вземлютъ"));
+        suppletive.future_stem = Some(word("возм"));
+        suppletive.future_first_singular = Some(word("возмꙋ"));
+        suppletive.future_third_plural = Some(word("возмꙋтъ"));
+        assert_eq!(
+            present(
+                &suppletive,
+                Person::Second,
+                Number::Singular,
+                OrthographyProfile::Expanded,
+            )
+            .expect("independent present series")
+            .primary_text(),
+            "вземлеши"
+        );
+        assert_eq!(
+            future(
+                &suppletive,
+                Person::Second,
+                Number::Singular,
+                OrthographyProfile::Expanded,
+            )
+            .expect("independent future series")
+            .primary_text(),
+            "возмеши"
+        );
+
+        suppletive.future_third_plural = None;
+        assert_eq!(
+            suppletive.missing_principal_parts(VerbSystem::Finite(FiniteTense::Future)),
+            vec![MetadataField::FutureThirdPlural]
+        );
+
         assert!(matches!(
             future(
                 &present_lexeme,
@@ -5438,6 +5971,53 @@ mod tests {
             Err(Error::MissingMetadata {
                 field: MetadataField::Aspect,
             })
+        );
+    }
+
+    #[test]
+    fn alpy_104_mobile_vowel_l_participle_keeps_two_typed_stems() {
+        let mut verb = regular_verb();
+        verb.lemma = word("изити");
+        verb.l_participle_stem = Some(word("изш"));
+        verb.l_participle_masculine_singular_stem = Some(word("изше"));
+
+        let expected = [
+            (Gender::Masculine, Number::Singular, "изшелъ"),
+            (Gender::Feminine, Number::Singular, "изшла"),
+            (Gender::Neuter, Number::Singular, "изшло"),
+            (Gender::Masculine, Number::Dual, "изшла"),
+            (Gender::Feminine, Number::Dual, "изшли"),
+            (Gender::Neuter, Number::Dual, "изшли"),
+            (Gender::Masculine, Number::Plural, "изшли"),
+            (Gender::Feminine, Number::Plural, "изшли"),
+            (Gender::Neuter, Number::Plural, "изшли"),
+        ];
+        for (gender, number, surface) in expected {
+            assert_eq!(
+                l_participle(
+                    &verb,
+                    LParticipleCell { gender, number },
+                    OrthographyProfile::Expanded,
+                )
+                .expect("typed two-stem l-participle")
+                .primary_text(),
+                surface
+            );
+        }
+
+        verb.l_participle_masculine_singular_stem = None;
+        assert_eq!(
+            l_participle(
+                &verb,
+                LParticipleCell {
+                    gender: Gender::Masculine,
+                    number: Number::Singular,
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("legacy one-stem l-participle")
+            .primary_text(),
+            "изшлъ"
         );
     }
 
@@ -5603,6 +6183,9 @@ mod tests {
             present_stem: Some(word("нес")),
             present_first_singular: Some(word("несꙋ")),
             present_third_plural: Some(word("несꙋтъ")),
+            future_stem: None,
+            future_first_singular: None,
+            future_third_plural: None,
             imperfect_stem: Some(word("нес")),
             imperfect_formation: Some(ImperfectFormation::Yah),
             aorist_stem: Some(word("нес")),
@@ -5610,6 +6193,7 @@ mod tests {
             imperative_stem: Some(word("нес")),
             imperative_formation: Some(ImperativeFormation::FirstUnpalatalized),
             l_participle_stem: Some(word("нес")),
+            l_participle_masculine_singular_stem: None,
             present_active_participle: Some(ParticiplePrincipalPart {
                 short_stem: Some(word("несꙋщ")),
                 short_formation: Some(ActiveParticipleShortFormation::PresentFirstUnpalatalized),

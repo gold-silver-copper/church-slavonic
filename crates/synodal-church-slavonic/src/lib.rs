@@ -1640,12 +1640,14 @@ mod tests {
             Err(Error::HistoricallyInvalidCell { .. })
         ));
 
-        let sparse_exact = Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti"))
-            .expect("reviewed sparse exact verb");
-        let missing = sparse_exact.missing_metadata();
-        assert!(missing.contains(&core::MetadataField::AoristStem));
-        assert!(missing.contains(&core::MetadataField::ImperativeStem));
-        assert!(missing.contains(&core::MetadataField::ParticipleStem));
+        let typed_irregular = Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti"))
+            .expect("reviewed typed irregular verb");
+        let missing = typed_irregular.missing_metadata();
+        assert!(!missing.contains(&core::MetadataField::AoristStem));
+        assert!(!missing.contains(&core::MetadataField::ImperativeStem));
+        assert!(!missing.contains(&core::MetadataField::LParticipleStem));
+        assert!(!missing.contains(&core::MetadataField::ParticipleStem));
+        assert!(!missing.contains(&core::MetadataField::VerbalNounStem));
 
         assert!(
             Determiner::from_id(&LexemeId::from("synodal:determiner:sam"))
@@ -2329,5 +2331,381 @@ mod tests {
             );
         }
         assert!(systems(69).contains(&"defectiveness".into()));
+    }
+
+    #[test]
+    fn curated_possessives_israel_and_thousand_use_productive_backgrounds() {
+        let bozhii = Adjective::from_id(&LexemeId::from("synodal:adjective:bozhii"))
+            .expect("typed -їй possessive");
+        assert_eq!(
+            bozhii
+                .form(AdjectiveCell {
+                    case: Case::Genitive,
+                    number: Number::Dual,
+                    gender: Gender::Feminine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive source-table cell")
+                .primary_text(),
+            "божїю"
+        );
+
+        let gospoden = Adjective::from_id(&LexemeId::from("synodal:adjective:gospoden"))
+            .expect("typed soft possessive");
+        assert_eq!(
+            gospoden
+                .form(AdjectiveCell {
+                    case: Case::Dative,
+                    number: Number::Plural,
+                    gender: Gender::Feminine,
+                    animacy: Animacy::Inanimate,
+                    form: AdjectiveForm::Short,
+                    comparison: Comparison::Positive,
+                })
+                .expect("productive soft possessive cell")
+                .primary_text(),
+            "господнимъ"
+        );
+
+        let israel_adjective = Adjective::from_id(&LexemeId::from("synodal:adjective:v06-israel"))
+            .expect("typed hard possessive");
+        let exact = israel_adjective
+            .form(AdjectiveCell {
+                case: Case::Genitive,
+                number: Number::Plural,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+            })
+            .expect("independently attested exceptional compound cell");
+        assert_eq!(exact.primary_text(), "израилевыхъ");
+        assert!(matches!(
+            exact.primary().source,
+            FormSource::SynodalAttestation { .. }
+        ));
+        assert!(matches!(
+            israel_adjective.form(AdjectiveCell {
+                case: Case::Instrumental,
+                number: Number::Plural,
+                gender: Gender::Masculine,
+                animacy: Animacy::Inanimate,
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+            }),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+
+        let israel = Noun::from_id(&LexemeId::from("synodal:noun:v06-israel"))
+            .expect("typed proper-name noun");
+        assert_eq!(
+            israel
+                .form(Case::Vocative, Number::Singular, Animacy::Animate)
+                .expect("productive singular vocative")
+                .primary_text(),
+            "израилю"
+        );
+        assert!(matches!(
+            israel.form(Case::Nominative, Number::Plural, Animacy::Animate),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+
+        let thousand = Noun::from_id(&LexemeId::from("synodal:noun:v06-tysyashcha"))
+            .expect("typed magnitude noun");
+        assert_eq!(
+            thousand
+                .form(Case::Instrumental, Number::Singular, Animacy::Inanimate)
+                .expect("productive second-declension cell")
+                .primary_text(),
+            "тысѧщою"
+        );
+        assert_eq!(
+            thousand
+                .form(Case::Genitive, Number::Plural, Animacy::Inanimate)
+                .expect("exact source cell remains first")
+                .primary_text(),
+            "тысѧщъ"
+        );
+    }
+
+    #[test]
+    fn alpy_104_remaining_curated_verbs_have_typed_complete_backgrounds() {
+        let dostoyati = Verb::from_id(&LexemeId::from("synodal:verb:dostoyati"))
+            .expect("typed defective modal");
+        assert_eq!(
+            dostoyati
+                .present(Person::Third, Number::Singular)
+                .expect("source-listed present")
+                .primary_text(),
+            "достоитъ"
+        );
+        assert_eq!(
+            dostoyati
+                .imperfect(Person::Third, Number::Singular)
+                .expect("source-listed imperfect")
+                .primary_text(),
+            "достоѧше"
+        );
+        assert!(matches!(
+            dostoyati.present(Person::First, Number::Singular),
+            Err(Error::HistoricallyInvalidCell { reason })
+                if reason.contains("§104") && reason.contains("third-person singular")
+        ));
+        assert!(matches!(
+            dostoyati.imperative(Person::Second, Number::Singular),
+            Err(Error::HistoricallyInvalidCell { .. })
+        ));
+
+        let iziti = Verb::from_id(&LexemeId::from("synodal:verb:v06-iziti"))
+            .expect("typed prefixed motion verb");
+        assert_eq!(
+            iziti
+                .future(Person::Second, Number::Singular)
+                .expect("productive future")
+                .primary_text(),
+            "изыдеши"
+        );
+        assert_eq!(
+            iziti
+                .aorist(Person::First, Number::Plural)
+                .expect("productive consonant aorist")
+                .primary_text(),
+            "изыдохомъ"
+        );
+        assert_eq!(
+            iziti
+                .imperative(Person::Second, Number::Plural)
+                .expect("productive imperative")
+                .primary_text(),
+            "изыдите"
+        );
+        assert_eq!(
+            iziti
+                .l_participle(Gender::Masculine, Number::Singular)
+                .expect("mobile-vowel masculine l-participle")
+                .primary_text(),
+            "изшелъ"
+        );
+        assert_eq!(
+            iziti
+                .l_participle(Gender::Feminine, Number::Singular)
+                .expect("zero-grade feminine l-participle")
+                .primary_text(),
+            "изшла"
+        );
+        let iziti_participle = Participle::from_id(iziti.id()).expect("past-active handle");
+        assert_eq!(
+            iziti_participle
+                .form(ParticipleCell {
+                    tense: ParticipleTense::Past,
+                    voice: ParticipleVoice::Active,
+                    agreement: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Feminine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                        comparison: Comparison::Positive,
+                    },
+                })
+                .expect("productive past-active participle")
+                .primary_text(),
+            "изшедши"
+        );
+
+        let vzyti = Verb::from_id(&LexemeId::from("synodal:verb:v06-vzyti"))
+            .expect("typed prefixed motion verb");
+        assert_eq!(
+            vzyti
+                .future(Person::First, Number::Plural)
+                .expect("productive future")
+                .primary_text(),
+            "взыдемъ"
+        );
+        assert_eq!(
+            vzyti
+                .aorist(Person::Second, Number::Plural)
+                .expect("productive consonant aorist")
+                .primary_text(),
+            "взыдосте"
+        );
+        assert_eq!(
+            vzyti
+                .l_participle(Gender::Masculine, Number::Plural)
+                .expect("zero-grade plural l-participle")
+                .primary_text(),
+            "возшли"
+        );
+
+        let vzeti = Verb::from_id(&LexemeId::from("synodal:verb:v06-vzeti"))
+            .expect("typed suppletive take verb");
+        assert_eq!(
+            vzeti
+                .present(Person::First, Number::Singular)
+                .expect("suppletive present first singular")
+                .primary_text(),
+            "вземлю"
+        );
+        assert_eq!(
+            vzeti
+                .present(Person::Second, Number::Singular)
+                .expect("suppletive present medial cell")
+                .primary_text(),
+            "вземлеши"
+        );
+        assert_eq!(
+            vzeti
+                .present(Person::Third, Number::Plural)
+                .expect("suppletive present third plural")
+                .primary_text(),
+            "вземлютъ"
+        );
+        assert_eq!(
+            vzeti
+                .future(Person::First, Number::Singular)
+                .expect("suppletive future first singular")
+                .primary_text(),
+            "возмꙋ"
+        );
+        assert_eq!(
+            vzeti
+                .future(Person::Third, Number::Singular)
+                .expect("productive suppletive future")
+                .primary_text(),
+            "возметъ"
+        );
+        assert_eq!(
+            vzeti
+                .future(Person::Third, Number::Plural)
+                .expect("suppletive future third plural")
+                .primary_text(),
+            "возмꙋтъ"
+        );
+        assert_eq!(
+            vzeti
+                .aorist(Person::Second, Number::Plural)
+                .expect("productive vowel aorist")
+                .primary_text(),
+            "взѧсте"
+        );
+        assert_eq!(
+            vzeti
+                .imperative(Person::Second, Number::Plural)
+                .expect("productive suppletive imperative")
+                .primary_text(),
+            "возмите"
+        );
+        assert_eq!(
+            vzeti
+                .imperative(Person::First, Number::Plural)
+                .expect("first-conjugation imperative series")
+                .primary_text(),
+            "возмемъ"
+        );
+        assert_eq!(
+            vzeti
+                .l_participle(Gender::Feminine, Number::Singular)
+                .expect("productive l-participle")
+                .primary_text(),
+            "взѧла"
+        );
+        let vzeti_participle = Participle::from_id(vzeti.id()).expect("participle handle");
+        assert_eq!(
+            vzeti_participle
+                .form(ParticipleCell {
+                    tense: ParticipleTense::Past,
+                    voice: ParticipleVoice::Passive,
+                    agreement: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Long,
+                        comparison: Comparison::Positive,
+                    },
+                })
+                .expect("productive past-passive participle")
+                .primary_text(),
+            "взѧтый"
+        );
+        assert_eq!(
+            verbal_noun(
+                "възѧти",
+                NounCell {
+                    case: Case::Genitive,
+                    number: Number::Singular,
+                    animacy: Animacy::Inanimate,
+                },
+            )
+            .expect("productive -їе verbal noun")
+            .primary_text(),
+            "взѧтїѧ"
+        );
+
+        for verb in [&iziti, &vzyti] {
+            for system in [
+                VerbSystem::Finite(FiniteTense::Future),
+                VerbSystem::Finite(FiniteTense::Aorist),
+                VerbSystem::Imperative,
+                VerbSystem::LParticiple,
+                VerbSystem::Participle {
+                    tense: ParticipleTense::Past,
+                    voice: ParticipleVoice::Active,
+                    form: AdjectiveForm::Short,
+                },
+                VerbSystem::Participle {
+                    tense: ParticipleTense::Past,
+                    voice: ParticipleVoice::Active,
+                    form: AdjectiveForm::Long,
+                },
+            ] {
+                assert!(
+                    verb.missing_principal_parts(system)
+                        .expect("typed metadata query")
+                        .is_empty(),
+                    "{} {system:?}",
+                    verb.id()
+                );
+            }
+        }
+        for system in [
+            VerbSystem::Finite(FiniteTense::Future),
+            VerbSystem::Finite(FiniteTense::Aorist),
+            VerbSystem::Imperative,
+            VerbSystem::LParticiple,
+            VerbSystem::Participle {
+                tense: ParticipleTense::Past,
+                voice: ParticipleVoice::Active,
+                form: AdjectiveForm::Short,
+            },
+            VerbSystem::Participle {
+                tense: ParticipleTense::Past,
+                voice: ParticipleVoice::Active,
+                form: AdjectiveForm::Long,
+            },
+            VerbSystem::Participle {
+                tense: ParticipleTense::Past,
+                voice: ParticipleVoice::Passive,
+                form: AdjectiveForm::Short,
+            },
+            VerbSystem::Participle {
+                tense: ParticipleTense::Past,
+                voice: ParticipleVoice::Passive,
+                form: AdjectiveForm::Long,
+            },
+            VerbSystem::VerbalNoun {
+                animacy: Animacy::Inanimate,
+            },
+        ] {
+            assert!(
+                vzeti
+                    .missing_principal_parts(system)
+                    .expect("typed metadata query")
+                    .is_empty(),
+                "{system:?}"
+            );
+        }
     }
 }

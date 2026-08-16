@@ -6,7 +6,7 @@ Inventory date: `2026-08-15`. Source-frontier date: `2026-08-15`.
 
 ## Headline
 
-The matrix contains **53** required system contracts: **50** have final states and **3** remain non-final. Source discovery has 16 recorded passes and has not converged.
+The matrix contains **53** required system contracts: **51** have final states and **2** remain non-final. Source discovery has 16 recorded passes and has not converged.
 
 ## State totals
 
@@ -14,10 +14,10 @@ The matrix contains **53** required system contracts: **50** have final states a
 |---|---:|
 | `absent-from-recension` | 1 |
 | `closed-exact-complete` | 2 |
-| `implementation-missing` | 2 |
+| `implementation-missing` | 1 |
 | `irregular-exact-complete` | 3 |
 | `not-inflectional` | 2 |
-| `productive-complete` | 42 |
+| `productive-complete` | 43 |
 | `source-review-open` | 1 |
 
 ## Recension totals
@@ -26,7 +26,7 @@ The matrix contains **53** required system contracts: **50** have final states a
 |---|---:|---:|
 | cross-recension | 3 | 4 |
 | old-church-slavonic | 26 | 26 |
-| synodal-russian | 21 | 23 |
+| synodal-russian | 22 | 23 |
 
 ## Category totals
 
@@ -60,7 +60,7 @@ The matrix contains **53** required system contracts: **50** have final states a
 | synodal-russian | finite-verb | 5 | 5 |
 | synodal-russian | invariant | 1 | 1 |
 | synodal-russian | irregular-verb | 1 | 1 |
-| synodal-russian | lexicon | 0 | 1 |
+| synodal-russian | lexicon | 1 | 1 |
 | synodal-russian | nonfinite-and-mood | 1 | 1 |
 | synodal-russian | nonfinite-verb | 1 | 1 |
 | synodal-russian | noun | 2 | 2 |
@@ -73,7 +73,6 @@ The matrix contains **53** required system contracts: **50** have final states a
 ## Non-final systems
 
 - `syn.orthography.liturgical-accent-abbreviation` — **implementation-missing**: Classify every remaining lexical accent/printed pattern and complete positional semantics without guessing; the Alypy §3.c abbreviation inventory itself is fully linked.
-- `syn.lexicon.classification` — **implementation-missing**: Replace the nine curated exact-only gaps with complete typed specifications: three possessive/relational adjectives, Israel and thousand nominal paradigms, and four irregular verbs.
 - `cross.source-frontier` — **source-review-open**: Complete source crosswalks and at least two consecutive post-seed passes with no contract-changing eligible source.
 
 ## Complete matrix
@@ -108,7 +107,7 @@ The matrix contains **53** required system contracts: **50** have final states a
 | `ocs.invariant-parts-of-speech` | old-church-slavonic | invariant | `not-inflectional` | `OCS-NOT-INFLECTIONAL` | lexical exact forms |
 | `syn.noun.declension` | synodal-russian | noun | `productive-complete` | `SYN-NOUN-I-HARD-M-ALYPY-34`<br>`SYN-NOUN-I-U-STEM-M-ALYPY-37-38`<br>`SYN-NOUN-I-HARD-M-IN-ETHNONYM-ALYPY-37`<br>`SYN-NOUN-I-M-UD-ES-ALYPY-44`<br>`SYN-NOUN-I-HARD-VELAR-M-ALYPY-34`<br>`SYN-NOUN-I-MIXED-M-ALYPY-33-34`<br>`SYN-NOUN-I-MIXED-TS-M-ALYPY-8-33-37`<br>`SYN-NOUN-I-HARD-N-ALYPY-34`<br>`SYN-NOUN-I-SOFT-M-ALYPY-34`<br>`SYN-NOUN-I-SOFT-M-TEL-AGENT-ALYPY-37`<br>`SYN-NOUN-I-SOFT-M-LORD-ALYPY-35-41`<br>`SYN-NOUN-I-SOFT-J-M-ALYPY-34-37`<br>`SYN-NOUN-I-SOFT-EY-M-ALYPY-34-37`<br>`SYN-NOUN-I-SOFT-N-ALYPY-34`<br>`SYN-NOUN-I-SOFT-N-ISHCHE-ALYPY-37`<br>`SYN-NOUN-I-SOFT-IE-N-ALYPY-34-37`<br>`SYN-NOUN-II-HARD-ALYPY-39`<br>`SYN-NOUN-II-HARD-VELAR-ALYPY-39-40`<br>`SYN-NOUN-II-SOFT-ALYPY-39`<br>`SYN-NOUN-II-SOFT-POSTVOCALIC-ANCIENT-PL-ALYPY-40`<br>`SYN-NOUN-II-SOFT-M-IA-ALYPY-39-40`<br>`SYN-NOUN-II-SOFT-F-IA-ALYPY-32-39-40`<br>`SYN-NOUN-II-MIXED-ALYPY-39-40`<br>`SYN-NOUN-III-F-ALYPY-41`<br>`SYN-NOUN-III-M-ALYPY-41`<br>`SYN-NOUN-IV-N-EN-ALYPY-42-43`<br>`SYN-NOUN-IV-N-ES-ALYPY-42-43`<br>`SYN-NOUN-IV-N-ES-ALT-FIRST-ALYPY-42-44`<br>`SYN-NOUN-IV-N-ES-PAIRED-DUAL-ALYPY-44`<br>`SYN-NOUN-IV-N-AT-ALYPY-42-43`<br>`SYN-NOUN-IV-F-ER-ALYPY-42-43`<br>`SYN-NOUN-IV-F-ER-DAUGHTER-ALYPY-42-44`<br>`SYN-NOUN-IV-F-OV-ALYPY-42-44`<br>`SYN-NOUN-IV-F-OV-SYNCOPATING-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-ALYPY-42-44`<br>`SYN-NOUN-IV-M-EN-DAY-ALYPY-43`<br>`SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43`<br>`SYN-NOUN-INDECLINABLE-ALYPY-37` | normative productive prediction |
 | `syn.noun.irregular` | synodal-russian | noun | `irregular-exact-complete` | `SYN-REGISTRY-IRREGULAR-OVERRIDE`<br>`SYN-CALLER-IRREGULAR-OVERRIDE` | reviewed normative families plus exact target attestations; unattested cells remain visibly productive predictions |
-| `syn.adjective.positive-comparison` | synodal-russian | adjective | `productive-complete` | `SYN-ADJ-SHORT-HARD-ALYPY-53`<br>`SYN-ADJ-SHORT-SOFT-ALYPY-53`<br>`SYN-ADJ-SHORT-VELAR-ALYPY-53-57`<br>`SYN-ADJ-SHORT-MASCULINE-STEM-ALYPY-52`<br>`SYN-ADJ-LONG-HARD-ALYPY-57`<br>`SYN-ADJ-LONG-SOFT-ALYPY-57`<br>`SYN-ADJ-LONG-VELAR-ALYPY-57`<br>`SYN-ADJ-COMPARATIVE-LONG-ALYPY-58`<br>`SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59`<br>`SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | normative productive prediction |
+| `syn.adjective.positive-comparison` | synodal-russian | adjective | `productive-complete` | `SYN-ADJ-SHORT-HARD-ALYPY-53`<br>`SYN-ADJ-SHORT-SOFT-ALYPY-53`<br>`SYN-ADJ-SHORT-VELAR-ALYPY-53-57`<br>`SYN-ADJ-POSSESSIVE-OV-EV-SHORT-ALYPY-50-53`<br>`SYN-ADJ-POSSESSIVE-SOFT-SHORT-ALYPY-50-53`<br>`SYN-ADJ-POSSESSIVE-II-SHORT-ALYPY-56`<br>`SYN-ADJ-POSSESSIVE-II-LONG-ALYPY-56`<br>`SYN-ADJ-SHORT-MASCULINE-STEM-ALYPY-52`<br>`SYN-ADJ-LONG-HARD-ALYPY-57`<br>`SYN-ADJ-LONG-SOFT-ALYPY-57`<br>`SYN-ADJ-LONG-VELAR-ALYPY-57`<br>`SYN-ADJ-COMPARATIVE-LONG-ALYPY-58`<br>`SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59`<br>`SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | normative productive prediction |
 | `syn.adjective.short-superlative` | synodal-russian | comparison | `productive-complete` | `SYN-ADJ-SUPERLATIVE-SHORT-PREDICATE-ALYPY-59-60-125-128` | one direct liturgical predicate form plus source-constrained productive agreement predictions |
 | `syn.pronoun` | synodal-russian | pronoun | `productive-complete` | `SYN-PRONOUN-PERSONAL-FIRST-ALYPY-47`<br>`SYN-PRONOUN-PERSONAL-SECOND-ALYPY-47`<br>`SYN-PRONOUN-REFLEXIVE-ALYPY-47`<br>`SYN-PRONOUN-THIRD-PERSON-ALYPY-46-47`<br>`SYN-PRONOUN-SEI-ALYPY-45-48`<br>`SYN-PRONOUN-SOFT-ALYPY-47-48`<br>`SYN-PRONOUN-SOFT-I-ALTERNATING-ALYPY-45-48`<br>`SYN-PRONOUN-HARD-ALYPY-47-48`<br>`SYN-PRONOUN-MIXED-POSSESSIVE-ALYPY-48`<br>`SYN-PRONOUN-SHORT-HARD-ALYPY-48`<br>`SYN-PRONOUN-SHORT-OV-MIXED-ALYPY-48`<br>`SYN-PRONOUN-SHORT-VELAR-ALYPY-48`<br>`SYN-PRONOUN-QUANTITY-VELAR-ALYPY-48`<br>`SYN-PRONOUN-FULL-HARD-ALYPY-48-57`<br>`SYN-PRONOUN-FULL-SOFT-ALYPY-48-57`<br>`SYN-PRONOUN-FULL-VELAR-ALYPY-48-57`<br>`SYN-PRONOUN-KII-ALYPY-48`<br>`SYN-PRONOUN-KTO-ALYPY-48`<br>`SYN-PRONOUN-CHTO-ALYPY-48`<br>`SYN-PRONOUN-DERIVED-ALYPY-46-48`<br>`SYN-PRONOUN-ENCLITIC-PROSODY-ALYPY-47`<br>`SYN-PRONOUN-THIRD-PREPOSITION-CONTRACTION-ALYPY-47`<br>`SYN-PRONOUN-NEGATIVE-PREPOSITION-ALYPY-48` | source-reviewed complete productive and closed-suppletive Synodal pronoun morphology, with exact target witnesses, typed prediction provenance, reusable caller accent metadata, and structured phrase-level behavior |
 | `syn.determiner` | synodal-russian | determiner | `productive-complete` | `SYN-DETERMINER-HARD-ALYPY-45-48`<br>`SYN-DETERMINER-VES-MIXED-ALYPY-45-48`<br>`SYN-DETERMINER-VSYAK-MIXED-ALYPY-45-48-57`<br>`SYN-DETERMINER-FULL-SK-ALYPY-45-57` | source-reviewed complete productive determiner morphology with exact target variants, typed invalid inventories, fixed-stem accent paradigms where established, and explicit missing-accent failures elsewhere |
@@ -127,7 +126,7 @@ The matrix contains **53** required system contracts: **50** have final states a
 | `syn.analytic.wider` | synodal-russian | analytic-form | `productive-complete` | `SYN-PHRASE-FUTURE-ALYPY-85-PK-13`<br>`SYN-PHRASE-PERFECT-ALYPY-88`<br>`SYN-PHRASE-PLUPERFECT-ALYPY-89-168`<br>`SYN-PHRASE-FUTURE-ANTERIOR-ALYPY-162`<br>`SYN-PHRASE-CONDITIONAL-ALYPY-91`<br>`SYN-PHRASE-OPTATIVE-ALYPY-92`<br>`SYN-PHRASE-PASSIVE-ALYPY-101-102`<br>`SYN-PHRASE-PERIPHRASTIC-ALYPY-90-163`<br>`SYN-PHRASE-COPULA-ELLIPSIS-ALYPY-123-124`<br>`SYN-PHRASE-ADVERBIAL-PARTICIPLE-ALYPY-146` | exhaustive normative construction inventory with independent target-grammar and diachronic crosschecks, locked target witnesses, source-bounded unattested predictions, and 14/14 expanded/liturgical phrase evaluation |
 | `syn.orthography.canonical` | synodal-russian | orthography | `productive-complete` | `SYN-ORTHOGRAPHY-EXPANDED`<br>`SYN-COLLATION-UTN41-R1`<br>`SYN-NUMERAL-NOTATION-ALYPY-5` | normative technical and grammatical contract |
 | `syn.orthography.liturgical-accent-abbreviation` | synodal-russian | orthography | `implementation-missing` | `synodal-accent:mudr-fixed-stem`<br>`synodal-accent:vsyacheskii-fixed-stem`<br>`synodal-accent:vsyak-fixed-stem`<br>`synodal-accent:mati-fixed-stem`<br>`synodal-accent:imya-mobile`<br>`synodal-accent:nebo-mobile`<br>`SYN-ORTH-FINAL-ACUTE-BEFORE-ENCLITIC-ALYPY-3`<br>`SYN-ABBR-FAMILY-ANGEL`<br>`SYN-ABBR-FAMILY-APOSTOL`<br>`SYN-ABBR-FAMILY-BLAG`<br>`SYN-ABBR-FAMILY-BLAGOCHESTNO`<br>`SYN-ABBR-FAMILY-BLAGOSLOVENN`<br>`SYN-ABBR-FAMILY-BLAZHENN`<br>`SYN-ABBR-FAMILY-BOG`<br>`SYN-ABBR-FAMILY-BOGORODITSA`<br>`SYN-ABBR-FAMILY-BOZHII`<br>`SYN-ABBR-FAMILY-BOZHESTVENN`<br>`SYN-ABBR-FAMILY-CHESTN`<br>`SYN-ABBR-FAMILY-CHIST`<br>`SYN-ABBR-FAMILY-CHRIST`<br>`SYN-ABBR-FAMILY-CHURCH`<br>`SYN-ABBR-FAMILY-DEVA`<br>`SYN-ABBR-FAMILY-EPISKOP`<br>`SYN-ABBR-FAMILY-EVANGELIE`<br>`SYN-ABBR-FAMILY-FATHER`<br>`SYN-ABBR-FAMILY-GLAGOL-NOUN`<br>`SYN-ABBR-FAMILY-GLAGOL-VERB`<br>`SYN-ABBR-FAMILY-GOSPOD`<br>`SYN-ABBR-FAMILY-GOSPODEN`<br>`SYN-ABBR-FAMILY-GRACE`<br>`SYN-ABBR-FAMILY-HEAVEN`<br>`SYN-ABBR-FAMILY-IMYAREK`<br>`SYN-ABBR-FAMILY-ISRAEL-ADJECTIVE`<br>`SYN-ABBR-FAMILY-ISRAEL-NOUN`<br>`SYN-ABBR-FAMILY-JERUSALEM`<br>`SYN-ABBR-FAMILY-JESUS`<br>`SYN-ABBR-FAMILY-KINGDOM`<br>`SYN-ABBR-FAMILY-KREST`<br>`SYN-ABBR-FAMILY-KRESTITEL`<br>`SYN-ABBR-FAMILY-MARY`<br>`SYN-ABBR-FAMILY-MATI`<br>`SYN-ABBR-FAMILY-MILOSERDIE`<br>`SYN-ABBR-FAMILY-MILOST`<br>`SYN-ABBR-FAMILY-MLADENETS`<br>`SYN-ABBR-FAMILY-MOLITVA`<br>`SYN-ABBR-FAMILY-MUCHENIK`<br>`SYN-ABBR-FAMILY-NEDELYA`<br>`SYN-ABBR-FAMILY-NYNYE`<br>`SYN-ABBR-FAMILY-PRAVEDNIK`<br>`SYN-ABBR-FAMILY-PREPODOBN`<br>`SYN-ABBR-FAMILY-PRESTOL`<br>`SYN-ABBR-FAMILY-PROPHET`<br>`SYN-ABBR-FAMILY-RESURRECTION`<br>`SYN-ABBR-FAMILY-SON`<br>`SYN-ABBR-FAMILY-SPAS`<br>`SYN-ABBR-FAMILY-SPIRIT`<br>`SYN-ABBR-FAMILY-SVYAT`<br>`SYN-ABBR-FAMILY-SVYATITEL`<br>`SYN-ABBR-FAMILY-TROITSA`<br>`SYN-ABBR-FAMILY-TSAR`<br>`SYN-ABBR-FAMILY-VLADYCHITSA`<br>`SYN-ABBR-FAMILY-VLADYKA`<br>`SYN-LITURGICAL-COMPLETE-PENDING` | language-wide prosodic context plus reviewed exact rows, 55 source-backed semantic families, and an exhaustive fully linked 48-entry Alypy abbreviation decision ledger |
-| `syn.lexicon.classification` | synodal-russian | lexicon | `implementation-missing` | `SYN-LEXICON-SOURCE-UNION-1` | Exhaustive deterministic 1,258-claim source union with 852 evidence-final ambiguities/disputes, 82 explicit exclusions, and nine visible implementation gaps. |
+| `syn.lexicon.classification` | synodal-russian | lexicon | `productive-complete` | `SYN-LEXICON-SOURCE-UNION-1` | Exhaustive deterministic 1,258-claim source union with 852 evidence-final ambiguities/disputes, 82 explicit exclusions, 324 implemented claims, and zero implementation gaps. |
 | `syn.invariant-parts-of-speech` | synodal-russian | invariant | `not-inflectional` | `SYN-NOT-INFLECTIONAL` | reviewed lexical exact forms |
 | `cross.open-lexicon-provider` | cross-recension | api | `productive-complete` | `OCS-ADVANCED-RULES`<br>`SYN-LEXICON-PROVIDER-V10`<br>`SYN-BATCH-V10` | architecture/API contract |
 | `cross.provenance-and-prediction` | cross-recension | provenance | `productive-complete` | `CROSS-PROVENANCE-CONTRACT` | architecture invariant |

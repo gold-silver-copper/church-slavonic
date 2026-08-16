@@ -1896,7 +1896,15 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
                         | "fourth-masculine-en-kamen"
                         | "indeclinable",
                 )
-                | ("adjective", "hard-short" | "soft-short" | "velar-short")
+                | (
+                    "adjective",
+                    "hard-short"
+                        | "soft-short"
+                        | "velar-short"
+                        | "possessive-hard-short"
+                        | "possessive-soft-short"
+                        | "possessive-ii"
+                )
                 | (
                     "determiner",
                     "determiner-pronominal-hard"
@@ -2082,6 +2090,33 @@ fn validate_principal_parts(path: &Path, table: &Table) -> Result<()> {
         {
             return invalid(path, offset + 2, "unknown typed short-masculine formation");
         }
+        if row[1] == "verbal-noun-ie-platform" && row[3] != "past-passive-ie" {
+            return invalid(
+                path,
+                offset + 2,
+                "verbal-noun -їе platforms require the typed past-passive-ie formation",
+            );
+        }
+        if row[1] == "verbal-noun-ie-platform" && !matches!(row[2].chars().last(), Some('н' | 'т'))
+        {
+            return invalid(
+                path,
+                offset + 2,
+                "a verbal-noun -їе platform must end in н or т",
+            );
+        }
+        if row[1] == "l-participle-masculine-singular-stem"
+            && !table
+                .rows
+                .iter()
+                .any(|candidate| candidate[0] == row[0] && candidate[1] == "l-participle-stem")
+        {
+            return invalid(
+                path,
+                offset + 2,
+                "an l-participle masculine-singular stem requires the general stem",
+            );
+        }
         if row[1].ends_with("active-participle-short-stem") {
             let valid = matches!(
                 row[3].as_str(),
@@ -2107,6 +2142,35 @@ fn validate_principal_parts(path: &Path, table: &Table) -> Result<()> {
                     "active short participles require a class and closed typed formation",
                 );
             }
+        }
+    }
+    let future_systems = [
+        "future-stem",
+        "future-first-singular",
+        "future-third-plural",
+    ];
+    let future_lexemes = table
+        .rows
+        .iter()
+        .filter(|row| future_systems.contains(&row[1].as_str()))
+        .map(|row| row[0].as_str())
+        .collect::<BTreeSet<_>>();
+    for lexeme_id in future_lexemes {
+        let supplied = future_systems
+            .iter()
+            .filter(|system| {
+                table
+                    .rows
+                    .iter()
+                    .any(|row| row[0] == lexeme_id && row[1] == **system)
+            })
+            .count();
+        if supplied != future_systems.len() {
+            return invalid(
+                path,
+                1,
+                "independent future stem, first singular, and third plural must be supplied together",
+            );
         }
     }
     Ok(())
@@ -2914,6 +2978,9 @@ fn validate_defective_inventories(path: &Path, table: &Table, lexemes: &Table) -
             "present-stem"
                 | "present-first-singular"
                 | "present-third-plural"
+                | "future-stem"
+                | "future-first-singular"
+                | "future-third-plural"
                 | "imperfect-stem"
                 | "aorist-stem"
                 | "aorist-formation"
@@ -3573,6 +3640,34 @@ fn hex_sha256(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn independent_future_principal_parts_are_atomic() {
+        let path = Path::new("principal_parts.tsv");
+        let row = |system: &str, value: &str| {
+            vec![
+                "synodal:verb:test".into(),
+                system.into(),
+                value.into(),
+                String::new(),
+                "test-evidence".into(),
+                TARGET.into(),
+            ]
+        };
+        let partial = Table {
+            rows: vec![row("future-stem", "возм")],
+        };
+        assert!(validate_principal_parts(path, &partial).is_err());
+
+        let complete = Table {
+            rows: vec![
+                row("future-stem", "возм"),
+                row("future-first-singular", "возмꙋ"),
+                row("future-third-plural", "возмꙋтъ"),
+            ],
+        };
+        validate_principal_parts(path, &complete).expect("complete future triple");
+    }
 
     #[test]
     fn rust_string_emission_is_lossless() {

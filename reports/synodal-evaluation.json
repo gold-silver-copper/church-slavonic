@@ -2151,17 +2151,17 @@
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 2955,
-    "returned": 2955,
-    "top_1_correct": 2722,
-    "top_k_correct": 2955,
+    "total": 2962,
+    "returned": 2962,
+    "top_1_correct": 2729,
+    "top_k_correct": 2962,
     "abstained": 0
   },
   "exact_registry_printed_round_trip": {
-    "total": 2955,
-    "returned": 2955,
-    "top_1_correct": 2573,
-    "top_k_correct": 2955,
+    "total": 2962,
+    "returned": 2962,
+    "top_1_correct": 2580,
+    "top_k_correct": 2962,
     "abstained": 0
   },
   "accent_bearing_rows": 2000,

@@ -883,7 +883,11 @@ fn productive_cell_is_supported(
         }
         GrammarCell::Adjective(cell) => {
             capabilities.productive_adjective
-                && adjectival_cell_is_supported(cell, principal_part("comparative-stem").is_some())
+                && adjectival_cell_is_supported(
+                    cell,
+                    metadata.class.as_deref(),
+                    principal_part("comparative-stem").is_some(),
+                )
         }
         GrammarCell::Determiner(cell) => {
             capabilities.productive_determiner
@@ -906,13 +910,18 @@ fn productive_cell_is_supported(
                             .all(|system| principal_part(system).is_some())
                 }
                 FiniteTense::Future => {
-                    matches!(
-                        metadata.aspect.as_deref(),
-                        Some("perfective" | "biaspectual")
-                    ) && metadata.stem.is_some()
-                        && ["present-first-singular", "present-third-plural"]
+                    metadata.aspect.as_deref() == Some("perfective")
+                        && ((metadata.stem.is_some()
+                            && ["present-first-singular", "present-third-plural"]
+                                .into_iter()
+                                .all(|system| principal_part(system).is_some()))
+                            || [
+                                "future-stem",
+                                "future-first-singular",
+                                "future-third-plural",
+                            ]
                             .into_iter()
-                            .all(|system| principal_part(system).is_some())
+                            .all(|system| principal_part(system).is_some()))
                 }
                 FiniteTense::Imperfect => {
                     matches!(
@@ -1035,7 +1044,18 @@ fn pronoun_cell_is_supported(cell: PronounCell, class: Option<&str>) -> bool {
     }
 }
 
-fn adjectival_cell_is_supported(cell: AdjectiveCell, has_comparative_stem: bool) -> bool {
+fn adjectival_cell_is_supported(
+    cell: AdjectiveCell,
+    class: Option<&str>,
+    has_comparative_stem: bool,
+) -> bool {
+    match class {
+        Some("possessive-hard-short" | "possessive-soft-short") => {
+            return cell.comparison == Comparison::Positive && cell.form == AdjectiveForm::Short;
+        }
+        Some("possessive-ii") => return cell.comparison == Comparison::Positive,
+        _ => {}
+    }
     match (cell.comparison, cell.form) {
         (Comparison::Positive, _) => true,
         (Comparison::Comparative, _) => has_comparative_stem,
@@ -1718,5 +1738,43 @@ mod tests {
             member.cell == "pronoun:accusative:singular:masculine:none:animate"
                 && member.expanded == "вашего"
         }));
+
+        let gospoden_id = LexemeId::from("synodal:adjective:gospoden");
+        let gospoden_cells = analysis_cells_by_id(&gospoden_id, Inflector::default())
+            .expect("typed short possessive cells");
+        assert!(gospoden_cells.iter().any(|cell| matches!(
+            cell,
+            GrammarCell::Adjective(AdjectiveCell {
+                form: AdjectiveForm::Short,
+                comparison: Comparison::Positive,
+                ..
+            })
+        )));
+        assert!(!gospoden_cells.iter().any(|cell| matches!(
+            cell,
+            GrammarCell::Adjective(AdjectiveCell {
+                form: AdjectiveForm::Long,
+                ..
+            })
+        )));
+
+        let bozhii_id = LexemeId::from("synodal:adjective:bozhii");
+        let bozhii_cells = analysis_cells_by_id(&bozhii_id, Inflector::default())
+            .expect("typed -їй possessive cells");
+        assert!(bozhii_cells.iter().any(|cell| matches!(
+            cell,
+            GrammarCell::Adjective(AdjectiveCell {
+                form: AdjectiveForm::Long,
+                comparison: Comparison::Positive,
+                ..
+            })
+        )));
+        assert!(!bozhii_cells.iter().any(|cell| matches!(
+            cell,
+            GrammarCell::Adjective(AdjectiveCell {
+                comparison: Comparison::Comparative | Comparison::Superlative,
+                ..
+            })
+        )));
     }
 }

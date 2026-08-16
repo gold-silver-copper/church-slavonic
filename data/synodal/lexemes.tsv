@@ -2,8 +2,8 @@ id	lemma	part_of_speech	class	stem	gender	aspect	source_id	target_recension
 synodal:adjective:blazhenn	блаженъ	adjective	hard-short	блаженн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:blagoslovenn	благословенъ	adjective	hard-short	благословенн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:bozhestvenn	божественный	adjective	hard-short	божественн			alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:adjective:bozhii	божїй	adjective	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:adjective:gospoden	господень	adjective	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:bozhii	божїй	adjective	possessive-ii	бож			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:gospoden	господень	adjective	possessive-soft-short	господн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:greshn	грѣшнъ	adjective	hard-short	грѣшн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:chestn	честный	adjective	hard-short	честн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:chist	чистый	adjective	hard-short	чист			alypy-gamanovich-grammar-web-2023	synodal-russian
@@ -12,7 +12,7 @@ synodal:adjective:nebesn	небеснъ	adjective	hard-short	небесн			alyp
 synodal:adjective:pravedn	праведнъ	adjective	hard-short	праведн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:prepodobn	преподобенъ	adjective	hard-short	преподобн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:svyat	свѧтъ	adjective	hard-short	свѧт			alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:adjective:v06-israel	израилевъ	adjective	exact		masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:adjective:v06-israel	израилевъ	adjective	possessive-hard-short	израилев			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:vechn	вѣчнъ	adjective	hard-short	вѣчн			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adjective:wikt-a9cef2fd54e7	благъ	adjective	velar-short	благ			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:adverb:blagochestno	благочестно	adverb					alypy-gamanovich-grammar-web-2023	synodal-russian
@@ -73,8 +73,8 @@ synodal:noun:ud	ꙋдъ	noun	first-hard-ud-es-m	ꙋдес	masculine		alypy-gaman
 synodal:noun:v06-64bd1811dbd024b5	око	noun	fourth-neuter-es-paired-dual	очес	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:v06-673b2df93b4f89a8	знаменїе	noun	first-soft-ie-n	знаменї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:v06-e5f5efea52ec5e2e	пламень	noun	fourth-masculine-en	пламен	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:noun:v06-israel	израиль	noun	exact		masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:noun:v06-tysyashcha	тысѧща	noun	exact		feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v06-israel	израиль	noun	first-soft-m	израил	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v06-tysyashcha	тысѧща	noun	second-hard	тысѧщ	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:v07-12621bc315f78ff8	ѹхо	noun	fourth-neuter-es-paired-dual	ушес	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:v07-15ca6aa83f100698	церковь	noun	fourth-feminine-ov-syncopating	церкв	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:noun:v07-a08ac1c4e41a685d	кровь	noun	fourth-feminine-ov	кров	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
@@ -221,9 +221,9 @@ synodal:verb:lyubiti	любити	verb	second	люб		imperfective	alypy-gamanov
 synodal:verb:nesti	нести	verb	first-unpalatalized	нес		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:pisati	писати	verb	first-palatalized	пиш		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:v07-35ce5d83583f3639	начѧти	verb	first-unpalatalized	начн		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
-synodal:verb:v06-iziti	изити	verb	exact			perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
-synodal:verb:v06-vzeti	възѧти	verb	exact			perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
-synodal:verb:v06-vzyti	взыти	verb	exact			perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
+synodal:verb:v06-iziti	изити	verb	first-unpalatalized	изыд		perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
+synodal:verb:v06-vzeti	възѧти	verb	first-palatalized	вземл		perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
+synodal:verb:v06-vzyti	взыти	verb	first-unpalatalized	взыд		perfective	english-wiktionary-ocs-kaikki-2026-08-07	synodal-russian
 synodal:verb:wikt-0c6c8db63b7c	имѣти	verb	archaic	имѣ		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:wikt-070505e82800	хотѣти	verb	first-unpalatalized	хощ		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:wikt-6ceeefbe4e9e	ꙗсти	verb	archaic	ꙗд		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian

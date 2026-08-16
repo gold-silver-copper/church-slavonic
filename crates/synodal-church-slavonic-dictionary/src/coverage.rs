@@ -1880,6 +1880,9 @@ fn classify_token(
                     MetadataField::PresentStem
                         | MetadataField::PresentFirstSingular
                         | MetadataField::PresentThirdPlural
+                        | MetadataField::FutureStem
+                        | MetadataField::FutureFirstSingular
+                        | MetadataField::FutureThirdPlural
                         | MetadataField::ImperfectStem
                         | MetadataField::AoristStem
                         | MetadataField::ImperativeStem

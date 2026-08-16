@@ -100,9 +100,9 @@ impl Capabilities {
                 && (registry::has_exact_system(id, "future:")
                     || verb_metadata.as_ref().is_some_and(|metadata| {
                         metadata.aspect == Aspect::Perfective
-                            && metadata.present_stem.is_some()
-                            && metadata.present_first_singular.is_some()
-                            && metadata.present_third_plural.is_some()
+                            && metadata
+                                .missing_principal_parts(VerbSystem::Finite(FiniteTense::Future))
+                                .is_empty()
                     })),
             past: verb && registry::has_exact_system(id, "past:"),
             imperfect: verb
@@ -491,6 +491,14 @@ fn missing_metadata(summary: &LexemeSummary) -> Vec<MetadataField> {
             if metadata.present_third_plural.is_none() {
                 missing.push(MetadataField::PresentThirdPlural);
             }
+            let has_independent_future = metadata.future_stem.is_some()
+                || metadata.future_first_singular.is_some()
+                || metadata.future_third_plural.is_some();
+            if has_independent_future {
+                missing.extend(
+                    metadata.missing_principal_parts(VerbSystem::Finite(FiniteTense::Future)),
+                );
+            }
         }
         Err(_) => {
             missing.extend([
@@ -513,6 +521,14 @@ fn missing_metadata(summary: &LexemeSummary) -> Vec<MetadataField> {
                 || registry::has_principal_part_prefix(id, "past-active-participle-")
                 || registry::has_principal_part_prefix(id, "present-passive-participle-")
                 || registry::has_principal_part_prefix(id, "past-passive-participle-")
+        } else if field == MetadataField::VerbalNounStem {
+            registry::verb_lexeme(id).is_ok_and(|metadata| {
+                metadata
+                    .missing_principal_parts(VerbSystem::VerbalNoun {
+                        animacy: Animacy::Inanimate,
+                    })
+                    .is_empty()
+            })
         } else {
             registry::has_principal_part(id, system)
         };

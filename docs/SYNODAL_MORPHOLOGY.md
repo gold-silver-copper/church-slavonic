@@ -115,6 +115,8 @@ reusable accent paradigm; expanded rules never invent stress.
 | Lexeme-specific `камень` contract | `SYN-NOUN-IV-M-EN-KAMEN-ALYPY-43` | Alypy §43 | independently supplied `камен-`; ordered cited singular, dual, and plural alternatives; the separate `каменїе` collective is never emitted |
 | Short adjectives, hard/soft/velar | `SYN-ADJ-SHORT-{HARD,SOFT}-ALYPY-53`, `SYN-ADJ-SHORT-VELAR-ALYPY-53-57` | Alypy §§53–55, 57 | positive degree only; explicit stem/class/agreement; the velar class owns its post-velar `и` spellings |
 | Short masculine principal parts | `SYN-ADJ-SHORT-MASCULINE-STEM-ALYPY-52` | Alypy §52 | optional independent masculine-nominative short stem plus typed `DoubleNReduction` or `MobileEInsertion`; every other short cell retains the general stem |
+| Short possessive adjectives in `-овъ/-евъ` and soft consonants | `SYN-ADJ-POSSESSIVE-{OV-EV,SOFT}-SHORT-ALYPY-50-53` | Alypy §§50–53 | explicit hard or soft possessive stem; short positive agreement only; optional typed mobile-`е` masculine citation edge |
+| Possessive adjectives in `-їй` | `SYN-ADJ-POSSESSIVE-II-{SHORT,LONG}-ALYPY-56` | Alypy §56 | explicit pre-`-їй` stem; complete source-table short agreement and source-bounded occasional full forms; comparison is invalid |
 | Long adjectives, hard/soft/velar | `SYN-ADJ-LONG-{HARD,SOFT}-ALYPY-57`, `SYN-ADJ-LONG-VELAR-ALYPY-57` | Alypy §§56–57 | positive degree only; explicit stem/class/agreement; velar first/second palatalization is cell-scoped rather than a global rewrite |
 | Comparative/superlative full adjectives | `SYN-ADJ-{COMPARATIVE,SUPERLATIVE}-LONG-ALYPY-{58,59}` | Alypy §§58–59 | independently reviewed comparison stem; full agreement inventory |
 | Short comparison | `SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60` | Alypy §§58 and 60 | independent comparison stem plus `AncientHard`, `AncientSoft`, `LaterYat`, or `LaterAi`; all 72 canonical cells, including the source-defined vocatives, locatives, dual endings, and masculine-plural variant |
@@ -125,13 +127,13 @@ reusable accent paradigm; expanded rules never invent stress.
 | Composed cardinals and ordinals | `SYN-NUMERAL-{CARDINAL,ORDINAL}-*-ALYPY-{63,64,68}` | Alypy §§63–64, 68 and appendix | correlated teen, tens, hundreds, ordinary-thousands, named-magnitude, additive, and compound-ordinal analyses; cardinals 1–1,000,000 and ordinals 1–1,000 |
 | Numeral government and phrases | `SYN-NUMERAL-{GOVERNMENT,DISTRIBUTIVE,MULTIPLICATIVE,FRACTION}-*` | Alypy §§61, 65–70; locked target texts | typed following/preceding agreement and government; repeated distributives; invariant `кратъ`; cardinal, ordinal, and `полдесѧтый` expressions with inflected `часть` |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
-| Simple future | `SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84` | Alypy §84; Pletneva–Kravetsky lesson 13 | perfective aspect plus the same independently supplied full 1sg, medial present stem, and 3pl; contextual non-perfective readings require exact evidence |
+| Simple future | `SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84` | Alypy §§84, 104; Pletneva–Kravetsky lesson 13 | perfective aspect plus either the independently supplied present-shaped 1sg/stem/3pl or a complete independent future triple for suppletion; contextual non-perfective readings require exact evidence |
 | Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
 | Imperative | `SYN-VERB-IMPERATIVE-ALYPY-93` | Alypy §93 | independent base and `first-unpalatalized`/`i-series` formation |
 | Infinitive | `SYN-VERB-INFINITIVE-LEXICAL` | Alypy §79 | resolved target lemma; no invented infinitive stem |
 | Supine boundary | `SYN-VERB-SUPINE-ABSENT-ALYPY-143` | Alypy §143.7–8 n.1; Pletneva–Kravetsky lesson 6 §II; Izotov p. 73 | no distinct productive target category; explicit caller provider-exact or irregular compatibility only |
-| l-participle | `SYN-VERB-LPART-ALYPY-97` | Alypy §97 | independent base plus typed gender and number |
+| l-participle | `SYN-VERB-LPART-ALYPY-97` | Alypy §§97, 104 | independent general base plus typed gender and number; optional independent masculine-singular base preserves the `шелъ : шли` mobile-vowel alternation |
 | Declined long active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-ALYPY-{95,96}` | Alypy §§95–96 | tense/voice-specific full-form stem and adjective class |
 | Declined short active participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-ACTIVE-SHORT-ALYPY-{95,96}-98` | Alypy §§95–96 citation edges and §98 complete declension | independent short stem plus `PresentFirstUnpalatalized`, `PresentFirstPalatalized`, `PresentSecond`, `PresentAfterSibilant`, `PastConsonant`, `PastVowel`, or `PastIotated`; source-ordered masculine/neuter citation variants; 63 valid canonical cells; vocative invalid |
 | Declined passive participles | `SYN-VERB-PARTICIPLE-{PRESENT,PAST}-PASSIVE-ALYPY-{99,100}` | Alypy §§99–100 | independent short/full stems; past-passive `н`/`нн` distinction is explicit metadata |
@@ -167,17 +169,21 @@ if a replacement disappears, or if any `past:*` target/evaluation row returns.
 Alypy §84 and Pletneva–Kravetsky lesson 13 independently establish that the
 simple future has no separate endings: it uses the complete present-shaped
 person × singular/dual/plural paradigm. `future`, `Verb::future`, and
-`VerbSpec::finite_paradigm(FiniteTense::Future)` therefore reuse the same three
-independent lexical inputs as the present system—the complete first singular,
-the medial stem, and the complete third plural—but classify their output under
-`SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84` only for a lexeme explicitly typed as
-perfective.
+`VerbSpec::finite_paradigm(FiniteTense::Future)` therefore use the same ending
+series and normally reuse the present system's three independent lexical
+inputs—the complete first singular, the medial stem, and the complete third
+plural. A complete optional future 1sg/stem/3pl triple represents independently
+suppletive series without changing those endings: Alypy §104 requires this seam
+for `взѧти`, whose present is `вземлю, вземлеши, … вземлютъ` while its future is
+`возмꙋ, возмеши, … возмꙋтъ`. Partial future triples are contradictory metadata.
+Both routes classify output under `SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84` only
+for a lexeme explicitly typed as perfective.
 
 The same sources document contextual future readings of formally present
 imperfective forms. Those cannot be predicted from aspect or shape alone:
 without a reviewed exact override they return `EvidenceIncompleteCell`. Unknown
-aspect returns `MissingMetadata`; missing present-shaped principal parts retain
-their specific `MissingPrincipalPart` failures. Exact future cells always win
+aspect returns `MissingMetadata`; missing present-shaped or independent-future
+principal parts retain their specific `MissingPrincipalPart` failures. Exact future cells always win
 before productive generation. The registry includes complete exact nine-cell
 suppletive futures for `быти` and archaic `дати`; `дати` is no longer
 misclassified as a present table. Other irregular or contextual cells retain
@@ -495,11 +501,14 @@ The locked Synodal lexical union is independently regenerated by
 curated seed rows, all 831 admitted or rejected cross-source review rows, and all
 198 preserved review proposals. The source-claim ledger keeps repeated claims
 and rejected rows visible while merging only stable reviewed identities. Of
-those claims, 852 are evidence-final ambiguities or disputes and 82 are explicit
-exclusions; they are not silently converted into paradigms from spelling. The
-current audit identifies exactly nine implementation gaps: three possessive or
-relational adjectives, the proper name `израиль`, inflecting `тысѧща`, and four
-irregular verbs that still have only selected exact cells.
+those claims, 852 are evidence-final ambiguities or disputes, 82 are explicit
+exclusions, and 324 are implemented; they are not silently converted into
+paradigms from spelling. The current audit has zero implementation gaps. Its
+last nine gaps were closed with source-typed possessive adjective paradigms,
+productive `израиль` and `тысѧща` noun backgrounds, a source-defective
+`достоꙗти` inventory, and complete independent principal parts for `изити`,
+`възѧти`, and `взыти`. Exact target attestations still precede those productive
+backgrounds.
 
 ## Explicitly unsupported or partial formations
 

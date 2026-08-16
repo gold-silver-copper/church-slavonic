@@ -19,6 +19,12 @@ synodal:adjective:mnog	adjective:locative:plural:neuter:inanimate:long:positive	
 synodal:adjective:mnog	adjective:nominative:plural:masculine:animate:short:positive	мнози	Мно́зи	v05-alypy-mnog,v05-target-mnog-mnozi	synodal-attestation	synodal-russian
 synodal:adjective:mnog	adjective:nominative:plural:masculine:animate:short:positive	мнѡги	мнѡ́ги	v05-alypy-mnog,v05-target-mnog-mnogi-omega	synodal-attestation	synodal-russian
 synodal:adjective:mnog	adjective:nominative:plural:neuter:inanimate:short:positive	мнѡга	мнѡ́га	v05-alypy-mnog,v05-target-mnog-mnoga-omega	synodal-attestation	synodal-russian
+synodal:adjective:v06-israel	adjective:dative:plural:masculine:any:long:positive	израилєвымъ	і҆и҃лєвымъ	v06-manual-alypy-israel,v06-manual-target-israel-adj-dat-pl	synodal-attestation	synodal-russian
+synodal:adjective:v06-israel	adjective:dative:singular:masculine:any:short:positive	израилевꙋ	і҆и҃левꙋ	v06-manual-alypy-israel,v06-manual-target-israel-adj-dat-sg	synodal-attestation	synodal-russian
+synodal:adjective:v06-israel	adjective:genitive:plural:masculine:any:long:positive	израилевыхъ	і҆и҃левыхъ	v06-manual-alypy-israel,v06-manual-target-israel-adj-gen-pl	synodal-attestation	synodal-russian
+synodal:adjective:v06-israel	adjective:nominative:plural:masculine:any:short:positive	израилєвы	і҆и҃лєвы	v06-manual-alypy-israel,v06-manual-target-israel-adj-nom-pl	synodal-attestation	synodal-russian
+synodal:adjective:v06-israel	adjective:nominative:singular:feminine:any:short:positive	израилева	і҆и҃лева	v06-manual-alypy-israel,v06-manual-target-israel-adj-nom-sg-f	synodal-attestation	synodal-russian
+synodal:adjective:v06-israel	adjective:nominative:singular:masculine:any:short:positive	израилевъ	і҆и҃левъ	v06-manual-alypy-israel,v06-manual-target-israel-adj-nom-sg-m	synodal-attestation	synodal-russian
 synodal:adjective:v06-1a7ee491487fbd39	adjective:accusative:singular:masculine:inanimate:short:positive	крѣпокъ	крѣ́покъ	review:v06:1a7ee491487fbd39,v06-ud-b3b8c528dd0d539f,v06-target-3fd7740cb790de8b	synodal-attestation	synodal-russian
 synodal:adjective:v06-1a7ee491487fbd39	adjective:nominative:singular:masculine:any:short:positive	крѣпокъ	крѣ́покъ	review:v06:1a7ee491487fbd39,v06-ud-5aecf8d0fe5a0eec,v06-target-3fd7740cb790de8b	synodal-attestation	synodal-russian
 synodal:adjective:v06-6d8cbd0ea412c4e9	adjective:nominative:singular:masculine:any:short:positive	подобенъ	подо́бенъ	review:v06:6d8cbd0ea412c4e9,v06-ud-40c0e2c8b07b3063,v06-target-8c5a123f43f69346	synodal-attestation	synodal-russian
@@ -1731,6 +1737,7 @@ synodal:verb:v06-c8b75d2f425c16e5	present:second:singular	можеши	мо́ж�
 synodal:verb:v06-c8b75d2f425c16e5	present:third:singular	можетъ	мо́жетъ	review:v06:c8b75d2f425c16e5,v06-ud-b7578019575c891d,v06-target-21f56fbf9500af3a	synodal-attestation	synodal-russian
 synodal:verb:v06-e66ef6e1727178e2	participle:past:passive:nominative:singular:masculine:any:short:positive	погребенъ	погребе́нъ	review:v06:e66ef6e1727178e2,v06-ud-06bbff07b1d5fef8,v06-target-32159a9ecdc31c84	synodal-attestation	synodal-russian
 synodal:verb:v06-e893231169afc767	aorist:third:singular	Сниде	Сни́де	review:v06:e893231169afc767,v06-ud-bdc2334a22ca1888,v06-target-b36d07679678ea62	synodal-attestation	synodal-russian
+synodal:verb:dostoyati	present:third:singular	достоитъ	досто́итъ	alypy-104-dostoyati-defective	normative-table	synodal-russian
 synodal:verb:v06-iziti	aorist:third:singular	изыде	и҆зы́де	v06-manual-semantic-iziti,v06-manual-alypy-iti-aorist,v06-manual-alypy-izyde,v06-manual-target-izyde	synodal-attestation	synodal-russian
 synodal:verb:v06-vzeti	aorist:third:plural	взѧша	взѧ́ша	v06-manual-semantic-vzeti,v06-manual-alypy-vzeti,v06-manual-alypy-vzesha,v06-manual-target-vzesha	synodal-attestation	synodal-russian
 synodal:verb:v06-vzeti	aorist:third:singular	взѧ	взѧ̀	v06-manual-semantic-vzeti,v06-manual-alypy-vzeti,v06-manual-target-vze	synodal-attestation	synodal-russian

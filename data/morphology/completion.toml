@@ -665,21 +665,21 @@ id = "syn.adjective.positive-comparison"
 recension = "synodal-russian"
 category = "adjective"
 part_of_speech = "adjective"
-scope = "Hard, soft, and velar positive short/long adjectives, typed short-masculine stem alternants, full comparative/superlative, and the complete short-comparative declension."
+scope = "Hard, soft, velar, and possessive positive short/long adjectives, typed short-masculine stem alternants, full comparative/superlative, and the complete short-comparative declension."
 profiles = ["abstract", "expanded", "expanded-accentless"]
-features = ["class=hard|soft|velar", "short-masculine-stem=typed-optional", "form=short|long", "degree=positive|comparative|superlative", "case=7", "number=3", "gender=3", "animacy=2"]
-subtypes = ["short-hard-positive", "short-soft-positive", "short-velar-positive", "short-masculine-principal-part", "long-hard-positive", "long-soft-positive", "long-velar-positive", "long-comparative", "long-superlative", "short-comparative"]
+features = ["class=hard|soft|velar|possessive-hard|possessive-soft|possessive-ii", "short-masculine-stem=typed-optional", "form=short|long", "degree=positive|comparative|superlative", "case=7", "number=3", "gender=3", "animacy=2"]
+subtypes = ["short-hard-positive", "short-soft-positive", "short-velar-positive", "short-possessive-ov-ev", "short-possessive-soft", "short-possessive-ii", "long-possessive-ii", "short-masculine-principal-part", "long-hard-positive", "long-soft-positive", "long-velar-positive", "long-comparative", "long-superlative", "short-comparative"]
 realization = "synthetic"
 state = "productive-complete"
 implementation_kind = "productive"
-rule_ids = ["SYN-ADJ-SHORT-HARD-ALYPY-53", "SYN-ADJ-SHORT-SOFT-ALYPY-53", "SYN-ADJ-SHORT-VELAR-ALYPY-53-57", "SYN-ADJ-SHORT-MASCULINE-STEM-ALYPY-52", "SYN-ADJ-LONG-HARD-ALYPY-57", "SYN-ADJ-LONG-SOFT-ALYPY-57", "SYN-ADJ-LONG-VELAR-ALYPY-57", "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58", "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59", "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60"]
+rule_ids = ["SYN-ADJ-SHORT-HARD-ALYPY-53", "SYN-ADJ-SHORT-SOFT-ALYPY-53", "SYN-ADJ-SHORT-VELAR-ALYPY-53-57", "SYN-ADJ-POSSESSIVE-OV-EV-SHORT-ALYPY-50-53", "SYN-ADJ-POSSESSIVE-SOFT-SHORT-ALYPY-50-53", "SYN-ADJ-POSSESSIVE-II-SHORT-ALYPY-56", "SYN-ADJ-POSSESSIVE-II-LONG-ALYPY-56", "SYN-ADJ-SHORT-MASCULINE-STEM-ALYPY-52", "SYN-ADJ-LONG-HARD-ALYPY-57", "SYN-ADJ-LONG-SOFT-ALYPY-57", "SYN-ADJ-LONG-VELAR-ALYPY-57", "SYN-ADJ-COMPARATIVE-LONG-ALYPY-58", "SYN-ADJ-SUPERLATIVE-LONG-ALYPY-59", "SYN-ADJ-COMPARATIVE-SHORT-ALYPY-58-60"]
 sources = ["alypy-gamanovich-grammar-web-2023"]
-citation = "Alypy §§52–60; docs/SYNODAL_MORPHOLOGY.md"
-required_metadata = ["lemma", "stem", "hard/soft/velar class", "optional typed short-masculine stem and formation", "independent comparison stem/formation where required", "agreement features"]
-valid_inventory = "Complete documented positive and comparison agreement inventories, including source-bounded velar palatalization and typed -нн- reduction/mobile-е at the masculine short citation edge. The §60 short-comparative table covers all 72 canonical case × number × gender cells including vocatives and accusative animacy requests, with its source-ordered citation and masculine-plural variants."
-invalid_inventory = "Wrong velar stem edge, unmatched short-masculine stem/formation, missing or suffix-inconsistent comparison stem/formation, and contradictory participle degree."
+citation = "Alypy §§50–60; docs/SYNODAL_MORPHOLOGY.md"
+required_metadata = ["lemma", "stem", "hard/soft/velar or possessive class", "optional typed short-masculine stem and formation", "independent comparison stem/formation where required", "agreement features"]
+valid_inventory = "Complete documented positive and comparison agreement inventories, including source-bounded velar palatalization, typed -нн- reduction/mobile-е at the masculine short citation edge, the short possessive -овъ/-евъ and soft-consonant profiles, and the complete possessive -їй short table plus its bounded occasional long forms. The §60 short-comparative table covers all 72 canonical case × number × gender cells including vocatives and accusative animacy requests, with its source-ordered citation and masculine-plural variants."
+invalid_inventory = "Wrong velar or possessive stem edge, unmatched short-masculine stem/formation, ordinary long forms for short-only possessives, comparison of possessives, missing or suffix-inconsistent comparison stem/formation, and contradictory participle degree."
 implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
-tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#alpy_52_short_masculine_stem_formations_are_typed", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_57_velar_adjective_table_controls_endings_and_palatalization", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_60_complete_short_comparison_golden", "crates/synodal-church-slavonic-core/src/morphology.rs#declines_comparison_stem_with_alypy_58_mixed_endings", "crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#alpy_50_56_possessive_adjective_contracts_are_complete_and_bounded", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_52_short_masculine_stem_formations_are_typed", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_57_velar_adjective_table_controls_endings_and_palatalization", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_60_complete_short_comparison_golden", "crates/synodal-church-slavonic-core/src/morphology.rs#declines_comparison_stem_with_alypy_58_mixed_endings", "crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete"]
 evidence_status = "normative productive prediction"
 rationale = "Every licensed positive/comparison class has strict stem metadata and exhaustive inventories; cell-scoped velar and short-masculine alternations are typed instead of inferred from arbitrary spelling."
 
@@ -865,13 +865,13 @@ implementation_kind = "productive-present-shape-with-exact-contextual-and-irregu
 rule_ids = ["SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84", "SYN-VERB-FUTURE-EXACT", "SYN-REGISTRY-IRREGULAR-OVERRIDE"]
 sources = ["alypy-gamanovich-grammar-web-2023", "pletneva-kravetsky-church-slavonic-2005", "synodal-target-text-union"]
 citation = "Alypy §§84–85; Pletneva and Kravetsky lesson 13; Alypy §§81, 103–104 irregular tables; locked target texts"
-required_metadata = ["stable identity", "aspect", "complete independently supplied present-shaped principal parts, or a complete exact irregular table", "exact contextual evidence for a non-perfective simple-future reading"]
-valid_inventory = "Every person × singular/dual/plural cell of an independently classified perfective verb; complete exact suppletive tables; and exact cell-specific contextual future readings for imperfective or biaspectual verbs."
-invalid_inventory = "Unknown aspect; missing 1sg, medial stem, or 3pl principal part; non-perfective future typing without contextual/exact evidence; and incomplete irregular overrides."
+required_metadata = ["stable identity", "aspect", "complete independently supplied present-shaped principal parts, a complete independent future 1sg/stem/3pl triple, or a complete exact irregular table", "exact contextual evidence for a non-perfective simple-future reading"]
+valid_inventory = "Every person × singular/dual/plural cell of an independently classified perfective verb; an independent complete suppletive future triple such as Alypy §104 взѧти возмꙋ : возмꙋтъ alongside its distinct вземлю : вземлютъ present; complete exact suppletive tables; and exact cell-specific contextual future readings for imperfective or biaspectual verbs."
+invalid_inventory = "Unknown aspect; missing 1sg, medial stem, or 3pl principal part; a partially supplied independent future triple; non-perfective future typing without contextual/exact evidence; and incomplete irregular overrides."
 implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/kernel.rs", "crates/synodal-church-slavonic/src/spec.rs", "crates/synodal-church-slavonic/src/resolver.rs", "data/synodal/exact_forms.tsv"]
-tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#simple_future_is_the_complete_perfective_present_shape", "crates/synodal-church-slavonic/src/spec.rs#perfective_spec_exposes_the_complete_productive_simple_future", "crates/synodal-church-slavonic/src/lib.rs#byti_future_is_an_exact_normative_table", "crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#simple_future_is_the_complete_perfective_present_shape", "crates/synodal-church-slavonic/src/spec.rs#perfective_spec_exposes_the_complete_productive_simple_future", "crates/synodal-church-slavonic/src/lib.rs#alpy_104_remaining_curated_verbs_have_typed_complete_backgrounds", "crates/synodal-church-slavonic/src/lib.rs#byti_future_is_an_exact_normative_table", "crates/synodal-church-slavonic/src/lib.rs#capabilities_report_actual_supported_systems"]
 evidence_status = "normative productive prediction for perfectives; exact provenance for contextual and irregular cells"
-rationale = "The sources agree that simple-future morphology is the present-shaped nine-cell series. Perfective aspect licenses the complete productive temporal interpretation, while the documented non-perfective/contextual exceptions fail as evidence-incomplete unless an exact override supplies that reading. The complete быти and да́ти futures and all reviewed sparse irregular cells retain exact-first precedence."
+rationale = "The sources agree that simple-future morphology uses the present-shaped nine-cell ending series. Perfective aspect licenses the complete productive temporal interpretation. Most lexemes reuse the present principal-part triple; the optional independent future triple preserves source-explicit suppletion such as Alypy §104 вземлютъ (present) versus возмꙋтъ (future). Documented non-perfective/contextual exceptions fail as evidence-incomplete unless an exact override supplies that reading. The complete быти and да́ти futures and all reviewed sparse irregular cells retain exact-first precedence."
 
 [[system]]
 id = "syn.verb.past-underspecified"
@@ -912,12 +912,12 @@ state = "productive-complete"
 implementation_kind = "productive"
 rule_ids = ["SYN-VERB-IMPERATIVE-ALYPY-93", "SYN-VERB-INFINITIVE-LEXICAL", "SYN-VERB-LPART-ALYPY-97"]
 sources = ["alypy-gamanovich-grammar-web-2023"]
-citation = "Alypy §§79, 93, 97"
-required_metadata = ["lexical infinitive", "imperative stem/formation", "l-participle stem"]
-valid_inventory = "Six synthetic imperative cells, lexical infinitive, and gender × number l-participle cells."
+citation = "Alypy §§79, 93, 97, 104"
+required_metadata = ["lexical infinitive", "imperative stem/formation", "general l-participle stem", "optional independent masculine-singular l-participle stem"]
+valid_inventory = "Six synthetic imperative cells, lexical infinitive, and all nine gender × number l-participle cells, including source-typed mobile-vowel citation forms such as шелъ : шли."
 invalid_inventory = "1sg/3du/3pl synthetic imperative and missing independent stems."
 implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs"]
-tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#declines_independently_specified_participle_stems", "crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#alpy_104_mobile_vowel_l_participle_keeps_two_typed_stems", "crates/synodal-church-slavonic-core/src/morphology.rs#declines_independently_specified_participle_stems", "crates/synodal-church-slavonic/src/spec.rs#typed_specs_reject_contradictory_formation_metadata", "crates/synodal-church-slavonic-core/src/morphology.rs#productive_rule_inventory_contracts_are_complete"]
 evidence_status = "normative productive prediction"
 rationale = "The bounded word systems and invalid imperative inventory are fully typed."
 
@@ -1118,18 +1118,18 @@ profiles = ["all"]
 features = ["identity=stable", "classification=productive|irregular|defective|indeclinable|ambiguous|excluded", "provenance=complete"]
 subtypes = ["productive", "closed-irregular", "defective", "indeclinable", "ambiguous", "disputed", "out-of-scope"]
 realization = "lexical-metadata"
-state = "implementation-missing"
-implementation_kind = "reviewed-registry-partial"
+state = "productive-complete"
+implementation_kind = "exhaustive-locked-source-union"
 rule_ids = ["SYN-LEXICON-SOURCE-UNION-1"]
 sources = ["alypy-gamanovich-grammar-web-2023", "russian-national-corpus-church-slavonic", "synodal-target-text-union", "dyachenko-1900-scan"]
 citation = "reports/synodal-lexical-union.md and docs/SYNODAL_MORPHOLOGY.md current reviewed lexical surface."
 required_metadata = ["stable identity", "part of speech", "class/principal parts", "restrictions", "accent", "evidence"]
 valid_inventory = "All 1,258 locked source claims: 229 curated seed rows, 831 admitted or rejected cross-source reviews, and 198 preserved cross-source proposals."
 invalid_inventory = "Unannotated corpus token types are evaluation witnesses rather than stable lemma/POS identities; other-recension, non-inflectional, ambiguous, disputed, and rejected claims remain explicit classifications."
-implementation = ["crates/xtask/src/synodal_lexical_union.rs", "data/synodal/lexemes.tsv", "data/synodal/principal_parts.tsv", "data/synodal/lexical_reviews.tsv", "data/synodal/lexical_source_decisions.tsv", "data/synodal/lexical_source_claims.tsv", "reports/synodal-lexical-review-queue.tsv", "reports/synodal-lexical-union.json", "reports/synodal-lexical-union.md"]
-tests = ["crates/synodal-church-slavonic-extractor/src/lib.rs#productive_lexical_upgrades_must_preserve_reviewed_identity", "crates/xtask/src/synodal_lexical_union.rs#final_support_states_match_final_classifications"]
-evidence_status = "Exhaustive deterministic 1,258-claim source union with 852 evidence-final ambiguities/disputes, 82 explicit exclusions, and nine visible implementation gaps."
-gap = "Replace the nine curated exact-only gaps with complete typed specifications: three possessive/relational adjectives, Israel and thousand nominal paradigms, and four irregular verbs."
+implementation = ["crates/synodal-church-slavonic-core/src/morphology.rs", "crates/synodal-church-slavonic/src/registry.rs", "crates/synodal-church-slavonic/src/lib.rs", "crates/xtask/src/synodal_lexical_union.rs", "data/synodal/lexemes.tsv", "data/synodal/principal_parts.tsv", "data/synodal/verb_defectiveness.tsv", "data/synodal/lexical_reviews.tsv", "data/synodal/lexical_source_decisions.tsv", "data/synodal/lexical_source_claims.tsv", "reports/synodal-lexical-review-queue.tsv", "reports/synodal-lexical-union.json", "reports/synodal-lexical-union.md"]
+tests = ["crates/synodal-church-slavonic-core/src/morphology.rs#alpy_50_56_possessive_adjective_contracts_are_complete_and_bounded", "crates/synodal-church-slavonic-core/src/morphology.rs#alpy_104_mobile_vowel_l_participle_keeps_two_typed_stems", "crates/synodal-church-slavonic/src/lib.rs#curated_possessives_israel_and_thousand_use_productive_backgrounds", "crates/synodal-church-slavonic/src/lib.rs#alpy_104_remaining_curated_verbs_have_typed_complete_backgrounds", "crates/synodal-church-slavonic-extractor/src/lib.rs#productive_lexical_upgrades_must_preserve_reviewed_identity", "crates/xtask/src/synodal_lexical_union.rs#final_support_states_match_final_classifications"]
+evidence_status = "Exhaustive deterministic 1,258-claim source union with 852 evidence-final ambiguities/disputes, 82 explicit exclusions, 324 implemented claims, and zero implementation gaps."
+rationale = "Every claim in the locked denominator has a final support state. The five formerly exact-only nominal identities now have source-typed productive classes, the three open irregular verbs have independent system principal parts, and достоꙗти has a source-closed defective inventory. Ambiguous, disputed, invariant, and excluded claims remain explicit final classifications rather than guessed paradigms."
 
 [[system]]
 id = "syn.invariant-parts-of-speech"

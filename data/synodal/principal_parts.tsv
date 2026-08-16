@@ -3,6 +3,7 @@ synodal:adjective:blagoslovenn	short-masculine-stem	благословен	doubl
 synodal:adjective:blazhenn	short-masculine-stem	блажен	double-n-reduction	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
 synodal:adjective:bozhestvenn	short-masculine-stem	божествен	double-n-reduction	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
 synodal:adjective:chestn	short-masculine-stem	честен	mobile-e-insertion	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
+synodal:adjective:gospoden	short-masculine-stem	господен	mobile-e-insertion	alypy-50-possessive-adjectives,v05-alypy-gospoden	synodal-russian
 synodal:adjective:prepodobn	short-masculine-stem	преподобен	mobile-e-insertion	alypy-3-abbreviation-inventory,alypy-52-short-adjectives	synodal-russian
 synodal:adjective:wikt-a9cef2fd54e7	comparative-stem	унш	ancient-hard	alypy-58-suppletive-good-comparison	synodal-russian
 synodal:verb:nesti	present-first-singular	несꙋ		alypy-82-nesti	synodal-russian
@@ -78,3 +79,32 @@ synodal:verb:wikt-070505e82800	present-first-singular	хощꙋ		alypy-104-hotet
 synodal:verb:wikt-070505e82800	present-third-plural	хотѧтъ		alypy-104-hoteti-present	synodal-russian
 synodal:verb:v07-35ce5d83583f3639	present-first-singular	начнꙋ		alypy-85-nachati-future	synodal-russian
 synodal:verb:v07-35ce5d83583f3639	present-third-plural	начнꙋтъ		alypy-85-nachati-future	synodal-russian
+synodal:verb:v06-iziti	present-first-singular	изыдꙋ		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-iziti	present-third-plural	изыдꙋтъ		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-iziti	aorist-stem	изыд	consonant	alypy-104-iti-family	synodal-russian
+synodal:verb:v06-iziti	imperative-stem	изыд	first-unpalatalized	alypy-104-iti-family	synodal-russian
+synodal:verb:v06-iziti	l-participle-stem	изш		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-iziti	l-participle-masculine-singular-stem	изше		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-iziti	past-active-participle-short-stem	изшедш	hard:past-consonant	alypy-104-iti-family	synodal-russian
+synodal:verb:v06-iziti	past-active-participle-long-stem	изшедш	hard	alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzeti	present-first-singular	вземлю		alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	present-third-plural	вземлютъ		alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	future-stem	возм		alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	future-first-singular	возмꙋ		alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	future-third-plural	возмꙋтъ		alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	aorist-stem	взѧ	vowel	alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	imperative-stem	возм	first-unpalatalized	alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	l-participle-stem	взѧ		alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	past-active-participle-short-stem	вземш	hard:past-consonant	alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	past-active-participle-long-stem	вземш	hard	alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	past-passive-participle-short-stem	взѧт	hard	alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	past-passive-participle-long-stem	взѧт	hard	alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzeti	verbal-noun-ie-platform	взѧт	past-passive-ie	alypy-104-yati-family	synodal-russian
+synodal:verb:v06-vzyti	present-first-singular	взыдꙋ		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzyti	present-third-plural	взыдꙋтъ		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzyti	aorist-stem	взыд	consonant	alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzyti	imperative-stem	взыд	first-unpalatalized	alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzyti	l-participle-stem	возш		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzyti	l-participle-masculine-singular-stem	возше		alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzyti	past-active-participle-short-stem	возшедш	hard:past-consonant	alypy-104-iti-family	synodal-russian
+synodal:verb:v06-vzyti	past-active-participle-long-stem	возшедш	hard	alypy-104-iti-family	synodal-russian

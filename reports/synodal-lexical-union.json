@@ -4,7 +4,7 @@
   "input_artifacts": [
     {
       "path": "data/synodal/lexemes.tsv",
-      "sha256": "afc089cecaa0ef862e336c150dc895e8c14a5f2bbcbf2a1a3e175cef7f3a7152",
+      "sha256": "9a7c0aac8735bbc6d6ef39b0facd073d8bc2a230c99c47f8cf168d45fd91b373",
       "claim_policy": "every curated seed row"
     },
     {
@@ -19,7 +19,7 @@
     },
     {
       "path": "data/synodal/lexical_source_decisions.tsv",
-      "sha256": "3a87390ff31e85df0f9fb4a04ff025c828546722b5efa214c9b9e0cc979638d6",
+      "sha256": "5f70cf266a6f7090406bd680534d5d6777035ffb1117bca59e33f3ca5def1e8c",
       "claim_policy": "every exceptional exact or classless seed row"
     }
   ],
@@ -46,22 +46,16 @@
   },
   "by_classification": {
     "ambiguous": 704,
-    "closed-irregular": 4,
+    "closed-irregular": 1,
     "disputed": 148,
     "indeclinable": 99,
     "out-of-scope": 82,
-    "productive": 221
+    "productive": 224
   },
   "by_support_state": {
     "evidence-final": 852,
-    "implementation-missing": 9,
-    "implemented": 315,
+    "implemented": 324,
     "not-applicable": 82
   },
-  "implementation_gaps_by_route": {
-    "irregular-verb-specification": 4,
-    "possessive-adjective-specification": 3,
-    "proper-name-noun-specification": 1,
-    "thousand-numeral-noun-specification": 1
-  }
+  "implementation_gaps_by_route": {}
 }

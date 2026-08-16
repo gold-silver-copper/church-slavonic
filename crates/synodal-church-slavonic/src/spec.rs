@@ -886,6 +886,9 @@ impl VerbSpec {
                     present_stem: None,
                     present_first_singular: None,
                     present_third_plural: None,
+                    future_stem: None,
+                    future_first_singular: None,
+                    future_third_plural: None,
                     imperfect_stem: None,
                     imperfect_formation: None,
                     aorist_stem: None,
@@ -893,6 +896,7 @@ impl VerbSpec {
                     imperative_stem: None,
                     imperative_formation: None,
                     l_participle_stem: None,
+                    l_participle_masculine_singular_stem: None,
                     present_active_participle: None,
                     past_active_participle: None,
                     present_passive_participle: None,
@@ -1016,6 +1020,29 @@ impl VerbSpec {
             self.lexeme.imperative_formation.is_some(),
             "imperative stem and formation",
         )?;
+        let future_part_count = [
+            self.lexeme.future_stem.is_some(),
+            self.lexeme.future_first_singular.is_some(),
+            self.lexeme.future_third_plural.is_some(),
+        ]
+        .into_iter()
+        .filter(|present| *present)
+        .count();
+        if !matches!(future_part_count, 0 | 3) {
+            return Err(Error::ContradictoryMetadata {
+                reason: "future stem, first singular, and third plural must be supplied together"
+                    .into(),
+            });
+        }
+        if self.lexeme.l_participle_masculine_singular_stem.is_some()
+            && self.lexeme.l_participle_stem.is_none()
+        {
+            return Err(Error::ContradictoryMetadata {
+                reason:
+                    "an l-participle masculine-singular stem requires the general l-participle stem"
+                        .into(),
+            });
+        }
         if self.lexeme.aspect == Aspect::Perfective && self.lexeme.imperfect_formation.is_some() {
             return Err(Error::ContradictoryMetadata {
                 reason: "a perfective specification cannot license a productive imperfect".into(),
@@ -1079,7 +1106,14 @@ impl VerbSpecBuilder {
     word_setter!(present_stem, present_stem);
     word_setter!(present_first_singular, present_first_singular);
     word_setter!(present_third_plural, present_third_plural);
+    word_setter!(future_stem, future_stem);
+    word_setter!(future_first_singular, future_first_singular);
+    word_setter!(future_third_plural, future_third_plural);
     word_setter!(l_participle_stem, l_participle_stem);
+    word_setter!(
+        l_participle_masculine_singular_stem,
+        l_participle_masculine_singular_stem
+    );
 
     /// Installs a complete, independently specified present series atomically.
     #[must_use]
@@ -1099,6 +1133,30 @@ impl VerbSpecBuilder {
         third_plural: impl Into<String>,
     ) -> Result<Self> {
         Ok(self.present_parts(PresentPrincipalParts::parse(
+            stem,
+            first_singular,
+            third_plural,
+        )?))
+    }
+
+    /// Installs a complete, independently suppletive simple-future series.
+    /// Perfective verbs without this triple continue to reuse their present
+    /// principal parts, as in the regular Alypy §84 pattern.
+    #[must_use]
+    pub fn future_parts(mut self, parts: PresentPrincipalParts) -> Self {
+        self.spec.lexeme.future_stem = Some(parts.stem);
+        self.spec.lexeme.future_first_singular = Some(parts.first_singular);
+        self.spec.lexeme.future_third_plural = Some(parts.third_plural);
+        self
+    }
+
+    pub fn future_series(
+        self,
+        stem: impl Into<String>,
+        first_singular: impl Into<String>,
+        third_plural: impl Into<String>,
+    ) -> Result<Self> {
+        Ok(self.future_parts(PresentPrincipalParts::parse(
             stem,
             first_singular,
             third_plural,
@@ -2105,6 +2163,58 @@ mod tests {
             .primary_text(),
             "понесетъ"
         );
+
+        let suppletive = VerbSpec::builder(
+            "възѧти",
+            Aspect::Perfective,
+            VerbConjugation::FirstPalatalized,
+            source(),
+        )
+        .expect("builder")
+        .present_series("вземл", "вземлю", "вземлютъ")
+        .expect("present series")
+        .future_series("возм", "возмꙋ", "возмꙋтъ")
+        .expect("future series")
+        .build()
+        .expect("suppletive future verb");
+        assert_eq!(
+            suppletive
+                .form(GrammarCell::FiniteVerb(
+                    synodal_church_slavonic_core::FiniteVerbCell {
+                        tense: FiniteTense::Present,
+                        person: Person::Second,
+                        number: Number::Singular,
+                    }
+                ))
+                .expect("present form")
+                .primary_text(),
+            "вземлеши"
+        );
+        assert_eq!(
+            suppletive
+                .form(GrammarCell::FiniteVerb(
+                    synodal_church_slavonic_core::FiniteVerbCell {
+                        tense: FiniteTense::Future,
+                        person: Person::Second,
+                        number: Number::Singular,
+                    }
+                ))
+                .expect("future form")
+                .primary_text(),
+            "возмеши"
+        );
+
+        let partial = VerbSpec::builder(
+            "възѧти",
+            Aspect::Perfective,
+            VerbConjugation::FirstPalatalized,
+            source(),
+        )
+        .expect("builder")
+        .future_stem("возм")
+        .expect("future stem")
+        .build();
+        assert!(matches!(partial, Err(Error::ContradictoryMetadata { .. })));
     }
 
     #[test]
@@ -2296,6 +2406,20 @@ mod tests {
             .expect("metadata")
             .build(),
             Err(Error::ContradictoryMetadata { .. })
+        ));
+        assert!(matches!(
+            VerbSpec::builder(
+                "изити",
+                Aspect::Perfective,
+                VerbConjugation::FirstUnpalatalized,
+                source(),
+            )
+            .expect("builder")
+            .l_participle_masculine_singular_stem("изше")
+            .expect("mobile-vowel edge")
+            .build(),
+            Err(Error::ContradictoryMetadata { reason })
+                if reason.contains("general l-participle stem")
         ));
         let empty_reason = DefectiveCell::evidence_incomplete(
             GrammarCell::Noun(NounCell {

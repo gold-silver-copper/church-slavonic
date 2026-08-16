@@ -9,8 +9,8 @@ use synodal_church_slavonic_core::{
     PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
     PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result,
     ShortMasculineStemFormation, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
-    normalize_lookup_accentless, validate_adjective_lexeme, validate_determiner_lexeme,
-    validate_numeral_lexeme, validate_pronoun_lexeme,
+    VerbalNounPrincipalPart, normalize_lookup_accentless, validate_adjective_lexeme,
+    validate_determiner_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -449,6 +449,9 @@ fn parse_metadata_field(value: &str) -> Result<synodal_church_slavonic_core::Met
         "present-stem" => MetadataField::PresentStem,
         "present-first-singular" => MetadataField::PresentFirstSingular,
         "present-third-plural" => MetadataField::PresentThirdPlural,
+        "future-stem" => MetadataField::FutureStem,
+        "future-first-singular" => MetadataField::FutureFirstSingular,
+        "future-third-plural" => MetadataField::FutureThirdPlural,
         "imperfect-stem" => MetadataField::ImperfectStem,
         "aorist-stem" => MetadataField::AoristStem,
         "aorist-formation" => MetadataField::AoristFormation,
@@ -1081,6 +1084,9 @@ fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveL
             "hard-short" => AdjectiveClass::Hard,
             "soft-short" => AdjectiveClass::Soft,
             "velar-short" => AdjectiveClass::Velar,
+            "possessive-hard-short" => AdjectiveClass::PossessiveHard,
+            "possessive-soft-short" => AdjectiveClass::PossessiveSoft,
+            "possessive-ii" => AdjectiveClass::PossessiveIi,
             value => return invalid_metadata("adjective class", value),
         },
         short_masculine_stem: short_masculine
@@ -1207,13 +1213,16 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
         }))
     };
 
-    Ok(VerbLexeme {
+    let lexeme = VerbLexeme {
         lemma: SynodalWord::parse(row.0[1])?,
         aspect,
         conjugation,
         present_stem: nonempty_word(row.0[4])?,
         present_first_singular: parsed_part("present-first-singular")?,
         present_third_plural: parsed_part("present-third-plural")?,
+        future_stem: parsed_part("future-stem")?,
+        future_first_singular: parsed_part("future-first-singular")?,
+        future_third_plural: parsed_part("future-third-plural")?,
         imperfect_stem: parsed_part("imperfect-stem")?,
         imperfect_formation: part("imperfect-stem")
             .map(|entry| parse_imperfect(entry.0[3]))
@@ -1227,12 +1236,32 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
             .map(|entry| parse_imperative(entry.0[3]))
             .transpose()?,
         l_participle_stem: parsed_part("l-participle-stem")?,
+        l_participle_masculine_singular_stem: parsed_part("l-participle-masculine-singular-stem")?,
         present_active_participle: participle_part("present-active-participle")?,
         past_active_participle: participle_part("past-active-participle")?,
         present_passive_participle: participle_part("present-passive-participle")?,
         past_passive_participle: participle_part("past-passive-participle")?,
-        verbal_noun: None,
-    })
+        verbal_noun: part("verbal-noun-ie-platform")
+            .map(|entry| VerbalNounPrincipalPart::past_passive_ie(entry.0[2]))
+            .transpose()?,
+    };
+    let future_part_count = [
+        lexeme.future_stem.is_some(),
+        lexeme.future_first_singular.is_some(),
+        lexeme.future_third_plural.is_some(),
+    ]
+    .into_iter()
+    .filter(|present| *present)
+    .count();
+    if !matches!(future_part_count, 0 | 3) {
+        return Err(Error::ContradictoryMetadata {
+            reason: format!(
+                "independent future principal parts for {} must be supplied as a complete triple",
+                id.as_str()
+            ),
+        });
+    }
+    Ok(lexeme)
 }
 
 pub(crate) fn all_lexemes() -> Result<Vec<LexemeSummary>> {
