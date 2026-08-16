@@ -1096,16 +1096,16 @@ features = ["accent-paradigm=cell-scoped", "breathing=typed", "positional-letter
 subtypes = ["fixed-accent", "mobile-accent", "irregular-accent", "positional-letters", "nomina-sacra", "other-abbreviations", "titla"]
 realization = "presentation"
 state = "implementation-missing"
-implementation_kind = "reviewed-exact-and-four-accent-paradigms"
-rule_ids = ["synodal-accent:mudr-fixed-stem", "synodal-accent:mati-fixed-stem", "synodal-accent:imya-mobile", "synodal-accent:nebo-mobile", "SYN-LITURGICAL-COMPLETE-PENDING"]
-sources = ["alypy-gamanovich-grammar-web-2023", "unicode-tn41-revision-1", "russian-national-corpus-church-slavonic", "synodal-target-text-union"]
+implementation_kind = "reviewed-exact-six-accent-paradigms-and-productive-prosodic-context"
+rule_ids = ["synodal-accent:mudr-fixed-stem", "synodal-accent:vsyacheskii-fixed-stem", "synodal-accent:vsyak-fixed-stem", "synodal-accent:mati-fixed-stem", "synodal-accent:imya-mobile", "synodal-accent:nebo-mobile", "SYN-ORTH-FINAL-ACUTE-BEFORE-ENCLITIC-ALYPY-3", "SYN-LITURGICAL-COMPLETE-PENDING"]
+sources = ["alypy-gamanovich-grammar-web-2023", "unicode-tn41-revision-1", "russian-national-corpus-church-slavonic", "polyakov-church-slavonic-grammatical-dictionary", "synodal-target-text-union"]
 citation = "docs/SYNODAL_ORTHOGRAPHY.md current presentation limits"
 required_metadata = ["complete lexical accent paradigm", "breathing", "positional/abbreviation semantic identity", "exact printed overrides"]
-valid_inventory = "Four lexical accent paradigms and individually reviewed abbreviation cells today; language-wide inventory incomplete."
+valid_inventory = "Six lexical accent paradigms, productive initial psili and final-vowel accent conditioning, and 159 exact abbreviation cells across 25 semantic identities today; language-wide lexical accent, positional-letter, and abbreviation-family inventories remain incomplete."
 invalid_inventory = "Stress guessing, blind substring contraction, or automatic positional rewrite across Alypy exceptions."
 implementation = ["crates/synodal-church-slavonic-core/src/accent.rs", "crates/synodal-church-slavonic/src/abbreviation.rs", "crates/synodal-church-slavonic-core/src/orthography.rs"]
-tests = ["crates/synodal-church-slavonic-core/src/accent.rs#noun_case_scopes_are_disjoint_and_detect_overlap", "crates/synodal-church-slavonic/src/abbreviation.rs#contraction_requires_semantic_identity"]
-evidence_status = "small reviewed productive/exact subset"
+tests = ["crates/synodal-church-slavonic-core/src/accent.rs#noun_case_scopes_are_disjoint_and_detect_overlap", "crates/synodal-church-slavonic-core/src/accent.rs#final_vowel_accent_is_conditioned_by_the_closed_enclitic_environment", "crates/synodal-church-slavonic/src/phrases.rs#postpositive_particles_condition_only_a_word_final_grave", "crates/synodal-church-slavonic/src/abbreviation.rs#contraction_requires_semantic_identity"]
+evidence_status = "language-wide prosodic context plus a small reviewed lexical productive/exact subset"
 gap = "Classify every lexical accent/printed pattern in the source union and complete positional and abbreviation families without guessing."
 
 [[system]]

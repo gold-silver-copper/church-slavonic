@@ -47,6 +47,7 @@ pub const APPROVED_SOURCE_RECENSIONS: &[(&str, &str)] = &[
     ),
     ("ponomar-library-catalog-2026-08-09", "synodal-russian"),
     ("russian-national-corpus-church-slavonic", "mixed"),
+    ("polyakov-church-slavonic-grammatical-dictionary", "mixed"),
     ("ponomar-modern-church-slavonic-corpus-2016", "mixed"),
     ("alypy-gamanovich-grammar-web-2023", "synodal-russian"),
     ("dyachenko-1900-scan", "mixed"),

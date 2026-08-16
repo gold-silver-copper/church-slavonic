@@ -344,6 +344,24 @@ normalization = "normalization/synodal-corpora.toml"
 download_status = "metadata-only"
 
 [[synodal_source]]
+id = "polyakov-church-slavonic-grammatical-dictionary"
+name = "Polyakov Church Slavonic grammatical dictionary (corpus-based)"
+url = "http://dic.feb-web.ru/slavonic/dicgram/index1.htm"
+retrieved_at = "2026-08-15"
+revision = "created 2013; substantially revised and corrected 2015-2017; server artifact last modified 2019-01-09"
+sha256 = ""
+source_recension = "mixed"
+content_kind = "corpus-derived grammatical dictionary"
+format = "HTML"
+license = "No bulk redistribution license identified; consult the publisher before mirroring"
+redistribution = "metadata-only"
+authority_roles = ["lexical", "accentual", "evaluation", "counterexample"]
+epistemic_roles = ["evaluation-only-evidence"]
+upstream_lineage = ["Russian National Corpus Church Slavonic corpus"]
+normalization = "normalization/synodal-corpora.toml"
+download_status = "metadata-only"
+
+[[synodal_source]]
 id = "ponomar-modern-church-slavonic-corpus-2016"
 name = "Slavonic Computing Initiative modern Church Slavonic corpus, frequency list, and dictionary"
 url = "https://sci.ponomar.net/tools.html"

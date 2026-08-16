@@ -759,6 +759,33 @@ conflicts = ["Mixed norms and unresolved homonymy require edition/profile filter
 access_status = "accessible-metadata"
 
 [[source]]
+id = "polyakov-church-slavonic-grammatical-dictionary"
+title = "Грамматический словарь церковнославянского языка (по материалам корпуса)"
+author_editor = "Alexey E. Polyakov"
+edition_revision = "created 2013; substantially revised and corrected 2015-2017; web artifact last modified 2019-01-09"
+publication_date = "2013; revision 2015-2017"
+publisher_institution = "Fundamental Digital Library of Russian Literature and Folklore; Russian National Corpus project lineage"
+stable_url = "http://dic.feb-web.ru/slavonic/dicgram/index1.htm"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["Russian", "Church Slavonic"]
+periods = ["corpus Church Slavonic across liturgical, patristic, biblical, typicon, and canon-law genres"]
+recensions = ["synodal-russian", "mixed"]
+orthographies = ["simplified Church Slavonic with lexical acute and kamora"]
+source_type = "corpus-derived grammatical dictionary"
+epistemic_roles = ["lexical-discovery", "accent-counterexample", "paradigm-crosscheck", "frequency"]
+authority_tier = 4
+authority_justification = "Its roughly 30,000 lexemes and 150,000 observed wordforms were manually corrected against the corpus, but the inventory is corpus-derived, orthographically simplified, and shares the Russian National Corpus lineage; it is evaluation evidence, not an independent normative grammar."
+license = "No bulk redistribution license identified on the reviewed resource page"
+redistribution = "metadata-only"
+upstream_lineage = ["russian-national-corpus-church-slavonic"]
+reviewed_sections = ["resource description", "alphabetical index", "sample lexical entries", "paradigm index"]
+rule_ids = ["SYN-ORTHOGRAPHY-POLYAKOV-EVALUATION"]
+impact = "Supplies a large externally maintained accented-form and grammatical-tag frontier for detecting lexical stress conflicts and missing paradigms. Its observed rows may validate or contradict output but cannot alone license unattested cells or traditional positional letters, breathings, and titla omitted by the simplified display orthography."
+conflicts = ["The dictionary uses acute or kamora to record stress class but omits traditional initial breathing and titlo realization; forms with several analyses remain visibly ambiguous.", "Because its data derives from the same RNC corpus, agreement with the RNC is one lineage, not independent confirmation."]
+access_status = "accessible-metadata"
+
+[[source]]
 id = "gorazd"
 title = "GORAZD Old Church Slavonic Digital Hub and Card Index"
 author_editor = "Czech Academy of Sciences digital lexicography project"
@@ -1097,3 +1124,23 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "Alypy §§85, 88–92, 101–102, 123–124, 146, 162–163 were reviewed as one closed analytic-construction contract. The source union adds Pletneva–Kravetsky lesson 13's full four-auxiliary compound-future table; Petrukhin independently crosschecks present, past, and future быти plus present-active participles and their biblical lineage; and the locked Acts 5:42 witness confirms не престаѧ́хꙋ ѹ҆ча́ще и҆ благовѣствꙋ́юще. Multilingual searches found no eligible competing target-recension rule contract. The implementation now types all documented auxiliary, order, agreement, ellipsis, passive-agent-government, and composite-participle subtypes, while leaving unrestricted sentence syntax outside the inflection engine. This contract-changing pass does not count toward convergence."
+
+[[discovery_pass]]
+id = "synodal-orthography-frontier-pass-15"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "German", "French", "Church Slavonic"]
+queries = [
+  "церковнославянские ударения придыхание титла сокращения позиционные буквы",
+  "словарь церковнославянских слов под титлами Карага",
+  "Polyakov grammatical dictionary Church Slavonic accent paradigms",
+  "Church Slavonic accent enclitic же бо ли abbreviations titla",
+  "Kirchenslawisch Akzent Enklitika Titla Abkürzungen Buchstabenvarianten",
+  "slavon liturgique accents enclitiques titlo abréviations variantes graphiques",
+]
+catalogs = ["Ponomar Alypy grammar", "Russian National Corpus Church Slavonic collection", "Polyakov/FEB grammatical dictionary", "Azbyka Smirnova and Karaga abbreviation inventories", "Unicode TN41", "locked Synodal target-text union", "multilingual scholarly discovery indexes"]
+new_sources = ["polyakov-church-slavonic-grammatical-dictionary"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "Alypy §§2–3 were reviewed end to end: psili is a language-wide initial-vowel rule; a word-final varia becomes acute before же, бо, ли and short personal or reflexive pronouns; the same written base can license or forbid titlo by semantics (the Christian God or angel versus an idol or evil spirit); and several positional-letter choices are lexical, grammatical, or semantic rather than blind character substitution. The engine now realizes automatic initial psili, types the closed accent environment, and constructs separate host-plus-particle phrases for all three named particles. Polyakov adds a roughly 30,000-lexeme, 150,000-form corpus-derived counterexample frontier for stress and paradigm coverage, but its simplified display omits breathings, titla, and fully traditional positional forms and shares the RNC lineage, so it is metadata-only evaluation evidence rather than an independent normative oracle. Karaga's compact contemporary abbreviation list is useful for inventory discovery but remains secondary, personal, and potentially pedagogically lineage-dependent; it was not imported without firmer bibliographic, legal, and lineage review. Full lexical accent classification, positional semantic classes, and productive abbreviation families remain open. This contract-changing pass does not count toward source-frontier convergence."

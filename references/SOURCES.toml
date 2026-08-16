@@ -272,6 +272,20 @@ authority_roles = ["lexical", "evaluation", "frequency"]
 upstream_lineage = []
 
 [[source]]
+id = "polyakov-church-slavonic-grammatical-dictionary"
+name = "Polyakov Church Slavonic grammatical dictionary (corpus-based)"
+url = "http://dic.feb-web.ru/slavonic/dicgram/index1.htm"
+revision = "created 2013; substantially revised and corrected 2015-2017; server artifact last modified 2019-01-09"
+source_recension = "mixed"
+content_kind = "corpus-derived grammatical dictionary"
+format = "HTML"
+license = "No bulk redistribution license identified; consult the publisher before mirroring"
+redistribution = "metadata-only"
+download_status = "metadata-only: public pages may be queried for evaluation, but no bulk snapshot is committed without explicit terms"
+authority_roles = ["lexical", "accentual", "evaluation", "counterexample"]
+upstream_lineage = ["Russian National Corpus Church Slavonic corpus"]
+
+[[source]]
 id = "ponomar-modern-church-slavonic-corpus-2016"
 name = "Slavonic Computing Initiative modern Church Slavonic corpus, frequency list, and dictionary"
 url = "https://sci.ponomar.net/tools.html"

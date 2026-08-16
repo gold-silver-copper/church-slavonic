@@ -3,9 +3,9 @@ use std::collections::BTreeSet;
 use synodal_church_slavonic_core::{
     AdjectiveForm, AdverbialParticipleFormation, AnalyticConstruction, Animacy, Aspect,
     AuthorityRole, Case, Comparison, CompoundAuxiliaryOrder, CompoundFutureAuxiliary,
-    ConditionalCopulaOrder, ConditionalFormation, CopulaOmissionContext, EpistemicRole, Error,
-    Evidence, EvidenceId, EvidenceKind, FormSet, Gender, GrammarCell, LexemeId,
-    ModalConditionalAuxiliary, NegativePronounBase, Number, OptativeFiniteSystem,
+    ConditionalCopulaOrder, ConditionalFormation, CopulaOmissionContext, EncliticParticle,
+    EpistemicRole, Error, Evidence, EvidenceId, EvidenceKind, FormSet, Gender, GrammarCell,
+    LexemeId, ModalConditionalAuxiliary, NegativePronounBase, Number, OptativeFiniteSystem,
     OrthographyProfile, ParticipleCell, ParticipleTense, ParticipleVoice, PassiveAgentGovernment,
     PassiveFormation, PerfectFormation, PeriphrasticFormation, PeriphrasticSemiAuxiliary,
     PeriphrasticTenseFormation, Person, PhraseFormation, PhraseOrder, PhraseRole, PhraseToken,
@@ -13,6 +13,7 @@ use synodal_church_slavonic_core::{
     PronounPostpositive, RealizedPhrase, Recension, Result, RuleId, SourceId, TraceStep,
     decline_pronoun,
 };
+use unicode_normalization::UnicodeNormalization;
 
 use crate::{Inflector, Noun, PartOfSpeech, Participle, Pronoun, Verb};
 
@@ -1586,6 +1587,119 @@ pub fn pronoun_enclitic_after_host_with(
     )
 }
 
+/// Joins a host and one of Alypy §3's closed postpositive particles. A
+/// word-final grave on the host becomes acute; nonfinal lexical stress is not
+/// moved. The particle remains a separately sourced token.
+pub fn enclitic_particle_after_host(
+    host: FormSet,
+    particle: EncliticParticle,
+) -> Result<RealizedPhrase> {
+    enclitic_particle_after_host_with(host, particle, Inflector::default())
+}
+
+pub fn enclitic_particle_after_host_with(
+    host: FormSet,
+    particle: EncliticParticle,
+    inflector: Inflector,
+) -> Result<RealizedPhrase> {
+    let host = transform_enclitic_particle_forms(host, "pre-enclitic-host-accent", |text| {
+        Ok(final_grave_to_acute(text))
+    })?;
+    let particle_id = match particle {
+        EncliticParticle::Zhe => "synodal:conjunction:wikt-d01902db4fbc",
+        EncliticParticle::Bo => "synodal:conjunction:wikt-b8c98d0a9447",
+        EncliticParticle::Li => "synodal:conjunction:li",
+    };
+    let particle = transform_enclitic_particle_forms(
+        inflector.form_by_id(&LexemeId::from(particle_id), GrammarCell::Indeclinable)?,
+        "postpositive-enclitic-particle",
+        |text| Ok(text.to_owned()),
+    )?;
+    RealizedPhrase::new(
+        AnalyticConstruction::EncliticParticle,
+        vec![
+            PhraseToken {
+                role: PhraseRole::Host,
+                forms: host,
+            },
+            PhraseToken {
+                role: PhraseRole::Particle,
+                forms: particle,
+            },
+        ],
+    )
+}
+
+fn transform_enclitic_particle_forms(
+    forms: FormSet,
+    stage: &'static str,
+    transform: impl Fn(&str) -> Result<String>,
+) -> Result<FormSet> {
+    let rule = RuleId::from("SYN-ORTH-FINAL-ACUTE-BEFORE-ENCLITIC-ALYPY-3");
+    let evidence = enclitic_particle_evidence();
+    let mut variants = Vec::with_capacity(forms.variants().len());
+    for source in forms.variants() {
+        let mut variant = source.clone();
+        let input = variant.printed.clone();
+        variant.printed = transform(&variant.printed)?;
+        variant.accented = variant.accented.as_deref().map(&transform).transpose()?;
+        variant.romanization = None;
+        if !variant.evidence.iter().any(|item| item.id == evidence.id) {
+            variant.evidence.push(evidence.clone());
+        }
+        let evidence_ids = variant
+            .evidence
+            .iter()
+            .map(|item| item.id.clone())
+            .collect();
+        variant.rule_trace.push(TraceStep {
+            rule: rule.clone(),
+            stage: stage.into(),
+            input,
+            output: variant.printed.clone(),
+            source_recension: Some(Recension::SynodalRussian),
+            target_recension: Recension::SynodalRussian,
+            mapping: None,
+            evidence: evidence_ids,
+        });
+        variants.push(variant);
+    }
+    FormSet::try_from_variants(variants)
+}
+
+fn final_grave_to_acute(text: &str) -> String {
+    let mut decomposed = text.nfd().collect::<Vec<_>>();
+    let Some(final_base) = decomposed.iter().rposition(|character| {
+        !matches!(
+            *character as u32,
+            0x0300..=0x036f | 0x0483..=0x0489 | 0x2de0..=0x2dff | 0xfe20..=0xfe2f
+        )
+    }) else {
+        return text.to_owned();
+    };
+    if is_synodal_vowel(decomposed[final_base]) {
+        for mark in &mut decomposed[final_base + 1..] {
+            if *mark == '\u{0300}' {
+                *mark = '\u{0301}';
+            }
+        }
+    }
+    decomposed.into_iter().nfc().collect()
+}
+
+fn enclitic_particle_evidence() -> Evidence {
+    Evidence {
+        id: EvidenceId::from("alypy-3-enclitic-accent"),
+        source: SourceId::from("alypy-gamanovich-grammar-web-2023"),
+        source_recension: Recension::SynodalRussian,
+        kind: EvidenceKind::NormativeRule,
+        authority_roles: vec![AuthorityRole::Grammatical, AuthorityRole::Accentual],
+        epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+        citation: "Alypy (Gamanovich), §3.a".into(),
+        note: Some("word-final acute before же, бо, or ли".into()),
+    }
+}
+
 /// Realizes the source-listed masculine singular inanimate accusative
 /// contractions `на(н)и → нань` and `въ(н)и → вонь` (Alypy §47).
 pub fn contracted_third_person_accusative(preposition: &str) -> Result<RealizedPhrase> {
@@ -2678,6 +2792,51 @@ mod tests {
         )
         .expect("logically stressed short pronoun");
         assert!(logical.primary_text().ends_with(" мѧ̀"));
+    }
+
+    #[test]
+    fn postpositive_particles_condition_only_a_word_final_grave() {
+        assert_eq!(final_grave_to_acute("землѧ̀"), "землѧ́");
+        assert_eq!(final_grave_to_acute("ма́ти"), "ма́ти");
+        assert_eq!(final_grave_to_acute("гра́дъ"), "гра́дъ");
+
+        let inflector = Inflector::builder()
+            .orthography(OrthographyProfile::SynodalLiturgical)
+            .build();
+        for (particle, expected) in [
+            (EncliticParticle::Zhe, "се́ же"),
+            (EncliticParticle::Bo, "се́ бо"),
+            (EncliticParticle::Li, "се́ ли"),
+        ] {
+            let host = inflector
+                .form_by_id(
+                    &LexemeId::from("synodal:interjection:se"),
+                    GrammarCell::Indeclinable,
+                )
+                .expect("reviewed host");
+            let phrase = enclitic_particle_after_host_with(host, particle, inflector)
+                .expect("typed postpositive particle");
+            assert_eq!(phrase.primary_text(), expected);
+            assert_eq!(
+                phrase.construction(),
+                AnalyticConstruction::EncliticParticle
+            );
+            assert_eq!(
+                phrase
+                    .tokens()
+                    .iter()
+                    .map(|token| token.role)
+                    .collect::<Vec<_>>(),
+                [PhraseRole::Host, PhraseRole::Particle]
+            );
+            assert!(phrase.tokens().iter().all(|token| {
+                token.forms.rule_traces().all(|trace| {
+                    trace.steps().iter().any(|step| {
+                        step.rule.as_ref() == "SYN-ORTH-FINAL-ACUTE-BEFORE-ENCLITIC-ALYPY-3"
+                    })
+                })
+            }));
+        }
     }
 
     #[test]

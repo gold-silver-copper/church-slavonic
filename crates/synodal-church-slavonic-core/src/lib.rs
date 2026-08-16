@@ -22,8 +22,8 @@ pub mod trace;
 pub mod transliteration;
 
 pub use accent::{
-    AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope, BreathingMark,
-    BreathingRule,
+    AccentEnclitic, AccentEnvironment, AccentMark, AccentParadigm, AccentPlacement, AccentRule,
+    AccentScope, BreathingMark, BreathingRule, EncliticParticle,
 };
 pub use collation::{
     CollationKey, CollationProfile, CollationStrength, collation_key, compare_synodal,

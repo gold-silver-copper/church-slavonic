@@ -17,6 +17,7 @@ serde = ["dep:serde", "synodal-church-slavonic-core/serde"]
 [dependencies]
 serde = { workspace = true, optional = true }
 synodal-church-slavonic-core.workspace = true
+unicode-normalization.workspace = true
 
 [lints]
 workspace = true

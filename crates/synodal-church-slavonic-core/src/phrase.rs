@@ -14,6 +14,7 @@ pub enum AnalyticConstruction {
     CopulaEllipsis,
     CompositeAdverbialParticiple,
     EncliticPronoun,
+    EncliticParticle,
     ThirdPersonPrepositionalContraction,
     NegativePronounPrepositional,
     CompoundCardinal,

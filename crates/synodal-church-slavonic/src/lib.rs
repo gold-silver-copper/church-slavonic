@@ -39,12 +39,12 @@ pub use spec::{
 };
 pub use synodal_church_slavonic_core as core;
 pub use synodal_church_slavonic_core::{
-    AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope,
-    ActiveParticipleShortFormation, AdjectiveClass, AoristFormation, Aspect, AuthorityRole,
-    BreathingMark, BreathingRule, ComparisonFormation, EpistemicRole, Evidence, EvidenceId,
-    EvidenceKind, ImperativeFormation, ImperfectFormation, NounDeclension, NounNumberInventory,
-    NumeralDeclension, NumeralLexeme, NumeralNumberInventory, ParticiplePrincipalPart,
-    PresentPrincipalParts, RuleId, SourceId, VerbConjugation,
+    AccentEnclitic, AccentEnvironment, AccentMark, AccentParadigm, AccentPlacement, AccentRule,
+    AccentScope, ActiveParticipleShortFormation, AdjectiveClass, AoristFormation, Aspect,
+    AuthorityRole, BreathingMark, BreathingRule, ComparisonFormation, EncliticParticle,
+    EpistemicRole, Evidence, EvidenceId, EvidenceKind, ImperativeFormation, ImperfectFormation,
+    NounDeclension, NounNumberInventory, NumeralDeclension, NumeralLexeme, NumeralNumberInventory,
+    ParticiplePrincipalPart, PresentPrincipalParts, RuleId, SourceId, VerbConjugation,
 };
 pub use synodal_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AdverbialParticipleFormation, AnalyticConstruction, Animacy,

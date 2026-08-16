@@ -1,6 +1,6 @@
 //! Typed, source-backed accent realization for productively generated forms.
 
-use unicode_normalization::UnicodeNormalization;
+use unicode_normalization::{UnicodeNormalization, char::canonical_combining_class};
 
 use crate::{
     AdjectiveForm, AuthorityRole, Case, Comparison, Error, Evidence, EvidenceKind, FiniteTense,
@@ -37,6 +37,50 @@ impl BreathingMark {
             Self::Psili => '\u{0486}',
         }
     }
+}
+
+/// The three invariant postpositives whose presence conditions a preceding
+/// word-final accent in Alypy §3.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum EncliticParticle {
+    Zhe,
+    Bo,
+    Li,
+}
+
+impl EncliticParticle {
+    pub const ALL: [Self; 3] = [Self::Zhe, Self::Bo, Self::Li];
+}
+
+/// The closed set of postpositive environments that change a word-final
+/// varia to an acute in Alypy §3. Short personal/reflexive pronouns remain a
+/// separate kind because their lexical identity and cell must be validated by
+/// the phrase layer before this presentation context is selected.
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum AccentEnclitic {
+    Particle(EncliticParticle),
+    ShortPersonalOrReflexivePronoun,
+}
+
+impl AccentEnclitic {
+    pub const ALL: [Self; 4] = [
+        Self::Particle(EncliticParticle::Zhe),
+        Self::Particle(EncliticParticle::Bo),
+        Self::Particle(EncliticParticle::Li),
+        Self::ShortPersonalOrReflexivePronoun,
+    ];
+}
+
+/// Syntactic environment used only for surface realization of an already
+/// selected lexical stress position.
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
+pub enum AccentEnvironment {
+    #[default]
+    Standalone,
+    BeforeEnclitic(AccentEnclitic),
 }
 
 /// A vowel position in the generated expanded form. Stem positions count from
@@ -241,10 +285,31 @@ impl AccentParadigm {
         Ok(())
     }
 
-    /// Applies the unique accent and optional breathing rules licensed for one
-    /// cell. A missing or overlapping rule is a typed metadata failure.
+    /// Applies the unique accent rule licensed for one isolated word. A
+    /// missing or overlapping rule is a typed metadata failure. Alypy §3's
+    /// language-wide initial-vowel psili and final-vowel varia are surface
+    /// rules; callers do not have to repeat them in every lexical paradigm.
     pub fn apply(&self, cell: GrammarCell, expanded: &str) -> Result<String> {
+        self.apply_in_environment(cell, expanded, AccentEnvironment::Standalone)
+    }
+
+    /// Applies lexical stress in an explicit syntactic environment. Before
+    /// one of Alypy §3's closed enclitic classes, a final stressed vowel keeps
+    /// an acute; in isolation the same position receives a grave. Nonfinal
+    /// stress and exceptional lexical grave/kamora marks are preserved.
+    pub fn apply_in_environment(
+        &self,
+        cell: GrammarCell,
+        expanded: &str,
+        environment: AccentEnvironment,
+    ) -> Result<String> {
         self.validate()?;
+        if contains_accent_or_breathing_mark(expanded) {
+            return Err(Error::ContradictoryMetadata {
+                reason: "an accent paradigm requires an unaccented, unbreathed expanded form"
+                    .into(),
+            });
+        }
         let accent = unique_rule(
             self.accent_rules
                 .iter()
@@ -262,25 +327,97 @@ impl AccentParadigm {
         )?;
 
         let accent_index = vowel_index(expanded, accent.placement)?;
-        let breathing_index = breathing
+        let explicit_breathing_index = breathing
             .map(|rule| vowel_index(expanded, rule.placement))
             .transpose()?;
+        let automatic_breathing_index = initial_vowel_index(expanded);
+        if explicit_breathing_index.is_some()
+            && explicit_breathing_index != automatic_breathing_index
+        {
+            return Err(Error::ContradictoryMetadata {
+                reason: "Synodal psili is licensed only over a word-initial vowel".into(),
+            });
+        }
+        let breathing_index = explicit_breathing_index.or(automatic_breathing_index);
+        let accent_mark = surface_accent_mark(expanded, accent_index, accent.mark, environment);
         let mut output = String::with_capacity(expanded.len() + 6);
         for (index, character) in expanded.char_indices() {
             output.push(character);
             if breathing_index == Some(index) {
-                if let Some(rule) = breathing {
-                    output.push(rule.mark.character());
-                }
+                output.push(
+                    breathing
+                        .map_or(BreathingMark::Psili, |rule| rule.mark)
+                        .character(),
+                );
             }
             if accent_index == index {
-                output.push(accent.mark.character());
+                output.push(accent_mark.character());
             }
         }
         let output: String = output.nfc().collect();
         SynodalWord::parse(output.clone())?;
         Ok(output)
     }
+}
+
+fn contains_accent_or_breathing_mark(value: &str) -> bool {
+    value.nfd().any(|character| {
+        matches!(
+            character,
+            '\u{0300}' | '\u{0301}' | '\u{0311}' | '\u{0485}' | '\u{0486}'
+        )
+    })
+}
+
+fn surface_accent_mark(
+    expanded: &str,
+    accent_index: usize,
+    lexical_mark: AccentMark,
+    environment: AccentEnvironment,
+) -> AccentMark {
+    if !accent_is_on_final_vowel(expanded, accent_index)
+        || !matches!(lexical_mark, AccentMark::Acute | AccentMark::Grave)
+    {
+        return lexical_mark;
+    }
+    match environment {
+        AccentEnvironment::Standalone => AccentMark::Grave,
+        AccentEnvironment::BeforeEnclitic(_) => AccentMark::Acute,
+    }
+}
+
+fn accent_is_on_final_vowel(value: &str, accent_index: usize) -> bool {
+    value
+        .char_indices()
+        .rev()
+        .find(|(_, character)| {
+            canonical_combining_class(*character) == 0 && *character != '\u{034f}'
+        })
+        .is_some_and(|(index, character)| index == accent_index && is_vowel(character))
+}
+
+fn initial_vowel_index(value: &str) -> Option<usize> {
+    if let Some((_, vowel_index)) = initial_digraph_uk_indices(value) {
+        return Some(vowel_index);
+    }
+    let mut characters = value.char_indices().filter(|(_, character)| {
+        canonical_combining_class(*character) == 0 && *character != '\u{034f}'
+    });
+    let (first_index, first) = characters.next()?;
+    if is_vowel(first) {
+        return Some(first_index);
+    }
+    None
+}
+
+fn initial_digraph_uk_indices(value: &str) -> Option<(usize, usize)> {
+    let mut characters = value.char_indices().filter(|(_, character)| {
+        canonical_combining_class(*character) == 0 && *character != '\u{034f}'
+    });
+    let (first_index, first) = characters.next()?;
+    let (second_index, second) = characters.next()?;
+    (matches!(first, 'ᲂ' | 'О') && matches!(second, 'у' | 'У'))
+        .then_some((first_index, second_index))
 }
 
 fn scope_is_empty(scope: &AccentScope) -> bool {
@@ -315,9 +452,12 @@ fn unique_rule<'a, T>(
 }
 
 fn vowel_index(value: &str, placement: AccentPlacement) -> Result<usize> {
+    let initial_uk_lead = initial_digraph_uk_indices(value).map(|(lead, _)| lead);
     let vowels: Vec<usize> = value
         .char_indices()
-        .filter_map(|(index, character)| is_vowel(character).then_some(index))
+        .filter_map(|(index, character)| {
+            (Some(index) != initial_uk_lead && is_vowel(character)).then_some(index)
+        })
         .collect();
     let selected = match placement {
         AccentPlacement::StemVowelFromStart(offset) => vowels.get(usize::from(offset)).copied(),
@@ -532,13 +672,13 @@ mod tests {
             paradigm
                 .apply(cell(Case::Nominative), "имена")
                 .expect("ending rule"),
-            "имена̀"
+            "и\u{0486}мена̀"
         );
         assert_eq!(
             paradigm
                 .apply(cell(Case::Genitive), "именъ")
                 .expect("stem rule"),
-            "име́нъ"
+            "и\u{0486}ме́нъ"
         );
         assert!(matches!(
             paradigm.apply(cell(Case::Dative), "именємъ"),
@@ -582,6 +722,155 @@ mod tests {
                 .expect("accent"),
             "о\u{0486}\u{0301}ко"
         );
+    }
+
+    #[test]
+    fn language_wide_initial_psili_does_not_require_lexical_duplication() {
+        let paradigm = AccentParadigm::fixed_stem(
+            "test-automatic-psili",
+            AccentScope::All,
+            0,
+            AccentMark::Acute,
+            evidence(),
+        );
+        assert_eq!(
+            paradigm
+                .apply(GrammarCell::LexicalForm, "имѧ")
+                .expect("initial-vowel psili"),
+            "и\u{0486}\u{0301}мѧ"
+        );
+        assert_eq!(
+            paradigm
+                .apply(GrammarCell::LexicalForm, "мꙋдръ")
+                .expect("consonant-initial word"),
+            "мꙋ́дръ"
+        );
+    }
+
+    #[test]
+    fn productive_accent_rejects_preaccented_or_prebreathed_inputs() {
+        let paradigm = AccentParadigm::fixed_stem(
+            "test-unmarked-input",
+            AccentScope::All,
+            0,
+            AccentMark::Acute,
+            evidence(),
+        );
+        for marked in [
+            "ѐже",
+            "е\u{0301}же",
+            "е\u{0311}же",
+            "е\u{0485}же",
+            "е\u{0486}же",
+        ] {
+            assert!(matches!(
+                paradigm.apply(GrammarCell::LexicalForm, marked),
+                Err(Error::ContradictoryMetadata { .. })
+            ));
+        }
+    }
+
+    #[test]
+    fn digraph_uk_places_psili_over_its_vocalic_second_component() {
+        let paradigm = AccentParadigm::fixed_stem(
+            "test-digraph-uk-psili",
+            AccentScope::All,
+            0,
+            AccentMark::Grave,
+            evidence(),
+        );
+        for (expanded, expected) in [
+            ("ᲂубо", "ᲂу\u{0486}\u{0300}бо"),
+            ("Оубо", "Оу\u{0486}\u{0300}бо"),
+        ] {
+            assert_eq!(
+                paradigm
+                    .apply(GrammarCell::LexicalForm, expanded)
+                    .expect("digraph-uk psili and accent"),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn final_vowel_accent_is_conditioned_by_the_closed_enclitic_environment() {
+        let paradigm = AccentParadigm::fixed_ending(
+            "test-final-vowel-context",
+            AccentScope::All,
+            0,
+            AccentMark::Acute,
+            evidence(),
+        );
+        assert_eq!(
+            paradigm
+                .apply(GrammarCell::LexicalForm, "се")
+                .expect("standalone varia"),
+            "сѐ"
+        );
+        for enclitic in AccentEnclitic::ALL {
+            assert_eq!(
+                paradigm
+                    .apply_in_environment(
+                        GrammarCell::LexicalForm,
+                        "се",
+                        AccentEnvironment::BeforeEnclitic(enclitic),
+                    )
+                    .expect("pre-enclitic acute"),
+                "се́"
+            );
+        }
+    }
+
+    #[test]
+    fn exceptional_nonfinal_grave_and_kamora_are_not_rewritten() {
+        for mark in [AccentMark::Grave, AccentMark::Kamora] {
+            let paradigm = AccentParadigm::fixed_stem(
+                "test-exceptional-mark",
+                AccentScope::All,
+                0,
+                mark,
+                evidence(),
+            );
+            let expected = match mark {
+                AccentMark::Grave => "и\u{0486}\u{0300}же",
+                AccentMark::Kamora => "и\u{0486}\u{0311}же",
+                AccentMark::Acute => unreachable!(),
+            };
+            assert_eq!(
+                paradigm
+                    .apply_in_environment(
+                        GrammarCell::LexicalForm,
+                        "иже",
+                        AccentEnvironment::BeforeEnclitic(AccentEnclitic::Particle(
+                            EncliticParticle::Li,
+                        )),
+                    )
+                    .expect("nonfinal lexical mark"),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn explicit_breathing_cannot_be_moved_away_from_the_initial_vowel() {
+        let paradigm = AccentParadigm {
+            id: "test-medial-breathing".into(),
+            accent_rules: vec![AccentRule {
+                scope: AccentScope::All,
+                placement: AccentPlacement::StemVowelFromStart(0),
+                mark: AccentMark::Acute,
+            }],
+            breathing_rules: vec![BreathingRule {
+                scope: AccentScope::All,
+                placement: AccentPlacement::StemVowelFromStart(1),
+                mark: BreathingMark::Psili,
+            }],
+            evidence: evidence(),
+        };
+        assert!(matches!(
+            paradigm.apply(GrammarCell::LexicalForm, "око"),
+            Err(Error::ContradictoryMetadata { .. })
+        ));
     }
 
     #[test]
