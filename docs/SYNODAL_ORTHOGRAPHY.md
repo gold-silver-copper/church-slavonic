@@ -220,8 +220,20 @@ cells, and 55 semantic contraction families with 61 allomorphs. The reusable
 `AccentParadigm` and `PositionalParadigm` APIs are not limited to those bundled
 rows: a caller can source every cell of any arbitrary lexeme, including fixed
 or mobile stress, breathing, initial variants, contextual `ї`, case-distinguishing
-`є/ѡ` or kamora, etymological spelling retained in the stem, and exact printed
-exceptions. Exact printed cells always win before reusable metadata.
+`є/ѡ/ы/ѧ` or kamora, etymological spelling retained in the stem, and exact
+printed exceptions. Exact printed cells always win before reusable metadata.
+
+Bolshakov's 2022 number-antistich study proposes a deterministic hierarchy for
+non-singular homoforms: one checked `е→є`, `о→ѡ`, `и→ы`, or `а→ѧ`
+substitution; otherwise kamora, initial apostroph, or an explicitly unresolved
+homoform. `PositionalParadigm` can express every letter operation at an exact
+occurrence and grammatical-cell scope, while `AccentParadigm` expresses the two
+prosodic fallbacks. The engine deliberately does not install that proposal as a
+universal default. Alypy §36 permits choices, its printed paradigms are not fully
+uniform, and the reviewed studies report further disagreements about prefix
+vowels, combined dissimilators, and dual spelling. A caller selects the authority
+and supplies complete cell scopes; incompatible occurrences and missing or
+overlapping scopes fail typed.
 
 Alypy §3.c's printed inventory contains 48 named abbreviation entries.
 `abbreviation_inventory.tsv` classifies all 48 in source order and now maps every
@@ -237,7 +249,9 @@ Unknown lexical stress, semantics, or Greek etymology is intentionally not a
 grammar implementation gap. For an arbitrary caller specification it is a
 typed metadata boundary; for a bundled lexeme an exact row or reviewed reusable
 paradigm supplies the known result, and an uncovered cell fails rather than
-guessing. The finite source inventory in `positional_rules.tsv` records all
-Alypy §§2 and 36 decision classes and their exception boundaries. Thus the
-presentation engine is operationally complete for complete lexical metadata
-without claiming that six bundled accent paradigms exhaust an open lexicon.
+guessing. The finite source inventory in `positional_rules.tsv` records all Alypy
+§§2 and 36 decision classes, the two additional number-antistich substitutions,
+and their exception boundaries. Thus the presentation engine is operationally
+complete for complete lexical metadata without claiming that six bundled accent
+paradigms exhaust an open lexicon or that one disputed codification is the only
+valid printed tradition.

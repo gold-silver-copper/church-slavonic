@@ -563,10 +563,10 @@ authority_justification = "Principal pinned normative anchor for the target Syno
 license = "Ponomar site and underlying edition notices must be preserved"
 redistribution = "evaluation-only"
 upstream_lineage = ["Alypy 1991 edition", "Ponomar corrected web transcription"]
-reviewed_sections = ["§§1–5", "§27 abstract nouns: -їе from past-passive bases and lexical -ота/-ета/-ба/-ежъ/-нь/-снь/-знь/-тва/-ть/-изна deverbal suffix families", "§§33–44", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–83 present formation and lexical principal parts", "§81 complete быти finite tables", "§84 simple future and contextual exceptions", "§85 compound future", "§§86–102 remaining regular and analytic verb systems", "§§123–124 copula omission contexts", "§143.7–8 and note 1: target motion-purpose infinitive and ancient-language-only supine boundary", "§146 composite adverbial participles", "§§162–163 future anterior and periphrastic-tense semantics", "§103 complete archaic быти/дати/ꙗсти/вѣдѣти/имати tables and participial boundaries", "§104 all 100 printed paragraphs, comprising one disclaimer, 98 source-ordered irregular verb entries, and one semantic note", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
+reviewed_sections = ["§§1–5 alphabet, positional letters, accents, and all 48 abbreviation entries", "§27 abstract nouns: -їе from past-passive bases and lexical -ота/-ета/-ба/-ежъ/-нь/-снь/-знь/-тва/-ть/-изна deverbal suffix families", "§§33–44 including §36 number-distinguishing spelling and its listed choices", "§§45–78", "§§61–70 simple cardinal tables, teen/tens/hundreds/magnitude composition, component-inflection alternatives, noun agreement and government, ordinal formation, collectives, multiplicatives, and fractions", "numeral appendix through леѡдръ and тысѧщный", "§§79–83 present formation and lexical principal parts", "§81 complete быти finite tables", "§84 simple future and contextual exceptions", "§85 compound future", "§§86–102 remaining regular and analytic verb systems", "§§123–124 copula omission contexts", "§143.7–8 and note 1: target motion-purpose infinitive and ancient-language-only supine boundary", "§146 composite adverbial participles", "§§162–163 future anterior and periphrastic-tense semantics", "§103 complete archaic быти/дати/ꙗсти/вѣдѣти/имати tables and participial boundaries", "§104 all 100 printed paragraphs, comprising one disclaimer, 98 source-ordered irregular verb entries, and one semantic note", "§§124–125 and 128 compound-predicate case/agreement", "§§171–172 short-form predicate syntax"]
 rule_ids = ["SYN-*"]
-impact = "Defines all currently admitted Synodal productive rules. In particular, §27 makes -їе action/state nouns compositional from complete past-passive bases, while its other deverbal suffix families remain lexical choices; §34 supplies their complete soft-neuter declension. Sections 58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Section 84 closes productive simple-future morphology as the complete present-shaped paradigm of independently typed perfective verbs, while preserving its listed contextual non-perfective exceptions as exact evidence. Sections 81 and 103 close the source-licensed exact finite systems of быти, дати, ꙗсти, вѣдѣти, and both distinct имати/имѣти identities, including ordered dual and imperative variants and the absent present passive of имати/имѣти. Section 104 supplies an exhaustive 98-entry irregular inventory in source order: bundled exact cells, independent productive principal parts, typed historical defectiveness, and evidence-incomplete cells are recorded separately, with all four printed question-marked entries retained as uncertainty rather than promoted to normative forms. Sections 86–87 provide the normative aorist/imperfect distinction used to close every formerly underspecified finite-past row. Section 143.7–8 uses the infinitive for target motion-purpose constructions and note 1 assigns the supine to the ancient language, closing the distinct target supine as absent. Sections 85, 88–92, 101–102, 123–124, 146, and 162–163 close the typed analytic-formation inventory, including all licensed auxiliaries, orders, agreement, agent government, omission contexts, and composite participles. Liturgical accent and abbreviation expansion remain open."
-conflicts = ["Lexeme-specific variants must not be generalized to a class.", "The §104 introduction warns that some rare forms may simply be unrecorded; omission alone therefore never proves historical impossibility. Only explicit defect statements become historically invalid, source-limited attestations remain evidence-incomplete, and question-marked forms remain uncertain."]
+impact = "Defines all currently admitted Synodal productive rules. In particular, §27 makes -їе action/state nouns compositional from complete past-passive bases, while its other deverbal suffix families remain lexical choices; §34 supplies their complete soft-neuter declension. Sections 58–60 distinguish the complete short-comparative table from §98 active-participle inflection; §59 directly attests exceptional predicate и҆́стиннѣйшъ; and §§125, 128, and 172 bound that short-superlative category to nominative predicate agreement. Sections 61–70 and the appendix close the Synodal numeral word classes, complete simple tables, alternative component inflection, ordinary and named-magnitude composition through one million, typed agreement/government, compound ordinals through thousandth, collectives, repeated distributives, multiplicatives, and fractional constructions. Section 84 closes productive simple-future morphology as the complete present-shaped paradigm of independently typed perfective verbs, while preserving its listed contextual non-perfective exceptions as exact evidence. Sections 81 and 103 close the source-licensed exact finite systems of быти, дати, ꙗсти, вѣдѣти, and both distinct имати/имѣти identities, including ordered dual and imperative variants and the absent present passive of имати/имѣти. Section 104 supplies an exhaustive 98-entry irregular inventory in source order: bundled exact cells, independent productive principal parts, typed historical defectiveness, and evidence-incomplete cells are recorded separately, with all four printed question-marked entries retained as uncertainty rather than promoted to normative forms. Sections 86–87 provide the normative aorist/imperfect distinction used to close every formerly underspecified finite-past row. Section 143.7–8 uses the infinitive for target motion-purpose constructions and note 1 assigns the supine to the ancient language, closing the distinct target supine as absent. Sections 85, 88–92, 101–102, 123–124, 146, and 162–163 close the typed analytic-formation inventory, including all licensed auxiliaries, orders, agreement, agent government, omission contexts, and composite participles. Sections 2, 3, and 36 now feed a complete typed arbitrary-lexeme accent, positional, and semantic-abbreviation presentation contract rather than a finite bundled-word ceiling."
+conflicts = ["Lexeme-specific variants must not be generalized to a class.", "Section 36 permits a writer to choose omega, wide e, or kamora in overlapping circumstances, while Bolshakov 2022 proposes a deterministic priority; the engine requires explicit source-selected positional metadata.", "Some §43 paradigms preserve ordinary vowels where a broad reading of §36 might predict a wide one, so exact table cells precede reusable presentation rules.", "The §104 introduction warns that some rare forms may simply be unrecorded; omission alone therefore never proves historical impossibility. Only explicit defect statements become historically invalid, source-limited attestations remain evidence-incomplete, and question-marked forms remain uncertain."]
 access_status = "pinned-local"
 
 [[source]]
@@ -701,6 +701,249 @@ upstream_lineage = []
 reviewed_sections = ["publisher bibliographic record", "prefaces", "table of contents including Les noms de nombre"]
 rule_ids = ["pending-deschler-full-text-crosswalk"]
 impact = "Adds an independently authored target-period French grammar to the discovery frontier and confirms that number words receive a dedicated treatment. No morphology rule or surface form is imported without access to the chapter body."
+conflicts = []
+access_status = "accessible-metadata"
+
+[[source]]
+id = "bolshakov-number-antistich-2022"
+title = "Дифференциация омоформ единственного и неединственного числа склоняемых частей речи в церковнославянском языке: к формулировке общего правила"
+author_editor = "Alexander D. Bolshakov"
+edition_revision = "Siberian Journal of Philology 2022 no. 1, pp. 251–267; DOI 10.17223/18137083/78/18"
+publication_date = "2022"
+publisher_institution = "Institute of Philology, Siberian Branch of the Russian Academy of Sciences"
+stable_url = "https://www.philology.nsc.ru/journals/spj/pdf/2022_1/18.pdf"
+retrieved_at = "2026-08-15"
+sha256 = "472ab05675239570f687a50dfe9e84aa9c1946b68d1401bc9b64246d691d898c"
+languages = ["Russian", "English", "Church Slavonic"]
+periods = ["modern Russian-recension Church Slavonic"]
+recensions = ["synodal-russian"]
+orthographies = ["traditional printed Russian-recension Church Slavonic"]
+source_type = "peer-reviewed orthographic study"
+epistemic_roles = ["orthographic-rule-proposal", "source-conflict-analysis", "primary-text-example-analysis"]
+authority_tier = 2
+authority_justification = "The peer-reviewed article derives an explicit number-antistich hierarchy from grammars and traditional printed examples, while clearly distinguishing its codifying proposal from universally accepted usage."
+license = "copyrighted journal article; bibliographic facts, hashes, and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Alypy 1991 edition", "Marsheva orthographic studies", "Russian-recension liturgical publications"]
+reviewed_sections = ["complete pp. 251–267 article", "general hierarchy for non-singular homoforms", "е→є, о→ѡ, и→ы, and а→ѧ dissimilators", "stem-occurrence and stress conditions", "kamora and apostroph fallback", "husher and direct-case restrictions", "mandatory wide plural dative endings", "source disagreements and residual unresolved homoforms"]
+rule_ids = ["SYN-POSITIONAL-PARADIGM", "SYN-ORTH-WIDE-PLURAL-ENDING-ALYPY-36", "SYN-ORTH-ANTISTICH-YERI", "SYN-ORTH-ANTISTICH-LITTLE-YUS", "SYN-ORTH-CASE-KAMORA"]
+impact = "Closes the caller-selectable number-antistich operation inventory. The typed positional layer can now express all four proposed letter pairs, choose an exact checked occurrence, scope each operation to grammatical cells, compose with kamora or initial apostroph realization, and preserve mandatory wide plural endings. Because the hierarchy is a codifying proposal and the article documents competing practices, the engine records it as complete source-specific metadata rather than silently imposing it on every lexeme."
+conflicts = ["Alypy §36 permits writer choice among omega, wide e, or kamora where Bolshakov proposes a deterministic hierarchy.", "Marsheva's prefix-immutability account conflicts with examples and arguments cited from Pletneva and Bolshakov.", "Reviewed authorities disagree about combining multiple dissimilators and about whether every grammatical homoform must be distinguished.", "Dual number spelling is historically less stable than plural spelling, so a source-selected cell scope is required rather than a universal number heuristic."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "bolshakov-generative-grammar-2024"
+title = "О задачах церковнославянской грамматики"
+author_editor = "Alexander D. Bolshakov"
+edition_revision = "Inostrannye yazyki v kontekste kul'tury, 2024 conference proceedings, pp. 52–57; ISBN 978-5-7944-4133-8"
+publication_date = "2024"
+publisher_institution = "Perm State University"
+stable_url = "https://elis.psu.ru/node/643561/pdfbook/download/Inostrannye_yazyki_v_kontekste_kultury_%3A_%28materialy_konferencii_%282024_g.%29.pdf"
+retrieved_at = "2026-08-15"
+sha256 = "f776bcc366d5beb2c44c4289aa4ba605c885c211262587e0325f11ca298f58af"
+languages = ["Russian", "Church Slavonic"]
+periods = ["modern Russian-recension Church Slavonic", "early modern grammatical tradition"]
+recensions = ["synodal-russian", "mixed"]
+orthographies = ["traditional printed Russian-recension Church Slavonic"]
+source_type = "scholarly conference paper on generative grammar and codification"
+epistemic_roles = ["methodological-boundary", "source-conflict-analysis", "grammar-discovery"]
+authority_tier = 2
+authority_justification = "The university-published paper directly evaluates whether existing modern Church Slavonic manuals support prescriptive generation and documents named disagreements relevant to this engine's completion claim."
+license = "copyrighted conference proceedings; bibliographic facts, hashes, and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Smotrytsky 1619 grammatical tradition", "Alypy 1991 edition", "modern Russian-recension manuals and orthographic studies"]
+reviewed_sections = ["complete pp. 52–57 paper", "receptive versus generative grammar distinction", "limits of Smotrytsky for later Synodal facts", "criticism of nondeterministic orthographic prescriptions", "modern publication and regional heterogeneity", "named orthographic conflicts and open codification tasks"]
+rule_ids = ["SOURCE-FRONTIER-CONVERGENCE", "SYN-POSITIONAL-PARADIGM"]
+impact = "Establishes the epistemic boundary for a fully generative engine: modern manuals are chiefly receptive descriptions and no single reviewed academic grammar supplies a universally accepted generative norm for every Synodal presentation choice. Completion must therefore mean exhaustive grammatical operations plus explicit source/lexical metadata and retained conflicts, not invention of one undocumented universal spelling policy."
+conflicts = ["Smotrytsky's historically important categories do not automatically govern later Synodal orthography.", "Modern printed practice is heterogeneous across standard and hybrid publications, liturgical and reading traditions, and Moscow, Kyiv, and Saint Petersburg usage.", "Named manuals and studies disagree over prefix vowels, combined dissimilators, -ови selection, and the objectivity of orthographic choices."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "leskien-handbuch-1871"
+title = "Handbuch der altbulgarischen (altkirchenslawischen) Sprache: Grammatik, Texte, Glossar"
+author_editor = "August Leskien"
+edition_revision = "first edition, Weimar 1871; Internet Archive / Wikimedia scan, 272 pages"
+publication_date = "1871"
+publisher_institution = "Hermann Böhlau; public-domain scan via Internet Archive and Wikimedia Commons"
+stable_url = "https://upload.wikimedia.org/wikipedia/commons/3/3b/Handbuch_der_altbulgarischen_%28altkirchenslawischen%29_sprache_%28IA_handbuchderaltbu00lesk%29.pdf"
+retrieved_at = "2026-08-15"
+sha256 = "ca713246899cfb39c9706111fec3fa0dc0aeb1522c4aa0b84f894103367ad9d7"
+languages = ["German", "Old Church Slavonic"]
+periods = ["canonical Old Church Slavonic"]
+recensions = ["old-church-slavonic"]
+orthographies = ["historical scholarly Cyrillic transcription"]
+source_type = "comprehensive historical grammar with texts and glossary"
+epistemic_roles = ["productive-grammar-comparison", "historical-terminology-crosscheck"]
+authority_tier = 2
+authority_justification = "A complete public-domain classical grammar whose morphology provides an independent German-language triangulation of the modern university grammars already controlling the OCS implementation."
+license = "public domain"
+redistribution = "allowed"
+upstream_lineage = ["nineteenth-century comparative Slavonic scholarship"]
+reviewed_sections = ["full morphology from substantive declension through pronouns, adjectives, participles, numerals, and conjugation", "seven cases and singular/dual/plural", "present, imperfect, aorist, imperative, infinitive, and supine", "present and past active/passive participles", "perfective present future and analytic future, future anterior, perfect, pluperfect, conditional, and passive", "irregular and copular roots"]
+rule_ids = ["N-*", "ADJ-*", "DET-*", "NUM-*", "PRON-*", "V-*", "V-COP-*", "PHRASE-*"]
+impact = "Independently reproduces the complete OCS category universe, stem-declension families, finite and nonfinite verb systems, and analytic constructions already implemented from Polivanova and the UT grammar. It adds historical triangulation but no new productive cell, typed defect, or realization contract."
+conflicts = ["Historical terminology and some paradigm grouping differ from the modern source matrix; the implementation retains form-level crosswalks instead of importing nineteenth-century labels as API categories."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "diels-ocs-grammar-1932"
+title = "Altkirchenslavische Grammatik"
+author_editor = "Paul Diels"
+edition_revision = "1932 edition, 425 pages; publisher/catalog preview"
+publication_date = "1932"
+publisher_institution = "Carl Winter; Google Books bibliographic catalog"
+stable_url = "https://books.google.com/books/about/Altkirchenslavische_Grammatik.html?id=LZphAAAAMAAJ"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["German", "Old Church Slavonic"]
+periods = ["canonical Old Church Slavonic"]
+recensions = ["old-church-slavonic"]
+orthographies = ["scholarly Old Church Slavonic transcription"]
+source_type = "comprehensive historical grammar"
+epistemic_roles = ["grammar-discovery", "bibliographic-triangulation"]
+authority_tier = 2
+authority_justification = "A major German-language OCS grammar considered in the classical source sweep; the body was not accessible in the current review."
+license = "copyright status and edition-specific reuse unresolved; bibliographic metadata only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["publisher/catalog bibliographic record and contents preview only"]
+rule_ids = ["pending-diels-full-text-crosswalk"]
+impact = "Records a known comprehensive grammar in the eligible frontier. No grammatical claim is imported without access to the body."
+conflicts = []
+access_status = "accessible-metadata"
+
+[[source]]
+id = "vaillant-manuel-1948"
+title = "Manuel du vieux slave, tome I: Grammaire"
+author_editor = "André Vaillant"
+edition_revision = "first edition 1948; later corrected/reprinted edition listed by the publisher"
+publication_date = "1948"
+publisher_institution = "Institut d’Études Slaves, Paris"
+stable_url = "https://institut-etudes-slaves.fr/products-page/langues/manuel-du-vieux-slave-grammaire/"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["French", "Old Church Slavonic"]
+periods = ["canonical Old Church Slavonic"]
+recensions = ["old-church-slavonic"]
+orthographies = ["scholarly Old Church Slavonic transcription"]
+source_type = "comprehensive historical grammar"
+epistemic_roles = ["grammar-discovery", "bibliographic-triangulation"]
+authority_tier = 2
+authority_justification = "A standard French-language OCS grammar considered in the multilingual sweep; only publisher metadata was accessible."
+license = "copyrighted handbook; publisher metadata only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["publisher bibliographic record only"]
+rule_ids = ["pending-vaillant-full-text-crosswalk"]
+impact = "Records the principal French classical grammar in the eligible frontier. No grammatical claim is imported without access to the body."
+conflicts = []
+access_status = "accessible-metadata"
+
+[[source]]
+id = "nandris-handbook-1959"
+title = "Handbook of Old Church Slavonic, Part I: Grammar"
+author_editor = "Grigore Nandriș"
+edition_revision = "Athlone Press 1959 edition; institutional catalog table of contents"
+publication_date = "1959"
+publisher_institution = "University of London, Athlone Press; GBV institutional catalog"
+stable_url = "https://www.gbv.de/dms/hebis-mainz/toc/024041513.pdf"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["English", "Old Church Slavonic"]
+periods = ["canonical Old Church Slavonic"]
+recensions = ["old-church-slavonic"]
+orthographies = ["scholarly Old Church Slavonic transcription"]
+source_type = "comprehensive historical grammar"
+epistemic_roles = ["grammar-discovery", "bibliographic-triangulation"]
+authority_tier = 2
+authority_justification = "A university-published English grammar considered in the classical sweep; only the institutional catalog and contents were accessible."
+license = "copyrighted handbook; catalog metadata only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["institutional bibliographic record and table of contents only"]
+rule_ids = ["pending-nandris-full-text-crosswalk"]
+impact = "Records an independently authored English classical grammar in the eligible frontier. No grammatical claim is imported without access to the body."
+conflicts = []
+access_status = "accessible-metadata"
+
+[[source]]
+id = "kozmin-church-slavonic-1903"
+title = "Грамматика церковно-славянского языка нового периода"
+author_editor = "Konstantin A. Kozmin"
+edition_revision = "thirteenth edition, Moscow Synodal Press 1903, 112-page scan"
+publication_date = "1903"
+publisher_institution = "Moscow Synodal Press; public-domain scan via Wikimedia Commons"
+stable_url = "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%BE%D0%B7%D1%8C%D0%BC%D0%B8%D0%BD_%D0%9A._%D0%93%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0_%D1%86%D0%B5%D1%80%D0%BA%D0%BE%D0%B2%D0%BD%D0%BE-%D1%81%D0%BB%D0%B0%D0%B2%D1%8F%D0%BD%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%8F%D0%B7%D1%8B%D0%BA%D0%B0_%281903%29.pdf"
+retrieved_at = "2026-08-15"
+sha256 = "ff5d3888ac31beb5954ef832f9c0f10a0d654eedd086004fdbc9271cfc447764"
+languages = ["Russian", "Church Slavonic"]
+periods = ["new-period Russian-recension Church Slavonic"]
+recensions = ["synodal-russian"]
+orthographies = ["Synodal printed Church Slavonic"]
+source_type = "normative school grammar"
+epistemic_roles = ["morphological-crosscheck", "orthographic-crosscheck", "historical-pedagogy"]
+authority_tier = 2
+authority_justification = "A Synodal-Press-era grammar explicitly devoted to the new period and reviewed from the complete public-domain scan; its compact school tables are a historical crosscheck rather than the sole modern authority."
+license = "public domain"
+redistribution = "allowed"
+upstream_lineage = ["Russian Synodal school grammar tradition"]
+reviewed_sections = ["complete pp. 3–55 alphabet through adverbs", "five noun declensions", "personal, relative, demonstrative, interrogative, possessive, and other pronouns", "short and long adjectives and comparison", "cardinal and ordinal numerals", "voice, mood, aspect, tense, person, number, infinitive, and participles", "быти, regular conjugations, analytic passive, and irregular verbs"]
+rule_ids = ["SYN-NOUN-*", "SYN-PRONOUN-*", "SYN-ADJECTIVE-*", "SYN-NUMERAL-*", "SYN-VERB-*", "SYN-PHRASE-*"]
+impact = "The complete inflectional section independently reproduces the target category inventory and paradigmatic coverage already closed from Alypy and later scholarship, including duals, analytic tenses and passives, imperatives, da-volitives, participles, and irregular verbs. Its historical grouping changes no current cell or contract."
+conflicts = ["The compact pedagogical inventory and terminology omit or merge distinctions treated explicitly by Alypy and the typed engine; absence from this school grammar is not evidence of ungrammaticality."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "marsheva-differentiating-orthography-2012"
+title = "Дифференцирующий принцип церковнославянской орфографии"
+author_editor = "Larisa I. Marsheva"
+edition_revision = "Sretensky Collection issue 3 (2012), pp. 327–335; journal PDF"
+publication_date = "2012"
+publisher_institution = "Sretensky Theological Seminary"
+stable_url = "https://sda-journals.ru/sbornik/article/download/sbornik_3_11_Marsheva/sbornik_3_11_Marsheva/323"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["Russian", "Church Slavonic"]
+periods = ["modern Russian-recension Church Slavonic", "Elizabethan printed tradition"]
+recensions = ["synodal-russian"]
+orthographies = ["traditional printed Russian-recension Church Slavonic"]
+source_type = "scholarly methodological orthographic study"
+epistemic_roles = ["orthographic-rule-analysis", "source-conflict-analysis", "primary-text-example-analysis"]
+authority_tier = 2
+authority_justification = "The complete article systematically inventories lexical and grammatical differentiation with traditional examples; later scholarship directly debates some of its generalizations."
+license = "copyrighted journal article; bibliographic facts and short rule references only"
+redistribution = "metadata-only"
+upstream_lineage = ["Elizabethan Bible and Russian liturgical print tradition"]
+reviewed_sections = ["complete pp. 327–335 article", "lexical я/ѧ, и/і, and о/ѡ distinctions", "dual/plural е→є and о→ѡ with kamora fallback", "wide genitive-plural endings", "pronoun case spellings", "husher и/і→ы and а→ѧ", "finite-verb, participle, adjective, and adverb distinctions", "prefix-vowel immutability claim"]
+rule_ids = ["SYN-POSITIONAL-PARADIGM", "SYN-ORTH-WIDE-PLURAL-ENDING-ALYPY-36", "SYN-ORTH-ANTISTICH-YERI", "SYN-ORTH-ANTISTICH-LITTLE-YUS", "SYN-ORTH-CASE-KAMORA"]
+impact = "Directly corroborates every typed number-antistich letter pair, wide plural endings, and accent fallback now exposed by the source-selectable presentation APIs. Its remaining case, verb, participle, adjective, and adverb contrasts are either already produced by morphology or expressible through complete cell-scoped accent/positional metadata, so it requires no new operation."
+conflicts = ["Its claim that no grammatical homoform remains unmarked is stronger than Bolshakov 2022's explicit residual-homonymy case.", "Its rule that prefix vowels never participate in dissimilation conflicts with Pletneva examples and Bolshakov's later analysis.", "Its listed dual/plural exclusions and single-differentiator presentation differ from other reviewed descriptions; source-specific cell scopes retain those choices."]
+access_status = "accessible-full-text"
+
+[[source]]
+id = "trunte-kirchenslavisch-2017"
+title = "Kirchenslavisch in 14 Lektionen"
+author_editor = "Nicolina Trunte"
+edition_revision = "Slavistische Beiträge 507, 2017, 174 pages, ISBN 978-3-447-10953-6"
+publication_date = "2017"
+publisher_institution = "Harrassowitz Verlag"
+stable_url = "https://www.harrassowitz-verlag.de/Kirchenslavisch_in_14_Lektionen/titel_2954.ahtml"
+retrieved_at = "2026-08-15"
+sha256 = ""
+languages = ["German", "Church Slavonic", "Old Church Slavonic"]
+periods = ["modern New Church Slavonic", "Old Church Slavonic", "Middle Church Slavonic"]
+recensions = ["synodal-russian", "old-church-slavonic", "mixed"]
+orthographies = ["Cyrillic and Glagolitic teaching transcription"]
+source_type = "diachronic Church Slavonic teaching grammar"
+epistemic_roles = ["grammar-discovery", "target-recension-crosscheck", "diachronic-boundary"]
+authority_tier = 2
+authority_justification = "The publisher states that lessons 1–5 introduce New Church Slavonic as used in the Russian Orthodox Church before the book turns to OCS and later history; the body was not accessible in the current review."
+license = "copyrighted teaching grammar; publisher metadata and contents only"
+redistribution = "metadata-only"
+upstream_lineage = []
+reviewed_sections = ["publisher bibliographic description and public table of contents only"]
+rule_ids = ["pending-trunte-full-text-crosswalk"]
+impact = "Adds an independently authored German target-period grammar to the discovery frontier. No morphology or surface-form claim is imported without access to the lesson bodies."
 conflicts = []
 access_status = "accessible-metadata"
 
@@ -1162,3 +1405,57 @@ changed_contracts = true
 changed_conflicts = true
 changed_validation = true
 notes = "The ten remaining Alypy §3.c entries were reconciled against §§8, 33–37, 52–53, 57–58 and the locked Ponomar/Wikisource target corpora. All 48 source-table entries now resolve to stable semantic families: 55 runtime families expose 61 source-backed stem patterns beneath 191 exact cells. The new morphology contracts are a complete mobile-е младенецъ : младенц- noun with cell-scoped ц → ч vocative, a complete velar adjective class with both palatalizations, typed -нн- reduction and mobile-е short-masculine principal parts, and the suppletive благїй : ᲂу҆́н- comparison. благочестно is an attested invariant adverb; имярекъ is a closed replacement rubric whose substituted name—not the rubric—bears syntactic case. Exact rows still precede productive families, semantic collisions such as честный/чистый remain separate identities, and the unattested младенче contraction is deliberately unsupported while the noun inflection itself remains productive. Full lexical accent and positional-semantic classification remains open, so this contract-changing pass does not count toward convergence."
+
+[[discovery_pass]]
+id = "synodal-antistich-frontier-pass-17"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "German", "French", "Church Slavonic"]
+queries = [
+  "церковнославянская порождающая грамматика антистих омоформы числа",
+  "Church Slavonic generative grammar number homographs antistich",
+  "Kirchenslavisch russische Redaktion Orthographie Homograph Numerus",
+  "slavon liturgique orthographe homographes nombre grammaire générative",
+]
+catalogs = ["Perm State University proceedings repository", "Siberian Journal of Philology archive", "Ponomar Alypy grammar", "Vinogradov Russian Language Institute", "Harrassowitz Verlag", "Institut d’Études Slaves", "multilingual scholarly discovery indexes"]
+new_sources = ["bolshakov-number-antistich-2022", "bolshakov-generative-grammar-2024"]
+changed_inventory = true
+changed_contracts = true
+changed_conflicts = true
+changed_validation = true
+notes = "Bolshakov's peer-reviewed 2022 study supplies a proposed deterministic hierarchy for distinguishing singular from non-singular homoforms: the four е→є, о→ѡ, и→ы, and а→ѧ substitutions, checked stem-occurrence and stress conditions, and kamora or apostroph fallbacks. The engine's source-scoped PositionalParadigm already represented the first two letter pairs and both accent strategies; this pass adds checked Yeri and LittleYus operations and exhaustive representability tests. The 2024 methodological paper shows why that hierarchy cannot be made an undocumented universal default: no complete modern generative academic grammar exists, teaching grammars are principally receptive, and named authorities and publication traditions disagree over several orthographic choices. The implementation therefore closes the operation inventory while requiring explicit source/lexical cell scopes and retaining every conflict. This contract-changing pass does not count toward convergence."
+
+[[discovery_pass]]
+id = "classical-grammar-convergence-pass-18"
+performed_at = "2026-08-15"
+languages = ["English", "Russian", "German", "French", "Old Church Slavonic"]
+queries = [
+  "Old Church Slavonic morphology comprehensive grammar university PDF",
+  "старославянская морфология полная грамматика университет PDF",
+  "Altkirchenslawische Morphologie vollständige Grammatik PDF",
+  "vieux slave morphologie grammaire complète manuel PDF",
+]
+catalogs = ["Firenze University Press", "University of Texas Linguistics Research Center", "Wikimedia Commons and Internet Archive", "Google Books", "Institut d’Études Slaves", "GBV institutional catalog", "multilingual scholarly discovery indexes"]
+new_sources = ["leskien-handbuch-1871", "diels-ocs-grammar-1932", "vaillant-manuel-1948", "nandris-handbook-1959"]
+changed_inventory = false
+changed_contracts = false
+changed_conflicts = false
+changed_validation = false
+notes = "This independent classical-grammar pass triangulated the locked OCS matrix across English, Russian, German, and French discovery routes. Leskien's complete public-domain morphology was reviewed from substantive declension through pronouns, adjectives, numerals, all finite and nonfinite verb categories, irregulars, and analytic constructions; it reproduced the already implemented OCS category and cell universe without a new operation or defect. Diels, Vaillant, and Nandriș were recorded as known comprehensive grammars, but only publisher or institutional metadata/contents were accessible, so no rule claim depends on their bodies. The pass found no eligible accessible source that changes inventory, contracts, conflicts, or validation and counts as the first consecutive convergence pass."
+
+[[discovery_pass]]
+id = "target-recension-convergence-pass-19"
+performed_at = "2026-08-15"
+languages = ["Russian", "English", "German", "French", "Church Slavonic"]
+queries = [
+  "русский извод церковнославянского языка полная морфология орфография PDF",
+  "Russian recension Church Slavonic complete morphology orthography grammar",
+  "Kirchenslavisch russische Redaktion Grammatik Morphologie Orthographie",
+  "slavon liturgique grammaire morphologie orthographe recension russe",
+]
+catalogs = ["Wikimedia Commons public-domain scans", "Sretensky Theological Seminary journal archive", "Harrassowitz Verlag", "Institut d’Études Slaves", "Vinogradov Russian Language Institute", "Ponomar Alypy grammar", "locked Synodal target-text union", "multilingual scholarly discovery indexes"]
+new_sources = ["kozmin-church-slavonic-1903", "marsheva-differentiating-orthography-2012", "trunte-kirchenslavisch-2017"]
+changed_inventory = false
+changed_contracts = false
+changed_conflicts = false
+changed_validation = false
+notes = "This independent target-recension pass reviewed Kozmin's complete public-domain inflectional section and Marsheva's complete nine-page differentiating-orthography study, then checked the German Trunte and French Deschler discovery records and the existing modern Russian authorities. Kozmin's five noun declensions, pronouns, short/long adjectives, comparison, numerals, complete finite/analytic systems, participles, passives, and irregular verbs are all already represented. Marsheva directly corroborates the four number-antistich letter pairs, wide endings, kamora, and lexical distinctions; every remaining example is already morphological or expressible by exact cell-scoped PositionalParadigm/AccentParadigm metadata. Her stronger universal, prefix-immutability, and dual/plural claims are the conflicts already recorded from Bolshakov's direct analysis, so no conflict set changes. Trunte's lesson body and Deschler's relevant chapter remain inaccessible and contribute no rule claim. The pass found no eligible accessible source that changes inventory, contracts, conflicts, or validation and counts as the second consecutive convergence pass."

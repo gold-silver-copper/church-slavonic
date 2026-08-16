@@ -1,39 +1,40 @@
 rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	suggested_action
 1	unknown-lexeme	нимиже	ни́миже	2	2		review the token against target-recension evidence and create or reject a lexical candidate
 2	unknown-lexeme	слышасте	слы́шасте	2	2		review the token against target-recension evidence and create or reject a lexical candidate
-3	unknown-lexeme	апⷭ҇лъ	а҆пⷭ҇лъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-4	unknown-lexeme	апⷭ҇лѡмъ	а҆пⷭ҇лѡмъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-5	unknown-lexeme	бж҃їею	бж҃їею	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-6	unknown-lexeme	благодаримъ	Благодари́мъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-7	unknown-lexeme	бл҃говѣствованїѧ	бл҃говѣствова́нїѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-8	unknown-lexeme	вознесесѧ	вознесе́сѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-9	unknown-lexeme	воньже	во́ньже	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-10	unknown-lexeme	всегда	всегда̀	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-11	unknown-lexeme	вѣрнымъ	вѣ̑рнымъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-12	unknown-lexeme	деньми	де́ньми	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+3	ambiguity-or-spelling-variant	имате	и҆́мате	2	2	synodal:verb:imati,synodal:verb:wikt-0c6c8db63b7c	review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains
+4	unknown-lexeme	апⷭ҇лъ	а҆пⷭ҇лъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+5	unknown-lexeme	апⷭ҇лѡмъ	а҆пⷭ҇лѡмъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+6	unknown-lexeme	бж҃їею	бж҃їею	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+7	unknown-lexeme	благодаримъ	Благодари́мъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+8	unknown-lexeme	бл҃говѣствованїѧ	бл҃говѣствова́нїѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+9	unknown-lexeme	вознесесѧ	вознесе́сѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+10	unknown-lexeme	воньже	во́ньже	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+11	unknown-lexeme	всегда	всегда̀	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+12	unknown-lexeme	вѣрнымъ	вѣ̑рнымъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
 13	unknown-lexeme	ждати	жда́ти	1	1		review the token against target-recension evidence and create or reject a lexical candidate
 14	unknown-lexeme	заповѣдавъ	заповѣ́давъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-15	unknown-lexeme	знаменїихъ	зна́менїихъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-16	unknown-lexeme	истинныхъ	и҆́стинныхъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-17	unknown-lexeme	колоссаехъ	колосса́ехъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-18	unknown-lexeme	крестилъ	крести́лъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-19	unknown-lexeme	креститисѧ	крести́тисѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-20	unknown-lexeme	молѧщесѧ	молѧ́щесѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-21	unknown-lexeme	паѵелъ	Па́ѵелъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-22	unknown-lexeme	слышавше	слы́шавше	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-23	unknown-lexeme	страданїи	страда́нїи	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-24	unknown-lexeme	ст҃ымъ	ст҃ы̑мъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-25	unknown-lexeme	сꙋщымъ	сꙋ́щымъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-26	unknown-lexeme	тїмоѳей	тїмоѳе́й	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-27	unknown-lexeme	хрⷭ҇товъ	хрⷭ҇то́въ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-28	unknown-lexeme	четыредесѧтьми	четы́редесѧтьми	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-29	unknown-lexeme	ѡбѣтованїѧ	ѡ҆бѣтова́нїѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-30	unknown-lexeme	ѳеофїле	ѳео́фїле	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-31	unknown-lexeme	ѹпованїе	ѹ҆пова́нїе	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-32	unknown-lexeme	ѻч҃а	ѻ҆́ч҃а	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-33	unknown-lexeme	ѿложенное	ѿложе́нное	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-34	unknown-lexeme	ѿлꙋчатисѧ	ѿлꙋча́тисѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-35	unknown-lexeme	ᲂучити	ᲂу҆чи́ти	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-36	unknown-lexeme	ꙗвлѧѧсѧ	ꙗ҆влѧ́ѧсѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-37	unknown-lexeme	ꙗдый	ꙗ҆ды́й	1	1		review the token against target-recension evidence and create or reject a lexical candidate
-38	ambiguity-or-spelling-variant	ѽ	ѽ	1	1	synodal:preposition:wikt-3ed58a49777e	review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme
+15	unknown-lexeme	истинныхъ	и҆́стинныхъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+16	unknown-lexeme	колоссаехъ	колосса́ехъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+17	unknown-lexeme	крестилъ	крести́лъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+18	unknown-lexeme	креститисѧ	крести́тисѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+19	unknown-lexeme	молѧщесѧ	молѧ́щесѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+20	unknown-lexeme	паѵелъ	Па́ѵелъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+21	unknown-lexeme	слышавше	слы́шавше	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+22	unknown-lexeme	страданїи	страда́нїи	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+23	unknown-lexeme	ст҃ымъ	ст҃ы̑мъ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+24	unknown-lexeme	тїмоѳей	тїмоѳе́й	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+25	unknown-lexeme	хрⷭ҇товъ	хрⷭ҇то́въ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+26	unknown-lexeme	четыредесѧтьми	четы́редесѧтьми	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+27	unknown-lexeme	ѡбѣтованїѧ	ѡ҆бѣтова́нїѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+28	unknown-lexeme	ѳеофїле	ѳео́фїле	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+29	unknown-lexeme	ѹпованїе	ѹ҆пова́нїе	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+30	unknown-lexeme	ѻч҃а	ѻ҆́ч҃а	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+31	unknown-lexeme	ѿложенное	ѿложе́нное	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+32	unknown-lexeme	ѿлꙋчатисѧ	ѿлꙋча́тисѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+33	unknown-lexeme	ᲂучити	ᲂу҆чи́ти	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+34	unknown-lexeme	ꙗвлѧѧсѧ	ꙗ҆влѧ́ѧсѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
+35	missing-accent-or-orthographic-metadata	деньми	де́ньми	1	1	synodal:noun:day	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
+36	missing-accent-or-orthographic-metadata	знаменїихъ	зна́менїихъ	1	1	synodal:noun:v06-673b2df93b4f89a8	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
+37	missing-accent-or-orthographic-metadata	сꙋщымъ	сꙋ́щымъ	1	1	synodal:verb:byti	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
+38	missing-accent-or-orthographic-metadata	ꙗдый	ꙗ҆ды́й	1	1	synodal:verb:wikt-6ceeefbe4e9e	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
+39	ambiguity-or-spelling-variant	ѽ	ѽ	1	1	synodal:preposition:wikt-3ed58a49777e	review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme

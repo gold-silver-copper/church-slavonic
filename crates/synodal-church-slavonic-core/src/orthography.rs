@@ -153,7 +153,8 @@ pub enum InitialPresentation {
     DigraphUk,
 }
 
-/// One closed positional-letter substitution licensed by Alypy §§2 and 36.
+/// One closed positional-letter substitution licensed by source-specific
+/// Synodal positional and number-antistich rules.
 /// The expected input letter is part of the variant, so a rule cannot silently
 /// rewrite an unrelated character.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -164,15 +165,19 @@ pub enum PositionalReplacement {
     Omega,
     DecimalI,
     IotatedYa,
+    Yeri,
+    LittleYus,
 }
 
 impl PositionalReplacement {
-    pub const ALL: [Self; 5] = [
+    pub const ALL: [Self; 7] = [
         Self::WideE,
         Self::BroadOn,
         Self::Omega,
         Self::DecimalI,
         Self::IotatedYa,
+        Self::Yeri,
+        Self::LittleYus,
     ];
 
     const fn letters(self) -> (char, char) {
@@ -182,6 +187,8 @@ impl PositionalReplacement {
             Self::Omega => ('о', 'ѡ'),
             Self::DecimalI => ('и', 'ї'),
             Self::IotatedYa => ('ѧ', 'ꙗ'),
+            Self::Yeri => ('и', 'ы'),
+            Self::LittleYus => ('а', 'ѧ'),
         }
     }
 }
@@ -783,6 +790,56 @@ mod tests {
             exception.apply(cell, "сиѡна").expect("Sihon preserve rule"),
             "сиѡна"
         );
+    }
+
+    #[test]
+    fn number_antistich_letter_pairs_are_all_source_selectable() {
+        let cell = noun_cell(Case::Instrumental, Number::Plural);
+        for (input, replacement, occurrence, expected) in [
+            (
+                "жене",
+                PositionalReplacement::WideE,
+                LetterOccurrence::FromEnd(0),
+                "женє",
+            ),
+            (
+                "мироносицы",
+                PositionalReplacement::Omega,
+                LetterOccurrence::FromStart(0),
+                "мирѡносицы",
+            ),
+            (
+                "мужи",
+                PositionalReplacement::Yeri,
+                LetterOccurrence::FromEnd(0),
+                "мужы",
+            ),
+            (
+                "пришедша",
+                PositionalReplacement::LittleYus,
+                LetterOccurrence::FromEnd(0),
+                "пришедшѧ",
+            ),
+        ] {
+            let paradigm = PositionalParadigm {
+                id: "source-selected-number-antistich".into(),
+                rules: vec![PositionalRule {
+                    scope: AccentScope::All,
+                    operations: vec![PositionalOperation::Replace {
+                        replacement,
+                        occurrence,
+                    }],
+                }],
+                evidence: evidence(),
+            };
+            assert_eq!(
+                paradigm
+                    .apply(cell, input)
+                    .expect("compatible number-antistich replacement"),
+                expected
+            );
+        }
+        assert_eq!(PositionalReplacement::ALL.len(), 7);
     }
 
     #[test]

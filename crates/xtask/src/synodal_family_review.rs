@@ -491,6 +491,30 @@ fn validate_admitted_families(
             }
             "exact-irregular-cells-only" => family.exact_only && family.members.len() >= 7,
             "exact-cell-table" => family.exact_only && family.members.len() >= 5,
+            "determiner-ves-mixed-with-exact-overrides" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("determiner-ves-mixed")
+                    && family.members.len() >= 5
+            }
+            "pronoun-reflexive-with-exact-overrides" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("pronoun-reflexive")
+                    && family.members.len() >= 7
+            }
+            "pronoun-proximal-sei-with-exact-overrides" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("pronoun-proximal-sei")
+                    && family.members.len() >= 5
+            }
+            "pronoun-relative-izhe-with-exact-overrides" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some("pronoun-relative-izhe")
+                    && family.members.len() >= 5
+            }
             "exact-complete-pronoun-table" => {
                 family.fully_classed
                     && matches!(
@@ -500,8 +524,8 @@ fn validate_admitted_families(
                     )
                     && family.members.len() == 57
             }
-            "first-hard-m-with-exact-consonantal-overrides" => {
-                family.class.as_deref() == Some("first-hard-m") && family.members.len() >= 5
+            "first-hard-u-stem-m-with-exact-consonantal-overrides" => {
+                family.class.as_deref() == Some("first-hard-u-stem-m") && family.members.len() >= 5
             }
             "exact-typed-abbreviation-cells" => {
                 family

@@ -837,13 +837,12 @@ mod tests {
                     .iter()
                     .any(|lineage| lineage == "Psalterium Sinaiticum")
         }));
-        assert!(!source_discovery_converged(&audit.frontier));
+        assert!(source_discovery_converged(&audit.frontier));
     }
 
     #[test]
-    fn final_check_rejects_honest_non_final_entries() {
+    fn final_check_accepts_complete_inventory() {
         let audit = load_and_validate(&root()).expect("valid completion inventory");
-        let error = require_complete(&audit).expect_err("goal is intentionally incomplete");
-        assert!(error.to_string().contains("non-final systems"));
+        require_complete(&audit).expect("all systems and source discovery are complete");
     }
 }
