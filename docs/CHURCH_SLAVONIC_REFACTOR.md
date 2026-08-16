@@ -370,7 +370,9 @@ validation from the explicit source-backed regeneration check, so production
 plus tools fell from 87,489 to 87,180 lines, a net reduction of 309 handwritten
 lines. Test and generated LOC are unchanged. No production code moved into
 tests, generated output, data, macros, or tools to improve the primary metric,
-and no generated or data artifact is in the change set.
+and generated Rust and linguistic data are unchanged. The deterministic
+fixture-bootstrap report is refreshed to the hashes and evaluation counts
+reproduced by the current committed registries.
 
 ### Ranked decisions and implementation
 
@@ -418,7 +420,9 @@ preserve the committed ledger byte-for-byte. A clean-checkout structural run
 with the ignored Polivanova intermediate absent covers the lighter completion
 route, while a consecutive strict check with the intermediate restored covers
 the full source-derived currentness contract. Rust 1.97.1 Clippy with warnings
-denied covers the two equivalent final-branch `?` rewrites required by CI.
+denied covers the two equivalent final-branch `?` rewrites required by CI. The
+full CI structural sequence also reproduces the committed fixture-bootstrap
+report and leaves the generated tree clean.
 
 The final workspace commands, native and WebAssembly builds, documentation and
 package checks, and independent full-diff review are recorded in the pull
