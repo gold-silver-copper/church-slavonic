@@ -3,10 +3,10 @@
 - Passages: 74130
 - Tokens: 1313344
 - Types: 57476
-- Top-1 analyzed: 613949 (4674 bp)
-- Top-k analyzed: 963251 (7334 bp)
+- Top-1 analyzed: 613989 (4675 bp)
+- Top-k analyzed: 963291 (7334 bp)
 - Ambiguous: 9398
-- Unresolved: 349064
+- Unresolved: 349024
 
 ## Gap categories
 
@@ -16,7 +16,7 @@
 | `missing-declension-or-class` | 43 |
 | `missing-verb-principal-part` | 72 |
 | `unsupported-formation` | 0 |
-| `missing-accent-or-orthographic-metadata` | 10048 |
+| `missing-accent-or-orthographic-metadata` | 10008 |
 | `ambiguity-or-spelling-variant` | 10427 |
 
 ## Coverage composition
@@ -29,10 +29,10 @@ assumed. `morphology-free` tokens carry only `lexical-form` readings.
 
 | Measure | Tokens | Share of top-k |
 |---|---:|---:|
-| morphologically typed | 913100 | 9479 bp |
+| morphologically typed | 913140 | 9479 bp |
 | morphology-free | 50151 | 520 bp |
-| lemma-unique | 953853 | 9902 bp |
-| within-lexeme ambiguous (syncretism) | 336946 | 3498 bp |
+| lemma-unique | 953893 | 9902 bp |
+| within-lexeme ambiguous (syncretism) | 336946 | 3497 bp |
 | cross-lexeme ambiguous (homonymy) | 9398 | 97 bp |
 
 ## Type-disjoint holdout
@@ -75,7 +75,7 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `reviewed-class` | 43 |
 | `reviewed-principal-part` | 72 |
 | `abbreviation-registry` | 10677 |
-| `spelling-variant` | 11077 |
+| `spelling-variant` | 11037 |
 | `unsupported-formation` | 0 |
 | `ungrouped-unknown` | 327765 |
 
@@ -188,31 +188,31 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| Church Slavonic Bible | 651487 | 304532 | 478204 | 4690 | 172753 |
-| Elizabeth Bible | 661857 | 309417 | 485047 | 4708 | 176311 |
+| Church Slavonic Bible | 651487 | 304552 | 478224 | 4690 | 172733 |
+| Elizabeth Bible | 661857 | 309437 | 485067 | 4708 | 176291 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 309417 | 485047 | 4708 | 176311 |
-| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 304532 | 478204 | 4690 | 172753 |
+| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 309437 | 485067 | 4708 | 176291 |
+| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 304552 | 478224 | 4690 | 172733 |
 
 ## Coverage by partition
 
 | Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `evaluation` | 265701 | 124136 | 195282 | 2010 | 70220 |
-| `source` | 1047643 | 489813 | 767969 | 7388 | 278844 |
+| `evaluation` | 265701 | 124145 | 195291 | 2010 | 70211 |
+| `source` | 1047643 | 489844 | 768000 | 7388 | 278813 |
 
 ## Coverage by source and partition
 
 | Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63069 | 98959 | 1046 | 35853 |
-| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 246348 | 386088 | 3662 | 140458 |
-| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61067 | 96323 | 964 | 34367 |
-| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 243465 | 381881 | 3726 | 138386 |
+| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63074 | 98964 | 1046 | 35848 |
+| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 246363 | 386103 | 3662 | 140443 |
+| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61071 | 96327 | 964 | 34363 |
+| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 243481 | 381897 | 3726 | 138370 |
 
 ## Gap categories by source
 
@@ -221,12 +221,12 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 171210 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-declension-or-class` | 22 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-verb-principal-part` | 36 |
-| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 5043 |
+| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 5023 |
 | `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5207 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 167691 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-declension-or-class` | 21 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-verb-principal-part` | 36 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 5005 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 4985 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5220 |
 
 ## Gap categories by partition
@@ -236,12 +236,12 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `evaluation` | `unknown-lexeme` | 68143 |
 | `evaluation` | `missing-declension-or-class` | 7 |
 | `evaluation` | `missing-verb-principal-part` | 18 |
-| `evaluation` | `missing-accent-or-orthographic-metadata` | 2052 |
+| `evaluation` | `missing-accent-or-orthographic-metadata` | 2043 |
 | `evaluation` | `ambiguity-or-spelling-variant` | 2209 |
 | `source` | `unknown-lexeme` | 270758 |
 | `source` | `missing-declension-or-class` | 36 |
 | `source` | `missing-verb-principal-part` | 54 |
-| `source` | `missing-accent-or-orthographic-metadata` | 7996 |
+| `source` | `missing-accent-or-orthographic-metadata` | 7965 |
 | `source` | `ambiguity-or-spelling-variant` | 8218 |
 
 ## Review queue

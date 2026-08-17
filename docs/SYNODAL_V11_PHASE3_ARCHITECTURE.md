@@ -103,20 +103,32 @@ Building the positional path surfaced a real error in the reviewed data.
   20 occurrences, agreeing with dative-plural `твои̑мъ`, `ва́шымъ`, `на́шымъ`
   (Apoc.18.4, Dan.4.24, Ezek.21.24, II_Paral.6.25, II_Macc.6.15, Dan.8.23).
 
-Correcting it is worth +40 tokens and was implemented and verified: the engine
-then returns `грѣхо́мъ` for the instrumental singular and `грѣхѡ́мъ` for the
-dative plural, and the held-out contract rises to 2,268/2,268 with one more
-cell tested.
+### What landed
 
-**The correction was reverted and is not in this branch.** The row is owned by
-the v0.7 wave: `v07_packet_ownership.tsv` line 323 declares it, that ledger is
-pinned by `HISTORICAL_PACKET_OWNER_DIGEST`, and `synodal-v07-apply` strips exact
-rows it does not own. Landing the fix therefore requires either unfreezing a
-sealed digest or adding a v0.11 cell-correction ledger that `synodal-v07-apply`
-honours — the `v10_exact_cell_corrections.tsv` ledger only retracts rows and is
-read by `synodal-check`, not by the wave tool. Bumping a frozen digest to absorb
-a data change is exactly the failure mode the review contract warns about, so
-the defect is recorded here with its full evidence instead of being forced in.
+The genuinely attested dative plural `грѣхѡ́мъ` is now an exact row citing
+Apoc.18.4, a source-partition witness. `synodal-v07-apply` preserves rows it
+does not own, so the addition survives materialisation. It is worth **+40
+tokens** (963,251 to 963,291) and leaves the held-out contract unchanged at
+2,203/2,267 expanded and 2,119/2,267 printed.
+
+### What did not land
+
+The mis-celled row itself remains. Re-celling it to
+`noun:instrumental:singular:inanimate` — which is what its Ezek.14.13 evidence
+actually attests — was implemented and verified end to end, and then reverted.
+The row is owned by the v0.7 wave: `v07_packet_ownership.tsv` line 323 declares
+it and that ledger is pinned by `HISTORICAL_PACKET_OWNER_DIGEST`, so changing
+the cell means either unfreezing a sealed digest or adding a v0.11
+cell-correction ledger that `synodal-v07-apply` honours. The existing
+`v10_exact_cell_corrections.tsv` only retracts rows and is read by
+`synodal-check`, not by the wave tool. Bumping a frozen digest to absorb a data
+change is exactly the failure mode the review contract warns about, so the
+defect is recorded here with its evidence instead of being forced in.
+
+The consequence is visible and bounded: `noun:dative:plural:inanimate` now
+carries two ordered variants, the correct `грѣхѡ́мъ` and the mis-celled
+`грѣхо́мъ`. Coverage and the held-out contract both improve or hold, but the
+cell claims one spelling that belongs to the instrumental singular.
 
 The same ledger also carries a second row (line 458) assigning the identical
 print `грѣхо́мъ` to `noun:instrumental:singular:inanimate` with the same
