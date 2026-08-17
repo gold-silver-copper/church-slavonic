@@ -3793,6 +3793,7 @@ fn emit_registry(tables: RegistryTables) -> String {
         "RawAccentParadigm",
         &accent_paradigms.rows,
     );
+    output.push_str("#[allow(dead_code)]\n");
     emit_rows(
         &mut output,
         "POSITIONAL_PARADIGMS",

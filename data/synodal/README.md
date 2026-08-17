@@ -46,7 +46,11 @@ morphological system has to be admitted deliberately. `--reseal-floors` ratchets
 bounds toward the achieved values and can only tighten; weakening one is a hand
 edit that carries its justification into review.
 
-`positional_paradigms.tsv` is the reviewed lexical positional-spelling contract:
+`positional_paradigms.tsv` is the reviewed lexical positional-spelling contract.
+**It is not consumed by the resolver yet and must stay empty**: the registry path
+would apply it after accent, and `PositionalParadigm::apply` rejects accented
+input, so a populated row turns working cells into hard errors. See
+`docs/SYNODAL_V11_PHASE3_ARCHITECTURE.md`. The table describes:
 which cells of a lexeme print a wide `є`, broad `ѡ`, decimal `і`, or the §36
 wide plural ending. It shares the accent scope grammar, because both answer the
 same question about which cells a reviewed decision governs, and its operation

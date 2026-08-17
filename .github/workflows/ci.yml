@@ -61,6 +61,12 @@ jobs:
         run: cargo xtask synodal-fixture-bootstrap
       - name: Deterministic coverage fixture
         run: cargo xtask synodal-coverage --offline --fixture --check
+      # The canonical coverage run needs the gitignored intermediate corpus, so
+      # it cannot execute here. This enforces the sealed composition floors
+      # against the committed report instead, which is what makes phase 1 and
+      # phase 2 bite on a pull request rather than only on a manual dispatch.
+      - name: Sealed coverage floors
+        run: cargo xtask synodal-coverage-floors
       - name: Structural checks
         run: |
           cargo xtask check-structure

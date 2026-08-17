@@ -485,17 +485,20 @@ fn apply_generated_presentation(
         }
         variants.push(variant);
     }
-    let forms = FormSet::try_from_variants(variants)?;
-    // Positional realization runs after accent, on the printed form, exactly as
-    // the caller-supplied path does. Without this the registry path could never
-    // produce the number-antistich spellings the print uses to separate a dual
-    // or plural from its homographic singular — wide `є`, broad `ѡ`, and the
-    // §36 `-ѡмъ/-ѡвъ` endings — so those cells stayed unreachable by generation
-    // no matter how complete the lexeme's other metadata was.
-    match registry::positional_paradigm_for(id, cell)? {
-        Some(paradigm) => apply_positional_paradigm(forms, cell, &paradigm),
-        None => Ok(forms),
-    }
+    // NOT wired to `registry::positional_paradigm_for` yet, deliberately.
+    //
+    // `PositionalParadigm::apply` rejects any input carrying a prosodic mark
+    // (`orthography.rs`, "requires an unaccented, unbreathed expanded form"),
+    // so applying it here — after the accent loop has produced an accented
+    // `printed` — can never succeed: a populated table would turn working cells
+    // into hard errors rather than realising positional spellings. The
+    // caller-supplied paths apply positional *before* accent, which is the only
+    // order the core permits, but the registry path resolves its exact accent
+    // rows by the expanded form, so reordering here changes that lookup key and
+    // needs its own design. Until that is resolved the reviewed table stays
+    // unread; `positional_paradigms.tsv` is validated and compiled, and
+    // `positional_paradigm_for` is unit-tested, but nothing consumes it.
+    FormSet::try_from_variants(variants)
 }
 
 fn mark_inherited(

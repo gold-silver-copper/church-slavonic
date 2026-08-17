@@ -6258,6 +6258,7 @@ pub(crate) const ACCENT_PARADIGMS: &[RawAccentParadigm] = &[
     RawAccentParadigm(["synodal:verb:wikt-8a084860d2ef", "synodal-accent:verb-wikt-8a084860d2ef-fitted", "participle:present:passive:short:positive:singular", "stem-vowel-from-start:0", "acute", "", "verb-wikt-8a084860d2ef-accent-fit", "ponomar-elizabeth-bible-2026-08-09", "Acts.13.38", "synodal-russian", "synodal-russian"]),
 ];
 
+#[allow(dead_code)]
 pub(crate) const POSITIONAL_PARADIGMS: &[RawPositionalParadigm] = &[
 ];
 

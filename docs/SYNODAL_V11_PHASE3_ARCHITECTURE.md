@@ -56,18 +56,33 @@ arrives as a failing check naming its own remedy rather than as a surprise at
 publish time. **Tripping that budget is the signal to change the storage
 format, not to raise the number.**
 
-## 3. Positional-letter realization — path implemented, narrower than assumed
+## 3. Positional-letter realization — NOT closed; data layer only
 
-The registry path genuinely could not carry a reviewed positional spelling
-contract: `resolve_cell` applied accent metadata only, `apply_positional_paradigm`
-ran solely for caller-supplied specs, and `positional_rules.tsv` was read-only
-introspection. That structural gap is now closed. `positional_paradigms.tsv` is
-a validated reviewed table, `registry::positional_paradigm_for` compiles it with
-the same one-paradigm-per-cell and uniform-evidence rules accent paradigms use,
-and `apply_generated_presentation` applies it after accent, on the printed form,
-exactly as the caller-supplied path does. The operation vocabulary is closed so
-a row cannot rewrite an unrelated character, and seven tests cover the parser,
-its rejections, and the absent-contract case.
+**Corrected after independent review. An earlier version of this file claimed
+the structural gap was closed. That was wrong.**
+
+The registry path genuinely cannot carry a reviewed positional spelling
+contract: `resolve_cell` applies accent metadata only, `apply_positional_paradigm`
+runs solely for caller-supplied specs, and `positional_rules.tsv` is read-only
+introspection. What this phase added is the *data layer*:
+`positional_paradigms.tsv` is a validated reviewed table,
+`registry::positional_paradigm_for` compiles it with the same
+one-paradigm-per-cell and uniform-evidence rules accent paradigms use, the
+operation vocabulary is closed so a row cannot rewrite an unrelated character,
+and seven tests cover the parser, its rejections, and the absent-contract case.
+
+**The resolver does not consume it.** The first attempt wired it after the
+accent loop, on the printed form. `PositionalParadigm::apply` rejects any input
+carrying a prosodic mark, so that ordering can never succeed: review
+demonstrated that a single reviewed row turns working cells into hard errors —
+`престо́ломъ` became `contradictory lexical metadata: a positional paradigm
+requires an unaccented, unbreathed expanded form` — and that even a semantic
+no-op `preserve` row breaks three cells. The empty table hid it and both gates
+passed. The caller-supplied paths apply positional *before* accent, which is
+the only order the core permits, but the registry path resolves its exact
+accent rows by the expanded form, so reordering changes that lookup key and
+needs its own design. The call is therefore removed and the reason recorded at
+the call site.
 
 The table ships **empty**, and that is a finding rather than an omission:
 
@@ -82,7 +97,8 @@ The table ships **empty**, and that is a finding rather than an omission:
   attested spelling.
 
 Populating the table is therefore lexical review work that belongs with the
-phase 4 lexicon, not a mechanical sweep.
+phase 4 lexicon — and it must not begin until the ordering above is resolved,
+because a populated table is currently harmful rather than merely inert.
 
 ## 4. A confirmed data defect this phase found but could not fix
 
@@ -147,3 +163,55 @@ JSONL in full, `validate_abbreviation_families`,
 today, so these are not yet binding; the frozen constants are, however, the
 direct cause of the unfixable defect above and should be addressed with the
 correction ledger.
+
+## Independent review findings
+
+A four-lens review plus adversarial verification ran against this branch. Its
+confirmed findings are recorded here whether or not they were fixed.
+
+### Fixed
+
+- **The positional path was a latent landmine.** Section 3 above is the
+  corrected account; the resolver call is removed.
+- **The sealed floors ran on no automatic CI path.** `.github/workflows/ci.yml`
+  executes only `synodal-coverage --offline --fixture --check`, and the fixture
+  branch skips the floors and empties the holdout. The canonical `--check` lives
+  only in a `workflow_dispatch` workflow. All of phase 1 and phase 2 was inert
+  on pull requests. `cargo xtask synodal-coverage-floors` now enforces the
+  sealed bounds against the committed report — which needs no gitignored corpus
+  — and runs in CI on every push.
+- **`cross_lexeme_ambiguous` was unguarded.** Review showed the lemma-unique
+  floor catches a duplicate identity only when its collisions exceed its gains,
+  and that a duplicate did ship at `74c45b4` under the then-committed floors. It
+  is now sealed as an at-most bound.
+
+### Confirmed and NOT fixed
+
+- **The denominator is unsealed on the enforced path.** `guarded_measures` binds
+  numerators only, and `LOCKED_TOKENS` / `LOCKED_PASSAGES` /
+  `LOCKED_INTERMEDIATE_SHA256` are checked only under `--require-complete`,
+  which no workflow runs. Review duplicated one verse 40,000 times in the
+  intermediate corpus and the documented canonical command reported 80.12%
+  coverage with all 30 floors passing. **Fix:** move the locked denominator and
+  input hashes onto the enforced path.
+- **`глаголати` ships forms the corpus contradicts.** Pre-existing exact rows
+  give `aorist:third:singular` and an `hard` long present-active participle;
+  review reports the engine resolving `aorist:3pl` to `Глаго́лаше` — an
+  imperfect *singular* — while the true `глаголаша` (192 tokens, including
+  Acts.3.24, the passage this branch cites as its own aorist evidence) stays
+  uncovered, and `глаголѧй` (73 tokens) likewise. The class should be
+  `present-first-palatalized` with a soft long-participle class. **This was
+  admitted by this branch and is a real defect in it.**
+- **`возвѣстити` generates almost nothing.** Review reports only 3 of 17
+  finite/imperative/infinitive cells resolving, and none of the six cells its
+  own `family_reviews.tsv` note cites. The admission is evidenced but the
+  engine does not realise it, so its contribution to coverage is far smaller
+  than the note implies.
+- **Duplicate identities remain live.** Beyond the two this branch merged,
+  same-lemma-same-POS pairs persist including `твои`, `имати`, `сотворити`,
+  `іакѡвъ`, `аарѡнъ`, `вїно`, `блаженъ`, `дѣва`. Most twins analyse zero
+  tokens, but several are live and inflate `cross_lexeme_ambiguous`.
+
+The verb findings mean the phase 4 numbers should be read as *coverage gained*,
+not as *four verbs correctly and completely modelled*. Two of the four need
+follow-up before they can be called done.

@@ -36,6 +36,9 @@ pub(crate) struct RawAccentParadigm(pub [&'static str; 11]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawPositionalRule(pub [&'static str; 7]);
 #[derive(Clone, Copy, Debug)]
+// Compiled and unit-tested, but not yet consumed: see the note in
+// `resolver::apply_generated_presentation` on the accent/positional ordering.
+#[allow(dead_code)]
 pub(crate) struct RawPositionalParadigm(pub [&'static str; 9]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawTransformationRule(pub [&'static str; 6]);
@@ -706,6 +709,7 @@ pub(crate) fn accent_paradigm_for(
 /// every row of the selected paradigm must carry identical evidence, so a
 /// lexeme cannot accumulate contradictory positional decisions. Rows sharing a
 /// scope accumulate their operations in generated order.
+#[allow(dead_code)]
 pub(crate) fn positional_paradigm_for(
     id: &LexemeId,
     cell: synodal_church_slavonic_core::GrammarCell,
@@ -784,6 +788,7 @@ pub(crate) fn positional_paradigm_for(
     }))
 }
 
+#[allow(dead_code)]
 fn parse_positional_operation(value: &str) -> Result<PositionalOperation> {
     if value == "preserve" {
         return Ok(PositionalOperation::Initial(InitialPresentation::Preserve));

@@ -104,6 +104,9 @@ fn run() -> Result<(), Box<dyn Error>> {
             synodal::fixture_bootstrap(&mut args, &workspace_root()?)
         }
         Some("synodal-coverage") => synodal_coverage::run(&mut args, &workspace_root()?),
+        Some("synodal-coverage-floors") => {
+            synodal_coverage::check_committed_floors(&workspace_root()?)
+        }
         Some("synodal-accent-fit") => synodal_accent_fit::run(&mut args, &workspace_root()?),
         Some("synodal-type-holdout") => synodal_type_holdout::run(&mut args, &workspace_root()?),
         Some("synodal-evaluation-queue") => {

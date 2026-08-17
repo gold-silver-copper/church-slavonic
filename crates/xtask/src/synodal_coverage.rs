@@ -744,6 +744,27 @@ struct Floor {
 
 const FLOOR_HEADER: &str = "measure\tdirection\tvalue\tsealed_at\tjustification";
 
+/// Enforces the sealed floors against the *committed* coverage report.
+///
+/// The canonical coverage run needs `data/intermediate/`, which is gitignored,
+/// so CI's fresh checkout cannot execute it and the floors would otherwise be
+/// enforced on no automatic path at all. This reads the committed report
+/// instead, which the full-bootstrap workflow keeps current, so a wave that
+/// regresses a guarded measure fails on every pull request rather than only on
+/// a manual dispatch.
+pub(crate) fn check_committed_floors(root: &Path) -> Result<(), Box<dyn Error>> {
+    let report_path = root.join("reports/synodal-coverage.json");
+    let report: CoverageReport = serde_json::from_str(&fs::read_to_string(&report_path)?)?;
+    let floors_path = root.join("data/synodal/coverage_floors.tsv");
+    let floors = load_floors(&floors_path)?;
+    enforce_floors(&floors_path, &floors, &report)?;
+    println!(
+        "synodal coverage floors: {} sealed bounds hold",
+        floors.len()
+    );
+    Ok(())
+}
+
 fn load_floors(path: &Path) -> Result<Vec<Floor>, Box<dyn Error>> {
     let contents = fs::read_to_string(path)
         .map_err(|error| format!("cannot read {}: {error}", path.display()))?;
@@ -815,6 +836,13 @@ fn guarded_measures(report: &CoverageReport) -> BTreeMap<String, usize> {
     measures.insert(
         "integrity:morphology_free_analyzed".to_owned(),
         report.integrity.morphology_free_analyzed,
+    );
+    // Sealed after review: a duplicated identity raises this while making the
+    // analyzer worse, and the lemma-unique floor only catches one whose
+    // collisions happen to exceed its gains.
+    measures.insert(
+        "integrity:cross_lexeme_ambiguous".to_owned(),
+        report.integrity.cross_lexeme_ambiguous,
     );
     for (system, slice) in &report.by_morphological_system {
         measures.insert(format!("system:{system}"), slice.top_k_analyzed);
