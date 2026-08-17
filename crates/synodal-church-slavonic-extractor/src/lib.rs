@@ -839,6 +839,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     let abbreviation_inventory_path = data_directory.join("abbreviation_inventory.tsv");
     let accent_path = data_directory.join("accents.tsv");
     let accent_paradigm_path = data_directory.join("accent_paradigms.tsv");
+    let positional_paradigm_path = data_directory.join("positional_paradigms.tsv");
     let positional_path = data_directory.join("positional_rules.tsv");
     let transformation_path = data_directory.join("transformation_rules.tsv");
     let conflict_path = data_directory.join("conflicts.tsv");
@@ -899,6 +900,11 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         &accent_paradigm_path,
         "lexeme_id\tparadigm_id\tscope\tplacement\tmark\tbreathing\tevidence_id\tsource_id\tcitation\tsource_recension\ttarget_recension",
         11,
+    )?;
+    let positional_paradigms = read_table(
+        &positional_paradigm_path,
+        "lexeme_id\tparadigm_id\tscope\toperation\tevidence_id\tsource_id\tcitation\tsource_recension\ttarget_recension",
+        9,
     )?;
     let positional_rules = read_table(
         &positional_path,
@@ -1017,6 +1023,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     )?;
     validate_accents(&accent_path, &accents)?;
     validate_accent_paradigms(&accent_paradigm_path, &accent_paradigms)?;
+    validate_positional_paradigms(&positional_paradigm_path, &positional_paradigms)?;
     validate_positional_rules(&positional_path, &positional_rules)?;
     validate_transformation_rules(&transformation_path, &transformation_rules)?;
     validate_conflicts(&conflict_path, &conflicts)?;
@@ -1037,6 +1044,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&abbreviation_inventory, &[8][..]),
             (&accents, &[4][..]),
             (&accent_paradigms, &[6][..]),
+            (&positional_paradigms, &[4][..]),
             (&noun_restrictions, &[3][..]),
             (&positional_rules, &[5][..]),
             (&transformation_rules, &[5][..]),
@@ -1055,6 +1063,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
             (&abbreviation_family_path, &abbreviation_families, 0),
             (&accent_path, &accents, 0),
             (&accent_paradigm_path, &accent_paradigms, 0),
+            (&positional_paradigm_path, &positional_paradigms, 0),
             (&noun_restriction_path, &noun_restrictions, 0),
             (&irregular_path, &irregular_overrides, 0),
             (&defective_inventory_path, &defective_inventories, 0),
@@ -1079,6 +1088,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         abbreviation_families: abbreviation_families.clone(),
         accents: accents.clone(),
         accent_paradigms: accent_paradigms.clone(),
+        positional_paradigms: positional_paradigms.clone(),
         positional_rules: positional_rules.clone(),
         transformation_rules: transformation_rules.clone(),
         conflicts: conflicts.clone(),
@@ -1755,7 +1765,7 @@ pub fn validate_candidate_links(data_directory: &Path, intermediate: &Path) -> R
 }
 
 fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
-    let specifications: [(&str, &[usize]); 13] = [
+    let specifications: [(&str, &[usize]); 14] = [
         ("principal_parts.tsv", &[4]),
         ("exact_forms.tsv", &[4]),
         ("alignments.tsv", &[8]),
@@ -1763,6 +1773,7 @@ fn runtime_evidence_ids(data_directory: &Path) -> Result<BTreeSet<String>> {
         ("abbreviation_families.tsv", &[5]),
         ("accents.tsv", &[4]),
         ("accent_paradigms.tsv", &[6]),
+        ("positional_paradigms.tsv", &[4]),
         ("noun_restrictions.tsv", &[3]),
         ("positional_rules.tsv", &[5]),
         ("transformation_rules.tsv", &[5]),
@@ -2837,6 +2848,89 @@ fn validate_accent_paradigms(path: &Path, table: &Table) -> Result<()> {
     Ok(())
 }
 
+/// Validates the reviewed lexical positional-spelling contract.
+///
+/// The scope grammar is shared with accent paradigms, because both answer the
+/// same question — which cells does this reviewed decision govern — and a
+/// second grammar would drift. The operation vocabulary is closed so that a row
+/// can never rewrite an unrelated character.
+fn validate_positional_paradigms(path: &Path, table: &Table) -> Result<()> {
+    let mut ids = BTreeSet::new();
+    for (offset, row) in table.rows.iter().enumerate() {
+        let line = offset + 2;
+        validate_target(path, line, &row[8])?;
+        if row[1].is_empty() || row[4].is_empty() || row[5].is_empty() || row[6].is_empty() {
+            return invalid(
+                path,
+                line,
+                "positional paradigm requires stable IDs, evidence, a source, and a citation",
+            );
+        }
+        if row[7] != TARGET {
+            return invalid(
+                path,
+                line,
+                "positional evidence requires a Synodal source recension",
+            );
+        }
+        if !ids.insert((
+            row[0].clone(),
+            row[1].clone(),
+            row[2].clone(),
+            row[3].clone(),
+        )) {
+            return Err(ExtractionError::DuplicateId {
+                file: path.to_owned(),
+                id: format!("{}:{}:{}", row[0], row[1], row[2]),
+            });
+        }
+        validate_accent_scope_code(path, line, &row[2])?;
+        validate_positional_operation_code(path, line, &row[3])?;
+    }
+    Ok(())
+}
+
+fn validate_positional_operation_code(path: &Path, line: usize, value: &str) -> Result<()> {
+    if matches!(
+        value,
+        "preserve" | "decimal-i-before-vowel" | "wide-plural-ending"
+    ) {
+        return Ok(());
+    }
+    if let Some(presentation) = value.strip_prefix("initial:") {
+        if matches!(
+            presentation,
+            "preserve" | "wide-e" | "broad-on" | "iotated-ya" | "digraph-uk"
+        ) {
+            return Ok(());
+        }
+        return invalid(path, line, "unknown initial positional presentation");
+    }
+    if let Some(rest) = value.strip_prefix("replace:") {
+        let Some((replacement, occurrence)) = rest.split_once('@') else {
+            return invalid(path, line, "positional replacement needs an occurrence");
+        };
+        if !matches!(
+            replacement,
+            "wide-e" | "broad-on" | "omega" | "decimal-i" | "iotated-ya" | "yeri" | "little-yus"
+        ) {
+            return invalid(path, line, "unknown positional replacement letter");
+        }
+        let Some((direction, index)) = occurrence.split_once(':') else {
+            return invalid(
+                path,
+                line,
+                "positional occurrence needs a direction and index",
+            );
+        };
+        if !matches!(direction, "from-start" | "from-end") || index.parse::<u8>().is_err() {
+            return invalid(path, line, "invalid positional occurrence");
+        }
+        return Ok(());
+    }
+    invalid(path, line, "unknown positional operation")
+}
+
 fn validate_accent_scope_code(path: &Path, line: usize, value: &str) -> Result<()> {
     let parts = value.split(':').collect::<Vec<_>>();
     if let [
@@ -3594,6 +3688,7 @@ struct RegistryTables {
     abbreviation_families: Table,
     accents: Table,
     accent_paradigms: Table,
+    positional_paradigms: Table,
     positional_rules: Table,
     transformation_rules: Table,
     conflicts: Table,
@@ -3614,6 +3709,7 @@ fn emit_registry(tables: RegistryTables) -> String {
         mut abbreviation_families,
         mut accents,
         mut accent_paradigms,
+        mut positional_paradigms,
         mut positional_rules,
         mut transformation_rules,
         mut conflicts,
@@ -3644,6 +3740,7 @@ fn emit_registry(tables: RegistryTables) -> String {
     abbreviation_families.rows.sort();
     accents.rows.sort();
     accent_paradigms.rows.sort();
+    positional_paradigms.rows.sort();
     positional_rules.rows.sort();
     transformation_rules.rows.sort();
     conflicts.rows.sort();
@@ -3695,6 +3792,12 @@ fn emit_registry(tables: RegistryTables) -> String {
         "ACCENT_PARADIGMS",
         "RawAccentParadigm",
         &accent_paradigms.rows,
+    );
+    emit_rows(
+        &mut output,
+        "POSITIONAL_PARADIGMS",
+        "RawPositionalParadigm",
+        &positional_paradigms.rows,
     );
     emit_rows(
         &mut output,

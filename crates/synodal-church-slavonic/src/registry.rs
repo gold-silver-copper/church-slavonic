@@ -4,14 +4,15 @@ use synodal_church_slavonic_core::{
     AoristFormation, Aspect, AuthorityRole, BreathingMark, BreathingRule, Case, Comparison,
     ComparisonFormation, Confidence, DeterminerDeclension, DeterminerLexeme, EpistemicRole, Error,
     Evidence, EvidenceId, EvidenceKind, FiniteTense, Gender, GenerationPolicy, GrammarCell,
-    ImperativeFormation, ImperfectFormation, LexemeId, NounAnimacyInventory, NounDeclension,
-    NounLexeme, NounNumberInventory, Number, NumeralDeclension, NumeralLexeme,
-    ParticiplePrincipalPart, ParticipleTense, ParticipleVoice, PronounDeclension,
-    PronounEnvironment, PronounFormSelection, PronounLexeme, PronounPostpositive, PronounPrefix,
-    Recension, RecensionMappingId, Result, ShortMasculineStemFormation, SourceId, SynodalWord,
-    VerbConjugation, VerbLexeme, VerbalNounPrincipalPart, normalize_lookup_accentless,
-    validate_adjective_lexeme, validate_determiner_lexeme, validate_numeral_lexeme,
-    validate_pronoun_lexeme,
+    ImperativeFormation, ImperfectFormation, InitialPresentation, LetterOccurrence, LexemeId,
+    NounAnimacyInventory, NounDeclension, NounLexeme, NounNumberInventory, Number,
+    NumeralDeclension, NumeralLexeme, ParticiplePrincipalPart, ParticipleTense, ParticipleVoice,
+    PositionalOperation, PositionalParadigm, PositionalReplacement, PositionalRule,
+    PronounDeclension, PronounEnvironment, PronounFormSelection, PronounLexeme,
+    PronounPostpositive, PronounPrefix, Recension, RecensionMappingId, Result,
+    ShortMasculineStemFormation, SourceId, SynodalWord, VerbConjugation, VerbLexeme,
+    VerbalNounPrincipalPart, normalize_lookup_accentless, validate_adjective_lexeme,
+    validate_determiner_lexeme, validate_numeral_lexeme, validate_pronoun_lexeme,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -34,6 +35,8 @@ pub(crate) struct RawAccent(pub [&'static str; 8]);
 pub(crate) struct RawAccentParadigm(pub [&'static str; 11]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawPositionalRule(pub [&'static str; 7]);
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct RawPositionalParadigm(pub [&'static str; 9]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawTransformationRule(pub [&'static str; 6]);
 #[derive(Clone, Copy, Debug)]
@@ -695,6 +698,144 @@ pub(crate) fn accent_paradigm_for(
             note: Some("reviewed reusable Synodal accent paradigm".into()),
         },
     }))
+}
+
+/// Builds the reviewed positional-spelling contract governing one cell.
+///
+/// Mirrors `accent_paradigm_for`: at most one paradigm may apply to a cell, and
+/// every row of the selected paradigm must carry identical evidence, so a
+/// lexeme cannot accumulate contradictory positional decisions. Rows sharing a
+/// scope accumulate their operations in generated order.
+pub(crate) fn positional_paradigm_for(
+    id: &LexemeId,
+    cell: synodal_church_slavonic_core::GrammarCell,
+) -> Result<Option<PositionalParadigm>> {
+    let rows: Vec<&RawPositionalParadigm> =
+        rows_for(POSITIONAL_PARADIGMS, |row| row.0[0], id.as_str())
+            .iter()
+            .collect();
+    let mut applicable_ids = Vec::new();
+    for row in &rows {
+        if parse_accent_scope(row.0[2])?.applies_to(cell) {
+            applicable_ids.push(row.0[1]);
+        }
+    }
+    applicable_ids.sort_unstable();
+    applicable_ids.dedup();
+    let Some(paradigm_id) = applicable_ids.first().copied() else {
+        return Ok(None);
+    };
+    if applicable_ids.len() > 1 {
+        return Err(Error::ContradictoryMetadata {
+            reason: format!(
+                "multiple positional paradigms apply to {} in cell {cell:?}",
+                id.as_str()
+            ),
+        });
+    }
+    let selected: Vec<&RawPositionalParadigm> = rows
+        .into_iter()
+        .filter(|row| row.0[1] == paradigm_id)
+        .collect();
+    let first = selected[0];
+    for row in &selected {
+        if row.0[4..] != first.0[4..] {
+            return Err(Error::ContradictoryMetadata {
+                reason: format!("positional paradigm {paradigm_id} has inconsistent evidence"),
+            });
+        }
+    }
+    let mut grouped: std::collections::BTreeMap<&str, Vec<PositionalOperation>> =
+        std::collections::BTreeMap::new();
+    for row in &selected {
+        grouped
+            .entry(row.0[2])
+            .or_default()
+            .push(parse_positional_operation(row.0[3])?);
+    }
+    let mut rules = Vec::with_capacity(grouped.len());
+    for (scope, operations) in grouped {
+        rules.push(PositionalRule {
+            scope: parse_accent_scope(scope)?,
+            operations: operations
+                .into_iter()
+                .filter(|operation| {
+                    !matches!(
+                        operation,
+                        PositionalOperation::Initial(InitialPresentation::Preserve)
+                    )
+                })
+                .collect(),
+        });
+    }
+    Ok(Some(PositionalParadigm {
+        id: paradigm_id.into(),
+        rules,
+        evidence: Evidence {
+            id: EvidenceId::from(first.0[4]),
+            source: SourceId::from(first.0[5]),
+            source_recension: Recension::SynodalRussian,
+            kind: EvidenceKind::OrthographicParadigm,
+            authority_roles: vec![AuthorityRole::Orthographic],
+            epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+            citation: first.0[6].into(),
+            note: Some("reviewed lexical positional spelling contract".into()),
+        },
+    }))
+}
+
+fn parse_positional_operation(value: &str) -> Result<PositionalOperation> {
+    if value == "preserve" {
+        return Ok(PositionalOperation::Initial(InitialPresentation::Preserve));
+    }
+    if value == "decimal-i-before-vowel" {
+        return Ok(PositionalOperation::DecimalIBeforeVowel);
+    }
+    if value == "wide-plural-ending" {
+        return Ok(PositionalOperation::WidePluralEnding);
+    }
+    if let Some(presentation) = value.strip_prefix("initial:") {
+        let presentation = match presentation {
+            "preserve" => InitialPresentation::Preserve,
+            "wide-e" => InitialPresentation::WideE,
+            "broad-on" => InitialPresentation::BroadOn,
+            "iotated-ya" => InitialPresentation::IotatedYa,
+            "digraph-uk" => InitialPresentation::DigraphUk,
+            other => return invalid_metadata("positional initial presentation", other),
+        };
+        return Ok(PositionalOperation::Initial(presentation));
+    }
+    if let Some(rest) = value.strip_prefix("replace:") {
+        let Some((replacement, occurrence)) = rest.split_once('@') else {
+            return invalid_metadata("positional replacement", value);
+        };
+        let replacement = match replacement {
+            "wide-e" => PositionalReplacement::WideE,
+            "broad-on" => PositionalReplacement::BroadOn,
+            "omega" => PositionalReplacement::Omega,
+            "decimal-i" => PositionalReplacement::DecimalI,
+            "iotated-ya" => PositionalReplacement::IotatedYa,
+            "yeri" => PositionalReplacement::Yeri,
+            "little-yus" => PositionalReplacement::LittleYus,
+            other => return invalid_metadata("positional replacement letter", other),
+        };
+        let Some((direction, index)) = occurrence.split_once(':') else {
+            return invalid_metadata("positional occurrence", occurrence);
+        };
+        let Ok(index) = index.parse::<u8>() else {
+            return invalid_metadata("positional occurrence index", index);
+        };
+        let occurrence = match direction {
+            "from-start" => LetterOccurrence::FromStart(index),
+            "from-end" => LetterOccurrence::FromEnd(index),
+            other => return invalid_metadata("positional occurrence direction", other),
+        };
+        return Ok(PositionalOperation::Replace {
+            replacement,
+            occurrence,
+        });
+    }
+    invalid_metadata("positional operation", value)
 }
 
 fn parse_accent_scope(value: &str) -> Result<AccentScope> {
@@ -1823,5 +1964,78 @@ mod binary_search_contract {
             assert!(rows_for(EXACT_FORMS, |row| row.0[0], id).is_empty());
             assert!(rows_for(LEXEMES, |row| row.0[0], id).is_empty());
         }
+    }
+}
+
+#[cfg(test)]
+mod positional_contract {
+    use super::*;
+
+    #[test]
+    fn every_reviewed_operation_code_parses_to_its_closed_variant() {
+        assert_eq!(
+            parse_positional_operation("wide-plural-ending").expect("wide plural"),
+            PositionalOperation::WidePluralEnding
+        );
+        assert_eq!(
+            parse_positional_operation("decimal-i-before-vowel").expect("decimal i"),
+            PositionalOperation::DecimalIBeforeVowel
+        );
+        assert_eq!(
+            parse_positional_operation("initial:wide-e").expect("initial"),
+            PositionalOperation::Initial(InitialPresentation::WideE)
+        );
+        assert_eq!(
+            parse_positional_operation("replace:omega@from-end:1").expect("replace"),
+            PositionalOperation::Replace {
+                replacement: PositionalReplacement::Omega,
+                occurrence: LetterOccurrence::FromEnd(1),
+            }
+        );
+        assert_eq!(
+            parse_positional_operation("replace:wide-e@from-start:2").expect("replace"),
+            PositionalOperation::Replace {
+                replacement: PositionalReplacement::WideE,
+                occurrence: LetterOccurrence::FromStart(2),
+            }
+        );
+    }
+
+    /// The operation vocabulary is closed precisely so a row cannot silently
+    /// rewrite an unrelated character.
+    #[test]
+    fn unknown_or_malformed_operations_are_rejected() {
+        for code in [
+            "",
+            "widen-everything",
+            "initial:tilde",
+            "replace:omega",
+            "replace:tilde@from-end:1",
+            "replace:omega@sideways:1",
+            "replace:omega@from-end:x",
+        ] {
+            assert!(
+                parse_positional_operation(code).is_err(),
+                "{code:?} must not parse"
+            );
+        }
+    }
+
+    /// A lexeme with no reviewed positional contract must resolve to `None`
+    /// rather than erroring, so the registry path stays a no-op until reviewed
+    /// rows exist.
+    #[test]
+    fn absent_positional_contracts_are_not_an_error() {
+        let id = LexemeId::from("synodal:noun:grad");
+        let cell = GrammarCell::Noun(synodal_church_slavonic_core::NounCell {
+            case: Case::Dative,
+            number: Number::Plural,
+            animacy: Animacy::Inanimate,
+        });
+        assert!(
+            positional_paradigm_for(&id, cell)
+                .expect("absent contract is not an error")
+                .is_none()
+        );
     }
 }

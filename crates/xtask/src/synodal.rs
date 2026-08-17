@@ -1178,7 +1178,42 @@ fn rust_files(directory: &Path) -> Result<Vec<PathBuf>, Box<dyn Error>> {
     Ok(result)
 }
 
+/// The generated registries are embedded in the published crates, so their
+/// source size is what eventually meets the crates.io per-crate limit.
+///
+/// Measured on this tree: `cargo package -p synodal-church-slavonic` produced
+/// 3.4 MiB of files as a 379 KiB `.crate`, a ratio near 9:1, against a 10 MiB
+/// compressed limit. That is roughly 90 MiB of source before publishing fails,
+/// so at 2.8 MiB today there is ample headroom and moving the payload out of
+/// generated Rust would be premature.
+///
+/// This budget exists so the ceiling is met as a failing check with a known
+/// remedy rather than as a surprise at publish time. Tripping it is the signal
+/// to move the bulk rows into a compact embedded representation, not to raise
+/// the number.
+const GENERATED_REGISTRY_BUDGET_BYTES: u64 = 40 * 1024 * 1024;
+
+fn check_generated_registry_budget(root: &Path) -> Result<(), Box<dyn Error>> {
+    for generated in [
+        "crates/synodal-church-slavonic/generated/registry.rs",
+        "crates/synodal-church-slavonic-dictionary/generated/registry.rs",
+    ] {
+        let path = root.join(generated);
+        let bytes = fs::metadata(&path)?.len();
+        if bytes > GENERATED_REGISTRY_BUDGET_BYTES {
+            return Err(format!(
+                "{generated} is {bytes} bytes, over the {GENERATED_REGISTRY_BUDGET_BYTES}-byte budget. \
+                 The published crate embeds this file and crates.io caps a package at 10 MiB compressed, \
+                 so the payload now needs a compact embedded representation rather than one Rust literal per row."
+            )
+            .into());
+        }
+    }
+    Ok(())
+}
+
 fn check_package_metadata(root: &Path) -> Result<(), Box<dyn Error>> {
+    check_generated_registry_budget(root)?;
     for package in [
         "synodal-church-slavonic-core",
         "synodal-church-slavonic",

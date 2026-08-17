@@ -485,7 +485,17 @@ fn apply_generated_presentation(
         }
         variants.push(variant);
     }
-    FormSet::try_from_variants(variants)
+    let forms = FormSet::try_from_variants(variants)?;
+    // Positional realization runs after accent, on the printed form, exactly as
+    // the caller-supplied path does. Without this the registry path could never
+    // produce the number-antistich spellings the print uses to separate a dual
+    // or plural from its homographic singular — wide `є`, broad `ѡ`, and the
+    // §36 `-ѡмъ/-ѡвъ` endings — so those cells stayed unreachable by generation
+    // no matter how complete the lexeme's other metadata was.
+    match registry::positional_paradigm_for(id, cell)? {
+        Some(paradigm) => apply_positional_paradigm(forms, cell, &paradigm),
+        None => Ok(forms),
+    }
 }
 
 fn mark_inherited(

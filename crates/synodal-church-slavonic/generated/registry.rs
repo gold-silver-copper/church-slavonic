@@ -6207,6 +6207,9 @@ pub(crate) const ACCENT_PARADIGMS: &[RawAccentParadigm] = &[
     RawAccentParadigm(["synodal:verb:wikt-8a084860d2ef", "synodal-accent:verb-wikt-8a084860d2ef-fitted", "participle:present:passive:short:positive:singular", "stem-vowel-from-start:0", "acute", "", "verb-wikt-8a084860d2ef-accent-fit", "ponomar-elizabeth-bible-2026-08-09", "Acts.13.38", "synodal-russian", "synodal-russian"]),
 ];
 
+pub(crate) const POSITIONAL_PARADIGMS: &[RawPositionalParadigm] = &[
+];
+
 pub(crate) const POSITIONAL_RULES: &[RawPositionalRule] = &[
     RawPositionalRule(["SYN-ORTH-ANTISTICH-LITTLE-YUS", "пришедша", "source-selected masculine-or-feminine plural after a husher", "пришедшѧ", "dual masculine and all neuter cells preserve а and require a different selected operation", "alypy-40-little-yus-variant", "synodal-russian"]),
     RawPositionalRule(["SYN-ORTH-ANTISTICH-YERI", "мужи", "source-selected non-singular husher-stem cell", "мужы", "direct-case and dual restrictions require an explicit cell scope; Alypy permits kamora or other dissimilators in related cells", "alypy-36-antistich-yeri", "synodal-russian"]),
