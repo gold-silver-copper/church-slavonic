@@ -606,19 +606,39 @@ mod tests {
             ["камєни", "каменїѧ"]
         );
         assert!(ordinary_plural.texts().all(|form| form != "каменїе"));
+
+        // The dative plural used to fail for want of an accent contract. It
+        // is directly printed in the source partition at Ezek.6.3 in both
+        // editions, in an unambiguous dative chain
+        // (`гора́мъ и҆ холмѡ́мъ, и҆ ка́менємъ и҆ де́бремъ`), and the genitive
+        // plural `ка́менїй` is printed 16 times, so a reviewed
+        // `noun:dual,plural` paradigm now licenses them. The cells are
+        // realised by that reviewed contract, not by an accentless fallback.
+        // The paradigm is not exhaustive: Ex.28.12 also prints a kamora
+        // nominative plural `ка̑мени` that this contract cannot produce.
+        let liturgical = Noun::resolve_with(
+            "камень",
+            Inflector::builder()
+                .orthography(OrthographyProfile::SynodalLiturgical)
+                .build(),
+        )
+        .expect("registered noun");
+        let dative_plural = liturgical
+            .form(Case::Dative, Number::Plural, Animacy::Inanimate)
+            .expect("reviewed fixed-stem accent contract");
+        assert_eq!(dative_plural.texts().collect::<Vec<_>>(), ["ка́менємъ"]);
         assert!(matches!(
-            Noun::resolve_with(
-                "камень",
-                Inflector::builder()
-                    .orthography(OrthographyProfile::SynodalLiturgical)
-                    .build(),
-            )
-            .expect("registered noun")
-            .form(Case::Dative, Number::Plural, Animacy::Inanimate),
-            Err(Error::OrthographicMetadataRequired {
-                field: MetadataField::AccentParadigm
-            })
+            dative_plural.primary().source,
+            FormSource::SynodalNormativeGeneration { .. }
         ));
+        assert_eq!(
+            liturgical
+                .form(Case::Genitive, Number::Plural, Animacy::Inanimate)
+                .expect("reviewed fixed-stem accent contract")
+                .texts()
+                .collect::<Vec<_>>(),
+            ["ка́менїй"]
+        );
     }
 
     #[test]
@@ -1338,8 +1358,8 @@ mod tests {
                 ],
             ),
         ] {
-            let noun = Noun::resolve_with(lemma, inflector.clone())
-                .expect("reviewed productive soft -їе noun");
+            let noun =
+                Noun::resolve_with(lemma, inflector).expect("reviewed productive soft -їе noun");
             for (case, number, expected) in representative_forms {
                 assert_eq!(
                     noun.form(case, number, Animacy::Inanimate)

@@ -238,6 +238,9 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Expanded `eval:v07:variant-601b77a623ca9eaf` (`indeclinable`): expected `ᲂуже`, top-1 `оуже`.
 - Expanded `eval:v07:variant-b8c1513b6bda88c9` (`indeclinable`): expected `ѹже`, top-1 `оуже`.
 - Expanded `eval:v07:variant-8df2b6ab8a91ffa0` (`noun:genitive:plural:inanimate`): expected `ꙗзыкъ`, top-1 `ѧзыкъ`.
+- Expanded `eval:v15:noun:tsar-nominative-plural-tsarie` (`noun:nominative:plural:animate`): expected `царїе`, top-1 `цари`.
+- Expanded `eval:v17:noun:levit-accusative-plural-omega` (`noun:accusative:plural:animate`): expected `леѵітѡвъ`, top-1 `леѵіты`.
+- Expanded `eval:v24:noun:rab-wide-omega-accusative-plural` (`noun:accusative:plural:animate`): expected `рабѡвъ`, top-1 `рабы`.
 - Expanded `eval:v07:05506371f37c63d6` (`aorist:third:singular`): expected `бѣжа`, top-1 `Бѣжа`.
 - Expanded `eval:v07:0cc4625dd2086f15` (`noun:genitive:singular:inanimate`): expected `родꙋ`, top-1 `рода`.
 - Expanded `eval:v07:12d883c01f5428e4` (`noun:instrumental:plural:inanimate`): expected `ᲂусты`, top-1 `ѹсты`.
@@ -270,9 +273,6 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Expanded `eval:v07:e48eca6f14f7c825` (`noun:accusative:singular:inanimate`): expected `любы`, top-1 `любовь`.
 - Expanded `eval:v07:e72eb04dce8a642d` (`noun:nominative:singular:inanimate`): expected `ᲂумъ`, top-1 `ѹмъ`.
 - Expanded `eval:v07:f6a8afc17586cb5c` (`noun:genitive:singular:inanimate`): expected `тьмы`, top-1 `тмы`.
-- Expanded `eval:v15:noun:tsar-nominative-plural-tsarie` (`noun:nominative:plural:animate`): expected `царїе`, top-1 `цари`.
-- Expanded `eval:v17:noun:levit-accusative-plural-omega` (`noun:accusative:plural:animate`): expected `леѵітѡвъ`, top-1 `леѵіты`.
-- Expanded `eval:v24:noun:rab-wide-omega-accusative-plural` (`noun:accusative:plural:animate`): expected `рабѡвъ`, top-1 `рабы`.
 - Printed `eval:acts-3-16-dati-aorist` (`aorist:third:singular`): expected `дадѐ`, top-1 `даде́`.
 - Printed `eval:acts-9-9-tri` (`numeral:cardinal:nominative:plural:masculine:inanimate`): expected `трѝ`, top-1 `трїѐ`.
 - Printed `eval:v04:reshchi-aorist-acute` (`aorist:third:singular`): expected `рече́`, top-1 `речѐ`.
@@ -380,6 +380,10 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v07:variant-8994884681e33a81` (`noun:nominative:plural:animate`): expected `ры̑бы`, top-1 `ры́бы`.
 - Printed `eval:v07:variant-d27aebd153616ed5` (`noun:accusative:plural:inanimate`): expected `да̑ни`, top-1 `да́ни`.
 - Printed `eval:v07:variant-334f7c3d9fbe2389` (`noun:locative:singular:animate`): expected `царѝ`, top-1 `цари̑`.
+- Printed `eval:v11:preposition:vosled` (`indeclinable`): expected `в̾слѣ́дъ`, top-1 `вослѣ́дъ`.
+- Printed `eval:v15:noun:tsar-nominative-plural-tsarie` (`noun:nominative:plural:animate`): expected `ца́рїе`, top-1 `цари̑`.
+- Printed `eval:v17:noun:levit-accusative-plural-omega` (`noun:accusative:plural:animate`): expected `леѵі́тѡвъ`, top-1 `леѵі́ты`.
+- Printed `eval:v24:noun:rab-wide-omega-accusative-plural` (`noun:accusative:plural:animate`): expected `рабѡ́въ`, top-1 `рабы̑`.
 - Printed `eval:v07:05506371f37c63d6` (`aorist:third:singular`): expected `бѣжа̀`, top-1 `Бѣжа́`.
 - Printed `eval:v07:0bc7c0760a8f536c` (`adjective:accusative:plural:neuter:any:short:positive`): expected `Бла́га`, top-1 `бла̑га`.
 - Printed `eval:v07:0cc4625dd2086f15` (`noun:genitive:singular:inanimate`): expected `ро́дꙋ`, top-1 `ро́да`.
@@ -417,10 +421,6 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v07:f2da2578054f271e` (`pronoun:dative:plural:masculine:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
 - Printed `eval:v07:f6a8afc17586cb5c` (`noun:genitive:singular:inanimate`): expected `тьмы̀`, top-1 `тмы̀`.
 - Printed `eval:v07:fdcd7d9ef5505c86` (`pronoun:dative:plural:feminine:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
-- Printed `eval:v11:preposition:vosled` (`indeclinable`): expected `в̾слѣ́дъ`, top-1 `вослѣ́дъ`.
-- Printed `eval:v15:noun:tsar-nominative-plural-tsarie` (`noun:nominative:plural:animate`): expected `ца́рїе`, top-1 `цари̑`.
-- Printed `eval:v17:noun:levit-accusative-plural-omega` (`noun:accusative:plural:animate`): expected `леѵі́тѡвъ`, top-1 `леѵі́ты`.
-- Printed `eval:v24:noun:rab-wide-omega-accusative-plural` (`noun:accusative:plural:animate`): expected `рабѡ́въ`, top-1 `рабы̑`.
 
 ## Inherited OCS evaluation
 

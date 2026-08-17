@@ -331,6 +331,36 @@
       ]
     },
     {
+      "id": "eval:v15:noun:tsar-nominative-plural-tsarie",
+      "cell": "noun:nominative:plural:animate",
+      "expected": "царїе",
+      "returned_top_1": "цари",
+      "returned_top_k": [
+        "цари",
+        "царїе"
+      ]
+    },
+    {
+      "id": "eval:v17:noun:levit-accusative-plural-omega",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "леѵітѡвъ",
+      "returned_top_1": "леѵіты",
+      "returned_top_k": [
+        "леѵіты",
+        "леѵітѡвъ"
+      ]
+    },
+    {
+      "id": "eval:v24:noun:rab-wide-omega-accusative-plural",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "рабѡвъ",
+      "returned_top_1": "рабы",
+      "returned_top_k": [
+        "рабы",
+        "рабѡвъ"
+      ]
+    },
+    {
       "id": "eval:v07:05506371f37c63d6",
       "cell": "aorist:third:singular",
       "expected": "бѣжа",
@@ -661,36 +691,6 @@
       "returned_top_k": [
         "тмы",
         "тьмы"
-      ]
-    },
-    {
-      "id": "eval:v15:noun:tsar-nominative-plural-tsarie",
-      "cell": "noun:nominative:plural:animate",
-      "expected": "царїе",
-      "returned_top_1": "цари",
-      "returned_top_k": [
-        "цари",
-        "царїе"
-      ]
-    },
-    {
-      "id": "eval:v17:noun:levit-accusative-plural-omega",
-      "cell": "noun:accusative:plural:animate",
-      "expected": "леѵітѡвъ",
-      "returned_top_1": "леѵіты",
-      "returned_top_k": [
-        "леѵіты",
-        "леѵітѡвъ"
-      ]
-    },
-    {
-      "id": "eval:v24:noun:rab-wide-omega-accusative-plural",
-      "cell": "noun:accusative:plural:animate",
-      "expected": "рабѡвъ",
-      "returned_top_1": "рабы",
-      "returned_top_k": [
-        "рабы",
-        "рабѡвъ"
       ]
     }
   ],
@@ -1801,6 +1801,46 @@
       ]
     },
     {
+      "id": "eval:v11:preposition:vosled",
+      "cell": "indeclinable",
+      "expected": "в̾слѣ́дъ",
+      "returned_top_1": "вослѣ́дъ",
+      "returned_top_k": [
+        "вослѣ́дъ",
+        "в̾слѣ́дъ"
+      ]
+    },
+    {
+      "id": "eval:v15:noun:tsar-nominative-plural-tsarie",
+      "cell": "noun:nominative:plural:animate",
+      "expected": "ца́рїе",
+      "returned_top_1": "цари̑",
+      "returned_top_k": [
+        "цари̑",
+        "ца́рїе"
+      ]
+    },
+    {
+      "id": "eval:v17:noun:levit-accusative-plural-omega",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "леѵі́тѡвъ",
+      "returned_top_1": "леѵі́ты",
+      "returned_top_k": [
+        "леѵі́ты",
+        "леѵі́тѡвъ"
+      ]
+    },
+    {
+      "id": "eval:v24:noun:rab-wide-omega-accusative-plural",
+      "cell": "noun:accusative:plural:animate",
+      "expected": "рабѡ́въ",
+      "returned_top_1": "рабы̑",
+      "returned_top_k": [
+        "рабы̑",
+        "рабѡ́въ"
+      ]
+    },
+    {
       "id": "eval:v07:05506371f37c63d6",
       "cell": "aorist:third:singular",
       "expected": "бѣжа̀",
@@ -2182,46 +2222,6 @@
       "returned_top_k": [
         "си̑мъ",
         "Си́мъ"
-      ]
-    },
-    {
-      "id": "eval:v11:preposition:vosled",
-      "cell": "indeclinable",
-      "expected": "в̾слѣ́дъ",
-      "returned_top_1": "вослѣ́дъ",
-      "returned_top_k": [
-        "вослѣ́дъ",
-        "в̾слѣ́дъ"
-      ]
-    },
-    {
-      "id": "eval:v15:noun:tsar-nominative-plural-tsarie",
-      "cell": "noun:nominative:plural:animate",
-      "expected": "ца́рїе",
-      "returned_top_1": "цари̑",
-      "returned_top_k": [
-        "цари̑",
-        "ца́рїе"
-      ]
-    },
-    {
-      "id": "eval:v17:noun:levit-accusative-plural-omega",
-      "cell": "noun:accusative:plural:animate",
-      "expected": "леѵі́тѡвъ",
-      "returned_top_1": "леѵі́ты",
-      "returned_top_k": [
-        "леѵі́ты",
-        "леѵі́тѡвъ"
-      ]
-    },
-    {
-      "id": "eval:v24:noun:rab-wide-omega-accusative-plural",
-      "cell": "noun:accusative:plural:animate",
-      "expected": "рабѡ́въ",
-      "returned_top_1": "рабы̑",
-      "returned_top_k": [
-        "рабы̑",
-        "рабѡ́въ"
       ]
     }
   ],

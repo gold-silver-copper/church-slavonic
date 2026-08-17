@@ -201,12 +201,14 @@ pub(crate) fn run(
     validate_admitted_families(&reviews)?;
     let proposals = build_proposals(
         &report.gaps,
-        &dictionary,
-        &supplemental_dictionary,
-        &morphological_witnesses,
-        &reviewed_lexemes,
-        &reviewed_dictionary_lexemes,
-        &reviews,
+        &ProposalEvidence {
+            dictionary: &dictionary,
+            supplemental_dictionary: &supplemental_dictionary,
+            morphological_witnesses: &morphological_witnesses,
+            reviewed_lexemes: &reviewed_lexemes,
+            reviewed_dictionary_lexemes: &reviewed_dictionary_lexemes,
+            reviews: &reviews,
+        },
         limit,
     );
     let reviewed_top_200 = proposals
@@ -711,16 +713,30 @@ fn exact_indeclinable_family_matches(
         && matches!(family.members.as_slice(), [member] if member.cell == "indeclinable")
 }
 
+/// The reviewed and source-derived evidence indexes consulted while grouping
+/// gap surfaces into family proposals.
+struct ProposalEvidence<'a> {
+    dictionary: &'a BTreeMap<String, Vec<DictionaryFamily>>,
+    supplemental_dictionary: &'a BTreeMap<String, Vec<SupplementalDictionaryEvidence>>,
+    morphological_witnesses: &'a BTreeMap<String, Vec<MorphologicalWitness>>,
+    reviewed_lexemes: &'a BTreeMap<String, Vec<ReviewedLexeme>>,
+    reviewed_dictionary_lexemes: &'a BTreeMap<String, String>,
+    reviews: &'a BTreeMap<String, ReviewDecision>,
+}
+
 fn build_proposals(
     gaps: &[GapRecord],
-    dictionary: &BTreeMap<String, Vec<DictionaryFamily>>,
-    supplemental_dictionary: &BTreeMap<String, Vec<SupplementalDictionaryEvidence>>,
-    morphological_witnesses: &BTreeMap<String, Vec<MorphologicalWitness>>,
-    reviewed_lexemes: &BTreeMap<String, Vec<ReviewedLexeme>>,
-    reviewed_dictionary_lexemes: &BTreeMap<String, String>,
-    reviews: &BTreeMap<String, ReviewDecision>,
+    evidence: &ProposalEvidence<'_>,
     limit: usize,
 ) -> Vec<FamilyProposal> {
+    let ProposalEvidence {
+        dictionary,
+        supplemental_dictionary,
+        morphological_witnesses,
+        reviewed_lexemes,
+        reviewed_dictionary_lexemes,
+        reviews,
+    } = *evidence;
     let mut groups: BTreeMap<String, FamilyAggregate> = BTreeMap::new();
     for gap in gaps.iter().filter(|gap| gap.top_k_uncovered_frequency > 0) {
         let family_key = diagnostic_family_key(gap, dictionary);

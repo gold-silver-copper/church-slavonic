@@ -133,6 +133,7 @@ cargo xtask synodal-lexical-review-queue
 cargo xtask synodal-evaluation-queue
 cargo xtask synodal-family-review-queue
 cargo xtask synodal-marginal-recovery
+cargo xtask synodal-accent-fit
 cargo xtask synodal-v06-review-packets
 cargo xtask synodal-v07-review-packets
 cargo xtask synodal-v07-apply --check
@@ -155,6 +156,18 @@ excludes admitted target lexemes, preserves ambiguous rejections, never treats
 dictionary rows as target surface evidence, and never edits reviewed TSVs. The
 evaluation queue uses only held-out passages, blocks generated surface forms
 that correspond to more than one cell, and likewise remains candidate-only.
+
+`synodal-accent-fit` writes `reports/synodal-accent-fit.tsv` and `.md`. It
+addresses the `missing-accent-or-orthographic-metadata` gap, where identity and
+cell already resolve but the liturgical profile cannot realise the printed
+marks. It reads only `source`-partition passages and excludes every passage
+sealed into the held-out evaluation contract, so the tokens its rules later
+realise in held-out passages are generalisation rather than recall. A placement
+survives only when the engine's own accent implementation reproduces every
+source-partition print in scope, and rules that would overlap an existing
+reviewed paradigm or claim an unrealisable cell are reported rather than
+narrowed. `--check` verifies report currency; `--apply` appends the surviving
+rows to `accent_paradigms.tsv` with one evidence row per lexeme.
 
 The family queue considers accentless positional spelling, conservative
 prefix/ending boundaries, dictionary form membership, known runtime candidates,

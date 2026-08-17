@@ -13,7 +13,27 @@ precise citation are validated before code generation. One paradigm may have
 several disjoint scope rows for documented mobility. Typed number scopes cover
 nouns (`noun:*`), numerals (`numeral:*`), finite and nonfinite verb systems,
 and the agreement categories; a numeral scope cannot accidentally apply to an
-adjective-like use represented by another grammar cell.
+adjective-like use represented by another grammar cell. Reusable pronoun scopes
+use `pronoun:{numbers}:{cases}` and
+`pronoun-agreeing:{numbers}:{cases}:{genders}:{animacies}`; the data validator
+accepts exactly the two shapes the runtime registry parses, because a pronoun
+cell without a gender can only be addressed by the case-only scope.
+
+`cargo xtask synodal-accent-fit` derives these rows rather than hand-authoring
+them. It reads only `source`-partition passages, excluding every passage sealed
+into the held-out evaluation contract, and keeps a placement only when the
+engine's own `AccentParadigm::apply` reproduces every source-partition printed
+form in scope. Scopes are refined from number to case to gender to animacy so
+that real accent mobility is stated rather than smoothed away. A candidate rule
+is rejected if it would overlap a cell an existing paradigm governs, claim a
+cell whose form its placement cannot address, generate a print that a
+corpus-complete index of source-partition tokens contradicts, or put a kamora
+on a singular-only scope — kamora is the number-disambiguating mark, so a
+singular-only kamora usually means a syncretic dual or plural reading drove the
+fit. `--check` verifies the proposal report is current; `--apply` appends the
+surviving rows and one evidence row per lexeme. Because the rows are fitted on the source partition
+only, the held-out tokens they realise are generalisation rather than recall of
+a stored string. `docs/SYNODAL_ACCENT_PARADIGM_FIT.md` records the wave.
 
 `engine_capabilities.tsv` is the concise v0.10 engine contract. It distinguishes
 typed categories, productive rules, exact/irregular systems, reusable accent

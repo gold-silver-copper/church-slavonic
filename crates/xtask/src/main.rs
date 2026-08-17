@@ -6,6 +6,7 @@ mod ocs_lexical_union;
 mod report_io;
 mod sources;
 mod synodal;
+mod synodal_accent_fit;
 mod synodal_coverage;
 mod synodal_evaluation_queue;
 mod synodal_family_review;
@@ -102,6 +103,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             synodal::fixture_bootstrap(&mut args, &workspace_root()?)
         }
         Some("synodal-coverage") => synodal_coverage::run(&mut args, &workspace_root()?),
+        Some("synodal-accent-fit") => synodal_accent_fit::run(&mut args, &workspace_root()?),
         Some("synodal-evaluation-queue") => {
             synodal_evaluation_queue::run(&mut args, &workspace_root()?)
         }

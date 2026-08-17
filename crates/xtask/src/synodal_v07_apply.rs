@@ -2286,10 +2286,14 @@ fn synchronized_table_text(
     }
     let mut rows = Vec::new();
     let mut seen = BTreeSet::new();
+    let mut committed_ids = BTreeSet::new();
     for line in lines.filter(|line| !line.is_empty()) {
         if let Some(corrected) =
             correct_reviewed_row(header, line, corrections, evidence_corrections)?
         {
+            if let Some(id) = unique_row_id(header, &corrected) {
+                committed_ids.insert(id);
+            }
             if seen.insert(corrected.clone()) {
                 rows.push(corrected);
             }
@@ -2300,6 +2304,17 @@ fn synchronized_table_text(
             correct_reviewed_row(header, row, corrections, evidence_corrections)?
             && seen.insert(corrected.clone())
         {
+            // Tables keyed by a unique first-column identifier must not gain a
+            // second row for an identifier a previous wave already
+            // materialised. A later review can refine the committed row — for
+            // example replacing a generic `lexical-form` cell with a typed
+            // one — and re-emitting the original shape would both duplicate
+            // the stable ID and regress the refinement. Changes to an already
+            // materialised row belong in the identity and evidence correction
+            // ledgers, which are applied above.
+            if unique_row_id(header, &corrected).is_some_and(|id| committed_ids.contains(&id)) {
+                continue;
+            }
             rows.push(corrected);
         }
     }
@@ -2310,6 +2325,22 @@ fn synchronized_table_text(
         output.push('\n');
     }
     Ok(output)
+}
+
+/// Returns the row's unique stable identifier for the tables that have one.
+///
+/// `exact_forms.tsv` and `abbreviations.tsv` are keyed by a composite of
+/// several columns rather than a single ID, so they are deliberately excluded
+/// and keep whole-row deduplication.
+fn unique_row_id(header: &str, row: &str) -> Option<String> {
+    if header == LEXICAL_HEADER
+        || header == EVIDENCE_HEADER
+        || header == EVALUATION_HEADER
+        || header == ABBREVIATION_EVALUATION_HEADER
+    {
+        return row.split('\t').next().map(str::to_owned);
+    }
+    None
 }
 
 fn correct_reviewed_row(

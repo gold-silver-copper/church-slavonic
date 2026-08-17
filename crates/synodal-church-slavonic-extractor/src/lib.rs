@@ -2877,10 +2877,27 @@ fn validate_accent_scope_code(path: &Path, line: usize, value: &str) -> Result<(
         }
         return Ok(());
     }
+    if let ["pronoun-agreeing", numbers, cases, genders, animacies] = parts.as_slice() {
+        if genders
+            .split(',')
+            .any(|gender| !matches!(gender, "masculine" | "feminine" | "neuter"))
+            || animacies
+                .split(',')
+                .any(|animacy| !matches!(animacy, "animate" | "inanimate"))
+        {
+            return invalid(path, line, "invalid pronoun-agreeing accent scope");
+        }
+        return validate_accent_numbers_and_cases(path, line, numbers, Some(cases));
+    }
     let (numbers, cases) = match parts.as_slice() {
         ["all"] => return Ok(()),
         ["noun", numbers] => (*numbers, None),
         ["noun", numbers, cases] => (*numbers, Some(*cases)),
+        // The runtime registry parses reusable pronoun accent scopes into
+        // `AccentScope::PronounCases` and `AccentScope::PronounAgreement`, so
+        // the reviewed data layer accepts the same two shapes. Without these
+        // arms a pronoun accent contract could be compiled but never authored.
+        ["pronoun", numbers, cases] => (*numbers, Some(*cases)),
         ["numeral", numbers] => (*numbers, None),
         ["adjective", form, comparison, numbers]
             if matches!(*form, "short" | "long")
@@ -2907,6 +2924,15 @@ fn validate_accent_scope_code(path: &Path, line: usize, value: &str) -> Result<(
         ["imperative" | "l-participle", numbers] => (*numbers, None),
         _ => return invalid(path, line, "unknown accent-paradigm scope"),
     };
+    validate_accent_numbers_and_cases(path, line, numbers, cases)
+}
+
+fn validate_accent_numbers_and_cases(
+    path: &Path,
+    line: usize,
+    numbers: &str,
+    cases: Option<&str>,
+) -> Result<()> {
     if !numbers
         .split(',')
         .all(|number| matches!(number, "singular" | "dual" | "plural"))
@@ -3796,6 +3822,50 @@ fn hex_sha256(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn reusable_pronoun_accent_scopes_are_reviewable() {
+        let path = Path::new("accent_paradigms.tsv");
+        // The runtime registry compiles both pronoun scope shapes, so the
+        // reviewed data layer must accept exactly the same two grammars.
+        assert!(
+            validate_accent_scope_code(path, 2, "pronoun:singular,plural:nominative,genitive")
+                .is_ok()
+        );
+        assert!(
+            validate_accent_scope_code(
+                path,
+                2,
+                "pronoun-agreeing:singular:nominative:masculine,neuter:animate,inanimate"
+            )
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn malformed_pronoun_accent_scopes_are_rejected() {
+        let path = Path::new("accent_paradigms.tsv");
+        assert!(validate_accent_scope_code(path, 2, "pronoun:quadral:nominative").is_err());
+        assert!(validate_accent_scope_code(path, 2, "pronoun:singular:ergative").is_err());
+        assert!(
+            validate_accent_scope_code(
+                path,
+                2,
+                "pronoun-agreeing:singular:nominative:common:animate"
+            )
+            .is_err()
+        );
+        assert!(
+            validate_accent_scope_code(
+                path,
+                2,
+                "pronoun-agreeing:singular:nominative:masculine:sentient"
+            )
+            .is_err()
+        );
+        // The bare two-part form has no registry counterpart and stays invalid.
+        assert!(validate_accent_scope_code(path, 2, "pronoun:singular").is_err());
+    }
 
     #[test]
     fn independent_future_principal_parts_are_atomic() {
