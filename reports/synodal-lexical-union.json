@@ -4,7 +4,7 @@
   "input_artifacts": [
     {
       "path": "data/synodal/lexemes.tsv",
-      "sha256": "0b43bcc06e6699be8910a8d7e1866b8d0672ce1ad7df3d395d53d869151e20dc",
+      "sha256": "e4a22bcdeb9aadc53f5ebd85ccef4d533477aab7735ff8494279bdb2a21111ae",
       "claim_policy": "every curated seed row"
     },
     {
@@ -23,11 +23,11 @@
       "claim_policy": "every exceptional exact or classless seed row"
     }
   ],
-  "claims": 2129,
-  "union_identities": 2082,
+  "claims": 2130,
+  "union_identities": 2081,
   "by_claim_set": {
     "adjudicated-review": 846,
-    "curated-seed": 283,
+    "curated-seed": 284,
     "preserved-proposal": 1000
   },
   "by_part_of_speech": {
@@ -43,7 +43,7 @@
     "pronoun": 76,
     "proper-noun": 24,
     "unknown": 972,
-    "verb": 199
+    "verb": 200
   },
   "by_classification": {
     "ambiguous": 702,
@@ -51,11 +51,11 @@
     "disputed": 959,
     "indeclinable": 114,
     "out-of-scope": 82,
-    "productive": 271
+    "productive": 272
   },
   "by_support_state": {
     "evidence-final": 1661,
-    "implemented": 386,
+    "implemented": 387,
     "not-applicable": 82
   },
   "implementation_gaps_by_route": {}

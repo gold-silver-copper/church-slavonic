@@ -134,9 +134,17 @@ synodal:verb:vozvestiti	future-third-plural	возвѣстѧтъ		alypy-82-vozve
 synodal:verb:vozvestiti	aorist-stem	возвѣсти	vowel	alypy-86-vozvestiti-aorist,ponomar-acts-5-25-vozvesti,ponomar-iii-esdra-14-5-vozvestikh	synodal-russian
 synodal:verb:vozvestiti	imperative-stem	возвѣст	i-series	alypy-93-vozvestiti-imperative,ponomar-acts-12-17-vozvestite	synodal-russian
 synodal:verb:vozvestiti	l-participle-stem	возвѣсти		alypy-97-vozvestiti-lpart	synodal-russian
-synodal:verb:prinesti	future-stem	принес		alypy-82-prinesti-first,ponomar-apoc-21-24-prinesut	synodal-russian
-synodal:verb:prinesti	future-first-singular	принесꙋ		alypy-82-prinesti-first,ponomar-gen-18-5-prinesu	synodal-russian
-synodal:verb:prinesti	future-third-plural	принесꙋтъ		alypy-82-prinesti-first,ponomar-apoc-21-24-prinesut	synodal-russian
-synodal:verb:prinesti	aorist-stem	принес	consonant	alypy-86-prinesti-aorist,ponomar-acts-4-37-prinese	synodal-russian
-synodal:verb:prinesti	imperative-stem	принес	first-unpalatalized	alypy-93-prinesti-imperative,ponomar-dan-13-17-prinesite,ponomar-iii-kings-17-10-prinesi	synodal-russian
-synodal:verb:prinesti	l-participle-stem	принес		alypy-97-prinesti-lpart	synodal-russian
+synodal:verb:wikt-332544509d0c	future-stem	принес		alypy-82-prinesti-first,ponomar-apoc-21-24-prinesut	synodal-russian
+synodal:verb:wikt-332544509d0c	future-first-singular	принесꙋ		alypy-82-prinesti-first,ponomar-gen-18-5-prinesu	synodal-russian
+synodal:verb:wikt-332544509d0c	future-third-plural	принесꙋтъ		alypy-82-prinesti-first,ponomar-apoc-21-24-prinesut	synodal-russian
+synodal:verb:wikt-332544509d0c	aorist-stem	принес	consonant	alypy-86-prinesti-aorist,ponomar-acts-4-37-prinese	synodal-russian
+synodal:verb:wikt-332544509d0c	imperative-stem	принес	first-unpalatalized	alypy-93-prinesti-imperative,ponomar-dan-13-17-prinesite,ponomar-iii-kings-17-10-prinesi	synodal-russian
+synodal:verb:wikt-332544509d0c	l-participle-stem	принес		alypy-97-prinesti-lpart	synodal-russian
+synodal:verb:wikt-833c90610c4d	present-first-singular	глаголю		alypy-82-glagolati-first,ponomar-acts-5-38-glagolyu	synodal-russian
+synodal:verb:wikt-833c90610c4d	present-third-plural	глаголютъ		alypy-82-glagolati-first,ponomar-acts-23-8-glagolyut	synodal-russian
+synodal:verb:wikt-833c90610c4d	aorist-stem	глагола	vowel	alypy-86-glagolati-aorist,ponomar-acts-2-31-glagola,ponomar-acts-3-24-glagolasha,ponomar-acts-25-20-glagolakh	synodal-russian
+synodal:verb:wikt-833c90610c4d	imperfect-stem	глагола	h	alypy-87-glagolati-imperfect,ponomar-acts-4-32-glagolashe	synodal-russian
+synodal:verb:wikt-833c90610c4d	imperative-stem	глагол	i-series	alypy-93-glagolati-imperative,ponomar-acts-5-20-glagolite	synodal-russian
+synodal:verb:wikt-833c90610c4d	l-participle-stem	глагола		alypy-97-glagolati-lpart	synodal-russian
+synodal:verb:wikt-833c90610c4d	present-active-participle-short-stem	глаголющ	hard:present-first-unpalatalized	alypy-95-glagolati-present-active,ponomar-acts-1-6-glagolyushche	synodal-russian
+synodal:verb:wikt-833c90610c4d	present-active-participle-long-stem	глаголющ	hard	alypy-95-glagolati-present-active,ponomar-acts-1-6-glagolyushche	synodal-russian
