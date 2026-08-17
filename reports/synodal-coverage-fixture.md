@@ -19,6 +19,22 @@
 | `missing-accent-or-orthographic-metadata` | 2 |
 | `ambiguity-or-spelling-variant` | 2 |
 
+## Coverage composition
+
+Strict top-k counts tokens that have *any* analysis. These measures describe what
+that coverage is made of, so recall cannot be bought with rows that commit to no
+morphology, and so a fall in unique-reading counts can be attributed rather than
+assumed. `morphology-free` tokens carry only `lexical-form` readings.
+`lemma-unique` is not capped by syncretism the way top-1 is.
+
+| Measure | Tokens | Share of top-k |
+|---|---:|---:|
+| morphologically typed | 114 | 9500 bp |
+| morphology-free | 6 | 500 bp |
+| lemma-unique | 118 | 9833 bp |
+| within-lexeme ambiguous (syncretism) | 44 | 3666 bp |
+| cross-lexeme ambiguous (homonymy) | 2 | 166 bp |
+
 ## Estimated recovery routes
 
 These are diagnostic estimates, not admitted lexical identities or guaranteed recoveries.

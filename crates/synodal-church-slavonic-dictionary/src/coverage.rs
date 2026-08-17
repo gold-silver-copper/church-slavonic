@@ -219,6 +219,35 @@ pub struct CoverageSlice {
     pub unresolved: usize,
 }
 
+/// Composition of the covered tokens, as distinct from their count.
+///
+/// Strict top-k coverage answers "does this token have any analysis"; it
+/// cannot distinguish a token the engine can inflect, generate, and reverse
+/// from one that merely carries a reviewed headword. These measures make that
+/// difference auditable so recall cannot be bought with morphology-free rows,
+/// and so a fall in unique-reading counts can be attributed rather than
+/// assumed.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+pub struct CoverageIntegrity {
+    /// Covered tokens whose analyses are *all* `LexicalForm` — a reviewed
+    /// identity with no inflectional commitment at all. This is the cheapest
+    /// route to coverage and the one that teaches the engine nothing.
+    pub morphology_free_analyzed: usize,
+    /// Covered tokens carrying at least one typed, inflectable cell.
+    pub morphologically_typed_analyzed: usize,
+    /// Covered tokens that resolve to exactly one lexical identity, whether or
+    /// not several cells of that identity remain compatible. Unlike
+    /// `top_1_analyzed` this is not capped by genuine syncretism.
+    pub lemma_unique_analyzed: usize,
+    /// Covered tokens with several readings of a single lexeme. This is
+    /// syncretism, which the target recension has in abundance and which must
+    /// be preserved rather than collapsed.
+    pub within_lexeme_ambiguous: usize,
+    /// Covered tokens whose readings span more than one lexeme. This is
+    /// homonymy, and each pair needs its own justification.
+    pub cross_lexeme_ambiguous: usize,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GapRecord {
     pub kind: GapKind,
@@ -358,6 +387,13 @@ pub struct CoverageReport {
     pub passages: usize,
     pub token_types: usize,
     pub summary: CoverageSlice,
+    /// Composition of `summary.top_k_analyzed`. See [`CoverageIntegrity`].
+    ///
+    /// Additive to schema version 4: every field a version 4 reader knows keeps
+    /// its meaning, and an older report deserializes with these counts zeroed,
+    /// so the version is deliberately not bumped.
+    #[serde(default)]
+    pub integrity: CoverageIntegrity,
     pub by_corpus: BTreeMap<String, CoverageSlice>,
     pub by_source: BTreeMap<String, CoverageSlice>,
     #[serde(default)]
@@ -1325,6 +1361,7 @@ pub fn coverage(
     let mut by_partition_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     let mut by_source_partition_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     let mut by_status = BTreeMap::new();
+    let mut integrity = CoverageIntegrity::default();
     let mut by_gap = BTreeMap::new();
     let mut types = BTreeSet::new();
     let mut aggregates: BTreeMap<(GapKind, String), GapAggregate> = BTreeMap::new();
@@ -1404,6 +1441,7 @@ pub fn coverage(
                     .map_or_else(|| "unresolved".into(), morphological_system)
             };
             update_slice(by_system.entry(system).or_default(), &analysis);
+            update_integrity(&mut integrity, &analysis);
             *by_status
                 .entry(status_label(analysis.status).into())
                 .or_default() += 1;
@@ -1534,6 +1572,7 @@ pub fn coverage(
         passages: passages.len(),
         token_types: types.len(),
         summary,
+        integrity,
         by_corpus,
         by_source,
         by_partition,
@@ -1588,6 +1627,30 @@ impl CoverageReport {
                 "| `{}` | {} |\n",
                 kind.label(),
                 self.by_gap.get(kind.label()).copied().unwrap_or_default()
+            ));
+        }
+        output.push_str(
+            "\n## Coverage composition\n\nStrict top-k counts tokens that have *any* analysis. These measures describe what\nthat coverage is made of, so recall cannot be bought with rows that commit to no\nmorphology, and so a fall in unique-reading counts can be attributed rather than\nassumed. `morphology-free` tokens carry only `lexical-form` readings.\n`lemma-unique` is not capped by syncretism the way top-1 is.\n\n| Measure | Tokens | Share of top-k |\n|---|---:|---:|\n",
+        );
+        for (label, value) in [
+            (
+                "morphologically typed",
+                self.integrity.morphologically_typed_analyzed,
+            ),
+            ("morphology-free", self.integrity.morphology_free_analyzed),
+            ("lemma-unique", self.integrity.lemma_unique_analyzed),
+            (
+                "within-lexeme ambiguous (syncretism)",
+                self.integrity.within_lexeme_ambiguous,
+            ),
+            (
+                "cross-lexeme ambiguous (homonymy)",
+                self.integrity.cross_lexeme_ambiguous,
+            ),
+        ] {
+            output.push_str(&format!(
+                "| {label} | {value} | {} bp |\n",
+                basis_points(value, self.summary.top_k_analyzed)
             ));
         }
         output.push_str("\n## Estimated recovery routes\n\nThese are diagnostic estimates, not admitted lexical identities or guaranteed recoveries.\n\n| Route | Tokens |\n|---|---:|\n");
@@ -2763,6 +2826,41 @@ fn update_text_summary(summary: &mut TextSummary, analysis: &TextTokenAnalysis) 
         if gap.kind != GapKind::AmbiguityOrSpellingVariant {
             summary.unresolved_tokens += 1;
         }
+    }
+}
+
+/// Classifies one covered token by the substance of its analyses.
+///
+/// Numerals and fused cardinal words carry no lexeme but do resolve to a
+/// unique typed value, so they count as morphologically typed and
+/// lemma-unique. Uncovered tokens are ignored entirely: this measures the
+/// composition of coverage, not of the corpus.
+fn update_integrity(integrity: &mut CoverageIntegrity, analysis: &TextTokenAnalysis) {
+    if !is_top_k_analyzed(analysis) {
+        return;
+    }
+    let lexemes = analysis
+        .analyses
+        .iter()
+        .map(|candidate| candidate.lexeme.id())
+        .collect::<BTreeSet<_>>();
+    if lexemes.len() > 1 {
+        integrity.cross_lexeme_ambiguous += 1;
+    } else {
+        integrity.lemma_unique_analyzed += 1;
+        if analysis.analyses.len() > 1 {
+            integrity.within_lexeme_ambiguous += 1;
+        }
+    }
+    let morphology_free = !analysis.analyses.is_empty()
+        && analysis
+            .analyses
+            .iter()
+            .all(|candidate| candidate.cell == Some(GrammarCell::LexicalForm));
+    if morphology_free {
+        integrity.morphology_free_analyzed += 1;
+    } else {
+        integrity.morphologically_typed_analyzed += 1;
     }
 }
 

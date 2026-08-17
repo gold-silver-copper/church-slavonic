@@ -12,6 +12,13 @@
     "ambiguous": 2,
     "unresolved": 35
   },
+  "integrity": {
+    "morphology_free_analyzed": 6,
+    "morphologically_typed_analyzed": 114,
+    "lemma_unique_analyzed": 118,
+    "within_lexeme_ambiguous": 44,
+    "cross_lexeme_ambiguous": 2
+  },
   "by_corpus": {
     "Church Slavonic Bible corpus": {
       "total_tokens": 70,

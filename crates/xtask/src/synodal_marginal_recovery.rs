@@ -832,6 +832,7 @@ mod tests {
             orthography_profile: OrthographyProfile::SynodalLiturgical,
             passages: 74_130,
             token_types: 0,
+            integrity: synodal_church_slavonic_dictionary::coverage::CoverageIntegrity::default(),
             summary: synodal_church_slavonic_dictionary::coverage::CoverageSlice {
                 total_tokens: 1,
                 ..Default::default()

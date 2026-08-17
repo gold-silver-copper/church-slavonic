@@ -1,4 +1,5 @@
 use std::{
+    collections::{BTreeMap, BTreeSet},
     error::Error,
     fs,
     path::{Path, PathBuf},
@@ -57,6 +58,7 @@ pub(crate) fn run(
     let mut fixture = false;
     let mut offline = false;
     let mut require_complete = false;
+    let mut reseal_floors = false;
     let mut canonical_inputs = true;
     while let Some(argument) = args.next() {
         match argument.as_str() {
@@ -82,6 +84,7 @@ pub(crate) fn run(
             "--fixture" => fixture = true,
             "--offline" => offline = true,
             "--require-complete" => require_complete = true,
+            "--reseal-floors" => reseal_floors = true,
             value => return Err(format!("unknown synodal-coverage argument {value:?}").into()),
         }
     }
@@ -129,6 +132,20 @@ pub(crate) fn run(
     let markdown = report.markdown();
     let queue = report.gaps_tsv();
     let frontier = report.uncovered_frontier_tsv();
+    // The sealed floors are checked before anything is written, so a wave that
+    // regresses a guarded measure cannot leave a report behind claiming it did
+    // not. The fixture is a ten-passage smoke corpus and carries no floors.
+    if !fixture {
+        let floors_path = root.join("data/synodal/coverage_floors.tsv");
+        let floors = load_floors(&floors_path)?;
+        if reseal_floors {
+            let resealed = reseal(&floors, &report);
+            write_if_changed_atomic(&floors_path, &resealed)?;
+            println!("synodal coverage: resealed {} floors", floors.len());
+        } else {
+            enforce_floors(&floors_path, &floors, &report)?;
+        }
+    }
     if check {
         check_contents(&json_path, &json)?;
         check_contents(&markdown_path, &markdown)?;
@@ -398,6 +415,161 @@ fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
 mod tests {
     use super::*;
 
+    fn floor(measure: &str, at_least: bool, value: usize) -> Floor {
+        Floor {
+            measure: measure.to_owned(),
+            at_least,
+            value,
+            sealed_at: "test".into(),
+            justification: "test".into(),
+        }
+    }
+
+    /// Builds a report whose guarded measures are known, by covering one
+    /// Cyrillic numeral and leaving everything else empty.
+    fn probe_report() -> CoverageReport {
+        let analyzer = Analyzer::new(Inflector::default()).expect("analyzer");
+        coverage(
+            &analyzer,
+            &[CoveragePassage {
+                corpus: "fixture".into(),
+                source_id: "fixture".into(),
+                work: "fixture".into(),
+                edition: "fixture".into(),
+                passage: "1".into(),
+                partition: "source".into(),
+                source_recension: "synodal-russian".into(),
+                text: "҂а҃".into(),
+            }],
+            CheckTextOptions::default(),
+        )
+    }
+
+    #[test]
+    fn sealed_floors_catch_a_regressed_measure() {
+        let report = probe_report();
+        let path = Path::new("coverage_floors.tsv");
+        let mut floors: Vec<Floor> = guarded_measures(&report)
+            .iter()
+            .map(|(measure, value)| floor(measure, true, *value))
+            .collect();
+        enforce_floors(path, &floors, &report).expect("sealed at the achieved values");
+
+        let target = floors
+            .iter_mut()
+            .find(|floor| floor.measure == "summary:top_k_analyzed")
+            .expect("guarded");
+        target.value += 1;
+        let error = enforce_floors(path, &floors, &report)
+            .expect_err("a top-k regression must fail the gate")
+            .to_string();
+        assert!(error.contains("summary:top_k_analyzed"), "{error}");
+        assert!(error.contains("at least"), "{error}");
+    }
+
+    #[test]
+    fn sealed_floors_catch_a_breached_morphology_free_ceiling() {
+        let report = probe_report();
+        let mut floors: Vec<Floor> = guarded_measures(&report)
+            .iter()
+            .map(|(measure, value)| floor(measure, true, *value))
+            .collect();
+        // The ceiling is the one bound whose direction is reversed: a rise in
+        // morphology-free coverage is the cheap-recall failure mode.
+        for entry in &mut floors {
+            if entry.measure == "integrity:morphology_free_analyzed" {
+                entry.at_least = false;
+                entry.value = 0;
+            }
+        }
+        let mut breached = report.clone();
+        breached.integrity.morphology_free_analyzed = 1;
+        let error = enforce_floors(Path::new("coverage_floors.tsv"), &floors, &breached)
+            .expect_err("morphology-free growth must fail the gate")
+            .to_string();
+        assert!(
+            error.contains("integrity:morphology_free_analyzed"),
+            "{error}"
+        );
+        assert!(error.contains("at most"), "{error}");
+    }
+
+    #[test]
+    fn sealed_floors_reject_an_unsealed_or_vanished_measure() {
+        let report = probe_report();
+        let path = Path::new("coverage_floors.tsv");
+        let complete: Vec<Floor> = guarded_measures(&report)
+            .iter()
+            .map(|(measure, value)| floor(measure, true, *value))
+            .collect();
+
+        let missing: Vec<Floor> = complete
+            .iter()
+            .filter(|entry| entry.measure != "summary:top_1_analyzed")
+            .cloned()
+            .collect();
+        let error = enforce_floors(path, &missing, &report)
+            .expect_err("an unsealed guarded measure must fail")
+            .to_string();
+        assert!(error.contains("has no sealed floor"), "{error}");
+
+        let mut stale = complete;
+        stale.push(floor("system:retired-system", true, 0));
+        let error = enforce_floors(path, &stale, &report)
+            .expect_err("a floor naming a vanished measure must fail")
+            .to_string();
+        assert!(error.contains("no longer produces it"), "{error}");
+    }
+
+    #[test]
+    fn resealing_only_ever_tightens_a_bound() {
+        let report = probe_report();
+        let covered = report.summary.top_k_analyzed;
+        let floors = vec![
+            floor("summary:top_k_analyzed", true, 0),
+            floor("integrity:morphology_free_analyzed", false, 9_999),
+        ];
+        let resealed = reseal(&floors, &report);
+        assert!(
+            resealed.contains(&format!("summary:top_k_analyzed\tat-least\t{covered}\t")),
+            "an at-least floor rises to the achieved value: {resealed}"
+        );
+        assert!(
+            resealed.contains("integrity:morphology_free_analyzed\tat-most\t0\t"),
+            "an at-most ceiling falls to the achieved value: {resealed}"
+        );
+
+        // Resealing must never relax a bound the current report cannot meet.
+        let strict = vec![floor("summary:top_k_analyzed", true, covered + 5)];
+        let kept = reseal(&strict, &report);
+        assert!(
+            kept.contains(&format!(
+                "summary:top_k_analyzed\tat-least\t{}\t",
+                covered + 5
+            )),
+            "a stricter existing floor survives resealing: {kept}"
+        );
+    }
+
+    #[test]
+    fn the_committed_floors_parse_and_cover_every_guarded_measure() {
+        let path =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../../data/synodal/coverage_floors.tsv");
+        let floors = load_floors(&path).expect("committed floors parse");
+        assert!(
+            floors.iter().any(
+                |entry| entry.measure == "integrity:morphology_free_analyzed" && !entry.at_least
+            ),
+            "the morphology-free ceiling must be sealed as an upper bound"
+        );
+        assert!(
+            floors
+                .iter()
+                .all(|entry| !entry.justification.trim().is_empty()),
+            "every sealed bound states why it exists"
+        );
+    }
+
     #[test]
     fn fixture_parser_preserves_passage_identity() {
         let root =
@@ -538,4 +710,190 @@ mod tests {
             .to_string();
         assert!(error.contains("source/partition \"source-a:evaluation\""));
     }
+}
+
+/// One sealed bound on a coverage measure.
+///
+/// The file is a reviewed contract, not a generated artifact: weakening a bound
+/// means editing the row and stating why, which surfaces in review as a diff.
+#[derive(Clone, Debug)]
+struct Floor {
+    measure: String,
+    at_least: bool,
+    value: usize,
+    sealed_at: String,
+    justification: String,
+}
+
+const FLOOR_HEADER: &str = "measure\tdirection\tvalue\tsealed_at\tjustification";
+
+fn load_floors(path: &Path) -> Result<Vec<Floor>, Box<dyn Error>> {
+    let contents = fs::read_to_string(path)
+        .map_err(|error| format!("cannot read {}: {error}", path.display()))?;
+    let mut lines = contents.lines();
+    if lines.next() != Some(FLOOR_HEADER) {
+        return Err(format!("invalid header in {}", path.display()).into());
+    }
+    let mut floors = Vec::new();
+    let mut seen = BTreeSet::new();
+    for (offset, line) in lines.filter(|line| !line.is_empty()).enumerate() {
+        let columns: Vec<&str> = line.split('\t').collect();
+        let [measure, direction, value, sealed_at, justification] = columns.as_slice() else {
+            return Err(format!("{}:{} needs five columns", path.display(), offset + 2).into());
+        };
+        let at_least = match *direction {
+            "at-least" => true,
+            "at-most" => false,
+            other => {
+                return Err(format!(
+                    "{}:{} has unknown direction {other:?}",
+                    path.display(),
+                    offset + 2
+                )
+                .into());
+            }
+        };
+        if justification.trim().is_empty() || sealed_at.trim().is_empty() {
+            return Err(format!(
+                "{}:{} must state when it was sealed and why",
+                path.display(),
+                offset + 2
+            )
+            .into());
+        }
+        if !seen.insert((*measure).to_owned()) {
+            return Err(format!("{} repeats {measure:?}", path.display()).into());
+        }
+        floors.push(Floor {
+            measure: (*measure).to_owned(),
+            at_least,
+            value: value.parse()?,
+            sealed_at: (*sealed_at).to_owned(),
+            justification: (*justification).to_owned(),
+        });
+    }
+    Ok(floors)
+}
+
+/// The guarded measures of one report, keyed exactly as the floors file names
+/// them.
+fn guarded_measures(report: &CoverageReport) -> BTreeMap<String, usize> {
+    let mut measures = BTreeMap::new();
+    measures.insert(
+        "summary:top_k_analyzed".to_owned(),
+        report.summary.top_k_analyzed,
+    );
+    measures.insert(
+        "summary:top_1_analyzed".to_owned(),
+        report.summary.top_1_analyzed,
+    );
+    measures.insert(
+        "integrity:lemma_unique_analyzed".to_owned(),
+        report.integrity.lemma_unique_analyzed,
+    );
+    measures.insert(
+        "integrity:morphologically_typed_analyzed".to_owned(),
+        report.integrity.morphologically_typed_analyzed,
+    );
+    measures.insert(
+        "integrity:morphology_free_analyzed".to_owned(),
+        report.integrity.morphology_free_analyzed,
+    );
+    for (system, slice) in &report.by_morphological_system {
+        measures.insert(format!("system:{system}"), slice.top_k_analyzed);
+    }
+    measures
+}
+
+/// Fails when any sealed bound is violated, when a guarded measure has no
+/// floor, or when a floor names a measure the report no longer produces.
+///
+/// An unsealed measure is an error rather than a warning: a newly appearing
+/// morphological system has to be admitted deliberately, and a disappearing one
+/// must not slip past because its floor stopped being evaluated.
+fn enforce_floors(
+    path: &Path,
+    floors: &[Floor],
+    report: &CoverageReport,
+) -> Result<(), Box<dyn Error>> {
+    let measures = guarded_measures(report);
+    let sealed: BTreeSet<&str> = floors.iter().map(|floor| floor.measure.as_str()).collect();
+    let mut failures = Vec::new();
+    for measure in measures.keys() {
+        if !sealed.contains(measure.as_str()) {
+            failures.push(format!(
+                "  {measure} has no sealed floor; add a reviewed row to {}",
+                path.display()
+            ));
+        }
+    }
+    for floor in floors {
+        let Some(actual) = measures.get(&floor.measure).copied() else {
+            failures.push(format!(
+                "  {} is sealed but the report no longer produces it",
+                floor.measure
+            ));
+            continue;
+        };
+        let ok = if floor.at_least {
+            actual >= floor.value
+        } else {
+            actual <= floor.value
+        };
+        if !ok {
+            let direction = if floor.at_least {
+                "at least"
+            } else {
+                "at most"
+            };
+            failures.push(format!(
+                "  {} is {actual} but was sealed {direction} {} at {}: {}",
+                floor.measure, floor.value, floor.sealed_at, floor.justification
+            ));
+        }
+    }
+    if failures.is_empty() {
+        return Ok(());
+    }
+    Err(format!(
+        "sealed coverage floors violated:\n{}\n\nRaise coverage, or edit {} with a stated justification if the change is intended.",
+        failures.join("\n"),
+        path.display()
+    )
+    .into())
+}
+
+/// Ratchets every bound toward the current report, never away from it.
+///
+/// Resealing can only tighten: an `at-least` floor rises to the achieved value
+/// and an `at-most` ceiling falls to it. Weakening a bound stays a hand edit so
+/// that it is reviewed rather than absorbed by a tool run.
+fn reseal(floors: &[Floor], report: &CoverageReport) -> String {
+    let measures = guarded_measures(report);
+    let mut output = String::from(FLOOR_HEADER);
+    output.push('\n');
+    for floor in floors {
+        let value = measures
+            .get(&floor.measure)
+            .copied()
+            .map_or(floor.value, |actual| {
+                if floor.at_least {
+                    actual.max(floor.value)
+                } else {
+                    actual.min(floor.value)
+                }
+            });
+        output.push_str(&format!(
+            "{}\t{}\t{value}\t{}\t{}\n",
+            floor.measure,
+            if floor.at_least {
+                "at-least"
+            } else {
+                "at-most"
+            },
+            floor.sealed_at,
+            floor.justification,
+        ));
+    }
+    output
 }
