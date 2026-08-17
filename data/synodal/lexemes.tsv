@@ -279,3 +279,6 @@ synodal:noun:spasenie	спасенїе	noun	first-soft-ie-n	спасенї	neute
 synodal:noun:ponoshenie	поношенїе	noun	first-soft-ie-n	поношенї	neuter		ponomar-modern-church-slavonic-corpus-2016	synodal-russian
 synodal:noun:otmshchenie	ѿмщенїе	noun	first-soft-ie-n	ѿмщенї	neuter		ponomar-modern-church-slavonic-corpus-2016	synodal-russian
 synodal:noun:v11-332e30b022aa	жрецъ	noun	first-mixed-ts-m	жерц	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:vozlozhiti	возложити	verb	second	возлож		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:vozvestiti	возвѣстити	verb	second	возвѣст		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:verb:prinesti	принести	verb	first-unpalatalized	принес		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian

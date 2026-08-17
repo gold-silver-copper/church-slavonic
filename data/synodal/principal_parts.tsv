@@ -122,3 +122,21 @@ synodal:verb:v06-vzyti	l-participle-stem	возш		alypy-104-iti-family	synodal-
 synodal:verb:v06-vzyti	l-participle-masculine-singular-stem	возше		alypy-104-iti-family	synodal-russian
 synodal:verb:v06-vzyti	past-active-participle-short-stem	возшедш	hard:past-consonant	alypy-104-iti-family	synodal-russian
 synodal:verb:v06-vzyti	past-active-participle-long-stem	возшедш	hard	alypy-104-iti-family	synodal-russian
+synodal:verb:vozlozhiti	future-stem	возлож		alypy-82-vozlozhiti-second,ponomar-deut-12-18-vozlozhishi,ponomar-deut-33-10-vozlozhat	synodal-russian
+synodal:verb:vozlozhiti	future-first-singular	возложꙋ		alypy-82-vozlozhiti-second	synodal-russian
+synodal:verb:vozlozhiti	future-third-plural	возложатъ		alypy-82-vozlozhiti-second,ponomar-deut-33-10-vozlozhat	synodal-russian
+synodal:verb:vozlozhiti	aorist-stem	возложи	vowel	alypy-86-vozlozhiti-aorist,ponomar-acts-12-1-vozlozhi,ponomar-acts-4-3-vozlozhisha	synodal-russian
+synodal:verb:vozlozhiti	imperative-stem	возлож	i-series	alypy-93-vozlozhiti-imperative,ponomar-deut-14-1-vozlozhite	synodal-russian
+synodal:verb:vozlozhiti	l-participle-stem	возложи		alypy-97-vozlozhiti-lpart	synodal-russian
+synodal:verb:vozvestiti	future-stem	возвѣст		alypy-82-vozvestiti-second,ponomar-dan-4-3-vozvestyat	synodal-russian
+synodal:verb:vozvestiti	future-first-singular	возвѣщꙋ		alypy-82-vozvestiti-second,ponomar-dan-2-24-vozveshchu	synodal-russian
+synodal:verb:vozvestiti	future-third-plural	возвѣстѧтъ		alypy-82-vozvestiti-second,ponomar-dan-4-3-vozvestyat	synodal-russian
+synodal:verb:vozvestiti	aorist-stem	возвѣсти	vowel	alypy-86-vozvestiti-aorist,ponomar-acts-5-25-vozvesti,ponomar-iii-esdra-14-5-vozvestikh	synodal-russian
+synodal:verb:vozvestiti	imperative-stem	возвѣст	i-series	alypy-93-vozvestiti-imperative,ponomar-acts-12-17-vozvestite	synodal-russian
+synodal:verb:vozvestiti	l-participle-stem	возвѣсти		alypy-97-vozvestiti-lpart	synodal-russian
+synodal:verb:prinesti	future-stem	принес		alypy-82-prinesti-first,ponomar-apoc-21-24-prinesut	synodal-russian
+synodal:verb:prinesti	future-first-singular	принесꙋ		alypy-82-prinesti-first,ponomar-gen-18-5-prinesu	synodal-russian
+synodal:verb:prinesti	future-third-plural	принесꙋтъ		alypy-82-prinesti-first,ponomar-apoc-21-24-prinesut	synodal-russian
+synodal:verb:prinesti	aorist-stem	принес	consonant	alypy-86-prinesti-aorist,ponomar-acts-4-37-prinese	synodal-russian
+synodal:verb:prinesti	imperative-stem	принес	first-unpalatalized	alypy-93-prinesti-imperative,ponomar-dan-13-17-prinesite,ponomar-iii-kings-17-10-prinesi	synodal-russian
+synodal:verb:prinesti	l-participle-stem	принес		alypy-97-prinesti-lpart	synodal-russian

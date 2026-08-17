@@ -8222,21 +8222,6 @@
   {
     "rank": 549,
     "frequency": 13,
-    "lemma": "возложити",
-    "printed": "возложи́ти",
-    "part_of_speech": "unknown",
-    "cell": "untyped",
-    "gloss": "вверить, посвятить",
-    "semantic_candidate_id": "synodal:candidate:4215324588a5753cd8939d40",
-    "attestation_candidate_id": "synodal:candidate:ab277f380ad3dce3b3467e42",
-    "passage": "Acts.15.10",
-    "context": "нн҃ѣ ᲂу҆̀бо что̀ и҆скꙋша́ете бг҃а, (хотѧ́ще) возложи́ти и҆́го на вы̑и ᲂу҆чн҃кѡ́мъ, є҆гѡ́же ни ѻ҆тцы̀ на́ши, ни мы̀ возмого́хомъ понестѝ;",
-    "decision": "candidate-unreviewed",
-    "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
-  },
-  {
-    "rank": 550,
-    "frequency": 13,
     "lemma": "воинство",
     "printed": "во́инство",
     "part_of_speech": "unknown",
@@ -8250,7 +8235,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 551,
+    "rank": 550,
     "frequency": 13,
     "lemma": "вѣрный",
     "printed": "вѣ́рный",
@@ -8265,7 +8250,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 552,
+    "rank": 551,
     "frequency": 13,
     "lemma": "гай",
     "printed": "га́й",
@@ -8280,7 +8265,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 553,
+    "rank": 552,
     "frequency": 13,
     "lemma": "зрѣти",
     "printed": "зрѣ́ти",
@@ -8295,7 +8280,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 554,
+    "rank": 553,
     "frequency": 13,
     "lemma": "книгочїй",
     "printed": "книго́чїй",
@@ -8310,7 +8295,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 555,
+    "rank": 554,
     "frequency": 13,
     "lemma": "коренїе",
     "printed": "коре́нїе",
@@ -8325,7 +8310,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 556,
+    "rank": 555,
     "frequency": 13,
     "lemma": "манѡе",
     "printed": "манѡ́е",
@@ -8340,7 +8325,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 557,
+    "rank": 556,
     "frequency": 13,
     "lemma": "могій",
     "printed": "могі́й",
@@ -8355,7 +8340,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 558,
+    "rank": 557,
     "frequency": 13,
     "lemma": "нама",
     "printed": "на́ма",
@@ -8370,7 +8355,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 559,
+    "rank": 558,
     "frequency": 13,
     "lemma": "наю",
     "printed": "на́ю",
@@ -8385,7 +8370,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 560,
+    "rank": 559,
     "frequency": 13,
     "lemma": "нечистота",
     "printed": "нечистота̀",
@@ -8400,7 +8385,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 561,
+    "rank": 560,
     "frequency": 13,
     "lemma": "ножъ",
     "printed": "но́жъ",
@@ -8415,7 +8400,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 562,
+    "rank": 561,
     "frequency": 13,
     "lemma": "послꙋшанїе",
     "printed": "послꙋша́нїе",
@@ -8430,7 +8415,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 563,
+    "rank": 562,
     "frequency": 13,
     "lemma": "правы",
     "printed": "пра̑вы",
@@ -8445,7 +8430,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 564,
+    "rank": 563,
     "frequency": 13,
     "lemma": "престꙋпленїе",
     "printed": "престꙋпле́нїе",
@@ -8460,7 +8445,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 565,
+    "rank": 564,
     "frequency": 13,
     "lemma": "разꙋмно",
     "printed": "разꙋ́мно",
@@ -8475,7 +8460,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 566,
+    "rank": 565,
     "frequency": 13,
     "lemma": "ревекка",
     "printed": "реве́кка",
@@ -8490,7 +8475,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 567,
+    "rank": 566,
     "frequency": 13,
     "lemma": "сотренїе",
     "printed": "сотре́нїе",
@@ -8505,7 +8490,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 568,
+    "rank": 567,
     "frequency": 13,
     "lemma": "сінъ",
     "printed": "сі́нъ",
@@ -8520,7 +8505,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 569,
+    "rank": 568,
     "frequency": 13,
     "lemma": "теченїе",
     "printed": "тече́нїе",
@@ -8535,7 +8520,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 570,
+    "rank": 569,
     "frequency": 13,
     "lemma": "требище",
     "printed": "тре́бище",
@@ -8550,7 +8535,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 571,
+    "rank": 570,
     "frequency": 13,
     "lemma": "червь",
     "printed": "че́рвь",
@@ -8565,7 +8550,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 572,
+    "rank": 571,
     "frequency": 13,
     "lemma": "ѕлакъ",
     "printed": "ѕла́къ",
@@ -8580,7 +8565,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 573,
+    "rank": 572,
     "frequency": 13,
     "lemma": "ѡгражденїе",
     "printed": "ѡ҆гражде́нїе",
@@ -8595,7 +8580,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 574,
+    "rank": 573,
     "frequency": 13,
     "lemma": "ѡсквернити",
     "printed": "ѡ҆скверни́ти",
@@ -8610,7 +8595,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 575,
+    "rank": 574,
     "frequency": 13,
     "lemma": "ѡѕлобленїе",
     "printed": "ѡ҆ѕлобле́нїе",
@@ -8625,7 +8610,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 576,
+    "rank": 575,
     "frequency": 12,
     "lemma": "стража",
     "printed": "стра́жа",
@@ -8640,7 +8625,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 577,
+    "rank": 576,
     "frequency": 12,
     "lemma": "агарь",
     "printed": "а҆́гарь",
@@ -8655,7 +8640,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 578,
+    "rank": 577,
     "frequency": 12,
     "lemma": "агнецъ",
     "printed": "а҆́гнецъ",
@@ -8670,7 +8655,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 579,
+    "rank": 578,
     "frequency": 12,
     "lemma": "азаилъ",
     "printed": "а҆заи́лъ",
@@ -8685,7 +8670,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 580,
+    "rank": 579,
     "frequency": 12,
     "lemma": "бѣгство",
     "printed": "бѣ́гство",
@@ -8700,7 +8685,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 581,
+    "rank": 580,
     "frequency": 12,
     "lemma": "водоносъ",
     "printed": "водоно́съ",
@@ -8715,7 +8700,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 582,
+    "rank": 581,
     "frequency": 12,
     "lemma": "зоровавель",
     "printed": "зорова́вель",
@@ -8730,7 +8715,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 583,
+    "rank": 582,
     "frequency": 12,
     "lemma": "избавленїе",
     "printed": "и҆збавле́нїе",
@@ -8745,7 +8730,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 584,
+    "rank": 583,
     "frequency": 12,
     "lemma": "избранъ",
     "printed": "и҆збра́нъ",
@@ -8760,7 +8745,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 585,
+    "rank": 584,
     "frequency": 12,
     "lemma": "истое",
     "printed": "и҆́стое",
@@ -8775,7 +8760,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 586,
+    "rank": 585,
     "frequency": 12,
     "lemma": "краеградїе",
     "printed": "краегра́дїе",
@@ -8790,7 +8775,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 587,
+    "rank": 586,
     "frequency": 12,
     "lemma": "лѣпо",
     "printed": "лѣ́по",
@@ -8805,7 +8790,7 @@
     "review_reason": "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication"
   },
   {
-    "rank": 588,
+    "rank": 587,
     "frequency": 12,
     "lemma": "марїамъ",
     "printed": "марїа́мъ",
@@ -8820,7 +8805,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 589,
+    "rank": 588,
     "frequency": 12,
     "lemma": "молюсѧ",
     "printed": "молю́сѧ",
@@ -8835,7 +8820,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 590,
+    "rank": 589,
     "frequency": 12,
     "lemma": "мысль",
     "printed": "мы́сль",
@@ -8850,7 +8835,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 591,
+    "rank": 590,
     "frequency": 12,
     "lemma": "навꙋзарданъ",
     "printed": "навꙋзарда́нъ",
@@ -8865,7 +8850,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 592,
+    "rank": 591,
     "frequency": 12,
     "lemma": "наипаче",
     "printed": "наипа́че",
@@ -8880,7 +8865,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 593,
+    "rank": 592,
     "frequency": 12,
     "lemma": "нефѳалімъ",
     "printed": "нефѳалі́мъ",
@@ -8895,7 +8880,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 594,
+    "rank": 593,
     "frequency": 12,
     "lemma": "неѡбрѣзанїе",
     "printed": "неѡбрѣ́занїе",
@@ -8910,7 +8895,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 595,
+    "rank": 594,
     "frequency": 12,
     "lemma": "подложница",
     "printed": "подло́жница",
@@ -8925,7 +8910,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 596,
+    "rank": 595,
     "frequency": 12,
     "lemma": "посѣщенїе",
     "printed": "посѣще́нїе",
@@ -8940,7 +8925,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 597,
+    "rank": 596,
     "frequency": 12,
     "lemma": "праведно",
     "printed": "пра́ведно",
@@ -8955,7 +8940,7 @@
     "review_reason": "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication"
   },
   {
-    "rank": 598,
+    "rank": 597,
     "frequency": 12,
     "lemma": "праздновати",
     "printed": "пра́здновати",
@@ -8970,7 +8955,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 599,
+    "rank": 598,
     "frequency": 12,
     "lemma": "притча",
     "printed": "при́тча",
@@ -8985,7 +8970,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 600,
+    "rank": 599,
     "frequency": 12,
     "lemma": "прокаженъ",
     "printed": "прокаже́нъ",
@@ -9000,7 +8985,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 601,
+    "rank": 600,
     "frequency": 12,
     "lemma": "прокаженїе",
     "printed": "прокаже́нїе",
@@ -9015,7 +9000,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 602,
+    "rank": 601,
     "frequency": 12,
     "lemma": "пшеница",
     "printed": "пшени́ца",
@@ -9030,7 +9015,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 603,
+    "rank": 602,
     "frequency": 12,
     "lemma": "скончати",
     "printed": "сконча́ти",
@@ -9045,7 +9030,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 604,
+    "rank": 603,
     "frequency": 12,
     "lemma": "слꙋга",
     "printed": "слꙋга̀",
@@ -9060,7 +9045,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 605,
+    "rank": 604,
     "frequency": 12,
     "lemma": "сосцы",
     "printed": "сосцы̀",
@@ -9075,7 +9060,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 606,
+    "rank": 605,
     "frequency": 12,
     "lemma": "сꙋпостатъ",
     "printed": "сꙋпоста̑тъ",
@@ -9090,7 +9075,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 607,
+    "rank": 606,
     "frequency": 12,
     "lemma": "тесть",
     "printed": "те́сть",
@@ -9105,7 +9090,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 608,
+    "rank": 607,
     "frequency": 12,
     "lemma": "хꙋсій",
     "printed": "хꙋсі́й",
@@ -9120,7 +9105,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 609,
+    "rank": 608,
     "frequency": 12,
     "lemma": "єлїезеръ",
     "printed": "є҆лїезе́ръ",
@@ -9135,7 +9120,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 610,
+    "rank": 609,
     "frequency": 12,
     "lemma": "єсевѡнъ",
     "printed": "є҆севѡ́нъ",
@@ -9150,7 +9135,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 611,
+    "rank": 610,
     "frequency": 12,
     "lemma": "іꙋдеанинъ",
     "printed": "і҆ꙋде́анинъ",
@@ -9165,7 +9150,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 612,
+    "rank": 611,
     "frequency": 12,
     "lemma": "ѡбновленїе",
     "printed": "ѡ҆бновле́нїе",
@@ -9180,7 +9165,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 613,
+    "rank": 612,
     "frequency": 12,
     "lemma": "ѡчистилище",
     "printed": "ѡ҆чисти́лище",
@@ -9195,7 +9180,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 614,
+    "rank": 613,
     "frequency": 12,
     "lemma": "ѳарсісъ",
     "printed": "ѳарсі́съ",
@@ -9210,7 +9195,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 615,
+    "rank": 614,
     "frequency": 12,
     "lemma": "ѳеманъ",
     "printed": "ѳема́нъ",
@@ -9225,7 +9210,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 616,
+    "rank": 615,
     "frequency": 12,
     "lemma": "ѻво",
     "printed": "ѻ҆́во",
@@ -9240,7 +9225,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 617,
+    "rank": 616,
     "frequency": 12,
     "lemma": "ѿдати",
     "printed": "ѿда́ти",
@@ -9255,7 +9240,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 618,
+    "rank": 617,
     "frequency": 11,
     "lemma": "видомъ",
     "printed": "ви́домъ",
@@ -9270,7 +9255,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 619,
+    "rank": 618,
     "frequency": 11,
     "lemma": "авїаѳаръ",
     "printed": "а҆вїа́ѳаръ",
@@ -9285,7 +9270,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 620,
+    "rank": 619,
     "frequency": 11,
     "lemma": "азѡтъ",
     "printed": "а҆зѡ́тъ",
@@ -9300,7 +9285,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 621,
+    "rank": 620,
     "frequency": 11,
     "lemma": "арамъ",
     "printed": "а҆ра́мъ",
@@ -9315,7 +9300,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 622,
+    "rank": 621,
     "frequency": 11,
     "lemma": "бездна",
     "printed": "бе́здна",
@@ -9330,7 +9315,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 623,
+    "rank": 622,
     "frequency": 11,
     "lemma": "ваалъ",
     "printed": "ваа́лъ",
@@ -9345,7 +9330,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 624,
+    "rank": 623,
     "frequency": 11,
     "lemma": "валтасаръ",
     "printed": "валтаса́ръ",
@@ -9360,7 +9345,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 625,
+    "rank": 624,
     "frequency": 11,
     "lemma": "варнава",
     "printed": "варна́ва",
@@ -9375,7 +9360,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 626,
+    "rank": 625,
     "frequency": 11,
     "lemma": "ввести",
     "printed": "ввестѝ",
@@ -9390,7 +9375,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 627,
+    "rank": 626,
     "frequency": 11,
     "lemma": "внѣшнїй",
     "printed": "внѣ́шнїй",
@@ -9405,7 +9390,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 628,
+    "rank": 627,
     "frequency": 11,
     "lemma": "вселеннаѧ",
     "printed": "вселе́ннаѧ",
@@ -9420,7 +9405,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 629,
+    "rank": 628,
     "frequency": 11,
     "lemma": "всюдꙋ",
     "printed": "всю́дꙋ",
@@ -9435,7 +9420,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 630,
+    "rank": 629,
     "frequency": 11,
     "lemma": "гласы",
     "printed": "гла́сы",
@@ -9450,7 +9435,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 631,
+    "rank": 630,
     "frequency": 11,
     "lemma": "деввѡра",
     "printed": "деввѡ́ра",
@@ -9465,7 +9450,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 632,
+    "rank": 631,
     "frequency": 11,
     "lemma": "дѣланїе",
     "printed": "дѣ́ланїе",
@@ -9480,7 +9465,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 633,
+    "rank": 632,
     "frequency": 11,
     "lemma": "заднѧѧ",
     "printed": "за̑днѧѧ",
@@ -9495,7 +9480,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 634,
+    "rank": 633,
     "frequency": 11,
     "lemma": "заколенїе",
     "printed": "заколе́нїе",
@@ -9510,7 +9495,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 635,
+    "rank": 634,
     "frequency": 11,
     "lemma": "знаю",
     "printed": "зна́ю",
@@ -9525,7 +9510,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 636,
+    "rank": 635,
     "frequency": 11,
     "lemma": "зꙋбъ",
     "printed": "зꙋ́бъ",
@@ -9540,7 +9525,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 637,
+    "rank": 636,
     "frequency": 11,
     "lemma": "излиха",
     "printed": "и҆́злиха",
@@ -9555,7 +9540,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 638,
+    "rank": 637,
     "frequency": 11,
     "lemma": "исполнити",
     "printed": "и҆спо́лнити",
@@ -9570,7 +9555,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 639,
+    "rank": 638,
     "frequency": 11,
     "lemma": "капернаꙋмъ",
     "printed": "капернаꙋ́мъ",
@@ -9585,7 +9570,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 640,
+    "rank": 639,
     "frequency": 11,
     "lemma": "кꙋю",
     "printed": "кꙋ́ю",
@@ -9600,7 +9585,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 641,
+    "rank": 640,
     "frequency": 11,
     "lemma": "мощно",
     "printed": "мо́щно",
@@ -9615,7 +9600,7 @@
     "review_reason": "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication"
   },
   {
-    "rank": 642,
+    "rank": 641,
     "frequency": 11,
     "lemma": "мꙋка",
     "printed": "мꙋка̀",
@@ -9630,7 +9615,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 643,
+    "rank": 642,
     "frequency": 11,
     "lemma": "наемникъ",
     "printed": "нае́мникъ",
@@ -9645,7 +9630,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 644,
+    "rank": 643,
     "frequency": 11,
     "lemma": "невѣдѣнїе",
     "printed": "невѣ́дѣнїе",
@@ -9660,7 +9645,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 645,
+    "rank": 644,
     "frequency": 11,
     "lemma": "нищїй",
     "printed": "ни́щїй",
@@ -9675,7 +9660,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 646,
+    "rank": 645,
     "frequency": 11,
     "lemma": "нѣдро",
     "printed": "нѣ́дро",
@@ -9690,7 +9675,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 647,
+    "rank": 646,
     "frequency": 11,
     "lemma": "подножїе",
     "printed": "подно́жїе",
@@ -9705,7 +9690,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 648,
+    "rank": 647,
     "frequency": 11,
     "lemma": "попранїе",
     "printed": "попра́нїе",
@@ -9720,7 +9705,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 649,
+    "rank": 648,
     "frequency": 11,
     "lemma": "поꙋченїе",
     "printed": "поꙋче́нїе",
@@ -9735,7 +9720,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 650,
+    "rank": 649,
     "frequency": 11,
     "lemma": "прославити",
     "printed": "просла́вити",
@@ -9750,7 +9735,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 651,
+    "rank": 650,
     "frequency": 11,
     "lemma": "ранъ",
     "printed": "ра̑нъ",
@@ -9765,7 +9750,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 652,
+    "rank": 651,
     "frequency": 11,
     "lemma": "старецъ",
     "printed": "ста́рецъ",
@@ -9780,7 +9765,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 653,
+    "rank": 652,
     "frequency": 11,
     "lemma": "стеблїе",
     "printed": "сте́блїе",
@@ -9795,7 +9780,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 654,
+    "rank": 653,
     "frequency": 11,
     "lemma": "стоѧло",
     "printed": "стоѧ́ло",
@@ -9810,7 +9795,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 655,
+    "rank": 654,
     "frequency": 11,
     "lemma": "стыдѣнїе",
     "printed": "стыдѣ́нїе",
@@ -9825,7 +9810,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 656,
+    "rank": 655,
     "frequency": 11,
     "lemma": "сытость",
     "printed": "сы́тость",
@@ -9840,7 +9825,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 657,
+    "rank": 656,
     "frequency": 11,
     "lemma": "таже",
     "printed": "та́же",
@@ -9855,7 +9840,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 658,
+    "rank": 657,
     "frequency": 11,
     "lemma": "темъ",
     "printed": "те́мъ",
@@ -9870,7 +9855,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 659,
+    "rank": 658,
     "frequency": 11,
     "lemma": "шествїе",
     "printed": "ше́ствїе",
@@ -9885,7 +9870,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 660,
+    "rank": 659,
     "frequency": 11,
     "lemma": "ємь",
     "printed": "є҆́мь",
@@ -9900,7 +9885,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 661,
+    "rank": 660,
     "frequency": 11,
     "lemma": "іессей",
     "printed": "і҆ессе́й",
@@ -9915,7 +9900,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 662,
+    "rank": 661,
     "frequency": 11,
     "lemma": "іехоніа",
     "printed": "і҆ехоні́а",
@@ -9930,7 +9915,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 663,
+    "rank": 662,
     "frequency": 11,
     "lemma": "ѡполчитисѧ",
     "printed": "ѡ҆полчи́тисѧ",
@@ -9945,7 +9930,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 664,
+    "rank": 663,
     "frequency": 11,
     "lemma": "ѡпꙋстѣнїе",
     "printed": "ѡ҆пꙋстѣ́нїе",
@@ -9960,7 +9945,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 665,
+    "rank": 664,
     "frequency": 11,
     "lemma": "ѡсꙋжденїе",
     "printed": "ѡ҆сꙋжде́нїе",
@@ -9975,7 +9960,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 666,
+    "rank": 665,
     "frequency": 11,
     "lemma": "ѻрна",
     "printed": "ѻ҆́рна",
@@ -9990,7 +9975,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 667,
+    "rank": 666,
     "frequency": 10,
     "lemma": "мощи",
     "printed": "мощѝ",
@@ -10005,7 +9990,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 668,
+    "rank": 667,
     "frequency": 10,
     "lemma": "ахїтофелъ",
     "printed": "а҆хїтофе́лъ",
@@ -10020,7 +10005,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 669,
+    "rank": 668,
     "frequency": 10,
     "lemma": "внимати",
     "printed": "внима́ти",
@@ -10035,7 +10020,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 670,
+    "rank": 669,
     "frequency": 10,
     "lemma": "воспоминанїе",
     "printed": "воспомина́нїе",
@@ -10050,7 +10035,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 671,
+    "rank": 670,
     "frequency": 10,
     "lemma": "гордынѧ",
     "printed": "горды́нѧ",
@@ -10065,7 +10050,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 672,
+    "rank": 671,
     "frequency": 10,
     "lemma": "досажденїе",
     "printed": "досажде́нїе",
@@ -10080,7 +10065,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 673,
+    "rank": 672,
     "frequency": 10,
     "lemma": "замврій",
     "printed": "замврі́й",
@@ -10095,7 +10080,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 674,
+    "rank": 673,
     "frequency": 10,
     "lemma": "зной",
     "printed": "зно́й",
@@ -10110,7 +10095,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 675,
+    "rank": 674,
     "frequency": 10,
     "lemma": "исповѣдатисѧ",
     "printed": "и҆сповѣ́датисѧ",
@@ -10125,7 +10110,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 676,
+    "rank": 675,
     "frequency": 10,
     "lemma": "корей",
     "printed": "коре́й",
@@ -10140,7 +10125,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 677,
+    "rank": 676,
     "frequency": 10,
     "lemma": "крꙋгъ",
     "printed": "крꙋ́гъ",
@@ -10155,7 +10140,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 678,
+    "rank": 677,
     "frequency": 10,
     "lemma": "кісъ",
     "printed": "кі́съ",
@@ -10170,7 +10155,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 679,
+    "rank": 678,
     "frequency": 10,
     "lemma": "кꙋміръ",
     "printed": "кꙋмі́ръ",
@@ -10185,7 +10170,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 680,
+    "rank": 679,
     "frequency": 10,
     "lemma": "молва",
     "printed": "молва̀",
@@ -10200,7 +10185,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 681,
+    "rank": 680,
     "frequency": 10,
     "lemma": "молїе",
     "printed": "мо́лїе",
@@ -10215,7 +10200,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 682,
+    "rank": 681,
     "frequency": 10,
     "lemma": "наченъ",
     "printed": "наче́нъ",
@@ -10230,7 +10215,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 683,
+    "rank": 682,
     "frequency": 10,
     "lemma": "питїе",
     "printed": "питїѐ",
@@ -10245,7 +10230,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 684,
+    "rank": 683,
     "frequency": 10,
     "lemma": "подиръ",
     "printed": "поди́ръ",
@@ -10260,7 +10245,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 685,
+    "rank": 684,
     "frequency": 10,
     "lemma": "покрыти",
     "printed": "покры́ти",
@@ -10275,7 +10260,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 686,
+    "rank": 685,
     "frequency": 10,
     "lemma": "полагаю",
     "printed": "полага́ю",
@@ -10290,7 +10275,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 687,
+    "rank": 686,
     "frequency": 10,
     "lemma": "помазанїе",
     "printed": "пома́занїе",
@@ -10305,7 +10290,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 688,
+    "rank": 687,
     "frequency": 10,
     "lemma": "посмѣхъ",
     "printed": "посмѣ́хъ",
@@ -10320,7 +10305,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 689,
+    "rank": 688,
     "frequency": 10,
     "lemma": "потребленїе",
     "printed": "потребле́нїе",
@@ -10335,7 +10320,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 690,
+    "rank": 689,
     "frequency": 10,
     "lemma": "похваленїе",
     "printed": "похвале́нїе",
@@ -10350,7 +10335,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 691,
+    "rank": 690,
     "frequency": 10,
     "lemma": "поѧсъ",
     "printed": "по́ѧсъ",
@@ -10365,7 +10350,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 692,
+    "rank": 691,
     "frequency": 10,
     "lemma": "права",
     "printed": "пра̑ва",
@@ -10380,7 +10365,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 693,
+    "rank": 692,
     "frequency": 10,
     "lemma": "притѧжанїе",
     "printed": "притѧжа́нїе",
@@ -10395,7 +10380,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 694,
+    "rank": 693,
     "frequency": 10,
     "lemma": "славнаѧ",
     "printed": "сла̑внаѧ",
@@ -10410,7 +10395,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 695,
+    "rank": 694,
     "frequency": 10,
     "lemma": "слꙋжитель",
     "printed": "слꙋжи́тель",
@@ -10425,7 +10410,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 696,
+    "rank": 695,
     "frequency": 10,
     "lemma": "снити",
     "printed": "сни́ти",
@@ -10440,7 +10425,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 697,
+    "rank": 696,
     "frequency": 10,
     "lemma": "сродникъ",
     "printed": "сро́дникъ",
@@ -10455,7 +10440,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 698,
+    "rank": 697,
     "frequency": 10,
     "lemma": "тайна",
     "printed": "та́йна",
@@ -10470,7 +10455,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 699,
+    "rank": 698,
     "frequency": 10,
     "lemma": "трапеза",
     "printed": "трапе́за",
@@ -10485,7 +10470,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 700,
+    "rank": 699,
     "frequency": 10,
     "lemma": "требꙋетъ",
     "printed": "тре́бꙋетъ",
@@ -10500,7 +10485,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 701,
+    "rank": 700,
     "frequency": 10,
     "lemma": "хотѣнїе",
     "printed": "хотѣ́нїе",
@@ -10515,7 +10500,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 702,
+    "rank": 701,
     "frequency": 10,
     "lemma": "часы",
     "printed": "часы̀",
@@ -10530,7 +10515,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 703,
+    "rank": 702,
     "frequency": 10,
     "lemma": "чресла",
     "printed": "чре́сла",
@@ -10545,7 +10530,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 704,
+    "rank": 703,
     "frequency": 10,
     "lemma": "ідѡлъ",
     "printed": "і҆́дѡлъ",
@@ -10560,7 +10545,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 705,
+    "rank": 704,
     "frequency": 10,
     "lemma": "іоѳоръ",
     "printed": "і҆оѳо́ръ",
@@ -10575,7 +10560,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 706,
+    "rank": 705,
     "frequency": 10,
     "lemma": "ѡсвѧщенїе",
     "printed": "ѡ҆свѧще́нїе",
@@ -10590,7 +10575,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 707,
+    "rank": 706,
     "frequency": 10,
     "lemma": "ѡчистити",
     "printed": "ѡ҆чи́стити",
@@ -10605,7 +10590,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 708,
+    "rank": 707,
     "frequency": 10,
     "lemma": "ꙗчмень",
     "printed": "ꙗ҆чме́нь",
@@ -10620,7 +10605,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 709,
+    "rank": 708,
     "frequency": 9,
     "lemma": "мѣрило",
     "printed": "мѣ́рило",
@@ -10635,7 +10620,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 710,
+    "rank": 709,
     "frequency": 9,
     "lemma": "адаръ",
     "printed": "а҆да́ръ",
@@ -10650,7 +10635,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 711,
+    "rank": 710,
     "frequency": 9,
     "lemma": "аскалѡнъ",
     "printed": "а҆скалѡ́нъ",
@@ -10665,7 +10650,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 712,
+    "rank": 711,
     "frequency": 9,
     "lemma": "аѵнанъ",
     "printed": "а҆ѵна́нъ",
@@ -10680,7 +10665,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 713,
+    "rank": 712,
     "frequency": 9,
     "lemma": "благій",
     "printed": "благі́й",
@@ -10695,7 +10680,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 714,
+    "rank": 713,
     "frequency": 9,
     "lemma": "ближнїй",
     "printed": "бли́жнїй",
@@ -10710,7 +10695,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 715,
+    "rank": 714,
     "frequency": 9,
     "lemma": "бѣдность",
     "printed": "бѣ́дность",
@@ -10725,7 +10710,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 716,
+    "rank": 715,
     "frequency": 9,
     "lemma": "гаваѡнъ",
     "printed": "гаваѡ́нъ",
@@ -10740,7 +10725,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 717,
+    "rank": 716,
     "frequency": 9,
     "lemma": "господїе",
     "printed": "госпо́дїе",
@@ -10755,7 +10740,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 718,
+    "rank": 717,
     "frequency": 9,
     "lemma": "донелѣже",
     "printed": "доне́лѣже",
@@ -10770,7 +10755,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 719,
+    "rank": 718,
     "frequency": 9,
     "lemma": "дꙋбрава",
     "printed": "дꙋбра́ва",
@@ -10785,7 +10770,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 720,
+    "rank": 719,
     "frequency": 9,
     "lemma": "желчь",
     "printed": "же́лчь",
@@ -10800,7 +10785,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 721,
+    "rank": 720,
     "frequency": 9,
     "lemma": "завѣса",
     "printed": "завѣ́са",
@@ -10815,7 +10800,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 722,
+    "rank": 721,
     "frequency": 9,
     "lemma": "завꙋлѡнъ",
     "printed": "завꙋлѡ́нъ",
@@ -10830,7 +10815,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 723,
+    "rank": 722,
     "frequency": 9,
     "lemma": "изо",
     "printed": "и҆зо",
@@ -10845,7 +10830,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 724,
+    "rank": 723,
     "frequency": 9,
     "lemma": "искꙋпъ",
     "printed": "и҆скꙋ́пъ",
@@ -10860,7 +10845,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 725,
+    "rank": 724,
     "frequency": 9,
     "lemma": "истлѣнїе",
     "printed": "и҆стлѣ́нїе",
@@ -10875,7 +10860,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 726,
+    "rank": 725,
     "frequency": 9,
     "lemma": "каїнанъ",
     "printed": "каїна́нъ",
@@ -10890,7 +10875,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 727,
+    "rank": 726,
     "frequency": 9,
     "lemma": "кедръ",
     "printed": "ке́дръ",
@@ -10905,7 +10890,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 728,
+    "rank": 727,
     "frequency": 9,
     "lemma": "клѧтисѧ",
     "printed": "клѧ́тисѧ",
@@ -10920,7 +10905,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 729,
+    "rank": 728,
     "frequency": 9,
     "lemma": "ковчежецъ",
     "printed": "ковче́жецъ",
@@ -10935,7 +10920,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 730,
+    "rank": 729,
     "frequency": 9,
     "lemma": "козлище",
     "printed": "ко́злище",
@@ -10950,7 +10935,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 731,
+    "rank": 730,
     "frequency": 9,
     "lemma": "колесница",
     "printed": "колесни́ца",
@@ -10965,7 +10950,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 732,
+    "rank": 731,
     "frequency": 9,
     "lemma": "корысть",
     "printed": "коры́сть",
@@ -10980,7 +10965,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 733,
+    "rank": 732,
     "frequency": 9,
     "lemma": "лахісъ",
     "printed": "лахі́съ",
@@ -10995,7 +10980,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 734,
+    "rank": 733,
     "frequency": 9,
     "lemma": "лѣнивый",
     "printed": "лѣни́вый",
@@ -11010,7 +10995,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 735,
+    "rank": 734,
     "frequency": 9,
     "lemma": "лꙋка",
     "printed": "лꙋ́ка",
@@ -11025,7 +11010,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 736,
+    "rank": 735,
     "frequency": 9,
     "lemma": "лꙋчшїй",
     "printed": "лꙋ́чшїй",
@@ -11040,7 +11025,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 737,
+    "rank": 736,
     "frequency": 9,
     "lemma": "малы",
     "printed": "ма̑лы",
@@ -11055,7 +11040,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 738,
+    "rank": 737,
     "frequency": 9,
     "lemma": "мꙋдрствовати",
     "printed": "мꙋ́дрствовати",
@@ -11070,7 +11055,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 739,
+    "rank": 738,
     "frequency": 9,
     "lemma": "начертанїе",
     "printed": "начерта́нїе",
@@ -11085,7 +11070,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 740,
+    "rank": 739,
     "frequency": 9,
     "lemma": "нееманъ",
     "printed": "неема́нъ",
@@ -11100,7 +11085,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 741,
+    "rank": 740,
     "frequency": 9,
     "lemma": "познанїе",
     "printed": "позна́нїе",
@@ -11115,7 +11100,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 742,
+    "rank": 741,
     "frequency": 9,
     "lemma": "потреба",
     "printed": "потре́ба",
@@ -11130,7 +11115,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 743,
+    "rank": 742,
     "frequency": 9,
     "lemma": "премꙋдрый",
     "printed": "премꙋ́дрый",
@@ -11145,7 +11130,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 744,
+    "rank": 743,
     "frequency": 9,
     "lemma": "произволенїе",
     "printed": "произволе́нїе",
@@ -11160,7 +11145,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 745,
+    "rank": 744,
     "frequency": 9,
     "lemma": "пїѧй",
     "printed": "пїѧ́й",
@@ -11175,7 +11160,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 746,
+    "rank": 745,
     "frequency": 9,
     "lemma": "пꙋстити",
     "printed": "пꙋсти́ти",
@@ -11190,7 +11175,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 747,
+    "rank": 746,
     "frequency": 9,
     "lemma": "разстоѧнїе",
     "printed": "разстоѧ́нїе",
@@ -11205,7 +11190,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 748,
+    "rank": 747,
     "frequency": 9,
     "lemma": "разꙋмный",
     "printed": "разꙋ́мный",
@@ -11220,7 +11205,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 749,
+    "rank": 748,
     "frequency": 9,
     "lemma": "сложенїе",
     "printed": "сложе́нїе",
@@ -11235,7 +11220,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 750,
+    "rank": 749,
     "frequency": 9,
     "lemma": "слꙋчай",
     "printed": "слꙋ́чай",
@@ -11250,7 +11235,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 751,
+    "rank": 750,
     "frequency": 9,
     "lemma": "совѣтникъ",
     "printed": "совѣ́тникъ",
@@ -11265,7 +11250,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 752,
+    "rank": 751,
     "frequency": 9,
     "lemma": "сокрꙋшити",
     "printed": "сокрꙋши́ти",
@@ -11280,7 +11265,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 753,
+    "rank": 752,
     "frequency": 9,
     "lemma": "сонїе",
     "printed": "со́нїе",
@@ -11295,7 +11280,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 754,
+    "rank": 753,
     "frequency": 9,
     "lemma": "стакти",
     "printed": "ста́кти",
@@ -11310,7 +11295,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 755,
+    "rank": 754,
     "frequency": 9,
     "lemma": "строенїе",
     "printed": "строе́нїе",
@@ -11325,7 +11310,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 756,
+    "rank": 755,
     "frequency": 9,
     "lemma": "стрꙋпъ",
     "printed": "стрꙋ́пъ",
@@ -11340,7 +11325,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 757,
+    "rank": 756,
     "frequency": 9,
     "lemma": "сѡфаръ",
     "printed": "сѡфа́ръ",
@@ -11355,7 +11340,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 758,
+    "rank": 757,
     "frequency": 9,
     "lemma": "терплю",
     "printed": "терплю̀",
@@ -11370,7 +11355,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 759,
+    "rank": 758,
     "frequency": 9,
     "lemma": "хитрость",
     "printed": "хи́трость",
@@ -11385,7 +11370,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 760,
+    "rank": 759,
     "frequency": 9,
     "lemma": "єфї",
     "printed": "є҆́фї",
@@ -11400,7 +11385,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 761,
+    "rank": 760,
     "frequency": 9,
     "lemma": "ѡбитанїе",
     "printed": "ѡ҆бита́нїе",
@@ -11415,7 +11400,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 762,
+    "rank": 761,
     "frequency": 9,
     "lemma": "ѡбличїе",
     "printed": "ѡ҆бли́чїе",
@@ -11430,7 +11415,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 763,
+    "rank": 762,
     "frequency": 9,
     "lemma": "ѡбращенїе",
     "printed": "ѡ҆браще́нїе",
@@ -11445,7 +11430,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 764,
+    "rank": 763,
     "frequency": 9,
     "lemma": "ѡбрѣтаю",
     "printed": "ѡ҆брѣта́ю",
@@ -11460,7 +11445,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 765,
+    "rank": 764,
     "frequency": 8,
     "lemma": "авдій",
     "printed": "а҆вді́й",
@@ -11475,7 +11460,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 766,
+    "rank": 765,
     "frequency": 8,
     "lemma": "аккарѡнъ",
     "printed": "а҆ккарѡ́нъ",
@@ -11490,7 +11475,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 767,
+    "rank": 766,
     "frequency": 8,
     "lemma": "аінъ",
     "printed": "а҆і́нъ",
@@ -11505,7 +11490,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 768,
+    "rank": 767,
     "frequency": 8,
     "lemma": "блескъ",
     "printed": "бле́скъ",
@@ -11520,7 +11505,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 769,
+    "rank": 768,
     "frequency": 8,
     "lemma": "брады",
     "printed": "брады̀",
@@ -11535,7 +11520,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 770,
+    "rank": 769,
     "frequency": 8,
     "lemma": "былїе",
     "printed": "бы́лїе",
@@ -11550,7 +11535,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 771,
+    "rank": 770,
     "frequency": 8,
     "lemma": "бꙋй",
     "printed": "бꙋ́й",
@@ -11565,7 +11550,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 772,
+    "rank": 771,
     "frequency": 8,
     "lemma": "вервь",
     "printed": "ве́рвь",
@@ -11580,7 +11565,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 773,
+    "rank": 772,
     "frequency": 8,
     "lemma": "вертепъ",
     "printed": "верте́пъ",
@@ -11595,7 +11580,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 774,
+    "rank": 773,
     "frequency": 8,
     "lemma": "взоръ",
     "printed": "взо́ръ",
@@ -11610,7 +11595,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 775,
+    "rank": 774,
     "frequency": 8,
     "lemma": "водотечь",
     "printed": "водоте́чь",
@@ -11625,7 +11610,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 776,
+    "rank": 775,
     "frequency": 8,
     "lemma": "возложꙋ",
     "printed": "возложꙋ̀",
@@ -11640,7 +11625,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 777,
+    "rank": 776,
     "frequency": 8,
     "lemma": "возносити",
     "printed": "возноси́ти",
@@ -11655,7 +11640,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 778,
+    "rank": 777,
     "frequency": 8,
     "lemma": "возрастъ",
     "printed": "во́зрастъ",
@@ -11670,7 +11655,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 779,
+    "rank": 778,
     "frequency": 8,
     "lemma": "восходъ",
     "printed": "восхо́дъ",
@@ -11685,7 +11670,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 780,
+    "rank": 779,
     "frequency": 8,
     "lemma": "вскрай",
     "printed": "вскра́й",
@@ -11700,7 +11685,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 781,
+    "rank": 780,
     "frequency": 8,
     "lemma": "выѧ",
     "printed": "вы́ѧ",
@@ -11715,7 +11700,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 782,
+    "rank": 781,
     "frequency": 8,
     "lemma": "вѣрꙋю",
     "printed": "вѣ́рꙋю",
@@ -11730,7 +11715,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 783,
+    "rank": 782,
     "frequency": 8,
     "lemma": "дерзость",
     "printed": "де́рзость",
@@ -11745,7 +11730,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 784,
+    "rank": 783,
     "frequency": 8,
     "lemma": "добрый",
     "printed": "до́брый",
@@ -11760,7 +11745,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 785,
+    "rank": 784,
     "frequency": 8,
     "lemma": "доволенъ",
     "printed": "дово́ленъ",
@@ -11775,7 +11760,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 786,
+    "rank": 785,
     "frequency": 8,
     "lemma": "долгъ",
     "printed": "до́лгъ",
@@ -11790,7 +11775,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 787,
+    "rank": 786,
     "frequency": 8,
     "lemma": "древле",
     "printed": "дре́вле",
@@ -11805,7 +11790,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 788,
+    "rank": 787,
     "frequency": 8,
     "lemma": "жванїе",
     "printed": "жва́нїе",
@@ -11820,7 +11805,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 789,
+    "rank": 788,
     "frequency": 8,
     "lemma": "застꙋпленїе",
     "printed": "застꙋпле́нїе",
@@ -11835,7 +11820,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 790,
+    "rank": 789,
     "frequency": 8,
     "lemma": "избытокъ",
     "printed": "и҆збы́токъ",
@@ -11850,7 +11835,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 791,
+    "rank": 790,
     "frequency": 8,
     "lemma": "инакѡ",
     "printed": "и҆́накѡ",
@@ -11865,7 +11850,7 @@
     "review_reason": "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication"
   },
   {
-    "rank": 792,
+    "rank": 791,
     "frequency": 8,
     "lemma": "искꙋсство",
     "printed": "и҆скꙋ́сство",
@@ -11880,7 +11865,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 793,
+    "rank": 792,
     "frequency": 8,
     "lemma": "истребленїе",
     "printed": "и҆стребле́нїе",
@@ -11895,7 +11880,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 794,
+    "rank": 793,
     "frequency": 8,
     "lemma": "кадильникъ",
     "printed": "кади́льникъ",
@@ -11910,7 +11895,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 795,
+    "rank": 794,
     "frequency": 8,
     "lemma": "кармилъ",
     "printed": "карми́лъ",
@@ -11925,7 +11910,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 796,
+    "rank": 795,
     "frequency": 8,
     "lemma": "креститисѧ",
     "printed": "крести́тисѧ",
@@ -11940,7 +11925,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 797,
+    "rank": 796,
     "frequency": 8,
     "lemma": "лишенїе",
     "printed": "лише́нїе",
@@ -11955,7 +11940,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 798,
+    "rank": 797,
     "frequency": 8,
     "lemma": "малый",
     "printed": "ма́лый",
@@ -11970,7 +11955,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 799,
+    "rank": 798,
     "frequency": 8,
     "lemma": "милѡть",
     "printed": "ми́лѡть",
@@ -11985,7 +11970,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 800,
+    "rank": 799,
     "frequency": 8,
     "lemma": "млада",
     "printed": "мла́да",
@@ -12000,7 +11985,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 801,
+    "rank": 800,
     "frequency": 8,
     "lemma": "мѵро",
     "printed": "мѵ́ро",
@@ -12015,7 +12000,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 802,
+    "rank": 801,
     "frequency": 8,
     "lemma": "написанїе",
     "printed": "написа́нїе",
@@ -12030,7 +12015,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 803,
+    "rank": 802,
     "frequency": 8,
     "lemma": "нѣкогда",
     "printed": "нѣ́когда",
@@ -12045,7 +12030,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 804,
+    "rank": 803,
     "frequency": 8,
     "lemma": "пастисѧ",
     "printed": "пасти́сѧ",
@@ -12060,7 +12045,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 805,
+    "rank": 804,
     "frequency": 8,
     "lemma": "перстъ",
     "printed": "пе́рстъ",
@@ -12075,7 +12060,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 806,
+    "rank": 805,
     "frequency": 8,
     "lemma": "писецъ",
     "printed": "писе́цъ",
@@ -12090,7 +12075,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 807,
+    "rank": 806,
     "frequency": 8,
     "lemma": "плещы",
     "printed": "плещы̀",
@@ -12105,7 +12090,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 808,
+    "rank": 807,
     "frequency": 8,
     "lemma": "погребенїе",
     "printed": "погребе́нїе",
@@ -12120,7 +12105,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 809,
+    "rank": 808,
     "frequency": 8,
     "lemma": "предложенїе",
     "printed": "предложе́нїе",
@@ -12135,7 +12120,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 810,
+    "rank": 809,
     "frequency": 8,
     "lemma": "прилѣжати",
     "printed": "прилѣжа́ти",
@@ -12150,7 +12135,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 811,
+    "rank": 810,
     "frequency": 8,
     "lemma": "приставникъ",
     "printed": "приста́вникъ",
@@ -12165,7 +12150,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 812,
+    "rank": 811,
     "frequency": 8,
     "lemma": "пѣнїе",
     "printed": "пѣ́нїе",
@@ -12180,7 +12165,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 813,
+    "rank": 812,
     "frequency": 8,
     "lemma": "пꙋты",
     "printed": "пꙋ̑ты",
@@ -12195,7 +12180,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 814,
+    "rank": 813,
     "frequency": 8,
     "lemma": "радованїе",
     "printed": "ра́дованїе",
@@ -12210,7 +12195,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 815,
+    "rank": 814,
     "frequency": 8,
     "lemma": "распрѧ",
     "printed": "ра́спрѧ",
@@ -12225,7 +12210,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 816,
+    "rank": 815,
     "frequency": 8,
     "lemma": "сава",
     "printed": "сава̀",
@@ -12240,7 +12225,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 817,
+    "rank": 816,
     "frequency": 8,
     "lemma": "санаваллатъ",
     "printed": "санавалла́тъ",
@@ -12255,7 +12240,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 818,
+    "rank": 817,
     "frequency": 8,
     "lemma": "свѣтло",
     "printed": "свѣ́тло",
@@ -12270,7 +12255,7 @@
     "review_reason": "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication"
   },
   {
-    "rank": 819,
+    "rank": 818,
     "frequency": 8,
     "lemma": "семїдалъ",
     "printed": "семїда́лъ",
@@ -12285,7 +12270,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 820,
+    "rank": 819,
     "frequency": 8,
     "lemma": "скончатисѧ",
     "printed": "сконча́тисѧ",
@@ -12300,7 +12285,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 821,
+    "rank": 820,
     "frequency": 8,
     "lemma": "слышанїе",
     "printed": "слы́шанїе",
@@ -12315,7 +12300,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 822,
+    "rank": 821,
     "frequency": 8,
     "lemma": "смѣшенїе",
     "printed": "смѣше́нїе",
@@ -12330,7 +12315,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 823,
+    "rank": 822,
     "frequency": 8,
     "lemma": "содержати",
     "printed": "содержа́ти",
@@ -12345,7 +12330,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 824,
+    "rank": 823,
     "frequency": 8,
     "lemma": "содомъ",
     "printed": "содо́мъ",
@@ -12360,7 +12345,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 825,
+    "rank": 824,
     "frequency": 8,
     "lemma": "спреди",
     "printed": "спредѝ",
@@ -12375,7 +12360,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 826,
+    "rank": 825,
     "frequency": 8,
     "lemma": "стѣнь",
     "printed": "стѣ́нь",
@@ -12390,7 +12375,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 827,
+    "rank": 826,
     "frequency": 8,
     "lemma": "сѣтованїе",
     "printed": "сѣ́тованїе",
@@ -12405,7 +12390,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 828,
+    "rank": 827,
     "frequency": 8,
     "lemma": "сꙋдище",
     "printed": "сꙋди́ще",
@@ -12420,7 +12405,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 829,
+    "rank": 828,
     "frequency": 8,
     "lemma": "сꙋпрꙋгъ",
     "printed": "сꙋпрꙋ̑гъ",
@@ -12435,7 +12420,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 830,
+    "rank": 829,
     "frequency": 8,
     "lemma": "сꙋщїй",
     "printed": "сꙋ́щїй",
@@ -12450,7 +12435,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 831,
+    "rank": 830,
     "frequency": 8,
     "lemma": "трикраты",
     "printed": "трикра́ты",
@@ -12465,7 +12450,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 832,
+    "rank": 831,
     "frequency": 8,
     "lemma": "тщанїе",
     "printed": "тща́нїе",
@@ -12480,7 +12465,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 833,
+    "rank": 832,
     "frequency": 8,
     "lemma": "ханаанъ",
     "printed": "ханаа́нъ",
@@ -12495,7 +12480,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 834,
+    "rank": 833,
     "frequency": 8,
     "lemma": "ховаръ",
     "printed": "хова́ръ",
@@ -12510,7 +12495,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 835,
+    "rank": 834,
     "frequency": 8,
     "lemma": "хранилища",
     "printed": "храни̑лища",
@@ -12525,7 +12510,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 836,
+    "rank": 835,
     "frequency": 8,
     "lemma": "чаѧнїе",
     "printed": "ча́ѧнїе",
@@ -12540,7 +12525,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 837,
+    "rank": 836,
     "frequency": 8,
     "lemma": "єрмѡнъ",
     "printed": "є҆́рмѡнъ",
@@ -12555,7 +12540,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 838,
+    "rank": 837,
     "frequency": 8,
     "lemma": "іасѡнъ",
     "printed": "і҆асѡ́нъ",
@@ -12570,7 +12555,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 839,
+    "rank": 838,
     "frequency": 8,
     "lemma": "ѡставлѧю",
     "printed": "ѡ҆ставлѧ́ю",
@@ -12585,7 +12570,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 840,
+    "rank": 839,
     "frequency": 8,
     "lemma": "ѳавѡръ",
     "printed": "ѳавѡ́ръ",
@@ -12600,7 +12585,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 841,
+    "rank": 840,
     "frequency": 8,
     "lemma": "ѻгнище",
     "printed": "ѻ҆гни́ще",
@@ -12615,7 +12600,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 842,
+    "rank": 841,
     "frequency": 8,
     "lemma": "ѿмстити",
     "printed": "ѿмсти́ти",
@@ -12630,7 +12615,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 843,
+    "rank": 842,
     "frequency": 8,
     "lemma": "ѿпꙋщати",
     "printed": "ѿпꙋща́ти",
@@ -12645,7 +12630,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 844,
+    "rank": 843,
     "frequency": 7,
     "lemma": "колъ",
     "printed": "ко́лъ",
@@ -12660,7 +12645,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 845,
+    "rank": 844,
     "frequency": 7,
     "lemma": "пира",
     "printed": "пи́ра",
@@ -12675,7 +12660,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 846,
+    "rank": 845,
     "frequency": 7,
     "lemma": "аермѡнъ",
     "printed": "а҆ермѡ́нъ",
@@ -12690,7 +12675,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 847,
+    "rank": 846,
     "frequency": 7,
     "lemma": "бдѣнїе",
     "printed": "бдѣ́нїе",
@@ -12705,7 +12690,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 848,
+    "rank": 847,
     "frequency": 7,
     "lemma": "благоꙋханїе",
     "printed": "благоꙋха́нїе",
@@ -12720,7 +12705,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 849,
+    "rank": 848,
     "frequency": 7,
     "lemma": "братисѧ",
     "printed": "бра́тисѧ",
@@ -12735,7 +12720,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 850,
+    "rank": 849,
     "frequency": 7,
     "lemma": "бывати",
     "printed": "быва́ти",
@@ -12750,7 +12735,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 851,
+    "rank": 850,
     "frequency": 7,
     "lemma": "бѣдство",
     "printed": "бѣ́дство",
@@ -12765,7 +12750,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 852,
+    "rank": 851,
     "frequency": 7,
     "lemma": "васанъ",
     "printed": "васа́нъ",
@@ -12780,7 +12765,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 853,
+    "rank": 852,
     "frequency": 7,
     "lemma": "воздꙋхъ",
     "printed": "воздꙋ́хъ",
@@ -12795,7 +12780,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 854,
+    "rank": 853,
     "frequency": 7,
     "lemma": "возложенїе",
     "printed": "возложе́нїе",
@@ -12810,7 +12795,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 855,
+    "rank": 854,
     "frequency": 7,
     "lemma": "возмощи",
     "printed": "возмощѝ",
@@ -12825,7 +12810,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 856,
+    "rank": 855,
     "frequency": 7,
     "lemma": "восоръ",
     "printed": "восо́ръ",
@@ -12840,7 +12825,7 @@
     "review_reason": "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication"
   },
   {
-    "rank": 857,
+    "rank": 856,
     "frequency": 7,
     "lemma": "высокїй",
     "printed": "высо́кїй",
@@ -12855,7 +12840,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 858,
+    "rank": 857,
     "frequency": 7,
     "lemma": "вѣждь",
     "printed": "вѣ́ждь",
@@ -12870,7 +12855,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 859,
+    "rank": 858,
     "frequency": 7,
     "lemma": "говѧда",
     "printed": "говѧ̑да",
@@ -12885,7 +12870,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 860,
+    "rank": 859,
     "frequency": 7,
     "lemma": "гоненїе",
     "printed": "гоне́нїе",
@@ -12900,7 +12885,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 861,
+    "rank": 860,
     "frequency": 7,
     "lemma": "гордость",
     "printed": "го́рдость",
@@ -12915,7 +12900,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 862,
+    "rank": 861,
     "frequency": 7,
     "lemma": "горесть",
     "printed": "го́ресть",
@@ -12930,7 +12915,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 863,
+    "rank": 862,
     "frequency": 7,
     "lemma": "денница",
     "printed": "денни́ца",
@@ -12945,7 +12930,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 864,
+    "rank": 863,
     "frequency": 7,
     "lemma": "держати",
     "printed": "держа́ти",
@@ -12960,7 +12945,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 865,
+    "rank": 864,
     "frequency": 7,
     "lemma": "дивитисѧ",
     "printed": "диви́тисѧ",
@@ -12975,7 +12960,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 866,
+    "rank": 865,
     "frequency": 7,
     "lemma": "звизданїе",
     "printed": "звизда́нїе",
@@ -12990,7 +12975,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 867,
+    "rank": 866,
     "frequency": 7,
     "lemma": "зданїе",
     "printed": "зда́нїе",
@@ -13005,7 +12990,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 868,
+    "rank": 867,
     "frequency": 7,
     "lemma": "зіфъ",
     "printed": "зі́фъ",
@@ -13020,7 +13005,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 869,
+    "rank": 868,
     "frequency": 7,
     "lemma": "изженетъ",
     "printed": "и҆зжене́тъ",
@@ -13035,7 +13020,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 870,
+    "rank": 869,
     "frequency": 7,
     "lemma": "искꙋсити",
     "printed": "и҆скꙋси́ти",
@@ -13050,7 +13035,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 871,
+    "rank": 870,
     "frequency": 7,
     "lemma": "кланѧтисѧ",
     "printed": "кла́нѧтисѧ",
@@ -13065,7 +13050,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 872,
+    "rank": 871,
     "frequency": 7,
     "lemma": "коварство",
     "printed": "кова́рство",
@@ -13080,7 +13065,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 873,
+    "rank": 872,
     "frequency": 7,
     "lemma": "козелъ",
     "printed": "козе́лъ",
@@ -13095,7 +13080,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 874,
+    "rank": 873,
     "frequency": 7,
     "lemma": "краснаѧ",
     "printed": "кра̑снаѧ",
@@ -13110,7 +13095,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 875,
+    "rank": 874,
     "frequency": 7,
     "lemma": "мній",
     "printed": "мні́й",
@@ -13125,7 +13110,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 876,
+    "rank": 875,
     "frequency": 7,
     "lemma": "навалъ",
     "printed": "нава́лъ",
@@ -13140,7 +13125,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 877,
+    "rank": 876,
     "frequency": 7,
     "lemma": "нареченный",
     "printed": "нарече́нный",
@@ -13155,7 +13140,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 878,
+    "rank": 877,
     "frequency": 7,
     "lemma": "настоѧтель",
     "printed": "настоѧ́тель",
@@ -13170,7 +13155,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 879,
+    "rank": 878,
     "frequency": 7,
     "lemma": "плѣнити",
     "printed": "плѣни́ти",
@@ -13185,7 +13170,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 880,
+    "rank": 879,
     "frequency": 7,
     "lemma": "прегрѣшенїе",
     "printed": "прегрѣше́нїе",
@@ -13200,7 +13185,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 881,
+    "rank": 880,
     "frequency": 7,
     "lemma": "преддверїе",
     "printed": "преддве́рїе",
@@ -13215,7 +13200,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 882,
+    "rank": 881,
     "frequency": 7,
     "lemma": "прещенїе",
     "printed": "преще́нїе",
@@ -13230,7 +13215,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 883,
+    "rank": 882,
     "frequency": 7,
     "lemma": "проповѣдникъ",
     "printed": "проповѣ́дникъ",
@@ -13245,7 +13230,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 884,
+    "rank": 883,
     "frequency": 7,
     "lemma": "птичище",
     "printed": "пти́чище",
@@ -13260,7 +13245,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 885,
+    "rank": 884,
     "frequency": 7,
     "lemma": "пїѧнство",
     "printed": "пїѧ́нство",
@@ -13275,7 +13260,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 886,
+    "rank": 885,
     "frequency": 7,
     "lemma": "пѣнѧзь",
     "printed": "пѣ̑нѧзь",
@@ -13290,7 +13275,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 887,
+    "rank": 886,
     "frequency": 7,
     "lemma": "раавъ",
     "printed": "раа́въ",
@@ -13305,7 +13290,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 888,
+    "rank": 887,
     "frequency": 7,
     "lemma": "растлѣнїе",
     "printed": "растлѣ́нїе",
@@ -13320,7 +13305,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 889,
+    "rank": 888,
     "frequency": 7,
     "lemma": "само",
     "printed": "са́мо",
@@ -13335,7 +13320,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 890,
+    "rank": 889,
     "frequency": 7,
     "lemma": "седрахъ",
     "printed": "седра́хъ",
@@ -13350,7 +13335,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 891,
+    "rank": 890,
     "frequency": 7,
     "lemma": "серна",
     "printed": "се́рна",
@@ -13365,7 +13350,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 892,
+    "rank": 891,
     "frequency": 7,
     "lemma": "скніпы",
     "printed": "скні̑пы",
@@ -13380,7 +13365,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 893,
+    "rank": 892,
     "frequency": 7,
     "lemma": "скрежетъ",
     "printed": "скре́жетъ",
@@ -13395,7 +13380,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 894,
+    "rank": 893,
     "frequency": 7,
     "lemma": "скѵменъ",
     "printed": "скѵ́менъ",
@@ -13410,7 +13395,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 895,
+    "rank": 894,
     "frequency": 7,
     "lemma": "слꙋжба",
     "printed": "слꙋ́жба",
@@ -13425,7 +13410,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 896,
+    "rank": 895,
     "frequency": 7,
     "lemma": "снѣсти",
     "printed": "снѣ́сти",
@@ -13440,7 +13425,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 897,
+    "rank": 896,
     "frequency": 7,
     "lemma": "сокровищный",
     "printed": "сокро́вищный",
@@ -13455,7 +13440,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 898,
+    "rank": 897,
     "frequency": 7,
     "lemma": "споборенїе",
     "printed": "споборе́нїе",
@@ -13470,7 +13455,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 899,
+    "rank": 898,
     "frequency": 7,
     "lemma": "стражба",
     "printed": "стражба̀",
@@ -13485,7 +13470,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 900,
+    "rank": 899,
     "frequency": 7,
     "lemma": "сꙋчецъ",
     "printed": "сꙋче́цъ",
@@ -13500,7 +13485,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 901,
+    "rank": 900,
     "frequency": 7,
     "lemma": "твердь",
     "printed": "тве́рдь",
@@ -13515,7 +13500,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 902,
+    "rank": 901,
     "frequency": 7,
     "lemma": "терпѣти",
     "printed": "терпѣ́ти",
@@ -13530,7 +13515,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 903,
+    "rank": 902,
     "frequency": 7,
     "lemma": "тѧжцѣ",
     "printed": "тѧ́жцѣ",
@@ -13545,7 +13530,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 904,
+    "rank": 903,
     "frequency": 7,
     "lemma": "тꙋземецъ",
     "printed": "тꙋзе́мецъ",
@@ -13560,7 +13545,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 905,
+    "rank": 904,
     "frequency": 7,
     "lemma": "храненїе",
     "printed": "хране́нїе",
@@ -13575,7 +13560,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 906,
+    "rank": 905,
     "frequency": 7,
     "lemma": "хꙋдожество",
     "printed": "хꙋдо́жество",
@@ -13590,7 +13575,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 907,
+    "rank": 906,
     "frequency": 7,
     "lemma": "чертогъ",
     "printed": "черто́гъ",
@@ -13605,7 +13590,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 908,
+    "rank": 907,
     "frequency": 7,
     "lemma": "честнѡ",
     "printed": "че́стнѡ",
@@ -13620,7 +13605,7 @@
     "review_reason": "multiple mixed-recension Ponomar dictionary identities share this headword; target identity, part of speech, and cell require contextual adjudication"
   },
   {
-    "rank": 909,
+    "rank": 908,
     "frequency": 7,
     "lemma": "чꙋдно",
     "printed": "чꙋ́дно",
@@ -13635,7 +13620,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 910,
+    "rank": 909,
     "frequency": 7,
     "lemma": "єфесъ",
     "printed": "є҆фе́съ",
@@ -13650,7 +13635,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 911,
+    "rank": 910,
     "frequency": 7,
     "lemma": "іазиръ",
     "printed": "і҆ази́ръ",
@@ -13665,7 +13650,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 912,
+    "rank": 911,
     "frequency": 7,
     "lemma": "іаіръ",
     "printed": "і҆аі́ръ",
@@ -13680,7 +13665,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 913,
+    "rank": 912,
     "frequency": 7,
     "lemma": "іꙋдейски",
     "printed": "і҆ꙋде́йски",
@@ -13695,7 +13680,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 914,
+    "rank": 913,
     "frequency": 7,
     "lemma": "ѡбновити",
     "printed": "ѡ҆бнови́ти",
@@ -13710,7 +13695,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 915,
+    "rank": 914,
     "frequency": 7,
     "lemma": "ѡболченъ",
     "printed": "ѡ҆болче́нъ",
@@ -13725,7 +13710,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 916,
+    "rank": 915,
     "frequency": 7,
     "lemma": "ѻстрогъ",
     "printed": "ѻ҆стро́гъ",
@@ -13740,7 +13725,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 917,
+    "rank": 916,
     "frequency": 7,
     "lemma": "ѿвратити",
     "printed": "ѿврати́ти",
@@ -13755,7 +13740,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 918,
+    "rank": 917,
     "frequency": 7,
     "lemma": "ѿдѣленїе",
     "printed": "ѿдѣле́нїе",
@@ -13770,7 +13755,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 919,
+    "rank": 918,
     "frequency": 6,
     "lemma": "ключь",
     "printed": "клю́чь",
@@ -13785,7 +13770,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 920,
+    "rank": 919,
     "frequency": 6,
     "lemma": "подвигъ",
     "printed": "по́двигъ",
@@ -13800,7 +13785,7 @@
     "review_reason": "surface belongs to multiple OCS lexeme paradigms; target identity must be resolved manually"
   },
   {
-    "rank": 921,
+    "rank": 920,
     "frequency": 6,
     "lemma": "авдѡнъ",
     "printed": "а҆вдѡ́нъ",
@@ -13815,7 +13800,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 922,
+    "rank": 921,
     "frequency": 6,
     "lemma": "амѡнъ",
     "printed": "а҆мѡ́нъ",
@@ -13830,7 +13815,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 923,
+    "rank": 922,
     "frequency": 6,
     "lemma": "благоволенїе",
     "printed": "благоволе́нїе",
@@ -13845,7 +13830,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 924,
+    "rank": 923,
     "frequency": 6,
     "lemma": "благопрїѧтство",
     "printed": "благопрїѧ́тство",
@@ -13860,7 +13845,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 925,
+    "rank": 924,
     "frequency": 6,
     "lemma": "вельблюдъ",
     "printed": "вельблю̑дъ",
@@ -13875,7 +13860,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 926,
+    "rank": 925,
     "frequency": 6,
     "lemma": "вкꙋсъ",
     "printed": "вкꙋ́съ",
@@ -13890,7 +13875,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 927,
+    "rank": 926,
     "frequency": 6,
     "lemma": "властелинъ",
     "printed": "властели́нъ",
@@ -13905,7 +13890,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 928,
+    "rank": 927,
     "frequency": 6,
     "lemma": "воздыханїе",
     "printed": "воздыха́нїе",
@@ -13920,7 +13905,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 929,
+    "rank": 928,
     "frequency": 6,
     "lemma": "возношенїе",
     "printed": "возноше́нїе",
@@ -13935,7 +13920,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 930,
+    "rank": 929,
     "frequency": 6,
     "lemma": "востанїе",
     "printed": "воста́нїе",
@@ -13950,7 +13935,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 931,
+    "rank": 930,
     "frequency": 6,
     "lemma": "восхитити",
     "printed": "восхи́тити",
@@ -13965,7 +13950,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 932,
+    "rank": 931,
     "frequency": 6,
     "lemma": "впасти",
     "printed": "впа́сти",
@@ -13980,7 +13965,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 933,
+    "rank": 932,
     "frequency": 6,
     "lemma": "всѧчески",
     "printed": "всѧ́чески",
@@ -13995,7 +13980,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 934,
+    "rank": 933,
     "frequency": 6,
     "lemma": "вѣдати",
     "printed": "вѣ́дати",
@@ -14010,7 +13995,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 935,
+    "rank": 934,
     "frequency": 6,
     "lemma": "вѧщше",
     "printed": "вѧ́щше",
@@ -14025,7 +14010,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 936,
+    "rank": 935,
     "frequency": 6,
     "lemma": "гаданїе",
     "printed": "гада́нїе",
@@ -14040,7 +14025,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 937,
+    "rank": 936,
     "frequency": 6,
     "lemma": "гади",
     "printed": "га́ди",
@@ -14055,7 +14040,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 938,
+    "rank": 937,
     "frequency": 6,
     "lemma": "гевалъ",
     "printed": "гева́лъ",
@@ -14070,7 +14055,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 939,
+    "rank": 938,
     "frequency": 6,
     "lemma": "гесемъ",
     "printed": "гесе́мъ",
@@ -14085,7 +14070,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 940,
+    "rank": 939,
     "frequency": 6,
     "lemma": "гнати",
     "printed": "гна́ти",
@@ -14100,7 +14085,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 941,
+    "rank": 940,
     "frequency": 6,
     "lemma": "гоморра",
     "printed": "гомо́рра",
@@ -14115,7 +14100,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 942,
+    "rank": 941,
     "frequency": 6,
     "lemma": "дарованїе",
     "printed": "дарова́нїе",
@@ -14130,7 +14115,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 943,
+    "rank": 942,
     "frequency": 6,
     "lemma": "демѡнъ",
     "printed": "де́мѡнъ",
@@ -14145,7 +14130,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 944,
+    "rank": 943,
     "frequency": 6,
     "lemma": "десѧтое",
     "printed": "десѧ́тое",
@@ -14160,7 +14145,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 945,
+    "rank": 944,
     "frequency": 6,
     "lemma": "животный",
     "printed": "живо́тный",
@@ -14175,7 +14160,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 946,
+    "rank": 945,
     "frequency": 6,
     "lemma": "жречество",
     "printed": "жре́чество",
@@ -14190,7 +14175,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 947,
+    "rank": 946,
     "frequency": 6,
     "lemma": "закланїе",
     "printed": "закла́нїе",
@@ -14205,7 +14190,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 948,
+    "rank": 947,
     "frequency": 6,
     "lemma": "зерно",
     "printed": "зе́рно",
@@ -14220,7 +14205,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 949,
+    "rank": 948,
     "frequency": 6,
     "lemma": "избранный",
     "printed": "и҆збра́нный",
@@ -14235,7 +14220,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 950,
+    "rank": 949,
     "frequency": 6,
     "lemma": "изгонити",
     "printed": "и҆згони́ти",
@@ -14250,7 +14235,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 951,
+    "rank": 950,
     "frequency": 6,
     "lemma": "излїѧти",
     "printed": "и҆злїѧ́ти",
@@ -14265,7 +14250,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 952,
+    "rank": 951,
     "frequency": 6,
     "lemma": "исчести",
     "printed": "и҆счестѝ",
@@ -14280,7 +14265,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 953,
+    "rank": 952,
     "frequency": 6,
     "lemma": "лихоимство",
     "printed": "лихои́мство",
@@ -14295,7 +14280,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 954,
+    "rank": 953,
     "frequency": 6,
     "lemma": "мнѣти",
     "printed": "мнѣ́ти",
@@ -14310,7 +14295,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 955,
+    "rank": 954,
     "frequency": 6,
     "lemma": "мїсаилъ",
     "printed": "мїсаи́лъ",
@@ -14325,7 +14310,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 956,
+    "rank": 955,
     "frequency": 6,
     "lemma": "навѣтъ",
     "printed": "навѣ́тъ",
@@ -14340,7 +14325,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 957,
+    "rank": 956,
     "frequency": 6,
     "lemma": "назаретъ",
     "printed": "назаре́тъ",
@@ -14355,7 +14340,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 958,
+    "rank": 957,
     "frequency": 6,
     "lemma": "назѡрей",
     "printed": "назѡре́й",
@@ -14370,7 +14355,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 959,
+    "rank": 958,
     "frequency": 6,
     "lemma": "нападенїе",
     "printed": "нападе́нїе",
@@ -14385,7 +14370,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 960,
+    "rank": 959,
     "frequency": 6,
     "lemma": "нападъ",
     "printed": "напа́дъ",
@@ -14400,7 +14385,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 961,
+    "rank": 960,
     "frequency": 6,
     "lemma": "нарещисѧ",
     "printed": "нарещи́сѧ",
@@ -14415,7 +14400,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 962,
+    "rank": 961,
     "frequency": 6,
     "lemma": "непорѡчны",
     "printed": "непорѡ́чны",
@@ -14430,7 +14415,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 963,
+    "rank": 962,
     "frequency": 6,
     "lemma": "неꙋдобь",
     "printed": "неꙋдо́бь",
@@ -14445,7 +14430,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 964,
+    "rank": 963,
     "frequency": 6,
     "lemma": "новый",
     "printed": "но́вый",
@@ -14460,7 +14445,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 965,
+    "rank": 964,
     "frequency": 6,
     "lemma": "печень",
     "printed": "пе́чень",
@@ -14475,7 +14460,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 966,
+    "rank": 965,
     "frequency": 6,
     "lemma": "подсада",
     "printed": "подса́да",
@@ -14490,7 +14475,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 967,
+    "rank": 966,
     "frequency": 6,
     "lemma": "помостъ",
     "printed": "помо́стъ",
@@ -14505,7 +14490,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 968,
+    "rank": 967,
     "frequency": 6,
     "lemma": "праведный",
     "printed": "пра́ведный",
@@ -14520,7 +14505,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 969,
+    "rank": 968,
     "frequency": 6,
     "lemma": "правый",
     "printed": "пра́вый",
@@ -14535,7 +14520,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 970,
+    "rank": 969,
     "frequency": 6,
     "lemma": "преданїе",
     "printed": "преда́нїе",
@@ -14550,7 +14535,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 971,
+    "rank": 970,
     "frequency": 6,
     "lemma": "претыканїе",
     "printed": "претыка́нїе",
@@ -14565,7 +14550,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 972,
+    "rank": 971,
     "frequency": 6,
     "lemma": "призрѣти",
     "printed": "призрѣ́ти",
@@ -14580,7 +14565,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 973,
+    "rank": 972,
     "frequency": 6,
     "lemma": "причастникъ",
     "printed": "прича́стникъ",
@@ -14595,7 +14580,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 974,
+    "rank": 973,
     "frequency": 6,
     "lemma": "просвѣщенїе",
     "printed": "просвѣще́нїе",
@@ -14610,7 +14595,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 975,
+    "rank": 974,
     "frequency": 6,
     "lemma": "прїемлю",
     "printed": "прїе́млю",
@@ -14625,7 +14610,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 976,
+    "rank": 975,
     "frequency": 6,
     "lemma": "прѧ",
     "printed": "прѧ̀",
@@ -14640,7 +14625,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 977,
+    "rank": 976,
     "frequency": 6,
     "lemma": "пѧтокъ",
     "printed": "пѧто́къ",
@@ -14655,7 +14640,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 978,
+    "rank": 977,
     "frequency": 6,
     "lemma": "рожденїе",
     "printed": "рожде́нїе",
@@ -14670,7 +14655,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 979,
+    "rank": 978,
     "frequency": 6,
     "lemma": "самый",
     "printed": "са́мый",
@@ -14685,7 +14670,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 980,
+    "rank": 979,
     "frequency": 6,
     "lemma": "свѧщеннодѣйствовати",
     "printed": "свѧщеннодѣ́йствовати",
@@ -14700,7 +14685,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 981,
+    "rank": 980,
     "frequency": 6,
     "lemma": "сиѳъ",
     "printed": "си́ѳъ",
@@ -14715,7 +14700,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 982,
+    "rank": 981,
     "frequency": 6,
     "lemma": "слїѧнїе",
     "printed": "слїѧ́нїе",
@@ -14730,7 +14715,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 983,
+    "rank": 982,
     "frequency": 6,
     "lemma": "смертный",
     "printed": "сме́ртный",
@@ -14745,7 +14730,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 984,
+    "rank": 983,
     "frequency": 6,
     "lemma": "смирити",
     "printed": "смири́ти",
@@ -14760,7 +14745,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 985,
+    "rank": 984,
     "frequency": 6,
     "lemma": "смоковница",
     "printed": "смоко́вница",
@@ -14775,7 +14760,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 986,
+    "rank": 985,
     "frequency": 6,
     "lemma": "смышленїе",
     "printed": "смышле́нїе",
@@ -14790,7 +14775,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 987,
+    "rank": 986,
     "frequency": 6,
     "lemma": "снабдѣнїе",
     "printed": "снабдѣ́нїе",
@@ -14805,7 +14790,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 988,
+    "rank": 987,
     "frequency": 6,
     "lemma": "составъ",
     "printed": "соста́въ",
@@ -14820,7 +14805,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 989,
+    "rank": 988,
     "frequency": 6,
     "lemma": "старѣй",
     "printed": "ста́рѣй",
@@ -14835,7 +14820,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 990,
+    "rank": 989,
     "frequency": 6,
     "lemma": "старѣйшинство",
     "printed": "старѣ́йшинство",
@@ -14850,7 +14835,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 991,
+    "rank": 990,
     "frequency": 6,
     "lemma": "столпописанїе",
     "printed": "столпописа́нїе",
@@ -14865,7 +14850,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 992,
+    "rank": 991,
     "frequency": 6,
     "lemma": "стремленїе",
     "printed": "стремле́нїе",
@@ -14880,7 +14865,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 993,
+    "rank": 992,
     "frequency": 6,
     "lemma": "стрѣльцы",
     "printed": "стрѣльцы̀",
@@ -14895,7 +14880,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 994,
+    "rank": 993,
     "frequency": 6,
     "lemma": "сꙋша",
     "printed": "сꙋ́ша",
@@ -14910,7 +14895,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 995,
+    "rank": 994,
     "frequency": 6,
     "lemma": "твердѡ",
     "printed": "тве́рдѡ",
@@ -14925,7 +14910,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 996,
+    "rank": 995,
     "frequency": 6,
     "lemma": "творецъ",
     "printed": "творе́цъ",
@@ -14940,7 +14925,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 997,
+    "rank": 996,
     "frequency": 6,
     "lemma": "травы",
     "printed": "травы̀",
@@ -14955,7 +14940,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 998,
+    "rank": 997,
     "frequency": 6,
     "lemma": "трꙋдитисѧ",
     "printed": "трꙋди́тисѧ",
@@ -14970,7 +14955,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 999,
+    "rank": 998,
     "frequency": 6,
     "lemma": "тѣснота",
     "printed": "тѣснота̀",
@@ -14985,7 +14970,7 @@
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   },
   {
-    "rank": 1000,
+    "rank": 999,
     "frequency": 6,
     "lemma": "хваленїе",
     "printed": "хвале́нїе",
@@ -14996,6 +14981,21 @@
     "attestation_candidate_id": "synodal:candidate:84b8db79a16e3f18ae1c3d08",
     "passage": "I_Esdra.3.11",
     "context": "и҆ вопїѧ́хꙋ въ пѣ́снехъ и҆ и҆сповѣ́данїи гдⷭ҇еви, ꙗ҆́кѡ бл҃гъ, ꙗ҆́кѡ въ вѣ́къ млⷭ҇ть є҆гѡ̀ над̾ і҆и҃лемъ: и҆ всѝ лю́дїе возглаша́хꙋ гла́сомъ вели́кимъ хвале́нїе гдⷭ҇ꙋ при ѡ҆снова́нїи до́мꙋ гдⷭ҇нѧ.",
+    "decision": "candidate-unreviewed",
+    "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
+  },
+  {
+    "rank": 1000,
+    "frequency": 6,
+    "lemma": "хвалитисѧ",
+    "printed": "хвали́тисѧ",
+    "part_of_speech": "unknown",
+    "cell": "untyped",
+    "gloss": "превозноситься, цениться, 2. похваляться, гордиться, 3. торжествовать",
+    "semantic_candidate_id": "synodal:candidate:704553aec7cc7ab3b0b537a7",
+    "attestation_candidate_id": "synodal:candidate:63d875fec0e04de03376944e",
+    "passage": "Gal.6.14",
+    "context": "мнѣ́ же да не бꙋ́детъ хвали́тисѧ, то́кмѡ ѡ҆ крⷭ҇тѣ̀ гдⷭ҇а на́шегѡ і҆и҃са хрⷭ҇та̀, и҆́мже мнѣ̀ мі́ръ распѧ́тсѧ, и҆ а҆́зъ мі́рꙋ.",
     "decision": "candidate-unreviewed",
     "review_reason": "mixed-recension Ponomar headword and meaning match a target source-partition form; part of speech, target identity, and exact cell require human confirmation"
   }

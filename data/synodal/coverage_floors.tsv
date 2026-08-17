@@ -1,31 +1,31 @@
 measure	direction	value	sealed_at	justification
-summary:top_k_analyzed	at-least	963251	v0.11-phase-1	Strict top-k recall may not fall. The v0.11 program keeps driving this toward 100%.
-summary:top_1_analyzed	at-least	613949	v0.11-phase-1	Regression guard only. Raw top-1 requires exactly one analysis, so genuine syncretism caps it; it is never an objective and may only fall with a stated syncretism justification.
-integrity:lemma_unique_analyzed	at-least	953853	v0.11-phase-1	Tokens resolving to exactly one lexical identity. Unlike top-1 this is not capped by syncretism, so a fall means real identity ambiguity was introduced.
-integrity:morphologically_typed_analyzed	at-least	913100	v0.11-phase-1	Covered tokens carrying at least one inflectable cell. Coverage growth must land here.
+summary:top_k_analyzed	at-least	964440	v0.11-phase-1	Strict top-k recall may not fall. The v0.11 program keeps driving this toward 100%.
+summary:top_1_analyzed	at-least	614339	v0.11-phase-1	Regression guard only. Raw top-1 requires exactly one analysis, so genuine syncretism caps it; it is never an objective and may only fall with a stated syncretism justification.
+integrity:lemma_unique_analyzed	at-least	954868	v0.11-phase-1	Tokens resolving to exactly one lexical identity. Unlike top-1 this is not capped by syncretism, so a fall means real identity ambiguity was introduced.
+integrity:morphologically_typed_analyzed	at-least	914289	v0.11-phase-1	Covered tokens carrying at least one inflectable cell. Coverage growth must land here.
 integrity:morphology_free_analyzed	at-most	50151	v0.11-phase-1	Covered tokens whose every reading is lexical-form. This is the cheapest route to coverage and teaches the engine nothing; the ceiling must fall over the program, never rise.
 system:adjective	at-least	20204	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:aorist	at-least	39987	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:aorist	at-least	40464	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:compound-cardinal-word	at-least	4300	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:cyrillic-numeral	at-least	197	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:determiner	at-least	17204	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:future	at-least	15990	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:imperative	at-least	4277	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:future	at-least	16016	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:imperative	at-least	4373	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:imperfect	at-least	6158	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:indeclinable	at-least	371571	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:infinitive	at-least	1389	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:l-participle	at-least	1819	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:l-participle	at-least	1843	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:lexical-form	at-least	94026	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:noun	at-least	171203	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:noun	at-least	171243	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:numeral	at-least	8504	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:past-active-participle	at-least	2340	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:past-passive-participle	at-least	516	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:present	at-least	22974	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:present	at-least	23500	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:present-active-participle	at-least	5691	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:present-passive-participle	at-least	31	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:pronoun	at-least	174870	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:unresolved	at-least	0	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:verbal-noun	at-least	0	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-holdout:top_k_analyzed	at-least	25417	v0.11-phase-2	Strict top-k over the type-disjoint holdout. This is the only measure here that shows generalisation to types the reviewed data has never seen, and it may not fall.
+holdout:top_k_analyzed	at-least	25512	v0.11-phase-2	Strict top-k over the type-disjoint holdout. This is the only measure here that shows generalisation to types the reviewed data has never seen, and it may not fall.
 holdout:memorised_analyzed	at-most	15048	v0.11-phase-2	Held-out tokens covered by an exact row citing the held-out type itself. These predate the holdout and are grandfathered; the ceiling forces new evidence away from held-out types instead of memorising them.
-holdout:generalised_analyzed	at-least	9310	v0.11-phase-2	Held-out tokens reached by normative table, productive rule, or irregular override rather than by a row naming the type. Coverage growth on the holdout must land here.
+holdout:generalised_analyzed	at-least	9405	v0.11-phase-2	Held-out tokens reached by normative table, productive rule, or irregular override rather than by a row naming the type. Coverage growth on the holdout must land here.

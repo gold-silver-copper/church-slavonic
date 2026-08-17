@@ -235,3 +235,6 @@ synodal:noun:videnie	sense:v21:noun:videnie	vision; appearance; sight	perception
 synodal:noun:spasenie	sense:v21:noun:spasenie	salvation; deliverance; protection	religion,deliverance	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
 synodal:noun:ponoshenie	sense:v21:noun:ponoshenie	reproach; disgrace; shame	social,shame	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
 synodal:noun:otmshchenie	sense:v21:noun:otmshchenie	vengeance; retribution; punishment	justice,retribution	ponomar-modern-church-slavonic-corpus-2016	mixed	reviewed-with-synodal-corpus
+synodal:verb:vozlozhiti	sense:v11:verb:vozlozhiti	to lay on; place upon; impose	action,position,causation	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:verb:vozvestiti	sense:v11:verb:vozvestiti	to announce; declare; make known	action,speech,communication	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
+synodal:verb:prinesti	sense:v11:verb:prinesti	to bring; carry to; offer	action,motion,offering	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative

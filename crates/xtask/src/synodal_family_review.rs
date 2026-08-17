@@ -619,6 +619,31 @@ fn validate_admitted_families(
             "first-hard-u-stem-m-with-exact-consonantal-overrides" => {
                 family.class.as_deref() == Some("first-hard-u-stem-m") && family.members.len() >= 5
             }
+            // A verb admitted purely productively has no exact rows at all, so
+            // the "with-exact-overrides" classes above cannot describe it: they
+            // require a member count this family will never have. What is
+            // checkable instead is that the class is reviewed, generation is
+            // enabled, and the systems the principal parts claim are the ones
+            // the engine actually supports.
+            "second-verb-system-productive-only"
+            | "first-unpalatalized-verb-system-productive-only"
+            | "first-palatalized-verb-system-productive-only" => {
+                let expected = review
+                    .admitted_class
+                    .trim_end_matches("-verb-system-productive-only");
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some(expected)
+                    && family.lexeme.part_of_speech() == synodal_church_slavonic::PartOfSpeech::Verb
+                    && ["future", "aorist", "imperative", "l-participle"]
+                        .iter()
+                        .all(|system| {
+                            family
+                                .supported_systems
+                                .iter()
+                                .any(|supported| supported == system)
+                        })
+            }
             "second-verb-system-with-exact-overrides" => {
                 family.fully_classed
                     && !family.exact_only

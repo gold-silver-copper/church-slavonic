@@ -12,8 +12,8 @@ accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 40
-- Scope families with no reproducing placement at the finest granularity: 169
-- Lexemes with cells outside the reusable scope grammar: 1
+- Scope families with no reproducing placement at the finest granularity: 179
+- Lexemes with cells outside the reusable scope grammar: 3
 
 | Granularity | Rows |
 |---|---:|
@@ -755,6 +755,9 @@ synodal:verb:imati	plural	Participle("present", "active", "short", "positive")	3
 synodal:verb:lyubiti	singular	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:0 acute misses: люблю→люблю̀ люблю→люблю́
 synodal:verb:pisati	singular	FiniteVerb("aorist")	4 attestation(s); best rule word-vowel-from-start:1 grave misses: писа→писа́ писа→писа́
 synodal:verb:pisati	singular	FiniteVerb("present")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пишетъ→пи́шетъ
+synodal:verb:prinesti	singular	FiniteVerb("aorist")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: принесе→принесе́ принесе→принесе́
+synodal:verb:prinesti	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: принесете→принесетѐ
+synodal:verb:prinesti	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: принесете→принесе́те
 synodal:verb:v06-iziti	plural	Imperative	2 attestation(s); best rule word-vowel-from-start:2 acute misses: изыдите→и҆зы́дите
 synodal:verb:v06-vzeti	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: взѧтїе→взѧ́тїе взѧтїе→взѧ́тїе
 synodal:verb:v06-vzeti	singular:genitive	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: взѧтїѧ→взѧ́тїѧ взѧтїѧ→взѧ́тїѧ
@@ -770,6 +773,15 @@ synodal:verb:v06-vzeti	plural	Participle("past", "passive", "short", "positive")
 synodal:verb:v06-vzeti	singular	Imperative	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: возми→возми́
 synodal:verb:v07-35ce5d83583f3639	singular	FiniteVerb("future")	4 attestation(s); best rule word-vowel-from-start:1 acute misses: начнетъ→на́чнетъ
 synodal:verb:v07-35ce5d83583f3639	singular	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:1 acute misses: начнетъ→на́чнетъ
+synodal:verb:vozlozhiti	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: возложите→возложитѐ
+synodal:verb:vozlozhiti	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
+synodal:verb:vozlozhiti	plural	Imperative	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
+synodal:verb:vozvestiti	singular	FiniteVerb("aorist")	11 attestation(s); best rule word-vowel-from-start:2 acute misses: возвѣсти→Возвѣсти́ возвѣсти→Возвѣсти́ возвѣсти→возвѣ́сти возвѣсти→возвѣ́сти
+synodal:verb:vozvestiti	singular	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 grave misses: возвѣщꙋ→возвѣщꙋ́
+synodal:verb:vozvestiti	plural	FiniteVerb("future")	5 attestation(s); best rule word-vowel-from-start:2 acute misses: возвѣстите→возвѣститѐ
+synodal:verb:vozvestiti	plural	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:2 acute misses: возвѣстите→возвѣститѐ
+synodal:verb:vozvestiti	singular	Imperative	10 attestation(s); best rule word-vowel-from-start:2 grave misses: возвѣсти→Возвѣсти́ возвѣсти→Возвѣсти́ возвѣсти→возвѣ́сти возвѣсти→возвѣ́сти
+synodal:verb:vozvestiti	plural	Imperative	4 attestation(s); best rule word-vowel-from-start:2 acute misses: возвѣстите→возвѣститѐ
 synodal:verb:wikt-0c6c8db63b7c	singular	Participle("present", "active", "short", "positive")	23 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:wikt-0c6c8db63b7c	dual	Participle("present", "active", "short", "positive")	29 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:wikt-6ceeefbe4e9e	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
@@ -872,10 +884,12 @@ accent-paradigm scope grammar cannot address them. They need per-cell
 
 ```text
 synodal:verb:pisati	infinitive писа́ти
+synodal:verb:vozlozhiti	infinitive возложи́ти
+synodal:verb:vozvestiti	infinitive возвѣсти́ти
 ```
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3046
-- Lexemes with at least one such attestation: 105
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3100
+- Lexemes with at least one such attestation: 108
 - Placement space searched per partition: 30 placements x 3 marks
