@@ -13,6 +13,7 @@ mod synodal_family_review;
 mod synodal_lexical_review;
 mod synodal_lexical_union;
 mod synodal_marginal_recovery;
+mod synodal_type_holdout;
 mod synodal_v04_audit;
 mod synodal_v05_audit;
 mod synodal_v05_baseline;
@@ -104,6 +105,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         }
         Some("synodal-coverage") => synodal_coverage::run(&mut args, &workspace_root()?),
         Some("synodal-accent-fit") => synodal_accent_fit::run(&mut args, &workspace_root()?),
+        Some("synodal-type-holdout") => synodal_type_holdout::run(&mut args, &workspace_root()?),
         Some("synodal-evaluation-queue") => {
             synodal_evaluation_queue::run(&mut args, &workspace_root()?)
         }

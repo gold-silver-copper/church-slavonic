@@ -19,6 +19,15 @@
     "within_lexeme_ambiguous": 44,
     "cross_lexeme_ambiguous": 2
   },
+  "held_out_types": 0,
+  "held_out_type_coverage": {
+    "total_tokens": 0,
+    "top_1_analyzed": 0,
+    "top_k_analyzed": 0,
+    "ambiguous": 0,
+    "unresolved": 0
+  },
+  "held_out_type_status": {},
   "by_corpus": {
     "Church Slavonic Bible corpus": {
       "total_tokens": 70,

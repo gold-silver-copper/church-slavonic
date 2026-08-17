@@ -134,6 +134,7 @@ cargo xtask synodal-evaluation-queue
 cargo xtask synodal-family-review-queue
 cargo xtask synodal-marginal-recovery
 cargo xtask synodal-accent-fit
+cargo xtask synodal-type-holdout
 cargo xtask synodal-v06-review-packets
 cargo xtask synodal-v07-review-packets
 cargo xtask synodal-v07-apply --check
@@ -156,6 +157,19 @@ excludes admitted target lexemes, preserves ambiguous rejections, never treats
 dictionary rows as target surface evidence, and never edits reviewed TSVs. The
 evaluation queue uses only held-out passages, blocks generated surface forms
 that correspond to more than one cell, and likewise remains candidate-only.
+
+`synodal-type-holdout` seals `data/synodal/held_out_types.tsv`, the type-disjoint
+evaluation slice. The corpus `source`/`evaluation` partitions are passage-disjoint,
+so most frontier surfaces occur on both sides and an exact row taken from a
+`source` passage closes its own held-out twin; only a fraction of a percent of the
+corpus can test generalisation that way. Holding out normalized *types* instead
+gives a slice roughly twelve times larger. Membership is a content hash of the type
+itself, so it carries no tunable parameter and cannot be shaped to avoid hard types
+or protect a percentage; loading the file re-derives the selector and rejects any
+hand-added row. Coverage then reports the held-out slice separately, together with
+the resolver statuses that produced it, so coverage that memorises a held-out type
+through an exact row citing it stays distinguishable from coverage a productive
+rule or normative table actually generalised to.
 
 `synodal-accent-fit` writes `reports/synodal-accent-fit.tsv` and `.md`. It
 addresses the `missing-accent-or-orthographic-metadata` gap, where identity and

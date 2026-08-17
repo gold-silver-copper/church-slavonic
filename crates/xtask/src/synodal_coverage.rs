@@ -10,7 +10,7 @@ use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use synodal_church_slavonic::{GenerationPolicy, Inflector, OrthographyProfile};
 use synodal_church_slavonic_dictionary::coverage::{
-    Analyzer, CheckTextOptions, CoveragePassage, CoverageReport, coverage,
+    Analyzer, CheckTextOptions, CoveragePassage, CoverageReport, coverage_with_type_holdout,
 };
 
 const DEFAULT_SOURCES: [&str; 2] = [
@@ -111,13 +111,21 @@ pub(crate) fn run(
             .orthography(profile)
             .build(),
     )?;
-    let report = coverage(
+    // The fixture is a ten-passage smoke corpus with no sealed holdout; the
+    // canonical run measures the type-disjoint slice alongside the corpus.
+    let held_out_types = if fixture {
+        BTreeSet::new()
+    } else {
+        crate::synodal_type_holdout::load(&root.join(crate::synodal_type_holdout::HOLDOUT_PATH))?
+    };
+    let report = coverage_with_type_holdout(
         &analyzer,
         &passages,
         CheckTextOptions {
             generation_policy: policy,
             orthography_profile: profile,
         },
+        &held_out_types,
     );
     let stem = if fixture {
         "synodal-coverage-fixture"
@@ -301,6 +309,14 @@ fn validate_complete_report(report: &CoverageReport) -> Result<(), Box<dyn Error
     }
 }
 
+/// Loads the canonical default source set, as the coverage report does.
+pub(crate) fn load_canonical_passages(
+    intermediate: &Path,
+) -> Result<Vec<CoveragePassage>, Box<dyn Error>> {
+    let sources = DEFAULT_SOURCES.map(str::to_owned);
+    load_intermediate(intermediate, &sources, None)
+}
+
 fn load_intermediate(
     intermediate: &Path,
     sources: &[String],
@@ -414,6 +430,7 @@ fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use synodal_church_slavonic_dictionary::coverage::coverage;
 
     fn floor(measure: &str, at_least: bool, value: usize) -> Floor {
         Floor {
@@ -802,6 +819,31 @@ fn guarded_measures(report: &CoverageReport) -> BTreeMap<String, usize> {
     for (system, slice) in &report.by_morphological_system {
         measures.insert(format!("system:{system}"), slice.top_k_analyzed);
     }
+    // The type-disjoint holdout is where generalisation is actually visible.
+    // Coverage there must not fall, coverage that arrives by memorising the
+    // held-out type itself must not rise, and coverage that arrives by rule
+    // must not fall. Together these force new work onto the generalising side.
+    let status = |label: &str| {
+        report
+            .held_out_type_status
+            .get(label)
+            .copied()
+            .unwrap_or_default()
+    };
+    measures.insert(
+        "holdout:top_k_analyzed".to_owned(),
+        report.held_out_type_coverage.top_k_analyzed,
+    );
+    measures.insert(
+        "holdout:memorised_analyzed".to_owned(),
+        status("exact-synodal-attestation"),
+    );
+    measures.insert(
+        "holdout:generalised_analyzed".to_owned(),
+        status("synodal-normative-table")
+            + status("synodal-productive-rule")
+            + status("synodal-irregular-override"),
+    );
     measures
 }
 

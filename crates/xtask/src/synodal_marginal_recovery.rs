@@ -833,6 +833,10 @@ mod tests {
             passages: 74_130,
             token_types: 0,
             integrity: synodal_church_slavonic_dictionary::coverage::CoverageIntegrity::default(),
+            held_out_types: 0,
+            held_out_type_coverage:
+                synodal_church_slavonic_dictionary::coverage::CoverageSlice::default(),
+            held_out_type_status: BTreeMap::new(),
             summary: synodal_church_slavonic_dictionary::coverage::CoverageSlice {
                 total_tokens: 1,
                 ..Default::default()

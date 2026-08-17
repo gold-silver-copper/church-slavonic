@@ -394,6 +394,19 @@ pub struct CoverageReport {
     /// so the version is deliberately not bumped.
     #[serde(default)]
     pub integrity: CoverageIntegrity,
+    /// How many sealed held-out types actually occur in this corpus.
+    #[serde(default)]
+    pub held_out_types: usize,
+    /// Coverage restricted to tokens whose normalized type is held out.
+    ///
+    /// Read this together with [`Self::held_out_type_status`]: coverage that
+    /// arrives as `exact-synodal-attestation` is a row citing the held-out type
+    /// itself and is memorisation, while `synodal-productive-rule` and
+    /// `synodal-normative-table` coverage is generalisation.
+    #[serde(default)]
+    pub held_out_type_coverage: CoverageSlice,
+    #[serde(default)]
+    pub held_out_type_status: BTreeMap<String, usize>,
     pub by_corpus: BTreeMap<String, CoverageSlice>,
     pub by_source: BTreeMap<String, CoverageSlice>,
     #[serde(default)]
@@ -1347,6 +1360,23 @@ pub fn coverage(
     passages: &[CoveragePassage],
     options: CheckTextOptions,
 ) -> CoverageReport {
+    coverage_with_type_holdout(analyzer, passages, options, &BTreeSet::new())
+}
+
+/// Computes coverage while measuring a caller-supplied type-disjoint holdout
+/// separately.
+///
+/// The corpus partition split is passage-disjoint, so most frontier surfaces
+/// occur on both sides of it and an exact row sourced from a `source` passage
+/// closes its own held-out twin. Holding out normalized *types* is what makes
+/// generalization measurable. The set is supplied by the caller because the
+/// runtime crates never read the filesystem.
+pub fn coverage_with_type_holdout(
+    analyzer: &Analyzer,
+    passages: &[CoveragePassage],
+    options: CheckTextOptions,
+    held_out_types: &BTreeSet<String>,
+) -> CoverageReport {
     let mut summary = CoverageSlice::default();
     let mut by_corpus = BTreeMap::new();
     let mut by_source = BTreeMap::new();
@@ -1362,6 +1392,9 @@ pub fn coverage(
     let mut by_source_partition_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     let mut by_status = BTreeMap::new();
     let mut integrity = CoverageIntegrity::default();
+    let mut held_out_slice = CoverageSlice::default();
+    let mut held_out_status = BTreeMap::new();
+    let mut held_out_observed = BTreeSet::new();
     let mut by_gap = BTreeMap::new();
     let mut types = BTreeSet::new();
     let mut aggregates: BTreeMap<(GapKind, String), GapAggregate> = BTreeMap::new();
@@ -1442,6 +1475,13 @@ pub fn coverage(
             };
             update_slice(by_system.entry(system).or_default(), &analysis);
             update_integrity(&mut integrity, &analysis);
+            if held_out_types.contains(&analysis.token.normalized) {
+                held_out_observed.insert(analysis.token.normalized.clone());
+                update_slice(&mut held_out_slice, &analysis);
+                *held_out_status
+                    .entry(status_label(analysis.status).into())
+                    .or_default() += 1;
+            }
             *by_status
                 .entry(status_label(analysis.status).into())
                 .or_default() += 1;
@@ -1573,6 +1613,9 @@ pub fn coverage(
         token_types: types.len(),
         summary,
         integrity,
+        held_out_types: held_out_observed.len(),
+        held_out_type_coverage: held_out_slice,
+        held_out_type_status: held_out_status,
         by_corpus,
         by_source,
         by_partition,
@@ -1652,6 +1695,25 @@ impl CoverageReport {
                 "| {label} | {value} | {} bp |\n",
                 basis_points(value, self.summary.top_k_analyzed)
             ));
+        }
+        if self.held_out_type_coverage.total_tokens > 0 {
+            let held = &self.held_out_type_coverage;
+            output.push_str(&format!(
+                "\n## Type-disjoint holdout\n\nThe corpus partition split is passage-disjoint, so an exact row sourced from a\n`source` passage closes its own held-out twin. This slice holds out normalized\n*types* instead, selected by a content hash that cannot be tuned, and is the\nonly measurement here that shows generalisation to surfaces the reviewed data\nhas never seen.\n\n- Held-out types present: {}\n- Held-out tokens: {}\n- Top-k analyzed: {} ({} bp)\n- Top-1 analyzed: {} ({} bp)\n- Unresolved: {}\n\nCoverage that arrives as `exact-synodal-attestation` is a row citing the\nheld-out type itself and is memorisation; `synodal-normative-table`,\n`synodal-productive-rule` and `synodal-irregular-override` coverage is\ngeneralisation.\n\n| Resolver status | Tokens | Share of held-out |\n|---|---:|---:|\n",
+                self.held_out_types,
+                held.total_tokens,
+                held.top_k_analyzed,
+                basis_points(held.top_k_analyzed, held.total_tokens),
+                held.top_1_analyzed,
+                basis_points(held.top_1_analyzed, held.total_tokens),
+                held.unresolved,
+            ));
+            for (status, tokens) in &self.held_out_type_status {
+                output.push_str(&format!(
+                    "| `{status}` | {tokens} | {} bp |\n",
+                    basis_points(*tokens, held.total_tokens)
+                ));
+            }
         }
         output.push_str("\n## Estimated recovery routes\n\nThese are diagnostic estimates, not admitted lexical identities or guaranteed recoveries.\n\n| Route | Tokens |\n|---|---:|\n");
         for route in [

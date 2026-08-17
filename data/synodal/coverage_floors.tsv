@@ -26,3 +26,6 @@ system:present-passive-participle	at-least	31	v0.11-phase-1	Per-system floor: ag
 system:pronoun	at-least	174870	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:unresolved	at-least	0	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:verbal-noun	at-least	0	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+holdout:top_k_analyzed	at-least	25417	v0.11-phase-2	Strict top-k over the type-disjoint holdout. This is the only measure here that shows generalisation to types the reviewed data has never seen, and it may not fall.
+holdout:memorised_analyzed	at-most	15048	v0.11-phase-2	Held-out tokens covered by an exact row citing the held-out type itself. These predate the holdout and are grandfathered; the ceiling forces new evidence away from held-out types instead of memorising them.
+holdout:generalised_analyzed	at-least	9310	v0.11-phase-2	Held-out tokens reached by normative table, productive rule, or irregular override rather than by a row naming the type. Coverage growth on the holdout must land here.

@@ -35,6 +35,36 @@ assumed. `morphology-free` tokens carry only `lexical-form` readings.
 | within-lexeme ambiguous (syncretism) | 336946 | 3498 bp |
 | cross-lexeme ambiguous (homonymy) | 9398 | 97 bp |
 
+## Type-disjoint holdout
+
+The corpus partition split is passage-disjoint, so an exact row sourced from a
+`source` passage closes its own held-out twin. This slice holds out normalized
+*types* instead, selected by a content hash that cannot be tuned, and is the
+only measurement here that shows generalisation to surfaces the reviewed data
+has never seen.
+
+- Held-out types present: 2929
+- Held-out tokens: 44425
+- Top-k analyzed: 25417 (5721 bp)
+- Top-1 analyzed: 10391 (2338 bp)
+- Unresolved: 18997
+
+Coverage that arrives as `exact-synodal-attestation` is a row citing the
+held-out type itself and is memorisation; `synodal-normative-table`,
+`synodal-productive-rule` and `synodal-irregular-override` coverage is
+generalisation.
+
+| Resolver status | Tokens | Share of held-out |
+|---|---:|---:|
+| `abbreviation-expansion` | 794 | 178 bp |
+| `ambiguous` | 265 | 59 bp |
+| `exact-synodal-attestation` | 15048 | 3387 bp |
+| `spelling-variant` | 11 | 2 bp |
+| `synodal-irregular-override` | 253 | 56 bp |
+| `synodal-normative-table` | 5867 | 1320 bp |
+| `synodal-productive-rule` | 3190 | 718 bp |
+| `unresolved` | 18997 | 4276 bp |
+
 ## Estimated recovery routes
 
 These are diagnostic estimates, not admitted lexical identities or guaranteed recoveries.
