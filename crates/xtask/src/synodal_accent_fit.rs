@@ -494,22 +494,43 @@ fn apply_to_registry(
 ) -> Result<(usize, usize), Box<dyn Error>> {
     let paradigm_path = root.join("data/synodal/accent_paradigms.tsv");
     let evidence_path = root.join("data/synodal/reviewed_evidence.tsv");
-    let mut paradigms = fs::read_to_string(&paradigm_path)?;
-    let mut evidence = fs::read_to_string(&evidence_path)?;
-    let existing_paradigms: BTreeSet<String> = paradigms.lines().map(str::to_owned).collect();
-    let existing_evidence: BTreeSet<String> = evidence
+    let mut paradigm_lines: Vec<String> = fs::read_to_string(&paradigm_path)?
         .lines()
-        .filter_map(|line| line.split('\t').next().map(str::to_owned))
+        .map(str::to_owned)
+        .collect();
+    let mut evidence = fs::read_to_string(&evidence_path)?;
+    let existing_paradigms: BTreeSet<String> = paradigm_lines.iter().cloned().collect();
+    // Every row of one paradigm must carry the same evidence, and the
+    // registry reads a paradigm as one contiguous block. A lexeme fitted in an
+    // earlier run therefore keeps that run's witness for every later row, and
+    // later rows are inserted at the end of its block rather than appended.
+    let existing_evidence: BTreeMap<String, (String, String)> = evidence
+        .lines()
+        .filter_map(|line| {
+            let fields: Vec<&str> = line.split('\t').collect();
+            (fields.len() >= 4).then(|| {
+                (
+                    fields[0].to_owned(),
+                    (fields[2].to_owned(), fields[3].to_owned()),
+                )
+            })
+        })
         .collect();
 
     let mut added_paradigms = 0;
     let mut added_evidence = 0;
     for (lexeme, rules) in &outcome.fitted {
-        let Some(witness) = witness_for(attestations, lexeme) else {
+        let Some(found) = witness_for(attestations, lexeme) else {
             continue;
         };
         let evidence_id = format!("{}-accent-fit", short_id(lexeme));
-        if !existing_evidence.contains(&evidence_id) {
+        let mut witness = found.clone();
+        if let Some((source_id, passage)) = existing_evidence.get(&evidence_id) {
+            witness.source_id = source_id.clone();
+            witness.passage = passage.clone();
+        }
+        let witness = &witness;
+        if !existing_evidence.contains_key(&evidence_id) {
             evidence.push_str(&format!(
                 "{evidence_id}\t{}\t{}\t{}\treviewed\tsynodal-russian\t{}\n",
                 witness.candidate_id,
@@ -525,11 +546,17 @@ fn apply_to_registry(
             if existing_paradigms.contains(&row) {
                 continue;
             }
-            paradigms.push_str(&row);
-            paradigms.push('\n');
+            let block_prefix = format!("{lexeme}\tsynodal-accent:{}-fitted\t", short_id(lexeme));
+            let position = paradigm_lines
+                .iter()
+                .rposition(|line| line.starts_with(&block_prefix))
+                .map_or(paradigm_lines.len(), |index| index + 1);
+            paradigm_lines.insert(position, row);
             added_paradigms += 1;
         }
     }
+    let mut paradigms = paradigm_lines.join("\n");
+    paradigms.push('\n');
     write_if_changed_atomic(&paradigm_path, &paradigms)?;
     write_if_changed_atomic(&evidence_path, &evidence)?;
     Ok((added_paradigms, added_evidence))
@@ -817,12 +844,21 @@ fn collect_attestations(
             if gap.kind != GapKind::MissingAccentOrOrthographicMetadata {
                 continue;
             }
-            let token_key = normalize_lookup_accentless(&token.token.original);
             for analysis in &token.analyses {
                 let Some(cell) = analysis.cell else {
                     continue;
                 };
                 let id = analysis.lexeme.id();
+                // A reflexive/passive reading derived by Alypy §73 attests the
+                // *host* cell of an active verb: the print to fit is the token
+                // without its enclitic, with the deleted final jer restored
+                // where the accentless host demands it. The enclitic never
+                // carries a mark, so the host keeps every mark the token has.
+                let hosts: Vec<String> = if analysis.reflexive {
+                    synodal_church_slavonic_core::reflexive_base_candidates(&token.token.original)
+                } else {
+                    vec![token.token.original.clone()]
+                };
                 // A cell that already resolves under the liturgical profile is
                 // governed by an existing rule that merely disagrees with the
                 // print. A second paradigm covering the same cell is rejected
@@ -837,14 +873,14 @@ fn collect_attestations(
                     // One cell can offer several ordered variants; only the
                     // variant that *is* this token's accentless counterpart may
                     // be paired with its print.
-                    if normalize_lookup_accentless(&variant.expanded) != token_key {
+                    let variant_key = normalize_lookup_accentless(&variant.expanded);
+                    let Some(printed) = hosts
+                        .iter()
+                        .find(|host| normalize_lookup_accentless(host) == variant_key)
+                    else {
                         continue;
-                    }
-                    let key = (
-                        id.as_str().to_owned(),
-                        cell.key(),
-                        token.token.original.clone(),
-                    );
+                    };
+                    let key = (id.as_str().to_owned(), cell.key(), printed.clone());
                     if !seen.insert(key) {
                         continue;
                     }
@@ -854,7 +890,7 @@ fn collect_attestations(
                         .push(Attestation {
                             cell,
                             expanded: variant.expanded.clone(),
-                            printed: token.token.original.clone(),
+                            printed: printed.clone(),
                             passage: record.passage.clone(),
                             source_id: record.source_id.clone(),
                             candidate_id: record.candidate_id.clone(),

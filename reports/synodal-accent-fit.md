@@ -11,23 +11,21 @@ the coarsest granularity that fits the whole family is the one emitted, so real
 accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
-- Accent-paradigm rows proposed: 40
-- Scope families with no reproducing placement at the finest granularity: 179
-- Lexemes with cells outside the reusable scope grammar: 3
+- Accent-paradigm rows proposed: 36
+- Scope families with no reproducing placement at the finest granularity: 178
+- Lexemes with cells outside the reusable scope grammar: 4
 
 | Granularity | Rows |
 |---|---:|
 | `Number` | 2 |
-| `NumberCase` | 6 |
+| `NumberCase` | 2 |
 | `NumberCaseGender` | 32 |
 
 ## Fitted contracts
 
 | Lexeme | Scope | Placement | Mark | Attestations |
 |---|---|---|---|---:|
-| `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:singular:genitive:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 4 |
-| `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:genitive:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 6 |
-| `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:locative:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 6 |
+| `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:genitive,locative:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 12 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:feminine:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:accusative:feminine:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
@@ -44,9 +42,7 @@ accent mobility is stated rather than smoothed away.
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:nominative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `kamora` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:accusative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `kamora` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:vocative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `kamora` | 2 |
-| `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:singular:genitive:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 4 |
-| `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:plural:genitive:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 6 |
-| `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:plural:locative:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 6 |
+| `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:plural:genitive,locative:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 12 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:dual:nominative:feminine:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:dual:nominative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:dual:accusative:feminine:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
@@ -733,9 +729,9 @@ synodal:pronoun:yakov	plural:nominative:neuter:inanimate	Pronoun	3 attestation(s
 synodal:pronoun:yakov	plural:nominative:neuter:animate	Pronoun	3 attestation(s); best rule word-vowel-from-start:2 kamora misses: ꙗкова→ꙗ҆кова̀ ꙗкова→ꙗ҆кова́
 synodal:pronoun:yakov	plural:accusative:neuter:inanimate	Pronoun	3 attestation(s); best rule word-vowel-from-start:2 kamora misses: ꙗкова→ꙗ҆кова̀ ꙗкова→ꙗ҆кова́
 synodal:pronoun:yakov	plural:accusative:neuter:animate	Pronoun	3 attestation(s); best rule word-vowel-from-start:2 kamora misses: ꙗкова→ꙗ҆кова̀ ꙗкова→ꙗ҆кова́
-synodal:verb:byti	singular	Participle("past", "active", "long", "positive")	25 attestation(s); best rule word-vowel-from-start:0 acute misses: бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ
-synodal:verb:byti	dual	Participle("past", "active", "long", "positive")	24 attestation(s); best rule word-vowel-from-start:0 acute misses: бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ
-synodal:verb:byti	plural	Participle("past", "active", "long", "positive")	36 attestation(s); best rule word-vowel-from-start:0 acute misses: бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ
+synodal:verb:byti	singular	Participle("past", "active", "long", "positive")	41 attestation(s); best rule word-vowel-from-start:0 acute misses: бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ
+synodal:verb:byti	dual	Participle("past", "active", "long", "positive")	36 attestation(s); best rule word-vowel-from-start:0 acute misses: бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ
+synodal:verb:byti	plural	Participle("past", "active", "long", "positive")	50 attestation(s); best rule word-vowel-from-start:0 acute misses: бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ бывшаѧ→бы̑вшаѧ
 synodal:verb:byti	singular	Participle("past", "active", "short", "positive")	32 attestation(s); best rule word-vowel-from-start:0 acute misses: бывша→бы̑вша бывша→бы̑вша бывша→бы̑вша бывша→бы̑вша
 synodal:verb:byti	dual	Participle("past", "active", "short", "positive")	8 attestation(s); best rule word-vowel-from-start:0 kamora misses: бывша→бы́вша бывша→бы́вша бывша→бы́вша бывша→бы́вша
 synodal:verb:byti	plural	Participle("past", "active", "short", "positive")	34 attestation(s); best rule word-vowel-from-start:0 acute misses: бывша→бы̑вша бывша→бы̑вша бывша→бы̑вша бывша→бы̑вша
@@ -749,9 +745,9 @@ synodal:verb:dati	plural	Participle("past", "passive", "long", "positive")	22 at
 synodal:verb:dati	singular	Participle("past", "passive", "short", "positive")	25 attestation(s); best rule word-vowel-from-start:0 acute misses: даны→даны̀ даны→даны̀ дана→дана́ дана→дана́
 synodal:verb:dati	dual	Participle("past", "passive", "short", "positive")	30 attestation(s); best rule word-vowel-from-start:0 acute misses: дана→дана́ дана→дана́ дана→дана́ дана→дана́
 synodal:verb:dati	plural	Participle("past", "passive", "short", "positive")	14 attestation(s); best rule word-vowel-from-start:1 grave misses: дана→дана́ дана→дана́ дана→дана́ дана→дана́
-synodal:verb:imati	singular	Participle("present", "active", "short", "positive")	31 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
+synodal:verb:imati	singular	Participle("present", "active", "short", "positive")	27 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:imati	dual	Participle("present", "active", "short", "positive")	29 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
-synodal:verb:imati	plural	Participle("present", "active", "short", "positive")	30 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
+synodal:verb:imati	plural	Participle("present", "active", "short", "positive")	10 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:lyubiti	singular	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:0 acute misses: люблю→люблю̀ люблю→люблю́
 synodal:verb:pisati	singular	FiniteVerb("aorist")	4 attestation(s); best rule word-vowel-from-start:1 grave misses: писа→писа́ писа→писа́
 synodal:verb:pisati	singular	FiniteVerb("present")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пишетъ→пи́шетъ
@@ -779,7 +775,7 @@ synodal:verb:vozvestiti	plural	FiniteVerb("future")	5 attestation(s); best rule 
 synodal:verb:vozvestiti	plural	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:2 acute misses: возвѣстите→возвѣститѐ
 synodal:verb:vozvestiti	singular	Imperative	10 attestation(s); best rule word-vowel-from-start:2 grave misses: возвѣсти→Возвѣсти́ возвѣсти→Возвѣсти́ возвѣсти→возвѣ́сти возвѣсти→возвѣ́сти
 synodal:verb:vozvestiti	plural	Imperative	4 attestation(s); best rule word-vowel-from-start:2 acute misses: возвѣстите→возвѣститѐ
-synodal:verb:wikt-0c6c8db63b7c	singular	Participle("present", "active", "short", "positive")	23 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
+synodal:verb:wikt-0c6c8db63b7c	singular	Participle("present", "active", "short", "positive")	19 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:wikt-0c6c8db63b7c	dual	Participle("present", "active", "short", "positive")	29 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:wikt-332544509d0c	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: принесете→принесетѐ
 synodal:verb:wikt-332544509d0c	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: принесете→принесе́те
@@ -789,8 +785,8 @@ synodal:verb:wikt-6ceeefbe4e9e	singular:vocative	Noun	2 attestation(s); best rul
 synodal:verb:wikt-6ceeefbe4e9e	singular	FiniteVerb("aorist")	2 attestation(s); best rule word-vowel-from-start:1 acute misses: ꙗде→ꙗ҆де́
 synodal:adjective:vechn	adjective-agreeing:long:positive:singular:accusative:masculine,feminine,neuter:inanimate,animate	overlaps an existing reviewed paradigm at adjective:accusative:singular:neuter:inanimate:long:positive
 synodal:adjective:wikt-a9cef2fd54e7	adjective-agreeing:short:positive:singular:nominative,accusative:masculine,feminine,neuter:inanimate,animate	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
-synodal:adjective:zlyi	adjective-agreeing:long:comparative:singular:nominative,vocative:masculine,feminine,neuter:inanimate,animate	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
-synodal:adjective:zlyi	adjective-agreeing:long:superlative:singular:nominative,vocative:masculine,feminine,neuter:inanimate,animate	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
+synodal:adjective:zlyi	adjective:long:comparative:singular	overlaps an existing reviewed paradigm at adjective:nominative:singular:masculine:inanimate:long:comparative
+synodal:adjective:zlyi	adjective:long:superlative:singular	overlaps an existing reviewed paradigm at adjective:nominative:singular:masculine:inanimate:long:superlative
 synodal:noun:bog	noun:singular,dual	overlaps an existing reviewed paradigm at noun:nominative:singular:animate
 synodal:noun:bog	noun:plural	overlaps an existing reviewed paradigm at noun:nominative:plural:animate
 synodal:noun:chudo	noun:singular	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
@@ -856,7 +852,6 @@ synodal:verb:dati	l-participle:singular,dual	overlaps an existing reviewed parad
 synodal:verb:lyubiti	finite:present:plural	overlaps an existing reviewed paradigm at present:second:plural
 synodal:verb:lyubiti	imperative:plural	overlaps an existing reviewed paradigm at imperative:second:plural
 synodal:verb:nesti	participle:past:passive:short:positive:singular,dual	overlaps an existing reviewed paradigm at participle:past:passive:nominative:singular:masculine:inanimate:short:positive
-synodal:verb:nesti	participle:present:active:long:positive:singular,plural	overlaps an existing reviewed paradigm at participle:present:active:nominative:singular:masculine:inanimate:long:positive
 synodal:verb:nesti	participle:present:active:short:positive:singular,dual,plural	overlaps an existing reviewed paradigm at participle:present:active:nominative:singular:feminine:inanimate:short:positive
 synodal:verb:nesti	participle:present:passive:short:positive:singular,dual,plural	overlaps an existing reviewed paradigm at participle:present:passive:nominative:singular:masculine:inanimate:short:positive
 synodal:verb:polozhiti	finite:present:plural	generates поло́жите for present:second:plural but the source partition prints положи́те
@@ -886,10 +881,11 @@ accent-paradigm scope grammar cannot address them. They need per-cell
 synodal:verb:pisati	infinitive писа́ти
 synodal:verb:vozlozhiti	infinitive возложи́ти
 synodal:verb:vozvestiti	infinitive возвѣсти́ти
+synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 ```
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3098
-- Lexemes with at least one such attestation: 108
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3055
+- Lexemes with at least one such attestation: 109
 - Placement space searched per partition: 30 placements x 3 marks

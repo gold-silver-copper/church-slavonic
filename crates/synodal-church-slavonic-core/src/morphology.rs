@@ -267,6 +267,14 @@ impl NounLexeme {
 pub enum AdjectiveClass {
     Hard,
     Soft,
+    /// A hard stem ending in a sibilant (`ш`, `щ`, `ж`, `ч`), which the
+    /// Synodal orthography declines with the mixed series Alypy §58 prints
+    /// for `-ш-` comparatives and §§95–98 for participles: hard `-агѡ`/`-ꙋю`
+    /// beside soft `-емꙋ`/`-ихъ`/`-ими`, with the plural dative `-ымъ` and
+    /// the plural feminine `-ыѧ` keeping `ы` to stay distinct from the
+    /// singular instrumental `-имъ` and genitive `-їѧ`. Derived from the
+    /// stem at declension time; never stored as reviewed metadata.
+    HardSibilant,
     /// Hard adjective with a final velar stem. Its complete positive
     /// paradigm has the ending spellings and palatalizations printed
     /// separately in Alypy §57 (`благїй : блазїи`).
@@ -541,6 +549,11 @@ pub enum ImperfectFormation {
 pub enum ImperativeFormation {
     FirstUnpalatalized,
     ISeries,
+    /// Alypy §93: after a vowel-final present stem the suffix `-и-` passes
+    /// into `-й-` in the singular and second plural (`по́й`, `по́йте`,
+    /// `сто́й(те)`, `бо́йсѧ`/`бо́йтесѧ`), and the first dual/plural take the
+    /// same j-suffix on such second-conjugation j-stems.
+    JSeries,
     Irregular,
 }
 
@@ -1214,6 +1227,7 @@ fn positive_adjective_surface(lexeme: &AdjectiveLexeme, cell: AdjectiveCell) -> 
             return possessive_j_positive_adjective_surface(lexeme, cell);
         }
         AdjectiveClass::Hard
+        | AdjectiveClass::HardSibilant
         | AdjectiveClass::Soft
         | AdjectiveClass::PossessiveHard
         | AdjectiveClass::PossessiveSoft
@@ -1441,7 +1455,12 @@ pub fn decline_adjective(
         Comparison::Positive => (
             vec![positive_adjective_surface(lexeme, cell)?],
             match (lexeme.class, cell.form) {
-                (AdjectiveClass::Hard, AdjectiveForm::Short) => "SYN-ADJ-SHORT-HARD-ALYPY-53",
+                (AdjectiveClass::Hard | AdjectiveClass::HardSibilant, AdjectiveForm::Short) => {
+                    "SYN-ADJ-SHORT-HARD-ALYPY-53"
+                }
+                (AdjectiveClass::HardSibilant, AdjectiveForm::Long) => {
+                    "SYN-ADJ-LONG-SIBILANT-ALYPY-57-58"
+                }
                 (AdjectiveClass::Soft, AdjectiveForm::Short) => "SYN-ADJ-SHORT-SOFT-ALYPY-53",
                 (AdjectiveClass::Velar, AdjectiveForm::Short) => "SYN-ADJ-SHORT-VELAR-ALYPY-53-57",
                 (AdjectiveClass::Hard, AdjectiveForm::Long) => "SYN-ADJ-LONG-HARD-ALYPY-57",
@@ -1781,6 +1800,44 @@ pub fn infinitive(lexeme: &VerbLexeme, profile: OrthographyProfile) -> Result<Fo
     )
 }
 
+/// Rule identifier for the reflexive/passive enclitic (Alypy §73).
+pub const REFLEXIVE_RULE_ID: &str = "SYN-VERB-REFLEXIVE-ALYPY-73";
+
+/// Alypy §73: the reflexive, reciprocal, and analytic passive voices are
+/// formed "прибавлением к глаголу действительного залога возвратного
+/// местоимения -сѧ". The enclitic attaches to every form of the verb, never
+/// carries an accent, and a final jer of the host is dropped before it
+/// (`клѧ́тъ` + `сѧ` → `клѧ́тсѧ`, `да́стъ` + `сѧ` → `да́стсѧ`; Alypy's own
+/// examples `воцари́сѧ`, `ѡ҆блече́сѧ`, `бра́шасѧ`). The rule is purely
+/// concatenative on both the expanded and the printed surface, so it is
+/// applied after accent realisation and leaves the host's marks untouched.
+#[must_use]
+pub fn reflexive_surface(base: &str) -> String {
+    let host = base.strip_suffix('ъ').unwrap_or(base);
+    format!("{host}сѧ")
+}
+
+/// The host surfaces a reflexive form could have been built from, most
+/// specific first: the form without `сѧ`, and — because the rule deletes a
+/// final jer — that form with `ъ` restored when it ends in a consonant.
+#[must_use]
+pub fn reflexive_base_candidates(surface: &str) -> Vec<String> {
+    let Some(host) = surface.strip_suffix("сѧ") else {
+        return Vec::new();
+    };
+    if host.is_empty() {
+        return Vec::new();
+    }
+    let mut candidates = vec![host.to_owned()];
+    let ends_in_consonant = host.chars().last().is_some_and(|last| {
+        !crate::orthography::is_synodal_vowel(last) && last != 'ъ' && last != 'ь' && last != 'й'
+    });
+    if ends_in_consonant {
+        candidates.push(format!("{host}ъ"));
+    }
+    candidates
+}
+
 pub fn l_participle(
     lexeme: &VerbLexeme,
     cell: LParticipleCell,
@@ -1884,9 +1941,20 @@ pub fn decline_participle(
     .ok_or(Error::MissingPrincipalPart {
         field: MetadataField::ParticipleStem,
     })?;
+    let class = if principal_part.class == AdjectiveClass::Hard
+        && stem
+            .canonical()
+            .chars()
+            .last()
+            .is_some_and(|last| matches!(last, 'ш' | 'щ' | 'ж' | 'ч'))
+    {
+        AdjectiveClass::HardSibilant
+    } else {
+        principal_part.class
+    };
     decline_adjectival_stem(
         stem,
-        principal_part.class,
+        class,
         cell.agreement,
         rule,
         "participle-declension",
@@ -3155,6 +3223,7 @@ fn short_adjective_ending(class: AdjectiveClass, cell: AdjectiveCell) -> Result<
         }
         AdjectiveClass::PossessiveIi => return possessive_ii_short_ending(cell),
         AdjectiveClass::Hard
+        | AdjectiveClass::HardSibilant
         | AdjectiveClass::Velar
         | AdjectiveClass::PossessiveHard
         | AdjectiveClass::PossessiveIn
@@ -3299,6 +3368,7 @@ pub(crate) fn long_adjective_ending(
 ) -> Result<&'static str> {
     match class {
         AdjectiveClass::Soft => return soft_long_adjective_ending(cell),
+        AdjectiveClass::HardSibilant => return sibilant_long_adjective_ending(cell),
         AdjectiveClass::Velar => return velar_long_adjective_ending(cell),
         AdjectiveClass::PossessiveIi => return possessive_ii_long_ending(cell),
         AdjectiveClass::PossessiveHard
@@ -3488,6 +3558,24 @@ fn soft_long_adjective_ending(cell: AdjectiveCell) -> Result<&'static str> {
 /// `-ѣйш-`, or `-айш-` stem. Alypy §58 gives a mixed series: for example,
 /// masculine `-шїй`, feminine `-шаѧ`, and neuter `-шее`, while the oblique
 /// cells combine hard `-шагѡ`/`-шꙋю` with soft `-шемꙋ`/`-шихъ` endings.
+/// Long endings after a hard sibilant stem. This is the §58 mixed series with
+/// the two plural cells the Synodal corpus keeps in `ы` after a sibilant: the
+/// dative `-ымъ` (`сꙋ́щымъ`, distinct from the singular instrumental
+/// `сꙋ́щимъ`) and the feminine nominative/accusative `-ыѧ` (`сꙋ́щыѧ`,
+/// distinct from the singular genitive `сꙋ́щїѧ`). The genitive/locative
+/// `-ихъ` and instrumental `-ими` are never spelled with `ы` after a sibilant.
+fn sibilant_long_adjective_ending(cell: AdjectiveCell) -> Result<&'static str> {
+    use Case::{Accusative as Acc, Dative as Dat, Nominative as Nom, Vocative as Voc};
+    use Gender::{Feminine as F, Masculine as M};
+    use Number::Plural as Pl;
+    Ok(match (cell.number, cell.gender, cell.case) {
+        (Pl, _, Dat) => "ымъ",
+        (Pl, F, Nom | Voc) => "ыѧ",
+        (Pl, M | F, Acc) if cell.animacy != Animacy::Animate => "ыѧ",
+        _ => comparison_long_adjective_ending(cell)?,
+    })
+}
+
 fn comparison_long_adjective_ending(cell: AdjectiveCell) -> Result<&'static str> {
     use Case::{
         Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
@@ -3620,6 +3708,11 @@ fn imperfect_ending(formation: ImperfectFormation, person: Person, number: Numbe
 
 fn imperative_ending(formation: ImperativeFormation, cell: ImperativeCell) -> &'static str {
     match (formation, cell.person, cell.number) {
+        (ImperativeFormation::JSeries, Person::Second | Person::Third, Number::Singular) => "й",
+        (ImperativeFormation::JSeries, Person::First, Number::Dual) => "йва",
+        (ImperativeFormation::JSeries, Person::Second, Number::Dual) => "йта",
+        (ImperativeFormation::JSeries, Person::First, Number::Plural) => "ймъ",
+        (ImperativeFormation::JSeries, Person::Second, Number::Plural) => "йте",
         (_, Person::Second | Person::Third, Number::Singular) => "и",
         (ImperativeFormation::FirstUnpalatalized, Person::First, Number::Dual) => "ева",
         (ImperativeFormation::FirstUnpalatalized, Person::Second, Number::Dual) => "ита",
@@ -3928,6 +4021,10 @@ fn normative_citation(rule: &str) -> &'static str {
         | "SYN-VERB-IMPERFECT-AH-ALYPY-87" => "Alypy (Gamanovich), §87",
         "SYN-VERB-IMPERATIVE-ALYPY-93" => "Alypy (Gamanovich), §93",
         "SYN-VERB-INFINITIVE-LEXICAL" => "Alypy (Gamanovich), §79; lexical infinitive",
+        "SYN-VERB-REFLEXIVE-ALYPY-73" => "Alypy (Gamanovich), §73",
+        "SYN-ADJ-LONG-SIBILANT-ALYPY-57-58" => {
+            "Alypy (Gamanovich), §§57–58 and 95–98; Synodal after-sibilant spelling"
+        }
         "SYN-VERB-LPART-ALYPY-97" => "Alypy (Gamanovich), §97",
         "SYN-VERB-PARTICIPLE-PRESENT-ACTIVE-ALYPY-95" => "Alypy (Gamanovich), §95",
         "SYN-VERB-PARTICIPLE-PAST-ACTIVE-ALYPY-96" => "Alypy (Gamanovich), §96",
@@ -6491,6 +6588,75 @@ mod tests {
     }
 
     #[test]
+    fn sibilant_long_participles_follow_the_synodal_mixed_series() {
+        let lexeme = regular_verb();
+        let long = |case, number, gender| {
+            decline_participle(
+                &lexeme,
+                ParticipleCell {
+                    tense: ParticipleTense::Present,
+                    voice: ParticipleVoice::Active,
+                    agreement: AdjectiveCell {
+                        case,
+                        number,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Long,
+                        comparison: Comparison::Positive,
+                    },
+                },
+                OrthographyProfile::Expanded,
+            )
+            .expect("hard sibilant participle stem")
+            .primary_text()
+            .to_owned()
+        };
+        // Genitive/locative and instrumental plural are never spelled with ы
+        // after a sibilant; the plural dative and feminine keep ы so they stay
+        // distinct from the singular instrumental and genitive.
+        assert_eq!(
+            long(Case::Genitive, Number::Plural, Gender::Masculine),
+            "несꙋщихъ"
+        );
+        assert_eq!(
+            long(Case::Instrumental, Number::Plural, Gender::Masculine),
+            "несꙋщими"
+        );
+        assert_eq!(
+            long(Case::Dative, Number::Plural, Gender::Masculine),
+            "несꙋщымъ"
+        );
+        assert_eq!(
+            long(Case::Nominative, Number::Plural, Gender::Feminine),
+            "несꙋщыѧ"
+        );
+        assert_eq!(
+            long(Case::Accusative, Number::Plural, Gender::Feminine),
+            "несꙋщыѧ"
+        );
+        assert_eq!(
+            long(Case::Instrumental, Number::Singular, Gender::Masculine),
+            "несꙋщимъ"
+        );
+        assert_eq!(
+            long(Case::Genitive, Number::Singular, Gender::Feminine),
+            "несꙋщїѧ"
+        );
+        assert_eq!(
+            long(Case::Dative, Number::Singular, Gender::Masculine),
+            "несꙋщемꙋ"
+        );
+        assert_eq!(
+            long(Case::Genitive, Number::Singular, Gender::Masculine),
+            "несꙋщагѡ"
+        );
+        assert_eq!(
+            long(Case::Nominative, Number::Singular, Gender::Masculine),
+            "несꙋщїй"
+        );
+    }
+
+    #[test]
     fn rejects_comparison_for_participles() {
         let cell = AdjectiveCell {
             case: Case::Nominative,
@@ -8214,5 +8380,62 @@ mod tests {
                 );
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod reflexive_tests {
+    use super::{reflexive_base_candidates, reflexive_surface};
+
+    #[test]
+    fn reflexive_surface_follows_alypy_73() {
+        assert_eq!(reflexive_surface("собраша"), "собрашасѧ");
+        assert_eq!(reflexive_surface("возврати́"), "возврати́сѧ");
+        assert_eq!(reflexive_surface("клѧ́тъ"), "клѧ́тсѧ");
+        assert_eq!(reflexive_surface("да́стъ"), "да́стсѧ");
+        assert_eq!(reflexive_surface("бо́йте"), "бо́йтесѧ");
+        assert_eq!(reflexive_surface("ѡ҆блече́"), "ѡ҆блече́сѧ");
+        assert_eq!(reflexive_surface("бои́мъ"), "бои́мсѧ");
+    }
+
+    #[test]
+    fn j_series_imperative_follows_alypy_93_vowel_stems() {
+        use super::{ImperativeFormation, imperative_ending};
+        use crate::{ImperativeCell, Number, Person};
+        let cell = |person, number| ImperativeCell { person, number };
+        let f = ImperativeFormation::JSeries;
+        assert_eq!(
+            imperative_ending(f, cell(Person::Second, Number::Singular)),
+            "й"
+        );
+        assert_eq!(
+            imperative_ending(f, cell(Person::Third, Number::Singular)),
+            "й"
+        );
+        assert_eq!(
+            imperative_ending(f, cell(Person::Second, Number::Plural)),
+            "йте"
+        );
+        assert_eq!(
+            imperative_ending(f, cell(Person::First, Number::Plural)),
+            "ймъ"
+        );
+        assert_eq!(
+            imperative_ending(f, cell(Person::First, Number::Dual)),
+            "йва"
+        );
+        assert_eq!(
+            imperative_ending(f, cell(Person::Second, Number::Dual)),
+            "йта"
+        );
+    }
+
+    #[test]
+    fn reflexive_base_candidates_restore_the_deleted_jer_only_after_a_consonant() {
+        assert_eq!(reflexive_base_candidates("собрашасѧ"), vec!["собраша"]);
+        assert_eq!(reflexive_base_candidates("клѧтсѧ"), vec!["клѧт", "клѧтъ"]);
+        assert_eq!(reflexive_base_candidates("бойсѧ"), vec!["бой"]);
+        assert!(reflexive_base_candidates("сѧ").is_empty());
+        assert!(reflexive_base_candidates("рабъ").is_empty());
     }
 }

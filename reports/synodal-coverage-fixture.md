@@ -74,6 +74,7 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `ungrouped:крестилъ` | 1 | 1 | `ungrouped-unknown` | крести́лъ |
 | `ungrouped:креститисѧ` | 1 | 1 | `ungrouped-unknown` | крести́тисѧ |
 | `ungrouped:молѧщесѧ` | 1 | 1 | `ungrouped-unknown` | молѧ́щесѧ |
+| `ungrouped:оучити` | 1 | 1 | `ungrouped-unknown` | ᲂу҆чи́ти |
 | `ungrouped:паѵелъ` | 1 | 1 | `ungrouped-unknown` | Па́ѵелъ |
 | `ungrouped:слышавше` | 1 | 1 | `ungrouped-unknown` | слы́шавше |
 | `ungrouped:страданїи` | 1 | 1 | `ungrouped-unknown` | страда́нїи |
@@ -86,7 +87,6 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `ungrouped:ѻч҃а` | 1 | 1 | `abbreviation-registry` | ѻ҆́ч҃а |
 | `ungrouped:ѿложенное` | 1 | 1 | `ungrouped-unknown` | ѿложе́нное |
 | `ungrouped:ѿлꙋчатисѧ` | 1 | 1 | `ungrouped-unknown` | ѿлꙋча́тисѧ |
-| `ungrouped:ᲂучити` | 1 | 1 | `ungrouped-unknown` | ᲂу҆чи́ти |
 | `ungrouped:ꙗвлѧѧсѧ` | 1 | 1 | `ungrouped-unknown` | ꙗ҆влѧ́ѧсѧ |
 
 ## Coverage by corpus
@@ -161,19 +161,19 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | 16 | `unknown-lexeme` | `крести́лъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 17 | `unknown-lexeme` | `крести́тисѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 18 | `unknown-lexeme` | `молѧ́щесѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 19 | `unknown-lexeme` | `Па́ѵелъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 20 | `unknown-lexeme` | `слы́шавше` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 21 | `unknown-lexeme` | `страда́нїи` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 22 | `unknown-lexeme` | `ст҃ы̑мъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 23 | `unknown-lexeme` | `тїмоѳе́й` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 24 | `unknown-lexeme` | `хрⷭ҇то́въ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 25 | `unknown-lexeme` | `ѡ҆бѣтова́нїѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 26 | `unknown-lexeme` | `ѳео́фїле` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 27 | `unknown-lexeme` | `ѹ҆пова́нїе` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 28 | `unknown-lexeme` | `ѻ҆́ч҃а` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 29 | `unknown-lexeme` | `ѿложе́нное` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 30 | `unknown-lexeme` | `ѿлꙋча́тисѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 31 | `unknown-lexeme` | `ᲂу҆чи́ти` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 19 | `unknown-lexeme` | `ᲂу҆чи́ти` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 20 | `unknown-lexeme` | `Па́ѵелъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 21 | `unknown-lexeme` | `слы́шавше` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 22 | `unknown-lexeme` | `страда́нїи` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 23 | `unknown-lexeme` | `ст҃ы̑мъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 24 | `unknown-lexeme` | `тїмоѳе́й` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 25 | `unknown-lexeme` | `хрⷭ҇то́въ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 26 | `unknown-lexeme` | `ѡ҆бѣтова́нїѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 27 | `unknown-lexeme` | `ѳео́фїле` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 28 | `unknown-lexeme` | `ѹ҆пова́нїе` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 29 | `unknown-lexeme` | `ѻ҆́ч҃а` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 30 | `unknown-lexeme` | `ѿложе́нное` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 31 | `unknown-lexeme` | `ѿлꙋча́тисѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 32 | `unknown-lexeme` | `ꙗ҆влѧ́ѧсѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 33 | `missing-accent-or-orthographic-metadata` | `зна́менїихъ` | 1 | 1 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 34 | `missing-accent-or-orthographic-metadata` | `ꙗ҆ды́й` | 1 | 1 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |

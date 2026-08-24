@@ -2024,6 +2024,13 @@ fn validate_lexemes(path: &Path, table: &Table) -> Result<()> {
         if !valid_class {
             return invalid(path, line, "unknown class for lexeme part of speech");
         }
+        if row[2] == "verb" && row[1].ends_with("сѧ") && row[4].ends_with("сѧ") {
+            return invalid(
+                path,
+                line,
+                "reflexive verb stems are stored without the enclitic -сѧ; the resolver attaches it",
+            );
+        }
         if !matches!(row[5].as_str(), "" | "masculine" | "feminine" | "neuter") {
             return invalid(path, line, "unknown lexical gender");
         }

@@ -422,7 +422,7 @@ fn contains_prosodic_mark(value: &str) -> bool {
     })
 }
 
-fn is_synodal_vowel(character: char) -> bool {
+pub(crate) fn is_synodal_vowel(character: char) -> bool {
     matches!(
         character.to_lowercase().next().unwrap_or(character),
         'а' | 'е'
@@ -502,7 +502,41 @@ pub fn apply_initial_presentation(
 
 #[must_use]
 pub fn normalize_lookup(value: &str) -> String {
-    value.chars().flat_map(char::to_lowercase).nfc().collect()
+    value
+        .chars()
+        .map(fold_digraph_uk)
+        .flat_map(char::to_lowercase)
+        .nfc()
+        .collect()
+}
+
+/// Renders the expanded word-initial `оу` as the printed Synodal digraph
+/// `ᲂу` (U+1C82 followed by `у`), leaving any marks on the `у` in place. A
+/// capitalised `Оу` is already the digraph's sentence-initial presentation
+/// and is preserved; every other initial is returned unchanged.
+#[must_use]
+pub fn present_initial_uk_digraph(printed: &str) -> String {
+    let mut characters = printed.chars();
+    match (characters.next(), characters.clone().next()) {
+        (Some('о'), Some('у' | 'ꙋ')) => {
+            let mut output = String::with_capacity(printed.len() + 2);
+            output.push('\u{1c82}');
+            output.extend(characters);
+            output
+        }
+        _ => printed.to_owned(),
+    }
+}
+
+/// The word-initial `ᲂу` digraph (U+1C82 followed by `у`) is a presentation
+/// of the expanded letters `оу`, exactly as the capitalised `Оу` is. The
+/// lookup projections fold the modifier-letter half back to `о` so a printed
+/// digraph token reaches the same key as its expanded form.
+const fn fold_digraph_uk(character: char) -> char {
+    match character {
+        '\u{1c82}' => 'о',
+        other => other,
+    }
 }
 
 /// Produces the explicit accent-insensitive lookup projection. Historical
@@ -511,6 +545,7 @@ pub fn normalize_lookup(value: &str) -> String {
 pub fn normalize_lookup_accentless(value: &str) -> String {
     value
         .chars()
+        .map(fold_digraph_uk)
         .flat_map(char::to_lowercase)
         .nfd()
         .filter(|character| {
@@ -912,5 +947,34 @@ mod tests {
             bad.apply(cell, "слово"),
             Err(Error::ContradictoryMetadata { .. })
         ));
+    }
+}
+
+#[cfg(test)]
+mod digraph_lookup_tests {
+    use super::{normalize_lookup, normalize_lookup_accentless};
+
+    #[test]
+    fn printed_presentation_writes_the_initial_uk_digraph() {
+        use super::present_initial_uk_digraph;
+        assert_eq!(
+            present_initial_uk_digraph("оу\u{486}\u{301}мре"),
+            "ᲂу\u{486}\u{301}мре"
+        );
+        assert_eq!(
+            present_initial_uk_digraph("Оу\u{486}\u{301}мре"),
+            "Оу\u{486}\u{301}мре"
+        );
+        assert_eq!(present_initial_uk_digraph("бои\u{301}тсѧ"), "бои\u{301}тсѧ");
+        assert_eq!(present_initial_uk_digraph("о\u{486}трокъ"), "о\u{486}трокъ");
+    }
+
+    #[test]
+    fn lookup_projections_fold_the_uk_digraph_to_its_expanded_letters() {
+        assert_eq!(normalize_lookup("ᲂу҆́мре"), normalize_lookup("Оу҆́мре"));
+        assert_eq!(normalize_lookup_accentless("ᲂу҆́мре"), "оумре");
+        assert_eq!(normalize_lookup_accentless("ᲂумретъ"), "оумретъ");
+        assert_eq!(normalize_lookup_accentless("Оу҆́мретъ"), "оумретъ");
+        assert_ne!(normalize_lookup("ᲂу҆́мре"), normalize_lookup("ᲂумре"));
     }
 }

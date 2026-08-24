@@ -529,7 +529,10 @@ fn initial_digraph_uk_indices(value: &str) -> Option<(usize, usize)> {
     });
     let (first_index, first) = characters.next()?;
     let (second_index, second) = characters.next()?;
-    (matches!(first, 'ᲂ' | 'О') && matches!(second, 'у' | 'У'))
+    // The expanded registry spelling writes the digraph as plain `оу`; the
+    // printed presentation replaces the lead with `ᲂ`, and a sentence-initial
+    // print capitalises it. All three are the same word-initial digraph.
+    (matches!(first, 'ᲂ' | 'О' | 'о') && matches!(second, 'у' | 'У' | 'ꙋ'))
         .then_some((first_index, second_index))
 }
 
@@ -1213,5 +1216,64 @@ mod tests {
             empty_scope.validate(),
             Err(Error::ContradictoryMetadata { .. })
         ));
+    }
+}
+
+#[cfg(test)]
+mod digraph_uk_tests {
+    use super::*;
+    use crate::{Animacy, Case, EpistemicRole, EvidenceId, Number, SourceId};
+
+    fn probe(placement: AccentPlacement) -> AccentParadigm {
+        AccentParadigm {
+            id: "test-digraph".into(),
+            accent_rules: vec![AccentRule {
+                scope: AccentScope::Noun {
+                    numbers: vec![Number::Singular],
+                },
+                placement,
+                mark: AccentMark::Acute,
+            }],
+            breathing_rules: vec![],
+            evidence: Evidence {
+                id: EvidenceId::from("test-digraph"),
+                source: SourceId::from("ponomar-elizabeth-bible-2026-08-09"),
+                source_recension: Recension::SynodalRussian,
+                kind: EvidenceKind::AccentParadigm,
+                authority_roles: vec![AuthorityRole::Accentual],
+                epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+                citation: "test".into(),
+                note: None,
+            },
+        }
+    }
+
+    #[test]
+    fn expanded_initial_uk_digraph_carries_psili_and_accent_on_its_vowel() {
+        let cell = GrammarCell::Noun(crate::NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        });
+        // The lead `о` of the digraph is not a syllable: the first stem vowel
+        // is the `у`, and the automatic psili sits on it too (ᲂу҆́мре).
+        assert_eq!(
+            probe(AccentPlacement::StemVowelFromStart(0))
+                .apply(cell, "оумре")
+                .expect("apply"),
+            "оу\u{486}\u{301}мре"
+        );
+        assert_eq!(
+            probe(AccentPlacement::StemVowelFromStart(1))
+                .apply(cell, "оумроша")
+                .expect("apply"),
+            "оу\u{486}мро\u{301}ша"
+        );
+        assert_eq!(
+            probe(AccentPlacement::StemVowelFromStart(0))
+                .apply(cell, "Оумре")
+                .expect("apply"),
+            "Оу\u{486}\u{301}мре"
+        );
     }
 }

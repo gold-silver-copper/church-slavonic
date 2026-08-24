@@ -644,6 +644,27 @@ fn validate_admitted_families(
                                 .any(|supported| supported == system)
                         })
             }
+            // An imperfective verb admitted purely productively claims the
+            // present, imperfect, and imperative systems; the simple future,
+            // aorist, and l-participle of the perfective contract above are
+            // not what its principal parts license.
+            "second-imperfective-verb-system-productive-only"
+            | "first-unpalatalized-imperfective-verb-system-productive-only"
+            | "first-palatalized-imperfective-verb-system-productive-only" => {
+                let expected = review
+                    .admitted_class
+                    .trim_end_matches("-imperfective-verb-system-productive-only");
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some(expected)
+                    && family.lexeme.part_of_speech() == synodal_church_slavonic::PartOfSpeech::Verb
+                    && ["present", "imperfect", "imperative"].iter().all(|system| {
+                        family
+                            .supported_systems
+                            .iter()
+                            .any(|supported| supported == system)
+                    })
+            }
             "second-verb-system-with-exact-overrides" => {
                 family.fully_classed
                     && !family.exact_only

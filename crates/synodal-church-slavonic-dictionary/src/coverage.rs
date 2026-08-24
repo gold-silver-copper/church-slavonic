@@ -13,7 +13,8 @@ use synodal_church_slavonic::{
     numeral_phrases::cardinal_with,
 };
 use synodal_church_slavonic_core::{
-    CyrillicNumeral, RuleTrace, normalize_lookup, normalize_lookup_accentless,
+    CyrillicNumeral, Recension, RuleId, RuleTrace, TraceStep, normalize_lookup,
+    normalize_lookup_accentless,
 };
 use unicode_normalization::char::is_combining_mark;
 
@@ -1113,6 +1114,7 @@ impl Analyzer {
                     contradictions: Vec::new(),
                     warnings: Vec::new(),
                     rule_trace: RuleTrace::default(),
+                    reflexive: false,
                 });
             }
         }
@@ -1149,17 +1151,25 @@ impl Analyzer {
             }
             OrthographyProfile::SynodalLiturgical => (&self.printed_marked, &self.printed),
         };
-        let mut analyses = marked
-            .get(&marked_key)
-            .cloned()
-            .filter(|analyses| !analyses.is_empty())
-            .unwrap_or_else(|| {
-                if allow_fallback {
-                    fallback.get(&key).cloned().unwrap_or_default()
-                } else {
-                    Vec::new()
-                }
-            });
+        let lookup = |canonical: &str| -> Vec<Analysis> {
+            let marked_key = normalize_lookup(canonical);
+            let key = normalize_lookup_accentless(canonical);
+            marked
+                .get(&marked_key)
+                .cloned()
+                .filter(|analyses| !analyses.is_empty())
+                .unwrap_or_else(|| {
+                    if allow_fallback {
+                        fallback.get(&key).cloned().unwrap_or_default()
+                    } else {
+                        Vec::new()
+                    }
+                })
+        };
+        let mut analyses = lookup(parsed.canonical());
+        if analyses.is_empty() {
+            analyses = self.reflexive_analyses(parsed.canonical(), &lookup);
+        }
         if let Ok(expansions) = crate::morphology::abbreviation::expand(parsed.canonical()) {
             for expansion in expansions {
                 let lexeme = crate::morphology::advanced::lookup_by_id(&expansion.lexeme_id)?;
@@ -1179,11 +1189,70 @@ impl Analyzer {
                     contradictions: Vec::new(),
                     warnings: Vec::new(),
                     rule_trace: RuleTrace::default(),
+                    reflexive: false,
                 });
             }
         }
         deduplicate_analyses(&mut analyses);
         Ok(analyses)
+    }
+
+    /// Alypy §73: a surface in `-сѧ` with no registered reading is analysed
+    /// as the reflexive/passive voice of a registered active verb when the
+    /// host it was built from (with the deleted final jer restored where the
+    /// rule removed one) has a verbal reading. The lexeme and cell are the
+    /// host's; the analysis is marked `reflexive` and carries the host in its
+    /// trace, and its source is the rule, not the host's evidence row, because
+    /// no row cites this surface.
+    fn reflexive_analyses(
+        &self,
+        canonical: &str,
+        lookup: &dyn Fn(&str) -> Vec<Analysis>,
+    ) -> Vec<Analysis> {
+        for host in synodal_church_slavonic_core::reflexive_base_candidates(canonical) {
+            let derived: Vec<Analysis> = lookup(&host)
+                .into_iter()
+                .filter(|analysis| {
+                    matches!(
+                        analysis.cell,
+                        Some(
+                            GrammarCell::FiniteVerb(_)
+                                | GrammarCell::Imperative(_)
+                                | GrammarCell::Infinitive
+                                | GrammarCell::LParticiple(_)
+                                | GrammarCell::Participle(_)
+                        )
+                    ) && !analysis.lexeme.lemma().ends_with("сѧ")
+                        && !analysis.reflexive
+                })
+                .map(|mut analysis| {
+                    let mut trace = analysis.rule_trace.clone();
+                    trace.push(TraceStep {
+                        rule: RuleId::from(synodal_church_slavonic_core::REFLEXIVE_RULE_ID),
+                        stage: "reflexive-enclitic".into(),
+                        input: host.clone(),
+                        output: canonical.to_owned(),
+                        source_recension: Some(Recension::SynodalRussian),
+                        target_recension: Recension::SynodalRussian,
+                        mapping: None,
+                        evidence: vec![],
+                    });
+                    analysis.rule_trace = trace;
+                    analysis.matched_text = canonical.to_owned();
+                    analysis.source = AnalysisSource::SynodalProductiveRule;
+                    analysis.assumptions.push(format!(
+                        "reflexive or passive voice of {} by Alypy §73: host form {host} + enclitic сѧ",
+                        analysis.lexeme.lemma()
+                    ));
+                    analysis.reflexive = true;
+                    analysis
+                })
+                .collect();
+            if !derived.is_empty() {
+                return derived;
+            }
+        }
+        Vec::new()
     }
 
     #[must_use]
@@ -1326,6 +1395,7 @@ impl Analyzer {
                     .collect(),
                 warnings: variant.warnings.clone(),
                 rule_trace: variant.rule_trace.clone(),
+                reflexive: false,
             };
             let (marked, fallback) = match profile {
                 OrthographyProfile::Expanded | OrthographyProfile::ExpandedAccentless => {
@@ -1469,15 +1539,27 @@ pub fn coverage_with_type_holdout(
                 let family_id = FamilyId::for_lexeme(lexeme_id).to_string();
                 update_slice(by_family.entry(family_id).or_default(), &analysis);
             }
+            // A token is attributed to the first *typed* reading it carries;
+            // a reviewed lexical-form row that happens to outrank a noun
+            // reading in source precedence does not make the token
+            // morphology-free.
             let system = if analysis.numeral.is_some() {
                 "cyrillic-numeral".into()
             } else if !analysis.cardinal_words.is_empty() {
                 "compound-cardinal-word".into()
             } else {
-                analysis
-                    .analyses
-                    .first()
-                    .and_then(|candidate| candidate.cell)
+                let typed = analysis.analyses.iter().find_map(|candidate| {
+                    candidate.cell.filter(|cell| {
+                        !matches!(cell, GrammarCell::LexicalForm | GrammarCell::Indeclinable)
+                    })
+                });
+                typed
+                    .or_else(|| {
+                        analysis
+                            .analyses
+                            .first()
+                            .and_then(|candidate| candidate.cell)
+                    })
                     .map_or_else(|| "unresolved".into(), morphological_system)
             };
             update_slice(by_system.entry(system.clone()).or_default(), &analysis);
@@ -3875,6 +3957,42 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn reflexive_surfaces_are_derived_from_registered_active_verbs_by_alypy_73() {
+        let analyzer = default_analyzer().expect("analyzer");
+        let analyses = analyzer.analyze("возвратисѧ").expect("analysis");
+        assert!(
+            !analyses.is_empty(),
+            "возвратисѧ should analyse as a reflexive of возвратити"
+        );
+        assert!(analyses.iter().all(|analysis| analysis.reflexive));
+        assert!(
+            analyses
+                .iter()
+                .all(|analysis| analysis.source == AnalysisSource::SynodalProductiveRule)
+        );
+        assert!(analyses.iter().all(|analysis| {
+            analysis
+                .rule_trace
+                .steps()
+                .last()
+                .is_some_and(|step| step.rule.as_str() == "SYN-VERB-REFLEXIVE-ALYPY-73")
+        }));
+        assert!(analyses.iter().all(|analysis| matches!(
+            analysis.cell,
+            Some(GrammarCell::FiniteVerb(_) | GrammarCell::Imperative(_))
+        )));
+        // The deleted jer is restored: да́стсѧ is the host да́стъ plus the enclitic.
+        let printed = analyzer
+            .analyze_profile("да́стсѧ", OrthographyProfile::SynodalLiturgical)
+            .expect("analysis");
+        assert!(printed.iter().any(|analysis| analysis.reflexive
+            && matches!(analysis.cell, Some(GrammarCell::FiniteVerb(_)))));
+        // A non-verbal host never yields a reflexive reading.
+        assert!(analyzer.analyze("рабсѧ").expect("analysis").is_empty());
+        assert!(analyzer.analyze("рабъсѧ").expect("analysis").is_empty());
     }
 
     #[test]

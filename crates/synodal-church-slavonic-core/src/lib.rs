@@ -47,10 +47,11 @@ pub use morphology::{
     ActiveParticipleShortFormation, AdjectiveClass, AdjectiveLexeme, AoristFormation, Aspect,
     ComparisonFormation, ImperativeFormation, ImperfectFormation, NounAnimacyInventory,
     NounDeclension, NounLexeme, NounNumberInventory, ParticiplePrincipalPart,
-    PresentPrincipalParts, ShortMasculineStemFormation, VerbConjugation, VerbLexeme,
-    VerbalNounFormation, VerbalNounPrincipalPart, aorist, decline_adjective, decline_noun,
-    decline_participle, decline_verbal_noun, future, imperative, imperfect, infinitive,
-    l_participle, present, validate_adjective_lexeme, validate_noun_lexeme,
+    PresentPrincipalParts, REFLEXIVE_RULE_ID, ShortMasculineStemFormation, VerbConjugation,
+    VerbLexeme, VerbalNounFormation, VerbalNounPrincipalPart, aorist, decline_adjective,
+    decline_noun, decline_participle, decline_verbal_noun, future, imperative, imperfect,
+    infinitive, l_participle, present, reflexive_base_candidates, reflexive_surface,
+    validate_adjective_lexeme, validate_noun_lexeme,
 };
 pub use numeral::{CyrillicNumeral, format_cyrillic_numeral, parse_cyrillic_numeral};
 pub use numeral_morphology::{
@@ -61,6 +62,7 @@ pub use orthography::{
     InitialPresentation, LetterOccurrence, Loss, NormalizationReport, OrthographyProfile,
     PositionalOperation, PositionalParadigm, PositionalReplacement, PositionalRule, RenderedText,
     SynodalWord, apply_initial_presentation, normalize_lookup, normalize_lookup_accentless,
+    present_initial_uk_digraph,
 };
 pub use phrase::{
     AdverbialParticipleFormation, AnalyticConstruction, CompoundAuxiliaryOrder,

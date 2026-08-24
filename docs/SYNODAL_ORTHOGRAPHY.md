@@ -255,3 +255,19 @@ and their exception boundaries. Thus the presentation engine is operationally
 complete for complete lexical metadata without claiming that six bundled accent
 paradigms exhaust an open lexicon or that one disputed codification is the only
 valid printed tradition.
+
+## Word-initial `оу` digraph
+
+The expanded registry spelling writes the word-initial digraph as plain `оу`;
+the printed profile writes it as `ᲂу` (U+1C82 followed by `у`), and a
+sentence-initial print capitalises it as `Оу`. All three are one word. Since
+v0.12 the lookup projections (`normalize_lookup`, `normalize_lookup_accentless`)
+fold the modifier-letter lead back to `о`, so a printed digraph token reaches
+the same reverse-index key as its expanded form; the accent engine treats the
+expanded `оу` as the digraph too, placing the automatic psili and the first
+stem-vowel accent on its `у` (`ᲂу҆́мре`, never `о҆́умре`); and every generated
+liturgical print applies `present_initial_uk_digraph` so registry-generated
+forms print exactly as reviewed exact rows do. Before this fold, every
+lowercase `ᲂу`-initial corpus token was invisible to the accentless index and
+therefore to the accent fitter, and 121 sealed held-out types were keyed
+under the unfolded presentation.

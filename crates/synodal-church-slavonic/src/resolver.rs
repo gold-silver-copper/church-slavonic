@@ -404,7 +404,49 @@ pub(crate) fn resolve_cell(
             reason: "the requested lexical cell has no exact reviewed form".into(),
         }),
     }?;
+    // Alypy §73: the enclitic is attached before accent realisation so that
+    // exact accent rows, fitted paradigms, and the corpus prints they were
+    // fitted against all describe the same surface (`боите́сѧ`, not `боите`).
+    // The enclitic never carries a mark, so a placement counted from the
+    // start is unaffected, and one counted from the end is fitted on the
+    // enclitic-bearing form it will be applied to.
+    let forms = if registry::is_reflexive_verb(id) {
+        apply_reflexive(forms)?
+    } else {
+        forms
+    };
     apply_generated_presentation(inflector, id, cell, &key, forms)
+}
+
+/// Alypy §73: attach the reflexive enclitic to every generated cell of a
+/// reflexive verb, on the expanded surface, before accent realisation.
+fn apply_reflexive(forms: FormSet) -> Result<FormSet> {
+    let variants = forms
+        .variants()
+        .iter()
+        .cloned()
+        .map(|mut variant| {
+            let input = variant.printed.clone();
+            variant.expanded = synodal_church_slavonic_core::reflexive_surface(&variant.expanded);
+            variant.printed = synodal_church_slavonic_core::reflexive_surface(&variant.printed);
+            variant.accented = variant
+                .accented
+                .as_deref()
+                .map(synodal_church_slavonic_core::reflexive_surface);
+            variant.rule_trace.push(TraceStep {
+                rule: RuleId::from(synodal_church_slavonic_core::REFLEXIVE_RULE_ID),
+                stage: "reflexive-enclitic".into(),
+                input,
+                output: variant.printed.clone(),
+                source_recension: Some(Recension::SynodalRussian),
+                target_recension: Recension::SynodalRussian,
+                mapping: None,
+                evidence: vec![],
+            });
+            variant
+        })
+        .collect();
+    FormSet::try_from_variants(variants)
 }
 
 fn apply_generated_presentation(
@@ -483,6 +525,11 @@ fn apply_generated_presentation(
                 field: synodal_church_slavonic_core::MetadataField::AccentParadigm,
             });
         }
+        // The printed profile writes the expanded word-initial `оу` as the
+        // digraph `ᲂу`, exactly as every reviewed exact print in the registry
+        // does; `accented` keeps the expanded letters under their marks.
+        variant.printed =
+            synodal_church_slavonic_core::present_initial_uk_digraph(&variant.printed);
         variants.push(variant);
     }
     // NOT wired to `registry::positional_paradigm_for` yet, deliberately.

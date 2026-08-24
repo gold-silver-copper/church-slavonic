@@ -490,6 +490,11 @@ pub struct Analysis {
     pub contradictions: Vec<String>,
     pub warnings: Vec<String>,
     pub rule_trace: RuleTrace,
+    /// The surface is a reflexive/passive form (Alypy §73) derived by rule
+    /// from a registered active verb: the lexeme and cell describe the host
+    /// the enclitic `-сѧ` attached to.
+    #[serde(default)]
+    pub reflexive: bool,
 }
 
 /// Returns every compatible curated analysis of an expanded or printed word.

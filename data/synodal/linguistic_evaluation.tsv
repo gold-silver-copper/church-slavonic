@@ -11,3 +11,10 @@ v10:verb:byti-irregular-first	synodal:verb:byti	present:first:singular	єсмь	
 v10:verb:nesti-unsupported-future	synodal:verb:nesti	future:third:singular		EvidenceIncompleteCell	error	alypy-gamanovich-grammar-web-2023	§84 contextual future reading cannot be inferred for imperfective нести
 v11:verb:nesti-verbal-noun	synodal:verb:nesti	verbal-noun:genitive:singular:inanimate	несенїѧ		productive	alypy-gamanovich-grammar-web-2023	§27 past-passive base plus -їе; §34 soft-neuter declension
 v10:verb:pisati-missing-participle	synodal:verb:pisati	participle:present:passive:nominative:singular:masculine:inanimate:short:positive		MissingPrincipalPart	error	alypy-gamanovich-grammar-web-2023	§99 relationship not promoted without stored participial principal part
+v12:verb:boyatisya-j-imperative	synodal:verb:v12-boyatisya	imperative:second:singular	бойсѧ		productive	alypy-gamanovich-grammar-web-2023	§93 j-stem imperative бо́-й-сѧ
+v12:verb:boyatisya-jer-deletion	synodal:verb:v12-boyatisya	present:third:singular	боитсѧ		productive	alypy-gamanovich-grammar-web-2023	§73 reflexive enclitic after the third-singular ending; the final jer is deleted
+v12:verb:boyatisya-no-aorist	synodal:verb:v12-boyatisya	aorist:third:singular		MissingMetadata	error	alypy-gamanovich-grammar-web-2023	§73 verb used only with -сѧ; no aorist principal part is claimed
+v12:verb:uboyatisya-vowel-aorist	synodal:verb:v12-uboyatisya	aorist:third:plural	оубоѧшасѧ		productive	alypy-gamanovich-grammar-web-2023	§86 vowel aorist with the §73 enclitic
+v12:verb:umreti-consonant-aorist	synodal:verb:v12-umreti	aorist:third:plural	оумроша		productive	alypy-gamanovich-grammar-web-2023	§86 consonant aorist -оша on the stem оумр-
+v12:verb:umreti-mobile-l-participle	synodal:verb:v12-umreti	l-participle:masculine:plural	оумерли		productive	alypy-gamanovich-grammar-web-2023	§97 l-participle on the independent base оумер-
+v12:verb:umreti-no-imperfect	synodal:verb:v12-umreti	imperfect:third:singular		HistoricallyInvalidCell	error	alypy-gamanovich-grammar-web-2023	perfective verb without an imperfect principal part fails explicitly

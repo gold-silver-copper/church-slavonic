@@ -1378,8 +1378,18 @@ fn parse_active_participle_short_formation(value: &str) -> Result<ActiveParticip
     }
 }
 
+/// A verb registered under a lemma in `-сѧ` (Alypy §73: verbs used only
+/// with the reflexive enclitic, or admitted in their reflexive voice). Its
+/// stems and principal parts are stored bare; the resolver appends the
+/// enclitic to every generated cell.
+pub(crate) fn is_reflexive_verb(id: &LexemeId) -> bool {
+    raw_by_id(id).is_some_and(|row| row.0[2] == "verb" && row.0[1].ends_with("сѧ"))
+}
+
 pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
     let row = require_pos(id, PartOfSpeech::Verb)?;
+    // The bare infinitive is the host the enclitic attaches to.
+    let lemma = row.0[1].strip_suffix("сѧ").unwrap_or(row.0[1]);
     let conjugation = match row.0[3] {
         "first-unpalatalized" => VerbConjugation::FirstUnpalatalized,
         "first-palatalized" => VerbConjugation::FirstPalatalized,
@@ -1449,7 +1459,7 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
     };
 
     let lexeme = VerbLexeme {
-        lemma: SynodalWord::parse(row.0[1])?,
+        lemma: SynodalWord::parse(lemma)?,
         aspect,
         conjugation,
         present_stem: nonempty_word(row.0[4])?,
@@ -1875,6 +1885,7 @@ fn parse_imperative(value: &str) -> Result<ImperativeFormation> {
     match value {
         "first-unpalatalized" => Ok(ImperativeFormation::FirstUnpalatalized),
         "i-series" => Ok(ImperativeFormation::ISeries),
+        "j-series" => Ok(ImperativeFormation::JSeries),
         "irregular" => Ok(ImperativeFormation::Irregular),
         other => invalid_metadata("imperative formation", other),
     }
