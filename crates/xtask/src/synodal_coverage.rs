@@ -59,6 +59,8 @@ pub(crate) fn run(
     let mut offline = false;
     let mut require_complete = false;
     let mut reseal_floors = false;
+    let mut seal_wave = None;
+    let mut wave_note = String::new();
     let mut canonical_inputs = true;
     while let Some(argument) = args.next() {
         match argument.as_str() {
@@ -85,6 +87,8 @@ pub(crate) fn run(
             "--offline" => offline = true,
             "--require-complete" => require_complete = true,
             "--reseal-floors" => reseal_floors = true,
+            "--seal-wave" => seal_wave = Some(args.next().ok_or("--seal-wave needs a label")?),
+            "--note" => wave_note = args.next().ok_or("--note needs text")?,
             value => return Err(format!("unknown synodal-coverage argument {value:?}").into()),
         }
     }
@@ -152,6 +156,17 @@ pub(crate) fn run(
             println!("synodal coverage: resealed {} floors", floors.len());
         } else {
             enforce_floors(&floors_path, &floors, &report)?;
+        }
+        // The wave ledger is the program's record of generalisation per
+        // sealed wave. Sealing appends; checking proves the last row still
+        // describes this report and the lexicon that produced it.
+        if let Some(wave) = &seal_wave {
+            if !canonical_inputs {
+                return Err("--seal-wave needs the canonical corpus".into());
+            }
+            crate::synodal_waves::seal(root, &report, wave, &wave_note)?;
+        } else if check {
+            crate::synodal_waves::check(root, &report)?;
         }
     }
     if check {
@@ -758,8 +773,9 @@ pub(crate) fn check_committed_floors(root: &Path) -> Result<(), Box<dyn Error>> 
     let floors_path = root.join("data/synodal/coverage_floors.tsv");
     let floors = load_floors(&floors_path)?;
     enforce_floors(&floors_path, &floors, &report)?;
+    crate::synodal_waves::check(root, &report)?;
     println!(
-        "synodal coverage floors: {} sealed bounds hold",
+        "synodal coverage floors: {} sealed bounds hold; wave ledger current",
         floors.len()
     );
     Ok(())
@@ -851,26 +867,17 @@ fn guarded_measures(report: &CoverageReport) -> BTreeMap<String, usize> {
     // Coverage there must not fall, coverage that arrives by memorising the
     // held-out type itself must not rise, and coverage that arrives by rule
     // must not fall. Together these force new work onto the generalising side.
-    let status = |label: &str| {
-        report
-            .held_out_type_status
-            .get(label)
-            .copied()
-            .unwrap_or_default()
-    };
     measures.insert(
         "holdout:top_k_analyzed".to_owned(),
         report.held_out_type_coverage.top_k_analyzed,
     );
     measures.insert(
         "holdout:memorised_analyzed".to_owned(),
-        status("exact-synodal-attestation"),
+        report.held_out_memorised(),
     );
     measures.insert(
         "holdout:generalised_analyzed".to_owned(),
-        status("synodal-normative-table")
-            + status("synodal-productive-rule")
-            + status("synodal-irregular-override"),
+        report.held_out_generalised(),
     );
     measures
 }

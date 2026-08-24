@@ -407,6 +407,12 @@ pub struct CoverageReport {
     pub held_out_type_coverage: CoverageSlice,
     #[serde(default)]
     pub held_out_type_status: BTreeMap<String, usize>,
+    /// Held-out tokens by morphological system, then by resolver status, so a
+    /// wave aimed at one system can be seen landing there rather than
+    /// somewhere else. Systems are attributed exactly as in
+    /// [`Self::by_morphological_system`].
+    #[serde(default)]
+    pub held_out_type_status_by_system: BTreeMap<String, BTreeMap<String, usize>>,
     pub by_corpus: BTreeMap<String, CoverageSlice>,
     pub by_source: BTreeMap<String, CoverageSlice>,
     #[serde(default)]
@@ -1394,6 +1400,7 @@ pub fn coverage_with_type_holdout(
     let mut integrity = CoverageIntegrity::default();
     let mut held_out_slice = CoverageSlice::default();
     let mut held_out_status = BTreeMap::new();
+    let mut held_out_status_by_system: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     let mut held_out_observed = BTreeSet::new();
     let mut by_gap = BTreeMap::new();
     let mut types = BTreeSet::new();
@@ -1473,12 +1480,17 @@ pub fn coverage_with_type_holdout(
                     .and_then(|candidate| candidate.cell)
                     .map_or_else(|| "unresolved".into(), morphological_system)
             };
-            update_slice(by_system.entry(system).or_default(), &analysis);
+            update_slice(by_system.entry(system.clone()).or_default(), &analysis);
             update_integrity(&mut integrity, &analysis);
             if held_out_types.contains(&analysis.token.normalized) {
                 held_out_observed.insert(analysis.token.normalized.clone());
                 update_slice(&mut held_out_slice, &analysis);
                 *held_out_status
+                    .entry(status_label(analysis.status).into())
+                    .or_default() += 1;
+                *held_out_status_by_system
+                    .entry(system)
+                    .or_default()
                     .entry(status_label(analysis.status).into())
                     .or_default() += 1;
             }
@@ -1616,6 +1628,7 @@ pub fn coverage_with_type_holdout(
         held_out_types: held_out_observed.len(),
         held_out_type_coverage: held_out_slice,
         held_out_type_status: held_out_status,
+        held_out_type_status_by_system: held_out_status_by_system,
         by_corpus,
         by_source,
         by_partition,
@@ -1644,7 +1657,44 @@ pub fn coverage_with_type_holdout(
     }
 }
 
+/// Resolver statuses that reach a held-out type by rule rather than by a row
+/// naming the type. These are the generalising statuses; everything the
+/// coverage contract calls "learned" must land here.
+pub const GENERALISING_STATUSES: [&str; 3] = [
+    "synodal-normative-table",
+    "synodal-productive-rule",
+    "synodal-irregular-override",
+];
+
+/// The resolver status that reaches a held-out type by an exact row citing
+/// the type itself: memorisation, grandfathered and capped.
+pub const MEMORISING_STATUS: &str = "exact-synodal-attestation";
+
 impl CoverageReport {
+    /// Held-out tokens reached by normative table, productive rule, or
+    /// irregular override. This is the headline measure of the program.
+    #[must_use]
+    pub fn held_out_generalised(&self) -> usize {
+        GENERALISING_STATUSES
+            .iter()
+            .map(|status| {
+                self.held_out_type_status
+                    .get(*status)
+                    .copied()
+                    .unwrap_or_default()
+            })
+            .sum()
+    }
+
+    /// Held-out tokens reached by an exact row citing the held-out type.
+    #[must_use]
+    pub fn held_out_memorised(&self) -> usize {
+        self.held_out_type_status
+            .get(MEMORISING_STATUS)
+            .copied()
+            .unwrap_or_default()
+    }
+
     #[must_use]
     pub fn markdown(&self) -> String {
         let basis_points = |value: usize, total: usize| {
@@ -1653,8 +1703,50 @@ impl CoverageReport {
                 .checked_div(total)
                 .unwrap_or_default()
         };
-        let mut output = format!(
-            "# Synodal corpus coverage\n\n- Passages: {}\n- Tokens: {}\n- Types: {}\n- Top-1 analyzed: {} ({} bp)\n- Top-k analyzed: {} ({} bp)\n- Ambiguous: {}\n- Unresolved: {}\n\n## Gap categories\n\n| Category | Tokens |\n|---|---:|\n",
+        let mut output = String::from("# Synodal corpus coverage\n");
+        if self.held_out_type_coverage.total_tokens > 0 {
+            let held = &self.held_out_type_coverage;
+            let generalised = self.held_out_generalised();
+            let memorised = self.held_out_memorised();
+            let ambiguous = self
+                .held_out_type_status
+                .get("ambiguous")
+                .copied()
+                .unwrap_or_default();
+            output.push_str(&format!(
+                "\n## Type-disjoint holdout\n\nThis is the headline measure. The corpus partition split is passage-disjoint,\nso an exact row sourced from a `source` passage closes its own held-out twin.\nThis slice holds out normalized *types* instead, selected by a content hash that\ncannot be tuned, and is the only measurement here that shows generalisation to\nsurfaces the reviewed data has never seen. Coverage that arrives as\n`exact-synodal-attestation` is a row citing the held-out type itself and is\nmemorisation; `synodal-normative-table`, `synodal-productive-rule` and\n`synodal-irregular-override` coverage is generalisation. Corpus-wide top-k\nrising while `generalised` stays flat is memorising.\n\n- Held-out types present: {}\n- Held-out tokens: {}\n\n| Outcome | Tokens | Share of held-out |\n|---|---:|---:|\n| **generalised** (by rule) | {generalised} | {} bp |\n| memorised (exact row) | {memorised} | {} bp |\n| ambiguous | {ambiguous} | {} bp |\n| unresolved | {} | {} bp |\n| top-k (any analysis) | {} | {} bp |\n| top-1 | {} | {} bp |\n\n### Held-out tokens by resolver status\n\n| Resolver status | Tokens | Share of held-out |\n|---|---:|---:|\n",
+                self.held_out_types,
+                held.total_tokens,
+                basis_points(generalised, held.total_tokens),
+                basis_points(memorised, held.total_tokens),
+                basis_points(ambiguous, held.total_tokens),
+                held.unresolved,
+                basis_points(held.unresolved, held.total_tokens),
+                held.top_k_analyzed,
+                basis_points(held.top_k_analyzed, held.total_tokens),
+                held.top_1_analyzed,
+                basis_points(held.top_1_analyzed, held.total_tokens),
+            ));
+            for (status, tokens) in &self.held_out_type_status {
+                output.push_str(&format!(
+                    "| `{status}` | {tokens} | {} bp |\n",
+                    basis_points(*tokens, held.total_tokens)
+                ));
+            }
+            output.push_str("\n### Held-out tokens by morphological system\n\nA wave aimed at one system must be visible landing in that system.\n\n| System | Held-out | Generalised | Memorised | Unresolved |\n|---|---:|---:|---:|---:|\n");
+            for (system, statuses) in &self.held_out_type_status_by_system {
+                let count = |label: &str| statuses.get(label).copied().unwrap_or_default();
+                let total: usize = statuses.values().sum();
+                let generalised: usize = GENERALISING_STATUSES.iter().map(|s| count(s)).sum();
+                output.push_str(&format!(
+                    "| `{system}` | {total} | {generalised} | {} | {} |\n",
+                    count(MEMORISING_STATUS),
+                    count("unresolved"),
+                ));
+            }
+        }
+        output.push_str(&format!(
+            "\n## Corpus-wide coverage\n\n- Passages: {}\n- Tokens: {}\n- Types: {}\n- Top-1 analyzed: {} ({} bp)\n- Top-k analyzed: {} ({} bp)\n- Ambiguous: {}\n- Unresolved: {}\n\n## Gap categories\n\n| Category | Tokens |\n|---|---:|\n",
             self.passages,
             self.summary.total_tokens,
             self.token_types,
@@ -1664,7 +1756,7 @@ impl CoverageReport {
             basis_points(self.summary.top_k_analyzed, self.summary.total_tokens),
             self.summary.ambiguous,
             self.summary.unresolved,
-        );
+        ));
         for kind in GapKind::ALL {
             output.push_str(&format!(
                 "| `{}` | {} |\n",
@@ -1695,25 +1787,6 @@ impl CoverageReport {
                 "| {label} | {value} | {} bp |\n",
                 basis_points(value, self.summary.top_k_analyzed)
             ));
-        }
-        if self.held_out_type_coverage.total_tokens > 0 {
-            let held = &self.held_out_type_coverage;
-            output.push_str(&format!(
-                "\n## Type-disjoint holdout\n\nThe corpus partition split is passage-disjoint, so an exact row sourced from a\n`source` passage closes its own held-out twin. This slice holds out normalized\n*types* instead, selected by a content hash that cannot be tuned, and is the\nonly measurement here that shows generalisation to surfaces the reviewed data\nhas never seen.\n\n- Held-out types present: {}\n- Held-out tokens: {}\n- Top-k analyzed: {} ({} bp)\n- Top-1 analyzed: {} ({} bp)\n- Unresolved: {}\n\nCoverage that arrives as `exact-synodal-attestation` is a row citing the\nheld-out type itself and is memorisation; `synodal-normative-table`,\n`synodal-productive-rule` and `synodal-irregular-override` coverage is\ngeneralisation.\n\n| Resolver status | Tokens | Share of held-out |\n|---|---:|---:|\n",
-                self.held_out_types,
-                held.total_tokens,
-                held.top_k_analyzed,
-                basis_points(held.top_k_analyzed, held.total_tokens),
-                held.top_1_analyzed,
-                basis_points(held.top_1_analyzed, held.total_tokens),
-                held.unresolved,
-            ));
-            for (status, tokens) in &self.held_out_type_status {
-                output.push_str(&format!(
-                    "| `{status}` | {tokens} | {} bp |\n",
-                    basis_points(*tokens, held.total_tokens)
-                ));
-            }
         }
         output.push_str("\n## Estimated recovery routes\n\nThese are diagnostic estimates, not admitted lexical identities or guaranteed recoveries.\n\n| Route | Tokens |\n|---|---:|\n");
         for route in [

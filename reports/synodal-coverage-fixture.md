@@ -1,5 +1,7 @@
 # Synodal corpus coverage
 
+## Corpus-wide coverage
+
 - Passages: 10
 - Tokens: 155
 - Types: 113

@@ -149,11 +149,24 @@ source/partition provenance, and bounded contexts. `--check` validates all four
 artifacts. The fixture is committed in `data/synodal/coverage_passages.tsv` and
 has a stable hash test.
 
-The final acceptance command is
-`cargo xtask synodal-coverage --offline --check --require-complete`. Its locked
-input hashes and denominator prevent a fixture, custom input, truncated source
-set, alternate policy, or aggregate-only success from satisfying the 100%
-claim.
+The canonical report leads with the type-disjoint holdout, split by resolver
+status and by morphological system, because held-out tokens reached by rule
+(`generalised`) are the only measure that distinguishes a better engine from a
+longer lookup table. `reports/synodal-waves.tsv` is the append-only ledger of
+that measure per sealed wave, next to the corpus figure and the lexicon size
+that produced it. `cargo xtask synodal-coverage --offline --seal-wave <label>
+--note <text>` appends a row; `--check` and `cargo xtask
+synodal-coverage-floors` fail when the last row no longer describes the live
+report, and a row may never lower `holdout_generalised` or raise
+`holdout_memorised`. `--reseal-floors` ratchets `data/synodal/coverage_floors.tsv`
+toward the current report and is how `holdout:generalised_analyzed` is raised
+after a wave that moved it.
+
+The historical acceptance command
+`cargo xtask synodal-coverage --offline --check --require-complete` still exists
+but is no longer a program gate. Its locked input hashes and denominator
+prevent a fixture, custom input, truncated source set, alternate policy, or
+aggregate-only success from satisfying a 100% claim.
 
 The lexical queue cross-matches target source-partition frequency with English
 Wiktionary OCS semantics and exact-headword semantics from the locked SCI

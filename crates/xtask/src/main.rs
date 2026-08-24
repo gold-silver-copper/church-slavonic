@@ -24,6 +24,7 @@ mod synodal_v07_apply;
 mod synodal_v07_audit;
 mod synodal_v07_review_packets;
 mod synodal_v08_engine_audit;
+mod synodal_waves;
 
 use old_church_slavonic::advanced::cells::{
     AdjectiveCell, AdjectiveForm, ClosedClassCell, FiniteVerbCell, ImperativeCell, LParticipleCell,

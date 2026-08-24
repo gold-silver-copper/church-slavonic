@@ -2616,6 +2616,48 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         )?;
         check_fixture_bootstrap_report(root, &current_evaluation)?;
 
+        // The wave ledger must notice a falsified last row and a broken
+        // ratchet. Both are checked against the committed canonical report,
+        // with the lexicon inputs copied so the only difference is the ledger.
+        let committed_report: synodal_church_slavonic_dictionary::coverage::CoverageReport =
+            serde_json::from_str(&fs::read_to_string(
+                root.join("reports/synodal-coverage.json"),
+            )?)?;
+        for path in [
+            "data/synodal/principal_parts.tsv",
+            "data/synodal/evaluation.tsv",
+        ] {
+            fs::copy(root.join(path), temporary.join(path))?;
+        }
+        let ledger_path = temporary.join(crate::synodal_waves::LEDGER_PATH);
+        let ledger = fs::read_to_string(root.join(crate::synodal_waves::LEDGER_PATH))?;
+        let mut lines: Vec<String> = ledger.lines().map(str::to_owned).collect();
+        let last = lines.pop().ok_or("wave ledger has no sealed wave")?;
+        let columns: Vec<&str> = last.split('\t').collect();
+        let generalised: usize = columns[1].parse()?;
+        let mut falsified = columns.clone();
+        let inflated = (generalised + 1).to_string();
+        falsified[1] = &inflated;
+        lines.push(falsified.join("\t"));
+        fs::write(&ledger_path, lines.join("\n") + "\n")?;
+        require_failure(
+            "stale wave ledger",
+            crate::synodal_waves::check(&temporary, &committed_report),
+        )?;
+        let mut lines: Vec<String> = ledger.lines().map(str::to_owned).collect();
+        let mut regressed = columns.clone();
+        let deflated = generalised.saturating_sub(1).to_string();
+        regressed[0] = "later";
+        regressed[1] = &deflated;
+        lines.push(regressed.join("\t"));
+        fs::write(&ledger_path, lines.join("\n") + "\n")?;
+        require_failure(
+            "wave ledger ratchet broken",
+            crate::synodal_waves::check(&temporary, &committed_report),
+        )?;
+        fs::write(&ledger_path, &ledger)?;
+        crate::synodal_waves::check(&temporary, &committed_report)?;
+
         for hostile in ["", "latin", "\u{e000}", "\u{0301}слово"] {
             if std::panic::catch_unwind(|| synodal_church_slavonic::lookup(hostile)).is_err() {
                 return Err(format!("hostile input panicked: {hostile:?}").into());

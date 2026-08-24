@@ -1,5 +1,70 @@
 # Synodal corpus coverage
 
+## Type-disjoint holdout
+
+This is the headline measure. The corpus partition split is passage-disjoint,
+so an exact row sourced from a `source` passage closes its own held-out twin.
+This slice holds out normalized *types* instead, selected by a content hash that
+cannot be tuned, and is the only measurement here that shows generalisation to
+surfaces the reviewed data has never seen. Coverage that arrives as
+`exact-synodal-attestation` is a row citing the held-out type itself and is
+memorisation; `synodal-normative-table`, `synodal-productive-rule` and
+`synodal-irregular-override` coverage is generalisation. Corpus-wide top-k
+rising while `generalised` stays flat is memorising.
+
+- Held-out types present: 2929
+- Held-out tokens: 44425
+
+| Outcome | Tokens | Share of held-out |
+|---|---:|---:|
+| **generalised** (by rule) | 9467 | 2131 bp |
+| memorised (exact row) | 15048 | 3387 bp |
+| ambiguous | 265 | 59 bp |
+| unresolved | 18840 | 4240 bp |
+| top-k (any analysis) | 25574 | 5756 bp |
+| top-1 | 10486 | 2360 bp |
+
+### Held-out tokens by resolver status
+
+| Resolver status | Tokens | Share of held-out |
+|---|---:|---:|
+| `abbreviation-expansion` | 794 | 178 bp |
+| `ambiguous` | 265 | 59 bp |
+| `exact-synodal-attestation` | 15048 | 3387 bp |
+| `spelling-variant` | 11 | 2 bp |
+| `synodal-irregular-override` | 253 | 56 bp |
+| `synodal-normative-table` | 5867 | 1320 bp |
+| `synodal-productive-rule` | 3347 | 753 bp |
+| `unresolved` | 18840 | 4240 bp |
+
+### Held-out tokens by morphological system
+
+A wave aimed at one system must be visible landing in that system.
+
+| System | Held-out | Generalised | Memorised | Unresolved |
+|---|---:|---:|---:|---:|
+| `adjective` | 914 | 299 | 406 | 2 |
+| `aorist` | 1304 | 95 | 1209 | 0 |
+| `compound-cardinal-word` | 401 | 401 | 0 | 0 |
+| `determiner` | 147 | 0 | 147 | 0 |
+| `future` | 683 | 458 | 161 | 64 |
+| `imperative` | 70 | 0 | 64 | 6 |
+| `imperfect` | 272 | 0 | 270 | 2 |
+| `indeclinable` | 1561 | 0 | 1534 | 27 |
+| `infinitive` | 1027 | 1027 | 0 | 0 |
+| `l-participle` | 4 | 4 | 0 | 0 |
+| `lexical-form` | 7679 | 0 | 6881 | 78 |
+| `noun` | 6480 | 2058 | 4061 | 229 |
+| `numeral` | 365 | 357 | 0 | 8 |
+| `past-active-participle` | 16 | 2 | 0 | 14 |
+| `past-passive-participle` | 49 | 2 | 45 | 2 |
+| `present` | 749 | 459 | 270 | 20 |
+| `present-active-participle` | 123 | 117 | 0 | 6 |
+| `pronoun` | 4210 | 4188 | 0 | 22 |
+| `unresolved` | 18371 | 0 | 0 | 18360 |
+
+## Corpus-wide coverage
+
 - Passages: 74130
 - Tokens: 1313344
 - Types: 57476
@@ -34,36 +99,6 @@ assumed. `morphology-free` tokens carry only `lexical-form` readings.
 | lemma-unique | 955393 | 9902 bp |
 | within-lexeme ambiguous (syncretism) | 337852 | 3501 bp |
 | cross-lexeme ambiguous (homonymy) | 9398 | 97 bp |
-
-## Type-disjoint holdout
-
-The corpus partition split is passage-disjoint, so an exact row sourced from a
-`source` passage closes its own held-out twin. This slice holds out normalized
-*types* instead, selected by a content hash that cannot be tuned, and is the
-only measurement here that shows generalisation to surfaces the reviewed data
-has never seen.
-
-- Held-out types present: 2929
-- Held-out tokens: 44425
-- Top-k analyzed: 25574 (5756 bp)
-- Top-1 analyzed: 10486 (2360 bp)
-- Unresolved: 18840
-
-Coverage that arrives as `exact-synodal-attestation` is a row citing the
-held-out type itself and is memorisation; `synodal-normative-table`,
-`synodal-productive-rule` and `synodal-irregular-override` coverage is
-generalisation.
-
-| Resolver status | Tokens | Share of held-out |
-|---|---:|---:|
-| `abbreviation-expansion` | 794 | 178 bp |
-| `ambiguous` | 265 | 59 bp |
-| `exact-synodal-attestation` | 15048 | 3387 bp |
-| `spelling-variant` | 11 | 2 bp |
-| `synodal-irregular-override` | 253 | 56 bp |
-| `synodal-normative-table` | 5867 | 1320 bp |
-| `synodal-productive-rule` | 3347 | 753 bp |
-| `unresolved` | 18840 | 4240 bp |
 
 ## Estimated recovery routes
 

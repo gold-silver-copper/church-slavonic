@@ -1,0 +1,2 @@
+wave	holdout_generalised	holdout_memorised	holdout_top_k	top_k_analyzed	morphology_free_analyzed	lexemes	verb_lexemes	principal_parts	productive_evaluation_rows	note
+v0.12-baseline	9467	15048	25574	964791	50151	999	169	149	1	Merge base of the v0.12 program; corpus top-k 73.46%, held-out generalised 21.31%
