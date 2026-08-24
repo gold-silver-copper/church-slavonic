@@ -497,6 +497,7 @@ pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
     check_extraction_report(root)?;
     check_verse_disagreement_report(root)?;
     check_bootstrap_report(root)?;
+    check_fixture_bootstrap_report(root, &evaluate(root)?)?;
     check_package_metadata(root)?;
     println!("synodal checks: current");
     Ok(())
@@ -660,6 +661,64 @@ fn write_verse_disagreement_report(root: &Path) -> Result<(), Box<dyn Error>> {
         root.join("reports/synodal-verse-disagreement.json"),
         serde_json::to_vec_pretty(&report)?,
     )?;
+    Ok(())
+}
+
+/// The fixture-bootstrap report records the sha256 of the registries it
+/// reconstructed and asserts they matched the committed outputs, so its hashes
+/// must equal the committed registries' hashes. `check_generated` already proves
+/// the committed registries are current, which makes this a cheap tripwire for a
+/// registry change that was committed without rerunning
+/// `cargo xtask synodal-fixture-bootstrap`.
+fn check_fixture_bootstrap_report(
+    root: &Path,
+    evaluation: &EvaluationReport,
+) -> Result<(), Box<dyn Error>> {
+    let report_path = root.join("reports/synodal-fixture-bootstrap.json");
+    let value: serde_json::Value = serde_json::from_slice(&fs::read(&report_path)?)?;
+    let field = |name: &str| -> Result<&serde_json::Value, Box<dyn Error>> {
+        value
+            .get(name)
+            .ok_or_else(|| format!("{} lacks field {name:?}", report_path.display()).into())
+    };
+    let stale = |what: &str| -> Box<dyn Error> {
+        format!(
+            "{} is stale ({what}); run cargo xtask synodal-fixture-bootstrap",
+            report_path.display()
+        )
+        .into()
+    };
+    for (name, committed) in [
+        (
+            "morphology_registry_sha256",
+            "crates/synodal-church-slavonic/generated/registry.rs",
+        ),
+        (
+            "dictionary_registry_sha256",
+            "crates/synodal-church-slavonic-dictionary/generated/registry.rs",
+        ),
+    ] {
+        if field(name)?.as_str() != Some(file_sha256(&root.join(committed))?.as_str()) {
+            return Err(stale(name));
+        }
+    }
+    if field("evaluation_rows")?.as_u64() != Some(evaluation.expanded.total as u64) {
+        return Err(stale("evaluation_rows"));
+    }
+    if field("evaluation_top_1_correct")?.as_u64() != Some(evaluation.expanded.top_1_correct as u64)
+    {
+        return Err(stale("evaluation_top_1_correct"));
+    }
+    for name in [
+        "fixture_runs_byte_identical",
+        "generated_runs_byte_identical",
+        "committed_outputs_current",
+        "source_locks_unchanged",
+    ] {
+        if field(name)?.as_bool() != Some(true) {
+            return Err(format!("{} reports {name} = false", report_path.display()).into());
+        }
+    }
     Ok(())
 }
 
@@ -2531,6 +2590,31 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         }) {
             return Err("Productive inherited output lost its mapping provenance".into());
         }
+
+        let fixture_report = root.join("reports/synodal-fixture-bootstrap.json");
+        let mut stale_report: serde_json::Value =
+            serde_json::from_slice(&fs::read(&fixture_report)?)?;
+        stale_report["morphology_registry_sha256"] = serde_json::Value::String("0".repeat(64));
+        fs::create_dir_all(temporary.join("reports"))?;
+        fs::write(
+            temporary.join("reports/synodal-fixture-bootstrap.json"),
+            serde_json::to_vec_pretty(&stale_report)?,
+        )?;
+        for path in [
+            "crates/synodal-church-slavonic/generated/registry.rs",
+            "crates/synodal-church-slavonic-dictionary/generated/registry.rs",
+        ] {
+            if let Some(parent) = temporary.join(path).parent() {
+                fs::create_dir_all(parent)?;
+            }
+            fs::copy(root.join(path), temporary.join(path))?;
+        }
+        let current_evaluation = evaluate(root)?;
+        require_failure(
+            "stale fixture-bootstrap registry checksum",
+            check_fixture_bootstrap_report(&temporary, &current_evaluation),
+        )?;
+        check_fixture_bootstrap_report(root, &current_evaluation)?;
 
         for hostile in ["", "latin", "\u{e000}", "\u{0301}слово"] {
             if std::panic::catch_unwind(|| synodal_church_slavonic::lookup(hostile)).is_err() {
