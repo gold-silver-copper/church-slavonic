@@ -10,14 +10,14 @@ Scope groups are refined from coarse to fine (number, case, gender, animacy) and
 the coarsest granularity that fits the whole family is the one emitted, so real
 accent mobility is stated rather than smoothed away.
 
-- Lexemes with a fitted contract: 2
-- Accent-paradigm rows proposed: 38
-- Scope families with no reproducing placement at the finest granularity: 216
+- Lexemes with a fitted contract: 1
+- Accent-paradigm rows proposed: 36
+- Scope families with no reproducing placement at the finest granularity: 225
 - Lexemes with cells outside the reusable scope grammar: 7
 
 | Granularity | Rows |
 |---|---:|
-| `Number` | 4 |
+| `Number` | 2 |
 | `NumberCase` | 2 |
 | `NumberCaseGender` | 32 |
 
@@ -61,8 +61,6 @@ accent mobility is stated rather than smoothed away.
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:plural:vocative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `kamora` | 2 |
 | `synodal:adjective:zlyi` | `adjective:short:comparative:singular,dual,plural` | `stem-vowel-from-start:0` | `acute` | 35 |
 | `synodal:adjective:zlyi` | `adjective:short:superlative:singular,dual,plural` | `stem-vowel-from-start:0` | `acute` | 6 |
-| `synodal:verb:v12-voznesti` | `finite:aorist:dual` | `stem-vowel-from-start:2` | `acute` | 2 |
-| `synodal:verb:v12-voznesti` | `finite:future:plural` | `stem-vowel-from-start:2` | `acute` | 1 |
 
 ## Unfitted scope families
 
@@ -466,6 +464,23 @@ synodal:noun:tsar	dual:nominative	Noun	4 attestation(s); best rule word-vowel-fr
 synodal:noun:tsar	dual:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: царѧ→Царѧ́ царѧ→Царѧ́
 synodal:noun:tsar	dual:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: царѧ→Царѧ́ царѧ→Царѧ́
 synodal:noun:v07-c27905de175a0cde	singular:dative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: каменю→ка́меню каменю→ка́меню
+synodal:noun:v12-kniga	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
+synodal:noun:v12-kniga	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
+synodal:noun:v12-kniga	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
+synodal:noun:v12-kniga	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
+synodal:noun:v12-myshtsa	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: мышцы→мы́шцы мышцы→мы́шцы
+synodal:noun:v12-myshtsa	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: мышцы→мы́шцы мышцы→мы́шцы
+synodal:noun:v12-myshtsa	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: мышцы→мы́шцы мышцы→мы́шцы
+synodal:noun:v12-myshtsa	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: мышцы→мы́шцы мышцы→мы́шцы
+synodal:noun:v12-nepravda	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
+synodal:noun:v12-nepravda	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
+synodal:noun:v12-nepravda	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
+synodal:noun:v12-nepravda	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
+synodal:noun:v12-vysota	singular:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: высота→высота́ высота→высота́
+synodal:noun:v12-vysota	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
+synodal:noun:v12-vysota	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
+synodal:noun:v12-vysota	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
+synodal:noun:v12-vysota	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
 synodal:noun:vladyka	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: владыки→влады́ки владыки→влады́ки
 synodal:noun:vladyka	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: владыки→влады́ки владыки→влады́ки
 synodal:noun:vladyka	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: владыки→влады́ки владыки→влады́ки
@@ -879,9 +894,14 @@ synodal:noun:tsar	noun:singular:locative	overlaps an existing reviewed paradigm 
 synodal:noun:v06-673b2df93b4f89a8	noun:singular,dual,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:v06-e5f5efea52ec5e2e	noun:singular	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:v07-15ca6aa83f100698	noun:singular,plural	overlaps an existing reviewed paradigm at noun:genitive:singular:inanimate
+synodal:noun:v07-4c67d910aa3e91d1	noun:singular,plural	overlaps an existing reviewed paradigm at noun:genitive:singular:inanimate
 synodal:noun:v07-a08ac1c4e41a685d	noun:plural	overlaps an existing reviewed paradigm at noun:nominative:plural:inanimate
 synodal:noun:v07-c27905de175a0cde	noun:singular:genitive,instrumental	overlaps an existing reviewed paradigm at noun:genitive:singular:inanimate
 synodal:noun:v07-c27905de175a0cde	noun:singular:locative	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
+synodal:noun:v12-dubrava	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
+synodal:noun:v12-kolesnitsa	noun:plural	overlaps an existing reviewed paradigm at noun:genitive:plural:inanimate
+synodal:noun:v12-myshtsa	noun:singular:nominative	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
+synodal:noun:v12-stareyshina	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:vera	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:zakon	noun:plural	overlaps an existing reviewed paradigm at noun:accusative:plural:inanimate
 synodal:noun:zapoved	noun:singular,dual,plural	overlaps an existing reviewed paradigm at noun:nominative:plural:inanimate
@@ -963,6 +983,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3450
-- Lexemes with at least one such attestation: 128
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3550
+- Lexemes with at least one such attestation: 136
 - Placement space searched per partition: 30 placements x 3 marks

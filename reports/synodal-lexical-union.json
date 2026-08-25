@@ -4,7 +4,7 @@
   "input_artifacts": [
     {
       "path": "data/synodal/lexemes.tsv",
-      "sha256": "db2c83d6285f2fb2b1cc5b9954cc0200e2c404d19c669ef2b2a041268a3580dc",
+      "sha256": "5f04b705bd2dd8969a7383a9e8a973c26b99f837f771db1c55e4d593ec7acc89",
       "claim_policy": "every curated seed row"
     },
     {
@@ -14,7 +14,7 @@
     },
     {
       "path": "reports/synodal-lexical-review-queue.tsv",
-      "sha256": "483a528eb07d1e1daacceefcedca576159cc7cb5b213515cbcd2e5de1add0e8b",
+      "sha256": "27b9eb703bf5970ad2e0824fdf98721f4838265da7a4fe6f0dd511a746324d2f",
       "claim_policy": "every preserved proposal row"
     },
     {
@@ -23,11 +23,11 @@
       "claim_policy": "every exceptional exact or classless seed row"
     }
   ],
-  "claims": 2156,
-  "union_identities": 2099,
+  "claims": 2170,
+  "union_identities": 2112,
   "by_claim_set": {
     "adjudicated-review": 846,
-    "curated-seed": 310,
+    "curated-seed": 324,
     "preserved-proposal": 1000
   },
   "by_part_of_speech": {
@@ -36,7 +36,7 @@
     "conjunction": 26,
     "determiner": 4,
     "interjection": 4,
-    "noun": 605,
+    "noun": 619,
     "numeral": 55,
     "particle": 2,
     "preposition": 29,
@@ -51,11 +51,11 @@
     "disputed": 957,
     "indeclinable": 114,
     "out-of-scope": 82,
-    "productive": 298
+    "productive": 312
   },
   "by_support_state": {
     "evidence-final": 1661,
-    "implemented": 413,
+    "implemented": 427,
     "not-applicable": 82
   },
   "implementation_gaps_by_route": {}

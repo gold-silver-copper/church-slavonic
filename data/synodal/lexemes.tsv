@@ -309,3 +309,17 @@ synodal:verb:v12-voznesti	вознести	verb	first-unpalatalized	вознес
 synodal:verb:v12-sogreshiti	согрѣшити	verb	second	согрѣш		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:v07-496708c3508480e4	разꙋмѣти	verb	first-palatalized	разꙋмѣ		imperfective	alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:verb:v12-skonchati	скончати	verb	first-palatalized	сконча		perfective	alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-stareyshina	старѣйшина	noun	second-hard	старѣйшин	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-svyashchennik	свѧщенникъ	noun	first-hard-velar-m	свѧщенник	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-kniga	книга	noun	second-hard-velar	книг	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-vysota	высота	noun	second-hard	высот	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-dubrava	дꙋбрава	noun	second-hard	дꙋбрав	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-nepravda	неправда	noun	second-hard	неправд	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-sonmishche	сонмище	noun	first-soft-ishche-n	сонмищ	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-nechestie	нечестїе	noun	first-soft-ie-n	нечестї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-merzost	мерзость	noun	third-f	мерзост	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-kolesnitsa	колесница	noun	second-hard	колесниц	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-myshtsa	мышца	noun	second-hard	мышц	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-kushcha	кꙋща	noun	second-mixed	кꙋщ	feminine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v12-telets	телецъ	noun	first-mixed-ts-m	телц	masculine		alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:noun:v07-4c67d910aa3e91d1	ѡчищенїе	noun	first-soft-ie-n	ѡчищенї	neuter		alypy-gamanovich-grammar-web-2023	synodal-russian

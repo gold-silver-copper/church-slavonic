@@ -521,3 +521,47 @@ attested at Acts 11:3 — the first live use of the §104 `шелъ : шли`
 mobile-vowel principal part), `погибнꙋти` (§§86, 97 `-нꙋ-` drop), `спасти`
 (reflexive prints attest the aorist series), `вознести`, `согрѣшити`,
 `разꙋмѣти` (promoted from the OCS headword `разоумѣти`), `скончати`.
+
+## Phase 2, wave 7 — the noun pipeline, and the first live positional paradigm
+
+Sealed as `v0.12-wave-7`.
+
+| Measure | Wave 6 | Wave 7 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 10,562 | **11,089** | **+527** |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| corpus top-k | 979,411 | 982,586 | +3,175 |
+| lexemes | 1,017 | 1,030 | +13 |
+| productive evaluation rows | 122 | 147 | +25 |
+
+The held-out unresolved remainder is predominantly *nominal* (verb stems with
+sibling support sum to ~600 of its 17,632 tokens), so this wave admitted
+fourteen nouns: `старѣйшина` (masc `-а`), `свѧщенникъ`, `книга`, `высота`,
+`дꙋбрава`, `неправда`, `сонмище`, `нечестїе`, `ѡчищенїе` (promoted),
+`мерзость`, `колесница`, `мышца`, `кꙋща`, `телецъ` (mobile-е `-ецъ`). One
+wave moved the gate metric nine times more than the eight-verb wave 6 —
+recorded so the remaining waves are aimed accordingly.
+
+Three mechanisms had their first live outing:
+
+- **The positional wiring carries real data**: `свѧще́нникѡвъ` is realised by
+  the first reviewed `positional_paradigms.tsv` row (§36 `wide-plural-ending`
+  on the genitive plural), applied under *every* profile before accent —
+  which required moving positional application ahead of the liturgical-only
+  branch, since the omega belongs to the expanded orthography itself.
+- **The memorised ceiling fired again and was right again**: the first seal
+  attempt included exact rows for `со́нмищихъ` and `мы́шцею` — both held-out
+  types (+62 memorised). The rows were reverted; those cells stay generated
+  as ordered class variants, the affected eval rows were withdrawn, and six
+  ratchet values briefly inflated by the reverted rows were reduced to the
+  honest post-revert actuals with a stated justification.
+- **Class corrections by corpus**: `-ца` stems decline hard in the Synodal
+  corpus (`колесни́цы`, not `колесни́ци`), so `колесница`/`мышца`/masculine
+  `старѣйшина` moved from `second-mixed` to `second-hard`; the family
+  validator accepts purely productive noun admissions (no queue members yet)
+  when the reviewed class actually generates the noun system.
+
+Running total: held-out generalised 9,467 → **11,089** (+1,622, +17.1%);
+corpus top-k 964,791 → 982,586 (+17,795); memorised capped at 14,998; the
+completion-gate ratchet (≥14,200) needs ≈3,100 more, which at the noun-wave
+rate is roughly six further waves.

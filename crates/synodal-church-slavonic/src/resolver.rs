@@ -456,6 +456,39 @@ fn apply_generated_presentation(
     key: &str,
     forms: FormSet,
 ) -> Result<FormSet> {
+    // The positional spelling belongs to the expanded orthography itself
+    // (§36 градѡ́въ carries its omega in every profile), so a reviewed
+    // positional paradigm applies under every profile, before the
+    // liturgical-only accent realisation below.
+    let positional = registry::positional_paradigm_for(id, cell)?;
+    let forms = if let Some(paradigm) = &positional {
+        let mut variants = Vec::with_capacity(forms.variants().len());
+        for source_variant in forms.variants() {
+            let mut variant = source_variant.clone();
+            let positioned = paradigm.apply(cell, &variant.expanded)?;
+            if positioned != variant.expanded {
+                variant.evidence.push(paradigm.evidence.clone());
+                variant.rule_trace.push(TraceStep {
+                    rule: RuleId::from(format!("SYN-POSITIONAL-PARADIGM:{}", paradigm.id)),
+                    stage: "positional-realization".into(),
+                    input: variant.expanded.clone(),
+                    output: positioned.clone(),
+                    source_recension: Some(Recension::SynodalRussian),
+                    target_recension: Recension::SynodalRussian,
+                    mapping: variant.recension_mapping.clone(),
+                    evidence: vec![paradigm.evidence.id.clone()],
+                });
+                if variant.printed == variant.expanded {
+                    variant.printed = positioned.clone();
+                }
+                variant.expanded = positioned;
+            }
+            variants.push(variant);
+        }
+        FormSet::try_from_variants(variants)?
+    } else {
+        forms
+    };
     if inflector.orthography() != OrthographyProfile::SynodalLiturgical {
         return Ok(forms);
     }
@@ -471,13 +504,6 @@ fn apply_generated_presentation(
     } else {
         None
     };
-    // A reviewed positional paradigm rewrites the *unaccented* expanded form
-    // (`PositionalParadigm::apply` rejects prosodic marks), so it runs before
-    // accent realisation, while the exact accent rows keep being keyed by the
-    // pre-positional expanded form the reviewer wrote. An exact accent row's
-    // accented value is the reviewer's complete print and is never
-    // re-presented.
-    let positional = registry::positional_paradigm_for(id, cell)?;
     let mut variants = Vec::with_capacity(forms.variants().len());
     for source_variant in forms.variants() {
         let mut variant = source_variant.clone();
@@ -513,24 +539,7 @@ fn apply_generated_presentation(
                 evidence: vec![evidence_id],
             });
         } else if let Some(paradigm) = &paradigm {
-            let accent_host = positioned_expanded(cell, &variant.expanded, positional.as_ref())?;
-            if accent_host != variant.expanded {
-                let positional = positional
-                    .as_ref()
-                    .expect("a changed host implies a positional paradigm");
-                variant.evidence.push(positional.evidence.clone());
-                variant.rule_trace.push(TraceStep {
-                    rule: RuleId::from(format!("SYN-POSITIONAL-PARADIGM:{}", positional.id)),
-                    stage: "positional-realization".into(),
-                    input: variant.expanded.clone(),
-                    output: accent_host.clone(),
-                    source_recension: Some(Recension::SynodalRussian),
-                    target_recension: Recension::SynodalRussian,
-                    mapping: variant.recension_mapping.clone(),
-                    evidence: vec![positional.evidence.id.clone()],
-                });
-            }
-            let accented = paradigm.apply(cell, &accent_host)?;
+            let accented = paradigm.apply(cell, &variant.expanded)?;
             variant.accented = Some(accented.clone());
             variant.printed = accented.clone();
             variant.evidence.push(paradigm.evidence.clone());
@@ -557,22 +566,6 @@ fn apply_generated_presentation(
         variants.push(variant);
     }
     FormSet::try_from_variants(variants)
-}
-
-/// The v0.12 resolution of the v0.11 phase-3 ordering defect: the positional
-/// paradigm rewrites the unaccented expanded form *before* accent
-/// realisation, while exact accent rows stay keyed by the pre-positional
-/// expanded the reviewer wrote. Populating `positional_paradigms.tsv` remains
-/// lexical-review work; the resolver now consumes it.
-pub(crate) fn positioned_expanded(
-    cell: GrammarCell,
-    expanded: &str,
-    positional: Option<&PositionalParadigm>,
-) -> Result<String> {
-    match positional {
-        Some(paradigm) => paradigm.apply(cell, expanded),
-        None => Ok(expanded.to_owned()),
-    }
 }
 
 fn mark_inherited(
@@ -882,7 +875,6 @@ fn reviewed_evidence(
 
 #[cfg(test)]
 mod positional_ordering_tests {
-    use super::positioned_expanded;
     use synodal_church_slavonic_core::{
         AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope, Animacy,
         AuthorityRole, Case, EpistemicRole, Evidence, EvidenceId, EvidenceKind, GrammarCell,
@@ -922,7 +914,7 @@ mod positional_ordering_tests {
             }],
             evidence: evidence_of(EvidenceKind::OrthographicParadigm),
         };
-        let positioned = positioned_expanded(cell, "езеро", Some(&positional)).expect("positioned");
+        let positioned = positional.apply(cell, "езеро").expect("positioned");
         assert_eq!(positioned, "єзеро");
         let accent = AccentParadigm {
             id: "test-accent".into(),
@@ -952,11 +944,7 @@ mod positional_ordering_tests {
             evidence_of(EvidenceKind::OrthographicParadigm),
         );
         assert_eq!(
-            positioned_expanded(cell, "престоломъ", Some(&preserve)).expect("preserve"),
-            "престоломъ"
-        );
-        assert_eq!(
-            positioned_expanded(cell, "престоломъ", None).expect("absent"),
+            preserve.apply(cell, "престоломъ").expect("preserve"),
             "престоломъ"
         );
     }

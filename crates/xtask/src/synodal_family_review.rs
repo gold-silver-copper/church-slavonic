@@ -547,9 +547,16 @@ fn validate_admitted_families(
             | "fourth-feminine-er-daughter"
             | "fourth-neuter-at"
             | "second-hard" => {
+                // Historical admissions carried queue members; a purely
+                // productive admission has none yet, so the checkable fact is
+                // that the reviewed class actually generates the noun system.
                 family.fully_classed
                     && family.class.as_deref() == Some(review.admitted_class.as_str())
-                    && !family.members.is_empty()
+                    && (!family.members.is_empty()
+                        || family
+                            .supported_systems
+                            .iter()
+                            .any(|system| system == "noun"))
             }
             "possessive-j-short" | "possessive-in" | "possessive-sk" | "hard-short"
             | "velar-short" => {
@@ -670,6 +677,18 @@ fn validate_admitted_families(
                     // system; which one varies (клѧтисѧ has an aorist and no
                     // imperfect print, боѧтисѧ the reverse).
                     && (supports("imperfect") || supports("aorist"))
+            }
+            // A noun admitted purely productively has no queue members yet;
+            // what is checkable is the reviewed class and that the noun
+            // system actually generates.
+            "second-mixed" | "second-hard-velar" | "third-f" | "first-soft-ishche-n" => {
+                family.fully_classed
+                    && !family.exact_only
+                    && family.class.as_deref() == Some(review.admitted_class.as_str())
+                    && family
+                        .supported_systems
+                        .iter()
+                        .any(|system| system == "noun")
             }
             "second-verb-system-with-exact-overrides" => {
                 family.fully_classed
