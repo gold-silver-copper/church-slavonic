@@ -10,14 +10,14 @@ Scope groups are refined from coarse to fine (number, case, gender, animacy) and
 the coarsest granularity that fits the whole family is the one emitted, so real
 accent mobility is stated rather than smoothed away.
 
-- Lexemes with a fitted contract: 1
-- Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 227
+- Lexemes with a fitted contract: 2
+- Accent-paradigm rows proposed: 37
+- Scope families with no reproducing placement at the finest granularity: 238
 - Lexemes with cells outside the reusable scope grammar: 7
 
 | Granularity | Rows |
 |---|---:|
-| `Number` | 2 |
+| `Number` | 3 |
 | `NumberCase` | 2 |
 | `NumberCaseGender` | 32 |
 
@@ -25,6 +25,7 @@ accent mobility is stated rather than smoothed away.
 
 | Lexeme | Scope | Placement | Mark | Attestations |
 |---|---|---|---|---:|
+| `synodal:adjective:v12-istinn` | `adjective:long:positive:singular,dual,plural` | `stem-vowel-from-start:0` | `acute` | 65 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:genitive,locative:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 12 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:feminine:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
@@ -214,6 +215,16 @@ synodal:adjective:svyat	plural:accusative:neuter:inanimate	Adjective("short", "p
 synodal:adjective:svyat	plural:accusative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 grave misses: свѧта→свѧ̑та
 synodal:adjective:svyat	plural:vocative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 grave misses: свѧта→свѧ̑та
 synodal:adjective:svyat	plural:vocative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 grave misses: свѧта→свѧ̑та
+synodal:adjective:v12-vyshnii	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	singular:genitive:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:nominative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:accusative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:accusative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:accusative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:accusative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:vocative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
+synodal:adjective:v12-vyshnii	plural:vocative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
 synodal:adjective:vechn	singular:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣчнаѧ→вѣ́чнаѧ
 synodal:adjective:vechn	singular:nominative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣчнаѧ→вѣ́чнаѧ
 synodal:adjective:vechn	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣчныѧ→вѣ́чныѧ
@@ -280,6 +291,54 @@ synodal:adjective:vechn	plural:accusative:neuter:inanimate	Adjective("short", "p
 synodal:adjective:vechn	plural:accusative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣчна→вѣ́чна
 synodal:adjective:vechn	plural:vocative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣчна→вѣ́чна
 synodal:adjective:vechn	plural:vocative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣчна→вѣ́чна
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	singular:genitive:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	singular:genitive:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	singular:dative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	singular:dative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	singular:dative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	singular:dative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	singular:instrumental:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	dual:genitive:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:genitive:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:genitive:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:genitive:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:genitive:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:genitive:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:locative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:locative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:locative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:locative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:locative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	dual:locative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 acute misses: живꙋ→живꙋ́
+synodal:adjective:wikt-804d9a9cde41	plural:nominative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	plural:nominative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	plural:dative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:dative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: живымъ→живы́мъ
+synodal:adjective:wikt-804d9a9cde41	plural:accusative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	plural:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	plural:accusative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	plural:accusative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	plural:vocative:masculine:inanimate	Adjective("short", "positive")	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: живи→живи́
+synodal:adjective:wikt-804d9a9cde41	plural:vocative:masculine:animate	Adjective("short", "positive")	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: живи→живи́
+synodal:adjective:wikt-804d9a9cde41	plural:vocative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
+synodal:adjective:wikt-804d9a9cde41	plural:vocative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: живы→жи́вы
 synodal:adjective:wikt-a9cef2fd54e7	singular:genitive:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: благи→бла́ги
 synodal:adjective:wikt-a9cef2fd54e7	singular:genitive:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: благи→бла́ги
 synodal:adjective:wikt-a9cef2fd54e7	plural:nominative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: благи→бла́ги
@@ -290,6 +349,88 @@ synodal:adjective:wikt-a9cef2fd54e7	plural:accusative:feminine:inanimate	Adjecti
 synodal:adjective:wikt-a9cef2fd54e7	plural:accusative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: благи→бла́ги
 synodal:adjective:wikt-a9cef2fd54e7	plural:vocative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: благи→бла́ги
 synodal:adjective:wikt-a9cef2fd54e7	plural:vocative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: благи→бла́ги
+synodal:adjective:wikt-c50de9a2243e	singular:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	singular:nominative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	singular:genitive:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:vocative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	singular:vocative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	dual:nominative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	dual:nominative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	dual:accusative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	dual:accusative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	dual:vocative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	dual:vocative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	plural:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:nominative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:nominative:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	plural:nominative:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:accusative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:accusative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:accusative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:accusative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:accusative:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	plural:accusative:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	plural:vocative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:vocative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малыѧ→ма́лыѧ
+synodal:adjective:wikt-c50de9a2243e	plural:vocative:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	plural:vocative:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малаѧ→ма́лаѧ
+synodal:adjective:wikt-c50de9a2243e	singular:accusative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:instrumental:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	singular:vocative:feminine:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	singular:vocative:feminine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	dual:nominative:masculine:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	dual:nominative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	dual:accusative:masculine:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	dual:accusative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	dual:vocative:masculine:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	dual:vocative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	plural:dative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:dative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: малымъ→ма́лымъ
+synodal:adjective:wikt-c50de9a2243e	plural:accusative:neuter:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	plural:vocative:neuter:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-c50de9a2243e	plural:vocative:neuter:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: мала→ма̑ла
+synodal:adjective:wikt-e406458f5df6	singular:genitive:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	singular:genitive:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	singular:genitive:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	singular:genitive:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	singular:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	singular:vocative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	singular:vocative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	dual:nominative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	dual:nominative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	dual:accusative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	dual:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	dual:vocative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	dual:vocative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	plural:nominative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:nominative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:accusative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:accusative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:accusative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:accusative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	plural:vocative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:vocative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: велики→вели́ки
+synodal:adjective:wikt-e406458f5df6	plural:vocative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
+synodal:adjective:wikt-e406458f5df6	plural:vocative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: велика→вели̑ка
 synodal:determiner:sam	singular:genitive:masculine:inanimate	Adjective("long", "positive")	3 attestation(s); best rule word-vowel-from-start:2 grave misses: самагѡ→сама́гѡ самагѡ→самагѡ́
 synodal:determiner:sam	singular:genitive:masculine:animate	Adjective("long", "positive")	3 attestation(s); best rule word-vowel-from-start:2 grave misses: самагѡ→сама́гѡ самагѡ→самагѡ́
 synodal:determiner:sam	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: самыѧ→са́мыѧ
@@ -780,6 +921,10 @@ synodal:verb:imati	plural	Participle("present", "active", "short", "positive")	1
 synodal:verb:lyubiti	singular	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:0 acute misses: люблю→люблю̀ люблю→люблю́
 synodal:verb:pisati	singular	FiniteVerb("aorist")	4 attestation(s); best rule word-vowel-from-start:1 grave misses: писа→писа́ писа→писа́
 synodal:verb:pisati	singular	FiniteVerb("present")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пишетъ→пи́шетъ
+synodal:verb:v06-bba31c88723cae5c	singular	FiniteVerb("present")	3 attestation(s); best rule ending-vowel-from-end:1 acute misses: живꙋ→живꙋ́
+synodal:verb:v06-bba31c88723cae5c	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:2 grave misses: живете→живе́те
+synodal:verb:v06-bba31c88723cae5c	singular	Imperative	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: живи→живи́
+synodal:verb:v06-bba31c88723cae5c	singular	LParticiple	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: жилъ→жи́лъ
 synodal:verb:v06-iziti	plural	Imperative	2 attestation(s); best rule word-vowel-from-start:2 acute misses: изыдите→и҆зы́дите
 synodal:verb:v06-vzeti	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: взѧтїе→взѧ́тїе взѧтїе→взѧ́тїе
 synodal:verb:v06-vzeti	singular:genitive	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: взѧтїѧ→взѧ́тїѧ взѧтїѧ→взѧ́тїѧ
@@ -869,6 +1014,8 @@ synodal:verb:wikt-6ceeefbe4e9e	singular:vocative	Noun	2 attestation(s); best rul
 synodal:verb:wikt-6ceeefbe4e9e	singular	FiniteVerb("aorist")	2 attestation(s); best rule word-vowel-from-start:1 acute misses: ꙗде→ꙗ҆де́
 synodal:adjective:vechn	adjective-agreeing:long:positive:singular:accusative:masculine,feminine,neuter:inanimate,animate	overlaps an existing reviewed paradigm at adjective:accusative:singular:neuter:inanimate:long:positive
 synodal:adjective:wikt-a9cef2fd54e7	adjective-agreeing:short:positive:singular:nominative,accusative:masculine,feminine,neuter:inanimate,animate	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
+synodal:adjective:wikt-e406458f5df6	adjective:long:positive:singular	overlaps an existing reviewed paradigm at adjective:nominative:singular:masculine:inanimate:long:positive
+synodal:adjective:wikt-e406458f5df6	adjective:long:positive:plural	overlaps an existing reviewed paradigm at adjective:nominative:plural:neuter:inanimate:long:positive
 synodal:adjective:zlyi	adjective:long:comparative:singular	overlaps an existing reviewed paradigm at adjective:nominative:singular:masculine:inanimate:long:comparative
 synodal:adjective:zlyi	adjective:long:superlative:singular	overlaps an existing reviewed paradigm at adjective:nominative:singular:masculine:inanimate:long:superlative
 synodal:noun:bog	noun:singular,dual	overlaps an existing reviewed paradigm at noun:nominative:singular:animate
@@ -995,6 +1142,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3638
-- Lexemes with at least one such attestation: 139
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4013
+- Lexemes with at least one such attestation: 145
 - Placement space searched per partition: 30 placements x 3 marks

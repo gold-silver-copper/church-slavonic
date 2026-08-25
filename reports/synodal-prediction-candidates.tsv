@@ -159,7 +159,6 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 призыва	77	6	true	first-conjugation,first-palatalized,imperfect,infinitive,vowel-aorist	призываетсѧ призываетъ призывати призывахъ призывахꙋ призываше призываютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 принос	77	4	true	second	приносимъ приносите приноситсѧ приноситъ приносѧтсѧ приносѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 внес	76	5	true	consonant-aorist,first-conjugation,first-unpalatalized	внесетсѧ внесетъ внесеши внесосте внесоша внесꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
-жив	76	4	false	first-conjugation,second	живемъ живете живеши живитъ живиши	SYN-PREDICT-VERB-SEGMENTATION-V1
 ищ	76	4	false	first-conjugation,first-unpalatalized,second	ищемъ ищеши ищите ищꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 наслѣд	76	3	false	second	наслѣдимъ наслѣдите наслѣдиши	SYN-PREDICT-VERB-SEGMENTATION-V1
 позна	76	6	false	first-conjugation,l-participle,vowel-aorist	познаемъ познаеши познала позналъ познасте познахомъ	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -259,6 +258,7 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 востав	57	2	false	imperfect,vowel-aorist	воставша воставше	SYN-PREDICT-VERB-SEGMENTATION-V1
 оувѣд	57	2	false	second	оувѣдите оувѣдѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 восхожда	56	2	false	imperfect	восхождахꙋ восхождаше	SYN-PREDICT-VERB-SEGMENTATION-V1
+жив	56	3	false	first-conjugation,second	живете живеши живитъ живиши	SYN-PREDICT-VERB-SEGMENTATION-V1
 испер	56	2	true	first-conjugation,first-unpalatalized	исперетсѧ исперетъ исперꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 покрыва	56	5	true	first-conjugation,first-palatalized,imperfect,infinitive,l-participle	покрываетсѧ покрываетъ покрывала покрывати покрыватисѧ покрывахꙋ покрываютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 постав	56	3	true	second	поставимъ поставите поставѧтсѧ поставѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1

@@ -594,3 +594,30 @@ stated syncretism/attribution justifications.
 
 Running total: held-out generalised 9,467 → **11,569** (+2,102, +22.2%);
 the gate ratchet needs ≈2,630 more.
+
+## Phase 2, wave 9 — the adjective frontier
+
+Sealed as `v0.12-wave-9`.
+
+| Measure | Wave 8 | Wave 9 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 11,569 | **12,219** | **+650** |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| corpus top-k | 983,580 | 985,512 | +1,932 |
+| lexemes | 1,035 | 1,039 | +4 |
+| productive evaluation rows | 158 | 171 | +13 |
+
+The largest single-wave generalisation gain of the program. New adjectives
+`вышнїй` (held-out `вы́шнѧгѡ`, 146 tokens, by the soft long class),
+`мꙋжескъ` (130), `истиненъ` (mobile-е masculine `истинен` under the §§52–53
+licence — its own nominative is held out), `долженъ`; promoted `малъ`,
+`великъ`, `живъ` from exact-only identities; `праведнъ` gains its mobile-е
+masculine; and `жити` becomes a productive verb whose participle stems plus
+the sibilant series reach the held-out `живꙋ́щыѧ` (120 tokens). The
+disjointness guard caught two evaluation rows that shared passages with
+their own evidence citations (withdrawn), and the ceiling recorded `живы́й`
+as *genuine* homonymy — the long adjective and the present participle are
+both real reviewed identities (+90, justified, no duplicate).
+
+Running total: held-out generalised 9,467 → **12,219** (+2,752, +29.1%);
+the gate ratchet needs ≈1,980 more.

@@ -331,3 +331,14 @@ synodal:verb:v12-pristupiti	aorist-stem	пристꙋпи	vowel	alypy-86-vowel-a
 synodal:verb:v12-pristupiti	imperative-stem	пристꙋп	i-series	alypy-93-second-conjugation,ponomar-iii-kings-18-30-pristupite	synodal-russian
 synodal:verb:v12-pristupiti	l-participle-stem	пристꙋпи		alypy-97-general	synodal-russian
 synodal:verb:v12-pristupiti	past-active-participle-short-stem	пристꙋпивш	hard:past-vowel	alypy-96-vowel-past-active,ponomar-deut-20-2-pristupiv,ponomar-ii-macc-10-17-pristupivshe	synodal-russian
+synodal:adjective:v12-istinn	short-masculine-stem	истинен	mobile-e-insertion	alypy-52-short-adjectives-mobile,ponomar-dan-2-45-istinen	synodal-russian
+synodal:adjective:v12-dolzhn	short-masculine-stem	должен	mobile-e-insertion	alypy-52-short-adjectives-mobile	synodal-russian
+synodal:adjective:pravedn	short-masculine-stem	праведен	mobile-e-insertion	alypy-52-short-adjectives-mobile	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	present-first-singular	живꙋ		alypy-82-zhiti,ponomar-deut-32-40-zhivu	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	present-third-plural	живꙋтъ		alypy-82-zhiti,ponomar-dan-2-38-zhivut	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	aorist-stem	жи	vowel	alypy-86-vowel-aorist,ponomar-ezek-37-25-zhisha	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	imperfect-stem	живѧ	yah	alypy-87-lyubiti,ponomar-acts-12-19-zhivyashe	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	imperative-stem	жив	first-unpalatalized	alypy-93-first-conjugation	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	l-participle-stem	жи		alypy-97-general,ponomar-baruch-3-13-zhil	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	present-active-participle-long-stem	живꙋщ	hard	alypy-95-boyatisya,ponomar-acts-17-11-zhivushchih,ponomar-acts-1-19-zhivushchym	synodal-russian
+synodal:verb:v06-bba31c88723cae5c	present-active-participle-short-stem	живꙋщ	hard:present-first-unpalatalized	alypy-95-boyatisya,ponomar-acts-17-11-zhivushchih	synodal-russian

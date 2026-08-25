@@ -559,7 +559,7 @@ fn validate_admitted_families(
                             .any(|system| system == "noun"))
             }
             "possessive-j-short" | "possessive-in" | "possessive-sk" | "hard-short"
-            | "velar-short" => {
+            | "soft-short" | "velar-short" => {
                 family.fully_classed
                     && !family.exact_only
                     && family.class.as_deref() == Some(review.admitted_class.as_str())
@@ -681,7 +681,10 @@ fn validate_admitted_families(
             // A noun admitted purely productively has no queue members yet;
             // what is checkable is the reviewed class and that the noun
             // system actually generates.
-            "second-mixed" | "second-hard-velar" | "third-f" | "third-m"
+            "second-mixed"
+            | "second-hard-velar"
+            | "third-f"
+            | "third-m"
             | "first-soft-ishche-n" => {
                 family.fully_classed
                     && !family.exact_only

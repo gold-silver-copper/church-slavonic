@@ -2,7 +2,7 @@
   "schema_version": 5,
   "target_recension": "synodal-russian",
   "fixture_source": "pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy",
-  "fixture_rows": 2422,
+  "fixture_rows": 2435,
   "retracted_fixture_rows": [
     "eval:v06:exact-93e43107a26fd7a1",
     "eval:v06:exact-cf3b7adc62194922",
@@ -13,17 +13,17 @@
   "phrase_fixture_rows": 14,
   "abbreviation_fixture_rows": 81,
   "expanded": {
-    "total": 2422,
-    "returned": 2422,
-    "top_1_correct": 2357,
-    "top_k_correct": 2421,
+    "total": 2435,
+    "returned": 2435,
+    "top_1_correct": 2370,
+    "top_k_correct": 2434,
     "abstained": 0
   },
   "printed": {
-    "total": 2422,
-    "returned": 2422,
-    "top_1_correct": 2273,
-    "top_k_correct": 2421,
+    "total": 2435,
+    "returned": 2435,
+    "top_1_correct": 2286,
+    "top_k_correct": 2434,
     "abstained": 0
   },
   "expanded_disagreements": [
@@ -2259,8 +2259,8 @@
     "top_k_correct": 3242,
     "abstained": 0
   },
-  "accent_bearing_rows": 2275,
-  "exact_accent_agreement": 2274,
+  "accent_bearing_rows": 2288,
+  "exact_accent_agreement": 2287,
   "by_regularity": {
     "closed-class-held-out-exact-cell": {
       "total": 25,
@@ -3194,10 +3194,10 @@
       "abstained": 0
     },
     "v12-productive-held-out": {
-      "total": 157,
-      "returned": 157,
-      "top_1_correct": 157,
-      "top_k_correct": 157,
+      "total": 170,
+      "returned": 170,
+      "top_1_correct": 170,
+      "top_k_correct": 170,
       "abstained": 0
     },
     "v18-held-out-productive-accent": {
@@ -3224,33 +3224,33 @@
   },
   "by_policy": {
     "exploratory": {
-      "total": 2422,
-      "returned": 2422,
-      "top_1_correct": 2357,
-      "top_k_correct": 2421,
+      "total": 2435,
+      "returned": 2435,
+      "top_1_correct": 2370,
+      "top_k_correct": 2434,
       "abstained": 0
     },
     "productive": {
-      "total": 2422,
-      "returned": 2422,
-      "top_1_correct": 2357,
-      "top_k_correct": 2421,
+      "total": 2435,
+      "returned": 2435,
+      "top_1_correct": 2370,
+      "top_k_correct": 2434,
       "abstained": 0
     },
     "strict": {
-      "total": 2422,
-      "returned": 2422,
-      "top_1_correct": 2357,
-      "top_k_correct": 2421,
+      "total": 2435,
+      "returned": 2435,
+      "top_1_correct": 2370,
+      "top_k_correct": 2434,
       "abstained": 0
     }
   },
   "by_attestation_status": {
     "attested": {
-      "total": 2123,
-      "returned": 2123,
-      "top_1_correct": 2061,
-      "top_k_correct": 2123,
+      "total": 2126,
+      "returned": 2126,
+      "top_1_correct": 2064,
+      "top_k_correct": 2126,
       "abstained": 0
     },
     "expected-form-not-returned": {
@@ -3261,26 +3261,26 @@
       "abstained": 0
     },
     "predicted": {
-      "total": 298,
-      "returned": 298,
-      "top_1_correct": 296,
-      "top_k_correct": 298,
+      "total": 308,
+      "returned": 308,
+      "top_1_correct": 306,
+      "top_k_correct": 308,
       "abstained": 0
     }
   },
   "by_morphological_system": {
     "adjective": {
-      "total": 122,
-      "returned": 122,
-      "top_1_correct": 118,
-      "top_k_correct": 122,
+      "total": 130,
+      "returned": 130,
+      "top_1_correct": 126,
+      "top_k_correct": 130,
       "abstained": 0
     },
     "aorist": {
-      "total": 232,
-      "returned": 232,
-      "top_1_correct": 227,
-      "top_k_correct": 232,
+      "total": 233,
+      "returned": 233,
+      "top_1_correct": 228,
+      "top_k_correct": 233,
       "abstained": 0
     },
     "determiner": {
@@ -3305,10 +3305,10 @@
       "abstained": 0
     },
     "imperfect": {
-      "total": 33,
-      "returned": 33,
-      "top_1_correct": 31,
-      "top_k_correct": 33,
+      "total": 34,
+      "returned": 34,
+      "top_1_correct": 32,
+      "top_k_correct": 34,
       "abstained": 0
     },
     "indeclinable": {
@@ -3319,10 +3319,10 @@
       "abstained": 0
     },
     "infinitive": {
-      "total": 27,
-      "returned": 27,
-      "top_1_correct": 27,
-      "top_k_correct": 27,
+      "total": 28,
+      "returned": 28,
+      "top_1_correct": 28,
+      "top_k_correct": 28,
       "abstained": 0
     },
     "l-participle": {
@@ -3354,17 +3354,17 @@
       "abstained": 0
     },
     "participle": {
-      "total": 77,
-      "returned": 77,
-      "top_1_correct": 77,
-      "top_k_correct": 77,
+      "total": 78,
+      "returned": 78,
+      "top_1_correct": 78,
+      "top_k_correct": 78,
       "abstained": 0
     },
     "present": {
-      "total": 72,
-      "returned": 72,
-      "top_1_correct": 71,
-      "top_k_correct": 72,
+      "total": 73,
+      "returned": 73,
+      "top_1_correct": 72,
+      "top_k_correct": 73,
       "abstained": 0
     },
     "pronoun": {
@@ -3377,10 +3377,10 @@
   },
   "by_provenance_path": {
     "exact-synodal-attestation": {
-      "total": 2119,
-      "returned": 2119,
-      "top_1_correct": 2061,
-      "top_k_correct": 2118,
+      "total": 2122,
+      "returned": 2122,
+      "top_1_correct": 2064,
+      "top_k_correct": 2121,
       "abstained": 0
     },
     "synodal-irregular-override": {
@@ -3398,19 +3398,19 @@
       "abstained": 0
     },
     "synodal-productive-rule": {
-      "total": 206,
-      "returned": 206,
-      "top_1_correct": 206,
-      "top_k_correct": 206,
+      "total": 216,
+      "returned": 216,
+      "top_1_correct": 216,
+      "top_k_correct": 216,
       "abstained": 0
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
-      "total": 2305,
-      "returned": 2305,
-      "top_1_correct": 2246,
-      "top_k_correct": 2304,
+      "total": 2318,
+      "returned": 2318,
+      "top_1_correct": 2259,
+      "top_k_correct": 2317,
       "abstained": 0
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
@@ -3445,17 +3445,17 @@
   },
   "leakage": {
     "masked_expanded": {
-      "total": 692,
-      "returned": 692,
-      "top_1_correct": 690,
-      "top_k_correct": 691,
+      "total": 702,
+      "returned": 702,
+      "top_1_correct": 700,
+      "top_k_correct": 701,
       "abstained": 0
     },
     "masked_printed": {
-      "total": 692,
-      "returned": 692,
-      "top_1_correct": 690,
-      "top_k_correct": 691,
+      "total": 702,
+      "returned": 702,
+      "top_1_correct": 700,
+      "top_k_correct": 701,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_expanded": {
