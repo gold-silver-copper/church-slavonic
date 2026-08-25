@@ -1,23 +1,23 @@
 # Synodal evaluation
 
-Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2360 held-out token cells).
+Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2386 held-out token cells).
 
 The correction ledger excludes 5 historically preserved but grammatically retracted evaluation rows from scoring.
 
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| Expanded | 2360 | 2295 | 2359 | 0 | 2360 |
-| Printed | 2360 | 2211 | 2359 | 0 | 2360 |
+| Expanded | 2386 | 2321 | 2385 | 0 | 2386 |
+| Printed | 2386 | 2237 | 2385 | 0 | 2386 |
 
 Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
 Typed abbreviations: top-1 71/81, top-k 81/81 (81 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 3241/3241, printed 3241/3241.
+Exact registry round trips (top-k, including reviewed variants): expanded 3242/3242, printed 3242/3242.
 
-Masked cells: expanded 628/630, printed 628/630. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
+Masked cells: expanded 654/656, printed 654/656. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
-Accent agreement: 2215/2216 accent-bearing rows.
+Accent agreement: 2238/2239 accent-bearing rows.
 
 Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expanded forms. The reviewed alignment registry has 5 accepted mappings, 5 aligned target lexemes, and 1 rejected negative controls.
 
@@ -25,9 +25,9 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exploratory` | 2360 | 2295 | 2359 | 0 | 2360 |
-| `productive` | 2360 | 2295 | 2359 | 0 | 2360 |
-| `strict` | 2360 | 2295 | 2359 | 0 | 2360 |
+| `exploratory` | 2386 | 2321 | 2385 | 0 | 2386 |
+| `productive` | 2386 | 2321 | 2385 | 0 | 2386 |
+| `strict` | 2386 | 2321 | 2385 | 0 | 2386 |
 
 ## Expanded accuracy by attestation status
 
@@ -35,26 +35,26 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 |---|---:|---:|---:|---:|---:|
 | `attested` | 2123 | 2061 | 2123 | 0 | 2123 |
 | `expected-form-not-returned` | 1 | 0 | 0 | 0 | 1 |
-| `predicted` | 236 | 234 | 236 | 0 | 236 |
+| `predicted` | 262 | 260 | 262 | 0 | 262 |
 
 ## Expanded accuracy by morphological system
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `adjective` | 122 | 118 | 122 | 0 | 122 |
-| `aorist` | 224 | 219 | 224 | 0 | 224 |
+| `aorist` | 231 | 226 | 231 | 0 | 231 |
 | `determiner` | 21 | 20 | 21 | 0 | 21 |
-| `future` | 97 | 94 | 97 | 0 | 97 |
-| `imperative` | 71 | 69 | 71 | 0 | 71 |
+| `future` | 104 | 101 | 104 | 0 | 104 |
+| `imperative` | 73 | 71 | 73 | 0 | 73 |
 | `imperfect` | 33 | 31 | 33 | 0 | 33 |
 | `indeclinable` | 88 | 82 | 88 | 0 | 88 |
-| `infinitive` | 19 | 19 | 19 | 0 | 19 |
+| `infinitive` | 26 | 26 | 26 | 0 | 26 |
 | `l-participle` | 21 | 21 | 21 | 0 | 21 |
 | `lexical-form` | 435 | 430 | 434 | 0 | 435 |
 | `noun` | 958 | 925 | 958 | 0 | 958 |
 | `numeral` | 26 | 25 | 26 | 0 | 26 |
-| `participle` | 76 | 76 | 76 | 0 | 76 |
-| `present` | 70 | 69 | 70 | 0 | 70 |
+| `participle` | 77 | 77 | 77 | 0 | 77 |
+| `present` | 72 | 71 | 72 | 0 | 72 |
 | `pronoun` | 99 | 97 | 99 | 0 | 99 |
 
 ## Expanded accuracy by provenance path
@@ -64,7 +64,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `exact-synodal-attestation` | 2119 | 2061 | 2118 | 0 | 2119 |
 | `synodal-irregular-override` | 19 | 16 | 19 | 0 | 19 |
 | `synodal-normative-table` | 78 | 74 | 78 | 0 | 78 |
-| `synodal-productive-rule` | 144 | 144 | 144 | 0 | 144 |
+| `synodal-productive-rule` | 170 | 170 | 170 | 0 | 170 |
 
 ## Expanded accuracy by regularity
 
@@ -203,7 +203,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `v07-held-out-exact-cell` | 914 | 882 | 914 | 0 | 914 |
 | `v07-held-out-explicit-accent-case-variant` | 44 | 40 | 44 | 0 | 44 |
 | `v07-reviewed-identity-correction` | 1 | 1 | 1 | 0 | 1 |
-| `v12-productive-held-out` | 95 | 95 | 95 | 0 | 95 |
+| `v12-productive-held-out` | 121 | 121 | 121 | 0 | 121 |
 | `v18-held-out-productive-accent` | 2 | 2 | 2 | 0 | 2 |
 | `v18-held-out-source-typed-exact` | 1 | 1 | 1 | 0 | 1 |
 | `v19-held-out-normative-short-feminine-accusative` | 1 | 1 | 1 | 0 | 1 |

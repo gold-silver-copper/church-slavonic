@@ -4,11 +4,11 @@
   "fixture_source": "miniature locked Alypy HTML page",
   "fixture_candidates_sha256": "03227728dbfe472f42db76e42bdefad6f6f7ddd89e6d6650ede2470383c02cb7",
   "fixture_runs_byte_identical": true,
-  "morphology_registry_sha256": "29d86e119fe7a47e3584ac34699b407b9e7158c7d3b291a3cfb39500c2f2eb13",
-  "dictionary_registry_sha256": "0307b4226bea546e8ebc8f95e7a47fb74b4708c26ec9081f560f259504a76f85",
+  "morphology_registry_sha256": "0611387e141642d3521c3b6a17aacd36d8fb04d6d49f26b8bd57e13bb7d6dac6",
+  "dictionary_registry_sha256": "08fc50fcff6506e1d04770bbf69239745755051aa90edfa75fb9a330df7c5a0f",
   "generated_runs_byte_identical": true,
   "committed_outputs_current": true,
   "source_locks_unchanged": true,
-  "evaluation_rows": 2360,
-  "evaluation_top_1_correct": 2295
+  "evaluation_rows": 2386,
+  "evaluation_top_1_correct": 2321
 }

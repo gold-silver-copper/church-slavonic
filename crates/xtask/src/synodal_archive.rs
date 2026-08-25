@@ -20,7 +20,7 @@ const HEADER: &str = "artifact\tsha256";
 
 /// The frozen artifact set. Everything here is an immutable historical
 /// checkpoint whose verifying command still exists for on-demand runs.
-const ARTIFACTS: [&str; 10] = [
+const ARTIFACTS: [&str; 14] = [
     "reports/synodal-v04-baseline.json",
     "reports/synodal-v04-marginal-recovery.json",
     "reports/synodal-v05-baseline.json",
@@ -31,6 +31,10 @@ const ARTIFACTS: [&str; 10] = [
     "reports/synodal-v07-review-packets.json",
     "reports/synodal-v07-review-packets.md",
     "reports/synodal-v07-review-packets.tsv",
+    "docs/SYNODAL_V04_MORPHOLOGICAL_FAMILY_AUDIT.md",
+    "docs/SYNODAL_V05_TOP_K_COVERAGE_AUDIT.md",
+    "docs/SYNODAL_V06_65_PERCENT_TOP_K_COVERAGE_AUDIT.md",
+    "docs/SYNODAL_V07_70_PERCENT_TOP_K_COVERAGE_AUDIT.md",
 ];
 
 fn digest(path: &Path) -> Result<String, Box<dyn Error>> {

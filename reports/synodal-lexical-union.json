@@ -4,7 +4,7 @@
   "input_artifacts": [
     {
       "path": "data/synodal/lexemes.tsv",
-      "sha256": "6254e2f1a1c07a24571210d9f0c9e58e188ea89081bffb81ccaa4ed630282768",
+      "sha256": "db2c83d6285f2fb2b1cc5b9954cc0200e2c404d19c669ef2b2a041268a3580dc",
       "claim_policy": "every curated seed row"
     },
     {
@@ -14,7 +14,7 @@
     },
     {
       "path": "reports/synodal-lexical-review-queue.tsv",
-      "sha256": "04c233fe0ea858b6525e74fa13e8f97dac761d642675ce4055f09b5fd775ef3e",
+      "sha256": "483a528eb07d1e1daacceefcedca576159cc7cb5b213515cbcd2e5de1add0e8b",
       "claim_policy": "every preserved proposal row"
     },
     {
@@ -23,11 +23,11 @@
       "claim_policy": "every exceptional exact or classless seed row"
     }
   ],
-  "claims": 2148,
-  "union_identities": 2093,
+  "claims": 2156,
+  "union_identities": 2099,
   "by_claim_set": {
     "adjudicated-review": 846,
-    "curated-seed": 302,
+    "curated-seed": 310,
     "preserved-proposal": 1000
   },
   "by_part_of_speech": {
@@ -43,7 +43,7 @@
     "pronoun": 76,
     "proper-noun": 24,
     "unknown": 962,
-    "verb": 221
+    "verb": 229
   },
   "by_classification": {
     "ambiguous": 704,
@@ -51,11 +51,11 @@
     "disputed": 957,
     "indeclinable": 114,
     "out-of-scope": 82,
-    "productive": 290
+    "productive": 298
   },
   "by_support_state": {
     "evidence-final": 1661,
-    "implemented": 405,
+    "implemented": 413,
     "not-applicable": 82
   },
   "implementation_gaps_by_route": {}

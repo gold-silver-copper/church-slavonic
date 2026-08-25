@@ -32,3 +32,6 @@ v12:verb:priblizhitisya-sibilant-3pl	synodal:verb:v12-priblizhitisya	future:thir
 v12:verb:otpustiti-dental	synodal:verb:v07-b4d42124734cba64	future:first:singular	ѿпꙋщꙋ		productive	alypy-gamanovich-grammar-web-2023	§80 dental alternation ст→щ
 v12:verb:potrebiti-epenthesis	synodal:verb:v12-potrebiti	future:first:singular	потреблю		productive	alypy-gamanovich-grammar-web-2023	§80 labial epenthesis б→бл, licensed with no non-held-out print
 v12:verb:vhoditi-dental	synodal:verb:v12-vhoditi	present:first:singular	вхождꙋ		productive	alypy-gamanovich-grammar-web-2023	§80 dental alternation д→жд, licensed with no non-held-out print
+v12:verb:vniti-suppletive-lparticiple	synodal:verb:wikt-2941d1bd0d7e	l-participle:masculine:singular	вшелъ		productive	alypy-gamanovich-grammar-web-2023	§§97, 104 шелъ : шли mobile-vowel base
+v12:verb:pogibnuti-nu-drop	synodal:verb:v12-pogibnuti	aorist:third:plural	погибоша		productive	alypy-gamanovich-grammar-web-2023	§86 -нꙋ- drop in the aorist
+v12:verb:slyshati-after-sibilant	synodal:verb:v12-slyshati	present:third:plural	слышатъ		productive	alypy-gamanovich-grammar-web-2023	§82 -атъ after the sibilant

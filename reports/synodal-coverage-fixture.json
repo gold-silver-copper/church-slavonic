@@ -8,15 +8,15 @@
   "summary": {
     "total_tokens": 155,
     "top_1_analyzed": 73,
-    "top_k_analyzed": 120,
+    "top_k_analyzed": 123,
     "ambiguous": 2,
-    "unresolved": 35
+    "unresolved": 32
   },
   "integrity": {
     "morphology_free_analyzed": 6,
-    "morphologically_typed_analyzed": 114,
-    "lemma_unique_analyzed": 118,
-    "within_lexeme_ambiguous": 44,
+    "morphologically_typed_analyzed": 117,
+    "lemma_unique_analyzed": 121,
+    "within_lexeme_ambiguous": 47,
     "cross_lexeme_ambiguous": 2
   },
   "held_out_types": 0,
@@ -29,7 +29,7 @@
   },
   "held_out_type_status": {},
   "predicted_unresolved_by_system": {
-    "aorist": 12,
+    "aorist": 9,
     "imperative": 1,
     "imperfect": 1,
     "infinitive": 4,
@@ -37,74 +37,73 @@
     "present": 1
   },
   "predicted_unresolved_by_confidence": {
-    "0-2399": 8,
+    "0-2399": 7,
     "2400-2999": 5,
-    "3000-3399": 6,
-    "3400+": 2
+    "3000-3399": 6
   },
   "held_out_type_status_by_system": {},
   "by_corpus": {
     "Church Slavonic Bible corpus": {
       "total_tokens": 70,
       "top_1_analyzed": 32,
-      "top_k_analyzed": 55,
+      "top_k_analyzed": 56,
       "ambiguous": 1,
-      "unresolved": 15
+      "unresolved": 14
     },
     "Elizabeth Bible corpus": {
       "total_tokens": 85,
       "top_1_analyzed": 41,
-      "top_k_analyzed": 65,
+      "top_k_analyzed": 67,
       "ambiguous": 1,
-      "unresolved": 20
+      "unresolved": 18
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
       "total_tokens": 85,
       "top_1_analyzed": 41,
-      "top_k_analyzed": 65,
+      "top_k_analyzed": 67,
       "ambiguous": 1,
-      "unresolved": 20
+      "unresolved": 18
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
       "total_tokens": 70,
       "top_1_analyzed": 32,
-      "top_k_analyzed": 55,
+      "top_k_analyzed": 56,
       "ambiguous": 1,
-      "unresolved": 15
+      "unresolved": 14
     }
   },
   "by_partition": {
     "evaluation": {
       "total_tokens": 60,
       "top_1_analyzed": 30,
-      "top_k_analyzed": 46,
+      "top_k_analyzed": 47,
       "ambiguous": 0,
-      "unresolved": 14
+      "unresolved": 13
     },
     "source": {
       "total_tokens": 95,
       "top_1_analyzed": 43,
-      "top_k_analyzed": 74,
+      "top_k_analyzed": 76,
       "ambiguous": 2,
-      "unresolved": 21
+      "unresolved": 19
     }
   },
   "by_source_partition": {
     "ponomar-elizabeth-bible-2026-08-09:evaluation": {
       "total_tokens": 50,
       "top_1_analyzed": 24,
-      "top_k_analyzed": 39,
+      "top_k_analyzed": 40,
       "ambiguous": 0,
-      "unresolved": 11
+      "unresolved": 10
     },
     "ponomar-elizabeth-bible-2026-08-09:source": {
       "total_tokens": 35,
       "top_1_analyzed": 17,
-      "top_k_analyzed": 26,
+      "top_k_analyzed": 27,
       "ambiguous": 1,
-      "unresolved": 9
+      "unresolved": 8
     },
     "wikisource-church-slavonic-bible-2026-08-09:evaluation": {
       "total_tokens": 10,
@@ -116,18 +115,18 @@
     "wikisource-church-slavonic-bible-2026-08-09:source": {
       "total_tokens": 60,
       "top_1_analyzed": 26,
-      "top_k_analyzed": 48,
+      "top_k_analyzed": 49,
       "ambiguous": 1,
-      "unresolved": 12
+      "unresolved": 11
     }
   },
   "by_policy": {
     "strict": {
       "total_tokens": 155,
       "top_1_analyzed": 73,
-      "top_k_analyzed": 120,
+      "top_k_analyzed": 123,
       "ambiguous": 2,
-      "unresolved": 35
+      "unresolved": 32
     }
   },
   "by_lexeme": {
@@ -566,6 +565,20 @@
       "unresolved": 0
     },
     "synodal:verb:v07-f40bf5c095d40411": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "synodal:verb:v12-slyshati": {
+      "total_tokens": 3,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 2,
+      "ambiguous": 0,
+      "unresolved": 1
+    },
+    "synodal:verb:v12-voznesti": {
       "total_tokens": 1,
       "top_1_analyzed": 0,
       "top_k_analyzed": 1,
@@ -1050,6 +1063,20 @@
       "ambiguous": 0,
       "unresolved": 0
     },
+    "family:synodal:verb:v12-slyshati": {
+      "total_tokens": 3,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 2,
+      "ambiguous": 0,
+      "unresolved": 1
+    },
+    "family:synodal:verb:v12-voznesti": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 1,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
     "family:synodal:verb:wikt-076d1c8a0add": {
       "total_tokens": 1,
       "top_1_analyzed": 0,
@@ -1095,9 +1122,9 @@
       "unresolved": 0
     },
     "aorist": {
-      "total_tokens": 5,
+      "total_tokens": 6,
       "top_1_analyzed": 1,
-      "top_k_analyzed": 5,
+      "top_k_analyzed": 6,
       "ambiguous": 0,
       "unresolved": 0
     },
@@ -1111,6 +1138,13 @@
     "determiner": {
       "total_tokens": 2,
       "top_1_analyzed": 1,
+      "top_k_analyzed": 2,
+      "ambiguous": 0,
+      "unresolved": 0
+    },
+    "imperfect": {
+      "total_tokens": 2,
+      "top_1_analyzed": 0,
       "top_k_analyzed": 2,
       "ambiguous": 0,
       "unresolved": 0
@@ -1143,6 +1177,13 @@
       "ambiguous": 0,
       "unresolved": 0
     },
+    "past-active-participle": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 0,
+      "ambiguous": 0,
+      "unresolved": 1
+    },
     "present": {
       "total_tokens": 3,
       "top_1_analyzed": 1,
@@ -1165,62 +1206,65 @@
       "unresolved": 0
     },
     "unresolved": {
-      "total_tokens": 33,
+      "total_tokens": 29,
       "top_1_analyzed": 0,
       "top_k_analyzed": 0,
       "ambiguous": 0,
-      "unresolved": 33
+      "unresolved": 29
     }
   },
   "by_corpus_gap": {
     "Church Slavonic Bible corpus": {
       "ambiguity-or-spelling-variant": 1,
-      "unknown-lexeme": 15
+      "missing-accent-or-orthographic-metadata": 1,
+      "unknown-lexeme": 13
     },
     "Elizabeth Bible corpus": {
       "ambiguity-or-spelling-variant": 1,
       "missing-accent-or-orthographic-metadata": 2,
-      "unknown-lexeme": 18
+      "unknown-lexeme": 16
     }
   },
   "by_source_gap": {
     "ponomar-elizabeth-bible-2026-08-09": {
       "ambiguity-or-spelling-variant": 1,
       "missing-accent-or-orthographic-metadata": 2,
-      "unknown-lexeme": 18
+      "unknown-lexeme": 16
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
       "ambiguity-or-spelling-variant": 1,
-      "unknown-lexeme": 15
+      "missing-accent-or-orthographic-metadata": 1,
+      "unknown-lexeme": 13
     }
   },
   "by_partition_gap": {
     "evaluation": {
       "missing-accent-or-orthographic-metadata": 1,
-      "unknown-lexeme": 13
+      "unknown-lexeme": 12
     },
     "source": {
       "ambiguity-or-spelling-variant": 2,
-      "missing-accent-or-orthographic-metadata": 1,
-      "unknown-lexeme": 20
+      "missing-accent-or-orthographic-metadata": 2,
+      "unknown-lexeme": 17
     }
   },
   "by_source_partition_gap": {
     "ponomar-elizabeth-bible-2026-08-09:evaluation": {
       "missing-accent-or-orthographic-metadata": 1,
-      "unknown-lexeme": 10
+      "unknown-lexeme": 9
     },
     "ponomar-elizabeth-bible-2026-08-09:source": {
       "ambiguity-or-spelling-variant": 1,
       "missing-accent-or-orthographic-metadata": 1,
-      "unknown-lexeme": 8
+      "unknown-lexeme": 7
     },
     "wikisource-church-slavonic-bible-2026-08-09:evaluation": {
       "unknown-lexeme": 3
     },
     "wikisource-church-slavonic-bible-2026-08-09:source": {
       "ambiguity-or-spelling-variant": 1,
-      "unknown-lexeme": 12
+      "missing-accent-or-orthographic-metadata": 1,
+      "unknown-lexeme": 10
     }
   },
   "by_status": {
@@ -1229,13 +1273,13 @@
     "exact-synodal-attestation": 65,
     "synodal-irregular-override": 1,
     "synodal-normative-table": 21,
-    "synodal-productive-rule": 4,
-    "unresolved": 35
+    "synodal-productive-rule": 7,
+    "unresolved": 32
   },
   "by_gap": {
     "ambiguity-or-spelling-variant": 2,
-    "missing-accent-or-orthographic-metadata": 2,
-    "unknown-lexeme": 33
+    "missing-accent-or-orthographic-metadata": 3,
+    "unknown-lexeme": 29
   },
   "unresolved_by_probable_family": {
     "ambiguous-family:synodal:verb:imati+synodal:verb:wikt-0c6c8db63b7c": {
@@ -1263,6 +1307,20 @@
       ],
       "candidate_lexeme_ids": [
         "synodal:noun:v06-673b2df93b4f89a8"
+      ],
+      "recovery_route": "spelling-variant",
+      "assumption": "one reviewed lexeme is compatible with this diagnostic; the requested cell still requires review"
+    },
+    "family:synodal:verb:v12-slyshati": {
+      "probable_family_id": "family:synodal:verb:v12-slyshati",
+      "token_frequency": 1,
+      "top_k_uncovered_token_frequency": 1,
+      "document_frequency": 1,
+      "surfaces": [
+        "слы́шавше"
+      ],
+      "candidate_lexeme_ids": [
+        "synodal:verb:v12-slyshati"
       ],
       "recovery_route": "spelling-variant",
       "assumption": "one reviewed lexeme is compatible with this diagnostic; the requested cell still requires review"
@@ -1339,18 +1397,6 @@
       ],
       "candidate_lexeme_ids": [],
       "recovery_route": "abbreviation-registry",
-      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
-    },
-    "ungrouped:вознесесѧ": {
-      "probable_family_id": "ungrouped:вознесесѧ",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "вознесе́сѧ"
-      ],
-      "candidate_lexeme_ids": [],
-      "recovery_route": "ungrouped-unknown",
       "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
     },
     "ungrouped:воньже": {
@@ -1497,30 +1543,6 @@
       "recovery_route": "ungrouped-unknown",
       "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
     },
-    "ungrouped:слышавше": {
-      "probable_family_id": "ungrouped:слышавше",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "слы́шавше"
-      ],
-      "candidate_lexeme_ids": [],
-      "recovery_route": "ungrouped-unknown",
-      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
-    },
-    "ungrouped:слышасте": {
-      "probable_family_id": "ungrouped:слышасте",
-      "token_frequency": 2,
-      "top_k_uncovered_token_frequency": 2,
-      "document_frequency": 2,
-      "surfaces": [
-        "слы́шасте"
-      ],
-      "candidate_lexeme_ids": [],
-      "recovery_route": "ungrouped-unknown",
-      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
-    },
     "ungrouped:страданїи": {
       "probable_family_id": "ungrouped:страданїи",
       "token_frequency": 1,
@@ -1656,19 +1678,18 @@
   },
   "estimated_recovery_by_route": {
     "abbreviation-registry": 7,
-    "spelling-variant": 2,
-    "ungrouped-unknown": 26
+    "spelling-variant": 3,
+    "ungrouped-unknown": 22
   },
   "abbreviation_family_tokens": 34,
-  "spelling_variant_family_tokens": 2,
-  "remaining_ungrouped_unknowns": 26,
+  "spelling_variant_family_tokens": 3,
+  "remaining_ungrouped_unknowns": 22,
   "gap_frequency_by_surface": {
     "апⷭ҇лъ": 1,
     "апⷭ҇лѡмъ": 1,
     "бж҃їею": 1,
     "благодаримъ": 1,
     "бл҃говѣствованїѧ": 1,
-    "вознесесѧ": 1,
     "воньже": 1,
     "вѣрнымъ": 1,
     "ждати": 1,
@@ -1684,7 +1705,6 @@
     "оучити": 1,
     "паѵелъ": 1,
     "слышавше": 1,
-    "слышасте": 2,
     "страданїи": 1,
     "ст҃ымъ": 1,
     "тїмоѳей": 1,
@@ -1704,7 +1724,6 @@
     "бж҃їею": 1,
     "благодаримъ": 1,
     "бл҃говѣствованїѧ": 1,
-    "вознесесѧ": 1,
     "воньже": 1,
     "вѣрнымъ": 1,
     "ждати": 1,
@@ -1719,7 +1738,6 @@
     "оучити": 1,
     "паѵелъ": 1,
     "слышавше": 1,
-    "слышасте": 2,
     "страданїи": 1,
     "ст҃ымъ": 1,
     "тїмоѳей": 1,
@@ -1733,7 +1751,7 @@
     "ꙗвлѧѧсѧ": 1,
     "ꙗдый": 1
   },
-  "total_gap_types": 34,
+  "total_gap_types": 32,
   "gaps": [
     {
       "kind": "unknown-lexeme",
@@ -1802,78 +1820,6 @@
       "top_k_uncovered_documents": [
         "ponomar-elizabeth-bible-2026-08-09:Acts.1.3",
         "ponomar-elizabeth-bible-2026-08-09:Acts.1.4"
-      ],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "kind": "unknown-lexeme",
-      "original": "слы́шасте",
-      "normalized": "слышасте",
-      "corpus": "Elizabeth Bible corpus",
-      "source_id": "ponomar-elizabeth-bible-2026-08-09",
-      "work": "Elizabeth Bible",
-      "edition": "Ponomar Unicode text",
-      "passage": "Acts.1.4",
-      "partition": "source",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Church Slavonic Bible corpus",
-        "Elizabeth Bible corpus"
-      ],
-      "source_ids": [
-        "ponomar-elizabeth-bible-2026-08-09",
-        "wikisource-church-slavonic-bible-2026-08-09"
-      ],
-      "editions": [
-        "Ponomar Unicode text",
-        "Wikisource exact revisions"
-      ],
-      "partitions": [
-        "source"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4",
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.5"
-      ],
-      "contexts": [
-        {
-          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.4",
-          "passage": "Acts.1.4",
-          "line": 1,
-          "column": 102,
-          "excerpt": "а, є҆́же слы́шасте ѿ менє̀"
-        },
-        {
-          "document": "wikisource-church-slavonic-bible-2026-08-09:Col.1.5",
-          "passage": "Col.1.5",
-          "line": 1,
-          "column": 59,
-          "excerpt": "пре́жде слы́шасте въ слов"
-        }
-      ],
-      "byte_start": 188,
-      "byte_end": 206,
-      "line": 1,
-      "column": 102,
-      "candidate_lexeme_ids": [],
-      "requested_morphological_system": null,
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": []
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "no reviewed target lexeme or compatible generated form",
-      "frequency": 2,
-      "document_frequency": 2,
-      "top_k_uncovered_frequency": 2,
-      "top_k_uncovered_documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4",
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.5"
       ],
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
@@ -2259,66 +2205,6 @@
       "top_k_uncovered_frequency": 1,
       "top_k_uncovered_documents": [
         "wikisource-church-slavonic-bible-2026-08-09:Col.1.5"
-      ],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "kind": "unknown-lexeme",
-      "original": "вознесе́сѧ",
-      "normalized": "вознесесѧ",
-      "corpus": "Elizabeth Bible corpus",
-      "source_id": "ponomar-elizabeth-bible-2026-08-09",
-      "work": "Elizabeth Bible",
-      "edition": "Ponomar Unicode text",
-      "passage": "Acts.1.2",
-      "partition": "evaluation",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Elizabeth Bible corpus"
-      ],
-      "source_ids": [
-        "ponomar-elizabeth-bible-2026-08-09"
-      ],
-      "editions": [
-        "Ponomar Unicode text"
-      ],
-      "partitions": [
-        "evaluation"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.2"
-      ],
-      "contexts": [
-        {
-          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.2",
-          "passage": "Acts.1.2",
-          "line": 1,
-          "column": 78,
-          "excerpt": "и҆збра̀, вознесе́сѧ:"
-        }
-      ],
-      "byte_start": 141,
-      "byte_end": 161,
-      "line": 1,
-      "column": 78,
-      "candidate_lexeme_ids": [],
-      "requested_morphological_system": null,
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": []
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "no reviewed target lexeme or compatible generated form",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.2"
       ],
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
@@ -2979,66 +2865,6 @@
       "top_k_uncovered_frequency": 1,
       "top_k_uncovered_documents": [
         "wikisource-church-slavonic-bible-2026-08-09:Col.1.1"
-      ],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "kind": "unknown-lexeme",
-      "original": "слы́шавше",
-      "normalized": "слышавше",
-      "corpus": "Church Slavonic Bible corpus",
-      "source_id": "wikisource-church-slavonic-bible-2026-08-09",
-      "work": "Church Slavonic Bible",
-      "edition": "Wikisource exact revisions",
-      "passage": "Col.1.4",
-      "partition": "source",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Church Slavonic Bible corpus"
-      ],
-      "source_ids": [
-        "wikisource-church-slavonic-bible-2026-08-09"
-      ],
-      "editions": [
-        "Wikisource exact revisions"
-      ],
-      "partitions": [
-        "source"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.4"
-      ],
-      "contexts": [
-        {
-          "document": "wikisource-church-slavonic-bible-2026-08-09:Col.1.4",
-          "passage": "Col.1.4",
-          "line": 1,
-          "column": 1,
-          "excerpt": "слы́шавше вѣ́рꙋ в"
-        }
-      ],
-      "byte_start": 0,
-      "byte_end": 18,
-      "line": 1,
-      "column": 1,
-      "candidate_lexeme_ids": [],
-      "requested_morphological_system": null,
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": []
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "no reviewed target lexeme or compatible generated form",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "wikisource-church-slavonic-bible-2026-08-09:Col.1.4"
       ],
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
@@ -3781,6 +3607,83 @@
     },
     {
       "kind": "missing-accent-or-orthographic-metadata",
+      "original": "слы́шавше",
+      "normalized": "слышавше",
+      "corpus": "Church Slavonic Bible corpus",
+      "source_id": "wikisource-church-slavonic-bible-2026-08-09",
+      "work": "Church Slavonic Bible",
+      "edition": "Wikisource exact revisions",
+      "passage": "Col.1.4",
+      "partition": "source",
+      "source_recension": "synodal-russian",
+      "corpora": [
+        "Church Slavonic Bible corpus"
+      ],
+      "source_ids": [
+        "wikisource-church-slavonic-bible-2026-08-09"
+      ],
+      "editions": [
+        "Wikisource exact revisions"
+      ],
+      "partitions": [
+        "source"
+      ],
+      "source_recensions": [
+        "synodal-russian"
+      ],
+      "documents": [
+        "wikisource-church-slavonic-bible-2026-08-09:Col.1.4"
+      ],
+      "contexts": [
+        {
+          "document": "wikisource-church-slavonic-bible-2026-08-09:Col.1.4",
+          "passage": "Col.1.4",
+          "line": 1,
+          "column": 1,
+          "excerpt": "слы́шавше вѣ́рꙋ в"
+        }
+      ],
+      "byte_start": 0,
+      "byte_end": 18,
+      "line": 1,
+      "column": 1,
+      "candidate_lexeme_ids": [
+        "synodal:verb:v12-slyshati"
+      ],
+      "requested_morphological_system": "past-active-participle",
+      "generation_policy": "Strict",
+      "orthography_profile": "SynodalLiturgical",
+      "resolver_trace": {
+        "steps": [
+          {
+            "rule": "SYN-VERB-PARTICIPLE-PAST-ACTIVE-SHORT-ALYPY-96-98",
+            "stage": "short-active-participle-declension",
+            "input": "слышати",
+            "output": "слышавше",
+            "source_recension": "SynodalRussian",
+            "target_recension": "SynodalRussian",
+            "mapping": null,
+            "evidence": [
+              "normative:SYN-VERB-PARTICIPLE-PAST-ACTIVE-SHORT-ALYPY-96-98"
+            ]
+          }
+        ]
+      },
+      "missing_metadata": [
+        "AccentClass"
+      ],
+      "secondary_reasons": [],
+      "detail": "the accentless surface resolves, but the explicit presentation marks do not match reviewed evidence",
+      "frequency": 1,
+      "document_frequency": 1,
+      "top_k_uncovered_frequency": 1,
+      "top_k_uncovered_documents": [
+        "wikisource-church-slavonic-bible-2026-08-09:Col.1.4"
+      ],
+      "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
+    },
+    {
+      "kind": "missing-accent-or-orthographic-metadata",
       "original": "ꙗ҆ды́й",
       "normalized": "ꙗдый",
       "corpus": "Elizabeth Bible corpus",
@@ -3870,16 +3773,6 @@
     },
     {
       "rank": 2,
-      "kind": "unknown-lexeme",
-      "normalized": "слышасте",
-      "sample": "слы́шасте",
-      "frequency": 2,
-      "document_frequency": 2,
-      "candidate_lexeme_ids": [],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "rank": 3,
       "kind": "ambiguity-or-spelling-variant",
       "normalized": "имате",
       "sample": "и҆́мате",
@@ -3892,7 +3785,7 @@
       "suggested_action": "review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains"
     },
     {
-      "rank": 4,
+      "rank": 3,
       "kind": "unknown-lexeme",
       "normalized": "апⷭ҇лъ",
       "sample": "а҆пⷭ҇лъ",
@@ -3902,7 +3795,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 5,
+      "rank": 4,
       "kind": "unknown-lexeme",
       "normalized": "апⷭ҇лѡмъ",
       "sample": "а҆пⷭ҇лѡмъ",
@@ -3912,7 +3805,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 6,
+      "rank": 5,
       "kind": "unknown-lexeme",
       "normalized": "бж҃їею",
       "sample": "бж҃їею",
@@ -3922,7 +3815,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 7,
+      "rank": 6,
       "kind": "unknown-lexeme",
       "normalized": "благодаримъ",
       "sample": "Благодари́мъ",
@@ -3932,7 +3825,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 8,
+      "rank": 7,
       "kind": "unknown-lexeme",
       "normalized": "бл҃говѣствованїѧ",
       "sample": "бл҃говѣствова́нїѧ",
@@ -3942,17 +3835,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 9,
-      "kind": "unknown-lexeme",
-      "normalized": "вознесесѧ",
-      "sample": "вознесе́сѧ",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "rank": 10,
+      "rank": 8,
       "kind": "unknown-lexeme",
       "normalized": "воньже",
       "sample": "во́ньже",
@@ -3962,7 +3845,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 11,
+      "rank": 9,
       "kind": "unknown-lexeme",
       "normalized": "вѣрнымъ",
       "sample": "вѣ̑рнымъ",
@@ -3972,7 +3855,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 12,
+      "rank": 10,
       "kind": "unknown-lexeme",
       "normalized": "ждати",
       "sample": "жда́ти",
@@ -3982,7 +3865,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 13,
+      "rank": 11,
       "kind": "unknown-lexeme",
       "normalized": "заповѣдавъ",
       "sample": "заповѣ́давъ",
@@ -3992,7 +3875,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 14,
+      "rank": 12,
       "kind": "unknown-lexeme",
       "normalized": "истинныхъ",
       "sample": "и҆́стинныхъ",
@@ -4002,7 +3885,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 15,
+      "rank": 13,
       "kind": "unknown-lexeme",
       "normalized": "колоссаехъ",
       "sample": "колосса́ехъ",
@@ -4012,7 +3895,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 16,
+      "rank": 14,
       "kind": "unknown-lexeme",
       "normalized": "крестилъ",
       "sample": "крести́лъ",
@@ -4022,7 +3905,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 17,
+      "rank": 15,
       "kind": "unknown-lexeme",
       "normalized": "креститисѧ",
       "sample": "крести́тисѧ",
@@ -4032,7 +3915,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 18,
+      "rank": 16,
       "kind": "unknown-lexeme",
       "normalized": "молѧщесѧ",
       "sample": "молѧ́щесѧ",
@@ -4042,7 +3925,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 19,
+      "rank": 17,
       "kind": "unknown-lexeme",
       "normalized": "оучити",
       "sample": "ᲂу҆чи́ти",
@@ -4052,7 +3935,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 20,
+      "rank": 18,
       "kind": "unknown-lexeme",
       "normalized": "паѵелъ",
       "sample": "Па́ѵелъ",
@@ -4062,17 +3945,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 21,
-      "kind": "unknown-lexeme",
-      "normalized": "слышавше",
-      "sample": "слы́шавше",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "rank": 22,
+      "rank": 19,
       "kind": "unknown-lexeme",
       "normalized": "страданїи",
       "sample": "страда́нїи",
@@ -4082,7 +3955,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 23,
+      "rank": 20,
       "kind": "unknown-lexeme",
       "normalized": "ст҃ымъ",
       "sample": "ст҃ы̑мъ",
@@ -4092,7 +3965,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 24,
+      "rank": 21,
       "kind": "unknown-lexeme",
       "normalized": "тїмоѳей",
       "sample": "тїмоѳе́й",
@@ -4102,7 +3975,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 25,
+      "rank": 22,
       "kind": "unknown-lexeme",
       "normalized": "хрⷭ҇товъ",
       "sample": "хрⷭ҇то́въ",
@@ -4112,7 +3985,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 26,
+      "rank": 23,
       "kind": "unknown-lexeme",
       "normalized": "ѡбѣтованїѧ",
       "sample": "ѡ҆бѣтова́нїѧ",
@@ -4122,7 +3995,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 27,
+      "rank": 24,
       "kind": "unknown-lexeme",
       "normalized": "ѳеофїле",
       "sample": "ѳео́фїле",
@@ -4132,7 +4005,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 28,
+      "rank": 25,
       "kind": "unknown-lexeme",
       "normalized": "ѹпованїе",
       "sample": "ѹ҆пова́нїе",
@@ -4142,7 +4015,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 29,
+      "rank": 26,
       "kind": "unknown-lexeme",
       "normalized": "ѻч҃а",
       "sample": "ѻ҆́ч҃а",
@@ -4152,7 +4025,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 30,
+      "rank": 27,
       "kind": "unknown-lexeme",
       "normalized": "ѿложенное",
       "sample": "ѿложе́нное",
@@ -4162,7 +4035,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 31,
+      "rank": 28,
       "kind": "unknown-lexeme",
       "normalized": "ѿлꙋчатисѧ",
       "sample": "ѿлꙋча́тисѧ",
@@ -4172,7 +4045,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 32,
+      "rank": 29,
       "kind": "unknown-lexeme",
       "normalized": "ꙗвлѧѧсѧ",
       "sample": "ꙗ҆влѧ́ѧсѧ",
@@ -4182,7 +4055,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 33,
+      "rank": 30,
       "kind": "missing-accent-or-orthographic-metadata",
       "normalized": "знаменїихъ",
       "sample": "зна́менїихъ",
@@ -4194,7 +4067,19 @@
       "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
     },
     {
-      "rank": 34,
+      "rank": 31,
+      "kind": "missing-accent-or-orthographic-metadata",
+      "normalized": "слышавше",
+      "sample": "слы́шавше",
+      "frequency": 1,
+      "document_frequency": 1,
+      "candidate_lexeme_ids": [
+        "synodal:verb:v12-slyshati"
+      ],
+      "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
+    },
+    {
+      "rank": 32,
       "kind": "missing-accent-or-orthographic-metadata",
       "normalized": "ꙗдый",
       "sample": "ꙗ҆ды́й",

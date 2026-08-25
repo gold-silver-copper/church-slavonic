@@ -70,7 +70,7 @@ fn curated_linguistic_contracts_pass_without_frequency_weighting() {
         }
         checked += 1;
     }
-    assert_eq!(checked, 33);
+    assert_eq!(checked, 36);
 }
 
 #[test]

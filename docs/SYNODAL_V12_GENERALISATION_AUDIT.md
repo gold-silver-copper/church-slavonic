@@ -282,8 +282,9 @@ the attested infinitive; the held-out `ᲂу҆́зрѧтъ` reached by a hand-au
 future-plural scope witnessed by the non-held-out `ᲂу҆́зрите`), `оубити`
 (j-series imperative `ᲂу҆бі́й`, palatalized future on the stem `оубї-`, both
 passive stems), and `оумертвити` (labial epenthesis `ᲂу҆мерщвлю̀` attested at
-Ex 9:15). Cited nothing held-out (`ᲂу҆слы́шавше`, `ᲂу҆́зрѧтъ` excluded from
-evidence).
+Ex 9:15). No held-out type is cited as corpus evidence; `ᲂу҆́зрѧтъ` and
+`ᲂу҆слы́шавше` are carried only as §-licensed paradigm values (the ending
+licence is the whole evidence, as the review notes state).
 
 **Duplicate identity found:** the registry holds `оумьрѣти`
 (`synodal:verb:v07-789965b2445975f1`) with exact rows spelled with the
@@ -470,3 +471,53 @@ accented print) can never succeed, and proves a `preserve` row is a semantic
 no-op rather than the hard error the v0.11 review demonstrated. The table
 still ships empty — populating it is lexical-review work — but a populated
 row is now consumed rather than harmful.
+
+## Independent review (commit `5aae234`) and its resolutions
+
+A fresh reviewer that implemented none of the program attempted to refute
+every claimed gain. What survived unqualified: the memorised ceiling (14,998
+across all waves), the holdout selector's integrity (unchanged sha256-mod-20;
+the wave-1 churn is exactly the ᲂу→оу key merge), the predictor gate's
+hygiene (only engine-generated paradigms are read for scoring; the corpus
+ranks candidates only; held-out data never read), the morphology-free
+decline, the consumer example's evaluation-partition claim, both v0.12 data
+retractions, and the full suite and gates on a pristine clone.
+
+**P0, fixed**: `principal_parts.tsv`'s `оумрꙋтъ` row cited the corpus print
+at Amos 6:9 — a held-out type. The collision arose because wave 1 regenerated
+the holdout (the digraph fold re-keyed it) in the same commit that admitted
+the verb, so `оумрꙋтъ` entered the holdout after its citation was written.
+The citation and its evidence row are removed; the part is licensed by the
+§82 `-ꙋтъ` ending alone, exactly like `оузрѧ́тъ`, and the surface still
+resolves — now honestly by rule. Process rule going forward: a wave that
+re-keys the holdout must land *before* any admission wave, never with one.
+
+**P1, fixed**: the archive manifest now also pins the four v0.4–v0.7 audit
+documents (14 artifacts) that the removed CI commands used to byte-verify.
+
+**P1, reworded**: the wave-3 audit text claimed `ᲂу҆́зрѧтъ` was "excluded
+from evidence" while the paradigm value is necessarily stored as data; the
+text now states the licence precisely. **Quantified honesty**: the reviewer
+bounds the taint of the fixed P0 at ≤165 of the +1,034 generalised tokens at
+`5aae234`; with the citation removed the affected types are reached by
+ending licence, and the wave-6 ledger stands at generalised **10,562**.
+
+## Phase 2, wave 6 — eight verbs from the prediction feed
+
+Sealed as `v0.12-wave-6`, the first wave worked directly off
+`reports/synodal-prediction-candidates.tsv`.
+
+| Measure | Wave 5 | Wave 6 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 10,501 | 10,562 | +61 |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| corpus top-k | 975,115 | 979,411 | +4,296 |
+| `morphology-free` covered | 50,122 | 49,836 | −286 |
+| lexemes / verb lexemes | 1,011 / 181 | 1,017 / 187 | +6 / +6 |
+| productive evaluation rows | 96 | 122 | +26 |
+
+`слышати`, `внити` (promoted; the suppletive l-participle base `вше́лъ` is
+attested at Acts 11:3 — the first live use of the §104 `шелъ : шли`
+mobile-vowel principal part), `погибнꙋти` (§§86, 97 `-нꙋ-` drop), `спасти`
+(reflexive prints attest the aorist series), `вознести`, `согрѣшити`,
+`разꙋмѣти` (promoted from the OCS headword `разоумѣти`), `скончати`.
