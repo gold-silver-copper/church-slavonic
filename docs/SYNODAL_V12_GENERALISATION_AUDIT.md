@@ -675,3 +675,14 @@ duplicated identity remains). гробъ's held-out ending-stressed plurals
 (гробѣ́хъ, гробѡ́въ) stay deferred: their only accent witnesses are themselves
 held-out. Ledger: held-out generalised 13,185 → **13,740** (+555). Gate
 remainder: **460**.
+
+## Wave 13 — possessives and remaining head nouns (v0.12-wave-13)
+
+Admitted: `собранїе` (first-soft-ie-n), `іакѡвль` and `мѡавль`
+(possessive-soft-short — a new productive validator arm), `іѡананъ`
+(first-hard-m), `єдинолѣтный` (hard-short; a hand-inserted
+accusative-masculine-animate row inside the fitted accent block closes the
+frequent агнца є҆динолѣ́тна cell). Two family-queue proposals for the
+possessive surfaces were recorded as admitted onto the new identities;
+поѧсти (athematic ꙗсти compound) deferred. Ledger: held-out generalised
+13,740 → **13,956** (+216). Gate remainder: **244**.

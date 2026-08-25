@@ -558,8 +558,13 @@ fn validate_admitted_families(
                             .iter()
                             .any(|system| system == "noun"))
             }
-            "possessive-j-short" | "possessive-in" | "possessive-sk" | "hard-short"
-            | "soft-short" | "velar-short" => {
+            "possessive-j-short"
+            | "possessive-in"
+            | "possessive-sk"
+            | "possessive-soft-short"
+            | "hard-short"
+            | "soft-short"
+            | "velar-short" => {
                 family.fully_classed
                     && !family.exact_only
                     && family.class.as_deref() == Some(review.admitted_class.as_str())
