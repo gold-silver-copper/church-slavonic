@@ -471,6 +471,13 @@ fn apply_generated_presentation(
     } else {
         None
     };
+    // A reviewed positional paradigm rewrites the *unaccented* expanded form
+    // (`PositionalParadigm::apply` rejects prosodic marks), so it runs before
+    // accent realisation, while the exact accent rows keep being keyed by the
+    // pre-positional expanded form the reviewer wrote. An exact accent row's
+    // accented value is the reviewer's complete print and is never
+    // re-presented.
+    let positional = registry::positional_paradigm_for(id, cell)?;
     let mut variants = Vec::with_capacity(forms.variants().len());
     for source_variant in forms.variants() {
         let mut variant = source_variant.clone();
@@ -506,7 +513,24 @@ fn apply_generated_presentation(
                 evidence: vec![evidence_id],
             });
         } else if let Some(paradigm) = &paradigm {
-            let accented = paradigm.apply(cell, &variant.expanded)?;
+            let accent_host = positioned_expanded(cell, &variant.expanded, positional.as_ref())?;
+            if accent_host != variant.expanded {
+                let positional = positional
+                    .as_ref()
+                    .expect("a changed host implies a positional paradigm");
+                variant.evidence.push(positional.evidence.clone());
+                variant.rule_trace.push(TraceStep {
+                    rule: RuleId::from(format!("SYN-POSITIONAL-PARADIGM:{}", positional.id)),
+                    stage: "positional-realization".into(),
+                    input: variant.expanded.clone(),
+                    output: accent_host.clone(),
+                    source_recension: Some(Recension::SynodalRussian),
+                    target_recension: Recension::SynodalRussian,
+                    mapping: variant.recension_mapping.clone(),
+                    evidence: vec![positional.evidence.id.clone()],
+                });
+            }
+            let accented = paradigm.apply(cell, &accent_host)?;
             variant.accented = Some(accented.clone());
             variant.printed = accented.clone();
             variant.evidence.push(paradigm.evidence.clone());
@@ -532,20 +556,23 @@ fn apply_generated_presentation(
             synodal_church_slavonic_core::present_initial_uk_digraph(&variant.printed);
         variants.push(variant);
     }
-    // NOT wired to `registry::positional_paradigm_for` yet, deliberately.
-    //
-    // `PositionalParadigm::apply` rejects any input carrying a prosodic mark
-    // (`orthography.rs`, "requires an unaccented, unbreathed expanded form"),
-    // so applying it here — after the accent loop has produced an accented
-    // `printed` — can never succeed: a populated table would turn working cells
-    // into hard errors rather than realising positional spellings. The
-    // caller-supplied paths apply positional *before* accent, which is the only
-    // order the core permits, but the registry path resolves its exact accent
-    // rows by the expanded form, so reordering here changes that lookup key and
-    // needs its own design. Until that is resolved the reviewed table stays
-    // unread; `positional_paradigms.tsv` is validated and compiled, and
-    // `positional_paradigm_for` is unit-tested, but nothing consumes it.
     FormSet::try_from_variants(variants)
+}
+
+/// The v0.12 resolution of the v0.11 phase-3 ordering defect: the positional
+/// paradigm rewrites the unaccented expanded form *before* accent
+/// realisation, while exact accent rows stay keyed by the pre-positional
+/// expanded the reviewer wrote. Populating `positional_paradigms.tsv` remains
+/// lexical-review work; the resolver now consumes it.
+pub(crate) fn positioned_expanded(
+    cell: GrammarCell,
+    expanded: &str,
+    positional: Option<&PositionalParadigm>,
+) -> Result<String> {
+    match positional {
+        Some(paradigm) => paradigm.apply(cell, expanded),
+        None => Ok(expanded.to_owned()),
+    }
 }
 
 fn mark_inherited(
@@ -850,5 +877,87 @@ fn reviewed_evidence(
         epistemic_role,
         citation: record.citation.into(),
         note: (!record.note.is_empty()).then(|| record.note.into()),
+    }
+}
+
+#[cfg(test)]
+mod positional_ordering_tests {
+    use super::positioned_expanded;
+    use synodal_church_slavonic_core::{
+        AccentMark, AccentParadigm, AccentPlacement, AccentRule, AccentScope, Animacy,
+        AuthorityRole, Case, EpistemicRole, Evidence, EvidenceId, EvidenceKind, GrammarCell,
+        InitialPresentation, NounCell, Number, PositionalOperation, PositionalParadigm,
+        PositionalRule, Recension, SourceId,
+    };
+
+    fn evidence_of(kind: EvidenceKind) -> Evidence {
+        Evidence {
+            id: EvidenceId::from("positional-ordering-test"),
+            source: SourceId::from("ponomar-elizabeth-bible-2026-08-09"),
+            source_recension: Recension::SynodalRussian,
+            kind,
+            authority_roles: vec![AuthorityRole::Orthographic, AuthorityRole::Accentual],
+            epistemic_role: EpistemicRole::SynodalNormativeAuthority,
+            citation: "ordering test".into(),
+            note: None,
+        }
+    }
+
+    /// The v0.11 phase-3 defect, resolved: the positional paradigm rewrites
+    /// the unaccented expanded form first, and the accent paradigm then
+    /// realises its mark over the positioned form — the order the core
+    /// permits. A `preserve` rule is a semantic no-op rather than an error.
+    #[test]
+    fn positional_runs_before_accent_and_preserve_is_a_no_op() {
+        let cell = GrammarCell::Noun(NounCell {
+            case: Case::Nominative,
+            number: Number::Singular,
+            animacy: Animacy::Inanimate,
+        });
+        let positional = PositionalParadigm {
+            id: "test-wide-e".into(),
+            rules: vec![PositionalRule {
+                scope: AccentScope::All,
+                operations: vec![PositionalOperation::Initial(InitialPresentation::WideE)],
+            }],
+            evidence: evidence_of(EvidenceKind::OrthographicParadigm),
+        };
+        let positioned = positioned_expanded(cell, "езеро", Some(&positional)).expect("positioned");
+        assert_eq!(positioned, "єзеро");
+        let accent = AccentParadigm {
+            id: "test-accent".into(),
+            accent_rules: vec![AccentRule {
+                scope: AccentScope::Noun {
+                    numbers: vec![Number::Singular],
+                },
+                placement: AccentPlacement::StemVowelFromStart(1),
+                mark: AccentMark::Acute,
+            }],
+            breathing_rules: vec![],
+            evidence: evidence_of(EvidenceKind::AccentParadigm),
+        };
+        assert_eq!(
+            accent
+                .apply(cell, &positioned)
+                .expect("accent over the positioned form"),
+            "є\u{486}зе\u{301}ро"
+        );
+        // The old ordering — positional over an already-accented print —
+        // could never succeed; that is exactly why the resolver now runs
+        // positional first.
+        assert!(positional.apply(cell, "є\u{486}зе\u{301}ро").is_err());
+        let preserve = PositionalParadigm::preserve(
+            "test-preserve",
+            AccentScope::All,
+            evidence_of(EvidenceKind::OrthographicParadigm),
+        );
+        assert_eq!(
+            positioned_expanded(cell, "престоломъ", Some(&preserve)).expect("preserve"),
+            "престоломъ"
+        );
+        assert_eq!(
+            positioned_expanded(cell, "престоломъ", None).expect("absent"),
+            "престоломъ"
+        );
     }
 }

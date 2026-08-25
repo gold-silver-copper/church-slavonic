@@ -449,6 +449,24 @@ evaluation partition**:
   `synodal-check`, both guard-witness suites, the fixture bootstrap, the
   accent-fit check, and the new prediction gate — these guard live failure
   modes.
-- **CI wall-clock**: before the cut, the structural job ran ~2m01s and the
-  workflow ~3m07s (run on `55f33bd`). The after value is recorded on the
-  first post-cut run in this commit's CI.
+- **CI wall-clock**: before the cut the structural job ran ~2m01s and the
+  workflow wall ~3m07s (`55f33bd`); after it the structural job ran ~2m52s
+  and the wall ~2m53s (`77beb71`). Honest reading: the removed commands were
+  cheap next to the Rust build that dominates the job, so the wall-clock is
+  roughly unchanged run-to-run; the real win is seven fewer moving parts per
+  push and one clear tamper signal instead of seven re-derivations.
+
+
+## Phase 2 addendum — the positional/accent ordering defect, resolved
+
+The registry path now consumes `positional_paradigms.tsv`: a reviewed
+positional paradigm rewrites the **unaccented expanded** form before accent
+realisation (`positioned_expanded` in the resolver), while exact accent rows
+stay keyed by the pre-positional expanded the reviewer wrote, and an exact
+accent row's value is the reviewer's complete print and is never
+re-presented. A unit test pins the order end to end (`єзеро` → positional
+wide-є → accent `є҆зе́ро`), proves the *old* order (positional over an
+accented print) can never succeed, and proves a `preserve` row is a semantic
+no-op rather than the hard error the v0.11 review demonstrated. The table
+still ships empty — populating it is lexical-review work — but a populated
+row is now consumed rather than harmful.
