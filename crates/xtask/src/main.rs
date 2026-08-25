@@ -27,6 +27,7 @@ mod synodal_v07_apply;
 mod synodal_v07_audit;
 mod synodal_v07_review_packets;
 mod synodal_v08_engine_audit;
+mod synodal_wave_close;
 mod synodal_waves;
 
 use old_church_slavonic::advanced::cells::{
@@ -103,6 +104,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             let write = args.next().as_deref() == Some("--write-baseline");
             synodal_admit_check::admit_check(&workspace_root()?, write)
         }
+        Some("synodal-wave-close") => synodal_wave_close::run(&mut args, &workspace_root()?),
         Some("synodal-check") => synodal::check(&workspace_root()?),
         Some("synodal-evaluate") => synodal::evaluate_and_write(&workspace_root()?),
         Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
@@ -2219,7 +2221,7 @@ fn speed() -> Result<(), Box<dyn Error>> {
     ])
 }
 
-fn check_all() -> Result<(), Box<dyn Error>> {
+pub(crate) fn check_all() -> Result<(), Box<dyn Error>> {
     run_cargo(&["fmt", "--all", "--", "--check"])?;
     run_cargo(&[
         "clippy",
@@ -2235,7 +2237,7 @@ fn check_all() -> Result<(), Box<dyn Error>> {
     check_structure()
 }
 
-fn check_structure() -> Result<(), Box<dyn Error>> {
+pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
     let root = workspace_root()?;
     check_registry(&root)?;
     check_dictionary(&root)?;
@@ -2823,7 +2825,7 @@ fn check_attribution(root: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn guard_witnesses() -> Result<(), Box<dyn Error>> {
+pub(crate) fn guard_witnesses() -> Result<(), Box<dyn Error>> {
     let root = workspace_root()?;
     let witness_root = std::env::temp_dir().join(format!(
         "old-church-slavonic-guard-witnesses-{}",
@@ -3421,6 +3423,7 @@ fn print_help() {
     eprintln!("  guard-witnesses");
     eprintln!("  synodal-regenerate");
     eprintln!("  synodal-admit-check [--write-baseline]");
+    eprintln!("  synodal-wave-close [--check|--fix]");
     eprintln!("  synodal-check");
     eprintln!("  synodal-evaluate");
     eprintln!("  synodal-guard-witnesses");

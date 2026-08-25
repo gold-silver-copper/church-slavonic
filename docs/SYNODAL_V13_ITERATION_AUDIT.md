@@ -64,3 +64,20 @@ merged onto the existing identities (lemma preservation satisfied by new
 exact `lexical-form` rows for the Synodal lemma prints, both non-held), and
 the lexicon change was sealed as `v0.13-prep-merges` (coverage unchanged,
 lexemes 1,076 → 1,074). Preflight wall clock: ~4 seconds.
+
+## Phase 2 — One-command wave close (`synodal-wave-close`)
+
+Landed as `crates/xtask/src/synodal_wave_close.rs`: the full closing suite as
+one in-process command with a pass/fail table and per-step timings. `--check`
+is read-only; the CI structural job now invokes `synodal-wave-close --check`
+instead of its inline command list, so the canonical ordering lives in exactly
+one place. Steps that recompute from the gitignored intermediate corpus
+(accent-fit, family-review-queue) self-skip when it is absent — verified by
+running the command with `adapter-reports.json` moved aside (11 steps green,
+matching the CI environment) and restored (13 steps green). This *adds* CI
+enforcement relative to the old inline list: `synodal-lexical-union --check`
+now runs in CI, closing the stale-union failure class permanently. `--fix`
+regenerates the derived artifacts in canonical order (union last) and prints
+undecided top-200 family proposals as review stubs on that gate's failure.
+The default local mode appends fmt/clippy/tests/doc-tests: 17 steps, ~2
+minutes wall clock, replacing what was previously ~16 hand-ordered commands.

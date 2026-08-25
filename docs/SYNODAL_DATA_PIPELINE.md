@@ -118,6 +118,21 @@ become exact Synodal rows.
 The report-producing commands use existing normalized intermediate candidates;
 they do not add raw-source adapters to the runtime CLI:
 
+### One-command wave close
+
+`cargo xtask synodal-wave-close` runs the entire closing suite in the
+canonical order with one pass/fail table and per-step timings. `--check` is
+read-only and CI-safe (the CI structural job invokes exactly this, so local
+and CI ordering cannot diverge); steps that recompute from the gitignored
+intermediate corpus (`synodal-accent-fit --check`,
+`synodal-family-review-queue --check`) self-skip where it is absent. The
+default local mode adds `cargo fmt --check`, clippy, and the workspace test
+suites. `--fix` first regenerates every derived artifact in the canonical
+order — the family queue, the accent-fit report, the prediction feed,
+marginal recovery, and the lexical source union **last** (it reads lexemes,
+lexical reviews, and family reviews) — and prints undecided top-200 family
+proposals as ready-to-review stubs when that gate is the failure.
+
 ### Admission preflight
 
 `cargo xtask synodal-admit-check` validates the committed TSVs in seconds and

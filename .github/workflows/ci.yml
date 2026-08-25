@@ -57,26 +57,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
-      - name: Deterministic fixture bootstrap
-        run: cargo xtask synodal-fixture-bootstrap
-      - name: Deterministic coverage fixture
-        run: cargo xtask synodal-coverage --offline --fixture --check
-      # The canonical coverage run needs the gitignored intermediate corpus, so
-      # it cannot execute here. This enforces the sealed composition floors
-      # against the committed report instead, which is what makes phase 1 and
-      # phase 2 bite on a pull request rather than only on a manual dispatch.
-      - name: Sealed coverage floors
-        run: cargo xtask synodal-coverage-floors
-      - name: Exploratory prediction gate
-        run: cargo xtask synodal-predict --check
-      - name: Structural checks
-        run: |
-          cargo xtask check-structure
-          cargo xtask guard-witnesses
-          cargo xtask synodal-check
-          cargo xtask synodal-guard-witnesses
-          cargo xtask synodal-marginal-recovery --check
-          cargo xtask synodal-archive --check
+      # The whole closing suite runs through one command so the canonical
+      # ordering can never diverge between a local close and CI. Steps that
+      # need the gitignored intermediate corpus self-skip here; the sealed
+      # floors and committed-artifact checks still bite on every pull request.
+      - name: Wave-close gates
+        run: cargo xtask synodal-wave-close --check
       - name: Package and publish dry runs
         run: |
           cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-core
