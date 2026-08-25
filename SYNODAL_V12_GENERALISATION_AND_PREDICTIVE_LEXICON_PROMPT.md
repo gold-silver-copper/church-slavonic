@@ -2,10 +2,10 @@
 
 # Synodal v0.12: generalisation, a predictive lexicon tier, and a usable library
 
-This goal succeeds `SYNODAL_V11_COVERAGE_INTEGRITY_AND_VERB_MORPHOLOGY_PROMPT.md`.
+This goal succeeds `docs/goals/SYNODAL_V11_COVERAGE_INTEGRITY_AND_VERB_MORPHOLOGY_PROMPT.md`.
 Phases 1–3 of that program are sealed; its phase 4 (verbs) is carried into this
 goal as phase 2 below with a changed objective. The 100% strict top-k target of
-`CHURCH_SLAVONIC_100_PERCENT_TOP_K_PROMPT.md` is **retired as a driving
+`docs/goals/CHURCH_SLAVONIC_100_PERCENT_TOP_K_PROMPT.md` is **retired as a driving
 objective** by this prompt. It did its job: it forced a real engine, real
 evidence rules, sealed floors, and a type-disjoint holdout. It is not
 withdrawn as a *constraint* — every floor in `data/synodal/coverage_floors.tsv`

@@ -430,3 +430,25 @@ evaluation partition**:
   passage-level entry point at all; provenance and ranking were already right
   and are kept); `CHANGELOG.md` records the additive API. No breaking change
   was needed. No contextual disambiguator was built, deliberately.
+
+## Phase 5 — verification overhead cut
+
+- **Historical audits archived.** The ten immutable v0.4–v0.7 artifacts
+  (baselines and review packets) are verified in CI by one checksum manifest
+  (`cargo xtask synodal-archive --check`,
+  `reports/synodal-archive-manifest.tsv`) instead of seven re-derivation
+  commands per push. Each removed command's failure mode — an immutable
+  artifact silently edited — is covered by the manifest check, and a guard
+  witness proves a tampered artifact is detected. The audit commands remain
+  available for on-demand re-derivation.
+- **Prompts moved.** Twenty-one historical goal prompts and the OCS gaps
+  survey now live under `docs/goals/` with a status index; the repository
+  root keeps the active v0.12 prompt, `README.md`, `CHANGELOG.md`, licences,
+  and attribution.
+- **Kept, deliberately**: the floors, the holdout, the wave ledger,
+  `synodal-check`, both guard-witness suites, the fixture bootstrap, the
+  accent-fit check, and the new prediction gate — these guard live failure
+  modes.
+- **CI wall-clock**: before the cut, the structural job ran ~2m01s and the
+  workflow ~3m07s (run on `55f33bd`). The after value is recorded on the
+  first post-cut run in this commit's CI.

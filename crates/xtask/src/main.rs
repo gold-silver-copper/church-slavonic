@@ -7,6 +7,7 @@ mod report_io;
 mod sources;
 mod synodal;
 mod synodal_accent_fit;
+mod synodal_archive;
 mod synodal_coverage;
 mod synodal_evaluation_queue;
 mod synodal_family_review;
@@ -106,6 +107,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             synodal::fixture_bootstrap(&mut args, &workspace_root()?)
         }
         Some("synodal-coverage") => synodal_coverage::run(&mut args, &workspace_root()?),
+        Some("synodal-archive") => synodal_archive::run(&mut args, &workspace_root()?),
         Some("synodal-predict") => synodal_predict::run(&mut args, &workspace_root()?),
         Some("synodal-coverage-floors") => {
             synodal_coverage::check_committed_floors(&workspace_root()?)

@@ -2658,6 +2658,32 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         fs::write(&ledger_path, &ledger)?;
         crate::synodal_waves::check(&temporary, &committed_report)?;
 
+        // Tampering with an immutable archived artifact must be detected.
+        fs::create_dir_all(temporary.join("reports"))?;
+        for artifact in [
+            "reports/synodal-archive-manifest.tsv",
+            "reports/synodal-v04-baseline.json",
+            "reports/synodal-v04-marginal-recovery.json",
+            "reports/synodal-v05-baseline.json",
+            "reports/synodal-v06-baseline.json",
+            "reports/synodal-v06-review-packets.json",
+            "reports/synodal-v06-review-packets.md",
+            "reports/synodal-v06-review-packets.tsv",
+            "reports/synodal-v07-review-packets.json",
+            "reports/synodal-v07-review-packets.md",
+            "reports/synodal-v07-review-packets.tsv",
+        ] {
+            fs::copy(root.join(artifact), temporary.join(artifact))?;
+        }
+        let archive_check =
+            || crate::synodal_archive::run(&mut vec!["--check".to_owned()].into_iter(), &temporary);
+        archive_check()?;
+        let tampered = temporary.join("reports/synodal-v06-baseline.json");
+        let pristine = fs::read_to_string(&tampered)?;
+        fs::write(&tampered, format!("{pristine} "))?;
+        require_failure("tampered immutable archive artifact", archive_check())?;
+        fs::write(&tampered, pristine)?;
+
         for hostile in ["", "latin", "\u{e000}", "\u{0301}слово"] {
             if std::panic::catch_unwind(|| synodal_church_slavonic::lookup(hostile)).is_err() {
                 return Err(format!("hostile input panicked: {hostile:?}").into());

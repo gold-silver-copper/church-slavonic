@@ -75,13 +75,8 @@ jobs:
           cargo xtask guard-witnesses
           cargo xtask synodal-check
           cargo xtask synodal-guard-witnesses
-          cargo xtask synodal-v04-audit --check
           cargo xtask synodal-marginal-recovery --check
-          cargo xtask synodal-v05-audit --check
-          cargo xtask synodal-v06-review-packets --check
-          cargo xtask synodal-v06-audit --check
-          cargo xtask synodal-v07-baseline --check
-          cargo xtask synodal-v07-audit --check
+          cargo xtask synodal-archive --check
       - name: Package and publish dry runs
         run: |
           cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-core
