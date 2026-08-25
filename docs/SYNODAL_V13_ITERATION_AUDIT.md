@@ -112,3 +112,22 @@ column) in 17.6 seconds** versus the ~4-minute canonical run. The output is
 stamped `PROJECTION — not sealable` and shows deltas against the last sealed
 ledger row; combining `--delta` with any sealing or checking flag is an
 error, and three guard witnesses inject exactly those combinations.
+
+## Phase 5 — Accent scope grammar and `--suggest`
+
+The complete accent-paradigm scope grammar (every parser arm, placement kind,
+and mark, with worked examples from the live data) is now documented in
+`docs/SYNODAL_MORPHOLOGY.md`. `synodal-accent-fit --suggest <lexeme> <cell>`
+produces the exact insertable row — verified by a round-trip that inserted
+the suggested `злый` comparative-plural row into the live fitted block,
+regenerated cleanly, and reverted — reusing the fitter's own placement search
+and scope derivation, with the block paradigm ID and block-uniform evidence
+when a block exists. Refusals are specific: not-expanding, not-in-gap,
+no-witness, conflicting witnesses (each print listed — the мѡа́влѧ/мѡа̑влѧ
+kamora homography, честна̀/че́стна), and the лакте́й case is reported exactly
+as required: "unfittable without memorisation: every corpus witness (ла́ктей,
+лакте́й) is itself a held-out type". Automatic scope *widening* in `--apply`
+was deliberately not automated: every real widening case in v0.12
+(входи́те/вхо́дите) is a same-letters homography conflict that the fitter
+refuses by design, and the conflict listing from `--suggest` is the review
+aid for exactly that human decision.

@@ -424,6 +424,7 @@ pub(crate) fn run(
     let mut intermediate = root.join("data/intermediate/synodal");
     let mut check = false;
     let mut apply = false;
+    let mut suggest = None;
     while let Some(argument) = args.next() {
         match argument.as_str() {
             "--intermediate" => {
@@ -431,17 +432,28 @@ pub(crate) fn run(
             }
             "--check" => check = true,
             "--apply" => apply = true,
+            "--suggest" => {
+                let lexeme = args.next().ok_or("--suggest needs a lexeme id")?;
+                let cell = args.next().ok_or("--suggest needs a cell key")?;
+                suggest = Some((lexeme, cell));
+            }
             value => return Err(format!("unknown synodal-accent-fit argument {value:?}").into()),
         }
     }
     if check && apply {
         return Err("--check and --apply are mutually exclusive".into());
     }
+    if suggest.is_some() && (check || apply) {
+        return Err("--suggest is read-only and excludes --check/--apply".into());
+    }
 
     let held_out = load_held_out_passages(root)?;
     let records = load_source_partition(&intermediate, &held_out)?;
     let printed_index = index_printed_tokens(&records);
     let attestations = collect_attestations(&records)?;
+    if let Some((lexeme, cell)) = suggest {
+        return suggest_row(root, &lexeme, &cell, &attestations, &printed_index);
+    }
     let mut outcome = fit(&attestations);
     validate_rules(&mut outcome, &printed_index)?;
     let tsv = render_tsv(&outcome, &attestations);
@@ -1501,4 +1513,129 @@ mod tests {
         assert_eq!(masked.gender, None);
         assert_eq!(masked.animacy, None);
     }
+}
+
+/// Prints the exact `accent_paradigms.tsv` row that would realize one cell's
+/// print — with the correct block paradigm ID and block-uniform evidence when
+/// the lexeme already carries a fitted block — or explains precisely which
+/// witness is missing. A cell whose only corpus witnesses are themselves
+/// held-out types is reported as unfittable without memorisation, never as a
+/// row.
+fn suggest_row(
+    root: &Path,
+    lexeme: &str,
+    cell_key: &str,
+    attestations: &BTreeMap<String, Vec<Attestation>>,
+    printed_index: &BTreeMap<String, BTreeSet<String>>,
+) -> Result<(), Box<dyn Error>> {
+    let _cell: GrammarCell = cell_key
+        .parse()
+        .map_err(|error| format!("invalid cell key {cell_key:?}: {error}"))?;
+    let held_types = crate::synodal_type_holdout::load(
+        &root.join(crate::synodal_type_holdout::HOLDOUT_PATH),
+    )?;
+    let mine: Vec<Attestation> = attestations
+        .get(lexeme)
+        .into_iter()
+        .flatten()
+        .filter(|attestation| attestation.cell.key() == cell_key)
+        .cloned()
+        .collect();
+    if mine.is_empty() {
+        let expanded = Inflector::builder()
+            .generation_policy(GenerationPolicy::Strict)
+            .orthography(OrthographyProfile::Expanded)
+            .build()
+            .form_by_id(&synodal_church_slavonic_core::LexemeId::from(lexeme), _cell);
+        return Err(match expanded {
+            Err(error) => format!(
+                "cell {cell_key} of {lexeme} does not expand ({error}); fix the expansion before fitting an accent"
+            ),
+            Ok(forms) => {
+                let keys: Vec<String> = forms
+                    .variants()
+                    .iter()
+                    .map(|variant| normalize_lookup_accentless(&variant.expanded))
+                    .collect();
+                let witnessed = keys
+                    .iter()
+                    .any(|key| printed_index.contains_key(key));
+                if witnessed {
+                    format!(
+                        "cell {cell_key} of {lexeme} expands but is not in the accent gap (it already resolves, or its prints attest another lexeme); nothing to fit"
+                    )
+                } else {
+                    format!(
+                        "cell {cell_key} of {lexeme} has no source-partition witness at all; no accent can be fitted without new corpus evidence"
+                    )
+                }
+            }
+        }
+        .into());
+    }
+    let (usable, memorising): (Vec<_>, Vec<_>) = mine.iter().partition(|attestation| {
+        !held_types.contains(&normalize_lookup_accentless(&attestation.printed))
+    });
+    if usable.is_empty() {
+        let prints: BTreeSet<&str> = memorising
+            .iter()
+            .map(|attestation| attestation.printed.as_str())
+            .collect();
+        return Err(format!(
+            "cell {cell_key} of {lexeme} is unfittable without memorisation: every corpus witness ({}) is itself a held-out type; leave it to a rule generalised from non-held cells or defer",
+            prints.into_iter().collect::<Vec<_>>().join(", ")
+        )
+        .into());
+    }
+    let mut single = BTreeMap::new();
+    single.insert(
+        lexeme.to_owned(),
+        usable.iter().map(|attestation| (*attestation).clone()).collect::<Vec<_>>(),
+    );
+    let outcome = fit(&single);
+    let Some(rules) = outcome.fitted.get(lexeme) else {
+        let prints: BTreeSet<&str> = usable
+            .iter()
+            .map(|attestation| attestation.printed.as_str())
+            .collect();
+        return Err(format!(
+            "cell {cell_key} of {lexeme} has conflicting witnesses ({}); review the variants before fitting",
+            prints.into_iter().collect::<Vec<_>>().join(", ")
+        )
+        .into());
+    };
+    let witness = &usable[0];
+    for rule in rules {
+        let mut row = paradigm_row(lexeme, rule, witness);
+        // Reuse the existing block's paradigm ID and uniform evidence when
+        // the lexeme already carries one, and name the insertion point.
+        let paradigms_path = root.join("data/synodal/accent_paradigms.tsv");
+        let existing = fs::read_to_string(&paradigms_path)?;
+        let block_rows: Vec<(usize, &str)> = existing
+            .lines()
+            .enumerate()
+            .filter(|(_, line)| line.starts_with(&format!("{lexeme}\t")))
+            .collect();
+        if let Some((line_number, block_row)) = block_rows.last() {
+            let block: Vec<&str> = block_row.split('\t').collect();
+            let mut columns: Vec<String> =
+                row.split('\t').map(str::to_owned).collect();
+            columns[1] = block[1].to_owned();
+            for index in [6, 7, 8] {
+                columns[index] = block[index].to_owned();
+            }
+            row = columns.join("\t");
+            println!(
+                "insert inside the existing block, after data/synodal/accent_paradigms.tsv line {}:",
+                line_number + 1
+            );
+        } else {
+            println!(
+                "no existing block for {lexeme}; the row cites its witness directly (add the matching reviewed_evidence row {}-accent-fit if absent):",
+                short_id(lexeme)
+            );
+        }
+        println!("{row}");
+    }
+    Ok(())
 }

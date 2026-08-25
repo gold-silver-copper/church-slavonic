@@ -133,6 +133,18 @@ marginal recovery, and the lexical source union **last** (it reads lexemes,
 lexical reviews, and family reviews) — and prints undecided top-200 family
 proposals as ready-to-review stubs when that gate is the failure.
 
+### Accent suggestions
+
+`cargo xtask synodal-accent-fit --suggest <lexeme-id> <cell>` prints the
+exact `accent_paradigms.tsv` row that would realize one cell's print — with
+the existing fitted block's paradigm ID and block-uniform evidence and the
+line to insert after, when the lexeme already carries a block — or the
+precise refusal: the cell does not expand; it is not in the accent gap; it
+has no source-partition witness at all; its witnesses conflict (each variant
+listed); or **every witness is itself a held-out type**, which is reported as
+unfittable without memorisation and never as a row. The scope grammar itself
+is documented in `SYNODAL_MORPHOLOGY.md` (“Accent paradigm scope grammar”).
+
 ### Delta coverage projection
 
 `cargo xtask synodal-coverage --offline --delta` projects the ledger-relevant

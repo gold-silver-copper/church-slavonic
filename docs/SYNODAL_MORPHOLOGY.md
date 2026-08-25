@@ -575,3 +575,47 @@ only confidence buckets meeting the stated floor emit review candidates
 (`reports/synodal-prediction-candidates.tsv`, ranked by token mass with at
 least two distinct sibling cells per hypothesised stem). The coverage report
 carries a diagnostic `predicted` slice over the strict-unresolved remainder.
+
+## Accent paradigm scope grammar
+
+`data/synodal/accent_paradigms.tsv` rows carry a `scope`, a `placement`, and
+a `mark`. Rows sharing a `(lexeme_id, paradigm_id)` must be contiguous and
+carry uniform evidence; `synodal-accent-fit --apply` inserts inside an
+existing block reusing that block's evidence.
+
+**Scopes** (colon-separated; every list position accepts comma-separated
+values):
+
+| Scope | Shape |
+|---|---|
+| `all` | every cell of the lexeme |
+| `noun:<numbers>` | e.g. `noun:singular,plural` |
+| `noun:<numbers>:<cases>` | e.g. `noun:plural:genitive,locative` |
+| `pronoun:<numbers>:<cases>` | |
+| `pronoun-agreeing:<numbers>:<cases>:<genders>:<animacies>` | |
+| `numeral:<numbers>` | |
+| `adjective:<form>:<comparison>:<numbers>` | form `short`/`long`, comparison `positive`/`comparative`/`superlative` |
+| `adjective-agreeing:<form>:<comparison>:<numbers>:<cases>:<genders>:<animacies>` | e.g. `adjective-agreeing:short:positive:singular:accusative:masculine:inanimate,animate` |
+| `finite:<tense>:<numbers>` | tense `present`/`future`/`past`/`imperfect`/`aorist` |
+| `participle:<tense>:<voice>:<form>:<comparison>:<numbers>` | |
+| `imperative:<numbers>` | |
+| `l-participle:<numbers>` | |
+
+Value lists: numbers `singular`/`dual`/`plural`; cases
+`nominative`/`genitive`/`dative`/`accusative`/`instrumental`/`locative`/`vocative`;
+genders `masculine`/`feminine`/`neuter`; animacies `inanimate`/`animate`.
+
+**Placements** (`<kind>:<index>`, zero-based over vowels):
+`stem-vowel-from-start:N` (the N-th vowel of the stem),
+`word-vowel-from-start:N`, `ending-vowel-from-end:N` (the N-th vowel of the
+ending counted from the end; `0` is the last ending vowel).
+
+**Marks**: `acute`, `grave`, `kamora`. The optional `breathing` column adds a
+breathing rule.
+
+Worked examples from the live data: `земли → землѝ` is
+`noun:singular:genitive` + `ending-vowel-from-end:0` + `grave`;
+`десно́е/десны́ѧ` is `adjective:long:positive:singular` (and `…:plural`) +
+`ending-vowel-from-end:1` + `acute`; the mobile-stress present of `входити`
+scopes `finite:present:singular,plural` at `stem-vowel-from-start:0` against
+an imperfect at `stem-vowel-from-start:1`.
