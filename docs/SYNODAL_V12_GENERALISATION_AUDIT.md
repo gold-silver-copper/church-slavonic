@@ -213,3 +213,51 @@ rebuild before probing with `synodal-dict analyze … --profile
 synodal-liturgical`; seal a wave with `synodal-coverage --offline
 --reseal-floors --seal-wave <label> --note "…"`; and never cite a held-out
 type in `reviewed_evidence.tsv` (`data/synodal/held_out_types.tsv`).
+
+## Phase 2, wave 2 — the exact-only reflexive hosts become productive
+
+Sealed as `v0.12-wave-2`.
+
+| Measure | Wave 1 | Wave 2 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 9,868 | 9,968 | +100 |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| held-out unresolved | 18,315 | 18,215 | −100 |
+| corpus top-k | 968,073 | 970,579 | +2,506 |
+| `morphology-free` covered | 50,138 | 50,122 | −16 |
+| `principal_parts.tsv` rows | 170 | 193 | +23 |
+| productive evaluation rows | 29 | 46 | +17 |
+| `linguistic_evaluation.tsv` | 19 | 23 | +4 |
+
+Promoted `возвратити` (`synodal:verb:v07-ff04037d9da0c605`), `ѡбратити`
+(`wikt-3ca5f600ecca`), and `собрати` (`v07-553feeb14b8be67e`) from exact-only
+identities to productive verbs — second conjugation with the §80 dental
+alternation attested directly (`возвращꙋ̀` Amos 9:14, `ѡ҆бращꙋ̀` Ezek 16:53),
+and first conjugation with the suppletive present stem `собер-` against the
+aorist base `собра-`, including `собрати`'s §100 passive participles
+(`со́брани`, `со́бранныхъ`). Their Synodal lemma spellings replace the OCS
+headwords, licensed by attested infinitive `lexical-form` rows (the upgrade
+validator requires exactly that). The reflexive frontier heads this unlocked:
+`возврати́сѧ` (348), `Ѡ҆брати́сѧ` (140), `собра́шасѧ` (238) now resolve in the
+liturgical profile by the §73 derivation.
+
+Mechanics this wave added or corrected:
+
+- `reflexive_base_candidates` also offers the isolated grave for a host whose
+  pre-enclitic print carries a final acute (`возврати́сѧ` ↔ `возвратѝ`).
+- Future-singular accent scopes mirror the fitted present-singular rules
+  (hand-authored rows, same witness), since the fitter's attestations label
+  those cells present.
+- A mislabelled v0.7 exact cell — the aorist print `Возвратѝ` filed as
+  `future:third:singular` — is retracted through
+  `v10_exact_cell_corrections.tsv` with its held-out expectation; the
+  productive engine now generates the genuine `возврати́тъ`.
+- `system:lexical-form` became an **at-most** ceiling (49,568): under
+  typed-first attribution it is the cheap residue and fell (−16) as reviewed
+  headwords gained real morphology, which an at-least floor cannot express.
+- Held-out aorist by resolver status is now 372 by rule / 1,536 memorised
+  (was 95 / 1,209 at baseline).
+
+Deferred with reasons (`family_reviews.tsv`): `послꙋшати` (j-series verb
+wave), `предати` (needs an archaic table like `дати`), `зане́же`
+(conjunction sweep), `саꙋ́лъ` (proper-noun wave).

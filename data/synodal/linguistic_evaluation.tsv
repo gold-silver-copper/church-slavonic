@@ -18,3 +18,7 @@ v12:verb:uboyatisya-vowel-aorist	synodal:verb:v12-uboyatisya	aorist:third:plural
 v12:verb:umreti-consonant-aorist	synodal:verb:v12-umreti	aorist:third:plural	оумроша		productive	alypy-gamanovich-grammar-web-2023	§86 consonant aorist -оша on the stem оумр-
 v12:verb:umreti-mobile-l-participle	synodal:verb:v12-umreti	l-participle:masculine:plural	оумерли		productive	alypy-gamanovich-grammar-web-2023	§97 l-participle on the independent base оумер-
 v12:verb:umreti-no-imperfect	synodal:verb:v12-umreti	imperfect:third:singular		HistoricallyInvalidCell	error	alypy-gamanovich-grammar-web-2023	perfective verb without an imperfect principal part fails explicitly
+v12:verb:vozvratiti-dental-future	synodal:verb:v07-ff04037d9da0c605	future:first:singular	возвращꙋ		productive	alypy-gamanovich-grammar-web-2023	§§80, 82 second-conjugation first singular with the dental alternation т→щ
+v12:verb:sobrati-suppletive-stems	synodal:verb:v07-553feeb14b8be67e	future:third:singular	соберетъ		productive	alypy-gamanovich-grammar-web-2023	§82 present stem собер- against the §86 aorist base собра-
+v12:verb:sobrati-passive	synodal:verb:v07-553feeb14b8be67e	participle:past:passive:nominative:plural:masculine:inanimate:short:positive	собрани		productive	alypy-gamanovich-grammar-web-2023	§100 past passive participle in -н- on the aorist base
+v12:verb:obratiti-imperative	synodal:verb:wikt-3ca5f600ecca	imperative:second:plural	ѡбратите		productive	alypy-gamanovich-grammar-web-2023	§93 second-conjugation imperative in -и-

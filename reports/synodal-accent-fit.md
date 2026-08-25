@@ -12,7 +12,7 @@ accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 178
+- Scope families with no reproducing placement at the finest granularity: 189
 - Lexemes with cells outside the reusable scope grammar: 4
 
 | Granularity | Rows |
@@ -766,6 +766,24 @@ synodal:verb:v06-vzeti	plural	Participle("past", "passive", "short", "positive")
 synodal:verb:v06-vzeti	singular	Imperative	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: возми→возми́
 synodal:verb:v07-35ce5d83583f3639	singular	FiniteVerb("future")	4 attestation(s); best rule word-vowel-from-start:1 acute misses: начнетъ→на́чнетъ
 synodal:verb:v07-35ce5d83583f3639	singular	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:1 acute misses: начнетъ→на́чнетъ
+synodal:verb:v07-553feeb14b8be67e	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїе→собра́нїе собранїе→собра́нїе
+synodal:verb:v07-553feeb14b8be67e	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ собранїѧ→собра̑нїѧ собранїѧ→собра̑нїѧ
+synodal:verb:v07-553feeb14b8be67e	singular:dative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїю→собра́нїю собранїю→собра́нїю
+synodal:verb:v07-553feeb14b8be67e	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїе→собра́нїе собранїе→собра́нїе
+synodal:verb:v07-553feeb14b8be67e	singular:instrumental	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїемъ→собра́нїемъ собранїемъ→собра́нїемъ
+synodal:verb:v07-553feeb14b8be67e	singular:locative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїи→собра́нїи собранїи→собра́нїи
+synodal:verb:v07-553feeb14b8be67e	singular:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїе→собра́нїе собранїе→собра́нїе
+synodal:verb:v07-553feeb14b8be67e	dual:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїи→собра́нїи собранїи→собра́нїи
+synodal:verb:v07-553feeb14b8be67e	dual:genitive	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїю→собра́нїю собранїю→собра́нїю
+synodal:verb:v07-553feeb14b8be67e	dual:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїи→собра́нїи собранїи→собра́нїи
+synodal:verb:v07-553feeb14b8be67e	dual:locative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїю→собра́нїю собранїю→собра́нїю
+synodal:verb:v07-553feeb14b8be67e	dual:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїи→собра́нїи собранїи→собра́нїи
+synodal:verb:v07-553feeb14b8be67e	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ собранїѧ→собра̑нїѧ собранїѧ→собра̑нїѧ
+synodal:verb:v07-553feeb14b8be67e	plural:genitive	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїй→собра́нїй собранїй→собра́нїй
+synodal:verb:v07-553feeb14b8be67e	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ собранїѧ→собра̑нїѧ собранїѧ→собра̑нїѧ
+synodal:verb:v07-553feeb14b8be67e	plural:instrumental	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїи→собра́нїи собранїи→собра́нїи
+synodal:verb:v07-553feeb14b8be67e	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ собранїѧ→собра̑нїѧ собранїѧ→собра̑нїѧ
+synodal:verb:v07-553feeb14b8be67e	singular	Imperative	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: собери→собери́
 synodal:verb:vozlozhiti	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: возложите→возложитѐ
 synodal:verb:vozlozhiti	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
 synodal:verb:vozlozhiti	plural	Imperative	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
@@ -779,6 +797,7 @@ synodal:verb:wikt-0c6c8db63b7c	singular	Participle("present", "active", "short",
 synodal:verb:wikt-0c6c8db63b7c	dual	Participle("present", "active", "short", "positive")	29 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:wikt-332544509d0c	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: принесете→принесетѐ
 synodal:verb:wikt-332544509d0c	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: принесете→принесе́те
+synodal:verb:wikt-3ca5f600ecca	singular	Imperative	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡбрати→ѡ҆брати́ ѡбрати→Ѡ҆брати́
 synodal:verb:wikt-6ceeefbe4e9e	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
 synodal:verb:wikt-6ceeefbe4e9e	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
 synodal:verb:wikt-6ceeefbe4e9e	singular:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
@@ -863,9 +882,17 @@ synodal:verb:v06-vzeti	imperative:plural	generates возме́мъ for imperati
 synodal:verb:v06-vzyti	finite:aorist:singular,dual,plural	overlaps an existing reviewed paradigm at aorist:third:singular
 synodal:verb:v07-35ce5d83583f3639	finite:future:plural	overlaps an existing reviewed paradigm at future:third:plural
 synodal:verb:v07-35ce5d83583f3639	finite:present:plural	generates на́чнꙋтъ for present:third:plural but the source partition prints начнꙋ́тъ
+synodal:verb:v07-553feeb14b8be67e	participle:past:passive:short:positive:singular,plural	overlaps an existing reviewed paradigm at participle:past:passive:nominative:plural:masculine:inanimate:short:positive
+synodal:verb:v07-ff04037d9da0c605	finite:future:plural	overlaps an existing reviewed paradigm at future:second:plural
+synodal:verb:v07-ff04037d9da0c605	finite:present:plural	overlaps an existing reviewed paradigm at present:second:plural
+synodal:verb:v07-ff04037d9da0c605	imperative:plural	overlaps an existing reviewed paradigm at imperative:second:plural
 synodal:verb:wikt-070505e82800	finite:present:dual,plural	overlaps an existing reviewed paradigm at present:third:plural
 synodal:verb:wikt-0c6c8db63b7c	participle:present:active:short:positive:plural	overlaps an existing reviewed paradigm at participle:present:active:nominative:plural:masculine:inanimate:short:positive
 synodal:verb:wikt-332544509d0c	finite:aorist:singular	overlaps an existing reviewed paradigm at aorist:second:singular
+synodal:verb:wikt-3ca5f600ecca	finite:aorist:plural	overlaps an existing reviewed paradigm at aorist:third:plural
+synodal:verb:wikt-3ca5f600ecca	finite:future:plural	overlaps an existing reviewed paradigm at future:second:plural
+synodal:verb:wikt-3ca5f600ecca	finite:present:plural	overlaps an existing reviewed paradigm at present:second:plural
+synodal:verb:wikt-3ca5f600ecca	imperative:plural	overlaps an existing reviewed paradigm at imperative:second:plural
 synodal:verb:wikt-6ceeefbe4e9e	finite:aorist:dual,plural	overlaps an existing reviewed paradigm at aorist:third:plural
 synodal:verb:wikt-6ceeefbe4e9e	participle:present:active:short:positive:singular,dual,plural	overlaps an existing reviewed paradigm at participle:present:active:nominative:plural:masculine:inanimate:short:positive
 synodal:verb:wikt-8a084860d2ef	finite:imperfect:singular,plural	overlaps an existing reviewed paradigm at imperfect:third:singular
@@ -886,6 +913,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3055
-- Lexemes with at least one such attestation: 109
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3129
+- Lexemes with at least one such attestation: 112
 - Placement space searched per partition: 30 placements x 3 marks

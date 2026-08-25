@@ -169,3 +169,26 @@ synodal:verb:v12-umreti	imperative-stem	оумр	first-unpalatalized	alypy-93-fi
 synodal:verb:v12-umreti	l-participle-stem	оумер		alypy-97-general,ponomar-num-14-3-umerli	synodal-russian
 synodal:verb:v12-umreti	past-active-participle-short-stem	оумерш	hard:past-consonant	alypy-96-consonant-past-active,ponomar-acts-14-19-umersha	synodal-russian
 synodal:verb:v12-umreti	past-active-participle-long-stem	оумерш	hard	alypy-96-consonant-past-active,ponomar-baruch-3-4-umershih,ponomar-ex-21-35-umershago	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	future-stem	возврат		alypy-82-vozvratiti,ponomar-deut-28-68-vozvratit,ponomar-gen-24-6-vozvratishi	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	future-first-singular	возвращꙋ		alypy-82-vozvratiti,ponomar-amos-9-14-vozvrashchu	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	future-third-plural	возвратѧтъ		alypy-82-vozvratiti,ponomar-ii-kings-16-3-vozvratyat	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	aorist-stem	возврати	vowel	alypy-86-vowel-aorist,ponomar-composite-8-3-vozvrati,ponomar-ex-10-8-vozvratisha	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	imperative-stem	возврат	i-series	alypy-93-second-conjugation,ponomar-gen-43-12-vozvratite	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	l-participle-stem	возврати		alypy-97-general,ponomar-psalm-43-10-vozvratil	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	past-active-participle-short-stem	возвративш	hard:past-vowel	alypy-96-vowel-past-active,wikisource-deut-24-4-vozvrativ	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	future-stem	ѡбрат		alypy-82-obratiti,ponomar-dan-11-18-obratit	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	future-first-singular	ѡбращꙋ		alypy-82-obratiti,ponomar-ezek-16-53-obrashchu	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	future-third-plural	ѡбратѧтъ		alypy-82-obratiti,ponomar-iii-esdra-15-32-obratyat	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	aorist-stem	ѡбрати	vowel	alypy-86-vowel-aorist,ponomar-acts-19-26-obrati,ponomar-heb-11-34-obratisha	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	imperative-stem	ѡбрат	i-series	alypy-93-second-conjugation,ponomar-ezek-14-6-obratite	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	l-participle-stem	ѡбрати		alypy-97-general,ponomar-iii-kings-18-37-obratil	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	past-active-participle-short-stem	ѡбративш	hard:past-vowel	alypy-96-vowel-past-active,ponomar-jerem-50-5-obrativshe	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	future-stem	собер		alypy-82-sobrati,ponomar-deut-30-4-soberet,ponomar-deut-11-14-sobereshi	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	future-first-singular	соберꙋ		alypy-82-sobrati,ponomar-deut-32-23-soberu	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	future-third-plural	соберꙋтъ		alypy-82-sobrati,ponomar-dan-11-10-soberut	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	aorist-stem	собра	vowel	alypy-86-vowel-aorist,ponomar-apoc-16-16-sobra,ponomar-baruch-1-6-sobrasha,ponomar-eccles-2-8-sobrah	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	imperative-stem	собер	first-unpalatalized	alypy-93-first-conjugation,ponomar-deut-31-12-soberite,ponomar-deut-4-10-soberi	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	l-participle-stem	собра		alypy-97-general,ponomar-ezek-38-13-sobral	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	past-active-participle-short-stem	собравш	hard:past-vowel	alypy-96-vowel-past-active,ponomar-iii-macc-5-2-sobrav,ponomar-acts-15-30-sobravshe	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	past-passive-participle-short-stem	собран	hard	alypy-100-passive-n,ponomar-acts-4-31-sobrani	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	past-passive-participle-long-stem	собранн	hard	alypy-100-passive-n,ponomar-deut-33-21-sobrannyh	synodal-russian

@@ -3111,7 +3111,6 @@ synodal:verb:v07-f655c8a4d4cdebda	imperative:second:plural	сохраните	с
 synodal:verb:v07-f655c8a4d4cdebda	imperative:second:singular	сохрани	Сохрани́	review:v07:b02b0084bf7ca28a,v07-source-d9082342ceac8354,v07-target-68ce3062890bf24f	synodal-attestation	synodal-russian
 synodal:verb:v07-f655c8a4d4cdebda	imperative:second:singular	сохрани	сохранѝ	review:v07:b02b0084bf7ca28a,v07-source-d9082342ceac8354,v07-target-68ce3062890bf24f,v07-variant-target-51abbb7cb50df7b7	synodal-attestation	synodal-russian
 synodal:verb:v07-ff04037d9da0c605	aorist:third:singular	возврати	Возвратѝ	review:v07:dd906d01184e6582,v07-source-35a876b3a9384958,v07-target-1ca425076202cb0f	synodal-attestation	synodal-russian
-synodal:verb:v07-ff04037d9da0c605	future:third:singular	возврати	Возвратѝ	review:v07:dd906d01184e6582,v07-source-aa2fe0e07addcda0,v07-target-1ca425076202cb0f	synodal-attestation	synodal-russian
 synodal:verb:wikt-06af096688df	future:first:plural	речемъ	рече́мъ	v07-source-37a0d03267935f4e,v07-target-4fe3c4cdfc47c318	synodal-attestation	synodal-russian
 synodal:verb:wikt-06af096688df	future:first:singular	рекꙋ	Рекꙋ̀	v07-source-03681771b1c2ed0a,v07-target-efcfd4b0c7023717	synodal-attestation	synodal-russian
 synodal:verb:wikt-06af096688df	future:second:plural	речете	рече́те	v07-source-709b09ae75264daa,v07-target-61d8648634d6029f	synodal-attestation	synodal-russian
@@ -3237,3 +3236,6 @@ synodal:verb:wikt-ffe65f68245a	aorist:third:singular	написа	написа̀
 synodal:verb:wikt-ffe65f68245a	imperative:second:singular	напиши	напишѝ	v07-source-d438437974960ea6,v07-target-6ce95f4429945c26	synodal-attestation	synodal-russian
 synodal:verb:wikt-ffe65f68245a	participle:past:passive:nominative:plural:neuter:any:short:positive	написана	напи̑сана	v07-source-4c2239ef7c93e617,v07-target-3117c97646763749	synodal-attestation	synodal-russian
 synodal:verb:wikt-ffe65f68245a	participle:past:passive:nominative:singular:neuter:any:short:positive	написано	напи́сано	v07-source-2081221eebdee6fb,v07-target-1a978fa510d9638f	synodal-attestation	synodal-russian
+synodal:verb:v07-ff04037d9da0c605	lexical-form	возвратити	возврати́ти	ponomar-baruch-1-8-vozvratiti	synodal-attestation	synodal-russian
+synodal:verb:wikt-3ca5f600ecca	lexical-form	ѡбратити	ѡ҆брати́ти	ponomar-ezek-38-12-obratiti	synodal-attestation	synodal-russian
+synodal:verb:v07-553feeb14b8be67e	lexical-form	собрати	собра́ти	ponomar-apoc-16-14-sobrati	synodal-attestation	synodal-russian

@@ -1829,9 +1829,24 @@ pub fn reflexive_base_candidates(surface: &str) -> Vec<String> {
         return Vec::new();
     }
     let mut candidates = vec![host.to_owned()];
-    let ends_in_consonant = host.chars().last().is_some_and(|last| {
-        !crate::orthography::is_synodal_vowel(last) && last != 'ъ' && last != 'ь' && last != 'й'
-    });
+    // Before an enclitic a word-final grave surfaces as an acute
+    // (`возвратѝ` in isolation, `возврати́сѧ` with the enclitic), so the
+    // isolated host is also sought under the grave.
+    if let Some(stripped) = host.strip_suffix('\u{0301}') {
+        candidates.push(format!("{stripped}\u{0300}"));
+    }
+    let ends_in_consonant = host
+        .chars()
+        .rev()
+        .find(|character| {
+            !matches!(
+                character,
+                '\u{0300}' | '\u{0301}' | '\u{0311}' | '\u{0484}' | '\u{0486}' | '\u{0485}'
+            )
+        })
+        .is_some_and(|last| {
+            !crate::orthography::is_synodal_vowel(last) && last != 'ъ' && last != 'ь' && last != 'й'
+        });
     if ends_in_consonant {
         candidates.push(format!("{host}ъ"));
     }
@@ -8434,6 +8449,10 @@ mod reflexive_tests {
     fn reflexive_base_candidates_restore_the_deleted_jer_only_after_a_consonant() {
         assert_eq!(reflexive_base_candidates("собрашасѧ"), vec!["собраша"]);
         assert_eq!(reflexive_base_candidates("клѧтсѧ"), vec!["клѧт", "клѧтъ"]);
+        assert_eq!(
+            reflexive_base_candidates("возврати\u{301}сѧ"),
+            vec!["возврати\u{301}", "возврати\u{300}"]
+        );
         assert_eq!(reflexive_base_candidates("бойсѧ"), vec!["бой"]);
         assert!(reflexive_base_candidates("сѧ").is_empty());
         assert!(reflexive_base_candidates("рабъ").is_empty());
