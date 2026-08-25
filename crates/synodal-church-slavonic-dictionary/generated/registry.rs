@@ -446,6 +446,8 @@ pub(crate) const SENSES: &[RawSense] = &[
     RawSense(["synodal:noun:v12-vostok", "sense:v12:noun:vostok", "east; sunrise", "space,direction", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian", "normative"]),
     RawSense(["synodal:noun:v12-vysota", "sense:v12:noun:vysota", "height; high place", "space,measure", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian", "normative"]),
     RawSense(["synodal:noun:v12-zapustenie", "sense:v12:zapustenie", "desolation", "lexical", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian", "normative"]),
+    RawSense(["synodal:noun:v13-pervenets", "sense:v13:pervenets", "firstborn", "lexical", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian", "normative"]),
+    RawSense(["synodal:noun:v13-vertep", "sense:v13:vertep", "cave, den", "lexical", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian", "normative"]),
     RawSense(["synodal:noun:vera", "sense:faith", "faith; belief", "religion", "dyachenko-1900-scan", "mixed", "reviewed-with-synodal-corpus"]),
     RawSense(["synodal:noun:videnie", "sense:v21:noun:videnie", "vision; appearance; sight", "perception,vision", "ponomar-modern-church-slavonic-corpus-2016", "mixed", "reviewed-with-synodal-corpus"]),
     RawSense(["synodal:noun:vino", "sense:v14:noun:vino", "wine; fermented grape drink", "food,drink,religion", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian", "normative"]),

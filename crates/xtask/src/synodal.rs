@@ -2778,9 +2778,12 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         )?;
         fs::remove_file(admit_data.join("evaluation.tsv"))?;
         fs::remove_file(admit_data.join("reviewed_evidence.tsv"))?;
+        // The injected lexeme reuses a REAL registered id so the probe does
+        // not classify it as pending-rebuild; its garbage lemma and stem make
+        // every probe surface unanalyzable.
         fs::write(
             admit_data.join("lexemes.tsv"),
-            "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension\nsynodal:noun:guard-dead\tqqqqъ\tnoun\tfirst-hard-m\tqqqq\tmasculine\t\talypy-gamanovich-grammar-web-2023\tsynodal-russian\n",
+            "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension\nsynodal:noun:v12-trus\tqqqqъ\tnoun\tfirst-hard-m\tqqqq\tmasculine\t\talypy-gamanovich-grammar-web-2023\tsynodal-russian\n",
         )?;
         require_violations(
             "generation-dead lexeme",

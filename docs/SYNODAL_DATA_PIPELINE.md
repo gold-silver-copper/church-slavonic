@@ -118,6 +118,35 @@ become exact Synodal rows.
 The report-producing commands use existing normalized intermediate candidates;
 they do not add raw-source adapters to the runtime CLI:
 
+### Wave cookbook
+
+One admission wave with the v0.13 tooling, in order:
+
+1. `cargo xtask synodal-admit-check` — clean baseline (~4s).
+2. Append the data rows (evidence, lexemes, principal parts, senses, family
+   review, evaluation). Never cite a held-out type; keep evaluation passages
+   off every runtime-evidence citation.
+3. `cargo xtask synodal-admit-check` again — new lexemes show as
+   pending-rebuild; everything else must be clean before any build.
+4. `cargo xtask synodal-regenerate` (expect the REBUILD REQUIRED banner) →
+   `cargo build --release -p xtask -p synodal-church-slavonic-dictionary`.
+5. `cargo xtask synodal-accent-fit --apply` → regenerate → rebuild. For a
+   stubborn cell, `synodal-accent-fit --suggest <lexeme> <cell>` prints the
+   exact row or the precise refusal.
+6. `cargo xtask synodal-evaluate` — fix abstentions before proceeding.
+7. `cargo xtask synodal-coverage --offline --delta` — projected ledger deltas
+   in ~18s; iterate from step 2 until they look right.
+8. `cargo xtask synodal-coverage --offline --reseal-floors --seal-wave
+   <label> --note "…"` — the canonical sealing run (~4min).
+9. `cargo xtask synodal-wave-close --fix` — regenerates every derived
+   artifact in the canonical order and runs all gates plus fmt/clippy/tests.
+10. Commit, push, and watch CI (whose structural job runs the same
+    `synodal-wave-close --check`).
+
+The timed demonstration wave (вертепъ, v0.13) completed steps 1–9 in 6m17s.
+Known deferral pointers live in `family_reviews.tsv` deferred rows and the
+v0.12 audit's handoff section.
+
 ### One-command wave close
 
 `cargo xtask synodal-wave-close` runs the entire closing suite in the

@@ -1,9 +1,8 @@
 # Goal history
 
-Every completed or superseded goal prompt, in program order. The one active
-prompt stays in the repository root
-(`SYNODAL_V12_GENERALISATION_AND_PREDICTIVE_LEXICON_PROMPT.md`); its running
-audit is `docs/SYNODAL_V12_GENERALISATION_AUDIT.md`.
+Every completed or superseded goal prompt, in program order. An active prompt,
+when one exists, stays in the repository root; running audits live next to
+this file in `docs/`.
 
 | Prompt | Status |
 |---|---|
@@ -31,3 +30,5 @@ audit is `docs/SYNODAL_V12_GENERALISATION_AUDIT.md`.
 The immutable v0.4–v0.7 audit artifacts are verified in CI by one checksum
 manifest (`cargo xtask synodal-archive --check`); the original audit commands
 remain available for on-demand re-derivation.
+| `SYNODAL_V12_GENERALISATION_AND_PREDICTIVE_LEXICON_PROMPT.md` | complete — held-out generalised 14,236 ≥ 14,200; audit `../SYNODAL_V12_GENERALISATION_AUDIT.md` |
+| `SYNODAL_V13_ITERATION_VELOCITY_PROMPT.md` | complete — 6m17s demonstrated wave, preflight/close/tripwire/delta/suggest tooling; audit `../SYNODAL_V13_ITERATION_AUDIT.md` |

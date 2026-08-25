@@ -460,9 +460,25 @@ pub(crate) fn check_generation_probes(root: &Path) -> Result<Vec<String>, Box<dy
             }
         }
     }
+    // A lexeme the compiled registry does not know at all is pending a
+    // rebuild, not broken: the preflight runs before regenerate/build by
+    // design, and the staleness tripwire guards the measurement side.
+    let registered: BTreeSet<String> = synodal_church_slavonic::lexemes()
+        .map(|lexemes| {
+            lexemes
+                .iter()
+                .map(|lexeme| lexeme.id().as_str().to_owned())
+                .collect()
+        })
+        .unwrap_or_default();
+    let mut pending = 0usize;
     let mut violations = Vec::new();
     for row in &lexemes.rows {
         if matches!(row[class].as_str(), "" | "archaic" | "exact") {
+            continue;
+        }
+        if !registered.contains(&row[id]) {
+            pending += 1;
             continue;
         }
         let reaches_itself = probes.get(&row[id]).into_iter().flatten().any(|surface| {
@@ -480,6 +496,11 @@ pub(crate) fn check_generation_probes(root: &Path) -> Result<Vec<String>, Box<dy
                 row[id], row[lemma], row[class]
             ));
         }
+    }
+    if pending > 0 {
+        println!(
+            "admit-check: {pending} lexeme(s) not yet in the compiled registry (pending regenerate+rebuild); generation probes deferred for them"
+        );
     }
     Ok(violations)
 }

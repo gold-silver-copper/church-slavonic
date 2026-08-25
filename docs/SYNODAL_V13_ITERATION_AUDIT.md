@@ -1,6 +1,6 @@
 # Synodal v0.13 iteration-velocity audit
 
-Program prompt: `SYNODAL_V13_ITERATION_VELOCITY_PROMPT.md`. Objective: one
+Program prompt: `docs/goals/SYNODAL_V13_ITERATION_VELOCITY_PROMPT.md`. Objective: one
 admission wave from candidate list to green local close in under 15 minutes
 with zero failed seals, with no guard weakened.
 
@@ -131,3 +131,48 @@ was deliberately not automated: every real widening case in v0.12
 (входи́те/вхо́дите) is a same-letters homography conflict that the fitter
 refuses by design, and the conflict listing from `--suggest` is the review
 aid for exactly that human decision.
+
+## Phase 6 — Measured demonstration and completion
+
+Two demonstration waves ran end-to-end with the new tooling:
+
+- **первенецъ** (first-mixed-ts-m): 17m16s total, including two first-use
+  tooling defects that the tooling itself surfaced mid-wave and that were
+  fixed on the spot (the generation-probe guard witness had been broken by
+  the pending-rebuild refinement, and a hand-edited family row was one column
+  short — caught by the family gate inside `wave-close --fix`). Zero failed
+  seals. This wave also hardened the preflight: a lexeme absent from the
+  compiled registry is now reported as pending-rebuild, not generation-dead.
+- **вертепъ** (first-hard-m), the clean replay: **6m17s** from candidate rows
+  to all 23 `wave-close --fix` steps green — preflight 4s, regenerate+rebuild
+  ×2 ≈ 60s, accent-fit apply 47s, evaluate 2s, delta projection 18s
+  (pre-seal total 126s), canonical seal ≈ 4min, one-command close in
+  parallel-free sequence. Zero failed seals; floors and the ledger hold.
+
+Baseline comparison: v0.12 waves ran 35–60 minutes with reseal loops and
+one-at-a-time late-check round-trips; the same shape of wave now closes in
+about six minutes with every failure class surfaced up front.
+
+## Completion gate review
+
+1. `synodal-admit-check`: CI-enforced through `synodal-check`; guard
+   witnesses for all four categories; regression tests replay the лꙋкавство
+   duplicate and the вѣ́рный passage collision. **Holds.** (First run also
+   found and merged two live duplicates the v0.12 ceilings had missed.)
+2. `synodal-wave-close` reproduces the suite; the CI structural job invokes
+   `--check`; ordering is single-sourced. **Holds.**
+3. The staleness tripwire refuses stale-binary measurement, witness-tested
+   ("stale compiled registry"). **Holds.**
+4. `--delta` matched the full run **exactly (+0 on every ledger column)** on
+   the sealed tree in 17.6s, and sealing from a delta is rejected and
+   witness-tested (three injected flag combinations). **Holds.**
+5. The accent scope grammar is documented; `--suggest` emitted a row for the
+   live злый comparative block that round-trip-inserted cleanly, and refuses
+   лакте́й as unfittable without memorisation. **Holds.**
+6. The timed вертепъ wave: 6m17s, zero failed seals, recorded above.
+   **Holds.**
+7. No floor or ceiling weakened (the only bound edits were the two justified
+   v0.12-wave-12 notes predating this program); all 31 bounds hold; the full
+   suite, clippy, fmt, doc tests, and CI are green. **Holds.**
+
+The v0.13 iteration-velocity program is complete.

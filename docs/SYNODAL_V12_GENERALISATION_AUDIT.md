@@ -1,6 +1,6 @@
 # Synodal v0.12 generalisation audit
 
-This records the v0.12 program (`SYNODAL_V12_GENERALISATION_AND_PREDICTIVE_LEXICON_PROMPT.md`)
+This records the v0.12 program (`docs/goals/SYNODAL_V12_GENERALISATION_AND_PREDICTIVE_LEXICON_PROMPT.md`)
 as it is realised: what each phase found, changed, and deliberately left. It
 is updated per sealed wave and is not a completion claim until the final
 section says so.
