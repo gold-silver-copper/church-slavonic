@@ -621,3 +621,17 @@ both real reviewed identities (+90, justified, no duplicate).
 
 Running total: held-out generalised 9,467 → **12,219** (+2,752, +29.1%);
 the gate ratchet needs ≈1,980 more.
+
+## Wave 10 — proper nouns (v0.12-wave-10)
+
+Nine proper names admitted productively: `єфремъ`, `іѡасъ`, `іѡакімъ`, `халевъ`,
+`галаадъ`, `фїліппъ`, `виѳлеемъ` (first-hard-m), `ісаакъ` (first-hard-velar-m),
+`амасіа` (second-soft-m-ia; a new productive-only validator arm was added for
+that class). Evidence cites only non-held-out oblique prints from the source
+partition; held-out cells (nominatives, `і҆саа́ка`, `виѳлее́ма`, `па́ѵлꙋ`…) are
+reached by the class and targeted by 17 new productive evaluation rows.
+`па́ѵелъ` was deferred (`synodal:family-admission:v12:pavel-deferred`): it needs
+a hard mobile-е masculine class that does not exist (`first-mixed-ts-m` is a
+ц-stem class) and its dative is itself held-out, so an exact row would memorise.
+Ledger: held-out generalised 12,219 → **12,727** (+508), memorised unchanged at
+14,998, corpus top-k 986,722. Gate remainder: 1,473 to 14,200.

@@ -10,14 +10,14 @@ Scope groups are refined from coarse to fine (number, case, gender, animacy) and
 the coarsest granularity that fits the whole family is the one emitted, so real
 accent mobility is stated rather than smoothed away.
 
-- Lexemes with a fitted contract: 2
-- Accent-paradigm rows proposed: 37
+- Lexemes with a fitted contract: 1
+- Accent-paradigm rows proposed: 36
 - Scope families with no reproducing placement at the finest granularity: 238
 - Lexemes with cells outside the reusable scope grammar: 7
 
 | Granularity | Rows |
 |---|---:|
-| `Number` | 3 |
+| `Number` | 2 |
 | `NumberCase` | 2 |
 | `NumberCaseGender` | 32 |
 
@@ -25,7 +25,6 @@ accent mobility is stated rather than smoothed away.
 
 | Lexeme | Scope | Placement | Mark | Attestations |
 |---|---|---|---|---:|
-| `synodal:adjective:v12-istinn` | `adjective:long:positive:singular,dual,plural` | `stem-vowel-from-start:0` | `acute` | 65 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:genitive,locative:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 12 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:feminine:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
@@ -1142,6 +1141,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4013
-- Lexemes with at least one such attestation: 145
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3948
+- Lexemes with at least one such attestation: 144
 - Placement space searched per partition: 30 placements x 3 marks

@@ -683,6 +683,7 @@ fn validate_admitted_families(
             // system actually generates.
             "second-mixed"
             | "second-hard-velar"
+            | "second-soft-m-ia"
             | "third-f"
             | "third-m"
             | "first-soft-ishche-n" => {
