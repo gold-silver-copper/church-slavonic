@@ -144,6 +144,13 @@
       "ambiguous": 0,
       "unresolved": 0
     },
+    "synodal:adjective:v06-a79476be07ef953c": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 0,
+      "ambiguous": 0,
+      "unresolved": 1
+    },
     "synodal:adjective:v06-e3bdc69bb0fe41f0": {
       "total_tokens": 2,
       "top_1_analyzed": 0,
@@ -157,13 +164,6 @@
       "top_k_analyzed": 1,
       "ambiguous": 0,
       "unresolved": 0
-    },
-    "synodal:adjective:v12-vern": {
-      "total_tokens": 1,
-      "top_1_analyzed": 0,
-      "top_k_analyzed": 0,
-      "ambiguous": 0,
-      "unresolved": 1
     },
     "synodal:adjective:wikt-804d9a9cde41": {
       "total_tokens": 1,
@@ -650,6 +650,13 @@
       "ambiguous": 0,
       "unresolved": 0
     },
+    "family:synodal:adjective:v06-a79476be07ef953c": {
+      "total_tokens": 1,
+      "top_1_analyzed": 0,
+      "top_k_analyzed": 0,
+      "ambiguous": 0,
+      "unresolved": 1
+    },
     "family:synodal:adjective:v06-e3bdc69bb0fe41f0": {
       "total_tokens": 2,
       "top_1_analyzed": 0,
@@ -663,13 +670,6 @@
       "top_k_analyzed": 1,
       "ambiguous": 0,
       "unresolved": 0
-    },
-    "family:synodal:adjective:v12-vern": {
-      "total_tokens": 1,
-      "top_1_analyzed": 0,
-      "top_k_analyzed": 0,
-      "ambiguous": 0,
-      "unresolved": 1
     },
     "family:synodal:adjective:wikt-804d9a9cde41": {
       "total_tokens": 1,
@@ -1325,8 +1325,8 @@
       "recovery_route": "spelling-variant",
       "assumption": "multiple reviewed lexemes remain compatible; no family was selected"
     },
-    "family:synodal:adjective:v12-vern": {
-      "probable_family_id": "family:synodal:adjective:v12-vern",
+    "family:synodal:adjective:v06-a79476be07ef953c": {
+      "probable_family_id": "family:synodal:adjective:v06-a79476be07ef953c",
       "token_frequency": 1,
       "top_k_uncovered_token_frequency": 1,
       "document_frequency": 1,
@@ -1334,7 +1334,7 @@
         "вѣ̑рнымъ"
       ],
       "candidate_lexeme_ids": [
-        "synodal:adjective:v12-vern"
+        "synodal:adjective:v06-a79476be07ef953c"
       ],
       "recovery_route": "spelling-variant",
       "assumption": "one reviewed lexeme is compatible with this diagnostic; the requested cell still requires review"
@@ -3451,7 +3451,7 @@
       "line": 1,
       "column": 35,
       "candidate_lexeme_ids": [
-        "synodal:adjective:v12-vern"
+        "synodal:adjective:v06-a79476be07ef953c"
       ],
       "requested_morphological_system": "adjective",
       "generation_policy": "Strict",
@@ -3461,7 +3461,7 @@
           {
             "rule": "SYN-ADJ-SHORT-HARD-ALYPY-53",
             "stage": "short-adjective-declension",
-            "input": "вѣрный",
+            "input": "вѣренъ",
             "output": "вѣрнымъ",
             "source_recension": "SynodalRussian",
             "target_recension": "SynodalRussian",
@@ -3922,7 +3922,7 @@
       "frequency": 1,
       "document_frequency": 1,
       "candidate_lexeme_ids": [
-        "synodal:adjective:v12-vern"
+        "synodal:adjective:v06-a79476be07ef953c"
       ],
       "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
     },

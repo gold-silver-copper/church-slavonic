@@ -79,7 +79,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | Family diagnostic | Tokens | Documents | Route | Surfaces |
 |---|---:|---:|---|---|
 | `ungrouped:нимиже` | 2 | 2 | `ungrouped-unknown` | ни́миже |
-| `family:synodal:adjective:v12-vern` | 1 | 1 | `spelling-variant` | вѣ̑рнымъ |
+| `family:synodal:adjective:v06-a79476be07ef953c` | 1 | 1 | `spelling-variant` | вѣ̑рнымъ |
 | `family:synodal:noun:v06-673b2df93b4f89a8` | 1 | 1 | `spelling-variant` | зна́менїихъ |
 | `family:synodal:verb:v12-slyshati` | 1 | 1 | `spelling-variant` | слы́шавше |
 | `ungrouped:апⷭ҇лъ` | 1 | 1 | `abbreviation-registry` | а҆пⷭ҇лъ |

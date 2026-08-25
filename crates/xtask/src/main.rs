@@ -7,6 +7,7 @@ mod report_io;
 mod sources;
 mod synodal;
 mod synodal_accent_fit;
+mod synodal_admit_check;
 mod synodal_archive;
 mod synodal_coverage;
 mod synodal_evaluation_queue;
@@ -98,6 +99,10 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("speed") => speed(),
         Some("guard-witnesses") => guard_witnesses(),
         Some("synodal-regenerate") => synodal::regenerate(&workspace_root()?),
+        Some("synodal-admit-check") => {
+            let write = args.next().as_deref() == Some("--write-baseline");
+            synodal_admit_check::admit_check(&workspace_root()?, write)
+        }
         Some("synodal-check") => synodal::check(&workspace_root()?),
         Some("synodal-evaluate") => synodal::evaluate_and_write(&workspace_root()?),
         Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
@@ -3415,6 +3420,7 @@ fn print_help() {
     eprintln!("  speed");
     eprintln!("  guard-witnesses");
     eprintln!("  synodal-regenerate");
+    eprintln!("  synodal-admit-check [--write-baseline]");
     eprintln!("  synodal-check");
     eprintln!("  synodal-evaluate");
     eprintln!("  synodal-guard-witnesses");

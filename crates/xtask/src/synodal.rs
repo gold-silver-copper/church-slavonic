@@ -499,6 +499,7 @@ pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
     check_bootstrap_report(root)?;
     check_fixture_bootstrap_report(root, &evaluate(root)?)?;
     check_package_metadata(root)?;
+    crate::synodal_admit_check::admit_check(root, false)?;
     println!("synodal checks: current");
     Ok(())
 }
@@ -2688,6 +2689,91 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         fs::write(&tampered, format!("{pristine} "))?;
         require_failure("tampered immutable archive artifact", archive_check())?;
         fs::write(&tampered, pristine)?;
+
+        // Admission-preflight witnesses: each category must fire on an
+        // injected violation. The analyzer is the compiled registry, so a
+        // surface owned by a fake id that a real lexeme analyzes is a
+        // duplicate; a real held-out type behind an exact row with an empty
+        // baseline is new memorisation; a shared passage between an
+        // evaluation row and runtime-referenced evidence is an overlap; a
+        // registered-nowhere productive lexeme analyzes none of its surfaces.
+        let admit_data = temporary.join("data/synodal");
+        let require_violations = |label: &str,
+                                  result: Result<Vec<String>, Box<dyn Error>>|
+         -> Result<(), Box<dyn Error>> {
+            match result {
+                Ok(violations) if !violations.is_empty() => {
+                    println!("synodal guard witness observed: {label}");
+                    Ok(())
+                }
+                Ok(_) => Err(format!("Synodal guard failed to detect {label}").into()),
+                Err(error) => Err(format!("{label} witness errored: {error}").into()),
+            }
+        };
+        let exact_header =
+            "lexeme_id\tcell\texpanded\tprinted\tevidence_id\tsource_kind\ttarget_recension";
+        fs::write(
+            admit_data.join("exact_forms.tsv"),
+            format!(
+                "{exact_header}\nsynodal:noun:guard-fake\tnoun:genitive:singular:inanimate\tгроба\tгро́ба\tguard-ev\tsynodal-attestation\tsynodal-russian\n"
+            ),
+        )?;
+        require_violations(
+            "duplicate lexeme identity",
+            crate::synodal_admit_check::check_duplicate_identities(&temporary),
+        )?;
+        let real_held = fs::read_to_string(root.join(crate::synodal_type_holdout::HOLDOUT_PATH))?
+            .lines()
+            .take(2)
+            .collect::<Vec<_>>()
+            .join("\n");
+        fs::write(
+            temporary.join(crate::synodal_type_holdout::HOLDOUT_PATH),
+            format!("{real_held}\n"),
+        )?;
+        let held_type = real_held
+            .lines()
+            .nth(1)
+            .and_then(|line| line.split('\t').next())
+            .ok_or("held-out fixture line missing")?;
+        fs::write(
+            admit_data.join("exact_forms.tsv"),
+            format!(
+                "{exact_header}\nsynodal:noun:guard-fake\tnoun:genitive:singular:inanimate\t{held_type}\t{held_type}\tguard-ev\tsynodal-attestation\tsynodal-russian\n"
+            ),
+        )?;
+        fs::write(
+            temporary.join(crate::synodal_admit_check::BASELINE_PATH),
+            "normalized_type\ttables\n",
+        )?;
+        require_violations(
+            "new held-out memorisation",
+            crate::synodal_admit_check::check_new_holdout_memorisation(&temporary),
+        )?;
+        fs::write(
+            admit_data.join("evaluation.tsv"),
+            "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity\neval:guard\tsynodal:noun:guard\tnoun:nominative:singular:inanimate\tproductive\tслово\tсло́во\tponomar-elizabeth-bible-2026-08-09\tActs.1.1\tguard\n",
+        )?;
+        fs::write(
+            admit_data.join("reviewed_evidence.tsv"),
+            "evidence_id\tcandidate_id\tsource_id\tcitation\tdecision\ttarget_recension\treview_note\nguard-ev\tsynodal:candidate:guard\tponomar-elizabeth-bible-2026-08-09\tActs.1.1\treviewed\tsynodal-russian\tinjected\n",
+        )?;
+        require_violations(
+            "evaluation-passage overlap",
+            crate::synodal_admit_check::check_evaluation_passage_overlap(&temporary),
+        )?;
+        fs::remove_file(admit_data.join("evaluation.tsv"))?;
+        fs::remove_file(admit_data.join("reviewed_evidence.tsv"))?;
+        fs::write(
+            admit_data.join("lexemes.tsv"),
+            "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension\nsynodal:noun:guard-dead\tqqqqъ\tnoun\tfirst-hard-m\tqqqq\tmasculine\t\talypy-gamanovich-grammar-web-2023\tsynodal-russian\n",
+        )?;
+        require_violations(
+            "generation-dead lexeme",
+            crate::synodal_admit_check::check_generation_probes(&temporary),
+        )?;
+        fs::remove_file(admit_data.join("lexemes.tsv"))?;
+        fs::remove_file(admit_data.join("exact_forms.tsv"))?;
 
         for hostile in ["", "latin", "\u{e000}", "\u{0301}слово"] {
             if std::panic::catch_unwind(|| synodal_church_slavonic::lookup(hostile)).is_err() {

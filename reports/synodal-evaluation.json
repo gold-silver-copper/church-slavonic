@@ -2246,17 +2246,17 @@
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 3243,
-    "returned": 3243,
-    "top_1_correct": 2979,
-    "top_k_correct": 3243,
+    "total": 3245,
+    "returned": 3245,
+    "top_1_correct": 2981,
+    "top_k_correct": 3245,
     "abstained": 0
   },
   "exact_registry_printed_round_trip": {
-    "total": 3243,
-    "returned": 3243,
-    "top_1_correct": 2826,
-    "top_k_correct": 3243,
+    "total": 3245,
+    "returned": 3245,
+    "top_1_correct": 2828,
+    "top_k_correct": 3245,
     "abstained": 0
   },
   "accent_bearing_rows": 2340,
@@ -3445,17 +3445,17 @@
   },
   "leakage": {
     "masked_expanded": {
-      "total": 754,
-      "returned": 754,
-      "top_1_correct": 752,
-      "top_k_correct": 753,
+      "total": 753,
+      "returned": 753,
+      "top_1_correct": 751,
+      "top_k_correct": 752,
       "abstained": 0
     },
     "masked_printed": {
-      "total": 754,
-      "returned": 754,
-      "top_1_correct": 752,
-      "top_k_correct": 753,
+      "total": 753,
+      "returned": 753,
+      "top_1_correct": 751,
+      "top_k_correct": 752,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_expanded": {

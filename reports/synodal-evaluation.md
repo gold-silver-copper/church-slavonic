@@ -13,9 +13,9 @@ Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
 Typed abbreviations: top-1 71/81, top-k 81/81 (81 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 3243/3243, printed 3243/3243.
+Exact registry round trips (top-k, including reviewed variants): expanded 3245/3245, printed 3245/3245.
 
-Masked cells: expanded 752/754, printed 752/754. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
+Masked cells: expanded 751/753, printed 751/753. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
 Accent agreement: 2339/2340 accent-bearing rows.
 

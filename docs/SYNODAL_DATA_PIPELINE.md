@@ -118,6 +118,24 @@ become exact Synodal rows.
 The report-producing commands use existing normalized intermediate candidates;
 they do not add raw-source adapters to the runtime CLI:
 
+### Admission preflight
+
+`cargo xtask synodal-admit-check` validates the committed TSVs in seconds and
+reports **every** violation at once, in the four categories that caused
+seal-time rework during v0.12: duplicated lexeme identities (a committed
+surface owned by one identity that the registry also analyzes to another, or
+two lexemes sharing a normalized lemma and part of speech), new held-out
+memorisation (an exact or accent row whose normalized type is held out and not
+frozen in `data/synodal/holdout_memorisation_baseline.tsv`), evaluation rows
+sharing a passage with runtime-referenced evidence (matching the authoritative
+extractor predicate), and generation-dead lexemes (a productive lexeme none of
+whose own surfaces analyzes back to it). Reviewed genuine homonymy lives in
+`data/synodal/homonymy_allowlist.tsv` with per-pair justifications; the
+memorisation baseline is ratcheted down with
+`cargo xtask synodal-admit-check --write-baseline` after reviewing the diff.
+The preflight runs inside `synodal-check`, so CI enforces it; it duplicates
+guards earlier and never replaces the sealed floors, ceilings, or late checks.
+
 ```sh
 cargo xtask synodal-coverage --fixture --offline
 cargo xtask synodal-coverage --offline

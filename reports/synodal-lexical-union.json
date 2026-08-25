@@ -4,7 +4,7 @@
   "input_artifacts": [
     {
       "path": "data/synodal/lexemes.tsv",
-      "sha256": "0b2233c6f35f30880ac6541818725e7656b36fa6b83326bd745ece3cfe241731",
+      "sha256": "94ab979bc9ebd73e0b398204d429de40eaabd255857836765f1ee6d34abe134c",
       "claim_policy": "every curated seed row"
     },
     {
@@ -24,7 +24,7 @@
     }
   ],
   "claims": 2228,
-  "union_identities": 2158,
+  "union_identities": 2156,
   "by_claim_set": {
     "adjudicated-review": 846,
     "curated-seed": 382,

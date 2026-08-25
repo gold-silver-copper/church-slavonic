@@ -1,0 +1,47 @@
+left_lexeme_id	right_lexeme_id	justification
+synodal:adjective:v06-73f4685d4e007ee3	synodal:adjective:blazhenn	frozen historical duplicate that shipped before the cross-lexeme ceiling existed; documented in coverage_floors.tsv
+synodal:adjective:wikt-804d9a9cde41	synodal:verb:v06-bba31c88723cae5c	живи is both the adjective живъ plural and the verb жити imperative; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:conjunction:wikt-3fc656e987c2	synodal:interjection:ni	genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:conjunction:wikt-3fc656e987c2	synodal:particle:negative-ni	genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:particle:negative-ni	synodal:interjection:ni	genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:brethren-collective	synodal:noun:brother	братїѧ is the reviewed collective and the plural of братъ; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:human	synodal:adjective:chelovech	человѣче is the noun vocative and a possessive short cell; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:rab	synodal:noun:v07-d2f9096ab3d42fc5	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:noun:v06-396b7b7e0bf4e59e	synodal:noun:chudo	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:noun:v06-ba5b8abd7b0756e9	synodal:numeral:fractional-pol	поли is the noun поле locative and the fractional пол-; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:v06-tysyashcha	synodal:numeral:tysiascha	тысѧща is reviewed as both noun and numeral; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:wikt-3c771d4eab2b	synodal:numeral:tma	тьма is darkness and the numeral ten-thousand; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:pronoun:chto	synodal:pronoun:v06-a6e60a3f60e607cb	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:pronoun:nekto	synodal:pronoun:nekii	нѣкимъ is a shared cell of нѣкто and нѣкїй; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:pronoun:on	synodal:pronoun:v06-7cb9fbdd604c5a70	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:pronoun:on	synodal:conjunction:wikt-577896b0cbc6	и is the conjunction and the pronoun accusative; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:pronoun:sebe	synodal:pronoun:wikt-7c6914eff782	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:pronoun:svoi	synodal:pronoun:wikt-a574507d33e1	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:pronoun:toi	synodal:pronoun:ty	ты is the second-person pronoun and a cell of той; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:pronoun:toi	synodal:adverb:wikt-e0d6b61a9ce0	тꙋ is the adverb there and the pronoun accusative; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:pronoun:tvoi	synodal:pronoun:wikt-d941ad616a6f	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:verb:byti	synodal:verb:wikt-5db6c354e674	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:verb:imati	synodal:verb:wikt-0c6c8db63b7c	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:verb:sotvoriti	synodal:verb:v07-1c4a4d92c8c26109	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:verb:v06-2e0573086fb92642	synodal:verb:byti	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:verb:v06-72858c58897d9d01	synodal:verb:wikt-bbe1760d7910	послꙋ́ша keeps two identities until the identity-merge wave; documented in coverage_floors.tsv
+synodal:verb:wikt-16664aa52c77	synodal:numeral:v06-sto	ста is the aorist of стати and the numeral hundred genitive; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:verb:wikt-6ceeefbe4e9e	synodal:adverb:v07-1d01379f954c962d	ꙗвѣ is the adverb and a verb cell print; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:verb:wikt-8a084860d2ef	synodal:noun:wikt-3def1355a9a6	вѣсть is the athematic verb cell and the noun; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:vino	synodal:noun:v06-b656255241f904d4	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:adjective:iosifov	synodal:proper-noun:iosif	іѡсифовъ is the possessive adjective and a genitive-plural print of the name; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:proper-noun:aaron	synodal:proper-noun:wikt-246df9e425fa	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:noun:spasenie	synodal:verb:v12-spasti	спасенїе is the noun and a print reachable from the promoted verb; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:adjective:v07-2585c9e958eb4925	synodal:verb:v07-ef3884d2694cadf5	проклѧтъ is the adjective and the past passive participle; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:v06-44fe6aceed3a2563	synodal:verb:v07-496708c3508480e4	разꙋмѣ is the noun locative and the verb aorist; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:v07-14c8473015ffe18c	synodal:numeral:fractional-desyatina	десѧтина is reviewed as both noun and fractional numeral; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:v07-478d442bd0465a8b	synodal:noun:v06-tysyashcha	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:noun:v07-478d442bd0465a8b	synodal:numeral:tysiascha	тысѧща is reviewed as both noun and numeral; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:wikt-0cf369042ac9	synodal:verb:dati	дани is the noun plural and the verb imperative-participle print; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:wikt-586163254439	synodal:numeral:fractional-pol	полъ is reviewed as both noun and fractional numeral; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:noun:wikt-a85269b71b16	synodal:noun:krai	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:pronoun:v07-38d66fc2f344c397	synodal:pronoun:kii	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:pronoun:wikt-abc6b7472112	synodal:pronoun:inyi	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:proper-noun:v07-38a8f756c955a923	synodal:noun:syn	сынѣ is the Sinai locative print and a cell of сынъ; genuine cross-part-of-speech homonymy between two reviewed identities
+synodal:verb:v06-c83e3264f4da24ce	synodal:verb:pisati	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave
+synodal:verb:v07-6d45884d5d054202	synodal:verb:v06-vzyti	frozen historical duplicate pinned by an immutable v0.6/v0.7 record; awaiting the identity-merge wave

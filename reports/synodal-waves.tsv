@@ -15,3 +15,4 @@ v0.12-wave-12	13740	14998	29797	989543	49746	1063	191	381	209	Frontier wave: є�
 v0.12-wave-13	13956	14998	30013	990023	49746	1068	191	381	214	Frontier wave: собранїе (first-soft-ie-n), іакѡвль and мѡавль (possessive-soft-short), іѡананъ, єдинолѣтный
 v0.12-wave-14	14126	14998	30183	990601	49746	1072	191	389	219	Gate wave: ѡставити merged onto its existing reviewed identity, сиѡнъ (Sihon), ѿпꙋщенїе, беззаконный, ѻтроковица
 v0.12-wave-15	14236	14998	30293	990913	49746	1076	191	390	223	Gate wave: беззаконникъ, лꙋкавство, сарра, вѣрный — the held-out generalised ratchet crosses the v0.12 completion target
+v0.13-prep-merges	14236	14998	30293	990913	49746	1074	191	390	223	The new synodal-admit-check preflight found two remaining duplicated identities and they were merged: вѣрный onto synodal:adjective:v06-a79476be07ef953c and лꙋкавство onto synodal:noun:v07-9c2563bd3383fa6d; coverage is unchanged, the lexicon shrinks by two
