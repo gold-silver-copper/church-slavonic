@@ -371,3 +371,42 @@ l-participle `поше́лъ`), `обитати`, `воздати`/`предат
 Running total after five waves: held-out generalised 9,467 → 10,501
 (+1,034, +10.9%); corpus top-k 964,791 → 975,115 (+10,324); memorised capped
 at 14,998; productive evaluation rows 1 → 96.
+
+## Phase 3 — the exploratory predictive tier
+
+Built as specified, walled as specified.
+
+- **Runtime**: `synodal_church_slavonic_dictionary::prediction` segments an
+  unknown surface against the Alypy §§82–97 verbal ending inventory (the §73
+  enclitic stripped first, with the acute/grave host variants). Each reading
+  is a `Prediction` — its own type, never an `Analysis` — carrying the stem,
+  ending, cell, class requirement, a shape-based confidence, and the model id
+  `SYN-PREDICT-VERB-SEGMENTATION-V1`. `predict_under` is the policy wall:
+  `Strict` and `Productive` get nothing; only `Exploratory` sees predictions.
+  A unit test pins the wall.
+- **The gate**: `cargo xtask synodal-predict` masks every reviewed verb (145
+  lexemes) and re-derives its generated surfaces. Measured precision of the
+  top prediction by confidence bucket: 0–2399 bp → 50%, 2400–2999 → 62%,
+  3000–3399 → 90%, 3400+ → 85%. The floor is 60%: the lowest bucket **does
+  not emit candidates**. By system: infinitive 100%, present/future 77%,
+  l-participle 77%, aorist 61%, imperfect 44%, imperative 38% (the bare `-и`
+  split is weak by design and priced accordingly).
+- **The feed**: `reports/synodal-prediction-candidates.tsv` groups
+  strict-uncovered surfaces (frequency ≥ 4) by hypothesised stem, keeps only
+  stems with ≥ 2 distinct sibling cells in the corpus, and ranks by token
+  mass. The head is the next admission worklist verbatim: `слыша-` (622
+  tokens, 8 cells, reflexive), `внид-` (558, 8), `пойд-` (344), `погибн-`
+  (316), `спас-` (300, reflexive), `вознес-` (293), `согрѣши-` (290),
+  `разꙋмѣ-` (273), `сконча-` (266). The masked-precision floor is the only
+  tuning signal; the held-out set is never read.
+- **The report slice**: the coverage report now carries a diagnostic
+  `predicted` section over the strict-unresolved remainder: 142,494 of
+  337,165 unresolved tokens (42%) have a typed hypothesis — aorist 49,173,
+  present/future 39,991, imperative 28,256, infinitive 10,270, l-participle
+  8,091, imperfect 6,713 — with a confidence histogram. It never adds to
+  top-k and no sealed floor reads it. CI runs `synodal-predict --check`.
+
+Not built, deliberately: promotion of any prediction to a reviewed row (each
+still passes the full admission rules by hand), and noun/adjective
+segmentation (the frontier is verbal; the ending inventory grows with the
+evidence, not ahead of it).

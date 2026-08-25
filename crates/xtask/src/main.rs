@@ -13,6 +13,7 @@ mod synodal_family_review;
 mod synodal_lexical_review;
 mod synodal_lexical_union;
 mod synodal_marginal_recovery;
+mod synodal_predict;
 mod synodal_type_holdout;
 mod synodal_v04_audit;
 mod synodal_v05_audit;
@@ -105,6 +106,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             synodal::fixture_bootstrap(&mut args, &workspace_root()?)
         }
         Some("synodal-coverage") => synodal_coverage::run(&mut args, &workspace_root()?),
+        Some("synodal-predict") => synodal_predict::run(&mut args, &workspace_root()?),
         Some("synodal-coverage-floors") => {
             synodal_coverage::check_committed_floors(&workspace_root()?)
         }

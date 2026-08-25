@@ -408,6 +408,15 @@ pub struct CoverageReport {
     pub held_out_type_coverage: CoverageSlice,
     #[serde(default)]
     pub held_out_type_status: BTreeMap<String, usize>,
+    /// Diagnostic only: strict-unresolved tokens the exploratory segmentation
+    /// tier can read (`prediction::predict`), by the top prediction's system.
+    /// Never part of `summary.top_k_analyzed`; no sealed floor reads it.
+    #[serde(default)]
+    pub predicted_unresolved_by_system: BTreeMap<String, usize>,
+    /// Diagnostic only: the same tokens by the top prediction's confidence
+    /// bucket in basis points.
+    #[serde(default)]
+    pub predicted_unresolved_by_confidence: BTreeMap<String, usize>,
     /// Held-out tokens by morphological system, then by resolver status, so a
     /// wave aimed at one system can be seen landing there rather than
     /// somewhere else. Systems are attributed exactly as in
@@ -1468,6 +1477,8 @@ pub fn coverage_with_type_holdout(
     let mut by_source_partition_gap: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     let mut by_status = BTreeMap::new();
     let mut integrity = CoverageIntegrity::default();
+    let mut predicted_by_system: BTreeMap<String, usize> = BTreeMap::new();
+    let mut predicted_by_confidence: BTreeMap<String, usize> = BTreeMap::new();
     let mut held_out_slice = CoverageSlice::default();
     let mut held_out_status = BTreeMap::new();
     let mut held_out_status_by_system: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
@@ -1580,6 +1591,17 @@ pub fn coverage_with_type_holdout(
                 .entry(status_label(analysis.status).into())
                 .or_default() += 1;
             if !is_top_k_analyzed(&analysis) {
+                if let Some(top) = crate::prediction::predict(&analysis.token.normalized)
+                    .into_iter()
+                    .next()
+                {
+                    *predicted_by_system
+                        .entry(prediction_system(top.cell))
+                        .or_default() += 1;
+                    *predicted_by_confidence
+                        .entry(confidence_bucket(top.confidence_bp).into())
+                        .or_default() += 1;
+                }
                 let frontier_key = (
                     analysis.token.original.clone(),
                     analysis.status,
@@ -1710,6 +1732,8 @@ pub fn coverage_with_type_holdout(
         held_out_types: held_out_observed.len(),
         held_out_type_coverage: held_out_slice,
         held_out_type_status: held_out_status,
+        predicted_unresolved_by_system: predicted_by_system,
+        predicted_unresolved_by_confidence: predicted_by_confidence,
         held_out_type_status_by_system: held_out_status_by_system,
         by_corpus,
         by_source,
@@ -1888,6 +1912,16 @@ impl CoverageReport {
                     .copied()
                     .unwrap_or_default(),
             ));
+        }
+        if !self.predicted_unresolved_by_system.is_empty() {
+            output.push_str("\n## Exploratory predictions over the unresolved remainder\n\nDiagnostic only. These tokens have no reviewed reading; the corpus-free\nsegmentation tier (`SYN-PREDICT-VERB-SEGMENTATION-V1`, reachable only under\n`GenerationPolicy::Exploratory`) can offer a typed hypothesis for them. They\nnever count toward strict top-k and no sealed floor reads this table; the\nmasked precision gate lives in `reports/synodal-prediction-precision.md`.\n\n| Top prediction's system | Tokens |\n|---|---:|\n");
+            for (system, tokens) in &self.predicted_unresolved_by_system {
+                output.push_str(&format!("| `{system}` | {tokens} |\n"));
+            }
+            output.push_str("\n| Confidence bucket (bp) | Tokens |\n|---|---:|\n");
+            for (bucket, tokens) in &self.predicted_unresolved_by_confidence {
+                output.push_str(&format!("| {bucket} | {tokens} |\n"));
+            }
         }
         output.push_str("\n## Unresolved tokens by probable family\n\n| Family diagnostic | Tokens | Documents | Route | Surfaces |\n|---|---:|---:|---|---|\n");
         let mut diagnostics: Vec<_> = self.unresolved_by_probable_family.values().collect();
@@ -3098,6 +3132,20 @@ fn update_slice(slice: &mut CoverageSlice, analysis: &TextTokenAnalysis) {
         .is_some_and(|gap| gap.kind != GapKind::AmbiguityOrSpellingVariant)
     {
         slice.unresolved += 1;
+    }
+}
+
+/// The system label of a predicted cell, for the diagnostic slice only.
+fn prediction_system(cell: GrammarCell) -> String {
+    morphological_system(cell)
+}
+
+const fn confidence_bucket(confidence_bp: u16) -> &'static str {
+    match confidence_bp {
+        0..=2399 => "0-2399",
+        2400..=2999 => "2400-2999",
+        3000..=3399 => "3000-3399",
+        _ => "3400+",
     }
 }
 

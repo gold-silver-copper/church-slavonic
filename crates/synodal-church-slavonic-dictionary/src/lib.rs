@@ -17,6 +17,7 @@ use synodal_church_slavonic_core::{
 };
 
 pub mod coverage;
+pub mod prediction;
 
 pub use synodal_church_slavonic as morphology;
 pub use synodal_church_slavonic_core as core;

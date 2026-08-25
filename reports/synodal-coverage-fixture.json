@@ -28,6 +28,20 @@
     "unresolved": 0
   },
   "held_out_type_status": {},
+  "predicted_unresolved_by_system": {
+    "aorist": 12,
+    "imperative": 1,
+    "imperfect": 1,
+    "infinitive": 4,
+    "l-participle": 2,
+    "present": 1
+  },
+  "predicted_unresolved_by_confidence": {
+    "0-2399": 8,
+    "2400-2999": 5,
+    "3000-3399": 6,
+    "3400+": 2
+  },
   "held_out_type_status_by_system": {},
   "by_corpus": {
     "Church Slavonic Bible corpus": {

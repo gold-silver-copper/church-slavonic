@@ -560,3 +560,18 @@ signals for registered behavior. The v0.10 capability source of truth is
 `data/synodal/linguistic_evaluation.tsv` fixture is evaluated by behavioral
 contract, and corpus percentages are not used to select or justify morphology
 work.
+
+
+## Exploratory predictive tier
+
+`synodal_church_slavonic_dictionary::prediction` is the v0.12 phase-3 layer: a
+surface with no reviewed reading gets typed, lower-confidence hypotheses by
+segmentation against the Alypy §§82–97 verbal ending inventory (reflexive
+`-сѧ` stripped first by the §73 rule). Predictions are their own type, are
+reachable only under `GenerationPolicy::Exploratory` (`predict_under`), never
+count toward strict top-k, and are gated by the masked-lexeme precision report
+(`cargo xtask synodal-predict`, `reports/synodal-prediction-precision.md`):
+only confidence buckets meeting the stated floor emit review candidates
+(`reports/synodal-prediction-candidates.tsv`, ranked by token mass with at
+least two distinct sibling cells per hypothesised stem). The coverage report
+carries a diagnostic `predicted` slice over the strict-unresolved remainder.

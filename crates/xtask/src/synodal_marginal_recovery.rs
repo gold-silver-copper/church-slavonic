@@ -837,6 +837,8 @@ mod tests {
             held_out_type_coverage:
                 synodal_church_slavonic_dictionary::coverage::CoverageSlice::default(),
             held_out_type_status: BTreeMap::new(),
+            predicted_unresolved_by_system: BTreeMap::new(),
+            predicted_unresolved_by_confidence: BTreeMap::new(),
             held_out_type_status_by_system: BTreeMap::new(),
             summary: synodal_church_slavonic_dictionary::coverage::CoverageSlice {
                 total_tokens: 1,

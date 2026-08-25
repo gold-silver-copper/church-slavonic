@@ -51,6 +51,30 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `unsupported-formation` | 0 |
 | `ungrouped-unknown` | 26 |
 
+## Exploratory predictions over the unresolved remainder
+
+Diagnostic only. These tokens have no reviewed reading; the corpus-free
+segmentation tier (`SYN-PREDICT-VERB-SEGMENTATION-V1`, reachable only under
+`GenerationPolicy::Exploratory`) can offer a typed hypothesis for them. They
+never count toward strict top-k and no sealed floor reads this table; the
+masked precision gate lives in `reports/synodal-prediction-precision.md`.
+
+| Top prediction's system | Tokens |
+|---|---:|
+| `aorist` | 12 |
+| `imperative` | 1 |
+| `imperfect` | 1 |
+| `infinitive` | 4 |
+| `l-participle` | 2 |
+| `present` | 1 |
+
+| Confidence bucket (bp) | Tokens |
+|---|---:|
+| 0-2399 | 8 |
+| 2400-2999 | 5 |
+| 3000-3399 | 6 |
+| 3400+ | 2 |
+
 ## Unresolved tokens by probable family
 
 | Family diagnostic | Tokens | Documents | Route | Surfaces |

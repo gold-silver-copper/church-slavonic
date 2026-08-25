@@ -67,6 +67,8 @@ jobs:
       # phase 2 bite on a pull request rather than only on a manual dispatch.
       - name: Sealed coverage floors
         run: cargo xtask synodal-coverage-floors
+      - name: Exploratory prediction gate
+        run: cargo xtask synodal-predict --check
       - name: Structural checks
         run: |
           cargo xtask check-structure
