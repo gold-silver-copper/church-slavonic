@@ -531,6 +531,12 @@ pub enum VerbConjugation {
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub enum AoristFormation {
     VowelStem,
+    /// Alypy §86: the closed list `ꙗти, начати, вити, пити, клѧти` (and
+    /// their prefixed compounds) takes the personal ending `-тъ` in the
+    /// second and third singular beside the bare vowel stem (`приѧтъ`,
+    /// `начатъ`, `клѧтъ`). Both prints are ordered variants; every other
+    /// cell follows the plain vowel-stem series.
+    VowelStemWithT,
     ConsonantStem,
     Irregular,
 }
@@ -1699,13 +1705,29 @@ pub fn aorist(
     } else {
         stem.canonical().to_owned()
     };
+    let rule = match formation {
+        AoristFormation::VowelStem => "SYN-VERB-AORIST-VOWEL-ALYPY-86",
+        AoristFormation::VowelStemWithT => "SYN-VERB-AORIST-VOWEL-T-ALYPY-86",
+        AoristFormation::ConsonantStem => "SYN-VERB-AORIST-CONSONANT-ALYPY-86",
+        AoristFormation::Irregular => unreachable!(),
+    };
+    if formation == AoristFormation::VowelStemWithT
+        && matches!(person, Person::Second | Person::Third)
+        && number == Number::Singular
+    {
+        // The bare stem and the -тъ print are both attested; Alypy cites the
+        // -тъ shape from the liturgical text, so it leads the ordered pair.
+        return normative_variants(
+            vec![join(&stem_text, "тъ"), stem_text.clone()],
+            rule,
+            profile,
+            "aorist",
+            lexeme.lemma.canonical(),
+        );
+    }
     normative(
         join(&stem_text, ending),
-        match formation {
-            AoristFormation::VowelStem => "SYN-VERB-AORIST-VOWEL-ALYPY-86",
-            AoristFormation::ConsonantStem => "SYN-VERB-AORIST-CONSONANT-ALYPY-86",
-            AoristFormation::Irregular => unreachable!(),
-        },
+        rule,
         profile,
         "aorist",
         lexeme.lemma.canonical(),
@@ -4037,6 +4059,9 @@ fn normative_citation(rule: &str) -> &'static str {
         "SYN-VERB-IMPERATIVE-ALYPY-93" => "Alypy (Gamanovich), §93",
         "SYN-VERB-INFINITIVE-LEXICAL" => "Alypy (Gamanovich), §79; lexical infinitive",
         "SYN-VERB-REFLEXIVE-ALYPY-73" => "Alypy (Gamanovich), §73",
+        "SYN-VERB-AORIST-VOWEL-T-ALYPY-86" => {
+            "Alypy (Gamanovich), §86: the closed -тъ list in the 2nd/3rd singular aorist"
+        }
         "SYN-ADJ-LONG-SIBILANT-ALYPY-57-58" => {
             "Alypy (Gamanovich), §§57–58 and 95–98; Synodal after-sibilant spelling"
         }
@@ -6725,6 +6750,38 @@ mod tests {
             }),
             vec![MetadataField::ParticipleFormation]
         );
+    }
+
+    #[test]
+    fn vowel_t_aorist_offers_the_alypy_86_t_variant_in_the_second_and_third_singular() {
+        let mut lexeme = regular_verb();
+        lexeme.lemma = SynodalWord::parse("клѧти").expect("lemma");
+        lexeme.aorist_stem = Some(SynodalWord::parse("клѧ").expect("stem"));
+        lexeme.aorist_formation = Some(AoristFormation::VowelStemWithT);
+        let third = aorist(
+            &lexeme,
+            Person::Third,
+            Number::Singular,
+            OrthographyProfile::Expanded,
+        )
+        .expect("aorist");
+        assert_eq!(third.texts().collect::<Vec<_>>(), vec!["клѧтъ", "клѧ"]);
+        let first = aorist(
+            &lexeme,
+            Person::First,
+            Number::Singular,
+            OrthographyProfile::Expanded,
+        )
+        .expect("aorist");
+        assert_eq!(first.primary_text(), "клѧхъ");
+        let plural = aorist(
+            &lexeme,
+            Person::Third,
+            Number::Plural,
+            OrthographyProfile::Expanded,
+        )
+        .expect("aorist");
+        assert_eq!(plural.primary_text(), "клѧша");
     }
 
     fn regular_verb() -> VerbLexeme {

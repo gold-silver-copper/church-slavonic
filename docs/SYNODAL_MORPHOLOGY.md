@@ -129,7 +129,7 @@ reusable accent paradigm; expanded rules never invent stress.
 | Numeral government and phrases | `SYN-NUMERAL-{GOVERNMENT,DISTRIBUTIVE,MULTIPLICATIVE,FRACTION}-*` | Alypy §§61, 65–70; locked target texts | typed following/preceding agreement and government; repeated distributives; invariant `кратъ`; cardinal, ordinal, and `полдесѧтый` expressions with inflected `часть` |
 | Present | `SYN-VERB-PRESENT-ALYPY-80` | Alypy §§79–82 | independent full 1sg and 3pl plus medial present stem and conjugation |
 | Simple future | `SYN-VERB-FUTURE-PERFECTIVE-ALYPY-84` | Alypy §§84, 104; Pletneva–Kravetsky lesson 13 | perfective aspect plus either the independently supplied present-shaped 1sg/stem/3pl or a complete independent future triple for suppletion; contextual non-perfective readings require exact evidence |
-| Aorist | `SYN-VERB-AORIST-{VOWEL,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation |
+| Aorist | `SYN-VERB-AORIST-{VOWEL,VOWEL-T,CONSONANT}-ALYPY-86` | Alypy §86 | independent aorist base and formation; limited final-velar alternation; the closed `-тъ` list (`ꙗти, начати, вити, пити, клѧти` and compounds) uses `vowel-t`, emitting ordered `-тъ`/bare variants in the 2nd/3rd singular |
 | Imperfect | `SYN-VERB-IMPERFECT-{H,YAH,AH}-ALYPY-87` | Alypy §87 | imperfective/biaspectual verb, independent base and formation |
 | Imperative | `SYN-VERB-IMPERATIVE-ALYPY-93` | Alypy §93 | independent base and `first-unpalatalized`/`i-series`/`j-series` formation; `j-series` is the §93 vowel-stem case where `-и-` passes into `-й-` (`бо́йсѧ`, `сто́йте`) |
 | Infinitive | `SYN-VERB-INFINITIVE-LEXICAL` | Alypy §79 | resolved target lemma; no invented infinitive stem |

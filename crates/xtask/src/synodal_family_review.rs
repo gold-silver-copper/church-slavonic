@@ -654,16 +654,22 @@ fn validate_admitted_families(
                 let expected = review
                     .admitted_class
                     .trim_end_matches("-imperfective-verb-system-productive-only");
+                let supports = |system: &str| {
+                    family
+                        .supported_systems
+                        .iter()
+                        .any(|supported| supported == system)
+                };
                 family.fully_classed
                     && !family.exact_only
                     && family.class.as_deref() == Some(expected)
                     && family.lexeme.part_of_speech() == synodal_church_slavonic::PartOfSpeech::Verb
-                    && ["present", "imperfect", "imperative"].iter().all(|system| {
-                        family
-                            .supported_systems
-                            .iter()
-                            .any(|supported| supported == system)
-                    })
+                    && supports("present")
+                    && supports("imperative")
+                    // An imperfective verb carries at least one attested past
+                    // system; which one varies (клѧтисѧ has an aorist and no
+                    // imperfect print, боѧтисѧ the reverse).
+                    && (supports("imperfect") || supports("aorist"))
             }
             "second-verb-system-with-exact-overrides" => {
                 family.fully_classed

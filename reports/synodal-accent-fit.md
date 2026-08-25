@@ -13,7 +13,7 @@ accent mobility is stated rather than smoothed away.
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 36
 - Scope families with no reproducing placement at the finest granularity: 193
-- Lexemes with cells outside the reusable scope grammar: 4
+- Lexemes with cells outside the reusable scope grammar: 5
 
 | Granularity | Rows |
 |---|---:|
@@ -923,6 +923,7 @@ accent-paradigm scope grammar cannot address them. They need per-cell
 
 ```text
 synodal:verb:pisati	infinitive писа́ти
+synodal:verb:v12-priblizhitisya	infinitive прибли́житисѧ
 synodal:verb:vozlozhiti	infinitive возложи́ти
 synodal:verb:vozvestiti	infinitive возвѣсти́ти
 synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
@@ -930,6 +931,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3231
-- Lexemes with at least one such attestation: 115
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3232
+- Lexemes with at least one such attestation: 116
 - Placement space searched per partition: 30 placements x 3 marks

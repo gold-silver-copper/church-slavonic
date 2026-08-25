@@ -1875,6 +1875,7 @@ fn parse_imperfect(value: &str) -> Result<ImperfectFormation> {
 fn parse_aorist(value: &str) -> Result<AoristFormation> {
     match value {
         "vowel" => Ok(AoristFormation::VowelStem),
+        "vowel-t" => Ok(AoristFormation::VowelStemWithT),
         "consonant" => Ok(AoristFormation::ConsonantStem),
         "irregular" => Ok(AoristFormation::Irregular),
         other => invalid_metadata("aorist formation", other),

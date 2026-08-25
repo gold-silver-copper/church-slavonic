@@ -223,3 +223,23 @@ synodal:verb:v12-umertviti	future-third-plural	оумертвѧтъ		alypy-82-um
 synodal:verb:v12-umertviti	aorist-stem	оумертви	vowel	alypy-86-vowel-aorist,ponomar-iii-kings-15-28-umertvi,ponomar-iv-kings-11-2-umertvisha	synodal-russian
 synodal:verb:v12-umertviti	imperative-stem	оумертв	i-series	alypy-93-second-conjugation,ponomar-iii-kings-3-26-umertvite	synodal-russian
 synodal:verb:v12-umertviti	l-participle-stem	оумертви		alypy-97-general	synodal-russian
+synodal:verb:v12-klyatisya	present-first-singular	кленꙋ		alypy-82-klyatisya	synodal-russian
+synodal:verb:v12-klyatisya	present-third-plural	кленꙋтъ		alypy-82-klyatisya	synodal-russian
+synodal:verb:v12-klyatisya	aorist-stem	клѧ	vowel-t	alypy-86-vowel-t,ponomar-baruch-2-34-klyahsya,ponomar-ex-13-11-klyasya,ponomar-ii-esdra-8-92-klyashasya	synodal-russian
+synodal:verb:v12-klyatisya	imperative-stem	клен	first-unpalatalized	alypy-93-first-conjugation,ponomar-gen-21-23-klenisya	synodal-russian
+synodal:verb:v12-klyatisya	l-participle-stem	клѧ		alypy-97-general,ponomar-deut-9-27-klyalsya	synodal-russian
+synodal:verb:v12-priblizhitisya	future-stem	приближ		alypy-82-priblizhitisya,ponomar-deut-20-2-priblizhishisya	synodal-russian
+synodal:verb:v12-priblizhitisya	future-first-singular	приближꙋ		alypy-82-priblizhitisya	synodal-russian
+synodal:verb:v12-priblizhitisya	future-third-plural	приближатъ		alypy-82-priblizhitisya,ponomar-isa-5-19-priblizhatsya	synodal-russian
+synodal:verb:v12-priblizhitisya	aorist-stem	приближи	vowel	alypy-86-vowel-aorist,ponomar-dan-6-20-priblizhisya,ponomar-ii-kings-11-20-priblizhistesya	synodal-russian
+synodal:verb:v12-priblizhitisya	imperative-stem	приближ	i-series	alypy-93-second-conjugation,ponomar-jas-4-8-priblizhitesya	synodal-russian
+synodal:verb:v12-priblizhitisya	l-participle-stem	приближи		alypy-97-general	synodal-russian
+synodal:verb:v12-priblizhitisya	past-active-participle-short-stem	приближивш	hard:past-vowel	alypy-96-vowel-past-active,ponomar-gen-18-23-priblizhivsya,ponomar-ii-macc-10-35-priblizhivshesya	synodal-russian
+synodal:verb:v12-tsarstvovati	present-first-singular	царствꙋю		alypy-82-tsarstvovati	synodal-russian
+synodal:verb:v12-tsarstvovati	present-third-plural	царствꙋютъ		alypy-82-tsarstvovati,ponomar-iii-esdra-12-2-tsarstvuyut	synodal-russian
+synodal:verb:v12-tsarstvovati	aorist-stem	царствова	vowel	alypy-86-vowel-aorist,ponomar-composite-4-3-tsarstvova,ponomar-i-paral-1-43-tsarstvovasha	synodal-russian
+synodal:verb:v12-tsarstvovati	imperfect-stem	царствова	h	alypy-87-lyubiti,ponomar-iii-esdra-11-14-tsarstvovashe	synodal-russian
+synodal:verb:v12-tsarstvovati	imperative-stem	царствꙋ	j-series	alypy-93-j-series	synodal-russian
+synodal:verb:v12-tsarstvovati	l-participle-stem	царствова		alypy-97-general	synodal-russian
+synodal:verb:v12-tsarstvovati	present-active-participle-long-stem	царствꙋющ	hard	alypy-95-boyatisya,ponomar-iii-kings-6-1-tsarstvuyushchu	synodal-russian
+synodal:verb:v12-tsarstvovati	present-active-participle-short-stem	царствꙋющ	hard:present-first-palatalized	alypy-95-boyatisya,ponomar-esther-3-13-tsarstvuyushch	synodal-russian

@@ -299,3 +299,34 @@ Deferred with reasons: `ѿпꙋстити` (needs a ст→щ first-singular pri
 `приближитисѧ` (reflexive-lexeme pattern; held-out `прибли́жишасѧ` must stay
 uncited), `колесни́ца` (nominal wave; broad-е antistich belongs with the
 phase-3 positional design).
+
+## Phase 2, wave 4 — the §86 -тъ rule, клѧтисѧ, приближитисѧ, царствовати
+
+Sealed as `v0.12-wave-4`.
+
+| Measure | Wave 3 | Wave 4 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 10,048 | 10,266 | +218 |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| corpus top-k | 971,946 | 973,202 | +1,256 |
+| lexemes / verb lexemes | 1,005 / 175 | 1,008 / 178 | +3 / +3 |
+| `principal_parts.tsv` rows | 224 | 244 | +20 |
+| productive evaluation rows | 65 | 77 | +12 |
+
+New rule `SYN-VERB-AORIST-VOWEL-T-ALYPY-86` (`vowel-t` formation): Alypy §86
+names the closed list `ꙗти, начати, вити, пити, клѧти` whose 2nd/3rd singular
+aorist takes `-тъ` beside the bare stem, as ordered variants. That is how the
+held-out `клѧ́тсѧ` (144 tokens) is reached by rule from an aorist stem whose
+evidence never cites it. Admissions: `клѧтисѧ` (reflexive-only, suppletive
+present `клен-` against aorist `клѧ-`; the imperfective productive-only class
+now requires *one* attested past system rather than specifically the
+imperfect), `приближитисѧ` (held-out `прибли́жишасѧ`, `прибли́житсѧ`,
+`прибли́житисѧ` all reached by rule), and `царствовати` (`-ова-`/`-ꙋ-` stem
+suppletion; held-out `ца́рствꙋю` licensed by the §82 ending). Also retracted a
+second mislabelled v0.7 exact cell — the imperfect print `Глаго́лаше` filed as
+`aorist:third:plural` of `глаголати` — unblocking the genuine `глаго́лаша`
+(192 tokens).
+
+Running total: held-out generalised 9,467 → 10,266 (+799, +8.4%) and corpus
+top-k 964,791 → 973,202 (+8,411) across four waves, with memorisation capped
+at 14,998 throughout.

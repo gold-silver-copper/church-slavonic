@@ -1,32 +1,32 @@
 measure	direction	value	sealed_at	justification
-summary:top_k_analyzed	at-least	971946	v0.11-phase-1	Strict top-k recall may not fall. The v0.11 program keeps driving this toward 100%.
-summary:top_1_analyzed	at-least	616288	v0.11-phase-1	Regression guard only. Raw top-1 requires exactly one analysis, so genuine syncretism caps it; it is never an objective and may only fall with a stated syncretism justification.
-integrity:lemma_unique_analyzed	at-least	962444	v0.11-phase-1	Tokens resolving to exactly one lexical identity. Unlike top-1 this is not capped by syncretism, so a fall means real identity ambiguity was introduced.
-integrity:morphologically_typed_analyzed	at-least	921824	v0.11-phase-1	Covered tokens carrying at least one inflectable cell. Coverage growth must land here.
+summary:top_k_analyzed	at-least	973202	v0.11-phase-1	Strict top-k recall may not fall. The v0.11 program keeps driving this toward 100%.
+summary:top_1_analyzed	at-least	617076	v0.11-phase-1	Regression guard only. Raw top-1 requires exactly one analysis, so genuine syncretism caps it; it is never an objective and may only fall with a stated syncretism justification.
+integrity:lemma_unique_analyzed	at-least	963700	v0.11-phase-1	Tokens resolving to exactly one lexical identity. Unlike top-1 this is not capped by syncretism, so a fall means real identity ambiguity was introduced.
+integrity:morphologically_typed_analyzed	at-least	923080	v0.11-phase-1	Covered tokens carrying at least one inflectable cell. Coverage growth must land here.
 integrity:morphology_free_analyzed	at-most	50122	v0.11-phase-1	Covered tokens whose every reading is lexical-form. This is the cheapest route to coverage and teaches the engine nothing; the ceiling must fall over the program, never rise.
 system:adjective	at-least	21767	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:aorist	at-least	46871	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:aorist	at-least	47706	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:compound-cardinal-word	at-least	4300	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:cyrillic-numeral	at-least	197	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:determiner	at-least	17204	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:future	at-least	17338	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:imperative	at-least	5050	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:imperfect	at-least	6389	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:future	at-least	17362	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:imperative	at-least	5072	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:imperfect	at-least	6401	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:indeclinable	at-least	371120	v0.12-wave-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system. v0.12 wave 1 re-sealed for the same typed-first attribution as system:lexical-form; no indeclinable reading was removed.
-system:infinitive	at-least	3420	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:l-participle	at-least	2130	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:infinitive	at-least	3584	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:l-participle	at-least	2152	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:lexical-form	at-most	49552	v0.12-wave-2	Tokens attributed to a lexical-form reading because no typed reading exists for them. Under typed-first attribution this is the cheap residue, so like integrity:morphology_free_analyzed it is a ceiling that must fall over the program, never rise; it does fall whenever a reviewed headword gains real morphology.
 system:noun	at-least	202583	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:numeral	at-least	10045	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:past-active-participle	at-least	2858	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:past-active-participle	at-least	2870	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:past-passive-participle	at-least	997	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:present	at-least	27220	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-system:present-active-participle	at-least	6382	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:present	at-least	27344	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
+system:present-active-participle	at-least	6423	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:present-passive-participle	at-least	31	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:pronoun	at-least	176492	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:unresolved	at-least	0	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
 system:verbal-noun	at-least	0	v0.11-phase-1	Per-system floor: aggregate coverage may not be purchased by losing a morphological system.
-holdout:top_k_analyzed	at-least	26105	v0.11-phase-2	Strict top-k over the type-disjoint holdout. This is the only measure here that shows generalisation to types the reviewed data has never seen, and it may not fall.
+holdout:top_k_analyzed	at-least	26323	v0.11-phase-2	Strict top-k over the type-disjoint holdout. This is the only measure here that shows generalisation to types the reviewed data has never seen, and it may not fall.
 holdout:memorised_analyzed	at-most	14998	v0.11-phase-2	Held-out tokens covered by an exact row citing the held-out type itself. These predate the holdout and are grandfathered; the ceiling forces new evidence away from held-out types instead of memorising them.
-holdout:generalised_analyzed	at-least	10048	v0.11-phase-2	Held-out tokens reached by normative table, productive rule, or irregular override rather than by a row naming the type. Coverage growth on the holdout must land here.
+holdout:generalised_analyzed	at-least	10266	v0.11-phase-2	Held-out tokens reached by normative table, productive rule, or irregular override rather than by a row naming the type. Coverage growth on the holdout must land here.
 integrity:cross_lexeme_ambiguous	at-most	9502	v0.12-wave-1	Tokens whose readings span more than one lexeme. Genuine homonymy is real and stays, but a duplicated identity raises this while making the analyzer worse, and one shipped on this branch before the ceiling existed. New homonymy now needs a stated justification. v0.12 wave 1 (+18): the Alypy §73 reflexive derivation inherits its host's readings, so a host that already spans two lexemes yields a two-lexeme reflexive reading; no identity was added.
