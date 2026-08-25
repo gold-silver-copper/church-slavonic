@@ -2660,6 +2660,7 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
 
         // Tampering with an immutable archived artifact must be detected.
         fs::create_dir_all(temporary.join("reports"))?;
+        fs::create_dir_all(temporary.join("docs"))?;
         for artifact in [
             "reports/synodal-archive-manifest.tsv",
             "reports/synodal-v04-baseline.json",
@@ -2672,6 +2673,10 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
             "reports/synodal-v07-review-packets.json",
             "reports/synodal-v07-review-packets.md",
             "reports/synodal-v07-review-packets.tsv",
+            "docs/SYNODAL_V04_MORPHOLOGICAL_FAMILY_AUDIT.md",
+            "docs/SYNODAL_V05_TOP_K_COVERAGE_AUDIT.md",
+            "docs/SYNODAL_V06_65_PERCENT_TOP_K_COVERAGE_AUDIT.md",
+            "docs/SYNODAL_V07_70_PERCENT_TOP_K_COVERAGE_AUDIT.md",
         ] {
             fs::copy(root.join(artifact), temporary.join(artifact))?;
         }
