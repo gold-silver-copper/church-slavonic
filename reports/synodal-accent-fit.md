@@ -12,8 +12,8 @@ accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 193
-- Lexemes with cells outside the reusable scope grammar: 5
+- Scope families with no reproducing placement at the finest granularity: 203
+- Lexemes with cells outside the reusable scope grammar: 6
 
 | Granularity | Rows |
 |---|---:|
@@ -784,6 +784,16 @@ synodal:verb:v07-553feeb14b8be67e	plural:accusative	Noun	4 attestation(s); best 
 synodal:verb:v07-553feeb14b8be67e	plural:instrumental	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїи→собра́нїи собранїи→собра́нїи
 synodal:verb:v07-553feeb14b8be67e	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ собранїѧ→собра̑нїѧ собранїѧ→собра̑нїѧ
 synodal:verb:v07-553feeb14b8be67e	singular	Imperative	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: собери→собери́
+synodal:verb:v07-b4d42124734cba64	plural	FiniteVerb("future")	4 attestation(s); best rule ending-vowel-from-end:1 acute misses: ѿпꙋстите→ѿпꙋститѐ
+synodal:verb:v07-b4d42124734cba64	plural	FiniteVerb("present")	3 attestation(s); best rule ending-vowel-from-end:1 acute misses: ѿпꙋстите→ѿпꙋститѐ
+synodal:verb:v07-b4d42124734cba64	plural	Imperative	3 attestation(s); best rule ending-vowel-from-end:1 acute misses: ѿпꙋстите→ѿпꙋститѐ
+synodal:verb:v12-gryasti	singular	Participle("present", "active", "long", "positive")	31 attestation(s); best rule word-vowel-from-start:1 acute misses: грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ
+synodal:verb:v12-gryasti	dual	Participle("present", "active", "long", "positive")	36 attestation(s); best rule word-vowel-from-start:1 acute misses: грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ
+synodal:verb:v12-gryasti	plural	Participle("present", "active", "long", "positive")	24 attestation(s); best rule word-vowel-from-start:1 acute misses: грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ
+synodal:verb:v12-potrebiti	plural	FiniteVerb("future")	5 attestation(s); best rule word-vowel-from-start:2 acute misses: потребите→потребите́ потребите→потребитѐ
+synodal:verb:v12-potrebiti	plural	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:2 acute misses: потребите→потребите́ потребите→потребитѐ
+synodal:verb:v12-potrebiti	singular	Imperative	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: потреби→Потреби́ потреби→Потреби́
+synodal:verb:v12-potrebiti	plural	Imperative	4 attestation(s); best rule word-vowel-from-start:2 acute misses: потребите→потребите́ потребите→потребитѐ
 synodal:verb:v12-ubiti	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїе→ᲂу҆бїе́нїе оубїенїе→ᲂу҆бїе́нїе
 synodal:verb:v12-ubiti	singular:dative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїю→ᲂу҆бїе́нїю оубїенїю→ᲂу҆бїе́нїю
 synodal:verb:v12-ubiti	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїе→ᲂу҆бїе́нїе оубїенїе→ᲂу҆бїе́нїе
@@ -801,6 +811,9 @@ synodal:verb:v12-uslyshati	singular:vocative	Noun	2 attestation(s); best rule wo
 synodal:verb:v12-uslyshati	singular	Participle("past", "passive", "short", "positive")	34 attestation(s); best rule word-vowel-from-start:1 acute misses: оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана
 synodal:verb:v12-uslyshati	dual	Participle("past", "passive", "short", "positive")	24 attestation(s); best rule word-vowel-from-start:1 acute misses: оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана
 synodal:verb:v12-uslyshati	plural	Participle("past", "passive", "short", "positive")	16 attestation(s); best rule word-vowel-from-start:1 acute misses: оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана
+synodal:verb:v12-vhoditi	plural	FiniteVerb("present")	4 attestation(s); best rule word-vowel-from-start:0 acute misses: входите→входи́те
+synodal:verb:v12-vhoditi	singular	Imperative	4 attestation(s); best rule word-vowel-from-start:1 grave misses: входи→вхо́ди входи→вхо́ди
+synodal:verb:v12-vhoditi	plural	Imperative	4 attestation(s); best rule word-vowel-from-start:0 acute misses: входите→входи́те
 synodal:verb:vozlozhiti	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: возложите→возложитѐ
 synodal:verb:vozlozhiti	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
 synodal:verb:vozlozhiti	plural	Imperative	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
@@ -903,6 +916,7 @@ synodal:verb:v07-553feeb14b8be67e	participle:past:passive:short:positive:singula
 synodal:verb:v07-ff04037d9da0c605	finite:future:plural	overlaps an existing reviewed paradigm at future:second:plural
 synodal:verb:v07-ff04037d9da0c605	finite:present:plural	overlaps an existing reviewed paradigm at present:second:plural
 synodal:verb:v07-ff04037d9da0c605	imperative:plural	overlaps an existing reviewed paradigm at imperative:second:plural
+synodal:verb:v12-potrebiti	finite:aorist:singular	overlaps an existing reviewed paradigm at aorist:second:singular
 synodal:verb:wikt-070505e82800	finite:present:dual,plural	overlaps an existing reviewed paradigm at present:third:plural
 synodal:verb:wikt-0c6c8db63b7c	participle:present:active:short:positive:plural	overlaps an existing reviewed paradigm at participle:present:active:nominative:plural:masculine:inanimate:short:positive
 synodal:verb:wikt-332544509d0c	finite:aorist:singular	overlaps an existing reviewed paradigm at aorist:second:singular
@@ -924,6 +938,7 @@ accent-paradigm scope grammar cannot address them. They need per-cell
 ```text
 synodal:verb:pisati	infinitive писа́ти
 synodal:verb:v12-priblizhitisya	infinitive прибли́житисѧ
+synodal:verb:v12-vhoditi	infinitive входи́ти
 synodal:verb:vozlozhiti	infinitive возложи́ти
 synodal:verb:vozvestiti	infinitive возвѣсти́ти
 synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
@@ -931,6 +946,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3232
-- Lexemes with at least one such attestation: 116
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3362
+- Lexemes with at least one such attestation: 120
 - Placement space searched per partition: 30 placements x 3 marks

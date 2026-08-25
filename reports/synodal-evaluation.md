@@ -1,23 +1,23 @@
 # Synodal evaluation
 
-Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2341 held-out token cells).
+Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2360 held-out token cells).
 
 The correction ledger excludes 5 historically preserved but grammatically retracted evaluation rows from scoring.
 
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| Expanded | 2341 | 2277 | 2341 | 0 | 2341 |
-| Printed | 2341 | 2193 | 2341 | 0 | 2341 |
+| Expanded | 2360 | 2295 | 2359 | 0 | 2360 |
+| Printed | 2360 | 2211 | 2359 | 0 | 2360 |
 
 Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
 Typed abbreviations: top-1 71/81, top-k 81/81 (81 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 3240/3240, printed 3240/3240.
+Exact registry round trips (top-k, including reviewed variants): expanded 3241/3241, printed 3241/3241.
 
-Masked cells: expanded 610/611, printed 610/611. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
+Masked cells: expanded 628/630, printed 628/630. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
-Accent agreement: 2199/2199 accent-bearing rows.
+Accent agreement: 2215/2216 accent-bearing rows.
 
 Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expanded forms. The reviewed alignment registry has 5 accepted mappings, 5 aligned target lexemes, and 1 rejected negative controls.
 
@@ -25,46 +25,46 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exploratory` | 2341 | 2277 | 2341 | 0 | 2341 |
-| `productive` | 2341 | 2277 | 2341 | 0 | 2341 |
-| `strict` | 2341 | 2277 | 2341 | 0 | 2341 |
+| `exploratory` | 2360 | 2295 | 2359 | 0 | 2360 |
+| `productive` | 2360 | 2295 | 2359 | 0 | 2360 |
+| `strict` | 2360 | 2295 | 2359 | 0 | 2360 |
 
 ## Expanded accuracy by attestation status
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `attested` | 2124 | 2062 | 2124 | 0 | 2124 |
-| `expected-form-not-returned` | 0 | 0 | 0 | 0 | 0 |
-| `predicted` | 217 | 215 | 217 | 0 | 217 |
+| `attested` | 2123 | 2061 | 2123 | 0 | 2123 |
+| `expected-form-not-returned` | 1 | 0 | 0 | 0 | 1 |
+| `predicted` | 236 | 234 | 236 | 0 | 236 |
 
 ## Expanded accuracy by morphological system
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `adjective` | 122 | 118 | 122 | 0 | 122 |
-| `aorist` | 221 | 216 | 221 | 0 | 221 |
+| `aorist` | 224 | 219 | 224 | 0 | 224 |
 | `determiner` | 21 | 20 | 21 | 0 | 21 |
-| `future` | 93 | 90 | 93 | 0 | 93 |
-| `imperative` | 68 | 66 | 68 | 0 | 68 |
-| `imperfect` | 32 | 30 | 32 | 0 | 32 |
+| `future` | 97 | 94 | 97 | 0 | 97 |
+| `imperative` | 71 | 69 | 71 | 0 | 71 |
+| `imperfect` | 33 | 31 | 33 | 0 | 33 |
 | `indeclinable` | 88 | 82 | 88 | 0 | 88 |
-| `infinitive` | 16 | 16 | 16 | 0 | 16 |
+| `infinitive` | 19 | 19 | 19 | 0 | 19 |
 | `l-participle` | 21 | 21 | 21 | 0 | 21 |
-| `lexical-form` | 435 | 431 | 435 | 0 | 435 |
+| `lexical-form` | 435 | 430 | 434 | 0 | 435 |
 | `noun` | 958 | 925 | 958 | 0 | 958 |
 | `numeral` | 26 | 25 | 26 | 0 | 26 |
 | `participle` | 76 | 76 | 76 | 0 | 76 |
-| `present` | 65 | 64 | 65 | 0 | 65 |
+| `present` | 70 | 69 | 70 | 0 | 70 |
 | `pronoun` | 99 | 97 | 99 | 0 | 99 |
 
 ## Expanded accuracy by provenance path
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exact-synodal-attestation` | 2119 | 2062 | 2119 | 0 | 2119 |
+| `exact-synodal-attestation` | 2119 | 2061 | 2118 | 0 | 2119 |
 | `synodal-irregular-override` | 19 | 16 | 19 | 0 | 19 |
 | `synodal-normative-table` | 78 | 74 | 78 | 0 | 78 |
-| `synodal-productive-rule` | 125 | 125 | 125 | 0 | 125 |
+| `synodal-productive-rule` | 144 | 144 | 144 | 0 | 144 |
 
 ## Expanded accuracy by regularity
 
@@ -196,14 +196,14 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `v05-held-out-third-person-variant` | 1 | 1 | 1 | 0 | 1 |
 | `v06-held-out-exact-cell` | 81 | 80 | 81 | 0 | 81 |
 | `v06-held-out-exact-irregular` | 5 | 5 | 5 | 0 | 5 |
-| `v06-held-out-lexical-identity` | 61 | 60 | 61 | 0 | 61 |
+| `v06-held-out-lexical-identity` | 61 | 59 | 60 | 0 | 61 |
 | `v06-held-out-manual-exact` | 13 | 12 | 13 | 0 | 13 |
 | `v06-held-out-normative-table` | 5 | 5 | 5 | 0 | 5 |
 | `v06-held-out-source-typed-exact` | 474 | 457 | 474 | 0 | 474 |
 | `v07-held-out-exact-cell` | 914 | 882 | 914 | 0 | 914 |
 | `v07-held-out-explicit-accent-case-variant` | 44 | 40 | 44 | 0 | 44 |
 | `v07-reviewed-identity-correction` | 1 | 1 | 1 | 0 | 1 |
-| `v12-productive-held-out` | 76 | 76 | 76 | 0 | 76 |
+| `v12-productive-held-out` | 95 | 95 | 95 | 0 | 95 |
 | `v18-held-out-productive-accent` | 2 | 2 | 2 | 0 | 2 |
 | `v18-held-out-source-typed-exact` | 1 | 1 | 1 | 0 | 1 |
 | `v19-held-out-normative-short-feminine-accusative` | 1 | 1 | 1 | 0 | 1 |
@@ -233,6 +233,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Expanded `eval:v06:exact-c123b072b6cbc74e` (`noun:accusative:plural:inanimate`): expected `бѡлѣзни`, top-1 `болѣзни`.
 - Expanded `eval:v06:exact-ec9f03ea8db3f50f` (`aorist:first:singular`): expected `Рѣхъ`, top-1 `рѣкъ`.
 - Expanded `eval:v06:lexical-8897d4e2e9679e01` (`lexical-form`): expected `илїи`, top-1 `илїа`.
+- Expanded `eval:v06:lexical-c36c119a628a329c` (`lexical-form`): expected `послꙋша`, top-1 `послꙋшати`.
 - Expanded `eval:v06:manual:resha` (`aorist:third:plural`): expected `рѣша`, top-1 `рекоша`.
 - Expanded `eval:v06:slovo-gen-sg` (`noun:genitive:singular:inanimate`): expected `словесе`, top-1 `слова`.
 - Expanded `eval:v07:variant-369f932e734ff9e7` (`noun:instrumental:plural:inanimate`): expected `ᲂусты`, top-1 `ѹсты`.
@@ -338,6 +339,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v06:exact-f9412ea965195abe` (`present:second:plural`): expected `творитѐ`, top-1 `твори́те`.
 - Printed `eval:v06:exact-fa7076f43321c9ce` (`adjective:nominative:plural:neuter:any:short:positive`): expected `жи̑ва`, top-1 `жи́ва`.
 - Printed `eval:v06:lexical-8897d4e2e9679e01` (`lexical-form`): expected `и҆лїѝ`, top-1 `И҆лїа̀`.
+- Printed `eval:v06:lexical-c36c119a628a329c` (`lexical-form`): expected `послꙋ́ша`, top-1 `послꙋ́шати`.
 - Printed `eval:v06:manual:posla` (`aorist:third:singular`): expected `посла̀`, top-1 `Посла̀`.
 - Printed `eval:v06:manual:resha` (`aorist:third:plural`): expected `рѣ́ша`, top-1 `реко́ша`.
 - Printed `eval:v06:noshch-gen-sg` (`noun:genitive:singular:inanimate`): expected `нощѝ`, top-1 `но́щи`.

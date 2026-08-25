@@ -243,3 +243,32 @@ synodal:verb:v12-tsarstvovati	imperative-stem	царствꙋ	j-series	alypy-93-
 synodal:verb:v12-tsarstvovati	l-participle-stem	царствова		alypy-97-general	synodal-russian
 synodal:verb:v12-tsarstvovati	present-active-participle-long-stem	царствꙋющ	hard	alypy-95-boyatisya,ponomar-iii-kings-6-1-tsarstvuyushchu	synodal-russian
 synodal:verb:v12-tsarstvovati	present-active-participle-short-stem	царствꙋющ	hard:present-first-palatalized	alypy-95-boyatisya,ponomar-esther-3-13-tsarstvuyushch	synodal-russian
+synodal:verb:wikt-bbe1760d7910	present-first-singular	послꙋшаю		alypy-82-poslushati,ponomar-amos-5-23-poslushayu	synodal-russian
+synodal:verb:wikt-bbe1760d7910	present-third-plural	послꙋшаютъ		alypy-82-poslushati,ponomar-deut-18-14-poslushayut	synodal-russian
+synodal:verb:wikt-bbe1760d7910	aorist-stem	послꙋша	vowel	alypy-86-vowel-aorist,ponomar-dan-1-14-poslusha,ponomar-acts-5-37-poslushasha,ponomar-deut-26-14-poslushah	synodal-russian
+synodal:verb:wikt-bbe1760d7910	imperfect-stem	послꙋша	h	alypy-87-lyubiti,ponomar-acts-16-14-poslushashe	synodal-russian
+synodal:verb:wikt-bbe1760d7910	imperative-stem	послꙋша	j-series	alypy-93-j-series,ponomar-acts-23-21-poslushay,ponomar-acts-3-22-poslushayte	synodal-russian
+synodal:verb:wikt-bbe1760d7910	l-participle-stem	послꙋша		alypy-97-general,ponomar-acts-18-14-poslushal	synodal-russian
+synodal:verb:v12-gryasti	present-first-singular	грѧдꙋ		alypy-82-gryasti,ponomar-apoc-2-5-gryadu	synodal-russian
+synodal:verb:v12-gryasti	present-third-plural	грѧдꙋтъ		alypy-82-gryasti,ponomar-amos-4-2-gryadut	synodal-russian
+synodal:verb:v12-gryasti	imperfect-stem	грѧдѧ	yah	alypy-87-lyubiti	synodal-russian
+synodal:verb:v12-gryasti	imperative-stem	грѧд	first-unpalatalized	alypy-93-first-conjugation,ponomar-iv-kings-6-19-gryadite	synodal-russian
+synodal:verb:v12-gryasti	present-active-participle-long-stem	грѧдꙋщ	hard	alypy-95-boyatisya,ponomar-eccles-2-16-gryadushchih	synodal-russian
+synodal:verb:v12-gryasti	present-active-participle-short-stem	грѧдꙋщ	hard:present-first-unpalatalized	alypy-95-boyatisya,ponomar-jn-1-29-gryadushcha	synodal-russian
+synodal:verb:v12-potrebiti	future-stem	потреб		alypy-82-potrebiti,ponomar-dan-13-59-potrebit,ponomar-deut-20-20-potrebishi	synodal-russian
+synodal:verb:v12-potrebiti	future-first-singular	потреблю		alypy-82-potrebiti	synodal-russian
+synodal:verb:v12-potrebiti	future-third-plural	потребѧтъ		alypy-82-potrebiti	synodal-russian
+synodal:verb:v12-potrebiti	aorist-stem	потреби	vowel	alypy-86-vowel-aorist,ponomar-deut-31-4-potrebi,ponomar-deut-2-12-potrebisha	synodal-russian
+synodal:verb:v12-potrebiti	imperative-stem	потреб	i-series	alypy-93-second-conjugation,ponomar-jerem-31-2-potrebite	synodal-russian
+synodal:verb:v12-potrebiti	l-participle-stem	потреби		alypy-97-general	synodal-russian
+synodal:verb:v12-vhoditi	present-first-singular	вхождꙋ		alypy-82-vhoditi	synodal-russian
+synodal:verb:v12-vhoditi	present-third-plural	входѧтъ		alypy-82-vhoditi,ponomar-deut-31-16-vhodyat	synodal-russian
+synodal:verb:v12-vhoditi	imperfect-stem	вхожда	h	alypy-87-lyubiti,ponomar-esther-2-14-vhozhdashe	synodal-russian
+synodal:verb:v12-vhoditi	imperative-stem	вход	i-series	alypy-93-second-conjugation,ponomar-amos-5-5-vhodite	synodal-russian
+synodal:verb:v12-vhoditi	l-participle-stem	входи		alypy-97-general	synodal-russian
+synodal:verb:v07-b4d42124734cba64	future-stem	ѿпꙋст		alypy-82-otpustiti,ponomar-acts-24-26-otpustit,ponomar-deut-15-12-otpustishi	synodal-russian
+synodal:verb:v07-b4d42124734cba64	future-first-singular	ѿпꙋщꙋ		alypy-82-otpustiti,ponomar-composite-8-17-otpushchu	synodal-russian
+synodal:verb:v07-b4d42124734cba64	future-third-plural	ѿпꙋстѧтъ		alypy-82-otpustiti	synodal-russian
+synodal:verb:v07-b4d42124734cba64	aorist-stem	ѿпꙋсти	vowel	alypy-86-vowel-aorist,ponomar-acts-16-35-otpusti,ponomar-acts-9-30-otpustisha	synodal-russian
+synodal:verb:v07-b4d42124734cba64	imperative-stem	ѿпꙋст	i-series	alypy-93-second-conjugation,ponomar-acts-16-35-otpusti	synodal-russian
+synodal:verb:v07-b4d42124734cba64	l-participle-stem	ѿпꙋсти		alypy-97-general,ponomar-gen-31-27-otpustil	synodal-russian

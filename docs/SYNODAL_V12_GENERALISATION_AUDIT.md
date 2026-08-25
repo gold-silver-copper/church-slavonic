@@ -330,3 +330,44 @@ second mislabelled v0.7 exact cell — the imperfect print `Глаго́лаше
 Running total: held-out generalised 9,467 → 10,266 (+799, +8.4%) and corpus
 top-k 964,791 → 973,202 (+8,411) across four waves, with memorisation capped
 at 14,998 throughout.
+
+## Phase 2, wave 5 — five verbs, and the ceiling catches two duplicates
+
+Sealed as `v0.12-wave-5`.
+
+| Measure | Wave 4 | Wave 5 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 10,266 | 10,501 | +235 |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| corpus top-k | 973,202 | 975,115 | +1,913 |
+| lexemes / verb lexemes | 1,008 / 178 | 1,011 / 181 | +3 / +3 |
+| productive evaluation rows | 77 | 96 | +19 |
+
+Admitted `послꙋшати`, `грѧсти` (held-out imperative `грѧдѝ`, 108 tokens, by
+the §93 rule from the plural print), `потребити` (held-out `потреблю̀` by the
+§80 labial-epenthesis licence), `входити` (held-out `вхо́дитъ`, `входи́ти`,
+`вхожда́хꙋ` by rule; `вхождꙋ̀` by the §80 dental licence), and `ѿпꙋстити`
+(`ѿпꙋщꙋ̀` attested).
+
+**The cross-lexeme ceiling fired mid-wave and was right.** The first seal
+attempt raised covered ambiguity by 504 tokens over exactly five surfaces:
+my fresh `v12-poslushati` and `v12-otpustiti` ids duplicated the reviewed
+exact-only identities `wikt-bbe1760d7910` (lemma `послꙋшати` — an exact
+match) and `v07-b4d42124734cba64` (`отъпоустити`). Both admissions were
+merged onto the existing ids; `ѿпꙋстити`'s lemma upgrade is licensed by the
+attested infinitive lexical-form row. One residue is documented in the
+ceiling's justification: the immutable v0.6 past-classification record pins
+one `послꙋ́ша` aorist print to a *third* identity (`v06-72858c58897d9d01`),
+so that surface keeps two identities (+120 tokens, ceiling re-sealed at
+9,622) until the identity-merge wave, which now holds three cases:
+`имати`/`имѣти`, `оумьрѣти`/`v12-umreti` (dead `ѹ`-monograph keys), and
+this one.
+
+Deferred: `возмощи` (the §93 velar imperative `возмозѝ` needs the г→з
+alternation the imperative engine does not model), `пойти` (suppletive
+l-participle `поше́лъ`), `обитати`, `воздати`/`предати` (athematic, need a
+`дати`-style archaic table), and six nominal families.
+
+Running total after five waves: held-out generalised 9,467 → 10,501
+(+1,034, +10.9%); corpus top-k 964,791 → 975,115 (+10,324); memorised capped
+at 14,998; productive evaluation rows 1 → 96.
