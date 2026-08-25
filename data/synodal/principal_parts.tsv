@@ -324,3 +324,10 @@ synodal:verb:v12-skonchati	future-third-plural	скончаютъ		alypy-82-skon
 synodal:verb:v12-skonchati	aorist-stem	сконча	vowel	alypy-86-vowel-aorist,ponomar-dan-5-26-skoncha,ponomar-iii-esdra-7-1-skonchah,ponomar-acts-13-29-skonchasha	synodal-russian
 synodal:verb:v12-skonchati	imperative-stem	сконча	j-series	alypy-93-j-series,ponomar-jerem-15-16-skonchay	synodal-russian
 synodal:verb:v12-skonchati	l-participle-stem	сконча		alypy-97-general,ponomar-ezek-22-12-skonchal	synodal-russian
+synodal:verb:v12-pristupiti	future-stem	пристꙋп		alypy-82-pristupiti,ponomar-ex-19-21-pristupyat	synodal-russian
+synodal:verb:v12-pristupiti	future-first-singular	пристꙋплю		alypy-82-pristupiti	synodal-russian
+synodal:verb:v12-pristupiti	future-third-plural	пристꙋпѧтъ		alypy-82-pristupiti,ponomar-ex-19-21-pristupyat	synodal-russian
+synodal:verb:v12-pristupiti	aorist-stem	пристꙋпи	vowel	alypy-86-vowel-aorist,ponomar-acts-8-29-pristupi,ponomar-heb-12-18-pristupiste	synodal-russian
+synodal:verb:v12-pristupiti	imperative-stem	пристꙋп	i-series	alypy-93-second-conjugation,ponomar-iii-kings-18-30-pristupite	synodal-russian
+synodal:verb:v12-pristupiti	l-participle-stem	пристꙋпи		alypy-97-general	synodal-russian
+synodal:verb:v12-pristupiti	past-active-participle-short-stem	пристꙋпивш	hard:past-vowel	alypy-96-vowel-past-active,ponomar-deut-20-2-pristupiv,ponomar-ii-macc-10-17-pristupivshe	synodal-russian

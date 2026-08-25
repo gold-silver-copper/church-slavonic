@@ -17,12 +17,12 @@ rising while `generalised` stays flat is memorising.
 
 | Outcome | Tokens | Share of held-out |
 |---|---:|---:|
-| **generalised** (by rule) | 11089 | 2505 bp |
+| **generalised** (by rule) | 11569 | 2614 bp |
 | memorised (exact row) | 14998 | 3389 bp |
 | ambiguous | 265 | 59 bp |
-| unresolved | 17094 | 3862 bp |
-| top-k (any analysis) | 27146 | 6134 bp |
-| top-1 | 11373 | 2570 bp |
+| unresolved | 16614 | 3754 bp |
+| top-k (any analysis) | 27626 | 6243 bp |
+| top-1 | 11502 | 2599 bp |
 
 ### Held-out tokens by resolver status
 
@@ -34,8 +34,8 @@ rising while `generalised` stays flat is memorising.
 | `spelling-variant` | 11 | 2 bp |
 | `synodal-irregular-override` | 253 | 57 bp |
 | `synodal-normative-table` | 5867 | 1325 bp |
-| `synodal-productive-rule` | 4969 | 1122 bp |
-| `unresolved` | 17094 | 3862 bp |
+| `synodal-productive-rule` | 5449 | 1231 bp |
+| `unresolved` | 16614 | 3754 bp |
 
 ### Held-out tokens by morphological system
 
@@ -44,24 +44,24 @@ A wave aimed at one system must be visible landing in that system.
 | System | Held-out | Generalised | Memorised | Unresolved |
 |---|---:|---:|---:|---:|
 | `adjective` | 914 | 299 | 406 | 2 |
-| `aorist` | 2118 | 559 | 1536 | 23 |
+| `aorist` | 2183 | 624 | 1536 | 23 |
 | `compound-cardinal-word` | 401 | 401 | 0 | 0 |
 | `determiner` | 147 | 0 | 147 | 0 |
-| `future` | 856 | 628 | 161 | 67 |
+| `future` | 856 | 692 | 161 | 3 |
 | `imperative` | 281 | 211 | 64 | 6 |
 | `imperfect` | 300 | 28 | 270 | 2 |
 | `indeclinable` | 1561 | 0 | 1534 | 27 |
 | `infinitive` | 1534 | 1033 | 437 | 64 |
 | `l-participle` | 4 | 4 | 0 | 0 |
 | `lexical-form` | 1514 | 0 | 909 | 20 |
-| `noun` | 12001 | 2585 | 8976 | 302 |
+| `noun` | 12548 | 2902 | 8976 | 532 |
 | `numeral` | 494 | 357 | 0 | 8 |
 | `past-active-participle` | 238 | 19 | 199 | 20 |
 | `past-passive-participle` | 49 | 2 | 45 | 2 |
-| `present` | 949 | 603 | 314 | 32 |
+| `present` | 983 | 637 | 314 | 32 |
 | `present-active-participle` | 184 | 172 | 0 | 12 |
 | `pronoun` | 4210 | 4188 | 0 | 22 |
-| `unresolved` | 16472 | 0 | 0 | 16461 |
+| `unresolved` | 15826 | 0 | 0 | 15815 |
 | `verbal-noun` | 24 | 0 | 0 | 24 |
 
 ## Corpus-wide coverage
@@ -69,21 +69,21 @@ A wave aimed at one system must be visible landing in that system.
 - Passages: 74130
 - Tokens: 1313344
 - Types: 57341
-- Top-1 analyzed: 619692 (4718 bp)
-- Top-k analyzed: 982586 (7481 bp)
+- Top-1 analyzed: 619365 (4715 bp)
+- Top-k analyzed: 983580 (7489 bp)
 - Ambiguous: 9622
-- Unresolved: 329684
+- Unresolved: 328608
 
 ## Gap categories
 
 | Category | Tokens |
 |---|---:|
-| `unknown-lexeme` | 316754 |
+| `unknown-lexeme` | 315503 |
 | `missing-declension-or-class` | 70 |
 | `missing-verb-principal-part` | 72 |
-| `unsupported-formation` | 0 |
-| `missing-accent-or-orthographic-metadata` | 12788 |
-| `ambiguity-or-spelling-variant` | 10696 |
+| `unsupported-formation` | 36 |
+| `missing-accent-or-orthographic-metadata` | 12927 |
+| `ambiguity-or-spelling-variant` | 10778 |
 
 ## Coverage composition
 
@@ -95,10 +95,10 @@ assumed. `morphology-free` tokens carry only `lexical-form` readings.
 
 | Measure | Tokens | Share of top-k |
 |---|---:|---:|
-| morphologically typed | 932750 | 9492 bp |
-| morphology-free | 49836 | 507 bp |
-| lemma-unique | 972964 | 9902 bp |
-| within-lexeme ambiguous (syncretism) | 350314 | 3565 bp |
+| morphologically typed | 933756 | 9493 bp |
+| morphology-free | 49824 | 506 bp |
+| lemma-unique | 973958 | 9902 bp |
+| within-lexeme ambiguous (syncretism) | 351635 | 3575 bp |
 | cross-lexeme ambiguous (homonymy) | 9622 | 97 bp |
 
 ## Estimated recovery routes
@@ -111,9 +111,9 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `reviewed-class` | 70 |
 | `reviewed-principal-part` | 72 |
 | `abbreviation-registry` | 10677 |
-| `spelling-variant` | 13862 |
-| `unsupported-formation` | 0 |
-| `ungrouped-unknown` | 305640 |
+| `spelling-variant` | 14083 |
+| `unsupported-formation` | 36 |
+| `ungrouped-unknown` | 304389 |
 
 ## Exploratory predictions over the unresolved remainder
 
@@ -125,19 +125,19 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 
 | Top prediction's system | Tokens |
 |---|---:|
-| `aorist` | 47675 |
-| `imperative` | 27943 |
-| `imperfect` | 6671 |
-| `infinitive` | 9844 |
-| `l-participle` | 7959 |
-| `present` | 38097 |
+| `aorist` | 47591 |
+| `imperative` | 27762 |
+| `imperfect` | 6555 |
+| `infinitive` | 9836 |
+| `l-participle` | 7955 |
+| `present` | 37894 |
 
 | Confidence bucket (bp) | Tokens |
 |---|---:|
-| 0-2399 | 49673 |
-| 2400-2999 | 19643 |
-| 3000-3399 | 46095 |
-| 3400+ | 22778 |
+| 0-2399 | 49492 |
+| 2400-2999 | 19613 |
+| 3000-3399 | 45984 |
+| 3400+ | 22504 |
 
 ## Unresolved tokens by probable family
 
@@ -147,6 +147,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `diagnostic-family:господь` | 503 | 484 | `abbreviation-registry` | Гдⷭ҇а, Гдⷭ҇еви, Гдⷭ҇емъ, Гдⷭ҇не, Гдⷭ҇нѧ, Гдⷭ҇ꙋ, Госпо́дствꙋюще, гдⷪ҇ꙋ, гдⷭа, гдⷭеви, гдⷭемъ, гдⷭень, гдⷭи, гдⷭне, гдⷭней, гдⷭни, гдⷭню, гдⷭь, гдⷭѣ, гдⷭ҇ви, гдⷭ҇и́на, гдⷭ҇и́нъ, гдⷭ҇и́нꙋ, гдⷭ҇ней, гдⷭ҇немъ, гдⷭ҇нею, гдⷭ҇нима, гдⷭ҇ними, гдⷭ҇нь, гдⷭ҇скꙋю, гдⷭ҇ствꙋй, гдⷭ҇ьі҆́ѡвꙋ, гдⷭꙋ, го́сподемъ, госпо́дства, госпо́дствова, госпо́дствовасте, госпо́дствовати, госпо́дствоваше, госпо́дствѣ, госпо́дствꙋ, госпо́дствꙋемъ, госпо́дствꙋетъ, госпо́дствꙋйте, госпо́дствꙋютъ, госпо́дствꙋюща, госпо́дствꙋющихъ, госпо́дствꙋѧ, госпо́дствꙋѧй, госпо́дїй, госпо́дїємъ, госпо́дїѧми, господе́мъ, господи́нома, господи́номъ, господи́нꙋ |
 | `family:synodal:verb:byti` | 369 | 361 | `spelling-variant` | Бы́вшей, Бы́вши, Бы́вшымъ, бы̀сть, бы̀ша, бы́вша, бы́вшаго, бы́вшагѡ, бы́вшаѧ, бы́вшей, бы́вшемъ, бы́вшемꙋ, бы́вшею, бы́вши, бы́вшихъ, бы́вшымъ, бы́вшыѧ, бы́вшїи, бы́вшїй, бы́вшїѧ, бы́вшꙋю, бы̑вша, бы̑вшаѧ, бывшїи, была́, сꙋ̑ща, сꙋ̑щаѧ, є҆́си, є҆́смы, є҆си, є҆смь |
 | `family:synodal:verb:v06-vzeti` | 323 | 311 | `spelling-variant` | Взѧ́, Возми́те, взе́мши, взе́мшѧ, взѧ́, взѧ́ста, взѧ́сте, взѧ́ти, взѧ́то, взѧ́тое, взѧ́тїе, взѧ́тїѧ, взѧ́хомъ, взѧ̑та, взѧ̑ты, взѧта̀, взѧта̑, взѧты̀, возми́, возми́те, возми́тесѧ, возмꙋ́ |
+| `family:synodal:noun:v12-lakot` | 253 | 146 | `spelling-variant` | Ла́коть, Ла̑кти, ла́коть, ла́ктей, ла́кти, ла̑кти, лакте́й |
 | `family:synodal:noun:v06-673b2df93b4f89a8` | 249 | 241 | `spelling-variant` | Зна́менїѧ, Зна́мєнїѧ, зна́меньми, зна́менїемъ, зна́менїи, зна́менїихъ, зна́менїй, зна́менїє, зна́менїємъ, зна́менїѧ, зна́мєнїи, зна́мєнїѧ, знаме́нїе, знамє́нїѧ |
 | `family:synodal:adverb:wikt-4f4b6240f36e` | 239 | 199 | `spelling-variant` | Го́ре, го́ре, горѣ́ |
 | `family:synodal:pronoun:inyi` | 234 | 229 | `spelling-variant` | И҆ны̑ѧ, и҆́наго, и҆́нымъ, и҆́ныхъ, и҆́ныѧ, и҆на́го, и҆на́ѧ, и҆на̑ѧ, и҆ны́мъ, и҆ны́хъ, и҆ны́ѧ, и҆ны̑мъ, и҆ны̑ѧ |
@@ -158,7 +159,6 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:нѣцыи` | 211 | 203 | `ungrouped-unknown` | Нѣ́цыи, нѣ́цыи |
 | `ungrouped:предаде` | 207 | 203 | `ungrouped-unknown` | предаде́, предадѐ |
 | `ungrouped:востани` | 204 | 183 | `ungrouped-unknown` | Воста́ни, воста́ни, востанѝ |
-| `ungrouped:лактей` | 200 | 119 | `ungrouped-unknown` | ла́ктей, лакте́й |
 | `ungrouped:воньже` | 198 | 186 | `ungrouped-unknown` | Во́ньже, во́ньже |
 | `family:synodal:pronoun:nekii` | 194 | 188 | `spelling-variant` | нѣ́каѧ, нѣ́кїй, нѣ̑каѧ |
 | `ungrouped:жєртвы` | 193 | 187 | `ungrouped-unknown` | Жє́ртвы, жє́ртвы |
@@ -195,7 +195,6 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ambiguous-family:synodal:verb:imati+synodal:verb:wikt-0c6c8db63b7c` | 153 | 148 | `spelling-variant` | И҆́мамъ, И҆́мамы, И҆́мать, И҆ма́мъ, И҆мѣ́йте, И҆мꙋ́щемꙋ, И҆мꙋ́щїи, и҆́мамъ, и҆́мамы, и҆́мате, и҆́мать, и҆́маши, и҆́мꙋтсѧ, и҆́мꙋтъ, и҆ма́ть, и҆ма́ши, и҆мы́й, и҆мѣ̀, и҆мѣ̀ѧхꙋ, и҆мѣ́вшаго, и҆мѣ́вшымъ, и҆мѣ́й, и҆мѣ́йте, и҆мѣ́ла, и҆мѣ́ли, и҆мѣ́лъ, и҆мѣ́ста, и҆мѣ́ѧста, и҆мѣѧ́хꙋ, и҆мꙋ́щаго, и҆мꙋ́щагѡ, и҆мꙋ́щаѧ, и҆мꙋ́щее, и҆мꙋ́щей, и҆мꙋ́щема, и҆мꙋ́щемъ, и҆мꙋ́щемꙋ, и҆мꙋ́щи, и҆мꙋ́щими, и҆мꙋ́щихъ, и҆мꙋ́що, и҆мꙋ́щымъ, и҆мꙋ́щыѧ, и҆мꙋ́щїи, и҆мꙋ́щїѧ, и҆мꙋ́щѧ, и҆мꙋ́щꙋ, и҆мꙋ́щꙋю, и҆мꙋ̑ща |
 | `ungrouped:слꙋжити` | 153 | 148 | `ungrouped-unknown` | слꙋжи́ти |
 | `ungrouped:сꙋббѡты` | 153 | 138 | `ungrouped-unknown` | Сꙋббѡ̑ты, сꙋббѡ́ты, сꙋббѡ̑ты |
-| `family:synodal:verb:wikt-332544509d0c` | 152 | 148 | `spelling-variant` | принесе́, принесе́те, принесетѐ, принесо́хъ, принесꙋ́тсѧ, принесꙋ́тъ |
 | `ungrouped:погꙋбити` | 152 | 150 | `ungrouped-unknown` | погꙋби́ти |
 | `family:synodal:verb:wikt-6ceeefbe4e9e` | 151 | 147 | `spelling-variant` | снѣде́нїе, Ꙗ҆ды́й, ꙗ҆́дѐ, ꙗ҆де́, ꙗ҆дитѐ, ꙗ҆до́ста, ꙗ҆до́сте, ꙗ҆до́хомъ, ꙗ҆до́хъ, ꙗ҆ды́й, ꙗ҆дꙋ́ща, ꙗ҆дꙋ́щи |
 | `ungrouped:ѻрꙋжїе` | 150 | 142 | `ungrouped-unknown` | ѻ҆рꙋ́жїе |
@@ -243,66 +242,71 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:скоты` | 128 | 122 | `ungrouped-unknown` | ско́ты, скоты̀, скоты̑ |
 | `ungrouped:цр҃ь` | 128 | 117 | `abbreviation-registry` | Цр҃ь, цр҃ь |
 | `ungrouped:ꙗвитсѧ` | 128 | 128 | `ungrouped-unknown` | Ꙗ҆ви́тсѧ, ꙗ҆ви́тсѧ |
+| `ungrouped:воздвиже` | 127 | 127 | `ungrouped-unknown` | Воздви́же, воздви́же |
 
 ## Coverage by corpus
 
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| Church Slavonic Bible | 651487 | 307705 | 486702 | 4802 | 164250 |
-| Elizabeth Bible | 661857 | 311987 | 495884 | 4820 | 165434 |
+| Church Slavonic Bible | 651487 | 307545 | 487197 | 4802 | 163714 |
+| Elizabeth Bible | 661857 | 311820 | 496383 | 4820 | 164894 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 311987 | 495884 | 4820 | 165434 |
-| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 307705 | 486702 | 4802 | 164250 |
+| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 311820 | 496383 | 4820 | 164894 |
+| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 307545 | 487197 | 4802 | 163714 |
 
 ## Coverage by partition
 
 | Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `evaluation` | 265701 | 125323 | 199207 | 2060 | 66291 |
-| `source` | 1047643 | 494369 | 783379 | 7562 | 263393 |
+| `evaluation` | 265701 | 125266 | 199411 | 2060 | 66071 |
+| `source` | 1047643 | 494099 | 784169 | 7562 | 262537 |
 
 ## Coverage by source and partition
 
 | Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63620 | 101188 | 1066 | 33620 |
-| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 248367 | 394696 | 3754 | 131814 |
-| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61703 | 98019 | 994 | 32671 |
-| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 246002 | 388683 | 3808 | 131579 |
+| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63585 | 101293 | 1066 | 33508 |
+| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 248235 | 395090 | 3754 | 131386 |
+| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61681 | 98118 | 994 | 32563 |
+| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 245864 | 389079 | 3808 | 131151 |
 
 ## Gap categories by source
 
 | Source | Category | Tokens |
 |---|---|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 158930 |
+| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 158301 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-declension-or-class` | 49 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-verb-principal-part` | 36 |
-| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6419 |
-| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5359 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 157824 |
+| `ponomar-elizabeth-bible-2026-08-09` | `unsupported-formation` | 18 |
+| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6490 |
+| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5400 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 157202 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-declension-or-class` | 21 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-verb-principal-part` | 36 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6369 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5337 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `unsupported-formation` | 18 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6437 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5378 |
 
 ## Gap categories by partition
 
 | Partition | Category | Tokens |
 |---|---|---:|
-| `evaluation` | `unknown-lexeme` | 63625 |
+| `evaluation` | `unknown-lexeme` | 63354 |
 | `evaluation` | `missing-declension-or-class` | 12 |
 | `evaluation` | `missing-verb-principal-part` | 18 |
-| `evaluation` | `missing-accent-or-orthographic-metadata` | 2636 |
-| `evaluation` | `ambiguity-or-spelling-variant` | 2263 |
-| `source` | `unknown-lexeme` | 253129 |
+| `evaluation` | `unsupported-formation` | 6 |
+| `evaluation` | `missing-accent-or-orthographic-metadata` | 2681 |
+| `evaluation` | `ambiguity-or-spelling-variant` | 2279 |
+| `source` | `unknown-lexeme` | 252149 |
 | `source` | `missing-declension-or-class` | 58 |
 | `source` | `missing-verb-principal-part` | 54 |
-| `source` | `missing-accent-or-orthographic-metadata` | 10152 |
-| `source` | `ambiguity-or-spelling-variant` | 8433 |
+| `source` | `unsupported-formation` | 30 |
+| `source` | `missing-accent-or-orthographic-metadata` | 10246 |
+| `source` | `ambiguity-or-spelling-variant` | 8499 |
 
 ## Review queue
 
@@ -331,7 +335,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 21 | `unknown-lexeme` | `нѣ́цыи` | 211 | 203 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 22 | `unknown-lexeme` | `предадѐ` | 207 | 203 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 23 | `unknown-lexeme` | `воста́ни` | 204 | 183 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 24 | `unknown-lexeme` | `ла́ктей` | 200 | 119 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 24 | `missing-accent-or-orthographic-metadata` | `ла́ктей` | 200 | 119 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 25 | `unknown-lexeme` | `во́ньже` | 198 | 186 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 26 | `unknown-lexeme` | `жє́ртвы` | 193 | 187 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 27 | `ambiguity-or-spelling-variant` | `своѝ` | 193 | 187 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
@@ -439,372 +443,372 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 129 | `unknown-lexeme` | `приложѝ` | 116 | 114 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 130 | `unknown-lexeme` | `прїиди́те` | 116 | 114 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 131 | `unknown-lexeme` | `повѣ́да` | 116 | 110 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 132 | `unknown-lexeme` | `па́схꙋ` | 116 | 106 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 133 | `unknown-lexeme` | `наказа́нїе` | 115 | 113 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 134 | `ambiguity-or-spelling-variant` | `и҆́мамы` | 115 | 113 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
-| 135 | `unknown-lexeme` | `воста́нетъ` | 114 | 114 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 136 | `unknown-lexeme` | `приложи́тъ` | 114 | 114 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 137 | `unknown-lexeme` | `вои́стиннꙋ` | 114 | 113 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 138 | `unknown-lexeme` | `восто́къ` | 114 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 139 | `unknown-lexeme` | `і҆исꙋ́сꙋ` | 114 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 140 | `unknown-lexeme` | `послѣ̑днѧѧ` | 113 | 113 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 141 | `unknown-lexeme` | `а҆ммѡ́нихъ` | 112 | 110 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 142 | `unknown-lexeme` | `вавѷлѡ́нскїй` | 112 | 110 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 143 | `missing-accent-or-orthographic-metadata` | `вели́кагѡ` | 112 | 110 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 144 | `unknown-lexeme` | `вы́шше` | 110 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 145 | `unknown-lexeme` | `заповѣ́даю` | 110 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 146 | `unknown-lexeme` | `зане́же` | 109 | 109 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 147 | `unknown-lexeme` | `саꙋ́лꙋ` | 109 | 109 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 148 | `unknown-lexeme` | `колєсни́цы` | 108 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 149 | `unknown-lexeme` | `высо́кихъ` | 108 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 150 | `unknown-lexeme` | `ѡ҆крє́стнаѧ` | 108 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 151 | `unknown-lexeme` | `повелѣ̑нїѧ` | 107 | 103 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 152 | `ambiguity-or-spelling-variant` | `чесѡ̀` | 107 | 101 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
-| 153 | `unknown-lexeme` | `пе́рвѣе` | 106 | 106 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 154 | `unknown-lexeme` | `по́йдꙋтъ` | 106 | 106 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 155 | `unknown-lexeme` | `і҆еремі́и` | 106 | 106 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 156 | `unknown-lexeme` | `по́йте` | 106 | 100 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 157 | `unknown-lexeme` | `нача́ша` | 106 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 158 | `unknown-lexeme` | `небє́сныѧ` | 105 | 105 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 159 | `unknown-lexeme` | `пребꙋ́детъ` | 105 | 105 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 160 | `unknown-lexeme` | `вавѷлѡ́нска` | 105 | 103 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 161 | `unknown-lexeme` | `писа́нїе` | 105 | 103 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 162 | `unknown-lexeme` | `поклони́шасѧ` | 104 | 104 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 163 | `unknown-lexeme` | `пойдꙋ̀` | 104 | 102 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 164 | `unknown-lexeme` | `си́льныхъ` | 104 | 102 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 165 | `unknown-lexeme` | `рабы̑ни` | 104 | 101 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 166 | `unknown-lexeme` | `фарїсе́є` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 167 | `unknown-lexeme` | `ѻ҆рꙋ́жїемъ` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 168 | `unknown-lexeme` | `помоли́сѧ` | 104 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 169 | `unknown-lexeme` | `є҆ле́емъ` | 104 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 170 | `unknown-lexeme` | `погꙋби́тъ` | 104 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 171 | `unknown-lexeme` | `сі̑кль` | 104 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 172 | `missing-accent-or-orthographic-metadata` | `Слы́шавше` | 103 | 102 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 173 | `missing-accent-or-orthographic-metadata` | `древа̀` | 103 | 101 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 174 | `unknown-lexeme` | `Житїѐ` | 102 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 175 | `unknown-lexeme` | `послы̀` | 102 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 176 | `unknown-lexeme` | `воню̀` | 101 | 101 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 177 | `unknown-lexeme` | `вы́нꙋ` | 101 | 101 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 178 | `unknown-lexeme` | `молю́` | 101 | 95 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 179 | `unknown-lexeme` | `а҆вессалѡ́мъ` | 101 | 89 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 180 | `unknown-lexeme` | `преста̀` | 100 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 181 | `unknown-lexeme` | `свы́ше` | 100 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 182 | `missing-accent-or-orthographic-metadata` | `кни̑ги` | 100 | 95 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 183 | `unknown-lexeme` | `пе́рвенца` | 100 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 184 | `unknown-lexeme` | `блгⷭ҇вѝ` | 99 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 185 | `unknown-lexeme` | `словесє́мъ` | 99 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 186 | `unknown-lexeme` | `ᲂу҆чн҃цы̀` | 99 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 187 | `unknown-lexeme` | `првⷣныхъ` | 99 | 95 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 188 | `unknown-lexeme` | `и҆здале́ча` | 98 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 189 | `unknown-lexeme` | `покры̀` | 98 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 190 | `unknown-lexeme` | `првⷣнъ` | 98 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 191 | `unknown-lexeme` | `си́ленъ` | 98 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 192 | `unknown-lexeme` | `живꙋ́щымъ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 193 | `unknown-lexeme` | `і҆ѡсафа́тъ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 194 | `unknown-lexeme` | `ѻ҆рꙋ̑жїѧ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 195 | `unknown-lexeme` | `Є҆ли́кѡ` | 98 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 196 | `unknown-lexeme` | `воевѡ́ды` | 96 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 197 | `unknown-lexeme` | `ѻ҆бои́хъ` | 96 | 89 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 198 | `unknown-lexeme` | `снѣдѧ́тъ` | 96 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 199 | `unknown-lexeme` | `по́йде` | 95 | 95 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 200 | `unknown-lexeme` | `чрез̾` | 95 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 201 | `unknown-lexeme` | `помо́литсѧ` | 95 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 202 | `unknown-lexeme` | `и҆са́ѵъ` | 95 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 203 | `unknown-lexeme` | `ꙗ҆́тъ` | 94 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 204 | `unknown-lexeme` | `дабы̀` | 94 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 205 | `unknown-lexeme` | `за́повѣдїй` | 94 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 206 | `unknown-lexeme` | `поѧ́стъ` | 94 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 207 | `unknown-lexeme` | `саꙋ́ла` | 94 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 208 | `unknown-lexeme` | `ѡ҆ста́сѧ` | 94 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 209 | `unknown-lexeme` | `сю́дꙋ` | 94 | 46 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 210 | `missing-accent-or-orthographic-metadata` | `Слы́шавъ` | 93 | 93 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 211 | `unknown-lexeme` | `возмо́жетъ` | 92 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 212 | `unknown-lexeme` | `си́льнїи` | 92 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 213 | `unknown-lexeme` | `ѧ҆зы́комъ` | 92 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 214 | `unknown-lexeme` | `поѧ́тъ` | 92 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 215 | `unknown-lexeme` | `і҆иꙋ́й` | 92 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 216 | `unknown-lexeme` | `вско́рѣ` | 91 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 217 | `unknown-lexeme` | `млⷭ҇тивъ` | 91 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 218 | `unknown-lexeme` | `погꙋблю̀` | 91 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 219 | `missing-accent-or-orthographic-metadata` | `бо́ги` | 91 | 90 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 220 | `unknown-lexeme` | `ѹ҆бѝ` | 91 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 221 | `unknown-lexeme` | `сокрѡ́вища` | 91 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 222 | `unknown-lexeme` | `заповѣ́дахъ` | 90 | 90 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 223 | `unknown-lexeme` | `живы́й` | 90 | 88 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 224 | `unknown-lexeme` | `и҆збра́нныхъ` | 90 | 88 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 225 | `unknown-lexeme` | `сотвори́вый` | 90 | 87 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 226 | `unknown-lexeme` | `всѧ́чєскаѧ` | 90 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 227 | `unknown-lexeme` | `ст҃ы́ни` | 89 | 88 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 228 | `unknown-lexeme` | `мѡа́вли` | 89 | 87 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 229 | `unknown-lexeme` | `і҆саа́къ` | 89 | 87 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 230 | `unknown-lexeme` | `ко́ль` | 89 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 231 | `unknown-lexeme` | `нача́токъ` | 89 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 232 | `unknown-lexeme` | `кѡры́сти` | 89 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 233 | `missing-accent-or-orthographic-metadata` | `чи́ста` | 88 | 86 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 234 | `unknown-lexeme` | `воста́нꙋтъ` | 88 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 235 | `unknown-lexeme` | `і҆ѡнаѳа́на` | 88 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 236 | `missing-accent-or-orthographic-metadata` | `ничесѡ́же` | 87 | 87 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 237 | `unknown-lexeme` | `прїидꙋ̀` | 87 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 238 | `unknown-lexeme` | `і҆ꙋде́ѡмъ` | 87 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 239 | `unknown-lexeme` | `И҆мѣ́ѧй` | 87 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 240 | `unknown-lexeme` | `всꙋ́е` | 87 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 241 | `unknown-lexeme` | `комꙋ́ждо` | 87 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 242 | `unknown-lexeme` | `помышлє́нїѧ` | 86 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 243 | `unknown-lexeme` | `і҆ꙋде́ю` | 86 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 244 | `unknown-lexeme` | `ѡ҆снова̑нїѧ` | 86 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 245 | `unknown-lexeme` | `плѣне́нїе` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 246 | `unknown-lexeme` | `царє́вы` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 247 | `unknown-lexeme` | `є҆зекі́и` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 248 | `unknown-lexeme` | `ѡ҆полчи́сѧ` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 249 | `unknown-lexeme` | `є҆гѵ́птѧне` | 86 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 250 | `unknown-lexeme` | `преда́стъ` | 86 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 251 | `unknown-lexeme` | `чл҃вѣ́ческїй` | 86 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 252 | `missing-accent-or-orthographic-metadata` | `высота̀` | 86 | 80 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 253 | `unknown-lexeme` | `ᲂу҆́шы` | 86 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 254 | `ambiguity-or-spelling-variant` | `про́клѧтъ` | 86 | 78 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
-| 255 | `unknown-lexeme` | `пе́рвенецъ` | 85 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 256 | `unknown-lexeme` | `сꙋдїи̑` | 85 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 257 | `unknown-lexeme` | `царе́въ` | 85 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 258 | `unknown-lexeme` | `ви́дитъ` | 84 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 259 | `unknown-lexeme` | `саваѡ́ѳъ` | 84 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 260 | `unknown-lexeme` | `ѕвѣ́зды` | 84 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 261 | `missing-accent-or-orthographic-metadata` | `и҆ны̑мъ` | 84 | 84 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 262 | `missing-accent-or-orthographic-metadata` | `и҆ны́хъ` | 84 | 83 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 263 | `missing-accent-or-orthographic-metadata` | `возвѣщꙋ̀` | 84 | 82 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 264 | `ambiguity-or-spelling-variant` | `ѻ҆́ный` | 84 | 82 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
-| 265 | `unknown-lexeme` | `є҆леаза́ръ` | 84 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 266 | `unknown-lexeme` | `постыдѧ́тсѧ` | 84 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 267 | `unknown-lexeme` | `поми́лꙋй` | 84 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 268 | `unknown-lexeme` | `снѣ́сте` | 84 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 269 | `unknown-lexeme` | `блгⷣти` | 83 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 270 | `missing-accent-or-orthographic-metadata` | `возми́те` | 83 | 81 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 271 | `unknown-lexeme` | `ѡ҆шꙋ́юю` | 83 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 272 | `unknown-lexeme` | `весе́лїемъ` | 82 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 273 | `unknown-lexeme` | `и҆зы́ти` | 82 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 274 | `unknown-lexeme` | `сокрꙋшѝ` | 82 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 275 | `missing-accent-or-orthographic-metadata` | `бо̀` | 82 | 82 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 276 | `unknown-lexeme` | `галїле́и` | 82 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 277 | `unknown-lexeme` | `даві́дова` | 82 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 278 | `unknown-lexeme` | `повелѣ́нїе` | 82 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 279 | `unknown-lexeme` | `послѣдѝ` | 82 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 280 | `unknown-lexeme` | `а҆вїмеле́хъ` | 82 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 281 | `unknown-lexeme` | `востѡ́къ` | 82 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 282 | `unknown-lexeme` | `ве́лїе` | 81 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 283 | `unknown-lexeme` | `мно́жае` | 81 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 284 | `unknown-lexeme` | `житїѧ̀` | 81 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 285 | `unknown-lexeme` | `мздꙋ̀` | 81 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 286 | `unknown-lexeme` | `пїла́тъ` | 81 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 287 | `unknown-lexeme` | `а҆рхїере́є` | 81 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 288 | `unknown-lexeme` | `і҆а́кѡвль` | 80 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 289 | `unknown-lexeme` | `завѣща̀` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 290 | `unknown-lexeme` | `кни́жницы` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 291 | `unknown-lexeme` | `мно́жествѣ` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 292 | `unknown-lexeme` | `помощѝ` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 293 | `unknown-lexeme` | `пшени́чны` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 294 | `missing-accent-or-orthographic-metadata` | `и҆мы́й` | 80 | 78 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 295 | `ambiguity-or-spelling-variant` | `сѧ̀` | 80 | 76 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
-| 296 | `unknown-lexeme` | `ю҆́гꙋ` | 80 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 297 | `unknown-lexeme` | `є҆фре́мъ` | 80 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 298 | `unknown-lexeme` | `і҆еровоа́мъ` | 80 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 299 | `unknown-lexeme` | `зла̑ты` | 80 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 300 | `missing-accent-or-orthographic-metadata` | `возвѣсти́те` | 80 | 71 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 301 | `unknown-lexeme` | `ко́жи` | 80 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 302 | `missing-accent-or-orthographic-metadata` | `плѡ́ти` | 80 | 62 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 303 | `unknown-lexeme` | `дв҃дꙋ` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 304 | `unknown-lexeme` | `пе́рсть` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 305 | `unknown-lexeme` | `прⷭ҇нѡ` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 306 | `unknown-lexeme` | `і҆ꙋдє́й` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 307 | `unknown-lexeme` | `і҆саа́ка` | 79 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 308 | `unknown-lexeme` | `нача̑лницы` | 79 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 309 | `unknown-lexeme` | `нача̑льницы` | 79 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 310 | `unknown-lexeme` | `є҆ди́ныѧ` | 79 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 311 | `unknown-lexeme` | `де́бри` | 79 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 312 | `unknown-lexeme` | `даві́довѣ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 313 | `unknown-lexeme` | `нечести́вїи` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 314 | `unknown-lexeme` | `посе́мъ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 315 | `unknown-lexeme` | `є҆́здра` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 316 | `unknown-lexeme` | `ѱало́мъ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 317 | `unknown-lexeme` | `ѿсю́дꙋ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 318 | `unknown-lexeme` | `лжꙋ̀` | 78 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 319 | `missing-accent-or-orthographic-metadata` | `согрѣши́хомъ` | 78 | 76 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 320 | `unknown-lexeme` | `воззрѣ́въ` | 78 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 321 | `unknown-lexeme` | `а҆ммѡ̑ни` | 78 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 322 | `unknown-lexeme` | `достоѧ́нїе` | 78 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 323 | `unknown-lexeme` | `тꙋ́не` | 78 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 324 | `unknown-lexeme` | `ᲂу҆го́дно` | 77 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 325 | `unknown-lexeme` | `возлїѧ́нїѧ` | 77 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 326 | `unknown-lexeme` | `вы́ше` | 77 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 327 | `unknown-lexeme` | `возра́дꙋютсѧ` | 77 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 328 | `unknown-lexeme` | `ѹ҆́шы` | 77 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 329 | `unknown-lexeme` | `мно́гꙋ` | 76 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 330 | `unknown-lexeme` | `плѣне́нїѧ` | 76 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 331 | `unknown-lexeme` | `ване́а` | 76 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 332 | `unknown-lexeme` | `вѣ́съ` | 76 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 333 | `unknown-lexeme` | `по́йдемъ` | 76 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 334 | `unknown-lexeme` | `ст҃ы̑мъ` | 76 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 335 | `unknown-lexeme` | `ꙗ҆́звою` | 76 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 336 | `unknown-lexeme` | `и҆спе́рва` | 76 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 337 | `unknown-lexeme` | `златы́хъ` | 76 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 338 | `unknown-lexeme` | `возглаго́лю` | 75 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 339 | `unknown-lexeme` | `поги́бель` | 75 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 340 | `unknown-lexeme` | `стра́жꙋ` | 75 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 341 | `unknown-lexeme` | `ѡ҆держа́нїе` | 75 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 342 | `unknown-lexeme` | `бл҃гъ` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 343 | `unknown-lexeme` | `царе́во` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 344 | `unknown-lexeme` | `ѻ҆внѡ́въ` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 345 | `unknown-lexeme` | `воззва̀` | 74 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 346 | `unknown-lexeme` | `даві́довъ` | 74 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 347 | `unknown-lexeme` | `сребро́мъ` | 74 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 348 | `unknown-lexeme` | `і҆ѡа́съ` | 74 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 349 | `unknown-lexeme` | `ды́мъ` | 74 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 350 | `unknown-lexeme` | `и҆збра́хъ` | 74 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 351 | `unknown-lexeme` | `подо́бїе` | 74 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 352 | `unknown-lexeme` | `прїе́млетъ` | 74 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 353 | `unknown-lexeme` | `глаго́лѧй` | 73 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 354 | `unknown-lexeme` | `мно́жествꙋ` | 73 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 355 | `unknown-lexeme` | `царє́мъ` | 73 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 356 | `unknown-lexeme` | `а҆рхїере́й` | 73 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 357 | `ambiguity-or-spelling-variant` | `ꙗ҆́вѣ` | 73 | 71 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
-| 358 | `unknown-lexeme` | `сꙋббѡ́тꙋ` | 73 | 69 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 359 | `unknown-lexeme` | `црⷭ҇тво` | 73 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 360 | `unknown-lexeme` | `восхо́щетъ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 361 | `unknown-lexeme` | `всели́шасѧ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 362 | `unknown-lexeme` | `и҆спо́лнь` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 363 | `unknown-lexeme` | `манассі́ина` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 364 | `unknown-lexeme` | `і҆еровоа́ма` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 365 | `unknown-lexeme` | `і҆саа́кꙋ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 366 | `unknown-lexeme` | `ѡ҆скꙋдѣ́етъ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 367 | `unknown-lexeme` | `ѳѷмїа́мъ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 368 | `unknown-lexeme` | `дрꙋгѡ́въ` | 72 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 369 | `unknown-lexeme` | `повелѣ́нїемъ` | 72 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 370 | `unknown-lexeme` | `ѡ҆бита́ющихъ` | 72 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 371 | `unknown-lexeme` | `по́йдетъ` | 72 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 372 | `unknown-lexeme` | `полцѣ̀` | 72 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 373 | `unknown-lexeme` | `ѡ҆чи́ститъ` | 72 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 374 | `unknown-lexeme` | `прозва̀` | 72 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 375 | `unknown-lexeme` | `і҆́ѡвъ` | 72 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 376 | `unknown-lexeme` | `стѡѧ́ла` | 72 | 49 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 377 | `unknown-lexeme` | `возмо́гꙋтъ` | 71 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 378 | `unknown-lexeme` | `сни́детъ` | 71 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 379 | `missing-accent-or-orthographic-metadata` | `возвратѧ́тсѧ` | 71 | 69 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 380 | `unknown-lexeme` | `ви́диши` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 381 | `unknown-lexeme` | `хеврѡ́нъ` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 382 | `unknown-lexeme` | `і҆и҃левѣ` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 383 | `unknown-lexeme` | `ѡ҆бита́ти` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 384 | `unknown-lexeme` | `валаа́мъ` | 70 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 385 | `unknown-lexeme` | `пла́касѧ` | 70 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 386 | `unknown-lexeme` | `повѣ́даша` | 70 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 387 | `unknown-lexeme` | `писа́нїѧ` | 70 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 388 | `unknown-lexeme` | `же́ртвенникъ` | 70 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 389 | `unknown-lexeme` | `премꙋ́дръ` | 70 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 390 | `unknown-lexeme` | `рахи́ль` | 70 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 391 | `missing-accent-or-orthographic-metadata` | `ꙗ҆ды́й` | 70 | 66 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 392 | `ambiguity-or-spelling-variant` | `даѧ́ти` | 70 | 66 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
-| 393 | `unknown-lexeme` | `стражбы̑` | 70 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 394 | `unknown-lexeme` | `и҆ноплеме́нникѡвъ` | 69 | 69 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 395 | `unknown-lexeme` | `блгⷭ҇ве́нїе` | 69 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 396 | `unknown-lexeme` | `проро́цы` | 69 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 397 | `unknown-lexeme` | `скотѡ́въ` | 69 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 398 | `unknown-lexeme` | `благово́нїѧ` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 399 | `unknown-lexeme` | `заха́рїа` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 400 | `unknown-lexeme` | `и҆зведо́хъ` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 401 | `unknown-lexeme` | `пришле́цъ` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 402 | `unknown-lexeme` | `созида́ти` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 403 | `unknown-lexeme` | `вселѧ́тсѧ` | 68 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 404 | `unknown-lexeme` | `повелѣ́нїю` | 68 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 405 | `unknown-lexeme` | `трꙋба́ми` | 68 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 406 | `unknown-lexeme` | `а҆вени́ръ` | 68 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 407 | `unknown-lexeme` | `со́лнцемъ` | 68 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 408 | `unknown-lexeme` | `снѣ́стъ` | 68 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 409 | `unknown-lexeme` | `безче́стїе` | 67 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 410 | `unknown-lexeme` | `ле́стїю` | 67 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 411 | `unknown-lexeme` | `бѣ́хꙋ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 412 | `unknown-lexeme` | `возда́мъ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 413 | `unknown-lexeme` | `стєзѝ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 414 | `unknown-lexeme` | `ѻ҆де́ждꙋ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 415 | `unknown-lexeme` | `ѿи́метъ` | 67 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 416 | `unknown-lexeme` | `сожжѐ` | 67 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 417 | `unknown-lexeme` | `а҆́гнцєвъ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 418 | `unknown-lexeme` | `посла́нїе` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 419 | `unknown-lexeme` | `совершѝ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 420 | `unknown-lexeme` | `царе́вꙋ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 421 | `unknown-lexeme` | `ѻ҆́троки` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 422 | `missing-accent-or-orthographic-metadata` | `свидѣ̑нїѧ` | 66 | 66 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 423 | `ambiguity-or-spelling-variant` | `ѻ҆смы́й` | 66 | 66 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
-| 424 | `missing-accent-or-orthographic-metadata` | `возвѣсти́ти` | 66 | 65 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 425 | `unknown-lexeme` | `вѣкѡ́въ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 426 | `unknown-lexeme` | `гедеѡ́нъ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 427 | `unknown-lexeme` | `непоро́ченъ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 428 | `unknown-lexeme` | `сто́гнахъ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 429 | `unknown-lexeme` | `трапе́зꙋ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 430 | `unknown-lexeme` | `бл҃же́ни` | 66 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 431 | `unknown-lexeme` | `нача́тки` | 66 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 432 | `unknown-lexeme` | `ѹ҆чн҃цы̀` | 66 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 433 | `unknown-lexeme` | `а҆ма́нъ` | 66 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 434 | `unknown-lexeme` | `бли́жнѧгѡ` | 66 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 435 | `unknown-lexeme` | `пристꙋпи́ша` | 65 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 436 | `unknown-lexeme` | `і҆а́кѡвлѧ` | 65 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 437 | `unknown-lexeme` | `ѡ҆быдо́ша` | 65 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 438 | `unknown-lexeme` | `ѹ҆́зрѧтъ` | 65 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 439 | `unknown-lexeme` | `златы̑ѧ` | 65 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 440 | `unknown-lexeme` | `нечести́вый` | 65 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 441 | `unknown-lexeme` | `сꙋббѡ́тный` | 65 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 442 | `unknown-lexeme` | `творѧ́щымъ` | 65 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 443 | `unknown-lexeme` | `прорцы̀` | 65 | 55 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 444 | `unknown-lexeme` | `ве́лїѧ` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 445 | `unknown-lexeme` | `возвесели́тсѧ` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 446 | `unknown-lexeme` | `вчера̀` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 447 | `unknown-lexeme` | `првⷣный` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 448 | `unknown-lexeme` | `преда́мъ` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 449 | `unknown-lexeme` | `сꙋдїѧ̀` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 450 | `unknown-lexeme` | `ѹ҆би́ти` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 451 | `missing-accent-or-orthographic-metadata` | `возвѣстѧ́тъ` | 64 | 64 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 452 | `missing-accent-or-orthographic-metadata` | `пѧ́тый` | 64 | 64 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 453 | `unknown-lexeme` | `ѹ҆́зритъ` | 64 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 454 | `unknown-lexeme` | `вала́къ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 455 | `unknown-lexeme` | `вели́кїѧ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 456 | `unknown-lexeme` | `даві́дѡвы` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 457 | `unknown-lexeme` | `живы́хъ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 458 | `unknown-lexeme` | `и҆сповѣ́мсѧ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 459 | `unknown-lexeme` | `про́йде` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 460 | `unknown-lexeme` | `со́нмꙋ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 461 | `missing-accent-or-orthographic-metadata` | `принесе́те` | 64 | 62 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 462 | `missing-accent-or-orthographic-metadata` | `принесꙋ́тъ` | 64 | 62 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 463 | `unknown-lexeme` | `вотщѐ` | 64 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 464 | `unknown-lexeme` | `а҆вра́мъ` | 64 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 465 | `unknown-lexeme` | `нечи́ста` | 64 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 466 | `unknown-lexeme` | `лава́нъ` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 467 | `unknown-lexeme` | `пи́ръ` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 468 | `unknown-lexeme` | `пома́за` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 469 | `unknown-lexeme` | `ровоа́мъ` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 470 | `unknown-lexeme` | `ѻ҆лтарю̀` | 64 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 471 | `unknown-lexeme` | `а҆хаа́въ` | 64 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 472 | `unknown-lexeme` | `десни́цꙋ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 473 | `unknown-lexeme` | `слꙋ́жатъ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 474 | `unknown-lexeme` | `сп҃сѐ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 475 | `unknown-lexeme` | `чꙋжди́хъ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 476 | `unknown-lexeme` | `земны́хъ` | 63 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 477 | `unknown-lexeme` | `быва́ютъ` | 63 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 478 | `unknown-lexeme` | `пре́йдетъ` | 63 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 479 | `unknown-lexeme` | `а҆ссѷрі́йска` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 480 | `unknown-lexeme` | `возмого́ша` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 481 | `unknown-lexeme` | `и҆збере́тъ` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 482 | `unknown-lexeme` | `мы́шцею` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 483 | `unknown-lexeme` | `ра́доватисѧ` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 484 | `unknown-lexeme` | `созда́ти` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 485 | `missing-accent-or-orthographic-metadata` | `жи́вꙋ` | 62 | 62 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 486 | `unknown-lexeme` | `погꙋбле́нїе` | 62 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 487 | `unknown-lexeme` | `слꙋже́нїе` | 62 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 488 | `ambiguity-or-spelling-variant` | `и҆но́мꙋ` | 62 | 58 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
-| 489 | `unknown-lexeme` | `мо́гꙋтъ` | 62 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 490 | `unknown-lexeme` | `Матѳ` | 61 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 491 | `unknown-lexeme` | `превозноси́те` | 61 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 492 | `unknown-lexeme` | `воздаѧ́нїе` | 61 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 493 | `unknown-lexeme` | `ро́въ` | 61 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 494 | `unknown-lexeme` | `а҆нтїо́хъ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 495 | `unknown-lexeme` | `безꙋ́мныхъ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 496 | `unknown-lexeme` | `венїамі́ни` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 497 | `unknown-lexeme` | `вонмѝ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 498 | `unknown-lexeme` | `высѡ́каѧ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 499 | `unknown-lexeme` | `крѣ́пкїй` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 500 | `unknown-lexeme` | `навꙋходоно́сора` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 132 | `unknown-lexeme` | `наказа́нїе` | 115 | 113 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 133 | `ambiguity-or-spelling-variant` | `и҆́мамы` | 115 | 113 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
+| 134 | `unknown-lexeme` | `воста́нетъ` | 114 | 114 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 135 | `unknown-lexeme` | `приложи́тъ` | 114 | 114 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 136 | `unknown-lexeme` | `вои́стиннꙋ` | 114 | 113 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 137 | `unknown-lexeme` | `і҆исꙋ́сꙋ` | 114 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 138 | `unknown-lexeme` | `послѣ̑днѧѧ` | 113 | 113 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 139 | `unknown-lexeme` | `а҆ммѡ́нихъ` | 112 | 110 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 140 | `unknown-lexeme` | `вавѷлѡ́нскїй` | 112 | 110 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 141 | `missing-accent-or-orthographic-metadata` | `вели́кагѡ` | 112 | 110 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 142 | `unknown-lexeme` | `вы́шше` | 110 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 143 | `unknown-lexeme` | `заповѣ́даю` | 110 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 144 | `unknown-lexeme` | `зане́же` | 109 | 109 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 145 | `unknown-lexeme` | `саꙋ́лꙋ` | 109 | 109 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 146 | `unknown-lexeme` | `колєсни́цы` | 108 | 108 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 147 | `unknown-lexeme` | `высо́кихъ` | 108 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 148 | `unknown-lexeme` | `ѡ҆крє́стнаѧ` | 108 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 149 | `unknown-lexeme` | `повелѣ̑нїѧ` | 107 | 103 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 150 | `ambiguity-or-spelling-variant` | `чесѡ̀` | 107 | 101 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
+| 151 | `unknown-lexeme` | `пе́рвѣе` | 106 | 106 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 152 | `unknown-lexeme` | `по́йдꙋтъ` | 106 | 106 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 153 | `unknown-lexeme` | `і҆еремі́и` | 106 | 106 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 154 | `unknown-lexeme` | `по́йте` | 106 | 100 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 155 | `unknown-lexeme` | `нача́ша` | 106 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 156 | `unknown-lexeme` | `небє́сныѧ` | 105 | 105 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 157 | `unknown-lexeme` | `пребꙋ́детъ` | 105 | 105 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 158 | `unknown-lexeme` | `вавѷлѡ́нска` | 105 | 103 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 159 | `unknown-lexeme` | `писа́нїе` | 105 | 103 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 160 | `unknown-lexeme` | `поклони́шасѧ` | 104 | 104 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 161 | `unknown-lexeme` | `пойдꙋ̀` | 104 | 102 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 162 | `unknown-lexeme` | `си́льныхъ` | 104 | 102 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 163 | `unknown-lexeme` | `рабы̑ни` | 104 | 101 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 164 | `unknown-lexeme` | `фарїсе́є` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 165 | `unknown-lexeme` | `ѻ҆рꙋ́жїемъ` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 166 | `unknown-lexeme` | `помоли́сѧ` | 104 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 167 | `unknown-lexeme` | `є҆ле́емъ` | 104 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 168 | `unknown-lexeme` | `погꙋби́тъ` | 104 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 169 | `unknown-lexeme` | `сі̑кль` | 104 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 170 | `missing-accent-or-orthographic-metadata` | `Слы́шавше` | 103 | 102 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 171 | `missing-accent-or-orthographic-metadata` | `древа̀` | 103 | 101 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 172 | `unknown-lexeme` | `Житїѐ` | 102 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 173 | `unknown-lexeme` | `послы̀` | 102 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 174 | `unknown-lexeme` | `воню̀` | 101 | 101 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 175 | `unknown-lexeme` | `вы́нꙋ` | 101 | 101 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 176 | `unknown-lexeme` | `молю́` | 101 | 95 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 177 | `unknown-lexeme` | `а҆вессалѡ́мъ` | 101 | 89 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 178 | `unknown-lexeme` | `преста̀` | 100 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 179 | `unknown-lexeme` | `свы́ше` | 100 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 180 | `missing-accent-or-orthographic-metadata` | `кни̑ги` | 100 | 95 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 181 | `unknown-lexeme` | `пе́рвенца` | 100 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 182 | `unknown-lexeme` | `блгⷭ҇вѝ` | 99 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 183 | `unknown-lexeme` | `словесє́мъ` | 99 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 184 | `unknown-lexeme` | `ᲂу҆чн҃цы̀` | 99 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 185 | `unknown-lexeme` | `првⷣныхъ` | 99 | 95 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 186 | `unknown-lexeme` | `и҆здале́ча` | 98 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 187 | `unknown-lexeme` | `покры̀` | 98 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 188 | `unknown-lexeme` | `првⷣнъ` | 98 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 189 | `unknown-lexeme` | `си́ленъ` | 98 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 190 | `unknown-lexeme` | `живꙋ́щымъ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 191 | `unknown-lexeme` | `і҆ѡсафа́тъ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 192 | `unknown-lexeme` | `ѻ҆рꙋ̑жїѧ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 193 | `unknown-lexeme` | `Є҆ли́кѡ` | 98 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 194 | `unknown-lexeme` | `воевѡ́ды` | 96 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 195 | `unknown-lexeme` | `ѻ҆бои́хъ` | 96 | 89 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 196 | `unknown-lexeme` | `снѣдѧ́тъ` | 96 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 197 | `unknown-lexeme` | `по́йде` | 95 | 95 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 198 | `unknown-lexeme` | `чрез̾` | 95 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 199 | `unknown-lexeme` | `помо́литсѧ` | 95 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 200 | `unknown-lexeme` | `и҆са́ѵъ` | 95 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 201 | `unknown-lexeme` | `ꙗ҆́тъ` | 94 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 202 | `unknown-lexeme` | `дабы̀` | 94 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 203 | `unknown-lexeme` | `за́повѣдїй` | 94 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 204 | `unknown-lexeme` | `поѧ́стъ` | 94 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 205 | `unknown-lexeme` | `саꙋ́ла` | 94 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 206 | `unknown-lexeme` | `ѡ҆ста́сѧ` | 94 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 207 | `unknown-lexeme` | `сю́дꙋ` | 94 | 46 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 208 | `missing-accent-or-orthographic-metadata` | `Слы́шавъ` | 93 | 93 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 209 | `unknown-lexeme` | `возмо́жетъ` | 92 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 210 | `unknown-lexeme` | `си́льнїи` | 92 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 211 | `unknown-lexeme` | `ѧ҆зы́комъ` | 92 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 212 | `unknown-lexeme` | `поѧ́тъ` | 92 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 213 | `unknown-lexeme` | `і҆иꙋ́й` | 92 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 214 | `unknown-lexeme` | `вско́рѣ` | 91 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 215 | `unknown-lexeme` | `млⷭ҇тивъ` | 91 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 216 | `unknown-lexeme` | `погꙋблю̀` | 91 | 91 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 217 | `missing-accent-or-orthographic-metadata` | `бо́ги` | 91 | 90 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 218 | `unknown-lexeme` | `ѹ҆бѝ` | 91 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 219 | `unknown-lexeme` | `сокрѡ́вища` | 91 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 220 | `unknown-lexeme` | `заповѣ́дахъ` | 90 | 90 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 221 | `unknown-lexeme` | `живы́й` | 90 | 88 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 222 | `unknown-lexeme` | `и҆збра́нныхъ` | 90 | 88 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 223 | `unknown-lexeme` | `сотвори́вый` | 90 | 87 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 224 | `unknown-lexeme` | `всѧ́чєскаѧ` | 90 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 225 | `unknown-lexeme` | `ст҃ы́ни` | 89 | 88 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 226 | `unknown-lexeme` | `мѡа́вли` | 89 | 87 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 227 | `unknown-lexeme` | `і҆саа́къ` | 89 | 87 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 228 | `unknown-lexeme` | `ко́ль` | 89 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 229 | `unknown-lexeme` | `нача́токъ` | 89 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 230 | `unknown-lexeme` | `кѡры́сти` | 89 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 231 | `missing-accent-or-orthographic-metadata` | `чи́ста` | 88 | 86 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 232 | `unknown-lexeme` | `воста́нꙋтъ` | 88 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 233 | `unknown-lexeme` | `і҆ѡнаѳа́на` | 88 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 234 | `missing-accent-or-orthographic-metadata` | `ничесѡ́же` | 87 | 87 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 235 | `unknown-lexeme` | `прїидꙋ̀` | 87 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 236 | `unknown-lexeme` | `і҆ꙋде́ѡмъ` | 87 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 237 | `unknown-lexeme` | `И҆мѣ́ѧй` | 87 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 238 | `unknown-lexeme` | `всꙋ́е` | 87 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 239 | `unknown-lexeme` | `комꙋ́ждо` | 87 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 240 | `unknown-lexeme` | `помышлє́нїѧ` | 86 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 241 | `unknown-lexeme` | `і҆ꙋде́ю` | 86 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 242 | `unknown-lexeme` | `ѡ҆снова̑нїѧ` | 86 | 86 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 243 | `unknown-lexeme` | `плѣне́нїе` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 244 | `unknown-lexeme` | `царє́вы` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 245 | `unknown-lexeme` | `є҆зекі́и` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 246 | `unknown-lexeme` | `ѡ҆полчи́сѧ` | 86 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 247 | `unknown-lexeme` | `є҆гѵ́птѧне` | 86 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 248 | `unknown-lexeme` | `преда́стъ` | 86 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 249 | `unknown-lexeme` | `чл҃вѣ́ческїй` | 86 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 250 | `missing-accent-or-orthographic-metadata` | `высота̀` | 86 | 80 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 251 | `unknown-lexeme` | `ᲂу҆́шы` | 86 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 252 | `ambiguity-or-spelling-variant` | `про́клѧтъ` | 86 | 78 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
+| 253 | `unknown-lexeme` | `пе́рвенецъ` | 85 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 254 | `unknown-lexeme` | `сꙋдїи̑` | 85 | 85 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 255 | `unknown-lexeme` | `царе́въ` | 85 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 256 | `unknown-lexeme` | `ви́дитъ` | 84 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 257 | `unknown-lexeme` | `саваѡ́ѳъ` | 84 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 258 | `unknown-lexeme` | `ѕвѣ́зды` | 84 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 259 | `missing-accent-or-orthographic-metadata` | `и҆ны̑мъ` | 84 | 84 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 260 | `missing-accent-or-orthographic-metadata` | `и҆ны́хъ` | 84 | 83 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 261 | `missing-accent-or-orthographic-metadata` | `возвѣщꙋ̀` | 84 | 82 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 262 | `ambiguity-or-spelling-variant` | `ѻ҆́ный` | 84 | 82 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
+| 263 | `unknown-lexeme` | `є҆леаза́ръ` | 84 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 264 | `unknown-lexeme` | `постыдѧ́тсѧ` | 84 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 265 | `unknown-lexeme` | `поми́лꙋй` | 84 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 266 | `unknown-lexeme` | `снѣ́сте` | 84 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 267 | `unknown-lexeme` | `блгⷣти` | 83 | 83 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 268 | `missing-accent-or-orthographic-metadata` | `возми́те` | 83 | 81 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 269 | `unknown-lexeme` | `ѡ҆шꙋ́юю` | 83 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 270 | `unknown-lexeme` | `весе́лїемъ` | 82 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 271 | `unknown-lexeme` | `и҆зы́ти` | 82 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 272 | `unknown-lexeme` | `сокрꙋшѝ` | 82 | 82 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 273 | `missing-accent-or-orthographic-metadata` | `бо̀` | 82 | 82 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 274 | `unknown-lexeme` | `галїле́и` | 82 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 275 | `unknown-lexeme` | `даві́дова` | 82 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 276 | `unknown-lexeme` | `повелѣ́нїе` | 82 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 277 | `unknown-lexeme` | `послѣдѝ` | 82 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 278 | `unknown-lexeme` | `а҆вїмеле́хъ` | 82 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 279 | `ambiguity-or-spelling-variant` | `востѡ́къ` | 82 | 78 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
+| 280 | `unknown-lexeme` | `ве́лїе` | 81 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 281 | `unknown-lexeme` | `мно́жае` | 81 | 81 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 282 | `unknown-lexeme` | `житїѧ̀` | 81 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 283 | `unknown-lexeme` | `мздꙋ̀` | 81 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 284 | `unknown-lexeme` | `пїла́тъ` | 81 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 285 | `unknown-lexeme` | `а҆рхїере́є` | 81 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 286 | `unknown-lexeme` | `і҆а́кѡвль` | 80 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 287 | `unknown-lexeme` | `завѣща̀` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 288 | `unknown-lexeme` | `кни́жницы` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 289 | `unknown-lexeme` | `мно́жествѣ` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 290 | `unknown-lexeme` | `помощѝ` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 291 | `unknown-lexeme` | `пшени́чны` | 80 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 292 | `missing-accent-or-orthographic-metadata` | `и҆мы́й` | 80 | 78 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 293 | `ambiguity-or-spelling-variant` | `сѧ̀` | 80 | 76 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
+| 294 | `unknown-lexeme` | `ю҆́гꙋ` | 80 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 295 | `unknown-lexeme` | `є҆фре́мъ` | 80 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 296 | `unknown-lexeme` | `і҆еровоа́мъ` | 80 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 297 | `unknown-lexeme` | `зла̑ты` | 80 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 298 | `missing-accent-or-orthographic-metadata` | `возвѣсти́те` | 80 | 71 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 299 | `unknown-lexeme` | `ко́жи` | 80 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 300 | `missing-accent-or-orthographic-metadata` | `плѡ́ти` | 80 | 62 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 301 | `unknown-lexeme` | `дв҃дꙋ` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 302 | `unknown-lexeme` | `пе́рсть` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 303 | `unknown-lexeme` | `прⷭ҇нѡ` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 304 | `unknown-lexeme` | `і҆ꙋдє́й` | 79 | 79 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 305 | `unknown-lexeme` | `і҆саа́ка` | 79 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 306 | `unknown-lexeme` | `нача̑лницы` | 79 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 307 | `unknown-lexeme` | `нача̑льницы` | 79 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 308 | `unknown-lexeme` | `є҆ди́ныѧ` | 79 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 309 | `unknown-lexeme` | `де́бри` | 79 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 310 | `unknown-lexeme` | `даві́довѣ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 311 | `unknown-lexeme` | `нечести́вїи` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 312 | `unknown-lexeme` | `посе́мъ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 313 | `unknown-lexeme` | `є҆́здра` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 314 | `unknown-lexeme` | `ѱало́мъ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 315 | `unknown-lexeme` | `ѿсю́дꙋ` | 78 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 316 | `unknown-lexeme` | `лжꙋ̀` | 78 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 317 | `missing-accent-or-orthographic-metadata` | `согрѣши́хомъ` | 78 | 76 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 318 | `unknown-lexeme` | `воззрѣ́въ` | 78 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 319 | `unknown-lexeme` | `а҆ммѡ̑ни` | 78 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 320 | `unknown-lexeme` | `достоѧ́нїе` | 78 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 321 | `unknown-lexeme` | `тꙋ́не` | 78 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 322 | `unknown-lexeme` | `ᲂу҆го́дно` | 77 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 323 | `unknown-lexeme` | `возлїѧ́нїѧ` | 77 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 324 | `unknown-lexeme` | `вы́ше` | 77 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 325 | `unknown-lexeme` | `возра́дꙋютсѧ` | 77 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 326 | `unknown-lexeme` | `ѹ҆́шы` | 77 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 327 | `unknown-lexeme` | `мно́гꙋ` | 76 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 328 | `unknown-lexeme` | `плѣне́нїѧ` | 76 | 76 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 329 | `unknown-lexeme` | `ване́а` | 76 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 330 | `unknown-lexeme` | `вѣ́съ` | 76 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 331 | `unknown-lexeme` | `по́йдемъ` | 76 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 332 | `unknown-lexeme` | `ст҃ы̑мъ` | 76 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 333 | `unknown-lexeme` | `ꙗ҆́звою` | 76 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 334 | `unknown-lexeme` | `и҆спе́рва` | 76 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 335 | `unknown-lexeme` | `златы́хъ` | 76 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 336 | `unknown-lexeme` | `возглаго́лю` | 75 | 75 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 337 | `unknown-lexeme` | `поги́бель` | 75 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 338 | `unknown-lexeme` | `стра́жꙋ` | 75 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 339 | `unknown-lexeme` | `ѡ҆держа́нїе` | 75 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 340 | `unknown-lexeme` | `бл҃гъ` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 341 | `unknown-lexeme` | `царе́во` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 342 | `unknown-lexeme` | `ѻ҆внѡ́въ` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 343 | `unknown-lexeme` | `воззва̀` | 74 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 344 | `unknown-lexeme` | `даві́довъ` | 74 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 345 | `unknown-lexeme` | `сребро́мъ` | 74 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 346 | `unknown-lexeme` | `і҆ѡа́съ` | 74 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 347 | `unknown-lexeme` | `ды́мъ` | 74 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 348 | `unknown-lexeme` | `и҆збра́хъ` | 74 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 349 | `unknown-lexeme` | `подо́бїе` | 74 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 350 | `unknown-lexeme` | `прїе́млетъ` | 74 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 351 | `unknown-lexeme` | `глаго́лѧй` | 73 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 352 | `unknown-lexeme` | `мно́жествꙋ` | 73 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 353 | `unknown-lexeme` | `царє́мъ` | 73 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 354 | `unknown-lexeme` | `а҆рхїере́й` | 73 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 355 | `ambiguity-or-spelling-variant` | `ꙗ҆́вѣ` | 73 | 71 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
+| 356 | `unknown-lexeme` | `сꙋббѡ́тꙋ` | 73 | 69 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 357 | `unknown-lexeme` | `црⷭ҇тво` | 73 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 358 | `unknown-lexeme` | `восхо́щетъ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 359 | `unknown-lexeme` | `всели́шасѧ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 360 | `unknown-lexeme` | `и҆спо́лнь` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 361 | `unknown-lexeme` | `манассі́ина` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 362 | `unknown-lexeme` | `і҆еровоа́ма` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 363 | `unknown-lexeme` | `і҆саа́кꙋ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 364 | `unknown-lexeme` | `ѡ҆скꙋдѣ́етъ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 365 | `unknown-lexeme` | `ѳѷмїа́мъ` | 72 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 366 | `unknown-lexeme` | `дрꙋгѡ́въ` | 72 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 367 | `unknown-lexeme` | `повелѣ́нїемъ` | 72 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 368 | `unknown-lexeme` | `ѡ҆бита́ющихъ` | 72 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 369 | `unknown-lexeme` | `по́йдетъ` | 72 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 370 | `unknown-lexeme` | `полцѣ̀` | 72 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 371 | `unknown-lexeme` | `ѡ҆чи́ститъ` | 72 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 372 | `unknown-lexeme` | `прозва̀` | 72 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 373 | `unknown-lexeme` | `і҆́ѡвъ` | 72 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 374 | `unknown-lexeme` | `стѡѧ́ла` | 72 | 49 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 375 | `unknown-lexeme` | `возмо́гꙋтъ` | 71 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 376 | `unknown-lexeme` | `сни́детъ` | 71 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 377 | `missing-accent-or-orthographic-metadata` | `возвратѧ́тсѧ` | 71 | 69 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 378 | `unknown-lexeme` | `ви́диши` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 379 | `unknown-lexeme` | `хеврѡ́нъ` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 380 | `unknown-lexeme` | `і҆и҃левѣ` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 381 | `unknown-lexeme` | `ѡ҆бита́ти` | 70 | 70 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 382 | `unknown-lexeme` | `валаа́мъ` | 70 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 383 | `unknown-lexeme` | `пла́касѧ` | 70 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 384 | `unknown-lexeme` | `повѣ́даша` | 70 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 385 | `unknown-lexeme` | `писа́нїѧ` | 70 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 386 | `unknown-lexeme` | `же́ртвенникъ` | 70 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 387 | `unknown-lexeme` | `премꙋ́дръ` | 70 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 388 | `unknown-lexeme` | `рахи́ль` | 70 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 389 | `missing-accent-or-orthographic-metadata` | `ꙗ҆ды́й` | 70 | 66 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 390 | `ambiguity-or-spelling-variant` | `даѧ́ти` | 70 | 66 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
+| 391 | `missing-accent-or-orthographic-metadata` | `стражбы̑` | 70 | 60 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 392 | `unknown-lexeme` | `и҆ноплеме́нникѡвъ` | 69 | 69 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 393 | `unknown-lexeme` | `блгⷭ҇ве́нїе` | 69 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 394 | `unknown-lexeme` | `проро́цы` | 69 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 395 | `unknown-lexeme` | `скотѡ́въ` | 69 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 396 | `unknown-lexeme` | `благово́нїѧ` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 397 | `unknown-lexeme` | `заха́рїа` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 398 | `unknown-lexeme` | `и҆зведо́хъ` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 399 | `unknown-lexeme` | `пришле́цъ` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 400 | `unknown-lexeme` | `созида́ти` | 68 | 68 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 401 | `unknown-lexeme` | `вселѧ́тсѧ` | 68 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 402 | `unknown-lexeme` | `повелѣ́нїю` | 68 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 403 | `unknown-lexeme` | `трꙋба́ми` | 68 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 404 | `unknown-lexeme` | `а҆вени́ръ` | 68 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 405 | `unknown-lexeme` | `со́лнцемъ` | 68 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 406 | `unknown-lexeme` | `снѣ́стъ` | 68 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 407 | `unknown-lexeme` | `безче́стїе` | 67 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 408 | `unknown-lexeme` | `ле́стїю` | 67 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 409 | `unknown-lexeme` | `бѣ́хꙋ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 410 | `unknown-lexeme` | `возда́мъ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 411 | `unknown-lexeme` | `стєзѝ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 412 | `unknown-lexeme` | `ѻ҆де́ждꙋ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 413 | `unknown-lexeme` | `ѿи́метъ` | 67 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 414 | `unknown-lexeme` | `сожжѐ` | 67 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 415 | `unknown-lexeme` | `а҆́гнцєвъ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 416 | `unknown-lexeme` | `посла́нїе` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 417 | `unknown-lexeme` | `совершѝ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 418 | `unknown-lexeme` | `царе́вꙋ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 419 | `unknown-lexeme` | `ѻ҆́троки` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 420 | `missing-accent-or-orthographic-metadata` | `свидѣ̑нїѧ` | 66 | 66 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 421 | `ambiguity-or-spelling-variant` | `ѻ҆смы́й` | 66 | 66 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
+| 422 | `missing-accent-or-orthographic-metadata` | `возвѣсти́ти` | 66 | 65 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 423 | `unknown-lexeme` | `вѣкѡ́въ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 424 | `unknown-lexeme` | `гедеѡ́нъ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 425 | `unknown-lexeme` | `непоро́ченъ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 426 | `unknown-lexeme` | `сто́гнахъ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 427 | `unknown-lexeme` | `трапе́зꙋ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 428 | `unknown-lexeme` | `бл҃же́ни` | 66 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 429 | `unknown-lexeme` | `нача́тки` | 66 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 430 | `unknown-lexeme` | `ѹ҆чн҃цы̀` | 66 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 431 | `unknown-lexeme` | `а҆ма́нъ` | 66 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 432 | `unknown-lexeme` | `бли́жнѧгѡ` | 66 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 433 | `unknown-lexeme` | `і҆а́кѡвлѧ` | 65 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 434 | `unknown-lexeme` | `ѡ҆быдо́ша` | 65 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 435 | `unknown-lexeme` | `ѹ҆́зрѧтъ` | 65 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 436 | `unknown-lexeme` | `златы̑ѧ` | 65 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 437 | `unknown-lexeme` | `нечести́вый` | 65 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 438 | `unknown-lexeme` | `сꙋббѡ́тный` | 65 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 439 | `unknown-lexeme` | `творѧ́щымъ` | 65 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 440 | `unknown-lexeme` | `прорцы̀` | 65 | 55 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 441 | `unknown-lexeme` | `ве́лїѧ` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 442 | `unknown-lexeme` | `возвесели́тсѧ` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 443 | `unknown-lexeme` | `вчера̀` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 444 | `unknown-lexeme` | `првⷣный` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 445 | `unknown-lexeme` | `преда́мъ` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 446 | `unknown-lexeme` | `сꙋдїѧ̀` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 447 | `unknown-lexeme` | `ѹ҆би́ти` | 64 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 448 | `missing-accent-or-orthographic-metadata` | `возвѣстѧ́тъ` | 64 | 64 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 449 | `missing-accent-or-orthographic-metadata` | `пѧ́тый` | 64 | 64 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 450 | `unknown-lexeme` | `ѹ҆́зритъ` | 64 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 451 | `unknown-lexeme` | `вала́къ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 452 | `unknown-lexeme` | `вели́кїѧ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 453 | `unknown-lexeme` | `даві́дѡвы` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 454 | `unknown-lexeme` | `живы́хъ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 455 | `unknown-lexeme` | `и҆сповѣ́мсѧ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 456 | `unknown-lexeme` | `про́йде` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 457 | `unknown-lexeme` | `со́нмꙋ` | 64 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 458 | `unknown-lexeme` | `вотщѐ` | 64 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 459 | `unknown-lexeme` | `а҆вра́мъ` | 64 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 460 | `unknown-lexeme` | `нечи́ста` | 64 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 461 | `unknown-lexeme` | `лава́нъ` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 462 | `unknown-lexeme` | `пи́ръ` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 463 | `unknown-lexeme` | `пома́за` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 464 | `unknown-lexeme` | `ровоа́мъ` | 64 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 465 | `unknown-lexeme` | `ѻ҆лтарю̀` | 64 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 466 | `unknown-lexeme` | `а҆хаа́въ` | 64 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 467 | `unknown-lexeme` | `десни́цꙋ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 468 | `unknown-lexeme` | `слꙋ́жатъ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 469 | `unknown-lexeme` | `сп҃сѐ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 470 | `unknown-lexeme` | `чꙋжди́хъ` | 63 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 471 | `unknown-lexeme` | `земны́хъ` | 63 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 472 | `unknown-lexeme` | `быва́ютъ` | 63 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 473 | `unknown-lexeme` | `пре́йдетъ` | 63 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 474 | `unknown-lexeme` | `а҆ссѷрі́йска` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 475 | `unknown-lexeme` | `возмого́ша` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 476 | `unknown-lexeme` | `и҆збере́тъ` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 477 | `unknown-lexeme` | `мы́шцею` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 478 | `unknown-lexeme` | `ра́доватисѧ` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 479 | `unknown-lexeme` | `созда́ти` | 62 | 62 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 480 | `missing-accent-or-orthographic-metadata` | `жи́вꙋ` | 62 | 62 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 481 | `unknown-lexeme` | `погꙋбле́нїе` | 62 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 482 | `unknown-lexeme` | `слꙋже́нїе` | 62 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 483 | `ambiguity-or-spelling-variant` | `и҆но́мꙋ` | 62 | 58 | review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains |
+| 484 | `unknown-lexeme` | `мо́гꙋтъ` | 62 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 485 | `unknown-lexeme` | `Матѳ` | 61 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 486 | `unknown-lexeme` | `превозноси́те` | 61 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 487 | `unknown-lexeme` | `воздаѧ́нїе` | 61 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 488 | `unknown-lexeme` | `ро́въ` | 61 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 489 | `unknown-lexeme` | `а҆нтїо́хъ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 490 | `unknown-lexeme` | `безꙋ́мныхъ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 491 | `unknown-lexeme` | `венїамі́ни` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 492 | `unknown-lexeme` | `вонмѝ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 493 | `unknown-lexeme` | `высѡ́каѧ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 494 | `unknown-lexeme` | `крѣ́пкїй` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 495 | `unknown-lexeme` | `навꙋходоно́сора` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 496 | `unknown-lexeme` | `помышле́нїе` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 497 | `unknown-lexeme` | `по́слетъ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 498 | `unknown-lexeme` | `совѣ́та` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 499 | `unknown-lexeme` | `ѳѷмїа́ма` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 500 | `unknown-lexeme` | `ѻ҆зі́а` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |

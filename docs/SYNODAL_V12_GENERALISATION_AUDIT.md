@@ -565,3 +565,32 @@ Running total: held-out generalised 9,467 → **11,089** (+1,622, +17.1%);
 corpus top-k 964,791 → 982,586 (+17,795); memorised capped at 14,998; the
 completion-gate ratchet (≥14,200) needs ≈3,100 more, which at the noun-wave
 rate is roughly six further waves.
+
+## Phase 2, wave 8 — paradigm-scope fixes reach held-out cells of *existing* lexemes
+
+Sealed as `v0.12-wave-8`.
+
+| Measure | Wave 7 | Wave 8 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 11,089 | **11,569** | +480 |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| corpus top-k | 982,586 | 983,580 | +994 |
+| lexemes | 1,030 | 1,035 | +5 |
+| productive evaluation rows | 147 | 158 | +11 |
+
+New this wave beyond the admissions (`пасха`, `востокъ`, `стражба`,
+`лакоть`, promoted `юница`, verb `пристꙋпити`): held-out cells of *already
+registered* lexemes were reached by extending their paradigm scopes from
+non-held-out witnesses — `зако́нѡвъ` (45 tokens) by a §36 positional row on
+`законъ` witnessed by the dative `зако́нѡмъ`, `жена́ми` by a plural scope
+witnessed by `жена́мъ`, `принесꙋ́тъ` by a future-plural scope witnessed by
+`принесе́те`. That pattern (fix the scope, not the lexeme) is cheap and aims
+squarely at the gate metric. The ceiling discipline held twice more: an
+exact row for `лакте́й` was reverted the moment the type proved held-out
+(and the corpus print turned out to be `ла́ктей` — the third-m genitive
+plural needs a reviewed `-ей` variant before that cell can be claimed,
+recorded as deferred); `top_1` and `system:imperative` moved only with
+stated syncretism/attribution justifications.
+
+Running total: held-out generalised 9,467 → **11,569** (+2,102, +22.2%);
+the gate ratchet needs ≈2,630 more.

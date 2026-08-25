@@ -12,7 +12,7 @@ accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 225
+- Scope families with no reproducing placement at the finest granularity: 227
 - Lexemes with cells outside the reusable scope grammar: 7
 
 | Granularity | Rows |
@@ -468,6 +468,14 @@ synodal:noun:v12-kniga	singular:genitive	Noun	4 attestation(s); best rule word-v
 synodal:noun:v12-kniga	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
 synodal:noun:v12-kniga	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
 synodal:noun:v12-kniga	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
+synodal:noun:v12-lakot	singular:genitive	Noun	6 attestation(s); best rule word-vowel-from-start:0 kamora misses: лакти→ла́кти лакти→ла́кти
+synodal:noun:v12-lakot	singular:dative	Noun	6 attestation(s); best rule word-vowel-from-start:0 kamora misses: лакти→ла́кти лакти→ла́кти
+synodal:noun:v12-lakot	singular:locative	Noun	6 attestation(s); best rule word-vowel-from-start:0 kamora misses: лакти→ла́кти лакти→ла́кти
+synodal:noun:v12-lakot	dual:nominative	Noun	6 attestation(s); best rule word-vowel-from-start:0 kamora misses: лакти→ла́кти лакти→ла́кти
+synodal:noun:v12-lakot	dual:accusative	Noun	6 attestation(s); best rule word-vowel-from-start:0 kamora misses: лакти→ла́кти лакти→ла́кти
+synodal:noun:v12-lakot	dual:vocative	Noun	6 attestation(s); best rule word-vowel-from-start:0 kamora misses: лакти→ла́кти лакти→ла́кти
+synodal:noun:v12-lakot	plural:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 acute misses: лактей→ла́ктей лактей→ла́ктей
+synodal:noun:v12-lakot	plural:accusative	Noun	6 attestation(s); best rule word-vowel-from-start:0 kamora misses: лакти→ла́кти лакти→ла́кти
 synodal:noun:v12-myshtsa	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: мышцы→мы́шцы мышцы→мы́шцы
 synodal:noun:v12-myshtsa	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: мышцы→мы́шцы мышцы→мы́шцы
 synodal:noun:v12-myshtsa	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: мышцы→мы́шцы мышцы→мы́шцы
@@ -476,6 +484,10 @@ synodal:noun:v12-nepravda	singular:genitive	Noun	4 attestation(s); best rule wor
 synodal:noun:v12-nepravda	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
 synodal:noun:v12-nepravda	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
 synodal:noun:v12-nepravda	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
+synodal:noun:v12-strazhba	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
+synodal:noun:v12-strazhba	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
+synodal:noun:v12-strazhba	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
+synodal:noun:v12-strazhba	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
 synodal:noun:v12-vysota	singular:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: высота→высота́ высота→высота́
 synodal:noun:v12-vysota	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
 synodal:noun:v12-vysota	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
@@ -850,8 +862,6 @@ synodal:verb:vozvestiti	singular	Imperative	10 attestation(s); best rule word-vo
 synodal:verb:vozvestiti	plural	Imperative	4 attestation(s); best rule word-vowel-from-start:2 acute misses: возвѣстите→возвѣститѐ
 synodal:verb:wikt-0c6c8db63b7c	singular	Participle("present", "active", "short", "positive")	19 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
 synodal:verb:wikt-0c6c8db63b7c	dual	Participle("present", "active", "short", "positive")	29 attestation(s); best rule word-vowel-from-start:1 acute misses: имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща имꙋща→и҆мꙋ̑ща
-synodal:verb:wikt-332544509d0c	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: принесете→принесетѐ
-synodal:verb:wikt-332544509d0c	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: принесете→принесе́те
 synodal:verb:wikt-3ca5f600ecca	singular	Imperative	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡбрати→ѡ҆брати́ ѡбрати→Ѡ҆брати́
 synodal:verb:wikt-6ceeefbe4e9e	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
 synodal:verb:wikt-6ceeefbe4e9e	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
@@ -903,7 +913,7 @@ synodal:noun:v12-kolesnitsa	noun:plural	overlaps an existing reviewed paradigm a
 synodal:noun:v12-myshtsa	noun:singular:nominative	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
 synodal:noun:v12-stareyshina	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:vera	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
-synodal:noun:zakon	noun:plural	overlaps an existing reviewed paradigm at noun:accusative:plural:inanimate
+synodal:noun:zakon	noun:plural	overlaps an existing reviewed paradigm at noun:genitive:plural:inanimate
 synodal:noun:zapoved	noun:singular,dual,plural	overlaps an existing reviewed paradigm at noun:nominative:plural:inanimate
 synodal:noun:zhena	noun:plural	overlaps an existing reviewed paradigm at noun:nominative:plural:animate
 synodal:noun:zhizn	noun:singular,dual	overlaps an existing reviewed paradigm at noun:genitive:singular:inanimate
@@ -948,6 +958,7 @@ synodal:verb:v07-ff04037d9da0c605	finite:future:plural	overlaps an existing revi
 synodal:verb:v07-ff04037d9da0c605	finite:present:plural	overlaps an existing reviewed paradigm at present:second:plural
 synodal:verb:v07-ff04037d9da0c605	imperative:plural	overlaps an existing reviewed paradigm at imperative:second:plural
 synodal:verb:v12-potrebiti	finite:aorist:singular	overlaps an existing reviewed paradigm at aorist:second:singular
+synodal:verb:v12-pristupiti	participle:past:active:short:positive:singular,plural	generates пристꙋпи́вша for participle:past:active:nominative:plural:neuter:inanimate:short:positive but the source partition prints пристꙋпи̑вша
 synodal:verb:v12-skonchati	finite:aorist:dual,plural	overlaps an existing reviewed paradigm at aorist:third:plural
 synodal:verb:v12-slyshati	participle:past:active:short:positive:singular,plural	generates слы́шавша for participle:past:active:nominative:plural:neuter:inanimate:short:positive but the source partition prints слы̑шавша
 synodal:verb:v12-sogreshiti	finite:aorist:plural	overlaps an existing reviewed paradigm at aorist:third:plural
@@ -956,6 +967,7 @@ synodal:verb:wikt-070505e82800	finite:present:dual,plural	overlaps an existing r
 synodal:verb:wikt-0c6c8db63b7c	participle:present:active:short:positive:plural	overlaps an existing reviewed paradigm at participle:present:active:nominative:plural:masculine:inanimate:short:positive
 synodal:verb:wikt-2941d1bd0d7e	finite:aorist:singular,dual,plural	overlaps an existing reviewed paradigm at aorist:third:singular
 synodal:verb:wikt-332544509d0c	finite:aorist:singular	overlaps an existing reviewed paradigm at aorist:second:singular
+synodal:verb:wikt-332544509d0c	finite:present:plural	cannot realise present:first:plural (принесемъ)
 synodal:verb:wikt-3ca5f600ecca	finite:aorist:plural	overlaps an existing reviewed paradigm at aorist:third:plural
 synodal:verb:wikt-3ca5f600ecca	finite:future:plural	overlaps an existing reviewed paradigm at future:second:plural
 synodal:verb:wikt-3ca5f600ecca	finite:present:plural	overlaps an existing reviewed paradigm at present:second:plural
@@ -983,6 +995,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3550
-- Lexemes with at least one such attestation: 136
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3638
+- Lexemes with at least one such attestation: 139
 - Placement space searched per partition: 30 placements x 3 marks
