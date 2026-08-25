@@ -95,6 +95,30 @@ fn data_rows(path: &Path, filter: Option<(&str, &str)>) -> Result<usize, Box<dyn
         .count())
 }
 
+/// The label and measures of the most recently sealed wave, for delta
+/// projections to compare against. `None` when the ledger has no rows.
+pub(crate) struct LastWave {
+    pub label: String,
+    pub holdout_generalised: usize,
+    pub holdout_memorised: usize,
+    pub holdout_top_k: usize,
+    pub top_k_analyzed: usize,
+}
+
+pub(crate) fn last_sealed_row(root: &Path) -> Result<Option<LastWave>, Box<dyn Error>> {
+    let path = root.join(LEDGER_PATH);
+    if !path.is_file() {
+        return Ok(None);
+    }
+    Ok(load(&path)?.last().map(|row| LastWave {
+        label: row.wave.clone(),
+        holdout_generalised: row.measures.holdout_generalised,
+        holdout_memorised: row.measures.holdout_memorised,
+        holdout_top_k: row.measures.holdout_top_k,
+        top_k_analyzed: row.measures.top_k_analyzed,
+    }))
+}
+
 fn load(path: &Path) -> Result<Vec<WaveRow>, Box<dyn Error>> {
     let contents = fs::read_to_string(path)
         .map_err(|error| format!("cannot read {}: {error}", path.display()))?;

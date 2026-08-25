@@ -1440,6 +1440,86 @@ pub fn check_text(analyzer: &Analyzer, text: &str, options: CheckTextOptions) ->
     }
 }
 
+/// One distinct printed surface of the corpus with its token frequency, the
+/// input to [`project_surface_counts`].
+#[derive(Clone, Debug)]
+pub struct SurfaceCount {
+    /// The surface exactly as printed in the corpus.
+    pub original: String,
+    /// The tokenizer's normalized form of the surface (holdout key).
+    pub normalized: String,
+    /// How many corpus tokens print exactly this surface.
+    pub frequency: usize,
+}
+
+/// The ledger-relevant totals of a projected coverage run.
+///
+/// Produced by [`project_surface_counts`], which reuses the same per-token
+/// classification as [`coverage_with_type_holdout`], so on an identical
+/// surface inventory the numbers match the full run by construction. A
+/// projection carries no per-passage attribution and can never seal a wave.
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct CoverageProjection {
+    pub total_tokens: usize,
+    pub top_1_analyzed: usize,
+    pub top_k_analyzed: usize,
+    pub cross_lexeme_ambiguous: usize,
+    pub holdout_tokens: usize,
+    pub holdout_top_k: usize,
+    pub holdout_generalised: usize,
+    pub holdout_memorised: usize,
+}
+
+/// Projects the ledger-relevant coverage totals from a distinct-surface
+/// inventory, classifying each surface exactly once with the same
+/// [`classify_token`] path the corpus loop uses and weighting by frequency.
+pub fn project_surface_counts(
+    analyzer: &Analyzer,
+    surfaces: &[SurfaceCount],
+    options: CheckTextOptions,
+    held_out_types: &BTreeSet<String>,
+) -> CoverageProjection {
+    let mut summary = CoverageSlice::default();
+    let mut integrity = CoverageIntegrity::default();
+    let mut held_out_slice = CoverageSlice::default();
+    let mut held_out_status: BTreeMap<String, usize> = BTreeMap::new();
+    for surface in surfaces {
+        let tokens = tokenize(&surface.original);
+        let Some(token) = tokens.into_iter().next() else {
+            continue;
+        };
+        let analysis = classify_token(analyzer, token, &options);
+        let held = held_out_types.contains(&surface.normalized);
+        for _ in 0..surface.frequency {
+            update_slice(&mut summary, &analysis);
+            update_integrity(&mut integrity, &analysis);
+            if held {
+                update_slice(&mut held_out_slice, &analysis);
+                *held_out_status
+                    .entry(status_label(analysis.status).into())
+                    .or_default() += 1;
+            }
+        }
+    }
+    let holdout_generalised = GENERALISING_STATUSES
+        .iter()
+        .map(|status| held_out_status.get(*status).copied().unwrap_or_default())
+        .sum();
+    CoverageProjection {
+        total_tokens: summary.total_tokens,
+        top_1_analyzed: summary.top_1_analyzed,
+        top_k_analyzed: summary.top_k_analyzed,
+        cross_lexeme_ambiguous: integrity.cross_lexeme_ambiguous,
+        holdout_tokens: held_out_slice.total_tokens,
+        holdout_top_k: held_out_slice.top_k_analyzed,
+        holdout_generalised,
+        holdout_memorised: held_out_status
+            .get(MEMORISING_STATUS)
+            .copied()
+            .unwrap_or_default(),
+    }
+}
+
 pub fn coverage(
     analyzer: &Analyzer,
     passages: &[CoveragePassage],

@@ -2811,6 +2811,22 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
             crate::synodal_admit_check::ensure_registry_current(&temporary),
         )?;
 
+        // A delta projection must never be able to seal, reseal, or check.
+        for forbidden in ["--seal-wave", "--reseal-floors", "--check"] {
+            let mut arguments = vec![
+                "--offline".to_owned(),
+                "--delta".to_owned(),
+                forbidden.to_owned(),
+            ];
+            if forbidden == "--seal-wave" {
+                arguments.push("guard".to_owned());
+            }
+            require_failure(
+                "delta projection sealing",
+                crate::synodal_coverage::run(&mut arguments.into_iter(), root),
+            )?;
+        }
+
         for hostile in ["", "latin", "\u{e000}", "\u{0301}слово"] {
             if std::panic::catch_unwind(|| synodal_church_slavonic::lookup(hostile)).is_err() {
                 return Err(format!("hostile input panicked: {hostile:?}").into());

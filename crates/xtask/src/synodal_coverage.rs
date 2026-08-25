@@ -56,6 +56,7 @@ pub(crate) fn run(
     let mut profile = OrthographyProfile::SynodalLiturgical;
     let mut maximum_passages = None;
     let mut check = false;
+    let mut delta = false;
     let mut fixture = false;
     let mut offline = false;
     let mut require_complete = false;
@@ -84,6 +85,7 @@ pub(crate) fn run(
                 );
             }
             "--check" => check = true,
+            "--delta" => delta = true,
             "--fixture" => fixture = true,
             "--offline" => offline = true,
             "--require-complete" => require_complete = true,
@@ -95,6 +97,16 @@ pub(crate) fn run(
     }
     if !offline {
         return Err("synodal-coverage is intentionally offline; pass --offline".into());
+    }
+    if delta {
+        // A projection can never seal, reseal, check, or masquerade as the
+        // canonical measurement; it exists purely for fast iteration.
+        if seal_wave.is_some() || reseal_floors || check || require_complete || fixture {
+            return Err(
+                "--delta is a projection only; it cannot be combined with --seal-wave, --reseal-floors, --check, --require-complete, or --fixture".into(),
+            );
+        }
+        return run_delta(root, policy, profile);
     }
     if sources.is_empty() {
         sources.extend(DEFAULT_SOURCES.map(str::to_owned));
@@ -132,6 +144,9 @@ pub(crate) fn run(
         },
         &held_out_types,
     );
+    if !fixture && canonical_inputs {
+        write_surface_inventory(&intermediate, &passages)?;
+    }
     let stem = if fixture {
         "synodal-coverage-fixture"
     } else {
@@ -974,4 +989,127 @@ fn reseal(floors: &[Floor], report: &CoverageReport) -> String {
         ));
     }
     output
+}
+
+const SURFACE_INVENTORY: &str = "coverage-surface-inventory.tsv";
+
+/// Writes the distinct-surface inventory of the canonical corpus so
+/// `--delta` can project ledger totals without re-reading the corpus. Lives
+/// in the gitignored intermediate directory: it derives from the locked
+/// corpus alone and changes only when the sources change.
+fn write_surface_inventory(
+    intermediate: &Path,
+    passages: &[synodal_church_slavonic_dictionary::coverage::CoveragePassage],
+) -> Result<(), Box<dyn Error>> {
+    use synodal_church_slavonic_dictionary::coverage::tokenize;
+    let mut counts: std::collections::BTreeMap<(String, String), usize> =
+        std::collections::BTreeMap::new();
+    for passage in passages {
+        for token in tokenize(&passage.text) {
+            *counts
+                .entry((token.original, token.normalized))
+                .or_default() += 1;
+        }
+    }
+    let mut text = String::from("original\tnormalized\tfrequency\n");
+    for ((original, normalized), frequency) in &counts {
+        text.push_str(&format!("{original}\t{normalized}\t{frequency}\n"));
+    }
+    std::fs::write(intermediate.join(SURFACE_INVENTORY), text)?;
+    println!(
+        "synodal coverage: wrote surface inventory ({} distinct surfaces)",
+        counts.len()
+    );
+    Ok(())
+}
+
+/// PROJECTION ONLY: recomputes the ledger-relevant totals from the cached
+/// surface inventory with the current registry. Same classification code as
+/// the canonical run, none of the corpus IO. Cannot seal.
+fn run_delta(
+    root: &Path,
+    policy: GenerationPolicy,
+    profile: OrthographyProfile,
+) -> Result<(), Box<dyn Error>> {
+    use synodal_church_slavonic_dictionary::coverage::{SurfaceCount, project_surface_counts};
+    let start = std::time::Instant::now();
+    let inventory_path = root
+        .join("data/intermediate/synodal")
+        .join(SURFACE_INVENTORY);
+    if !inventory_path.is_file() {
+        return Err(format!(
+            "{} is missing; run the canonical `synodal-coverage --offline` once to write it",
+            inventory_path.display()
+        )
+        .into());
+    }
+    let mut surfaces = Vec::new();
+    for (offset, line) in std::fs::read_to_string(&inventory_path)?
+        .lines()
+        .enumerate()
+        .skip(1)
+    {
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() != 3 {
+            return Err(format!(
+                "{}:{} is not an inventory row",
+                inventory_path.display(),
+                offset + 1
+            )
+            .into());
+        }
+        surfaces.push(SurfaceCount {
+            original: fields[0].to_owned(),
+            normalized: fields[1].to_owned(),
+            frequency: fields[2].parse()?,
+        });
+    }
+    let analyzer = Analyzer::new(
+        Inflector::builder()
+            .generation_policy(policy)
+            .orthography(profile)
+            .build(),
+    )?;
+    let held_out_types =
+        crate::synodal_type_holdout::load(&root.join(crate::synodal_type_holdout::HOLDOUT_PATH))?;
+    let projection = project_surface_counts(
+        &analyzer,
+        &surfaces,
+        CheckTextOptions {
+            generation_policy: policy,
+            orthography_profile: profile,
+        },
+        &held_out_types,
+    );
+    println!("================ PROJECTION — not sealable ================");
+    println!(
+        "tokens {}  top-k {}  top-1 {}  cross-lexeme {}",
+        projection.total_tokens,
+        projection.top_k_analyzed,
+        projection.top_1_analyzed,
+        projection.cross_lexeme_ambiguous
+    );
+    println!(
+        "holdout: tokens {}  top-k {}  generalised {}  memorised {}",
+        projection.holdout_tokens,
+        projection.holdout_top_k,
+        projection.holdout_generalised,
+        projection.holdout_memorised
+    );
+    if let Some(last) = crate::synodal_waves::last_sealed_row(root)? {
+        println!(
+            "vs last sealed wave {}: generalised {:+}  memorised {:+}  top-k {:+}  holdout-top-k {:+}",
+            last.label,
+            projection.holdout_generalised as i64 - last.holdout_generalised as i64,
+            projection.holdout_memorised as i64 - last.holdout_memorised as i64,
+            projection.top_k_analyzed as i64 - last.top_k_analyzed as i64,
+            projection.holdout_top_k as i64 - last.holdout_top_k as i64,
+        );
+    }
+    println!(
+        "projection completed in {:.1}s over {} distinct surfaces; seal with the canonical run",
+        start.elapsed().as_secs_f64(),
+        surfaces.len()
+    );
+    Ok(())
 }

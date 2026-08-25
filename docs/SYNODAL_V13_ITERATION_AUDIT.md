@@ -96,3 +96,19 @@ tested ("stale compiled registry" injection in `synodal-guard-witnesses`),
 and checked against the portable-runtime and publish-dry-run constraints
 (build scripts run host-side; wasm/no-default builds and `cargo publish
 --dry-run` all pass).
+
+## Phase 4 — Delta coverage projection
+
+`synodal-coverage --offline --delta` projects the ledger columns from a
+distinct-surface inventory (63,507 surfaces) written by every canonical run
+into the gitignored intermediate directory. The projection reuses the very
+`classify_token`/`update_slice`/`update_integrity`/holdout-status code the
+corpus loop uses (a new `project_surface_counts` API in the dictionary
+coverage module), so equality with the full run is by construction, and the
+acceptance check confirmed it empirically: on the sealed v0.13-prep-merges
+tree, the projection reproduced generalised 14,236, memorised 14,998,
+holdout top-k 30,293, and corpus top-k 990,913 **exactly (+0 on every
+column) in 17.6 seconds** versus the ~4-minute canonical run. The output is
+stamped `PROJECTION — not sealable` and shows deltas against the last sealed
+ledger row; combining `--delta` with any sealing or checking flag is an
+error, and three guard witnesses inject exactly those combinations.

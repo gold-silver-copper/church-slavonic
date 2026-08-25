@@ -133,6 +133,21 @@ marginal recovery, and the lexical source union **last** (it reads lexemes,
 lexical reviews, and family reviews) — and prints undecided top-200 family
 proposals as ready-to-review stubs when that gate is the failure.
 
+### Delta coverage projection
+
+`cargo xtask synodal-coverage --offline --delta` projects the ledger-relevant
+totals (corpus top-k and top-1, cross-lexeme ambiguity, and the held-out
+generalised/memorised/top-k columns) from a cached distinct-surface inventory
+(`data/intermediate/synodal/coverage-surface-inventory.tsv`, written by every
+canonical run) instead of re-reading the 1.3M-token corpus. It classifies
+each surface with the same code path as the canonical run, so on an unchanged
+corpus the numbers match the full run exactly (~18s instead of ~4min). The
+output is stamped `PROJECTION — not sealable`, compares against the last
+sealed ledger row, and combining `--delta` with `--seal-wave`,
+`--reseal-floors`, `--check`, `--require-complete`, or `--fixture` is an
+error, witness-tested in `synodal-guard-witnesses`. Sealing always uses the
+canonical full run.
+
 ### Registry staleness tripwire
 
 The generated registries compile into the binaries, so a measurement run
