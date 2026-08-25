@@ -11,17 +11,17 @@ The gate for the exploratory segmentation tier (`SYN-PREDICT-VERB-SEGMENTATION-V
 | Bucket (bp) | Surfaces | Top-1 precision | Any-prediction precision | Emits candidates |
 |---|---:|---:|---:|---|
 | 0-2399 | 178 | 4943 bp | 4943 bp | no |
-| 2400-2999 | 368 | 6413 bp | 6657 bp | yes |
-| 3000-3399 | 495 | 9050 bp | 9090 bp | yes |
-| 3400+ | 352 | 8437 bp | 8437 bp | yes |
+| 2400-2999 | 375 | 6453 bp | 6693 bp | yes |
+| 3000-3399 | 497 | 9054 bp | 9094 bp | yes |
+| 3400+ | 356 | 8455 bp | 8455 bp | yes |
 
 ## Precision by system
 
 | System | Surfaces | Top-1 precision | Any-prediction precision |
 |---|---:|---:|---:|
-| aorist | 460 | 6239 bp | 6239 bp |
+| aorist | 462 | 6255 bp | 6255 bp |
 | imperative | 147 | 3673 bp | 4421 bp |
 | imperfect | 144 | 4166 bp | 4166 bp |
-| infinitive | 59 | 10000 bp | 10000 bp |
-| l-participle | 209 | 7655 bp | 7655 bp |
-| present-future | 564 | 7960 bp | 7960 bp |
+| infinitive | 60 | 10000 bp | 10000 bp |
+| l-participle | 212 | 7641 bp | 7641 bp |
+| present-future | 572 | 7972 bp | 7972 bp |

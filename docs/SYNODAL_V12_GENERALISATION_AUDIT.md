@@ -686,3 +686,30 @@ frequent агнца є҆динолѣ́тна cell). Two family-queue proposals f
 possessive surfaces were recorded as admitted onto the new identities;
 поѧсти (athematic ꙗсти compound) deferred. Ledger: held-out generalised
 13,740 → **13,956** (+216). Gate remainder: **244**.
+
+## Waves 14–15 — completion gate crossed (v0.12-wave-14, v0.12-wave-15)
+
+Wave 14: `ѡставити` (merged onto the reviewed identity
+`synodal:verb:wikt-e0c91b5eb837`; labial first singular ѡ҆ста́влю and a §100
+past passive participle reach ѡ҆ста́влени productively), `сиѡнъ` (Sihon the
+Amorite king, distinct from Zion), `ѿпꙋщенїе`, `беззаконный` (mobile-е short
+masculine), `ѻтроковица`. Wave 15: `беззаконникъ`, `лꙋкавство`, `сарра`,
+`вѣрный`.
+
+**The v0.12 completion-gate ratchet holds: held-out generalised analyzed is
+14,236 ≥ 14,200** — +50.4% over the 9,467 baseline. Memorised stayed capped at
+14,998 throughout all fifteen waves. Corpus top-k 990,913. All 31 sealed bounds
+hold; every closing gate, the full test suite, clippy, and the doc tests are
+green. The remaining gate items were already satisfied earlier in the program:
+the holdout-led ledger (`reports/synodal-waves.tsv`), the masked-precision-gated
+predictive tier (`synodal-predict`), the consumer scenario on a held-out passage
+(`analyze-text`, doctested), the archived audit manifest (`synodal-archive
+--check`), and the independent review with all findings resolved.
+
+Remaining deferred work (recorded in family_reviews and prior sections):
+ѻ/є/ѹ presentation folds (each needs its own holdout-rekey wave before
+admissions), kamora plural marking (кни̑ги, жи̑лы), the лакте́й/ла́ктей
+genitive whose only accent witnesses are held-out, ц-stem soft instrumental
+(мы́шцею), titlo-abbreviation heads, athematic compounds (поѧсти,
+предати/воздати), возмощи, пойти, паѵелъ-type hard mobile-е masculines, and
+the послꙋ́ша v0.6 pin.

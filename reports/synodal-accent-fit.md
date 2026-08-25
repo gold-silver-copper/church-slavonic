@@ -12,7 +12,7 @@ accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 253
+- Scope families with no reproducing placement at the finest granularity: 258
 - Lexemes with cells outside the reusable scope grammar: 12
 
 | Granularity | Rows |
@@ -369,6 +369,57 @@ synodal:adjective:v12-pust	plural:nominative:masculine:inanimate	Adjective("shor
 synodal:adjective:v12-pust	plural:nominative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пꙋсти→пꙋсти́ пꙋсти→пꙋ́сти
 synodal:adjective:v12-pust	plural:vocative:masculine:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пꙋсти→пꙋсти́ пꙋсти→пꙋ́сти
 synodal:adjective:v12-pust	plural:vocative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пꙋсти→пꙋсти́ пꙋсти→пꙋ́сти
+synodal:adjective:v12-vern	singular:instrumental:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:instrumental:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:instrumental:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:instrumental:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:neuter:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:neuter:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:nominative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:nominative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:genitive:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:genitive:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:genitive:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	singular:genitive:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	singular:genitive:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:genitive:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:instrumental:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:instrumental:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:instrumental:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:instrumental:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	singular:vocative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	singular:vocative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	dual:nominative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	dual:nominative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	dual:accusative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	dual:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	dual:vocative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	dual:vocative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	plural:nominative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:nominative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:nominative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	plural:nominative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	plural:dative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:dative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрнымъ→вѣ́рнымъ
+synodal:adjective:v12-vern	plural:accusative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:accusative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:accusative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:accusative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	plural:accusative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	plural:vocative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:vocative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрны→вѣ́рны
+synodal:adjective:v12-vern	plural:vocative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
+synodal:adjective:v12-vern	plural:vocative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вѣрна→вѣ́рна
 synodal:adjective:v12-vyshnii	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
 synodal:adjective:v12-vyshnii	singular:genitive:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
 synodal:adjective:v12-vyshnii	plural:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
@@ -781,6 +832,10 @@ synodal:noun:v12-nepravda	singular:genitive	Noun	4 attestation(s); best rule wor
 synodal:noun:v12-nepravda	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
 synodal:noun:v12-nepravda	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
 synodal:noun:v12-nepravda	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
+synodal:noun:v12-otrokovitsa	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:3 kamora misses: ѻтроковицы→ѻ҆трокови́цы ѻтроковицы→ѻ҆трокови́цы
+synodal:noun:v12-otrokovitsa	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:3 kamora misses: ѻтроковицы→ѻ҆трокови́цы ѻтроковицы→ѻ҆трокови́цы
+synodal:noun:v12-otrokovitsa	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:3 kamora misses: ѻтроковицы→ѻ҆трокови́цы ѻтроковицы→ѻ҆трокови́цы
+synodal:noun:v12-otrokovitsa	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:3 kamora misses: ѻтроковицы→ѻ҆трокови́цы ѻтроковицы→ѻ҆трокови́цы
 synodal:noun:v12-sobranie	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ
 synodal:noun:v12-sobranie	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ
 synodal:noun:v12-sobranie	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ
@@ -1157,6 +1212,15 @@ synodal:verb:wikt-6ceeefbe4e9e	singular:nominative	Noun	2 attestation(s); best r
 synodal:verb:wikt-6ceeefbe4e9e	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
 synodal:verb:wikt-6ceeefbe4e9e	singular:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
 synodal:verb:wikt-6ceeefbe4e9e	singular	FiniteVerb("aorist")	2 attestation(s); best rule word-vowel-from-start:1 acute misses: ꙗде→ꙗ҆де́
+synodal:verb:wikt-e0c91b5eb837	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставленїе→ѡ҆ставле́нїе ѡставленїе→ѡ҆ставле́нїе
+synodal:verb:wikt-e0c91b5eb837	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставленїѧ→ѡ҆ставле́нїѧ ѡставленїѧ→ѡ҆ставле́нїѧ ѡставленїѧ→Ѡ҆ставле́нїѧ ѡставленїѧ→Ѡ҆ставле́нїѧ
+synodal:verb:wikt-e0c91b5eb837	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставленїе→ѡ҆ставле́нїе ѡставленїе→ѡ҆ставле́нїе
+synodal:verb:wikt-e0c91b5eb837	singular:locative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставленїи→ѡ҆ставле́нїи ѡставленїи→ѡ҆ставле́нїи
+synodal:verb:wikt-e0c91b5eb837	singular:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставленїе→ѡ҆ставле́нїе ѡставленїе→ѡ҆ставле́нїе
+synodal:verb:wikt-e0c91b5eb837	plural:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставлєнїѧ→ѡ҆ставлє́нїѧ ѡставлєнїѧ→ѡ҆ставлє́нїѧ
+synodal:verb:wikt-e0c91b5eb837	plural:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставлєнїѧ→ѡ҆ставлє́нїѧ ѡставлєнїѧ→ѡ҆ставлє́нїѧ
+synodal:verb:wikt-e0c91b5eb837	plural:instrumental	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставленїи→ѡ҆ставле́нїи ѡставленїи→ѡ҆ставле́нїи
+synodal:verb:wikt-e0c91b5eb837	plural:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: ѡставлєнїѧ→ѡ҆ставлє́нїѧ ѡставлєнїѧ→ѡ҆ставлє́нїѧ
 synodal:adjective:v07-754731df6f1c0a4b	adjective:long:positive:singular	overlaps an existing reviewed paradigm at adjective:genitive:singular:feminine:inanimate:long:positive
 synodal:adjective:v12-edinoletn	adjective:short:positive:singular,dual,plural	overlaps an existing reviewed paradigm at adjective:nominative:singular:neuter:inanimate:short:positive
 synodal:adjective:vechn	adjective-agreeing:long:positive:singular:accusative:masculine,feminine,neuter:inanimate,animate	overlaps an existing reviewed paradigm at adjective:accusative:singular:neuter:inanimate:long:positive
@@ -1205,6 +1269,7 @@ synodal:noun:v07-c27905de175a0cde	noun:singular:locative	singular-only kamora ne
 synodal:noun:v12-dostoyanie	noun:singular	overlaps an existing reviewed paradigm at noun:genitive:singular:inanimate
 synodal:noun:v12-dubrava	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:v12-kolesnitsa	noun:plural	overlaps an existing reviewed paradigm at noun:genitive:plural:inanimate
+synodal:noun:v12-lukavstvo	noun:dual,plural	overlaps an existing reviewed paradigm at noun:genitive:dual:inanimate
 synodal:noun:v12-myshtsa	noun:singular:nominative	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
 synodal:noun:v12-stareyshina	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:v12-strazhba	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
@@ -1297,6 +1362,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4314
-- Lexemes with at least one such attestation: 159
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4464
+- Lexemes with at least one such attestation: 163
 - Placement space searched per partition: 30 placements x 3 marks

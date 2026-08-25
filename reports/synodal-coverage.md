@@ -17,11 +17,11 @@ rising while `generalised` stays flat is memorising.
 
 | Outcome | Tokens | Share of held-out |
 |---|---:|---:|
-| **generalised** (by rule) | 13956 | 3153 bp |
+| **generalised** (by rule) | 14236 | 3217 bp |
 | memorised (exact row) | 14998 | 3389 bp |
 | ambiguous | 265 | 59 bp |
-| unresolved | 14227 | 3215 bp |
-| top-k (any analysis) | 30013 | 6782 bp |
+| unresolved | 13947 | 3151 bp |
+| top-k (any analysis) | 30293 | 6845 bp |
 | top-1 | 11723 | 2649 bp |
 
 ### Held-out tokens by resolver status
@@ -34,8 +34,8 @@ rising while `generalised` stays flat is memorising.
 | `spelling-variant` | 11 | 2 bp |
 | `synodal-irregular-override` | 253 | 57 bp |
 | `synodal-normative-table` | 5867 | 1325 bp |
-| `synodal-productive-rule` | 7836 | 1770 bp |
-| `unresolved` | 14227 | 3215 bp |
+| `synodal-productive-rule` | 8116 | 1834 bp |
+| `unresolved` | 13947 | 3151 bp |
 
 ### Held-out tokens by morphological system
 
@@ -43,7 +43,7 @@ A wave aimed at one system must be visible landing in that system.
 
 | System | Held-out | Generalised | Memorised | Unresolved |
 |---|---:|---:|---:|---:|
-| `adjective` | 1879 | 1207 | 406 | 59 |
+| `adjective` | 1946 | 1274 | 406 | 59 |
 | `aorist` | 2289 | 730 | 1536 | 23 |
 | `compound-cardinal-word` | 401 | 401 | 0 | 0 |
 | `determiner` | 147 | 0 | 147 | 0 |
@@ -54,35 +54,35 @@ A wave aimed at one system must be visible landing in that system.
 | `infinitive` | 1536 | 1033 | 437 | 66 |
 | `l-participle` | 18 | 16 | 0 | 2 |
 | `lexical-form` | 1514 | 0 | 909 | 20 |
-| `noun` | 13654 | 3988 | 8976 | 552 |
+| `noun` | 13839 | 4163 | 8976 | 562 |
 | `numeral` | 494 | 357 | 0 | 8 |
 | `past-active-participle` | 238 | 19 | 199 | 20 |
-| `past-passive-participle` | 49 | 2 | 45 | 2 |
+| `past-passive-participle` | 87 | 40 | 45 | 2 |
 | `present` | 1031 | 685 | 314 | 32 |
 | `present-active-participle` | 369 | 357 | 0 | 12 |
 | `pronoun` | 4210 | 4188 | 0 | 22 |
-| `unresolved` | 13382 | 0 | 0 | 13371 |
+| `unresolved` | 13092 | 0 | 0 | 13081 |
 
 ## Corpus-wide coverage
 
 - Passages: 74130
 - Tokens: 1313344
 - Types: 57341
-- Top-1 analyzed: 619520 (4717 bp)
-- Top-k analyzed: 990023 (7538 bp)
+- Top-1 analyzed: 619580 (4717 bp)
+- Top-k analyzed: 990913 (7544 bp)
 - Ambiguous: 9792
-- Unresolved: 322114
+- Unresolved: 321234
 
 ## Gap categories
 
 | Category | Tokens |
 |---|---:|
-| `unknown-lexeme` | 308408 |
+| `unknown-lexeme` | 307338 |
 | `missing-declension-or-class` | 70 |
 | `missing-verb-principal-part` | 54 |
 | `unsupported-formation` | 36 |
-| `missing-accent-or-orthographic-metadata` | 13546 |
-| `ambiguity-or-spelling-variant` | 10999 |
+| `missing-accent-or-orthographic-metadata` | 13736 |
+| `ambiguity-or-spelling-variant` | 10989 |
 
 ## Coverage composition
 
@@ -94,10 +94,10 @@ assumed. `morphology-free` tokens carry only `lexical-form` readings.
 
 | Measure | Tokens | Share of top-k |
 |---|---:|---:|
-| morphologically typed | 940277 | 9497 bp |
+| morphologically typed | 941167 | 9497 bp |
 | morphology-free | 49746 | 502 bp |
-| lemma-unique | 980231 | 9901 bp |
-| within-lexeme ambiguous (syncretism) | 357753 | 3613 bp |
+| lemma-unique | 981121 | 9901 bp |
+| within-lexeme ambiguous (syncretism) | 358583 | 3618 bp |
 | cross-lexeme ambiguous (homonymy) | 9792 | 98 bp |
 
 ## Estimated recovery routes
@@ -110,9 +110,9 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `reviewed-class` | 70 |
 | `reviewed-principal-part` | 54 |
 | `abbreviation-registry` | 10677 |
-| `spelling-variant` | 14753 |
+| `spelling-variant` | 14933 |
 | `unsupported-formation` | 36 |
-| `ungrouped-unknown` | 297294 |
+| `ungrouped-unknown` | 296224 |
 
 ## Exploratory predictions over the unresolved remainder
 
@@ -124,19 +124,19 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 
 | Top prediction's system | Tokens |
 |---|---:|
-| `aorist` | 46661 |
-| `imperative` | 27390 |
+| `aorist` | 46501 |
+| `imperative` | 27282 |
 | `imperfect` | 6441 |
 | `infinitive` | 9836 |
-| `l-participle` | 7911 |
-| `present` | 37368 |
+| `l-participle` | 7906 |
+| `present` | 37296 |
 
 | Confidence bucket (bp) | Tokens |
 |---|---:|
-| 0-2399 | 48697 |
-| 2400-2999 | 19466 |
-| 3000-3399 | 45154 |
-| 3400+ | 22290 |
+| 0-2399 | 48553 |
+| 2400-2999 | 19435 |
+| 3000-3399 | 45084 |
+| 3400+ | 22190 |
 
 ## Unresolved tokens by probable family
 
@@ -247,65 +247,65 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| Church Slavonic Bible | 651487 | 307623 | 490386 | 4887 | 160499 |
-| Elizabeth Bible | 661857 | 311897 | 499637 | 4905 | 161615 |
+| Church Slavonic Bible | 651487 | 307653 | 490824 | 4887 | 160066 |
+| Elizabeth Bible | 661857 | 311927 | 500089 | 4905 | 161168 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 311897 | 499637 | 4905 | 161615 |
-| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 307623 | 490386 | 4887 | 160499 |
+| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 311927 | 500089 | 4905 | 161168 |
+| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 307653 | 490824 | 4887 | 160066 |
 
 ## Coverage by partition
 
 | Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `evaluation` | 265701 | 125287 | 200729 | 2091 | 64740 |
-| `source` | 1047643 | 494233 | 789294 | 7701 | 257374 |
+| `evaluation` | 265701 | 125294 | 200908 | 2091 | 64564 |
+| `source` | 1047643 | 494286 | 790005 | 7701 | 256670 |
 
 ## Coverage by source and partition
 
 | Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63594 | 101922 | 1083 | 32874 |
-| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 248303 | 397715 | 3822 | 128741 |
-| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61693 | 98807 | 1008 | 31866 |
-| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 245930 | 391579 | 3879 | 128633 |
+| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63600 | 102011 | 1083 | 32786 |
+| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 248327 | 398078 | 3822 | 128382 |
+| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61694 | 98897 | 1008 | 31778 |
+| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 245959 | 391927 | 3879 | 128288 |
 
 ## Gap categories by source
 
 | Source | Category | Tokens |
 |---|---|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 154720 |
+| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 154177 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-declension-or-class` | 49 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-verb-principal-part` | 27 |
 | `ponomar-elizabeth-bible-2026-08-09` | `unsupported-formation` | 18 |
-| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6801 |
-| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5510 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 153688 |
+| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6897 |
+| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5505 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 153161 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-declension-or-class` | 21 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-verb-principal-part` | 27 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `unsupported-formation` | 18 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6745 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5489 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6839 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5484 |
 
 ## Gap categories by partition
 
 | Partition | Category | Tokens |
 |---|---|---:|
-| `evaluation` | `unknown-lexeme` | 61890 |
+| `evaluation` | `unknown-lexeme` | 61671 |
 | `evaluation` | `missing-declension-or-class` | 12 |
 | `evaluation` | `missing-verb-principal-part` | 15 |
 | `evaluation` | `unsupported-formation` | 6 |
-| `evaluation` | `missing-accent-or-orthographic-metadata` | 2817 |
-| `evaluation` | `ambiguity-or-spelling-variant` | 2323 |
-| `source` | `unknown-lexeme` | 246518 |
+| `evaluation` | `missing-accent-or-orthographic-metadata` | 2860 |
+| `evaluation` | `ambiguity-or-spelling-variant` | 2320 |
+| `source` | `unknown-lexeme` | 245667 |
 | `source` | `missing-declension-or-class` | 58 |
 | `source` | `missing-verb-principal-part` | 39 |
 | `source` | `unsupported-formation` | 30 |
-| `source` | `missing-accent-or-orthographic-metadata` | 10729 |
-| `source` | `ambiguity-or-spelling-variant` | 8676 |
+| `source` | `missing-accent-or-orthographic-metadata` | 10876 |
+| `source` | `ambiguity-or-spelling-variant` | 8669 |
 
 ## Review queue
 
@@ -801,13 +801,13 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 488 | `unknown-lexeme` | `по́йдеши` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 489 | `unknown-lexeme` | `поста́вихъ` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 490 | `unknown-lexeme` | `самарі́ю` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 491 | `unknown-lexeme` | `са́рра` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 492 | `unknown-lexeme` | `є҆фре́мли` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 493 | `unknown-lexeme` | `ѕло́бꙋ` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 494 | `unknown-lexeme` | `є҆сѳи́рь` | 60 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 495 | `unknown-lexeme` | `верєѝ` | 60 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 496 | `unknown-lexeme` | `вложѝ` | 60 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 497 | `unknown-lexeme` | `семе́й` | 60 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 498 | `unknown-lexeme` | `десни́ца` | 60 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 499 | `unknown-lexeme` | `мардохе́й` | 60 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 500 | `unknown-lexeme` | `жа́твы` | 60 | 52 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 491 | `unknown-lexeme` | `є҆фре́мли` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 492 | `unknown-lexeme` | `ѕло́бꙋ` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 493 | `unknown-lexeme` | `є҆сѳи́рь` | 60 | 57 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 494 | `unknown-lexeme` | `верєѝ` | 60 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 495 | `unknown-lexeme` | `вложѝ` | 60 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 496 | `unknown-lexeme` | `семе́й` | 60 | 56 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 497 | `unknown-lexeme` | `десни́ца` | 60 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 498 | `unknown-lexeme` | `мардохе́й` | 60 | 54 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 499 | `unknown-lexeme` | `жа́твы` | 60 | 52 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 500 | `unknown-lexeme` | `бж҃їей` | 59 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
