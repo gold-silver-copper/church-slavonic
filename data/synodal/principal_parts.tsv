@@ -365,3 +365,18 @@ synodal:verb:v07-eb0cb66022096836	aorist-stem	порази	vowel	alypy-86-vowel-
 synodal:verb:v07-eb0cb66022096836	imperative-stem	пораз	i-series	alypy-93-second-conjugation	synodal-russian
 synodal:verb:v07-eb0cb66022096836	l-participle-stem	порази		alypy-97-general,ponomar-iv-kings-13-19-porazil	synodal-russian
 synodal:adjective:v12-povinn	short-masculine-stem	повинен	mobile-e-insertion	alypy-52-short-adjectives-mobile,ponomar-composite-3-19-povinni	synodal-russian
+synodal:verb:v12-zachati	present-first-singular	зачнꙋ		alypy-82-zachati	synodal-russian
+synodal:verb:v12-zachati	present-third-plural	зачнꙋтъ		alypy-82-zachati	synodal-russian
+synodal:verb:v12-zachati	aorist-stem	зача	vowel-t	alypy-86-vowel-t,ponomar-ex-2-2-zacha,ponomar-gen-19-36-zachasha	synodal-russian
+synodal:verb:v12-zachati	imperative-stem	зачн	i-series	alypy-93-second-conjugation	synodal-russian
+synodal:verb:v12-zachati	l-participle-stem	зача		alypy-97-general	synodal-russian
+synodal:verb:wikt-4110b1c667a8	present-first-singular	храню		alypy-82-hraniti	synodal-russian
+synodal:verb:wikt-4110b1c667a8	present-third-plural	хранѧтъ		alypy-82-hraniti,ponomar-epistle-1-69-hranit	synodal-russian
+synodal:verb:wikt-4110b1c667a8	aorist-stem	храни	vowel	alypy-86-vowel-aorist	synodal-russian
+synodal:verb:wikt-4110b1c667a8	imperfect-stem	хран	yah	alypy-87-lyubiti	synodal-russian
+synodal:verb:wikt-4110b1c667a8	imperative-stem	хран	i-series	alypy-93-second-conjugation,ponomar-deut-24-8-hrani	synodal-russian
+synodal:verb:wikt-4110b1c667a8	l-participle-stem	храни		alypy-97-general	synodal-russian
+synodal:verb:wikt-4110b1c667a8	present-active-participle-long-stem	хранѧщ	hard	alypy-95-boyatisya,ponomar-baruch-3-17-hranyashchii	synodal-russian
+synodal:verb:wikt-4110b1c667a8	present-active-participle-short-stem	хранѧщ	hard:present-second	alypy-95-boyatisya	synodal-russian
+synodal:verb:wikt-cab2350c2b15	present-active-participle-long-stem	вѣрꙋющ	hard	alypy-95-boyatisya	synodal-russian
+synodal:verb:wikt-cab2350c2b15	present-active-participle-short-stem	вѣрꙋющ	hard:present-first-palatalized	alypy-95-boyatisya	synodal-russian

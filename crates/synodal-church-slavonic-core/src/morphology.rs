@@ -1989,7 +1989,7 @@ pub fn decline_participle(
     } else {
         principal_part.class
     };
-    decline_adjectival_stem(
+    let declined = decline_adjectival_stem(
         stem,
         class,
         cell.agreement,
@@ -1997,7 +1997,44 @@ pub fn decline_participle(
         "participle-declension",
         lexeme.lemma.canonical(),
         profile,
-    )
+    )?;
+    // Alypy §95: the present active long participle contracts its masculine
+    // nominative singular: unpalatalized first-conjugation stems in -ꙋщ- give
+    // -ый (сы́й, несы́й, грѧды́й), while -ѧщ-/-ющ- stems give -ѧй (боѧ́й,
+    // хранѧ́й, вѣ́рꙋѧй). The uncontracted adjectival print stays available as a
+    // later variant because both appear in the target recension.
+    if cell.tense == ParticipleTense::Present
+        && cell.voice == ParticipleVoice::Active
+        && cell.agreement.form == AdjectiveForm::Long
+        && cell.agreement.case == Case::Nominative
+        && cell.agreement.number == Number::Singular
+        && cell.agreement.gender == Gender::Masculine
+    {
+        let canonical = stem.canonical();
+        let contracted = canonical
+            .strip_suffix("ѧщ")
+            .or_else(|| canonical.strip_suffix("ющ"))
+            .map(|base| format!("{base}ѧй"))
+            .or_else(|| {
+                canonical
+                    .strip_suffix("ꙋщ")
+                    .or_else(|| canonical.strip_suffix("ущ"))
+                    .map(|base| format!("{base}ый"))
+            });
+        if let Some(contracted) = contracted {
+            let contracted_set = normative_variants(
+                vec![contracted],
+                rule,
+                profile,
+                "participle-declension",
+                lexeme.lemma.canonical(),
+            )?;
+            let mut variants = contracted_set.variants().to_vec();
+            variants.extend(declined.variants().iter().cloned());
+            return FormSet::try_from_variants(variants);
+        }
+    }
+    Ok(declined)
 }
 
 fn decline_short_comparison(
@@ -2549,8 +2586,11 @@ pub fn validate_noun_lexeme(lexeme: &NounLexeme) -> Result<()> {
                 })
         }
         NounDeclension::SecondSoftMasculineIa | NounDeclension::SecondSoftFeminineIa => {
+            // Alypy §§32, 39–40: the postvocalic а-declension covers stems in
+            // -і-/-ї- (марі́а, и҆саі́а) and, in the target recension, the same
+            // endings after -е- (галїле́а, і҆ꙋде́а).
             lemma.strip_suffix('а').is_some_and(|prefix| prefix == stem)
-                && (stem.ends_with('ї') || stem.ends_with('і'))
+                && (stem.ends_with('ї') || stem.ends_with('і') || stem.ends_with('е'))
         }
         NounDeclension::FourthNeuterEn => lemma.ends_with('ѧ') && stem.ends_with("ен"),
         NounDeclension::FourthNeuterEs | NounDeclension::FourthNeuterEsAlternatingFirst => {
@@ -6690,9 +6730,11 @@ mod tests {
             long(Case::Genitive, Number::Singular, Gender::Masculine),
             "несꙋщагѡ"
         );
+        // Alypy §95: the masculine nominative singular contracts to -ый; the
+        // uncontracted adjectival print remains as a later variant.
         assert_eq!(
             long(Case::Nominative, Number::Singular, Gender::Masculine),
-            "несꙋщїй"
+            "несый"
         );
     }
 

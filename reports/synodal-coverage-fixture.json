@@ -8,15 +8,15 @@
   "summary": {
     "total_tokens": 155,
     "top_1_analyzed": 73,
-    "top_k_analyzed": 124,
+    "top_k_analyzed": 125,
     "ambiguous": 2,
-    "unresolved": 31
+    "unresolved": 30
   },
   "integrity": {
     "morphology_free_analyzed": 6,
-    "morphologically_typed_analyzed": 118,
-    "lemma_unique_analyzed": 122,
-    "within_lexeme_ambiguous": 48,
+    "morphologically_typed_analyzed": 119,
+    "lemma_unique_analyzed": 123,
+    "within_lexeme_ambiguous": 49,
     "cross_lexeme_ambiguous": 2
   },
   "held_out_types": 0,
@@ -53,18 +53,18 @@
     "Elizabeth Bible corpus": {
       "total_tokens": 85,
       "top_1_analyzed": 41,
-      "top_k_analyzed": 68,
+      "top_k_analyzed": 69,
       "ambiguous": 1,
-      "unresolved": 17
+      "unresolved": 16
     }
   },
   "by_source": {
     "ponomar-elizabeth-bible-2026-08-09": {
       "total_tokens": 85,
       "top_1_analyzed": 41,
-      "top_k_analyzed": 68,
+      "top_k_analyzed": 69,
       "ambiguous": 1,
-      "unresolved": 17
+      "unresolved": 16
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
       "total_tokens": 70,
@@ -85,9 +85,9 @@
     "source": {
       "total_tokens": 95,
       "top_1_analyzed": 43,
-      "top_k_analyzed": 76,
+      "top_k_analyzed": 77,
       "ambiguous": 2,
-      "unresolved": 19
+      "unresolved": 18
     }
   },
   "by_source_partition": {
@@ -101,9 +101,9 @@
     "ponomar-elizabeth-bible-2026-08-09:source": {
       "total_tokens": 35,
       "top_1_analyzed": 17,
-      "top_k_analyzed": 27,
+      "top_k_analyzed": 28,
       "ambiguous": 1,
-      "unresolved": 8
+      "unresolved": 7
     },
     "wikisource-church-slavonic-bible-2026-08-09:evaluation": {
       "total_tokens": 10,
@@ -124,9 +124,9 @@
     "strict": {
       "total_tokens": 155,
       "top_1_analyzed": 73,
-      "top_k_analyzed": 124,
+      "top_k_analyzed": 125,
       "ambiguous": 2,
-      "unresolved": 31
+      "unresolved": 30
     }
   },
   "by_lexeme": {
@@ -616,9 +616,9 @@
     "synodal:verb:wikt-6ceeefbe4e9e": {
       "total_tokens": 1,
       "top_1_analyzed": 0,
-      "top_k_analyzed": 0,
+      "top_k_analyzed": 1,
       "ambiguous": 0,
-      "unresolved": 1
+      "unresolved": 0
     },
     "synodal:verb:wikt-833c90610c4d": {
       "total_tokens": 1,
@@ -1115,9 +1115,9 @@
     "family:synodal:verb:wikt-6ceeefbe4e9e": {
       "total_tokens": 1,
       "top_1_analyzed": 0,
-      "top_k_analyzed": 0,
+      "top_k_analyzed": 1,
       "ambiguous": 0,
-      "unresolved": 1
+      "unresolved": 0
     },
     "family:synodal:verb:wikt-833c90610c4d": {
       "total_tokens": 1,
@@ -1208,9 +1208,9 @@
     "present-active-participle": {
       "total_tokens": 3,
       "top_1_analyzed": 1,
-      "top_k_analyzed": 2,
+      "top_k_analyzed": 3,
       "ambiguous": 0,
-      "unresolved": 1
+      "unresolved": 0
     },
     "pronoun": {
       "total_tokens": 20,
@@ -1235,14 +1235,14 @@
     },
     "Elizabeth Bible corpus": {
       "ambiguity-or-spelling-variant": 1,
-      "missing-accent-or-orthographic-metadata": 2,
+      "missing-accent-or-orthographic-metadata": 1,
       "unknown-lexeme": 15
     }
   },
   "by_source_gap": {
     "ponomar-elizabeth-bible-2026-08-09": {
       "ambiguity-or-spelling-variant": 1,
-      "missing-accent-or-orthographic-metadata": 2,
+      "missing-accent-or-orthographic-metadata": 1,
       "unknown-lexeme": 15
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
@@ -1258,7 +1258,7 @@
     },
     "source": {
       "ambiguity-or-spelling-variant": 2,
-      "missing-accent-or-orthographic-metadata": 2,
+      "missing-accent-or-orthographic-metadata": 1,
       "unknown-lexeme": 17
     }
   },
@@ -1269,7 +1269,6 @@
     },
     "ponomar-elizabeth-bible-2026-08-09:source": {
       "ambiguity-or-spelling-variant": 1,
-      "missing-accent-or-orthographic-metadata": 1,
       "unknown-lexeme": 7
     },
     "wikisource-church-slavonic-bible-2026-08-09:evaluation": {
@@ -1287,12 +1286,12 @@
     "exact-synodal-attestation": 65,
     "synodal-irregular-override": 1,
     "synodal-normative-table": 21,
-    "synodal-productive-rule": 8,
-    "unresolved": 31
+    "synodal-productive-rule": 9,
+    "unresolved": 30
   },
   "by_gap": {
     "ambiguity-or-spelling-variant": 2,
-    "missing-accent-or-orthographic-metadata": 3,
+    "missing-accent-or-orthographic-metadata": 2,
     "unknown-lexeme": 28
   },
   "unresolved_by_probable_family": {
@@ -1335,20 +1334,6 @@
       ],
       "candidate_lexeme_ids": [
         "synodal:verb:v12-slyshati"
-      ],
-      "recovery_route": "spelling-variant",
-      "assumption": "one reviewed lexeme is compatible with this diagnostic; the requested cell still requires review"
-    },
-    "family:synodal:verb:wikt-6ceeefbe4e9e": {
-      "probable_family_id": "family:synodal:verb:wikt-6ceeefbe4e9e",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "ꙗ҆ды́й"
-      ],
-      "candidate_lexeme_ids": [
-        "synodal:verb:wikt-6ceeefbe4e9e"
       ],
       "recovery_route": "spelling-variant",
       "assumption": "one reviewed lexeme is compatible with this diagnostic; the requested cell still requires review"
@@ -1680,11 +1665,11 @@
   },
   "estimated_recovery_by_route": {
     "abbreviation-registry": 7,
-    "spelling-variant": 3,
+    "spelling-variant": 2,
     "ungrouped-unknown": 21
   },
   "abbreviation_family_tokens": 34,
-  "spelling_variant_family_tokens": 3,
+  "spelling_variant_family_tokens": 2,
   "remaining_ungrouped_unknowns": 21,
   "gap_frequency_by_surface": {
     "апⷭ҇лъ": 1,
@@ -1716,8 +1701,7 @@
     "ѻч҃а": 1,
     "ѿложенное": 1,
     "ѿлꙋчатисѧ": 1,
-    "ꙗвлѧѧсѧ": 1,
-    "ꙗдый": 1
+    "ꙗвлѧѧсѧ": 1
   },
   "top_k_uncovered_frequency_by_surface": {
     "апⷭ҇лъ": 1,
@@ -1748,10 +1732,9 @@
     "ѻч҃а": 1,
     "ѿложенное": 1,
     "ѿлꙋчатисѧ": 1,
-    "ꙗвлѧѧсѧ": 1,
-    "ꙗдый": 1
+    "ꙗвлѧѧсѧ": 1
   },
-  "total_gap_types": 31,
+  "total_gap_types": 30,
   "gaps": [
     {
       "kind": "unknown-lexeme",
@@ -3621,83 +3604,6 @@
         "wikisource-church-slavonic-bible-2026-08-09:Col.1.4"
       ],
       "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
-    },
-    {
-      "kind": "missing-accent-or-orthographic-metadata",
-      "original": "ꙗ҆ды́й",
-      "normalized": "ꙗдый",
-      "corpus": "Elizabeth Bible corpus",
-      "source_id": "ponomar-elizabeth-bible-2026-08-09",
-      "work": "Elizabeth Bible",
-      "edition": "Ponomar Unicode text",
-      "passage": "Acts.1.4",
-      "partition": "source",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Elizabeth Bible corpus"
-      ],
-      "source_ids": [
-        "ponomar-elizabeth-bible-2026-08-09"
-      ],
-      "editions": [
-        "Ponomar Unicode text"
-      ],
-      "partitions": [
-        "source"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4"
-      ],
-      "contexts": [
-        {
-          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.4",
-          "passage": "Acts.1.4",
-          "line": 1,
-          "column": 15,
-          "excerpt": "́миже и҆ ꙗ҆ды́й повелѣ̀"
-        }
-      ],
-      "byte_start": 25,
-      "byte_end": 38,
-      "line": 1,
-      "column": 15,
-      "candidate_lexeme_ids": [
-        "synodal:verb:wikt-6ceeefbe4e9e"
-      ],
-      "requested_morphological_system": "present-active-participle",
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": [
-          {
-            "rule": "SYN-VERB-PARTICIPLE-PRESENT-ACTIVE-SHORT-ALYPY-95-98",
-            "stage": "short-active-participle-declension",
-            "input": "ꙗсти",
-            "output": "ꙗдый",
-            "source_recension": "SynodalRussian",
-            "target_recension": "SynodalRussian",
-            "mapping": null,
-            "evidence": [
-              "normative:SYN-VERB-PARTICIPLE-PRESENT-ACTIVE-SHORT-ALYPY-95-98"
-            ]
-          }
-        ]
-      },
-      "missing_metadata": [
-        "AccentClass"
-      ],
-      "secondary_reasons": [],
-      "detail": "the accentless surface resolves, but the explicit presentation marks do not match reviewed evidence",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4"
-      ],
-      "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
     }
   ],
   "review_queue": [
@@ -4005,18 +3911,6 @@
       "document_frequency": 1,
       "candidate_lexeme_ids": [
         "synodal:verb:v12-slyshati"
-      ],
-      "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
-    },
-    {
-      "rank": 31,
-      "kind": "missing-accent-or-orthographic-metadata",
-      "normalized": "ꙗдый",
-      "sample": "ꙗ҆ды́й",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [
-        "synodal:verb:wikt-6ceeefbe4e9e"
       ],
       "suggested_action": "review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback"
     }

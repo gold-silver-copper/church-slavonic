@@ -1,6 +1,6 @@
 # Synodal extraction report
 
-Target recension: `synodal-russian`. The curated normalized layer contains 14051 rows across 29 tables; 0 rows are quarantined (ceiling 0).
+Target recension: `synodal-russian`. The curated normalized layer contains 14185 rows across 29 tables; 0 rows are quarantined (ceiling 0).
 
 | Table | Rows |
 |---|---:|
@@ -8,34 +8,34 @@ Target recension: `synodal-russian`. The curated normalized layer contains 14051
 | `abbreviation_families.tsv` | 62 |
 | `abbreviation_inventory.tsv` | 48 |
 | `abbreviations.tsv` | 220 |
-| `accent_paradigms.tsv` | 1195 |
-| `accents.tsv` | 179 |
+| `accent_paradigms.tsv` | 1241 |
+| `accents.tsv` | 180 |
 | `alignments.tsv` | 6 |
 | `conflicts.tsv` | 1 |
 | `engine_capabilities.tsv` | 97 |
-| `evaluation.tsv` | 2468 |
+| `evaluation.tsv` | 2478 |
 | `exact_forms.tsv` | 3243 |
 | `examples.tsv` | 8 |
 | `irregular_overrides.tsv` | 16 |
 | `irregular_verb_inventory.tsv` | 98 |
-| `lexemes.tsv` | 357 |
+| `lexemes.tsv` | 368 |
 | `lexical_reviews.tsv` | 846 |
 | `linguistic_evaluation.tsv` | 36 |
 | `noun_restrictions.tsv` | 7 |
 | `past_classification_reviews.tsv` | 73 |
 | `phrase_evaluation.tsv` | 14 |
 | `positional_rules.tsv` | 19 |
-| `principal_parts.tsv` | 366 |
-| `reviewed_evidence.tsv` | 4267 |
+| `principal_parts.tsv` | 381 |
+| `reviewed_evidence.tsv` | 4307 |
 | `semantic_alignments.tsv` | 6 |
-| `senses.tsv` | 304 |
+| `senses.tsv` | 315 |
 | `training_passages.tsv` | 20 |
 | `transformation_rules.tsv` | 4 |
 | `v10_exact_cell_corrections.tsv` | 5 |
 | `verb_defectiveness.tsv` | 5 |
 
-Generated morphology SHA-256: `ed52b02d9f2742de2d97390bc565e9b7a074e06135fc80f1cdecf23ad35d8afc`.
+Generated morphology SHA-256: `62e028788e3b8fbce135828133018d5e14dc52f1007f582f23502bde61a44985`.
 
-Generated dictionary SHA-256: `3deb85a00b926686b43daeae98891095c799bf8ecc68d499714e7586768e1ff8`.
+Generated dictionary SHA-256: `5a9b3ce649cb28a27a52e949c7c51e63bc3a14dd275ae23c39ae7c6df9ffd138`.
 
 Large raw inputs are processed by streaming adapters; malformed rows are retained in JSONL quarantine output and the output replacement is atomic.

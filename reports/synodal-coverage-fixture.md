@@ -6,9 +6,9 @@
 - Tokens: 155
 - Types: 113
 - Top-1 analyzed: 73 (4709 bp)
-- Top-k analyzed: 124 (8000 bp)
+- Top-k analyzed: 125 (8064 bp)
 - Ambiguous: 2
-- Unresolved: 31
+- Unresolved: 30
 
 ## Gap categories
 
@@ -18,7 +18,7 @@
 | `missing-declension-or-class` | 0 |
 | `missing-verb-principal-part` | 0 |
 | `unsupported-formation` | 0 |
-| `missing-accent-or-orthographic-metadata` | 3 |
+| `missing-accent-or-orthographic-metadata` | 2 |
 | `ambiguity-or-spelling-variant` | 2 |
 
 ## Coverage composition
@@ -31,11 +31,11 @@ assumed. `morphology-free` tokens carry only `lexical-form` readings.
 
 | Measure | Tokens | Share of top-k |
 |---|---:|---:|
-| morphologically typed | 118 | 9516 bp |
-| morphology-free | 6 | 483 bp |
-| lemma-unique | 122 | 9838 bp |
-| within-lexeme ambiguous (syncretism) | 48 | 3870 bp |
-| cross-lexeme ambiguous (homonymy) | 2 | 161 bp |
+| morphologically typed | 119 | 9520 bp |
+| morphology-free | 6 | 480 bp |
+| lemma-unique | 123 | 9840 bp |
+| within-lexeme ambiguous (syncretism) | 49 | 3920 bp |
+| cross-lexeme ambiguous (homonymy) | 2 | 160 bp |
 
 ## Estimated recovery routes
 
@@ -47,7 +47,7 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | `reviewed-class` | 0 |
 | `reviewed-principal-part` | 0 |
 | `abbreviation-registry` | 7 |
-| `spelling-variant` | 3 |
+| `spelling-variant` | 2 |
 | `unsupported-formation` | 0 |
 | `ungrouped-unknown` | 21 |
 
@@ -81,7 +81,6 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:нимиже` | 2 | 2 | `ungrouped-unknown` | ни́миже |
 | `family:synodal:noun:v06-673b2df93b4f89a8` | 1 | 1 | `spelling-variant` | зна́менїихъ |
 | `family:synodal:verb:v12-slyshati` | 1 | 1 | `spelling-variant` | слы́шавше |
-| `family:synodal:verb:wikt-6ceeefbe4e9e` | 1 | 1 | `spelling-variant` | ꙗ҆ды́й |
 | `ungrouped:апⷭ҇лъ` | 1 | 1 | `abbreviation-registry` | а҆пⷭ҇лъ |
 | `ungrouped:апⷭ҇лѡмъ` | 1 | 1 | `abbreviation-registry` | а҆пⷭ҇лѡмъ |
 | `ungrouped:бж҃їею` | 1 | 1 | `abbreviation-registry` | бж҃їею |
@@ -114,13 +113,13 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
 | Church Slavonic Bible corpus | 70 | 32 | 56 | 1 | 14 |
-| Elizabeth Bible corpus | 85 | 41 | 68 | 1 | 17 |
+| Elizabeth Bible corpus | 85 | 41 | 69 | 1 | 16 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 85 | 41 | 68 | 1 | 17 |
+| `ponomar-elizabeth-bible-2026-08-09` | 85 | 41 | 69 | 1 | 16 |
 | `wikisource-church-slavonic-bible-2026-08-09` | 70 | 32 | 56 | 1 | 14 |
 
 ## Coverage by partition
@@ -128,14 +127,14 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
 | `evaluation` | 60 | 30 | 48 | 0 | 12 |
-| `source` | 95 | 43 | 76 | 2 | 19 |
+| `source` | 95 | 43 | 77 | 2 | 18 |
 
 ## Coverage by source and partition
 
 | Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
 | `ponomar-elizabeth-bible-2026-08-09:evaluation` | 50 | 24 | 41 | 0 | 9 |
-| `ponomar-elizabeth-bible-2026-08-09:source` | 35 | 17 | 27 | 1 | 8 |
+| `ponomar-elizabeth-bible-2026-08-09:source` | 35 | 17 | 28 | 1 | 7 |
 | `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 10 | 6 | 7 | 0 | 3 |
 | `wikisource-church-slavonic-bible-2026-08-09:source` | 60 | 26 | 49 | 1 | 11 |
 
@@ -144,7 +143,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | Source | Category | Tokens |
 |---|---|---:|
 | `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 15 |
-| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 2 |
+| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 1 |
 | `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 1 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 13 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 1 |
@@ -157,7 +156,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `evaluation` | `unknown-lexeme` | 11 |
 | `evaluation` | `missing-accent-or-orthographic-metadata` | 1 |
 | `source` | `unknown-lexeme` | 17 |
-| `source` | `missing-accent-or-orthographic-metadata` | 2 |
+| `source` | `missing-accent-or-orthographic-metadata` | 1 |
 | `source` | `ambiguity-or-spelling-variant` | 2 |
 
 ## Review queue
@@ -194,4 +193,3 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 28 | `unknown-lexeme` | `ꙗ҆влѧ́ѧсѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 29 | `missing-accent-or-orthographic-metadata` | `зна́менїихъ` | 1 | 1 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 30 | `missing-accent-or-orthographic-metadata` | `слы́шавше` | 1 | 1 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 31 | `missing-accent-or-orthographic-metadata` | `ꙗ҆ды́й` | 1 | 1 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |

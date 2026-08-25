@@ -684,6 +684,8 @@ fn validate_admitted_families(
             "second-mixed"
             | "second-hard-velar"
             | "second-soft-m-ia"
+            | "second-soft-f-ia"
+            | "first-soft-ey-m"
             | "third-f"
             | "third-m"
             | "first-soft-ishche-n" => {

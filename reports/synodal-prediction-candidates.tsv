@@ -380,7 +380,6 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 сто	42	3	false	second	стоите стоиши стоѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 хожда	42	2	false	imperfect,vowel-aorist	хождахъ хождахꙋ	SYN-PREDICT-VERB-SEGMENTATION-V1
 ваа	41	2	false	l-participle	ваала ваалъ	SYN-PREDICT-VERB-SEGMENTATION-V1
-вход	41	2	false	second	входимъ входите	SYN-PREDICT-VERB-SEGMENTATION-V1
 нечествова	41	5	false	infinitive,vowel-aorist	нечествовасте нечествовати нечествовахомъ нечествовахъ нечествоваша	SYN-PREDICT-VERB-SEGMENTATION-V1
 преста	41	4	false	first-conjugation,infinitive,l-participle,vowel-aorist	престаетъ престали престати престаша	SYN-PREDICT-VERB-SEGMENTATION-V1
 ѡблада	41	4	false	first-conjugation,first-palatalized,imperfect,vowel-aorist	ѡбладаеши ѡбладаша ѡбладаше ѡбладаютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -399,3 +398,4 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 ѿѧ	40	3	false	l-participle,vowel-aorist	ѿѧлъ ѿѧхъ ѿѧша	SYN-PREDICT-VERB-SEGMENTATION-V1
 би	39	3	true	infinitive,l-participle,vowel-aorist	билъ битисѧ биша бишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 живѧ	39	3	false	imperfect,vowel-aorist	живѧсте живѧхъ живѧхꙋ	SYN-PREDICT-VERB-SEGMENTATION-V1
+оутверди	39	4	true	infinitive,l-participle,vowel-aorist	оутвердилъ оутвердити оутвердихсѧ оутвердихъ оутвердиша оутвердишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1

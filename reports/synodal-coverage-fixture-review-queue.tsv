@@ -29,4 +29,3 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 28	unknown-lexeme	ꙗвлѧѧсѧ	ꙗ҆влѧ́ѧсѧ	1	1		review the token against target-recension evidence and create or reject a lexical candidate
 29	missing-accent-or-orthographic-metadata	знаменїихъ	зна́менїихъ	1	1	synodal:noun:v06-673b2df93b4f89a8	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 30	missing-accent-or-orthographic-metadata	слышавше	слы́шавше	1	1	synodal:verb:v12-slyshati	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
-31	missing-accent-or-orthographic-metadata	ꙗдый	ꙗ҆ды́й	1	1	synodal:verb:wikt-6ceeefbe4e9e	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback

@@ -652,3 +652,26 @@ required a new exact `lexical-form` row for the Synodal lemma print
 лꙋка́вый, Acts 19:15). A `second-soft-m-ia` productive validator arm was added
 for wave 10's `амасіа`. Ledger: held-out generalised 12,727 → **13,185**
 (+458); memorised unchanged; ceiling exactly held at 9,712 after the merges. Gate remainder: 1,015.
+
+## Wave 12 — engine rules and a frontier batch (v0.12-wave-12)
+
+Two engine rules landed with the batch. Alypy §95: the present active long
+participle now contracts its masculine nominative singular (-ꙋщ- → -ый,
+-ѧщ-/-ющ- → -ѧй), keeping the uncontracted adjectival print as a later variant
+(вѣ́рꙋѧй, хранѧ́й, грѧды́й). The postvocalic а-declension
+(`second-soft-f-ia`) was extended to -еа stems (галїле́а, і҆ꙋде́а pattern).
+Admitted: `єлїссей` (first-soft-ey-m), `галїлеа`, `запꙋстѣнїе`, `достоѧнїе`,
+`наꙋтрїе` (first-soft-ie-n), `трꙋсъ` (first-hard-m), `лѣвый` (hard-short),
+`зачати` (vowel-t aorist on the начѧти pattern), and three that the
+cross-lexeme ceiling revealed as existing identities and were merged before
+sealing: `гробъ` → `wikt-ccfc01108eba`, `хранити` → `wikt-4110b1c667a8`,
+`десный` → `v07-754731df6f1c0a4b` (lemma restored to the reviewed short
+деснъ). `входити` had its present-plural accent scope widened and gained the
+imperative-plural print. Two bounds were hand-adjusted with justifications:
+`summary:top_1_analyzed` 619,601 → 619,481 (§95 second readings and -еа
+и-syncretism) and `integrity:cross_lexeme_ambiguous` 9,712 → 9,792 (genuine
+живы́й-type homography from contracted nominatives; a per-surface scan shows no
+duplicated identity remains). гробъ's held-out ending-stressed plurals
+(гробѣ́хъ, гробѡ́въ) stay deferred: their only accent witnesses are themselves
+held-out. Ledger: held-out generalised 13,185 → **13,740** (+555). Gate
+remainder: **460**.
