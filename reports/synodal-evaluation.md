@@ -1,23 +1,23 @@
 # Synodal evaluation
 
-Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2311 held-out token cells).
+Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2330 held-out token cells).
 
 The correction ledger excludes 4 historically preserved but grammatically retracted evaluation rows from scoring.
 
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| Expanded | 2311 | 2247 | 2311 | 0 | 2311 |
-| Printed | 2311 | 2163 | 2311 | 0 | 2311 |
+| Expanded | 2330 | 2266 | 2330 | 0 | 2330 |
+| Printed | 2330 | 2182 | 2330 | 0 | 2330 |
 
 Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
 Typed abbreviations: top-1 71/81, top-k 81/81 (81 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 3240/3240, printed 3240/3240.
+Exact registry round trips (top-k, including reviewed variants): expanded 3241/3241, printed 3241/3241.
 
-Masked cells: expanded 579/580, printed 579/580. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
+Masked cells: expanded 598/599, printed 598/599. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
-Accent agreement: 2169/2169 accent-bearing rows.
+Accent agreement: 2188/2188 accent-bearing rows.
 
 Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expanded forms. The reviewed alignment registry has 5 accepted mappings, 5 aligned target lexemes, and 1 rejected negative controls.
 
@@ -25,9 +25,9 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exploratory` | 2311 | 2247 | 2311 | 0 | 2311 |
-| `productive` | 2311 | 2247 | 2311 | 0 | 2311 |
-| `strict` | 2311 | 2247 | 2311 | 0 | 2311 |
+| `exploratory` | 2330 | 2266 | 2330 | 0 | 2330 |
+| `productive` | 2330 | 2266 | 2330 | 0 | 2330 |
+| `strict` | 2330 | 2266 | 2330 | 0 | 2330 |
 
 ## Expanded accuracy by attestation status
 
@@ -35,20 +35,20 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 |---|---:|---:|---:|---:|---:|
 | `attested` | 2125 | 2063 | 2125 | 0 | 2125 |
 | `expected-form-not-returned` | 0 | 0 | 0 | 0 | 0 |
-| `predicted` | 186 | 184 | 186 | 0 | 186 |
+| `predicted` | 205 | 203 | 205 | 0 | 205 |
 
 ## Expanded accuracy by morphological system
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `adjective` | 122 | 118 | 122 | 0 | 122 |
-| `aorist` | 210 | 205 | 210 | 0 | 210 |
+| `aorist` | 216 | 211 | 216 | 0 | 216 |
 | `determiner` | 21 | 20 | 21 | 0 | 21 |
-| `future` | 83 | 80 | 83 | 0 | 83 |
-| `imperative` | 66 | 64 | 66 | 0 | 66 |
+| `future` | 91 | 88 | 91 | 0 | 91 |
+| `imperative` | 68 | 66 | 68 | 0 | 68 |
 | `imperfect` | 32 | 30 | 32 | 0 | 32 |
 | `indeclinable` | 88 | 82 | 88 | 0 | 88 |
-| `infinitive` | 11 | 11 | 11 | 0 | 11 |
+| `infinitive` | 14 | 14 | 14 | 0 | 14 |
 | `l-participle` | 21 | 21 | 21 | 0 | 21 |
 | `lexical-form` | 435 | 431 | 435 | 0 | 435 |
 | `noun` | 958 | 925 | 958 | 0 | 958 |
@@ -64,7 +64,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `exact-synodal-attestation` | 2120 | 2063 | 2120 | 0 | 2120 |
 | `synodal-irregular-override` | 19 | 16 | 19 | 0 | 19 |
 | `synodal-normative-table` | 78 | 74 | 78 | 0 | 78 |
-| `synodal-productive-rule` | 94 | 94 | 94 | 0 | 94 |
+| `synodal-productive-rule` | 113 | 113 | 113 | 0 | 113 |
 
 ## Expanded accuracy by regularity
 
@@ -203,7 +203,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `v07-held-out-exact-cell` | 915 | 883 | 915 | 0 | 915 |
 | `v07-held-out-explicit-accent-case-variant` | 44 | 40 | 44 | 0 | 44 |
 | `v07-reviewed-identity-correction` | 1 | 1 | 1 | 0 | 1 |
-| `v12-productive-held-out` | 45 | 45 | 45 | 0 | 45 |
+| `v12-productive-held-out` | 64 | 64 | 64 | 0 | 64 |
 | `v18-held-out-productive-accent` | 2 | 2 | 2 | 0 | 2 |
 | `v18-held-out-source-typed-exact` | 1 | 1 | 1 | 0 | 1 |
 | `v19-held-out-normative-short-feminine-accusative` | 1 | 1 | 1 | 0 | 1 |

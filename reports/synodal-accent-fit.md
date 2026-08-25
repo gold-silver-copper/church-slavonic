@@ -12,7 +12,7 @@ accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 189
+- Scope families with no reproducing placement at the finest granularity: 193
 - Lexemes with cells outside the reusable scope grammar: 4
 
 | Granularity | Rows |
@@ -784,6 +784,23 @@ synodal:verb:v07-553feeb14b8be67e	plural:accusative	Noun	4 attestation(s); best 
 synodal:verb:v07-553feeb14b8be67e	plural:instrumental	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїи→собра́нїи собранїи→собра́нїи
 synodal:verb:v07-553feeb14b8be67e	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: собранїѧ→собра́нїѧ собранїѧ→собра́нїѧ собранїѧ→собра̑нїѧ собранїѧ→собра̑нїѧ
 synodal:verb:v07-553feeb14b8be67e	singular	Imperative	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: собери→собери́
+synodal:verb:v12-ubiti	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїе→ᲂу҆бїе́нїе оубїенїе→ᲂу҆бїе́нїе
+synodal:verb:v12-ubiti	singular:dative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїю→ᲂу҆бїе́нїю оубїенїю→ᲂу҆бїе́нїю
+synodal:verb:v12-ubiti	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїе→ᲂу҆бїе́нїе оубїенїе→ᲂу҆бїе́нїе
+synodal:verb:v12-ubiti	singular:instrumental	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїемъ→ᲂу҆бїе́нїемъ оубїенїемъ→ᲂу҆бїе́нїемъ
+synodal:verb:v12-ubiti	singular:locative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїи→ᲂу҆бїе́нїи оубїенїи→ᲂу҆бїе́нїи
+synodal:verb:v12-ubiti	singular:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїе→ᲂу҆бїе́нїе оубїенїе→ᲂу҆бїе́нїе
+synodal:verb:v12-ubiti	plural:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїєнїѧ→ᲂу҆бїє́нїѧ оубїєнїѧ→ᲂу҆бїє́нїѧ
+synodal:verb:v12-ubiti	plural:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїєнїѧ→ᲂу҆бїє́нїѧ оубїєнїѧ→ᲂу҆бїє́нїѧ
+synodal:verb:v12-ubiti	plural:instrumental	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїенїи→ᲂу҆бїе́нїи оубїенїи→ᲂу҆бїе́нїи
+synodal:verb:v12-ubiti	plural:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оубїєнїѧ→ᲂу҆бїє́нїѧ оубїєнїѧ→ᲂу҆бїє́нїѧ
+synodal:verb:v12-umertviti	singular	Imperative	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оумертви→ᲂу҆мертви́ оумертви→ᲂу҆мертви́
+synodal:verb:v12-uslyshati	singular:nominative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оуслышанїе→ᲂу҆слы́шанїе оуслышанїе→ᲂу҆слы́шанїе
+synodal:verb:v12-uslyshati	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оуслышанїе→ᲂу҆слы́шанїе оуслышанїе→ᲂу҆слы́шанїе
+synodal:verb:v12-uslyshati	singular:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оуслышанїе→ᲂу҆слы́шанїе оуслышанїе→ᲂу҆слы́шанїе
+synodal:verb:v12-uslyshati	singular	Participle("past", "passive", "short", "positive")	34 attestation(s); best rule word-vowel-from-start:1 acute misses: оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана
+synodal:verb:v12-uslyshati	dual	Participle("past", "passive", "short", "positive")	24 attestation(s); best rule word-vowel-from-start:1 acute misses: оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана
+synodal:verb:v12-uslyshati	plural	Participle("past", "passive", "short", "positive")	16 attestation(s); best rule word-vowel-from-start:1 acute misses: оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана оуслышана→ᲂу҆слы̑шана
 synodal:verb:vozlozhiti	plural	FiniteVerb("future")	3 attestation(s); best rule word-vowel-from-start:2 acute misses: возложите→возложитѐ
 synodal:verb:vozlozhiti	plural	FiniteVerb("present")	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
 synodal:verb:vozlozhiti	plural	Imperative	2 attestation(s); best rule word-vowel-from-start:3 grave misses: возложите→возложи́те
@@ -913,6 +930,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3129
-- Lexemes with at least one such attestation: 112
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3231
+- Lexemes with at least one such attestation: 115
 - Placement space searched per partition: 30 placements x 3 marks

@@ -261,3 +261,41 @@ Mechanics this wave added or corrected:
 Deferred with reasons (`family_reviews.tsv`): `послꙋшати` (j-series verb
 wave), `предати` (needs an archaic table like `дати`), `зане́же`
 (conjunction sweep), `саꙋ́лъ` (proper-noun wave).
+
+## Phase 2, wave 3 — four more verbs; the ѹ monograph duplicate found
+
+Sealed as `v0.12-wave-3`.
+
+| Measure | Wave 2 | Wave 3 | Δ |
+|---|---:|---:|---:|
+| held-out **generalised** | 9,968 | 10,048 | +80 |
+| held-out memorised | 14,998 | 14,998 | 0 |
+| corpus top-k | 970,579 | 971,946 | +1,367 |
+| lexemes / verb lexemes | 1,002 / 172 | 1,005 / 175 | +3 / +3 |
+| `principal_parts.tsv` rows | 193 | 224 | +31 |
+| productive evaluation rows | 46 | 65 | +19 |
+| `linguistic_evaluation.tsv` | 23 | 27 | +4 |
+
+Admitted `оуслышати` (full paradigm including §100 passives), `оузрѣти`
+(promoting the v0.7 exact-only identity `оузьрѣти` under its Synodal lemma via
+the attested infinitive; the held-out `ᲂу҆́зрѧтъ` reached by a hand-authored
+future-plural scope witnessed by the non-held-out `ᲂу҆́зрите`), `оубити`
+(j-series imperative `ᲂу҆бі́й`, palatalized future on the stem `оубї-`, both
+passive stems), and `оумертвити` (labial epenthesis `ᲂу҆мерщвлю̀` attested at
+Ex 9:15). Cited nothing held-out (`ᲂу҆слы́шавше`, `ᲂу҆́зрѧтъ` excluded from
+evidence).
+
+**Duplicate identity found:** the registry holds `оумьрѣти`
+(`synodal:verb:v07-789965b2445975f1`) with exact rows spelled with the
+*monograph* uk `ѹ` (U+0479: `ѹмре`, `ѹ҆́мреши`) — the same verb as wave 1's
+`v12-umreti`. Those rows are dead keys today because the lookup fold covers
+only the two-character `ᲂу` presentation, not `ѹ`. Folding `ѹ` without first
+merging the identities would create live cross-lexeme collisions, so the fold
+and the merge must land together; `оузьрѣти`'s rows have the same property and
+its identity is now productively owned. Recorded for the identity-merge wave
+alongside `имати`/`имѣти`.
+
+Deferred with reasons: `ѿпꙋстити` (needs a ст→щ first-singular print),
+`приближитисѧ` (reflexive-lexeme pattern; held-out `прибли́жишасѧ` must stay
+uncited), `колесни́ца` (nominal wave; broad-е antistich belongs with the
+phase-3 positional design).
