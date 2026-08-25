@@ -48,7 +48,6 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 ѡскверн	147	4	true	second	ѡскверните ѡсквернитесѧ ѡсквернитсѧ ѡсквернитъ ѡскверниши ѡсквернѧтсѧ ѡсквернѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 повѣда	144	8	false	first-conjugation,first-palatalized,imperfect,infinitive,l-participle,vowel-aorist	повѣдаемъ повѣдалъ повѣдати повѣдахомъ повѣдахꙋ повѣдаша повѣдаше повѣдаютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 ѡскверни	144	5	true	infinitive,l-participle,vowel-aorist	ѡсквернила ѡсквернилсѧ ѡсквернилъ ѡсквернисте ѡсквернити ѡсквернитисѧ ѡскверниша ѡсквернишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
-вопроша	142	7	false	first-conjugation,imperfect,infinitive,l-participle,vowel-aorist	вопрошаетъ вопрошаеши вопрошалъ вопрошати вопрошахъ вопрошахꙋ вопрошаше	SYN-PREDICT-VERB-SEGMENTATION-V1
 заповѣда	142	5	false	first-conjugation,infinitive,l-participle,vowel-aorist	заповѣдаетъ заповѣдалъ заповѣдати заповѣдахъ заповѣдаша	SYN-PREDICT-VERB-SEGMENTATION-V1
 прїемл	137	4	false	first-conjugation,first-palatalized,second	прїемлемъ прїемлете прїемлетъ прїемлите прїемлютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 взыска	136	5	false	infinitive,l-participle,vowel-aorist	взыскалъ взыскати взыскахомъ взыскахъ взыскаша	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -96,7 +95,6 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 воздвигн	104	4	true	first-conjugation,first-unpalatalized,second	воздвигнетсѧ воздвигнетъ воздвигнеши воздвигните воздвигнитесѧ воздвигнꙋтсѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 смир	104	4	true	second	смирите смиритесѧ смиритсѧ смиритъ смириши смиришисѧ смирѧтсѧ смирѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 ѡбрѧщ	102	2	true	first-conjugation,first-unpalatalized	ѡбрѧщемъ ѡбрѧщꙋтсѧ ѡбрѧщꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
-вѣрꙋ	101	5	false	first-conjugation,first-palatalized	вѣрꙋемъ вѣрꙋете вѣрꙋетъ вѣрꙋеши вѣрꙋютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 оупова	101	9	false	first-conjugation,first-palatalized,infinitive,l-participle,vowel-aorist	оуповаемъ оуповаетъ оуповаеши оуповалъ оуповати оуповахомъ оуповахъ оуповаша оуповаютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 наꙋч	100	4	true	second,second-after-sibilant	наꙋчатсѧ наꙋчатъ наꙋчите наꙋчитесѧ наꙋчитсѧ наꙋчитъ наꙋчиши наꙋчишисѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 постави	100	4	false	l-participle,vowel-aorist	поставилъ постависте поставихомъ поставихъ	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -119,7 +117,6 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 пад	90	5	false	consonant-aorist,first-conjugation,imperfect,second,vowel-aorist	падете падеши падите падохъ падша падше	SYN-PREDICT-VERB-SEGMENTATION-V1
 восхощ	89	2	false	first-conjugation	восхощетъ восхощеши	SYN-PREDICT-VERB-SEGMENTATION-V1
 впад	89	5	true	consonant-aorist,first-conjugation,first-unpalatalized,imperfect	впадетсѧ впадетъ впадеши впадоша впадше впадꙋтсѧ впадꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
-порази	89	4	false	infinitive,l-participle,vowel-aorist	поразилъ поразити поразихъ поразиша	SYN-PREDICT-VERB-SEGMENTATION-V1
 слꙋ	89	3	false	imperfect,vowel-aorist	слꙋхомъ слꙋхъ слꙋхꙋ	SYN-PREDICT-VERB-SEGMENTATION-V1
 возда	88	6	false	first-conjugation,infinitive,l-participle,vowel-aorist	воздаете воздаетъ воздалъ воздати воздахъ воздаша	SYN-PREDICT-VERB-SEGMENTATION-V1
 пос	88	3	true	first-conjugation,infinitive,l-participle	посемъ посли постисѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -181,10 +178,8 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 сбꙋд	73	2	true	first-conjugation,first-unpalatalized	сбꙋдетсѧ сбꙋдꙋтсѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 ѡбыдо	73	2	false	vowel-aorist	ѡбыдохъ ѡбыдоша	SYN-PREDICT-VERB-SEGMENTATION-V1
 антїо	72	3	false	imperfect,vowel-aorist	антїохомъ антїохъ антїохꙋ	SYN-PREDICT-VERB-SEGMENTATION-V1
-вѣрова	72	6	false	imperfect,l-participle,vowel-aorist	вѣровали вѣровалъ вѣровасте вѣровахомъ вѣровахъ вѣровахꙋ	SYN-PREDICT-VERB-SEGMENTATION-V1
 наполн	72	3	true	second	наполните наполнитсѧ наполнитъ наполнѧтсѧ наполнѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 оумножи	72	5	true	infinitive,l-participle,vowel-aorist	оумножила оумножилъ оумножити оумножихъ оумножиша оумножишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
-пораз	72	5	false	second	поразимъ поразите поразитъ поразиши поразѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 прослав	72	4	true	second	прославимъ прославите прославитесѧ прославитсѧ прославитъ прославѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 ѡбѣща	72	9	false	first-conjugation,first-palatalized,infinitive,l-participle,vowel-aorist	ѡбѣщаете ѡбѣщаетъ ѡбѣщаеши ѡбѣщала ѡбѣщалъ ѡбѣщати ѡбѣщахъ ѡбѣщаша ѡбѣщаютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 ѡблеч	71	4	true	first-conjugation	ѡблечемсѧ ѡблечетесѧ ѡблечетсѧ ѡблечетъ ѡблечеши ѡблечешисѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -276,6 +271,7 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 вда	54	4	true	infinitive,l-participle,vowel-aorist	вдалъ вдати вдахъ вдаша вдашасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 возраст	54	5	false	consonant-aorist,first-conjugation,first-unpalatalized,second	возрастете возрастетъ возрастеши возраститъ возрастоша возрастꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 искꙋп	54	3	true	second	искꙋпитсѧ искꙋпитъ искꙋпиши искꙋпѧтсѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
+пораз	54	2	false	second	поразитъ поразиши	SYN-PREDICT-VERB-SEGMENTATION-V1
 прельсти	54	3	true	infinitive,l-participle,vowel-aorist	прельстилъ прельстити прельстиша прельстишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 прїим	54	2	false	first-conjugation,second	прїимемъ прїимите	SYN-PREDICT-VERB-SEGMENTATION-V1
 ражда	54	4	true	first-conjugation,first-palatalized,imperfect	раждаетсѧ раждаетъ раждахꙋ раждахꙋсѧ раждаше раждаютъ	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -399,3 +395,7 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 подвиж	40	3	true	first-conjugation,first-unpalatalized,second	подвижете подвижитсѧ подвижꙋтсѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 помог	40	4	false	consonant-aorist,first-unpalatalized,l-participle	помоглъ помогохъ помогоша помогꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 сотр	40	3	true	consonant-aorist,first-conjugation	сотретъ сотрохъ сотроша сотрошасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
+сꙋ	40	2	false	imperfect,vowel-aorist	сꙋхꙋ сꙋша	SYN-PREDICT-VERB-SEGMENTATION-V1
+ѿѧ	40	3	false	l-participle,vowel-aorist	ѿѧлъ ѿѧхъ ѿѧша	SYN-PREDICT-VERB-SEGMENTATION-V1
+би	39	3	true	infinitive,l-participle,vowel-aorist	билъ битисѧ биша бишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
+живѧ	39	3	false	imperfect,vowel-aorist	живѧсте живѧхъ живѧхꙋ	SYN-PREDICT-VERB-SEGMENTATION-V1

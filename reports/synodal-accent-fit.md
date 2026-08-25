@@ -10,21 +10,22 @@ Scope groups are refined from coarse to fine (number, case, gender, animacy) and
 the coarsest granularity that fits the whole family is the one emitted, so real
 accent mobility is stated rather than smoothed away.
 
-- Lexemes with a fitted contract: 1
-- Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 238
-- Lexemes with cells outside the reusable scope grammar: 7
+- Lexemes with a fitted contract: 2
+- Accent-paradigm rows proposed: 37
+- Scope families with no reproducing placement at the finest granularity: 247
+- Lexemes with cells outside the reusable scope grammar: 10
 
 | Granularity | Rows |
 |---|---:|
 | `Number` | 2 |
 | `NumberCase` | 2 |
-| `NumberCaseGender` | 32 |
+| `NumberCaseGender` | 33 |
 
 ## Fitted contracts
 
 | Lexeme | Scope | Placement | Mark | Attestations |
 |---|---|---|---|---:|
+| `synodal:adjective:v12-pust` | `adjective-agreeing:short:positive:plural:nominative,vocative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 4 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:plural:genitive,locative:masculine,feminine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 12 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:feminine:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:comparative:dual:nominative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 2 |
@@ -214,6 +215,51 @@ synodal:adjective:svyat	plural:accusative:neuter:inanimate	Adjective("short", "p
 synodal:adjective:svyat	plural:accusative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 grave misses: свѧта→свѧ̑та
 synodal:adjective:svyat	plural:vocative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 grave misses: свѧта→свѧ̑та
 synodal:adjective:svyat	plural:vocative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 grave misses: свѧта→свѧ̑та
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:genitive:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:nominative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:accusative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:accusative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:accusative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:accusative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:vocative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:vocative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкавыѧ→лꙋка́выѧ
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:nominative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:nominative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:genitive:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:genitive:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:genitive:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:genitive:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:vocative:feminine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	singular:vocative:feminine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	dual:nominative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	dual:nominative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	dual:accusative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	dual:accusative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	dual:vocative:masculine:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	dual:vocative:masculine:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:nominative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:nominative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:accusative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:accusative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:vocative:neuter:inanimate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v07-5ac21ff6bd1d1530	plural:vocative:neuter:animate	Adjective("short", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: лꙋкава→лꙋка́ва
+synodal:adjective:v12-pust	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	singular:genitive:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:nominative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:accusative:masculine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:accusative:masculine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:accusative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:accusative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:vocative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:vocative:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:1 kamora misses: пꙋстыѧ→пꙋсты́ѧ
+synodal:adjective:v12-pust	plural:nominative:masculine:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пꙋсти→пꙋсти́ пꙋсти→пꙋ́сти
+synodal:adjective:v12-pust	plural:nominative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пꙋсти→пꙋсти́ пꙋсти→пꙋ́сти
+synodal:adjective:v12-pust	plural:vocative:masculine:inanimate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пꙋсти→пꙋсти́ пꙋсти→пꙋ́сти
+synodal:adjective:v12-pust	plural:vocative:masculine:animate	Adjective("short", "positive")	3 attestation(s); best rule word-vowel-from-start:1 grave misses: пꙋсти→пꙋсти́ пꙋсти→пꙋ́сти
 synodal:adjective:v12-vyshnii	singular:genitive:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
 synodal:adjective:v12-vyshnii	singular:genitive:feminine:animate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
 synodal:adjective:v12-vyshnii	plural:nominative:feminine:inanimate	Adjective("long", "positive")	2 attestation(s); best rule word-vowel-from-start:0 kamora misses: вышнїѧ→вы́шнїѧ
@@ -604,6 +650,8 @@ synodal:noun:tsar	dual:nominative	Noun	4 attestation(s); best rule word-vowel-fr
 synodal:noun:tsar	dual:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: царѧ→Царѧ́ царѧ→Царѧ́
 synodal:noun:tsar	dual:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: царѧ→Царѧ́ царѧ→Царѧ́
 synodal:noun:v07-c27905de175a0cde	singular:dative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: каменю→ка́меню каменю→ка́меню
+synodal:noun:v12-ishod	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: исходи→и҆схо́ди исходи→и҆схо́ди
+synodal:noun:v12-ishod	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: исходи→и҆схо́ди исходи→и҆схо́ди
 synodal:noun:v12-kniga	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
 synodal:noun:v12-kniga	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
 synodal:noun:v12-kniga	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: книги→кни́ги книги→кни́ги
@@ -624,10 +672,6 @@ synodal:noun:v12-nepravda	singular:genitive	Noun	4 attestation(s); best rule wor
 synodal:noun:v12-nepravda	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
 synodal:noun:v12-nepravda	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
 synodal:noun:v12-nepravda	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: неправды→непра́вды неправды→непра́вды
-synodal:noun:v12-strazhba	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
-synodal:noun:v12-strazhba	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
-synodal:noun:v12-strazhba	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
-synodal:noun:v12-strazhba	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: стражбы→стражбы̀ стражбы→стражбы̀
 synodal:noun:v12-vysota	singular:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: высота→высота́ высота→высота́
 synodal:noun:v12-vysota	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
 synodal:noun:v12-vysota	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
@@ -960,6 +1004,8 @@ synodal:verb:v07-553feeb14b8be67e	singular	Imperative	1 attestation(s); best rul
 synodal:verb:v07-b4d42124734cba64	plural	FiniteVerb("future")	4 attestation(s); best rule ending-vowel-from-end:1 acute misses: ѿпꙋстите→ѿпꙋститѐ
 synodal:verb:v07-b4d42124734cba64	plural	FiniteVerb("present")	3 attestation(s); best rule ending-vowel-from-end:1 acute misses: ѿпꙋстите→ѿпꙋститѐ
 synodal:verb:v07-b4d42124734cba64	plural	Imperative	3 attestation(s); best rule ending-vowel-from-end:1 acute misses: ѿпꙋстите→ѿпꙋститѐ
+synodal:verb:v07-eb0cb66022096836	singular	FiniteVerb("future")	5 attestation(s); best rule word-vowel-from-start:2 acute misses: поражꙋ→поражꙋ́
+synodal:verb:v07-eb0cb66022096836	singular	FiniteVerb("present")	5 attestation(s); best rule word-vowel-from-start:2 acute misses: поражꙋ→поражꙋ́
 synodal:verb:v12-gryasti	singular	Participle("present", "active", "long", "positive")	31 attestation(s); best rule word-vowel-from-start:1 acute misses: грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ
 synodal:verb:v12-gryasti	dual	Participle("present", "active", "long", "positive")	36 attestation(s); best rule word-vowel-from-start:1 acute misses: грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ
 synodal:verb:v12-gryasti	plural	Participle("present", "active", "long", "positive")	24 attestation(s); best rule word-vowel-from-start:1 acute misses: грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ грѧдꙋщаѧ→грѧдꙋ̑щаѧ
@@ -1011,6 +1057,8 @@ synodal:verb:wikt-6ceeefbe4e9e	singular:nominative	Noun	2 attestation(s); best r
 synodal:verb:wikt-6ceeefbe4e9e	singular:accusative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
 synodal:verb:wikt-6ceeefbe4e9e	singular:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: снѣденїе→снѣде́нїе снѣденїе→снѣде́нїе
 synodal:verb:wikt-6ceeefbe4e9e	singular	FiniteVerb("aorist")	2 attestation(s); best rule word-vowel-from-start:1 acute misses: ꙗде→ꙗ҆де́
+synodal:adjective:v12-pust	adjective:short:positive:singular,dual	overlaps an existing reviewed paradigm at adjective:nominative:singular:masculine:inanimate:short:positive
+synodal:adjective:v12-pust	adjective-agreeing:short:positive:plural:accusative:masculine,feminine,neuter:inanimate,animate	overlaps an existing reviewed paradigm at adjective:accusative:plural:masculine:inanimate:short:positive
 synodal:adjective:vechn	adjective-agreeing:long:positive:singular:accusative:masculine,feminine,neuter:inanimate,animate	overlaps an existing reviewed paradigm at adjective:accusative:singular:neuter:inanimate:long:positive
 synodal:adjective:wikt-a9cef2fd54e7	adjective-agreeing:short:positive:singular:nominative,accusative:masculine,feminine,neuter:inanimate,animate	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
 synodal:adjective:wikt-e406458f5df6	adjective:long:positive:singular	overlaps an existing reviewed paradigm at adjective:nominative:singular:masculine:inanimate:long:positive
@@ -1058,6 +1106,7 @@ synodal:noun:v12-dubrava	noun:singular,plural	overlaps an existing reviewed para
 synodal:noun:v12-kolesnitsa	noun:plural	overlaps an existing reviewed paradigm at noun:genitive:plural:inanimate
 synodal:noun:v12-myshtsa	noun:singular:nominative	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
 synodal:noun:v12-stareyshina	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
+synodal:noun:v12-strazhba	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:vera	noun:singular,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:zakon	noun:plural	overlaps an existing reviewed paradigm at noun:genitive:plural:inanimate
 synodal:noun:zapoved	noun:singular,dual,plural	overlaps an existing reviewed paradigm at noun:nominative:plural:inanimate
@@ -1131,9 +1180,12 @@ accent-paradigm scope grammar cannot address them. They need per-cell
 
 ```text
 synodal:verb:pisati	infinitive писа́ти
+synodal:verb:v07-eb0cb66022096836	infinitive порази́ти
 synodal:verb:v12-pogibnuti	infinitive поги́бнꙋти
 synodal:verb:v12-priblizhitisya	infinitive прибли́житисѧ
+synodal:verb:v12-svyazati	infinitive свѧза́ти
 synodal:verb:v12-vhoditi	infinitive входи́ти
+synodal:verb:v12-voproshati	infinitive вопроша́ти
 synodal:verb:vozlozhiti	infinitive возложи́ти
 synodal:verb:vozvestiti	infinitive возвѣсти́ти
 synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
@@ -1141,6 +1193,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 3948
-- Lexemes with at least one such attestation: 144
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4074
+- Lexemes with at least one such attestation: 150
 - Placement space searched per partition: 30 placements x 3 marks

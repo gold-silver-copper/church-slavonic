@@ -635,3 +635,20 @@ a hard mobile-е masculine class that does not exist (`first-mixed-ts-m` is a
 ц-stem class) and its dative is itself held-out, so an exact row would memorise.
 Ledger: held-out generalised 12,219 → **12,727** (+508), memorised unchanged at
 14,998, corpus top-k 986,722. Gate remainder: 1,473 to 14,200.
+
+## Wave 11 — mixed frontier wave (v0.12-wave-11)
+
+From the held-out unresolved head: nouns `исходъ` (first-hard-m), `конникъ`
+(first-hard-velar-m); adjectives `ꙗзыческїй` (velar-short), `пꙋстъ`, `повинный`
+(hard-short; mobile-е short masculine `повинен`); verbs `вопрошати`
+(first-unpalatalized -ае-, imperfective), `свѧзати` (first-palatalized з→ж,
+perfective). `стражба` turned out to be already admitted and was closed with an
+explicit end-stress genitive accent row instead. Three duplicated identities
+were caught by the cross-lexeme ceiling and merged onto their existing reviewed
+ids before sealing: `поразити` → `synodal:verb:v07-eb0cb66022096836`,
+`вѣровати` → `synodal:verb:wikt-cab2350c2b15`, and `лꙋкавый` →
+`synodal:adjective:v07-5ac21ff6bd1d1530` (whose OCS review lemma лѫкавъ
+required a new exact `lexical-form` row for the Synodal lemma print
+лꙋка́вый, Acts 19:15). A `second-soft-m-ia` productive validator arm was added
+for wave 10's `амасіа`. Ledger: held-out generalised 12,727 → **13,185**
+(+458); memorised unchanged; ceiling exactly held at 9,712 after the merges. Gate remainder: 1,015.
