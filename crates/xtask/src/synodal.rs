@@ -476,7 +476,20 @@ pub(crate) fn regenerate(root: &Path) -> Result<(), Box<dyn Error>> {
     let dictionary_report =
         synodal_church_slavonic_extractor::generate_dictionary_registry(&data, &dictionary)?;
     write_extraction_report(root)?;
-    evaluate_and_write(root)?;
+    // The registries compile into the binaries. When this write changed them,
+    // an in-process evaluation would measure the OLD compiled data against
+    // the new tables, so it is skipped and the rebuild is demanded loudly
+    // instead; the tripwire in evaluate/coverage/accent-fit enforces the same
+    // rule for every later measurement.
+    if crate::synodal_admit_check::ensure_registry_current(root).is_ok() {
+        evaluate_and_write(root)?;
+    } else {
+        println!("==============================================================");
+        println!("REBUILD REQUIRED: generated registries changed; run");
+        println!("  cargo build --release -p xtask -p synodal-church-slavonic-dictionary");
+        println!("then rerun synodal-evaluate. Measurements refuse stale binaries.");
+        println!("==============================================================");
+    }
     println!(
         "synodal registries: {} lexemes, {} forms, {} senses, {} examples",
         morphology_report.lexemes,
@@ -880,6 +893,7 @@ fn sha256_bytes(bytes: &[u8]) -> String {
 }
 
 pub(crate) fn evaluate_and_write(root: &Path) -> Result<(), Box<dyn Error>> {
+    crate::synodal_admit_check::ensure_registry_current(root)?;
     let report = evaluate(root)?;
     let reports = root.join("reports");
     fs::create_dir_all(&reports)?;
@@ -2774,6 +2788,28 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         )?;
         fs::remove_file(admit_data.join("lexemes.tsv"))?;
         fs::remove_file(admit_data.join("exact_forms.tsv"))?;
+
+        // A binary older than the on-disk registry must refuse to measure.
+        for crate_name in [
+            "synodal-church-slavonic",
+            "synodal-church-slavonic-dictionary",
+        ] {
+            let generated = format!("crates/{crate_name}/generated");
+            fs::create_dir_all(temporary.join(&generated))?;
+            fs::copy(
+                root.join(&generated).join("registry.rs"),
+                temporary.join(&generated).join("registry.rs"),
+            )?;
+        }
+        crate::synodal_admit_check::ensure_registry_current(&temporary)?;
+        let tampered_registry =
+            temporary.join("crates/synodal-church-slavonic/generated/registry.rs");
+        let pristine_registry = fs::read_to_string(&tampered_registry)?;
+        fs::write(&tampered_registry, format!("{pristine_registry} "))?;
+        require_failure(
+            "stale compiled registry",
+            crate::synodal_admit_check::ensure_registry_current(&temporary),
+        )?;
 
         for hostile in ["", "latin", "\u{e000}", "\u{0301}слово"] {
             if std::panic::catch_unwind(|| synodal_church_slavonic::lookup(hostile)).is_err() {

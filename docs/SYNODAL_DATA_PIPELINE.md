@@ -133,6 +133,18 @@ marginal recovery, and the lexical source union **last** (it reads lexemes,
 lexical reviews, and family reviews) — and prints undecided top-200 family
 proposals as ready-to-review stubs when that gate is the failure.
 
+### Registry staleness tripwire
+
+The generated registries compile into the binaries, so a measurement run
+after `synodal-regenerate` but before a rebuild silently reflects the old
+data. Each runtime crate's build script embeds a fingerprint of its
+`generated/registry.rs` (`REGISTRY_FINGERPRINT`), and `synodal-evaluate`,
+`synodal-coverage`, and `synodal-accent-fit` refuse to run when the on-disk
+file no longer matches the compiled fingerprint, naming the exact rebuild
+command. `synodal-regenerate` itself skips the in-process evaluation and
+prints a loud REBUILD REQUIRED banner whenever its write changed the
+registries. The refusal is witness-tested in `synodal-guard-witnesses`.
+
 ### Admission preflight
 
 `cargo xtask synodal-admit-check` validates the committed TSVs in seconds and

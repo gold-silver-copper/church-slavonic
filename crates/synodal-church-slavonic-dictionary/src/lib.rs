@@ -498,6 +498,11 @@ pub struct Analysis {
     pub reflexive: bool,
 }
 
+/// Build-time fingerprint of `generated/registry.rs` (FNV-1a over the raw
+/// bytes, plus the byte length). The xtask staleness tripwire compares this
+/// against the on-disk file so a stale binary refuses to measure.
+pub const REGISTRY_FINGERPRINT: &str = env!("SYNODAL_REGISTRY_FINGERPRINT");
+
 /// Returns every compatible curated analysis of an expanded or printed word.
 pub fn analyze(word: &str) -> Result<Vec<Analysis>> {
     coverage::default_analyzer()?.analyze_dictionary(word)

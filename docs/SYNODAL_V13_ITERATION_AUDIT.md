@@ -81,3 +81,18 @@ regenerates the derived artifacts in canonical order (union last) and prints
 undecided top-200 family proposals as review stubs on that gate's failure.
 The default local mode appends fmt/clippy/tests/doc-tests: 17 steps, ~2
 minutes wall clock, replacing what was previously ~16 hand-ordered commands.
+
+## Phase 3 — Registry staleness tripwires
+
+Each runtime crate gained a build script embedding an FNV-1a fingerprint of
+its `generated/registry.rs` as `REGISTRY_FINGERPRINT`. The xtask measurement
+entry points (`synodal-evaluate`, `synodal-coverage`, `synodal-accent-fit`)
+now call `ensure_registry_current` and refuse a stale binary with the exact
+rebuild command; `synodal-regenerate` skips its in-process evaluation and
+prints a REBUILD REQUIRED banner whenever its write changed the registries
+(previously it silently wrote an evaluation report measured against the old
+compiled data). Verified live (tamper → refusal → restore → pass), witness-
+tested ("stale compiled registry" injection in `synodal-guard-witnesses`),
+and checked against the portable-runtime and publish-dry-run constraints
+(build scripts run host-side; wasm/no-default builds and `cargo publish
+--dry-run` all pass).

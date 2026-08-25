@@ -484,6 +484,45 @@ pub(crate) fn check_generation_probes(root: &Path) -> Result<Vec<String>, Box<dy
     Ok(violations)
 }
 
+/// FNV-1a fingerprint matching the runtime crates' build scripts.
+fn registry_fingerprint(bytes: &[u8]) -> String {
+    let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
+    for byte in bytes {
+        hash ^= u64::from(*byte);
+        hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+    }
+    format!("{hash:016x}-{}", bytes.len())
+}
+
+/// Refuses to measure with a binary compiled against an older registry than
+/// the one on disk. `synodal-regenerate` rewrites `generated/registry.rs`,
+/// but the registries compile *into* the binaries, so every measurement after
+/// a regenerate silently reflects the old data until a rebuild — which cost a
+/// full evaluation cycle during v0.12. The message names the exact rebuild.
+pub(crate) fn ensure_registry_current(root: &Path) -> Result<(), Box<dyn Error>> {
+    for (crate_name, path, compiled) in [
+        (
+            "synodal-church-slavonic",
+            "crates/synodal-church-slavonic/generated/registry.rs",
+            synodal_church_slavonic::REGISTRY_FINGERPRINT,
+        ),
+        (
+            "synodal-church-slavonic-dictionary",
+            "crates/synodal-church-slavonic-dictionary/generated/registry.rs",
+            synodal_church_slavonic_dictionary::REGISTRY_FINGERPRINT,
+        ),
+    ] {
+        let on_disk = registry_fingerprint(&fs::read(root.join(path))?);
+        if on_disk != compiled {
+            return Err(format!(
+                "this binary was compiled against an older {crate_name} registry than {path}; rebuild before measuring: cargo build --release -p xtask -p synodal-church-slavonic-dictionary"
+            )
+            .into());
+        }
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

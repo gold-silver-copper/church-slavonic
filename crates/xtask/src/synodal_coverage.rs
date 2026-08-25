@@ -49,6 +49,7 @@ pub(crate) fn run(
     args: &mut impl Iterator<Item = String>,
     root: &Path,
 ) -> Result<(), Box<dyn Error>> {
+    crate::synodal_admit_check::ensure_registry_current(root)?;
     let mut intermediate = root.join("data/intermediate/synodal");
     let mut sources = Vec::new();
     let mut policy = GenerationPolicy::Strict;
