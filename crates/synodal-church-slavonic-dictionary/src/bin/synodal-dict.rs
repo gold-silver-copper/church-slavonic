@@ -71,6 +71,7 @@ pub fn run(
         Some("analyze") => analyze_command(args, output, context),
         Some("lint") => lint_command(args, input, output, context),
         Some("check-text") => check_text_command(args, input, output, context),
+        Some("analyze-text") => analyze_text_command(args, input, output),
         Some("coverage") => coverage_command(args, input, output, context),
         Some("marginal-recovery") => marginal_recovery_command(args, output),
         Some("help") | Some("-h") | Some("--help") | None => {
@@ -343,6 +344,63 @@ fn analyze_command(
     } else {
         for (index, analysis) in analyses.iter().enumerate() {
             print_analysis(output, index + 1, analysis)?;
+        }
+    }
+    Ok(())
+}
+
+fn analyze_text_command(
+    args: impl Iterator<Item = String>,
+    input: &mut dyn Read,
+    output: &mut dyn Write,
+) -> Result<(), Box<dyn Error>> {
+    let mut texts = Vec::new();
+    let mut policy = GenerationPolicy::Strict;
+    let mut profile = OrthographyProfile::SynodalLiturgical;
+    let mut json = false;
+    let mut args = args.peekable();
+    while let Some(argument) = args.next() {
+        match argument.as_str() {
+            "--policy" => policy = parse_policy(&args.next().ok_or("--policy needs a value")?)?,
+            "--profile" => profile = parse_profile(&args.next().ok_or("--profile needs a value")?)?,
+            "--json" => json = true,
+            value if value.starts_with("--") => {
+                return Err(format!("unknown analyze-text option {value:?}").into());
+            }
+            _ => texts.push(argument),
+        }
+    }
+    if texts.len() != 1 {
+        return Err("analyze-text requires exactly one TEXT argument (or - for stdin)".into());
+    }
+    let text = read_input(&texts[0], input)?;
+    let inflector = synodal_church_slavonic::Inflector::builder()
+        .generation_policy(policy)
+        .orthography(profile)
+        .build();
+    let analysis = synodal_church_slavonic_dictionary::analyze_text(&text, inflector)?;
+    if json {
+        writeln!(output, "{}", serde_json::to_string_pretty(&analysis)?)?;
+        return Ok(());
+    }
+    for token in &analysis.tokens {
+        writeln!(output, "{}", token.token.original)?;
+        if token.readings.is_empty() && token.predictions.is_empty() {
+            writeln!(output, "    (no reading under {policy:?}/{profile:?})")?;
+        }
+        for (index, reading) in token.readings.iter().enumerate() {
+            print_analysis(output, index + 1, reading)?;
+        }
+        for prediction in &token.predictions {
+            writeln!(
+                output,
+                "    ? {} + -{} => {:?} [{} bp, {}]",
+                prediction.stem,
+                prediction.ending,
+                prediction.cell,
+                prediction.confidence_bp,
+                prediction.model,
+            )?;
         }
     }
     Ok(())
@@ -952,7 +1010,8 @@ fn help(diagnostics: &mut dyn Write) -> io::Result<()> {
     )?;
     writeln!(
         diagnostics,
-        "  analyze WORD [--policy POLICY] [--profile PROFILE] [--json]"
+        "  analyze WORD [--policy POLICY] [--profile PROFILE] [--json]
+  analyze-text TEXT [--policy POLICY] [--profile PROFILE] [--json]"
     )?;
     writeln!(diagnostics, "  lint MANIFEST.json [--json]")?;
     writeln!(

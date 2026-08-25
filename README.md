@@ -11,6 +11,31 @@ The Synodal library is not an orthographic alias for the OCS engine. It has an
 independent target registry and rule tables, and every OCS-derived prediction
 passes through a stable recension mapping and a Synodal realization rule.
 
+The consumer entry point analyses a passage the registry has never seen —
+here Acts 8:30 from the held-out evaluation partition — and returns, for every
+token, its readings with lemma, cell, provenance, and confidence, attested and
+normative readings always ahead of predictions:
+
+```rust
+use synodal_church_slavonic::Inflector;
+use synodal_church_slavonic_dictionary::analyze_text;
+
+let passage = "ᲂу҆слы́ша є҆го̀ чтꙋ́ща прⷪ҇ро́ка";
+let analysis = analyze_text(passage, Inflector::default())?;
+let reading = &analysis.tokens[0].readings[0];
+assert_eq!(reading.lexeme.lemma(), "оуслышати");
+assert!(matches!(
+    reading.cell,
+    Some(synodal_church_slavonic::GrammarCell::FiniteVerb(_))
+));
+# Ok::<(), synodal_church_slavonic::Error>(())
+```
+
+The same call is on the command line as `synodal-dict analyze-text TEXT`
+(`--policy exploratory` additionally offers typed segmentation hypotheses,
+clearly separated from reviewed readings, for tokens with no reading at all).
+Single-cell generation stays available on the facade crate:
+
 ```rust
 use synodal_church_slavonic::{present, Number, Person};
 

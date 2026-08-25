@@ -1,5 +1,13 @@
 # synodal-church-slavonic-dictionary
 
+The passage-level consumer entry point is `analyze_text`: every token of a
+possibly never-seen passage gets its reviewed readings in provenance order
+(lemma, cell, source, confidence, evidence, rule trace, `reflexive` flag),
+and — only under `GenerationPolicy::Exploratory` — typed segmentation
+hypotheses for tokens with no reviewed reading, kept strictly apart from
+reviewed readings. The same call is `synodal-dict analyze-text TEXT` on the
+command line, with `--json` as the stable interchange format.
+
 Semantic lookup, reverse morphological analysis, source concordance, and
 application-vocabulary validation for **Synodal Russian Church Slavonic**.
 

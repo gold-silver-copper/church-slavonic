@@ -410,3 +410,23 @@ Not built, deliberately: promotion of any prediction to a reviewed row (each
 still passes the full admission rules by hand), and noun/adjective
 segmentation (the frontier is verbal; the ending inventory grows with the
 evidence, not ahead of it).
+
+## Phase 4 — a consumer can use the library
+
+The scenario — analyse a passage the registry has never seen and return, for
+every token, its readings with lemma, cell, provenance, and confidence,
+attested/normative before predicted, in one call, with stable serialisation —
+works end to end and is doc-tested against **Acts 8:30 from the held-out
+evaluation partition**:
+
+- `synodal_church_slavonic_dictionary::analyze_text(text, inflector) ->
+  TextAnalysis` (serde-serialisable; readings in provenance order;
+  exploratory `predictions` present only under that policy and never mixed
+  into `readings`);
+- `synodal-dict analyze-text TEXT [--policy] [--profile] [--json]` (unread
+  tokens say so; predictions print with a leading `?`);
+- the workspace and crate READMEs lead with the scenario;
+- `docs/SYNODAL_CONSUMER_API.md` records the ergonomics audit (there was no
+  passage-level entry point at all; provenance and ranking were already right
+  and are kept); `CHANGELOG.md` records the additive API. No breaking change
+  was needed. No contextual disambiguator was built, deliberately.
