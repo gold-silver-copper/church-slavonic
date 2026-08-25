@@ -14,7 +14,7 @@
     },
     {
       "path": "reports/synodal-lexical-review-queue.tsv",
-      "sha256": "7af589460f8dbf49b893f5b70fd5969d4bdfd06f8003a47378c802e4caefd20c",
+      "sha256": "112967e974be73050af4052967362aeaf5203cb1391435f2b44cefdb59da41e8",
       "claim_policy": "every preserved proposal row"
     },
     {
@@ -42,8 +42,8 @@
     "preposition": 29,
     "pronoun": 76,
     "proper-noun": 24,
-    "unknown": 961,
-    "verb": 214
+    "unknown": 962,
+    "verb": 213
   },
   "by_classification": {
     "ambiguous": 704,
