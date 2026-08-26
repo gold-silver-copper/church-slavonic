@@ -1,4 +1,13 @@
 //! Source-reviewed Synodal Church Slavonic numeral-word morphology.
+//!
+//! Since the phase-4 numeral merge (docs/UNIFIED_LANGUAGE_PROMPT.md) the
+//! shared closed cardinal tables (one through four, the five–nine plural
+//! obliques, ten, hundred) and the agreeing collective plural terminals
+//! live in the merged kernel `church_slavonic_core::numeral`, queried with
+//! `Recension::SynodalRussian`; this module is the family adapter that
+//! keeps the public API, validation, `FormSet` plumbing, and the
+//! noun/adjective-backed and family-only classes (see
+//! `church_slavonic_core::divergence::UNMERGED`).
 
 use crate::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, AdjectiveLexeme, Animacy, Case, Comparison,
@@ -6,6 +15,9 @@ use crate::{
     NumeralCell, NumeralKind, OrthographyProfile, Result, SynodalWord,
     morphology::{decline_adjective, decline_noun, normative_variants},
 };
+use church_slavonic_core::{Recension, numeral as kernel};
+
+const SYN: Recension = Recension::SynodalRussian;
 
 /// Productive and closed numeral-word paradigms licensed by Alypy §§61–70.
 ///
@@ -472,87 +484,56 @@ fn join(stem: &str, ending: &str) -> String {
 }
 
 fn cardinal_one_forms(cell: NumeralCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
     reject_vocative(cell)?;
     let gender = require_gender(cell)?;
-    let forms: &[&str] = match (gender, cell.case, cell.animacy) {
-        (M, Nom, _) => &["єдинъ"],
-        (F, Nom, _) => &["єдина"],
-        (N, Nom, _) => &["єдино"],
-        (M | N, Gen, _) => &["єдинагѡ", "єдинаго"],
-        (F, Gen, _) => &["єдиноѧ"],
-        (M | N, Dat, _) => &["єдиномꙋ"],
-        (F, Dat | Loc, _) => &["єдиной"],
-        (M, Acc, Animacy::Inanimate) => &["єдинъ"],
-        (M, Acc, Animacy::Animate) => &["єдинаго", "єдинагѡ"],
-        (F, Acc, _) => &["єдинꙋю"],
-        (N, Acc, _) => &["єдино"],
-        (M | N, Ins, _) => &["єдинѣмъ"],
-        (F, Ins, _) => &["єдиною"],
-        (M | N, Loc, _) => &["єдиномъ"],
-        (_, Case::Vocative, _) => unreachable!(),
-    };
-    Ok(forms.iter().map(|form| (*form).into()).collect())
+    // Merged kernel: the cardinal one (singular-only in this recension).
+    Ok(
+        kernel::cardinal_one_cell(cell.case, cell.number, gender, cell.animacy, SYN)
+            .iter()
+            .map(|form| (*form).into())
+            .collect(),
+    )
 }
 
 fn cardinal_two_forms(cell: NumeralCell, both: bool) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
     reject_vocative(cell)?;
     let gender = require_gender(cell)?;
-    let forms: &[&str] = match (both, cell.case, gender) {
-        (false, Nom | Acc, Gender::Masculine) => &["два"],
-        (false, Nom | Acc, Gender::Feminine | Gender::Neuter) => &["двѣ"],
-        (false, Gen | Loc, _) => &["двою", "двꙋ"],
-        (false, Dat | Ins, _) => &["двѣма"],
-        (true, Nom | Acc, Gender::Masculine) => &["оба"],
-        (true, Nom | Acc, Gender::Feminine | Gender::Neuter) => &["обѣ"],
-        (true, Gen | Loc, _) => &["обою"],
-        (true, Dat | Ins, _) => &["обѣма"],
-        (_, Case::Vocative, _) => unreachable!(),
+    let paradigm = if both {
+        kernel::PairedCardinal::Both
+    } else {
+        kernel::PairedCardinal::Two
     };
-    Ok(forms.iter().map(|form| (*form).into()).collect())
+    // Merged kernel: the dual-only paired cardinals.
+    Ok(
+        kernel::paired_cardinal_cell(paradigm, cell.case, gender, SYN)
+            .iter()
+            .map(|form| (*form).into())
+            .collect(),
+    )
 }
 
 fn cardinal_three_forms(cell: NumeralCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
     reject_vocative(cell)?;
     let gender = require_gender(cell)?;
-    let forms: &[&str] = match (cell.case, gender, cell.animacy) {
-        (Nom, M, _) => &["трїе", "три"],
-        (Nom, F | N, _) => &["три"],
-        (Gen | Loc, M, _) => &["трїехъ", "трехъ"],
-        (Gen | Loc, F | N, _) => &["трехъ"],
-        (Dat, M, _) => &["трїемъ", "тремъ"],
-        (Dat, F | N, _) => &["тремъ"],
-        (Acc, M, Animacy::Animate) => &["трїехъ", "трехъ", "три"],
-        (Acc, _, _) => &["три"],
-        (Ins, M, _) => &["трїеми", "треми"],
-        (Ins, F | N, _) => &["треми"],
-        (Case::Vocative, _, _) => unreachable!(),
-    };
-    Ok(forms.iter().map(|form| (*form).into()).collect())
+    // Merged kernel: the plural-only cardinal three.
+    Ok(
+        kernel::cardinal_three_cell(cell.case, gender, cell.animacy, SYN)
+            .iter()
+            .map(|form| (*form).into())
+            .collect(),
+    )
 }
 
 fn cardinal_four_forms(cell: NumeralCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
     reject_vocative(cell)?;
-    let gender = require_gender(cell)?;
-    let forms: &[&str] = match (cell.case, gender) {
-        (Nom, Gender::Masculine) => &["четыре", "четыри"],
-        (Nom, Gender::Feminine | Gender::Neuter) => &["четыри", "четыре"],
-        (Gen | Loc, _) => &["четырехъ"],
-        (Dat, _) => &["четыремъ"],
-        (Acc, _) => &["четыри", "четыре"],
-        (Ins, _) => &["четырьми"],
-        (Case::Vocative, _) => unreachable!(),
-    };
-    Ok(forms.iter().map(|form| (*form).into()).collect())
+    require_gender(cell)?;
+    // Merged kernel: the plural-only cardinal four.
+    Ok(
+        kernel::cardinal_four_cell(cell.case, cell.gender.expect("validated gender"), SYN)
+            .iter()
+            .map(|form| (*form).into())
+            .collect(),
+    )
 }
 
 fn cardinal_i_stem_forms(lexeme: &NumeralLexeme, cell: NumeralCell) -> Result<Vec<String>> {
@@ -565,10 +546,14 @@ fn cardinal_i_stem_forms(lexeme: &NumeralLexeme, cell: NumeralCell) -> Result<Ve
             Gender::Feminine,
             NounDeclension::ThirdFeminine,
         ),
-        (Number::Plural, Case::Genitive | Case::Locative) => {
-            Ok(vec![join(lexeme.stem.canonical(), "ихъ")])
-        }
-        (Number::Plural, Case::Dative) => Ok(vec![join(lexeme.stem.canonical(), "имъ")]),
+        // Merged kernel: the five-through-nine plural adjectival obliques
+        // (divergence num:five-nine-plural-obliques).
+        (Number::Plural, Case::Genitive | Case::Locative | Case::Dative) => Ok(
+            kernel::i_stem_cardinal_plural_oblique_ending(cell.case, SYN)
+                .iter()
+                .map(|ending| join(lexeme.stem.canonical(), ending))
+                .collect(),
+        ),
         _ => historically_invalid(
             "five through nine license only singular noun cells and the listed plural adjectival obliques",
         ),
@@ -576,52 +561,23 @@ fn cardinal_i_stem_forms(lexeme: &NumeralLexeme, cell: NumeralCell) -> Result<Ve
 }
 
 fn cardinal_ten_forms(cell: NumeralCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
     reject_gender(cell)?;
     reject_vocative(cell)?;
-    let forms: &[&str] = match (cell.number, cell.case) {
-        (Sg, Nom) => &["десѧть"],
-        (Sg, Gen | Dat | Loc) => &["десѧти"],
-        (Sg, Acc) => &["десѧть", "десѧте"],
-        (Sg, Ins) => &["десѧтїю"],
-        (Du, Nom | Acc) => &["десѧти", "десѧтѣ"],
-        (Du, Gen | Loc) => &["десѧтꙋ"],
-        (Du, Dat | Ins) => &["десѧтьма"],
-        (Pl, Nom | Acc) => &["десѧти", "десѧте"],
-        (Pl, Gen) => &["десѧтъ", "десѧтихъ"],
-        (Pl, Dat) => &["десѧтемъ", "десѧтимъ"],
-        (Pl, Ins) => &["десѧтьми"],
-        (Pl, Loc) => &["десѧтехъ", "десѧтихъ"],
-        (_, Case::Vocative) => unreachable!(),
-    };
-    Ok(forms.iter().map(|form| (*form).into()).collect())
+    // Merged kernel: the mixed cardinal-ten tables.
+    Ok(kernel::cardinal_ten_cell(cell.case, cell.number, SYN)
+        .iter()
+        .map(|form| (*form).into())
+        .collect())
 }
 
 fn cardinal_hundred_forms(cell: NumeralCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
     reject_gender(cell)?;
     reject_vocative(cell)?;
-    let form = match (cell.number, cell.case) {
-        (Sg, Nom | Acc) => "сто",
-        (Sg, Gen) => "ста",
-        (Sg, Dat) => "стꙋ",
-        (Sg, Ins) => "стомъ",
-        (Sg, Loc) => "стѣ",
-        (Du, Nom | Acc) => "стѣ",
-        (Du, Gen | Loc) => "стꙋ",
-        (Du, Dat | Ins) => "стома",
-        (Pl, Nom | Acc) => "ста",
-        (Pl, Gen) => "сотъ",
-        (Pl, Dat) => "стомъ",
-        (Pl, Ins) => "сты",
-        (Pl, Loc) => "стѣхъ",
-        (_, Case::Vocative) => unreachable!(),
-    };
-    Ok(vec![form.into()])
+    // Merged kernel: the inherited neuter o-stem hundred.
+    Ok(kernel::cardinal_hundred_cell(cell.case, cell.number, SYN)
+        .iter()
+        .map(|form| (*form).into())
+        .collect())
 }
 
 fn noun_like_forms(
@@ -698,20 +654,14 @@ fn adjective_like_forms(
 }
 
 fn collective_agreeing_forms(stem: &str, cell: NumeralCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom, Vocative as Voc};
     let gender = require_gender(cell)?;
-    let ending = match (cell.case, gender, cell.animacy) {
-        (Nom | Voc, Gender::Masculine | Gender::Feminine, _) => "и",
-        (Nom | Voc, Gender::Neuter, _) => "ѧ",
-        (Gen | Loc, _, _) => "ихъ",
-        (Dat, _, _) => "имъ",
-        (Acc, Gender::Masculine | Gender::Feminine, Animacy::Animate) => "ихъ",
-        (Acc, Gender::Masculine | Gender::Feminine, Animacy::Inanimate) => "и",
-        (Acc, Gender::Neuter, _) => "ѧ",
-        (Ins, _, _) => "ими",
-    };
-    Ok(vec![join(stem, ending)])
+    // Merged kernel: the agreeing collective plural terminals.
+    Ok(
+        kernel::collective_agreeing_plural_ending(cell.case, gender, cell.animacy, SYN)
+            .iter()
+            .map(|ending| join(stem, ending))
+            .collect(),
+    )
 }
 
 fn collective_governing_forms(stem: &str, cell: NumeralCell) -> Result<Vec<String>> {

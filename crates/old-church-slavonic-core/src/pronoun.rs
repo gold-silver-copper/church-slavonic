@@ -902,38 +902,23 @@ fn form(text: &'static str) -> Vec<PronounVariant> {
 }
 
 fn ves_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
-    use Gender::{Feminine, Masculine, Neuter};
-    use Number::{Plural, Singular};
     use PronounVariantStatus::{TablePrimary, TableVariant};
-    match (case, number, gender) {
-        (Nominative, Singular, Masculine) | (Accusative, Singular, Masculine) => form("вьсь"),
-        (Nominative, Singular, Neuter) | (Accusative, Singular, Neuter) => form("вьсе"),
-        (Nominative, Singular, Feminine) => vec![
-            PronounVariant::new("вьса", TablePrimary),
-            PronounVariant::new("вьсѣ", TableVariant),
-        ],
-        (Accusative, Singular, Feminine) => form("вьсѫ"),
-        (Genitive, Singular, Masculine | Neuter) => form("вьсего"),
-        (Genitive, Singular, Feminine) => form("вьсеѩ"),
-        (Locative, Singular, Masculine | Neuter) => form("вьсемь"),
-        (Dative | Locative, Singular, Feminine) => form("вьсеи"),
-        (Dative, Singular, Masculine | Neuter) => form("вьсему"),
-        (Instrumental, Singular, Masculine | Neuter) => form("вьсѣмь"),
-        (Instrumental, Singular, Feminine) => form("вьсеѭ"),
-        (Nominative, Plural, Masculine) => form("вьси"),
-        (Nominative | Accusative, Plural, Neuter) => vec![
-            PronounVariant::new("вьса", TablePrimary),
-            PronounVariant::new("вьсѣ", TableVariant),
-        ],
-        (Nominative | Accusative, Plural, Feminine) | (Accusative, Plural, Masculine) => {
-            form("вьсѧ")
-        }
-        (Genitive | Locative, Plural, _) => form("вьсѣхъ"),
-        (Dative, Plural, _) => form("вьсѣмъ"),
-        (Instrumental, Plural, _) => form("вьсѣми"),
-        (Case::Vocative, _, _) | (_, Number::Dual, _) => Vec::new(),
-    }
+    // Merged kernel: the totalizing determiner вьсь (the OCS side ignores
+    // animacy; the source-ordered first form is the table primary).
+    church_slavonic_core::determiner::total_ves_cell(case, number, gender, Animacy::Inanimate, OCS)
+        .iter()
+        .enumerate()
+        .map(|(index, text)| {
+            PronounVariant::new(
+                text,
+                if index == 0 {
+                    TablePrimary
+                } else {
+                    TableVariant
+                },
+            )
+        })
+        .collect()
 }
 
 fn sic_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {

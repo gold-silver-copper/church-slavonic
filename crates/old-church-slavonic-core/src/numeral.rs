@@ -1,4 +1,17 @@
 //! Source-reviewed Old Church Slavonic cardinal-numeral morphology.
+//!
+//! Since the phase-4 numeral merge (docs/UNIFIED_LANGUAGE_PROMPT.md) the
+//! shared closed cardinal tables (three, four, and the reviewed ten rows)
+//! live in the merged kernel `church_slavonic_core::numeral`, queried with
+//! `Recension::OldChurchSlavonic`; the one/two/both/collective paradigms
+//! already reach the same kernel through the pronominal `2/p` adapter, and
+//! the pinned equality of both routes is asserted by
+//! `tests/numeral_kernel_pin.rs`. This module keeps the identity
+//! inventories, variant statuses, trace plumbing, productive noun
+//! supplements, and the value-composition machinery (see
+//! `church_slavonic_core::divergence::UNMERGED`).
+
+use church_slavonic_core::{Recension, numeral as merged_kernel};
 
 use crate::noun::NounLexeme;
 use crate::pronoun::StandardPronominalIdentity;
@@ -1973,19 +1986,19 @@ fn decline_pronominal(
 
 fn decline_three(cell: NumeralCell) -> Result<Vec<NumeralVariant>, InflectionError> {
     let gender = required_gender(CardinalNumeralIdentity::Three, cell)?;
-    let text = match (cell.case, gender) {
-        (Case::Nominative, Gender::Masculine) => "триѥ",
-        (Case::Nominative, Gender::Neuter | Gender::Feminine) | (Case::Accusative, _) => "три",
-        (Case::Genitive, _) => "трии",
-        (Case::Locative, _) => "трьхъ",
-        (Case::Dative, _) => "трьмъ",
-        (Case::Instrumental, _) => "трьми",
-        (Case::Vocative, _) => {
-            return Err(InflectionError::historically_invalid(
-                CardinalNumeralIdentity::Three.canonical_lemma(),
-                RequestedCell::Numeral(cell),
-            ));
-        }
+    // Merged kernel: the plural-only cardinal three (OCS side ignores
+    // animacy).
+    let Some(text) = merged_kernel::cardinal_three_cell(
+        cell.case,
+        gender,
+        Animacy::Inanimate,
+        Recension::OldChurchSlavonic,
+    )
+    .first() else {
+        return Err(InflectionError::historically_invalid(
+            CardinalNumeralIdentity::Three.canonical_lemma(),
+            RequestedCell::Numeral(cell),
+        ));
     };
     Ok(vec![NumeralVariant::reviewed(
         text,
@@ -1997,19 +2010,14 @@ fn decline_three(cell: NumeralCell) -> Result<Vec<NumeralVariant>, InflectionErr
 
 fn decline_four(cell: NumeralCell) -> Result<Vec<NumeralVariant>, InflectionError> {
     let gender = required_gender(CardinalNumeralIdentity::Four, cell)?;
-    let text = match (cell.case, gender) {
-        (Case::Nominative, Gender::Masculine) => "четыре",
-        (Case::Nominative, Gender::Neuter | Gender::Feminine) | (Case::Accusative, _) => "четыри",
-        (Case::Genitive, _) => "четыръ",
-        (Case::Locative, _) => "четырехъ",
-        (Case::Dative, _) => "четыремъ",
-        (Case::Instrumental, _) => "четырьми",
-        (Case::Vocative, _) => {
-            return Err(InflectionError::historically_invalid(
-                CardinalNumeralIdentity::Four.canonical_lemma(),
-                RequestedCell::Numeral(cell),
-            ));
-        }
+    // Merged kernel: the plural-only cardinal four.
+    let Some(text) =
+        merged_kernel::cardinal_four_cell(cell.case, gender, Recension::OldChurchSlavonic).first()
+    else {
+        return Err(InflectionError::historically_invalid(
+            CardinalNumeralIdentity::Four.canonical_lemma(),
+            RequestedCell::Numeral(cell),
+        ));
     };
     Ok(vec![NumeralVariant::reviewed(
         text,
@@ -2054,42 +2062,26 @@ fn decline_ten(cell: NumeralCell) -> Result<Vec<NumeralVariant>, InflectionError
             number: cell.number,
         },
     )?;
-    let primary = match (cell.case, cell.number) {
-        (Case::Nominative | Case::Accusative, Number::Singular) => Some("десѧть"),
-        (Case::Locative, Number::Singular) => Some("десѧти"),
-        (Case::Instrumental, Number::Singular) => Some("десѧтиѭ"),
-        (Case::Nominative | Case::Accusative, Number::Dual) => Some("десѧти"),
-        (Case::Dative | Case::Instrumental, Number::Dual) => Some("десѧтьма"),
-        (Case::Nominative, Number::Plural) => Some("десѧте"),
-        (Case::Accusative, Number::Plural) => Some("десѧти"),
-        (Case::Genitive, Number::Plural) => Some("десѧтъ"),
-        (Case::Locative, Number::Plural) => Some("десѧтехъ"),
-        (Case::Dative, Number::Plural) => Some("десѧтемъ"),
-        (Case::Instrumental, Number::Plural) => Some("десѧты"),
-        _ => None,
-    };
+    // Merged kernel: the reviewed mixed cardinal-ten rows, ordered
+    // source-primary-first; the productive i-stem supplement stays here.
+    let reviewed =
+        merged_kernel::cardinal_ten_cell(cell.case, cell.number, Recension::OldChurchSlavonic);
     let mut forms = Vec::new();
-    if let Some(text) = primary {
+    if let Some((primary, secondary)) = reviewed.split_first() {
         forms.push(NumeralVariant::reviewed(
-            text,
+            primary,
             RuleId::NumeralCardinalTen,
             lemma,
             "select the attested mixed-declension cardinal-ten cell",
         ));
-    }
-    let secondary = match (cell.case, cell.number) {
-        (Case::Locative, Number::Singular) => Some("десѧте"),
-        (Case::Nominative | Case::Accusative, Number::Dual) => Some("десѧтѣ"),
-        (Case::Dative, Number::Plural) => Some("десѧтьмъ"),
-        _ => None,
-    };
-    if let Some(text) = secondary {
-        forms.push(NumeralVariant::reviewed(
-            text,
-            RuleId::NumeralCardinalTen,
-            lemma,
-            "retain the source-listed secondary cardinal-ten realization",
-        ));
+        for text in secondary {
+            forms.push(NumeralVariant::reviewed(
+                text,
+                RuleId::NumeralCardinalTen,
+                lemma,
+                "retain the source-listed secondary cardinal-ten realization",
+            ));
+        }
     }
     if forms
         .iter()

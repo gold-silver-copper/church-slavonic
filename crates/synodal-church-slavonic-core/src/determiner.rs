@@ -1,10 +1,22 @@
 //! Source-reviewed Synodal Church Slavonic determiner morphology.
+//!
+//! Since the phase-4 determiner merge (docs/UNIFIED_LANGUAGE_PROMPT.md) the
+//! shared closed tables — the hard short (pronominal) terminals and the
+//! весь paradigm — live in the merged kernel
+//! `church_slavonic_core::determiner`, queried with
+//! `Recension::SynodalRussian`; this module is the family adapter that
+//! keeps the public API, validation, `FormSet` plumbing, and the
+//! family-only classes (всѧкъ and -скїй — see
+//! `church_slavonic_core::divergence::UNMERGED`).
 
 use crate::{
     AdjectiveCell, AdjectiveForm, Animacy, Case, Comparison, Error, FormSet, Gender, Number,
     OrthographyProfile, Result, SynodalWord,
     morphology::{long_adjective_ending, normative_variants},
 };
+use church_slavonic_core::{Recension, determiner as kernel};
+
+const SYN: Recension = Recension::SynodalRussian;
 
 /// Productive determiner paradigms described by Alypy §§45, 48, and 57.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -222,42 +234,12 @@ fn vocative_as_nominative(cell: AdjectiveCell) -> AdjectiveCell {
 }
 
 fn short_hard_forms(stem: &str, cell: AdjectiveCell) -> Vec<String> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+    // Merged kernel: the hard short (pronominal `2/p`) determiner terminals.
     let cell = vocative_as_nominative(cell);
-    let endings: &[&str] = match (cell.number, cell.gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) => &["ъ"],
-        (Sg, F, Nom, _) => &["а"],
-        (Sg, N, Nom, _) => &["о"],
-        (Sg, M | N, Gen, _) => &["огѡ", "ого"],
-        (Sg, F, Gen, _) => &["оѧ"],
-        (Sg, M | N, Dat, _) => &["омꙋ"],
-        (Sg, F, Dat | Loc, _) => &["ой", "ѣй"],
-        (Sg, M, Acc, Animacy::Inanimate) => &["ъ"],
-        (Sg, M, Acc, Animacy::Animate) => &["ого", "огѡ"],
-        (Sg, F, Acc, _) => &["ꙋ"],
-        (Sg, N, Acc, _) => &["о"],
-        (Sg, M | N, Ins, _) => &["ѣмъ"],
-        (Sg, F, Ins, _) => &["ою"],
-        (Sg, M | N, Loc, _) => &["омъ", "ѣмъ"],
-        (Du, M, Nom | Acc, _) => &["а"],
-        (Du, F | N, Nom | Acc, _) => &["ѣ"],
-        (Du, _, Gen | Loc, _) => &["ѡю"],
-        (Du, _, Dat | Ins, _) => &["ѣма"],
-        (Pl, M, Nom, _) => &["и"],
-        (Pl, F, Nom, _) => &["и"],
-        (Pl, N, Nom, _) => &["а"],
-        (Pl, _, Gen | Loc, _) => &["ѣхъ"],
-        (Pl, _, Dat, _) => &["ѣмъ"],
-        (Pl, M | F, Acc, Animacy::Inanimate) => &["и"],
-        (Pl, M | F, Acc, Animacy::Animate) => &["ѣхъ"],
-        (Pl, N, Acc, _) => &["а"],
-        (Pl, _, Ins, _) => &["ѣми"],
-        (_, _, Case::Vocative, _) => unreachable!(),
-    };
-    endings.iter().map(|ending| join(stem, ending)).collect()
+    kernel::hard_short_ending(cell.case, cell.number, cell.gender, cell.animacy, SYN)
+        .iter()
+        .map(|ending| join(stem, ending))
+        .collect()
 }
 
 fn full_hard_forms(stem: &str, cell: AdjectiveCell) -> Result<Vec<String>> {
@@ -267,36 +249,13 @@ fn full_hard_forms(stem: &str, cell: AdjectiveCell) -> Result<Vec<String>> {
 }
 
 fn ves_forms(cell: AdjectiveCell) -> Vec<String> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Plural as Pl, Singular as Sg};
+    // Merged kernel: the totalizing determiner весь (dual cells are
+    // rejected by the number inventory before this point).
     let cell = vocative_as_nominative(cell);
-    let forms: &[&str] = match (cell.number, cell.gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) => &["весь"],
-        (Sg, F, Nom, _) => &["всѧ"],
-        (Sg, N, Nom, _) => &["все"],
-        (Sg, M | N, Gen, _) => &["всего", "всегѡ"],
-        (Sg, F, Gen, _) => &["всеѧ"],
-        (Sg, M | N, Dat, _) => &["всемꙋ"],
-        (Sg, F, Dat | Loc, _) => &["всей"],
-        (Sg, M, Acc, Animacy::Inanimate) => &["весь"],
-        (Sg, M, Acc, Animacy::Animate) => &["всего", "всегѡ"],
-        (Sg, F, Acc, _) => &["всю"],
-        (Sg, N, Acc, _) => &["все"],
-        (Sg, M | N, Ins, _) => &["всѣмъ"],
-        (Sg, F, Ins, _) => &["всею"],
-        (Sg, M | N, Loc, _) => &["всемъ"],
-        (Pl, M, Nom, _) => &["вси"],
-        (Pl, F | N, Nom, _) => &["всѧ"],
-        (Pl, _, Gen | Loc, _) => &["всехъ"],
-        (Pl, _, Dat, _) => &["всѣмъ"],
-        (Pl, M | F, Acc, Animacy::Animate) => &["всехъ"],
-        (Pl, M | F, Acc, Animacy::Inanimate) | (Pl, N, Acc, _) => &["всѧ"],
-        (Pl, _, Ins, _) => &["всѣми"],
-        (Number::Dual, _, _, _) | (_, _, Case::Vocative, _) => unreachable!(),
-    };
-    forms.iter().map(|form| (*form).into()).collect()
+    kernel::total_ves_cell(cell.case, cell.number, cell.gender, cell.animacy, SYN)
+        .iter()
+        .map(|form| (*form).into())
+        .collect()
 }
 
 fn vsyak_short_forms(stem: &str, cell: AdjectiveCell) -> Vec<String> {
