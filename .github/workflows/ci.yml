@@ -57,12 +57,20 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
-      # The whole closing suite runs through one command so the canonical
-      # ordering can never diverge between a local close and CI. Steps that
-      # need the gitignored intermediate corpus self-skip here; the sealed
-      # floors and committed-artifact checks still bite on every pull request.
-      - name: Wave-close gates
-        run: cargo xtask synodal-wave-close --check
+      # The wave-close suite is retired; its surviving closing checks run
+      # individually. check-structure includes synodal-check and the gold
+      # gate; the guard witnesses, lexical-union ledger, fixture bootstrap,
+      # and immutable archive were the other CI-safe wave-close steps.
+      - name: Structural checks
+        run: cargo xtask check-structure
+      - name: Synodal guard witnesses
+        run: cargo xtask synodal-guard-witnesses
+      - name: Synodal lexical union
+        run: cargo xtask synodal-lexical-union --check
+      - name: Synodal fixture bootstrap
+        run: cargo xtask synodal-fixture-bootstrap
+      - name: Immutable archive
+        run: cargo xtask synodal-archive --check
       # Full-enumeration replay of both gold oracles from committed artifacts
       # only; witness consultation is a source-present-only refinement, so the
       # regenerated gap is identical with or without data/intermediate.

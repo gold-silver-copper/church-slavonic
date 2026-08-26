@@ -113,197 +113,37 @@ reviewed candidate disappears or changes. OCS records retain an OCS source
 recension and can affect generation only through a reviewed mapping; they never
 become exact Synodal rows.
 
-## Corpus coverage and review queues
+## Coverage measurement: the gold gate
 
-The report-producing commands use existing normalized intermediate candidates;
-they do not add raw-source adapters to the runtime CLI:
+The wave-era measurement machinery (coverage fixtures and floors, review
+queues, wave ledger, admission preflight, accent-fit ratchet, marginal
+recovery) was retired on 2026-08-26 when the synodal-gold full-enumeration
+gate replaced it; the wave-era workflow documentation is preserved in
+`docs/history/` and the immutable archive. Coverage is now measured by one
+command with no sampling:
 
-### Wave cookbook
+```sh
+cargo xtask synodal-gold --check   # full-enumeration replay, subset gate
+cargo xtask synodal-gold --fix     # commit a strictly smaller gap
+```
 
-One admission wave with the v0.13 tooling, in order:
-
-1. `cargo xtask synodal-admit-check` — clean baseline (~4s).
-2. Append the data rows (evidence, lexemes, principal parts, senses, family
-   review, evaluation). Never cite a held-out type; keep evaluation passages
-   off every runtime-evidence citation.
-3. `cargo xtask synodal-admit-check` again — new lexemes show as
-   pending-rebuild; everything else must be clean before any build.
-4. `cargo xtask synodal-regenerate` (expect the REBUILD REQUIRED banner) →
-   `cargo build --release -p xtask -p synodal-church-slavonic-dictionary`.
-5. `cargo xtask synodal-accent-fit --apply` → regenerate → rebuild. For a
-   stubborn cell, `synodal-accent-fit --suggest <lexeme> <cell>` prints the
-   exact row or the precise refusal.
-6. `cargo xtask synodal-evaluate` — fix abstentions before proceeding.
-7. `cargo xtask synodal-coverage --offline --delta` — projected ledger deltas
-   in ~18s; iterate from step 2 until they look right.
-8. `cargo xtask synodal-coverage --offline --reseal-floors --seal-wave
-   <label> --note "…"` — the canonical sealing run (~4min).
-9. `cargo xtask synodal-wave-close --fix` — regenerates every derived
-   artifact in the canonical order and runs all gates plus fmt/clippy/tests.
-10. Commit, push, and watch CI (whose structural job runs the same
-    `synodal-wave-close --check`).
-
-The timed demonstration wave (вертепъ, v0.13) completed steps 1–9 in 6m17s.
-Known deferral pointers live in `family_reviews.tsv` deferred rows and the
-v0.12 audit's handoff section.
-
-### One-command wave close
-
-`cargo xtask synodal-wave-close` runs the entire closing suite in the
-canonical order with one pass/fail table and per-step timings. `--check` is
-read-only and CI-safe (the CI structural job invokes exactly this, so local
-and CI ordering cannot diverge); steps that recompute from the gitignored
-intermediate corpus (`synodal-accent-fit --check`,
-`synodal-family-review-queue --check`) self-skip where it is absent. The
-default local mode adds `cargo fmt --check`, clippy, and the workspace test
-suites. `--fix` first regenerates every derived artifact in the canonical
-order — the family queue, the accent-fit report, the prediction feed,
-marginal recovery, and the lexical source union **last** (it reads lexemes,
-lexical reviews, and family reviews) — and prints undecided top-200 family
-proposals as ready-to-review stubs when that gate is the failure.
-
-### Accent suggestions
-
-`cargo xtask synodal-accent-fit --suggest <lexeme-id> <cell>` prints the
-exact `accent_paradigms.tsv` row that would realize one cell's print — with
-the existing fitted block's paradigm ID and block-uniform evidence and the
-line to insert after, when the lexeme already carries a block — or the
-precise refusal: the cell does not expand; it is not in the accent gap; it
-has no source-partition witness at all; its witnesses conflict (each variant
-listed); or **every witness is itself a held-out type**, which is reported as
-unfittable without memorisation and never as a row. The scope grammar itself
-is documented in `SYNODAL_MORPHOLOGY.md` (“Accent paradigm scope grammar”).
-
-### Delta coverage projection
-
-`cargo xtask synodal-coverage --offline --delta` projects the ledger-relevant
-totals (corpus top-k and top-1, cross-lexeme ambiguity, and the held-out
-generalised/memorised/top-k columns) from a cached distinct-surface inventory
-(`data/intermediate/synodal/coverage-surface-inventory.tsv`, written by every
-canonical run) instead of re-reading the 1.3M-token corpus. It classifies
-each surface with the same code path as the canonical run, so on an unchanged
-corpus the numbers match the full run exactly (~18s instead of ~4min). The
-output is stamped `PROJECTION — not sealable`, compares against the last
-sealed ledger row, and combining `--delta` with `--seal-wave`,
-`--reseal-floors`, `--check`, `--require-complete`, or `--fixture` is an
-error, witness-tested in `synodal-guard-witnesses`. Sealing always uses the
-canonical full run.
+The gate replays every row of both committed gold oracles
+(`data/synodal/gold_token_oracle.tsv`, `data/synodal/gold_paradigm_oracle.tsv`)
+and regenerates `reports/synodal-gold-gap.tsv`, the finite worklist that may
+only shrink. The contract is normative in `docs/SYNODAL_GOLD_ORACLE.md`.
 
 ### Registry staleness tripwire
 
 The generated registries compile into the binaries, so a measurement run
 after `synodal-regenerate` but before a rebuild silently reflects the old
 data. Each runtime crate's build script embeds a fingerprint of its
-`generated/registry.rs` (`REGISTRY_FINGERPRINT`), and `synodal-evaluate`,
-`synodal-coverage`, and `synodal-accent-fit` refuse to run when the on-disk
-file no longer matches the compiled fingerprint, naming the exact rebuild
-command. `synodal-regenerate` itself skips the in-process evaluation and
-prints a loud REBUILD REQUIRED banner whenever its write changed the
-registries. The refusal is witness-tested in `synodal-guard-witnesses`.
+`generated/registry.rs` (`REGISTRY_FINGERPRINT`), and the in-process
+evaluation refuses to run when the on-disk file no longer matches the
+compiled fingerprint, naming the exact rebuild command. `synodal-regenerate`
+itself skips the in-process evaluation and prints a loud REBUILD REQUIRED
+banner whenever its write changed the registries. The refusal is
+witness-tested in `synodal-guard-witnesses`.
 
-### Admission preflight
-
-`cargo xtask synodal-admit-check` validates the committed TSVs in seconds and
-reports **every** violation at once, in the four categories that caused
-seal-time rework during v0.12: duplicated lexeme identities (a committed
-surface owned by one identity that the registry also analyzes to another, or
-two lexemes sharing a normalized lemma and part of speech), new held-out
-memorisation (an exact or accent row whose normalized type is held out and not
-frozen in `data/synodal/holdout_memorisation_baseline.tsv`), evaluation rows
-sharing a passage with runtime-referenced evidence (matching the authoritative
-extractor predicate), and generation-dead lexemes (a productive lexeme none of
-whose own surfaces analyzes back to it). Reviewed genuine homonymy lives in
-`data/synodal/homonymy_allowlist.tsv` with per-pair justifications; the
-memorisation baseline is ratcheted down with
-`cargo xtask synodal-admit-check --write-baseline` after reviewing the diff.
-The preflight runs inside `synodal-check`, so CI enforces it; it duplicates
-guards earlier and never replaces the sealed floors, ceilings, or late checks.
-
-```sh
-cargo xtask synodal-coverage --fixture --offline
-cargo xtask synodal-coverage --offline
-cargo xtask synodal-lexical-review-queue
-cargo xtask synodal-evaluation-queue
-cargo xtask synodal-family-review-queue
-cargo xtask synodal-marginal-recovery
-cargo xtask synodal-v06-review-packets
-cargo xtask synodal-v07-review-packets
-cargo xtask synodal-v07-apply --check
-cargo xtask synodal-v04-audit --check
-cargo xtask synodal-v05-audit
-cargo xtask synodal-v06-audit --check
-cargo xtask synodal-v07-audit --check
-```
-
-When a current packet decision changes to `admitted`, run
-`cargo xtask synodal-v07-apply --refresh-ownership` before ordinary
-materialization. The committed ownership ledger retains inactive historical
-packet facts so later rejection, deferral, or re-admission is reproducible.
-
-Full coverage reads only the Ponomar and exact-revision Wikisource records whose
-target recension is `synodal-russian`, retains source, passage, and partition
-identities, and writes deterministic JSON/Markdown plus two TSVs under
-`reports/`. The review queue is intentionally bounded for human triage. The
-separate `*-frontier.tsv` is the complete, untruncated inventory of every
-strict-top-k-uncovered surface/status combination with true document frequency,
-source/partition provenance, and bounded contexts. `--check` validates all four
-artifacts. The fixture is committed in `data/synodal/coverage_passages.tsv` and
-has a stable hash test.
-
-The canonical report leads with the type-disjoint holdout, split by resolver
-status and by morphological system, because held-out tokens reached by rule
-(`generalised`) are the only measure that distinguishes a better engine from a
-longer lookup table. `reports/synodal-waves.tsv` is the append-only ledger of
-that measure per sealed wave, next to the corpus figure and the lexicon size
-that produced it. `cargo xtask synodal-coverage --offline --seal-wave <label>
---note <text>` appends a row; `--check` and `cargo xtask
-synodal-coverage-floors` fail when the last row no longer describes the live
-report, and a row may never lower `holdout_generalised` or raise
-`holdout_memorised`. `--reseal-floors` ratchets `data/synodal/coverage_floors.tsv`
-toward the current report and is how `holdout:generalised_analyzed` is raised
-after a wave that moved it.
-
-The historical acceptance command
-`cargo xtask synodal-coverage --offline --check --require-complete` still exists
-but is no longer a program gate. Its locked input hashes and denominator
-prevent a fixture, custom input, truncated source set, alternate policy, or
-aggregate-only success from satisfying a 100% claim.
-
-The lexical queue cross-matches target source-partition frequency with English
-Wiktionary OCS semantics and exact-headword semantics from the locked SCI
-Ponomar dictionary. An OCS candidate contributes only a proposed meaning; a
-Ponomar dictionary candidate remains `unknown`/`untyped` until a reviewer
-establishes its part of speech and target cell. Neither is target surface
-evidence, and neither is admitted automatically. Already admitted `(lemma,
-part of speech)` pairs are excluded, ambiguous paradigm or dictionary owners are
-retained as blocked rows, and output is candidate-only. The evaluation queue
-searches evaluation-partition passages that are disjoint from training and
-lexical-review evidence. It blocks surface matches shared by multiple generated
-cells and never promotes a match without context review.
-
-The locked SCI Ponomar source adapter preserves both the frequency list and the
-21,104-row dictionary workbook as distinct structured candidate records. The
-dictionary contributes mixed-recension headword and semantic evidence for
-review; it does not supply a target-recension grammatical cell, and no workbook
-row is admitted automatically. The corpus archive remains unexpanded until its
-component lineage and evidence role are reviewed.
-
-The family queue groups repeated unresolved surfaces conservatively for human
-review and records contexts, possible cells, known and dictionary candidates,
-missing metadata, assumptions, contradictions, and stable candidate IDs. Its
-`--check` gate requires decisions for the top 200 current proposals. The
-marginal-recovery report overlap-adjusts unresolved candidate batches and makes
-the remaining token requirement explicit without granting coverage. The v0.4
-audit verifies a locked historical snapshot and digest. The v0.5 audit
-deterministically compares that baseline with the current registries, coverage,
-evaluation, family decisions, marginal diagnostics, and remaining gaps.
-The v0.6 audit remains an immutable 65% historical record. The v0.7 packet
-generator distinguishes current exact-surface work from prior decisions, the
-apply gate validates every admitted evidence role before regeneration, and the
-v0.7 audit freezes the 70% result plus its verification and full-diff review.
-
-See `SYNODAL_CLI_AND_COVERAGE.md` for normalized input formats, gap precedence,
-and consumer-facing commands.
 
 ## Refresh review
 

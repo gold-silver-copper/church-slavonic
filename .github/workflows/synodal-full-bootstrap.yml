@@ -22,19 +22,9 @@ jobs:
       - name: Verify immutable cache and generated outputs
         run: |
           cargo xtask synodal-sources verify --offline --cache "${RUNNER_TEMP}/synodal-cache"
-          cargo xtask synodal-coverage --offline --check
-          cargo xtask synodal-lexical-review-queue --check
-          cargo xtask synodal-evaluation-queue --check
-          cargo xtask synodal-family-review-queue --check
-          cargo xtask synodal-v04-audit --check
-          cargo xtask synodal-marginal-recovery --check
-          cargo xtask synodal-v05-audit --check
-          cargo xtask synodal-v06-review-packets --check
-          cargo xtask synodal-v06-audit --check
-          cargo xtask synodal-v07-baseline --check
-          cargo xtask synodal-v07-review-packets --check
-          cargo xtask synodal-v07-apply --check
-          cargo xtask synodal-v07-audit --check
+          cargo xtask synodal-gold-oracle --check
+          cargo xtask synodal-gold --check
+          cargo xtask synodal-archive --check
           cargo xtask synodal-check
           git diff --exit-code
       - name: Upload non-redistributable reports only

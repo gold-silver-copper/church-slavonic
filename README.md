@@ -95,29 +95,17 @@ synodal-dict check-text rendered.txt --strict
 synodal-dict coverage passages.tsv --by-family --json-out coverage.json
 ```
 
-Coverage is only a downstream regression signal for registered behavior. The
-committed live report is reproduced with
-`cargo xtask synodal-coverage --offline`; review queues are reproduced with
-`cargo xtask synodal-lexical-review-queue` and
-`cargo xtask synodal-evaluation-queue`; the locked 1,258-claim lexical union is
-reproduced and checked with `cargo xtask synodal-lexical-union`; the family
-queue, overlap-adjusted
-marginal-recovery report, and audits use
-`cargo xtask synodal-family-review-queue` and
-`cargo xtask synodal-marginal-recovery`,
-`cargo xtask synodal-v04-audit --check`, and
-`cargo xtask synodal-v05-audit`; v0.6 family packets and its completed 65% audit
-use `cargo xtask synodal-v06-review-packets` and
-`cargo xtask synodal-v06-audit --check`. The v0.7 exact-surface acquisition
-queue, reviewed-application gate, and completed 70% audit use
-`cargo xtask synodal-v07-review-packets`,
-`cargo xtask synodal-v07-apply --check`, and
-`cargo xtask synodal-v07-audit --check`. That v0.7 audit is an immutable
-historical checkpoint; it does not describe the corrected live registry. The locked
-corpus now has 919,436 of 1,313,344 tokens in canonical `Strict` top-k coverage
-(70.007%), 95 tokens above the 70% gate. See
-[`docs/SYNODAL_CLI_AND_COVERAGE.md`](docs/SYNODAL_CLI_AND_COVERAGE.md) for command
-and input formats, gap precedence, thresholds, and the evidence-review workflow.
+Repo-level coverage is gated by the synodal-gold full-enumeration oracle:
+`cargo xtask synodal-gold --check` replays every distinct surface type of the
+pinned Elizabeth Bible (58,467 types) and every Alypy paradigm cell, and fails
+unless the regenerated gap is a subset of the committed worklist
+`reports/synodal-gold-gap.tsv` (`docs/SYNODAL_GOLD_ORACLE.md`). The wave-era
+sampled coverage reports, review queues, and ratchets were retired when the
+gate landed; their methodology is preserved in `docs/history/` and the
+immutable archive. The locked 1,258-claim lexical union is reproduced and
+checked with `cargo xtask synodal-lexical-union`. See
+[`docs/SYNODAL_CLI_AND_COVERAGE.md`](docs/SYNODAL_CLI_AND_COVERAGE.md) for
+consumer command and input formats and gap precedence.
 The 2,136-cell morphology evaluation (all expected variants present in top-k),
 14 analytic phrases, and 74 typed abbreviation cases remain registered-form
 regression suites, not claims of language-wide accuracy.

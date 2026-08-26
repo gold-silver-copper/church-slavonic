@@ -1,5 +1,4 @@
 use std::{
-    fs,
     io::{Cursor, Write},
     path::PathBuf,
     process::{Command, Stdio},
@@ -328,8 +327,6 @@ fn coverage_accepts_passage_tsv_and_emits_ranked_json() {
 
 #[test]
 fn family_commands_separate_reviewed_and_proposed_data() {
-    let proposals = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../reports/synodal-family-review-queue.json");
     let reviewed = run(&["families", "ꙗкѡ", "--reviewed-only", "--json"]);
     assert!(
         reviewed.status.success(),
@@ -341,99 +338,6 @@ fn family_commands_separate_reviewed_and_proposed_data() {
     assert_eq!(reviewed_json["reviewed"].as_array().map(Vec::len), Some(1));
     assert_eq!(reviewed_json["proposed"], serde_json::json!([]));
 
-    let proposal_rows: serde_json::Value =
-        serde_json::from_str(&fs::read_to_string(&proposals).expect("family proposal report"))
-            .expect("family proposal JSON");
-    let expected_candidate_id = proposal_rows[0]["candidate_id"]
-        .as_str()
-        .expect("first candidate ID");
-    let proposed = run(&[
-        "families",
-        expected_candidate_id,
-        "--proposals",
-        proposals.to_str().expect("UTF-8 path"),
-        "--json",
-    ]);
-    assert!(
-        proposed.status.success(),
-        "{}",
-        String::from_utf8_lossy(&proposed.stderr)
-    );
-    let proposed_json: serde_json::Value =
-        serde_json::from_slice(&proposed.stdout).expect("proposed family JSON");
-    let candidate_id = proposed_json["proposed"]
-        .as_array()
-        .and_then(|rows| {
-            rows.iter().find_map(|row| {
-                (row["candidate_id"].as_str() == Some(expected_candidate_id))
-                    .then(|| row["candidate_id"].as_str())
-                    .flatten()
-            })
-        })
-        .expect("candidate ID");
-
-    let shown = run(&[
-        "show-family",
-        candidate_id,
-        "--proposals",
-        proposals.to_str().expect("UTF-8 path"),
-        "--json",
-    ]);
-    assert!(shown.status.success());
-    let shown_json: serde_json::Value =
-        serde_json::from_slice(&shown.stdout).expect("shown proposal JSON");
-    assert_eq!(shown_json["candidate_id"], candidate_id);
-
     let bad_option = run(&["show-family", "family:synodal:determiner:ves", "--bogus"]);
     assert!(!bad_option.status.success());
-}
-
-#[test]
-fn marginal_recovery_exposes_ranked_review_readiness() {
-    let report = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../reports/synodal-marginal-recovery.json");
-    let report_value: serde_json::Value =
-        serde_json::from_slice(&fs::read(&report).expect("read marginal recovery report"))
-            .expect("marginal recovery report JSON");
-    let output = run(&[
-        "marginal-recovery",
-        report.to_str().expect("UTF-8 path"),
-        "--readiness",
-        "ready",
-        "--limit",
-        "2",
-        "--json",
-    ]);
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let value: serde_json::Value =
-        serde_json::from_slice(&output.stdout).expect("marginal recovery JSON");
-    assert_eq!(value["current_top_k"], report_value["current_top_k"]);
-    assert_eq!(value["target_top_k"], 919_341);
-    assert_eq!(value["tokens_needed_for_target"], 0);
-    assert_eq!(value["milestones"].as_array().map(Vec::len), Some(5));
-    assert_eq!(value["milestones"][4]["percent"], 70);
-    assert_eq!(
-        value["milestones"][4]["margin"],
-        report_value["milestones"][4]["margin"]
-    );
-    let batches = value["batches"].as_array().expect("batches");
-    assert_eq!(batches.len(), 2);
-    assert!(
-        batches
-            .iter()
-            .all(|batch| batch["evidence_readiness"] == "ready")
-    );
-    assert!(batches[0]["overlap_adjusted_tokens"].as_u64().is_some());
-
-    let bad = run(&[
-        "marginal-recovery",
-        report.to_str().expect("UTF-8 path"),
-        "--readiness",
-        "invented",
-    ]);
-    assert!(!bad.status.success());
 }

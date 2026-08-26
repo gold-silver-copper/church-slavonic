@@ -19,8 +19,12 @@ const MANIFEST_PATH: &str = "reports/synodal-archive-manifest.tsv";
 const HEADER: &str = "artifact\tsha256";
 
 /// The frozen artifact set. Everything here is an immutable historical
-/// checkpoint whose verifying command still exists for on-demand runs.
-const ARTIFACTS: [&str; 14] = [
+/// checkpoint. The final two entries are the closing record of the wave
+/// program (v0.4-v0.14): it ended on 2026-08-26 when the synodal-gold
+/// full-enumeration gate (`cargo xtask synodal-gold --check`, commit
+/// baa4ffa) replaced the sampled coverage fixtures, review queues, holdout
+/// ratchets, and per-wave ledgers.
+const ARTIFACTS: [&str; 16] = [
     "reports/synodal-v04-baseline.json",
     "reports/synodal-v04-marginal-recovery.json",
     "reports/synodal-v05-baseline.json",
@@ -35,6 +39,8 @@ const ARTIFACTS: [&str; 14] = [
     "docs/SYNODAL_V05_TOP_K_COVERAGE_AUDIT.md",
     "docs/SYNODAL_V06_65_PERCENT_TOP_K_COVERAGE_AUDIT.md",
     "docs/SYNODAL_V07_70_PERCENT_TOP_K_COVERAGE_AUDIT.md",
+    "docs/history/SYNODAL_100_PERCENT_TOP_K_BASELINE.md",
+    "docs/history/SYNODAL_ACCENT_PARADIGM_FIT.md",
 ];
 
 fn digest(path: &Path) -> Result<String, Box<dyn Error>> {

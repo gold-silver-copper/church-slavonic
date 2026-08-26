@@ -569,19 +569,19 @@ surface with no reviewed reading gets typed, lower-confidence hypotheses by
 segmentation against the Alypy §§82–97 verbal ending inventory (reflexive
 `-сѧ` stripped first by the §73 rule). Predictions are their own type, are
 reachable only under `GenerationPolicy::Exploratory` (`predict_under`), never
-count toward strict top-k, and are gated by the masked-lexeme precision report
-(`cargo xtask synodal-predict`, `reports/synodal-prediction-precision.md`):
-only confidence buckets meeting the stated floor emit review candidates
-(`reports/synodal-prediction-candidates.tsv`, ranked by token mass with at
-least two distinct sibling cells per hypothesised stem). The coverage report
-carries a diagnostic `predicted` slice over the strict-unresolved remainder.
+count toward strict top-k, and were tuned during the wave program by a
+masked-lexeme precision report (the `synodal-predict` triage command and its
+reports were retired with the wave machinery on 2026-08-26; the gold gap
+`reports/synodal-gold-gap.tsv` is the burn-down worklist now).
+
 
 ## Accent paradigm scope grammar
 
 `data/synodal/accent_paradigms.tsv` rows carry a `scope`, a `placement`, and
 a `mark`. Rows sharing a `(lexeme_id, paradigm_id)` must be contiguous and
-carry uniform evidence; `synodal-accent-fit --apply` inserts inside an
-existing block reusing that block's evidence.
+carry uniform evidence; a new row inserted inside an existing block reuses
+that block's evidence (the wave-era `synodal-accent-fit --apply` writer is
+retired).
 
 **Scopes** (colon-separated; every list position accepts comma-separated
 values):

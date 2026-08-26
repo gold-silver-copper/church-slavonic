@@ -9,21 +9,10 @@ mod rewrite_dictionary;
 mod rewrite_pilot;
 mod sources;
 mod synodal;
-mod synodal_accent_fit;
-mod synodal_admit_check;
 mod synodal_archive;
-mod synodal_coverage;
-mod synodal_evaluation_queue;
-mod synodal_family_review;
 mod synodal_gold;
 mod synodal_gold_oracle;
-mod synodal_lexical_review;
 mod synodal_lexical_union;
-mod synodal_marginal_recovery;
-mod synodal_predict;
-mod synodal_type_holdout;
-mod synodal_wave_close;
-mod synodal_waves;
 
 use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Animacy, Case, FiniteTense, FiniteVerbCell, Gender,
@@ -59,13 +48,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("check-dictionary") => check_dictionary(&workspace_root()?),
         Some("extraction-report") => extraction_report(),
         Some("synodal-regenerate") => synodal::regenerate(&workspace_root()?),
-        Some("synodal-admit-check") => {
-            let write = args.next().as_deref() == Some("--write-baseline");
-            synodal_admit_check::admit_check(&workspace_root()?, write)
-        }
-        Some("synodal-wave-close") => synodal_wave_close::run(&mut args, &workspace_root()?),
         Some("synodal-check") => synodal::check(&workspace_root()?),
-        Some("synodal-evaluate") => synodal::evaluate_and_write(&workspace_root()?),
         Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
         Some("alypy-paradigm-oracle") => alypy_oracle::run(&mut args, &workspace_root()?),
         Some("synodal-gold-oracle") => synodal_gold_oracle::run(&mut args, &workspace_root()?),
@@ -75,27 +58,8 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-fixture-bootstrap") => {
             synodal::fixture_bootstrap(&mut args, &workspace_root()?)
         }
-        Some("synodal-coverage") => synodal_coverage::run(&mut args, &workspace_root()?),
         Some("synodal-archive") => synodal_archive::run(&mut args, &workspace_root()?),
-        Some("synodal-predict") => synodal_predict::run(&mut args, &workspace_root()?),
-        Some("synodal-coverage-floors") => {
-            synodal_coverage::check_committed_floors(&workspace_root()?)
-        }
-        Some("synodal-accent-fit") => synodal_accent_fit::run(&mut args, &workspace_root()?),
-        Some("synodal-type-holdout") => synodal_type_holdout::run(&mut args, &workspace_root()?),
-        Some("synodal-evaluation-queue") => {
-            synodal_evaluation_queue::run(&mut args, &workspace_root()?)
-        }
-        Some("synodal-family-review-queue") => {
-            synodal_family_review::run(&mut args, &workspace_root()?)
-        }
-        Some("synodal-lexical-review-queue") => {
-            synodal_lexical_review::run(&mut args, &workspace_root()?)
-        }
         Some("synodal-lexical-union") => synodal_lexical_union::run(&mut args, &workspace_root()?),
-        Some("synodal-marginal-recovery") => {
-            synodal_marginal_recovery::run(&mut args, &workspace_root()?)
-        }
         Some("morphology-completeness") => {
             morphology_completeness::run(&mut args, &workspace_root()?)
         }
@@ -459,10 +423,7 @@ fn print_help() {
     eprintln!("  check-dictionary");
     eprintln!("  extraction-report");
     eprintln!("  synodal-regenerate");
-    eprintln!("  synodal-admit-check [--write-baseline]");
-    eprintln!("  synodal-wave-close [--check|--fix]");
     eprintln!("  synodal-check");
-    eprintln!("  synodal-evaluate");
     eprintln!("  synodal-guard-witnesses");
     eprintln!("  alypy-paradigm-oracle [--check]");
     eprintln!("  synodal-gold-oracle [--check]");
@@ -472,14 +433,7 @@ fn print_help() {
         "  synodal-bootstrap [--cache PATH] [--offline] [--source ID] [--skip-fetch] [--keep-intermediate]"
     );
     eprintln!("  synodal-fixture-bootstrap");
-    eprintln!(
-        "  synodal-coverage --offline [--fixture] [--source ID] [--policy POLICY] [--profile PROFILE] [--check] [--require-complete]"
-    );
-    eprintln!("  synodal-evaluation-queue [--limit N] [--check]");
-    eprintln!("  synodal-family-review-queue [--limit N] [--check]");
-    eprintln!("  synodal-lexical-review-queue [--limit N] [--check]");
     eprintln!("  synodal-lexical-union [--check]");
-    eprintln!("  synodal-marginal-recovery [--check] [--require-source-inputs]");
     eprintln!("  morphology-completeness [--check]");
     eprintln!("  ocs-lexical-union [--check | --kaikki PATH --osd-jsonl PATH]");
     eprintln!("  rewrite-pilot-accuracy");

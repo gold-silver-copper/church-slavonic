@@ -4,8 +4,6 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use serde::de::DeserializeOwned;
-
 pub(crate) struct Table {
     path: PathBuf,
     pub(crate) header: Vec<String>,
@@ -19,10 +17,6 @@ impl Table {
             .position(|column| column == name)
             .ok_or_else(|| format!("{} omits column {name:?}", self.path.display()).into())
     }
-}
-
-pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<T, Box<dyn Error>> {
-    Ok(serde_json::from_slice(&fs::read(path)?)?)
 }
 
 pub(crate) fn read_tsv(path: &Path) -> Result<Table, Box<dyn Error>> {
@@ -59,34 +53,6 @@ pub(crate) fn read_tsv(path: &Path) -> Result<Table, Box<dyn Error>> {
     })
 }
 
-pub(crate) fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(expected) {
-        Ok(())
-    } else {
-        Err(format!("{} is stale", path.display()).into())
-    }
-}
-
-pub(crate) fn check_contents_for(
-    path: &Path,
-    expected: &str,
-    command: &str,
-) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(expected) {
-        Ok(())
-    } else {
-        Err(format!("stale {}; rerun {command}", path.display()).into())
-    }
-}
-
-pub(crate) fn write_if_changed(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
-    if fs::read_to_string(path).ok().as_deref() == Some(contents) {
-        return Ok(());
-    }
-    fs::write(path, contents)?;
-    Ok(())
-}
-
 pub(crate) fn write_if_changed_atomic(path: &Path, contents: &str) -> Result<(), Box<dyn Error>> {
     if fs::read_to_string(path).ok().as_deref() == Some(contents) {
         return Ok(());
@@ -116,41 +82,20 @@ mod tests {
         fs::create_dir_all(&root).expect("temporary directory");
         let path = root.join("report.json");
 
-        write_if_changed(&path, "{\"value\":1}\n").expect("direct write");
-        check_contents(&path, "{\"value\":1}\n").expect("current report");
         let json = concat!(
             "{\"value\":2,\"kind\":\"audit\",\"nested\":{\"count\":3},",
             "\"normalized_tables\":{\"forms\":4}}\n"
         );
         write_if_changed_atomic(&path, json).expect("atomic update");
-        check_contents_for(&path, json, "example-command").expect("current report");
-
-        let value: serde_json::Value = read_json(&path).expect("valid JSON");
-        assert_eq!(value["value"], 2);
+        assert_eq!(fs::read_to_string(&path).expect("written report"), json);
+        write_if_changed_atomic(&path, json).expect("idempotent rewrite");
 
         let table_path = root.join("review.tsv");
         fs::write(&table_path, "lemma\tstatus\nслово\treviewed\n").expect("temporary TSV");
         let table = read_tsv(&table_path).expect("valid TSV");
         assert_eq!(table.index("status").expect("status column"), 1);
         assert_eq!(table.rows, vec![vec!["слово", "reviewed"]]);
-        assert_eq!(
-            check_contents(&path, "different")
-                .expect_err("stale report")
-                .to_string(),
-            format!("{} is stale", path.display())
-        );
-        assert_eq!(
-            check_contents_for(&path, "different", "example-command")
-                .expect_err("stale report")
-                .to_string(),
-            format!("stale {}; rerun example-command", path.display())
-        );
 
         fs::remove_dir_all(root).expect("temporary cleanup");
     }
 }
-
-// Temporary wiring: the Alypy paradigm-oracle extractor is declared here so it
-// compiles and its tests run while `main.rs` is under concurrent edit. When
-// wiring the dispatch, move `mod alypy_oracle;` into `main.rs` and delete this
-// block (declaring it in both places would compile the file twice).

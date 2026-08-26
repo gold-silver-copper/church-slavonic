@@ -481,13 +481,13 @@ pub(crate) fn regenerate(root: &Path) -> Result<(), Box<dyn Error>> {
     // the new tables, so it is skipped and the rebuild is demanded loudly
     // instead; the tripwire in evaluate/coverage/accent-fit enforces the same
     // rule for every later measurement.
-    if crate::synodal_admit_check::ensure_registry_current(root).is_ok() {
+    if ensure_registry_current(root).is_ok() {
         evaluate_and_write(root)?;
     } else {
         println!("==============================================================");
         println!("REBUILD REQUIRED: generated registries changed; run");
         println!("  cargo build --release -p xtask -p synodal-church-slavonic-dictionary");
-        println!("then rerun synodal-evaluate. Measurements refuse stale binaries.");
+        println!("then rerun synodal-regenerate. Measurements refuse stale binaries.");
         println!("==============================================================");
     }
     println!(
@@ -512,7 +512,6 @@ pub(crate) fn check(root: &Path) -> Result<(), Box<dyn Error>> {
     check_bootstrap_report(root)?;
     check_fixture_bootstrap_report(root, &evaluate(root)?)?;
     check_package_metadata(root)?;
-    crate::synodal_admit_check::admit_check(root, false)?;
     println!("synodal checks: current");
     Ok(())
 }
@@ -893,7 +892,7 @@ fn sha256_bytes(bytes: &[u8]) -> String {
 }
 
 pub(crate) fn evaluate_and_write(root: &Path) -> Result<(), Box<dyn Error>> {
-    crate::synodal_admit_check::ensure_registry_current(root)?;
+    ensure_registry_current(root)?;
     let report = evaluate(root)?;
     let reports = root.join("reports");
     fs::create_dir_all(&reports)?;
@@ -2631,51 +2630,47 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         )?;
         check_fixture_bootstrap_report(root, &current_evaluation)?;
 
-        // The wave ledger must notice a falsified last row and a broken
-        // ratchet. Both are checked against the committed canonical report,
-        // with the lexicon inputs copied so the only difference is the ledger.
-        let committed_report: synodal_church_slavonic_dictionary::coverage::CoverageReport =
-            serde_json::from_str(&fs::read_to_string(
-                root.join("reports/synodal-coverage.json"),
-            )?)?;
-        for path in [
-            "data/synodal/principal_parts.tsv",
-            "data/synodal/evaluation.tsv",
-        ] {
-            fs::copy(root.join(path), temporary.join(path))?;
+        // The wave ledger's ratchet witnesses are retired with the wave
+        // program; the gold gate's invariants are witnessed instead. First,
+        // oracle staleness: a token-oracle row edited without regenerating
+        // the artifact must fail the committed self-validation (body sha).
+        let token_oracle = fs::read_to_string(root.join("data/synodal/gold_token_oracle.tsv"))?;
+        crate::synodal_gold_oracle::validate_committed(&token_oracle)?;
+        let tampered_oracle = token_oracle.replacen("\t1\t", "\t2\t", 1);
+        if tampered_oracle == token_oracle {
+            return Err("gold token oracle tamper fixture found nothing to alter".into());
         }
-        let ledger_path = temporary.join(crate::synodal_waves::LEDGER_PATH);
-        let ledger = fs::read_to_string(root.join(crate::synodal_waves::LEDGER_PATH))?;
-        let mut lines: Vec<String> = ledger.lines().map(str::to_owned).collect();
-        let last = lines.pop().ok_or("wave ledger has no sealed wave")?;
-        let columns: Vec<&str> = last.split('\t').collect();
-        let generalised: usize = columns[1].parse()?;
-        let mut falsified = columns.clone();
-        let inflated = (generalised + 1).to_string();
-        falsified[1] = &inflated;
-        lines.push(falsified.join("\t"));
-        fs::write(&ledger_path, lines.join("\n") + "\n")?;
         require_failure(
-            "stale wave ledger",
-            crate::synodal_waves::check(&temporary, &committed_report),
+            "tampered gold token oracle",
+            crate::synodal_gold_oracle::validate_committed(&tampered_oracle),
         )?;
-        let mut lines: Vec<String> = ledger.lines().map(str::to_owned).collect();
-        let mut regressed = columns.clone();
-        let deflated = generalised.saturating_sub(1).to_string();
-        regressed[0] = "later";
-        regressed[1] = &deflated;
-        lines.push(regressed.join("\t"));
-        fs::write(&ledger_path, lines.join("\n") + "\n")?;
+
+        // Second, gap-subset enforcement: with one committed gap row removed,
+        // the full-enumeration replay regenerates that row and must report a
+        // regression against the (artificially smaller) committed gap.
+        fs::create_dir_all(temporary.join("reports"))?;
+        for relative in [
+            "data/synodal/gold_token_oracle.tsv",
+            "data/synodal/gold_paradigm_oracle.tsv",
+            "data/synodal/gold_source_defects.tsv",
+        ] {
+            fs::copy(root.join(relative), temporary.join(relative))?;
+        }
+        let gap = fs::read_to_string(root.join("reports/synodal-gold-gap.tsv"))?;
+        let mut gap_lines: Vec<&str> = gap.lines().collect();
+        gap_lines.pop().ok_or("committed gold gap has no rows")?;
+        fs::write(
+            temporary.join("reports/synodal-gold-gap.tsv"),
+            gap_lines.join("\n") + "\n",
+        )?;
         require_failure(
-            "wave ledger ratchet broken",
-            crate::synodal_waves::check(&temporary, &committed_report),
+            "gold gap regression",
+            crate::synodal_gold::check(&temporary),
         )?;
-        fs::write(&ledger_path, &ledger)?;
-        crate::synodal_waves::check(&temporary, &committed_report)?;
 
         // Tampering with an immutable archived artifact must be detected.
         fs::create_dir_all(temporary.join("reports"))?;
-        fs::create_dir_all(temporary.join("docs"))?;
+        fs::create_dir_all(temporary.join("docs/history"))?;
         for artifact in [
             "reports/synodal-archive-manifest.tsv",
             "reports/synodal-v04-baseline.json",
@@ -2692,6 +2687,8 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
             "docs/SYNODAL_V05_TOP_K_COVERAGE_AUDIT.md",
             "docs/SYNODAL_V06_65_PERCENT_TOP_K_COVERAGE_AUDIT.md",
             "docs/SYNODAL_V07_70_PERCENT_TOP_K_COVERAGE_AUDIT.md",
+            "docs/history/SYNODAL_100_PERCENT_TOP_K_BASELINE.md",
+            "docs/history/SYNODAL_ACCENT_PARADIGM_FIT.md",
         ] {
             fs::copy(root.join(artifact), temporary.join(artifact))?;
         }
@@ -2703,94 +2700,6 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         fs::write(&tampered, format!("{pristine} "))?;
         require_failure("tampered immutable archive artifact", archive_check())?;
         fs::write(&tampered, pristine)?;
-
-        // Admission-preflight witnesses: each category must fire on an
-        // injected violation. The analyzer is the compiled registry, so a
-        // surface owned by a fake id that a real lexeme analyzes is a
-        // duplicate; a real held-out type behind an exact row with an empty
-        // baseline is new memorisation; a shared passage between an
-        // evaluation row and runtime-referenced evidence is an overlap; a
-        // registered-nowhere productive lexeme analyzes none of its surfaces.
-        let admit_data = temporary.join("data/synodal");
-        let require_violations = |label: &str,
-                                  result: Result<Vec<String>, Box<dyn Error>>|
-         -> Result<(), Box<dyn Error>> {
-            match result {
-                Ok(violations) if !violations.is_empty() => {
-                    println!("synodal guard witness observed: {label}");
-                    Ok(())
-                }
-                Ok(_) => Err(format!("Synodal guard failed to detect {label}").into()),
-                Err(error) => Err(format!("{label} witness errored: {error}").into()),
-            }
-        };
-        let exact_header =
-            "lexeme_id\tcell\texpanded\tprinted\tevidence_id\tsource_kind\ttarget_recension";
-        fs::write(
-            admit_data.join("exact_forms.tsv"),
-            format!(
-                "{exact_header}\nsynodal:noun:guard-fake\tnoun:genitive:singular:inanimate\tгроба\tгро́ба\tguard-ev\tsynodal-attestation\tsynodal-russian\n"
-            ),
-        )?;
-        require_violations(
-            "duplicate lexeme identity",
-            crate::synodal_admit_check::check_duplicate_identities(&temporary),
-        )?;
-        let real_held = fs::read_to_string(root.join(crate::synodal_type_holdout::HOLDOUT_PATH))?
-            .lines()
-            .take(2)
-            .collect::<Vec<_>>()
-            .join("\n");
-        fs::write(
-            temporary.join(crate::synodal_type_holdout::HOLDOUT_PATH),
-            format!("{real_held}\n"),
-        )?;
-        let held_type = real_held
-            .lines()
-            .nth(1)
-            .and_then(|line| line.split('\t').next())
-            .ok_or("held-out fixture line missing")?;
-        fs::write(
-            admit_data.join("exact_forms.tsv"),
-            format!(
-                "{exact_header}\nsynodal:noun:guard-fake\tnoun:genitive:singular:inanimate\t{held_type}\t{held_type}\tguard-ev\tsynodal-attestation\tsynodal-russian\n"
-            ),
-        )?;
-        fs::write(
-            temporary.join(crate::synodal_admit_check::BASELINE_PATH),
-            "normalized_type\ttables\n",
-        )?;
-        require_violations(
-            "new held-out memorisation",
-            crate::synodal_admit_check::check_new_holdout_memorisation(&temporary),
-        )?;
-        fs::write(
-            admit_data.join("evaluation.tsv"),
-            "id\tlexeme_id\tcell\tpolicy\texpected_expanded\texpected_printed\tsource_id\tpassage\tregularity\neval:guard\tsynodal:noun:guard\tnoun:nominative:singular:inanimate\tproductive\tслово\tсло́во\tponomar-elizabeth-bible-2026-08-09\tActs.1.1\tguard\n",
-        )?;
-        fs::write(
-            admit_data.join("reviewed_evidence.tsv"),
-            "evidence_id\tcandidate_id\tsource_id\tcitation\tdecision\ttarget_recension\treview_note\nguard-ev\tsynodal:candidate:guard\tponomar-elizabeth-bible-2026-08-09\tActs.1.1\treviewed\tsynodal-russian\tinjected\n",
-        )?;
-        require_violations(
-            "evaluation-passage overlap",
-            crate::synodal_admit_check::check_evaluation_passage_overlap(&temporary),
-        )?;
-        fs::remove_file(admit_data.join("evaluation.tsv"))?;
-        fs::remove_file(admit_data.join("reviewed_evidence.tsv"))?;
-        // The injected lexeme reuses a REAL registered id so the probe does
-        // not classify it as pending-rebuild; its garbage lemma and stem make
-        // every probe surface unanalyzable.
-        fs::write(
-            admit_data.join("lexemes.tsv"),
-            "id\tlemma\tpart_of_speech\tclass\tstem\tgender\taspect\tsource_id\ttarget_recension\nsynodal:noun:v12-trus\tqqqqъ\tnoun\tfirst-hard-m\tqqqq\tmasculine\t\talypy-gamanovich-grammar-web-2023\tsynodal-russian\n",
-        )?;
-        require_violations(
-            "generation-dead lexeme",
-            crate::synodal_admit_check::check_generation_probes(&temporary),
-        )?;
-        fs::remove_file(admit_data.join("lexemes.tsv"))?;
-        fs::remove_file(admit_data.join("exact_forms.tsv"))?;
 
         // A binary older than the on-disk registry must refuse to measure.
         for crate_name in [
@@ -2804,31 +2713,15 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
                 temporary.join(&generated).join("registry.rs"),
             )?;
         }
-        crate::synodal_admit_check::ensure_registry_current(&temporary)?;
+        ensure_registry_current(&temporary)?;
         let tampered_registry =
             temporary.join("crates/synodal-church-slavonic/generated/registry.rs");
         let pristine_registry = fs::read_to_string(&tampered_registry)?;
         fs::write(&tampered_registry, format!("{pristine_registry} "))?;
         require_failure(
             "stale compiled registry",
-            crate::synodal_admit_check::ensure_registry_current(&temporary),
+            ensure_registry_current(&temporary),
         )?;
-
-        // A delta projection must never be able to seal, reseal, or check.
-        for forbidden in ["--seal-wave", "--reseal-floors", "--check"] {
-            let mut arguments = vec![
-                "--offline".to_owned(),
-                "--delta".to_owned(),
-                forbidden.to_owned(),
-            ];
-            if forbidden == "--seal-wave" {
-                arguments.push("guard".to_owned());
-            }
-            require_failure(
-                "delta projection sealing",
-                crate::synodal_coverage::run(&mut arguments.into_iter(), root),
-            )?;
-        }
 
         for hostile in ["", "latin", "\u{e000}", "\u{0301}слово"] {
             if std::panic::catch_unwind(|| synodal_church_slavonic::lookup(hostile)).is_err() {
@@ -2939,4 +2832,43 @@ fn prepare_fixture_cache(
     .into_iter();
     crate::sources::run(&mut verify, &fixture_root)?;
     Ok((fixture_root, cache))
+}
+
+/// FNV-1a fingerprint matching the runtime crates' build scripts.
+fn registry_fingerprint(bytes: &[u8]) -> String {
+    let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
+    for byte in bytes {
+        hash ^= u64::from(*byte);
+        hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
+    }
+    format!("{hash:016x}-{}", bytes.len())
+}
+
+/// Refuses to measure with a binary compiled against an older registry than
+/// the one on disk. `synodal-regenerate` rewrites `generated/registry.rs`,
+/// but the registries compile *into* the binaries, so every measurement after
+/// a regenerate silently reflects the old data until a rebuild — which cost a
+/// full evaluation cycle during v0.12. The message names the exact rebuild.
+fn ensure_registry_current(root: &Path) -> Result<(), Box<dyn Error>> {
+    for (crate_name, path, compiled) in [
+        (
+            "synodal-church-slavonic",
+            "crates/synodal-church-slavonic/generated/registry.rs",
+            synodal_church_slavonic::REGISTRY_FINGERPRINT,
+        ),
+        (
+            "synodal-church-slavonic-dictionary",
+            "crates/synodal-church-slavonic-dictionary/generated/registry.rs",
+            synodal_church_slavonic_dictionary::REGISTRY_FINGERPRINT,
+        ),
+    ] {
+        let on_disk = registry_fingerprint(&fs::read(root.join(path))?);
+        if on_disk != compiled {
+            return Err(format!(
+                "this binary was compiled against an older {crate_name} registry than {path}; rebuild before measuring: cargo build --release -p xtask -p synodal-church-slavonic-dictionary"
+            )
+            .into());
+        }
+    }
+    Ok(())
 }

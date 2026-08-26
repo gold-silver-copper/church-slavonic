@@ -9,14 +9,12 @@ use synodal_church_slavonic_dictionary::{
     Analysis, Entry, FamilyId, FamilySummary, SearchOptions, VocabularyManifest,
     core::{GenerationPolicy, LexemeId, OrthographyProfile, normalize_lookup_accentless},
     coverage::{
-        Analyzer, AnalyzerCache, CheckTextOptions, CoveragePassage, EvidenceReadiness, GapKind,
-        MarginalRecoveryReport, check_text, coverage,
+        Analyzer, AnalyzerCache, CheckTextOptions, CoveragePassage, GapKind, check_text, coverage,
     },
     families, lint_vocabulary_with, lookup_all, lookup_by_id, search, show_family_by_id,
 };
 
 const DEFAULT_FAMILY_PROPOSALS: &str = "reports/synodal-family-review-queue.json";
-const DEFAULT_MARGINAL_RECOVERY: &str = "reports/synodal-marginal-recovery.json";
 
 #[cfg(not(test))]
 fn main() {
@@ -73,7 +71,6 @@ pub fn run(
         Some("check-text") => check_text_command(args, input, output, context),
         Some("analyze-text") => analyze_text_command(args, input, output),
         Some("coverage") => coverage_command(args, input, output, context),
-        Some("marginal-recovery") => marginal_recovery_command(args, output),
         Some("help") | Some("-h") | Some("--help") | None => {
             help(diagnostics)?;
             Ok(())
@@ -634,85 +631,6 @@ fn coverage_command(
     Ok(())
 }
 
-fn marginal_recovery_command(
-    args: impl Iterator<Item = String>,
-    output: &mut dyn Write,
-) -> Result<(), Box<dyn Error>> {
-    let mut input = None;
-    let mut json = false;
-    let mut limit = 50_usize;
-    let mut route = None;
-    let mut readiness = None;
-    let mut args = args.peekable();
-    while let Some(argument) = args.next() {
-        match argument.as_str() {
-            "--json" => json = true,
-            "--limit" => limit = args.next().ok_or("--limit needs a number")?.parse()?,
-            "--route" => route = Some(args.next().ok_or("--route needs a value")?),
-            "--readiness" => {
-                readiness = Some(parse_evidence_readiness(
-                    &args.next().ok_or("--readiness needs a value")?,
-                )?);
-            }
-            value if value.starts_with('-') => {
-                return Err(format!("unknown marginal-recovery option {value:?}").into());
-            }
-            _ if input.is_none() => input = Some(PathBuf::from(argument)),
-            _ => return Err("marginal-recovery accepts at most one JSON report".into()),
-        }
-    }
-    let path = input.unwrap_or_else(|| PathBuf::from(DEFAULT_MARGINAL_RECOVERY));
-    let mut report: MarginalRecoveryReport = serde_json::from_str(&fs::read_to_string(&path)?)?;
-    report.batches.retain(|batch| {
-        route
-            .as_ref()
-            .is_none_or(|expected| batch.recovery_route == *expected)
-            && readiness.is_none_or(|expected| batch.evidence_readiness == expected)
-    });
-    report.batches.truncate(limit);
-    if json {
-        writeln!(output, "{}", serde_json::to_string_pretty(&report)?)?;
-    } else {
-        writeln!(
-            output,
-            "Synodal marginal recovery: current top-k {}, target {}, {} token(s) still needed. Showing {} batch(es) from {}.",
-            report.current_top_k,
-            report.target_top_k,
-            report.tokens_needed_for_target,
-            report.batches.len(),
-            path.display(),
-        )?;
-        for batch in &report.batches {
-            writeln!(
-                output,
-                "{}. {} [{}] — {} marginal token(s), {} cumulative; {:?} readiness / {:?} effort; {}",
-                batch.rank,
-                batch.label,
-                batch.recovery_route,
-                batch.overlap_adjusted_tokens,
-                batch.cumulative_overlap_adjusted_tokens,
-                batch.evidence_readiness,
-                batch.review_effort,
-                batch.review_status,
-            )?;
-            if !batch.missing_evidence.is_empty() {
-                writeln!(output, "   missing: {}", batch.missing_evidence.join(", "))?;
-            }
-        }
-    }
-    Ok(())
-}
-
-fn parse_evidence_readiness(value: &str) -> Result<EvidenceReadiness, Box<dyn Error>> {
-    match value {
-        "blocked" => Ok(EvidenceReadiness::Blocked),
-        "weak" => Ok(EvidenceReadiness::Weak),
-        "partial" => Ok(EvidenceReadiness::Partial),
-        "ready" => Ok(EvidenceReadiness::Ready),
-        _ => Err(format!("unknown evidence readiness {value:?}").into()),
-    }
-}
-
 fn analyzer(
     policy: GenerationPolicy,
     profile: OrthographyProfile,
@@ -1021,10 +939,6 @@ fn help(diagnostics: &mut dyn Write) -> io::Result<()> {
     writeln!(
         diagnostics,
         "  coverage CORPUS.jsonl [--policy POLICY] [--profile PROFILE] [--by-family] [--json] [--markdown-out PATH] [--json-out PATH] [--tsv-out PATH]"
-    )?;
-    writeln!(
-        diagnostics,
-        "  marginal-recovery [REPORT.json] [--route ROUTE] [--readiness LEVEL] [--limit N] [--json]"
     )?;
     writeln!(
         diagnostics,
