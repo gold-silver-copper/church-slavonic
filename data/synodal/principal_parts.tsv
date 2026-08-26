@@ -389,3 +389,24 @@ synodal:verb:wikt-e0c91b5eb837	past-passive-participle-short-stem	ѡставле
 synodal:verb:wikt-e0c91b5eb837	past-passive-participle-long-stem	ѡставленн	hard	alypy-100-ostaviti	synodal-russian
 synodal:adjective:v12-bezzakonn	short-masculine-stem	беззаконен	mobile-e-insertion	alypy-52-short-adjectives	synodal-russian
 synodal:adjective:v06-a79476be07ef953c	short-masculine-stem	вѣрен	mobile-e-insertion	alypy-52-short-adjectives-mobile	synodal-russian
+synodal:verb:v14-utverditi	present-first-singular	оутвержꙋ		alypy-82-utverditi	synodal-russian
+synodal:verb:v14-utverditi	present-third-plural	оутвердѧтъ		alypy-82-utverditi,wikisource-i-pet-5-10-utverdit	synodal-russian
+synodal:verb:v14-utverditi	aorist-stem	оутверди	vowel	alypy-86-vowel-aorist,ponomar-ezek-6-2-utverdi	synodal-russian
+synodal:verb:v14-utverditi	imperative-stem	оутверд	i-series	alypy-93-second-conjugation,ponomar-ezek-6-2-utverdi	synodal-russian
+synodal:verb:v14-utverditi	l-participle-stem	оутверди		alypy-97-general	synodal-russian
+synodal:verb:v14-urazumeti	present-first-singular	оуразꙋмѣю		alypy-82-urazumeti	synodal-russian
+synodal:verb:v14-urazumeti	present-third-plural	оуразꙋмѣютъ		alypy-82-urazumeti,ponomar-apoc-2-23-urazumeyut	synodal-russian
+synodal:verb:v14-urazumeti	aorist-stem	оуразꙋмѣ	vowel	alypy-86-vowel-aorist,ponomar-iii-kings-17-23-urazumeh	synodal-russian
+synodal:verb:v14-urazumeti	imperative-stem	оуразꙋмѣ	j-series	alypy-93-j-series	synodal-russian
+synodal:verb:v14-urazumeti	l-participle-stem	оуразꙋмѣ		alypy-97-general,ponomar-isa-40-28-urazumel	synodal-russian
+synodal:verb:v14-ugotovati	future-stem	оуготова		alypy-82-ugotovati	synodal-russian
+synodal:verb:v14-ugotovati	future-first-singular	оуготоваю		alypy-82-ugotovati	synodal-russian
+synodal:verb:v14-ugotovati	future-third-plural	оуготоваютъ		alypy-82-ugotovati	synodal-russian
+synodal:verb:v14-ugotovati	aorist-stem	оуготова	vowel	alypy-86-vowel-aorist,ponomar-eph-2-10-ugotova,ponomar-ii-esdra-1-13-ugotovasha	synodal-russian
+synodal:verb:v14-ugotovati	imperative-stem	оуготова	j-series	alypy-93-j-series	synodal-russian
+synodal:verb:v14-ugotovati	l-participle-stem	оуготова		alypy-97-general,ponomar-iii-esdra-5-28-ugotoval	synodal-russian
+synodal:verb:v14-ugotoviti	present-first-singular	оуготовлю		alypy-82-ugotoviti	synodal-russian
+synodal:verb:v14-ugotoviti	present-third-plural	оуготовѧтъ		alypy-82-ugotoviti,ponomar-isa-28-24-ugotovit	synodal-russian
+synodal:verb:v14-ugotoviti	aorist-stem	оуготови	vowel	alypy-86-vowel-aorist	synodal-russian
+synodal:verb:v14-ugotoviti	imperative-stem	оуготов	i-series	alypy-93-second-conjugation,ponomar-iii-esdra-14-24-ugotovi	synodal-russian
+synodal:verb:v14-ugotoviti	l-participle-stem	оуготови		alypy-97-general	synodal-russian

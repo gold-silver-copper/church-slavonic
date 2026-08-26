@@ -45,3 +45,19 @@ phase-specific notes. Yield of the fold alone, before any admissions:
 held-out generalised 14,236 → **14,346** (+110), corpus top-k 991,194 →
 **993,530** (+2,336), memorised flat at 14,998. (`wave-close --fix` also
 gained coverage-fixture regeneration, a gap this wave exposed.)
+
+### ѹ exploitation wave `v0.14-uk-exploitation`
+
+Seven admissions that the fold unified across three spellings each:
+`оустна` (second-hard, dual-dominant — a manual end-stress row closes the
+held-out dual nominative ѹ҆стнѣ̀), `оупованїе` and `оутвержденїе`
+(first-soft-ie-n), `оутвердити` (second perfective; manual aorist/imperative
+singular end-stress rows beside the fitted stem-stress block), `оуразꙋмѣти`
+(first-palatalized, разꙋмѣти's prefixed twin), and the a/и pair
+`оуготовати`/`оуготовити`. The preflight caught one evaluation-passage
+collision before any build, and two wikisource candidates initially cited as
+ponomar were corrected (with a script sweep verifying every remaining v14
+candidate against its corpus). Ledger: held-out generalised 14,346 →
+**14,515** (+169), corpus top-k 993,530 → **994,992** (+1,462), memorised
+flat. The ѹ fold plus its exploitation is worth +279 generalised and +3,798
+top-k so far.

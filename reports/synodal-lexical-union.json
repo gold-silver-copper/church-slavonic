@@ -4,7 +4,7 @@
   "input_artifacts": [
     {
       "path": "data/synodal/lexemes.tsv",
-      "sha256": "15a0f1701b06ff731e55478f82d514ce5e3bd563836e03ea476fe3ba61c10c3f",
+      "sha256": "0b04e70f121c62b59ceac79c3b7c01fda935ec73032588f53b8b98769090d5a4",
       "claim_policy": "every curated seed row"
     },
     {
@@ -23,11 +23,11 @@
       "claim_policy": "every exceptional exact or classless seed row"
     }
   ],
-  "claims": 2230,
-  "union_identities": 2157,
+  "claims": 2237,
+  "union_identities": 2164,
   "by_claim_set": {
     "adjudicated-review": 846,
-    "curated-seed": 384,
+    "curated-seed": 391,
     "preserved-proposal": 1000
   },
   "by_part_of_speech": {
@@ -36,14 +36,14 @@
     "conjunction": 26,
     "determiner": 4,
     "interjection": 4,
-    "noun": 652,
+    "noun": 655,
     "numeral": 55,
     "particle": 2,
     "preposition": 29,
     "pronoun": 76,
     "proper-noun": 24,
     "unknown": 962,
-    "verb": 238
+    "verb": 242
   },
   "by_classification": {
     "ambiguous": 704,
@@ -51,11 +51,11 @@
     "disputed": 957,
     "indeclinable": 114,
     "out-of-scope": 82,
-    "productive": 372
+    "productive": 379
   },
   "by_support_state": {
     "evidence-final": 1661,
-    "implemented": 487,
+    "implemented": 494,
     "not-applicable": 82
   },
   "implementation_gaps_by_route": {}

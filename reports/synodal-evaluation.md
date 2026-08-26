@@ -1,13 +1,13 @@
 # Synodal evaluation
 
-Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2489 held-out token cells).
+Target recension: `synodal-russian`. Fixture: pinned passage-held-out Ponomar Elizabeth Bible rows across Matthew, Acts, Daniel, Apocalypse, Amos, and Deuteronomy (2496 held-out token cells).
 
 The correction ledger excludes 5 historically preserved but grammatically retracted evaluation rows from scoring.
 
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| Expanded | 2489 | 2422 | 2486 | 0 | 2489 |
-| Printed | 2489 | 2338 | 2486 | 0 | 2489 |
+| Expanded | 2496 | 2429 | 2493 | 0 | 2496 |
+| Printed | 2496 | 2341 | 2489 | 0 | 2496 |
 
 Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
@@ -15,9 +15,9 @@ Typed abbreviations: top-1 71/81, top-k 81/81 (81 held-out contractions; reverse
 
 Exact registry round trips (top-k, including reviewed variants): expanded 3246/3246, printed 3246/3246.
 
-Masked cells: expanded 751/753, printed 751/753. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
+Masked cells: expanded 758/760, printed 754/760. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
-Accent agreement: 2339/2342 accent-bearing rows.
+Accent agreement: 2342/2349 accent-bearing rows.
 
 Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expanded forms. The reviewed alignment registry has 5 accepted mappings, 5 aligned target lexemes, and 1 rejected negative controls.
 
@@ -25,9 +25,9 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exploratory` | 2489 | 2422 | 2486 | 0 | 2489 |
-| `productive` | 2489 | 2422 | 2486 | 0 | 2489 |
-| `strict` | 2489 | 2422 | 2486 | 0 | 2489 |
+| `exploratory` | 2496 | 2429 | 2493 | 0 | 2496 |
+| `productive` | 2496 | 2429 | 2493 | 0 | 2496 |
+| `strict` | 2496 | 2429 | 2493 | 0 | 2496 |
 
 ## Expanded accuracy by attestation status
 
@@ -35,14 +35,14 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 |---|---:|---:|---:|---:|---:|
 | `attested` | 2126 | 2064 | 2126 | 0 | 2126 |
 | `expected-form-not-returned` | 3 | 0 | 0 | 0 | 3 |
-| `predicted` | 360 | 358 | 360 | 0 | 360 |
+| `predicted` | 367 | 365 | 367 | 0 | 367 |
 
 ## Expanded accuracy by morphological system
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `adjective` | 141 | 137 | 141 | 0 | 141 |
-| `aorist` | 236 | 230 | 235 | 0 | 236 |
+| `aorist` | 238 | 232 | 237 | 0 | 238 |
 | `determiner` | 21 | 20 | 21 | 0 | 21 |
 | `future` | 106 | 102 | 105 | 0 | 106 |
 | `imperative` | 73 | 71 | 73 | 0 | 73 |
@@ -51,10 +51,10 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `infinitive` | 28 | 28 | 28 | 0 | 28 |
 | `l-participle` | 21 | 21 | 21 | 0 | 21 |
 | `lexical-form` | 435 | 430 | 434 | 0 | 435 |
-| `noun` | 1026 | 993 | 1026 | 0 | 1026 |
+| `noun` | 1029 | 996 | 1029 | 0 | 1029 |
 | `numeral` | 26 | 25 | 26 | 0 | 26 |
 | `participle` | 80 | 80 | 80 | 0 | 80 |
-| `present` | 74 | 73 | 74 | 0 | 74 |
+| `present` | 76 | 75 | 76 | 0 | 76 |
 | `pronoun` | 99 | 97 | 99 | 0 | 99 |
 
 ## Expanded accuracy by provenance path
@@ -64,7 +64,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `exact-synodal-attestation` | 2124 | 2064 | 2121 | 0 | 2124 |
 | `synodal-irregular-override` | 19 | 16 | 19 | 0 | 19 |
 | `synodal-normative-table` | 78 | 74 | 78 | 0 | 78 |
-| `synodal-productive-rule` | 268 | 268 | 268 | 0 | 268 |
+| `synodal-productive-rule` | 275 | 275 | 275 | 0 | 275 |
 
 ## Expanded accuracy by regularity
 
@@ -205,6 +205,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `v07-reviewed-identity-correction` | 1 | 1 | 1 | 0 | 1 |
 | `v12-productive-held-out` | 222 | 220 | 220 | 0 | 222 |
 | `v13-demonstration` | 2 | 2 | 2 | 0 | 2 |
+| `v14-uk-exploitation` | 7 | 7 | 7 | 0 | 7 |
 | `v18-held-out-productive-accent` | 2 | 2 | 2 | 0 | 2 |
 | `v18-held-out-source-typed-exact` | 1 | 1 | 1 | 0 | 1 |
 | `v19-held-out-normative-short-feminine-accusative` | 1 | 1 | 1 | 0 | 1 |
@@ -429,6 +430,10 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v07:fdcd7d9ef5505c86` (`pronoun:dative:plural:feminine:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
 - Printed `eval:v12:fb522502444b462d` (`future:second:singular`): expected `ᲂу҆́мреши`, top-1 `ѹ҆́мреши`.
 - Printed `eval:v12:5ddb6c02cd48d6bf` (`aorist:third:singular`): expected `ᲂу҆́мре`, top-1 `Ѹ҆́мре`.
+- Printed `eval:v14:140e49c2040c5a43` (`noun:nominative:dual:inanimate`): expected `ѹ҆стнѣ̀`, top-1 `ᲂу҆стнѣ̀`.
+- Printed `eval:v14:d8c92587f265eb94` (`aorist:third:singular`): expected `ѹ҆твердѝ`, top-1 `ᲂу҆твердѝ`.
+- Printed `eval:v14:36d45eb16f577d41` (`aorist:first:singular`): expected `ѹ҆гото́вахъ`, top-1 `ᲂу҆гото́вахъ`.
+- Printed `eval:v14:99a5e5294b3701a4` (`present:third:singular`): expected `ѹ҆гото́витъ`, top-1 `ᲂу҆гото́витъ`.
 
 ## Inherited OCS evaluation
 

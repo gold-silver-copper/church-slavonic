@@ -12,8 +12,8 @@ accent mobility is stated rather than smoothed away.
 
 - Lexemes with a fitted contract: 1
 - Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 258
-- Lexemes with cells outside the reusable scope grammar: 12
+- Scope families with no reproducing placement at the finest granularity: 259
+- Lexemes with cells outside the reusable scope grammar: 16
 
 | Granularity | Rows |
 |---|---:|
@@ -845,6 +845,13 @@ synodal:noun:v12-vysota	singular:genitive	Noun	4 attestation(s); best rule word-
 synodal:noun:v12-vysota	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
 synodal:noun:v12-vysota	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
 synodal:noun:v12-vysota	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:2 kamora misses: высоты→высоты̀ высоты→высоты̀
+synodal:noun:v14-ustna	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: оустны→ᲂу҆стны̀ оустны→ᲂу҆стны̀
+synodal:noun:v14-ustna	singular:dative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оустнѣ→ᲂу҆стнѣ́ оустнѣ→ᲂу҆стнѣ́
+synodal:noun:v14-ustna	singular:locative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оустнѣ→ᲂу҆стнѣ́ оустнѣ→ᲂу҆стнѣ́
+synodal:noun:v14-ustna	dual:vocative	Noun	2 attestation(s); best rule word-vowel-from-start:9 kamora misses: оустнѣ→ᲂу҆стнѣ́ оустнѣ→ᲂу҆стнѣ́
+synodal:noun:v14-ustna	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: оустны→ᲂу҆стны̀ оустны→ᲂу҆стны̀
+synodal:noun:v14-ustna	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: оустны→ᲂу҆стны̀ оустны→ᲂу҆стны̀
+synodal:noun:v14-ustna	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: оустны→ᲂу҆стны̀ оустны→ᲂу҆стны̀
 synodal:noun:vladyka	singular:genitive	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: владыки→влады́ки владыки→влады́ки
 synodal:noun:vladyka	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: владыки→влады́ки владыки→влады́ки
 synodal:noun:vladyka	plural:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: владыки→влады́ки владыки→влады́ки
@@ -1354,6 +1361,10 @@ synodal:verb:v12-svyazati	infinitive свѧза́ти
 synodal:verb:v12-vhoditi	infinitive входи́ти
 synodal:verb:v12-voproshati	infinitive вопроша́ти
 synodal:verb:v12-zachati	infinitive зача́ти
+synodal:verb:v14-ugotovati	infinitive ᲂу҆гото́вати
+synodal:verb:v14-ugotoviti	infinitive Оу҆гото́вити | infinitive ᲂу҆гото́вити
+synodal:verb:v14-urazumeti	infinitive ᲂу҆разꙋмѣ́ти
+synodal:verb:v14-utverditi	infinitive ᲂу҆тверди́ти
 synodal:verb:vozlozhiti	infinitive возложи́ти
 synodal:verb:vozvestiti	infinitive возвѣсти́ти
 synodal:verb:wikt-4110b1c667a8	infinitive храни́ти
@@ -1362,6 +1373,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4464
-- Lexemes with at least one such attestation: 163
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4491
+- Lexemes with at least one such attestation: 168
 - Placement space searched per partition: 30 placements x 3 marks
