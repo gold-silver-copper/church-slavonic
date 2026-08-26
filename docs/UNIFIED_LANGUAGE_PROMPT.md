@@ -225,3 +225,14 @@ crate-consolidation state.
   `data/ocs/`. Deferred with reasons in `docs/UNIFIED_DATA.md` §5: the
   `data/extracted` / `data/dictionary` renames (paths embedded in generated
   artifact banners) and the per-source split of `data/synodal`.
+
+- 2026-08-26 — Release: the merge shipped to crates.io in dependency order
+  (church-slavonic-core 0.3.0, church-slavonic-orthography 0.2.0,
+  old-church-slavonic-core 0.6.0, the three synodal crates 0.6.0,
+  church-slavonic 0.3.0, church-slavonic-dictionary 0.2.0), each tarball
+  standalone-verified against the live index; the identity table is
+  vendored into the facade package with a sync guard. Tagged
+  `v1.1.0-alpha`. All six phases of this prompt are executed; the
+  remaining program is the gold-gap burn-down (docs/UNIFIED_FACADE.md §5
+  sequences the analyze-layer merge behind it) and the deferred data-tree
+  moves in docs/UNIFIED_DATA.md.
