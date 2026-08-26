@@ -9,6 +9,11 @@
 //! churning its serialized artifacts.
 
 pub mod grammar;
+pub mod identity;
+pub mod recension;
+
+pub use identity::{IdentityEntry, IdentityRegistry};
+pub use recension::Recension;
 
 pub use grammar::{
     AdjectiveForm, Animacy, Case, Comparison, FiniteTense, Gender, Number, NumeralKind,

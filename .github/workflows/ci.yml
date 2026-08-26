@@ -76,6 +76,10 @@ jobs:
       # regenerated gap is identical with or without data/intermediate.
       - name: Synodal gold gate
         run: cargo xtask synodal-gold --check
+      # Projection-coherence gate: identity table staleness + no-regression
+      # on the committed coherence baseline (docs/UNIFIED_IDENTITY.md).
+      - name: Unified identity and projection coherence
+        run: cargo xtask unified-identity --check
       - name: Package and publish dry runs
         run: |
           cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-core

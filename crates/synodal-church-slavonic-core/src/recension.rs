@@ -1,35 +1,8 @@
-/// A source or target language variety.
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-#[non_exhaustive]
-pub enum Recension {
-    OldChurchSlavonic,
-    SynodalRussian,
-    OtherChurchSlavonic,
-    OldRussian,
-    ModernRussian,
-    Mixed,
-    Unknown,
-}
+//! Re-export of the shared [`Recension`] axis.
+//!
+//! The type moved into `church-slavonic-core` (docs/UNIFIED_LANGUAGE_PROMPT.md,
+//! phase-2 early task): the recension axis belongs to the shared kernel, not
+//! to one family. This module keeps the public path
+//! `synodal_church_slavonic_core::recension::Recension` byte-identical.
 
-impl Recension {
-    pub const ALL: [Self; 7] = [
-        Self::OldChurchSlavonic,
-        Self::SynodalRussian,
-        Self::OtherChurchSlavonic,
-        Self::OldRussian,
-        Self::ModernRussian,
-        Self::Mixed,
-        Self::Unknown,
-    ];
-
-    #[must_use]
-    pub const fn is_synodal_target(self) -> bool {
-        matches!(self, Self::SynodalRussian)
-    }
-
-    #[must_use]
-    pub const fn is_forbidden_authority(self) -> bool {
-        matches!(self, Self::ModernRussian)
-    }
-}
+pub use church_slavonic_core::recension::Recension;

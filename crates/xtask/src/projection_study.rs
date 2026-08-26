@@ -90,7 +90,7 @@ const RULES: &[(&str, &str)] = &[
 
 /// Applies the symmetric study folds after the orthography crate's
 /// accent-insensitive lookup projection; the result is the comparison key.
-fn study_key(value: &str) -> String {
+pub(crate) fn study_key(value: &str) -> String {
     let mut output = String::new();
     for character in normalize_lookup_accentless(value).nfd() {
         match character {
@@ -146,7 +146,7 @@ fn accented_key(value: &str, collapse_uk_digraph: bool) -> String {
 }
 
 #[derive(Default)]
-struct RuleCounts(BTreeMap<&'static str, usize>);
+pub(crate) struct RuleCounts(BTreeMap<&'static str, usize>);
 
 impl RuleCounts {
     fn fire(&mut self, rule: &'static str) {
@@ -154,7 +154,7 @@ impl RuleCounts {
     }
 }
 
-enum Projection {
+pub(crate) enum Projection {
     /// Every candidate spelling the declared rules admit.
     Candidates(Vec<String>),
     /// The rules branch past [`CANDIDATE_CAP`].
@@ -165,7 +165,7 @@ enum Projection {
 }
 
 /// Projects one OCS surface into its candidate Synodal comparison keys.
-fn project(surface: &str, counts: &mut RuleCounts) -> Projection {
+pub(crate) fn project(surface: &str, counts: &mut RuleCounts) -> Projection {
     let folded = study_key(surface);
     let mut candidates = vec![String::new()];
     let characters: Vec<char> = folded.chars().collect();
@@ -266,7 +266,7 @@ fn is_synodal_study_letter(character: char) -> bool {
     )
 }
 
-fn parse_body_rows<'a>(
+pub(crate) fn parse_body_rows<'a>(
     text: &'a str,
     expected_columns: usize,
     label: &str,

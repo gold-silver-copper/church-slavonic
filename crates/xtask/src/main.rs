@@ -14,6 +14,7 @@ mod synodal_archive;
 mod synodal_gold;
 mod synodal_gold_oracle;
 mod synodal_lexical_union;
+mod unified_identity;
 
 use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Animacy, Case, FiniteTense, FiniteVerbCell, Gender,
@@ -65,6 +66,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             morphology_completeness::run(&mut args, &workspace_root()?)
         }
         Some("projection-study") => projection_study::run(&workspace_root()?),
+        Some("unified-identity") => unified_identity::run(&mut args, &workspace_root()?),
         Some("ocs-lexical-union") => ocs_lexical_union::run(&mut args, &workspace_root()?),
         Some("rewrite-pilot-accuracy") => rewrite_pilot::accuracy(&mut args, &workspace_root()?),
         Some("rewrite-emit-residue") => rewrite_pilot::emit_residue(&workspace_root()?),
@@ -263,6 +265,7 @@ pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
     synodal_gold::check(&root)?;
     rewrite_dictionary::check(&root)?;
     check_pilot_data_budget(&root)?;
+    unified_identity::check(&root)?;
     check_vendored_source_tables(&root)
 }
 
@@ -443,5 +446,6 @@ fn print_help() {
     eprintln!("  rewrite-dictionary");
     eprintln!("  check-all");
     eprintln!("  projection-study");
+    eprintln!("  unified-identity [--check]");
     eprintln!("  check-structure");
 }
