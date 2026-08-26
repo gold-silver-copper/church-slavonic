@@ -112,6 +112,13 @@ impl FutureInfinitiveAuxiliary {
             Self::Khoteti => "хотѣти",
         }
     }
+
+    /// Whether the reviewed grammar licenses this auxiliary for a
+    /// past-reference (imperfect or aorist) infinitival future. Only
+    /// `имѣти` and `хотѣти` are source-licensed there.
+    pub const fn licensed_for_past_reference(self) -> bool {
+        matches!(self, Self::Imeti | Self::Khoteti)
+    }
 }
 
 /// Whether an infinitival future is located from the speech time or from a

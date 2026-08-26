@@ -133,6 +133,124 @@ pub fn compose_pronominal_family_text(
     ))
 }
 
+/// Validate an explicitly selected §316 derived-family spec against one
+/// inflected pronominal base, given the base's lemma and its ordered surface
+/// texts. This is the pure validation shared by the phrase-building facades;
+/// it commits to nothing about how the base was resolved.
+pub fn validate_pronominal_family_spec(
+    base_lemma: &str,
+    base_texts: &[&str],
+    case: Case,
+    spec: &PronominalFamilySpec,
+) -> Result<(), InflectionError> {
+    if spec.prefix.is_none() && spec.postpositive.is_none() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a derived pronominal family requires a prefix or postpositive".to_string(),
+        });
+    }
+    if spec.preposition.is_some() && spec.prefix.is_none() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a preposition can be interposed only between a prefixal formative and its pronominal base"
+                .to_string(),
+        });
+    }
+    if spec.preposition.is_some() && case == Case::Nominative {
+        return Err(InflectionError::InvalidInput {
+            reason: "an interposed preposition cannot govern a nominative pronominal form"
+                .to_string(),
+        });
+    }
+
+    let bound_postpositive = spec
+        .postpositive
+        .is_some_and(|particle| particle.is_bound());
+    let direct_case = matches!(case, Case::Nominative | Case::Accusative);
+    let all_to = base_lemma.ends_with("то") && base_texts.iter().all(|text| text.ends_with("то"));
+    let any_to = base_lemma.ends_with("то") || base_texts.iter().any(|text| text.ends_with("то"));
+    let explicit_treatment_is_licensed = direct_case && bound_postpositive && all_to;
+
+    if spec.direct_to.is_some() && !explicit_treatment_is_licensed {
+        return Err(InflectionError::InvalidInput {
+            reason: "direct-case -то treatment is valid only for a uniformly -то-final nominative or accusative base before a bound postpositive"
+                .to_string(),
+        });
+    }
+    if direct_case && bound_postpositive && any_to && spec.direct_to.is_none() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a direct -то-final base before a bound postpositive requires an explicit retain/drop treatment"
+                .to_string(),
+        });
+    }
+    Ok(())
+}
+
+/// Canonicalize an interposed preposition: exactly one Cyrillic word.
+pub fn canonical_cyrillic_preposition(preposition: &str) -> Result<String, InflectionError> {
+    let lemma = crate::orthography::Lemma::parse(preposition)?;
+    if lemma.script() != crate::Script::Cyrillic {
+        return Err(InflectionError::InvalidInput {
+            reason: "the interposed preposition must be one Cyrillic word".to_string(),
+        });
+    }
+    Ok(lemma.to_string())
+}
+
+/// Compose the ordered phrase tokens of a §316 derived pronominal family
+/// from the inflected base's ordered variant texts (primary first). Each
+/// returned token is an ordered variant list. Bound formatives stay inside
+/// the pronominal token; `любо` is an independent token; an interposed
+/// preposition splits the prefixal formative and the preposition into their
+/// own leading tokens, mirroring the construction's intermediate status
+/// between a free sequence and a unitary wordform.
+pub fn compose_pronominal_family_tokens(
+    base_lemma: &str,
+    base_texts: &[&str],
+    case: Case,
+    spec: &PronominalFamilySpec,
+) -> Result<Vec<Vec<String>>, InflectionError> {
+    validate_pronominal_family_spec(base_lemma, base_texts, case, spec)?;
+    let interposed = spec
+        .preposition
+        .as_deref()
+        .map(canonical_cyrillic_preposition)
+        .transpose()?;
+    let prefix_is_separate = interposed.is_some();
+    let bound_postpositive = spec.postpositive.filter(|particle| particle.is_bound());
+    let pronoun_prefix = if prefix_is_separate { None } else { spec.prefix };
+    let mut pronoun_variants: Vec<String> = Vec::new();
+    for text in base_texts {
+        let composed = compose_pronominal_family_text(
+            text,
+            pronoun_prefix,
+            bound_postpositive,
+            spec.direct_to,
+        )?;
+        if !pronoun_variants.contains(&composed) {
+            pronoun_variants.push(composed);
+        }
+    }
+    if pronoun_variants.is_empty() {
+        return Err(InflectionError::InvalidInput {
+            reason: "a pronominal base unexpectedly had no surface variants".to_string(),
+        });
+    }
+    let mut tokens: Vec<Vec<String>> = Vec::with_capacity(4);
+    if let Some(preposition) = interposed {
+        let Some(prefix) = spec.prefix else {
+            return Err(InflectionError::InvalidInput {
+                reason: "an interposed preposition requires a prefixal formative".to_string(),
+            });
+        };
+        tokens.push(vec![prefix.text().to_string()]);
+        tokens.push(vec![preposition]);
+    }
+    tokens.push(pronoun_variants);
+    if spec.postpositive == Some(PronominalPostpositive::Liubo) {
+        tokens.push(vec![PronominalPostpositive::Liubo.text().to_string()]);
+    }
+    Ok(tokens)
+}
+
 /// The regular pronominal declensions conventionally grouped as OCS class
 /// `2/p`. `J` identifies possessives such as `мои`, whose citation `-и` is the
 /// surface result of a stem-final *j* rather than a soft consonant ending.

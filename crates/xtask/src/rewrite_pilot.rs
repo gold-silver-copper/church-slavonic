@@ -2124,6 +2124,413 @@ pub(crate) fn accuracy(
     }
     paradigm_consistency(&oracle, &adjectives, &verbs, &closed)?;
     numeral_value_differential()?;
+    phrase_differential()?;
+    Ok(())
+}
+
+/// Differential gate for the pilot's phrase layer: the fat old-church-
+/// slavonic facade's `phrases` module is the reference. Over a deterministic
+/// parameter sweep every kept construction must agree on the primary phrase
+/// text — or agree that the request is rejected — at 100%. The absolute
+/// superlative is gated against the old facade's lemma-keyed
+/// `long_adjective`/`short_adjective` joined with the invariant adverb per
+/// the same order convention (the old phrase function takes a bare
+/// `AdjectiveLexeme`, bypassing the lemma-keyed dictionary route that is the
+/// actual behavioural contract).
+fn phrase_differential() -> Result<(), Box<dyn Error>> {
+    use church_slavonic::phrases as new_phrases;
+    use old_church_slavonic::phrases as old_phrases;
+    use old_church_slavonic_core::{
+        ConditionalAuxiliary, CopulaSeries, DirectToTreatment, FutureInfinitiveAuxiliary,
+        FutureReferenceTense, ImpersonalVerbIdentity, InterrogativePronounIdentity, PhraseOrder,
+        PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
+    };
+
+    const VERBS: [&str; 3] = ["благословити", "любити", "творити"];
+    const ADJECTIVES: [&str; 3] = ["новъ", "свѧтъ", "добръ"];
+    const ORDERS: [PhraseOrder; 2] = [PhraseOrder::DependentFirst, PhraseOrder::HeadFirst];
+
+    let mut counts: BTreeMap<&'static str, (usize, usize)> = BTreeMap::new();
+    let mut mismatches: Vec<String> = Vec::new();
+    let mut check = |construction: &'static str,
+                     detail: String,
+                     new: Option<String>,
+                     old: Option<String>| {
+        let entry = counts.entry(construction).or_insert((0, 0));
+        entry.1 += 1;
+        match (&new, &old) {
+            (Some(new_text), Some(old_text)) if new_text == old_text => entry.0 += 1,
+            (None, None) => entry.0 += 1,
+            _ => {
+                if mismatches.len() < 30 {
+                    mismatches.push(format!(
+                        "{construction} {detail}: new {new:?} vs old {old:?}"
+                    ));
+                }
+            }
+        }
+    };
+
+    // §316 derived pronominal families: every prefix x postpositive x
+    // direct-то treatment x interposed-preposition choice over both
+    // interrogative bases and all seven cases.
+    for (identity, lemma) in [
+        (InterrogativePronounIdentity::Kto, "къто"),
+        (InterrogativePronounIdentity::Chto, "чьто"),
+    ] {
+        for case in Case::ALL {
+            for prefix in [None, Some(PronominalPrefix::Ni), Some(PronominalPrefix::Ne)] {
+                for postpositive in [
+                    None,
+                    Some(PronominalPostpositive::Ze),
+                    Some(PronominalPostpositive::Zhde),
+                    Some(PronominalPostpositive::Zhydo),
+                    Some(PronominalPostpositive::Liubo),
+                ] {
+                    for direct_to in [
+                        None,
+                        Some(DirectToTreatment::Retain),
+                        Some(DirectToTreatment::Drop),
+                    ] {
+                        for preposition in [None, Some("о")] {
+                            let old = old_phrases::interrogative_pronoun_family(
+                                identity,
+                                case,
+                                PronominalFamilySpec {
+                                    prefix,
+                                    postpositive,
+                                    direct_to,
+                                    preposition: preposition.map(str::to_string),
+                                },
+                            )
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
+                            let new = new_phrases::pronominal_family(
+                                lemma,
+                                case,
+                                prefix,
+                                postpositive,
+                                direct_to,
+                                preposition,
+                            )
+                            .ok();
+                            check(
+                                "pronominal_family",
+                                format!(
+                                    "{lemma} {case:?} {prefix:?} {postpositive:?} {direct_to:?} {preposition:?}"
+                                ),
+                                new,
+                                old,
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Absolute superlative, both adjective forms and both orders.
+    for lemma in ADJECTIVES {
+        for case in Case::ALL {
+            for number in Number::ALL {
+                for gender in Gender::ALL {
+                    for order in ORDERS {
+                        let join = |adjective: String| match order {
+                            PhraseOrder::DependentFirst => format!("ѕѣло {adjective}"),
+                            PhraseOrder::HeadFirst => format!("{adjective} ѕѣло"),
+                        };
+                        let old_long = old_church_slavonic::long_adjective(
+                            lemma,
+                            case,
+                            number,
+                            gender,
+                            Animacy::Inanimate,
+                        )
+                        .ok()
+                        .map(|forms| join(forms.primary_text().to_string()));
+                        let new_long = new_phrases::absolute_superlative(
+                            lemma, case, number, gender, order,
+                        )
+                        .ok();
+                        check(
+                            "absolute_superlative",
+                            format!("{lemma} {case:?} {number:?} {gender:?} {order:?}"),
+                            new_long,
+                            old_long,
+                        );
+                        let old_short = old_church_slavonic::short_adjective(
+                            lemma,
+                            case,
+                            number,
+                            gender,
+                            Animacy::Inanimate,
+                        )
+                        .ok()
+                        .map(|forms| join(forms.primary_text().to_string()));
+                        let new_short = new_phrases::short_absolute_superlative(
+                            lemma, case, number, gender, order,
+                        )
+                        .ok();
+                        check(
+                            "short_absolute_superlative",
+                            format!("{lemma} {case:?} {number:?} {gender:?} {order:?}"),
+                            new_short,
+                            old_short,
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    // Copular series: all six series over every person-number cell.
+    for series in CopulaSeries::ALL {
+        for number in Number::ALL {
+            for person in Person::ALL {
+                let old = old_phrases::copula(series, person, number)
+                    .ok()
+                    .map(|forms| forms.primary_text().to_string());
+                let new = Some(match series {
+                    CopulaSeries::PresentEs => new_phrases::copula_present(person, number),
+                    CopulaSeries::FutureBud => new_phrases::copula_future(person, number),
+                    CopulaSeries::ImperfectBe => new_phrases::copula_imperfect(person, number),
+                    CopulaSeries::AoristBe => new_phrases::copula_aorist(person, number),
+                    CopulaSeries::ConditionalBi => {
+                        new_phrases::copula_conditional(person, number)
+                    }
+                    CopulaSeries::ConditionalAoristBy => {
+                        new_phrases::copula_conditional_aorist(person, number)
+                    }
+                });
+                check(
+                    "copula",
+                    format!("{series:?} {person:?} {number:?}"),
+                    new,
+                    old,
+                );
+            }
+        }
+    }
+
+    for lemma in VERBS {
+        for number in Number::ALL {
+            for person in Person::ALL {
+                // да + present.
+                let old = old_phrases::da_imperative(lemma, person, number)
+                    .ok()
+                    .map(|phrase| phrase.primary_text());
+                let new = new_phrases::da_imperative(lemma, person, number).ok();
+                check(
+                    "da_imperative",
+                    format!("{lemma} {person:?} {number:?}"),
+                    new,
+                    old,
+                );
+
+                // Infinitival futures over every auxiliary and reference tense.
+                for auxiliary in FutureInfinitiveAuxiliary::ALL {
+                    for tense in [
+                        FutureReferenceTense::Present,
+                        FutureReferenceTense::Imperfect,
+                        FutureReferenceTense::Aorist,
+                    ] {
+                        for order in ORDERS {
+                            let old = old_phrases::infinitival_future(
+                                lemma, auxiliary, tense, person, number, order,
+                            )
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
+                            let new = match tense {
+                                FutureReferenceTense::Present => new_phrases::infinitival_future(
+                                    lemma, auxiliary, person, number, order,
+                                ),
+                                FutureReferenceTense::Imperfect => {
+                                    new_phrases::infinitival_future_imperfect(
+                                        lemma, auxiliary, person, number, order,
+                                    )
+                                }
+                                FutureReferenceTense::Aorist => {
+                                    new_phrases::infinitival_future_aorist(
+                                        lemma, auxiliary, person, number, order,
+                                    )
+                                }
+                            }
+                            .ok();
+                            check(
+                                "infinitival_future",
+                                format!(
+                                    "{lemma} {auxiliary:?} {tense:?} {person:?} {number:?} {order:?}"
+                                ),
+                                new,
+                                old,
+                            );
+                        }
+                    }
+                }
+
+                for gender in Gender::ALL {
+                    for order in ORDERS {
+                        // Perfect and future perfect.
+                        let old = old_phrases::perfect(lemma, person, number, gender, order)
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
+                        let new =
+                            new_phrases::perfect(lemma, person, number, gender, order).ok();
+                        check(
+                            "perfect",
+                            format!("{lemma} {person:?} {number:?} {gender:?} {order:?}"),
+                            new,
+                            old,
+                        );
+                        let old =
+                            old_phrases::future_perfect(lemma, person, number, gender, order)
+                                .ok()
+                                .map(|phrase| phrase.primary_text());
+                        let new =
+                            new_phrases::future_perfect(lemma, person, number, gender, order)
+                                .ok();
+                        check(
+                            "future_perfect",
+                            format!("{lemma} {person:?} {number:?} {gender:?} {order:?}"),
+                            new,
+                            old,
+                        );
+
+                        // The three pluperfect formations.
+                        for auxiliary in [
+                            PluperfectAuxiliary::Imperfect,
+                            PluperfectAuxiliary::Aorist,
+                            PluperfectAuxiliary::Perfect,
+                        ] {
+                            let old = old_phrases::pluperfect(
+                                lemma, person, number, gender, auxiliary, order,
+                            )
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
+                            let new = match auxiliary {
+                                PluperfectAuxiliary::Imperfect => {
+                                    new_phrases::pluperfect(lemma, person, number, gender, order)
+                                }
+                                PluperfectAuxiliary::Aorist => new_phrases::pluperfect_aorist(
+                                    lemma, person, number, gender, order,
+                                ),
+                                PluperfectAuxiliary::Perfect => new_phrases::pluperfect_perfect(
+                                    lemma, person, number, gender, order,
+                                ),
+                            }
+                            .ok();
+                            check(
+                                "pluperfect",
+                                format!(
+                                    "{lemma} {person:?} {number:?} {gender:?} {auxiliary:?} {order:?}"
+                                ),
+                                new,
+                                old,
+                            );
+                        }
+
+                        // Conditional-optatives, plain and да-marked.
+                        for auxiliary in [
+                            ConditionalAuxiliary::Conditional,
+                            ConditionalAuxiliary::AoristReplacement,
+                        ] {
+                            let old = old_phrases::conditional_optative(
+                                lemma, person, number, gender, auxiliary, order,
+                            )
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
+                            let new = match auxiliary {
+                                ConditionalAuxiliary::Conditional => {
+                                    new_phrases::conditional_optative(
+                                        lemma, person, number, gender, order,
+                                    )
+                                }
+                                ConditionalAuxiliary::AoristReplacement => {
+                                    new_phrases::conditional_optative_aorist(
+                                        lemma, person, number, gender, order,
+                                    )
+                                }
+                            }
+                            .ok();
+                            check(
+                                "conditional_optative",
+                                format!(
+                                    "{lemma} {person:?} {number:?} {gender:?} {auxiliary:?} {order:?}"
+                                ),
+                                new,
+                                old,
+                            );
+                            let old = old_phrases::da_conditional_optative(
+                                lemma, person, number, gender, auxiliary, order,
+                            )
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
+                            let new = match auxiliary {
+                                ConditionalAuxiliary::Conditional => {
+                                    new_phrases::da_conditional_optative(
+                                        lemma, person, number, gender, order,
+                                    )
+                                }
+                                ConditionalAuxiliary::AoristReplacement => {
+                                    new_phrases::da_conditional_optative_aorist(
+                                        lemma, person, number, gender, order,
+                                    )
+                                }
+                            }
+                            .ok();
+                            check(
+                                "da_conditional_optative",
+                                format!(
+                                    "{lemma} {person:?} {number:?} {gender:?} {auxiliary:?} {order:?}"
+                                ),
+                                new,
+                                old,
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Impersonal predicates over every finite tense.
+    for identity in ImpersonalVerbIdentity::ALL {
+        for tense in FiniteTense::ALL {
+            let old = old_phrases::impersonal_predicate(identity, tense)
+                .ok()
+                .map(|phrase| phrase.primary_text());
+            let new = match tense {
+                FiniteTense::Present => new_phrases::impersonal_present(identity.lemma()),
+                FiniteTense::Imperfect => new_phrases::impersonal_imperfect(identity.lemma()),
+                FiniteTense::Aorist => new_phrases::impersonal_aorist(identity.lemma()),
+            }
+            .ok();
+            check(
+                "impersonal_predicate",
+                format!("{identity:?} {tense:?}"),
+                new,
+                old,
+            );
+        }
+    }
+
+    println!(
+        "rewrite pilot phrase differential (pilot phrases module vs the old facade phrase \
+         layer; both-rejected counts as agreement)"
+    );
+    let mut failed = false;
+    for (construction, (agreements, total)) in &counts {
+        println!("  {construction}: {agreements}/{total} sweep cells agree");
+        if agreements != total {
+            failed = true;
+        }
+    }
+    for line in &mismatches {
+        println!("  MISMATCH {line}");
+    }
+    if failed {
+        return Err("phrase differential disagreements, expected 100%".into());
+    }
     Ok(())
 }
 

@@ -5,10 +5,10 @@ use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Case, ConditionalAuxiliary, CopulaSeries,
     DirectToTreatment, FiniteTense, FormAnalysis, FormSet, FormSource, FormVariant,
     FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, ImpersonalVerbIdentity,
-    InflectionError, InterrogativePronounIdentity, Lemma, MetadataEvidence, MetadataProvenance,
+    InflectionError, InterrogativePronounIdentity, MetadataEvidence, MetadataProvenance,
     Number, ParticipleKind, PassiveAuxiliary, Person, PhraseOrder, PhraseRole, PhraseToken,
     PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
-    RealizedPhrase, RuleId, RuleStep, Script,
+    RealizedPhrase, RuleId, RuleStep,
 };
 
 use crate::{Verb, resolver};
@@ -62,11 +62,19 @@ pub fn pronominal_family_with(
     case: Case,
     spec: PronominalFamilySpec,
 ) -> Result<RealizedPhrase, InflectionError> {
-    validate_pronominal_family_spec(&base, case, &spec)?;
+    {
+        let texts: Vec<&str> = base.texts().collect();
+        old_church_slavonic_core::pronoun::validate_pronominal_family_spec(
+            base.lemma(),
+            &texts,
+            case,
+            &spec,
+        )?;
+    }
     let interposed_preposition = spec
         .preposition
         .as_deref()
-        .map(canonical_cyrillic_preposition)
+        .map(old_church_slavonic_core::pronoun::canonical_cyrillic_preposition)
         .transpose()?;
     let prefix_is_separate = interposed_preposition.is_some();
     let bound_postpositive = spec.postpositive.filter(|particle| particle.is_bound());
@@ -141,62 +149,6 @@ pub(crate) fn single_token_pronominal_family_with(
         });
     }
     Ok(phrase.tokens()[0].forms.clone())
-}
-
-fn validate_pronominal_family_spec(
-    base: &FormSet,
-    case: Case,
-    spec: &PronominalFamilySpec,
-) -> Result<(), InflectionError> {
-    if spec.prefix.is_none() && spec.postpositive.is_none() {
-        return Err(InflectionError::InvalidInput {
-            reason: "a derived pronominal family requires a prefix or postpositive".to_string(),
-        });
-    }
-    if spec.preposition.is_some() && spec.prefix.is_none() {
-        return Err(InflectionError::InvalidInput {
-            reason: "a preposition can be interposed only between a prefixal formative and its pronominal base"
-                .to_string(),
-        });
-    }
-    if spec.preposition.is_some() && case == Case::Nominative {
-        return Err(InflectionError::InvalidInput {
-            reason: "an interposed preposition cannot govern a nominative pronominal form"
-                .to_string(),
-        });
-    }
-
-    let bound_postpositive = spec
-        .postpositive
-        .is_some_and(|particle| particle.is_bound());
-    let direct_case = matches!(case, Case::Nominative | Case::Accusative);
-    let all_to = base.lemma().ends_with("то") && base.texts().all(|text| text.ends_with("то"));
-    let any_to = base.lemma().ends_with("то") || base.texts().any(|text| text.ends_with("то"));
-    let explicit_treatment_is_licensed = direct_case && bound_postpositive && all_to;
-
-    if spec.direct_to.is_some() && !explicit_treatment_is_licensed {
-        return Err(InflectionError::InvalidInput {
-            reason: "direct-case -то treatment is valid only for a uniformly -то-final nominative or accusative base before a bound postpositive"
-                .to_string(),
-        });
-    }
-    if direct_case && bound_postpositive && any_to && spec.direct_to.is_none() {
-        return Err(InflectionError::InvalidInput {
-            reason: "a direct -то-final base before a bound postpositive requires an explicit retain/drop treatment"
-                .to_string(),
-        });
-    }
-    Ok(())
-}
-
-fn canonical_cyrillic_preposition(preposition: &str) -> Result<String, InflectionError> {
-    let lemma = Lemma::parse(preposition)?;
-    if lemma.script() != Script::Cyrillic {
-        return Err(InflectionError::InvalidInput {
-            reason: "the interposed preposition must be one Cyrillic word".to_string(),
-        });
-    }
-    Ok(lemma.to_string())
 }
 
 fn compose_pronominal_token(
@@ -499,11 +451,7 @@ pub fn infinitival_future(
     number: Number,
     order: PhraseOrder,
 ) -> Result<RealizedPhrase, InflectionError> {
-    if reference_tense != FutureReferenceTense::Present
-        && !matches!(
-            auxiliary,
-            FutureInfinitiveAuxiliary::Imeti | FutureInfinitiveAuxiliary::Khoteti
-        )
+    if reference_tense != FutureReferenceTense::Present && !auxiliary.licensed_for_past_reference()
     {
         return Err(InflectionError::InvalidInput {
             reason: format!(

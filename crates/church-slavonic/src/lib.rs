@@ -219,6 +219,8 @@ use old_church_slavonic_core::{
 
 pub use church_slavonic_core::grammar::{AdjectiveForm, Animacy, Case, Gender, Number, Person};
 
+pub mod phrases;
+
 mod paradigm;
 pub use paradigm::{
     AdjectiveParadigm, ClosedParadigm, NounParadigm, VerbCellKind, VerbParadigm,
@@ -256,6 +258,11 @@ pub enum Error {
     /// composition sources license (see [`NUMERAL_MIN_VALUE`] and
     /// [`NUMERAL_MAX_VALUE`]).
     ValueOutOfRange { value: u64 },
+    /// The requested analytic construction is not licensed by the reviewed
+    /// sources for these parameters (an ill-formed §316 pronominal-family
+    /// request, or a past-reference infinitival future with an auxiliary
+    /// other than `имѣти`/`хотѣти`).
+    UnsupportedPhrase { reason: String },
     /// The lemma is known, but its metadata does not determine this cell
     /// (missing class metadata, an animacy-conditioned masculine accusative
     /// without an animacy fact, a number-restricted paradigm, or a kernel
@@ -270,6 +277,9 @@ impl std::fmt::Display for Error {
             Error::UnknownLemma(lemma) => write!(f, "unknown lemma `{lemma}`"),
             Error::Underdetermined { lemma } => {
                 write!(f, "cell underdetermined for lemma `{lemma}`")
+            }
+            Error::UnsupportedPhrase { reason } => {
+                write!(f, "unsupported analytic construction: {reason}")
             }
             Error::ValueOutOfRange { value } => {
                 write!(

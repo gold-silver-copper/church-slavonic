@@ -40,7 +40,8 @@ listed one by one.
 | `adjective`, `adjective_by_id`, `adjective_with`, `adjectival_form` | **Dropped** — id-addressed, override-channel, and enum-dispatch entry points collapse into the two lemma-keyed functions above |
 | `adjective_paradigm`, `adjective_paradigm_by_id`, `AdjectiveParadigm`, `Adjective` (handle) | **Planned** — paradigm enumeration |
 | `adjective_comparatives`, `comparative_citation`, `comparative_citation_by_id`, `comparative_with`, `comparative_paradigm_with`, `ComparativeParadigm` | **Dropped** — the comparative-exclusion decision: the oracle stores comparative *citations* only, carrying unpredictable lexical facts (suppletion, suffix grade), not a productive stem; excluded from the pilot API and accuracy denominator |
-| `absolute_superlative_adverb_with`, `pre_superlative_with`, `relative_superlative_with` | **Dropped** — with the comparatives; may return as data-backed derivations if the comparative citations are ever tabled, but no phase currently covers them |
+| `absolute_superlative_adverb_with` | **Replaced**: `phrases::absolute_superlative` / `phrases::short_absolute_superlative(lemma, case, number, gender, order)` — the invariant `ѕѣло` phrase over the pilot's lemma-keyed adjective (the old function took a bare `AdjectiveLexeme`); the long/short form dimension became a function pair, per the ruthenian rule. Differential-gated against the old facade's lemma-keyed adjective joined per the same order convention |
+| `pre_superlative_with`, `relative_superlative_with` | **Dropped** — with the comparatives (`relative_superlative_with` heads a `ComparativeLexeme`); may return as data-backed derivations if the comparative citations are ever tabled, but no phase currently covers them |
 
 ### Verbs (finite and non-finite)
 
@@ -63,7 +64,9 @@ listed one by one.
 | `personal_pronoun`, `personal_pronoun_with`, `personal_pronoun_by_id` | **Replaced**: `pronoun(person, number, case)` (`Person::Third` returns `Underdetermined`; the third person is the anaphoric series) |
 | `reflexive_pronoun(case, selection)` | **Replaced**: `reflexive(case)` — the attested number dimension is fully degenerate, and the `PronounFormSelection` policy enum is gone (variants come back ordered, primary first) |
 | `anaphoric_pronoun` | **Replaced**: `anaphoric(case, number, gender)` |
-| `relative_pronoun`, `interrogative_pronoun`, `interrogative_pronoun_family`, `gendered_pronoun(_by_id)`, `regular_pronominal`, `irregular_agreeing`, `pronominal_form`, `pronominal_with`, `pronominal_family_with`, `pronoun(lemma, ...)` | **Replaced**: `pronoun_form(lemma, case, number, gender)` — one lemma-keyed entry point over the reviewed identity kernels; the per-family functions and identity enums are internal dispatch now |
+| `relative_pronoun`, `interrogative_pronoun`, `gendered_pronoun(_by_id)`, `regular_pronominal`, `irregular_agreeing`, `pronominal_form`, `pronominal_with`, `pronoun(lemma, ...)` | **Replaced**: `pronoun_form(lemma, case, number, gender)` — one lemma-keyed entry point over the reviewed identity kernels; the per-family functions and identity enums are internal dispatch now |
+| `phrases::interrogative_pronoun_family(identity, case, spec)` | **Replaced**: `phrases::pronominal_family(lemma, case, prefix, postpositive, direct_to, preposition)` (+ `_variants`) — lemma-keyed (`къто`/`чьто`) instead of identity-keyed; the §316 validation and token composition moved into `old_church_slavonic_core::pronoun` (`validate_pronominal_family_spec`, `canonical_cyrillic_preposition`, `compose_pronominal_family_tokens`), with the fat facade delegating. Ill-formed specs are the typed `Error::UnsupportedPhrase`; differential-gated over identities x cases x every formative combination |
+| `phrases::pronominal_family_with(base: FormSet, ...)`, `single_token_pronominal_family_with` | **Dropped** — `FormSet`-generic plumbing; the pilot's lemma-keyed `pronominal_family` covers the consumer surface, and direct kernel callers use the core composer |
 | `determiner`, `determiner_by_id`, `determiner_with`, `determiner_identity` | **Replaced**: `determiner_form(lemma, case, number, gender)` |
 | `pronoun_paradigm(_by_id)`, `personal_pronoun_paradigm(_by_id)`, `gendered_pronoun_paradigm(_by_id)`, `determiner_paradigm(_by_id)`, `Pronoun`/`Determiner` handles, `PronounParadigm`/`PersonalPronounParadigm`/`GenderedPronounParadigm`/`DeterminerParadigm` | **Planned** — paradigm enumeration |
 
@@ -82,9 +85,25 @@ listed one by one.
 
 ### Analytic / periphrastic constructions
 
+All kept constructions live in `church_slavonic::phrases`, return the
+space-joined phrase as `Result<String, Error>` with a `*_variants`
+companion (odometer over token-level variant lists, primary first), and are
+differential-gated against this crate's phrase layer inside
+`cargo xtask rewrite-pilot-accuracy` at 100% (agreement on rejected cells
+included).
+
 | Old item | Disposition |
 |---|---|
-| `analytic_passive`, `conditional_optative`, `conditional_passive`, `copula`, `da_conditional_optative`, `da_imperative`, `elliptical_conditional_optative`, `perfect`, `pluperfect`, `future_perfect`, `infinitival_future`, `participial_future`, `impersonal_predicate` | **Planned** — phrases (multi-token constructions returning `RealizedPhrase`; designed in the plan's phase 4, not in the pilot) |
+| `copula(series, person, number)` | **Replaced**: the series enum selects a paradigm, so it became six total functions — `copula_present`, `copula_future`, `copula_imperfect`, `copula_aorist`, `copula_conditional`, `copula_conditional_aorist` `(person, number) -> String` — over the core's reviewed `CopulaSeries` tables |
+| `da_imperative(lemma, person, number)` | **Replaced**: same name and key, `-> Result<String, Error>` |
+| `perfect(lemma, person, number, gender, order)` | **Replaced**: same name and key |
+| `pluperfect(lemma, …, auxiliary, order)` | **Replaced**: the `PluperfectAuxiliary` enum became the functions `pluperfect` (imperfect `бꙑти`), `pluperfect_aorist`, and the three-token `pluperfect_perfect` |
+| `future_perfect(lemma, person, number, gender, order)` | **Replaced**: same name and key |
+| `conditional_optative`, `da_conditional_optative` (…, `auxiliary`, `order`) | **Replaced**: the `ConditionalAuxiliary` enum became function pairs — `conditional_optative` / `conditional_optative_aorist` and `da_conditional_optative` / `da_conditional_optative_aorist` |
+| `infinitival_future(lemma, auxiliary, reference_tense, person, number, order)` | **Replaced**: `infinitival_future` (present reference) plus `infinitival_future_imperfect` / `infinitival_future_aorist` (past reference; `имѣти`/`хотѣти` only, per `FutureInfinitiveAuxiliary::licensed_for_past_reference`, now a core fact — anything else is `Error::UnsupportedPhrase`). The auxiliary stays a parameter: it is a lexical index within one construction |
+| `impersonal_predicate(identity, tense)` | **Replaced**: lemma-keyed `impersonal_present` / `impersonal_imperfect` / `impersonal_aorist(lemma)` for `достоꙗти` and reflexive `мьнѣти` (the particle `сѧ` stays an independent token in the joined text). Resolution is attested residue row first, reviewed impersonal lexeme second — the same precedence as the old dictionary-first dispatch |
+| `elliptical_conditional_optative(lemma, number, gender)` | **Dropped** — the construction is exactly the bare l-participle; call `l_participle(lemma, gender, number)` |
+| `analytic_passive`, `conditional_passive`, `participial_future` | **Planned** — paradigm enumeration: these predicate a *declined* (case/number/gender-agreeing) participle, and the pilot serves participles as citations only; they land when participle declension does |
 
 ### Script, accent, lookup, plumbing
 
@@ -107,8 +126,8 @@ phase-2 continuation.
 | Rule kernels (`decline_*` family, `present`/`aorist`/`imperfect`/`imperative`/participle formations, `NounClass`, `AdjectiveClass`, `VerbClass`, formation enums, lexeme structs `NounLexeme`/`AdjectiveLexeme`/`VerbLexeme`/`PronominalLexeme`/`DeterminerLexeme`, identity enums `PersonalPronounIdentity`, `CardinalNumeralIdentity`, `OrdinalNumeralIdentity`, `StandardPronominalIdentity`, `InterrogativePronounIdentity`, `IrregularAgreeingIdentity`, unique/irregular family members, Polivanova classifications) | **Planned** — merge into `church-slavonic-core` per-POS modules (phase 2 continuation); until then they remain public in this crate and reachable, but new code should call the facade |
 | `PredictedForm`, `RuleStep`, `RuleId`, `FormSet`, `FormVariant`, trace machinery | **Planned** — trace/result unification with the synodal `RuleTrace` model is deliberately deferred until the rule kernels merge (the two `RuleId` models are semantically different); the provenance idea is explicitly preserved |
 | Accent (`AccentRule`, `AccentParadigm`, `ReconstructedAccent`, `AccentEvidence`, placement/scope enums), Glagolitic (`Script`, `GlagoliticProfile`, `Transliteration*` family, `detect_script`, `transliterate_glagolitic_to_cyrillic`) | **Planned** — orthography crate |
-| Phrase machinery (`PhraseToken`, `RealizedPhrase`, `PhraseOrder`, `PhraseRole`, `CardinalPhraseAnalysis`, `OrdinalPhraseAnalysis`, `RealizedCardinal`, `RealizedOrdinal`, `RealizedDistributiveCardinal`, `CardinalCompositionOptions`, `NumeralGovernment`, compound-ordinal constants) | **Planned** — phrases & numeral composition (these types are the intended vocabulary of the collapsed `numeral(value, …)` entry) |
-| Copula/analytic types (`CopulaSeries`, `CopulaVariant`, `AnalyticConstruction`, auxiliary enums) | **Planned** — phrases |
+| Phrase machinery (`PhraseToken`, `RealizedPhrase`, `PhraseOrder`, `PhraseRole`, `CardinalPhraseAnalysis`, `OrdinalPhraseAnalysis`, `RealizedCardinal`, `RealizedOrdinal`, `RealizedDistributiveCardinal`, `CardinalCompositionOptions`, `NumeralGovernment`, compound-ordinal constants) | **Planned** — phrases & numeral composition (these types are the intended vocabulary of the collapsed `numeral(value, …)` entry). `PhraseOrder` is already re-exported by the pilot's `phrases` module, along with `PronominalPrefix`/`PronominalPostpositive`/`DirectToTreatment`/`FutureInfinitiveAuxiliary` |
+| Copula/analytic types (`CopulaSeries`, `CopulaVariant`, `AnalyticConstruction`, auxiliary enums) | **Planned** — phrase-layer kernel vocabulary; the pilot's phrase functions consume `CopulaSeries::forms` and the moved §316 composer (`pronoun::validate_pronominal_family_spec` / `compose_pronominal_family_tokens` / `canonical_cyrillic_preposition`) directly, so the enums stay internal to the kernel rather than pilot API |
 | `InflectionError`, `InflectionWarning`, `VariantPolicy`, `VariantSelectionError`, warning plumbing | **Replaced** (in shape) by the facade `Error`; the warning channel does not survive — defects are typed errors, not warnings |
 | `MetadataField`, `MetadataProvenance`, `MetadataEvidence`, `FormSource`, `FormAnalysis`, `classify_source_*`, family/source-member structs | **Dropped** from the published surface — extractor-side vocabulary; the extractor leaves the published workspace in phase 5 |
 

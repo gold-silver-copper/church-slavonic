@@ -137,6 +137,20 @@ Hard rules for the target:
   phrases, dictionary/analyze, orthography/transliteration, the synodal
   counterpart, and the phase-5 deprecation release.
 
+- 2026-08-26 — Phrases layer landed on the pilot: `church_slavonic::phrases`
+  serves the consumer analytic constructions (§316 pronominal families,
+  absolute superlatives, да-imperative, six copular series, perfect /
+  three pluperfects / future perfect, conditional-optatives with and
+  without да, three infinitival futures, impersonal predicates) as
+  typed-parameter String-out functions; paradigm-selecting enums became
+  functions. §316 validation/composition and the past-reference future
+  license moved into old-church-slavonic-core with the fat facade
+  delegating. `rewrite-pilot-accuracy` gains a phrase differential gate
+  (4,209 sweep cells vs the old phrase layer, 100%). The
+  participle-predicated constructions (analytic/conditional passive,
+  participial future) wait on declined participles;
+  `elliptical_conditional_optative` collapses to `l_participle`.
+
 - 2026-08-26 — church-slavonic-dictionary landed: 5,174 senses as 2.2 MB
   sorted-slice tables, homograph-aware lemma keys, lemmatize() by lazily
   inverting paradigm enumeration (measured lazy beats a generated index),
