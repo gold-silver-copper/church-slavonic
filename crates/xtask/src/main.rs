@@ -15,6 +15,7 @@ mod synodal_archive;
 mod synodal_coverage;
 mod synodal_evaluation_queue;
 mod synodal_family_review;
+mod synodal_gold;
 mod synodal_gold_oracle;
 mod synodal_lexical_review;
 mod synodal_lexical_union;
@@ -68,6 +69,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
         Some("alypy-paradigm-oracle") => alypy_oracle::run(&mut args, &workspace_root()?),
         Some("synodal-gold-oracle") => synodal_gold_oracle::run(&mut args, &workspace_root()?),
+        Some("synodal-gold") => synodal_gold::run(&mut args, &workspace_root()?),
         Some("synodal-sources") => sources::run(&mut args, &workspace_root()?),
         Some("synodal-bootstrap") => synodal::bootstrap(&mut args, &workspace_root()?),
         Some("synodal-fixture-bootstrap") => {
@@ -292,6 +294,7 @@ pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
     synodal::check(&root)?;
     morphology_completeness::check_progress_artifacts(&root)?;
     rewrite_pilot::accuracy(&mut std::iter::empty(), &root)?;
+    synodal_gold::check(&root)?;
     rewrite_dictionary::check(&root)?;
     check_pilot_data_budget(&root)?;
     check_vendored_source_tables(&root)
@@ -463,6 +466,7 @@ fn print_help() {
     eprintln!("  synodal-guard-witnesses");
     eprintln!("  alypy-paradigm-oracle [--check]");
     eprintln!("  synodal-gold-oracle [--check]");
+    eprintln!("  synodal-gold [--check|--fix]");
     eprintln!("  synodal-sources <list|status|fetch|verify|refresh> [OPTIONS]");
     eprintln!(
         "  synodal-bootstrap [--cache PATH] [--offline] [--source ID] [--skip-fetch] [--keep-intermediate]"

@@ -2,9 +2,9 @@
 
 This document is the single normative definition of how a token of the
 Elizabeth Bible is compared against the Synodal engine. Every gate,
-generator, and adjudication step uses these rules and no others. The
-paradigm-side (Alypy) contract is a separate section to be added by that
-workstream; this document covers the **token side**.
+generator, and adjudication step uses these rules and no others.
+Sections 1–6 cover the token side; §7 covers the paradigm (Alypy) side;
+§8 defines the gate and its gap worklist.
 
 Source of truth: `data/intermediate/synodal/ponomar-elizabeth-bible-2026-08-09.jsonl`
 (37,211 verse records, pinned and checksummed under `references/`).
@@ -141,8 +141,10 @@ of the Bible is a row.
   equals the actual data-row count, declared `body-sha256` matches the
   body.
 
-The check is not yet wired into `check-structure`; the forthcoming
-`synodal-gold` gate will own that wiring.
+The oracle staleness check runs standalone; the `synodal-gold` gate
+(`cargo xtask synodal-gold --check`, wired into `check-structure` and CI)
+validates the committed artifact's header/sha self-consistency on every
+run and replays every row.
 
 ## 6. Witnesses and source-defect adjudication
 
@@ -176,3 +178,64 @@ quietly absorb engine bugs.
 Ledger columns: `passage`, `ponomar_surface`, `adjudicated_surface`,
 `crosswire_reading`, `wikisource_reading`, `note`. The ledger starts
 empty; rows enter only through the rule above.
+
+## 7. The paradigm side: Alypy typography equivalence classes
+
+The paradigm oracle (`data/synodal/gold_paradigm_oracle.tsv`, 1,604 cells)
+records surfaces verbatim as printed in the Alypy (Gamanovich) grammar
+tables. The printed tables use pedagogical typography that is not
+morphology; the gate (`crates/xtask/src/synodal_gold.rs`) applies exactly
+these equivalence classes when comparing a printed cell against the
+engine, and nothing else:
+
+1. **Hyphenated morpheme boundaries.** The tables print stem-ending
+   hyphens (`ра́б-ъ`); hyphens are stripped before comparison and never
+   part of any surface.
+2. **Parenthesised variants.** A parenthetical is an alternate reading;
+   either side matches. A full-word alternate (`бы́сть (бы̀)`) stands on
+   its own; a `-suffix` alternate (`цар-ѝ (-їе)`) replaces an ending of
+   the base word — the printed table does not say where the suffix
+   attaches, so every split point is an accepted variant (this can only
+   widen acceptance of the printed alternate, never pass an unrelated
+   form). `или`-joined alternates inside one parenthetical are split.
+   Parenthesised prose annotations (e.g. `(для всех родов)`) are dropped.
+3. **Multi-word demonstrations.** A cell printed as a phrase — the
+   periphrastic future (`хощꙋ̀ бы́ти`), prepositional case demonstrations
+   (`ѡ҆ бра́тїѧхъ`), adjective-plus-noun pairs (`бж҃ї-й кра́-й`) — accepts
+   the whole phrase or any single word of it, because the engine
+   generates the inflected member while the table prints its syntactic
+   frame.
+4. **Combined feature labels.** A table row spanning several cells
+   (`nominative+accusative`, `second+third` person) is one oracle row;
+   the engine cell for any of the combined values may match.
+5. **Under-specified dimensions.** The printed tables do not encode every
+   engine cell dimension (noun animacy, adjective length and degree,
+   participle voice, numeral kind, pronoun person). The unencoded
+   dimensions fan out over their closed value sets and the cell passes
+   when any candidate generates the printed surface.
+
+The token-side classes of §3 (NFC, initial-uk presentation) apply to the
+paradigm comparison as well; accents and positional letter choices
+compare exactly, as everywhere.
+
+## 8. The gate and the gap worklist
+
+`cargo xtask synodal-gold` replays every token-oracle type and every
+paradigm-oracle cell and writes `reports/synodal-gold-gap.tsv` — one row
+per failure with a reason class chosen so each class has one remediation
+path: `unregistered-lemma`, `unreviewed-cell`, `engine-wrong-form`,
+`engine-wrong-accent`, `abbreviation-unexpanded`,
+`non-lexical-unclassified`, `witness-conflict`.
+
+`--check` fails iff the regenerated gap is not a subset of the committed
+one (row-set comparison); `--fix` rewrites the committed gap and fails if
+it would grow. The gate runs entirely from committed artifacts, so CI and
+local runs regenerate the identical gap. Witness consultation (§6) is a
+source-present-only refinement: with the intermediate witnesses present,
+engine-disagreement rows are swept against them and ledger candidates are
+proposed to `reports/synodal-gold-defect-candidates.tsv` for human review
+(never auto-added); without them (CI), the sweep is skipped and rows keep
+their `engine-*` class. Rows whose surface matches a reviewed
+`gold_source_defects.tsv` entry are excluded from the gap, and every
+ledger row's two-witness disagreement is re-validated whenever the
+witnesses are present.

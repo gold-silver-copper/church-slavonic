@@ -63,6 +63,11 @@ jobs:
       # floors and committed-artifact checks still bite on every pull request.
       - name: Wave-close gates
         run: cargo xtask synodal-wave-close --check
+      # Full-enumeration replay of both gold oracles from committed artifacts
+      # only; witness consultation is a source-present-only refinement, so the
+      # regenerated gap is identical with or without data/intermediate.
+      - name: Synodal gold gate
+        run: cargo xtask synodal-gold --check
       - name: Package and publish dry runs
         run: |
           cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-core
