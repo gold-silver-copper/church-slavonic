@@ -95,6 +95,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "church-slavonic-orthography"
+version = "0.1.0"
+dependencies = [
+ "church-slavonic-core",
+ "serde",
+ "unicode-normalization",
+]
+
+[[package]]
 name = "codepage"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -261,6 +270,7 @@ name = "old-church-slavonic-core"
 version = "0.4.0"
 dependencies = [
  "church-slavonic-core",
+ "church-slavonic-orthography",
  "unicode-normalization",
 ]
 
@@ -417,6 +427,7 @@ name = "synodal-church-slavonic-core"
 version = "0.4.0"
 dependencies = [
  "church-slavonic-core",
+ "church-slavonic-orthography",
  "serde",
  "unicode-normalization",
 ]

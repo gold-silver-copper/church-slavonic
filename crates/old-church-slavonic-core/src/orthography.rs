@@ -1,97 +1,51 @@
 //! Lossless display normalization, conservative lookup keys, and explicit
 //! source-bounded script realization.
+//!
+//! The recension-agnostic primitives and the Glagolitic transliteration
+//! engine live in the `church-slavonic-orthography` crate
+//! (docs/REWRITE_PLAN.md, target layout). This module re-exports the shared
+//! vocabulary unchanged and keeps thin adapters so the family API — its
+//! `InflectionError` values and `RuleStep` provenance — is exactly what it
+//! was before the extraction.
 
 use crate::{InflectionError, RuleId, RuleStep};
+use church_slavonic_orthography::glagolitic::{self, GlagoliticError};
+use church_slavonic_orthography::text;
 use core::{fmt, ops::Deref};
-use unicode_normalization::UnicodeNormalization;
 use unicode_normalization::char::is_combining_mark;
 
-pub const MAX_INPUT_CHARS: usize = 4_096;
+pub use church_slavonic_orthography::glagolitic::{
+    GlagoliticProfile, TransliterationDirection, TransliterationFidelity, TransliterationLoss,
+    TransliterationLossKind, TransliterationLossPolicy,
+};
+pub use church_slavonic_orthography::text::{MAX_INPUT_CHARS, Script, detect_script};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Script {
-    Cyrillic,
-    Glagolitic,
-    Latin,
-    Mixed,
-    Unknown,
-}
-
-/// Explicit Cyrillic/Glagolitic transliteration profile.
-///
-/// This is a normalized scholarly realization, not diplomatic manuscript
-/// transcription. Its shared-alphabet mappings follow Polivanova §§131–133 and
-/// the Jagić table reproduced in Unicode TN41 revision 1, Appendix A.
-/// Polivanova's natural-Cyrillic allographs and iotated-vowel boundary control
-/// the non-reversible extensions. Every such distinction is reported as a loss.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum GlagoliticProfile {
-    Jagic1879NormalizedOcs,
-}
-
-impl GlagoliticProfile {
-    pub const fn code(self) -> &'static str {
-        match self {
-            Self::Jagic1879NormalizedOcs => "jagic-1879-normalized-ocs",
-        }
-    }
-
-    pub const fn source_id(self) -> &'static str {
-        match self {
-            Self::Jagic1879NormalizedOcs => "unicode-tn41-revision-1",
-        }
+fn from_invalid_word(error: text::InvalidWord) -> InflectionError {
+    InflectionError::InvalidInput {
+        reason: error.reason,
     }
 }
 
-/// Policy for a Cyrillic or Glagolitic distinction that the target script
-/// cannot preserve.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum TransliterationLossPolicy {
-    /// Return a typed error at the first lossy mapping.
-    Reject,
-    /// Return the normalized spelling and an ordered loss report.
-    Report,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum TransliterationDirection {
-    CyrillicToGlagolitic,
-    GlagoliticToCyrillic,
-    PreserveGlagoliticInput,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum TransliterationFidelity {
-    /// Existing Glagolitic input was validated and retained unchanged. This is
-    /// not by itself a claim that the caller's spelling is source-attested.
-    InputUnchanged,
-    /// The profile can recover the input spelling from the output.
-    Reversible,
-    /// One or more source-script distinctions were normalized away.
-    LossReported,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum TransliterationLossKind {
-    /// Several Cyrillic code points share one historical Glagolitic letter.
-    CyrillicVariantFold,
-    /// A Cyrillic letter without a Glagolitic counterpart becomes a sequence.
-    CyrillicLetterExpansion,
-    /// A literal Cyrillic yer-plus-i sequence collides with a single yeri
-    /// spelling in the reverse profile.
-    CyrillicSequenceCollision,
-    /// A non-classical or colliding Glagolitic letter becomes canonical Cyrillic.
-    GlagoliticVariantFold,
-}
-
-/// One ordered, explicit loss in a normalized transliteration.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TransliterationLoss {
-    pub scalar_index: usize,
-    pub source: String,
-    pub replacement: String,
-    pub kind: TransliterationLossKind,
-    pub reason: &'static str,
+fn from_glagolitic_error(error: GlagoliticError) -> InflectionError {
+    match error {
+        GlagoliticError::InvalidInput { reason } => InflectionError::InvalidInput { reason },
+        GlagoliticError::InvalidLemma { input, reason } => {
+            InflectionError::InvalidLemma { input, reason }
+        }
+        GlagoliticError::Unrepresentable {
+            input,
+            profile,
+            character,
+            scalar_index,
+            reason,
+        } => InflectionError::UnrepresentableOrthography {
+            input,
+            profile,
+            character,
+            scalar_index,
+            reason,
+        },
+    }
 }
 
 /// A source-bounded script realization with enough information to keep a
@@ -107,6 +61,26 @@ pub struct TransliteratedForm {
 }
 
 impl TransliteratedForm {
+    fn from_engine(realized: glagolitic::Transliteration) -> Self {
+        Self {
+            text: realized.text().to_string(),
+            profile: realized.profile(),
+            direction: realized.direction(),
+            fidelity: realized.fidelity(),
+            losses: realized.losses().to_vec(),
+            trace: realized
+                .steps()
+                .iter()
+                .map(|step| RuleStep {
+                    rule_id: RuleId::OrthographyGlagoliticJagic,
+                    before: step.before.clone(),
+                    after: step.after.clone(),
+                    reason: step.reason,
+                })
+                .collect(),
+        }
+    }
+
     pub fn text(&self) -> &str {
         &self.text
     }
@@ -220,42 +194,11 @@ impl fmt::Display for Lemma {
 }
 
 pub fn canonical_display(input: &str) -> Result<String, InflectionError> {
-    validate(input)?;
-    Ok(input.nfc().collect())
+    text::canonical_display(input).map_err(from_invalid_word)
 }
 
 pub fn lookup_key(input: &str) -> Result<String, InflectionError> {
-    let normalized = canonical_display(input)?;
-    Ok(normalized.to_lowercase())
-}
-
-pub fn detect_script(input: &str) -> Script {
-    let mut cyrillic = false;
-    let mut glagolitic = false;
-    let mut latin = false;
-    let mut other = false;
-    for ch in input.chars().filter(|ch| ch.is_alphabetic()) {
-        let cp = u32::from(ch);
-        if (0x0400..=0x052f).contains(&cp)
-            || (0x2de0..=0x2dff).contains(&cp)
-            || (0xa640..=0xa69f).contains(&cp)
-        {
-            cyrillic = true;
-        } else if (0x2c00..=0x2c5f).contains(&cp) || (0x1e000..=0x1e02f).contains(&cp) {
-            glagolitic = true;
-        } else if ch.is_ascii_alphabetic() || (0x00c0..=0x024f).contains(&cp) {
-            latin = true;
-        } else {
-            other = true;
-        }
-    }
-    match (cyrillic, glagolitic, latin, other) {
-        (true, false, false, false) => Script::Cyrillic,
-        (false, true, false, false) => Script::Glagolitic,
-        (false, false, true, false) => Script::Latin,
-        (false, false, false, _) => Script::Unknown,
-        _ => Script::Mixed,
-    }
+    text::lookup_key(input).map_err(from_invalid_word)
 }
 
 /// Realize one complete OCS word in normalized Glagolitic.
@@ -270,125 +213,9 @@ pub fn realize_glagolitic(
     profile: GlagoliticProfile,
     loss_policy: TransliterationLossPolicy,
 ) -> Result<TransliteratedForm, InflectionError> {
-    let lemma = Lemma::parse(input)?;
-    if lemma.script() == Script::Glagolitic {
-        validate_existing_glagolitic(lemma.as_str(), profile)?;
-        return Ok(TransliteratedForm {
-            text: lemma.as_str().to_string(),
-            profile,
-            direction: TransliterationDirection::PreserveGlagoliticInput,
-            fidelity: TransliterationFidelity::InputUnchanged,
-            losses: Vec::new(),
-            trace: Vec::new(),
-        });
-    }
-
-    let characters = lemma.as_str().chars().collect::<Vec<_>>();
-    let mut output = String::with_capacity(lemma.as_str().len());
-    let mut losses = Vec::new();
-    let mut scalar_index = 0;
-    while scalar_index < characters.len() {
-        let character = characters[scalar_index];
-        if scalar_index + 1 < characters.len() {
-            let sequence = match (character, characters[scalar_index + 1]) {
-                ('Ъ', 'І') => Some(("ЪІ", "ⰟⰉ")),
-                ('ъ', 'і') => Some(("ъі", "ⱏⰹ")),
-                ('Ь', 'І') => Some(("ЬІ", "ⰠⰉ")),
-                ('ь', 'і') => Some(("ьі", "ⱐⰹ")),
-                _ => None,
-            };
-            if let Some((source, replacement)) = sequence {
-                record_or_reject_sequence_loss(
-                    &mut losses,
-                    loss_policy,
-                    lemma.as_str(),
-                    profile,
-                    scalar_index,
-                    character,
-                    source,
-                    replacement,
-                )?;
-            }
-        }
-        if is_combining_mark(character) {
-            if is_cyrillic_specific_mark(character) {
-                return Err(unrepresentable(
-                    lemma.as_str(),
-                    profile,
-                    character,
-                    scalar_index,
-                    "Cyrillic manuscript marks and abbreviations require an explicit diplomatic profile",
-                ));
-            }
-            output.push(character);
-            scalar_index += 1;
-            continue;
-        }
-        let mapping = cyrillic_to_glagolitic(character).ok_or_else(|| {
-            unrepresentable(
-                lemma.as_str(),
-                profile,
-                character,
-                scalar_index,
-                "the normalized OCS profile has no source-backed Glagolitic counterpart",
-            )
-        })?;
-        if let Some((kind, reason)) = mapping.loss {
-            record_or_reject_loss(
-                &mut losses,
-                loss_policy,
-                lemma.as_str(),
-                profile,
-                scalar_index,
-                character,
-                mapping.output,
-                kind,
-                reason,
-            )?;
-        }
-        output.push_str(mapping.output);
-        scalar_index += 1;
-    }
-
-    debug_assert_eq!(detect_script(&output), Script::Glagolitic);
-    Ok(transliterated(
-        lemma.as_str(),
-        output,
-        profile,
-        TransliterationDirection::CyrillicToGlagolitic,
-        losses,
-        "realize the complete word with the normalized Jagić Glagolitic profile",
-    ))
-}
-
-fn validate_existing_glagolitic(
-    input: &str,
-    profile: GlagoliticProfile,
-) -> Result<(), InflectionError> {
-    for (scalar_index, character) in input.chars().enumerate() {
-        if is_combining_mark(character) {
-            if is_cyrillic_specific_mark(character) || is_glagolitic_supplemental_mark(character) {
-                return Err(unrepresentable(
-                    input,
-                    profile,
-                    character,
-                    scalar_index,
-                    "Glagolitic superscripts and diplomatic breathing or abbreviation marks require an explicit diplomatic profile",
-                ));
-            }
-            continue;
-        }
-        if glagolitic_to_cyrillic(character).is_none() {
-            return Err(unrepresentable(
-                input,
-                profile,
-                character,
-                scalar_index,
-                "the character is outside the normalized Old Church Slavonic Glagolitic profile",
-            ));
-        }
-    }
-    Ok(())
+    glagolitic::realize_glagolitic(input, profile, loss_policy)
+        .map(TransliteratedForm::from_engine)
+        .map_err(from_glagolitic_error)
 }
 
 /// Transliterate normalized Glagolitic to the canonical Cyrillic choices of
@@ -403,625 +230,9 @@ pub fn transliterate_glagolitic_to_cyrillic(
     profile: GlagoliticProfile,
     loss_policy: TransliterationLossPolicy,
 ) -> Result<TransliteratedForm, InflectionError> {
-    let lemma = Lemma::parse(input)?;
-    if lemma.script() != Script::Glagolitic {
-        let character = lemma.as_str().chars().next().unwrap_or('\0');
-        return Err(unrepresentable(
-            lemma.as_str(),
-            profile,
-            character,
-            0,
-            "the reverse transliterator requires a Glagolitic word",
-        ));
-    }
-
-    let characters = lemma.as_str().chars().collect::<Vec<_>>();
-    let mut output = String::with_capacity(lemma.as_str().len());
-    let mut losses = Vec::new();
-    let mut scalar_index = 0;
-    while scalar_index < characters.len() {
-        if scalar_index + 1 < characters.len() {
-            match (characters[scalar_index], characters[scalar_index + 1]) {
-                ('Ⱏ', 'Ⰹ') => {
-                    output.push('Ꙑ');
-                    scalar_index += 2;
-                    continue;
-                }
-                ('ⱏ', 'ⰹ') => {
-                    output.push('ꙑ');
-                    scalar_index += 2;
-                    continue;
-                }
-                ('Ⱐ', 'Ⰹ') => {
-                    output.push('Ы');
-                    scalar_index += 2;
-                    continue;
-                }
-                ('ⱐ', 'ⰹ') => {
-                    output.push('ы');
-                    scalar_index += 2;
-                    continue;
-                }
-                _ => {}
-            }
-        }
-
-        let character = characters[scalar_index];
-        if is_combining_mark(character) {
-            if is_cyrillic_specific_mark(character) || is_glagolitic_supplemental_mark(character) {
-                return Err(unrepresentable(
-                    lemma.as_str(),
-                    profile,
-                    character,
-                    scalar_index,
-                    "Glagolitic superscripts and diplomatic breathing or abbreviation marks require an explicit expansion profile",
-                ));
-            }
-            output.push(character);
-            scalar_index += 1;
-            continue;
-        }
-        let mapping = glagolitic_to_cyrillic(character).ok_or_else(|| {
-            unrepresentable(
-                lemma.as_str(),
-                profile,
-                character,
-                scalar_index,
-                "the character is outside the normalized Old Church Slavonic Glagolitic profile",
-            )
-        })?;
-        if let Some((kind, reason)) = mapping.loss {
-            record_or_reject_loss(
-                &mut losses,
-                loss_policy,
-                lemma.as_str(),
-                profile,
-                scalar_index,
-                character,
-                mapping.output,
-                kind,
-                reason,
-            )?;
-        }
-        output.push_str(mapping.output);
-        scalar_index += 1;
-    }
-
-    debug_assert_eq!(detect_script(&output), Script::Cyrillic);
-    Ok(transliterated(
-        lemma.as_str(),
-        output,
-        profile,
-        TransliterationDirection::GlagoliticToCyrillic,
-        losses,
-        "transliterate normalized Glagolitic with the Jagić Cyrillic table",
-    ))
-}
-
-#[derive(Clone, Copy)]
-struct ScriptMapping {
-    output: &'static str,
-    loss: Option<(TransliterationLossKind, &'static str)>,
-}
-
-const fn direct(output: &'static str) -> ScriptMapping {
-    ScriptMapping { output, loss: None }
-}
-
-const fn lossy(
-    output: &'static str,
-    kind: TransliterationLossKind,
-    reason: &'static str,
-) -> ScriptMapping {
-    ScriptMapping {
-        output,
-        loss: Some((kind, reason)),
-    }
-}
-
-fn cyrillic_to_glagolitic(character: char) -> Option<ScriptMapping> {
-    let mapping = match character {
-        'А' => direct("Ⰰ"),
-        'а' => direct("ⰰ"),
-        'Б' => direct("Ⰱ"),
-        'б' => direct("ⰱ"),
-        'В' => direct("Ⰲ"),
-        'в' => direct("ⰲ"),
-        'Г' => direct("Ⰳ"),
-        'г' => direct("ⰳ"),
-        'Д' => direct("Ⰴ"),
-        'д' => direct("ⰴ"),
-        'Е' => direct("Ⰵ"),
-        'е' => direct("ⰵ"),
-        'Ж' => direct("Ⰶ"),
-        'ж' => direct("ⰶ"),
-        'Ѕ' => direct("Ⰷ"),
-        'ѕ' => direct("ⰷ"),
-        'З' => direct("Ⰸ"),
-        'з' => direct("ⰸ"),
-        'И' => direct("Ⰻ"),
-        'и' => direct("ⰻ"),
-        'Й' => direct("Ⰻ\u{306}"),
-        'й' => direct("ⰻ\u{306}"),
-        'І' => direct("Ⰹ"),
-        'і' => direct("ⰹ"),
-        'Ꙇ' => direct("Ⰺ"),
-        'ꙇ' => direct("ⰺ"),
-        'Ꙉ' => direct("Ⰼ"),
-        'ꙉ' => direct("ⰼ"),
-        'К' => direct("Ⰽ"),
-        'к' => direct("ⰽ"),
-        'Л' => direct("Ⰾ"),
-        'л' => direct("ⰾ"),
-        'М' => direct("Ⰿ"),
-        'м' => direct("ⰿ"),
-        'Н' => direct("Ⱀ"),
-        'н' => direct("ⱀ"),
-        'О' => direct("Ⱁ"),
-        'о' => direct("ⱁ"),
-        'П' => direct("Ⱂ"),
-        'п' => direct("ⱂ"),
-        'Р' => direct("Ⱃ"),
-        'р' => direct("ⱃ"),
-        'С' => direct("Ⱄ"),
-        'с' => direct("ⱄ"),
-        'Т' => direct("Ⱅ"),
-        'т' => direct("ⱅ"),
-        'Ꙋ' => direct("Ⱆ"),
-        'ꙋ' => direct("ⱆ"),
-        'Ф' => direct("Ⱇ"),
-        'ф' => direct("ⱇ"),
-        'Х' => direct("Ⱈ"),
-        'х' => direct("ⱈ"),
-        'Ѡ' => direct("Ⱉ"),
-        'ѡ' => direct("ⱉ"),
-        'Ц' => direct("Ⱌ"),
-        'ц' => direct("ⱌ"),
-        'Ч' => direct("Ⱍ"),
-        'ч' => direct("ⱍ"),
-        'Ш' => direct("Ⱎ"),
-        'ш' => direct("ⱎ"),
-        'Щ' => direct("Ⱋ"),
-        'щ' => direct("ⱋ"),
-        'Ъ' => direct("Ⱏ"),
-        'ъ' => direct("ⱏ"),
-        'Ꙑ' => direct("ⰟⰉ"),
-        'ꙑ' => direct("ⱏⰹ"),
-        'Ь' => direct("Ⱐ"),
-        'ь' => direct("ⱐ"),
-        'Ы' => direct("ⰠⰉ"),
-        'ы' => direct("ⱐⰹ"),
-        'Ѣ' => direct("Ⱑ"),
-        'ѣ' => direct("ⱑ"),
-        'Ю' => direct("Ⱓ"),
-        'ю' => direct("ⱓ"),
-        'Ѧ' => direct("Ⱔ"),
-        'ѧ' => direct("ⱔ"),
-        'Ѫ' => direct("Ⱘ"),
-        'ѫ' => direct("ⱘ"),
-        'Ѩ' => direct("Ⱗ"),
-        'ѩ' => direct("ⱗ"),
-        'Ѭ' => direct("Ⱙ"),
-        'ѭ' => direct("ⱙ"),
-        'Ѳ' => direct("Ⱚ"),
-        'ѳ' => direct("ⱚ"),
-        'Ѵ' => direct("Ⱛ"),
-        'ѵ' => direct("ⱛ"),
-        'Ѷ' => direct("Ⱛ\u{30f}"),
-        'ѷ' => direct("ⱛ\u{30f}"),
-
-        'Є' => lossy(
-            "Ⰵ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic ye and e have one normalized Glagolitic counterpart",
-        ),
-        'є' => lossy(
-            "ⰵ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic ye and e have one normalized Glagolitic counterpart",
-        ),
-        'Ї' => lossy(
-            "Ⰺ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic yi is a secondary allograph of initial izhe in Polivanova's Glagolitic transliteration table",
-        ),
-        'ї' => lossy(
-            "ⰺ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic yi is a secondary allograph of initial izhe in Polivanova's Glagolitic transliteration table",
-        ),
-        'У' => lossy(
-            "Ⱆ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic u and monograph uk have one normalized Glagolitic counterpart",
-        ),
-        'у' => lossy(
-            "ⱆ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic u and monograph uk have one normalized Glagolitic counterpart",
-        ),
-        'Ꙗ' => lossy(
-            "Ⰰ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "natural Cyrillic iotated a normalizes to non-iotated a because early Glagolitic has no matching iotated letter",
-        ),
-        'ꙗ' => lossy(
-            "ⰰ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "natural Cyrillic iotated a normalizes to non-iotated a because early Glagolitic has no matching iotated letter",
-        ),
-        'Ѥ' => lossy(
-            "Ⰵ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic iotated e has no distinct Glagolitic letter",
-        ),
-        'ѥ' => lossy(
-            "ⰵ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic iotated e has no distinct Glagolitic letter",
-        ),
-        'Ѻ' => lossy(
-            "Ⱁ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "round o and ordinary o share normalized Glagolitic onu",
-        ),
-        'ѻ' => lossy(
-            "ⱁ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "round o and ordinary o share normalized Glagolitic onu",
-        ),
-        'Ꙍ' => lossy(
-            "Ⱉ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "broad omega and omega share normalized Glagolitic ot",
-        ),
-        'ꙍ' => lossy(
-            "ⱉ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "broad omega and omega share normalized Glagolitic ot",
-        ),
-        'Ѿ' => lossy(
-            "ⰙⰕ",
-            TransliterationLossKind::CyrillicLetterExpansion,
-            "Cyrillic ot has no single Glagolitic counterpart",
-        ),
-        'ѿ' => lossy(
-            "ⱉⱅ",
-            TransliterationLossKind::CyrillicLetterExpansion,
-            "Cyrillic ot has no single Glagolitic counterpart",
-        ),
-        'Ѯ' => lossy(
-            "ⰍⰔ",
-            TransliterationLossKind::CyrillicLetterExpansion,
-            "Cyrillic xi expands to Glagolitic k-s",
-        ),
-        'ѯ' => lossy(
-            "ⰽⱄ",
-            TransliterationLossKind::CyrillicLetterExpansion,
-            "Cyrillic xi expands to Glagolitic k-s",
-        ),
-        'Ѱ' => lossy(
-            "ⰒⰔ",
-            TransliterationLossKind::CyrillicLetterExpansion,
-            "Cyrillic psi expands to Glagolitic p-s",
-        ),
-        'ѱ' => lossy(
-            "ⱂⱄ",
-            TransliterationLossKind::CyrillicLetterExpansion,
-            "Cyrillic psi expands to Glagolitic p-s",
-        ),
-        'Ꙁ' => lossy(
-            "Ⰸ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic zemlya variants share Glagolitic zemlja",
-        ),
-        'ꙁ' => lossy(
-            "ⰸ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic zemlya variants share Glagolitic zemlja",
-        ),
-        'Ꙃ' => lossy(
-            "Ⰷ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic dzelo variants share Glagolitic djelo",
-        ),
-        'ꙃ' => lossy(
-            "ⰷ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "Cyrillic dzelo variants share Glagolitic djelo",
-        ),
-        'Ꙙ' => lossy(
-            "Ⱔ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "closed little yus shares normalized Glagolitic small yus",
-        ),
-        'ꙙ' => lossy(
-            "ⱔ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "closed little yus shares normalized Glagolitic small yus",
-        ),
-        'Ꙝ' => lossy(
-            "Ⱗ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "iotated closed little yus shares normalized Glagolitic iotated small yus",
-        ),
-        'ꙝ' => lossy(
-            "ⱗ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "iotated closed little yus shares normalized Glagolitic iotated small yus",
-        ),
-        'Ꙩ' | 'Ꙫ' | 'Ꙭ' => lossy(
-            "Ⱁ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "ornamental o variants share normalized Glagolitic onu",
-        ),
-        'ꙩ' | 'ꙫ' | 'ꙭ' => lossy(
-            "ⱁ",
-            TransliterationLossKind::CyrillicVariantFold,
-            "ornamental o variants share normalized Glagolitic onu",
-        ),
-        _ => return None,
-    };
-    Some(mapping)
-}
-
-fn glagolitic_to_cyrillic(character: char) -> Option<ScriptMapping> {
-    let mapping = match character {
-        'Ⰰ' => direct("А"),
-        'ⰰ' => direct("а"),
-        'Ⰱ' => direct("Б"),
-        'ⰱ' => direct("б"),
-        'Ⰲ' => direct("В"),
-        'ⰲ' => direct("в"),
-        'Ⰳ' => direct("Г"),
-        'ⰳ' => direct("г"),
-        'Ⰴ' => direct("Д"),
-        'ⰴ' => direct("д"),
-        'Ⰵ' => direct("Е"),
-        'ⰵ' => direct("е"),
-        'Ⰶ' => direct("Ж"),
-        'ⰶ' => direct("ж"),
-        'Ⰷ' => direct("Ѕ"),
-        'ⰷ' => direct("ѕ"),
-        'Ⰸ' => direct("З"),
-        'ⰸ' => direct("з"),
-        'Ⰻ' => direct("И"),
-        'ⰻ' => direct("и"),
-        'Ⰹ' => direct("І"),
-        'ⰹ' => direct("і"),
-        'Ⰺ' => direct("Ꙇ"),
-        'ⰺ' => direct("ꙇ"),
-        'Ⰼ' => direct("Ꙉ"),
-        'ⰼ' => direct("ꙉ"),
-        'Ⰽ' => direct("К"),
-        'ⰽ' => direct("к"),
-        'Ⰾ' => direct("Л"),
-        'ⰾ' => direct("л"),
-        'Ⰿ' => direct("М"),
-        'ⰿ' => direct("м"),
-        'Ⱀ' => direct("Н"),
-        'ⱀ' => direct("н"),
-        'Ⱁ' => direct("О"),
-        'ⱁ' => direct("о"),
-        'Ⱂ' => direct("П"),
-        'ⱂ' => direct("п"),
-        'Ⱃ' => direct("Р"),
-        'ⱃ' => direct("р"),
-        'Ⱄ' => direct("С"),
-        'ⱄ' => direct("с"),
-        'Ⱅ' => direct("Т"),
-        'ⱅ' => direct("т"),
-        'Ⱆ' => direct("Ꙋ"),
-        'ⱆ' => direct("ꙋ"),
-        'Ⱇ' => direct("Ф"),
-        'ⱇ' => direct("ф"),
-        'Ⱈ' => direct("Х"),
-        'ⱈ' => direct("х"),
-        'Ⱉ' => direct("Ѡ"),
-        'ⱉ' => direct("ѡ"),
-        'Ⱌ' => direct("Ц"),
-        'ⱌ' => direct("ц"),
-        'Ⱍ' => direct("Ч"),
-        'ⱍ' => direct("ч"),
-        'Ⱎ' => direct("Ш"),
-        'ⱎ' => direct("ш"),
-        'Ⱋ' => direct("Щ"),
-        'ⱋ' => direct("щ"),
-        'Ⱏ' => direct("Ъ"),
-        'ⱏ' => direct("ъ"),
-        'Ⱐ' => direct("Ь"),
-        'ⱐ' => direct("ь"),
-        'Ⱑ' => direct("Ѣ"),
-        'ⱑ' => direct("ѣ"),
-        'Ⱓ' => direct("Ю"),
-        'ⱓ' => direct("ю"),
-        'Ⱔ' => direct("Ѧ"),
-        'ⱔ' => direct("ѧ"),
-        'Ⱘ' => direct("Ѫ"),
-        'ⱘ' => direct("ѫ"),
-        'Ⱗ' => direct("Ѩ"),
-        'ⱗ' => direct("ѩ"),
-        'Ⱙ' => direct("Ѭ"),
-        'ⱙ' => direct("ѭ"),
-        'Ⱚ' => direct("Ѳ"),
-        'ⱚ' => direct("ѳ"),
-        'Ⱛ' => direct("Ѵ"),
-        'ⱛ' => direct("ѵ"),
-        'Ⱊ' => lossy(
-            "П",
-            TransliterationLossKind::GlagoliticVariantFold,
-            "the character collides with ordinary Glagolitic pokoji and has disputed identity",
-        ),
-        'ⱊ' => lossy(
-            "п",
-            TransliterationLossKind::GlagoliticVariantFold,
-            "the character collides with ordinary Glagolitic pokoji and has disputed identity",
-        ),
-        'Ⱒ' => lossy(
-            "Х",
-            TransliterationLossKind::GlagoliticVariantFold,
-            "the rare character has no distinct Cyrillic analog",
-        ),
-        'ⱒ' => lossy(
-            "х",
-            TransliterationLossKind::GlagoliticVariantFold,
-            "the rare character has no distinct Cyrillic analog",
-        ),
-        'Ⱕ' => lossy(
-            "Ѧ",
-            TransliterationLossKind::GlagoliticVariantFold,
-            "small yus with tail is a graphical variant in this normalized profile",
-        ),
-        'ⱕ' => lossy(
-            "ѧ",
-            TransliterationLossKind::GlagoliticVariantFold,
-            "small yus with tail is a graphical variant in this normalized profile",
-        ),
-        _ => return None,
-    };
-    Some(mapping)
-}
-
-fn is_cyrillic_specific_mark(character: char) -> bool {
-    matches!(
-        u32::from(character),
-        0x0483 | 0x0485..=0x0489 | 0xa66f | 0xa67c..=0xa67d
-    )
-}
-
-fn is_glagolitic_supplemental_mark(character: char) -> bool {
-    (0x1e000..=0x1e02f).contains(&u32::from(character))
-}
-
-#[allow(clippy::too_many_arguments)]
-fn record_or_reject_sequence_loss(
-    losses: &mut Vec<TransliterationLoss>,
-    policy: TransliterationLossPolicy,
-    input: &str,
-    profile: GlagoliticProfile,
-    scalar_index: usize,
-    character: char,
-    source: &'static str,
-    replacement: &'static str,
-) -> Result<(), InflectionError> {
-    let reason = "the literal yer-plus-i sequence collides with one canonical yeri sequence in reverse transliteration";
-    if policy == TransliterationLossPolicy::Reject {
-        return Err(unrepresentable(
-            input,
-            profile,
-            character,
-            scalar_index,
-            reason,
-        ));
-    }
-    losses.push(TransliterationLoss {
-        scalar_index,
-        source: source.to_string(),
-        replacement: replacement.to_string(),
-        kind: TransliterationLossKind::CyrillicSequenceCollision,
-        reason,
-    });
-    Ok(())
-}
-
-#[allow(clippy::too_many_arguments)]
-fn record_or_reject_loss(
-    losses: &mut Vec<TransliterationLoss>,
-    policy: TransliterationLossPolicy,
-    input: &str,
-    profile: GlagoliticProfile,
-    scalar_index: usize,
-    character: char,
-    replacement: &'static str,
-    kind: TransliterationLossKind,
-    reason: &'static str,
-) -> Result<(), InflectionError> {
-    if policy == TransliterationLossPolicy::Reject {
-        return Err(unrepresentable(
-            input,
-            profile,
-            character,
-            scalar_index,
-            reason,
-        ));
-    }
-    losses.push(TransliterationLoss {
-        scalar_index,
-        source: character.to_string(),
-        replacement: replacement.to_string(),
-        kind,
-        reason,
-    });
-    Ok(())
-}
-
-fn unrepresentable(
-    input: &str,
-    profile: GlagoliticProfile,
-    character: char,
-    scalar_index: usize,
-    reason: impl Into<String>,
-) -> InflectionError {
-    InflectionError::UnrepresentableOrthography {
-        input: input.to_string(),
-        profile: profile.code(),
-        character,
-        scalar_index,
-        reason: reason.into(),
-    }
-}
-
-fn transliterated(
-    before: &str,
-    text: String,
-    profile: GlagoliticProfile,
-    direction: TransliterationDirection,
-    losses: Vec<TransliterationLoss>,
-    reason: &'static str,
-) -> TransliteratedForm {
-    let text = text.nfc().collect::<String>();
-    let fidelity = if losses.is_empty() {
-        TransliterationFidelity::Reversible
-    } else {
-        TransliterationFidelity::LossReported
-    };
-    TransliteratedForm {
-        trace: vec![RuleStep {
-            rule_id: RuleId::OrthographyGlagoliticJagic,
-            before: before.to_string(),
-            after: text.clone(),
-            reason,
-        }],
-        text,
-        profile,
-        direction,
-        fidelity,
-        losses,
-    }
-}
-
-fn validate(input: &str) -> Result<(), InflectionError> {
-    if input.is_empty() {
-        return Err(InflectionError::InvalidInput {
-            reason: "the lemma is empty".to_string(),
-        });
-    }
-    if input.chars().count() > MAX_INPUT_CHARS {
-        return Err(InflectionError::InvalidInput {
-            reason: format!("the lemma exceeds {MAX_INPUT_CHARS} Unicode scalar values"),
-        });
-    }
-    if input.chars().any(char::is_control) {
-        return Err(InflectionError::InvalidInput {
-            reason: "control characters are not allowed".to_string(),
-        });
-    }
-    if input.chars().any(char::is_whitespace) {
-        return Err(InflectionError::InvalidInput {
-            reason: "the word-level API does not accept whitespace".to_string(),
-        });
-    }
-    Ok(())
+    glagolitic::transliterate_glagolitic_to_cyrillic(input, profile, loss_policy)
+        .map(TransliteratedForm::from_engine)
+        .map_err(from_glagolitic_error)
 }
 
 #[cfg(test)]
