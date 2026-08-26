@@ -106,6 +106,33 @@ pub struct PronominalFamilySpec {
     pub direct_to: Option<DirectToTreatment>,
 }
 
+/// Compose one surface text of a §316 derived pronominal family from its
+/// inflected base text and the explicitly selected bound formatives. This is
+/// the pure text-level composition shared by the phrase-building facade and
+/// direct kernel callers; it performs no spec validation.
+pub fn compose_pronominal_family_text(
+    text: &str,
+    prefix: Option<PronominalPrefix>,
+    postpositive: Option<PronominalPostpositive>,
+    direct_to: Option<DirectToTreatment>,
+) -> Result<String, InflectionError> {
+    let stem = match direct_to {
+        Some(DirectToTreatment::Drop) => {
+            text.strip_suffix("то")
+                .ok_or_else(|| InflectionError::InvalidInput {
+                    reason: format!("cannot drop direct-case -то from {text:?}"),
+                })?
+        }
+        Some(DirectToTreatment::Retain) | None => text,
+    };
+    Ok(format!(
+        "{}{}{}",
+        prefix.map_or("", |value| value.text()),
+        stem,
+        postpositive.map_or("", |value| value.text())
+    ))
+}
+
 /// The regular pronominal declensions conventionally grouped as OCS class
 /// `2/p`. `J` identifies possessives such as `мои`, whose citation `-и` is the
 /// surface result of a stem-final *j* rather than a soft consonant ending.

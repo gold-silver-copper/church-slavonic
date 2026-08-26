@@ -10,7 +10,6 @@ rust-version.workspace = true
 
 [dependencies]
 church-slavonic-core.workspace = true
-old-church-slavonic.workspace = true
 old-church-slavonic-core.workspace = true
 
 [lints]

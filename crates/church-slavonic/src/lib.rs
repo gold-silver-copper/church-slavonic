@@ -148,7 +148,6 @@
 //! its cells are served by [`pronoun`]. `етеръ` (no reviewed kernel) and
 //! `Єѵрѡпа` are served entirely from the residue table verbatim.
 
-use old_church_slavonic::{FormSet, phrases};
 use old_church_slavonic_core::adjective::AdjectiveLexeme;
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::unique_noun::UniqueNounFamilyMember;
@@ -158,11 +157,12 @@ use old_church_slavonic_core::{
     CardinalNumeralIdentity, FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation,
     ImperfectFormation, ImperfectVariantPolicy, InterrogativePronounIdentity,
     IrregularAgreeingIdentity, IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass,
-    NumberRestriction, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell, ParticipleKind,
-    PastActiveParticipleFormation, PastPassiveParticipleFormation, PersonalPronounIdentity,
-    PresentActiveParticipleFormation, PresentFormation, PresentPassiveParticipleFormation,
-    PronominalFamilySpec, PronominalPrefix, PronounFormSelection, StandardPronominalIdentity,
-    TwofoldNounFamilyMember, UniqueVerbFamilyMember, VerbAspect, VerbClass, orthography,
+    NumberRestriction, NumeralCell, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell,
+    ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation,
+    PersonalPronounIdentity, PresentActiveParticipleFormation, PresentFormation,
+    PresentPassiveParticipleFormation, PronominalPrefix, PronounFormSelection,
+    StandardPronominalIdentity, TwofoldNounFamilyMember, UniqueVerbFamilyMember, VerbAspect,
+    VerbClass, numeral, orthography, pronoun,
 };
 
 pub use church_slavonic_core::grammar::{Case, Gender, Number, Person};
@@ -1147,11 +1147,14 @@ pub fn closed_meta(lemma: &str) -> Option<(u8, u8)> {
         })
 }
 
-fn closed_form_set(
-    result: Result<FormSet, old_church_slavonic::InflectionError>,
-) -> Option<Vec<String>> {
-    let set = result.ok()?;
-    Some(set.variants().map(|variant| variant.text.clone()).collect())
+fn closed_pronoun_texts(variants: Vec<pronoun::PronounVariant>) -> Option<Vec<String>> {
+    if variants.is_empty() {
+        return None;
+    }
+    variants
+        .into_iter()
+        .map(|variant| orthography::canonical_display(variant.text).ok())
+        .collect()
 }
 
 /// Rule-kernel prediction for one closed-class cell: the reviewed identity
@@ -1176,18 +1179,17 @@ pub fn kernel_closed_variants(
         let (None, Some(gender)) = (person, gender) else {
             return None;
         };
-        return closed_form_set(old_church_slavonic::regular_pronominal(
-            identity, case, number, gender,
-        ));
+        let form = pronoun::decline_standard_pronominal(identity, case, number, gender).ok()?;
+        return Some(vec![orthography::canonical_display(&form.text).ok()?]);
     }
     match part_of_speech {
         PartOfSpeech::Pronoun => {
             if let Some(identity) = PersonalPronounIdentity::classify_source_union_lemma(lemma) {
-                let result = match identity {
+                let variants = match identity {
                     PersonalPronounIdentity::First | PersonalPronounIdentity::Second => {
                         match (person, gender, identity.person()) {
                             (Some(requested), None, Some(intrinsic)) if requested == intrinsic => {
-                                old_church_slavonic::personal_pronoun_with(
+                                pronoun::personal_forms(
                                     identity,
                                     case,
                                     number,
@@ -1199,40 +1201,43 @@ pub fn kernel_closed_variants(
                     }
                     PersonalPronounIdentity::Reflexive => {
                         if person.is_none() && gender.is_none() {
-                            old_church_slavonic::reflexive_pronoun(case, PronounFormSelection::All)
+                            pronoun::reflexive_forms(case, PronounFormSelection::All)
                         } else {
                             return None;
                         }
                     }
                     PersonalPronounIdentity::AnaphoricThird => match (person, gender) {
-                        (None, Some(gender)) => old_church_slavonic::anaphoric_pronoun(
+                        (None, Some(gender)) => pronoun::anaphoric_form(
                             case,
                             number,
                             gender,
                             AnaphoricEnvironment::Free,
-                        ),
+                        )
+                        .into_iter()
+                        .collect(),
                         _ => return None,
                     },
                 };
-                return closed_form_set(result);
+                return closed_pronoun_texts(variants);
             }
             match lemma {
                 "иже" => {
                     let (None, Some(gender)) = (person, gender) else {
                         return None;
                     };
-                    closed_form_set(old_church_slavonic::relative_pronoun(
+                    let text = pronoun::relative_izhe_form(
                         case,
                         number,
                         gender,
                         AnaphoricEnvironment::Free,
-                    ))
+                    )?;
+                    Some(vec![orthography::canonical_display(&text).ok()?])
                 }
                 "сь" => {
                     let (None, Some(gender)) = (person, gender) else {
                         return None;
                     };
-                    closed_form_set(old_church_slavonic::irregular_agreeing(
+                    closed_pronoun_texts(pronoun::irregular_agreeing_forms(
                         IrregularAgreeingIdentity::ProximalSi,
                         case,
                         number,
@@ -1248,23 +1253,21 @@ pub fn kernel_closed_variants(
                     } else {
                         InterrogativePronounIdentity::Kto
                     };
-                    let base = old_church_slavonic::interrogative_pronoun(identity, case).ok()?;
+                    let base = closed_pronoun_texts(pronoun::interrogative_forms(identity, case))?;
                     if lemma == "никъто" {
-                        let phrase = phrases::pronominal_family_with(
-                            base,
-                            case,
-                            PronominalFamilySpec {
-                                prefix: Some(PronominalPrefix::Ni),
-                                ..PronominalFamilySpec::default()
-                            },
-                        )
-                        .ok()?;
-                        let [token] = phrase.tokens() else {
-                            return None;
-                        };
-                        closed_form_set(Ok(token.forms.clone()))
+                        base.into_iter()
+                            .map(|text| {
+                                pronoun::compose_pronominal_family_text(
+                                    &text,
+                                    Some(PronominalPrefix::Ni),
+                                    None,
+                                    None,
+                                )
+                                .ok()
+                            })
+                            .collect()
                     } else {
-                        closed_form_set(Ok(base))
+                        Some(base)
                     }
                 }
                 _ => None,
@@ -1275,7 +1278,7 @@ pub fn kernel_closed_variants(
                 let (None, Some(gender)) = (person, gender) else {
                     return None;
                 };
-                closed_form_set(old_church_slavonic::irregular_agreeing(
+                closed_pronoun_texts(pronoun::irregular_agreeing_forms(
                     IrregularAgreeingIdentity::InterrogativeKyi,
                     case,
                     number,
@@ -1290,9 +1293,23 @@ pub fn kernel_closed_variants(
                 return None;
             }
             if let Some(identity) = CardinalNumeralIdentity::classify_source_union_lemma(lemma) {
-                return closed_form_set(old_church_slavonic::cardinal_numeral_identity(
-                    identity, case, number, gender,
-                ));
+                let variants = numeral::decline_cardinal(
+                    identity,
+                    NumeralCell {
+                        case,
+                        number,
+                        gender,
+                    },
+                )
+                .ok()?;
+                let mut texts: Vec<String> = Vec::new();
+                for variant in variants {
+                    let text = orthography::canonical_display(&variant.prediction.text).ok()?;
+                    if !texts.contains(&text) {
+                        texts.push(text);
+                    }
+                }
+                return (!texts.is_empty()).then_some(texts);
             }
             // Ordinal registry cells merge the short and long adjectival
             // series into one gendered cell; both come from the reviewed
@@ -1301,18 +1318,24 @@ pub fn kernel_closed_variants(
             let gender = gender?;
             let mut texts: Vec<String> = Vec::new();
             for form in [AdjectiveForm::Short, AdjectiveForm::Long] {
-                let set = old_church_slavonic::ordinal_numeral_identity(
+                let variants = numeral::decline_ordinal(
                     identity,
-                    form,
-                    case,
-                    number,
-                    gender,
-                    Animacy::Inanimate,
+                    AdjectiveCell {
+                        case,
+                        number,
+                        gender,
+                        animacy: Animacy::Inanimate,
+                        form,
+                    },
                 )
                 .ok()?;
-                for text in set.texts() {
-                    if !texts.iter().any(|t| t == text) {
-                        texts.push(text.to_string());
+                if variants.is_empty() {
+                    return None;
+                }
+                for variant in variants {
+                    let text = orthography::canonical_display(&variant.prediction.text).ok()?;
+                    if !texts.contains(&text) {
+                        texts.push(text);
                     }
                 }
             }
@@ -1334,11 +1357,10 @@ pub fn closed_variants(
     gender: Option<Gender>,
     person: Option<Person>,
 ) -> Result<Vec<String>, Error> {
-    let code = closed_cell_code(case, number, gender, person).ok_or_else(|| {
-        Error::Underdetermined {
+    let code =
+        closed_cell_code(case, number, gender, person).ok_or_else(|| Error::Underdetermined {
             lemma: lemma.to_string(),
-        }
-    })?;
+        })?;
     if let Ok(index) =
         generated::CLOSED_RESIDUE.binary_search_by(|row| (row.0, row.1).cmp(&(lemma, code)))
     {
@@ -1386,7 +1408,11 @@ pub fn pronoun_variants(person: Person, number: Number, case: Case) -> Result<Ve
 
 /// The primary surface form for one personal-pronoun cell.
 pub fn pronoun(person: Person, number: Number, case: Case) -> Result<String, Error> {
-    let lemma = if person == Person::First { "азъ" } else { "тꙑ" };
+    let lemma = if person == Person::First {
+        "азъ"
+    } else {
+        "тꙑ"
+    };
     primary(pronoun_variants(person, number, case)?, lemma)
 }
 
@@ -1422,14 +1448,7 @@ pub fn anaphoric_variants(
     number: Number,
     gender: Gender,
 ) -> Result<Vec<String>, Error> {
-    closed_variants(
-        "и",
-        PartOfSpeech::Pronoun,
-        case,
-        number,
-        Some(gender),
-        None,
-    )
+    closed_variants("и", PartOfSpeech::Pronoun, case, number, Some(gender), None)
 }
 
 /// The primary surface form for one third-person (anaphoric) pronoun cell.
@@ -1531,7 +1550,10 @@ pub fn determiner_form(
     number: Number,
     gender: Gender,
 ) -> Result<String, Error> {
-    primary(determiner_form_variants(lemma, case, number, gender)?, lemma)
+    primary(
+        determiner_form_variants(lemma, case, number, gender)?,
+        lemma,
+    )
 }
 
 #[cfg(test)]
@@ -1677,7 +1699,12 @@ mod tests {
         // parameter (десѧть's genitive singular is the same either way).
         assert_eq!(
             numeral_form("десѧть", Case::Genitive, Number::Singular, Gender::Feminine),
-            numeral_form("десѧть", Case::Genitive, Number::Singular, Gender::Masculine),
+            numeral_form(
+                "десѧть",
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine
+            ),
         );
     }
 
@@ -1685,13 +1712,16 @@ mod tests {
     fn closed_class_residue_and_shape_errors() {
         // етеръ has no reviewed kernel: its attested cells come verbatim
         // from the residue table (gender ignored, bare shape).
-        assert!(
-            pronoun_form("етеръ", Case::Nominative, Number::Singular, Gender::Neuter).is_ok()
-        );
+        assert!(pronoun_form("етеръ", Case::Nominative, Number::Singular, Gender::Neuter).is_ok());
         // вашь attests only the duplicated person-indexed table, so the
         // lemma-keyed pronoun_form cannot address it.
         assert!(matches!(
-            pronoun_form("вашь", Case::Nominative, Number::Singular, Gender::Masculine),
+            pronoun_form(
+                "вашь",
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine
+            ),
             Err(Error::Underdetermined { .. })
         ));
         assert_eq!(

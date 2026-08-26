@@ -207,21 +207,12 @@ fn compose_pronominal_token(
     direct_to: Option<DirectToTreatment>,
 ) -> Result<FormSet, InflectionError> {
     let transform = |text: &str| -> Result<String, InflectionError> {
-        let stem = match direct_to {
-            Some(DirectToTreatment::Drop) => {
-                text.strip_suffix("то")
-                    .ok_or_else(|| InflectionError::InvalidInput {
-                        reason: format!("cannot drop direct-case -то from {text:?}"),
-                    })?
-            }
-            Some(DirectToTreatment::Retain) | None => text,
-        };
-        Ok(format!(
-            "{}{}{}",
-            prefix.map_or("", |value| value.text()),
-            stem,
-            postpositive.map_or("", |value| value.text())
-        ))
+        old_church_slavonic_core::pronoun::compose_pronominal_family_text(
+            text,
+            prefix,
+            postpositive,
+            direct_to,
+        )
     };
     let lemma = transform(base.lemma())?;
     let variants = base
