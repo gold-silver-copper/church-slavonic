@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "crates/church-slavonic",
     "crates/church-slavonic-core",
     "crates/old-church-slavonic-core",
     "crates/old-church-slavonic",
@@ -21,6 +22,7 @@ repository = "https://github.com/gold-silver-copper/church-slavonic"
 rust-version = "1.85"
 
 [workspace.dependencies]
+church-slavonic = { path = "crates/church-slavonic", version = "0.1.0" }
 church-slavonic-core = { path = "crates/church-slavonic-core", version = "0.1.0" }
 old-church-slavonic = { path = "crates/old-church-slavonic", version = "0.5.0" }
 old-church-slavonic-core = { path = "crates/old-church-slavonic-core", version = "0.4.0" }

@@ -61,8 +61,17 @@ pub(crate) fn run(
     args: &mut impl Iterator<Item = String>,
     root: &Path,
 ) -> Result<(), Box<dyn Error>> {
-    if let Some(extra) = args.next() {
-        return Err(format!("rewrite-derivability takes no arguments, found {extra}").into());
+    match args.next().as_deref() {
+        None => {}
+        Some("--emit-residue") => {
+            if let Some(extra) = args.next() {
+                return Err(format!("--emit-residue takes no arguments, found {extra}").into());
+            }
+            return crate::rewrite_pilot::emit_residue(root);
+        }
+        Some(extra) => {
+            return Err(format!("rewrite-derivability takes no arguments, found {extra}").into());
+        }
     }
     let registry = load_registry(&root.join("data/extracted"))?;
     let grouped = crate::grouped_forms(&registry);
