@@ -1,6 +1,6 @@
 [package]
 name = "church-slavonic-dictionary"
-version = "0.1.0"
+version = "0.2.0"
 description = "Optional Church Slavonic dictionary for the rewrite pilot: sense lookup, glosses, and paradigm-inverting lemmatization over the church-slavonic facade"
 authors.workspace = true
 edition.workspace = true
@@ -14,6 +14,7 @@ include = ["src/**", "generated/**", "README.md"]
 church-slavonic.workspace = true
 church-slavonic-core.workspace = true
 old-church-slavonic-core.workspace = true
+church-slavonic-orthography.workspace = true
 
 [lints]
 workspace = true

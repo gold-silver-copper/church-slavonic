@@ -205,3 +205,30 @@ except where noted:
    lint, `cargo public-api` diff review), the old crate families are deleted
    from the workspace and `v1.0.0-alpha` is tagged. The deprecated releases
    remain on crates.io as the migration bridge.
+
+---
+
+## Merge phase 5, slice 1 (2026-08-26): the recension dimension
+
+`church-slavonic` 0.3.0 (unpublished) gains the recension axis per
+`docs/UNIFIED_FACADE.md`: `recension(Recension) -> RecensionScope`, a
+scoped handle resolving lemmas through the shared identity table
+(abstract keys authoritative, native keys still working) and realizing
+nouns, adjectives, the finite tenses, the imperative, the l-participle,
+and the infinitive in either attested recension, each with `_variants`
+and paradigm-enumeration companions. The OCS free functions are unchanged
+and are the delegation target of the OCS scope. Typed errors:
+`UnsupportedRecension`, `UnidentifiedLemma`, `NotInRecension`.
+
+`church-slavonic-dictionary` 0.2.0 (unpublished) gains `lookup_in` /
+`RecensionSense` (senses reachable across recensions via the identity
+table, marked with their provenance recension) and `lemmatize_in` /
+`RecensionReading` (recension-tagged readings; the Synodal index inverts
+the facade's Synodal-scope paradigm enumeration, accent-blind).
+
+Still with the old names (dispositions above unchanged):
+`synodal-church-slavonic`'s phrase/numeral/orthography surfaces, the
+closed classes, the supine/verbal-noun/participle recension routes, and —
+last of all — `synodal-church-slavonic-dictionary`'s `Inflector`-backed
+analyze layer, blocked by the accent asymmetry and the gap burn-down
+state (`docs/UNIFIED_FACADE.md` §5 has the merge order).

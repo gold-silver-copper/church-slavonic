@@ -237,6 +237,10 @@ pub use paradigm::{
     participle_paradigm, pronoun_form_paradigm, verb_paradigm,
 };
 
+mod recension_scope;
+pub use church_slavonic_core::identity::{IdentityEntry, IdentityRegistry};
+pub use recension_scope::{Recension, RecensionScope, identity_registry, recension};
+
 mod generated {
     include!(concat!(
         env!("CARGO_MANIFEST_DIR"),
@@ -278,6 +282,16 @@ pub enum Error {
     /// defect). Attested cells never reach this arm; it marks unattested
     /// requests the rules cannot commit to.
     Underdetermined { lemma: String },
+    /// The requested recension is not one the facade serves
+    /// (only the two attested recensions are; docs/UNIFIED_FACADE.md §1).
+    UnsupportedRecension { recension: Recension },
+    /// The lemma resolves neither through the shared identity table nor as
+    /// a native key of the requested recension (docs/UNIFIED_FACADE.md §2).
+    UnidentifiedLemma { lemma: String, recension: Recension },
+    /// The abstract identity is known, but it carries no citation surface /
+    /// native handle in the requested recension (reserved for partial,
+    /// projection-seeded identities; docs/UNIFIED_FACADE.md §2).
+    NotInRecension { lemma: String, recension: Recension },
 }
 
 impl std::fmt::Display for Error {
@@ -289,6 +303,21 @@ impl std::fmt::Display for Error {
             }
             Error::UnsupportedPhrase { reason } => {
                 write!(f, "unsupported analytic construction: {reason}")
+            }
+            Error::UnsupportedRecension { recension } => {
+                write!(f, "unsupported recension {recension:?}")
+            }
+            Error::UnidentifiedLemma { lemma, recension } => {
+                write!(
+                    f,
+                    "lemma `{lemma}` is unidentified in recension {recension:?}"
+                )
+            }
+            Error::NotInRecension { lemma, recension } => {
+                write!(
+                    f,
+                    "lemma `{lemma}` has no citation surface in recension {recension:?}"
+                )
             }
             Error::ValueOutOfRange { value } => {
                 write!(

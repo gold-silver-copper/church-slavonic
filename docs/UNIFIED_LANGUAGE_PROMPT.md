@@ -198,3 +198,22 @@ rate, divergence count by POS and by suspected layer), and the
 recommendation at the decision point. Later phases: the named-divergence
 registry size as it evolves, oracle deltas (should be zero), and the
 crate-consolidation state.
+
+## Execution state
+
+- Phase 1 — done (`reports/projection-study.md`, commit 9afdab7); the
+  decision point passed on the numbers.
+- Phase 2 — done (identity layer + `Recension` in the kernel, commit
+  7f00e9f; `docs/UNIFIED_IDENTITY.md`).
+- Phase 3 — done (correspondence rules promoted into
+  `church-slavonic-orthography::projection`, commit 6a083ea).
+- Phase 4 — done (all five POS kernels merged into `church-slavonic-core`
+  with the named-divergence registry, commits d4b89e0..c204d4f).
+- Phase 5 — in progress. Slice 1 landed: `docs/UNIFIED_FACADE.md` (the
+  scoped-handle decision), the `church-slavonic` 0.3.0 recension scope
+  over the identity table, and the `church-slavonic-dictionary` 0.2.0
+  recension-aware readings/senses. Remaining: closed classes, phrases,
+  supine/verbal-noun/participle recension routes, and the analyze-layer
+  merge (last; see `docs/UNIFIED_FACADE.md` §5 for the blockers), then the
+  deprecation releases of the `synodal-church-slavonic*` names.
+- Phase 6 — not started.

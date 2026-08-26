@@ -1,6 +1,6 @@
 [package]
 name = "church-slavonic"
-version = "0.2.0"
+version = "0.3.0"
 description = "Church Slavonic inflection facade: rule kernel plus compact irregular residue tables"
 authors.workspace = true
 edition.workspace = true
@@ -13,6 +13,7 @@ rust-version.workspace = true
 [dependencies]
 church-slavonic-core.workspace = true
 old-church-slavonic-core.workspace = true
+synodal-church-slavonic.workspace = true
 
 [lints]
 workspace = true
