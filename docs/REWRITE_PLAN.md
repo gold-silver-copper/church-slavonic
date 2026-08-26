@@ -119,6 +119,15 @@ Hard rules for the target:
   2,083 cells, 473/707 verbs fully rules-backed. Total pilot generated
   data: 964 KB — inside the english-crate silhouette.
 
+- 2026-08-26 — Homograph policy resolved per the english scheme: per-lexeme
+  suffixed keys (bare/_2) assigned by a pure inventory sort, no lockfile;
+  all oracles now gate per lexeme at 100% (nouns 41,566; verbs 13,260).
+  Full check-structure passes with the pilot gates included. Remaining
+  major items: the new crate's README + deprecation map (in flight),
+  paradigm enumeration / phrases / dictionary-analyze layers on the new
+  facade, the synodal-family counterpart, and the phase-5 deprecation
+  release.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
