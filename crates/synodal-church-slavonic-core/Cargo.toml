@@ -1,6 +1,6 @@
 [package]
 name = "synodal-church-slavonic-core"
-version = "0.5.0"
+version = "0.6.0"
 description = "Pure morphology and orthography primitives for Synodal Russian Church Slavonic"
 authors.workspace = true
 edition.workspace = true

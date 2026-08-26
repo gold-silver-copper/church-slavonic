@@ -1,6 +1,6 @@
 [package]
 name = "synodal-church-slavonic-dictionary"
-version = "0.5.1"
+version = "0.6.0"
 description = "Semantic lookup and morphological analysis for Synodal Russian Church Slavonic"
 authors.workspace = true
 edition.workspace = true
