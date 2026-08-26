@@ -1,6 +1,6 @@
 [package]
 name = "synodal-church-slavonic-dictionary"
-version = "0.5.0"
+version = "0.5.1"
 description = "Semantic lookup and morphological analysis for Synodal Russian Church Slavonic"
 authors.workspace = true
 edition.workspace = true
@@ -10,6 +10,7 @@ rust-version.workspace = true
 readme = "README.md"
 include = [
     "Cargo.toml",
+    "build.rs",
     "README.md",
     "ATTRIBUTION.md",
     "LICENSE-*",

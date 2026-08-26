@@ -34,7 +34,7 @@ old-church-slavonic-dictionary = { path = "crates/old-church-slavonic-dictionary
 old-church-slavonic-extractor = { path = "crates/old-church-slavonic-extractor", version = "0.1.0" }
 synodal-church-slavonic = { path = "crates/synodal-church-slavonic", version = "0.5.0" }
 synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core", version = "0.5.0" }
-synodal-church-slavonic-dictionary = { path = "crates/synodal-church-slavonic-dictionary", version = "0.5.0" }
+synodal-church-slavonic-dictionary = { path = "crates/synodal-church-slavonic-dictionary", version = "0.5.1" }
 synodal-church-slavonic-extractor = { path = "crates/synodal-church-slavonic-extractor", version = "0.1.0" }
 quick-xml = "0.37.5"
 calamine = "0.28.0"
