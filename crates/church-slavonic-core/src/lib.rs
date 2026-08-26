@@ -18,6 +18,9 @@ pub mod noun_consonant;
 pub mod numeral;
 pub mod pronoun;
 pub mod recension;
+pub mod verb;
+pub mod verb_participle;
+pub mod verb_past;
 
 pub use identity::{IdentityEntry, IdentityRegistry};
 pub use recension::Recension;

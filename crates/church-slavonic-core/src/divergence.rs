@@ -28,7 +28,8 @@ pub struct NamedDivergence {
 
 /// Named divergences encoded by the merged POS kernels (`crate::pronoun`,
 /// `crate::determiner`, `crate::numeral`, `crate::adjective`, `crate::noun`,
-/// `crate::noun_consonant`). Later POS merges append their own entries.
+/// `crate::noun_consonant`, `crate::verb`, `crate::verb_past`,
+/// `crate::verb_participle`).
 pub const NAMED: &[NamedDivergence] = &[
     NamedDivergence {
         id: "pron:instr-loc-sg-jer",
@@ -458,6 +459,146 @@ pub const NAMED: &[NamedDivergence] = &[
                   follows noun:soft-direct-plural-leveling.",
         evidence: "Alypy §37 agent rows vs Polivanova's 2/m* class.",
     },
+    NamedDivergence {
+        id: "verb:dual-first-person-va",
+        summary: "The first-person dual ending re-vocalizes across every \
+                  finite system: OCS -вѣ (несевѣ, ивѣ, ховѣ, оховѣ, ѥсвѣ) \
+                  against Synodal -ва (несева, ива, хова, охова, єсва); no \
+                  declared projection rule relates ѣ and а. In the copula \
+                  the -вѣ archaism survives as the ordered Synodal \
+                  normative variant.",
+        evidence: "Alypy §§80, 86–87, 93 and the §81 copula dual rows \
+                   (with their -вѣ normative variants in \
+                   data/synodal/exact_forms.tsv) vs Polivanova §§412–424 \
+                   and UT OCS Online §24.",
+    },
+    NamedDivergence {
+        id: "verb:dual-third-person-leveling",
+        summary: "OCS keeps a distinct third dual (-те: несете, ите, \
+                  шете, осте, бѫдете) against the second dual (-та); \
+                  Synodal levels the third dual to the second-dual shape \
+                  (-та/-ста/-оста) in every finite system, with the \
+                  ѣ-grade doublets co-listed in the copula.",
+        evidence: "Alypy §§80, 86–87 person tables (one shared dual row \
+                   for 2nd/3rd) vs Polivanova's distinct 3du terminals; \
+                   the §81 copula tables.",
+    },
+    NamedDivergence {
+        id: "verb:imperfect-contraction",
+        summary: "The OCS uncontracted imperfect markers -ѣа- and the \
+                  iotated -ѣꙗ-/-аꙗ- contract into the Synodal -ѧ- (Alypy \
+                  §87 -ѧхъ series): бѣаше-type ~ бѧше-type. Contraction \
+                  is not a character-level fold, so the marker is a \
+                  morphological recension condition; the plain -аа- ~ -а- \
+                  and -а- ~ -∅- pairs are realization because the OCS \
+                  contracted variants match the Synodal grade exactly.",
+        evidence: "Polivanova §§425–432 uncontracted/contracted variant \
+                   pairs vs Alypy §87, which prints only the contracted \
+                   grades.",
+    },
+    NamedDivergence {
+        id: "verb:imperfect-hardening",
+        summary: "The imperfect dual/plural personal endings re-inventory: \
+                  OCS ш-series -шета/-шете (2du/3du and 2pl) against the \
+                  Synodal aorist-shaped -ста/-сте.",
+        evidence: "Alypy §87 imperfect table vs Polivanova §§425–432 and \
+                   UT OCS Online §24.2.",
+    },
+    NamedDivergence {
+        id: "verb:aorist-inventory",
+        summary: "The aorist formation inventories differ: the OCS root \
+                  (asigmatic) aorist and the first sigmatic -с- aorist \
+                  have no Synodal counterpart (Alypy keeps only the \
+                  х-/ох- series), while the Synodal closed ꙗти/начати/ \
+                  вити/пити/клѧти list adds the ordered -тъ / bare-stem \
+                  second/third-singular doublet absent from OCS.",
+        evidence: "Polivanova §§433–445 formation inventory vs Alypy §86, \
+                   including its -тъ list.",
+    },
+    NamedDivergence {
+        id: "verb:aorist-third-plural-a-grade",
+        summary: "The aorist third plural levels the small yus to а after \
+                  the sibilant: OCS -шѧ/-ошѧ (and copula бѣшѧ, бꙑшѧ) \
+                  against Synodal -ша/-оша (бѣша, быша); no declared \
+                  projection rule takes ѧ to а.",
+        evidence: "Alypy §86 and the §81 copula tables vs Polivanova's \
+                   -шѧ terminals.",
+    },
+    NamedDivergence {
+        id: "verb:imperative-vowel-grade",
+        summary: "The first-conjugation imperative re-grades outside the \
+                  shared -и singular: OCS yat-series -ѣвѣ/-ѣта/-ѣмъ/-ѣте \
+                  against Synodal -ева/-ита/-емъ/-ите (е-grade in the \
+                  first person, generalized и in the second), and Synodal \
+                  adds the contracted j-series (-й, -йте) on vowel-final \
+                  stems with no OCS counterpart.",
+        evidence: "Alypy §93 imperative tables vs Polivanova §§446–452 \
+                   yat-series terminals.",
+    },
+    NamedDivergence {
+        id: "verb:l-participle-leveling",
+        summary: "The l-participle agreement endings level: OCS gendered \
+                  plurals -ли/-лꙑ/-ла and feminine/neuter dual -лѣ \
+                  against the Synodal uniform plural -ли and dual \
+                  -ла/-ли.",
+        evidence: "Alypy §§97, 104 l-participle rows vs Polivanova's \
+                   resultative table.",
+    },
+    NamedDivergence {
+        id: "verb:present-active-nominative-contraction",
+        summary: "The present-active masculine nominative-singular edge \
+                  reshapes: OCS -ꙑ/-ѩ (несꙑ, знаѩ) against the Synodal \
+                  contracted -ый/-ѧ with the retained uncontracted \
+                  -ꙋщь/-ющь/-ѧщь prints as ordered variants (несый ‖ \
+                  несꙋщь); the past-active edge likewise co-lists the \
+                  retained -шъ/-вшъ prints beside the shared -ъ/-въ.",
+        evidence: "Alypy §§95–96, 98 citation rows vs Polivanova \
+                   §§453–470 participle nominatives.",
+    },
+    NamedDivergence {
+        id: "verb:copula-third-person-soft-t",
+        summary: "The copula's third-person endings soften: OCS ѥстъ and \
+                  сѫтъ against Synodal єсть and сꙋть; the jer rules keep \
+                  a final jer but cannot turn ъ into ь.",
+        evidence: "Alypy §81 vs UT OCS Online §24.1 and Polivanova \
+                   §§538–542.",
+    },
+    NamedDivergence {
+        id: "verb:copula-first-plural-my",
+        summary: "The copula's first plural reshapes: OCS ѥсмъ against \
+                  Synodal єсмы.",
+        evidence: "Alypy §81 vs UT OCS Online §24.1.",
+    },
+    NamedDivergence {
+        id: "verb:copula-imperfect-restemming",
+        summary: "The copula imperfect restems: the OCS uncontracted \
+                  бѣах- series (бѣаше) against the Synodal бѧх- series \
+                  (бѧше) — the copula-specific instance of \
+                  verb:imperfect-contraction, with the vowel re-graded \
+                  ѣа → ѧ throughout.",
+        evidence: "Alypy §81 imperfect-бѧ table vs UT OCS Online §24.2 \
+                   and Polivanova §§544–545.",
+    },
+    NamedDivergence {
+        id: "verb:copula-tense-reassignment",
+        summary: "The copula's бѣ- and бꙑ- series carry different tense \
+                  labels per recension: the OCS aorist бѣхъ series is the \
+                  Synodal imperfect-be table, and the OCS \
+                  conditional-aorist бꙑхъ series is the Synodal plain \
+                  aorist. The merged kernel keys the tables by form \
+                  series, leaving the tense assignment family-side.",
+        evidence: "Alypy §81 (бѣхъ printed under the imperfect, быхъ \
+                   under the aorist) vs UT OCS Online §§24.2, 27 and \
+                   Polivanova §§544–549.",
+    },
+    NamedDivergence {
+        id: "verb:copula-aorist-sti",
+        summary: "The Synodal copula aorist second/third singular adds \
+                  бысть (with the -сть extension) as the primary print \
+                  beside бы; OCS has only бꙑ.",
+        evidence: "Alypy §81 aorist row (бы́сть ‖ бы̀) vs Polivanova \
+                   §§546–549.",
+    },
 ];
 
 /// Pieces of the per-family POS kernels deliberately NOT merged at their
@@ -594,6 +735,70 @@ pub const UNMERGED: &[NamedDivergence] = &[
                    compound/distributive APIs vs Synodal numeral.rs \
                    CyrillicNumeral.",
     },
+    NamedDivergence {
+        id: "unmerged:verb:irregular-identity-inventories",
+        summary: "The reviewed irregular identity inventories are \
+                  per-recension lexical facts: the OCS unique/irregular \
+                  verb kernels (дати, вѣдѣти, ꙗсти, имѣти, хотѣти and \
+                  their compounds), the impersonal identities, and the \
+                  Synodal exact-form tables of \
+                  data/synodal/exact_forms.tsv. Only the copula бꙑти ~ \
+                  бы́ти, attested closed on both sides, merges (as \
+                  crate::verb_past::copula_form); its family routes are \
+                  pinned to the kernel columns.",
+        evidence: "OCS unique_verb.rs/irregular_verb.rs vs the Synodal \
+                   Alypy §§81, 104 exact tables; both copula tables ride \
+                   the kernel via shim and pin.",
+    },
+    NamedDivergence {
+        id: "unmerged:verb:synodal-suppletive-present-edges",
+        summary: "The Synodal present first singular and third plural are \
+                  supplied suppletive principal parts (the ꙋ/ю and \
+                  ꙋтъ/ютъ/атъ/ѧтъ choices ride lexical stem alternation); \
+                  OCS generates them productively (-ѫ/-ѭ, -ѫтъ/-ѧтъ). \
+                  The kernel carries OCS-only columns for those cells; \
+                  gen:big-yus would relate the shapes once a Synodal \
+                  productive route exists.",
+        evidence: "Synodal verb.rs PresentPrincipalParts vs OCS \
+                   present_ending; Alypy §80 vs Polivanova §§412–424.",
+    },
+    NamedDivergence {
+        id: "unmerged:verb:ocs-conditional-bi",
+        summary: "The OCS conditional би- series (бимь, би, бишѧ) has no \
+                  Synodal paradigm counterpart: the Synodal conditional \
+                  is the analytic аще бы + l-participle construction, a \
+                  phrase-level fact. The series stays in the OCS copula \
+                  module; the shared бꙑ-series member merged as \
+                  crate::verb_past::CopulaSeries::AoristBy.",
+        evidence: "Polivanova §§546–549 and UT OCS Online §27 vs Alypy \
+                   §91 conditional formations.",
+    },
+    NamedDivergence {
+        id: "unmerged:verb:participle-stem-supply",
+        summary: "Participle stem supply stays family-side: the Synodal \
+                  wholesale short/long stems with lexical нн doubling and \
+                  the sibilant subclass reshape, and the OCS ов→оу \
+                  transformation and final-j deletion. The kernel merges \
+                  the formation suffixes and citation edges \
+                  (crate::verb_participle); the family assembly around \
+                  them is lexical.",
+        evidence: "Synodal participle.rs ParticiplePrincipalPart vs OCS \
+                   past_active_participle formations.",
+    },
+    NamedDivergence {
+        id: "unmerged:verb:constructions-and-reflexive",
+        summary: "The construction layers stay family-side: the Synodal \
+                  reflexive -сѧ enclitic surface rules, periphrastic \
+                  tense/passive/optative phrase composers, and verbal \
+                  noun licensing (Alypy §§27, 73, 88–92, 101–102, 163), \
+                  and the OCS supine and phrase modules. Each is a \
+                  construction over the paradigm cells, not a paradigm \
+                  cell.",
+        evidence: "Synodal phrase.rs/verb.rs reflexive machinery vs OCS \
+                   supine and phrase.rs; the supine itself is an \
+                   OCS-only system (the Synodal target has no productive \
+                   supine).",
+    },
 ];
 
 #[cfg(test)]
@@ -607,7 +812,7 @@ mod tests {
         ids.sort_unstable();
         ids.dedup();
         assert_eq!(ids.len(), total, "duplicate divergence id");
-        let pos_prefixes = ["pron:", "det:", "num:", "adj:", "noun:"];
+        let pos_prefixes = ["pron:", "det:", "num:", "adj:", "noun:", "verb:"];
         assert!(NAMED.iter().all(|entry| {
             pos_prefixes
                 .iter()

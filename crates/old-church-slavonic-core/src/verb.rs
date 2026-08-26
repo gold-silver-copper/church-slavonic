@@ -460,22 +460,24 @@ pub fn imperative(
         lexeme.stems.imperative.as_deref(),
         MetadataField::ImperativeStem,
     )?;
-    let ending = match (formation, cell.person, cell.number) {
-        (_, Person::Second | Person::Third, Number::Singular) => "и",
-        (ImperativeFormation::ISeries, Person::First, Number::Dual) => "ивѣ",
-        (ImperativeFormation::ISeries, Person::Second, Number::Dual) => "ита",
-        (ImperativeFormation::ISeries, Person::First, Number::Plural) => "имъ",
-        (ImperativeFormation::ISeries, Person::Second, Number::Plural) => "ите",
-        (ImperativeFormation::YatSeries, Person::First, Number::Dual) => "ѣвѣ",
-        (ImperativeFormation::YatSeries, Person::Second, Number::Dual) => "ѣта",
-        (ImperativeFormation::YatSeries, Person::First, Number::Plural) => "ѣмъ",
-        (ImperativeFormation::YatSeries, Person::Second, Number::Plural) => "ѣте",
-        _ => {
-            return Err(InflectionError::historically_invalid(
-                &lexeme.lemma,
-                RequestedCell::Imperative(cell),
-            ));
-        }
+    // Shim over the merged imperative kernel (OCS column): the family's
+    // YatSeries is the kernel's EGrade axis (divergence
+    // `verb:imperative-vowel-grade`), ISeries the shared i-grade.
+    let series = match formation {
+        ImperativeFormation::ISeries => church_slavonic_core::verb::ImperativeSeries::I,
+        ImperativeFormation::YatSeries => church_slavonic_core::verb::ImperativeSeries::EGrade,
+    };
+    let column = church_slavonic_core::verb::imperative_ending(
+        series,
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    );
+    let Some(&ending) = column.first() else {
+        return Err(InflectionError::historically_invalid(
+            &lexeme.lemma,
+            RequestedCell::Imperative(cell),
+        ));
     };
     Ok(join(
         &stem,
@@ -605,16 +607,13 @@ pub fn l_participle(
         lexeme.stems.l_participle.as_deref(),
         MetadataField::LParticipleStem,
     )?;
-    let ending = match (cell.gender, cell.number) {
-        (Gender::Masculine, Number::Singular) => "лъ",
-        (Gender::Feminine, Number::Singular) => "ла",
-        (Gender::Neuter, Number::Singular) => "ло",
-        (Gender::Masculine, Number::Dual) => "ла",
-        (Gender::Feminine | Gender::Neuter, Number::Dual) => "лѣ",
-        (Gender::Masculine, Number::Plural) => "ли",
-        (Gender::Feminine, Number::Plural) => "лꙑ",
-        (Gender::Neuter, Number::Plural) => "ла",
-    };
+    // Shim over the merged l-participle kernel (OCS column; the Synodal
+    // side levels the dual/plural — divergence `verb:l-participle-leveling`).
+    let ending = church_slavonic_core::verb::l_participle_ending(
+        cell.gender,
+        cell.number,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    )[0];
     Ok(join(
         &stem,
         ending,
@@ -762,65 +761,79 @@ fn imperfect(lexeme: &VerbLexeme, cell: FiniteVerbCell) -> Result<PredictedForm,
     } else {
         stem
     };
+    // Shim over the merged imperfect-marker kernel (OCS columns list the
+    // ordered uncontracted/contracted grades; divergence
+    // `verb:imperfect-contraction` separates the Synodal grades).
+    let kernel_marker = |marker, contracted: bool| {
+        let column = church_slavonic_core::verb_past::imperfect_marker(
+            marker,
+            church_slavonic_core::Recension::OldChurchSlavonic,
+        );
+        if contracted { column[1] } else { column[0] }
+    };
+    use church_slavonic_core::verb_past::ImperfectMarker as KernelMarker;
     let (marker, rule_id, reason) = match (formation, variant_policy) {
         (ImperfectFormation::A, ImperfectVariantPolicy::UncontractedOnly) => (
-            "а",
+            kernel_marker(KernelMarker::A, false),
             RuleId::VerbImperfectA,
             "attach the explicitly selected uncontracted imperfect marker and personal ending",
         ),
         (ImperfectFormation::A, ImperfectVariantPolicy::ContractedOnly) => (
-            "",
+            kernel_marker(KernelMarker::A, true),
             RuleId::VerbImperfectContractedA,
             "attach the source-selected contracted imperfect terminal to the explicit platform",
         ),
         (ImperfectFormation::YatA, ImperfectVariantPolicy::UncontractedOnly) => (
-            "ѣа",
+            kernel_marker(KernelMarker::YatA, false),
             RuleId::VerbImperfectYatA,
             "attach the explicitly selected uncontracted imperfect marker and personal ending",
         ),
         (ImperfectFormation::YatA, ImperfectVariantPolicy::ContractedOnly) => (
-            "ѣ",
+            kernel_marker(KernelMarker::YatA, true),
             RuleId::VerbImperfectContractedYatA,
             "attach the source-selected contracted imperfect terminal to the explicit platform",
         ),
         (ImperfectFormation::PalatalizedA, ImperfectVariantPolicy::UncontractedOnly) => (
-            "аа",
+            kernel_marker(KernelMarker::PalatalizedA, false),
             RuleId::VerbImperfectPalatalizedA,
             "attach the explicitly selected uncontracted imperfect marker and personal ending",
         ),
         (ImperfectFormation::PalatalizedA, ImperfectVariantPolicy::ContractedOnly) => (
-            "а",
+            kernel_marker(KernelMarker::PalatalizedA, true),
             RuleId::VerbImperfectContractedPalatalizedA,
             "attach the source-selected contracted imperfect terminal to the explicit platform",
         ),
         (ImperfectFormation::PresentA, ImperfectVariantPolicy::UncontractedOnly) => (
-            "а",
+            kernel_marker(KernelMarker::A, false),
             RuleId::VerbImperfectPresent,
             "attach the short uncontracted imperfect terminal to the explicit present-system stem",
         ),
         (ImperfectFormation::PresentA, ImperfectVariantPolicy::ContractedOnly) => (
-            "",
+            kernel_marker(KernelMarker::A, true),
             RuleId::VerbImperfectPresentContracted,
             "attach the short contracted imperfect terminal to the explicit present-system stem",
         ),
         (ImperfectFormation::PresentYatA, ImperfectVariantPolicy::UncontractedOnly) => (
-            "ѣа",
+            kernel_marker(KernelMarker::YatA, false),
             RuleId::VerbImperfectPresent,
             "attach the uncontracted imperfect terminal to the explicit present-system stem",
         ),
         (ImperfectFormation::PresentYatA, ImperfectVariantPolicy::ContractedOnly) => (
-            "ѣ",
+            kernel_marker(KernelMarker::YatA, true),
             RuleId::VerbImperfectPresentContracted,
             "attach the contracted imperfect terminal to the explicit present-system stem",
         ),
         (formation, ImperfectVariantPolicy::IotatedOnly) => (
-            match formation {
-                ImperfectFormation::A => "ꙗ",
-                ImperfectFormation::YatA => "ѣꙗ",
-                ImperfectFormation::PalatalizedA => "аꙗ",
-                ImperfectFormation::PresentA => "ꙗ",
-                ImperfectFormation::PresentYatA => "ѣꙗ",
-            },
+            kernel_marker(
+                match formation {
+                    ImperfectFormation::A | ImperfectFormation::PresentA => KernelMarker::IotatedA,
+                    ImperfectFormation::YatA | ImperfectFormation::PresentYatA => {
+                        KernelMarker::IotatedYatA
+                    }
+                    ImperfectFormation::PalatalizedA => KernelMarker::IotatedPalatalizedA,
+                },
+                false,
+            ),
             RuleId::VerbImperfectIotated,
             "attach the source-selected iotated imperfect terminal to the explicit workstem",
         ),
@@ -934,17 +947,38 @@ fn present_active_participle(
         lexeme.stems.present_active_participle.as_deref(),
         MetadataField::PresentActiveParticipleStem,
     )?;
-    let (oblique, nominative) = match formation {
-        PresentActiveParticipleFormation::YushtHard => (format!("{stem}ѫшт"), format!("{stem}ꙑ")),
-        PresentActiveParticipleFormation::YushtSoft => (format!("{stem}ѫшт"), format!("{stem}ѩ")),
-        PresentActiveParticipleFormation::YeshtSoft => (format!("{stem}ѧшт"), format!("{stem}ѧ")),
+    // Shim over the merged participle stem kernel (OCS columns; divergence
+    // `verb:present-active-nominative-contraction` separates the Synodal
+    // edges).
+    let kernel_formation = match formation {
+        PresentActiveParticipleFormation::YushtHard => {
+            church_slavonic_core::verb_participle::PresentActiveFormation::HardUsht
+        }
+        PresentActiveParticipleFormation::YushtSoft => {
+            church_slavonic_core::verb_participle::PresentActiveFormation::SoftUsht
+        }
+        PresentActiveParticipleFormation::YeshtSoft => {
+            church_slavonic_core::verb_participle::PresentActiveFormation::SoftAsht
+        }
         PresentActiveParticipleFormation::MixedYushtSoft => {
-            (format!("{stem}ѫшт"), format!("{stem}ѧ"))
+            church_slavonic_core::verb_participle::PresentActiveFormation::MixedUsht
         }
         PresentActiveParticipleFormation::IotatedYushtSoft => {
-            (format!("{stem}ѭшт"), format!("{stem}ѩ"))
+            church_slavonic_core::verb_participle::PresentActiveFormation::IotatedUsht
         }
     };
+    const OCS: church_slavonic_core::Recension = church_slavonic_core::Recension::OldChurchSlavonic;
+    let oblique_suffix =
+        church_slavonic_core::verb_participle::present_active_oblique_suffix(kernel_formation, OCS)
+            [0];
+    let nominative_suffix = church_slavonic_core::verb_participle::present_active_nominative_edge(
+        kernel_formation,
+        OCS,
+    )[0];
+    let (oblique, nominative) = (
+        format!("{stem}{oblique_suffix}"),
+        format!("{stem}{nominative_suffix}"),
+    );
     decline_active_participle(
         lexeme,
         cell,
@@ -968,31 +1002,59 @@ fn past_active_participle(
         lexeme.stems.past_active_participle.as_deref(),
         MetadataField::PastActiveParticipleStem,
     )?;
+    // Shim over the merged participle stem kernel (OCS columns): the
+    // family owns the ов→оу base transformation; the suffixes and
+    // citation edges come from the kernel.
+    let kernel_parts = |formation: church_slavonic_core::verb_participle::PastActiveFormation| {
+        const OCS: church_slavonic_core::Recension =
+            church_slavonic_core::Recension::OldChurchSlavonic;
+        (
+            church_slavonic_core::verb_participle::past_active_oblique_suffix(formation, OCS)[0],
+            church_slavonic_core::verb_participle::past_active_nominative_edge(formation, OCS)[0],
+        )
+    };
     let (base, suffix, nominative_suffix, reason) = match formation {
-        PastActiveParticipleFormation::Ush => (
-            stem,
-            "ъш",
-            "ъ",
-            "attach the hard -ъш- past-active suffix to the explicit consonant stem",
-        ),
-        PastActiveParticipleFormation::Ish => (
-            stem,
-            "ьш",
-            "ь",
-            "attach the fronted -ьш- suffix to the explicitly transformed i-stem",
-        ),
-        PastActiveParticipleFormation::IshAfterGlide => (
-            stem,
-            "ишь",
-            "и",
-            "realize final j or i-glide before the fronted -ьш- past-active suffix",
-        ),
-        PastActiveParticipleFormation::VushAfterJDeletion => (
-            stem,
-            "въш",
-            "въ",
-            "apply the declared final-j deletion and attach the -въш- suffix",
-        ),
+        PastActiveParticipleFormation::Ush => {
+            let (suffix, edge) = kernel_parts(
+                church_slavonic_core::verb_participle::PastActiveFormation::ConsonantHard,
+            );
+            (
+                stem,
+                suffix,
+                edge,
+                "attach the hard -ъш- past-active suffix to the explicit consonant stem",
+            )
+        }
+        PastActiveParticipleFormation::Ish => {
+            let (suffix, edge) =
+                kernel_parts(church_slavonic_core::verb_participle::PastActiveFormation::SoftI);
+            (
+                stem,
+                suffix,
+                edge,
+                "attach the fronted -ьш- suffix to the explicitly transformed i-stem",
+            )
+        }
+        PastActiveParticipleFormation::IshAfterGlide => {
+            let (suffix, edge) =
+                kernel_parts(church_slavonic_core::verb_participle::PastActiveFormation::GlideI);
+            (
+                stem,
+                suffix,
+                edge,
+                "realize final j or i-glide before the fronted -ьш- past-active suffix",
+            )
+        }
+        PastActiveParticipleFormation::VushAfterJDeletion => {
+            let (suffix, edge) =
+                kernel_parts(church_slavonic_core::verb_participle::PastActiveFormation::Vowel);
+            (
+                stem,
+                suffix,
+                edge,
+                "apply the declared final-j deletion and attach the -въш- suffix",
+            )
+        }
         PastActiveParticipleFormation::VushAfterOvToU => {
             let Some(base) = stem.strip_suffix("ов") else {
                 return Err(InflectionError::InvalidInput {
@@ -1000,19 +1062,25 @@ fn past_active_participle(
                         .to_string(),
                 });
             };
+            let (suffix, edge) =
+                kernel_parts(church_slavonic_core::verb_participle::PastActiveFormation::Vowel);
             (
                 format!("{base}оу"),
-                "въш",
-                "въ",
+                suffix,
+                edge,
                 "change final -ов to -оу and attach the -въш- suffix",
             )
         }
-        PastActiveParticipleFormation::Vush => (
-            stem,
-            "въш",
-            "въ",
-            "attach the -въш- suffix to the explicit vowel stem",
-        ),
+        PastActiveParticipleFormation::Vush => {
+            let (suffix, edge) =
+                kernel_parts(church_slavonic_core::verb_participle::PastActiveFormation::Vowel);
+            (
+                stem,
+                suffix,
+                edge,
+                "attach the -въш- suffix to the explicit vowel stem",
+            )
+        }
     };
     let oblique = format!("{base}{suffix}");
     let nominative = format!("{base}{nominative_suffix}");
@@ -1040,12 +1108,26 @@ fn present_passive_participle(
         lexeme.stems.present_passive_participle.as_deref(),
         MetadataField::PresentPassiveParticipleStem,
     )?;
-    let adjectival_stem = match formation {
-        PresentPassiveParticipleFormation::Im => format!("{stem}им"),
-        PresentPassiveParticipleFormation::Em => format!("{stem}ем"),
-        PresentPassiveParticipleFormation::IotatedEm => format!("{stem}ѥм"),
-        PresentPassiveParticipleFormation::Om => format!("{stem}ом"),
+    // Shim over the merged present-passive suffix kernel (OCS column).
+    let kernel_formation = match formation {
+        PresentPassiveParticipleFormation::Im => {
+            church_slavonic_core::verb_participle::PresentPassiveFormation::Im
+        }
+        PresentPassiveParticipleFormation::Em => {
+            church_slavonic_core::verb_participle::PresentPassiveFormation::Em
+        }
+        PresentPassiveParticipleFormation::IotatedEm => {
+            church_slavonic_core::verb_participle::PresentPassiveFormation::IotatedEm
+        }
+        PresentPassiveParticipleFormation::Om => {
+            church_slavonic_core::verb_participle::PresentPassiveFormation::Om
+        }
     };
+    let suffix = church_slavonic_core::verb_participle::present_passive_suffix(
+        kernel_formation,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    )[0];
+    let adjectival_stem = format!("{stem}{suffix}");
     decline_passive_participle(
         lexeme,
         cell,
@@ -1068,11 +1150,23 @@ fn past_passive_participle(
         lexeme.stems.past_passive_participle.as_deref(),
         MetadataField::PastPassiveParticipleStem,
     )?;
-    let adjectival_stem = match formation {
-        PastPassiveParticipleFormation::T => format!("{stem}т"),
-        PastPassiveParticipleFormation::N => format!("{stem}н"),
-        PastPassiveParticipleFormation::En => format!("{stem}ен"),
+    // Shim over the merged past-passive suffix kernel (shared inventory).
+    let kernel_formation = match formation {
+        PastPassiveParticipleFormation::T => {
+            church_slavonic_core::verb_participle::PastPassiveFormation::T
+        }
+        PastPassiveParticipleFormation::N => {
+            church_slavonic_core::verb_participle::PastPassiveFormation::N
+        }
+        PastPassiveParticipleFormation::En => {
+            church_slavonic_core::verb_participle::PastPassiveFormation::En
+        }
     };
+    let suffix = church_slavonic_core::verb_participle::past_passive_suffix(
+        kernel_formation,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    )[0];
+    let adjectival_stem = format!("{stem}{suffix}");
     decline_passive_participle(
         lexeme,
         cell,
@@ -1180,79 +1274,79 @@ fn participle_result(
 }
 
 fn imperfect_personal_ending(cell: FiniteVerbCell) -> &'static str {
-    match (cell.person, cell.number) {
-        (Person::First, Number::Singular) => "хъ",
-        (Person::Second | Person::Third, Number::Singular) => "ше",
-        (Person::First, Number::Dual) => "ховѣ",
-        (Person::Second, Number::Dual) => "шета",
-        (Person::Third, Number::Dual) => "шете",
-        (Person::First, Number::Plural) => "хомъ",
-        (Person::Second, Number::Plural) => "шете",
-        (Person::Third, Number::Plural) => "хѫ",
-    }
+    // Shim over the merged imperfect personal-ending kernel (OCS column;
+    // divergences `verb:imperfect-hardening` and `verb:dual-first-person-va`
+    // separate the Synodal column).
+    church_slavonic_core::verb_past::imperfect_personal_ending(
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    )[0]
+}
+
+fn ocs_aorist_ending(
+    series: church_slavonic_core::verb_past::AoristSeries,
+    cell: FiniteVerbCell,
+) -> &'static str {
+    // Shim over the merged aorist kernel (OCS column; divergence
+    // `verb:aorist-inventory` names the per-recension series asymmetry).
+    church_slavonic_core::verb_past::aorist_ending(
+        series,
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    )[0]
 }
 
 fn asigmatic_aorist_cell(stem: &str, cell: FiniteVerbCell) -> (String, &'static str) {
-    match (cell.person, cell.number) {
-        (Person::First, Number::Singular) => (stem.to_string(), "ъ"),
-        (Person::Second | Person::Third, Number::Singular) => (first_palatalize(stem), "е"),
-        (Person::First, Number::Dual) => (stem.to_string(), "овѣ"),
-        (Person::Second, Number::Dual) => (first_palatalize(stem), "ета"),
-        (Person::Third, Number::Dual) => (first_palatalize(stem), "ете"),
-        (Person::First, Number::Plural) => (stem.to_string(), "омъ"),
-        (Person::Second, Number::Plural) => (first_palatalize(stem), "ете"),
-        (Person::Third, Number::Plural) => (stem.to_string(), "ѫ"),
-    }
+    // The family owns the second/third palatalization seam; the endings
+    // come from the kernel's asigmatic column.
+    let palatalized = matches!(
+        (cell.person, cell.number),
+        (Person::Second | Person::Third, Number::Singular)
+            | (Person::Second | Person::Third, Number::Dual)
+            | (Person::Second, Number::Plural)
+    );
+    let stem = if palatalized {
+        first_palatalize(stem)
+    } else {
+        stem.to_string()
+    };
+    (
+        stem,
+        ocs_aorist_ending(
+            church_slavonic_core::verb_past::AoristSeries::Asigmatic,
+            cell,
+        ),
+    )
 }
 
 fn new_aorist_cell(stem: &str, cell: FiniteVerbCell) -> (String, &'static str) {
-    match (cell.person, cell.number) {
-        (Person::First, Number::Singular) => (stem.to_string(), "охъ"),
-        (Person::Second | Person::Third, Number::Singular) => (first_palatalize(stem), "е"),
-        (Person::First, Number::Dual) => (stem.to_string(), "оховѣ"),
-        (Person::Second, Number::Dual) => (stem.to_string(), "оста"),
-        (Person::Third, Number::Dual) => (stem.to_string(), "осте"),
-        (Person::First, Number::Plural) => (stem.to_string(), "охомъ"),
-        (Person::Second, Number::Plural) => (stem.to_string(), "осте"),
-        (Person::Third, Number::Plural) => (stem.to_string(), "ошѧ"),
-    }
+    let palatalized = matches!(
+        (cell.person, cell.number),
+        (Person::Second | Person::Third, Number::Singular)
+    );
+    let stem = if palatalized {
+        first_palatalize(stem)
+    } else {
+        stem.to_string()
+    };
+    (
+        stem,
+        ocs_aorist_ending(church_slavonic_core::verb_past::AoristSeries::New, cell),
+    )
 }
 
 fn sigmatic_aorist_ending(kind: SigmaticKind, cell: FiniteVerbCell) -> &'static str {
-    match (kind, cell.person, cell.number) {
-        (SigmaticKind::Primary, Person::First, Number::Singular) => "съ",
-        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::First, Number::Singular) => {
-            "хъ"
-        }
-        (SigmaticKind::Primary, Person::First, Number::Dual) => "совѣ",
-        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::First, Number::Dual) => "ховѣ",
-        (
-            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
-            Person::Second,
-            Number::Dual,
-        ) => "ста",
-        (
-            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
-            Person::Third,
-            Number::Dual,
-        ) => "сте",
-        (SigmaticKind::Primary, Person::First, Number::Plural) => "сомъ",
-        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::First, Number::Plural) => {
-            "хомъ"
-        }
-        (
-            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
-            Person::Second,
-            Number::Plural,
-        ) => "сте",
-        (SigmaticKind::Primary, Person::Third, Number::Plural) => "сѧ",
-        (SigmaticKind::Secondary | SigmaticKind::VowelStem, Person::Third, Number::Plural) => "шѧ",
-        (
-            SigmaticKind::Primary | SigmaticKind::Secondary | SigmaticKind::VowelStem,
-            Person::Second | Person::Third,
-            Number::Singular,
-        ) => "",
-    }
+    // Shim over the merged aorist kernel (OCS columns of the sigmatic
+    // series; the second/third singular is the genuine zero ending, filled
+    // family-side by the supplied syncretic principal part).
+    let series = match kind {
+        SigmaticKind::Primary => church_slavonic_core::verb_past::AoristSeries::SigmaticPrimary,
+        SigmaticKind::Secondary => church_slavonic_core::verb_past::AoristSeries::SigmaticSecondary,
+        SigmaticKind::VowelStem => church_slavonic_core::verb_past::AoristSeries::SigmaticVowel,
+    };
+    ocs_aorist_ending(series, cell)
 }
 
 fn required_stem(value: Option<&str>, field: MetadataField) -> Result<String, InflectionError> {
@@ -1336,6 +1430,9 @@ fn present_ending(
     class: VerbClass,
     cell: FiniteVerbCell,
 ) -> Result<(&'static str, RuleId), InflectionError> {
+    // Shim over the merged present kernel (OCS columns): IA classes read
+    // the hard first-conjugation series, II classes the soft
+    // second-conjugation series.
     let first = matches!(class, VerbClass::IA1 | VerbClass::IA2);
     let second = matches!(class, VerbClass::II1 | VerbClass::II2 | VerbClass::II3);
     let rule = match class {
@@ -1351,61 +1448,49 @@ fn present_ending(
             ));
         }
     };
-    let ending = match (first, second, cell.person, cell.number) {
-        (true, _, Person::First, Number::Singular) => "ѫ",
-        (true, _, Person::Second, Number::Singular) => "еши",
-        (true, _, Person::Third, Number::Singular) => "етъ",
-        (true, _, Person::First, Number::Dual) => "евѣ",
-        (true, _, Person::Second, Number::Dual) => "ета",
-        (true, _, Person::Third, Number::Dual) => "ете",
-        (true, _, Person::First, Number::Plural) => "емъ",
-        (true, _, Person::Second, Number::Plural) => "ете",
-        (true, _, Person::Third, Number::Plural) => "ѫтъ",
-        (_, true, Person::First, Number::Singular) => "ѭ",
-        (_, true, Person::Second, Number::Singular) => "иши",
-        (_, true, Person::Third, Number::Singular) => "итъ",
-        (_, true, Person::First, Number::Dual) => "ивѣ",
-        (_, true, Person::Second, Number::Dual) => "ита",
-        (_, true, Person::Third, Number::Dual) => "ите",
-        (_, true, Person::First, Number::Plural) => "имъ",
-        (_, true, Person::Second, Number::Plural) => "ите",
-        (_, true, Person::Third, Number::Plural) => "ѧтъ",
-        _ => {
-            return Err(InflectionError::unsupported(
-                lemma,
-                RequestedCell::FiniteVerb(cell),
-            ));
-        }
+    let series = if first {
+        church_slavonic_core::verb::PresentSeries::FirstHard
+    } else if second {
+        church_slavonic_core::verb::PresentSeries::SecondSoft
+    } else {
+        return Err(InflectionError::unsupported(
+            lemma,
+            RequestedCell::FiniteVerb(cell),
+        ));
     };
-    Ok((ending, rule))
+    let column = church_slavonic_core::verb::present_ending(
+        series,
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    );
+    match column.first() {
+        Some(&ending) => Ok((ending, rule)),
+        None => Err(InflectionError::unsupported(
+            lemma,
+            RequestedCell::FiniteVerb(cell),
+        )),
+    }
 }
 
 fn iotated_e_present_ending(cell: FiniteVerbCell) -> &'static str {
-    match (cell.person, cell.number) {
-        (Person::First, Number::Singular) => "ѭ",
-        (Person::Second, Number::Singular) => "ѥши",
-        (Person::Third, Number::Singular) => "ѥтъ",
-        (Person::First, Number::Dual) => "ѥвѣ",
-        (Person::Second, Number::Dual) => "ѥта",
-        (Person::Third, Number::Dual) => "ѥте",
-        (Person::First, Number::Plural) => "ѥмъ",
-        (Person::Second, Number::Plural) => "ѥте",
-        (Person::Third, Number::Plural) => "ѭтъ",
-    }
+    // Shim over the kernel's iotated first-conjugation OCS column.
+    church_slavonic_core::verb::present_ending(
+        church_slavonic_core::verb::PresentSeries::FirstIotated,
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    )[0]
 }
 
 fn hard_i_present_ending(cell: FiniteVerbCell) -> &'static str {
-    match (cell.person, cell.number) {
-        (Person::First, Number::Singular) => "ѫ",
-        (Person::Second, Number::Singular) => "иши",
-        (Person::Third, Number::Singular) => "итъ",
-        (Person::First, Number::Dual) => "ивѣ",
-        (Person::Second, Number::Dual) => "ита",
-        (Person::Third, Number::Dual) => "ите",
-        (Person::First, Number::Plural) => "имъ",
-        (Person::Second, Number::Plural) => "ите",
-        (Person::Third, Number::Plural) => "ѧтъ",
-    }
+    // Shim over the kernel's hard-i second-conjugation OCS column.
+    church_slavonic_core::verb::present_ending(
+        church_slavonic_core::verb::PresentSeries::SecondHardI,
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::OldChurchSlavonic,
+    )[0]
 }
 
 /// The reviewed lexeme profile of one verb lemma: every source-reviewed

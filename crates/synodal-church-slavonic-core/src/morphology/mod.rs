@@ -24,6 +24,8 @@ mod reflexive_tests;
 #[cfg(test)]
 mod test_support;
 #[cfg(test)]
+mod verb_kernel_pin_tests;
+#[cfg(test)]
 mod verb_tests;
 
 #[allow(unused_imports)]

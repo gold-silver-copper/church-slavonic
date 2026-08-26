@@ -610,9 +610,19 @@ pub fn aorist(
         && number == Number::Singular
     {
         // The bare stem and the -тъ print are both attested; Alypy cites the
-        // -тъ shape from the liturgical text, so it leads the ordered pair.
+        // -тъ shape from the liturgical text, so it leads the ordered pair
+        // (kernel `VowelStemWithT` column; divergence verb:aorist-inventory).
+        let ordered = church_slavonic_core::verb_past::aorist_ending(
+            church_slavonic_core::verb_past::AoristSeries::VowelStemWithT,
+            person,
+            number,
+            church_slavonic_core::Recension::SynodalRussian,
+        );
         return normative_variants(
-            vec![join(&stem_text, "тъ"), stem_text.clone()],
+            ordered
+                .iter()
+                .map(|ending| join(&stem_text, ending))
+                .collect(),
             rule,
             profile,
             "aorist",
@@ -656,7 +666,7 @@ pub fn imperfect(
     normative(
         join(
             stem.canonical(),
-            imperfect_ending(formation, person, number),
+            &imperfect_ending(formation, person, number),
         ),
         match formation {
             ImperfectFormation::H => "SYN-VERB-IMPERFECT-H-ALYPY-87",
@@ -786,14 +796,13 @@ pub fn l_participle(
     } else {
         general_stem
     };
-    let ending = match (cell.number, cell.gender) {
-        (Number::Singular, Gender::Masculine) => "лъ",
-        (Number::Singular, Gender::Feminine) => "ла",
-        (Number::Singular, Gender::Neuter) => "ло",
-        (Number::Dual, Gender::Masculine) => "ла",
-        (Number::Dual, Gender::Feminine | Gender::Neuter) => "ли",
-        (Number::Plural, _) => "ли",
-    };
+    // Shim over the merged l-participle kernel (Synodal column;
+    // divergence `verb:l-participle-leveling` in the dual and plural).
+    let ending = church_slavonic_core::verb::l_participle_ending(
+        cell.gender,
+        cell.number,
+        church_slavonic_core::Recension::SynodalRussian,
+    )[0];
     normative(
         join(stem.canonical(), ending),
         "SYN-VERB-LPART-ALYPY-97",
@@ -807,41 +816,42 @@ pub(crate) fn present_ending(
     conjugation: VerbConjugation,
     cell: FiniteVerbCell,
 ) -> Result<&'static str> {
+    // Shim over the merged present kernel
+    // (`church_slavonic_core::verb::present_ending`, Synodal column). The
+    // kernel's first-singular/third-plural cells are empty on the Synodal
+    // side because those edges are suppletive principal parts
+    // (`unmerged:verb:synodal-suppletive-present-edges`).
+    use church_slavonic_core::verb::{PresentSeries, present_ending as kernel_present};
     if conjugation == VerbConjugation::Archaic {
         return Err(Error::UnsupportedFormation {
             formation: "archaic present requires an exact lexeme table".into(),
         });
     }
-    let vowel = if conjugation == VerbConjugation::Second {
-        "и"
+    let series = if conjugation == VerbConjugation::Second {
+        PresentSeries::SecondSoft
     } else {
-        "е"
+        PresentSeries::FirstHard
     };
-    Ok(match (cell.person, cell.number, vowel) {
-        (Person::Second, Number::Singular, "е") => "еши",
-        (Person::Second, Number::Singular, "и") => "иши",
-        (Person::Third, Number::Singular, "е") => "етъ",
-        (Person::Third, Number::Singular, "и") => "итъ",
-        (Person::First, Number::Dual, "е") => "ева",
-        (Person::First, Number::Dual, "и") => "ива",
-        (Person::Second | Person::Third, Number::Dual, "е") => "ета",
-        (Person::Second | Person::Third, Number::Dual, "и") => "ита",
-        (Person::First, Number::Plural, "е") => "емъ",
-        (Person::First, Number::Plural, "и") => "имъ",
-        (Person::Second, Number::Plural, "е") => "ете",
-        (Person::Second, Number::Plural, "и") => "ите",
-        (Person::First, Number::Singular, _) | (Person::Third, Number::Plural, _) => {
-            return Err(Error::ContradictoryMetadata {
-                reason: "suppletive present edge cells must use their explicit principal part"
-                    .into(),
-            });
-        }
-        (_, _, _) => {
-            return Err(Error::HistoricallyInvalidCell {
-                reason: "invalid present cell".into(),
-            });
-        }
-    })
+    if matches!(
+        (cell.person, cell.number),
+        (Person::First, Number::Singular) | (Person::Third, Number::Plural)
+    ) {
+        return Err(Error::ContradictoryMetadata {
+            reason: "suppletive present edge cells must use their explicit principal part".into(),
+        });
+    }
+    let column = kernel_present(
+        series,
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::SynodalRussian,
+    );
+    column
+        .first()
+        .copied()
+        .ok_or(Error::HistoricallyInvalidCell {
+            reason: "invalid present cell".into(),
+        })
 }
 
 pub(crate) fn aorist_ending(
@@ -849,75 +859,68 @@ pub(crate) fn aorist_ending(
     person: Person,
     number: Number,
 ) -> &'static str {
-    let consonant = formation == AoristFormation::ConsonantStem;
-    match (person, number, consonant) {
-        (Person::First, Number::Singular, false) => "хъ",
-        (Person::First, Number::Singular, true) => "охъ",
-        (Person::Second | Person::Third, Number::Singular, false) => "",
-        (Person::Second | Person::Third, Number::Singular, true) => "е",
-        (Person::First, Number::Dual, false) => "хова",
-        (Person::First, Number::Dual, true) => "охова",
-        (Person::Second | Person::Third, Number::Dual, false) => "ста",
-        (Person::Second | Person::Third, Number::Dual, true) => "оста",
-        (Person::First, Number::Plural, false) => "хомъ",
-        (Person::First, Number::Plural, true) => "охомъ",
-        (Person::Second, Number::Plural, false) => "сте",
-        (Person::Second, Number::Plural, true) => "осте",
-        (Person::Third, Number::Plural, false) => "ша",
-        (Person::Third, Number::Plural, true) => "оша",
-    }
+    // Shim over the merged aorist kernel
+    // (`church_slavonic_core::verb_past::aorist_ending`, Synodal column):
+    // the vowel-stem series reads the sigmatic х-column, the consonant
+    // series the ох-column; the §86 -тъ doublet cells are realized by the
+    // caller from the `VowelStemWithT` column.
+    use church_slavonic_core::verb_past::{AoristSeries, aorist_ending as kernel_aorist};
+    let series = if formation == AoristFormation::ConsonantStem {
+        AoristSeries::New
+    } else {
+        AoristSeries::SigmaticVowel
+    };
+    kernel_aorist(
+        series,
+        person,
+        number,
+        church_slavonic_core::Recension::SynodalRussian,
+    )[0]
 }
 
 pub(crate) fn imperfect_ending(
     formation: ImperfectFormation,
     person: Person,
     number: Number,
-) -> &'static str {
-    match (formation, person, number) {
-        (ImperfectFormation::H, Person::First, Number::Singular) => "хъ",
-        (ImperfectFormation::H, Person::Second | Person::Third, Number::Singular) => "ше",
-        (ImperfectFormation::H, Person::First, Number::Dual) => "хова",
-        (ImperfectFormation::H, Person::Second | Person::Third, Number::Dual) => "ста",
-        (ImperfectFormation::H, Person::First, Number::Plural) => "хомъ",
-        (ImperfectFormation::H, Person::Second, Number::Plural) => "сте",
-        (ImperfectFormation::H, Person::Third, Number::Plural) => "хꙋ",
-        (ImperfectFormation::Yah, Person::First, Number::Singular) => "ѧхъ",
-        (ImperfectFormation::Yah, Person::Second | Person::Third, Number::Singular) => "ѧше",
-        (ImperfectFormation::Yah, Person::First, Number::Dual) => "ѧхова",
-        (ImperfectFormation::Yah, Person::Second | Person::Third, Number::Dual) => "ѧста",
-        (ImperfectFormation::Yah, Person::First, Number::Plural) => "ѧхомъ",
-        (ImperfectFormation::Yah, Person::Second, Number::Plural) => "ѧсте",
-        (ImperfectFormation::Yah, Person::Third, Number::Plural) => "ѧхꙋ",
-        (ImperfectFormation::Ah, Person::First, Number::Singular) => "ахъ",
-        (ImperfectFormation::Ah, Person::Second | Person::Third, Number::Singular) => "аше",
-        (ImperfectFormation::Ah, Person::First, Number::Dual) => "ахова",
-        (ImperfectFormation::Ah, Person::Second | Person::Third, Number::Dual) => "аста",
-        (ImperfectFormation::Ah, Person::First, Number::Plural) => "ахомъ",
-        (ImperfectFormation::Ah, Person::Second, Number::Plural) => "асте",
-        (ImperfectFormation::Ah, Person::Third, Number::Plural) => "ахꙋ",
-        (ImperfectFormation::Irregular, _, _) => unreachable!(),
-    }
+) -> String {
+    // Shim over the merged imperfect kernel
+    // (`church_slavonic_core::verb_past`, Synodal columns): the Alypy §87
+    // H/Yah/Ah series read the contracted marker grades (kernel markers
+    // A/YatA/PalatalizedA) plus the shared personal-ending table.
+    use church_slavonic_core::verb_past::{
+        ImperfectMarker, imperfect_marker, imperfect_personal_ending,
+    };
+    const SYN: church_slavonic_core::Recension = church_slavonic_core::Recension::SynodalRussian;
+    let marker = match formation {
+        ImperfectFormation::H => imperfect_marker(ImperfectMarker::A, SYN)[0],
+        ImperfectFormation::Yah => imperfect_marker(ImperfectMarker::YatA, SYN)[0],
+        ImperfectFormation::Ah => imperfect_marker(ImperfectMarker::PalatalizedA, SYN)[0],
+        ImperfectFormation::Irregular => unreachable!(),
+    };
+    let personal = imperfect_personal_ending(person, number, SYN)[0];
+    format!("{marker}{personal}")
 }
 
 pub(crate) fn imperative_ending(
     formation: ImperativeFormation,
     cell: ImperativeCell,
 ) -> &'static str {
-    match (formation, cell.person, cell.number) {
-        (ImperativeFormation::JSeries, Person::Second | Person::Third, Number::Singular) => "й",
-        (ImperativeFormation::JSeries, Person::First, Number::Dual) => "йва",
-        (ImperativeFormation::JSeries, Person::Second, Number::Dual) => "йта",
-        (ImperativeFormation::JSeries, Person::First, Number::Plural) => "ймъ",
-        (ImperativeFormation::JSeries, Person::Second, Number::Plural) => "йте",
-        (_, Person::Second | Person::Third, Number::Singular) => "и",
-        (ImperativeFormation::FirstUnpalatalized, Person::First, Number::Dual) => "ева",
-        (ImperativeFormation::FirstUnpalatalized, Person::Second, Number::Dual) => "ита",
-        (ImperativeFormation::FirstUnpalatalized, Person::First, Number::Plural) => "емъ",
-        (ImperativeFormation::FirstUnpalatalized, Person::Second, Number::Plural) => "ите",
-        (ImperativeFormation::ISeries, Person::First, Number::Dual) => "ива",
-        (ImperativeFormation::ISeries, Person::Second, Number::Dual) => "ита",
-        (ImperativeFormation::ISeries, Person::First, Number::Plural) => "имъ",
-        (ImperativeFormation::ISeries, Person::Second, Number::Plural) => "ите",
-        _ => unreachable!(),
-    }
+    // Shim over the merged imperative kernel
+    // (`church_slavonic_core::verb::imperative_ending`, Synodal column):
+    // the family's FirstUnpalatalized series is the kernel's EGrade axis
+    // (divergence `verb:imperative-vowel-grade`), ISeries the shared
+    // i-grade, JSeries the Synodal-only contracted column.
+    use church_slavonic_core::verb::{ImperativeSeries, imperative_ending as kernel_imperative};
+    let series = match formation {
+        ImperativeFormation::FirstUnpalatalized => ImperativeSeries::EGrade,
+        ImperativeFormation::ISeries => ImperativeSeries::I,
+        ImperativeFormation::JSeries => ImperativeSeries::J,
+        ImperativeFormation::Irregular => unreachable!(),
+    };
+    kernel_imperative(
+        series,
+        cell.person,
+        cell.number,
+        church_slavonic_core::Recension::SynodalRussian,
+    )[0]
 }

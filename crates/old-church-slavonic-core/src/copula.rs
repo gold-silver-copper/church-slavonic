@@ -63,52 +63,43 @@ impl CopulaSeries {
     }
 
     /// Return source-ordered forms for one complete person-number cell.
+    ///
+    /// The five series attested closed on both sides (present, future, the
+    /// бѣа-imperfect, the бѣ-aorist, and the бꙑ-series) are shims over the
+    /// merged copula kernel
+    /// (`church_slavonic_core::verb_past::copula_form`, OCS column); every
+    /// kernel-backed cell is source-backed. The conditional би-series has
+    /// no Synodal paradigm counterpart and stays a family table
+    /// (`unmerged:verb:ocs-conditional-bi`), keeping its reconstructed
+    /// annotations.
     pub fn forms(self, person: Person, number: Number) -> Vec<CopulaVariant> {
         use CopulaVariantStatus::{Reconstructed, SourceBacked};
         use Number::{Dual, Plural, Singular};
         use Person::{First, Second, Third};
 
-        let forms: &[CopulaVariant] = match (self, person, number) {
-            (Self::PresentEs, First, Singular) => &[CopulaVariant::new("ѥсмь", SourceBacked)],
-            (Self::PresentEs, Second, Singular) => &[CopulaVariant::new("ѥси", SourceBacked)],
-            (Self::PresentEs, Third, Singular) => &[CopulaVariant::new("ѥстъ", SourceBacked)],
-            (Self::PresentEs, First, Dual) => &[CopulaVariant::new("ѥсвѣ", SourceBacked)],
-            (Self::PresentEs, Second, Dual) => &[CopulaVariant::new("ѥста", SourceBacked)],
-            (Self::PresentEs, Third, Dual) => &[CopulaVariant::new("ѥсте", SourceBacked)],
-            (Self::PresentEs, First, Plural) => &[CopulaVariant::new("ѥсмъ", SourceBacked)],
-            (Self::PresentEs, Second, Plural) => &[CopulaVariant::new("ѥсте", SourceBacked)],
-            (Self::PresentEs, Third, Plural) => &[CopulaVariant::new("сѫтъ", SourceBacked)],
-
-            (Self::FutureBud, First, Singular) => &[CopulaVariant::new("бѫдѫ", SourceBacked)],
-            (Self::FutureBud, Second, Singular) => &[CopulaVariant::new("бѫдеши", SourceBacked)],
-            (Self::FutureBud, Third, Singular) => &[CopulaVariant::new("бѫдетъ", SourceBacked)],
-            (Self::FutureBud, First, Dual) => &[CopulaVariant::new("бѫдевѣ", SourceBacked)],
-            (Self::FutureBud, Second, Dual) => &[CopulaVariant::new("бѫдета", SourceBacked)],
-            (Self::FutureBud, Third, Dual) => &[CopulaVariant::new("бѫдете", SourceBacked)],
-            (Self::FutureBud, First, Plural) => &[CopulaVariant::new("бѫдемъ", SourceBacked)],
-            (Self::FutureBud, Second, Plural) => &[CopulaVariant::new("бѫдете", SourceBacked)],
-            (Self::FutureBud, Third, Plural) => &[CopulaVariant::new("бѫдѫтъ", SourceBacked)],
-
-            (Self::ImperfectBe, First, Singular) => &[CopulaVariant::new("бѣахъ", SourceBacked)],
-            (Self::ImperfectBe, Second | Third, Singular) => {
-                &[CopulaVariant::new("бѣаше", SourceBacked)]
+        let kernel_series = match self {
+            Self::PresentEs => Some(church_slavonic_core::verb_past::CopulaSeries::PresentEs),
+            Self::FutureBud => Some(church_slavonic_core::verb_past::CopulaSeries::FutureBud),
+            Self::ImperfectBe => Some(church_slavonic_core::verb_past::CopulaSeries::ImperfectBea),
+            Self::AoristBe => Some(church_slavonic_core::verb_past::CopulaSeries::AoristBe),
+            Self::ConditionalAoristBy => {
+                Some(church_slavonic_core::verb_past::CopulaSeries::AoristBy)
             }
-            (Self::ImperfectBe, First, Dual) => &[CopulaVariant::new("бѣаховѣ", SourceBacked)],
-            (Self::ImperfectBe, Second, Dual) => &[CopulaVariant::new("бѣашета", SourceBacked)],
-            (Self::ImperfectBe, Third, Dual) => &[CopulaVariant::new("бѣашете", SourceBacked)],
-            (Self::ImperfectBe, First, Plural) => &[CopulaVariant::new("бѣахомъ", SourceBacked)],
-            (Self::ImperfectBe, Second, Plural) => &[CopulaVariant::new("бѣашете", SourceBacked)],
-            (Self::ImperfectBe, Third, Plural) => &[CopulaVariant::new("бѣахѫ", SourceBacked)],
+            Self::ConditionalBi => None,
+        };
+        if let Some(series) = kernel_series {
+            return church_slavonic_core::verb_past::copula_form(
+                series,
+                person,
+                number,
+                church_slavonic_core::Recension::OldChurchSlavonic,
+            )
+            .iter()
+            .map(|text| CopulaVariant::new(text, SourceBacked))
+            .collect();
+        }
 
-            (Self::AoristBe, First, Singular) => &[CopulaVariant::new("бѣхъ", SourceBacked)],
-            (Self::AoristBe, Second | Third, Singular) => &[CopulaVariant::new("бѣ", SourceBacked)],
-            (Self::AoristBe, First, Dual) => &[CopulaVariant::new("бѣховѣ", SourceBacked)],
-            (Self::AoristBe, Second, Dual) => &[CopulaVariant::new("бѣста", SourceBacked)],
-            (Self::AoristBe, Third, Dual) => &[CopulaVariant::new("бѣсте", SourceBacked)],
-            (Self::AoristBe, First, Plural) => &[CopulaVariant::new("бѣхомъ", SourceBacked)],
-            (Self::AoristBe, Second, Plural) => &[CopulaVariant::new("бѣсте", SourceBacked)],
-            (Self::AoristBe, Third, Plural) => &[CopulaVariant::new("бѣшѧ", SourceBacked)],
-
+        let forms: &[CopulaVariant] = match (self, person, number) {
             (Self::ConditionalBi, First, Singular) => &[CopulaVariant::new("бимь", SourceBacked)],
             (Self::ConditionalBi, Second | Third, Singular) => {
                 &[CopulaVariant::new("би", SourceBacked)]
@@ -129,30 +120,7 @@ impl CopulaSeries {
                 CopulaVariant::new("бишѧ", SourceBacked),
             ],
 
-            (Self::ConditionalAoristBy, First, Singular) => {
-                &[CopulaVariant::new("бꙑхъ", SourceBacked)]
-            }
-            (Self::ConditionalAoristBy, Second | Third, Singular) => {
-                &[CopulaVariant::new("бꙑ", SourceBacked)]
-            }
-            (Self::ConditionalAoristBy, First, Dual) => {
-                &[CopulaVariant::new("бꙑховѣ", SourceBacked)]
-            }
-            (Self::ConditionalAoristBy, Second, Dual) => {
-                &[CopulaVariant::new("бꙑста", SourceBacked)]
-            }
-            (Self::ConditionalAoristBy, Third, Dual) => {
-                &[CopulaVariant::new("бꙑсте", SourceBacked)]
-            }
-            (Self::ConditionalAoristBy, First, Plural) => {
-                &[CopulaVariant::new("бꙑхомъ", SourceBacked)]
-            }
-            (Self::ConditionalAoristBy, Second, Plural) => {
-                &[CopulaVariant::new("бꙑсте", SourceBacked)]
-            }
-            (Self::ConditionalAoristBy, Third, Plural) => {
-                &[CopulaVariant::new("бꙑшѧ", SourceBacked)]
-            }
+            _ => unreachable!("kernel-backed series handled above"),
         };
         forms.to_vec()
     }
