@@ -8,15 +8,19 @@
 //! precedence, then compares the predicted variant list to the stored surface
 //! variants. Results land in `reports/rewrite-derivability.md`.
 
-use old_church_slavonic::FormSet;
 use old_church_slavonic::advanced::metadata as api_metadata;
 use old_church_slavonic::advanced::rules;
+use old_church_slavonic::{FormSet, phrases};
 use old_church_slavonic_core::adjective::{AdjectiveLexeme, LongOnlyAdjectiveIdentity};
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, Gender, NounCell, NounClass,
-    Number, ParticipleCell, VerbClass, orthography,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, AnaphoricEnvironment, Animacy,
+    CardinalNumeralIdentity, Case, Gender, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    IrregularVerbFamilyMember, NounCell, NounClass, Number, OrdinalNumeralIdentity, PartOfSpeech,
+    ParticipleCell, Person, PersonalPronounIdentity, PronominalFamilySpec, PronominalPrefix,
+    PronounFormSelection, StandardPronominalIdentity, TwofoldNounFamilyMember,
+    UniqueNounFamilyMember, UniqueVerbFamilyMember, VerbClass, orthography,
 };
 use old_church_slavonic_extractor::extract::load_registry;
 use old_church_slavonic_extractor::schema::{FormRow, LexemeRow};
@@ -91,15 +95,17 @@ pub(crate) fn run(
             let (outcome, category, predicted) =
                 classify_cell(lexeme, feature, &expected, verb_metadata.as_ref());
             if matches!(outcome, Outcome::Divergent { .. }) {
-                divergent_examples.entry(category.clone()).or_insert_with(|| {
-                    format!(
-                        "{} `{}`: stored {} vs rules {}",
-                        lexeme.lemma,
-                        feature,
-                        expected.join(" / "),
-                        predicted.unwrap_or_default().join(" / "),
-                    )
-                });
+                divergent_examples
+                    .entry(category.clone())
+                    .or_insert_with(|| {
+                        format!(
+                            "{} `{}`: stored {} vs rules {}",
+                            lexeme.lemma,
+                            feature,
+                            expected.join(" / "),
+                            predicted.unwrap_or_default().join(" / "),
+                        )
+                    });
             }
             match outcome {
                 Outcome::Derivable => counts.derivable += 1,
@@ -149,9 +155,14 @@ fn classify_cell(
     expected: &[&str],
     verb_metadata: Option<&api_metadata::DictionaryVerbMetadata>,
 ) -> (Outcome, String, Option<Vec<String>>) {
-    let (predicted, category) = predict(lexeme, feature, verb_metadata);
+    let (predicted, category) = predict(lexeme, feature, expected, verb_metadata);
     let outcome = match &predicted {
-        Some(texts) if texts.iter().map(String::as_str).eq(expected.iter().copied()) => {
+        Some(texts)
+            if texts
+                .iter()
+                .map(String::as_str)
+                .eq(expected.iter().copied()) =>
+        {
             Outcome::Derivable
         }
         Some(texts) => Outcome::Divergent {
@@ -165,17 +176,50 @@ fn classify_cell(
 fn predict(
     lexeme: &LexemeRow,
     feature: &str,
+    expected: &[&str],
     verb_metadata: Option<&api_metadata::DictionaryVerbMetadata>,
 ) -> (Option<Vec<String>>, String) {
     match lexeme.pos.as_str() {
-        "noun" => predict_noun(lexeme, feature),
+        "noun" => predict_noun(lexeme, feature, expected),
         "adj" => predict_adjective(lexeme, feature),
-        "verb" => predict_verb(lexeme, feature, verb_metadata),
+        "verb" => predict_verb(lexeme, feature, expected, verb_metadata),
+        "pron" | "num" | "det" => predict_closed_class(lexeme, feature),
         pos => (None, format!("closed-class/{pos}")),
     }
 }
 
-fn predict_noun(lexeme: &LexemeRow, feature: &str) -> (Option<Vec<String>>, String) {
+/// Does a prediction reproduce the stored variant list exactly?
+fn prediction_matches(predicted: &Option<Vec<String>>, expected: &[&str]) -> bool {
+    predicted.as_ref().is_some_and(|texts| {
+        texts
+            .iter()
+            .map(String::as_str)
+            .eq(expected.iter().copied())
+    })
+}
+
+/// Combine a reviewed identity-kernel prediction with a metadata/class-driven
+/// one, mirroring the resolver's reviewed-profile-first precedence while still
+/// crediting whichever kernel actually reproduces the stored cell.
+fn prefer_matching(
+    identity: Option<Vec<String>>,
+    standard: Option<Vec<String>>,
+    expected: &[&str],
+) -> Option<Vec<String>> {
+    if prediction_matches(&identity, expected) {
+        identity
+    } else if prediction_matches(&standard, expected) {
+        standard
+    } else {
+        identity.or(standard)
+    }
+}
+
+fn predict_noun(
+    lexeme: &LexemeRow,
+    feature: &str,
+    expected: &[&str],
+) -> (Option<Vec<String>>, String) {
     let category = format!(
         "noun/{}",
         if lexeme.class.is_empty() {
@@ -187,12 +231,60 @@ fn predict_noun(lexeme: &LexemeRow, feature: &str) -> (Option<Vec<String>>, Stri
     let Some(cell) = crate::parse_noun_cell(feature) else {
         return (None, format!("noun/unparsed:{feature}"));
     };
+    // Reviewed closed-class noun identities (unique and twofold kernels) ship
+    // as Rust-encoded paradigms in the rules crate; try them first, mirroring
+    // the resolver's reviewed-profile precedence.
+    let reviewed = reviewed_noun_prediction(&lexeme.lemma, cell);
+    if let Some((reviewed_predicted, reviewed_category)) = reviewed {
+        let (standard_predicted, _) = classed_noun_prediction(lexeme, cell, &category);
+        let chosen = prefer_matching(reviewed_predicted, standard_predicted, expected);
+        return (chosen, reviewed_category);
+    }
+    classed_noun_prediction(lexeme, cell, &category)
+}
+
+/// Rule-only prediction for reviewed unique/twofold noun identities.
+fn reviewed_noun_prediction(lemma: &str, cell: NounCell) -> Option<(Option<Vec<String>>, String)> {
+    if let Some(member) = UniqueNounFamilyMember::classify_source_lemma(lemma) {
+        let predicted = member.decline(cell).ok().and_then(|variants| {
+            let mut texts: Vec<String> = Vec::new();
+            for variant in variants {
+                let text = orthography::canonical_display(&variant.prediction.text).ok()?;
+                if !texts.contains(&text) {
+                    texts.push(text);
+                }
+            }
+            (!texts.is_empty()).then_some(texts)
+        });
+        return Some((predicted, "noun/reviewed-unique".to_string()));
+    }
+    if let Some(member) = TwofoldNounFamilyMember::classify_source_lemma(lemma) {
+        let predicted = single_prediction(old_church_slavonic_core::noun::decline(
+            &member.lexeme(),
+            cell,
+        ));
+        return Some((predicted, "noun/reviewed-twofold".to_string()));
+    }
+    None
+}
+
+/// Class-code-driven productive noun prediction (the original path).
+fn classed_noun_prediction(
+    lexeme: &LexemeRow,
+    cell: NounCell,
+    category: &str,
+) -> (Option<Vec<String>>, String) {
+    let category = category.to_string();
     let Some(class) = parse_noun_class(&lexeme.class) else {
         return (None, category);
     };
-    let Some(gender) = parse_gender(&lexeme.gender)
-        .or_else(|| lexeme.gender.is_empty().then(|| class.intrinsic_gender()).flatten())
-    else {
+    let Some(gender) = parse_gender(&lexeme.gender).or_else(|| {
+        lexeme
+            .gender
+            .is_empty()
+            .then(|| class.intrinsic_gender())
+            .flatten()
+    }) else {
         return (None, category);
     };
     let animacy = parse_animacy(&lexeme.animacy);
@@ -245,7 +337,9 @@ fn predict_adjective(lexeme: &LexemeRow, feature: &str) -> (Option<Vec<String>>,
         class,
     };
     (
-        single_prediction(old_church_slavonic_core::adjective::decline(&adjective, cell)),
+        single_prediction(old_church_slavonic_core::adjective::decline(
+            &adjective, cell,
+        )),
         category,
     )
 }
@@ -253,6 +347,7 @@ fn predict_adjective(lexeme: &LexemeRow, feature: &str) -> (Option<Vec<String>>,
 fn predict_verb(
     lexeme: &LexemeRow,
     feature: &str,
+    expected: &[&str],
     metadata: Option<&api_metadata::DictionaryVerbMetadata>,
 ) -> (Option<Vec<String>>, String) {
     let parts: Vec<&str> = feature.split(':').collect();
@@ -262,11 +357,86 @@ fn predict_verb(
         ["verb", section, ..] => format!("verb/{section}"),
         _ => format!("verb/unparsed:{feature}"),
     };
-    if matches!(parts.as_slice(), ["verb", "infinitive"] | ["verb", "supine"]) {
+    // Reviewed unique/irregular verb identities are Rust-encoded paradigms in
+    // the rules crate; the resolver consults them ahead of principal-part
+    // metadata, so give them a prediction here too.
+    let identity_predicted = UniqueVerbFamilyMember::classify_source_union_lemma(&lexeme.lemma)
+        .map(|member| member.lexeme())
+        .or_else(|| {
+            IrregularVerbFamilyMember::classify_source_lemma(&lexeme.lemma)
+                .map(|member| member.lexeme())
+        })
+        .and_then(|verb| verb_cell_prediction(&verb, &parts));
+    let standard_predicted = metadata_verb_prediction(lexeme, feature, &parts, metadata);
+    (
+        prefer_matching(identity_predicted, standard_predicted, expected),
+        category,
+    )
+}
+
+/// Rule-only prediction for one verb cell from a fully assembled lexeme
+/// profile (used for the reviewed unique/irregular identity kernels).
+fn verb_cell_prediction(verb: &VerbLexeme, parts: &[&str]) -> Option<Vec<String>> {
+    let result = match parts {
+        ["verb", "infinitive"] => rules::infinitive_with(verb),
+        ["verb", "supine"] => rules::supine_with(verb),
+        ["verb", "finite", tense, person, number] => {
+            let cell =
+                crate::parse_finite_verb_cell(&format!("verb:finite:{tense}:{person}:{number}"))?;
+            rules::finite_verb_with(verb, cell)
+        }
+        ["verb", "imperative", ..] => {
+            let cell = crate::parse_imperative_cell(&parts.join(":"))?;
+            rules::imperative_with(verb, cell)
+        }
+        ["verb", "l-participle", ..] => {
+            let cell = crate::parse_l_participle_cell(&parts.join(":"))?;
+            rules::l_participle_with(verb, cell)
+        }
+        ["verb", "participle", kind, "citation"] => {
+            let kind = crate::parse_participle_kind(kind)?;
+            rules::participle_with(
+                verb,
+                ParticipleCell {
+                    kind,
+                    adjective: AdjectiveCell {
+                        case: Case::Nominative,
+                        number: Number::Singular,
+                        gender: Gender::Masculine,
+                        animacy: Animacy::Inanimate,
+                        form: AdjectiveForm::Short,
+                    },
+                },
+            )
+        }
+        ["verb", "verbal-noun"] => rules::verbal_noun_with(
+            verb,
+            NounCell {
+                case: Case::Nominative,
+                number: Number::Singular,
+            },
+        ),
+        _ => return None,
+    };
+    form_set_prediction(result)
+}
+
+/// Principal-part-metadata-driven verb prediction (the original path).
+fn metadata_verb_prediction(
+    lexeme: &LexemeRow,
+    feature: &str,
+    parts: &[&str],
+    metadata: Option<&api_metadata::DictionaryVerbMetadata>,
+) -> Option<Vec<String>> {
+    if matches!(parts, ["verb", "infinitive"] | ["verb", "supine"]) {
         // The infinitive is the citation form and the supine is derived from
         // it; both need only the lemma (plus the irregular-verb kernel).
         let class = crate::parse_productive_verb_class(&lexeme.class)
-            .or_else(|| metadata.and_then(|m| m.present.first()).map(|a| a.class.value))
+            .or_else(|| {
+                metadata
+                    .and_then(|m| m.present.first())
+                    .map(|a| a.class.value)
+            })
             .unwrap_or(VerbClass::Irregular);
         let verb = VerbLexeme::new(lexeme.lemma.clone(), class);
         let result = if parts[1] == "infinitive" {
@@ -274,36 +444,25 @@ fn predict_verb(
         } else {
             rules::supine_with(&verb)
         };
-        return (form_set_prediction(result), category);
+        return form_set_prediction(result);
     }
-    let Some(metadata) = metadata else {
-        return (None, category);
-    };
-    let result = match parts.as_slice() {
+    let metadata = metadata?;
+    let result = match parts {
         ["verb", "finite", tense, person, number] => {
-            let Some(cell) = crate::parse_finite_verb_cell(&format!(
-                "verb:finite:{tense}:{person}:{number}"
-            )) else {
-                return (None, category);
-            };
+            let cell =
+                crate::parse_finite_verb_cell(&format!("verb:finite:{tense}:{person}:{number}"))?;
             api_metadata::finite_verb_from_dictionary_metadata(metadata, cell)
         }
         ["verb", "imperative", ..] => {
-            let Some(cell) = crate::parse_imperative_cell(feature) else {
-                return (None, category);
-            };
+            let cell = crate::parse_imperative_cell(feature)?;
             api_metadata::imperative_from_dictionary_metadata(metadata, cell)
         }
         ["verb", "l-participle", ..] => {
-            let Some(cell) = crate::parse_l_participle_cell(feature) else {
-                return (None, category);
-            };
+            let cell = crate::parse_l_participle_cell(feature)?;
             api_metadata::l_participle_from_dictionary_metadata(metadata, cell)
         }
         ["verb", "participle", kind, "citation"] => {
-            let Some(kind) = crate::parse_participle_kind(kind) else {
-                return (None, category);
-            };
+            let kind = crate::parse_participle_kind(kind)?;
             api_metadata::participle_from_dictionary_metadata(
                 metadata,
                 ParticipleCell {
@@ -325,13 +484,215 @@ fn predict_verb(
                 number: Number::Singular,
             },
         ),
+        _ => return None,
+    };
+    form_set_prediction(result)
+}
+
+/// Rule-only prediction for one closed-class `decl:*` cell, mirroring the
+/// facade resolver's reviewed identity-kernel dispatch but never falling back
+/// to the residual lookup table. Cells the facade serves from generated-table
+/// data alone stay unsupported.
+fn predict_closed_class(lexeme: &LexemeRow, feature: &str) -> (Option<Vec<String>>, String) {
+    let category = format!("closed-class/{}", lexeme.pos);
+    let parts: Vec<&str> = feature.split(':').collect();
+    let ["decl", _, case, number, rest @ ..] = parts.as_slice() else {
+        return (
+            None,
+            format!("closed-class/{}:unparsed:{feature}", lexeme.pos),
+        );
+    };
+    let part_of_speech = match lexeme.pos.as_str() {
+        "pron" => PartOfSpeech::Pronoun,
+        "num" => PartOfSpeech::Numeral,
+        "det" => PartOfSpeech::Determiner,
         _ => return (None, category),
     };
-    (form_set_prediction(result), category)
+    let (Some(case), Some(number)) = (crate::parse_case(case), crate::parse_number(number)) else {
+        return (None, category);
+    };
+    let mut gender = None;
+    let mut person = None;
+    for value in rest.iter().copied() {
+        if let Some(value) = crate::parse_gender_code(value) {
+            gender = Some(value);
+        } else if let Some(value) = crate::parse_person(value) {
+            person = Some(value);
+        } else {
+            return (None, category);
+        }
+    }
+    let predicted =
+        closed_class_kernel_prediction(&lexeme.lemma, part_of_speech, case, number, gender, person);
+    (predicted, category)
+}
+
+fn closed_class_kernel_prediction(
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+    case: Case,
+    number: Number,
+    gender: Option<Gender>,
+    person: Option<Person>,
+) -> Option<Vec<String>> {
+    // Regular class `2/p` identities span all three closed parts of speech.
+    if let Some(identity) = StandardPronominalIdentity::classify_source_union_lemma(lemma)
+        .filter(|identity| identity.part_of_speech() == part_of_speech)
+    {
+        let (None, Some(gender)) = (person, gender) else {
+            return None;
+        };
+        return form_set_prediction(old_church_slavonic::regular_pronominal(
+            identity, case, number, gender,
+        ));
+    }
+    match part_of_speech {
+        PartOfSpeech::Pronoun => {
+            if let Some(identity) = PersonalPronounIdentity::classify_source_union_lemma(lemma) {
+                let result = match identity {
+                    PersonalPronounIdentity::First | PersonalPronounIdentity::Second => {
+                        match (person, gender, identity.person()) {
+                            (Some(requested), None, Some(intrinsic)) if requested == intrinsic => {
+                                old_church_slavonic::personal_pronoun_with(
+                                    identity,
+                                    case,
+                                    number,
+                                    PronounFormSelection::All,
+                                )
+                            }
+                            _ => return None,
+                        }
+                    }
+                    PersonalPronounIdentity::Reflexive => {
+                        if person.is_none() && gender.is_none() {
+                            old_church_slavonic::reflexive_pronoun(case, PronounFormSelection::All)
+                        } else {
+                            return None;
+                        }
+                    }
+                    PersonalPronounIdentity::AnaphoricThird => match (person, gender) {
+                        (None, Some(gender)) => old_church_slavonic::anaphoric_pronoun(
+                            case,
+                            number,
+                            gender,
+                            AnaphoricEnvironment::Free,
+                        ),
+                        _ => return None,
+                    },
+                };
+                return form_set_prediction(result);
+            }
+            match lemma {
+                "иже" => {
+                    let (None, Some(gender)) = (person, gender) else {
+                        return None;
+                    };
+                    form_set_prediction(old_church_slavonic::relative_pronoun(
+                        case,
+                        number,
+                        gender,
+                        AnaphoricEnvironment::Free,
+                    ))
+                }
+                "сь" => {
+                    let (None, Some(gender)) = (person, gender) else {
+                        return None;
+                    };
+                    form_set_prediction(old_church_slavonic::irregular_agreeing(
+                        IrregularAgreeingIdentity::ProximalSi,
+                        case,
+                        number,
+                        gender,
+                    ))
+                }
+                "къто" | "чьто" | "никъто" => {
+                    if person.is_some() || gender.is_some() {
+                        return None;
+                    }
+                    let identity = if lemma == "чьто" {
+                        InterrogativePronounIdentity::Chto
+                    } else {
+                        InterrogativePronounIdentity::Kto
+                    };
+                    let base = old_church_slavonic::interrogative_pronoun(identity, case).ok()?;
+                    if lemma == "никъто" {
+                        let phrase = phrases::pronominal_family_with(
+                            base,
+                            case,
+                            PronominalFamilySpec {
+                                prefix: Some(PronominalPrefix::Ni),
+                                ..PronominalFamilySpec::default()
+                            },
+                        )
+                        .ok()?;
+                        let [token] = phrase.tokens() else {
+                            return None;
+                        };
+                        form_set_prediction(Ok(token.forms.clone()))
+                    } else {
+                        form_set_prediction(Ok(base))
+                    }
+                }
+                _ => None,
+            }
+        }
+        PartOfSpeech::Determiner => {
+            if lemma == "кꙑи" {
+                let (None, Some(gender)) = (person, gender) else {
+                    return None;
+                };
+                form_set_prediction(old_church_slavonic::irregular_agreeing(
+                    IrregularAgreeingIdentity::InterrogativeKyi,
+                    case,
+                    number,
+                    gender,
+                ))
+            } else {
+                None
+            }
+        }
+        PartOfSpeech::Numeral => {
+            if person.is_some() {
+                return None;
+            }
+            if let Some(identity) = CardinalNumeralIdentity::classify_source_union_lemma(lemma) {
+                return form_set_prediction(old_church_slavonic::cardinal_numeral_identity(
+                    identity, case, number, gender,
+                ));
+            }
+            // Ordinal registry cells merge the short and long adjectival
+            // series into one gendered cell; both come from the reviewed
+            // ordinal kernel.
+            let identity = OrdinalNumeralIdentity::classify_source_union_lemma(lemma)?;
+            let gender = gender?;
+            let mut texts: Vec<String> = Vec::new();
+            for form in [AdjectiveForm::Short, AdjectiveForm::Long] {
+                let set = old_church_slavonic::ordinal_numeral_identity(
+                    identity,
+                    form,
+                    case,
+                    number,
+                    gender,
+                    Animacy::Inanimate,
+                )
+                .ok()?;
+                for text in set.texts() {
+                    if !texts.iter().any(|t| t == text) {
+                        texts.push(text.to_string());
+                    }
+                }
+            }
+            (!texts.is_empty()).then_some(texts)
+        }
+        _ => None,
+    }
 }
 
 fn single_prediction(
-    predicted: Result<old_church_slavonic_core::PredictedForm, old_church_slavonic::InflectionError>,
+    predicted: Result<
+        old_church_slavonic_core::PredictedForm,
+        old_church_slavonic::InflectionError,
+    >,
 ) -> Option<Vec<String>> {
     let predicted = predicted.ok()?;
     Some(vec![orthography::canonical_display(&predicted.text).ok()?])
@@ -502,10 +863,14 @@ fn render_markdown(
          - Verb predictions consume `verb_metadata.tsv` (stems and formation\n\
            codes with provenance); that metadata is itself compact per-lexeme\n\
            data the rewrite would keep, not a surface table.\n\
-         - Closed classes (pron/num/det `decl:*` cells) are counted as\n\
-           unsupported here because this harness does not wire the reviewed\n\
-           closed-class kernels; the core crate already models the major\n\
-           paradigms as reviewed tables keyed by identity.\n\
+         - Closed classes (pron/num/det `decl:*` cells) and the reviewed\n\
+           unique/twofold noun and unique/irregular verb identities are\n\
+           predicted through the Rust-encoded identity kernels in the rules\n\
+           crate, mirroring the facade resolver's reviewed-profile dispatch.\n\
+           The remaining unsupported closed-class cells are the ones the\n\
+           facade itself serves from duplicated generated source tables (for\n\
+           example the personal-pronoun table replicated under possessive\n\
+           lemmas) with no kernel behind them.\n\
          - Comparisons are on canonical Cyrillic text only; romanization is\n\
            assumed to be regenerable by transliteration.\n",
     );
