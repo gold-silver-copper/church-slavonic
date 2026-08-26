@@ -157,6 +157,23 @@ Hard rules for the target:
   check-structure-gated (all pinned keys resolve; 101,206/101,206
   round-trips). church-slavonic-orthography extraction in flight.
 
+- 2026-08-26 — OCS scope of the rewrite EXECUTED (31 commits since
+  `v0.14-pre-rewrite`, every one landing green). The target layout exists:
+  church-slavonic-core (shared vocabulary), church-slavonic-orthography
+  (shared text primitives + glagolitic + synodal modules, family cores
+  re-exporting), church-slavonic (full inflection facade: 6 POS at 100%
+  attested-oracle fidelity from 964 KB of tables, paradigm enumeration,
+  value-driven numerals, analytic phrases — all differentially or
+  self-consistency gated in check-structure), church-slavonic-dictionary
+  (senses + lemmatize, gated). Remaining scope, deliberately not taken
+  autonomously:
+  (a) declined participles as adjective-lemma derivations (no attested
+  oracle exists — extraction excluded them as not safely attributed);
+  (b) the synodal-family counterpart (its own multi-week program: the
+  8.5k-line morphology merge, exact-forms diet, accent layer);
+  (c) phase 5 release mechanics — publishing, `#[deprecated]` re-export
+  releases, and deleting the old crate families are user decisions.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
