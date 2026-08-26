@@ -128,6 +128,15 @@ Hard rules for the target:
   facade, the synodal-family counterpart, and the phase-5 deprecation
   release.
 
+- 2026-08-26 — Phase 4 progress: README + deprecation map written;
+  paradigm enumeration landed with a self-consistency gate (each paradigm
+  equals exactly what the single-cell API serves); value-driven
+  numeral()/distributive_numeral() replaced the twelve cardinal variants
+  with a 100% differential gate against the old machinery, and the
+  compound composer moved into old-church-slavonic-core. Remaining:
+  phrases, dictionary/analyze, orthography/transliteration, the synodal
+  counterpart, and the phase-5 deprecation release.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).

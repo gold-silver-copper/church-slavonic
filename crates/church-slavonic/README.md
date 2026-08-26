@@ -111,13 +111,44 @@ numeral_form("пѧть", Case::Genitive, Number::Singular, Gender::Feminine)?;
 determiner_form("кꙑи", Case::Nominative, Number::Singular, Gender::Neuter)?;
 ```
 
+### Value-driven numerals
+
+One function per construction, range 1–10,000 (the evidential myriad
+boundary), replacing the old crate's twelve compound/distributive variants:
+
+```rust
+numeral(123, Case::Nominative, Gender::Masculine, Animacy::Inanimate)?;
+distributive_numeral(5, Gender::Feminine, Animacy::Inanimate)?; // по + dative
+numeral_variants(33, Case::Nominative, Gender::Masculine, Animacy::Inanimate)?;
+```
+
+Both are gated differentially against the old machinery (cardinals
+2,919/2,919 sweep cells, distributives 417/417).
+
+### Paradigm enumeration
+
+Every lexeme's full table through the same single-cell resolution path,
+self-consistency-gated (a paradigm contains exactly the cells the
+single-cell API serves):
+
+```rust
+noun_paradigm("градъ")?;                       // Vec<(Case, Number, Vec<String>)>
+adjective_paradigm("новъ", AdjectiveForm::Long)?;
+verb_paradigm("нести")?;                       // Vec<(VerbCellKind, Vec<String>)>
+```
+
+Defective cells are honestly absent: pluralia tantum list seven plural
+cells, singular-only proper names seven singular ones, and masculines with
+no animacy fact omit the animacy-contrastive accusatives.
+
 ### Errors
 
 ```rust
 pub enum Error {
-    UnknownLemma(String),            // the facade knows nothing about this lemma
-    Underdetermined { lemma: String } // known lemma, but the metadata cannot
-                                      // determine this cell
+    UnknownLemma(String),             // the facade knows nothing about this lemma
+    Underdetermined { lemma: String }, // known lemma, but the metadata cannot
+                                       // determine this cell
+    ValueOutOfRange { value: u64 },    // numeral outside 1..=10_000
 }
 ```
 
