@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+mod alypy_oracle;
 mod morphology_completeness;
 mod ocs_lexical_union;
 mod ocs_verb_metadata;
@@ -65,6 +66,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-check") => synodal::check(&workspace_root()?),
         Some("synodal-evaluate") => synodal::evaluate_and_write(&workspace_root()?),
         Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
+        Some("alypy-paradigm-oracle") => alypy_oracle::run(&mut args, &workspace_root()?),
         Some("synodal-gold-oracle") => synodal_gold_oracle::run(&mut args, &workspace_root()?),
         Some("synodal-sources") => sources::run(&mut args, &workspace_root()?),
         Some("synodal-bootstrap") => synodal::bootstrap(&mut args, &workspace_root()?),
@@ -459,6 +461,7 @@ fn print_help() {
     eprintln!("  synodal-check");
     eprintln!("  synodal-evaluate");
     eprintln!("  synodal-guard-witnesses");
+    eprintln!("  alypy-paradigm-oracle [--check]");
     eprintln!("  synodal-gold-oracle [--check]");
     eprintln!("  synodal-sources <list|status|fetch|verify|refresh> [OPTIONS]");
     eprintln!(

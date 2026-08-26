@@ -149,3 +149,8 @@ mod tests {
         fs::remove_dir_all(root).expect("temporary cleanup");
     }
 }
+
+// Temporary wiring: the Alypy paradigm-oracle extractor is declared here so it
+// compiles and its tests run while `main.rs` is under concurrent edit. When
+// wiring the dispatch, move `mod alypy_oracle;` into `main.rs` and delete this
+// block (declaring it in both places would compile the file twice).
