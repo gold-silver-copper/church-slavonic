@@ -4,9 +4,13 @@ You are working in the church-slavonic workspace. Read first:
 `docs/REWRITE_PLAN.md` (executed — its target was already "one kernel,
 recension as a parameter, not a crate family", achieved down to the shared
 vocabulary and orthography crates), and
-`docs/SYNODAL_GOLD_ORACLE_PROMPT.md` (the gold-oracle gates; if not yet
-executed, execute it first — this merge relies on its gates to arbitrate
-every point where the recensions differ).
+`docs/SYNODAL_GOLD_ORACLE_PROMPT.md` (executed — the gold gates are live:
+`rewrite-pilot-accuracy` holds the OCS Wiktionary oracle at a hard 100%
+of 134,761 cells, and `synodal-gold` holds the Bible + Alypy oracles at
+subset-only no-regression against a committed baseline gap of 53,879
+rows, 96% of it `unregistered-lemma`). This merge relies on those gates
+to arbitrate every point where the recensions differ — and the gap's
+`unregistered-lemma` mass is the merge's concrete payoff target.
 
 ## The thesis
 
@@ -23,7 +27,9 @@ should both constrain the same lexeme.
 
 ## The target model — be precise about what is shared and what is not
 
-One `Recension` axis (already a kernel type). Three layers, with a strict
+One `Recension` axis. (Corrective note: `Recension` currently lives in
+`synodal-church-slavonic-core/src/recension.rs`, not the shared kernel —
+moving it into `church-slavonic-core` is an early phase-2 task.) Three layers, with a strict
 rule about which layer a difference lives in:
 
 1. **Lexeme identity (shared).** One lemma space keyed by an
@@ -66,19 +72,32 @@ discount, never silently:
   attested-before-predicted ordering generalizes to
   same-recension > cross-recension-projected > rule-predicted) and they
   never satisfy a gold gate by themselves.
-- The cross-recension candidate queues that today "require human
-  confirmation" become mostly mechanical: confirmation is needed only
-  where projection is ambiguous or a named divergence is in play.
+- **The accent asymmetry is a hard constraint on the prize.** OCS sources
+  are unaccented, so OCS→Synodal projection yields accentless surface
+  skeletons: enough to seed lexeme identity, declension class, and letter
+  shape, never enough to satisfy the accent-exact token gate. Accent
+  facts come only from Synodal-side evidence (the Bible's printed
+  accents, the accent paradigms). State this in every place projection
+  provenance is defined; a projected admission without a Synodal accent
+  fact is a *partial* lexeme whose accented cells remain gap rows.
+- The concrete consumer is the gold gap: its 51,235 `unregistered-lemma`
+  token types and 934 paradigm cells. Projection-seeded curated
+  admissions (still reviewed — projection never bypasses review) are the
+  burn-down accelerant. The old cross-recension review queues are gone
+  (gold phase 3); the surviving integration points are the lexical-union
+  claims ledger and the gap file itself.
 
 ## Gates — nothing weakens
 
 All existing oracles survive and gate the ONE merged engine:
 
-- OCS Wiktionary cell oracle (134,761 cells, 100%) — via the OCS
-  recension parameter.
-- Synodal Bible token oracle + witness adjudication + Alypy paradigm
-  oracle (from the gold-oracle prompt) — via the Synodal recension
-  parameter.
+- `rewrite-pilot-accuracy`: the OCS Wiktionary cell oracle (134,761
+  cells) stays at a hard 100% — via the OCS recension parameter.
+- `synodal-gold`: the Bible token oracle (58,467 types) + witness
+  adjudication + the Alypy paradigm oracle (1,604 cells) stay
+  subset-only against the committed gap — via the Synodal recension
+  parameter. Merge success is measured as gap shrink through
+  projection-seeded admissions.
 - Paradigm self-consistency and dictionary round-trip gates.
 - **New gate: projection coherence.** For every lexeme attested in both
   recensions, project each recension's attested cells into the other and
@@ -96,13 +115,19 @@ Phased like the rewrite: every slice lands green; the two old kernels are
 strangled, not big-banged.
 
 1. **Measure the overlap (no code moves).** Build the projection study as
-   an xtask command: apply candidate correspondence rules
-   (orthography-level first: jer reflexes, nasal reflexes, letter folds —
-   several already exist in the orthography crate's lookup projections)
-   to map OCS oracle lemmas/cells onto Synodal ones and vice versa.
-   Report: lexemes identifiable across recensions, cells that project
-   exactly, cells that need a morphological divergence, cells that cannot
-   be related. Commit the report. **Decision point: the plan below
+   an xtask command running entirely on committed artifacts
+   (`data/extracted` for OCS, `data/synodal/gold_token_oracle.tsv` and
+   `gold_paradigm_oracle.tsv` for Synodal): apply candidate
+   correspondence rules (orthography-level first: jer reflexes, nasal
+   reflexes, letter folds — several already exist in the orthography
+   crate's lookup projections) to map OCS oracle lemmas/cells onto
+   Synodal ones and vice versa. Report: lexemes identifiable across
+   recensions, cells that project exactly (modulo accents — count
+   accent-blind matches separately from full matches), cells that need a
+   morphological divergence, cells that cannot be related — **and the
+   headline number: how many of the gap's 51,235 unregistered token
+   types have an OCS-attested lexeme projecting onto them.** That number
+   is the merge's business case. Commit the report. **Decision point: the plan below
    assumes the exact-projection rate on shared lexemes is high (the
    thesis); if the study says otherwise, stop and re-litigate the thesis
    with the numbers rather than forcing the merge.**
@@ -129,7 +154,12 @@ strangled, not big-banged.
    rides on functions as a profile/parameter, not as parallel function
    sets — decide `noun(lemma, case, number, recension)` vs a
    `Recension`-scoped handle once, in the phase-2 design doc, and apply
-   uniformly. `synodal-church-slavonic`'s Inflector/analyze layer merges
+   uniformly. This is a breaking release (0.3.0) of a published crate:
+   follow the established deprecation-release precedent, and specify how
+   the deterministic homograph suffix keys interact with the shared
+   identity layer (one suffix assignment per abstract lexeme, projected
+   to both recensions — never per-recension re-sorting, which would let
+   the same identity carry different keys in different recensions). `synodal-church-slavonic`'s Inflector/analyze layer merges
    into `church-slavonic-dictionary`'s analyze layer with recension-aware
    readings. The synodal crate names get the same deprecation-release-
    then-delete treatment.
