@@ -27,7 +27,7 @@ use old_church_slavonic_core::{
     VerbAspect, VerbClass,
 };
 use old_church_slavonic_extractor::extract::load_registry;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt::Write as _;
 use std::fs;
@@ -2074,5 +2074,203 @@ pub(crate) fn accuracy(
             .into());
         }
     }
+    paradigm_consistency(&oracle, &adjectives, &verbs, &closed)?;
     Ok(())
 }
+
+/// Paradigm self-consistency gate: for every attested lexeme, the enumerated
+/// `*_paradigm` listing must contain exactly the cells the single-cell API
+/// serves (no more, no fewer), in the enumeration order, and agree on every
+/// variant list. Both sides are probed through the public API, so this is a
+/// pure re-derivation with no second oracle.
+fn paradigm_consistency(
+    nouns: &NounOracle,
+    adjectives: &AdjectiveOracle,
+    verbs: &VerbOracle,
+    closed: &ClosedOracle,
+) -> Result<(), Box<dyn Error>> {
+    use church_slavonic::VerbCellKind;
+
+    fn grid() -> impl Iterator<Item = (Case, Number)> {
+        Case::ALL
+            .into_iter()
+            .flat_map(|case| Number::ALL.into_iter().map(move |number| (case, number)))
+    }
+
+    let mut mismatches: Vec<String> = Vec::new();
+
+    let noun_lemmas: BTreeSet<&String> = nouns.cells.keys().map(|(lemma, _)| lemma).collect();
+    let mut noun_cells = 0usize;
+    for lemma in &noun_lemmas {
+        let expected: Vec<(Case, Number, Vec<String>)> = grid()
+            .filter_map(|(case, number)| {
+                church_slavonic::noun_variants(lemma, case, number)
+                    .ok()
+                    .map(|variants| (case, number, variants))
+            })
+            .collect();
+        noun_cells += expected.len();
+        if church_slavonic::noun_paradigm(lemma).as_ref() != Ok(&expected)
+            && mismatches.len() < 20
+        {
+            mismatches.push(format!("noun {lemma}: paradigm disagrees with single-cell API"));
+        }
+    }
+
+    let adjective_lemmas: BTreeSet<&String> =
+        adjectives.cells.keys().map(|(lemma, _)| lemma).collect();
+    let mut adjective_cells = 0usize;
+    for lemma in &adjective_lemmas {
+        for form in [AdjectiveForm::Long, AdjectiveForm::Short] {
+            let expected: Vec<(Case, Number, Gender, Vec<String>)> = grid()
+                .flat_map(|(case, number)| {
+                    Gender::ALL
+                        .into_iter()
+                        .map(move |gender| (case, number, gender))
+                })
+                .filter_map(|(case, number, gender)| {
+                    let produced = match form {
+                        AdjectiveForm::Long => {
+                            church_slavonic::adjective_variants(lemma, case, number, gender)
+                        }
+                        AdjectiveForm::Short => {
+                            church_slavonic::short_adjective_variants(lemma, case, number, gender)
+                        }
+                    };
+                    produced.ok().map(|variants| (case, number, gender, variants))
+                })
+                .collect();
+            adjective_cells += expected.len();
+            if church_slavonic::adjective_paradigm(lemma, form).as_ref() != Ok(&expected)
+                && mismatches.len() < 20
+            {
+                mismatches.push(format!(
+                    "adjective {lemma} ({form:?}): paradigm disagrees with single-cell API"
+                ));
+            }
+        }
+    }
+
+    let verb_lemmas: BTreeSet<&String> = verbs.cells.keys().map(|(lemma, _)| lemma).collect();
+    let mut verb_cells = 0usize;
+    for lemma in &verb_lemmas {
+        let expected: Vec<(VerbCellKind, Vec<String>)> = VerbCellKind::all()
+            .into_iter()
+            .filter_map(|kind| {
+                let produced = match kind {
+                    VerbCellKind::Present { person, number } => {
+                        church_slavonic::present_variants(lemma, person, number)
+                    }
+                    VerbCellKind::Imperfect { person, number } => {
+                        church_slavonic::imperfect_variants(lemma, person, number)
+                    }
+                    VerbCellKind::Aorist { person, number } => {
+                        church_slavonic::aorist_variants(lemma, person, number)
+                    }
+                    VerbCellKind::Imperative { person, number } => {
+                        church_slavonic::imperative_variants(lemma, person, number)
+                    }
+                    VerbCellKind::LParticiple { gender, number } => {
+                        church_slavonic::l_participle_variants(lemma, gender, number)
+                    }
+                    VerbCellKind::Infinitive => church_slavonic::infinitive_variants(lemma),
+                    VerbCellKind::Supine => church_slavonic::supine_variants(lemma),
+                    VerbCellKind::VerbalNoun => church_slavonic::verbal_noun_variants(lemma),
+                    VerbCellKind::PresentActiveParticiple => {
+                        church_slavonic::present_active_participle_variants(lemma)
+                    }
+                    VerbCellKind::PresentPassiveParticiple => {
+                        church_slavonic::present_passive_participle_variants(lemma)
+                    }
+                    VerbCellKind::PastActiveParticiple => {
+                        church_slavonic::past_active_participle_variants(lemma)
+                    }
+                    VerbCellKind::PastPassiveParticiple => {
+                        church_slavonic::past_passive_participle_variants(lemma)
+                    }
+                };
+                produced.ok().map(|variants| (kind, variants))
+            })
+            .collect();
+        verb_cells += expected.len();
+        if church_slavonic::verb_paradigm(lemma).as_ref() != Ok(&expected)
+            && mismatches.len() < 20
+        {
+            mismatches.push(format!("verb {lemma}: paradigm disagrees with single-cell API"));
+        }
+    }
+
+    let closed_lemmas: BTreeSet<&String> = closed.cells.keys().map(|(lemma, _)| lemma).collect();
+    let mut closed_cells = 0usize;
+    for lemma in &closed_lemmas {
+        let (pos_code, shape) = closed.meta[*lemma];
+        let single = |case, number, gender| match pos_code {
+            1 => church_slavonic::pronoun_form_variants(lemma, case, number, gender),
+            2 => church_slavonic::numeral_form_variants(lemma, case, number, gender),
+            _ => church_slavonic::determiner_form_variants(lemma, case, number, gender),
+        };
+        let expected: Vec<(Case, Number, Option<Gender>, Vec<String>)> = if shape & 2 != 0 {
+            grid()
+                .flat_map(|(case, number)| {
+                    Gender::ALL
+                        .into_iter()
+                        .map(move |gender| (case, number, gender))
+                })
+                .filter_map(|(case, number, gender)| {
+                    single(case, number, gender)
+                        .ok()
+                        .map(|variants| (case, number, Some(gender), variants))
+                })
+                .collect()
+        } else if shape & 1 != 0 {
+            grid()
+                .filter_map(|(case, number)| {
+                    single(case, number, Gender::Masculine)
+                        .ok()
+                        .map(|variants| (case, number, None, variants))
+                })
+                .collect()
+        } else {
+            Vec::new()
+        };
+        closed_cells += expected.len();
+        let paradigm = match pos_code {
+            1 => church_slavonic::pronoun_form_paradigm(lemma),
+            2 => church_slavonic::numeral_form_paradigm(lemma),
+            _ => church_slavonic::determiner_form_paradigm(lemma),
+        };
+        if paradigm.as_ref() != Ok(&expected) && mismatches.len() < 20 {
+            mismatches.push(format!("closed {lemma}: paradigm disagrees with single-cell API"));
+        }
+    }
+
+    println!("rewrite pilot paradigm consistency (enumerated paradigms vs the single-cell API)");
+    println!(
+        "  nouns: {} lexemes / {noun_cells} servable cells consistent",
+        noun_lemmas.len()
+    );
+    println!(
+        "  adjectives: {} lexemes / {adjective_cells} servable cells consistent",
+        adjective_lemmas.len()
+    );
+    println!(
+        "  verbs: {} lexemes / {verb_cells} servable cells consistent",
+        verb_lemmas.len()
+    );
+    println!(
+        "  closed classes: {} lexemes / {closed_cells} servable cells consistent",
+        closed_lemmas.len()
+    );
+    for line in &mismatches {
+        println!("  MISMATCH {line}");
+    }
+    if !mismatches.is_empty() {
+        return Err(format!(
+            "paradigm consistency failed for {} lexeme(s)",
+            mismatches.len()
+        )
+        .into());
+    }
+    Ok(())
+}
+

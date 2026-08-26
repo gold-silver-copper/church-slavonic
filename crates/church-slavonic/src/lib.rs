@@ -162,7 +162,7 @@ use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::unique_noun::UniqueNounFamilyMember;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, AnaphoricEnvironment, Animacy, AoristFormation,
+    AdjectiveCell, AdjectiveClass, AnaphoricEnvironment, Animacy, AoristFormation,
     CardinalNumeralIdentity, FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation,
     ImperfectFormation, ImperfectVariantPolicy, InterrogativePronounIdentity,
     IrregularAgreeingIdentity, IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass,
@@ -174,7 +174,14 @@ use old_church_slavonic_core::{
     VerbClass, numeral, orthography, pronoun,
 };
 
-pub use church_slavonic_core::grammar::{Case, Gender, Number, Person};
+pub use church_slavonic_core::grammar::{AdjectiveForm, Case, Gender, Number, Person};
+
+mod paradigm;
+pub use paradigm::{
+    AdjectiveParadigm, ClosedParadigm, NounParadigm, VerbCellKind, VerbParadigm,
+    adjective_paradigm, determiner_form_paradigm, noun_paradigm,
+    numeral_form_paradigm, pronoun_form_paradigm, verb_paradigm,
+};
 
 mod generated {
     include!(concat!(
@@ -483,7 +490,7 @@ pub fn kernel_adjective_variants(
     ))
 }
 
-fn adjective_form_variants(
+pub(crate) fn adjective_form_variants(
     lemma: &str,
     form: AdjectiveForm,
     case: Case,
@@ -1149,7 +1156,7 @@ pub fn closed_cell_code(
     Some(cell_code(case, number) * 6 + dim)
 }
 
-fn closed_pos_code(pos: PartOfSpeech) -> u8 {
+pub(crate) fn closed_pos_code(pos: PartOfSpeech) -> u8 {
     match pos {
         PartOfSpeech::Pronoun => 1,
         PartOfSpeech::Numeral => 2,
