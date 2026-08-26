@@ -53,6 +53,8 @@ pub(crate) fn exact_forms(id: &LexemeId, cell: &str) -> Vec<ExactFormRecord> {
             printed: row.0[3],
             evidence_id: row.0[4],
             source_kind: row.0[5],
+            irregular_system: row.0[7],
+            irregular_evidence: row.0[8],
         })
         .collect()
 }
@@ -213,28 +215,6 @@ pub(crate) fn has_accent_data(id: &LexemeId) -> bool {
         || rows_for(EXACT_FORMS, |row| row.0[0], id.as_str())
             .iter()
             .any(|row| row.0[2] != row.0[3])
-}
-
-pub(crate) fn irregular_evidence_for(id: &LexemeId, cell_key: &str) -> Option<&'static str> {
-    IRREGULAR_OVERRIDES
-        .iter()
-        .find(|row| {
-            if row.0[0] != id.as_str() {
-                return false;
-            }
-            match row.0[1] {
-                "present" => cell_key.starts_with("present:"),
-                "future" => cell_key.starts_with("future:"),
-                "aorist" => cell_key.starts_with("aorist:"),
-                "imperfect" => cell_key.starts_with("imperfect:"),
-                "imperative" => cell_key.starts_with("imperative:"),
-                "noun-singular-dative-and-plural" => {
-                    cell_key.starts_with("noun:dative:singular:") || cell_key.contains(":plural:")
-                }
-                _ => false,
-            }
-        })
-        .map(|row| row.0[3])
 }
 
 pub(crate) fn accent_for(id: &LexemeId, cell: &str, expanded: &str) -> Option<AccentRecord> {

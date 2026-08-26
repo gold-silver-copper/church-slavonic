@@ -120,10 +120,15 @@ assert_eq!(batch.failures().count(), 1);
 # Ok::<(), synodal_church_slavonic::Error>(())
 ```
 
-Provider exact cells precede the entry's caller-specified irregular cells,
-which precede its productive background. Ordered variants and failures are not
-collapsed. Duplicate stable IDs return `ErrorCode::ProviderConflict`; distinct
-homographs remain an explicit `AmbiguousLexeme`.
+Resolution follows one override precedence everywhere: the generated merged
+irregular table (exact reviewed cells, with irregular-override provenance
+stamped on the rows the curated `irregular_overrides.tsv` covers) precedes
+typed defects, which precede the productive rule kernel. Providers supply
+typed lexical specifications only; they cannot inject surface forms, so every
+exact form lives in the reviewed data-side table. Ordered variants and
+failures are not collapsed. Duplicate stable IDs return
+`ErrorCode::ProviderConflict`; distinct homographs remain an explicit
+`AmbiguousLexeme`.
 
 Short comparison uses a typed, independently supplied formation:
 
@@ -264,8 +269,8 @@ assert_eq!(form.primary_text(), "мꙋ́драгѡ");
 Direct lemma-plus-dimension functions include `noun`, `long_adjective`,
 `short_adjective`, `present`, `imperfect`, `aorist`, `imperative`, `infinitive`,
 `l_participle`, `pronoun`, `determiner`, `numeral`, `participle`, `supine`, and
-`verbal_noun`. The distinct target supine is historically invalid (with
-explicit caller provider-exact and irregular interoperability seams);
+`verbal_noun`. The distinct target supine is historically invalid (a reviewed
+exact registry cell is the only interoperability seam);
 verbal nouns use Alypy §27's past-passive-platform `-їе` rule or a complete
 caller-supplied lexical noun. Neither category becomes a placeholder or
 plausible guess.

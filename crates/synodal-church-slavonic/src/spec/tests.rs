@@ -543,105 +543,7 @@ fn source_selected_wide_ending_is_applied_before_accent() {
 }
 
 #[test]
-fn noun_irregular_forms_cannot_bypass_lexical_inventories() {
-    let inanimate = GrammarCell::Noun(NounCell {
-        case: Case::Nominative,
-        number: Number::Singular,
-        animacy: Animacy::Inanimate,
-    });
-    let inanimate_form =
-        SpecifiedForm::new(inanimate, "врагъ", None::<String>, source()).expect("form");
-    let animate_only = NounSpec::new(
-        "врагъ",
-        "враг",
-        Gender::Masculine,
-        NounDeclension::FirstHardMasculine,
-        source(),
-    )
-    .expect("noun")
-    .with_animacy_inventory(synodal_church_slavonic_core::NounAnimacyInventory::AnimateOnly)
-    .expect("animate restriction");
-    assert!(matches!(
-        animate_only.with_irregular_form(inanimate_form),
-        Err(Error::ContradictoryMetadata { .. })
-    ));
-
-    let plural = GrammarCell::Noun(NounCell {
-        case: Case::Nominative,
-        number: Number::Plural,
-        animacy: Animacy::Animate,
-    });
-    let plural_form = SpecifiedForm::new(plural, "врази", None::<String>, source()).expect("form");
-    let singular_only = NounSpec::new(
-        "врагъ",
-        "враг",
-        Gender::Masculine,
-        NounDeclension::FirstHardMasculine,
-        source(),
-    )
-    .expect("noun")
-    .with_number_inventory(synodal_church_slavonic_core::NounNumberInventory::SingularOnly)
-    .expect("singular restriction");
-    assert!(matches!(
-        singular_only.with_irregular_form(plural_form),
-        Err(Error::ContradictoryMetadata { .. })
-    ));
-}
-
-#[test]
-fn exact_liturgical_override_precedes_reusable_positional_metadata() {
-    let source = source();
-    let cell = GrammarCell::Noun(NounCell {
-        case: Case::Nominative,
-        number: Number::Singular,
-        animacy: Animacy::Inanimate,
-    });
-    let positional = source.positional_paradigm(
-        "yazyk-people-rule",
-        vec![PositionalRule {
-            scope: AccentScope::All,
-            operations: vec![PositionalOperation::Initial(InitialPresentation::IotatedYa)],
-        }],
-    );
-    let exact = SpecifiedForm::new(cell, "ѧзыкъ", Some("ѧ҆зы́къ"), source.clone())
-        .expect("valid exact yazyk form");
-    let spec = NounSpec::new(
-        "ѧзыкъ",
-        "ѧзык",
-        Gender::Masculine,
-        NounDeclension::FirstHardMasculine,
-        source,
-    )
-    .expect("valid yazyk noun specification")
-    .with_positional_paradigm(positional)
-    .expect("valid yazyk positional paradigm")
-    .with_irregular_form(exact)
-    .expect("valid exact yazyk override");
-    let forms = spec
-        .form_with(
-            Inflector::builder()
-                .orthography(OrthographyProfile::SynodalLiturgical)
-                .build(),
-            match cell {
-                GrammarCell::Noun(cell) => cell,
-                _ => unreachable!(),
-            },
-        )
-        .expect("exact yazyk liturgical form");
-    assert_eq!(forms.primary_text(), "ѧ҆зы́къ");
-    assert!(forms.primary().rule_trace.steps().iter().all(|step| {
-        step.stage != "lexical-positional-realization"
-            && step.stage != "accent-paradigm-realization"
-    }));
-}
-
-#[test]
-fn partial_irregular_falls_back_and_defect_is_structured() {
-    let dative = GrammarCell::Noun(NounCell {
-        case: Case::Dative,
-        number: Number::Singular,
-        animacy: Animacy::Animate,
-    });
+fn defect_is_structured_and_regular_background_falls_back() {
     let defective = GrammarCell::Noun(NounCell {
         case: Case::Locative,
         number: Number::Dual,
@@ -655,36 +557,12 @@ fn partial_irregular_falls_back_and_defect_is_structured() {
         source(),
     )
     .expect("noun")
-    .with_irregular_form(
-        SpecifiedForm::new(
-            dative,
-            "сынови",
-            None::<String>,
-            SpecificationSource::new(
-                "alypy-37-synovi",
-                "alypy-gamanovich-grammar-web-2023",
-                "Alypy §37",
-            )
-            .expect("source"),
-        )
-        .expect("override"),
-    )
-    .expect("irregular")
     .with_defective_cell(DefectiveCell::evidence_incomplete(
         defective,
         MetadataField::IrregularOverride,
         "no reviewed dual locative override is supplied by this specification",
     ))
     .expect("defect");
-    assert_eq!(
-        spec.form(match dative {
-            GrammarCell::Noun(cell) => cell,
-            _ => unreachable!(),
-        })
-        .expect("override")
-        .primary_text(),
-        "сынови"
-    );
     let fallback = spec
         .form(NounCell {
             case: Case::Genitive,
@@ -699,58 +577,6 @@ fn partial_irregular_falls_back_and_defect_is_structured() {
         .find(|row| row.cell() == defective)
         .expect("defective row retained");
     assert_eq!(row.status(), crate::ParadigmStatus::EvidenceIncomplete);
-}
-
-#[test]
-fn caller_irregular_variants_preserve_declared_order_per_cell() {
-    let cell = GrammarCell::Noun(NounCell {
-        case: Case::Genitive,
-        number: Number::Singular,
-        animacy: Animacy::Inanimate,
-    });
-    let first = SpecifiedForm::new(cell, "любве", Some("любве́"), source()).expect("first variant");
-    let second =
-        SpecifiedForm::new(cell, "любви", Some("любвѝ"), source()).expect("second variant");
-    let spec = NounSpec::new(
-        "любовь",
-        "любв",
-        Gender::Feminine,
-        NounDeclension::FourthFeminineOvSyncopating,
-        source(),
-    )
-    .expect("noun")
-    .with_irregular_form(first.clone())
-    .expect("first override")
-    .with_irregular_form(second)
-    .expect("ordered override");
-
-    assert_eq!(
-        spec.form(match cell {
-            GrammarCell::Noun(cell) => cell,
-            _ => unreachable!(),
-        })
-        .expect("ordered caller variants")
-        .texts()
-        .collect::<Vec<_>>(),
-        ["любве", "любви"]
-    );
-    assert!(matches!(
-        spec.clone().with_irregular_form(first),
-        Err(Error::ContradictoryMetadata { .. })
-    ));
-
-    let liturgical = spec
-        .form_with(
-            Inflector::builder()
-                .orthography(OrthographyProfile::SynodalLiturgical)
-                .build(),
-            match cell {
-                GrammarCell::Noun(cell) => cell,
-                _ => unreachable!(),
-            },
-        )
-        .expect("ordered accented caller variants");
-    assert_eq!(liturgical.texts().collect::<Vec<_>>(), ["любве́", "любвѝ"]);
 }
 
 #[test]
@@ -1036,27 +862,6 @@ fn absent_supine_and_productive_verbal_noun_are_distinguished() {
         .expect("productive verbal noun")
         .primary_text(),
         "моленїе"
-    );
-
-    let compatibility = VerbSpec::builder(
-        "нести",
-        Aspect::Imperfective,
-        VerbConjugation::FirstUnpalatalized,
-        source(),
-    )
-    .expect("verb")
-    .irregular_form(
-        SpecifiedForm::new(GrammarCell::Supine, "нестъ", None::<String>, source())
-            .expect("explicit compatibility cell"),
-    )
-    .build()
-    .expect("verb with explicit compatibility cell");
-    assert_eq!(
-        compatibility
-            .form(GrammarCell::Supine)
-            .expect("caller exact compatibility form")
-            .primary_text(),
-        "нестъ"
     );
 }
 

@@ -254,6 +254,12 @@ pub(crate) struct ExactFormRecord {
     pub printed: &'static str,
     pub evidence_id: &'static str,
     pub source_kind: &'static str,
+    /// Irregular-override system label stamped by the extractor's merged
+    /// irregular table; empty for a regular exact row.
+    pub irregular_system: &'static str,
+    /// Comma-separated reviewed evidence IDs for the irregular override;
+    /// empty for a regular exact row.
+    pub irregular_evidence: &'static str,
 }
 
 #[derive(Clone, Copy, Debug)]

@@ -22,7 +22,7 @@ pub(crate) struct RawNounRestriction(pub [&'static str; 5]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawPrincipalPart(pub [&'static str; 6]);
 #[derive(Clone, Copy, Debug)]
-pub(crate) struct RawExactForm(pub [&'static str; 7]);
+pub(crate) struct RawExactForm(pub [&'static str; 9]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawAlignment(pub [&'static str; 11]);
 #[derive(Clone, Copy, Debug)]
@@ -44,8 +44,6 @@ pub(crate) struct RawPositionalParadigm(pub [&'static str; 9]);
 pub(crate) struct RawTransformationRule(pub [&'static str; 6]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawConflict(pub [&'static str; 8]);
-#[derive(Clone, Copy, Debug)]
-pub(crate) struct RawIrregularOverride(pub [&'static str; 5]);
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct RawDefectiveInventory(pub [&'static str; 8]);
 #[derive(Clone, Copy, Debug)]

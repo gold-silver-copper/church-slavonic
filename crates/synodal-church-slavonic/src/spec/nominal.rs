@@ -116,12 +116,6 @@ impl NounSpec {
         Ok(self)
     }
 
-    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
-        self.context.irregular_forms.push(form);
-        self.validate()?;
-        Ok(self)
-    }
-
     pub fn with_defective_cell(mut self, cell: DefectiveCell) -> Result<Self> {
         self.context.defective_cells.push(cell);
         self.validate()?;
@@ -131,20 +125,6 @@ impl NounSpec {
     pub fn validate(&self) -> Result<()> {
         self.context.validate()?;
         validate_context_cells(&self.context, |cell| matches!(cell, GrammarCell::Noun(_)))?;
-        for form in &self.context.irregular_forms {
-            let GrammarCell::Noun(cell) = form.cell else {
-                continue;
-            };
-            if !self.lexeme.number_inventory.contains(cell.number)
-                || !self.lexeme.animacy_inventory.contains(cell.animacy)
-            {
-                return Err(Error::ContradictoryMetadata {
-                    reason: format!(
-                        "irregular noun cell {cell:?} is outside the licensed number or animacy inventory"
-                    ),
-                });
-            }
-        }
         validate_noun_lexeme(&self.lexeme)
     }
 }
@@ -257,12 +237,6 @@ impl AdjectiveSpec {
         Ok(self)
     }
 
-    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
-        self.context.irregular_forms.push(form);
-        self.validate()?;
-        Ok(self)
-    }
-
     pub fn with_defective_cell(mut self, cell: DefectiveCell) -> Result<Self> {
         self.context.defective_cells.push(cell);
         self.validate()?;
@@ -354,12 +328,6 @@ impl DeterminerSpec {
 
     pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
         self.context.positional = Some(positional);
-        self.validate()?;
-        Ok(self)
-    }
-
-    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
-        self.context.irregular_forms.push(form);
         self.validate()?;
         Ok(self)
     }
@@ -462,12 +430,6 @@ impl NumeralSpec {
 
     pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
         self.context.positional = Some(positional);
-        self.validate()?;
-        Ok(self)
-    }
-
-    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
-        self.context.irregular_forms.push(form);
         self.validate()?;
         Ok(self)
     }
@@ -600,12 +562,6 @@ impl PronounSpec {
 
     pub fn with_positional_paradigm(mut self, positional: PositionalParadigm) -> Result<Self> {
         self.context.positional = Some(positional);
-        self.validate()?;
-        Ok(self)
-    }
-
-    pub fn with_irregular_form(mut self, form: SpecifiedForm) -> Result<Self> {
-        self.context.irregular_forms.push(form);
         self.validate()?;
         Ok(self)
     }

@@ -7,7 +7,7 @@ mod verb;
 #[cfg(test)]
 mod tests;
 
-pub use context::{DefectKind, DefectiveCell, SpecificationSource, SpecifiedForm};
+pub use context::{DefectKind, DefectiveCell, SpecificationSource};
 pub(crate) use context::SpecContext;
 pub use lexeme::LexemeSpec;
 pub(crate) use lexeme::LexemeSpecInner;

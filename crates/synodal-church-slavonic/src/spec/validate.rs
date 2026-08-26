@@ -19,16 +19,12 @@ pub(crate) fn validate_context_cells(
     accepts: impl Fn(GrammarCell) -> bool,
 ) -> Result<()> {
     if context
-        .irregular_forms
+        .defective_cells
         .iter()
-        .any(|form| !accepts(form.cell))
-        || context
-            .defective_cells
-            .iter()
-            .any(|cell| !accepts(cell.cell))
+        .any(|cell| !accepts(cell.cell))
     {
         return Err(Error::ContradictoryMetadata {
-            reason: "an irregular or defective cell belongs to a different part of speech".into(),
+            reason: "a defective cell belongs to a different part of speech".into(),
         });
     }
     Ok(())

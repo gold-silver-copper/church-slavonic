@@ -34,7 +34,7 @@ Target recension: `synodal-russian`. The curated normalized layer contains 14573
 | `v10_exact_cell_corrections.tsv` | 5 |
 | `verb_defectiveness.tsv` | 5 |
 
-Generated morphology SHA-256: `94d60d70f504bc9e04c0c7e65afd71d4e9f8f39339ab2a062580309503d5e47f`.
+Generated morphology SHA-256: `7c42ce596dd8ad263fc5471aaf6a3c55b8fae1ecd2e1d2fe722e8e9f12bdebb3`.
 
 Generated dictionary SHA-256: `04821bc3c902c2d356be1455f8b7124a360053de778477983df4a2b8d312f58a`.
 

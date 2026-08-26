@@ -6,121 +6,11 @@ use synodal_church_slavonic_core::{
 };
 
 use crate::{
-    DefectKind, Inflector, LexemeSpec, SpecificationSource, SpecifiedForm,
+    DefectKind, Inflector, LexemeSpec, SpecificationSource,
     kernel::{ProductiveLexeme, absent_synodal_supine, generate_productive},
     registry,
     spec::LexemeSpecInner,
 };
-
-fn specified_form_with_rule(
-    inflector: Inflector,
-    form: &SpecifiedForm,
-    accent: Option<&AccentParadigm>,
-    positional: Option<&PositionalParadigm>,
-    rule: &'static str,
-    stage: &'static str,
-) -> Result<FormSet> {
-    let expanded = form.expanded.canonical().to_owned();
-    let rule = RuleId::from(rule);
-    let evidence = form.source.evidence(EvidenceKind::LexicalMetadata);
-    let evidence_id = evidence.id.clone();
-    let (printed, accented, warnings) = match inflector.orthography() {
-        OrthographyProfile::Expanded => (expanded.clone(), None, vec![]),
-        OrthographyProfile::ExpandedAccentless => (
-            normalize_lookup_accentless(&expanded),
-            None,
-            vec!["accent and breathing marks removed by requested profile".into()],
-        ),
-        OrthographyProfile::SynodalLiturgical => {
-            if let Some(liturgical) = &form.liturgical {
-                (
-                    liturgical.as_str().to_owned(),
-                    Some(liturgical.as_str().to_owned()),
-                    vec![],
-                )
-            } else {
-                (expanded.clone(), None, vec![])
-            }
-        }
-    };
-    let forms = FormSet::new(FormVariant {
-        expanded: expanded.clone(),
-        accented,
-        printed: printed.clone(),
-        romanization: None,
-        source_recension: Some(Recension::SynodalRussian),
-        target_recension: Recension::SynodalRussian,
-        recension_mapping: None,
-        confidence: Confidence::from_basis_points(9_500).unwrap_or(Confidence::CERTAIN),
-        source: FormSource::CallerSpecifiedPrediction {
-            rule: rule.clone(),
-            evidence: evidence_id.clone(),
-        },
-        assumptions: vec![],
-        evidence: vec![evidence],
-        contradictions: vec![],
-        warnings,
-        rule_trace: RuleTrace::new(vec![TraceStep {
-            rule,
-            stage: stage.into(),
-            input: expanded,
-            output: printed,
-            source_recension: Some(Recension::SynodalRussian),
-            target_recension: Recension::SynodalRussian,
-            mapping: None,
-            evidence: vec![evidence_id],
-        }]),
-    })?;
-    if inflector.orthography() == OrthographyProfile::SynodalLiturgical && form.liturgical.is_none()
-    {
-        let accent = accent.ok_or(Error::OrthographicMetadataRequired {
-            field: synodal_church_slavonic_core::MetadataField::AccentParadigm,
-        })?;
-        let positional = positional.ok_or(Error::OrthographicMetadataRequired {
-            field: synodal_church_slavonic_core::MetadataField::PositionalParadigm,
-        })?;
-        let forms = apply_positional_paradigm(forms, form.cell, positional)?;
-        apply_accent_paradigm(forms, form.cell, accent)
-    } else {
-        Ok(forms)
-    }
-}
-
-pub(crate) fn provided_exact_forms(
-    inflector: Inflector,
-    forms: &[&SpecifiedForm],
-    accent: Option<&AccentParadigm>,
-    positional: Option<&PositionalParadigm>,
-) -> Result<FormSet> {
-    specified_forms_with_rule(
-        inflector,
-        forms,
-        accent,
-        positional,
-        "SYN-PROVIDER-EXACT-OVERRIDE",
-        "provider-exact-override",
-    )
-}
-
-fn specified_forms_with_rule(
-    inflector: Inflector,
-    forms: &[&SpecifiedForm],
-    accent: Option<&AccentParadigm>,
-    positional: Option<&PositionalParadigm>,
-    rule: &'static str,
-    stage: &'static str,
-) -> Result<FormSet> {
-    let mut variants = Vec::new();
-    for form in forms {
-        variants.extend(
-            specified_form_with_rule(inflector, form, accent, positional, rule, stage)?
-                .variants()
-                .iter()
-                .cloned(),
-        );
-    }
-    FormSet::try_from_variants(variants)
-}
 
 fn mark_caller_specified(forms: FormSet, source: &SpecificationSource) -> Result<FormSet> {
     let metadata = source.evidence(EvidenceKind::LexicalMetadata);
@@ -224,21 +114,6 @@ pub(crate) fn resolve_spec(
 ) -> Result<FormSet> {
     spec.validate()?;
     let context = spec.context();
-    let irregular = context
-        .irregular_forms
-        .iter()
-        .filter(|form| form.cell == cell)
-        .collect::<Vec<_>>();
-    if !irregular.is_empty() {
-        return specified_forms_with_rule(
-            inflector,
-            &irregular,
-            context.accent.as_ref(),
-            context.positional.as_ref(),
-            "SYN-CALLER-IRREGULAR-OVERRIDE",
-            "caller-irregular-override",
-        );
-    }
     if let Some(defect) = context
         .defective_cells
         .iter()
@@ -707,7 +582,12 @@ fn exact_forms(
     key: &str,
     records: &[registry::ExactFormRecord],
 ) -> Result<FormSet> {
-    let irregular_evidence = registry::irregular_evidence_for(id, key);
+    // The merged irregular table: an exact row stamped with irregular
+    // provenance by the extractor is the override; no second lookup exists.
+    let irregular_evidence = records
+        .iter()
+        .map(|record| record.irregular_evidence)
+        .find(|evidence| !evidence.is_empty());
     let irregular_records = irregular_evidence
         .map(registry::reviewed_evidence)
         .transpose()?

@@ -204,6 +204,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
     validate_conflicts(&conflict_path, &conflicts)?;
     validate_conflict_evidence(&conflict_path, &conflicts, &reviewed_evidence)?;
     validate_irregular_overrides(&irregular_path, &irregular_overrides)?;
+    merge_irregular_overrides(&irregular_path, &mut exact_forms, &irregular_overrides)?;
     validate_defective_inventories(&defective_inventory_path, &defective_inventories, &lexemes)?;
     validate_irregular_verb_inventory(&irregular_inventory_path, &irregular_inventory)?;
     validate_morphology_evidence(
@@ -267,7 +268,6 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         positional_rules: positional_rules.clone(),
         transformation_rules: transformation_rules.clone(),
         conflicts: conflicts.clone(),
-        irregular_overrides: irregular_overrides.clone(),
         defective_inventories: defective_inventories.clone(),
         irregular_inventory: irregular_inventory.clone(),
         evidence_provenance,
@@ -393,4 +393,70 @@ pub fn generate_dictionary_registry(
         semantic_alignments: semantic_alignments.rows.len(),
         output_sha256,
     })
+}
+
+/// True when an irregular-override `system` label covers the exact-form
+/// `cell` key. This is the single place the label-to-cell mapping lives;
+/// the runtime consumes the stamped column instead of re-deriving it.
+fn irregular_system_covers(system: &str, cell: &str) -> bool {
+    match system {
+        "present" | "future" | "aorist" | "imperfect" | "imperative" => {
+            cell.starts_with(system) && cell.as_bytes().get(system.len()) == Some(&b':')
+        }
+        "noun-singular-dative-and-plural" => {
+            cell.starts_with("noun:dative:singular:") || cell.contains(":plural:")
+        }
+        _ => false,
+    }
+}
+
+/// Folds `irregular_overrides.tsv` into the exact-form table the registry
+/// emits: every covered exact row gains two provenance columns
+/// (`irregular_system`, `irregular_evidence_id`), so the runtime consults one
+/// merged irregular table while the trace still names the reviewed override
+/// evidence. Uncovered rows carry empty markers. An override that stamps no
+/// row is an error: it would silently vanish from the merged table.
+fn merge_irregular_overrides(
+    irregular_path: &Path,
+    exact_forms: &mut Table,
+    irregular_overrides: &Table,
+) -> Result<()> {
+    for row in &mut exact_forms.rows {
+        row.push(String::new());
+        row.push(String::new());
+    }
+    for (offset, override_row) in irregular_overrides.rows.iter().enumerate() {
+        let mut stamped = 0_usize;
+        for exact_row in &mut exact_forms.rows {
+            if exact_row[0] != override_row[0]
+                || !irregular_system_covers(&override_row[1], &exact_row[1])
+            {
+                continue;
+            }
+            if !exact_row[7].is_empty() && exact_row[7] != override_row[1] {
+                return Err(ExtractionError::InvalidRow {
+                    file: irregular_path.to_owned(),
+                    line: offset + 2,
+                    reason: format!(
+                        "irregular override systems {} and {} both cover exact cell {}",
+                        exact_row[7], override_row[1], exact_row[1]
+                    ),
+                });
+            }
+            exact_row[7] = override_row[1].clone();
+            exact_row[8] = override_row[3].clone();
+            stamped += 1;
+        }
+        if stamped == 0 {
+            return Err(ExtractionError::InvalidRow {
+                file: irregular_path.to_owned(),
+                line: offset + 2,
+                reason: format!(
+                    "irregular override for {} system {} covers no exact-form row",
+                    override_row[0], override_row[1]
+                ),
+            });
+        }
+    }
+    Ok(())
 }

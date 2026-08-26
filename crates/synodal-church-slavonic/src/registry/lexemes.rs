@@ -623,13 +623,20 @@ pub(crate) fn positional_rules() -> Vec<PositionalRuleSummary> {
 }
 
 pub(crate) fn irregular_overrides() -> Vec<IrregularOverrideSummary> {
-    IRREGULAR_OVERRIDES
+    // The merged exact-form table is the single irregular table: overrides
+    // survive as per-row provenance stamps, so the summary is the distinct
+    // set of stamped (lexeme, system, evidence) tuples. `cell_set` names the
+    // curated source table the stamps were folded from.
+    let mut seen = std::collections::BTreeSet::new();
+    EXACT_FORMS
         .iter()
+        .filter(|row| !row.0[7].is_empty())
+        .filter(|row| seen.insert((row.0[0], row.0[7], row.0[8])))
         .map(|row| IrregularOverrideSummary {
             lexeme_id: row.0[0].into(),
-            system: row.0[1].into(),
-            cell_set: row.0[2].into(),
-            evidence_id: row.0[3].into(),
+            system: row.0[7].into(),
+            cell_set: "data/synodal/exact_forms.tsv".into(),
+            evidence_id: row.0[8].into(),
         })
         .collect()
 }

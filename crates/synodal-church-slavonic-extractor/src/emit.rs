@@ -18,7 +18,6 @@ pub(crate) struct RegistryTables {
     pub(crate) positional_rules: Table,
     pub(crate) transformation_rules: Table,
     pub(crate) conflicts: Table,
-    pub(crate) irregular_overrides: Table,
     pub(crate) defective_inventories: Table,
     pub(crate) irregular_inventory: Table,
     pub(crate) evidence_provenance: Table,
@@ -39,7 +38,6 @@ pub(crate) fn emit_registry(tables: RegistryTables) -> String {
         mut positional_rules,
         mut transformation_rules,
         mut conflicts,
-        mut irregular_overrides,
         mut defective_inventories,
         mut irregular_inventory,
         evidence_provenance,
@@ -70,7 +68,6 @@ pub(crate) fn emit_registry(tables: RegistryTables) -> String {
     positional_rules.rows.sort();
     transformation_rules.rows.sort();
     conflicts.rows.sort();
-    irregular_overrides.rows.sort();
     defective_inventories.rows.sort();
     irregular_inventory
         .rows
@@ -139,12 +136,6 @@ pub(crate) fn emit_registry(tables: RegistryTables) -> String {
         &transformation_rules.rows,
     );
     emit_rows(&mut output, "CONFLICTS", "RawConflict", &conflicts.rows);
-    emit_rows(
-        &mut output,
-        "IRREGULAR_OVERRIDES",
-        "RawIrregularOverride",
-        &irregular_overrides.rows,
-    );
     emit_rows(
         &mut output,
         "DEFECTIVE_INVENTORIES",

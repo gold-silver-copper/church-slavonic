@@ -35,7 +35,7 @@ pub use registry::{
 };
 pub use spec::{
     AdjectiveSpec, DefectKind, DefectiveCell, DeterminerSpec, LexemeSpec, NounSpec, NumeralSpec,
-    PronounSpec, SpecificationSource, SpecifiedForm, VerbSpec, VerbSpecBuilder,
+    PronounSpec, SpecificationSource, VerbSpec, VerbSpecBuilder,
 };
 pub use synodal_church_slavonic_core as core;
 pub use synodal_church_slavonic_core::{

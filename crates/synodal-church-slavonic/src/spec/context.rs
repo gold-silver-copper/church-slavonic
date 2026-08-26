@@ -3,7 +3,7 @@ use std::collections::BTreeSet;
 use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentScope, AuthorityRole, EpistemicRole, Error, Evidence,
     EvidenceId, EvidenceKind, GrammarCell, PositionalParadigm, PositionalRule, Recension,
-    RenderedText, Result, SourceId, SynodalWord,
+    Result, SourceId,
 };
 
 /// Provenance attached to caller-supplied lexical metadata. It identifies a
@@ -154,42 +154,12 @@ impl DefectiveCell {
     }
 }
 
-/// A caller-specified irregular form. `liturgical` is an explicit lexical
-/// accent/printing override and therefore precedes a reusable accent paradigm.
-#[derive(Clone, Debug, Eq, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-pub struct SpecifiedForm {
-    pub cell: GrammarCell,
-    pub expanded: SynodalWord,
-    pub liturgical: Option<RenderedText>,
-    pub source: SpecificationSource,
-}
-
-impl SpecifiedForm {
-    pub fn new(
-        cell: GrammarCell,
-        expanded: impl Into<String>,
-        liturgical: Option<impl Into<String>>,
-        source: SpecificationSource,
-    ) -> Result<Self> {
-        Ok(Self {
-            cell,
-            expanded: SynodalWord::parse(expanded)?,
-            liturgical: liturgical
-                .map(|value| RenderedText::parse(value.into()))
-                .transpose()?,
-            source,
-        })
-    }
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub(crate) struct SpecContext {
     pub source: SpecificationSource,
     pub accent: Option<AccentParadigm>,
     pub positional: Option<PositionalParadigm>,
-    pub irregular_forms: Vec<SpecifiedForm>,
     pub defective_cells: Vec<DefectiveCell>,
 }
 
@@ -199,7 +169,6 @@ impl SpecContext {
             source,
             accent: None,
             positional: None,
-            irregular_forms: vec![],
             defective_cells: vec![],
         }
     }
@@ -225,16 +194,6 @@ impl SpecContext {
                 });
             }
         }
-        let mut irregular = BTreeSet::new();
-        let mut irregular_cells = BTreeSet::new();
-        for form in &self.irregular_forms {
-            irregular_cells.insert(form.cell);
-            if !irregular.insert((form.cell, &form.expanded, &form.liturgical)) {
-                return Err(Error::ContradictoryMetadata {
-                    reason: "an explicit specification contains a duplicate irregular form".into(),
-                });
-            }
-        }
         let mut defective = BTreeSet::new();
         for cell in &self.defective_cells {
             if cell.reason.trim().is_empty() {
@@ -242,9 +201,9 @@ impl SpecContext {
                     reason: "a defective cell must include a nonempty diagnostic reason".into(),
                 });
             }
-            if !defective.insert(cell.cell) || irregular_cells.contains(&cell.cell) {
+            if !defective.insert(cell.cell) {
                 return Err(Error::ContradictoryMetadata {
-                    reason: "a cell cannot be both irregular and defective, or listed twice".into(),
+                    reason: "a defective cell cannot be listed twice".into(),
                 });
             }
         }

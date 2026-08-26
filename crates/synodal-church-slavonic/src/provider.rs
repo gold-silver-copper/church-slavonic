@@ -6,27 +6,25 @@ use synodal_church_slavonic_core::{
 };
 
 use crate::{
-    Capabilities, Inflector, LexemeSpec, LexemeSummary, Paradigm, PartOfSpeech, SpecifiedForm,
+    Capabilities, Inflector, LexemeSpec, LexemeSummary, Paradigm, PartOfSpeech,
     paradigm::{noun_cells, verb_cells},
-    registry, resolver,
+    registry,
     spec::LexemeSpecInner,
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum ProviderLexemeKind {
     Builtin,
-    Supplied {
-        spec: LexemeSpec,
-        exact_forms: Vec<SpecifiedForm>,
-    },
+    Supplied { spec: LexemeSpec },
 }
 
 /// One stable target-recension identity exposed by a [`LexemeProvider`].
 ///
-/// Supplied entries carry typed lexical metadata. Fixed exact cells are
-/// checked before the specification's irregular cells and productive
-/// background. Built-in entries are adapters over the generated registry and
-/// therefore enter the same `Lexicon` composition and conflict checks.
+/// Supplied entries carry typed lexical metadata and resolve through the
+/// productive rule kernel; exact surface forms live only in the generated
+/// data-side irregular table. Built-in entries are adapters over the
+/// generated registry and therefore enter the same `Lexicon` composition and
+/// conflict checks.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProviderLexeme {
     summary: LexemeSummary,
@@ -49,10 +47,7 @@ impl ProviderLexeme {
         spec.validate()?;
         Ok(Self {
             summary: LexemeSummary::new(id, spec.lemma().into(), spec.part_of_speech(), source_id),
-            kind: ProviderLexemeKind::Supplied {
-                spec,
-                exact_forms: vec![],
-            },
+            kind: ProviderLexemeKind::Supplied { spec },
         })
     }
 
@@ -61,32 +56,6 @@ impl ProviderLexeme {
             summary,
             kind: ProviderLexemeKind::Builtin,
         }
-    }
-
-    pub fn with_exact_form(mut self, form: SpecifiedForm) -> Result<Self> {
-        let ProviderLexemeKind::Supplied { spec, exact_forms } = &mut self.kind else {
-            return Err(Error::ProviderConflict {
-                lexeme: self.summary.id().clone(),
-                reason: "built-in registry entries cannot be mutated by a provider".into(),
-            });
-        };
-        if !cell_matches_part_of_speech(form.cell, spec.part_of_speech()) {
-            return Err(Error::ContradictoryMetadata {
-                reason: "a provider exact form belongs to a different part of speech".into(),
-            });
-        }
-        if exact_forms.iter().any(|existing| {
-            existing.cell == form.cell
-                && existing.expanded == form.expanded
-                && existing.liturgical == form.liturgical
-        }) {
-            return Err(Error::ProviderConflict {
-                lexeme: self.summary.id().clone(),
-                reason: "duplicate exact provider form".into(),
-            });
-        }
-        exact_forms.push(form);
-        Ok(self)
     }
 
     #[must_use]
@@ -99,13 +68,6 @@ impl ProviderLexeme {
         match &self.kind {
             ProviderLexemeKind::Builtin => None,
             ProviderLexemeKind::Supplied { spec, .. } => Some(spec),
-        }
-    }
-
-    pub fn exact_forms(&self) -> impl Iterator<Item = &SpecifiedForm> {
-        match &self.kind {
-            ProviderLexemeKind::Builtin => [].iter(),
-            ProviderLexemeKind::Supplied { exact_forms, .. } => exact_forms.iter(),
         }
     }
 }
@@ -228,22 +190,7 @@ impl Lexicon {
         })?;
         match &entry.kind {
             ProviderLexemeKind::Builtin => self.inflector.form_by_id(id, cell),
-            ProviderLexemeKind::Supplied { spec, exact_forms } => {
-                let exact = exact_forms
-                    .iter()
-                    .filter(|form| form.cell == cell)
-                    .collect::<Vec<_>>();
-                if exact.is_empty() {
-                    self.inflector.form_spec(spec, cell)
-                } else {
-                    resolver::provided_exact_forms(
-                        self.inflector,
-                        &exact,
-                        spec.context().accent.as_ref(),
-                        spec.context().positional.as_ref(),
-                    )
-                }
-            }
+            ProviderLexemeKind::Supplied { spec } => self.inflector.form_spec(spec, cell),
         }
     }
 
@@ -286,9 +233,7 @@ impl Lexicon {
             ProviderLexemeKind::Builtin => {
                 Ok(Capabilities::for_summary(&entry.summary, self.inflector))
             }
-            ProviderLexemeKind::Supplied { spec, exact_forms } => {
-                Ok(spec_capabilities(spec, exact_forms))
-            }
+            ProviderLexemeKind::Supplied { spec } => Ok(spec_capabilities(spec)),
         }
     }
 
@@ -435,28 +380,6 @@ fn validate_entries(entries: &[ProviderLexeme]) -> Result<()> {
     Ok(())
 }
 
-fn cell_matches_part_of_speech(cell: GrammarCell, part_of_speech: PartOfSpeech) -> bool {
-    matches!(
-        (cell, part_of_speech),
-        (GrammarCell::LexicalForm, _)
-            | (GrammarCell::Noun(_), PartOfSpeech::Noun)
-            | (GrammarCell::Adjective(_), PartOfSpeech::Adjective)
-            | (GrammarCell::Determiner(_), PartOfSpeech::Determiner)
-            | (GrammarCell::Numeral(_), PartOfSpeech::Numeral)
-            | (GrammarCell::Pronoun(_), PartOfSpeech::Pronoun)
-            | (
-                GrammarCell::FiniteVerb(_)
-                    | GrammarCell::Imperative(_)
-                    | GrammarCell::Infinitive
-                    | GrammarCell::LParticiple(_)
-                    | GrammarCell::Supine
-                    | GrammarCell::Participle(_)
-                    | GrammarCell::VerbalNoun(_),
-                PartOfSpeech::Verb
-            )
-    )
-}
-
 fn require_pos(summary: &LexemeSummary, expected: PartOfSpeech) -> Result<()> {
     if summary.part_of_speech() == expected {
         Ok(())
@@ -471,74 +394,54 @@ fn require_pos(summary: &LexemeSummary, expected: PartOfSpeech) -> Result<()> {
     }
 }
 
-fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabilities {
-    let exact_forms_present = !exact_forms.is_empty();
-    let has_exact =
-        |predicate: fn(GrammarCell) -> bool| exact_forms.iter().any(|form| predicate(form.cell));
+fn spec_capabilities(spec: &LexemeSpec) -> Capabilities {
     match spec.inner() {
         LexemeSpecInner::Noun(_) => Capabilities {
-            exact_forms: exact_forms_present,
             productive_noun: true,
             ..Capabilities::default()
         },
         LexemeSpecInner::Adjective(_) => Capabilities {
-            exact_forms: exact_forms_present,
             productive_adjective: true,
             ..Capabilities::default()
         },
         LexemeSpecInner::Determiner(_) => Capabilities {
-            exact_forms: exact_forms_present,
             productive_determiner: true,
             ..Capabilities::default()
         },
         LexemeSpecInner::Numeral(_) => Capabilities {
-            exact_forms: exact_forms_present,
             productive_numeral: true,
             ..Capabilities::default()
         },
         LexemeSpecInner::Pronoun(_) => Capabilities {
-            exact_forms: exact_forms_present,
             productive_pronoun: true,
             ..Capabilities::default()
         },
         LexemeSpecInner::Verb(verb) => {
             let complete = |system| verb.missing_principal_parts(system).is_empty();
-            let exact_finite = |tense| {
-                exact_forms.iter().any(
-                    |form| matches!(form.cell, GrammarCell::FiniteVerb(value) if value.tense == tense),
-                )
-            };
             Capabilities {
-                exact_forms: exact_forms_present,
                 present: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Present,
-                )) || exact_finite(synodal_church_slavonic_core::FiniteTense::Present),
-                future: (verb.lexeme.aspect == synodal_church_slavonic_core::Aspect::Perfective
+                )),
+                future: verb.lexeme.aspect == synodal_church_slavonic_core::Aspect::Perfective
                     && complete(VerbSystem::Finite(
                         synodal_church_slavonic_core::FiniteTense::Future,
-                    )))
-                    || exact_finite(synodal_church_slavonic_core::FiniteTense::Future),
-                past: exact_finite(synodal_church_slavonic_core::FiniteTense::Past),
+                    )),
                 imperfect: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Imperfect,
-                )) || exact_finite(synodal_church_slavonic_core::FiniteTense::Imperfect),
+                )),
                 aorist: complete(VerbSystem::Finite(
                     synodal_church_slavonic_core::FiniteTense::Aorist,
-                )) || exact_finite(synodal_church_slavonic_core::FiniteTense::Aorist),
-                imperative: complete(VerbSystem::Imperative)
-                    || has_exact(|cell| matches!(cell, GrammarCell::Imperative(_))),
+                )),
+                imperative: complete(VerbSystem::Imperative),
                 infinitive: true,
-                l_participle: complete(VerbSystem::LParticiple)
-                    || has_exact(|cell| matches!(cell, GrammarCell::LParticiple(_))),
-                participle: has_exact(|cell| matches!(cell, GrammarCell::Participle(_)))
-                    || VerbSystem::ALL
-                        .into_iter()
-                        .filter(|system| matches!(system, VerbSystem::Participle { .. }))
-                        .any(complete),
-                supine: has_exact(|cell| matches!(cell, GrammarCell::Supine)),
+                l_participle: complete(VerbSystem::LParticiple),
+                participle: VerbSystem::ALL
+                    .into_iter()
+                    .filter(|system| matches!(system, VerbSystem::Participle { .. }))
+                    .any(complete),
                 verbal_noun: complete(VerbSystem::VerbalNoun {
                     animacy: synodal_church_slavonic_core::Animacy::Inanimate,
-                }) || has_exact(|cell| matches!(cell, GrammarCell::VerbalNoun(_))),
+                }),
                 ..Capabilities::default()
             }
         }
@@ -548,12 +451,12 @@ fn spec_capabilities(spec: &LexemeSpec, exact_forms: &[SpecifiedForm]) -> Capabi
 #[cfg(test)]
 mod tests {
     use synodal_church_slavonic_core::{
-        Animacy, Aspect, Case, Error, ErrorCode, FormSource, Gender, GrammarCell, NounCell,
-        NounDeclension, NounNumberInventory, Number, VerbConjugation,
+        Animacy, Case, Error, ErrorCode, Gender, GrammarCell, NounCell, NounDeclension,
+        NounNumberInventory, Number,
     };
 
     use super::*;
-    use crate::{NounSpec, SpecificationSource, VerbSpec};
+    use crate::{NounSpec, SpecificationSource};
 
     fn source(label: &str) -> SpecificationSource {
         SpecificationSource::new(
@@ -584,205 +487,6 @@ mod tests {
         .expect("valid supplied noun");
         ProviderLexeme::new(id, "application-test-lexicon", LexemeSpec::from(spec))
             .expect("valid provider entry")
-    }
-
-    #[test]
-    fn provider_exact_irregular_productive_precedence_is_stable() {
-        let dative = noun_cell(Case::Dative, Number::Singular);
-        let locative = noun_cell(Case::Locative, Number::Singular);
-        let genitive = noun_cell(Case::Genitive, Number::Singular);
-        let irregular = SpecifiedForm::new(locative, "дари", None::<String>, source("irregular"))
-            .expect("valid irregular");
-        let spec = NounSpec::new(
-            "даръ",
-            "дар",
-            Gender::Masculine,
-            NounDeclension::FirstHardMasculine,
-            source("dar"),
-        )
-        .expect("valid noun")
-        .with_irregular_form(irregular)
-        .expect("valid irregular noun");
-        let entry = ProviderLexeme::new(
-            "application:noun:dar",
-            "application-test-lexicon",
-            LexemeSpec::from(spec),
-        )
-        .expect("valid provider entry")
-        .with_exact_form(
-            SpecifiedForm::new(dative, "дареви", Some("даре́ви"), source("exact-primary"))
-                .expect("valid exact"),
-        )
-        .expect("first exact")
-        .with_exact_form(
-            SpecifiedForm::new(dative, "дарови", Some("да́рови"), source("exact-secondary"))
-                .expect("valid exact"),
-        )
-        .expect("second exact");
-        let provider = InMemoryLexemeProvider::new([entry]).expect("valid provider");
-        let lexicon = Lexicon::from_provider(Inflector::default(), &provider).expect("lexicon");
-
-        let exact = lexicon.form("даръ", dative).expect("provider exact forms");
-        assert_eq!(exact.texts().collect::<Vec<_>>(), ["дареви", "дарови"]);
-        assert!(matches!(
-            &exact.primary().source,
-            FormSource::CallerSpecifiedPrediction { rule, .. }
-                if rule.as_str() == "SYN-PROVIDER-EXACT-OVERRIDE"
-        ));
-        let liturgical = Lexicon::from_provider(
-            Inflector::builder()
-                .orthography(synodal_church_slavonic_core::OrthographyProfile::SynodalLiturgical)
-                .build(),
-            &provider,
-        )
-        .expect("liturgical lexicon")
-        .form("даръ", dative)
-        .expect("provider exact accent precedes productive accent requirements");
-        assert_eq!(liturgical.texts().collect::<Vec<_>>(), ["даре́ви", "да́рови"]);
-
-        let irregular = lexicon
-            .form("даръ", locative)
-            .expect("provider irregular form");
-        assert_eq!(irregular.primary_text(), "дари");
-        assert!(matches!(
-            &irregular.primary().source,
-            FormSource::CallerSpecifiedPrediction { rule, .. }
-                if rule.as_str() == "SYN-CALLER-IRREGULAR-OVERRIDE"
-        ));
-        let paradigm = lexicon
-            .noun_paradigm(&LexemeId::from("application:noun:dar"), Animacy::Inanimate)
-            .expect("provider noun paradigm");
-        assert_eq!(paradigm.irregular().count(), 1);
-
-        let productive = lexicon.form("даръ", genitive).expect("productive fallback");
-        assert_eq!(productive.primary_text(), "дара");
-        assert!(matches!(
-            productive.primary().source,
-            FormSource::CallerSpecifiedPrediction { .. }
-        ));
-    }
-
-    #[test]
-    fn exact_provider_supine_precedes_the_absent_target_category() {
-        let spec = VerbSpec::builder(
-            "нести",
-            Aspect::Imperfective,
-            VerbConjugation::FirstUnpalatalized,
-            source("supine-compatibility"),
-        )
-        .expect("valid verb")
-        .build()
-        .expect("valid verb specification");
-        assert!(matches!(
-            spec.form(GrammarCell::Supine),
-            Err(Error::HistoricallyInvalidCell { .. })
-        ));
-
-        let entry = ProviderLexeme::new(
-            "application:verb:supine-compatibility",
-            "application-test-lexicon",
-            LexemeSpec::from(spec),
-        )
-        .expect("valid provider entry")
-        .with_exact_form(
-            SpecifiedForm::new(
-                GrammarCell::Supine,
-                "нестъ",
-                None::<String>,
-                source("explicit-supine"),
-            )
-            .expect("valid exact compatibility form"),
-        )
-        .expect("valid exact provider form");
-        let lexicon = Lexicon::from_provider(
-            Inflector::default(),
-            &InMemoryLexemeProvider::new([entry]).expect("valid provider"),
-        )
-        .expect("valid lexicon");
-        let id = LexemeId::from("application:verb:supine-compatibility");
-
-        let exact = lexicon
-            .form_by_id(&id, GrammarCell::Supine)
-            .expect("caller exact compatibility form");
-        assert_eq!(exact.primary_text(), "нестъ");
-        assert!(matches!(
-            &exact.primary().source,
-            FormSource::CallerSpecifiedPrediction { rule, .. }
-                if rule.as_str() == "SYN-PROVIDER-EXACT-OVERRIDE"
-        ));
-        assert!(
-            lexicon
-                .capabilities_by_id(&id)
-                .expect("capabilities")
-                .supine
-        );
-    }
-
-    #[test]
-    fn exact_provider_verbal_noun_precedes_productive_formation() {
-        let cell = GrammarCell::VerbalNoun(NounCell {
-            case: Case::Nominative,
-            number: Number::Singular,
-            animacy: Animacy::Inanimate,
-        });
-        let spec = VerbSpec::builder(
-            "молити",
-            Aspect::Imperfective,
-            VerbConjugation::Second,
-            source("verbal-noun-precedence"),
-        )
-        .expect("valid verb")
-        .verbal_noun_ie("молен")
-        .expect("complete verbal-noun platform")
-        .build()
-        .expect("valid verb specification");
-        assert!(matches!(
-            &spec.form(cell)
-                .expect("productive verbal noun")
-                .primary()
-                .source,
-            FormSource::CallerSpecifiedPrediction { rule, .. }
-                if rule.as_str() == "SYN-VERB-VERBAL-NOUN-IE-ALYPY-27"
-        ));
-
-        let entry = ProviderLexeme::new(
-            "application:verb:verbal-noun-precedence",
-            "application-test-lexicon",
-            LexemeSpec::from(spec),
-        )
-        .expect("valid provider entry")
-        .with_exact_form(
-            SpecifiedForm::new(
-                cell,
-                "моленїе",
-                Some("моле́нїе"),
-                source("explicit-verbal-noun"),
-            )
-            .expect("valid exact verbal noun"),
-        )
-        .expect("valid exact provider form");
-        let lexicon = Lexicon::from_provider(
-            Inflector::default(),
-            &InMemoryLexemeProvider::new([entry]).expect("valid provider"),
-        )
-        .expect("valid lexicon");
-        let id = LexemeId::from("application:verb:verbal-noun-precedence");
-
-        let exact = lexicon
-            .form_by_id(&id, cell)
-            .expect("caller exact verbal noun");
-        assert_eq!(exact.primary_text(), "моленїе");
-        assert!(matches!(
-            &exact.primary().source,
-            FormSource::CallerSpecifiedPrediction { rule, .. }
-                if rule.as_str() == "SYN-PROVIDER-EXACT-OVERRIDE"
-        ));
-        assert!(
-            lexicon
-                .capabilities_by_id(&id)
-                .expect("capabilities")
-                .verbal_noun
-        );
     }
 
     #[test]
@@ -927,18 +631,6 @@ mod tests {
                     )
                     .expect("valid spec")
                 )
-            ),
-            Err(Error::ContradictoryMetadata { .. })
-        ));
-        assert!(matches!(
-            supplied_noun("application:noun:indeclinable", "даръ").with_exact_form(
-                SpecifiedForm::new(
-                    GrammarCell::Indeclinable,
-                    "даръ",
-                    None::<String>,
-                    source("invalid-indeclinable"),
-                )
-                .expect("well-formed but POS-incompatible exact form"),
             ),
             Err(Error::ContradictoryMetadata { .. })
         ));

@@ -384,11 +384,6 @@ impl VerbSpecBuilder {
         self
     }
 
-    pub fn irregular_form(mut self, form: SpecifiedForm) -> Self {
-        self.spec.context.irregular_forms.push(form);
-        self
-    }
-
     pub fn defective_cell(mut self, cell: DefectiveCell) -> Self {
         self.spec.context.defective_cells.push(cell);
         self

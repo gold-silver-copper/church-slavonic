@@ -109,6 +109,17 @@ source-partition target attestations. `source_kind` distinguishes
 attestation must cite a reviewed whole-token corpus candidate outside all
 held-out passages.
 
+`irregular_overrides.tsv` stays a separate curated input, but the extractor
+folds it into the generated registry: each covered `exact_forms.tsv` row is
+stamped with the override's system label and reviewed evidence IDs, so the
+runtime consults one merged irregular table ahead of the rule kernel while
+the trace still names the irregular provenance. An override row that covers
+no exact row fails generation.
+
+`homonymy_allowlist.tsv` disambiguates lexical identities (it licenses two
+reviewed identities to share a surface); it never injects surface forms, so
+it is not an override channel and is consulted only by the admission gates.
+
 `irregular_verb_inventory.tsv` exhaustively preserves the 98 verb entries in
 Alypy §104 and names the typed implementation route for each source-listed
 system. `verb_defectiveness.tsv` separately records cell/system selectors,
