@@ -258,12 +258,7 @@ fn ves_forms(cell: AdjectiveCell) -> Vec<String> {
         .collect()
 }
 
-fn vsyak_short_forms(stem: &str, cell: AdjectiveCell) -> Vec<String> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Plural as Pl, Singular as Sg};
-    let cell = vocative_as_nominative(cell);
+fn vsyak_velar_join(stem: &str, endings: &[kernel::VelarEnding]) -> Vec<String> {
     let palatalized = stem.strip_suffix('к').map_or_else(
         || stem.to_owned(),
         |base| {
@@ -272,78 +267,40 @@ fn vsyak_short_forms(stem: &str, cell: AdjectiveCell) -> Vec<String> {
             value
         },
     );
-    let raw = |ending| join(stem, ending);
-    let soft = |ending| join(&palatalized, ending);
-    match (cell.number, cell.gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) => vec![raw("ъ")],
-        (Sg, F, Nom, _) => vec![raw("а")],
-        (Sg, N, Nom, _) => vec![raw("о")],
-        (Sg, M | N, Gen, _) => vec![raw("агѡ"), raw("аго")],
-        (Sg, F, Gen, _) => vec![raw("оѧ")],
-        (Sg, M | N, Dat, _) => vec![raw("омꙋ")],
-        (Sg, F, Dat | Loc, _) => vec![soft("ѣй"), raw("ой")],
-        (Sg, M, Acc, Animacy::Inanimate) => vec![raw("ъ")],
-        (Sg, M, Acc, Animacy::Animate) => vec![raw("аго"), raw("агѡ")],
-        (Sg, F, Acc, _) => vec![raw("ꙋ")],
-        (Sg, N, Acc, _) => vec![raw("о")],
-        (Sg, M | N, Ins, _) => vec![soft("ѣмъ")],
-        (Sg, F, Ins, _) => vec![raw("ою")],
-        (Sg, M | N, Loc, _) => vec![raw("омъ"), soft("ѣмъ")],
-        (Pl, M, Nom, _) => vec![soft("ы")],
-        (Pl, F, Nom, _) => vec![raw("и")],
-        (Pl, N, Nom, _) => vec![raw("а")],
-        (Pl, _, Gen | Loc, _) => vec![soft("ѣхъ")],
-        (Pl, _, Dat, _) => vec![soft("ѣмъ")],
-        (Pl, M | F, Acc, Animacy::Animate) => vec![soft("ѣхъ")],
-        (Pl, M | F, Acc, Animacy::Inanimate) => vec![raw("и")],
-        (Pl, N, Acc, _) => vec![raw("а")],
-        (Pl, _, Ins, _) => vec![soft("ѣми")],
-        (Number::Dual, _, _, _) | (_, _, Case::Vocative, _) => unreachable!(),
-    }
+    endings
+        .iter()
+        .map(|ending| {
+            if ending.palatalized {
+                join(&palatalized, ending.text)
+            } else {
+                join(stem, ending.text)
+            }
+        })
+        .collect()
+}
+
+fn vsyak_short_forms(stem: &str, cell: AdjectiveCell) -> Vec<String> {
+    // Merged kernel: the velar universal determiner's short column.
+    let cell = vocative_as_nominative(cell);
+    vsyak_velar_join(
+        stem,
+        kernel::velar_universal_short_ending(
+            cell.case,
+            cell.number,
+            cell.gender,
+            cell.animacy,
+            SYN,
+        ),
+    )
 }
 
 fn vsyak_long_forms(stem: &str, cell: AdjectiveCell) -> Vec<String> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Plural as Pl, Singular as Sg};
+    // Merged kernel: the velar universal determiner's long column.
     let cell = vocative_as_nominative(cell);
-    let palatalized = stem.strip_suffix('к').map_or_else(
-        || stem.to_owned(),
-        |base| {
-            let mut value = base.to_owned();
-            value.push('ц');
-            value
-        },
-    );
-    let raw = |ending| join(stem, ending);
-    let soft = |ending| join(&palatalized, ending);
-    match (cell.number, cell.gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) => vec![raw("їй")],
-        (Sg, F, Nom, _) => vec![raw("аѧ")],
-        (Sg, N, Nom, _) => vec![raw("ое")],
-        (Sg, M | N, Gen, _) => vec![raw("агѡ")],
-        (Sg, F, Gen, _) => vec![raw("їѧ")],
-        (Sg, M | N, Dat, _) => vec![raw("омꙋ")],
-        (Sg, F, Dat | Loc, _) => vec![soft("ѣй"), raw("ой")],
-        (Sg, M, Acc, Animacy::Inanimate) => vec![raw("їй")],
-        (Sg, M, Acc, Animacy::Animate) => vec![raw("аго")],
-        (Sg, F, Acc, _) => vec![raw("ꙋю")],
-        (Sg, N, Acc, _) => vec![raw("ое")],
-        (Sg, M | N, Ins, _) => vec![raw("имъ")],
-        (Sg, F, Ins, _) => vec![raw("ою")],
-        (Sg, M | N, Loc, _) => vec![soft("ѣмъ"), raw("омъ")],
-        (Pl, M, Nom, _) => vec![soft("ыи")],
-        (Pl, F, Nom, _) => vec![raw("їѧ")],
-        (Pl, N, Nom, _) => vec![raw("аѧ")],
-        (Pl, _, Gen | Loc, _) => vec![raw("ихъ")],
-        (Pl, _, Dat, _) => vec![raw("имъ")],
-        (Pl, M | F, Acc, Animacy::Animate) => vec![raw("ихъ")],
-        (Pl, M | F, Acc, Animacy::Inanimate) => vec![raw("їѧ")],
-        (Pl, N, Acc, _) => vec![raw("аѧ")],
-        (Pl, _, Ins, _) => vec![raw("ими")],
-        (Number::Dual, _, _, _) | (_, _, Case::Vocative, _) => unreachable!(),
-    }
+    vsyak_velar_join(
+        stem,
+        kernel::velar_universal_long_ending(cell.case, cell.number, cell.gender, cell.animacy, SYN),
+    )
 }
 
 fn full_sk_forms(stem: &str, cell: AdjectiveCell) -> Result<Vec<String>> {

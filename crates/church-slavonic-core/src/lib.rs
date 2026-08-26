@@ -8,6 +8,7 @@
 //! pipeline ("nom") — so either family can adopt the shared type without
 //! churning its serialized artifacts.
 
+pub mod adjective;
 pub mod determiner;
 pub mod divergence;
 pub mod grammar;

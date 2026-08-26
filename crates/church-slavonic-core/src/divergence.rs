@@ -235,6 +235,75 @@ pub const NAMED: &[NamedDivergence] = &[
                   full-form shape (сїѧ, сіи) instead of OCS short си/сиѩ.",
         evidence: "Alypy §45 сей table vs Polivanova's сь paradigm.",
     },
+    NamedDivergence {
+        id: "adj:long-contraction",
+        summary: "The Synodal long (compound) adjective declension contracts \
+                  the OCS uncontracted vowel + ѥ/и sequences throughout the \
+                  obliques: аѥго → агѡ/ѧгѡ, оуѥмоу → омꙋ/емꙋ, ꙑимь/иимь → \
+                  ымъ/имъ, ѣѥмь/иѥмь → ѣмъ/емъ, instrumental feminine ѫѭ → \
+                  ою, ꙑима/иима → ыма/има, and ꙑихъ/ꙑимъ/ꙑими (soft \
+                  иихъ/иимъ/иими) → ыхъ/ымъ/ыми (ихъ/имъ/ими); the direct \
+                  cells (благꙑимъ-type против the contracted column) stay \
+                  fold-projectable. Predicted by the projection study as the \
+                  merge's largest adjective family.",
+        evidence: "projection-study §3 …аѥго/…оуѥмоу/…ꙑимь patterns; \
+                   Polivanova's compound declension vs Alypy §57.",
+    },
+    NamedDivergence {
+        id: "adj:short-oblique-pronominalization",
+        summary: "The Synodal short adjective declension levels the OCS \
+                  nominal (twofold o/a-stem) obliques to the pronominal/\
+                  long-shaped series: омь/емь → ымъ/имъ, ома/ема/ама → \
+                  ыма/има, genitive plural ъ/ь → ыхъ/ихъ, омъ/емъ/амъ → \
+                  ымъ/имъ, instrumental ꙑ/и/ами → ыми/ими, and locative \
+                  ѣхъ/ихъ/ахъ → ыхъ/ихъ, erasing the gendered feminine \
+                  а-stem obliques.",
+        evidence: "Polivanova's twofold nominal declension (§§303–305) vs \
+                   Alypy §53 short tables.",
+    },
+    NamedDivergence {
+        id: "adj:soft-short-palatal-vowel-series",
+        summary: "The Synodal soft short column generalizes the palatal \
+                  vowel series where OCS prints the plain letters after the \
+                  soft stem: genitive/direct а → ѧ, dative оу → ю, the \
+                  feminine genitive ѧ → и, and the feminine/neuter plural \
+                  direct cells ѧ/а → и/ѧ.",
+        evidence: "Polivanova's soft 2/a subtype vs Alypy §53 soft table.",
+    },
+    NamedDivergence {
+        id: "adj:soft-long-vowel-grade",
+        summary: "Beyond contraction, the Synodal soft long column levels \
+                  stem-vowel grades: аꙗ → ѧѧ in the feminine singular and \
+                  dual/neuter-plural direct cells, ѧѩ → їѧ in the feminine \
+                  genitives, the feminine dative/locative ии → ей, and the \
+                  dual genitive/locative оую → юю.",
+        evidence: "Polivanova's compound soft declension vs Alypy §57 soft \
+                   table.",
+    },
+    NamedDivergence {
+        id: "adj:short-vocative-leveling",
+        summary: "Synodal levels the short feminine vocative (OCS hard -о) \
+                  and the soft masculine vocative (OCS -е) to the \
+                  nominative shape; only the hard masculine vocative -е is \
+                  shared.",
+        evidence: "Polivanova's vocative rows vs Alypy §53, which prints a \
+                   distinct short vocative only for the hard masculine.",
+    },
+    NamedDivergence {
+        id: "det:velar-universal-reshape",
+        summary: "The velar universal determiner (OCS вьсакъ/вьсѣкъ, Synodal \
+                  всѧкъ) reshapes around the shared hard pronominal core: \
+                  Synodal mixes long-adjective а-grade genitives (агѡ/аго \
+                  against pronominal ого), co-lists palatalized/plain \
+                  oblique doublets (ѣй/ой, омъ/ѣмъ), takes -и in the \
+                  feminine nominative and inanimate accusative plural where \
+                  the OCS class has -ы, drops the dual, adds the long \
+                  всѧкїй paradigm, and carries the ѧ-grade stem всѧк- \
+                  against OCS вьсак-/вьсѣк-.",
+        evidence: "Alypy §§45, 48, and 57 всѧкъ tables vs Polivanova's 2/p \
+                   velar-palatalizing terminals; the OCS column is pinned to \
+                   the merged pronoun hard class by a kernel test.",
+    },
 ];
 
 /// Pieces of the per-family POS kernels deliberately NOT merged at their
@@ -243,17 +312,16 @@ pub const NAMED: &[NamedDivergence] = &[
 /// them.
 pub const UNMERGED: &[NamedDivergence] = &[
     NamedDivergence {
-        id: "unmerged:pron:adjective-coupled-classes",
-        summary: "Synodal FullHard/FullSoft/FullVelar delegate to the Synodal \
-                  long-adjective kernel, and Hard (contracted/uncontracted \
-                  doublets), ShortVelar/QuantityVelar (palatalized variant \
-                  doubling), ShortOvMixed (noun-like sub-paradigm) and \
-                  InterrogativeKii interleave with it; the OCS counterpart \
-                  кꙑи declines with suppletive stems кꙑ-/ко-/цѣ-/ци- that do \
-                  not align cell-by-cell under any nameable condition. These \
-                  classes merge together with the adjective POS slice.",
-        evidence: "synodal pronoun.rs full_forms → long_adjective_ending; \
-                   OCS kyi_forms suppletion; Alypy §§48, 57.",
+        id: "unmerged:pron:kii-suppletive-interrogative",
+        summary: "Since the adjective slice the Synodal Full*/velar/kii/ov \
+                  pronoun classes ride the merged long-adjective kernel \
+                  through the family ending shim; what remains unmerged is \
+                  the OCS interrogative кꙑи itself, whose suppletive stems \
+                  кꙑ-/ко-/цѣ-/ци- do not align cell-by-cell with the \
+                  Synodal кїй long-velar paradigm under any nameable \
+                  condition. It stays an OCS lexical paradigm.",
+        evidence: "OCS kyi_forms suppletion vs the Synodal full_velar_forms \
+                   route; Alypy §§48, 57.",
     },
     NamedDivergence {
         id: "unmerged:pron:derived-family-composition",
@@ -277,38 +345,32 @@ pub const UNMERGED: &[NamedDivergence] = &[
                    from Alypy §§45–48 as a closed table.",
     },
     NamedDivergence {
-        id: "unmerged:det:velar-universal",
-        summary: "The velar universal determiners (OCS вьсакъ/вьсѣкъ, \
-                  Synodal всѧкъ/всѧкїй) couple to the velar-palatalized \
-                  variant doubling already deferred with the Synodal velar \
-                  pronoun classes (unmerged:pron:adjective-coupled-classes) \
-                  and to the Synodal а-grade genitives; they merge with the \
-                  adjective slice.",
-        evidence: "Synodal determiner.rs vsyak_short/long_forms vs the OCS \
-                   2/p velar-palatalizing generator; Alypy §§48, 57.",
+        id: "unmerged:det:determiner-identity-inventories",
+        summary: "Since the adjective slice the adjective-backed determiner \
+                  routes (OCS которꙑи/ѥтеръ/кꙑи long citations, the Synodal \
+                  FullSk -скїй with its -ск-/-ст- alternation and the long \
+                  hard forms) read the merged adjective kernel through their \
+                  family shims; what remains per-recension is the identity \
+                  inventories themselves — the OCS такъ-series against the \
+                  Synodal самъ — which do not overlap lexically.",
+        evidence: "OCS determiner.rs adjectival profiles and Synodal \
+                   determiner.rs FullSk/full_hard_forms, both now shimmed \
+                   onto crate::adjective; Alypy §§45, 57 vs Polivanova \
+                   §§285, 303–305, 375–376.",
     },
     NamedDivergence {
-        id: "unmerged:det:adjective-backed-inventory",
-        summary: "OCS которꙑи/ѥтеръ/кꙑи and the Synodal FullSk (-скїй with \
-                  -ск-/-ст- alternation) and long hard determiner forms \
-                  delegate to the family adjective kernels and merge with \
-                  the adjective slice; the remaining identity inventories \
-                  (OCS такъ-series vs Synodal самъ) do not overlap \
-                  lexically and are per-recension lexical facts.",
-        evidence: "OCS determiner.rs adjectival profiles; Synodal \
-                   determiner.rs FullSk/full_hard_forms; Alypy §§45, 57 vs \
-                   Polivanova §§285, 303–305, 375–376.",
-    },
-    NamedDivergence {
-        id: "unmerged:num:ordinal-adjective-coupled",
-        summary: "Ordinal declension delegates to each family's adjective \
-                  kernel (OCS hard/j-stem short and long forms vs Synodal \
-                  Hard/PossessiveIi long classes) and merges with the \
-                  adjective slice; the OCS closed ordinal stem inventory \
-                  and compound-ordinal stems, and the Synodal ordinal \
-                  lexemes, remain family and lexicon facts.",
+        id: "unmerged:num:ordinal-stem-inventories",
+        summary: "Since the adjective slice ordinal declension rides the \
+                  merged adjective kernel through each family's adjective \
+                  shim (OCS hard/j-stem short and long routes, Synodal \
+                  Hard/PossessiveIi long classes); what remains per-recension \
+                  is the closed ordinal stem inventories — the OCS simple \
+                  and compound-ordinal stems and the Synodal ordinal \
+                  lexemes — which are family lexicon facts, not paradigm \
+                  rules.",
         evidence: "OCS numeral.rs decline_ordinal/decline_compound_ordinal_stem \
-                   vs Synodal numeral_morphology.rs adjective_like_forms.",
+                   and Synodal numeral_morphology.rs adjective_like_forms, \
+                   both now shimmed onto crate::adjective.",
     },
     NamedDivergence {
         id: "unmerged:num:noun-backed-magnitudes-and-fractionals",
@@ -359,7 +421,7 @@ mod tests {
         ids.sort_unstable();
         ids.dedup();
         assert_eq!(ids.len(), total, "duplicate divergence id");
-        let pos_prefixes = ["pron:", "det:", "num:"];
+        let pos_prefixes = ["pron:", "det:", "num:", "adj:"];
         assert!(NAMED.iter().all(|entry| {
             pos_prefixes
                 .iter()

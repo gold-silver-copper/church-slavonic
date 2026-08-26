@@ -5,9 +5,11 @@
 //! `church_slavonic_core::pronoun`, queried with
 //! `Recension::SynodalRussian`; this module is the family adapter that
 //! keeps the public API, the `FormSet`/rule-trace plumbing, the lexeme
-//! validation, and the adjective-coupled classes that stay family-side
-//! until the adjective merge (`church_slavonic_core::divergence::UNMERGED`,
-//! entry `unmerged:pron:adjective-coupled-classes`).
+//! validation, and the adjective-backed classes, which since the adjective
+//! merge read the merged kernel through the family adjective shim (the OCS
+//! кꙑи counterpart stays suppletive — see
+//! `church_slavonic_core::divergence::UNMERGED`, entry
+//! `unmerged:pron:kii-suppletive-interrogative`).
 
 use church_slavonic_core::{Recension, pronoun as kernel};
 

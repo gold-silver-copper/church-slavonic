@@ -202,6 +202,183 @@ pub fn total_ves_cell(
     }
 }
 
+/// One ending of a velar universal-determiner cell, with the stem treatment
+/// it selects.
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+pub struct VelarEnding {
+    pub text: &'static str,
+    /// Whether the ending attaches to the second-palatalized stem
+    /// (вьсац-/всѧц-) rather than the plain velar stem (вьсак-/всѧк-); see
+    /// [`crate::pronoun::palatalize_final_velar`].
+    pub palatalized: bool,
+}
+
+const NO_VELAR: &[VelarEnding] = &[];
+
+macro_rules! ve {
+    ($text:literal) => {
+        VelarEnding {
+            text: $text,
+            palatalized: false,
+        }
+    };
+}
+
+macro_rules! vp {
+    ($text:literal) => {
+        VelarEnding {
+            text: $text,
+            palatalized: true,
+        }
+    };
+}
+
+/// One short cell of the velar universal determiner (OCS вьсакъ/вьсѣкъ,
+/// Synodal всѧкъ).
+///
+/// The OCS column IS the merged pronoun kernel's hard agreeing class with
+/// the positional second palatalization before и/ѣ-initial endings (checked
+/// against [`crate::pronoun::agreeing_ending`] by a kernel test); OCS
+/// ignores `animacy` and has no vocative. The Synodal column is the Alypy
+/// §§45, 48, and 57 всѧкъ mixed short table; its family renders the
+/// vocative as the nominative before querying the kernel, so vocatives are
+/// empty here. Beyond the hard-class realization rules the columns differ
+/// by divergence `det:velar-universal-reshape`, plus
+/// `pron:genitive-accusative` on the Synodal animate arms and
+/// `pron:instr-loc-sg-jer` on the -мь/-мъ terminals; the stem-grade pair
+/// вьсак- ~ всѧк- is part of the same reshape. The Synodal paradigm drops
+/// the dual (Alypy §48 excludes it explicitly).
+#[must_use]
+pub fn velar_universal_short_ending(
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+    recension: Recension,
+) -> &'static [VelarEnding] {
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative, Vocative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Dual, Plural, Singular};
+    let animate = animacy == Animacy::Animate;
+    let (ocs, syn): (&[VelarEnding], &[VelarEnding]) = match (case, number, gender) {
+        (Nominative, Singular, Masculine) => (&[ve!("ъ")], &[ve!("ъ")]),
+        (Nominative, Singular, Feminine) => (&[ve!("а")], &[ve!("а")]),
+        (Nominative, Singular, Neuter) => (&[ve!("о")], &[ve!("о")]),
+        // det:velar-universal-reshape (long-adjective а-grade genitives with
+        // the агѡ/аго and аго/агѡ variant orders against pronominal ого).
+        (Genitive, Singular, Masculine | Neuter) => (&[ve!("ого")], &[ve!("агѡ"), ve!("аго")]),
+        (Genitive, Singular, Feminine) => (&[ve!("оѩ")], &[ve!("оѧ")]),
+        (Dative, Singular, Masculine | Neuter) => (&[ve!("ому")], &[ve!("омꙋ")]),
+        // det:velar-universal-reshape (palatalized ѣй beside ой).
+        (Dative | Locative, Singular, Feminine) => (&[ve!("ои")], &[vp!("ѣй"), ve!("ой")]),
+        // pron:genitive-accusative + det:velar-universal-reshape.
+        (Accusative, Singular, Masculine) => (
+            &[ve!("ъ")],
+            if animate {
+                &[ve!("аго"), ve!("агѡ")]
+            } else {
+                &[ve!("ъ")]
+            },
+        ),
+        // realization: gen:big-yus (ѫ → у, typographic ꙋ).
+        (Accusative, Singular, Feminine) => (&[ve!("ѫ")], &[ve!("ꙋ")]),
+        (Accusative, Singular, Neuter) => (&[ve!("о")], &[ve!("о")]),
+        // pron:instr-loc-sg-jer (both columns palatalize before ѣ).
+        (Instrumental, Singular, Masculine | Neuter) => (&[vp!("ѣмь")], &[vp!("ѣмъ")]),
+        // realization: gen:iotated-big-yus (оѭ ~ ою).
+        (Instrumental, Singular, Feminine) => (&[ve!("оѭ")], &[ve!("ою")]),
+        // pron:instr-loc-sg-jer + det:velar-universal-reshape (омъ beside
+        // the palatalized ѣмъ).
+        (Locative, Singular, Masculine | Neuter) => (&[ve!("омь")], &[ve!("омъ"), vp!("ѣмъ")]),
+        // det:velar-universal-reshape (the Synodal paradigm drops the dual).
+        (Nominative | Accusative, Dual, Masculine) => (&[ve!("а")], NO_VELAR),
+        (Nominative | Accusative, Dual, Feminine | Neuter) => (&[vp!("ѣ")], NO_VELAR),
+        (Genitive | Locative, Dual, _) => (&[ve!("ою")], NO_VELAR),
+        (Dative | Instrumental, Dual, _) => (&[vp!("ѣма")], NO_VELAR),
+        (Nominative, Plural, Masculine) => (&[vp!("и")], &[vp!("ы")]),
+        // det:velar-universal-reshape (feminine plural -и against -ы).
+        (Nominative, Plural, Feminine) => (&[ve!("ы")], &[ve!("и")]),
+        (Nominative, Plural, Neuter) => (&[ve!("а")], &[ve!("а")]),
+        // pron:genitive-accusative + det:velar-universal-reshape on the
+        // Synodal arms.
+        (Accusative, Plural, Masculine | Feminine) => (
+            &[ve!("ы")],
+            if animate {
+                &[vp!("ѣхъ")]
+            } else {
+                &[ve!("и")]
+            },
+        ),
+        (Accusative, Plural, Neuter) => (&[ve!("а")], &[ve!("а")]),
+        (Genitive | Locative, Plural, _) => (&[vp!("ѣхъ")], &[vp!("ѣхъ")]),
+        (Dative, Plural, _) => (&[vp!("ѣмъ")], &[vp!("ѣмъ")]),
+        (Instrumental, Plural, _) => (&[vp!("ѣми")], &[vp!("ѣми")]),
+        (Vocative, _, _) => (NO_VELAR, NO_VELAR),
+    };
+    match recension {
+        Recension::OldChurchSlavonic => ocs,
+        Recension::SynodalRussian => syn,
+        _ => NO_VELAR,
+    }
+}
+
+/// One long cell of the velar universal determiner (Synodal всѧкїй, Alypy
+/// §§48 and 57). The OCS вьсакъ is short-only, so the OCS column is empty
+/// throughout — the long paradigm is a Synodal lexical fact carried here
+/// because the family reads both forms of one lexeme from the kernel.
+/// Vocatives and duals follow the short table's conventions.
+#[must_use]
+pub fn velar_universal_long_ending(
+    case: Case,
+    number: Number,
+    gender: Gender,
+    animacy: Animacy,
+    recension: Recension,
+) -> &'static [VelarEnding] {
+    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative, Vocative};
+    use Gender::{Feminine, Masculine, Neuter};
+    use Number::{Dual, Plural, Singular};
+    if recension != Recension::SynodalRussian {
+        return NO_VELAR;
+    }
+    let animate = animacy == Animacy::Animate;
+    match (case, number, gender) {
+        (Nominative, Singular, Masculine) => &[ve!("їй")],
+        (Nominative, Singular, Feminine) => &[ve!("аѧ")],
+        (Nominative | Accusative, Singular, Neuter) => &[ve!("ое")],
+        (Genitive, Singular, Masculine | Neuter) => &[ve!("агѡ")],
+        (Genitive, Singular, Feminine) => &[ve!("їѧ")],
+        (Dative, Singular, Masculine | Neuter) => &[ve!("омꙋ")],
+        (Dative | Locative, Singular, Feminine) => &[vp!("ѣй"), ve!("ой")],
+        (Accusative, Singular, Masculine) => {
+            if animate {
+                &[ve!("аго")]
+            } else {
+                &[ve!("їй")]
+            }
+        }
+        (Accusative, Singular, Feminine) => &[ve!("ꙋю")],
+        (Instrumental, Singular, Masculine | Neuter) => &[ve!("имъ")],
+        (Instrumental, Singular, Feminine) => &[ve!("ою")],
+        (Locative, Singular, Masculine | Neuter) => &[vp!("ѣмъ"), ve!("омъ")],
+        (Nominative, Plural, Masculine) => &[vp!("ыи")],
+        (Nominative, Plural, Feminine) => &[ve!("їѧ")],
+        (Nominative, Plural, Neuter) => &[ve!("аѧ")],
+        (Accusative, Plural, Masculine | Feminine) => {
+            if animate {
+                &[ve!("ихъ")]
+            } else {
+                &[ve!("їѧ")]
+            }
+        }
+        (Accusative, Plural, Neuter) => &[ve!("аѧ")],
+        (Genitive | Locative, Plural, _) => &[ve!("ихъ")],
+        (Dative, Plural, _) => &[ve!("имъ")],
+        (Instrumental, Plural, _) => &[ve!("ими")],
+        (Vocative, _, _) | (_, Dual, _) => NO_VELAR,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -233,6 +410,67 @@ mod tests {
                 .is_empty()
             );
         }
+    }
+
+    #[test]
+    fn velar_universal_ocs_column_is_the_palatalizing_hard_class() {
+        // The OCS velar universal declines through the pronoun kernel's hard
+        // class, second-palatalizing before и/ѣ-initial endings; the two
+        // copies of that closed table must not drift.
+        for case in Case::ALL {
+            if case == Case::Vocative {
+                continue;
+            }
+            for number in Number::ALL {
+                for gender in Gender::ALL {
+                    let hard = crate::pronoun::agreeing_ending(
+                        AgreeingClass::Hard,
+                        case,
+                        number,
+                        gender,
+                        Animacy::Inanimate,
+                        OCS,
+                    );
+                    let velar: Vec<(&str, bool)> =
+                        velar_universal_short_ending(case, number, gender, Animacy::Inanimate, OCS)
+                            .iter()
+                            .map(|ending| (ending.text, ending.palatalized))
+                            .collect();
+                    let expected: Vec<(&str, bool)> = hard
+                        .iter()
+                        .map(|ending| (*ending, ending.starts_with(['и', 'ѣ'])))
+                        .collect();
+                    assert_eq!(velar, expected, "{case:?} {number:?} {gender:?}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn velar_universal_long_paradigm_is_synodal_only() {
+        for case in Case::ALL {
+            for number in Number::ALL {
+                for gender in Gender::ALL {
+                    assert!(
+                        velar_universal_long_ending(case, number, gender, Animacy::Inanimate, OCS)
+                            .is_empty()
+                    );
+                }
+            }
+        }
+        assert_eq!(
+            velar_universal_long_ending(
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                Animacy::Inanimate,
+                SYN
+            ),
+            [VelarEnding {
+                text: "агѡ",
+                palatalized: false
+            }]
+        );
     }
 
     #[test]

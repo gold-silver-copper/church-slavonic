@@ -1,9 +1,19 @@
 //! Rule-based adjective declension.
+//!
+//! Since the phase-4 adjective merge (docs/UNIFIED_LANGUAGE_PROMPT.md) the
+//! shared hard/soft short and long ending tables live in the merged kernel
+//! `church_slavonic_core::adjective`; this module is the family adapter that
+//! keeps the public API, the citation parsing, the palatalization seams, the
+//! jer-j workstems, the long-only identities, and the comparative
+//! principal-part machinery.
 
 use crate::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, ComparativeFormation, Gender,
     InflectionError, Number, PredictedForm, RuleId, RuleStep,
 };
+use church_slavonic_core::{Recension, adjective as kernel};
+
+const OCS: Recension = Recension::OldChurchSlavonic;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AdjectiveLexeme {
@@ -559,148 +569,51 @@ fn adjective_citation_stem(
     }
 }
 
+/// Since the phase-4 adjective merge the four shared ending tables live in
+/// the merged kernel `church_slavonic_core::adjective`, queried with
+/// `Recension::OldChurchSlavonic`; these shims keep this module's ending
+/// vocabulary byte-identical. The kernel's totality test guarantees every
+/// OCS cell is populated with exactly one ending.
+fn kernel_ending(
+    class: kernel::AdjectiveClass,
+    form: AdjectiveForm,
+    cell: AdjectiveCell,
+) -> &'static str {
+    let endings = match form {
+        AdjectiveForm::Short => kernel::short_ending(
+            class,
+            cell.case,
+            cell.number,
+            cell.gender,
+            cell.animacy,
+            OCS,
+        ),
+        AdjectiveForm::Long => kernel::long_ending(
+            class,
+            cell.case,
+            cell.number,
+            cell.gender,
+            cell.animacy,
+            OCS,
+        ),
+    };
+    endings.first().copied().unwrap_or_default()
+}
+
 fn hard_long_ending(cell: AdjectiveCell) -> &'static str {
-    use Case::*;
-    use Gender::*;
-    use Number::*;
-    match (cell.case, cell.number, cell.gender) {
-        (Nominative | Vocative, Singular, Masculine) => "ꙑи",
-        (Nominative | Accusative | Vocative, Singular, Neuter) => "оѥ",
-        (Nominative | Vocative, Singular, Feminine) => "аꙗ",
-        (Genitive, Singular, Masculine | Neuter) => "аѥго",
-        (Genitive, Singular, Feminine) => "ꙑѩ",
-        (Dative, Singular, Masculine | Neuter) => "оуѥмоу",
-        (Dative | Locative, Singular, Feminine) => "ѣи",
-        (Accusative, Singular, Masculine) if cell.animacy == Animacy::Animate => "аѥго",
-        (Accusative, Singular, Masculine) => "ꙑи",
-        (Accusative | Instrumental, Singular, Feminine) => "ѫѭ",
-        (Instrumental, Singular, Masculine | Neuter) => "ꙑимь",
-        (Locative, Singular, Masculine | Neuter) => "ѣѥмь",
-        (Nominative | Accusative | Vocative, Dual, Masculine) => "аꙗ",
-        (Nominative | Accusative | Vocative, Dual, Feminine | Neuter) => "ѣи",
-        (Genitive | Locative, Dual, _) => "оую",
-        (Dative | Instrumental, Dual, _) => "ꙑима",
-        (Nominative | Vocative, Plural, Masculine) => "ии",
-        (Nominative | Accusative | Vocative, Plural, Feminine) => "ꙑѩ",
-        (Nominative | Accusative | Vocative, Plural, Neuter) => "аꙗ",
-        (Genitive | Locative, Plural, _) => "ꙑихъ",
-        (Dative, Plural, _) => "ꙑимъ",
-        (Accusative, Plural, Masculine) if cell.animacy == Animacy::Animate => "ꙑихъ",
-        (Accusative, Plural, Masculine) => "ꙑѩ",
-        (Instrumental, Plural, _) => "ꙑими",
-    }
+    kernel_ending(kernel::AdjectiveClass::Hard, AdjectiveForm::Long, cell)
 }
 
 fn soft_short_ending(cell: AdjectiveCell) -> &'static str {
-    use Case::*;
-    use Gender::*;
-    use Number::*;
-    match (cell.case, cell.number, cell.gender) {
-        (Nominative, Singular, Masculine) => "ь",
-        (Nominative | Vocative, Singular, Feminine) => "а",
-        (Nominative | Accusative | Vocative, Singular, Neuter) => "е",
-        (Genitive, Singular, Masculine | Neuter) => "а",
-        (Genitive, Singular, Feminine) => "ѧ",
-        (Dative, Singular, Masculine | Neuter) => "оу",
-        (Dative | Locative, Singular, Feminine) => "и",
-        (Accusative, Singular, Masculine) if cell.animacy == Animacy::Animate => "а",
-        (Accusative, Singular, Masculine) => "ь",
-        (Accusative, Singular, Feminine) => "ѫ",
-        (Instrumental, Singular, Masculine | Neuter) => "емь",
-        (Instrumental, Singular, Feminine) => "еѭ",
-        (Locative, Singular, Masculine | Neuter) => "и",
-        (Vocative, Singular, Masculine) => "е",
-        (Nominative | Accusative | Vocative, Dual, Masculine) => "а",
-        (Nominative | Accusative | Vocative, Dual, Feminine | Neuter) => "и",
-        (Genitive | Locative, Dual, _) => "оу",
-        (Dative | Instrumental, Dual, Masculine | Neuter) => "ема",
-        (Dative | Instrumental, Dual, Feminine) => "ама",
-        (Nominative | Vocative, Plural, Masculine) => "и",
-        (Nominative | Accusative | Vocative, Plural, Feminine) => "ѧ",
-        (Nominative | Accusative | Vocative, Plural, Neuter) => "а",
-        (Genitive, Plural, _) => "ь",
-        (Dative, Plural, Masculine | Neuter) => "емъ",
-        (Dative, Plural, Feminine) => "амъ",
-        (Accusative, Plural, Masculine) if cell.animacy == Animacy::Animate => "ь",
-        (Accusative, Plural, Masculine) => "ѧ",
-        (Instrumental, Plural, Masculine | Neuter) => "и",
-        (Instrumental, Plural, Feminine) => "ами",
-        (Locative, Plural, Masculine | Neuter) => "ихъ",
-        (Locative, Plural, Feminine) => "ахъ",
-    }
+    kernel_ending(kernel::AdjectiveClass::Soft, AdjectiveForm::Short, cell)
 }
 
 fn soft_long_ending(cell: AdjectiveCell) -> &'static str {
-    use Case::*;
-    use Gender::*;
-    use Number::*;
-    match (cell.case, cell.number, cell.gender) {
-        (Nominative | Vocative, Singular, Masculine) => "ии",
-        (Nominative | Accusative | Vocative, Singular, Neuter) => "еѥ",
-        (Nominative | Vocative, Singular, Feminine) => "аꙗ",
-        (Genitive, Singular, Masculine | Neuter) => "аѥго",
-        (Genitive, Singular, Feminine) => "ѧѩ",
-        (Dative, Singular, Masculine | Neuter) => "оуѥмоу",
-        (Dative | Locative, Singular, Feminine) => "ии",
-        (Accusative, Singular, Masculine) if cell.animacy == Animacy::Animate => "аѥго",
-        (Accusative, Singular, Masculine) => "ии",
-        (Accusative, Singular, Feminine) => "ѫѭ",
-        (Instrumental, Singular, Masculine | Neuter) => "иимь",
-        (Instrumental, Singular, Feminine) => "еѭ",
-        (Locative, Singular, Masculine | Neuter) => "иѥмь",
-        (Nominative | Accusative | Vocative, Dual, Masculine) => "аꙗ",
-        (Nominative | Accusative | Vocative, Dual, Feminine | Neuter) => "ии",
-        (Genitive | Locative, Dual, _) => "оую",
-        (Dative | Instrumental, Dual, _) => "иима",
-        (Nominative | Vocative, Plural, Masculine) => "ии",
-        (Nominative | Accusative | Vocative, Plural, Feminine) => "ѧѩ",
-        (Nominative | Accusative | Vocative, Plural, Neuter) => "аꙗ",
-        (Genitive | Locative, Plural, _) => "иихъ",
-        (Dative, Plural, _) => "иимъ",
-        (Accusative, Plural, Masculine) if cell.animacy == Animacy::Animate => "иихъ",
-        (Accusative, Plural, Masculine) => "ѧѩ",
-        (Instrumental, Plural, _) => "иими",
-    }
+    kernel_ending(kernel::AdjectiveClass::Soft, AdjectiveForm::Long, cell)
 }
 
 fn hard_short_ending(cell: AdjectiveCell) -> &'static str {
-    use Case::*;
-    use Gender::*;
-    use Number::*;
-    match (cell.case, cell.number, cell.gender) {
-        (Nominative, Singular, Masculine) => "ъ",
-        (Nominative, Singular, Feminine) => "а",
-        (Nominative | Accusative | Vocative, Singular, Neuter) => "о",
-        (Genitive, Singular, Masculine | Neuter) => "а",
-        (Genitive, Singular, Feminine) => "ꙑ",
-        (Dative, Singular, Masculine | Neuter) => "оу",
-        (Dative | Locative, Singular, Feminine) => "ѣ",
-        (Accusative, Singular, Masculine) if cell.animacy == Animacy::Animate => "а",
-        (Accusative, Singular, Masculine) => "ъ",
-        (Accusative, Singular, Feminine) => "ѫ",
-        (Instrumental, Singular, Masculine | Neuter) => "омь",
-        (Instrumental, Singular, Feminine) => "оѭ",
-        (Locative, Singular, Masculine | Neuter) => "ѣ",
-        (Vocative, Singular, Masculine) => "е",
-        (Vocative, Singular, Feminine) => "о",
-        (Nominative | Accusative | Vocative, Dual, Masculine) => "а",
-        (Nominative | Accusative | Vocative, Dual, Feminine | Neuter) => "ѣ",
-        (Genitive | Locative, Dual, _) => "оу",
-        (Dative | Instrumental, Dual, Masculine | Neuter) => "ома",
-        (Dative | Instrumental, Dual, Feminine) => "ама",
-        (Nominative | Vocative, Plural, Masculine) => "и",
-        (Nominative | Accusative | Vocative, Plural, Feminine) => "ꙑ",
-        (Nominative | Accusative | Vocative, Plural, Neuter) => "а",
-        (Genitive, Plural, _) => "ъ",
-        (Dative, Plural, Masculine | Neuter) => "омъ",
-        (Dative, Plural, Feminine) => "амъ",
-        (Accusative, Plural, Masculine) if cell.animacy == Animacy::Animate => "ъ",
-        (Accusative, Plural, Masculine) => "ꙑ",
-        (Instrumental, Plural, Masculine | Neuter) => "ꙑ",
-        (Instrumental, Plural, Feminine) => "ами",
-        (Locative, Plural, Masculine | Neuter) => "ѣхъ",
-        (Locative, Plural, Feminine) => "ахъ",
-    }
+    kernel_ending(kernel::AdjectiveClass::Hard, AdjectiveForm::Short, cell)
 }
 
 fn palatalize<const N: usize>(stem: &str, replacements: [(char, &str); N]) -> String {

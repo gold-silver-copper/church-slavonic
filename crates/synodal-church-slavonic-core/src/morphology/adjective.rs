@@ -4,6 +4,41 @@ use crate::{
 };
 
 use super::*;
+use church_slavonic_core::{Recension, adjective as kernel};
+
+const SYN: Recension = Recension::SynodalRussian;
+
+/// Since the phase-4 adjective merge the shared hard/soft short and long
+/// ending tables live in the merged kernel `church_slavonic_core::adjective`,
+/// queried with `Recension::SynodalRussian`; the velar, sibilant, possessive,
+/// and comparison series remain Synodal-only family paradigms. The kernel's
+/// totality test guarantees every Synodal cell is populated with exactly one
+/// ending.
+fn kernel_ending(
+    class: kernel::AdjectiveClass,
+    form: AdjectiveForm,
+    cell: AdjectiveCell,
+) -> &'static str {
+    let endings = match form {
+        AdjectiveForm::Short => kernel::short_ending(
+            class,
+            cell.case,
+            cell.number,
+            cell.gender,
+            cell.animacy,
+            SYN,
+        ),
+        AdjectiveForm::Long => kernel::long_ending(
+            class,
+            cell.case,
+            cell.number,
+            cell.gender,
+            cell.animacy,
+            SYN,
+        ),
+    };
+    endings.first().copied().unwrap_or_default()
+}
 
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
@@ -551,49 +586,12 @@ pub(crate) fn short_adjective_ending(
         | AdjectiveClass::PossessiveIn
         | AdjectiveClass::PossessiveSk => {}
     }
-    use Case::{
-        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
-        Nominative as Nom, Vocative as Voc,
-    };
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
-    let animate = |nominative, genitive| {
-        if cell.animacy == Animacy::Animate {
-            genitive
-        } else {
-            nominative
-        }
-    };
-    Ok(match (cell.number, cell.gender, cell.case) {
-        (Sg, M, Nom) => "ъ",
-        (Sg, M, Gen) => "а",
-        (Sg, M, Dat) => "ꙋ",
-        (Sg, M, Acc) => animate("ъ", "а"),
-        (Sg, M, Ins) => "ымъ",
-        (Sg, M, Loc) => "ѣ",
-        (Sg, M, Voc) => "е",
-        (Sg, F, Nom | Voc) => "а",
-        (Sg, F, Gen) => "ы",
-        (Sg, F, Dat | Loc) => "ѣ",
-        (Sg, F, Acc) => "ꙋ",
-        (Sg, F, Ins) => "ою",
-        (Sg, N, Nom | Acc | Voc) => "о",
-        (Sg, N, Gen) => "а",
-        (Sg, N, Dat) => "ꙋ",
-        (Sg, N, Ins) => "ымъ",
-        (Sg, N, Loc) => "ѣ",
-        (Du, M, Nom | Acc | Voc) => "а",
-        (Du, F | N, Nom | Acc | Voc) => "ѣ",
-        (Du, _, Gen | Loc) => "ꙋ",
-        (Du, _, Dat | Ins) => "ыма",
-        (Pl, M, Nom | Voc) => "и",
-        (Pl, F, Nom | Acc | Voc) => "ы",
-        (Pl, N, Nom | Acc | Voc) => "а",
-        (Pl, _, Gen | Loc) => "ыхъ",
-        (Pl, _, Dat) => "ымъ",
-        (Pl, M, Acc) => animate("ы", "ыхъ"),
-        (Pl, _, Ins) => "ыми",
-    })
+    // Merged kernel: the shared hard short (nominal) declension.
+    Ok(kernel_ending(
+        kernel::AdjectiveClass::Hard,
+        AdjectiveForm::Short,
+        cell,
+    ))
 }
 
 pub(crate) fn possessive_ii_short_ending(cell: AdjectiveCell) -> Result<&'static str> {
@@ -642,46 +640,12 @@ pub(crate) fn possessive_ii_short_ending(cell: AdjectiveCell) -> Result<&'static
 }
 
 pub(crate) fn soft_short_adjective_ending(cell: AdjectiveCell) -> Result<&'static str> {
-    use Case::{
-        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
-        Nominative as Nom, Vocative as Voc,
-    };
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
-    let animate = |nominative, genitive| {
-        if cell.animacy == Animacy::Animate {
-            genitive
-        } else {
-            nominative
-        }
-    };
-    Ok(match (cell.number, cell.gender, cell.case) {
-        (Sg, M, Nom | Voc) => "ь",
-        (Sg, M, Gen) => "ѧ",
-        (Sg, M, Dat) => "ю",
-        (Sg, M, Acc) => animate("ь", "ѧ"),
-        (Sg, M, Ins) => "имъ",
-        (Sg, M, Loc) => "и",
-        (Sg, F, Nom | Voc) => "ѧ",
-        (Sg, F, Gen | Dat | Loc) => "и",
-        (Sg, F, Acc) => "ю",
-        (Sg, F, Ins) => "ею",
-        (Sg, N, Nom | Acc | Voc) => "е",
-        (Sg, N, Gen) => "ѧ",
-        (Sg, N, Dat) => "ю",
-        (Sg, N, Ins) => "имъ",
-        (Sg, N, Loc) => "и",
-        (Du, M, Nom | Acc | Voc) => "ѧ",
-        (Du, F | N, Nom | Acc | Voc) => "и",
-        (Du, _, Gen | Loc) => "ю",
-        (Du, _, Dat | Ins) => "има",
-        (Pl, M | F, Nom | Voc) => "и",
-        (Pl, N, Nom | Acc | Voc) => "ѧ",
-        (Pl, _, Gen | Loc) => "ихъ",
-        (Pl, _, Dat) => "имъ",
-        (Pl, M | F, Acc) => animate("и", "ихъ"),
-        (Pl, _, Ins) => "ими",
-    })
+    // Merged kernel: the shared soft short (nominal) declension.
+    Ok(kernel_ending(
+        kernel::AdjectiveClass::Soft,
+        AdjectiveForm::Short,
+        cell,
+    ))
 }
 
 pub(crate) fn long_adjective_ending(
@@ -702,48 +666,12 @@ pub(crate) fn long_adjective_ending(
         }
         AdjectiveClass::Hard | AdjectiveClass::PossessiveIn | AdjectiveClass::PossessiveSk => {}
     }
-    use Case::{
-        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
-        Nominative as Nom, Vocative as Voc,
-    };
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
-    let animate = |nominative, genitive| {
-        if cell.animacy == Animacy::Animate {
-            genitive
-        } else {
-            nominative
-        }
-    };
-    Ok(match (cell.number, cell.gender, cell.case) {
-        (Sg, M, Nom | Voc) => "ый",
-        (Sg, M, Gen) => "агѡ",
-        (Sg, M, Dat) => "омꙋ",
-        (Sg, M, Acc) => animate("ый", "аго"),
-        (Sg, M, Ins) => "ымъ",
-        (Sg, M, Loc) => "ѣмъ",
-        (Sg, F, Nom | Voc) => "аѧ",
-        (Sg, F, Gen) => "ыѧ",
-        (Sg, F, Dat | Loc) => "ѣй",
-        (Sg, F, Acc) => "ꙋю",
-        (Sg, F, Ins) => "ою",
-        (Sg, N, Nom | Acc | Voc) => "ое",
-        (Sg, N, Gen) => "агѡ",
-        (Sg, N, Dat) => "омꙋ",
-        (Sg, N, Ins) => "ымъ",
-        (Sg, N, Loc) => "ѣмъ",
-        (Du, M, Nom | Acc | Voc) => "аѧ",
-        (Du, F | N, Nom | Acc | Voc) => "ѣи",
-        (Du, _, Gen | Loc) => "ꙋю",
-        (Du, _, Dat | Ins) => "ыма",
-        (Pl, M, Nom | Voc) => "їи",
-        (Pl, F, Nom | Voc) => "ыѧ",
-        (Pl, N, Nom | Acc | Voc) => "аѧ",
-        (Pl, _, Gen | Loc) => "ыхъ",
-        (Pl, _, Dat) => "ымъ",
-        (Pl, M | F, Acc) => animate("ыѧ", "ыхъ"),
-        (Pl, _, Ins) => "ыми",
-    })
+    // Merged kernel: the shared hard long (compound) declension.
+    Ok(kernel_ending(
+        kernel::AdjectiveClass::Hard,
+        AdjectiveForm::Long,
+        cell,
+    ))
 }
 
 /// Occasional compound forms of the `-їй` class (Alypy §56). Direct-case,
@@ -832,48 +760,12 @@ pub(crate) fn velar_long_adjective_ending(cell: AdjectiveCell) -> Result<&'stati
 }
 
 pub(crate) fn soft_long_adjective_ending(cell: AdjectiveCell) -> Result<&'static str> {
-    use Case::{
-        Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins, Locative as Loc,
-        Nominative as Nom, Vocative as Voc,
-    };
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
-    let animate = |nominative, genitive| {
-        if cell.animacy == Animacy::Animate {
-            genitive
-        } else {
-            nominative
-        }
-    };
-    Ok(match (cell.number, cell.gender, cell.case) {
-        (Sg, M, Nom | Voc) => "їй",
-        (Sg, M, Gen) => "ѧгѡ",
-        (Sg, M, Dat) => "емꙋ",
-        (Sg, M, Acc) => animate("їй", "ѧго"),
-        (Sg, M, Ins) => "имъ",
-        (Sg, M, Loc) => "емъ",
-        (Sg, F, Nom | Voc) => "ѧѧ",
-        (Sg, F, Gen) => "їѧ",
-        (Sg, F, Dat | Loc) => "ей",
-        (Sg, F, Acc) => "юю",
-        (Sg, F, Ins) => "ею",
-        (Sg, N, Nom | Acc | Voc) => "ее",
-        (Sg, N, Gen) => "ѧгѡ",
-        (Sg, N, Dat) => "емꙋ",
-        (Sg, N, Ins) => "имъ",
-        (Sg, N, Loc) => "емъ",
-        (Du, M, Nom | Acc | Voc) => "ѧѧ",
-        (Du, F | N, Nom | Acc | Voc) => "їи",
-        (Du, _, Gen | Loc) => "юю",
-        (Du, _, Dat | Ins) => "има",
-        (Pl, M, Nom | Voc) => "їи",
-        (Pl, F, Nom | Voc) => "їѧ",
-        (Pl, N, Nom | Acc | Voc) => "ѧѧ",
-        (Pl, _, Gen | Loc) => "ихъ",
-        (Pl, _, Dat) => "имъ",
-        (Pl, M | F, Acc) => animate("їѧ", "ихъ"),
-        (Pl, _, Ins) => "ими",
-    })
+    // Merged kernel: the shared soft long (compound) declension.
+    Ok(kernel_ending(
+        kernel::AdjectiveClass::Soft,
+        AdjectiveForm::Long,
+        cell,
+    ))
 }
 
 /// Long comparison endings after the independently supplied `-(ь)ш-`,
