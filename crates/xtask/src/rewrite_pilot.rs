@@ -197,6 +197,7 @@ fn cell_from_code(code: u8) -> (Case, Number) {
 }
 
 /// Rank-stable dedupe of one cell's raw rows into its variant list.
+#[allow(clippy::ptr_arg)]
 fn dedupe_ranked(rows: &mut Vec<(u16, String)>) -> Vec<String> {
     rows.sort_by_key(|(rank, _)| *rank);
     let mut texts: Vec<String> = Vec::new();
@@ -230,7 +231,8 @@ fn load_noun_oracle(root: &Path) -> Result<NounOracle, Box<dyn Error>> {
         );
     }
     // Per-lexeme rows, rank-stable within a cell.
-    let mut per_lexeme: BTreeMap<&str, BTreeMap<u8, Vec<(u16, String)>>> = BTreeMap::new();
+    type RankedCells<'a> = BTreeMap<&'a str, BTreeMap<u8, Vec<(u16, String)>>>;
+    let mut per_lexeme: RankedCells = BTreeMap::new();
     for row in &registry.forms {
         if !lexemes.contains_key(row.lexeme_id.as_str()) {
             continue;
@@ -889,7 +891,8 @@ fn load_verb_oracle(root: &Path) -> Result<VerbOracle, Box<dyn Error>> {
             .unwrap_or_default();
         lexemes.insert(&lexeme.id, (&lexeme.lemma, codes));
     }
-    let mut per_lexeme: BTreeMap<&str, BTreeMap<u8, Vec<(u16, String)>>> = BTreeMap::new();
+    type RankedCells<'a> = BTreeMap<&'a str, BTreeMap<u8, Vec<(u16, String)>>>;
+    let mut per_lexeme: RankedCells = BTreeMap::new();
     for row in &registry.forms {
         if !lexemes.contains_key(row.lexeme_id.as_str()) {
             continue;
@@ -1311,6 +1314,7 @@ fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
         // (system id, cell-code filter, whether the analysis list is empty)
         let mut updated = base.clone();
         let mut touched = false;
+        #[allow(clippy::type_complexity)]
         let systems: [(bool, fn(u8) -> bool); 9] = [
             (base.present.is_empty(), |code| code <= 8),
             (base.imperfect.is_empty(), |code| (9..=17).contains(&code)),

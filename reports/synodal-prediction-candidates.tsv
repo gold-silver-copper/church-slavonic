@@ -86,6 +86,7 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 пожив	114	5	false	first-conjugation,first-unpalatalized	поживемъ поживете поживетъ поживеши поживꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 постыд	114	4	true	second	постыдитесѧ постыдитсѧ постыдишисѧ постыдѧтсѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 роди	112	4	true	infinitive,l-participle,vowel-aorist	родила родиласѧ родилсѧ родилъ родитисѧ родиша родишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
+чрес	112	2	false	l-participle	чресла чреслъ чрєсла	SYN-PREDICT-VERB-SEGMENTATION-V1
 всели	111	3	true	infinitive,vowel-aorist	вселити вселитисѧ вселихсѧ вселихъ вселишасѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 слꙋж	111	5	false	second,second-after-sibilant	слꙋжатъ слꙋжимъ слꙋжите слꙋжитъ слꙋжиши	SYN-PREDICT-VERB-SEGMENTATION-V1
 ѿверг	111	5	true	consonant-aorist,first-unpalatalized,l-participle	ѿверглсѧ ѿверглъ ѿвергосте ѿвергостесѧ ѿвергохъ ѿвергоша ѿвергошасѧ ѿвергꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
@@ -173,7 +174,6 @@ stem	tokens	distinct_cells	reflexive	classes	surfaces	model
 посрам	75	3	true	second	посрамите посрамитесѧ посрамитсѧ посрамитъ посрамѧтсѧ	SYN-PREDICT-VERB-SEGMENTATION-V1
 разор	75	4	true	second	разорите разоритсѧ разоритъ разориши разорѧтсѧ разорѧтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 соверш	75	3	true	second,second-after-sibilant	совершатсѧ совершатъ совершитсѧ совершитъ совершиши	SYN-PREDICT-VERB-SEGMENTATION-V1
-чрес	75	2	false	l-participle	чресла чреслъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 восплач	74	4	true	first-conjugation,first-unpalatalized,second	восплачетесѧ восплачетсѧ восплачешисѧ восплачитесѧ восплачꙋтсѧ восплачꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 мог	74	3	false	consonant-aorist,first-unpalatalized,l-participle	моглъ могохъ могꙋтъ	SYN-PREDICT-VERB-SEGMENTATION-V1
 радова	74	2	true	imperfect,infinitive	радоватисѧ радовахꙋсѧ	SYN-PREDICT-VERB-SEGMENTATION-V1

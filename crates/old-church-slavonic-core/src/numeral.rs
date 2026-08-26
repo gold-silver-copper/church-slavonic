@@ -2507,7 +2507,7 @@ pub fn compound_cardinal(
     cell: CompoundCardinalCell,
     options: CardinalCompositionOptions,
 ) -> Result<RealizedCardinal, InflectionError> {
-    if value < MIN_COMPOUND_CARDINAL_VALUE || value > MAX_CARDINAL_VALUE {
+    if !(MIN_COMPOUND_CARDINAL_VALUE..=MAX_CARDINAL_VALUE).contains(&value) {
         return Err(InflectionError::InvalidInput {
             reason: "the reviewed compound-cardinal range is 11 through 10,000".to_string(),
         });
