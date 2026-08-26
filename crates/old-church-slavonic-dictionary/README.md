@@ -1,5 +1,12 @@
 # old-church-slavonic-dictionary
 
+> **Succession notice.** This crate's consumer surface is superseded by
+> the rule-first [`church-slavonic`](../church-slavonic) facade (and
+> `church-slavonic-dictionary`); see `docs/DEPRECATION_MAP.md` for the
+> item-by-item mapping and `docs/REWRITE_PLAN.md` for the program. This
+> crate remains the reference implementation until the final deprecation
+> release is published.
+
 An offline, source-attributed Old Church Slavonic semantic dictionary for Rust.
 It provides OCS-to-English lookup, English-to-OCS search, attested examples, and
 a vocabulary-manifest lint designed for games. It contains no modern

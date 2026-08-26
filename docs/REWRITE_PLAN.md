@@ -191,6 +191,19 @@ Hard rules for the target:
   `_imperfect`/`_aorist`/`_future`), `conditional_passive`(+`_aorist`), and
   `participial_future`, each differential-gated at 100%.
 
+- 2026-08-26 — Final executable scope closed (36 commits since
+  `v0.14-pre-rewrite`): declined participles landed with a differential
+  gate plus the three passive/participial phrase constructions; the
+  synodal monoliths (morphology 8,559, extractor lib 5,167, facade lib/
+  phrases/numeral_phrases/spec/registry, dictionary lib/coverage) all
+  split under the 1,500-line rule behind API-identical seams; succession
+  notices added to the old OCS crates' READMEs; `v1.0.0-alpha` tagged
+  locally. Blocked on the user (outward-facing or sequenced behind
+  publishing): the crates.io deprecation release of the old names, the
+  subsequent deletion of the old OCS family (the plan sequences deletion
+  after that release), pushing, and the synodal one-override-precedence
+  semantic change (an API-behavior decision for the surviving Inflector).
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
