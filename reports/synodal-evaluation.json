@@ -15,15 +15,15 @@
   "expanded": {
     "total": 2489,
     "returned": 2489,
-    "top_1_correct": 2424,
-    "top_k_correct": 2488,
+    "top_1_correct": 2422,
+    "top_k_correct": 2486,
     "abstained": 0
   },
   "printed": {
     "total": 2489,
     "returned": 2489,
-    "top_1_correct": 2340,
-    "top_k_correct": 2488,
+    "top_1_correct": 2338,
+    "top_k_correct": 2486,
     "abstained": 0
   },
   "expanded_disagreements": [
@@ -702,6 +702,24 @@
       "returned_top_k": [
         "тмы",
         "тьмы"
+      ]
+    },
+    {
+      "id": "eval:v12:fb522502444b462d",
+      "cell": "future:second:singular",
+      "expected": "оумреши",
+      "returned_top_1": "ѹмреши",
+      "returned_top_k": [
+        "ѹмреши"
+      ]
+    },
+    {
+      "id": "eval:v12:5ddb6c02cd48d6bf",
+      "cell": "aorist:third:singular",
+      "expected": "оумре",
+      "returned_top_1": "ѹмре",
+      "returned_top_k": [
+        "ѹмре"
       ]
     }
   ],
@@ -2243,24 +2261,42 @@
         "си̑мъ",
         "Си́мъ"
       ]
+    },
+    {
+      "id": "eval:v12:fb522502444b462d",
+      "cell": "future:second:singular",
+      "expected": "ᲂу҆́мреши",
+      "returned_top_1": "ѹ҆́мреши",
+      "returned_top_k": [
+        "ѹ҆́мреши"
+      ]
+    },
+    {
+      "id": "eval:v12:5ddb6c02cd48d6bf",
+      "cell": "aorist:third:singular",
+      "expected": "ᲂу҆́мре",
+      "returned_top_1": "Ѹ҆́мре",
+      "returned_top_k": [
+        "Ѹ҆́мре"
+      ]
     }
   ],
   "exact_registry_expanded_round_trip": {
-    "total": 3245,
-    "returned": 3245,
-    "top_1_correct": 2981,
-    "top_k_correct": 3245,
+    "total": 3246,
+    "returned": 3246,
+    "top_1_correct": 2982,
+    "top_k_correct": 3246,
     "abstained": 0
   },
   "exact_registry_printed_round_trip": {
-    "total": 3245,
-    "returned": 3245,
-    "top_1_correct": 2828,
-    "top_k_correct": 3245,
+    "total": 3246,
+    "returned": 3246,
+    "top_1_correct": 2829,
+    "top_k_correct": 3246,
     "abstained": 0
   },
   "accent_bearing_rows": 2342,
-  "exact_accent_agreement": 2341,
+  "exact_accent_agreement": 2339,
   "by_regularity": {
     "closed-class-held-out-exact-cell": {
       "total": 25,
@@ -3196,8 +3232,8 @@
     "v12-productive-held-out": {
       "total": 222,
       "returned": 222,
-      "top_1_correct": 222,
-      "top_k_correct": 222,
+      "top_1_correct": 220,
+      "top_k_correct": 220,
       "abstained": 0
     },
     "v13-demonstration": {
@@ -3233,22 +3269,22 @@
     "exploratory": {
       "total": 2489,
       "returned": 2489,
-      "top_1_correct": 2424,
-      "top_k_correct": 2488,
+      "top_1_correct": 2422,
+      "top_k_correct": 2486,
       "abstained": 0
     },
     "productive": {
       "total": 2489,
       "returned": 2489,
-      "top_1_correct": 2424,
-      "top_k_correct": 2488,
+      "top_1_correct": 2422,
+      "top_k_correct": 2486,
       "abstained": 0
     },
     "strict": {
       "total": 2489,
       "returned": 2489,
-      "top_1_correct": 2424,
-      "top_k_correct": 2488,
+      "top_1_correct": 2422,
+      "top_k_correct": 2486,
       "abstained": 0
     }
   },
@@ -3261,17 +3297,17 @@
       "abstained": 0
     },
     "expected-form-not-returned": {
-      "total": 1,
-      "returned": 1,
+      "total": 3,
+      "returned": 3,
       "top_1_correct": 0,
       "top_k_correct": 0,
       "abstained": 0
     },
     "predicted": {
-      "total": 362,
-      "returned": 362,
-      "top_1_correct": 360,
-      "top_k_correct": 362,
+      "total": 360,
+      "returned": 360,
+      "top_1_correct": 358,
+      "top_k_correct": 360,
       "abstained": 0
     }
   },
@@ -3286,8 +3322,8 @@
     "aorist": {
       "total": 236,
       "returned": 236,
-      "top_1_correct": 231,
-      "top_k_correct": 236,
+      "top_1_correct": 230,
+      "top_k_correct": 235,
       "abstained": 0
     },
     "determiner": {
@@ -3300,8 +3336,8 @@
     "future": {
       "total": 106,
       "returned": 106,
-      "top_1_correct": 103,
-      "top_k_correct": 106,
+      "top_1_correct": 102,
+      "top_k_correct": 105,
       "abstained": 0
     },
     "imperative": {
@@ -3384,8 +3420,8 @@
   },
   "by_provenance_path": {
     "exact-synodal-attestation": {
-      "total": 2122,
-      "returned": 2122,
+      "total": 2124,
+      "returned": 2124,
       "top_1_correct": 2064,
       "top_k_correct": 2121,
       "abstained": 0
@@ -3405,10 +3441,10 @@
       "abstained": 0
     },
     "synodal-productive-rule": {
-      "total": 270,
-      "returned": 270,
-      "top_1_correct": 270,
-      "top_k_correct": 270,
+      "total": 268,
+      "returned": 268,
+      "top_1_correct": 268,
+      "top_k_correct": 268,
       "abstained": 0
     }
   },
@@ -3416,8 +3452,8 @@
     "ponomar-elizabeth-bible-2026-08-09": {
       "total": 2372,
       "returned": 2372,
-      "top_1_correct": 2313,
-      "top_k_correct": 2371,
+      "top_1_correct": 2311,
+      "top_k_correct": 2369,
       "abstained": 0
     },
     "wikisource-church-slavonic-bible-2026-08-09": {
@@ -3452,17 +3488,17 @@
   },
   "leakage": {
     "masked_expanded": {
-      "total": 755,
-      "returned": 755,
-      "top_1_correct": 753,
-      "top_k_correct": 754,
+      "total": 753,
+      "returned": 753,
+      "top_1_correct": 751,
+      "top_k_correct": 752,
       "abstained": 0
     },
     "masked_printed": {
-      "total": 755,
-      "returned": 755,
-      "top_1_correct": 753,
-      "top_k_correct": 754,
+      "total": 753,
+      "returned": 753,
+      "top_1_correct": 751,
+      "top_k_correct": 752,
       "abstained": 0
     },
     "leave_one_synodal_lexeme_out_expanded": {

@@ -6,18 +6,18 @@ The correction ledger excludes 5 historically preserved but grammatically retrac
 
 | Metric | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| Expanded | 2489 | 2424 | 2488 | 0 | 2489 |
-| Printed | 2489 | 2340 | 2488 | 0 | 2489 |
+| Expanded | 2489 | 2422 | 2486 | 0 | 2489 |
+| Printed | 2489 | 2338 | 2486 | 0 | 2489 |
 
 Analytic phrases: expanded 14/14, printed 14/14 (14 held-out phrases).
 
 Typed abbreviations: top-1 71/81, top-k 81/81 (81 held-out contractions; reverse lookup also required).
 
-Exact registry round trips (top-k, including reviewed variants): expanded 3245/3245, printed 3245/3245.
+Exact registry round trips (top-k, including reviewed variants): expanded 3246/3246, printed 3246/3246.
 
-Masked cells: expanded 753/755, printed 753/755. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
+Masked cells: expanded 751/753, printed 751/753. Leave-one-Synodal-lexeme-out inherited cells: expanded 0/0, printed 0/0.
 
-Accent agreement: 2341/2342 accent-bearing rows.
+Accent agreement: 2339/2342 accent-bearing rows.
 
 Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expanded forms. The reviewed alignment registry has 5 accepted mappings, 5 aligned target lexemes, and 1 rejected negative controls.
 
@@ -25,26 +25,26 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exploratory` | 2489 | 2424 | 2488 | 0 | 2489 |
-| `productive` | 2489 | 2424 | 2488 | 0 | 2489 |
-| `strict` | 2489 | 2424 | 2488 | 0 | 2489 |
+| `exploratory` | 2489 | 2422 | 2486 | 0 | 2489 |
+| `productive` | 2489 | 2422 | 2486 | 0 | 2489 |
+| `strict` | 2489 | 2422 | 2486 | 0 | 2489 |
 
 ## Expanded accuracy by attestation status
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `attested` | 2126 | 2064 | 2126 | 0 | 2126 |
-| `expected-form-not-returned` | 1 | 0 | 0 | 0 | 1 |
-| `predicted` | 362 | 360 | 362 | 0 | 362 |
+| `expected-form-not-returned` | 3 | 0 | 0 | 0 | 3 |
+| `predicted` | 360 | 358 | 360 | 0 | 360 |
 
 ## Expanded accuracy by morphological system
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
 | `adjective` | 141 | 137 | 141 | 0 | 141 |
-| `aorist` | 236 | 231 | 236 | 0 | 236 |
+| `aorist` | 236 | 230 | 235 | 0 | 236 |
 | `determiner` | 21 | 20 | 21 | 0 | 21 |
-| `future` | 106 | 103 | 106 | 0 | 106 |
+| `future` | 106 | 102 | 105 | 0 | 106 |
 | `imperative` | 73 | 71 | 73 | 0 | 73 |
 | `imperfect` | 35 | 33 | 35 | 0 | 35 |
 | `indeclinable` | 88 | 82 | 88 | 0 | 88 |
@@ -61,10 +61,10 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 
 | Slice | Returned | Top-1 | Top-k | Abstained | Total |
 |---|---:|---:|---:|---:|---:|
-| `exact-synodal-attestation` | 2122 | 2064 | 2121 | 0 | 2122 |
+| `exact-synodal-attestation` | 2124 | 2064 | 2121 | 0 | 2124 |
 | `synodal-irregular-override` | 19 | 16 | 19 | 0 | 19 |
 | `synodal-normative-table` | 78 | 74 | 78 | 0 | 78 |
-| `synodal-productive-rule` | 270 | 270 | 270 | 0 | 270 |
+| `synodal-productive-rule` | 268 | 268 | 268 | 0 | 268 |
 
 ## Expanded accuracy by regularity
 
@@ -203,7 +203,7 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 | `v07-held-out-exact-cell` | 914 | 882 | 914 | 0 | 914 |
 | `v07-held-out-explicit-accent-case-variant` | 44 | 40 | 44 | 0 | 44 |
 | `v07-reviewed-identity-correction` | 1 | 1 | 1 | 0 | 1 |
-| `v12-productive-held-out` | 222 | 222 | 222 | 0 | 222 |
+| `v12-productive-held-out` | 222 | 220 | 220 | 0 | 222 |
 | `v13-demonstration` | 2 | 2 | 2 | 0 | 2 |
 | `v18-held-out-productive-accent` | 2 | 2 | 2 | 0 | 2 |
 | `v18-held-out-source-typed-exact` | 1 | 1 | 1 | 0 | 1 |
@@ -276,6 +276,8 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Expanded `eval:v07:e48eca6f14f7c825` (`noun:accusative:singular:inanimate`): expected `любы`, top-1 `любовь`.
 - Expanded `eval:v07:e72eb04dce8a642d` (`noun:nominative:singular:inanimate`): expected `ᲂумъ`, top-1 `ѹмъ`.
 - Expanded `eval:v07:f6a8afc17586cb5c` (`noun:genitive:singular:inanimate`): expected `тьмы`, top-1 `тмы`.
+- Expanded `eval:v12:fb522502444b462d` (`future:second:singular`): expected `оумреши`, top-1 `ѹмреши`.
+- Expanded `eval:v12:5ddb6c02cd48d6bf` (`aorist:third:singular`): expected `оумре`, top-1 `ѹмре`.
 - Printed `eval:acts-3-16-dati-aorist` (`aorist:third:singular`): expected `дадѐ`, top-1 `даде́`.
 - Printed `eval:acts-9-9-tri` (`numeral:cardinal:nominative:plural:masculine:inanimate`): expected `трѝ`, top-1 `трїѐ`.
 - Printed `eval:v04:reshchi-aorist-acute` (`aorist:third:singular`): expected `рече́`, top-1 `речѐ`.
@@ -425,6 +427,8 @@ Inherited evidence contributed 0/1 returned held-out cells, with 0/0 exact expan
 - Printed `eval:v07:f2da2578054f271e` (`pronoun:dative:plural:masculine:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
 - Printed `eval:v07:f6a8afc17586cb5c` (`noun:genitive:singular:inanimate`): expected `тьмы̀`, top-1 `тмы̀`.
 - Printed `eval:v07:fdcd7d9ef5505c86` (`pronoun:dative:plural:feminine:none:any`): expected `Си́мъ`, top-1 `си̑мъ`.
+- Printed `eval:v12:fb522502444b462d` (`future:second:singular`): expected `ᲂу҆́мреши`, top-1 `ѹ҆́мреши`.
+- Printed `eval:v12:5ddb6c02cd48d6bf` (`aorist:third:singular`): expected `ᲂу҆́мре`, top-1 `Ѹ҆́мре`.
 
 ## Inherited OCS evaluation
 

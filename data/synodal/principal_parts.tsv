@@ -161,14 +161,14 @@ synodal:verb:v12-uboyatisya	imperative-stem	оубо	j-series	alypy-93-j-series,
 synodal:verb:v12-uboyatisya	l-participle-stem	оубоѧ		alypy-97-general,ponomar-ii-kings-1-14-uboyalsya	synodal-russian
 synodal:verb:v12-uboyatisya	past-active-participle-short-stem	оубоѧвш	hard:past-vowel	alypy-96-vowel-past-active,ponomar-heb-11-7-uboyavsya	synodal-russian
 synodal:verb:v12-uboyatisya	past-active-participle-long-stem	оубоѧвш	hard	alypy-96-vowel-past-active	synodal-russian
-synodal:verb:v12-umreti	future-stem	оумр		alypy-82-umreti,ponomar-eccles-7-18-umreshi,ponomar-deut-5-25-umrem,ponomar-dan-14-8-umrete	synodal-russian
-synodal:verb:v12-umreti	future-first-singular	оумрꙋ		alypy-82-umreti,ponomar-deut-4-22-umru	synodal-russian
-synodal:verb:v12-umreti	future-third-plural	оумрꙋтъ		alypy-82-umreti	synodal-russian
-synodal:verb:v12-umreti	aorist-stem	оумр	consonant	alypy-86-consonant-aorist,ponomar-gal-2-19-umroh,ponomar-acts-2-29-umre,ponomar-apoc-8-11-umrosha	synodal-russian
-synodal:verb:v12-umreti	imperative-stem	оумр	first-unpalatalized	alypy-93-first-conjugation	synodal-russian
-synodal:verb:v12-umreti	l-participle-stem	оумер		alypy-97-general,ponomar-num-14-3-umerli	synodal-russian
-synodal:verb:v12-umreti	past-active-participle-short-stem	оумерш	hard:past-consonant	alypy-96-consonant-past-active,ponomar-acts-14-19-umersha	synodal-russian
-synodal:verb:v12-umreti	past-active-participle-long-stem	оумерш	hard	alypy-96-consonant-past-active,ponomar-baruch-3-4-umershih,ponomar-ex-21-35-umershago	synodal-russian
+synodal:verb:v07-789965b2445975f1	future-stem	оумр		alypy-82-umreti,ponomar-eccles-7-18-umreshi,ponomar-deut-5-25-umrem,ponomar-dan-14-8-umrete	synodal-russian
+synodal:verb:v07-789965b2445975f1	future-first-singular	оумрꙋ		alypy-82-umreti,ponomar-deut-4-22-umru	synodal-russian
+synodal:verb:v07-789965b2445975f1	future-third-plural	оумрꙋтъ		alypy-82-umreti	synodal-russian
+synodal:verb:v07-789965b2445975f1	aorist-stem	оумр	consonant	alypy-86-consonant-aorist,ponomar-gal-2-19-umroh,ponomar-acts-2-29-umre,ponomar-apoc-8-11-umrosha	synodal-russian
+synodal:verb:v07-789965b2445975f1	imperative-stem	оумр	first-unpalatalized	alypy-93-first-conjugation	synodal-russian
+synodal:verb:v07-789965b2445975f1	l-participle-stem	оумер		alypy-97-general,ponomar-num-14-3-umerli	synodal-russian
+synodal:verb:v07-789965b2445975f1	past-active-participle-short-stem	оумерш	hard:past-consonant	alypy-96-consonant-past-active,ponomar-acts-14-19-umersha	synodal-russian
+synodal:verb:v07-789965b2445975f1	past-active-participle-long-stem	оумерш	hard	alypy-96-consonant-past-active,ponomar-baruch-3-4-umershih,ponomar-ex-21-35-umershago	synodal-russian
 synodal:verb:v07-ff04037d9da0c605	future-stem	возврат		alypy-82-vozvratiti,ponomar-deut-28-68-vozvratit,ponomar-gen-24-6-vozvratishi	synodal-russian
 synodal:verb:v07-ff04037d9da0c605	future-first-singular	возвращꙋ		alypy-82-vozvratiti,ponomar-amos-9-14-vozvrashchu	synodal-russian
 synodal:verb:v07-ff04037d9da0c605	future-third-plural	возвратѧтъ		alypy-82-vozvratiti,ponomar-ii-kings-16-3-vozvratyat	synodal-russian

@@ -500,12 +500,27 @@ pub fn apply_initial_presentation(
     })
 }
 
+/// The Cyrillic letter uk `ѹ` (U+0479, with its capital U+0478) is a
+/// single-codepoint presentation of the letter pair `оу`, exactly as the
+/// printed word-initial digraph `ᲂу` is. The lookup projections expand it so
+/// an `ѹ`-spelled token reaches the same key as its `оу`/`ᲂу` twins; marks
+/// that followed the monograph land on the `у`, matching where the digraph
+/// carries them.
+fn fold_uk_monograph(character: char) -> impl Iterator<Item = char> {
+    let (first, second) = match character {
+        'ѹ' => ('о', Some('у')),
+        other => (other, None),
+    };
+    core::iter::once(first).chain(second)
+}
+
 #[must_use]
 pub fn normalize_lookup(value: &str) -> String {
     value
         .chars()
         .map(fold_digraph_uk)
         .flat_map(char::to_lowercase)
+        .flat_map(fold_uk_monograph)
         .nfc()
         .collect()
 }
@@ -547,6 +562,7 @@ pub fn normalize_lookup_accentless(value: &str) -> String {
         .chars()
         .map(fold_digraph_uk)
         .flat_map(char::to_lowercase)
+        .flat_map(fold_uk_monograph)
         .nfd()
         .filter(|character| {
             !matches!(
@@ -976,5 +992,23 @@ mod digraph_lookup_tests {
         assert_eq!(normalize_lookup_accentless("ᲂумретъ"), "оумретъ");
         assert_eq!(normalize_lookup_accentless("Оу҆́мретъ"), "оумретъ");
         assert_ne!(normalize_lookup("ᲂу҆́мре"), normalize_lookup("ᲂумре"));
+    }
+}
+
+#[cfg(test)]
+mod uk_monograph_tests {
+
+    #[test]
+    fn uk_monograph_folds_to_the_letter_pair_in_both_projections() {
+        assert_eq!(super::normalize_lookup("ѹже"), "оуже");
+        assert_eq!(super::normalize_lookup("Ѹже"), "оуже");
+        assert_eq!(
+            super::normalize_lookup_accentless("ѹ\u{0486}мре\u{0301}ти"),
+            super::normalize_lookup_accentless("ᲂу\u{0486}мре\u{0301}ти"),
+        );
+        assert_eq!(
+            super::normalize_lookup("ѹ\u{0486}мре\u{0301}ти"),
+            super::normalize_lookup("оу\u{0486}мре\u{0301}ти"),
+        );
     }
 }

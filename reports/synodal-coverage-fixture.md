@@ -5,7 +5,7 @@
 - Passages: 10
 - Tokens: 155
 - Types: 113
-- Top-1 analyzed: 73 (4709 bp)
+- Top-1 analyzed: 71 (4580 bp)
 - Top-k analyzed: 125 (8064 bp)
 - Ambiguous: 2
 - Unresolved: 30
@@ -34,7 +34,7 @@ assumed. `morphology-free` tokens carry only `lexical-form` readings.
 | morphologically typed | 119 | 9520 bp |
 | morphology-free | 6 | 480 bp |
 | lemma-unique | 123 | 9840 bp |
-| within-lexeme ambiguous (syncretism) | 49 | 3920 bp |
+| within-lexeme ambiguous (syncretism) | 51 | 4080 bp |
 | cross-lexeme ambiguous (homonymy) | 2 | 160 bp |
 
 ## Estimated recovery routes
@@ -61,7 +61,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 
 | Top prediction's system | Tokens |
 |---|---:|
-| `aorist` | 8 |
+| `aorist` | 9 |
 | `imperative` | 1 |
 | `imperfect` | 1 |
 | `infinitive` | 4 |
@@ -70,7 +70,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 
 | Confidence bucket (bp) | Tokens |
 |---|---:|
-| 0-2399 | 7 |
+| 0-2399 | 8 |
 | 2400-2999 | 5 |
 | 3000-3399 | 5 |
 
@@ -94,6 +94,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:крестилъ` | 1 | 1 | `ungrouped-unknown` | крести́лъ |
 | `ungrouped:креститисѧ` | 1 | 1 | `ungrouped-unknown` | крести́тисѧ |
 | `ungrouped:молѧщесѧ` | 1 | 1 | `ungrouped-unknown` | молѧ́щесѧ |
+| `ungrouped:оупованїе` | 1 | 1 | `ungrouped-unknown` | ѹ҆пова́нїе |
 | `ungrouped:оучити` | 1 | 1 | `ungrouped-unknown` | ᲂу҆чи́ти |
 | `ungrouped:паѵелъ` | 1 | 1 | `ungrouped-unknown` | Па́ѵелъ |
 | `ungrouped:страданїи` | 1 | 1 | `ungrouped-unknown` | страда́нїи |
@@ -102,7 +103,6 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:хрⷭ҇товъ` | 1 | 1 | `abbreviation-registry` | хрⷭ҇то́въ |
 | `ungrouped:ѡбѣтованїѧ` | 1 | 1 | `ungrouped-unknown` | ѡ҆бѣтова́нїѧ |
 | `ungrouped:ѳеофїле` | 1 | 1 | `ungrouped-unknown` | ѳео́фїле |
-| `ungrouped:ѹпованїе` | 1 | 1 | `ungrouped-unknown` | ѹ҆пова́нїе |
 | `ungrouped:ѻч҃а` | 1 | 1 | `abbreviation-registry` | ѻ҆́ч҃а |
 | `ungrouped:ѿложенное` | 1 | 1 | `ungrouped-unknown` | ѿложе́нное |
 | `ungrouped:ѿлꙋчатисѧ` | 1 | 1 | `ungrouped-unknown` | ѿлꙋча́тисѧ |
@@ -113,28 +113,28 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
 | Church Slavonic Bible corpus | 70 | 32 | 56 | 1 | 14 |
-| Elizabeth Bible corpus | 85 | 41 | 69 | 1 | 16 |
+| Elizabeth Bible corpus | 85 | 39 | 69 | 1 | 16 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 85 | 41 | 69 | 1 | 16 |
+| `ponomar-elizabeth-bible-2026-08-09` | 85 | 39 | 69 | 1 | 16 |
 | `wikisource-church-slavonic-bible-2026-08-09` | 70 | 32 | 56 | 1 | 14 |
 
 ## Coverage by partition
 
 | Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `evaluation` | 60 | 30 | 48 | 0 | 12 |
-| `source` | 95 | 43 | 77 | 2 | 18 |
+| `evaluation` | 60 | 29 | 48 | 0 | 12 |
+| `source` | 95 | 42 | 77 | 2 | 18 |
 
 ## Coverage by source and partition
 
 | Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 50 | 24 | 41 | 0 | 9 |
-| `ponomar-elizabeth-bible-2026-08-09:source` | 35 | 17 | 28 | 1 | 7 |
+| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 50 | 23 | 41 | 0 | 9 |
+| `ponomar-elizabeth-bible-2026-08-09:source` | 35 | 16 | 28 | 1 | 7 |
 | `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 10 | 6 | 7 | 0 | 3 |
 | `wikisource-church-slavonic-bible-2026-08-09:source` | 60 | 26 | 49 | 1 | 11 |
 
@@ -177,15 +177,15 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 12 | `unknown-lexeme` | `крести́лъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 13 | `unknown-lexeme` | `крести́тисѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 14 | `unknown-lexeme` | `молѧ́щесѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 15 | `unknown-lexeme` | `ᲂу҆чи́ти` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 16 | `unknown-lexeme` | `Па́ѵелъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 17 | `unknown-lexeme` | `страда́нїи` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 18 | `unknown-lexeme` | `ст҃ы̑мъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 19 | `unknown-lexeme` | `тїмоѳе́й` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 20 | `unknown-lexeme` | `хрⷭ҇то́въ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 21 | `unknown-lexeme` | `ѡ҆бѣтова́нїѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 22 | `unknown-lexeme` | `ѳео́фїле` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 23 | `unknown-lexeme` | `ѹ҆пова́нїе` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 15 | `unknown-lexeme` | `ѹ҆пова́нїе` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 16 | `unknown-lexeme` | `ᲂу҆чи́ти` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 17 | `unknown-lexeme` | `Па́ѵелъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 18 | `unknown-lexeme` | `страда́нїи` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 19 | `unknown-lexeme` | `ст҃ы̑мъ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 20 | `unknown-lexeme` | `тїмоѳе́й` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 21 | `unknown-lexeme` | `хрⷭ҇то́въ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 22 | `unknown-lexeme` | `ѡ҆бѣтова́нїѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 23 | `unknown-lexeme` | `ѳео́фїле` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 24 | `unknown-lexeme` | `ѻ҆́ч҃а` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 25 | `unknown-lexeme` | `ѿложе́нное` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 26 | `unknown-lexeme` | `ѿлꙋча́тисѧ` | 1 | 1 | review the token against target-recension evidence and create or reject a lexical candidate |
