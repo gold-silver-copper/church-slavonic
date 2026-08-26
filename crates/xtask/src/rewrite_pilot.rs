@@ -2124,7 +2124,167 @@ pub(crate) fn accuracy(
     }
     paradigm_consistency(&oracle, &adjectives, &verbs, &closed)?;
     numeral_value_differential()?;
+    participle_differential()?;
     phrase_differential()?;
+    Ok(())
+}
+
+/// Differential gate for the pilot's declined participles: the fat
+/// old-church-slavonic facade's participle handles are the reference (no
+/// attested oracle exists — extraction excluded declined participles as not
+/// safely attributed). Over a deterministic sweep of a representative verb
+/// set (regular metadata-served, §104 irregular, and reviewed unique
+/// identities) x all four kinds x case x number x gender x long/short form
+/// (inanimate convention, matching the pilot adjective surface), the pilot's
+/// `participle()` primary must equal the old handle's declined cell primary,
+/// with agreement on rejected cells counted, at 100%.
+fn participle_differential() -> Result<(), Box<dyn Error>> {
+    // Regular metadata-served verbs, §104 irregulars, reviewed unique
+    // identities.
+    const VERBS: [&str; 14] = [
+        "благословити",
+        "любити",
+        "творити",
+        "глаголати",
+        "нести",
+        "рещи",
+        "видѣти",
+        "бити",
+        "метати",
+        "пѣти",
+        "бꙑти",
+        "ити",
+        "имѣти",
+        "хотѣти",
+    ];
+    let old_handle = |lemma: &str, kind: ParticipleKind| match kind {
+        ParticipleKind::PresentActive => old_church_slavonic::present_active_participle(lemma),
+        ParticipleKind::PresentPassive => old_church_slavonic::present_passive_participle(lemma),
+        ParticipleKind::PastActive => old_church_slavonic::past_active_participle(lemma),
+        ParticipleKind::PastPassive => old_church_slavonic::past_passive_participle(lemma),
+    };
+    let mut agreements = 0usize;
+    let mut total = 0usize;
+    let mut rejected_pairs = 0usize;
+    let mut citation_cells = 0usize;
+    let mut citation_old_agreements = 0usize;
+    let mut mismatches: Vec<String> = Vec::new();
+    for lemma in VERBS {
+        for kind in [
+            ParticipleKind::PresentActive,
+            ParticipleKind::PresentPassive,
+            ParticipleKind::PastActive,
+            ParticipleKind::PastPassive,
+        ] {
+            let handle = old_handle(lemma, kind).ok();
+            for case in Case::ALL {
+                for number in Number::ALL {
+                    for gender in Gender::ALL {
+                        for form in [AdjectiveForm::Long, AdjectiveForm::Short] {
+                            total += 1;
+                            let old = handle.as_ref().and_then(|participle| {
+                                match form {
+                                    AdjectiveForm::Long => participle
+                                        .long(case, number, gender, Animacy::Inanimate),
+                                    AdjectiveForm::Short => participle
+                                        .short(case, number, gender, Animacy::Inanimate),
+                                }
+                                .ok()
+                                .map(|forms| forms.primary_text().to_string())
+                            });
+                            let new = church_slavonic::participle(
+                                lemma, kind, case, number, gender, form,
+                            )
+                            .ok();
+                            // The citation cell (short nominative singular
+                            // masculine) is governed by the pilot's
+                            // attested-first citation precedence (main
+                            // accuracy gate), not the old facade's
+                            // reviewed-first dispatch, so it is asserted
+                            // against the pilot's own citation function
+                            // instead; old-facade agreement there is
+                            // reported but not gated.
+                            let is_citation = case == Case::Nominative
+                                && number == Number::Singular
+                                && gender == Gender::Masculine
+                                && form == AdjectiveForm::Short;
+                            if is_citation {
+                                citation_cells += 1;
+                                if new == old {
+                                    citation_old_agreements += 1;
+                                }
+                                let citation = match kind {
+                                    ParticipleKind::PresentActive => {
+                                        church_slavonic::present_active_participle(lemma)
+                                    }
+                                    ParticipleKind::PresentPassive => {
+                                        church_slavonic::present_passive_participle(lemma)
+                                    }
+                                    ParticipleKind::PastActive => {
+                                        church_slavonic::past_active_participle(lemma)
+                                    }
+                                    ParticipleKind::PastPassive => {
+                                        church_slavonic::past_passive_participle(lemma)
+                                    }
+                                }
+                                .ok();
+                                let consistent = match &citation {
+                                    Some(text) => new.as_deref() == Some(text.as_str()),
+                                    None => true,
+                                };
+                                if consistent {
+                                    agreements += 1;
+                                } else if mismatches.len() < 30 {
+                                    mismatches.push(format!(
+                                        "{lemma} {kind:?} citation: participle() {new:?} vs \
+                                         citation function {citation:?}"
+                                    ));
+                                }
+                                continue;
+                            }
+                            match (&new, &old) {
+                                (Some(new_text), Some(old_text)) if new_text == old_text => {
+                                    agreements += 1;
+                                }
+                                (None, None) => {
+                                    agreements += 1;
+                                    rejected_pairs += 1;
+                                }
+                                _ => {
+                                    if mismatches.len() < 30 {
+                                        mismatches.push(format!(
+                                            "{lemma} {kind:?} {case:?} {number:?} {gender:?} \
+                                             {form:?}: new {new:?} vs old {old:?}"
+                                        ));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    println!(
+        "rewrite pilot declined-participle differential (pilot participle() vs the old facade \
+         participle handles; both-rejected counts as agreement)"
+    );
+    println!(
+        "  {agreements}/{total} sweep cells agree ({rejected_pairs} agreed-rejected, \
+         {} verbs x 4 kinds x case x number x gender x form)",
+        VERBS.len()
+    );
+    println!(
+        "  citation cells ({citation_cells}) are gated as self-consistency with the pilot's \
+         attested-first citation functions; {citation_old_agreements}/{citation_cells} also \
+         agree with the old facade's reviewed-first dispatch"
+    );
+    for line in &mismatches {
+        println!("  MISMATCH {line}");
+    }
+    if agreements != total {
+        return Err("declined-participle differential disagreements, expected 100%".into());
+    }
     Ok(())
 }
 
@@ -2143,7 +2303,8 @@ fn phrase_differential() -> Result<(), Box<dyn Error>> {
     use old_church_slavonic_core::{
         ConditionalAuxiliary, CopulaSeries, DirectToTreatment, FutureInfinitiveAuxiliary,
         FutureReferenceTense, ImpersonalVerbIdentity, InterrogativePronounIdentity, PhraseOrder,
-        PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
+        PassiveAuxiliary, PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive,
+        PronominalPrefix,
     };
 
     const VERBS: [&str; 3] = ["благословити", "любити", "творити"];
@@ -2493,6 +2654,141 @@ fn phrase_differential() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    // Declined-participle predicates: the analytic passive (each copular
+    // auxiliary a pilot function), the conditional passive, and the
+    // participial future, over every participle kind (exercising the
+    // active/passive licensing rejections), person x number x gender x
+    // order. The old functions take a caller-supplied AdjectiveCell; the
+    // pilot derives the short nominative subject-agreeing cell, so the
+    // sweep supplies exactly that cell to the old side.
+    for lemma in VERBS {
+        for kind in [
+            ParticipleKind::PresentActive,
+            ParticipleKind::PresentPassive,
+            ParticipleKind::PastActive,
+            ParticipleKind::PastPassive,
+        ] {
+            for person in [Person::First, Person::Second, Person::Third] {
+                for number in [Number::Singular, Number::Dual, Number::Plural] {
+                    for gender in [Gender::Masculine, Gender::Feminine, Gender::Neuter] {
+                        let cell = old_church_slavonic_core::AdjectiveCell {
+                            case: Case::Nominative,
+                            number,
+                            gender,
+                            animacy: Animacy::Inanimate,
+                            form: AdjectiveForm::Short,
+                        };
+                        for order in ORDERS {
+                            for auxiliary in [
+                                PassiveAuxiliary::Present,
+                                PassiveAuxiliary::Imperfect,
+                                PassiveAuxiliary::Aorist,
+                                PassiveAuxiliary::Future,
+                                PassiveAuxiliary::Conditional,
+                                PassiveAuxiliary::ConditionalAoristReplacement,
+                            ] {
+                                let old = old_phrases::analytic_passive(
+                                    lemma, kind, cell, person, number, auxiliary, order,
+                                )
+                                .ok()
+                                .map(|phrase| phrase.primary_text());
+                                let new = match auxiliary {
+                                    PassiveAuxiliary::Present => new_phrases::analytic_passive(
+                                        lemma, kind, person, number, gender, order,
+                                    ),
+                                    PassiveAuxiliary::Imperfect => {
+                                        new_phrases::analytic_passive_imperfect(
+                                            lemma, kind, person, number, gender, order,
+                                        )
+                                    }
+                                    PassiveAuxiliary::Aorist => {
+                                        new_phrases::analytic_passive_aorist(
+                                            lemma, kind, person, number, gender, order,
+                                        )
+                                    }
+                                    PassiveAuxiliary::Future => {
+                                        new_phrases::analytic_passive_future(
+                                            lemma, kind, person, number, gender, order,
+                                        )
+                                    }
+                                    PassiveAuxiliary::Conditional => {
+                                        new_phrases::conditional_passive(
+                                            lemma, kind, person, number, gender, order,
+                                        )
+                                    }
+                                    PassiveAuxiliary::ConditionalAoristReplacement => {
+                                        new_phrases::conditional_passive_aorist(
+                                            lemma, kind, person, number, gender, order,
+                                        )
+                                    }
+                                }
+                                .ok();
+                                check(
+                                    "analytic_passive",
+                                    format!(
+                                        "{lemma} {kind:?} {person:?} {number:?} {gender:?} \
+                                         {auxiliary:?} {order:?}"
+                                    ),
+                                    new,
+                                    old,
+                                );
+                            }
+                            for auxiliary in [
+                                ConditionalAuxiliary::Conditional,
+                                ConditionalAuxiliary::AoristReplacement,
+                            ] {
+                                let old = old_phrases::conditional_passive(
+                                    lemma, kind, cell, person, number, auxiliary, order,
+                                )
+                                .ok()
+                                .map(|phrase| phrase.primary_text());
+                                let new = match auxiliary {
+                                    ConditionalAuxiliary::Conditional => {
+                                        new_phrases::conditional_passive(
+                                            lemma, kind, person, number, gender, order,
+                                        )
+                                    }
+                                    ConditionalAuxiliary::AoristReplacement => {
+                                        new_phrases::conditional_passive_aorist(
+                                            lemma, kind, person, number, gender, order,
+                                        )
+                                    }
+                                }
+                                .ok();
+                                check(
+                                    "conditional_passive",
+                                    format!(
+                                        "{lemma} {kind:?} {person:?} {number:?} {gender:?} \
+                                         {auxiliary:?} {order:?}"
+                                    ),
+                                    new,
+                                    old,
+                                );
+                            }
+                            let old = old_phrases::participial_future(
+                                lemma, kind, cell, person, number, order,
+                            )
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
+                            let new = new_phrases::participial_future(
+                                lemma, kind, person, number, gender, order,
+                            )
+                            .ok();
+                            check(
+                                "participial_future",
+                                format!(
+                                    "{lemma} {kind:?} {person:?} {number:?} {gender:?} {order:?}"
+                                ),
+                                new,
+                                old,
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Impersonal predicates over every finite tense.
     for identity in ImpersonalVerbIdentity::ALL {
         for tense in FiniteTense::ALL {
@@ -2660,6 +2956,46 @@ fn paradigm_consistency(
         }
     }
 
+    // Declined-participle paradigms: for every attested verb lexeme, each of
+    // the four kinds x long/short enumerations must contain exactly the
+    // cells `participle_variants` serves, in order, with the same lists.
+    let mut participle_cells = 0usize;
+    for lemma in &verb_lemmas {
+        for kind in [
+            ParticipleKind::PresentActive,
+            ParticipleKind::PresentPassive,
+            ParticipleKind::PastActive,
+            ParticipleKind::PastPassive,
+        ] {
+            for form in [AdjectiveForm::Long, AdjectiveForm::Short] {
+                let expected: Vec<(Case, Number, Gender, Vec<String>)> = grid()
+                    .flat_map(|(case, number)| {
+                        Gender::ALL
+                            .into_iter()
+                            .map(move |gender| (case, number, gender))
+                    })
+                    .filter_map(|(case, number, gender)| {
+                        church_slavonic::participle_variants(
+                            lemma, kind, case, number, gender, form,
+                        )
+                        .ok()
+                        .map(|variants| (case, number, gender, variants))
+                    })
+                    .collect();
+                participle_cells += expected.len();
+                if church_slavonic::participle_paradigm(lemma, kind, form).as_ref()
+                    != Ok(&expected)
+                    && mismatches.len() < 20
+                {
+                    mismatches.push(format!(
+                        "participle {lemma} ({kind:?} {form:?}): paradigm disagrees with \
+                         single-cell API"
+                    ));
+                }
+            }
+        }
+    }
+
     let closed_lemmas: BTreeSet<&String> = closed.cells.keys().map(|(lemma, _)| lemma).collect();
     let mut closed_cells = 0usize;
     for lemma in &closed_lemmas {
@@ -2717,6 +3053,11 @@ fn paradigm_consistency(
     );
     println!(
         "  verbs: {} lexemes / {verb_cells} servable cells consistent",
+        verb_lemmas.len()
+    );
+    println!(
+        "  declined participles: {} lexemes x 4 kinds x 2 forms / {participle_cells} servable \
+         cells consistent",
         verb_lemmas.len()
     );
     println!(

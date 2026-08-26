@@ -81,6 +81,15 @@
 //! oracle stores under `verb:participle:<kind>:citation`. Every function has
 //! a `*_variants` companion; no attested verb cell kind is excluded.
 //!
+//! Declined participles are served by [`participle`] (and
+//! [`participle_paradigm`]): the derivation's per-kind stem declines as an
+//! adjective across ([`Case`], [`Number`], [`Gender`], [`AdjectiveForm`]).
+//! No attested oracle covers these cells, so beyond the citation cell they
+//! are kernel-served (the reviewed verb-family profiles first, then the
+//! principal-part metadata) and gated differentially against the old
+//! facade's declined-participle output; see [`participle`] for the
+//! documented design choices.
+//!
 //! Resolution precedence mirrors the nouns: the generated residue table
 //! (`generated/verb_residue.rs`) first, then the rule kernel. The kernel path
 //! is (a) the reviewed unique/irregular verb identity kernels, keyed by
@@ -210,7 +219,7 @@ use old_church_slavonic_core::{
     ImperfectFormation, ImperfectVariantPolicy, InterrogativePronounIdentity,
     IrregularAgreeingIdentity, IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass,
     NumberRestriction, NumeralCell, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell,
-    ParticipleKind, PastActiveParticipleFormation, PastPassiveParticipleFormation,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation,
     PersonalPronounIdentity, PresentActiveParticipleFormation, PresentFormation,
     PresentPassiveParticipleFormation, PronominalPrefix, PronounFormSelection,
     StandardPronominalIdentity, TwofoldNounFamilyMember, UniqueVerbFamilyMember, VerbAspect,
@@ -218,6 +227,7 @@ use old_church_slavonic_core::{
 };
 
 pub use church_slavonic_core::grammar::{AdjectiveForm, Animacy, Case, Gender, Number, Person};
+pub use old_church_slavonic_core::ParticipleKind;
 
 pub mod phrases;
 
@@ -225,7 +235,7 @@ mod paradigm;
 pub use paradigm::{
     AdjectiveParadigm, ClosedParadigm, NounParadigm, VerbCellKind, VerbParadigm,
     adjective_paradigm, determiner_form_paradigm, noun_paradigm,
-    numeral_form_paradigm, pronoun_form_paradigm, verb_paradigm,
+    numeral_form_paradigm, participle_paradigm, pronoun_form_paradigm, verb_paradigm,
 };
 
 mod generated {
@@ -924,54 +934,7 @@ fn metadata_verb_variants(lemma: &str, meta: &VerbMeta<'_>, cell: VerbCell) -> O
             verb_lexeme_prediction(&verb, cell)
         }),
         VerbCell::ParticipleCitation(kind) => {
-            let analyses = match kind {
-                ParticipleKind::PresentActive => meta.present_active_participle,
-                ParticipleKind::PresentPassive => meta.present_passive_participle,
-                ParticipleKind::PastActive => meta.past_active_participle,
-                ParticipleKind::PastPassive => meta.past_passive_participle,
-            };
-            merge_analyses(analyses, |analysis| {
-                let (stem, formation) = *analysis;
-                let mut verb = base_verb_lexeme(lemma, meta);
-                match kind {
-                    ParticipleKind::PresentActive => {
-                        verb.stems.present_active_participle = Some(stem.to_string());
-                        verb.formations.present_active_participle = Some(match formation {
-                            1 => PresentActiveParticipleFormation::YushtHard,
-                            2 => PresentActiveParticipleFormation::YushtSoft,
-                            3 => PresentActiveParticipleFormation::YeshtSoft,
-                            4 => PresentActiveParticipleFormation::MixedYushtSoft,
-                            _ => PresentActiveParticipleFormation::IotatedYushtSoft,
-                        });
-                    }
-                    ParticipleKind::PresentPassive => {
-                        verb.stems.present_passive_participle = Some(stem.to_string());
-                        verb.formations.present_passive_participle = Some(match formation {
-                            1 => PresentPassiveParticipleFormation::Im,
-                            2 => PresentPassiveParticipleFormation::Em,
-                            3 => PresentPassiveParticipleFormation::IotatedEm,
-                            _ => PresentPassiveParticipleFormation::Om,
-                        });
-                    }
-                    ParticipleKind::PastActive => {
-                        verb.stems.past_active_participle = Some(stem.to_string());
-                        verb.formations.past_active_participle = Some(match formation {
-                            1 => PastActiveParticipleFormation::Ush,
-                            2 => PastActiveParticipleFormation::Ish,
-                            3 => PastActiveParticipleFormation::IshAfterGlide,
-                            4 => PastActiveParticipleFormation::VushAfterJDeletion,
-                            5 => PastActiveParticipleFormation::VushAfterOvToU,
-                            _ => PastActiveParticipleFormation::Vush,
-                        });
-                    }
-                    ParticipleKind::PastPassive => {
-                        verb.stems.past_passive_participle = Some(stem.to_string());
-                        verb.formations.past_passive_participle =
-                            Some(decode_past_passive_formation(formation));
-                    }
-                }
-                verb_lexeme_prediction(&verb, cell)
-            })
+            metadata_participle_variants(lemma, meta, participle_citation_cell(kind))
         }
         VerbCell::VerbalNoun => merge_analyses(meta.past_passive_participle, |analysis| {
             let (stem, formation) = *analysis;
@@ -982,6 +945,113 @@ fn metadata_verb_variants(lemma: &str, meta: &VerbMeta<'_>, cell: VerbCell) -> O
             verb_lexeme_prediction(&verb, cell)
         }),
     }
+}
+
+/// Principal-part-metadata-driven prediction for one (possibly declined)
+/// participle cell: the same per-kind stem/formation analyses the citation
+/// path replays, declined through the core adjective machinery to the
+/// requested agreement cell.
+fn metadata_participle_variants(
+    lemma: &str,
+    meta: &VerbMeta<'_>,
+    cell: ParticipleCell,
+) -> Option<Vec<String>> {
+    let kind = cell.kind;
+    let analyses = match kind {
+        ParticipleKind::PresentActive => meta.present_active_participle,
+        ParticipleKind::PresentPassive => meta.present_passive_participle,
+        ParticipleKind::PastActive => meta.past_active_participle,
+        ParticipleKind::PastPassive => meta.past_passive_participle,
+    };
+    merge_analyses(analyses, |analysis| {
+        let (stem, formation) = *analysis;
+        let mut verb = base_verb_lexeme(lemma, meta);
+        match kind {
+            ParticipleKind::PresentActive => {
+                verb.stems.present_active_participle = Some(stem.to_string());
+                verb.formations.present_active_participle = Some(match formation {
+                    1 => PresentActiveParticipleFormation::YushtHard,
+                    2 => PresentActiveParticipleFormation::YushtSoft,
+                    3 => PresentActiveParticipleFormation::YeshtSoft,
+                    4 => PresentActiveParticipleFormation::MixedYushtSoft,
+                    _ => PresentActiveParticipleFormation::IotatedYushtSoft,
+                });
+            }
+            ParticipleKind::PresentPassive => {
+                verb.stems.present_passive_participle = Some(stem.to_string());
+                verb.formations.present_passive_participle = Some(match formation {
+                    1 => PresentPassiveParticipleFormation::Im,
+                    2 => PresentPassiveParticipleFormation::Em,
+                    3 => PresentPassiveParticipleFormation::IotatedEm,
+                    _ => PresentPassiveParticipleFormation::Om,
+                });
+            }
+            ParticipleKind::PastActive => {
+                verb.stems.past_active_participle = Some(stem.to_string());
+                verb.formations.past_active_participle = Some(match formation {
+                    1 => PastActiveParticipleFormation::Ush,
+                    2 => PastActiveParticipleFormation::Ish,
+                    3 => PastActiveParticipleFormation::IshAfterGlide,
+                    4 => PastActiveParticipleFormation::VushAfterJDeletion,
+                    5 => PastActiveParticipleFormation::VushAfterOvToU,
+                    _ => PastActiveParticipleFormation::Vush,
+                });
+            }
+            ParticipleKind::PastPassive => {
+                verb.stems.past_passive_participle = Some(stem.to_string());
+                verb.formations.past_passive_participle =
+                    Some(decode_past_passive_formation(formation));
+            }
+        }
+        old_church_slavonic_core::verb::participle(&verb, cell)
+            .ok()
+            .map(|predicted| predicted.text)
+    })
+}
+
+/// The full reviewed lexeme-profile merge for one declined participle cell,
+/// mirroring the fat facade's `reviewed_verb_form`: every reviewed analysis
+/// (unique identity, §104 irregular analyses, Polivanova regular rows —
+/// `old_church_slavonic_core::verb::reviewed_verb_lexemes`) must predict the
+/// cell, every predicted text is canonicalized, and the texts merge in
+/// analysis order with duplicates dropped. Any failing analysis fails the
+/// cell (a reviewed defect such as the missing past passive of `ити` is a
+/// genuine rejection, not a fall-through).
+fn reviewed_participle_variants(lemma: &str, cell: ParticipleCell) -> Option<Option<Vec<String>>> {
+    let lexemes = match old_church_slavonic_core::verb::reviewed_verb_lexemes(lemma)? {
+        Ok(lexemes) => lexemes,
+        Err(_) => return Some(None),
+    };
+    let mut texts: Vec<String> = Vec::new();
+    for lexeme in &lexemes {
+        let Ok(predicted) = old_church_slavonic_core::verb::participle(lexeme, cell) else {
+            return Some(None);
+        };
+        let Ok(text) = orthography::canonical_display(&predicted.text) else {
+            return Some(None);
+        };
+        if !texts.contains(&text) {
+            texts.push(text);
+        }
+    }
+    Some((!texts.is_empty()).then_some(texts))
+}
+
+/// Rule-kernel prediction for one declined participle cell. A lemma covered
+/// by a reviewed verb family resolves through the reviewed profile merge
+/// *only* — a reviewed refusal (e.g. no past passive participle of `ити`)
+/// is final, exactly as in the old facade's reviewed-first dispatch; other
+/// lemmas resolve through the per-lemma principal-part metadata.
+#[doc(hidden)]
+pub fn kernel_participle_variants(
+    lemma: &str,
+    meta: &VerbMeta<'_>,
+    cell: ParticipleCell,
+) -> Option<Vec<String>> {
+    if let Some(reviewed) = reviewed_participle_variants(lemma, cell) {
+        return reviewed;
+    }
+    metadata_participle_variants(lemma, meta, cell)
 }
 
 fn decode_past_passive_formation(code: u8) -> PastPassiveParticipleFormation {
@@ -1197,6 +1267,89 @@ pub fn past_passive_participle_variants(lemma: &str) -> Result<Vec<String>, Erro
 /// The primary past passive participle citation form.
 pub fn past_passive_participle(lemma: &str) -> Result<String, Error> {
     primary(past_passive_participle_variants(lemma)?, lemma)
+}
+
+/// All variants for one declined participle cell, primary first. See
+/// [`participle`].
+pub fn participle_variants(
+    lemma: &str,
+    kind: ParticipleKind,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    form: AdjectiveForm,
+) -> Result<Vec<String>, Error> {
+    let cell = ParticipleCell {
+        kind,
+        adjective: AdjectiveCell {
+            case,
+            number,
+            gender,
+            animacy: Animacy::Inanimate,
+            form,
+        },
+    };
+    if cell == participle_citation_cell(kind) {
+        // The citation cell is exactly what the citation functions serve:
+        // route it through the residue-first single-cell path first, so an
+        // attested or metadata-backed citation always agrees with
+        // `present_active_participle` etc. Only when that path cannot
+        // serve the citation (e.g. a Polivanova regular family with no
+        // attested citation) does the reviewed-profile kernel below get to
+        // answer.
+        if let Ok(texts) = verb_form_variants(lemma, VerbCell::ParticipleCitation(kind)) {
+            return Ok(texts);
+        }
+    }
+    let meta = verb_meta(lemma).ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
+    kernel_participle_variants(base_lemma(lemma), &meta, cell).ok_or_else(|| {
+        Error::Underdetermined {
+            lemma: lemma.to_string(),
+        }
+    })
+}
+
+/// The primary surface form for one declined participle cell.
+///
+/// A participle is a derivation whose output declines as an adjective: the
+/// per-kind stem the citation functions derive
+/// ([`present_active_participle`] etc.) is fed through the core adjective
+/// declension machinery to the requested ([`Case`], [`Number`], [`Gender`],
+/// [`AdjectiveForm`]) agreement cell. Design choices, documented:
+///
+/// - **One function, `kind` and `form` as parameters.** The kernel serves
+///   all four participle systems through one `ParticipleCell` entry — the
+///   kind indexes which derived stem feeds the same adjective machine, and
+///   the long/short dimension indexes within that one declension — so both
+///   stay parameters (an enum that indexes within one paradigm family is a
+///   parameter, per the ruthenian rule). This also composes directly with
+///   the phrase constructions ([`phrases::analytic_passive`] etc.), whose
+///   kind is caller-selected data. The four kind-named citation functions
+///   remain the derivation-style shorthand:
+///   `present_active_participle(lemma)` equals
+///   `participle(lemma, ParticipleKind::PresentActive, Case::Nominative,
+///   Number::Singular, Gender::Masculine, AdjectiveForm::Short)`.
+/// - **Inanimate convention.** Like [`adjective`], the kernel is driven
+///   with the inanimate masculine accusative convention; no animacy
+///   parameter.
+/// - **No attested oracle.** Extraction excluded declined participles as
+///   not safely attributed, so these cells are kernel-served (identity
+///   kernels, then principal-part metadata) and validated *differentially*
+///   against the old facade's declined-participle output
+///   (`cargo xtask rewrite-pilot-accuracy`); only the citation cell can be
+///   residue-served.
+pub fn participle(
+    lemma: &str,
+    kind: ParticipleKind,
+    case: Case,
+    number: Number,
+    gender: Gender,
+    form: AdjectiveForm,
+) -> Result<String, Error> {
+    primary(
+        participle_variants(lemma, kind, case, number, gender, form)?,
+        lemma,
+    )
 }
 
 /// Stable numeric key for one closed-class cell, used by the generated
@@ -2015,6 +2168,140 @@ mod tests {
             l_participle("бꙑти", Gender::Masculine, Number::Singular).as_deref(),
             Ok("бꙑлъ")
         );
+    }
+
+    #[test]
+    fn declined_participle_cells() {
+        // A metadata-served regular verb declines through the adjective
+        // machinery in both forms.
+        assert_eq!(
+            participle(
+                "благословити",
+                ParticipleKind::PastPassive,
+                Case::Dative,
+                Number::Plural,
+                Gender::Feminine,
+                AdjectiveForm::Long,
+            )
+            .as_deref(),
+            Ok("благословлѥнꙑимъ")
+        );
+        assert_eq!(
+            participle(
+                "творити",
+                ParticipleKind::PresentActive,
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+            )
+            .as_deref(),
+            Ok("творѧшта")
+        );
+        // A reviewed Polivanova regular family with no metadata analyses is
+        // served by the reviewed-profile kernel.
+        assert_eq!(
+            participle(
+                "глаголати",
+                ParticipleKind::PresentActive,
+                Case::Dative,
+                Number::Plural,
+                Gender::Feminine,
+                AdjectiveForm::Long,
+            )
+            .as_deref(),
+            Ok("глаголѭштиимъ")
+        );
+        // A reviewed unique identity: the declined cells come from the
+        // reviewed profile (present stem бѫд-), while the citation cell
+        // keeps the attested residue precedence (сꙑ).
+        assert_eq!(
+            participle(
+                "бꙑти",
+                ParticipleKind::PresentActive,
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+            )
+            .as_deref(),
+            Ok("бѫдѫшта")
+        );
+        assert_eq!(
+            participle(
+                "бꙑти",
+                ParticipleKind::PresentActive,
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+            ),
+            present_active_participle("бꙑти")
+        );
+    }
+
+    #[test]
+    fn declined_participle_citation_cell_matches_citation_functions() {
+        for (kind, citation) in [
+            (
+                ParticipleKind::PresentActive,
+                present_active_participle("благословити"),
+            ),
+            (
+                ParticipleKind::PresentPassive,
+                present_passive_participle("благословити"),
+            ),
+            (
+                ParticipleKind::PastActive,
+                past_active_participle("благословити"),
+            ),
+            (
+                ParticipleKind::PastPassive,
+                past_passive_participle("благословити"),
+            ),
+        ] {
+            assert_eq!(
+                participle(
+                    "благословити",
+                    kind,
+                    Case::Nominative,
+                    Number::Singular,
+                    Gender::Masculine,
+                    AdjectiveForm::Short,
+                ),
+                citation
+            );
+        }
+    }
+
+    #[test]
+    fn declined_participle_defects() {
+        // The reviewed profile of `ити` has no past passive participle:
+        // the refusal is final (no metadata fall-through).
+        assert_eq!(
+            participle(
+                "ити",
+                ParticipleKind::PastPassive,
+                Case::Genitive,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Long,
+            ),
+            Err(Error::Underdetermined {
+                lemma: "ити".to_string()
+            })
+        );
+        assert!(matches!(
+            participle(
+                "nonexistent",
+                ParticipleKind::PresentActive,
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine,
+                AdjectiveForm::Short,
+            ),
+            Err(Error::UnknownLemma(_))
+        ));
     }
 
     #[test]

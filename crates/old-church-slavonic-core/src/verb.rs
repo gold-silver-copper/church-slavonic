@@ -1408,6 +1408,65 @@ fn hard_i_present_ending(cell: FiniteVerbCell) -> &'static str {
     }
 }
 
+/// The reviewed lexeme profile of one verb lemma: every source-reviewed
+/// analysis — the unique-verb identity kernels, the Alypy §104 irregular
+/// analyses, and the Polivanova regular source rows — assembled as concrete
+/// [`VerbLexeme`] profiles in the reviewed-authority order (unique first,
+/// then the irregular analyses, then the regular family rows). This is the
+/// pure composition half of the fat facade resolver's `ReviewedVerbProfile`
+/// (which the resolver keeps for id/warning plumbing); it is the kernel
+/// consulted by the pilot facade's declined-participle path.
+///
+/// Returns `None` when no reviewed family covers the lemma. A reviewed
+/// analysis whose lexeme cannot be assembled (a source-invariant violation)
+/// is an `Err`, mirroring the resolver's error propagation: the caller must
+/// reject the request rather than fall back to another channel.
+pub fn reviewed_verb_lexemes(lemma: &str) -> Option<Result<Vec<VerbLexeme>, InflectionError>> {
+    use crate::irregular_verb::IrregularVerbFamilyMember;
+    use crate::regular_verb::RegularVerbFamily;
+    use crate::unique_verb::{UniqueVerbFamilyMember, UniqueVerbIdentity};
+
+    let unique = UniqueVerbFamilyMember::classify_source_union_lemma(lemma).or_else(|| {
+        UniqueVerbIdentity::classify_source_union_lemma(lemma).and_then(|identity| {
+            UniqueVerbFamilyMember::classify_source_union_lemma(identity.canonical_lemma())
+        })
+    });
+    let irregular = IrregularVerbFamilyMember::classify_source_lemma(lemma);
+    let regular = RegularVerbFamily::classify_source_lemma(lemma);
+    if unique.is_none() && irregular.is_none() && regular.is_none() {
+        return None;
+    }
+    let mut lexemes: Vec<VerbLexeme> = Vec::new();
+    if let Some(member) = unique {
+        lexemes.push(member.lexeme());
+    }
+    if let Some(member) = irregular {
+        for analysis in member.analyses() {
+            match member.lexeme_for_analysis(*analysis) {
+                Some(lexeme) => lexemes.push(lexeme),
+                None => {
+                    return Some(Err(InflectionError::InvalidInput {
+                        reason: format!(
+                            "reviewed analysis {} does not belong to {}",
+                            analysis.code(),
+                            member.canonical_lemma()
+                        ),
+                    }));
+                }
+            }
+        }
+    }
+    if let Some(family) = regular {
+        for member in family.members() {
+            match member.lexemes() {
+                Ok(member_lexemes) => lexemes.extend(member_lexemes),
+                Err(error) => return Some(Err(error)),
+            }
+        }
+    }
+    Some(Ok(lexemes))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

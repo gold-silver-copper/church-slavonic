@@ -24,10 +24,12 @@
 //!   `CopulaSeries` cells; the inflected members come from this crate's own
 //!   residue-table → rule-kernel functions.
 //!
-//! Constructions requiring a *declined* participle (the analytic passive,
-//! the conditional passive, the participial future) are deliberately absent:
-//! the pilot serves participles as citations only, so those constructions
-//! wait for the paradigm-enumeration phase. The old
+//! The constructions predicated on a *declined* participle ride on
+//! [`crate::participle`]: the old `PassiveAuxiliary` enum became the
+//! function family [`analytic_passive`] / [`analytic_passive_imperfect`] /
+//! [`analytic_passive_aorist`] / [`analytic_passive_future`] /
+//! [`conditional_passive`] / [`conditional_passive_aorist`], and
+//! [`participial_future`] takes the active kinds. The old
 //! `elliptical_conditional_optative` collapsed to [`crate::l_participle`];
 //! `relative_superlative_with` fell with the comparative exclusion.
 //!
@@ -634,6 +636,122 @@ pub fn infinitival_future_aorist(
 }
 
 // ---------------------------------------------------------------------------
+// Declined-participle predicates (analytic passive, conditional passive,
+// participial future)
+// ---------------------------------------------------------------------------
+
+/// The agreeing predicative participle: short nominative, agreeing with the
+/// subject in number and gender ([`crate::participle_variants`]). The old
+/// facade let the caller pass any `AdjectiveCell` and rejected everything
+/// but the short nominative subject-agreeing one; the pilot signature keeps
+/// only the free dimensions (kind, number, gender) and derives the rest, so
+/// the case/form validation arm cannot arise. The active/passive licensing
+/// of the participle kind remains a typed refusal.
+fn predicative_participle_variants(
+    lemma: &str,
+    kind: crate::ParticipleKind,
+    number: Number,
+    gender: Gender,
+    active: bool,
+) -> Result<Vec<String>, Error> {
+    use crate::ParticipleKind;
+    let valid_kind = if active {
+        matches!(
+            kind,
+            ParticipleKind::PresentActive | ParticipleKind::PastActive
+        )
+    } else {
+        matches!(
+            kind,
+            ParticipleKind::PresentPassive | ParticipleKind::PastPassive
+        )
+    };
+    if !valid_kind {
+        return Err(unsupported(format!(
+            "the requested analytic construction requires an {} participle",
+            if active { "active" } else { "passive" }
+        )));
+    }
+    crate::participle_variants(
+        lemma,
+        kind,
+        Case::Nominative,
+        number,
+        gender,
+        crate::AdjectiveForm::Short,
+    )
+}
+
+macro_rules! participle_predicate_constructions {
+    ($($(#[$doc:meta])* $name:ident, $variants_name:ident => $series:expr, $active:expr;)*) => {
+        $(
+            /// Every rendered phrase for the same cell, primary first.
+            pub fn $variants_name(
+                lemma: &str,
+                kind: crate::ParticipleKind,
+                person: Person,
+                number: Number,
+                gender: Gender,
+                order: PhraseOrder,
+            ) -> Result<Vec<String>, Error> {
+                let participle =
+                    predicative_participle_variants(lemma, kind, number, gender, $active)?;
+                let auxiliary = copula_series_variants($series, person, number);
+                Ok(phrase_variants(&ordered(auxiliary, participle, order)))
+            }
+
+            $(#[$doc])*
+            ///
+            /// The participle is the short nominative agreeing with the
+            /// subject ([`crate::participle`]); `kind` is a parameter (a
+            /// lexical-style index into the licensed participle systems),
+            /// and an unlicensed kind is [`Error::UnsupportedPhrase`].
+            /// `PhraseOrder::HeadFirst` puts the participle first.
+            pub fn $name(
+                lemma: &str,
+                kind: crate::ParticipleKind,
+                person: Person,
+                number: Number,
+                gender: Gender,
+                order: PhraseOrder,
+            ) -> Result<String, Error> {
+                first_phrase(
+                    $variants_name(lemma, kind, person, number, gender, order)?,
+                    lemma,
+                )
+            }
+        )*
+    };
+}
+
+participle_predicate_constructions! {
+    /// The present analytic passive: agreeing passive participle + present
+    /// `ѥс-` copula (`благословленъ ѥсмь`). The old facade's
+    /// `PassiveAuxiliary` enum selected the copular series — a
+    /// paradigm-selecting distinction, so it became the function family
+    /// [`analytic_passive`] / [`analytic_passive_imperfect`] /
+    /// [`analytic_passive_aorist`] / [`analytic_passive_future`] /
+    /// [`conditional_passive`] / [`conditional_passive_aorist`].
+    analytic_passive, analytic_passive_variants => CopulaSeries::PresentEs, false;
+    /// The analytic passive with the imperfect series of `бꙑти` (`бѣаше`).
+    analytic_passive_imperfect, analytic_passive_imperfect_variants => CopulaSeries::ImperfectBe, false;
+    /// The analytic passive with the aorist series of `бꙑти` (`бѣ`).
+    analytic_passive_aorist, analytic_passive_aorist_variants => CopulaSeries::AoristBe, false;
+    /// The future analytic passive with the future series `бѫд-`.
+    analytic_passive_future, analytic_passive_future_variants => CopulaSeries::FutureBud, false;
+    /// The conditional with a passive-participle predicate and the dedicated
+    /// conditional series `би-` (the modal arm of the old facade's
+    /// `analytic_passive`/`conditional_passive` pair).
+    conditional_passive, conditional_passive_variants => CopulaSeries::ConditionalBi, false;
+    /// The conditional passive with the source-described aorist replacement
+    /// series `бꙑ-`.
+    conditional_passive_aorist, conditional_passive_aorist_variants => CopulaSeries::ConditionalAoristBy, false;
+    /// The occasional active-participle future: agreeing *active* participle
+    /// + future `бѫд-` (a passive kind is [`Error::UnsupportedPhrase`]).
+    participial_future, participial_future_variants => CopulaSeries::FutureBud, true;
+}
+
+// ---------------------------------------------------------------------------
 // Impersonal predicates
 // ---------------------------------------------------------------------------
 
@@ -1026,6 +1144,99 @@ mod tests {
         assert!(matches!(
             impersonal_present("благословити"),
             Err(Error::UnknownLemma(_))
+        ));
+    }
+
+    #[test]
+    fn declined_participle_predicates() {
+        use crate::ParticipleKind;
+        assert_eq!(
+            analytic_passive(
+                "благословити",
+                ParticipleKind::PastPassive,
+                Person::First,
+                Number::Singular,
+                Gender::Masculine,
+                PhraseOrder::DependentFirst,
+            )
+            .as_deref(),
+            Ok("ѥсмь благословлѥнъ")
+        );
+        assert_eq!(
+            conditional_passive_aorist(
+                "любити",
+                ParticipleKind::PresentPassive,
+                Person::Second,
+                Number::Singular,
+                Gender::Feminine,
+                PhraseOrder::HeadFirst,
+            )
+            .as_deref(),
+            Ok("любима бꙑ")
+        );
+        assert_eq!(
+            participial_future(
+                "творити",
+                ParticipleKind::PresentActive,
+                Person::Third,
+                Number::Plural,
+                Gender::Masculine,
+                PhraseOrder::DependentFirst,
+            )
+            .as_deref(),
+            Ok("бѫдѫтъ творѧште")
+        );
+    }
+
+    #[test]
+    fn declined_participle_predicates_enforce_kind_licensing() {
+        use crate::ParticipleKind;
+        // A passive construction refuses active kinds; the participial
+        // future refuses passive kinds.
+        assert!(matches!(
+            analytic_passive(
+                "благословити",
+                ParticipleKind::PresentActive,
+                Person::First,
+                Number::Singular,
+                Gender::Masculine,
+                PhraseOrder::DependentFirst,
+            ),
+            Err(Error::UnsupportedPhrase { .. })
+        ));
+        assert!(matches!(
+            conditional_passive(
+                "благословити",
+                ParticipleKind::PastActive,
+                Person::First,
+                Number::Singular,
+                Gender::Masculine,
+                PhraseOrder::DependentFirst,
+            ),
+            Err(Error::UnsupportedPhrase { .. })
+        ));
+        assert!(matches!(
+            participial_future(
+                "благословити",
+                ParticipleKind::PastPassive,
+                Person::First,
+                Number::Singular,
+                Gender::Masculine,
+                PhraseOrder::DependentFirst,
+            ),
+            Err(Error::UnsupportedPhrase { .. })
+        ));
+        // A reviewed participle defect propagates as Underdetermined.
+        assert!(matches!(
+            analytic_passive(
+                "ити",
+                ParticipleKind::PastPassive,
+                Person::First,
+                Number::Plural,
+                Gender::Masculine,
+                PhraseOrder::DependentFirst,
+            ),
+            Err(Error::Underdetermined { .. })
         ));
     }
 }

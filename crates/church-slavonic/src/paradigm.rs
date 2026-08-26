@@ -24,6 +24,7 @@ use crate::{
     past_passive_participle_variants, present_active_participle_variants,
     present_passive_participle_variants, present_variants, supine_variants, verbal_noun_variants,
 };
+use crate::ParticipleKind;
 use old_church_slavonic_core::PartOfSpeech;
 
 /// One lexeme's enumerated noun paradigm: every servable (case, number)
@@ -51,8 +52,8 @@ pub type ClosedParadigm = Vec<(Case, Number, Option<Gender>, Vec<String>)>;
 /// index dimensions; the infinitive, supine, verbal noun, and the four
 /// participle kinds are single citation cells (the participle citations are
 /// the masculine nominative singular short forms the oracle stores —
-/// declining them across case/number/gender is the planned
-/// participle-paradigm layer, not this enum).
+/// declining them across case/number/gender/form is
+/// [`participle_paradigm`], not this enum).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum VerbCellKind {
     /// Present-tense finite cell.
@@ -190,6 +191,33 @@ pub fn adjective_paradigm(
     });
     let cells = collect_cells(lemma, candidates, |(case, number, gender)| {
         adjective_form_variants(lemma, form, case, number, gender)
+    })?;
+    Ok(cells
+        .into_iter()
+        .map(|((case, number, gender), variants)| (case, number, gender, variants))
+        .collect())
+}
+
+/// Every declined cell of one participle system (kind) in one form
+/// (long/short) the lexeme actually supports, in `Case::ALL` x
+/// `Number::ALL` x `Gender::ALL` order — exactly the cells
+/// [`participle_variants`](crate::participle_variants) serves for this
+/// lemma, kind, and form. The shape is [`AdjectiveParadigm`]: a participle
+/// declines as an adjective. The [`VerbCellKind`] verb paradigm keeps only
+/// the citation cell of each kind; this function is the declension of that
+/// citation across the agreement grid.
+pub fn participle_paradigm(
+    lemma: &str,
+    kind: ParticipleKind,
+    form: AdjectiveForm,
+) -> Result<AdjectiveParadigm, Error> {
+    let candidates = case_number_grid().flat_map(|(case, number)| {
+        Gender::ALL
+            .into_iter()
+            .map(move |gender| (case, number, gender))
+    });
+    let cells = collect_cells(lemma, candidates, |(case, number, gender)| {
+        crate::participle_variants(lemma, kind, case, number, gender, form)
     })?;
     Ok(cells
         .into_iter()
@@ -373,6 +401,51 @@ mod tests {
         assert!(!short.is_empty());
         assert!(matches!(
             adjective_paradigm("nonexistent", AdjectiveForm::Long),
+            Err(Error::UnknownLemma(_))
+        ));
+    }
+
+    #[test]
+    fn participle_paradigm_declines_as_adjective() {
+        let long = participle_paradigm(
+            "благословити",
+            ParticipleKind::PastPassive,
+            AdjectiveForm::Long,
+        )
+        .expect("known lemma");
+        assert_eq!(long.len(), 63, "{long:?}");
+        for (case, number, gender, variants) in &long {
+            assert_eq!(
+                crate::participle_variants(
+                    "благословити",
+                    ParticipleKind::PastPassive,
+                    *case,
+                    *number,
+                    *gender,
+                    AdjectiveForm::Long
+                )
+                .as_ref(),
+                Ok(variants)
+            );
+        }
+        // The reviewed profile of `ити` refuses the past passive: no long
+        // cell serves (empty listing, not an error), and the short paradigm
+        // keeps only the metadata-backed citation cell.
+        assert_eq!(
+            participle_paradigm("ити", ParticipleKind::PastPassive, AdjectiveForm::Long),
+            Ok(Vec::new())
+        );
+        assert_eq!(
+            participle_paradigm("ити", ParticipleKind::PastPassive, AdjectiveForm::Short)
+                .map(|cells| cells.len()),
+            Ok(1)
+        );
+        assert!(matches!(
+            participle_paradigm(
+                "nonexistent",
+                ParticipleKind::PresentActive,
+                AdjectiveForm::Long
+            ),
             Err(Error::UnknownLemma(_))
         ));
     }

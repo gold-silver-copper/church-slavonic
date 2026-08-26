@@ -174,6 +174,23 @@ Hard rules for the target:
   (c) phase 5 release mechanics — publishing, `#[deprecated]` re-export
   releases, and deleting the old crate families are user decisions.
 
+- 2026-08-26 — Remaining-scope item (a) landed: declined participles on the
+  pilot facade as `participle(lemma, kind, case, number, gender, form)` /
+  `participle_variants` / `participle_paradigm` — the derivation's per-kind
+  stem declined through the core adjective machinery (inanimate convention,
+  like the adjective surface). Resolution: attested/metadata citation
+  precedence on the citation cell, then the reviewed verb-family kernel
+  (`reviewed_verb_lexemes`, the resolver's `ReviewedVerbProfile` composition
+  moved down into old-church-slavonic-core), then principal-part metadata.
+  With no attested oracle, `rewrite-pilot-accuracy` gates a 100% differential
+  sweep against the old facade's declined-participle handles (14 verbs x 4
+  kinds x case x number x gender x form; citation cells gated as
+  self-consistency with the attested-first citation functions), plus a
+  259k-cell participle-paradigm self-consistency gate. The three deferred
+  phrase constructions ported the same way: `analytic_passive` (+
+  `_imperfect`/`_aorist`/`_future`), `conditional_passive`(+`_aorist`), and
+  `participial_future`, each differential-gated at 100%.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
