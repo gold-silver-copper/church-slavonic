@@ -5,7 +5,6 @@ use std::{
 };
 
 use serde::de::DeserializeOwned;
-use serde_json::Value;
 
 pub(crate) struct Table {
     path: PathBuf,
@@ -58,105 +57,6 @@ pub(crate) fn read_tsv(path: &Path) -> Result<Table, Box<dyn Error>> {
         header,
         rows,
     })
-}
-
-pub(crate) fn require_header(table: &Table, required: &[&str]) -> Result<(), Box<dyn Error>> {
-    for column in required {
-        table.index(column)?;
-    }
-    Ok(())
-}
-
-pub(crate) fn object<'a>(
-    value: &'a Value,
-    key: &str,
-) -> Result<&'a serde_json::Map<String, Value>, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_object)
-        .ok_or_else(|| format!("JSON omits object {key:?}").into())
-}
-
-pub(crate) fn map_object<'a>(
-    value: &'a serde_json::Map<String, Value>,
-    key: &str,
-) -> Result<&'a serde_json::Map<String, Value>, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_object)
-        .ok_or_else(|| format!("JSON omits object {key:?}").into())
-}
-
-pub(crate) fn number(
-    value: &serde_json::Map<String, Value>,
-    key: &str,
-) -> Result<u64, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("JSON omits number {key:?}").into())
-}
-
-pub(crate) fn root_number(value: &Value, key: &str) -> Result<u64, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("JSON omits number {key:?}").into())
-}
-
-pub(crate) fn pointer_number(value: &Value, pointer: &str) -> Result<u64, Box<dyn Error>> {
-    value
-        .pointer(pointer)
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("JSON omits number {pointer:?}").into())
-}
-
-pub(crate) fn string<'a>(value: &'a Value, key: &str) -> Result<&'a str, Box<dyn Error>> {
-    value
-        .get(key)
-        .and_then(Value::as_str)
-        .ok_or_else(|| format!("JSON omits string {key:?}").into())
-}
-
-pub(crate) fn require_string(
-    value: &Value,
-    key: &str,
-    expected: &str,
-) -> Result<(), Box<dyn Error>> {
-    let actual = string(value, key)?;
-    if actual == expected {
-        Ok(())
-    } else {
-        Err(format!("field {key:?}: expected {expected:?}, found {actual:?}").into())
-    }
-}
-
-pub(crate) fn require_number(
-    value: &Value,
-    pointer: &str,
-    expected: u64,
-) -> Result<(), Box<dyn Error>> {
-    let actual = pointer_number(value, pointer)?;
-    if actual == expected {
-        Ok(())
-    } else {
-        Err(format!("field {pointer:?}: expected {expected}, found {actual}").into())
-    }
-}
-
-pub(crate) fn table_count(value: &Value, name: &str) -> Result<u64, Box<dyn Error>> {
-    value
-        .pointer(&format!("/normalized_tables/{name}"))
-        .and_then(Value::as_u64)
-        .ok_or_else(|| format!("extraction report omits {name}").into())
-}
-
-pub(crate) fn percent(value: u64, total: u64) -> String {
-    format!("{:.3}%", value as f64 * 100.0 / total as f64)
-}
-
-pub(crate) fn escape(value: &str) -> String {
-    value.replace('|', "\\|").replace('\n', " ")
 }
 
 pub(crate) fn check_contents(path: &Path, expected: &str) -> Result<(), Box<dyn Error>> {

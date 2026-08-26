@@ -17,16 +17,6 @@ mod synodal_lexical_union;
 mod synodal_marginal_recovery;
 mod synodal_predict;
 mod synodal_type_holdout;
-mod synodal_v04_audit;
-mod synodal_v05_audit;
-mod synodal_v05_baseline;
-mod synodal_v06_audit;
-mod synodal_v06_baseline;
-mod synodal_v06_review_packets;
-mod synodal_v07_apply;
-mod synodal_v07_audit;
-mod synodal_v07_review_packets;
-mod synodal_v08_engine_audit;
 mod synodal_wave_close;
 mod synodal_waves;
 
@@ -133,23 +123,6 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-lexical-union") => synodal_lexical_union::run(&mut args, &workspace_root()?),
         Some("synodal-marginal-recovery") => {
             synodal_marginal_recovery::run(&mut args, &workspace_root()?)
-        }
-        Some("synodal-v06-review-packets") => {
-            synodal_v06_review_packets::run(&mut args, &workspace_root()?)
-        }
-        Some("synodal-v04-audit") => synodal_v04_audit::run(&mut args, &workspace_root()?),
-        Some("synodal-v05-baseline") => synodal_v05_baseline::run(&mut args, &workspace_root()?),
-        Some("synodal-v05-audit") => synodal_v05_audit::run(&mut args, &workspace_root()?),
-        Some("synodal-v06-audit") => synodal_v06_audit::run(&mut args, &workspace_root()?),
-        Some("synodal-v06-baseline") => synodal_v06_baseline::run(&mut args, &workspace_root()?),
-        Some("synodal-v07-baseline") => synodal_v06_baseline::run(&mut args, &workspace_root()?),
-        Some("synodal-v07-review-packets") => {
-            synodal_v07_review_packets::run(&mut args, &workspace_root()?)
-        }
-        Some("synodal-v07-apply") => synodal_v07_apply::run(&mut args, &workspace_root()?),
-        Some("synodal-v07-audit") => synodal_v07_audit::run(&mut args, &workspace_root()?),
-        Some("synodal-engine-audit") => {
-            synodal_v08_engine_audit::run(&mut args, &workspace_root()?)
         }
         Some("morphology-completeness") => {
             morphology_completeness::run(&mut args, &workspace_root()?)
@@ -2246,7 +2219,6 @@ pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
     check_runtime_boundaries(&root)?;
     check_attribution(&root)?;
     synodal::check(&root)?;
-    synodal_v08_engine_audit::run(&mut ["--check".to_owned()].into_iter(), &root)?;
     morphology_completeness::check_progress_artifacts(&root)?;
     examples()
 }
@@ -3440,16 +3412,6 @@ fn print_help() {
     eprintln!("  synodal-lexical-review-queue [--limit N] [--check]");
     eprintln!("  synodal-lexical-union [--check]");
     eprintln!("  synodal-marginal-recovery [--check] [--require-source-inputs]");
-    eprintln!("  synodal-v06-review-packets [--check]");
-    eprintln!("  synodal-v04-audit [--check]");
-    eprintln!("  synodal-v05-baseline [--check]");
-    eprintln!("  synodal-v05-audit [--check]");
-    eprintln!("  synodal-v06-audit [--check]");
-    eprintln!("  synodal-v07-baseline [--check]");
-    eprintln!("  synodal-v07-review-packets [--check]");
-    eprintln!("  synodal-v07-apply [--check | --refresh-ownership]");
-    eprintln!("  synodal-v07-audit [--check]");
-    eprintln!("  synodal-engine-audit [--check]");
     eprintln!("  morphology-completeness [--check]");
     eprintln!("  ocs-lexical-union [--check | --kaikki PATH --osd-jsonl PATH]");
     eprintln!("  check-all");
