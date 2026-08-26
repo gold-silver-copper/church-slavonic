@@ -2075,6 +2075,7 @@ pub(crate) fn accuracy(
         }
     }
     paradigm_consistency(&oracle, &adjectives, &verbs, &closed)?;
+    numeral_value_differential()?;
     Ok(())
 }
 
@@ -2274,3 +2275,128 @@ fn paradigm_consistency(
     Ok(())
 }
 
+/// Differential gate for the value-driven numeral composer: the fat
+/// old-church-slavonic facade is the reference. For a deterministic sweep of
+/// values (1..=100 plus representative larger values across every supported
+/// order of magnitude) x case x gender, the pilot's `numeral()` must equal
+/// the old `compound_cardinal` (default options) primary text for 11..=10,000
+/// and the old lemma-keyed simple-cardinal path for 1..=10, and the pilot's
+/// `distributive_numeral()` must equal the old `distributive_cardinal`.
+/// Cells the old facade rejects must be rejected by the pilot too.
+fn numeral_value_differential() -> Result<(), Box<dyn Error>> {
+    fn old_cardinal_reference(value: u16, case: Case, gender: Gender) -> Option<String> {
+        if value >= 11 {
+            return old_church_slavonic::compound_cardinal(value, case, Some(gender))
+                .or_else(|_| old_church_slavonic::compound_cardinal(value, case, None))
+                .ok()
+                .map(|realized| realized.primary_text());
+        }
+        let (lemma, number, gendered) = match value {
+            1 => ("ѥдинъ", Number::Singular, true),
+            2 => ("дъва", Number::Dual, true),
+            3 => ("триѥ", Number::Plural, true),
+            4 => ("четыре", Number::Plural, true),
+            5 => ("пѧть", Number::Singular, false),
+            6 => ("шесть", Number::Singular, false),
+            7 => ("седмь", Number::Singular, false),
+            8 => ("осмь", Number::Singular, false),
+            9 => ("девѧть", Number::Singular, false),
+            10 => ("десѧть", Number::Singular, false),
+            _ => unreachable!("simple cardinal sweep covers 1..=10"),
+        };
+        let result = if gendered {
+            old_church_slavonic::gendered_numeral(lemma, case, number, gender)
+        } else {
+            old_church_slavonic::numeral(lemma, case, number)
+        };
+        result.ok().map(|forms| forms.primary_text().to_string())
+    }
+
+    fn old_distributive_reference(value: u16, gender: Gender) -> Option<String> {
+        old_church_slavonic::distributive_cardinal(value, Some(gender))
+            .or_else(|_| old_church_slavonic::distributive_cardinal(value, None))
+            .ok()
+            .map(|realized| realized.primary_text())
+    }
+
+    let mut values: Vec<u16> = (1..=100).collect();
+    values.extend([
+        101, 110, 111, 123, 199, 200, 222, 300, 333, 400, 444, 500, 555, 600, 666, 700, 777, 800,
+        888, 900, 999, 1_000, 1_001, 1_100, 1_111, 1_234, 2_000, 2_222, 3_000, 3_456, 4_000,
+        5_000, 5_555, 6_000, 7_000, 8_000, 9_000, 9_999, 10_000,
+    ]);
+
+    let mut cardinal_agreements = 0usize;
+    let mut cardinal_total = 0usize;
+    let mut distributive_agreements = 0usize;
+    let mut distributive_total = 0usize;
+    let mut mismatches: Vec<String> = Vec::new();
+    for &value in &values {
+        for gender in Gender::ALL {
+            for case in Case::ALL {
+                cardinal_total += 1;
+                let new = church_slavonic::numeral(
+                    u64::from(value),
+                    case,
+                    gender,
+                    Animacy::Inanimate,
+                );
+                let old = old_cardinal_reference(value, case, gender);
+                match (&new, &old) {
+                    (Ok(new_text), Some(old_text)) if new_text == old_text => {
+                        cardinal_agreements += 1;
+                    }
+                    (Err(_), None) => cardinal_agreements += 1,
+                    _ => {
+                        if mismatches.len() < 20 {
+                            mismatches.push(format!(
+                                "cardinal {value} {case:?} {gender:?}: new {new:?} vs old {old:?}"
+                            ));
+                        }
+                    }
+                }
+            }
+            distributive_total += 1;
+            let new =
+                church_slavonic::distributive_numeral(u64::from(value), gender, Animacy::Inanimate);
+            let old = old_distributive_reference(value, gender);
+            match (&new, &old) {
+                (Ok(new_text), Some(old_text)) if new_text == old_text => {
+                    distributive_agreements += 1;
+                }
+                (Err(_), None) => distributive_agreements += 1,
+                _ => {
+                    if mismatches.len() < 20 {
+                        mismatches.push(format!(
+                            "distributive {value} {gender:?}: new {new:?} vs old {old:?}"
+                        ));
+                    }
+                }
+            }
+        }
+    }
+
+    println!(
+        "rewrite pilot numeral differential (value-driven numeral() vs the old facade \
+         compound_cardinal/simple-cardinal reference, default options)"
+    );
+    println!(
+        "  cardinals: {cardinal_agreements}/{cardinal_total} value x case x gender cells agree \
+         ({} distinct values swept)",
+        values.len()
+    );
+    println!(
+        "  distributives: {distributive_agreements}/{distributive_total} value x gender cells agree"
+    );
+    for line in &mismatches {
+        println!("  MISMATCH {line}");
+    }
+    if cardinal_agreements != cardinal_total || distributive_agreements != distributive_total {
+        return Err(format!(
+            "numeral differential {cardinal_agreements}/{cardinal_total} cardinal and \
+             {distributive_agreements}/{distributive_total} distributive agreements, expected 100%"
+        )
+        .into());
+    }
+    Ok(())
+}

@@ -156,13 +156,56 @@
 //! its own, so [`pronoun_form`] returns [`Error::Underdetermined`] for it;
 //! its cells are served by [`pronoun`]. `етеръ` (no reviewed kernel) and
 //! `Єѵрѡпа` are served entirely from the residue table verbatim.
+//!
+//! # Value-driven numerals
+//!
+//! [`numeral`]`(value, case, gender, animacy)` composes the reviewed
+//! cardinal phrase for an integer from 1 through 10,000 (the evidential
+//! boundary of the source profile: the myriad `тъма` / `десѧть тꙑсѫщь`;
+//! anything outside returns [`Error::ValueOutOfRange`]). Composition is
+//! delegated to `old_church_slavonic_core::numeral` (the composer moved down
+//! from the fat facade's resolver, which now delegates, exactly as the
+//! pronominal composer did). Signature decisions, per the facade's design
+//! rule (an output-selecting distinction becomes a separate function when it
+//! selects a different construction, an options parameter only when
+//! unavoidable):
+//!
+//! - The old `compound_cardinal` / `compound_cardinal_with_one` /
+//!   `compound_cardinal_with_options` trio differed only in the lexical
+//!   doublet chosen for "one" (`ѥдинъ` vs `ѥдьнъ`) and "thousand"
+//!   (`тꙑсѫщи` vs `тꙑсѧщи`) — the same construction with an orthographic/
+//!   lexical register choice, not a different linguistic output. The pilot
+//!   serves the defaults (`ѥдинъ`, `тꙑсѫщи`); the `_with_one` /
+//!   `_with_options` axes are dropped, not folded into an options struct.
+//! - The distributive (`по` + dative cardinal, "fifty each") is a genuinely
+//!   different construction, so it is the separate function
+//!   [`distributive_numeral`]`(value, gender, animacy)` (the preposition
+//!   fixes the case). Its `_with_one` / `_with_options` variants are dropped
+//!   for the same reason as the cardinal's.
+//! - `gender` participates only when the final unit agrees (final digit 1–4,
+//!   including the analytic teens 11–14); under genitive-plural government
+//!   the construction has no gender slot and the parameter is ignored (the
+//!   request cannot fail on a distinction the construction does not draw).
+//! - `animacy` is accepted for signature uniformity with the planned synodal
+//!   family but ignored: the reviewed OCS cardinal cells draw no animacy
+//!   contrast (mirroring the adjectives, where the attested contrast is
+//!   likewise vacuous).
+//!
+//! [`numeral_variants`] enumerates every rendered phrase: the kernel's
+//! correlated structural analyses (e.g. nominative 33 keeps `триѥ десѧте`
+//! beside `три десѧти`) crossed with token-level orthographic doublets,
+//! primary first. `cargo xtask rewrite-pilot-accuracy` runs a differential
+//! gate: for a deterministic sweep of values x case x gender the pilot
+//! output must equal the old facade's `compound_cardinal` (default options)
+//! primary text (values 1–10: the old lemma-keyed simple-cardinal path), at
+//! 100% agreement, including agreement on rejected cells.
 
 use old_church_slavonic_core::adjective::AdjectiveLexeme;
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::unique_noun::UniqueNounFamilyMember;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveClass, AnaphoricEnvironment, Animacy, AoristFormation,
+    AdjectiveCell, AdjectiveClass, AnaphoricEnvironment, AoristFormation,
     CardinalNumeralIdentity, FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation,
     ImperfectFormation, ImperfectVariantPolicy, InterrogativePronounIdentity,
     IrregularAgreeingIdentity, IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass,
@@ -174,7 +217,7 @@ use old_church_slavonic_core::{
     VerbClass, numeral, orthography, pronoun,
 };
 
-pub use church_slavonic_core::grammar::{AdjectiveForm, Case, Gender, Number, Person};
+pub use church_slavonic_core::grammar::{AdjectiveForm, Animacy, Case, Gender, Number, Person};
 
 mod paradigm;
 pub use paradigm::{
@@ -209,6 +252,10 @@ pub enum Error {
     /// The lemma is not in the per-lemma metadata table and has no residue
     /// rows: the facade knows nothing about it.
     UnknownLemma(String),
+    /// The requested numeral value is outside the range the reviewed
+    /// composition sources license (see [`NUMERAL_MIN_VALUE`] and
+    /// [`NUMERAL_MAX_VALUE`]).
+    ValueOutOfRange { value: u64 },
     /// The lemma is known, but its metadata does not determine this cell
     /// (missing class metadata, an animacy-conditioned masculine accusative
     /// without an animacy fact, a number-restricted paradigm, or a kernel
@@ -223,6 +270,13 @@ impl std::fmt::Display for Error {
             Error::UnknownLemma(lemma) => write!(f, "unknown lemma `{lemma}`"),
             Error::Underdetermined { lemma } => {
                 write!(f, "cell underdetermined for lemma `{lemma}`")
+            }
+            Error::ValueOutOfRange { value } => {
+                write!(
+                    f,
+                    "numeral value {value} outside the reviewed range \
+                     {NUMERAL_MIN_VALUE}..={NUMERAL_MAX_VALUE}"
+                )
             }
         }
     }
@@ -1588,9 +1642,289 @@ pub fn determiner_form(
     )
 }
 
+/// Lowest integer served by the value-driven [`numeral`] composer.
+pub const NUMERAL_MIN_VALUE: u64 = old_church_slavonic_core::numeral::MIN_CARDINAL_VALUE as u64;
+
+/// Highest integer the reviewed Old Church Slavonic sources license for
+/// cardinal composition (`тъма` / `десѧть тꙑсѫшть`). This is an evidential
+/// boundary inherited from the composition kernel, not a storage limit.
+pub const NUMERAL_MAX_VALUE: u64 = old_church_slavonic_core::numeral::MAX_CARDINAL_VALUE as u64;
+
+fn realized_cardinal(
+    value: u64,
+    case: Case,
+    gender: Gender,
+) -> Result<old_church_slavonic_core::RealizedCardinal, Error> {
+    let narrow = checked_numeral_value(value)?;
+    let gender = agreeing_gender(narrow, gender);
+    numeral::cardinal(
+        narrow,
+        old_church_slavonic_core::CompoundCardinalCell { case, gender },
+        old_church_slavonic_core::CardinalCompositionOptions::DEFAULT,
+    )
+    .map_err(|_| Error::Underdetermined {
+        lemma: value.to_string(),
+    })
+}
+
+fn checked_numeral_value(value: u64) -> Result<u16, Error> {
+    if !(NUMERAL_MIN_VALUE..=NUMERAL_MAX_VALUE).contains(&value) {
+        return Err(Error::ValueOutOfRange { value });
+    }
+    Ok(value as u16)
+}
+
+/// The requested gender is meaningful only when the composed cardinal ends in
+/// an agreeing unit (final digit one through four, including the analytic
+/// teens 11–14); everywhere else the construction governs the genitive
+/// plural and has no gender slot, so the parameter is ignored.
+fn agreeing_gender(value: u16, gender: Gender) -> Option<Gender> {
+    match numeral::final_cardinal_digit(value) {
+        Some(1..=4) => Some(gender),
+        _ => None,
+    }
+}
+
+fn phrase_texts(analyses: &[&[old_church_slavonic_core::PhraseToken]]) -> Vec<String> {
+    let mut texts: Vec<String> = Vec::new();
+    for tokens in analyses {
+        // Odometer over each token's ordered variant list, primary first, so
+        // the first rendered phrase is every token's source-first form.
+        let variant_lists: Vec<Vec<&str>> = tokens
+            .iter()
+            .map(|token| token.forms.texts().collect())
+            .collect();
+        let mut indices = vec![0usize; variant_lists.len()];
+        'analysis: loop {
+            let text = variant_lists
+                .iter()
+                .zip(&indices)
+                .map(|(variants, index)| variants[*index])
+                .collect::<Vec<_>>()
+                .join(" ");
+            if !texts.contains(&text) {
+                texts.push(text);
+            }
+            let mut position = variant_lists.len();
+            loop {
+                if position == 0 {
+                    break 'analysis;
+                }
+                position -= 1;
+                indices[position] += 1;
+                if indices[position] < variant_lists[position].len() {
+                    break;
+                }
+                indices[position] = 0;
+            }
+        }
+    }
+    texts
+}
+
+/// Every rendered phrase for one value-driven cardinal cell, primary first.
+///
+/// The list enumerates each correlated structural analysis of the composed
+/// phrase in kernel order (e.g. nominative 33 keeps `три десѧти` beside
+/// `триѥ десѧте`), crossed with every token-level orthographic doublet
+/// (e.g. the two reviewed spellings of the thousand), deduplicated in a
+/// stable order. The first entry always renders every token's source-first
+/// form and equals [`numeral`].
+pub fn numeral_variants(
+    value: u64,
+    case: Case,
+    gender: Gender,
+    animacy: Animacy,
+) -> Result<Vec<String>, Error> {
+    let _ = animacy; // see the module docs: no attested animacy contrast
+    let realized = realized_cardinal(value, case, gender)?;
+    let analyses: Vec<&[old_church_slavonic_core::PhraseToken]> = realized
+        .analyses()
+        .iter()
+        .map(|analysis| analysis.tokens.as_slice())
+        .collect();
+    Ok(phrase_texts(&analyses))
+}
+
+/// The primary surface phrase for one value-driven cardinal.
+///
+/// Composes the reviewed Old Church Slavonic cardinal for `value` (one
+/// through 10,000; anything else is [`Error::ValueOutOfRange`]) in `case`.
+/// `gender` participates only when the final unit agrees (final digit one
+/// through four, including the analytic teens); `animacy` is accepted for
+/// signature uniformity but ignored, because the reviewed cardinal cells
+/// draw no animacy contrast. Requests the sources rule out (for example the
+/// vocative of a genitive-plural-governing construction) return
+/// [`Error::Underdetermined`].
+///
+/// ```
+/// use church_slavonic::{numeral, Animacy, Case, Gender};
+/// assert_eq!(
+///     numeral(12, Case::Genitive, Gender::Masculine, Animacy::Inanimate).as_deref(),
+///     Ok("дъвою на десѧте")
+/// );
+/// assert_eq!(
+///     numeral(50, Case::Genitive, Gender::Masculine, Animacy::Inanimate).as_deref(),
+///     Ok("пѧти десѧтъ")
+/// );
+/// ```
+pub fn numeral(
+    value: u64,
+    case: Case,
+    gender: Gender,
+    animacy: Animacy,
+) -> Result<String, Error> {
+    primary(
+        numeral_variants(value, case, gender, animacy)?,
+        &value.to_string(),
+    )
+}
+
+/// Every rendered phrase for one distributive cardinal, primary first, under
+/// the same enumeration order as [`numeral_variants`].
+pub fn distributive_numeral_variants(
+    value: u64,
+    gender: Gender,
+    animacy: Animacy,
+) -> Result<Vec<String>, Error> {
+    let _ = animacy; // see the module docs: no attested animacy contrast
+    let narrow = checked_numeral_value(value)?;
+    let realized = numeral::distributive_cardinal(
+        narrow,
+        old_church_slavonic_core::DistributiveCardinalCell {
+            gender: agreeing_gender(narrow, gender),
+        },
+        old_church_slavonic_core::CardinalCompositionOptions::DEFAULT,
+    )
+    .map_err(|_| Error::Underdetermined {
+        lemma: value.to_string(),
+    })?;
+    let analyses: Vec<&[old_church_slavonic_core::PhraseToken]> = realized
+        .analyses()
+        .iter()
+        .map(|analysis| analysis.tokens.as_slice())
+        .collect();
+    Ok(phrase_texts(&analyses))
+}
+
+/// The primary surface phrase for the distributive construction: `по` with
+/// the dative cardinal (`по пѧти десѧтъ` "fifty each").
+///
+/// The distributive is a genuinely different construction from the plain
+/// cardinal, so per the facade's design rule it is a separate function
+/// rather than an option on [`numeral`]. The preposition fixes the case, so
+/// there is no `case` parameter; `gender` and `animacy` behave exactly as in
+/// [`numeral`].
+///
+/// ```
+/// use church_slavonic::{distributive_numeral, Animacy, Gender};
+/// assert_eq!(
+///     distributive_numeral(2, Gender::Masculine, Animacy::Inanimate).as_deref(),
+///     Ok("по дъвѣма")
+/// );
+/// ```
+pub fn distributive_numeral(
+    value: u64,
+    gender: Gender,
+    animacy: Animacy,
+) -> Result<String, Error> {
+    primary(
+        distributive_numeral_variants(value, gender, animacy)?,
+        &value.to_string(),
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn landmark_numerals() {
+        let n = |value, case, gender| numeral(value, case, gender, Animacy::Inanimate);
+        assert_eq!(
+            n(1, Case::Nominative, Gender::Masculine).as_deref(),
+            Ok("ѥдинъ")
+        );
+        assert_eq!(
+            n(2, Case::Nominative, Gender::Feminine).as_deref(),
+            Ok("дъвѣ")
+        );
+        assert_eq!(
+            n(5, Case::Nominative, Gender::Masculine).as_deref(),
+            Ok("пѧть")
+        );
+        assert_eq!(
+            n(11, Case::Nominative, Gender::Masculine).as_deref(),
+            Ok("ѥдинъ на десѧте")
+        );
+        assert_eq!(
+            n(21, Case::Nominative, Gender::Masculine).as_deref(),
+            Ok("дъва десѧти и ѥдинъ")
+        );
+        assert_eq!(
+            n(100, Case::Nominative, Gender::Masculine).as_deref(),
+            Ok("съто")
+        );
+        assert_eq!(
+            n(123, Case::Nominative, Gender::Masculine).as_deref(),
+            Ok("съто и дъва десѧти и триѥ")
+        );
+        assert_eq!(
+            n(10_000, Case::Nominative, Gender::Masculine).as_deref(),
+            Ok("десѧть тꙑсѫщь")
+        );
+        // Gender is ignored under genitive-plural government.
+        assert_eq!(
+            n(50, Case::Genitive, Gender::Feminine).as_deref(),
+            Ok("пѧти десѧтъ")
+        );
+    }
+
+    #[test]
+    fn numeral_variants_keep_correlated_analyses() {
+        assert_eq!(
+            numeral_variants(33, Case::Nominative, Gender::Masculine, Animacy::Inanimate),
+            Ok(vec![
+                "триѥ десѧте и триѥ".to_string(),
+                "три десѧти и триѥ".to_string(),
+            ])
+        );
+        assert_eq!(
+            numeral_variants(
+                10_000,
+                Case::Nominative,
+                Gender::Masculine,
+                Animacy::Inanimate
+            ),
+            Ok(vec![
+                "десѧть тꙑсѫщь".to_string(),
+                "десѧть тꙑсѫшть".to_string(),
+                "тъма".to_string(),
+            ])
+        );
+    }
+
+    #[test]
+    fn numeral_rejects_out_of_range_values() {
+        for value in [0u64, 10_001, u64::MAX] {
+            assert_eq!(
+                numeral(value, Case::Nominative, Gender::Masculine, Animacy::Inanimate),
+                Err(Error::ValueOutOfRange { value })
+            );
+        }
+    }
+
+    #[test]
+    fn distributive_numeral_prefixes_po() {
+        assert_eq!(
+            distributive_numeral(2, Gender::Masculine, Animacy::Inanimate).as_deref(),
+            Ok("по дъвѣма")
+        );
+        assert_eq!(
+            distributive_numeral(50, Gender::Masculine, Animacy::Inanimate).as_deref(),
+            Ok("по пѧти десѧтъ")
+        );
+    }
 
     #[test]
     fn regular_noun_via_rules() {

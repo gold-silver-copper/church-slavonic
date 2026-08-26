@@ -1490,17 +1490,7 @@ pub fn reviewed_cardinal_numeral(
     identity: CardinalNumeralIdentity,
     cell: NumeralCell,
 ) -> Result<FormSet, InflectionError> {
-    reviewed_numeral_variants(
-        identity.canonical_lemma(),
-        identity.authority(),
-        format!(
-            "numeral:cardinal:{}:{}:{}",
-            cell.case.abbrev(),
-            cell.number.abbrev(),
-            cell.gender.map_or("none", Gender::abbrev),
-        ),
-        old_church_slavonic_core::numeral::decline_cardinal(identity, cell)?,
-    )
+    old_church_slavonic_core::numeral::cardinal_form_set(identity, cell)
 }
 
 /// Resolve one adjective-agreement cell of a reviewed simple ordinal.
@@ -1637,18 +1627,7 @@ pub fn reviewed_cardinal_magnitude(
     identity: CardinalMagnitudeIdentity,
     cell: NumeralCell,
 ) -> Result<FormSet, InflectionError> {
-    reviewed_numeral_variants(
-        identity.canonical_lemma(),
-        identity.authority(),
-        format!(
-            "numeral:cardinal:magnitude:{}:{}:{}:{}",
-            identity.rule_id().code(),
-            cell.case.abbrev(),
-            cell.number.abbrev(),
-            cell.gender.map_or("none", Gender::abbrev),
-        ),
-        old_church_slavonic_core::numeral::decline_magnitude(identity, cell)?,
-    )
+    old_church_slavonic_core::numeral::magnitude_form_set(identity, cell)
 }
 
 fn reviewed_numeral_variants(
@@ -1657,97 +1636,17 @@ fn reviewed_numeral_variants(
     source_feature: String,
     variants: Vec<NumeralVariant>,
 ) -> Result<FormSet, InflectionError> {
-    let includes_reconstructed = variants
-        .iter()
-        .any(|variant| variant.status == NumeralVariantStatus::ReconstructedRule);
-    let variants = variants
-        .into_iter()
-        .map(|variant| {
-            let rule_id = variant.prediction.rule_id;
-            let trace = variant.prediction.trace;
-            let form = FormVariant {
-                text: orthography::canonical_display(&variant.prediction.text)?,
-                romanization: None,
-            };
-            let source = FormSource::ReviewedGrammarTable { rule_id };
-            let analysis = FormAnalysis {
-                variants: vec![form.clone()],
-                source: source.clone(),
-                evidence: vec![MetadataEvidence {
-                    field: None,
-                    provenance: match variant.status {
-                        NumeralVariantStatus::ReviewedTable => {
-                            MetadataProvenance::ReviewedGrammarTable
-                        }
-                        NumeralVariantStatus::ProductiveRule => {
-                            MetadataProvenance::ProductiveRuleOutput
-                        }
-                        NumeralVariantStatus::CorpusAttestation => {
-                            MetadataProvenance::CorpusEvaluationObservation
-                        }
-                        NumeralVariantStatus::PrimaryTextAttestation => {
-                            MetadataProvenance::PrimaryTextAttestation
-                        }
-                        NumeralVariantStatus::ReconstructedRule => {
-                            MetadataProvenance::ProductiveRuleOutput
-                        }
-                    },
-                    source_feature: Some(format!("{source_feature}:{}", variant.status.code())),
-                    source_form: matches!(
-                        variant.status,
-                        NumeralVariantStatus::ReviewedTable
-                            | NumeralVariantStatus::CorpusAttestation
-                            | NumeralVariantStatus::PrimaryTextAttestation
-                    )
-                    .then(|| form.text.clone()),
-                    crosscheck_features: Vec::new(),
-                    authority: Some(authority.to_string()),
-                }],
-                trace: trace.clone(),
-            };
-            Ok((form, analysis, trace))
-        })
-        .collect::<Result<Vec<_>, InflectionError>>()?;
-    let (primary, primary_analysis, primary_trace) =
-        variants
-            .first()
-            .ok_or_else(|| InflectionError::InvalidInput {
-                reason: format!("the {lemma:?} numeral cell has no reviewed forms"),
-            })?;
-    let mut surface_forms = Vec::with_capacity(variants.len());
-    for (form, _, _) in &variants {
-        if !surface_forms.contains(form) {
-            surface_forms.push(form.clone());
-        }
-    }
-    Ok(FormSet::new(
-        orthography::canonical_display(lemma)?,
-        primary.clone(),
-        surface_forms.into_iter().skip(1).collect(),
-        primary_analysis.source.clone(),
-        includes_reconstructed
-            .then_some(InflectionWarning::IncludesReconstructedForms)
-            .into_iter()
-            .collect(),
-        primary_trace.clone(),
-        variants
-            .into_iter()
-            .map(|(_, analysis, _)| analysis)
-            .collect(),
-    ))
+    old_church_slavonic_core::numeral::numeral_variants_form_set(
+        lemma,
+        authority,
+        source_feature,
+        variants,
+    )
 }
-
-const COMPOUND_CARDINAL_AUTHORITY: &str = "UT OCS Online §44.11–10,000; Polivanova 2023 \
-    §§321–322, 345–351, 373–374, 383–384";
 
 const COMPOUND_ORDINAL_AUTHORITY: &str = "Leuta and Havryliuk 2018 pp. 155, 161–162; \
     Gorshkov 2002 §§118–119; Polivanova OSD spreadsheet; Syntacticus/PROIEL \
     Suprasliensis ordinal crosscheck";
-
-const DISTRIBUTIVE_CARDINAL_AUTHORITY: &str = "Leuta and Havryliuk 2018 pp. 154, \
-    156, 164; UD OCS PROIEL r2.18 and native Syntacticus: Codex Zographensis \
-    Mark 14:19 and 6:40, Codex Marianus Luke 9:14 and 10:1, John 8:9 and \
-    21:25, and Codex Suprasliensis sentences 245344 and 253762";
 
 /// Compose a reviewed cardinal from 11 through 10,000 while retaining correlated
 /// multiword analyses and each word's own provenance.
@@ -1771,66 +1670,19 @@ pub fn compound_cardinal_with_options(
     cell: CompoundCardinalCell,
     options: CardinalCompositionOptions,
 ) -> Result<RealizedCardinal, InflectionError> {
-    validate_compound_cardinal_spec(value, options)?;
-
-    let government = final_cardinal_digit(value)
-        .map(|digit| digit_identity(digit, options.one_identity))
-        .transpose()?
-        .map_or(NumeralGovernment::GenitivePlural, |identity| {
-            identity.government()
-        });
-    let expects_gender = matches!(government, NumeralGovernment::Agreement { .. });
-    if cell.gender.is_some() != expects_gender {
-        return Err(compound_cardinal_cell_error(value, cell));
-    }
-
-    let analyses = compose_cardinal_analyses(value, cell, options)
-        .map_err(|error| remap_compound_cardinal_error(error, value, cell))?;
-
-    RealizedCardinal::new(value, cell, government, analyses)
-        .map_err(|error| remap_compound_cardinal_error(error, value, cell))
-}
-
-fn validate_compound_cardinal_spec(
-    value: u16,
-    options: CardinalCompositionOptions,
-) -> Result<(), InflectionError> {
-    if !(11..=10_000).contains(&value) {
-        return Err(InflectionError::InvalidInput {
-            reason: "the reviewed compound-cardinal range is 11 through 10,000".to_string(),
-        });
-    }
-    validate_cardinal_composition_options(options)
-}
-
-fn validate_cardinal_composition_options(
-    options: CardinalCompositionOptions,
-) -> Result<(), InflectionError> {
-    if !matches!(
-        options.one_identity,
-        CardinalNumeralIdentity::OneYedin | CardinalNumeralIdentity::OneYedyn
-    ) {
-        return Err(InflectionError::InvalidInput {
-            reason: "compound one selection must be OneYedin or OneYedyn".to_string(),
-        });
-    }
-    if !matches!(
-        options.thousand_identity,
-        CardinalMagnitudeIdentity::ThousandBackYus | CardinalMagnitudeIdentity::ThousandLittleYus
-    ) {
-        return Err(InflectionError::InvalidInput {
-            reason: "compound thousand selection must be ThousandBackYus or ThousandLittleYus"
-                .to_string(),
-        });
-    }
-    Ok(())
+    old_church_slavonic_core::numeral::compound_cardinal(value, cell, options)
 }
 
 pub(crate) fn build_compound_cardinal_paradigm(
     value: u16,
     options: CardinalCompositionOptions,
 ) -> Result<CompoundCardinalParadigm, InflectionError> {
-    validate_compound_cardinal_spec(value, options)?;
+    if !(11..=10_000).contains(&value) {
+        return Err(InflectionError::InvalidInput {
+            reason: "the reviewed compound-cardinal range is 11 through 10,000".to_string(),
+        });
+    }
+    old_church_slavonic_core::numeral::validate_cardinal_composition_options(options)?;
     Ok(CompoundCardinalParadigm {
         value,
         options,
@@ -1851,58 +1703,7 @@ pub fn distributive_cardinal_with_options(
     cell: DistributiveCardinalCell,
     options: CardinalCompositionOptions,
 ) -> Result<RealizedDistributiveCardinal, InflectionError> {
-    if !(1..=10_000).contains(&value) {
-        return Err(InflectionError::InvalidInput {
-            reason: "the reviewed distributive-cardinal range is 1 through 10,000".to_string(),
-        });
-    }
-    validate_cardinal_composition_options(options)?;
-
-    let government = final_cardinal_digit(value)
-        .map(|digit| digit_identity(digit, options.one_identity))
-        .transpose()?
-        .map_or(NumeralGovernment::GenitivePlural, |identity| {
-            identity.government()
-        });
-    if cell.gender.is_some() != matches!(government, NumeralGovernment::Agreement { .. }) {
-        return Err(distributive_cardinal_cell_error(value, cell));
-    }
-
-    let cardinal_analyses = if value <= 10 {
-        lower_cardinal_analyses(value as u8, Case::Dative, cell.gender, options.one_identity)
-    } else {
-        compose_cardinal_analyses(
-            value,
-            CompoundCardinalCell {
-                case: Case::Dative,
-                gender: cell.gender,
-            },
-            options,
-        )
-    }
-    .map_err(|error| remap_distributive_cardinal_error(error, value, cell))?;
-
-    let preposition = reviewed_grammar_token(
-        "по",
-        RuleId::NumeralCardinalDistributive,
-        "numeral:cardinal:distributive:po-dative",
-        DISTRIBUTIVE_CARDINAL_AUTHORITY,
-    )?;
-    let analyses = cardinal_analyses
-        .into_iter()
-        .map(|analysis| {
-            let mut tokens = Vec::with_capacity(analysis.tokens.len() + 1);
-            tokens.push(PhraseToken {
-                role: PhraseRole::Preposition,
-                forms: preposition.clone(),
-            });
-            tokens.extend(analysis.tokens);
-            DistributiveCardinalAnalysis { tokens }
-        })
-        .collect();
-
-    RealizedDistributiveCardinal::new(value, cell, government, analyses)
-        .map_err(|error| remap_distributive_cardinal_error(error, value, cell))
+    old_church_slavonic_core::numeral::distributive_cardinal(value, cell, options)
 }
 
 pub(crate) fn build_distributive_cardinal_paradigm(
@@ -1914,7 +1715,7 @@ pub(crate) fn build_distributive_cardinal_paradigm(
             reason: "the reviewed distributive-cardinal range is 1 through 10,000".to_string(),
         });
     }
-    validate_cardinal_composition_options(options)?;
+    old_church_slavonic_core::numeral::validate_cardinal_composition_options(options)?;
     Ok(DistributiveCardinalParadigm {
         value,
         options,
@@ -1927,446 +1728,10 @@ pub(crate) fn build_distributive_cardinal_paradigm(
     })
 }
 
-fn final_cardinal_digit(value: u16) -> Option<u8> {
-    let remainder = value % 100;
-    if (11..=19).contains(&remainder) {
-        Some((remainder - 10) as u8)
-    } else {
-        match remainder % 10 {
-            0 => None,
-            digit => Some(digit as u8),
-        }
-    }
-}
-
-fn compose_cardinal_analyses(
-    value: u16,
-    cell: CompoundCardinalCell,
-    options: CardinalCompositionOptions,
-) -> Result<Vec<CardinalPhraseAnalysis>, InflectionError> {
-    if value == 10_000 {
-        return myriad_analyses(cell.case, options.thousand_identity);
-    }
-
-    let mut chunks = Vec::new();
-    let thousands = (value / 1_000) as u8;
-    if thousands != 0 {
-        chunks.push(magnitude_analyses(
-            thousands,
-            options.thousand_identity,
-            cell.case,
-        )?);
-    }
-    let hundreds = ((value % 1_000) / 100) as u8;
-    if hundreds != 0 {
-        chunks.push(magnitude_analyses(
-            hundreds,
-            CardinalMagnitudeIdentity::HundredSto,
-            cell.case,
-        )?);
-    }
-    let remainder = (value % 100) as u8;
-    if remainder != 0 {
-        chunks.push(lower_cardinal_analyses(
-            remainder,
-            cell.case,
-            cell.gender,
-            options.one_identity,
-        )?);
-    }
-
-    combine_cardinal_chunks(chunks)
-}
-
-fn combine_cardinal_chunks(
-    chunks: Vec<Vec<CardinalPhraseAnalysis>>,
-) -> Result<Vec<CardinalPhraseAnalysis>, InflectionError> {
-    let mut combined = vec![CardinalPhraseAnalysis { tokens: Vec::new() }];
-    for chunk in chunks {
-        let mut next = Vec::with_capacity(combined.len() * chunk.len());
-        for prefix in &combined {
-            for suffix in &chunk {
-                let mut tokens = prefix.tokens.clone();
-                if !tokens.is_empty() {
-                    tokens.push(PhraseToken {
-                        role: PhraseRole::Conjunction,
-                        forms: additive_connector()?,
-                    });
-                }
-                tokens.extend(suffix.tokens.clone());
-                next.push(CardinalPhraseAnalysis { tokens });
-            }
-        }
-        combined = next;
-    }
-    Ok(combined)
-}
-
-fn lower_cardinal_analyses(
-    value: u8,
-    case: Case,
-    gender: Option<Gender>,
-    one_identity: CardinalNumeralIdentity,
-) -> Result<Vec<CardinalPhraseAnalysis>, InflectionError> {
-    match value {
-        1..=9 => Ok(vec![CardinalPhraseAnalysis {
-            tokens: vec![numeral_token(digit_component(
-                value,
-                one_identity,
-                case,
-                gender,
-            )?)],
-        }]),
-        10 => Ok(vec![CardinalPhraseAnalysis {
-            tokens: vec![numeral_token(reviewed_cardinal_numeral(
-                CardinalNumeralIdentity::Ten,
-                NumeralCell {
-                    case,
-                    number: Number::Singular,
-                    gender: None,
-                },
-            )?)],
-        }]),
-        11..=19 => {
-            let unit = digit_component(value - 10, one_identity, case, gender)?;
-            Ok(vec![CardinalPhraseAnalysis {
-                tokens: vec![
-                    numeral_token(unit),
-                    PhraseToken {
-                        role: PhraseRole::Preposition,
-                        forms: reviewed_grammar_token(
-                            "на",
-                            RuleId::NumeralCardinalTeen,
-                            "numeral:cardinal:teen:preposition",
-                            COMPOUND_CARDINAL_AUTHORITY,
-                        )?,
-                    },
-                    PhraseToken {
-                        role: PhraseRole::Numeral,
-                        forms: reviewed_grammar_token(
-                            "десѧте",
-                            RuleId::NumeralCardinalTeen,
-                            "numeral:cardinal:teen:invariant-ten",
-                            COMPOUND_CARDINAL_AUTHORITY,
-                        )?,
-                    },
-                ],
-            }])
-        }
-        20..=99 => {
-            let tens_digit = value / 10;
-            let final_digit = value % 10;
-            let mut analyses = tens_analyses(tens_digit, case)?;
-            if final_digit != 0 {
-                let unit = digit_component(final_digit, one_identity, case, gender)?;
-                let connector = additive_connector()?;
-                for analysis in &mut analyses {
-                    analysis.tokens.push(PhraseToken {
-                        role: PhraseRole::Conjunction,
-                        forms: connector.clone(),
-                    });
-                    analysis.tokens.push(numeral_token(unit.clone()));
-                }
-            }
-            Ok(analyses)
-        }
-        _ => Err(InflectionError::InvalidInput {
-            reason: "a lower cardinal chunk must be between one and ninety-nine".to_string(),
-        }),
-    }
-}
-
-fn magnitude_analyses(
-    multiplier: u8,
-    magnitude: CardinalMagnitudeIdentity,
-    case: Case,
-) -> Result<Vec<CardinalPhraseAnalysis>, InflectionError> {
-    let magnitude_number = match multiplier {
-        1 | 5..=9 => Number::Singular,
-        2 => Number::Dual,
-        3 | 4 => Number::Plural,
-        _ => {
-            return Err(InflectionError::InvalidInput {
-                reason: "a magnitude multiplier must be between one and nine".to_string(),
-            });
-        }
-    };
-    let magnitude_case = if multiplier >= 5 {
-        Case::Genitive
-    } else {
-        case
-    };
-    let magnitude_form = reviewed_cardinal_magnitude(
-        magnitude,
-        NumeralCell {
-            case: magnitude_case,
-            number: if multiplier >= 5 {
-                Number::Plural
-            } else {
-                magnitude_number
-            },
-            gender: None,
-        },
-    )?;
-    let tokens = if multiplier == 1 {
-        vec![numeral_token(magnitude_form)]
-    } else {
-        let leading = digit_component(
-            multiplier,
-            CardinalNumeralIdentity::OneYedin,
-            case,
-            (multiplier <= 4).then_some(Gender::Feminine),
-        )?;
-        vec![numeral_token(leading), numeral_token(magnitude_form)]
-    };
-    Ok(vec![CardinalPhraseAnalysis { tokens }])
-}
-
-fn myriad_analyses(
-    case: Case,
-    thousand_identity: CardinalMagnitudeIdentity,
-) -> Result<Vec<CardinalPhraseAnalysis>, InflectionError> {
-    let ten_thousand = CardinalPhraseAnalysis {
-        tokens: vec![
-            numeral_token(reviewed_cardinal_numeral(
-                CardinalNumeralIdentity::Ten,
-                NumeralCell {
-                    case,
-                    number: Number::Singular,
-                    gender: None,
-                },
-            )?),
-            numeral_token(reviewed_cardinal_magnitude(
-                thousand_identity,
-                NumeralCell {
-                    case: Case::Genitive,
-                    number: Number::Plural,
-                    gender: None,
-                },
-            )?),
-        ],
-    };
-    let tma = CardinalPhraseAnalysis {
-        tokens: vec![numeral_token(reviewed_cardinal_magnitude(
-            CardinalMagnitudeIdentity::MyriadTma,
-            NumeralCell {
-                case,
-                number: Number::Singular,
-                gender: None,
-            },
-        )?)],
-    };
-    Ok(vec![ten_thousand, tma])
-}
-
-fn additive_connector() -> Result<FormSet, InflectionError> {
-    reviewed_grammar_token(
-        "и",
-        RuleId::NumeralCardinalAdditive,
-        "numeral:cardinal:additive-connector",
-        COMPOUND_CARDINAL_AUTHORITY,
-    )
-}
-
-fn tens_analyses(
-    multiplier: u8,
-    case: Case,
-) -> Result<Vec<CardinalPhraseAnalysis>, InflectionError> {
-    match multiplier {
-        2 => {
-            let leading = digit_component(
-                2,
-                CardinalNumeralIdentity::OneYedin,
-                case,
-                Some(Gender::Masculine),
-            )?;
-            let ten = reviewed_numeral_variants(
-                CardinalNumeralIdentity::Ten.canonical_lemma(),
-                COMPOUND_CARDINAL_AUTHORITY,
-                format!("numeral:cardinal:tens:twenty:{}", case.abbrev()),
-                old_church_slavonic_core::numeral::decline_counted_ten(case, Number::Dual)?,
-            )?;
-            Ok(vec![CardinalPhraseAnalysis {
-                tokens: vec![numeral_token(leading), numeral_token(ten)],
-            }])
-        }
-        3 | 4 => {
-            let identity = digit_identity(multiplier, CardinalNumeralIdentity::OneYedin)?;
-            let variants =
-                old_church_slavonic_core::numeral::decline_counted_ten(case, Number::Plural)?;
-            if case == Case::Nominative {
-                let mut variants = variants.into_iter();
-                let primary_ten = variants
-                    .next()
-                    .ok_or_else(|| InflectionError::InvalidInput {
-                        reason: "counted ten has no nominative plural form".to_string(),
-                    })?;
-                let primary = CardinalPhraseAnalysis {
-                    tokens: vec![
-                        numeral_token(digit_component(
-                            multiplier,
-                            CardinalNumeralIdentity::OneYedin,
-                            case,
-                            Some(Gender::Masculine),
-                        )?),
-                        numeral_token(reviewed_numeral_variants(
-                            CardinalNumeralIdentity::Ten.canonical_lemma(),
-                            COMPOUND_CARDINAL_AUTHORITY,
-                            format!(
-                                "numeral:cardinal:tens:{multiplier}:{}:primary",
-                                case.abbrev()
-                            ),
-                            vec![primary_ten],
-                        )?),
-                    ],
-                };
-                let mut analyses = vec![primary];
-                if let Some(alternative_ten) = variants.next() {
-                    analyses.push(CardinalPhraseAnalysis {
-                        tokens: vec![
-                            numeral_token(reviewed_cardinal_numeral(
-                                identity,
-                                NumeralCell {
-                                    case,
-                                    number: Number::Plural,
-                                    gender: Some(Gender::Feminine),
-                                },
-                            )?),
-                            numeral_token(reviewed_numeral_variants(
-                                CardinalNumeralIdentity::Ten.canonical_lemma(),
-                                COMPOUND_CARDINAL_AUTHORITY,
-                                format!(
-                                    "numeral:cardinal:tens:{multiplier}:{}:alternative",
-                                    case.abbrev()
-                                ),
-                                vec![alternative_ten],
-                            )?),
-                        ],
-                    });
-                }
-                Ok(analyses)
-            } else {
-                let leading = reviewed_cardinal_numeral(
-                    identity,
-                    NumeralCell {
-                        case,
-                        number: Number::Plural,
-                        gender: Some(Gender::Masculine),
-                    },
-                )?;
-                let ten = reviewed_numeral_variants(
-                    CardinalNumeralIdentity::Ten.canonical_lemma(),
-                    COMPOUND_CARDINAL_AUTHORITY,
-                    format!("numeral:cardinal:tens:{multiplier}:{}", case.abbrev()),
-                    variants,
-                )?;
-                Ok(vec![CardinalPhraseAnalysis {
-                    tokens: vec![numeral_token(leading), numeral_token(ten)],
-                }])
-            }
-        }
-        5..=9 => {
-            let leading =
-                digit_component(multiplier, CardinalNumeralIdentity::OneYedin, case, None)?;
-            let ten = reviewed_grammar_token(
-                "десѧтъ",
-                RuleId::NumeralCardinalTens,
-                "numeral:cardinal:tens:invariant-genitive-plural-ten",
-                COMPOUND_CARDINAL_AUTHORITY,
-            )?;
-            Ok(vec![CardinalPhraseAnalysis {
-                tokens: vec![numeral_token(leading), numeral_token(ten)],
-            }])
-        }
-        _ => Err(InflectionError::InvalidInput {
-            reason: "a decimal tens multiplier must be between two and nine".to_string(),
-        }),
-    }
-}
-
-fn digit_component(
-    digit: u8,
-    one_identity: CardinalNumeralIdentity,
-    case: Case,
-    gender: Option<Gender>,
-) -> Result<FormSet, InflectionError> {
-    let identity = digit_identity(digit, one_identity)?;
-    let number = match identity.government() {
-        NumeralGovernment::Agreement { number } => number,
-        NumeralGovernment::GenitivePlural => Number::Singular,
-    };
-    reviewed_cardinal_numeral(
-        identity,
-        NumeralCell {
-            case,
-            number,
-            gender,
-        },
-    )
-}
-
-fn digit_identity(
-    digit: u8,
-    one_identity: CardinalNumeralIdentity,
-) -> Result<CardinalNumeralIdentity, InflectionError> {
-    match digit {
-        1 => Ok(one_identity),
-        2 => Ok(CardinalNumeralIdentity::TwoDva),
-        3 => Ok(CardinalNumeralIdentity::Three),
-        4 => Ok(CardinalNumeralIdentity::Four),
-        5 => Ok(CardinalNumeralIdentity::Five),
-        6 => Ok(CardinalNumeralIdentity::Six),
-        7 => Ok(CardinalNumeralIdentity::Seven),
-        8 => Ok(CardinalNumeralIdentity::Eight),
-        9 => Ok(CardinalNumeralIdentity::Nine),
-        _ => Err(InflectionError::InvalidInput {
-            reason: "a compound-cardinal digit must be between one and nine".to_string(),
-        }),
-    }
-}
-
 fn numeral_token(forms: FormSet) -> PhraseToken {
     PhraseToken {
         role: PhraseRole::Numeral,
         forms,
-    }
-}
-
-fn compound_cardinal_cell_error(value: u16, cell: CompoundCardinalCell) -> InflectionError {
-    InflectionError::historically_invalid(
-        value.to_string(),
-        RequestedCell::CompoundCardinal { value, cell },
-    )
-}
-
-fn distributive_cardinal_cell_error(value: u16, cell: DistributiveCardinalCell) -> InflectionError {
-    InflectionError::historically_invalid(
-        value.to_string(),
-        RequestedCell::DistributiveCardinal { value, cell },
-    )
-}
-
-fn remap_distributive_cardinal_error(
-    error: InflectionError,
-    value: u16,
-    cell: DistributiveCardinalCell,
-) -> InflectionError {
-    match error {
-        InflectionError::HistoricallyInvalidCell { .. }
-        | InflectionError::UnsupportedCell { .. } => distributive_cardinal_cell_error(value, cell),
-        other => other,
-    }
-}
-
-fn remap_compound_cardinal_error(
-    error: InflectionError,
-    value: u16,
-    cell: CompoundCardinalCell,
-) -> InflectionError {
-    match error {
-        InflectionError::HistoricallyInvalidCell { .. }
-        | InflectionError::UnsupportedCell { .. } => compound_cardinal_cell_error(value, cell),
-        other => other,
     }
 }
 
@@ -2867,33 +2232,7 @@ pub(crate) fn reviewed_grammar_token(
     source_feature: &str,
     authority: &'static str,
 ) -> Result<FormSet, InflectionError> {
-    let text = orthography::canonical_display(text)?;
-    let form = FormVariant {
-        text: text.clone(),
-        romanization: None,
-    };
-    let source = FormSource::ReviewedGrammarTable { rule_id };
-    Ok(FormSet::new(
-        text.clone(),
-        form.clone(),
-        Vec::new(),
-        source.clone(),
-        Vec::new(),
-        Vec::new(),
-        vec![FormAnalysis {
-            variants: vec![form],
-            source,
-            evidence: vec![MetadataEvidence {
-                field: None,
-                provenance: MetadataProvenance::ReviewedGrammarTable,
-                source_feature: Some(source_feature.to_string()),
-                source_form: Some(text),
-                crosscheck_features: Vec::new(),
-                authority: Some(authority.to_string()),
-            }],
-            trace: Vec::new(),
-        }],
-    ))
+    old_church_slavonic_core::numeral::grammar_token(text, rule_id, source_feature, authority)
 }
 
 /// Resolve one independently reviewed suppletive copular series without
