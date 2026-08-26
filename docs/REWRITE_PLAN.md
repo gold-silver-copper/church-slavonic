@@ -98,6 +98,19 @@ Hard rules for the target:
   served with rank-merged variant lists; the english-style numeric-suffix
   scheme remains open.
 
+- 2026-08-26 — Pilot facade COMPLETE across every attested POS: nouns
+  (41,370 merged cells), adjectives (39,204; animacy proven vacuous and
+  dropped from the API), verbs (13,100; 53% from rules), pronouns (1,341),
+  numerals (126), determiners (36) — all at 100% of the attested oracle
+  via `cargo xtask rewrite-pilot-accuracy`, from ~1.18 MB of generated
+  sorted-slice tables versus the 24 MB registry. Within the ≤2 MB facade
+  data budget. Open items for the full phase 3/4: shrink the verb residue
+  by widening principal-part metadata coverage; replace the pilot's
+  temporary dependency on the old-church-slavonic resolver crate (closed-
+  class identity kernels should move into a core crate); decide the
+  homograph story (currently rank-merged variants, not numeric suffixes);
+  then port the dictionary/analyze layer and cut the deprecation release.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
