@@ -1,6 +1,6 @@
 # Rewrite plan: one kernel, small API, rules first
 
-Status: proposed (2026-08-25). Executable against this repository as it stands
+Status: executed (2026-08-25/26; see the execution log). Executable against this repository as it stands
 after v0.14 phase 1. Each phase is independently landable and leaves the
 workspace green (`cargo test --workspace` passes at every merge point).
 
@@ -214,6 +214,15 @@ Hard rules for the target:
   publication of the new crates and the deprecation release of the old
   names (requires the maintainer's registry credentials and is the
   irreversible public-claim step), then the old-family deletion.
+
+- 2026-08-26 — PLAN COMPLETE. The release train shipped to crates.io in
+  dependency order (ten crates; one broken dictionary tarball caught by
+  standalone verification, republished as 0.5.1 and 0.5.0 yanked), CI's
+  publish dry-run gate restored to the full list, and the superseded
+  old-church-slavonic facade and dictionary crates deleted from the
+  workspace with xtask's transition scaffolding — the attested-oracle,
+  self-consistency, and dictionary gates carry the guarantees forward.
+  Tagged v1.0.0-alpha.
 
 ## Phase 0 — Freeze and measure (half a day)
 

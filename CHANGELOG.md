@@ -29,7 +29,14 @@
 
 ### Deprecated
 - The `old-church-slavonic*` surface is mapped item-by-item onto the new
-  facade in `docs/DEPRECATION_MAP.md` (replaced / planned / dropped).
+  facade in `docs/DEPRECATION_MAP.md` (replaced / planned / dropped). The
+  deprecation release shipped to crates.io (`old-church-slavonic` 0.6.0,
+  `old-church-slavonic-dictionary` 0.3.0, succession notices included) and
+  both crates then left the workspace; `church-slavonic` 0.2.0 and
+  `church-slavonic-dictionary` 0.1.0 are the OCS entry points. The full
+  release train also published `church-slavonic-core` 0.2.0,
+  `church-slavonic-orthography` 0.1.0, `old-church-slavonic-core` 0.5.0,
+  and the three synodal crates at 0.5.x.
 
 ## Unreleased (the v0.12 program)
 
