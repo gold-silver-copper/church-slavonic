@@ -204,6 +204,15 @@ Hard rules for the target:
   after that release), pushing, and the synodal one-override-precedence
   semantic change (an API-behavior decision for the surviving Inflector).
 
+- 2026-08-26 — The one-override-precedence hard rule landed for the
+  synodal family: resolve_cell is merged-irregular-table -> typed defects
+  -> rule kernel; provider-exact and caller-irregular channels removed
+  from the public API; registry overrides folded into the generated exact
+  table as provenance stamps; homonymy allowlist reclassified as an
+  identity license. All behavioral gates identical. Remaining blockers are
+  exclusively outward-facing: the crates.io deprecation release, the old-
+  family deletion sequenced behind it, and pushing.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
