@@ -75,6 +75,7 @@ name = "church-slavonic"
 version = "0.1.0"
 dependencies = [
  "church-slavonic-core",
+ "old-church-slavonic",
  "old-church-slavonic-core",
 ]
 

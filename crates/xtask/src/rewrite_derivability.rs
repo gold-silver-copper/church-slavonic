@@ -10,17 +10,15 @@
 
 use old_church_slavonic::advanced::metadata as api_metadata;
 use old_church_slavonic::advanced::rules;
-use old_church_slavonic::{FormSet, phrases};
+use old_church_slavonic::FormSet;
 use old_church_slavonic_core::adjective::{AdjectiveLexeme, LongOnlyAdjectiveIdentity};
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, AnaphoricEnvironment, Animacy,
-    CardinalNumeralIdentity, Case, Gender, InterrogativePronounIdentity, IrregularAgreeingIdentity,
-    IrregularVerbFamilyMember, NounCell, NounClass, Number, OrdinalNumeralIdentity, PartOfSpeech,
-    ParticipleCell, Person, PersonalPronounIdentity, PronominalFamilySpec, PronominalPrefix,
-    PronounFormSelection, StandardPronominalIdentity, TwofoldNounFamilyMember,
-    UniqueNounFamilyMember, UniqueVerbFamilyMember, VerbClass, orthography,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, Gender,
+    IrregularVerbFamilyMember, NounCell, NounClass, Number, PartOfSpeech, ParticipleCell,
+    TwofoldNounFamilyMember, UniqueNounFamilyMember, UniqueVerbFamilyMember, VerbClass,
+    orthography,
 };
 use old_church_slavonic_extractor::extract::load_registry;
 use old_church_slavonic_extractor::schema::{FormRow, LexemeRow};
@@ -531,170 +529,15 @@ fn predict_closed_class(lexeme: &LexemeRow, feature: &str) -> (Option<Vec<String
             return (None, category);
         }
     }
-    let predicted =
-        closed_class_kernel_prediction(&lexeme.lemma, part_of_speech, case, number, gender, person);
+    let predicted = church_slavonic::kernel_closed_variants(
+        &lexeme.lemma,
+        part_of_speech,
+        case,
+        number,
+        gender,
+        person,
+    );
     (predicted, category)
-}
-
-fn closed_class_kernel_prediction(
-    lemma: &str,
-    part_of_speech: PartOfSpeech,
-    case: Case,
-    number: Number,
-    gender: Option<Gender>,
-    person: Option<Person>,
-) -> Option<Vec<String>> {
-    // Regular class `2/p` identities span all three closed parts of speech.
-    if let Some(identity) = StandardPronominalIdentity::classify_source_union_lemma(lemma)
-        .filter(|identity| identity.part_of_speech() == part_of_speech)
-    {
-        let (None, Some(gender)) = (person, gender) else {
-            return None;
-        };
-        return form_set_prediction(old_church_slavonic::regular_pronominal(
-            identity, case, number, gender,
-        ));
-    }
-    match part_of_speech {
-        PartOfSpeech::Pronoun => {
-            if let Some(identity) = PersonalPronounIdentity::classify_source_union_lemma(lemma) {
-                let result = match identity {
-                    PersonalPronounIdentity::First | PersonalPronounIdentity::Second => {
-                        match (person, gender, identity.person()) {
-                            (Some(requested), None, Some(intrinsic)) if requested == intrinsic => {
-                                old_church_slavonic::personal_pronoun_with(
-                                    identity,
-                                    case,
-                                    number,
-                                    PronounFormSelection::All,
-                                )
-                            }
-                            _ => return None,
-                        }
-                    }
-                    PersonalPronounIdentity::Reflexive => {
-                        if person.is_none() && gender.is_none() {
-                            old_church_slavonic::reflexive_pronoun(case, PronounFormSelection::All)
-                        } else {
-                            return None;
-                        }
-                    }
-                    PersonalPronounIdentity::AnaphoricThird => match (person, gender) {
-                        (None, Some(gender)) => old_church_slavonic::anaphoric_pronoun(
-                            case,
-                            number,
-                            gender,
-                            AnaphoricEnvironment::Free,
-                        ),
-                        _ => return None,
-                    },
-                };
-                return form_set_prediction(result);
-            }
-            match lemma {
-                "иже" => {
-                    let (None, Some(gender)) = (person, gender) else {
-                        return None;
-                    };
-                    form_set_prediction(old_church_slavonic::relative_pronoun(
-                        case,
-                        number,
-                        gender,
-                        AnaphoricEnvironment::Free,
-                    ))
-                }
-                "сь" => {
-                    let (None, Some(gender)) = (person, gender) else {
-                        return None;
-                    };
-                    form_set_prediction(old_church_slavonic::irregular_agreeing(
-                        IrregularAgreeingIdentity::ProximalSi,
-                        case,
-                        number,
-                        gender,
-                    ))
-                }
-                "къто" | "чьто" | "никъто" => {
-                    if person.is_some() || gender.is_some() {
-                        return None;
-                    }
-                    let identity = if lemma == "чьто" {
-                        InterrogativePronounIdentity::Chto
-                    } else {
-                        InterrogativePronounIdentity::Kto
-                    };
-                    let base = old_church_slavonic::interrogative_pronoun(identity, case).ok()?;
-                    if lemma == "никъто" {
-                        let phrase = phrases::pronominal_family_with(
-                            base,
-                            case,
-                            PronominalFamilySpec {
-                                prefix: Some(PronominalPrefix::Ni),
-                                ..PronominalFamilySpec::default()
-                            },
-                        )
-                        .ok()?;
-                        let [token] = phrase.tokens() else {
-                            return None;
-                        };
-                        form_set_prediction(Ok(token.forms.clone()))
-                    } else {
-                        form_set_prediction(Ok(base))
-                    }
-                }
-                _ => None,
-            }
-        }
-        PartOfSpeech::Determiner => {
-            if lemma == "кꙑи" {
-                let (None, Some(gender)) = (person, gender) else {
-                    return None;
-                };
-                form_set_prediction(old_church_slavonic::irregular_agreeing(
-                    IrregularAgreeingIdentity::InterrogativeKyi,
-                    case,
-                    number,
-                    gender,
-                ))
-            } else {
-                None
-            }
-        }
-        PartOfSpeech::Numeral => {
-            if person.is_some() {
-                return None;
-            }
-            if let Some(identity) = CardinalNumeralIdentity::classify_source_union_lemma(lemma) {
-                return form_set_prediction(old_church_slavonic::cardinal_numeral_identity(
-                    identity, case, number, gender,
-                ));
-            }
-            // Ordinal registry cells merge the short and long adjectival
-            // series into one gendered cell; both come from the reviewed
-            // ordinal kernel.
-            let identity = OrdinalNumeralIdentity::classify_source_union_lemma(lemma)?;
-            let gender = gender?;
-            let mut texts: Vec<String> = Vec::new();
-            for form in [AdjectiveForm::Short, AdjectiveForm::Long] {
-                let set = old_church_slavonic::ordinal_numeral_identity(
-                    identity,
-                    form,
-                    case,
-                    number,
-                    gender,
-                    Animacy::Inanimate,
-                )
-                .ok()?;
-                for text in set.texts() {
-                    if !texts.iter().any(|t| t == text) {
-                        texts.push(text.to_string());
-                    }
-                }
-            }
-            (!texts.is_empty()).then_some(texts)
-        }
-        _ => None,
-    }
 }
 
 fn single_prediction(

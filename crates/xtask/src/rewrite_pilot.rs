@@ -13,16 +13,17 @@
 //! occurrence wins on duplicate surface forms).
 
 use church_slavonic::{
-    NounMeta, VerbCell, VerbMeta, adjective_cell_code, cell_code, kernel_noun_variants,
-    kernel_verb_variants, verb_cell_code,
+    NounMeta, VerbCell, VerbMeta, adjective_cell_code, cell_code, closed_cell_code,
+    kernel_closed_variants, kernel_noun_variants, kernel_verb_variants, verb_cell_code,
 };
 use old_church_slavonic::advanced::metadata as api_metadata;
 use old_church_slavonic_core::{
     AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, FiniteTense, FiniteVerbCell,
     Gender, ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
-    LParticipleCell, Number, NumberRestriction, ParticipleKind, PastActiveParticipleFormation,
-    PastPassiveParticipleFormation, Person, PresentActiveParticipleFormation, PresentFormation,
-    PresentPassiveParticipleFormation, VerbAspect, VerbClass,
+    LParticipleCell, Number, NumberRestriction, PartOfSpeech, ParticipleKind,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation, Person,
+    PresentActiveParticipleFormation, PresentFormation, PresentPassiveParticipleFormation,
+    VerbAspect, VerbClass,
 };
 use old_church_slavonic_extractor::extract::load_registry;
 use std::collections::BTreeMap;
@@ -981,7 +982,184 @@ fn emit_verb_residue(root: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Closed-class (pron/num/det) oracle at lemma granularity. Every lemma has
+/// exactly one lexeme entry, so no homograph merge arises; cells still go
+/// through the same rank-stable dedupe as the other POS.
+struct ClosedOracle {
+    /// lemma -> (pos code: 1 pron / 2 num / 3 det, shape flags: 1 bare /
+    /// 2 gendered / 4 person-indexed cells attested).
+    meta: BTreeMap<String, (u8, u8)>,
+    /// (lemma, closed cell code) -> variant list in rank order.
+    cells: BTreeMap<(String, u8), Vec<String>>,
+}
+
+fn closed_pos_code(pos: &str) -> Option<u8> {
+    match pos {
+        "pron" => Some(1),
+        "num" => Some(2),
+        "det" => Some(3),
+        _ => None,
+    }
+}
+
+fn closed_pos_from_code(code: u8) -> PartOfSpeech {
+    match code {
+        1 => PartOfSpeech::Pronoun,
+        2 => PartOfSpeech::Numeral,
+        _ => PartOfSpeech::Determiner,
+    }
+}
+
+/// Decode a closed cell code back into its typed dimensions (inverse of the
+/// facade's `closed_cell_code`).
+fn closed_cell_from_code(code: u8) -> (Case, Number, Option<Gender>, Option<Person>) {
+    let (case, number) = cell_from_code(code / 6);
+    let (gender, person) = match code % 6 {
+        0 => (None, None),
+        1 => (Some(Gender::Masculine), None),
+        2 => (Some(Gender::Feminine), None),
+        3 => (Some(Gender::Neuter), None),
+        4 => (None, Some(Person::First)),
+        _ => (None, Some(Person::Second)),
+    };
+    (case, number, gender, person)
+}
+
+fn load_closed_oracle(root: &Path) -> Result<ClosedOracle, Box<dyn Error>> {
+    let registry = load_registry(&root.join("data/extracted"))?;
+    let mut meta: BTreeMap<String, (u8, u8)> = BTreeMap::new();
+    let mut lemma_by_id: BTreeMap<&str, &str> = BTreeMap::new();
+    for lexeme in &registry.lexemes {
+        let Some(pos) = closed_pos_code(&lexeme.pos) else {
+            continue;
+        };
+        lemma_by_id.insert(&lexeme.id, &lexeme.lemma);
+        let previous = meta.insert(lexeme.lemma.clone(), (pos, 0));
+        if let Some((previous_pos, _)) = previous {
+            if previous_pos != pos {
+                return Err(format!(
+                    "closed-class lemma {} attested under two parts of speech",
+                    lexeme.lemma
+                )
+                .into());
+            }
+        }
+    }
+    let mut rows: BTreeMap<(String, u8), Vec<(u16, String)>> = BTreeMap::new();
+    for row in &registry.forms {
+        let Some(lemma) = lemma_by_id.get(row.lexeme_id.as_str()) else {
+            continue;
+        };
+        let parts: Vec<&str> = row.feature.split(':').collect();
+        let ["decl", _, case, number, rest @ ..] = parts.as_slice() else {
+            return Err(format!("unparsed closed-class feature {}", row.feature).into());
+        };
+        let (Some(case), Some(number)) = (crate::parse_case(case), crate::parse_number(number))
+        else {
+            return Err(format!("unparsed closed-class feature {}", row.feature).into());
+        };
+        let mut gender = None;
+        let mut person = None;
+        for value in rest.iter().copied() {
+            if let Some(value) = crate::parse_gender_code(value) {
+                gender = Some(value);
+            } else if let Some(value) = crate::parse_person(value) {
+                person = Some(value);
+            } else {
+                return Err(format!("unparsed closed-class feature {}", row.feature).into());
+            }
+        }
+        let Some(code) = closed_cell_code(case, number, gender, person) else {
+            return Err(format!("unencodable closed-class feature {}", row.feature).into());
+        };
+        let shape = match (gender, person) {
+            (None, None) => 1u8,
+            (Some(_), None) => 2,
+            _ => 4,
+        };
+        meta.get_mut(*lemma).expect("lexeme meta").1 |= shape;
+        rows.entry(((*lemma).to_string(), code))
+            .or_default()
+            .push((row.rank, row.form.clone()));
+    }
+    let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
+    for ((lemma, code), mut ranked) in rows {
+        ranked.sort_by_key(|(rank, _)| *rank);
+        let mut texts: Vec<String> = Vec::new();
+        for (_, form) in ranked {
+            if !texts.contains(&form) {
+                texts.push(form);
+            }
+        }
+        cells.insert((lemma, code), texts);
+    }
+    Ok(ClosedOracle { meta, cells })
+}
+
+fn emit_closed_residue(root: &Path) -> Result<(), Box<dyn Error>> {
+    let oracle = load_closed_oracle(root)?;
+    let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
+    for ((lemma, code), expected) in &oracle.cells {
+        let (case, number, gender, person) = closed_cell_from_code(*code);
+        let pos = closed_pos_from_code(oracle.meta[lemma].0);
+        let predicted = kernel_closed_variants(lemma, pos, case, number, gender, person);
+        if predicted.as_deref() != Some(expected.as_slice()) {
+            residue.push((lemma, *code, expected));
+        }
+    }
+    let mut out = String::new();
+    out.push_str(
+        "// @generated by `cargo xtask rewrite-derivability --emit-residue`. Do not edit.\n\
+         //\n\
+         // CLOSED_META: (lemma, pos code 1 pron / 2 num / 3 det, shape flags 1 bare /\n\
+         // 2 gendered / 4 person-indexed) for every closed-class lemma in\n\
+         // data/extracted. CLOSED_RESIDUE: (lemma, closed cell code, variants) for\n\
+         // exactly the attested cells the identity-kernel dispatch does not\n\
+         // reproduce verbatim (the duplicated personal-pronoun tables under\n\
+         // possessive and non-canonical personal lemmas, `етеръ`, `Єѵрѡпа`, and any\n\
+         // kernel divergences). Both slices are sorted for binary search; see\n\
+         // church-slavonic/src/lib.rs for the cell code layout.\n",
+    );
+    let _ = writeln!(
+        out,
+        "pub static CLOSED_META: &[(&str, u8, u8)] = &[ // {} lemmas",
+        oracle.meta.len()
+    );
+    for (lemma, (pos, shape)) in &oracle.meta {
+        let _ = writeln!(out, "    ({lemma:?}, {pos}, {shape}),");
+    }
+    out.push_str("];\n");
+    let _ = writeln!(
+        out,
+        "pub static CLOSED_RESIDUE: &[(&str, u8, &[&str])] = &[ // {} cells",
+        residue.len()
+    );
+    for (lemma, code, variants) in &residue {
+        let _ = write!(out, "    ({lemma:?}, {code}, &[");
+        for (index, variant) in variants.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            let _ = write!(out, "{variant:?}");
+        }
+        out.push_str("]),\n");
+    }
+    out.push_str("];\n");
+    let path = root.join("crates/church-slavonic/generated/closed_residue.rs");
+    fs::write(&path, &out)?;
+    println!(
+        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} cells)",
+        path.display(),
+        out.len(),
+        oracle.meta.len(),
+        residue.len(),
+        oracle.cells.len(),
+    );
+    Ok(())
+}
+
 pub(crate) fn emit_residue(root: &Path) -> Result<(), Box<dyn Error>> {
+    emit_closed_residue(root)?;
     emit_verb_residue(root)?;
     emit_adjective_residue(root)?;
     let oracle = load_noun_oracle(root)?;
@@ -1229,6 +1407,98 @@ pub(crate) fn accuracy(
         return Err(
             format!("verb pilot accuracy {verb_matched}/{verb_total}, expected 100%").into(),
         );
+    }
+
+    let closed = load_closed_oracle(root)?;
+    // Per POS: (matched, total, kernel-served cells).
+    let mut closed_counts: BTreeMap<&str, (usize, usize, usize)> = BTreeMap::new();
+    let mut closed_mismatches: Vec<String> = Vec::new();
+    for ((lemma, code), expected) in &closed.cells {
+        let (pos_code, _shape) = closed.meta[lemma];
+        let pos_name = match pos_code {
+            1 => "pron",
+            2 => "num",
+            _ => "det",
+        };
+        let counts = closed_counts.entry(pos_name).or_default();
+        counts.1 += 1;
+        let (case, number, gender, person) = closed_cell_from_code(*code);
+        let pos = closed_pos_from_code(pos_code);
+        // The rules-vs-residue split: a cell is kernel-served exactly when
+        // the shared identity-kernel dispatch reproduces the stored list
+        // (the emitter's criterion).
+        if kernel_closed_variants(lemma, pos, case, number, gender, person).as_deref()
+            == Some(expected.as_slice())
+        {
+            counts.2 += 1;
+        }
+        // Lemma-keyed resolution (residue table -> identity kernels), the
+        // path every public wrapper goes through.
+        let lemma_route = church_slavonic::closed_variants(lemma, pos, case, number, gender, person);
+        // Public API route for this cell's shape.
+        let public_route = match (pos_code, gender, person) {
+            (1, None, Some(person)) => church_slavonic::pronoun_variants(person, number, case),
+            (1, None, None) if lemma == "сѧ" => church_slavonic::reflexive_variants(case),
+            (1, Some(gender), None) => {
+                church_slavonic::pronoun_form_variants(lemma, case, number, gender)
+            }
+            (1, None, None) => {
+                church_slavonic::pronoun_form_variants(lemma, case, number, Gender::Masculine)
+            }
+            (2, gender, None) => church_slavonic::numeral_form_variants(
+                lemma,
+                case,
+                number,
+                gender.unwrap_or(Gender::Masculine),
+            ),
+            (3, gender, None) => church_slavonic::determiner_form_variants(
+                lemma,
+                case,
+                number,
+                gender.unwrap_or(Gender::Masculine),
+            ),
+            _ => Err(church_slavonic::Error::Underdetermined {
+                lemma: lemma.to_string(),
+            }),
+        };
+        let lemma_ok = lemma_route.as_ref().map(Vec::as_slice) == Ok(expected.as_slice());
+        let public_ok = public_route.as_ref().map(Vec::as_slice) == Ok(expected.as_slice());
+        if lemma_ok && public_ok {
+            counts.0 += 1;
+        } else if closed_mismatches.len() < 20 {
+            closed_mismatches.push(format!(
+                "{lemma} cell {code}: stored {expected:?} vs lemma-keyed {lemma_route:?} / \
+                 public {public_route:?}"
+            ));
+        }
+    }
+    let closed_generated = root.join("crates/church-slavonic/generated/closed_residue.rs");
+    let closed_bytes = fs::metadata(&closed_generated)?.len();
+    println!(
+        "rewrite pilot accuracy (closed classes, lemma-keyed oracle; both the lemma-keyed \
+         resolution and the public API route must match)"
+    );
+    for (pos_name, (matched, total, kernel_cells)) in &closed_counts {
+        println!(
+            "  {pos_name}: merged cells matched: {matched}/{total} (rules-vs-residue split: \
+             {kernel_cells} cells from the identity kernels, {} from the residue table)",
+            total - kernel_cells
+        );
+    }
+    println!(
+        "  generated table size: {closed_bytes} bytes ({path})",
+        path = closed_generated.display()
+    );
+    for line in &closed_mismatches {
+        println!("  MISMATCH {line}");
+    }
+    for (pos_name, (matched, total, _)) in &closed_counts {
+        if matched != total {
+            return Err(format!(
+                "{pos_name} pilot accuracy {matched}/{total}, expected 100%"
+            )
+            .into());
+        }
     }
     Ok(())
 }

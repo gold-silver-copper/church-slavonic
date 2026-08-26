@@ -87,19 +87,82 @@
 //! `съпасти` — transitive/intransitive or lexical doublets sharing a
 //! citation) are served with rank-merged variant lists, first lexeme's
 //! metadata winning.
+//!
+//! # Closed classes (pronouns, numerals, determiners)
+//!
+//! The remaining attested parts of speech are closed inventories (29 pronoun
+//! lexemes, 8 numeral lexemes, 1 determiner). Resolution precedence mirrors
+//! the open classes: the generated residue table
+//! (`generated/closed_residue.rs`) first, then the shared closed-class
+//! identity-kernel dispatch ([`kernel_closed_variants`], the same
+//! `#[doc(hidden)]` helper the derivability harness replays), which routes
+//! each lemma to the reviewed Rust-encoded paradigms (personal/reflexive/
+//! anaphoric pronouns, standard pronominal declension, `иже`, `сь`, `кꙑи`,
+//! interrogatives, cardinal and ordinal numeral identities).
+//!
+//! The attested cells come in exactly three key shapes, and the API follows
+//! them honestly:
+//!
+//! - **Person-indexed cells** (`decl:pron:<case>:<number>:<1|2>`). The
+//!   extracted inventory duplicates one and the same personal-pronoun table
+//!   (both persons, all numbers) under thirteen lemmas: the personal lemmas
+//!   themselves (`азъ`, `тꙑ`, `мꙑ`, `вꙑ`, `вѣ`, `ва`, `наю`, `ваю`) and the
+//!   five possessives (`мои`, `твои`, `свои`, `нашь`, `вашь`). Every
+//!   duplicate is byte-identical per (person, number, case) key (the
+//!   accuracy gate proves this cell by cell), so the attested personal cells
+//!   are exactly person x number x case, and OCS has no gendered 1st/2nd
+//!   person: [`pronoun`]`(person, number, case)` is the whole surface. It is
+//!   served under the canonical lemmas `азъ` (first person) and `тꙑ`
+//!   (second); the duplicated tables under the other eleven lemmas are the
+//!   cells the kernels cannot serve (the kernel's intrinsic-person guard
+//!   refuses a second-person request against `азъ`, and refuses possessive
+//!   lemmas outright), so they ship in the residue table verbatim, keyed by
+//!   their own lemma, and stay reachable through the lemma-keyed gate path.
+//!   [`Person::Third`] is not a personal-pronoun value in this inventory
+//!   (the third person is the gendered anaphoric series) and returns
+//!   [`Error::Underdetermined`].
+//! - **Gender-indexed cells** (`decl:pron:<case>:<number>:<m|f|n>`). All
+//!   lexically identified: the anaphoric family (`и`, `ѥ`, `ѭ`, `ими` — four
+//!   spellings of one identical table), the demonstrative family (`онъ`,
+//!   `она`, `оно` — likewise one table), `тъ`, `иже`, `сь`, `вьсѣкъ`, the
+//!   gendered halves of the possessives, the ordinal `прьвъ`, and the
+//!   determiner `кꙑи`. Served by [`pronoun_form`] / [`numeral_form`] /
+//!   [`determiner_form`]`(lemma, case, number, gender)`, where gender is a
+//!   key dimension (must-match). [`anaphoric`]`(case, number, gender)` is
+//!   the person-free third-person entry point, canonicalized to lemma `и`.
+//! - **Bare cells** (`decl:<pos>:<case>:<number>`). The reflexive `сѧ`
+//!   (whose attested number dimension is fully degenerate — the singular,
+//!   dual, and plural rows are identical, and the accuracy gate replays all
+//!   fifteen cells through the numberless [`reflexive`]`(case)`), the
+//!   genderless interrogatives `къто`/`чьто`/`никъто`, the indefinite
+//!   `етеръ`, and the non-ordinal numerals (`пѧть` … `десѧть`, plus the
+//!   mistagged proper noun `Єѵрѡпа` the source data files under `num`).
+//!   These lexemes' cells lack a gender dimension, so the `gender` parameter
+//!   of the `*_form` functions is **ignored** for them (documented rather
+//!   than must-match: the request cannot fail on a distinction the data does
+//!   not draw).
+//!
+//! A lemma whose only attested cells are the shared person-indexed table
+//! (`азъ`, `ва`, `наю`, `вашь`, …) has no case x number (x gender) table of
+//! its own, so [`pronoun_form`] returns [`Error::Underdetermined`] for it;
+//! its cells are served by [`pronoun`]. `етеръ` (no reviewed kernel) and
+//! `Єѵрѡпа` are served entirely from the residue table verbatim.
 
+use old_church_slavonic::{FormSet, phrases};
 use old_church_slavonic_core::adjective::AdjectiveLexeme;
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::unique_noun::UniqueNounFamilyMember;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, FiniteTense,
-    FiniteVerbCell, ImperativeCell, ImperativeFormation, ImperfectFormation,
-    ImperfectVariantPolicy, IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass,
-    NumberRestriction, ParticipleCell, ParticipleKind, PastActiveParticipleFormation,
-    PastPassiveParticipleFormation, PresentActiveParticipleFormation, PresentFormation,
-    PresentPassiveParticipleFormation, TwofoldNounFamilyMember, UniqueVerbFamilyMember, VerbAspect,
-    VerbClass, orthography,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, AnaphoricEnvironment, Animacy, AoristFormation,
+    CardinalNumeralIdentity, FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation,
+    ImperfectFormation, ImperfectVariantPolicy, InterrogativePronounIdentity,
+    IrregularAgreeingIdentity, IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass,
+    NumberRestriction, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell, ParticipleKind,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation, PersonalPronounIdentity,
+    PresentActiveParticipleFormation, PresentFormation, PresentPassiveParticipleFormation,
+    PronominalFamilySpec, PronominalPrefix, PronounFormSelection, StandardPronominalIdentity,
+    TwofoldNounFamilyMember, UniqueVerbFamilyMember, VerbAspect, VerbClass, orthography,
 };
 
 pub use church_slavonic_core::grammar::{Case, Gender, Number, Person};
@@ -116,6 +179,10 @@ mod generated {
     include!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/generated/verb_residue.rs"
+    ));
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/generated/closed_residue.rs"
     ));
 }
 
@@ -1036,6 +1103,437 @@ pub fn past_passive_participle(lemma: &str) -> Result<String, Error> {
     primary(past_passive_participle_variants(lemma)?, lemma)
 }
 
+/// Stable numeric key for one closed-class cell, used by the generated
+/// residue table. `cell_code(case, number) * 6 + dim`, where `dim` encodes
+/// the third attested key dimension: 0 none (bare case x number cell),
+/// 1/2/3 gender m/f/n, 4/5 person 1/2.
+#[doc(hidden)]
+pub fn closed_cell_code(
+    case: Case,
+    number: Number,
+    gender: Option<Gender>,
+    person: Option<Person>,
+) -> Option<u8> {
+    let dim = match (gender, person) {
+        (None, None) => 0u8,
+        (Some(gender), None) => 1 + gender_index(gender),
+        (None, Some(Person::First)) => 4,
+        (None, Some(Person::Second)) => 5,
+        _ => return None,
+    };
+    Some(cell_code(case, number) * 6 + dim)
+}
+
+fn closed_pos_code(pos: PartOfSpeech) -> u8 {
+    match pos {
+        PartOfSpeech::Pronoun => 1,
+        PartOfSpeech::Numeral => 2,
+        _ => 3,
+    }
+}
+
+/// Shape flags for one closed-class lemma's attested cells: bit 1 bare
+/// (case x number) cells, bit 2 gender-indexed cells, bit 4 person-indexed
+/// cells. A lemma may attest several shapes (the possessives are gendered
+/// and person-indexed).
+#[doc(hidden)]
+pub fn closed_meta(lemma: &str) -> Option<(u8, u8)> {
+    generated::CLOSED_META
+        .binary_search_by(|row| row.0.cmp(lemma))
+        .ok()
+        .map(|index| {
+            let row = &generated::CLOSED_META[index];
+            (row.1, row.2)
+        })
+}
+
+fn closed_form_set(
+    result: Result<FormSet, old_church_slavonic::InflectionError>,
+) -> Option<Vec<String>> {
+    let set = result.ok()?;
+    Some(set.variants().map(|variant| variant.text.clone()).collect())
+}
+
+/// Rule-kernel prediction for one closed-class cell: the reviewed identity
+/// kernels (personal/reflexive/anaphoric pronouns, standard pronominal
+/// declension, `иже`/`сь`/`кꙑи`, interrogatives, cardinal and ordinal
+/// numeral identities), keyed by lemma. This is the exact dispatch the
+/// derivability harness replays; cells it cannot serve ship in the residue
+/// table. Returns `None` when no kernel covers the request.
+#[doc(hidden)]
+pub fn kernel_closed_variants(
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+    case: Case,
+    number: Number,
+    gender: Option<Gender>,
+    person: Option<Person>,
+) -> Option<Vec<String>> {
+    // Regular class `2/p` identities span all three closed parts of speech.
+    if let Some(identity) = StandardPronominalIdentity::classify_source_union_lemma(lemma)
+        .filter(|identity| identity.part_of_speech() == part_of_speech)
+    {
+        let (None, Some(gender)) = (person, gender) else {
+            return None;
+        };
+        return closed_form_set(old_church_slavonic::regular_pronominal(
+            identity, case, number, gender,
+        ));
+    }
+    match part_of_speech {
+        PartOfSpeech::Pronoun => {
+            if let Some(identity) = PersonalPronounIdentity::classify_source_union_lemma(lemma) {
+                let result = match identity {
+                    PersonalPronounIdentity::First | PersonalPronounIdentity::Second => {
+                        match (person, gender, identity.person()) {
+                            (Some(requested), None, Some(intrinsic)) if requested == intrinsic => {
+                                old_church_slavonic::personal_pronoun_with(
+                                    identity,
+                                    case,
+                                    number,
+                                    PronounFormSelection::All,
+                                )
+                            }
+                            _ => return None,
+                        }
+                    }
+                    PersonalPronounIdentity::Reflexive => {
+                        if person.is_none() && gender.is_none() {
+                            old_church_slavonic::reflexive_pronoun(case, PronounFormSelection::All)
+                        } else {
+                            return None;
+                        }
+                    }
+                    PersonalPronounIdentity::AnaphoricThird => match (person, gender) {
+                        (None, Some(gender)) => old_church_slavonic::anaphoric_pronoun(
+                            case,
+                            number,
+                            gender,
+                            AnaphoricEnvironment::Free,
+                        ),
+                        _ => return None,
+                    },
+                };
+                return closed_form_set(result);
+            }
+            match lemma {
+                "иже" => {
+                    let (None, Some(gender)) = (person, gender) else {
+                        return None;
+                    };
+                    closed_form_set(old_church_slavonic::relative_pronoun(
+                        case,
+                        number,
+                        gender,
+                        AnaphoricEnvironment::Free,
+                    ))
+                }
+                "сь" => {
+                    let (None, Some(gender)) = (person, gender) else {
+                        return None;
+                    };
+                    closed_form_set(old_church_slavonic::irregular_agreeing(
+                        IrregularAgreeingIdentity::ProximalSi,
+                        case,
+                        number,
+                        gender,
+                    ))
+                }
+                "къто" | "чьто" | "никъто" => {
+                    if person.is_some() || gender.is_some() {
+                        return None;
+                    }
+                    let identity = if lemma == "чьто" {
+                        InterrogativePronounIdentity::Chto
+                    } else {
+                        InterrogativePronounIdentity::Kto
+                    };
+                    let base = old_church_slavonic::interrogative_pronoun(identity, case).ok()?;
+                    if lemma == "никъто" {
+                        let phrase = phrases::pronominal_family_with(
+                            base,
+                            case,
+                            PronominalFamilySpec {
+                                prefix: Some(PronominalPrefix::Ni),
+                                ..PronominalFamilySpec::default()
+                            },
+                        )
+                        .ok()?;
+                        let [token] = phrase.tokens() else {
+                            return None;
+                        };
+                        closed_form_set(Ok(token.forms.clone()))
+                    } else {
+                        closed_form_set(Ok(base))
+                    }
+                }
+                _ => None,
+            }
+        }
+        PartOfSpeech::Determiner => {
+            if lemma == "кꙑи" {
+                let (None, Some(gender)) = (person, gender) else {
+                    return None;
+                };
+                closed_form_set(old_church_slavonic::irregular_agreeing(
+                    IrregularAgreeingIdentity::InterrogativeKyi,
+                    case,
+                    number,
+                    gender,
+                ))
+            } else {
+                None
+            }
+        }
+        PartOfSpeech::Numeral => {
+            if person.is_some() {
+                return None;
+            }
+            if let Some(identity) = CardinalNumeralIdentity::classify_source_union_lemma(lemma) {
+                return closed_form_set(old_church_slavonic::cardinal_numeral_identity(
+                    identity, case, number, gender,
+                ));
+            }
+            // Ordinal registry cells merge the short and long adjectival
+            // series into one gendered cell; both come from the reviewed
+            // ordinal kernel.
+            let identity = OrdinalNumeralIdentity::classify_source_union_lemma(lemma)?;
+            let gender = gender?;
+            let mut texts: Vec<String> = Vec::new();
+            for form in [AdjectiveForm::Short, AdjectiveForm::Long] {
+                let set = old_church_slavonic::ordinal_numeral_identity(
+                    identity,
+                    form,
+                    case,
+                    number,
+                    gender,
+                    Animacy::Inanimate,
+                )
+                .ok()?;
+                for text in set.texts() {
+                    if !texts.iter().any(|t| t == text) {
+                        texts.push(text.to_string());
+                    }
+                }
+            }
+            (!texts.is_empty()).then_some(texts)
+        }
+        _ => None,
+    }
+}
+
+/// Lemma-keyed resolution for one closed-class cell: residue table first,
+/// identity kernels second. The public wrappers and the accuracy gate both
+/// go through this path.
+#[doc(hidden)]
+pub fn closed_variants(
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+    case: Case,
+    number: Number,
+    gender: Option<Gender>,
+    person: Option<Person>,
+) -> Result<Vec<String>, Error> {
+    let code = closed_cell_code(case, number, gender, person).ok_or_else(|| {
+        Error::Underdetermined {
+            lemma: lemma.to_string(),
+        }
+    })?;
+    if let Ok(index) =
+        generated::CLOSED_RESIDUE.binary_search_by(|row| (row.0, row.1).cmp(&(lemma, code)))
+    {
+        return Ok(generated::CLOSED_RESIDUE[index]
+            .2
+            .iter()
+            .map(|text| (*text).to_string())
+            .collect());
+    }
+    closed_meta(lemma)
+        .filter(|(pos, _)| *pos == closed_pos_code(part_of_speech))
+        .ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
+    kernel_closed_variants(lemma, part_of_speech, case, number, gender, person).ok_or_else(|| {
+        Error::Underdetermined {
+            lemma: lemma.to_string(),
+        }
+    })
+}
+
+/// All variants for one personal-pronoun cell, primary first. The attested
+/// personal cells are exactly person x number x case (see the module docs);
+/// they are served under the canonical lemmas `азъ` (first person) and `тꙑ`
+/// (second). [`Person::Third`] is not a personal-pronoun value in this
+/// inventory — the third person is the gendered anaphoric series, served by
+/// [`anaphoric`] — and returns [`Error::Underdetermined`].
+pub fn pronoun_variants(person: Person, number: Number, case: Case) -> Result<Vec<String>, Error> {
+    let lemma = match person {
+        Person::First => "азъ",
+        Person::Second => "тꙑ",
+        Person::Third => {
+            return Err(Error::Underdetermined {
+                lemma: "азъ".to_string(),
+            });
+        }
+    };
+    closed_variants(
+        lemma,
+        PartOfSpeech::Pronoun,
+        case,
+        number,
+        None,
+        Some(person),
+    )
+}
+
+/// The primary surface form for one personal-pronoun cell.
+pub fn pronoun(person: Person, number: Number, case: Case) -> Result<String, Error> {
+    let lemma = if person == Person::First { "азъ" } else { "тꙑ" };
+    primary(pronoun_variants(person, number, case)?, lemma)
+}
+
+/// All variants for one reflexive-pronoun cell, primary first. The reflexive
+/// `сѧ` is numberless: its attested number dimension is fully degenerate
+/// (singular, dual, and plural rows are identical; the accuracy gate replays
+/// all of them through this function), so [`Case`] is the whole key.
+/// Nominative and vocative are historically absent and return
+/// [`Error::Underdetermined`].
+pub fn reflexive_variants(case: Case) -> Result<Vec<String>, Error> {
+    closed_variants(
+        "сѧ",
+        PartOfSpeech::Pronoun,
+        case,
+        Number::Singular,
+        None,
+        None,
+    )
+}
+
+/// The primary surface form for one reflexive-pronoun cell.
+pub fn reflexive(case: Case) -> Result<String, Error> {
+    primary(reflexive_variants(case)?, "сѧ")
+}
+
+/// All variants for one third-person (anaphoric) pronoun cell, primary
+/// first. The oracle keys these cells by gender, not person, so the minimal
+/// signature is case x number x gender; the identical tables the source
+/// duplicates under the spellings `ѥ`, `ѭ`, and `ими` are canonicalized to
+/// lemma `и` here (each spelling also answers through [`pronoun_form`]).
+pub fn anaphoric_variants(
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    closed_variants(
+        "и",
+        PartOfSpeech::Pronoun,
+        case,
+        number,
+        Some(gender),
+        None,
+    )
+}
+
+/// The primary surface form for one third-person (anaphoric) pronoun cell.
+pub fn anaphoric(case: Case, number: Number, gender: Gender) -> Result<String, Error> {
+    primary(anaphoric_variants(case, number, gender)?, "и")
+}
+
+fn lexical_closed_variants(
+    lemma: &str,
+    part_of_speech: PartOfSpeech,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    let (_, shape) = closed_meta(lemma)
+        .filter(|(pos, _)| *pos == closed_pos_code(part_of_speech))
+        .ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
+    // Gender is a key dimension exactly when the lexeme attests
+    // gender-indexed cells; for bare-shaped lexemes it is ignored (the data
+    // draws no such distinction). Person-indexed-only lemmas have no
+    // case x number (x gender) table of their own (see the module docs).
+    let gender = if shape & 2 != 0 {
+        Some(gender)
+    } else if shape & 1 != 0 {
+        None
+    } else {
+        return Err(Error::Underdetermined {
+            lemma: lemma.to_string(),
+        });
+    };
+    closed_variants(lemma, part_of_speech, case, number, gender, None)
+}
+
+/// All variants for one lexically identified pronoun cell, primary first.
+/// For gender-indexed lexemes (`тъ`, `иже`, `сь`, `вьсѣкъ`, the anaphoric
+/// and demonstrative spellings, the gendered halves of the possessives)
+/// `gender` is a key; for bare-shaped lexemes (`етеръ`, `къто`, `чьто`,
+/// `никъто`, `сѧ`) it is ignored. Lemmas attesting only the shared
+/// person-indexed table are served by [`pronoun`] and return
+/// [`Error::Underdetermined`] here.
+pub fn pronoun_form_variants(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    lexical_closed_variants(lemma, PartOfSpeech::Pronoun, case, number, gender)
+}
+
+/// The primary surface form for one lexically identified pronoun cell.
+pub fn pronoun_form(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<String, Error> {
+    primary(pronoun_form_variants(lemma, case, number, gender)?, lemma)
+}
+
+/// All variants for one numeral cell, primary first. The ordinal `прьвъ` is
+/// gender-indexed (`gender` is a key; the oracle merges its short and long
+/// adjectival series into one cell); the cardinals `пѧть` … `десѧть` (and
+/// the mistagged proper noun `Єѵрѡпа` the source files under `num`) attest
+/// bare case x number cells, so `gender` is ignored for them.
+pub fn numeral_form_variants(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    lexical_closed_variants(lemma, PartOfSpeech::Numeral, case, number, gender)
+}
+
+/// The primary surface form for one numeral cell.
+pub fn numeral_form(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<String, Error> {
+    primary(numeral_form_variants(lemma, case, number, gender)?, lemma)
+}
+
+/// All variants for one determiner cell, primary first. The single attested
+/// determiner `кꙑи` is gender-indexed, so `gender` is a key.
+pub fn determiner_form_variants(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    lexical_closed_variants(lemma, PartOfSpeech::Determiner, case, number, gender)
+}
+
+/// The primary surface form for one determiner cell.
+pub fn determiner_form(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<String, Error> {
+    primary(determiner_form_variants(lemma, case, number, gender)?, lemma)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1135,6 +1633,74 @@ mod tests {
     fn unknown_verb_lemma_is_typed_error() {
         assert_eq!(
             infinitive("nonexistent"),
+            Err(Error::UnknownLemma("nonexistent".to_string()))
+        );
+    }
+
+    #[test]
+    fn personal_and_reflexive_pronouns_via_kernel() {
+        // The dative-singular personal cells carry the marked clitics; the
+        // reflexive is numberless and refuses the nominative.
+        assert_eq!(
+            pronoun_variants(Person::First, Number::Singular, Case::Dative),
+            Ok(vec!["мьнѣ".to_string(), "ми".to_string()])
+        );
+        assert_eq!(
+            pronoun(Person::Second, Number::Plural, Case::Nominative).as_deref(),
+            Ok("вꙑ")
+        );
+        assert_eq!(reflexive(Case::Dative).as_deref(), Ok("себѣ"));
+        assert!(matches!(
+            reflexive(Case::Nominative),
+            Err(Error::Underdetermined { .. })
+        ));
+    }
+
+    #[test]
+    fn gendered_closed_class_forms() {
+        // The anaphoric third person is canonicalized to lemma `и`; the
+        // demonstrative family and the determiner resolve lemma-keyed.
+        assert_eq!(
+            anaphoric(Case::Dative, Number::Singular, Gender::Feminine).as_deref(),
+            Ok("ѥи")
+        );
+        assert_eq!(
+            pronoun_form("онъ", Case::Dative, Number::Singular, Gender::Feminine).as_deref(),
+            Ok("онои")
+        );
+        assert_eq!(
+            determiner_form("кꙑи", Case::Nominative, Number::Singular, Gender::Masculine)
+                .as_deref(),
+            Ok("кꙑи")
+        );
+        // прьвъ is gender-indexed; the bare cardinals ignore the gender
+        // parameter (десѧть's genitive singular is the same either way).
+        assert_eq!(
+            numeral_form("десѧть", Case::Genitive, Number::Singular, Gender::Feminine),
+            numeral_form("десѧть", Case::Genitive, Number::Singular, Gender::Masculine),
+        );
+    }
+
+    #[test]
+    fn closed_class_residue_and_shape_errors() {
+        // етеръ has no reviewed kernel: its attested cells come verbatim
+        // from the residue table (gender ignored, bare shape).
+        assert!(
+            pronoun_form("етеръ", Case::Nominative, Number::Singular, Gender::Neuter).is_ok()
+        );
+        // вашь attests only the duplicated person-indexed table, so the
+        // lemma-keyed pronoun_form cannot address it.
+        assert!(matches!(
+            pronoun_form("вашь", Case::Nominative, Number::Singular, Gender::Masculine),
+            Err(Error::Underdetermined { .. })
+        ));
+        assert_eq!(
+            numeral_form(
+                "nonexistent",
+                Case::Nominative,
+                Number::Singular,
+                Gender::Masculine
+            ),
             Err(Error::UnknownLemma("nonexistent".to_string()))
         );
     }
