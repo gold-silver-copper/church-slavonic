@@ -243,6 +243,7 @@ dependencies = [
 name = "old-church-slavonic-core"
 version = "0.4.0"
 dependencies = [
+ "church-slavonic-core",
  "unicode-normalization",
 ]
 

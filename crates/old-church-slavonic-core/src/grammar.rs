@@ -31,114 +31,16 @@ impl fmt::Display for PartOfSpeech {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Case {
-    Nominative,
-    Genitive,
-    Dative,
-    Accusative,
-    Instrumental,
-    Locative,
-    Vocative,
-}
+// The five closed grammatical-category enums (Case, Number, Gender, Animacy,
+// Person) now come from the shared `church-slavonic-core` kernel. The kernel's
+// `abbrev()` spellings equal this family's historical `code()` spellings.
+pub use church_slavonic_core::grammar::{Animacy, Case, Gender, Number, Person};
 
-impl Case {
-    pub const ALL: [Self; 7] = [
-        Self::Nominative,
-        Self::Genitive,
-        Self::Dative,
-        Self::Accusative,
-        Self::Instrumental,
-        Self::Locative,
-        Self::Vocative,
-    ];
+/// The OCS family's historical `Animacy` enumeration order (Animate first).
+/// The kernel declares Inanimate first; committed paradigm/report orderings in
+/// this family depend on the old order, so enumeration sites use this constant.
+pub const OCS_ANIMACY_ORDER: [Animacy; 2] = [Animacy::Animate, Animacy::Inanimate];
 
-    pub const fn code(self) -> &'static str {
-        match self {
-            Self::Nominative => "nom",
-            Self::Genitive => "gen",
-            Self::Dative => "dat",
-            Self::Accusative => "acc",
-            Self::Instrumental => "ins",
-            Self::Locative => "loc",
-            Self::Vocative => "voc",
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Number {
-    Singular,
-    Dual,
-    Plural,
-}
-
-impl Number {
-    pub const ALL: [Self; 3] = [Self::Singular, Self::Dual, Self::Plural];
-
-    pub const fn code(self) -> &'static str {
-        match self {
-            Self::Singular => "sg",
-            Self::Dual => "du",
-            Self::Plural => "pl",
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Gender {
-    Masculine,
-    Feminine,
-    Neuter,
-}
-
-impl Gender {
-    pub const ALL: [Self; 3] = [Self::Masculine, Self::Feminine, Self::Neuter];
-
-    pub const fn code(self) -> &'static str {
-        match self {
-            Self::Masculine => "m",
-            Self::Feminine => "f",
-            Self::Neuter => "n",
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Animacy {
-    Animate,
-    Inanimate,
-}
-
-impl Animacy {
-    pub const ALL: [Self; 2] = [Self::Animate, Self::Inanimate];
-
-    pub const fn code(self) -> &'static str {
-        match self {
-            Self::Animate => "an",
-            Self::Inanimate => "in",
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum Person {
-    First,
-    Second,
-    Third,
-}
-
-impl Person {
-    pub const ALL: [Self; 3] = [Self::First, Self::Second, Self::Third];
-
-    pub const fn code(self) -> &'static str {
-        match self {
-            Self::First => "1",
-            Self::Second => "2",
-            Self::Third => "3",
-        }
-    }
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AdjectiveForm {
@@ -498,7 +400,7 @@ impl NounCell {
     }
 
     pub fn key(self) -> String {
-        format!("noun:{}:{}", self.case.code(), self.number.code())
+        format!("noun:{}:{}", self.case.abbrev(), self.number.abbrev())
     }
 }
 
@@ -519,7 +421,7 @@ impl AdjectiveCell {
             Number::ALL.into_iter().flat_map(move |number| {
                 Case::ALL.into_iter().flat_map(move |case| {
                     Gender::ALL.into_iter().flat_map(move |gender| {
-                        Animacy::ALL.into_iter().map(move |animacy| Self {
+                        OCS_ANIMACY_ORDER.into_iter().map(move |animacy| Self {
                             case,
                             number,
                             gender,
@@ -536,10 +438,10 @@ impl AdjectiveCell {
         format!(
             "adj:{}:{}:{}:{}:{}",
             self.form.code(),
-            self.case.code(),
-            self.number.code(),
-            self.gender.code(),
-            self.animacy.code()
+            self.case.abbrev(),
+            self.number.abbrev(),
+            self.gender.abbrev(),
+            self.animacy.abbrev()
         )
     }
 }
@@ -564,7 +466,7 @@ impl DeterminerCell {
         Number::ALL.into_iter().flat_map(|number| {
             Case::ALL.into_iter().flat_map(move |case| {
                 Gender::ALL.into_iter().flat_map(move |gender| {
-                    Animacy::ALL.into_iter().map(move |animacy| Self {
+                    OCS_ANIMACY_ORDER.into_iter().map(move |animacy| Self {
                         case,
                         number,
                         gender,
@@ -578,10 +480,10 @@ impl DeterminerCell {
     pub fn key(self) -> String {
         format!(
             "det:{}:{}:{}:{}",
-            self.case.code(),
-            self.number.code(),
-            self.gender.code(),
-            self.animacy.code()
+            self.case.abbrev(),
+            self.number.abbrev(),
+            self.gender.abbrev(),
+            self.animacy.abbrev()
         )
     }
 
@@ -625,10 +527,10 @@ impl NumeralCell {
     }
 
     pub fn key(self) -> String {
-        let mut key = format!("num:{}:{}", self.case.code(), self.number.code());
+        let mut key = format!("num:{}:{}", self.case.abbrev(), self.number.abbrev());
         if let Some(gender) = self.gender {
             key.push(':');
-            key.push_str(gender.code());
+            key.push_str(gender.abbrev());
         }
         key
     }
@@ -665,10 +567,10 @@ impl CompoundCardinalCell {
     }
 
     pub fn key(self) -> String {
-        let mut key = format!("num:compound:{}", self.case.code());
+        let mut key = format!("num:compound:{}", self.case.abbrev());
         if let Some(gender) = self.gender {
             key.push(':');
-            key.push_str(gender.code());
+            key.push_str(gender.abbrev());
         }
         key
     }
@@ -695,7 +597,7 @@ impl DistributiveCardinalCell {
         let mut key = "num:distributive:dat".to_string();
         if let Some(gender) = self.gender {
             key.push(':');
-            key.push_str(gender.code());
+            key.push_str(gender.abbrev());
         }
         key
     }
@@ -729,8 +631,8 @@ impl FiniteVerbCell {
         format!(
             "verb:finite:{}:{}:{}",
             self.tense.code(),
-            self.person.code(),
-            self.number.code()
+            self.person.abbrev(),
+            self.number.abbrev()
         )
     }
 }
@@ -783,8 +685,8 @@ impl ImperativeCell {
     pub fn key(self) -> String {
         format!(
             "verb:imperative:{}:{}",
-            self.person.code(),
-            self.number.code()
+            self.person.abbrev(),
+            self.number.abbrev()
         )
     }
 }
@@ -856,8 +758,8 @@ impl VerbMorphologyCell {
             Self::Participle(cell) => cell.key(),
             Self::VerbalNoun(cell) => format!(
                 "verb:verbal-noun:{}:{}",
-                cell.case.code(),
-                cell.number.code()
+                cell.case.abbrev(),
+                cell.number.abbrev()
             ),
         }
     }
@@ -894,8 +796,8 @@ impl LParticipleCell {
     pub fn key(self) -> String {
         format!(
             "verb:l-participle:{}:{}",
-            self.gender.code(),
-            self.number.code()
+            self.gender.abbrev(),
+            self.number.abbrev()
         )
     }
 }
@@ -1004,17 +906,17 @@ impl CollectiveNumeralCell {
         match self {
             Self::Pronominal(cell) => format!(
                 "collective:pronominal:{}:{}:{}",
-                cell.case.code(),
-                cell.number.code(),
-                cell.gender.code()
+                cell.case.abbrev(),
+                cell.number.abbrev(),
+                cell.gender.abbrev()
             ),
             Self::Adjectival(cell) => format!(
                 "collective:adjectival:{}:{}:{}:{}:{}",
                 cell.form.code(),
-                cell.case.code(),
-                cell.number.code(),
-                cell.gender.code(),
-                cell.animacy.code()
+                cell.case.abbrev(),
+                cell.number.abbrev(),
+                cell.gender.abbrev(),
+                cell.animacy.abbrev()
             ),
         }
     }
@@ -1103,16 +1005,16 @@ impl ClosedClassCell {
         let mut key = format!(
             "decl:{}:{}:{}",
             part_of_speech.code(),
-            self.case.code(),
-            self.number.code()
+            self.case.abbrev(),
+            self.number.abbrev()
         );
         if let Some(gender) = self.gender {
             key.push(':');
-            key.push_str(gender.code());
+            key.push_str(gender.abbrev());
         }
         if let Some(person) = self.person {
             key.push(':');
-            key.push_str(person.code());
+            key.push_str(person.abbrev());
         }
         key
     }

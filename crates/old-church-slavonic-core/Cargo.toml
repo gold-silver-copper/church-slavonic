@@ -9,6 +9,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+church-slavonic-core.workspace = true
 unicode-normalization.workspace = true
 
 [lints]

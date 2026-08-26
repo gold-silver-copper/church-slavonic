@@ -1314,10 +1314,10 @@ fn long_only_adjective_form(
             provenance: MetadataProvenance::ReviewedGrammarTable,
             source_feature: Some(format!(
                 "adjective:2-a:plenum-tantum:{}:{}:{}:{}",
-                cell.case.code(),
-                cell.number.code(),
-                cell.gender.code(),
-                cell.animacy.code()
+                cell.case.abbrev(),
+                cell.number.abbrev(),
+                cell.gender.abbrev(),
+                cell.animacy.abbrev()
             )),
             source_form: None,
             crosscheck_features: Vec::new(),
@@ -1388,10 +1388,10 @@ fn reviewed_adjectival_determiner(
             source_feature: Some(format!(
                 "determiner:{}:{}:{}:{}:{}",
                 lexeme.declension.code(),
-                cell.case.code(),
-                cell.number.code(),
-                cell.gender.code(),
-                cell.animacy.code()
+                cell.case.abbrev(),
+                cell.number.abbrev(),
+                cell.gender.abbrev(),
+                cell.animacy.abbrev()
             )),
             source_form: None,
             crosscheck_features: Vec::new(),
@@ -1495,9 +1495,9 @@ pub fn reviewed_cardinal_numeral(
         identity.authority(),
         format!(
             "numeral:cardinal:{}:{}:{}",
-            cell.case.code(),
-            cell.number.code(),
-            cell.gender.map_or("none", Gender::code),
+            cell.case.abbrev(),
+            cell.number.abbrev(),
+            cell.gender.map_or("none", Gender::abbrev),
         ),
         old_church_slavonic_core::numeral::decline_cardinal(identity, cell)?,
     )
@@ -1514,10 +1514,10 @@ pub fn reviewed_ordinal_numeral(
         format!(
             "numeral:ordinal:{}:{}:{}:{}:{}",
             cell.form.code(),
-            cell.case.code(),
-            cell.number.code(),
-            cell.gender.code(),
-            cell.animacy.code(),
+            cell.case.abbrev(),
+            cell.number.abbrev(),
+            cell.gender.abbrev(),
+            cell.animacy.abbrev(),
         ),
         old_church_slavonic_core::numeral::decline_ordinal(identity, cell)?,
     )
@@ -1580,8 +1580,8 @@ pub fn reviewed_fractional_numeral(
         format!(
             "numeral:fractional:1-{}:{}:{}",
             identity.denominator(),
-            cell.case.code(),
-            cell.number.code(),
+            cell.case.abbrev(),
+            cell.number.abbrev(),
         ),
         old_church_slavonic_core::numeral::decline_fractional(identity, cell)?,
     )
@@ -1611,8 +1611,8 @@ pub fn reviewed_indefinite_numeral(
         identity.authority(),
         format!(
             "numeral:indefinite-quantity:{}:{}",
-            cell.case.code(),
-            cell.number.code(),
+            cell.case.abbrev(),
+            cell.number.abbrev(),
         ),
         old_church_slavonic_core::numeral::decline_indefinite(identity, cell)?,
     )
@@ -1643,9 +1643,9 @@ pub fn reviewed_cardinal_magnitude(
         format!(
             "numeral:cardinal:magnitude:{}:{}:{}:{}",
             identity.rule_id().code(),
-            cell.case.code(),
-            cell.number.code(),
-            cell.gender.map_or("none", Gender::code),
+            cell.case.abbrev(),
+            cell.number.abbrev(),
+            cell.gender.map_or("none", Gender::abbrev),
         ),
         old_church_slavonic_core::numeral::decline_magnitude(identity, cell)?,
     )
@@ -2183,7 +2183,7 @@ fn tens_analyses(
             let ten = reviewed_numeral_variants(
                 CardinalNumeralIdentity::Ten.canonical_lemma(),
                 COMPOUND_CARDINAL_AUTHORITY,
-                format!("numeral:cardinal:tens:twenty:{}", case.code()),
+                format!("numeral:cardinal:tens:twenty:{}", case.abbrev()),
                 old_church_slavonic_core::numeral::decline_counted_ten(case, Number::Dual)?,
             )?;
             Ok(vec![CardinalPhraseAnalysis {
@@ -2212,7 +2212,7 @@ fn tens_analyses(
                         numeral_token(reviewed_numeral_variants(
                             CardinalNumeralIdentity::Ten.canonical_lemma(),
                             COMPOUND_CARDINAL_AUTHORITY,
-                            format!("numeral:cardinal:tens:{multiplier}:{}:primary", case.code()),
+                            format!("numeral:cardinal:tens:{multiplier}:{}:primary", case.abbrev()),
                             vec![primary_ten],
                         )?),
                     ],
@@ -2234,7 +2234,7 @@ fn tens_analyses(
                                 COMPOUND_CARDINAL_AUTHORITY,
                                 format!(
                                     "numeral:cardinal:tens:{multiplier}:{}:alternative",
-                                    case.code()
+                                    case.abbrev()
                                 ),
                                 vec![alternative_ten],
                             )?),
@@ -2254,7 +2254,7 @@ fn tens_analyses(
                 let ten = reviewed_numeral_variants(
                     CardinalNumeralIdentity::Ten.canonical_lemma(),
                     COMPOUND_CARDINAL_AUTHORITY,
-                    format!("numeral:cardinal:tens:{multiplier}:{}", case.code()),
+                    format!("numeral:cardinal:tens:{multiplier}:{}", case.abbrev()),
                     variants,
                 )?;
                 Ok(vec![CardinalPhraseAnalysis {
@@ -2909,7 +2909,7 @@ pub fn copula(
             let trace = if variant.status == CopulaVariantStatus::Reconstructed {
                 vec![RuleStep {
                     rule_id,
-                    before: format!("{}:{}", person.code(), number.code()),
+                    before: format!("{}:{}", person.abbrev(), number.abbrev()),
                     after: text.clone(),
                     reason: "realize the explicitly reconstructed OCS copular cell",
                 }]
@@ -2939,8 +2939,8 @@ pub fn copula(
                     },
                     source_feature: Some(format!(
                         "copula:{series:?}:{}:{}",
-                        person.code(),
-                        number.code()
+                        person.abbrev(),
+                        number.abbrev()
                     )),
                     source_form: (variant.status == CopulaVariantStatus::SourceBacked)
                         .then(|| form.text.clone()),
@@ -3015,9 +3015,9 @@ pub fn personal_pronoun_with(
         forms,
         format!(
             "pronoun:{}:{}:{}:{}",
-            person.code(),
-            case.code(),
-            number.code(),
+            person.abbrev(),
+            case.abbrev(),
+            number.abbrev(),
             selection.code()
         ),
     )
@@ -3038,7 +3038,7 @@ pub fn reflexive_pronoun(
             person: None,
         },
         old_church_slavonic_core::pronoun::reflexive_forms(case, selection),
-        format!("pronoun:reflexive:{}:{}", case.code(), selection.code()),
+        format!("pronoun:reflexive:{}:{}", case.abbrev(), selection.code()),
     )
 }
 
@@ -3065,9 +3065,9 @@ pub fn anaphoric_pronoun(
         forms,
         format!(
             "pronoun:anaphoric-third:{}:{}:{}:{}",
-            case.code(),
-            number.code(),
-            gender.code(),
+            case.abbrev(),
+            number.abbrev(),
+            gender.abbrev(),
             environment.code()
         ),
     )
@@ -3131,9 +3131,9 @@ fn standard_pronominal_form(
                 "{}:2-p:{}:{}:{}:{}",
                 identity.part_of_speech().code(),
                 identity.declension().code(),
-                case.code(),
-                number.code(),
-                gender.code()
+                case.abbrev(),
+                number.abbrev(),
+                gender.abbrev()
             )),
             // The authorities license the productive terminal combination;
             // do not mislabel the generated surface as a corpus attestation.
@@ -3197,9 +3197,9 @@ pub fn relative_pronoun(
         rule_id,
         format!(
             "pronoun:relative-izhe:{}:{}:{}:{}",
-            case.code(),
-            number.code(),
-            gender.code(),
+            case.abbrev(),
+            number.abbrev(),
+            gender.abbrev(),
             environment.code()
         ),
         "Polivanova 2023 §318; UT OCS Online lesson 2 §8.3",
@@ -3242,9 +3242,9 @@ pub fn irregular_agreeing(
         format!(
             "{}:irregular-agreeing:{}:{}:{}",
             part_of_speech.code(),
-            case.code(),
-            number.code(),
-            gender.code()
+            case.abbrev(),
+            number.abbrev(),
+            gender.abbrev()
         ),
         authority,
     )
@@ -3273,7 +3273,7 @@ pub fn interrogative_pronoun(
         },
         variants,
         identity.rule_id(),
-        format!("pronoun:interrogative:numberless:{}", case.code()),
+        format!("pronoun:interrogative:numberless:{}", case.abbrev()),
         "Polivanova 2023 §§379–380",
     )
 }

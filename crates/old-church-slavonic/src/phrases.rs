@@ -253,7 +253,7 @@ fn compose_pronominal_token(
         provenance: MetadataProvenance::ReviewedGrammarTable,
         source_feature: Some(format!(
             "pronoun:derived-family:{}:{}:{}:{}",
-            case.code(),
+            case.abbrev(),
             prefix.map_or("none", PronominalPrefix::code),
             postpositive.map_or("none", PronominalPostpositive::code),
             direct_to.map_or("none", DirectToTreatment::code),

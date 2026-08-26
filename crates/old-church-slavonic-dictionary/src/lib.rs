@@ -433,8 +433,8 @@ fn generated_form_index() -> &'static BTreeMap<String, Vec<DictionaryFormMatch>>
                         add_generated_outcomes(paradigm.iter(), &mut add, |cell| {
                             format!(
                                 "verb:verbal-noun:{}:{}",
-                                cell.case.code(),
-                                cell.number.code()
+                                cell.case.abbrev(),
+                                cell.number.abbrev()
                             )
                         });
                     }

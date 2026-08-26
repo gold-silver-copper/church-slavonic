@@ -3301,7 +3301,14 @@ fn grammar_all_inventories_are_complete_and_stably_ordered() {
         Gender::ALL,
         [Gender::Masculine, Gender::Feminine, Gender::Neuter]
     );
-    assert_eq!(Animacy::ALL, [Animacy::Animate, Animacy::Inanimate]);
+    // The shared kernel declares Inanimate first; the OCS family's historical
+    // enumeration order (Animate first) is preserved at paradigm-enumeration
+    // sites via `old_church_slavonic_core::grammar::OCS_ANIMACY_ORDER`.
+    assert_eq!(Animacy::ALL, [Animacy::Inanimate, Animacy::Animate]);
+    assert_eq!(
+        old_church_slavonic_core::grammar::OCS_ANIMACY_ORDER,
+        [Animacy::Animate, Animacy::Inanimate]
+    );
     assert_eq!(Person::ALL, [Person::First, Person::Second, Person::Third]);
     assert_eq!(
         AdjectiveForm::ALL,
