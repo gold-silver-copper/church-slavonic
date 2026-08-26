@@ -18,13 +18,21 @@
 //! `data/extracted` (`cargo xtask rewrite-pilot-accuracy`). Two conventions
 //! were required to reproduce the oracle at 100%:
 //!
-//! - **Homograph merge.** The extracted inventory contains ten noun lemmas
-//!   with two lexeme entries each (e.g. `градъ`, `ногъть`, `сꙑнъ`), whose
-//!   stored tables differ only in variant coverage. This facade is keyed by
-//!   lemma, so the oracle is defined at lemma granularity: for each
-//!   (lemma, cell) the stored variant lists of all homograph lexemes are
-//!   merged in rank order (stable, first occurrence wins on duplicates), and
-//!   the facade reproduces that merged list.
+//! - **Homographs (deterministic numeric suffixes).** The extracted
+//!   inventory contains lemmas with more than one lexeme entry (ten noun
+//!   lemmas, e.g. `градъ`, `ногъть`, `сꙑнъ`; four verb pairs). Mirroring the
+//!   `gold-silver-copper/english` crate's scheme, each such lexeme gets its
+//!   own key: the bare lemma serves the default sense, and the others are
+//!   reachable as `lemma_2`, `lemma_3`, … Sense numbering is decided by a
+//!   pure deterministic sort of each lexeme's emitted form inventory — the
+//!   sorted sequence of `(cell code, variant list)` pairs, compared
+//!   lexicographically, with the encoded lexeme metadata as tie-break — so
+//!   the assignment needs no external lockfile and is reproducible from the
+//!   data alone across refreshes (two lexemes that tie under this sort have
+//!   identical inventories and metadata, so their relative order cannot
+//!   change any emitted table). A lookup for the bare lemma answers with
+//!   only that lexeme's own variants (not a union across senses);
+//!   [`base_lemma`] strips the suffix before any rule-kernel derivation.
 //! - **Animacy.** Masculine accusative cells are animacy-conditioned. Where
 //!   the extracted metadata carries no animacy fact for a class with an
 //!   animacy contrast, the rules cannot commit, so those attested
@@ -82,11 +90,12 @@
 //! dictionary-metadata generators use. `verb_metadata.tsv` covers only a
 //! minority of the 711 attested verbs, so the verb residue table is
 //! proportionally larger than the noun one; the oracle referee keeps the
-//! facade at 100% either way. The homograph convention is the nouns' lemma
-//! merge; the four verb homograph pairs (`вести`, `пасти`, `привести`,
-//! `съпасти` — transitive/intransitive or lexical doublets sharing a
-//! citation) are served with rank-merged variant lists, first lexeme's
-//! metadata winning.
+//! facade at 100% either way. The homograph convention is the nouns'
+//! deterministic numeric-suffix scheme: the four verb homograph pairs
+//! (`вести`, `пасти`, `привести`, `съпасти` — transitive/intransitive or
+//! lexical doublets sharing a citation) are served per lexeme, the default
+//! sense under the bare lemma and the other under `lemma_2`, each with its
+//! own principal-part metadata.
 //!
 //! # Closed classes (pronouns, numerals, determiners)
 //!
@@ -289,6 +298,20 @@ fn decode_meta(row: &(&str, u8, u8, u8, u8)) -> NounMeta {
     }
 }
 
+/// Strip a numeric homograph suffix (`_2`, `_3`, …) from a lemma key,
+/// returning the surface lemma the rule kernel inflects. Keys without a
+/// suffix are returned unchanged. See the module docs ("Homographs") for the
+/// deterministic numbering scheme.
+pub fn base_lemma(lemma: &str) -> &str {
+    if let Some((base, suffix)) = lemma.rsplit_once('_') {
+        if !base.is_empty() && !suffix.is_empty() && suffix.bytes().all(|byte| byte.is_ascii_digit())
+        {
+            return base;
+        }
+    }
+    lemma
+}
+
 /// Look up the compact metadata record for a lemma.
 #[doc(hidden)]
 pub fn noun_meta(lemma: &str) -> Option<NounMeta> {
@@ -377,8 +400,10 @@ pub fn noun_variants(lemma: &str, case: Case, number: Number) -> Result<Vec<Stri
             .collect());
     }
     let meta = noun_meta(lemma).ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
-    kernel_noun_variants(lemma, &meta, case, number).ok_or_else(|| Error::Underdetermined {
-        lemma: lemma.to_string(),
+    kernel_noun_variants(base_lemma(lemma), &meta, case, number).ok_or_else(|| {
+        Error::Underdetermined {
+            lemma: lemma.to_string(),
+        }
     })
 }
 
@@ -476,7 +501,7 @@ fn adjective_form_variants(
             .collect());
     }
     let class = adjective_class(lemma).ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
-    kernel_adjective_variants(lemma, class, form, case, number, gender).ok_or_else(|| {
+    kernel_adjective_variants(base_lemma(lemma), class, form, case, number, gender).ok_or_else(|| {
         Error::Underdetermined {
             lemma: lemma.to_string(),
         }
@@ -923,7 +948,7 @@ fn verb_form_variants(lemma: &str, cell: VerbCell) -> Result<Vec<String>, Error>
             .collect());
     }
     let meta = verb_meta(lemma).ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
-    kernel_verb_variants(lemma, &meta, cell).ok_or_else(|| Error::Underdetermined {
+    kernel_verb_variants(base_lemma(lemma), &meta, cell).ok_or_else(|| Error::Underdetermined {
         lemma: lemma.to_string(),
     })
 }

@@ -8,9 +8,10 @@
 //!   from `data/extracted` through `church_slavonic::noun_variants`.
 //!
 //! Oracle convention (documented in the facade's lib.rs): the oracle is
-//! defined at lemma granularity. Homograph noun lexemes sharing a lemma have
-//! their per-cell variant lists merged in rank order (stable; first
-//! occurrence wins on duplicate surface forms).
+//! defined per lexeme. Homograph lexemes sharing a lemma get deterministic
+//! numeric-suffix keys (`lemma`, `lemma_2`, ...), ordered by a pure sort of
+//! their emitted form inventories (see `homograph_keys`); each key's cells
+//! are that lexeme's own variant lists, never a union across senses.
 
 use church_slavonic::{
     NounMeta, VerbCell, VerbMeta, adjective_cell_code, cell_code, closed_cell_code,
@@ -35,15 +36,45 @@ use std::path::Path;
 /// One lemma's compact encoded metadata: (class, gender, animacy, restriction).
 type MetaCodes = (u8, u8, u8, u8);
 
+/// A lexeme's rank-deduped form inventory: cell code -> variant list.
+type Inventory = BTreeMap<u8, Vec<String>>;
+
+/// Deterministic homograph keying (documented in the facade's lib.rs,
+/// mirroring `gold-silver-copper/english`): lexemes sharing a lemma are
+/// ordered by a pure sort of their emitted form inventories — the sorted
+/// `(cell code, variant list)` sequence compared lexicographically, which is
+/// exactly `BTreeMap<u8, Vec<String>>`'s derived `Ord` — with the encoded
+/// lexeme metadata as tie-break. The first lexeme keeps the bare lemma; the
+/// rest get `lemma_2`, `lemma_3`, … No external lockfile: the assignment is
+/// reproducible from the data alone, and two lexemes tying under this sort
+/// are content-identical, so their relative order cannot change any table.
+fn homograph_keys<M: Ord>(
+    lemma: &str,
+    mut entries: Vec<(Inventory, M)>,
+) -> Vec<(String, Inventory, M)> {
+    entries.sort_by(|left, right| left.cmp(right));
+    entries
+        .into_iter()
+        .enumerate()
+        .map(|(index, (inventory, meta))| {
+            let key = if index == 0 {
+                lemma.to_string()
+            } else {
+                format!("{lemma}_{}", index + 1)
+            };
+            (key, inventory, meta)
+        })
+        .collect()
+}
+
 struct NounOracle {
-    /// lemma -> encoded metadata (first lexeme entry wins).
+    /// lemma key (bare or numeric-suffixed) -> encoded metadata for exactly
+    /// that lexeme.
     meta: BTreeMap<String, MetaCodes>,
-    /// (lemma, cell code) -> merged variant list in rank order.
+    /// (lemma key, cell code) -> that lexeme's own variant list in rank order.
     cells: BTreeMap<(String, u8), Vec<String>>,
-    /// Per-lexeme cell count (the 41,566 figure) and how many of those
-    /// per-lexeme lists differ from the merged lemma-level list.
-    lexeme_cells: usize,
-    merged_divergent_lexeme_cells: usize,
+    /// Homograph groups: (bare lemma, assigned keys in sense order).
+    homographs: Vec<(String, Vec<String>)>,
 }
 
 fn class_code(value: &str) -> u8 {
@@ -159,79 +190,98 @@ fn cell_from_code(code: u8) -> (Case, Number) {
     (case, number)
 }
 
+/// Rank-stable dedupe of one cell's raw rows into its variant list.
+fn dedupe_ranked(rows: &mut Vec<(u16, String)>) -> Vec<String> {
+    rows.sort_by_key(|(rank, _)| *rank);
+    let mut texts: Vec<String> = Vec::new();
+    for (_, form) in rows.iter() {
+        if !texts.contains(form) {
+            texts.push(form.clone());
+        }
+    }
+    texts
+}
+
 fn load_noun_oracle(root: &Path) -> Result<NounOracle, Box<dyn Error>> {
     let registry = load_registry(&root.join("data/extracted"))?;
-    let mut meta: BTreeMap<String, MetaCodes> = BTreeMap::new();
-    let mut lemma_by_id: BTreeMap<&str, &str> = BTreeMap::new();
+    // lexeme id -> (lemma, encoded metadata).
+    let mut lexemes: BTreeMap<&str, (&str, MetaCodes)> = BTreeMap::new();
     for lexeme in &registry.lexemes {
         if lexeme.pos != "noun" {
             continue;
         }
-        lemma_by_id.insert(&lexeme.id, &lexeme.lemma);
-        meta.entry(lexeme.lemma.clone()).or_insert((
-            class_code(&lexeme.class),
-            gender_code(&lexeme.gender),
-            animacy_code(&lexeme.animacy),
-            restriction_code(&lexeme.number_restriction),
-        ));
+        lexemes.insert(
+            &lexeme.id,
+            (
+                &lexeme.lemma,
+                (
+                    class_code(&lexeme.class),
+                    gender_code(&lexeme.gender),
+                    animacy_code(&lexeme.animacy),
+                    restriction_code(&lexeme.number_restriction),
+                ),
+            ),
+        );
     }
-    // Per-lexeme rows in file order, rank-stable within a cell.
-    let mut per_lexeme: BTreeMap<(String, u8), Vec<(u16, String)>> = BTreeMap::new();
-    let mut merged_rows: BTreeMap<(String, u8), Vec<(u16, String)>> = BTreeMap::new();
+    // Per-lexeme rows, rank-stable within a cell.
+    let mut per_lexeme: BTreeMap<&str, BTreeMap<u8, Vec<(u16, String)>>> = BTreeMap::new();
     for row in &registry.forms {
-        let Some(lemma) = lemma_by_id.get(row.lexeme_id.as_str()) else {
+        if !lexemes.contains_key(row.lexeme_id.as_str()) {
             continue;
-        };
+        }
         let Some(code) = feature_cell_code(&row.feature) else {
             return Err(format!("unparsed noun feature {}", row.feature).into());
         };
         per_lexeme
-            .entry((row.lexeme_id.clone(), code))
+            .entry(row.lexeme_id.as_str())
             .or_default()
-            .push((row.rank, row.form.clone()));
-        merged_rows
-            .entry(((*lemma).to_string(), code))
+            .entry(code)
             .or_default()
             .push((row.rank, row.form.clone()));
     }
-    let dedupe = |rows: &mut Vec<(u16, String)>| -> Vec<String> {
-        rows.sort_by_key(|(rank, _)| *rank);
-        let mut texts: Vec<String> = Vec::new();
-        for (_, form) in rows.iter() {
-            if !texts.contains(form) {
-                texts.push(form.clone());
-            }
-        }
-        texts
-    };
+    // Group per-lexeme inventories by lemma and assign deterministic keys.
+    let mut groups: BTreeMap<&str, Vec<(Inventory, MetaCodes)>> = BTreeMap::new();
+    for (id, (lemma, codes)) in &lexemes {
+        let inventory: Inventory = per_lexeme
+            .remove(id)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|(code, mut rows)| (code, dedupe_ranked(&mut rows)))
+            .collect();
+        groups.entry(lemma).or_default().push((inventory, *codes));
+    }
+    let mut meta: BTreeMap<String, MetaCodes> = BTreeMap::new();
     let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
-    for (key, mut rows) in merged_rows {
-        cells.insert(key, dedupe(&mut rows));
-    }
-    let mut lexeme_cells = 0usize;
-    let mut merged_divergent_lexeme_cells = 0usize;
-    for ((lexeme_id, code), mut rows) in per_lexeme {
-        lexeme_cells += 1;
-        let lemma = lemma_by_id[lexeme_id.as_str()];
-        let own = dedupe(&mut rows);
-        if cells[&(lemma.to_string(), code)] != own {
-            merged_divergent_lexeme_cells += 1;
+    let mut homographs: Vec<(String, Vec<String>)> = Vec::new();
+    for (lemma, entries) in groups {
+        let keyed = homograph_keys(lemma, entries);
+        if keyed.len() > 1 {
+            homographs.push((
+                lemma.to_string(),
+                keyed.iter().map(|(key, _, _)| key.clone()).collect(),
+            ));
+        }
+        for (key, inventory, codes) in keyed {
+            meta.insert(key.clone(), codes);
+            for (code, variants) in inventory {
+                cells.insert((key.clone(), code), variants);
+            }
         }
     }
     Ok(NounOracle {
         meta,
         cells,
-        lexeme_cells,
-        merged_divergent_lexeme_cells,
+        homographs,
     })
 }
 
 /// Adjective oracle at lemma granularity, with the animacy dimension
 /// collapsed after verifying it is degenerate (see the facade's lib.rs).
 struct AdjectiveOracle {
-    /// lemma -> encoded class (1 hard, 2 soft, 0 unknown; first lexeme wins).
+    /// lemma key (bare or numeric-suffixed) -> encoded class
+    /// (1 hard, 2 soft, 0 unknown) for exactly that lexeme.
     meta: BTreeMap<String, u8>,
-    /// (lemma, adjective cell code) -> merged variant list in rank order.
+    /// (lemma key, adjective cell code) -> that lexeme's own variant list.
     cells: BTreeMap<(String, u8), Vec<String>>,
     /// Attested `(lexeme, feature)` cells keyed with the animacy dimension,
     /// comparatives included — the raw 78,432 figure.
@@ -239,8 +289,8 @@ struct AdjectiveOracle {
     /// `adj:comparative:citation` cells excluded from the facade + accuracy
     /// denominator (unpredictable suffix-grade / suppletive lexical facts).
     comparative_cells: usize,
-    lexeme_cells: usize,
-    merged_divergent_lexeme_cells: usize,
+    /// Homograph groups: (bare lemma, assigned keys in sense order).
+    homographs: Vec<(String, Vec<String>)>,
 }
 
 fn adjective_class_code(value: &str) -> u8 {
@@ -277,29 +327,26 @@ fn adjective_cell_from_code(code: u8) -> (AdjectiveForm, Case, Number, Gender) {
 
 fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>> {
     let registry = load_registry(&root.join("data/extracted"))?;
-    let mut meta: BTreeMap<String, u8> = BTreeMap::new();
-    let mut lemma_by_id: BTreeMap<&str, &str> = BTreeMap::new();
+    // lexeme id -> (lemma, encoded class).
+    let mut lexemes: BTreeMap<&str, (&str, u8)> = BTreeMap::new();
     for lexeme in &registry.lexemes {
         if lexeme.pos != "adj" {
             continue;
         }
-        lemma_by_id.insert(&lexeme.id, &lexeme.lemma);
-        meta.entry(lexeme.lemma.clone())
-            .or_insert_with(|| adjective_class_code(&lexeme.class));
+        lexemes.insert(&lexeme.id, (&lexeme.lemma, adjective_class_code(&lexeme.class)));
     }
     // Rows keyed with the animacy dimension still present, to prove it is
     // degenerate before collapsing it out of the facade key.
     type Ranked = Vec<(u16, String)>;
     let mut per_lexeme: BTreeMap<(String, u8, Animacy), Ranked> = BTreeMap::new();
-    let mut merged_rows: BTreeMap<(String, u8, Animacy), Ranked> = BTreeMap::new();
     let mut keyed_cells: std::collections::BTreeSet<(String, String)> =
         std::collections::BTreeSet::new();
     let mut comparative_cells: std::collections::BTreeSet<String> =
         std::collections::BTreeSet::new();
     for row in &registry.forms {
-        let Some(lemma) = lemma_by_id.get(row.lexeme_id.as_str()) else {
+        if !lexemes.contains_key(row.lexeme_id.as_str()) {
             continue;
-        };
+        }
         keyed_cells.insert((row.lexeme_id.clone(), row.feature.clone()));
         if row.feature == "adj:comparative:citation" {
             comparative_cells.insert(row.lexeme_id.clone());
@@ -313,34 +360,24 @@ fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>>
             .entry((row.lexeme_id.clone(), code, cell.animacy))
             .or_default()
             .push((row.rank, row.form.clone()));
-        merged_rows
-            .entry(((*lemma).to_string(), code, cell.animacy))
-            .or_default()
-            .push((row.rank, row.form.clone()));
     }
-    let dedupe = |rows: &mut Ranked| -> Vec<String> {
-        rows.sort_by_key(|(rank, _)| *rank);
-        let mut texts: Vec<String> = Vec::new();
-        for (_, form) in rows.iter() {
-            if !texts.contains(form) {
-                texts.push(form.clone());
-            }
-        }
-        texts
-    };
-    // Collapse animacy, failing loudly if the dimension ever carries
-    // information (the facade API is built on this degeneracy).
-    let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
-    for ((lemma, code, animacy), mut rows) in merged_rows {
-        let texts = dedupe(&mut rows);
-        match cells.entry((lemma.clone(), code)) {
+    // Collapse animacy per lexeme, failing loudly if the dimension ever
+    // carries information (the facade API is built on this degeneracy).
+    let mut collapsed_lexeme: BTreeMap<String, Inventory> = BTreeMap::new();
+    for ((lexeme_id, code, animacy), mut rows) in per_lexeme {
+        let texts = dedupe_ranked(&mut rows);
+        match collapsed_lexeme
+            .entry(lexeme_id.clone())
+            .or_default()
+            .entry(code)
+        {
             std::collections::btree_map::Entry::Vacant(entry) => {
                 entry.insert(texts);
             }
             std::collections::btree_map::Entry::Occupied(entry) => {
                 if entry.get() != &texts {
                     return Err(format!(
-                        "adjective animacy dimension is not degenerate: {lemma} cell {code} \
+                        "adjective animacy dimension is not degenerate: {lexeme_id} cell {code} \
                          ({animacy:?}) stores {:?} vs {:?}",
                         texts,
                         entry.get()
@@ -350,18 +387,28 @@ fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>>
             }
         }
     }
-    let mut collapsed_lexeme: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
-    for ((lexeme_id, code, _animacy), mut rows) in per_lexeme {
-        let texts = dedupe(&mut rows);
-        collapsed_lexeme.entry((lexeme_id, code)).or_insert(texts);
+    // Group per-lexeme inventories by lemma and assign deterministic keys.
+    let mut groups: BTreeMap<&str, Vec<(Inventory, u8)>> = BTreeMap::new();
+    for (id, (lemma, class)) in &lexemes {
+        let inventory = collapsed_lexeme.remove(*id).unwrap_or_default();
+        groups.entry(lemma).or_default().push((inventory, *class));
     }
-    let mut lexeme_cells = 0usize;
-    let mut merged_divergent_lexeme_cells = 0usize;
-    for ((lexeme_id, code), own) in &collapsed_lexeme {
-        lexeme_cells += 1;
-        let lemma = lemma_by_id[lexeme_id.as_str()];
-        if cells[&(lemma.to_string(), *code)] != *own {
-            merged_divergent_lexeme_cells += 1;
+    let mut meta: BTreeMap<String, u8> = BTreeMap::new();
+    let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
+    let mut homographs: Vec<(String, Vec<String>)> = Vec::new();
+    for (lemma, entries) in groups {
+        let keyed = homograph_keys(lemma, entries);
+        if keyed.len() > 1 {
+            homographs.push((
+                lemma.to_string(),
+                keyed.iter().map(|(key, _, _)| key.clone()).collect(),
+            ));
+        }
+        for (key, inventory, class) in keyed {
+            meta.insert(key.clone(), class);
+            for (code, variants) in inventory {
+                cells.insert((key.clone(), code), variants);
+            }
         }
     }
     Ok(AdjectiveOracle {
@@ -369,8 +416,7 @@ fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>>
         cells,
         keyed_cells: keyed_cells.len(),
         comparative_cells: comparative_cells.len(),
-        lexeme_cells,
-        merged_divergent_lexeme_cells,
+        homographs,
     })
 }
 
@@ -380,8 +426,14 @@ fn emit_adjective_residue(root: &Path) -> Result<(), Box<dyn Error>> {
     for ((lemma, code), expected) in &oracle.cells {
         let class = decode_adjective_class(oracle.meta[lemma]);
         let (form, case, number, gender) = adjective_cell_from_code(*code);
-        let predicted =
-            church_slavonic::kernel_adjective_variants(lemma, class, form, case, number, gender);
+        let predicted = church_slavonic::kernel_adjective_variants(
+            church_slavonic::base_lemma(lemma),
+            class,
+            form,
+            case,
+            number,
+            gender,
+        );
         if predicted.as_deref() != Some(expected.as_slice()) {
             residue.push((lemma, *code, expected));
         }
@@ -426,15 +478,15 @@ fn emit_adjective_residue(root: &Path) -> Result<(), Box<dyn Error>> {
     let path = root.join("crates/church-slavonic/generated/adjective_residue.rs");
     fs::write(&path, &out)?;
     println!(
-        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} merged / {} per-lexeme; \
-         {} comparative cells excluded)",
+        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} per-lexeme cells; \
+         {} comparative cells excluded; {} homograph groups)",
         path.display(),
         out.len(),
         oracle.meta.len(),
         residue.len(),
         oracle.cells.len(),
-        oracle.lexeme_cells,
         oracle.comparative_cells,
+        oracle.homographs.len(),
     );
     Ok(())
 }
@@ -442,7 +494,7 @@ fn emit_adjective_residue(root: &Path) -> Result<(), Box<dyn Error>> {
 /// Compact per-lemma verb principal-part codes, owned by the emitter before
 /// being written as `crate::VerbMeta` literals (see the facade's field code
 /// tables on `VerbMeta`).
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct VerbMetaCodes {
     aspect: u8,
     present: Vec<(String, u8, String, String, u8)>,
@@ -720,12 +772,13 @@ fn with_verb_meta_view<R>(codes: &VerbMetaCodes, body: impl FnOnce(&VerbMeta<'_>
 }
 
 struct VerbOracle {
-    /// lemma -> encoded principal-part metadata (first lexeme entry wins).
+    /// lemma key (bare or numeric-suffixed) -> that lexeme's own encoded
+    /// principal-part metadata.
     meta: BTreeMap<String, VerbMetaCodes>,
-    /// (lemma, verb cell code) -> merged variant list in rank order.
+    /// (lemma key, verb cell code) -> that lexeme's own variant list.
     cells: BTreeMap<(String, u8), Vec<String>>,
-    lexeme_cells: usize,
-    merged_divergent_lexeme_cells: usize,
+    /// Homograph groups: (bare lemma, assigned keys in sense order).
+    homographs: Vec<(String, Vec<String>)>,
 }
 
 fn parse_verb_cell(feature: &str) -> Option<VerbCell> {
@@ -800,68 +853,69 @@ fn verb_cell_from_code(code: u8) -> VerbCell {
 
 fn load_verb_oracle(root: &Path) -> Result<VerbOracle, Box<dyn Error>> {
     let registry = load_registry(&root.join("data/extracted"))?;
-    let mut meta: BTreeMap<String, VerbMetaCodes> = BTreeMap::new();
-    let mut lemma_by_id: BTreeMap<&str, &str> = BTreeMap::new();
+    // lexeme id -> (lemma, that lexeme's own encoded metadata).
+    let mut lexemes: BTreeMap<&str, (&str, VerbMetaCodes)> = BTreeMap::new();
     for lexeme in &registry.lexemes {
         if lexeme.pos != "verb" {
             continue;
         }
-        lemma_by_id.insert(&lexeme.id, &lexeme.lemma);
-        if !meta.contains_key(&lexeme.lemma) {
-            let codes = api_metadata::verb_metadata_by_id(&lexeme.id)
-                .map(|metadata| encode_verb_metadata(&metadata))
-                .unwrap_or_default();
-            meta.insert(lexeme.lemma.clone(), codes);
-        }
+        let codes = api_metadata::verb_metadata_by_id(&lexeme.id)
+            .map(|metadata| encode_verb_metadata(&metadata))
+            .unwrap_or_default();
+        lexemes.insert(&lexeme.id, (&lexeme.lemma, codes));
     }
-    let mut per_lexeme: BTreeMap<(String, u8), Vec<(u16, String)>> = BTreeMap::new();
-    let mut merged_rows: BTreeMap<(String, u8), Vec<(u16, String)>> = BTreeMap::new();
+    let mut per_lexeme: BTreeMap<&str, BTreeMap<u8, Vec<(u16, String)>>> = BTreeMap::new();
     for row in &registry.forms {
-        let Some(lemma) = lemma_by_id.get(row.lexeme_id.as_str()) else {
+        if !lexemes.contains_key(row.lexeme_id.as_str()) {
             continue;
-        };
+        }
         let Some(cell) = parse_verb_cell(&row.feature) else {
             return Err(format!("unparsed verb feature {}", row.feature).into());
         };
         let code = verb_cell_code(cell);
         per_lexeme
-            .entry((row.lexeme_id.clone(), code))
+            .entry(row.lexeme_id.as_str())
             .or_default()
-            .push((row.rank, row.form.clone()));
-        merged_rows
-            .entry(((*lemma).to_string(), code))
+            .entry(code)
             .or_default()
             .push((row.rank, row.form.clone()));
     }
-    let dedupe = |rows: &mut Vec<(u16, String)>| -> Vec<String> {
-        rows.sort_by_key(|(rank, _)| *rank);
-        let mut texts: Vec<String> = Vec::new();
-        for (_, form) in rows.iter() {
-            if !texts.contains(form) {
-                texts.push(form.clone());
-            }
-        }
-        texts
-    };
+    // Group per-lexeme inventories by lemma and assign deterministic keys.
+    let mut groups: BTreeMap<&str, Vec<(Inventory, VerbMetaCodes)>> = BTreeMap::new();
+    for (id, (lemma, codes)) in &lexemes {
+        let inventory: Inventory = per_lexeme
+            .remove(id)
+            .unwrap_or_default()
+            .into_iter()
+            .map(|(code, mut rows)| (code, dedupe_ranked(&mut rows)))
+            .collect();
+        groups
+            .entry(lemma)
+            .or_default()
+            .push((inventory, codes.clone()));
+    }
+    let mut meta: BTreeMap<String, VerbMetaCodes> = BTreeMap::new();
     let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
-    for (key, mut rows) in merged_rows {
-        cells.insert(key, dedupe(&mut rows));
-    }
-    let mut lexeme_cells = 0usize;
-    let mut merged_divergent_lexeme_cells = 0usize;
-    for ((lexeme_id, code), mut rows) in per_lexeme {
-        lexeme_cells += 1;
-        let lemma = lemma_by_id[lexeme_id.as_str()];
-        let own = dedupe(&mut rows);
-        if cells[&(lemma.to_string(), code)] != own {
-            merged_divergent_lexeme_cells += 1;
+    let mut homographs: Vec<(String, Vec<String>)> = Vec::new();
+    for (lemma, entries) in groups {
+        let keyed = homograph_keys(lemma, entries);
+        if keyed.len() > 1 {
+            homographs.push((
+                lemma.to_string(),
+                keyed.iter().map(|(key, _, _)| key.clone()).collect(),
+            ));
+        }
+        for (key, inventory, codes) in keyed {
+            meta.insert(key.clone(), codes);
+            for (code, variants) in inventory {
+                cells.insert((key.clone(), code), variants);
+            }
         }
     }
     Ok(VerbOracle {
         meta,
         cells,
-        lexeme_cells,
-        merged_divergent_lexeme_cells,
+        homographs,
     })
 }
 
@@ -1199,6 +1253,9 @@ fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
     let mut systems_filled = 0usize;
     let mut synthesized: Vec<(String, VerbMetaCodes)> = Vec::new();
     for (lemma, cells) in &cells_by_lemma {
+        // Kernel derivation always sees the surface lemma, never the
+        // numeric homograph suffix.
+        let kernel_lemma = church_slavonic::base_lemma(lemma);
         let base = oracle.meta[lemma.as_str()].clone();
         // Cells the metadata path will actually govern: the kernel currently
         // returns nothing for them (identity-served cells are unaffected by
@@ -1211,7 +1268,7 @@ fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
                 }
             }
             with_verb_meta_view(codes, |meta| {
-                kernel_verb_variants(lemma, meta, verb_cell_from_code(code))
+                kernel_verb_variants(kernel_lemma, meta, verb_cell_from_code(code))
             })
             .is_none()
         };
@@ -1250,8 +1307,8 @@ fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
                 continue;
             }
             let solution = match system_index {
-                0 => synth_present_system(lemma, &updated, &system_cells),
-                1 => synth_system(lemma, &updated, &system_cells, |stem| {
+                0 => synth_present_system(kernel_lemma, &updated, &system_cells),
+                1 => synth_system(kernel_lemma, &updated, &system_cells, |stem| {
                     let mut analyses = Vec::new();
                     for formation in 1..=5u8 {
                         for policy in 1..=3u8 {
@@ -1277,7 +1334,7 @@ fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
                             }
                         }
                     }
-                    synth_system(lemma, &updated, &system_cells, move |stem| {
+                    synth_system(kernel_lemma, &updated, &system_cells, move |stem| {
                         let mut analyses = Vec::new();
                         for formation in [1u8, 5] {
                             analyses.push(SynthAnalysis::Aorist(
@@ -1298,36 +1355,36 @@ fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
                         analyses
                     })
                 }
-                3 => synth_system(lemma, &updated, &system_cells, |stem| {
+                3 => synth_system(kernel_lemma, &updated, &system_cells, |stem| {
                     (1..=2u8)
                         .map(|formation| SynthAnalysis::Imperative(stem.to_string(), formation))
                         .collect()
                 }),
-                4 => synth_system(lemma, &updated, &system_cells, |stem| {
+                4 => synth_system(kernel_lemma, &updated, &system_cells, |stem| {
                     vec![SynthAnalysis::LParticiple(stem.to_string())]
                 }),
-                5 => synth_system(lemma, &updated, &system_cells, |stem| {
+                5 => synth_system(kernel_lemma, &updated, &system_cells, |stem| {
                     (1..=5u8)
                         .map(|formation| {
                             SynthAnalysis::PresentActiveParticiple(stem.to_string(), formation)
                         })
                         .collect()
                 }),
-                6 => synth_system(lemma, &updated, &system_cells, |stem| {
+                6 => synth_system(kernel_lemma, &updated, &system_cells, |stem| {
                     (1..=4u8)
                         .map(|formation| {
                             SynthAnalysis::PresentPassiveParticiple(stem.to_string(), formation)
                         })
                         .collect()
                 }),
-                7 => synth_system(lemma, &updated, &system_cells, |stem| {
+                7 => synth_system(kernel_lemma, &updated, &system_cells, |stem| {
                     (1..=6u8)
                         .map(|formation| {
                             SynthAnalysis::PastActiveParticiple(stem.to_string(), formation)
                         })
                         .collect()
                 }),
-                _ => synth_system(lemma, &updated, &system_cells, |stem| {
+                _ => synth_system(kernel_lemma, &updated, &system_cells, |stem| {
                     (1..=3u8)
                         .map(|formation| {
                             SynthAnalysis::PastPassiveParticiple(stem.to_string(), formation)
@@ -1369,7 +1426,7 @@ fn verb_residue_cells(oracle: &VerbOracle) -> Vec<(&str, u8, &Vec<String>)> {
     let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
     for ((lemma, code), expected) in &oracle.cells {
         let predicted = with_verb_meta_view(&oracle.meta[lemma], |meta| {
-            kernel_verb_variants(lemma, meta, verb_cell_from_code(*code))
+            kernel_verb_variants(church_slavonic::base_lemma(lemma), meta, verb_cell_from_code(*code))
         });
         if predicted.as_deref() != Some(expected.as_slice()) {
             residue.push((lemma, *code, expected));
@@ -1482,13 +1539,14 @@ fn emit_verb_residue(root: &Path) -> Result<(), Box<dyn Error>> {
     let path = root.join("crates/church-slavonic/generated/verb_residue.rs");
     fs::write(&path, &out)?;
     println!(
-        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} merged / {} per-lexeme)",
+        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} per-lexeme cells; \
+         {} homograph groups)",
         path.display(),
         out.len(),
         oracle.meta.len(),
         residue.len(),
         oracle.cells.len(),
-        oracle.lexeme_cells,
+        oracle.homographs.len(),
     );
     Ok(())
 }
@@ -1678,7 +1736,8 @@ pub(crate) fn emit_residue(root: &Path) -> Result<(), Box<dyn Error>> {
     for ((lemma, code), expected) in &oracle.cells {
         let meta = decode_meta(oracle.meta[lemma]);
         let (case, number) = cell_from_code(*code);
-        let predicted = kernel_noun_variants(lemma, &meta, case, number);
+        let predicted =
+            kernel_noun_variants(church_slavonic::base_lemma(lemma), &meta, case, number);
         if predicted.as_deref() != Some(expected.as_slice()) {
             residue.push((lemma, *code, expected));
         }
@@ -1724,15 +1783,26 @@ pub(crate) fn emit_residue(root: &Path) -> Result<(), Box<dyn Error>> {
     let path = root.join("crates/church-slavonic/generated/noun_residue.rs");
     fs::write(&path, &out)?;
     println!(
-        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} merged / {} per-lexeme)",
+        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} per-lexeme cells; \
+         {} homograph groups)",
         path.display(),
         out.len(),
         oracle.meta.len(),
         residue.len(),
         oracle.cells.len(),
-        oracle.lexeme_cells,
+        oracle.homographs.len(),
     );
     Ok(())
+}
+
+fn print_homographs(homographs: &[(String, Vec<String>)]) {
+    println!(
+        "  homograph groups: {} (deterministic numeric-suffix keys; bare lemma = default sense)",
+        homographs.len()
+    );
+    for (lemma, keys) in homographs {
+        println!("    {lemma}: {}", keys.join(", "));
+    }
 }
 
 pub(crate) fn accuracy(
@@ -1763,13 +1833,9 @@ pub(crate) fn accuracy(
     }
     let generated = root.join("crates/church-slavonic/generated/noun_residue.rs");
     let bytes = fs::metadata(&generated)?.len();
-    println!("rewrite pilot accuracy (nouns, lemma-merged oracle)");
-    println!("  merged cells matched: {matched}/{total}");
-    println!(
-        "  per-lexeme cells covered: {} (of which {} homograph cells differ from the \
-         merged lemma-level list and are served merged)",
-        oracle.lexeme_cells, oracle.merged_divergent_lexeme_cells
-    );
+    println!("rewrite pilot accuracy (nouns, per-lexeme oracle, suffixed homograph keys)");
+    println!("  per-lexeme cells matched: {matched}/{total}");
+    print_homographs(&oracle.homographs);
     println!(
         "  generated table size: {bytes} bytes ({generated})",
         generated = generated.display()
@@ -1807,18 +1873,17 @@ pub(crate) fn accuracy(
     }
     let adj_generated = root.join("crates/church-slavonic/generated/adjective_residue.rs");
     let adj_bytes = fs::metadata(&adj_generated)?.len();
-    println!("rewrite pilot accuracy (adjectives, lemma-merged oracle, animacy collapsed)");
-    println!("  merged cells matched: {adj_matched}/{adj_total}");
+    println!(
+        "rewrite pilot accuracy (adjectives, per-lexeme oracle, animacy collapsed, \
+         suffixed homograph keys)"
+    );
+    println!("  per-lexeme cells matched: {adj_matched}/{adj_total}");
     println!(
         "  keyed (lexeme, feature) cells: {} of which {} comparative-citation cells are \
          excluded from the facade (unpredictable suffix grade / suppletion)",
         adjectives.keyed_cells, adjectives.comparative_cells
     );
-    println!(
-        "  per-lexeme collapsed cells covered: {} (of which {} homograph cells differ from \
-         the merged lemma-level list and are served merged)",
-        adjectives.lexeme_cells, adjectives.merged_divergent_lexeme_cells
-    );
+    print_homographs(&adjectives.homographs);
     println!(
         "  generated table size: {adj_bytes} bytes ({path})",
         path = adj_generated.display()
@@ -1881,7 +1946,7 @@ pub(crate) fn accuracy(
         // measured over the shipped `VERB_META` table so synthesized
         // principal-part metadata counts as rules.
         let kernel = church_slavonic::verb_meta(lemma)
-            .and_then(|meta| kernel_verb_variants(lemma, &meta, cell));
+            .and_then(|meta| kernel_verb_variants(church_slavonic::base_lemma(lemma), &meta, cell));
         if kernel.as_deref() == Some(expected.as_slice()) {
             verb_rules_cells += 1;
         }
@@ -1898,16 +1963,13 @@ pub(crate) fn accuracy(
     }
     let verb_generated = root.join("crates/church-slavonic/generated/verb_residue.rs");
     let verb_bytes = fs::metadata(&verb_generated)?.len();
-    println!("rewrite pilot accuracy (verbs, lemma-merged oracle)");
-    println!("  merged cells matched: {verb_matched}/{verb_total}");
+    println!("rewrite pilot accuracy (verbs, per-lexeme oracle, suffixed homograph keys)");
+    println!("  per-lexeme cells matched: {verb_matched}/{verb_total}");
     println!(
         "  rules-vs-residue split: {verb_rules_cells} cells from the rule kernel          (identity kernels + principal-part metadata), {} from the residue table",
         verb_total - verb_rules_cells
     );
-    println!(
-        "  per-lexeme cells covered: {} (of which {} homograph cells differ from the          merged lemma-level list and are served merged)",
-        verbs.lexeme_cells, verbs.merged_divergent_lexeme_cells
-    );
+    print_homographs(&verbs.homographs);
     println!(
         "  generated table size: {verb_bytes} bytes ({path})",
         path = verb_generated.display()
