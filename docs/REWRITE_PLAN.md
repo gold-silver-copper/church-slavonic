@@ -137,6 +137,12 @@ Hard rules for the target:
   phrases, dictionary/analyze, orthography/transliteration, the synodal
   counterpart, and the phase-5 deprecation release.
 
+- 2026-08-26 — church-slavonic-dictionary landed: 5,174 senses as 2.2 MB
+  sorted-slice tables, homograph-aware lemma keys, lemmatize() by lazily
+  inverting paradigm enumeration (measured lazy beats a generated index),
+  check-structure-gated (all pinned keys resolve; 101,206/101,206
+  round-trips). church-slavonic-orthography extraction in flight.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
