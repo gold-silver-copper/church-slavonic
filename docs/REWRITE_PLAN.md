@@ -75,6 +75,21 @@ Hard rules for the target:
   deferred until the rule kernels merge: the two `RuleId` models are
   semantically different (closed rule inventory vs evidence-tagged ids).
 
+- 2026-08-25 — Phase 2 slices 2–3: OCS family adopted the kernel's five
+  identity enums plus AdjectiveForm (`abbrev()` spellings; historical
+  Animacy enumeration order preserved via `OCS_ANIMACY_ORDER`); no
+  committed artifact changed, accuracy stays 134,761/134,761. The
+  orthography-crate merge is deprioritised: the two modules are nearly
+  disjoint domains (script transliteration vs liturgical normalization).
+- 2026-08-25 — Phase 3 groundwork: `cargo xtask rewrite-derivability`
+  measures the registry against the pure rule kernel. 84.7% of attested
+  cells derive exactly; the residue is ~20.6k cells / ~347 KB of form text
+  (vs the 24 MB compiled registry), confirming the PHF budget. Known
+  measurement gaps: closed classes/pronouns/numerals not yet wired to
+  their reviewed identity kernels; the verb shortfall is a
+  verb_metadata.tsv coverage gap; ~3k adjective "divergences" are one
+  animate-accusative convention difference, a policy call to adjudicate.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
