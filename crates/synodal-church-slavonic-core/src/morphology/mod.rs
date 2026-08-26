@@ -14,6 +14,8 @@ mod contract_tests;
 #[cfg(test)]
 mod noun_extended_tests;
 #[cfg(test)]
+mod noun_kernel_pin_tests;
+#[cfg(test)]
 mod noun_tests;
 #[cfg(test)]
 mod participle_tests;

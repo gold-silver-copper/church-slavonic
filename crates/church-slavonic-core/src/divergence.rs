@@ -27,8 +27,8 @@ pub struct NamedDivergence {
 }
 
 /// Named divergences encoded by the merged POS kernels (`crate::pronoun`,
-/// `crate::determiner`, `crate::numeral`). Later POS merges append their
-/// own entries.
+/// `crate::determiner`, `crate::numeral`, `crate::adjective`, `crate::noun`,
+/// `crate::noun_consonant`). Later POS merges append their own entries.
 pub const NAMED: &[NamedDivergence] = &[
     NamedDivergence {
         id: "pron:instr-loc-sg-jer",
@@ -304,6 +304,160 @@ pub const NAMED: &[NamedDivergence] = &[
                    velar-palatalizing terminals; the OCS column is pinned to \
                    the merged pronoun hard class by a kernel test.",
     },
+    NamedDivergence {
+        id: "noun:instrumental-singular-jer",
+        summary: "The OCS soft and jer-grade instrumental singulars end in a \
+                  soft jer (-ѥмь, -ьмь, -ъмь: мѫжемь, пѫтьмь, сꙑнъмь); \
+                  Synodal hardens and vocalizes to -емъ/-омъ (мꙋжемъ, \
+                  пꙋтемъ, сыномъ). Jer projection explains the medial vowel \
+                  but cannot turn the final ь into ъ — the same condition as \
+                  pron:instr-loc-sg-jer, extended over the noun classes.",
+        evidence: "projection-study §3 top patterns …емь/…омь/…имь; Alypy \
+                   §§34–44 instrumental rows vs Polivanova §§326–351.",
+    },
+    NamedDivergence {
+        id: "noun:i-stem-instrumental-i-grade",
+        summary: "The feminine i-grade instrumental singular re-vocalizes: \
+                  OCS -ьѭ (костьѭ, матерьѭ, свекръвьѭ) against Synodal -їю \
+                  (заповѣдїю, матерїю, церковїю); no projection rule takes \
+                  the jer to и.",
+        evidence: "Alypy §§41–44 vs Polivanova §§349–351 and the athematic \
+                   tables.",
+    },
+    NamedDivergence {
+        id: "noun:i-stem-vocative-leveling",
+        summary: "The i-stem vocative singular is re-inventoried: OCS -и in \
+                  both genders against Synodal feminine -е (заповѣде) and \
+                  masculine -ь/-ю doublets.",
+        evidence: "Alypy §41 vocative rows vs Polivanova §§333–335, \
+                   349–351.",
+    },
+    NamedDivergence {
+        id: "noun:soft-genitive-plural-reinventory",
+        summary: "The soft, i-stem, and athematic genitive plurals are \
+                  re-inventoried: OCS -ь (jo-stems), -ии (i-stems), and -ъ \
+                  (consonant stems) against Synodal -ей/-ій/-їй (мꙋжей, \
+                  заповѣдей, гостій, каменїй, матерїй‖ей), also carried by \
+                  the genitive-shaped animate accusative plurals.",
+        evidence: "Alypy §§34–44 genitive-plural rows vs Polivanova's -ь/-ии \
+                   terminals.",
+    },
+    NamedDivergence {
+        id: "noun:soft-direct-plural-leveling",
+        summary: "The soft direct plurals level -ѩ/-ѧ to the \
+                  nominative-shaped -и: OCS jo-masculine accusative мѫжѧ and \
+                  ja-stem nominative/accusative доушѧ against Synodal мꙋжы/ \
+                  дꙋши-type -и (the postvocalic ancient plural that keeps -ѧ \
+                  survives as a Synodal family subclass).",
+        evidence: "Alypy §§34–40 plural rows vs Polivanova tables 327/343.",
+    },
+    NamedDivergence {
+        id: "noun:soft-feminine-genitive-leveling",
+        summary: "The ja-stem genitive singular levels to the i-shape: OCS \
+                  -ѩ (доушѧ, землѩ) against Synodal -и (дꙋши, земли) — the \
+                  same grade shift as adj:soft-short-palatal-vowel-series's \
+                  feminine genitive.",
+        evidence: "Alypy §§39–40 vs Polivanova table 343.",
+    },
+    NamedDivergence {
+        id: "noun:hard-declension-variant-imports",
+        summary: "The Synodal first declension imports ordered variant sets \
+                  the OCS twofold classes lack: the u-stem dative -ови/-еви \
+                  and genitive plural -овъ (now primary over inherited -ъ), \
+                  the i-stem instrumental -(ь)ми and nominative -їе, the \
+                  a-stem instrumental/locative -ами/-ахъ (also on neuters \
+                  and the -ама/-ѡмъ consonant-stem duals and datives), and \
+                  the hard locative doublet -ѣ on soft masculines.",
+        evidence: "Alypy §§33–44 variant rows vs Polivanova's variant-free \
+                   tables 327/339; gold paradigm oracle variant orders.",
+    },
+    NamedDivergence {
+        id: "noun:locative-plural-reinventory",
+        summary: "The soft and neuter-athematic locative plurals are \
+                  re-inventoried: OCS jo-stem -ихъ against Synodal \
+                  -ехъ/-ѧхъ (мꙋжехъ, морѧхъ), and OCS neuter consonant-stem \
+                  -ьхъ against Synodal -ѣхъ (именѣхъ, словесѣхъ); the \
+                  jer-grade -ьхъ → -ехъ cells (i-stems, масс./fem. \
+                  athematics) proved projectable and are realization.",
+        evidence: "projection-study §3 …ѣхъ/…ихъ patterns; Alypy §§34–44 vs \
+                   Polivanova's locative rows.",
+    },
+    NamedDivergence {
+        id: "noun:animate-accusative-coverage",
+        summary: "Synodal extends the genitive-shaped animate accusative \
+                  over the a-stem, ja-stem, and feminine athematic plurals \
+                  (жєнъ, дꙋшь, матерей‖и) where OCS keeps the \
+                  nominative-shaped accusative; the o/jo-stem animate arms \
+                  are shared (pron:genitive-accusative).",
+        evidence: "Alypy §§39–44 animate rows vs Polivanova §§267, 289–290 \
+                   (canonical nominative-like accusative).",
+    },
+    NamedDivergence {
+        id: "noun:consonant-direct-reshape",
+        summary: "The masculine n-stem direct cells reshape: OCS keeps the \
+                  athematic nominative/accusative камꙑ and the plural \
+                  камене; Synodal reshapes the citation to камень, generates \
+                  accusative -ь/-е from the extended stem, and levels the \
+                  direct plural to -и (камени).",
+        evidence: "Alypy §§42–44 камень/день tables vs Polivanova's камꙑ \
+                   paradigm.",
+    },
+    NamedDivergence {
+        id: "noun:consonant-locative-singular-i",
+        summary: "The athematic locative singular levels to the \
+                  dative-shaped -и: OCS -е (камене, имене, словесе, \
+                  свекръве) against Synodal -и (камени, имени, словеси, \
+                  свекрови); only the r-stem locative -и is shared.",
+        evidence: "Alypy §§42–44 locative rows vs Polivanova's athematic \
+                   tables.",
+    },
+    NamedDivergence {
+        id: "noun:dual-direct-reshape",
+        summary: "The neuter dual direct cells reshape: OCS hard o-stem -ѣ \
+                  (селѣ) against Synodal -а (села), and OCS consonant-stem \
+                  -ѣ (именѣ, словесѣ) against Synodal -и (имени, словеси). \
+                  Synodal RETAINS the dual as a category — the endings \
+                  re-inventory, they do not vanish.",
+        evidence: "Alypy §§34, 42–44 dual rows vs Polivanova tables \
+                   339 and the athematic tables.",
+    },
+    NamedDivergence {
+        id: "noun:dual-oblique-reinventory",
+        summary: "The feminine athematic dual genitive/locative \
+                  re-inventories: OCS -оу (матероу, свекръвоу) against \
+                  Synodal -їю (матерїю, церковїю), the i-stem-shaped dual \
+                  oblique.",
+        evidence: "Alypy §§42–44 dual rows vs Polivanova's r/v-stem \
+                   tables.",
+    },
+    NamedDivergence {
+        id: "noun:u-stem-dissolution",
+        summary: "The OCS u-stem paradigm (сꙑноу, сꙑнови, сꙑнъмь, dual \
+                  сꙑнꙑ/сꙑновоу/сꙑнъма, vocative сꙑноу, plural \
+                  сꙑнове/сꙑновъ/сꙑнъмъ/сꙑнъми/сꙑнъхъ) dissolves into the \
+                  Synodal first declension carrying the u-stem endings as \
+                  ordered variants (-ꙋ, -ови, -ове, -овомъ, -овѣхъ) beside \
+                  the o-stem primaries; the distinct dual, vocative, and \
+                  jer-grade obliques are not preserved.",
+        evidence: "Alypy §§37–38 сынъ/домъ rows vs Polivanova §333 u-stem \
+                   profile.",
+    },
+    NamedDivergence {
+        id: "noun:in-singulative-inanimate-accusative",
+        summary: "The -инъ singulative plural is otherwise shared \
+                  (syncopated stem, -е/-ъ/-омъ/-ѣхъ), but the inanimate \
+                  accusative differs: OCS -ꙑ against the Synodal \
+                  nominative-shaped -е.",
+        evidence: "Alypy §37 ethnonym table vs Polivanova's 2/m** class.",
+    },
+    NamedDivergence {
+        id: "noun:agent-plural-reinventory",
+        summary: "The agent -тель direct plural re-inventories: OCS \
+                  nominative/vocative -ѥ (оучителѥ) against the Synodal \
+                  ordered -и/-е/-їе variants; the inanimate accusative \
+                  follows noun:soft-direct-plural-leveling.",
+        evidence: "Alypy §37 agent rows vs Polivanova's 2/m* class.",
+    },
 ];
 
 /// Pieces of the per-family POS kernels deliberately NOT merged at their
@@ -374,16 +528,48 @@ pub const UNMERGED: &[NamedDivergence] = &[
     },
     NamedDivergence {
         id: "unmerged:num:noun-backed-magnitudes-and-fractionals",
-        summary: "The thousand and myriad magnitudes, the five–nine \
-                  singulars, and both fractional lexicons decline through \
-                  the family noun kernels and merge with the noun slice; \
-                  the fractional inventories (OCS substantival \
-                  полъ/половина/четврьть/десѧтина vs Synodal fractional \
-                  adjective and noun classes) also do not overlap \
+        summary: "Since the noun slice the noun-backed numeral routes ride \
+                  the merged noun kernel through their family noun shims: \
+                  the OCS thousand's ja-stem obliques and the Synodal \
+                  magnitude/fractional noun classes (SecondHard, \
+                  SecondMixed, FirstHardMasculine(UStem), ThirdFeminine) \
+                  all read the kernel columns. What remains per-recension \
+                  is the magnitude and fractional lexeme inventories \
+                  themselves (OCS тꙑсѫщи/тьма spellings and substantival \
+                  полъ/половина/четврьть/десѧтина vs the Synodal fractional \
+                  adjective and noun lexemes), which do not overlap \
                   lexically.",
-        evidence: "OCS numeral.rs decline_thousand/decline_fractional vs \
-                   Synodal numeral_morphology.rs noun_like_forms; Leuta and \
-                   Havryliuk 2018 p. 162 vs Alypy §§61–70.",
+        evidence: "OCS numeral.rs decline_thousand over crate::noun (now \
+                   kernel-backed) vs Synodal numeral_morphology.rs \
+                   noun_like_forms over decline_noun (now kernel-backed); \
+                   Leuta and Havryliuk 2018 p. 162 vs Alypy §§61–70.",
+    },
+    NamedDivergence {
+        id: "unmerged:noun:synodal-subclass-tables",
+        summary: "The Synodal velar, sibilant-mixed, mobile-ц, glide-й, \
+                  -ей, -їа, -їе, postvocalic-ancient-plural, and \
+                  second-mixed subclasses are family reshapes of the merged \
+                  columns conditioned on Synodal stem phonology (positional \
+                  ы/и after velars, -є-/-ѡ- wide-letter duals, sibilant \
+                  vocatives) with no OCS class to align cell-by-cell; they \
+                  stay Synodal family tables over the kernel's shared \
+                  classes.",
+        evidence: "Synodal noun.rs FirstHardVelarMasculine, FirstMixed*, \
+                   FirstSoftMasculineJ/Ey, SecondSoft*Ia, SecondMixed, \
+                   SecondSoftPostvocalicAncientPlural arms; Alypy §§8, \
+                   32–40.",
+    },
+    NamedDivergence {
+        id: "unmerged:noun:lexeme-specific-contracts",
+        summary: "The lexeme-specific paradigms stay family-side: Synodal \
+                  господь, день, камень's alternative series, ꙋдъ's mixed \
+                  -ес- background, дщерь, the syncopating -овь members, the \
+                  paired-body ѻко/ꙋхо duals, and the -ище locative variants; \
+                  OCS class-0 (UniqueMixed) reviewed substantives. Each is \
+                  a closed per-recension lexical contract, not a paradigm \
+                  rule.",
+        evidence: "Synodal noun.rs lexeme-specific declensions (Alypy \
+                   §§35–44); OCS UniqueNounFamilyMember data.",
     },
     NamedDivergence {
         id: "unmerged:num:collective-remainder",
@@ -421,7 +607,7 @@ mod tests {
         ids.sort_unstable();
         ids.dedup();
         assert_eq!(ids.len(), total, "duplicate divergence id");
-        let pos_prefixes = ["pron:", "det:", "num:", "adj:"];
+        let pos_prefixes = ["pron:", "det:", "num:", "adj:", "noun:"];
         assert!(NAMED.iter().all(|entry| {
             pos_prefixes
                 .iter()

@@ -1,9 +1,19 @@
 //! Rule-based noun declension.
+//!
+//! Since the phase-4 noun merge (docs/UNIFIED_LANGUAGE_PROMPT.md) the shared
+//! vocalic and consonant-stem ending tables live in the merged kernel
+//! (`church_slavonic_core::noun` and `church_slavonic_core::noun_consonant`);
+//! this module is the family adapter that keeps the public API, the citation
+//! parsing, the palatalization seams, the iotation/glide respelling of the
+//! canonical soft columns, and the class-0 dispatch.
 
 use crate::{
     Animacy, Case, Gender, InflectionError, NounCell, NounClass, Number, NumberRestriction,
     PredictedForm, RuleId, RuleStep,
 };
+use church_slavonic_core::{Recension, noun as kernel, noun_consonant as kernel_consonant};
+
+const OCS: Recension = Recension::OldChurchSlavonic;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NounLexeme {
@@ -14,71 +24,39 @@ pub struct NounLexeme {
     pub number_restriction: NumberRestriction,
 }
 
-struct ConsonantDeclension {
-    citation_ending: char,
-    endings: [[&'static str; 7]; 3],
-    rule: RuleId,
+/// Read one OCS vocalic column of the merged kernel. The kernel's totality
+/// test guarantees a single non-empty OCS ending per cell.
+fn kernel_ending(
+    class: kernel::VocalicNounClass,
+    cell: NounCell,
+    animacy: Animacy,
+) -> &'static str {
+    kernel::vocalic_ending(class, cell.case, cell.number, animacy, OCS)[0]
 }
 
-const N_MASCULINE: ConsonantDeclension = ConsonantDeclension {
-    citation_ending: 'ꙑ',
-    endings: [
-        ["ꙑ", "ене", "ени", "ꙑ", "еньмь", "ене", "ꙑ"],
-        ["ени", "еноу", "еньма", "ени", "еньма", "еноу", "ени"],
-        ["ене", "енъ", "еньмъ", "ени", "еньми", "еньхъ", "ене"],
-    ],
-    rule: RuleId::NounNMasculine,
-};
-
-const N_NEUTER: ConsonantDeclension = ConsonantDeclension {
-    citation_ending: 'ѧ',
-    endings: [
-        ["ѧ", "ене", "ени", "ѧ", "еньмь", "ене", "ѧ"],
-        ["енѣ", "еноу", "еньма", "енѣ", "еньма", "еноу", "енѣ"],
-        ["ена", "енъ", "еньмъ", "ена", "енꙑ", "еньхъ", "ена"],
-    ],
-    rule: RuleId::NounNNeuter,
-};
-
-const NT_NEUTER: ConsonantDeclension = ConsonantDeclension {
-    citation_ending: 'ѧ',
-    endings: [
-        ["ѧ", "ѧте", "ѧти", "ѧ", "ѧтьмь", "ѧте", "ѧ"],
-        ["ѧтѣ", "ѧтоу", "ѧтьма", "ѧтѣ", "ѧтьма", "ѧтоу", "ѧтѣ"],
-        ["ѧта", "ѧтъ", "ѧтьмъ", "ѧта", "ѧтꙑ", "ѧтьхъ", "ѧта"],
-    ],
-    rule: RuleId::NounNtNeuter,
-};
-
-const R_STEM: ConsonantDeclension = ConsonantDeclension {
-    citation_ending: 'и',
-    endings: [
-        ["и", "ере", "ери", "ерь", "ерьѭ", "ери", "и"],
-        ["ери", "ероу", "ерьма", "ери", "ерьма", "ероу", "ери"],
-        ["ери", "еръ", "ерьмъ", "ери", "ерьми", "ерьхъ", "ери"],
-    ],
-    rule: RuleId::NounRStem,
-};
-
-const S_NEUTER: ConsonantDeclension = ConsonantDeclension {
-    citation_ending: 'о',
-    endings: [
-        ["о", "есе", "еси", "о", "есьмь", "есе", "о"],
-        ["есѣ", "есоу", "есьма", "есѣ", "есьма", "есоу", "есѣ"],
-        ["еса", "есъ", "есьмъ", "еса", "есꙑ", "есьхъ", "еса"],
-    ],
-    rule: RuleId::NounSNeuter,
-};
-
-const V_FEMININE: ConsonantDeclension = ConsonantDeclension {
-    citation_ending: 'ꙑ',
-    endings: [
-        ["ꙑ", "ъве", "ъви", "ъвь", "ъвьѭ", "ъве", "ꙑ"],
-        ["ъви", "ъвоу", "ъвама", "ъви", "ъвама", "ъвоу", "ъви"],
-        ["ъви", "ъвъ", "ъвамъ", "ъви", "ъвами", "ъвахъ", "ъви"],
-    ],
-    rule: RuleId::NounVFeminine,
-};
+/// Respell one canonical iotated soft-column ending as the family prints it
+/// after the given stem shape (Polivanova's positional norm): after a vowel
+/// glide the iotated letters stand; after a plain consonant ѥ/ѩ print as
+/// е/ѧ; after a sibilant ꙗ/ю/ѭ additionally print as а/оу/ѫ.
+fn soft_surface(ending: &'static str, glide: bool, sibilant: bool) -> String {
+    if glide {
+        return ending.to_string();
+    }
+    let mut chars = ending.chars();
+    let Some(first) = chars.next() else {
+        return String::new();
+    };
+    let rest = chars.as_str();
+    let replaced = match first {
+        'ѥ' => Some("е"),
+        'ѩ' => Some("ѧ"),
+        'ꙗ' if sibilant => Some("а"),
+        'ю' if sibilant => Some("оу"),
+        'ѭ' if sibilant => Some("ѫ"),
+        _ => None,
+    };
+    replaced.map_or_else(|| ending.to_string(), |first| format!("{first}{rest}"))
+}
 
 pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
     let normalized_lexeme = NounLexeme {
@@ -109,12 +87,54 @@ pub fn decline(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, Inf
         NounClass::IFeminine => decline_i_stem(lexeme, cell, false),
         NounClass::IMasculine => decline_i_stem(lexeme, cell, true),
         NounClass::UMasculine => decline_u_masculine(lexeme, cell),
-        NounClass::NMasculine => decline_consonant_stem(lexeme, cell, &N_MASCULINE),
-        NounClass::NNeuter => decline_consonant_stem(lexeme, cell, &N_NEUTER),
-        NounClass::NtNeuter => decline_consonant_stem(lexeme, cell, &NT_NEUTER),
-        NounClass::RStem => decline_consonant_stem(lexeme, cell, &R_STEM),
-        NounClass::SNeuter => decline_consonant_stem(lexeme, cell, &S_NEUTER),
-        NounClass::VFeminine => decline_consonant_stem(lexeme, cell, &V_FEMININE),
+        NounClass::NMasculine => decline_consonant_stem(
+            lexeme,
+            cell,
+            kernel_consonant::ConsonantNounClass::NMasculine,
+            'ꙑ',
+            "ен",
+            RuleId::NounNMasculine,
+        ),
+        NounClass::NNeuter => decline_consonant_stem(
+            lexeme,
+            cell,
+            kernel_consonant::ConsonantNounClass::NNeuter,
+            'ѧ',
+            "ен",
+            RuleId::NounNNeuter,
+        ),
+        NounClass::NtNeuter => decline_consonant_stem(
+            lexeme,
+            cell,
+            kernel_consonant::ConsonantNounClass::NtNeuter,
+            'ѧ',
+            "ѧт",
+            RuleId::NounNtNeuter,
+        ),
+        NounClass::RStem => decline_consonant_stem(
+            lexeme,
+            cell,
+            kernel_consonant::ConsonantNounClass::RFeminine,
+            'и',
+            "ер",
+            RuleId::NounRStem,
+        ),
+        NounClass::SNeuter => decline_consonant_stem(
+            lexeme,
+            cell,
+            kernel_consonant::ConsonantNounClass::SNeuter,
+            'о',
+            "ес",
+            RuleId::NounSNeuter,
+        ),
+        NounClass::VFeminine => decline_consonant_stem(
+            lexeme,
+            cell,
+            kernel_consonant::ConsonantNounClass::VFeminine,
+            'ꙑ',
+            "ъв",
+            RuleId::NounVFeminine,
+        ),
         NounClass::TwofoldAgentMasculine => decline_twofold_agent_masculine(lexeme, cell),
         NounClass::TwofoldInMasculine => decline_twofold_in_masculine(lexeme, cell),
         NounClass::TwofoldFeminineI => decline_twofold_feminine_i(lexeme, cell),
@@ -150,12 +170,11 @@ fn decline_twofold_agent_masculine(
     let stem = strip_required(&lexeme.lemma, 'ь')?;
     let base = decline_jo_masculine_soft(lexeme, cell)?;
     if cell.number == Number::Plural {
-        let ending = match cell.case {
-            Case::Nominative | Case::Vocative => Some("ѥ"),
-            Case::Accusative if lexeme.animacy == Animacy::Inanimate => Some("ѩ"),
-            _ => None,
-        };
-        if let Some(ending) = ending {
+        // Merged kernel: the agent direct-plural overrides (divergence
+        // noun:agent-plural-reinventory).
+        let overriding =
+            kernel_consonant::agent_direct_plural_ending(cell.case, lexeme.animacy, OCS);
+        if let Some(ending) = overriding.first() {
             return Ok(join(
                 stem,
                 ending,
@@ -180,39 +199,24 @@ fn decline_twofold_in_masculine(
             reason: "Polivanova class 2/m** requires a citation in -инъ".to_string(),
         })?;
     let (stem, ending, mutation) = if cell.number == Number::Plural {
-        let (ending, mutation) = match cell.case {
-            Case::Nominative | Case::Vocative => ("е", Mutation::None),
-            Case::Genitive => ("ъ", Mutation::None),
-            Case::Dative => ("омъ", Mutation::None),
-            Case::Accusative if lexeme.animacy == Animacy::Animate => ("ъ", Mutation::None),
-            Case::Accusative | Case::Instrumental => ("ꙑ", Mutation::None),
-            Case::Locative => ("ѣхъ", Mutation::SecondPalatalization),
+        // Merged kernel: the shared singulative plural on the syncopated stem.
+        let ending =
+            kernel_consonant::in_singulative_plural_ending(cell.case, lexeme.animacy, OCS)[0];
+        let mutation = if cell.case == Case::Locative {
+            Mutation::SecondPalatalization
+        } else {
+            Mutation::None
         };
         (syncopated_stem, ending, mutation)
     } else {
-        let (ending, mutation) = match (cell.case, cell.number) {
-            (Case::Nominative, Number::Singular) => ("ъ", Mutation::None),
-            (Case::Genitive, Number::Singular) => ("а", Mutation::None),
-            (Case::Dative, Number::Singular) => ("оу", Mutation::None),
-            (Case::Accusative, Number::Singular) if lexeme.animacy == Animacy::Animate => {
-                ("а", Mutation::None)
-            }
-            (Case::Accusative, Number::Singular) => ("ъ", Mutation::None),
-            (Case::Instrumental, Number::Singular) => ("омъ", Mutation::None),
-            (Case::Locative, Number::Singular) => ("ѣ", Mutation::SecondPalatalization),
-            (Case::Vocative, Number::Singular) => ("е", Mutation::FirstPalatalization),
-            (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => {
-                ("а", Mutation::None)
-            }
-            (Case::Genitive | Case::Locative, Number::Dual) => ("оу", Mutation::None),
-            (Case::Dative | Case::Instrumental, Number::Dual) => ("ома", Mutation::None),
-            (_, Number::Plural) => {
-                return Err(InflectionError::InvalidInput {
-                    reason: "internal class-2/m** number partition failure".to_string(),
-                });
-            }
-        };
-        (expanded_stem, ending, mutation)
+        // Merged kernel: the shared hard o-stem singular and dual on the
+        // expanded -ин- stem.
+        let ending = kernel_ending(
+            kernel::VocalicNounClass::OHardMasculine,
+            cell,
+            lexeme.animacy,
+        );
+        (expanded_stem, ending, hard_o_mutation(cell))
     };
     Ok(join(stem, ending, mutation, RuleId::NounTwofoldInMasculine))
 }
@@ -280,12 +284,6 @@ fn decline_jo_masculine_soft(
     let glide_citation = lexeme.lemma.ends_with('и');
     let stem = strip_any_required(&lexeme.lemma, &["ь", "и"])?;
     let sibilant = ends_in_sibilant(stem);
-    let vowel_glide = glide_citation;
-    let (back, front) = if sibilant {
-        ("а", "оу")
-    } else {
-        ("ꙗ", "ю")
-    };
     if cell.case == Case::Vocative && cell.number == Number::Singular && stem.ends_with('ц') {
         let stem = stem.strip_suffix('ц').unwrap_or(stem);
         return Ok(join(
@@ -295,36 +293,30 @@ fn decline_jo_masculine_soft(
             RuleId::NounJoMasculineSoft,
         ));
     }
+    // Family citation overrides over the merged kernel column: the vowel-
+    // glide citation prints -и in the direct singular and the genitive
+    // plural.
     let ending = match (cell.case, cell.number) {
-        (Case::Nominative, Number::Singular) if glide_citation => "и",
-        (Case::Nominative, Number::Singular) => "ь",
-        (Case::Genitive, Number::Singular) => back,
-        (Case::Dative, Number::Singular) => front,
-        (Case::Accusative, Number::Singular) if lexeme.animacy == Animacy::Animate => back,
-        (Case::Accusative, Number::Singular) if glide_citation => "и",
-        (Case::Accusative, Number::Singular) => "ь",
-        (Case::Instrumental, Number::Singular) if vowel_glide => "ѥмь",
-        (Case::Instrumental, Number::Singular) => "емь",
-        (Case::Locative, Number::Singular) => "и",
-        (Case::Vocative, Number::Singular) => front,
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => back,
-        (Case::Genitive | Case::Locative, Number::Dual) => front,
-        (Case::Dative | Case::Instrumental, Number::Dual) if vowel_glide => "ѥма",
-        (Case::Dative | Case::Instrumental, Number::Dual) => "ема",
-        (Case::Nominative | Case::Vocative, Number::Plural) => "и",
-        (Case::Genitive, Number::Plural) if glide_citation => "и",
-        (Case::Genitive, Number::Plural) => "ь",
-        (Case::Dative, Number::Plural) if vowel_glide => "ѥмъ",
-        (Case::Dative, Number::Plural) => "емъ",
-        (Case::Accusative, Number::Plural) if lexeme.animacy == Animacy::Animate => "ь",
-        (Case::Accusative, Number::Plural) if glide_citation => "ѩ",
-        (Case::Accusative, Number::Plural) => "ѧ",
-        (Case::Instrumental, Number::Plural) => "и",
-        (Case::Locative, Number::Plural) => "ихъ",
+        (Case::Nominative, Number::Singular) if glide_citation => "и".to_string(),
+        (Case::Accusative, Number::Singular)
+            if glide_citation && lexeme.animacy != Animacy::Animate =>
+        {
+            "и".to_string()
+        }
+        (Case::Genitive, Number::Plural) if glide_citation => "и".to_string(),
+        _ => soft_surface(
+            kernel_ending(
+                kernel::VocalicNounClass::JoSoftMasculine,
+                cell,
+                lexeme.animacy,
+            ),
+            glide_citation,
+            sibilant,
+        ),
     };
     Ok(join(
         stem,
-        ending,
+        &ending,
         Mutation::None,
         RuleId::NounJoMasculineSoft,
     ))
@@ -337,31 +329,27 @@ fn decline_jo_neuter_soft(
     let iotated = lexeme.lemma.ends_with('ѥ');
     let stem = strip_any_required(&lexeme.lemma, &["е", "ѥ"])?;
     let yer_j_stem = iotated && stem.ends_with('и');
-    let (citation, back, front) = if iotated {
-        ("ѥ", "ꙗ", "ю")
+    let canonical = kernel_ending(kernel::VocalicNounClass::JoSoftNeuter, cell, lexeme.animacy);
+    let ending = if cell.case == Case::Genitive && cell.number == Number::Plural && yer_j_stem {
+        // Family citation override: the ьj workstem genitive plural -ии.
+        "и".to_string()
+    } else if !iotated {
+        soft_surface(canonical, false, true)
+    } else if yer_j_stem {
+        canonical.to_string()
+    } else if let Some(rest) = canonical.strip_prefix("ѥм") {
+        // An iotated citation after a plain consonant keeps ѥ/ꙗ/ю in the
+        // direct and genitive cells but prints the ѥм- obliques with plain е.
+        format!("ем{rest}")
     } else {
-        ("е", "а", "оу")
+        canonical.to_string()
     };
-    let ending = match (cell.case, cell.number) {
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Singular) => citation,
-        (Case::Genitive, Number::Singular) => back,
-        (Case::Dative, Number::Singular) => front,
-        (Case::Instrumental, Number::Singular) if yer_j_stem => "ѥмь",
-        (Case::Instrumental, Number::Singular) => "емь",
-        (Case::Locative, Number::Singular) => "и",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => "и",
-        (Case::Genitive | Case::Locative, Number::Dual) => front,
-        (Case::Dative | Case::Instrumental, Number::Dual) if yer_j_stem => "ѥма",
-        (Case::Dative | Case::Instrumental, Number::Dual) => "ема",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => back,
-        (Case::Genitive, Number::Plural) if iotated && stem.ends_with('и') => "и",
-        (Case::Genitive, Number::Plural) => "ь",
-        (Case::Dative, Number::Plural) if yer_j_stem => "ѥмъ",
-        (Case::Dative, Number::Plural) => "емъ",
-        (Case::Instrumental, Number::Plural) => "и",
-        (Case::Locative, Number::Plural) => "ихъ",
-    };
-    Ok(join(stem, ending, Mutation::None, RuleId::NounJoNeuterSoft))
+    Ok(join(
+        stem,
+        &ending,
+        Mutation::None,
+        RuleId::NounJoNeuterSoft,
+    ))
 }
 
 fn decline_ja_soft(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
@@ -372,33 +360,20 @@ fn decline_ja_soft(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm,
     } else {
         (strip_required(&lexeme.lemma, 'а')?, false)
     };
-    let ending = match (cell.case, cell.number) {
-        (Case::Nominative, Number::Singular) if iotated => "ꙗ",
-        (Case::Nominative, Number::Singular) => "а",
-        (Case::Genitive, Number::Singular) if iotated => "ѩ",
-        (Case::Genitive, Number::Singular) => "ѧ",
-        (Case::Dative | Case::Locative, Number::Singular) => "и",
-        (Case::Accusative, Number::Singular) if iotated => "ѭ",
-        (Case::Accusative, Number::Singular) => "ѫ",
-        (Case::Instrumental, Number::Singular) => "еѭ",
-        (Case::Vocative, Number::Singular) => "е",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => "и",
-        (Case::Genitive | Case::Locative, Number::Dual) if iotated => "ю",
-        (Case::Genitive | Case::Locative, Number::Dual) => "оу",
-        (Case::Dative | Case::Instrumental, Number::Dual) if iotated => "ꙗма",
-        (Case::Dative | Case::Instrumental, Number::Dual) => "ама",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) if iotated => "ѩ",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => "ѧ",
-        (Case::Genitive, Number::Plural) if iotated && stem.ends_with('и') => "и",
-        (Case::Genitive, Number::Plural) => "ь",
-        (Case::Dative, Number::Plural) if iotated => "ꙗмъ",
-        (Case::Dative, Number::Plural) => "амъ",
-        (Case::Instrumental, Number::Plural) if iotated => "ꙗми",
-        (Case::Instrumental, Number::Plural) => "ами",
-        (Case::Locative, Number::Plural) if iotated => "ꙗхъ",
-        (Case::Locative, Number::Plural) => "ахъ",
+    let canonical = kernel_ending(kernel::VocalicNounClass::JaSoft, cell, lexeme.animacy);
+    let ending = if cell.case == Case::Genitive
+        && cell.number == Number::Plural
+        && iotated
+        && stem.ends_with('и')
+    {
+        // Family citation override: the ьj workstem genitive plural -ии.
+        "и".to_string()
+    } else if iotated {
+        canonical.to_string()
+    } else {
+        soft_surface(canonical, false, true)
     };
-    Ok(join(stem, ending, Mutation::None, RuleId::NounJaSoft))
+    Ok(join(stem, &ending, Mutation::None, RuleId::NounJaSoft))
 }
 
 fn decline_i_stem(
@@ -407,32 +382,13 @@ fn decline_i_stem(
     masculine: bool,
 ) -> Result<PredictedForm, InflectionError> {
     let stem = strip_required(&lexeme.lemma, 'ь')?;
-    let ending = match (cell.case, cell.number) {
-        (Case::Nominative | Case::Accusative, Number::Singular) => "ь",
-        (Case::Genitive | Case::Dative | Case::Locative | Case::Vocative, Number::Singular) => "и",
-        (Case::Instrumental, Number::Singular) if masculine => "ьмь",
-        (Case::Instrumental, Number::Singular) => "ьѭ",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => "и",
-        (Case::Genitive | Case::Locative, Number::Dual) => "ию",
-        (Case::Dative | Case::Instrumental, Number::Dual) => "ьма",
-        (Case::Nominative | Case::Vocative, Number::Plural) if masculine => "иѥ",
-        (Case::Nominative | Case::Vocative, Number::Plural) => "и",
-        (Case::Genitive, Number::Plural) => "ии",
-        (Case::Dative, Number::Plural) => "ьмъ",
-        (Case::Accusative, Number::Plural) => "и",
-        (Case::Instrumental, Number::Plural) => "ьми",
-        (Case::Locative, Number::Plural) => "ьхъ",
+    let (class, rule) = if masculine {
+        (kernel::VocalicNounClass::IMasculine, RuleId::NounIMasculine)
+    } else {
+        (kernel::VocalicNounClass::IFeminine, RuleId::NounIFeminine)
     };
-    Ok(join(
-        stem,
-        ending,
-        Mutation::None,
-        if masculine {
-            RuleId::NounIMasculine
-        } else {
-            RuleId::NounIFeminine
-        },
-    ))
+    let ending = kernel_ending(class, cell, lexeme.animacy);
+    Ok(join(stem, ending, Mutation::None, rule))
 }
 
 fn decline_u_masculine(
@@ -440,36 +396,32 @@ fn decline_u_masculine(
     cell: NounCell,
 ) -> Result<PredictedForm, InflectionError> {
     let stem = strip_required(&lexeme.lemma, 'ъ')?;
-    let ending = match (cell.case, cell.number) {
-        (Case::Nominative | Case::Accusative, Number::Singular) => "ъ",
-        (Case::Genitive | Case::Locative | Case::Vocative, Number::Singular) => "оу",
-        (Case::Dative, Number::Singular) => "ови",
-        (Case::Instrumental, Number::Singular) => "ъмь",
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => "ꙑ",
-        (Case::Genitive | Case::Locative, Number::Dual) => "овоу",
-        (Case::Dative | Case::Instrumental, Number::Dual) => "ъма",
-        (Case::Nominative | Case::Vocative, Number::Plural) => "ове",
-        (Case::Genitive, Number::Plural) => "овъ",
-        (Case::Dative, Number::Plural) => "ъмъ",
-        (Case::Accusative, Number::Plural) => "ꙑ",
-        (Case::Instrumental, Number::Plural) => "ъми",
-        (Case::Locative, Number::Plural) => "ъхъ",
-    };
+    let ending = kernel_ending(
+        kernel::VocalicNounClass::UStemMasculine,
+        cell,
+        lexeme.animacy,
+    );
     Ok(join(stem, ending, Mutation::None, RuleId::NounUMasculine))
 }
 
 fn decline_consonant_stem(
     lexeme: &NounLexeme,
     cell: NounCell,
-    declension: &ConsonantDeclension,
+    class: kernel_consonant::ConsonantNounClass,
+    citation_ending: char,
+    extension: &str,
+    rule: RuleId,
 ) -> Result<PredictedForm, InflectionError> {
-    let stem = strip_required(&lexeme.lemma, declension.citation_ending)?;
-    Ok(join(
-        stem,
-        consonant_ending(cell, &declension.endings),
-        Mutation::None,
-        declension.rule,
-    ))
+    let stem = strip_required(&lexeme.lemma, citation_ending)?;
+    // Merged kernel: consonant-stem endings after the extended oblique stem;
+    // an empty column marks a family-owned citation cell.
+    let endings =
+        kernel_consonant::consonant_ending(class, cell.case, cell.number, lexeme.animacy, OCS);
+    let ending = endings.first().map_or_else(
+        || citation_ending.to_string(),
+        |ending| format!("{extension}{ending}"),
+    );
+    Ok(join(stem, &ending, Mutation::None, rule))
 }
 
 fn enforce_number(
@@ -493,39 +445,33 @@ fn enforce_number(
     }
 }
 
+/// The hard o-stem palatalization seams (Polivanova table 327), applied over
+/// the merged kernel's ending column.
+fn hard_o_mutation(cell: NounCell) -> Mutation {
+    match (cell.case, cell.number) {
+        (Case::Locative, Number::Singular | Number::Plural)
+        | (Case::Nominative | Case::Vocative, Number::Plural) => Mutation::SecondPalatalization,
+        (Case::Vocative, Number::Singular) => Mutation::FirstPalatalization,
+        _ => Mutation::None,
+    }
+}
+
 fn decline_o_masculine_hard(
     lexeme: &NounLexeme,
     cell: NounCell,
 ) -> Result<PredictedForm, InflectionError> {
     let stem = strip_required(&lexeme.lemma, 'ъ')?;
-    let (ending, mutation) = match (cell.case, cell.number) {
-        (Case::Nominative, Number::Singular) => ("ъ", Mutation::None),
-        (Case::Genitive, Number::Singular) => ("а", Mutation::None),
-        (Case::Dative, Number::Singular) => ("оу", Mutation::None),
-        (Case::Accusative, Number::Singular) if lexeme.animacy == Animacy::Animate => {
-            ("а", Mutation::None)
-        }
-        (Case::Accusative, Number::Singular) => ("ъ", Mutation::None),
-        (Case::Instrumental, Number::Singular) => ("омъ", Mutation::None),
-        (Case::Locative, Number::Singular) => ("ѣ", Mutation::SecondPalatalization),
-        (Case::Vocative, Number::Singular) => ("е", Mutation::FirstPalatalization),
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => {
-            ("а", Mutation::None)
-        }
-        (Case::Genitive | Case::Locative, Number::Dual) => ("оу", Mutation::None),
-        (Case::Dative | Case::Instrumental, Number::Dual) => ("ома", Mutation::None),
-        (Case::Nominative | Case::Vocative, Number::Plural) => {
-            ("и", Mutation::SecondPalatalization)
-        }
-        (Case::Genitive, Number::Plural) => ("ъ", Mutation::None),
-        (Case::Dative, Number::Plural) => ("омъ", Mutation::None),
-        (Case::Accusative, Number::Plural) if lexeme.animacy == Animacy::Animate => {
-            ("ъ", Mutation::None)
-        }
-        (Case::Accusative | Case::Instrumental, Number::Plural) => ("ꙑ", Mutation::None),
-        (Case::Locative, Number::Plural) => ("ѣхъ", Mutation::SecondPalatalization),
-    };
-    Ok(join(stem, ending, mutation, RuleId::NounOMasculineHard))
+    let ending = kernel_ending(
+        kernel::VocalicNounClass::OHardMasculine,
+        cell,
+        lexeme.animacy,
+    );
+    Ok(join(
+        stem,
+        ending,
+        hard_o_mutation(cell),
+        RuleId::NounOMasculineHard,
+    ))
 }
 
 fn decline_o_neuter_hard(
@@ -533,51 +479,26 @@ fn decline_o_neuter_hard(
     cell: NounCell,
 ) -> Result<PredictedForm, InflectionError> {
     let stem = strip_required(&lexeme.lemma, 'о')?;
-    let (ending, mutation) = match (cell.case, cell.number) {
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Singular) => {
-            ("о", Mutation::None)
+    let ending = kernel_ending(kernel::VocalicNounClass::OHardNeuter, cell, lexeme.animacy);
+    let mutation = match (cell.case, cell.number) {
+        (Case::Locative, Number::Singular | Number::Plural)
+        | (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => {
+            Mutation::SecondPalatalization
         }
-        (Case::Genitive, Number::Singular) => ("а", Mutation::None),
-        (Case::Dative, Number::Singular) => ("оу", Mutation::None),
-        (Case::Instrumental, Number::Singular) => ("омъ", Mutation::None),
-        (Case::Locative, Number::Singular) => ("ѣ", Mutation::SecondPalatalization),
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => {
-            ("ѣ", Mutation::SecondPalatalization)
-        }
-        (Case::Genitive | Case::Locative, Number::Dual) => ("оу", Mutation::None),
-        (Case::Dative | Case::Instrumental, Number::Dual) => ("ома", Mutation::None),
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => {
-            ("а", Mutation::None)
-        }
-        (Case::Genitive, Number::Plural) => ("ъ", Mutation::None),
-        (Case::Dative, Number::Plural) => ("омъ", Mutation::None),
-        (Case::Instrumental, Number::Plural) => ("ꙑ", Mutation::None),
-        (Case::Locative, Number::Plural) => ("ѣхъ", Mutation::SecondPalatalization),
+        _ => Mutation::None,
     };
     Ok(join(stem, ending, mutation, RuleId::NounONeuterHard))
 }
 
 fn decline_a_hard(lexeme: &NounLexeme, cell: NounCell) -> Result<PredictedForm, InflectionError> {
     let stem = strip_required(&lexeme.lemma, 'а')?;
-    let (ending, mutation) = match (cell.case, cell.number) {
-        (Case::Nominative, Number::Singular) => ("а", Mutation::None),
-        (Case::Genitive, Number::Singular) => ("ꙑ", Mutation::None),
-        (Case::Dative | Case::Locative, Number::Singular) => ("ѣ", Mutation::SecondPalatalization),
-        (Case::Accusative, Number::Singular) => ("ѫ", Mutation::None),
-        (Case::Instrumental, Number::Singular) => ("оѭ", Mutation::None),
-        (Case::Vocative, Number::Singular) => ("о", Mutation::None),
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => {
-            ("ѣ", Mutation::SecondPalatalization)
+    let ending = kernel_ending(kernel::VocalicNounClass::AHard, cell, lexeme.animacy);
+    let mutation = match (cell.case, cell.number) {
+        (Case::Dative | Case::Locative, Number::Singular)
+        | (Case::Nominative | Case::Accusative | Case::Vocative, Number::Dual) => {
+            Mutation::SecondPalatalization
         }
-        (Case::Genitive | Case::Locative, Number::Dual) => ("оу", Mutation::None),
-        (Case::Dative | Case::Instrumental, Number::Dual) => ("ама", Mutation::None),
-        (Case::Nominative | Case::Accusative | Case::Vocative, Number::Plural) => {
-            ("ꙑ", Mutation::None)
-        }
-        (Case::Genitive, Number::Plural) => ("ъ", Mutation::None),
-        (Case::Dative, Number::Plural) => ("амъ", Mutation::None),
-        (Case::Instrumental, Number::Plural) => ("ами", Mutation::None),
-        (Case::Locative, Number::Plural) => ("ахъ", Mutation::None),
+        _ => Mutation::None,
     };
     Ok(join(stem, ending, mutation, RuleId::NounAHard))
 }
@@ -610,24 +531,6 @@ fn ends_in_sibilant(stem: &str) -> bool {
             .chars()
             .last()
             .is_some_and(|letter| matches!(letter, 'ш' | 'щ' | 'ч' | 'ж' | 'ѕ' | 'ꙃ' | 'ц'))
-}
-
-fn consonant_ending(cell: NounCell, endings: &[[&'static str; 7]; 3]) -> &'static str {
-    let number = match cell.number {
-        Number::Singular => 0,
-        Number::Dual => 1,
-        Number::Plural => 2,
-    };
-    let case = match cell.case {
-        Case::Nominative => 0,
-        Case::Genitive => 1,
-        Case::Dative => 2,
-        Case::Accusative => 3,
-        Case::Instrumental => 4,
-        Case::Locative => 5,
-        Case::Vocative => 6,
-    };
-    endings[number][case]
 }
 
 #[derive(Debug, Clone, Copy)]

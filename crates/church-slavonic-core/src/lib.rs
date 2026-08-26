@@ -13,6 +13,8 @@ pub mod determiner;
 pub mod divergence;
 pub mod grammar;
 pub mod identity;
+pub mod noun;
+pub mod noun_consonant;
 pub mod numeral;
 pub mod pronoun;
 pub mod recension;
