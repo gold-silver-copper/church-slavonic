@@ -209,9 +209,11 @@ Hard rules for the target:
   -> rule kernel; provider-exact and caller-irregular channels removed
   from the public API; registry overrides folded into the generated exact
   table as provenance stamps; homonymy allowlist reclassified as an
-  identity license. All behavioral gates identical. Remaining blockers are
-  exclusively outward-facing: the crates.io deprecation release, the old-
-  family deletion sequenced behind it, and pushing.
+  identity license. All behavioral gates identical. Pushed to origin/main with both tags
+  2026-08-26. Remaining, per the plan's own sequencing: the crates.io
+  publication of the new crates and the deprecation release of the old
+  names (requires the maintainer's registry credentials and is the
+  irreversible public-claim step), then the old-family deletion.
 
 ## Phase 0 — Freeze and measure (half a day)
 
