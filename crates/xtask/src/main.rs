@@ -4,6 +4,7 @@ mod corpus;
 mod morphology_completeness;
 mod ocs_lexical_union;
 mod report_io;
+mod rewrite_derivability;
 mod sources;
 mod synodal;
 mod synodal_accent_fit;
@@ -128,6 +129,7 @@ fn run() -> Result<(), Box<dyn Error>> {
             morphology_completeness::run(&mut args, &workspace_root()?)
         }
         Some("ocs-lexical-union") => ocs_lexical_union::run(&mut args, &workspace_root()?),
+        Some("rewrite-derivability") => rewrite_derivability::run(&mut args, &workspace_root()?),
         Some("check-all") => check_all(),
         Some("check-structure") => check_structure(),
         Some("help") | Some("-h") | Some("--help") | None => {
@@ -3414,6 +3416,7 @@ fn print_help() {
     eprintln!("  synodal-marginal-recovery [--check] [--require-source-inputs]");
     eprintln!("  morphology-completeness [--check]");
     eprintln!("  ocs-lexical-union [--check | --kaikki PATH --osd-jsonl PATH]");
+    eprintln!("  rewrite-derivability");
     eprintln!("  check-all");
     eprintln!("  check-structure");
 }
