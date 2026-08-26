@@ -31,17 +31,48 @@
 //!   accusative cells ship in the residue table verbatim (the stored tables
 //!   keep the plain accusative). Elsewhere animacy defaults to inanimate,
 //!   matching the stored declension tables.
+//!
+//! # Adjectives
+//!
+//! [`adjective`] serves the long (definite) declension and
+//! [`short_adjective`] the short (indefinite) one — a paradigm-selecting
+//! distinction becomes a function, not an enum parameter. Two dimensions of
+//! the extracted adjective cells are deliberately not parameters:
+//!
+//! - **Animacy is degenerate in the attested oracle.** The extracted
+//!   adjective cells are keyed with an animacy dimension, but for every
+//!   attested (lemma, form, case, number, gender) cell the animate and
+//!   inanimate stored variant lists are byte-identical (the stored tables
+//!   keep the plain accusative; the residue generator fails if this ever
+//!   stops holding). Taking an `Animacy` parameter would therefore promise a
+//!   distinction the data does not make, so these functions do not take one;
+//!   the kernel is driven with the inanimate convention, and any cell where
+//!   the kernel's animate-accusative convention would diverge from the
+//!   stored tables ships in the residue table verbatim (the oracle decides).
+//! - **Positive degree only.** The extracted inventory stores comparative
+//!   *citations* only (`adj:comparative:citation`), and those carry
+//!   unpredictable lexical facts (suppletion `велии` → `болии`, old vs new
+//!   suffix grade `дражии` / `дражаи`), not a productive stem the kernel's
+//!   `productive_new_comparative` can commit to. Comparatives are excluded
+//!   from these functions and from the pilot accuracy denominator; the
+//!   accuracy gate prints the excluded count.
 
+use old_church_slavonic_core::adjective::AdjectiveLexeme;
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::unique_noun::UniqueNounFamilyMember;
 use old_church_slavonic_core::{
-    Animacy, Gender, NounCell, NounClass, NumberRestriction, TwofoldNounFamilyMember, orthography,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, NounCell, NounClass, NumberRestriction,
+    TwofoldNounFamilyMember, orthography,
 };
 
-pub use church_slavonic_core::grammar::{Case, Number};
+pub use church_slavonic_core::grammar::{Case, Gender, Number};
 
 mod generated {
     include!(concat!(env!("CARGO_MANIFEST_DIR"), "/generated/noun_residue.rs"));
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/generated/adjective_residue.rs"
+    ));
 }
 
 /// Facade error type.
@@ -253,6 +284,142 @@ pub fn noun(lemma: &str, case: Case, number: Number) -> Result<String, Error> {
     Ok(variants.remove(0))
 }
 
+/// Stable numeric key for one adjective (form, case, number, gender) cell,
+/// used by the generated residue table. Animacy is not part of the key: the
+/// attested oracle is animacy-degenerate (see the module docs).
+/// `form_index * 63 + cell_code(case, number) * 3 + gender_index`.
+#[doc(hidden)]
+pub fn adjective_cell_code(form: AdjectiveForm, case: Case, number: Number, gender: Gender) -> u8 {
+    let form = match form {
+        AdjectiveForm::Short => 0u8,
+        AdjectiveForm::Long => 1,
+    };
+    let gender = match gender {
+        Gender::Masculine => 0u8,
+        Gender::Feminine => 1,
+        Gender::Neuter => 2,
+    };
+    form * 63 + cell_code(case, number) * 3 + gender
+}
+
+fn decode_adjective_class(code: u8) -> Option<AdjectiveClass> {
+    Some(match code {
+        1 => AdjectiveClass::Hard,
+        2 => AdjectiveClass::Soft,
+        _ => return None,
+    })
+}
+
+/// Look up the compact class code for an adjective lemma.
+#[doc(hidden)]
+pub fn adjective_class(lemma: &str) -> Option<Option<AdjectiveClass>> {
+    generated::ADJ_META
+        .binary_search_by(|row| row.0.cmp(lemma))
+        .ok()
+        .map(|index| decode_adjective_class(generated::ADJ_META[index].1))
+}
+
+/// Rule-kernel prediction for one adjective cell. The kernel is driven with
+/// the inanimate convention (the oracle's animacy dimension is degenerate;
+/// see the module docs). Returns `None` when the class is unknown or the
+/// kernel reports a defect (e.g. a short cell of a long-only adjective).
+#[doc(hidden)]
+pub fn kernel_adjective_variants(
+    lemma: &str,
+    class: Option<AdjectiveClass>,
+    form: AdjectiveForm,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Option<Vec<String>> {
+    let class = class?;
+    let adjective = AdjectiveLexeme {
+        lemma: lemma.to_string(),
+        class,
+    };
+    let cell = AdjectiveCell {
+        case,
+        number,
+        gender,
+        animacy: Animacy::Inanimate,
+        form,
+    };
+    single(old_church_slavonic_core::adjective::decline(&adjective, cell))
+}
+
+fn adjective_form_variants(
+    lemma: &str,
+    form: AdjectiveForm,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    let code = adjective_cell_code(form, case, number, gender);
+    if let Ok(index) =
+        generated::ADJ_RESIDUE.binary_search_by(|row| (row.0, row.1).cmp(&(lemma, code)))
+    {
+        return Ok(generated::ADJ_RESIDUE[index]
+            .2
+            .iter()
+            .map(|text| (*text).to_string())
+            .collect());
+    }
+    let class =
+        adjective_class(lemma).ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
+    kernel_adjective_variants(lemma, class, form, case, number, gender).ok_or_else(|| {
+        Error::Underdetermined {
+            lemma: lemma.to_string(),
+        }
+    })
+}
+
+fn primary(mut variants: Vec<String>, lemma: &str) -> Result<String, Error> {
+    if variants.is_empty() {
+        return Err(Error::Underdetermined {
+            lemma: lemma.to_string(),
+        });
+    }
+    Ok(variants.remove(0))
+}
+
+/// All variants for one long (definite) adjective cell, primary first.
+pub fn adjective_variants(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    adjective_form_variants(lemma, AdjectiveForm::Long, case, number, gender)
+}
+
+/// The primary surface form for one long (definite) adjective cell.
+pub fn adjective(lemma: &str, case: Case, number: Number, gender: Gender) -> Result<String, Error> {
+    primary(adjective_variants(lemma, case, number, gender)?, lemma)
+}
+
+/// All variants for one short (indefinite) adjective cell, primary first.
+pub fn short_adjective_variants(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<Vec<String>, Error> {
+    adjective_form_variants(lemma, AdjectiveForm::Short, case, number, gender)
+}
+
+/// The primary surface form for one short (indefinite) adjective cell.
+pub fn short_adjective(
+    lemma: &str,
+    case: Case,
+    number: Number,
+    gender: Gender,
+) -> Result<String, Error> {
+    primary(
+        short_adjective_variants(lemma, case, number, gender)?,
+        lemma,
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -273,6 +440,47 @@ mod tests {
         let variants = noun_variants("ногъть", Case::Dative, Number::Singular)
             .expect("attested cell");
         assert!(variants.iter().any(|form| form == "ногътю"), "{variants:?}");
+    }
+
+    #[test]
+    fn regular_adjective_via_rules() {
+        // новъ is a plain hard adjective; the long genitive comes from the
+        // rule kernel (no residue row for this cell).
+        assert_eq!(
+            adjective("новъ", Case::Genitive, Number::Singular, Gender::Masculine).as_deref(),
+            Ok("новаѥго")
+        );
+    }
+
+    #[test]
+    fn irregular_adjective_via_residue() {
+        // вьсемогъ keeps an attested two-variant long nominative plural the
+        // kernel does not derive; the residue table serves it verbatim.
+        assert_eq!(
+            adjective_variants(
+                "вьсемогъ",
+                Case::Nominative,
+                Number::Plural,
+                Gender::Masculine
+            ),
+            Ok(vec![
+                "вьсемогъшеи".to_string(),
+                "вьсемогъшии".to_string()
+            ])
+        );
+    }
+
+    #[test]
+    fn short_adjective_uses_short_paradigm() {
+        assert_eq!(
+            short_adjective("новъ", Case::Genitive, Number::Singular, Gender::Masculine)
+                .as_deref(),
+            Ok("нова")
+        );
+        assert_eq!(
+            adjective("nonexistent", Case::Nominative, Number::Singular, Gender::Feminine),
+            Err(Error::UnknownLemma("nonexistent".to_string()))
+        );
     }
 
     #[test]

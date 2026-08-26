@@ -12,8 +12,10 @@
 //! their per-cell variant lists merged in rank order (stable; first
 //! occurrence wins on duplicate surface forms).
 
-use church_slavonic::{NounMeta, cell_code, kernel_noun_variants};
-use old_church_slavonic_core::{Animacy, Case, Gender, Number, NumberRestriction};
+use church_slavonic::{NounMeta, adjective_cell_code, cell_code, kernel_noun_variants};
+use old_church_slavonic_core::{
+    AdjectiveClass, AdjectiveForm, Animacy, Case, Gender, Number, NumberRestriction,
+};
 use old_church_slavonic_extractor::extract::load_registry;
 use std::collections::BTreeMap;
 use std::error::Error;
@@ -215,7 +217,221 @@ fn load_noun_oracle(root: &Path) -> Result<NounOracle, Box<dyn Error>> {
     })
 }
 
+/// Adjective oracle at lemma granularity, with the animacy dimension
+/// collapsed after verifying it is degenerate (see the facade's lib.rs).
+struct AdjectiveOracle {
+    /// lemma -> encoded class (1 hard, 2 soft, 0 unknown; first lexeme wins).
+    meta: BTreeMap<String, u8>,
+    /// (lemma, adjective cell code) -> merged variant list in rank order.
+    cells: BTreeMap<(String, u8), Vec<String>>,
+    /// Attested `(lexeme, feature)` cells keyed with the animacy dimension,
+    /// comparatives included — the raw 78,432 figure.
+    keyed_cells: usize,
+    /// `adj:comparative:citation` cells excluded from the facade + accuracy
+    /// denominator (unpredictable suffix-grade / suppletive lexical facts).
+    comparative_cells: usize,
+    lexeme_cells: usize,
+    merged_divergent_lexeme_cells: usize,
+}
+
+fn adjective_class_code(value: &str) -> u8 {
+    match value {
+        "adj-hard" => 1,
+        "adj-soft" => 2,
+        _ => 0,
+    }
+}
+
+fn decode_adjective_class(code: u8) -> Option<AdjectiveClass> {
+    match code {
+        1 => Some(AdjectiveClass::Hard),
+        2 => Some(AdjectiveClass::Soft),
+        _ => None,
+    }
+}
+
+/// Decode an adjective cell code back into its typed dimensions.
+fn adjective_cell_from_code(code: u8) -> (AdjectiveForm, Case, Number, Gender) {
+    let form = if code / 63 == 0 {
+        AdjectiveForm::Short
+    } else {
+        AdjectiveForm::Long
+    };
+    let (case, number) = cell_from_code((code % 63) / 3);
+    let gender = match code % 3 {
+        0 => Gender::Masculine,
+        1 => Gender::Feminine,
+        _ => Gender::Neuter,
+    };
+    (form, case, number, gender)
+}
+
+fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>> {
+    let registry = load_registry(&root.join("data/extracted"))?;
+    let mut meta: BTreeMap<String, u8> = BTreeMap::new();
+    let mut lemma_by_id: BTreeMap<&str, &str> = BTreeMap::new();
+    for lexeme in &registry.lexemes {
+        if lexeme.pos != "adj" {
+            continue;
+        }
+        lemma_by_id.insert(&lexeme.id, &lexeme.lemma);
+        meta.entry(lexeme.lemma.clone())
+            .or_insert_with(|| adjective_class_code(&lexeme.class));
+    }
+    // Rows keyed with the animacy dimension still present, to prove it is
+    // degenerate before collapsing it out of the facade key.
+    type Ranked = Vec<(u16, String)>;
+    let mut per_lexeme: BTreeMap<(String, u8, Animacy), Ranked> = BTreeMap::new();
+    let mut merged_rows: BTreeMap<(String, u8, Animacy), Ranked> = BTreeMap::new();
+    let mut keyed_cells: std::collections::BTreeSet<(String, String)> =
+        std::collections::BTreeSet::new();
+    let mut comparative_cells: std::collections::BTreeSet<String> =
+        std::collections::BTreeSet::new();
+    for row in &registry.forms {
+        let Some(lemma) = lemma_by_id.get(row.lexeme_id.as_str()) else {
+            continue;
+        };
+        keyed_cells.insert((row.lexeme_id.clone(), row.feature.clone()));
+        if row.feature == "adj:comparative:citation" {
+            comparative_cells.insert(row.lexeme_id.clone());
+            continue;
+        }
+        let Some(cell) = crate::parse_adjective_cell(&row.feature) else {
+            return Err(format!("unparsed adjective feature {}", row.feature).into());
+        };
+        let code = adjective_cell_code(cell.form, cell.case, cell.number, cell.gender);
+        per_lexeme
+            .entry((row.lexeme_id.clone(), code, cell.animacy))
+            .or_default()
+            .push((row.rank, row.form.clone()));
+        merged_rows
+            .entry(((*lemma).to_string(), code, cell.animacy))
+            .or_default()
+            .push((row.rank, row.form.clone()));
+    }
+    let dedupe = |rows: &mut Ranked| -> Vec<String> {
+        rows.sort_by_key(|(rank, _)| *rank);
+        let mut texts: Vec<String> = Vec::new();
+        for (_, form) in rows.iter() {
+            if !texts.contains(form) {
+                texts.push(form.clone());
+            }
+        }
+        texts
+    };
+    // Collapse animacy, failing loudly if the dimension ever carries
+    // information (the facade API is built on this degeneracy).
+    let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
+    for ((lemma, code, animacy), mut rows) in merged_rows {
+        let texts = dedupe(&mut rows);
+        match cells.entry((lemma.clone(), code)) {
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(texts);
+            }
+            std::collections::btree_map::Entry::Occupied(entry) => {
+                if entry.get() != &texts {
+                    return Err(format!(
+                        "adjective animacy dimension is not degenerate: {lemma} cell {code} \
+                         ({animacy:?}) stores {:?} vs {:?}",
+                        texts,
+                        entry.get()
+                    )
+                    .into());
+                }
+            }
+        }
+    }
+    let mut collapsed_lexeme: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
+    for ((lexeme_id, code, _animacy), mut rows) in per_lexeme {
+        let texts = dedupe(&mut rows);
+        collapsed_lexeme.entry((lexeme_id, code)).or_insert(texts);
+    }
+    let mut lexeme_cells = 0usize;
+    let mut merged_divergent_lexeme_cells = 0usize;
+    for ((lexeme_id, code), own) in &collapsed_lexeme {
+        lexeme_cells += 1;
+        let lemma = lemma_by_id[lexeme_id.as_str()];
+        if cells[&(lemma.to_string(), *code)] != *own {
+            merged_divergent_lexeme_cells += 1;
+        }
+    }
+    Ok(AdjectiveOracle {
+        meta,
+        cells,
+        keyed_cells: keyed_cells.len(),
+        comparative_cells: comparative_cells.len(),
+        lexeme_cells,
+        merged_divergent_lexeme_cells,
+    })
+}
+
+fn emit_adjective_residue(root: &Path) -> Result<(), Box<dyn Error>> {
+    let oracle = load_adjective_oracle(root)?;
+    let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
+    for ((lemma, code), expected) in &oracle.cells {
+        let class = decode_adjective_class(oracle.meta[lemma]);
+        let (form, case, number, gender) = adjective_cell_from_code(*code);
+        let predicted =
+            church_slavonic::kernel_adjective_variants(lemma, class, form, case, number, gender);
+        if predicted.as_deref() != Some(expected.as_slice()) {
+            residue.push((lemma, *code, expected));
+        }
+    }
+    let mut out = String::new();
+    out.push_str(
+        "// @generated by `cargo xtask rewrite-derivability --emit-residue`. Do not edit.\n\
+         //\n\
+         // ADJ_META: (lemma, class) codes (1 hard, 2 soft, 0 unknown) for every\n\
+         // adjective lemma in data/extracted. ADJ_RESIDUE: (lemma, adjective cell\n\
+         // code, variants) for exactly the attested positive-degree cells the rule\n\
+         // kernel does not reproduce verbatim; the cell code collapses the oracle's\n\
+         // degenerate animacy dimension (see church-slavonic/src/lib.rs). Comparative\n\
+         // citations are excluded from the facade. Both slices are sorted for binary\n\
+         // search.\n",
+    );
+    let _ = writeln!(
+        out,
+        "pub static ADJ_META: &[(&str, u8)] = &[ // {} lemmas",
+        oracle.meta.len()
+    );
+    for (lemma, class) in &oracle.meta {
+        let _ = writeln!(out, "    ({lemma:?}, {class}),");
+    }
+    out.push_str("];\n");
+    let _ = writeln!(
+        out,
+        "pub static ADJ_RESIDUE: &[(&str, u8, &[&str])] = &[ // {} cells",
+        residue.len()
+    );
+    for (lemma, code, variants) in &residue {
+        let _ = write!(out, "    ({lemma:?}, {code}, &[");
+        for (index, variant) in variants.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            let _ = write!(out, "{variant:?}");
+        }
+        out.push_str("]),\n");
+    }
+    out.push_str("];\n");
+    let path = root.join("crates/church-slavonic/generated/adjective_residue.rs");
+    fs::write(&path, &out)?;
+    println!(
+        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} merged / {} per-lexeme; \
+         {} comparative cells excluded)",
+        path.display(),
+        out.len(),
+        oracle.meta.len(),
+        residue.len(),
+        oracle.cells.len(),
+        oracle.lexeme_cells,
+        oracle.comparative_cells,
+    );
+    Ok(())
+}
+
 pub(crate) fn emit_residue(root: &Path) -> Result<(), Box<dyn Error>> {
+    emit_adjective_residue(root)?;
     let oracle = load_noun_oracle(root)?;
     let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
     for ((lemma, code), expected) in &oracle.cells {
@@ -316,6 +532,57 @@ pub(crate) fn accuracy(
     }
     if matched != total {
         return Err(format!("pilot accuracy {matched}/{total}, expected 100%").into());
+    }
+
+    let adjectives = load_adjective_oracle(root)?;
+    let mut adj_total = 0usize;
+    let mut adj_matched = 0usize;
+    let mut adj_mismatches: Vec<String> = Vec::new();
+    for ((lemma, code), expected) in &adjectives.cells {
+        adj_total += 1;
+        let (form, case, number, gender) = adjective_cell_from_code(*code);
+        let produced = match form {
+            AdjectiveForm::Long => church_slavonic::adjective_variants(lemma, case, number, gender),
+            AdjectiveForm::Short => {
+                church_slavonic::short_adjective_variants(lemma, case, number, gender)
+            }
+        };
+        match produced {
+            Ok(variants) if &variants == expected => adj_matched += 1,
+            other => {
+                if adj_mismatches.len() < 20 {
+                    adj_mismatches.push(format!(
+                        "{lemma} cell {code}: stored {expected:?} vs facade {other:?}"
+                    ));
+                }
+            }
+        }
+    }
+    let adj_generated = root.join("crates/church-slavonic/generated/adjective_residue.rs");
+    let adj_bytes = fs::metadata(&adj_generated)?.len();
+    println!("rewrite pilot accuracy (adjectives, lemma-merged oracle, animacy collapsed)");
+    println!("  merged cells matched: {adj_matched}/{adj_total}");
+    println!(
+        "  keyed (lexeme, feature) cells: {} of which {} comparative-citation cells are \
+         excluded from the facade (unpredictable suffix grade / suppletion)",
+        adjectives.keyed_cells, adjectives.comparative_cells
+    );
+    println!(
+        "  per-lexeme collapsed cells covered: {} (of which {} homograph cells differ from \
+         the merged lemma-level list and are served merged)",
+        adjectives.lexeme_cells, adjectives.merged_divergent_lexeme_cells
+    );
+    println!(
+        "  generated table size: {adj_bytes} bytes ({path})",
+        path = adj_generated.display()
+    );
+    for line in &adj_mismatches {
+        println!("  MISMATCH {line}");
+    }
+    if adj_matched != adj_total {
+        return Err(
+            format!("adjective pilot accuracy {adj_matched}/{adj_total}, expected 100%").into(),
+        );
     }
     Ok(())
 }
