@@ -111,6 +111,14 @@ Hard rules for the target:
   homograph story (currently rank-merged variants, not numeric suffixes);
   then port the dictionary/analyze layer and cut the deprecation release.
 
+- 2026-08-26 — Pilot hardening: the facade's dependency on the fat OCS
+  facade is gone (closed-class kernels were core-backed; the §316
+  pronominal composer moved into core). check-structure now gates on the
+  six pilot oracles and the 2 MB data budget. Principal-part synthesis
+  infers verb metadata from the attested oracle: verb residue 6,178 →
+  2,083 cells, 473/707 verbs fully rules-backed. Total pilot generated
+  data: 964 KB — inside the english-crate silhouette.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
