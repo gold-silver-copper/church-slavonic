@@ -61,3 +61,19 @@ candidate against its corpus). Ledger: held-out generalised 14,346 →
 **14,515** (+169), corpus top-k 993,530 → **994,992** (+1,462), memorised
 flat. The ѹ fold plus its exploitation is worth +279 generalised and +3,798
 top-k so far.
+
+### Fold 2 — ѻ (broad on), rekey wave `v0.14-rekey-broad-on`
+
+`fold_digraph_uk` now also folds ѻ/Ѻ to о/О, unifying the word-initial broad
+on with its plain twin in both lookup projections (unit-tested). The rekey
+moved the holdout composition sharply: held-out generalised 14,515 →
+**15,238** (+723) and memorised 14,998 → **14,974** (−24) purely from
+re-keyed type membership — ѻ-spelled twins of productively reviewed о-words
+joined the held slice already resolved by rule. The fold revealed one frozen
+pin (the ѻчесъ v0.7 identity with mislabeled cells, recorded in the
+allowlist for the phase-5 merge with cell-correction retractions) and one
+genuine homonymy (ѻ҆ныхъ: онъ's historical pin vs оный's genitive plural).
+Three re-keyed queue proposals decided: оный's ѻ prints marked moot against
+the existing reviewed demonstrative; обои и ѻ҆тцы̑ (kamora) deferred to
+their phases. The memorisation baseline re-derived at 94 types. No
+admissions; corpus top-k unchanged at 994,992 pending exploitation.

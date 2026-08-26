@@ -24,7 +24,7 @@
     "phrase_evaluation.tsv": 14,
     "positional_rules.tsv": 19,
     "principal_parts.tsv": 411,
-    "reviewed_evidence.tsv": 4403,
+    "reviewed_evidence.tsv": 4405,
     "semantic_alignments.tsv": 6,
     "senses.tsv": 338,
     "training_passages.tsv": 20,
@@ -32,10 +32,10 @@
     "v10_exact_cell_corrections.tsv": 5,
     "verb_defectiveness.tsv": 5
   },
-  "normalized_rows": 14528,
+  "normalized_rows": 14530,
   "quarantined_rows": 0,
   "parse_failure_ceiling": 0,
-  "morphology_registry_sha256": "a312cbe7742ae4a20478eef7cc5231dd95a526479296142db6c869ff121c9237",
+  "morphology_registry_sha256": "a57b65cc2b68788f55c88706b577881fabfd9a9541a6f82d392eb89b48784fb9",
   "dictionary_registry_sha256": "c942e2f052a6dc147c65b8b8928401a8f7ca058c4e71afa26e12db3cd1c6ccb9",
   "source_adapter_contracts": [
     "streaming Ponomar verse adapter with source order and quarantine",

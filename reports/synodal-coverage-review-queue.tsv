@@ -40,7 +40,7 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 39	unknown-lexeme	премꙋдрости	премꙋ́дрости	170	169		review the token against target-recension evidence and create or reject a lexical candidate
 40	unknown-lexeme	господинꙋ	господи́нꙋ	170	162		review the token against target-recension evidence and create or reject a lexical candidate
 41	unknown-lexeme	єзекіа	є҆зекі́а	170	160		review the token against target-recension evidence and create or reject a lexical candidate
-42	unknown-lexeme	ѻлтарѧ	ѻ҆лтарѧ̀	169	145		review the token against target-recension evidence and create or reject a lexical candidate
+42	unknown-lexeme	олтарѧ	ѻ҆лтарѧ̀	169	145		review the token against target-recension evidence and create or reject a lexical candidate
 43	unknown-lexeme	паѵелъ	па́ѵелъ	166	166		review the token against target-recension evidence and create or reject a lexical candidate
 44	unknown-lexeme	творѧй	творѧ́й	166	162		review the token against target-recension evidence and create or reject a lexical candidate
 45	unknown-lexeme	оучн҃цы	ᲂу҆чн҃цы̀	165	156		review the token against target-recension evidence and create or reject a lexical candidate
@@ -54,15 +54,15 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 53	unknown-lexeme	введе	введѐ	155	153		review the token against target-recension evidence and create or reject a lexical candidate
 54	unknown-lexeme	сонмѡмъ	со́нмѡмъ	154	152		review the token against target-recension evidence and create or reject a lexical candidate
 55	unknown-lexeme	каменїемъ	ка́менїемъ	154	150		review the token against target-recension evidence and create or reject a lexical candidate
-56	unknown-lexeme	ѻвна	ѻ҆вна̀	154	148		review the token against target-recension evidence and create or reject a lexical candidate
+56	unknown-lexeme	овна	ѻ҆вна̀	154	148		review the token against target-recension evidence and create or reject a lexical candidate
 57	unknown-lexeme	слꙋжити	слꙋжи́ти	153	148		review the token against target-recension evidence and create or reject a lexical candidate
 58	unknown-lexeme	сꙋббѡты	сꙋббѡ́ты	153	138		review the token against target-recension evidence and create or reject a lexical candidate
 59	unknown-lexeme	погꙋбити	погꙋби́ти	152	150		review the token against target-recension evidence and create or reject a lexical candidate
 60	ambiguity-or-spelling-variant	имаши	и҆́маши	150	143	synodal:verb:imati,synodal:verb:wikt-0c6c8db63b7c	review semantic identity and variant ordering; require a stable lexeme ID when ambiguity remains
-61	unknown-lexeme	ѻрꙋжїе	ѻ҆рꙋ́жїе	150	142		review the token against target-recension evidence and create or reject a lexical candidate
+61	unknown-lexeme	орꙋжїе	ѻ҆рꙋ́жїе	150	142		review the token against target-recension evidence and create or reject a lexical candidate
 62	unknown-lexeme	навꙋходоносоръ	навꙋходоно́соръ	149	145		review the token against target-recension evidence and create or reject a lexical candidate
 63	unknown-lexeme	царева	царе́ва	148	144		review the token against target-recension evidence and create or reject a lexical candidate
-64	unknown-lexeme	ѻньже	ѻ҆́ньже	147	141		review the token against target-recension evidence and create or reject a lexical candidate
+64	unknown-lexeme	оньже	ѻ҆́ньже	147	141		review the token against target-recension evidence and create or reject a lexical candidate
 65	unknown-lexeme	велїй	ве́лїй	145	144		review the token against target-recension evidence and create or reject a lexical candidate
 66	unknown-lexeme	богѡвъ	богѡ́въ	145	137		review the token against target-recension evidence and create or reject a lexical candidate
 67	unknown-lexeme	врагѡвъ	врагѡ́въ	144	140		review the token against target-recension evidence and create or reject a lexical candidate
@@ -74,10 +74,10 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 73	unknown-lexeme	дверїй	две́рїй	140	127		review the token against target-recension evidence and create or reject a lexical candidate
 74	ambiguity-or-spelling-variant	нѣкїй	нѣ́кїй	138	138	synodal:pronoun:nekii	review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme
 75	unknown-lexeme	сонъ	со́нъ	138	122		review the token against target-recension evidence and create or reject a lexical candidate
-76	unknown-lexeme	ѻтцы	ѻ҆тцы̑	138	122		review the token against target-recension evidence and create or reject a lexical candidate
+76	missing-accent-or-orthographic-metadata	отцы	ѻ҆тцы̑	138	122	synodal:noun:father	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 77	unknown-lexeme	вєси	вє́си	138	103		review the token against target-recension evidence and create or reject a lexical candidate
 78	unknown-lexeme	тꙋкъ	тꙋ́къ	138	100		review the token against target-recension evidence and create or reject a lexical candidate
-79	missing-accent-or-orthographic-metadata	ѻнꙋ	ѻ҆нꙋ̀	137	135	synodal:pronoun:on	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
+79	missing-accent-or-orthographic-metadata	онꙋ	ѻ҆нꙋ̀	137	135	synodal:pronoun:on	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 80	unknown-lexeme	прѡчаѧ	прѡ́чаѧ	136	136		review the token against target-recension evidence and create or reject a lexical candidate
 81	unknown-lexeme	восташа	Воста́ша	136	134		review the token against target-recension evidence and create or reject a lexical candidate
 82	missing-accent-or-orthographic-metadata	знамєнїѧ	зна́мєнїѧ	136	134	synodal:noun:v06-673b2df93b4f89a8	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
@@ -155,8 +155,8 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 154	unknown-lexeme	пойдꙋ	пойдꙋ̀	104	102		review the token against target-recension evidence and create or reject a lexical candidate
 155	unknown-lexeme	сильныхъ	си́льныхъ	104	102		review the token against target-recension evidence and create or reject a lexical candidate
 156	unknown-lexeme	рабыни	рабы̑ни	104	101		review the token against target-recension evidence and create or reject a lexical candidate
-157	unknown-lexeme	фарїсеє	фарїсе́є	104	99		review the token against target-recension evidence and create or reject a lexical candidate
-158	unknown-lexeme	ѻрꙋжїемъ	ѻ҆рꙋ́жїемъ	104	99		review the token against target-recension evidence and create or reject a lexical candidate
+157	unknown-lexeme	орꙋжїемъ	ѻ҆рꙋ́жїемъ	104	99		review the token against target-recension evidence and create or reject a lexical candidate
+158	unknown-lexeme	фарїсеє	фарїсе́є	104	99		review the token against target-recension evidence and create or reject a lexical candidate
 159	unknown-lexeme	помолисѧ	помоли́сѧ	104	98		review the token against target-recension evidence and create or reject a lexical candidate
 160	unknown-lexeme	єлеемъ	є҆ле́емъ	104	96		review the token against target-recension evidence and create or reject a lexical candidate
 161	unknown-lexeme	погꙋбитъ	погꙋби́тъ	104	93		review the token against target-recension evidence and create or reject a lexical candidate
@@ -181,11 +181,11 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 180	unknown-lexeme	покры	покры̀	98	98		review the token against target-recension evidence and create or reject a lexical candidate
 181	unknown-lexeme	првⷣнъ	првⷣнъ	98	96		review the token against target-recension evidence and create or reject a lexical candidate
 182	unknown-lexeme	силенъ	си́ленъ	98	96		review the token against target-recension evidence and create or reject a lexical candidate
-183	unknown-lexeme	іѡсафатъ	і҆ѡсафа́тъ	98	94		review the token against target-recension evidence and create or reject a lexical candidate
-184	unknown-lexeme	ѻрꙋжїѧ	ѻ҆рꙋ̑жїѧ	98	94		review the token against target-recension evidence and create or reject a lexical candidate
+183	unknown-lexeme	орꙋжїѧ	ѻ҆рꙋ̑жїѧ	98	94		review the token against target-recension evidence and create or reject a lexical candidate
+184	unknown-lexeme	іѡсафатъ	і҆ѡсафа́тъ	98	94		review the token against target-recension evidence and create or reject a lexical candidate
 185	unknown-lexeme	єликѡ	Є҆ли́кѡ	98	92		review the token against target-recension evidence and create or reject a lexical candidate
 186	unknown-lexeme	воевѡды	воевѡ́ды	96	96		review the token against target-recension evidence and create or reject a lexical candidate
-187	unknown-lexeme	ѻбоихъ	ѻ҆бои́хъ	96	89		review the token against target-recension evidence and create or reject a lexical candidate
+187	missing-accent-or-orthographic-metadata	обоихъ	ѻ҆бои́хъ	96	89	synodal:numeral:collective-oboi	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 188	unknown-lexeme	снѣдѧтъ	снѣдѧ́тъ	96	84		review the token against target-recension evidence and create or reject a lexical candidate
 189	unknown-lexeme	пойде	по́йде	95	95		review the token against target-recension evidence and create or reject a lexical candidate
 190	unknown-lexeme	чрез̾	чрез̾	95	93		review the token against target-recension evidence and create or reject a lexical candidate
@@ -250,7 +250,7 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 249	missing-accent-or-orthographic-metadata	инымъ	и҆ны̑мъ	84	84	synodal:pronoun:inyi	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 250	missing-accent-or-orthographic-metadata	иныхъ	и҆ны́хъ	84	83	synodal:pronoun:inyi	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 251	missing-accent-or-orthographic-metadata	возвѣщꙋ	возвѣщꙋ̀	84	82	synodal:verb:vozvestiti	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
-252	ambiguity-or-spelling-variant	ѻный	ѻ҆́ный	84	82	synodal:pronoun:demonstrative-onyi	review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme
+252	missing-accent-or-orthographic-metadata	оный	ѻ҆́ный	84	82	synodal:pronoun:demonstrative-onyi	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 253	unknown-lexeme	єлеазаръ	є҆леаза́ръ	84	80		review the token against target-recension evidence and create or reject a lexical candidate
 254	unknown-lexeme	постыдѧтсѧ	постыдѧ́тсѧ	84	78		review the token against target-recension evidence and create or reject a lexical candidate
 255	unknown-lexeme	помилꙋй	поми́лꙋй	84	77		review the token against target-recension evidence and create or reject a lexical candidate
@@ -326,8 +326,8 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 325	unknown-lexeme	стражꙋ	стра́жꙋ	75	73		review the token against target-recension evidence and create or reject a lexical candidate
 326	unknown-lexeme	ѡдержанїе	ѡ҆держа́нїе	75	71		review the token against target-recension evidence and create or reject a lexical candidate
 327	unknown-lexeme	бл҃гъ	бл҃гъ	74	74		review the token against target-recension evidence and create or reject a lexical candidate
-328	unknown-lexeme	царево	царе́во	74	74		review the token against target-recension evidence and create or reject a lexical candidate
-329	unknown-lexeme	ѻвнѡвъ	ѻ҆внѡ́въ	74	74		review the token against target-recension evidence and create or reject a lexical candidate
+328	unknown-lexeme	овнѡвъ	ѻ҆внѡ́въ	74	74		review the token against target-recension evidence and create or reject a lexical candidate
+329	unknown-lexeme	царево	царе́во	74	74		review the token against target-recension evidence and create or reject a lexical candidate
 330	unknown-lexeme	воззва	воззва̀	74	73		review the token against target-recension evidence and create or reject a lexical candidate
 331	unknown-lexeme	давідовъ	даві́довъ	74	73		review the token against target-recension evidence and create or reject a lexical candidate
 332	unknown-lexeme	оукрѣпи	ᲂу҆крѣпи́	74	72		review the token against target-recension evidence and create or reject a lexical candidate
@@ -395,18 +395,18 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 394	unknown-lexeme	лестїю	ле́стїю	67	67		review the token against target-recension evidence and create or reject a lexical candidate
 395	unknown-lexeme	бѣхꙋ	бѣ́хꙋ	67	65		review the token against target-recension evidence and create or reject a lexical candidate
 396	unknown-lexeme	воздамъ	возда́мъ	67	65		review the token against target-recension evidence and create or reject a lexical candidate
-397	unknown-lexeme	стєзи	стєзѝ	67	65		review the token against target-recension evidence and create or reject a lexical candidate
-398	unknown-lexeme	ѻдеждꙋ	ѻ҆де́ждꙋ	67	65		review the token against target-recension evidence and create or reject a lexical candidate
+397	unknown-lexeme	одеждꙋ	ѻ҆де́ждꙋ	67	65		review the token against target-recension evidence and create or reject a lexical candidate
+398	unknown-lexeme	стєзи	стєзѝ	67	65		review the token against target-recension evidence and create or reject a lexical candidate
 399	unknown-lexeme	ѿиметъ	ѿи́метъ	67	63		review the token against target-recension evidence and create or reject a lexical candidate
 400	unknown-lexeme	сожже	сожжѐ	67	61		review the token against target-recension evidence and create or reject a lexical candidate
 401	unknown-lexeme	агнцєвъ	а҆́гнцєвъ	66	66		review the token against target-recension evidence and create or reject a lexical candidate
-402	unknown-lexeme	оутрїе	ᲂу҆́трїе	66	66		review the token against target-recension evidence and create or reject a lexical candidate
-403	unknown-lexeme	посланїе	посла́нїе	66	66		review the token against target-recension evidence and create or reject a lexical candidate
-404	unknown-lexeme	соверши	совершѝ	66	66		review the token against target-recension evidence and create or reject a lexical candidate
-405	unknown-lexeme	царевꙋ	царе́вꙋ	66	66		review the token against target-recension evidence and create or reject a lexical candidate
-406	unknown-lexeme	ѻтроки	ѻ҆́троки	66	66		review the token against target-recension evidence and create or reject a lexical candidate
-407	missing-accent-or-orthographic-metadata	свидѣнїѧ	свидѣ̑нїѧ	66	66	synodal:noun:svidenie	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
-408	ambiguity-or-spelling-variant	ѻсмый	ѻ҆смы́й	66	66	synodal:numeral:osmyi	review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme
+402	unknown-lexeme	отроки	ѻ҆́троки	66	66		review the token against target-recension evidence and create or reject a lexical candidate
+403	unknown-lexeme	оутрїе	ᲂу҆́трїе	66	66		review the token against target-recension evidence and create or reject a lexical candidate
+404	unknown-lexeme	посланїе	посла́нїе	66	66		review the token against target-recension evidence and create or reject a lexical candidate
+405	unknown-lexeme	соверши	совершѝ	66	66		review the token against target-recension evidence and create or reject a lexical candidate
+406	unknown-lexeme	царевꙋ	царе́вꙋ	66	66		review the token against target-recension evidence and create or reject a lexical candidate
+407	missing-accent-or-orthographic-metadata	осмый	ѻ҆смы́й	66	66	synodal:numeral:osmyi	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
+408	missing-accent-or-orthographic-metadata	свидѣнїѧ	свидѣ̑нїѧ	66	66	synodal:noun:svidenie	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 409	missing-accent-or-orthographic-metadata	возвѣстити	возвѣсти́ти	66	65	synodal:verb:vozvestiti	review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback
 410	unknown-lexeme	вѣкѡвъ	вѣкѡ́въ	66	64		review the token against target-recension evidence and create or reject a lexical candidate
 411	unknown-lexeme	гедеѡнъ	гедеѡ́нъ	66	64		review the token against target-recension evidence and create or reject a lexical candidate
@@ -446,7 +446,7 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 445	unknown-lexeme	пиръ	пи́ръ	64	58		review the token against target-recension evidence and create or reject a lexical candidate
 446	unknown-lexeme	помаза	пома́за	64	58		review the token against target-recension evidence and create or reject a lexical candidate
 447	unknown-lexeme	ровоамъ	ровоа́мъ	64	58		review the token against target-recension evidence and create or reject a lexical candidate
-448	unknown-lexeme	ѻлтарю	ѻ҆лтарю̀	64	57		review the token against target-recension evidence and create or reject a lexical candidate
+448	unknown-lexeme	олтарю	ѻ҆лтарю̀	64	57		review the token against target-recension evidence and create or reject a lexical candidate
 449	unknown-lexeme	ахаавъ	а҆хаа́въ	64	54		review the token against target-recension evidence and create or reject a lexical candidate
 450	unknown-lexeme	десницꙋ	десни́цꙋ	63	63		review the token against target-recension evidence and create or reject a lexical candidate
 451	unknown-lexeme	слꙋжатъ	слꙋ́жатъ	63	63		review the token against target-recension evidence and create or reject a lexical candidate
@@ -479,12 +479,12 @@ rank	kind	normalized	sample	frequency	document_frequency	candidate_lexeme_ids	su
 478	unknown-lexeme	высѡкаѧ	высѡ́каѧ	60	60		review the token against target-recension evidence and create or reject a lexical candidate
 479	unknown-lexeme	крѣпкїй	крѣ́пкїй	60	60		review the token against target-recension evidence and create or reject a lexical candidate
 480	unknown-lexeme	навꙋходоносора	навꙋходоно́сора	60	60		review the token against target-recension evidence and create or reject a lexical candidate
-481	unknown-lexeme	помышленїе	помышле́нїе	60	60		review the token against target-recension evidence and create or reject a lexical candidate
-482	unknown-lexeme	послетъ	по́слетъ	60	60		review the token against target-recension evidence and create or reject a lexical candidate
-483	unknown-lexeme	совѣта	совѣ́та	60	60		review the token against target-recension evidence and create or reject a lexical candidate
-484	unknown-lexeme	ѳѷмїама	ѳѷмїа́ма	60	60		review the token against target-recension evidence and create or reject a lexical candidate
-485	unknown-lexeme	ѻзіа	ѻ҆зі́а	60	60		review the token against target-recension evidence and create or reject a lexical candidate
-486	unknown-lexeme	ѻтрочищь	ѻ҆́трочищь	60	60		review the token against target-recension evidence and create or reject a lexical candidate
+481	unknown-lexeme	озіа	ѻ҆зі́а	60	60		review the token against target-recension evidence and create or reject a lexical candidate
+482	unknown-lexeme	отрочищь	ѻ҆́трочищь	60	60		review the token against target-recension evidence and create or reject a lexical candidate
+483	unknown-lexeme	помышленїе	помышле́нїе	60	60		review the token against target-recension evidence and create or reject a lexical candidate
+484	unknown-lexeme	послетъ	по́слетъ	60	60		review the token against target-recension evidence and create or reject a lexical candidate
+485	unknown-lexeme	совѣта	совѣ́та	60	60		review the token against target-recension evidence and create or reject a lexical candidate
+486	unknown-lexeme	ѳѷмїама	ѳѷмїа́ма	60	60		review the token against target-recension evidence and create or reject a lexical candidate
 487	unknown-lexeme	наказанїѧ	наказа́нїѧ	60	59		review the token against target-recension evidence and create or reject a lexical candidate
 488	unknown-lexeme	воздвигоша	воздвиго́ша	60	58		review the token against target-recension evidence and create or reject a lexical candidate
 489	unknown-lexeme	возлюбихъ	возлюби́хъ	60	58		review the token against target-recension evidence and create or reject a lexical candidate

@@ -1549,6 +1549,18 @@
       "recovery_route": "ungrouped-unknown",
       "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
     },
+    "ungrouped:оч҃а": {
+      "probable_family_id": "ungrouped:оч҃а",
+      "token_frequency": 1,
+      "top_k_uncovered_token_frequency": 1,
+      "document_frequency": 1,
+      "surfaces": [
+        "ѻ҆́ч҃а"
+      ],
+      "candidate_lexeme_ids": [],
+      "recovery_route": "abbreviation-registry",
+      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
+    },
     "ungrouped:паѵелъ": {
       "probable_family_id": "ungrouped:паѵелъ",
       "token_frequency": 1,
@@ -1633,18 +1645,6 @@
       "recovery_route": "ungrouped-unknown",
       "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
     },
-    "ungrouped:ѻч҃а": {
-      "probable_family_id": "ungrouped:ѻч҃а",
-      "token_frequency": 1,
-      "top_k_uncovered_token_frequency": 1,
-      "document_frequency": 1,
-      "surfaces": [
-        "ѻ҆́ч҃а"
-      ],
-      "candidate_lexeme_ids": [],
-      "recovery_route": "abbreviation-registry",
-      "assumption": "no reviewed lexical identity or conservative high-impact family diagnostic is available"
-    },
     "ungrouped:ѿложенное": {
       "probable_family_id": "ungrouped:ѿложенное",
       "token_frequency": 1,
@@ -1708,6 +1708,7 @@
     "молѧщесѧ": 1,
     "нимиже": 2,
     "оучити": 1,
+    "оч҃а": 1,
     "паѵелъ": 1,
     "слышавше": 1,
     "страданїи": 1,
@@ -1716,7 +1717,6 @@
     "хрⷭ҇товъ": 1,
     "ѡбѣтованїѧ": 1,
     "ѳеофїле": 1,
-    "ѻч҃а": 1,
     "ѿложенное": 1,
     "ѿлꙋчатисѧ": 1,
     "ꙗвлѧѧсѧ": 1
@@ -1738,6 +1738,7 @@
     "молѧщесѧ": 1,
     "нимиже": 2,
     "оучити": 1,
+    "оч҃а": 1,
     "паѵелъ": 1,
     "слышавше": 1,
     "страданїи": 1,
@@ -1746,7 +1747,6 @@
     "хрⷭ҇товъ": 1,
     "ѡбѣтованїѧ": 1,
     "ѳеофїле": 1,
-    "ѻч҃а": 1,
     "ѿложенное": 1,
     "ѿлꙋчатисѧ": 1,
     "ꙗвлѧѧсѧ": 1
@@ -2690,6 +2690,66 @@
     },
     {
       "kind": "unknown-lexeme",
+      "original": "ѻ҆́ч҃а",
+      "normalized": "оч҃а",
+      "corpus": "Elizabeth Bible corpus",
+      "source_id": "ponomar-elizabeth-bible-2026-08-09",
+      "work": "Elizabeth Bible",
+      "edition": "Ponomar Unicode text",
+      "passage": "Acts.1.4",
+      "partition": "source",
+      "source_recension": "synodal-russian",
+      "corpora": [
+        "Elizabeth Bible corpus"
+      ],
+      "source_ids": [
+        "ponomar-elizabeth-bible-2026-08-09"
+      ],
+      "editions": [
+        "Ponomar Unicode text"
+      ],
+      "partitions": [
+        "source"
+      ],
+      "source_recensions": [
+        "synodal-russian"
+      ],
+      "documents": [
+        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4"
+      ],
+      "contexts": [
+        {
+          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.4",
+          "passage": "Acts.1.4",
+          "line": 1,
+          "column": 88,
+          "excerpt": "това́нїѧ ѻ҆́ч҃а, є҆́же"
+        }
+      ],
+      "byte_start": 163,
+      "byte_end": 175,
+      "line": 1,
+      "column": 88,
+      "candidate_lexeme_ids": [],
+      "requested_morphological_system": null,
+      "generation_policy": "Strict",
+      "orthography_profile": "SynodalLiturgical",
+      "resolver_trace": {
+        "steps": []
+      },
+      "missing_metadata": [],
+      "secondary_reasons": [],
+      "detail": "no reviewed target lexeme or compatible generated form",
+      "frequency": 1,
+      "document_frequency": 1,
+      "top_k_uncovered_frequency": 1,
+      "top_k_uncovered_documents": [
+        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4"
+      ],
+      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
+    },
+    {
+      "kind": "unknown-lexeme",
       "original": "Па́ѵелъ",
       "normalized": "паѵелъ",
       "corpus": "Church Slavonic Bible corpus",
@@ -3105,66 +3165,6 @@
       "top_k_uncovered_frequency": 1,
       "top_k_uncovered_documents": [
         "ponomar-elizabeth-bible-2026-08-09:Acts.1.1"
-      ],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "kind": "unknown-lexeme",
-      "original": "ѻ҆́ч҃а",
-      "normalized": "ѻч҃а",
-      "corpus": "Elizabeth Bible corpus",
-      "source_id": "ponomar-elizabeth-bible-2026-08-09",
-      "work": "Elizabeth Bible",
-      "edition": "Ponomar Unicode text",
-      "passage": "Acts.1.4",
-      "partition": "source",
-      "source_recension": "synodal-russian",
-      "corpora": [
-        "Elizabeth Bible corpus"
-      ],
-      "source_ids": [
-        "ponomar-elizabeth-bible-2026-08-09"
-      ],
-      "editions": [
-        "Ponomar Unicode text"
-      ],
-      "partitions": [
-        "source"
-      ],
-      "source_recensions": [
-        "synodal-russian"
-      ],
-      "documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4"
-      ],
-      "contexts": [
-        {
-          "document": "ponomar-elizabeth-bible-2026-08-09:Acts.1.4",
-          "passage": "Acts.1.4",
-          "line": 1,
-          "column": 88,
-          "excerpt": "това́нїѧ ѻ҆́ч҃а, є҆́же"
-        }
-      ],
-      "byte_start": 163,
-      "byte_end": 175,
-      "line": 1,
-      "column": 88,
-      "candidate_lexeme_ids": [],
-      "requested_morphological_system": null,
-      "generation_policy": "Strict",
-      "orthography_profile": "SynodalLiturgical",
-      "resolver_trace": {
-        "steps": []
-      },
-      "missing_metadata": [],
-      "secondary_reasons": [],
-      "detail": "no reviewed target lexeme or compatible generated form",
-      "frequency": 1,
-      "document_frequency": 1,
-      "top_k_uncovered_frequency": 1,
-      "top_k_uncovered_documents": [
-        "ponomar-elizabeth-bible-2026-08-09:Acts.1.4"
       ],
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
@@ -3737,6 +3737,16 @@
     {
       "rank": 16,
       "kind": "unknown-lexeme",
+      "normalized": "оч҃а",
+      "sample": "ѻ҆́ч҃а",
+      "frequency": 1,
+      "document_frequency": 1,
+      "candidate_lexeme_ids": [],
+      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
+    },
+    {
+      "rank": 17,
+      "kind": "unknown-lexeme",
       "normalized": "паѵелъ",
       "sample": "Па́ѵелъ",
       "frequency": 1,
@@ -3745,7 +3755,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 17,
+      "rank": 18,
       "kind": "unknown-lexeme",
       "normalized": "страданїи",
       "sample": "страда́нїи",
@@ -3755,7 +3765,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 18,
+      "rank": 19,
       "kind": "unknown-lexeme",
       "normalized": "ст҃ымъ",
       "sample": "ст҃ы̑мъ",
@@ -3765,7 +3775,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 19,
+      "rank": 20,
       "kind": "unknown-lexeme",
       "normalized": "тїмоѳей",
       "sample": "тїмоѳе́й",
@@ -3775,7 +3785,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 20,
+      "rank": 21,
       "kind": "unknown-lexeme",
       "normalized": "хрⷭ҇товъ",
       "sample": "хрⷭ҇то́въ",
@@ -3785,7 +3795,7 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 21,
+      "rank": 22,
       "kind": "unknown-lexeme",
       "normalized": "ѡбѣтованїѧ",
       "sample": "ѡ҆бѣтова́нїѧ",
@@ -3795,20 +3805,10 @@
       "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
     },
     {
-      "rank": 22,
+      "rank": 23,
       "kind": "unknown-lexeme",
       "normalized": "ѳеофїле",
       "sample": "ѳео́фїле",
-      "frequency": 1,
-      "document_frequency": 1,
-      "candidate_lexeme_ids": [],
-      "suggested_action": "review the token against target-recension evidence and create or reject a lexical candidate"
-    },
-    {
-      "rank": 23,
-      "kind": "unknown-lexeme",
-      "normalized": "ѻч҃а",
-      "sample": "ѻ҆́ч҃а",
       "frequency": 1,
       "document_frequency": 1,
       "candidate_lexeme_ids": [],

@@ -10,16 +10,16 @@ Scope groups are refined from coarse to fine (number, case, gender, animacy) and
 the coarsest granularity that fits the whole family is the one emitted, so real
 accent mobility is stated rather than smoothed away.
 
-- Lexemes with a fitted contract: 1
-- Accent-paradigm rows proposed: 36
-- Scope families with no reproducing placement at the finest granularity: 259
+- Lexemes with a fitted contract: 8
+- Accent-paradigm rows proposed: 43
+- Scope families with no reproducing placement at the finest granularity: 269
 - Lexemes with cells outside the reusable scope grammar: 16
 
 | Granularity | Rows |
 |---|---:|
-| `Number` | 2 |
-| `NumberCase` | 2 |
-| `NumberCaseGender` | 32 |
+| `Number` | 7 |
+| `NumberCase` | 3 |
+| `NumberCaseGender` | 33 |
 
 ## Fitted contracts
 
@@ -61,6 +61,13 @@ accent mobility is stated rather than smoothed away.
 | `synodal:adjective:zlyi` | `adjective-agreeing:long:superlative:plural:vocative:neuter:inanimate,animate` | `stem-vowel-from-start:0` | `kamora` | 2 |
 | `synodal:adjective:zlyi` | `adjective:short:comparative:singular,dual,plural` | `stem-vowel-from-start:0` | `acute` | 35 |
 | `synodal:adjective:zlyi` | `adjective:short:superlative:singular,dual,plural` | `stem-vowel-from-start:0` | `acute` | 6 |
+| `synodal:noun:v06-64bd1811dbd024b5` | `noun:singular:genitive,dative` | `stem-vowel-from-start:2` | `acute` | 4 |
+| `synodal:numeral:collective-oboe` | `numeral:singular` | `ending-vowel-from-end:0` | `acute` | 8 |
+| `synodal:numeral:osmyi` | `numeral:singular,dual` | `stem-vowel-from-start:1` | `acute` | 45 |
+| `synodal:numeral:v06-7391e80a474691c3` | `numeral:plural` | `stem-vowel-from-start:1` | `acute` | 6 |
+| `synodal:pronoun:demonstrative-onyi` | `pronoun:singular,dual,plural:nominative,genitive,dative,accusative,instrumental,locative,vocative` | `stem-vowel-from-start:0` | `acute` | 96 |
+| `synodal:pronoun:ovyi` | `pronoun:singular,plural:nominative,genitive,dative,accusative,instrumental,locative,vocative` | `stem-vowel-from-start:0` | `acute` | 23 |
+| `synodal:pronoun:v06-7cb9fbdd604c5a70` | `pronoun-agreeing:plural:nominative:masculine,neuter:inanimate,animate` | `stem-vowel-from-start:0` | `acute` | 8 |
 
 ## Unfitted scope families
 
@@ -809,6 +816,7 @@ synodal:noun:tsar	singular:genitive	Noun	2 attestation(s); best rule word-vowel-
 synodal:noun:tsar	dual:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: царѧ→Царѧ́ царѧ→Царѧ́
 synodal:noun:tsar	dual:accusative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: царѧ→Царѧ́ царѧ→Царѧ́
 synodal:noun:tsar	dual:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:1 kamora misses: царѧ→Царѧ́ царѧ→Царѧ́
+synodal:noun:v06-64bd1811dbd024b5	singular:locative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: оцѣ→ѻ҆́цѣ оцѣ→ѻ҆́цѣ
 synodal:noun:v07-c27905de175a0cde	singular:dative	Noun	4 attestation(s); best rule word-vowel-from-start:0 kamora misses: каменю→ка́меню каменю→ка́меню
 synodal:noun:v12-ishod	plural:nominative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: исходи→и҆схо́ди исходи→и҆схо́ди
 synodal:noun:v12-ishod	plural:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:2 grave misses: исходи→и҆схо́ди исходи→и҆схо́ди
@@ -878,6 +886,7 @@ synodal:noun:zhena	dual:accusative	Noun	4 attestation(s); best rule word-vowel-f
 synodal:noun:zhena	dual:vocative	Noun	4 attestation(s); best rule word-vowel-from-start:9 kamora misses: женѣ→Женѣ́ женѣ→Женѣ́ женѣ→женѣ́ женѣ→женѣ́
 synodal:numeral:collective-dvoe	singular	Numeral	10 attestation(s); best rule word-vowel-from-start:0 acute misses: двоимъ→двои́мъ двоимъ→двои́мъ
 synodal:numeral:collective-dvoi	plural	Numeral	36 attestation(s); best rule word-vowel-from-start:1 acute misses: двои→дво́и двои→дво́и двои→дво́и двои→дво́и
+synodal:numeral:collective-oboi	plural	Numeral	54 attestation(s); best rule word-vowel-from-start:2 acute misses: обоѧ→ѻ҆боѧ̑ обоѧ→ѻ҆боѧ̑ обоѧ→ѻ҆боѧ̑ обоѧ→ѻ҆боѧ̑
 synodal:numeral:dva	dual	Numeral	6 attestation(s); best rule word-vowel-from-start:9 kamora misses: два→два́ двѣ→двѣ́ двѣ→двѣ́ двѣ→Двѣ́
 synodal:numeral:fractional-pol	singular	Numeral	8 attestation(s); best rule word-vowel-from-start:1 grave misses: пола→по́ла пола→по́ла
 synodal:numeral:fractional-pol	dual	Numeral	8 attestation(s); best rule word-vowel-from-start:1 grave misses: пола→по́ла пола→по́ла пола→по́ла пола→по́ла
@@ -1016,6 +1025,20 @@ synodal:pronoun:nichto	singular:nominative:inanimate	Pronoun	2 attestation(s); b
 synodal:pronoun:nichto	singular:nominative:animate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: ничто→ничто́
 synodal:pronoun:nichto	singular:accusative:inanimate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: ничто→ничто́
 synodal:pronoun:nichto	singular:accusative:animate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: ничто→ничто́
+synodal:pronoun:on	dual:nominative:feminine:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	dual:nominative:feminine:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	dual:nominative:neuter:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	dual:nominative:neuter:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	dual:accusative:feminine:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	dual:accusative:feminine:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	dual:accusative:neuter:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	dual:accusative:neuter:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:on	plural:instrumental:masculine:inanimate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: онѣми→ѻ҆́нѣми
+synodal:pronoun:on	plural:instrumental:masculine:animate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: онѣми→ѻ҆́нѣми
+synodal:pronoun:on	plural:instrumental:feminine:inanimate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: онѣми→ѻ҆́нѣми
+synodal:pronoun:on	plural:instrumental:feminine:animate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: онѣми→ѻ҆́нѣми
+synodal:pronoun:on	plural:instrumental:neuter:inanimate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: онѣми→ѻ҆́нѣми
+synodal:pronoun:on	plural:instrumental:neuter:animate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: онѣми→ѻ҆́нѣми
 synodal:pronoun:sei	singular:instrumental:feminine:inanimate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: сею→се́ю
 synodal:pronoun:sei	singular:instrumental:feminine:animate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: сею→се́ю
 synodal:pronoun:sei	dual:genitive:masculine:inanimate	Pronoun	2 attestation(s); best rule word-vowel-from-start:1 grave misses: сею→се́ю
@@ -1103,6 +1126,12 @@ synodal:pronoun:v06-7cb9fbdd604c5a70	singular:genitive:masculine:animate	Pronoun
 synodal:pronoun:v06-7cb9fbdd604c5a70	singular:genitive:neuter:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: єгѡ→є҆гѡ́
 synodal:pronoun:v06-7cb9fbdd604c5a70	singular:genitive:neuter:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: єгѡ→є҆гѡ́
 synodal:pronoun:v06-7cb9fbdd604c5a70	singular:accusative:masculine:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: єго→є҆го́
+synodal:pronoun:v06-7cb9fbdd604c5a70	dual:nominative:feminine:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:v06-7cb9fbdd604c5a70	dual:nominative:feminine:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:v06-7cb9fbdd604c5a70	dual:nominative:neuter:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:v06-7cb9fbdd604c5a70	dual:nominative:neuter:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:v06-7cb9fbdd604c5a70	plural:nominative:feminine:inanimate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
+synodal:pronoun:v06-7cb9fbdd604c5a70	plural:nominative:feminine:animate	Pronoun	1 attestation(s); best rule word-vowel-from-start:9 kamora misses: онѣ→Ѻ҆нѣ́
 synodal:pronoun:yakov	singular:nominative:feminine:inanimate	Pronoun	3 attestation(s); best rule word-vowel-from-start:2 kamora misses: ꙗкова→ꙗ҆кова̀ ꙗкова→ꙗ҆кова́
 synodal:pronoun:yakov	singular:nominative:feminine:animate	Pronoun	3 attestation(s); best rule word-vowel-from-start:2 kamora misses: ꙗкова→ꙗ҆кова̀ ꙗкова→ꙗ҆кова́
 synodal:pronoun:yakov	singular:genitive:masculine:inanimate	Pronoun	3 attestation(s); best rule word-vowel-from-start:2 kamora misses: ꙗкова→ꙗ҆кова̀ ꙗкова→ꙗ҆кова́
@@ -1266,6 +1295,8 @@ synodal:noun:slovo	noun:singular,plural	overlaps an existing reviewed paradigm a
 synodal:noun:svet	noun:singular,dual,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:tsar	noun:plural	overlaps an existing reviewed paradigm at noun:nominative:plural:animate
 synodal:noun:tsar	noun:singular:locative	overlaps an existing reviewed paradigm at noun:locative:singular:animate
+synodal:noun:v06-64bd1811dbd024b5	noun:dual	overlaps an existing reviewed paradigm at noun:nominative:dual:inanimate
+synodal:noun:v06-64bd1811dbd024b5	noun:plural	cannot realise noun:genitive:plural:inanimate (очесъ)
 synodal:noun:v06-673b2df93b4f89a8	noun:singular,dual,plural	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:v06-e5f5efea52ec5e2e	noun:singular	overlaps an existing reviewed paradigm at noun:nominative:singular:inanimate
 synodal:noun:v07-15ca6aa83f100698	noun:singular,plural	overlaps an existing reviewed paradigm at noun:genitive:singular:inanimate
@@ -1289,6 +1320,7 @@ synodal:noun:zhizn	noun:singular,dual	overlaps an existing reviewed paradigm at 
 synodal:numeral:legeon	numeral:singular,dual	generates легеѡ̑нъ for numeral:cardinal:nominative:singular:any:inanimate but the source partition prints легеѡ́нъ
 synodal:numeral:multiplicative-sugubyi	numeral:singular,plural	generates сꙋгꙋ́баѧ for numeral:multiplicative:nominative:singular:feminine:inanimate but the source partition prints сꙋгꙋ̑баѧ
 synodal:numeral:pervyi	numeral:singular,dual,plural	overlaps an existing reviewed paradigm at numeral:ordinal:nominative:singular:masculine:inanimate
+synodal:numeral:v06-7391e80a474691c3	numeral:singular	overlaps an existing reviewed paradigm at numeral:cardinal:nominative:singular:feminine:inanimate
 synodal:numeral:wikt-04f311cf0bd0	numeral:singular	cannot realise numeral:cardinal:nominative:singular:any:inanimate (девѧть)
 synodal:numeral:wikt-2fe80b81eaf8	numeral:singular	overlaps an existing reviewed paradigm at numeral:cardinal:genitive:singular:feminine:inanimate
 synodal:numeral:wikt-58a4f8eb4197	numeral:singular	overlaps an existing reviewed paradigm at numeral:cardinal:genitive:singular:feminine:inanimate
@@ -1298,10 +1330,14 @@ synodal:pronoun:elik	pronoun:plural:nominative,genitive,dative,accusative,instru
 synodal:pronoun:inyi	pronoun:singular:locative	singular-only kamora needs explicit review: the mark disambiguates dual and plural, so a syncretic reading may have driven it
 synodal:pronoun:izhe	pronoun:singular,dual:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:nominative:singular:masculine:none:inanimate
 synodal:pronoun:kiizhdo	pronoun:singular:accusative	overlaps an existing reviewed paradigm at pronoun:accusative:singular:neuter:none:inanimate
-synodal:pronoun:on	pronoun:plural:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:nominative:plural:masculine:none:inanimate
-synodal:pronoun:v06-7cb9fbdd604c5a70	pronoun:plural:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:accusative:plural:masculine:third:inanimate
+synodal:pronoun:on	pronoun:singular:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:nominative:singular:masculine:none:inanimate
+synodal:pronoun:on	pronoun:dual:dative	overlaps an existing reviewed paradigm at pronoun:dative:dual:any:third:inanimate
+synodal:pronoun:on	pronoun:dual:instrumental	overlaps an existing reviewed paradigm at pronoun:instrumental:dual:any:third:inanimate
+synodal:pronoun:on	pronoun:plural:dative	overlaps an existing reviewed paradigm at pronoun:dative:plural:any:third:inanimate
+synodal:pronoun:v06-7cb9fbdd604c5a70	pronoun:plural:instrumental	generates нимѝ for pronoun:instrumental:plural:masculine:third:inanimate but the source partition prints ни́ми
 synodal:pronoun:v06-nichtozhe	pronoun:singular:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:nominative:singular:any:none:inanimate
 synodal:pronoun:v06-niktozhe	pronoun:singular:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:nominative:singular:any:none:inanimate
+synodal:pronoun:v07-97002c43d9dd87c3	pronoun:singular,plural:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:nominative:singular:masculine:none:inanimate
 synodal:pronoun:wikt-abc6b7472112	pronoun:plural:nominative,genitive,dative,accusative,instrumental,locative,vocative	overlaps an existing reviewed paradigm at pronoun:nominative:plural:masculine:none:inanimate
 synodal:pronoun:wikt-abc6b7472112	pronoun:singular:accusative	overlaps an existing reviewed paradigm at pronoun:accusative:singular:neuter:none:inanimate
 synodal:pronoun:wikt-abc6b7472112	pronoun:singular:genitive	overlaps an existing reviewed paradigm at pronoun:genitive:singular:neuter:none:inanimate
@@ -1373,6 +1409,6 @@ synodal:verb:wikt-833c90610c4d	infinitive глаго́лати
 
 ## Inputs
 
-- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4491
-- Lexemes with at least one such attestation: 168
+- Distinct source-partition `(lexeme, cell, printed)` attestations read: 4862
+- Lexemes with at least one such attestation: 176
 - Placement space searched per partition: 30 placements x 3 marks

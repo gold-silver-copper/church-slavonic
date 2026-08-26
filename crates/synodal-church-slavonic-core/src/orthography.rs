@@ -550,6 +550,12 @@ pub fn present_initial_uk_digraph(printed: &str) -> String {
 const fn fold_digraph_uk(character: char) -> char {
     match character {
         '\u{1c82}' => 'о',
+        // The broad on ѻ (U+047B, capital U+047A) is a word-initial
+        // presentation of о, exactly as the digraph half above is a
+        // presentation of о: the lookup projections fold it so an ѻ-spelled
+        // token reaches the same key as its о twin.
+        'ѻ' => 'о',
+        'Ѻ' => 'О',
         other => other,
     }
 }
@@ -997,6 +1003,16 @@ mod digraph_lookup_tests {
 
 #[cfg(test)]
 mod uk_monograph_tests {
+
+    #[test]
+    fn broad_on_folds_to_o_in_both_projections() {
+        assert_eq!(super::normalize_lookup("ѻдрѣ"), "одрѣ");
+        assert_eq!(super::normalize_lookup("Ѻтроча"), "отроча");
+        assert_eq!(
+            super::normalize_lookup_accentless("ѻ\u{0486}дрѣ\u{0300}"),
+            super::normalize_lookup_accentless("о\u{0486}дрѣ\u{0300}"),
+        );
+    }
 
     #[test]
     fn uk_monograph_folds_to_the_letter_pair_in_both_projections() {

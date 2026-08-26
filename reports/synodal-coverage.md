@@ -12,30 +12,30 @@ memorisation; `synodal-normative-table`, `synodal-productive-rule` and
 `synodal-irregular-override` coverage is generalisation. Corpus-wide top-k
 rising while `generalised` stays flat is memorising.
 
-- Held-out types present: 2785
-- Held-out tokens: 44310
+- Held-out types present: 2784
+- Held-out tokens: 45111
 
 | Outcome | Tokens | Share of held-out |
 |---|---:|---:|
-| **generalised** (by rule) | 14515 | 3275 bp |
-| memorised (exact row) | 14998 | 3384 bp |
-| ambiguous | 265 | 59 bp |
-| unresolved | 13727 | 3097 bp |
-| top-k (any analysis) | 30572 | 6899 bp |
-| top-1 | 11825 | 2668 bp |
+| **generalised** (by rule) | 15238 | 3377 bp |
+| memorised (exact row) | 14974 | 3319 bp |
+| ambiguous | 265 | 58 bp |
+| unresolved | 13831 | 3065 bp |
+| top-k (any analysis) | 31271 | 6932 bp |
+| top-1 | 11879 | 2633 bp |
 
 ### Held-out tokens by resolver status
 
 | Resolver status | Tokens | Share of held-out |
 |---|---:|---:|
-| `abbreviation-expansion` | 794 | 179 bp |
-| `ambiguous` | 265 | 59 bp |
-| `exact-synodal-attestation` | 14998 | 3384 bp |
-| `spelling-variant` | 11 | 2 bp |
-| `synodal-irregular-override` | 253 | 57 bp |
-| `synodal-normative-table` | 5867 | 1324 bp |
-| `synodal-productive-rule` | 8395 | 1894 bp |
-| `unresolved` | 13727 | 3097 bp |
+| `abbreviation-expansion` | 794 | 176 bp |
+| `ambiguous` | 265 | 58 bp |
+| `exact-synodal-attestation` | 14974 | 3319 bp |
+| `spelling-variant` | 9 | 1 bp |
+| `synodal-irregular-override` | 253 | 56 bp |
+| `synodal-normative-table` | 6460 | 1432 bp |
+| `synodal-productive-rule` | 8525 | 1889 bp |
+| `unresolved` | 13831 | 3065 bp |
 
 ### Held-out tokens by morphological system
 
@@ -43,46 +43,46 @@ A wave aimed at one system must be visible landing in that system.
 
 | System | Held-out | Generalised | Memorised | Unresolved |
 |---|---:|---:|---:|---:|
-| `adjective` | 1946 | 1274 | 406 | 59 |
+| `adjective` | 1940 | 1268 | 406 | 59 |
 | `aorist` | 2290 | 731 | 1536 | 23 |
-| `compound-cardinal-word` | 401 | 401 | 0 | 0 |
+| `compound-cardinal-word` | 513 | 513 | 0 | 0 |
 | `determiner` | 147 | 0 | 147 | 0 |
 | `future` | 952 | 788 | 161 | 3 |
 | `imperative` | 299 | 229 | 64 | 6 |
 | `imperfect` | 340 | 68 | 270 | 2 |
-| `indeclinable` | 1561 | 0 | 1534 | 27 |
+| `indeclinable` | 1562 | 0 | 1534 | 28 |
 | `infinitive` | 1536 | 1033 | 437 | 66 |
 | `l-participle` | 18 | 16 | 0 | 2 |
 | `lexical-form` | 1514 | 0 | 909 | 20 |
-| `noun` | 13998 | 4310 | 8976 | 574 |
+| `noun` | 13998 | 4334 | 8952 | 574 |
 | `numeral` | 494 | 357 | 0 | 8 |
 | `past-active-participle` | 251 | 32 | 199 | 20 |
 | `past-passive-participle` | 87 | 40 | 45 | 2 |
 | `present` | 1037 | 691 | 314 | 32 |
 | `present-active-participle` | 369 | 357 | 0 | 12 |
-| `pronoun` | 4210 | 4188 | 0 | 22 |
-| `unresolved` | 12860 | 0 | 0 | 12849 |
+| `pronoun` | 4879 | 4781 | 0 | 98 |
+| `unresolved` | 12885 | 0 | 0 | 12876 |
 
 ## Corpus-wide coverage
 
 - Passages: 74130
 - Tokens: 1313344
-- Types: 54868
+- Types: 54863
 - Top-1 analyzed: 618212 (4707 bp)
 - Top-k analyzed: 994992 (7576 bp)
 - Ambiguous: 9792
-- Unresolved: 317122
+- Unresolved: 317283
 
 ## Gap categories
 
 | Category | Tokens |
 |---|---:|
-| `unknown-lexeme` | 303065 |
-| `missing-declension-or-class` | 98 |
+| `unknown-lexeme` | 302254 |
+| `missing-declension-or-class` | 100 |
 | `missing-verb-principal-part` | 54 |
 | `unsupported-formation` | 36 |
-| `missing-accent-or-orthographic-metadata` | 13869 |
-| `ambiguity-or-spelling-variant` | 11022 |
+| `missing-accent-or-orthographic-metadata` | 14839 |
+| `ambiguity-or-spelling-variant` | 10861 |
 
 ## Coverage composition
 
@@ -107,12 +107,12 @@ These are diagnostic estimates, not admitted lexical identities or guaranteed re
 | Route | Tokens |
 |---|---:|
 | `exact-evidence` | 437 |
-| `reviewed-class` | 98 |
+| `reviewed-class` | 100 |
 | `reviewed-principal-part` | 54 |
 | `abbreviation-registry` | 10677 |
-| `spelling-variant` | 15099 |
+| `spelling-variant` | 15908 |
 | `unsupported-formation` | 36 |
-| `ungrouped-unknown` | 291951 |
+| `ungrouped-unknown` | 291140 |
 
 ## Exploratory predictions over the unresolved remainder
 
@@ -124,19 +124,19 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 
 | Top prediction's system | Tokens |
 |---|---:|
-| `aorist` | 47537 |
-| `imperative` | 28000 |
-| `imperfect` | 6585 |
-| `infinitive` | 10154 |
-| `l-participle` | 8130 |
-| `present` | 38344 |
+| `aorist` | 48431 |
+| `imperative` | 28502 |
+| `imperfect` | 6589 |
+| `infinitive` | 10175 |
+| `l-participle` | 8267 |
+| `present` | 38602 |
 
 | Confidence bucket (bp) | Tokens |
 |---|---:|
-| 0-2399 | 49695 |
-| 2400-2999 | 19999 |
-| 3000-3399 | 46179 |
-| 3400+ | 22877 |
+| 0-2399 | 50819 |
+| 2400-2999 | 20104 |
+| 3000-3399 | 46747 |
+| 3400+ | 22896 |
 
 ## Unresolved tokens by probable family
 
@@ -147,6 +147,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `family:synodal:verb:byti` | 369 | 361 | `spelling-variant` | Бы́вшей, Бы́вши, Бы́вшымъ, бы̀сть, бы̀ша, бы́вша, бы́вшаго, бы́вшагѡ, бы́вшаѧ, бы́вшей, бы́вшемъ, бы́вшемꙋ, бы́вшею, бы́вши, бы́вшихъ, бы́вшымъ, бы́вшыѧ, бы́вшїи, бы́вшїй, бы́вшїѧ, бы́вшꙋю, бы̑вша, бы̑вшаѧ, бывшїи, была́, сꙋ̑ща, сꙋ̑щаѧ, є҆́си, є҆́смы, є҆си, є҆смь |
 | `family:synodal:verb:v06-vzeti` | 323 | 311 | `spelling-variant` | Взѧ́, Возми́те, взе́мши, взе́мшѧ, взѧ́, взѧ́ста, взѧ́сте, взѧ́ти, взѧ́то, взѧ́тое, взѧ́тїе, взѧ́тїѧ, взѧ́хомъ, взѧ̑та, взѧ̑ты, взѧта̀, взѧта̑, взѧты̀, возми́, возми́те, возми́тесѧ, возмꙋ́ |
 | `family:synodal:noun:v12-lakot` | 253 | 146 | `spelling-variant` | Ла́коть, Ла̑кти, ла́коть, ла́ктей, ла́кти, ла̑кти, лакте́й |
+| `family:synodal:pronoun:demonstrative-onyi` | 253 | 249 | `spelling-variant` | Ѻ҆́наѧ, Ѻ҆́ныѧ, ѻ҆́наго, ѻ҆́нагѡ, ѻ҆́наѧ, ѻ҆́ное, ѻ҆́ный, ѻ҆́нымъ, ѻ҆́ныѧ, ѻ҆́нїи, ѻ҆́нѣй, ѻ҆́нꙋю |
 | `family:synodal:noun:v06-673b2df93b4f89a8` | 249 | 241 | `spelling-variant` | Зна́менїѧ, Зна́мєнїѧ, зна́меньми, зна́менїемъ, зна́менїи, зна́менїихъ, зна́менїй, зна́менїє, зна́менїємъ, зна́менїѧ, зна́мєнїи, зна́мєнїѧ, знаме́нїе, знамє́нїѧ |
 | `family:synodal:adverb:wikt-4f4b6240f36e` | 239 | 199 | `spelling-variant` | Го́ре, го́ре, горѣ́ |
 | `family:synodal:pronoun:inyi` | 234 | 229 | `spelling-variant` | И҆ны̑ѧ, и҆́наго, и҆́нымъ, и҆́ныхъ, и҆́ныѧ, и҆на́го, и҆на́ѧ, и҆на̑ѧ, и҆ны́мъ, и҆ны́хъ, и҆ны́ѧ, и҆ны̑мъ, и҆ны̑ѧ |
@@ -174,7 +175,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:далече` | 171 | 169 | `ungrouped-unknown` | Дале́че, дале́че |
 | `ungrouped:премꙋдрости` | 170 | 169 | `ungrouped-unknown` | премꙋ́дрости |
 | `ungrouped:єзекіа` | 170 | 160 | `ungrouped-unknown` | Є҆зекі́а, є҆зекі́а |
-| `ungrouped:ѻлтарѧ` | 169 | 145 | `ungrouped-unknown` | ѻлтарѧ̀, ѻ҆лтарѧ̀ |
+| `ungrouped:олтарѧ` | 169 | 145 | `ungrouped-unknown` | ѻлтарѧ̀, ѻ҆лтарѧ̀ |
 | `ungrouped:паѵелъ` | 166 | 166 | `ungrouped-unknown` | Па́ѵелъ, па́ѵелъ |
 | `ungrouped:творѧй` | 166 | 162 | `ungrouped-unknown` | Творѧ́й, творѧ́й |
 | `ungrouped:оучн҃цы` | 165 | 156 | `abbreviation-registry` | Оу҆чн҃цы́, Ѹ҆чн҃цы́, ѹ҆чн҃цы̀, ѹ҆чн҃цы́, ᲂу҆чн҃цы̀, ᲂу҆чн҃цы́ |
@@ -186,17 +187,20 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `family:synodal:adjective:chist` | 156 | 149 | `spelling-variant` | чи́ста, чи́сты, чи́стыма, чи́стымъ, чи́стыѧ, чи́стїи, чи̑ста, чи̑стаѧ, чи̑сты, чи̑стымъ, чи̑стыѧ, чиста̀ |
 | `ungrouped:блгⷭ҇венъ` | 156 | 155 | `abbreviation-registry` | Блгⷭ҇ве́нъ, Блгⷭ҇венъ, блгⷭ҇ве́нъ |
 | `ungrouped:введе` | 155 | 153 | `ungrouped-unknown` | Введе́, введе́, введѐ |
+| `family:synodal:numeral:collective-oboi` | 154 | 147 | `spelling-variant` | ѻ҆́бои, ѻ҆бои́ми, ѻ҆бои́хъ, ѻ҆боѝ, ѻ҆боѧ̀, ѻ҆боѧ́, ѻ҆боѧ̑ |
 | `ungrouped:каменїемъ` | 154 | 150 | `ungrouped-unknown` | Ка́менїемъ, ка́менїемъ |
+| `ungrouped:овна` | 154 | 148 | `ungrouped-unknown` | ѻ҆вна̀, ѻ҆вна́, ѻ҆вна̑ |
 | `ungrouped:сонмѡмъ` | 154 | 152 | `ungrouped-unknown` | со́нмѡмъ |
-| `ungrouped:ѻвна` | 154 | 148 | `ungrouped-unknown` | ѻ҆вна̀, ѻ҆вна́, ѻ҆вна̑ |
 | `ungrouped:слꙋжити` | 153 | 148 | `ungrouped-unknown` | слꙋжи́ти |
 | `ungrouped:сꙋббѡты` | 153 | 138 | `ungrouped-unknown` | Сꙋббѡ̑ты, сꙋббѡ́ты, сꙋббѡ̑ты |
 | `ungrouped:погꙋбити` | 152 | 150 | `ungrouped-unknown` | погꙋби́ти |
-| `ungrouped:ѻрꙋжїе` | 150 | 142 | `ungrouped-unknown` | ѻ҆рꙋ́жїе |
+| `family:synodal:pronoun:on` | 151 | 149 | `spelling-variant` | ѻ҆́ного, ѻ҆́ноѧ, ѻ҆́нѣма, ѻ҆́нѣми, ѻ҆нꙋ̀ |
+| `ungrouped:орꙋжїе` | 150 | 142 | `ungrouped-unknown` | ѻ҆рꙋ́жїе |
 | `ungrouped:навꙋходоносоръ` | 149 | 145 | `ungrouped-unknown` | Навꙋходоно́соръ, навꙋходоно́соръ |
 | `family:synodal:pronoun:toi` | 148 | 140 | `spelling-variant` | То́, Тогѡ́, то́, того́, тогѡ́, томꙋ́, тоѧ́, ты̑ѧ |
 | `ungrouped:царева` | 148 | 144 | `ungrouped-unknown` | царе́ва |
-| `ungrouped:ѻньже` | 147 | 141 | `ungrouped-unknown` | ѻ҆́ньже |
+| `family:synodal:noun:father` | 147 | 131 | `spelling-variant` | ѻ҆́тца, ѻ҆тца́, ѻ҆тцы́, ѻ҆тцы̑, ѻ҆тцꙋ́ |
+| `ungrouped:оньже` | 147 | 141 | `ungrouped-unknown` | ѻ҆́ньже |
 | `family:synodal:numeral:vtoryi` | 145 | 142 | `spelling-variant` | Втора́ѧ, втора́ѧ, втора̑ѧ, второ́мꙋ, вторы́ми, вторы́мъ, вторы́хъ, вторы́ѧ, вторы̑мъ, вторѣ́й, вторѣ́мъ, вторꙋ́ю |
 | `ungrouped:богѡвъ` | 145 | 137 | `ungrouped-unknown` | Богѡ́въ, богѡ́въ |
 | `ungrouped:велїй` | 145 | 144 | `ungrouped-unknown` | Ве́лїй, ве́лїй |
@@ -212,8 +216,6 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:вєси` | 138 | 103 | `ungrouped-unknown` | вє́си |
 | `ungrouped:сонъ` | 138 | 122 | `ungrouped-unknown` | Со́нъ, со̀нъ, со́нъ |
 | `ungrouped:тꙋкъ` | 138 | 100 | `ungrouped-unknown` | Тꙋ́къ, тꙋ́къ |
-| `ungrouped:ѻтцы` | 138 | 122 | `ungrouped-unknown` | ѻ҆тцы́, ѻ҆тцы̑ |
-| `family:synodal:pronoun:on` | 137 | 135 | `spelling-variant` | ѻ҆нꙋ̀ |
 | `ungrouped:восташа` | 136 | 134 | `ungrouped-unknown` | Воста́ша, воста́ша |
 | `ungrouped:прѡчаѧ` | 136 | 136 | `ungrouped-unknown` | Прѡ́чаѧ, прѡ́чаѧ |
 | `ungrouped:талантъ` | 136 | 101 | `ungrouped-unknown` | тала́нтъ, тала̑нтъ |
@@ -240,72 +242,70 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | `ungrouped:поклонисѧ` | 126 | 126 | `ungrouped-unknown` | поклони́сѧ |
 | `ungrouped:дрꙋгій` | 125 | 123 | `ungrouped-unknown` | Дрꙋгі́й, дрꙋгі́й |
 | `ungrouped:кꙋпнѡ` | 125 | 123 | `ungrouped-unknown` | Кꙋ́пнѡ, кꙋ́пнѡ |
-| `ungrouped:єлей` | 125 | 116 | `ungrouped-unknown` | є҆ле́й |
-| `ungrouped:покой` | 123 | 119 | `ungrouped-unknown` | Поко́й, поко́й |
 
 ## Coverage by corpus
 
 | Corpus | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| Church Slavonic Bible | 651487 | 306672 | 493710 | 4887 | 157148 |
-| Elizabeth Bible | 661857 | 311540 | 501282 | 4905 | 159974 |
+| Church Slavonic Bible | 651487 | 306672 | 493710 | 4887 | 157228 |
+| Elizabeth Bible | 661857 | 311540 | 501282 | 4905 | 160055 |
 
 ## Coverage by source
 
 | Source | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 311540 | 501282 | 4905 | 159974 |
-| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 306672 | 493710 | 4887 | 157148 |
+| `ponomar-elizabeth-bible-2026-08-09` | 661857 | 311540 | 501282 | 4905 | 160055 |
+| `wikisource-church-slavonic-bible-2026-08-09` | 651487 | 306672 | 493710 | 4887 | 157228 |
 
 ## Coverage by partition
 
 | Partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `evaluation` | 265701 | 125021 | 201732 | 2091 | 63731 |
-| `source` | 1047643 | 493191 | 793260 | 7701 | 253391 |
+| `evaluation` | 265701 | 125021 | 201732 | 2091 | 63765 |
+| `source` | 1047643 | 493191 | 793260 | 7701 | 253518 |
 
 ## Coverage by source and partition
 
 | Source/partition | Tokens | Top-1 | Top-k | Ambiguous | Unresolved |
 |---|---:|---:|---:|---:|---:|
-| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63523 | 102239 | 1083 | 32557 |
-| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 248017 | 399043 | 3822 | 127417 |
-| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61498 | 99493 | 1008 | 31174 |
-| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 245174 | 394217 | 3879 | 125974 |
+| `ponomar-elizabeth-bible-2026-08-09:evaluation` | 134910 | 63523 | 102239 | 1083 | 32575 |
+| `ponomar-elizabeth-bible-2026-08-09:source` | 526947 | 248017 | 399043 | 3822 | 127480 |
+| `wikisource-church-slavonic-bible-2026-08-09:evaluation` | 130791 | 61498 | 99493 | 1008 | 31190 |
+| `wikisource-church-slavonic-bible-2026-08-09:source` | 520696 | 245174 | 394217 | 3879 | 126038 |
 
 ## Gap categories by source
 
 | Source | Category | Tokens |
 |---|---|---:|
-| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 152918 |
-| `ponomar-elizabeth-bible-2026-08-09` | `missing-declension-or-class` | 49 |
+| `ponomar-elizabeth-bible-2026-08-09` | `unknown-lexeme` | 152509 |
+| `ponomar-elizabeth-bible-2026-08-09` | `missing-declension-or-class` | 50 |
 | `ponomar-elizabeth-bible-2026-08-09` | `missing-verb-principal-part` | 27 |
 | `ponomar-elizabeth-bible-2026-08-09` | `unsupported-formation` | 18 |
-| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6962 |
-| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5506 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 150147 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `missing-declension-or-class` | 49 |
+| `ponomar-elizabeth-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 7451 |
+| `ponomar-elizabeth-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5425 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `unknown-lexeme` | 149745 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `missing-declension-or-class` | 50 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `missing-verb-principal-part` | 27 |
 | `wikisource-church-slavonic-bible-2026-08-09` | `unsupported-formation` | 18 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 6907 |
-| `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5516 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `missing-accent-or-orthographic-metadata` | 7388 |
+| `wikisource-church-slavonic-bible-2026-08-09` | `ambiguity-or-spelling-variant` | 5436 |
 
 ## Gap categories by partition
 
 | Partition | Category | Tokens |
 |---|---|---:|
-| `evaluation` | `unknown-lexeme` | 60797 |
-| `evaluation` | `missing-declension-or-class` | 18 |
+| `evaluation` | `unknown-lexeme` | 60651 |
+| `evaluation` | `missing-declension-or-class` | 19 |
 | `evaluation` | `missing-verb-principal-part` | 15 |
 | `evaluation` | `unsupported-formation` | 6 |
-| `evaluation` | `missing-accent-or-orthographic-metadata` | 2895 |
-| `evaluation` | `ambiguity-or-spelling-variant` | 2329 |
-| `source` | `unknown-lexeme` | 242268 |
-| `source` | `missing-declension-or-class` | 80 |
+| `evaluation` | `missing-accent-or-orthographic-metadata` | 3074 |
+| `evaluation` | `ambiguity-or-spelling-variant` | 2295 |
+| `source` | `unknown-lexeme` | 241603 |
+| `source` | `missing-declension-or-class` | 81 |
 | `source` | `missing-verb-principal-part` | 39 |
 | `source` | `unsupported-formation` | 30 |
-| `source` | `missing-accent-or-orthographic-metadata` | 10974 |
-| `source` | `ambiguity-or-spelling-variant` | 8693 |
+| `source` | `missing-accent-or-orthographic-metadata` | 11765 |
+| `source` | `ambiguity-or-spelling-variant` | 8566 |
 
 ## Review queue
 
@@ -386,7 +386,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 73 | `unknown-lexeme` | `две́рїй` | 140 | 127 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 74 | `ambiguity-or-spelling-variant` | `нѣ́кїй` | 138 | 138 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
 | 75 | `unknown-lexeme` | `со́нъ` | 138 | 122 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 76 | `unknown-lexeme` | `ѻ҆тцы̑` | 138 | 122 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 76 | `missing-accent-or-orthographic-metadata` | `ѻ҆тцы̑` | 138 | 122 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 77 | `unknown-lexeme` | `вє́си` | 138 | 103 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 78 | `unknown-lexeme` | `тꙋ́къ` | 138 | 100 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 79 | `missing-accent-or-orthographic-metadata` | `ѻ҆нꙋ̀` | 137 | 135 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
@@ -467,8 +467,8 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 154 | `unknown-lexeme` | `пойдꙋ̀` | 104 | 102 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 155 | `unknown-lexeme` | `си́льныхъ` | 104 | 102 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 156 | `unknown-lexeme` | `рабы̑ни` | 104 | 101 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 157 | `unknown-lexeme` | `фарїсе́є` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 158 | `unknown-lexeme` | `ѻ҆рꙋ́жїемъ` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 157 | `unknown-lexeme` | `ѻ҆рꙋ́жїемъ` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 158 | `unknown-lexeme` | `фарїсе́є` | 104 | 99 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 159 | `unknown-lexeme` | `помоли́сѧ` | 104 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 160 | `unknown-lexeme` | `є҆ле́емъ` | 104 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 161 | `unknown-lexeme` | `погꙋби́тъ` | 104 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
@@ -493,11 +493,11 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 180 | `unknown-lexeme` | `покры̀` | 98 | 98 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 181 | `unknown-lexeme` | `првⷣнъ` | 98 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 182 | `unknown-lexeme` | `си́ленъ` | 98 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 183 | `unknown-lexeme` | `і҆ѡсафа́тъ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 184 | `unknown-lexeme` | `ѻ҆рꙋ̑жїѧ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 183 | `unknown-lexeme` | `ѻ҆рꙋ̑жїѧ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 184 | `unknown-lexeme` | `і҆ѡсафа́тъ` | 98 | 94 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 185 | `unknown-lexeme` | `Є҆ли́кѡ` | 98 | 92 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 186 | `unknown-lexeme` | `воевѡ́ды` | 96 | 96 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 187 | `unknown-lexeme` | `ѻ҆бои́хъ` | 96 | 89 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 187 | `missing-accent-or-orthographic-metadata` | `ѻ҆бои́хъ` | 96 | 89 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 188 | `unknown-lexeme` | `снѣдѧ́тъ` | 96 | 84 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 189 | `unknown-lexeme` | `по́йде` | 95 | 95 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 190 | `unknown-lexeme` | `чрез̾` | 95 | 93 | review the token against target-recension evidence and create or reject a lexical candidate |
@@ -562,7 +562,7 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 249 | `missing-accent-or-orthographic-metadata` | `и҆ны̑мъ` | 84 | 84 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 250 | `missing-accent-or-orthographic-metadata` | `и҆ны́хъ` | 84 | 83 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 251 | `missing-accent-or-orthographic-metadata` | `возвѣщꙋ̀` | 84 | 82 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 252 | `ambiguity-or-spelling-variant` | `ѻ҆́ный` | 84 | 82 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
+| 252 | `missing-accent-or-orthographic-metadata` | `ѻ҆́ный` | 84 | 82 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 253 | `unknown-lexeme` | `є҆леаза́ръ` | 84 | 80 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 254 | `unknown-lexeme` | `постыдѧ́тсѧ` | 84 | 78 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 255 | `unknown-lexeme` | `поми́лꙋй` | 84 | 77 | review the token against target-recension evidence and create or reject a lexical candidate |
@@ -638,8 +638,8 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 325 | `unknown-lexeme` | `стра́жꙋ` | 75 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 326 | `unknown-lexeme` | `ѡ҆держа́нїе` | 75 | 71 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 327 | `unknown-lexeme` | `бл҃гъ` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 328 | `unknown-lexeme` | `царе́во` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 329 | `unknown-lexeme` | `ѻ҆внѡ́въ` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 328 | `unknown-lexeme` | `ѻ҆внѡ́въ` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 329 | `unknown-lexeme` | `царе́во` | 74 | 74 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 330 | `unknown-lexeme` | `воззва̀` | 74 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 331 | `unknown-lexeme` | `даві́довъ` | 74 | 73 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 332 | `unknown-lexeme` | `ᲂу҆крѣпи́` | 74 | 72 | review the token against target-recension evidence and create or reject a lexical candidate |
@@ -707,18 +707,18 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 394 | `unknown-lexeme` | `ле́стїю` | 67 | 67 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 395 | `unknown-lexeme` | `бѣ́хꙋ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 396 | `unknown-lexeme` | `возда́мъ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 397 | `unknown-lexeme` | `стєзѝ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 398 | `unknown-lexeme` | `ѻ҆де́ждꙋ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 397 | `unknown-lexeme` | `ѻ҆де́ждꙋ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 398 | `unknown-lexeme` | `стєзѝ` | 67 | 65 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 399 | `unknown-lexeme` | `ѿи́метъ` | 67 | 63 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 400 | `unknown-lexeme` | `сожжѐ` | 67 | 61 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 401 | `unknown-lexeme` | `а҆́гнцєвъ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 402 | `unknown-lexeme` | `ᲂу҆́трїе` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 403 | `unknown-lexeme` | `посла́нїе` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 404 | `unknown-lexeme` | `совершѝ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 405 | `unknown-lexeme` | `царе́вꙋ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 406 | `unknown-lexeme` | `ѻ҆́троки` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 407 | `missing-accent-or-orthographic-metadata` | `свидѣ̑нїѧ` | 66 | 66 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
-| 408 | `ambiguity-or-spelling-variant` | `ѻ҆смы́й` | 66 | 66 | review whether this is a permitted Synodal spelling variant, abbreviation, or distinct lexeme |
+| 402 | `unknown-lexeme` | `ѻ҆́троки` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 403 | `unknown-lexeme` | `ᲂу҆́трїе` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 404 | `unknown-lexeme` | `посла́нїе` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 405 | `unknown-lexeme` | `совершѝ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 406 | `unknown-lexeme` | `царе́вꙋ` | 66 | 66 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 407 | `missing-accent-or-orthographic-metadata` | `ѻ҆смы́й` | 66 | 66 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
+| 408 | `missing-accent-or-orthographic-metadata` | `свидѣ̑нїѧ` | 66 | 66 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 409 | `missing-accent-or-orthographic-metadata` | `возвѣсти́ти` | 66 | 65 | review the accent, breathing, titlo, and positional-letter evidence instead of accepting an accentless fallback |
 | 410 | `unknown-lexeme` | `вѣкѡ́въ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 411 | `unknown-lexeme` | `гедеѡ́нъ` | 66 | 64 | review the token against target-recension evidence and create or reject a lexical candidate |
@@ -791,12 +791,12 @@ masked precision gate lives in `reports/synodal-prediction-precision.md`.
 | 478 | `unknown-lexeme` | `высѡ́каѧ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 479 | `unknown-lexeme` | `крѣ́пкїй` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 480 | `unknown-lexeme` | `навꙋходоно́сора` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 481 | `unknown-lexeme` | `помышле́нїе` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 482 | `unknown-lexeme` | `по́слетъ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 483 | `unknown-lexeme` | `совѣ́та` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 484 | `unknown-lexeme` | `ѳѷмїа́ма` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 485 | `unknown-lexeme` | `ѻ҆зі́а` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
-| 486 | `unknown-lexeme` | `ѻ҆́трочищь` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 481 | `unknown-lexeme` | `ѻ҆зі́а` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 482 | `unknown-lexeme` | `ѻ҆́трочищь` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 483 | `unknown-lexeme` | `помышле́нїе` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 484 | `unknown-lexeme` | `по́слетъ` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 485 | `unknown-lexeme` | `совѣ́та` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
+| 486 | `unknown-lexeme` | `ѳѷмїа́ма` | 60 | 60 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 487 | `unknown-lexeme` | `наказа́нїѧ` | 60 | 59 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 488 | `unknown-lexeme` | `воздвиго́ша` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
 | 489 | `unknown-lexeme` | `возлюби́хъ` | 60 | 58 | review the token against target-recension evidence and create or reject a lexical candidate |
