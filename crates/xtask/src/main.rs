@@ -4,6 +4,7 @@ mod alypy_oracle;
 mod morphology_completeness;
 mod ocs_lexical_union;
 mod ocs_verb_metadata;
+mod projection_study;
 mod report_io;
 mod rewrite_dictionary;
 mod rewrite_pilot;
@@ -63,6 +64,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("morphology-completeness") => {
             morphology_completeness::run(&mut args, &workspace_root()?)
         }
+        Some("projection-study") => projection_study::run(&workspace_root()?),
         Some("ocs-lexical-union") => ocs_lexical_union::run(&mut args, &workspace_root()?),
         Some("rewrite-pilot-accuracy") => rewrite_pilot::accuracy(&mut args, &workspace_root()?),
         Some("rewrite-emit-residue") => rewrite_pilot::emit_residue(&workspace_root()?),
@@ -440,5 +442,6 @@ fn print_help() {
     eprintln!("  rewrite-emit-residue");
     eprintln!("  rewrite-dictionary");
     eprintln!("  check-all");
+    eprintln!("  projection-study");
     eprintln!("  check-structure");
 }

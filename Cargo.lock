@@ -538,6 +538,7 @@ version = "0.1.0"
 dependencies = [
  "church-slavonic",
  "church-slavonic-dictionary",
+ "church-slavonic-orthography",
  "old-church-slavonic-core",
  "old-church-slavonic-extractor",
  "serde",
