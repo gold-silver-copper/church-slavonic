@@ -10,7 +10,7 @@ use crate::{Animacy, Gender, InflectionError, NounClass, NumberRestriction};
 use std::collections::BTreeSet;
 use std::sync::OnceLock;
 
-const SOURCE_ROWS: &str = include_str!("../../../data/ocs/polivanova_regular_nouns.tsv");
+const SOURCE_ROWS: &str = include_str!("../data/polivanova_regular_nouns.tsv");
 
 /// One of Polivanova's five standard substantive inflectional classes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

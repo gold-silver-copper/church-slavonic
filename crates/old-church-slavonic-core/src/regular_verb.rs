@@ -15,7 +15,7 @@ use crate::{
 use std::collections::BTreeSet;
 use std::sync::OnceLock;
 
-const SOURCE_ROWS: &str = include_str!("../../../data/ocs/polivanova_regular_verbs.tsv");
+const SOURCE_ROWS: &str = include_str!("../data/polivanova_regular_verbs.tsv");
 
 /// One of Polivanova's seven productive verb classes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]

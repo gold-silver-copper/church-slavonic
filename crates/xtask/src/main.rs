@@ -2229,7 +2229,28 @@ pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
     rewrite_pilot::accuracy(&mut std::iter::empty(), &root)?;
     rewrite_dictionary::check(&root)?;
     check_pilot_data_budget(&root)?;
+    check_vendored_source_tables(&root)?;
     examples()
+}
+
+/// The packaged old-church-slavonic-core crate vendors the Polivanova source
+/// tables (a published crate cannot include files outside its root); the
+/// canonical copies stay in data/ocs and must remain byte-identical.
+fn check_vendored_source_tables(root: &Path) -> Result<(), Box<dyn Error>> {
+    for name in [
+        "polivanova_regular_nouns.tsv",
+        "polivanova_regular_verbs.tsv",
+    ] {
+        let canonical = fs::read(root.join("data/ocs").join(name))?;
+        let vendored = fs::read(root.join("crates/old-church-slavonic-core/data").join(name))?;
+        if canonical != vendored {
+            return Err(format!(
+                "vendored {name} diverges from data/ocs; re-copy the canonical file"
+            )
+            .into());
+        }
+    }
+    Ok(())
 }
 
 /// The rewrite plan caps the pilot facade's bundled generated data at 2 MB
