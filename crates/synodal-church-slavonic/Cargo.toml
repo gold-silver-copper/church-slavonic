@@ -1,6 +1,6 @@
 [package]
 name = "synodal-church-slavonic"
-version = "0.4.0"
+version = "0.5.0"
 description = "Dictionary-backed inflection for Synodal Russian Church Slavonic"
 authors.workspace = true
 edition.workspace = true

@@ -260,14 +260,14 @@ dependencies = [
 
 [[package]]
 name = "old-church-slavonic"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "old-church-slavonic-core",
 ]
 
 [[package]]
 name = "old-church-slavonic-core"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "church-slavonic-core",
  "church-slavonic-orthography",
@@ -276,7 +276,7 @@ dependencies = [
 
 [[package]]
 name = "old-church-slavonic-dictionary"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "old-church-slavonic",
  "old-church-slavonic-core",
@@ -415,7 +415,7 @@ dependencies = [
 
 [[package]]
 name = "synodal-church-slavonic"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "serde",
  "synodal-church-slavonic-core",
@@ -424,7 +424,7 @@ dependencies = [
 
 [[package]]
 name = "synodal-church-slavonic-core"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "church-slavonic-core",
  "church-slavonic-orthography",
@@ -434,7 +434,7 @@ dependencies = [
 
 [[package]]
 name = "synodal-church-slavonic-dictionary"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "serde",
  "serde_json",

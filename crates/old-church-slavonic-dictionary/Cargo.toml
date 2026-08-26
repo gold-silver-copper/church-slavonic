@@ -1,6 +1,6 @@
 [package]
 name = "old-church-slavonic-dictionary"
-version = "0.2.0"
+version = "0.3.0"
 description = "Wiktionary-backed Old Church Slavonic semantic dictionary and game-vocabulary tools"
 authors.workspace = true
 edition.workspace = true
