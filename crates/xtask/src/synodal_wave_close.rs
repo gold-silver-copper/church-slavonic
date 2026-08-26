@@ -126,6 +126,13 @@ pub(crate) fn run(
         step(&mut results, "regenerate lexical union (last)", || {
             with_args(&[], root, crate::synodal_lexical_union::run)
         });
+        step(&mut results, "regenerate coverage fixture", || {
+            with_args(
+                &["--offline", "--fixture"],
+                root,
+                crate::synodal_coverage::run,
+            )
+        });
         step(&mut results, "cargo fmt", || cargo(&["fmt", "--all"], root));
     }
 
