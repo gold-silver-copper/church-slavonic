@@ -52,6 +52,29 @@ Hard rules for the target:
 - Unpredictable lexical facts ride on the citation form (ruthenian's lemma
   markers) wherever possible, so unseen words inflect as well as seen ones.
 
+## Execution log
+
+- 2026-08-25 — Phase 0 complete: tag `v0.14-pre-rewrite`, baseline in
+  `reports/rewrite-baseline.md`, API snapshot in
+  `reports/rewrite-api-snapshot.txt`.
+- 2026-08-25 — Phase 1 largely complete: ten frozen `synodal_v04–v08`
+  xtask modules deleted (~13k LOC) with dispatch/help/`check_structure`
+  unwired; eight unreferenced SYNODAL_V* audit docs moved to
+  `docs/history/`; orphaned `verb-*` reports dropped. Deviations from the
+  written plan: the V04–V07 docs/reports stay in place because
+  `synodal-archive --check` pins them as immutable checksummed artifacts
+  (revisit when the archive machinery retires); the `.bak`/`.old`/
+  quarantine/staging/intermediate trees were already untracked, so no
+  committed purge was needed; relocating the wave/holdout tooling to
+  `tools/research/` is deferred — it is load-bearing inside
+  `synodal::check`'s guard witnesses and still drives active v0.14 work.
+- 2026-08-25 — Phase 2 slice 1: `church-slavonic-core` created; the twelve
+  closed grammatical enums moved there with dual `code()`/`abbrev()`
+  spellings; synodal-core re-exports them. Slice 2 (OCS adoption of the
+  five identity enums) in progress. Trace/result unification is deliberately
+  deferred until the rule kernels merge: the two `RuleId` models are
+  semantically different (closed rule inventory vs evidence-tagged ids).
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
