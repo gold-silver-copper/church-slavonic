@@ -40,25 +40,68 @@ ratchets:
 - The old system's numbers ("65% top-k") were statistics over samples. The
   only numbers here are exact counts over the full enumeration.
 
-### The gold source
+### The gold sources
 
-**The Elizabeth Bible** — `ponomar-elizabeth-bible-2026-08-09` (pinned and
-checksummed under `references/`; 37,211 verse records, ~53 MB JSONL). Gold
-means: every token of every verse.
+Two gold oracles with different shapes, plus witnesses for adjudication —
+all already pinned and checksummed under `references/`:
+
+**1. Token gold: the Elizabeth Bible** —
+`ponomar-elizabeth-bible-2026-08-09` (37,211 verse records, ~53 MB JSONL,
+machine-born Unicode, fully accented). Gold means: every token of every
+verse.
+
+**Witnesses (adjudication, not separate oracles):** the CrossWire
+`crosswire-csl-elizabeth-1.5.2` SWORD module and the
+`wikisource-church-slavonic-bible-2026-08-09` text are independent
+digitizations of the same Bible. At a 100% goal, every digitization typo
+in the primary source would otherwise become a fake gap row. So the gate
+gets a witness rule: when the engine disagrees with Ponomar on a surface,
+consult the other two witnesses for that verse; if at least two witnesses
+side against Ponomar, the row is classified `source-defect` (with the
+witness readings recorded as evidence) instead of counting against the
+engine. `source-defect` rows live in their own committed ledger, are
+audited like any curated data, and are excluded from the gap. Witnesses
+gate nothing on their own and are consulted only at disagreement points,
+so they need loaders but no oracle artifacts of their own.
+
+**2. Paradigm gold: the Alypy grammar tables** —
+`alypy-gamanovich-grammar-web-2023` (198 artifacts). The Bible only
+attests cells that happen to occur; Alypy's printed paradigms are the
+normative full tables — small, closed, authoritative (the §104
+irregular-verb inventory already came from here). Gold means: every
+paradigm table printed in the grammar reproduces exactly, cell by cell —
+the same cell-shaped oracle format as the OCS family's Wiktionary gate.
+This validates generation in the cells no corpus reaches (duals, rare
+vocatives, full imperative rows). Extract the tables into a committed
+oracle TSV with per-table provenance (section number, artifact id);
+extraction is a curated act — a human-checkable mapping from the printed
+table to rows, reviewed once, then frozen behind the checksum machinery.
+
+**Already-confirmed material:** the reviewed `synodal-evaluate` rows —
+2,499 curated passages — fold into the token oracle as confirmed readings
+rather than surviving as a separate command.
 
 **Explicitly not gold for this family:** the Wiktionary/Kaikki dump
 (`english-wiktionary-ocs-kaikki-2026-08-07`) is an *Old Church Slavonic*
-source. It is already the OCS family's gold oracle, and in the synodal data
-it appears only as cross-recension evidence whose identities require human
-confirmation. It stays what it is: evidence feeding reviewed admissions,
-never a synodal truth source. (The reviewed `synodal-evaluate` rows — 2,499
-curated passages — are already-confirmed gold material: fold them into the
-oracle as a third input rather than keeping a separate command.)
+source. It is already the OCS family's gold oracle, and in the synodal
+data it appears only as cross-recension evidence whose identities require
+human confirmation. It stays evidence feeding reviewed admissions, never a
+synodal truth source. Likewise not gold: `dyachenko-1900-scan` (OCR —
+gloss evidence, never surface truth), the OCS treebanks
+(PROIEL/Syntacticus/CCMH/DIACU — wrong recension), the RNC and Polyakov
+dictionaries (no bulk rights; note that Polyakov's corpus-based
+grammatical dictionary would be ideal cell gold if terms are ever
+secured), and `unicode-tn41` (normative input to the typography contract,
+not an oracle).
 
-Do not add further sources in this pass. Design the source list to be
-extensible — adding one later means adding its loader and accepting a
-temporarily larger gap — but a source is either gold (fully enumerated,
-gated) or not consulted by any gate at all. No partially-trusted tier.
+**Queued for a later pass, not this one:** the
+`ponomar-modern-church-slavonic-corpus-2016` (+ frequency list) as a
+second token oracle for liturgical genre breadth once the Bible gap is
+substantially burned down. Design the source list to be extensible —
+adding a source later means adding its loader and accepting a temporarily
+larger gap — but a source is either gold (fully enumerated, gated),
+a witness (consulted only for adjudication), or not consulted by any gate
+at all. No partially-trusted tier.
 
 ### What 100% means for a Bible token
 
@@ -84,28 +127,46 @@ anything (`docs/SYNODAL_GOLD_ORACLE.md`, normative):
   oracle with a `non-lexical:<kind>` tag and are gated on classification
   stability rather than morphology.
 
-### The oracle artifact must make CI and local identical
+### The oracle artifacts must make CI and local identical
 
-Do not read the 53 MB JSONL in the gate. Phase 1 derives and commits a
-**type-level oracle** the way `data/extracted` works for OCS: one row per
-distinct surface type with its attestation count and a bounded list of
-verse references (evidence pointers), generated deterministically by an
-xtask command from the pinned source, with the generator command named in
-the file header and a staleness check (regenerate-and-compare) in the gate.
-Estimate the size first; if the full type inventory with references exceeds
-what the repo policy tolerates (~20 MB, the OCS precedent), trim reference
-lists, never types. After this lands, delete the fixture-bootstrap path:
-there is no fixture tier any more.
+Do not read the 53 MB JSONL in the gate. Phase 1 derives and commits
+**oracle artifacts** the way `data/extracted` works for OCS:
+
+- **Token oracle**: one row per distinct Bible surface type with its
+  attestation count and a bounded list of verse references (evidence
+  pointers), generated deterministically by an xtask command from the
+  pinned source, with the generator command named in the file header and a
+  staleness check (regenerate-and-compare) in the gate. Estimate the size
+  first; if the full type inventory with references exceeds what the repo
+  policy tolerates (~20 MB, the OCS precedent), trim reference lists,
+  never types.
+- **Paradigm oracle**: the Alypy tables as one row per (table, cell) with
+  section provenance. Extraction from the 198 web artifacts is reviewed
+  once, then frozen; its staleness check compares against the committed
+  extraction, not the HTML (the source is pinned, so re-extraction is a
+  deliberate curated act).
+- **Source-defect ledger**: `data/synodal/gold_source_defects.tsv` — the
+  witness-adjudicated Ponomar defects, with the disagreeing witness
+  readings recorded per row. The gate validates that every ledger row
+  still shows genuine two-witness disagreement (so the ledger cannot
+  quietly absorb engine bugs).
+
+After these land, delete the fixture-bootstrap path: there is no fixture
+tier any more.
 
 ### The gap is a worklist, not a queue
 
-`cargo xtask synodal-gold --check` replays the full type-level oracle and
-writes `reports/synodal-gold-gap.tsv`: one row per failing type, with the
-current best analysis and a **reason class chosen so that each class has one
-remediation path** — at minimum: `unregistered-lemma` (needs a curated
-admission), `unreviewed-cell` (lemma known, cell lacks evidence review),
-`engine-wrong-form` (rules produce a different surface — a code bug),
-`engine-wrong-accent`, `abbreviation-unexpanded`, `non-lexical-unclassified`.
+`cargo xtask synodal-gold --check` replays both oracles in full and
+writes `reports/synodal-gold-gap.tsv`: one row per failing token type or
+paradigm cell, with the current best analysis and a **reason class chosen
+so that each class has one remediation path** — at minimum:
+`unregistered-lemma` (needs a curated admission), `unreviewed-cell`
+(lemma known, cell lacks evidence review), `engine-wrong-form` (rules
+produce a different surface — a code bug), `engine-wrong-accent`,
+`abbreviation-unexpanded`, `non-lexical-unclassified`, and
+`witness-conflict` (the witnesses split 1–1–1 or are unavailable for the
+verse — needs a human call before it can move to the defect ledger or
+back into the engine classes).
 No ranking, no top-N. `--check` fails if the regenerated gap is not a
 subset of the committed one; shrinking requires committing the smaller file
 (`--fix` rewrites it). Wire `--check` into `check-structure` and CI.
@@ -117,10 +178,13 @@ order of magnitude — if it is not, fix the lookup path, do not sample).
 ### Execution plan
 
 1. **Normative doc + oracle extraction.** Write the comparison contract,
-   build the type-level oracle artifact, commit it with its staleness
-   check. Fold the `synodal-evaluate` rows in as confirmed readings.
-2. **The gate.** Build `synodal-gold --check/--fix`, commit the first full
-   gap report as the baseline — expect it to be large; that is the honest
+   build the token oracle artifact and the witness loaders, extract the
+   Alypy paradigm oracle (reviewed once, then frozen), commit all with
+   their staleness checks. Fold the `synodal-evaluate` rows in as
+   confirmed readings. The defect ledger starts empty; rows enter it only
+   through the two-witness rule.
+2. **The gate.** Build `synodal-gold --check/--fix` over both oracles,
+   commit the first full gap report as the baseline — expect it to be large; that is the honest
    starting position the sampled fixtures were smoothing over. Wire into
    `check-structure` and CI. From this commit on, CI green means
    "full-corpus, no regression".
@@ -166,7 +230,8 @@ order of magnitude — if it is not, fix the lookup path, do not sample).
 
 ### Report back
 
-Baseline numbers (oracle type count; gap size per reason class), the
-oracle artifact's size and generation time, the gate's CI runtime, what
-was deleted vs kept from the wave machinery, and the normative doc's list
-of typography equivalence classes.
+Baseline numbers (token-oracle type count, Alypy cell count, gap size per
+reason class per oracle, defect-ledger size after the first witness
+sweep), the oracle artifacts' sizes and generation times, the gate's CI
+runtime, what was deleted vs kept from the wave machinery, and the
+normative doc's list of typography equivalence classes.
