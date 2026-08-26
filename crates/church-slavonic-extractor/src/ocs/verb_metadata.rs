@@ -1,6 +1,6 @@
 //! Conservative, source-cell-based verb principal-part extraction.
 
-use crate::schema::{FormRow, HeadTemplate, LexemeRow, Registry, VerbMetadataRow};
+use crate::ocs::schema::{FormRow, HeadTemplate, LexemeRow, Registry, VerbMetadataRow};
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
     AoristFormation, FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation,

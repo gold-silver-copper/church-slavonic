@@ -82,6 +82,12 @@ review queue, never an identity claim), tagged:
 | `ambiguous-many-to-one` | 26 | several OCS lexemes project onto one Synodal lexeme |
 | `registered-pos-mismatch` | 6 | registered match, incompatible part of speech |
 | `oracle-type` | 592 | lemma surface attested in Synodal evidence, no registered lexeme |
+| `lexical-union-proposal` | 957 | (phase 6) a Synodal lexical-union queue claim whose cross-recension identity is unconfirmed; provenance is the ledger claim id |
+| `lexical-union-homograph` | 43 | (phase 6) a queue claim blocked by a cross-source homograph |
+
+Since merge phase 6 (`docs/UNIFIED_DATA.md` §4) every candidate row carries
+a `provenance` column: `projection-study` for the four original kinds, the
+Synodal lexical-union ledger claim id for the two ingested kinds.
 
 Promotion from candidates to the identity table is a reviewed edit followed
 by `cargo xtask unified-identity` — the generator is the single writer of

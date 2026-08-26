@@ -97,7 +97,7 @@ type FieldGroup = BTreeMap<String, NormalizedVerbMetadataField>;
 type FieldGroups = BTreeMap<(String, u16), FieldGroup>;
 
 pub(crate) fn verb_metadata_from_registry(
-    registry: &old_church_slavonic_extractor::schema::Registry,
+    registry: &church_slavonic_extractor::ocs::schema::Registry,
     id: &str,
 ) -> Result<DictionaryVerbMetadata, InflectionError> {
     let lexeme = registry

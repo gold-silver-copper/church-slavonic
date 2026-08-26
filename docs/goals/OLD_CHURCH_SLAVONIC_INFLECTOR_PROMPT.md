@@ -411,7 +411,7 @@ lexeme_id  lemma  pos  class  feature_key  variant_rank  form  romanization  sou
 
 The exact format may be TSV or another reviewable deterministic format. One component
 owns parsing and serialization. Generated Rust is a pure deterministic function of
-the committed normalized registry plus `data/overrides.tsv`.
+the committed normalized registry plus `data/ocs/overrides.tsv`.
 
 ### Strict schema audit
 
@@ -474,7 +474,7 @@ Resolution order:
 5. conservative OOV inference only when classification is unambiguous;
 6. typed error explaining what is missing.
 
-Manual overrides live in `data/overrides.tsv` with lemma, POS, complete feature key,
+Manual overrides live in `data/ocs/overrides.tsv` with lemma, POS, complete feature key,
 ordered variants, reason, source citation, and reviewer status. Keep this file small.
 An override without a reason/source fails validation.
 

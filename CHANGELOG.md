@@ -2,6 +2,15 @@
 
 ## Unreleased (the workspace rewrite)
 
+### Changed
+- Merge phase 6 (`docs/UNIFIED_DATA.md`): the two unpublished extractor
+  crates are one `church-slavonic-extractor` crate (modules `ocs`,
+  `synodal`, `shared`); the Synodal lexical-union cross-recension claims
+  are ingested into `data/unified/identity-candidates.tsv` with ledger
+  provenance; `data/overrides.tsv` and `data/citation-exemptions.tsv`
+  moved under `data/ocs/`. Every generated artifact regenerates
+  byte-identically.
+
 ### Added
 - New crate family realizing `docs/REWRITE_PLAN.md`'s target layout:
   - `church-slavonic-core` — the shared closed grammatical vocabulary

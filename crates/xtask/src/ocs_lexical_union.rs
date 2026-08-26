@@ -5,15 +5,15 @@
 //! other identity remains source-qualified so homonyms are never silently
 //! collapsed.
 
+use church_slavonic_extractor::ocs::{
+    extract::canonical_lemma,
+    schema::{Entry, LexemeRow},
+};
 use old_church_slavonic_core::{
     CardinalNumeralIdentity, Gender, IrregularVerbFamilyMember, NounClass, PersonalPronounIdentity,
     RegularNounFamily, RegularNounSourceMember, RegularVerbFamily, RegularVerbSourceMember,
     TwofoldNounFamilyMember, UniqueNounFamilyMember, UniqueVerbFamilyMember,
     orthography::lookup_key,
-};
-use old_church_slavonic_extractor::{
-    extract::canonical_lemma,
-    schema::{Entry, LexemeRow},
 };
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -142,7 +142,7 @@ pub(crate) fn run(
     }
 
     let registry =
-        old_church_slavonic_extractor::extract::load_registry(&root.join("data/extracted"))?;
+        church_slavonic_extractor::ocs::extract::load_registry(&root.join("data/extracted"))?;
     let runtime = RuntimeIndex::new(&registry.lexemes);
     let mut claims = read_runtime_registry(&registry.lexemes);
     claims.extend(read_kaikki(&kaikki, &runtime)?);
@@ -1249,7 +1249,7 @@ fn validate(root: &Path, claims: &[Claim]) -> Result<(), Box<dyn Error>> {
         return Err("data/extracted/source.json does not match the runtime Kaikki revision".into());
     }
     let registry =
-        old_church_slavonic_extractor::extract::load_registry(&root.join("data/extracted"))?;
+        church_slavonic_extractor::ocs::extract::load_registry(&root.join("data/extracted"))?;
     let runtime_ids = registry
         .lexemes
         .iter()
@@ -1804,7 +1804,7 @@ mod tests {
         let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
         let claims = load_ledger(&root.join(LEDGER_PATH)).expect("committed lexical ledger");
         let registry =
-            old_church_slavonic_extractor::extract::load_registry(&root.join("data/extracted"))
+            church_slavonic_extractor::ocs::extract::load_registry(&root.join("data/extracted"))
                 .expect("committed extracted registry");
         let identities = claims
             .iter()
@@ -1874,7 +1874,7 @@ mod tests {
         let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
         let claims = load_ledger(&root.join(LEDGER_PATH)).expect("committed lexical ledger");
         let registry =
-            old_church_slavonic_extractor::extract::load_registry(&root.join("data/extracted"))
+            church_slavonic_extractor::ocs::extract::load_registry(&root.join("data/extracted"))
                 .expect("committed extracted registry");
         let identities = claims
             .iter()

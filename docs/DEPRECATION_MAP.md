@@ -232,3 +232,18 @@ closed classes, the supine/verbal-noun/participle recension routes, and —
 last of all — `synodal-church-slavonic-dictionary`'s `Inflector`-backed
 analyze layer, blocked by the accent asymmetry and the gap burn-down
 state (`docs/UNIFIED_FACADE.md` §5 has the merge order).
+
+---
+
+## Merge phase 6 (2026-08-26): the extractor and data tree
+
+Unpublished tooling only; no public API changes. Dispositions:
+
+| Old item | Disposition |
+|---|---|
+| crate `old-church-slavonic-extractor` (unpublished) | **Deleted** — its modules are `church_slavonic_extractor::ocs::*` unchanged; `xtask` was its only dependant. No deprecation release is owed for an unpublished crate |
+| crate `synodal-church-slavonic-extractor` (unpublished) | **Deleted** — its modules are `church_slavonic_extractor::synodal::*` unchanged; the binary's three entry points are `church-slavonic-extractor synodal ...` |
+| binaries `old-church-slavonic-extractor`, `synodal-church-slavonic-extractor` | **Replaced**: one `church-slavonic-extractor <ocs\|synodal> ...` binary; `cargo xtask` remains the documented entry for every stage |
+| `data/overrides.tsv`, `data/citation-exemptions.tsv` | **Moved** to `data/ocs/` (pure rename, every reference updated) |
+| the cross-recension rows of `data/synodal/lexical_source_claims.tsv` | **Mirrored** into `data/unified/identity-candidates.tsv` (kinds `lexical-union-proposal` / `lexical-union-homograph`, ledger claim id as provenance); the ledger itself is kept for its completion-gate consumers (`docs/UNIFIED_DATA.md` §4) |
+| `data/extracted`, `data/dictionary` locations; generator banners in generated artifacts | **Planned** — move under `data/ocs/` with the next content-changing OCS regeneration (`docs/UNIFIED_DATA.md` §5) |

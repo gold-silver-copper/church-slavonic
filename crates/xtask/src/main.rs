@@ -16,12 +16,12 @@ mod synodal_gold_oracle;
 mod synodal_lexical_union;
 mod unified_identity;
 
+use church_slavonic_extractor::ocs::extract::{check_registry, refresh, refresh_derived_registry};
+use church_slavonic_extractor::ocs::semantics::{check_dictionary, refresh_dictionary};
 use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, Animacy, Case, FiniteTense, FiniteVerbCell, Gender,
     ImperativeCell, LParticipleCell, NounCell, Number, ParticipleKind, Person,
 };
-use old_church_slavonic_extractor::extract::{check_registry, refresh, refresh_derived_registry};
-use old_church_slavonic_extractor::semantics::{check_dictionary, refresh_dictionary};
 use std::env;
 use std::error::Error;
 use std::fs;

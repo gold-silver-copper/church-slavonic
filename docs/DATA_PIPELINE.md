@@ -1,5 +1,15 @@
 # Data pipeline
 
+The OCS pipeline is the `ocs` module of the unpublished
+`church-slavonic-extractor` crate (`crates/church-slavonic-extractor/src/ocs`),
+which since merge phase 6 also hosts the Synodal pipeline
+(`docs/SYNODAL_DATA_PIPELINE.md`) and the shared checksumming/atomic-write
+plumbing; the survey and the target data layout are in
+`docs/UNIFIED_DATA.md`. Curated OCS inputs live under `data/ocs/`
+(`overrides.tsv`, `citation-exemptions.tsv`, the Polivanova source tables,
+the OCS source-union ledger); the extracted registry stays at
+`data/extracted` until the next content-changing refresh.
+
 ## Stages and ownership
 
 | Stage | Reads | Owns |
@@ -108,7 +118,7 @@ formation, source feature, cross-check, or provenance therefore fails even when 
 code is otherwise valid.
 
 TSV fields are rejected if they contain a tab or newline. Generated Rust is a pure
-function of these files plus `data/overrides.tsv`. Metadata validation rejects
+function of these files plus `data/ocs/overrides.tsv`. Metadata validation rejects
 orphan/non-verb IDs, unknown systems/fields/codes/provenance, duplicate or
 non-contiguous analyses, incomplete stem/formation groups, empty values, invalid
 script, and non-NFC text. An override row contains

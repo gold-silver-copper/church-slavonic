@@ -180,7 +180,10 @@ rule kernel survives as this workspace's `old-church-slavonic-core`, and
 The current pinned snapshot contains 3,081 lexemes, 134,761 public feature
 cells, 137,406 ordered variants, and 3,157 normalized verb metadata fields.
 The source identity and transformation record are in `data/SOURCES.toml`,
-generated metadata, and each package's `ATTRIBUTION.md`. Wiktionary-derived
+generated metadata, and each package's `ATTRIBUTION.md`. The data tree is
+recension-tagged: `data/ocs/` (curated OCS inputs), `data/synodal/` (curated
+Synodal reviews and oracles), `data/unified/` (the shared identity layer),
+with `references/` pinning every raw download. Wiktionary-derived
 data is CC BY-SA 4.0; code is MIT OR Apache-2.0.
 
 ```bash
@@ -191,7 +194,9 @@ cargo xtask check-structure
 cargo xtask check-all
 ```
 
-The workspace also contains the offline extractor and `xtask`. It intentionally
+The workspace also contains the offline extractor (`church-slavonic-extractor`,
+one unpublished crate whose `ocs` and `synodal` modules are the two
+recension pipelines; `docs/UNIFIED_DATA.md`) and `xtask`. It intentionally
 does not perform implicit script conversion, diplomatic manuscript transcription,
 OCR, or abbreviation expansion. Syntax and phrase-valued morphology use separate
 typed construction APIs rather than the single-word inflector.

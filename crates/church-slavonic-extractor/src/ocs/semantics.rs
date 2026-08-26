@@ -1,13 +1,12 @@
-use crate::extract::{canonical_lemma, load_registry};
-use crate::normalize::lookup_key;
-use crate::output::atomic_write_batch;
-use crate::schema::{DictionaryExampleRow, DictionarySenseRow, Entry, Registry};
+use crate::ocs::extract::{canonical_lemma, load_registry};
+use crate::ocs::normalize::lookup_key;
+use crate::ocs::schema::{DictionaryExampleRow, DictionarySenseRow, Entry, Registry};
+use crate::shared::{atomic_write_batch, sha256_file};
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader};
 use std::path::Path;
 
 const DICTIONARY_SCHEMA: u32 = 1;
@@ -400,17 +399,8 @@ fn sorted_strings(values: &[String]) -> Vec<String> {
 }
 
 fn source_metadata(path: &Path) -> Result<DictionarySourceMetadata, Box<dyn Error>> {
-    let mut file = File::open(path)?;
-    let bytes = file.metadata()?.len();
-    let mut digest = Sha256::new();
-    let mut buffer = [0_u8; 64 * 1024];
-    loop {
-        let count = file.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        digest.update(&buffer[..count]);
-    }
+    let bytes = fs::metadata(path)?.len();
+    let sha256 = sha256_file(path)?;
     Ok(DictionarySourceMetadata {
         schema_version: DICTIONARY_SCHEMA,
         input_file: path
@@ -419,7 +409,7 @@ fn source_metadata(path: &Path) -> Result<DictionarySourceMetadata, Box<dyn Erro
             .unwrap_or("dictionary.jsonl")
             .to_string(),
         bytes,
-        sha256: format!("{:x}", digest.finalize()),
+        sha256,
     })
 }
 

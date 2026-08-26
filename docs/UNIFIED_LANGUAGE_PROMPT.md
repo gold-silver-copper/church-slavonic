@@ -216,4 +216,12 @@ crate-consolidation state.
   supine/verbal-noun/participle recension routes, and the analyze-layer
   merge (last; see `docs/UNIFIED_FACADE.md` §5 for the blockers), then the
   deprecation releases of the `synodal-church-slavonic*` names.
-- Phase 6 — not started.
+- Phase 6 — done (`docs/UNIFIED_DATA.md`): one unpublished
+  `church-slavonic-extractor` crate (modules `ocs`, `synodal`, `shared`; the
+  two old extractor crates deleted, `xtask` re-pointed), the lexical-union
+  cross-recension claims ingested into `data/unified/identity-candidates.tsv`
+  with ledger-claim provenance (631 → 1,631 candidates; `identity.tsv` and
+  the coherence baseline unchanged), the curated OCS inputs moved under
+  `data/ocs/`. Deferred with reasons in `docs/UNIFIED_DATA.md` §5: the
+  `data/extracted` / `data/dictionary` renames (paths embedded in generated
+  artifact banners) and the per-source split of `data/synodal`.

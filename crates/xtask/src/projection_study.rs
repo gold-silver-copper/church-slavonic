@@ -17,8 +17,8 @@
 //! handle are counted as unprojectable.
 
 use church_slavonic_core::Recension;
+use church_slavonic_extractor::ocs::extract::load_registry;
 use church_slavonic_orthography::projection::{self, CANDIDATE_CAP, Projection, Rule, RuleCounts};
-use old_church_slavonic_extractor::extract::load_registry;
 use std::{
     collections::{BTreeMap, BTreeSet, HashMap, HashSet},
     error::Error,

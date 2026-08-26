@@ -1,17 +1,18 @@
-use crate::normalize::{has_wiki_markup, lookup_key};
-use crate::output::atomic_write_batch;
-use crate::report::ExtractionReport;
-use crate::schema::{AliasRow, Entry, FormRow, LexemeRow, Registry, SourceForm, VerbMetadataRow};
-use crate::validate;
-use crate::verb_metadata;
+use crate::ocs::normalize::{has_wiki_markup, lookup_key};
+use crate::ocs::report::ExtractionReport;
+use crate::ocs::schema::{
+    AliasRow, Entry, FormRow, LexemeRow, Registry, SourceForm, VerbMetadataRow,
+};
+use crate::ocs::validate;
+use crate::ocs::verb_metadata;
+use crate::shared::{atomic_write_batch, sha256_file};
 use old_church_slavonic_core::orthography::{Script, canonical_display, detect_script};
 use serde::Serialize;
-use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::env;
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 
 const REGISTRY_SCHEMA: u32 = 2;
@@ -48,8 +49,7 @@ struct SourceMetadata {
     sha256: String,
 }
 
-pub fn run_cli() -> Result<(), Box<dyn Error>> {
-    let mut args = env::args().skip(1);
+pub fn run_cli(args: &mut dyn Iterator<Item = String>) -> Result<(), Box<dyn Error>> {
     match args.next().as_deref() {
         Some("refresh") => {
             let mut dump = None;
@@ -93,17 +93,17 @@ pub fn run_cli() -> Result<(), Box<dyn Error>> {
                 }
             }
             let dump = dump.ok_or("dictionary-refresh requires --dump <PATH>")?;
-            crate::semantics::refresh_dictionary(&dump, &root)?;
+            crate::ocs::semantics::refresh_dictionary(&dump, &root)?;
         }
         Some("dictionary-check") => {
             let root = args
                 .next()
                 .map_or(workspace_root(), |value| Ok(value.into()))?;
-            crate::semantics::check_dictionary(&root)?;
+            crate::ocs::semantics::check_dictionary(&root)?;
         }
         _ => {
             eprintln!(
-                "usage: old-church-slavonic-extractor \
+                "usage: church-slavonic-extractor ocs \
                  <refresh --dump PATH|check|report|dictionary-refresh --dump PATH|dictionary-check>"
             );
         }
@@ -120,7 +120,8 @@ pub fn refresh(dump: &Path, root: &Path) -> Result<(), Box<dyn Error>> {
     registry.verb_metadata = verb_metadata::derive(&registry, &BTreeSet::new())?;
     registry.verb_metadata.sort();
     validate::registry(&registry)?;
-    let citation_exemptions = load_citation_exemptions(&root.join("data/citation-exemptions.tsv"))?;
+    let citation_exemptions =
+        load_citation_exemptions(&root.join("data/ocs/citation-exemptions.tsv"))?;
 
     report.accepted_lexemes = registry.lexemes.len();
     report.accepted_forms = registry.forms.len();
@@ -184,7 +185,7 @@ pub fn refresh(dump: &Path, root: &Path) -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(root.join("reports"))?;
     let (lexemes_tsv, aliases_tsv, forms_tsv, verb_metadata_tsv) = registry_text(&registry);
     let generated_registry =
-        registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))?;
+        registry_with_overrides(registry.clone(), &root.join("data/ocs/overrides.tsv"))?;
     validate::noun_citations(&generated_registry, &citation_exemptions)?;
     let report_json = serde_json::to_vec_pretty(&report)?;
     let report_markdown = report.markdown();
@@ -243,7 +244,8 @@ pub fn check_registry(root: &Path) -> Result<(), Box<dyn Error>> {
     if registry.verb_metadata != derived_metadata {
         return Err("committed verb metadata is stale relative to normalized source cells".into());
     }
-    let citation_exemptions = load_citation_exemptions(&root.join("data/citation-exemptions.tsv"))?;
+    let citation_exemptions =
+        load_citation_exemptions(&root.join("data/ocs/citation-exemptions.tsv"))?;
     validate::coverage(registry.lexemes.len(), registry.forms.len())?;
     let coverage_bytes = fs::read(root.join("reports/extraction-coverage.json"))?;
     let coverage_report: ExtractionReport = serde_json::from_slice(&coverage_bytes)?;
@@ -275,7 +277,7 @@ pub fn check_registry(root: &Path) -> Result<(), Box<dyn Error>> {
         return Err("data/SOURCES.toml disagrees with data/extracted/source.json".into());
     }
     let generated_registry =
-        registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))?;
+        registry_with_overrides(registry.clone(), &root.join("data/ocs/overrides.tsv"))?;
     validate::noun_citations(&generated_registry, &citation_exemptions)?;
     println!(
         "check-registry: OK ({} lexemes, {} forms)",
@@ -293,8 +295,10 @@ pub fn refresh_derived_registry(root: &Path) -> Result<(), Box<dyn Error>> {
     registry.verb_metadata.sort();
     validate::registry(&registry)?;
     let (_, _, _, verb_metadata_tsv) = registry_text(&registry);
-    let generated_registry = registry_with_overrides(registry, &root.join("data/overrides.tsv"))?;
-    let citation_exemptions = load_citation_exemptions(&root.join("data/citation-exemptions.tsv"))?;
+    let generated_registry =
+        registry_with_overrides(registry, &root.join("data/ocs/overrides.tsv"))?;
+    let citation_exemptions =
+        load_citation_exemptions(&root.join("data/ocs/citation-exemptions.tsv"))?;
     validate::noun_citations(&generated_registry, &citation_exemptions)?;
     atomic_write_batch(&[(
         root.join("data/extracted/verb_metadata.tsv"),
@@ -382,7 +386,7 @@ pub fn registry_with_overrides(
                     format!("override row {} contains a sentinel form", line_index + 1).into(),
                 );
             }
-            registry.overrides.push(crate::schema::OverrideRow {
+            registry.overrides.push(crate::ocs::schema::OverrideRow {
                 lexeme_id: lexeme_id.clone(),
                 feature: feature.to_string(),
                 rank: u16::try_from(rank)?,
@@ -1218,16 +1222,7 @@ fn bump(map: &mut BTreeMap<String, usize>, key: &str) {
 }
 
 fn source_metadata(path: &Path) -> Result<SourceMetadata, Box<dyn Error>> {
-    let mut file = File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buffer = [0_u8; 64 * 1024];
-    loop {
-        let read = file.read(&mut buffer)?;
-        if read == 0 {
-            break;
-        }
-        hasher.update(&buffer[..read]);
-    }
+    let sha256 = sha256_file(path)?;
     Ok(SourceMetadata {
         schema_version: REGISTRY_SCHEMA,
         input_file: path
@@ -1236,7 +1231,7 @@ fn source_metadata(path: &Path) -> Result<SourceMetadata, Box<dyn Error>> {
             .unwrap_or("source.jsonl")
             .to_string(),
         bytes: fs::metadata(path)?.len(),
-        sha256: format!("{:x}", hasher.finalize()),
+        sha256,
     })
 }
 

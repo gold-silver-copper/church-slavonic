@@ -13,7 +13,7 @@ use std::{
     error::Error,
     ffi::OsStr,
     fs::{self, File},
-    io::{BufRead, BufReader, BufWriter, Read, Write},
+    io::{BufRead, BufReader, BufWriter, Write},
     path::{Path, PathBuf},
     process::{Command, Stdio},
     sync::{
@@ -2057,21 +2057,7 @@ fn passage_partition(source: &str, passage: &str) -> String {
 }
 
 fn sha256_file(path: &Path) -> PipelineResult<String> {
-    let mut file = File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buffer = vec![0; 1024 * 1024];
-    loop {
-        let count = file.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        hasher.update(&buffer[..count]);
-    }
-    Ok(hasher
-        .finalize()
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect())
+    Ok(crate::shared::sha256_file(path)?)
 }
 
 fn require_tool(tool: &str, remediation: &str) -> PipelineResult<()> {

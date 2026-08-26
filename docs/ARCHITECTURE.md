@@ -6,7 +6,7 @@ The project uses four crates and one committed data boundary:
 
 ```text
 Kaikki/Wiktextract JSONL
-  -> old-church-slavonic-extractor
+  -> church-slavonic-extractor (module `ocs`; docs/UNIFIED_DATA.md)
   -> data/extracted/*.tsv, including verb_metadata.tsv
      + reports/extraction-coverage.*
   -> generated Rust arrays
@@ -142,5 +142,6 @@ The facade has a normal versioned crates.io dependency on
 `old-church-slavonic-core`. A workspace `[patch.crates-io]` entry permits local
 `cargo package` verification before either crate is published; Cargo does not copy
 that patch into the published manifest. Release `old-church-slavonic-core` first,
-then `old-church-slavonic` at the matching version. The offline extractor and
-`xtask` crates are not published.
+then `old-church-slavonic` at the matching version. The offline extractor
+(`church-slavonic-extractor`, one crate for both recension pipelines since
+merge phase 6) and `xtask` are not published.

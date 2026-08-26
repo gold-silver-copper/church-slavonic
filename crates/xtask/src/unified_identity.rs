@@ -10,7 +10,10 @@
 //! - `data/unified/identity-candidates.tsv` — the review companion
 //!   (defect-candidates precedent): ambiguous projections (2+ candidate
 //!   pairings, or many OCS lexemes onto one Synodal lexeme), pos-mismatched
-//!   registered matches, and oracle-type-only matches. NOT identity claims.
+//!   registered matches, oracle-type-only matches, and — since merge phase 6
+//!   (docs/UNIFIED_DATA.md) — the Synodal lexical-union's cross-recension
+//!   claims (the preserved proposal queue), each carrying its ledger claim id
+//!   as provenance. NOT identity claims.
 //! - `data/unified/coherence-baseline.tsv` — the projection-coherence gate
 //!   baseline: for every identity entry, each recension's attested cells
 //!   replayed through the projection rules against the other side, with the
@@ -23,9 +26,10 @@
 //! other drift as staleness.
 
 use crate::projection_study::{parse_body_rows, project, study_key};
+use crate::report_io::read_tsv;
 use crate::rewrite_pilot;
+use church_slavonic_extractor::ocs::extract::load_registry;
 use church_slavonic_orthography::projection::RuleCounts;
-use old_church_slavonic_extractor::extract::load_registry;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::error::Error;
 use std::fmt::Write as _;
@@ -35,6 +39,12 @@ use std::path::Path;
 const IDENTITY_RELATIVE: &str = "data/unified/identity.tsv";
 const CANDIDATES_RELATIVE: &str = "data/unified/identity-candidates.tsv";
 const COHERENCE_RELATIVE: &str = "data/unified/coherence-baseline.tsv";
+/// The preserved cross-source proposal queue: the input the Synodal
+/// lexical-union ledger derives its cross-recension claims from
+/// (`crates/xtask/src/synodal_lexical_union.rs`, `read_queue_claims`).
+const LEXICAL_UNION_QUEUE_RELATIVE: &str = "reports/synodal-lexical-review-queue.tsv";
+/// Provenance tag of every candidate row the projection study produces.
+const PROJECTION_STUDY_PROVENANCE: &str = "projection-study";
 
 /// Synodal part-of-speech codes an OCS pos may identify with.
 fn compatible_synodal_pos(ocs_pos: &str) -> &'static [&'static str] {
@@ -134,6 +144,7 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
         ocs_lemma: String,
         kind: &'static str,
         detail: String,
+        provenance: String,
     }
     let mut pairings: Vec<Pairing> = Vec::new();
     let mut candidate_rows: Vec<CandidateRow> = Vec::new();
@@ -141,11 +152,20 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
 
     let mut lexemes: Vec<_> = registry.lexemes.iter().collect();
     lexemes.sort_by(|a, b| a.id.cmp(&b.id));
+    // Every projected candidate key of every OCS lexeme, for the
+    // lexical-union ingestion below (same projection as the pairing).
+    let mut ocs_by_projected_key: BTreeMap<String, Vec<&str>> = BTreeMap::new();
 
     for lexeme in &lexemes {
         let Some(cands) = project(&lexeme.lemma, &mut counts).into_candidates() else {
             continue;
         };
+        for candidate in &cands {
+            ocs_by_projected_key
+                .entry(candidate.clone())
+                .or_default()
+                .push(lexeme.id.as_str());
+        }
         // Every (candidate key, registered Synodal lexeme) pairing, split by
         // pos compatibility. Candidate order is the deterministic projection
         // enumeration order; bucket order is sorted by Synodal id.
@@ -187,6 +207,7 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
                 ocs_lemma: lexeme.lemma.clone(),
                 kind: "registered-pos-mismatch",
                 detail: describe(&incompatible),
+                provenance: PROJECTION_STUDY_PROVENANCE.to_owned(),
             }),
             0 => {
                 if let Some(candidate) = cands.iter().find(|c| evidence_keys.contains(*c)) {
@@ -196,6 +217,7 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
                         ocs_lemma: lexeme.lemma.clone(),
                         kind: "oracle-type",
                         detail: candidate.clone(),
+                        provenance: PROJECTION_STUDY_PROVENANCE.to_owned(),
                     });
                 }
             }
@@ -205,6 +227,7 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
                 ocs_lemma: lexeme.lemma.clone(),
                 kind: "ambiguous",
                 detail: describe(&compatible),
+                provenance: PROJECTION_STUDY_PROVENANCE.to_owned(),
             }),
         }
     }
@@ -225,9 +248,56 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
             ocs_lemma: pairing.ocs_lemma,
             kind: "ambiguous-many-to-one",
             detail: format!("{}={}", pairing.synodal_id, pairing.matched_key),
+            provenance: PROJECTION_STUDY_PROVENANCE.to_owned(),
         });
     }
     candidate_rows.sort_by(|a, b| a.ocs_id.cmp(&b.ocs_id));
+
+    // ---- lexical-union cross-recension claims (merge phase 6) ------------
+    // The Synodal lexical-union ledger's `disputed`/`ambiguous` queue claims
+    // assert an *unconfirmed* cross-recension identity between a mixed- or
+    // OCS-recension headword and a Synodal Bible attestation. They are
+    // ingested here as review candidates (never identities) with the ledger
+    // claim id as provenance, so the identity layer is the single review
+    // queue for cross-recension identity (docs/UNIFIED_DATA.md §4). The OCS
+    // side is resolved by the same projection as the pairing above: every
+    // OCS lexeme whose projected candidate keys include the claim lemma's
+    // projection-normal key is listed (ids sorted), `-` when none does.
+    let queue = read_tsv(&root.join(LEXICAL_UNION_QUEUE_RELATIVE))?;
+    let queue_lemma = queue.index("lemma")?;
+    let queue_printed = queue.index("printed")?;
+    let queue_pos = queue.index("part_of_speech")?;
+    let queue_semantic = queue.index("semantic_candidate_id")?;
+    let queue_attestation = queue.index("attestation_candidate_id")?;
+    let queue_passage = queue.index("passage")?;
+    let queue_decision = queue.index("decision")?;
+    for row in &queue.rows {
+        let kind = match row[queue_decision].as_str() {
+            "candidate-unreviewed" => "lexical-union-proposal",
+            "blocked-ambiguous-homograph" => "lexical-union-homograph",
+            other => {
+                return Err(format!(
+                    "{LEXICAL_UNION_QUEUE_RELATIVE} has decision {other:?}; the identity \
+                     ingestion mirrors synodal_lexical_union::read_queue_claims"
+                )
+                .into());
+            }
+        };
+        let ocs_id = ocs_by_projected_key
+            .get(&study_key(&row[queue_lemma]))
+            .map_or_else(|| "-".to_owned(), |ids| ids.join(";"));
+        candidate_rows.push(CandidateRow {
+            ocs_id,
+            ocs_pos: row[queue_pos].clone(),
+            ocs_lemma: row[queue_lemma].clone(),
+            kind,
+            detail: format!("{}@{}", row[queue_printed], row[queue_passage]),
+            provenance: format!(
+                "synodal-lexical-union:queue:{}:{}",
+                row[queue_semantic], row[queue_attestation]
+            ),
+        });
+    }
 
     // ---- abstract keys with deterministic homograph suffixes -------------
     // Base key: pos + projection-normal matched key. Suffix assignment is
@@ -299,14 +369,19 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
          # kind: ambiguous (2+ pos-compatible registered pairings) |\n\
          #       ambiguous-many-to-one (several OCS lexemes project onto one Synodal lexeme) |\n\
          #       registered-pos-mismatch (registered match, incompatible part of speech) |\n\
-         #       oracle-type (lemma surface attested in Synodal evidence, no registered lexeme)\n\
-         ocs_lexeme_id\tpos\tocs_citation\tkind\tcandidates\n",
+         #       oracle-type (lemma surface attested in Synodal evidence, no registered lexeme) |\n\
+         #       lexical-union-proposal (Synodal lexical-union queue claim, cross-recension identity unconfirmed) |\n\
+         #       lexical-union-homograph (Synodal lexical-union queue claim blocked by a cross-source homograph)\n\
+         # provenance: projection-study, or the Synodal lexical-union ledger claim id\n\
+         #       (synodal-lexical-union:<claim_id>; lexical-union rows list every OCS lexeme\n\
+         #       sharing the projection-normal key, `-` when none, and printed@passage as candidate)\n\
+         ocs_lexeme_id\tpos\tocs_citation\tkind\tcandidates\tprovenance\n",
     );
     for row in &candidate_rows {
         writeln!(
             candidates,
-            "{}\t{}\t{}\t{}\t{}",
-            row.ocs_id, row.ocs_pos, row.ocs_lemma, row.kind, row.detail
+            "{}\t{}\t{}\t{}\t{}\t{}",
+            row.ocs_id, row.ocs_pos, row.ocs_lemma, row.kind, row.detail, row.provenance
         )?;
     }
 

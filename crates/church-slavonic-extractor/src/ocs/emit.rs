@@ -1,4 +1,4 @@
-use crate::schema::Registry;
+use crate::ocs::schema::Registry;
 
 pub fn generated_rust(registry: &Registry) -> String {
     let mut out =

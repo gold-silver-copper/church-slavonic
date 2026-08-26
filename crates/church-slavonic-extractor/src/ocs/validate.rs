@@ -1,5 +1,5 @@
-use crate::normalize::{checked_tsv, has_wiki_markup};
-use crate::schema::Registry;
+use crate::ocs::normalize::{checked_tsv, has_wiki_markup};
+use crate::ocs::schema::Registry;
 use old_church_slavonic_core::orthography::{Script, canonical_display, detect_script, lookup_key};
 use std::collections::BTreeSet;
 
@@ -708,7 +708,7 @@ pub fn noun_citations(registry: &Registry, exemptions: &BTreeSet<String>) -> Res
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::schema::{AliasRow, FormRow, LexemeRow};
+    use crate::ocs::schema::{AliasRow, FormRow, LexemeRow};
 
     fn valid_registry() -> Registry {
         Registry {

@@ -97,6 +97,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "church-slavonic-extractor"
+version = "0.1.0"
+dependencies = [
+ "calamine",
+ "old-church-slavonic-core",
+ "quick-xml",
+ "serde",
+ "serde_json",
+ "sha2",
+ "synodal-church-slavonic-core",
+ "toml",
+ "unicode-normalization",
+]
+
+[[package]]
 name = "church-slavonic-orthography"
 version = "0.1.0"
 dependencies = [
@@ -270,16 +285,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "old-church-slavonic-extractor"
-version = "0.1.0"
-dependencies = [
- "old-church-slavonic-core",
- "serde",
- "serde_json",
- "sha2",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -429,20 +434,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "synodal-church-slavonic-extractor"
-version = "0.1.0"
-dependencies = [
- "calamine",
- "quick-xml",
- "serde",
- "serde_json",
- "sha2",
- "synodal-church-slavonic-core",
- "toml",
- "unicode-normalization",
-]
-
-[[package]]
 name = "tinyvec"
 version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -541,16 +532,15 @@ dependencies = [
  "church-slavonic",
  "church-slavonic-core",
  "church-slavonic-dictionary",
+ "church-slavonic-extractor",
  "church-slavonic-orthography",
  "old-church-slavonic-core",
- "old-church-slavonic-extractor",
  "serde",
  "serde_json",
  "sha2",
  "synodal-church-slavonic",
  "synodal-church-slavonic-core",
  "synodal-church-slavonic-dictionary",
- "synodal-church-slavonic-extractor",
  "toml",
  "unicode-normalization",
 ]

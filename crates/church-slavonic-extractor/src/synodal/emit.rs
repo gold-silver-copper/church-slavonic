@@ -1,7 +1,5 @@
 use std::{fs, io::Write, path::Path};
 
-use sha2::{Digest, Sha256};
-
 use super::*;
 
 pub(crate) struct RegistryTables {
@@ -235,7 +233,4 @@ pub(crate) fn atomic_write(destination: &Path, bytes: &[u8]) -> Result<()> {
     Ok(())
 }
 
-pub(crate) fn hex_sha256(bytes: &[u8]) -> String {
-    let digest = Sha256::digest(bytes);
-    digest.iter().map(|byte| format!("{byte:02x}")).collect()
-}
+pub(crate) use crate::shared::hex_sha256;

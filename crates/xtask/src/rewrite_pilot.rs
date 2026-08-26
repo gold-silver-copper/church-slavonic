@@ -17,6 +17,7 @@ use church_slavonic::{
     NounMeta, VerbCell, VerbMeta, adjective_cell_code, cell_code, closed_cell_code,
     kernel_closed_variants, kernel_noun_variants, kernel_verb_variants, verb_cell_code,
 };
+use church_slavonic_extractor::ocs::extract::load_registry;
 use old_church_slavonic_core::{
     AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, FiniteTense, FiniteVerbCell,
     Gender, ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
@@ -25,7 +26,6 @@ use old_church_slavonic_core::{
     PresentActiveParticipleFormation, PresentFormation, PresentPassiveParticipleFormation,
     VerbAspect, VerbClass,
 };
-use old_church_slavonic_extractor::extract::load_registry;
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt::Write as _;

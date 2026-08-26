@@ -201,7 +201,7 @@ struct BootstrapReport {
     target_recension: &'static str,
     source_filter: Option<String>,
     source_verification: &'static str,
-    candidate_pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport,
+    candidate_pipeline: church_slavonic_extractor::synodal::pipeline::PipelineReport,
     reviewed_overlay: &'static str,
     registry_generation: &'static str,
     evaluation: &'static str,
@@ -289,8 +289,8 @@ pub(crate) fn bootstrap(
     }
     crate::sources::run(&mut verify_arguments.into_iter(), root)?;
 
-    let candidate_pipeline = synodal_church_slavonic_extractor::pipeline::run_pipeline(
-        &synodal_church_slavonic_extractor::pipeline::PipelineOptions {
+    let candidate_pipeline = church_slavonic_extractor::synodal::pipeline::run_pipeline(
+        &church_slavonic_extractor::synodal::pipeline::PipelineOptions {
             workspace_root: root.to_owned(),
             cache,
             intermediate: root.join("data/intermediate/synodal"),
@@ -301,7 +301,7 @@ pub(crate) fn bootstrap(
         },
     )?;
     if source.is_none() {
-        synodal_church_slavonic_extractor::validate_candidate_links(
+        church_slavonic_extractor::synodal::validate_candidate_links(
             &root.join("data/synodal"),
             &root.join("data/intermediate/synodal"),
         )?;
@@ -321,7 +321,7 @@ pub(crate) fn bootstrap(
 }
 
 fn bootstrap_report(
-    candidate_pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport,
+    candidate_pipeline: church_slavonic_extractor::synodal::pipeline::PipelineReport,
 ) -> BootstrapReport {
     BootstrapReport {
         schema_version: 1,
@@ -338,7 +338,7 @@ fn bootstrap_report(
 
 fn write_bootstrap_report(
     root: &Path,
-    candidate_pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport,
+    candidate_pipeline: church_slavonic_extractor::synodal::pipeline::PipelineReport,
 ) -> Result<(), Box<dyn Error>> {
     fs::write(
         root.join("reports/synodal-bootstrap.json"),
@@ -371,8 +371,8 @@ pub(crate) fn fixture_bootstrap(
             let (fixture_root, cache) = prepare_fixture_cache(&temporary, name, html)?;
             let intermediate = temporary.join(format!("{name}/intermediate"));
             let quarantine = temporary.join(format!("{name}/quarantine"));
-            let report = synodal_church_slavonic_extractor::pipeline::run_pipeline(
-                &synodal_church_slavonic_extractor::pipeline::PipelineOptions {
+            let report = church_slavonic_extractor::synodal::pipeline::run_pipeline(
+                &church_slavonic_extractor::synodal::pipeline::PipelineOptions {
                     workspace_root: fixture_root,
                     cache,
                     intermediate: intermediate.clone(),
@@ -400,11 +400,11 @@ pub(crate) fn fixture_bootstrap(
         fs::create_dir_all(&generated_one)?;
         fs::create_dir_all(&generated_two)?;
         for destination in [&generated_one, &generated_two] {
-            synodal_church_slavonic_extractor::generate_registry(
+            church_slavonic_extractor::synodal::generate_registry(
                 &root.join("data/synodal"),
                 &destination.join("morphology.rs"),
             )?;
-            synodal_church_slavonic_extractor::generate_dictionary_registry(
+            church_slavonic_extractor::synodal::generate_dictionary_registry(
                 &root.join("data/synodal"),
                 &destination.join("dictionary.rs"),
             )?;
@@ -472,9 +472,9 @@ pub(crate) fn regenerate(root: &Path) -> Result<(), Box<dyn Error>> {
     let morphology = root.join("crates/synodal-church-slavonic/generated/registry.rs");
     let dictionary = root.join("crates/synodal-church-slavonic-dictionary/generated/registry.rs");
     let morphology_report =
-        synodal_church_slavonic_extractor::generate_registry(&data, &morphology)?;
+        church_slavonic_extractor::synodal::generate_registry(&data, &morphology)?;
     let dictionary_report =
-        synodal_church_slavonic_extractor::generate_dictionary_registry(&data, &dictionary)?;
+        church_slavonic_extractor::synodal::generate_dictionary_registry(&data, &dictionary)?;
     write_extraction_report(root)?;
     // The registries compile into the binaries. When this write changed them,
     // an in-process evaluation would measure the OLD compiled data against
@@ -522,10 +522,10 @@ fn check_reviewed_candidate_links(root: &Path) -> Result<(), Box<dyn Error>> {
     if !adapter_report.is_file() {
         return Ok(());
     }
-    let pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport =
+    let pipeline: church_slavonic_extractor::synodal::pipeline::PipelineReport =
         serde_json::from_slice(&fs::read(adapter_report)?)?;
     if pipeline.source_reports.len() == 13 {
-        synodal_church_slavonic_extractor::validate_candidate_links(
+        church_slavonic_extractor::synodal::validate_candidate_links(
             &root.join("data/synodal"),
             &intermediate,
         )?;
@@ -566,7 +566,7 @@ fn check_bootstrap_report(root: &Path) -> Result<(), Box<dyn Error>> {
 
     let adapter_report = root.join("data/intermediate/synodal/adapter-reports.json");
     if adapter_report.is_file() {
-        let pipeline: synodal_church_slavonic_extractor::pipeline::PipelineReport =
+        let pipeline: church_slavonic_extractor::synodal::pipeline::PipelineReport =
             serde_json::from_slice(&fs::read(&adapter_report)?)?;
         if pipeline.source_reports.len() == 13 {
             let expected = serde_json::to_vec_pretty(&bootstrap_report(pipeline))?;
@@ -923,11 +923,11 @@ fn check_generated(root: &Path) -> Result<(), Box<dyn Error>> {
     let result = (|| -> Result<(), Box<dyn Error>> {
         let generated_morphology = temporary.join("morphology.rs");
         let generated_dictionary = temporary.join("dictionary.rs");
-        synodal_church_slavonic_extractor::generate_registry(
+        church_slavonic_extractor::synodal::generate_registry(
             &root.join("data/synodal"),
             &generated_morphology,
         )?;
-        synodal_church_slavonic_extractor::generate_dictionary_registry(
+        church_slavonic_extractor::synodal::generate_dictionary_registry(
             &root.join("data/synodal"),
             &generated_dictionary,
         )?;
@@ -1039,7 +1039,7 @@ fn check_source_manifests(root: &Path) -> Result<(), Box<dyn Error>> {
         );
     }
     if authoritative_pairs.len()
-        != synodal_church_slavonic_extractor::APPROVED_SOURCE_RECENSIONS.len()
+        != church_slavonic_extractor::synodal::APPROVED_SOURCE_RECENSIONS.len()
     {
         return Err("Synodal source manifests do not contain the complete approved set".into());
     }
@@ -1068,7 +1068,7 @@ fn validate_source_record(
     ) {
         return Err(format!("source {id} has unknown recension {source_recension}").into());
     }
-    if !synodal_church_slavonic_extractor::source_recension_is_approved(id, source_recension) {
+    if !church_slavonic_extractor::synodal::source_recension_is_approved(id, source_recension) {
         return Err(format!(
             "source {id} with recension {source_recension} is not explicitly approved"
         )
@@ -2557,7 +2557,7 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         )?;
         require_failure(
             "orphaned reviewed overlay",
-            synodal_church_slavonic_extractor::validate_candidate_links(
+            church_slavonic_extractor::synodal::validate_candidate_links(
                 &temporary.join("data/synodal"),
                 &intermediate,
             )

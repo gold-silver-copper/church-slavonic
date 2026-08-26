@@ -1,12 +1,48 @@
+//! Plumbing both recension pipelines genuinely share (docs/UNIFIED_DATA.md,
+//! "what is shared"): source checksumming and atomic artifact installation.
+//! Nothing here knows about a recension, a schema, or a source format.
+
+use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs::{self, File};
-use std::io::Write;
+use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
+
+/// Lowercase hex SHA-256 of an in-memory artifact (the registry fingerprint
+/// convention shared by every generated report).
+#[must_use]
+pub fn hex_sha256(bytes: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(bytes))
+}
+
+/// Lowercase hex SHA-256 of a file, streamed (the `references/` source pin and
+/// `source.json` convention).
+///
+/// # Errors
+///
+/// Returns the underlying I/O error.
+pub fn sha256_file(path: &Path) -> io::Result<String> {
+    let mut file = File::open(path)?;
+    let mut hasher = Sha256::new();
+    let mut buffer = vec![0_u8; 64 * 1024];
+    loop {
+        let count = file.read(&mut buffer)?;
+        if count == 0 {
+            break;
+        }
+        hasher.update(&buffer[..count]);
+    }
+    Ok(format!("{:x}", hasher.finalize()))
+}
 
 /// Prepare every artifact before replacing any target, and roll the batch
 /// back if installation fails partway through.
-pub(crate) fn atomic_write_batch(artifacts: &[(PathBuf, &[u8])]) -> Result<(), Box<dyn Error>> {
+///
+/// # Errors
+///
+/// Returns the first preparation or installation failure after rollback.
+pub fn atomic_write_batch(artifacts: &[(PathBuf, &[u8])]) -> Result<(), Box<dyn Error>> {
     let process = std::process::id();
     let unique_targets = artifacts
         .iter()

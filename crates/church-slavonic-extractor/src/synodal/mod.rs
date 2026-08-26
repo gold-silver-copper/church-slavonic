@@ -1,23 +1,62 @@
-use std::{env, path::Path};
+//! The reviews/evidence/registry pipeline for Synodal Russian Church Slavonic
+//! (recension: Synodal).
+//!
+//! Ingests pinned sources from `references/` into candidate records, reviews
+//! them against the curated `data/synodal/*.tsv` tables, and generates the
+//! Synodal morphology and dictionary registries. See
+//! `docs/SYNODAL_DATA_PIPELINE.md`.
 
-use synodal_church_slavonic_extractor::{
-    adapters::materialize_wikisource_export,
-    generate_dictionary_registry, generate_registry,
-    pipeline::{PipelineOptions, run_pipeline},
+pub mod adapters;
+pub mod pipeline;
+
+mod emit;
+mod evidence;
+mod generate;
+mod reviews;
+mod schema;
+mod validate_grammar;
+mod validate_registry;
+
+#[cfg(test)]
+mod tests;
+
+#[allow(unused_imports)]
+pub(crate) use emit::*;
+#[allow(unused_imports)]
+pub(crate) use evidence::*;
+#[allow(unused_imports)]
+pub(crate) use generate::*;
+#[allow(unused_imports)]
+pub(crate) use reviews::*;
+#[allow(unused_imports)]
+pub(crate) use schema::*;
+#[allow(unused_imports)]
+pub(crate) use validate_grammar::*;
+#[allow(unused_imports)]
+pub(crate) use validate_registry::*;
+
+use adapters::materialize_wikisource_export;
+use pipeline::{PipelineOptions, run_pipeline};
+use std::path::Path;
+
+pub use evidence::validate_candidate_links;
+pub use generate::{generate_dictionary_registry, generate_registry};
+pub use schema::{
+    APPROVED_SOURCE_RECENSIONS, DictionaryGenerationReport, ExtractionError, GenerationReport,
+    REGISTRY_SCHEMA_VERSION, Result, source_recension_is_approved,
 };
 
-fn main() {
-    if let Err(error) = run() {
-        eprintln!("synodal extraction failed: {error}");
-        std::process::exit(1);
-    }
-}
-
-fn run() -> Result<(), Box<dyn std::error::Error>> {
-    let mut arguments = env::args_os().skip(1);
+/// Command-line entry of the Synodal pipeline (`church-slavonic-extractor synodal ...`).
+///
+/// # Errors
+///
+/// Returns the first pipeline, generation, or argument error.
+pub fn run_cli(
+    arguments: &mut dyn Iterator<Item = String>,
+) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let first = arguments
         .next()
-        .ok_or("usage: synodal-church-slavonic-extractor DATA_DIR DESTINATION")?;
+        .ok_or("usage: church-slavonic-extractor synodal DATA_DIR DESTINATION")?;
     if first == "candidates" {
         let workspace_root = arguments
             .next()
@@ -31,9 +70,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         let quarantine = arguments
             .next()
             .ok_or("candidates requires WORKSPACE_ROOT CACHE INTERMEDIATE QUARANTINE [SOURCE]")?;
-        let source = arguments
-            .next()
-            .map(|value| value.to_string_lossy().into_owned());
+        let source = arguments.next().map(|value| value.to_owned());
         if arguments.next().is_some() {
             return Err(
                 "candidates requires WORKSPACE_ROOT CACHE INTERMEDIATE QUARANTINE [SOURCE]".into(),
@@ -83,11 +120,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let data_directory = first;
     let destination = arguments
         .next()
-        .ok_or("usage: synodal-church-slavonic-extractor DATA_DIR DESTINATION")?;
+        .ok_or("usage: church-slavonic-extractor synodal DATA_DIR DESTINATION")?;
     let dictionary_destination = arguments.next();
     if arguments.next().is_some() {
         return Err(
-            "usage: synodal-church-slavonic-extractor DATA_DIR MORPHOLOGY_DESTINATION [DICTIONARY_DESTINATION]"
+            "usage: church-slavonic-extractor synodal DATA_DIR MORPHOLOGY_DESTINATION [DICTIONARY_DESTINATION]"
                 .into(),
         );
     }

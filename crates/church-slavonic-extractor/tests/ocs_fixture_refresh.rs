@@ -1,4 +1,4 @@
-use old_church_slavonic_extractor::extract::{load_registry, refresh, registry_with_overrides};
+use church_slavonic_extractor::ocs::extract::{load_registry, refresh, registry_with_overrides};
 use std::fs;
 use std::path::PathBuf;
 
@@ -6,20 +6,20 @@ use std::path::PathBuf;
 fn fixture_refresh_fails_closed_and_is_deterministic() {
     let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/schema.jsonl");
     let root = std::env::temp_dir().join(format!(
-        "old-church-slavonic-extractor-test-{}",
+        "church-slavonic-extractor-ocs-test-{}",
         std::process::id()
     ));
     if root.exists() {
         fs::remove_dir_all(&root).expect("remove stale fixture output");
     }
-    fs::create_dir_all(root.join("data")).expect("fixture data directory");
+    fs::create_dir_all(root.join("data/ocs")).expect("fixture data directory");
     fs::write(
-        root.join("data/overrides.tsv"),
+        root.join("data/ocs/overrides.tsv"),
         "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
     )
     .expect("empty override registry");
     fs::write(
-        root.join("data/citation-exemptions.tsv"),
+        root.join("data/ocs/citation-exemptions.tsv"),
         "lexeme_id\treason\tsource\n",
     )
     .expect("empty citation exemption registry");
@@ -39,7 +39,7 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
     assert!(!registry.forms.iter().any(|row| row.form == "guess"));
 
     fs::write(
-        root.join("data/overrides.tsv"),
+        root.join("data/ocs/overrides.tsv"),
         concat!(
             "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
             "тестъ\tnoun\tnoun:dat:sg\tтестоу :: testou || тестови :: testovi\t",
@@ -47,8 +47,9 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
         ),
     )
     .expect("write approved override");
-    let overridden = registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))
-        .expect("apply approved override");
+    let overridden =
+        registry_with_overrides(registry.clone(), &root.join("data/ocs/overrides.tsv"))
+            .expect("apply approved override");
     let override_forms = overridden
         .overrides
         .iter()
@@ -66,7 +67,7 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
     );
 
     fs::write(
-        root.join("data/overrides.tsv"),
+        root.join("data/ocs/overrides.tsv"),
         concat!(
             "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
             "тестъ\tnoun\tnoun:dat:sg\tдва слова\tbad fixture\tfixture citation\tapproved\n"
@@ -74,14 +75,14 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
     )
     .expect("write invalid override");
     assert!(
-        registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))
+        registry_with_overrides(registry.clone(), &root.join("data/ocs/overrides.tsv"))
             .expect_err("word-level override must fail")
             .to_string()
             .contains("whitespace")
     );
 
     fs::write(
-        root.join("data/overrides.tsv"),
+        root.join("data/ocs/overrides.tsv"),
         concat!(
             "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
             "тестъ\tnoun\tnoun:unknown:sg\tтестоу\tbad feature\tfixture citation\tapproved\n"
@@ -89,14 +90,14 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
     )
     .expect("write invalid feature override");
     assert!(
-        registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))
+        registry_with_overrides(registry.clone(), &root.join("data/ocs/overrides.tsv"))
             .expect_err("unknown override feature must fail")
             .to_string()
             .contains("invalid feature")
     );
 
     fs::write(
-        root.join("data/overrides.tsv"),
+        root.join("data/ocs/overrides.tsv"),
         concat!(
             "lemma\tpos\tfeature\tvariants\treason\tsource\treview_status\n",
             "тестъ\tnoun\tnoun:gen:sg\tтестоу\tshadow\tfixture citation\tapproved\n"
@@ -104,7 +105,7 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
     )
     .expect("write shadowing override");
     assert!(
-        registry_with_overrides(registry, &root.join("data/overrides.tsv"))
+        registry_with_overrides(registry, &root.join("data/ocs/overrides.tsv"))
             .expect_err("source-cell shadowing must fail")
             .to_string()
             .contains("shadow an exact source cell")
