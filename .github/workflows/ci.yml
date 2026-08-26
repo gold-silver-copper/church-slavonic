@@ -63,15 +63,15 @@ jobs:
       # floors and committed-artifact checks still bite on every pull request.
       - name: Wave-close gates
         run: cargo xtask synodal-wave-close --check
-      # The rewrite (docs/REWRITE_PLAN.md) made every family crate depend on
-      # the new kernel crates, which are not on crates.io yet, so a dependent
-      # dry run cannot resolve until the coordinated publication release ships
-      # (docs/DEPRECATION_MAP.md sequencing). Until then, only the crate whose
-      # dependency closure is already published can be dry-run packaged; the
-      # full list returns with that release, in dependency order.
       - name: Package and publish dry runs
         run: |
           cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-core
+          cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-orthography
+          cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic
+          cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-dictionary
+          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-core
+          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic
+          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-dictionary
       - name: Generated tree stays clean
         run: git diff --exit-code
 
