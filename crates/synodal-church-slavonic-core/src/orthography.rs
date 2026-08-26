@@ -556,6 +556,11 @@ const fn fold_digraph_uk(character: char) -> char {
         // token reaches the same key as its о twin.
         'ѻ' => 'о',
         'Ѻ' => 'О',
+        // The wide е (є, U+0454, capital U+0404) marks position — endings
+        // after a vowel and plural-distinguishing cells — over the same
+        // letter е, so the lookup projections fold it likewise.
+        'є' => 'е',
+        'Є' => 'Е',
         other => other,
     }
 }
@@ -1003,6 +1008,16 @@ mod digraph_lookup_tests {
 
 #[cfg(test)]
 mod uk_monograph_tests {
+
+    #[test]
+    fn wide_e_folds_to_e_in_both_projections() {
+        assert_eq!(super::normalize_lookup("фарїсєй"), "фарїсей");
+        assert_eq!(super::normalize_lookup("Єгѵпетъ"), "егѵпетъ");
+        assert_eq!(
+            super::normalize_lookup_accentless("словесє\u{0301}мъ"),
+            super::normalize_lookup_accentless("словесе\u{0301}мъ"),
+        );
+    }
 
     #[test]
     fn broad_on_folds_to_o_in_both_projections() {
