@@ -34,19 +34,13 @@ impl fmt::Display for PartOfSpeech {
 // The five closed grammatical-category enums (Case, Number, Gender, Animacy,
 // Person) now come from the shared `church-slavonic-core` kernel. The kernel's
 // `abbrev()` spellings equal this family's historical `code()` spellings.
-pub use church_slavonic_core::grammar::{Animacy, Case, Gender, Number, Person};
+pub use church_slavonic_core::grammar::{AdjectiveForm, Animacy, Case, Gender, Number, Person};
 
 /// The OCS family's historical `Animacy` enumeration order (Animate first).
 /// The kernel declares Inanimate first; committed paradigm/report orderings in
 /// this family depend on the old order, so enumeration sites use this constant.
 pub const OCS_ANIMACY_ORDER: [Animacy; 2] = [Animacy::Animate, Animacy::Inanimate];
 
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub enum AdjectiveForm {
-    Short,
-    Long,
-}
 
 /// The two source-described Old Church Slavonic comparative strategies.
 ///
@@ -65,17 +59,6 @@ impl ComparativeFormation {
         match self {
             Self::New => "new",
             Self::Old => "old",
-        }
-    }
-}
-
-impl AdjectiveForm {
-    pub const ALL: [Self; 2] = [Self::Short, Self::Long];
-
-    pub const fn code(self) -> &'static str {
-        match self {
-            Self::Short => "short",
-            Self::Long => "long",
         }
     }
 }
