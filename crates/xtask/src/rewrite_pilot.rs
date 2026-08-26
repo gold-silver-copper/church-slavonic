@@ -865,6 +865,495 @@ fn load_verb_oracle(root: &Path) -> Result<VerbOracle, Box<dyn Error>> {
     })
 }
 
+/// ---- Principal-part metadata synthesis from the attested oracle ----
+///
+/// For each verb lemma whose compact metadata leaves a whole inflectional
+/// system empty (no analyses), enumerate candidate analyses the core kernel
+/// supports — candidate stems are derived from the attested surface forms
+/// themselves (prefix stripping bounded by `SYNTH_MAX_STRIP` characters,
+/// plus the exact attested 2/3sg aorist forms for the syncretic sigmatic
+/// principal part) crossed with every formation code the system admits.
+/// A candidate analysis is kept only when replaying it through
+/// `kernel_verb_variants` yields, for every attested cell of the system, a
+/// text that appears in that cell's stored variant list. A bounded
+/// depth-first search (`SYNTH_MAX_DEPTH` analyses) then looks for an ordered
+/// analysis list whose merge (analysis order, duplicates dropped — the
+/// facade's `merge_analyses` semantics) reproduces every attested variant
+/// list exactly. Candidates are sorted, so the first solution found is the
+/// lexicographically smallest encoding: the whole procedure is
+/// deterministic. Systems with no fitting candidate keep their residue rows;
+/// the residue loop re-verifies every cell afterwards, so the 100% gates
+/// hold by construction.
+///
+/// The search never touches a system that already has analyses, and the
+/// present system is the only one whose class code leaks into other systems
+/// (via the facade's `base_verb_lexeme`) — the core consults `lexeme.class`
+/// only inside `present()`, so filling one system cannot regress another.
+const SYNTH_MAX_STRIP: usize = 8;
+const SYNTH_MAX_DEPTH: usize = 3;
+
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+enum SynthAnalysis {
+    /// (stem, class, first-singular stem, third-plural stem, formation)
+    Present(String, u8, String, String, u8),
+    /// (stem, formation, variant policy)
+    Imperfect(String, u8, u8),
+    /// (stem, 2/3sg principal part, formation)
+    Aorist(String, String, u8),
+    Imperative(String, u8),
+    LParticiple(String),
+    PresentActiveParticiple(String, u8),
+    PresentPassiveParticiple(String, u8),
+    PastActiveParticiple(String, u8),
+    PastPassiveParticiple(String, u8),
+}
+
+fn synth_install(codes: &mut VerbMetaCodes, analysis: &SynthAnalysis) {
+    match analysis {
+        SynthAnalysis::Present(stem, class, first, third, formation) => codes.present.push((
+            stem.clone(),
+            *class,
+            first.clone(),
+            third.clone(),
+            *formation,
+        )),
+        SynthAnalysis::Imperfect(stem, formation, policy) => {
+            codes.imperfect.push((stem.clone(), *formation, *policy));
+        }
+        SynthAnalysis::Aorist(stem, singular, formation) => {
+            codes.aorist.push((stem.clone(), singular.clone(), *formation));
+        }
+        SynthAnalysis::Imperative(stem, formation) => {
+            codes.imperative.push((stem.clone(), *formation));
+        }
+        SynthAnalysis::LParticiple(stem) => codes.l_participle.push(stem.clone()),
+        SynthAnalysis::PresentActiveParticiple(stem, formation) => {
+            codes
+                .present_active_participle
+                .push((stem.clone(), *formation));
+        }
+        SynthAnalysis::PresentPassiveParticiple(stem, formation) => {
+            codes
+                .present_passive_participle
+                .push((stem.clone(), *formation));
+        }
+        SynthAnalysis::PastActiveParticiple(stem, formation) => {
+            codes
+                .past_active_participle
+                .push((stem.clone(), *formation));
+        }
+        SynthAnalysis::PastPassiveParticiple(stem, formation) => {
+            codes
+                .past_passive_participle
+                .push((stem.clone(), *formation));
+        }
+    }
+}
+
+/// Candidate stems: every char-boundary prefix of every attested variant,
+/// stripping at most `SYNTH_MAX_STRIP` characters (endings, suffix bundles
+/// and stem mutations are all shorter than that), minimum one character.
+fn synth_stem_pool(cells: &[(u8, &Vec<String>)]) -> Vec<String> {
+    let mut pool: std::collections::BTreeSet<String> = std::collections::BTreeSet::new();
+    for (_, variants) in cells {
+        for form in variants.iter() {
+            let chars: Vec<char> = form.chars().collect();
+            let max_strip = SYNTH_MAX_STRIP.min(chars.len().saturating_sub(1));
+            for strip in 0..=max_strip {
+                pool.insert(chars[..chars.len() - strip].iter().collect());
+            }
+        }
+    }
+    pool.into_iter().collect()
+}
+
+/// One analysis's single-text prediction for one cell, replayed through the
+/// exact kernel path the facade uses (identity kernels first, then the
+/// metadata generators over a probe record holding just this analysis).
+fn synth_predict(
+    lemma: &str,
+    base: &VerbMetaCodes,
+    analysis: &SynthAnalysis,
+    code: u8,
+) -> Option<String> {
+    let mut probe = base.clone();
+    synth_install(&mut probe, analysis);
+    let texts = with_verb_meta_view(&probe, |meta| {
+        kernel_verb_variants(lemma, meta, verb_cell_from_code(code))
+    })?;
+    if texts.len() == 1 {
+        texts.into_iter().next()
+    } else {
+        None
+    }
+}
+
+/// Validate a candidate over every attested cell of the system: each
+/// prediction must exist and appear somewhere in that cell's variant list.
+fn synth_candidate(
+    lemma: &str,
+    base: &VerbMetaCodes,
+    analysis: SynthAnalysis,
+    cells: &[(u8, &Vec<String>)],
+) -> Option<(SynthAnalysis, Vec<String>)> {
+    let mut predictions = Vec::with_capacity(cells.len());
+    for (code, variants) in cells {
+        let text = synth_predict(lemma, base, &analysis, *code)?;
+        if !variants.contains(&text) {
+            return None;
+        }
+        predictions.push(text);
+    }
+    Some((analysis, predictions))
+}
+
+/// Bounded DFS for an ordered candidate list whose merge reproduces every
+/// attested variant list exactly. Candidates must be pre-sorted; the first
+/// solution found is returned, making the choice deterministic.
+fn synth_search(
+    cells: &[(u8, &Vec<String>)],
+    candidates: &[(SynthAnalysis, Vec<String>)],
+) -> Option<Vec<SynthAnalysis>> {
+    fn dfs(
+        targets: &[&Vec<String>],
+        candidates: &[(SynthAnalysis, Vec<String>)],
+        consumed: &mut Vec<usize>,
+        chosen: &mut Vec<SynthAnalysis>,
+    ) -> bool {
+        if targets
+            .iter()
+            .zip(consumed.iter())
+            .all(|(list, used)| list.len() == *used)
+        {
+            return true;
+        }
+        if chosen.len() >= SYNTH_MAX_DEPTH {
+            return false;
+        }
+        'candidate: for (analysis, predictions) in candidates {
+            let mut next = consumed.clone();
+            let mut advanced = false;
+            for (index, text) in predictions.iter().enumerate() {
+                let list = targets[index];
+                if next[index] < list.len() && &list[next[index]] == text {
+                    next[index] += 1;
+                    advanced = true;
+                } else if !list[..next[index]].contains(text) {
+                    continue 'candidate;
+                }
+            }
+            if !advanced {
+                continue;
+            }
+            chosen.push(analysis.clone());
+            let saved = std::mem::replace(consumed, next);
+            if dfs(targets, candidates, consumed, chosen) {
+                return true;
+            }
+            *consumed = saved;
+            chosen.pop();
+        }
+        false
+    }
+    let targets: Vec<&Vec<String>> = cells.iter().map(|(_, list)| *list).collect();
+    let mut consumed = vec![0usize; cells.len()];
+    let mut chosen = Vec::new();
+    dfs(&targets, candidates, &mut consumed, &mut chosen).then_some(chosen)
+}
+
+/// Enumerate, validate, sort and search one system's candidate analyses.
+fn synth_system(
+    lemma: &str,
+    base: &VerbMetaCodes,
+    cells: &[(u8, &Vec<String>)],
+    enumerate: impl Fn(&str) -> Vec<SynthAnalysis>,
+) -> Option<Vec<SynthAnalysis>> {
+    let mut candidates: Vec<(SynthAnalysis, Vec<String>)> = Vec::new();
+    for stem in synth_stem_pool(cells) {
+        for analysis in enumerate(&stem) {
+            if let Some(candidate) = synth_candidate(lemma, base, analysis, cells) {
+                candidates.push(candidate);
+            }
+        }
+    }
+    candidates.sort_by(|left, right| left.0.cmp(&right.0));
+    candidates.dedup_by(|left, right| left.0 == right.0);
+    synth_search(cells, &candidates)
+}
+
+/// The present system's candidates carry optional 1sg/3pl allomorph stems.
+/// The default-stem candidate must already fit every non-allomorph cell;
+/// allomorph stems are then solved independently (each affects exactly one
+/// cell), keeping the enumeration small.
+fn synth_present_system(
+    lemma: &str,
+    base: &VerbMetaCodes,
+    cells: &[(u8, &Vec<String>)],
+) -> Option<Vec<SynthAnalysis>> {
+    // (class, formation) pairs the core's `present()` accepts.
+    const COMBOS: [(u8, u8); 10] = [
+        (1, 0),
+        (1, 1),
+        (2, 0),
+        (2, 1),
+        (3, 0),
+        (3, 2),
+        (4, 0),
+        (4, 2),
+        (5, 0),
+        (5, 2),
+    ];
+    let first_singular: Vec<(u8, &Vec<String>)> =
+        cells.iter().filter(|(code, _)| *code == 0).copied().collect();
+    let third_plural: Vec<(u8, &Vec<String>)> =
+        cells.iter().filter(|(code, _)| *code == 8).copied().collect();
+    let middle: Vec<(u8, &Vec<String>)> = cells
+        .iter()
+        .filter(|(code, _)| *code != 0 && *code != 8)
+        .copied()
+        .collect();
+    let allomorph_pool = |edge: &[(u8, &Vec<String>)]| -> Vec<String> {
+        let mut pool = synth_stem_pool(edge);
+        pool.insert(0, String::new());
+        pool.dedup();
+        pool
+    };
+    let first_pool = allomorph_pool(&first_singular);
+    let third_pool = allomorph_pool(&third_plural);
+    let mut candidates: Vec<(SynthAnalysis, Vec<String>)> = Vec::new();
+    for stem in synth_stem_pool(cells) {
+        for (class, formation) in COMBOS {
+            let plain = SynthAnalysis::Present(
+                stem.clone(),
+                class,
+                String::new(),
+                String::new(),
+                formation,
+            );
+            // The default stem must serve every middle cell on its own.
+            if synth_candidate(lemma, base, plain.clone(), &middle).is_none() {
+                continue;
+            }
+            let edge_options = |edge: &[(u8, &Vec<String>)], pool: &[String], first: bool| {
+                if edge.is_empty() {
+                    return vec![String::new()];
+                }
+                pool.iter()
+                    .filter(|allomorph| {
+                        let analysis = if first {
+                            SynthAnalysis::Present(
+                                stem.clone(),
+                                class,
+                                (*allomorph).clone(),
+                                String::new(),
+                                formation,
+                            )
+                        } else {
+                            SynthAnalysis::Present(
+                                stem.clone(),
+                                class,
+                                String::new(),
+                                (*allomorph).clone(),
+                                formation,
+                            )
+                        };
+                        synth_candidate(lemma, base, analysis, edge).is_some()
+                    })
+                    .cloned()
+                    .collect::<Vec<String>>()
+            };
+            let first_options = edge_options(&first_singular, &first_pool, true);
+            let third_options = edge_options(&third_plural, &third_pool, false);
+            for first_stem in &first_options {
+                for third_stem in &third_options {
+                    let analysis = SynthAnalysis::Present(
+                        stem.clone(),
+                        class,
+                        first_stem.clone(),
+                        third_stem.clone(),
+                        formation,
+                    );
+                    if let Some(candidate) = synth_candidate(lemma, base, analysis, cells) {
+                        candidates.push(candidate);
+                    }
+                }
+            }
+        }
+    }
+    candidates.sort_by(|left, right| left.0.cmp(&right.0));
+    candidates.dedup_by(|left, right| left.0 == right.0);
+    synth_search(cells, &candidates)
+}
+
+/// Fill empty metadata systems by inference from the attested oracle.
+/// Returns (lemmas gaining synthesized analyses, systems filled).
+fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
+    let mut cells_by_lemma: BTreeMap<&String, Vec<(u8, &Vec<String>)>> = BTreeMap::new();
+    for ((lemma, code), variants) in &oracle.cells {
+        cells_by_lemma
+            .entry(lemma)
+            .or_default()
+            .push((*code, variants));
+    }
+    let mut lemmas_touched = 0usize;
+    let mut systems_filled = 0usize;
+    let mut synthesized: Vec<(String, VerbMetaCodes)> = Vec::new();
+    for (lemma, cells) in &cells_by_lemma {
+        let base = oracle.meta[lemma.as_str()].clone();
+        // Cells the metadata path will actually govern: the kernel currently
+        // returns nothing for them (identity-served cells are unaffected by
+        // metadata and are excluded), and the cell is one the metadata
+        // generators can express at all.
+        let eligible = |codes: &VerbMetaCodes, code: u8| -> bool {
+            if let VerbCell::Imperative(cell) = verb_cell_from_code(code) {
+                if !cell.is_supported() {
+                    return false;
+                }
+            }
+            with_verb_meta_view(codes, |meta| {
+                kernel_verb_variants(lemma, meta, verb_cell_from_code(code))
+            })
+            .is_none()
+        };
+        // (system id, cell-code filter, whether the analysis list is empty)
+        let mut updated = base.clone();
+        let mut touched = false;
+        let systems: [(bool, fn(u8) -> bool); 9] = [
+            (base.present.is_empty(), |code| code <= 8),
+            (base.imperfect.is_empty(), |code| (9..=17).contains(&code)),
+            (base.aorist.is_empty(), |code| (18..=26).contains(&code)),
+            (base.imperative.is_empty(), |code| {
+                (27..=35).contains(&code)
+            }),
+            (base.l_participle.is_empty(), |code| {
+                (36..=44).contains(&code)
+            }),
+            (base.present_active_participle.is_empty(), |code| code == 48),
+            (base.present_passive_participle.is_empty(), |code| {
+                code == 49
+            }),
+            (base.past_active_participle.is_empty(), |code| code == 50),
+            (base.past_passive_participle.is_empty(), |code| {
+                code == 47 || code == 51
+            }),
+        ];
+        for (system_index, (empty, filter)) in systems.iter().enumerate() {
+            if !empty {
+                continue;
+            }
+            let system_cells: Vec<(u8, &Vec<String>)> = cells
+                .iter()
+                .filter(|(code, _)| filter(*code) && eligible(&updated, *code))
+                .copied()
+                .collect();
+            if system_cells.is_empty() {
+                continue;
+            }
+            let solution = match system_index {
+                0 => synth_present_system(lemma, &updated, &system_cells),
+                1 => synth_system(lemma, &updated, &system_cells, |stem| {
+                    let mut analyses = Vec::new();
+                    for formation in 1..=5u8 {
+                        for policy in 1..=3u8 {
+                            analyses.push(SynthAnalysis::Imperfect(
+                                stem.to_string(),
+                                formation,
+                                policy,
+                            ));
+                        }
+                    }
+                    analyses
+                }),
+                2 => {
+                    // Syncretic 2/3sg sigmatic principal parts are the exact
+                    // attested 2sg/3sg forms, not stripped prefixes.
+                    let mut syncretic: Vec<String> = vec![String::new()];
+                    for (code, variants) in &system_cells {
+                        if *code == 21 || *code == 24 {
+                            for form in variants.iter() {
+                                if !syncretic.contains(form) {
+                                    syncretic.push(form.clone());
+                                }
+                            }
+                        }
+                    }
+                    synth_system(lemma, &updated, &system_cells, move |stem| {
+                        let mut analyses = Vec::new();
+                        for formation in [1u8, 5] {
+                            analyses.push(SynthAnalysis::Aorist(
+                                stem.to_string(),
+                                String::new(),
+                                formation,
+                            ));
+                        }
+                        for formation in [2u8, 3, 4] {
+                            for singular in &syncretic {
+                                analyses.push(SynthAnalysis::Aorist(
+                                    stem.to_string(),
+                                    singular.clone(),
+                                    formation,
+                                ));
+                            }
+                        }
+                        analyses
+                    })
+                }
+                3 => synth_system(lemma, &updated, &system_cells, |stem| {
+                    (1..=2u8)
+                        .map(|formation| SynthAnalysis::Imperative(stem.to_string(), formation))
+                        .collect()
+                }),
+                4 => synth_system(lemma, &updated, &system_cells, |stem| {
+                    vec![SynthAnalysis::LParticiple(stem.to_string())]
+                }),
+                5 => synth_system(lemma, &updated, &system_cells, |stem| {
+                    (1..=5u8)
+                        .map(|formation| {
+                            SynthAnalysis::PresentActiveParticiple(stem.to_string(), formation)
+                        })
+                        .collect()
+                }),
+                6 => synth_system(lemma, &updated, &system_cells, |stem| {
+                    (1..=4u8)
+                        .map(|formation| {
+                            SynthAnalysis::PresentPassiveParticiple(stem.to_string(), formation)
+                        })
+                        .collect()
+                }),
+                7 => synth_system(lemma, &updated, &system_cells, |stem| {
+                    (1..=6u8)
+                        .map(|formation| {
+                            SynthAnalysis::PastActiveParticiple(stem.to_string(), formation)
+                        })
+                        .collect()
+                }),
+                _ => synth_system(lemma, &updated, &system_cells, |stem| {
+                    (1..=3u8)
+                        .map(|formation| {
+                            SynthAnalysis::PastPassiveParticiple(stem.to_string(), formation)
+                        })
+                        .collect()
+                }),
+            };
+            if let Some(analyses) = solution {
+                for analysis in &analyses {
+                    synth_install(&mut updated, analysis);
+                }
+                systems_filled += 1;
+                touched = true;
+            }
+        }
+        if touched {
+            lemmas_touched += 1;
+            synthesized.push(((*lemma).clone(), updated));
+        }
+    }
+    for (lemma, codes) in synthesized {
+        oracle.meta.insert(lemma, codes);
+    }
+    (lemmas_touched, systems_filled)
+}
+
 fn write_str_pair_slice(out: &mut String, rows: &[(String, u8)]) {
     out.push_str("&[");
     for (index, (stem, code)) in rows.iter().enumerate() {
@@ -876,8 +1365,7 @@ fn write_str_pair_slice(out: &mut String, rows: &[(String, u8)]) {
     out.push(']');
 }
 
-fn emit_verb_residue(root: &Path) -> Result<(), Box<dyn Error>> {
-    let oracle = load_verb_oracle(root)?;
+fn verb_residue_cells(oracle: &VerbOracle) -> Vec<(&str, u8, &Vec<String>)> {
     let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
     for ((lemma, code), expected) in &oracle.cells {
         let predicted = with_verb_meta_view(&oracle.meta[lemma], |meta| {
@@ -887,6 +1375,29 @@ fn emit_verb_residue(root: &Path) -> Result<(), Box<dyn Error>> {
             residue.push((lemma, *code, expected));
         }
     }
+    residue
+}
+
+fn emit_verb_residue(root: &Path) -> Result<(), Box<dyn Error>> {
+    let mut oracle = load_verb_oracle(root)?;
+    let residue_before = verb_residue_cells(&oracle).len();
+    let fully_rules = |oracle: &VerbOracle| {
+        let residue_lemmas: std::collections::BTreeSet<&str> = verb_residue_cells(oracle)
+            .iter()
+            .map(|(lemma, _, _)| *lemma)
+            .collect();
+        oracle.meta.len() - residue_lemmas.len()
+    };
+    let fully_before = fully_rules(&oracle);
+    let (synth_lemmas, synth_systems) = synthesize_verb_metadata(&mut oracle);
+    let residue = verb_residue_cells(&oracle);
+    let fully_after = fully_rules(&oracle);
+    println!(
+        "verb metadata synthesis: {synth_lemmas} lemmas gained {synth_systems} synthesized \
+         systems; residue cells {residue_before} -> {}; fully rules-backed lemmas \
+         {fully_before} -> {fully_after}",
+        residue.len(),
+    );
     let mut out = String::new();
     out.push_str(
         "// @generated by `cargo xtask rewrite-derivability --emit-residue`. Do not edit.\n\
@@ -1366,10 +1877,11 @@ pub(crate) fn accuracy(
             },
         };
         // The rules-vs-residue split: a cell is rules-served exactly when the
-        // shared kernel reproduces the stored list (the emitter's criterion).
-        let kernel = with_verb_meta_view(&verbs.meta[lemma], |meta| {
-            kernel_verb_variants(lemma, meta, cell)
-        });
+        // shared kernel reproduces the stored list (the emitter's criterion),
+        // measured over the shipped `VERB_META` table so synthesized
+        // principal-part metadata counts as rules.
+        let kernel = church_slavonic::verb_meta(lemma)
+            .and_then(|meta| kernel_verb_variants(lemma, &meta, cell));
         if kernel.as_deref() == Some(expected.as_slice()) {
             verb_rules_cells += 1;
         }
