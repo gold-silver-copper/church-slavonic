@@ -90,6 +90,14 @@ Hard rules for the target:
   verb_metadata.tsv coverage gap; ~3k adjective "divergences" are one
   animate-accusative convention difference, a policy call to adjudicate.
 
+- 2026-08-26 — Phases 3–4 pilot landed: new `church-slavonic` facade crate
+  serves nouns as residue-table → identity-kernels → class rules from a
+  553 KB generated sorted-slice table (vs the 24 MB registry), validated
+  at 100% of the lemma-merged attested oracle by
+  `cargo xtask rewrite-pilot-accuracy`. Homograph lemmas are currently
+  served with rank-merged variant lists; the english-style numeric-suffix
+  scheme remains open.
+
 ## Phase 0 — Freeze and measure (half a day)
 
 - Tag the current state (`v0.14-pre-rewrite`).
