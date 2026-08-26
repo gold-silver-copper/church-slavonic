@@ -1,0 +1,18 @@
+[package]
+name = "church-slavonic-core"
+description = "Shared grammatical vocabulary for the Church Slavonic language crates"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+serde = { workspace = true, optional = true }
+
+[lints]
+workspace = true

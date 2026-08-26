@@ -12,9 +12,10 @@ include = ["Cargo.toml", "README.md", "ATTRIBUTION.md", "LICENSE-*", "src/**"]
 
 [features]
 default = ["serde"]
-serde = ["dep:serde"]
+serde = ["dep:serde", "church-slavonic-core/serde"]
 
 [dependencies]
+church-slavonic-core.workspace = true
 serde = { workspace = true, optional = true }
 unicode-normalization.workspace = true
 

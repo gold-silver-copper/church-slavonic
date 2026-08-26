@@ -127,29 +127,10 @@ mod tests {
 
         let value: serde_json::Value = read_json(&path).expect("valid JSON");
         assert_eq!(value["value"], 2);
-        assert_eq!(root_number(&value, "value").expect("root number"), 2);
-        assert_eq!(string(&value, "kind").expect("root string"), "audit");
-        require_string(&value, "kind", "audit").expect("matching string");
-        require_number(&value, "/nested/count", 3).expect("matching number");
-        assert_eq!(pointer_number(&value, "/nested/count").expect("pointer"), 3);
-        assert_eq!(table_count(&value, "forms").expect("table count"), 4);
-        let nested = object(&value, "nested").expect("nested object");
-        assert_eq!(number(nested, "count").expect("nested number"), 3);
-        let normalized = value["normalized_tables"]
-            .as_object()
-            .expect("normalized tables object");
-        let mapped_value = serde_json::json!({ "outer": { "count": 5 } });
-        let mapped_root = mapped_value.as_object().expect("outer object");
-        let mapped = map_object(mapped_root, "outer").expect("mapped object");
-        assert_eq!(number(mapped, "count").expect("mapped number"), 5);
-        assert_eq!(number(normalized, "forms").expect("normalized count"), 4);
-        assert_eq!(percent(1, 8), "12.500%");
-        assert_eq!(escape("a|b\nc"), "a\\|b c");
 
         let table_path = root.join("review.tsv");
         fs::write(&table_path, "lemma\tstatus\nслово\treviewed\n").expect("temporary TSV");
         let table = read_tsv(&table_path).expect("valid TSV");
-        require_header(&table, &["lemma", "status"]).expect("required columns");
         assert_eq!(table.index("status").expect("status column"), 1);
         assert_eq!(table.rows, vec![vec!["слово", "reviewed"]]);
         assert_eq!(

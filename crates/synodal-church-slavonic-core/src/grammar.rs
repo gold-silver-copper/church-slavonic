@@ -1,101 +1,11 @@
-macro_rules! closed_enum {
-    ($name:ident { $($variant:ident => $code:literal),+ $(,)? }) => {
-        #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-        #[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
-        pub enum $name { $($variant),+ }
-
-        impl $name {
-            pub const ALL: [Self; closed_enum!(@count $($variant),+)] = [$(Self::$variant),+];
-
-            #[must_use]
-            pub const fn code(self) -> &'static str {
-                match self {
-                    $(Self::$variant => $code),+
-                }
-            }
-
-            #[must_use]
-            pub fn from_code(value: &str) -> Option<Self> {
-                match value {
-                    $($code => Some(Self::$variant),)+
-                    _ => None,
-                }
-            }
-        }
-    };
-    (@count $($variant:ident),+) => {
-        <[()]>::len(&[$(closed_enum!(@unit $variant)),+])
-    };
-    (@unit $variant:ident) => { () };
-}
-
-closed_enum!(Case {
-    Nominative => "nominative",
-    Genitive => "genitive",
-    Dative => "dative",
-    Accusative => "accusative",
-    Instrumental => "instrumental",
-    Locative => "locative",
-    Vocative => "vocative",
-});
-closed_enum!(Number {
-    Singular => "singular",
-    Dual => "dual",
-    Plural => "plural",
-});
-closed_enum!(Gender {
-    Masculine => "masculine",
-    Feminine => "feminine",
-    Neuter => "neuter",
-});
-closed_enum!(Animacy {
-    Inanimate => "inanimate",
-    Animate => "animate",
-});
-closed_enum!(Person {
-    First => "first",
-    Second => "second",
-    Third => "third",
-});
-closed_enum!(AdjectiveForm {
-    Short => "short",
-    Long => "long",
-});
-closed_enum!(Comparison {
-    Positive => "positive",
-    Comparative => "comparative",
-    Superlative => "superlative",
-});
-closed_enum!(Voice {
-    Active => "active",
-    Middle => "middle",
-    Passive => "passive",
-});
-// `Past` is retained only as a source-adapter normalization tag for
-// caller-supplied exact specifications. The audited target registry contains
-// no `past:*` cells: target forms are classified as aorist or imperfect.
-closed_enum!(FiniteTense {
-    Present => "present",
-    Future => "future",
-    Past => "past",
-    Imperfect => "imperfect",
-    Aorist => "aorist",
-});
-closed_enum!(ParticipleTense {
-    Present => "present",
-    Past => "past",
-});
-closed_enum!(ParticipleVoice {
-    Active => "active",
-    Passive => "passive",
-});
-closed_enum!(NumeralKind {
-    Cardinal => "cardinal",
-    Ordinal => "ordinal",
-    Collective => "collective",
-    Multiplicative => "multiplicative",
-    Fractional => "fractional",
-});
+// The closed grammatical category vocabulary is shared with the OCS family
+// through the `church-slavonic-core` kernel crate (docs/REWRITE_PLAN.md,
+// phase 2). The re-exported types keep the same `ALL`, `code()` and
+// `from_code()` contracts this module declared before the extraction.
+pub use church_slavonic_core::grammar::{
+    AdjectiveForm, Animacy, Case, Comparison, FiniteTense, Gender, Number, NumeralKind,
+    ParticipleTense, ParticipleVoice, Person, Voice,
+};
 
 /// A complete verb-system inventory understood by the public paradigm API.
 /// Exact-only systems remain represented here so their unsupported or missing
