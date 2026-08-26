@@ -1,0 +1,19 @@
+[package]
+name = "church-slavonic-dictionary"
+version = "0.1.0"
+description = "Optional Church Slavonic dictionary for the rewrite pilot: sense lookup, glosses, and paradigm-inverting lemmatization over the church-slavonic facade"
+authors.workspace = true
+edition.workspace = true
+# Code is MIT/Apache; bundled Wiktionary-derived sense data is CC BY-SA 4.0.
+license = "(MIT OR Apache-2.0) AND CC-BY-SA-4.0"
+repository.workspace = true
+rust-version.workspace = true
+include = ["src/**", "generated/**", "README.md"]
+
+[dependencies]
+church-slavonic.workspace = true
+church-slavonic-core.workspace = true
+old-church-slavonic-core.workspace = true
+
+[lints]
+workspace = true

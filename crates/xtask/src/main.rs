@@ -5,6 +5,7 @@ mod morphology_completeness;
 mod ocs_lexical_union;
 mod report_io;
 mod rewrite_derivability;
+mod rewrite_dictionary;
 mod rewrite_pilot;
 mod sources;
 mod synodal;
@@ -132,6 +133,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("ocs-lexical-union") => ocs_lexical_union::run(&mut args, &workspace_root()?),
         Some("rewrite-derivability") => rewrite_derivability::run(&mut args, &workspace_root()?),
         Some("rewrite-pilot-accuracy") => rewrite_pilot::accuracy(&mut args, &workspace_root()?),
+        Some("rewrite-dictionary") => rewrite_dictionary::emit(&workspace_root()?),
         Some("check-all") => check_all(),
         Some("check-structure") => check_structure(),
         Some("help") | Some("-h") | Some("--help") | None => {
@@ -2225,6 +2227,7 @@ pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
     synodal::check(&root)?;
     morphology_completeness::check_progress_artifacts(&root)?;
     rewrite_pilot::accuracy(&mut std::iter::empty(), &root)?;
+    rewrite_dictionary::check(&root)?;
     check_pilot_data_budget(&root)?;
     examples()
 }
@@ -3441,6 +3444,7 @@ fn print_help() {
     eprintln!("  ocs-lexical-union [--check | --kaikki PATH --osd-jsonl PATH]");
     eprintln!("  rewrite-derivability");
     eprintln!("  rewrite-pilot-accuracy");
+    eprintln!("  rewrite-dictionary");
     eprintln!("  check-all");
     eprintln!("  check-structure");
 }

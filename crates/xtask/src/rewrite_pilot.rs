@@ -50,19 +50,23 @@ type Inventory = BTreeMap<u8, Vec<String>>;
 /// are content-identical, so their relative order cannot change any table.
 fn homograph_keys<M: Ord>(
     lemma: &str,
-    mut entries: Vec<(Inventory, M)>,
-) -> Vec<(String, Inventory, M)> {
-    entries.sort_by(|left, right| left.cmp(right));
+    mut entries: Vec<(Inventory, M, String)>,
+) -> Vec<(String, Inventory, M, String)> {
+    entries.sort_by(|left, right| {
+        (&left.0, &left.1)
+            .cmp(&(&right.0, &right.1))
+            .then_with(|| left.2.cmp(&right.2))
+    });
     entries
         .into_iter()
         .enumerate()
-        .map(|(index, (inventory, meta))| {
+        .map(|(index, (inventory, meta, lexeme_id))| {
             let key = if index == 0 {
                 lemma.to_string()
             } else {
                 format!("{lemma}_{}", index + 1)
             };
-            (key, inventory, meta)
+            (key, inventory, meta, lexeme_id)
         })
         .collect()
 }
@@ -75,6 +79,8 @@ struct NounOracle {
     cells: BTreeMap<(String, u8), Vec<String>>,
     /// Homograph groups: (bare lemma, assigned keys in sense order).
     homographs: Vec<(String, Vec<String>)>,
+    /// Extracted lexeme id -> assigned lemma key (bare or numeric-suffixed).
+    key_by_lexeme: BTreeMap<String, String>,
 }
 
 fn class_code(value: &str) -> u8 {
@@ -240,7 +246,7 @@ fn load_noun_oracle(root: &Path) -> Result<NounOracle, Box<dyn Error>> {
             .push((row.rank, row.form.clone()));
     }
     // Group per-lexeme inventories by lemma and assign deterministic keys.
-    let mut groups: BTreeMap<&str, Vec<(Inventory, MetaCodes)>> = BTreeMap::new();
+    let mut groups: BTreeMap<&str, Vec<(Inventory, MetaCodes, String)>> = BTreeMap::new();
     for (id, (lemma, codes)) in &lexemes {
         let inventory: Inventory = per_lexeme
             .remove(id)
@@ -248,20 +254,25 @@ fn load_noun_oracle(root: &Path) -> Result<NounOracle, Box<dyn Error>> {
             .into_iter()
             .map(|(code, mut rows)| (code, dedupe_ranked(&mut rows)))
             .collect();
-        groups.entry(lemma).or_default().push((inventory, *codes));
+        groups
+            .entry(lemma)
+            .or_default()
+            .push((inventory, *codes, (*id).to_string()));
     }
     let mut meta: BTreeMap<String, MetaCodes> = BTreeMap::new();
     let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
     let mut homographs: Vec<(String, Vec<String>)> = Vec::new();
+    let mut key_by_lexeme: BTreeMap<String, String> = BTreeMap::new();
     for (lemma, entries) in groups {
         let keyed = homograph_keys(lemma, entries);
         if keyed.len() > 1 {
             homographs.push((
                 lemma.to_string(),
-                keyed.iter().map(|(key, _, _)| key.clone()).collect(),
+                keyed.iter().map(|(key, _, _, _)| key.clone()).collect(),
             ));
         }
-        for (key, inventory, codes) in keyed {
+        for (key, inventory, codes, lexeme_id) in keyed {
+            key_by_lexeme.insert(lexeme_id, key.clone());
             meta.insert(key.clone(), codes);
             for (code, variants) in inventory {
                 cells.insert((key.clone(), code), variants);
@@ -272,6 +283,7 @@ fn load_noun_oracle(root: &Path) -> Result<NounOracle, Box<dyn Error>> {
         meta,
         cells,
         homographs,
+        key_by_lexeme,
     })
 }
 
@@ -291,6 +303,8 @@ struct AdjectiveOracle {
     comparative_cells: usize,
     /// Homograph groups: (bare lemma, assigned keys in sense order).
     homographs: Vec<(String, Vec<String>)>,
+    /// Extracted lexeme id -> assigned lemma key (bare or numeric-suffixed).
+    key_by_lexeme: BTreeMap<String, String>,
 }
 
 fn adjective_class_code(value: &str) -> u8 {
@@ -333,7 +347,10 @@ fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>>
         if lexeme.pos != "adj" {
             continue;
         }
-        lexemes.insert(&lexeme.id, (&lexeme.lemma, adjective_class_code(&lexeme.class)));
+        lexemes.insert(
+            &lexeme.id,
+            (&lexeme.lemma, adjective_class_code(&lexeme.class)),
+        );
     }
     // Rows keyed with the animacy dimension still present, to prove it is
     // degenerate before collapsing it out of the facade key.
@@ -388,23 +405,28 @@ fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>>
         }
     }
     // Group per-lexeme inventories by lemma and assign deterministic keys.
-    let mut groups: BTreeMap<&str, Vec<(Inventory, u8)>> = BTreeMap::new();
+    let mut groups: BTreeMap<&str, Vec<(Inventory, u8, String)>> = BTreeMap::new();
     for (id, (lemma, class)) in &lexemes {
         let inventory = collapsed_lexeme.remove(*id).unwrap_or_default();
-        groups.entry(lemma).or_default().push((inventory, *class));
+        groups
+            .entry(lemma)
+            .or_default()
+            .push((inventory, *class, (*id).to_string()));
     }
     let mut meta: BTreeMap<String, u8> = BTreeMap::new();
     let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
     let mut homographs: Vec<(String, Vec<String>)> = Vec::new();
+    let mut key_by_lexeme: BTreeMap<String, String> = BTreeMap::new();
     for (lemma, entries) in groups {
         let keyed = homograph_keys(lemma, entries);
         if keyed.len() > 1 {
             homographs.push((
                 lemma.to_string(),
-                keyed.iter().map(|(key, _, _)| key.clone()).collect(),
+                keyed.iter().map(|(key, _, _, _)| key.clone()).collect(),
             ));
         }
-        for (key, inventory, class) in keyed {
+        for (key, inventory, class, lexeme_id) in keyed {
+            key_by_lexeme.insert(lexeme_id, key.clone());
             meta.insert(key.clone(), class);
             for (code, variants) in inventory {
                 cells.insert((key.clone(), code), variants);
@@ -417,6 +439,7 @@ fn load_adjective_oracle(root: &Path) -> Result<AdjectiveOracle, Box<dyn Error>>
         keyed_cells: keyed_cells.len(),
         comparative_cells: comparative_cells.len(),
         homographs,
+        key_by_lexeme,
     })
 }
 
@@ -779,6 +802,8 @@ struct VerbOracle {
     cells: BTreeMap<(String, u8), Vec<String>>,
     /// Homograph groups: (bare lemma, assigned keys in sense order).
     homographs: Vec<(String, Vec<String>)>,
+    /// Extracted lexeme id -> assigned lemma key (bare or numeric-suffixed).
+    key_by_lexeme: BTreeMap<String, String>,
 }
 
 fn parse_verb_cell(feature: &str) -> Option<VerbCell> {
@@ -881,7 +906,7 @@ fn load_verb_oracle(root: &Path) -> Result<VerbOracle, Box<dyn Error>> {
             .push((row.rank, row.form.clone()));
     }
     // Group per-lexeme inventories by lemma and assign deterministic keys.
-    let mut groups: BTreeMap<&str, Vec<(Inventory, VerbMetaCodes)>> = BTreeMap::new();
+    let mut groups: BTreeMap<&str, Vec<(Inventory, VerbMetaCodes, String)>> = BTreeMap::new();
     for (id, (lemma, codes)) in &lexemes {
         let inventory: Inventory = per_lexeme
             .remove(id)
@@ -892,20 +917,22 @@ fn load_verb_oracle(root: &Path) -> Result<VerbOracle, Box<dyn Error>> {
         groups
             .entry(lemma)
             .or_default()
-            .push((inventory, codes.clone()));
+            .push((inventory, codes.clone(), (*id).to_string()));
     }
     let mut meta: BTreeMap<String, VerbMetaCodes> = BTreeMap::new();
     let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
     let mut homographs: Vec<(String, Vec<String>)> = Vec::new();
+    let mut key_by_lexeme: BTreeMap<String, String> = BTreeMap::new();
     for (lemma, entries) in groups {
         let keyed = homograph_keys(lemma, entries);
         if keyed.len() > 1 {
             homographs.push((
                 lemma.to_string(),
-                keyed.iter().map(|(key, _, _)| key.clone()).collect(),
+                keyed.iter().map(|(key, _, _, _)| key.clone()).collect(),
             ));
         }
-        for (key, inventory, codes) in keyed {
+        for (key, inventory, codes, lexeme_id) in keyed {
+            key_by_lexeme.insert(lexeme_id, key.clone());
             meta.insert(key.clone(), codes);
             for (code, variants) in inventory {
                 cells.insert((key.clone(), code), variants);
@@ -916,6 +943,7 @@ fn load_verb_oracle(root: &Path) -> Result<VerbOracle, Box<dyn Error>> {
         meta,
         cells,
         homographs,
+        key_by_lexeme,
     })
 }
 
@@ -975,7 +1003,9 @@ fn synth_install(codes: &mut VerbMetaCodes, analysis: &SynthAnalysis) {
             codes.imperfect.push((stem.clone(), *formation, *policy));
         }
         SynthAnalysis::Aorist(stem, singular, formation) => {
-            codes.aorist.push((stem.clone(), singular.clone(), *formation));
+            codes
+                .aorist
+                .push((stem.clone(), singular.clone(), *formation));
         }
         SynthAnalysis::Imperative(stem, formation) => {
             codes.imperative.push((stem.clone(), *formation));
@@ -1157,10 +1187,16 @@ fn synth_present_system(
         (5, 0),
         (5, 2),
     ];
-    let first_singular: Vec<(u8, &Vec<String>)> =
-        cells.iter().filter(|(code, _)| *code == 0).copied().collect();
-    let third_plural: Vec<(u8, &Vec<String>)> =
-        cells.iter().filter(|(code, _)| *code == 8).copied().collect();
+    let first_singular: Vec<(u8, &Vec<String>)> = cells
+        .iter()
+        .filter(|(code, _)| *code == 0)
+        .copied()
+        .collect();
+    let third_plural: Vec<(u8, &Vec<String>)> = cells
+        .iter()
+        .filter(|(code, _)| *code == 8)
+        .copied()
+        .collect();
     let middle: Vec<(u8, &Vec<String>)> = cells
         .iter()
         .filter(|(code, _)| *code != 0 && *code != 8)
@@ -1279,9 +1315,7 @@ fn synthesize_verb_metadata(oracle: &mut VerbOracle) -> (usize, usize) {
             (base.present.is_empty(), |code| code <= 8),
             (base.imperfect.is_empty(), |code| (9..=17).contains(&code)),
             (base.aorist.is_empty(), |code| (18..=26).contains(&code)),
-            (base.imperative.is_empty(), |code| {
-                (27..=35).contains(&code)
-            }),
+            (base.imperative.is_empty(), |code| (27..=35).contains(&code)),
             (base.l_participle.is_empty(), |code| {
                 (36..=44).contains(&code)
             }),
@@ -1426,7 +1460,11 @@ fn verb_residue_cells(oracle: &VerbOracle) -> Vec<(&str, u8, &Vec<String>)> {
     let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
     for ((lemma, code), expected) in &oracle.cells {
         let predicted = with_verb_meta_view(&oracle.meta[lemma], |meta| {
-            kernel_verb_variants(church_slavonic::base_lemma(lemma), meta, verb_cell_from_code(*code))
+            kernel_verb_variants(
+                church_slavonic::base_lemma(lemma),
+                meta,
+                verb_cell_from_code(*code),
+            )
         });
         if predicted.as_deref() != Some(expected.as_slice()) {
             residue.push((lemma, *code, expected));
@@ -1560,6 +1598,8 @@ struct ClosedOracle {
     meta: BTreeMap<String, (u8, u8)>,
     /// (lemma, closed cell code) -> variant list in rank order.
     cells: BTreeMap<(String, u8), Vec<String>>,
+    /// Extracted lexeme id -> lemma key (closed lemmas have one lexeme each).
+    key_by_lexeme: BTreeMap<String, String>,
 }
 
 fn closed_pos_code(pos: &str) -> Option<u8> {
@@ -1662,7 +1702,15 @@ fn load_closed_oracle(root: &Path) -> Result<ClosedOracle, Box<dyn Error>> {
         }
         cells.insert((lemma, code), texts);
     }
-    Ok(ClosedOracle { meta, cells })
+    let key_by_lexeme: BTreeMap<String, String> = lemma_by_id
+        .iter()
+        .map(|(id, lemma)| ((*id).to_string(), (*lemma).to_string()))
+        .collect();
+    Ok(ClosedOracle {
+        meta,
+        cells,
+        key_by_lexeme,
+    })
 }
 
 fn emit_closed_residue(root: &Path) -> Result<(), Box<dyn Error>> {
@@ -2008,7 +2056,8 @@ pub(crate) fn accuracy(
         }
         // Lemma-keyed resolution (residue table -> identity kernels), the
         // path every public wrapper goes through.
-        let lemma_route = church_slavonic::closed_variants(lemma, pos, case, number, gender, person);
+        let lemma_route =
+            church_slavonic::closed_variants(lemma, pos, case, number, gender, person);
         // Public API route for this cell's shape.
         let public_route = match (pos_code, gender, person) {
             (1, None, Some(person)) => church_slavonic::pronoun_variants(person, number, case),
@@ -2068,10 +2117,9 @@ pub(crate) fn accuracy(
     }
     for (pos_name, (matched, total, _)) in &closed_counts {
         if matched != total {
-            return Err(format!(
-                "{pos_name} pilot accuracy {matched}/{total}, expected 100%"
-            )
-            .into());
+            return Err(
+                format!("{pos_name} pilot accuracy {matched}/{total}, expected 100%").into(),
+            );
         }
     }
     paradigm_consistency(&oracle, &adjectives, &verbs, &closed)?;
@@ -2111,10 +2159,11 @@ fn paradigm_consistency(
             })
             .collect();
         noun_cells += expected.len();
-        if church_slavonic::noun_paradigm(lemma).as_ref() != Ok(&expected)
-            && mismatches.len() < 20
+        if church_slavonic::noun_paradigm(lemma).as_ref() != Ok(&expected) && mismatches.len() < 20
         {
-            mismatches.push(format!("noun {lemma}: paradigm disagrees with single-cell API"));
+            mismatches.push(format!(
+                "noun {lemma}: paradigm disagrees with single-cell API"
+            ));
         }
     }
 
@@ -2138,7 +2187,9 @@ fn paradigm_consistency(
                             church_slavonic::short_adjective_variants(lemma, case, number, gender)
                         }
                     };
-                    produced.ok().map(|variants| (case, number, gender, variants))
+                    produced
+                        .ok()
+                        .map(|variants| (case, number, gender, variants))
                 })
                 .collect();
             adjective_cells += expected.len();
@@ -2194,10 +2245,11 @@ fn paradigm_consistency(
             })
             .collect();
         verb_cells += expected.len();
-        if church_slavonic::verb_paradigm(lemma).as_ref() != Ok(&expected)
-            && mismatches.len() < 20
+        if church_slavonic::verb_paradigm(lemma).as_ref() != Ok(&expected) && mismatches.len() < 20
         {
-            mismatches.push(format!("verb {lemma}: paradigm disagrees with single-cell API"));
+            mismatches.push(format!(
+                "verb {lemma}: paradigm disagrees with single-cell API"
+            ));
         }
     }
 
@@ -2241,7 +2293,9 @@ fn paradigm_consistency(
             _ => church_slavonic::determiner_form_paradigm(lemma),
         };
         if paradigm.as_ref() != Ok(&expected) && mismatches.len() < 20 {
-            mismatches.push(format!("closed {lemma}: paradigm disagrees with single-cell API"));
+            mismatches.push(format!(
+                "closed {lemma}: paradigm disagrees with single-cell API"
+            ));
         }
     }
 
@@ -2322,8 +2376,8 @@ fn numeral_value_differential() -> Result<(), Box<dyn Error>> {
     let mut values: Vec<u16> = (1..=100).collect();
     values.extend([
         101, 110, 111, 123, 199, 200, 222, 300, 333, 400, 444, 500, 555, 600, 666, 700, 777, 800,
-        888, 900, 999, 1_000, 1_001, 1_100, 1_111, 1_234, 2_000, 2_222, 3_000, 3_456, 4_000,
-        5_000, 5_555, 6_000, 7_000, 8_000, 9_000, 9_999, 10_000,
+        888, 900, 999, 1_000, 1_001, 1_100, 1_111, 1_234, 2_000, 2_222, 3_000, 3_456, 4_000, 5_000,
+        5_555, 6_000, 7_000, 8_000, 9_000, 9_999, 10_000,
     ]);
 
     let mut cardinal_agreements = 0usize;
@@ -2335,12 +2389,8 @@ fn numeral_value_differential() -> Result<(), Box<dyn Error>> {
         for gender in Gender::ALL {
             for case in Case::ALL {
                 cardinal_total += 1;
-                let new = church_slavonic::numeral(
-                    u64::from(value),
-                    case,
-                    gender,
-                    Animacy::Inanimate,
-                );
+                let new =
+                    church_slavonic::numeral(u64::from(value), case, gender, Animacy::Inanimate);
                 let old = old_cardinal_reference(value, case, gender);
                 match (&new, &old) {
                     (Ok(new_text), Some(old_text)) if new_text == old_text => {
@@ -2399,4 +2449,54 @@ fn numeral_value_differential() -> Result<(), Box<dyn Error>> {
         .into());
     }
     Ok(())
+}
+
+/// Cross-POS lemma-key inventory and lexeme-id mapping consumed by the
+/// dictionary generator (`cargo xtask rewrite-dictionary`): every pilot
+/// lemma key with its part-of-speech code, plus the deterministic
+/// extracted-lexeme-id -> lemma-key assignment the residue emitters use
+/// (the same `homograph_keys` sort, so a dictionary sense that names a
+/// lexeme id lands on exactly the key the facade serves that lexeme under).
+pub(crate) struct DictionarySupport {
+    /// Extracted lexeme id -> pilot lemma key (bare or numeric-suffixed).
+    pub key_by_lexeme: BTreeMap<String, String>,
+    /// Pilot lemma key -> part-of-speech code
+    /// (1 noun, 2 adjective, 3 verb, 4 pronoun, 5 numeral, 6 determiner).
+    pub lemma_pos: BTreeMap<String, u8>,
+}
+
+pub(crate) fn dictionary_support(root: &Path) -> Result<DictionarySupport, Box<dyn Error>> {
+    let nouns = load_noun_oracle(root)?;
+    let adjectives = load_adjective_oracle(root)?;
+    let verbs = load_verb_oracle(root)?;
+    let closed = load_closed_oracle(root)?;
+    let mut key_by_lexeme = BTreeMap::new();
+    let mut lemma_pos: BTreeMap<String, u8> = BTreeMap::new();
+    let per_pos: [(&BTreeMap<String, String>, Vec<&String>, u8); 3] = [
+        (&nouns.key_by_lexeme, nouns.meta.keys().collect(), 1),
+        (
+            &adjectives.key_by_lexeme,
+            adjectives.meta.keys().collect(),
+            2,
+        ),
+        (&verbs.key_by_lexeme, verbs.meta.keys().collect(), 3),
+    ];
+    for (oracle_keys, oracle_meta_keys, pos) in per_pos {
+        for key in oracle_meta_keys {
+            lemma_pos.insert(key.clone(), pos);
+        }
+        for (id, key) in oracle_keys {
+            key_by_lexeme.insert(id.clone(), key.clone());
+        }
+    }
+    for (lemma, (pos, _)) in &closed.meta {
+        lemma_pos.insert(lemma.clone(), pos + 3);
+    }
+    for (id, key) in &closed.key_by_lexeme {
+        key_by_lexeme.insert(id.clone(), key.clone());
+    }
+    Ok(DictionarySupport {
+        key_by_lexeme,
+        lemma_pos,
+    })
 }

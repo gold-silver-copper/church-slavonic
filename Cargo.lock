@@ -86,6 +86,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "church-slavonic-dictionary"
+version = "0.1.0"
+dependencies = [
+ "church-slavonic",
+ "church-slavonic-core",
+ "old-church-slavonic-core",
+]
+
+[[package]]
 name = "codepage"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -534,6 +543,7 @@ name = "xtask"
 version = "0.1.0"
 dependencies = [
  "church-slavonic",
+ "church-slavonic-dictionary",
  "old-church-slavonic",
  "old-church-slavonic-core",
  "old-church-slavonic-extractor",

@@ -8,17 +8,16 @@
 //! precedence, then compares the predicted variant list to the stored surface
 //! variants. Results land in `reports/rewrite-derivability.md`.
 
+use old_church_slavonic::FormSet;
 use old_church_slavonic::advanced::metadata as api_metadata;
 use old_church_slavonic::advanced::rules;
-use old_church_slavonic::FormSet;
 use old_church_slavonic_core::adjective::{AdjectiveLexeme, LongOnlyAdjectiveIdentity};
 use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, Gender,
-    IrregularVerbFamilyMember, NounCell, NounClass, Number, PartOfSpeech, ParticipleCell,
-    TwofoldNounFamilyMember, UniqueNounFamilyMember, UniqueVerbFamilyMember, VerbClass,
-    orthography,
+    AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, Gender, IrregularVerbFamilyMember,
+    NounCell, NounClass, Number, PartOfSpeech, ParticipleCell, TwofoldNounFamilyMember,
+    UniqueNounFamilyMember, UniqueVerbFamilyMember, VerbClass, orthography,
 };
 use old_church_slavonic_extractor::extract::load_registry;
 use old_church_slavonic_extractor::schema::{FormRow, LexemeRow};
