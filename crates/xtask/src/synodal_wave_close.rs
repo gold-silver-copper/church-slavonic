@@ -153,7 +153,6 @@ pub(crate) fn run(
         with_args(&["--check"], root, crate::synodal_predict::run)
     });
     step(&mut results, "check-structure", crate::check_structure);
-    step(&mut results, "guard-witnesses", crate::guard_witnesses);
     step(&mut results, "synodal-check", || {
         crate::synodal::check(root)
     });

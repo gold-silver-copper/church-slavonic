@@ -1,4 +1,3 @@
-use crate::emit::generated_rust;
 use crate::normalize::{has_wiki_markup, lookup_key};
 use crate::output::atomic_write_batch;
 use crate::report::ExtractionReport;
@@ -183,12 +182,10 @@ pub fn refresh(dump: &Path, root: &Path) -> Result<(), Box<dyn Error>> {
     }
     fs::create_dir_all(&extracted)?;
     fs::create_dir_all(root.join("reports"))?;
-    fs::create_dir_all(root.join("crates/old-church-slavonic/generated"))?;
     let (lexemes_tsv, aliases_tsv, forms_tsv, verb_metadata_tsv) = registry_text(&registry);
     let generated_registry =
         registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))?;
     validate::noun_citations(&generated_registry, &citation_exemptions)?;
-    let generated = generated_rust(&generated_registry);
     let report_json = serde_json::to_vec_pretty(&report)?;
     let report_markdown = report.markdown();
     let source = source_metadata(dump)?;
@@ -202,10 +199,6 @@ pub fn refresh(dump: &Path, root: &Path) -> Result<(), Box<dyn Error>> {
             verb_metadata_tsv.as_bytes(),
         ),
         (extracted.join("source.json"), &source_json),
-        (
-            root.join("crates/old-church-slavonic/generated/registry.rs"),
-            generated.as_bytes(),
-        ),
         (root.join("reports/extraction-coverage.json"), &report_json),
         (
             root.join("reports/extraction-coverage.md"),
@@ -284,16 +277,6 @@ pub fn check_registry(root: &Path) -> Result<(), Box<dyn Error>> {
     let generated_registry =
         registry_with_overrides(registry.clone(), &root.join("data/overrides.tsv"))?;
     validate::noun_citations(&generated_registry, &citation_exemptions)?;
-    let expected = generated_rust(&generated_registry);
-    let generated_path = root.join("crates/old-church-slavonic/generated/registry.rs");
-    let committed = fs::read_to_string(&generated_path)?;
-    if committed != expected {
-        return Err(format!(
-            "generated registry is stale: refresh {}",
-            generated_path.display()
-        )
-        .into());
-    }
     println!(
         "check-registry: OK ({} lexemes, {} forms)",
         registry.lexemes.len(),
@@ -313,17 +296,10 @@ pub fn refresh_derived_registry(root: &Path) -> Result<(), Box<dyn Error>> {
     let generated_registry = registry_with_overrides(registry, &root.join("data/overrides.tsv"))?;
     let citation_exemptions = load_citation_exemptions(&root.join("data/citation-exemptions.tsv"))?;
     validate::noun_citations(&generated_registry, &citation_exemptions)?;
-    let generated = generated_rust(&generated_registry);
-    atomic_write_batch(&[
-        (
-            root.join("data/extracted/verb_metadata.tsv"),
-            verb_metadata_tsv.as_bytes(),
-        ),
-        (
-            root.join("crates/old-church-slavonic/generated/registry.rs"),
-            generated.as_bytes(),
-        ),
-    ])?;
+    atomic_write_batch(&[(
+        root.join("data/extracted/verb_metadata.tsv"),
+        verb_metadata_tsv.as_bytes(),
+    )])?;
     Ok(())
 }
 

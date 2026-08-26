@@ -24,11 +24,9 @@ fn fixture_refresh_fails_closed_and_is_deterministic() {
     )
     .expect("empty citation exemption registry");
     refresh(&fixture, &root).expect("fixture refresh");
-    let first = fs::read(root.join("crates/old-church-slavonic/generated/registry.rs"))
-        .expect("generated fixture");
+    let first = fs::read(root.join("data/extracted/forms.tsv")).expect("generated fixture");
     refresh(&fixture, &root).expect("second fixture refresh");
-    let second = fs::read(root.join("crates/old-church-slavonic/generated/registry.rs"))
-        .expect("regenerated fixture");
+    let second = fs::read(root.join("data/extracted/forms.tsv")).expect("regenerated fixture");
     assert_eq!(first, second);
 
     let registry = load_registry(&root.join("data/extracted")).expect("fixture registry");

@@ -5,8 +5,6 @@ members = [
     "crates/church-slavonic-core",
     "crates/church-slavonic-orthography",
     "crates/old-church-slavonic-core",
-    "crates/old-church-slavonic",
-    "crates/old-church-slavonic-dictionary",
     "crates/old-church-slavonic-extractor",
     "crates/synodal-church-slavonic-core",
     "crates/synodal-church-slavonic",
@@ -28,9 +26,7 @@ church-slavonic = { path = "crates/church-slavonic", version = "0.2.0" }
 church-slavonic-core = { path = "crates/church-slavonic-core", version = "0.2.0" }
 church-slavonic-dictionary = { path = "crates/church-slavonic-dictionary", version = "0.1.0" }
 church-slavonic-orthography = { path = "crates/church-slavonic-orthography", version = "0.1.0" }
-old-church-slavonic = { path = "crates/old-church-slavonic", version = "0.6.0" }
 old-church-slavonic-core = { path = "crates/old-church-slavonic-core", version = "0.5.0" }
-old-church-slavonic-dictionary = { path = "crates/old-church-slavonic-dictionary", version = "0.3.0" }
 old-church-slavonic-extractor = { path = "crates/old-church-slavonic-extractor", version = "0.1.0" }
 synodal-church-slavonic = { path = "crates/synodal-church-slavonic", version = "0.5.0" }
 synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core", version = "0.5.0" }

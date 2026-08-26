@@ -10,7 +10,6 @@ rust-version.workspace = true
 [dependencies]
 church-slavonic.workspace = true
 church-slavonic-dictionary.workspace = true
-old-church-slavonic.workspace = true
 old-church-slavonic-core.workspace = true
 old-church-slavonic-extractor.workspace = true
 synodal-church-slavonic.workspace = true

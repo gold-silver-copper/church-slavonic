@@ -1,6 +1,0 @@
-concept	lemma	part_of_speech	sense_id	status	notes
-gold coin	златикъ	noun	en-златикъ-cu-noun-LNl6qc2t#7118465019a0a01f	attested	Fixture for an attested noun.
-food	пищꙗ	noun	en-пища-cu-noun-wfAmWC~m#78ff6bd34cacc822	attested	Fixture for a second attested noun.
-read	чьсти	verb	en-чьсти-cu-verb-OQnC8LFq#794afadaa81df537	attested	Fixture for an attested verb.
-dungeon map	образъ	noun	en-образъ-cu-noun-YQXWzHav#2b79d797fb89c37d	thematic	Uses the attested sense “image” for the displayed dungeon representation, not for parchment.
-Yendor	Іендоръ	proper-name	-	proper-name	Fictional inherited name adapted to the OCS Cyrillic presentation.

@@ -259,29 +259,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "old-church-slavonic"
-version = "0.6.0"
-dependencies = [
- "old-church-slavonic-core",
-]
-
-[[package]]
 name = "old-church-slavonic-core"
 version = "0.5.0"
 dependencies = [
  "church-slavonic-core",
  "church-slavonic-orthography",
  "unicode-normalization",
-]
-
-[[package]]
-name = "old-church-slavonic-dictionary"
-version = "0.3.0"
-dependencies = [
- "old-church-slavonic",
- "old-church-slavonic-core",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -555,7 +538,6 @@ version = "0.1.0"
 dependencies = [
  "church-slavonic",
  "church-slavonic-dictionary",
- "old-church-slavonic",
  "old-church-slavonic-core",
  "old-church-slavonic-extractor",
  "serde",
