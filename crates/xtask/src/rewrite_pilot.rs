@@ -12,9 +12,17 @@
 //! their per-cell variant lists merged in rank order (stable; first
 //! occurrence wins on duplicate surface forms).
 
-use church_slavonic::{NounMeta, adjective_cell_code, cell_code, kernel_noun_variants};
+use church_slavonic::{
+    NounMeta, VerbCell, VerbMeta, adjective_cell_code, cell_code, kernel_noun_variants,
+    kernel_verb_variants, verb_cell_code,
+};
+use old_church_slavonic::advanced::metadata as api_metadata;
 use old_church_slavonic_core::{
-    AdjectiveClass, AdjectiveForm, Animacy, Case, Gender, Number, NumberRestriction,
+    AdjectiveClass, AdjectiveForm, Animacy, AoristFormation, Case, FiniteTense, FiniteVerbCell,
+    Gender, ImperativeCell, ImperativeFormation, ImperfectFormation, ImperfectVariantPolicy,
+    LParticipleCell, Number, NumberRestriction, ParticipleKind, PastActiveParticipleFormation,
+    PastPassiveParticipleFormation, Person, PresentActiveParticipleFormation, PresentFormation,
+    PresentPassiveParticipleFormation, VerbAspect, VerbClass,
 };
 use old_church_slavonic_extractor::extract::load_registry;
 use std::collections::BTreeMap;
@@ -430,7 +438,551 @@ fn emit_adjective_residue(root: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Compact per-lemma verb principal-part codes, owned by the emitter before
+/// being written as `crate::VerbMeta` literals (see the facade's field code
+/// tables on `VerbMeta`).
+#[derive(Debug, Default, Clone)]
+struct VerbMetaCodes {
+    aspect: u8,
+    present: Vec<(String, u8, String, String, u8)>,
+    imperfect: Vec<(String, u8, u8)>,
+    aorist: Vec<(String, String, u8)>,
+    imperative: Vec<(String, u8)>,
+    l_participle: Vec<String>,
+    present_active_participle: Vec<(String, u8)>,
+    present_passive_participle: Vec<(String, u8)>,
+    past_active_participle: Vec<(String, u8)>,
+    past_passive_participle: Vec<(String, u8)>,
+}
+
+fn verb_class_code(value: VerbClass) -> u8 {
+    match value {
+        VerbClass::IA1 => 1,
+        VerbClass::IA2 => 2,
+        VerbClass::II1 => 3,
+        VerbClass::II2 => 4,
+        VerbClass::II3 => 5,
+        VerbClass::Root => 6,
+        VerbClass::Irregular => 7,
+    }
+}
+
+fn verb_aspect_code(value: VerbAspect) -> u8 {
+    match value {
+        VerbAspect::Perfective => 1,
+        VerbAspect::Imperfective => 2,
+        VerbAspect::Biaspectual => 3,
+    }
+}
+
+fn present_formation_code(value: PresentFormation) -> u8 {
+    match value {
+        PresentFormation::IotatedE => 1,
+        PresentFormation::HardI => 2,
+    }
+}
+
+fn imperfect_formation_code(value: ImperfectFormation) -> u8 {
+    match value {
+        ImperfectFormation::A => 1,
+        ImperfectFormation::YatA => 2,
+        ImperfectFormation::PalatalizedA => 3,
+        ImperfectFormation::PresentA => 4,
+        ImperfectFormation::PresentYatA => 5,
+    }
+}
+
+fn imperfect_policy_code(value: ImperfectVariantPolicy) -> u8 {
+    match value {
+        ImperfectVariantPolicy::UncontractedOnly => 1,
+        ImperfectVariantPolicy::ContractedOnly => 2,
+        ImperfectVariantPolicy::IotatedOnly => 3,
+    }
+}
+
+fn aorist_formation_code(value: AoristFormation) -> u8 {
+    match value {
+        AoristFormation::Asigmatic => 1,
+        AoristFormation::SigmaticPrimary => 2,
+        AoristFormation::SigmaticSecondary => 3,
+        AoristFormation::SigmaticVowel => 4,
+        AoristFormation::New => 5,
+    }
+}
+
+fn imperative_formation_code(value: ImperativeFormation) -> u8 {
+    match value {
+        ImperativeFormation::ISeries => 1,
+        ImperativeFormation::YatSeries => 2,
+    }
+}
+
+fn present_active_participle_code(value: PresentActiveParticipleFormation) -> u8 {
+    match value {
+        PresentActiveParticipleFormation::YushtHard => 1,
+        PresentActiveParticipleFormation::YushtSoft => 2,
+        PresentActiveParticipleFormation::YeshtSoft => 3,
+        PresentActiveParticipleFormation::MixedYushtSoft => 4,
+        PresentActiveParticipleFormation::IotatedYushtSoft => 5,
+    }
+}
+
+fn present_passive_participle_code(value: PresentPassiveParticipleFormation) -> u8 {
+    match value {
+        PresentPassiveParticipleFormation::Im => 1,
+        PresentPassiveParticipleFormation::Em => 2,
+        PresentPassiveParticipleFormation::IotatedEm => 3,
+        PresentPassiveParticipleFormation::Om => 4,
+    }
+}
+
+fn past_active_participle_code(value: PastActiveParticipleFormation) -> u8 {
+    match value {
+        PastActiveParticipleFormation::Ush => 1,
+        PastActiveParticipleFormation::Ish => 2,
+        PastActiveParticipleFormation::IshAfterGlide => 3,
+        PastActiveParticipleFormation::VushAfterJDeletion => 4,
+        PastActiveParticipleFormation::VushAfterOvToU => 5,
+        PastActiveParticipleFormation::Vush => 6,
+    }
+}
+
+fn past_passive_participle_code(value: PastPassiveParticipleFormation) -> u8 {
+    match value {
+        PastPassiveParticipleFormation::T => 1,
+        PastPassiveParticipleFormation::N => 2,
+        PastPassiveParticipleFormation::En => 3,
+    }
+}
+
+fn encode_verb_metadata(metadata: &api_metadata::DictionaryVerbMetadata) -> VerbMetaCodes {
+    VerbMetaCodes {
+        aspect: metadata
+            .aspect
+            .as_ref()
+            .map_or(0, |aspect| verb_aspect_code(aspect.value)),
+        present: metadata
+            .present
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    verb_class_code(analysis.class.value),
+                    analysis
+                        .first_singular_stem
+                        .as_ref()
+                        .map_or_else(String::new, |stem| stem.value.clone()),
+                    analysis
+                        .third_plural_stem
+                        .as_ref()
+                        .map_or_else(String::new, |stem| stem.value.clone()),
+                    analysis
+                        .formation
+                        .as_ref()
+                        .map_or(0, |formation| present_formation_code(formation.value)),
+                )
+            })
+            .collect(),
+        imperfect: metadata
+            .imperfect
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    imperfect_formation_code(analysis.formation.value),
+                    imperfect_policy_code(analysis.variant_policy.value),
+                )
+            })
+            .collect(),
+        aorist: metadata
+            .aorist
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    analysis
+                        .second_third_singular
+                        .as_ref()
+                        .map_or_else(String::new, |part| part.value.clone()),
+                    aorist_formation_code(analysis.formation.value),
+                )
+            })
+            .collect(),
+        imperative: metadata
+            .imperative
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    imperative_formation_code(analysis.formation.value),
+                )
+            })
+            .collect(),
+        l_participle: metadata
+            .l_participle
+            .iter()
+            .map(|analysis| analysis.stem.value.clone())
+            .collect(),
+        present_active_participle: metadata
+            .present_active_participle
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    present_active_participle_code(analysis.formation.value),
+                )
+            })
+            .collect(),
+        present_passive_participle: metadata
+            .present_passive_participle
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    present_passive_participle_code(analysis.formation.value),
+                )
+            })
+            .collect(),
+        past_active_participle: metadata
+            .past_active_participle
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    past_active_participle_code(analysis.formation.value),
+                )
+            })
+            .collect(),
+        past_passive_participle: metadata
+            .past_passive_participle
+            .iter()
+            .map(|analysis| {
+                (
+                    analysis.stem.value.clone(),
+                    past_passive_participle_code(analysis.formation.value),
+                )
+            })
+            .collect(),
+    }
+}
+
+/// Run `body` with a borrowed `VerbMeta` view over the owned code rows —
+/// exactly the record the facade decodes from the generated table.
+fn with_verb_meta_view<R>(codes: &VerbMetaCodes, body: impl FnOnce(&VerbMeta<'_>) -> R) -> R {
+    let present: Vec<(&str, u8, &str, &str, u8)> = codes
+        .present
+        .iter()
+        .map(|(stem, class, first, third, formation)| {
+            (
+                stem.as_str(),
+                *class,
+                first.as_str(),
+                third.as_str(),
+                *formation,
+            )
+        })
+        .collect();
+    let imperfect: Vec<(&str, u8, u8)> = codes
+        .imperfect
+        .iter()
+        .map(|(stem, formation, policy)| (stem.as_str(), *formation, *policy))
+        .collect();
+    let aorist: Vec<(&str, &str, u8)> = codes
+        .aorist
+        .iter()
+        .map(|(stem, singular, formation)| (stem.as_str(), singular.as_str(), *formation))
+        .collect();
+    fn pair(rows: &[(String, u8)]) -> Vec<(&str, u8)> {
+        rows.iter()
+            .map(|(stem, formation)| (stem.as_str(), *formation))
+            .collect()
+    }
+    let imperative = pair(&codes.imperative);
+    let l_participle: Vec<&str> = codes.l_participle.iter().map(String::as_str).collect();
+    let present_active_participle = pair(&codes.present_active_participle);
+    let present_passive_participle = pair(&codes.present_passive_participle);
+    let past_active_participle = pair(&codes.past_active_participle);
+    let past_passive_participle = pair(&codes.past_passive_participle);
+    let meta = VerbMeta {
+        aspect: codes.aspect,
+        present: &present,
+        imperfect: &imperfect,
+        aorist: &aorist,
+        imperative: &imperative,
+        l_participle: &l_participle,
+        present_active_participle: &present_active_participle,
+        present_passive_participle: &present_passive_participle,
+        past_active_participle: &past_active_participle,
+        past_passive_participle: &past_passive_participle,
+    };
+    body(&meta)
+}
+
+struct VerbOracle {
+    /// lemma -> encoded principal-part metadata (first lexeme entry wins).
+    meta: BTreeMap<String, VerbMetaCodes>,
+    /// (lemma, verb cell code) -> merged variant list in rank order.
+    cells: BTreeMap<(String, u8), Vec<String>>,
+    lexeme_cells: usize,
+    merged_divergent_lexeme_cells: usize,
+}
+
+fn parse_verb_cell(feature: &str) -> Option<VerbCell> {
+    match feature {
+        "verb:infinitive" => return Some(VerbCell::Infinitive),
+        "verb:supine" => return Some(VerbCell::Supine),
+        "verb:verbal-noun" => return Some(VerbCell::VerbalNoun),
+        _ => {}
+    }
+    if let Some(cell) = crate::parse_finite_verb_cell(feature) {
+        return Some(VerbCell::Finite(cell));
+    }
+    if let Some(cell) = crate::parse_imperative_cell(feature) {
+        return Some(VerbCell::Imperative(cell));
+    }
+    if let Some(cell) = crate::parse_l_participle_cell(feature) {
+        return Some(VerbCell::LParticiple(cell));
+    }
+    let parts: Vec<&str> = feature.split(':').collect();
+    if let ["verb", "participle", kind, "citation"] = parts.as_slice() {
+        return crate::parse_participle_kind(kind).map(VerbCell::ParticipleCitation);
+    }
+    None
+}
+
+/// Decode a verb cell code back into its typed cell (inverse of the facade's
+/// `verb_cell_code`).
+fn verb_cell_from_code(code: u8) -> VerbCell {
+    let person = |index: u8| match index {
+        0 => Person::First,
+        1 => Person::Second,
+        _ => Person::Third,
+    };
+    let number = |index: u8| match index {
+        0 => Number::Singular,
+        1 => Number::Dual,
+        _ => Number::Plural,
+    };
+    match code {
+        0..=26 => VerbCell::Finite(FiniteVerbCell {
+            tense: match code / 9 {
+                0 => FiniteTense::Present,
+                1 => FiniteTense::Imperfect,
+                _ => FiniteTense::Aorist,
+            },
+            person: person((code % 9) / 3),
+            number: number(code % 3),
+        }),
+        27..=35 => VerbCell::Imperative(ImperativeCell {
+            person: person((code - 27) / 3),
+            number: number(code % 3),
+        }),
+        36..=44 => VerbCell::LParticiple(LParticipleCell {
+            gender: match (code - 36) / 3 {
+                0 => Gender::Masculine,
+                1 => Gender::Feminine,
+                _ => Gender::Neuter,
+            },
+            number: number(code % 3),
+        }),
+        45 => VerbCell::Infinitive,
+        46 => VerbCell::Supine,
+        47 => VerbCell::VerbalNoun,
+        _ => VerbCell::ParticipleCitation(match code - 48 {
+            0 => ParticipleKind::PresentActive,
+            1 => ParticipleKind::PresentPassive,
+            2 => ParticipleKind::PastActive,
+            _ => ParticipleKind::PastPassive,
+        }),
+    }
+}
+
+fn load_verb_oracle(root: &Path) -> Result<VerbOracle, Box<dyn Error>> {
+    let registry = load_registry(&root.join("data/extracted"))?;
+    let mut meta: BTreeMap<String, VerbMetaCodes> = BTreeMap::new();
+    let mut lemma_by_id: BTreeMap<&str, &str> = BTreeMap::new();
+    for lexeme in &registry.lexemes {
+        if lexeme.pos != "verb" {
+            continue;
+        }
+        lemma_by_id.insert(&lexeme.id, &lexeme.lemma);
+        if !meta.contains_key(&lexeme.lemma) {
+            let codes = api_metadata::verb_metadata_by_id(&lexeme.id)
+                .map(|metadata| encode_verb_metadata(&metadata))
+                .unwrap_or_default();
+            meta.insert(lexeme.lemma.clone(), codes);
+        }
+    }
+    let mut per_lexeme: BTreeMap<(String, u8), Vec<(u16, String)>> = BTreeMap::new();
+    let mut merged_rows: BTreeMap<(String, u8), Vec<(u16, String)>> = BTreeMap::new();
+    for row in &registry.forms {
+        let Some(lemma) = lemma_by_id.get(row.lexeme_id.as_str()) else {
+            continue;
+        };
+        let Some(cell) = parse_verb_cell(&row.feature) else {
+            return Err(format!("unparsed verb feature {}", row.feature).into());
+        };
+        let code = verb_cell_code(cell);
+        per_lexeme
+            .entry((row.lexeme_id.clone(), code))
+            .or_default()
+            .push((row.rank, row.form.clone()));
+        merged_rows
+            .entry(((*lemma).to_string(), code))
+            .or_default()
+            .push((row.rank, row.form.clone()));
+    }
+    let dedupe = |rows: &mut Vec<(u16, String)>| -> Vec<String> {
+        rows.sort_by_key(|(rank, _)| *rank);
+        let mut texts: Vec<String> = Vec::new();
+        for (_, form) in rows.iter() {
+            if !texts.contains(form) {
+                texts.push(form.clone());
+            }
+        }
+        texts
+    };
+    let mut cells: BTreeMap<(String, u8), Vec<String>> = BTreeMap::new();
+    for (key, mut rows) in merged_rows {
+        cells.insert(key, dedupe(&mut rows));
+    }
+    let mut lexeme_cells = 0usize;
+    let mut merged_divergent_lexeme_cells = 0usize;
+    for ((lexeme_id, code), mut rows) in per_lexeme {
+        lexeme_cells += 1;
+        let lemma = lemma_by_id[lexeme_id.as_str()];
+        let own = dedupe(&mut rows);
+        if cells[&(lemma.to_string(), code)] != own {
+            merged_divergent_lexeme_cells += 1;
+        }
+    }
+    Ok(VerbOracle {
+        meta,
+        cells,
+        lexeme_cells,
+        merged_divergent_lexeme_cells,
+    })
+}
+
+fn write_str_pair_slice(out: &mut String, rows: &[(String, u8)]) {
+    out.push_str("&[");
+    for (index, (stem, code)) in rows.iter().enumerate() {
+        if index > 0 {
+            out.push_str(", ");
+        }
+        let _ = write!(out, "({stem:?}, {code})");
+    }
+    out.push(']');
+}
+
+fn emit_verb_residue(root: &Path) -> Result<(), Box<dyn Error>> {
+    let oracle = load_verb_oracle(root)?;
+    let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
+    for ((lemma, code), expected) in &oracle.cells {
+        let predicted = with_verb_meta_view(&oracle.meta[lemma], |meta| {
+            kernel_verb_variants(lemma, meta, verb_cell_from_code(*code))
+        });
+        if predicted.as_deref() != Some(expected.as_slice()) {
+            residue.push((lemma, *code, expected));
+        }
+    }
+    let mut out = String::new();
+    out.push_str(
+        "// @generated by `cargo xtask rewrite-derivability --emit-residue`. Do not edit.\n\
+         //\n\
+         // VERB_META: (lemma, principal-part metadata) for every verb lemma in\n\
+         // data/extracted, encoded per the facade's `VerbMeta` field code tables\n\
+         // (church-slavonic/src/lib.rs). VERB_RESIDUE: (lemma, verb cell code,\n\
+         // variants) for exactly the attested cells the rule kernel (identity\n\
+         // kernels + this metadata) does not reproduce verbatim. Both slices are\n\
+         // sorted for binary search.\n",
+    );
+    let _ = writeln!(
+        out,
+        "pub static VERB_META: &[(&str, crate::VerbMeta<'static>)] = &[ // {} lemmas",
+        oracle.meta.len()
+    );
+    for (lemma, codes) in &oracle.meta {
+        let _ = write!(
+            out,
+            "    ({lemma:?}, crate::VerbMeta {{ aspect: {}, present: &[",
+            codes.aspect
+        );
+        for (index, (stem, class, first, third, formation)) in codes.present.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            let _ = write!(
+                out,
+                "({stem:?}, {class}, {first:?}, {third:?}, {formation})"
+            );
+        }
+        out.push_str("], imperfect: &[");
+        for (index, (stem, formation, policy)) in codes.imperfect.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            let _ = write!(out, "({stem:?}, {formation}, {policy})");
+        }
+        out.push_str("], aorist: &[");
+        for (index, (stem, singular, formation)) in codes.aorist.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            let _ = write!(out, "({stem:?}, {singular:?}, {formation})");
+        }
+        out.push_str("], imperative: ");
+        write_str_pair_slice(&mut out, &codes.imperative);
+        out.push_str(", l_participle: &[");
+        for (index, stem) in codes.l_participle.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            let _ = write!(out, "{stem:?}");
+        }
+        out.push_str("], present_active_participle: ");
+        write_str_pair_slice(&mut out, &codes.present_active_participle);
+        out.push_str(", present_passive_participle: ");
+        write_str_pair_slice(&mut out, &codes.present_passive_participle);
+        out.push_str(", past_active_participle: ");
+        write_str_pair_slice(&mut out, &codes.past_active_participle);
+        out.push_str(", past_passive_participle: ");
+        write_str_pair_slice(&mut out, &codes.past_passive_participle);
+        out.push_str(" }),\n");
+    }
+    out.push_str("];\n");
+    let _ = writeln!(
+        out,
+        "pub static VERB_RESIDUE: &[(&str, u8, &[&str])] = &[ // {} cells",
+        residue.len()
+    );
+    for (lemma, code, variants) in &residue {
+        let _ = write!(out, "    ({lemma:?}, {code}, &[");
+        for (index, variant) in variants.iter().enumerate() {
+            if index > 0 {
+                out.push_str(", ");
+            }
+            let _ = write!(out, "{variant:?}");
+        }
+        out.push_str("]),\n");
+    }
+    out.push_str("];\n");
+    let path = root.join("crates/church-slavonic/generated/verb_residue.rs");
+    fs::write(&path, &out)?;
+    println!(
+        "wrote {} ({} bytes): {} metadata rows, {} residue cells (of {} merged / {} per-lexeme)",
+        path.display(),
+        out.len(),
+        oracle.meta.len(),
+        residue.len(),
+        oracle.cells.len(),
+        oracle.lexeme_cells,
+    );
+    Ok(())
+}
+
 pub(crate) fn emit_residue(root: &Path) -> Result<(), Box<dyn Error>> {
+    emit_verb_residue(root)?;
     emit_adjective_residue(root)?;
     let oracle = load_noun_oracle(root)?;
     let mut residue: Vec<(&str, u8, &Vec<String>)> = Vec::new();
@@ -458,7 +1010,10 @@ pub(crate) fn emit_residue(root: &Path) -> Result<(), Box<dyn Error>> {
         oracle.meta.len()
     );
     for (lemma, (class, gender, animacy, restriction)) in &oracle.meta {
-        let _ = writeln!(out, "    ({lemma:?}, {class}, {gender}, {animacy}, {restriction}),");
+        let _ = writeln!(
+            out,
+            "    ({lemma:?}, {class}, {gender}, {animacy}, {restriction}),"
+        );
     }
     out.push_str("];\n");
     let _ = writeln!(
@@ -526,7 +1081,10 @@ pub(crate) fn accuracy(
          merged lemma-level list and are served merged)",
         oracle.lexeme_cells, oracle.merged_divergent_lexeme_cells
     );
-    println!("  generated table size: {bytes} bytes ({generated})", generated = generated.display());
+    println!(
+        "  generated table size: {bytes} bytes ({generated})",
+        generated = generated.display()
+    );
     for line in &mismatches {
         println!("  MISMATCH {line}");
     }
@@ -582,6 +1140,94 @@ pub(crate) fn accuracy(
     if adj_matched != adj_total {
         return Err(
             format!("adjective pilot accuracy {adj_matched}/{adj_total}, expected 100%").into(),
+        );
+    }
+
+    let verbs = load_verb_oracle(root)?;
+    let mut verb_total = 0usize;
+    let mut verb_matched = 0usize;
+    let mut verb_rules_cells = 0usize;
+    let mut verb_mismatches: Vec<String> = Vec::new();
+    for ((lemma, code), expected) in &verbs.cells {
+        verb_total += 1;
+        let cell = verb_cell_from_code(*code);
+        let produced = match cell {
+            VerbCell::Finite(finite) => match finite.tense {
+                FiniteTense::Present => {
+                    church_slavonic::present_variants(lemma, finite.person, finite.number)
+                }
+                FiniteTense::Imperfect => {
+                    church_slavonic::imperfect_variants(lemma, finite.person, finite.number)
+                }
+                FiniteTense::Aorist => {
+                    church_slavonic::aorist_variants(lemma, finite.person, finite.number)
+                }
+            },
+            VerbCell::Imperative(imperative) => {
+                church_slavonic::imperative_variants(lemma, imperative.person, imperative.number)
+            }
+            VerbCell::LParticiple(participle) => {
+                church_slavonic::l_participle_variants(lemma, participle.gender, participle.number)
+            }
+            VerbCell::Infinitive => church_slavonic::infinitive_variants(lemma),
+            VerbCell::Supine => church_slavonic::supine_variants(lemma),
+            VerbCell::VerbalNoun => church_slavonic::verbal_noun_variants(lemma),
+            VerbCell::ParticipleCitation(kind) => match kind {
+                ParticipleKind::PresentActive => {
+                    church_slavonic::present_active_participle_variants(lemma)
+                }
+                ParticipleKind::PresentPassive => {
+                    church_slavonic::present_passive_participle_variants(lemma)
+                }
+                ParticipleKind::PastActive => {
+                    church_slavonic::past_active_participle_variants(lemma)
+                }
+                ParticipleKind::PastPassive => {
+                    church_slavonic::past_passive_participle_variants(lemma)
+                }
+            },
+        };
+        // The rules-vs-residue split: a cell is rules-served exactly when the
+        // shared kernel reproduces the stored list (the emitter's criterion).
+        let kernel = with_verb_meta_view(&verbs.meta[lemma], |meta| {
+            kernel_verb_variants(lemma, meta, cell)
+        });
+        if kernel.as_deref() == Some(expected.as_slice()) {
+            verb_rules_cells += 1;
+        }
+        match produced {
+            Ok(variants) if &variants == expected => verb_matched += 1,
+            other => {
+                if verb_mismatches.len() < 20 {
+                    verb_mismatches.push(format!(
+                        "{lemma} cell {code}: stored {expected:?} vs facade {other:?}"
+                    ));
+                }
+            }
+        }
+    }
+    let verb_generated = root.join("crates/church-slavonic/generated/verb_residue.rs");
+    let verb_bytes = fs::metadata(&verb_generated)?.len();
+    println!("rewrite pilot accuracy (verbs, lemma-merged oracle)");
+    println!("  merged cells matched: {verb_matched}/{verb_total}");
+    println!(
+        "  rules-vs-residue split: {verb_rules_cells} cells from the rule kernel          (identity kernels + principal-part metadata), {} from the residue table",
+        verb_total - verb_rules_cells
+    );
+    println!(
+        "  per-lexeme cells covered: {} (of which {} homograph cells differ from the          merged lemma-level list and are served merged)",
+        verbs.lexeme_cells, verbs.merged_divergent_lexeme_cells
+    );
+    println!(
+        "  generated table size: {verb_bytes} bytes ({path})",
+        path = verb_generated.display()
+    );
+    for line in &verb_mismatches {
+        println!("  MISMATCH {line}");
+    }
+    if verb_matched != verb_total {
+        return Err(
+            format!("verb pilot accuracy {verb_matched}/{verb_total}, expected 100%").into(),
         );
     }
     Ok(())

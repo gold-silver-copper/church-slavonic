@@ -41,7 +41,6 @@ pub use church_slavonic_core::grammar::{AdjectiveForm, Animacy, Case, Gender, Nu
 /// this family depend on the old order, so enumeration sites use this constant.
 pub const OCS_ANIMACY_ORDER: [Animacy; 2] = [Animacy::Animate, Animacy::Inanimate];
 
-
 /// The two source-described Old Church Slavonic comparative strategies.
 ///
 /// This is independent of [`AdjectiveForm`]: both an old and a new comparative

@@ -2212,7 +2212,10 @@ fn tens_analyses(
                         numeral_token(reviewed_numeral_variants(
                             CardinalNumeralIdentity::Ten.canonical_lemma(),
                             COMPOUND_CARDINAL_AUTHORITY,
-                            format!("numeral:cardinal:tens:{multiplier}:{}:primary", case.abbrev()),
+                            format!(
+                                "numeral:cardinal:tens:{multiplier}:{}:primary",
+                                case.abbrev()
+                            ),
                             vec![primary_ten],
                         )?),
                     ],
