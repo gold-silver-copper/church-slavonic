@@ -22,8 +22,9 @@
 //! baseline is reported as a projection-coherence REGRESSION (the gate), any
 //! other drift as staleness.
 
-use crate::projection_study::{Projection, RuleCounts, parse_body_rows, project, study_key};
+use crate::projection_study::{parse_body_rows, project, study_key};
 use crate::rewrite_pilot;
+use church_slavonic_orthography::projection::RuleCounts;
 use old_church_slavonic_extractor::extract::load_registry;
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::error::Error;
@@ -142,7 +143,7 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
     lexemes.sort_by(|a, b| a.id.cmp(&b.id));
 
     for lexeme in &lexemes {
-        let Projection::Candidates(cands) = project(&lexeme.lemma, &mut counts) else {
+        let Some(cands) = project(&lexeme.lemma, &mut counts).into_candidates() else {
             continue;
         };
         // Every (candidate key, registered Synodal lexeme) pairing, split by
@@ -333,7 +334,7 @@ fn render(root: &Path) -> Result<Artifacts, Box<dyn Error>> {
             .flatten()
         {
             ocs_cells += 1;
-            if let Projection::Candidates(cands) = project(surface, &mut counts) {
+            if let Some(cands) = project(surface, &mut counts).into_candidates() {
                 if cands.iter().any(|c| evidence_keys.contains(c)) {
                     ocs_matched += 1;
                 }

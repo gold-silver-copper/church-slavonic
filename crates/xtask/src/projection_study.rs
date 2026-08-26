@@ -10,11 +10,14 @@
 //! correspondence rules can relate, and writes `reports/projection-study.md`
 //! plus a per-lexeme `reports/projection-study.tsv` detail table.
 //!
-//! Honesty contract: only the rules declared in [`RULES`] fire; a projection
-//! with several candidates is counted as ambiguous, never silently as a
-//! match; forms the rules cannot handle are counted as unprojectable.
+//! Honesty contract (now enforced by the orthography crate's
+//! `projection` module, where the declared rules moved in merge phase 3):
+//! only the declared rules fire; a projection with several candidates is
+//! counted as ambiguous, never silently as a match; forms the rules cannot
+//! handle are counted as unprojectable.
 
-use church_slavonic_orthography::synodal::normalize_lookup_accentless;
+use church_slavonic_core::Recension;
+use church_slavonic_orthography::projection::{self, CANDIDATE_CAP, Projection, Rule, RuleCounts};
 use old_church_slavonic_extractor::extract::load_registry;
 use std::{
     collections::{BTreeMap, BTreeSet, HashMap, HashSet},
@@ -25,245 +28,29 @@ use std::{
 };
 use unicode_normalization::UnicodeNormalization;
 
-/// A word projected into more candidates than this is counted as
-/// over-ambiguous rather than enumerated (jer branching is exponential).
-const CANDIDATE_CAP: usize = 32;
-
-/// The declared correspondence rules, documented with one example each.
-/// Symmetric folds apply to BOTH sides (they define the accent-blind
-/// comparison space); generative rules apply to the OCS side only.
-const RULES: &[(&str, &str)] = &[
-    (
-        "fold:accent-strip",
-        "acute/grave/kamora/breathing removed on both sides (Синъ ~ сѵ́нъ level); \
-         the orthography crate's normalize_lookup_accentless",
-    ),
-    (
-        "fold:uk",
-        "оу / ѹ / ꙋ / ᲂу all fold to у on both sides: ѹчитель ~ ᲂучи́тель -> учитель",
-    ),
-    (
-        "gen:uk-digraph",
-        "the OCS two-letter uk digraph оу collapses to у in every position \
-         (OCS spells /u/ as оу throughout): рабоу -> рабу, благоую -> благую",
-    ),
-    (
-        "fold:omega",
-        "ѡ folds to о (and ѿ to от) on both sides: рабѡ́мъ ~ рабомъ -> рабом(ъ)",
-    ),
-    (
-        "fold:i-variants",
-        "і, ї, й fold to и on both sides: і҆ере́й -> иереи",
-    ),
-    (
-        "fold:ja",
-        "ꙗ folds to ѧ on both sides (word-initial ja spelling): ꙗ҆зы́къ ~ ѧзыкъ",
-    ),
-    (
-        "fold:izhitsa-kendema",
-        "ѷ folds to ѵ on both sides: мѷ́ро ~ мѵ́ро",
-    ),
-    ("gen:yery", "ꙑ -> ы: рꙑба -> рыба"),
-    ("gen:big-yus", "ѫ -> у or ю (ambiguous): рѫка -> рука"),
-    ("gen:iotated-big-yus", "ѭ -> ю: землѭ -> землю"),
-    ("gen:iotated-small-yus", "ѩ -> ѧ: ѩзꙑкъ -> ѧзыкъ"),
-    ("gen:small-yus", "ѧ -> ѧ (retained): пѧть -> пѧть"),
-    ("gen:iotated-e", "ѥ -> е: моѥ -> мое"),
-    (
-        "gen:jer-final",
-        "word-final ъ/ь kept (Synodal retains them): градъ -> градъ",
-    ),
-    (
-        "gen:jer-medial",
-        "medial ъ -> dropped, о, or kept; medial ь -> dropped, е, or kept \
-         (ambiguous): дьнь -> день / днь; сънъ -> сонъ / снъ",
-    ),
-    (
-        "gen:zelo",
-        "ѕ -> ѕ or з (ambiguous): ѕвѣзда -> ѕвѣзда / звѣзда",
-    ),
-    (
-        "gen:zemlja-variant",
-        "ꙁ -> з, ꙃ -> ѕ/з (archaic letterforms)",
-    ),
-];
-
-/// Applies the symmetric study folds after the orthography crate's
-/// accent-insensitive lookup projection; the result is the comparison key.
+/// The accent-blind comparison key shared by both recensions (the
+/// orthography crate's symmetric study folds).
 pub(crate) fn study_key(value: &str) -> String {
-    let mut output = String::new();
-    for character in normalize_lookup_accentless(value).nfd() {
-        match character {
-            // presentation marks the lookup projection leaves in place
-            '\u{0300}' | '\u{0301}' | '\u{0311}' | '\u{033e}' => {}
-            'ѡ' => output.push('о'),
-            'ѿ' => output.push_str("от"),
-            'ѽ' | 'ѻ' => output.push('о'),
-            'і' | 'ї' | 'й' => output.push('и'),
-            'ꙗ' => output.push('ѧ'),
-            'ѷ' => output.push('ѵ'),
-            'ꙋ' => output.push('у'),
-            other => output.push(other),
-        }
-    }
-    let output: String = output.nfc().collect();
-    // the word-initial uk digraph (оу / ᲂу / ѹ) folds to plain у
-    output
-        .strip_prefix("оу")
-        .map_or(output.clone(), |rest| format!("у{rest}"))
+    projection::comparison_key(value)
 }
 
-/// Comparison key that keeps one accent mark (grave, kamora, and the
-/// precomposed ѐ/ѝ all fold to the acute) for the full-match tier.
+/// The full-match-tier key (one accent kept); see
+/// [`projection::accented_comparison_key`].
 fn accented_key(value: &str, collapse_uk_digraph: bool) -> String {
-    let mut result = String::new();
-    for character in value.nfd() {
-        match character {
-            '\u{0300}' | '\u{0311}' => result.push('\u{0301}'),
-            '\u{0484}' | '\u{0486}' | '\u{033e}' => {}
-            'ѡ' | 'Ѡ' => result.push('о'),
-            'ѿ' | 'Ѿ' => result.push_str("от"),
-            'ѽ' | 'ѻ' | 'Ѻ' | 'Ѽ' => result.push('о'),
-            'є' | 'Є' => result.push('е'),
-            '\u{1c82}' => result.push('о'),
-            'ѹ' | 'Ѹ' => result.push_str("оу"),
-            'ꙋ' | 'Ꙋ' => result.push('у'),
-            'і' | 'І' | 'ї' | 'Ї' | 'й' | 'Й' => result.push('и'),
-            'ꙗ' | 'Ꙗ' => result.push('ѧ'),
-            'ѷ' | 'Ѷ' => result.push('ѵ'),
-            other => result.extend(other.to_lowercase()),
-        }
-    }
-    let mut result: String = result.nfc().collect();
-    if collapse_uk_digraph {
-        // OCS spells /u/ as the оу digraph in every position; the mark, if
-        // any, sits on the у and survives the collapse.
-        result = result.replace("оу", "у");
-    }
-    result
-        .strip_prefix("оу")
-        .map_or_else(|| result.clone(), |rest| format!("у{rest}"))
+    projection::accented_comparison_key(value, collapse_uk_digraph)
 }
 
-#[derive(Default)]
-pub(crate) struct RuleCounts(BTreeMap<&'static str, usize>);
-
-impl RuleCounts {
-    fn fire(&mut self, rule: &'static str) {
-        *self.0.entry(rule).or_default() += 1;
-    }
-}
-
-pub(crate) enum Projection {
-    /// Every candidate spelling the declared rules admit.
-    Candidates(Vec<String>),
-    /// The rules branch past [`CANDIDATE_CAP`].
-    OverAmbiguous,
-    /// The source contains a character no declared rule handles
-    /// (Glagolitic rows, djerv, hyphenated notations).
-    Unprojectable,
-}
-
-/// Projects one OCS surface into its candidate Synodal comparison keys.
+/// Projects one OCS surface into its candidate Synodal comparison keys via
+/// the orthography crate's recension projection module (the study's
+/// implemented direction).
 pub(crate) fn project(surface: &str, counts: &mut RuleCounts) -> Projection {
-    let folded = study_key(surface);
-    let mut candidates = vec![String::new()];
-    let characters: Vec<char> = folded.chars().collect();
-    let mut skip_next = false;
-    for (index, &character) in characters.iter().enumerate() {
-        if skip_next {
-            skip_next = false;
-            continue;
-        }
-        let is_final = index + 1 == characters.len();
-        if character == 'о' && characters.get(index + 1) == Some(&'у') {
-            counts.fire("gen:uk-digraph");
-            skip_next = true;
-            candidates.iter_mut().for_each(|c| c.push('у'));
-            continue;
-        }
-        let options: Vec<&str> = match character {
-            'ꙑ' => {
-                counts.fire("gen:yery");
-                vec!["ы"]
-            }
-            'ѫ' => {
-                counts.fire("gen:big-yus");
-                vec!["у", "ю"]
-            }
-            'ѭ' => {
-                counts.fire("gen:iotated-big-yus");
-                vec!["ю"]
-            }
-            'ѩ' => {
-                counts.fire("gen:iotated-small-yus");
-                vec!["ѧ"]
-            }
-            'ѧ' => {
-                counts.fire("gen:small-yus");
-                vec!["ѧ"]
-            }
-            'ѥ' => {
-                counts.fire("gen:iotated-e");
-                vec!["е"]
-            }
-            'ъ' if is_final => {
-                counts.fire("gen:jer-final");
-                vec!["ъ"]
-            }
-            'ь' if is_final => {
-                counts.fire("gen:jer-final");
-                vec!["ь"]
-            }
-            'ъ' => {
-                counts.fire("gen:jer-medial");
-                vec!["", "о", "ъ"]
-            }
-            'ь' => {
-                counts.fire("gen:jer-medial");
-                vec!["", "е", "ь"]
-            }
-            'ѕ' => {
-                counts.fire("gen:zelo");
-                vec!["ѕ", "з"]
-            }
-            'ꙁ' => {
-                counts.fire("gen:zemlja-variant");
-                vec!["з"]
-            }
-            'ꙃ' => {
-                counts.fire("gen:zemlja-variant");
-                vec!["ѕ", "з"]
-            }
-            other if is_synodal_study_letter(other) => {
-                candidates.iter_mut().for_each(|c| c.push(other));
-                continue;
-            }
-            _ => return Projection::Unprojectable,
-        };
-        if candidates.len() * options.len() > CANDIDATE_CAP {
-            return Projection::OverAmbiguous;
-        }
-        candidates = candidates
-            .iter()
-            .flat_map(|prefix| {
-                options.iter().map(move |option| {
-                    let mut next = prefix.clone();
-                    next.push_str(option);
-                    next
-                })
-            })
-            .collect();
-    }
-    Projection::Candidates(candidates)
-}
-
-/// The letters a candidate Synodal comparison key may contain.
-fn is_synodal_study_letter(character: char) -> bool {
-    matches!(
-        character,
-        'а'..='я' | 'ѣ' | 'ѧ' | 'ѳ' | 'ѵ' | 'ѯ' | 'ѱ' | 'ѕ'
+    projection::project_with_counts(
+        surface,
+        Recension::OldChurchSlavonic,
+        Recension::SynodalRussian,
+        counts,
     )
+    .expect("OCS -> Synodal is the implemented projection direction")
 }
 
 pub(crate) fn parse_body_rows<'a>(
@@ -403,7 +190,10 @@ pub(crate) fn run(root: &Path) -> Result<(), Box<dyn Error>> {
     for lexeme in &registry.lexemes {
         let projection = project(&lexeme.lemma, &mut counts);
         let (candidates, candidate_count, mut match_kind, mut matched_key) = match &projection {
-            Projection::Candidates(candidates) => {
+            Projection::Unambiguous(candidate) => {
+                (vec![candidate.clone()], 1, "none", String::new())
+            }
+            Projection::Ambiguous(candidates) => {
                 (candidates.clone(), candidates.len(), "none", String::new())
             }
             Projection::OverAmbiguous => (Vec::new(), 0, "over-ambiguous", String::new()),
@@ -462,7 +252,8 @@ pub(crate) fn run(root: &Path) -> Result<(), Box<dyn Error>> {
             match project(surface, &mut counts) {
                 Projection::Unprojectable => outcome.cells_unprojectable += 1,
                 Projection::OverAmbiguous => outcome.cells_over_ambiguous += 1,
-                Projection::Candidates(cell_candidates) => {
+                enumerable @ (Projection::Unambiguous(_) | Projection::Ambiguous(_)) => {
+                    let cell_candidates = enumerable.into_candidates().unwrap_or_default();
                     let mut blind_hit = false;
                     for candidate in &cell_candidates {
                         let in_evidence = oracle_types.contains_key(candidate)
@@ -760,11 +551,13 @@ pub(crate) fn run(root: &Path) -> Result<(), Box<dyn Error>> {
     writeln!(md, "\n## 4. Rule activity and ambiguity\n")?;
     writeln!(md, "| rule | description | fired |")?;
     writeln!(md, "|---|---|---:|")?;
-    for (rule, description) in RULES {
-        let fired = counts.0.get(rule).copied();
+    for rule in Rule::ALL {
+        let fired = counts.fired(rule);
         writeln!(
             md,
-            "| {rule} | {description} | {} |",
+            "| {} | {} | {} |",
+            rule.id(),
+            rule.description(),
             fired.map_or_else(|| "(fold: both sides)".to_owned(), |n| n.to_string())
         )?;
     }

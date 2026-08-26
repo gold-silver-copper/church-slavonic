@@ -3,12 +3,16 @@
 //! crate family: [`glagolitic`] carries the Old Church Slavonic
 //! Cyrillic/Glagolitic transliteration engine, [`synodal`] carries the Synodal
 //! liturgical lookup normalization and positional presentation rules, and
-//! [`text`] carries the recension-agnostic primitives both share.
+//! [`text`] carries the recension-agnostic primitives both share, and
+//! [`projection`] carries the cross-recension correspondence rules (the
+//! OCS -> Synodal recension projection promoted from the merge's phase-1
+//! study).
 //!
 //! This crate depends only on `church-slavonic-core` and
 //! `unicode-normalization`; it never depends on either family core. The family
 //! cores re-export from here so their public APIs are unchanged.
 
 pub mod glagolitic;
+pub mod projection;
 pub mod synodal;
 pub mod text;
