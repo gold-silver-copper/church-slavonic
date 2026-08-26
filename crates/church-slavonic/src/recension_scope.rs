@@ -34,7 +34,7 @@ use crate::{AdjectiveForm, Case, Error, Gender, Number, Person, VerbCellKind};
 /// parsed once on first use. The `unified-identity --check` gate holds the
 /// underlying file byte-stable; the deprecation release that publishes
 /// 0.3.0 vendors it into the crate package (docs/UNIFIED_FACADE.md §3).
-const IDENTITY_TSV: &str = include_str!("../../../data/unified/identity.tsv");
+const IDENTITY_TSV: &str = include_str!("../data/identity.tsv");
 
 /// The shared lexeme-identity registry the facade ships: abstract identity
 /// keys with both recensions' citation surfaces and native handles.

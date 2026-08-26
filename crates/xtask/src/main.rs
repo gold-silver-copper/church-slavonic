@@ -273,15 +273,28 @@ pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
 /// tables (a published crate cannot include files outside its root); the
 /// canonical copies stay in data/ocs and must remain byte-identical.
 fn check_vendored_source_tables(root: &Path) -> Result<(), Box<dyn Error>> {
-    for name in [
-        "polivanova_regular_nouns.tsv",
-        "polivanova_regular_verbs.tsv",
+    for (canonical_dir, vendored_dir, name) in [
+        (
+            "data/ocs",
+            "crates/old-church-slavonic-core/data",
+            "polivanova_regular_nouns.tsv",
+        ),
+        (
+            "data/ocs",
+            "crates/old-church-slavonic-core/data",
+            "polivanova_regular_verbs.tsv",
+        ),
+        (
+            "data/unified",
+            "crates/church-slavonic/data",
+            "identity.tsv",
+        ),
     ] {
-        let canonical = fs::read(root.join("data/ocs").join(name))?;
-        let vendored = fs::read(root.join("crates/old-church-slavonic-core/data").join(name))?;
+        let canonical = fs::read(root.join(canonical_dir).join(name))?;
+        let vendored = fs::read(root.join(vendored_dir).join(name))?;
         if canonical != vendored {
             return Err(format!(
-                "vendored {name} diverges from data/ocs; re-copy the canonical file"
+                "vendored {name} diverges from {canonical_dir}; re-copy the canonical file"
             )
             .into());
         }
