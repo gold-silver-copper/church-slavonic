@@ -225,16 +225,18 @@ fn perfect_pluperfect_and_future_anterior_cover_every_source_subtype() {
     )
     .expect("third-singular copula ellipsis");
     assert_eq!(omitted.primary_text(), "писалъ");
-    assert!(perfect_with_formation(
-        "писати",
-        Person::First,
-        Number::Singular,
-        Gender::Masculine,
-        PerfectFormation::OmittedThirdSingularCopula,
-        PhraseOrder::PredicateFirst,
-        Inflector::default(),
-    )
-    .is_err());
+    assert!(
+        perfect_with_formation(
+            "писати",
+            Person::First,
+            Number::Singular,
+            Gender::Masculine,
+            PerfectFormation::OmittedThirdSingularCopula,
+            PhraseOrder::PredicateFirst,
+            Inflector::default(),
+        )
+        .is_err()
+    );
     shared_copula_perfect(
         "писати",
         "нести",
@@ -326,13 +328,15 @@ fn conditional_and_optative_cover_every_source_subtype() {
         Inflector::default(),
     )
     .expect("подобаше with optional бы");
-    assert!(modal_conditional_infinitive(
-        ModalConditionalAuxiliary::Moshchi,
-        "писати",
-        true,
-        Inflector::default(),
-    )
-    .is_err());
+    assert!(
+        modal_conditional_infinitive(
+            ModalConditionalAuxiliary::Moshchi,
+            "писати",
+            true,
+            Inflector::default(),
+        )
+        .is_err()
+    );
     modal_conditional_passive_infinitive(
         ModalConditionalAuxiliary::Moshchi,
         "нести",
@@ -430,20 +434,22 @@ fn periphrastic_ellipsis_and_composite_participles_are_closed_and_checked() {
         Inflector::default(),
     )
     .expect("пребывати with past-active participle");
-    assert!(semi_auxiliary_periphrasis_from_forms(
-        PeriphrasticSemiAuxiliary::Prestati,
-        supplied_auxiliary,
-        "нести",
-        predicative_participle(
-            ParticipleTense::Past,
-            ParticipleVoice::Active,
-            Number::Singular,
-            Gender::Masculine,
-        ),
-        PhraseOrder::AuxiliaryFirst,
-        Inflector::default(),
-    )
-    .is_err());
+    assert!(
+        semi_auxiliary_periphrasis_from_forms(
+            PeriphrasticSemiAuxiliary::Prestati,
+            supplied_auxiliary,
+            "нести",
+            predicative_participle(
+                ParticipleTense::Past,
+                ParticipleVoice::Active,
+                Number::Singular,
+                Gender::Masculine,
+            ),
+            PhraseOrder::AuxiliaryFirst,
+            Inflector::default(),
+        )
+        .is_err()
+    );
 
     let predicate = Verb::resolve("нести")
         .expect("verb")
@@ -622,16 +628,18 @@ fn passive_table_covers_all_seventeen_formations_orders_and_agent_government() {
         Number::Singular,
         Gender::Masculine,
     );
-    assert!(analytic_passive_formation(
-        "нести",
-        wrong_voice,
-        PassiveFormation::Perfect,
-        Person::Third,
-        Number::Singular,
-        PhraseOrder::PredicateFirst,
-        Inflector::default(),
-    )
-    .is_err());
+    assert!(
+        analytic_passive_formation(
+            "нести",
+            wrong_voice,
+            PassiveFormation::Perfect,
+            Person::Third,
+            Number::Singular,
+            PhraseOrder::PredicateFirst,
+            Inflector::default(),
+        )
+        .is_err()
+    );
     let wrong_form = ParticipleCell {
         agreement: AdjectiveCell {
             form: AdjectiveForm::Long,
@@ -650,16 +658,18 @@ fn passive_table_covers_all_seventeen_formations_orders_and_agent_government() {
             Gender::Masculine,
         )
     };
-    assert!(analytic_passive_formation(
-        "нести",
-        wrong_form,
-        PassiveFormation::Perfect,
-        Person::Third,
-        Number::Singular,
-        PhraseOrder::PredicateFirst,
-        Inflector::default(),
-    )
-    .is_err());
+    assert!(
+        analytic_passive_formation(
+            "нести",
+            wrong_form,
+            PassiveFormation::Perfect,
+            Person::Third,
+            Number::Singular,
+            PhraseOrder::PredicateFirst,
+            Inflector::default(),
+        )
+        .is_err()
+    );
 }
 
 #[test]

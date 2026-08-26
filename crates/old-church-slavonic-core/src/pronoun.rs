@@ -216,7 +216,11 @@ pub fn compose_pronominal_family_tokens(
         .transpose()?;
     let prefix_is_separate = interposed.is_some();
     let bound_postpositive = spec.postpositive.filter(|particle| particle.is_bound());
-    let pronoun_prefix = if prefix_is_separate { None } else { spec.prefix };
+    let pronoun_prefix = if prefix_is_separate {
+        None
+    } else {
+        spec.prefix
+    };
     let mut pronoun_variants: Vec<String> = Vec::new();
     for text in base_texts {
         let composed = compose_pronominal_family_text(

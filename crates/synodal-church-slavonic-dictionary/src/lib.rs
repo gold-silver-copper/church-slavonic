@@ -31,7 +31,6 @@ pub(crate) struct RawSemanticAlignment(pub [&'static str; 6]);
 
 include!("../generated/registry.rs");
 
-
 mod analysis;
 mod cells;
 mod entry;

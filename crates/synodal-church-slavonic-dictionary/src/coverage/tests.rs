@@ -459,8 +459,8 @@ fn fused_cardinal_words_are_typed_mark_sensitive_and_top_k_covered() {
     assert_eq!(
         indexed_values,
         BTreeSet::from([
-            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300,
-            400, 500, 600, 700, 800, 900,
+            11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400,
+            500, 600, 700, 800, 900,
         ])
     );
     let options = CheckTextOptions {
@@ -703,8 +703,7 @@ fn check_text_reports_malformed_and_incompatible_marks() {
     );
     assert_eq!(report.summary.unresolved_tokens, 2);
     assert!(report.tokens.iter().all(|token| {
-        token.gap.as_ref().map(|gap| gap.kind)
-            == Some(GapKind::MissingAccentOrOrthographicMetadata)
+        token.gap.as_ref().map(|gap| gap.kind) == Some(GapKind::MissingAccentOrOrthographicMetadata)
     }));
 }
 
@@ -769,8 +768,10 @@ fn reflexive_surfaces_are_derived_from_registered_active_verbs_by_alypy_73() {
     let printed = analyzer
         .analyze_profile("да́стсѧ", OrthographyProfile::SynodalLiturgical)
         .expect("analysis");
-    assert!(printed.iter().any(|analysis| analysis.reflexive
-        && matches!(analysis.cell, Some(GrammarCell::FiniteVerb(_)))));
+    assert!(
+        printed.iter().any(|analysis| analysis.reflexive
+            && matches!(analysis.cell, Some(GrammarCell::FiniteVerb(_))))
+    );
     // A non-verbal host never yields a reflexive reading.
     assert!(analyzer.analyze("рабсѧ").expect("analysis").is_empty());
     assert!(analyzer.analyze("рабъсѧ").expect("analysis").is_empty());

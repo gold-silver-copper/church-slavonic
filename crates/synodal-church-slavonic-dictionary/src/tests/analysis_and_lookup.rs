@@ -329,9 +329,8 @@ fn vosled_preposition_is_exact_mark_sensitive_and_distinct_from_sled_noun() {
 
     let noun = analyze("слѣ́дъ").expect("valid noun control");
     assert!(
-        noun.iter().any(|analysis| {
-            analysis.lexeme.id().as_str() == "synodal:noun:wikt-c96e00520110"
-        })
+        noun.iter()
+            .any(|analysis| { analysis.lexeme.id().as_str() == "synodal:noun:wikt-c96e00520110" })
     );
     assert!(
         noun.iter()
@@ -720,8 +719,7 @@ fn no_yat_vsem_and_titlecase_month_abbreviations_remain_exactly_scoped() {
         })
     )));
 
-    for (surface, case) in [("Мцⷭ҇а", Case::Genitive), ("Мцⷭ҇ъ", Case::Nominative)]
-    {
+    for (surface, case) in [("Мцⷭ҇а", Case::Genitive), ("Мцⷭ҇ъ", Case::Nominative)] {
         assert!(
             analyze(surface)
                 .expect("reviewed titlecase abbreviation")
@@ -821,9 +819,8 @@ fn zlyi_is_productive_mark_sensitive_and_preserves_zlo_homonymy() {
 
     let noun = analyze("ѕло̀").expect("valid noun control");
     assert!(
-        noun.iter().any(|analysis| {
-            analysis.lexeme.id().as_str() == "synodal:noun:v11-112ca1130b42"
-        })
+        noun.iter()
+            .any(|analysis| { analysis.lexeme.id().as_str() == "synodal:noun:v11-112ca1130b42" })
     );
     assert!(noun.iter().any(|analysis| {
         analysis.lexeme.id().as_str() == "synodal:adjective:zlyi"

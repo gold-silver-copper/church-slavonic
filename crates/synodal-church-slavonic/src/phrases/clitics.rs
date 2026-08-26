@@ -1,11 +1,11 @@
 use std::collections::BTreeSet;
 
 use synodal_church_slavonic_core::{
-    decline_pronoun, AnalyticConstruction, AuthorityRole, EncliticParticle, EpistemicRole, Error,
-    Evidence, EvidenceId, EvidenceKind, FormSet, GrammarCell, LexemeId, NegativePronounBase,
+    AnalyticConstruction, AuthorityRole, EncliticParticle, EpistemicRole, Error, Evidence,
+    EvidenceId, EvidenceKind, FormSet, GrammarCell, LexemeId, NegativePronounBase,
     OrthographyProfile, PhraseRole, PhraseToken, PronounCell, PronounCliticProsody,
     PronounFormSelection, PronounPostpositive, RealizedPhrase, Recension, Result, RuleId, SourceId,
-    TraceStep,
+    TraceStep, decline_pronoun,
 };
 use unicode_normalization::UnicodeNormalization;
 

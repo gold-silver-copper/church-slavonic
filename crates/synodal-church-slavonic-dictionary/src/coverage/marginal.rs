@@ -170,7 +170,10 @@ pub(crate) fn unique_surface_frequency(candidate: &RecoveryCandidateBatch) -> us
     surface_membership(candidate).values().sum()
 }
 
-pub(crate) fn marginal_tokens(candidate: &RecoveryCandidateBatch, covered: &BTreeMap<String, usize>) -> usize {
+pub(crate) fn marginal_tokens(
+    candidate: &RecoveryCandidateBatch,
+    covered: &BTreeMap<String, usize>,
+) -> usize {
     surface_membership(candidate)
         .iter()
         .map(|(key, frequency)| frequency.saturating_sub(covered.get(key).copied().unwrap_or(0)))

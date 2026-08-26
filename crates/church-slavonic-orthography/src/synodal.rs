@@ -170,10 +170,7 @@ pub enum PositionalOperation {
 /// because reviewed source tables do not realize the generalization uniformly.
 /// `nominal` is the requested cell's number and case, or `None` for a
 /// non-nominal cell (which is always preserved).
-pub fn apply_wide_plural_ending(
-    nominal: Option<(Number, Case)>,
-    expanded: &str,
-) -> Result<String> {
+pub fn apply_wide_plural_ending(nominal: Option<(Number, Case)>, expanded: &str) -> Result<String> {
     if contains_prosodic_mark(expanded) {
         return Err(Error::ContradictoryMetadata {
             reason: "grammatical positional presentation requires an unaccented expanded form"
@@ -226,8 +223,6 @@ pub fn decimal_i_before_vowel(value: &str) -> Result<String> {
     canonicalize(output)
 }
 
-
-
 pub fn replace_occurrence(
     value: &str,
     replacement: PositionalReplacement,
@@ -257,8 +252,6 @@ pub fn replace_occurrence(
     canonicalize(replaced)
 }
 
-
-
 /// Whether a spelling carries any Synodal prosodic mark (accents, oxia,
 /// varia, kamora, or breathing).
 pub fn contains_prosodic_mark(value: &str) -> bool {
@@ -269,8 +262,6 @@ pub fn contains_prosodic_mark(value: &str) -> bool {
         )
     })
 }
-
-
 
 /// The Synodal vowel-letter repertoire, case-insensitively.
 pub fn is_synodal_vowel(character: char) -> bool {
@@ -299,8 +290,6 @@ pub fn is_synodal_vowel(character: char) -> bool {
             | 'ѵ'
     )
 }
-
-
 
 /// Applies one reviewed positional-letter decision and reports the change.
 /// This is deliberately explicit: lexical semantics decide exceptions such as
@@ -343,7 +332,6 @@ pub fn apply_initial_presentation(
         }],
     })
 }
-
 
 /// The Cyrillic letter uk `ѹ` (U+0479, with its capital U+0478) is a
 /// single-codepoint presentation of the letter pair `оу`, exactly as the
@@ -429,7 +417,6 @@ pub fn normalize_lookup_accentless(value: &str) -> String {
         .nfc()
         .collect()
 }
-
 
 /// Validates one Synodal spelling: Cyrillic repertoire only, permitted
 /// combining marks in canonical order, one accent per cluster, breathing

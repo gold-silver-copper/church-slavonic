@@ -352,8 +352,7 @@ fn reviewed_v21_soft_ie_nouns_preserve_exact_and_productive_reverse_cells() {
                 && analysis.source == AnalysisSource::ExactSynodalAttestation
         }));
 
-        let productive =
-            analyze(productive_surface).expect("reviewed productive soft -їе form");
+        let productive = analyze(productive_surface).expect("reviewed productive soft -їе form");
         assert!(productive.iter().any(|analysis| {
             analysis.lexeme.id().as_str() == lexeme_id
                 && analysis.cell
@@ -826,9 +825,9 @@ fn analyzer_keeps_closed_class_variants_exact_and_collision_free() {
     );
     let yuzhe = analyze("юже").expect("orthographically valid negative control");
     assert!(
-        yuzhe.iter().all(|analysis| {
-            analysis.lexeme.id().as_str() != "synodal:noun:wikt-f330683bc04d"
-        })
+        yuzhe
+            .iter()
+            .all(|analysis| { analysis.lexeme.id().as_str() != "synodal:noun:wikt-f330683bc04d" })
     );
 }
 
@@ -989,8 +988,8 @@ fn family_supported_systems_cover_productive_and_exact_capabilities() {
         ("synodal:verb:byti", "future"),
         ("synodal:verb:wikt-78da2d05497d", "aorist"),
     ] {
-        let family = show_family_by_id(&FamilyId::for_lexeme(&LexemeId::from(id)))
-            .expect("reviewed family");
+        let family =
+            show_family_by_id(&FamilyId::for_lexeme(&LexemeId::from(id))).expect("reviewed family");
         assert!(
             family
                 .supported_systems
@@ -1047,8 +1046,8 @@ fn complete_possessive_tables_are_truthfully_classed_and_productive() {
     )));
 
     let bozhii_id = LexemeId::from("synodal:adjective:bozhii");
-    let bozhii_cells = analysis_cells_by_id(&bozhii_id, Inflector::default())
-        .expect("typed -їй possessive cells");
+    let bozhii_cells =
+        analysis_cells_by_id(&bozhii_id, Inflector::default()).expect("typed -їй possessive cells");
     assert!(bozhii_cells.iter().any(|cell| matches!(
         cell,
         GrammarCell::Adjective(AdjectiveCell {

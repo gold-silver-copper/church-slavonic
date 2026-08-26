@@ -5,8 +5,8 @@ use old_church_slavonic_core::{
     AdjectiveCell, AdjectiveForm, AnalyticConstruction, Case, ConditionalAuxiliary, CopulaSeries,
     DirectToTreatment, FiniteTense, FormAnalysis, FormSet, FormSource, FormVariant,
     FutureInfinitiveAuxiliary, FutureReferenceTense, Gender, ImpersonalVerbIdentity,
-    InflectionError, InterrogativePronounIdentity, MetadataEvidence, MetadataProvenance,
-    Number, ParticipleKind, PassiveAuxiliary, Person, PhraseOrder, PhraseRole, PhraseToken,
+    InflectionError, InterrogativePronounIdentity, MetadataEvidence, MetadataProvenance, Number,
+    ParticipleKind, PassiveAuxiliary, Person, PhraseOrder, PhraseRole, PhraseToken,
     PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive, PronominalPrefix,
     RealizedPhrase, RuleId, RuleStep,
 };

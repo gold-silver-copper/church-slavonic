@@ -389,7 +389,12 @@ impl ProbableFamilyAggregate {
         }
     }
 
-    pub(crate) fn observe(&mut self, analysis: &TextTokenAnalysis, gap: &GapOccurrence, document: &str) {
+    pub(crate) fn observe(
+        &mut self,
+        analysis: &TextTokenAnalysis,
+        gap: &GapOccurrence,
+        document: &str,
+    ) {
         self.frequency += 1;
         if !is_top_k_analyzed(analysis) {
             self.top_k_uncovered_frequency += 1;
@@ -583,7 +588,12 @@ impl CoverageFrontierAggregate {
         }
     }
 
-    pub(crate) fn observe(&mut self, passage: &CoveragePassage, document: &str, analysis: &TextTokenAnalysis) {
+    pub(crate) fn observe(
+        &mut self,
+        passage: &CoveragePassage,
+        document: &str,
+        analysis: &TextTokenAnalysis,
+    ) {
         self.item.token_frequency += 1;
         self.documents.insert(document.into());
         self.corpora.insert(passage.corpus.clone());
@@ -651,7 +661,11 @@ pub(crate) struct GapAggregate {
 }
 
 impl GapAggregate {
-    pub(crate) fn new(passage: &CoveragePassage, analysis: &TextTokenAnalysis, gap: &GapOccurrence) -> Self {
+    pub(crate) fn new(
+        passage: &CoveragePassage,
+        analysis: &TextTokenAnalysis,
+        gap: &GapOccurrence,
+    ) -> Self {
         Self {
             record: GapRecord {
                 kind: gap.kind,

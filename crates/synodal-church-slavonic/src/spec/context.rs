@@ -2,8 +2,8 @@ use std::collections::BTreeSet;
 
 use synodal_church_slavonic_core::{
     AccentMark, AccentParadigm, AccentScope, AuthorityRole, EpistemicRole, Error, Evidence,
-    EvidenceId, EvidenceKind, GrammarCell, PositionalParadigm, PositionalRule, Recension,
-    Result, SourceId,
+    EvidenceId, EvidenceKind, GrammarCell, PositionalParadigm, PositionalRule, Recension, Result,
+    SourceId,
 };
 
 /// Provenance attached to caller-supplied lexical metadata. It identifies a

@@ -20,7 +20,9 @@ pub(crate) use unicode_normalization::char::is_combining_mark;
 
 #[cfg(test)]
 pub(crate) use crate::candidate_cells;
-pub(crate) use crate::{Analysis, AnalysisSource, FamilyId, analysis_cells_for_lexeme, analysis_source};
+pub(crate) use crate::{
+    Analysis, AnalysisSource, FamilyId, analysis_cells_for_lexeme, analysis_source,
+};
 
 mod analyzer;
 mod classify;

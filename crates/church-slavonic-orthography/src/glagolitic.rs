@@ -1017,9 +1017,6 @@ fn transliterated(
 mod tests {
     use super::*;
 
-
-
-
     #[test]
     fn lemma_is_normalized_single_script_and_letters_only() {
         let lemma = Lemma::parse("И\u{306}").expect("decomposed Cyrillic lemma");

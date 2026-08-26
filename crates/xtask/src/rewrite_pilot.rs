@@ -2184,10 +2184,12 @@ fn participle_differential() -> Result<(), Box<dyn Error>> {
                             total += 1;
                             let old = handle.as_ref().and_then(|participle| {
                                 match form {
-                                    AdjectiveForm::Long => participle
-                                        .long(case, number, gender, Animacy::Inanimate),
-                                    AdjectiveForm::Short => participle
-                                        .short(case, number, gender, Animacy::Inanimate),
+                                    AdjectiveForm::Long => {
+                                        participle.long(case, number, gender, Animacy::Inanimate)
+                                    }
+                                    AdjectiveForm::Short => {
+                                        participle.short(case, number, gender, Animacy::Inanimate)
+                                    }
                                 }
                                 .ok()
                                 .map(|forms| forms.primary_text().to_string())
@@ -2302,9 +2304,9 @@ fn phrase_differential() -> Result<(), Box<dyn Error>> {
     use old_church_slavonic::phrases as old_phrases;
     use old_church_slavonic_core::{
         ConditionalAuxiliary, CopulaSeries, DirectToTreatment, FutureInfinitiveAuxiliary,
-        FutureReferenceTense, ImpersonalVerbIdentity, InterrogativePronounIdentity, PhraseOrder,
-        PassiveAuxiliary, PluperfectAuxiliary, PronominalFamilySpec, PronominalPostpositive,
-        PronominalPrefix,
+        FutureReferenceTense, ImpersonalVerbIdentity, InterrogativePronounIdentity,
+        PassiveAuxiliary, PhraseOrder, PluperfectAuxiliary, PronominalFamilySpec,
+        PronominalPostpositive, PronominalPrefix,
     };
 
     const VERBS: [&str; 3] = ["благословити", "любити", "творити"];
@@ -2313,24 +2315,22 @@ fn phrase_differential() -> Result<(), Box<dyn Error>> {
 
     let mut counts: BTreeMap<&'static str, (usize, usize)> = BTreeMap::new();
     let mut mismatches: Vec<String> = Vec::new();
-    let mut check = |construction: &'static str,
-                     detail: String,
-                     new: Option<String>,
-                     old: Option<String>| {
-        let entry = counts.entry(construction).or_insert((0, 0));
-        entry.1 += 1;
-        match (&new, &old) {
-            (Some(new_text), Some(old_text)) if new_text == old_text => entry.0 += 1,
-            (None, None) => entry.0 += 1,
-            _ => {
-                if mismatches.len() < 30 {
-                    mismatches.push(format!(
-                        "{construction} {detail}: new {new:?} vs old {old:?}"
-                    ));
+    let mut check =
+        |construction: &'static str, detail: String, new: Option<String>, old: Option<String>| {
+            let entry = counts.entry(construction).or_insert((0, 0));
+            entry.1 += 1;
+            match (&new, &old) {
+                (Some(new_text), Some(old_text)) if new_text == old_text => entry.0 += 1,
+                (None, None) => entry.0 += 1,
+                _ => {
+                    if mismatches.len() < 30 {
+                        mismatches.push(format!(
+                            "{construction} {detail}: new {new:?} vs old {old:?}"
+                        ));
+                    }
                 }
             }
-        }
-    };
+        };
 
     // §316 derived pronominal families: every prefix x postpositive x
     // direct-то treatment x interposed-preposition choice over both
@@ -2409,10 +2409,9 @@ fn phrase_differential() -> Result<(), Box<dyn Error>> {
                         )
                         .ok()
                         .map(|forms| join(forms.primary_text().to_string()));
-                        let new_long = new_phrases::absolute_superlative(
-                            lemma, case, number, gender, order,
-                        )
-                        .ok();
+                        let new_long =
+                            new_phrases::absolute_superlative(lemma, case, number, gender, order)
+                                .ok();
                         check(
                             "absolute_superlative",
                             format!("{lemma} {case:?} {number:?} {gender:?} {order:?}"),
@@ -2456,9 +2455,7 @@ fn phrase_differential() -> Result<(), Box<dyn Error>> {
                     CopulaSeries::FutureBud => new_phrases::copula_future(person, number),
                     CopulaSeries::ImperfectBe => new_phrases::copula_imperfect(person, number),
                     CopulaSeries::AoristBe => new_phrases::copula_aorist(person, number),
-                    CopulaSeries::ConditionalBi => {
-                        new_phrases::copula_conditional(person, number)
-                    }
+                    CopulaSeries::ConditionalBi => new_phrases::copula_conditional(person, number),
                     CopulaSeries::ConditionalAoristBy => {
                         new_phrases::copula_conditional_aorist(person, number)
                     }
@@ -2535,21 +2532,18 @@ fn phrase_differential() -> Result<(), Box<dyn Error>> {
                         let old = old_phrases::perfect(lemma, person, number, gender, order)
                             .ok()
                             .map(|phrase| phrase.primary_text());
-                        let new =
-                            new_phrases::perfect(lemma, person, number, gender, order).ok();
+                        let new = new_phrases::perfect(lemma, person, number, gender, order).ok();
                         check(
                             "perfect",
                             format!("{lemma} {person:?} {number:?} {gender:?} {order:?}"),
                             new,
                             old,
                         );
-                        let old =
-                            old_phrases::future_perfect(lemma, person, number, gender, order)
-                                .ok()
-                                .map(|phrase| phrase.primary_text());
+                        let old = old_phrases::future_perfect(lemma, person, number, gender, order)
+                            .ok()
+                            .map(|phrase| phrase.primary_text());
                         let new =
-                            new_phrases::future_perfect(lemma, person, number, gender, order)
-                                .ok();
+                            new_phrases::future_perfect(lemma, person, number, gender, order).ok();
                         check(
                             "future_perfect",
                             format!("{lemma} {person:?} {number:?} {gender:?} {order:?}"),
@@ -2983,8 +2977,7 @@ fn paradigm_consistency(
                     })
                     .collect();
                 participle_cells += expected.len();
-                if church_slavonic::participle_paradigm(lemma, kind, form).as_ref()
-                    != Ok(&expected)
+                if church_slavonic::participle_paradigm(lemma, kind, form).as_ref() != Ok(&expected)
                     && mismatches.len() < 20
                 {
                     mismatches.push(format!(

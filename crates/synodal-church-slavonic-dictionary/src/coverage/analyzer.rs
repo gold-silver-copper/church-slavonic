@@ -575,7 +575,12 @@ impl Analyzer {
         }
     }
 
-    pub(crate) fn index_cell(&mut self, lexeme: &LexemeSummary, cell: GrammarCell, inflector: Inflector) {
+    pub(crate) fn index_cell(
+        &mut self,
+        lexeme: &LexemeSummary,
+        cell: GrammarCell,
+        inflector: Inflector,
+    ) {
         let Ok(forms) = inflector.form_by_id(lexeme.id(), cell) else {
             return;
         };

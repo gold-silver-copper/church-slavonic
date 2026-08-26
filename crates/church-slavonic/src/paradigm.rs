@@ -17,6 +17,7 @@
 //! (`cargo xtask rewrite-pilot-accuracy`) proves this cell by cell over the
 //! full attested inventory.
 
+use crate::ParticipleKind;
 use crate::{
     AdjectiveForm, Case, Error, Gender, Number, Person, adjective_form_variants, aorist_variants,
     closed_meta, closed_pos_code, closed_variants, imperative_variants, imperfect_variants,
@@ -24,7 +25,6 @@ use crate::{
     past_passive_participle_variants, present_active_participle_variants,
     present_passive_participle_variants, present_variants, supine_variants, verbal_noun_variants,
 };
-use crate::ParticipleKind;
 use old_church_slavonic_core::PartOfSpeech;
 
 /// One lexeme's enumerated noun paradigm: every servable (case, number)
@@ -180,10 +180,7 @@ pub fn noun_paradigm(lemma: &str) -> Result<NounParadigm, Error> {
 /// the cells [`adjective_variants`](crate::adjective_variants) (long) or
 /// [`short_adjective_variants`](crate::short_adjective_variants) (short)
 /// serve. A long-only lexeme simply has no short cells.
-pub fn adjective_paradigm(
-    lemma: &str,
-    form: AdjectiveForm,
-) -> Result<AdjectiveParadigm, Error> {
+pub fn adjective_paradigm(lemma: &str, form: AdjectiveForm) -> Result<AdjectiveParadigm, Error> {
     let candidates = case_number_grid().flat_map(|(case, number)| {
         Gender::ALL
             .into_iter()
@@ -236,7 +233,9 @@ pub fn verb_paradigm(lemma: &str) -> Result<VerbParadigm, Error> {
         VerbCellKind::Imperfect { person, number } => imperfect_variants(lemma, person, number),
         VerbCellKind::Aorist { person, number } => aorist_variants(lemma, person, number),
         VerbCellKind::Imperative { person, number } => imperative_variants(lemma, person, number),
-        VerbCellKind::LParticiple { gender, number } => l_participle_variants(lemma, gender, number),
+        VerbCellKind::LParticiple { gender, number } => {
+            l_participle_variants(lemma, gender, number)
+        }
         VerbCellKind::Infinitive => infinitive_variants(lemma),
         VerbCellKind::Supine => supine_variants(lemma),
         VerbCellKind::VerbalNoun => verbal_noun_variants(lemma),
@@ -254,10 +253,7 @@ pub fn verb_paradigm(lemma: &str) -> Result<VerbParadigm, Error> {
 /// data draws no gender distinction there), and a lemma attesting only the
 /// shared person-indexed personal table has no lemma-keyed paradigm of its
 /// own (empty listing; its cells are served by [`pronoun`](crate::pronoun)).
-fn closed_paradigm(
-    lemma: &str,
-    part_of_speech: PartOfSpeech,
-) -> Result<ClosedParadigm, Error> {
+fn closed_paradigm(lemma: &str, part_of_speech: PartOfSpeech) -> Result<ClosedParadigm, Error> {
     let (_, shape) = closed_meta(lemma)
         .filter(|(pos, _)| *pos == closed_pos_code(part_of_speech))
         .ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
@@ -292,26 +288,20 @@ fn closed_paradigm(
 /// third tuple field is `Some(gender)` for gender-indexed lexemes and `None`
 /// for bare-shaped ones (where the single-cell function ignores its gender
 /// parameter). See [`closed_paradigm`]'s shape rules in the source.
-pub fn pronoun_form_paradigm(
-    lemma: &str,
-) -> Result<ClosedParadigm, Error> {
+pub fn pronoun_form_paradigm(lemma: &str) -> Result<ClosedParadigm, Error> {
     closed_paradigm(lemma, PartOfSpeech::Pronoun)
 }
 
 /// Every numeral cell the lexeme actually supports — exactly the cells
 /// [`numeral_form_variants`](crate::numeral_form_variants) serves. Gendered
 /// for `прьвъ` (`Some(gender)`), bare (`None`) for the cardinals.
-pub fn numeral_form_paradigm(
-    lemma: &str,
-) -> Result<ClosedParadigm, Error> {
+pub fn numeral_form_paradigm(lemma: &str) -> Result<ClosedParadigm, Error> {
     closed_paradigm(lemma, PartOfSpeech::Numeral)
 }
 
 /// Every determiner cell the lexeme actually supports — exactly the cells
 /// [`determiner_form_variants`](crate::determiner_form_variants) serves.
-pub fn determiner_form_paradigm(
-    lemma: &str,
-) -> Result<ClosedParadigm, Error> {
+pub fn determiner_form_paradigm(lemma: &str) -> Result<ClosedParadigm, Error> {
     closed_paradigm(lemma, PartOfSpeech::Determiner)
 }
 
@@ -349,14 +339,21 @@ mod tests {
         // simply missing from the listing, not an error.
         let paradigm = noun_paradigm("врата").expect("known lemma");
         assert_eq!(paradigm.len(), 7, "{paradigm:?}");
-        assert!(paradigm.iter().all(|(_, number, _)| *number == Number::Plural));
+        assert!(
+            paradigm
+                .iter()
+                .all(|(_, number, _)| *number == Number::Plural)
+        );
         // гладъ is a masculine of an animacy-contrasting class with no
         // animacy fact: the kernel cannot commit to the accusative, and only
         // the attested accusative singular ships in the residue, so the
         // unattested accusative dual/plural are absent from the paradigm.
         let paradigm = noun_paradigm("гладъ").expect("known lemma");
         assert_eq!(paradigm.len(), 19, "{paradigm:?}");
-        for (case, number) in [(Case::Accusative, Number::Dual), (Case::Accusative, Number::Plural)] {
+        for (case, number) in [
+            (Case::Accusative, Number::Dual),
+            (Case::Accusative, Number::Plural),
+        ] {
             assert!(!paradigm.iter().any(|(c, n, _)| (*c, *n) == (case, number)));
         }
         for (case, number, variants) in &paradigm {
@@ -455,11 +452,19 @@ mod tests {
         // Gendered demonstrative: cells carry Some(gender).
         let demonstrative = pronoun_form_paradigm("онъ").expect("known lemma");
         assert!(!demonstrative.is_empty());
-        assert!(demonstrative.iter().all(|(_, _, gender, _)| gender.is_some()));
+        assert!(
+            demonstrative
+                .iter()
+                .all(|(_, _, gender, _)| gender.is_some())
+        );
         // Bare-shaped interrogative: gender dimension absent.
         let interrogative = pronoun_form_paradigm("къто").expect("known lemma");
         assert!(!interrogative.is_empty());
-        assert!(interrogative.iter().all(|(_, _, gender, _)| gender.is_none()));
+        assert!(
+            interrogative
+                .iter()
+                .all(|(_, _, gender, _)| gender.is_none())
+        );
         // A person-indexed-only possessive has no lemma-keyed paradigm.
         assert_eq!(pronoun_form_paradigm("вашь"), Ok(Vec::new()));
         // Unknown lemma propagates.

@@ -131,11 +131,10 @@ pub fn pronominal_family_variants(
     // prefer an orthographic doublet of the same form.
     let mut base: Vec<String> = Vec::new();
     for variant in core_pronoun::interrogative_forms(identity, case) {
-        let text = orthography::canonical_display(variant.text).map_err(|_| {
-            Error::Underdetermined {
+        let text =
+            orthography::canonical_display(variant.text).map_err(|_| Error::Underdetermined {
                 lemma: lemma.to_string(),
-            }
-        })?;
+            })?;
         if !base.contains(&text) {
             base.push(text);
         }
@@ -152,9 +151,8 @@ pub fn pronominal_family_variants(
         direct_to,
         preposition: preposition.map(str::to_string),
     };
-    let tokens =
-        core_pronoun::compose_pronominal_family_tokens(lemma, &base_texts, case, &spec)
-            .map_err(|error| unsupported(error.to_string()))?;
+    let tokens = core_pronoun::compose_pronominal_family_tokens(lemma, &base_texts, case, &spec)
+        .map_err(|error| unsupported(error.to_string()))?;
     Ok(phrase_variants(&tokens))
 }
 
@@ -202,10 +200,7 @@ pub fn pronominal_family(
 
 const ABSOLUTE_SUPERLATIVE_ADVERB: &str = "ѕѣло";
 
-fn superlative_tokens(
-    adjective: Vec<String>,
-    order: PhraseOrder,
-) -> Vec<Vec<String>> {
+fn superlative_tokens(adjective: Vec<String>, order: PhraseOrder) -> Vec<Vec<String>> {
     ordered(
         vec![ABSOLUTE_SUPERLATIVE_ADVERB.to_string()],
         adjective,
@@ -443,9 +438,7 @@ pub fn pluperfect_perfect(
     )
 }
 
-fn da_prefixed(
-    inner: Result<Vec<String>, Error>,
-) -> Result<Vec<String>, Error> {
+fn da_prefixed(inner: Result<Vec<String>, Error>) -> Result<Vec<String>, Error> {
     Ok(inner?
         .into_iter()
         .map(|text| format!("да {text}"))
@@ -532,7 +525,11 @@ fn infinitival_future_tokens(
         FiniteTense::Aorist => crate::aorist_variants(auxiliary.lemma(), person, number)?,
     };
     let infinitive = crate::infinitive_variants(lemma)?;
-    Ok(phrase_variants(&ordered(auxiliary_forms, infinitive, order)))
+    Ok(phrase_variants(&ordered(
+        auxiliary_forms,
+        infinitive,
+        order,
+    )))
 }
 
 /// Every rendered phrase for one present-reference infinitival-future cell,
@@ -544,7 +541,14 @@ pub fn infinitival_future_variants(
     number: Number,
     order: PhraseOrder,
 ) -> Result<Vec<String>, Error> {
-    infinitival_future_tokens(lemma, auxiliary, FiniteTense::Present, person, number, order)
+    infinitival_future_tokens(
+        lemma,
+        auxiliary,
+        FiniteTense::Present,
+        person,
+        number,
+        order,
+    )
 }
 
 /// The infinitival future: a present-tense lexical auxiliary
@@ -610,14 +614,7 @@ pub fn infinitival_future_aorist_variants(
     number: Number,
     order: PhraseOrder,
 ) -> Result<Vec<String>, Error> {
-    infinitival_future_tokens(
-        lemma,
-        auxiliary,
-        FiniteTense::Aorist,
-        person,
-        number,
-        order,
-    )
+    infinitival_future_tokens(lemma, auxiliary, FiniteTense::Aorist, person, number, order)
 }
 
 /// The future-in-the-past with an aorist auxiliary; source-licensed for
@@ -771,8 +768,8 @@ fn impersonal_tense_variants(lemma: &str, tense: FiniteTense) -> Result<Vec<Stri
     let identity = impersonal_identity(lemma)?;
     let finite_cell = identity.predicate_cell(tense);
     let code = crate::verb_cell_code(crate::VerbCell::Finite(finite_cell));
-    let base: Vec<String> = if let Ok(index) = crate::generated::VERB_RESIDUE
-        .binary_search_by(|row| (row.0, row.1).cmp(&(lemma, code)))
+    let base: Vec<String> = if let Ok(index) =
+        crate::generated::VERB_RESIDUE.binary_search_by(|row| (row.0, row.1).cmp(&(lemma, code)))
     {
         crate::generated::VERB_RESIDUE[index]
             .2
@@ -957,7 +954,14 @@ mod tests {
         ));
         // The family is closed over къто/чьто.
         assert!(matches!(
-            pronominal_family("тъ", Case::Nominative, Some(PronominalPrefix::Ni), None, None, None),
+            pronominal_family(
+                "тъ",
+                Case::Nominative,
+                Some(PronominalPrefix::Ni),
+                None,
+                None,
+                None
+            ),
             Err(Error::UnknownLemma(_))
         ));
     }
@@ -1131,16 +1135,10 @@ mod tests {
 
     #[test]
     fn impersonal_predicates_keep_lexical_and_reflexive_structures_distinct() {
-        assert_eq!(
-            impersonal_present("достоꙗти").as_deref(),
-            Ok("достоитъ")
-        );
+        assert_eq!(impersonal_present("достоꙗти").as_deref(), Ok("достоитъ"));
         assert_eq!(impersonal_present("мьнѣти").as_deref(), Ok("мьнитъ сѧ"));
         assert_eq!(impersonal_aorist("достоꙗти").as_deref(), Ok("достоꙗ"));
-        assert_eq!(
-            impersonal_imperfect("достоꙗти").as_deref(),
-            Ok("достоꙗаше")
-        );
+        assert_eq!(impersonal_imperfect("достоꙗти").as_deref(), Ok("достоꙗаше"));
         assert!(matches!(
             impersonal_present("благословити"),
             Err(Error::UnknownLemma(_))

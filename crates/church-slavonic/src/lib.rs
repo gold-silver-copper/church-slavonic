@@ -214,16 +214,15 @@ use old_church_slavonic_core::noun::NounLexeme;
 use old_church_slavonic_core::unique_noun::UniqueNounFamilyMember;
 use old_church_slavonic_core::verb::VerbLexeme;
 use old_church_slavonic_core::{
-    AdjectiveCell, AdjectiveClass, AnaphoricEnvironment, AoristFormation,
-    CardinalNumeralIdentity, FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation,
-    ImperfectFormation, ImperfectVariantPolicy, InterrogativePronounIdentity,
-    IrregularAgreeingIdentity, IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass,
-    NumberRestriction, NumeralCell, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell,
-    PastActiveParticipleFormation, PastPassiveParticipleFormation,
-    PersonalPronounIdentity, PresentActiveParticipleFormation, PresentFormation,
-    PresentPassiveParticipleFormation, PronominalPrefix, PronounFormSelection,
-    StandardPronominalIdentity, TwofoldNounFamilyMember, UniqueVerbFamilyMember, VerbAspect,
-    VerbClass, numeral, orthography, pronoun,
+    AdjectiveCell, AdjectiveClass, AnaphoricEnvironment, AoristFormation, CardinalNumeralIdentity,
+    FiniteTense, FiniteVerbCell, ImperativeCell, ImperativeFormation, ImperfectFormation,
+    ImperfectVariantPolicy, InterrogativePronounIdentity, IrregularAgreeingIdentity,
+    IrregularVerbFamilyMember, LParticipleCell, NounCell, NounClass, NumberRestriction,
+    NumeralCell, OrdinalNumeralIdentity, PartOfSpeech, ParticipleCell,
+    PastActiveParticipleFormation, PastPassiveParticipleFormation, PersonalPronounIdentity,
+    PresentActiveParticipleFormation, PresentFormation, PresentPassiveParticipleFormation,
+    PronominalPrefix, PronounFormSelection, StandardPronominalIdentity, TwofoldNounFamilyMember,
+    UniqueVerbFamilyMember, VerbAspect, VerbClass, numeral, orthography, pronoun,
 };
 
 pub use church_slavonic_core::grammar::{AdjectiveForm, Animacy, Case, Gender, Number, Person};
@@ -234,8 +233,8 @@ pub mod phrases;
 mod paradigm;
 pub use paradigm::{
     AdjectiveParadigm, ClosedParadigm, NounParadigm, VerbCellKind, VerbParadigm,
-    adjective_paradigm, determiner_form_paradigm, noun_paradigm,
-    numeral_form_paradigm, participle_paradigm, pronoun_form_paradigm, verb_paradigm,
+    adjective_paradigm, determiner_form_paradigm, noun_paradigm, numeral_form_paradigm,
+    participle_paradigm, pronoun_form_paradigm, verb_paradigm,
 };
 
 mod generated {
@@ -385,7 +384,9 @@ fn decode_meta(row: &(&str, u8, u8, u8, u8)) -> NounMeta {
 /// deterministic numbering scheme.
 pub fn base_lemma(lemma: &str) -> &str {
     if let Some((base, suffix)) = lemma.rsplit_once('_') {
-        if !base.is_empty() && !suffix.is_empty() && suffix.bytes().all(|byte| byte.is_ascii_digit())
+        if !base.is_empty()
+            && !suffix.is_empty()
+            && suffix.bytes().all(|byte| byte.is_ascii_digit())
         {
             return base;
         }
@@ -582,11 +583,11 @@ pub(crate) fn adjective_form_variants(
             .collect());
     }
     let class = adjective_class(lemma).ok_or_else(|| Error::UnknownLemma(lemma.to_string()))?;
-    kernel_adjective_variants(base_lemma(lemma), class, form, case, number, gender).ok_or_else(|| {
-        Error::Underdetermined {
+    kernel_adjective_variants(base_lemma(lemma), class, form, case, number, gender).ok_or_else(
+        || Error::Underdetermined {
             lemma: lemma.to_string(),
-        }
-    })
+        },
+    )
 }
 
 fn primary(mut variants: Vec<String>, lemma: &str) -> Result<String, Error> {
@@ -1931,12 +1932,7 @@ pub fn numeral_variants(
 ///     Ok("пѧти десѧтъ")
 /// );
 /// ```
-pub fn numeral(
-    value: u64,
-    case: Case,
-    gender: Gender,
-    animacy: Animacy,
-) -> Result<String, Error> {
+pub fn numeral(value: u64, case: Case, gender: Gender, animacy: Animacy) -> Result<String, Error> {
     primary(
         numeral_variants(value, case, gender, animacy)?,
         &value.to_string(),
@@ -1986,11 +1982,7 @@ pub fn distributive_numeral_variants(
 ///     Ok("по дъвѣма")
 /// );
 /// ```
-pub fn distributive_numeral(
-    value: u64,
-    gender: Gender,
-    animacy: Animacy,
-) -> Result<String, Error> {
+pub fn distributive_numeral(value: u64, gender: Gender, animacy: Animacy) -> Result<String, Error> {
     primary(
         distributive_numeral_variants(value, gender, animacy)?,
         &value.to_string(),
@@ -2071,7 +2063,12 @@ mod tests {
     fn numeral_rejects_out_of_range_values() {
         for value in [0u64, 10_001, u64::MAX] {
             assert_eq!(
-                numeral(value, Case::Nominative, Gender::Masculine, Animacy::Inanimate),
+                numeral(
+                    value,
+                    Case::Nominative,
+                    Gender::Masculine,
+                    Animacy::Inanimate
+                ),
                 Err(Error::ValueOutOfRange { value })
             );
         }
