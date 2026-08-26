@@ -2224,7 +2224,28 @@ pub(crate) fn check_structure() -> Result<(), Box<dyn Error>> {
     check_attribution(&root)?;
     synodal::check(&root)?;
     morphology_completeness::check_progress_artifacts(&root)?;
+    rewrite_pilot::accuracy(&mut std::iter::empty(), &root)?;
+    check_pilot_data_budget(&root)?;
     examples()
+}
+
+/// The rewrite plan caps the pilot facade's bundled generated data at 2 MB
+/// (docs/REWRITE_PLAN.md, phase 5 gates).
+fn check_pilot_data_budget(root: &Path) -> Result<(), Box<dyn Error>> {
+    const BUDGET_BYTES: u64 = 2 * 1024 * 1024;
+    let generated = root.join("crates/church-slavonic/generated");
+    let mut total = 0u64;
+    for entry in fs::read_dir(&generated)? {
+        total += entry?.metadata()?.len();
+    }
+    if total > BUDGET_BYTES {
+        return Err(format!(
+            "pilot facade generated data is {total} bytes, over the {BUDGET_BYTES}-byte budget"
+        )
+        .into());
+    }
+    println!("pilot facade generated data: {total} bytes (budget {BUDGET_BYTES})");
+    Ok(())
 }
 
 fn check_accuracy_report(root: &Path) -> Result<(), Box<dyn Error>> {
