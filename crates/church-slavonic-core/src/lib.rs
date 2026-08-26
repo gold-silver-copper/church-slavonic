@@ -8,8 +8,10 @@
 //! pipeline ("nom") — so either family can adopt the shared type without
 //! churning its serialized artifacts.
 
+pub mod divergence;
 pub mod grammar;
 pub mod identity;
+pub mod pronoun;
 pub mod recension;
 
 pub use identity::{IdentityEntry, IdentityRegistry};

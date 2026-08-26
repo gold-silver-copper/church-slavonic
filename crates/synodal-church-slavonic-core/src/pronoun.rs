@@ -1,10 +1,23 @@
 //! Source-reviewed Synodal Church Slavonic pronoun morphology.
+//!
+//! Since the phase-4 pronoun merge (docs/UNIFIED_LANGUAGE_PROMPT.md) the
+//! shared closed paradigms live in the merged kernel
+//! `church_slavonic_core::pronoun`, queried with
+//! `Recension::SynodalRussian`; this module is the family adapter that
+//! keeps the public API, the `FormSet`/rule-trace plumbing, the lexeme
+//! validation, and the adjective-coupled classes that stay family-side
+//! until the adjective merge (`church_slavonic_core::divergence::UNMERGED`,
+//! entry `unmerged:pron:adjective-coupled-classes`).
+
+use church_slavonic_core::{Recension, pronoun as kernel};
 
 use crate::{
     AdjectiveCell, AdjectiveClass, AdjectiveForm, Animacy, Case, Comparison, Error, FormSet,
     Gender, Number, OrthographyProfile, Person, PronounCell, Result, SynodalWord,
     morphology::{long_adjective_ending, normative_variants},
 };
+
+const SYN: Recension = Recension::SynodalRussian;
 
 /// Productive and closed suppletive paradigms described by Alypy §§45–48.
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -583,94 +596,36 @@ fn rule_id(lexeme: &PronounLexeme, cell: PronounCell) -> &'static str {
     }
 }
 
-#[derive(Clone, Copy)]
-struct PersonalVariant {
-    text: &'static str,
-    enclitic: bool,
-}
-
-const fn primary(text: &'static str) -> PersonalVariant {
-    PersonalVariant {
-        text,
-        enclitic: false,
-    }
-}
-
-const fn enclitic(text: &'static str) -> PersonalVariant {
-    PersonalVariant {
-        text,
-        enclitic: true,
-    }
-}
-
 fn personal_forms(
     first: bool,
     cell: PronounCell,
     selection: PronounFormSelection,
 ) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
-
-    let forms: &[PersonalVariant] = match (first, cell.number, cell.case) {
-        (true, Sg, Nom) => &[primary("азъ")],
-        (true, Sg, Gen) => &[primary("мене")],
-        (true, Sg, Dat) => &[primary("мнѣ"), enclitic("ми")],
-        (true, Sg, Acc) => &[primary("мене"), enclitic("мѧ")],
-        (true, Sg, Ins) => &[primary("мною")],
-        (true, Sg, Loc) => &[primary("мнѣ")],
-        (true, Du, Nom) => &[primary("мы")],
-        (true, Du, Acc) => &[enclitic("ны")],
-        (true, Du, Gen | Loc) => &[primary("наю")],
-        (true, Du, Dat | Ins) => &[primary("нама")],
-        (true, Pl, Nom) => &[primary("мы")],
-        (true, Pl, Gen | Loc) => &[primary("насъ")],
-        (true, Pl, Dat) => &[primary("намъ")],
-        (true, Pl, Acc) => &[enclitic("ны"), primary("насъ")],
-        (true, Pl, Ins) => &[primary("нами")],
-
-        (false, Sg, Nom) => &[primary("ты")],
-        (false, Sg, Gen) => &[primary("тебе")],
-        (false, Sg, Dat) => &[primary("тебѣ"), enclitic("ти")],
-        (false, Sg, Acc) => &[primary("тебе"), enclitic("тѧ")],
-        (false, Sg, Ins) => &[primary("тобою")],
-        (false, Sg, Loc) => &[primary("тебѣ")],
-        (false, Du, Nom) => &[primary("вы")],
-        (false, Du, Acc) => &[enclitic("вы")],
-        (false, Du, Gen | Loc) => &[primary("ваю")],
-        (false, Du, Dat | Ins) => &[primary("вама")],
-        (false, Pl, Nom) => &[primary("вы")],
-        (false, Pl, Gen | Loc) => &[primary("васъ")],
-        (false, Pl, Dat) => &[primary("вамъ")],
-        (false, Pl, Acc) => &[enclitic("вы"), primary("васъ")],
-        (false, Pl, Ins) => &[primary("вами")],
-        (_, _, Case::Vocative) => unreachable!(),
+    let paradigm = if first {
+        kernel::PersonalParadigm::First
+    } else {
+        kernel::PersonalParadigm::Second
     };
-    select_personal(forms, selection)
+    select_personal(
+        kernel::personal_cell(paradigm, cell.case, cell.number, SYN),
+        selection,
+    )
 }
 
 fn reflexive_forms(cell: PronounCell, selection: PronounFormSelection) -> Result<Vec<String>> {
-    let forms: &[PersonalVariant] = match cell.case {
-        Case::Genitive => &[primary("себе")],
-        Case::Dative => &[primary("себѣ"), enclitic("си")],
-        Case::Accusative => &[primary("себе"), enclitic("сѧ")],
-        Case::Instrumental => &[primary("собою")],
-        Case::Locative => &[primary("себѣ")],
-        Case::Nominative | Case::Vocative => unreachable!(),
-    };
-    select_personal(forms, selection)
+    select_personal(kernel::reflexive_cell(cell.case, SYN), selection)
 }
 
 fn select_personal(
-    forms: &[PersonalVariant],
+    forms: &[kernel::PronounSurface],
     selection: PronounFormSelection,
 ) -> Result<Vec<String>> {
     let selected = forms
         .iter()
         .filter(|variant| match selection {
             PronounFormSelection::All => true,
-            PronounFormSelection::TablePrimary => !variant.enclitic,
-            PronounFormSelection::Enclitic => variant.enclitic,
+            PronounFormSelection::TablePrimary => !variant.role.is_clitic(),
+            PronounFormSelection::Enclitic => variant.role.is_clitic(),
         })
         .map(|variant| variant.text.to_owned())
         .collect::<Vec<_>>();
@@ -688,10 +643,7 @@ fn third_person_forms(
     environment: PronounEnvironment,
     postpositive: Option<PronounPostpositive>,
 ) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
     use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
 
     let gender = cell.gender.expect("validated third-person gender");
     if environment == PronounEnvironment::ContextualVariants {
@@ -711,155 +663,52 @@ fn third_person_forms(
         return Ok(forms);
     }
     if cell.case == Nom && postpositive == Some(PronounPostpositive::Zhe) {
-        return Ok(match (cell.number, gender) {
-            (Sg, M) => vec!["и".into()],
-            (Sg, F) => vec!["ꙗ".into()],
-            (Sg, N) => vec!["є".into()],
-            (Du, M) => vec!["ѧ".into()],
-            (Du, F | N) => vec!["и".into()],
-            (Pl, M) => vec!["и".into()],
-            (Pl, F | N) => vec!["ꙗ".into()],
-        });
+        // Merged kernel: the -же compound's nominative base.
+        return Ok(kernel::relative_nominative_base(cell.number, gender, SYN)
+            .iter()
+            .map(|text| (*text).to_owned())
+            .collect());
     }
     let after = environment == PronounEnvironment::AfterPreposition;
-    let form = match (cell.number, gender, cell.case, cell.animacy, after) {
-        (Sg, M, Nom, _, false) => "онъ",
-        (Sg, F, Nom, _, false) => "она",
-        (Sg, N, Nom, _, false) => "оно",
-        (Sg, M | N, Gen, _, false) => "єгѡ",
-        (Sg, M | N, Gen, _, true) => "негѡ",
-        (Sg, F, Gen, _, false) => "єѧ",
-        (Sg, F, Gen, _, true) => "неѧ",
-        (Sg, M | N, Dat, _, false) => "ємꙋ",
-        (Sg, M | N, Dat, _, true) => "немꙋ",
-        (Sg, F, Dat, _, false) => "єй",
-        (Sg, F, Dat, _, true) => "ней",
-        (Sg, M, Acc, Animacy::Animate, false) => "єго",
-        (Sg, M, Acc, Animacy::Animate, true) => "него",
-        (Sg, M, Acc, Animacy::Inanimate, false) => "и",
-        (Sg, M, Acc, Animacy::Inanimate, true) => "нь",
-        (Sg, F, Acc, _, false) => "ю",
-        (Sg, F, Acc, _, true) => "ню",
-        (Sg, N, Acc, _, false) => "є",
-        (Sg, N, Acc, _, true) => "не",
-        (Sg, M | N, Ins, _, false) => "имъ",
-        (Sg, M | N, Ins, _, true) => "нимъ",
-        (Sg, F, Ins, _, false) => "єю",
-        (Sg, F, Ins, _, true) => "нею",
-        (Sg, M | N, Loc, _, true) => "немъ",
-        (Sg, F, Loc, _, true) => "ней",
-
-        (Du, M, Nom, _, false) => "она",
-        (Du, F, Nom, _, false) => "онѣ",
-        (Du, N, Nom, _, false) => "онѣ",
-        (Du, _, Acc, _, false) => "ѧ",
-        (Du, _, Acc, _, true) => "нѧ",
-        (Du, _, Gen | Loc, _, false) => "єю",
-        (Du, _, Gen | Loc, _, true) => "нею",
-        (Du, _, Dat | Ins, _, false) => "има",
-        (Du, _, Dat | Ins, _, true) => "нима",
-
-        (Pl, M | N, Nom, _, false) => "они",
-        (Pl, F, Nom, _, false) => "онѣ",
-        (Pl, _, Gen | Loc, _, false) => "ихъ",
-        (Pl, _, Gen | Loc, _, true) => "нихъ",
-        (Pl, _, Dat, _, false) => "имъ",
-        (Pl, _, Dat, _, true) => "нимъ",
-        (Pl, M | F, Acc, Animacy::Animate, false) => "ихъ",
-        (Pl, M | F, Acc, Animacy::Animate, true) => "нихъ",
-        (Pl, _, Acc, _, false) => "ѧ",
-        (Pl, _, Acc, _, true) => "нѧ",
-        (Pl, _, Ins, _, false) => "ими",
-        (Pl, _, Ins, _, true) => "ними",
-        (_, _, Case::Vocative, _, _) => unreachable!(),
-        (_, _, Nom, _, true) | (_, _, Loc, _, false) => unreachable!(),
-    };
-    let mut forms = vec![form.to_owned()];
-    if cell.number == Du && gender == N && cell.case == Nom && !after {
-        forms.push("она".into());
+    let forms = kernel::anaphoric_cell(cell.case, cell.number, gender, cell.animacy, after, SYN);
+    if forms.is_empty() {
+        // Vocatives, governed nominatives, and independent locatives are
+        // rejected by cell validation before this point.
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "the requested third-person cell has no licensed form".into(),
+        });
     }
-    Ok(forms)
+    Ok(forms.iter().map(|text| (*text).to_owned()).collect())
 }
 
 fn proximal_sei_forms(cell: PronounCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
     let gender = cell.gender.expect("validated agreeing gender");
-    if cell.number == Sg
-        && gender == M
-        && (cell.case == Nom || (cell.case == Acc && cell.animacy == Animacy::Inanimate))
-    {
-        return Ok(vec!["сей".into(), "сій".into()]);
+    let forms = kernel::proximal_cell(cell.case, cell.number, gender, cell.animacy, SYN);
+    if forms.is_empty() {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "the requested proximal cell has no licensed form".into(),
+        });
     }
-    let form = match (cell.number, gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) | (Sg, M, Acc, Animacy::Inanimate) => unreachable!(),
-        (Sg, F, Nom, _) => "сїѧ",
-        (Sg, N, Nom, _) => "сїе",
-        (Sg, M | N, Gen, _) => "сегѡ",
-        (Sg, F, Gen, _) => "сеѧ",
-        (Sg, M | N, Dat, _) => "семꙋ",
-        (Sg, F, Dat | Loc, _) => "сей",
-        (Sg, M, Acc, Animacy::Animate) => "сего",
-        (Sg, F, Acc, _) => "сїю",
-        (Sg, N, Acc, _) => "сїе",
-        (Sg, M | N, Ins, _) => "симъ",
-        (Sg, F, Ins, _) => "сею",
-        (Sg, M | N, Loc, _) => "семъ",
-        (Du, M, Nom | Acc, _) => "сїѧ",
-        (Du, F | N, Nom | Acc, _) => "сіи",
-        (Du, _, Gen | Loc, _) => "сею",
-        (Du, _, Dat | Ins, _) => "сима",
-        (Pl, M, Nom, _) => "сіи",
-        (Pl, F | N, Nom, _) => "сїѧ",
-        (Pl, _, Gen | Loc, _) => "сихъ",
-        (Pl, _, Dat, _) => "симъ",
-        (Pl, M | F, Acc, Animacy::Animate) => "сихъ",
-        (Pl, M | F, Acc, Animacy::Inanimate) | (Pl, N, Acc, _) => "сїѧ",
-        (Pl, _, Ins, _) => "сими",
-        (_, _, Case::Vocative, _) => unreachable!(),
-    };
-    Ok(vec![form.into()])
+    Ok(forms.iter().map(|text| (*text).to_owned()).collect())
 }
 
 fn short_hard_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
+    agreeing_forms(kernel::AgreeingClass::Hard, stem, cell)
+}
+
+fn agreeing_forms(
+    class: kernel::AgreeingClass,
+    stem: &str,
+    cell: PronounCell,
+) -> Result<Vec<String>> {
     let gender = cell.gender.expect("validated agreeing gender");
-    let ending = match (cell.number, gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) => "ъ",
-        (Sg, F, Nom, _) => "а",
-        (Sg, N, Nom, _) => "о",
-        (Sg, M | N, Gen, _) => "огѡ",
-        (Sg, F, Gen, _) => "оѧ",
-        (Sg, M | N, Dat, _) => "омꙋ",
-        (Sg, F, Dat | Loc, _) => "ой",
-        (Sg, M, Acc, Animacy::Inanimate) => "ъ",
-        (Sg, M, Acc, Animacy::Animate) => "ого",
-        (Sg, F, Acc, _) => "ꙋ",
-        (Sg, N, Acc, _) => "о",
-        (Sg, M | N, Ins, _) => "ѣмъ",
-        (Sg, F, Ins, _) => "ою",
-        (Sg, M | N, Loc, _) => "омъ",
-        (Du, M, Nom | Acc, _) => "а",
-        (Du, F | N, Nom | Acc, _) => "ѣ",
-        (Du, _, Gen | Loc, _) => "ѡю",
-        (Du, _, Dat | Ins, _) => "ѣма",
-        (Pl, M, Nom, _) => "и",
-        (Pl, F, Nom, _) => "ы",
-        (Pl, N, Nom, _) => "а",
-        (Pl, _, Gen | Loc, _) => "ѣхъ",
-        (Pl, _, Dat, _) => "ѣмъ",
-        (Pl, M | F, Acc, Animacy::Inanimate) => "ы",
-        (Pl, M | F, Acc, Animacy::Animate) => "ѣхъ",
-        (Pl, N, Acc, _) => "а",
-        (Pl, _, Ins, _) => "ѣми",
-        (_, _, Case::Vocative, _) => unreachable!(),
-    };
-    Ok(vec![join(stem, ending)])
+    let endings = kernel::agreeing_ending(class, cell.case, cell.number, gender, cell.animacy, SYN);
+    if endings.is_empty() {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "the requested agreeing pronoun cell has no licensed ending".into(),
+        });
+    }
+    Ok(endings.iter().map(|ending| join(stem, ending)).collect())
 }
 
 fn short_ov_mixed_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>> {
@@ -1012,20 +861,9 @@ fn full_velar_forms(stem: &str, cell: PronounCell, diaeresis_direct: bool) -> Re
 }
 
 fn palatalize_final_velar(stem: &str) -> Result<String> {
-    let (base, replacement) = match stem.chars().last() {
-        Some('к') => (&stem[..stem.len() - 'к'.len_utf8()], 'ц'),
-        Some('г') => (&stem[..stem.len() - 'г'.len_utf8()], 'з'),
-        Some('х') => (&stem[..stem.len() - 'х'.len_utf8()], 'с'),
-        _ => {
-            return Err(Error::ContradictoryMetadata {
-                reason: "a velar pronoun class requires a stem ending in к, г, or х".into(),
-            });
-        }
-    };
-    let mut result = String::with_capacity(stem.len());
-    result.push_str(base);
-    result.push(replacement);
-    Ok(result)
+    kernel::palatalize_final_velar(stem, SYN).ok_or_else(|| Error::ContradictoryMetadata {
+        reason: "a velar pronoun class requires a stem ending in к, г, or х".into(),
+    })
 }
 
 fn soft_i_alternating_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>> {
@@ -1048,40 +886,7 @@ fn soft_i_alternating_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>
 }
 
 fn soft_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
-    let gender = cell.gender.expect("validated agreeing gender");
-    let endings: &[&str] = match (cell.number, gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) => &["й"],
-        (Sg, F, Nom, _) => &["ѧ"],
-        (Sg, N, Nom, _) => &["е"],
-        (Sg, M | N, Gen, _) => &["егѡ"],
-        (Sg, F, Gen, _) => &["еѧ"],
-        (Sg, M | N, Dat, _) => &["емꙋ"],
-        (Sg, F, Dat | Loc, _) => &["ей"],
-        (Sg, M, Acc, Animacy::Inanimate) => &["й"],
-        (Sg, M, Acc, Animacy::Animate) => &["его"],
-        (Sg, F, Acc, _) => &["ю"],
-        (Sg, N, Acc, _) => &["е"],
-        (Sg, M | N, Ins, _) => &["имъ"],
-        (Sg, F, Ins, _) => &["ею"],
-        (Sg, M | N, Loc, _) => &["емъ"],
-        (Du, M, Nom | Acc, _) => &["ѧ"],
-        (Du, F | N, Nom | Acc, _) => &["и"],
-        (Du, _, Gen | Loc, _) => &["єю"],
-        (Du, _, Dat | Ins, _) => &["има"],
-        (Pl, M, Nom, _) => &["и"],
-        (Pl, F | N, Nom, _) => &["ѧ"],
-        (Pl, _, Gen | Loc, _) => &["ихъ"],
-        (Pl, _, Dat, _) => &["имъ"],
-        (Pl, M | F, Acc, Animacy::Animate) => &["ихъ"],
-        (Pl, M | F, Acc, Animacy::Inanimate) | (Pl, N, Acc, _) => &["ѧ"],
-        (Pl, _, Ins, _) => &["ими"],
-        (_, _, Case::Vocative, _) => unreachable!(),
-    };
-    Ok(endings.iter().map(|ending| join(stem, ending)).collect())
+    agreeing_forms(kernel::AgreeingClass::SoftJ, stem, cell)
 }
 
 fn hard_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>> {
@@ -1126,42 +931,7 @@ fn hard_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>> {
 }
 
 fn mixed_forms(stem: &str, cell: PronounCell) -> Result<Vec<String>> {
-    use Case::{Accusative as Acc, Dative as Dat, Genitive as Gen, Instrumental as Ins};
-    use Case::{Locative as Loc, Nominative as Nom};
-    use Gender::{Feminine as F, Masculine as M, Neuter as N};
-    use Number::{Dual as Du, Plural as Pl, Singular as Sg};
-    let gender = cell.gender.expect("validated agreeing gender");
-    let ending = match (cell.number, gender, cell.case, cell.animacy) {
-        (Sg, M, Nom, _) => "ъ",
-        (Sg, F, Nom, _) => "а",
-        (Sg, N, Nom, _) => "е",
-        (Sg, M | N, Gen, _) => "егѡ",
-        (Sg, F, Gen, _) => "еѧ",
-        (Sg, M | N, Dat, _) => "емꙋ",
-        (Sg, F, Dat | Loc, _) => "ей",
-        (Sg, M, Acc, Animacy::Inanimate) => "ъ",
-        (Sg, M, Acc, Animacy::Animate) => "его",
-        (Sg, F, Acc, _) => "ꙋ",
-        (Sg, N, Acc, _) => "е",
-        (Sg, M | N, Ins, _) => "имъ",
-        (Sg, F, Ins, _) => "ею",
-        (Sg, M | N, Loc, _) => "емъ",
-        (Du, M, Nom | Acc, _) => "а",
-        (Du, F | N, Nom | Acc, _) => "и",
-        (Du, _, Gen | Loc, _) => "ею",
-        (Du, _, Dat | Ins, _) => "има",
-        (Pl, M, Nom, _) => "и",
-        (Pl, F, Nom, _) => "ѧ",
-        (Pl, N, Nom, _) => "а",
-        (Pl, _, Gen | Loc, _) => "ихъ",
-        (Pl, _, Dat, _) => "ымъ",
-        (Pl, M | F, Acc, Animacy::Animate) => "ихъ",
-        (Pl, M | F, Acc, Animacy::Inanimate) => "ѧ",
-        (Pl, N, Acc, _) => "а",
-        (Pl, _, Ins, _) => "ими",
-        (_, _, Case::Vocative, _) => unreachable!(),
-    };
-    Ok(vec![join(stem, ending)])
+    agreeing_forms(kernel::AgreeingClass::Soft, stem, cell)
 }
 
 fn interrogative_kii(cell: PronounCell) -> Result<Vec<String>> {
@@ -1204,30 +974,24 @@ fn interrogative_kii(cell: PronounCell) -> Result<Vec<String>> {
 }
 
 fn interrogative_who(cell: PronounCell) -> Result<Vec<String>> {
-    Ok(vec![
-        match cell.case {
-            Case::Nominative => "кто",
-            Case::Genitive => "когѡ",
-            Case::Dative => "комꙋ",
-            Case::Accusative => "кого",
-            Case::Instrumental => "кимъ",
-            Case::Locative => "комъ",
-            Case::Vocative => unreachable!(),
-        }
-        .into(),
-    ])
+    interrogative_texts(kernel::InterrogativeParadigm::Kto, cell)
 }
 
 fn interrogative_what(cell: PronounCell) -> Result<Vec<String>> {
-    Ok(match cell.case {
-        Case::Nominative => vec!["что".into()],
-        Case::Genitive => vec!["чегѡ".into(), "чесѡ".into(), "чесогѡ".into()],
-        Case::Dative => vec!["чемꙋ".into(), "чесомꙋ".into()],
-        Case::Accusative => vec!["что".into(), "чесо".into()],
-        Case::Instrumental => vec!["чимъ".into()],
-        Case::Locative => vec!["чемъ".into(), "чесомъ".into()],
-        Case::Vocative => unreachable!(),
-    })
+    interrogative_texts(kernel::InterrogativeParadigm::Chto, cell)
+}
+
+fn interrogative_texts(
+    paradigm: kernel::InterrogativeParadigm,
+    cell: PronounCell,
+) -> Result<Vec<String>> {
+    let forms = kernel::interrogative_cell(paradigm, cell.case, SYN);
+    if forms.is_empty() {
+        return Err(Error::HistoricallyInvalidCell {
+            reason: "the requested interrogative cell has no licensed form".into(),
+        });
+    }
+    Ok(forms.iter().map(|form| form.text.to_owned()).collect())
 }
 
 fn compose(

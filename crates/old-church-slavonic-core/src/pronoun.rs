@@ -1,9 +1,30 @@
 //! Source-reviewed Old Church Slavonic pronouns.
+//!
+//! Since the phase-4 pronoun merge (docs/UNIFIED_LANGUAGE_PROMPT.md) the
+//! shared paradigms live in the merged kernel
+//! `church_slavonic_core::pronoun`, queried with
+//! `Recension::OldChurchSlavonic`; this module is the family adapter that
+//! keeps the public API, the trace/typed-error plumbing, the identity
+//! enums, and the OCS-only lexical paradigms (вьсь, сиць, кꙑи — see
+//! `church_slavonic_core::divergence::UNMERGED`).
 
 use crate::{
     Case, ClosedClassCell, Gender, InflectionError, Number, PartOfSpeech, Person, PredictedForm,
     RequestedCell, RuleId, RuleStep,
 };
+use church_slavonic_core::{Animacy, Recension, pronoun as kernel};
+
+const OCS: Recension = Recension::OldChurchSlavonic;
+
+fn variant_from_kernel(surface: kernel::PronounSurface) -> PronounVariant {
+    let status = match surface.role {
+        kernel::SurfaceRole::Primary => PronounVariantStatus::TablePrimary,
+        kernel::SurfaceRole::Variant => PronounVariantStatus::TableVariant,
+        kernel::SurfaceRole::Clitic => PronounVariantStatus::MarkedClitic,
+        kernel::SurfaceRole::DisputedClitic => PronounVariantStatus::DisputedMarkedClitic,
+    };
+    PronounVariant::new(surface.text, status)
+}
 
 /// Prefixal formatives used to derive negative and indefinite pronominal
 /// families from an independently inflected base.
@@ -723,110 +744,18 @@ fn pronominal_ending(
     number: Number,
     gender: Gender,
 ) -> Option<&'static str> {
-    if declension == PronominalDeclension::J {
-        return j_pronominal_ending(case, number, gender);
-    }
-    let soft = declension == PronominalDeclension::Soft;
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
-    use Gender::{Feminine, Masculine, Neuter};
-    use Number::{Dual, Plural, Singular};
-    Some(match (case, number, gender, soft) {
-        (Nominative, Singular, Masculine, false) => "ъ",
-        (Nominative, Singular, Masculine, true) => "ь",
-        (Nominative, Singular, Feminine, _) => "а",
-        (Nominative, Singular, Neuter, false) => "о",
-        (Nominative, Singular, Neuter, true) => "е",
-        (Accusative, Singular, Masculine, false) => "ъ",
-        (Accusative, Singular, Masculine, true) => "ь",
-        (Accusative, Singular, Feminine, _) => "ѫ",
-        (Accusative, Singular, Neuter, false) => "о",
-        (Accusative, Singular, Neuter, true) => "е",
-        (Genitive, Singular, Masculine | Neuter, false) => "ого",
-        (Genitive, Singular, Masculine | Neuter, true) => "его",
-        (Genitive, Singular, Feminine, false) => "оѩ",
-        (Genitive, Singular, Feminine, true) => "еѩ",
-        (Dative, Singular, Masculine | Neuter, false) => "ому",
-        (Dative, Singular, Masculine | Neuter, true) => "ему",
-        (Dative | Locative, Singular, Feminine, false) => "ои",
-        (Dative | Locative, Singular, Feminine, true) => "еи",
-        (Instrumental, Singular, Masculine | Neuter, false) => "ѣмь",
-        (Instrumental, Singular, Masculine | Neuter, true) => "имь",
-        (Instrumental, Singular, Feminine, false) => "оѭ",
-        (Instrumental, Singular, Feminine, true) => "еѭ",
-        (Locative, Singular, Masculine | Neuter, false) => "омь",
-        (Locative, Singular, Masculine | Neuter, true) => "емь",
-
-        (Nominative | Accusative, Dual, Masculine, _) => "а",
-        (Nominative | Accusative, Dual, Feminine | Neuter, false) => "ѣ",
-        (Nominative | Accusative, Dual, Feminine | Neuter, true) => "и",
-        (Genitive | Locative, Dual, _, false) => "ою",
-        (Genitive | Locative, Dual, _, true) => "ею",
-        (Dative | Instrumental, Dual, _, false) => "ѣма",
-        (Dative | Instrumental, Dual, _, true) => "има",
-
-        (Nominative, Plural, Masculine, _) => "и",
-        (Nominative, Plural, Feminine, false) => "ы",
-        (Nominative, Plural, Feminine, true) => "ѧ",
-        (Nominative, Plural, Neuter, _) => "а",
-        (Accusative, Plural, Masculine | Feminine, false) => "ы",
-        (Accusative, Plural, Masculine | Feminine, true) => "ѧ",
-        (Accusative, Plural, Neuter, _) => "а",
-        (Genitive | Locative, Plural, _, false) => "ѣхъ",
-        (Genitive | Locative, Plural, _, true) => "ихъ",
-        (Dative, Plural, _, false) => "ѣмъ",
-        (Dative, Plural, _, true) => "имъ",
-        (Instrumental, Plural, _, false) => "ѣми",
-        (Instrumental, Plural, _, true) => "ими",
-        (Case::Vocative, _, _, _) => return None,
-    })
-}
-
-fn j_pronominal_ending(case: Case, number: Number, gender: Gender) -> Option<&'static str> {
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
-    use Gender::{Feminine, Masculine, Neuter};
-    use Number::{Dual, Plural, Singular};
-    Some(match (case, number, gender) {
-        (Nominative, Singular, Masculine) => "и",
-        (Nominative, Singular, Feminine) => "ꙗ",
-        (Nominative, Singular, Neuter) => "ѥ",
-        (Accusative, Singular, Masculine) => "и",
-        (Accusative, Singular, Feminine) => "ѭ",
-        (Accusative, Singular, Neuter) => "ѥ",
-        (Genitive, Singular, Masculine | Neuter) => "ѥго",
-        (Genitive, Singular, Feminine) => "ѥѩ",
-        (Dative, Singular, Masculine | Neuter) => "ѥму",
-        (Dative | Locative, Singular, Feminine) => "ѥи",
-        (Instrumental, Singular, Masculine | Neuter) => "имь",
-        (Instrumental, Singular, Feminine) => "ѥѭ",
-        (Locative, Singular, Masculine | Neuter) => "ѥмь",
-
-        (Nominative | Accusative, Dual, Masculine) => "ꙗ",
-        (Nominative | Accusative, Dual, Feminine | Neuter) => "и",
-        (Genitive | Locative, Dual, _) => "ѥю",
-        (Dative | Instrumental, Dual, _) => "има",
-
-        (Nominative, Plural, Masculine) => "и",
-        (Nominative, Plural, Feminine) => "ѩ",
-        (Nominative, Plural, Neuter) => "ꙗ",
-        (Accusative, Plural, Masculine | Feminine) => "ѩ",
-        (Accusative, Plural, Neuter) => "ꙗ",
-        (Genitive | Locative, Plural, _) => "ихъ",
-        (Dative, Plural, _) => "имъ",
-        (Instrumental, Plural, _) => "ими",
-        (Case::Vocative, _, _) => return None,
-    })
+    let class = match declension {
+        PronominalDeclension::Hard => kernel::AgreeingClass::Hard,
+        PronominalDeclension::Soft => kernel::AgreeingClass::Soft,
+        PronominalDeclension::J => kernel::AgreeingClass::SoftJ,
+    };
+    kernel::agreeing_ending(class, case, number, gender, Animacy::Inanimate, OCS)
+        .first()
+        .copied()
 }
 
 fn palatalize_final_velar(stem: &str) -> Option<String> {
-    let (base, replacement) = if let Some(base) = stem.strip_suffix('к') {
-        (base, "ц")
-    } else if let Some(base) = stem.strip_suffix('г') {
-        (base, "ѕ")
-    } else {
-        let base = stem.strip_suffix('х')?;
-        (base, "с")
-    };
-    Some(format!("{base}{replacement}"))
+    kernel::palatalize_final_velar(stem, OCS)
 }
 
 /// Closed agreeing paradigms whose stem distribution or terminal mixture is
@@ -912,8 +841,6 @@ pub fn relative_izhe_form(
     environment: AnaphoricEnvironment,
 ) -> Option<String> {
     use AnaphoricEnvironment::AfterPreposition;
-    use Gender::{Feminine, Masculine, Neuter};
-    use Number::{Dual, Plural, Singular};
 
     if case == Case::Vocative {
         return None;
@@ -922,19 +849,9 @@ pub fn relative_izhe_form(
         if environment == AfterPreposition {
             return None;
         }
-        return Some(
-            match (number, gender) {
-                (Singular, Masculine) => "иже",
-                (Singular, Neuter) => "ѥже",
-                (Singular, Feminine) => "ꙗже",
-                (Dual, Masculine) => "ꙗже",
-                (Dual, Feminine | Neuter) => "иже",
-                (Plural, Masculine) => "иже",
-                (Plural, Neuter) => "ꙗже",
-                (Plural, Feminine) => "ѩже",
-            }
-            .to_string(),
-        );
+        // Merged kernel: the -же compound's nominative base.
+        let base = kernel::relative_nominative_base(number, gender, OCS).first()?;
+        return Some(format!("{base}же"));
     }
     let anaphoric = anaphoric_form(case, number, gender, environment)?;
     let mut text = anaphoric.text.to_string();
@@ -966,45 +883,15 @@ pub fn interrogative_forms(
     identity: InterrogativePronounIdentity,
     case: Case,
 ) -> Vec<PronounVariant> {
-    use PronounVariantStatus::{TablePrimary, TableVariant};
-    match (identity, case) {
-        (InterrogativePronounIdentity::Kto, Case::Nominative | Case::Accusative) => {
-            vec![PronounVariant::new("къто", TablePrimary)]
-        }
-        (InterrogativePronounIdentity::Kto, Case::Genitive) => {
-            vec![PronounVariant::new("кого", TablePrimary)]
-        }
-        (InterrogativePronounIdentity::Kto, Case::Locative) => {
-            vec![PronounVariant::new("комь", TablePrimary)]
-        }
-        (InterrogativePronounIdentity::Kto, Case::Dative) => {
-            vec![PronounVariant::new("кому", TablePrimary)]
-        }
-        (InterrogativePronounIdentity::Kto, Case::Instrumental) => {
-            vec![PronounVariant::new("цѣмь", TablePrimary)]
-        }
-        (InterrogativePronounIdentity::Chto, Case::Nominative | Case::Accusative) => {
-            vec![PronounVariant::new("чьто", TablePrimary)]
-        }
-        (InterrogativePronounIdentity::Chto, Case::Genitive) => vec![
-            PronounVariant::new("чесо", TablePrimary),
-            PronounVariant::new("чьсо", TableVariant),
-            PronounVariant::new("чесого", TableVariant),
-        ],
-        (InterrogativePronounIdentity::Chto, Case::Locative) => vec![
-            PronounVariant::new("чемь", TablePrimary),
-            PronounVariant::new("чесомь", TableVariant),
-        ],
-        (InterrogativePronounIdentity::Chto, Case::Dative) => vec![
-            PronounVariant::new("чему", TablePrimary),
-            PronounVariant::new("чесому", TableVariant),
-            PronounVariant::new("чьсому", TableVariant),
-        ],
-        (InterrogativePronounIdentity::Chto, Case::Instrumental) => {
-            vec![PronounVariant::new("чимь", TablePrimary)]
-        }
-        (_, Case::Vocative) => Vec::new(),
-    }
+    let paradigm = match identity {
+        InterrogativePronounIdentity::Kto => kernel::InterrogativeParadigm::Kto,
+        InterrogativePronounIdentity::Chto => kernel::InterrogativeParadigm::Chto,
+    };
+    kernel::interrogative_cell(paradigm, case, OCS)
+        .iter()
+        .copied()
+        .map(variant_from_kernel)
+        .collect()
 }
 
 fn form(text: &'static str) -> Vec<PronounVariant> {
@@ -1077,34 +964,11 @@ fn sic_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> 
 }
 
 fn si_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
-    use Gender::{Feminine, Masculine, Neuter};
-    use Number::{Dual, Plural, Singular};
-    let text = match (case, number, gender) {
-        (Nominative, Singular, Masculine) | (Accusative, Singular, Masculine) => "сь",
-        (Nominative, Singular, Neuter) | (Accusative, Singular, Neuter) => "се",
-        (Nominative, Singular, Feminine) => "си",
-        (Accusative, Singular, Feminine) => "сиѭ",
-        (Genitive, Singular, Masculine | Neuter) => "сего",
-        (Genitive, Singular, Feminine) => "сеѩ",
-        (Locative, Singular, Masculine | Neuter) => "семь",
-        (Dative | Locative, Singular, Feminine) => "сеи",
-        (Dative, Singular, Masculine | Neuter) => "сему",
-        (Instrumental, Singular, Masculine | Neuter) => "симь",
-        (Instrumental, Singular, Feminine) => "сеѭ",
-        (Nominative | Accusative, Dual, Masculine) => "сиꙗ",
-        (Nominative | Accusative, Dual, Feminine | Neuter) => "си",
-        (Genitive | Locative, Dual, _) => "сею",
-        (Dative | Instrumental, Dual, _) => "сима",
-        (Nominative, Plural, Masculine) => "сии",
-        (Nominative | Accusative, Plural, Neuter) => "си",
-        (Nominative | Accusative, Plural, Feminine) | (Accusative, Plural, Masculine) => "сиѩ",
-        (Genitive | Locative, Plural, _) => "сихъ",
-        (Dative, Plural, _) => "симъ",
-        (Instrumental, Plural, _) => "сими",
-        (Case::Vocative, _, _) => return Vec::new(),
-    };
-    form(text)
+    // Merged kernel: the proximal demonstrative (OCS side ignores animacy).
+    kernel::proximal_cell(case, number, gender, Animacy::Inanimate, OCS)
+        .iter()
+        .map(|text| PronounVariant::new(text, PronounVariantStatus::TablePrimary))
+        .collect()
 }
 
 fn kyi_forms(case: Case, number: Number, gender: Gender) -> Vec<PronounVariant> {
@@ -1284,30 +1148,31 @@ pub fn personal_forms(
     number: Number,
     selection: PronounFormSelection,
 ) -> Vec<PronounVariant> {
-    let forms = match identity {
-        PersonalPronounIdentity::First => first_person_forms(case, number),
-        PersonalPronounIdentity::Second => second_person_forms(case, number),
-        PersonalPronounIdentity::Reflexive | PersonalPronounIdentity::AnaphoricThird => Vec::new(),
-    };
+    let forms: Vec<PronounVariant> = match identity {
+        PersonalPronounIdentity::First => {
+            kernel::personal_cell(kernel::PersonalParadigm::First, case, number, OCS)
+        }
+        PersonalPronounIdentity::Second => {
+            kernel::personal_cell(kernel::PersonalParadigm::Second, case, number, OCS)
+        }
+        PersonalPronounIdentity::Reflexive | PersonalPronounIdentity::AnaphoricThird => &[],
+    }
+    .iter()
+    .copied()
+    .map(variant_from_kernel)
+    .collect();
     select(&forms, selection)
 }
 
 /// Return the numberless reflexive-pronoun cell. Nominative and vocative are
 /// historically invalid and therefore return no forms.
 pub fn reflexive_forms(case: Case, selection: PronounFormSelection) -> Vec<PronounVariant> {
-    use PronounVariantStatus::{MarkedClitic, TablePrimary};
-    let forms: &[PronounVariant] = match case {
-        Case::Nominative | Case::Vocative => &[],
-        Case::Accusative => &[PronounVariant::new("сѧ", TablePrimary)],
-        Case::Genitive => &[PronounVariant::new("себе", TablePrimary)],
-        Case::Locative => &[PronounVariant::new("себѣ", TablePrimary)],
-        Case::Dative => &[
-            PronounVariant::new("себѣ", TablePrimary),
-            PronounVariant::new("си", MarkedClitic),
-        ],
-        Case::Instrumental => &[PronounVariant::new("собоѭ", TablePrimary)],
-    };
-    select(forms, selection)
+    let forms: Vec<PronounVariant> = kernel::reflexive_cell(case, OCS)
+        .iter()
+        .copied()
+        .map(variant_from_kernel)
+        .collect();
+    select(&forms, selection)
 }
 
 /// Return one conditioned third-person anaphoric form. Every nominative and
@@ -1319,41 +1184,16 @@ pub fn anaphoric_form(
     gender: Gender,
     environment: AnaphoricEnvironment,
 ) -> Option<PronounVariant> {
-    use AnaphoricEnvironment::{AfterPreposition, Free};
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative};
-    use Gender::{Feminine, Masculine, Neuter};
-    use Number::{Dual, Plural, Singular};
-    use PronounVariantStatus::{Adprepositional, FreeAnaphoric};
-
-    let (free, adprepositional) = match (case, number, gender) {
-        (Accusative, Singular, Masculine) => ("и", "н҄ь"),
-        (Accusative, Singular, Neuter) => ("ѥ", "н҄ѥ"),
-        (Accusative, Singular, Feminine) => ("ѭ", "н҄ѭ"),
-        (Genitive, Singular, Masculine | Neuter) => ("ѥго", "н҄ѥго"),
-        (Genitive, Singular, Feminine) => ("ѥѩ", "н҄ѥѩ"),
-        (Locative, Singular, Masculine | Neuter) => ("ѥмь", "н҄ѥмь"),
-        (Locative, Singular, Feminine) => ("ѥи", "н҄ѥи"),
-        (Dative, Singular, Masculine | Neuter) => ("ѥму", "н҄ѥму"),
-        (Dative, Singular, Feminine) => ("ѥи", "н҄ѥи"),
-        (Instrumental, Singular, Masculine | Neuter) => ("имь", "н҄имь"),
-        (Instrumental, Singular, Feminine) => ("ѥѭ", "н҄ѥѭ"),
-
-        (Accusative, Dual, Masculine) => ("ꙗ", "н҄ꙗ"),
-        (Accusative, Dual, Neuter | Feminine) => ("и", "н҄и"),
-        (Genitive | Locative, Dual, _) => ("ѥю", "н҄ѥю"),
-        (Dative | Instrumental, Dual, _) => ("има", "н҄има"),
-
-        (Accusative, Plural, Masculine | Feminine) => ("ѩ", "н҄ѩ"),
-        (Accusative, Plural, Neuter) => ("ꙗ", "н҄ꙗ"),
-        (Genitive | Locative, Plural, _) => ("ихъ", "н҄ихъ"),
-        (Dative, Plural, _) => ("имъ", "н҄имъ"),
-        (Instrumental, Plural, _) => ("ими", "н҄ими"),
-        (Case::Nominative | Case::Vocative, _, _) => return None,
+    let after = environment == AnaphoricEnvironment::AfterPreposition;
+    // Merged kernel: the OCS side is animacy-blind and nominative-defective
+    // (divergence pron:third-person-nominative-on).
+    let text =
+        kernel::anaphoric_cell(case, number, gender, Animacy::Inanimate, after, OCS).first()?;
+    let status = match environment {
+        AnaphoricEnvironment::Free => PronounVariantStatus::FreeAnaphoric,
+        AnaphoricEnvironment::AfterPreposition => PronounVariantStatus::Adprepositional,
     };
-    Some(match environment {
-        Free => PronounVariant::new(free, FreeAnaphoric),
-        AfterPreposition => PronounVariant::new(adprepositional, Adprepositional),
-    })
+    Some(PronounVariant::new(text, status))
 }
 
 fn select(forms: &[PronounVariant], selection: PronounFormSelection) -> Vec<PronounVariant> {
@@ -1366,86 +1206,6 @@ fn select(forms: &[PronounVariant], selection: PronounFormSelection) -> Vec<Pron
             PronounFormSelection::MarkedClitic => form.status.is_marked_clitic(),
         })
         .collect()
-}
-
-fn first_person_forms(case: Case, number: Number) -> Vec<PronounVariant> {
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
-    use Number::{Dual, Plural, Singular};
-    use PronounVariantStatus::{DisputedMarkedClitic, MarkedClitic, TablePrimary};
-
-    let forms: &[PronounVariant] = match (case, number) {
-        (Nominative, Singular) => &[PronounVariant::new("азъ", TablePrimary)],
-        (Accusative, Singular) => &[PronounVariant::new("мѧ", TablePrimary)],
-        (Genitive, Singular) => &[PronounVariant::new("мене", TablePrimary)],
-        (Locative, Singular) => &[PronounVariant::new("мьнѣ", TablePrimary)],
-        (Dative, Singular) => &[
-            PronounVariant::new("мьнѣ", TablePrimary),
-            PronounVariant::new("ми", MarkedClitic),
-        ],
-        (Instrumental, Singular) => &[PronounVariant::new("мъноѭ", TablePrimary)],
-
-        (Nominative, Dual) => &[PronounVariant::new("вѣ", TablePrimary)],
-        (Accusative, Dual) => &[
-            PronounVariant::new("на", TablePrimary),
-            PronounVariant::new("нꙑ", MarkedClitic),
-        ],
-        (Genitive | Locative, Dual) => &[PronounVariant::new("наю", TablePrimary)],
-        (Dative, Dual) => &[
-            PronounVariant::new("нама", TablePrimary),
-            PronounVariant::new("на", DisputedMarkedClitic),
-        ],
-        (Instrumental, Dual) => &[PronounVariant::new("нама", TablePrimary)],
-
-        (Nominative, Plural) => &[PronounVariant::new("мꙑ", TablePrimary)],
-        (Accusative, Plural) => &[PronounVariant::new("нꙑ", TablePrimary)],
-        (Genitive | Locative, Plural) => &[PronounVariant::new("насъ", TablePrimary)],
-        (Dative, Plural) => &[
-            PronounVariant::new("намъ", TablePrimary),
-            PronounVariant::new("нꙑ", MarkedClitic),
-        ],
-        (Instrumental, Plural) => &[PronounVariant::new("нами", TablePrimary)],
-        (Case::Vocative, _) => &[],
-    };
-    forms.to_vec()
-}
-
-fn second_person_forms(case: Case, number: Number) -> Vec<PronounVariant> {
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative};
-    use Number::{Dual, Plural, Singular};
-    use PronounVariantStatus::{MarkedClitic, TablePrimary};
-
-    let forms: &[PronounVariant] = match (case, number) {
-        (Nominative, Singular) => &[PronounVariant::new("тꙑ", TablePrimary)],
-        (Accusative, Singular) => &[PronounVariant::new("тѧ", TablePrimary)],
-        (Genitive, Singular) => &[PronounVariant::new("тебе", TablePrimary)],
-        (Locative, Singular) => &[PronounVariant::new("тебѣ", TablePrimary)],
-        (Dative, Singular) => &[
-            PronounVariant::new("тебѣ", TablePrimary),
-            PronounVariant::new("ти", MarkedClitic),
-        ],
-        (Instrumental, Singular) => &[PronounVariant::new("тобоѭ", TablePrimary)],
-
-        (Nominative | Accusative, Dual) => &[
-            PronounVariant::new("ва", TablePrimary),
-            PronounVariant::new("вꙑ", MarkedClitic),
-        ],
-        (Genitive | Locative, Dual) => &[PronounVariant::new("ваю", TablePrimary)],
-        (Dative, Dual) => &[
-            PronounVariant::new("вама", TablePrimary),
-            PronounVariant::new("ва", MarkedClitic),
-        ],
-        (Instrumental, Dual) => &[PronounVariant::new("вама", TablePrimary)],
-
-        (Nominative | Accusative, Plural) => &[PronounVariant::new("вꙑ", TablePrimary)],
-        (Genitive | Locative, Plural) => &[PronounVariant::new("васъ", TablePrimary)],
-        (Dative, Plural) => &[
-            PronounVariant::new("вамъ", TablePrimary),
-            PronounVariant::new("вꙑ", MarkedClitic),
-        ],
-        (Instrumental, Plural) => &[PronounVariant::new("вами", TablePrimary)],
-        (Case::Vocative, _) => &[],
-    };
-    forms.to_vec()
 }
 
 #[cfg(test)]
