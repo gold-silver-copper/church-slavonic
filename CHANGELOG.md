@@ -1,5 +1,36 @@
 # Changelog
 
+## Unreleased (the workspace rewrite)
+
+### Added
+- New crate family realizing `docs/REWRITE_PLAN.md`'s target layout:
+  - `church-slavonic-core` — the shared closed grammatical vocabulary
+    (dual `code()`/`abbrev()` spellings), adopted by both existing families
+    with unchanged public APIs.
+  - `church-slavonic-orthography` — shared text primitives plus the
+    Glagolitic transliteration engine and the Synodal liturgical
+    normalization as recension-named modules; family cores re-export.
+  - `church-slavonic` — the rule-first OCS inflection facade: six POS at
+    100% attested-oracle fidelity from 964 KB of generated sorted-slice
+    residue tables (versus the 24 MB compiled registry), paradigm
+    enumeration, value-driven `numeral()`/`distributive_numeral()`, the
+    analytic phrase constructions, deterministic homograph suffix keys.
+  - `church-slavonic-dictionary` — senses (5,174, homograph-aware lemma
+    keys) and `lemmatize()` by inverting paradigm enumeration.
+- Rewrite gates in `cargo xtask check-structure`: the per-POS attested
+  oracles, differential gates against the old facade (numerals, phrases),
+  the paradigm self-consistency gate, the dictionary round-trip gate, and
+  the 2 MB facade data budget. New commands `rewrite-derivability`
+  (with `--emit-residue`), `rewrite-pilot-accuracy`, `rewrite-dictionary`.
+
+### Removed
+- The ten frozen `synodal-v04`–`v08` one-shot xtask migration commands
+  (~13k LOC); their audit documents moved to `docs/history/`.
+
+### Deprecated
+- The `old-church-slavonic*` surface is mapped item-by-item onto the new
+  facade in `docs/DEPRECATION_MAP.md` (replaced / planned / dropped).
+
 ## Unreleased (the v0.12 program)
 
 ### Added
