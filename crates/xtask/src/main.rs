@@ -14,6 +14,7 @@ mod synodal_archive;
 mod synodal_coverage;
 mod synodal_evaluation_queue;
 mod synodal_family_review;
+mod synodal_gold_oracle;
 mod synodal_lexical_review;
 mod synodal_lexical_union;
 mod synodal_marginal_recovery;
@@ -64,6 +65,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         Some("synodal-check") => synodal::check(&workspace_root()?),
         Some("synodal-evaluate") => synodal::evaluate_and_write(&workspace_root()?),
         Some("synodal-guard-witnesses") => synodal::guard_witnesses(&workspace_root()?),
+        Some("synodal-gold-oracle") => synodal_gold_oracle::run(&mut args, &workspace_root()?),
         Some("synodal-sources") => sources::run(&mut args, &workspace_root()?),
         Some("synodal-bootstrap") => synodal::bootstrap(&mut args, &workspace_root()?),
         Some("synodal-fixture-bootstrap") => {
@@ -457,6 +459,7 @@ fn print_help() {
     eprintln!("  synodal-check");
     eprintln!("  synodal-evaluate");
     eprintln!("  synodal-guard-witnesses");
+    eprintln!("  synodal-gold-oracle [--check]");
     eprintln!("  synodal-sources <list|status|fetch|verify|refresh> [OPTIONS]");
     eprintln!(
         "  synodal-bootstrap [--cache PATH] [--offline] [--source ID] [--skip-fetch] [--keep-intermediate]"

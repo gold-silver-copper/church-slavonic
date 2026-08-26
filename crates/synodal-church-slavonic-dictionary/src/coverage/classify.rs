@@ -708,3 +708,29 @@ pub(crate) fn tsv_field(value: &str) -> String {
         .trim()
         .to_owned()
 }
+
+/// Classifies a tokenized surface as non-lexical for the gold-oracle
+/// contract (`docs/SYNODAL_GOLD_ORACLE.md`). A surface that parses as a
+/// canonical Church Slavonic letter-numeral is `letter-numeral`; a surface
+/// containing any non-Cyrillic alphabetic character is `foreign-script`.
+/// Everything else is lexical (`None`) and is compared morphologically.
+/// A titlo abbreviation can be letter-for-letter identical with a numeral
+/// (`сн҃а` is both `с+н+а` = 251 and the contraction of `сы́на`); an attested
+/// lexical analysis under the liturgical profile takes precedence, so only
+/// surfaces with no such analysis are tagged `letter-numeral`.
+#[must_use]
+pub fn classify_non_lexical(analyzer: &Analyzer, surface: &str) -> Option<&'static str> {
+    if CyrillicNumeral::parse(surface).is_ok() {
+        let lexical = analyzer
+            .analyze_profile(surface, OrthographyProfile::SynodalLiturgical)
+            .unwrap_or_default();
+        if lexical.is_empty() {
+            return Some("letter-numeral");
+        }
+        return None;
+    }
+    if contains_non_cyrillic_alphabetic(surface) {
+        return Some("foreign-script");
+    }
+    None
+}
