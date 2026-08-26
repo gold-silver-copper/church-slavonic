@@ -77,3 +77,18 @@ Three re-keyed queue proposals decided: оный's ѻ prints marked moot against
 the existing reviewed demonstrative; обои и ѻ҆тцы̑ (kamora) deferred to
 their phases. The memorisation baseline re-derived at 94 types. No
 admissions; corpus top-k unchanged at 994,992 pending exploitation.
+
+### ѻ exploitation wave `v0.14-broad-on-exploitation`
+
+Admitted `орꙋжїе` (first-soft-ie-n; a manual singular accent row beside the
+fitted block closes the held-out acute genitive — its kamora plural waits for
+phase 2), `одръ` (mobile-stress first-hard-m; the frequent held-out
+ѻ҆дрѣ̀ locative closes from the attested end-stress witnesses), and `озіилъ`
+(proper noun with an all-scope accent row). The reviewed demonstrative
+`оный` — which had no accent rows at all — gained its root-stress all-scope
+paradigm, closing ѻ҆́нагѡ, ѻ҆́нꙋю, and the rest of its cells at once (+72
+tokens), and making ѻ҆́ныхъ print productively, which raised the cross-lexeme
+ceiling by its 54 genuinely homonymous tokens (justified; the pair was
+already in the allowlist). Ledger: held-out generalised 15,238 → **15,344**
+(+106), memorised flat at 14,974, corpus top-k 994,992 → **995,668** (+676).
+Running total for phase 1 so far: generalised 14,236 → 15,344 (+1,108).
