@@ -24,8 +24,8 @@ repository = "https://github.com/gold-silver-copper/church-slavonic"
 rust-version = "1.85"
 
 [workspace.dependencies]
-church-slavonic = { path = "crates/church-slavonic", version = "0.1.0" }
-church-slavonic-core = { path = "crates/church-slavonic-core", version = "0.1.0" }
+church-slavonic = { path = "crates/church-slavonic", version = "0.2.0" }
+church-slavonic-core = { path = "crates/church-slavonic-core", version = "0.2.0" }
 church-slavonic-dictionary = { path = "crates/church-slavonic-dictionary", version = "0.1.0" }
 church-slavonic-orthography = { path = "crates/church-slavonic-orthography", version = "0.1.0" }
 old-church-slavonic = { path = "crates/old-church-slavonic", version = "0.6.0" }
