@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Fetch the two pinned sources the extractor reads (see SOURCE_LOCK.tsv) into
+# Fetch every pinned source artifact listed in references/SOURCE_LOCK.tsv (see SOURCE_LOCK.tsv) into
 # references/downloads/ and verify them against SHA256SUMS. Idempotent: files
 # whose checksum already matches are not downloaded again.
 set -euo pipefail
 
-cd "$(dirname -- "$0")"
+cd "$(dirname -- "$0")/../references"
 
 while IFS=$'\t' read -r source_id artifact_id transport url path sha256 size format signature content_types; do
     [ "$source_id" = "source_id" ] && continue

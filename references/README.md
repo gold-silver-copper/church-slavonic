@@ -13,7 +13,7 @@ The extractor reads exactly two sources, both pinned here and stored under
 `SHA256SUMS` is the same checksum list in `shasum -c` form. Run
 
 ```sh
-./references/fetch-sources.sh
+./scripts/fetch-sources.sh
 ```
 
 to download whatever is missing and verify the cache, then

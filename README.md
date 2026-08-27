@@ -156,8 +156,9 @@ row.
 | English Wiktionary Old Church Slavonic ([Kaikki/Wiktextract](https://kaikki.org/dictionary/Old%20Church%20Slavonic/)) `kaikki.org-dictionary-OldChurchSlavonic.jsonl` | OCS | `fb20336e716d8f29d0c53bb4cc32f35065ad973ef8b496654c72bf542f876a83` | inflection tables (unaccented) |
 | Archbishop Alypy (Gamanovich), *Grammar of the Church Slavonic Language*, web edition: the 198 `.htm` pages | Synodal | `41dac82d5eb14342c3c158e86b6fc790a6b1b2f76a894d29db103a32604d51a4` (sha256 of the pages concatenated in sorted file-name order) | printed paradigm tables (accented) |
 
-1. Place the artifacts under `references/downloads/english-wiktionary-ocs/`
-   and `references/downloads/alypy-grammar/` (or pass `--sources DIR`).
+1. Run `scripts/fetch-sources.sh` (downloads every pinned artifact and
+   verifies it against `references/SHA256SUMS`; per-source download scripts
+   live alongside it in `scripts/`).
 2. Run `cargo xtask refresh-data`.
 3. Generated tables land in `crates/church-slavonic/generated`; the filtered
    sources in `data/intermediate` (gitignored, regenerable).
