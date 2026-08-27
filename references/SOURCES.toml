@@ -58,3 +58,17 @@ redistribution = "table-source via its lexical projection"
 download_status = "not directly exportable: the corpus is consumed through Polyakov's grammatical dictionary, which is its per-lemma projection (every attested form with cell tags and counts); the FEB text mirror at dic.feb-web.ru/slavonic/corpus/ is unannotated"
 authority_roles = ["lexical", "accentual", "frequency"]
 upstream_lineage = []
+
+[[source]]
+id = "russian-wiktionary-church-slavonic-kaikki-2026-08-04"
+name = "Russian Wiktionary, Церковнославянский section, via Kaikki/Wiktextract"
+url = "https://kaikki.org/ruwiktionary/Церковнославянский/"
+revision = "ruwiktionary dump dated 2026-08-04; fetched 2026-08-27"
+source_recension = "synodal"
+content_kind = "dictionary entries (7249 entries, 39 with structured inflection forms)"
+format = "jsonl"
+license = "CC BY-SA 4.0 (Wiktionary contributor content)"
+redistribution = "table-source"
+download_status = "downloaded to references/downloads/ruwiktionary-cu/"
+authority_roles = ["lexical", "accentual"]
+upstream_lineage = ["ru.wiktionary.org"]
