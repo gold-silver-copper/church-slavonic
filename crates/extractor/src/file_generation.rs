@@ -1,0 +1,81 @@
+//! PHF table emission. BYTE STABILITY IS LOAD-BEARING here: the
+//! `tables_round_trip_committed_output` test parses the committed tables and
+//! re-emits them, requiring a byte-identical result — any formatting change
+//! (whitespace, ordering, headers) must be committed together with regenerated
+//! tables (`cargo xtask refresh-data`). Entries are sorted by key before writing
+//! so output is independent of input order.
+
+use crate::cells::Pos;
+use std::fs::File;
+use std::io::{self, Write};
+use std::path::Path;
+
+/// The static map and getter names of each part of speech's table.
+pub fn names(pos: Pos) -> (&'static str, &'static str) {
+    match pos {
+        Pos::Noun => ("NOUN_MAP", "get_noun"),
+        Pos::Adj => ("ADJ_MAP", "get_adj"),
+        Pos::Verb => ("VERB_MAP", "get_verb"),
+        Pos::Pronoun => ("PRONOUN_MAP", "get_pronoun"),
+    }
+}
+
+/// The cell-order documentation printed above each map (see `crate::cells`).
+fn doc(pos: Pos) -> &'static str {
+    match pos {
+        Pos::Noun => {
+            "number * 7 + case; numbers Singular, Dual, Plural; cases Nominative, Genitive, Dative, Accusative, Instrumental, Locative, Vocative"
+        }
+        Pos::Adj => {
+            "((degree * 3 + gender) * 3 + number) * 7 + case; degrees Positive, Comparative; genders Masculine, Feminine, Neuter; then as nouns"
+        }
+        Pos::Verb => {
+            "finite blocks Present, Imperfect, Aorist, Imperative at block * 9 + number * 3 + person; 36 present active participle; 37 past active participle"
+        }
+        Pos::Pronoun => {
+            "first person number * 6 + case, second person 18 + the same, third person 36 + (gender * 3 + number) * 6 + case; six cases, no vocative"
+        }
+    }
+}
+
+pub fn write_phf(
+    pos: Pos,
+    mut rows: Vec<(String, Vec<String>)>,
+    path: impl AsRef<Path>,
+) -> io::Result<()> {
+    rows.sort_by(|a, b| a.0.cmp(&b.0));
+    let (map, getter) = names(pos);
+    let arity = pos.arity();
+    let mut out = File::create(path)?;
+    writeln!(out, "use phf::phf_map;")?;
+    writeln!(out)?;
+    writeln!(
+        out,
+        "/// `\"<recension>:<key>\"` -> {arity} cells; an empty cell falls back to the rule."
+    )?;
+    writeln!(out, "/// Cell order: {}.", doc(pos))?;
+    writeln!(
+        out,
+        "pub static {map}: phf::Map<&'static str, [&'static str; {arity}]> = phf_map! {{"
+    )?;
+    for (key, cells) in &rows {
+        for text in std::iter::once(key).chain(cells.iter()) {
+            if text.contains('"') || text.contains('\\') || text.contains('\n') {
+                return Err(io::Error::other(format!(
+                    "refusing to emit {key}: a cell contains a quote, backslash or newline"
+                )));
+            }
+        }
+        let cells: Vec<String> = cells.iter().map(|c| format!("\"{c}\"")).collect();
+        writeln!(out, "    \"{key}\" => [{}],", cells.join(", "))?;
+    }
+    writeln!(out, "}};")?;
+    writeln!(out)?;
+    writeln!(
+        out,
+        "pub fn {getter}(key: &str) -> Option<&'static [&'static str; {arity}]> {{"
+    )?;
+    writeln!(out, "    {map}.get(key)")?;
+    writeln!(out, "}}")?;
+    Ok(())
+}

@@ -94,13 +94,23 @@ pub fn comparison_key(word: &str) -> String {
 }
 
 /// Remove every combining mark (accents, breathing, titlo, kamora) and the
-/// digraph half `ᲂ`, returning the NFC skeleton.
+/// digraph half `ᲂ`, returning the NFC skeleton. The precomposed letters
+/// `й`, `ї` and `ѷ` are letters of the alphabet, not accented vowels, and are
+/// kept.
 pub fn strip_marks(word: &str) -> String {
-    word.nfd()
-        .filter(|c| !is_mark(*c))
-        .map(|c| if c == '\u{1c82}' { 'о' } else { c })
-        .nfc()
-        .collect()
+    let mut out = String::with_capacity(word.len());
+    for c in word.nfc() {
+        if matches!(c, 'й' | 'Й' | 'ї' | 'Ї' | 'ѷ' | 'Ѷ') {
+            out.push(c);
+            continue;
+        }
+        out.extend(
+            c.nfd()
+                .filter(|m| !is_mark(*m))
+                .map(|m| if m == '\u{1c82}' { 'о' } else { m }),
+        );
+    }
+    out.nfc().collect()
 }
 
 /// Place the stress on the `syllable`-th vowel (0-based): the acute
@@ -228,6 +238,7 @@ mod tests {
         assert_eq!(accent("ра́бъ", 5), "рабъ");
         assert_eq!(strip_marks("ѻ҆те́цъ"), "ѻтецъ");
         assert_eq!(strip_marks("ᲂу҆чени́къ"), "оученикъ");
+        assert_eq!(strip_marks("бж҃їй кра́й"), "бжїй край");
         assert_eq!(titlo("бгъ"), "бг\u{483}ъ");
         assert_eq!(titlo("б"), "б");
     }

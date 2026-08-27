@@ -1,15 +1,2 @@
-# Verify facade packages before their matching core versions exist on
-# crates.io. Cargo configuration is not embedded in the resulting .crate;
-# actual releases still publish each core, facade, and dictionary in order.
 [alias]
 xtask = "run --package xtask --"
-# The gold-gap inner loop runs the replay optimised: `cargo gold --check`,
-# `cargo gold propose`, `cargo gold admit …`, `cargo gold loop …`.
-gold = "run --release --package xtask -- synodal-gold"
-
-# Detached while docs/ENGLISH_PARITY_PROMPT.md step 2 rebuilds the core
-# crate; steps 3-5 restore (or delete) these with the four-crate workspace.
-# [patch.crates-io]
-# old-church-slavonic-core = { path = "crates/old-church-slavonic-core" }
-# synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core" }
-# synodal-church-slavonic = { path = "crates/synodal-church-slavonic" }

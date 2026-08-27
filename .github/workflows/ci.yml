@@ -2,110 +2,68 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
+# Cancel superseded runs on the same ref.
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  quality:
+  # Blocking: the full suite, including the extractor determinism tests (extractor
+  # is a default member, so `cargo test --workspace` exercises them).
+  test:
+    name: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --workspace
+      # `cargo test --workspace` uses DEFAULT features, so the `checks`-gated
+      # accuracy harness never even compiles. Build + run its source-free unit
+      # tests so the harness stays compilable and the pure scoring helpers are
+      # pinned. The per-slot scoring itself needs the sources (only `cargo xtask
+      # accuracy` exercises it), so this is not full coverage.
+      - run: cargo test -p extractor --features checks
+      # Examples are assert-based demos that `cargo test` never executes (it only
+      # compiles them) — run the assert-bearing example so stale key formats or
+      # behavioral drift in examples fail CI, not users. speedmark is excluded:
+      # it is a benchmark with no asserts.
+      - run: cargo run -p church-slavonic --example test
+
+  # Blocking: the source-free consistency gate. Verifies the committed PHF tables
+  # are well-formed (unique, correctly-shaped keys), have the right arity, and
+  # preserve rule/table layering (no cell merely duplicates the rule engine —
+  # which would mean a rule changed without regenerating). It does NOT need the
+  # sources, and there is no cross-version immutability check: sense-numbered
+  # keys are deterministic, not frozen.
+  registry:
+    name: check-registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo run -p xtask -- check-registry
+
+  # Both BLOCKING: the tree is formatted and clippy-clean; keep it that way.
+  # -D warnings is what makes clippy an actual gate — without it the step
+  # exits 0 no matter how many lints fire.
+  lint:
+    name: fmt + clippy (blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
-      - name: Format
-        run: cargo fmt --all --check
-      - name: Lint
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
-      - name: Documentation tests
-        run: cargo test --workspace --doc
-
-  test-workspace:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Test workspace except Synodal dictionary
-        run: cargo test --workspace --exclude synodal-church-slavonic-dictionary --all-targets --all-features
-
-  test-synodal-dictionary-lib:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Test Synodal dictionary library and binaries
-        run: cargo test -p synodal-church-slavonic-dictionary --lib --bins --all-features
-
-  test-synodal-dictionary-cli:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Test Synodal dictionary CLI
-        run: cargo test -p synodal-church-slavonic-dictionary --test cli --all-features
-
-  structural:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-      # The wave-close suite is retired; its surviving closing checks run
-      # individually. check-structure includes synodal-check and the gold
-      # gate; the guard witnesses, lexical-union ledger, fixture bootstrap,
-      # and immutable archive were the other CI-safe wave-close steps.
-      - name: Structural checks
-        run: cargo xtask check-structure
-      - name: Synodal guard witnesses
-        run: cargo xtask synodal-guard-witnesses
-      - name: Synodal lexical union
-        run: cargo xtask synodal-lexical-union --check
-      - name: Synodal fixture bootstrap
-        run: cargo xtask synodal-fixture-bootstrap
-      - name: Immutable archive
-        run: cargo xtask synodal-archive --check
-      # Full-enumeration replay of both gold oracles from committed artifacts
-      # only; witness consultation is a source-present-only refinement, so the
-      # regenerated gap is identical with or without data/intermediate.
-      - name: Synodal gold gate
-        run: cargo xtask synodal-gold --check
-      # Projection-coherence gate: identity table staleness + no-regression
-      # on the committed coherence baseline (docs/UNIFIED_IDENTITY.md).
-      - name: Unified identity and projection coherence
-        run: cargo xtask unified-identity --check
-      - name: Package and publish dry runs
-        run: |
-          cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-core
-          cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-orthography
-          cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic
-          cargo publish --dry-run --no-verify --allow-dirty -p church-slavonic-dictionary
-          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-core
-          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic
-          cargo publish --dry-run --no-verify --allow-dirty -p synodal-church-slavonic-dictionary
-      - name: Generated tree stays clean
-        run: git diff --exit-code
-
-  portable-runtime:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-      - name: Native no-default-feature builds
-        run: |
-          cargo check -p synodal-church-slavonic-core --no-default-features
-          cargo check -p synodal-church-slavonic --no-default-features
-          cargo check -p synodal-church-slavonic-dictionary --no-default-features
-      - name: WebAssembly runtime builds
-        run: |
-          cargo check -p synodal-church-slavonic-core --target wasm32-unknown-unknown --no-default-features
-          cargo check -p synodal-church-slavonic --target wasm32-unknown-unknown --no-default-features
-          cargo check -p synodal-church-slavonic-dictionary --target wasm32-unknown-unknown --no-default-features
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      # --all-features so the `checks`-gated accuracy harness (compiled by
+      # `cargo xtask accuracy`) is linted too, not just the default surface.
+      - run: cargo clippy --workspace --all-targets --all-features -- -D warnings

@@ -1,10 +1,16 @@
 [workspace]
 members = [
-    # Steps 3-5 of docs/ENGLISH_PARITY_PROMPT.md restore the four-crate
-    # workspace (church-slavonic, church-slavonic-core, extractor, xtask).
-    # While step 2 rebuilds the core crate the old members are detached so
-    # `cargo test --workspace` stays meaningful.
+    "crates/church-slavonic",
     "crates/church-slavonic-core",
+    "crates/extractor",
+    "crates/xtask",
+]
+exclude = ["experiments/*"]
+default-members = [
+    "crates/church-slavonic",
+    "crates/church-slavonic-core",
+    "crates/extractor",
+    "crates/xtask",
 ]
 resolver = "3"
 
@@ -13,24 +19,14 @@ authors = ["gold-silver-copper"]
 edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/gold-silver-copper/church-slavonic"
-rust-version = "1.85"
+rust-version = "1.88"
 
 [workspace.dependencies]
 church-slavonic = { path = "crates/church-slavonic", version = "0.3.0" }
 church-slavonic-core = { path = "crates/church-slavonic-core", version = "0.3.0" }
-church-slavonic-dictionary = { path = "crates/church-slavonic-dictionary", version = "0.2.0" }
-church-slavonic-extractor = { path = "crates/church-slavonic-extractor", version = "0.1.0" }
-church-slavonic-orthography = { path = "crates/church-slavonic-orthography", version = "0.2.0" }
-old-church-slavonic-core = { path = "crates/old-church-slavonic-core", version = "0.6.0" }
-synodal-church-slavonic = { path = "crates/synodal-church-slavonic", version = "0.6.0" }
-synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core", version = "0.6.0" }
-synodal-church-slavonic-dictionary = { path = "crates/synodal-church-slavonic-dictionary", version = "0.6.0" }
-quick-xml = "0.37.5"
-calamine = "0.28.0"
+phf = { version = "0.12", default-features = false, features = ["macros"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-sha2 = "0.10.9"
-toml = "0.8.23"
 unicode-normalization = "0.1.24"
 
 [workspace.lints.rust]
@@ -41,27 +37,13 @@ dbg_macro = "deny"
 todo = "deny"
 unwrap_used = "deny"
 
-# [profile.dev.package.sha2]
-# opt-level = 3
+[profile.release]
+opt-level = 2
 
-# The Synodal gold replay (cargo xtask synodal-gold, also inside
-# check-structure) spends its time in the inflector, the orthography folds,
-# and the analyzer index. Optimising just those crates in the dev profile
-# takes the full replay from ~30 s to ~3 s (measured 2026-08-26) while xtask
-# itself stays a fast debug build; `cargo gold` is the release alias.
-# [profile.dev.package.synodal-church-slavonic]
-# opt-level = 3
-# [profile.dev.package.synodal-church-slavonic-core]
-# opt-level = 3
-# [profile.dev.package.synodal-church-slavonic-dictionary]
-# opt-level = 3
-# [profile.dev.package.church-slavonic-orthography]
-# opt-level = 3
-[profile.dev.package.unicode-normalization]
-opt-level = 3
+# Optimize all dependencies even in debug builds: the extractor and the
+# accuracy harness spend their time in unicode-normalization and serde_json.
+[profile.dev.package."*"]
+opt-level = 2
 
-# The dictionary's exhaustive morphology checks are CPU-bound. Optimizing test
-# code preserves debug assertions and overflow checks while keeping the full
-# correctness inventory practical on local and CI runners.
 [profile.test]
 opt-level = 1

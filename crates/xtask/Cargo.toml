@@ -1,27 +1,15 @@
 [package]
 name = "xtask"
 version = "0.1.0"
-publish = false
 authors.workspace = true
 edition.workspace = true
 license.workspace = true
+repository.workspace = true
 rust-version.workspace = true
+publish = false
 
 [dependencies]
-church-slavonic.workspace = true
-church-slavonic-core.workspace = true
-church-slavonic-orthography.workspace = true
-church-slavonic-dictionary.workspace = true
-church-slavonic-extractor.workspace = true
-old-church-slavonic-core.workspace = true
-synodal-church-slavonic = { workspace = true, features = ["registry-override"] }
-synodal-church-slavonic-core.workspace = true
-synodal-church-slavonic-dictionary.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-sha2.workspace = true
-toml.workspace = true
-unicode-normalization.workspace = true
+extractor = { path = "../extractor" }
 
 [lints]
 workspace = true

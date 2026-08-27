@@ -1,19 +1,29 @@
 [package]
 name = "church-slavonic"
 version = "0.3.0"
-description = "Church Slavonic inflection facade: rule kernel plus compact irregular residue tables"
 authors.workspace = true
 edition.workspace = true
-# The rule kernel is MIT OR Apache-2.0; the generated residue tables derive
-# from Wiktionary's CC BY-SA 4.0 content. See ATTRIBUTION.md.
+# src/lib.rs uses let-chains (`&& let ...`), stabilized in 1.88.
+rust-version.workspace = true
+description = "Church Slavonic inflector (Old Church Slavonic and Synodal) from Wiktionary and grammar-table data"
+# The code is MIT OR Apache-2.0; the generated tables derive from Wiktionary's
+# CC BY-SA 4.0 content. See ATTRIBUTION.md.
 license = "(MIT OR Apache-2.0) AND CC-BY-SA-4.0"
 repository.workspace = true
-rust-version.workspace = true
+keywords = ["church-slavonic", "inflection", "nlp", "grammar", "linguistics"]
+categories = ["text-processing", "localization"]
+readme = "README.md"
+include = ["build.rs", "examples/**/*.rs", "generated/**/*.rs", "src/**/*.rs", "Cargo.toml", "README.md", "ATTRIBUTION.md"]
+
+[lib]
+# cdylib lets this crate be built standalone as a C-ABI / wasm dynamic library;
+# Rust dependents only ever link the rlib.
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-church-slavonic-core.workspace = true
-old-church-slavonic-core.workspace = true
-synodal-church-slavonic.workspace = true
+church-slavonic-core = { workspace = true }
+phf = { workspace = true }
+unicode-normalization = { workspace = true }
 
 [lints]
 workspace = true

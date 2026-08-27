@@ -44,10 +44,10 @@ impl ChurchSlavonicCore {
         recension: &Recension,
     ) -> String {
         let synodal = *recension == Recension::Synodal;
-        if word == "бꙑти" || word == "быти" {
-            if let Some(form) = Self::to_be(person, number, tense, form, recension) {
-                return form.to_string();
-            }
+        if (word == "бꙑти" || word == "быти")
+            && let Some(form) = Self::to_be(person, number, tense, form, recension)
+        {
+            return form.to_string();
         }
         let s = Self::stems(word, recension);
         let cell = Self::person_cell(person, number);
