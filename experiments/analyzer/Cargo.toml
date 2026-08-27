@@ -1,0 +1,25 @@
+# Standalone experiment; excluded from the workspace (see the root Cargo.toml).
+[package]
+name = "analyzer"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+publish = false
+description = "Synodal Church Slavonic text analyzer (unmaintained until adopted; targets the published 0.6 crates)"
+
+[[bin]]
+name = "synodal-dict"
+path = "src/main.rs"
+
+[dependencies]
+# Published pre-parity crates by exact crates.io version (the x.y.1 releases are
+# empty deprecation stubs) — deliberately not path
+# dependencies: the sources of these crates have left this repository.
+synodal-church-slavonic-dictionary = "=0.6.0"
+synodal-church-slavonic = "=0.6.0"
+synodal-church-slavonic-core = "=0.6.0"
+serde_json = "1"
+
+# Standalone: not a member of the repository workspace.
+[workspace]

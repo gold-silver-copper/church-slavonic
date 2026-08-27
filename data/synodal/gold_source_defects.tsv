@@ -1,5 +1,0 @@
-# gold_source_defects.tsv — witness-adjudicated digitization defects in the Ponomar Elizabeth Bible.
-# A row may enter only under the two-of-three rule of docs/SYNODAL_GOLD_ORACLE.md: at a
-# disagreement between the engine and Ponomar, both other witnesses (CrossWire, Wikisource)
-# must side against Ponomar's reading; their readings are recorded as evidence.
-passage	ponomar_surface	adjudicated_surface	crosswire_reading	wikisource_reading	note

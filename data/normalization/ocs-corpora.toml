@@ -1,7 +1,0 @@
-schema_version = 1
-adapter = "ocs-corpora"
-source_recension = "old-church-slavonic"
-use = "inherited-evidence-and-evaluation"
-target_registry = "ocs-witnesses"
-copy_surface_rows_to_synodal_exact_forms = false
-lineage_groups = [["syntacticus-20230428", "ud-ocs-proiel-r2.18"]]

@@ -1,2 +1,0 @@
-1. градъ [noun] — city; town
-   id: synodal:noun:grad · score: 9000 · match: GlossPhrase

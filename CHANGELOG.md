@@ -1,76 +1,38 @@
 # Changelog
 
-## Unreleased (the workspace rewrite)
+## 0.4.0 — the english-parity release (breaking)
 
-### Changed
-- Merge phase 6 (`docs/UNIFIED_DATA.md`): the two unpublished extractor
-  crates are one `church-slavonic-extractor` crate (modules `ocs`,
-  `synodal`, `shared`); the Synodal lexical-union cross-recension claims
-  are ingested into `data/unified/identity-candidates.tsv` with ledger
-  provenance; `data/overrides.tsv` and `data/citation-exemptions.tsv`
-  moved under `data/ocs/`. Every generated artifact regenerates
-  byte-identically.
+The workspace is rebuilt in the shape of `gold-silver-copper/english`: four
+crates, generated PHF tables as the whole artifact, three `xtask` commands,
+one README.
 
-### Added
-- New crate family realizing `docs/REWRITE_PLAN.md`'s target layout:
-  - `church-slavonic-core` — the shared closed grammatical vocabulary
-    (dual `code()`/`abbrev()` spellings), adopted by both existing families
-    with unchanged public APIs.
-  - `church-slavonic-orthography` — shared text primitives plus the
-    Glagolitic transliteration engine and the Synodal liturgical
-    normalization as recension-named modules; family cores re-export.
-  - `church-slavonic` — the rule-first OCS inflection facade: six POS at
-    100% attested-oracle fidelity from 964 KB of generated sorted-slice
-    residue tables (versus the 24 MB compiled registry), paradigm
-    enumeration, value-driven `numeral()`/`distributive_numeral()`, the
-    analytic phrase constructions, deterministic homograph suffix keys.
-  - `church-slavonic-dictionary` — senses (5,174, homograph-aware lemma
-    keys) and `lemmatize()` by inverting paradigm enumeration.
-- Rewrite gates in `cargo xtask check-structure`: the per-POS attested
-  oracles, differential gates against the old facade (numerals, phrases),
-  the paradigm self-consistency gate, the dictionary round-trip gate, and
-  the 2 MB facade data budget. New commands `rewrite-derivability`
-  (with `--emit-residue`), `rewrite-pilot-accuracy`, `rewrite-dictionary`.
+### Changed (breaking)
+- `church-slavonic` is one `lib.rs`: table-first, rule-fallback, case
+  restoration, deterministic `_n` sense keys assigned by a pure sort (keys
+  may renumber on refresh). Every call takes `&Recension`
+  (`OldChurchSlavonic` | `Synodal`); the scoped handles, profiles and
+  identity layer are gone.
+- `church-slavonic-core` is rules only (no data): `grammar`, `noun`, `adj`,
+  `verb`, `pronoun`, `orthography`, `sense_key`, `utils`; depends on
+  `unicode-normalization` alone.
+- The tables regenerate from two pinned sources (Kaikki OCS Wiktionary,
+  the Alypy grammar pages) with `cargo xtask refresh-data`; no curated
+  data files, ledgers, overrides or lockfiles remain.
 
 ### Removed
-- The ten frozen `synodal-v04`–`v08` one-shot xtask migration commands
-  (~13k LOC); their audit documents moved to `docs/history/`.
+- Crates `old-church-slavonic-core`, `church-slavonic-orthography`,
+  `church-slavonic-dictionary`, `synodal-church-slavonic-core`,
+  `synodal-church-slavonic`, `synodal-church-slavonic-dictionary` and the
+  old extractor. Each published name gets a final empty patch release
+  pointing here (`deprecated/`); their sources are at tag
+  `pre-english-parity`.
+- `data/` (except the gitignored `data/intermediate/`), `reports/`, `docs/`,
+  the root prompt files and the non-CI workflows.
+- Every `xtask` command except `refresh-data`, `check-registry`, `accuracy`.
 
-### Deprecated
-- The `old-church-slavonic*` surface is mapped item-by-item onto the new
-  facade in `docs/DEPRECATION_MAP.md` (replaced / planned / dropped). The
-  deprecation release shipped to crates.io (`old-church-slavonic` 0.6.0,
-  `old-church-slavonic-dictionary` 0.3.0, succession notices included) and
-  both crates then left the workspace; `church-slavonic` 0.2.0 and
-  `church-slavonic-dictionary` 0.1.0 are the OCS entry points. The full
-  release train also published `church-slavonic-core` 0.2.0,
-  `church-slavonic-orthography` 0.1.0, `old-church-slavonic-core` 0.5.0,
-  and the three synodal crates at 0.5.x.
+### Moved
+- The Synodal text analyzer is an unmaintained experiment under
+  `experiments/analyzer/`, built against the published 0.6 crates.
 
-## Unreleased (the v0.12 program)
-
-### Added
-- `synodal_church_slavonic_dictionary::analyze_text` — the passage-level
-  consumer entry point with per-reading provenance and stable serialisation;
-  `synodal-dict analyze-text` on the command line.
-- `synodal_church_slavonic_dictionary::prediction` — the exploratory
-  segmentation tier (`predict_under`, walled behind
-  `GenerationPolicy::Exploratory`), its masked-precision gate
-  (`cargo xtask synodal-predict`) and ranked review-candidate feed.
-- Alypy §73 reflexive voice: reflexive verb lexemes (lemma in `-сѧ`, bare
-  stems) and rule-derived reflexive/passive readings of registered active
-  verbs (`Analysis.reflexive`).
-- Alypy §93 `j-series` imperative and §86 `vowel-t` aorist formations.
-- The Synodal mixed sibilant series for long participles on stems in
-  `ш/щ/ж/ч`.
-- The `ᲂу` digraph fold in the lookup projections, digraph-aware accent
-  placement, and `present_initial_uk_digraph` on generated liturgical prints.
-- The per-wave generalisation ledger (`reports/synodal-waves.tsv`) and the
-  holdout-led coverage report with per-system and predicted slices.
-
-### Changed
-- Coverage attribution prefers a token's first *typed* reading over a
-  lexical-form row (reporting only; strict top-k is unchanged).
-- Fifteen verbs admitted productively; three duplicate identities merged onto
-  their reviewed ids; three mislabelled v0.6/v0.7 exact cells retracted
-  through the correction ledger.
+Earlier history (0.1–0.3 and the synodal 0.4–0.6 program) is in the git
+history of `CHANGELOG.md` before this release.

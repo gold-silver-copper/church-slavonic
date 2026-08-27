@@ -1,9 +1,0 @@
-example_id	lexeme_id	text	translation	source_id	passage	source_recension	target_recension	partition
-example:alypy-34-rab	synodal:noun:rab	рабъ	servant	alypy-gamanovich-grammar-web-2023	§34 paradigm	synodal-russian	synodal-russian	source
-example:alypy-44app-grad	synodal:noun:grad	градовѡмъ	to the cities	alypy-gamanovich-grammar-web-2023	§44 exercises; Matthew 11:20	synodal-russian	synodal-russian	source
-example:alypy-39-zemlya	synodal:noun:zemlya	землѧ	land; earth	alypy-gamanovich-grammar-web-2023	§39 paradigm	synodal-russian	synodal-russian	source
-example:alypy-81-byti	synodal:verb:byti	є҆́смь	I am	alypy-gamanovich-grammar-web-2023	§81 paradigm	synodal-russian	synodal-russian	source
-example:alypy-82-nesti	synodal:verb:nesti	несꙋ̀	I carry	alypy-gamanovich-grammar-web-2023	§82 paradigm	synodal-russian	synodal-russian	source
-example:alypy-62-dva	synodal:numeral:dva	два̀	two	alypy-gamanovich-grammar-web-2023	§62 paradigm	synodal-russian	synodal-russian	source
-example:ponomar-mt-5-22-vsyak	synodal:determiner:vsyak	всѧ́къ	every	ponomar-elizabeth-bible-2026-08-09	Matthew 5:22	synodal-russian	synodal-russian	evaluation
-example:alypy-85-imati	synodal:verb:imati	и҆́мамъ нестѝ	I shall carry	alypy-gamanovich-grammar-web-2023	§85 compound-future paradigm	synodal-russian	synodal-russian	source

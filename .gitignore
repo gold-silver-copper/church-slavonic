@@ -1,8 +1,4 @@
-/target/
+target/
 /data/intermediate/
 /references/downloads/
 .DS_Store
-# Scratch left by the retired tooling; removed with it in step 5.
-/data/quarantine/
-/references/.tmp/
-reports/synodal-gold-hypotheses.tsv

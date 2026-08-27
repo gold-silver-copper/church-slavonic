@@ -1,7 +1,0 @@
-mapping_id	source_sense_id	target_sense_id	status	evidence_id	review_note
-map:ocs-rab:syn-rab	ocs:sense:servant	sense:servant	established	alypy-34-rab	Inherited liturgical sense established.
-map:ocs-grad:syn-grad	ocs:sense:city	sense:city	established	ponomar-deut-2-34-grad	Passage-disjoint target corpus evidence confirms the inherited city sense.
-map:ocs-zemlja:syn-zemlya	ocs:sense:earth	sense:earth-land	established	ponomar-deut-11-17-zemlya	Passage-disjoint target corpus evidence confirms the inherited earth sense.
-map:ocs-nesti:syn-nesti	ocs:sense:carry	sense:carry	established	alypy-82-nesti	Normative target verb table establishes compatibility.
-map:ocs-lubiti:syn-lyubiti	ocs:sense:love	sense:love	established	alypy-82-lyubiti	Normative target verb table establishes compatibility.
-map:ocs-false-friend:rejected	ocs:sense:unknown	sense:deity:christian	false-friend	negative-control	Deliberate rejected negative control.

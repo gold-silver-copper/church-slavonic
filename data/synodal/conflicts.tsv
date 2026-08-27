@@ -1,2 +1,0 @@
-conflict_id	source_lexeme_id	target_lexeme_id	kind	status	supporting_evidence	contradicting_evidence	resolution
-conflict:false-friend-control	ocs:lexeme:unknown	synodal:noun:bog	semantic-false-friend	rejected	string-similarity-only	alypy-34-bog-vocative	exclude-from-all-generation-policies

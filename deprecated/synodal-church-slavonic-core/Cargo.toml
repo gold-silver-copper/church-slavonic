@@ -1,0 +1,20 @@
+[package]
+name = "synodal-church-slavonic-core"
+version = "0.6.1"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/gold-silver-copper/church-slavonic"
+description = "DEPRECATED: superseded by the church-slavonic crate (0.4). It held the Synodal Church Slavonic rule engine; those rules now live in church-slavonic-core as the Synodal recension."
+readme = "README.md"
+keywords = ["church-slavonic", "deprecated"]
+categories = ["text-processing"]
+publish = true
+
+[badges]
+maintenance = { status = "deprecated" }
+
+[dependencies]
+
+# Standalone: not a member of the repository workspace.
+[workspace]

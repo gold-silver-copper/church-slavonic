@@ -1,0 +1,20 @@
+[package]
+name = "synodal-church-slavonic-dictionary"
+version = "0.6.1"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/gold-silver-copper/church-slavonic"
+description = "DEPRECATED: superseded by the church-slavonic crate (0.4). It held Synodal senses, lookup and the text analyzer; senses are now _n keys in church-slavonic, and the analyzer lives unmaintained under experiments/analyzer in the repository."
+readme = "README.md"
+keywords = ["church-slavonic", "deprecated"]
+categories = ["text-processing"]
+publish = true
+
+[badges]
+maintenance = { status = "deprecated" }
+
+[dependencies]
+
+# Standalone: not a member of the repository workspace.
+[workspace]
