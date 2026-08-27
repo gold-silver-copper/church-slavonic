@@ -292,19 +292,29 @@ fn ponomar_dictionary_reviews_admit_only_the_attested_exact_forms() {
         );
     }
 
-    for (surface, excluded_id) in [
-        ("жрѐцъ", "synodal:noun:v11-332e30b022aa"),
+    // Alypy §5: a word-final acute is the pre-enclitic print of the reviewed
+    // grave-final surface (ѕло̀ / ѕло́ же), so it reaches the same review.
+    for (surface, expected_id) in [
         ("ѕло́", "synodal:noun:v11-112ca1130b42"),
         ("сквозѣ́", "synodal:preposition:v11-2b9f7f3a2990"),
     ] {
-        let analyses = analyze(surface).expect("valid mark-sensitive negative control");
+        let analyses = analyze(surface).expect("valid pre-enclitic print");
         assert!(
             analyses
                 .iter()
-                .all(|analysis| analysis.lexeme.id().as_str() != excluded_id),
-            "unattested marked variant reached exact review {excluded_id}"
+                .any(|analysis| analysis.lexeme.id().as_str() == expected_id),
+            "pre-enclitic acute did not reach exact review {expected_id}"
         );
     }
+
+    let (surface, excluded_id) = ("жрѐцъ", "synodal:noun:v11-332e30b022aa");
+    let analyses = analyze(surface).expect("valid mark-sensitive negative control");
+    assert!(
+        analyses
+            .iter()
+            .all(|analysis| analysis.lexeme.id().as_str() != excluded_id),
+        "unattested marked variant reached exact review {excluded_id}"
+    );
 }
 
 #[test]
@@ -362,7 +372,8 @@ fn bez_preposition_is_exact_mark_sensitive_and_not_a_prefix_fallback() {
 
 #[test]
 fn srede_preposition_is_exact_and_does_not_license_accentless_or_substring_forms() {
-    for surface in ["средѣ̀", "средѣ"] {
+    // средѣ́ is the pre-enclitic print of the reviewed средѣ̀ (Alypy §5).
+    for surface in ["средѣ̀", "средѣ", "средѣ́"] {
         let analyses = analyze(surface).expect("reviewed medial preposition");
         assert!(analyses.iter().any(|analysis| {
             analysis.lexeme.id().as_str() == "synodal:preposition:srede"
@@ -371,15 +382,14 @@ fn srede_preposition_is_exact_and_does_not_license_accentless_or_substring_forms
         }));
     }
 
-    for surface in ["средѣ́", "посре́дѣ"] {
-        let analyses = analyze(surface).expect("valid exact negative control");
-        assert!(
-            analyses
-                .iter()
-                .all(|analysis| analysis.lexeme.id().as_str() != "synodal:preposition:srede"),
-            "unreviewed accent or substring reached exact средѣ̀ analysis: {surface:?}"
-        );
-    }
+    let surface = "посре́дѣ";
+    let analyses = analyze(surface).expect("valid exact negative control");
+    assert!(
+        analyses
+            .iter()
+            .all(|analysis| analysis.lexeme.id().as_str() != "synodal:preposition:srede"),
+        "unreviewed accent or substring reached exact средѣ̀ analysis: {surface:?}"
+    );
 }
 
 #[test]
@@ -763,11 +773,13 @@ fn sotvoriti_productive_systems_round_trip_with_exact_precedence() {
         analysis.lexeme.id().as_str() == "synodal:verb:sotvoriti"
             && analysis.source == AnalysisSource::ExactSynodalAttestation
     }));
-    let wrong_mark = analyze("сотворите́").expect("mark-sensitive negative control");
+    // Alypy §5: the word-final acute is the pre-enclitic print of the
+    // reviewed grave variant (сотвори́те же), so it reaches the same lexeme.
+    let pre_enclitic = analyze("сотворите́").expect("pre-enclitic acute print");
     assert!(
-        wrong_mark
+        pre_enclitic
             .iter()
-            .all(|analysis| analysis.lexeme.id().as_str() != "synodal:verb:sotvoriti")
+            .any(|analysis| analysis.lexeme.id().as_str() == "synodal:verb:sotvoriti")
     );
 }
 

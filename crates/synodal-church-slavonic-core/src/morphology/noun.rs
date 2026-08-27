@@ -335,6 +335,20 @@ pub(crate) fn noun_surfaces(lexeme: &NounLexeme, cell: crate::NounCell) -> Resul
         return Ok(vec![lexeme.lemma.canonical().to_owned()]);
     }
     if lexeme.declension == NounDeclension::FirstMixedTsMasculine
+        && cell.number == Number::Plural
+        && cell.case == Case::Genitive
+    {
+        // Alypy §§33, 37: beside -євъ the class keeps the zero-ending
+        // genitive plural on the citation stem with its mobile vowel
+        // (ѻ҆тє́цъ ×148 against ѻ҆тцє́въ ×28, конє́цъ ×21, а҆́гнєцъ ×5 in the
+        // pinned Bible); the print distinguishes it from the nominative
+        // singular by the §36 antistich.
+        return Ok(vec![
+            join(lexeme.stem.canonical(), "євъ"),
+            lexeme.lemma.canonical().to_owned(),
+        ]);
+    }
+    if lexeme.declension == NounDeclension::FirstMixedTsMasculine
         && cell.number == Sg
         && cell.case == Voc
     {

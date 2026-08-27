@@ -792,7 +792,9 @@ fn high_frequency_v16_nominal_families_use_complete_typed_paradigms() {
             .form(Case::Dative, Number::Plural, Animacy::Inanimate)
             .expect("productive oblique-stem cell")
             .primary_text(),
-        "є҆гѵ́птомъ"
+        // Alypy §36: the dative plural ending is wide where the instrumental
+        // singular shares its letters (є҆гѵ́птомъ ×3 is that instrumental).
+        "є҆гѵ́птѡмъ"
     );
 
     let egyptian =

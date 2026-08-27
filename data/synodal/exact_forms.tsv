@@ -403,7 +403,6 @@ synodal:noun:rab	noun:genitive:plural:animate	рабъ	ра́бъ	v06-ud-651c066
 synodal:noun:rab	noun:genitive:plural:animate	рабъ	ра̑бъ	v06-ud-651c0665c24b9676,v06-target-b703b182b585c1dc	synodal-attestation	synodal-russian
 synodal:noun:rab	noun:genitive:singular:animate	раба	раба̀	alypy-34-rab,v05-target-rab-variants	synodal-attestation	synodal-russian
 synodal:noun:rab	noun:instrumental:plural:animate	рабы	рабы̑	alypy-34-rab,v05-source-form-f5f28215144af269	synodal-attestation	synodal-russian
-synodal:noun:rab	noun:instrumental:singular:animate	рабѡмъ	рабѡ́мъ	v06-ud-87dd4d8e096bec3c,v06-target-97504c7b8b9c264e	synodal-attestation	synodal-russian
 synodal:noun:rab	noun:nominative:plural:animate	раби	рабѝ	alypy-34-rab,v05-source-form-b5fb18d0598be61e	synodal-attestation	synodal-russian
 synodal:noun:rab	noun:nominative:singular:animate	рабъ	ра́бъ	v06-ud-221d6dc141bd8b3c,v06-target-1506941022406563	synodal-attestation	synodal-russian
 synodal:noun:rab	noun:nominative:singular:animate	рабъ	ра̑бъ	v06-ud-221d6dc141bd8b3c,v06-target-b703b182b585c1dc	synodal-attestation	synodal-russian
@@ -411,7 +410,6 @@ synodal:noun:rab	noun:vocative:plural:animate	раби	рабѝ	alypy-34-rab,v05
 synodal:noun:selo	noun:accusative:plural:inanimate	села	се́ла	v06-ud-1e1f91ab44dc9d14,v06-target-8bc90beeedf358fd	synodal-attestation	synodal-russian
 synodal:noun:selo	noun:accusative:plural:inanimate	села	села̀	v05-ready-selo-gen-pl	synodal-attestation	synodal-russian
 synodal:noun:selo	noun:accusative:singular:inanimate	село	село̀	v05-source-form-9c8ad1ff699c46c7	synodal-attestation	synodal-russian
-synodal:noun:selo	noun:dative:singular:inanimate	селѣ	селѣ̀	v05-ready-selo-oblique	synodal-attestation	synodal-russian
 synodal:noun:selo	noun:genitive:singular:inanimate	села	се́ла	v06-ud-31fb31e06dad9d4f,v06-target-8bc90beeedf358fd	synodal-attestation	synodal-russian
 synodal:noun:selo	noun:genitive:singular:inanimate	села	села̀	v05-ready-selo-gen-pl	synodal-attestation	synodal-russian
 synodal:noun:selo	noun:locative:plural:inanimate	селѣхъ	се́лѣхъ	v05-ready-selo-loc-pl	synodal-attestation	synodal-russian
@@ -967,6 +965,7 @@ synodal:numeral:oba	numeral:cardinal:instrumental:dual:any:any	обѣма	ѻ҆б
 synodal:preposition:wikt-77998a1b179f	lexical-form	ко	ко	ponomar-acts-1-26-ko	synodal-attestation	synodal-russian
 synodal:preposition:wikt-9c77102d5441	lexical-form	во	во	ponomar-acts-1-7-vo	synodal-attestation	synodal-russian
 synodal:preposition:wikt-c63ef675e22e	indeclinable	со	со	alypy-110-preposition-variants,ponomar-acts-2-14-so	normative-variant	synodal-russian
+synodal:particle:conditional-by	indeclinable	бы	бы	ponomar-acts-10-17-by	synodal-attestation	synodal-russian
 synodal:particle:negative-ni	indeclinable	ни	ни	alypy-48-negative-pronoun-interposition	normative-table	synodal-russian
 synodal:pronoun:az	pronoun:accusative:dual:any:first:any	ны	ны̀	alypy-47-personal	normative-table	synodal-russian
 synodal:pronoun:az	pronoun:accusative:plural:any:first:any	насъ	на́съ	alypy-47-personal	normative-table	synodal-russian
@@ -2354,7 +2353,7 @@ synodal:noun:narod	noun:instrumental:plural:inanimate	народы	наро́д�
 synodal:noun:sila	noun:locative:plural:inanimate	силахъ	си́лахъ	v07-source-e62102e944324d49,v07-target-8d88c5ff46abebb4	synodal-attestation	synodal-russian
 synodal:noun:slovo	noun:dative:singular:inanimate	словꙋ	сло́вꙋ	v07-source-252b1d6c6c3b605d,v07-target-d23358d6c732bb87	synodal-attestation	synodal-russian
 synodal:noun:slovo	noun:locative:plural:inanimate	словесѣхъ	словесѣ́хъ	v07-source-035735d022f70336,v07-target-63c8753f6f980895	synodal-attestation	synodal-russian
-synodal:noun:spirit	noun:dative:plural:inanimate	дꙋхомъ	Дꙋ́хомъ	v07-source-964ced1be3286c6d,v07-target-4f17d5acd5b2373b	synodal-attestation	synodal-russian
+synodal:noun:spirit	noun:instrumental:singular:inanimate	дꙋхомъ	Дꙋ́хомъ	v07-source-964ced1be3286c6d,v07-target-4f17d5acd5b2373b	synodal-attestation	synodal-russian
 synodal:noun:spirit	noun:genitive:singular:inanimate	дꙋха	дꙋ́ха	v07-source-882463a770504483,v07-target-ae50ee6a33bcdc02	synodal-attestation	synodal-russian
 synodal:noun:tsar	noun:dative:singular:animate	цареви	царе́ви	v07-source-603c47578dd6fb7a,v07-target-598a188ee7e09c34	synodal-attestation	synodal-russian
 synodal:noun:tsar	noun:locative:singular:animate	цари	цари̑	v07-source-404caa4fe218a998,v07-target-f3272790b996623d	synodal-attestation	synodal-russian

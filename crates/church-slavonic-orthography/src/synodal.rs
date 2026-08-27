@@ -196,6 +196,173 @@ pub fn apply_wide_plural_ending(nominal: Option<(Number, Case)>, expanded: &str)
     Ok(expanded.to_owned())
 }
 
+// ---------------------------------------------------------------------------
+// Liturgical cell presentation (language-wide realisation rules)
+//
+// These operate on a *printed* (accented, breathed) surface after the
+// lexical positional and accent paradigms have run. Each is a rule of the
+// Synodal print itself, not a lexical decision, which is why none of them
+// needs per-lexeme metadata. The gold contract (docs/SYNODAL_GOLD_ORACLE.md
+// §3) and Alypy §§2, 5, 36 are the evidence.
+// ---------------------------------------------------------------------------
+
+fn is_combining(character: char) -> bool {
+    canonical_combining_class(character) != 0 || character == '\u{034f}'
+}
+
+/// Gold contract §3.2: a verse-initial capital is a presentation of the
+/// sentence position, not a property of the cell. The cell's surface is the
+/// lowercase print.
+#[must_use]
+pub fn lowercase_initial(printed: &str) -> String {
+    let mut characters = printed.chars();
+    match characters.next() {
+        Some(first) if first.is_uppercase() => {
+            let mut output: String = first.to_lowercase().collect();
+            output.extend(characters);
+            output.nfc().collect()
+        }
+        _ => printed.to_owned(),
+    }
+}
+
+/// Alypy §2 (SYN-ORTH-INITIAL-O): word-initial `о` is printed as the broad
+/// on `ѻ`, except where it opens the uk digraph `оу`/`ᲂу`. The pinned Bible
+/// prints 659 ѻ-initial types and no о҆-initial type, so the broad on is the
+/// language-wide default rather than a lexical choice.
+#[must_use]
+pub fn present_initial_broad_on(printed: &str) -> String {
+    let characters: Vec<char> = printed.chars().collect();
+    let Some(&first) = characters.first() else {
+        return printed.to_owned();
+    };
+    let replacement = match first {
+        'о' => 'ѻ',
+        'О' => 'Ѻ',
+        _ => return printed.to_owned(),
+    };
+    let next_base = characters[1..].iter().copied().find(|c| !is_combining(*c));
+    if matches!(next_base, Some('у' | 'ꙋ' | 'У' | 'Ꙋ')) {
+        return printed.to_owned();
+    }
+    let mut output = String::with_capacity(printed.len() + 2);
+    output.push(replacement);
+    output.extend(characters[1..].iter());
+    output
+}
+
+/// Alypy §36 on a printed surface: the plural genitive `-овъ`/`-евъ` and
+/// dative `-омъ`/`-емъ` endings are printed wide (`-ѡвъ`/`-євъ`,
+/// `-ѡмъ`/`-ємъ`) regardless of homography (человѣ́кѡмъ, ѻ҆тцє́мъ,
+/// мꙋжє́мъ against instrumental-singular человѣ́комъ, мꙋ́жемъ). Marks on the
+/// ending vowel are kept.
+#[must_use]
+pub fn widen_plural_ending_printed(nominal: Option<(Number, Case)>, printed: &str) -> String {
+    let Some((Number::Plural, Case::Genitive | Case::Dative)) = nominal else {
+        return printed.to_owned();
+    };
+    let mut characters: Vec<char> = printed.nfd().collect();
+    let length = characters.len();
+    if length < 3 || characters[length - 1] != 'ъ' || !matches!(characters[length - 2], 'в' | 'м')
+    {
+        return printed.to_owned();
+    }
+    let Some(vowel_index) = (0..length - 2)
+        .rev()
+        .find(|&i| !is_combining(characters[i]))
+    else {
+        return printed.to_owned();
+    };
+    let wide = match characters[vowel_index] {
+        'о' => 'ѡ',
+        'е' => 'є',
+        _ => return printed.to_owned(),
+    };
+    characters[vowel_index] = wide;
+    characters.into_iter().nfc().collect()
+}
+
+/// Alypy §36 antistich for a plural or dual cell that is homographic with a
+/// singular cell of the same lexeme: the last non-initial `о`/`е` is printed
+/// `ѡ`/`є` (жє́ртвы, ю҆́нѡши, младе́нєцъ, ᲂу҆мє́рша). `None` when the word
+/// offers no such letter (the kamora antistich is a separate, accentual
+/// device this rule does not attempt).
+///
+/// The letter is taken wherever it stands — a stressed first syllable
+/// (мє́ртвыѧ, дѡ́брыѧ), an unstressed one (зємны́ѧ, кѡли́каѧ) or a later one
+/// (колєсни́цы, пра́вєднаѧ, человѣ́чєскаѧ). The one printed alternative the
+/// Bible attests, the kamora on a noun whose only о/е is in the root
+/// (бога̑тства ×3), is a cell-scoped accent-paradigm fact, not a rule here.
+#[must_use]
+pub fn antistich_letter(printed: &str) -> Option<String> {
+    let mut characters: Vec<char> = printed.nfd().collect();
+    let first_base = characters.iter().position(|c| !is_combining(*c))?;
+    let index = (first_base + 1..characters.len()).rev().find(|&i| {
+        matches!(characters[i], 'о' | 'е')
+            && !characters[i + 1..]
+                .iter()
+                .copied()
+                .find(|c| !is_combining(*c))
+                .is_some_and(|next| characters[i] == 'о' && matches!(next, 'у' | 'ꙋ'))
+    })?;
+    characters[index] = match characters[index] {
+        'о' => 'ѡ',
+        _ => 'є',
+    };
+    Some(characters.into_iter().nfc().collect())
+}
+
+/// Alypy §5: a word-final accent is printed as the grave (varia) in
+/// isolation and as the acute (oxia) when an enclitic follows (менѐ / мене́
+/// же, помѧнѝ / помѧни́ мѧ, ты̀ / ты́ є҆сѝ). Both are prints of one cell; this
+/// returns the other member of the pair, or `None` when the accent is not on
+/// the final vowel.
+#[must_use]
+pub fn final_accent_alternate(printed: &str) -> Option<String> {
+    let mut characters: Vec<char> = printed.nfd().collect();
+    let last_base = characters.iter().rposition(|c| !is_combining(*c))?;
+    if !is_synodal_vowel(characters[last_base]) {
+        return None;
+    }
+    let mark_index = (last_base + 1..characters.len())
+        .find(|&i| matches!(characters[i], '\u{0300}' | '\u{0301}'))?;
+    characters[mark_index] = if characters[mark_index] == '\u{0300}' {
+        '\u{0301}'
+    } else {
+        '\u{0300}'
+    };
+    Some(characters.into_iter().nfc().collect())
+}
+
+/// Alypy §5 (enclitics): a monosyllabic pronoun bearing the grave in
+/// isolation (мѧ̀, мѝ, сѧ̀, ны̀, ты̀, то̀) is printed without any accent when it
+/// leans on a host that has taken the pre-enclitic acute (помѧни́ мѧ, что́
+/// ты). Returns the unaccented print, or `None` for polysyllables, forms
+/// that do not carry the grave, and the vowel-initial clitics (и҆̀, ю҆̀, є҆̀,
+/// ѧ҆̀), which the pinned Bible never prints without their accent.
+#[must_use]
+pub fn unaccented_enclitic(printed: &str) -> Option<String> {
+    let characters: Vec<char> = printed.nfd().collect();
+    let vowels = characters
+        .iter()
+        .filter(|c| !is_combining(**c) && is_synodal_vowel(**c))
+        .count();
+    if vowels != 1
+        || !characters.contains(&'\u{0300}')
+        || characters.contains(&'\u{0486}')
+        || characters.contains(&'\u{0485}')
+    {
+        return None;
+    }
+    Some(
+        characters
+            .into_iter()
+            .filter(|c| *c != '\u{0300}')
+            .nfc()
+            .collect(),
+    )
+}
+
 /// Validates one spelling and returns its NFC-canonical presentation — the
 /// same projection `SynodalWord::parse(..).canonical()` produces in the
 /// family core.
@@ -517,6 +684,79 @@ pub fn is_cyrillic(character: char) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn verse_initial_capital_is_presentation_not_cell_surface() {
+        assert_eq!(lowercase_initial("Ка́мень"), "ка́мень");
+        assert_eq!(lowercase_initial("Ѻ҆́вцы"), "ѻ҆́вцы");
+        assert_eq!(lowercase_initial("Ѹ҆́мре"), "ѹ҆́мре");
+        assert_eq!(lowercase_initial("ка́мень"), "ка́мень");
+    }
+
+    #[test]
+    fn word_initial_on_is_broad_except_before_uk() {
+        assert_eq!(present_initial_broad_on("о҆́дръ"), "ѻ҆́дръ");
+        assert_eq!(present_initial_broad_on("о҆смы́й"), "ѻ҆смы́й");
+        assert_eq!(present_initial_broad_on("оу҆́мре"), "оу҆́мре");
+        assert_eq!(present_initial_broad_on("ѡ҆́нъ"), "ѡ҆́нъ");
+        assert_eq!(present_initial_broad_on("до́мъ"), "до́мъ");
+    }
+
+    #[test]
+    fn plural_genitive_and_dative_endings_print_wide_on_the_accented_surface() {
+        let dative = Some((Number::Plural, Case::Dative));
+        let genitive = Some((Number::Plural, Case::Genitive));
+        assert_eq!(widen_plural_ending_printed(dative, "царе́мъ"), "царє́мъ");
+        assert_eq!(widen_plural_ending_printed(dative, "мꙋ́жемъ"), "мꙋ́жємъ");
+        assert_eq!(widen_plural_ending_printed(dative, "рабо́мъ"), "рабѡ́мъ");
+        assert_eq!(widen_plural_ending_printed(genitive, "ѻ҆тце́въ"), "ѻ҆тцє́въ");
+        assert_eq!(widen_plural_ending_printed(genitive, "царе́й"), "царе́й");
+        assert_eq!(
+            widen_plural_ending_printed(Some((Number::Singular, Case::Instrumental)), "рабо́мъ"),
+            "рабо́мъ"
+        );
+        assert_eq!(widen_plural_ending_printed(None, "рабо́мъ"), "рабо́мъ");
+    }
+
+    #[test]
+    fn antistich_substitutes_the_last_non_initial_o_or_e() {
+        assert_eq!(antistich_letter("же́ртвы").as_deref(), Some("жє́ртвы"));
+        assert_eq!(antistich_letter("ю҆́ноши").as_deref(), Some("ю҆́нѡши"));
+        assert_eq!(antistich_letter("младе́нецъ").as_deref(), Some("младе́нєцъ"));
+        assert_eq!(antistich_letter("ѻ҆те́чества").as_deref(), Some("ѻ҆те́чєства"));
+        assert_eq!(
+            antistich_letter("человѣ́ческаѧ").as_deref(),
+            Some("человѣ́чєскаѧ")
+        );
+        assert_eq!(antistich_letter("ᲂу҆ме́рша").as_deref(), Some("ᲂу҆мє́рша"));
+        assert_eq!(antistich_letter("ѻ҆́чи"), None);
+        assert_eq!(antistich_letter("мꙋ́дра"), None);
+        assert_eq!(antistich_letter("колесни́цы").as_deref(), Some("колєсни́цы"));
+        assert_eq!(antistich_letter("ме́ртвыѧ").as_deref(), Some("мє́ртвыѧ"));
+        assert_eq!(antistich_letter("коли́каѧ").as_deref(), Some("кѡли́каѧ"));
+    }
+
+    #[test]
+    fn final_accent_alternates_between_grave_and_acute() {
+        assert_eq!(final_accent_alternate("менѐ").as_deref(), Some("мене́"));
+        assert_eq!(final_accent_alternate("мене́").as_deref(), Some("менѐ"));
+        assert_eq!(final_accent_alternate("помѧни́").as_deref(), Some("помѧнѝ"));
+        assert_eq!(final_accent_alternate("ты̀").as_deref(), Some("ты́"));
+        assert_eq!(final_accent_alternate("ра́бъ"), None);
+        assert_eq!(final_accent_alternate("мо́ре"), None);
+    }
+
+    #[test]
+    fn monosyllabic_grave_pronouns_have_an_unaccented_enclitic_print() {
+        assert_eq!(unaccented_enclitic("мѧ̀").as_deref(), Some("мѧ"));
+        assert_eq!(unaccented_enclitic("мѝ").as_deref(), Some("ми"));
+        assert_eq!(unaccented_enclitic("ты̀").as_deref(), Some("ты"));
+        assert_eq!(unaccented_enclitic("менѐ"), None);
+        assert_eq!(unaccented_enclitic("ты́"), None);
+        assert_eq!(unaccented_enclitic("ᲂу҆̀бо"), None);
+        assert_eq!(unaccented_enclitic("и҆̀"), None);
+        assert_eq!(unaccented_enclitic("ѧ҆̀"), None);
+    }
 
     #[test]
     fn every_initial_presentation_is_explicit_and_shape_checked() {

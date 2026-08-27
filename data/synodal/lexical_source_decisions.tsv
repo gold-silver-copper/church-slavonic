@@ -1,6 +1,7 @@
 lexeme_id	classification	engine_route	support_state	evidence	notes
 synodal:adverb:blagochestno	indeclinable	reviewed-exact-indeclinable	implemented	alypy-3-abbreviation-inventory	The semantic abbreviation family is an invariant adverb and has no inflectional cells beyond its lexical form.
 synodal:noun:imyarek	indeclinable	closed-rubric-placeholder	implemented	alypy-3-imyarek-placeholder	This is a closed rubric token; grammatical case belongs to the substituted personal name, not to the placeholder.
+synodal:particle:conditional-by	indeclinable	reviewed-exact-indeclinable	implemented	ponomar-acts-10-17-by	The conditional particle бы is invariant and enclitic (unaccented in its 196 Bible tokens); the exact printed evidence is its complete lexical realization, distinct from the aorist бы̀ of бы́ти.
 synodal:particle:negative-ni	indeclinable	reviewed-exact-indeclinable	implemented	alypy-gamanovich-grammar-web-2023	The negative particle is invariant; exact printed evidence is its complete lexical realization.
 synodal:verb:dostoyati	closed-irregular	typed-defective-inventory	implemented	alypy-104-dostoyati-defective	Alypy §104 licenses only the third-singular present and imperfect plus the cited infinitive; all other requests fail through the registered historical defect.
 synodal:adverb:vne	indeclinable	reviewed-exact-indeclinable	implemented	ponomar-acts-5-34-vne-indeclinable	The local adverb внѣ̀ is invariant; the source-partition print of its single lexical form is its complete realization and no inflectional cell is claimed.

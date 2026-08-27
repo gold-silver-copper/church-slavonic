@@ -1,0 +1,24 @@
+# synodal-gold-human-review.tsv — gap rows that need a human linguistic or contract call.
+# Written by the engine-bug burn-down (class 1); every row here is one an oracle could not settle:
+# either the Alypy print and the Bible's own printing disagree, or the question is whether a
+# printed convention is a §7 typography equivalence (a contract revision, never a slice change).
+oracle	key	engine_output	expected	bible_evidence	question
+paradigm	§34. Образцы 1-го склонения|p034.htm|1|кра́-й|Мягкое склонение|genitive:plural::::	кра́євъ	кра-є́въ	кра́євъ ×4, крає́въ ×0	Alypy accents the genitive plural on the ending; every Bible print keeps stem stress. Which accent is normative for the cell, or is the table a misprint?
+paradigm	§34. Образцы 1-го склонения|p034.htm|1|кра́-й|Мягкое склонение|nominative+vocative:plural::::	краи̑	кра̑-и	краи̑ ×7, кра̑и ×0	Alypy places the plural kamora on the stem vowel; the Bible prints it on the ending vowel. Is kamora placement inside one word a §7 typography equivalence?
+paradigm	§34. Образцы 1-го склонения|p034.htm|1|кра́-й|Мягкое склонение|instrumental:plural::::	краи̑	кра̑-и	краи̑ ×7, кра̑и ×0	Same kamora-placement question as the nominative plural.
+paradigm	§34. Образцы 1-го склонения|p034.htm|1|ра́б-ъ|Твердое склонение|instrumental:plural::::	рабы̑	раб-ы̀	рабы̑ ×93, рабы̀ ×20	Same kamora question as the accusative plural.
+paradigm	§34. Образцы 1-го склонения|p034.htm|2|мꙋ́ж-ъ|Смешанное склонение|locative:plural::::	мꙋже́хъ	мꙋж-а́хъ	мꙋже́хъ ×12, мꙋжа́хъ ×0	Alypy's mixed-declension locative plural -а́хъ is unattested in the Bible, which prints -е́хъ. Is the table's -ахъ a normative variant the engine should add, or a pedagogical form?
+paradigm	§48|p048.htm|2|кі́й||dative:plural:masculine:::	кі́имъ	кі̑имъ	кі́имъ ×6, кі̑имъ ×0	Alypy prints the dative plural with the kamora; every Bible print has the acute. Which is normative?
+paradigm	§48|p048.htm|3|на́шъ||accusative:plural:masculine:::	на́шѧ	на́шѧ, -ихъ	engine generates на́шѧ	The cell prints two alternates separated by a comma. §7.2 admits parenthesised alternates only; is a comma-separated alternate list the same equivalence (a contract revision)? Four cells are affected (this one and the three нестѝ dual aorists).
+paradigm	§86. Прошедшие времена. Аорист|p086.htm|2|нес-тѝ||:dual::first:aorist:	несо́хова	нес-о́-х-о-ва, -ѣ	engine generates несо́хова	Comma-separated alternate list (see на́шѧ).
+paradigm	§86. Прошедшие времена. Аорист|p086.htm|2|нес-тѝ||:dual::second:aorist:	несо́ста	нес-о́-с-та, -ѣ	engine generates несо́ста	Comma-separated alternate list (see на́шѧ).
+paradigm	§86. Прошедшие времена. Аорист|p086.htm|2|нес-тѝ||:dual::third:aorist:	несо́ста	нес-о́-с-та, -ѣ	engine generates несо́ста	Comma-separated alternate list (see на́шѧ).
+token	мꙋже́мъ	мꙋ́жємъ	мꙋже́мъ	Gen.34.20 ×1 against мꙋжє́мъ ×75	Ponomar prints the dative plural narrow once against its own wide print 75 times; the witness sweep did not propose it as a defect. Source defect or a genuine narrow variant?
+token	свѧщє́нники	свѧще́нники	свѧщє́нники	×4 against свѧще́нники ×9; no singular homograph	The §36 antistich is printed on a non-homographic plural in a minority of tokens (also свѧщє́нницы ×1 vs ×101, младє́нцы ×1 vs ×29). Rule extension (є on every plural of these stems) or printing inconsistency?
+token	свѧщє́нницы	свѧще́нницы	свѧщє́нницы	×1 against свѧще́нницы ×101	See свѧщє́нники.
+token	младє́нцы	младе́нцы	младє́нцы	×1 against младе́нцы ×29	See свѧщє́нники.
+token	мꙋ́жєски	мꙋ́жески	мꙋ́жєски	×1	See человѣ́чєски.
+token	ка́мєнїѧ	ка́менїѧ	ка́мєнїѧ	ка́мєнїѧ ×8, ка́менїѧ ×26	The plural of ка́мень is printed with є against the genitive singular of the collective ка́менїе — a homograph across two lexemes. Should the antistich rule consider derivationally related lexemes, or stay paradigm-internal?
+token	сꙋть	сꙋ́ть	сꙋть	Ex.10.8 ×1 (compare є҆сть ×47 unaccented against є҆́сть ×2788)	An unaccented print of a monosyllabic present form of бы́ти. Enclitic use the engine should emit for бы́ти's monosyllables, or a one-off?
+token	дще́рємъ	дще́ремъ	дще́рємъ	×1 against дще́ремъ ×15 (feminine i-stem dative plural; instrumental singular дще́рїю, so no homograph)	See свѧщє́нники: a wide print on a non-homographic plural in one token.
+token	пра́вєдницы	пра́ведницы	пра́вєдницы	×2; пра́ведницы ×0; genitive singular пра́ведника, so no homograph	See свѧщє́нники: the only prints of the type are wide although no singular homograph exists. Rule extension for -никъ plurals or printing inconsistency?

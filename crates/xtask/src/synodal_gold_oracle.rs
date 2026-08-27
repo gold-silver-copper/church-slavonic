@@ -123,19 +123,30 @@ fn confirmed_readings(root: &Path) -> Result<BTreeMap<String, BTreeSet<String>>,
             .position(|column| *column == name)
             .ok_or_else(|| format!("evaluation.tsv lacks column {name}"))
     };
+    let id_index = index_of("id")?;
     let lexeme_index = index_of("lexeme_id")?;
     let cell_index = index_of("cell")?;
     let printed_index = index_of("expected_printed")?;
+    // A reviewed evaluation row retracted through the exact-cell correction
+    // ledger is no longer a confirmed reading (§5): the gate must not be held
+    // to a cell the ledger has withdrawn.
+    let retracted = crate::synodal::load_retracted_evaluation_ids(
+        &root.join("data/synodal/v10_exact_cell_corrections.tsv"),
+    )?;
     let mut map: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
     for line in lines {
         let fields: Vec<&str> = line.split('\t').collect();
-        let (Some(lexeme), Some(cell), Some(printed)) = (
+        let (Some(id), Some(lexeme), Some(cell), Some(printed)) = (
+            fields.get(id_index),
             fields.get(lexeme_index),
             fields.get(cell_index),
             fields.get(printed_index),
         ) else {
             return Err(format!("short evaluation.tsv row: {line}").into());
         };
+        if retracted.contains(*id) {
+            continue;
+        }
         map.entry(canonical_surface(printed))
             .or_default()
             .insert(format!("{lexeme}|{cell}"));

@@ -1492,12 +1492,11 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
             printed_result.as_ref().ok(),
             &row.expected_printed,
         );
-        if printed_result
+        if !printed_result
             .as_ref()
             .ok()
             .and_then(|forms| forms.variants().first())
-            .map(|form| form.printed.as_str())
-            != Some(row.expected_printed.as_str())
+            .is_some_and(|form| printed_matches(&row.expected_printed, &form.printed))
         {
             printed_disagreements.push(EvaluationDisagreement {
                 id: row.id.clone(),
@@ -1600,7 +1599,7 @@ fn evaluate(root: &Path) -> Result<EvaluationReport, Box<dyn Error>> {
                 forms
                     .variants()
                     .iter()
-                    .any(|form| form.printed == row.expected_printed)
+                    .any(|form| printed_matches(&row.expected_printed, &form.printed))
             }) {
                 exact_accent_agreement += 1;
             }
@@ -1854,6 +1853,16 @@ fn inflector(policy: GenerationPolicy, orthography: OrthographyProfile) -> Infle
         .build()
 }
 
+/// Gold contract §3.2: an expected print recorded at a verse-initial
+/// position carries the sentence capital; the engine presents the cell in
+/// lowercase, so a capitalised expectation compares case-insensitively on
+/// its initial. Lowercase expectations compare exactly.
+fn printed_matches(expected: &str, printed: &str) -> bool {
+    printed == expected
+        || (expected.chars().next().is_some_and(char::is_uppercase)
+            && printed == church_slavonic_orthography::synodal::lowercase_initial(expected))
+}
+
 fn score_result(
     slice: &mut MetricSlice,
     forms: Option<&synodal_church_slavonic::FormSet>,
@@ -1865,13 +1874,13 @@ fn score_result(
         return;
     };
     slice.returned += 1;
-    if forms.primary_text() == expected {
+    if printed_matches(expected, forms.primary_text()) {
         slice.top_1_correct += 1;
     }
     if forms
         .variants()
         .iter()
-        .any(|variant| variant.printed == expected)
+        .any(|variant| printed_matches(expected, &variant.printed))
     {
         slice.top_k_correct += 1;
     }
@@ -2122,7 +2131,9 @@ fn load_exact_keys(
     Ok(keys)
 }
 
-fn load_retracted_evaluation_ids(path: &Path) -> Result<BTreeSet<String>, Box<dyn Error>> {
+pub(crate) fn load_retracted_evaluation_ids(
+    path: &Path,
+) -> Result<BTreeSet<String>, Box<dyn Error>> {
     let text = fs::read_to_string(path)?;
     let mut lines = text.lines();
     if lines.next() != Some(EXACT_CELL_CORRECTION_HEADER) {

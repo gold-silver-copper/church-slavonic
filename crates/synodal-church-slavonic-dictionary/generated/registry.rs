@@ -774,6 +774,7 @@ pub(crate) const SENSES: &[RawSense] = &[
     RawSense(["synodal:numeral:wikt-42c5d78bab14", "sense:v03:42c5d78bab14", "five", "general", "english-wiktionary-ocs-kaikki-2026-08-07", "old-church-slavonic", "reviewed-ocs-inheritance"]),
     RawSense(["synodal:numeral:wikt-58a4f8eb4197", "sense:v03:58a4f8eb4197", "six", "general", "english-wiktionary-ocs-kaikki-2026-08-07", "old-church-slavonic", "reviewed-ocs-inheritance"]),
     RawSense(["synodal:numeral:wikt-bc270882d39d", "sense:v03:bc270882d39d", "ten", "general", "english-wiktionary-ocs-kaikki-2026-08-07", "old-church-slavonic", "reviewed-ocs-inheritance"]),
+    RawSense(["synodal:particle:conditional-by", "sense:conditional-particle-by", "conditional (optative) particle; enclitic and unaccented", "grammar,mood", "ponomar-elizabeth-bible-2026-08-09", "synodal-russian", "normative"]),
     RawSense(["synodal:particle:negative-ni", "sense:negative-particle-ni", "negative particle; negative pronoun component", "grammar,negation", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),
     RawSense(["synodal:particle:wikt-928bf31442d9", "sense:v03:928bf31442d9", "no; not", "general", "english-wiktionary-ocs-kaikki-2026-08-07", "old-church-slavonic", "reviewed-ocs-inheritance"]),
     RawSense(["synodal:preposition:bez", "sense:v12:preposition:bez", "without; lacking", "relation,privation", "alypy-gamanovich-grammar-web-2023", "synodal-russian", "normative"]),

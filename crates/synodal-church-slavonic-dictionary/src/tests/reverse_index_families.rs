@@ -15,7 +15,9 @@ fn v16_productive_nominal_families_round_trip_through_the_reverse_index() {
             }),
         ),
         (
-            "є҆гѵ́птомъ",
+            // Alypy §36: the dative plural ending is wide where the
+            // instrumental singular (є҆гѵ́птомъ) shares its letters.
+            "є҆гѵ́птѡмъ",
             "synodal:proper-noun:egipet",
             GrammarCell::Noun(synodal_church_slavonic::core::NounCell {
                 case: Case::Dative,

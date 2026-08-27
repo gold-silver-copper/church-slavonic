@@ -184,6 +184,12 @@ gap around a fast inner loop. `cargo gold` is the release-profile alias for
   everything each admission reaches, keeps the admissions that clear their
   cluster without moving any other row's class, and reverts the rest into
   `reports/synodal-gold-rejected-hypotheses.tsv`.
+- `cargo gold cell <lemma-or-id> [<cell-key>...]` and
+  `cargo gold analyze <surface>...` are dev aids for the engine-bug class:
+  the first prints every liturgical variant the registry path generates for
+  the named cells (with the last trace stage), the second prints the analyses
+  the gate sees for a printed surface and the variants each analysed cell
+  round-trips to.
 - `cargo gold loop [--only <class>] [--take N] [--min-cells N]` chains
   propose → admit → scoped replay and prints one line: rows cleared per class,
   the rules-vs-residue split of what landed, elapsed seconds.

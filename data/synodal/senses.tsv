@@ -132,6 +132,7 @@ synodal:numeral:tysiascha	sense:thousand	one thousand	number,magnitude	alypy-gam
 synodal:numeral:v06-sto	sense:v06:sto	one hundred	number,quantity	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:vtoryi	sense:second	second; ordinal two	number	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:numeral:chetvertyi	sense:fourth	fourth; ordinal four	number,ordinal	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
+synodal:particle:conditional-by	sense:conditional-particle-by	conditional (optative) particle; enclitic and unaccented	grammar,mood	ponomar-elizabeth-bible-2026-08-09	synodal-russian	normative
 synodal:particle:negative-ni	sense:negative-particle-ni	negative particle; negative pronoun component	grammar,negation	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:az	sense:first-person	I; first-person personal pronoun	person,grammar	alypy-gamanovich-grammar-web-2023	synodal-russian	normative
 synodal:pronoun:chii	sense:whose	whose; interrogative possessive pronoun	possession,grammar,interrogative	alypy-gamanovich-grammar-web-2023	synodal-russian	normative

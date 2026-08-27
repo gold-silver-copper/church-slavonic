@@ -11,6 +11,7 @@ pub mod phrases;
 mod provider;
 mod registry;
 mod resolver;
+pub use resolver::ENCLITIC_ENVIRONMENT_ASSUMPTION;
 mod spec;
 
 pub use abbreviation::Abbreviation;

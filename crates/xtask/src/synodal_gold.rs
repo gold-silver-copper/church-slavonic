@@ -60,6 +60,14 @@ pub(crate) fn run(
             peeked.next();
             return crate::synodal_gold_burndown::probe(&mut peeked, root);
         }
+        Some("cell") => {
+            peeked.next();
+            return crate::synodal_gold_burndown::cell(&mut peeked, root);
+        }
+        Some("analyze") => {
+            peeked.next();
+            return crate::synodal_gold_burndown::analyze(&mut peeked, root);
+        }
         _ => {}
     }
     while let Some(argument) = peeked.next() {
@@ -1021,10 +1029,17 @@ pub(crate) fn load_paradigm_oracle(root: &Path) -> Result<Vec<ParadigmOracleRow>
 /// adjective-plus-noun demonstration pairs) accepts the whole phrase or any
 /// single word of it.
 pub(crate) fn paradigm_expected_variants(surface: &str) -> Vec<String> {
-    let dehyphenated: String = surface
-        .chars()
-        .filter(|character| *character != '-')
-        .collect();
+    // §7.1 strips the stem-ending hyphen; the hyphen that opens a `-suffix`
+    // alternate inside a parenthesis (§7.2) is part of that notation and
+    // must survive to the alternate parser below.
+    let mut dehyphenated = String::with_capacity(surface.len());
+    let mut previous = None;
+    for character in surface.chars() {
+        if character != '-' || previous == Some('(') {
+            dehyphenated.push(character);
+        }
+        previous = Some(character);
+    }
     let mut variants: BTreeSet<String> = BTreeSet::new();
     let mut base = dehyphenated.clone();
     while let Some(open) = base.find('(') {
@@ -1043,6 +1058,13 @@ pub(crate) fn paradigm_expected_variants(surface: &str) -> Vec<String> {
                 variants.extend(apply_suffix_alternate(&head, suffix));
             } else if !alternate.is_empty() && !alternate.contains(' ') {
                 variants.insert(alternate.to_owned());
+                // An optional letter printed in place — `(н)е́мъ` — is the
+                // same "either side matches" alternate: the word with the
+                // parenthesised letters kept is accepted beside the word
+                // without them.
+                if !tail.is_empty() {
+                    variants.insert(format!("{head}{alternate}{tail}"));
+                }
             }
         }
         base = format!("{head}{tail}").trim().to_owned();
@@ -1476,6 +1498,16 @@ mod tests {
         assert!(!surfaces_match("є҆стество̀", "е҆стество̀"));
         assert!(accentless_match("слово", "сло́во"));
         assert!(!accentless_match("слово", "словъ"));
+    }
+
+    #[test]
+    fn paradigm_in_place_parenthetical_accepts_both_readings() {
+        let variants = paradigm_expected_variants("(н)е́мъ");
+        assert!(variants.iter().any(|variant| variant == "не́мъ"));
+        assert!(variants.iter().any(|variant| variant == "е́мъ"));
+        let suffix = paradigm_expected_variants("цар-ѝ (-е́й)");
+        assert!(suffix.iter().any(|variant| nfc(variant) == nfc("царе́й")));
+        assert!(suffix.iter().any(|variant| nfc(variant) == nfc("царѝ")));
     }
 
     #[test]

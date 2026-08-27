@@ -407,6 +407,7 @@ dependencies = [
 name = "synodal-church-slavonic"
 version = "0.6.0"
 dependencies = [
+ "church-slavonic-orthography",
  "serde",
  "synodal-church-slavonic-core",
  "unicode-normalization",

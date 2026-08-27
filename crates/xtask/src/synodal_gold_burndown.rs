@@ -311,6 +311,121 @@ pub(crate) fn probe(
     Ok(())
 }
 
+/// Dev aid: `synodal-gold cell <lemma-or-id> <cell-key>...` prints every
+/// liturgical variant the registry path generates for the named cells (or,
+/// with no cell keys, every cell of the lexeme's part of speech that the
+/// productive class inventory enumerates).
+pub(crate) fn cell(
+    args: &mut impl Iterator<Item = String>,
+    root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let arguments: Vec<String> = args.collect();
+    let [key, cells @ ..] = arguments.as_slice() else {
+        return Err("cell <lemma-or-id> [<cell-key>...]".into());
+    };
+    let _ = root;
+    let liturgical = Inflector::builder()
+        .orthography(OrthographyProfile::SynodalLiturgical)
+        .build();
+    let id = if key.starts_with("synodal:") {
+        synodal_church_slavonic::LexemeId::from(key.as_str())
+    } else {
+        let lexeme = synodal_church_slavonic::lookup(key)
+            .or_else(|_| synodal_church_slavonic::lookup(&strip_accents(key)))?;
+        lexeme.id().clone()
+    };
+    println!("{}", id.as_str());
+    let keys: Vec<String> = if cells.is_empty() {
+        let pos = id.as_str().split(':').nth(1).unwrap_or_default();
+        productive_classes()
+            .into_iter()
+            .filter(|class| class.pos == pos)
+            .take(1)
+            .flat_map(|class| class_cells(&class).into_iter().map(|cell| cell.key()))
+            .collect()
+    } else {
+        cells.to_vec()
+    };
+    for key in keys {
+        let Ok(cell) = key.parse::<GrammarCell>() else {
+            println!("{key}\tUNPARSED");
+            continue;
+        };
+        match liturgical.form_by_id(&id, cell) {
+            Ok(forms) => {
+                let variants: Vec<String> = forms
+                    .variants()
+                    .iter()
+                    .map(|variant| {
+                        format!(
+                            "{} ({}; {})",
+                            variant.printed,
+                            variant.expanded,
+                            variant
+                                .rule_trace
+                                .steps()
+                                .last()
+                                .map(|step| step.stage.as_str())
+                                .unwrap_or("")
+                        )
+                    })
+                    .collect();
+                println!("{key}\t{}", variants.join(" / "));
+            }
+            Err(error) => println!("{key}\tERROR {error}"),
+        }
+    }
+    Ok(())
+}
+
+/// Dev aid: `synodal-gold analyze <surface>...` prints the analyses the gate
+/// sees for a printed surface (lexeme, cell, analysis source) and the
+/// liturgical variants each analysed cell round-trips to.
+pub(crate) fn analyze(
+    args: &mut impl Iterator<Item = String>,
+    root: &Path,
+) -> Result<(), Box<dyn Error>> {
+    let _ = root;
+    let analyzer =
+        synodal_church_slavonic_dictionary::coverage::Analyzer::new(Inflector::default())
+            .map_err(|error| format!("build analyzer: {error}"))?;
+    let liturgical = Inflector::builder()
+        .orthography(OrthographyProfile::SynodalLiturgical)
+        .build();
+    for surface in args {
+        let surface = synodal_gold::nfc(&surface);
+        println!("{surface}");
+        let analyses = analyzer
+            .analyze_profile(&surface, OrthographyProfile::SynodalLiturgical)
+            .unwrap_or_default();
+        if analyses.is_empty() {
+            println!("\t(no analysis)");
+        }
+        for analysis in analyses {
+            let cell = analysis.cell.map(|cell| cell.key()).unwrap_or_default();
+            let forms = analysis
+                .cell
+                .and_then(|cell| liturgical.form_by_id(analysis.lexeme.id(), cell).ok())
+                .map(|forms| {
+                    forms
+                        .variants()
+                        .iter()
+                        .map(|variant| variant.printed.clone())
+                        .collect::<Vec<_>>()
+                        .join(" / ")
+                })
+                .unwrap_or_else(|| "-".into());
+            println!(
+                "\t{}\t{cell}\t{:?}\treflexive={}\t=> {forms}",
+                analysis.lexeme.id().as_str(),
+                analysis.source,
+                analysis.reflexive
+            );
+        }
+    }
+    Ok(())
+}
+
 fn spec_form(
     spec: &Spec,
     inflector: Inflector,

@@ -14,6 +14,7 @@ fn registry_key_compatibility_is_canonical_and_ordered() {
         [
             "pronoun:accusative:plural:feminine:third:animate",
             "pronoun:accusative:plural:feminine:third:any",
+            "pronoun:accusative:plural:any:third:any",
         ]
     );
 
@@ -393,7 +394,7 @@ fn otrocha_has_a_complete_mobile_at_stem_accent_paradigm() {
         nominative.primary().source,
         FormSource::SynodalNormativeGeneration { .. }
     ));
-    assert_eq!(nominative.texts().collect::<Vec<_>>(), ["ѻ҆троча̀", "Ѻ҆троча́"]);
+    assert_eq!(nominative.texts().collect::<Vec<_>>(), ["ѻ҆троча̀", "ѻ҆троча́"]);
 
     for (case, number, expected) in [
         (Case::Accusative, Number::Singular, "ѻ҆троча̀"),
@@ -1037,7 +1038,9 @@ fn skonchanie_has_a_complete_fixed_accent_soft_ie_paradigm() {
         (Case::Nominative, Number::Singular, "сконча́нїе"),
         (Case::Genitive, Number::Singular, "сконча́нїѧ"),
         (Case::Locative, Number::Singular, "сконча́нїи"),
-        (Case::Nominative, Number::Plural, "сконча́нїѧ"),
+        // Alypy §36: the plural is homographic with the genitive singular
+        // and takes the letter antistich (unattested cell; cf. спасє́нїѧ).
+        (Case::Nominative, Number::Plural, "скѡнча́нїѧ"),
         (Case::Dative, Number::Plural, "сконча́нїємъ"),
     ] {
         assert_eq!(
@@ -1139,7 +1142,7 @@ fn knyaz_is_a_complete_mobile_soft_masculine_with_bounded_variants() {
     assert_eq!(texts(Case::Dative, Number::Plural), ["кнѧзє́мъ"]);
     assert!(texts(Case::Locative, Number::Singular).contains(&"кнѧ́зи".to_owned()));
     assert!(texts(Case::Locative, Number::Singular).contains(&"кнѧ́зѣ".to_owned()));
-    assert!(texts(Case::Nominative, Number::Plural).contains(&"Кнѧ̑зи".to_owned()));
+    assert!(texts(Case::Nominative, Number::Plural).contains(&"кнѧ̑зи".to_owned()));
     assert!(texts(Case::Nominative, Number::Plural).contains(&"кнѧ́зїе".to_owned()));
     assert_eq!(texts(Case::Accusative, Number::Dual), ["кнѧ̑зѧ"]);
     assert_eq!(noun.paradigm(Animacy::Animate).failures().count(), 0);
@@ -1285,7 +1288,7 @@ fn dshcher_has_a_complete_fixed_oblique_accent_paradigm() {
     .expect("reviewed daughter noun");
 
     for (case, number, expected) in [
-        (Case::Nominative, Number::Singular, "Дщѝ"),
+        (Case::Nominative, Number::Singular, "дщѝ"),
         (Case::Genitive, Number::Singular, "дще́ре"),
         (Case::Instrumental, Number::Singular, "дще́рїю"),
         (Case::Nominative, Number::Plural, "дщє́ри"),

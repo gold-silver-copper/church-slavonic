@@ -768,6 +768,7 @@ synodal:numeral:wikt-2fe80b81eaf8	седмь	numeral	numeral-cardinal-i-stem	с�
 synodal:numeral:wikt-42c5d78bab14	пѧть	numeral	numeral-cardinal-i-stem	пѧт			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:wikt-58a4f8eb4197	шесть	numeral	numeral-cardinal-i-stem	шест			alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:numeral:wikt-bc270882d39d	десѧть	numeral	numeral-cardinal-ten	десѧт			alypy-gamanovich-grammar-web-2023	synodal-russian
+synodal:particle:conditional-by	бы	particle	exact				ponomar-elizabeth-bible-2026-08-09	synodal-russian
 synodal:particle:negative-ni	ни	particle	exact				alypy-gamanovich-grammar-web-2023	synodal-russian
 synodal:particle:wikt-928bf31442d9	не	particle					ponomar-elizabeth-bible-2026-08-09	synodal-russian
 synodal:preposition:bez	безъ	preposition					ponomar-elizabeth-bible-2026-08-09	synodal-russian
@@ -2207,7 +2208,6 @@ synodal:noun:rab	noun:genitive:plural:animate	рабъ	ра̑бъ	v06-ud-651c066
 synodal:noun:rab	noun:genitive:plural:animate	рабѡвъ	рабѡ́въ	ponomar-acts-10-7-rabov-genitive-plural	synodal-attestation	synodal-russian		
 synodal:noun:rab	noun:genitive:singular:animate	раба	раба̀	alypy-34-rab,v05-target-rab-variants	synodal-attestation	synodal-russian		
 synodal:noun:rab	noun:instrumental:plural:animate	рабы	рабы̑	alypy-34-rab,v05-source-form-f5f28215144af269	synodal-attestation	synodal-russian		
-synodal:noun:rab	noun:instrumental:singular:animate	рабѡмъ	рабѡ́мъ	v06-ud-87dd4d8e096bec3c,v06-target-97504c7b8b9c264e	synodal-attestation	synodal-russian		
 synodal:noun:rab	noun:nominative:plural:animate	раби	рабѝ	alypy-34-rab,v05-source-form-b5fb18d0598be61e	synodal-attestation	synodal-russian		
 synodal:noun:rab	noun:nominative:singular:animate	рабъ	ра́бъ	v06-ud-221d6dc141bd8b3c,v06-target-1506941022406563	synodal-attestation	synodal-russian		
 synodal:noun:rab	noun:nominative:singular:animate	рабъ	ра̑бъ	v06-ud-221d6dc141bd8b3c,v06-target-b703b182b585c1dc	synodal-attestation	synodal-russian		
@@ -2215,7 +2215,6 @@ synodal:noun:rab	noun:vocative:plural:animate	раби	рабѝ	alypy-34-rab,v05
 synodal:noun:selo	noun:accusative:plural:inanimate	села	се́ла	v06-ud-1e1f91ab44dc9d14,v06-target-8bc90beeedf358fd	synodal-attestation	synodal-russian		
 synodal:noun:selo	noun:accusative:plural:inanimate	села	села̀	v05-ready-selo-gen-pl	synodal-attestation	synodal-russian		
 synodal:noun:selo	noun:accusative:singular:inanimate	село	село̀	v05-source-form-9c8ad1ff699c46c7	synodal-attestation	synodal-russian		
-synodal:noun:selo	noun:dative:singular:inanimate	селѣ	селѣ̀	v05-ready-selo-oblique	synodal-attestation	synodal-russian		
 synodal:noun:selo	noun:genitive:singular:inanimate	села	се́ла	v06-ud-31fb31e06dad9d4f,v06-target-8bc90beeedf358fd	synodal-attestation	synodal-russian		
 synodal:noun:selo	noun:genitive:singular:inanimate	села	села̀	v05-ready-selo-gen-pl	synodal-attestation	synodal-russian		
 synodal:noun:selo	noun:locative:plural:inanimate	селѣхъ	се́лѣхъ	v05-ready-selo-loc-pl	synodal-attestation	synodal-russian		
@@ -2274,8 +2273,8 @@ synodal:noun:spasenie	noun:dative:singular:inanimate	спасенїю	спасе
 synodal:noun:spasenie	noun:genitive:singular:inanimate	спасенїѧ	спасе́нїѧ	ponomar-esther-4-11-spaseniya-genitive-singular	synodal-attestation	synodal-russian		
 synodal:noun:spasenie	noun:locative:singular:inanimate	спасенїи	спасе́нїи	ponomar-baruch-4-22-spasenii-locative-singular	synodal-attestation	synodal-russian		
 synodal:noun:spirit	lexical-form	дꙋхъ	дꙋ́хъ	review:v05:noun:spirit	synodal-attestation	synodal-russian		
-synodal:noun:spirit	noun:dative:plural:inanimate	дꙋхомъ	Дꙋ́хомъ	v07-source-964ced1be3286c6d,v07-target-4f17d5acd5b2373b	synodal-attestation	synodal-russian		
 synodal:noun:spirit	noun:genitive:singular:inanimate	дꙋха	дꙋ́ха	v07-source-882463a770504483,v07-target-ae50ee6a33bcdc02	synodal-attestation	synodal-russian		
+synodal:noun:spirit	noun:instrumental:singular:inanimate	дꙋхомъ	Дꙋ́хомъ	v07-source-964ced1be3286c6d,v07-target-4f17d5acd5b2373b	synodal-attestation	synodal-russian		
 synodal:noun:sretenie	noun:accusative:singular:inanimate	срѣтенїе	срѣ́тенїе	ponomar-acts-28-15-sretenie-accusative-singular	synodal-attestation	synodal-russian		
 synodal:noun:sretenie	noun:instrumental:singular:inanimate	срѣтенїемъ	срѣ́тенїемъ	ponomar-jerem-27-3-sreteniem-instrumental-singular	synodal-attestation	synodal-russian		
 synodal:noun:svet	noun:genitive:singular:inanimate	свѣта	свѣ́та	v06-ud-svet-gen-sg,v06-target-svet-gen-sg	synodal-attestation	synodal-russian		
@@ -3782,6 +3781,7 @@ synodal:numeral:wikt-bc270882d39d	numeral:cardinal:accusative:plural:feminine:in
 synodal:numeral:wikt-bc270882d39d	numeral:cardinal:accusative:plural:masculine:inanimate	десѧти	десѧтѝ	review:v03:bc270882d39d,v06-ud-9bdff8210bf44713,v06-target-5a2867947bbcf08a	synodal-attestation	synodal-russian		
 synodal:numeral:wikt-bc270882d39d	numeral:cardinal:dative:singular:feminine:any	десѧти	десѧтѝ	review:v03:bc270882d39d,v06-ud-e659c3f9894a1c6d,v06-target-5a2867947bbcf08a	synodal-attestation	synodal-russian		
 synodal:numeral:wikt-bc270882d39d	numeral:cardinal:dative:singular:masculine:any	десѧти	десѧтѝ	review:v03:bc270882d39d,v06-ud-e659c3f9894a1c6d,v06-target-5a2867947bbcf08a	synodal-attestation	synodal-russian		
+synodal:particle:conditional-by	indeclinable	бы	бы	ponomar-acts-10-17-by	synodal-attestation	synodal-russian		
 synodal:particle:negative-ni	indeclinable	ни	ни	alypy-48-negative-pronoun-interposition	normative-table	synodal-russian		
 synodal:particle:wikt-928bf31442d9	indeclinable	не	не	review:v03:928bf31442d9	synodal-attestation	synodal-russian		
 synodal:preposition:bez	indeclinable	безъ	без̾	review:v12:preposition:bez	synodal-attestation	synodal-russian		
@@ -6541,7 +6541,8 @@ synodal:noun:chudo	synodal-accent:noun-chudo-fitted	noun:singular:accusative	ste
 synodal:noun:chudo	synodal-accent:noun-chudo-fitted	noun:singular:genitive	stem-vowel-from-start:0	acute		noun-chudo-accent-fit	ponomar-elizabeth-bible-2026-08-09	Acts.3.10	synodal-russian	synodal-russian
 synodal:noun:chudo	synodal-accent:noun-chudo-fitted	noun:singular:nominative	stem-vowel-from-start:0	acute		noun-chudo-accent-fit	ponomar-elizabeth-bible-2026-08-09	Acts.3.10	synodal-russian	synodal-russian
 synodal:noun:chudo	synodal-accent:noun-chudo-fitted	noun:singular:vocative	stem-vowel-from-start:0	acute		noun-chudo-accent-fit	ponomar-elizabeth-bible-2026-08-09	Acts.3.10	synodal-russian	synodal-russian
-synodal:noun:dar	synodal-accent:noun-dar-fitted	noun:plural:dative	stem-vowel-from-start:0	acute		noun-dar-accent-fit	ponomar-elizabeth-bible-2026-08-09	Deut.10.17	synodal-russian	synodal-russian
+synodal:noun:dar	synodal-accent:noun-dar-fitted	noun:plural:dative	ending-vowel-from-end:0	acute		noun-dar-accent-fit	ponomar-elizabeth-bible-2026-08-09	Deut.10.17	synodal-russian	synodal-russian
+synodal:noun:dar	synodal-accent:noun-dar-fitted	noun:singular:instrumental	stem-vowel-from-start:0	acute		noun-dar-accent-fit	ponomar-elizabeth-bible-2026-08-09	Deut.10.17	synodal-russian	synodal-russian
 synodal:noun:day	synodal-accent:noun-day-fitted	noun:plural:dative,instrumental	stem-vowel-from-start:0	acute		noun-day-accent-fit	ponomar-elizabeth-bible-2026-08-09	Acts.16.35	synodal-russian	synodal-russian
 synodal:noun:delo	synodal-accent:noun-delo-fitted	noun:dual:genitive	stem-vowel-from-start:0	acute		noun-delo-accent-fit	ponomar-elizabeth-bible-2026-08-09	Apoc.14.13	synodal-russian	synodal-russian
 synodal:noun:delo	synodal-accent:noun-delo-fitted	noun:dual:locative	stem-vowel-from-start:0	acute		noun-delo-accent-fit	ponomar-elizabeth-bible-2026-08-09	Apoc.14.13	synodal-russian	synodal-russian
@@ -6621,6 +6622,7 @@ synodal:noun:rab	synodal-accent:noun-rab-fitted	noun:dual:accusative	stem-vowel-
 synodal:noun:rab	synodal-accent:noun-rab-fitted	noun:dual:nominative	stem-vowel-from-start:1	kamora		noun-rab-accent-fit	ponomar-elizabeth-bible-2026-08-09	Dan.6.20	synodal-russian	synodal-russian
 synodal:noun:rab	synodal-accent:noun-rab-fitted	noun:dual:vocative	stem-vowel-from-start:1	kamora		noun-rab-accent-fit	ponomar-elizabeth-bible-2026-08-09	Dan.6.20	synodal-russian	synodal-russian
 synodal:noun:rab	synodal-accent:noun-rab-fitted	noun:plural:locative	stem-vowel-from-start:1	acute		noun-rab-accent-fit	ponomar-elizabeth-bible-2026-08-09	Dan.6.20	synodal-russian	synodal-russian
+synodal:noun:rab	synodal-accent:noun-rab-fitted	noun:singular:instrumental	ending-vowel-from-end:0	acute		noun-rab-accent-fit	ponomar-elizabeth-bible-2026-08-09	Dan.6.20	synodal-russian	synodal-russian
 synodal:noun:rab	synodal-accent:noun-rab-fitted	noun:singular:locative	stem-vowel-from-start:1	acute		noun-rab-accent-fit	ponomar-elizabeth-bible-2026-08-09	Dan.6.20	synodal-russian	synodal-russian
 synodal:noun:rab	synodal-accent:noun-rab-fitted	noun:singular:vocative	stem-vowel-from-start:0	acute		noun-rab-accent-fit	ponomar-elizabeth-bible-2026-08-09	Dan.6.20	synodal-russian	synodal-russian
 synodal:noun:resurrection	synodal-accent:noun-resurrection-fitted	noun:singular	stem-vowel-from-start:2	acute		noun-resurrection-accent-fit	ponomar-elizabeth-bible-2026-08-09	Heb.11.35	synodal-russian	synodal-russian
@@ -6871,6 +6873,7 @@ synodal:numeral:edin	synodal-accent:edin-cardinal-singular-fixed	numeral:singula
 synodal:numeral:fractional-chetvert	synodal-accent:numeral-fractional-chetvert-fitted	numeral:singular	stem-vowel-from-start:0	acute		numeral-fractional-chetvert-accent-fit	ponomar-elizabeth-bible-2026-08-09	Ezek.5.12	synodal-russian	synodal-russian
 synodal:numeral:fractional-desyatina	synodal-accent:numeral-fractional-desyatina-fitted	numeral:singular,dual,plural	stem-vowel-from-start:2	acute		numeral-fractional-desyatina-accent-fit	ponomar-elizabeth-bible-2026-08-09	Lev.24.5	synodal-russian	synodal-russian
 synodal:numeral:fractional-pol	synodal-accent:numeral-fractional-pol-fitted	numeral:plural	stem-vowel-from-start:0	acute		numeral-fractional-pol-accent-fit	ponomar-elizabeth-bible-2026-08-09	Deut.4.16	synodal-russian	synodal-russian
+synodal:numeral:fractional-pol	synodal-accent:numeral-fractional-pol-fitted	numeral:singular	stem-vowel-from-start:0	acute		numeral-fractional-pol-accent-fit	ponomar-elizabeth-bible-2026-08-09	Deut.4.16	synodal-russian	synodal-russian
 synodal:numeral:multiplicative-sugubyi	synodal-accent:numeral-multiplicative-sugubyi-fitted	numeral:dual	stem-vowel-from-start:1	kamora		numeral-multiplicative-sugubyi-accent-fit	ponomar-elizabeth-bible-2026-08-09	Gen.23.17	synodal-russian	synodal-russian
 synodal:numeral:multiplicative-tregubyi	synodal-accent:numeral-multiplicative-tregubyi-fitted	numeral:singular	stem-vowel-from-start:1	acute		numeral-multiplicative-tregubyi-accent-fit	ponomar-elizabeth-bible-2026-08-09	Sirach.28.16	synodal-russian	synodal-russian
 synodal:numeral:osmyi	synodal-accent:numeral-osmyi-fitted	numeral:singular,dual	stem-vowel-from-start:1	acute		numeral-osmyi-accent-fit	ponomar-elizabeth-bible-2026-08-09	Apoc.21.20	synodal-russian	synodal-russian
@@ -7370,8 +7373,8 @@ synodal:noun:zakon	synodal-positional:zakon-wide-plural	noun:plural:genitive,dat
 SYN-ORTH-ANTISTICH-LITTLE-YUS	пришедша	source-selected masculine-or-feminine plural after a husher	пришедшѧ	dual masculine and all neuter cells preserve а and require a different selected operation	alypy-40-little-yus-variant	synodal-russian
 SYN-ORTH-ANTISTICH-YERI	мужи	source-selected non-singular husher-stem cell	мужы	direct-case and dual restrictions require an explicit cell scope; Alypy permits kamora or other dissimilators in related cells	alypy-36-antistich-yeri	synodal-russian
 SYN-ORTH-CASE-KAMORA	рабъ	dual-or-plural case distinction without usable о or е	ра̑бъ	implemented by a cell-scoped AccentParadigm with AccentMark::Kamora	alypy-36-case-orthography	synodal-russian
-SYN-ORTH-CASE-OMEGA	рабомъ	selected plural-or-dual case distinction	рабѡмъ	§43 tables preserve ordinary vowels in some classes; exact table or scoped PositionalParadigm controls	alypy-36-case-orthography	synodal-russian
-SYN-ORTH-CASE-WIDE-E	фарисей	dual-or-plural-case-distinction	фарисєй	exact cell or scoped PositionalParadigm; not inferred from a homograph	alypy-2-letter-e	synodal-russian
+SYN-ORTH-CASE-OMEGA	рабомъ	selected plural-or-dual case distinction	рабѡмъ	genitive plural -ѡвъ/-євъ is language-wide; dative plural -ѡмъ/-ємъ only where the instrumental singular shares the letters (feminine i-stems keep -емъ); exact table or scoped PositionalParadigm controls the rest	alypy-36-case-orthography	synodal-russian
+SYN-ORTH-CASE-WIDE-E	фарисей	dual-or-plural-case-distinction	фарисєй	inferred from paradigm-internal homography with a singular print (SYN-ORTH-ANTISTICH-ALYPY-36, accents included, across genders); exact cells and scoped PositionalParadigms override; not inferred across lexemes	alypy-2-letter-e	synodal-russian
 SYN-ORTH-FOREIGN-DECIMAL-I	идолъ	foreign Greek-etymological spelling	ідѡлъ	stable lexical identity and source spelling required	alypy-2-letter-i	synodal-russian
 SYN-ORTH-FOREIGN-IZHITSA	миро	foreign etymological spelling	мѵро	pronunciation and diacritic depend on Greek etymology	alypy-2-foreign-letters	synodal-russian
 SYN-ORTH-FOREIGN-OMEGA	иоаннъ	foreign etymological spelling	іѡаннъ	stable lexical identity required	alypy-2-letter-o	synodal-russian
@@ -7380,7 +7383,7 @@ SYN-ORTH-I-BEFORE-VOWEL	и	before-vowel	ї	foreign-etymology-may-also-require-de
 SYN-ORTH-I-BEFORE-VOWEL-SEMANTIC-EXCEPTION	сиѡна	Sihon-king identity	сиѡна	Sion-mountain identity uses сїѡнъ	alypy-2-letter-i	synodal-russian
 SYN-ORTH-INITIAL-DIGRAPH-UK	ꙋ	word-initial	ᲂу	medial and final positions preserve monograph uk	alypy-2-letter-uk	synodal-russian
 SYN-ORTH-INITIAL-E	е	word-initial	є	lexically-contrastive-case-forms	alypy-2-letter-e	synodal-russian
-SYN-ORTH-INITIAL-O	о	word-initial	ѻ	lexical-and-compound-exceptions	alypy-2-letter-o	synodal-russian
+SYN-ORTH-INITIAL-O	о	word-initial	ѻ	language-wide default in the liturgical print (SYN-ORTH-LITURGICAL-PRESENTATION); lexical ѡ- prefixes and the uk digraph are the exceptions	alypy-2-letter-o	synodal-russian
 SYN-ORTH-INITIAL-YA	ѧ	word-initial	ꙗ	organ-yazyk-and-third-person-pronoun	alypy-2-letter-ya	synodal-russian
 SYN-ORTH-INITIAL-YA-SEMANTIC-EXCEPTION	ѧзыкъ	body-organ identity	ѧзыкъ	people/nation identity instead selects initial ꙗ; third-person plural accusative ѧ is also preserved	alypy-2-letter-ya	synodal-russian
 SYN-ORTH-LEXICAL-DZE	зло	closed lexical family and derivatives	ѕло	lexical identity required; numeral six is a separate notation system	alypy-2-letter-dze	synodal-russian
@@ -7951,6 +7954,7 @@ ponomar-acts-1-7-razumeti	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Act
 ponomar-acts-1-7-reche	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Acts.1.7	target-attestation	Target-recension acute printed variant Рече́ reviewed in passage context; capitalization is presentation-only.
 ponomar-acts-1-7-vo	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Acts.1.7	target-attestation	Reviewed positional preposition variant in a locked source-partition passage.
 ponomar-acts-1-9-sei-siya	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Acts.1.9	target-attestation	Source-partition target witness for circumflex plural сїѧ̑; disjoint from held-out passages.
+ponomar-acts-10-17-by	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Acts.10.17	target-attestation	Source-partition print of the enclitic conditional particle бы (unaccented in 196 tokens, e.g. Acts.10.17 а҆́ще бы), a lexeme distinct from the accented aorist бы̀ of бы́ти.
 ponomar-acts-10-17-videnie-nominative-singular	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Acts.10.17	target-attestation	The source-partition clause что́ бы бы́ло видѣ́нїе directly supplies inanimate neuter nominative singular and fixed stem acute.
 ponomar-acts-10-19-videnii-locative-singular	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Acts.10.19	target-attestation	The source-partition governed phrase ѡ҆ видѣ́нїи directly supplies inanimate locative singular and the regular soft-neuter ending.
 ponomar-acts-10-2-vsegda-indeclinable	ponomar-elizabeth-bible-2026-08-09	synodal-russian	Acts.10.2	target-attestation	The source-partition target passage directly attests exact всегда̀ as an invariant temporal adverb; Acts.24.16 remains held out.

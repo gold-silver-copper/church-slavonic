@@ -184,7 +184,8 @@ fn high_frequency_v19_peter_name_has_complete_mobile_paradigm() {
     assert_eq!(form(Case::Vocative).primary_text(), "пе́тре");
     assert_eq!(
         form(Case::Dative).texts().collect::<Vec<_>>(),
-        vec!["петро́ви", "петрꙋ̀"]
+        // The pre-enclitic acute (Alypy §5) is a variant after the isolated grave.
+        vec!["петро́ви", "петрꙋ̀", "петрꙋ́"]
     );
 
     let paradigm = peter.paradigm(Animacy::Animate);

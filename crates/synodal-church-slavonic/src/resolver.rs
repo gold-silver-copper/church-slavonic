@@ -1,8 +1,12 @@
+use church_slavonic_orthography::synodal::{
+    antistich_letter, final_accent_alternate, lowercase_initial, present_initial_broad_on,
+    unaccented_enclitic, widen_plural_ending_printed,
+};
 use synodal_church_slavonic_core::{
-    AccentParadigm, Assumption, AuthorityRole, Confidence, EpistemicRole, Error, Evidence,
-    EvidenceId, EvidenceKind, FormSet, FormSource, FormVariant, GenerationPolicy, GrammarCell,
-    LexemeId, OrthographyProfile, PositionalParadigm, Recension, Result, RuleId, RuleTrace,
-    SourceId, TraceStep, normalize_lookup_accentless,
+    AccentParadigm, Assumption, AuthorityRole, Case, Confidence, EpistemicRole, Error, Evidence,
+    EvidenceId, EvidenceKind, FormSet, FormSource, FormVariant, Gender, GenerationPolicy,
+    GrammarCell, LexemeId, Number, OrthographyProfile, PositionalParadigm, Recension, Result,
+    RuleId, RuleTrace, SourceId, TraceStep, normalize_lookup_accentless,
 };
 
 use crate::{
@@ -197,7 +201,8 @@ pub(crate) fn resolve_cell(
         exact.append(&mut candidate);
     }
     if !exact.is_empty() {
-        return exact_forms(inflector, id, &exact_key, &exact);
+        let forms = exact_forms(inflector, id, &exact_key, &exact)?;
+        return present_liturgical_cell(inflector, id, cell, forms, false);
     }
     if let Some(defect) = registry::defect_for(id, &key)? {
         return match defect.kind {
@@ -290,7 +295,292 @@ pub(crate) fn resolve_cell(
     } else {
         forms
     };
-    apply_generated_presentation(inflector, id, cell, &key, forms)
+    let forms = apply_generated_presentation(inflector, id, cell, &key, forms)?;
+    present_liturgical_cell(inflector, id, cell, forms, true)
+}
+
+const PRESENTATION_RULE: &str = "SYN-ORTH-LITURGICAL-PRESENTATION";
+const ANTISTICH_RULE: &str = "SYN-ORTH-ANTISTICH-ALYPY-36";
+const ENCLITIC_RULE: &str = "SYN-ACCENT-ENCLITIC-ENVIRONMENT-ALYPY-5";
+/// Assumption code carried by an enclitic-environment print (Alypy §5) so
+/// that surface indexes can tell it from the isolated print.
+pub const ENCLITIC_ENVIRONMENT_ASSUMPTION: &str = "enclitic-environment";
+
+fn nominal_number_and_case(cell: GrammarCell) -> Option<(Number, Case)> {
+    match cell {
+        GrammarCell::Noun(cell) | GrammarCell::VerbalNoun(cell) => Some((cell.number, cell.case)),
+        GrammarCell::Adjective(cell) | GrammarCell::Determiner(cell) => {
+            Some((cell.number, cell.case))
+        }
+        GrammarCell::Numeral(cell) => Some((cell.number, cell.case)),
+        GrammarCell::Participle(cell) => Some((cell.agreement.number, cell.agreement.case)),
+        GrammarCell::Pronoun(cell) => Some((cell.number, cell.case)),
+        _ => None,
+    }
+}
+
+/// The singular cells a plural or dual nominal cell can be homographic with:
+/// every case of the singular; for agreeing words also every gender, since
+/// the print contrasts number across genders (небє́снаѧ plural neuter against
+/// небе́снаѧ feminine singular). Length and comparison stay fixed.
+fn singular_counterparts(cell: GrammarCell) -> Vec<GrammarCell> {
+    let cases = [
+        Case::Nominative,
+        Case::Genitive,
+        Case::Dative,
+        Case::Accusative,
+        Case::Instrumental,
+        Case::Locative,
+        Case::Vocative,
+    ];
+    let genders = [Gender::Masculine, Gender::Feminine, Gender::Neuter];
+    let mut cells = Vec::new();
+    for case in cases {
+        match cell {
+            GrammarCell::Noun(mut inner) => {
+                inner.case = case;
+                inner.number = Number::Singular;
+                cells.push(GrammarCell::Noun(inner));
+            }
+            GrammarCell::VerbalNoun(mut inner) => {
+                inner.case = case;
+                inner.number = Number::Singular;
+                cells.push(GrammarCell::VerbalNoun(inner));
+            }
+            GrammarCell::Adjective(mut inner) => {
+                inner.case = case;
+                inner.number = Number::Singular;
+                for gender in genders {
+                    inner.gender = gender;
+                    cells.push(GrammarCell::Adjective(inner));
+                }
+            }
+            GrammarCell::Determiner(mut inner) => {
+                inner.case = case;
+                inner.number = Number::Singular;
+                for gender in genders {
+                    inner.gender = gender;
+                    cells.push(GrammarCell::Determiner(inner));
+                }
+            }
+            GrammarCell::Numeral(mut inner) => {
+                inner.case = case;
+                inner.number = Number::Singular;
+                if inner.gender.is_some() {
+                    for gender in genders {
+                        inner.gender = Some(gender);
+                        cells.push(GrammarCell::Numeral(inner));
+                    }
+                } else {
+                    cells.push(GrammarCell::Numeral(inner));
+                }
+            }
+            GrammarCell::Participle(mut inner) => {
+                inner.agreement.case = case;
+                inner.agreement.number = Number::Singular;
+                for gender in genders {
+                    inner.agreement.gender = gender;
+                    cells.push(GrammarCell::Participle(inner));
+                }
+            }
+            GrammarCell::Pronoun(mut inner) => {
+                inner.case = case;
+                inner.number = Number::Singular;
+                if inner.gender.is_some() {
+                    for gender in genders {
+                        inner.gender = Some(gender);
+                        cells.push(GrammarCell::Pronoun(inner));
+                    }
+                } else {
+                    cells.push(GrammarCell::Pronoun(inner));
+                }
+            }
+            _ => {}
+        }
+    }
+    cells
+}
+
+fn trace(rule: &str, stage: &str, input: String, output: String) -> TraceStep {
+    TraceStep {
+        rule: RuleId::from(rule),
+        stage: stage.into(),
+        input,
+        output,
+        source_recension: Some(Recension::SynodalRussian),
+        target_recension: Recension::SynodalRussian,
+        mapping: None,
+        evidence: vec![],
+    }
+}
+
+fn set_printed(variant: &mut FormVariant, rule: &str, stage: &str, printed: String) {
+    if printed == variant.printed {
+        return;
+    }
+    variant
+        .rule_trace
+        .push(trace(rule, stage, variant.printed.clone(), printed.clone()));
+    if variant.accented.is_some() {
+        variant.accented = Some(printed.clone());
+    }
+    variant.printed = printed;
+}
+
+/// The language-wide liturgical presentation of one cell, applied after the
+/// lexical (exact, positional, accent) realisation of both the exact and the
+/// generated path:
+///
+/// 1. gold contract §3.2 — a verse-initial capital in a reviewed print is
+///    presentation, so the cell surface is the lowercase print;
+/// 2. Alypy §36 — plural genitive/dative `-ѡвъ`/`-ѡмъ`/`-євъ`/`-ємъ` on
+///    generated nominal cells (reviewed exact prints already carry theirs);
+/// 3. Alypy §2 — word-initial broad on `ѻ`;
+/// 4. Alypy §36 — the letter antistich (`ѡ`/`є`) on a generated plural or
+///    dual cell that is homographic with a singular cell of the same lexeme;
+/// 5. Alypy §5 — the pre-enclitic acute / isolated grave pair on a final
+///    vowel, and the unaccented print of a monosyllabic grave-bearing
+///    pronoun, emitted as additional variants after the isolated print.
+fn present_liturgical_cell(
+    inflector: Inflector,
+    id: &LexemeId,
+    cell: GrammarCell,
+    forms: FormSet,
+    generated: bool,
+) -> Result<FormSet> {
+    if inflector.orthography() != OrthographyProfile::SynodalLiturgical {
+        return Ok(forms);
+    }
+    let nominal = nominal_number_and_case(cell);
+    let mut variants: Vec<FormVariant> = forms.variants().to_vec();
+    for variant in &mut variants {
+        let printed = present_initial_broad_on(&lowercase_initial(&variant.printed));
+        set_printed(
+            variant,
+            PRESENTATION_RULE,
+            "liturgical-presentation",
+            printed,
+        );
+    }
+    if generated && matches!(nominal, Some((Number::Plural | Number::Dual, _))) {
+        // The singular prints of the same lexeme (reviewed exact prints
+        // included), computed once per plural or dual request.
+        let mut singulars: Option<Vec<String>> = None;
+        let mut singular_surfaces_of = |inflector, id, cell| {
+            singulars
+                .get_or_insert_with(|| singular_surfaces(inflector, id, cell))
+                .clone()
+        };
+        match nominal {
+            // The genitive plural ending is always wide (дарѡ́въ, ѻ҆тцє́въ).
+            Some((Number::Plural, Case::Genitive)) => {
+                for variant in &mut variants {
+                    let widened = widen_plural_ending_printed(nominal, &variant.printed);
+                    set_printed(variant, ANTISTICH_RULE, "wide-plural-ending", widened);
+                }
+            }
+            // The dative plural ending is wide exactly where the declension
+            // gives the instrumental singular the same letters (ѻ҆тцє́мъ /
+            // ѻ҆тце́мъ, мꙋжє́мъ / мꙋ́жемъ, словесє́мъ / словесе́мъ, пꙋтє́мъ /
+            // пꙋте́мъ); feminine i-stems with -їю instrumentals keep the
+            // narrow letter (лю́демъ, за́повѣдемъ, ме́рзостемъ).
+            Some((Number::Plural, Case::Dative)) => {
+                let candidates: Vec<usize> = variants
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, variant)| {
+                        widen_plural_ending_printed(nominal, &variant.printed) != variant.printed
+                    })
+                    .map(|(index, _)| index)
+                    .collect();
+                if !candidates.is_empty() {
+                    let accentless: Vec<String> = singular_surfaces_of(inflector, id, cell)
+                        .iter()
+                        .map(|surface| normalize_lookup_accentless(surface))
+                        .collect();
+                    for index in candidates {
+                        let variant = &mut variants[index];
+                        if accentless.contains(&normalize_lookup_accentless(&variant.printed)) {
+                            let widened = widen_plural_ending_printed(nominal, &variant.printed);
+                            set_printed(variant, ANTISTICH_RULE, "wide-plural-ending", widened);
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+        // The letter antistich applies to a print that is fully homographic
+        // (accents included: во́ды / воды̀ and дѣ́ла / дѣла̀ stay narrow;
+        // жєны̀ / жены̀ and ю҆́нѡши / ю҆́ноши do not) with a singular print.
+        let candidates: Vec<usize> = variants
+            .iter()
+            .enumerate()
+            .filter(|(_, variant)| antistich_letter(&variant.printed).is_some())
+            .map(|(index, _)| index)
+            .collect();
+        if !candidates.is_empty() {
+            let singulars = singular_surfaces_of(inflector, id, cell);
+            for index in candidates {
+                let variant = &mut variants[index];
+                if singulars.contains(&variant.printed) {
+                    if let Some(substituted) = antistich_letter(&variant.printed) {
+                        set_printed(variant, ANTISTICH_RULE, "number-antistich", substituted);
+                    }
+                }
+            }
+        }
+    }
+    let mut environment = Vec::new();
+    for variant in &variants {
+        let mut alternates = Vec::new();
+        if let Some(acute) = final_accent_alternate(&variant.printed) {
+            alternates.push(("pre-enclitic-or-isolated-accent", acute));
+        }
+        if matches!(cell, GrammarCell::Pronoun(_)) {
+            if let Some(bare) = unaccented_enclitic(&variant.printed) {
+                alternates.push(("unaccented-enclitic", bare));
+            }
+        }
+        for (stage, printed) in alternates {
+            let mut alternate = variant.clone();
+            set_printed(&mut alternate, ENCLITIC_RULE, stage, printed);
+            // The environment print is a variant of the cell, not an
+            // isolated surface: the analyzer indexes the isolated print and
+            // reaches these through the accent-insensitive projection.
+            alternate.assumptions.push(Assumption {
+                code: ENCLITIC_ENVIRONMENT_ASSUMPTION.into(),
+                detail: format!("{stage}: {} beside {}", alternate.printed, variant.printed),
+            });
+            environment.push(alternate);
+        }
+    }
+    for alternate in environment {
+        if !variants
+            .iter()
+            .any(|variant| variant.printed == alternate.printed)
+        {
+            variants.push(alternate);
+        }
+    }
+    FormSet::try_from_variants(variants)
+}
+
+/// Every printed surface of the lexeme's singular cells that share the
+/// requested cell's other dimensions (reviewed exact prints included).
+/// Unavailable cells contribute nothing.
+fn singular_surfaces(inflector: Inflector, id: &LexemeId, cell: GrammarCell) -> Vec<String> {
+    let mut surfaces = Vec::new();
+    for singular in singular_counterparts(cell) {
+        if let Ok(forms) = resolve_cell(inflector, id, singular) {
+            surfaces.extend(
+                forms
+                    .variants()
+                    .iter()
+                    .map(|variant| variant.printed.clone()),
+            );
+        }
+    }
+    surfaces
 }
 
 /// Alypy §73: attach the reflexive enclitic to every generated cell of a
@@ -529,6 +819,15 @@ pub(crate) fn exact_lookup_keys(cell: GrammarCell) -> Vec<String> {
         }
         GrammarCell::Pronoun(pronoun) => {
             keys.push(pronoun_key(pronoun, None));
+            // Reviewed third-person dual and plural prints (ѧ҆̀, и҆́хъ, и҆̀мъ)
+            // are keyed with gender `any`; a gender-specific request reaches
+            // them through the gender-neutral key exactly as an animacy-
+            // specific adjective request reaches its `any` row.
+            if pronoun.gender.is_some() {
+                let mut neutral = pronoun;
+                neutral.gender = None;
+                keys.push(pronoun_key(neutral, None));
+            }
         }
         GrammarCell::Numeral(numeral) => {
             if numeral.gender.is_some() {

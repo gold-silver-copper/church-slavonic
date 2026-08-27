@@ -18,6 +18,7 @@ serde = ["dep:serde", "synodal-church-slavonic-core/serde"]
 registry-override = []
 
 [dependencies]
+church-slavonic-orthography.workspace = true
 serde = { workspace = true, optional = true }
 synodal-church-slavonic-core.workspace = true
 unicode-normalization.workspace = true

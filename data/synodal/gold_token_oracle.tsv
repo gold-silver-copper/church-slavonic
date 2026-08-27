@@ -4,7 +4,7 @@
 # contract: docs/SYNODAL_GOLD_ORACLE.md
 # reference-cap: 8
 # rows: 58467
-# body-sha256: 4f0a3d0d5540beb145606fc73b3cf4651e4407c7093253f6ab5cb0849808c0aa
+# body-sha256: 601d570790be658ceb6ee8b1cca7c3fcd9e72c9ee26be1d7dfecbbb565ec00e3
 surface	count	non_lexical	references	confirmed_readings
 Є҆́же	15		Gal.6.7,II_Cor.4.17,II_Macc.2.31,I_Jn.1.1,Lamen.3.34,Mk.14.8,Mt.10.27,Rom.6.10	
 Є҆́й	7		Apoc.1.7,Apoc.14.13,Apoc.22.20,Lk.7.26,Mt.11.9,Philemon.1.20,Rom.3.29	
@@ -539,7 +539,7 @@ surface	count	non_lexical	references	confirmed_readings
 Возврати́сѧ	6		Esther.7.8,Ex.5.22,Gen.22.19,Gen.33.16,Gen.37.29,I_Macc.15.36	
 Возврати́тесѧ	1		Jerem.3.22	
 Возврати́шасѧ	1		Lk.10.17	
-Возвратѝ	2		Psalm.84.4,Psalm.125.4	synodal:verb:v07-ff04037d9da0c605|aorist:third:singular;synodal:verb:v07-ff04037d9da0c605|future:third:singular
+Возвратѝ	2		Psalm.84.4,Psalm.125.4	synodal:verb:v07-ff04037d9da0c605|aorist:third:singular
 Возвратѧ́тсѧ	2		Psalm.58.6,Psalm.58.14	
 Возвы́силъ	1		Psalm.88.42	
 Возвѣсти́	2		Dan.2.15,II_Macc.13.21	
@@ -866,7 +866,7 @@ surface	count	non_lexical	references	confirmed_readings
 Глаго́лахъ	1		Eccles.1.16	
 Глаго́лахꙋ	14		Jn.4.33,Jn.5.10,Jn.7.25,Jn.8.19,Jn.8.22,Jn.8.25,Jn.9.10,Jn.9.16	synodal:verb:wikt-833c90610c4d|imperfect:third:plural
 Глаго́лаша	15		Ex.32.23,Gen.45.27,Jn.11.8,Jn.11.34,Jn.16.29,Jn.21.3,Mk.8.19,Mt.13.51	
-Глаго́лаше	3		Acts.9.29,Lk.3.7,Mk.6.18	synodal:verb:wikt-833c90610c4d|aorist:third:plural;synodal:verb:wikt-833c90610c4d|imperfect:third:singular
+Глаго́лаше	3		Acts.9.29,Lk.3.7,Mk.6.18	synodal:verb:wikt-833c90610c4d|imperfect:third:singular
 Глаго́лемъ	1		Rom.4.9	
 Глаго́летъ	5		I_Tim.5.18,Prov.26.13,Psalm.35.1,Rom.9.17,Rom.10.11	
 Глаго́леши	1		Job.33.13	
@@ -1071,7 +1071,7 @@ surface	count	non_lexical	references	confirmed_readings
 Дѣ́ти	1		I_Jn.2.18	
 Дѣла̀	3		Prov.10.16,Psalm.110.7,Sirach.39.25	
 Дѣла́	1		II_Macc.2.20	
-Дꙋ́хомъ	1		Psalm.47.7	synodal:noun:spirit|noun:dative:plural:inanimate
+Дꙋ́хомъ	1		Psalm.47.7	
 Дꙋ́хъ	3		Jn.3.8,Lamen.4.20,Sirach.34.13	
 Дꙋ́шы	1		I_Pet.1.22	
 Дꙋ́шꙋ	2		Psalm.22.3,Sirach.51.27	synodal:noun:v07-549dec12f8aeb0c9|noun:accusative:singular:inanimate
@@ -13077,7 +13077,7 @@ surface	count	non_lexical	references	confirmed_readings
 го́рꙋ	129		Amos.3.9,Amos.4.3,Amos.6.1,Deut.1.2,Deut.1.7,Deut.1.24,Deut.1.41,Deut.1.43	synodal:noun:wikt-fd691ce3ca48|noun:accusative:singular:inanimate
 го́спода	9		II_Kings.14.17,I_Kings.24.11,I_Kings.26.16,Jn.13.16,Jn.15.20,Lk.12.36,Mt.25.21,Mt.25.23	synodal:noun:wikt-83848429ea44|lexical-form
 го́сподемъ	2		Dan.10.17,II_Kings.19.37	
-го́споди	67		Apoc.7.14,Dan.10.16,Dan.10.17,Dan.12.8,III_Esdra.2.44,III_Esdra.4.3,III_Esdra.4.5,III_Esdra.4.22	synodal:noun:wikt-ed67a3345df1|noun:dative:singular:animate;synodal:noun:wikt-ed67a3345df1|noun:genitive:singular:animate;synodal:noun:wikt-ed67a3345df1|noun:locative:singular:animate;synodal:noun:wikt-ed67a3345df1|noun:vocative:singular:animate
+го́споди	67		Apoc.7.14,Dan.10.16,Dan.10.17,Dan.12.8,III_Esdra.2.44,III_Esdra.4.3,III_Esdra.4.5,III_Esdra.4.22	synodal:noun:wikt-ed67a3345df1|noun:vocative:singular:animate
 гобзꙋ́ющихъ	2		Psalm.67.17,Psalm.122.4	
 гобзꙋ́ющь	1		Zech.7.7	
 гобзꙋ́ющїи	1		Psalm.72.12	
@@ -14264,7 +14264,7 @@ surface	count	non_lexical	references	confirmed_readings
 десны́ми	2		II_Cor.6.7,I_Paral.12.2	
 десны́мъ	2		Judg.3.21,Lev.14.27	
 десны́хъ	10		Ex.29.20,Ezek.4.6,I_Macc.9.14,Judg.7.20,Lev.8.24,Mk.16.5	
-десны́ѧ	18		Ex.29.20,Ezek.39.3,Ezek.47.1,Ezek.47.2,II_Paral.23.10,IV_Kings.11.11,Lev.8.23,Lev.14.14	synodal:adjective:v07-754731df6f1c0a4b|adjective:accusative:plural:feminine:inanimate:long:positive
+десны́ѧ	18		Ex.29.20,Ezek.39.3,Ezek.47.1,Ezek.47.2,II_Paral.23.10,IV_Kings.11.11,Lev.8.23,Lev.14.14	
 десны̑ѧ	1		Prov.4.28	
 деснѣ́й	10		Apoc.1.16,Apoc.13.16,III_Esdra.9.38,III_Esdra.11.24,III_Kings.7.39,Jerem.22.24,Judg.3.16,Sirach.21.22	
 деснѣ́мъ	1		I_Macc.9.12	
@@ -36105,7 +36105,7 @@ surface	count	non_lexical	references	confirmed_readings
 рабы̑нина	1		Gal.4.31	
 рабѝ	134		Acts.16.17,Apoc.19.5,Apoc.22.3,Dan.3.85,Dan.3.93,Dan.13.27,Deut.6.21,Eph.6.6	
 рабѡ́въ	59		Acts.10.7,Apoc.19.2,Apoc.19.18,Eccles.10.7,Ex.8.3,Ex.8.11,Ex.8.24,Ex.8.29	synodal:noun:rab|noun:accusative:plural:animate
-рабѡ́мъ	48		Acts.4.29,Amos.3.7,Apoc.1.1,Apoc.11.18,Apoc.22.6,Col.4.1,Dan.2.4,Dan.2.7	synodal:noun:rab|noun:dative:plural:animate;synodal:noun:rab|noun:instrumental:singular:animate
+рабѡ́мъ	48		Acts.4.29,Amos.3.7,Apoc.1.1,Apoc.11.18,Apoc.22.6,Col.4.1,Dan.2.4,Dan.2.7	synodal:noun:rab|noun:dative:plural:animate
 рабѡ́тна	1		Psalm.118.91	
 рабѡ́тныѧ	1		Apoc.13.16	
 рабѣ̀	15		Deut.15.17,Ex.21.27,Gen.16.2,III_Kings.1.13,III_Kings.1.17,II_Kings.7.25,II_Kings.7.28,II_Kings.14.6	
