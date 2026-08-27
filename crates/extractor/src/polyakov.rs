@@ -41,10 +41,13 @@
 //! and carry no cell information. An empty `<i></i>` is an unanalysed form.
 //!
 //! A slash joins alternatives inside one dimension (`gen/acc`, `m/n`, `2p/3p`,
-//! `plen/brev`): the form attests every cell of the expansion; `|` separates
-//! whole alternative analyses; a second case in one analysis (`nom,loc`) is a
-//! second cell. [`expand`] turns a tag string into that list of flat tag sets
-//! and [`features`] reads one set into typed grammar.
+//! `plen/brev`): the form attests every cell of the expansion, except that
+//! `gen/acc` on `m/n` names the masculine's animate accusative only — the
+//! neuter accusative is always its nominative, so the `n`+`acc` combination
+//! is not attested; `|` separates whole alternative analyses; a second case
+//! in one analysis (`nom,loc`) is a second cell. [`expand`] turns a tag
+//! string into that list of flat tag sets and [`features`] reads one set into
+//! typed grammar.
 
 use church_slavonic_core::grammar::{Case, Gender, Number, Person};
 use serde::{Deserialize, Serialize};
@@ -255,7 +258,10 @@ pub fn expand(tags: &str) -> Vec<Vec<String>> {
             }
             sets = next;
         }
-        out.extend(sets);
+        let animate_only = analysis.contains("gen/acc") && analysis.contains("m/n");
+        out.extend(sets.into_iter().filter(|set| {
+            !(animate_only && set.iter().any(|t| t == "n") && set.iter().any(|t| t == "acc"))
+        }));
     }
     out
 }
@@ -393,15 +399,16 @@ mod tests {
     #[test]
     fn slashes_multiply_and_bars_separate_analyses() {
         let cells = expand("brev,sg,f,nom|brev,sg,m/n,gen/acc");
-        assert_eq!(cells.len(), 5);
+        assert_eq!(cells.len(), 4);
         assert_eq!(cells[0], ["brev", "sg", "f", "nom"]);
-        assert_eq!(cells[4], ["brev", "sg", "n", "acc"]);
+        assert_eq!(cells[3], ["brev", "sg", "n", "gen"]);
+        assert_eq!(expand("sg,m/n,acc").len(), 2);
         assert!(expand("").is_empty());
-        let f = features(&cells[4]);
+        let f = features(&cells[3]);
         assert_eq!(f.series, Some(Series::Short));
         assert_eq!(f.number, Some(Number::Singular));
         assert_eq!(f.gender, Some(Gender::Neuter));
-        assert_eq!(f.cases, [Case::Accusative]);
+        assert_eq!(f.cases, [Case::Genitive]);
     }
 
     #[test]

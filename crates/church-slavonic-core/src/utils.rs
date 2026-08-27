@@ -49,6 +49,10 @@ impl ChurchSlavonicCore {
     /// - a stem-final husher (`ж ч ш щ ц`) de-iotates the ending's first
     ///   vowel (OCS `мѫжь` -> `мѫжа`, `мѫжоу`; Synodal `мꙋжа`, `слышꙋ`).
     pub(crate) fn attach(stem: &str, ending: &str, recension: &Recension) -> String {
+        // A cell's plural marker (`^`, see `accent`) rides outside the seam.
+        if let Some(ending) = ending.strip_prefix('^') {
+            return format!("^{}", Self::attach(stem, ending, recension));
+        }
         let synodal = *recension == Recension::Synodal;
         let mut stem = stem.to_string();
         let mut ending = ending.to_string();
@@ -61,10 +65,15 @@ impl ChurchSlavonicCore {
                 _ => ("с", "ш"),
             };
             match first {
-                'и' | 'ѣ' => {
+                'и' | 'ѣ' | 'і' => {
                     stem.pop();
-                    stem.push_str(second);
-                    if synodal && first == 'и' && last == 'к' {
+                    // Synodal `ск` before a front vowel is `ст` (`-стіи`, `-стѣ`).
+                    if synodal && last == 'к' && stem.ends_with('с') {
+                        stem.push('т');
+                    } else {
+                        stem.push_str(second);
+                    }
+                    if synodal && first == 'и' && last == 'к' && !stem.ends_with('т') {
                         ending.replace_range(..'и'.len_utf8(), "ы");
                     }
                 }
@@ -72,7 +81,14 @@ impl ChurchSlavonicCore {
                     stem.pop();
                     stem.push_str(first_pal);
                 }
-                'ы' if synodal => ending.replace_range(..'ы'.len_utf8(), "и"),
+                'ы' if synodal => {
+                    // `рꙋки`, but `-кіѧ`/`-гіи` before a vowel.
+                    let before_vowel = ending
+                        .chars()
+                        .nth(1)
+                        .is_some_and(crate::orthography::is_vowel);
+                    ending.replace_range(..'ы'.len_utf8(), if before_vowel { "і" } else { "и" });
+                }
                 _ => {}
             }
         } else if matches!(last, 'ж' | 'ч' | 'ш' | 'щ' | 'ц') {
@@ -126,7 +142,20 @@ mod tests {
         assert_eq!(ChurchSlavonicCore::attach("ѹченик", "и", &syn), "ѹченицы");
         assert_eq!(ChurchSlavonicCore::attach("оученик", "и", &ocs), "оученици");
         assert_eq!(ChurchSlavonicCore::attach("рꙋк", "ы", &syn), "рꙋки");
+        assert_eq!(ChurchSlavonicCore::attach("благ", "ыѧ", &syn), "благіѧ");
         assert_eq!(ChurchSlavonicCore::attach("рѫк", "ꙑ", &ocs), "рѫкꙑ");
+        assert_eq!(
+            ChurchSlavonicCore::attach("аггельск", "іи", &syn),
+            "аггельстіи"
+        );
+        assert_eq!(
+            ChurchSlavonicCore::attach("аггельск", "ѣ", &syn),
+            "аггельстѣ"
+        );
+        assert_eq!(
+            ChurchSlavonicCore::attach("аггельск", "іи", &ocs),
+            "аггельсціи"
+        );
         assert_eq!(ChurchSlavonicCore::attach("мѫж", "ꙗ", &ocs), "мѫжа");
         assert_eq!(ChurchSlavonicCore::attach("мѫж", "ю", &ocs), "мѫжоу");
         assert_eq!(ChurchSlavonicCore::attach("слꙑш", "ѭ", &ocs), "слꙑшѫ");

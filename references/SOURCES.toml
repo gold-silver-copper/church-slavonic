@@ -72,3 +72,33 @@ redistribution = "table-source"
 download_status = "downloaded to references/downloads/ruwiktionary-cu/"
 authority_roles = ["lexical", "accentual"]
 upstream_lineage = ["ru.wiktionary.org"]
+
+[[source]]
+id = "ud-ocs-proiel-r2.18"
+name = "UD Old Church Slavonic PROIEL"
+url = "https://github.com/UniversalDependencies/UD_Old_Church_Slavonic-PROIEL"
+revision = "64eddf87abfaa51e7f5acf0bef1bebcdaca1559f"
+path = "downloads/ud-ocs-proiel-r2.18/UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f.tar.gz"
+sha256 = "579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c"
+source_recension = "old-church-slavonic"
+content_kind = "treebank"
+format = "tar.gz/conllu"
+license = "CC BY-NC-SA 4.0"
+redistribution = "evaluation-only (CC BY-NC-SA: scored by cargo xtask accuracy, never emitted into the tables)"
+authority_roles = ["morphological", "evaluation"]
+upstream_lineage = ["syntacticus-20230428"]
+
+[[source]]
+id = "syntacticus-20230428"
+name = "Syntacticus native PROIEL/TOROT treebank data"
+url = "https://github.com/syntacticus/syntacticus-treebank-data"
+revision = "525cee4fb40590d7d514376c11acaed1bdd91c15"
+path = "downloads/syntacticus-20230428/syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15.tar.gz"
+sha256 = "e32844093cc173edf9241868fdad7167dfb63fb7f105d146af02a645ff382fec"
+source_recension = "old-church-slavonic"
+content_kind = "treebank"
+format = "tar.gz/xml"
+license = "CC BY-NC-SA 4.0"
+redistribution = "evaluation-only (CC BY-NC-SA: scored by cargo xtask accuracy, never emitted into the tables)"
+authority_roles = ["morphological", "evaluation"]
+upstream_lineage = ["PROIEL", "TOROT"]

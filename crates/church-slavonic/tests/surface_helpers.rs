@@ -18,15 +18,27 @@ fn base_surface_helpers_work() {
     );
     assert_eq!(
         ChurchSlavonic::verb(
-            "нести",
+            "нестѝ",
             &Person::First,
             &Number::Singular,
             &Tense::Present,
             &Form::Finite,
             &SYN
         ),
-        // Polyakov's corpus primary; the grammar's `несꙋ̀` is `нести_2`.
-        "несу́"
+        // The corpus primary in the print's typography (the Synodal `-сти`
+        // rule is the dental class, so `нестѝ` is a table row).
+        "несꙋ̀"
+    );
+    assert_eq!(
+        ChurchSlavonic::verb(
+            "вестѝ",
+            &Person::First,
+            &Number::Singular,
+            &Tense::Present,
+            &Form::Finite,
+            &SYN
+        ),
+        "ведꙋ̀"
     );
     assert_eq!(
         ChurchSlavonic::verb(
@@ -44,12 +56,12 @@ fn base_surface_helpers_work() {
         "града"
     );
     assert_eq!(
-        ChurchSlavonic::noun("рабъ", &Case::Dative, &Number::Singular, &SYN),
+        ChurchSlavonic::noun("ра́бъ", &Case::Dative, &Number::Singular, &SYN),
         "рабꙋ̀"
     );
     assert_eq!(
         ChurchSlavonic::adj(
-            "мꙋдръ",
+            "мꙋ́дръ",
             &Case::Nominative,
             &Number::Singular,
             &Gender::Feminine,
@@ -60,25 +72,25 @@ fn base_surface_helpers_work() {
     );
     assert_eq!(
         ChurchSlavonic::adj(
-            "мꙋдръ",
+            "мꙋ́дръ",
             &Case::Nominative,
             &Number::Singular,
             &Gender::Masculine,
             &Degree::Comparative,
             &SYN
         ),
-        "мꙋдрѣ́й"
+        "мꙋ́дрѣй"
     );
     assert_eq!(
         ChurchSlavonic::adj(
-            "мꙋдръ",
+            "мꙋ́дръ",
             &Case::Nominative,
             &Number::Singular,
             &Gender::Masculine,
             &Degree::Superlative,
             &SYN
         ),
-        "премꙋдръ"
+        "премꙋ́дръ"
     );
     assert_eq!(
         ChurchSlavonic::adj(
@@ -96,14 +108,14 @@ fn base_surface_helpers_work() {
 }
 
 #[test]
-fn casing_and_accents_are_folded_for_lookup_and_restored_on_output() {
+fn casing_is_folded_for_lookup_and_restored_on_output() {
     // Title-case and ALL-CAPS input reach the lowercase tables.
     assert_eq!(
-        ChurchSlavonic::noun("Рабъ", &Case::Dative, &Number::Singular, &SYN),
+        ChurchSlavonic::noun("Ра́бъ", &Case::Dative, &Number::Singular, &SYN),
         "Рабꙋ̀"
     );
     assert_eq!(
-        ChurchSlavonic::noun("РАБЪ", &Case::Dative, &Number::Singular, &SYN),
+        ChurchSlavonic::noun("РА́БЪ", &Case::Dative, &Number::Singular, &SYN),
         "РАБꙊ̀"
     );
     // ...and so does the rule fallback.
@@ -111,10 +123,21 @@ fn casing_and_accents_are_folded_for_lookup_and_restored_on_output() {
         ChurchSlavonic::noun("Градъ", &Case::Genitive, &Number::Singular, &OCS),
         "Града"
     );
-    // Accented input folds to its unaccented key.
+    // A Synodal lemma is its accented citation form: the accent is the
+    // rule's input (`рꙋка̀` : `рꙋкѝ`), and the print's typography is
+    // restored on the letters the caller typed (`у` -> `ꙋ`, the breathing).
     assert_eq!(
-        ChurchSlavonic::noun("ра́бъ", &Case::Dative, &Number::Singular, &SYN),
-        "рабꙋ̀"
+        ChurchSlavonic::noun("рука́", &Case::Genitive, &Number::Singular, &SYN),
+        "рꙋкѝ"
+    );
+    assert_eq!(
+        ChurchSlavonic::noun("аарѡ́нъ", &Case::Genitive, &Number::Singular, &SYN),
+        "а҆арѡ́на"
+    );
+    // An unaccented Synodal lemma is answered by the rule, unaccented.
+    assert_eq!(
+        ChurchSlavonic::noun("рабъ", &Case::Dative, &Number::Singular, &SYN),
+        "рабꙋ"
     );
 }
 

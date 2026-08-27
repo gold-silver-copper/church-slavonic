@@ -1,0 +1,687 @@
+//! The Old Church Slavonic treebanks as EVALUATION sources (feature
+//! `checks` only): every annotated token whose lemma and features name a
+//! cell of the schema is a slot the accuracy harness scores — "corpus
+//! recall" — and nothing more.
+//!
+//! Both treebanks are CC BY-NC-SA, so their tokens must never become table
+//! cells. That is guaranteed structurally, not by policy: this module is
+//! compiled only under the `checks` feature, which the `refresh-data` build
+//! (the only path that emits tables) never enables, and its output type
+//! [`Corpus`] has no conversion into [`crate::extract::Lexemes`] — the sole
+//! input `extract::finalize`, `assign` and `bootstrap::generate_tables`
+//! accept. A corpus slot can be compared with the library's answer; it
+//! cannot be published.
+//!
+//! # Sources
+//!
+//! - `ud-ocs-proiel-r2.18`: UD_Old_Church_Slavonic-PROIEL, CoNLL-U (the
+//!   train/dev/test files). Features: `Case`, `Number`, `Gender` (a list
+//!   attests every gender named), `Degree`, `Variant=Short` (absent = the
+//!   long adjective/participle), `Person`, `Mood`, `Tense` with `Aspect`
+//!   (the PROIEL conversion writes the aorist as `Tense=Past|Aspect=Perf`
+//!   and the imperfect as `Tense=Past|Aspect=Imp`), `VerbForm`
+//!   (`Fin`/`Part`; `Inf`, `PartRes` — the l-participle — and `Sup` are
+//!   outside the schema), `PronType=Prs` for the personal pronoun.
+//! - `syntacticus-20230428`: the PROIEL XML of every text whose `<source>`
+//!   is `language="chu"` (Marianus, Zographensis, Suprasliensis, Psalterium
+//!   Sinaiticum, Euchologium, the Kiev Missal, the Vitae, Chrabr). The
+//!   ten-letter `morphology` string is person, number, tense, mood, voice,
+//!   gender, case, degree, strength, inflection; strength `s` (strong) is
+//!   the short form and `w` (weak) the long one.
+//!
+//! The dual is kept. A feature the schema has no cell for (a future, a
+//! subjunctive, a passive or declined participle, a reflexive pronoun, an
+//! ambiguous `Case=Dat,Gen`) skips the token and is counted by reason.
+
+use crate::cells::{GENDERS, Pos, adj_cell, noun_cell, pronoun_cell, verb_cell};
+use church_slavonic_core::grammar::*;
+use std::collections::BTreeMap;
+use std::error::Error;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+
+/// One attested cell of a treebank: the lemma the annotators gave the token,
+/// the schema cell its features name, and the surface as written.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CorpusSlot {
+    pub lemma: String,
+    pub pos: Pos,
+    pub cell: usize,
+    pub surface: String,
+}
+
+/// A loaded treebank: its slots and the accounting of what was left out.
+#[derive(Debug, Default)]
+pub struct Corpus {
+    /// The README's "Recension" column for this treebank's rows.
+    pub label: &'static str,
+    /// The file stem of the misses report.
+    pub file_label: &'static str,
+    pub tokens: u64,
+    pub slots: Vec<CorpusSlot>,
+    pub skipped: BTreeMap<&'static str, u64>,
+}
+
+impl Corpus {
+    fn skip(&mut self, reason: &'static str) {
+        *self.skipped.entry(reason).or_default() += 1;
+    }
+
+    pub fn skipped_total(&self) -> u64 {
+        self.skipped.values().sum()
+    }
+}
+
+/// The two treebank directories under `--sources`.
+pub const UD_PROIEL_SOURCE: &str = "ud-ocs-proiel-r2.18";
+pub const SYNTACTICUS_SOURCE: &str = "syntacticus-20230428";
+
+/// Unpack the one `.tar.gz` of a source directory into `artifacts_dir/
+/// treebanks/<name>` (once; the unpacked tree is reused) and return it, or
+/// `None` when the source is not downloaded.
+fn unpacked(
+    sources_dir: &Path,
+    artifacts_dir: &Path,
+    name: &str,
+) -> Result<Option<PathBuf>, Box<dyn Error>> {
+    let source = sources_dir.join(name);
+    if !source.is_dir() {
+        return Ok(None);
+    }
+    let Some(tarball) = fs::read_dir(&source)?
+        .filter_map(|e| e.ok().map(|e| e.path()))
+        .find(|p| p.to_string_lossy().ends_with(".tar.gz"))
+    else {
+        return Ok(None);
+    };
+    let into = artifacts_dir.join("treebanks").join(name);
+    if !into.is_dir() {
+        fs::create_dir_all(&into)?;
+        let status = Command::new("tar")
+            .arg("xzf")
+            .arg(&tarball)
+            .arg("-C")
+            .arg(&into)
+            .status()?;
+        if !status.success() {
+            return Err(format!("tar failed on {}", tarball.display()).into());
+        }
+    }
+    Ok(Some(into))
+}
+
+fn files_with_extension(
+    dir: &Path,
+    extension: &str,
+    out: &mut Vec<PathBuf>,
+) -> Result<(), Box<dyn Error>> {
+    for entry in fs::read_dir(dir)? {
+        let path = entry?.path();
+        if path.is_dir() {
+            files_with_extension(&path, extension, out)?;
+        } else if path.extension().is_some_and(|e| e == extension) {
+            out.push(path);
+        }
+    }
+    out.sort();
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// UD CoNLL-U
+// ---------------------------------------------------------------------------
+
+pub fn load_ud_proiel(
+    sources_dir: &Path,
+    artifacts_dir: &Path,
+) -> Result<Option<Corpus>, Box<dyn Error>> {
+    let Some(root) = unpacked(sources_dir, artifacts_dir, UD_PROIEL_SOURCE)? else {
+        return Ok(None);
+    };
+    let mut corpus = Corpus {
+        label: "OCS (UD PROIEL r2.18, corpus recall)",
+        file_label: "ud_proiel",
+        ..Corpus::default()
+    };
+    let mut files = Vec::new();
+    files_with_extension(&root, "conllu", &mut files)?;
+    for file in files {
+        for line in fs::read_to_string(&file)?.lines() {
+            let fields: Vec<&str> = line.split('\t').collect();
+            if fields.len() < 10 || fields[0].contains('-') || fields[0].contains('.') {
+                continue;
+            }
+            corpus.tokens += 1;
+            let feats: BTreeMap<&str, &str> = fields[5]
+                .split('|')
+                .filter_map(|f| f.split_once('='))
+                .collect();
+            ud_token(&mut corpus, fields[1], fields[2], fields[3], &feats);
+        }
+    }
+    Ok(Some(corpus))
+}
+
+fn ud_token(
+    corpus: &mut Corpus,
+    form: &str,
+    lemma: &str,
+    upos: &str,
+    feats: &BTreeMap<&str, &str>,
+) {
+    if !matches!(upos, "NOUN" | "PROPN" | "ADJ" | "VERB" | "AUX" | "PRON") {
+        return corpus.skip("part of speech outside the four tables");
+    }
+    let number = match feats.get("Number") {
+        Some(&"Sing") => Number::Singular,
+        Some(&"Dual") => Number::Dual,
+        Some(&"Plur") => Number::Plural,
+        _ => return corpus.skip("no number"),
+    };
+    let case = |corpus: &mut Corpus| match feats.get("Case") {
+        Some(&"Nom") => Some(Case::Nominative),
+        Some(&"Gen") => Some(Case::Genitive),
+        Some(&"Dat") => Some(Case::Dative),
+        Some(&"Acc") => Some(Case::Accusative),
+        Some(&"Ins") => Some(Case::Instrumental),
+        Some(&"Loc") => Some(Case::Locative),
+        Some(&"Voc") => Some(Case::Vocative),
+        Some(_) => {
+            corpus.skip("ambiguous case");
+            None
+        }
+        None => {
+            corpus.skip("no case");
+            None
+        }
+    };
+    let genders: Vec<Gender> = feats
+        .get("Gender")
+        .map(|g| {
+            g.split(',')
+                .filter_map(|g| match g {
+                    "Masc" => Some(Gender::Masculine),
+                    "Fem" => Some(Gender::Feminine),
+                    "Neut" => Some(Gender::Neuter),
+                    _ => None,
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    let lemma = lemma.to_lowercase();
+    let surface = form.to_lowercase();
+    match upos {
+        "NOUN" | "PROPN" => {
+            let Some(case) = case(corpus) else { return };
+            corpus.slots.push(CorpusSlot {
+                lemma,
+                pos: Pos::Noun,
+                cell: noun_cell(&case, &number),
+                surface,
+            });
+        }
+        "ADJ" => {
+            let Some(case) = case(corpus) else { return };
+            let degree = match feats.get("Degree") {
+                Some(&"Cmp") => Degree::Comparative,
+                Some(&"Sup") => return corpus.skip("adjective: superlative"),
+                _ => Degree::Positive,
+            };
+            let short = feats.get("Variant") == Some(&"Short");
+            let Some(lemma) = adjective_lemma(&lemma, short) else {
+                return corpus.skip("adjective: no long lemma from the short one");
+            };
+            let genders = if genders.is_empty() {
+                GENDERS.to_vec()
+            } else {
+                genders
+            };
+            for gender in genders {
+                if let Some(cell) = adj_cell(&case, &number, &gender, &degree) {
+                    corpus.slots.push(CorpusSlot {
+                        lemma: lemma.clone(),
+                        pos: Pos::Adj,
+                        cell,
+                        surface: surface.clone(),
+                    });
+                }
+            }
+        }
+        "VERB" | "AUX" => {
+            let cell = match feats.get("VerbForm") {
+                Some(&"Fin") => {
+                    let person = match feats.get("Person") {
+                        Some(&"1") => Person::First,
+                        Some(&"2") => Person::Second,
+                        Some(&"3") => Person::Third,
+                        _ => return corpus.skip("verb: no person"),
+                    };
+                    let (tense, verb_form) =
+                        match (feats.get("Mood"), feats.get("Tense"), feats.get("Aspect")) {
+                            (Some(&"Imp"), _, _) => (Tense::Present, Form::Imperative),
+                            (Some(&"Ind"), Some(&"Pres"), _) => (Tense::Present, Form::Finite),
+                            (Some(&"Ind"), Some(&"Past"), Some(&"Imp")) => {
+                                (Tense::Imperfect, Form::Finite)
+                            }
+                            (Some(&"Ind"), Some(&"Past"), _) => (Tense::Aorist, Form::Finite),
+                            (Some(&"Ind"), Some(&"Fut"), _) => return corpus.skip("verb: future"),
+                            (Some(&"Sub"), _, _) => return corpus.skip("verb: subjunctive"),
+                            _ => return corpus.skip("verb: finite form without a tense"),
+                        };
+                    verb_cell(&person, &number, &tense, &verb_form)
+                }
+                Some(&"Part") => {
+                    if feats.get("Voice") == Some(&"Pass") {
+                        return corpus.skip("verb: passive participle");
+                    }
+                    if feats.get("Variant") != Some(&"Short") {
+                        return corpus.skip("verb: long-series participle");
+                    }
+                    let citation = number == Number::Singular
+                        && feats.get("Case") == Some(&"Nom")
+                        && genders.contains(&Gender::Masculine);
+                    if !citation {
+                        return corpus.skip("verb: participle declension");
+                    }
+                    match feats.get("Tense") {
+                        Some(&"Pres") => Some(36),
+                        Some(&"Past") => Some(37),
+                        _ => return corpus.skip("verb: participle without a tense"),
+                    }
+                }
+                Some(&"Inf") => return corpus.skip("verb: infinitive (the lemma itself)"),
+                Some(&"PartRes") => return corpus.skip("verb: l-participle"),
+                Some(&"Sup") => return corpus.skip("verb: supine"),
+                _ => return corpus.skip("verb: no verb form"),
+            };
+            let Some(cell) = cell else {
+                return corpus.skip("verb: cell outside the schema");
+            };
+            corpus.slots.push(CorpusSlot {
+                lemma,
+                pos: Pos::Verb,
+                cell,
+                surface,
+            });
+        }
+        "PRON" => {
+            if feats.get("PronType") != Some(&"Prs") {
+                return corpus.skip("pronoun: outside the personal matrix");
+            }
+            if feats.get("Reflex") == Some(&"Yes") {
+                return corpus.skip("pronoun: reflexive");
+            }
+            let person = match feats.get("Person") {
+                Some(&"1") => Person::First,
+                Some(&"2") => Person::Second,
+                Some(&"3") => Person::Third,
+                _ => return corpus.skip("pronoun: no person"),
+            };
+            let Some(case) = case(corpus) else { return };
+            if case == Case::Vocative {
+                return corpus.skip("pronoun: vocative");
+            }
+            let genders = if genders.is_empty() || person != Person::Third {
+                GENDERS.to_vec()
+            } else {
+                genders
+            };
+            for gender in genders {
+                corpus.slots.push(CorpusSlot {
+                    lemma: crate::cells::PRONOUN_KEY.to_string(),
+                    pos: Pos::Pronoun,
+                    cell: pronoun_cell(&person, &number, &gender, &case),
+                    surface: surface.clone(),
+                });
+            }
+        }
+        _ => corpus.skip("part of speech outside the four tables"),
+    }
+}
+
+/// The table lemma of an adjective form: the treebanks cite the short
+/// nominative (`новъ`); a long form is keyed by its own nominative (`новꙑи`,
+/// `синии`), as in the Kaikki tables.
+fn adjective_lemma(lemma: &str, short: bool) -> Option<String> {
+    if short {
+        return Some(lemma.to_string());
+    }
+    if let Some(stem) = lemma.strip_suffix('ъ') {
+        Some(format!("{stem}ꙑи"))
+    } else if let Some(stem) = lemma.strip_suffix('ь') {
+        Some(format!("{stem}ии"))
+    } else if lemma.ends_with("ꙑи") || lemma.ends_with("ии") {
+        Some(lemma.to_string())
+    } else {
+        None
+    }
+}
+
+// ---------------------------------------------------------------------------
+// PROIEL XML (Syntacticus)
+// ---------------------------------------------------------------------------
+
+pub fn load_syntacticus(
+    sources_dir: &Path,
+    artifacts_dir: &Path,
+) -> Result<Option<Corpus>, Box<dyn Error>> {
+    let Some(root) = unpacked(sources_dir, artifacts_dir, SYNTACTICUS_SOURCE)? else {
+        return Ok(None);
+    };
+    let mut corpus = Corpus {
+        label: "OCS (Syntacticus 2023-04-28, corpus recall)",
+        file_label: "syntacticus",
+        ..Corpus::default()
+    };
+    let mut files = Vec::new();
+    files_with_extension(&root, "xml", &mut files)?;
+    for file in files {
+        let xml = fs::read_to_string(&file)?;
+        let is_ocs = xml
+            .find("<source ")
+            .map(|at| &xml[at..])
+            .and_then(|s| s.find('>').map(|end| &s[..end]))
+            .is_some_and(|tag| tag.contains("language=\"chu\""));
+        if !is_ocs {
+            continue;
+        }
+        let mut rest = xml.as_str();
+        while let Some(at) = rest.find("<token ") {
+            let tag = &rest[at..];
+            let Some(end) = tag.find('>') else { break };
+            let tag = &tag[..end];
+            rest = &rest[at + end + 1..];
+            let attribute = |name: &str| {
+                let key = format!(" {name}=\"");
+                let start = tag.find(&key)? + key.len();
+                let value = &tag[start..];
+                Some(unescape(&value[..value.find('"')?]))
+            };
+            let (Some(form), Some(lemma), Some(pos), Some(morphology)) = (
+                attribute("form"),
+                attribute("lemma"),
+                attribute("part-of-speech"),
+                attribute("morphology"),
+            ) else {
+                continue;
+            };
+            corpus.tokens += 1;
+            proiel_token(&mut corpus, &form, &lemma, &pos, &morphology);
+        }
+    }
+    Ok(Some(corpus))
+}
+
+fn unescape(text: &str) -> String {
+    text.replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .replace("&quot;", "\"")
+        .replace("&apos;", "'")
+}
+
+fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphology: &str) {
+    if !matches!(pos, "Nb" | "Ne" | "A-" | "V-" | "Pp" | "Pk") {
+        return corpus.skip("part of speech outside the four tables");
+    }
+    let m: Vec<char> = morphology.chars().collect();
+    if m.len() < 9 {
+        return corpus.skip("morphology too short");
+    }
+    let (person, number, tense, mood, voice, gender, case_letter, degree, strength) =
+        (m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]);
+    let number = match number {
+        's' => Number::Singular,
+        'd' => Number::Dual,
+        'p' => Number::Plural,
+        _ => return corpus.skip("no number"),
+    };
+    let case = |corpus: &mut Corpus| match case_letter {
+        'n' => Some(Case::Nominative),
+        'g' => Some(Case::Genitive),
+        'd' => Some(Case::Dative),
+        'a' => Some(Case::Accusative),
+        'i' => Some(Case::Instrumental),
+        'l' => Some(Case::Locative),
+        'v' => Some(Case::Vocative),
+        '-' | 'z' => {
+            corpus.skip("no case");
+            None
+        }
+        _ => {
+            corpus.skip("ambiguous case");
+            None
+        }
+    };
+    let genders: Vec<Gender> = match gender {
+        'm' => vec![Gender::Masculine],
+        'f' => vec![Gender::Feminine],
+        'n' => vec![Gender::Neuter],
+        'p' => vec![Gender::Masculine, Gender::Feminine],
+        'o' => vec![Gender::Masculine, Gender::Neuter],
+        'r' => vec![Gender::Feminine, Gender::Neuter],
+        _ => GENDERS.to_vec(),
+    };
+    let lemma = lemma.to_lowercase();
+    let surface = form.to_lowercase();
+    match pos {
+        "Nb" | "Ne" => {
+            let Some(case) = case(corpus) else { return };
+            corpus.slots.push(CorpusSlot {
+                lemma,
+                pos: Pos::Noun,
+                cell: noun_cell(&case, &number),
+                surface,
+            });
+        }
+        "A-" => {
+            let Some(case) = case(corpus) else { return };
+            let degree = match degree {
+                'c' => Degree::Comparative,
+                's' => return corpus.skip("adjective: superlative"),
+                _ => Degree::Positive,
+            };
+            let short = match strength {
+                's' => true,
+                'w' => false,
+                _ => return corpus.skip("adjective: strength unspecified"),
+            };
+            let Some(lemma) = adjective_lemma(&lemma, short) else {
+                return corpus.skip("adjective: no long lemma from the short one");
+            };
+            for g in genders {
+                if let Some(cell) = adj_cell(&case, &number, &g, &degree) {
+                    corpus.slots.push(CorpusSlot {
+                        lemma: lemma.clone(),
+                        pos: Pos::Adj,
+                        cell,
+                        surface: surface.clone(),
+                    });
+                }
+            }
+        }
+        "V-" => {
+            let cell = match mood {
+                'i' | 'm' => {
+                    let person = match person {
+                        '1' => Person::First,
+                        '2' => Person::Second,
+                        '3' => Person::Third,
+                        _ => return corpus.skip("verb: no person"),
+                    };
+                    let (tense, verb_form) = match (mood, tense) {
+                        ('m', _) => (Tense::Present, Form::Imperative),
+                        ('i', 'p') => (Tense::Present, Form::Finite),
+                        ('i', 'a') => (Tense::Aorist, Form::Finite),
+                        ('i', 'i') => (Tense::Imperfect, Form::Finite),
+                        ('i', 'f') => return corpus.skip("verb: future"),
+                        _ => return corpus.skip("verb: tense outside the schema"),
+                    };
+                    verb_cell(&person, &number, &tense, &verb_form)
+                }
+                'p' => {
+                    if voice == 'p' {
+                        return corpus.skip("verb: passive participle");
+                    }
+                    if strength == 'w' {
+                        return corpus.skip("verb: long-series participle");
+                    }
+                    if strength != 's' {
+                        return corpus.skip("verb: participle strength unspecified");
+                    }
+                    let citation = number == Number::Singular
+                        && case_letter == 'n'
+                        && genders.contains(&Gender::Masculine);
+                    if !citation {
+                        return corpus.skip("verb: participle declension");
+                    }
+                    match tense {
+                        'p' => Some(36),
+                        'u' | 'a' => Some(37),
+                        _ => return corpus.skip("verb: participle without a tense"),
+                    }
+                }
+                'n' => return corpus.skip("verb: infinitive (the lemma itself)"),
+                's' => return corpus.skip("verb: subjunctive"),
+                _ => return corpus.skip("verb: mood outside the schema"),
+            };
+            let Some(cell) = cell else {
+                return corpus.skip("verb: cell outside the schema");
+            };
+            corpus.slots.push(CorpusSlot {
+                lemma,
+                pos: Pos::Verb,
+                cell,
+                surface,
+            });
+        }
+        "Pp" => {
+            let person = match person {
+                '1' => Person::First,
+                '2' => Person::Second,
+                '3' => Person::Third,
+                _ => return corpus.skip("pronoun: no person"),
+            };
+            let Some(case) = case(corpus) else { return };
+            if case == Case::Vocative {
+                return corpus.skip("pronoun: vocative");
+            }
+            let genders = if person == Person::Third {
+                genders
+            } else {
+                GENDERS.to_vec()
+            };
+            for g in genders {
+                corpus.slots.push(CorpusSlot {
+                    lemma: crate::cells::PRONOUN_KEY.to_string(),
+                    pos: Pos::Pronoun,
+                    cell: pronoun_cell(&person, &number, &g, &case),
+                    surface: surface.clone(),
+                });
+            }
+        }
+        "Pk" => corpus.skip("pronoun: reflexive"),
+        _ => corpus.skip("part of speech outside the four tables"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ud_features_map_onto_the_schema_and_the_rest_is_counted() {
+        let mut corpus = Corpus::default();
+        fn feats(s: &str) -> BTreeMap<&str, &str> {
+            s.split('|').filter_map(|f| f.split_once('=')).collect()
+        }
+        let noun = feats("Case=Gen|Gender=Fem|Number=Sing");
+        ud_token(&mut corpus, "мѫченіцѧ", "мѫчѣница", "NOUN", &noun);
+        let adj = feats("Case=Gen|Degree=Pos|Gender=Fem|Number=Sing");
+        ud_token(&mut corpus, "блаженъиѧ", "блаженъ", "ADJ", &adj);
+        let imp = feats("Mood=Imp|Number=Sing|Person=2|Tense=Pres|VerbForm=Fin|Voice=Act");
+        ud_token(&mut corpus, "Подазь", "подати", "VERB", &imp);
+        let aor =
+            feats("Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act");
+        ud_token(&mut corpus, "рече", "решти", "VERB", &aor);
+        let ipf =
+            feats("Aspect=Imp|Mood=Ind|Number=Plur|Person=3|Tense=Past|VerbForm=Fin|Voice=Act");
+        ud_token(&mut corpus, "глаголаахѫ", "глаголати", "VERB", &ipf);
+        let pron = feats("Case=Dat|Gender=Fem,Masc|Number=Plur|Person=1|PronType=Prs");
+        ud_token(&mut corpus, "намъ", "мꙑ", "PRON", &pron);
+        let res = feats("Gender=Masc|Number=Sing|Tense=Past|VerbForm=PartRes|Voice=Act");
+        ud_token(&mut corpus, "далъ", "дати", "VERB", &res);
+        let ambiguous = feats("Case=Dat,Gen|Gender=Masc|Number=Sing");
+        ud_token(&mut corpus, "x", "x", "NOUN", &ambiguous);
+        let cells: Vec<(Pos, usize, &str)> = corpus
+            .slots
+            .iter()
+            .map(|s| (s.pos, s.cell, s.lemma.as_str()))
+            .collect();
+        assert_eq!(cells[0], (Pos::Noun, 1, "мѫчѣница"));
+        assert_eq!(
+            cells[1],
+            (
+                Pos::Adj,
+                adj_cell(
+                    &Case::Genitive,
+                    &Number::Singular,
+                    &Gender::Feminine,
+                    &Degree::Positive
+                )
+                .expect("cell"),
+                "блаженꙑи"
+            )
+        );
+        assert_eq!(cells[2], (Pos::Verb, 28, "подати"));
+        assert_eq!(cells[3], (Pos::Verb, 20, "решти"));
+        assert_eq!(cells[4], (Pos::Verb, 17, "глаголати"));
+        assert_eq!(
+            cells[5].1,
+            pronoun_cell(
+                &Person::First,
+                &Number::Plural,
+                &Gender::Masculine,
+                &Case::Dative
+            )
+        );
+        assert_eq!(cells.len(), 6 + 2);
+        assert_eq!(corpus.skipped.get("verb: l-participle"), Some(&1));
+        assert_eq!(corpus.skipped.get("ambiguous case"), Some(&1));
+    }
+
+    #[test]
+    fn proiel_morphology_maps_onto_the_schema() {
+        let mut corpus = Corpus::default();
+        proiel_token(&mut corpus, "остави", "оставити", "V-", "2spma----i");
+        proiel_token(&mut corpus, "шедъ", "ити", "V-", "-supamn-si");
+        proiel_token(&mut corpus, "даръ", "даръ", "Nb", "-s---ma--i");
+        proiel_token(&mut corpus, "новꙑи", "новъ", "A-", "-s---mnpwi");
+        proiel_token(&mut corpus, "себе", "себе", "Pk", "3s---qa--i");
+        proiel_token(&mut corpus, "ѥмоу", "и", "Pp", "3s---md--i");
+        let cells: Vec<(Pos, usize, &str)> = corpus
+            .slots
+            .iter()
+            .map(|s| (s.pos, s.cell, s.lemma.as_str()))
+            .collect();
+        assert_eq!(cells[0], (Pos::Verb, 28, "оставити"));
+        assert_eq!(cells[1], (Pos::Verb, 37, "ити"));
+        assert_eq!(cells[2], (Pos::Noun, 3, "даръ"));
+        assert_eq!(cells[3].2, "новꙑи");
+        assert_eq!(
+            cells[4],
+            (
+                Pos::Pronoun,
+                pronoun_cell(
+                    &Person::Third,
+                    &Number::Singular,
+                    &Gender::Masculine,
+                    &Case::Dative
+                ),
+                "personal"
+            )
+        );
+        assert_eq!(corpus.skipped.get("pronoun: reflexive"), Some(&1));
+    }
+}

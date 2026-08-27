@@ -8,7 +8,7 @@ fn main() {
     // Generally the worst case: a long word outside the tables, so every call
     // probes the map (twice, folded) and then runs the rule.
     let words = ["ꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁꙁъ"];
-    let tabled = ["рабъ"];
+    let tabled = ["ра́бъ"];
 
     run_benchmark("noun (rule)", &words, |w| {
         ChurchSlavonic::noun(w, &Case::Genitive, &Number::Plural, &ocs)

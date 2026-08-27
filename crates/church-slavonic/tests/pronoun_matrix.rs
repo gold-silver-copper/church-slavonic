@@ -1,14 +1,15 @@
 //! Exhaustive coverage of the `ChurchSlavonic::pronoun` matrix.
 //!
-//! The personal pronoun is one lemma-less row per recension: the Kaikki
-//! `и`/`ꙗ`/`ѥ` tables (OCS) and, for Synodal, Polyakov's corpus primaries
-//! (frequency-ordered, full forms before enclitics) with §47 of the Alypy
-//! grammar filling the cells the corpus lacks (the duals) — the grammar's
-//! other spellings are the row's variant gap, since the lemma-less call
-//! reaches one row. Gender is consulted only in the third person;
-//! the vocative answers with the nominative. This pins every cell of the
-//! first and second persons and the third-person singular in both recensions,
-//! so a transposed cell or a wrong recension condition cannot ship silently.
+//! The personal pronoun is a lemma-less matrix per recension, keyed
+//! `personal` with its attested variants at `personal_<n>`
+//! (`ChurchSlavonic::pronoun_sense`): the Kaikki `и`/`ꙗ`/`ѥ` tables (OCS)
+//! and, for Synodal, Polyakov's corpus primaries (frequency-ordered, full
+//! forms before enclitics) merged with §47 of the Alypy grammar, over the
+//! rule's matrix in the print's typography. Gender is consulted only in the
+//! third person; the vocative answers with the nominative. This pins every
+//! cell of the first and second persons and the third-person singular in
+//! both recensions, so a transposed cell or a wrong recension condition
+//! cannot ship silently.
 
 use church_slavonic::*;
 
@@ -40,7 +41,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::First, Number::Singular, g, SYN),
-            ["а́зъ", "менє́", "мнѣ́", "мене́", "мно́ю", "мнѣ́"]
+            ["а҆́зъ", "менє̀", "мнѣ̀", "менѐ", "мно́ю", "мнѣ̀"]
         );
         assert_eq!(
             row(Person::First, Number::Dual, g, OCS),
@@ -56,7 +57,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::First, Number::Plural, g, SYN),
-            ["ны́", "на́съ", "на́мъ", "на́съ", "на́ми", "на́съ"]
+            ["ны̀", "на́съ", "на́мъ", "на́съ", "на́ми", "на́съ"]
         );
         assert_eq!(
             row(Person::Second, Number::Singular, g, OCS),
@@ -68,7 +69,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::Second, Number::Plural, g, SYN),
-            ["вы́", "ва́съ", "ва́мъ", "ва́съ", "ва́ми", "ва́съ"]
+            ["вы̀", "ва́съ", "ва́мъ", "ва́съ", "ва́ми", "ва́съ"]
         );
     }
 }
@@ -89,20 +90,33 @@ fn third_person_singular_varies_by_gender() {
         row(Person::Third, Number::Singular, Gender::Neuter, OCS),
         ["ѥ", "ѥго", "ѥмоу", "ѥ", "имь", "ѥмь"]
     );
-    // Synodal: the corpus's anaphoric `и́`/`я́`/`є́` and its most frequent
-    // oblique spellings (the prepositional `не́мъ`/`не́й` outnumber `є́мъ`).
+    // Synodal: the corpus's anaphoric `и҆̀`/`ꙗ҆̀`/`є҆̀` and its most frequent
+    // oblique spellings (the prepositional `не́мъ`/`не́й` outnumber `є҆́мъ`),
+    // in the print's typography.
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Masculine, SYN),
-        ["и́", "єгѡ́", "єму́", "єго́", "и́мъ", "не́мъ"]
+        ["и҆̀", "є҆гѡ̀", "є҆мꙋ̀", "є҆го̀", "и҆́мъ", "не́мъ"]
     );
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Feminine, SYN),
-        ["я́", "єя́", "не́й", "ю́", "не́ю", "не́й"]
+        ["ꙗ҆̀", "є҆ѧ̀", "не́й", "ю҆̀", "не́ю", "не́й"]
     );
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Neuter, SYN),
-        ["є́", "єгѡ́", "єму́", "є́", "и́мъ", "не́мъ"]
+        ["є҆̀", "є҆гѡ̀", "є҆мꙋ̀", "є҆̀", "и҆́мъ", "не́мъ"]
     );
+    // The grammar's nominative lives at a variant key.
+    let keys: Vec<String> = (2..12).map(|n| format!("personal_{n}")).collect();
+    assert!(keys.iter().any(|k| {
+        ChurchSlavonic::pronoun_sense(
+            k,
+            &Person::Third,
+            &Number::Singular,
+            &Gender::Masculine,
+            &Case::Nominative,
+            &SYN,
+        ) == "ѻ҆́нъ"
+    }));
 }
 
 #[test]
@@ -125,7 +139,7 @@ fn third_person_plural_and_dual() {
     );
     assert_eq!(
         row(Person::Third, Number::Plural, Gender::Masculine, SYN),
-        ["ѻ҆нѝ", "и́хъ", "и́мъ", "и́хъ", "ни́ми", "и́хъ"]
+        ["ѻ҆нѝ", "и҆́хъ", "и҆́мъ", "и҆́хъ", "ни́ми", "и҆́хъ"]
     );
     assert_eq!(
         row(Person::Third, Number::Dual, Gender::Feminine, SYN)[0],

@@ -4,18 +4,33 @@
 //! The class guess is an approximation in the `english` style: it picks the
 //! most common class for each ending and the tables hold what it gets wrong
 //! (the `-ь` masculine i-stems `пѫть`/`гость`, the neuter `-ѧ` Synodal
-//! lemmas `отроча`, the mobile-vowel stems `отьць`/`ѻтецъ`, every consonant
-//! mutation the seam rule does not cover). The accusative is answered in its
-//! nominative shape; the genitive-shaped animate accusative is a table cell.
+//! lemmas `отроча`, the OCS mobile-vowel stems `отьць`, every consonant
+//! mutation the seam rule does not cover). The OCS accusative is answered in
+//! its nominative shape and the genitive-shaped animate accusative is a
+//! table cell; the Synodal masculine answers the genitive shape (the corpus
+//! dictionary's masculine lexemes are three-quarters animate — persons'
+//! names above all) and the inanimate nominative shape is the table cell.
+//! The Synodal rows carry the print's plural marks (`^`, see
+//! [`crate::accent`]): the wide `ѡ`/`є` or the kamora on the genitive,
+//! dative and instrumental plural, the dual, and the direct plural of the
+//! feminines and neuters that would otherwise read as a singular.
 
 use crate::ChurchSlavonicCore;
+use crate::accent::with_accent;
 use crate::grammar::*;
 
 impl ChurchSlavonicCore {
     /// Decline a noun by rule. `word` is the nominative-singular lemma in
-    /// `recension`'s spelling; the answer is in the same spelling.
+    /// `recension`'s spelling (accented in Synodal — see [`crate::accent`]);
+    /// the answer is in the same spelling.
     pub fn noun(word: &str, case: &Case, number: &Number, recension: &Recension) -> String {
-        let (stem, row) = Self::noun_class(word, recension);
+        with_accent(word, recension, |w| {
+            Self::noun_skeleton(w, case, number, recension)
+        })
+    }
+
+    fn noun_skeleton(word: &str, case: &Case, number: &Number, recension: &Recension) -> String {
+        let (stem, row) = Self::noun_class(word, case, number, recension);
         let cell = Self::cell(case, number);
         let ending = match recension {
             Recension::OldChurchSlavonic => row.ocs[cell],
@@ -31,7 +46,12 @@ impl ChurchSlavonicCore {
 
     /// Pick the declension row and the stem it attaches to. Order is
     /// load-bearing: whole-word lists first, then the longest suffixes.
-    fn noun_class(word: &str, recension: &Recension) -> (String, &'static Row) {
+    fn noun_class(
+        word: &str,
+        case: &Case,
+        number: &Number,
+        recension: &Recension,
+    ) -> (String, &'static Row) {
         let synodal = *recension == Recension::Synodal;
         if let Some(stem) = Self::pair_match(word, R_STEMS) {
             return (stem, &R_FEMININE);
@@ -50,6 +70,28 @@ impl ChurchSlavonicCore {
         };
         let row: &Row = if let Some(stem) = word.strip_suffix("мѧ") {
             return (format!("{stem}мен"), &N_NEUTER);
+        } else if synodal
+            && let Some(stem) = word.strip_suffix("ецъ")
+            && stem.chars().last().is_some_and(|c| !is_vowel(c))
+        {
+            // The fleeting-vowel `-ецъ` masculines (`ѻтецъ` : `ѻтца`).
+            return (stem.to_string(), &EC_MASCULINE);
+        } else if synodal && (word.ends_with("іа") || word.ends_with("еа")) {
+            // The Greek `-іа`/`-еа` feminines (`марі́а` : `марі́и`, `марі́ю`).
+            return (strip(word, 1), &IA_FEMININE);
+        } else if synodal && word.ends_with("ца") {
+            return (strip(word, 1), &CA_FEMININE);
+        } else if synodal && word.ends_with("ій") {
+            return (strip(word, 1), &JI_MASCULINE);
+        } else if synodal && word.ends_with('й') {
+            return (strip(word, 1), &J_MASCULINE);
+        } else if synodal && word.ends_with("іе") {
+            let stem = strip(word, 1);
+            // The instrumental plural drops the `і` (`беззако́ньми`).
+            if Self::cell(case, number) == 18 {
+                return (strip(&stem, 1), &IE_NEUTER);
+            }
+            return (stem, &IE_NEUTER);
         } else if let Some(stem) = word.strip_suffix("анинъ") {
             return (format!("{stem}ан"), &IN_SINGULATIVE);
         } else if let Some(stem) = word.strip_suffix("ѣнинъ") {
@@ -70,8 +112,10 @@ impl ChurchSlavonicCore {
             } else {
                 return (format!("{}ѧт", strip(word, 1)), &NT_NEUTER);
             }
-        } else if word.ends_with('ꙗ') || (word.ends_with('а') && husher(word)) {
+        } else if word.ends_with('ꙗ') {
             &JA_SOFT
+        } else if word.ends_with('а') && husher(word) {
+            &JA_HUSHER
         } else if word.ends_with('а') {
             &A_HARD
         } else if word.ends_with('о') {
@@ -96,9 +140,96 @@ fn strip(word: &str, chars: usize) -> String {
     word.chars().take(n).collect()
 }
 
+fn is_vowel(c: char) -> bool {
+    crate::orthography::is_vowel(c)
+}
+
 /// A feminine i-stem is guessed from a dental/labial + `ь` ending (`кость`,
 /// `заповѣдь`, `любовь`-type aside); `-тель` and the sonorant/husher `-ь`
 /// lemmas are taken masculine. `пѫть`, `гость`, `звѣрь`, `голѫбь` are tabled.
+/// The `-а` feminines on a husher: a soft stem whose Synodal plural is
+/// spelled with the hard letters (`дꙋшѝ` : `дꙋ́шы`, `дꙋ́шъ`).
+const JA_HUSHER: Row = Row {
+    ocs: JA_SOFT.ocs,
+    syn: [
+        "а", "и", "и", "ꙋ", "ею", "и", "е", "^и", "ꙋ", "ама", "^и", "ама", "ꙋ", "^и", "^ы", "ъ",
+        "амъ", "^ы", "ами", "ахъ", "^ы",
+    ],
+};
+/// The `-ца` feminines (`ѻ҆вца̀`, `пти́ца`): hard endings after the `ц`
+/// except the instrumental and vocative.
+const CA_FEMININE: Row = Row {
+    ocs: JA_SOFT.ocs,
+    syn: [
+        "а", "ы", "ѣ", "ꙋ", "ею", "ѣ", "е", "^ѣ", "^ꙋ", "ама", "^ѣ", "ама", "^ꙋ", "^ѣ", "^ы", "ъ",
+        "амъ", "^ы", "ами", "ахъ", "^ы",
+    ],
+};
+/// The Greek `-іа` feminines (`марі́а`, `а҆ллилꙋ́іа`): the nominative is the
+/// lemma, the obliques the soft series.
+const IA_FEMININE: Row = Row {
+    ocs: JA_SOFT.ocs,
+    syn: [
+        "=", "и", "и", "ю", "ею", "и", "=", "^и", "ю", "ѧма", "^и", "ѧма", "ю", "^и", "^и", "й",
+        "ѧмъ", "^и", "ѧми", "ѧхъ", "^и",
+    ],
+};
+/// The `-й` masculines (`і҆ере́й`, `а҆́рій`, `край`): a soft stem whose
+/// nominative is the lemma and whose direct plural is `-є`.
+const J_MASCULINE: Row = Row {
+    ocs: JO_SOFT_MASCULINE.ocs,
+    syn: [
+        "=", "ѧ", "ю", "ѧ", "емъ", "и", "е", "^ѧ", "ю", "ема", "^ѧ", "ема", "ю", "^ѧ", "є", "^овъ",
+        "^омъ", "^овъ", "^и", "ехъ", "є",
+    ],
+};
+/// The fleeting-vowel `-ецъ` masculines (`ѻ҆те́цъ` : `ѻ҆тца̀`, `ѻ҆тцы̀`,
+/// `ѻ҆тє́цъ`): the endings carry the `ц` so the vocative can palatalise it,
+/// and the stem is the letters before the fleeting vowel.
+const EC_MASCULINE: Row = Row {
+    ocs: JO_SOFT_MASCULINE.ocs,
+    syn: [
+        "=",
+        "ца",
+        "цꙋ",
+        "ца",
+        "цемъ",
+        "цѣ",
+        "че",
+        "^ца",
+        "^цꙋ",
+        "цема",
+        "^ца",
+        "цема",
+        "^цꙋ",
+        "^ца",
+        "цы",
+        "^цевъ",
+        "^цемъ",
+        "^цевъ",
+        "^цы",
+        "цѣхъ",
+        "цы",
+    ],
+};
+/// The `-ій` masculines of the Greek names (`а҆́рій`, `а҆нало́гій`): the
+/// `а`-grade after the `і` (`а҆́ріа`, `а҆нало́гіахъ`).
+const JI_MASCULINE: Row = Row {
+    ocs: JO_SOFT_MASCULINE.ocs,
+    syn: [
+        "=", "а", "ю", "а", "емъ", "и", "е", "^а", "ю", "ема", "^а", "ема", "ю", "^а", "и", "^овъ",
+        "^омъ", "^овъ", "^ами", "ахъ", "и",
+    ],
+};
+/// The `-іе` neuters (`бдѣ́ніе`, `беззако́ніе`): the genitive plural `-ій`,
+/// the instrumental plural on the bare stem (`беззако́ньми`).
+const IE_NEUTER: Row = Row {
+    ocs: JO_SOFT_NEUTER.ocs,
+    syn: [
+        "е", "ѧ", "ю", "е", "емъ", "и", "е", "^и", "ю", "ема", "^и", "ема", "ю", "^и", "^ѧ", "й",
+        "^емъ", "^ѧ", "ьми", "ихъ", "^ѧ",
+    ],
+};
 const I_FEMININE_SUFFIXES: &[(&str, &str)] = &[
     ("сть", ""),
     ("ть", ""),
@@ -148,8 +279,8 @@ const O_HARD_MASCULINE: Row = Row {
         "омъ", "ꙑ", "ꙑ", "ѣхъ", "и",
     ],
     syn: [
-        "ъ", "а", "ꙋ", "ъ", "омъ", "ѣ", "е", "а", "ꙋ", "ома", "а", "ома", "ꙋ", "а", "и", "овъ",
-        "омъ", "ы", "ы", "ѣхъ", "и",
+        "ъ", "а", "ꙋ", "а", "омъ", "ѣ", "е", "^а", "^ꙋ", "ома", "^а", "ома", "^ꙋ", "^а", "и",
+        "^овъ", "^омъ", "^овъ", "^ы", "ѣхъ", "и",
     ],
 };
 const O_HARD_NEUTER: Row = Row {
@@ -158,8 +289,8 @@ const O_HARD_NEUTER: Row = Row {
         "омъ", "а", "ꙑ", "ѣхъ", "а",
     ],
     syn: [
-        "о", "а", "ꙋ", "о", "омъ", "ѣ", "о", "а", "ꙋ", "ома", "а", "ома", "ꙋ", "а", "а", "ъ",
-        "омъ", "а", "ы", "ѣхъ", "а",
+        "о", "а", "ꙋ", "о", "омъ", "ѣ", "о", "^а", "^ꙋ", "ома", "^а", "ома", "^ꙋ", "^а", "^а",
+        "^ъ", "^омъ", "^а", "^ы", "ѣхъ", "^а",
     ],
 };
 const JO_SOFT_MASCULINE: Row = Row {
@@ -168,8 +299,8 @@ const JO_SOFT_MASCULINE: Row = Row {
         "ѥмъ", "ѩ", "и", "ихъ", "и",
     ],
     syn: [
-        "ь", "ѧ", "ю", "ь", "емъ", "и", "ю", "ѧ", "ю", "ема", "ѧ", "ема", "ю", "ѧ", "и", "ей",
-        "емъ", "и", "и", "ехъ", "и",
+        "ь", "ѧ", "ю", "ѧ", "емъ", "и", "ю", "^ѧ", "ю", "ема", "^ѧ", "ема", "ю", "^ѧ", "и", "ей",
+        "^емъ", "ей", "^и", "ехъ", "и",
     ],
 };
 const JO_SOFT_NEUTER: Row = Row {
@@ -178,8 +309,8 @@ const JO_SOFT_NEUTER: Row = Row {
         "ѥмъ", "ꙗ", "и", "ихъ", "ꙗ",
     ],
     syn: [
-        "е", "ѧ", "ю", "е", "емъ", "и", "е", "и", "ю", "ема", "и", "ема", "ю", "и", "ѧ", "ей",
-        "емъ", "ѧ", "и", "ѧхъ", "ѧ",
+        "е", "ѧ", "ю", "е", "емъ", "и", "е", "^и", "ю", "ема", "^и", "ема", "ю", "^и", "^ѧ", "ей",
+        "^емъ", "^ѧ", "^и", "ѧхъ", "^ѧ",
     ],
 };
 const A_HARD: Row = Row {
@@ -188,8 +319,8 @@ const A_HARD: Row = Row {
         "амъ", "ꙑ", "ами", "ахъ", "ꙑ",
     ],
     syn: [
-        "а", "ы", "ѣ", "ꙋ", "ою", "ѣ", "о", "ѣ", "ꙋ", "ама", "ѣ", "ама", "ꙋ", "ѣ", "ы", "ъ", "амъ",
-        "ы", "ами", "ахъ", "ы",
+        "а", "ы", "ѣ", "ꙋ", "ою", "ѣ", "о", "^ѣ", "^ꙋ", "ама", "^ѣ", "ама", "^ꙋ", "^ѣ", "^ы", "ъ",
+        "амъ", "^ы", "ами", "ахъ", "^ы",
     ],
 };
 const JA_SOFT: Row = Row {
@@ -198,8 +329,8 @@ const JA_SOFT: Row = Row {
         "ѩ", "ꙗми", "ꙗхъ", "ѩ",
     ],
     syn: [
-        "ѧ", "и", "и", "ю", "ею", "и", "е", "и", "ю", "ѧма", "и", "ѧма", "ю", "и", "и", "ь", "ѧмъ",
-        "и", "ѧми", "ѧхъ", "и",
+        "ѧ", "и", "и", "ю", "ею", "и", "е", "^и", "ю", "ѧма", "^и", "ѧма", "ю", "^и", "^и", "ь",
+        "ѧмъ", "^и", "ѧми", "ѧхъ", "^и",
     ],
 };
 const I_FEMININE: Row = Row {
@@ -208,8 +339,8 @@ const I_FEMININE: Row = Row {
         "ьмъ", "и", "ьми", "ьхъ", "и",
     ],
     syn: [
-        "ь", "и", "и", "ь", "їю", "и", "е", "и", "їю", "ема", "и", "ема", "їю", "и", "и", "ей",
-        "емъ", "и", "ьми", "ехъ", "и",
+        "ь", "и", "и", "ь", "ію", "и", "е", "^и", "ію", "ема", "^и", "ема", "ію", "^и", "^и", "ей",
+        "емъ", "^и", "ьми", "ехъ", "^и",
     ],
 };
 const U_MASCULINE: Row = Row {
@@ -249,7 +380,7 @@ const IN_SINGULATIVE: Row = Row {
         "инъ",
         "ина",
         "инꙋ",
-        "инъ",
+        "ина",
         "иномъ",
         "инѣ",
         "ине",
@@ -262,9 +393,9 @@ const IN_SINGULATIVE: Row = Row {
         "ина",
         "е",
         "ъ",
-        "омъ",
-        "е",
-        "ы",
+        "^омъ",
+        "ъ",
+        "^ы",
         "ѣхъ",
         "е",
     ],
@@ -303,7 +434,7 @@ const R_FEMININE: Row = Row {
         "ьмъ", "и", "ьми", "ьхъ", "и",
     ],
     syn: [
-        "=", "е", "и", "ь", "їю", "и", "=", "и", "їю", "ема", "и", "ема", "їю", "и", "и", "їй",
+        "=", "е", "и", "ь", "ію", "и", "=", "и", "ію", "ема", "и", "ема", "ію", "и", "и", "ій",
         "емъ", "и", "ьми", "ехъ", "и",
     ],
 };
@@ -313,7 +444,7 @@ const V_FEMININE: Row = Row {
         "амъ", "и", "ами", "ахъ", "и",
     ],
     syn: [
-        "=", "е", "и", "ь", "їю", "и", "=", "и", "їю", "ама", "и", "ама", "їю", "и", "и", "ей",
+        "=", "е", "и", "ь", "ію", "и", "=", "и", "ію", "ама", "и", "ама", "ію", "и", "и", "ей",
         "амъ", "и", "ами", "ахъ", "и",
     ],
 };
@@ -360,7 +491,7 @@ mod tests {
         );
         assert_eq!(
             decline("конь", Case::Accusative, Number::Plural, SYN),
-            "кони"
+            "коней"
         );
         assert_eq!(
             decline("землꙗ", Case::Genitive, Number::Singular, OCS),
@@ -409,7 +540,7 @@ mod tests {
         );
         assert_eq!(
             decline("церковь", Case::Instrumental, Number::Singular, SYN),
-            "церковїю"
+            "церковію"
         );
         assert_eq!(
             decline("отрочѧ", Case::Genitive, Number::Singular, OCS),
@@ -431,8 +562,53 @@ mod tests {
         assert_eq!(decline("сынъ", Case::Dative, Number::Singular, SYN), "сынꙋ");
         assert_eq!(
             decline("сынъ", Case::Genitive, Number::Plural, SYN),
-            "сыновъ"
+            "сынѡвъ"
         );
+        assert_eq!(decline("сы́нъ", Case::Dative, Number::Plural, SYN), "сы́нѡмъ");
+        assert_eq!(
+            decline("сы́нъ", Case::Instrumental, Number::Plural, SYN),
+            "сы̑ны"
+        );
+        assert_eq!(decline("ра́бъ", Case::Nominative, Number::Dual, SYN), "ра̑ба");
+    }
+
+    #[test]
+    fn synodal_plural_marks_and_the_print_classes() {
+        use Case::*;
+        use Number::*;
+        // The wide letter tells the plural from the singular it looks like.
+        assert_eq!(decline("а҆́ггелъ", Genitive, Plural, SYN), "а҆́ггелѡвъ");
+        assert_eq!(decline("а҆́ггелъ", Dative, Plural, SYN), "а҆́ггелѡмъ");
+        // The Synodal masculine accusative is the genitive's shape.
+        assert_eq!(decline("а҆́ггелъ", Accusative, Singular, SYN), "а҆́ггела");
+        assert_eq!(decline("а҆́ггелъ", Accusative, Plural, SYN), "а҆́ггелѡвъ");
+        assert_eq!(decline("рабъ", Accusative, Singular, OCS), "рабъ");
+        assert_eq!(decline("бдѣ́ніе", Genitive, Plural, SYN), "бдѣ́ній");
+        assert_eq!(decline("бдѣ́ніе", Instrumental, Plural, SYN), "бдѣ́ньми");
+        assert_eq!(decline("а҆́рій", Genitive, Singular, SYN), "а҆́ріа");
+        assert_eq!(decline("а҆нало́гій", Locative, Plural, SYN), "а҆нало́гіахъ");
+        assert_eq!(decline("а҆віге́а", Genitive, Singular, SYN), "а҆віге́и");
+        assert_eq!(decline("бе́здна", Nominative, Plural, SYN), "бє́здны");
+        assert_eq!(decline("бдѣ́ніе", Nominative, Plural, SYN), "бдѣ̑ніѧ");
+        assert_eq!(decline("ко́сть", Accusative, Plural, SYN), "кѡ́сти");
+        assert_eq!(decline("рꙋка̀", Nominative, Plural, SYN), "рꙋки̑");
+        assert_eq!(decline("гражда́нинъ", Dative, Plural, SYN), "гражда́нѡмъ");
+        // -ца, -іа, -й and the fleeting -ецъ.
+        assert_eq!(decline("пти́ца", Genitive, Singular, SYN), "пти́цы");
+        assert_eq!(decline("пти́ца", Instrumental, Singular, SYN), "пти́цею");
+        assert_eq!(decline("пти́ца", Genitive, Plural, SYN), "пти́цъ");
+        assert_eq!(decline("дꙋша̀", Nominative, Plural, SYN), "дꙋшы̑");
+        assert_eq!(decline("марі́а", Genitive, Singular, SYN), "марі́и");
+        assert_eq!(decline("марі́а", Accusative, Singular, SYN), "марі́ю");
+        assert_eq!(decline("марі́а", Nominative, Singular, SYN), "марі́а");
+        assert_eq!(decline("і҆ере́й", Genitive, Singular, SYN), "і҆ере́ѧ");
+        assert_eq!(decline("і҆ере́й", Nominative, Singular, SYN), "і҆ере́й");
+        assert_eq!(decline("і҆ере́й", Nominative, Plural, SYN), "і҆ере́є");
+        assert_eq!(decline("ѻ҆те́цъ", Genitive, Singular, SYN), "ѻ҆тца̀");
+        assert_eq!(decline("ѻ҆те́цъ", Vocative, Singular, SYN), "ѻ҆тчѐ");
+        assert_eq!(decline("ѻ҆те́цъ", Genitive, Plural, SYN), "ѻ҆тцє́въ");
+        assert_eq!(decline("ѻ҆те́цъ", Dative, Plural, SYN), "ѻ҆тцє́мъ");
+        assert_eq!(decline("а҆́гнецъ", Genitive, Singular, SYN), "а҆́гнца");
     }
 
     #[test]
@@ -452,7 +628,7 @@ mod tests {
         );
         assert_eq!(
             decline("гражданинъ", Case::Accusative, Number::Plural, SYN),
-            "граждане"
+            "гражданъ"
         );
         // noun:agent-plural-reinventory
         assert_eq!(

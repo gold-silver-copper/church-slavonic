@@ -4,6 +4,10 @@
 //! (whitespace, ordering, headers) must be committed together with regenerated
 //! tables (`cargo xtask refresh-data`). Entries are sorted by key before writing
 //! so output is independent of input order.
+//!
+//! A row is written sparsely — `(cell index, form)` pairs in cell order, the
+//! blank cells (the rule's) left out — so the source the compiler sees is
+//! proportional to the attested exceptions, not to the row's arity.
 
 use crate::cells::Pos;
 use std::fs::File;
@@ -51,12 +55,12 @@ pub fn write_phf(
     writeln!(out)?;
     writeln!(
         out,
-        "/// `\"<recension>:<key>\"` -> {arity} cells; an empty cell falls back to the rule."
+        "/// `\"<recension>:<key>\"` -> the attested `(cell, form)` pairs of a {arity}-cell row; a cell not listed falls back to the rule."
     )?;
     writeln!(out, "/// Cell order: {}.", doc(pos))?;
     writeln!(
         out,
-        "pub static {map}: phf::Map<&'static str, [&'static str; {arity}]> = phf_map! {{"
+        "pub static {map}: phf::Map<&'static str, &'static [(u8, &'static str)]> = phf_map! {{"
     )?;
     for (key, cells) in &rows {
         for text in std::iter::once(key).chain(cells.iter()) {
@@ -66,16 +70,27 @@ pub fn write_phf(
                 )));
             }
         }
-        let cells: Vec<String> = cells.iter().map(|c| format!("\"{c}\"")).collect();
-        writeln!(out, "    \"{key}\" => [{}],", cells.join(", "))?;
+        if cells.len() != arity {
+            return Err(io::Error::other(format!(
+                "refusing to emit {key}: {} cells, expected {arity}",
+                cells.len()
+            )));
+        }
+        let cells: Vec<String> = cells
+            .iter()
+            .enumerate()
+            .filter(|(_, c)| !c.is_empty())
+            .map(|(i, c)| format!("({i}, \"{c}\")"))
+            .collect();
+        writeln!(out, "    \"{key}\" => &[{}],", cells.join(", "))?;
     }
     writeln!(out, "}};")?;
     writeln!(out)?;
     writeln!(
         out,
-        "pub fn {getter}(key: &str) -> Option<&'static [&'static str; {arity}]> {{"
+        "pub fn {getter}(key: &str) -> Option<&'static [(u8, &'static str)]> {{"
     )?;
-    writeln!(out, "    {map}.get(key)")?;
+    writeln!(out, "    {map}.get(key).copied()")?;
     writeln!(out, "}}")?;
     Ok(())
 }

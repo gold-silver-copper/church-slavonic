@@ -43,6 +43,10 @@ pub struct Candidate {
     /// The row's cells in schema order (see [`crate::cells`]); an empty string
     /// is a cell the rule serves (unattested, or attested equal to the rule).
     pub forms: Vec<String>,
+    /// The same cells before the rule was subtracted (an empty string is an
+    /// unattested cell). Not part of the sort: two candidates that emit the
+    /// same forms are one candidate.
+    pub raw: Vec<String>,
     /// True when EVERY contributing sense is soft (dialectal). Such a candidate
     /// sorts after standard siblings so it can never take the bare key from one.
     pub soft_sense: bool,
@@ -51,6 +55,7 @@ pub struct Candidate {
 impl Candidate {
     pub fn new(forms: Vec<String>) -> Self {
         Candidate {
+            raw: forms.clone(),
             forms,
             soft_sense: false,
         }
@@ -69,11 +74,14 @@ impl Candidate {
     }
 }
 
-/// One emitted key plus the forms published under it.
+/// One emitted key plus the forms published under it (and the attested
+/// forms before the rule was subtracted, for the variant-row trimming in
+/// `extract::finalize`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Assignment {
     pub key: String,
     pub forms: Vec<String>,
+    pub raw: Vec<String>,
 }
 
 /// Number a lemma's surviving candidates into deterministic keys.
@@ -93,6 +101,7 @@ pub fn assign(lemma: &str, mut candidates: Vec<Candidate>, had_regular: bool) ->
         .map(|(i, c)| Assignment {
             key: make_key(lemma, base + i as u32),
             forms: c.forms,
+            raw: c.raw,
         })
         .collect()
 }

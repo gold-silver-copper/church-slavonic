@@ -21,12 +21,15 @@
 //!
 //! # Sources and recensions
 //!
-//! Three labelled full-form sources, each tagged with the recension it
+//! Four labelled full-form sources, each tagged with the recension it
 //! attests: the Kaikki/Wiktextract Old Church Slavonic dump (`ocs`, unaccented
 //! inflection tables), the Alypy grammar's printed paradigms (`syn`, accented
-//! Synodal print) and Polyakov's corpus-based grammatical dictionary (`syn`,
-//! every corpus-attested form with its analysis and frequency). A raw text
-//! corpus is not a source.
+//! Synodal print), Polyakov's corpus-based grammatical dictionary (`syn`,
+//! every corpus-attested form with its analysis and frequency) and the
+//! Russian Wiktionary's few structured Church Slavonic tables (`syn`,
+//! [`ruwiktionary`]). A raw text corpus is not a source; the two Old Church
+//! Slavonic treebanks ([`treebank`], `checks` only) are evaluation sources
+//! whose tokens are scored and never published.
 //!
 //! # Table schema (the contract with the `church-slavonic` runtime)
 //!
@@ -51,6 +54,9 @@ pub mod file_generation;
 pub mod kaikki;
 pub mod pipeline;
 pub mod polyakov;
+pub mod ruwiktionary;
+#[cfg(feature = "checks")]
+pub mod treebank;
 
 pub use args::Config;
 

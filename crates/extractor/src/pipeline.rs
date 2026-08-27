@@ -10,16 +10,18 @@ use crate::args::Config;
 use crate::bootstrap::generate_tables;
 use crate::checks::run_checks;
 use crate::extract::{Source, disagreements, finalize, gather, gather_sources};
-use crate::{alypy, kaikki, polyakov};
+use crate::{alypy, kaikki, polyakov, ruwiktionary};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
 
-/// The three pinned sources, relative to `--sources`.
+/// The four pinned table sources, relative to `--sources`.
 pub const KAIKKI_SOURCE: &str =
     "english-wiktionary-ocs/kaikki.org-dictionary-OldChurchSlavonic.jsonl";
 pub const ALYPY_SOURCE: &str = "alypy-grammar";
 pub const POLYAKOV_SOURCE: &str = "polyakov";
+pub const RUWIKTIONARY_SOURCE: &str =
+    "ruwiktionary-cu/kaikki.org-dictionary-Церковнославянский.jsonl";
 
 /// Run one full data refresh. On success the four generated PHF tables are a
 /// pure deterministic function of the (filtered) sources.
@@ -30,9 +32,13 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     let kaikki_out = config.artifacts_dir.join(Source::Kaikki.intermediate());
     let alypy_out = config.artifacts_dir.join(Source::Alypy.intermediate());
     let polyakov_out = config.artifacts_dir.join(Source::Polyakov.intermediate());
+    let ruwiktionary_out = config
+        .artifacts_dir
+        .join(Source::RuWiktionary.intermediate());
     let kaikki_src = config.sources_dir.join(KAIKKI_SOURCE);
     let alypy_src = config.sources_dir.join(ALYPY_SOURCE);
     let polyakov_src = config.sources_dir.join(POLYAKOV_SOURCE);
+    let ruwiktionary_src = config.sources_dir.join(RUWIKTIONARY_SOURCE);
 
     if kaikki_src.is_file() {
         kaikki::filter(&kaikki_src, &kaikki_out)?;
@@ -49,21 +55,36 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     } else {
         reuse_or_fail(&polyakov_out, &polyakov_src)?;
     }
+    if ruwiktionary_src.is_file() {
+        ruwiktionary::filter(&ruwiktionary_src, &ruwiktionary_out)?;
+    } else {
+        reuse_or_fail(&ruwiktionary_out, &ruwiktionary_src)?;
+    }
 
     if config.checks_only {
-        run_checks(&config.artifacts_dir, &config.artifacts_dir)?;
+        run_checks(
+            &config.artifacts_dir,
+            &config.artifacts_dir,
+            &config.sources_dir,
+        )?;
         println!("Checks-only run: generated tables untouched.");
         return Ok(());
     }
 
     let lexemes = gather(&config.artifacts_dir)?;
-    let (exact, beyond) = disagreements(
-        &gather_sources(&config.artifacts_dir, &[Source::Alypy])?,
-        &gather_sources(&config.artifacts_dir, &[Source::Polyakov])?,
-    );
-    println!(
-        "Alypy/Polyakov slots attested by both with a different primary: {exact} ({beyond} beyond accent and letter conventions) — variants by the sort."
-    );
+    let polyakov = gather_sources(&config.artifacts_dir, &[Source::Polyakov])?;
+    for (source, name) in [
+        (Source::Alypy, "Alypy"),
+        (Source::RuWiktionary, "ru.wiktionary"),
+    ] {
+        let (exact, beyond) = disagreements(
+            &gather_sources(&config.artifacts_dir, &[source])?,
+            &polyakov,
+        );
+        println!(
+            "{name}/Polyakov slots attested by both with a different primary: {exact} ({beyond} beyond accent and letter conventions) — variants by the sort."
+        );
+    }
     let tables = finalize(&lexemes);
     generate_tables(&tables, &config.generated_dir)?;
     println!(

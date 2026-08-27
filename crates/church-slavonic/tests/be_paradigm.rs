@@ -2,10 +2,10 @@
 //!
 //! In Old Church Slavonic the Kaikki dump attests nothing the rules do not
 //! predict, so every cell routes through `ChurchSlavonicCore::to_be`; in the
-//! Synodal recension the §81 tables of the Alypy grammar and Polyakov's
-//! corpus paradigm serve the accented finite cells from the table — both
-//! spell the copula, so the sort spreads their variants over `быти` and its
-//! `_n` keys. This pins every reachable finite cell in both recensions,
+//! Synodal recension the rule's matrix carries the print's accents and the
+//! §81 tables of the Alypy grammar and Polyakov's corpus paradigm add
+//! their variants — both spell the copula, so the sort spreads them over
+//! `бы́ти` and its `_n` keys. This pins every reachable finite cell in both recensions,
 //! including the recension-conditioned tense assignment (the OCS aorist is
 //! the `бѣхъ` series, the Synodal aorist the `быхъ`/`бысть` series).
 
@@ -48,14 +48,11 @@ fn old_church_slavonic_finite_cells() {
 /// The published keys of the Synodal copula: the bare lemma and every `_n`
 /// key that resolves to a table row.
 fn synodal_keys() -> Vec<String> {
-    let mut keys = vec!["быти".to_string()];
-    keys.extend((2..20).map(|n| format!("быти_{n}")).take_while(|k| {
-        // An unpublished suffix falls through to the rule, which never accents.
-        be(k, Tense::Present, SYN)
-            .iter()
-            .any(|f| f != "єсмь" && f.contains('\u{301}') || f.contains('\u{300}'))
-    }));
-    keys
+    // An unpublished suffix reads the bare row, then the rule: probing a few
+    // keys past the published ones costs nothing.
+    std::iter::once("бы́ти".to_string())
+        .chain((2..8).map(|n| format!("бы́ти_{n}")))
+        .collect()
 }
 
 /// Every cell of `expected` is produced by some published key.
@@ -119,8 +116,8 @@ fn synodal_finite_cells_come_from_the_grammar_with_their_accents() {
         Tense::Aorist,
         [
             "бѣ́хъ",
-            "бѣ́",
-            "бѣ́",
+            "бѣ̀",
+            "бѣ̀",
             "бѣ́ховѣ",
             "бѣ́ста",
             "бѣ́ста",
@@ -129,19 +126,19 @@ fn synodal_finite_cells_come_from_the_grammar_with_their_accents() {
             "бѣ́ша",
         ],
     );
-    // Polyakov's corpus spellings are reachable alongside the grammar's.
+    // The corpus's other spellings are reachable alongside the grammar's.
     reachable(
         Tense::Present,
         [
-            "є́смь",
-            "єси́",
-            "є́сть",
-            "єсма́",
-            "єста́",
-            "єста́",
-            "єсмы́",
-            "єсте́",
-            "су́ть",
+            "є҆смь",
+            "є҆си",
+            "є҆сть",
+            "є҆сма̀",
+            "є҆стѣ̀",
+            "є҆стѣ̀",
+            "є҆́смы",
+            "є҆стѐ",
+            "сꙋть",
         ],
     );
 }
@@ -165,7 +162,7 @@ fn participles_and_infinitive_stay_with_the_rule() {
     let keys = synodal_keys();
     assert!(
         keys.iter()
-            .any(|k| participle(k, Tense::Present, SYN) == "су́щь")
+            .any(|k| participle(k, Tense::Present, SYN) == "сꙋ́щь")
     );
     assert!(
         keys.iter()
@@ -173,13 +170,13 @@ fn participles_and_infinitive_stay_with_the_rule() {
     );
     assert_eq!(
         ChurchSlavonic::verb(
-            "быти_2",
+            "бы́ти_2",
             &Person::First,
             &Number::Singular,
             &Tense::Present,
             &Form::Infinitive,
             &SYN
         ),
-        "быти"
+        "бы́ти"
     );
 }

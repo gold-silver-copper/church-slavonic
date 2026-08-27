@@ -18,9 +18,16 @@
 //!   return the PRIMARY (first-listed) attested form? The recall metric unions
 //!   every key, so it is blind to a standard form demoted to an `_n` key.
 //!
+//! The two Old Church Slavonic treebanks ([`crate::treebank`]) are scored the
+//! same way — every annotated token whose features name a schema cell is a
+//! slot, the lemma and the surface compared through
+//! [`church_slavonic_core::orthography::comparison_key`] (manuscript spelling
+//! varies) — and reported as "corpus recall" rows; they feed no table.
+//!
 //! Run `cargo xtask accuracy` before and after any rule or policy change so the
 //! change carries a number, not an anecdote. Misses are written per POS and
-//! recension to `data/intermediate/*_misses.tsv`.
+//! recension to `data/intermediate/*_misses.tsv`, and per treebank to
+//! `data/intermediate/<treebank>_misses.tsv`.
 
 use std::error::Error;
 use std::path::Path;
@@ -109,14 +116,18 @@ fn score_bare(
     is_primary
 }
 
-pub fn run_checks(intermediate_dir: &Path, artifacts_dir: &Path) -> Result<(), Box<dyn Error>> {
+pub fn run_checks(
+    intermediate_dir: &Path,
+    artifacts_dir: &Path,
+    sources_dir: &Path,
+) -> Result<(), Box<dyn Error>> {
     #[cfg(feature = "checks")]
     {
-        harness::run(intermediate_dir, artifacts_dir)
+        harness::run(intermediate_dir, artifacts_dir, sources_dir)
     }
     #[cfg(not(feature = "checks"))]
     {
-        let _ = (intermediate_dir, artifacts_dir);
+        let _ = (intermediate_dir, artifacts_dir, sources_dir);
         Err("extractor was built without the `checks` feature; run `cargo xtask accuracy`.".into())
     }
 }
@@ -127,12 +138,13 @@ mod harness {
     use crate::assign::split_key;
     use crate::bootstrap::parse_phf_pairs;
     use crate::cells::{
-        CASES, GENDERS, NUMBERS, PERSONS, PRONOUN_KEY, Pos, VERB_BLOCKS, recension_of_tag,
-        rule_matches,
+        CASES, GENDERS, NUMBERS, PERSONS, Pos, VERB_BLOCKS, recension_of_tag, rule_matches,
     };
     use crate::extract::{Lexemes, Source, gather_sources};
+    use crate::treebank::{Corpus, load_syntacticus, load_ud_proiel};
     use church_slavonic::ChurchSlavonic;
     use church_slavonic_core::grammar::*;
+    use church_slavonic_core::orthography::comparison_key;
     use std::collections::BTreeMap;
     use std::error::Error;
     use std::fmt::Write as _;
@@ -215,7 +227,7 @@ mod harness {
                 let case = &CASES[rest % 6];
                 let number = &NUMBERS[(rest / 6) % 3];
                 let gender = &GENDERS[(rest / 6) / 3];
-                ChurchSlavonic::pronoun(&person, number, gender, case, r).to_string()
+                ChurchSlavonic::pronoun_sense(key, &person, number, gender, case, r).to_string()
             }
         }
     }
@@ -251,15 +263,84 @@ mod harness {
 
     /// Each source is scored on its own against the published tables (which
     /// every source fed): the number measures the table/rule machinery, not
-    /// generalisation.
-    pub fn run(intermediate_dir: &Path, artifacts_dir: &Path) -> Result<(), Box<dyn Error>> {
+    /// generalisation. The treebanks fed nothing: their rows measure it.
+    pub fn run(
+        intermediate_dir: &Path,
+        artifacts_dir: &Path,
+        sources_dir: &Path,
+    ) -> Result<(), Box<dyn Error>> {
         let published = published_keys()?;
         let mut reports: BTreeMap<(Pos, Source), Report> = BTreeMap::new();
         for source in Source::ALL {
             let lexemes: Lexemes = gather_sources(intermediate_dir, &[source])?;
             score_source(source, &lexemes, &published, &mut reports);
         }
-        report(&reports, artifacts_dir)
+        let corpora: Vec<CorpusReport> = [
+            load_ud_proiel(sources_dir, artifacts_dir)?,
+            load_syntacticus(sources_dir, artifacts_dir)?,
+        ]
+        .into_iter()
+        .flatten()
+        .map(|corpus| score_corpus(corpus, &published))
+        .collect();
+        report(&reports, &corpora, artifacts_dir)
+    }
+
+    /// A scored treebank: per part of speech, the slots reproduced.
+    struct CorpusReport {
+        corpus: Corpus,
+        scores: BTreeMap<Pos, Score>,
+        misses: String,
+    }
+
+    /// Score a treebank: a slot is a hit when some published key of a lemma
+    /// spelled like the token's (its [`comparison_key`]) — or the bare
+    /// lemma through the rule — produces the surface up to spelling.
+    fn score_corpus(corpus: Corpus, published: &Published) -> CorpusReport {
+        let ocs = Recension::OldChurchSlavonic;
+        let mut by_spelling: BTreeMap<(Pos, String), Vec<String>> = BTreeMap::new();
+        for ((tag, pos, lemma), keys) in published {
+            if tag == "ocs" {
+                by_spelling
+                    .entry((*pos, comparison_key(lemma)))
+                    .or_default()
+                    .extend(keys.iter().cloned());
+            }
+        }
+        let mut scores: BTreeMap<Pos, Score> = BTreeMap::new();
+        let mut misses = String::new();
+        for slot in &corpus.slots {
+            let mut keys = vec![slot.lemma.clone()];
+            if let Some(list) = by_spelling.get(&(slot.pos, comparison_key(&slot.lemma))) {
+                keys.extend(list.iter().filter(|k| **k != slot.lemma).cloned());
+            }
+            let produced: Vec<String> = keys
+                .iter()
+                .map(|k| produce(slot.pos, k, slot.cell, &ocs))
+                .collect();
+            let hit = score_slot(
+                scores.entry(slot.pos).or_default(),
+                std::slice::from_ref(&slot.surface),
+                &produced,
+                |a, b| comparison_key(a) == comparison_key(b),
+            );
+            if !hit {
+                let _ = writeln!(
+                    misses,
+                    "{}\t{}\t{}\t{}\t{}",
+                    slot.pos.label(),
+                    slot.lemma,
+                    slot.cell,
+                    slot.surface,
+                    produced.join(", ")
+                );
+            }
+        }
+        CorpusReport {
+            corpus,
+            scores,
+            misses,
+        }
     }
 
     fn score_source(
@@ -273,11 +354,7 @@ mod harness {
                 continue;
             };
             let same = |a: &str, b: &str| rule_matches(&recension, a, b);
-            let keys = if key.pos == Pos::Pronoun {
-                vec![PRONOUN_KEY.to_string()]
-            } else {
-                keys_for(published, key.tag, key.pos, &key.lemma)
-            };
+            let keys = keys_for(published, key.tag, key.pos, &key.lemma);
             let report = reports.entry((key.pos, source)).or_default();
             for i in 0..key.pos.arity() {
                 let attested = slot_forms(observations, i);
@@ -317,6 +394,7 @@ mod harness {
 
     fn report(
         reports: &BTreeMap<(Pos, Source), Report>,
+        corpora: &[CorpusReport],
         artifacts_dir: &Path,
     ) -> Result<(), Box<dyn Error>> {
         let mut out = String::new();
@@ -333,6 +411,35 @@ mod harness {
                 r.recall.total_slots,
                 r.recall.percent_display(),
                 r.recall.unreachable_forms
+            );
+        }
+        for c in corpora {
+            for (pos, score) in &c.scores {
+                let _ = writeln!(
+                    out,
+                    "| **{}** | {} | {} / {} | {} | {} |",
+                    pos_label(*pos),
+                    c.corpus.label,
+                    score.matched_slots,
+                    score.total_slots,
+                    score.percent_display(),
+                    score.unreachable_forms
+                );
+            }
+        }
+        for c in corpora {
+            let _ = writeln!(
+                out,
+                "\n{}: {} tokens, {} slots mapped, {} skipped:{}",
+                c.corpus.label,
+                c.corpus.tokens,
+                c.corpus.slots.len(),
+                c.corpus.skipped_total(),
+                c.corpus
+                    .skipped
+                    .iter()
+                    .map(|(reason, n)| format!(" {reason}={n};"))
+                    .collect::<String>()
             );
         }
         out.push_str("\nBare-lemma correctness (does the natural bare-lemma call return the primary, first-listed, attested form?):\n\n");
@@ -362,6 +469,13 @@ mod harness {
             fs::write(
                 &path,
                 format!("lemma\tcell\tattested\tproduced\tkind\n{}", r.misses),
+            )?;
+        }
+        for c in corpora {
+            let path = artifacts_dir.join(format!("{}_misses.tsv", c.corpus.file_label));
+            fs::write(
+                &path,
+                format!("pos\tlemma\tcell\tsurface\tproduced\n{}", c.misses),
             )?;
         }
         println!(

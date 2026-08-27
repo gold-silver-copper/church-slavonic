@@ -4,9 +4,9 @@
 //! # Architecture
 //!
 //! Every query follows the same two-tier shape: consult the generated PHF
-//! tables (`generated/*_phf.rs`, compiled in via `include!`) for an attested
-//! cell first, and fall back to [`ChurchSlavonicCore`]'s regular rules
-//! otherwise. The tables and the rules are NOT independent: the extractor
+//! tables (`generated/*_phf.rs`, compiled in via `include!`; a row lists its
+//! attested `(cell, form)` pairs) for an attested cell first, and fall back
+//! to [`ChurchSlavonicCore`]'s regular rules otherwise. The tables and the rules are NOT independent: the extractor
 //! blanks any cell the rules already predict, so the tables hold exactly the
 //! attested exceptions and nothing else. Changing a rule in
 //! `church-slavonic-core` therefore requires regenerating the tables (`cargo
@@ -19,21 +19,24 @@
 //!
 //! # Recensions and the table schema
 //!
-//! Every call takes a [`Recension`] by reference, like `&Number`. Each
-//! recension has one source — the Kaikki/Wiktextract Old Church Slavonic dump
-//! (`ocs`, unaccented) and the Alypy grammar's printed Synodal paradigms
-//! (`syn`, accented) — and every table key carries the recension tag:
-//! `"ocs:градъ"`, `"syn:рабъ_2"`. A row is a fixed-arity array of cells in a
+//! Every call takes a [`Recension`] by reference, like `&Number`. The Old
+//! Church Slavonic rows come from the Kaikki/Wiktextract dump (`ocs`,
+//! unaccented); the Synodal rows from the Alypy grammar, Polyakov's corpus
+//! dictionary and ru.wiktionary (`syn`, the accented print). A Synodal lemma
+//! is its ACCENTED citation form (`ра́бъ`, `свѧты́й`, `твори́ти`): the accent
+//! is the input of the rule engine's accent rule, and the key of its table
+//! row — an unaccented Synodal lemma is answered by the rule, unaccented.
+//! Every table key carries the recension tag: `"ocs:градъ"`, `"syn:ра́бъ_2"`. A row is a fixed-arity array of cells in a
 //! documented order (nouns 21: `number * 7 + case`; adjectives 126:
 //! `((degree * 3 + gender) * 3 + number) * 7 + case` over the positive and
 //! comparative degrees; verbs 38: four 9-cell finite blocks present /
 //! imperfect / aorist / imperative at `number * 3 + person`, then the present
 //! and past active participle citations; the personal pronoun 90: first and
 //! second person `number * 6 + case`, third `36 + (gender * 3 + number) * 6 +
-//! case`, six cases). An empty cell means the rule serves it. Table cells are
-//! returned as attested — Synodal cells keep their printed accents — while
-//! rule output is passed through [`orthography::realise`] so it is spelled in
-//! the requested recension's letters.
+//! case`, six cases). A cell the row does not list is served by the rule.
+//! Table cells and rule output alike are spelled in the recension's canonical
+//! typography ([`orthography::realise`]): unaccented letters for Old Church
+//! Slavonic, the print's letters, breathing and accent for Synodal.
 //!
 //! # Sense-numbered keys
 //!
@@ -60,8 +63,10 @@
 //!    folded to its unaccented key the same way.
 //! 2. Base-lemma agreement: when a `_<n>` suffix strips (the word or its base
 //!    is a table key), EVERY code path treats the input as that base lemma —
-//!    lookups fall back `get_*(word)` then `get_*(base)` so `сꙑнъ_2` inflects
-//!    exactly like `сꙑнъ` where its own row is blank.
+//!    a cell is read from the word's own row, then from the base lemma's row,
+//!    then from the rule, so `сꙑнъ_2` inflects exactly like `сꙑнъ` where its
+//!    own row is blank (the generator blanks every `_<n>` cell the bare row
+//!    already holds).
 //! 3. Opaqueness: input that resolves to no key inflects by rule on the whole
 //!    string, unchanged (the nominative of `градъ_9` is `градъ_9ъ`, not
 //!    `градъ`).
@@ -97,6 +102,9 @@ mod pronoun_phf {
     ));
 }
 use pronoun_phf::*;
+
+/// The lemma-less key of the personal pronoun's primary row.
+const PRONOUN_KEY: &str = "personal";
 
 /// The key prefix of a recension's rows.
 fn tag(recension: &Recension) -> &'static str {
@@ -146,10 +154,13 @@ fn pronoun_cell(person: &Person, number: &Number, gender: &Gender, case: &Case) 
     }
 }
 
-/// A non-empty table cell.
-fn cell(cells: &'static [&'static str], i: Option<usize>) -> Option<&'static str> {
-    let c = *cells.get(i?)?;
-    (!c.is_empty()).then_some(c)
+/// The attested form at cell `i` of a sparse row (the `(cell, form)` pairs
+/// the generator wrote, in cell order); `None` when the rule serves it.
+fn cell(row: &'static [(u8, &'static str)], i: Option<usize>) -> Option<&'static str> {
+    let i = u8::try_from(i?).ok()?;
+    row.binary_search_by_key(&i, |(c, _)| *c)
+        .ok()
+        .map(|at| row[at].1)
 }
 
 /// The base of a canonical sense-suffixed key (`сꙑнъ_2` -> `сꙑнъ`), or `None`
@@ -203,9 +214,15 @@ fn restyle(s: String, style: CaseStyle) -> String {
     }
 }
 
-/// The table key spelling of an input: NFC, marks stripped, lowercased.
-fn fold(word: &str) -> String {
-    strip_marks(&word.nfc().collect::<String>()).to_lowercase()
+/// The table key spelling of an input: the recension's canonical spelling
+/// ([`realise`]) — for Old Church Slavonic the unaccented lowercase word,
+/// for Synodal the print's typography with the accent kept (a Synodal lemma
+/// is its accented citation form: `ра́бъ`, not `рабъ`).
+fn fold(word: &str, recension: &Recension) -> String {
+    match recension {
+        Recension::OldChurchSlavonic => strip_marks(&word.nfc().collect::<String>()).to_lowercase(),
+        Recension::Synodal => realise(word, recension),
+    }
 }
 
 /// Run a regular-rule fallback with the same case handling table hits get:
@@ -219,11 +236,15 @@ fn rule_with_case(word: &str, recension: &Recension, rule: impl Fn(&str) -> Stri
 
 /// Table lookup: the exact key first; then the folded key (the tables are
 /// unaccented lowercase), remembering how to restore the casing onto the value.
-fn ci_lookup<T>(word: &str, get: impl Fn(&str) -> Option<T>) -> Option<(T, CaseStyle)> {
+fn ci_lookup<T>(
+    word: &str,
+    recension: &Recension,
+    get: impl Fn(&str) -> Option<T>,
+) -> Option<(T, CaseStyle)> {
     if let Some(v) = get(word) {
         return Some((v, CaseStyle::AsIs));
     }
-    let folded = fold(word);
+    let folded = fold(word, recension);
     if folded != word
         && let Some(v) = get(&folded)
     {
@@ -232,20 +253,21 @@ fn ci_lookup<T>(word: &str, get: impl Fn(&str) -> Option<T>) -> Option<(T, CaseS
     None
 }
 
-/// `ci_lookup` on the word, then on its base lemma — skipping the second,
-/// byte-identical probe when no sense suffix stripped.
-fn ci_lookup_with_base<T>(
+/// The attested cell `i` of `word`'s row, else of its base lemma's row (a
+/// `_<n>` row holds only the cells that differ from the bare row), with the
+/// casing to restore; `None` when the rule serves the cell.
+fn attested_cell(
     word: &str,
     base: &str,
-    get: impl Fn(&str) -> Option<T>,
-) -> Option<(T, CaseStyle)> {
-    ci_lookup(word, &get).or_else(|| {
-        if base != word {
-            ci_lookup(base, &get)
-        } else {
-            None
-        }
-    })
+    recension: &Recension,
+    i: Option<usize>,
+    get: impl Fn(&str) -> Option<&'static [(u8, &'static str)]>,
+) -> Option<(&'static str, CaseStyle)> {
+    let probe = |w: &str| {
+        let (row, style) = ci_lookup(w, recension, &get)?;
+        Some((cell(row, i)?, style))
+    };
+    probe(word).or_else(|| (base != word).then(|| probe(base)).flatten())
 }
 
 /// Entry point for Church Slavonic inflection.
@@ -258,10 +280,11 @@ pub struct ChurchSlavonic;
 impl ChurchSlavonic {
     /// Declines a noun.
     ///
-    /// The lemma is the nominative singular in the recension's spelling. Table
-    /// rows serve the attested exceptions; everything else is the rule.
-    /// Sense-numbered keys resolve to their homograph or variant; a `_<n>`
-    /// suffix that resolves to no table key stays opaque.
+    /// The lemma is the nominative singular in the recension's spelling — in
+    /// Synodal its accented citation form (`ра́бъ`, `рꙋка̀`), which the accent
+    /// rule reads. Table rows serve the attested exceptions; everything else
+    /// is the rule. Sense-numbered keys resolve to their homograph or
+    /// variant; a `_<n>` suffix that resolves to no table key stays opaque.
     ///
     /// # Examples
     /// ```rust
@@ -272,15 +295,19 @@ impl ChurchSlavonic {
     ///     "града"
     /// );
     /// assert_eq!(
-    ///     ChurchSlavonic::noun("рабъ", &Case::Dative, &Number::Singular, &Recension::Synodal),
+    ///     ChurchSlavonic::noun("ра́бъ", &Case::Dative, &Number::Singular, &Recension::Synodal),
     ///     "рабꙋ̀"
+    /// );
+    /// assert_eq!(
+    ///     ChurchSlavonic::noun("рꙋка̀", &Case::Genitive, &Number::Singular, &Recension::Synodal),
+    ///     "рꙋкѝ"
     /// );
     /// ```
     pub fn noun(word: &str, case: &Case, number: &Number, recension: &Recension) -> String {
         let get = |w: &str| get_noun(&format!("{}:{w}", tag(recension)));
-        let base = base_lemma(word, |w| ci_lookup(w, get).is_some());
-        if let Some((row, style)) = ci_lookup_with_base(word, base, get)
-            && let Some(c) = cell(row, Some(noun_cell(case, number)))
+        let base = base_lemma(word, |w| ci_lookup(w, recension, get).is_some());
+        if let Some((c, style)) =
+            attested_cell(word, base, recension, Some(noun_cell(case, number)), get)
         {
             return restyle(c.to_string(), style);
         }
@@ -314,10 +341,14 @@ impl ChurchSlavonic {
         recension: &Recension,
     ) -> String {
         let get = |w: &str| get_adj(&format!("{}:{w}", tag(recension)));
-        let base = base_lemma(word, |w| ci_lookup(w, get).is_some());
-        if let Some((row, style)) = ci_lookup_with_base(word, base, get)
-            && let Some(c) = cell(row, adj_cell(case, number, gender, degree))
-        {
+        let base = base_lemma(word, |w| ci_lookup(w, recension, get).is_some());
+        if let Some((c, style)) = attested_cell(
+            word,
+            base,
+            recension,
+            adj_cell(case, number, gender, degree),
+            get,
+        ) {
             return restyle(c.to_string(), style);
         }
         rule_with_case(base, recension, |w| {
@@ -357,13 +388,17 @@ impl ChurchSlavonic {
         recension: &Recension,
     ) -> String {
         let get = |w: &str| get_verb(&format!("{}:{w}", tag(recension)));
-        let base = base_lemma(word, |w| ci_lookup(w, get).is_some());
+        let base = base_lemma(word, |w| ci_lookup(w, recension, get).is_some());
         if *form == Form::Infinitive {
             return base.to_string();
         }
-        if let Some((row, style)) = ci_lookup_with_base(word, base, get)
-            && let Some(c) = cell(row, verb_cell(person, number, tense, form))
-        {
+        if let Some((c, style)) = attested_cell(
+            word,
+            base,
+            recension,
+            verb_cell(person, number, tense, form),
+            get,
+        ) {
             return restyle(c.to_string(), style);
         }
         rule_with_case(base, recension, |w| {
@@ -373,7 +408,8 @@ impl ChurchSlavonic {
 
     /// Returns the personal pronoun for the given grammatical features. Gender
     /// is consulted only in the third person; the vocative answers with the
-    /// nominative.
+    /// nominative. This is the primary row (`personal`); the attested
+    /// variants live at the `personal_<n>` keys of [`ChurchSlavonic::pronoun_sense`].
     ///
     /// # Examples
     /// ```rust
@@ -391,8 +427,40 @@ impl ChurchSlavonic {
         case: &Case,
         recension: &Recension,
     ) -> &'static str {
-        get_pronoun(&format!("{}:personal", tag(recension)))
-            .and_then(|row| cell(row, Some(pronoun_cell(person, number, gender, case))))
+        Self::pronoun_sense(PRONOUN_KEY, person, number, gender, case, recension)
+    }
+
+    /// The personal pronoun through a sense key: the matrix has no lemma, so
+    /// its variants are numbered on the constant key `personal` exactly like
+    /// a lemma's — `personal` is the primary row, `personal_2`, `personal_3`,
+    /// … the attested alternatives (a source's enclitic, minority accentuation
+    /// or spelling). A key with no row (or a cell the row leaves blank) falls
+    /// back to the rule's matrix, like any other `_<n>` key.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use church_slavonic::{Case, ChurchSlavonic, Gender, Number, Person, Recension};
+    ///
+    /// let syn = Recension::Synodal;
+    /// let genitive = |key: &str| {
+    ///     ChurchSlavonic::pronoun_sense(key, &Person::First, &Number::Singular, &Gender::Neuter, &Case::Genitive, &syn)
+    /// };
+    /// assert_ne!(genitive("personal"), "");
+    /// assert_eq!(genitive("personal_99"), genitive("personal"));
+    /// ```
+    pub fn pronoun_sense(
+        key: &str,
+        person: &Person,
+        number: &Number,
+        gender: &Gender,
+        case: &Case,
+        recension: &Recension,
+    ) -> &'static str {
+        let cell_index = Some(pronoun_cell(person, number, gender, case));
+        let get = |k: &str| get_pronoun(&format!("{}:{k}", tag(recension)));
+        get(key)
+            .and_then(|row| cell(row, cell_index))
+            .or_else(|| get(PRONOUN_KEY).and_then(|row| cell(row, cell_index)))
             .unwrap_or_else(|| ChurchSlavonicCore::pronoun(person, number, gender, case, recension))
     }
 
@@ -431,6 +499,26 @@ mod rule_table_sync_tests {
         }
     }
 
+    /// A `_n` cell the bare row shadows (holds a different form at) must be
+    /// spelled out even when it equals the rule: the runtime reads a `_n`
+    /// blank from the bare row first.
+    fn shadowed(
+        key: &str,
+        i: usize,
+        cell_text: &str,
+        get: impl Fn(&str) -> Option<&'static [(u8, &'static str)]>,
+    ) -> bool {
+        let Some((tag, rest)) = key.split_once(':') else {
+            return false;
+        };
+        let Some(base) = canonical_sense_suffix_base(rest) else {
+            return false;
+        };
+        get(&format!("{tag}:{base}"))
+            .and_then(|row| cell(row, Some(i)))
+            .is_some_and(|bare| bare != cell_text)
+    }
+
     /// The facade's rule path: realise the lemma in, realise the answer out.
     fn rule(lemma: &str, r: &Recension, f: impl Fn(&str) -> String) -> String {
         realise(&f(&realise(lemma, r)), r)
@@ -461,12 +549,14 @@ mod rule_table_sync_tests {
         let genders = [Gender::Masculine, Gender::Feminine, Gender::Neuter];
         let persons = [Person::First, Person::Second, Person::Third];
 
+        let at = |row: &'static [(u8, &'static str)], i: usize| cell(row, Some(i)).unwrap_or("");
         for (key, row) in NOUN_MAP.entries() {
             let (r, lemma) = split(key);
             for n in &numbers {
                 for c in &cases {
-                    let attested = row[noun_cell(c, n)];
+                    let attested = at(row, noun_cell(c, n));
                     if !attested.is_empty()
+                        && !shadowed(key, noun_cell(c, n), attested, get_noun)
                         && same(
                             &r,
                             attested,
@@ -485,8 +575,9 @@ mod rule_table_sync_tests {
                     for n in &numbers {
                         for c in &cases {
                             let i = adj_cell(c, n, g, &d).expect("indexed");
-                            let attested = row[i];
+                            let attested = at(row, i);
                             if !attested.is_empty()
+                                && !shadowed(key, i, attested, get_adj)
                                 && same(
                                     &r,
                                     attested,
@@ -514,8 +605,9 @@ mod rule_table_sync_tests {
                 for n in &numbers {
                     for p in &persons {
                         let i = verb_cell(p, n, t, f).expect("indexed");
-                        let attested = row[i];
+                        let attested = at(row, i);
                         if !attested.is_empty()
+                            && !shadowed(key, i, attested, get_verb)
                             && same(
                                 &r,
                                 attested,
@@ -528,7 +620,10 @@ mod rule_table_sync_tests {
                 }
             }
             for (i, t) in [(36, Tense::Present), (37, Tense::Aorist)] {
-                let attested = row[i];
+                let attested = at(row, i);
+                if shadowed(key, i, attested, get_verb) {
+                    continue;
+                }
                 let predicted = rule(lemma, &r, |l| {
                     ChurchSlavonicCore::verb(
                         l,
@@ -550,8 +645,9 @@ mod rule_table_sync_tests {
                 for g in &genders {
                     for n in &numbers {
                         for c in &cases[..6] {
-                            let attested = row[pronoun_cell(p, n, g, c)];
+                            let attested = at(row, pronoun_cell(p, n, g, c));
                             if !attested.is_empty()
+                                && !shadowed(key, pronoun_cell(p, n, g, c), attested, get_pronoun)
                                 && same(&r, attested, ChurchSlavonicCore::pronoun(p, n, g, c, &r))
                             {
                                 redundant.push(format!(

@@ -7,13 +7,19 @@
 //! the Synodal `-ій` is the hard class: `благій`). Comparison is suffixal
 //! `-ѣиш-`/`-ѣйш-` declined as a soft stem; the superlative is the `пре-`
 //! prefix on the positive. Consonant-mutating comparatives (`болии`,
-//! `лоучии`) and the suppletive pairs are tabled.
+//! `лоучии`) and the suppletive pairs are tabled. The Synodal rows carry the
+//! print's plural marks (`^`, see [`crate::accent`]) on the dual and on the
+//! direct plural cells that would otherwise read as a singular; the short
+//! `-енъ` adjectives with an unstressed fleeting vowel (`а҆́лченъ` :
+//! `а҆́лчна`) drop it before a vowel ending.
 
 use crate::ChurchSlavonicCore;
+use crate::accent::with_accent;
 use crate::grammar::*;
 
 impl ChurchSlavonicCore {
-    /// Decline (and grade) an adjective by rule.
+    /// Decline (and grade) an adjective by rule. The lemma is accented in
+    /// Synodal (see [`crate::accent`]).
     pub fn adj(
         word: &str,
         case: &Case,
@@ -22,8 +28,34 @@ impl ChurchSlavonicCore {
         degree: &Degree,
         recension: &Recension,
     ) -> String {
+        let fleeting = *recension == Recension::Synodal && has_fleeting_en(word);
+        with_accent(word, recension, |w| {
+            Self::adj_skeleton(w, case, number, gender, degree, recension, fleeting)
+        })
+    }
+
+    fn adj_skeleton(
+        word: &str,
+        case: &Case,
+        number: &Number,
+        gender: &Gender,
+        degree: &Degree,
+        recension: &Recension,
+        fleeting: bool,
+    ) -> String {
         let synodal = *recension == Recension::Synodal;
         let (stem, long, hard) = Self::adj_class(word, recension);
+        let stem = if fleeting && *degree == Degree::Positive {
+            if *gender == Gender::Masculine
+                && *number == Number::Singular
+                && matches!(case, Case::Nominative | Case::Accusative)
+            {
+                return word.to_string();
+            }
+            format!("{}н", &stem[..stem.len() - "ен".len()])
+        } else {
+            stem
+        };
         let (stem, long, hard) = match degree {
             Degree::Positive => (stem, long, hard),
             Degree::Comparative => {
@@ -97,7 +129,7 @@ impl ChurchSlavonicCore {
             Recension::Synodal => {
                 if word.ends_with("ый") {
                     (cut(2), true, true)
-                } else if word.ends_with("їй") || word.ends_with("ій") {
+                } else if word.ends_with("ій") {
                     (cut(2), true, velar(3))
                 } else if word.ends_with('ь') {
                     (cut(1), false, false)
@@ -107,6 +139,31 @@ impl ChurchSlavonicCore {
             }
         }
     }
+}
+
+/// A short adjective in unstressed `-енъ` after a consonant has a fleeting
+/// vowel (`а҆́лченъ` : `а҆́лчна`, `вѣ́ренъ` : `вѣ́рна`); the stressed `-е́нъ`
+/// (`блаже́нъ` : `блаже́на`) keeps it. The lemma is the accented citation.
+fn has_fleeting_en(word: &str) -> bool {
+    let skeleton = crate::orthography::strip_marks(word);
+    let Some(before) = skeleton.strip_suffix("енъ") else {
+        return false;
+    };
+    let consonant_before = before
+        .chars()
+        .last()
+        .is_some_and(|c| !crate::orthography::is_vowel(c));
+    let vowels = skeleton
+        .chars()
+        .filter(|c| crate::orthography::is_vowel(*c))
+        .count();
+    // The stressed vowel is the fleeting one when the stress is the last vowel.
+    let stressed_last = crate::orthography::units(word)
+        .iter()
+        .filter(|u| u.is_vowel())
+        .enumerate()
+        .any(|(i, u)| u.has_stress() && i + 1 == vowels);
+    consonant_before && vowels >= 2 && !stressed_last
 }
 
 /// `[masculine, feminine, neuter]` rows of 21 cells per recension.
@@ -138,16 +195,16 @@ const SHORT_HARD: Row = Row {
     ],
     syn: [
         [
-            "ъ", "а", "ꙋ", "ъ", "ымъ", "ѣ", "е", "а", "ꙋ", "ыма", "а", "ыма", "ꙋ", "а", "и", "ыхъ",
-            "ымъ", "ы", "ыми", "ыхъ", "и",
+            "ъ", "а", "ꙋ", "ъ", "ымъ", "ѣ", "е", "^а", "^ꙋ", "ыма", "^а", "ыма", "^ꙋ", "^а", "и",
+            "ыхъ", "^ымъ", "^ы", "^ы", "ыхъ", "и",
         ],
         [
-            "а", "ы", "ѣ", "ꙋ", "ою", "ѣ", "а", "ѣ", "ꙋ", "ыма", "ѣ", "ыма", "ꙋ", "ѣ", "ы", "ыхъ",
-            "ымъ", "ы", "ыми", "ыхъ", "ы",
+            "а", "ы", "ѣ", "ꙋ", "ою", "ѣ", "а", "^ѣ", "^ꙋ", "ыма", "^ѣ", "ыма", "^ꙋ", "^ѣ", "^ы",
+            "ыхъ", "^ымъ", "^ы", "^ы", "ыхъ", "^ы",
         ],
         [
-            "о", "а", "ꙋ", "о", "ымъ", "ѣ", "о", "ѣ", "ꙋ", "ыма", "ѣ", "ыма", "ꙋ", "ѣ", "а", "ыхъ",
-            "ымъ", "а", "ыми", "ыхъ", "а",
+            "о", "а", "ꙋ", "о", "ымъ", "ѣ", "о", "^ѣ", "^ꙋ", "ыма", "^ѣ", "ыма", "^ꙋ", "^ѣ", "^а",
+            "ыхъ", "^ымъ", "^а", "^ы", "ыхъ", "^а",
         ],
     ],
 };
@@ -168,16 +225,16 @@ const SHORT_SOFT: Row = Row {
     ],
     syn: [
         [
-            "ь", "ѧ", "ю", "ь", "имъ", "и", "ь", "ѧ", "ю", "има", "ѧ", "има", "ю", "ѧ", "и", "ихъ",
-            "имъ", "и", "ими", "ихъ", "и",
+            "ь", "ѧ", "ю", "ь", "имъ", "и", "ь", "^ѧ", "ю", "има", "^ѧ", "има", "ю", "^ѧ", "и",
+            "ихъ", "^имъ", "и", "^и", "ихъ", "и",
         ],
         [
-            "ѧ", "и", "и", "ю", "ею", "и", "ѧ", "и", "ю", "има", "и", "има", "ю", "и", "и", "ихъ",
-            "имъ", "и", "ими", "ихъ", "и",
+            "ѧ", "и", "и", "ю", "ею", "и", "ѧ", "^и", "ю", "има", "^и", "има", "ю", "^и", "и",
+            "ихъ", "^имъ", "и", "^и", "ихъ", "и",
         ],
         [
-            "е", "ѧ", "ю", "е", "имъ", "и", "е", "и", "ю", "има", "и", "има", "ю", "и", "ѧ", "ихъ",
-            "имъ", "ѧ", "ими", "ихъ", "ѧ",
+            "е", "ѧ", "ю", "е", "имъ", "и", "е", "^и", "ю", "има", "^и", "има", "ю", "^и", "ѧ",
+            "ихъ", "^имъ", "ѧ", "^и", "ихъ", "ѧ",
         ],
     ],
 };
@@ -255,16 +312,16 @@ const LONG_HARD: Row = Row {
     ],
     syn: [
         [
-            "ый", "агѡ", "омꙋ", "ый", "ымъ", "ѣмъ", "ый", "аѧ", "ꙋю", "ыма", "аѧ", "ыма", "ꙋю",
-            "аѧ", "їи", "ыхъ", "ымъ", "ыѧ", "ыми", "ыхъ", "їи",
+            "ый", "агѡ", "омꙋ", "ый", "ымъ", "ѣмъ", "ый", "^аѧ", "^ꙋю", "ыма", "^аѧ", "ыма", "^ꙋю",
+            "^аѧ", "іи", "ыхъ", "^ымъ", "^ыѧ", "ыми", "ыхъ", "іи",
         ],
         [
-            "аѧ", "ыѧ", "ѣй", "ꙋю", "ою", "ѣй", "аѧ", "ѣи", "ꙋю", "ыма", "ѣи", "ыма", "ꙋю", "ѣи",
-            "ыѧ", "ыхъ", "ымъ", "ыѧ", "ыми", "ыхъ", "ыѧ",
+            "аѧ", "ыѧ", "ѣй", "ꙋю", "ою", "ѣй", "аѧ", "^ѣи", "^ꙋю", "ыма", "^ѣи", "ыма", "^ꙋю",
+            "^ѣи", "^ыѧ", "ыхъ", "^ымъ", "^ыѧ", "ыми", "ыхъ", "^ыѧ",
         ],
         [
-            "ое", "агѡ", "омꙋ", "ое", "ымъ", "ѣмъ", "ое", "ѣи", "ꙋю", "ыма", "ѣи", "ыма", "ꙋю",
-            "ѣи", "аѧ", "ыхъ", "ымъ", "аѧ", "ыми", "ыхъ", "аѧ",
+            "ое", "агѡ", "омꙋ", "ое", "ымъ", "ѣмъ", "ое", "^ѣи", "^ꙋю", "ыма", "^ѣи", "ыма", "^ꙋю",
+            "^ѣи", "^аѧ", "ыхъ", "^ымъ", "^аѧ", "ыми", "ыхъ", "^аѧ",
         ],
     ],
 };
@@ -323,16 +380,16 @@ const LONG_SOFT: Row = Row {
     ],
     syn: [
         [
-            "їй", "ѧгѡ", "емꙋ", "їй", "имъ", "емъ", "їй", "ѧѧ", "юю", "има", "ѧѧ", "има", "юю",
-            "ѧѧ", "їи", "ихъ", "имъ", "їѧ", "ими", "ихъ", "їи",
+            "ій", "ѧгѡ", "емꙋ", "ій", "имъ", "емъ", "ій", "^ѧѧ", "^юю", "има", "^ѧѧ", "има", "^юю",
+            "^ѧѧ", "іи", "ихъ", "^имъ", "^іѧ", "ими", "ихъ", "іи",
         ],
         [
-            "ѧѧ", "їѧ", "ей", "юю", "ею", "ей", "ѧѧ", "їи", "юю", "има", "їи", "има", "юю", "їи",
-            "їѧ", "ихъ", "имъ", "їѧ", "ими", "ихъ", "їѧ",
+            "ѧѧ", "іѧ", "ей", "юю", "ею", "ей", "ѧѧ", "^іи", "^юю", "има", "^іи", "има", "^юю",
+            "^іи", "^іѧ", "ихъ", "^имъ", "^іѧ", "ими", "ихъ", "^іѧ",
         ],
         [
-            "ее", "ѧгѡ", "емꙋ", "ее", "имъ", "емъ", "ее", "їи", "юю", "има", "їи", "има", "юю",
-            "їи", "ѧѧ", "ихъ", "имъ", "ѧѧ", "ими", "ихъ", "ѧѧ",
+            "ее", "ѧгѡ", "емꙋ", "ее", "имъ", "емъ", "ее", "^іи", "^юю", "има", "^іи", "има", "^юю",
+            "^іи", "^ѧѧ", "ихъ", "^имъ", "^ѧѧ", "ими", "ихъ", "^ѧѧ",
         ],
     ],
 };
@@ -382,6 +439,40 @@ mod tests {
         );
         assert_eq!(adj("новъ", Genitive, Plural, Feminine, pos, OCS), "новъ");
         assert_eq!(adj("новъ", Genitive, Plural, Feminine, pos, SYN), "новыхъ");
+        // the print's plural marks and the fleeting -енъ
+        assert_eq!(
+            adj("до́брый", Nominative, Plural, Neuter, pos, SYN),
+            "дѡ́браѧ"
+        );
+        assert_eq!(adj("до́брый", Dative, Plural, Neuter, pos, SYN), "дѡ́брымъ");
+        assert_eq!(
+            adj("а҆́динъ", Instrumental, Plural, Masculine, pos, SYN),
+            "а҆̑дины"
+        );
+        assert_eq!(
+            adj("а҆враа́мскій", Accusative, Plural, Masculine, pos, SYN),
+            "а҆враа̑мскіѧ"
+        );
+        assert_eq!(
+            adj("свѧты́й", Accusative, Plural, Masculine, pos, SYN),
+            "свѧты̑ѧ"
+        );
+        assert_eq!(
+            adj("а҆́лченъ", Genitive, Singular, Masculine, pos, SYN),
+            "а҆́лчна"
+        );
+        assert_eq!(
+            adj("а҆́лченъ", Nominative, Singular, Masculine, pos, SYN),
+            "а҆́лченъ"
+        );
+        assert_eq!(
+            adj("блаже́нъ", Genitive, Singular, Masculine, pos, SYN),
+            "блаже́на"
+        );
+        assert_eq!(
+            adj("а҆́ггельскій", Nominative, Plural, Masculine, pos, SYN),
+            "а҆́ггельстіи"
+        );
         // adj:short-vocative-leveling
         assert_eq!(adj("новъ", Vocative, Singular, Feminine, pos, OCS), "ново");
         assert_eq!(adj("новъ", Vocative, Singular, Feminine, pos, SYN), "нова");
@@ -401,11 +492,11 @@ mod tests {
             "синаꙗ"
         );
         assert_eq!(
-            adj("синїй", Nominative, Singular, Feminine, pos, SYN),
+            adj("синій", Nominative, Singular, Feminine, pos, SYN),
             "синѧѧ"
         );
         assert_eq!(
-            adj("нищїй", Genitive, Singular, Masculine, pos, SYN),
+            adj("нищій", Genitive, Singular, Masculine, pos, SYN),
             "нищагѡ"
         );
         // a velar before -ій is the hard class; ы -> и after the velar
@@ -448,7 +539,7 @@ mod tests {
         );
         assert_eq!(
             adj("новый", Nominative, Singular, Masculine, cmp, SYN),
-            "новѣйшїй"
+            "новѣйшій"
         );
         assert_eq!(
             adj("новꙑи", Nominative, Singular, Masculine, cmp, OCS),

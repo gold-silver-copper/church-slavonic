@@ -17,11 +17,17 @@ use std::path::Path;
 /// A parsed table row: a key and its cells.
 pub type KeyForms = (String, Vec<String>);
 
-/// Extract `(key, cells)` pairs from a generated `*_phf.rs` file by reading the
-/// quoted string literals on each `"key" => [...]` line. This is the
-/// emitter-independent reader `check-registry` and the accuracy harness use.
+/// Extract `(key, cells)` pairs from a generated `*_phf.rs` file by reading
+/// each `"key" => &[(cell, "form"), …]` line back into a dense row of the
+/// map's arity (the file header states it). This is the emitter-independent
+/// reader `check-registry` and the accuracy harness use.
 pub fn parse_phf_pairs(path: impl AsRef<Path>) -> Result<Vec<KeyForms>, Box<dyn Error>> {
     let text = fs::read_to_string(path)?;
+    let arity: usize = text
+        .lines()
+        .find_map(|l| l.split("pairs of a ").nth(1)?.split("-cell").next())
+        .ok_or("no arity in the table header")?
+        .parse()?;
     let mut out = Vec::new();
     for line in text.lines() {
         let trimmed = line.trim_start();
@@ -29,10 +35,24 @@ pub fn parse_phf_pairs(path: impl AsRef<Path>) -> Result<Vec<KeyForms>, Box<dyn 
             continue;
         }
         let fields = quoted_fields(line);
-        if fields.len() < 2 {
+        let Some((key, forms)) = fields.split_first() else {
             continue;
+        };
+        let mut cells = vec![String::new(); arity];
+        let indices = line
+            .split("=>")
+            .nth(1)
+            .unwrap_or("")
+            .split('(')
+            .skip(1)
+            .filter_map(|part| part.split(',').next()?.trim().parse::<usize>().ok());
+        for (i, form) in indices.zip(forms) {
+            if i >= arity {
+                return Err(format!("cell {i} of `{key}` is past the arity {arity}").into());
+            }
+            cells[i] = form.clone();
         }
-        out.push((fields[0].clone(), fields[1..].to_vec()));
+        out.push((key.clone(), cells));
     }
     Ok(out)
 }
@@ -92,7 +112,9 @@ fn reject_duplicate_keys(table: &Table, pos: Pos) -> Result<(), Box<dyn Error>> 
 /// - every row has the right arity and at least one non-empty cell;
 /// - rule/table layering holds — no cell may equal the regular rule's answer
 ///   for its lemma (the generator blanks such cells; one that survives means a
-///   core rule changed without regenerating).
+///   core rule changed without regenerating), except in a `_n` row where the
+///   bare row holds a different form at that cell (the runtime reads a `_n`
+///   blank from the bare row, so the rule's form must be spelled out).
 ///
 /// It does NOT verify that a row's VALUES are correct — those are attested
 /// data, not derivable without the sources; `cargo xtask accuracy` is the
@@ -117,6 +139,14 @@ pub fn audit_tables(generated_dir: &Path) -> Result<Vec<String>, Box<dyn Error>>
 /// are unit-testable with in-memory rows.
 fn audit_rows(v: &mut Vec<String>, pos: Pos, pairs: &[KeyForms]) {
     let name = pos.file_name();
+    let bare_rows: std::collections::HashMap<&str, &Vec<String>> = pairs
+        .iter()
+        .filter(|(k, _)| {
+            k.split_once(':')
+                .is_some_and(|(_, l)| split_key(l).is_none())
+        })
+        .map(|(k, c)| (k.as_str(), c))
+        .collect();
     let mut seen: HashSet<&str> = HashSet::new();
     for (key, cells) in pairs {
         if !seen.insert(key) {
@@ -162,8 +192,12 @@ fn audit_rows(v: &mut Vec<String>, pos: Pos, pairs: &[KeyForms]) {
             continue;
         }
         let predicted = pos.predict(lemma, &recension);
+        let shadowing = (lemma != lemma_key)
+            .then(|| bare_rows.get(format!("{tag}:{lemma}").as_str()).copied())
+            .flatten();
         for (i, cell) in cells.iter().enumerate() {
-            if !cell.is_empty() && rule_matches(&recension, cell, &predicted[i]) {
+            let shadowed = shadowing.is_some_and(|bare| !bare[i].is_empty() && bare[i] != *cell);
+            if !cell.is_empty() && !shadowed && rule_matches(&recension, cell, &predicted[i]) {
                 v.push(format!(
                     "{name}: key `{key}` cell {i} `{cell}` equals the regular-rule prediction — dead weight; \
                      a core rule changed without regenerating (`cargo xtask refresh-data`)"
@@ -280,14 +314,14 @@ mod tests {
     }
 
     #[test]
-    fn parse_phf_pairs_keeps_empty_cells() {
+    fn parse_phf_pairs_restores_the_blank_cells() {
         let dir = std::env::temp_dir().join(format!("cs_parse_phf_{}", std::process::id()));
         let _ = fs::create_dir_all(&dir);
         let path = dir.join("noun_phf.rs");
         fs::write(
             &path,
-            "use phf::phf_map;\npub static NOUN_MAP: phf::Map<&'static str, [&'static str; 3]> = phf_map! {\n    \
-             \"ocs:x_2\" => [\"\", \"б\", \"\"],\n};\n",
+            "use phf::phf_map;\n/// pairs of a 3-cell row\npub static NOUN_MAP: phf::Map<&'static str, &'static [(u8, &'static str)]> = phf_map! {\n    \
+             \"ocs:x_2\" => &[(1, \"б\")],\n};\n",
         )
         .expect("write");
         let pairs = parse_phf_pairs(&path).expect("parses");

@@ -11,14 +11,16 @@
 //! the print's variant notation (`и҆́мава, -ѣ`; `мꙋ́др-ъ (-а)`; `бы́сть (бы̀)`)
 //! expanded into a list of alternatives by [`alternatives`].
 
+use church_slavonic_core::grammar::Recension;
 use church_slavonic_core::grammar::{Case, Gender, Number, Person};
-use church_slavonic_core::orthography::strip_marks;
+use church_slavonic_core::orthography::{realise, strip_marks};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fs;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
+use unicode_normalization::UnicodeNormalization;
 
 // ---------------------------------------------------------------------------
 // Intermediate schema: one JSON line per `Decline`-classed table.
@@ -726,7 +728,7 @@ pub fn lemma_key(headword: &str) -> Option<String> {
     if joined.is_empty() || joined.contains(' ') || joined.contains(',') {
         return None;
     }
-    Some(strip_marks(&joined).to_lowercase())
+    Some(realise(&joined, &Recension::Synodal))
 }
 
 /// Expand a printed cell into its attested alternatives, primary first.
@@ -764,8 +766,15 @@ pub fn alternatives(printed: &str) -> Vec<String> {
         push(&mut out, &base);
         for (spaced, paren) in parens {
             let paren = paren.trim();
-            let whole =
-                spaced && !paren.starts_with('-') && first_letter(paren) == first_letter(&base);
+            // A word-initial spelling (a vowel under its breathing: `(ѧ҆̀)`)
+            // is a whole alternative word too.
+            let initial_vowel = paren
+                .nfd()
+                .nth(1)
+                .is_some_and(|m| matches!(m, '\u{486}' | '\u{485}'));
+            let whole = spaced
+                && !paren.starts_with('-')
+                && (first_letter(paren) == first_letter(&base) || initial_vowel);
             let alt = if whole {
                 paren.to_string()
             } else {
@@ -913,13 +922,13 @@ mod tests {
     }
 
     #[test]
-    fn headwords_become_unaccented_lemma_keys() {
-        assert_eq!(lemma_key("ра́б-ъ").as_deref(), Some("рабъ"));
-        assert_eq!(lemma_key("пис-а́-ти").as_deref(), Some("писати"));
-        assert_eq!(lemma_key("клѧ́-ти = клен-ꙋ́тъ").as_deref(), Some("клѧти"));
-        assert_eq!(lemma_key("и҆-тѝ — и҆д-ꙋ́тъ").as_deref(), Some("ити"));
-        assert_eq!(lemma_key("ѻ҆́чи (ѻ҆́цѣ)").as_deref(), Some("ѻчи"));
-        assert_eq!(lemma_key("ᲂу҆́ши").as_deref(), Some("оуши"));
+    fn headwords_become_accented_lemma_keys() {
+        assert_eq!(lemma_key("ра́б-ъ").as_deref(), Some("ра́бъ"));
+        assert_eq!(lemma_key("пис-а́-ти").as_deref(), Some("писа́ти"));
+        assert_eq!(lemma_key("клѧ́-ти = клен-ꙋ́тъ").as_deref(), Some("клѧ́ти"));
+        assert_eq!(lemma_key("и҆-тѝ — и҆д-ꙋ́тъ").as_deref(), Some("и҆тѝ"));
+        assert_eq!(lemma_key("ѻ҆́чи (ѻ҆́цѣ)").as_deref(), Some("ѻ҆́чи"));
+        assert_eq!(lemma_key("ᲂу҆́ши").as_deref(), Some("оу҆́ши"));
         assert_eq!(lemma_key("бж҃ї-й кра́-й"), None);
     }
 

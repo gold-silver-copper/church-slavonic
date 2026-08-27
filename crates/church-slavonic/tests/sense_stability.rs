@@ -28,10 +28,15 @@ fn attested_variants_are_numbered_by_their_form_signature() {
         noun("аблань_2", Case::Instrumental, Number::Singular, OCS),
         "абланьѭ"
     );
-    // рабъ: the grammar prints two genitive plurals and the corpus attests
-    // more spellings; the sort spreads them over the bare key and `_n`.
-    assert_eq!(noun("рабъ", Case::Genitive, Number::Plural, SYN), "рабѡ́въ");
-    assert_eq!(noun("рабъ_4", Case::Genitive, Number::Plural, SYN), "рабъ");
+    // ра́бъ (a Synodal lemma is its accented citation form): the grammar
+    // prints two genitive plurals and the corpus attests more spellings; the
+    // sort spreads them over the bare key and `_n`.
+    assert_eq!(noun("ра́бъ", Case::Genitive, Number::Plural, SYN), "ра̑бъ");
+    assert_eq!(noun("ра́бъ_2", Case::Genitive, Number::Plural, SYN), "рабъ");
+    assert_eq!(
+        noun("ра́бъ_3", Case::Genitive, Number::Plural, SYN),
+        "рабѡ́въ"
+    );
 }
 
 #[test]
@@ -49,14 +54,14 @@ fn a_suffix_strips_only_for_real_table_keys() {
     );
     assert_eq!(
         ChurchSlavonic::verb(
-            "быти_2",
+            "бы́ти_2",
             &Person::First,
             &Number::Singular,
             &Tense::Present,
             &Form::Infinitive,
             &SYN
         ),
-        "быти"
+        "бы́ти"
     );
     // A suffix that resolves to no key is opaque: the whole string inflects.
     assert_eq!(
@@ -78,7 +83,9 @@ fn a_suffix_strips_only_for_real_table_keys() {
 
 #[test]
 fn recensions_never_share_a_row() {
-    // The Synodal rows are keyed `syn:`; the same lemma in OCS is the rule.
-    assert_eq!(noun("рабъ", Case::Dative, Number::Singular, SYN), "рабꙋ̀");
+    // The Synodal rows are keyed `syn:` by the accented lemma; the same
+    // letters in OCS are the rule.
+    assert_eq!(noun("ра́бъ", Case::Dative, Number::Singular, SYN), "рабꙋ̀");
+    assert_eq!(noun("ра́бъ", Case::Dative, Number::Singular, OCS), "рабоу");
     assert_eq!(noun("рабъ", Case::Dative, Number::Singular, OCS), "рабоу");
 }

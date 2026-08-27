@@ -47,7 +47,7 @@ fn main() {
             &Form::Finite,
             &syn
         ),
-        ChurchSlavonic::noun("рабъ", &Case::Nominative, &Number::Singular, &syn),
+        ChurchSlavonic::noun("ра́бъ", &Case::Nominative, &Number::Singular, &syn),
     );
     assert_eq!(phrase, "а҆́зъ є҆́смь ра́бъ");
 
@@ -69,10 +69,15 @@ fn main() {
         ChurchSlavonic::noun("сꙑнъ_2", &Case::Dative, &Number::Singular, &ocs),
         "сꙑноу"
     );
-    // Synodal cells keep the grammar's accents.
+    // A Synodal lemma is its accented citation form; the accent rule and
+    // the tables answer in the print's typography.
     assert_eq!(
-        ChurchSlavonic::noun("жена", &Case::Nominative, &Number::Singular, &syn),
-        "жена̀"
+        ChurchSlavonic::noun("жена̀", &Case::Instrumental, &Number::Singular, &syn),
+        "жено́ю"
+    );
+    assert_eq!(
+        ChurchSlavonic::noun("жена̀", &Case::Nominative, &Number::Plural, &syn),
+        "жє́ны"
     );
 
     // --- Verbs ---
@@ -89,7 +94,7 @@ fn main() {
     );
     assert_eq!(
         ChurchSlavonic::verb(
-            "нести",
+            "нестѝ",
             &Person::First,
             &Number::Singular,
             &Tense::Aorist,
@@ -113,7 +118,7 @@ fn main() {
     // --- Adjectives and the pronoun ---
     assert_eq!(
         ChurchSlavonic::adj(
-            "мꙋдръ",
+            "мꙋ́дръ",
             &Case::Genitive,
             &Number::Singular,
             &Gender::Feminine,
@@ -135,7 +140,7 @@ fn main() {
 
     // --- Case restoration and realisation ---
     assert_eq!(
-        ChurchSlavonic::noun("Рабъ", &Case::Dative, &Number::Singular, &syn),
+        ChurchSlavonic::noun("Ра́бъ", &Case::Dative, &Number::Singular, &syn),
         "Рабꙋ̀"
     );
     assert_eq!(

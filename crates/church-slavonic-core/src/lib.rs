@@ -26,12 +26,14 @@
 //! also measures rule quality against every attested form.
 //!
 //! Inputs are lowercase lemmas in the requested recension's own canonical
-//! spelling (OCS: `ꙑ`, `оу`, `ѫ`, `ѥ`, `ꙗ`; Synodal: `ы`, `ꙋ`, `ѧ`, `е`),
-//! unaccented; every rule takes a `&Recension` and answers in that recension's
-//! spelling. Case handling, accent restoration and the printed-form
+//! spelling (OCS: `ꙑ`, `оу`, `ѫ`, `ѥ`, `ꙗ`, unaccented; Synodal: `ы`, `ꙋ`,
+//! `ѧ`, `е`, ACCENTED — the citation form's stress is the input the accent
+//! rule reads, see the `accent` module); every rule takes a `&Recension` and
+//! answers in that recension's spelling. Case handling and the printed-form
 //! realisation ([`orthography::realise`]) are the `church-slavonic` crate's
 //! responsibility, applied on output.
 
+mod accent;
 mod adj;
 pub mod grammar;
 mod noun;

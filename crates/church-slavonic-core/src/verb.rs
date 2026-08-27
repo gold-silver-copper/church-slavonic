@@ -5,14 +5,23 @@
 //! `-ати` first conjugation on a vowel stem (`дѣла-`), `-овати` on `-оу-`/
 //! `-ꙋ-`, `-ноути`/`-нꙋти` on `-н-`, consonant `-ти` and velar `-щи` on the
 //! bare consonant, `-ити`/`-ѣти`/husher + `-ати` second conjugation. This is
-//! an approximation: iotating `-ати` stems (`писати` : `пишеши`), dental
-//! infinitives (`вести` : `ведеши`), the `-мѣти` first-conjugation
-//! `-ѣти` verbs and the mutating second-conjugation first singular
-//! (`любити` : `люблю`) are tabled. The copula `бꙑти`/`быти` is fully
-//! suppletive and handled by [`ChurchSlavonicCore::to_be`].
+//! an approximation. Where the corpus made a class the majority for its
+//! infinitive shape the Synodal rule follows it: `-сати`/`-мати` iotate
+//! (`писати` : `пишеши`, `є҆́млетъ`), `-сти` is a dental stem (`вести` :
+//! `ведеши`; the `нести` type is tabled), a second-conjugation stem iotates
+//! in the first singular and the imperfect (`любити` : `люблю`, `люблѧ́хъ`;
+//! `носити` : `ношꙋ`, `ноша́хъ`), the monosyllabic `-ити` (`бити` : `бію`)
+//! is a vowel stem, and the reflexive `-сѧ` is carried on the outside of
+//! every form. The rest — the other iotating `-ати` stems, the `-мѣти`
+//! first-conjugation `-ѣти` verbs — is tabled, as is everything above in
+//! Old Church Slavonic, where the rule keeps Polivanova's plain classes. The
+//! copula `бꙑти`/`быти` is fully suppletive and handled by
+//! [`ChurchSlavonicCore::to_be`].
 
 use crate::ChurchSlavonicCore;
+use crate::accent::with_accent;
 use crate::grammar::*;
+use crate::orthography::strip_marks;
 
 /// The three productive present-stem series.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -21,6 +30,9 @@ enum Conj {
     Hard,
     /// First conjugation, vowel stem (OCS `дѣла-ѥ-ши`, Synodal `дѣла-е-ши`).
     Vowel,
+    /// First conjugation on an iotated present stem with a vowel infinitive
+    /// stem (`пиш-е-ши`, `писа-хъ`).
+    Iotated,
     /// Second conjugation (`хвал-и-ши`).
     Second,
 }
@@ -34,7 +46,8 @@ struct Stems {
 }
 
 impl ChurchSlavonicCore {
-    /// Conjugate a verb by rule.
+    /// Conjugate a verb by rule. The lemma is accented in Synodal (see
+    /// [`crate::accent`]).
     pub fn verb(
         word: &str,
         person: &Person,
@@ -43,25 +56,52 @@ impl ChurchSlavonicCore {
         form: &Form,
         recension: &Recension,
     ) -> String {
-        let synodal = *recension == Recension::Synodal;
-        if (word == "бꙑти" || word == "быти")
+        let skeleton = strip_marks(word);
+        if (skeleton == "бꙑти" || skeleton == "быти")
             && let Some(form) = Self::to_be(person, number, tense, form, recension)
         {
             return form.to_string();
         }
+        let reflexive = *recension == Recension::Synodal && skeleton.ends_with("сѧ");
+        if reflexive {
+            let bare: String = word.chars().take(word.chars().count() - 2).collect();
+            return with_accent(&bare, recension, |w| {
+                // The jer drops before the enclitic (`моли́тсѧ`, `моли́хсѧ`).
+                let answer = Self::verb_skeleton(w, person, number, tense, form, recension);
+                format!("{}сѧ", answer.strip_suffix('ъ').unwrap_or(&answer))
+            });
+        }
+        with_accent(word, recension, |w| {
+            Self::verb_skeleton(w, person, number, tense, form, recension)
+        })
+    }
+
+    fn verb_skeleton(
+        word: &str,
+        person: &Person,
+        number: &Number,
+        tense: &Tense,
+        form: &Form,
+        recension: &Recension,
+    ) -> String {
+        let synodal = *recension == Recension::Synodal;
         let s = Self::stems(word, recension);
         let cell = Self::person_cell(person, number);
         match (tense, form) {
             (_, Form::Infinitive) => word.to_string(),
             (Tense::Present, Form::Finite) => {
                 let row = match (s.conj, synodal) {
-                    (Conj::Hard, false) => &PRESENT_HARD.0,
-                    (Conj::Hard, true) => &PRESENT_HARD.1,
+                    (Conj::Hard | Conj::Iotated, false) => &PRESENT_HARD.0,
+                    (Conj::Hard | Conj::Iotated, true) => &PRESENT_HARD.1,
                     (Conj::Vowel, false) => &PRESENT_VOWEL.0,
                     (Conj::Vowel, true) => &PRESENT_VOWEL.1,
                     (Conj::Second, false) => &PRESENT_SECOND.0,
                     (Conj::Second, true) => &PRESENT_SECOND.1,
                 };
+                // The Synodal second conjugation iotates its first singular.
+                if s.conj == Conj::Second && synodal && cell == 0 {
+                    return Self::attach(&iotate(&s.present), row[cell], recension);
+                }
                 Self::attach(&s.present, row[cell], recension)
             }
             (Tense::Imperfect, Form::Finite) => {
@@ -85,7 +125,7 @@ impl ChurchSlavonicCore {
                     (Conj::Hard, false) => "ꙑ",
                     (Conj::Hard, true) => "ый",
                     (Conj::Vowel, false) => "ѩ",
-                    (Conj::Vowel, true) | (Conj::Second, _) => "ѧ",
+                    (Conj::Vowel, true) | (Conj::Second | Conj::Iotated, _) => "ѧ",
                 };
                 Self::attach(&s.present, ending, recension)
             }
@@ -113,7 +153,7 @@ impl ChurchSlavonicCore {
                     (Conj::Hard, false) => &IMPERATIVE_YAT,
                     (Conj::Hard, true) => &IMPERATIVE_E,
                     (Conj::Vowel, true) => &IMPERATIVE_J,
-                    (Conj::Vowel, false) | (Conj::Second, _) => {
+                    (Conj::Vowel, false) | (Conj::Second | Conj::Iotated, _) => {
                         if synodal {
                             &IMPERATIVE_I.1
                         } else {
@@ -149,9 +189,9 @@ impl ChurchSlavonicCore {
             (Tense::Aorist, Form::Finite, false) => BE_AORIST.0[cell],
             (Tense::Aorist, Form::Finite, true) => BE_AORIST.1[cell],
             (Tense::Present, Form::Participle, false) => "сꙑ",
-            (Tense::Present, Form::Participle, true) => "сый",
+            (Tense::Present, Form::Participle, true) => "сы́й",
             (_, Form::Participle, false) => "бꙑвъ",
-            (_, Form::Participle, true) => "бывъ",
+            (_, Form::Participle, true) => "бы́въ",
             _ => return None,
         })
     }
@@ -178,6 +218,14 @@ impl ChurchSlavonicCore {
             mk(Conj::Hard, stem(3), stem(2))
         } else if word.ends_with("мѣти") {
             mk(Conj::Vowel, stem(2), stem(2))
+        } else if synodal
+            && word.ends_with("ити")
+            && !stem(3).chars().any(crate::orthography::is_vowel)
+        {
+            // The monosyllabic `бити`, `пити`, `лити`: `бію`, `біеши`.
+            mk(Conj::Vowel, format!("{}і", stem(3)), stem(2))
+        } else if synodal && (word.ends_with("сати") || word.ends_with("мати")) && !husher {
+            mk(Conj::Iotated, iotate(&stem(3)), stem(2))
         } else if word.ends_with("ити")
             || word.ends_with("ѣти")
             || (word.ends_with("ати") && husher)
@@ -186,6 +234,10 @@ impl ChurchSlavonicCore {
         } else if word.ends_with("ати") || word.ends_with("ꙗти") || word.ends_with("ѧти")
         {
             mk(Conj::Vowel, stem(2), stem(2))
+        } else if synodal && word.ends_with("сти") {
+            // The dental stems are the majority of the `-сти` infinitives
+            // (`вести` : `ведꙋ`; `нести` : `несꙋ` is tabled).
+            mk(Conj::Hard, format!("{}д", stem(3)), format!("{}д", stem(3)))
         } else if word.ends_with("шти") || word.ends_with("щи") {
             // Velar infinitives: the stem ends in `к` (the `г` stems `мошти`
             // are tabled); the seam rule palatalizes before the endings.
@@ -215,7 +267,8 @@ impl ChurchSlavonicCore {
                 if synodal { "а" } else { "аа" },
             ),
             Conj::Hard => (s.present.clone(), if synodal { "ѧ" } else { "ѣа" }),
-            Conj::Vowel => (s.infinitive.clone(), if synodal { "" } else { "а" }),
+            Conj::Vowel if synodal && s.infinitive.ends_with('и') => (s.present.clone(), "ѧ"),
+            Conj::Vowel | Conj::Iotated => (s.infinitive.clone(), if synodal { "" } else { "а" }),
             Conj::Second if s.infinitive.ends_with('ѣ') => {
                 if synodal {
                     (s.present.clone(), "ѧ")
@@ -223,9 +276,51 @@ impl ChurchSlavonicCore {
                     (s.infinitive.clone(), "а")
                 }
             }
-            Conj::Second => (s.present.clone(), if synodal { "ѧ" } else { "ꙗа" }),
+            Conj::Second if synodal => (iotate(&s.present), "ѧ"),
+            Conj::Second => (s.present.clone(), "ꙗа"),
         }
     }
+}
+
+/// The Slavonic iotation of a stem-final consonant (before the first
+/// singular `-ю` and the Synodal imperfect `-ѧ-`/`-а-`): `т`/`ст`/`ск` ->
+/// `щ`, `д`/`зд` -> `жд`, `с` -> `ш`, `з` -> `ж`, `к` -> `ч`, `г` -> `ж`, `х`
+/// -> `ш`, a labial takes `л`; the sonorants and the hushers stay.
+fn iotate(stem: &str) -> String {
+    let mut chars: Vec<char> = stem.chars().collect();
+    let Some(last) = chars.pop() else {
+        return String::new();
+    };
+    let prev = chars.last().copied();
+    let mutated: &str = match last {
+        'т' | 'к' if prev == Some('с') => {
+            chars.pop();
+            "щ"
+        }
+        'д' if prev == Some('з') => {
+            chars.pop();
+            "жд"
+        }
+        'т' => "щ",
+        'д' => "жд",
+        'с' => "ш",
+        'з' => "ж",
+        'к' => "ч",
+        'г' => "ж",
+        'х' => "ш",
+        'б' => "бл",
+        'п' => "пл",
+        'в' => "вл",
+        'м' => "мл",
+        'ф' => "фл",
+        _ => {
+            chars.push(last);
+            ""
+        }
+    };
+    let mut out: String = chars.into_iter().collect();
+    out.push_str(mutated);
+    out
 }
 
 // Nine cells per row: singular 1 2 3, dual 1 2 3, plural 1 2 3 — as `(OCS,
@@ -285,7 +380,7 @@ const AORIST_OX: (Row, Row) = (
 // (first singular) is unused.
 const IMPERATIVE_YAT: Row = ["", "и", "и", "ѣвѣ", "ѣта", "ѣта", "ѣмъ", "ѣте", "ѣте"];
 const IMPERATIVE_E: Row = ["", "и", "и", "ева", "ита", "ита", "емъ", "ите", "ите"];
-const IMPERATIVE_J: Row = ["", "й", "й", "йва", "йта", "йта", "ймъ", "йте", "йте"];
+const IMPERATIVE_J: Row = ["", "й", "й", "йва", "йта", "йта", "емъ", "йте", "йте"];
 const IMPERATIVE_I: (Row, Row) = (
     ["", "и", "и", "ивѣ", "ита", "ита", "имъ", "ите", "ите"],
     ["", "и", "и", "ива", "ита", "ита", "имъ", "ите", "ите"],
@@ -298,15 +393,15 @@ const BE_PRESENT: (Row, Row) = (
         "ѥсмь", "ѥси", "ѥстъ", "ѥсвѣ", "ѥста", "ѥсте", "ѥсмъ", "ѥсте", "сѫтъ",
     ],
     [
-        "єсмь",
-        "єси",
-        "єсть",
-        "єсва",
-        "єста",
-        "єста",
-        "єсмы",
-        "єсте",
-        "сꙋть",
+        "є҆́смь",
+        "є҆сѝ",
+        "є҆́сть",
+        "є҆сва̀",
+        "є҆ста̀",
+        "є҆ста̀",
+        "є҆смы̀",
+        "є҆стѐ",
+        "сꙋ́ть",
     ],
 );
 const BE_IMPERFECT: (Row, Row) = (
@@ -322,15 +417,15 @@ const BE_IMPERFECT: (Row, Row) = (
         "бѣахѫ",
     ],
     [
-        "бѧхъ",
-        "бѧше",
-        "бѧше",
-        "бѧхова",
-        "бѧста",
-        "бѧста",
-        "бѧхомъ",
-        "бѧсте",
-        "бѧхꙋ",
+        "бѧ́хъ",
+        "бѧ́ше",
+        "бѧ́ше",
+        "бѧ́хова",
+        "бѧ́ста",
+        "бѧ́ста",
+        "бѧ́хомъ",
+        "бѧ́сте",
+        "бѧ́хꙋ",
     ],
 );
 const BE_AORIST: (Row, Row) = (
@@ -346,15 +441,15 @@ const BE_AORIST: (Row, Row) = (
         "бѣшѧ",
     ],
     [
-        "быхъ",
-        "бысть",
-        "бысть",
-        "быхова",
-        "быста",
-        "быста",
-        "быхомъ",
-        "бысте",
-        "быша",
+        "бы́хъ",
+        "бы́сть",
+        "бы́сть",
+        "бы́хова",
+        "бы́ста",
+        "бы́ста",
+        "бы́хомъ",
+        "бы́сте",
+        "бы́ша",
     ],
 );
 
@@ -376,7 +471,36 @@ mod tests {
         use Person::*;
         use Tense::Present;
         assert_eq!(v("нести", First, Singular, Present, Finite, OCS), "несѫ");
-        assert_eq!(v("нести", First, Singular, Present, Finite, SYN), "несꙋ");
+        assert_eq!(v("вести", First, Singular, Present, Finite, SYN), "ведꙋ");
+        assert_eq!(v("нести", First, Singular, Present, Finite, OCS), "несѫ");
+        assert_eq!(v("носи́ти", First, Singular, Present, Finite, SYN), "ношꙋ̀");
+        assert_eq!(v("люби́ти", First, Singular, Present, Finite, SYN), "люблю̀");
+        assert_eq!(v("проси́ти", First, Singular, Present, Finite, SYN), "прошꙋ̀");
+        assert_eq!(
+            v("проси́ти", Second, Singular, Present, Finite, SYN),
+            "проси́ши"
+        );
+        assert_eq!(
+            v("писа́ти", Second, Singular, Present, Finite, SYN),
+            "пише́ши"
+        );
+        assert_eq!(
+            v("писа́ти", Third, Singular, Tense::Imperfect, Finite, SYN),
+            "писа́ше"
+        );
+        assert_eq!(v("би́ти", Third, Plural, Present, Finite, SYN), "бі́ютъ");
+        assert_eq!(
+            v("би́ти", Third, Singular, Tense::Imperfect, Finite, SYN),
+            "бі́ѧше"
+        );
+        assert_eq!(
+            v("моли́тисѧ", First, Singular, Present, Finite, SYN),
+            "молю́сѧ"
+        );
+        assert_eq!(
+            v("моли́тисѧ", Third, Singular, Present, Finite, SYN),
+            "моли́тсѧ"
+        );
         assert_eq!(
             v("дѣлати", Second, Singular, Present, Finite, OCS),
             "дѣлаѥши"
@@ -401,9 +525,9 @@ mod tests {
         );
         // verb:dual-first-person-va, verb:dual-third-person-leveling
         assert_eq!(v("нести", First, Dual, Present, Finite, OCS), "несевѣ");
-        assert_eq!(v("нести", First, Dual, Present, Finite, SYN), "несева");
+        assert_eq!(v("вести", First, Dual, Present, Finite, SYN), "ведева");
         assert_eq!(v("нести", Third, Dual, Present, Finite, OCS), "несете");
-        assert_eq!(v("нести", Third, Dual, Present, Finite, SYN), "несета");
+        assert_eq!(v("вести", Third, Dual, Present, Finite, SYN), "ведета");
     }
 
     #[test]
@@ -417,8 +541,8 @@ mod tests {
             "несѣахъ"
         );
         assert_eq!(
-            v("нести", First, Singular, Imperfect, Finite, SYN),
-            "несѧхъ"
+            v("вести", First, Singular, Imperfect, Finite, SYN),
+            "ведѧхъ"
         );
         assert_eq!(
             v("дѣлати", First, Singular, Imperfect, Finite, OCS),
@@ -437,6 +561,14 @@ mod tests {
             "хвалѧше"
         );
         assert_eq!(
+            v("носи́ти", Third, Singular, Imperfect, Finite, SYN),
+            "ноша́ше"
+        );
+        assert_eq!(
+            v("люби́ти", First, Singular, Imperfect, Finite, SYN),
+            "люблѧ́хъ"
+        );
+        assert_eq!(
             v("видѣти", First, Singular, Imperfect, Finite, SYN),
             "видѧхъ"
         );
@@ -446,8 +578,8 @@ mod tests {
             "несѣашете"
         );
         assert_eq!(
-            v("нести", Second, Plural, Imperfect, Finite, SYN),
-            "несѧсте"
+            v("вести", Second, Plural, Imperfect, Finite, SYN),
+            "ведѧсте"
         );
     }
 
@@ -456,8 +588,8 @@ mod tests {
         use Number::*;
         use Person::*;
         assert_eq!(
-            v("нести", First, Singular, Tense::Aorist, Form::Finite, SYN),
-            "несохъ"
+            v("вести", First, Singular, Tense::Aorist, Form::Finite, SYN),
+            "ведохъ"
         );
         assert_eq!(
             v("пещи", Third, Singular, Tense::Aorist, Form::Finite, SYN),
@@ -484,14 +616,14 @@ mod tests {
         );
         assert_eq!(
             v(
-                "нести",
+                "вести",
                 Third,
                 Singular,
                 Tense::Present,
                 Form::Participle,
                 SYN
             ),
-            "несый"
+            "ведый"
         );
         assert_eq!(
             v(
@@ -550,14 +682,14 @@ mod tests {
         );
         assert_eq!(
             v(
-                "нести",
+                "вести",
                 Second,
                 Plural,
                 Tense::Present,
                 Form::Imperative,
                 SYN
             ),
-            "несите"
+            "ведите"
         );
         assert_eq!(
             v(
@@ -582,11 +714,11 @@ mod tests {
         );
         assert_eq!(
             v("быти", Third, Singular, Tense::Present, Form::Finite, SYN),
-            "єсть"
+            "є҆́сть"
         );
         assert_eq!(
             v("быти", First, Plural, Tense::Present, Form::Finite, SYN),
-            "єсмы"
+            "є҆смы̀"
         );
         assert_eq!(
             v("бꙑти", Third, Singular, Tense::Imperfect, Form::Finite, OCS),
@@ -594,7 +726,7 @@ mod tests {
         );
         assert_eq!(
             v("быти", Third, Singular, Tense::Imperfect, Form::Finite, SYN),
-            "бѧше"
+            "бѧ́ше"
         );
         assert_eq!(
             v("бꙑти", Third, Singular, Tense::Aorist, Form::Finite, OCS),
@@ -602,7 +734,7 @@ mod tests {
         );
         assert_eq!(
             v("быти", Third, Singular, Tense::Aorist, Form::Finite, SYN),
-            "бысть"
+            "бы́сть"
         );
         assert_eq!(
             v(

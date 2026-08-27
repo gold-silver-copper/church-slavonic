@@ -28,8 +28,19 @@ use church_slavonic_core::orthography;
 const OCS: Recension = Recension::OldChurchSlavonic;
 const SYN: Recension = Recension::Synodal;
 
+/// Every row of a table is checked; the failures are reported together.
+macro_rules! check {
+    ($failures:ident, $got:expr, $want:expr, $($arg:tt)*) => {
+        let got = $got;
+        if got != $want {
+            $failures.push(format!("{}: got {got:?}, want {:?}", format!($($arg)*), $want));
+        }
+    };
+}
+
 #[test]
 fn regular_noun_declensions() {
+    let mut failures: Vec<String> = Vec::new();
     use Case::*;
     use Number::*;
     for (word, r, case, number, expected) in [
@@ -37,7 +48,7 @@ fn regular_noun_declensions() {
         ("рабъ", OCS, Dative, Singular, "рабоу"),
         ("рабъ", SYN, Dative, Singular, "рабꙋ"),
         ("рабъ", OCS, Genitive, Plural, "рабъ"),
-        ("рабъ", SYN, Genitive, Plural, "рабовъ"),
+        ("рабъ", SYN, Genitive, Plural, "рабѡвъ"),
         ("рабъ", OCS, Accusative, Plural, "рабꙑ"),
         ("рабъ", SYN, Instrumental, Plural, "рабы"),
         ("врагъ", SYN, Locative, Singular, "вразѣ"),
@@ -46,7 +57,7 @@ fn regular_noun_declensions() {
         ("ѹченикъ", SYN, Nominative, Plural, "ѹченицы"),
         // hard o-stem neuter (noun:dual-direct-reshape)
         ("село", OCS, Nominative, Dual, "селѣ"),
-        ("село", SYN, Nominative, Dual, "села"),
+        ("село", SYN, Nominative, Dual, "сєла"),
         ("село", SYN, Locative, Plural, "селѣхъ"),
         // soft jo-stems
         ("конь", OCS, Genitive, Singular, "конꙗ"),
@@ -70,12 +81,12 @@ fn regular_noun_declensions() {
         ("землꙗ", OCS, Genitive, Singular, "землѩ"),
         ("землѧ", SYN, Genitive, Singular, "земли"),
         ("землꙗ", OCS, Nominative, Plural, "землѩ"),
-        ("землѧ", SYN, Nominative, Plural, "земли"),
+        ("землѧ", SYN, Nominative, Plural, "зємли"),
         ("доуша", OCS, Accusative, Singular, "доушѫ"),
         ("дꙋша", SYN, Accusative, Singular, "дꙋшꙋ"),
         // i-stems (noun:i-stem-instrumental-i-grade, noun:i-stem-vocative-leveling)
         ("кость", OCS, Instrumental, Singular, "костьѭ"),
-        ("кость", SYN, Instrumental, Singular, "костїю"),
+        ("кость", SYN, Instrumental, Singular, "костію"),
         ("кость", OCS, Vocative, Singular, "кости"),
         ("кость", SYN, Vocative, Singular, "косте"),
         ("кость", OCS, Genitive, Plural, "костии"),
@@ -86,7 +97,7 @@ fn regular_noun_declensions() {
         ("имѧ", OCS, Nominative, Dual, "именѣ"),
         ("имѧ", SYN, Nominative, Dual, "имени"),
         ("мати", OCS, Genitive, Dual, "матероу"),
-        ("мати", SYN, Genitive, Dual, "матерїю"),
+        ("мати", SYN, Genitive, Dual, "матерію"),
         ("небо", OCS, Locative, Plural, "небесьхъ"),
         ("небо", SYN, Locative, Plural, "небесѣхъ"),
         ("свекрꙑ", OCS, Nominative, Singular, "свекрꙑ"),
@@ -96,17 +107,30 @@ fn regular_noun_declensions() {
         ("сынъ", SYN, Genitive, Singular, "сына"),
         ("сꙑнъ", OCS, Instrumental, Singular, "сꙑнъмь"),
         ("сынъ", SYN, Instrumental, Singular, "сыномъ"),
+        // the accent rule (Synodal lemmas are accented citation forms)
+        ("аарѡ́нъ", SYN, Genitive, Singular, "аарѡ́на"),
+        ("аарѡ́нъ", SYN, Dative, Plural, "аарѡ́нѡмъ"),
+        ("рꙋка̀", SYN, Genitive, Singular, "рꙋкѝ"),
+        ("рꙋка̀", SYN, Dative, Singular, "рꙋцѣ̀"),
+        ("рꙋка̀", SYN, Instrumental, Singular, "рꙋко́ю"),
+        ("рꙋка̀", SYN, Genitive, Plural, "рꙋ́къ"),
+        ("рꙋка̀", SYN, Locative, Plural, "рꙋка́хъ"),
+        ("оу҆чени́къ", SYN, Nominative, Plural, "оу҆чени́цы"),
+        ("бг҃ъ", SYN, Genitive, Singular, "бг҃а"),
     ] {
-        assert_eq!(
+        check!(
+            failures,
             ChurchSlavonicCore::noun(word, &case, &number, &r),
             expected,
             "{word} {case:?} {number:?} {r:?}"
         );
     }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]
 fn regular_adjective_declensions_and_degrees() {
+    let mut failures: Vec<String> = Vec::new();
     use Case::*;
     use Gender::*;
     use Number::*;
@@ -133,7 +157,7 @@ fn regular_adjective_declensions_and_degrees() {
             "новымъ",
         ),
         ("новъ", OCS, Dative, Plural, Feminine, pos, "новамъ"),
-        ("новъ", SYN, Dative, Plural, Feminine, pos, "новымъ"),
+        ("новъ", SYN, Dative, Plural, Feminine, pos, "нѡвымъ"),
         ("новъ", OCS, Accusative, Singular, Feminine, pos, "новѫ"),
         ("новъ", SYN, Accusative, Singular, Feminine, pos, "новꙋ"),
         ("синь", OCS, Dative, Singular, Neuter, pos, "синоу"),
@@ -151,12 +175,34 @@ fn regular_adjective_declensions_and_degrees() {
         ("новꙑи", OCS, Genitive, Plural, Feminine, pos, "новꙑихъ"),
         ("новый", SYN, Genitive, Plural, Feminine, pos, "новыхъ"),
         ("синии", OCS, Genitive, Singular, Feminine, pos, "синѧѩ"),
-        ("синїй", SYN, Genitive, Singular, Feminine, pos, "синїѧ"),
+        ("синій", SYN, Genitive, Singular, Feminine, pos, "синіѧ"),
         ("синии", OCS, Dative, Singular, Feminine, pos, "синии"),
-        ("синїй", SYN, Dative, Singular, Feminine, pos, "синей"),
+        ("синій", SYN, Dative, Singular, Feminine, pos, "синей"),
         ("синии", OCS, Genitive, Dual, Masculine, pos, "синоую"),
-        ("синїй", SYN, Genitive, Dual, Masculine, pos, "синюю"),
-        ("благій", SYN, Nominative, Plural, Masculine, pos, "благїи"),
+        ("синій", SYN, Genitive, Dual, Masculine, pos, "синюю"),
+        ("благій", SYN, Nominative, Plural, Masculine, pos, "блазіи"),
+        // the accent rule (Synodal lemmas are accented citation forms)
+        ("до́брый", SYN, Genitive, Singular, Masculine, pos, "до́брагѡ"),
+        ("свѧты́й", SYN, Genitive, Singular, Masculine, pos, "свѧта́гѡ"),
+        ("свѧты́й", SYN, Nominative, Singular, Feminine, pos, "свѧта́ѧ"),
+        (
+            "аарѡ́новъ",
+            SYN,
+            Nominative,
+            Singular,
+            Feminine,
+            pos,
+            "аарѡ́нова",
+        ),
+        (
+            "до́бръ",
+            SYN,
+            Nominative,
+            Singular,
+            Masculine,
+            Degree::Comparative,
+            "до́брѣй",
+        ),
         (
             "новъ",
             OCS,
@@ -203,16 +249,19 @@ fn regular_adjective_declensions_and_degrees() {
             "преновъ",
         ),
     ] {
-        assert_eq!(
+        check!(
+            failures,
             ChurchSlavonicCore::adj(word, &case, &number, &gender, &degree, &r),
             expected,
             "{word} {case:?} {number:?} {gender:?} {degree:?} {r:?}"
         );
     }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]
 fn regular_verb_conjugations() {
+    let mut failures: Vec<String> = Vec::new();
     use Number::*;
     use Person::*;
     let fin = Form::Finite;
@@ -227,20 +276,20 @@ fn regular_verb_conjugations() {
             "несеши",
         ),
         (
-            "нести",
+            "вести",
             SYN,
             Second,
             Singular,
             Tense::Present,
             fin,
-            "несеши",
+            "ведеши",
         ),
         ("нести", OCS, Third, Plural, Tense::Present, fin, "несѫтъ"),
-        ("нести", SYN, Third, Plural, Tense::Present, fin, "несꙋтъ"),
+        ("вести", SYN, Third, Plural, Tense::Present, fin, "ведꙋтъ"),
         ("нести", OCS, First, Dual, Tense::Present, fin, "несевѣ"),
-        ("нести", SYN, First, Dual, Tense::Present, fin, "несева"),
+        ("вести", SYN, First, Dual, Tense::Present, fin, "ведева"),
         ("нести", OCS, Third, Dual, Tense::Present, fin, "несете"),
-        ("нести", SYN, Third, Dual, Tense::Present, fin, "несета"),
+        ("вести", SYN, Third, Dual, Tense::Present, fin, "ведета"),
         ("знати", OCS, First, Singular, Tense::Present, fin, "знаѭ"),
         ("знати", SYN, First, Singular, Tense::Present, fin, "знаю"),
         ("знати", OCS, Third, Singular, Tense::Present, fin, "знаѥтъ"),
@@ -320,13 +369,13 @@ fn regular_verb_conjugations() {
             "несѣаше",
         ),
         (
-            "нести",
+            "вести",
             SYN,
             Third,
             Singular,
             Tense::Imperfect,
             fin,
-            "несѧше",
+            "ведѧше",
         ),
         (
             "нести",
@@ -337,7 +386,7 @@ fn regular_verb_conjugations() {
             fin,
             "несѣашета",
         ),
-        ("нести", SYN, Second, Dual, Tense::Imperfect, fin, "несѧста"),
+        ("вести", SYN, Second, Dual, Tense::Imperfect, fin, "ведѧста"),
         (
             "нести",
             OCS,
@@ -347,7 +396,7 @@ fn regular_verb_conjugations() {
             fin,
             "несѣахѫ",
         ),
-        ("нести", SYN, Third, Plural, Tense::Imperfect, fin, "несѧхꙋ"),
+        ("вести", SYN, Third, Plural, Tense::Imperfect, fin, "ведѧхꙋ"),
         (
             "знати",
             OCS,
@@ -413,9 +462,9 @@ fn regular_verb_conjugations() {
         ),
         // aorist
         ("нести", OCS, First, Singular, Tense::Aorist, fin, "несохъ"),
-        ("нести", SYN, Third, Singular, Tense::Aorist, fin, "несе"),
+        ("вести", SYN, Third, Singular, Tense::Aorist, fin, "веде"),
         ("нести", OCS, Third, Plural, Tense::Aorist, fin, "несошѧ"),
-        ("нести", SYN, Third, Plural, Tense::Aorist, fin, "несоша"),
+        ("вести", SYN, Third, Plural, Tense::Aorist, fin, "ведоша"),
         ("знати", OCS, Third, Singular, Tense::Aorist, fin, "зна"),
         ("знати", SYN, Second, Plural, Tense::Aorist, fin, "знасте"),
         ("хвалити", OCS, First, Dual, Tense::Aorist, fin, "хвалиховѣ"),
@@ -434,13 +483,13 @@ fn regular_verb_conjugations() {
             "несꙑ",
         ),
         (
-            "нести",
+            "вести",
             SYN,
             Third,
             Singular,
             Tense::Present,
             Form::Participle,
-            "несый",
+            "ведый",
         ),
         (
             "знати",
@@ -470,13 +519,13 @@ fn regular_verb_conjugations() {
             "хвалѧ",
         ),
         (
-            "нести",
+            "вести",
             SYN,
             Third,
             Singular,
             Tense::Aorist,
             Form::Participle,
-            "несъ",
+            "ведъ",
         ),
         (
             "знати",
@@ -525,13 +574,13 @@ fn regular_verb_conjugations() {
             "несѣмъ",
         ),
         (
-            "нести",
+            "вести",
             SYN,
             First,
             Plural,
             Tense::Present,
             Form::Imperative,
-            "несемъ",
+            "ведемъ",
         ),
         (
             "нести",
@@ -543,13 +592,13 @@ fn regular_verb_conjugations() {
             "несѣта",
         ),
         (
-            "нести",
+            "вести",
             SYN,
             Second,
             Dual,
             Tense::Present,
             Form::Imperative,
-            "несита",
+            "ведита",
         ),
         (
             "знати",
@@ -588,26 +637,27 @@ fn regular_verb_conjugations() {
             "хвали",
         ),
         (
-            "нести",
+            "вести",
             SYN,
             Third,
             Singular,
             Tense::Present,
             Form::Infinitive,
-            "нести",
+            "вести",
         ),
         // the copula
         ("бꙑти", OCS, First, Singular, Tense::Present, fin, "ѥсмь"),
-        ("быти", SYN, First, Singular, Tense::Present, fin, "єсмь"),
+        ("быти", SYN, First, Singular, Tense::Present, fin, "є҆́смь"),
         ("бꙑти", OCS, Third, Plural, Tense::Present, fin, "сѫтъ"),
-        ("быти", SYN, Third, Plural, Tense::Present, fin, "сꙋть"),
+        ("быти", SYN, Third, Plural, Tense::Present, fin, "сꙋ́ть"),
         ("бꙑти", OCS, First, Plural, Tense::Present, fin, "ѥсмъ"),
-        ("быти", SYN, First, Plural, Tense::Present, fin, "єсмы"),
+        ("быти", SYN, First, Plural, Tense::Present, fin, "є҆смы̀"),
         ("бꙑти", OCS, First, Singular, Tense::Imperfect, fin, "бѣахъ"),
-        ("быти", SYN, First, Singular, Tense::Imperfect, fin, "бѧхъ"),
+        ("быти", SYN, First, Singular, Tense::Imperfect, fin, "бѧ́хъ"),
         ("бꙑти", OCS, Third, Plural, Tense::Aorist, fin, "бѣшѧ"),
-        ("быти", SYN, Third, Plural, Tense::Aorist, fin, "быша"),
-        ("быти", SYN, Third, Singular, Tense::Aorist, fin, "бысть"),
+        ("быти", SYN, Third, Plural, Tense::Aorist, fin, "бы́ша"),
+        ("быти", SYN, Third, Singular, Tense::Aorist, fin, "бы́сть"),
+        ("бы́ти", SYN, Third, Singular, Tense::Aorist, fin, "бы́сть"),
         (
             "бꙑти",
             OCS,
@@ -624,7 +674,7 @@ fn regular_verb_conjugations() {
             Singular,
             Tense::Aorist,
             Form::Participle,
-            "бывъ",
+            "бы́въ",
         ),
         (
             "быти",
@@ -635,17 +685,113 @@ fn regular_verb_conjugations() {
             Form::Imperative,
             "бꙋдите",
         ),
+        (
+            "бы́ти",
+            SYN,
+            Second,
+            Plural,
+            Tense::Present,
+            Form::Imperative,
+            "бꙋ́дите",
+        ),
+        // the accent rule (Synodal lemmas are accented citation forms)
+        (
+            "глаго́лати",
+            SYN,
+            First,
+            Singular,
+            Tense::Present,
+            fin,
+            "глаго́лаю",
+        ),
+        (
+            "глаго́лати",
+            SYN,
+            Third,
+            Singular,
+            Tense::Imperfect,
+            fin,
+            "глаго́лаше",
+        ),
+        (
+            "твори́ти",
+            SYN,
+            First,
+            Singular,
+            Tense::Present,
+            fin,
+            "творю̀",
+        ),
+        (
+            "твори́ти",
+            SYN,
+            Second,
+            Singular,
+            Tense::Present,
+            fin,
+            "твори́ши",
+        ),
+        (
+            "твори́ти",
+            SYN,
+            Third,
+            Plural,
+            Tense::Imperfect,
+            fin,
+            "творѧ́хꙋ",
+        ),
+        (
+            "твори́ти",
+            SYN,
+            First,
+            Plural,
+            Tense::Aorist,
+            fin,
+            "твори́хомъ",
+        ),
+        ("вестѝ", SYN, First, Singular, Tense::Present, fin, "ведꙋ̀"),
+        (
+            "вестѝ",
+            SYN,
+            Second,
+            Singular,
+            Tense::Present,
+            fin,
+            "веде́ши",
+        ),
+        ("вестѝ", SYN, First, Singular, Tense::Aorist, fin, "ведо́хъ"),
+        (
+            "вестѝ",
+            SYN,
+            Third,
+            Singular,
+            Tense::Present,
+            Form::Participle,
+            "веды́й",
+        ),
+        (
+            "твори́ти",
+            SYN,
+            Second,
+            Plural,
+            Tense::Present,
+            Form::Imperative,
+            "твори́те",
+        ),
     ] {
-        assert_eq!(
+        check!(
+            failures,
             ChurchSlavonicCore::verb(word, &person, &number, &tense, &form, &r),
             expected,
             "{word} {person:?} {number:?} {tense:?} {form:?} {r:?}"
         );
     }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]
 fn pronoun_matrix_and_realisation() {
+    let mut failures: Vec<String> = Vec::new();
     use Case::*;
     use Gender::*;
     use Number::*;
@@ -653,30 +799,32 @@ fn pronoun_matrix_and_realisation() {
     for (person, number, gender, case, r, expected) in [
         (First, Singular, Masculine, Nominative, OCS, "азъ"),
         (First, Singular, Masculine, Instrumental, OCS, "мъноѭ"),
-        (First, Singular, Masculine, Instrumental, SYN, "мною"),
+        (First, Singular, Masculine, Instrumental, SYN, "мно́ю"),
         (First, Plural, Masculine, Accusative, OCS, "нꙑ"),
-        (First, Plural, Masculine, Accusative, SYN, "насъ"),
+        (First, Plural, Masculine, Accusative, SYN, "на́съ"),
         (Second, Dual, Masculine, Nominative, OCS, "ва"),
-        (Second, Dual, Masculine, Nominative, SYN, "вы"),
+        (Second, Dual, Masculine, Nominative, SYN, "вы̀"),
         (Second, Singular, Masculine, Accusative, OCS, "тѧ"),
-        (Second, Singular, Masculine, Accusative, SYN, "тебе"),
+        (Second, Singular, Masculine, Accusative, SYN, "тебѐ"),
         (Third, Singular, Masculine, Genitive, OCS, "ѥго"),
-        (Third, Singular, Masculine, Genitive, SYN, "єгѡ"),
+        (Third, Singular, Masculine, Genitive, SYN, "є҆гѡ̀"),
         (Third, Singular, Feminine, Accusative, OCS, "ѭ"),
-        (Third, Singular, Feminine, Accusative, SYN, "ю"),
+        (Third, Singular, Feminine, Accusative, SYN, "ю҆̀"),
         (Third, Singular, Masculine, Locative, OCS, "ѥмь"),
-        (Third, Singular, Masculine, Locative, SYN, "немъ"),
+        (Third, Singular, Masculine, Locative, SYN, "не́мъ"),
         (Third, Plural, Feminine, Nominative, OCS, "онꙑ"),
-        (Third, Plural, Feminine, Nominative, SYN, "онѣ"),
+        (Third, Plural, Feminine, Nominative, SYN, "ѻ҆нѣ̀"),
         (Third, Plural, Neuter, Accusative, OCS, "ꙗ"),
-        (Third, Plural, Masculine, Accusative, SYN, "ихъ"),
+        (Third, Plural, Masculine, Accusative, SYN, "и҆́хъ"),
     ] {
-        assert_eq!(
+        check!(
+            failures,
             ChurchSlavonicCore::pronoun(&person, &number, &gender, &case, &r),
             expected,
             "{person:?} {number:?} {gender:?} {case:?} {r:?}"
         );
     }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
     // realisation takes a rule answer across the recension boundary
     let ocs = ChurchSlavonicCore::noun("рѫка", &Dative, &Singular, &OCS);
     assert_eq!(orthography::realise(&ocs, &SYN), "рꙋцѣ");
