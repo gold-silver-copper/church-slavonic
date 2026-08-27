@@ -5,7 +5,7 @@ members = [
     "crates/extractor",
     "crates/xtask",
 ]
-exclude = ["experiments/*", "deprecated/*"]
+exclude = ["experiments/*"]
 default-members = [
     "crates/church-slavonic",
     "crates/church-slavonic-core",
