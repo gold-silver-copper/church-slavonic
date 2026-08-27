@@ -3,58 +3,23 @@
 # contract: docs/SYNODAL_GOLD_ORACLE.md; one row per failing token type or paradigm cell.
 # The gate (synodal-gold --check) fails if the regenerated gap is not a subset of this file.
 oracle	key	reason	engine_output	expected
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:dual::first:future:	unregistered-lemma		да́-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:dual::second+third:future:	unregistered-lemma		да́с-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:plural::first:future:	unregistered-lemma		да́-мы
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:plural::second:future:	unregistered-lemma		да́с-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:plural::third:future:	unregistered-lemma		дад-ꙋ́тъ, -ѧ́тъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:singular::first:future:	unregistered-lemma		да́-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:singular::second:future:	unregistered-lemma		да́-си
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:singular::third:future:	unregistered-lemma		да́с-тъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::first:present:	unregistered-lemma		вѣ́-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::first:present:	unregistered-lemma		и҆́м-а-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::first:present:	unregistered-lemma		ꙗ҆́-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::second+third:present:	unregistered-lemma		вѣ́с-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::second+third:present:	unregistered-lemma		и҆́м-а-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::second+third:present:	unregistered-lemma		ꙗ҆́с-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::first:present:	unregistered-lemma		вѣ́-мы
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::first:present:	unregistered-lemma		и҆́м-а-мы
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::first:present:	unregistered-lemma		ꙗ҆́-мы
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::second:present:	unregistered-lemma		вѣ́с-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::second:present:	unregistered-lemma		и҆́м-а-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::second:present:	unregistered-lemma		ꙗ҆́с-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::third:present:	unregistered-lemma		вѣ́д-ѧтъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::third:present:	unregistered-lemma		и҆́м-ꙋтъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:plural::third:present:	unregistered-lemma		ꙗ҆д-ѧ́тъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::first:present:	unregistered-lemma		вѣ́-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::first:present:	unregistered-lemma		и҆́м-а-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::first:present:	unregistered-lemma		ꙗ҆́-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::second:present:	unregistered-lemma		вѣ́-си
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::second:present:	unregistered-lemma		и҆́м-а-ши
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::second:present:	unregistered-lemma		ꙗ҆́-си
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::third:present:	unregistered-lemma		вѣ́с-ть
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::third:present:	unregistered-lemma		и҆́м-а-ть
-paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:singular::third:present:	unregistered-lemma		ꙗ҆́с-тъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	unregistered-lemma		вѣ́д-и-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	unregistered-lemma		дад-и́-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	unregistered-lemma		и҆м-ѣ́-и-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	unregistered-lemma		ꙗ҆д-и́-ва, -вѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	unregistered-lemma		вѣ́д-и-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	unregistered-lemma		дад-и́-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	unregistered-lemma		и҆м-ѣ́-и-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	unregistered-lemma		ꙗ҆д-и́-та, -тѣ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::first::imperative	unregistered-lemma		вѣ́д-и-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::first::imperative	unregistered-lemma		дад-и́-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::first::imperative	unregistered-lemma		и҆м-ѣ́-и-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::first::imperative	unregistered-lemma		ꙗ҆д-и́-мъ
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::second::imperative	unregistered-lemma		вѣ́д-и-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::second::imperative	unregistered-lemma		дад-и́-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::second::imperative	unregistered-lemma		и҆м-ѣ́-й-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:plural::second::imperative	unregistered-lemma		ꙗ҆д-и́-те
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:singular::second+third::imperative	unregistered-lemma		вѣ́жд-ь
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:singular::second+third::imperative	unregistered-lemma		да́жд-ь
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:singular::second+third::imperative	unregistered-lemma		и҆м-ѣ́-й
-paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:singular::second+third::imperative	unregistered-lemma		ꙗ҆́жд-ь
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:dual::first:future:	engine-wrong-form	да́ва	да́-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:dual::second+third:future:	engine-wrong-form	да́ста	да́с-та, -тѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||будущее время|:plural::third:future:	engine-wrong-form	дадѧ́тъ	дад-ꙋ́тъ, -ѧ́тъ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::first:present:	engine-wrong-form	вѣ́ва	вѣ́-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::first:present:	engine-wrong-form	и҆́мава	и҆́м-а-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::first:present:	engine-wrong-form	ꙗ҆́ва	ꙗ҆́-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::second+third:present:	engine-wrong-form	вѣ́ста	вѣ́с-та, -тѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::second+third:present:	engine-wrong-form	и҆́мата	и҆́м-а-та, -тѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|1||настоящее время|:dual::second+third:present:	engine-wrong-form	ꙗ҆́ста	ꙗ҆́с-та, -тѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	engine-wrong-form	вѣ́дива	вѣ́д-и-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	engine-wrong-form	дади́ва	дад-и́-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	engine-wrong-form	и҆мѣ́ива	и҆м-ѣ́-и-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::first::imperative	engine-wrong-form	ꙗ҆ди́ва	ꙗ҆д-и́-ва, -вѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	engine-wrong-form	вѣ́дита	вѣ́д-и-та, -тѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	engine-wrong-form	дади́та	дад-и́-та, -тѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	engine-wrong-form	и҆мѣ́ита	и҆м-ѣ́-и-та, -тѣ
+paradigm	§103. Глаголы архаического спряжения|p103.htm|2|||:dual::second+third::imperative	engine-wrong-form	ꙗ҆ди́та	ꙗ҆д-и́-та, -тѣ
 paradigm	§34. Образцы 1-го склонения|p034.htm|1|кра́-й|Мягкое склонение|accusative:plural::::	unreviewed-cell		кра̑-и
 paradigm	§34. Образцы 1-го склонения|p034.htm|1|кра́-й|Мягкое склонение|accusative:singular::::	unreviewed-cell		кра́-й
 paradigm	§34. Образцы 1-го склонения|p034.htm|1|кра́-й|Мягкое склонение|dative+instrumental:dual::::	unreviewed-cell		кра́-ема
@@ -160,9 +125,9 @@ paradigm	§34. Образцы 1-го склонения|p034.htm|2|ѻ҆́тро�
 paradigm	§34. Образцы 1-го склонения|p034.htm|2|ѻ҆́трок-ъ|Твердое склонение на гортанный|nominative+vocative:plural::::	unregistered-lemma		ѻ҆́троц-ы
 paradigm	§34. Образцы 1-го склонения|p034.htm|2|ѻ҆́трок-ъ|Твердое склонение на гортанный|nominative:singular::::	unregistered-lemma		ѻ҆́трок-ъ
 paradigm	§34. Образцы 1-го склонения|p034.htm|2|ѻ҆́трок-ъ|Твердое склонение на гортанный|vocative:singular::::	unregistered-lemma		ѻ҆́троч-е
-paradigm	§37. Особенности 1-го склонения|p037.htm|1|||accusative:::::	unregistered-lemma		бра́тїй
-paradigm	§37. Особенности 1-го склонения|p037.htm|1|||instrumental:::::	unregistered-lemma		бра́тїѧми
-paradigm	§37. Особенности 1-го склонения|p037.htm|1|||locative:::::	unregistered-lemma		ѡ҆ бра́тїѧхъ
+paradigm	§37. Особенности 1-го склонения|p037.htm|1|||accusative:::::	engine-wrong-form	бра́тїю	бра́тїй
+paradigm	§37. Особенности 1-го склонения|p037.htm|1|||instrumental:::::	engine-wrong-form	бра́тїею	бра́тїѧми
+paradigm	§37. Особенности 1-го склонения|p037.htm|1|||locative:::::	unreviewed-cell		ѡ҆ бра́тїѧхъ
 paradigm	§37. Особенности 1-го склонения|p037.htm|1|бра́тїѧ||dative:::::	unreviewed-cell		бра́тїѧмъ
 paradigm	§37. Особенности 1-го склонения|p037.htm|1|бра́тїѧ||genitive:::::	engine-wrong-form	бра́тїи	бра́тїй
 paradigm	§39. 2-е склонение|p039.htm|1|жен-а̀|Твердое склонение|dative+instrumental:dual::::	unreviewed-cell		жен-а́ма
@@ -216,115 +181,9 @@ paradigm	§43. Образцы склонений|p043.htm|3|це́рков-ь||n
 paradigm	§43. Образцы склонений|p043.htm|3|це́рков-ь||nominative+vocative:plural::::	unreviewed-cell		цє́ркв-и
 paradigm	§43. Образцы склонений|p043.htm|3|це́рков-ь||nominative:singular::::	unreviewed-cell		це́рков-ь
 paradigm	§43. Образцы склонений|p043.htm|3|це́рков-ь||vocative:singular::::	unreviewed-cell		це́рков-ь, це́ркв-е
-paradigm	§44. Особенности 4-го склонения|p044.htm|1|ѻ҆́чи (ѻ҆́цѣ)||dative+instrumental:dual::::	unregistered-lemma		ѻ҆чи́ма
-paradigm	§44. Особенности 4-го склонения|p044.htm|1|ѻ҆́чи (ѻ҆́цѣ)||genitive+locative:dual::::	unregistered-lemma		ѻ҆́чїю
-paradigm	§44. Особенности 4-го склонения|p044.htm|1|ѻ҆́чи (ѻ҆́цѣ)||nominative+accusative+vocative:dual::::	unregistered-lemma		ѻ҆́чи (ѻ҆́цѣ)
-paradigm	§44. Особенности 4-го склонения|p044.htm|1|ᲂу҆́ши||dative+instrumental:dual::::	unregistered-lemma		ᲂу҆ши́ма
-paradigm	§44. Особенности 4-го склонения|p044.htm|1|ᲂу҆́ши||genitive+locative:dual::::	unregistered-lemma		ᲂу҆́шїю
-paradigm	§44. Особенности 4-го склонения|p044.htm|1|ᲂу҆́ши||nominative+accusative+vocative:dual::::	unregistered-lemma		ᲂу҆́ши
-paradigm	§47. Склонение местоимений|p047.htm|1|||accusative:singular::::	unregistered-lemma		себѐ, сѧ̀
-paradigm	§47. Склонение местоимений|p047.htm|1|||dative:singular::::	unregistered-lemma		себѣ̀, сѝ
-paradigm	§47. Склонение местоимений|p047.htm|1|||genitive:singular::::	unregistered-lemma		себѐ
-paradigm	§47. Склонение местоимений|p047.htm|1|||instrumental:singular::::	unregistered-lemma		собо́ю
-paradigm	§47. Склонение местоимений|p047.htm|1|||locative:singular::::	unregistered-lemma		себѣ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||accusative:dual:neuter:::	unregistered-lemma		моѝ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||accusative:plural:neuter:::	unregistered-lemma		моѧ̑
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||accusative:singular:neuter:::	unregistered-lemma		моѐ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||dative+instrumental:dual:neuter:::	unregistered-lemma		мои́ма
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||dative:plural:neuter:::	unregistered-lemma		мои̑мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||dative:singular:neuter:::	unregistered-lemma		моемꙋ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||genitive+locative:dual:neuter:::	unregistered-lemma		моє́ю
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||genitive:plural:neuter:::	unregistered-lemma		мои́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||genitive:singular:neuter:::	unregistered-lemma		моегѡ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||instrumental:plural:neuter:::	unregistered-lemma		мои́ми
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||instrumental:singular:neuter:::	unregistered-lemma		мои́мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||locative:plural:neuter:::	unregistered-lemma		мои́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||locative:singular:neuter:::	unregistered-lemma		мое́мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||nominative:dual:neuter:::	unregistered-lemma		моѝ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||nominative:plural:neuter:::	unregistered-lemma		моѧ̑
-paradigm	§47. Склонение местоимений|p047.htm|2|моѐ||nominative:singular:neuter:::	unregistered-lemma		моѐ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||accusative:dual:feminine:::	unregistered-lemma		моѝ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||accusative:plural:feminine:::	unregistered-lemma		моѧ̑, мои́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||accusative:singular:feminine:::	unregistered-lemma		мою̀
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||dative+instrumental:dual:feminine:::	unregistered-lemma		мои́ма
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||dative:plural:feminine:::	unregistered-lemma		мои̑мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||dative:singular:feminine:::	unregistered-lemma		мое́й
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||genitive+locative:dual:feminine:::	unregistered-lemma		моє́ю
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||genitive:plural:feminine:::	unregistered-lemma		мои́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||genitive:singular:feminine:::	unregistered-lemma		моеѧ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||instrumental:plural:feminine:::	unregistered-lemma		мои́ми
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||instrumental:singular:feminine:::	unregistered-lemma		мое́ю
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||locative:plural:feminine:::	unregistered-lemma		мои́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||locative:singular:feminine:::	unregistered-lemma		мое́й
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||nominative:dual:feminine:::	unregistered-lemma		моѝ
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||nominative:plural:feminine:::	unregistered-lemma		моѧ̑
-paradigm	§47. Склонение местоимений|p047.htm|2|моѧ̀||nominative:singular:feminine:::	unregistered-lemma		моѧ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||accusative:dual:feminine:::	unregistered-lemma		ѧ҆̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||accusative:plural:feminine:::	unregistered-lemma		ѧ҆̀, и҆̀хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||accusative:singular:feminine:::	unregistered-lemma		ю҆̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||dative+instrumental:dual:feminine:::	unregistered-lemma		и҆́ма
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||dative:plural:feminine:::	unregistered-lemma		и҆̀мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||dative:singular:feminine:::	unregistered-lemma		є҆́й
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||genitive+locative:dual:feminine:::	unregistered-lemma		є҆ю̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||genitive:plural:feminine:::	unregistered-lemma		и҆́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||genitive:singular:feminine:::	unregistered-lemma		є҆ѧ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||instrumental:plural:feminine:::	unregistered-lemma		и҆́ми
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||instrumental:singular:feminine:::	unregistered-lemma		є҆́ю
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||locative:plural:feminine:::	unregistered-lemma		(н)и́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||locative:singular:feminine:::	unregistered-lemma		(н)е́й
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||nominative:dual:feminine:::	unregistered-lemma		ѻ҆́нѣ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||nominative:plural:feminine:::	unregistered-lemma		ѻ҆нѣ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆на̀ (ѧ҆̀)||nominative:singular:feminine:::	unregistered-lemma		ѻ҆на̀ (ѧ҆̀)
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||accusative:dual:neuter:::	unregistered-lemma		ѧ҆̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||accusative:plural:neuter:::	unregistered-lemma		ѧ҆̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||accusative:singular:neuter:::	unregistered-lemma		є҆̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||dative+instrumental:dual:neuter:::	unregistered-lemma		и҆́ма
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||dative:plural:neuter:::	unregistered-lemma		и҆̀мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||dative:singular:neuter:::	unregistered-lemma		є҆мꙋ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||genitive+locative:dual:neuter:::	unregistered-lemma		є҆ю̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||genitive:plural:neuter:::	unregistered-lemma		и҆́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||genitive:singular:neuter:::	unregistered-lemma		є҆гѡ̀
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||instrumental:plural:neuter:::	unregistered-lemma		и҆́ми
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||instrumental:singular:neuter:::	unregistered-lemma		и҆́мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||locative:plural:neuter:::	unregistered-lemma		(н)и́хъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||locative:singular:neuter:::	unregistered-lemma		(н)е́мъ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||nominative:dual:neuter:::	unregistered-lemma		ѻ҆́нѣ, ѻ҆́на
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||nominative:plural:neuter:::	unregistered-lemma		ѻ҆нѝ
-paradigm	§47. Склонение местоимений|p047.htm|2|ѻ҆но̀ (є҆̀)||nominative:singular:neuter:::	unregistered-lemma		ѻ҆но̀ (є҆̀)
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||accusative:plural:feminine:::	unregistered-lemma		ты́ѧ, ты̑, тѣ́хъ
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||accusative:singular:feminine:::	unregistered-lemma		тꙋ̀, тꙋ́ю
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||dative+instrumental:dual:feminine:::	unregistered-lemma		тѣ́ма
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||dative:plural:feminine:::	unregistered-lemma		тѣ̑мъ
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||dative:singular:feminine:::	unregistered-lemma		то́й
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||genitive+locative:dual:feminine:::	unregistered-lemma		тѡ́ю
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||genitive:plural:feminine:::	unregistered-lemma		тѣ́хъ
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||genitive:singular:feminine:::	unregistered-lemma		тоѧ̀
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||instrumental:plural:feminine:::	unregistered-lemma		тѣ́ми
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||instrumental:singular:feminine:::	unregistered-lemma		то́ю
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||locative:plural:feminine:::	unregistered-lemma		тѣ́хъ
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||locative:singular:feminine:::	unregistered-lemma		то́й
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||nominative+accusative:dual:feminine:::	unregistered-lemma		тѣ̀
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||nominative:plural:feminine:::	unregistered-lemma		ты́ѧ, ты̑
-paradigm	§47. Склонение местоимений|p047.htm|3|та́ѧ, та̀||nominative:singular:feminine:::	unregistered-lemma		та́ѧ, та̀
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||accusative:plural:neuter:::	unregistered-lemma		та̑ѧ, та̑
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||accusative:singular:neuter:::	unregistered-lemma		то́е, то̀
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||dative+instrumental:dual:neuter:::	unregistered-lemma		тѣ́ма
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||dative:plural:neuter:::	unregistered-lemma		тѣ̑мъ
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||dative:singular:neuter:::	unregistered-lemma		томꙋ̀
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||genitive+locative:dual:neuter:::	unregistered-lemma		тѡ́ю
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||genitive:plural:neuter:::	unregistered-lemma		тѣ́хъ
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||genitive:singular:neuter:::	unregistered-lemma		тогѡ̀
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||instrumental:plural:neuter:::	unregistered-lemma		тѣ́ми
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||instrumental:singular:neuter:::	unregistered-lemma		тѣ́мъ
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||locative:plural:neuter:::	unregistered-lemma		тѣ́хъ
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||locative:singular:neuter:::	unregistered-lemma		то́мъ
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||nominative+accusative:dual:neuter:::	unregistered-lemma		тѣ̀, та̑
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||nominative:plural:neuter:::	unregistered-lemma		та̑ѧ, та̑
-paradigm	§47. Склонение местоимений|p047.htm|3|то́е, то̀||nominative:singular:neuter:::	unregistered-lemma		то́е, то̀
-paradigm	§48|p048.htm|1|||accusative:::::	unregistered-lemma		чесо̀
-paradigm	§48|p048.htm|1|||dative:::::	unregistered-lemma		чесомꙋ̀
-paradigm	§48|p048.htm|1|||genitive:::::	unregistered-lemma		чесѡ̀, чесогѡ̀
-paradigm	§48|p048.htm|1|||locative:::::	unregistered-lemma		чесо́мъ
+paradigm	§44. Особенности 4-го склонения|p044.htm|1|ᲂу҆́ши||dative+instrumental:dual::::	unreviewed-cell		ᲂу҆ши́ма
+paradigm	§44. Особенности 4-го склонения|p044.htm|1|ᲂу҆́ши||genitive+locative:dual::::	unreviewed-cell		ᲂу҆́шїю
+paradigm	§44. Особенности 4-го склонения|p044.htm|1|ᲂу҆́ши||nominative+accusative+vocative:dual::::	unreviewed-cell		ᲂу҆́ши
 paradigm	§48|p048.htm|2|ка́ѧ||accusative:plural:feminine:::	unreviewed-cell		кі́ѧ, кі́ихъ
 paradigm	§48|p048.htm|2|ка́ѧ||accusative:singular:feminine:::	unreviewed-cell		кꙋ́ю
 paradigm	§48|p048.htm|2|ка́ѧ||dative+instrumental:dual:feminine:::	unreviewed-cell		кі́има
@@ -340,21 +199,13 @@ paradigm	§48|p048.htm|2|ка́ѧ||locative:singular:feminine:::	unreviewed-cell
 paradigm	§48|p048.htm|2|ка́ѧ||nominative+accusative:dual:feminine:::	unreviewed-cell		кі́и
 paradigm	§48|p048.htm|2|ка́ѧ||nominative:plural:feminine:::	unreviewed-cell		кі́ѧ
 paradigm	§48|p048.htm|2|ка́ѧ||nominative:singular:feminine:::	unreviewed-cell		ка́ѧ
-paradigm	§48|p048.htm|2|ко́е||accusative:plural:neuter:::	unregistered-lemma		ка̑ѧ
-paradigm	§48|p048.htm|2|ко́е||accusative:singular:neuter:::	unregistered-lemma		ко́е
-paradigm	§48|p048.htm|2|ко́е||dative+instrumental:dual:neuter:::	unregistered-lemma		кі́има
-paradigm	§48|p048.htm|2|ко́е||dative:plural:neuter:::	unregistered-lemma		кі̑имъ
-paradigm	§48|p048.htm|2|ко́е||dative:singular:neuter:::	unregistered-lemma		ко́емꙋ
-paradigm	§48|p048.htm|2|ко́е||genitive+locative:dual:neuter:::	unregistered-lemma		ко́єю
-paradigm	§48|p048.htm|2|ко́е||genitive:plural:neuter:::	unregistered-lemma		кі́ихъ
-paradigm	§48|p048.htm|2|ко́е||genitive:singular:neuter:::	unregistered-lemma		ко́егѡ
-paradigm	§48|p048.htm|2|ко́е||instrumental:plural:neuter:::	unregistered-lemma		кі́ими
-paradigm	§48|p048.htm|2|ко́е||instrumental:singular:neuter:::	unregistered-lemma		кі́имъ
-paradigm	§48|p048.htm|2|ко́е||locative:plural:neuter:::	unregistered-lemma		кі́ихъ
-paradigm	§48|p048.htm|2|ко́е||locative:singular:neuter:::	unregistered-lemma		ко́емъ
-paradigm	§48|p048.htm|2|ко́е||nominative+accusative:dual:neuter:::	unregistered-lemma		кі́и
-paradigm	§48|p048.htm|2|ко́е||nominative:plural:neuter:::	unregistered-lemma		ка̑ѧ
-paradigm	§48|p048.htm|2|ко́е||nominative:singular:neuter:::	unregistered-lemma		ко́е
+paradigm	§48|p048.htm|2|ко́е||dative+instrumental:dual:neuter:::	unreviewed-cell		кі́има
+paradigm	§48|p048.htm|2|ко́е||dative:plural:neuter:::	engine-wrong-accent	кі́имъ	кі̑имъ
+paradigm	§48|p048.htm|2|ко́е||genitive+locative:dual:neuter:::	unreviewed-cell		ко́єю
+paradigm	§48|p048.htm|2|ко́е||genitive:singular:neuter:::	unreviewed-cell		ко́егѡ
+paradigm	§48|p048.htm|2|ко́е||instrumental:plural:neuter:::	unreviewed-cell		кі́ими
+paradigm	§48|p048.htm|2|ко́е||nominative+accusative:dual:neuter:::	unreviewed-cell		кі́и
+paradigm	§48|p048.htm|2|ко́е||nominative:plural:neuter:::	unreviewed-cell		ка̑ѧ
 paradigm	§48|p048.htm|2|кі́й||dative+instrumental:dual:masculine:::	unreviewed-cell		кі́има
 paradigm	§48|p048.htm|2|кі́й||dative:plural:masculine:::	engine-wrong-accent	кі́имъ	кі̑имъ
 paradigm	§48|p048.htm|2|кі́й||genitive+locative:dual:masculine:::	unreviewed-cell		ко́єю
@@ -362,103 +213,44 @@ paradigm	§48|p048.htm|2|кі́й||genitive:singular:masculine:::	unreviewed-cel
 paradigm	§48|p048.htm|2|кі́й||instrumental:plural:masculine:::	unreviewed-cell		кі́ими
 paradigm	§48|p048.htm|2|кі́й||nominative+accusative:dual:masculine:::	unreviewed-cell		ка̑ѧ
 paradigm	§48|p048.htm|2|кі́й||nominative:plural:masculine:::	unreviewed-cell		кі́и
-paradigm	§48|p048.htm|3|на́ша||accusative:plural:feminine:::	unregistered-lemma		на́шѧ, -ихъ
-paradigm	§48|p048.htm|3|на́ша||accusative:singular:feminine:::	unregistered-lemma		на́шꙋ
-paradigm	§48|p048.htm|3|на́ша||dative+instrumental:dual:feminine:::	unregistered-lemma		на́шима
-paradigm	§48|p048.htm|3|на́ша||dative:plural:feminine:::	unregistered-lemma		на́шымъ
-paradigm	§48|p048.htm|3|на́ша||dative:singular:feminine:::	unregistered-lemma		на́шей
-paradigm	§48|p048.htm|3|на́ша||genitive+locative:dual:feminine:::	unregistered-lemma		на̑шею
-paradigm	§48|p048.htm|3|на́ша||genitive:plural:feminine:::	unregistered-lemma		на́шихъ
-paradigm	§48|p048.htm|3|на́ша||genitive:singular:feminine:::	unregistered-lemma		на́шеѧ
-paradigm	§48|p048.htm|3|на́ша||instrumental:plural:feminine:::	unregistered-lemma		на́шими
-paradigm	§48|p048.htm|3|на́ша||instrumental:singular:feminine:::	unregistered-lemma		на́шею
-paradigm	§48|p048.htm|3|на́ша||locative:plural:feminine:::	unregistered-lemma		на́шихъ
-paradigm	§48|p048.htm|3|на́ша||locative:singular:feminine:::	unregistered-lemma		на́шей
-paradigm	§48|p048.htm|3|на́ша||nominative+accusative:dual:feminine:::	unregistered-lemma		на́ши
-paradigm	§48|p048.htm|3|на́ша||nominative:plural:feminine:::	unregistered-lemma		на́шѧ
-paradigm	§48|p048.htm|3|на́ша||nominative:singular:feminine:::	unregistered-lemma		на́ша
-paradigm	§48|p048.htm|3|на́ше||accusative:plural:neuter:::	unregistered-lemma		на̑ша
-paradigm	§48|p048.htm|3|на́ше||accusative:singular:neuter:::	unregistered-lemma		на́ше
-paradigm	§48|p048.htm|3|на́ше||dative+instrumental:dual:neuter:::	unregistered-lemma		на́шима
-paradigm	§48|p048.htm|3|на́ше||dative:plural:neuter:::	unregistered-lemma		на́шымъ
-paradigm	§48|p048.htm|3|на́ше||dative:singular:neuter:::	unregistered-lemma		на́шемꙋ
-paradigm	§48|p048.htm|3|на́ше||genitive+locative:dual:neuter:::	unregistered-lemma		на̑шею
-paradigm	§48|p048.htm|3|на́ше||genitive:plural:neuter:::	unregistered-lemma		на́шихъ
-paradigm	§48|p048.htm|3|на́ше||genitive:singular:neuter:::	unregistered-lemma		на́шегѡ
-paradigm	§48|p048.htm|3|на́ше||instrumental:plural:neuter:::	unregistered-lemma		на́шими
-paradigm	§48|p048.htm|3|на́ше||instrumental:singular:neuter:::	unregistered-lemma		на́шимъ
-paradigm	§48|p048.htm|3|на́ше||locative:plural:neuter:::	unregistered-lemma		на́шихъ
-paradigm	§48|p048.htm|3|на́ше||locative:singular:neuter:::	unregistered-lemma		на́шемъ
-paradigm	§48|p048.htm|3|на́ше||nominative+accusative:dual:neuter:::	unregistered-lemma		на́ши
-paradigm	§48|p048.htm|3|на́ше||nominative:plural:neuter:::	unregistered-lemma		на̑ша
-paradigm	§48|p048.htm|3|на́ше||nominative:singular:neuter:::	unregistered-lemma		на́ше
+paradigm	§48|p048.htm|3|на́ша||accusative:plural:feminine:::	engine-wrong-form	на́шѧ	на́шѧ, -ихъ
 paradigm	§48|p048.htm|3|на́шъ||accusative:plural:masculine:::	engine-wrong-form	на́шѧ	на́шѧ, -ихъ
-paradigm	§48|p048.htm|4|||accusative:::::	unregistered-lemma		толи̑ки
-paradigm	§48|p048.htm|4|||instrumental:::::	unregistered-lemma		толи́цѣми
-paradigm	§48|p048.htm|4|||locative:::::	unregistered-lemma		толи́цѣхъ
+paradigm	§48|p048.htm|4|||accusative:::::	engine-wrong-form	толи́къ	толи̑ки
+paradigm	§48|p048.htm|4|||instrumental:::::	unreviewed-cell		толи́цѣми
 paradigm	§48|p048.htm|4|толи́цы||dative:::::	unregistered-lemma		толи̑цѣмъ
 paradigm	§48|p048.htm|4|толи́цы||genitive:::::	unregistered-lemma		толи́цѣхъ
 paradigm	§48|p048.htm|4|толи́цы||nominative:::::	unregistered-lemma		толи́цы
-paradigm	§48|p048.htm|5|ѻ҆́ва||accusative:plural:feminine:::short	unregistered-lemma		ѻ҆́вы, ѻ҆́вѣхъ
-paradigm	§48|p048.htm|5|ѻ҆́ва||accusative:singular:feminine:::short	unregistered-lemma		ѻ҆́вꙋ
-paradigm	§48|p048.htm|5|ѻ҆́ва||dative+instrumental:dual:feminine:::short	unregistered-lemma		ѻ҆́вѣма
-paradigm	§48|p048.htm|5|ѻ҆́ва||dative:plural:feminine:::short	unregistered-lemma		ѻ҆́вѣмъ
-paradigm	§48|p048.htm|5|ѻ҆́ва||dative:singular:feminine:::short	unregistered-lemma		ѻ҆́вой
-paradigm	§48|p048.htm|5|ѻ҆́ва||genitive+locative:dual:feminine:::short	unregistered-lemma		ѻ҆́вѡю
-paradigm	§48|p048.htm|5|ѻ҆́ва||genitive:plural:feminine:::short	unregistered-lemma		ѻ҆́вѣхъ
-paradigm	§48|p048.htm|5|ѻ҆́ва||genitive:singular:feminine:::short	unregistered-lemma		ѻ҆́воѧ
-paradigm	§48|p048.htm|5|ѻ҆́ва||instrumental:plural:feminine:::short	unregistered-lemma		ѻ҆́вѣми
-paradigm	§48|p048.htm|5|ѻ҆́ва||instrumental:singular:feminine:::short	unregistered-lemma		ѻ҆́вою
-paradigm	§48|p048.htm|5|ѻ҆́ва||locative:plural:feminine:::short	unregistered-lemma		ѻ҆́вѣхъ
-paradigm	§48|p048.htm|5|ѻ҆́ва||locative:singular:feminine:::short	unregistered-lemma		ѻ҆́вой
-paradigm	§48|p048.htm|5|ѻ҆́ва||nominative+accusative:dual:feminine:::short	unregistered-lemma		ѻ҆́вѣ
-paradigm	§48|p048.htm|5|ѻ҆́ва||nominative:plural:feminine:::short	unregistered-lemma		ѻ҆́вы
-paradigm	§48|p048.htm|5|ѻ҆́ва||nominative:singular:feminine:::short	unregistered-lemma		ѻ҆́ва
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||accusative:plural:feminine:::long	unregistered-lemma		ѻ҆́выѧ, ѻ҆́выхъ
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||accusative:singular:feminine:::long	unregistered-lemma		ѻ҆́вꙋю
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||dative+instrumental:dual:feminine:::long	unregistered-lemma		ѻ҆́выма
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||dative:plural:feminine:::long	unregistered-lemma		ѻ҆́вымъ
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||dative:singular:feminine:::long	unregistered-lemma		ѻ҆́вой
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||genitive+locative:dual:feminine:::long	unregistered-lemma		ѻ҆́вѡю
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||genitive:plural:feminine:::long	unregistered-lemma		ѻ҆́выхъ
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||genitive:singular:feminine:::long	unregistered-lemma		ѻ҆́выѧ
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||instrumental:plural:feminine:::long	unregistered-lemma		ѻ҆́выми
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||instrumental:singular:feminine:::long	unregistered-lemma		ѻ҆́вою
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||locative:plural:feminine:::long	unregistered-lemma		ѻ҆́выхъ
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||locative:singular:feminine:::long	unregistered-lemma		ѻ҆́вой
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||nominative+accusative:dual:feminine:::long	unregistered-lemma		ѻ҆́вѣи
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||nominative:plural:feminine:::long	unregistered-lemma		ѻ҆́выѧ
-paradigm	§48|p048.htm|5|ѻ҆́ваѧ||nominative:singular:feminine:::long	unregistered-lemma		ѻ҆́ваѧ
-paradigm	§48|p048.htm|5|ѻ҆́во||accusative:plural:neuter:::short	unregistered-lemma		ѻ҆́ва
-paradigm	§48|p048.htm|5|ѻ҆́во||accusative:singular:neuter:::short	unregistered-lemma		ѻ҆́во
-paradigm	§48|p048.htm|5|ѻ҆́во||dative+instrumental:dual:neuter:::short	unregistered-lemma		ѻ҆́вѣма
-paradigm	§48|p048.htm|5|ѻ҆́во||dative:plural:neuter:::short	unregistered-lemma		ѻ҆́вѣмъ
-paradigm	§48|p048.htm|5|ѻ҆́во||dative:singular:neuter:::short	unregistered-lemma		ѻ҆́вомꙋ
-paradigm	§48|p048.htm|5|ѻ҆́во||genitive+locative:dual:neuter:::short	unregistered-lemma		ѻ҆́вѡю
-paradigm	§48|p048.htm|5|ѻ҆́во||genitive:plural:neuter:::short	unregistered-lemma		ѻ҆́вѣхъ
-paradigm	§48|p048.htm|5|ѻ҆́во||genitive:singular:neuter:::short	unregistered-lemma		ѻ҆́вогѡ
-paradigm	§48|p048.htm|5|ѻ҆́во||instrumental:plural:neuter:::short	unregistered-lemma		ѻ҆́вѣми
-paradigm	§48|p048.htm|5|ѻ҆́во||instrumental:singular:neuter:::short	unregistered-lemma		ѻ҆́вѣмъ
-paradigm	§48|p048.htm|5|ѻ҆́во||locative:plural:neuter:::short	unregistered-lemma		ѻ҆́вѣхъ
-paradigm	§48|p048.htm|5|ѻ҆́во||locative:singular:neuter:::short	unregistered-lemma		ѻ҆́вомъ
-paradigm	§48|p048.htm|5|ѻ҆́во||nominative+accusative:dual:neuter:::short	unregistered-lemma		ѻ҆́вѣ
-paradigm	§48|p048.htm|5|ѻ҆́во||nominative:plural:neuter:::short	unregistered-lemma		ѻ҆́ва
-paradigm	§48|p048.htm|5|ѻ҆́во||nominative:singular:neuter:::short	unregistered-lemma		ѻ҆́во
-paradigm	§48|p048.htm|5|ѻ҆́вое||accusative:plural:neuter:::long	unregistered-lemma		ѻ҆́ваѧ
-paradigm	§48|p048.htm|5|ѻ҆́вое||accusative:singular:neuter:::long	unregistered-lemma		ѻ҆́вое
-paradigm	§48|p048.htm|5|ѻ҆́вое||dative+instrumental:dual:neuter:::long	unregistered-lemma		ѻ҆́выма
-paradigm	§48|p048.htm|5|ѻ҆́вое||dative:plural:neuter:::long	unregistered-lemma		ѻ҆́вымъ
-paradigm	§48|p048.htm|5|ѻ҆́вое||dative:singular:neuter:::long	unregistered-lemma		ѻ҆́вомꙋ
-paradigm	§48|p048.htm|5|ѻ҆́вое||genitive+locative:dual:neuter:::long	unregistered-lemma		ѻ҆́вѡю
-paradigm	§48|p048.htm|5|ѻ҆́вое||genitive:plural:neuter:::long	unregistered-lemma		ѻ҆́выхъ
-paradigm	§48|p048.htm|5|ѻ҆́вое||genitive:singular:neuter:::long	unregistered-lemma		ѻ҆́вагѡ
-paradigm	§48|p048.htm|5|ѻ҆́вое||instrumental:plural:neuter:::long	unregistered-lemma		ѻ҆́выми
-paradigm	§48|p048.htm|5|ѻ҆́вое||instrumental:singular:neuter:::long	unregistered-lemma		ѻ҆́вымъ
-paradigm	§48|p048.htm|5|ѻ҆́вое||locative:plural:neuter:::long	unregistered-lemma		ѻ҆́выхъ
-paradigm	§48|p048.htm|5|ѻ҆́вое||locative:singular:neuter:::long	unregistered-lemma		ѻ҆́вомъ
-paradigm	§48|p048.htm|5|ѻ҆́вое||nominative+accusative:dual:neuter:::long	unregistered-lemma		ѻ҆́вѣи
-paradigm	§48|p048.htm|5|ѻ҆́вое||nominative:plural:neuter:::long	unregistered-lemma		ѻ҆́ваѧ
-paradigm	§48|p048.htm|5|ѻ҆́вое||nominative:singular:neuter:::long	unregistered-lemma		ѻ҆́вое
+paradigm	§48|p048.htm|5|ѻ҆́ва||accusative:plural:feminine:::short	engine-wrong-form	ѻ҆́выѧ	ѻ҆́вы, ѻ҆́вѣхъ
+paradigm	§48|p048.htm|5|ѻ҆́ва||accusative:singular:feminine:::short	engine-wrong-form	ѻ҆́вꙋю	ѻ҆́вꙋ
+paradigm	§48|p048.htm|5|ѻ҆́ва||dative+instrumental:dual:feminine:::short	unreviewed-cell		ѻ҆́вѣма
+paradigm	§48|p048.htm|5|ѻ҆́ва||dative:plural:feminine:::short	engine-wrong-form	ѻ҆́вымъ	ѻ҆́вѣмъ
+paradigm	§48|p048.htm|5|ѻ҆́ва||genitive+locative:dual:feminine:::short	unreviewed-cell		ѻ҆́вѡю
+paradigm	§48|p048.htm|5|ѻ҆́ва||genitive:plural:feminine:::short	engine-wrong-form	ѻ҆́выхъ	ѻ҆́вѣхъ
+paradigm	§48|p048.htm|5|ѻ҆́ва||genitive:singular:feminine:::short	engine-wrong-form	ѻ҆́выѧ	ѻ҆́воѧ
+paradigm	§48|p048.htm|5|ѻ҆́ва||instrumental:plural:feminine:::short	engine-wrong-form	ѻ҆́выми	ѻ҆́вѣми
+paradigm	§48|p048.htm|5|ѻ҆́ва||locative:plural:feminine:::short	engine-wrong-form	ѻ҆́выхъ	ѻ҆́вѣхъ
+paradigm	§48|p048.htm|5|ѻ҆́ва||nominative+accusative:dual:feminine:::short	unreviewed-cell		ѻ҆́вѣ
+paradigm	§48|p048.htm|5|ѻ҆́ва||nominative:plural:feminine:::short	engine-wrong-form	ѻ҆́выѧ	ѻ҆́вы
+paradigm	§48|p048.htm|5|ѻ҆́ва||nominative:singular:feminine:::short	engine-wrong-form	ѻ҆́ваѧ	ѻ҆́ва
+paradigm	§48|p048.htm|5|ѻ҆́ваѧ||dative+instrumental:dual:feminine:::long	unreviewed-cell		ѻ҆́выма
+paradigm	§48|p048.htm|5|ѻ҆́ваѧ||genitive+locative:dual:feminine:::long	unreviewed-cell		ѻ҆́вѡю
+paradigm	§48|p048.htm|5|ѻ҆́ваѧ||nominative+accusative:dual:feminine:::long	unreviewed-cell		ѻ҆́вѣи
+paradigm	§48|p048.htm|5|ѻ҆́во||accusative:plural:neuter:::short	engine-wrong-form	ѻ҆́ваѧ	ѻ҆́ва
+paradigm	§48|p048.htm|5|ѻ҆́во||accusative:singular:neuter:::short	engine-wrong-form	ѻ҆́вое	ѻ҆́во
+paradigm	§48|p048.htm|5|ѻ҆́во||dative+instrumental:dual:neuter:::short	unreviewed-cell		ѻ҆́вѣма
+paradigm	§48|p048.htm|5|ѻ҆́во||dative:plural:neuter:::short	engine-wrong-form	ѻ҆́вымъ	ѻ҆́вѣмъ
+paradigm	§48|p048.htm|5|ѻ҆́во||genitive+locative:dual:neuter:::short	unreviewed-cell		ѻ҆́вѡю
+paradigm	§48|p048.htm|5|ѻ҆́во||genitive:plural:neuter:::short	engine-wrong-form	ѻ҆́выхъ	ѻ҆́вѣхъ
+paradigm	§48|p048.htm|5|ѻ҆́во||genitive:singular:neuter:::short	engine-wrong-form	ѻ҆́вагѡ	ѻ҆́вогѡ
+paradigm	§48|p048.htm|5|ѻ҆́во||instrumental:plural:neuter:::short	engine-wrong-form	ѻ҆́выми	ѻ҆́вѣми
+paradigm	§48|p048.htm|5|ѻ҆́во||instrumental:singular:neuter:::short	engine-wrong-form	ѻ҆́вымъ	ѻ҆́вѣмъ
+paradigm	§48|p048.htm|5|ѻ҆́во||locative:plural:neuter:::short	engine-wrong-form	ѻ҆́выхъ	ѻ҆́вѣхъ
+paradigm	§48|p048.htm|5|ѻ҆́во||nominative+accusative:dual:neuter:::short	unreviewed-cell		ѻ҆́вѣ
+paradigm	§48|p048.htm|5|ѻ҆́во||nominative:plural:neuter:::short	engine-wrong-form	ѻ҆́ваѧ	ѻ҆́ва
+paradigm	§48|p048.htm|5|ѻ҆́во||nominative:singular:neuter:::short	engine-wrong-form	ѻ҆́вое	ѻ҆́во
+paradigm	§48|p048.htm|5|ѻ҆́вое||dative+instrumental:dual:neuter:::long	unreviewed-cell		ѻ҆́выма
+paradigm	§48|p048.htm|5|ѻ҆́вое||genitive+locative:dual:neuter:::long	unreviewed-cell		ѻ҆́вѡю
+paradigm	§48|p048.htm|5|ѻ҆́вое||nominative+accusative:dual:neuter:::long	unreviewed-cell		ѻ҆́вѣи
 paradigm	§48|p048.htm|5|ѻ҆́въ||accusative:plural:masculine:::short	unreviewed-cell		ѻ҆́вы, ѻ҆́вѣхъ
 paradigm	§48|p048.htm|5|ѻ҆́въ||accusative:singular:masculine:::short	unreviewed-cell		ѻ҆́въ, ѻ҆́вого
 paradigm	§48|p048.htm|5|ѻ҆́въ||dative+instrumental:dual:masculine:::short	unreviewed-cell		ѻ҆́вѣма
@@ -476,38 +268,18 @@ paradigm	§48|p048.htm|5|ѻ҆́въ||nominative:plural:masculine:::short	unrevie
 paradigm	§48|p048.htm|5|ѻ҆́вый||dative+instrumental:dual:masculine:::long	unreviewed-cell		ѻ҆́выма
 paradigm	§48|p048.htm|5|ѻ҆́вый||genitive+locative:dual:masculine:::long	unreviewed-cell		ѻ҆́вѡю
 paradigm	§48|p048.htm|5|ѻ҆́вый||nominative+accusative:dual:masculine:::long	unreviewed-cell		ѻ҆́ваѧ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||accusative:plural:feminine:::	unregistered-lemma		мꙋ̑др-ы
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||accusative:singular:feminine:::	unregistered-lemma		мꙋ́др-ꙋ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||dative+instrumental:dual:feminine:::	unregistered-lemma		мꙋ́др-ыма
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||dative:plural:feminine:::	unregistered-lemma		мꙋ̑др-ымъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||dative:singular:feminine:::	unregistered-lemma		мꙋ́др-ѣ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||genitive+locative:dual:feminine:::	unregistered-lemma		мꙋ̑др-ꙋ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||genitive:plural:feminine:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||genitive:singular:feminine:::	unregistered-lemma		мꙋ́др-ы
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||instrumental:plural:feminine:::	unregistered-lemma		мꙋ́др-ыми
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||instrumental:singular:feminine:::	unregistered-lemma		мꙋ́др-ою
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||locative:plural:feminine:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||locative:singular:feminine:::	unregistered-lemma		мꙋ́др-ѣ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||nominative+accusative+vocative:dual:feminine:::	unregistered-lemma		мꙋ̑др-ѣ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||nominative+vocative:plural:feminine:::	unregistered-lemma		мꙋ̑др-ы
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||nominative:singular:feminine:::	unregistered-lemma		мꙋ́др-а
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||vocative:singular:feminine:::	unregistered-lemma		мꙋ́др-а
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||accusative:plural:neuter:::	unregistered-lemma		мꙋ̑др-а
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||accusative:singular:neuter:::	unregistered-lemma		мꙋ́др-о
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||dative+instrumental:dual:neuter:::	unregistered-lemma		мꙋ́др-ыма
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||dative:plural:neuter:::	unregistered-lemma		мꙋ̑др-ымъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||dative:singular:neuter:::	unregistered-lemma		мꙋ́др-ꙋ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||genitive+locative:dual:neuter:::	unregistered-lemma		мꙋ̑др-ꙋ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||genitive:plural:neuter:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||genitive:singular:neuter:::	unregistered-lemma		мꙋ́др-а
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||instrumental:plural:neuter:::	unregistered-lemma		мꙋ̑др-ы (ыми)
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||instrumental:singular:neuter:::	unregistered-lemma		мꙋ́др-ымъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||locative:plural:neuter:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||locative:singular:neuter:::	unregistered-lemma		мꙋ́др-ѣ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||nominative+accusative+vocative:dual:neuter:::	unregistered-lemma		мꙋ̑др-ѣ
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||nominative+vocative:plural:neuter:::	unregistered-lemma		мꙋ̑др-а
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||nominative:singular:neuter:::	unregistered-lemma		мꙋ́др-о
-paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||vocative:singular:neuter:::	unregistered-lemma		мꙋ́др-о
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||accusative:plural:feminine:::	engine-wrong-form	мꙋ̑дрыѧ	мꙋ̑др-ы
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||genitive+locative:dual:feminine:::	engine-wrong-accent	мꙋ́дрꙋ	мꙋ̑др-ꙋ
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||genitive:singular:feminine:::	engine-wrong-form	мꙋ́дрыѧ	мꙋ́др-ы
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||nominative+accusative+vocative:dual:feminine:::	engine-wrong-accent	мꙋ́дрѣ	мꙋ̑др-ѣ
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||nominative+vocative:plural:feminine:::	engine-wrong-form	мꙋ̑дрыѧ	мꙋ̑др-ы
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-а||nominative:singular:feminine:::	engine-wrong-form	мꙋ́драѧ	мꙋ́др-а
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||accusative:plural:neuter:::	engine-wrong-accent	мꙋ́дра	мꙋ̑др-а
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||genitive+locative:dual:neuter:::	engine-wrong-accent	мꙋ́дрꙋ	мꙋ̑др-ꙋ
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||instrumental:plural:neuter:::	engine-wrong-form	мꙋ́дрыми	мꙋ̑др-ы (ыми)
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||nominative+accusative+vocative:dual:neuter:::	engine-wrong-accent	мꙋ́дрѣ	мꙋ̑др-ѣ
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||nominative+vocative:plural:neuter:::	engine-wrong-accent	мꙋ́дра	мꙋ̑др-а
+paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-о||nominative:singular:neuter:::	engine-wrong-form	мꙋ́дрое	мꙋ́др-о
 paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-ъ||accusative:plural:masculine:::	engine-wrong-form	мꙋ̑дрыѧ	мꙋ̑др-ы (ыхъ)
 paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-ъ||genitive+locative:dual:masculine:::	engine-wrong-accent	мꙋ́дрꙋ	мꙋ̑др-ꙋ
 paradigm	§53. Склонение имен прилагательных|p053.htm|1|мꙋ́др-ъ||instrumental:plural:masculine:::	engine-wrong-form	мꙋ́дрыми	мꙋ̑др-ы (ыми)
@@ -528,38 +300,38 @@ paradigm	§53. Склонение имен прилагательных|p053.htm
 paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́ден-ь||nominative+vocative:plural:masculine:::	unreviewed-cell		госпѡ́дн-и
 paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́ден-ь||nominative:singular:masculine:::	unreviewed-cell		госпо́ден-ь
 paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́ден-ь||vocative:singular:masculine:::	unreviewed-cell		госпо́ден-ь
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||accusative:plural:neuter:::	unregistered-lemma		госпѡ́дн-ѧ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||accusative:singular:neuter:::	unregistered-lemma		госпо́дн-е
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||dative+instrumental:dual:neuter:::	unregistered-lemma		госпо́дн-има
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||dative:plural:neuter:::	unregistered-lemma		госпѡ́дн-имъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||dative:singular:neuter:::	unregistered-lemma		госпо́дн-ю
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||genitive+locative:dual:neuter:::	unregistered-lemma		госпѡ́дн-ю
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||genitive:plural:neuter:::	unregistered-lemma		госпо́дн-ихъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||genitive:singular:neuter:::	unregistered-lemma		госпо́дн-ѧ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||instrumental:plural:neuter:::	unregistered-lemma		госпѡ́дн-и (ими)
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||instrumental:singular:neuter:::	unregistered-lemma		госпо́дн-имъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||locative:plural:neuter:::	unregistered-lemma		госпо́дн-ихъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||locative:singular:neuter:::	unregistered-lemma		госпо́дн-и
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||nominative+accusative+vocative:dual:neuter:::	unregistered-lemma		госпѡ́дн-и
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||nominative+vocative:plural:neuter:::	unregistered-lemma		госпѡ́дн-ѧ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||nominative:singular:neuter:::	unregistered-lemma		госпо́дн-е
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||vocative:singular:neuter:::	unregistered-lemma		госпо́дн-е
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||accusative:plural:feminine:::	unregistered-lemma		госпѡ́дн-и (ихъ)
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||accusative:singular:feminine:::	unregistered-lemma		госпо́дн-ю
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||dative+instrumental:dual:feminine:::	unregistered-lemma		госпо́дн-има
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||dative:plural:feminine:::	unregistered-lemma		госпѡ́дн-имъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||dative:singular:feminine:::	unregistered-lemma		госпо́дн-и
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||genitive+locative:dual:feminine:::	unregistered-lemma		госпѡ́дн-ю
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||genitive:plural:feminine:::	unregistered-lemma		госпо́дн-ихъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||genitive:singular:feminine:::	unregistered-lemma		госпо́дн-и
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||instrumental:plural:feminine:::	unregistered-lemma		госпо́дн-ими
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||instrumental:singular:feminine:::	unregistered-lemma		госпо́дн-ею
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||locative:plural:feminine:::	unregistered-lemma		госпо́дн-ихъ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||locative:singular:feminine:::	unregistered-lemma		госпо́дн-и
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||nominative+accusative+vocative:dual:feminine:::	unregistered-lemma		госпѡ́дн-и
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||nominative+vocative:plural:feminine:::	unregistered-lemma		госпѡ́дн-и
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||nominative:singular:feminine:::	unregistered-lemma		госпо́дн-ѧ
-paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||vocative:singular:feminine:::	unregistered-lemma		госпо́дн-ѧ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||accusative:plural:neuter:::	unreviewed-cell		госпѡ́дн-ѧ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||accusative:singular:neuter:::	unreviewed-cell		госпо́дн-е
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||dative+instrumental:dual:neuter:::	unreviewed-cell		госпо́дн-има
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||dative:plural:neuter:::	unreviewed-cell		госпѡ́дн-имъ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||dative:singular:neuter:::	unreviewed-cell		госпо́дн-ю
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||genitive+locative:dual:neuter:::	unreviewed-cell		госпѡ́дн-ю
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||genitive:plural:neuter:::	unreviewed-cell		госпо́дн-ихъ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||genitive:singular:neuter:::	unreviewed-cell		госпо́дн-ѧ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||instrumental:plural:neuter:::	unreviewed-cell		госпѡ́дн-и (ими)
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||instrumental:singular:neuter:::	unreviewed-cell		госпо́дн-имъ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||locative:plural:neuter:::	unreviewed-cell		госпо́дн-ихъ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||locative:singular:neuter:::	unreviewed-cell		госпо́дн-и
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||nominative+accusative+vocative:dual:neuter:::	unreviewed-cell		госпѡ́дн-и
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||nominative+vocative:plural:neuter:::	unreviewed-cell		госпѡ́дн-ѧ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||nominative:singular:neuter:::	unreviewed-cell		госпо́дн-е
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-е||vocative:singular:neuter:::	unreviewed-cell		госпо́дн-е
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||accusative:plural:feminine:::	unreviewed-cell		госпѡ́дн-и (ихъ)
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||accusative:singular:feminine:::	unreviewed-cell		госпо́дн-ю
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||dative+instrumental:dual:feminine:::	unreviewed-cell		госпо́дн-има
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||dative:plural:feminine:::	unreviewed-cell		госпѡ́дн-имъ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||dative:singular:feminine:::	unreviewed-cell		госпо́дн-и
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||genitive+locative:dual:feminine:::	unreviewed-cell		госпѡ́дн-ю
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||genitive:plural:feminine:::	unreviewed-cell		госпо́дн-ихъ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||genitive:singular:feminine:::	unreviewed-cell		госпо́дн-и
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||instrumental:plural:feminine:::	unreviewed-cell		госпо́дн-ими
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||instrumental:singular:feminine:::	unreviewed-cell		госпо́дн-ею
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||locative:plural:feminine:::	unreviewed-cell		госпо́дн-ихъ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||locative:singular:feminine:::	unreviewed-cell		госпо́дн-и
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||nominative+accusative+vocative:dual:feminine:::	unreviewed-cell		госпѡ́дн-и
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||nominative+vocative:plural:feminine:::	unreviewed-cell		госпѡ́дн-и
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||nominative:singular:feminine:::	unreviewed-cell		госпо́дн-ѧ
+paradigm	§53. Склонение имен прилагательных|p053.htm|2|госпо́дн-ѧ||vocative:singular:feminine:::	unreviewed-cell		госпо́дн-ѧ
 paradigm	§56|p056.htm|1|бж҃ї-е зна́менї-е||accusative:plural:neuter:::	unregistered-lemma		бж҃ї-ѧ зна́мєнї-ѧ
 paradigm	§56|p056.htm|1|бж҃ї-е зна́менї-е||accusative:singular:neuter:::	unregistered-lemma		бж҃ї-е зна́менї-е
 paradigm	§56|p056.htm|1|бж҃ї-е зна́менї-е||dative+instrumental:dual:neuter:::	unregistered-lemma		бж҃ї-има зна́менї-ема
@@ -576,68 +348,44 @@ paradigm	§56|p056.htm|1|бж҃ї-е зна́менї-е||nominative+accusative+
 paradigm	§56|p056.htm|1|бж҃ї-е зна́менї-е||nominative+vocative:plural:neuter:::	unregistered-lemma		бж҃ї-ѧ зна́мєнї-ѧ
 paradigm	§56|p056.htm|1|бж҃ї-е зна́менї-е||nominative:singular:neuter:::	unregistered-lemma		бж҃ї-е зна́менї-е
 paradigm	§56|p056.htm|1|бж҃ї-е зна́менї-е||vocative:singular:neuter:::	unregistered-lemma		бж҃ї-е зна́менї-е
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||accusative:plural:masculine:::	unregistered-lemma		бж҃ї-и кра̑-и
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||accusative:singular:masculine:::	unregistered-lemma		бж҃ї-й кра́-й
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||dative+instrumental:dual:masculine:::	unregistered-lemma		бж҃ї-има кра́-ема
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||dative:plural:masculine:::	unregistered-lemma		бж҃ї-имъ кра́-ємъ
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||dative:singular:masculine:::	unregistered-lemma		бж҃ї-ю кра́-ю
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||genitive+locative:dual:masculine:::	unregistered-lemma		бж҃ї-ю кра̑-ю
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||genitive:plural:masculine:::	unregistered-lemma		бж҃ї-ихъ кра-є́въ
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||genitive:singular:masculine:::	unregistered-lemma		бж҃ї-ѧ кра́-ѧ
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||instrumental:plural:masculine:::	unregistered-lemma		бж҃ї-и кра̑-и
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||instrumental:singular:masculine:::	unregistered-lemma		бж҃ї-имъ кра́-емъ
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||locative:plural:masculine:::	unregistered-lemma		бж҃ї-ихъ кра́-ехъ
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||locative:singular:masculine:::	unregistered-lemma		бж҃ї-и (емъ) кра́-и
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||nominative+accusative+vocative:dual:masculine:::	unregistered-lemma		бж҃ї-ѧ кра̑-ѧ
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||nominative+vocative:plural:masculine:::	unregistered-lemma		бж҃ї-и кра̑-и
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||nominative:singular:masculine:::	unregistered-lemma		бж҃ї-й кра́-й
-paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||vocative:singular:masculine:::	unregistered-lemma		бж҃ї-й кра́-ю
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||accusative:plural:feminine:::	unregistered-lemma		бж҃ї-ѧ ми́лѡстын-и
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||accusative:singular:feminine:::	unregistered-lemma		бж҃ї-ю ми́лостын-ю
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||dative+instrumental:dual:feminine:::	unregistered-lemma		бж҃ї-има ми́лостын-ѧма
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||dative:plural:feminine:::	unregistered-lemma		бж҃ї-имъ ми́лостын-ѧмъ
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||dative:singular:feminine:::	unregistered-lemma		бж҃ї-и ми́лостын-и
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||genitive+locative:dual:feminine:::	unregistered-lemma		бж҃ї-ю ми́лѡстын-ю
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||genitive:plural:feminine:::	unregistered-lemma		бж҃ї-ихъ ми́лостын-ь
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||genitive:singular:feminine:::	unregistered-lemma		бж҃ї-ѧ ми́лостын-и
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||instrumental:plural:feminine:::	unregistered-lemma		бж҃ї-ими ми́лостын-ѧми
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||instrumental:singular:feminine:::	unregistered-lemma		бж҃ї-ею ми́лостын-ею
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||locative:plural:feminine:::	unregistered-lemma		бж҃ї-ихъ ми́лостын-ѧхъ
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||locative:singular:feminine:::	unregistered-lemma		бж҃ї-и ми́лостын-и
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||nominative+accusative+vocative:dual:feminine:::	unregistered-lemma		бж҃ї-и ми́лѡстын-и
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||nominative+vocative:plural:feminine:::	unregistered-lemma		бж҃ї-ѧ ми́лѡстын-и
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||nominative:singular:feminine:::	unregistered-lemma		бж҃ї-ѧ ми́лостын-ѧ
-paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||vocative:singular:feminine:::	unregistered-lemma		бж҃ї-ѧ ми́лостын-е
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||accusative:plural:feminine:::	unregistered-lemma		мꙋ̑др-ыѧ (ыхъ)
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||accusative:singular:feminine:::	unregistered-lemma		мꙋ́др-ꙋю
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||dative+instrumental:dual:feminine:::	unregistered-lemma		мꙋ́др-ыма
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||dative:plural:feminine:::	unregistered-lemma		мꙋ̑др-ымъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||dative:singular:feminine:::	unregistered-lemma		мꙋ́др-ѣй (-ой)
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||genitive+locative:dual:feminine:::	unregistered-lemma		мꙋ̑др-ꙋю
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||genitive:plural:feminine:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||genitive:singular:feminine:::	unregistered-lemma		мꙋ́др-ыѧ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||instrumental:plural:feminine:::	unregistered-lemma		мꙋ́др-ыми
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||instrumental:singular:feminine:::	unregistered-lemma		мꙋ́др-ою
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||locative:plural:feminine:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||locative:singular:feminine:::	unregistered-lemma		мꙋ́др-ѣй (-ой)
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||nominative+accusative+vocative:dual:feminine:::	unregistered-lemma		мꙋ́др-ѣи
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||nominative+vocative:plural:feminine:::	unregistered-lemma		мꙋ̑др-ыѧ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||nominative+vocative:singular:feminine:::	unregistered-lemma		мꙋ́др-аѧ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||accusative:plural:neuter:::	unregistered-lemma		мꙋ̑др-аѧ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||accusative:singular:neuter:::	unregistered-lemma		мꙋ́др-ое
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||dative+instrumental:dual:neuter:::	unregistered-lemma		мꙋ́др-ыма
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||dative:plural:neuter:::	unregistered-lemma		мꙋ̑др-ымъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||dative:singular:neuter:::	unregistered-lemma		мꙋ́др-омꙋ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||genitive+locative:dual:neuter:::	unregistered-lemma		мꙋ̑др-ꙋю
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||genitive:plural:neuter:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||genitive:singular:neuter:::	unregistered-lemma		мꙋ́др-агѡ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||instrumental:plural:neuter:::	unregistered-lemma		мꙋ́др-ыми
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||instrumental:singular:neuter:::	unregistered-lemma		мꙋ́др-ымъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||locative:plural:neuter:::	unregistered-lemma		мꙋ́др-ыхъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||locative:singular:neuter:::	unregistered-lemma		мꙋ́др-ѣмъ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||nominative+accusative+vocative:dual:neuter:::	unregistered-lemma		мꙋ́др-ѣи
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||nominative+vocative:plural:neuter:::	unregistered-lemma		мꙋ̑др-аѧ
-paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||nominative+vocative:singular:neuter:::	unregistered-lemma		мꙋ́др-ое
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||accusative:plural:masculine:::	unreviewed-cell		бж҃ї-и кра̑-и
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||accusative:singular:masculine:::	unreviewed-cell		бж҃ї-й кра́-й
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||dative+instrumental:dual:masculine:::	unreviewed-cell		бж҃ї-има кра́-ема
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||dative:plural:masculine:::	unreviewed-cell		бж҃ї-имъ кра́-ємъ
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||dative:singular:masculine:::	unreviewed-cell		бж҃ї-ю кра́-ю
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||genitive+locative:dual:masculine:::	unreviewed-cell		бж҃ї-ю кра̑-ю
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||genitive:plural:masculine:::	unreviewed-cell		бж҃ї-ихъ кра-є́въ
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||genitive:singular:masculine:::	unreviewed-cell		бж҃ї-ѧ кра́-ѧ
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||instrumental:plural:masculine:::	unreviewed-cell		бж҃ї-и кра̑-и
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||instrumental:singular:masculine:::	unreviewed-cell		бж҃ї-имъ кра́-емъ
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||locative:plural:masculine:::	unreviewed-cell		бж҃ї-ихъ кра́-ехъ
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||locative:singular:masculine:::	unreviewed-cell		бж҃ї-и (емъ) кра́-и
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||nominative+accusative+vocative:dual:masculine:::	unreviewed-cell		бж҃ї-ѧ кра̑-ѧ
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||nominative+vocative:plural:masculine:::	unreviewed-cell		бж҃ї-и кра̑-и
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||nominative:singular:masculine:::	unreviewed-cell		бж҃ї-й кра́-й
+paradigm	§56|p056.htm|1|бж҃ї-й кра́-й||vocative:singular:masculine:::	unreviewed-cell		бж҃ї-й кра́-ю
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||accusative:plural:feminine:::	unreviewed-cell		бж҃ї-ѧ ми́лѡстын-и
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||accusative:singular:feminine:::	unreviewed-cell		бж҃ї-ю ми́лостын-ю
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||dative+instrumental:dual:feminine:::	unreviewed-cell		бж҃ї-има ми́лостын-ѧма
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||dative:plural:feminine:::	unreviewed-cell		бж҃ї-имъ ми́лостын-ѧмъ
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||dative:singular:feminine:::	unreviewed-cell		бж҃ї-и ми́лостын-и
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||genitive+locative:dual:feminine:::	unreviewed-cell		бж҃ї-ю ми́лѡстын-ю
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||genitive:plural:feminine:::	unreviewed-cell		бж҃ї-ихъ ми́лостын-ь
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||genitive:singular:feminine:::	unreviewed-cell		бж҃ї-ѧ ми́лостын-и
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||instrumental:plural:feminine:::	unreviewed-cell		бж҃ї-ими ми́лостын-ѧми
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||instrumental:singular:feminine:::	unreviewed-cell		бж҃ї-ею ми́лостын-ею
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||locative:plural:feminine:::	unreviewed-cell		бж҃ї-ихъ ми́лостын-ѧхъ
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||locative:singular:feminine:::	unreviewed-cell		бж҃ї-и ми́лостын-и
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||nominative+accusative+vocative:dual:feminine:::	unreviewed-cell		бж҃ї-и ми́лѡстын-и
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||nominative+vocative:plural:feminine:::	unreviewed-cell		бж҃ї-ѧ ми́лѡстын-и
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||nominative:singular:feminine:::	unreviewed-cell		бж҃ї-ѧ ми́лостын-ѧ
+paradigm	§56|p056.htm|1|бж҃ї-ѧ ми́лостын-ѧ||vocative:singular:feminine:::	unreviewed-cell		бж҃ї-ѧ ми́лостын-е
+paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||genitive+locative:dual:feminine:::	engine-wrong-form	мꙋ́дрꙋ	мꙋ̑др-ꙋю
+paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-аѧ||nominative+accusative+vocative:dual:feminine:::	engine-wrong-form	мꙋ́дрѣ	мꙋ́др-ѣи
+paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||accusative:plural:neuter:::	engine-wrong-form	мꙋ́дра	мꙋ̑др-аѧ
+paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||genitive+locative:dual:neuter:::	engine-wrong-form	мꙋ́дрꙋ	мꙋ̑др-ꙋю
+paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||nominative+accusative+vocative:dual:neuter:::	engine-wrong-form	мꙋ́дрѣ	мꙋ́др-ѣи
+paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ое||nominative+vocative:plural:neuter:::	engine-wrong-form	мꙋ́дра	мꙋ̑др-аѧ
 paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ый||accusative:plural:masculine:::	unregistered-lemma		мꙋ̑др-ыѧ (ыхъ)
 paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ый||accusative:singular:masculine:::	unregistered-lemma		мꙋ́др-ый (-аго)
 paradigm	§57. Склонение имен прилагательных полных|p057.htm|1|мꙋ́др-ый||dative+instrumental:dual:masculine:::	unregistered-lemma		мꙋ́др-ыма
@@ -788,81 +536,55 @@ paradigm	§57. Склонение имен прилагательных полн
 paradigm	§57. Склонение имен прилагательных полных|p057.htm|4|ни́щ-їй||nominative+accusative+vocative:dual:masculine:::	unregistered-lemma		ни̑щ-аѧ
 paradigm	§57. Склонение имен прилагательных полных|p057.htm|4|ни́щ-їй||nominative+vocative:plural:masculine:::	unregistered-lemma		ни́щ-їи
 paradigm	§57. Склонение имен прилагательных полных|p057.htm|4|ни́щ-їй||nominative+vocative:singular:masculine:::	unregistered-lemma		ни́щ-їй
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||accusative:plural:neuter:::	unregistered-lemma		мꙋдр-ѣ̑йша
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||accusative:singular:neuter:::	unregistered-lemma		мꙋдр-ѣ́е (-ѣ́йше)
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||dative+instrumental:dual:neuter:::	unregistered-lemma		мꙋдр-ѣ́йшима
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||dative:plural:neuter:::	unregistered-lemma		мꙋдр-ѣ́йшымъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||dative:singular:neuter:::	unregistered-lemma		мꙋдр-ѣ́йшꙋ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||genitive+locative:dual:neuter:::	unregistered-lemma		мꙋдр-ѣ̑йшꙋ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||genitive:plural:neuter:::	unregistered-lemma		мꙋдр-ѣ́йшихъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||genitive:singular:neuter:::	unregistered-lemma		мꙋдр-ѣ́йша
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||instrumental:plural:neuter:::	unregistered-lemma		мꙋдр-ѣ́йшими
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||instrumental:singular:neuter:::	unregistered-lemma		мꙋдр-ѣ́йшимъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||locative:plural:neuter:::	unregistered-lemma		мꙋдр-ѣ́йшихъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||locative:singular:neuter:::	unregistered-lemma		мꙋдр-ѣ́йши
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||nominative+accusative+vocative:dual:neuter:::	unregistered-lemma		мꙋдр-ѣ̑йши
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||nominative+vocative:plural:neuter:::	unregistered-lemma		мꙋдр-ѣ̑йша
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||nominative+vocative:singular:neuter:::	unregistered-lemma		мꙋдр-ѣ́е (-ѣ́йше)
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||accusative:plural:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшѧ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||accusative:singular:masculine:::	unregistered-lemma		мꙋдр-ѣ́йш-ъ (-а)
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||dative+instrumental:dual:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшима
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||dative:plural:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшымъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||dative:singular:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшꙋ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||genitive+locative:dual:masculine:::	unregistered-lemma		мꙋдр-ѣ̑йшꙋ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||genitive:plural:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшихъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||genitive:singular:masculine:::	unregistered-lemma		мꙋдр-ѣ́йша
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||instrumental:plural:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшими
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||instrumental:singular:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшимъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||locative:plural:masculine:::	unregistered-lemma		мꙋдр-ѣ́йшихъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||locative:singular:masculine:::	unregistered-lemma		мꙋдр-ѣ́йши
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||nominative+accusative+vocative:dual:masculine:::	unregistered-lemma		мꙋдр-ѣ̑йша
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||nominative+vocative:plural:masculine:::	unregistered-lemma		мꙋдр-ѣ̑йше (и)
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||nominative+vocative:singular:masculine:::	unregistered-lemma		мꙋдр-ѣ́й
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||accusative:plural:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшѧ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||accusative:singular:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшꙋ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||dative+instrumental:dual:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшима
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||dative:plural:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшымъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||dative:singular:feminine:::	unregistered-lemma		мꙋдр-ѣ́йши
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||genitive+locative:dual:feminine:::	unregistered-lemma		мꙋдр-ѣ̑йшꙋ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||genitive:plural:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшихъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||genitive:singular:feminine:::	unregistered-lemma		мꙋдр-ѣ́йши
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||instrumental:plural:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшими
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||instrumental:singular:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшею
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||locative:plural:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшихъ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||locative:singular:feminine:::	unregistered-lemma		мꙋдр-ѣ́йши
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||nominative+accusative+vocative:dual:feminine:::	unregistered-lemma		мꙋдр-ѣ̑йши
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||nominative+vocative:plural:feminine:::	unregistered-lemma		мꙋдр-ѣ́йшѧ
-paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||nominative+vocative:singular:feminine:::	unregistered-lemma		мꙋдр-ѣ́йши
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||accusative:plural:feminine:::	unregistered-lemma		є҆ди̑н-а
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||accusative:singular:feminine:::	unregistered-lemma		є҆ди́н-ꙋю
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||dative+instrumental:dual:feminine:::	unregistered-lemma		є҆ди́н-ѣма
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||dative:plural:feminine:::	unregistered-lemma		є҆ди́н-ѣмъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||dative:singular:feminine:::	unregistered-lemma		є҆ди́н-ой
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||genitive+locative:dual:feminine:::	unregistered-lemma		є҆ди̑н-ою
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||genitive:plural:feminine:::	unregistered-lemma		є҆ди́н-ѣхъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||genitive:singular:feminine:::	unregistered-lemma		є҆ди́н-оѧ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||instrumental:plural:feminine:::	unregistered-lemma		є҆ди́н-ѣми
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||instrumental:singular:feminine:::	unregistered-lemma		є҆ди́н-ою
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||locative:plural:feminine:::	unregistered-lemma		є҆ди́н-ѣхъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||locative:singular:feminine:::	unregistered-lemma		є҆ди́н-ой
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||nominative+accusative:dual:feminine:::	unregistered-lemma		є҆ди́н-ѣ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||nominative:plural:feminine:::	unregistered-lemma		є҆ди̑н-а
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||nominative:singular:feminine:::	unregistered-lemma		є҆ди́н-а
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||accusative:plural:neuter:::	unregistered-lemma		є҆ди́н-ы
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||accusative:singular:neuter:::	unregistered-lemma		є҆ди́н-о
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||dative+instrumental:dual:neuter:::	unregistered-lemma		є҆ди́н-ѣма
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||dative:plural:neuter:::	unregistered-lemma		є҆ди́н-ѣмъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||dative:singular:neuter:::	unregistered-lemma		є҆ди́н-омꙋ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||genitive+locative:dual:neuter:::	unregistered-lemma		є҆ди̑н-ою
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||genitive:plural:neuter:::	unregistered-lemma		є҆ди́н-ѣхъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||genitive:singular:neuter:::	unregistered-lemma		є҆ди́н-агѡ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||instrumental:plural:neuter:::	unregistered-lemma		є҆ди́н-ѣми
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||instrumental:singular:neuter:::	unregistered-lemma		є҆ди́н-ѣмъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||locative:plural:neuter:::	unregistered-lemma		є҆ди́н-ѣхъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||locative:singular:neuter:::	unregistered-lemma		є҆ди́н-омъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||nominative+accusative:dual:neuter:::	unregistered-lemma		є҆ди́н-ѣ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||nominative:plural:neuter:::	unregistered-lemma		є҆ди́н-ы
-paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||nominative:singular:neuter:::	unregistered-lemma		є҆ди́н-о
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||accusative:plural:neuter:::	engine-wrong-form	мꙋ́дра	мꙋдр-ѣ̑йша
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||dative+instrumental:dual:neuter:::	engine-wrong-form	мꙋ́дрыма	мꙋдр-ѣ́йшима
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||dative:plural:neuter:::	engine-wrong-form	мꙋ̑дрымъ	мꙋдр-ѣ́йшымъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||genitive+locative:dual:neuter:::	engine-wrong-form	мꙋ́дрꙋ	мꙋдр-ѣ̑йшꙋ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||genitive:plural:neuter:::	engine-wrong-form	мꙋ́дрыхъ	мꙋдр-ѣ́йшихъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||genitive:singular:neuter:::	engine-wrong-form	мꙋ́драгѡ	мꙋдр-ѣ́йша
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||instrumental:plural:neuter:::	engine-wrong-form	мꙋ́дрыми	мꙋдр-ѣ́йшими
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||locative:plural:neuter:::	engine-wrong-form	мꙋ́дрыхъ	мꙋдр-ѣ́йшихъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||nominative+accusative+vocative:dual:neuter:::	engine-wrong-accent	мꙋ́дрѣ	мꙋдр-ѣ̑йши
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́е (-ѣ́йше)||nominative+vocative:plural:neuter:::	engine-wrong-form	мꙋ́дра	мꙋдр-ѣ̑йша
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||accusative:plural:masculine:::	engine-wrong-form	мꙋ̑дрыѧ	мꙋдр-ѣ́йшѧ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||dative+instrumental:dual:masculine:::	engine-wrong-form	мꙋ́дрыма	мꙋдр-ѣ́йшима
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||dative:plural:masculine:::	engine-wrong-form	мꙋ̑дрымъ	мꙋдр-ѣ́йшымъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||genitive+locative:dual:masculine:::	engine-wrong-form	мꙋ́дрꙋ	мꙋдр-ѣ̑йшꙋ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||genitive:plural:masculine:::	engine-wrong-form	мꙋ́дрыхъ	мꙋдр-ѣ́йшихъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||genitive:singular:masculine:::	engine-wrong-form	мꙋ́драгѡ	мꙋдр-ѣ́йша
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||instrumental:plural:masculine:::	engine-wrong-form	мꙋ́дрыми	мꙋдр-ѣ́йшими
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||locative:plural:masculine:::	engine-wrong-form	мꙋ́дрыхъ	мꙋдр-ѣ́йшихъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||nominative+accusative+vocative:dual:masculine:::	engine-wrong-form	мꙋ́дра	мꙋдр-ѣ̑йша
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́й||nominative+vocative:plural:masculine:::	engine-wrong-form	мꙋ́дрїи	мꙋдр-ѣ̑йше (и)
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||accusative:plural:feminine:::	engine-wrong-form	мꙋ̑дрыѧ	мꙋдр-ѣ́йшѧ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||accusative:singular:feminine:::	engine-wrong-form	мꙋ́дрꙋю	мꙋдр-ѣ́йшꙋ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||dative+instrumental:dual:feminine:::	engine-wrong-form	мꙋ́дрыма	мꙋдр-ѣ́йшима
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||dative:plural:feminine:::	engine-wrong-form	мꙋ̑дрымъ	мꙋдр-ѣ́йшымъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||genitive+locative:dual:feminine:::	engine-wrong-form	мꙋ́дрꙋ	мꙋдр-ѣ̑йшꙋ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||genitive:plural:feminine:::	engine-wrong-form	мꙋ́дрыхъ	мꙋдр-ѣ́йшихъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||instrumental:plural:feminine:::	engine-wrong-form	мꙋ́дрыми	мꙋдр-ѣ́йшими
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||locative:plural:feminine:::	engine-wrong-form	мꙋ́дрыхъ	мꙋдр-ѣ́йшихъ
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||nominative+accusative+vocative:dual:feminine:::	engine-wrong-accent	мꙋ́дрѣ	мꙋдр-ѣ̑йши
+paradigm	§60. Склонение прилагательных сравнительной степени кратких|p060.htm|1|мꙋдр-ѣ́йши||nominative+vocative:plural:feminine:::	engine-wrong-form	мꙋ̑дрыѧ	мꙋдр-ѣ́йшѧ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||accusative:plural:feminine:::	unreviewed-cell		є҆ди̑н-а
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||accusative:singular:feminine:::	engine-wrong-form	є҆ди́нꙋ	є҆ди́н-ꙋю
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||dative+instrumental:dual:feminine:::	unreviewed-cell		є҆ди́н-ѣма
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||dative:plural:feminine:::	unreviewed-cell		є҆ди́н-ѣмъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||genitive+locative:dual:feminine:::	unreviewed-cell		є҆ди̑н-ою
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||genitive:plural:feminine:::	unreviewed-cell		є҆ди́н-ѣхъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||instrumental:plural:feminine:::	unreviewed-cell		є҆ди́н-ѣми
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||locative:plural:feminine:::	unreviewed-cell		є҆ди́н-ѣхъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||nominative+accusative:dual:feminine:::	unreviewed-cell		є҆ди́н-ѣ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-а||nominative:plural:feminine:::	unreviewed-cell		є҆ди̑н-а
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||accusative:plural:neuter:::	unreviewed-cell		є҆ди́н-ы
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||dative+instrumental:dual:neuter:::	unreviewed-cell		є҆ди́н-ѣма
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||dative:plural:neuter:::	unreviewed-cell		є҆ди́н-ѣмъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||genitive+locative:dual:neuter:::	unreviewed-cell		є҆ди̑н-ою
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||genitive:plural:neuter:::	unreviewed-cell		є҆ди́н-ѣхъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||instrumental:plural:neuter:::	unreviewed-cell		є҆ди́н-ѣми
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||locative:plural:neuter:::	unreviewed-cell		є҆ди́н-ѣхъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||nominative+accusative:dual:neuter:::	unreviewed-cell		є҆ди́н-ѣ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-о||nominative:plural:neuter:::	unreviewed-cell		є҆ди́н-ы
 paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-ъ||accusative:plural:masculine:::	unreviewed-cell		є҆ди́н-ы
 paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-ъ||dative+instrumental:dual:masculine:::	unreviewed-cell		є҆ди́н-ѣма
 paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-ъ||dative:plural:masculine:::	unreviewed-cell		є҆ди́н-ѣмъ
@@ -872,101 +594,56 @@ paradigm	§62. Склонение количественных числител�
 paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-ъ||locative:plural:masculine:::	unreviewed-cell		є҆ди́н-ѣхъ
 paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-ъ||nominative+accusative:dual:masculine:::	unreviewed-cell		є҆ди̑н-а
 paradigm	§62. Склонение количественных числительных простых|p062.htm|1|є҆ди́н-ъ||nominative:plural:masculine:::	unreviewed-cell		є҆ди́н-и
-paradigm	§62. Склонение количественных числительных простых|p062.htm|2|два̀, ѻ҆́ба | двѣ̀, ѻ҆́бѣ||dative+instrumental:dual:masculine+feminine+neuter:::	unregistered-lemma		двѣма̀, ѻ҆бѣ́ма
-paradigm	§62. Склонение количественных числительных простых|p062.htm|2|два̀, ѻ҆́ба | двѣ̀, ѻ҆́бѣ||genitive+locative:dual:masculine+feminine+neuter:::	unregistered-lemma		двою̀ или двꙋ̀, ѻ҆бою̀ (для всех родов)
-paradigm	§62. Склонение количественных числительных простых|p062.htm|2|два̀, ѻ҆́ба||nominative+accusative:dual:masculine:::	unregistered-lemma		два̀, ѻ҆́ба
-paradigm	§62. Склонение количественных числительных простых|p062.htm|2|двѣ̀, ѻ҆́бѣ||nominative+accusative:dual:feminine:::	unregistered-lemma		двѣ̀, ѻ҆́бѣ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|2|двѣ̀, ѻ҆́бѣ||nominative+accusative:dual:neuter:::	unregistered-lemma		двѣ̀, ѻ҆́бѣ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|3|трїѐ, трѝ||accusative:plural:masculine:::	unregistered-lemma		трїе́хъ, тре́хъ, трѝ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|3|трїѐ, трѝ||dative:plural:masculine:::	unregistered-lemma		трїе́мъ, тре́мъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|3|трїѐ, трѝ||genitive:plural:masculine:::	unregistered-lemma		трїе́хъ, тре́хъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|3|трїѐ, трѝ||instrumental:plural:masculine:::	unregistered-lemma		трїе́ми, тремѝ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|3|трїѐ, трѝ||locative:plural:masculine:::	unregistered-lemma		трїе́хъ, тре́хъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|3|трїѐ, трѝ||nominative:plural:masculine:::	unregistered-lemma		трїѐ, трѝ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|2|два̀, ѻ҆́ба | двѣ̀, ѻ҆́бѣ||dative+instrumental:dual:masculine+feminine+neuter:::	engine-wrong-form	двѣма̀	двѣма̀, ѻ҆бѣ́ма
+paradigm	§62. Склонение количественных числительных простых|p062.htm|2|два̀, ѻ҆́ба||nominative+accusative:dual:masculine:::	engine-wrong-form	два̀	два̀, ѻ҆́ба
+paradigm	§62. Склонение количественных числительных простых|p062.htm|2|двѣ̀, ѻ҆́бѣ||nominative+accusative:dual:feminine:::	engine-wrong-form	двѣ̀	двѣ̀, ѻ҆́бѣ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|2|двѣ̀, ѻ҆́бѣ||nominative+accusative:dual:neuter:::	engine-wrong-form	двѣ̀	двѣ̀, ѻ҆́бѣ
 paradigm	§62. Склонение количественных числительных простых|p062.htm|3|трѝ||instrumental:plural:feminine+neuter:::	engine-wrong-accent	трїе́ми	тре́ми
-paradigm	§62. Склонение количественных числительных простых|p062.htm|3|четы́ри (-е)||nominative:plural:feminine+neuter:::	unregistered-lemma		четы́ри (-е)
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число | окончания по прилагательным|accusative:plural::::	unregistered-lemma		десѧ́т-и (-е)
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число | окончания по прилагательным|instrumental:plural::::	unregistered-lemma		десѧт-ьмѝ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число | окончания по прилагательным|nominative:plural::::	unregistered-lemma		десѧ́т-и (-е)
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число|dative:plural::::	unregistered-lemma		десѧ́т-емъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число|genitive:plural::::	unregistered-lemma		десѧ́т-ъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число|locative:plural::::	unregistered-lemma		десѧ́т-ехъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число | окончания по прилагательным|accusative:plural::::	engine-wrong-accent	десѧтѝ	десѧ́т-и (-е)
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число | окончания по прилагательным|instrumental:plural::::	unreviewed-cell		десѧт-ьмѝ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число | окончания по прилагательным|nominative:plural::::	unreviewed-cell		десѧ́т-и (-е)
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число|dative:plural::::	unreviewed-cell		десѧ́т-емъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число|genitive:plural::::	unreviewed-cell		десѧ́т-ъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4||Множественное число|locative:plural::::	unreviewed-cell		десѧ́т-ехъ
 paradigm	§62. Склонение количественных числительных простых|p062.htm|4|де́сѧт-ь|Единственное число|accusative:singular::::	unreviewed-cell		де́сѧт-ь (-е)
 paradigm	§62. Склонение количественных числительных простых|p062.htm|4|де́сѧт-ь|Единственное число|genitive:singular::::	unreviewed-cell		десѧт-ѝ
 paradigm	§62. Склонение количественных числительных простых|p062.htm|4|де́сѧт-ь|Единственное число|instrumental:singular::::	unreviewed-cell		десѧт-їю̀
 paradigm	§62. Склонение количественных числительных простых|p062.htm|4|де́сѧт-ь|Единственное число|locative:singular::::	unreviewed-cell		десѧт-ѝ
 paradigm	§62. Склонение количественных числительных простых|p062.htm|4|де́сѧт-ь|Единственное число|nominative:singular::::	unreviewed-cell		де́сѧт-ь
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4|десѧ́т-и (-ѣ)|Двойственное число|dative+instrumental:dual::::	unregistered-lemma		десѧт-ьма̀
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4|десѧ́т-и (-ѣ)|Двойственное число|genitive+locative:dual::::	unregistered-lemma		десѧ́т-ꙋ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|4|десѧ́т-и (-ѣ)|Двойственное число|nominative+accusative:dual::::	unregistered-lemma		десѧ́т-и (-ѣ)
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|accusative:plural::::	unregistered-lemma		ста̑
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|dative:plural::::	unregistered-lemma		стѡ́мъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|genitive:plural::::	unregistered-lemma		сѡ́тъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|instrumental:plural::::	unregistered-lemma		сты̀
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|locative:plural::::	unregistered-lemma		стѣ́хъ
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|nominative:plural::::	unregistered-lemma		ста̑
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4|десѧ́т-и (-ѣ)|Двойственное число|dative+instrumental:dual::::	unreviewed-cell		десѧт-ьма̀
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4|десѧ́т-и (-ѣ)|Двойственное число|genitive+locative:dual::::	unreviewed-cell		десѧ́т-ꙋ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|4|десѧ́т-и (-ѣ)|Двойственное число|nominative+accusative:dual::::	unreviewed-cell		десѧ́т-и (-ѣ)
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|accusative:plural::::	unreviewed-cell		ста̑
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|dative:plural::::	unreviewed-cell		стѡ́мъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|instrumental:plural::::	unreviewed-cell		сты̀
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|locative:plural::::	unreviewed-cell		стѣ́хъ
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|ста̑|Множественное число|nominative:plural::::	unreviewed-cell		ста̑
 paradigm	§62. Склонение количественных числительных простых|p062.htm|5|сто̀|Единственное число|accusative:singular::::	unreviewed-cell		сто̀
 paradigm	§62. Склонение количественных числительных простых|p062.htm|5|сто̀|Единственное число|dative:singular::::	unreviewed-cell		стꙋ̀
 paradigm	§62. Склонение количественных числительных простых|p062.htm|5|сто̀|Единственное число|genitive:singular::::	unreviewed-cell		ста̀
 paradigm	§62. Склонение количественных числительных простых|p062.htm|5|сто̀|Единственное число|instrumental:singular::::	unreviewed-cell		сто́мъ
 paradigm	§62. Склонение количественных числительных простых|p062.htm|5|сто̀|Единственное число|locative:singular::::	unreviewed-cell		стѣ̀
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|стѣ̑|Двойственное число|dative+instrumental:dual::::	unregistered-lemma		сто́ма
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|стѣ̑|Двойственное число|genitive+locative:dual::::	unregistered-lemma		стꙋ̑
-paradigm	§62. Склонение количественных числительных простых|p062.htm|5|стѣ̑|Двойственное число|nominative+accusative:dual::::	unregistered-lemma		стѣ̑
-paradigm	§81|p081.htm|1||будущее простое|:dual::first:future:	unregistered-lemma		бꙋ́дева (-ѣ)
-paradigm	§81|p081.htm|1||будущее простое|:dual::second:future:	unregistered-lemma		бꙋ́дета (-ѣ)
-paradigm	§81|p081.htm|1||будущее простое|:dual::third:future:	unregistered-lemma		бꙋ́дета (-ѣ)
-paradigm	§81|p081.htm|1||будущее простое|:plural::first:future:	unregistered-lemma		бꙋ́демъ
-paradigm	§81|p081.htm|1||будущее простое|:plural::second:future:	unregistered-lemma		бꙋ́дете
-paradigm	§81|p081.htm|1||будущее простое|:plural::third:future:	unregistered-lemma		бꙋ́дꙋтъ
-paradigm	§81|p081.htm|1||будущее простое|:singular::first:future:	unregistered-lemma		бꙋ́дꙋ
-paradigm	§81|p081.htm|1||будущее простое|:singular::second:future:	unregistered-lemma		бꙋ́деши
-paradigm	§81|p081.htm|1||будущее простое|:singular::third:future:	unregistered-lemma		бꙋ́детъ
-paradigm	§81|p081.htm|1||будущее сложное|:dual::first:future:	unregistered-lemma		хо́щева (-ѣ) бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:dual::second:future:	unregistered-lemma		хо́щета (-ѣ) бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:dual::third:future:	unregistered-lemma		хо́щета (-ѣ) бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:plural::first:future:	unregistered-lemma		хо́щемъ бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:plural::second:future:	unregistered-lemma		хо́щете бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:plural::third:future:	unregistered-lemma		хотѧ́тъ бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:singular::first:future:	unregistered-lemma		хощꙋ̀ бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:singular::second:future:	unregistered-lemma		хо́щеши бы́ти
-paradigm	§81|p081.htm|1||будущее сложное|:singular::third:future:	unregistered-lemma		хо́щетъ бы́ти
-paradigm	§81|p081.htm|1||настоящее время|:dual::first:present:	unregistered-lemma		є҆сва̀ (-ѣ̀)
-paradigm	§81|p081.htm|1||настоящее время|:dual::second:present:	unregistered-lemma		є҆ста̀ (-ѣ̀)
-paradigm	§81|p081.htm|1||настоящее время|:dual::third:present:	unregistered-lemma		є҆ста̀ (-ѣ̀)
-paradigm	§81|p081.htm|1||настоящее время|:plural::first:present:	unregistered-lemma		є҆смы̀
-paradigm	§81|p081.htm|1||настоящее время|:plural::second:present:	unregistered-lemma		є҆стѐ
-paradigm	§81|p081.htm|1||настоящее время|:plural::third:present:	unregistered-lemma		сꙋ́ть
-paradigm	§81|p081.htm|1||настоящее время|:singular::first:present:	unregistered-lemma		є҆́смь
-paradigm	§81|p081.htm|1||настоящее время|:singular::second:present:	unregistered-lemma		є҆сѝ
-paradigm	§81|p081.htm|1||настоящее время|:singular::third:present:	unregistered-lemma		є҆́сть
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:dual::first:aorist:	unregistered-lemma		бѣ́хова (-ѣ)
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:dual::second:aorist:	unregistered-lemma		бѣ́ста (-ѣ)
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:dual::third:aorist:	unregistered-lemma		бѣ́ста (-ѣ)
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:plural::first:aorist:	unregistered-lemma		бѣ́хомъ
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:plural::second:aorist:	unregistered-lemma		бѣ́сте
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:plural::third:aorist:	unregistered-lemma		бѣ́ша
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:singular::first:aorist:	unregistered-lemma		бѣ́хъ
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:singular::second:aorist:	unregistered-lemma		бѣ̀
-paradigm	§81|p081.htm|2||аорист несовершенного вида|:singular::third:aorist:	unregistered-lemma		бѣ̀
-paradigm	§81|p081.htm|2||аорист совершенного вида|:dual::first:aorist:	unregistered-lemma		бы́хова (-ѣ)
-paradigm	§81|p081.htm|2||аорист совершенного вида|:dual::second:aorist:	unregistered-lemma		бы́ста (-ѣ)
-paradigm	§81|p081.htm|2||аорист совершенного вида|:dual::third:aorist:	unregistered-lemma		бы́ста (-ѣ)
-paradigm	§81|p081.htm|2||аорист совершенного вида|:plural::first:aorist:	unregistered-lemma		бы́хомъ
-paradigm	§81|p081.htm|2||аорист совершенного вида|:plural::second:aorist:	unregistered-lemma		бы́сте
-paradigm	§81|p081.htm|2||аорист совершенного вида|:plural::third:aorist:	unregistered-lemma		бы́ша
-paradigm	§81|p081.htm|2||аорист совершенного вида|:singular::first:aorist:	unregistered-lemma		бы́хъ
-paradigm	§81|p081.htm|2||аорист совершенного вида|:singular::second:aorist:	unregistered-lemma		бы́сть (бы̀)
-paradigm	§81|p081.htm|2||аорист совершенного вида|:singular::third:aorist:	unregistered-lemma		бы́сть (бы̀)
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:dual::first:imperfect:	unregistered-lemma		бѧ́хова (-ѣ)
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:dual::second:imperfect:	unregistered-lemma		бѧ́ста (-ѣ)
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:dual::third:imperfect:	unregistered-lemma		бѧ́ста (-ѣ)
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:plural::first:imperfect:	unregistered-lemma		бѧ́хомъ
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:plural::second:imperfect:	unregistered-lemma		бѧ́сте
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:plural::third:imperfect:	unregistered-lemma		бѧ́хꙋ
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:singular::first:imperfect:	unregistered-lemma		бѧ́хъ
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:singular::second:imperfect:	unregistered-lemma		бѧ́ше
-paradigm	§81|p081.htm|2||имперфект (преходящее)|:singular::third:imperfect:	unregistered-lemma		бѧ́ше
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|стѣ̑|Двойственное число|dative+instrumental:dual::::	unreviewed-cell		сто́ма
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|стѣ̑|Двойственное число|genitive+locative:dual::::	unreviewed-cell		стꙋ̑
+paradigm	§62. Склонение количественных числительных простых|p062.htm|5|стѣ̑|Двойственное число|nominative+accusative:dual::::	unreviewed-cell		стѣ̑
+paradigm	§81|p081.htm|1||будущее сложное|:dual::first:future:	engine-wrong-form	бꙋ́дева	хо́щева (-ѣ) бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:dual::second:future:	engine-wrong-form	бꙋ́дета	хо́щета (-ѣ) бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:dual::third:future:	engine-wrong-form	бꙋ́дета	хо́щета (-ѣ) бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:plural::first:future:	engine-wrong-form	бꙋ́демъ	хо́щемъ бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:plural::second:future:	engine-wrong-form	бꙋ́дете	хо́щете бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:plural::third:future:	engine-wrong-form	бꙋ́дꙋтъ	хотѧ́тъ бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:singular::first:future:	engine-wrong-form	бꙋ́дꙋ	хощꙋ̀ бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:singular::second:future:	engine-wrong-form	бꙋ́деши	хо́щеши бы́ти
+paradigm	§81|p081.htm|1||будущее сложное|:singular::third:future:	engine-wrong-form	бꙋ́детъ	хо́щетъ бы́ти
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:dual::first:aorist:	engine-wrong-form	бы́хова	бѣ́хова (-ѣ)
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:dual::second:aorist:	engine-wrong-form	бы́ста	бѣ́ста (-ѣ)
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:dual::third:aorist:	engine-wrong-form	бы́ста	бѣ́ста (-ѣ)
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:plural::first:aorist:	engine-wrong-form	бы́хомъ	бѣ́хомъ
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:plural::second:aorist:	engine-wrong-form	бы́сте	бѣ́сте
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:plural::third:aorist:	engine-wrong-form	бы́ша	бѣ́ша
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:singular::first:aorist:	engine-wrong-form	бы́хъ	бѣ́хъ
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:singular::second:aorist:	engine-wrong-form	бы̀	бѣ̀
+paradigm	§81|p081.htm|2||аорист несовершенного вида|:singular::third:aorist:	engine-wrong-form	бы̀	бѣ̀
 paradigm	§82. Изъявительное наклонение. Настоящее время|p082.htm|1|вел-ѣ́-ти||:dual::first:present:	unregistered-lemma		вел-и́-ва, -ѣ
 paradigm	§82. Изъявительное наклонение. Настоящее время|p082.htm|1|вел-ѣ́-ти||:dual::second:present:	unregistered-lemma		вел-и́-та, -ѣ
 paradigm	§82. Изъявительное наклонение. Настоящее время|p082.htm|1|вел-ѣ́-ти||:dual::third:present:	unregistered-lemma		вел-и́-та, -ѣ
@@ -1107,105 +784,103 @@ paradigm	§93. Повелительное наклонение|p093.htm|3|ст�
 paradigm	§93. Повелительное наклонение|p093.htm|3|стꙋча́-ти — стꙋч-а́тъ||:plural::second::imperative	unregistered-lemma		стꙋчи́те
 paradigm	§93. Повелительное наклонение|p093.htm|3|стꙋча́-ти — стꙋч-а́тъ||:singular::second::imperative	unregistered-lemma		стꙋчѝ
 paradigm	§93. Повелительное наклонение|p093.htm|3|стꙋча́-ти — стꙋч-а́тъ||:singular::third::imperative	unregistered-lemma		стꙋчѝ
-paradigm	§97|p097.htm|1|||:dual:feminine:::l-participle	unregistered-lemma		неслѝ
-paradigm	§97|p097.htm|1|||:dual:masculine:::l-participle	unregistered-lemma		несла̑
-paradigm	§97|p097.htm|1|||:dual:neuter:::l-participle	unregistered-lemma		неслѝ
-paradigm	§97|p097.htm|1|||:plural:feminine:::l-participle	unregistered-lemma		неслѝ
-paradigm	§97|p097.htm|1|||:plural:masculine:::l-participle	unregistered-lemma		неслѝ
-paradigm	§97|p097.htm|1|||:plural:neuter:::l-participle	unregistered-lemma		неслѝ
-paradigm	§97|p097.htm|1|||:singular:feminine:::l-participle	unregistered-lemma		несла̀
-paradigm	§97|p097.htm|1|||:singular:masculine:::l-participle	unregistered-lemma		не́слъ
-paradigm	§97|p097.htm|1|||:singular:neuter:::l-participle	unregistered-lemma		несло̀
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||accusative:plural:neuter:::	unregistered-lemma		твѡрѧ́щ-а
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||accusative:singular:neuter:::	unregistered-lemma		творѧ́щ-е
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||dative+instrumental:dual:neuter:::	unregistered-lemma		творѧ́щ-ема
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||dative:plural:neuter:::	unregistered-lemma		творѧ́щ-ымъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||dative:singular:neuter:::	unregistered-lemma		творѧ́щ-ꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||genitive+locative:dual:neuter:::	unregistered-lemma		твѡрѧ́щ-ꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||genitive:plural:neuter:::	unregistered-lemma		творѧ́щ-ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||genitive:singular:neuter:::	unregistered-lemma		творѧ́щ-а
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||instrumental:plural:neuter:::	unregistered-lemma		творѧ́щ-ими
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||instrumental:singular:neuter:::	unregistered-lemma		творѧ́щ-имъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||locative:plural:neuter:::	unregistered-lemma		творѧ́щ-ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||locative:singular:neuter:::	unregistered-lemma		творѧ́щ-емъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||nominative+accusative:dual:neuter:::	unregistered-lemma		творѧ́щ-ѣ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||nominative:plural:neuter:::	unregistered-lemma		твѡрѧ́щ-а
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||nominative:singular:neuter:::	unregistered-lemma		творѧ̀, -ѧ́щ-е
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||accusative:plural:masculine:::	unregistered-lemma		творѧ́щ-ѧ, -ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||accusative:singular:masculine:::	unregistered-lemma		творѧ́щ-ъ, -а
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||dative+instrumental:dual:masculine:::	unregistered-lemma		творѧ́щ-ема
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||dative:plural:masculine:::	unregistered-lemma		творѧ́щ-ымъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||dative:singular:masculine:::	unregistered-lemma		творѧ́щ-ꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||genitive+locative:dual:masculine:::	unregistered-lemma		твѡрѧ́щ-ꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||genitive:plural:masculine:::	unregistered-lemma		творѧ́щ-ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||genitive:singular:masculine:::	unregistered-lemma		творѧ́щ-а
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||instrumental:plural:masculine:::	unregistered-lemma		творѧ́щ-ими
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||instrumental:singular:masculine:::	unregistered-lemma		творѧ́щ-имъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||locative:plural:masculine:::	unregistered-lemma		творѧ́щ-ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||locative:singular:masculine:::	unregistered-lemma		творѧ́щ-емъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||nominative+accusative:dual:masculine:::	unregistered-lemma		твѡрѧ́щ-а
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||nominative:plural:masculine:::	unregistered-lemma		твѡрѧ́щ-е
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||nominative:singular:masculine:::	unregistered-lemma		творѧ̀, -ѧ́щ-ь
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||accusative:plural:feminine:::	unregistered-lemma		творѧ́щ-ѧ, -ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||accusative:singular:feminine:::	unregistered-lemma		творѧ́щ-ꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||dative+instrumental:dual:feminine:::	unregistered-lemma		творѧ́щ-ема
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||dative:plural:feminine:::	unregistered-lemma		творѧ́щ-ымъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||dative:singular:feminine:::	unregistered-lemma		творѧ́щ-и
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||genitive+locative:dual:feminine:::	unregistered-lemma		твѡрѧ́щ-ꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||genitive:plural:feminine:::	unregistered-lemma		творѧ́щ-ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||genitive:singular:feminine:::	unregistered-lemma		творѧ́щ-и
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||instrumental:plural:feminine:::	unregistered-lemma		творѧ́щ-ими
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||instrumental:singular:feminine:::	unregistered-lemma		творѧ́щ-ею
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||locative:plural:feminine:::	unregistered-lemma		творѧ́щ-ихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||locative:singular:feminine:::	unregistered-lemma		творѧ́щ-и
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||nominative+accusative:dual:feminine:::	unregistered-lemma		творѧ́щ-ѣ
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||nominative:plural:feminine:::	unregistered-lemma		творѧ́щ-ѧ (-е)
-paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||nominative:singular:feminine:::	unregistered-lemma		творѧ́щ-и
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||accusative:plural:masculine:::	unregistered-lemma		творѧ́щыѧ (-ихъ)
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||accusative:singular:masculine:::	unregistered-lemma		творѧ́щїй (-аго)
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||dative+instrumental:dual:masculine:::	unregistered-lemma		творѧ́щима
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||dative:plural:masculine:::	unregistered-lemma		творѧ́щымъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||dative:singular:masculine:::	unregistered-lemma		творѧ́щемꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||genitive+locative:dual:masculine:::	unregistered-lemma		творѧ̑щꙋю
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||genitive:plural:masculine:::	unregistered-lemma		творѧ́щихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||genitive:singular:masculine:::	unregistered-lemma		творѧ́щагѡ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||instrumental:plural:masculine:::	unregistered-lemma		творѧ́щими
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||instrumental:singular:masculine:::	unregistered-lemma		творѧ́щимъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||locative:plural:masculine:::	unregistered-lemma		творѧ́щихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||locative:singular:masculine:::	unregistered-lemma		творѧ́щемъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||nominative+accusative:dual:masculine:::	unregistered-lemma		творѧ̑щаѧ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||nominative:plural:masculine:::	unregistered-lemma		творѧ́щїи
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||nominative:singular:masculine:::	unregistered-lemma		творѧ́й
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||accusative:plural:feminine:::	unregistered-lemma		творѧ́щыѧ (-ихъ)
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||accusative:singular:feminine:::	unregistered-lemma		творѧ́щꙋю
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||dative+instrumental:dual:feminine:::	unregistered-lemma		творѧ́щима
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||dative:plural:feminine:::	unregistered-lemma		творѧ́щымъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||dative:singular:feminine:::	unregistered-lemma		творѧ́щей
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||genitive+locative:dual:feminine:::	unregistered-lemma		творѧ̑щꙋю
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||genitive:plural:feminine:::	unregistered-lemma		творѧ́щихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||genitive:singular:feminine:::	unregistered-lemma		творѧ́щїѧ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||instrumental:plural:feminine:::	unregistered-lemma		творѧ́щими
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||instrumental:singular:feminine:::	unregistered-lemma		творѧ́щею
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||locative:plural:feminine:::	unregistered-lemma		творѧ́щихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||locative:singular:feminine:::	unregistered-lemma		творѧ́щей
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||nominative+accusative:dual:feminine:::	unregistered-lemma		творѧ́щїи
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||nominative:plural:feminine:::	unregistered-lemma		творѧ́щыѧ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||nominative:singular:feminine:::	unregistered-lemma		творѧ́щаѧ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||accusative:plural:neuter:::	unregistered-lemma		творѧ̑щаѧ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||accusative:singular:neuter:::	unregistered-lemma		творѧ́щее
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||dative+instrumental:dual:neuter:::	unregistered-lemma		творѧ́щима
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||dative:plural:neuter:::	unregistered-lemma		творѧ́щымъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||dative:singular:neuter:::	unregistered-lemma		творѧ́щемꙋ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||genitive+locative:dual:neuter:::	unregistered-lemma		творѧ̑щꙋю
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||genitive:plural:neuter:::	unregistered-lemma		творѧ́щихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||genitive:singular:neuter:::	unregistered-lemma		творѧ́щагѡ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||instrumental:plural:neuter:::	unregistered-lemma		творѧ́щими
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||instrumental:singular:neuter:::	unregistered-lemma		творѧ́щимъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||locative:plural:neuter:::	unregistered-lemma		творѧ́щихъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||locative:singular:neuter:::	unregistered-lemma		творѧ́щемъ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||nominative+accusative:dual:neuter:::	unregistered-lemma		творѧ́щїи
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||nominative:plural:neuter:::	unregistered-lemma		творѧ̑щаѧ
-paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||nominative:singular:neuter:::	unregistered-lemma		творѧ́щее
+paradigm	§97|p097.htm|1|||:dual:feminine:::l-participle	unreviewed-cell		неслѝ
+paradigm	§97|p097.htm|1|||:dual:masculine:::l-participle	unreviewed-cell		несла̑
+paradigm	§97|p097.htm|1|||:dual:neuter:::l-participle	unreviewed-cell		неслѝ
+paradigm	§97|p097.htm|1|||:plural:feminine:::l-participle	unreviewed-cell		неслѝ
+paradigm	§97|p097.htm|1|||:plural:masculine:::l-participle	unreviewed-cell		неслѝ
+paradigm	§97|p097.htm|1|||:plural:neuter:::l-participle	unreviewed-cell		неслѝ
+paradigm	§97|p097.htm|1|||:singular:feminine:::l-participle	unreviewed-cell		несла̀
+paradigm	§97|p097.htm|1|||:singular:masculine:::l-participle	unreviewed-cell		не́слъ
+paradigm	§97|p097.htm|1|||:singular:neuter:::l-participle	unreviewed-cell		несло̀
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||accusative:plural:neuter:::	unreviewed-cell		твѡрѧ́щ-а
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||accusative:singular:neuter:::	unreviewed-cell		творѧ́щ-е
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||dative+instrumental:dual:neuter:::	unreviewed-cell		творѧ́щ-ема
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||dative:plural:neuter:::	unreviewed-cell		творѧ́щ-ымъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||dative:singular:neuter:::	unreviewed-cell		творѧ́щ-ꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||genitive+locative:dual:neuter:::	unreviewed-cell		твѡрѧ́щ-ꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||genitive:plural:neuter:::	unreviewed-cell		творѧ́щ-ихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||genitive:singular:neuter:::	unreviewed-cell		творѧ́щ-а
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||instrumental:plural:neuter:::	unreviewed-cell		творѧ́щ-ими
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||instrumental:singular:neuter:::	unreviewed-cell		творѧ́щ-имъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||locative:plural:neuter:::	unreviewed-cell		творѧ́щ-ихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||locative:singular:neuter:::	unreviewed-cell		творѧ́щ-емъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||nominative+accusative:dual:neuter:::	unreviewed-cell		творѧ́щ-ѣ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||nominative:plural:neuter:::	unreviewed-cell		твѡрѧ́щ-а
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-е||nominative:singular:neuter:::	engine-wrong-form	творѧ̀	творѧ̀, -ѧ́щ-е
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||accusative:plural:masculine:::	unreviewed-cell		творѧ́щ-ѧ, -ихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||accusative:singular:masculine:::	unreviewed-cell		творѧ́щ-ъ, -а
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||dative+instrumental:dual:masculine:::	unreviewed-cell		творѧ́щ-ема
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||dative:plural:masculine:::	unreviewed-cell		творѧ́щ-ымъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||dative:singular:masculine:::	unreviewed-cell		творѧ́щ-ꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||genitive+locative:dual:masculine:::	unreviewed-cell		твѡрѧ́щ-ꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||genitive:plural:masculine:::	unreviewed-cell		творѧ́щ-ихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||genitive:singular:masculine:::	unreviewed-cell		творѧ́щ-а
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||instrumental:plural:masculine:::	unreviewed-cell		творѧ́щ-ими
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||instrumental:singular:masculine:::	unreviewed-cell		творѧ́щ-имъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||locative:singular:masculine:::	unreviewed-cell		творѧ́щ-емъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||nominative+accusative:dual:masculine:::	unreviewed-cell		твѡрѧ́щ-а
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||nominative:plural:masculine:::	engine-wrong-form	творѧ́ще	твѡрѧ́щ-е
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ̀, -ѧ́щ-ь||nominative:singular:masculine:::	engine-wrong-form	творѧ̀	творѧ̀, -ѧ́щ-ь
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||accusative:plural:feminine:::	unreviewed-cell		творѧ́щ-ѧ, -ихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||accusative:singular:feminine:::	unreviewed-cell		творѧ́щ-ꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||dative+instrumental:dual:feminine:::	unreviewed-cell		творѧ́щ-ема
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||dative:plural:feminine:::	unreviewed-cell		творѧ́щ-ымъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||dative:singular:feminine:::	unreviewed-cell		творѧ́щ-и
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||genitive+locative:dual:feminine:::	unreviewed-cell		твѡрѧ́щ-ꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||genitive:plural:feminine:::	unreviewed-cell		творѧ́щ-ихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||genitive:singular:feminine:::	unreviewed-cell		творѧ́щ-и
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||instrumental:plural:feminine:::	unreviewed-cell		творѧ́щ-ими
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||instrumental:singular:feminine:::	unreviewed-cell		творѧ́щ-ею
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||locative:plural:feminine:::	unreviewed-cell		творѧ́щ-ихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||locative:singular:feminine:::	unreviewed-cell		творѧ́щ-и
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||nominative+accusative:dual:feminine:::	unreviewed-cell		творѧ́щ-ѣ
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||nominative:plural:feminine:::	unreviewed-cell		творѧ́щ-ѧ (-е)
+paradigm	§98. Склонение действительных причастий|p098.htm|1|творѧ́щ-и||nominative:singular:feminine:::	unreviewed-cell		творѧ́щ-и
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||accusative:plural:masculine:::	unreviewed-cell		творѧ́щыѧ (-ихъ)
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||accusative:singular:masculine:::	unreviewed-cell		творѧ́щїй (-аго)
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||dative+instrumental:dual:masculine:::	unreviewed-cell		творѧ́щима
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||dative:plural:masculine:::	unreviewed-cell		творѧ́щымъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||dative:singular:masculine:::	unreviewed-cell		творѧ́щемꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||genitive+locative:dual:masculine:::	unreviewed-cell		творѧ̑щꙋю
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||genitive:plural:masculine:::	unreviewed-cell		творѧ́щихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||genitive:singular:masculine:::	unreviewed-cell		творѧ́щагѡ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||instrumental:plural:masculine:::	unreviewed-cell		творѧ́щими
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||instrumental:singular:masculine:::	unreviewed-cell		творѧ́щимъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||locative:singular:masculine:::	unreviewed-cell		творѧ́щемъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||nominative+accusative:dual:masculine:::	unreviewed-cell		творѧ̑щаѧ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||nominative:plural:masculine:::	engine-wrong-form	творѧ́ще	творѧ́щїи
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́й||nominative:singular:masculine:::	engine-wrong-form	творѧ̀	творѧ́й
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||accusative:plural:feminine:::	unreviewed-cell		творѧ́щыѧ (-ихъ)
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||accusative:singular:feminine:::	unreviewed-cell		творѧ́щꙋю
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||dative+instrumental:dual:feminine:::	unreviewed-cell		творѧ́щима
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||dative:plural:feminine:::	unreviewed-cell		творѧ́щымъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||dative:singular:feminine:::	unreviewed-cell		творѧ́щей
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||genitive+locative:dual:feminine:::	unreviewed-cell		творѧ̑щꙋю
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||genitive:plural:feminine:::	unreviewed-cell		творѧ́щихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||genitive:singular:feminine:::	unreviewed-cell		творѧ́щїѧ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||instrumental:plural:feminine:::	unreviewed-cell		творѧ́щими
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||instrumental:singular:feminine:::	unreviewed-cell		творѧ́щею
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||locative:plural:feminine:::	unreviewed-cell		творѧ́щихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||locative:singular:feminine:::	unreviewed-cell		творѧ́щей
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||nominative+accusative:dual:feminine:::	unreviewed-cell		творѧ́щїи
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||nominative:plural:feminine:::	unreviewed-cell		творѧ́щыѧ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щаѧ||nominative:singular:feminine:::	unreviewed-cell		творѧ́щаѧ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||accusative:plural:neuter:::	unreviewed-cell		творѧ̑щаѧ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||accusative:singular:neuter:::	unreviewed-cell		творѧ́щее
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||dative+instrumental:dual:neuter:::	unreviewed-cell		творѧ́щима
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||dative:plural:neuter:::	unreviewed-cell		творѧ́щымъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||dative:singular:neuter:::	unreviewed-cell		творѧ́щемꙋ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||genitive+locative:dual:neuter:::	unreviewed-cell		творѧ̑щꙋю
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||genitive:plural:neuter:::	unreviewed-cell		творѧ́щихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||genitive:singular:neuter:::	unreviewed-cell		творѧ́щагѡ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||instrumental:plural:neuter:::	unreviewed-cell		творѧ́щими
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||instrumental:singular:neuter:::	unreviewed-cell		творѧ́щимъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||locative:plural:neuter:::	unreviewed-cell		творѧ́щихъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||locative:singular:neuter:::	unreviewed-cell		творѧ́щемъ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||nominative+accusative:dual:neuter:::	unreviewed-cell		творѧ́щїи
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||nominative:plural:neuter:::	unreviewed-cell		творѧ̑щаѧ
+paradigm	§98. Склонение действительных причастий|p098.htm|2|творѧ́щее||nominative:singular:neuter:::	engine-wrong-form	творѧ̀	творѧ́щее
 token	Є҆́ллини	unregistered-lemma		Є҆́ллини
 token	Є҆́ллинѡмъ	unregistered-lemma		Є҆́ллинѡмъ
 token	Є҆́млеши	unregistered-lemma		Є҆́млеши

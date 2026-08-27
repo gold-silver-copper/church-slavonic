@@ -304,6 +304,7 @@ pub(crate) fn validate_accent_scope_code(path: &Path, line: usize, value: &str) 
         // arms a pronoun accent contract could be compiled but never authored.
         ["pronoun", numbers, cases] => (*numbers, Some(*cases)),
         ["numeral", numbers] => (*numbers, None),
+        ["numeral", numbers, cases] => (*numbers, Some(*cases)),
         ["adjective", form, comparison, numbers]
             if matches!(*form, "short" | "long")
                 && matches!(*comparison, "positive" | "comparative" | "superlative") =>
@@ -326,7 +327,31 @@ pub(crate) fn validate_accent_scope_code(path: &Path, line: usize, value: &str) 
         {
             (*numbers, None)
         }
+        ["finite", tense, numbers, persons]
+            if matches!(
+                *tense,
+                "present" | "future" | "past" | "imperfect" | "aorist"
+            ) && persons
+                .split(',')
+                .all(|person| matches!(person, "first" | "second" | "third")) =>
+        {
+            (*numbers, None)
+        }
         ["imperative" | "l-participle", numbers] => (*numbers, None),
+        ["imperative", numbers, persons]
+            if persons
+                .split(',')
+                .all(|person| matches!(person, "first" | "second" | "third")) =>
+        {
+            (*numbers, None)
+        }
+        ["l-participle", numbers, genders]
+            if genders
+                .split(',')
+                .all(|gender| matches!(gender, "masculine" | "feminine" | "neuter")) =>
+        {
+            (*numbers, None)
+        }
         _ => return invalid(path, line, "unknown accent-paradigm scope"),
     };
     validate_accent_numbers_and_cases(path, line, numbers, cases)

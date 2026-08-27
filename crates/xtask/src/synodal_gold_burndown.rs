@@ -38,11 +38,13 @@ use synodal_church_slavonic_core::{
 
 use crate::synodal_gold::{
     self, ParadigmOracleRow, Scope, TokenOracleRow, candidate_cell_keys, committed_gap,
-    paradigm_expected_variants, paradigm_lemma, strip_accents, surfaces_match,
+    paradigm_expected_variants, paradigm_lemma, resolve_paradigm_lexeme, strip_accents,
+    surfaces_match,
 };
 
 const HYPOTHESES_RELATIVE: &str = "reports/synodal-gold-hypotheses.tsv";
 const REJECTED_RELATIVE: &str = "reports/synodal-gold-rejected-hypotheses.tsv";
+pub(crate) const HUMAN_REVIEW_RELATIVE: &str = "reports/synodal-gold-human-review.tsv";
 const PONOMAR_SOURCE: &str = "ponomar-elizabeth-bible-2026-08-09";
 const ALYPY_SOURCE: &str = "alypy-gamanovich-grammar-web-2023";
 const PONOMAR_RELATIVE: &str = "data/intermediate/synodal/ponomar-elizabeth-bible-2026-08-09.jsonl";
@@ -61,6 +63,7 @@ struct ProposeOptions {
     min_cells: usize,
     top: usize,
     output: String,
+    oracle: Option<&'static str>,
 }
 
 fn parse_propose_options(
@@ -71,6 +74,7 @@ fn parse_propose_options(
         min_cells: 2,
         top: usize::MAX,
         output: HYPOTHESES_RELATIVE.to_owned(),
+        oracle: None,
     };
     while let Some(argument) = args.next() {
         match argument.as_str() {
@@ -78,6 +82,13 @@ fn parse_propose_options(
                 options
                     .classes
                     .insert(args.next().ok_or("--only requires a gap class")?);
+            }
+            "--oracle" => {
+                options.oracle = Some(match args.next().as_deref() {
+                    Some("token") => "token",
+                    Some("paradigm") => "paradigm",
+                    _ => return Err("--oracle takes token or paradigm".into()),
+                });
             }
             "--min-cells" => {
                 options.min_cells = args
@@ -105,6 +116,7 @@ pub(crate) fn propose(
     let proposal = propose_clusters(
         root,
         &options.classes,
+        options.oracle,
         options.min_cells,
         Budget {
             max_candidates: options.top,
@@ -215,6 +227,7 @@ pub(crate) fn inner_loop(
     let proposal = propose_clusters(
         root,
         &classes,
+        oracle,
         min_cells,
         Budget {
             max_candidates: top.unwrap_or(usize::MAX),
@@ -319,13 +332,19 @@ pub(crate) fn cell(
     args: &mut impl Iterator<Item = String>,
     root: &Path,
 ) -> Result<(), Box<dyn Error>> {
-    let arguments: Vec<String> = args.collect();
+    let mut arguments: Vec<String> = args.collect();
+    let expanded = arguments.iter().any(|argument| argument == "--expanded");
+    arguments.retain(|argument| argument != "--expanded");
     let [key, cells @ ..] = arguments.as_slice() else {
-        return Err("cell <lemma-or-id> [<cell-key>...]".into());
+        return Err("cell [--expanded] <lemma-or-id> [<cell-key>...]".into());
     };
     let _ = root;
     let liturgical = Inflector::builder()
-        .orthography(OrthographyProfile::SynodalLiturgical)
+        .orthography(if expanded {
+            OrthographyProfile::Expanded
+        } else {
+            OrthographyProfile::SynodalLiturgical
+        })
         .build();
     let id = if key.starts_with("synodal:") {
         synodal_church_slavonic::LexemeId::from(key.as_str())
@@ -446,11 +465,11 @@ fn spec_form(
 // ---------------------------------------------------------------------------
 
 #[derive(Clone, Debug)]
-struct ClassSpec {
-    pos: &'static str,
-    class: &'static str,
-    gender: &'static str,
-    aspect: &'static str,
+pub(crate) struct ClassSpec {
+    pub(crate) pos: &'static str,
+    pub(crate) class: &'static str,
+    pub(crate) gender: &'static str,
+    pub(crate) aspect: &'static str,
 }
 
 impl ClassSpec {
@@ -483,7 +502,7 @@ impl ClassSpec {
 /// The productive classes hypotheses may name. Lexically specific classes
 /// (the лорд/день/камень/дщерь shapes) and the closed pronoun, numeral, and
 /// determiner tables are not hypothesised: those are reviewed by hand.
-fn productive_classes() -> Vec<ClassSpec> {
+pub(crate) fn productive_classes() -> Vec<ClassSpec> {
     let mut classes = Vec::new();
     for (class, genders) in [
         ("first-hard-m", &["masculine"][..]),
@@ -630,7 +649,7 @@ fn aspect(code: &str) -> Aspect {
 /// probed ending matches a surface regardless of presentation. Used only to
 /// find candidates; every acceptance is exact (contract §3). One char maps
 /// to one char, so indices into the unfolded key stay valid.
-fn loose_key(value: &str) -> Vec<char> {
+pub(crate) fn loose_key(value: &str) -> Vec<char> {
     normalize_lookup_accentless(value)
         .chars()
         .map(|character| match character {
@@ -650,7 +669,7 @@ fn loose_key(value: &str) -> Vec<char> {
 /// broad on `ѻ` kept, because the registry spells ѻ-initial lemmas with it
 /// and the engine's initial presentation reproduces it from the stem. (The
 /// lookup projections fold ѻ, so they cannot supply stem letters.)
-fn surface_letters(value: &str) -> Vec<char> {
+pub(crate) fn surface_letters(value: &str) -> Vec<char> {
     use unicode_normalization::UnicodeNormalization;
     value
         .chars()
@@ -729,7 +748,7 @@ fn generate(spec: &Spec, inflector: Inflector, cell: GrammarCell) -> Option<Form
 }
 
 /// The cells a class can realise (the probe generates all of them).
-fn class_cells(class: &ClassSpec) -> Vec<GrammarCell> {
+pub(crate) fn class_cells(class: &ClassSpec) -> Vec<GrammarCell> {
     match class.pos {
         "noun" => NounCell::inventory(&[Animacy::Inanimate, Animacy::Animate])
             .into_iter()
@@ -838,7 +857,7 @@ fn probe_endings(classes: &[ClassSpec], inflector: Inflector) -> BTreeMap<String
 // ---------------------------------------------------------------------------
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum ClusterStatus {
+pub(crate) enum ClusterStatus {
     /// Class and accent paradigm reproduce every attested cell.
     Fit,
     /// Below the `--min-cells` floor: listed, never admitted automatically.
@@ -906,7 +925,7 @@ impl ClusterStatus {
 /// One attested gap cell the hypothesis must reproduce: a token surface with
 /// its candidate cells, or a paradigm-oracle row with its printed variants.
 #[derive(Clone, Debug)]
-struct AttestedCell {
+pub(crate) struct AttestedCell {
     oracle: &'static str,
     key: String,
     /// Accepted printed surfaces (one for a token; the Alypy variants for a
@@ -917,29 +936,29 @@ struct AttestedCell {
     evidence: Vec<String>,
 }
 
-#[derive(Clone, Debug)]
-struct AccentRuleSpec {
-    scope: String,
-    placement: String,
-    mark: String,
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct AccentRuleSpec {
+    pub(crate) scope: String,
+    pub(crate) placement: String,
+    pub(crate) mark: String,
 }
 
 #[derive(Clone, Debug)]
 pub(crate) struct Cluster {
-    id: String,
-    status: ClusterStatus,
-    class: ClassSpec,
-    lemma: String,
-    stem: String,
-    cells: Vec<AttestedCell>,
-    token_keys: Vec<String>,
-    paradigm_keys: Vec<String>,
-    accent: Vec<AccentRuleSpec>,
-    evidence: Vec<String>,
-    note: String,
+    pub(crate) id: String,
+    pub(crate) status: ClusterStatus,
+    pub(crate) class: ClassSpec,
+    pub(crate) lemma: String,
+    pub(crate) stem: String,
+    pub(crate) cells: Vec<AttestedCell>,
+    pub(crate) token_keys: Vec<String>,
+    pub(crate) paradigm_keys: Vec<String>,
+    pub(crate) accent: Vec<AccentRuleSpec>,
+    pub(crate) evidence: Vec<String>,
+    pub(crate) note: String,
 }
 
-fn cluster_id(class: &ClassSpec, lemma: &str, stem: &str) -> String {
+pub(crate) fn cluster_id(class: &ClassSpec, lemma: &str, stem: &str) -> String {
     let digest = Sha256::digest(
         format!(
             "{}|{}|{}|{}|{lemma}|{stem}",
@@ -984,12 +1003,14 @@ struct Proposal {
 fn propose_clusters(
     root: &Path,
     classes_in_scope: &BTreeSet<String>,
+    oracle_in_scope: Option<&'static str>,
     min_cells: usize,
     budget: Budget,
 ) -> Result<Proposal, Box<dyn Error>> {
     let committed = committed_gap(root)?;
     let token_rows = synodal_gold::load_token_oracle(root)?;
     let paradigm_rows = synodal_gold::load_paradigm_oracle(root)?;
+    let headwords = synodal_gold::load_paradigm_headwords(root)?;
     // Segmentation and lemma derivation run through caller-supplied
     // specifications in the expanded profile (the liturgical profile refuses
     // a specification without accent metadata); every acceptance below goes
@@ -1010,7 +1031,10 @@ fn propose_clusters(
         .map(|row| (row.surface.as_str(), row))
         .collect();
     for ((oracle, key), reason) in &committed {
-        if oracle != "token" || !classes_in_scope.contains(reason) {
+        if oracle != "token"
+            || !classes_in_scope.contains(reason)
+            || oracle_in_scope.is_some_and(|only| only != "token")
+        {
             continue;
         }
         let Some(row) = token_by_surface.get(key.as_str()) else {
@@ -1063,9 +1087,13 @@ fn propose_clusters(
     // of the row's part of speech is a candidate for the whole table.
     let mut tables: BTreeMap<(String, String), Vec<&ParadigmOracleRow>> = BTreeMap::new();
     for row in &paradigm_rows {
-        if !committed
-            .get(&("paradigm".to_owned(), row.key.clone()))
-            .is_some_and(|reason| classes_in_scope.contains(reason))
+        if oracle_in_scope.is_some_and(|only| only != "paradigm")
+            || !committed
+                .get(&("paradigm".to_owned(), row.key.clone()))
+                .is_some_and(|reason| classes_in_scope.contains(reason))
+            // A table whose headword already resolves (directly or through
+            // the reviewed headword assignments) needs no lexeme hypothesis.
+            || resolve_paradigm_lexeme(&headwords, row).is_some()
         {
             continue;
         }
@@ -1335,7 +1363,7 @@ fn hypothesis_lemma(spec: &Spec, class: &ClassSpec, inflector: Inflector) -> Opt
 /// placeholder rows, installed in-process so `form_by_id` generates a
 /// hypothesis exactly as the gate would generate an admitted lexeme
 /// (positional presentation, breathings, and accent paradigm included).
-struct ArtifactBuilder {
+pub(crate) struct ArtifactBuilder {
     lines: Vec<String>,
     lexemes: Vec<String>,
     accents: Vec<String>,
@@ -1345,7 +1373,7 @@ struct ArtifactBuilder {
 const PROBE_EVIDENCE: &str = "gold-probe";
 
 impl ArtifactBuilder {
-    fn load(root: &Path) -> Result<Self, Box<dyn Error>> {
+    pub(crate) fn load(root: &Path) -> Result<Self, Box<dyn Error>> {
         let content = fs::read_to_string(root.join(ARTIFACT_RELATIVE))?;
         Ok(Self {
             lines: content.lines().map(str::to_owned).collect(),
@@ -1364,7 +1392,7 @@ impl ArtifactBuilder {
         ));
     }
 
-    fn accent(&mut self, id: &str, rule: &AccentRuleSpec) {
+    pub(crate) fn accent(&mut self, id: &str, rule: &AccentRuleSpec) {
         self.accents.push(format!(
             "{id}\tsynodal-accent:{id}\t{}\t{}\t{}\t\t{PROBE_EVIDENCE}\t{PONOMAR_SOURCE}\tsynodal-gold propose\tsynodal-russian\tsynodal-russian",
             rule.scope, rule.placement, rule.mark
@@ -1373,7 +1401,7 @@ impl ArtifactBuilder {
 
     /// Composes the artifact, keeping every keyed table sorted by its first
     /// column (the runtime binary-searches them), and installs it.
-    fn install(&self) -> Result<(), Box<dyn Error>> {
+    pub(crate) fn install(&self) -> Result<(), Box<dyn Error>> {
         let mut output = String::new();
         let mut current: Option<&str> = None;
         let mut section: Vec<&str> = Vec::new();
@@ -2220,26 +2248,32 @@ fn print_propose_summary(proposal: &Proposal, output: &str, seconds: f64) {
 // Admission
 // ---------------------------------------------------------------------------
 
-struct Admission {
-    cluster: Cluster,
-    lexeme_id: String,
-    evidence_id: String,
-    candidate_id: String,
-    source_id: String,
-    citation: String,
+pub(crate) struct Admission {
+    pub(crate) cluster: Cluster,
+    pub(crate) lexeme_id: String,
+    pub(crate) evidence_id: String,
+    pub(crate) candidate_id: String,
+    pub(crate) source_id: String,
+    pub(crate) citation: String,
+    /// An accent-paradigm extension of an already registered lexeme: no
+    /// lexeme row is written, and only this admission's own accent rows
+    /// (by evidence id) are reverted on rejection.
+    pub(crate) accent_only: bool,
 }
 
 pub(crate) struct AdmitOutcome {
-    kept: Vec<String>,
-    rejected: Vec<(String, Vec<String>)>,
-    cleared_by_class: BTreeMap<(String, String), usize>,
-    residue_rows: usize,
-    replay_seconds: f64,
+    pub(crate) kept: Vec<String>,
+    pub(crate) rejected: Vec<(String, Vec<String>)>,
+    pub(crate) cleared_by_class: BTreeMap<(String, String), usize>,
+    pub(crate) residue_rows: usize,
+    pub(crate) replay_seconds: f64,
 }
 
 /// Passage/section → candidate id for the two gold sources, so every
 /// admission's evidence row links to a real candidate record.
-fn candidate_index(root: &Path) -> Result<BTreeMap<(String, String), String>, Box<dyn Error>> {
+pub(crate) fn candidate_index(
+    root: &Path,
+) -> Result<BTreeMap<(String, String), String>, Box<dyn Error>> {
     let mut index = BTreeMap::new();
     for (source, relative) in [
         (PONOMAR_SOURCE, PONOMAR_RELATIVE),
@@ -2307,8 +2341,20 @@ fn admit_batch(root: &Path, clusters: &[Cluster]) -> Result<AdmitOutcome, Box<dy
             source_id: source_id.to_owned(),
             citation,
             cluster: cluster.clone(),
+            accent_only: false,
         });
     }
+    land_admissions(root, admissions, rejected)
+}
+
+/// Writes the admissions, regenerates the registry, replays everything they
+/// reach, keeps the ones that clear their cluster without moving any other
+/// row's class, and reverts the rest into the rejected report.
+pub(crate) fn land_admissions(
+    root: &Path,
+    admissions: Vec<Admission>,
+    mut rejected: Vec<(String, Vec<String>)>,
+) -> Result<AdmitOutcome, Box<dyn Error>> {
     if admissions.is_empty() {
         return Ok(AdmitOutcome {
             kept: Vec::new(),
@@ -2319,6 +2365,11 @@ fn admit_batch(root: &Path, clusters: &[Cluster]) -> Result<AdmitOutcome, Box<dy
         });
     }
     let committed = committed_gap(root)?;
+    // Rows filed for human review are contract or evidence questions the
+    // oracle cannot settle; an admission may move their class (an accent
+    // paradigm that now generates the cell the printed comma-alternate
+    // blocks) without that counting as a regression.
+    let filed = human_review_keys(root)?;
     write_admissions(root, &admissions)?;
     regenerate_and_install(root)?;
     // The scope is everything an admission can touch: its cluster's cells
@@ -2360,7 +2411,8 @@ fn admit_batch(root: &Path, clusters: &[Cluster]) -> Result<AdmitOutcome, Box<dy
             }
             let regressed = committed
                 .get(&key)
-                .is_none_or(|reason| reason != row.reason);
+                .is_none_or(|reason| reason != row.reason)
+                && !filed.contains(&key);
             if in_cluster || regressed {
                 failures.push(format!(
                     "{}\t{}\t{}\t{}\t{}",
@@ -2387,9 +2439,11 @@ fn admit_batch(root: &Path, clusters: &[Cluster]) -> Result<AdmitOutcome, Box<dy
         .gap
         .iter()
         .filter(|row| {
+            let key = (row.oracle.to_owned(), row.key.clone());
             committed
-                .get(&(row.oracle.to_owned(), row.key.clone()))
+                .get(&key)
                 .is_none_or(|reason| reason != row.reason)
+                && !filed.contains(&key)
         })
         .map(|row| row.render())
         .collect();
@@ -2427,6 +2481,24 @@ fn admit_batch(root: &Path, clusters: &[Cluster]) -> Result<AdmitOutcome, Box<dy
     })
 }
 
+/// The (oracle, key) pairs filed in `reports/synodal-gold-human-review.tsv`.
+fn human_review_keys(root: &Path) -> Result<BTreeSet<(String, String)>, Box<dyn Error>> {
+    let path = root.join(HUMAN_REVIEW_RELATIVE);
+    let content = match fs::read_to_string(&path) {
+        Ok(content) => content,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(BTreeSet::new()),
+        Err(error) => return Err(format!("read {}: {error}", path.display()).into()),
+    };
+    Ok(content
+        .lines()
+        .filter(|line| line.starts_with("token\t") || line.starts_with("paradigm\t"))
+        .filter_map(|line| {
+            let mut fields = line.split('\t');
+            Some((fields.next()?.to_owned(), fields.next()?.to_owned()))
+        })
+        .collect())
+}
+
 /// Which admitted lexemes each failing row reaches: a token row through the
 /// analyser (the freshly installed registry), a paradigm row through its
 /// headword resolution.
@@ -2443,10 +2515,7 @@ fn attribute_rows(
         synodal_church_slavonic_dictionary::coverage::Analyzer::new(Inflector::default())
             .map_err(|error| format!("build analyzer: {error}"))?;
     let paradigm_rows = synodal_gold::load_paradigm_oracle(root)?;
-    let headwords: BTreeMap<&str, &str> = paradigm_rows
-        .iter()
-        .map(|row| (row.key.as_str(), row.headword.as_str()))
-        .collect();
+    let headwords = synodal_gold::load_paradigm_headwords(root)?;
     let mut attribution: Attribution = BTreeMap::new();
     for row in &replay.gap {
         let ids: BTreeSet<String> = match row.oracle {
@@ -2460,17 +2529,12 @@ fn attribute_rows(
                 .map(|analysis| analysis.lexeme.id().as_str().to_owned())
                 .filter(|id| admitted.contains(id.as_str()))
                 .collect(),
-            _ => headwords
-                .get(row.key.as_str())
-                .and_then(|headword| paradigm_lemma(headword))
-                .and_then(|lemma| {
-                    synodal_church_slavonic::lookup(&lemma)
-                        .or_else(|_| synodal_church_slavonic::lookup(&strip_accents(&lemma)))
-                        .ok()
-                })
+            _ => paradigm_rows
+                .iter()
+                .filter(|paradigm_row| paradigm_row.key == row.key)
+                .filter_map(|paradigm_row| resolve_paradigm_lexeme(&headwords, paradigm_row))
                 .map(|lexeme| lexeme.id().as_str().to_owned())
                 .filter(|id| admitted.contains(id.as_str()))
-                .into_iter()
                 .collect(),
         };
         if !ids.is_empty() {
@@ -2480,7 +2544,7 @@ fn attribute_rows(
     Ok(attribution)
 }
 
-fn print_admit_summary(outcome: &AdmitOutcome, seconds: f64) {
+pub(crate) fn print_admit_summary(outcome: &AdmitOutcome, seconds: f64) {
     println!(
         "synodal-gold admit: kept {} admissions ({} rules, {} residue rows), rejected {}; replay {:.1}s, total {seconds:.1}s",
         outcome.kept.len(),
@@ -2512,29 +2576,42 @@ fn write_admissions(root: &Path, admissions: &[Admission]) -> Result<(), Box<dyn
     let mut accents = String::new();
     for admission in admissions {
         let cluster = &admission.cluster;
-        let _ = writeln!(
-            lexemes,
-            "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tsynodal-russian",
-            admission.lexeme_id,
-            cluster.lemma,
-            cluster.class.pos,
-            cluster.class.class,
-            cluster.stem,
-            cluster.class.gender,
-            cluster.class.aspect,
-            admission.source_id
-        );
-        let _ = writeln!(
-            evidence,
-            "{}\t{}\t{}\t{}\treviewed\tsynodal-russian\tsynodal-gold admit: class {} reproduces every attested gold cell of this lexeme ({} cells; {}); accents from the printed cells.",
-            admission.evidence_id,
-            admission.candidate_id,
-            admission.source_id,
-            admission.citation,
-            cluster.class.class,
-            cluster.token_keys.len() + cluster.paradigm_keys.len(),
-            cluster.evidence.join(", ")
-        );
+        if admission.accent_only {
+            let _ = writeln!(
+                evidence,
+                "{}\t{}\t{}\t{}\treviewed\tsynodal-russian\tsynodal-gold refit: the printed table proves this accent paradigm for the registered lexeme ({} cells; {}); accents from the printed cells.",
+                admission.evidence_id,
+                admission.candidate_id,
+                admission.source_id,
+                admission.citation,
+                cluster.paradigm_keys.len(),
+                cluster.evidence.join(", ")
+            );
+        } else {
+            let _ = writeln!(
+                lexemes,
+                "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tsynodal-russian",
+                admission.lexeme_id,
+                cluster.lemma,
+                cluster.class.pos,
+                cluster.class.class,
+                cluster.stem,
+                cluster.class.gender,
+                cluster.class.aspect,
+                admission.source_id
+            );
+            let _ = writeln!(
+                evidence,
+                "{}\t{}\t{}\t{}\treviewed\tsynodal-russian\tsynodal-gold admit: class {} reproduces every attested gold cell of this lexeme ({} cells; {}); accents from the printed cells.",
+                admission.evidence_id,
+                admission.candidate_id,
+                admission.source_id,
+                admission.citation,
+                cluster.class.class,
+                cluster.token_keys.len() + cluster.paradigm_keys.len(),
+                cluster.evidence.join(", ")
+            );
+        }
         for rule in &cluster.accent {
             let _ = writeln!(
                 accents,
@@ -2571,26 +2648,27 @@ fn append(path: &Path, rows: &str) -> Result<(), Box<dyn Error>> {
 
 /// Removes every row an admission wrote (matched by its lexeme or evidence id
 /// in the first column).
-fn remove_admissions(root: &Path, admissions: &[&Admission]) -> Result<(), Box<dyn Error>> {
+pub(crate) fn remove_admissions(root: &Path, admissions: &[&Admission]) -> Result<(), Box<dyn Error>> {
     let data = root.join("data/synodal");
-    let lexeme_ids: BTreeSet<&str> = admissions
-        .iter()
-        .map(|admission| admission.lexeme_id.as_str())
-        .collect();
     let evidence_ids: BTreeSet<&str> = admissions
         .iter()
         .map(|admission| admission.evidence_id.as_str())
         .collect();
-    for (file, ids) in [
-        ("lexemes.tsv", &lexeme_ids),
-        ("accent_paradigms.tsv", &lexeme_ids),
-        ("reviewed_evidence.tsv", &evidence_ids),
+    let lexeme_ids: BTreeSet<&str> = admissions
+        .iter()
+        .filter(|admission| !admission.accent_only)
+        .map(|admission| admission.lexeme_id.as_str())
+        .collect();
+    for (file, ids, column) in [
+        ("lexemes.tsv", &lexeme_ids, 0),
+        ("accent_paradigms.tsv", &evidence_ids, 6),
+        ("reviewed_evidence.tsv", &evidence_ids, 0),
     ] {
         let path = data.join(file);
         let content = fs::read_to_string(&path)?;
         let kept: Vec<&str> = content
             .lines()
-            .filter(|line| !ids.contains(line.split('\t').next().unwrap_or_default()))
+            .filter(|line| !ids.contains(line.split('\t').nth(column).unwrap_or_default()))
             .collect();
         fs::write(&path, format!("{}\n", kept.join("\n")))?;
     }
@@ -2601,7 +2679,7 @@ fn remove_admissions(root: &Path, admissions: &[&Admission]) -> Result<(), Box<d
 /// morphology artifact in-process, so the next replay reads the new data
 /// without recompiling anything. The dictionary registry is regenerated for
 /// consistency (admissions do not touch it).
-fn regenerate_and_install(root: &Path) -> Result<(), Box<dyn Error>> {
+pub(crate) fn regenerate_and_install(root: &Path) -> Result<(), Box<dyn Error>> {
     let data = root.join("data/synodal");
     church_slavonic_extractor::synodal::generate_registry(&data, &root.join(ARTIFACT_RELATIVE))?;
     church_slavonic_extractor::synodal::generate_dictionary_registry(

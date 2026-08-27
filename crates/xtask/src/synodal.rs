@@ -2668,6 +2668,7 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         for relative in [
             "data/synodal/gold_token_oracle.tsv",
             "data/synodal/gold_paradigm_oracle.tsv",
+            "data/synodal/gold_paradigm_headwords.tsv",
             "data/synodal/gold_source_defects.tsv",
         ] {
             fs::copy(root.join(relative), temporary.join(relative))?;

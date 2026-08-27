@@ -152,6 +152,14 @@ pub enum AccentScope {
         tense: FiniteTense,
         numbers: Vec<Number>,
     },
+    /// A finite-verb rule restricted by tense, number, and person, for the
+    /// mobile present stress Alypy §82 prints (люблю̀ / лю́биши, пишꙋ̀ /
+    /// пи́шеши) that a number-only scope cannot express.
+    FiniteVerbPersons {
+        tense: FiniteTense,
+        numbers: Vec<Number>,
+        persons: Vec<crate::Person>,
+    },
     /// A reusable participle rule restricted to one tense, voice, adjective
     /// form, comparison, and set of grammatical numbers.
     Participle {
@@ -165,9 +173,27 @@ pub enum AccentScope {
     Imperative {
         numbers: Vec<Number>,
     },
+    /// An imperative rule restricted by number and person (Alypy §93
+    /// лю́бива / люби́та).
+    ImperativePersons {
+        numbers: Vec<Number>,
+        persons: Vec<crate::Person>,
+    },
     /// A reusable l-participle rule restricted by grammatical number.
     LParticiple {
         numbers: Vec<Number>,
+    },
+    /// An l-participle rule restricted by number and gender (Alypy §97
+    /// не́слъ / несла̀ / несло̀).
+    LParticipleGenders {
+        numbers: Vec<Number>,
+        genders: Vec<Gender>,
+    },
+    /// A numeral rule restricted by number and case (Alypy §62 стѣ̑ / сто́ма,
+    /// ста̑ / сѡ́тъ).
+    NumeralCases {
+        numbers: Vec<Number>,
+        cases: Vec<Case>,
     },
     OtherCells(Vec<GrammarCell>),
 }
@@ -200,6 +226,9 @@ impl AccentScope {
             }
             (Self::Numeral { numbers }, GrammarCell::Numeral(cell)) => {
                 numbers.contains(&cell.number)
+            }
+            (Self::NumeralCases { numbers, cases }, GrammarCell::Numeral(cell)) => {
+                numbers.contains(&cell.number) && cases.contains(&cell.case)
             }
             (
                 Self::Adjective {
@@ -235,6 +264,18 @@ impl AccentScope {
                 cell.tense == *tense && numbers.contains(&cell.number)
             }
             (
+                Self::FiniteVerbPersons {
+                    tense,
+                    numbers,
+                    persons,
+                },
+                GrammarCell::FiniteVerb(cell),
+            ) => {
+                cell.tense == *tense
+                    && numbers.contains(&cell.number)
+                    && persons.contains(&cell.person)
+            }
+            (
                 Self::Participle {
                     tense,
                     voice,
@@ -253,8 +294,14 @@ impl AccentScope {
             (Self::Imperative { numbers }, GrammarCell::Imperative(cell)) => {
                 numbers.contains(&cell.number)
             }
+            (Self::ImperativePersons { numbers, persons }, GrammarCell::Imperative(cell)) => {
+                numbers.contains(&cell.number) && persons.contains(&cell.person)
+            }
             (Self::LParticiple { numbers }, GrammarCell::LParticiple(cell)) => {
                 numbers.contains(&cell.number)
+            }
+            (Self::LParticipleGenders { numbers, genders }, GrammarCell::LParticiple(cell)) => {
+                numbers.contains(&cell.number) && genders.contains(&cell.gender)
             }
             (Self::OtherCells(cells), cell) => cells.contains(&cell),
             _ => false,
@@ -272,8 +319,17 @@ impl AccentScope {
             | Self::Participle { numbers, .. }
             | Self::Imperative { numbers }
             | Self::LParticiple { numbers } => numbers.is_empty(),
-            Self::NounCases { numbers, cases } | Self::PronounCases { numbers, cases } => {
-                numbers.is_empty() || cases.is_empty()
+            Self::NounCases { numbers, cases }
+            | Self::PronounCases { numbers, cases }
+            | Self::NumeralCases { numbers, cases } => numbers.is_empty() || cases.is_empty(),
+            Self::FiniteVerbPersons {
+                numbers, persons, ..
+            }
+            | Self::ImperativePersons { numbers, persons } => {
+                numbers.is_empty() || persons.is_empty()
+            }
+            Self::LParticipleGenders { numbers, genders } => {
+                numbers.is_empty() || genders.is_empty()
             }
             Self::PronounAgreement {
                 numbers,

@@ -1,0 +1,77 @@
+# gold_paradigm_headwords.tsv — reviewed headword assignments for Alypy paradigm tables whose
+# printed exemplar does not resolve to a registered lemma: tables with no exemplar (§81 бы́ти,
+# §97 нестѝ, §103 archaic verbs, §47 себѐ, §48 что̀/толи́къ), tables headed by an inflected form
+# (мꙋ́др-а, є҆ди́н-а, творѧ́й, та́ѧ), and multi-word or titlo-printed exemplars (бж҃ї-й кра́-й).
+# The table's own printed forms identify the lexeme; the assignment is review data whose
+# provenance is the section. Read by the gold gate (crates/xtask/src/synodal_gold.rs) only
+# after the printed headword itself fails to resolve; it never changes the comparison contract.
+# column_label empty = every column of the table; surface_prefix (accentless, dehyphenated)
+# separates the lexemes of a table that interleaves several paradigms (§103).
+section	artifact	table_index	headword	column_label	surface_prefix	lexeme	note
+§37. Особенности 1-го склонения	p037.htm	1				братїѧ	right column of the paired layout prints no nominative
+§44. Особенности 4-го склонения	p044.htm	1	ᲂу҆́ши			synodal:noun:v07-12621bc315f78ff8	dual/plural of ᲂу́хо
+§44. Особенности 4-го склонения	p044.htm	1	ѻ҆́чи (ѻ҆́цѣ)			synodal:noun:v06-64bd1811dbd024b5	dual/plural of ѻ́ко
+§47. Склонение местоимений	p047.htm	1				synodal:pronoun:sebe	reflexive pronoun prints no nominative
+§47. Склонение местоимений	p047.htm	2	ѻ҆на̀ (ѧ҆̀)			synodal:pronoun:on	feminine column of ѻ҆́нъ
+§47. Склонение местоимений	p047.htm	2	ѻ҆но̀ (є҆̀)			synodal:pronoun:on	neuter column of ѻ҆́нъ
+§47. Склонение местоимений	p047.htm	2	моѧ̀			мой	feminine column of мо́й
+§47. Склонение местоимений	p047.htm	2	моѐ			мой	neuter column of мо́й
+§47. Склонение местоимений	p047.htm	3	та́ѧ, та̀			synodal:pronoun:toi	feminine column of то́й
+§47. Склонение местоимений	p047.htm	3	то́е, то̀			synodal:pronoun:toi	neuter column of то́й
+§48	p048.htm	1				synodal:pronoun:chto	чесѡ̀ column of что̀
+§48	p048.htm	2	ка́ѧ			synodal:pronoun:kii	feminine column of кі́й
+§48	p048.htm	2	ко́е			synodal:pronoun:kii	neuter column of кі́й
+§48	p048.htm	3	на́ша			synodal:pronoun:nash	feminine column of на́шъ
+§48	p048.htm	3	на́ше			synodal:pronoun:nash	neuter column of на́шъ
+§48	p048.htm	4				synodal:pronoun:tolik	accusative/instrumental/locative column of толи́цы
+§48	p048.htm	5	ѻ҆́ва			synodal:pronoun:ovyi	short feminine column of ѻ҆́въ
+§48	p048.htm	5	ѻ҆́во			synodal:pronoun:ovyi	short neuter column of ѻ҆́въ
+§48	p048.htm	5	ѻ҆́ваѧ			synodal:pronoun:ovyi	long feminine column of ѻ҆́вый
+§48	p048.htm	5	ѻ҆́вое			synodal:pronoun:ovyi	long neuter column of ѻ҆́вый
+§53. Склонение имен прилагательных	p053.htm	1	мꙋ́др-а			synodal:adjective:mudr	feminine column of мꙋ́дръ
+§53. Склонение имен прилагательных	p053.htm	1	мꙋ́др-о			synodal:adjective:mudr	neuter column of мꙋ́дръ
+§53. Склонение имен прилагательных	p053.htm	2	госпо́дн-ѧ			synodal:adjective:gospoden	feminine column of госпо́день
+§53. Склонение имен прилагательных	p053.htm	2	госпо́дн-е			synodal:adjective:gospoden	neuter column of госпо́день
+§56	p056.htm	1	бж҃ї-й кра́-й			synodal:adjective:bozhii	titlo-printed adjective of the demonstration pair
+§56	p056.htm	1	бж҃ї-ѧ ми́лостын-ѧ			synodal:adjective:bozhii	titlo-printed adjective of the demonstration pair
+§57. Склонение имен прилагательных полных	p057.htm	1	мꙋ́др-аѧ			synodal:adjective:mudr	feminine column of мꙋ́дрый
+§57. Склонение имен прилагательных полных	p057.htm	1	мꙋ́др-ое			synodal:adjective:mudr	neuter column of мꙋ́дрый
+§57. Склонение имен прилагательных полных	p057.htm	2	си́н-ѧѧ			синїй	feminine column of си́нїй
+§57. Склонение имен прилагательных полных	p057.htm	2	си́н-ее			синїй	neuter column of си́нїй
+§57. Склонение имен прилагательных полных	p057.htm	3	благ-а́ѧ			благій	feminine column of благі́й
+§57. Склонение имен прилагательных полных	p057.htm	3	благ-о́е			благій	neuter column of благі́й
+§57. Склонение имен прилагательных полных	p057.htm	4	ни́щ-аѧ			нищїй	feminine column of ни́щїй
+§57. Склонение имен прилагательных полных	p057.htm	4	ни́щ-ее			нищїй	neuter column of ни́щїй
+§60. Склонение прилагательных сравнительной степени кратких	p060.htm	1	мꙋдр-ѣ́й			synodal:adjective:mudr	short comparative of мꙋ́дръ
+§60. Склонение прилагательных сравнительной степени кратких	p060.htm	1	мꙋдр-ѣ́йши			synodal:adjective:mudr	short comparative feminine of мꙋ́дръ
+§60. Склонение прилагательных сравнительной степени кратких	p060.htm	1	мꙋдр-ѣ́е (-ѣ́йше)			synodal:adjective:mudr	short comparative neuter of мꙋ́дръ
+§62. Склонение количественных числительных простых	p062.htm	1	є҆ди́н-а			synodal:numeral:edin	feminine column of є҆ди́нъ
+§62. Склонение количественных числительных простых	p062.htm	1	є҆ди́н-о			synodal:numeral:edin	neuter column of є҆ди́нъ
+§62. Склонение количественных числительных простых	p062.htm	2	два̀, ѻ҆́ба			synodal:numeral:dva	два̀ column; ѻ҆́ба is the parallel alternate
+§62. Склонение количественных числительных простых	p062.htm	2	двѣ̀, ѻ҆́бѣ			synodal:numeral:dva	двѣ̀ column; ѻ҆́бѣ is the parallel alternate
+§62. Склонение количественных числительных простых	p062.htm	2	два̀, ѻ҆́ба | двѣ̀, ѻ҆́бѣ			synodal:numeral:dva	shared oblique cells of два̀
+§62. Склонение количественных числительных простых	p062.htm	3	трїѐ, трѝ			synodal:numeral:tri	masculine column of трѝ
+§62. Склонение количественных числительных простых	p062.htm	3	четы́ри (-е)			synodal:numeral:chetyre	feminine/neuter column of четы́ре
+§62. Склонение количественных числительных простых	p062.htm	3	четы́ре (-и) | четы́ри (-е)			synodal:numeral:chetyre	shared oblique cells of четы́ре
+§62. Склонение количественных числительных простых	p062.htm	4	десѧ́т-и (-ѣ)			synodal:numeral:wikt-bc270882d39d	dual column of де́сѧть
+§62. Склонение количественных числительных простых	p062.htm	4				synodal:numeral:wikt-bc270882d39d	plural columns of де́сѧть
+§62. Склонение количественных числительных простых	p062.htm	5	стѣ̑			synodal:numeral:v06-sto	dual column of сто̀
+§62. Склонение количественных числительных простых	p062.htm	5	ста̑			synodal:numeral:v06-sto	plural column of сто̀
+§81	p081.htm	1		будущее сложное		synodal:verb:wikt-070505e82800	periphrastic future: the inflected member is хотѣ́ти (contract §7.3)
+§81	p081.htm	1				synodal:verb:byti	conjugation of бы́ти (no infinitive row)
+§81	p081.htm	2				synodal:verb:byti	past tenses of бы́ти (no infinitive row)
+§97	p097.htm	1				synodal:verb:nesti	l-participle of нестѝ (no infinitive row)
+§98. Склонение действительных причастий	p098.htm	1	творѧ̀, -ѧ́щ-ь			synodal:verb:wikt-61a99171906f	short present active participle of твори́ти
+§98. Склонение действительных причастий	p098.htm	1	творѧ́щ-и			synodal:verb:wikt-61a99171906f	short present active participle of твори́ти
+§98. Склонение действительных причастий	p098.htm	1	творѧ̀, -ѧ́щ-е			synodal:verb:wikt-61a99171906f	short present active participle of твори́ти
+§98. Склонение действительных причастий	p098.htm	2	творѧ́й			synodal:verb:wikt-61a99171906f	long present active participle of твори́ти
+§98. Склонение действительных причастий	p098.htm	2	творѧ́щаѧ			synodal:verb:wikt-61a99171906f	long present active participle of твори́ти
+§98. Склонение действительных причастий	p098.htm	2	творѧ́щее			synodal:verb:wikt-61a99171906f	long present active participle of твори́ти
+§103. Глаголы архаического спряжения	p103.htm	1			да	synodal:verb:dati	да́мъ column
+§103. Глаголы архаического спряжения	p103.htm	1			ꙗ	synodal:verb:wikt-6ceeefbe4e9e	ꙗ҆́мъ column
+§103. Глаголы архаического спряжения	p103.htm	1			вѣ	synodal:verb:wikt-8a084860d2ef	вѣ́мъ column
+§103. Глаголы архаического спряжения	p103.htm	1			им	synodal:verb:wikt-0c6c8db63b7c	и҆́мамъ column
+§103. Глаголы архаического спряжения	p103.htm	2			да	synodal:verb:dati	imperative of да́ти
+§103. Глаголы архаического спряжения	p103.htm	2			ꙗ	synodal:verb:wikt-6ceeefbe4e9e	imperative of ꙗ҆́сти
+§103. Глаголы архаического спряжения	p103.htm	2			вѣ	synodal:verb:wikt-8a084860d2ef	imperative of вѣ́дѣти
+§103. Глаголы архаического спряжения	p103.htm	2			им	synodal:verb:wikt-0c6c8db63b7c	imperative of и҆мѣ́ти

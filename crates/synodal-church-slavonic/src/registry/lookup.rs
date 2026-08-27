@@ -481,6 +481,10 @@ pub(crate) fn parse_accent_scope(value: &str) -> Result<AccentScope> {
         ["numeral", numbers] => Ok(AccentScope::Numeral {
             numbers: parse_accent_numbers(numbers)?,
         }),
+        ["numeral", numbers, cases] => Ok(AccentScope::NumeralCases {
+            numbers: parse_accent_numbers(numbers)?,
+            cases: parse_accent_cases(cases)?,
+        }),
         ["adjective", form, comparison, numbers] => Ok(AccentScope::Adjective {
             form: match *form {
                 "short" => AdjectiveForm::Short,
@@ -531,6 +535,18 @@ pub(crate) fn parse_accent_scope(value: &str) -> Result<AccentScope> {
             },
             numbers: parse_accent_numbers(numbers)?,
         }),
+        ["finite", tense, numbers, persons] => Ok(AccentScope::FiniteVerbPersons {
+            tense: match *tense {
+                "present" => FiniteTense::Present,
+                "future" => FiniteTense::Future,
+                "past" => FiniteTense::Past,
+                "imperfect" => FiniteTense::Imperfect,
+                "aorist" => FiniteTense::Aorist,
+                value => return invalid_metadata("accent finite tense", value),
+            },
+            numbers: parse_accent_numbers(numbers)?,
+            persons: parse_accent_persons(persons)?,
+        }),
         ["participle", tense, voice, form, comparison, numbers] => Ok(AccentScope::Participle {
             tense: ParticipleTense::from_code(tense).ok_or_else(|| {
                 Error::ContradictoryMetadata {
@@ -555,11 +571,33 @@ pub(crate) fn parse_accent_scope(value: &str) -> Result<AccentScope> {
         ["imperative", numbers] => Ok(AccentScope::Imperative {
             numbers: parse_accent_numbers(numbers)?,
         }),
+        ["imperative", numbers, persons] => Ok(AccentScope::ImperativePersons {
+            numbers: parse_accent_numbers(numbers)?,
+            persons: parse_accent_persons(persons)?,
+        }),
         ["l-participle", numbers] => Ok(AccentScope::LParticiple {
             numbers: parse_accent_numbers(numbers)?,
         }),
+        ["l-participle", numbers, genders] => Ok(AccentScope::LParticipleGenders {
+            numbers: parse_accent_numbers(numbers)?,
+            genders: parse_accent_genders(genders)?,
+        }),
         _ => invalid_metadata("accent scope", value),
     }
+}
+
+pub(crate) fn parse_accent_persons(
+    value: &str,
+) -> Result<Vec<synodal_church_slavonic_core::Person>> {
+    value
+        .split(',')
+        .map(|person| match person {
+            "first" => Ok(synodal_church_slavonic_core::Person::First),
+            "second" => Ok(synodal_church_slavonic_core::Person::Second),
+            "third" => Ok(synodal_church_slavonic_core::Person::Third),
+            value => invalid_metadata("accent person", value),
+        })
+        .collect()
 }
 
 pub(crate) fn parse_accent_cases(value: &str) -> Result<Vec<Case>> {

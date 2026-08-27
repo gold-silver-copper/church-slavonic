@@ -26,6 +26,7 @@ use unicode_normalization::UnicodeNormalization;
 
 const TOKEN_ORACLE_RELATIVE: &str = "data/synodal/gold_token_oracle.tsv";
 const PARADIGM_ORACLE_RELATIVE: &str = "data/synodal/gold_paradigm_oracle.tsv";
+const PARADIGM_HEADWORDS_RELATIVE: &str = "data/synodal/gold_paradigm_headwords.tsv";
 const LEDGER_RELATIVE: &str = "data/synodal/gold_source_defects.tsv";
 const GAP_RELATIVE: &str = "reports/synodal-gold-gap.tsv";
 const DEFECT_CANDIDATES_RELATIVE: &str = "reports/synodal-gold-defect-candidates.tsv";
@@ -67,6 +68,10 @@ pub(crate) fn run(
         Some("analyze") => {
             peeked.next();
             return crate::synodal_gold_burndown::analyze(&mut peeked, root);
+        }
+        Some("refit") => {
+            peeked.next();
+            return crate::synodal_gold_refit::refit(&mut peeked, root);
         }
         _ => {}
     }
@@ -213,6 +218,7 @@ pub(crate) fn replay(root: &Path, scope: &Scope) -> Result<Replay, Box<dyn Error
     let started = Instant::now();
     let token_rows = load_token_oracle(root)?;
     let paradigm_rows = load_paradigm_oracle(root)?;
+    let headwords = load_paradigm_headwords(root)?;
     let ledger = load_defect_ledger(root)?;
     let committed = committed_gap(root)?;
     let analyzer =
@@ -274,18 +280,18 @@ pub(crate) fn replay(root: &Path, scope: &Scope) -> Result<Replay, Box<dyn Error
     }
     for row in &paradigm_rows {
         let hits = || {
-            paradigm_lemma(&row.headword).is_some_and(|lemma| {
-                lemma_keys.contains(&normalize_lookup_accentless(&lemma))
-                    || synodal_church_slavonic::lookup(&lemma)
-                        .or_else(|_| synodal_church_slavonic::lookup(&strip_accents(&lemma)))
-                        .is_ok_and(|lexeme| lemma_keys.contains(lexeme.id().as_str()))
-            })
+            paradigm_lemma(&row.headword)
+                .is_some_and(|lemma| lemma_keys.contains(&normalize_lookup_accentless(&lemma)))
+                || resolve_paradigm_lexeme(&headwords, row).is_some_and(|lexeme| {
+                    lemma_keys.contains(lexeme.id().as_str())
+                        || lemma_keys.contains(&normalize_lookup_accentless(lexeme.lemma()))
+                })
         };
         if !selects("paradigm", &row.key, &hits) {
             continue;
         }
         covered.insert(("paradigm".to_owned(), row.key.clone()));
-        if let Some(gap_row) = replay_paradigm(liturgical, row) {
+        if let Some(gap_row) = replay_paradigm(liturgical, &headwords, row) {
             gap.push(gap_row);
         }
     }
@@ -387,6 +393,7 @@ fn gate(root: &Path, fix: bool) -> Result<(), Box<dyn Error>> {
     let started = Instant::now();
     let token_rows = load_token_oracle(root)?;
     let paradigm_rows = load_paradigm_oracle(root)?;
+    let headwords = load_paradigm_headwords(root)?;
     let ledger = load_defect_ledger(root)?;
 
     let analyzer =
@@ -423,7 +430,7 @@ fn gate(root: &Path, fix: bool) -> Result<(), Box<dyn Error>> {
     }
     let token_gap = gap.len();
     for row in &paradigm_rows {
-        if let Some(gap_row) = replay_paradigm(liturgical, row) {
+        if let Some(gap_row) = replay_paradigm(liturgical, &headwords, row) {
             gap.push(gap_row);
         }
     }
@@ -967,8 +974,11 @@ pub(crate) fn strip_accents(value: &str) -> String {
 pub(crate) struct ParadigmOracleRow {
     pub(crate) key: String,
     pub(crate) section: String,
+    pub(crate) artifact: String,
+    pub(crate) table_index: String,
     pub(crate) pos: String,
     pub(crate) headword: String,
+    pub(crate) column_label: String,
     pub(crate) case: String,
     pub(crate) number: String,
     pub(crate) gender: String,
@@ -1007,8 +1017,11 @@ pub(crate) fn load_paradigm_oracle(root: &Path) -> Result<Vec<ParadigmOracleRow>
                 fields[6..12].join(":")
             ),
             section: fields[0].to_owned(),
+            artifact: fields[1].to_owned(),
+            table_index: fields[2].to_owned(),
             pos: fields[3].to_owned(),
             headword: fields[4].to_owned(),
+            column_label: fields[5].to_owned(),
             case: fields[6].to_owned(),
             number: fields[7].to_owned(),
             gender: fields[8].to_owned(),
@@ -1240,7 +1253,112 @@ pub(crate) fn paradigm_lemma(headword: &str) -> Option<String> {
     if lemma.is_empty() { None } else { Some(lemma) }
 }
 
-fn replay_paradigm(liturgical: Inflector, row: &ParadigmOracleRow) -> Option<GapRow> {
+/// One reviewed headword assignment for an Alypy table that prints no
+/// resolvable exemplar (`data/synodal/gold_paradigm_headwords.tsv`): the
+/// table's own printed forms identify the lexeme, and the assignment is
+/// review data with the section as provenance. `column_label` empty matches
+/// every column; `surface_prefix` (accentless, dehyphenated) separates the
+/// lexemes of a table that interleaves several paradigms (§103).
+struct HeadwordAssignment {
+    section: String,
+    artifact: String,
+    table_index: String,
+    headword: String,
+    column_label: String,
+    surface_prefix: String,
+    lexeme: String,
+}
+
+#[derive(Default)]
+pub(crate) struct ParadigmHeadwords {
+    assignments: Vec<HeadwordAssignment>,
+}
+
+pub(crate) fn load_paradigm_headwords(root: &Path) -> Result<ParadigmHeadwords, Box<dyn Error>> {
+    let path = root.join(PARADIGM_HEADWORDS_RELATIVE);
+    let content = match fs::read_to_string(&path) {
+        Ok(content) => content,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            return Ok(ParadigmHeadwords::default());
+        }
+        Err(error) => return Err(format!("read {}: {error}", path.display()).into()),
+    };
+    let mut assignments = Vec::new();
+    let mut saw_header = false;
+    for line in content.lines() {
+        if line.starts_with('#') || line.is_empty() {
+            continue;
+        }
+        if !saw_header {
+            saw_header = true;
+            continue;
+        }
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() != 8 {
+            return Err(format!("short paradigm-headword row: {line}").into());
+        }
+        assignments.push(HeadwordAssignment {
+            section: fields[0].to_owned(),
+            artifact: fields[1].to_owned(),
+            table_index: fields[2].to_owned(),
+            headword: fields[3].to_owned(),
+            column_label: fields[4].to_owned(),
+            surface_prefix: fields[5].to_owned(),
+            lexeme: fields[6].to_owned(),
+        });
+    }
+    Ok(ParadigmHeadwords { assignments })
+}
+
+impl ParadigmHeadwords {
+    /// The reviewed lexeme (lemma or id) assigned to a row, if any.
+    pub(crate) fn assigned(&self, row: &ParadigmOracleRow) -> Option<&str> {
+        let surface = strip_accents(&row.surface.replace('-', ""));
+        self.assignments
+            .iter()
+            .find(|assignment| {
+                assignment.section == row.section
+                    && assignment.artifact == row.artifact
+                    && assignment.table_index == row.table_index
+                    && assignment.headword == row.headword
+                    && (assignment.column_label.is_empty()
+                        || assignment.column_label == row.column_label)
+                    && (assignment.surface_prefix.is_empty()
+                        || surface.starts_with(&assignment.surface_prefix))
+            })
+            .map(|assignment| assignment.lexeme.as_str())
+    }
+}
+
+/// The registered lexeme an Alypy row's headword resolves to: the reviewed
+/// headword assignment for the table when one exists (an explicit review
+/// outranks a lemma coincidence such as ка́ѧ resolving to its own exact-form
+/// entry instead of the кі́й column it heads), else the printed headword as
+/// a lemma (accented or accentless).
+pub(crate) fn resolve_paradigm_lexeme(
+    headwords: &ParadigmHeadwords,
+    row: &ParadigmOracleRow,
+) -> Option<synodal_church_slavonic::LexemeSummary> {
+    if let Some(assigned) = headwords.assigned(row) {
+        return if assigned.starts_with("synodal:") {
+            synodal_church_slavonic::advanced::lookup_by_id(&LexemeId::from(assigned)).ok()
+        } else {
+            synodal_church_slavonic::lookup(assigned)
+                .or_else(|_| synodal_church_slavonic::lookup(&strip_accents(assigned)))
+                .ok()
+        };
+    }
+    let lemma = paradigm_lemma(&row.headword)?;
+    synodal_church_slavonic::lookup(&lemma)
+        .or_else(|_| synodal_church_slavonic::lookup(&strip_accents(&lemma)))
+        .ok()
+}
+
+fn replay_paradigm(
+    liturgical: Inflector,
+    headwords: &ParadigmHeadwords,
+    row: &ParadigmOracleRow,
+) -> Option<GapRow> {
     let gap = |reason: &'static str, engine_output: String| GapRow {
         oracle: "paradigm",
         key: row.key.clone(),
@@ -1248,12 +1366,7 @@ fn replay_paradigm(liturgical: Inflector, row: &ParadigmOracleRow) -> Option<Gap
         engine_output,
         expected: row.surface.clone(),
     };
-    let Some(lemma) = paradigm_lemma(&row.headword) else {
-        return Some(gap("unregistered-lemma", String::new()));
-    };
-    let Ok(lexeme) = synodal_church_slavonic::lookup(&lemma)
-        .or_else(|_| synodal_church_slavonic::lookup(&strip_accents(&lemma)))
-    else {
+    let Some(lexeme) = resolve_paradigm_lexeme(headwords, row) else {
         return Some(gap("unregistered-lemma", String::new()));
     };
     let expected = paradigm_expected_variants(&row.surface);

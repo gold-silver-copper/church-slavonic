@@ -13,6 +13,7 @@ mod synodal;
 mod synodal_archive;
 mod synodal_gold;
 mod synodal_gold_burndown;
+mod synodal_gold_refit;
 mod synodal_gold_oracle;
 mod synodal_lexical_union;
 mod unified_identity;
