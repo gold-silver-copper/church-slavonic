@@ -93,9 +93,10 @@ fn untabled_regular_words_still_follow_the_rules() {
         noun("градъ", Case::Locative, Number::Plural, OCS),
         "градѣхъ"
     );
+    // A word the corpus never attests (`врагъ` is tabled with its accents).
     assert_eq!(
-        noun("врагъ", Case::Locative, Number::Singular, SYN),
-        "вразѣ"
+        noun("хворостъ", Case::Locative, Number::Singular, SYN),
+        "хворостѣ"
     );
     assert_eq!(noun("мѫжь", Case::Genitive, Number::Singular, OCS), "мѫжа");
     assert_eq!(noun("село", Case::Nominative, Number::Dual, OCS), "селѣ");

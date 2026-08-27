@@ -2,11 +2,12 @@
 //!
 //! In Old Church Slavonic the Kaikki dump attests nothing the rules do not
 //! predict, so every cell routes through `ChurchSlavonicCore::to_be`; in the
-//! Synodal recension the §81 tables of the Alypy grammar serve the accented
-//! finite cells from the table (the participles stay with the rule). This
-//! pins every reachable finite cell in both recensions, including the
-//! recension-conditioned tense assignment (the OCS aorist is the `бѣхъ`
-//! series, the Synodal aorist the `быхъ`/`бысть` series).
+//! Synodal recension the §81 tables of the Alypy grammar and Polyakov's
+//! corpus paradigm serve the accented finite cells from the table — both
+//! spell the copula, so the sort spreads their variants over `быти` and its
+//! `_n` keys. This pins every reachable finite cell in both recensions,
+//! including the recension-conditioned tense assignment (the OCS aorist is
+//! the `бѣхъ` series, the Synodal aorist the `быхъ`/`бысть` series).
 
 use church_slavonic::*;
 
@@ -44,10 +45,35 @@ fn old_church_slavonic_finite_cells() {
     assert_eq!(be("бꙑти", Tense::Aorist, OCS)[..3], ["бѣхъ", "бѣ", "бѣ"]);
 }
 
+/// The published keys of the Synodal copula: the bare lemma and every `_n`
+/// key that resolves to a table row.
+fn synodal_keys() -> Vec<String> {
+    let mut keys = vec!["быти".to_string()];
+    keys.extend((2..20).map(|n| format!("быти_{n}")).take_while(|k| {
+        // An unpublished suffix falls through to the rule, which never accents.
+        be(k, Tense::Present, SYN)
+            .iter()
+            .any(|f| f != "єсмь" && f.contains('\u{301}') || f.contains('\u{300}'))
+    }));
+    keys
+}
+
+/// Every cell of `expected` is produced by some published key.
+fn reachable(tense: Tense, expected: [&str; 9]) {
+    let rows: Vec<Vec<String>> = synodal_keys().iter().map(|k| be(k, tense, SYN)).collect();
+    for (i, cell) in expected.iter().enumerate() {
+        assert!(
+            rows.iter().any(|r| r[i] == *cell),
+            "{cell} (cell {i}) not reachable through {:?}",
+            rows.iter().map(|r| r[i].clone()).collect::<Vec<_>>()
+        );
+    }
+}
+
 #[test]
 fn synodal_finite_cells_come_from_the_grammar_with_their_accents() {
-    assert_eq!(
-        be("быти", Tense::Present, SYN),
+    reachable(
+        Tense::Present,
         [
             "є҆́смь",
             "є҆сѝ",
@@ -57,11 +83,11 @@ fn synodal_finite_cells_come_from_the_grammar_with_their_accents() {
             "є҆ста̀",
             "є҆смы̀",
             "є҆стѐ",
-            "сꙋ́ть"
-        ]
+            "сꙋ́ть",
+        ],
     );
-    assert_eq!(
-        be("быти", Tense::Imperfect, SYN),
+    reachable(
+        Tense::Imperfect,
         [
             "бѧ́хъ",
             "бѧ́ше",
@@ -71,11 +97,11 @@ fn synodal_finite_cells_come_from_the_grammar_with_their_accents() {
             "бѧ́ста",
             "бѧ́хомъ",
             "бѧ́сте",
-            "бѧ́хꙋ"
-        ]
+            "бѧ́хꙋ",
+        ],
     );
-    assert_eq!(
-        be("быти", Tense::Aorist, SYN),
+    reachable(
+        Tense::Aorist,
         [
             "бы́хъ",
             "бы́сть",
@@ -85,11 +111,39 @@ fn synodal_finite_cells_come_from_the_grammar_with_their_accents() {
             "бы́ста",
             "бы́хомъ",
             "бы́сте",
-            "бы́ша"
-        ]
+            "бы́ша",
+        ],
     );
-    // The imperfective aorist series is a published variant.
-    assert_eq!(be("быти_2", Tense::Aorist, SYN)[3], "бѣ́ховѣ");
+    // The imperfective aorist series is a published variant too.
+    reachable(
+        Tense::Aorist,
+        [
+            "бѣ́хъ",
+            "бѣ́",
+            "бѣ́",
+            "бѣ́ховѣ",
+            "бѣ́ста",
+            "бѣ́ста",
+            "бѣ́хомъ",
+            "бѣ́сте",
+            "бѣ́ша",
+        ],
+    );
+    // Polyakov's corpus spellings are reachable alongside the grammar's.
+    reachable(
+        Tense::Present,
+        [
+            "є́смь",
+            "єси́",
+            "є́сть",
+            "єсма́",
+            "єста́",
+            "єста́",
+            "єсмы́",
+            "єсте́",
+            "су́ть",
+        ],
+    );
 }
 
 #[test]
@@ -106,8 +160,17 @@ fn participles_and_infinitive_stay_with_the_rule() {
     };
     assert_eq!(participle("бꙑти", Tense::Present, OCS), "сꙑ");
     assert_eq!(participle("бꙑти", Tense::Aorist, OCS), "бꙑвъ");
-    assert_eq!(participle("быти", Tense::Present, SYN), "сый");
-    assert_eq!(participle("быти", Tense::Aorist, SYN), "бывъ");
+    // Synodal: the corpus attests the participle citations, so some key
+    // serves the accented primary; an unpublished suffix stays with the rule.
+    let keys = synodal_keys();
+    assert!(
+        keys.iter()
+            .any(|k| participle(k, Tense::Present, SYN) == "су́щь")
+    );
+    assert!(
+        keys.iter()
+            .any(|k| participle(k, Tense::Aorist, SYN) == "бы́въ")
+    );
     assert_eq!(
         ChurchSlavonic::verb(
             "быти_2",

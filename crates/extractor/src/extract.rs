@@ -1,6 +1,6 @@
 //! Source scanning and candidate policy — the editorial layer of the pipeline.
 //!
-//! Both sources funnel through one shape:
+//! All three sources funnel through one shape:
 //!
 //! 1. [`gather`] reads the filtered intermediates and turns them into
 //!    per-`(recension, pos, lemma)` [`Observation`]s: for every cell of the
@@ -14,9 +14,13 @@
 //!    into deterministic `_<n>` keys via [`crate::assign`].
 //!
 //! Each refresh regenerates every table from the sources alone — there is no
-//! lockfile, carry-forward state, or cross-source reconciliation. There is no
+//! lockfile, carry-forward state, or adjudication between sources. There is no
 //! admission step either: an attested form the rules do not predict is in the
-//! table, automatically.
+//! table, automatically. The two Synodal sources are read Polyakov first, then
+//! Alypy: a lemma both attest is one observation (the union of their slots,
+//! Polyakov's corpus-frequency primary first), so a slot they spell
+//! differently becomes two variant rows by the sort — [`disagreements`]
+//! counts those slots for the README.
 //!
 //! The policy decisions (each pinned by a fixture test at the bottom):
 //! - a Kaikki entry is a lemma only when it is a proper single Cyrillic word and
@@ -38,8 +42,23 @@
 //!   left out, with the reason in the list's comments); the lemma is the
 //!   printed exemplar (`ра́б-ъ` -> `рабъ`), joined and unaccented, while every
 //!   cell keeps its printed accents;
+//! - a Polyakov entry is one observation of its headword (marks stripped for
+//!   the key, as the facade folds its input; the printed letters are kept, so
+//!   its `у` never merges with Alypy's `ꙋ`), with each cell's forms ordered by
+//!   corpus frequency (an enclitic pronoun after the full forms); a part of
+//!   speech outside the four tables, the
+//!   infinitive, the perfect (l-participle), the passive and long participles
+//!   and the participle declension, an imperfective's `fut` (the periphrastic
+//!   future) and a pronoun outside the personal matrix are skipped and counted
+//!   ([`Skips`]); a perfective's `fut` is its present block; the short and long
+//!   adjective series are two lemmas keyed by their own masculine nominative
+//!   (as in Kaikki) — attested, or spelled by the paradigm class's legend
+//!   ([`legend_nominative`]); a series with neither is skipped and counted
+//!   (the starred fleeting-vowel classes); a `comp` form belongs to its series' positive lemma
+//!   at `Comparative`; an `A,comp` headword (`бо́льшій`) is its own lemma;
 //! - the personal pronoun is one lemma-less row per recension (`personal`)
-//!   merging the person entries (`азъ`, `тꙑ`, `и` in Kaikki; §47 in Alypy);
+//!   merging the person entries (`азъ`, `тꙑ`, `и` in Kaikki; §47 in Alypy;
+//!   `а́зъ`, `ты́`, `мы́`, `вы́`, `и́` in Polyakov);
 //!   only the first-listed alternative is reachable through the lemma-less API;
 //! - a sense tagged `Old-East-Church-Slavonic` is soft: it sorts after standard
 //!   siblings and never takes the bare key from one.
@@ -51,11 +70,14 @@ use crate::cells::{
     tag, verb_cell,
 };
 use crate::kaikki::{self, Entry, has};
+use crate::polyakov::{self, Features, Mood, Series, TenseTag, Voice};
 use church_slavonic_core::grammar::*;
-use church_slavonic_core::orthography::strip_marks;
+use church_slavonic_core::orthography::{comparison_key, strip_marks};
 use std::collections::BTreeMap;
 use std::error::Error;
+use std::fmt;
 use std::path::Path;
+use unicode_normalization::UnicodeNormalization;
 
 /// One part-of-speech's emitted table: `(key, cells)` rows, ready for the PHF
 /// generator; the key already carries its recension prefix.
@@ -136,26 +158,123 @@ pub struct LexemeKey {
 
 pub type Lexemes = BTreeMap<LexemeKey, Vec<Observation>>;
 
-/// The intermediate file names under `data/intermediate`.
-pub const KAIKKI_INTERMEDIATE: &str = "kaikki.jsonl";
-pub const ALYPY_INTERMEDIATE: &str = "alypy.jsonl";
+/// The three labelled full-form sources, each with its filtered intermediate
+/// under `data/intermediate`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Source {
+    Kaikki,
+    Alypy,
+    Polyakov,
+}
 
-/// Read every attested paradigm out of the filtered intermediates.
-pub fn gather(intermediate_dir: &Path) -> Result<Lexemes, Box<dyn Error>> {
-    let mut lexemes = Lexemes::new();
-    let kaikki_path = intermediate_dir.join(KAIKKI_INTERMEDIATE);
-    if kaikki_path.exists() {
-        for entry in kaikki::read(&kaikki_path)? {
-            gather_kaikki_entry(&entry, &mut lexemes);
+impl Source {
+    /// Reading order: Polyakov before Alypy, so Alypy's paradigm merges into
+    /// the corpus observation of the same lemma (see the module docs).
+    pub const ALL: [Source; 3] = [Source::Kaikki, Source::Polyakov, Source::Alypy];
+
+    pub fn intermediate(self) -> &'static str {
+        match self {
+            Source::Kaikki => "kaikki.jsonl",
+            Source::Alypy => "alypy.jsonl",
+            Source::Polyakov => "polyakov.jsonl",
         }
     }
-    let alypy_path = intermediate_dir.join(ALYPY_INTERMEDIATE);
-    if alypy_path.exists() {
-        for table in alypy::read(&alypy_path)? {
-            gather_alypy_table(&table, &mut lexemes)?;
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Source::Kaikki => "kaikki",
+            Source::Alypy => "alypy",
+            Source::Polyakov => "polyakov",
+        }
+    }
+
+    /// The README's "Recension" column: the recension, and the source where
+    /// a recension has more than one.
+    pub fn recension_label(self) -> &'static str {
+        match self {
+            Source::Kaikki => "OCS",
+            Source::Alypy => "Synodal (Alypy)",
+            Source::Polyakov => "Synodal (Polyakov)",
+        }
+    }
+}
+
+/// Read every attested paradigm out of the filtered intermediates, reporting
+/// the Polyakov mapping coverage.
+pub fn gather(intermediate_dir: &Path) -> Result<Lexemes, Box<dyn Error>> {
+    let mut skips = Skips::default();
+    let lexemes = gather_with(intermediate_dir, &Source::ALL, &mut skips)?;
+    println!("Polyakov mapping: {skips}");
+    Ok(lexemes)
+}
+
+/// [`gather`] restricted to `sources` (the accuracy harness scores each
+/// source on its own). The reading order is always [`Source::ALL`]'s.
+pub fn gather_sources(
+    intermediate_dir: &Path,
+    sources: &[Source],
+) -> Result<Lexemes, Box<dyn Error>> {
+    gather_with(intermediate_dir, sources, &mut Skips::default())
+}
+
+fn gather_with(
+    intermediate_dir: &Path,
+    sources: &[Source],
+    skips: &mut Skips,
+) -> Result<Lexemes, Box<dyn Error>> {
+    let mut lexemes = Lexemes::new();
+    for source in Source::ALL {
+        if !sources.contains(&source) {
+            continue;
+        }
+        let path = intermediate_dir.join(source.intermediate());
+        if !path.exists() {
+            continue;
+        }
+        match source {
+            Source::Kaikki => {
+                for entry in kaikki::read(&path)? {
+                    gather_kaikki_entry(&entry, &mut lexemes);
+                }
+            }
+            Source::Alypy => {
+                for table in alypy::read(&path)? {
+                    gather_alypy_table(&table, &mut lexemes)?;
+                }
+            }
+            Source::Polyakov => {
+                for entry in polyakov::read(&path)? {
+                    gather_polyakov_entry(&entry, &mut lexemes, skips);
+                }
+            }
         }
     }
     Ok(lexemes)
+}
+
+/// Slots two gatherings attest with a different primary: `(exact, beyond
+/// spelling)` — the second ignores accents, breathings, titla and the
+/// recensions' letter conventions ([`comparison_key`]), so it counts the
+/// disagreements that are not merely a convention of print.
+pub fn disagreements(a: &Lexemes, b: &Lexemes) -> (u64, u64) {
+    let (mut exact, mut beyond) = (0, 0);
+    for (key, obs_a) in a {
+        let (Some(first_a), Some(first_b)) = (obs_a.first(), b.get(key).and_then(|o| o.first()))
+        else {
+            continue;
+        };
+        for (cell_a, cell_b) in first_a.cells.iter().zip(&first_b.cells) {
+            if let (Some(fa), Some(fb)) = (cell_a.first(), cell_b.first())
+                && fa != fb
+            {
+                exact += 1;
+                if comparison_key(fa) != comparison_key(fb) {
+                    beyond += 1;
+                }
+            }
+        }
+    }
+    (exact, beyond)
 }
 
 fn push_observation(lexemes: &mut Lexemes, key: LexemeKey, obs: Observation, merge: bool) {
@@ -769,6 +888,352 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
 }
 
 // ---------------------------------------------------------------------------
+// Polyakov (Synodal)
+// ---------------------------------------------------------------------------
+
+/// What the Polyakov reading left out, by reason, plus what it mapped. One
+/// unit is one expanded analysis of one form (`sg,gen/acc` is two).
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+pub struct Skips {
+    pub entries: u64,
+    pub forms: u64,
+    pub mapped: u64,
+    pub by_reason: BTreeMap<&'static str, u64>,
+}
+
+impl Skips {
+    fn skip(&mut self, reason: &'static str) {
+        *self.by_reason.entry(reason).or_default() += 1;
+    }
+}
+
+impl fmt::Display for Skips {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{} entries, {} forms, {} analyses mapped onto cells; skipped:",
+            self.entries, self.forms, self.mapped
+        )?;
+        for (reason, n) in &self.by_reason {
+            write!(f, " {reason}={n};")?;
+        }
+        Ok(())
+    }
+}
+
+/// A Polyakov headword or surface as a table key: the facade's fold (NFC,
+/// marks stripped, lowercase), and a proper single word.
+fn polyakov_key(printed: &str) -> Option<String> {
+    let key = strip_marks(printed).to_lowercase();
+    word_is_proper(&key).then_some(key)
+}
+
+/// A printed surface, kept as printed (NFC) when it is a proper word under
+/// its marks.
+fn polyakov_surface(printed: &str) -> Option<String> {
+    polyakov_key(printed).map(|_| printed.nfc().collect())
+}
+
+/// The cells one analysis attests, with the lemma that owns them.
+type Attestation = (String, Vec<usize>);
+
+/// Per `(lemma, cell)`: the attesting forms as `(clitic, frequency, print
+/// order, surface)`.
+type Attested = BTreeMap<(String, usize), Vec<(bool, u64, usize, String)>>;
+
+fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: &mut Skips) {
+    let pos = match entry.tags.first().map(String::as_str) {
+        Some("S" | "N") => Pos::Noun,
+        Some("A") => Pos::Adj,
+        Some("V") => Pos::Verb,
+        Some("SPRO") => Pos::Pronoun,
+        _ => {
+            skips.skip("entry: part of speech outside the four tables");
+            return;
+        }
+    };
+    let Some(lemma) = polyakov_key(&entry.lemma) else {
+        skips.skip("entry: headword is not one word");
+        return;
+    };
+    skips.entries += 1;
+    let perfective = entry.tags.iter().any(|t| t == "pf" || t == "pf/ipf");
+    let pronoun_person = match lemma.as_str() {
+        "азъ" | "мы" => Some(Person::First),
+        "ты" | "вы" => Some(Person::Second),
+        "и" => Some(Person::Third),
+        _ => None,
+    };
+    let series_lemmas = if pos == Pos::Adj {
+        adjective_series_lemmas(entry, &lemma)
+    } else {
+        BTreeMap::new()
+    };
+
+    let mut attested = Attested::new();
+    for (order, form) in entry.forms.iter().enumerate() {
+        if form.cells.is_empty() {
+            skips.skip("form: unanalysed");
+            continue;
+        }
+        let Some(surface) = polyakov_surface(&form.form) else {
+            skips.skip("form: not one word");
+            continue;
+        };
+        skips.forms += 1;
+        for set in &form.cells {
+            let f = polyakov::features(set);
+            let result = match pos {
+                Pos::Noun => polyakov_noun_cells(&f).map(|c| (lemma.clone(), c)),
+                Pos::Adj => polyakov_adj_cells(&f, &series_lemmas),
+                Pos::Verb => polyakov_verb_cells(&f, perfective).map(|c| (lemma.clone(), c)),
+                Pos::Pronoun => match pronoun_person {
+                    Some(person) => {
+                        polyakov_pronoun_cells(&f, person).map(|c| (PRONOUN_KEY.to_string(), c))
+                    }
+                    None => Err("pronoun: outside the personal matrix"),
+                },
+            };
+            match result {
+                Ok((owner, cells)) => {
+                    skips.mapped += 1;
+                    for cell in cells {
+                        attested.entry((owner.clone(), cell)).or_default().push((
+                            f.clitic,
+                            form.count,
+                            order,
+                            surface.clone(),
+                        ));
+                    }
+                }
+                Err(reason) => skips.skip(reason),
+            }
+        }
+    }
+
+    let mut observations: BTreeMap<String, Observation> = BTreeMap::new();
+    for ((owner, cell), mut forms) in attested {
+        // Corpus frequency decides the primary and print order breaks ties;
+        // an enclitic (`мя`) never outranks the full form (`мене́`), as in
+        // the grammar, where the clitics are the alternatives.
+        forms.sort_by(|a, b| a.0.cmp(&b.0).then(b.1.cmp(&a.1)).then(a.2.cmp(&b.2)));
+        let obs = observations
+            .entry(owner)
+            .or_insert_with(|| Observation::new(pos.arity()));
+        for (_, _, _, surface) in forms {
+            obs.attest(cell, &surface);
+        }
+    }
+    for (owner, obs) in observations {
+        let key = LexemeKey {
+            tag: tag(&SYN),
+            pos,
+            lemma: owner,
+        };
+        // Each entry is one lexeme (a homograph gets its own observation);
+        // the personal pronoun is the one shared row.
+        push_observation(lexemes, key, obs, pos == Pos::Pronoun);
+    }
+}
+
+/// The lemma of each adjective series in an entry: the headword for its own
+/// series; for the other, the most frequent attested masculine nominative
+/// singular, else the nominative the paradigm class's legend gives it
+/// ([`legend_nominative`]). A series with neither has no lemma and its forms
+/// are skipped.
+fn adjective_series_lemmas(entry: &polyakov::Entry, lemma: &str) -> BTreeMap<Series, String> {
+    let headword: String = entry.lemma.nfc().collect();
+    let headword_series = entry
+        .forms
+        .iter()
+        .filter(|f| f.form.nfc().collect::<String>() == headword)
+        .flat_map(|f| &f.cells)
+        .map(|set| polyakov::features(set))
+        .filter(|f| !f.comparative)
+        .find_map(|f| f.series)
+        .unwrap_or(if has_long_ending(lemma) {
+            Series::Long
+        } else {
+            Series::Short
+        });
+    let mut out = BTreeMap::new();
+    out.insert(headword_series, lemma.to_string());
+    let other = match headword_series {
+        Series::Short => Series::Long,
+        Series::Long => Series::Short,
+    };
+    let nominative = entry
+        .forms
+        .iter()
+        .filter(|f| {
+            f.cells.iter().map(|set| polyakov::features(set)).any(|f| {
+                f.series == Some(other)
+                    && !f.comparative
+                    && f.number == Some(Number::Singular)
+                    && f.gender == Some(Gender::Masculine)
+                    && f.cases.contains(&Case::Nominative)
+            })
+        })
+        .max_by_key(|f| f.count)
+        .and_then(|f| polyakov_key(&f.form))
+        .or_else(|| legend_nominative(&entry.class, lemma, other));
+    if let Some(l) = nominative {
+        out.insert(other, l);
+    }
+    out
+}
+
+fn has_long_ending(lemma: &str) -> bool {
+    lemma.ends_with("ый") || lemma.ends_with("ій") || lemma.ends_with("ой")
+}
+
+/// The other series' masculine nominative singular as `flexslav.htm` defines
+/// it for the entry's paradigm class: `A1t`/`A1k`/`A1g`/`A1a`/`A1n` (and the
+/// possessive `A2t`) pair `-ъ` with `-ый` (`-ій` after a velar), `A1j`/`A1s`/
+/// `A2j`/`A2s` pair `-ь` with `-ій`, `A1i`/`A2i` (`божій`) share one
+/// nominative. A starred class (`A1t*`: `умный` ~ `уменъ`) has a fleeting
+/// vowel the legend does not spell out, so it derives nothing. The key is
+/// unaccented, so the series' accent difference is immaterial.
+fn legend_nominative(class: &str, lemma: &str, wanted: Series) -> Option<String> {
+    let first = class.split('/').next()?;
+    if first.contains('*') {
+        return None;
+    }
+    let letter = first
+        .strip_prefix('A')?
+        .trim_start_matches(|c: char| c.is_ascii_digit())
+        .chars()
+        .next()?;
+    let stem_and_long = |stem: &str| match letter {
+        'k' | 'g' => Some(format!("{stem}ій")),
+        't' | 'a' | 'n' => Some(format!("{stem}ый")),
+        'j' | 's' => Some(format!("{stem}ій")),
+        _ => None,
+    };
+    match (wanted, letter) {
+        (_, 'i') => Some(lemma.to_string()),
+        (Series::Short, 't' | 'k' | 'g' | 'a' | 'n') => {
+            let stem = strip_long_ending(lemma)?;
+            Some(format!("{stem}ъ"))
+        }
+        (Series::Short, 'j' | 's') => {
+            let stem = strip_long_ending(lemma)?;
+            Some(format!("{stem}ь"))
+        }
+        (Series::Long, 't' | 'k' | 'g' | 'a' | 'n') => stem_and_long(lemma.strip_suffix('ъ')?),
+        (Series::Long, 'j' | 's') => stem_and_long(lemma.strip_suffix('ь')?),
+        _ => None,
+    }
+}
+
+fn strip_long_ending(lemma: &str) -> Option<&str> {
+    ["ый", "ій", "ой"]
+        .iter()
+        .find_map(|e| lemma.strip_suffix(e))
+}
+
+fn polyakov_noun_cells(f: &Features) -> Result<Vec<usize>, &'static str> {
+    let number = f.number.ok_or("noun: no number")?;
+    if f.cases.is_empty() {
+        return Err("noun: no case");
+    }
+    Ok(f.cases.iter().map(|c| noun_cell(c, &number)).collect())
+}
+
+fn polyakov_adj_cells(
+    f: &Features,
+    series_lemmas: &BTreeMap<Series, String>,
+) -> Result<Attestation, &'static str> {
+    let series = f.series.ok_or("adjective: no series tag")?;
+    let lemma = series_lemmas.get(&series).ok_or(match series {
+        Series::Short => "adjective: short series without an attested masculine nominative",
+        Series::Long => "adjective: long series without an attested masculine nominative",
+    })?;
+    let number = f.number.ok_or("adjective: no number")?;
+    if f.cases.is_empty() {
+        return Err("adjective: no case");
+    }
+    let degree = if f.comparative {
+        Degree::Comparative
+    } else {
+        Degree::Positive
+    };
+    let genders: Vec<Gender> = f.gender.map_or_else(|| GENDERS.to_vec(), |g| vec![g]);
+    let mut cells = Vec::new();
+    for case in &f.cases {
+        for gender in &genders {
+            cells.extend(adj_cell(case, &number, gender, &degree));
+        }
+    }
+    Ok((lemma.clone(), cells))
+}
+
+fn polyakov_verb_cells(f: &Features, perfective: bool) -> Result<Vec<usize>, &'static str> {
+    if f.infinitive {
+        return Err("verb: infinitive (the lemma itself)");
+    }
+    if f.tense == Some(TenseTag::Perfect) {
+        return Err("verb: perfect (the l-participle)");
+    }
+    if f.participle {
+        if f.voice == Some(Voice::Passive) {
+            return Err("verb: passive participle");
+        }
+        if f.series == Some(Series::Long) {
+            return Err("verb: long-series participle");
+        }
+        let citation = f.number == Some(Number::Singular)
+            && f.gender == Some(Gender::Masculine)
+            && f.cases.contains(&Case::Nominative);
+        if !citation {
+            return Err("verb: participle declension");
+        }
+        return match f.tense {
+            Some(TenseTag::Present) => Ok(vec![36]),
+            Some(TenseTag::Future) if perfective => Ok(vec![36]),
+            Some(TenseTag::Past) => Ok(vec![37]),
+            _ => Err("verb: participle outside the two citation cells"),
+        };
+    }
+    let (tense, form) = match (f.mood, f.tense) {
+        (Some(Mood::Imperative), _) => (Tense::Present, Form::Imperative),
+        (_, Some(TenseTag::Present)) => (Tense::Present, Form::Finite),
+        (_, Some(TenseTag::Future)) if perfective => (Tense::Present, Form::Finite),
+        (_, Some(TenseTag::Future)) => return Err("verb: future of an imperfective"),
+        (_, Some(TenseTag::Aorist)) => (Tense::Aorist, Form::Finite),
+        (_, Some(TenseTag::Imperfect)) => (Tense::Imperfect, Form::Finite),
+        _ => return Err("verb: finite form without a tense"),
+    };
+    let number = f.number.ok_or("verb: no number")?;
+    let person = f.person.ok_or("verb: no person")?;
+    verb_cell(&person, &number, &tense, &form)
+        .map(|c| vec![c])
+        .ok_or("verb: cell outside the schema")
+}
+
+fn polyakov_pronoun_cells(f: &Features, person: Person) -> Result<Vec<usize>, &'static str> {
+    let number = f.number.ok_or("pronoun: no number")?;
+    let genders: Vec<Gender> = match (person, f.gender) {
+        (Person::Third, Some(g)) => vec![g],
+        _ => GENDERS.to_vec(),
+    };
+    let cells: Vec<usize> = f
+        .cases
+        .iter()
+        .filter(|c| **c != Case::Vocative)
+        .flat_map(|case| {
+            genders
+                .iter()
+                .map(move |g| pronoun_cell(&person, &number, g, case))
+        })
+        .collect();
+    if cells.is_empty() {
+        return Err("pronoun: no case");
+    }
+    Ok(cells)
+}
+
+// ---------------------------------------------------------------------------
 // Finalize: subtract the rules, number the survivors.
 // ---------------------------------------------------------------------------
 
@@ -1046,5 +1511,312 @@ mod tests {
         assert_eq!(row[noun_cell(&Case::Genitive, &Number::Singular)], "раба̀");
         assert_eq!(row[noun_cell(&Case::Dative, &Number::Singular)], "");
         assert_eq!(row.len(), CASES.len() * 3);
+    }
+
+    fn polyakov_entry(
+        lemma: &str,
+        tags: &str,
+        class: &str,
+        forms: &[(&str, &str, u64)],
+    ) -> polyakov::Entry {
+        polyakov::Entry {
+            lemma: lemma.to_string(),
+            tags: tags.split(',').map(str::to_string).collect(),
+            class: class.to_string(),
+            count: forms.iter().map(|f| f.2).sum(),
+            forms: forms
+                .iter()
+                .map(|(form, tags, count)| polyakov::FormEntry {
+                    form: form.to_string(),
+                    tags: tags.to_string(),
+                    count: *count,
+                    cells: polyakov::expand(tags),
+                })
+                .collect(),
+        }
+    }
+
+    #[test]
+    fn polyakov_frequency_orders_a_cell_and_expansions_attest_every_cell() {
+        let e = polyakov_entry(
+            "аарѡ́нъ",
+            "S,m,anim,persn",
+            "N1t",
+            &[
+                ("аарѡ́на", "sg,gen/acc", 90),
+                ("аарѡ́нови", "sg,dat", 1),
+                ("аарѡ́ну", "sg,dat", 86),
+                ("аарѡ́нѣхъ", "", 2),
+                ("другъдру́га", "gen/acc", 3),
+            ],
+        );
+        let mut lexemes = Lexemes::new();
+        let mut skips = Skips::default();
+        gather_polyakov_entry(&e, &mut lexemes, &mut skips);
+        let (key, obs) = only(&lexemes);
+        assert_eq!(
+            (key.tag, key.pos, key.lemma.as_str()),
+            ("syn", Pos::Noun, "аарѡнъ")
+        );
+        let cell = |c: Case| obs[0].cells[noun_cell(&c, &Number::Singular)].clone();
+        assert_eq!(cell(Case::Genitive), ["аарѡ́на"]);
+        assert_eq!(cell(Case::Accusative), ["аарѡ́на"]);
+        assert_eq!(cell(Case::Dative), ["аарѡ́ну", "аарѡ́нови"]);
+        assert_eq!(skips.by_reason.get("form: unanalysed"), Some(&1));
+        assert_eq!(skips.by_reason.get("noun: no number"), Some(&2));
+        assert_eq!(skips.mapped, 4);
+    }
+
+    #[test]
+    fn polyakov_adjective_series_are_two_lemmas_and_the_legend_spells_a_missing_nominative() {
+        // The headword is long; the short series has an attested nominative.
+        let e = polyakov_entry(
+            "багря́ный",
+            "A",
+            "A1t",
+            &[
+                ("багря́ный", "plen,sg,m,nom/acc", 2),
+                ("багря́нѣй", "plen,sg,f,dat/loc|comp,brev,sg,m,nom/acc", 1),
+                ("багря́ныхъ", "plen/brev,pl,gen/loc", 1),
+                ("багря́нъ", "brev,sg,m,nom/acc", 1),
+            ],
+        );
+        let mut lexemes = Lexemes::new();
+        gather_polyakov_entry(&e, &mut lexemes, &mut Skips::default());
+        let lemmas: Vec<&str> = lexemes.keys().map(|k| k.lemma.as_str()).collect();
+        assert_eq!(lemmas, ["багрянъ", "багряный"]);
+        let short = &lexemes.values().next().expect("short")[0];
+        let long = &lexemes.values().nth(1).expect("long")[0];
+        let gen_pl = |g: Gender| {
+            adj_cell(&Case::Genitive, &Number::Plural, &g, &Degree::Positive).expect("cell")
+        };
+        assert_eq!(short.cells[gen_pl(Gender::Neuter)], ["багря́ныхъ"]);
+        assert_eq!(long.cells[gen_pl(Gender::Feminine)], ["багря́ныхъ"]);
+        let comp = adj_cell(
+            &Case::Nominative,
+            &Number::Singular,
+            &Gender::Masculine,
+            &Degree::Comparative,
+        )
+        .expect("cell");
+        assert_eq!(short.cells[comp], ["багря́нѣй"]);
+        assert!(long.cells[comp].is_empty());
+
+        // No attested short nominative: the class legend spells it (A1k: -ій ~ -ъ);
+        // a starred class (fleeting vowel) spells nothing and the series is skipped.
+        for (class, expect) in [("A1k", Some("великъ")), ("A1t*", None)] {
+            let e = polyakov_entry(
+                "вели́кій",
+                "A",
+                class,
+                &[
+                    ("вели́ка", "brev,sg,m/n,gen/acc", 5),
+                    ("вели́кій", "plen,sg,m,nom/acc", 9),
+                ],
+            );
+            let mut lexemes = Lexemes::new();
+            let mut skips = Skips::default();
+            gather_polyakov_entry(&e, &mut lexemes, &mut skips);
+            let lemmas: Vec<&str> = lexemes.keys().map(|k| k.lemma.as_str()).collect();
+            match expect {
+                Some(short) => assert_eq!(lemmas, [short, "великій"]),
+                None => {
+                    assert_eq!(lemmas, ["великій"]);
+                    assert_eq!(
+                        skips.by_reason.get(
+                            "adjective: short series without an attested masculine nominative"
+                        ),
+                        Some(&4)
+                    );
+                }
+            }
+        }
+        assert_eq!(
+            legend_nominative("A2t", "аарѡновъ", Series::Long).as_deref(),
+            Some("аарѡновый")
+        );
+        assert_eq!(
+            legend_nominative("A2j", "аарѡнь", Series::Long).as_deref(),
+            Some("аарѡній")
+        );
+        assert_eq!(
+            legend_nominative("A1i", "божій", Series::Long).as_deref(),
+            Some("божій")
+        );
+    }
+
+    #[test]
+    fn polyakov_verb_cells_follow_aspect_and_only_citation_participles_map() {
+        let forms: &[(&str, &str, u64)] = &[
+            ("да́ти", "inf", 10),
+            ("да́мъ", "indic,fut,sg,1p", 7),
+            ("да́сть", "indic,fut,sg,2p/3p", 9),
+            ("да́хъ", "indic,aor,sg,1p", 3),
+            ("да́лъ", "partcp,perf,sg,m", 4),
+            ("да́вый", "partcp,praet,act,plen,sg,m/n,nom", 2),
+            ("да́въ", "partcp,praet,act,brev,sg,m/n,nom", 6),
+            ("да́вша", "partcp,praet,act,brev,sg,m/n,gen/acc", 1),
+            ("да́ный", "partcp,praet,pass,plen,sg,m,nom/acc", 1),
+            ("да́ждь", "imper,sg,2p/3p", 5),
+        ];
+        let mut lexemes = Lexemes::new();
+        let mut skips = Skips::default();
+        gather_polyakov_entry(
+            &polyakov_entry("да́ти", "V,pf,tran", "Vdat", forms),
+            &mut lexemes,
+            &mut skips,
+        );
+        let (key, obs) = only(&lexemes);
+        assert_eq!(key.lemma, "дати");
+        let cell = |p: Person, n: Number, t: Tense, f: Form| {
+            obs[0].cells[verb_cell(&p, &n, &t, &f).expect("cell")].clone()
+        };
+        assert_eq!(
+            cell(
+                Person::First,
+                Number::Singular,
+                Tense::Present,
+                Form::Finite
+            ),
+            ["да́мъ"]
+        );
+        assert_eq!(
+            cell(
+                Person::Third,
+                Number::Singular,
+                Tense::Present,
+                Form::Finite
+            ),
+            ["да́сть"]
+        );
+        assert_eq!(
+            cell(Person::First, Number::Singular, Tense::Aorist, Form::Finite),
+            ["да́хъ"]
+        );
+        assert_eq!(
+            cell(
+                Person::Second,
+                Number::Singular,
+                Tense::Present,
+                Form::Imperative
+            ),
+            ["да́ждь"]
+        );
+        assert_eq!(obs[0].cells[37], ["да́въ"]);
+        assert!(obs[0].cells[36].is_empty());
+        for (reason, n) in [
+            ("verb: infinitive (the lemma itself)", 1),
+            ("verb: perfect (the l-participle)", 1),
+            ("verb: long-series participle", 2),
+            ("verb: participle declension", 5),
+            ("verb: passive participle", 2),
+        ] {
+            assert_eq!(skips.by_reason.get(reason), Some(&n), "{reason}");
+        }
+        // An imperfective's `fut` is periphrastic and stays out.
+        let mut lexemes = Lexemes::new();
+        let mut skips = Skips::default();
+        gather_polyakov_entry(
+            &polyakov_entry(
+                "бы́ти",
+                "V,ipf,intr",
+                "Vbyt",
+                &[("бу́ду", "indic,fut,sg,1p", 1)],
+            ),
+            &mut lexemes,
+            &mut skips,
+        );
+        assert!(lexemes.is_empty());
+        assert_eq!(
+            skips.by_reason.get("verb: future of an imperfective"),
+            Some(&1)
+        );
+    }
+
+    #[test]
+    fn polyakov_pronouns_fill_the_personal_matrix_and_others_are_skipped() {
+        let mut lexemes = Lexemes::new();
+        let mut skips = Skips::default();
+        gather_polyakov_entry(
+            &polyakov_entry(
+                "а́зъ",
+                "SPRO",
+                "PNja",
+                &[("мене́", "sg,acc", 2690), ("мя́", "sg,acc,clit", 9226)],
+            ),
+            &mut lexemes,
+            &mut skips,
+        );
+        gather_polyakov_entry(
+            &polyakov_entry(
+                "и́",
+                "SPRO",
+                "PA2i",
+                &[("єгѡ́", "sg,m/n,gen", 16171), ("єя́", "sg,f,gen", 2344)],
+            ),
+            &mut lexemes,
+            &mut skips,
+        );
+        gather_polyakov_entry(
+            &polyakov_entry("кто́", "SPRO", "PNkto", &[("кого́", "sg,acc", 199)]),
+            &mut lexemes,
+            &mut skips,
+        );
+        let (key, obs) = only(&lexemes);
+        assert_eq!(key.lemma, PRONOUN_KEY);
+        assert_eq!(obs.len(), 1);
+        let cell = |p: Person, g: Gender, c: Case| {
+            obs[0].cells[pronoun_cell(&p, &Number::Singular, &g, &c)].clone()
+        };
+        assert_eq!(
+            cell(Person::First, Gender::Feminine, Case::Accusative),
+            ["мене́", "мя́"]
+        );
+        assert_eq!(cell(Person::Third, Gender::Neuter, Case::Genitive), ["єгѡ́"]);
+        assert_eq!(
+            cell(Person::Third, Gender::Feminine, Case::Genitive),
+            ["єя́"]
+        );
+        assert_eq!(
+            skips.by_reason.get("pronoun: outside the personal matrix"),
+            Some(&1)
+        );
+    }
+
+    #[test]
+    fn alypy_merges_into_the_polyakov_observation_and_disagreements_are_counted() {
+        let dat = noun_cell(&Case::Dative, &Number::Singular);
+        let genitive = noun_cell(&Case::Genitive, &Number::Singular);
+        let polyakov = lexeme(
+            "syn",
+            Pos::Noun,
+            "рабъ",
+            &[(dat, &["рабу́"]), (genitive, &["раба́"])],
+        );
+        let mut both = polyakov.clone();
+        let alypy_obs = {
+            let l = lexeme(
+                "syn",
+                Pos::Noun,
+                "рабъ",
+                &[(dat, &["рабꙋ̀"]), (genitive, &["раба́"])],
+            );
+            l.into_values().next().expect("obs").remove(0)
+        };
+        let key = both.keys().next().expect("key").clone();
+        push_observation(&mut both, key, alypy_obs.clone(), true);
+        let obs = &both.values().next().expect("obs");
+        assert_eq!(obs.len(), 1);
+        assert_eq!(obs[0].cells[dat], ["рабу́", "рабꙋ̀"]);
+        let mut alypy = Lexemes::new();
+        alypy.insert(
+            polyakov.keys().next().expect("key").clone(),
+            vec![alypy_obs],
+        );
+        // The dative differs only by the print's letter and accent conventions.
+        assert_eq!(disagreements(&alypy, &polyakov), (1, 0));
+        let t = finalize(&both);
+        let keys: Vec<&str> = t.noun.iter().map(|(k, _)| k.as_str()).collect();
+        assert_eq!(keys, ["syn:рабъ", "syn:рабъ_2"]);
     }
 }

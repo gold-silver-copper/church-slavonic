@@ -28,12 +28,10 @@ fn attested_variants_are_numbered_by_their_form_signature() {
         noun("аблань_2", Case::Instrumental, Number::Singular, OCS),
         "абланьѭ"
     );
-    // рабъ in the Synodal grammar prints two genitive plurals.
-    assert_eq!(noun("рабъ", Case::Genitive, Number::Plural, SYN), "рабъ");
-    assert_eq!(
-        noun("рабъ_2", Case::Genitive, Number::Plural, SYN),
-        "рабѡ́въ"
-    );
+    // рабъ: the grammar prints two genitive plurals and the corpus attests
+    // more spellings; the sort spreads them over the bare key and `_n`.
+    assert_eq!(noun("рабъ", Case::Genitive, Number::Plural, SYN), "рабѡ́въ");
+    assert_eq!(noun("рабъ_4", Case::Genitive, Number::Plural, SYN), "рабъ");
 }
 
 #[test]

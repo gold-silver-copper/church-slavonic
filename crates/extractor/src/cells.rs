@@ -225,13 +225,13 @@ impl Pos {
     }
 }
 
-/// Does an attested surface count as "what the rule already says"? Each
-/// recension has exactly one source, and the comparison follows the source's
-/// accent policy: the Kaikki dump (OCS) is unaccented, so two spellings are one
-/// form when their [`comparison_key`]s agree; the Alypy grammar (Synodal)
-/// prints accents, breathings and titla, and the surface is compared exactly —
-/// the rules never produce accents, so an accented Synodal cell is served by
-/// the table.
+/// Does an attested surface count as "what the rule already says"? The
+/// comparison follows the recension's sources' accent policy: the Kaikki dump
+/// (OCS) is unaccented, so two spellings are one form when their
+/// [`comparison_key`]s agree; the Alypy grammar and Polyakov's dictionary
+/// (Synodal) print accents (and the grammar breathings and titla), and the
+/// surface is compared exactly — the rules never produce accents, so an
+/// accented Synodal cell is served by the table.
 pub fn rule_matches(recension: &Recension, attested: &str, predicted: &str) -> bool {
     match recension {
         Recension::OldChurchSlavonic => comparison_key(attested) == comparison_key(predicted),

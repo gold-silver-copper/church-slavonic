@@ -26,6 +26,7 @@ dependencies = [
  "church-slavonic-core",
  "serde",
  "serde_json",
+ "unicode-normalization",
 ]
 
 [[package]]

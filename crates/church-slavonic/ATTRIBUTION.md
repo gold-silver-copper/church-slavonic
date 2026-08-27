@@ -1,7 +1,7 @@
 # Bundled table attribution
 
 The generated tables in this package (`generated/*_phf.rs`) are derived from
-two labelled full-form sources, each tagged with the recension it attests.
+three labelled full-form sources, each tagged with the recension it attests.
 
 ## Old Church Slavonic (`ocs:` rows)
 
@@ -20,6 +20,15 @@ Church Slavonic Language* (Holy Trinity Monastery, Jordanville; web edition).
 The rows reproduce the grammar's inflected word forms — linguistic data of a
 liturgical language, not the grammar's expository text — with their printed
 accents, breathings and titla.
+
+A. E. Polyakov, *Grammatical dictionary of Church Slavonic (corpus-based)*,
+tagged web edition (<http://dic.feb-web.ru/slavonic/dicgram/>; created 2013,
+RGNF project 12-04-12045, revised 2015–2017, RFBR project 17-04-12064), built
+on the Church Slavonic corpus of the Russian National Corpus. The rows
+reproduce its corpus-attested inflected word forms with their printed
+accents, as the dictionary spells them (`у`, no breathings). Derived data
+ships under the crate licence by the institutional grant recorded in the
+repository's `references/TERMS.md`.
 
 ## Code
 

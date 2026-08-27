@@ -25,7 +25,8 @@ fn base_surface_helpers_work() {
             &Form::Finite,
             &SYN
         ),
-        "несꙋ̀"
+        // Polyakov's corpus primary; the grammar's `несꙋ̀` is `нести_2`.
+        "несу́"
     );
     assert_eq!(
         ChurchSlavonic::verb(

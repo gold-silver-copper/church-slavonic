@@ -10,8 +10,8 @@
 //! comparison policy ([`crate::cells::rule_matches`]: accent-blind for the
 //! Kaikki dump, exact for the accented Alypy print).
 //!
-//! Two tables are reported, per part of speech per recension — the README's
-//! two tables:
+//! Two tables are reported, per part of speech per source (each source scored
+//! on its own against the tables all of them fed) — the README's two tables:
 //! - recall through any key (the headline), with the variant gap: attested
 //!   forms no published key produces;
 //! - bare-lemma correctness ([`BareScore`]): does the natural bare-lemma call
@@ -130,7 +130,7 @@ mod harness {
         CASES, GENDERS, NUMBERS, PERSONS, PRONOUN_KEY, Pos, VERB_BLOCKS, recension_of_tag,
         rule_matches,
     };
-    use crate::extract::{Lexemes, gather};
+    use crate::extract::{Lexemes, Source, gather_sources};
     use church_slavonic::ChurchSlavonic;
     use church_slavonic_core::grammar::*;
     use std::collections::BTreeMap;
@@ -240,13 +240,6 @@ mod harness {
         misses: String,
     }
 
-    fn label(tag: &str) -> &'static str {
-        match tag {
-            "ocs" => "OCS",
-            _ => "Synodal",
-        }
-    }
-
     fn pos_label(pos: Pos) -> &'static str {
         match pos {
             Pos::Noun => "Nouns",
@@ -256,11 +249,26 @@ mod harness {
         }
     }
 
+    /// Each source is scored on its own against the published tables (which
+    /// every source fed): the number measures the table/rule machinery, not
+    /// generalisation.
     pub fn run(intermediate_dir: &Path, artifacts_dir: &Path) -> Result<(), Box<dyn Error>> {
-        let lexemes: Lexemes = gather(intermediate_dir)?;
         let published = published_keys()?;
-        let mut reports: BTreeMap<(Pos, &'static str), Report> = BTreeMap::new();
-        for (key, observations) in &lexemes {
+        let mut reports: BTreeMap<(Pos, Source), Report> = BTreeMap::new();
+        for source in Source::ALL {
+            let lexemes: Lexemes = gather_sources(intermediate_dir, &[source])?;
+            score_source(source, &lexemes, &published, &mut reports);
+        }
+        report(&reports, artifacts_dir)
+    }
+
+    fn score_source(
+        source: Source,
+        lexemes: &Lexemes,
+        published: &Published,
+        reports: &mut BTreeMap<(Pos, Source), Report>,
+    ) {
+        for (key, observations) in lexemes {
             let Some(recension) = recension_of_tag(key.tag) else {
                 continue;
             };
@@ -268,9 +276,9 @@ mod harness {
             let keys = if key.pos == Pos::Pronoun {
                 vec![PRONOUN_KEY.to_string()]
             } else {
-                keys_for(&published, key.tag, key.pos, &key.lemma)
+                keys_for(published, key.tag, key.pos, &key.lemma)
             };
-            let report = reports.entry((key.pos, key.tag)).or_default();
+            let report = reports.entry((key.pos, source)).or_default();
             for i in 0..key.pos.arity() {
                 let attested = slot_forms(observations, i);
                 if attested.is_empty() {
@@ -305,17 +313,22 @@ mod harness {
                 }
             }
         }
+    }
 
+    fn report(
+        reports: &BTreeMap<(Pos, Source), Report>,
+        artifacts_dir: &Path,
+    ) -> Result<(), Box<dyn Error>> {
         let mut out = String::new();
         out.push_str("\nRecall through any published key (attested source slots the library reproduces via the bare lemma or any `_n` key):\n\n");
         out.push_str("| Part of Speech | Recension | Correct / Total | Accuracy | Variant gap |\n");
         out.push_str("|----------------|-----------|-----------------|----------|-------------|\n");
-        for ((pos, tag), r) in &reports {
+        for ((pos, source), r) in reports {
             let _ = writeln!(
                 out,
                 "| **{}** | {} | {} / {} | {} | {} |",
                 pos_label(*pos),
-                label(tag),
+                source.recension_label(),
                 r.recall.matched_slots,
                 r.recall.total_slots,
                 r.recall.percent_display(),
@@ -325,7 +338,7 @@ mod harness {
         out.push_str("\nBare-lemma correctness (does the natural bare-lemma call return the primary, first-listed, attested form?):\n\n");
         out.push_str("| Part of Speech | Recension | Bare Primary / Total | Bare Accuracy | Demoted to `_n` |\n");
         out.push_str("|----------------|-----------|----------------------|---------------|-----------------|\n");
-        for ((pos, tag), r) in &reports {
+        for ((pos, source), r) in reports {
             let pct = Score {
                 matched_slots: r.bare.bare_primary_hits,
                 total_slots: r.bare.total,
@@ -336,7 +349,7 @@ mod harness {
                 out,
                 "| **{}** | {} | {} / {} | {} | {} |",
                 pos_label(*pos),
-                label(tag),
+                source.recension_label(),
                 r.bare.bare_primary_hits,
                 r.bare.total,
                 pct,
@@ -344,15 +357,15 @@ mod harness {
             );
         }
         print!("{out}");
-        for ((pos, tag), r) in &reports {
-            let path = artifacts_dir.join(format!("{}_{}_misses.tsv", pos.label(), tag));
+        for ((pos, source), r) in reports {
+            let path = artifacts_dir.join(format!("{}_{}_misses.tsv", pos.label(), source.label()));
             fs::write(
                 &path,
                 format!("lemma\tcell\tattested\tproduced\tkind\n{}", r.misses),
             )?;
         }
         println!(
-            "\nMisses written to {}/<pos>_<recension>_misses.tsv",
+            "\nMisses written to {}/<pos>_<source>_misses.tsv",
             artifacts_dir.display()
         );
         Ok(())

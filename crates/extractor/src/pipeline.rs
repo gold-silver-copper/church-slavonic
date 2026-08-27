@@ -9,16 +9,17 @@
 use crate::args::Config;
 use crate::bootstrap::generate_tables;
 use crate::checks::run_checks;
-use crate::extract::{ALYPY_INTERMEDIATE, KAIKKI_INTERMEDIATE, finalize, gather};
-use crate::{alypy, kaikki};
+use crate::extract::{Source, disagreements, finalize, gather, gather_sources};
+use crate::{alypy, kaikki, polyakov};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
 
-/// The two pinned sources, relative to `--sources`.
+/// The three pinned sources, relative to `--sources`.
 pub const KAIKKI_SOURCE: &str =
     "english-wiktionary-ocs/kaikki.org-dictionary-OldChurchSlavonic.jsonl";
 pub const ALYPY_SOURCE: &str = "alypy-grammar";
+pub const POLYAKOV_SOURCE: &str = "polyakov";
 
 /// Run one full data refresh. On success the four generated PHF tables are a
 /// pure deterministic function of the (filtered) sources.
@@ -26,10 +27,12 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     fs::create_dir_all(&config.generated_dir)?;
     fs::create_dir_all(&config.artifacts_dir)?;
 
-    let kaikki_out = config.artifacts_dir.join(KAIKKI_INTERMEDIATE);
-    let alypy_out = config.artifacts_dir.join(ALYPY_INTERMEDIATE);
+    let kaikki_out = config.artifacts_dir.join(Source::Kaikki.intermediate());
+    let alypy_out = config.artifacts_dir.join(Source::Alypy.intermediate());
+    let polyakov_out = config.artifacts_dir.join(Source::Polyakov.intermediate());
     let kaikki_src = config.sources_dir.join(KAIKKI_SOURCE);
     let alypy_src = config.sources_dir.join(ALYPY_SOURCE);
+    let polyakov_src = config.sources_dir.join(POLYAKOV_SOURCE);
 
     if kaikki_src.is_file() {
         kaikki::filter(&kaikki_src, &kaikki_out)?;
@@ -41,6 +44,11 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     } else {
         reuse_or_fail(&alypy_out, &alypy_src)?;
     }
+    if polyakov_src.is_dir() {
+        polyakov::filter(&polyakov_src, &polyakov_out)?;
+    } else {
+        reuse_or_fail(&polyakov_out, &polyakov_src)?;
+    }
 
     if config.checks_only {
         run_checks(&config.artifacts_dir, &config.artifacts_dir)?;
@@ -49,6 +57,13 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     }
 
     let lexemes = gather(&config.artifacts_dir)?;
+    let (exact, beyond) = disagreements(
+        &gather_sources(&config.artifacts_dir, &[Source::Alypy])?,
+        &gather_sources(&config.artifacts_dir, &[Source::Polyakov])?,
+    );
+    println!(
+        "Alypy/Polyakov slots attested by both with a different primary: {exact} ({beyond} beyond accent and letter conventions) — variants by the sort."
+    );
     let tables = finalize(&lexemes);
     generate_tables(&tables, &config.generated_dir)?;
     println!(

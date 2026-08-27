@@ -1,8 +1,11 @@
 //! Exhaustive coverage of the `ChurchSlavonic::pronoun` matrix.
 //!
 //! The personal pronoun is one lemma-less row per recension: the Kaikki
-//! `и`/`ꙗ`/`ѥ` tables (OCS) and §47 of the Alypy grammar (Synodal) over the
-//! rule engine's closed matrix. Gender is consulted only in the third person;
+//! `и`/`ꙗ`/`ѥ` tables (OCS) and, for Synodal, Polyakov's corpus primaries
+//! (frequency-ordered, full forms before enclitics) with §47 of the Alypy
+//! grammar filling the cells the corpus lacks (the duals) — the grammar's
+//! other spellings are the row's variant gap, since the lemma-less call
+//! reaches one row. Gender is consulted only in the third person;
 //! the vocative answers with the nominative. This pins every cell of the
 //! first and second persons and the third-person singular in both recensions,
 //! so a transposed cell or a wrong recension condition cannot ship silently.
@@ -37,7 +40,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::First, Number::Singular, g, SYN),
-            ["а҆́зъ", "менѐ", "мнѣ̀", "менѐ", "мно́ю", "мнѣ̀"]
+            ["а́зъ", "менє́", "мнѣ́", "мене́", "мно́ю", "мнѣ́"]
         );
         assert_eq!(
             row(Person::First, Number::Dual, g, OCS),
@@ -53,7 +56,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::First, Number::Plural, g, SYN),
-            ["мы̀", "на́съ", "на́мъ", "ны̀", "на́ми", "на́съ"]
+            ["ны́", "на́съ", "на́мъ", "на́съ", "на́ми", "на́съ"]
         );
         assert_eq!(
             row(Person::Second, Number::Singular, g, OCS),
@@ -65,7 +68,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::Second, Number::Plural, g, SYN),
-            ["вы̀", "ва́съ", "ва́мъ", "вы̀", "ва́ми", "ва́съ"]
+            ["вы́", "ва́съ", "ва́мъ", "ва́съ", "ва́ми", "ва́съ"]
         );
     }
 }
@@ -86,18 +89,19 @@ fn third_person_singular_varies_by_gender() {
         row(Person::Third, Number::Singular, Gender::Neuter, OCS),
         ["ѥ", "ѥго", "ѥмоу", "ѥ", "имь", "ѥмь"]
     );
-    // Synodal: §47 with its accents; the genitive-shaped accusative.
+    // Synodal: the corpus's anaphoric `и́`/`я́`/`є́` and its most frequent
+    // oblique spellings (the prepositional `не́мъ`/`не́й` outnumber `є́мъ`).
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Masculine, SYN),
-        ["ѻ҆́нъ", "є҆гѡ̀", "є҆мꙋ̀", "є҆го̀", "и҆́мъ", "е́мъ"]
+        ["и́", "єгѡ́", "єму́", "єго́", "и́мъ", "не́мъ"]
     );
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Feminine, SYN),
-        ["ѻ҆на̀", "є҆ѧ̀", "є҆́й", "ю҆̀", "є҆́ю", "е́й"]
+        ["я́", "єя́", "не́й", "ю́", "не́ю", "не́й"]
     );
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Neuter, SYN),
-        ["ѻ҆но̀", "є҆гѡ̀", "є҆мꙋ̀", "є҆̀", "и҆́мъ", "е́мъ"]
+        ["є́", "єгѡ́", "єму́", "є́", "и́мъ", "не́мъ"]
     );
 }
 
@@ -121,7 +125,7 @@ fn third_person_plural_and_dual() {
     );
     assert_eq!(
         row(Person::Third, Number::Plural, Gender::Masculine, SYN),
-        ["ѻ҆нѝ", "и҆́хъ", "и҆̀мъ", "ѧ҆̀", "и҆́ми", "и́хъ"]
+        ["ѻ҆нѝ", "и́хъ", "и́мъ", "и́хъ", "ни́ми", "и́хъ"]
     );
     assert_eq!(
         row(Person::Third, Number::Dual, Gender::Feminine, SYN)[0],
