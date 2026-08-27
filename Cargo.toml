@@ -1,15 +1,10 @@
 [workspace]
 members = [
-    "crates/church-slavonic",
-    "crates/church-slavonic-dictionary",
-    "crates/church-slavonic-extractor",
+    # Steps 3-5 of docs/ENGLISH_PARITY_PROMPT.md restore the four-crate
+    # workspace (church-slavonic, church-slavonic-core, extractor, xtask).
+    # While step 2 rebuilds the core crate the old members are detached so
+    # `cargo test --workspace` stays meaningful.
     "crates/church-slavonic-core",
-    "crates/church-slavonic-orthography",
-    "crates/old-church-slavonic-core",
-    "crates/synodal-church-slavonic-core",
-    "crates/synodal-church-slavonic",
-    "crates/synodal-church-slavonic-dictionary",
-    "crates/xtask",
 ]
 resolver = "3"
 
@@ -46,22 +41,22 @@ dbg_macro = "deny"
 todo = "deny"
 unwrap_used = "deny"
 
-[profile.dev.package.sha2]
-opt-level = 3
+# [profile.dev.package.sha2]
+# opt-level = 3
 
 # The Synodal gold replay (cargo xtask synodal-gold, also inside
 # check-structure) spends its time in the inflector, the orthography folds,
 # and the analyzer index. Optimising just those crates in the dev profile
 # takes the full replay from ~30 s to ~3 s (measured 2026-08-26) while xtask
 # itself stays a fast debug build; `cargo gold` is the release alias.
-[profile.dev.package.synodal-church-slavonic]
-opt-level = 3
-[profile.dev.package.synodal-church-slavonic-core]
-opt-level = 3
-[profile.dev.package.synodal-church-slavonic-dictionary]
-opt-level = 3
-[profile.dev.package.church-slavonic-orthography]
-opt-level = 3
+# [profile.dev.package.synodal-church-slavonic]
+# opt-level = 3
+# [profile.dev.package.synodal-church-slavonic-core]
+# opt-level = 3
+# [profile.dev.package.synodal-church-slavonic-dictionary]
+# opt-level = 3
+# [profile.dev.package.church-slavonic-orthography]
+# opt-level = 3
 [profile.dev.package.unicode-normalization]
 opt-level = 3
 

@@ -1,31 +1,48 @@
-//! Shared grammatical vocabulary for the Church Slavonic crate families.
+//! The dependency-free REGULAR fallback / prediction engine for Church
+//! Slavonic inflection.
 //!
-//! This is the first slice of the rewrite-plan kernel (docs/REWRITE_PLAN.md,
-//! phase 2): the closed grammatical category enums that both the Old Church
-//! Slavonic and Synodal families declare independently today. Each enum
-//! carries two spelling registries — the long `code()` used by the Synodal
-//! data pipeline ("nominative") and the short `abbrev()` used by the OCS
-//! pipeline ("nom") — so either family can adopt the shared type without
-//! churning its serialized artifacts.
+//! `church-slavonic-core` knows nothing about the source dumps or lookup
+//! tables: it encodes a compact approximation of productive Church Slavonic
+//! morphology — ending tables per declension and conjugation class, selected
+//! by inspecting the lemma's ending — in both recensions the crate family
+//! serves (Old Church Slavonic and the Synodal print). It is intentionally
+//! small and is not a guarantee of correct inflection for arbitrary
+//! out-of-vocabulary words; the table-backed `church-slavonic` crate is the
+//! correctness-oriented public API.
+//!
+//! # The contract with the `church-slavonic` crate (do not break casually)
+//!
+//! These rules serve two roles at once:
+//! 1. the runtime FALLBACK for any word the generated tables don't list;
+//! 2. the extractor's PREDICTION: a source attestation equal to the rule
+//!    output is dropped at table-generation time (the rule will produce it),
+//!    and its presence reserves the bare key for the rule engine.
+//!
+//! Consequently, changing any rule here changes what counts as "irregular" and
+//! REQUIRES regenerating the tables (`cargo xtask refresh-data`). Two dump-free
+//! tests partially guard the drift — the `church-slavonic` crate's
+//! `rule_table_sync` test and this crate's `regular_rules_golden` test — but
+//! `cargo xtask accuracy` (with the sources) is the authoritative check, and
+//! also measures rule quality against every attested form.
+//!
+//! Inputs are lowercase lemmas in the requested recension's own canonical
+//! spelling (OCS: `ꙑ`, `оу`, `ѫ`, `ѥ`, `ꙗ`; Synodal: `ы`, `ꙋ`, `ѧ`, `е`),
+//! unaccented; every rule takes a `&Recension` and answers in that recension's
+//! spelling. Case handling, accent restoration and the printed-form
+//! realisation ([`orthography::realise`]) are the `church-slavonic` crate's
+//! responsibility, applied on output.
 
-pub mod adjective;
-pub mod determiner;
-pub mod divergence;
+mod adj;
 pub mod grammar;
-pub mod identity;
-pub mod noun;
-pub mod noun_consonant;
-pub mod numeral;
-pub mod pronoun;
-pub mod recension;
-pub mod verb;
-pub mod verb_participle;
-pub mod verb_past;
+mod noun;
+pub mod orthography;
+mod pronoun;
+pub mod sense_key;
+mod utils;
+mod verb;
+pub use crate::grammar::*;
 
-pub use identity::{IdentityEntry, IdentityRegistry};
-pub use recension::Recension;
-
-pub use grammar::{
-    AdjectiveForm, Animacy, Case, Comparison, FiniteTense, Gender, Number, NumeralKind,
-    ParticipleTense, ParticipleVoice, Person, Voice,
-};
+/// Namespace struct for the rule engine — all functionality is associated
+/// functions (`ChurchSlavonicCore::noun`, `::verb`, `::adj`, `::pronoun`,
+/// ...); there is no state to construct.
+pub struct ChurchSlavonicCore {}

@@ -7,7 +7,9 @@ xtask = "run --package xtask --"
 # `cargo gold propose`, `cargo gold admit …`, `cargo gold loop …`.
 gold = "run --release --package xtask -- synodal-gold"
 
-[patch.crates-io]
-old-church-slavonic-core = { path = "crates/old-church-slavonic-core" }
-synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core" }
-synodal-church-slavonic = { path = "crates/synodal-church-slavonic" }
+# Detached while docs/ENGLISH_PARITY_PROMPT.md step 2 rebuilds the core
+# crate; steps 3-5 restore (or delete) these with the four-crate workspace.
+# [patch.crates-io]
+# old-church-slavonic-core = { path = "crates/old-church-slavonic-core" }
+# synodal-church-slavonic-core = { path = "crates/synodal-church-slavonic-core" }
+# synodal-church-slavonic = { path = "crates/synodal-church-slavonic" }

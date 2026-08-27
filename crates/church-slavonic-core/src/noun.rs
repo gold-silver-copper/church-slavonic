@@ -1,581 +1,467 @@
-//! The merged vocalic-stem noun inflection kernel
-//! (docs/UNIFIED_LANGUAGE_PROMPT.md, execution plan step 4, fourth POS
-//! slice; the consonant stems live in [`crate::noun_consonant`]).
+//! Regular noun declension: one 21-cell ending row per declension class and
+//! recension, selected by inspecting the lemma's ending.
 //!
-//! One recension-conditioned ending table per shared vocalic declension
-//! class. Every cell is written with both recensions side by side so that a
-//! difference is always visibly one of:
-//!
-//! - **realization** — related by the declared projection rules of
-//!   `church-slavonic-orthography::projection` (cited inline by rule id,
-//!   e.g. `gen:yery`, `gen:big-yus`, `fold:ja`, `fold:uk`) or by a named
-//!   Synodal spelling norm outside that rule set (checked by the
-//!   realization-coherence test in the orthography crate);
-//! - **a named divergence** — cited inline by its id in
-//!   [`crate::divergence::NAMED`];
-//! - **a per-recension lexical fact** — which never reaches this module:
-//!   the Synodal velar/sibilant/mixed subclasses, the lexeme-specific
-//!   profiles (господь, день, камень, ꙋдъ, дщерь, ѻко/ꙋхо), the OCS
-//!   class-0 substantives, and both families' citation parsing stay in the
-//!   family cores (see [`crate::divergence::UNMERGED`]).
-//!
-//! The family cores are adapters over these tables: they own their stem
-//! selection (palatalization seams, iotation/glide respelling, mobile
-//! vowels, wide-letter dual spellings), their interface types, validation,
-//! variant provenance, and error vocabularies, and they read their own
-//! recension's column through thin shims. Recensions other than the two
-//! attested ones yield empty cells.
-//!
-//! Each recension's column stores that family's canonical kernel spelling
-//! (OCS ꙑ/оу/ѥ/ꙗ/ѩ/ѫ/ѭ with the iotated soft series; Synodal ы/ꙋ/е/ѧ/ю
-//! with positional ї/є/ѡ), because the columns feed the family engines
-//! directly. The OCS column lists exactly one primary ending per populated
-//! cell (Polivanova's tables are variant-free at this altitude); the
-//! Synodal column lists the Alypy variant set in its reviewed order.
+//! The class guess is an approximation in the `english` style: it picks the
+//! most common class for each ending and the tables hold what it gets wrong
+//! (the `-ь` masculine i-stems `пѫть`/`гость`, the neuter `-ѧ` Synodal
+//! lemmas `отроча`, the mobile-vowel stems `отьць`/`ѻтецъ`, every consonant
+//! mutation the seam rule does not cover). The accusative is answered in its
+//! nominative shape; the genitive-shaped animate accusative is a table cell.
 
-use crate::grammar::{Animacy, Case, Number};
-use crate::recension::Recension;
+use crate::ChurchSlavonicCore;
+use crate::grammar::*;
 
-const NO_TEXTS: &[&str] = &[];
-
-/// The vocalic declension classes shared by both recensions' noun kernels.
-///
-/// The Synodal family's further subclasses (velar, sibilant, mixed-ц,
-/// glide-й, -ей, -їе, -їа, postvocalic ancient plural) are derived
-/// family-side from these columns or carried as Synodal-only paradigms; the
-/// OCS family derives its glide/sibilant respelling from the canonical
-/// iotated soft columns. Neither reaches this enum.
-#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub enum VocalicNounClass {
-    /// Polivanova's hard twofold masculine (o-stem) ↔ Alypy §§33–37 first
-    /// declension hard masculine.
-    OHardMasculine,
-    /// Polivanova's hard twofold neuter (o-stem) ↔ Alypy §34 first
-    /// declension hard neuter.
-    OHardNeuter,
-    /// Polivanova's soft twofold masculine (jo-stem) ↔ Alypy §§34–37 first
-    /// declension soft masculine.
-    JoSoftMasculine,
-    /// Polivanova's soft twofold neuter (jo-stem) ↔ Alypy §34 first
-    /// declension soft neuter.
-    JoSoftNeuter,
-    /// Polivanova's hard twofold feminine (a-stem) ↔ Alypy §39 second
-    /// declension hard.
-    AHard,
-    /// Polivanova's soft twofold feminine (ja-stem) ↔ Alypy §§39–40 second
-    /// declension soft.
-    JaSoft,
-    /// Polivanova's simplex feminine (i-stem) ↔ Alypy §41 third declension
-    /// feminine.
-    IFeminine,
-    /// Polivanova's simplex masculine (i-stem) ↔ Alypy §41 third declension
-    /// masculine.
-    IMasculine,
-    /// The OCS u-stem masculine ↔ the Alypy §§37–38 first-declension
-    /// profile with ordered u-stem variants (divergence
-    /// `noun:u-stem-dissolution`).
-    UStemMasculine,
-}
-
-impl VocalicNounClass {
-    pub const ALL: [Self; 9] = [
-        Self::OHardMasculine,
-        Self::OHardNeuter,
-        Self::JoSoftMasculine,
-        Self::JoSoftNeuter,
-        Self::AHard,
-        Self::JaSoft,
-        Self::IFeminine,
-        Self::IMasculine,
-        Self::UStemMasculine,
-    ];
-}
-
-/// One vocalic noun ending cell. The OCS column is Polivanova's table
-/// terminal (§§326–351); the Synodal column is the Alypy §§33–41 ending set
-/// in its reviewed variant order. Animacy selects the genitive-shaped
-/// accusative arm where a recension marks it (divergence
-/// `pron:genitive-accusative` names the shared mechanism; the noun-specific
-/// coverage differences are named per class below).
-#[must_use]
-pub fn vocalic_ending(
-    class: VocalicNounClass,
-    case: Case,
-    number: Number,
-    animacy: Animacy,
-    recension: Recension,
-) -> &'static [&'static str] {
-    use Case::{Accusative, Dative, Genitive, Instrumental, Locative, Nominative, Vocative};
-    use Number::{Dual, Plural, Singular};
-    use VocalicNounClass::{
-        AHard, IFeminine, IMasculine, JaSoft, JoSoftMasculine, JoSoftNeuter, OHardMasculine,
-        OHardNeuter, UStemMasculine,
-    };
-    let animate = animacy == Animacy::Animate;
-    let (ocs, syn): (&[&str], &[&str]) = match (class, case, number) {
-        // ---- hard o-stem masculine (Polivanova table 327 ↔ Alypy §§33–37) ----
-        (OHardMasculine, Nominative, Singular) => (&["ъ"], &["ъ"]),
-        (OHardMasculine, Genitive, Singular) => (&["а"], &["а"]),
-        // realization: fold:uk on -оу ~ -ꙋ; noun:hard-declension-variant-imports
-        // on the Synodal u-stem doublet -ови.
-        (OHardMasculine, Dative, Singular) => (&["оу"], &["ꙋ", "ови"]),
-        (OHardMasculine, Accusative, Singular) => {
-            if animate {
-                (&["а"], &["а"])
-            } else {
-                (&["ъ"], &["ъ"])
-            }
+impl ChurchSlavonicCore {
+    /// Decline a noun by rule. `word` is the nominative-singular lemma in
+    /// `recension`'s spelling; the answer is in the same spelling.
+    pub fn noun(word: &str, case: &Case, number: &Number, recension: &Recension) -> String {
+        let (stem, row) = Self::noun_class(word, recension);
+        let cell = Self::cell(case, number);
+        let ending = match recension {
+            Recension::OldChurchSlavonic => row.ocs[cell],
+            Recension::Synodal => row.syn[cell],
+        };
+        // The citation cell of the athematic classes is the lemma itself
+        // (`мати`, `имѧ`, `свекрꙑ`): the extended stem never surfaces there.
+        if ending == "=" {
+            return word.to_string();
         }
-        (OHardMasculine, Instrumental, Singular) => (&["омъ"], &["омъ"]),
-        (OHardMasculine, Locative, Singular) => (&["ѣ"], &["ѣ"]),
-        (OHardMasculine, Vocative, Singular) => (&["е"], &["е"]),
-        (OHardMasculine, Nominative | Accusative | Vocative, Dual) => (&["а"], &["а"]),
-        // realization: fold:uk.
-        (OHardMasculine, Genitive | Locative, Dual) => (&["оу"], &["ꙋ"]),
-        (OHardMasculine, Dative | Instrumental, Dual) => (&["ома"], &["ома"]),
-        (OHardMasculine, Nominative | Vocative, Plural) => (&["и"], &["и"]),
-        // noun:hard-declension-variant-imports (u-stem -овъ becomes the
-        // primary Synodal genitive plural, the inherited -ъ the doublet).
-        (OHardMasculine, Genitive, Plural) => (&["ъ"], &["овъ", "ъ"]),
-        (OHardMasculine, Dative, Plural) => (&["омъ"], &["омъ"]),
-        // realization: gen:yery on the inanimate arm;
-        // noun:hard-declension-variant-imports on the animate arm (-овъ).
-        (OHardMasculine, Accusative, Plural) => {
-            if animate {
-                (&["ъ"], &["овъ"])
-            } else {
-                (&["ꙑ"], &["ы"])
-            }
+        Self::attach(&stem, ending, recension)
+    }
+
+    /// Pick the declension row and the stem it attaches to. Order is
+    /// load-bearing: whole-word lists first, then the longest suffixes.
+    fn noun_class(word: &str, recension: &Recension) -> (String, &'static Row) {
+        let synodal = *recension == Recension::Synodal;
+        if let Some(stem) = Self::pair_match(word, R_STEMS) {
+            return (stem, &R_FEMININE);
         }
-        // realization: gen:yery; noun:hard-declension-variant-imports on the
-        // Synodal i-stem/a-stem instrumental doublets.
-        (OHardMasculine, Instrumental, Plural) => (&["ꙑ"], &["ы", "ми", "ами"]),
-        // noun:hard-declension-variant-imports on the a-stem locative doublet.
-        (OHardMasculine, Locative, Plural) => (&["ѣхъ"], &["ѣхъ", "ахъ"]),
-
-        // ---- hard o-stem neuter (Polivanova table 339 ↔ Alypy §34) ----
-        (OHardNeuter, Nominative | Accusative | Vocative, Singular) => (&["о"], &["о"]),
-        (OHardNeuter, Genitive, Singular) => (&["а"], &["а"]),
-        // realization: fold:uk.
-        (OHardNeuter, Dative, Singular) => (&["оу"], &["ꙋ"]),
-        (OHardNeuter, Instrumental, Singular) => (&["омъ"], &["омъ"]),
-        (OHardNeuter, Locative, Singular) => (&["ѣ"], &["ѣ"]),
-        // noun:dual-direct-reshape (OCS -ѣ against the Synodal masculine-
-        // shaped -а).
-        (OHardNeuter, Nominative | Accusative | Vocative, Dual) => (&["ѣ"], &["а"]),
-        // realization: fold:uk.
-        (OHardNeuter, Genitive | Locative, Dual) => (&["оу"], &["ꙋ"]),
-        (OHardNeuter, Dative | Instrumental, Dual) => (&["ома"], &["ома"]),
-        (OHardNeuter, Nominative | Accusative | Vocative, Plural) => (&["а"], &["а"]),
-        (OHardNeuter, Genitive, Plural) => (&["ъ"], &["ъ"]),
-        (OHardNeuter, Dative, Plural) => (&["омъ"], &["омъ"]),
-        // realization: gen:yery; noun:hard-declension-variant-imports (-ами).
-        (OHardNeuter, Instrumental, Plural) => (&["ꙑ"], &["ы", "ами"]),
-        // noun:hard-declension-variant-imports (-ахъ).
-        (OHardNeuter, Locative, Plural) => (&["ѣхъ"], &["ѣхъ", "ахъ"]),
-
-        // ---- soft jo-stem masculine (Polivanova table 327 ↔ Alypy §§34–37).
-        // The OCS column is the canonical iotated series; the family shim
-        // de-iotates after sibilants and plain consonants at its documented
-        // seams. ----
-        (JoSoftMasculine, Nominative, Singular) => (&["ь"], &["ь"]),
-        // realization: fold:ja (ꙗ ~ ѧ).
-        (JoSoftMasculine, Genitive, Singular) => (&["ꙗ"], &["ѧ"]),
-        // noun:hard-declension-variant-imports (Synodal soft dative doublet
-        // -еви after the u-stem analogy).
-        (JoSoftMasculine, Dative, Singular) => (&["ю"], &["ю", "еви"]),
-        (JoSoftMasculine, Accusative, Singular) => {
-            if animate {
-                // realization: fold:ja.
-                (&["ꙗ"], &["ѧ"])
-            } else {
-                (&["ь"], &["ь"])
-            }
+        if let Some(stem) = Self::pair_match(word, S_STEMS) {
+            return (stem, &S_NEUTER);
         }
-        // noun:instrumental-singular-jer (-ѥмь against -емъ).
-        (JoSoftMasculine, Instrumental, Singular) => (&["ѥмь"], &["емъ"]),
-        // noun:hard-declension-variant-imports (Synodal hard locative
-        // doublet -ѣ beside the inherited -и).
-        (JoSoftMasculine, Locative, Singular) => (&["и"], &["и", "ѣ"]),
-        (JoSoftMasculine, Vocative, Singular) => (&["ю"], &["ю"]),
-        // realization: fold:ja.
-        (JoSoftMasculine, Nominative | Accusative | Vocative, Dual) => (&["ꙗ"], &["ѧ"]),
-        (JoSoftMasculine, Genitive | Locative, Dual) => (&["ю"], &["ю"]),
-        // realization: gen:iotated-e (ѥ ~ е).
-        (JoSoftMasculine, Dative | Instrumental, Dual) => (&["ѥма"], &["ема"]),
-        // noun:hard-declension-variant-imports (-їе after the i-stem plural).
-        (JoSoftMasculine, Nominative | Vocative, Plural) => (&["и"], &["и", "їе"]),
-        // noun:soft-genitive-plural-reinventory (-ь against -ей).
-        (JoSoftMasculine, Genitive, Plural) => (&["ь"], &["ей"]),
-        // realization: gen:iotated-e + gen:jer-final.
-        (JoSoftMasculine, Dative, Plural) => (&["ѥмъ"], &["емъ"]),
-        (JoSoftMasculine, Accusative, Plural) => {
-            if animate {
-                // noun:soft-genitive-plural-reinventory on the animate arm.
-                (&["ь"], &["ей"])
-            } else {
-                // noun:soft-direct-plural-leveling (-ѩ against -и).
-                (&["ѩ"], &["и"])
-            }
+        if !synodal && U_STEMS.contains(&word) {
+            return (strip(word, 1), &U_MASCULINE);
         }
-        // noun:hard-declension-variant-imports (-ьми/-ами doublets).
-        (JoSoftMasculine, Instrumental, Plural) => (&["и"], &["и", "ьми", "ами"]),
-        // noun:locative-plural-reinventory (-ихъ against -ехъ/-ѧхъ).
-        (JoSoftMasculine, Locative, Plural) => (&["ихъ"], &["ехъ", "ѧхъ"]),
-
-        // ---- soft jo-stem neuter (Polivanova table 339 ↔ Alypy §34) ----
-        // realization: gen:iotated-e.
-        (JoSoftNeuter, Nominative | Accusative | Vocative, Singular) => (&["ѥ"], &["е"]),
-        // realization: fold:ja.
-        (JoSoftNeuter, Genitive, Singular) => (&["ꙗ"], &["ѧ"]),
-        (JoSoftNeuter, Dative, Singular) => (&["ю"], &["ю"]),
-        // noun:instrumental-singular-jer.
-        (JoSoftNeuter, Instrumental, Singular) => (&["ѥмь"], &["емъ"]),
-        (JoSoftNeuter, Locative, Singular) => (&["и"], &["и"]),
-        (JoSoftNeuter, Nominative | Accusative | Vocative, Dual) => (&["и"], &["и"]),
-        (JoSoftNeuter, Genitive | Locative, Dual) => (&["ю"], &["ю"]),
-        // realization: gen:iotated-e.
-        (JoSoftNeuter, Dative | Instrumental, Dual) => (&["ѥма"], &["ема"]),
-        // realization: fold:ja.
-        (JoSoftNeuter, Nominative | Accusative | Vocative, Plural) => (&["ꙗ"], &["ѧ"]),
-        // noun:soft-genitive-plural-reinventory.
-        (JoSoftNeuter, Genitive, Plural) => (&["ь"], &["ей"]),
-        // realization: gen:iotated-e + gen:jer-final.
-        (JoSoftNeuter, Dative, Plural) => (&["ѥмъ"], &["емъ"]),
-        // noun:hard-declension-variant-imports (-ьми/-ами doublets).
-        (JoSoftNeuter, Instrumental, Plural) => (&["и"], &["и", "ьми", "ами"]),
-        // noun:locative-plural-reinventory (-ихъ against -ѧхъ).
-        (JoSoftNeuter, Locative, Plural) => (&["ихъ"], &["ѧхъ"]),
-
-        // ---- hard a-stem (Polivanova table 343 ↔ Alypy §39) ----
-        (AHard, Nominative, Singular) => (&["а"], &["а"]),
-        // realization: gen:yery.
-        (AHard, Genitive, Singular) => (&["ꙑ"], &["ы"]),
-        (AHard, Dative | Locative, Singular) => (&["ѣ"], &["ѣ"]),
-        // realization: gen:big-yus (ѫ → у, typographic ꙋ).
-        (AHard, Accusative, Singular) => (&["ѫ"], &["ꙋ"]),
-        // realization: gen:iotated-big-yus (оѭ ~ ою).
-        (AHard, Instrumental, Singular) => (&["оѭ"], &["ою"]),
-        (AHard, Vocative, Singular) => (&["о"], &["о"]),
-        (AHard, Nominative | Accusative | Vocative, Dual) => (&["ѣ"], &["ѣ"]),
-        // realization: fold:uk.
-        (AHard, Genitive | Locative, Dual) => (&["оу"], &["ꙋ"]),
-        (AHard, Dative | Instrumental, Dual) => (&["ама"], &["ама"]),
-        (AHard, Nominative | Vocative, Plural) => (&["ꙑ"], &["ы"]),
-        (AHard, Accusative, Plural) => {
-            if animate {
-                // noun:animate-accusative-coverage (OCS a-stems keep the
-                // nominative-shaped accusative; Synodal marks animacy).
-                (&["ꙑ"], &["ъ"])
+        let husher = |w: &str| {
+            matches!(
+                strip(w, 1).chars().last(),
+                Some('ж' | 'ч' | 'ш' | 'щ' | 'ц')
+            )
+        };
+        let row: &Row = if let Some(stem) = word.strip_suffix("мѧ") {
+            return (format!("{stem}мен"), &N_NEUTER);
+        } else if let Some(stem) = word.strip_suffix("анинъ") {
+            return (format!("{stem}ан"), &IN_SINGULATIVE);
+        } else if let Some(stem) = word.strip_suffix("ѣнинъ") {
+            return (format!("{stem}ѣн"), &IN_SINGULATIVE);
+        } else if let Some(stem) = word.strip_suffix("ѧнинъ") {
+            return (format!("{stem}ѧн"), &IN_SINGULATIVE);
+        } else if !synodal && word.ends_with('ꙑ') {
+            return (format!("{}ъв", strip(word, 1)), &V_FEMININE);
+        } else if synodal && word.ends_with("овь") {
+            return (strip(word, 1), &V_FEMININE);
+        } else if word.ends_with("тель") {
+            &AGENT
+        } else if word.ends_with('ѧ') {
+            // OCS nt-stem neuters (`отрочѧ`); Synodal soft feminines
+            // (`землѧ`) — the Synodal nt-stems spell `-а` after a husher.
+            if synodal {
+                &JA_SOFT
             } else {
-                // realization: gen:yery.
-                (&["ꙑ"], &["ы"])
+                return (format!("{}ѧт", strip(word, 1)), &NT_NEUTER);
             }
-        }
-        (AHard, Genitive, Plural) => (&["ъ"], &["ъ"]),
-        (AHard, Dative, Plural) => (&["амъ"], &["амъ"]),
-        (AHard, Instrumental, Plural) => (&["ами"], &["ами"]),
-        (AHard, Locative, Plural) => (&["ахъ"], &["ахъ"]),
-
-        // ---- soft ja-stem (Polivanova table 343 ↔ Alypy §§39–40).
-        // The OCS column is the canonical iotated series; the family shim
-        // de-iotates after sibilants at its documented seam. ----
-        // realization: fold:ja.
-        (JaSoft, Nominative, Singular) => (&["ꙗ"], &["ѧ"]),
-        // noun:soft-feminine-genitive-leveling (-ѩ against -и).
-        (JaSoft, Genitive, Singular) => (&["ѩ"], &["и"]),
-        (JaSoft, Dative | Locative, Singular) => (&["и"], &["и"]),
-        // realization: gen:big-yus (iotated grade; cf. вьсѫ ~ всю).
-        (JaSoft, Accusative, Singular) => (&["ѭ"], &["ю"]),
-        // realization: gen:iotated-big-yus (еѭ ~ ею).
-        (JaSoft, Instrumental, Singular) => (&["еѭ"], &["ею"]),
-        (JaSoft, Vocative, Singular) => (&["е"], &["е"]),
-        (JaSoft, Nominative | Accusative | Vocative, Dual) => (&["и"], &["и"]),
-        (JaSoft, Genitive | Locative, Dual) => (&["ю"], &["ю"]),
-        // realization: fold:ja.
-        (JaSoft, Dative | Instrumental, Dual) => (&["ꙗма"], &["ѧма"]),
-        // noun:soft-direct-plural-leveling (-ѩ against -и).
-        (JaSoft, Nominative | Vocative, Plural) => (&["ѩ"], &["и"]),
-        (JaSoft, Accusative, Plural) => {
-            if animate {
-                // noun:animate-accusative-coverage (Synodal genitive-shaped
-                // animate arm; OCS keeps the nominative-shaped -ѩ).
-                (&["ѩ"], &["ь"])
-            } else {
-                // noun:soft-direct-plural-leveling.
-                (&["ѩ"], &["и"])
-            }
-        }
-        (JaSoft, Genitive, Plural) => (&["ь"], &["ь"]),
-        // realization: fold:ja.
-        (JaSoft, Dative, Plural) => (&["ꙗмъ"], &["ѧмъ"]),
-        (JaSoft, Instrumental, Plural) => (&["ꙗми"], &["ѧми"]),
-        (JaSoft, Locative, Plural) => (&["ꙗхъ"], &["ѧхъ"]),
-
-        // ---- simplex i-stem feminine (Polivanova table 351 ↔ Alypy §41) ----
-        (IFeminine, Nominative | Accusative, Singular) => (&["ь"], &["ь"]),
-        (IFeminine, Genitive | Dative | Locative, Singular) => (&["и"], &["и"]),
-        // noun:i-stem-instrumental-i-grade (-ьѭ against -їю).
-        (IFeminine, Instrumental, Singular) => (&["ьѭ"], &["їю"]),
-        // noun:i-stem-vocative-leveling (-и against -е).
-        (IFeminine, Vocative, Singular) => (&["и"], &["е"]),
-        (IFeminine, Nominative | Accusative | Vocative, Dual) => (&["и"], &["и"]),
-        // noun:i-stem-instrumental-i-grade (-ию against -їю is realization
-        // fold:i-variants; kept here for the paired feminine columns).
-        (IFeminine, Genitive | Locative, Dual) => (&["ию"], &["їю"]),
-        // realization: gen:jer-medial (-ьма ~ -ема), with the inherited
-        // -ьма co-listed.
-        (IFeminine, Dative | Instrumental, Dual) => (&["ьма"], &["ема", "ьма"]),
-        (IFeminine, Nominative | Accusative | Vocative, Plural) => (&["и"], &["и"]),
-        // noun:soft-genitive-plural-reinventory (-ии against -ей).
-        (IFeminine, Genitive, Plural) => (&["ии"], &["ей"]),
-        // realization: gen:jer-medial (-ьмъ ~ -емъ).
-        (IFeminine, Dative, Plural) => (&["ьмъ"], &["емъ"]),
-        (IFeminine, Instrumental, Plural) => (&["ьми"], &["ьми"]),
-        // realization: gen:jer-medial (-ьхъ ~ -ехъ).
-        (IFeminine, Locative, Plural) => (&["ьхъ"], &["ехъ"]),
-
-        // ---- simplex i-stem masculine (Polivanova table 335 ↔ Alypy §41) ----
-        (IMasculine, Nominative | Accusative, Singular) => (&["ь"], &["ь"]),
-        (IMasculine, Genitive | Dative | Locative, Singular) => (&["и"], &["и"]),
-        // noun:instrumental-singular-jer.
-        (IMasculine, Instrumental, Singular) => (&["ьмь"], &["емъ"]),
-        // noun:i-stem-vocative-leveling (-и against -ь/-ю).
-        (IMasculine, Vocative, Singular) => (&["и"], &["ь", "ю"]),
-        (IMasculine, Nominative | Accusative | Vocative, Dual) => (&["и"], &["и"]),
-        // realization: fold:i-variants.
-        (IMasculine, Genitive | Locative, Dual) => (&["ию"], &["їю"]),
-        (IMasculine, Dative | Instrumental, Dual) => (&["ьма"], &["ьма"]),
-        // realization: gen:iotated-e + fold:i-variants (-иѥ ~ -їе).
-        (IMasculine, Nominative | Vocative, Plural) => (&["иѥ"], &["їе"]),
-        // noun:soft-genitive-plural-reinventory (-ии against -ій/-ей).
-        (IMasculine, Genitive, Plural) => (&["ии"], &["ій", "ей"]),
-        // realization: gen:jer-medial (-ьмъ ~ -емъ; є is the family's
-        // positional wide-е norm).
-        (IMasculine, Dative, Plural) => (&["ьмъ"], &["ємъ"]),
-        (IMasculine, Accusative, Plural) => {
-            if animate {
-                // noun:soft-genitive-plural-reinventory on the animate arm.
-                (&["и"], &["ій"])
-            } else {
-                (&["и"], &["и"])
-            }
-        }
-        (IMasculine, Instrumental, Plural) => (&["ьми"], &["ьми"]),
-        // realization: gen:jer-medial (-ьхъ ~ -ехъ).
-        (IMasculine, Locative, Plural) => (&["ьхъ"], &["ехъ"]),
-
-        // ---- u-stem masculine (Polivanova §333 ↔ Alypy §§37–38).
-        // Divergence noun:u-stem-dissolution throughout: the OCS u-stem
-        // paradigm dissolves into the Synodal first declension carrying the
-        // u-stem endings as ordered variants; the distinct dual, vocative,
-        // and jer-grade obliques are not preserved. ----
-        (UStemMasculine, Nominative, Singular) => (&["ъ"], &["ъ"]),
-        (UStemMasculine, Genitive, Singular) => (&["оу"], &["а", "ꙋ"]),
-        (UStemMasculine, Dative, Singular) => (&["ови"], &["ꙋ", "ови"]),
-        (UStemMasculine, Accusative, Singular) => {
-            if animate {
-                (&["ъ"], &["а"])
-            } else {
-                (&["ъ"], &["ъ"])
-            }
-        }
-        (UStemMasculine, Instrumental, Singular) => (&["ъмь"], &["омъ"]),
-        (UStemMasculine, Locative, Singular) => (&["оу"], &["ѣ", "ꙋ"]),
-        (UStemMasculine, Vocative, Singular) => (&["оу"], &["е"]),
-        (UStemMasculine, Nominative | Accusative | Vocative, Dual) => (&["ꙑ"], &["а"]),
-        (UStemMasculine, Genitive | Locative, Dual) => (&["овоу"], &["ꙋ"]),
-        (UStemMasculine, Dative | Instrumental, Dual) => (&["ъма"], &["ома"]),
-        (UStemMasculine, Nominative | Vocative, Plural) => (&["ове"], &["и", "ове"]),
-        (UStemMasculine, Genitive, Plural) => (&["овъ"], &["овъ"]),
-        (UStemMasculine, Dative, Plural) => (&["ъмъ"], &["омъ", "овомъ"]),
-        (UStemMasculine, Accusative, Plural) => {
-            if animate {
-                (&["ꙑ"], &["овъ"])
-            } else {
-                (&["ꙑ"], &["ы"])
-            }
-        }
-        (UStemMasculine, Instrumental, Plural) => (&["ъми"], &["ы", "ми"]),
-        (UStemMasculine, Locative, Plural) => (&["ъхъ"], &["ѣхъ", "овѣхъ", "ахъ"]),
-    };
-    by_recension(recension, ocs, syn)
-}
-
-pub(crate) fn by_recension(
-    recension: Recension,
-    ocs: &'static [&'static str],
-    syn: &'static [&'static str],
-) -> &'static [&'static str] {
-    match recension {
-        Recension::OldChurchSlavonic => ocs,
-        Recension::SynodalRussian => syn,
-        _ => NO_TEXTS,
+        } else if word.ends_with('ꙗ') || (word.ends_with('а') && husher(word)) {
+            &JA_SOFT
+        } else if word.ends_with('а') {
+            &A_HARD
+        } else if word.ends_with('о') {
+            &O_HARD_NEUTER
+        } else if word.ends_with('е') || word.ends_with('ѥ') {
+            &JO_SOFT_NEUTER
+        } else if word.ends_with('ъ') {
+            &O_HARD_MASCULINE
+        } else if Self::iter_replace_last(word, I_FEMININE_SUFFIXES).is_some() {
+            &I_FEMININE
+        } else if word.ends_with('ь') || word.ends_with('и') || word.ends_with('й') {
+            &JO_SOFT_MASCULINE
+        } else {
+            return (word.to_string(), &O_HARD_MASCULINE);
+        };
+        (strip(word, 1), row)
     }
 }
+
+fn strip(word: &str, chars: usize) -> String {
+    let n = word.chars().count().saturating_sub(chars);
+    word.chars().take(n).collect()
+}
+
+/// A feminine i-stem is guessed from a dental/labial + `ь` ending (`кость`,
+/// `заповѣдь`, `любовь`-type aside); `-тель` and the sonorant/husher `-ь`
+/// lemmas are taken masculine. `пѫть`, `гость`, `звѣрь`, `голѫбь` are tabled.
+const I_FEMININE_SUFFIXES: &[(&str, &str)] = &[
+    ("сть", ""),
+    ("ть", ""),
+    ("дь", ""),
+    ("зь", ""),
+    ("сь", ""),
+    ("вь", ""),
+    ("бь", ""),
+    ("пь", ""),
+    ("мь", ""),
+];
+
+/// The closed OCS u-stems (Polivanova §333); Synodal declines them as
+/// first-declension hard masculines with the u-stem endings as variants.
+const U_STEMS: &[&str] = &["сꙑнъ", "домъ", "врьхъ", "медъ", "полъ", "волъ"];
+/// The r-stems, lemma -> extended stem.
+const R_STEMS: &[(&str, &str)] = &[("мати", "матер"), ("дъщи", "дъщер"), ("дщи", "дщер")];
+/// The s-stems, lemma -> extended stem.
+const S_STEMS: &[(&str, &str)] = &[
+    ("слово", "словес"),
+    ("небо", "небес"),
+    ("тѣло", "тѣлес"),
+    ("чоудо", "чоудес"),
+    ("чꙋдо", "чꙋдес"),
+    ("дрѣво", "дрѣвес"),
+    ("древо", "древес"),
+    ("коло", "колес"),
+];
+
+/// One declension class: 21 endings per recension in [`Case`] order for the
+/// singular, dual and plural. `=` marks the lemma's own citation cell.
+struct Row {
+    ocs: [&'static str; 21],
+    syn: [&'static str; 21],
+}
+
+// The Synodal columns are the Alypy §§33–44 primaries; the OCS columns are
+// Polivanova's tables 327/339/343/351 and the athematic tables. Cells that
+// differ beyond spelling are the divergence registry's recension conditions:
+// the `-ѥмь`/`-емъ` instrumental, the `-ь`/`-ей` soft genitive plural, the
+// `-ѩ`/`-и` soft direct plural, the `-ѩ`/`-и` ja-stem genitive singular,
+// the Synodal `-овъ` genitive plural import, the neuter dual `-ѣ`/`-а`,
+// the athematic locative `-е`/`-и`, and the u-stem dissolution.
+const O_HARD_MASCULINE: Row = Row {
+    ocs: [
+        "ъ", "а", "оу", "ъ", "омъ", "ѣ", "е", "а", "оу", "ома", "а", "ома", "оу", "а", "и", "ъ",
+        "омъ", "ꙑ", "ꙑ", "ѣхъ", "и",
+    ],
+    syn: [
+        "ъ", "а", "ꙋ", "ъ", "омъ", "ѣ", "е", "а", "ꙋ", "ома", "а", "ома", "ꙋ", "а", "и", "овъ",
+        "омъ", "ы", "ы", "ѣхъ", "и",
+    ],
+};
+const O_HARD_NEUTER: Row = Row {
+    ocs: [
+        "о", "а", "оу", "о", "омъ", "ѣ", "о", "ѣ", "оу", "ома", "ѣ", "ома", "оу", "ѣ", "а", "ъ",
+        "омъ", "а", "ꙑ", "ѣхъ", "а",
+    ],
+    syn: [
+        "о", "а", "ꙋ", "о", "омъ", "ѣ", "о", "а", "ꙋ", "ома", "а", "ома", "ꙋ", "а", "а", "ъ",
+        "омъ", "а", "ы", "ѣхъ", "а",
+    ],
+};
+const JO_SOFT_MASCULINE: Row = Row {
+    ocs: [
+        "ь", "ꙗ", "ю", "ь", "ѥмь", "и", "ю", "ꙗ", "ю", "ѥма", "ꙗ", "ѥма", "ю", "ꙗ", "и", "ь",
+        "ѥмъ", "ѩ", "и", "ихъ", "и",
+    ],
+    syn: [
+        "ь", "ѧ", "ю", "ь", "емъ", "и", "ю", "ѧ", "ю", "ема", "ѧ", "ема", "ю", "ѧ", "и", "ей",
+        "емъ", "и", "и", "ехъ", "и",
+    ],
+};
+const JO_SOFT_NEUTER: Row = Row {
+    ocs: [
+        "ѥ", "ꙗ", "ю", "ѥ", "ѥмь", "и", "ѥ", "и", "ю", "ѥма", "и", "ѥма", "ю", "и", "ꙗ", "ь",
+        "ѥмъ", "ꙗ", "и", "ихъ", "ꙗ",
+    ],
+    syn: [
+        "е", "ѧ", "ю", "е", "емъ", "и", "е", "и", "ю", "ема", "и", "ема", "ю", "и", "ѧ", "ей",
+        "емъ", "ѧ", "и", "ѧхъ", "ѧ",
+    ],
+};
+const A_HARD: Row = Row {
+    ocs: [
+        "а", "ꙑ", "ѣ", "ѫ", "оѭ", "ѣ", "о", "ѣ", "оу", "ама", "ѣ", "ама", "оу", "ѣ", "ꙑ", "ъ",
+        "амъ", "ꙑ", "ами", "ахъ", "ꙑ",
+    ],
+    syn: [
+        "а", "ы", "ѣ", "ꙋ", "ою", "ѣ", "о", "ѣ", "ꙋ", "ама", "ѣ", "ама", "ꙋ", "ѣ", "ы", "ъ", "амъ",
+        "ы", "ами", "ахъ", "ы",
+    ],
+};
+const JA_SOFT: Row = Row {
+    ocs: [
+        "ꙗ", "ѩ", "и", "ѭ", "еѭ", "и", "е", "и", "ю", "ꙗма", "и", "ꙗма", "ю", "и", "ѩ", "ь", "ꙗмъ",
+        "ѩ", "ꙗми", "ꙗхъ", "ѩ",
+    ],
+    syn: [
+        "ѧ", "и", "и", "ю", "ею", "и", "е", "и", "ю", "ѧма", "и", "ѧма", "ю", "и", "и", "ь", "ѧмъ",
+        "и", "ѧми", "ѧхъ", "и",
+    ],
+};
+const I_FEMININE: Row = Row {
+    ocs: [
+        "ь", "и", "и", "ь", "ьѭ", "и", "и", "и", "ию", "ьма", "и", "ьма", "ию", "и", "и", "ии",
+        "ьмъ", "и", "ьми", "ьхъ", "и",
+    ],
+    syn: [
+        "ь", "и", "и", "ь", "їю", "и", "е", "и", "їю", "ема", "и", "ема", "їю", "и", "и", "ей",
+        "емъ", "и", "ьми", "ехъ", "и",
+    ],
+};
+const U_MASCULINE: Row = Row {
+    ocs: [
+        "ъ", "оу", "ови", "ъ", "ъмь", "оу", "оу", "ꙑ", "овоу", "ъма", "ꙑ", "ъма", "овоу", "ꙑ",
+        "ове", "овъ", "ъмъ", "ꙑ", "ъми", "ъхъ", "ове",
+    ],
+    syn: O_HARD_MASCULINE.syn,
+};
+/// The `-инъ` singulative: singular and dual on the full stem as a hard
+/// masculine, plural on the syncopated stem (`гражданинъ` : `граждане`).
+const IN_SINGULATIVE: Row = Row {
+    ocs: [
+        "инъ",
+        "ина",
+        "иноу",
+        "инъ",
+        "иномъ",
+        "инѣ",
+        "ине",
+        "ина",
+        "иноу",
+        "инома",
+        "ина",
+        "инома",
+        "иноу",
+        "ина",
+        "е",
+        "ъ",
+        "омъ",
+        "ꙑ",
+        "ꙑ",
+        "ѣхъ",
+        "е",
+    ],
+    syn: [
+        "инъ",
+        "ина",
+        "инꙋ",
+        "инъ",
+        "иномъ",
+        "инѣ",
+        "ине",
+        "ина",
+        "инꙋ",
+        "инома",
+        "ина",
+        "инома",
+        "инꙋ",
+        "ина",
+        "е",
+        "ъ",
+        "омъ",
+        "е",
+        "ы",
+        "ѣхъ",
+        "е",
+    ],
+};
+/// The `-тель` agent nouns: a soft masculine whose OCS direct plural is `-ѥ`.
+const AGENT: Row = Row {
+    ocs: [
+        "ь", "ꙗ", "ю", "ь", "ѥмь", "и", "ю", "ꙗ", "ю", "ѥма", "ꙗ", "ѥма", "ю", "ꙗ", "ѥ", "ь",
+        "ѥмъ", "ѩ", "и", "ихъ", "ѥ",
+    ],
+    syn: JO_SOFT_MASCULINE.syn,
+};
+// Athematic classes: endings after the extended stem (`имен-`, `отрочѧт-`,
+// `матер-`, `словес-`, `свекръв-`/`церков-`).
+const N_NEUTER: Row = Row {
+    ocs: [
+        "=", "е", "и", "=", "ьмь", "е", "=", "ѣ", "оу", "ьма", "ѣ", "ьма", "оу", "ѣ", "а", "ъ",
+        "ьмъ", "а", "ꙑ", "ьхъ", "а",
+    ],
+    syn: [
+        "=", "е", "и", "=", "емъ", "и", "=", "и", "ꙋ", "ема", "и", "ема", "ꙋ", "и", "а", "ъ",
+        "ємъ", "а", "ы", "ѣхъ", "а",
+    ],
+};
+const NT_NEUTER: Row = N_NEUTER;
+const S_NEUTER: Row = Row {
+    ocs: N_NEUTER.ocs,
+    syn: [
+        "=", "е", "и", "=", "емъ", "и", "=", "и", "ꙋ", "ема", "и", "ема", "ꙋ", "и", "а", "ъ",
+        "ємъ", "а", "ы", "ѣхъ", "а",
+    ],
+};
+const R_FEMININE: Row = Row {
+    ocs: [
+        "=", "е", "и", "ь", "ьѭ", "и", "=", "и", "оу", "ьма", "и", "ьма", "оу", "и", "и", "ъ",
+        "ьмъ", "и", "ьми", "ьхъ", "и",
+    ],
+    syn: [
+        "=", "е", "и", "ь", "їю", "и", "=", "и", "їю", "ема", "и", "ема", "їю", "и", "и", "їй",
+        "емъ", "и", "ьми", "ехъ", "и",
+    ],
+};
+const V_FEMININE: Row = Row {
+    ocs: [
+        "=", "е", "и", "ь", "ьѭ", "е", "=", "и", "оу", "ама", "и", "ама", "оу", "и", "и", "ъ",
+        "амъ", "и", "ами", "ахъ", "и",
+    ],
+    syn: [
+        "=", "е", "и", "ь", "їю", "и", "=", "и", "їю", "ама", "и", "ама", "їю", "и", "и", "ей",
+        "амъ", "и", "ами", "ахъ", "и",
+    ],
+};
 
 #[cfg(test)]
 mod tests {
-    use super::{VocalicNounClass, vocalic_ending};
-    use crate::grammar::{Animacy, Case, Number};
-    use crate::recension::Recension;
+    use super::*;
 
     const OCS: Recension = Recension::OldChurchSlavonic;
-    const SYN: Recension = Recension::SynodalRussian;
+    const SYN: Recension = Recension::Synodal;
 
-    #[test]
-    fn unsupported_recensions_yield_empty_cells() {
-        for recension in Recension::ALL {
-            if matches!(
-                recension,
-                Recension::OldChurchSlavonic | Recension::SynodalRussian
-            ) {
-                continue;
-            }
-            for class in VocalicNounClass::ALL {
-                for case in Case::ALL {
-                    for number in Number::ALL {
-                        for animacy in Animacy::ALL {
-                            assert!(
-                                vocalic_ending(class, case, number, animacy, recension).is_empty()
-                            );
-                        }
-                    }
-                }
-            }
-        }
+    fn decline(word: &str, case: Case, number: Number, recension: Recension) -> String {
+        ChurchSlavonicCore::noun(word, &case, &number, &recension)
     }
 
     #[test]
-    fn attested_recension_tables_are_total() {
-        for class in VocalicNounClass::ALL {
-            for case in Case::ALL {
-                for number in Number::ALL {
-                    for animacy in Animacy::ALL {
-                        for recension in [OCS, SYN] {
-                            let endings = vocalic_ending(class, case, number, animacy, recension);
-                            assert!(
-                                !endings.is_empty(),
-                                "{class:?} {case:?} {number:?} {animacy:?} {recension:?}"
-                            );
-                            assert!(endings.iter().all(|ending| !ending.is_empty()));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn ocs_columns_are_variant_free() {
-        for class in VocalicNounClass::ALL {
-            for case in Case::ALL {
-                for number in Number::ALL {
-                    for animacy in Animacy::ALL {
-                        assert_eq!(vocalic_ending(class, case, number, animacy, OCS).len(), 1);
-                    }
-                }
-            }
-        }
-    }
-
-    #[test]
-    fn instrumental_singular_jer_divergence_holds() {
-        // noun:instrumental-singular-jer: every soft/jer-grade instrumental
-        // singular pairs an OCS soft-jer ending with a Synodal -емъ/-омъ.
-        for (class, ocs, syn) in [
-            (VocalicNounClass::JoSoftMasculine, "ѥмь", "емъ"),
-            (VocalicNounClass::JoSoftNeuter, "ѥмь", "емъ"),
-            (VocalicNounClass::IMasculine, "ьмь", "емъ"),
-            (VocalicNounClass::UStemMasculine, "ъмь", "омъ"),
-        ] {
-            assert_eq!(
-                vocalic_ending(
-                    class,
-                    Case::Instrumental,
-                    Number::Singular,
-                    Animacy::Inanimate,
-                    OCS,
-                ),
-                [ocs]
-            );
-            assert_eq!(
-                vocalic_ending(
-                    class,
-                    Case::Instrumental,
-                    Number::Singular,
-                    Animacy::Inanimate,
-                    SYN,
-                )[0],
-                syn
-            );
-        }
-    }
-
-    #[test]
-    fn soft_genitive_plural_reinventory_holds() {
-        // noun:soft-genitive-plural-reinventory.
-        for (class, ocs, syn) in [
-            (VocalicNounClass::JoSoftMasculine, "ь", "ей"),
-            (VocalicNounClass::JoSoftNeuter, "ь", "ей"),
-            (VocalicNounClass::IFeminine, "ии", "ей"),
-            (VocalicNounClass::IMasculine, "ии", "ій"),
-        ] {
-            assert_eq!(
-                vocalic_ending(
-                    class,
-                    Case::Genitive,
-                    Number::Plural,
-                    Animacy::Inanimate,
-                    OCS
-                ),
-                [ocs]
-            );
-            assert_eq!(
-                vocalic_ending(
-                    class,
-                    Case::Genitive,
-                    Number::Plural,
-                    Animacy::Inanimate,
-                    SYN
-                )[0],
-                syn
-            );
-        }
-    }
-
-    #[test]
-    fn u_stem_dissolution_keeps_the_synodal_variant_orders() {
-        // noun:u-stem-dissolution: the Alypy §§37–38 ordered variant sets.
+    fn instrumental_singular_jer_condition_holds() {
+        // noun:instrumental-singular-jer — OCS soft `-ѥмь` against Synodal `-емъ`.
         assert_eq!(
-            vocalic_ending(
-                VocalicNounClass::UStemMasculine,
-                Case::Genitive,
-                Number::Singular,
-                Animacy::Inanimate,
-                SYN,
-            ),
-            ["а", "ꙋ"]
+            decline("конь", Case::Instrumental, Number::Singular, OCS),
+            "конѥмь"
         );
         assert_eq!(
-            vocalic_ending(
-                VocalicNounClass::UStemMasculine,
-                Case::Locative,
-                Number::Plural,
-                Animacy::Inanimate,
-                SYN,
-            ),
-            ["ѣхъ", "овѣхъ", "ахъ"]
+            decline("конь", Case::Instrumental, Number::Singular, SYN),
+            "конемъ"
         );
         assert_eq!(
-            vocalic_ending(
-                VocalicNounClass::UStemMasculine,
-                Case::Nominative,
-                Number::Dual,
-                Animacy::Inanimate,
-                OCS,
-            ),
-            ["ꙑ"]
+            decline("мѫжь", Case::Instrumental, Number::Singular, OCS),
+            "мѫжемь"
+        );
+    }
+
+    #[test]
+    fn soft_plurals_are_re_inventoried_in_synodal() {
+        // noun:soft-genitive-plural-reinventory and noun:soft-direct-plural-leveling.
+        assert_eq!(decline("конь", Case::Genitive, Number::Plural, OCS), "конь");
+        assert_eq!(
+            decline("конь", Case::Genitive, Number::Plural, SYN),
+            "коней"
+        );
+        assert_eq!(
+            decline("конь", Case::Accusative, Number::Plural, OCS),
+            "конѩ"
+        );
+        assert_eq!(
+            decline("конь", Case::Accusative, Number::Plural, SYN),
+            "кони"
+        );
+        assert_eq!(
+            decline("землꙗ", Case::Genitive, Number::Singular, OCS),
+            "землѩ"
+        );
+        assert_eq!(
+            decline("землѧ", Case::Genitive, Number::Singular, SYN),
+            "земли"
+        );
+    }
+
+    #[test]
+    fn athematic_stems_extend_and_keep_their_citation_cell() {
+        assert_eq!(
+            decline("имѧ", Case::Nominative, Number::Singular, OCS),
+            "имѧ"
+        );
+        assert_eq!(
+            decline("имѧ", Case::Genitive, Number::Singular, OCS),
+            "имене"
+        );
+        // noun:consonant-locative-singular-i
+        assert_eq!(
+            decline("имѧ", Case::Locative, Number::Singular, OCS),
+            "имене"
+        );
+        assert_eq!(
+            decline("имѧ", Case::Locative, Number::Singular, SYN),
+            "имени"
+        );
+        assert_eq!(
+            decline("мати", Case::Genitive, Number::Singular, SYN),
+            "матере"
+        );
+        assert_eq!(
+            decline("мати", Case::Instrumental, Number::Singular, OCS),
+            "матерьѭ"
+        );
+        assert_eq!(
+            decline("слово", Case::Genitive, Number::Plural, SYN),
+            "словесъ"
+        );
+        assert_eq!(
+            decline("свекрꙑ", Case::Genitive, Number::Singular, OCS),
+            "свекръве"
+        );
+        assert_eq!(
+            decline("церковь", Case::Instrumental, Number::Singular, SYN),
+            "церковїю"
+        );
+        assert_eq!(
+            decline("отрочѧ", Case::Genitive, Number::Singular, OCS),
+            "отрочѧте"
+        );
+    }
+
+    #[test]
+    fn u_stem_dissolves_into_the_synodal_first_declension() {
+        // noun:u-stem-dissolution
+        assert_eq!(
+            decline("сꙑнъ", Case::Dative, Number::Singular, OCS),
+            "сꙑнови"
+        );
+        assert_eq!(
+            decline("сꙑнъ", Case::Nominative, Number::Plural, OCS),
+            "сꙑнове"
+        );
+        assert_eq!(decline("сынъ", Case::Dative, Number::Singular, SYN), "сынꙋ");
+        assert_eq!(
+            decline("сынъ", Case::Genitive, Number::Plural, SYN),
+            "сыновъ"
+        );
+    }
+
+    #[test]
+    fn singulative_and_agent_plurals() {
+        assert_eq!(
+            decline("гражданинъ", Case::Nominative, Number::Plural, SYN),
+            "граждане"
+        );
+        assert_eq!(
+            decline("гражданинъ", Case::Genitive, Number::Singular, SYN),
+            "гражданина"
+        );
+        // noun:in-singulative-inanimate-accusative
+        assert_eq!(
+            decline("гражданинъ", Case::Accusative, Number::Plural, OCS),
+            "гражданꙑ"
+        );
+        assert_eq!(
+            decline("гражданинъ", Case::Accusative, Number::Plural, SYN),
+            "граждане"
+        );
+        // noun:agent-plural-reinventory
+        assert_eq!(
+            decline("оучитель", Case::Nominative, Number::Plural, OCS),
+            "оучителѥ"
+        );
+        assert_eq!(
+            decline("ѹчитель", Case::Nominative, Number::Plural, SYN),
+            "ѹчители"
         );
     }
 }
