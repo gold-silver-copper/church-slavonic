@@ -35,7 +35,7 @@
   "normalized_rows": 14573,
   "quarantined_rows": 0,
   "parse_failure_ceiling": 0,
-  "morphology_registry_sha256": "7c42ce596dd8ad263fc5471aaf6a3c55b8fae1ecd2e1d2fe722e8e9f12bdebb3",
+  "morphology_registry_sha256": "63cada6830a26a840d7be0093c65a31ef056bb0546d4336a12757841dc16d4fa",
   "dictionary_registry_sha256": "04821bc3c902c2d356be1455f8b7124a360053de778477983df4a2b8d312f58a",
   "source_adapter_contracts": [
     "streaming Ponomar verse adapter with source order and quarantine",

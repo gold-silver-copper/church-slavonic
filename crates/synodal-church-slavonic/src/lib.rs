@@ -78,10 +78,16 @@ pub fn lexemes() -> Result<Vec<LexemeSummary>> {
     registry::all_lexemes()
 }
 
-/// Build-time fingerprint of `generated/registry.rs` (FNV-1a over the raw
-/// bytes, plus the byte length). The xtask staleness tripwire compares this
-/// against the on-disk file so a stale binary refuses to measure.
+/// Build-time fingerprint of the embedded `generated/registry.dat` (FNV-1a
+/// over the raw bytes, plus the byte length). The xtask staleness tripwire
+/// compares [`active_registry_fingerprint`] against the on-disk artifact so a
+/// stale binary refuses to measure.
 pub const REGISTRY_FINGERPRINT: &str = env!("SYNODAL_REGISTRY_FINGERPRINT");
+
+pub use registry::{active_registry_fingerprint, registry_fingerprint};
+
+#[cfg(feature = "registry-override")]
+pub use registry::install_registry_override;
 
 /// Returns the complete reviewable metadata associated with one target lexeme.
 pub fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> {

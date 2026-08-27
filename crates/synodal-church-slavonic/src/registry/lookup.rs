@@ -2,7 +2,8 @@ use super::*;
 
 pub(crate) fn resolve(lemma: &SynodalWord) -> Result<LexemeSummary> {
     let lookup = normalize_lookup_accentless(lemma.canonical());
-    let matches: Vec<&RawLexeme> = LEXEMES
+    let matches: Vec<&RawLexeme> = tables()
+        .lexemes
         .iter()
         .filter(|row| normalize_lookup_accentless(row.0[1]) == lookup)
         .collect();
@@ -41,11 +42,11 @@ pub(crate) fn rows_for<T>(
 }
 
 pub(crate) fn raw_by_id(id: &LexemeId) -> Option<&'static RawLexeme> {
-    rows_for(LEXEMES, |row| row.0[0], id.as_str()).first()
+    rows_for(&tables().lexemes, |row| row.0[0], id.as_str()).first()
 }
 
 pub(crate) fn exact_forms(id: &LexemeId, cell: &str) -> Vec<ExactFormRecord> {
-    rows_for(EXACT_FORMS, |row| row.0[0], id.as_str())
+    rows_for(&tables().exact_forms, |row| row.0[0], id.as_str())
         .iter()
         .filter(|row| row.0[1] == cell)
         .map(|row| ExactFormRecord {
@@ -60,7 +61,7 @@ pub(crate) fn exact_forms(id: &LexemeId, cell: &str) -> Vec<ExactFormRecord> {
 }
 
 pub(crate) fn defect_for(id: &LexemeId, cell: &str) -> Result<Option<DefectiveInventoryRecord>> {
-    let row = DEFECTIVE_INVENTORIES.iter().find(|row| {
+    let row = tables().defective_inventories.iter().find(|row| {
         if row.0[0] != id.as_str() {
             return false;
         }
@@ -135,7 +136,8 @@ pub(crate) fn reviewed_evidence(evidence_ids: &str) -> Result<Vec<ReviewedEviden
         .map(str::trim)
         .filter(|id| !id.is_empty())
         .map(|id| {
-            let row = REVIEWED_EVIDENCE
+            let row = tables()
+                .reviewed_evidence
                 .iter()
                 .find(|row| row.0[0] == id)
                 .ok_or_else(|| Error::ContradictoryMetadata {
@@ -164,13 +166,13 @@ pub(crate) fn reviewed_evidence(evidence_ids: &str) -> Result<Vec<ReviewedEviden
 }
 
 pub(crate) fn has_exact_forms(id: &LexemeId) -> bool {
-    !rows_for(EXACT_FORMS, |row| row.0[0], id.as_str()).is_empty()
+    !rows_for(&tables().exact_forms, |row| row.0[0], id.as_str()).is_empty()
 }
 
 pub(crate) fn pronoun_profiles(
     id: &LexemeId,
 ) -> Vec<(Option<Gender>, Option<synodal_church_slavonic_core::Person>)> {
-    rows_for(EXACT_FORMS, |row| row.0[0], id.as_str())
+    rows_for(&tables().exact_forms, |row| row.0[0], id.as_str())
         .iter()
         .filter(|row| row.0[1].starts_with("pronoun:"))
         .filter_map(|row| {
@@ -192,33 +194,34 @@ pub(crate) fn is_exact_only(id: &LexemeId) -> bool {
 }
 
 pub(crate) fn has_exact_system(id: &LexemeId, prefix: &str) -> bool {
-    rows_for(EXACT_FORMS, |row| row.0[0], id.as_str())
+    rows_for(&tables().exact_forms, |row| row.0[0], id.as_str())
         .iter()
         .any(|row| row.0[1].starts_with(prefix))
 }
 
 pub(crate) fn has_principal_part(id: &LexemeId, system: &str) -> bool {
-    rows_for(PRINCIPAL_PARTS, |row| row.0[0], id.as_str())
+    rows_for(&tables().principal_parts, |row| row.0[0], id.as_str())
         .iter()
         .any(|row| row.0[1] == system)
 }
 
 pub(crate) fn has_principal_part_prefix(id: &LexemeId, prefix: &str) -> bool {
-    rows_for(PRINCIPAL_PARTS, |row| row.0[0], id.as_str())
+    rows_for(&tables().principal_parts, |row| row.0[0], id.as_str())
         .iter()
         .any(|row| row.0[1].starts_with(prefix))
 }
 
 pub(crate) fn has_accent_data(id: &LexemeId) -> bool {
-    !rows_for(ACCENTS, |row| row.0[0], id.as_str()).is_empty()
-        || !rows_for(ACCENT_PARADIGMS, |row| row.0[0], id.as_str()).is_empty()
-        || rows_for(EXACT_FORMS, |row| row.0[0], id.as_str())
+    !rows_for(&tables().accents, |row| row.0[0], id.as_str()).is_empty()
+        || !rows_for(&tables().accent_paradigms, |row| row.0[0], id.as_str()).is_empty()
+        || rows_for(&tables().exact_forms, |row| row.0[0], id.as_str())
             .iter()
             .any(|row| row.0[2] != row.0[3])
 }
 
 pub(crate) fn accent_for(id: &LexemeId, cell: &str, expanded: &str) -> Option<AccentRecord> {
-    ACCENTS
+    tables()
+        .accents
         .iter()
         .find(|row| row.0[0] == id.as_str() && row.0[1] == cell && row.0[2] == expanded)
         .map(|row| AccentRecord {
@@ -233,9 +236,10 @@ pub(crate) fn accent_paradigm_for(
     id: &LexemeId,
     cell: synodal_church_slavonic_core::GrammarCell,
 ) -> Result<Option<AccentParadigm>> {
-    let rows: Vec<&RawAccentParadigm> = rows_for(ACCENT_PARADIGMS, |row| row.0[0], id.as_str())
-        .iter()
-        .collect();
+    let rows: Vec<&RawAccentParadigm> =
+        rows_for(&tables().accent_paradigms, |row| row.0[0], id.as_str())
+            .iter()
+            .collect();
     let mut applicable_ids = Vec::new();
     for row in &rows {
         if parse_accent_scope(row.0[2])?.applies_to(cell) {
@@ -323,7 +327,7 @@ pub(crate) fn positional_paradigm_for(
     cell: synodal_church_slavonic_core::GrammarCell,
 ) -> Result<Option<PositionalParadigm>> {
     let rows: Vec<&RawPositionalParadigm> =
-        rows_for(POSITIONAL_PARADIGMS, |row| row.0[0], id.as_str())
+        rows_for(&tables().positional_paradigms, |row| row.0[0], id.as_str())
             .iter()
             .collect();
     let mut applicable_ids = Vec::new();
@@ -659,35 +663,39 @@ mod binary_search_contract {
     /// slow. This pins the generator's ordering contract.
     #[test]
     fn generated_lexeme_tables_are_sorted() {
-        assert_sorted("LEXEMES", LEXEMES, |row| row.0[0]);
-        assert_sorted("EXACT_FORMS", EXACT_FORMS, |row| row.0[0]);
-        assert_sorted("PRINCIPAL_PARTS", PRINCIPAL_PARTS, |row| row.0[0]);
-        assert_sorted("ACCENTS", ACCENTS, |row| row.0[0]);
-        assert_sorted("ACCENT_PARADIGMS", ACCENT_PARADIGMS, |row| row.0[0]);
+        assert_sorted("LEXEMES", &tables().lexemes, |row| row.0[0]);
+        assert_sorted("EXACT_FORMS", &tables().exact_forms, |row| row.0[0]);
+        assert_sorted("PRINCIPAL_PARTS", &tables().principal_parts, |row| row.0[0]);
+        assert_sorted("ACCENTS", &tables().accents, |row| row.0[0]);
+        assert_sorted("ACCENT_PARADIGMS", &tables().accent_paradigms, |row| {
+            row.0[0]
+        });
     }
 
     /// The searched range must be exactly the rows a full scan would keep, for
     /// every lexeme in the registry and in the same order.
     #[test]
     fn searched_ranges_match_an_exhaustive_scan() {
-        for lexeme in LEXEMES {
+        for lexeme in &tables().lexemes {
             let id = lexeme.0[0];
-            let searched: Vec<&str> = rows_for(EXACT_FORMS, |row| row.0[0], id)
+            let searched: Vec<&str> = rows_for(&tables().exact_forms, |row| row.0[0], id)
                 .iter()
                 .map(|row| row.0[1])
                 .collect();
-            let scanned: Vec<&str> = EXACT_FORMS
+            let scanned: Vec<&str> = tables()
+                .exact_forms
                 .iter()
                 .filter(|row| row.0[0] == id)
                 .map(|row| row.0[1])
                 .collect();
             assert_eq!(searched, scanned, "exact forms diverged for {id}");
 
-            let searched: Vec<&str> = rows_for(ACCENT_PARADIGMS, |row| row.0[0], id)
+            let searched: Vec<&str> = rows_for(&tables().accent_paradigms, |row| row.0[0], id)
                 .iter()
                 .map(|row| row.0[2])
                 .collect();
-            let scanned: Vec<&str> = ACCENT_PARADIGMS
+            let scanned: Vec<&str> = tables()
+                .accent_paradigms
                 .iter()
                 .filter(|row| row.0[0] == id)
                 .map(|row| row.0[2])
@@ -701,8 +709,8 @@ mod binary_search_contract {
     #[test]
     fn absent_identifiers_yield_an_empty_range() {
         for id in ["", "synodal:noun:absent-lexeme", "\u{10ffff}"] {
-            assert!(rows_for(EXACT_FORMS, |row| row.0[0], id).is_empty());
-            assert!(rows_for(LEXEMES, |row| row.0[0], id).is_empty());
+            assert!(rows_for(&tables().exact_forms, |row| row.0[0], id).is_empty());
+            assert!(rows_for(&tables().lexemes, |row| row.0[0], id).is_empty());
         }
     }
 }

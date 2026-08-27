@@ -418,7 +418,7 @@ pub(crate) fn fixture_bootstrap(
             return Err("generated registries differ across independent directories".into());
         }
         let committed_outputs_current = morphology_one
-            == fs::read(root.join("crates/synodal-church-slavonic/generated/registry.rs"))?
+            == fs::read(root.join("crates/synodal-church-slavonic/generated/registry.dat"))?
             && dictionary_one
                 == fs::read(
                     root.join("crates/synodal-church-slavonic-dictionary/generated/registry.rs"),
@@ -469,7 +469,7 @@ pub(crate) fn fixture_bootstrap(
 
 pub(crate) fn regenerate(root: &Path) -> Result<(), Box<dyn Error>> {
     let data = root.join("data/synodal");
-    let morphology = root.join("crates/synodal-church-slavonic/generated/registry.rs");
+    let morphology = root.join("crates/synodal-church-slavonic/generated/registry.dat");
     let dictionary = root.join("crates/synodal-church-slavonic-dictionary/generated/registry.rs");
     let morphology_report =
         church_slavonic_extractor::synodal::generate_registry(&data, &morphology)?;
@@ -704,7 +704,7 @@ fn check_fixture_bootstrap_report(
     for (name, committed) in [
         (
             "morphology_registry_sha256",
-            "crates/synodal-church-slavonic/generated/registry.rs",
+            "crates/synodal-church-slavonic/generated/registry.dat",
         ),
         (
             "dictionary_registry_sha256",
@@ -810,7 +810,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
         quarantined_rows: 0,
         parse_failure_ceiling: 0,
         morphology_registry_sha256: file_sha256(
-            &root.join("crates/synodal-church-slavonic/generated/registry.rs"),
+            &root.join("crates/synodal-church-slavonic/generated/registry.dat"),
         )?,
         dictionary_registry_sha256: file_sha256(
             &root.join("crates/synodal-church-slavonic-dictionary/generated/registry.rs"),
@@ -831,7 +831,7 @@ fn extraction_report(root: &Path) -> Result<ExtractionReport, Box<dyn Error>> {
     })
 }
 
-fn write_extraction_report(root: &Path) -> Result<(), Box<dyn Error>> {
+pub(crate) fn write_extraction_report(root: &Path) -> Result<(), Box<dyn Error>> {
     let report = extraction_report(root)?;
     let reports = root.join("reports");
     fs::create_dir_all(&reports)?;
@@ -933,7 +933,7 @@ fn check_generated(root: &Path) -> Result<(), Box<dyn Error>> {
         )?;
         compare_files(
             &generated_morphology,
-            &root.join("crates/synodal-church-slavonic/generated/registry.rs"),
+            &root.join("crates/synodal-church-slavonic/generated/registry.dat"),
         )?;
         compare_files(
             &generated_dictionary,
@@ -1268,7 +1268,7 @@ const GENERATED_REGISTRY_BUDGET_BYTES: u64 = 40 * 1024 * 1024;
 
 fn check_generated_registry_budget(root: &Path) -> Result<(), Box<dyn Error>> {
     for generated in [
-        "crates/synodal-church-slavonic/generated/registry.rs",
+        "crates/synodal-church-slavonic/generated/registry.dat",
         "crates/synodal-church-slavonic-dictionary/generated/registry.rs",
     ] {
         let path = root.join(generated);
@@ -1344,10 +1344,15 @@ fn check_package_metadata(root: &Path) -> Result<(), Box<dyn Error>> {
                 .into());
             }
         }
-        if package != "synodal-church-slavonic-core"
-            && !packaged.lines().any(|path| path == "generated/registry.rs")
+        let generated = match package {
+            "synodal-church-slavonic-core" => None,
+            "synodal-church-slavonic" => Some("generated/registry.dat"),
+            _ => Some("generated/registry.rs"),
+        };
+        if let Some(generated) = generated
+            && !packaged.lines().any(|path| path == generated)
         {
-            return Err(format!("{package} package omits generated/registry.rs").into());
+            return Err(format!("{package} package omits {generated}").into());
         }
     }
     Ok(())
@@ -2615,7 +2620,7 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
             serde_json::to_vec_pretty(&stale_report)?,
         )?;
         for path in [
-            "crates/synodal-church-slavonic/generated/registry.rs",
+            "crates/synodal-church-slavonic/generated/registry.dat",
             "crates/synodal-church-slavonic-dictionary/generated/registry.rs",
         ] {
             if let Some(parent) = temporary.join(path).parent() {
@@ -2702,20 +2707,20 @@ pub(crate) fn guard_witnesses(root: &Path) -> Result<(), Box<dyn Error>> {
         fs::write(&tampered, pristine)?;
 
         // A binary older than the on-disk registry must refuse to measure.
-        for crate_name in [
-            "synodal-church-slavonic",
-            "synodal-church-slavonic-dictionary",
+        for (crate_name, file) in [
+            ("synodal-church-slavonic", "registry.dat"),
+            ("synodal-church-slavonic-dictionary", "registry.rs"),
         ] {
             let generated = format!("crates/{crate_name}/generated");
             fs::create_dir_all(temporary.join(&generated))?;
             fs::copy(
-                root.join(&generated).join("registry.rs"),
-                temporary.join(&generated).join("registry.rs"),
+                root.join(&generated).join(file),
+                temporary.join(&generated).join(file),
             )?;
         }
         ensure_registry_current(&temporary)?;
         let tampered_registry =
-            temporary.join("crates/synodal-church-slavonic/generated/registry.rs");
+            temporary.join("crates/synodal-church-slavonic/generated/registry.dat");
         let pristine_registry = fs::read_to_string(&tampered_registry)?;
         fs::write(&tampered_registry, format!("{pristine_registry} "))?;
         require_failure(
@@ -2845,16 +2850,36 @@ fn registry_fingerprint(bytes: &[u8]) -> String {
 }
 
 /// Refuses to measure with a binary compiled against an older registry than
-/// the one on disk. `synodal-regenerate` rewrites `generated/registry.rs`,
+/// the one on disk. `synodal-regenerate` rewrites the generated registries,
 /// but the registries compile *into* the binaries, so every measurement after
 /// a regenerate silently reflects the old data until a rebuild — which cost a
 /// full evaluation cycle during v0.12. The message names the exact rebuild.
+/// Installs the on-disk morphology registry artifact in-process when this
+/// binary embeds an older one, so a gold replay after an admission reads the
+/// current curated data without a rebuild. Returns whether an override was
+/// installed. Analyzers built before the call keep their registry, so callers
+/// invoke this before constructing any.
+pub(crate) fn sync_registry_override(root: &Path) -> Result<bool, Box<dyn Error>> {
+    let path = root.join("crates/synodal-church-slavonic/generated/registry.dat");
+    let artifact = fs::read_to_string(&path)?;
+    if synodal_church_slavonic::registry_fingerprint(artifact.as_bytes())
+        == synodal_church_slavonic::active_registry_fingerprint()
+    {
+        return Ok(false);
+    }
+    synodal_church_slavonic::install_registry_override(artifact)?;
+    println!(
+        "synodal registry: this binary embeds an older generated/registry.dat; installed the on-disk artifact in-process"
+    );
+    Ok(true)
+}
+
 fn ensure_registry_current(root: &Path) -> Result<(), Box<dyn Error>> {
     for (crate_name, path, compiled) in [
         (
             "synodal-church-slavonic",
-            "crates/synodal-church-slavonic/generated/registry.rs",
-            synodal_church_slavonic::REGISTRY_FINGERPRINT,
+            "crates/synodal-church-slavonic/generated/registry.dat",
+            synodal_church_slavonic::active_registry_fingerprint(),
         ),
         (
             "synodal-church-slavonic-dictionary",

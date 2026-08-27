@@ -25,6 +25,13 @@ Everything below is organised around keeping the inner loop tight.
 
 ## Slice 0 — build the fast loop before burning anything
 
+*Status (2026-08-26): delivered — `cargo gold` alias plus dev-profile
+opt-level for the replay's hot crates; `--only`/`--lemma`/`--types-from`
+scoped replay; the morphology registry moved to the `generated/registry.dat`
+artifact with an xtask-only in-process override; `synodal-gold propose`,
+`admit`, and `loop`. Usage is documented in `docs/SYNODAL_DATA_PIPELINE.md`
+("The gold-gap inner loop"); the measured numbers are in that slice's report.*
+
 Deliverables, each with a measured time you report:
 
 1. **A release-profile xtask path.** Add a cargo alias (e.g.

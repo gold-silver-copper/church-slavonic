@@ -49,6 +49,22 @@ unwrap_used = "deny"
 [profile.dev.package.sha2]
 opt-level = 3
 
+# The Synodal gold replay (cargo xtask synodal-gold, also inside
+# check-structure) spends its time in the inflector, the orthography folds,
+# and the analyzer index. Optimising just those crates in the dev profile
+# takes the full replay from ~30 s to ~3 s (measured 2026-08-26) while xtask
+# itself stays a fast debug build; `cargo gold` is the release alias.
+[profile.dev.package.synodal-church-slavonic]
+opt-level = 3
+[profile.dev.package.synodal-church-slavonic-core]
+opt-level = 3
+[profile.dev.package.synodal-church-slavonic-dictionary]
+opt-level = 3
+[profile.dev.package.church-slavonic-orthography]
+opt-level = 3
+[profile.dev.package.unicode-normalization]
+opt-level = 3
+
 # The dictionary's exhaustive morphology checks are CPU-bound. Optimizing test
 # code preserves debug assertions and overflow checks while keeping the full
 # correctness inventory practical on local and CI runners.

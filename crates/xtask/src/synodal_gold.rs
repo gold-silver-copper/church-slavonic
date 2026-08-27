@@ -19,7 +19,7 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::time::Instant;
 use synodal_church_slavonic::{GrammarCell, Inflector, LexemeId, OrthographyProfile, abbreviation};
-use synodal_church_slavonic_core::reflexive_base_candidates;
+use synodal_church_slavonic_core::{normalize_lookup_accentless, reflexive_base_candidates};
 use synodal_church_slavonic_dictionary::coverage::{Analyzer, classify_non_lexical};
 use synodal_church_slavonic_dictionary::{Analysis, AnalysisSource};
 use unicode_normalization::UnicodeNormalization;
@@ -39,29 +39,335 @@ pub(crate) fn run(
     args: &mut impl Iterator<Item = String>,
     root: &Path,
 ) -> Result<(), Box<dyn Error>> {
+    crate::synodal::sync_registry_override(root)?;
     let mut fix = false;
-    for argument in args.by_ref() {
+    let mut scope = Scope::default();
+    let mut peeked = args.peekable();
+    match peeked.peek().map(String::as_str) {
+        Some("propose") => {
+            peeked.next();
+            return crate::synodal_gold_burndown::propose(&mut peeked, root);
+        }
+        Some("admit") => {
+            peeked.next();
+            return crate::synodal_gold_burndown::admit(&mut peeked, root);
+        }
+        Some("loop") => {
+            peeked.next();
+            return crate::synodal_gold_burndown::inner_loop(&mut peeked, root);
+        }
+        Some("probe") => {
+            peeked.next();
+            return crate::synodal_gold_burndown::probe(&mut peeked, root);
+        }
+        _ => {}
+    }
+    while let Some(argument) = peeked.next() {
         match argument.as_str() {
             "--check" => fix = false,
             "--fix" => fix = true,
+            "--only" => {
+                let class = peeked.next().ok_or("--only requires a gap class")?;
+                scope.classes.insert(class);
+            }
+            "--lemma" => {
+                let key = peeked
+                    .next()
+                    .ok_or("--lemma requires a lemma or lexeme id")?;
+                scope.lemmas.push(key);
+            }
+            "--types-from" => {
+                let path = peeked.next().ok_or("--types-from requires a file path")?;
+                scope.keys.extend(read_type_keys(Path::new(&path))?);
+            }
             other => return Err(format!("unknown synodal-gold option: {other}").into()),
         }
     }
-    gate(root, fix)
+    if fix && !scope.is_empty() {
+        return Err(
+            "synodal-gold --fix replays the full oracles; scope flags apply to --check only".into(),
+        );
+    }
+    if scope.is_empty() {
+        gate(root, fix)
+    } else {
+        scoped_check(root, &scope)
+    }
+}
+
+/// Reads gap keys from a file: one per line, either a bare key (a token
+/// surface or paradigm key) or a full gap row (`oracle<TAB>key...`), from
+/// which the key column is taken. Comments and blank lines are skipped.
+fn read_type_keys(path: &Path) -> Result<Vec<String>, Box<dyn Error>> {
+    let content =
+        fs::read_to_string(path).map_err(|error| format!("read {}: {error}", path.display()))?;
+    Ok(content
+        .lines()
+        .filter(|line| {
+            !line.starts_with('#') && !line.trim().is_empty() && *line != GAP_COLUMN_HEADER
+        })
+        .map(|line| {
+            let mut fields = line.split('\t');
+            match (fields.next(), fields.next()) {
+                (Some("token" | "paradigm"), Some(key)) => key.to_owned(),
+                _ => line.to_owned(),
+            }
+        })
+        .collect())
+}
+
+/// What a replay covers. Empty means the full oracles (the gate); otherwise
+/// only rows whose committed gap class is in `classes`, whose key is in
+/// `keys`, or which a lexeme in `lemmas` analyses/generates. Scope never
+/// changes the comparison contract: a selected row replays exactly as it
+/// would under the full gate.
+#[derive(Clone, Debug, Default)]
+pub(crate) struct Scope {
+    pub(crate) classes: BTreeSet<String>,
+    pub(crate) keys: BTreeSet<String>,
+    pub(crate) lemmas: Vec<String>,
+}
+
+impl Scope {
+    pub(crate) fn is_empty(&self) -> bool {
+        self.classes.is_empty() && self.keys.is_empty() && self.lemmas.is_empty()
+    }
+
+    pub(crate) fn from_keys(keys: impl IntoIterator<Item = String>) -> Self {
+        Self {
+            keys: keys.into_iter().collect(),
+            ..Self::default()
+        }
+    }
+}
+
+/// The committed gap, keyed by (oracle, key) with its committed reason.
+pub(crate) fn committed_gap(
+    root: &Path,
+) -> Result<BTreeMap<(String, String), String>, Box<dyn Error>> {
+    let gap_path = root.join(GAP_RELATIVE);
+    let content = fs::read_to_string(&gap_path).map_err(|error| {
+        format!(
+            "{GAP_RELATIVE}: {error}; run cargo xtask synodal-gold --fix to commit the baseline"
+        )
+    })?;
+    let mut committed = BTreeMap::new();
+    for row in data_rows(&content) {
+        let fields: Vec<&str> = row.split('\t').collect();
+        if fields.len() != 5 {
+            return Err(format!("short committed gap row: {row}").into());
+        }
+        committed.insert(
+            (fields[0].to_owned(), fields[1].to_owned()),
+            fields[2].to_owned(),
+        );
+    }
+    Ok(committed)
+}
+
+/// Every committed gap row as (oracle, key, reason). Paradigm keys are not
+/// unique (headword-less tables share keys), so counts must be taken over
+/// rows, never over the deduplicated key map.
+pub(crate) type CommittedRow = (String, String, String);
+
+pub(crate) fn committed_rows(root: &Path) -> Result<Vec<CommittedRow>, Box<dyn Error>> {
+    let content = fs::read_to_string(root.join(GAP_RELATIVE))
+        .map_err(|error| format!("{GAP_RELATIVE}: {error}"))?;
+    Ok(data_rows(&content)
+        .filter_map(|row| {
+            let fields: Vec<&str> = row.split('\t').collect();
+            (fields.len() == 5).then(|| {
+                (
+                    fields[0].to_owned(),
+                    fields[1].to_owned(),
+                    fields[2].to_owned(),
+                )
+            })
+        })
+        .collect())
+}
+
+/// The result of a (full or scoped) replay.
+pub(crate) struct Replay {
+    pub(crate) gap: Vec<GapRow>,
+    /// The (oracle, key) pairs the replay covered.
+    pub(crate) covered: BTreeSet<(String, String)>,
+    pub(crate) token_total: usize,
+    pub(crate) paradigm_total: usize,
+    pub(crate) seconds: f64,
+}
+
+/// Replays the selected rows of both oracles with a freshly built analyzer
+/// (so an installed registry override is honoured) and returns the failing
+/// rows. Witness consultation and ledger validation are the full gate's
+/// source-present refinements and are not part of a scoped replay.
+pub(crate) fn replay(root: &Path, scope: &Scope) -> Result<Replay, Box<dyn Error>> {
+    let started = Instant::now();
+    let token_rows = load_token_oracle(root)?;
+    let paradigm_rows = load_paradigm_oracle(root)?;
+    let ledger = load_defect_ledger(root)?;
+    let committed = committed_gap(root)?;
+    let analyzer =
+        Analyzer::new(Inflector::default()).map_err(|error| format!("build analyzer: {error}"))?;
+    let liturgical = Inflector::builder()
+        .orthography(OrthographyProfile::SynodalLiturgical)
+        .build();
+    let lemma_keys: BTreeSet<String> = scope
+        .lemmas
+        .iter()
+        .map(|lemma| normalize_lookup_accentless(lemma))
+        .collect();
+    let selects = |oracle: &str, key: &str, lexeme_hits: &dyn Fn() -> bool| -> bool {
+        if scope.keys.contains(key) {
+            return true;
+        }
+        if !scope.classes.is_empty()
+            && committed
+                .get(&(oracle.to_owned(), key.to_owned()))
+                .is_some_and(|reason| scope.classes.contains(reason))
+        {
+            return true;
+        }
+        !lemma_keys.is_empty() && lexeme_hits()
+    };
+    let mut gap: Vec<GapRow> = Vec::new();
+    let mut covered = BTreeSet::new();
+    for row in &token_rows {
+        if ledger
+            .iter()
+            .any(|defect| defect.ponomar_surface == row.surface)
+        {
+            continue;
+        }
+        let surface = nfc(&row.surface);
+        let hits = || {
+            analyzer
+                .analyze_profile(&surface, OrthographyProfile::SynodalLiturgical)
+                .unwrap_or_default()
+                .iter()
+                .any(|analysis| {
+                    lemma_keys.contains(&normalize_lookup_accentless(analysis.lexeme.lemma()))
+                        || lemma_keys.contains(analysis.lexeme.id().as_str())
+                })
+        };
+        if !selects("token", &row.surface, &hits) {
+            continue;
+        }
+        covered.insert(("token".to_owned(), row.surface.clone()));
+        if let Some(failure) = replay_token(&analyzer, liturgical, row) {
+            gap.push(GapRow {
+                oracle: "token",
+                key: row.surface.clone(),
+                reason: failure.reason,
+                engine_output: failure.engine_output,
+                expected: row.surface.clone(),
+            });
+        }
+    }
+    for row in &paradigm_rows {
+        let hits = || {
+            paradigm_lemma(&row.headword).is_some_and(|lemma| {
+                lemma_keys.contains(&normalize_lookup_accentless(&lemma))
+                    || synodal_church_slavonic::lookup(&lemma)
+                        .or_else(|_| synodal_church_slavonic::lookup(&strip_accents(&lemma)))
+                        .is_ok_and(|lexeme| lemma_keys.contains(lexeme.id().as_str()))
+            })
+        };
+        if !selects("paradigm", &row.key, &hits) {
+            continue;
+        }
+        covered.insert(("paradigm".to_owned(), row.key.clone()));
+        if let Some(gap_row) = replay_paradigm(liturgical, row) {
+            gap.push(gap_row);
+        }
+    }
+    gap.sort();
+    gap.dedup();
+    Ok(Replay {
+        gap,
+        covered,
+        token_total: token_rows.len(),
+        paradigm_total: paradigm_rows.len(),
+        seconds: started.elapsed().as_secs_f64(),
+    })
+}
+
+/// Per-class delta of a scoped replay against the committed gap, over the
+/// covered keys only. Returns (class -> (committed rows, regenerated rows)).
+pub(crate) fn class_delta(
+    replay: &Replay,
+    committed_rows: &[CommittedRow],
+) -> BTreeMap<(String, String), (usize, usize)> {
+    let mut delta: BTreeMap<(String, String), (usize, usize)> = BTreeMap::new();
+    for (oracle, key, reason) in committed_rows {
+        if replay.covered.contains(&(oracle.clone(), key.clone())) {
+            delta.entry((oracle.clone(), reason.clone())).or_default().0 += 1;
+        }
+    }
+    for row in &replay.gap {
+        delta
+            .entry((row.oracle.to_owned(), row.reason.to_owned()))
+            .or_default()
+            .1 += 1;
+    }
+    delta
+}
+
+/// `--check` restricted to a scope: prints the per-class delta over the
+/// covered keys and fails on any covered row that is not in the committed
+/// gap. Never writes the gap; the full replay stays the authority for --fix.
+fn scoped_check(root: &Path, scope: &Scope) -> Result<(), Box<dyn Error>> {
+    let committed = committed_gap(root)?;
+    let rows = committed_rows(root)?;
+    let result = replay(root, scope)?;
+    let delta = class_delta(&result, &rows);
+    println!(
+        "synodal-gold --check (scoped): {} of {} token types and paradigm cells replayed, {} in gap",
+        result.covered.len(),
+        result.token_total + result.paradigm_total,
+        result.gap.len()
+    );
+    for ((oracle, reason), (before, after)) in &delta {
+        println!(
+            "  {oracle}\t{reason}\t{before} -> {after}\t({:+})",
+            *after as i64 - *before as i64
+        );
+    }
+    println!("  replay runtime: {:.1}s", result.seconds);
+    let regressed: Vec<&GapRow> = result
+        .gap
+        .iter()
+        .filter(|row| {
+            committed
+                .get(&(row.oracle.to_owned(), row.key.clone()))
+                .is_none_or(|reason| reason != row.reason)
+        })
+        .collect();
+    if !regressed.is_empty() {
+        for row in regressed.iter().take(20) {
+            eprintln!("  regressed row: {}", row.render());
+        }
+        return Err(format!(
+            "synodal-gold --check (scoped): {} covered rows fail with a class absent from the committed gap",
+            regressed.len()
+        )
+        .into());
+    }
+    Ok(())
 }
 
 /// One row of the regenerated gap worklist.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-struct GapRow {
-    oracle: &'static str,
-    key: String,
-    reason: &'static str,
-    engine_output: String,
-    expected: String,
+pub(crate) struct GapRow {
+    pub(crate) oracle: &'static str,
+    pub(crate) key: String,
+    pub(crate) reason: &'static str,
+    pub(crate) engine_output: String,
+    pub(crate) expected: String,
 }
 
 impl GapRow {
-    fn render(&self) -> String {
+    pub(crate) fn render(&self) -> String {
         format!(
             "{}\t{}\t{}\t{}\t{}",
             self.oracle, self.key, self.reason, self.engine_output, self.expected
@@ -204,7 +510,7 @@ fn row_key(row: &str) -> Option<(&str, &str)> {
     Some((oracle, fields.next()?))
 }
 
-fn data_rows(content: &str) -> impl Iterator<Item = &str> {
+pub(crate) fn data_rows(content: &str) -> impl Iterator<Item = &str> {
     content
         .lines()
         .filter(|line| !line.starts_with('#') && !line.is_empty() && *line != GAP_COLUMN_HEADER)
@@ -259,11 +565,11 @@ fn print_summary(
 // Token oracle replay
 // ---------------------------------------------------------------------------
 
-struct TokenOracleRow {
-    surface: String,
-    non_lexical: String,
-    references: Vec<String>,
-    confirmed_readings: Vec<(LexemeId, String)>,
+pub(crate) struct TokenOracleRow {
+    pub(crate) surface: String,
+    pub(crate) non_lexical: String,
+    pub(crate) references: Vec<String>,
+    pub(crate) confirmed_readings: Vec<(LexemeId, String)>,
 }
 
 struct TokenFailure {
@@ -277,7 +583,7 @@ struct Failure {
     engine_output: String,
 }
 
-fn load_token_oracle(root: &Path) -> Result<Vec<TokenOracleRow>, Box<dyn Error>> {
+pub(crate) fn load_token_oracle(root: &Path) -> Result<Vec<TokenOracleRow>, Box<dyn Error>> {
     let path = root.join(TOKEN_ORACLE_RELATIVE);
     let content =
         fs::read_to_string(&path).map_err(|error| format!("read {}: {error}", path.display()))?;
@@ -576,14 +882,14 @@ fn has_titlo(surface: &str) -> bool {
 // Comparison within the contract's equivalence classes (§3)
 // ---------------------------------------------------------------------------
 
-fn nfc(value: &str) -> String {
+pub(crate) fn nfc(value: &str) -> String {
     value.nfc().collect()
 }
 
 /// §3.3: the uk presentation fold — the printed digraph half `ᲂ` and the
 /// monograph `ѹ`/`Ѹ` are presentations of the letter pair `оу`. Nothing else
 /// is folded here.
-fn fold_uk(value: &str) -> String {
+pub(crate) fn fold_uk(value: &str) -> String {
     let mut output = String::with_capacity(value.len());
     for character in value.chars() {
         match character {
@@ -599,7 +905,7 @@ fn fold_uk(value: &str) -> String {
 /// Exact NFC comparison, then the uk presentation fold (§3.3), then — only
 /// for a surface printed capitalized (verse-initial presentation, §3.2) —
 /// case-insensitively.
-fn surfaces_match(oracle: &str, engine: &str) -> bool {
+pub(crate) fn surfaces_match(oracle: &str, engine: &str) -> bool {
     let oracle = nfc(oracle);
     let engine = nfc(engine);
     if oracle == engine {
@@ -616,14 +922,14 @@ fn surfaces_match(oracle: &str, engine: &str) -> bool {
     false
 }
 
-fn lowercase(value: &str) -> String {
+pub(crate) fn lowercase(value: &str) -> String {
     value.chars().flat_map(char::to_lowercase).nfc().collect()
 }
 
 /// Whether the two surfaces agree once presentation accents and breathing are
 /// removed, under the same case rule as [`surfaces_match`] (used only to
 /// split `engine-wrong-accent` from `engine-wrong-form`; never a pass).
-fn accentless_match(oracle: &str, engine: &str) -> bool {
+pub(crate) fn accentless_match(oracle: &str, engine: &str) -> bool {
     let stripped_oracle = strip_accents(oracle);
     let stripped_engine = strip_accents(engine);
     if stripped_oracle == stripped_engine {
@@ -633,7 +939,7 @@ fn accentless_match(oracle: &str, engine: &str) -> bool {
         && lowercase(&stripped_oracle) == lowercase(&stripped_engine)
 }
 
-fn strip_accents(value: &str) -> String {
+pub(crate) fn strip_accents(value: &str) -> String {
     fold_uk(&nfc(value))
         .nfd()
         .filter(|character| {
@@ -650,20 +956,21 @@ fn strip_accents(value: &str) -> String {
 // Paradigm oracle replay
 // ---------------------------------------------------------------------------
 
-struct ParadigmOracleRow {
-    key: String,
-    pos: String,
-    headword: String,
-    case: String,
-    number: String,
-    gender: String,
-    person: String,
-    tense: String,
-    form: String,
-    surface: String,
+pub(crate) struct ParadigmOracleRow {
+    pub(crate) key: String,
+    pub(crate) section: String,
+    pub(crate) pos: String,
+    pub(crate) headword: String,
+    pub(crate) case: String,
+    pub(crate) number: String,
+    pub(crate) gender: String,
+    pub(crate) person: String,
+    pub(crate) tense: String,
+    pub(crate) form: String,
+    pub(crate) surface: String,
 }
 
-fn load_paradigm_oracle(root: &Path) -> Result<Vec<ParadigmOracleRow>, Box<dyn Error>> {
+pub(crate) fn load_paradigm_oracle(root: &Path) -> Result<Vec<ParadigmOracleRow>, Box<dyn Error>> {
     let path = root.join(PARADIGM_ORACLE_RELATIVE);
     let content =
         fs::read_to_string(&path).map_err(|error| format!("read {}: {error}", path.display()))?;
@@ -691,6 +998,7 @@ fn load_paradigm_oracle(root: &Path) -> Result<Vec<ParadigmOracleRow>, Box<dyn E
                 fields[5],
                 fields[6..12].join(":")
             ),
+            section: fields[0].to_owned(),
             pos: fields[3].to_owned(),
             headword: fields[4].to_owned(),
             case: fields[6].to_owned(),
@@ -712,7 +1020,7 @@ fn load_paradigm_oracle(root: &Path) -> Result<Vec<ParadigmOracleRow>, Box<dyn E
 /// A multi-word printed cell (periphrases, prepositional demonstrations,
 /// adjective-plus-noun demonstration pairs) accepts the whole phrase or any
 /// single word of it.
-fn paradigm_expected_variants(surface: &str) -> Vec<String> {
+pub(crate) fn paradigm_expected_variants(surface: &str) -> Vec<String> {
     let dehyphenated: String = surface
         .chars()
         .filter(|character| *character != '-')
@@ -784,7 +1092,7 @@ fn feature_or(value: &str, guesses: &[&str]) -> Vec<String> {
 /// adjective length, participle voice, numeral kind), so the unencoded
 /// dimensions fan out over their closed value sets; a cell passes when any
 /// candidate generates the printed surface.
-fn candidate_cell_keys(row: &ParadigmOracleRow) -> Vec<String> {
+pub(crate) fn candidate_cell_keys(row: &ParadigmOracleRow) -> Vec<String> {
     let mut keys = Vec::new();
     let cases = split_feature(&row.case);
     let numbers = feature_or(&row.number, &["singular", "dual", "plural"]);
@@ -900,7 +1208,7 @@ fn candidate_cell_keys(row: &ParadigmOracleRow) -> Vec<String> {
 
 /// The Alypy headword, dehyphenated, with a parenthesised alternate dropped
 /// and only the first word of a multi-word demonstration kept.
-fn paradigm_lemma(headword: &str) -> Option<String> {
+pub(crate) fn paradigm_lemma(headword: &str) -> Option<String> {
     let first = headword.split_whitespace().next()?;
     let first = first.split('(').next()?.trim();
     let lemma: String = first

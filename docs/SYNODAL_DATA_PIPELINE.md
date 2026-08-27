@@ -50,7 +50,7 @@ SYNODAL_TEST_CACHE="$(mktemp -d)"
 cargo xtask synodal-bootstrap --cache "$SYNODAL_TEST_CACHE"
 cargo xtask synodal-sources verify --offline --cache "$SYNODAL_TEST_CACHE"
 git diff --exit-code -- \
-  crates/synodal-church-slavonic/generated/registry.rs \
+  crates/synodal-church-slavonic/generated/registry.dat \
   crates/synodal-church-slavonic-dictionary/generated/registry.rs \
   reports/synodal-bootstrap.json \
   reports/synodal-evaluation.json \
@@ -85,9 +85,13 @@ files, evaluates held-out rows, and proves that source locks did not change.
    reasons and is gitignored.
 4. `data/synodal/reviewed_evidence.tsv` and the other committed TSVs are the
    human-reviewed overlays. They are never written by source adapters.
-5. `crates/*/generated/registry.rs` contains deterministic runtime-safe facts;
-   runtime crates have no filesystem, network, archive, XML, JSON, TSV, or
-   database reader.
+5. `crates/*/generated/` contains deterministic runtime-safe facts — the
+   morphology registry as the data artifact
+   `synodal-church-slavonic/generated/registry.dat` (`@TABLE <columns>`
+   headers, tab-separated rows, embedded with `include_str!` and parsed once
+   on first use), the dictionary registry as `generated/registry.rs`; runtime
+   crates have no filesystem, network, archive, XML, JSON, TSV, or database
+   reader.
 6. `data/synodal/evaluation.tsv` and raw corpus passages are evaluation-only and
    cannot enter runtime packages.
 
@@ -137,12 +141,56 @@ only shrink. The contract is normative in `docs/SYNODAL_GOLD_ORACLE.md`.
 The generated registries compile into the binaries, so a measurement run
 after `synodal-regenerate` but before a rebuild silently reflects the old
 data. Each runtime crate's build script embeds a fingerprint of its
-`generated/registry.rs` (`REGISTRY_FINGERPRINT`), and the in-process
-evaluation refuses to run when the on-disk file no longer matches the
-compiled fingerprint, naming the exact rebuild command. `synodal-regenerate`
-itself skips the in-process evaluation and prints a loud REBUILD REQUIRED
-banner whenever its write changed the registries. The refusal is
-witness-tested in `synodal-guard-witnesses`.
+generated registry (`registry.dat` for the morphology crate, `registry.rs`
+for the dictionary; `REGISTRY_FINGERPRINT`), and the in-process evaluation
+refuses to run when the on-disk file no longer matches the fingerprint of the
+registry actually in use (`active_registry_fingerprint()`), naming the exact
+rebuild command. `synodal-regenerate` itself skips the in-process evaluation
+and prints a loud REBUILD REQUIRED banner whenever its write changed the
+registries. The refusal is witness-tested in `synodal-guard-witnesses`.
+
+The morphology crate additionally carries the `registry-override` cargo
+feature, enabled only by `xtask`: `install_registry_override` swaps the parsed
+artifact in-process, so the gold inner loop below reads freshly regenerated
+data without recompiling anything. Every `synodal-gold` command first installs
+the on-disk artifact when the binary embeds an older one (printing a notice),
+which keeps the gate honest between regenerations and rebuilds. The published
+crate exposes no such channel.
+
+### The gold-gap inner loop
+
+`docs/GOLD_GAP_BURNDOWN_PROMPT.md` organises the burn-down of the committed
+gap around a fast inner loop. `cargo gold` is the release-profile alias for
+`cargo xtask synodal-gold` (the full replay runs in about 2 s instead of
+20–30 s in debug):
+
+- `cargo gold --check --only <class> [--only …] [--lemma <lemma-or-id>]
+  [--types-from <file>]` replays only the selected oracle rows and prints the
+  per-class delta against the committed gap; `--fix` always replays the full
+  oracles.
+- `cargo gold propose [--only <class>] [--min-cells N] [--top N]` writes
+  `reports/synodal-gold-hypotheses.tsv`: (lemma, class) hypotheses derived by
+  segmenting gap surfaces against every productive class's probed ending
+  inventory, verified through the registry path (placeholder lexemes installed
+  via the override), with an accent paradigm fitted from the printed cells,
+  clustered by the attested cells each clears and ranked by cells per
+  admission. Statuses other than `fit` explain why a hypothesis is not
+  admissible (partial table, accent unfit with the closest rule named,
+  collateral surfaces it would misanalyse, a competing lemma or class).
+- `cargo gold admit [<hypotheses.tsv>] [--take N] [--oracle token|paradigm]`
+  appends lexeme, accent-paradigm, and reviewed-evidence rows for the fit
+  clusters (provenance: the attesting passage or Alypy section, linked to its
+  candidate record), regenerates the artifact, installs it in-process, replays
+  everything each admission reaches, keeps the admissions that clear their
+  cluster without moving any other row's class, and reverts the rest into
+  `reports/synodal-gold-rejected-hypotheses.tsv`.
+- `cargo gold loop [--only <class>] [--take N] [--min-cells N]` chains
+  propose → admit → scoped replay and prints one line: rows cleared per class,
+  the rules-vs-residue split of what landed, elapsed seconds.
+
+Admissions are always a lexeme with a class plus a fitted accent paradigm;
+the tooling never writes exact forms. The full gate, `synodal-check`, and
+`check-structure` remain the outer loop.
 
 
 ## Refresh review

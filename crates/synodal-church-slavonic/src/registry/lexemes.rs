@@ -2,7 +2,8 @@ use super::*;
 
 pub(crate) fn noun_lexeme(id: &LexemeId) -> Result<NounLexeme> {
     let row = require_pos(id, PartOfSpeech::Noun)?;
-    let restriction = NOUN_RESTRICTIONS
+    let restriction = tables()
+        .noun_restrictions
         .iter()
         .find(|restriction| restriction.0[0] == id.as_str());
     let number_inventory = restriction.map_or(Ok(NounNumberInventory::All), |restriction| {
@@ -276,7 +277,8 @@ pub(crate) fn pronoun_lexeme(id: &LexemeId) -> Result<PronounLexeme> {
 
 pub(crate) fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result<AdjectiveLexeme> {
     let row = require_pos(id, expected)?;
-    let short_masculine = PRINCIPAL_PARTS
+    let short_masculine = tables()
+        .principal_parts
         .iter()
         .find(|part| part.0[0] == id.as_str() && part.0[1] == "short-masculine-stem");
     let lexeme = AdjectiveLexeme {
@@ -300,12 +302,14 @@ pub(crate) fn adjectival_lexeme(id: &LexemeId, expected: PartOfSpeech) -> Result
         short_masculine_formation: short_masculine
             .map(|part| parse_short_masculine_formation(part.0[3]))
             .transpose()?,
-        comparative_stem: PRINCIPAL_PARTS
+        comparative_stem: tables()
+            .principal_parts
             .iter()
             .find(|part| part.0[0] == id.as_str() && part.0[1] == "comparative-stem")
             .map(|part| SynodalWord::parse(part.0[2]))
             .transpose()?,
-        comparison_formation: PRINCIPAL_PARTS
+        comparison_formation: tables()
+            .principal_parts
             .iter()
             .find(|part| part.0[0] == id.as_str() && part.0[1] == "comparative-stem")
             .map(|part| parse_comparison_formation(part.0[3]))
@@ -378,7 +382,8 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
         value => return invalid_metadata("aspect", value),
     };
     let part = |system: &str| {
-        PRINCIPAL_PARTS
+        tables()
+            .principal_parts
             .iter()
             .find(|part| part.0[0] == id.as_str() && part.0[1] == system)
     };
@@ -483,7 +488,7 @@ pub(crate) fn verb_lexeme(id: &LexemeId) -> Result<VerbLexeme> {
 }
 
 pub(crate) fn all_lexemes() -> Result<Vec<LexemeSummary>> {
-    LEXEMES.iter().map(summary).collect()
+    tables().lexemes.iter().map(summary).collect()
 }
 
 pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> {
@@ -499,7 +504,8 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
         aspect: optional(row.0[6]),
         source_id: row.0[7].into(),
         target_recension: row.0[8].into(),
-        noun_restriction: NOUN_RESTRICTIONS
+        noun_restriction: tables()
+            .noun_restrictions
             .iter()
             .find(|restriction| restriction.0[0] == id.as_str())
             .map(|restriction| NounRestrictionSummary {
@@ -507,7 +513,7 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
                 animacy_inventory: restriction.0[2].into(),
                 evidence_id: restriction.0[3].into(),
             }),
-        principal_parts: rows_for(PRINCIPAL_PARTS, |row| row.0[0], id.as_str())
+        principal_parts: rows_for(&tables().principal_parts, |row| row.0[0], id.as_str())
             .iter()
             .map(|part| PrincipalPartSummary {
                 system: part.0[1].into(),
@@ -516,7 +522,7 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
                 evidence_id: part.0[4].into(),
             })
             .collect(),
-        exact_forms: rows_for(EXACT_FORMS, |row| row.0[0], id.as_str())
+        exact_forms: rows_for(&tables().exact_forms, |row| row.0[0], id.as_str())
             .iter()
             .map(|form| ExactFormSummary {
                 cell: form.0[1].into(),
@@ -526,7 +532,7 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
                 source_kind: form.0[5].into(),
             })
             .collect(),
-        accents: rows_for(ACCENTS, |row| row.0[0], id.as_str())
+        accents: rows_for(&tables().accents, |row| row.0[0], id.as_str())
             .iter()
             .map(|accent| AccentSummary {
                 cell: accent.0[1].into(),
@@ -537,7 +543,7 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
                 source_recension: accent.0[6].into(),
             })
             .collect(),
-        accent_paradigms: rows_for(ACCENT_PARADIGMS, |row| row.0[0], id.as_str())
+        accent_paradigms: rows_for(&tables().accent_paradigms, |row| row.0[0], id.as_str())
             .iter()
             .map(|accent| AccentParadigmSummary {
                 paradigm_id: accent.0[1].into(),
@@ -553,7 +559,8 @@ pub(crate) fn lexical_metadata(id: &LexemeId) -> Result<LexicalMetadataSummary> 
 }
 
 pub(crate) fn alignments() -> Result<Vec<AlignmentSummary>> {
-    ALIGNMENTS
+    tables()
+        .alignments
         .iter()
         .map(|row| {
             let confidence_basis_points =
@@ -579,7 +586,8 @@ pub(crate) fn alignments() -> Result<Vec<AlignmentSummary>> {
 }
 
 pub(crate) fn transformation_rules() -> Vec<TransformationRuleSummary> {
-    TRANSFORMATION_RULES
+    tables()
+        .transformation_rules
         .iter()
         .map(|row| TransformationRuleSummary {
             rule_id: row.0[0].into(),
@@ -593,7 +601,8 @@ pub(crate) fn transformation_rules() -> Vec<TransformationRuleSummary> {
 }
 
 pub(crate) fn conflicts() -> Vec<RecensionConflictSummary> {
-    CONFLICTS
+    tables()
+        .conflicts
         .iter()
         .map(|row| RecensionConflictSummary {
             conflict_id: row.0[0].into(),
@@ -609,7 +618,8 @@ pub(crate) fn conflicts() -> Vec<RecensionConflictSummary> {
 }
 
 pub(crate) fn positional_rules() -> Vec<PositionalRuleSummary> {
-    POSITIONAL_RULES
+    tables()
+        .positional_rules
         .iter()
         .map(|row| PositionalRuleSummary {
             rule_id: row.0[0].into(),
@@ -628,7 +638,8 @@ pub(crate) fn irregular_overrides() -> Vec<IrregularOverrideSummary> {
     // set of stamped (lexeme, system, evidence) tuples. `cell_set` names the
     // curated source table the stamps were folded from.
     let mut seen = std::collections::BTreeSet::new();
-    EXACT_FORMS
+    tables()
+        .exact_forms
         .iter()
         .filter(|row| !row.0[7].is_empty())
         .filter(|row| seen.insert((row.0[0], row.0[7], row.0[8])))
@@ -642,7 +653,8 @@ pub(crate) fn irregular_overrides() -> Vec<IrregularOverrideSummary> {
 }
 
 pub(crate) fn irregular_verb_inventory() -> Result<Vec<IrregularVerbInventorySummary>> {
-    IRREGULAR_VERB_INVENTORY
+    tables()
+        .irregular_verb_inventory
         .iter()
         .map(|row| {
             let source_order =
@@ -665,7 +677,8 @@ pub(crate) fn irregular_verb_inventory() -> Result<Vec<IrregularVerbInventorySum
 }
 
 pub(crate) fn abbreviations_for(id: &LexemeId, sense_id: &str) -> Vec<AbbreviationRecord> {
-    ABBREVIATIONS
+    tables()
+        .abbreviations
         .iter()
         .filter(|row| row.0[0] == id.as_str() && row.0[1] == sense_id)
         .map(|row| AbbreviationRecord {
@@ -687,7 +700,8 @@ pub(crate) fn abbreviations_for(id: &LexemeId, sense_id: &str) -> Vec<Abbreviati
 }
 
 pub(crate) fn abbreviations_for_printed(printed: &str) -> Vec<AbbreviationRecord> {
-    ABBREVIATIONS
+    tables()
+        .abbreviations
         .iter()
         .filter(|row| row.0[4] == printed)
         .map(|row| AbbreviationRecord {
@@ -712,7 +726,8 @@ pub(crate) fn abbreviation_families_for(
     id: &LexemeId,
     sense_id: &str,
 ) -> Vec<AbbreviationFamilyRecord> {
-    ABBREVIATION_FAMILIES
+    tables()
+        .abbreviation_families
         .iter()
         .filter(|row| row.0[0] == id.as_str() && row.0[1] == sense_id)
         .map(abbreviation_family_record)
@@ -720,7 +735,8 @@ pub(crate) fn abbreviation_families_for(
 }
 
 pub(crate) fn abbreviation_family_records() -> Vec<AbbreviationFamilyRecord> {
-    ABBREVIATION_FAMILIES
+    tables()
+        .abbreviation_families
         .iter()
         .map(abbreviation_family_record)
         .collect()
@@ -752,7 +768,8 @@ pub(crate) fn inherited_alignments(
     policy: GenerationPolicy,
     threshold_basis_points: u16,
 ) -> Result<Vec<InheritedAlignment>> {
-    let candidates: Vec<&RawAlignment> = ALIGNMENTS
+    let candidates: Vec<&RawAlignment> = tables()
+        .alignments
         .iter()
         .filter(|row| {
             row.0[2] == id.as_str()

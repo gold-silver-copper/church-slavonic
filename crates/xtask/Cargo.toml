@@ -14,7 +14,7 @@ church-slavonic-orthography.workspace = true
 church-slavonic-dictionary.workspace = true
 church-slavonic-extractor.workspace = true
 old-church-slavonic-core.workspace = true
-synodal-church-slavonic.workspace = true
+synodal-church-slavonic = { workspace = true, features = ["registry-override"] }
 synodal-church-slavonic-core.workspace = true
 synodal-church-slavonic-dictionary.workspace = true
 serde.workspace = true

@@ -3,6 +3,9 @@
 # actual releases still publish each core, facade, and dictionary in order.
 [alias]
 xtask = "run --package xtask --"
+# The gold-gap inner loop runs the replay optimised: `cargo gold --check`,
+# `cargo gold propose`, `cargo gold admit …`, `cargo gold loop …`.
+gold = "run --release --package xtask -- synodal-gold"
 
 [patch.crates-io]
 old-church-slavonic-core = { path = "crates/old-church-slavonic-core" }

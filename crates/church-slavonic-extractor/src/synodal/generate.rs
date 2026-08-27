@@ -2,7 +2,8 @@ use std::path::Path;
 
 use super::*;
 
-/// Validates reviewable TSV and atomically writes the generated Rust registry.
+/// Validates reviewable TSV and atomically writes the generated registry
+/// artifact (`generated/registry.dat`, parsed by the runtime crate).
 pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<GenerationReport> {
     let lexeme_path = data_directory.join("lexemes.tsv");
     let noun_restriction_path = data_directory.join("noun_restrictions.tsv");
@@ -271,7 +272,7 @@ pub fn generate_registry(data_directory: &Path, destination: &Path) -> Result<Ge
         defective_inventories: defective_inventories.clone(),
         irregular_inventory: irregular_inventory.clone(),
         evidence_provenance,
-    });
+    })?;
     let output_sha256 = hex_sha256(output.as_bytes());
     atomic_write(destination, output.as_bytes())?;
 

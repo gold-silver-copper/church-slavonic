@@ -4,7 +4,7 @@
   "fixture_source": "miniature locked Alypy HTML page",
   "fixture_candidates_sha256": "03227728dbfe472f42db76e42bdefad6f6f7ddd89e6d6650ede2470383c02cb7",
   "fixture_runs_byte_identical": true,
-  "morphology_registry_sha256": "7c42ce596dd8ad263fc5471aaf6a3c55b8fae1ecd2e1d2fe722e8e9f12bdebb3",
+  "morphology_registry_sha256": "63cada6830a26a840d7be0093c65a31ef056bb0546d4336a12757841dc16d4fa",
   "dictionary_registry_sha256": "04821bc3c902c2d356be1455f8b7124a360053de778477983df4a2b8d312f58a",
   "generated_runs_byte_identical": true,
   "committed_outputs_current": true,

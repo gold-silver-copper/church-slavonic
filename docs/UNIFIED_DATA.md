@@ -39,7 +39,7 @@ the source signature, the raw source spelling and tags on every form, the
 |---|---|---|
 | `candidates` (the adapter pipeline, `pipeline.rs` + `adapters.rs`) | `references/SOURCE_LOCK.tsv`-pinned downloads (Ponomar, Wikisource, CrossWire, Alypy HTML, D'yachenko OCR, Polivanova TEI, Kaikki, treebanks) | `data/intermediate/synodal/*.jsonl` candidate records and `data/quarantine/` (both gitignored), `reports/synodal-extraction.*` |
 | evidence review (`evidence.rs`, `reviews.rs`) | the candidate records + the curated `data/synodal/*.tsv` review tables | validation only: every reviewed row must link to a candidate, every source id/recension must be in `APPROVED_SOURCE_RECENSIONS` |
-| `generate_registry` / `generate_dictionary_registry` (`generate.rs`, `validate_registry.rs`, `validate_grammar.rs`, `emit.rs`) | `data/synodal/*.tsv` | `crates/synodal-church-slavonic/generated/registry.rs`, `crates/synodal-church-slavonic-dictionary/generated/registry.rs` |
+| `generate_registry` / `generate_dictionary_registry` (`generate.rs`, `validate_registry.rs`, `validate_grammar.rs`, `emit.rs`) | `data/synodal/*.tsv` | `crates/synodal-church-slavonic/generated/registry.dat`, `crates/synodal-church-slavonic-dictionary/generated/registry.rs` |
 | `wikisource-split` | one Wikisource export + `references/WIKISOURCE_REVISIONS.tsv` | exact revision-pinned wikitext artifacts |
 
 Stage shape: many source formats (HTML, XLS, XML, SWORD, OCR text, TEI),

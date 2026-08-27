@@ -13,6 +13,9 @@ include = ["Cargo.toml", "build.rs", "README.md", "ATTRIBUTION.md", "LICENSE-*",
 [features]
 default = ["serde"]
 serde = ["dep:serde", "synodal-church-slavonic-core/serde"]
+# Workspace tooling only: lets `xtask` swap the generated registry in-process
+# (see `install_registry_override`). Never enabled by a published dependent.
+registry-override = []
 
 [dependencies]
 serde = { workspace = true, optional = true }

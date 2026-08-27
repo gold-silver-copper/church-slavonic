@@ -12,6 +12,7 @@ mod sources;
 mod synodal;
 mod synodal_archive;
 mod synodal_gold;
+mod synodal_gold_burndown;
 mod synodal_gold_oracle;
 mod synodal_lexical_union;
 mod unified_identity;
@@ -445,7 +446,14 @@ fn print_help() {
     eprintln!("  synodal-guard-witnesses");
     eprintln!("  alypy-paradigm-oracle [--check]");
     eprintln!("  synodal-gold-oracle [--check]");
-    eprintln!("  synodal-gold [--check|--fix]");
+    eprintln!(
+        "  synodal-gold [--check|--fix] [--only <class>]... [--lemma <key>]... [--types-from <file>]"
+    );
+    eprintln!("  synodal-gold propose [--only <class>] [--min-cells N] [--top N]");
+    eprintln!("  synodal-gold admit [<hypotheses.tsv>] [--take N] [--oracle token|paradigm]");
+    eprintln!(
+        "  synodal-gold loop [--only <class>] [--take N] [--min-cells N]  (cargo gold = release alias)"
+    );
     eprintln!("  synodal-sources <list|status|fetch|verify|refresh> [OPTIONS]");
     eprintln!(
         "  synodal-bootstrap [--cache PATH] [--offline] [--source ID] [--skip-fetch] [--keep-intermediate]"
