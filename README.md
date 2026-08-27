@@ -1,202 +1,136 @@
-# Historical Church Slavonic libraries for Rust
+# church-slavonic
 
-This workspace contains two deliberately separate language targets:
+[![Crates.io](https://img.shields.io/crates/v/church-slavonic)](https://crates.io/crates/church-slavonic)
+[![Docs.rs](https://docs.rs/church-slavonic/badge.svg)](https://docs.rs/church-slavonic)
+![License](https://img.shields.io/crates/l/church-slavonic)
 
-- `church-slavonic`: rule-first canonical Old Church Slavonic; and
-- `synodal-church-slavonic`: the normalized Russian Synodal liturgical
-  recension, with Synodal morphology, accents, typography, semantic
-  abbreviations, analytic phrases, and explicit reviewed OCS inheritance.
+**church-slavonic** is a fast, lightweight Church Slavonic inflection library
+written in Rust, covering the Old Church Slavonic and Synodal recensions of the
+one language. Total bundled data is a few megabytes of generated lookup
+tables. It provides noun, adjective, verb, and pronoun inflection from
+processed Wiktionary and grammar-table data, making it useful for real-time
+procedural text generation.
 
-The Synodal library is not an orthographic alias for the OCS engine. It has an
-independent target registry and rule tables, and every OCS-derived prediction
-passes through a stable recension mapping and a Synodal realization rule.
+## ⚡ Speed and Accuracy
 
-The consumer entry point analyses a passage the registry has never seen —
-here Acts 8:30 from the held-out evaluation partition — and returns, for every
-token, its readings with lemma, cell, provenance, and confidence, attested and
-normative readings always ahead of predictions:
+Evaluation (`cargo xtask accuracy`, against the pinned sources listed under
+[Obtaining Data](#-obtaining-data--running-the-extractor)) and performance
+benchmarking (`examples/speedmark.rs`, release, averaged over 10 runs):
 
-```rust
-use synodal_church_slavonic::Inflector;
-use synodal_church_slavonic_dictionary::analyze_text;
+| Part of Speech | Recension | Correct / Total | Accuracy | Throughput (calls/sec) |
+|----------------|-----------|-----------------|----------|------------------------|
+| **Nouns**      | OCS       | _pending_       |          |                        |
+| **Nouns**      | Synodal   | _pending_       |          |                        |
+| **Verbs**      | OCS       | _pending_       |          |                        |
+| **Verbs**      | Synodal   | _pending_       |          |                        |
+| **Adjectives** | OCS       | _pending_       |          |                        |
+| **Adjectives** | Synodal   | _pending_       |          |                        |
+| **Pronouns**   | OCS       | _pending_       |          |                        |
+| **Pronouns**   | Synodal   | _pending_       |          |                        |
 
-let passage = "ᲂу҆слы́ша є҆го̀ чтꙋ́ща прⷪ҇ро́ка";
-let analysis = analyze_text(passage, Inflector::default())?;
-let reading = &analysis.tokens[0].readings[0];
-assert_eq!(reading.lexeme.lemma(), "оуслышати");
-assert!(matches!(
-    reading.cell,
-    Some(synodal_church_slavonic::GrammarCell::FiniteVerb(_))
-));
-# Ok::<(), synodal_church_slavonic::Error>(())
-```
+The accuracy percentages measure **recall through any published key**: the
+share of attested source slots reproducible via the bare lemma **or** any
+`_n` sense key. `cargo xtask accuracy` also reports bare-lemma correctness —
+whether the natural bare-lemma call returns the primary attested form:
 
-The same call is on the command line as `synodal-dict analyze-text TEXT`
-(`--policy exploratory` additionally offers typed segmentation hypotheses,
-clearly separated from reviewed readings, for tokens with no reading at all).
-Single-cell generation stays available on the facade crate:
+| Part of Speech | Recension | Bare Primary / Total | Bare Accuracy |
+|----------------|-----------|----------------------|---------------|
+| _pending_      |           |                      |               |
 
-```rust
-use synodal_church_slavonic::{present, Number, Person};
-
-let form = present("быти", Person::First, Number::Singular)?;
-assert_eq!(form.primary_text(), "єсмь");
-assert_eq!(form.target_recension(), synodal_church_slavonic::Recension::SynodalRussian);
-# Ok::<(), synodal_church_slavonic::Error>(())
-```
-
-The full source inventory, including 321 individually locked and checksum-verified
-machine-readable artifacts (about 4.6 GB), is in `references/`. Raw source bytes
-are gitignored and excluded from packages. See `docs/SYNODAL_RECENSION.md`,
-`docs/SYNODAL_MORPHOLOGY.md`, `docs/SYNODAL_ORTHOGRAPHY.md`, and
-`docs/SYNODAL_DATA_PIPELINE.md` and `reports/synodal-evaluation.md` for the
-implemented boundary, reproducible commands, and measured held-out coverage.
-
-## Synodal inflection engine
-
-The engine accepts typed `NounSpec`, `AdjectiveSpec`, `PronounSpec`, and `VerbSpec`
-metadata without requiring a dictionary row. Explicit and registry-backed words
-share one productive kernel, while exact and irregular cells retain deterministic
-precedence. Grammar-backed rules cover complete Synodal noun, adjective,
-pronoun, short-comparison, and participial declensions. Pronouns include the
-source-defined suppletive, regular, derived, clitic, and prepositional
-constructions in Alypy §§45–48. A typed, reusable accent-paradigm model realizes
-reviewed stress across multiple generated cells.
-
-Complete specialized paradigms retain structured failures for historical
-invalidity, incomplete evidence, missing principal parts/formations, missing
-accent metadata, and unsupported systems. See
-[`docs/SYNODAL_V08_INFLECTION_ENGINE_AUDIT.md`](docs/SYNODAL_V08_INFLECTION_ENGINE_AUDIT.md)
-and the explicit API examples in
-[`crates/synodal-church-slavonic/README.md`](crates/synodal-church-slavonic/README.md).
-
-The public `irregular_verb_inventory()` also exposes all 98 verb entries in
-Alypy §104 in source order. Closed archaic tables, productive principal-part
-contracts, historically impossible cells, and merely incomplete evidence remain
-separate, inspectable outcomes.
-
-## Synodal dictionary and coverage checkpoints
-
-The current Synodal registry contains 937 reviewed lexemes, 940 reviewed senses,
-and 3,677 generated exact normative or target-attested forms. The `synodal-dict` executable
-searches and displays the registry, performs ambiguity-preserving reverse
-analysis, displays reviewed and proposed morphological families, validates
-application vocabulary, checks rendered text, and creates typed corpus-coverage
-reports:
+## 📦 Installation
 
 ```bash
-cargo install --path crates/synodal-church-slavonic-dictionary
-synodal-dict search "king" --pos noun
-synodal-dict show synodal:verb:byti
-synodal-dict analyze 'бꙋ́детъ' --profile printed
-synodal-dict families 'весь' --json
-synodal-dict show-family family:synodal:determiner:ves --json
-synodal-dict check-text rendered.txt --strict
-synodal-dict coverage passages.tsv --by-family --json-out coverage.json
+cargo add church-slavonic
 ```
-
-Repo-level coverage is gated by the synodal-gold full-enumeration oracle:
-`cargo xtask synodal-gold --check` replays every distinct surface type of the
-pinned Elizabeth Bible (58,467 types) and every Alypy paradigm cell, and fails
-unless the regenerated gap is a subset of the committed worklist
-`reports/synodal-gold-gap.tsv` (`docs/SYNODAL_GOLD_ORACLE.md`). The wave-era
-sampled coverage reports, review queues, and ratchets were retired when the
-gate landed; their methodology is preserved in `docs/history/` and the
-immutable archive. The locked 1,258-claim lexical union is reproduced and
-checked with `cargo xtask synodal-lexical-union`. See
-[`docs/SYNODAL_CLI_AND_COVERAGE.md`](docs/SYNODAL_CLI_AND_COVERAGE.md) for
-consumer command and input formats and gap precedence.
-The 2,136-cell morphology evaluation (all expected variants present in top-k),
-14 analytic phrases, and 74 typed abbreviation cases remain registered-form
-regression suites, not claims of language-wide accuracy.
-
-## Old Church Slavonic inflection
-
-`church-slavonic` is a fast, offline, rule-first inflector for canonical
-**Old Church Slavonic** (`cu`/`chu`): a pure rule kernel
-(`church-slavonic-core` plus the `old-church-slavonic-core` rule engine) with
-compact generated residue tables holding only the attested cells the rules do
-not reproduce verbatim. `cargo xtask rewrite-pilot-accuracy` replays every
-attested cell in `data/extracted` against the facade and requires 100% per
-part of speech. Every function returns the primary form as a `String`, with a
-`*_variants` companion returning every attested spelling, primary first:
 
 ```rust
-use church_slavonic::{noun, present, Case, Number, Person};
+use church_slavonic::*;
 
-assert_eq!(noun("градъ", Case::Genitive, Number::Singular)?, "града");
-assert_eq!(present("нести", Person::Third, Number::Singular)?, "несетъ");
-# Ok::<(), church_slavonic::Error>(())
+fn main() {
+    // Every call names the recension; realisation (jers, nasals, accents,
+    // titla) is applied on output.
+    assert_eq!(
+        ChurchSlavonic::noun("градъ", &Case::Genitive, &Number::Singular, &Recension::OldChurchSlavonic),
+        "града"
+    );
+    assert_eq!(
+        ChurchSlavonic::noun("градъ", &Case::Genitive, &Number::Singular, &Recension::Synodal),
+        "гра́да"
+    );
+    // Sense-numbered keys expose homographs and attested variants.
+    // assert_eq!(ChurchSlavonic::noun("градъ_2", ...), ...);
+}
 ```
 
-The facade serves nouns, long/short adjectives, all finite tenses,
-imperatives, participles (citation and fully declined), l-participles,
-infinitives, supines, verbal nouns, closed-class pronouns/numerals/
-determiners, value-driven numerals (1–10,000), typed phrase constructions,
-and whole-paradigm enumeration. Because unseen lemmas run through the same
-rules, it inflects words it has never stored. Unknown lemmas and
-underdetermined cells return typed errors — no empty-string holes. See
-[`crates/church-slavonic/README.md`](crates/church-slavonic/README.md) for
-the full API tour.
+## 🔧 Crate Overview
 
-Orthography lives in `church-slavonic-orthography`: script detection and
-lookup normalization, plus the reversible normalized Jagić/TN41 Glagolitic
-profile where every non-reversible mapping is reported or rejected. See
-[docs/ORTHOGRAPHY.md](docs/ORTHOGRAPHY.md).
+### `church-slavonic`
 
-## Install
+> The public API for noun, adjective, verb, and pronoun inflection in either
+> recension.
 
-The minimum supported Rust version is 1.85.
+* Combines generated tables from `extractor` with rules from
+  `church-slavonic-core`.
+* Pure Rust; dependencies: `phf`, `unicode-normalization`, and the
+  first-party `church-slavonic-core`.
+* PHF-backed irregular lookups with regular-rule fallback; recension
+  realisation applied on output.
 
-```toml
-[dependencies]
-church-slavonic = "0.2"
-```
+### `church-slavonic-core`
 
-The generated residue tables (under 1 MB total) are compiled into the
-package. Runtime crates perform no file, network, JSON, TSV, XML, or Lua
-access.
+> The compact rule engine: ending tables per declension/conjugation class,
+> recension conditions where the two recensions genuinely differ, and the
+> orthographic realisation rules.
 
-## Semantic dictionary
+* Logic-only; no data dependency.
+* Used by the extractor to classify attested forms as regular or irregular.
 
-`church-slavonic-dictionary` is the offline Wiktionary-backed meaning layer,
-re-keyed onto the facade's lemma keys (deterministic numeric homograph
-suffixes included): English-concept search, OCS senses and examples, and
-`lemmatize(form)` returning (lemma key, typed paradigm cell) readings built
-by inverting the facade's paradigm enumeration. Meaning and morphology remain
-separate evidence layers: a sense links to the inflector only when both
-snapshots resolve the same lexical identity.
+### `extractor`
 
-## Legacy crates
+> Processes the pinned sources into the generated tables.
 
-The pre-rewrite facades remain published on crates.io as
-`old-church-slavonic` 0.6.0 and `old-church-slavonic-dictionary` 0.3.0; both
-carry succession notices pointing here and receive no further releases. Their
-rule kernel survives as this workspace's `old-church-slavonic-core`, and
-`docs/DEPRECATION_MAP.md` maps their surface onto `church-slavonic`.
+* Parses the Wiktionary/Kaikki Old Church Slavonic dump and the Alypy grammar
+  tables (and any further labelled full-form source listed below).
+* Uses `church-slavonic-core` to drop regular forms, preserving only
+  irregulars.
+* Numbers homograph senses **deterministically** by a pure sort of their
+  emitted forms — no lockfile, no identity table, no human review.
+* Generates the static PHF tables used in `church-slavonic`.
 
-## Data and maintenance
+## 📦 Obtaining Data & Running the Extractor
 
-The current pinned snapshot contains 3,081 lexemes, 134,761 public feature
-cells, 137,406 ordered variants, and 3,157 normalized verb metadata fields.
-The source identity and transformation record are in `data/SOURCES.toml`,
-generated metadata, and each package's `ATTRIBUTION.md`. The data tree is
-recension-tagged: `data/ocs/` (curated OCS inputs), `data/synodal/` (curated
-Synodal reviews and oracles), `data/unified/` (the shared identity layer),
-with `references/` pinning every raw download. Wiktionary-derived
-data is CC BY-SA 4.0; code is MIT OR Apache-2.0.
+| Source | Pinned artifact | Role |
+|--------|-----------------|------|
+| English Wiktionary Old Church Slavonic (Kaikki/Wiktextract) | _pending checksum_ | inflection tables |
+| Archbishop Alypy, *Grammar of the Church Slavonic Language* (web edition) | _pending checksum_ | paradigm tables |
 
-```bash
-cargo xtask check-registry
-cargo xtask check-dictionary
-cargo xtask rewrite-pilot-accuracy
-cargo xtask check-structure
-cargo xtask check-all
-```
+1. Download the pinned artifacts (`cargo xtask refresh-data --help` lists
+   them).
+2. Run `cargo xtask refresh-data --sources <dir>`.
+3. Generated tables land in `crates/church-slavonic/generated`; intermediate
+   artifacts in `data/intermediate` (gitignored).
+4. Review `git diff crates/church-slavonic/generated/`, run
+   `cargo xtask check-registry`, then `cargo xtask accuracy`.
 
-The workspace also contains the offline extractor (`church-slavonic-extractor`,
-one unpublished crate whose `ocs` and `synodal` modules are the two
-recension pipelines; `docs/UNIFIED_DATA.md`) and `xtask`. It intentionally
-does not perform implicit script conversion, diplomatic manuscript transcription,
-OCR, or abbreviation expansion. Syntax and phrase-valued morphology use separate
-typed construction APIs rather than the single-word inflector.
+Raw text corpora (the Elizabeth Bible) are not table sources: this library
+extracts from labelled full-form data only, as `english` does.
+
+## Deterministic sense numbering
+
+Homographs and attested variants share a lemma and are disambiguated by a
+numeric suffix (`lemma_2`, `lemma_3`). The suffix is assigned by a pure sort of
+the emitted forms — no lockfile, no frozen identity. Keys are deterministic but
+**not immutable**: a source refresh can renumber a lemma's `_n` keys. Do not
+persist them as stable IDs across refreshes.
+
+## Disclaimer
+
+Source data is subject to upstream change. The generated tables in
+`crates/church-slavonic/generated/*_phf.rs` are the source of truth for a given
+revision.
+
+## 📄 License
+
+- Code: dual licensed under MIT and Apache-2.0 © gold-silver-copper.
+- Data: Wiktionary content is CC BY-SA 4.0 / GFDL; see the generated tables'
+  attribution headers.
