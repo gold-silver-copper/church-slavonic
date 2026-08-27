@@ -1,146 +1,164 @@
-# Prompt: burn down the Synodal gold gap
+# Prompt: burn down the Synodal gold gap — fast
 
 You are working in the church-slavonic workspace. Read first:
 `docs/SYNODAL_GOLD_ORACLE.md` (the normative comparison contract — it
 governs every pass/fail), `docs/SYNODAL_GOLD_ORACLE_PROMPT.md` (executed:
 the gate and its semantics), `docs/UNIFIED_LANGUAGE_PROMPT.md` and
-`docs/UNIFIED_FACADE.md` (executed: the merged kernel, identity layer, and
-§5's ordering of the final analyze-layer merge behind this burn-down).
+`docs/UNIFIED_FACADE.md` (executed: merged kernel, identity layer, §5's
+ordering of the final analyze-layer merge behind this burn-down).
 
-## The starting position (exact, from `reports/synodal-gold-gap.tsv`)
+## Iteration speed is the design goal
 
-| oracle | reason class | rows | remediation path |
-|---|---|---:|---|
-| token | `unregistered-lemma` | 51,235 | curated lexeme admission |
-| token | `abbreviation-unexpanded` | 1,080 | titlo/abbreviation review |
-| paradigm | `unregistered-lemma` | 934 | admit Alypy's own headwords |
-| token | `engine-wrong-form` | 295 | code fix |
-| paradigm | `unreviewed-cell` | 250 | cell evidence review |
-| paradigm | `engine-wrong-form` | 36 | code fix |
-| token | `engine-wrong-accent` | 35 | code fix |
-| paradigm | `engine-wrong-accent` | 14 | code fix |
+The gap is 53,879 rows. A program that verifies each change with the full
+gate battery (~2–3 minutes: `check-structure` ≈100 s, the gold replay
+20–36 s in debug, a `synodal-regenerate` + recompile of the generated
+registry) cannot burn that down. So this program has two loops, and the
+first deliverable is the tooling that makes the inner one fast:
 
-Plus 6 witness-adjudicated defect candidates in
-`reports/synodal-gold-defect-candidates.tsv`, 1,631 identity candidates
-in `data/unified/identity-candidates.tsv`, and the projection study's
-finding that 5,118 of the unregistered token types are reachable from an
-OCS-attested lexeme.
+- **Inner loop (per edit, target ≤10 s):** admit a batch → replay only
+  what the batch can affect → read the delta. No full battery, no
+  regeneration of unrelated artifacts, no CI.
+- **Outer loop (per commit/push):** full `check-structure`, CI. Batches of
+  inner-loop work land as one commit with the regenerated gap file.
 
-## The contract of this program
+Everything below is organised around keeping the inner loop tight.
 
-- **The gap file is the only progress metric.** Every slice ends with
-  `cargo xtask synodal-gold --fix` producing a strictly smaller
-  `reports/synodal-gold-gap.tsv`; `--check` remains subset-only. There are
-  no percentages over samples, no queues, no ratchets — only the exact
-  enumerated remainder, per class.
-- **Rules first, residue second.** An admission is a *lexeme with a
-  declension/conjugation class* so the merged kernel generates its cells;
-  exact forms enter the merged irregular table only for genuine
-  irregularity the rules cannot reach. Track the rules-vs-residue split the
-  way the OCS pilot does and report it per slice; a slice that clears gap
-  rows mostly by exact-form dumping is a smell, not a win.
-- **Review-by-oracle is legitimate; invention is not.** The gold sources
-  are the evidence: a lexeme admitted because its attested Bible cells
-  (with their printed accents) and/or its Alypy table are reproduced by
-  the assigned class is reviewed *by the oracle*. Every admission carries
-  provenance (source id, verse references or Alypy section). A form with
-  no gold attestation is never written down as fact.
+## Slice 0 — build the fast loop before burning anything
+
+Deliverables, each with a measured time you report:
+
+1. **A release-profile xtask path.** Add a cargo alias (e.g.
+   `cargo gold` → `cargo run --release -p xtask -- synodal-gold`) or a
+   `[profile.dev.package.*]` opt-level bump for the crates the replay
+   spends its time in, so the full gold replay runs in single-digit
+   seconds. Measure debug vs release; pick the cheaper of "faster
+   profile" vs "fewer allocations in the replay" if either alone meets
+   the budget.
+2. **Scoped replay.** `synodal-gold --check --only <class>` and
+   `--lemma <key>` / `--types-from <file>` so a batch replays only its
+   own rows and prints the per-class delta; full replay stays the
+   authority for `--fix`.
+3. **Incremental registry regeneration.** Measure what `synodal-regenerate`
+   plus the recompile of `crates/synodal-church-slavonic/generated/
+   registry.rs` costs per admission batch. If it dominates the inner
+   loop, do the rewrite plan's deferred move first: the registry's
+   lexeme/exact-form data becomes a loaded artifact (or a much smaller
+   generated table) so admissions do not recompile a 12k-line file. This
+   is allowed to be the biggest piece of Slice 0 — it pays for itself
+   within the first thousand admissions.
+4. **Hypothesis tooling.** `synodal-gold propose [--class ...]` — for
+   every gap type, run the merged kernel's analysis to emit (lemma,
+   class) hypotheses, cluster types by hypothesis, and rank clusters by
+   *attested cells cleared per admission*. Output is a TSV an admit
+   step consumes directly. Ranking orders work; it never filters the
+   gate.
+5. **Batch admission.** `synodal-gold admit <hypotheses.tsv>` writes the
+   admissions (lexeme rows with class + provenance from the gold source:
+   verse references or Alypy section) into the curated data, then the
+   scoped replay arbitrates: hypotheses whose class reproduces **every**
+   attested cell of their cluster (accents included where attested) stay;
+   the rest are reverted automatically and written to
+   `reports/synodal-gold-rejected-hypotheses.tsv` with the failing cells.
+   Humans are not in this loop; the oracle is the reviewer.
+6. **A single inner-loop command** that chains 4→5→2 and prints one
+   line: rows cleared per class, rules-vs-residue split of what landed,
+   elapsed seconds.
+
+Report Slice 0's numbers before proceeding: full replay time (before/
+after), scoped replay time, regeneration cost per batch, and a dry run of
+propose→admit on the engine-bug-free classes.
+
+## The contract (unchanged from the gold program, restated)
+
+- **The gap file is the only progress metric.** `--fix` produces a
+  strictly smaller `reports/synodal-gold-gap.tsv`; `--check` is subset-
+  only. No percentages over samples, no queues, no ratchets.
+- **Rules first, residue second.** An admission is a lexeme *with a
+  class*; exact forms enter the merged irregular table only for genuine
+  irregularity. The inner-loop line reports the rules-vs-residue split;
+  a batch that clears rows mostly by exact forms is a smell.
+- **Review-by-oracle is legitimate; invention is not.** Gold attestation
+  (Bible cells with printed accents; Alypy tables) reproduced by the
+  assigned class *is* the review. Every admission carries provenance. A
+  form with no gold attestation is never written down as fact.
 - **The accent asymmetry stands.** Projection-seeded admissions supply
-  identity and class; accent facts come only from the Bible's printing or
-  the accent paradigms. An admission whose accented cells are not yet
-  evidenced leaves those cells in the gap honestly.
-- **One override precedence** (merged irregular table → typed defects →
-  rule kernel). Never reintroduce provider/caller override channels.
-- **Every slice lands green**: `cargo test --workspace`, `check-structure`
-  (which runs `synodal-gold --check`, `rewrite-pilot-accuracy`,
-  `unified-identity --check`), clippy `-D warnings`, fmt. The OCS oracle
-  stays at 100% and the identity coherence baseline may only improve.
+  identity and class; accent facts come only from Synodal evidence.
+  Unevidenced accented cells stay in the gap honestly.
+- **One override precedence**; no provider/caller override channels.
+- **The comparison contract is off-limits to slices.** It changes only
+  through its own reviewed revision in `docs/SYNODAL_GOLD_ORACLE.md`.
 
-## Order of work — by remediation class, then by leverage within a class
+## Order of work — class by class, batches within a class
 
-Ordering by leverage is not sampling: every row remains in the gate at
-all times; ordering only decides what to fix first.
+Starting position (exact): token `unregistered-lemma` 51,235 ·
+`abbreviation-unexpanded` 1,080 · paradigm `unregistered-lemma` 934 ·
+token `engine-wrong-form` 295 · paradigm `unreviewed-cell` 250 ·
+paradigm `engine-wrong-form` 36 · token `engine-wrong-accent` 35 ·
+paradigm `engine-wrong-accent` 14. Plus 6 defect candidates, 1,631
+identity candidates, and 5,118 projection-reachable types.
 
-1. **Engine bugs first** (380 rows: `engine-wrong-form` + `engine-wrong-
-   accent`, both oracles). Code-only, zero curation, and each fix may
-   clear rows outside its own class. Group by the divergence registry
-   and the kernel module they implicate; fix root causes, not surfaces.
-   Any fix that would change an OCS oracle cell is a merge-layer bug —
-   route it through the named-divergence registry, never a family fork.
-2. **Alypy headwords and cells** (934 + 250 paradigm rows). The grammar's
-   own example words are normative: admit each headword with the class
-   its table proves, and review the 250 cells against the table rows.
-   This also grows the paradigm oracle's servable coverage in cells the
-   Bible never attests. Target: the paradigm oracle at 0 gap rows — a
-   fully reproduced grammar is a milestone worth its own tag.
-3. **Abbreviations** (1,080 token rows). A closed liturgical inventory
-   (nomina sacra and their inflected titlo forms). Extend the abbreviation
-   review data so each titlo surface expands to a reviewed reading, with
-   the expansion round-tripping under the contract's §3 equivalence class.
-   Includes the known `сн҃а`-as-numeral misclassification.
-4. **Projection-seeded admissions** (up to 5,118 token types). For each
-   identity candidate (start with the 599 confirmed entries' unregistered
-   Synodal cells, then the candidates file), assign the class the merged
-   kernel needs, generate, and admit where the Bible's attested cells —
-   accents included — are reproduced. Ambiguous candidates resolve by
-   which projection actually matches attested cells; unresolved ones stay
-   candidates. Each admission also grows `data/unified/identity.tsv`
-   (the coherence gate then measures it).
-5. **The long tail** (the remaining `unregistered-lemma` types). Cluster
-   gap types by lemma hypothesis: run the merged kernel's analysis over
-   each type to propose (lemma, class) hypotheses, group types by
-   hypothesis, and order hypotheses by *attested cells cleared per
-   admission* (a lexeme whose 40 attested cells all reproduce under one
-   class is worth more than a hapax). Admit a hypothesis only when its
-   class reproduces every attested cell of the cluster; partial
-   reproduction is a signal to look for a subclass or a genuine
-   irregular, not to force it. Proper names, foreign transliterations,
-   and hapaxes will dominate the end of this tail — classify them
-   honestly (indeclinable, foreign-stem class) rather than skipping.
+1. **Engine bugs** (380 rows). Code-only; group by the divergence
+   registry entry / kernel module implicated; fix root causes. A fix that
+   would move an OCS oracle cell is a merge-layer bug — route through the
+   named-divergence registry, never a family fork. Scoped replay on
+   `--only engine-wrong-form --only engine-wrong-accent`.
+2. **Alypy headwords and cells** (934 + 250). The grammar's own words are
+   normative: batch-admit headwords with the class their table proves;
+   review the 250 cells against table rows. Target: paradigm oracle at 0
+   gap rows — tag it.
+3. **Abbreviations** (1,080). A closed inventory (nomina sacra and their
+   inflected titlo forms): extend the abbreviation review data so each
+   titlo surface expands to a reviewed reading round-tripping under §3
+   of the contract. Includes the `сн҃а`-as-numeral misclassification.
+4. **Projection-seeded admissions** (≤5,118 types). Feed the 599
+   confirmed identity entries' unregistered Synodal cells, then the
+   candidates file, through propose→admit; ambiguous candidates resolve
+   by which projection matches attested cells. Each landed admission
+   also extends `data/unified/identity.tsv` (the coherence gate measures
+   it).
+5. **The long tail.** Loop: `propose` → take the top clusters by cells-
+   cleared → `admit` → scoped replay → next. Batches of hundreds, not
+   ones. Partial reproduction means "look for a subclass or a genuine
+   irregular", never "force it". Proper names, foreign transliterations,
+   hapaxes dominate the end — classify honestly (indeclinable / foreign-
+   stem classes) rather than skipping.
 6. **Defect ledger.** Adjudicate the 6 candidates under the two-witness
-   rule; move confirmed ones to `data/synodal/gold_source_defects.tsv`
-   with witness evidence. Re-run the sweep after each slice that touches
-   engine output; new candidates get the same treatment.
-7. **The terminal step, gated on the above:** when the identity table
-   covers the identified lexicon and the gap's `unregistered-lemma` mass
-   is gone or reduced to the documented honest residue, execute the
-   analyze-layer merge per `docs/UNIFIED_FACADE.md` §5 — the synodal
-   `analyze_text` and the unified dictionary's `lemmatize_in` become one
-   recension-aware analysis with attested > cross-recension-projected >
-   rule-predicted ordering — and deprecation-release the synodal crate
-   names per the established precedent.
+   rule; confirmed ones move to `data/synodal/gold_source_defects.tsv`
+   with witness evidence. Re-run the sweep after any slice that changes
+   engine output.
+7. **Terminal step, gated on the above:** when `unregistered-lemma` is
+   gone or reduced to the documented honest residue and the identity
+   table covers the identified lexicon, execute the analyze-layer merge
+   per `docs/UNIFIED_FACADE.md` §5 and deprecation-release the synodal
+   crate names per the established precedent.
 
 ## Slice discipline
 
-- One slice = one class (or one cluster within a class), one PR-sized
-  commit, message stating the per-class gap delta and the rules-vs-
-  residue split of what was admitted.
-- Commit the regenerated gap file with the slice; never regenerate it
-  separately from the change that shrank it.
-- Regenerate downstream artifacts in the same slice (`synodal-regenerate`,
-  the gold oracles' `--check`, `unified-identity`, `rewrite-emit-residue`
-  where OCS-side data moved) so `check-structure` stays green at every
-  commit.
-- Where a class is exhausted of oracle-reviewable moves and what remains
+- Inner loop freely; commit when a class-batch is done or the gap has
+  shrunk by a meaningful amount (thousands of rows or a class emptied).
+  One commit = the data change + the regenerated gap file + whatever
+  downstream artifacts that change touched — nothing else.
+- Commit message = the inner-loop line (per-class delta, rules-vs-residue
+  split). Full tables only at class boundaries.
+- Push in batches; let CI be the outer loop. Never wait on CI inside the
+  inner loop.
+- Where a class is exhausted of oracle-reviewable moves and the rest
   needs human linguistic judgment (a sense split, a disputed reading, a
-  source pair the witnesses cannot settle), write those rows to a
+  witness split), write those rows to
   `reports/synodal-gold-human-review.tsv` with the specific question per
-  row, and move on. That file is the only thing this program hands to a
-  person; it must never contain anything an oracle could have settled.
+  row and move on. That file must never contain anything an oracle could
+  have settled.
 
 ## Out of scope
 
-- New gold sources (the Ponomar 2016 corpus is queued in the gold prompt;
-  add it only after the Bible gap is substantially burned down, and
-  accept the larger gap it brings as a new baseline in its own slice).
-- Any change to the comparison contract to make rows pass. The contract
-  changes only through its own reviewed revision, documented in
-  `docs/SYNODAL_GOLD_ORACLE.md`, never inside a burn-down slice.
-- Re-ranking, sampling, or top-N of any kind in any gate.
+- New gold sources (Ponomar 2016 is queued; add it only after the Bible
+  gap is substantially burned down, as its own baseline slice).
+- Re-ranking, sampling, or top-N in any *gate*. (Ranking inside
+  `propose` orders work; it never filters what the gate replays.)
 
-## Report back (per slice and at each class boundary)
+## Report back
 
-The gap table above, updated with exact counts; rules-vs-residue split of
-admissions; identity-table growth and coherence-gate movement; the
-human-review file's size and its question categories; and, at class
-boundaries, whether the next class's leverage ordering still holds.
+After Slice 0: the measured loop times. After each class: the exact gap
+table, rules-vs-residue split of admissions, identity-table growth and
+coherence movement, rejected-hypothesis count and dominant rejection
+reasons, human-review file size and question categories.
