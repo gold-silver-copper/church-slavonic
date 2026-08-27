@@ -31,3 +31,30 @@ license = "Ponomar site terms; underlying edition and web correction rights requ
 redistribution = "evaluation-only"
 authority_roles = ["morphological", "orthographic", "accentual", "numeral"]
 upstream_lineage = ["Alypy (Gamanovich), 1991 edition", "Ponomar corrected web transcription"]
+
+[[source]]
+id = "polyakov-church-slavonic-grammatical-dictionary"
+name = "Polyakov, A. E. Grammatical dictionary of Church Slavonic (corpus-based), tagged edition"
+url = "http://dic.feb-web.ru/slavonic/dicgram/"
+revision = "created 2013 (RGNF 12-04-12045), revised 2015-2017 (RFBR 17-04-12064); fetched 2026-08-27"
+source_recension = "synodal"
+content_kind = "corpus-derived grammatical dictionary: lemma, POS/class tags, every attested form with cell tags and counts, accented"
+format = "HTML (43 pages: index1, indexnav, flexslav legend, 1/*.htm, 2/*.htm)"
+license = "institutional grant: the maintainer's university holds rights and permits release of derived data under MIT OR Apache-2.0 (see references/TERMS.md)"
+redistribution = "table-source"
+download_status = "downloaded to references/downloads/polyakov/ (43 files, checksums in references/downloads/polyakov/SHA256SUMS.txt)"
+authority_roles = ["lexical", "accentual", "morphological"]
+upstream_lineage = ["Russian National Corpus Church Slavonic corpus"]
+
+[[source]]
+id = "russian-national-corpus-church-slavonic"
+name = "Russian National Corpus Church Slavonic subcorpus"
+url = "https://ruscorpora.ru/en/corpus/orthlib"
+source_recension = "synodal"
+content_kind = "morphologically annotated corpus (web query only; no bulk export endpoint)"
+format = "web-query"
+license = "institutional grant (see references/TERMS.md)"
+redistribution = "table-source via its lexical projection"
+download_status = "not directly exportable: the corpus is consumed through Polyakov's grammatical dictionary, which is its per-lemma projection (every attested form with cell tags and counts); the FEB text mirror at dic.feb-web.ru/slavonic/corpus/ is unannotated"
+authority_roles = ["lexical", "accentual", "frequency"]
+upstream_lineage = []
