@@ -25,7 +25,7 @@ use crate::orthography::strip_marks;
 
 /// The three productive present-stem series.
 #[derive(Clone, Copy, PartialEq, Eq)]
-enum Conj {
+pub enum Conj {
     /// First conjugation, consonant stem (`нес-е-ши`).
     Hard,
     /// First conjugation, vowel stem (OCS `дѣла-ѥ-ши`, Synodal `дѣла-е-ши`).
@@ -37,12 +37,36 @@ enum Conj {
     Second,
 }
 
-struct Stems {
-    conj: Conj,
+impl Conj {
+    /// The canonical class token the tables store in the class cell.
+    pub fn token(self) -> &'static str {
+        match self {
+            Conj::Hard => "hard",
+            Conj::Vowel => "vowel",
+            Conj::Iotated => "iotated",
+            Conj::Second => "second",
+        }
+    }
+
+    pub fn from_token(token: &str) -> Option<Conj> {
+        Some(match token {
+            "hard" => Conj::Hard,
+            "vowel" => Conj::Vowel,
+            "iotated" => Conj::Iotated,
+            "second" => Conj::Second,
+            _ => return None,
+        })
+    }
+
+    pub const ALL: [Conj; 4] = [Conj::Hard, Conj::Vowel, Conj::Iotated, Conj::Second];
+}
+
+pub(crate) struct Stems {
+    pub(crate) conj: Conj,
     /// The stem the present endings attach to.
-    present: String,
+    pub(crate) present: String,
     /// The stem the aorist, past participle and (in OCS) imperfect attach to.
-    infinitive: String,
+    pub(crate) infinitive: String,
 }
 
 impl ChurchSlavonicCore {
@@ -76,6 +100,63 @@ impl ChurchSlavonicCore {
         })
     }
 
+    /// Conjugate with an explicit class/present-stem override — the runtime
+    /// path for the tables' class cells, and the extractor's validation
+    /// path. The suppletive [`Self::irregular`] layer and the copula answer
+    /// BEFORE the override; the infinitive stem always comes from the
+    /// lemma. The word and the answer are skeleton-level (no accent pass):
+    /// the stored stem carries its own accent.
+    #[allow(clippy::too_many_arguments)]
+    pub fn verb_from_stems(
+        word: &str,
+        class: Option<&str>,
+        present: Option<&str>,
+        person: &Person,
+        number: &Number,
+        tense: &Tense,
+        form: &Form,
+        recension: &Recension,
+    ) -> String {
+        let skeleton = strip_marks(word);
+        if (skeleton == "бꙑти" || skeleton == "быти")
+            && let Some(answer) = Self::to_be(person, number, tense, form, recension)
+        {
+            return answer.to_string();
+        }
+        if let Some(answer) = Self::irregular(&skeleton, person, number, tense, form, recension) {
+            return answer;
+        }
+        if *form == Form::Infinitive {
+            return word.to_string();
+        }
+        let s = Self::override_stems(word, class, present, recension);
+        let answer = Self::conjugate(&skeleton, &s, person, number, tense, form, recension);
+        if *recension == Recension::Synodal {
+            crate::accent::final_varia(&answer)
+        } else {
+            answer
+        }
+    }
+
+    /// The lemma's rule stems with the class and/or present stem replaced.
+    pub(crate) fn override_stems(
+        word: &str,
+        class: Option<&str>,
+        present: Option<&str>,
+        recension: &Recension,
+    ) -> Stems {
+        // Class detection reads the infinitive's ending letters, so it runs
+        // on the unaccented skeleton; the override stem keeps its accent.
+        let mut s = Self::stems(&strip_marks(word), recension);
+        if let Some(conj) = class.and_then(Conj::from_token) {
+            s.conj = conj;
+        }
+        if let Some(present) = present.filter(|p| !p.is_empty()) {
+            s.present = present.to_string();
+        }
+        s
+    }
+
     fn verb_skeleton(
         word: &str,
         person: &Person,
@@ -84,11 +165,25 @@ impl ChurchSlavonicCore {
         form: &Form,
         recension: &Recension,
     ) -> String {
-        let synodal = *recension == Recension::Synodal;
         if let Some(answer) = Self::irregular(word, person, number, tense, form, recension) {
             return answer;
         }
         let s = Self::stems(word, recension);
+        Self::conjugate(word, &s, person, number, tense, form, recension)
+    }
+
+    /// The regular route on explicit stems — the tail of [`verb_skeleton`]
+    /// shared with the class/present-stem override path.
+    pub(crate) fn conjugate(
+        word: &str,
+        s: &Stems,
+        person: &Person,
+        number: &Number,
+        tense: &Tense,
+        form: &Form,
+        recension: &Recension,
+    ) -> String {
+        let synodal = *recension == Recension::Synodal;
         let cell = Self::person_cell(person, number);
         match (tense, form) {
             (_, Form::Infinitive) => word.to_string(),
@@ -109,7 +204,7 @@ impl ChurchSlavonicCore {
                 Self::attach(&s.present, row[cell], recension)
             }
             (Tense::Imperfect, Form::Finite) => {
-                let (stem, marker) = Self::imperfect_stem(&s, recension);
+                let (stem, marker) = Self::imperfect_stem(s, recension);
                 let row = if synodal { &IMPERFECT.1 } else { &IMPERFECT.0 };
                 Self::attach(&stem, &format!("{marker}{}", row[cell]), recension)
             }
@@ -310,7 +405,7 @@ impl ChurchSlavonicCore {
         None
     }
 
-    fn stems(word: &str, recension: &Recension) -> Stems {
+    pub(crate) fn stems(word: &str, recension: &Recension) -> Stems {
         let synodal = *recension == Recension::Synodal;
         let stem = |n: usize| -> String {
             let len = word.chars().count().saturating_sub(n);
@@ -443,7 +538,7 @@ const ATHEMATIC_IMA: Row = [
 /// singular `-ю` and the Synodal imperfect `-ѧ-`/`-а-`): `т`/`ст`/`ск` ->
 /// `щ`, `д`/`зд` -> `жд`, `с` -> `ш`, `з` -> `ж`, `к` -> `ч`, `г` -> `ж`, `х`
 /// -> `ш`, a labial takes `л`; the sonorants and the hushers stay.
-fn iotate(stem: &str) -> String {
+pub(crate) fn iotate(stem: &str) -> String {
     let mut chars: Vec<char> = stem.chars().collect();
     let Some(last) = chars.pop() else {
         return String::new();
@@ -619,6 +714,44 @@ mod tests {
 
     fn v(w: &str, p: Person, n: Number, t: Tense, f: Form, r: Recension) -> String {
         ChurchSlavonicCore::verb(w, &p, &n, &t, &f, &r)
+    }
+
+    #[test]
+    fn irregulars_answer_before_any_override() {
+        use Form::*;
+        use Number::*;
+        use Person::*;
+        // A wrong override must not break the athematics, the ити family
+        // or the copula.
+        assert_eq!(
+            ChurchSlavonicCore::verb_from_stems(
+                "дати", Some("vowel"), Some("дава"),
+                &First, &Singular, &Tense::Present, &Finite, &OCS
+            ),
+            "дамь"
+        );
+        assert_eq!(
+            ChurchSlavonicCore::verb_from_stems(
+                "прити", Some("second"), Some("прит"),
+                &Third, &Singular, &Tense::Aorist, &Participle, &OCS
+            ),
+            "пришьдъ"
+        );
+        assert_eq!(
+            ChurchSlavonicCore::verb_from_stems(
+                "бꙑти", Some("hard"), Some("бꙑва"),
+                &Third, &Singular, &Tense::Present, &Finite, &OCS
+            ),
+            "ѥстъ"
+        );
+        // And the override does steer a regular verb.
+        assert_eq!(
+            ChurchSlavonicCore::verb_from_stems(
+                "глаголати", Some("iotated"), Some("глагол"),
+                &Third, &Singular, &Tense::Present, &Finite, &OCS
+            ),
+            "глаголетъ"
+        );
     }
 
     #[test]

@@ -37,11 +37,12 @@ mod accent;
 mod adj;
 pub mod grammar;
 mod noun;
+mod participle;
 pub mod orthography;
 mod pronoun;
 pub mod sense_key;
 mod utils;
-mod verb;
+pub mod verb;
 pub use crate::grammar::*;
 
 /// Namespace struct for the rule engine — all functionality is associated

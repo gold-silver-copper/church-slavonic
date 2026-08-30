@@ -82,6 +82,21 @@ impl ChurchSlavonicCore {
             }
             Degree::Superlative => (format!("пре{stem}"), long, hard),
         };
+        Self::decline_stem(&stem, long, hard, case, number, gender, recension)
+    }
+
+    /// Attach the adjective declension to a bare stem — the shared tail of
+    /// the adjective and the participle paradigms (a participle is a verb
+    /// stem in the adjective's clothes).
+    pub(crate) fn decline_stem(
+        stem: &str,
+        long: bool,
+        hard: bool,
+        case: &Case,
+        number: &Number,
+        gender: &Gender,
+        recension: &Recension,
+    ) -> String {
         let row = match (long, hard) {
             (false, true) => &SHORT_HARD,
             (false, false) => &SHORT_SOFT,
@@ -97,7 +112,7 @@ impl ChurchSlavonicCore {
             (Recension::Synodal, Gender::Feminine) => &row.syn[1],
             (Recension::Synodal, Gender::Neuter) => &row.syn[2],
         };
-        Self::attach(&stem, table[cell], recension)
+        Self::attach(stem, table[cell], recension)
     }
 
     /// `(stem, long, hard)` from the masculine nominative-singular lemma.

@@ -5,13 +5,21 @@
 ![License](https://img.shields.io/crates/l/church-slavonic)
 
 **church-slavonic** is a fast, lightweight Church Slavonic inflection library
-written in Rust, covering the Old Church Slavonic and Synodal recensions of the
-one language. The bundled data is about 3.1 MB of generated lookup-table
+written in Rust, covering the Old Church Slavonic and Synodal recensions of
+the one language. The bundled data is about 3.6 MB of generated lookup-table
 source (the attested exceptions of a 31,000-lexeme corpus dictionary, a
-grammar and two Wiktionaries; the rules predict the rest, accents included).
-It provides noun, adjective, verb, and pronoun inflection from processed
-Wiktionary, grammar-table and corpus-dictionary data, making it useful for
-real-time procedural text generation.
+grammar, two Wiktionaries and an annotated corpus; the rules predict the
+rest, accents included). It provides noun, adjective, verb, pronoun and
+declined-participle inflection from processed Wiktionary, grammar-table,
+corpus-dictionary and treebank data, making it useful for real-time
+procedural text generation. The verb schema covers the finite paradigm, the
+imperative, and the full declined participle system — present and past,
+active and passive, short and long series — with per-verb participle STEMS
+derived from the attested declensions, so a regular declension of an
+irregular stem costs four table cells, not five hundred — and, in the same
+spirit, a per-verb conjugation-class and present-stem override that re-runs
+the finite rule with the verb's true class, collapsing a misclassed verb's
+finite block to two cells.
 
 ## ⚡ Speed and Accuracy
 
@@ -30,10 +38,10 @@ benchmarking (`examples/speedmark.rs`, release):
 | **Adjectives** | OCS (UD PROIEL train) | 502 / 502 | 100.00% | 0 |
 | **Adjectives** | Synodal (Alypy) | 441 / 441 | 100.00% | 0 |
 | **Adjectives** | Synodal (Polyakov) | 87997 / 87997 | 100.00% | 0 |
-| **Verbs** | OCS | 18418 / 18418 | 100.00% | 0 |
-| **Verbs** | OCS (UD PROIEL train) | 1439 / 1439 | 100.00% | 0 |
+| **Verbs** | OCS | 236400 / 236400 | 100.00% | 0 |
+| **Verbs** | OCS (UD PROIEL train) | 1757 / 1757 | 100.00% | 0 |
 | **Verbs** | Synodal (Alypy) | 262 / 262 | 100.00% | 0 |
-| **Verbs** | Synodal (Polyakov) | 34598 / 34598 | 100.00% | 0 |
+| **Verbs** | Synodal (Polyakov) | 56435 / 56435 | 100.00% | 0 |
 | **Verbs** | Synodal (ru.wiktionary) | 78 / 78 | 100.00% | 0 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
 | **Pronouns** | OCS (UD PROIEL train) | 67 / 67 | 100.00% | 0 |
@@ -41,11 +49,11 @@ benchmarking (`examples/speedmark.rs`, release):
 | **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
 | **Nouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 8116 / 8818 | 92.04% | 702 |
 | **Adjectives** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 2134 / 2546 | 83.82% | 412 |
-| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 5833 / 6655 | 87.65% | 822 |
+| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 7294 / 8529 | 85.52% | 1235 |
 | **Pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 4918 / 4960 | 99.15% | 42 |
 | **Nouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 44305 / 48825 | 90.74% | 4520 |
 | **Adjectives** | OCS (Syntacticus 2023-04-28, corpus recall) | 11698 / 13901 | 84.15% | 2203 |
-| **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 31475 / 35936 | 87.59% | 4461 |
+| **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 38709 / 45179 | 85.68% | 6470 |
 | **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 26764 / 27025 | 99.03% | 261 |
 
 The accuracy percentages measure **recall through any published key**: the
@@ -61,7 +69,9 @@ spelling doublets, at least 3 attestations per form), feed cells like any
 dictionary — so the held-out rows are the UD **dev+test splits**;
 Syntacticus's texts overlap the train split, so its rows measure
 manuscript-spelling robustness, not generalisation. Every
-annotated token whose lemma and features name a schema cell is scored,
+annotated token whose lemma and features name a schema cell — the finite
+cells and, since the participle widening, the full declined participle
+system — is scored,
 lemma and surface compared through a manuscript-lax fold layered on
 `orthography::comparison_key` because manuscript spelling varies (`ъі`
 for `ꙑ`, `ꙙ` for `ѧ`, `шт` for `щ`, dropped or vocalised jers, `ѣ`~`ѧ`~`е`
@@ -71,17 +81,16 @@ full form (`г҃мь` for `господьмь`), a third-person pronoun may carr
 the post-prepositional `н`-, and the copula's imperfective aorist (`бѣ`,
 `бѣшѧ`) is accepted under either past tense, since the treebanks and the
 schema file it differently. The held-out UD dev+test files gave 39,133
-tokens and 22,979 slots (18,470 skipped and counted by reason — other
-parts of speech, reflexives, the periphrastic future and l-participle,
-declined and passive participles); 213,658 Syntacticus tokens gave
-125,687 slots (101,530 skipped). The residual corpus-recall gap is not an
+tokens and 24,853 slots (16,655 skipped and counted by reason — other
+parts of speech, reflexives, the periphrastic future, the l-participle
+and the supine); 213,658 Syntacticus tokens gave 134,930 slots (92,642
+skipped). The residual corpus-recall gap is not an
 error budget to spend: forms enter the tables only when a registered
 source attests them past the gates, so what remains is dev+test forms too
 rare to clear the train split's frequency gate, annotation noise
 (editorial lemmas like `братръ`, truncated surfaces, homograph lemmas),
 and lemmas the train split never saw; the next meaningful widening is the
-schema itself — the skipped declined and passive participles and
-non-personal pronouns. `cargo xtask accuracy` also reports bare-lemma
+schema itself — the non-personal pronouns and the l-participle. `cargo xtask accuracy` also reports bare-lemma
 correctness — whether the natural bare-lemma call returns the primary
 (first-listed) attested form:
 
@@ -96,11 +105,11 @@ correctness — whether the natural bare-lemma call returns the primary
 | **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
 | **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
 | **Adjectives** | Synodal (Polyakov) | 84489 / 87997 | 96.01% | 3508 |
-| **Verbs** | OCS | 18100 / 18418 | 98.27% | 318 |
-| **Verbs** | OCS (UD PROIEL train) | 1166 / 1439 | 81.03% | 273 |
+| **Verbs** | OCS | 218500 / 236400 | 92.43% | 17900 |
+| **Verbs** | OCS (UD PROIEL train) | 1352 / 1757 | 76.95% | 405 |
 | **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
-| **Verbs** | Synodal (Polyakov) | 33484 / 34598 | 96.78% | 1114 |
-| **Verbs** | Synodal (ru.wiktionary) | 62 / 78 | 79.49% | 16 |
+| **Verbs** | Synodal (Polyakov) | 54722 / 56435 | 96.96% | 1713 |
+| **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
 | **Pronouns** | OCS (UD PROIEL train) | 48 / 67 | 71.64% | 19 |
 | **Pronouns** | Synodal (Alypy) | 62 / 90 | 68.89% | 28 |
@@ -154,6 +163,11 @@ fn main() {
         ChurchSlavonic::verb("бꙑти", &Person::First, &Number::Singular, &Tense::Present, &Form::Finite, &Recension::OldChurchSlavonic),
         "ѥсмь"
     );
+    // Declined participles: tense, voice, series, and agreement.
+    assert_eq!(
+        ChurchSlavonic::participle("нести", &Tense::Present, &Voice::Active, &Series::Short, &Case::Genitive, &Number::Singular, &Gender::Masculine, &Recension::OldChurchSlavonic),
+        "несѫща"
+    );
     // Sense-numbered keys expose homographs and attested variants.
     assert_eq!(
         ChurchSlavonic::noun("сꙑнъ_2", &Case::Dative, &Number::Singular, &Recension::OldChurchSlavonic),
@@ -171,9 +185,10 @@ fn main() {
 
 * Combines generated tables from `extractor` with rules from
   `church-slavonic-core`.
-* Pure Rust; dependencies: `phf`, `unicode-normalization`, and the
+* Pure Rust; dependencies: `unicode-normalization`, and the
   first-party `church-slavonic-core`.
-* PHF-backed lookups of the attested exceptions with regular-rule fallback;
+* Sorted static-slice tables, binary-searched, of the attested exceptions
+  with regular-rule fallback;
   case restoration and recension realisation applied on output.
 
 ### `church-slavonic-core`
@@ -207,7 +222,7 @@ fn main() {
   so the tables hold exactly the attested exceptions.
 * Numbers homograph senses and variants **deterministically** by a pure sort
   of their emitted forms — no lockfile, no identity table, no human review.
-* Generates the static PHF tables used in `church-slavonic`.
+* Generates the static tables used in `church-slavonic`.
 
 ### `xtask`
 
@@ -218,7 +233,8 @@ accuracy` (with the sources; prints the two tables above).
 
 ## Table schema
 
-One `phf` map per part of speech in `crates/church-slavonic/generated/`,
+One sorted static slice per part of speech in
+`crates/church-slavonic/generated/`,
 keyed `"<recension>:<key>"` (`ocs:градъ`, `syn:ра́бъ_2` — the Synodal key is
 the accented lemma), each row the attested `(cell, form)` pairs of a
 fixed-arity row in cell order; a cell not listed is served by the bare

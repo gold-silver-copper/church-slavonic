@@ -74,6 +74,21 @@ pub enum Form {
     Imperative,
 }
 
+/// Participle voice.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Voice {
+    Active,
+    Passive,
+}
+
+/// The participle's declension series: the short (nominal) declension
+/// against the long (compound) one — the same split the adjectives make.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum Series {
+    Short,
+    Long,
+}
+
 /// Degree for adjectives.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Degree {

@@ -72,11 +72,14 @@
 use crate::alypy::{self, Defaults, TenseWord};
 use crate::assign::{Candidate, assign, forms_sig};
 use crate::cells::{
-    GENDERS, PRONOUN_KEY, Pos, adj_cell, noun_cell, pronoun_cell, recension_of_tag, rule_matches,
+    CASES, Conj, GENDERS, NUMBERS, PRESENT_STEM_CELL, PRONOUN_KEY, Pos, VERB_CLASS_CELL, adj_cell,
+    noun_cell, participle_cell, participle_stem_cell, predict_verb_override, pronoun_cell,
+    recension_of_tag, rule_matches,
     tag, verb_cell,
 };
 use crate::kaikki::{self, Entry, has};
 use crate::polyakov::{self, Features, Mood, Series, TenseTag, Voice};
+use church_slavonic_core::grammar::{Series as GSeries, Voice as GVoice};
 use crate::ruwiktionary;
 use church_slavonic_core::grammar::*;
 use church_slavonic_core::orthography::{comparison_key, realise, stress, strip_marks};
@@ -642,6 +645,10 @@ fn gather_kaikki_entry(entry: &Entry, lexemes: &mut Lexemes) {
 /// from them.
 pub const TRAIN_MIN_COUNT: u64 = 3;
 
+/// The corpus-frequency gate on Polyakov's declined-participle cells (the
+/// citation cells 36/37 stay ungated, as before the schema widening).
+pub const POLYAKOV_PARTICIPLE_MIN_COUNT: u64 = 5;
+
 fn gather_ud_proiel(
     records: &[crate::treebank::TrainRecord],
     lexemes: &mut Lexemes,
@@ -926,6 +933,9 @@ fn gather_kaikki_form_of(entry: &Entry, lexemes: &mut Lexemes, skips: &mut Skips
 }
 
 fn gather_kaikki_participle(forms: &[&kaikki::FormEntry], obs: &mut Observation) {
+    // The sub-table's tense and voice are read off the short feminine
+    // nominative singular: `-щи` present active, `-ши` past active, `-ма`
+    // present passive, `-на`/`-та` past passive.
     let direct = |f: &kaikki::FormEntry, gender: Gender| {
         has(&f.tags, "short-form")
             && kaikki::case(&f.tags) == Some(Case::Nominative)
@@ -936,14 +946,45 @@ fn gather_kaikki_participle(forms: &[&kaikki::FormEntry], obs: &mut Observation)
         .iter()
         .find(|f| direct(f, Gender::Feminine))
         .and_then(|f| kaikki_form(&f.form));
-    let cell = match feminine.as_deref() {
-        Some(f) if f.ends_with("щи") => 36,
-        Some(f) if f.ends_with("ши") => 37,
+    let (tense, voice, citation) = match feminine.as_deref() {
+        Some(f) if f.ends_with("щи") => (Tense::Present, GVoice::Active, Some(36)),
+        Some(f) if f.ends_with("ши") => (Tense::Aorist, GVoice::Active, Some(37)),
+        Some(f) if f.ends_with("ма") => (Tense::Present, GVoice::Passive, None),
+        Some(f) if f.ends_with("на") || f.ends_with("та") => {
+            (Tense::Aorist, GVoice::Passive, None)
+        }
         _ => return,
     };
-    for f in forms.iter().filter(|f| direct(f, Gender::Masculine)) {
-        if let Some(form) = kaikki_form(&f.form) {
-            obs.attest(cell, &form);
+    for f in forms {
+        let Some(form) = kaikki_form(&f.form) else {
+            continue;
+        };
+        let series = if has(&f.tags, "short-form") {
+            GSeries::Short
+        } else if has(&f.tags, "long-form") {
+            GSeries::Long
+        } else {
+            continue;
+        };
+        let (Some(case), Some(number)) = (kaikki::case(&f.tags), kaikki::number(&f.tags)) else {
+            continue;
+        };
+        let genders = kaikki::genders(&f.tags);
+        for gender in &genders {
+            obs.attest(
+                participle_cell(&voice, &series, &tense, gender, &number, &case),
+                &form,
+            );
+        }
+        // The masculine nominative singular short form is also the
+        // citation cell of the finite block.
+        if let Some(citation) = citation
+            && series == GSeries::Short
+            && case == Case::Nominative
+            && number == Number::Singular
+            && genders.contains(&Gender::Masculine)
+        {
+            obs.attest(citation, &form);
         }
     }
 }
@@ -1492,7 +1533,9 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
             let result = match pos {
                 Pos::Noun => polyakov_noun_cells(&f).map(|c| (lemma.clone(), c)),
                 Pos::Adj => polyakov_adj_cells(&f, &series_lemmas),
-                Pos::Verb => polyakov_verb_cells(&f, perfective).map(|c| (lemma.clone(), c)),
+                Pos::Verb => {
+                    polyakov_verb_cells(&f, perfective, form.count).map(|c| (lemma.clone(), c))
+                }
                 Pos::Pronoun => match pronoun_person {
                     Some(person) => {
                         polyakov_pronoun_cells(&f, person).map(|c| (PRONOUN_KEY.to_string(), c))
@@ -1765,7 +1808,11 @@ fn polyakov_adj_cells(
     Ok((lemma.clone(), cells))
 }
 
-fn polyakov_verb_cells(f: &Features, perfective: bool) -> Result<Vec<usize>, &'static str> {
+fn polyakov_verb_cells(
+    f: &Features,
+    perfective: bool,
+    count: u64,
+) -> Result<Vec<usize>, &'static str> {
     if f.infinitive {
         return Err("verb: infinitive (the lemma itself)");
     }
@@ -1773,24 +1820,57 @@ fn polyakov_verb_cells(f: &Features, perfective: bool) -> Result<Vec<usize>, &'s
         return Err("verb: perfect (the l-participle)");
     }
     if f.participle {
-        if f.voice == Some(Voice::Passive) {
-            return Err("verb: passive participle");
+        // The declined-participle admission is corpus-frequency gated, like
+        // the treebank train split: the dictionary is corpus-derived, and a
+        // hapax declension cell is where its OCR and analysis noise lives —
+        // and an ungated admission would balloon the tables past what CI
+        // builds (~500 exception cells per misclassed verb).
+        let voice = if f.voice == Some(Voice::Passive) {
+            GVoice::Passive
+        } else {
+            GVoice::Active
+        };
+        let series = if f.series == Some(Series::Long) {
+            GSeries::Long
+        } else {
+            GSeries::Short
+        };
+        let tense = match f.tense {
+            Some(TenseTag::Present) => Tense::Present,
+            Some(TenseTag::Future) if perfective => Tense::Present,
+            Some(TenseTag::Past) => Tense::Aorist,
+            _ => return Err("verb: participle without a tense"),
+        };
+        let number = f.number.ok_or("verb: participle without a number")?;
+        let genders: Vec<Gender> = f.gender.map_or_else(|| GENDERS.to_vec(), |g| vec![g]);
+        if f.cases.is_empty() {
+            return Err("verb: participle without a case");
         }
-        if f.series == Some(Series::Long) {
-            return Err("verb: long-series participle");
-        }
-        let citation = f.number == Some(Number::Singular)
+        let citation = voice == GVoice::Active
+            && series == GSeries::Short
+            && number == Number::Singular
             && f.gender == Some(Gender::Masculine)
             && f.cases.contains(&Case::Nominative);
-        if !citation {
-            return Err("verb: participle declension");
+        let mut cells = Vec::new();
+        // The declined cells are corpus-frequency gated: a hapax declension
+        // reading is where the dictionary's OCR and analysis noise lives,
+        // and ungated admission balloons the tables (~500 exception cells
+        // per misclassed verb). The citation cells stay ungated, as before
+        // the schema widening.
+        if count >= POLYAKOV_PARTICIPLE_MIN_COUNT {
+            for case in &f.cases {
+                for gender in &genders {
+                    cells.push(participle_cell(&voice, &series, &tense, gender, &number, case));
+                }
+            }
         }
-        return match f.tense {
-            Some(TenseTag::Present) => Ok(vec![36]),
-            Some(TenseTag::Future) if perfective => Ok(vec![36]),
-            Some(TenseTag::Past) => Ok(vec![37]),
-            _ => Err("verb: participle outside the two citation cells"),
-        };
+        if citation {
+            cells.push(if tense == Tense::Present { 36 } else { 37 });
+        }
+        if cells.is_empty() {
+            return Err("verb: participle below the frequency gate");
+        }
+        return Ok(cells);
     }
     let (tense, form) = match (f.mood, f.tense) {
         (Some(Mood::Imperative), _) => (Tense::Present, Form::Imperative),
@@ -1876,6 +1956,255 @@ impl LemmaAcc {
     }
 }
 
+/// Derive the four participle stems of a verb candidate from its attested
+/// declension, blank every cell the stem-expanded rule reproduces, and
+/// store the stem in its reserved cell (542..546): a regular declension of
+/// an irregular stem then costs four cells instead of five hundred. A stem
+/// is accepted only when it explains at least two attested cells; the
+/// cells it cannot explain stay stored individually.
+fn infer_participle_stems(recension: &Recension, forms: &mut [String], raw: &mut [String]) {
+    use church_slavonic_core::ChurchSlavonicCore;
+    for (voice, past, marker) in [
+        (GVoice::Active, false, 'щ'),
+        (GVoice::Active, true, 'ш'),
+        (GVoice::Passive, false, 'м'),
+        (GVoice::Passive, true, 'н'),
+    ] {
+        let tense = if past { Tense::Aorist } else { Tense::Present };
+        let stem_cell = participle_stem_cell(&voice, &tense);
+        let block: Vec<(usize, GSeries, Gender, Number, Case)> = [GSeries::Short, GSeries::Long]
+            .iter()
+            .flat_map(|sr| {
+                GENDERS.iter().flat_map(move |g| {
+                    NUMBERS.iter().flat_map(move |n| {
+                        CASES.iter().map(move |c| {
+                            (participle_cell(&voice, sr, &tense, g, n, c), *sr, *g, *n, *c)
+                        })
+                    })
+                })
+            })
+            .collect();
+        // Candidate stems: every prefix of an attested form ending at the
+        // block's marker letter (`щ`, `ш`, `м`, `н` — plus `т` for the
+        // t-participles).
+        let mut candidates: Vec<String> = Vec::new();
+        for (cell, ..) in &block {
+            let f = &raw[*cell];
+            if f.is_empty() {
+                continue;
+            }
+            for (at, c) in f.char_indices() {
+                if c == marker || (past && voice == GVoice::Passive && c == 'т') {
+                    let stem = &f[..at + c.len_utf8()];
+                    if !candidates.iter().any(|s| s == stem) {
+                        candidates.push(stem.to_string());
+                    }
+                }
+            }
+            if candidates.len() >= 12 {
+                break;
+            }
+        }
+        let mut best: Option<(String, Vec<usize>)> = None;
+        for stem in candidates {
+            let covered: Vec<usize> = block
+                .iter()
+                .filter(|(cell, sr, g, n, c)| {
+                    !raw[*cell].is_empty()
+                        && ChurchSlavonicCore::participle_from_stem(
+                            &stem, past, &voice, sr, c, n, g, recension,
+                        )
+                        .is_some_and(|d| rule_matches(recension, &raw[*cell], &d))
+                })
+                .map(|(cell, ..)| *cell)
+                .collect();
+            if covered.len() >= 2 && best.as_ref().is_none_or(|(_, b)| covered.len() > b.len()) {
+                best = Some((stem, covered));
+            }
+        }
+        if let Some((stem, covered)) = best {
+            for cell in covered {
+                forms[cell] = String::new();
+            }
+            // The runtime consults the stem BEFORE the rule, so a cell the
+            // per-cell subtraction blanked as rule-predicted must be
+            // re-stored when the stem would derive something else there —
+            // otherwise the stem shadows the rule's correct answer.
+            for (cell, sr, g, n, c) in &block {
+                if raw[*cell].is_empty() || !forms[*cell].is_empty() {
+                    continue;
+                }
+                if let Some(derived) = ChurchSlavonicCore::participle_from_stem(
+                    &stem, past, &voice, sr, c, n, g, recension,
+                ) && !rule_matches(recension, &raw[*cell], &derived)
+                {
+                    forms[*cell] = raw[*cell].clone();
+                }
+            }
+            // The stem is part of the row's identity: the bare-shadow pass
+            // compares raw against the bare row, so a variant's stem must
+            // live in raw too or the pass would erase it.
+            raw[stem_cell] = stem.clone();
+            forms[stem_cell] = stem;
+        }
+    }
+}
+
+/// What the runtime would answer for a blank participle cell of a row with
+/// these four stems: the stem's derivation, or `None` for the rule.
+pub(crate) fn resolve_participle_cell(
+    recension: &Recension,
+    cell: usize,
+    stems: &[String],
+) -> Option<String> {
+    use church_slavonic_core::ChurchSlavonicCore;
+    let rest = cell - 38;
+    let case = CASES[rest % 7];
+    let rest = rest / 7;
+    let number = NUMBERS[rest % 3];
+    let rest = rest / 3;
+    let gender = GENDERS[rest % 3];
+    let rest = rest / 3;
+    let past = rest % 2 == 1;
+    let (voice, series) = match rest / 2 {
+        0 => (GVoice::Active, GSeries::Short),
+        1 => (GVoice::Active, GSeries::Long),
+        2 => (GVoice::Passive, GSeries::Short),
+        _ => (GVoice::Passive, GSeries::Long),
+    };
+    let stem = &stems[match (voice, past) {
+        (GVoice::Active, false) => 0,
+        (GVoice::Active, true) => 1,
+        (GVoice::Passive, false) => 2,
+        (GVoice::Passive, true) => 3,
+    }];
+    if stem.is_empty() {
+        return None;
+    }
+    ChurchSlavonicCore::participle_from_stem(
+        stem, past, &voice, &series, &case, &number, &gender, recension,
+    )
+}
+
+/// Infer a conjugation-class/present-stem override for a verb candidate:
+/// candidate stems are read off the attested present cells by stripping
+/// each class's endings, every hypothesis is scored by how many attested
+/// finite/imperative/citation cells the re-run rule reproduces, and the
+/// winner is adopted only when it beats the plain rule. Returns the
+/// override-aware prediction row the caller must re-subtract against.
+fn infer_verb_override(
+    recension: &Recension,
+    lemma: &str,
+    predicted: &[String],
+    raw: &[String],
+) -> Option<(&'static str, String, Vec<String>)> {
+    let synodal = *recension == Recension::Synodal;
+    // (class, donor cell, ending) — 2sg, 3sg, 3pl per class.
+    let donors: &[(Conj, usize, &str)] = if synodal {
+        &[
+            (Conj::Hard, 1, "еши"),
+            (Conj::Hard, 2, "етъ"),
+            (Conj::Hard, 8, "ꙋтъ"),
+            (Conj::Iotated, 1, "еши"),
+            (Conj::Iotated, 2, "етъ"),
+            (Conj::Iotated, 8, "ꙋтъ"),
+            (Conj::Vowel, 1, "еши"),
+            (Conj::Vowel, 2, "етъ"),
+            (Conj::Vowel, 8, "ютъ"),
+            (Conj::Second, 1, "иши"),
+            (Conj::Second, 2, "итъ"),
+            (Conj::Second, 8, "ѧтъ"),
+        ]
+    } else {
+        &[
+            (Conj::Hard, 1, "еши"),
+            (Conj::Hard, 2, "етъ"),
+            (Conj::Hard, 8, "ѫтъ"),
+            (Conj::Iotated, 1, "еши"),
+            (Conj::Iotated, 2, "етъ"),
+            (Conj::Iotated, 8, "ѫтъ"),
+            (Conj::Vowel, 1, "ѥши"),
+            (Conj::Vowel, 2, "ѥтъ"),
+            (Conj::Vowel, 8, "ѭтъ"),
+            (Conj::Second, 1, "иши"),
+            (Conj::Second, 2, "итъ"),
+            (Conj::Second, 8, "ѧтъ"),
+        ]
+    };
+    let mut hypotheses: Vec<(Conj, String)> = Vec::new();
+    for (conj, cell, ending) in donors {
+        let form = &raw[*cell];
+        if form.is_empty() {
+            continue;
+        }
+        if let Some(stem) = form.strip_suffix(ending)
+            && !stem.is_empty()
+            && !hypotheses.iter().any(|(c, st)| c == conj && st == stem)
+        {
+            hypotheses.push((*conj, stem.to_string()));
+        }
+    }
+    if hypotheses.is_empty() {
+        return None;
+    }
+    let attested: Vec<usize> = (0..38).filter(|i| !raw[*i].is_empty()).collect();
+    if attested.len() < 2 {
+        return None;
+    }
+    // Score on the attested finite cells only — the full 548-cell
+    // prediction is computed once, for the winner.
+    let realised = church_slavonic_core::orthography::realise(lemma, recension);
+    let finite = |class: Option<&str>, present: Option<&str>, i: usize| {
+        use crate::cells::{NUMBERS as NS, PERSONS as PS, VERB_BLOCKS as VB};
+        use church_slavonic_core::ChurchSlavonicCore;
+        let answer = if i >= 36 {
+            let tense = if i == 36 { Tense::Present } else { Tense::Aorist };
+            ChurchSlavonicCore::verb_from_stems(
+                &realised,
+                class,
+                present,
+                &Person::Third,
+                &Number::Singular,
+                &tense,
+                &Form::Participle,
+                recension,
+            )
+        } else {
+            let (tense, form) = VB[i / 9];
+            ChurchSlavonicCore::verb_from_stems(
+                &realised,
+                class,
+                present,
+                &PS[i % 3],
+                &NS[(i % 9) / 3],
+                &tense,
+                &form,
+                recension,
+            )
+        };
+        church_slavonic_core::orthography::realise(&answer, recension)
+    };
+    let plain = attested
+        .iter()
+        .filter(|i| rule_matches(recension, &raw[**i], &predicted[**i]))
+        .count();
+    let mut best: Option<(&'static str, String, usize)> = None;
+    for (conj, stem) in hypotheses {
+        let token = conj.token();
+        let n = attested
+            .iter()
+            .filter(|i| rule_matches(recension, &raw[**i], &finite(Some(token), Some(&stem), **i)))
+            .count();
+        if n > plain && best.as_ref().is_none_or(|(.., b)| n > *b) {
+            best = Some((token, stem, n));
+        }
+    }
+    best.map(|(token, stem, _)| {
+        let pred = predict_verb_override(lemma, Some(token), Some(&stem), recension);
+        (token, stem, pred)
+    })
+}
+
 /// Subtract the rule engine from every observation and number the survivors.
 pub fn finalize(lexemes: &Lexemes) -> Tables {
     let mut tables = Tables::default();
@@ -1895,7 +2224,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                         alts.get(k).or(alts.first()).cloned().unwrap_or_default()
                     })
                     .collect();
-                let forms: Vec<String> = raw
+                let mut forms: Vec<String> = raw
                     .iter()
                     .enumerate()
                     .map(|(i, f)| {
@@ -1906,6 +2235,30 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                         }
                     })
                     .collect();
+                let mut raw = raw;
+                if key.pos == Pos::Verb {
+                    if let Some((class, stem, predicted_ov)) =
+                        infer_verb_override(&recension, &key.lemma, &predicted, &raw)
+                    {
+                        // Re-subtract against what the overridden rule will
+                        // actually answer, and carry the override in raw so
+                        // the bare-shadow pass keeps the row's identity.
+                        for i in 0..542 {
+                            forms[i] = if raw[i].is_empty()
+                                || rule_matches(&recension, &raw[i], &predicted_ov[i])
+                            {
+                                String::new()
+                            } else {
+                                raw[i].clone()
+                            };
+                        }
+                        forms[VERB_CLASS_CELL] = class.to_string();
+                        forms[PRESENT_STEM_CELL] = stem.clone();
+                        raw[VERB_CLASS_CELL] = class.to_string();
+                        raw[PRESENT_STEM_CELL] = stem;
+                    }
+                    infer_participle_stems(&recension, &mut forms, &mut raw);
+                }
                 acc.observe(forms, raw, obs.soft);
             }
         }
@@ -1931,6 +2284,126 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     } else {
                         row.raw[cell].clone()
                     };
+                }
+            }
+        }
+        // A participle cell blanked as rule-predicted stays reachable only
+        // through a published row whose stem does not shadow the rule; when
+        // this row would vanish (or its stem derives something else),
+        // re-store the attested form.
+        if key.pos == Pos::Verb {
+            let bare_stems: Vec<String> = assigned
+                .first()
+                .filter(|bare| bare.key == key.lemma)
+                .map(|bare| (542..546).map(|i| bare.forms[i].clone()).collect())
+                .unwrap_or_else(|| vec![String::new(); 4]);
+            let bare_exact: Vec<String> = assigned
+                .first()
+                .filter(|bare| bare.key == key.lemma)
+                .map(|bare| bare.forms[..542].to_vec())
+                .unwrap_or_else(|| vec![String::new(); 542]);
+            // The rule fallback each row's caller will actually reach: the
+            // row's own class/present-stem override, else the bare row's
+            // (a vanished variant row is served by the bare key), else the
+            // plain rule.
+            // Per-cell own-else-bare, exactly as `attested_cell` resolves.
+            let bare_fact: Vec<String> = assigned
+                .first()
+                .filter(|bare| bare.key == key.lemma)
+                .map(|bare| {
+                    vec![
+                        bare.forms[PRESENT_STEM_CELL].clone(),
+                        bare.forms[VERB_CLASS_CELL].clone(),
+                    ]
+                })
+                .unwrap_or_else(|| vec![String::new(); 2]);
+            let override_pred = |row: &crate::assign::Assignment| -> Option<Vec<String>> {
+                let pick = |i: usize, b: usize| {
+                    if !row.forms[i].is_empty() {
+                        row.forms[i].clone()
+                    } else {
+                        bare_fact[b].clone()
+                    }
+                };
+                let (stem, class) = (pick(PRESENT_STEM_CELL, 0), pick(VERB_CLASS_CELL, 1));
+                (!class.is_empty() || !stem.is_empty()).then(|| {
+                    predict_verb_override(
+                        &key.lemma,
+                        (!class.is_empty()).then_some(class.as_str()),
+                        (!stem.is_empty()).then_some(stem.as_str()),
+                        &recension,
+                    )
+                })
+            };
+            let bare_pred: Option<Vec<String>> = assigned
+                .first()
+                .filter(|bare| bare.key == key.lemma)
+                .and_then(|bare| override_pred(bare));
+            for row in &mut assigned {
+                // Reachability is judged per block against the stem that
+                // will actually answer: the row's own where it has one, the
+                // bare row's otherwise (a variant whose row would vanish as
+                // all-empty falls back to the bare key).
+                let stems: Vec<String> = (542..546)
+                    .enumerate()
+                    .map(|(b, i)| {
+                        if row.forms[i].is_empty() {
+                            bare_stems[b].clone()
+                        } else {
+                            row.forms[i].clone()
+                        }
+                    })
+                    .collect();
+                // Judged against what the runtime will resolve for this
+                // key: `attested_cell` probes the key's row, then the bare
+                // lemma's — so the fallback is the row's own override,
+                // else the bare row's, else the plain rule.
+                let row_pred = override_pred(row).or_else(|| bare_pred.clone());
+                let restore = |row: &mut crate::assign::Assignment, pred: &Option<Vec<String>>| {
+                    for cell in 0..542 {
+                        if row.forms[cell].is_empty() && !row.raw[cell].is_empty() {
+                            // Already reachable through the bare row's own cell.
+                            if bare_exact[cell] == row.raw[cell] {
+                                continue;
+                            }
+                            let resolved = (38..542)
+                                .contains(&cell)
+                                .then(|| resolve_participle_cell(&recension, cell, &stems))
+                                .flatten()
+                                .unwrap_or_else(|| {
+                                    pred.as_ref().map_or(&predicted[cell], |p| &p[cell]).clone()
+                                });
+                            if !rule_matches(&recension, &row.raw[cell], &resolved) {
+                                row.forms[cell] = row.raw[cell].clone();
+                            }
+                        }
+                    }
+                };
+                restore(row, &row_pred);
+                // And the inverse: a cell stored by the per-candidate
+                // subtraction (which compared against the candidate's own
+                // prediction) is dead weight when the runtime's fallback
+                // for this key — the bare row's cell, else the override
+                // resolution — already answers it.
+                for cell in 0..542 {
+                    if row.key != key.lemma
+                        && !row.forms[cell].is_empty()
+                        && bare_exact[cell].is_empty()
+                    {
+                        let resolved = (38..542)
+                            .contains(&cell)
+                            .then(|| resolve_participle_cell(&recension, cell, &stems))
+                            .flatten()
+                            .unwrap_or_else(|| {
+                                row_pred
+                                    .as_ref()
+                                    .map_or(&predicted[cell], |p| &p[cell])
+                                    .clone()
+                            });
+                        if rule_matches(&recension, &row.forms[cell], &resolved) {
+                            row.forms[cell] = String::new();
+                        }
+                    }
                 }
             }
         }
@@ -2298,10 +2771,10 @@ mod tests {
             ("да́сть", "indic,fut,sg,2p/3p", 9),
             ("да́хъ", "indic,aor,sg,1p", 3),
             ("да́лъ", "partcp,perf,sg,m", 4),
-            ("да́вый", "partcp,praet,act,plen,sg,m/n,nom", 2),
+            ("да́вый", "partcp,praet,act,plen,sg,m/n,nom", 5),
             ("да́въ", "partcp,praet,act,brev,sg,m/n,nom", 6),
-            ("да́вша", "partcp,praet,act,brev,sg,m/n,gen/acc", 1),
-            ("да́ный", "partcp,praet,pass,plen,sg,m,nom/acc", 1),
+            ("да́вша", "partcp,praet,act,brev,sg,m/n,gen/acc", 5),
+            ("да́ный", "partcp,praet,pass,plen,sg,m,nom/acc", 5),
             ("да́ждь", "imper,sg,2p/3p", 5),
         ];
         let mut lexemes = Lexemes::new();
@@ -2349,12 +2822,28 @@ mod tests {
         );
         assert_eq!(obs[0].cells[37], ["да́въ"]);
         assert!(obs[0].cells[36].is_empty());
+        // The declined participle cells: `да́вый` long active m nom sg,
+        // `да́вша` short active m/n gen (and m acc) sg, `да́ный` long
+        // passive m nom/acc sg.
+        let pcell = |v: GVoice, sr: GSeries, g: Gender, n: Number, c: Case| {
+            obs[0].cells[participle_cell(&v, &sr, &Tense::Aorist, &g, &n, &c)].clone()
+        };
+        use Case::*;
+        assert_eq!(
+            pcell(GVoice::Active, GSeries::Long, Gender::Masculine, Number::Singular, Nominative),
+            ["да́вый"]
+        );
+        assert_eq!(
+            pcell(GVoice::Active, GSeries::Short, Gender::Neuter, Number::Singular, Genitive),
+            ["да́вша"]
+        );
+        assert_eq!(
+            pcell(GVoice::Passive, GSeries::Long, Gender::Masculine, Number::Singular, Accusative),
+            ["да́ный"]
+        );
         for (reason, n) in [
             ("verb: infinitive (the lemma itself)", 1),
             ("verb: perfect (the l-participle)", 1),
-            ("verb: long-series participle", 2),
-            ("verb: participle declension", 4),
-            ("verb: passive participle", 2),
         ] {
             assert_eq!(skips.by_reason.get(reason), Some(&n), "{reason}");
         }

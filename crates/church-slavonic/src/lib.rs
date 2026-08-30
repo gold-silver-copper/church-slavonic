@@ -141,6 +141,40 @@ fn verb_cell(person: &Person, number: &Number, tense: &Tense, form: &Form) -> Op
     Some(block * 9 + *number as usize * 3 + *person as usize)
 }
 
+fn participle_cell(
+    voice: &Voice,
+    series: &Series,
+    tense: &Tense,
+    gender: &Gender,
+    number: &Number,
+    case: &Case,
+) -> usize {
+    let series = match (voice, series) {
+        (Voice::Active, Series::Short) => 0,
+        (Voice::Active, Series::Long) => 1,
+        (Voice::Passive, Series::Short) => 2,
+        (Voice::Passive, Series::Long) => 3,
+    };
+    let tense = match tense {
+        Tense::Present => 0,
+        Tense::Imperfect | Tense::Aorist => 1,
+    };
+    38 + (((series * 2 + tense) * 3 + *gender as usize) * 3 + *number as usize) * 7
+        + *case as usize
+}
+
+const PRESENT_STEM_CELL: usize = 546;
+const VERB_CLASS_CELL: usize = 547;
+
+fn participle_stem_cell(voice: &Voice, tense: &Tense) -> usize {
+    542 + match (voice, tense) {
+        (Voice::Active, Tense::Present) => 0,
+        (Voice::Active, _) => 1,
+        (Voice::Passive, Tense::Present) => 2,
+        (Voice::Passive, _) => 3,
+    }
+}
+
 fn pronoun_cell(person: &Person, number: &Number, gender: &Gender, case: &Case) -> usize {
     let case = if *case == Case::Vocative {
         0
@@ -156,8 +190,8 @@ fn pronoun_cell(person: &Person, number: &Number, gender: &Gender, case: &Case) 
 
 /// The attested form at cell `i` of a sparse row (the `(cell, form)` pairs
 /// the generator wrote, in cell order); `None` when the rule serves it.
-fn cell(row: &'static [(u8, &'static str)], i: Option<usize>) -> Option<&'static str> {
-    let i = u8::try_from(i?).ok()?;
+fn cell(row: &'static [(u16, &'static str)], i: Option<usize>) -> Option<&'static str> {
+    let i = u16::try_from(i?).ok()?;
     row.binary_search_by_key(&i, |(c, _)| *c)
         .ok()
         .map(|at| row[at].1)
@@ -261,7 +295,7 @@ fn attested_cell(
     base: &str,
     recension: &Recension,
     i: Option<usize>,
-    get: impl Fn(&str) -> Option<&'static [(u8, &'static str)]>,
+    get: impl Fn(&str) -> Option<&'static [(u16, &'static str)]>,
 ) -> Option<(&'static str, CaseStyle)> {
     let probe = |w: &str| {
         let (row, style) = ci_lookup(w, recension, &get)?;
@@ -401,8 +435,105 @@ impl ChurchSlavonic {
         ) {
             return restyle(c.to_string(), style);
         }
+        // A class/present-stem override re-runs the rule with the verb's
+        // true stems (the tables' cells 546/547).
+        let class = attested_cell(word, base, recension, Some(VERB_CLASS_CELL), get);
+        let stem = attested_cell(word, base, recension, Some(PRESENT_STEM_CELL), get);
+        if let Some((_, style)) = class.or(stem) {
+            return restyle(
+                ChurchSlavonicCore::verb_from_stems(
+                    base,
+                    class.map(|(c, _)| c),
+                    stem.map(|(c, _)| c),
+                    person,
+                    number,
+                    tense,
+                    form,
+                    recension,
+                ),
+                style,
+            );
+        }
         rule_with_case(base, recension, |w| {
             ChurchSlavonicCore::verb(w, person, number, tense, form, recension)
+        })
+    }
+
+/// Declines a participle: `tense` (`Imperfect` and `Aorist` both mean
+    /// the past participle), `voice`, the short or long [`Series`], and the
+    /// adjective-style agreement features. The lemma is the infinitive; like
+    /// every call, attested table cells override the rule.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use church_slavonic::*;
+    ///
+    /// assert_eq!(
+    ///     ChurchSlavonic::participle(
+    ///         "нести", &Tense::Present, &Voice::Active, &Series::Short,
+    ///         &Case::Genitive, &Number::Singular, &Gender::Masculine,
+    ///         &Recension::OldChurchSlavonic,
+    ///     ),
+    ///     "несѫща"
+    /// );
+    /// ```
+    #[allow(clippy::too_many_arguments)]
+    pub fn participle(
+        word: &str,
+        tense: &Tense,
+        voice: &Voice,
+        series: &Series,
+        case: &Case,
+        number: &Number,
+        gender: &Gender,
+        recension: &Recension,
+    ) -> String {
+        let get = |w: &str| get_verb(&format!("{}:{w}", tag(recension)));
+        let base = base_lemma(word, |w| ci_lookup(w, recension, get).is_some());
+        if let Some((c, style)) = attested_cell(
+            word,
+            base,
+            recension,
+            Some(participle_cell(voice, series, tense, gender, number, case)),
+            get,
+        ) {
+            return restyle(c.to_string(), style);
+        }
+        // A stem the extractor derived from the attested declension expands
+        // through the same rule the extractor validated it against.
+        let past = !matches!(tense, Tense::Present);
+        if let Some((stem, style)) = attested_cell(
+            word,
+            base,
+            recension,
+            Some(participle_stem_cell(voice, tense)),
+            get,
+        ) && let Some(form) = ChurchSlavonicCore::participle_from_stem(
+            stem, past, voice, series, case, number, gender, recension,
+        ) {
+            return restyle(form, style);
+        }
+        let class = attested_cell(word, base, recension, Some(VERB_CLASS_CELL), get);
+        let present = attested_cell(word, base, recension, Some(PRESENT_STEM_CELL), get);
+        if let Some((_, style)) = class.or(present) {
+            return restyle(
+                ChurchSlavonicCore::participle_with_override(
+                    base,
+                    class.map(|(c, _)| c),
+                    present.map(|(c, _)| c),
+                    tense,
+                    voice,
+                    series,
+                    case,
+                    number,
+                    gender,
+                    recension,
+                ),
+                style,
+            );
+        }
+        rule_with_case(base, recension, |w| {
+            ChurchSlavonicCore::participle(w, tense, voice, series, case, number, gender, recension)
         })
     }
 
@@ -506,7 +637,7 @@ mod rule_table_sync_tests {
         key: &str,
         i: usize,
         cell_text: &str,
-        get: impl Fn(&str) -> Option<&'static [(u8, &'static str)]>,
+        get: impl Fn(&str) -> Option<&'static [(u16, &'static str)]>,
     ) -> bool {
         let Some((tag, rest)) = key.split_once(':') else {
             return false;
@@ -549,8 +680,8 @@ mod rule_table_sync_tests {
         let genders = [Gender::Masculine, Gender::Feminine, Gender::Neuter];
         let persons = [Person::First, Person::Second, Person::Third];
 
-        let at = |row: &'static [(u8, &'static str)], i: usize| cell(row, Some(i)).unwrap_or("");
-        for (key, row) in NOUN_MAP.entries() {
+        let at = |row: &'static [(u16, &'static str)], i: usize| cell(row, Some(i)).unwrap_or("");
+        for (key, row) in NOUN_TABLE {
             let (r, lemma) = split(key);
             for n in &numbers {
                 for c in &cases {
@@ -568,7 +699,7 @@ mod rule_table_sync_tests {
                 }
             }
         }
-        for (key, row) in ADJ_MAP.entries() {
+        for (key, row) in ADJ_TABLE {
             let (r, lemma) = split(key);
             for d in [Degree::Positive, Degree::Comparative] {
                 for g in &genders {
@@ -593,8 +724,24 @@ mod rule_table_sync_tests {
                 }
             }
         }
-        for (key, row) in VERB_MAP.entries() {
+        for (key, row) in VERB_TABLE {
             let (r, lemma) = split(key);
+            // A class/present-stem override (this row's, else the bare
+            // row's) replaces the rule the finite cells are audited
+            // against.
+            // `attested_cell` falls back to the bare row, so the audited
+            // override is the row's own cell, else the bare lemma's.
+            let over = |i: usize| -> Option<&'static str> {
+                let own = at(row, i);
+                if !own.is_empty() {
+                    return Some(own);
+                }
+                let tag = key.split(':').next().unwrap_or("");
+                get_verb(&format!("{tag}:{lemma}"))
+                    .map(|bare| at(bare, i))
+                    .filter(|c| !c.is_empty())
+            };
+            let (class, stem) = (over(VERB_CLASS_CELL), over(PRESENT_STEM_CELL));
             let blocks = [
                 (Tense::Present, Form::Finite),
                 (Tense::Imperfect, Form::Finite),
@@ -611,7 +758,15 @@ mod rule_table_sync_tests {
                             && same(
                                 &r,
                                 attested,
-                                &rule(lemma, &r, |l| ChurchSlavonicCore::verb(l, p, n, t, f, &r)),
+                                &rule(lemma, &r, |l| {
+                                    if class.is_some() || stem.is_some() {
+                                        ChurchSlavonicCore::verb_from_stems(
+                                            l, class, stem, p, n, t, f, &r,
+                                        )
+                                    } else {
+                                        ChurchSlavonicCore::verb(l, p, n, t, f, &r)
+                                    }
+                                }),
                             )
                         {
                             redundant.push(format!("verb {key} cell {i} -> {attested}"));
@@ -625,21 +780,34 @@ mod rule_table_sync_tests {
                     continue;
                 }
                 let predicted = rule(lemma, &r, |l| {
-                    ChurchSlavonicCore::verb(
-                        l,
-                        &Person::Third,
-                        &Number::Singular,
-                        &t,
-                        &Form::Participle,
-                        &r,
-                    )
+                    if class.is_some() || stem.is_some() {
+                        ChurchSlavonicCore::verb_from_stems(
+                            l,
+                            class,
+                            stem,
+                            &Person::Third,
+                            &Number::Singular,
+                            &t,
+                            &Form::Participle,
+                            &r,
+                        )
+                    } else {
+                        ChurchSlavonicCore::verb(
+                            l,
+                            &Person::Third,
+                            &Number::Singular,
+                            &t,
+                            &Form::Participle,
+                            &r,
+                        )
+                    }
                 });
                 if !attested.is_empty() && same(&r, attested, &predicted) {
                     redundant.push(format!("verb {key} cell {i} -> {attested}"));
                 }
             }
         }
-        for (key, row) in PRONOUN_MAP.entries() {
+        for (key, row) in PRONOUN_TABLE {
             let (r, _) = split(key);
             for p in &persons {
                 for g in &genders {

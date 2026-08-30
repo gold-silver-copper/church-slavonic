@@ -32,6 +32,25 @@ use crate::orthography::{Unit, is_accented, join, stress, strip_marks, units};
 /// (`рабы̑`, `рꙋ̑ки`, `сы̑ны`, `безпꙋ̑тіѧ`).
 pub(crate) const KAMORA_CELL: char = '^';
 
+/// The print's word-final varia (Alypy §5): an acute that lands on the last
+/// vowel letter of a word becomes grave. The skeleton-level override paths
+/// concatenate an accented stem with plain endings, so a stem-final acute
+/// must be re-graded when nothing follows it.
+pub(crate) fn final_varia(word: &str) -> String {
+    let mut units = crate::orthography::units(word);
+    let last = units.len().saturating_sub(1);
+    for (i, unit) in units.iter_mut().enumerate() {
+        for mark in &mut unit.marks {
+            if *mark == crate::orthography::ACUTE && i == last {
+                *mark = crate::orthography::GRAVE;
+            } else if *mark == crate::orthography::GRAVE && i != last {
+                *mark = crate::orthography::ACUTE;
+            }
+        }
+    }
+    crate::orthography::join(&units)
+}
+
 /// Run `rule` on the unaccented skeleton of `word` and put the accent back
 /// by the pattern above. Outside the Synodal recension, or for an
 /// unaccented lemma, the rule's answer is returned as is (minus the kamora

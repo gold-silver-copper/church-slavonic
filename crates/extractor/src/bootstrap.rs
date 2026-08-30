@@ -2,7 +2,7 @@
 //!
 //! [`generate_tables`] is the single candidate -> PHF path, byte-deterministic
 //! because `check-registry` and the accuracy harness both read the committed
-//! tables back with [`parse_phf_pairs`]. There is no lockfile: the generated
+//! tables back with [`parse_table_pairs`]. There is no lockfile: the generated
 //! tables ARE the committed artifact.
 
 use crate::assign::split_key;
@@ -21,7 +21,7 @@ pub type KeyForms = (String, Vec<String>);
 /// each `"key" => &[(cell, "form"), …]` line back into a dense row of the
 /// map's arity (the file header states it). This is the emitter-independent
 /// reader `check-registry` and the accuracy harness use.
-pub fn parse_phf_pairs(path: impl AsRef<Path>) -> Result<Vec<KeyForms>, Box<dyn Error>> {
+pub fn parse_table_pairs(path: impl AsRef<Path>) -> Result<Vec<KeyForms>, Box<dyn Error>> {
     let text = fs::read_to_string(path)?;
     let arity: usize = text
         .lines()
@@ -31,7 +31,7 @@ pub fn parse_phf_pairs(path: impl AsRef<Path>) -> Result<Vec<KeyForms>, Box<dyn 
     let mut out = Vec::new();
     for line in text.lines() {
         let trimmed = line.trim_start();
-        if !trimmed.starts_with('"') || !line.contains("=>") {
+        if !trimmed.starts_with("(\"") || !line.contains("&[") {
             continue;
         }
         let fields = quoted_fields(line);
@@ -40,7 +40,7 @@ pub fn parse_phf_pairs(path: impl AsRef<Path>) -> Result<Vec<KeyForms>, Box<dyn 
         };
         let mut cells = vec![String::new(); arity];
         let indices = line
-            .split("=>")
+            .split("&[")
             .nth(1)
             .unwrap_or("")
             .split('(')
@@ -104,7 +104,7 @@ fn reject_duplicate_keys(table: &Table, pos: Pos) -> Result<(), Box<dyn Error>> 
 }
 
 /// The source-free consistency gate behind `cargo xtask check-registry`. Reads
-/// the committed PHF tables back with [`parse_phf_pairs`] and verifies, WITHOUT
+/// the committed tables back with [`parse_table_pairs`] and verifies, WITHOUT
 /// any lockfile or source:
 /// - keys are well-formed and unique (`<ocs|syn>:<lemma>` or
 ///   `<ocs|syn>:<lemma>_<n>` with `n >= 2`; the pronoun map's lemma is
@@ -122,7 +122,7 @@ fn reject_duplicate_keys(table: &Table, pos: Pos) -> Result<(), Box<dyn Error>> 
 pub fn audit_tables(generated_dir: &Path) -> Result<Vec<String>, Box<dyn Error>> {
     let mut v = Vec::new();
     for pos in Pos::ALL {
-        let pairs = parse_phf_pairs(generated_dir.join(pos.file_name()))?;
+        let pairs = parse_table_pairs(generated_dir.join(pos.file_name()))?;
         if pairs.is_empty() {
             v.push(format!(
                 "{}: no table entries parsed (missing or malformed table?)",
@@ -148,7 +148,14 @@ fn audit_rows(v: &mut Vec<String>, pos: Pos, pairs: &[KeyForms]) {
         .map(|(k, c)| (k.as_str(), c))
         .collect();
     let mut seen: HashSet<&str> = HashSet::new();
-    for (key, cells) in pairs {
+    for (window, (key, cells)) in pairs.windows(2).map(Some).chain([None]).zip(pairs) {
+        // The slice is the artifact's canonical order: binary search
+        // depends on strictly ascending keys.
+        if let Some([(a, _), (b, _)]) = window
+            && a >= b
+        {
+            v.push(format!("{name}: keys `{a}` and `{b}` are out of order"));
+        }
         if !seen.insert(key) {
             v.push(format!("{name}: duplicate key `{key}`"));
         }
@@ -191,13 +198,57 @@ fn audit_rows(v: &mut Vec<String>, pos: Pos, pairs: &[KeyForms]) {
             ));
             continue;
         }
-        let predicted = pos.predict(lemma, &recension);
+        let mut predicted = pos.predict(lemma, &recension);
         let shadowing = (lemma != lemma_key)
             .then(|| bare_rows.get(format!("{tag}:{lemma}").as_str()).copied())
             .flatten();
+        // A class/present-stem override (this row's, else the bare row's)
+        // replaces the rule this row is audited against.
+        if pos == Pos::Verb {
+            // `attested_cell` falls back to the bare row, so the audited
+            // override is the row's own cell, else the bare lemma's.
+            let over = |i: usize| -> String {
+                if !cells[i].is_empty() {
+                    cells[i].clone()
+                } else {
+                    shadowing.map_or(String::new(), |bare| bare[i].clone())
+                }
+            };
+            let (class, stem) = (
+                over(crate::cells::VERB_CLASS_CELL),
+                over(crate::cells::PRESENT_STEM_CELL),
+            );
+            if !class.is_empty() || !stem.is_empty() {
+                predicted = crate::cells::predict_verb_override(
+                    lemma,
+                    (!class.is_empty()).then_some(class.as_str()),
+                    (!stem.is_empty()).then_some(stem.as_str()),
+                    &recension,
+                );
+            }
+        }
         for (i, cell) in cells.iter().enumerate() {
             let shadowed = shadowing.is_some_and(|bare| !bare[i].is_empty() && bare[i] != *cell);
-            if !cell.is_empty() && !shadowed && rule_matches(&recension, cell, &predicted[i]) {
+            // A rule-equal declined-participle cell is load-bearing when a
+            // stem (this row's, or the bare row's it falls back to) would
+            // shadow the rule with a different derivation.
+            let stem_shadowed = pos == Pos::Verb
+                && (38..542).contains(&i)
+                && crate::extract::resolve_participle_cell(&recension, i, &{
+                    let own: Vec<String> = cells[542..546].to_vec();
+                    match shadowing {
+                        Some(bare) => own
+                            .iter()
+                            .zip(&bare[542..546])
+                            .map(|(o, b)| if o.is_empty() { b.clone() } else { o.clone() })
+                            .collect(),
+                        None => own,
+                    }
+                })
+                .is_some_and(|d| !rule_matches(&recension, &d, &predicted[i]));
+            if !cell.is_empty() && !shadowed && !stem_shadowed
+                && rule_matches(&recension, cell, &predicted[i])
+            {
                 v.push(format!(
                     "{name}: key `{key}` cell {i} `{cell}` equals the regular-rule prediction — dead weight; \
                      a core rule changed without regenerating (`cargo xtask refresh-data`)"
@@ -225,7 +276,7 @@ mod tests {
         let gen_dir = generated_dir();
         let mut tables = Tables::default();
         for pos in Pos::ALL {
-            let rows = parse_phf_pairs(gen_dir.join(pos.file_name())).expect("parses");
+            let rows = parse_table_pairs(gen_dir.join(pos.file_name())).expect("parses");
             match pos {
                 Pos::Noun => tables.noun = rows,
                 Pos::Adj => tables.adj = rows,
@@ -314,17 +365,17 @@ mod tests {
     }
 
     #[test]
-    fn parse_phf_pairs_restores_the_blank_cells() {
+    fn parse_table_pairs_restores_the_blank_cells() {
         let dir = std::env::temp_dir().join(format!("cs_parse_phf_{}", std::process::id()));
         let _ = fs::create_dir_all(&dir);
         let path = dir.join("noun_phf.rs");
         fs::write(
             &path,
-            "use phf::phf_map;\n/// pairs of a 3-cell row\npub static NOUN_MAP: phf::Map<&'static str, &'static [(u8, &'static str)]> = phf_map! {\n    \
-             \"ocs:x_2\" => &[(1, \"б\")],\n};\n",
+            "/// pairs of a 3-cell row\npub static NOUN_TABLE: &[(&str, &[(u16, &str)])] = &[\n    \
+             (\"ocs:x_2\", &[(1, \"б\")]),\n];\n",
         )
         .expect("write");
-        let pairs = parse_phf_pairs(&path).expect("parses");
+        let pairs = parse_table_pairs(&path).expect("parses");
         assert_eq!(
             pairs,
             vec![(

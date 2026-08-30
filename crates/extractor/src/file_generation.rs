@@ -1,4 +1,5 @@
-//! PHF table emission. BYTE STABILITY IS LOAD-BEARING here: the
+//! Table emission — a sorted static slice per part of speech, looked up by
+//! binary search. BYTE STABILITY IS LOAD-BEARING here: the
 //! `tables_round_trip_committed_output` test parses the committed tables and
 //! re-emits them, requiring a byte-identical result — any formatting change
 //! (whitespace, ordering, headers) must be committed together with regenerated
@@ -14,13 +15,13 @@ use std::fs::File;
 use std::io::{self, Write};
 use std::path::Path;
 
-/// The static map and getter names of each part of speech's table.
+/// The static table and getter names of each part of speech.
 pub fn names(pos: Pos) -> (&'static str, &'static str) {
     match pos {
-        Pos::Noun => ("NOUN_MAP", "get_noun"),
-        Pos::Adj => ("ADJ_MAP", "get_adj"),
-        Pos::Verb => ("VERB_MAP", "get_verb"),
-        Pos::Pronoun => ("PRONOUN_MAP", "get_pronoun"),
+        Pos::Noun => ("NOUN_TABLE", "get_noun"),
+        Pos::Adj => ("ADJ_TABLE", "get_adj"),
+        Pos::Verb => ("VERB_TABLE", "get_verb"),
+        Pos::Pronoun => ("PRONOUN_TABLE", "get_pronoun"),
     }
 }
 
@@ -51,16 +52,15 @@ pub fn write_phf(
     let (map, getter) = names(pos);
     let arity = pos.arity();
     let mut out = File::create(path)?;
-    writeln!(out, "use phf::phf_map;")?;
-    writeln!(out)?;
     writeln!(
         out,
         "/// `\"<recension>:<key>\"` -> the attested `(cell, form)` pairs of a {arity}-cell row; a cell not listed falls back to the rule."
     )?;
     writeln!(out, "/// Cell order: {}.", doc(pos))?;
+    writeln!(out, "/// Sorted by key; looked up by binary search.")?;
     writeln!(
         out,
-        "pub static {map}: phf::Map<&'static str, &'static [(u8, &'static str)]> = phf_map! {{"
+        "pub static {map}: &[(&str, &[(u16, &str)])] = &["
     )?;
     for (key, cells) in &rows {
         for text in std::iter::once(key).chain(cells.iter()) {
@@ -82,15 +82,20 @@ pub fn write_phf(
             .filter(|(_, c)| !c.is_empty())
             .map(|(i, c)| format!("({i}, \"{c}\")"))
             .collect();
-        writeln!(out, "    \"{key}\" => &[{}],", cells.join(", "))?;
+        writeln!(out, "    (\"{key}\", &[{}]),", cells.join(", "))?;
     }
-    writeln!(out, "}};")?;
+    writeln!(out, "];")?;
     writeln!(out)?;
     writeln!(
         out,
-        "pub fn {getter}(key: &str) -> Option<&'static [(u8, &'static str)]> {{"
+        "pub fn {getter}(key: &str) -> Option<&'static [(u16, &'static str)]> {{"
     )?;
-    writeln!(out, "    {map}.get(key).copied()")?;
+    writeln!(
+        out,
+        "    {map}.binary_search_by_key(&key, |(k, _)| *k)"
+    )?;
+    writeln!(out, "        .ok()")?;
+    writeln!(out, "        .map(|i| {map}[i].1)")?;
     writeln!(out, "}}")?;
     Ok(())
 }

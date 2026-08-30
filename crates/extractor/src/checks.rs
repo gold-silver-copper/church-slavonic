@@ -136,7 +136,7 @@ pub fn run_checks(
 mod harness {
     use super::{BareScore, Score, score_bare, score_slot};
     use crate::assign::split_key;
-    use crate::bootstrap::parse_phf_pairs;
+    use crate::bootstrap::parse_table_pairs;
     use crate::cells::{
         CASES, GENDERS, NUMBERS, PERSONS, Pos, VERB_BLOCKS, recension_of_tag, rule_matches,
     };
@@ -163,7 +163,7 @@ mod harness {
     fn published_keys() -> Result<Published, Box<dyn Error>> {
         let mut out = Published::new();
         for pos in Pos::ALL {
-            for (key, _) in parse_phf_pairs(generated_dir().join(pos.file_name()))? {
+            for (key, _) in parse_table_pairs(generated_dir().join(pos.file_name()))? {
                 let Some((tag, rest)) = key.split_once(':') else {
                     continue;
                 };
@@ -201,6 +201,27 @@ mod harness {
                     Degree::Comparative
                 };
                 ChurchSlavonic::adj(key, case, number, gender, &degree, r)
+            }
+            Pos::Verb if i >= 38 => {
+                let rest = i - 38;
+                let case = &CASES[rest % 7];
+                let rest = rest / 7;
+                let number = &NUMBERS[rest % 3];
+                let rest = rest / 3;
+                let gender = &GENDERS[rest % 3];
+                let rest = rest / 3;
+                let tense = if rest % 2 == 0 {
+                    Tense::Present
+                } else {
+                    Tense::Aorist
+                };
+                let (voice, series) = match rest / 2 {
+                    0 => (Voice::Active, Series::Short),
+                    1 => (Voice::Active, Series::Long),
+                    2 => (Voice::Passive, Series::Short),
+                    _ => (Voice::Passive, Series::Long),
+                };
+                ChurchSlavonic::participle(key, &tense, &voice, &series, case, number, gender, r)
             }
             Pos::Verb => {
                 let (person, number, tense, form) = if i < 36 {
@@ -475,6 +496,15 @@ mod harness {
                     .map(|k| produce(key.pos, k, i, &recension))
                     .collect();
                 let hit = score_slot(&mut report.recall, &attested, &produced, same);
+                for a in &attested {
+                    if !produced.iter().any(|p| same(a, p)) {
+                        let _ = writeln!(
+                            report.misses,
+                            "{}\t{}\t{}\t{}\tunreachable-form",
+                            key.lemma, i, a, produced.join(", ")
+                        );
+                    }
+                }
                 let bare_hit = score_bare(
                     &mut report.bare,
                     &produced[0],

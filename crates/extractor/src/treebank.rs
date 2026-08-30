@@ -32,7 +32,7 @@
 //! subjunctive, a passive or declined participle, a reflexive pronoun, an
 //! ambiguous `Case=Dat,Gen`) skips the token and is counted by reason.
 
-use crate::cells::{GENDERS, Pos, adj_cell, noun_cell, pronoun_cell, verb_cell};
+use crate::cells::{GENDERS, Pos, adj_cell, noun_cell, participle_cell, pronoun_cell, verb_cell};
 use church_slavonic_core::grammar::*;
 use std::collections::BTreeMap;
 use std::error::Error;
@@ -312,23 +312,36 @@ fn ud_token(
                     verb_cell(&person, &number, &tense, &verb_form)
                 }
                 Some(&"Part") => {
-                    if feats.get("Voice") == Some(&"Pass") {
-                        return corpus.skip("verb: passive participle");
-                    }
-                    if feats.get("Variant") != Some(&"Short") {
-                        return corpus.skip("verb: long-series participle");
-                    }
-                    let citation = number == Number::Singular
-                        && feats.get("Case") == Some(&"Nom")
-                        && genders.contains(&Gender::Masculine);
-                    if !citation {
-                        return corpus.skip("verb: participle declension");
-                    }
-                    match feats.get("Tense") {
-                        Some(&"Pres") => Some(36),
-                        Some(&"Past") => Some(37),
+                    let voice = if feats.get("Voice") == Some(&"Pass") {
+                        Voice::Passive
+                    } else {
+                        Voice::Active
+                    };
+                    let series = if feats.get("Variant") == Some(&"Short") {
+                        Series::Short
+                    } else {
+                        Series::Long
+                    };
+                    let tense = match feats.get("Tense") {
+                        Some(&"Pres") => Tense::Present,
+                        Some(&"Past") => Tense::Aorist,
                         _ => return corpus.skip("verb: participle without a tense"),
+                    };
+                    let Some(case) = case(corpus) else { return };
+                    let genders = if genders.is_empty() {
+                        GENDERS.to_vec()
+                    } else {
+                        genders
+                    };
+                    for gender in genders {
+                        corpus.slots.push(CorpusSlot {
+                            lemma: lemma.clone(),
+                            pos: Pos::Verb,
+                            cell: participle_cell(&voice, &series, &tense, &gender, &number, &case),
+                            surface: surface.clone(),
+                        });
                     }
+                    return;
                 }
                 Some(&"Inf") => return corpus.skip("verb: infinitive (the lemma itself)"),
                 Some(&"PartRes") => return corpus.skip("verb: l-participle"),
@@ -677,26 +690,38 @@ fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphol
                     verb_cell(&person, &number, &tense, &verb_form)
                 }
                 'p' => {
-                    if voice == 'p' {
-                        return corpus.skip("verb: passive participle");
-                    }
-                    if strength == 'w' {
-                        return corpus.skip("verb: long-series participle");
-                    }
-                    if strength != 's' {
-                        return corpus.skip("verb: participle strength unspecified");
-                    }
-                    let citation = number == Number::Singular
-                        && case_letter == 'n'
-                        && genders.contains(&Gender::Masculine);
-                    if !citation {
-                        return corpus.skip("verb: participle declension");
-                    }
-                    match tense {
-                        'p' => Some(36),
-                        'u' | 'a' => Some(37),
+                    let part_voice = if voice == 'p' {
+                        Voice::Passive
+                    } else {
+                        Voice::Active
+                    };
+                    let series = match strength {
+                        's' => Series::Short,
+                        'w' => Series::Long,
+                        _ => return corpus.skip("verb: participle strength unspecified"),
+                    };
+                    let part_tense = match tense {
+                        'p' => Tense::Present,
+                        'u' | 'a' => Tense::Aorist,
                         _ => return corpus.skip("verb: participle without a tense"),
+                    };
+                    let Some(case) = case(corpus) else { return };
+                    for gender in &genders {
+                        corpus.slots.push(CorpusSlot {
+                            lemma: lemma.clone(),
+                            pos: Pos::Verb,
+                            cell: participle_cell(
+                                &part_voice,
+                                &series,
+                                &part_tense,
+                                gender,
+                                &number,
+                                &case,
+                            ),
+                            surface: surface.clone(),
+                        });
                     }
+                    return;
                 }
                 'n' => return corpus.skip("verb: infinitive (the lemma itself)"),
                 's' => return corpus.skip("verb: subjunctive"),
@@ -822,7 +847,8 @@ mod tests {
             .map(|s| (s.pos, s.cell, s.lemma.as_str()))
             .collect();
         assert_eq!(cells[0], (Pos::Verb, 28, "оставити"));
-        assert_eq!(cells[1], (Pos::Verb, 37, "ити"));
+        // The declined-participle cell: short active past, m nom sg (38 + 63).
+        assert_eq!(cells[1], (Pos::Verb, 101, "ити"));
         assert_eq!(cells[2], (Pos::Noun, 3, "даръ"));
         assert_eq!(cells[3].2, "новꙑи");
         assert_eq!(

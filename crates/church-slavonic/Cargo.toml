@@ -1,6 +1,6 @@
 [package]
 name = "church-slavonic"
-version = "0.4.0"
+version = "0.6.0"
 authors.workspace = true
 edition.workspace = true
 # src/lib.rs uses let-chains (`&& let ...`), stabilized in 1.88.
@@ -22,7 +22,6 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 church-slavonic-core = { workspace = true }
-phf = { workspace = true }
 unicode-normalization = { workspace = true }
 
 [lints]

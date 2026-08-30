@@ -10,9 +10,18 @@
 //! - adjective (126): `((degree * 3 + gender) * 3 + number) * 7 + case`,
 //!   degrees `Positive, Comparative` (the superlative is always the rule's
 //!   `пре-` prefix), genders `Masculine, Feminine, Neuter`;
-//! - verb (38): four 9-cell finite blocks `Present, Imperfect, Aorist,
-//!   Imperative` indexed `number * 3 + person`, then the present active
-//!   participle citation (36) and the past active participle citation (37);
+//! - verb (542): four 9-cell finite blocks `Present, Imperfect, Aorist,
+//!   Imperative` indexed `number * 3 + person`, the present active
+//!   participle citation (36) and the past active participle citation (37)
+//!   — these 38 cells are FROZEN — then the declined participle block at
+//!   `38 + (((series * 2 + tense) * 3 + gender) * 3 + number) * 7 + case`,
+//!   series `Short-Active, Long-Active, Short-Passive, Long-Passive`,
+//!   tenses `Present, Past`, genders/numbers/cases in the adjective order
+//!   (504 cells), and four PARTICIPLE-STEM cells (542 present active, 543
+//!   past active, 544 present passive, 545 past passive) — a stem the
+//!   extractor derived from the attested declension, which the runtime
+//!   expands through the same declension rule, so a verb with a regular
+//!   declension of an irregular stem costs four cells, not five hundred;
 //!   the infinitive is the lemma itself;
 //! - pronoun (90): the closed personal matrix — first person `number * 6 +
 //!   case` (0..18), second person likewise at 18.., third person
@@ -23,6 +32,7 @@
 use church_slavonic_core::ChurchSlavonicCore;
 use church_slavonic_core::grammar::*;
 use church_slavonic_core::orthography::{comparison_key, realise};
+pub use church_slavonic_core::verb::Conj;
 
 pub const CASES: [Case; 7] = [
     Case::Nominative,
@@ -76,6 +86,46 @@ pub fn adj_cell(case: &Case, number: &Number, gender: &Gender, degree: &Degree) 
     Some(((degree * 3 + *gender as usize) * 3 + *number as usize) * 7 + *case as usize)
 }
 
+/// The declined-participle block: cells 38.. of the verb row. `tense` is
+/// collapsed to present/past (`Imperfect` and `Aorist` are both the past
+/// participle, as in [`verb_cell`]).
+pub fn participle_cell(
+    voice: &Voice,
+    series: &Series,
+    tense: &Tense,
+    gender: &Gender,
+    number: &Number,
+    case: &Case,
+) -> usize {
+    let series = match (voice, series) {
+        (Voice::Active, Series::Short) => 0,
+        (Voice::Active, Series::Long) => 1,
+        (Voice::Passive, Series::Short) => 2,
+        (Voice::Passive, Series::Long) => 3,
+    };
+    let tense = match tense {
+        Tense::Present => 0,
+        Tense::Imperfect | Tense::Aorist => 1,
+    };
+    38 + (((series * 2 + tense) * 3 + *gender as usize) * 3 + *number as usize) * 7
+        + *case as usize
+}
+
+/// The four participle-stem cells: a derived stem, not an attested form.
+pub fn participle_stem_cell(voice: &Voice, tense: &Tense) -> usize {
+    542 + match (voice, tense) {
+        (Voice::Active, Tense::Present) => 0,
+        (Voice::Active, _) => 1,
+        (Voice::Passive, Tense::Present) => 2,
+        (Voice::Passive, _) => 3,
+    }
+}
+
+/// The present-stem override cell: a derived stem, not an attested form.
+pub const PRESENT_STEM_CELL: usize = 546;
+/// The conjugation-class override cell: a class token, not a form.
+pub const VERB_CLASS_CELL: usize = 547;
+
 pub fn verb_cell(person: &Person, number: &Number, tense: &Tense, form: &Form) -> Option<usize> {
     let block = match (tense, form) {
         (Tense::Present, Form::Finite) => 0,
@@ -102,6 +152,65 @@ pub fn pronoun_cell(person: &Person, number: &Number, gender: &Gender, case: &Ca
     }
 }
 
+/// The verb row as the runtime would answer it under a class/present-stem
+/// override (cells 546/547): every finite, imperative, citation and
+/// declined-participle cell, realised like [`Pos::predict`]. Cells the
+/// override machinery never touches (the stem and override cells) stay
+/// empty.
+pub fn predict_verb_override(
+    lemma: &str,
+    class: Option<&str>,
+    present: Option<&str>,
+    recension: &Recension,
+) -> Vec<String> {
+    let realised = realise(lemma, recension);
+    let mut out = vec![String::new(); Pos::Verb.arity()];
+    for (tense, form) in &VERB_BLOCKS {
+        for number in &NUMBERS {
+            for person in &PERSONS {
+                if let Some(i) = verb_cell(person, number, tense, form) {
+                    out[i] = ChurchSlavonicCore::verb_from_stems(
+                        &realised, class, present, person, number, tense, form, recension,
+                    );
+                }
+            }
+        }
+    }
+    for (i, tense) in [(36usize, Tense::Present), (37, Tense::Aorist)] {
+        out[i] = ChurchSlavonicCore::verb_from_stems(
+            &realised,
+            class,
+            present,
+            &Person::Third,
+            &Number::Singular,
+            &tense,
+            &Form::Participle,
+            recension,
+        );
+    }
+    for voice in &[Voice::Active, Voice::Passive] {
+        for series in &[Series::Short, Series::Long] {
+            for tense in &[Tense::Present, Tense::Aorist] {
+                for gender in &GENDERS {
+                    for number in &NUMBERS {
+                        for case in &CASES {
+                            out[participle_cell(voice, series, tense, gender, number, case)] =
+                                ChurchSlavonicCore::participle_with_override(
+                                    &realised, class, present, tense, voice, series, case,
+                                    number, gender, recension,
+                                );
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for cell in &mut out {
+        *cell = realise(cell, recension);
+    }
+    out
+}
+
 /// The four parts of speech the tables cover.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Pos {
@@ -118,7 +227,7 @@ impl Pos {
         match self {
             Pos::Noun => 21,
             Pos::Adj => 126,
-            Pos::Verb => 38,
+            Pos::Verb => 548,
             Pos::Pronoun => 90,
         }
     }
@@ -204,6 +313,24 @@ impl Pos {
                 };
                 out[36] = participle(&Tense::Present);
                 out[37] = participle(&Tense::Aorist);
+                for voice in &[Voice::Active, Voice::Passive] {
+                    for series in &[Series::Short, Series::Long] {
+                        for tense in &[Tense::Present, Tense::Aorist] {
+                            for gender in &GENDERS {
+                                for number in &NUMBERS {
+                                    for case in &CASES {
+                                        out[participle_cell(
+                                            voice, series, tense, gender, number, case,
+                                        )] = ChurchSlavonicCore::participle(
+                                            lemma, tense, voice, series, case, number, gender,
+                                            recension,
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             Pos::Pronoun => {
                 for person in &PERSONS {
@@ -293,7 +420,49 @@ mod tests {
             assert!(!seen[i]);
             seen[i] = true;
         }
+        for v in [Voice::Active, Voice::Passive] {
+            for sr in [Series::Short, Series::Long] {
+                for t in [Tense::Present, Tense::Aorist] {
+                    for g in &GENDERS {
+                        for n in &NUMBERS {
+                            for c in &CASES {
+                                let i = participle_cell(&v, &sr, &t, g, n, c);
+                                assert!(!seen[i]);
+                                seen[i] = true;
+                            }
+                        }
+                    }
+                }
+            }
+            for t in [Tense::Present, Tense::Aorist] {
+                let i = participle_stem_cell(&v, &t);
+                assert!(!seen[i]);
+                seen[i] = true;
+            }
+        }
+        for i in [PRESENT_STEM_CELL, VERB_CLASS_CELL] {
+            assert!(!seen[i]);
+            seen[i] = true;
+        }
         assert!(seen.iter().all(|s| *s));
+        assert_eq!(
+            participle_cell(
+                &Voice::Active,
+                &Series::Short,
+                &Tense::Imperfect,
+                &Gender::Masculine,
+                &Number::Singular,
+                &Case::Nominative
+            ),
+            participle_cell(
+                &Voice::Active,
+                &Series::Short,
+                &Tense::Aorist,
+                &Gender::Masculine,
+                &Number::Singular,
+                &Case::Nominative
+            )
+        );
         assert_eq!(
             verb_cell(
                 &Person::First,

@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.6.0 — class cells and the slice tables
+
+### Added
+- Per-verb conjugation-class and present-stem override cells (546/547):
+  derived facts, inferred by the extractor from the attested present cells
+  and validated form by form, that re-run the finite (and present
+  participle) rule with the verb's true class — a misclassed verb's finite
+  block collapses to two cells. The runtime resolves exact cell -> bare
+  row's cell -> class/present-stem override (own, else the bare row's) ->
+  rule, and every audit mirrors that order.
+
+### Changed
+- The generated tables are sorted static slices looked up by binary search;
+  the `phf` dependency is gone. Same information, simpler artifact:
+  byte-identical accuracy output, table-hit throughput unchanged (~6.8M
+  pronoun calls/s), and the runtime crate rebuilds faster (0.65s against
+  1.46s on a table touch).
+
+## 0.5.0 — declined participles
+
+### Added
+- The full declined participle system: present and past, active and
+  passive, short and long series, over the adjective-style agreement
+  features. New facade call `ChurchSlavonic::participle(key, &tense,
+  &voice, &series, &case, &number, &gender, &recension)` with the new
+  `Voice` and `Series` enums; `verb(..., Form::Participle)` still returns
+  the two citation cells. The verb schema grows append-only from 38 to 546
+  cells: 504 declined-participle cells and four participle-STEM cells the
+  extractor derives from the attested declensions — a regular declension of
+  an irregular stem costs four cells, not five hundred, and the runtime
+  expands the stem through the same declension rule.
+- Table sources for the new cells: the Kaikki participle sub-tables read in
+  full, Polyakov's participle declensions (corpus-frequency gated at ≥5 —
+  its hapax analyses are where OCR and analysis noise lives; the citation
+  cells stay ungated), and the UD PROIEL train split under the existing
+  gates. The two treebank evaluations score the declined cells too.
+- Participle rules per recension: the OCS long-series shapes (`-щиимь`,
+  `-щиꙗ`, `-щеи`), the Synodal print's own mixed declension for the active
+  stems (Alypy pp. 95–96: `-щагѡ` but `-щихъ`), citation contractions
+  derived from the stem (`-ѫщ` -> `-ꙑ`, `-ꙋщ` -> `-ый`), and reflexive
+  participles.
+
+### Changed
+- The generated sparse rows index cells as `u16` (the schema outgrew
+  `u8`); `check-registry`'s dead-weight audit is stem-aware.
+
 ## 0.4.0 — the english-parity release (breaking)
 
 The workspace is rebuilt in the shape of `gold-silver-copper/english`: four
