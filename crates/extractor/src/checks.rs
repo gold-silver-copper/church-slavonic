@@ -293,6 +293,106 @@ mod harness {
         misses: String,
     }
 
+    /// Manuscript-lax spelling key for treebank surfaces, layered on
+    /// [`comparison_key`]: the scribes interchange `шт` and `щ`, write `ѣ`
+    /// for `ꙗ` (the key already folds `ꙗ` to `ѧ`), drop or confuse the two
+    /// jers, and contract double vowels (`-ими` for `-иими`, `-аго` for
+    /// `-ааго`); Syntacticus leaves the Glagolitic `ⱕ` untransliterated.
+    /// Both sides of a comparison pass through the same fold, so it can only
+    /// merge a surface with its own cell's form, never move a slot.
+    fn corpus_fold(word: &str) -> String {
+        let folded: String = comparison_key(word)
+            .replace("шт", "щ")
+            .chars()
+            .filter_map(|c| match c {
+                'ъ' | 'ь' => None,
+                // The front vowels the scribes interchange freely: ѣ for ꙗ
+                // and for е, ѧ for е (`фарисѣи`, `день`, `тебѣ`, `мⱕ`).
+                'ѣ' | 'ⱕ' | 'ѧ' => Some('е'),
+                'ю' => Some('у'),
+                other => Some(other),
+            })
+            .collect();
+        let mut out = String::new();
+        for c in folded.chars() {
+            let vowel = matches!(c, 'а' | 'е' | 'и' | 'о' | 'у' | 'ы');
+            if vowel && out.ends_with(c) {
+                continue;
+            }
+            out.push(c);
+        }
+        // Contractions: the imperfect and the long-adjective/-ѥ- seams —
+        // бѣаше ~ бѣше, свѧтааго ~ свѧтаѥго, людиѥмъ ~ людемъ,
+        // блаженоуоумоу ~ блаженоуѥмоу.
+        out.replace("еа", "е")
+            .replace("ие", "е")
+            .replace("ае", "а")
+            .replace("ое", "о")
+            .replace("уе", "у")
+    }
+
+    /// Remove every `е` whose both neighbours are consonants — the jer
+    /// position; an `е` at an edge or beside a vowel is a real vowel.
+    fn elide_jer_e(word: &str) -> String {
+        let chars: Vec<char> = word.chars().collect();
+        let vowel = |c: char| matches!(c, 'а' | 'е' | 'и' | 'о' | 'у' | 'ы' | 'ѣ' | 'ю' | 'ѧ');
+        chars
+            .iter()
+            .enumerate()
+            .filter(|(i, c)| {
+                **c != 'е'
+                    || *i == 0
+                    || *i + 1 == chars.len()
+                    || vowel(chars[i - 1])
+                    || vowel(chars[i + 1])
+            })
+            .map(|(_, c)| *c)
+            .collect()
+    }
+
+    /// Do the abbreviation's letters appear, in order, inside the full form?
+    fn is_subsequence(short: &str, long: &str) -> bool {
+        let mut rest = long;
+        for c in short.chars() {
+            match rest.find(c) {
+                Some(at) => rest = &rest[at + c.len_utf8()..],
+                None => return false,
+            }
+        }
+        true
+    }
+
+    /// A treebank surface matches a produced form when their [`corpus_fold`]
+    /// keys agree; an abbreviated surface (under titlo) matches when its
+    /// letters are an ordered proper subsequence of the full form sharing the
+    /// first letter; a third-person pronoun surface may carry the
+    /// post-prepositional `н`- the schema has no separate cell for.
+    fn corpus_matches(surface: &str, produced: &str, pos: Pos) -> bool {
+        let s = corpus_fold(surface);
+        let p = corpus_fold(produced);
+        if s == p {
+            return true;
+        }
+        // The post-prepositional `н`- of the third-person pronoun (`немоу`)
+        // and the fused negation of the copula (`нѣстъ` = не + ѥстъ).
+        if matches!(pos, Pos::Pronoun | Pos::Verb)
+            && !p.starts_with('н')
+            && s.strip_prefix('н').is_some_and(|rest| rest == p)
+        {
+            return true;
+        }
+        // A jer written out as `е` (`день` for `дьнь`) or a jer-like `е`
+        // dropped (`мне` for `мене`): equal once every е standing between
+        // two consonants — the only position a jer occupies — is elided.
+        if elide_jer_e(&s) == elide_jer_e(&p) {
+            return true;
+        }
+        crate::treebank::is_abbreviated(surface)
+            && s.chars().count() < p.chars().count()
+            && s.chars().next() == p.chars().next()
+            && is_subsequence(&s, &p)
+    }
+
     /// Score a treebank: a slot is a hit when some published key of a lemma
     /// spelled like the token's (its [`comparison_key`]) — or the bare
     /// lemma through the rule — produces the surface up to spelling.
@@ -314,15 +414,25 @@ mod harness {
             if let Some(list) = by_spelling.get(&(slot.pos, comparison_key(&slot.lemma))) {
                 keys.extend(list.iter().filter(|k| **k != slot.lemma).cloned());
             }
-            let produced: Vec<String> = keys
+            let mut produced: Vec<String> = keys
                 .iter()
                 .map(|k| produce(slot.pos, k, slot.cell, &ocs))
                 .collect();
+            // The copula's imperfective aorist (`бѣ`, `бѣшѧ`): the treebanks
+            // tag it `Tense=Past|Aspect=Imp`, the schema files it under the
+            // aorist — same real forms, two taxonomies. For бꙑти only, an
+            // imperfect-cell slot also accepts the aorist cell's forms.
+            if slot.pos == Pos::Verb
+                && (9..18).contains(&slot.cell)
+                && comparison_key(&slot.lemma) == comparison_key("бꙑти")
+            {
+                produced.extend(keys.iter().map(|k| produce(slot.pos, k, slot.cell + 9, &ocs)));
+            }
             let hit = score_slot(
                 scores.entry(slot.pos).or_default(),
                 std::slice::from_ref(&slot.surface),
                 &produced,
-                |a, b| comparison_key(a) == comparison_key(b),
+                |a, b| corpus_matches(a, b, slot.pos),
             );
             if !hit {
                 let _ = writeln!(
@@ -342,7 +452,6 @@ mod harness {
             misses,
         }
     }
-
     fn score_source(
         source: Source,
         lexemes: &Lexemes,

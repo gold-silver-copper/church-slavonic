@@ -85,6 +85,9 @@ impl ChurchSlavonicCore {
         recension: &Recension,
     ) -> String {
         let synodal = *recension == Recension::Synodal;
+        if let Some(answer) = Self::irregular(word, person, number, tense, form, recension) {
+            return answer;
+        }
         let s = Self::stems(word, recension);
         let cell = Self::person_cell(person, number);
         match (tense, form) {
@@ -98,8 +101,9 @@ impl ChurchSlavonicCore {
                     (Conj::Second, false) => &PRESENT_SECOND.0,
                     (Conj::Second, true) => &PRESENT_SECOND.1,
                 };
-                // The Synodal second conjugation iotates its first singular.
-                if s.conj == Conj::Second && synodal && cell == 0 {
+                // The second conjugation iotates its first singular in
+                // both recensions (`виждѫ`/`вижду`, `люблѭ`/`люблю`).
+                if s.conj == Conj::Second && cell == 0 {
                     return Self::attach(&iotate(&s.present), row[cell], recension);
                 }
                 Self::attach(&s.present, row[cell], recension)
@@ -110,12 +114,29 @@ impl ChurchSlavonicCore {
                 Self::attach(&stem, &format!("{marker}{}", row[cell]), recension)
             }
             (Tense::Aorist, Form::Finite) => {
-                let row = match (s.conj == Conj::Hard, synodal) {
+                // The ox grades belong to consonant stems; a vowel-final
+                // infinitive stem (`забꙑ-`, `обꙑкнѫ-`) takes the sigmatic
+                // row whatever its present class.
+                let hard = s.conj == Conj::Hard
+                    && !s
+                        .infinitive
+                        .chars()
+                        .last()
+                        .is_some_and(crate::orthography::is_vowel);
+                let row = match (hard, synodal) {
                     (true, false) => &AORIST_OX.0,
                     (true, true) => &AORIST_OX.1,
                     (false, false) => &AORIST_SIGMATIC.0,
                     (false, true) => &AORIST_SIGMATIC.1,
                 };
+                // The `-ѧти`/`-ѩти` nasal stems close their 2/3 singular
+                // with `-тъ` in OCS: `начѧтъ`, `приѩтъ`.
+                if !synodal
+                    && row[cell].is_empty()
+                    && matches!(s.infinitive.chars().last(), Some('ѧ' | 'ѩ'))
+                {
+                    return format!("{}тъ", s.infinitive);
+                }
                 Self::attach(&s.infinitive, row[cell], recension)
             }
             (Tense::Present, Form::Participle) => {
@@ -134,8 +155,6 @@ impl ChurchSlavonicCore {
                 // resolve to the past active participle.
                 if s.conj == Conj::Hard {
                     format!("{}ъ", s.infinitive)
-                } else if s.conj == Conj::Second && !synodal && s.infinitive.ends_with('и') {
-                    format!("{}ь", s.present)
                 } else {
                     format!("{}въ", s.infinitive)
                 }
@@ -170,8 +189,10 @@ impl ChurchSlavonicCore {
     /// and aorist finites plus the two participles. Imperative and
     /// infinitive fall through to the regular route on the `бѫд-`/`бꙋд-`
     /// stem. The tense assignment differs per recension
-    /// (verb:copula-tense-reassignment): the OCS aorist is the `бѣхъ`
-    /// series, the Synodal aorist the `быхъ`/`бысть` series.
+    /// (verb:copula-tense-reassignment): the aorist is the `бꙑхъ`/`быхъ`
+    /// series in both recensions (the OCS `бѣ` series is the imperfective
+    /// aorist, which the treebanks file under the imperfect); the OCS 3sg
+    /// keeps the hard `бꙑстъ` against Synodal `бы́сть`.
     pub fn to_be(
         person: &Person,
         number: &Number,
@@ -196,6 +217,99 @@ impl ChurchSlavonicCore {
         })
     }
 
+    /// The athematic presents (`дати` : `дамь`, `вѣдѣти` : `вѣси`, `имѣти` :
+    /// `имаши`) and the suppletive pieces of the `ити` family (`шьдъ`) —
+    /// the cells the stem machinery cannot build. Everything else falls
+    /// through to the regular route.
+    fn irregular(
+        word: &str,
+        person: &Person,
+        number: &Number,
+        tense: &Tense,
+        form: &Form,
+        recension: &Recension,
+    ) -> Option<String> {
+        let synodal = *recension == Recension::Synodal;
+        let cell = Self::person_cell(person, number);
+        let prefix = |n: usize| -> String {
+            let len = word.chars().count().saturating_sub(n);
+            word.chars().take(len).collect()
+        };
+        if word.ends_with("дати") && !word.ends_with("ждати") && !word.ends_with("гадати") {
+            // The athematic `дам-`/`даст-` present and the `даждь`
+            // imperative; the sigmatic aorist keeps `-ст-` in 2/3 singular.
+            let p = prefix(4);
+            match (tense, form) {
+                (Tense::Present, Form::Finite) => {
+                    let row = ATHEMATIC_DA[cell];
+                    return Some(format!("{p}{row}"));
+                }
+                (_, Form::Imperative) => {
+                    if *number == Number::Singular {
+                        return Some(format!("{p}даждь"));
+                    }
+                    let cell = match (person, number) {
+                        (Person::First, Number::Singular) => 6,
+                        (Person::Third, n) => Self::person_cell(&Person::Second, n),
+                        _ => cell,
+                    };
+                    let row = if synodal {
+                        &IMPERATIVE_I.1
+                    } else {
+                        &IMPERATIVE_I.0
+                    };
+                    return Some(format!("{p}дад{}", row[cell]));
+                }
+                (Tense::Aorist, Form::Finite)
+                    if *number == Number::Singular && *person != Person::First =>
+                {
+                    return Some(format!("{p}дастъ"));
+                }
+                _ => return None,
+            }
+        }
+        if (word.ends_with("рещи") || word.ends_with("решти"))
+            && (*tense, *form) == (Tense::Aorist, Form::Finite)
+            && !synodal
+        {
+            // The root aorist of `рещи`: `рѣхъ`, `рече`, `рѣшѧ`.
+            let p = prefix(if word.ends_with("решти") { 5 } else { 4 });
+            return Some(format!("{p}{}", RESTI_AORIST[cell]));
+        }
+        if word.ends_with("вѣдѣти") {
+            let p = prefix(6);
+            match (tense, form) {
+                (Tense::Present, Form::Finite) => {
+                    return Some(format!("{p}{}", ATHEMATIC_VE[cell]));
+                }
+                (Tense::Present, Form::Participle) if !synodal => {
+                    return Some(format!("{p}вѣдꙑ"));
+                }
+                _ => return None,
+            }
+        }
+        if word.ends_with("имѣти") && (*tense, *form) == (Tense::Present, Form::Finite) {
+            // `имамь`, `имаши` — the athematic-shaped present of `имѣти`.
+            return Some(format!("{}{}", prefix(5), ATHEMATIC_IMA[cell]));
+        }
+        if let Some(p) = go_prefix(word)
+            && matches!(form, Form::Participle)
+            && matches!(tense, Tense::Aorist | Tense::Imperfect)
+        {
+            // The suppletive past active participle of `ити`: `шьдъ`,
+            // `пришьдъ` (`при` + `ити` contracts to `прити`, so the
+            // participle's prefix is not always the present stem's).
+            let p = match p.as_str() {
+                "пр" | "прии" | "при" => "при",
+                "вън" | "вьн" | "въни" => "въ",
+                "из" | "изи" => "и",
+                other => other,
+            };
+            return Some(format!("{p}ш{}дъ", if synodal { "е" } else { "ь" }));
+        }
+        None
+    }
+
     fn stems(word: &str, recension: &Recension) -> Stems {
         let synodal = *recension == Recension::Synodal;
         let stem = |n: usize| -> String {
@@ -218,6 +332,16 @@ impl ChurchSlavonicCore {
             mk(Conj::Hard, stem(3), stem(2))
         } else if word.ends_with("мѣти") {
             mk(Conj::Vowel, stem(2), stem(2))
+        } else if let Some(prefix) = go_prefix(word) {
+            // The `ити` family: the present stem `ид-` carries the present,
+            // the ox aorist (`идохъ`, `иде`) and the imperfect; the past
+            // participle `шьдъ` is suppletive (see `irregular`).
+            let id = format!("{prefix}ид");
+            mk(Conj::Hard, id.clone(), id)
+        } else if word.ends_with("хотѣти") {
+            // The mixed conjugation: first-conjugation iotated present
+            // (`хощеши`) on the second-conjugation infinitive stem.
+            mk(Conj::Iotated, iotate(&stem(3)), stem(2))
         } else if synodal
             && word.ends_with("ити")
             && !stem(3).chars().any(crate::orthography::is_vowel)
@@ -231,7 +355,10 @@ impl ChurchSlavonicCore {
             || (word.ends_with("ати") && husher)
         {
             mk(Conj::Second, stem(3), stem(2))
-        } else if word.ends_with("ати") || word.ends_with("ꙗти") || word.ends_with("ѧти")
+        } else if word.ends_with("ати")
+            || word.ends_with("ꙗти")
+            || word.ends_with("ѧти")
+            || word.ends_with("ѩти")
         {
             mk(Conj::Vowel, stem(2), stem(2))
         } else if synodal && word.ends_with("сти") {
@@ -281,6 +408,36 @@ impl ChurchSlavonicCore {
         }
     }
 }
+
+/// The prefix of an `ити`-family lemma (`ити`, `прити`, `вънити`,
+/// `изити`, `отити`...), or `None` when the word is not one — the head
+/// before `-ити` must be a known preverb, so `ходити` or `бити` never
+/// match.
+fn go_prefix(word: &str) -> Option<String> {
+    let head = word.strip_suffix("ити")?;
+    const PREVERBS: [&str; 18] = [
+        "", "по", "пр", "прии", "при", "вън", "вьн", "въни", "из", "изи", "от", "до", "на", "за",
+        "прѣ", "мимо", "съ", "об",
+    ];
+    PREVERBS
+        .contains(&head)
+        .then(|| head.to_string())
+}
+
+// The athematic present rows, full forms after the preverb: singular 1 2 3,
+// dual 1 2 3, plural 1 2 3.
+const ATHEMATIC_DA: Row = [
+    "дамь", "даси", "дастъ", "давѣ", "даста", "дасте", "дамъ", "дасте", "дадѧтъ",
+];
+const RESTI_AORIST: Row = [
+    "рѣхъ", "рече", "рече", "рѣховѣ", "рѣста", "рѣсте", "рѣхомъ", "рѣсте", "рѣшѧ",
+];
+const ATHEMATIC_VE: Row = [
+    "вѣмь", "вѣси", "вѣстъ", "вѣвѣ", "вѣста", "вѣсте", "вѣмъ", "вѣсте", "вѣдѧтъ",
+];
+const ATHEMATIC_IMA: Row = [
+    "имамь", "имаши", "иматъ", "имавѣ", "имата", "имате", "имамъ", "имате", "имѫтъ",
+];
 
 /// The Slavonic iotation of a stem-final consonant (before the first
 /// singular `-ю` and the Synodal imperfect `-ѧ-`/`-а-`): `т`/`ст`/`ск` ->
@@ -430,15 +587,15 @@ const BE_IMPERFECT: (Row, Row) = (
 );
 const BE_AORIST: (Row, Row) = (
     [
-        "бѣхъ",
-        "бѣ",
-        "бѣ",
-        "бѣховѣ",
-        "бѣста",
-        "бѣсте",
-        "бѣхомъ",
-        "бѣсте",
-        "бѣшѧ",
+        "бꙑхъ",
+        "бꙑстъ",
+        "бꙑстъ",
+        "бꙑховѣ",
+        "бꙑста",
+        "бꙑсте",
+        "бꙑхомъ",
+        "бꙑсте",
+        "бꙑшѧ",
     ],
     [
         "бы́хъ",
@@ -634,7 +791,7 @@ mod tests {
                 Form::Participle,
                 OCS
             ),
-            "хваль"
+            "хваливъ"
         );
         assert_eq!(
             v(
@@ -730,7 +887,7 @@ mod tests {
         );
         assert_eq!(
             v("бꙑти", Third, Singular, Tense::Aorist, Form::Finite, OCS),
-            "бѣ"
+            "бꙑстъ"
         );
         assert_eq!(
             v("быти", Third, Singular, Tense::Aorist, Form::Finite, SYN),

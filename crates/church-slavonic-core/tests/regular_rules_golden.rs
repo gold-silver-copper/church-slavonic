@@ -346,7 +346,7 @@ fn regular_verb_conjugations() {
             Singular,
             Tense::Present,
             fin,
-            "имѣеши",
+            "имаши",
         ),
         (
             "цѣловати",
@@ -543,7 +543,7 @@ fn regular_verb_conjugations() {
             Singular,
             Tense::Aorist,
             Form::Participle,
-            "хваль",
+            "хваливъ",
         ),
         (
             "хвалити",
@@ -654,7 +654,7 @@ fn regular_verb_conjugations() {
         ("быти", SYN, First, Plural, Tense::Present, fin, "є҆смы̀"),
         ("бꙑти", OCS, First, Singular, Tense::Imperfect, fin, "бѣахъ"),
         ("быти", SYN, First, Singular, Tense::Imperfect, fin, "бѧ́хъ"),
-        ("бꙑти", OCS, Third, Plural, Tense::Aorist, fin, "бѣшѧ"),
+        ("бꙑти", OCS, Third, Plural, Tense::Aorist, fin, "бꙑшѧ"),
         ("быти", SYN, Third, Plural, Tense::Aorist, fin, "бы́ша"),
         ("быти", SYN, Third, Singular, Tense::Aorist, fin, "бы́сть"),
         ("бы́ти", SYN, Third, Singular, Tense::Aorist, fin, "бы́сть"),

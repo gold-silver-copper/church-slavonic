@@ -10,12 +10,13 @@ use crate::args::Config;
 use crate::bootstrap::generate_tables;
 use crate::checks::run_checks;
 use crate::extract::{Source, disagreements, finalize, gather, gather_sources};
-use crate::{alypy, kaikki, polyakov, ruwiktionary};
+use crate::{alypy, kaikki, polyakov, ruwiktionary, treebank};
 use std::error::Error;
 use std::fs;
 use std::path::Path;
 
-/// The four pinned table sources, relative to `--sources`.
+/// The pinned table sources, relative to `--sources` (the fifth, the UD
+/// PROIEL train split, lives at `treebank::UD_PROIEL_SOURCE`).
 pub const KAIKKI_SOURCE: &str =
     "english-wiktionary-ocs/kaikki.org-dictionary-OldChurchSlavonic.jsonl";
 pub const ALYPY_SOURCE: &str = "alypy-grammar";
@@ -39,6 +40,8 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     let alypy_src = config.sources_dir.join(ALYPY_SOURCE);
     let polyakov_src = config.sources_dir.join(POLYAKOV_SOURCE);
     let ruwiktionary_src = config.sources_dir.join(RUWIKTIONARY_SOURCE);
+    let ud_proiel_out = config.artifacts_dir.join(Source::UdProiel.intermediate());
+    let ud_proiel_src = config.sources_dir.join(treebank::UD_PROIEL_SOURCE);
 
     if kaikki_src.is_file() {
         kaikki::filter(&kaikki_src, &kaikki_out)?;
@@ -59,6 +62,11 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
         ruwiktionary::filter(&ruwiktionary_src, &ruwiktionary_out)?;
     } else {
         reuse_or_fail(&ruwiktionary_out, &ruwiktionary_src)?;
+    }
+    if ud_proiel_src.is_dir() {
+        treebank::filter_train(&config.sources_dir, &config.artifacts_dir, &ud_proiel_out)?;
+    } else {
+        reuse_or_fail(&ud_proiel_out, &ud_proiel_src)?;
     }
 
     if config.checks_only {

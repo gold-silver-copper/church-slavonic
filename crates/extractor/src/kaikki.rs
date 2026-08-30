@@ -35,6 +35,19 @@ pub struct FormEntry {
 pub struct Sense {
     #[serde(default)]
     pub tags: Vec<String>,
+    #[serde(default)]
+    pub form_of: Vec<FormOf>,
+}
+
+/// The target of a `form-of` sense: the lemma the headword is a form of.
+#[derive(Debug, Clone, Deserialize)]
+pub struct FormOf {
+    pub word: String,
+}
+
+/// Is this sense a `form-of` pointer with a named target?
+pub fn is_form_of(sense: &Sense) -> bool {
+    has(&sense.tags, "form-of") && !sense.form_of.is_empty()
 }
 
 /// The parts of speech the filter keeps, in the dump's own vocabulary.
@@ -53,7 +66,9 @@ pub fn filter(dump: &Path, out: &Path) -> Result<(), Box<dyn Error>> {
         let Ok(entry) = serde_json::from_str::<Entry>(&line) else {
             continue;
         };
-        if KEPT_POS.contains(&entry.pos.as_str()) && entry.forms.iter().any(is_table_form) {
+        if KEPT_POS.contains(&entry.pos.as_str())
+            && (entry.forms.iter().any(is_table_form) || entry.senses.iter().any(is_form_of))
+        {
             writer.write_all(line.as_bytes())?;
             writer.write_all(b"\n")?;
             kept += 1;
@@ -152,6 +167,45 @@ pub fn tables(entry: &Entry) -> Vec<Table<'_>> {
         }
     }
     out
+}
+
+/// Every case the tags name (a `form-of` sense may cover several cells:
+/// "nominative/accusative dual").
+pub fn cases(tags: &[String]) -> Vec<Case> {
+    tags.iter()
+        .filter_map(|t| match t.as_str() {
+            "nominative" => Some(Case::Nominative),
+            "genitive" => Some(Case::Genitive),
+            "dative" => Some(Case::Dative),
+            "accusative" => Some(Case::Accusative),
+            "instrumental" => Some(Case::Instrumental),
+            "locative" => Some(Case::Locative),
+            "vocative" => Some(Case::Vocative),
+            _ => None,
+        })
+        .collect()
+}
+
+pub fn numbers(tags: &[String]) -> Vec<Number> {
+    tags.iter()
+        .filter_map(|t| match t.as_str() {
+            "singular" => Some(Number::Singular),
+            "dual" => Some(Number::Dual),
+            "plural" => Some(Number::Plural),
+            _ => None,
+        })
+        .collect()
+}
+
+pub fn persons(tags: &[String]) -> Vec<Person> {
+    tags.iter()
+        .filter_map(|t| match t.as_str() {
+            "first-person" => Some(Person::First),
+            "second-person" => Some(Person::Second),
+            "third-person" => Some(Person::Third),
+            _ => None,
+        })
+        .collect()
 }
 
 pub fn has(tags: &[String], wanted: &str) -> bool {

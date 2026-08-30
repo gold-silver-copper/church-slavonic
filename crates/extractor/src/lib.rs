@@ -27,9 +27,11 @@
 //! Synodal print), Polyakov's corpus-based grammatical dictionary (`syn`,
 //! every corpus-attested form with its analysis and frequency) and the
 //! Russian Wiktionary's few structured Church Slavonic tables (`syn`,
-//! [`ruwiktionary`]). A raw text corpus is not a source; the two Old Church
-//! Slavonic treebanks ([`treebank`], `checks` only) are evaluation sources
-//! whose tokens are scored and never published.
+//! [`ruwiktionary`]). A raw text corpus is not a source; of the two
+//! Old Church Slavonic treebanks ([`treebank`]) the UD PROIEL train split is
+//! a fifth table source (`ocs`, institutional grant — references/TERMS.md),
+//! while the UD dev/test splits and Syntacticus are evaluation sources
+//! (`checks` only) whose tokens are scored and never published.
 //!
 //! # Table schema (the contract with the `church-slavonic` runtime)
 //!
@@ -55,7 +57,6 @@ pub mod kaikki;
 pub mod pipeline;
 pub mod polyakov;
 pub mod ruwiktionary;
-#[cfg(feature = "checks")]
 pub mod treebank;
 
 pub use args::Config;

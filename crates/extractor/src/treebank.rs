@@ -1,16 +1,15 @@
-//! The Old Church Slavonic treebanks as EVALUATION sources (feature
-//! `checks` only): every annotated token whose lemma and features name a
-//! cell of the schema is a slot the accuracy harness scores — "corpus
-//! recall" — and nothing more.
+//! The Old Church Slavonic treebanks: the UD PROIEL **train split** is a
+//! table source under the institutional grant in `references/TERMS.md`
+//! (both treebanks are CC BY-NC-SA upstream; the grant is what permits
+//! derived cells to ship under the crate licence). The UD **dev/test
+//! splits** and Syntacticus are EVALUATION sources (feature `checks` only):
+//! every annotated token whose lemma and features name a cell of the schema
+//! is a slot the accuracy harness scores — "corpus recall".
 //!
-//! Both treebanks are CC BY-NC-SA, so their tokens must never become table
-//! cells. That is guaranteed structurally, not by policy: this module is
-//! compiled only under the `checks` feature, which the `refresh-data` build
-//! (the only path that emits tables) never enables, and its output type
-//! [`Corpus`] has no conversion into [`crate::extract::Lexemes`] — the sole
-//! input `extract::finalize`, `assign` and `bootstrap::generate_tables`
-//! accept. A corpus slot can be compared with the library's answer; it
-//! cannot be published.
+//! The held-out property is structural, not policy: [`load_ud_proiel_train`]
+//! reads only `*train*.conllu` files, and the dev/test and Syntacticus
+//! loaders are compiled only under the `checks` feature, which the
+//! `refresh-data` build (the only path that emits tables) never enables.
 //!
 //! # Sources
 //!
@@ -128,24 +127,65 @@ fn files_with_extension(
     Ok(())
 }
 
+/// A treebank surface, lowercased and with the editors' brackets removed:
+/// the transcriptions carry supplied or damaged letters as `дрѣ[вѣ]`,
+/// `въ]ньмемъ`, `христ(ос)ъ`.
+fn clean_surface(form: &str) -> String {
+    form.to_lowercase()
+        .chars()
+        .filter(|c| !matches!(c, '[' | ']' | '(' | ')'))
+        .collect()
+}
+
 // ---------------------------------------------------------------------------
 // UD CoNLL-U
 // ---------------------------------------------------------------------------
 
+/// The evaluation corpus: the **dev and test** splits only — the train
+/// split feeds tables and must never be scored as held-out.
+#[cfg(feature = "checks")]
 pub fn load_ud_proiel(
     sources_dir: &Path,
     artifacts_dir: &Path,
+) -> Result<Option<Corpus>, Box<dyn Error>> {
+    load_ud_proiel_split(
+        sources_dir,
+        artifacts_dir,
+        false,
+        "OCS (UD PROIEL r2.18 dev+test, corpus recall)",
+    )
+}
+
+/// The table-source corpus: the **train** split only (see the module docs
+/// and `references/TERMS.md`).
+pub fn load_ud_proiel_train(
+    sources_dir: &Path,
+    artifacts_dir: &Path,
+) -> Result<Option<Corpus>, Box<dyn Error>> {
+    load_ud_proiel_split(sources_dir, artifacts_dir, true, "OCS (UD PROIEL train)")
+}
+
+fn load_ud_proiel_split(
+    sources_dir: &Path,
+    artifacts_dir: &Path,
+    train: bool,
+    label: &'static str,
 ) -> Result<Option<Corpus>, Box<dyn Error>> {
     let Some(root) = unpacked(sources_dir, artifacts_dir, UD_PROIEL_SOURCE)? else {
         return Ok(None);
     };
     let mut corpus = Corpus {
-        label: "OCS (UD PROIEL r2.18, corpus recall)",
+        label,
         file_label: "ud_proiel",
         ..Corpus::default()
     };
     let mut files = Vec::new();
     files_with_extension(&root, "conllu", &mut files)?;
+    files.retain(|f| {
+        f.file_stem()
+            .and_then(|s| s.to_str())
+            .is_some_and(|s| s.ends_with("train") == train)
+    });
     for file in files {
         for line in fs::read_to_string(&file)?.lines() {
             let fields: Vec<&str> = line.split('\t').collect();
@@ -210,7 +250,7 @@ fn ud_token(
         })
         .unwrap_or_default();
     let lemma = lemma.to_lowercase();
-    let surface = form.to_lowercase();
+    let surface = clean_surface(form);
     match upos {
         "NOUN" | "PROPN" => {
             let Some(case) = case(corpus) else { return };
@@ -359,9 +399,123 @@ fn adjective_lemma(lemma: &str, short: bool) -> Option<String> {
 }
 
 // ---------------------------------------------------------------------------
+// The train split as a table source
+// ---------------------------------------------------------------------------
+
+/// One aggregated attestation of the train split: a form observed `count`
+/// times in a lemma's cell, already normalised to canonical spelling.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct TrainRecord {
+    pub pos: String,
+    pub lemma: String,
+    pub cell: usize,
+    pub form: String,
+    pub count: u64,
+}
+
+/// Is the surface written under a titlo or a supralinear letter — an
+/// abbreviation whose omitted letters no mark-stripping restores? (The
+/// palatalization hook and the breathings, U+0484..U+0486, mark ordinary
+/// fully-written words and do not count.)
+pub fn is_abbreviated(surface: &str) -> bool {
+    surface.chars().any(|c| {
+        matches!(c, '\u{0346}' | '\u{0483}' | '\u{0487}'..='\u{0489}' | '\u{2DE0}'..='\u{2DFF}' | '\u{A66F}')
+    })
+}
+
+/// Filter the UD PROIEL train split into `out`: normalised, counted
+/// attestations, one JSON line per (pos, lemma, cell, form). A token under a
+/// titlo (an abbreviation, not a form), a surface or lemma that is not one
+/// canonical Cyrillic word after mark-stripping and realisation, or a junk
+/// lemma is skipped and counted by reason. The frequency GATE is not applied
+/// here — it is extraction policy (see `extract::gather_ud_proiel`).
+pub fn filter_train(
+    sources_dir: &Path,
+    artifacts_dir: &Path,
+    out: &Path,
+) -> Result<(), Box<dyn Error>> {
+    use church_slavonic_core::orthography::{realise, strip_marks};
+    let Some(corpus) = load_ud_proiel_train(sources_dir, artifacts_dir)? else {
+        return Err(format!(
+            "no UD PROIEL source under {} — download it or pass `--sources DIR`.",
+            sources_dir.display()
+        )
+        .into());
+    };
+    let ocs = Recension::OldChurchSlavonic;
+    let mut counts: BTreeMap<(Pos, String, usize, String), u64> = BTreeMap::new();
+    let mut skipped: BTreeMap<&'static str, u64> = BTreeMap::new();
+    let mut kept = 0u64;
+    for slot in &corpus.slots {
+        if is_abbreviated(&slot.surface) {
+            *skipped.entry("token under a titlo").or_default() += 1;
+            continue;
+        }
+        // The payerok stands for a jer the scribe superscripted (`имꙿ`).
+        let form = realise(&strip_marks(&slot.surface).replace('ꙿ', "ъ"), &ocs);
+        if !crate::extract::word_is_proper(&form) {
+            *skipped.entry("surface is not one canonical word").or_default() += 1;
+            continue;
+        }
+        let lemma = if slot.pos == Pos::Pronoun {
+            slot.lemma.clone()
+        } else {
+            let lemma = realise(&strip_marks(&slot.lemma), &ocs);
+            if !crate::extract::word_is_proper(&lemma) {
+                *skipped.entry("lemma is not one canonical word").or_default() += 1;
+                continue;
+            }
+            lemma
+        };
+        kept += 1;
+        *counts
+            .entry((slot.pos, lemma, slot.cell, form))
+            .or_default() += 1;
+    }
+    let mut writer = String::new();
+    for ((pos, lemma, cell, form), count) in &counts {
+        writer.push_str(&serde_json::to_string(&TrainRecord {
+            pos: pos.label().to_string(),
+            lemma: lemma.clone(),
+            cell: *cell,
+            form: form.clone(),
+            count: *count,
+        })?);
+        writer.push('\n');
+    }
+    fs::write(out, writer)?;
+    println!(
+        "Filtered UD PROIEL train: {} tokens, {} slot attestations kept ({} distinct), {} skipped:{} into {}",
+        corpus.tokens,
+        kept,
+        counts.len(),
+        skipped.values().sum::<u64>() + corpus.skipped_total(),
+        skipped
+            .iter()
+            .map(|(reason, n)| format!(" {reason}={n};"))
+            .collect::<String>(),
+        out.display()
+    );
+    Ok(())
+}
+
+/// Read a filtered train intermediate back.
+pub fn read_train(path: &Path) -> Result<Vec<TrainRecord>, Box<dyn Error>> {
+    let mut out = Vec::new();
+    for line in fs::read_to_string(path)?.lines() {
+        if line.trim().is_empty() {
+            continue;
+        }
+        out.push(serde_json::from_str(line)?);
+    }
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
 // PROIEL XML (Syntacticus)
 // ---------------------------------------------------------------------------
 
+#[cfg(feature = "checks")]
 pub fn load_syntacticus(
     sources_dir: &Path,
     artifacts_dir: &Path,
@@ -413,6 +567,7 @@ pub fn load_syntacticus(
     Ok(Some(corpus))
 }
 
+#[cfg_attr(not(feature = "checks"), allow(dead_code))]
 fn unescape(text: &str) -> String {
     text.replace("&amp;", "&")
         .replace("&lt;", "<")
@@ -421,6 +576,7 @@ fn unescape(text: &str) -> String {
         .replace("&apos;", "'")
 }
 
+#[cfg_attr(not(feature = "checks"), allow(dead_code))]
 fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphology: &str) {
     if !matches!(pos, "Nb" | "Ne" | "A-" | "V-" | "Pp" | "Pk") {
         return corpus.skip("part of speech outside the four tables");
@@ -464,7 +620,7 @@ fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphol
         _ => GENDERS.to_vec(),
     };
     let lemma = lemma.to_lowercase();
-    let surface = form.to_lowercase();
+    let surface = clean_surface(form);
     match pos {
         "Nb" | "Ne" => {
             let Some(case) = case(corpus) else { return };

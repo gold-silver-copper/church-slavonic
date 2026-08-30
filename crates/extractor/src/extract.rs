@@ -170,6 +170,7 @@ pub type Lexemes = BTreeMap<LexemeKey, Vec<Observation>>;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Source {
     Kaikki,
+    UdProiel,
     Alypy,
     Polyakov,
     RuWiktionary,
@@ -179,8 +180,9 @@ impl Source {
     /// Reading order: Polyakov before Alypy and ru.wiktionary, so their
     /// paradigms merge into the corpus observation of the same lemma (see the
     /// module docs).
-    pub const ALL: [Source; 4] = [
+    pub const ALL: [Source; 5] = [
         Source::Kaikki,
+        Source::UdProiel,
         Source::Polyakov,
         Source::Alypy,
         Source::RuWiktionary,
@@ -189,6 +191,7 @@ impl Source {
     pub fn intermediate(self) -> &'static str {
         match self {
             Source::Kaikki => "kaikki.jsonl",
+            Source::UdProiel => "ud_proiel.jsonl",
             Source::Alypy => "alypy.jsonl",
             Source::Polyakov => "polyakov.jsonl",
             Source::RuWiktionary => "ruwiktionary.jsonl",
@@ -198,6 +201,7 @@ impl Source {
     pub fn label(self) -> &'static str {
         match self {
             Source::Kaikki => "kaikki",
+            Source::UdProiel => "ud_proiel_train",
             Source::Alypy => "alypy",
             Source::Polyakov => "polyakov",
             Source::RuWiktionary => "ruwiktionary",
@@ -209,6 +213,7 @@ impl Source {
     pub fn recension_label(self) -> &'static str {
         match self {
             Source::Kaikki => "OCS",
+            Source::UdProiel => "OCS (UD PROIEL train)",
             Source::Alypy => "Synodal (Alypy)",
             Source::Polyakov => "Synodal (Polyakov)",
             Source::RuWiktionary => "Synodal (ru.wiktionary)",
@@ -263,9 +268,18 @@ fn gather_with(
         }
         match source {
             Source::Kaikki => {
-                for entry in kaikki::read(&path)? {
-                    gather_kaikki_entry(&entry, &mut lexemes);
+                // Lemma pages first, then the standalone `form-of` pages,
+                // whose attestations merge into the lemmas' observations.
+                let entries = kaikki::read(&path)?;
+                for entry in &entries {
+                    gather_kaikki_entry(entry, &mut lexemes);
                 }
+                for entry in &entries {
+                    gather_kaikki_form_of(entry, &mut lexemes, skips);
+                }
+            }
+            Source::UdProiel => {
+                gather_ud_proiel(&crate::treebank::read_train(&path)?, &mut lexemes, skips);
             }
             Source::Alypy => {
                 for table in alypy::read(&path)? {
@@ -616,6 +630,301 @@ fn gather_kaikki_entry(entry: &Entry, lexemes: &mut Lexemes) {
 
 /// A participle table: its masculine nominative singular short form is the
 /// citation cell; the feminine tells present (`-щи`) from past (`-ши`) active.
+/// The UD PROIEL train split (institutional grant — references/TERMS.md):
+/// aggregated, normalised attestations from `treebank::filter_train`. The
+/// frequency GATE lives here as policy: a (lemma, cell, form) enters only
+/// with at least [`TRAIN_MIN_COUNT`] train-split attestations — hapaxes and
+/// doubles in a hand-annotated corpus are where typos and annotation errors
+/// live. Within a cell the corpus majority is attested first, so it becomes
+/// the primary among the split's own variants. The whole observation is
+/// SOFT and separate: a corpus is a secondary witness, so its variants sort
+/// after every dictionary source's and can never take a bare key's primary
+/// from them.
+pub const TRAIN_MIN_COUNT: u64 = 3;
+
+fn gather_ud_proiel(
+    records: &[crate::treebank::TrainRecord],
+    lexemes: &mut Lexemes,
+    skips: &mut Skips,
+) {
+    use std::collections::HashMap;
+    let mut by_lemma: BTreeMap<(Pos, String), Vec<&crate::treebank::TrainRecord>> =
+        BTreeMap::new();
+    let pos_of: HashMap<&str, Pos> = [
+        ("noun", Pos::Noun),
+        ("adj", Pos::Adj),
+        ("verb", Pos::Verb),
+        ("pronoun", Pos::Pronoun),
+    ]
+    .into_iter()
+    .collect();
+    for r in records {
+        skips.forms += 1;
+        let Some(pos) = pos_of.get(r.pos.as_str()) else {
+            skips.skip("train: unknown part of speech");
+            continue;
+        };
+        if r.cell >= pos.arity() {
+            skips.skip("train: cell outside the schema");
+            continue;
+        }
+        if r.count < TRAIN_MIN_COUNT {
+            skips.skip("train: below the frequency gate");
+            continue;
+        }
+        by_lemma.entry((*pos, r.lemma.clone())).or_default().push(r);
+    }
+    for ((pos, lemma), mut records) in by_lemma {
+        // Majority first within each cell: descending count, then the form.
+        records.sort_by(|a, b| {
+            (a.cell, std::cmp::Reverse(a.count), &a.form)
+                .cmp(&(b.cell, std::cmp::Reverse(b.count), &b.form))
+        });
+        let mut obs = Observation::new(pos.arity());
+        obs.soft = true;
+        // A scribal token is not automatically a form: an aphaeretic scrap
+        // (`го` where `ѥго` dominates the cell), a one-letter remnant, or a
+        // spelling that folds onto a form the cell already holds would be
+        // noise, not attestation.
+        let fold = |form: &str| comparison_key(form).replace('ъ', "ь");
+        let mut kept: BTreeMap<usize, Vec<String>> = BTreeMap::new();
+        for r in &records {
+            if r.form.chars().count() < 2 {
+                skips.skip("train: one-letter token");
+                continue;
+            }
+            let cell = kept.entry(r.cell).or_default();
+            let folded = fold(&r.form);
+            if cell.iter().any(|k| fold(k) == folded) {
+                skips.skip("train: spelling variant of an attested form");
+                continue;
+            }
+            let subsequence = |short: &str, long: &str| {
+                let mut rest = long;
+                short.chars().all(|c| match rest.find(c) {
+                    Some(at) => {
+                        rest = &rest[at + c.len_utf8()..];
+                        true
+                    }
+                    None => false,
+                })
+            };
+            if cell
+                .iter()
+                .any(|k| k != &r.form && subsequence(&r.form, k))
+            {
+                skips.skip("train: elided writing of an attested form");
+                continue;
+            }
+            cell.push(r.form.clone());
+            obs.attest(r.cell, &r.form);
+            skips.mapped += 1;
+        }
+        skips.entries += 1;
+        push_observation(
+            lexemes,
+            LexemeKey {
+                tag: tag(&OCS),
+                pos,
+                lemma,
+            },
+            obs,
+            false,
+        );
+    }
+}
+
+/// A standalone `form-of` page: the headword is an attested form of the
+/// sense's target lemma, its cells named by the sense tags — the same
+/// vocabulary as the tables, but one sense may cover several cells
+/// ("nominative/accusative dual"). Forms outside the schema (a passive or
+/// l-participle, a future, a pronoun outside the personal matrix) are
+/// skipped and counted. A sense tagged as Old East Church Slavonic joins as
+/// a soft observation, like the East lemma pages do.
+fn gather_kaikki_form_of(entry: &Entry, lexemes: &mut Lexemes, skips: &mut Skips) {
+    let form_of: Vec<&kaikki::Sense> = entry
+        .senses
+        .iter()
+        .filter(|s| kaikki::is_form_of(s))
+        .collect();
+    if form_of.is_empty() {
+        return;
+    }
+    let Some(form) = kaikki_form(&entry.word) else {
+        return skips.skip("form-of: non-Cyrillic headword");
+    };
+    for sense in form_of {
+        let Some(lemma) = sense.form_of.first().and_then(|t| kaikki_form(&t.word)) else {
+            skips.skip("form-of: non-Cyrillic target");
+            continue;
+        };
+        let tags = &sense.tags;
+        let soft = kaikki::has(tags, "Old-East-Church-Slavonic") || kaikki::has(tags, "East");
+        let cases = kaikki::cases(tags);
+        let numbers = kaikki::numbers(tags);
+        let persons = kaikki::persons(tags);
+        let (pos, cells): (Pos, Vec<usize>) = match entry.pos.as_str() {
+            "noun" => {
+                if cases.is_empty() || numbers.is_empty() {
+                    skips.skip("form-of: noun without a case and number");
+                    continue;
+                }
+                let mut cells = Vec::new();
+                for case in &cases {
+                    for number in &numbers {
+                        cells.push(noun_cell(case, number));
+                    }
+                }
+                (Pos::Noun, cells)
+            }
+            "pron" => {
+                let person = match lemma.as_str() {
+                    "азъ" => Person::First,
+                    "тꙑ" => Person::Second,
+                    "и" | "ѥ" | "ꙗ" => Person::Third,
+                    _ => {
+                        skips.skip("form-of: pronoun outside the personal matrix");
+                        continue;
+                    }
+                };
+                if cases.is_empty() || numbers.is_empty() {
+                    skips.skip("form-of: pronoun without a case and number");
+                    continue;
+                }
+                let genders = kaikki::genders(tags);
+                let genders = if genders.is_empty() || person != Person::Third {
+                    GENDERS.to_vec()
+                } else {
+                    genders
+                };
+                let mut cells = Vec::new();
+                for case in cases.iter().filter(|c| **c != Case::Vocative) {
+                    for number in &numbers {
+                        for gender in &genders {
+                            cells.push(pronoun_cell(&person, number, gender, case));
+                        }
+                    }
+                }
+                (Pos::Pronoun, cells)
+            }
+            "adj" => {
+                // The bare comparative pointer attests the comparative
+                // citation cell; a case-tagged sense its named cells.
+                let comparative = kaikki::has(tags, "comparative");
+                if kaikki::has(tags, "superlative") || kaikki::has(tags, "definite") {
+                    skips.skip("form-of: adjective outside the schema");
+                    continue;
+                }
+                let degree = if comparative {
+                    Degree::Comparative
+                } else {
+                    Degree::Positive
+                };
+                let (cases, numbers) = if comparative && cases.is_empty() {
+                    (vec![Case::Nominative], vec![Number::Singular])
+                } else {
+                    (cases, numbers)
+                };
+                if cases.is_empty() || numbers.is_empty() {
+                    skips.skip("form-of: adjective without a case and number");
+                    continue;
+                }
+                let genders = kaikki::genders(tags);
+                let genders = if genders.is_empty() {
+                    if comparative {
+                        vec![Gender::Masculine]
+                    } else {
+                        GENDERS.to_vec()
+                    }
+                } else {
+                    genders
+                };
+                let mut cells = Vec::new();
+                for case in &cases {
+                    for number in &numbers {
+                        for gender in &genders {
+                            if let Some(i) = adj_cell(case, number, gender, &degree) {
+                                cells.push(i);
+                            }
+                        }
+                    }
+                }
+                (Pos::Adj, cells)
+            }
+            "verb" => {
+                const OUTSIDE: [&str; 7] = [
+                    "passive",
+                    "l-participle",
+                    "supine",
+                    "future",
+                    "conditional",
+                    "optative",
+                    "negative",
+                ];
+                if OUTSIDE.iter().any(|t| kaikki::has(tags, t)) {
+                    skips.skip("form-of: verb form outside the schema");
+                    continue;
+                }
+                if kaikki::has(tags, "participle") {
+                    let cell = if kaikki::has(tags, "present") {
+                        36
+                    } else if kaikki::has(tags, "past") {
+                        37
+                    } else {
+                        skips.skip("form-of: participle without a tense");
+                        continue;
+                    };
+                    (Pos::Verb, vec![cell])
+                } else {
+                    let (tense, verb_form) = if kaikki::has(tags, "imperative") {
+                        (Tense::Present, Form::Imperative)
+                    } else if let Some(tense) = kaikki::tense(tags) {
+                        (tense, Form::Finite)
+                    } else {
+                        skips.skip("form-of: finite verb without a tense");
+                        continue;
+                    };
+                    if persons.is_empty() || numbers.is_empty() {
+                        skips.skip("form-of: finite verb without a person and number");
+                        continue;
+                    }
+                    let mut cells = Vec::new();
+                    for person in &persons {
+                        for number in &numbers {
+                            if let Some(i) = verb_cell(person, number, &tense, &verb_form) {
+                                cells.push(i);
+                            }
+                        }
+                    }
+                    (Pos::Verb, cells)
+                }
+            }
+            _ => continue,
+        };
+        if cells.is_empty() {
+            skips.skip("form-of: no cell resolved");
+            continue;
+        }
+        let mut obs = Observation::new(pos.arity());
+        obs.soft = soft;
+        for cell in cells {
+            obs.attest(cell, &form);
+        }
+        skips.mapped += 1;
+        let key = LexemeKey {
+            tag: tag(&OCS),
+            pos,
+            // The personal pronoun is the one shared, lemma-less row.
+            lemma: if pos == Pos::Pronoun {
+                PRONOUN_KEY.to_string()
+            } else {
+                lemma
+            },
+        };
+        push_observation(lexemes, key, obs, !soft);
+    }
+}
+
 fn gather_kaikki_participle(forms: &[&kaikki::FormEntry], obs: &mut Observation) {
     let direct = |f: &kaikki::FormEntry, gender: Gender| {
         has(&f.tags, "short-form")
@@ -1546,12 +1855,22 @@ impl LemmaAcc {
         c.soft_sense = if is_new { soft } else { c.soft_sense && soft };
     }
 
-    /// Drop the pattern with nothing left after subtracting the rules: the
-    /// rule engine produces it at runtime, so a table row would add nothing,
-    /// and its presence reserves the bare key.
+    /// Handle the pattern with nothing left after subtracting the rules.
+    /// A STANDARD regular observation is dropped and reserves the bare key
+    /// for the rule engine. A SOFT one (an East spelling, the treebank train
+    /// split) is a secondary witness: it must not demote a dictionary's
+    /// exceptional row off the bare key, but it stays a candidate — where
+    /// the bare row overrides the rule, the shadow pass re-materialises the
+    /// rule-equal forms it attested, and an entirely redundant row is
+    /// dropped at emission.
     fn drop_regular(&mut self, arity: usize) {
         let sig = forms_sig(&vec![String::new(); arity]);
-        if self.by_sig.remove(&sig).is_some() {
+        if self
+            .by_sig
+            .get(&sig)
+            .is_some_and(|candidate| !candidate.soft_sense)
+        {
+            self.by_sig.remove(&sig);
             self.had_regular = true;
         }
     }
@@ -1616,6 +1935,12 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
             }
         }
         for a in assigned {
+            // A row can subtract and shadow down to nothing (every variant
+            // of every cell matched the rule or the bare row); an empty row
+            // says nothing and fails the registry audit.
+            if a.forms.iter().all(String::is_empty) {
+                continue;
+            }
             tables
                 .get_mut(key.pos)
                 .push((format!("{}:{}", key.tag, a.key), a.forms));

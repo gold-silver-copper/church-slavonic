@@ -21,61 +21,88 @@ benchmarking (`examples/speedmark.rs`, release):
 
 | Part of Speech | Recension | Correct / Total | Accuracy | Variant gap |
 |----------------|-----------|-----------------|----------|-------------|
-| **Nouns** | OCS | 40159 / 40159 | 100.00% | 0 |
+| **Nouns** | OCS | 40171 / 40171 | 100.00% | 0 |
+| **Nouns** | OCS (UD PROIEL train) | 2098 / 2098 | 100.00% | 0 |
 | **Nouns** | Synodal (Alypy) | 502 / 502 | 100.00% | 0 |
 | **Nouns** | Synodal (Polyakov) | 48135 / 48135 | 100.00% | 0 |
 | **Nouns** | Synodal (ru.wiktionary) | 651 / 651 | 100.00% | 0 |
-| **Adjectives** | OCS | 38952 / 38952 | 100.00% | 0 |
+| **Adjectives** | OCS | 38960 / 38960 | 100.00% | 0 |
+| **Adjectives** | OCS (UD PROIEL train) | 502 / 502 | 100.00% | 0 |
 | **Adjectives** | Synodal (Alypy) | 441 / 441 | 100.00% | 0 |
 | **Adjectives** | Synodal (Polyakov) | 87997 / 87997 | 100.00% | 0 |
-| **Verbs** | OCS | 18141 / 18141 | 100.00% | 0 |
+| **Verbs** | OCS | 18418 / 18418 | 100.00% | 0 |
+| **Verbs** | OCS (UD PROIEL train) | 1439 / 1439 | 100.00% | 0 |
 | **Verbs** | Synodal (Alypy) | 262 / 262 | 100.00% | 0 |
 | **Verbs** | Synodal (Polyakov) | 34598 / 34598 | 100.00% | 0 |
 | **Verbs** | Synodal (ru.wiktionary) | 78 / 78 | 100.00% | 0 |
-| **Pronouns** | OCS | 54 / 54 | 100.00% | 0 |
+| **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
+| **Pronouns** | OCS (UD PROIEL train) | 67 / 67 | 100.00% | 0 |
 | **Pronouns** | Synodal (Alypy) | 90 / 90 | 100.00% | 0 |
 | **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
-| **Nouns** | OCS (UD PROIEL r2.18, corpus recall) | 26419 / 45237 | 58.40% | 18818 |
-| **Adjectives** | OCS (UD PROIEL r2.18, corpus recall) | 5402 / 13339 | 40.50% | 7937 |
-| **Verbs** | OCS (UD PROIEL r2.18, corpus recall) | 16626 / 33755 | 49.25% | 17129 |
-| **Pronouns** | OCS (UD PROIEL r2.18, corpus recall) | 20961 / 25483 | 82.25% | 4522 |
-| **Nouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 27727 / 48825 | 56.79% | 21098 |
-| **Adjectives** | OCS (Syntacticus 2023-04-28, corpus recall) | 5559 / 13901 | 39.99% | 8342 |
-| **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 17141 / 35936 | 47.70% | 18795 |
-| **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 21850 / 27025 | 80.85% | 5175 |
+| **Nouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 8116 / 8818 | 92.04% | 702 |
+| **Adjectives** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 2134 / 2546 | 83.82% | 412 |
+| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 5833 / 6655 | 87.65% | 822 |
+| **Pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 4918 / 4960 | 99.15% | 42 |
+| **Nouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 44305 / 48825 | 90.74% | 4520 |
+| **Adjectives** | OCS (Syntacticus 2023-04-28, corpus recall) | 11698 / 13901 | 84.15% | 2203 |
+| **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 31475 / 35936 | 87.59% | 4461 |
+| **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 26764 / 27025 | 99.03% | 261 |
 
 The accuracy percentages measure **recall through any published key**: the
 share of attested source slots (a lemma's cell, with every form the source
 lists for it) reproducible via the bare lemma **or** any `_n` sense key. Each
 table source is scored on its own against the tables all of them fed. The
 *variant gap* counts attested forms no key produces. The *corpus recall*
-rows are different in kind: the two Old Church Slavonic treebanks fed no
-table (they are CC BY-NC-SA, evaluation only — see below), and every
+rows are different in kind: they score annotated treebank text the tables
+never saw. Under the institutional grant (`references/TERMS.md`) the UD
+PROIEL **train split** is itself a table source — its tokens, normalised
+and gated (no titlo abbreviations, no one-letter or elided scraps or
+spelling doublets, at least 3 attestations per form), feed cells like any
+dictionary — so the held-out rows are the UD **dev+test splits**;
+Syntacticus's texts overlap the train split, so its rows measure
+manuscript-spelling robustness, not generalisation. Every
 annotated token whose lemma and features name a schema cell is scored,
-lemma and surface compared through `orthography::comparison_key` because
-manuscript spelling varies (`ъі` for `ꙑ`, `ꙙ` for `ѧ`, jer alternations,
-words under titla). They measure generalisation: 198,843 UD tokens gave
-117,814 slots (93,865 skipped and counted by reason — other parts of
-speech, reflexives, the periphrastic future and l-participle, declined
-and passive participles); 213,658 Syntacticus tokens gave 125,687 slots
-(101,530 skipped). `cargo xtask accuracy` also reports bare-lemma
+lemma and surface compared through a manuscript-lax fold layered on
+`orthography::comparison_key` because manuscript spelling varies (`ъі`
+for `ꙑ`, `ꙙ` for `ѧ`, `шт` for `щ`, dropped or vocalised jers, `ѣ`~`ѧ`~`е`
+interchange, contracted `-ааго`, editorial brackets); a surface written
+under a titlo matches when its letters are an ordered subsequence of the
+full form (`г҃мь` for `господьмь`), a third-person pronoun may carry
+the post-prepositional `н`-, and the copula's imperfective aorist (`бѣ`,
+`бѣшѧ`) is accepted under either past tense, since the treebanks and the
+schema file it differently. The held-out UD dev+test files gave 39,133
+tokens and 22,979 slots (18,470 skipped and counted by reason — other
+parts of speech, reflexives, the periphrastic future and l-participle,
+declined and passive participles); 213,658 Syntacticus tokens gave
+125,687 slots (101,530 skipped). The residual corpus-recall gap is not an
+error budget to spend: forms enter the tables only when a registered
+source attests them past the gates, so what remains is dev+test forms too
+rare to clear the train split's frequency gate, annotation noise
+(editorial lemmas like `братръ`, truncated surfaces, homograph lemmas),
+and lemmas the train split never saw; the next meaningful widening is the
+schema itself — the skipped declined and passive participles and
+non-personal pronouns. `cargo xtask accuracy` also reports bare-lemma
 correctness — whether the natural bare-lemma call returns the primary
 (first-listed) attested form:
 
 | Part of Speech | Recension | Bare Primary / Total | Bare Accuracy | Demoted to `_n` |
 |----------------|-----------|----------------------|---------------|-----------------|
-| **Nouns** | OCS | 39602 / 40159 | 98.61% | 557 |
+| **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
+| **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
 | **Nouns** | Synodal (Alypy) | 418 / 502 | 83.27% | 84 |
 | **Nouns** | Synodal (Polyakov) | 46347 / 48135 | 96.29% | 1788 |
 | **Nouns** | Synodal (ru.wiktionary) | 545 / 651 | 83.72% | 106 |
-| **Adjectives** | OCS | 38952 / 38952 | 100.00% | 0 |
+| **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
+| **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
 | **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
 | **Adjectives** | Synodal (Polyakov) | 84489 / 87997 | 96.01% | 3508 |
-| **Verbs** | OCS | 17941 / 18141 | 98.90% | 200 |
-| **Verbs** | Synodal (Alypy) | 223 / 262 | 85.11% | 39 |
-| **Verbs** | Synodal (Polyakov) | 33476 / 34598 | 96.76% | 1122 |
+| **Verbs** | OCS | 18100 / 18418 | 98.27% | 318 |
+| **Verbs** | OCS (UD PROIEL train) | 1166 / 1439 | 81.03% | 273 |
+| **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
+| **Verbs** | Synodal (Polyakov) | 33484 / 34598 | 96.78% | 1114 |
 | **Verbs** | Synodal (ru.wiktionary) | 62 / 78 | 79.49% | 16 |
-| **Pronouns** | OCS | 54 / 54 | 100.00% | 0 |
+| **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
+| **Pronouns** | OCS (UD PROIEL train) | 48 / 67 | 71.64% | 19 |
 | **Pronouns** | Synodal (Alypy) | 62 / 90 | 68.89% | 28 |
 | **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
 
@@ -172,8 +199,10 @@ fn main() {
   tables, Polyakov's corpus-based grammatical dictionary (every
   corpus-attested Synodal form with its analysis and frequency; the
   frequency picks each cell's primary) and the Russian Wiktionary's 39
-  structured Church Slavonic tables (Kaikki); loads the two Old Church
-  Slavonic treebanks for evaluation only.
+  structured Church Slavonic tables (Kaikki), and the UD PROIEL train
+  split (normalised, titlo-free tokens attested ≥3 times; the corpus
+  majority is each cell's primary among the split's variants); the UD
+  dev/test splits and Syntacticus are loaded for evaluation only.
 * Uses `church-slavonic-core` to blank every cell the rules already predict,
   so the tables hold exactly the attested exceptions.
 * Numbers homograph senses and variants **deterministically** by a pure sort
@@ -222,8 +251,8 @@ the Alypy pronoun row is at 90/90.
 | Archbishop Alypy (Gamanovich), *Grammar of the Church Slavonic Language*, web edition: the 198 `.htm` pages | Synodal | `41dac82d5eb14342c3c158e86b6fc790a6b1b2f76a894d29db103a32604d51a4` (sha256 of the pages concatenated in sorted file-name order) | printed paradigm tables (accented) |
 | A. E. Polyakov, *Grammatical dictionary of Church Slavonic (corpus-based)*, tagged web edition ([dic.feb-web.ru](http://dic.feb-web.ru/slavonic/dicgram/)): the 43 `.htm` pages (`flexslav.htm` legend, indexes, `1/*.htm`, `2/*.htm`) | Synodal | `6fe3c1f0094c1624493f2b4a384b1fe56201392dc0c45314e928e7bc50f61c5d` (sha256 of the pages concatenated in sorted path order) | corpus-derived paradigms with frequencies (accented); table source under the institutional grant in `references/TERMS.md` |
 | Russian Wiktionary, Церковнославянский section ([Kaikki/Wiktextract](https://kaikki.org/ruwiktionary/Церковнославянский/)) `kaikki.org-dictionary-Церковнославянский.jsonl` | Synodal | `5fa83de2fc23e14ad7062e84bcb4a208006352002545df88359699274e893ec7` | the 39 entries with structured inflection tables (accented); CC BY-SA 4.0 |
-| UD_Old_Church_Slavonic-PROIEL r2.18 (`UD_Old_Church_Slavonic-PROIEL-64eddf87….tar.gz`) | OCS | `579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c` | **evaluation only** (CC BY-NC-SA 4.0): corpus recall, never a table cell |
-| Syntacticus treebank data 2023-04-28 (`syntacticus-treebank-data-525cee4f….tar.gz`): the PROIEL XML texts marked `language="chu"` | OCS | `e32844093cc173edf9241868fdad7167dfb63fb7f105d146af02a645ff382fec` | **evaluation only** (CC BY-NC-SA 4.0): corpus recall, never a table cell |
+| UD_Old_Church_Slavonic-PROIEL r2.18 (`UD_Old_Church_Slavonic-PROIEL-64eddf87….tar.gz`) | OCS | `579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c` | **train split**: inflection tables from the annotated corpus (institutional grant, `references/TERMS.md`; CC BY-NC-SA 4.0 upstream); **dev/test splits**: held-out corpus recall, never a table cell |
+| Syntacticus treebank data 2023-04-28 (`syntacticus-treebank-data-525cee4f….tar.gz`): the PROIEL XML texts marked `language="chu"` | OCS | `e32844093cc173edf9241868fdad7167dfb63fb7f105d146af02a645ff382fec` | evaluation (institutional grant covers it; its texts overlap the train split, so its rows measure spelling robustness, not generalisation): corpus recall, never a table cell |
 
 1. Run `scripts/fetch-sources.sh` (downloads every pinned table source and
    verifies it against `references/SHA256SUMS`; per-source download scripts

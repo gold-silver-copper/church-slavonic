@@ -30,6 +30,22 @@ impl ChurchSlavonicCore {
     }
 
     fn noun_skeleton(word: &str, case: &Case, number: &Number, recension: &Recension) -> String {
+        // The i-declension duals of the paired body parts: `очи`, `оуши` —
+        // not the o-stem `оцѣ` the suffix machinery would build.
+        if *number == Number::Dual
+            && let Some(stem) = match word {
+                "око" => Some("оч"),
+                "оухо" | "ꙋхо" | "ѹхо" => Some("оуш"),
+                _ => None,
+            }
+        {
+            let ending = match case {
+                Case::Genitive | Case::Locative => "ию",
+                Case::Dative | Case::Instrumental => "има",
+                _ => "и",
+            };
+            return format!("{stem}{ending}");
+        }
         let (stem, row) = Self::noun_class(word, case, number, recension);
         let cell = Self::cell(case, number);
         let ending = match recension {

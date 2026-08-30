@@ -6,8 +6,8 @@
 //! §81 tables of the Alypy grammar and Polyakov's corpus paradigm add
 //! their variants — both spell the copula, so the sort spreads them over
 //! `бы́ти` and its `_n` keys. This pins every reachable finite cell in both recensions,
-//! including the recension-conditioned tense assignment (the OCS aorist is
-//! the `бѣхъ` series, the Synodal aorist the `быхъ`/`бысть` series).
+//! including the shared `бꙑхъ`/`быхъ` aorist series (the OCS `бѣ` series is
+//! the imperfective aorist, filed under the imperfect by the treebanks).
 
 use church_slavonic::*;
 
@@ -42,7 +42,9 @@ fn old_church_slavonic_finite_cells() {
         ]
     );
     assert_eq!(be("бꙑти", Tense::Imperfect, OCS)[0], "бѣахъ");
-    assert_eq!(be("бꙑти", Tense::Aorist, OCS)[..3], ["бѣхъ", "бѣ", "бѣ"]);
+    // The dump attests the imperfective-aorist `бѣхъ` as the first
+    // singular's primary; the rule's `бꙑхъ` series holds the rest.
+    assert_eq!(be("бꙑти", Tense::Aorist, OCS)[..3], ["бѣхъ", "бꙑстъ", "бꙑстъ"]);
 }
 
 /// The published keys of the Synodal copula: the bare lemma and every `_n`
