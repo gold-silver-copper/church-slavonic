@@ -198,57 +198,27 @@ fn audit_rows(v: &mut Vec<String>, pos: Pos, pairs: &[KeyForms]) {
             ));
             continue;
         }
-        let mut predicted = pos.predict(lemma, &recension);
+        let predicted = pos.predict(lemma, &recension);
         let shadowing = (lemma != lemma_key)
             .then(|| bare_rows.get(format!("{tag}:{lemma}").as_str()).copied())
             .flatten();
-        // A class/present-stem override (this row's, else the bare row's)
-        // replaces the rule this row is audited against.
-        if pos == Pos::Verb {
-            // `attested_cell` falls back to the bare row, so the audited
-            // override is the row's own cell, else the bare lemma's.
-            let over = |i: usize| -> String {
-                if !cells[i].is_empty() {
-                    cells[i].clone()
-                } else {
-                    shadowing.map_or(String::new(), |bare| bare[i].clone())
-                }
-            };
-            let (class, stem) = (
-                over(crate::cells::VERB_CLASS_CELL),
-                over(crate::cells::PRESENT_STEM_CELL),
-            );
-            if !class.is_empty() || !stem.is_empty() {
-                predicted = crate::cells::predict_verb_override(
-                    lemma,
-                    (!class.is_empty()).then_some(class.as_str()),
-                    (!stem.is_empty()).then_some(stem.as_str()),
-                    &recension,
-                );
-            }
-        }
+        // A stored cell is dead weight only when the FULL resolution — the
+        // fact cells read own-else-bare, expanded by the one engine, else
+        // the plain rule — already reproduces it.
+        let fact_resolved: Option<Vec<String>> = crate::extract::audit_fact_resolution(
+            pos,
+            &recension,
+            lemma,
+            cells,
+            shadowing.map(Vec::as_slice),
+        );
         for (i, cell) in cells.iter().enumerate() {
             let shadowed = shadowing.is_some_and(|bare| !bare[i].is_empty() && bare[i] != *cell);
-            // A rule-equal declined-participle cell is load-bearing when a
-            // stem (this row's, or the bare row's it falls back to) would
-            // shadow the rule with a different derivation.
-            let stem_shadowed = pos == Pos::Verb
-                && (38..542).contains(&i)
-                && crate::extract::resolve_participle_cell(&recension, i, &{
-                    let own: Vec<String> = cells[542..546].to_vec();
-                    match shadowing {
-                        Some(bare) => own
-                            .iter()
-                            .zip(&bare[542..546])
-                            .map(|(o, b)| if o.is_empty() { b.clone() } else { o.clone() })
-                            .collect(),
-                        None => own,
-                    }
-                })
-                .is_some_and(|d| !rule_matches(&recension, &d, &predicted[i]));
-            if !cell.is_empty() && !shadowed && !stem_shadowed
-                && rule_matches(&recension, cell, &predicted[i])
-            {
+            let effective = fact_resolved
+                .as_ref()
+                .and_then(|r| r.get(i))
+                .unwrap_or(&predicted[i]);
+            if !cell.is_empty() && !shadowed && rule_matches(&recension, cell, effective) {
                 v.push(format!(
                     "{name}: key `{key}` cell {i} `{cell}` equals the regular-rule prediction — dead weight; \
                      a core rule changed without regenerating (`cargo xtask refresh-data`)"
@@ -346,7 +316,7 @@ mod tests {
             Pos::Noun,
             &[("ocs:x".to_string(), vec!["а".to_string()])],
         );
-        assert!(out.iter().any(|m| m.contains("expected 21")), "{out:?}");
+        assert!(out.iter().any(|m| m.contains("expected 22")), "{out:?}");
         let mut out = Vec::new();
         audit_rows(&mut out, Pos::Noun, &[row("ocs:x", &[])]);
         assert!(

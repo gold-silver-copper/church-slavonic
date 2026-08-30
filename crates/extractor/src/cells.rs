@@ -34,28 +34,10 @@ use church_slavonic_core::grammar::*;
 use church_slavonic_core::orthography::{comparison_key, realise};
 pub use church_slavonic_core::verb::Conj;
 
-pub const CASES: [Case; 7] = [
-    Case::Nominative,
-    Case::Genitive,
-    Case::Dative,
-    Case::Accusative,
-    Case::Instrumental,
-    Case::Locative,
-    Case::Vocative,
-];
-pub const NUMBERS: [Number; 3] = [Number::Singular, Number::Dual, Number::Plural];
-pub const GENDERS: [Gender; 3] = [Gender::Masculine, Gender::Feminine, Gender::Neuter];
-pub const PERSONS: [Person; 3] = [Person::First, Person::Second, Person::Third];
-pub const DEGREES: [Degree; 2] = [Degree::Positive, Degree::Comparative];
-/// The finite blocks of the verb row, in cell order.
-pub const VERB_BLOCKS: [(Tense, Form); 4] = [
-    (Tense::Present, Form::Finite),
-    (Tense::Imperfect, Form::Finite),
-    (Tense::Aorist, Form::Finite),
-    (Tense::Present, Form::Imperative),
-];
-/// The pronoun row's lemma-less key.
-pub const PRONOUN_KEY: &str = "personal";
+pub use church_slavonic_core::schema::{
+    CASES, DEGREES, GENDERS, NUMBERS, PERSONS, PRESENT_STEM_CELL, VERB_BLOCKS, VERB_CLASS_CELL,
+    adj_cell, noun_cell, participle_cell, participle_stem_cell, pronoun_cell, verb_cell,
+};
 
 /// The two recension tags that prefix every key.
 pub fn tag(recension: &Recension) -> &'static str {
@@ -73,90 +55,13 @@ pub fn recension_of_tag(tag: &str) -> Option<Recension> {
     }
 }
 
-pub fn noun_cell(case: &Case, number: &Number) -> usize {
-    *number as usize * 7 + *case as usize
-}
-
-pub fn adj_cell(case: &Case, number: &Number, gender: &Gender, degree: &Degree) -> Option<usize> {
-    let degree = match degree {
-        Degree::Positive => 0,
-        Degree::Comparative => 1,
-        Degree::Superlative => return None,
-    };
-    Some(((degree * 3 + *gender as usize) * 3 + *number as usize) * 7 + *case as usize)
-}
-
-/// The declined-participle block: cells 38.. of the verb row. `tense` is
-/// collapsed to present/past (`Imperfect` and `Aorist` are both the past
-/// participle, as in [`verb_cell`]).
-pub fn participle_cell(
-    voice: &Voice,
-    series: &Series,
-    tense: &Tense,
-    gender: &Gender,
-    number: &Number,
-    case: &Case,
-) -> usize {
-    let series = match (voice, series) {
-        (Voice::Active, Series::Short) => 0,
-        (Voice::Active, Series::Long) => 1,
-        (Voice::Passive, Series::Short) => 2,
-        (Voice::Passive, Series::Long) => 3,
-    };
-    let tense = match tense {
-        Tense::Present => 0,
-        Tense::Imperfect | Tense::Aorist => 1,
-    };
-    38 + (((series * 2 + tense) * 3 + *gender as usize) * 3 + *number as usize) * 7
-        + *case as usize
-}
-
-/// The four participle-stem cells: a derived stem, not an attested form.
-pub fn participle_stem_cell(voice: &Voice, tense: &Tense) -> usize {
-    542 + match (voice, tense) {
-        (Voice::Active, Tense::Present) => 0,
-        (Voice::Active, _) => 1,
-        (Voice::Passive, Tense::Present) => 2,
-        (Voice::Passive, _) => 3,
-    }
-}
-
-/// The present-stem override cell: a derived stem, not an attested form.
-pub const PRESENT_STEM_CELL: usize = 546;
-/// The conjugation-class override cell: a class token, not a form.
-pub const VERB_CLASS_CELL: usize = 547;
-
-pub fn verb_cell(person: &Person, number: &Number, tense: &Tense, form: &Form) -> Option<usize> {
-    let block = match (tense, form) {
-        (Tense::Present, Form::Finite) => 0,
-        (Tense::Imperfect, Form::Finite) => 1,
-        (Tense::Aorist, Form::Finite) => 2,
-        (_, Form::Imperative) => 3,
-        (Tense::Present, Form::Participle) => return Some(36),
-        (_, Form::Participle) => return Some(37),
-        (_, Form::Infinitive) => return None,
-    };
-    Some(block * 9 + *number as usize * 3 + *person as usize)
-}
-
-pub fn pronoun_cell(person: &Person, number: &Number, gender: &Gender, case: &Case) -> usize {
-    let case = if *case == Case::Vocative {
-        0
-    } else {
-        *case as usize
-    };
-    match person {
-        Person::First => *number as usize * 6 + case,
-        Person::Second => 18 + *number as usize * 6 + case,
-        Person::Third => 36 + (*gender as usize * 3 + *number as usize) * 6 + case,
-    }
-}
+/// The pronoun row's lemma-less key.
+pub const PRONOUN_KEY: &str = "personal";
 
 /// The verb row as the runtime would answer it under a class/present-stem
-/// override (cells 546/547): every finite, imperative, citation and
-/// declined-participle cell, realised like [`Pos::predict`]. Cells the
-/// override machinery never touches (the stem and override cells) stay
-/// empty.
+/// override (cells 546/547), realised like [`Pos::predict`]: every cell
+/// through [`church_slavonic_core::resolution::verb_fact_fallback`], the
+/// one copy of the fact-resolution order.
 pub fn predict_verb_override(
     lemma: &str,
     class: Option<&str>,
@@ -164,51 +69,25 @@ pub fn predict_verb_override(
     recension: &Recension,
 ) -> Vec<String> {
     let realised = realise(lemma, recension);
-    let mut out = vec![String::new(); Pos::Verb.arity()];
-    for (tense, form) in &VERB_BLOCKS {
-        for number in &NUMBERS {
-            for person in &PERSONS {
-                if let Some(i) = verb_cell(person, number, tense, form) {
-                    out[i] = ChurchSlavonicCore::verb_from_stems(
-                        &realised, class, present, person, number, tense, form, recension,
-                    );
-                }
-            }
+    let fact = |i: usize| -> Option<String> {
+        if i == VERB_CLASS_CELL {
+            class.map(str::to_string)
+        } else if i == PRESENT_STEM_CELL {
+            present.map(str::to_string)
+        } else {
+            None
         }
-    }
-    for (i, tense) in [(36usize, Tense::Present), (37, Tense::Aorist)] {
-        out[i] = ChurchSlavonicCore::verb_from_stems(
-            &realised,
-            class,
-            present,
-            &Person::Third,
-            &Number::Singular,
-            &tense,
-            &Form::Participle,
-            recension,
-        );
-    }
-    for voice in &[Voice::Active, Voice::Passive] {
-        for series in &[Series::Short, Series::Long] {
-            for tense in &[Tense::Present, Tense::Aorist] {
-                for gender in &GENDERS {
-                    for number in &NUMBERS {
-                        for case in &CASES {
-                            out[participle_cell(voice, series, tense, gender, number, case)] =
-                                ChurchSlavonicCore::participle_with_override(
-                                    &realised, class, present, tense, voice, series, case,
-                                    number, gender, recension,
-                                );
-                        }
-                    }
-                }
-            }
-        }
-    }
-    for cell in &mut out {
-        *cell = realise(cell, recension);
-    }
-    out
+    };
+    (0..Pos::Verb.arity())
+        .map(|cell| {
+            realise(
+                &church_slavonic_core::resolution::verb_fact_fallback(
+                    &realised, recension, cell, &fact,
+                ),
+                recension,
+            )
+        })
+        .collect()
 }
 
 /// The four parts of speech the tables cover.
@@ -224,11 +103,12 @@ impl Pos {
     pub const ALL: [Pos; 4] = [Pos::Noun, Pos::Adj, Pos::Verb, Pos::Pronoun];
 
     pub fn arity(self) -> usize {
+        use church_slavonic_core::schema as sch;
         match self {
-            Pos::Noun => 21,
-            Pos::Adj => 126,
-            Pos::Verb => 548,
-            Pos::Pronoun => 90,
+            Pos::Noun => sch::NOUN_ARITY,
+            Pos::Adj => sch::ADJ_ARITY,
+            Pos::Verb => sch::VERB_ARITY,
+            Pos::Pronoun => sch::PRONOUN_ARITY,
         }
     }
 
@@ -380,6 +260,7 @@ mod tests {
                 seen[i] = true;
             }
         }
+        seen[church_slavonic_core::schema::NOUN_ACCENT_CELL] = true;
         assert!(seen.iter().all(|s| *s));
 
         let mut seen = vec![false; Pos::Adj.arity()];
@@ -394,6 +275,7 @@ mod tests {
                 }
             }
         }
+        seen[church_slavonic_core::schema::ADJ_ACCENT_CELL] = true;
         assert!(seen.iter().all(|s| *s));
         assert_eq!(
             adj_cell(
@@ -440,7 +322,11 @@ mod tests {
                 seen[i] = true;
             }
         }
-        for i in [PRESENT_STEM_CELL, VERB_CLASS_CELL] {
+        for i in [
+            PRESENT_STEM_CELL,
+            VERB_CLASS_CELL,
+            church_slavonic_core::schema::VERB_ACCENT_CELL,
+        ] {
             assert!(!seen[i]);
             seen[i] = true;
         }

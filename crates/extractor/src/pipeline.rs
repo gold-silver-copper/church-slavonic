@@ -95,6 +95,7 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     }
     let tables = finalize(&lexemes);
     generate_tables(&tables, &config.generated_dir)?;
+    accent_class_agreement(&tables, &config.artifacts_dir);
     println!(
         "Refresh complete: {} noun, {} adjective, {} verb, {} pronoun rows regenerated in {}.",
         tables.noun.len(),
@@ -104,6 +105,59 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
         config.generated_dir.display()
     );
     Ok(())
+}
+
+/// The accent-pattern cross-check: how uniform are the adopted tokens
+/// within each Polyakov accent class? Reported, not enforced — a low rate
+/// means the inference is reading noise.
+fn accent_class_agreement(tables: &crate::extract::Tables, artifacts_dir: &Path) {
+    use church_slavonic_core::schema as sch;
+    use std::collections::BTreeMap;
+    let path = artifacts_dir.join(Source::Polyakov.intermediate());
+    let Ok(entries) = polyakov::read(&path) else {
+        return;
+    };
+    let class_of: BTreeMap<String, String> = entries
+        .into_iter()
+        .filter(|e| !e.class.is_empty())
+        .map(|e| (e.lemma, e.class))
+        .collect();
+    let mut by_class: BTreeMap<&str, BTreeMap<&str, u64>> = BTreeMap::new();
+    for (rows, accent_cell) in [
+        (&tables.noun, sch::NOUN_ACCENT_CELL),
+        (&tables.adj, sch::ADJ_ACCENT_CELL),
+        (&tables.verb, sch::VERB_ACCENT_CELL),
+    ] {
+        for (key, cells) in rows {
+            let Some(lemma) = key.strip_prefix("syn:") else {
+                continue;
+            };
+            let token = &cells[accent_cell];
+            if token.is_empty() {
+                continue;
+            }
+            if let Some(class) = class_of.get(lemma) {
+                *by_class
+                    .entry(class.as_str())
+                    .or_default()
+                    .entry(token.as_str())
+                    .or_default() += 1;
+            }
+        }
+    }
+    let (mut majority, mut total) = (0u64, 0u64);
+    for tokens in by_class.values() {
+        let sum: u64 = tokens.values().sum();
+        majority += tokens.values().max().copied().unwrap_or(0);
+        total += sum;
+    }
+    if total > 0 {
+        println!(
+            "Accent-pattern/Polyakov-class agreement: {majority}/{total} adopted tokens share \
+             their class's majority token across {} classes.",
+            by_class.len()
+        );
+    }
 }
 
 fn reuse_or_fail(intermediate: &Path, source: &Path) -> Result<(), Box<dyn Error>> {

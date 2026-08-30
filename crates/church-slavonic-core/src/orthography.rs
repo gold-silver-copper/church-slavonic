@@ -286,6 +286,26 @@ pub fn is_accented(word: &str) -> bool {
     units(word).iter().any(Unit::has_stress)
 }
 
+/// How many vowel letters the word has.
+pub fn vowel_count(word: &str) -> usize {
+    units(word).iter().filter(|u| u.is_vowel()).count()
+}
+
+/// The 0-based index, among the word's vowels, of the stressed one — or
+/// `None` for an unaccented word (or stress on a non-vowel).
+pub fn stressed_vowel_index(word: &str) -> Option<usize> {
+    let mut vowels = 0;
+    for unit in units(word) {
+        if unit.is_vowel() {
+            if unit.has_stress() {
+                return Some(vowels);
+            }
+            vowels += 1;
+        }
+    }
+    None
+}
+
 /// Place the stress on the `vowel`-th vowel (0-based), replacing any stress
 /// the word carries and keeping its other marks: the oxia inside the word,
 /// the varia on a word-final vowel letter (Alypy §5), or the kamora when

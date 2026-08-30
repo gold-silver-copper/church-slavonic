@@ -2050,41 +2050,6 @@ fn infer_participle_stems(recension: &Recension, forms: &mut [String], raw: &mut
     }
 }
 
-/// What the runtime would answer for a blank participle cell of a row with
-/// these four stems: the stem's derivation, or `None` for the rule.
-pub(crate) fn resolve_participle_cell(
-    recension: &Recension,
-    cell: usize,
-    stems: &[String],
-) -> Option<String> {
-    use church_slavonic_core::ChurchSlavonicCore;
-    let rest = cell - 38;
-    let case = CASES[rest % 7];
-    let rest = rest / 7;
-    let number = NUMBERS[rest % 3];
-    let rest = rest / 3;
-    let gender = GENDERS[rest % 3];
-    let rest = rest / 3;
-    let past = rest % 2 == 1;
-    let (voice, series) = match rest / 2 {
-        0 => (GVoice::Active, GSeries::Short),
-        1 => (GVoice::Active, GSeries::Long),
-        2 => (GVoice::Passive, GSeries::Short),
-        _ => (GVoice::Passive, GSeries::Long),
-    };
-    let stem = &stems[match (voice, past) {
-        (GVoice::Active, false) => 0,
-        (GVoice::Active, true) => 1,
-        (GVoice::Passive, false) => 2,
-        (GVoice::Passive, true) => 3,
-    }];
-    if stem.is_empty() {
-        return None;
-    }
-    ChurchSlavonicCore::participle_from_stem(
-        stem, past, &voice, &series, &case, &number, &gender, recension,
-    )
-}
 
 /// Infer a conjugation-class/present-stem override for a verb candidate:
 /// candidate stems are read off the attested present cells by stripping
@@ -2151,38 +2116,23 @@ fn infer_verb_override(
     if attested.len() < 2 {
         return None;
     }
-    // Score on the attested finite cells only — the full 548-cell
-    // prediction is computed once, for the winner.
+    // Score on the attested finite cells only — through the one resolution
+    // engine; the full prediction row is computed once, for the winner.
     let realised = church_slavonic_core::orthography::realise(lemma, recension);
-    let finite = |class: Option<&str>, present: Option<&str>, i: usize| {
-        use crate::cells::{NUMBERS as NS, PERSONS as PS, VERB_BLOCKS as VB};
-        use church_slavonic_core::ChurchSlavonicCore;
-        let answer = if i >= 36 {
-            let tense = if i == 36 { Tense::Present } else { Tense::Aorist };
-            ChurchSlavonicCore::verb_from_stems(
-                &realised,
-                class,
-                present,
-                &Person::Third,
-                &Number::Singular,
-                &tense,
-                &Form::Participle,
-                recension,
-            )
-        } else {
-            let (tense, form) = VB[i / 9];
-            ChurchSlavonicCore::verb_from_stems(
-                &realised,
-                class,
-                present,
-                &PS[i % 3],
-                &NS[(i % 9) / 3],
-                &tense,
-                &form,
-                recension,
-            )
+    let finite = |class: &str, present: &str, i: usize| {
+        let fact = |cell: usize| -> Option<String> {
+            if cell == VERB_CLASS_CELL {
+                Some(class.to_string())
+            } else if cell == PRESENT_STEM_CELL {
+                Some(present.to_string())
+            } else {
+                None
+            }
         };
-        church_slavonic_core::orthography::realise(&answer, recension)
+        church_slavonic_core::orthography::realise(
+            &church_slavonic_core::resolution::verb_fact_fallback(&realised, recension, i, &fact),
+            recension,
+        )
     };
     let plain = attested
         .iter()
@@ -2193,7 +2143,7 @@ fn infer_verb_override(
         let token = conj.token();
         let n = attested
             .iter()
-            .filter(|i| rule_matches(recension, &raw[**i], &finite(Some(token), Some(&stem), **i)))
+            .filter(|i| rule_matches(recension, &raw[**i], &finite(token, &stem, **i)))
             .count();
         if n > plain && best.as_ref().is_none_or(|(.., b)| n > *b) {
             best = Some((token, stem, n));
@@ -2203,6 +2153,179 @@ fn infer_verb_override(
         let pred = predict_verb_override(lemma, Some(token), Some(&stem), recension);
         (token, stem, pred)
     })
+}
+
+/// The one resolution engine, dispatched by POS and wrapped in the
+/// extractor's realise convention.
+fn resolved_cell(
+    pos: Pos,
+    lemma_realised: &str,
+    recension: &Recension,
+    cell: usize,
+    fact: &dyn Fn(usize) -> Option<String>,
+) -> String {
+    use church_slavonic_core::resolution as res;
+    let raw = match pos {
+        Pos::Noun => res::noun_fact_fallback(lemma_realised, recension, cell, fact),
+        Pos::Adj => res::adj_fact_fallback(lemma_realised, recension, cell, fact),
+        Pos::Verb => res::verb_fact_fallback(lemma_realised, recension, cell, fact),
+        Pos::Pronoun => String::new(),
+    };
+    church_slavonic_core::orthography::realise(&raw, recension)
+}
+
+/// The form-cell range and fact-cell range of a POS row.
+fn fact_geometry(pos: Pos) -> Option<(usize, std::ops::Range<usize>)> {
+    use church_slavonic_core::schema as sch;
+    match pos {
+        Pos::Noun => Some((sch::NOUN_ACCENT_CELL, 21..22)),
+        Pos::Adj => Some((sch::ADJ_ACCENT_CELL, 126..127)),
+        Pos::Verb => Some((sch::VERB_ACCENT_CELL, 542..549)),
+        Pos::Pronoun => None,
+    }
+}
+
+/// Infer a Synodal accent-pattern token for one candidate: every attested
+/// accented form must stress the same stem vowel (`s<N>`) or its last
+/// vowel (`e`), and the re-accented resolution must reproduce at least two
+/// cells the current one does not. Mobile paradigms fit neither and stay
+/// stored. OCS never adopts: its comparison is accent-blind, so a token
+/// would be dead weight.
+fn infer_accent_pattern(
+    pos: Pos,
+    recension: &Recension,
+    lemma: &str,
+    forms: &mut [String],
+    raw: &mut [String],
+) {
+    use church_slavonic_core::orthography::{realise, stressed_vowel_index, vowel_count};
+    if *recension != Recension::Synodal {
+        return;
+    }
+    let Some((accent_cell, fact_range)) = fact_geometry(pos) else {
+        return;
+    };
+    let form_end = fact_range.start.min(accent_cell);
+    let mut stem_n: Option<usize> = None;
+    let (mut all_stem, mut all_end, mut seen) = (true, true, 0usize);
+    for cell in 0..form_end {
+        let f = &raw[cell];
+        if f.is_empty() {
+            continue;
+        }
+        let Some(k) = stressed_vowel_index(f) else {
+            continue;
+        };
+        seen += 1;
+        match stem_n {
+            None => stem_n = Some(k),
+            Some(n) if n == k => {}
+            _ => all_stem = false,
+        }
+        if k + 1 != vowel_count(f) {
+            all_end = false;
+        }
+    }
+    if seen < 2 {
+        return;
+    }
+    let mut candidates: Vec<String> = Vec::new();
+    if all_stem && let Some(n) = stem_n {
+        candidates.push(format!("s{n}"));
+    }
+    if all_end {
+        candidates.push("e".to_string());
+    }
+    let realised = realise(lemma, recension);
+    let mut best: Option<(String, Vec<usize>)> = None;
+    for token in candidates {
+        let fact = |i: usize| -> Option<String> {
+            if i == accent_cell {
+                return Some(token.clone());
+            }
+            fact_range
+                .contains(&i)
+                .then(|| raw[i].clone())
+                .filter(|f| !f.is_empty())
+        };
+        let covered: Vec<usize> = (0..form_end)
+            .filter(|cell| {
+                !forms[*cell].is_empty()
+                    && rule_matches(
+                        recension,
+                        &raw[*cell],
+                        &resolved_cell(pos, &realised, recension, *cell, &fact),
+                    )
+            })
+            .collect();
+        if covered.len() >= 2 && best.as_ref().is_none_or(|(_, b)| covered.len() > b.len()) {
+            best = Some((token, covered));
+        }
+    }
+    if let Some((token, _)) = best {
+        // Adoption changes the resolution for EVERY cell, so the whole row
+        // re-subtracts against it: a cell the accented resolution now
+        // reproduces goes blank, and one it no longer reproduces (an
+        // unaccented variant spelling a blanket token would orphan) is
+        // stored.
+        let fact = |i: usize| -> Option<String> {
+            if i == accent_cell {
+                return Some(token.clone());
+            }
+            fact_range
+                .contains(&i)
+                .then(|| raw[i].clone())
+                .filter(|f| !f.is_empty())
+        };
+        for cell in 0..form_end {
+            forms[cell] = if raw[cell].is_empty()
+                || rule_matches(
+                    recension,
+                    &raw[cell],
+                    &resolved_cell(pos, &realised, recension, cell, &fact),
+                ) {
+                String::new()
+            } else {
+                raw[cell].clone()
+            };
+        }
+        forms[accent_cell] = token.clone();
+        raw[accent_cell] = token;
+    }
+}
+
+/// The audit's view of a row's full fact-aware resolution (0..form-cells),
+/// realised — `None` when the POS has no fact cells or none are set.
+pub fn audit_fact_resolution(
+    pos: Pos,
+    recension: &Recension,
+    lemma: &str,
+    cells: &[String],
+    bare: Option<&[String]>,
+) -> Option<Vec<String>> {
+    let (_, fact_range) = fact_geometry(pos)?;
+    let form_end = fact_range.start;
+    let any = fact_range.clone().any(|i| {
+        !cells[i].is_empty() || bare.is_some_and(|b| !b[i].is_empty())
+    });
+    if !any {
+        return None;
+    }
+    let fact = |i: usize| -> Option<String> {
+        if !fact_range.contains(&i) {
+            return None;
+        }
+        if !cells[i].is_empty() {
+            return Some(cells[i].clone());
+        }
+        bare.map(|b| b[i].clone()).filter(|c| !c.is_empty())
+    };
+    let realised = church_slavonic_core::orthography::realise(lemma, recension);
+    Some(
+        (0..form_end)
+            .map(|i| resolved_cell(pos, &realised, recension, i, &fact))
+            .collect(),
+    )
 }
 
 /// Subtract the rule engine from every observation and number the survivors.
@@ -2259,6 +2382,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     }
                     infer_participle_stems(&recension, &mut forms, &mut raw);
                 }
+                infer_accent_pattern(key.pos, &recension, &key.lemma, &mut forms, &mut raw);
                 acc.observe(forms, raw, obs.soft);
             }
         }
@@ -2291,118 +2415,73 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
         // through a published row whose stem does not shadow the rule; when
         // this row would vanish (or its stem derives something else),
         // re-store the attested form.
-        if key.pos == Pos::Verb {
-            let bare_stems: Vec<String> = assigned
-                .first()
-                .filter(|bare| bare.key == key.lemma)
-                .map(|bare| (542..546).map(|i| bare.forms[i].clone()).collect())
-                .unwrap_or_else(|| vec![String::new(); 4]);
-            let bare_exact: Vec<String> = assigned
-                .first()
-                .filter(|bare| bare.key == key.lemma)
-                .map(|bare| bare.forms[..542].to_vec())
-                .unwrap_or_else(|| vec![String::new(); 542]);
-            // The rule fallback each row's caller will actually reach: the
-            // row's own class/present-stem override, else the bare row's
-            // (a vanished variant row is served by the bare key), else the
-            // plain rule.
-            // Per-cell own-else-bare, exactly as `attested_cell` resolves.
-            let bare_fact: Vec<String> = assigned
-                .first()
-                .filter(|bare| bare.key == key.lemma)
-                .map(|bare| {
-                    vec![
-                        bare.forms[PRESENT_STEM_CELL].clone(),
-                        bare.forms[VERB_CLASS_CELL].clone(),
-                    ]
-                })
-                .unwrap_or_else(|| vec![String::new(); 2]);
-            let override_pred = |row: &crate::assign::Assignment| -> Option<Vec<String>> {
-                let pick = |i: usize, b: usize| {
-                    if !row.forms[i].is_empty() {
-                        row.forms[i].clone()
-                    } else {
-                        bare_fact[b].clone()
-                    }
-                };
-                let (stem, class) = (pick(PRESENT_STEM_CELL, 0), pick(VERB_CLASS_CELL, 1));
-                (!class.is_empty() || !stem.is_empty()).then(|| {
-                    predict_verb_override(
-                        &key.lemma,
-                        (!class.is_empty()).then_some(class.as_str()),
-                        (!stem.is_empty()).then_some(stem.as_str()),
-                        &recension,
-                    )
-                })
+        if let Some((_, fact_range)) = fact_geometry(key.pos) {
+            let form_end = fact_range.start;
+            let realised = church_slavonic_core::orthography::realise(&key.lemma, &recension);
+            // The bare row is resolved FIRST and the snapshots taken after:
+            // the forward pass below can re-store bare cells, and every
+            // variant must reason from the bare row the runtime will see.
+            let snapshot = |assigned: &[crate::assign::Assignment]| {
+                let bare = assigned.first().filter(|b| b.key == key.lemma);
+                (
+                    bare.map(|b| b.forms[fact_range.clone()].to_vec())
+                        .unwrap_or_else(|| vec![String::new(); fact_range.len()]),
+                    bare.map(|b| b.forms[..form_end].to_vec())
+                        .unwrap_or_else(|| vec![String::new(); form_end]),
+                )
             };
-            let bare_pred: Option<Vec<String>> = assigned
-                .first()
-                .filter(|bare| bare.key == key.lemma)
-                .and_then(|bare| override_pred(bare));
-            for row in &mut assigned {
-                // Reachability is judged per block against the stem that
-                // will actually answer: the row's own where it has one, the
-                // bare row's otherwise (a variant whose row would vanish as
-                // all-empty falls back to the bare key).
-                let stems: Vec<String> = (542..546)
-                    .enumerate()
-                    .map(|(b, i)| {
+            let (mut bare_facts, mut bare_exact) = snapshot(&assigned);
+            let row_count = assigned.len();
+            for index in 0..row_count {
+                if index == 1 {
+                    // The bare row just settled; variants see its final state.
+                    (bare_facts, bare_exact) = snapshot(&assigned);
+                }
+                let row = &mut assigned[index];
+                let is_bare = row.key == key.lemma;
+                let facts: Vec<String> = fact_range
+                    .clone()
+                    .map(|i| {
                         if row.forms[i].is_empty() {
-                            bare_stems[b].clone()
+                            bare_facts[i - fact_range.start].clone()
                         } else {
                             row.forms[i].clone()
                         }
                     })
                     .collect();
-                // Judged against what the runtime will resolve for this
-                // key: `attested_cell` probes the key's row, then the bare
-                // lemma's — so the fallback is the row's own override,
-                // else the bare row's, else the plain rule.
-                let row_pred = override_pred(row).or_else(|| bare_pred.clone());
-                let restore = |row: &mut crate::assign::Assignment, pred: &Option<Vec<String>>| {
-                    for cell in 0..542 {
-                        if row.forms[cell].is_empty() && !row.raw[cell].is_empty() {
-                            // Already reachable through the bare row's own cell.
-                            if bare_exact[cell] == row.raw[cell] {
-                                continue;
-                            }
-                            let resolved = (38..542)
-                                .contains(&cell)
-                                .then(|| resolve_participle_cell(&recension, cell, &stems))
-                                .flatten()
-                                .unwrap_or_else(|| {
-                                    pred.as_ref().map_or(&predicted[cell], |p| &p[cell]).clone()
-                                });
-                            if !rule_matches(&recension, &row.raw[cell], &resolved) {
-                                row.forms[cell] = row.raw[cell].clone();
-                            }
+                let fact = |i: usize| -> Option<String> {
+                    facts
+                        .get(i.checked_sub(fact_range.start)?)
+                        .filter(|f| !f.is_empty())
+                        .cloned()
+                };
+                let resolved =
+                    |cell: usize| resolved_cell(key.pos, &realised, &recension, cell, &fact);
+                // Forward: a blank cell is re-stored when the runtime's
+                // resolution for this key will NOT reproduce its
+                // attestation — a differing bare exact cell shadows the
+                // facts, and the facts must otherwise derive it.
+                for cell in 0..form_end {
+                    if row.forms[cell].is_empty() && !row.raw[cell].is_empty() {
+                        let reproduced = if !is_bare && !bare_exact[cell].is_empty() {
+                            bare_exact[cell] == row.raw[cell]
+                        } else {
+                            rule_matches(&recension, &row.raw[cell], &resolved(cell))
+                        };
+                        if !reproduced {
+                            row.forms[cell] = row.raw[cell].clone();
                         }
                     }
-                };
-                restore(row, &row_pred);
-                // And the inverse: a cell stored by the per-candidate
-                // subtraction (which compared against the candidate's own
-                // prediction) is dead weight when the runtime's fallback
-                // for this key — the bare row's cell, else the override
-                // resolution — already answers it.
-                for cell in 0..542 {
-                    if row.key != key.lemma
+                }
+                // Reverse: a stored cell the fallback already reproduces
+                // (and the bare row does not shadow) is dead weight.
+                for cell in 0..form_end {
+                    if !is_bare
                         && !row.forms[cell].is_empty()
                         && bare_exact[cell].is_empty()
+                        && rule_matches(&recension, &row.forms[cell], &resolved(cell))
                     {
-                        let resolved = (38..542)
-                            .contains(&cell)
-                            .then(|| resolve_participle_cell(&recension, cell, &stems))
-                            .flatten()
-                            .unwrap_or_else(|| {
-                                row_pred
-                                    .as_ref()
-                                    .map_or(&predicted[cell], |p| &p[cell])
-                                    .clone()
-                            });
-                        if rule_matches(&recension, &row.forms[cell], &resolved) {
-                            row.forms[cell] = String::new();
-                        }
+                        row.forms[cell] = String::new();
                     }
                 }
             }
@@ -2425,7 +2504,6 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::cells::CASES;
 
     fn entry(json: &str) -> Entry {
         serde_json::from_str(json).expect("fixture parses")
@@ -2623,7 +2701,7 @@ mod tests {
         let row = &t.noun[0].1;
         assert_eq!(row[noun_cell(&Case::Genitive, &Number::Singular)], "раба̀");
         assert_eq!(row[noun_cell(&Case::Dative, &Number::Singular)], "");
-        assert_eq!(row.len(), CASES.len() * 3);
+        assert_eq!(row.len(), Pos::Noun.arity());
     }
 
     fn polyakov_entry(
@@ -2953,9 +3031,14 @@ mod tests {
         let t = finalize(&both);
         let keys: Vec<&str> = t.noun.iter().map(|(k, _)| k.as_str()).collect();
         assert_eq!(keys, ["syn:рабъ", "syn:рабъ_2"]);
-        // The variant row repeats nothing the bare row holds.
-        assert_eq!(t.noun[0].1[dat], "рабꙋ̀");
+        // The ending-stressed cells collapsed onto an accent-pattern token;
+        // the variant row repeats nothing the bare row resolves.
+        assert_eq!(
+            t.noun[0].1[church_slavonic_core::schema::NOUN_ACCENT_CELL],
+            "s1"
+        );
+        assert_eq!(t.noun[0].1[dat], "");
         assert_eq!(t.noun[1].1[dat], "");
-        assert_eq!(t.noun[1].1[genitive], "раба̀");
+        assert_eq!(t.noun[1].1[genitive], "ра́ба");
     }
 }

@@ -19,7 +19,14 @@ derived from the attested declensions, so a regular declension of an
 irregular stem costs four table cells, not five hundred — and, in the same
 spirit, a per-verb conjugation-class and present-stem override that re-runs
 the finite rule with the verb's true class, collapsing a misclassed verb's
-finite block to two cells.
+finite block to two cells. A fourth derived fact, the Synodal
+ACCENT-PATTERN cell (`s<N>` stem-fixed or `e` ending-stressed), re-accents
+the rule's answer where a row's whole paradigm shares one stress shape;
+mobile and mixed-convention paradigms stay stored. The fact-resolution
+order — the row's exact cell, the bare row's, the facts read
+own-else-bare, the rule — lives in one place,
+`church_slavonic_core::resolution`, which the runtime, the extractor and
+both audits all call.
 
 ## ⚡ Speed and Accuracy
 
@@ -98,17 +105,17 @@ correctness — whether the natural bare-lemma call returns the primary
 |----------------|-----------|----------------------|---------------|-----------------|
 | **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
 | **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
-| **Nouns** | Synodal (Alypy) | 418 / 502 | 83.27% | 84 |
-| **Nouns** | Synodal (Polyakov) | 46347 / 48135 | 96.29% | 1788 |
+| **Nouns** | Synodal (Alypy) | 417 / 502 | 83.07% | 85 |
+| **Nouns** | Synodal (Polyakov) | 46368 / 48135 | 96.33% | 1767 |
 | **Nouns** | Synodal (ru.wiktionary) | 545 / 651 | 83.72% | 106 |
 | **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
 | **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
 | **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
-| **Adjectives** | Synodal (Polyakov) | 84489 / 87997 | 96.01% | 3508 |
+| **Adjectives** | Synodal (Polyakov) | 84418 / 87997 | 95.93% | 3579 |
 | **Verbs** | OCS | 218500 / 236400 | 92.43% | 17900 |
 | **Verbs** | OCS (UD PROIEL train) | 1352 / 1757 | 76.95% | 405 |
 | **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
-| **Verbs** | Synodal (Polyakov) | 54722 / 56435 | 96.96% | 1713 |
+| **Verbs** | Synodal (Polyakov) | 54732 / 56435 | 96.98% | 1703 |
 | **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
 | **Pronouns** | OCS (UD PROIEL train) | 48 / 67 | 71.64% | 19 |

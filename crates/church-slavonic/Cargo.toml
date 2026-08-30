@@ -1,6 +1,6 @@
 [package]
 name = "church-slavonic"
-version = "0.6.0"
+version = "0.7.0"
 authors.workspace = true
 edition.workspace = true
 # src/lib.rs uses let-chains (`&& let ...`), stabilized in 1.88.

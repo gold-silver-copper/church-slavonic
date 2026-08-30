@@ -40,6 +40,8 @@ mod noun;
 mod participle;
 pub mod orthography;
 mod pronoun;
+pub mod resolution;
+pub mod schema;
 pub mod sense_key;
 mod utils;
 pub mod verb;

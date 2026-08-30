@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.7.0 — one resolution engine and the accent-pattern cells
+
+### Changed
+- The fact-resolution order (own exact cell -> bare exact cell -> facts
+  read own-else-bare -> rule) is consolidated into
+  `church_slavonic_core::resolution` and `church_slavonic_core::schema`;
+  the runtime facade, the extractor's subtraction and reachability passes,
+  and both dead-weight audits call the one engine. The refactor is
+  byte-identical: same tables, same accuracy report.
+
+### Added
+- Synodal accent-pattern cells (noun 21, adjective 126, verb 548; arities
+  22/127/549): a derived `s<N>`/`e` token adopted only when every attested
+  accented form of the row shares the stress shape and the re-accented
+  rule reproduces it exactly. ~370 rows adopt; mobile and mixed-convention
+  paradigms (~6,500 accented Synodal rows) stay stored — the finding of
+  this build is that Synodal storage couples stress with the print's
+  plural-letter conventions, so pure stress patterns have limited reach.
+  The refresh summary reports the token/Polyakov-class agreement rate
+  (85/128 across 29 classes on this data).
+
 ## 0.6.0 — class cells and the slice tables
 
 ### Added
