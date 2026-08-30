@@ -77,7 +77,7 @@ fn main() {
     );
     assert_eq!(
         ChurchSlavonic::noun("жена̀", &Case::Nominative, &Number::Plural, &syn),
-        "жє́ны"
+        "жєны̀"
     );
 
     // --- Verbs ---

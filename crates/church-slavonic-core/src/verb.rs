@@ -19,7 +19,6 @@
 //! [`ChurchSlavonicCore::to_be`].
 
 use crate::ChurchSlavonicCore;
-use crate::accent::with_accent;
 use crate::grammar::*;
 use crate::orthography::strip_marks;
 
@@ -80,6 +79,23 @@ impl ChurchSlavonicCore {
         form: &Form,
         recension: &Recension,
     ) -> String {
+        Self::verb_pattern(word, person, number, tense, form, recension, None)
+    }
+
+    /// [`Self::verb`] with the row's accent-pattern token steering the
+    /// stress (see [`crate::accent::with_accent_pattern`]) — the resolution
+    /// engine's fallback path.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn verb_pattern(
+        word: &str,
+        person: &Person,
+        number: &Number,
+        tense: &Tense,
+        form: &Form,
+        recension: &Recension,
+        pattern: Option<&str>,
+    ) -> String {
+        use crate::accent::with_accent_pattern;
         let skeleton = strip_marks(word);
         if (skeleton == "бꙑти" || skeleton == "быти")
             && let Some(form) = Self::to_be(person, number, tense, form, recension)
@@ -89,13 +105,13 @@ impl ChurchSlavonicCore {
         let reflexive = *recension == Recension::Synodal && skeleton.ends_with("сѧ");
         if reflexive {
             let bare: String = word.chars().take(word.chars().count() - 2).collect();
-            return with_accent(&bare, recension, |w| {
+            return with_accent_pattern(&bare, recension, pattern, |w| {
                 // The jer drops before the enclitic (`моли́тсѧ`, `моли́хсѧ`).
                 let answer = Self::verb_skeleton(w, person, number, tense, form, recension);
                 format!("{}сѧ", answer.strip_suffix('ъ').unwrap_or(&answer))
             });
         }
-        with_accent(word, recension, |w| {
+        with_accent_pattern(word, recension, pattern, |w| {
             Self::verb_skeleton(w, person, number, tense, form, recension)
         })
     }
@@ -330,7 +346,8 @@ impl ChurchSlavonicCore {
             let len = word.chars().count().saturating_sub(n);
             word.chars().take(len).collect()
         };
-        if word.ends_with("дати") && !word.ends_with("ждати") && !word.ends_with("гадати") {
+        if word.ends_with("дати") && !word.ends_with("ждати") && !word.ends_with("гадати")
+        {
             // The athematic `дам-`/`даст-` present and the `даждь`
             // imperative; the sigmatic aorist keeps `-ст-` in 2/3 singular.
             let p = prefix(4);
@@ -514,24 +531,54 @@ fn go_prefix(word: &str) -> Option<String> {
         "", "по", "пр", "прии", "при", "вън", "вьн", "въни", "из", "изи", "от", "до", "на", "за",
         "прѣ", "мимо", "съ", "об",
     ];
-    PREVERBS
-        .contains(&head)
-        .then(|| head.to_string())
+    PREVERBS.contains(&head).then(|| head.to_string())
 }
 
 // The athematic present rows, full forms after the preverb: singular 1 2 3,
 // dual 1 2 3, plural 1 2 3.
 const ATHEMATIC_DA: Row = [
-    "дамь", "даси", "дастъ", "давѣ", "даста", "дасте", "дамъ", "дасте", "дадѧтъ",
+    "дамь",
+    "даси",
+    "дастъ",
+    "давѣ",
+    "даста",
+    "дасте",
+    "дамъ",
+    "дасте",
+    "дадѧтъ",
 ];
 const RESTI_AORIST: Row = [
-    "рѣхъ", "рече", "рече", "рѣховѣ", "рѣста", "рѣсте", "рѣхомъ", "рѣсте", "рѣшѧ",
+    "рѣхъ",
+    "рече",
+    "рече",
+    "рѣховѣ",
+    "рѣста",
+    "рѣсте",
+    "рѣхомъ",
+    "рѣсте",
+    "рѣшѧ",
 ];
 const ATHEMATIC_VE: Row = [
-    "вѣмь", "вѣси", "вѣстъ", "вѣвѣ", "вѣста", "вѣсте", "вѣмъ", "вѣсте", "вѣдѧтъ",
+    "вѣмь",
+    "вѣси",
+    "вѣстъ",
+    "вѣвѣ",
+    "вѣста",
+    "вѣсте",
+    "вѣмъ",
+    "вѣсте",
+    "вѣдѧтъ",
 ];
 const ATHEMATIC_IMA: Row = [
-    "имамь", "имаши", "иматъ", "имавѣ", "имата", "имате", "имамъ", "имате", "имѫтъ",
+    "имамь",
+    "имаши",
+    "иматъ",
+    "имавѣ",
+    "имата",
+    "имате",
+    "имамъ",
+    "имате",
+    "имѫтъ",
 ];
 
 /// The Slavonic iotation of a stem-final consonant (before the first
@@ -725,30 +772,54 @@ mod tests {
         // or the copula.
         assert_eq!(
             ChurchSlavonicCore::verb_from_stems(
-                "дати", Some("vowel"), Some("дава"),
-                &First, &Singular, &Tense::Present, &Finite, &OCS
+                "дати",
+                Some("vowel"),
+                Some("дава"),
+                &First,
+                &Singular,
+                &Tense::Present,
+                &Finite,
+                &OCS
             ),
             "дамь"
         );
         assert_eq!(
             ChurchSlavonicCore::verb_from_stems(
-                "прити", Some("second"), Some("прит"),
-                &Third, &Singular, &Tense::Aorist, &Participle, &OCS
+                "прити",
+                Some("second"),
+                Some("прит"),
+                &Third,
+                &Singular,
+                &Tense::Aorist,
+                &Participle,
+                &OCS
             ),
             "пришьдъ"
         );
         assert_eq!(
             ChurchSlavonicCore::verb_from_stems(
-                "бꙑти", Some("hard"), Some("бꙑва"),
-                &Third, &Singular, &Tense::Present, &Finite, &OCS
+                "бꙑти",
+                Some("hard"),
+                Some("бꙑва"),
+                &Third,
+                &Singular,
+                &Tense::Present,
+                &Finite,
+                &OCS
             ),
             "ѥстъ"
         );
         // And the override does steer a regular verb.
         assert_eq!(
             ChurchSlavonicCore::verb_from_stems(
-                "глаголати", Some("iotated"), Some("глагол"),
-                &Third, &Singular, &Tense::Present, &Finite, &OCS
+                "глаголати",
+                Some("iotated"),
+                Some("глагол"),
+                &Third,
+                &Singular,
+                &Tense::Present,
+                &Finite,
+                &OCS
             ),
             "глаголетъ"
         );

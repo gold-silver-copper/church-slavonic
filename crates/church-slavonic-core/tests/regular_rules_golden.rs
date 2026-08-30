@@ -339,15 +339,7 @@ fn regular_verb_conjugations() {
             fin,
             "видиши",
         ),
-        (
-            "имѣти",
-            SYN,
-            Second,
-            Singular,
-            Tense::Present,
-            fin,
-            "имаши",
-        ),
+        ("имѣти", SYN, Second, Singular, Tense::Present, fin, "имаши"),
         (
             "цѣловати",
             OCS,

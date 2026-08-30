@@ -15,8 +15,12 @@
 //! 3. the plain rule.
 //!
 //! Facts compose as: stems and the override pick the LETTERS, the
-//! accent-pattern token picks the STRESS — it re-accents whatever the
-//! letter-level resolution produced, always last. This module
+//! accent-pattern token picks the STRESS. On the plain-rule paths the
+//! token rides inside the accent pass itself (`crate::accent`), so the
+//! print's stress-coupled conventions — the wide `ѡ`/`є`, the kamora, the
+//! final varia — follow the token's position; on the skeleton-level
+//! stem/override paths, whose endings carry no convention marker, it is a
+//! bare re-stress applied last. This module
 //! is steps 2–3; the runtime facade, the extractor's subtraction and
 //! reachability passes, and both dead-weight audits all call it instead of
 //! keeping their own copies.
@@ -47,22 +51,25 @@ pub fn verb_fact_fallback(
     cell: usize,
     fact: &dyn Fn(usize) -> Option<String>,
 ) -> String {
-    let letters = verb_letters(lemma, recension, cell, fact);
-    match fact(VERB_ACCENT_CELL) {
-        Some(token) => apply_accent_pattern(&letters, &token),
-        None => letters,
-    }
+    let token = fact(VERB_ACCENT_CELL);
+    verb_letters(lemma, recension, cell, fact, token.as_deref())
 }
 
-/// Apply an accent-pattern token to a produced form: `s<N>` stresses the
-/// N-th vowel, `e` the last; anything else leaves the form alone.
+/// Apply an accent-pattern token to a produced form as a bare re-stress:
+/// `s<N>` stresses the N-th vowel, `e` the last; anything else leaves the
+/// form alone. Only the skeleton-level stem/override paths use this — the
+/// rule paths thread the token through the accent pass instead, where the
+/// print conventions can follow it.
 pub fn apply_accent_pattern(form: &str, token: &str) -> String {
     if form.is_empty() {
         return form.to_string();
     }
     let n = if token == "e" {
         crate::orthography::vowel_count(form).saturating_sub(1)
-    } else if let Some(n) = token.strip_prefix('s').and_then(|d| d.parse::<usize>().ok()) {
+    } else if let Some(n) = token
+        .strip_prefix('s')
+        .and_then(|d| d.parse::<usize>().ok())
+    {
         n
     } else {
         return form.to_string();
@@ -82,11 +89,8 @@ pub fn noun_fact_fallback(
         return String::new();
     }
     let (case, number) = noun_features(cell);
-    let letters = ChurchSlavonicCore::noun(lemma, &case, &number, recension);
-    match fact(NOUN_ACCENT_CELL) {
-        Some(token) => apply_accent_pattern(&letters, &token),
-        None => letters,
-    }
+    let token = fact(NOUN_ACCENT_CELL);
+    ChurchSlavonicCore::noun_pattern(lemma, &case, &number, recension, token.as_deref())
 }
 
 /// What an adjective key answers once its exact cells miss.
@@ -100,22 +104,38 @@ pub fn adj_fact_fallback(
         return String::new();
     }
     let (case, number, gender, degree) = adj_features(cell);
-    let letters = ChurchSlavonicCore::adj(lemma, &case, &number, &gender, &degree, recension);
-    match fact(ADJ_ACCENT_CELL) {
-        Some(token) => apply_accent_pattern(&letters, &token),
-        None => letters,
-    }
+    let token = fact(ADJ_ACCENT_CELL);
+    ChurchSlavonicCore::adj_pattern(
+        lemma,
+        &case,
+        &number,
+        &gender,
+        &degree,
+        recension,
+        token.as_deref(),
+    )
 }
 
+/// The letter-level resolution with the accent-pattern token in its right
+/// seat: the plain-rule paths thread it through the accent pass (the one
+/// copy of the stress-coupled print conventions in `crate::accent`), while
+/// the skeleton-level stem/override paths — whose stored stems carry their
+/// own accents and whose endings carry no convention marker — post-apply
+/// it as a bare re-stress, as before.
 fn verb_letters(
     lemma: &str,
     recension: &Recension,
     cell: usize,
     fact: &dyn Fn(usize) -> Option<String>,
+    pattern: Option<&str>,
 ) -> String {
     if cell >= 542 {
         return String::new();
     }
+    let reaccent = |form: String| match pattern {
+        Some(token) => apply_accent_pattern(&form, token),
+        None => form,
+    };
     if (38..542).contains(&cell) {
         let (voice, series, past, gender, number, case) = participle_features(cell);
         let tense = if past { Tense::Aorist } else { Tense::Present };
@@ -124,7 +144,7 @@ fn verb_letters(
                 &stem, past, &voice, &series, &case, &number, &gender, recension,
             )
         {
-            return form;
+            return reaccent(form);
         }
     }
     let class = fact(VERB_CLASS_CELL);
@@ -132,7 +152,7 @@ fn verb_letters(
     if class.is_some() || present.is_some() {
         if cell < 38 {
             let (person, number, tense, form) = finite_features(cell);
-            return ChurchSlavonicCore::verb_from_stems(
+            return reaccent(ChurchSlavonicCore::verb_from_stems(
                 lemma,
                 class.as_deref(),
                 present.as_deref(),
@@ -141,11 +161,11 @@ fn verb_letters(
                 &tense,
                 &form,
                 recension,
-            );
+            ));
         }
         let (voice, series, past, gender, number, case) = participle_features(cell);
         let tense = if past { Tense::Aorist } else { Tense::Present };
-        return ChurchSlavonicCore::participle_with_override(
+        return reaccent(ChurchSlavonicCore::participle_with_override(
             lemma,
             class.as_deref(),
             present.as_deref(),
@@ -156,16 +176,16 @@ fn verb_letters(
             &number,
             &gender,
             recension,
-        );
+        ));
     }
     if cell < 38 {
         let (person, number, tense, form) = finite_features(cell);
-        ChurchSlavonicCore::verb(lemma, &person, &number, &tense, &form, recension)
+        ChurchSlavonicCore::verb_pattern(lemma, &person, &number, &tense, &form, recension, pattern)
     } else {
         let (voice, series, past, gender, number, case) = participle_features(cell);
         let tense = if past { Tense::Aorist } else { Tense::Present };
-        ChurchSlavonicCore::participle(
-            lemma, &tense, &voice, &series, &case, &number, &gender, recension,
+        ChurchSlavonicCore::participle_pattern(
+            lemma, &tense, &voice, &series, &case, &number, &gender, recension, pattern,
         )
     }
 }

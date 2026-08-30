@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.8.0 — convention-aware accent tokens
+
+### Changed
+- The accent-pattern token now rides inside the accent pass
+  (`core::accent::with_accent_pattern`) on every rule path, instead of
+  bare-re-stressing the finished form: the print's stress-coupled
+  conventions — the wide `ѡ`/`є`, the kamora, the word-final varia, the
+  carried stem marks — follow the token's position exactly as they follow
+  the lemma's. The skeleton-level stem/override paths, whose endings carry
+  no convention marker, keep the bare re-stress.
+- The convention itself was corrected against the corpus: the widening
+  targets the last narrow `о`/`е` at or after the stress; a form stressed
+  on its final vowel widens the last narrow `о`/`е` anywhere instead
+  (`вѡнѝ`, `верєѝ`); and a lexical wide letter no longer excuses the
+  kamora (`а҆арѡ̑нимъ`, `а҆вессалѡ̑мли` — the print writes the kamora
+  anyway). 643 attested kamora-bearing cells that were stored are now
+  reproduced by rule; noun bare accuracy +0.09 (Polyakov) and +0.20
+  (Alypy), adjectives +0.02, nothing regresses, OCS byte-identical.
+
+### Findings, stated plainly
+- Mobile-stress scheme tokens — the planned second stage — were measured
+  and dropped: clustering the 1,951 mobile rows' attested stress shapes
+  found the commonest scheme recurring on just 15 rows, and most rows
+  (adj 432/574, verb 618/850) not expressible as a stem/ending partition
+  at all, so no closed scheme vocabulary earns a const table. Mobile
+  paradigms stay stored.
+- The adoption coverage gate stays at >=2 covered cells: lowering it to 1
+  adopted 52 more tokens but cost 0.02 noun bare accuracy for ~550 bytes —
+  a measured wash that regresses.
+- Two experiments were tried and reverted: computing the distinguishing
+  markers from within-paradigm ending collisions (breaks `сынѡ́въ` —
+  GenPl `-овъ` widens with no singular collision), and widening anywhere
+  unconditionally (breaks `безпꙋ̑тіѧ` — a pre-stress `о`/`е` under a
+  non-final stress does not widen).
+- The remaining census (rows without a token, by dominant blocker):
+  letters-differ 8,668 rows (a letter-paradigm problem, not an accent
+  one — the next lever), too-sparse 7,681, mobile 1,951, wide 434,
+  kamora 99. Token/Polyakov-class agreement is 68/99 across 26 classes
+  (85/128 across 29 in 0.7.0 — fewer, more convention-faithful tokens).
+
 ## 0.7.0 — one resolution engine and the accent-pattern cells
 
 ### Changed

@@ -117,8 +117,8 @@ fn tag(recension: &Recension) -> &'static str {
 // The cell indices of the schema — the one copy lives in
 // `church_slavonic_core::schema`.
 use church_slavonic_core::schema::{
-    PRESENT_STEM_CELL, VERB_CLASS_CELL, adj_cell, noun_cell, participle_cell,
-    participle_stem_cell, pronoun_cell, verb_cell,
+    PRESENT_STEM_CELL, VERB_CLASS_CELL, adj_cell, noun_cell, participle_cell, participle_stem_cell,
+    pronoun_cell, verb_cell,
 };
 
 /// The attested form at cell `i` of a sparse row (the `(cell, form)` pairs
@@ -450,7 +450,7 @@ impl ChurchSlavonic {
         })
     }
 
-/// Declines a participle: `tense` (`Imperfect` and `Aorist` both mean
+    /// Declines a participle: `tense` (`Imperfect` and `Aorist` both mean
     /// the past participle), `voice`, the short or long [`Series`], and the
     /// adjective-style agreement features. The lemma is the infinitive; like
     /// every call, attested table cells override the rule.

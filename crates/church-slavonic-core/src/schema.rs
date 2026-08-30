@@ -119,8 +119,7 @@ pub fn participle_cell(
         Tense::Present => 0,
         Tense::Imperfect | Tense::Aorist => 1,
     };
-    38 + (((series * 2 + tense) * 3 + *gender as usize) * 3 + *number as usize) * 7
-        + *case as usize
+    38 + (((series * 2 + tense) * 3 + *gender as usize) * 3 + *number as usize) * 7 + *case as usize
 }
 
 /// The four participle-stem cells: a derived stem, not an attested form.

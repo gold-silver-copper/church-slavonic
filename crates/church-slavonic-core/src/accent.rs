@@ -25,11 +25,12 @@ use crate::grammar::Recension;
 use crate::orthography::{Unit, is_accented, join, stress, strip_marks, units};
 
 /// A cell whose ending begins with this marker is one the print tells apart
-/// from a look-alike singular (Alypy §6): the last `о`/`е` at or after the
-/// stress becomes the wide `ѡ`/`є` (`рабѡ́въ`, `а҆́ггєлъ`, `ѻ҆тцє́мъ`,
-/// `бє́здны`), a wide letter already there is mark enough (`а҆вессалѡ́мли`),
-/// and a word with neither takes the kamora instead of the oxia/varia
-/// (`рабы̑`, `рꙋ̑ки`, `сы̑ны`, `безпꙋ̑тіѧ`).
+/// from a look-alike singular (Alypy §6): the last narrow `о`/`е` anywhere
+/// in the word becomes the wide `ѡ`/`є` (`рабѡ́въ`, `а҆́ггєлъ`, `ѻ҆тцє́мъ`,
+/// `бє́здны`, and before the stress too: `вѡнѝ`, `верєѝ`), and a word
+/// without one takes the kamora instead of the oxia/varia (`рабы̑`,
+/// `рꙋ̑ки`, `сы̑ны`, `безпꙋ̑тіѧ`, `а҆арѡ̑нимъ` — a lexical wide letter is
+/// not mark enough).
 pub(crate) const KAMORA_CELL: char = '^';
 
 /// The print's word-final varia (Alypy §5): an acute that lands on the last
@@ -54,10 +55,17 @@ pub(crate) fn final_varia(word: &str) -> String {
 /// Run `rule` on the unaccented skeleton of `word` and put the accent back
 /// by the pattern above. Outside the Synodal recension, or for an
 /// unaccented lemma, the rule's answer is returned as is (minus the kamora
-/// marker).
-pub(crate) fn with_accent(
+/// marker). `pattern` is the row's accent-pattern token, when it carries
+/// one, and takes charge of the stress: `s<N>` stresses the answer's N-th
+/// vowel, `e` its last, and the print conventions (the wide `ѡ`/`є`, the
+/// kamora, the word-final varia, the carried stem marks) follow the
+/// token's position exactly as they follow the lemma's. This is the ONE
+/// copy of that machinery; the token path may not re-implement it. An
+/// unrecognised token, or `None`, defers to the lemma.
+pub(crate) fn with_accent_pattern(
     word: &str,
     recension: &Recension,
+    pattern: Option<&str>,
     rule: impl FnOnce(&str) -> String,
 ) -> String {
     if *recension != Recension::Synodal {
@@ -98,21 +106,40 @@ pub(crate) fn with_accent(
         |units: &[Unit], n: usize| units[..n].iter().filter(|u| u.is_vowel()).count();
     let total = out.iter().filter(|u| u.is_vowel()).count();
     let prefix_vowels = vowels_before(&out, offset);
-    let target = accent.map(|accent| {
-        let k = vowels_before(&lemma, accent) + prefix_vowels;
-        let stem_vowels = vowels_before(&out, offset + shared);
-        if k < stem_vowels || stem_vowels >= total {
-            k.min(total.saturating_sub(1))
+    // The token, when the row carries one, positions the stress; the lemma
+    // positions it otherwise. Either way the conventions below follow it.
+    let token_target = pattern.and_then(|token| {
+        if token == "e" {
+            Some(total.saturating_sub(1))
         } else {
-            stem_vowels
+            token
+                .strip_prefix('s')
+                .and_then(|d| d.parse::<usize>().ok())
         }
     });
-    // The plural mark: the last `о`/`е` from the stressed vowel on becomes
-    // wide; a wide letter already there needs nothing; a word with neither
-    // takes the kamora at the stress.
+    let unmarked = unmarked && token_target.is_none();
+    let target = token_target.or_else(|| {
+        accent.map(|accent| {
+            let k = vowels_before(&lemma, accent) + prefix_vowels;
+            let stem_vowels = vowels_before(&out, offset + shared);
+            if k < stem_vowels || stem_vowels >= total {
+                k.min(total.saturating_sub(1))
+            } else {
+                stem_vowels
+            }
+        })
+    });
+    // The plural mark: the last narrow `о`/`е` at or after the stress
+    // becomes wide (`рабѡ́въ`, `а҆́ггєлъ`); a form stressed on its final
+    // vowel, with nothing after to widen, widens the last narrow `о`/`е`
+    // anywhere instead (`вѡнѝ`, `верєѝ`); a word with no candidate takes
+    // the kamora at the stress (`рабы̑`, `а҆рома̑тъ`, `безпꙋ̑тіѧ` — an `о`/`е`
+    // before a non-final stress stays, and a lexical wide letter is not
+    // mark enough: `а҆арѡ̑нимъ`).
     let mut kamora = false;
     if distinguish && (target.is_some() || unmarked) {
         let from = target.unwrap_or(0);
+        let from = if from + 1 >= total { 0 } else { from };
         let mut seen = total;
         let mut widened = false;
         for unit in out.iter_mut().rev() {
@@ -131,10 +158,6 @@ pub(crate) fn with_accent(
                 }
                 'е' => {
                     unit.base = 'є';
-                    widened = true;
-                    break;
-                }
-                'ѡ' | 'є' => {
                     widened = true;
                     break;
                 }
@@ -161,7 +184,7 @@ mod tests {
     const SYN: Recension = Recension::Synodal;
 
     fn apply(lemma: &str, answer: &str) -> String {
-        with_accent(lemma, &SYN, |skeleton| {
+        with_accent_pattern(lemma, &SYN, None, |skeleton| {
             assert!(!is_accented(skeleton));
             answer.to_string()
         })
@@ -198,11 +221,13 @@ mod tests {
         assert_eq!(apply("а҆́ггелъ", "^аггелъ"), "а҆́ггєлъ");
         assert_eq!(apply("бе́здна", "^бездны"), "бє́здны");
         assert_eq!(apply("безпꙋ́тіе", "^безпꙋтіѧ"), "безпꙋ̑тіѧ");
-        assert_eq!(apply("а҆вессалѡ́мль", "^авессалѡмли"), "а҆вессалѡ́мли");
+        assert_eq!(apply("а҆вессалѡ́мль", "^авессалѡмли"), "а҆вессалѡ\u{311}мли");
+        assert_eq!(apply("вонѧ̀", "^вони"), "вѡнѝ");
+        assert_eq!(apply("вереѧ̀", "^вереи"), "верєѝ");
         assert_eq!(apply("бг҃ъ", "^бгы"), "бг҃ы");
         assert_eq!(apply("рꙋка̀", "^рꙋками"), "рꙋка\u{311}ми");
         assert_eq!(
-            with_accent("ра́бъ", &Recension::OldChurchSlavonic, |w| format!(
+            with_accent_pattern("ра́бъ", &Recension::OldChurchSlavonic, None, |w| format!(
                 "{w}!"
             )),
             "ра́бъ!"

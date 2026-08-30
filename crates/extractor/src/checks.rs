@@ -447,7 +447,10 @@ mod harness {
                 && (9..18).contains(&slot.cell)
                 && comparison_key(&slot.lemma) == comparison_key("бꙑти")
             {
-                produced.extend(keys.iter().map(|k| produce(slot.pos, k, slot.cell + 9, &ocs)));
+                produced.extend(
+                    keys.iter()
+                        .map(|k| produce(slot.pos, k, slot.cell + 9, &ocs)),
+                );
             }
             let hit = score_slot(
                 scores.entry(slot.pos).or_default(),
@@ -501,7 +504,10 @@ mod harness {
                         let _ = writeln!(
                             report.misses,
                             "{}\t{}\t{}\t{}\tunreachable-form",
-                            key.lemma, i, a, produced.join(", ")
+                            key.lemma,
+                            i,
+                            a,
+                            produced.join(", ")
                         );
                     }
                 }

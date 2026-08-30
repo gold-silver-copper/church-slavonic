@@ -14,7 +14,6 @@
 //! `а҆́лчна`) drop it before a vowel ending.
 
 use crate::ChurchSlavonicCore;
-use crate::accent::with_accent;
 use crate::grammar::*;
 
 impl ChurchSlavonicCore {
@@ -28,8 +27,23 @@ impl ChurchSlavonicCore {
         degree: &Degree,
         recension: &Recension,
     ) -> String {
+        Self::adj_pattern(word, case, number, gender, degree, recension, None)
+    }
+
+    /// [`Self::adj`] with the row's accent-pattern token steering the
+    /// stress (see [`crate::accent::with_accent_pattern`]) — the resolution
+    /// engine's fallback path.
+    pub(crate) fn adj_pattern(
+        word: &str,
+        case: &Case,
+        number: &Number,
+        gender: &Gender,
+        degree: &Degree,
+        recension: &Recension,
+        pattern: Option<&str>,
+    ) -> String {
         let fleeting = *recension == Recension::Synodal && has_fleeting_en(word);
-        with_accent(word, recension, |w| {
+        crate::accent::with_accent_pattern(word, recension, pattern, |w| {
             Self::adj_skeleton(w, case, number, gender, degree, recension, fleeting)
         })
     }

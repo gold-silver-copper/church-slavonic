@@ -13,7 +13,6 @@
 //! the exceptions, as everywhere else.
 
 use crate::ChurchSlavonicCore;
-use crate::accent::with_accent;
 use crate::grammar::*;
 use crate::orthography::strip_marks;
 use crate::verb::{Conj, iotate};
@@ -34,17 +33,39 @@ impl ChurchSlavonicCore {
         gender: &Gender,
         recension: &Recension,
     ) -> String {
+        Self::participle_pattern(
+            word, tense, voice, series, case, number, gender, recension, None,
+        )
+    }
+
+    /// [`Self::participle`] with the row's accent-pattern token steering
+    /// the stress (see [`crate::accent::with_accent_pattern`]) — the
+    /// resolution engine's fallback path.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn participle_pattern(
+        word: &str,
+        tense: &Tense,
+        voice: &Voice,
+        series: &Series,
+        case: &Case,
+        number: &Number,
+        gender: &Gender,
+        recension: &Recension,
+        pattern: Option<&str>,
+    ) -> String {
+        use crate::accent::with_accent_pattern;
         // The reflexive `-сѧ` rides outside every form, as in
         // [`ChurchSlavonicCore::verb`]; the jer drops before the enclitic.
         if *recension == Recension::Synodal && strip_marks(word).ends_with("сѧ") {
             let bare: String = word.chars().take(word.chars().count() - 2).collect();
-            return with_accent(&bare, recension, |w| {
-                let answer =
-                    Self::participle_skeleton(w, tense, voice, series, case, number, gender, recension);
+            return with_accent_pattern(&bare, recension, pattern, |w| {
+                let answer = Self::participle_skeleton(
+                    w, tense, voice, series, case, number, gender, recension,
+                );
                 format!("{}сѧ", answer.strip_suffix('ъ').unwrap_or(&answer))
             });
         }
-        with_accent(word, recension, |w| {
+        with_accent_pattern(word, recension, pattern, |w| {
             Self::participle_skeleton(w, tense, voice, series, case, number, gender, recension)
         })
     }
@@ -106,11 +127,7 @@ impl ChurchSlavonicCore {
             let citation = || {
                 if past {
                     let base = stem.strip_suffix('ш')?.to_string();
-                    return Some(if synodal {
-                        format!("{base}ъ")
-                    } else {
-                        base
-                    });
+                    return Some(if synodal { format!("{base}ъ") } else { base });
                 }
                 // The present-active nominative contracts off the stem's
                 // suffix: OCS `-ѫщ` -> `-ꙑ`, `-ѭщ` -> `-ѩ`, `-ѧщ` -> `-ѧ`;
@@ -155,7 +172,11 @@ impl ChurchSlavonicCore {
                 let c = citation()?;
                 return Some(if synodal {
                     let c = c.trim_end_matches('ъ');
-                    if past { format!("{c}ый") } else { c.to_string() }
+                    if past {
+                        format!("{c}ый")
+                    } else {
+                        c.to_string()
+                    }
                 } else if past {
                     format!("{c}и")
                 } else {
@@ -185,11 +206,9 @@ impl ChurchSlavonicCore {
                             Some("иꙗ")
                         }
                         (Gender::Feminine, Number::Singular, Case::Instrumental) => Some("ѫѭ"),
-                        (
-                            Gender::Masculine,
-                            Number::Plural,
-                            Case::Nominative | Case::Vocative,
-                        ) => Some("еи"),
+                        (Gender::Masculine, Number::Plural, Case::Nominative | Case::Vocative) => {
+                            Some("еи")
+                        }
                         _ => None,
                     };
                     if let Some(over) = over {
@@ -368,12 +387,12 @@ const SYN_ACTIVE_SHORT: [PRow; 3] = [
 ];
 const SYN_ACTIVE_LONG: [PRow; 3] = [
     [
-        "ій", "агѡ", "емꙋ", "аго", "имъ", "емъ", "ій", "аѧ", "ꙋю", "има", "аѧ", "има", "ꙋю",
-        "аѧ", "іи", "ихъ", "ымъ", "ыѧ", "ими", "ихъ", "іи",
+        "ій", "агѡ", "емꙋ", "аго", "имъ", "емъ", "ій", "аѧ", "ꙋю", "има", "аѧ", "има", "ꙋю", "аѧ",
+        "іи", "ихъ", "ымъ", "ыѧ", "ими", "ихъ", "іи",
     ],
     [
-        "аѧ", "іѧ", "еи", "ꙋю", "ею", "еи", "аѧ", "іи", "ꙋю", "има", "іи", "има", "ꙋю", "іи",
-        "ыѧ", "ихъ", "ымъ", "ыѧ", "ими", "ихъ", "ыѧ",
+        "аѧ", "іѧ", "еи", "ꙋю", "ею", "еи", "аѧ", "іи", "ꙋю", "има", "іи", "има", "ꙋю", "іи", "ыѧ",
+        "ихъ", "ымъ", "ыѧ", "ими", "ихъ", "ыѧ",
     ],
     [
         "ее", "агѡ", "емꙋ", "ее", "имъ", "емъ", "ее", "іи", "ꙋю", "има", "іи", "има", "ꙋю", "іи",
@@ -382,7 +401,6 @@ const SYN_ACTIVE_LONG: [PRow; 3] = [
 ];
 
 fn ends_husher(stem: &str) -> bool {
-
     matches!(stem.chars().last(), Some('ж' | 'ч' | 'ш' | 'щ')) || stem.ends_with("жд")
 }
 
@@ -411,44 +429,134 @@ mod tests {
         use {Case::*, Gender::*, Number::*, Series::*, Tense::*, Voice::*};
         // Present active: citation, feminine -и, oblique -ѫщ-.
         assert_eq!(
-            p("нести", Present, Active, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "нести",
+                Present,
+                Active,
+                Short,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "несꙑ"
         );
         assert_eq!(
-            p("нести", Present, Active, Short, Nominative, Singular, Feminine, OCS),
+            p(
+                "нести",
+                Present,
+                Active,
+                Short,
+                Nominative,
+                Singular,
+                Feminine,
+                OCS
+            ),
             "несѫщи"
         );
         assert_eq!(
-            p("нести", Present, Active, Short, Genitive, Singular, Masculine, OCS),
+            p(
+                "нести",
+                Present,
+                Active,
+                Short,
+                Genitive,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "несѫща"
         );
         assert_eq!(
-            p("хвалити", Present, Active, Short, Genitive, Singular, Masculine, OCS),
+            p(
+                "хвалити",
+                Present,
+                Active,
+                Short,
+                Genitive,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "хвалѧща"
         );
         assert_eq!(
-            p("дѣлати", Present, Active, Short, Genitive, Singular, Masculine, OCS),
+            p(
+                "дѣлати",
+                Present,
+                Active,
+                Short,
+                Genitive,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "дѣлаѭща"
         );
         assert_eq!(
-            p("нести", Present, Active, Long, Nominative, Singular, Masculine, OCS),
+            p(
+                "нести",
+                Present,
+                Active,
+                Long,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "несꙑи"
         );
         assert_eq!(
-            p("нести", Present, Active, Long, Genitive, Singular, Masculine, OCS),
+            p(
+                "нести",
+                Present,
+                Active,
+                Long,
+                Genitive,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "несѫщаѥго"
         );
         // Past active: citation + -ш-.
         assert_eq!(
-            p("нести", Aorist, Active, Short, Genitive, Singular, Masculine, OCS),
+            p(
+                "нести",
+                Aorist,
+                Active,
+                Short,
+                Genitive,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "несъша"
         );
         assert_eq!(
-            p("дѣлати", Aorist, Active, Short, Nominative, Plural, Masculine, OCS),
+            p(
+                "дѣлати",
+                Aorist,
+                Active,
+                Short,
+                Nominative,
+                Plural,
+                Masculine,
+                OCS
+            ),
             "дѣлавъше"
         );
         assert_eq!(
-            p("прити", Aorist, Active, Short, Nominative, Singular, Feminine, OCS),
+            p(
+                "прити",
+                Aorist,
+                Active,
+                Short,
+                Nominative,
+                Singular,
+                Feminine,
+                OCS
+            ),
             "пришьдъши"
         );
     }
@@ -457,35 +565,100 @@ mod tests {
     fn passive_series_across_the_classes() {
         use {Case::*, Gender::*, Number::*, Series::*, Tense::*, Voice::*};
         assert_eq!(
-            p("нести", Present, Passive, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "нести",
+                Present,
+                Passive,
+                Short,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "несомъ"
         );
         assert_eq!(
-            p("хвалити", Present, Passive, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "хвалити",
+                Present,
+                Passive,
+                Short,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "хвалимъ"
         );
         assert_eq!(
-            p("дѣлати", Aorist, Passive, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "дѣлати",
+                Aorist,
+                Passive,
+                Short,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "дѣланъ"
         );
         assert_eq!(
-            p("рещи", Aorist, Passive, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "рещи", Aorist, Passive, Short, Nominative, Singular, Masculine, OCS
+            ),
             "реченъ"
         );
         assert_eq!(
-            p("хвалити", Aorist, Passive, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "хвалити",
+                Aorist,
+                Passive,
+                Short,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "хвалѥнъ"
         );
         assert_eq!(
-            p("носити", Aorist, Passive, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "носити",
+                Aorist,
+                Passive,
+                Short,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "ношенъ"
         );
         assert_eq!(
-            p("възѧти", Aorist, Passive, Short, Nominative, Singular, Masculine, OCS),
+            p(
+                "възѧти",
+                Aorist,
+                Passive,
+                Short,
+                Nominative,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "възѧтъ"
         );
         assert_eq!(
-            p("дѣлати", Aorist, Passive, Long, Genitive, Singular, Masculine, OCS),
+            p(
+                "дѣлати",
+                Aorist,
+                Passive,
+                Long,
+                Genitive,
+                Singular,
+                Masculine,
+                OCS
+            ),
             "дѣланаѥго"
         );
     }
@@ -494,15 +667,42 @@ mod tests {
     fn synodal_series_spell_the_print() {
         use {Case::*, Gender::*, Number::*, Series::*, Tense::*, Voice::*};
         assert_eq!(
-            p("вести́", Present, Active, Short, Genitive, Singular, Masculine, SYN),
+            p(
+                "вести́",
+                Present,
+                Active,
+                Short,
+                Genitive,
+                Singular,
+                Masculine,
+                SYN
+            ),
             "ведꙋ́ща"
         );
         assert_eq!(
-            p("дѣ́лати", Aorist, Active, Short, Genitive, Singular, Masculine, SYN),
+            p(
+                "дѣ́лати",
+                Aorist,
+                Active,
+                Short,
+                Genitive,
+                Singular,
+                Masculine,
+                SYN
+            ),
             "дѣ́лавша"
         );
         assert_eq!(
-            p("дѣ́лати", Aorist, Passive, Short, Nominative, Singular, Feminine, SYN),
+            p(
+                "дѣ́лати",
+                Aorist,
+                Passive,
+                Short,
+                Nominative,
+                Singular,
+                Feminine,
+                SYN
+            ),
             "дѣ́лана"
         );
     }

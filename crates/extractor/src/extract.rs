@@ -74,14 +74,13 @@ use crate::assign::{Candidate, assign, forms_sig};
 use crate::cells::{
     CASES, Conj, GENDERS, NUMBERS, PRESENT_STEM_CELL, PRONOUN_KEY, Pos, VERB_CLASS_CELL, adj_cell,
     noun_cell, participle_cell, participle_stem_cell, predict_verb_override, pronoun_cell,
-    recension_of_tag, rule_matches,
-    tag, verb_cell,
+    recension_of_tag, rule_matches, tag, verb_cell,
 };
 use crate::kaikki::{self, Entry, has};
 use crate::polyakov::{self, Features, Mood, Series, TenseTag, Voice};
-use church_slavonic_core::grammar::{Series as GSeries, Voice as GVoice};
 use crate::ruwiktionary;
 use church_slavonic_core::grammar::*;
+use church_slavonic_core::grammar::{Series as GSeries, Voice as GVoice};
 use church_slavonic_core::orthography::{comparison_key, realise, stress, strip_marks};
 use std::collections::BTreeMap;
 use std::error::Error;
@@ -655,8 +654,7 @@ fn gather_ud_proiel(
     skips: &mut Skips,
 ) {
     use std::collections::HashMap;
-    let mut by_lemma: BTreeMap<(Pos, String), Vec<&crate::treebank::TrainRecord>> =
-        BTreeMap::new();
+    let mut by_lemma: BTreeMap<(Pos, String), Vec<&crate::treebank::TrainRecord>> = BTreeMap::new();
     let pos_of: HashMap<&str, Pos> = [
         ("noun", Pos::Noun),
         ("adj", Pos::Adj),
@@ -684,8 +682,11 @@ fn gather_ud_proiel(
     for ((pos, lemma), mut records) in by_lemma {
         // Majority first within each cell: descending count, then the form.
         records.sort_by(|a, b| {
-            (a.cell, std::cmp::Reverse(a.count), &a.form)
-                .cmp(&(b.cell, std::cmp::Reverse(b.count), &b.form))
+            (a.cell, std::cmp::Reverse(a.count), &a.form).cmp(&(
+                b.cell,
+                std::cmp::Reverse(b.count),
+                &b.form,
+            ))
         });
         let mut obs = Observation::new(pos.arity());
         obs.soft = true;
@@ -716,10 +717,7 @@ fn gather_ud_proiel(
                     None => false,
                 })
             };
-            if cell
-                .iter()
-                .any(|k| k != &r.form && subsequence(&r.form, k))
-            {
+            if cell.iter().any(|k| k != &r.form && subsequence(&r.form, k)) {
                 skips.skip("train: elided writing of an attested form");
                 continue;
             }
@@ -1860,7 +1858,9 @@ fn polyakov_verb_cells(
         if count >= POLYAKOV_PARTICIPLE_MIN_COUNT {
             for case in &f.cases {
                 for gender in &genders {
-                    cells.push(participle_cell(&voice, &series, &tense, gender, &number, case));
+                    cells.push(participle_cell(
+                        &voice, &series, &tense, gender, &number, case,
+                    ));
                 }
             }
         }
@@ -1978,7 +1978,13 @@ fn infer_participle_stems(recension: &Recension, forms: &mut [String], raw: &mut
                 GENDERS.iter().flat_map(move |g| {
                     NUMBERS.iter().flat_map(move |n| {
                         CASES.iter().map(move |c| {
-                            (participle_cell(&voice, sr, &tense, g, n, c), *sr, *g, *n, *c)
+                            (
+                                participle_cell(&voice, sr, &tense, g, n, c),
+                                *sr,
+                                *g,
+                                *n,
+                                *c,
+                            )
                         })
                     })
                 })
@@ -2049,7 +2055,6 @@ fn infer_participle_stems(recension: &Recension, forms: &mut [String], raw: &mut
         }
     }
 }
-
 
 /// Infer a conjugation-class/present-stem override for a verb candidate:
 /// candidate stems are read off the attested present cells by stripping
@@ -2305,9 +2310,9 @@ pub fn audit_fact_resolution(
 ) -> Option<Vec<String>> {
     let (_, fact_range) = fact_geometry(pos)?;
     let form_end = fact_range.start;
-    let any = fact_range.clone().any(|i| {
-        !cells[i].is_empty() || bare.is_some_and(|b| !b[i].is_empty())
-    });
+    let any = fact_range
+        .clone()
+        .any(|i| !cells[i].is_empty() || bare.is_some_and(|b| !b[i].is_empty()));
     if !any {
         return None;
     }
@@ -2908,15 +2913,33 @@ mod tests {
         };
         use Case::*;
         assert_eq!(
-            pcell(GVoice::Active, GSeries::Long, Gender::Masculine, Number::Singular, Nominative),
+            pcell(
+                GVoice::Active,
+                GSeries::Long,
+                Gender::Masculine,
+                Number::Singular,
+                Nominative
+            ),
             ["да́вый"]
         );
         assert_eq!(
-            pcell(GVoice::Active, GSeries::Short, Gender::Neuter, Number::Singular, Genitive),
+            pcell(
+                GVoice::Active,
+                GSeries::Short,
+                Gender::Neuter,
+                Number::Singular,
+                Genitive
+            ),
             ["да́вша"]
         );
         assert_eq!(
-            pcell(GVoice::Passive, GSeries::Long, Gender::Masculine, Number::Singular, Accusative),
+            pcell(
+                GVoice::Passive,
+                GSeries::Long,
+                Gender::Masculine,
+                Number::Singular,
+                Accusative
+            ),
             ["да́ный"]
         );
         for (reason, n) in [

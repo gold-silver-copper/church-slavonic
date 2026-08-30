@@ -16,7 +16,6 @@
 //! feminines and neuters that would otherwise read as a singular.
 
 use crate::ChurchSlavonicCore;
-use crate::accent::with_accent;
 use crate::grammar::*;
 
 impl ChurchSlavonicCore {
@@ -24,7 +23,20 @@ impl ChurchSlavonicCore {
     /// `recension`'s spelling (accented in Synodal — see [`crate::accent`]);
     /// the answer is in the same spelling.
     pub fn noun(word: &str, case: &Case, number: &Number, recension: &Recension) -> String {
-        with_accent(word, recension, |w| {
+        Self::noun_pattern(word, case, number, recension, None)
+    }
+
+    /// [`Self::noun`] with the row's accent-pattern token steering the
+    /// stress (see [`crate::accent::with_accent_pattern`]) — the resolution
+    /// engine's fallback path.
+    pub(crate) fn noun_pattern(
+        word: &str,
+        case: &Case,
+        number: &Number,
+        recension: &Recension,
+        pattern: Option<&str>,
+    ) -> String {
+        crate::accent::with_accent_pattern(word, recension, pattern, |w| {
             Self::noun_skeleton(w, case, number, recension)
         })
     }

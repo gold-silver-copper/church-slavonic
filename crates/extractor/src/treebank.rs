@@ -467,7 +467,9 @@ pub fn filter_train(
         // The payerok stands for a jer the scribe superscripted (`имꙿ`).
         let form = realise(&strip_marks(&slot.surface).replace('ꙿ', "ъ"), &ocs);
         if !crate::extract::word_is_proper(&form) {
-            *skipped.entry("surface is not one canonical word").or_default() += 1;
+            *skipped
+                .entry("surface is not one canonical word")
+                .or_default() += 1;
             continue;
         }
         let lemma = if slot.pos == Pos::Pronoun {
@@ -475,7 +477,9 @@ pub fn filter_train(
         } else {
             let lemma = realise(&strip_marks(&slot.lemma), &ocs);
             if !crate::extract::word_is_proper(&lemma) {
-                *skipped.entry("lemma is not one canonical word").or_default() += 1;
+                *skipped
+                    .entry("lemma is not one canonical word")
+                    .or_default() += 1;
                 continue;
             }
             lemma

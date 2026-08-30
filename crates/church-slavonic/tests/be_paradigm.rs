@@ -44,7 +44,10 @@ fn old_church_slavonic_finite_cells() {
     assert_eq!(be("бꙑти", Tense::Imperfect, OCS)[0], "бѣахъ");
     // The dump attests the imperfective-aorist `бѣхъ` as the first
     // singular's primary; the rule's `бꙑхъ` series holds the rest.
-    assert_eq!(be("бꙑти", Tense::Aorist, OCS)[..3], ["бѣхъ", "бꙑстъ", "бꙑстъ"]);
+    assert_eq!(
+        be("бꙑти", Tense::Aorist, OCS)[..3],
+        ["бѣхъ", "бꙑстъ", "бꙑстъ"]
+    );
 }
 
 /// The published keys of the Synodal copula: the bare lemma and every `_n`

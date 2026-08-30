@@ -58,10 +58,7 @@ pub fn write_phf(
     )?;
     writeln!(out, "/// Cell order: {}.", doc(pos))?;
     writeln!(out, "/// Sorted by key; looked up by binary search.")?;
-    writeln!(
-        out,
-        "pub static {map}: &[(&str, &[(u16, &str)])] = &["
-    )?;
+    writeln!(out, "pub static {map}: &[(&str, &[(u16, &str)])] = &[")?;
     for (key, cells) in &rows {
         for text in std::iter::once(key).chain(cells.iter()) {
             if text.contains('"') || text.contains('\\') || text.contains('\n') {
@@ -90,10 +87,7 @@ pub fn write_phf(
         out,
         "pub fn {getter}(key: &str) -> Option<&'static [(u16, &'static str)]> {{"
     )?;
-    writeln!(
-        out,
-        "    {map}.binary_search_by_key(&key, |(k, _)| *k)"
-    )?;
+    writeln!(out, "    {map}.binary_search_by_key(&key, |(k, _)| *k)")?;
     writeln!(out, "        .ok()")?;
     writeln!(out, "        .map(|i| {map}[i].1)")?;
     writeln!(out, "}}")?;

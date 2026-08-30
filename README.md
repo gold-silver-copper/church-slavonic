@@ -21,8 +21,12 @@ spirit, a per-verb conjugation-class and present-stem override that re-runs
 the finite rule with the verb's true class, collapsing a misclassed verb's
 finite block to two cells. A fourth derived fact, the Synodal
 ACCENT-PATTERN cell (`s<N>` stem-fixed or `e` ending-stressed), re-accents
-the rule's answer where a row's whole paradigm shares one stress shape;
-mobile and mixed-convention paradigms stay stored. The fact-resolution
+the rule's answer where a row's whole paradigm shares one stress shape —
+riding inside the accent pass, so the print's stress-coupled conventions
+(the wide `ѡ`/`є`, the kamora, the final varia) follow the token's
+position; mobile paradigms stay stored — their stress shapes were measured
+too fragmented for any closed scheme vocabulary (the commonest shape
+recurs on 15 rows). The fact-resolution
 order — the row's exact cell, the bare row's, the facts read
 own-else-bare, the rule — lives in one place,
 `church_slavonic_core::resolution`, which the runtime, the extractor and
@@ -105,13 +109,13 @@ correctness — whether the natural bare-lemma call returns the primary
 |----------------|-----------|----------------------|---------------|-----------------|
 | **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
 | **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
-| **Nouns** | Synodal (Alypy) | 417 / 502 | 83.07% | 85 |
-| **Nouns** | Synodal (Polyakov) | 46368 / 48135 | 96.33% | 1767 |
+| **Nouns** | Synodal (Alypy) | 418 / 502 | 83.27% | 84 |
+| **Nouns** | Synodal (Polyakov) | 46411 / 48135 | 96.42% | 1724 |
 | **Nouns** | Synodal (ru.wiktionary) | 545 / 651 | 83.72% | 106 |
 | **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
 | **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
 | **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
-| **Adjectives** | Synodal (Polyakov) | 84418 / 87997 | 95.93% | 3579 |
+| **Adjectives** | Synodal (Polyakov) | 84429 / 87997 | 95.95% | 3568 |
 | **Verbs** | OCS | 218500 / 236400 | 92.43% | 17900 |
 | **Verbs** | OCS (UD PROIEL train) | 1352 / 1757 | 76.95% | 405 |
 | **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
