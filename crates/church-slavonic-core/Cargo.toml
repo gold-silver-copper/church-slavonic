@@ -1,7 +1,7 @@
 [package]
 name = "church-slavonic-core"
 description = "Church Slavonic inflector: the rule engine (no data)"
-version = "0.9.0"
+version = "1.0.0"
 authors.workspace = true
 edition.workspace = true
 license.workspace = true

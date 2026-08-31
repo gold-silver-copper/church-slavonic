@@ -6,14 +6,15 @@
 
 **church-slavonic** is a fast, lightweight Church Slavonic inflection library
 written in Rust, covering the Old Church Slavonic and Synodal recensions of
-the one language. The bundled data is about 3.6 MB of generated lookup-table
+the one language. The bundled data is about 5 MB of generated lookup-table
 source (the attested exceptions of a 31,000-lexeme corpus dictionary, a
 grammar, two Wiktionaries and an annotated corpus; the rules predict the
-rest, accents included). It provides noun, adjective, verb, pronoun and
-declined-participle inflection from processed Wiktionary, grammar-table,
-corpus-dictionary and treebank data, making it useful for real-time
-procedural text generation. The verb schema covers the finite paradigm, the
-imperative, and the full declined participle system — present and past,
+rest, accents included). It provides noun, adjective, verb, pronoun
+(personal and non-personal) and declined-participle inflection from
+processed Wiktionary, grammar-table, corpus-dictionary and treebank data,
+making it useful for real-time procedural text generation. The verb schema
+covers the finite paradigm, the imperative, the l-participle
+(resultative), and the full declined participle system — present and past,
 active and passive, short and long series — with per-verb participle STEMS
 derived from the attested declensions, so a regular declension of an
 irregular stem costs four table cells, not five hundred — and, in the same
@@ -54,23 +55,27 @@ benchmarking (`examples/speedmark.rs`, release):
 | **Adjectives** | OCS (UD PROIEL train) | 502 / 502 | 100.00% | 0 |
 | **Adjectives** | Synodal (Alypy) | 441 / 441 | 100.00% | 0 |
 | **Adjectives** | Synodal (Polyakov) | 87997 / 87997 | 100.00% | 0 |
-| **Verbs** | OCS | 236400 / 236400 | 100.00% | 0 |
-| **Verbs** | OCS (UD PROIEL train) | 1757 / 1757 | 100.00% | 0 |
+| **Verbs** | OCS | 236411 / 236411 | 100.00% | 0 |
+| **Verbs** | OCS (UD PROIEL train) | 1802 / 1802 | 100.00% | 0 |
 | **Verbs** | Synodal (Alypy) | 262 / 262 | 100.00% | 0 |
-| **Verbs** | Synodal (Polyakov) | 56435 / 56435 | 100.00% | 0 |
+| **Verbs** | Synodal (Polyakov) | 60517 / 60517 | 100.00% | 0 |
 | **Verbs** | Synodal (ru.wiktionary) | 78 / 78 | 100.00% | 0 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
 | **Pronouns** | OCS (UD PROIEL train) | 67 / 67 | 100.00% | 0 |
 | **Pronouns** | Synodal (Alypy) | 90 / 90 | 100.00% | 0 |
 | **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
+| **Non-personal pronouns** | OCS | 811 / 811 | 100.00% | 0 |
+| **Non-personal pronouns** | OCS (UD PROIEL train) | 191 / 191 | 100.00% | 0 |
 | **Nouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 8116 / 8818 | 92.04% | 702 |
 | **Adjectives** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 2134 / 2546 | 83.82% | 412 |
-| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 7294 / 8529 | 85.52% | 1235 |
+| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 7414 / 8662 | 85.59% | 1248 |
 | **Pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 4918 / 4960 | 99.15% | 42 |
+| **Non-personal pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 1208 / 1296 | 93.21% | 88 |
 | **Nouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 44305 / 48825 | 90.74% | 4520 |
 | **Adjectives** | OCS (Syntacticus 2023-04-28, corpus recall) | 11698 / 13901 | 84.15% | 2203 |
 | **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 38709 / 45179 | 85.68% | 6470 |
 | **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 26764 / 27025 | 99.03% | 261 |
+| **Non-personal pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 17765 / 18835 | 94.32% | 1070 |
 
 The accuracy percentages measure **recall through any published key**: the
 share of attested source slots (a lemma's cell, with every form the source
@@ -97,16 +102,17 @@ full form (`г҃мь` for `господьмь`), a third-person pronoun may carr
 the post-prepositional `н`-, and the copula's imperfective aorist (`бѣ`,
 `бѣшѧ`) is accepted under either past tense, since the treebanks and the
 schema file it differently. The held-out UD dev+test files gave 39,133
-tokens and 24,853 slots (16,655 skipped and counted by reason — other
-parts of speech, reflexives, the periphrastic future, the l-participle
-and the supine); 213,658 Syntacticus tokens gave 134,930 slots (92,642
+tokens and 26,282 slots (15,243 skipped and counted by reason — other
+parts of speech, reflexives and reciprocals, the periphrastic future and
+the supine); 213,658 Syntacticus tokens gave 153,765 slots (75,729
 skipped). The residual corpus-recall gap is not an
 error budget to spend: forms enter the tables only when a registered
 source attests them past the gates, so what remains is dev+test forms too
 rare to clear the train split's frequency gate, annotation noise
 (editorial lemmas like `братръ`, truncated surfaces, homograph lemmas),
-and lemmas the train split never saw; the next meaningful widening is the
-schema itself — the non-personal pronouns and the l-participle. `cargo xtask accuracy` also reports bare-lemma
+and lemmas the train split never saw. The schema scope is closed as of
+1.0.0 — the deferred edges and the sources examined and rejected for a
+further widening are recorded in `NOTES.md`. `cargo xtask accuracy` also reports bare-lemma
 correctness — whether the natural bare-lemma call returns the primary
 (first-listed) attested form:
 
@@ -121,15 +127,17 @@ correctness — whether the natural bare-lemma call returns the primary
 | **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
 | **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
 | **Adjectives** | Synodal (Polyakov) | 84429 / 87997 | 95.95% | 3568 |
-| **Verbs** | OCS | 218500 / 236400 | 92.43% | 17900 |
-| **Verbs** | OCS (UD PROIEL train) | 1352 / 1757 | 76.95% | 405 |
+| **Verbs** | OCS | 218511 / 236411 | 92.43% | 17900 |
+| **Verbs** | OCS (UD PROIEL train) | 1395 / 1802 | 77.41% | 407 |
 | **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
-| **Verbs** | Synodal (Polyakov) | 54732 / 56435 | 96.98% | 1703 |
+| **Verbs** | Synodal (Polyakov) | 58759 / 60517 | 97.10% | 1758 |
 | **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
 | **Pronouns** | OCS (UD PROIEL train) | 48 / 67 | 71.64% | 19 |
 | **Pronouns** | Synodal (Alypy) | 62 / 90 | 68.89% | 28 |
 | **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
+| **Non-personal pronouns** | OCS | 805 / 811 | 99.26% | 6 |
+| **Non-personal pronouns** | OCS (UD PROIEL train) | 170 / 191 | 89.01% | 21 |
 
 A *demotion* is a slot whose first-listed form lives at a `_n` key because the
 deterministic sort put a lexicographically earlier variant on the bare key, or
@@ -145,8 +153,8 @@ abbreviations under a titlo are their own lemmas (`бг҃ъ`, `гл҃ати`), s
 Synodal demotion counts are mostly the sort's choice among such spellings.
 
 Throughput on an Apple M-series laptop (`cargo run --release --example
-speedmark`): about 6.5 million calls per second for a table hit (nouns,
-pronouns) and 130–190 thousand per second for a rule fallback on a long
+speedmark`): 5–10 million calls per second for a table hit (nouns,
+pronouns) and 50–150 thousand per second for a rule fallback on a long
 out-of-vocabulary word (the fold, the realisation, the rule and the accent
 placement).
 
@@ -303,8 +311,8 @@ the Alypy pronoun row is at 90/90.
 Raw text corpora are not table sources: this library extracts from labelled
 full-form data only. Accented Synodal coverage is whatever the labelled
 sources give — Alypy's few dozen exemplar paradigms, Polyakov's 31,098
-corpus lexemes (174,087 analysed cells mapped, ru.wiktionary's included;
-the participle declension, passive and long participles, the l-participle,
+corpus lexemes (200,906 analysed cells mapped, ru.wiktionary's included;
+the below-gate participle declensions,
 an imperfective's periphrastic future, the short adjective series of the
 fleeting-vowel classes and 1,798 titlo spellings whose entry never
 abbreviates the citation form are outside the schema and skipped, counted

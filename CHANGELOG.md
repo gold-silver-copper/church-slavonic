@@ -1,5 +1,39 @@
 # Changelog
 
+## 1.0.0 — the schema close
+
+### Added
+- The l-participle (resultative): `ChurchSlavonic::l_participle(key,
+  &gender, &number, &recension)`. The verb row grows append-only from 549
+  to 558 cells (a nominative-only gender/number block); the rule builds it
+  on the infinitive stem (`бꙑти` : `бꙑлъ`, `вести` : `велъ`, `рещи` :
+  `реклъ`), Synodal accents ride the lemma's stress, and the reflexive
+  `-сѧ` stays outside. Newly attested cells: Polyakov's `partcp,perf`
+  forms (4,082 slots), the UD PROIEL train split's `PartRes` tokens, and
+  the Wiktionary l-participle pages. The held-out treebank evaluations
+  score the new cells.
+- The non-personal pronouns: `ChurchSlavonic::npron(key, &gender,
+  &number, &case, &recension)` over a new 54-cell lemma-keyed table
+  (`npron_phf.rs`) and a pronominal-declension rule — the hard `тъ` type,
+  the soft `сь`/`мои`/`нашь` type, mixed `вьсь`, the relative `иже` as
+  the anaphoric series plus `же`, the singular-only `къто`/`чьто`, and
+  the `ни-`/`нѣ-` compounds. Sources: the Wiktionary pronoun tables and
+  form-of pages and the UD PROIEL train split; both treebank evaluations
+  score the class (93.2% and 94.3% held-out recall on first contact).
+
+### Fixed
+- Two same-signature candidates now union their attested raw cells, so a
+  rule-equal form shadowed by a stored bare cell is re-materialised on a
+  variant key instead of silently dropped (`еиже` under `иже`).
+
+### Notes
+- 1.0.0 closes the schema scope. The residual held-out corpus-recall gap
+  is documented data ceiling, not backlog: forms enter the tables only
+  when a pinned source attests them past the gates, and no further
+  qualifying machine-readable source exists today (see `NOTES.md` for the
+  candidates examined). The research diary lives in `NOTES.md` from this
+  release on.
+
 ## 0.9.0 — the accusative-shape fact
 
 ### Added
@@ -15,31 +49,6 @@
   now derived, and ~1,500 rows whose only attested accusative is the
   singular now answer their unattested plural in the attested shape.
 
-### Findings, stated plainly
-- The scoping ceiling (1,020 rows "entirely explained" by animacy)
-  dissolved on contact: 1,513 of the 1,552 nominative-shaped-accusative
-  rows store exactly ONE such cell, where any mechanism — derivation or a
-  fact cell — is a storage wash. The planned `inan` fact cell (arity 23)
-  was therefore NOT added, per this wave's own condition: an arity bump
-  nothing needs is dead weight.
-- Selection bias claimed two designs this wave, both caught by refresh
-  deltas: the possessive adjectives' genitive-shaped accusative flip (640
-  stored gen-shaped cells are the rule's MISSES; 463 nominative-shaped
-  possessive accusatives were silently covered and broke — blanket flip
-  +1,295 rows, possessive-only flip still +38 cells) and both mandated
-  rule flips (locative plural `-ахъ`: +30 noun rows; long locative
-  singular `-омъ`: +28 adjective rows — the stored `-скомъ`/`-ской`
-  forms are outnumbered by the covered `-ѣмъ` forms they would break).
-  Stored-form tallies see only what the rule misses; every ending-choice
-  hypothesis must be judged by a full refresh, never by counting misses.
-- The possessives' nominal-cell class (`а҆́велемъ` InstSg) measured at 4
-  stored cells — below any implementation threshold.
-- The re-run censuses are essentially unchanged (letters-differ: noun
-  2,991 / adj 3,167 / verb 1,857 ending-class rows; the accent censuses
-  as in 0.8.0). The remaining mass is per-row ending choice and variant
-  noise — irreducibly lexical at current source coverage. No recorded
-  next lever clears the bar this wave's failures set; the honest next
-  step is new source data, not new mechanism.
 
 ## 0.8.0 — convention-aware accent tokens
 
@@ -60,26 +69,6 @@
   reproduced by rule; noun bare accuracy +0.09 (Polyakov) and +0.20
   (Alypy), adjectives +0.02, nothing regresses, OCS byte-identical.
 
-### Findings, stated plainly
-- Mobile-stress scheme tokens — the planned second stage — were measured
-  and dropped: clustering the 1,951 mobile rows' attested stress shapes
-  found the commonest scheme recurring on just 15 rows, and most rows
-  (adj 432/574, verb 618/850) not expressible as a stem/ending partition
-  at all, so no closed scheme vocabulary earns a const table. Mobile
-  paradigms stay stored.
-- The adoption coverage gate stays at >=2 covered cells: lowering it to 1
-  adopted 52 more tokens but cost 0.02 noun bare accuracy for ~550 bytes —
-  a measured wash that regresses.
-- Two experiments were tried and reverted: computing the distinguishing
-  markers from within-paradigm ending collisions (breaks `сынѡ́въ` —
-  GenPl `-овъ` widens with no singular collision), and widening anywhere
-  unconditionally (breaks `безпꙋ̑тіѧ` — a pre-stress `о`/`е` under a
-  non-final stress does not widen).
-- The remaining census (rows without a token, by dominant blocker):
-  letters-differ 8,668 rows (a letter-paradigm problem, not an accent
-  one — the next lever), too-sparse 7,681, mobile 1,951, wide 434,
-  kamora 99. Token/Polyakov-class agreement is 68/99 across 26 classes
-  (85/128 across 29 in 0.7.0 — fewer, more convention-faithful tokens).
 
 ## 0.7.0 — one resolution engine and the accent-pattern cells
 
