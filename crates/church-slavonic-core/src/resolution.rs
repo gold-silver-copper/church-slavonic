@@ -28,8 +28,9 @@
 use crate::ChurchSlavonicCore;
 use crate::grammar::*;
 use crate::schema::{
-    ADJ_ACCENT_CELL, NOUN_ACCENT_CELL, PRESENT_STEM_CELL, VERB_ACCENT_CELL, VERB_CLASS_CELL,
-    adj_features, finite_features, noun_features, participle_features, participle_stem_cell,
+    ADJ_ACCENT_CELL, NOUN_ACCENT_CELL, NOUN_SHAPE_SOURCE_CELLS, PRESENT_STEM_CELL,
+    VERB_ACCENT_CELL, VERB_CLASS_CELL, adj_features, finite_features, noun_features,
+    participle_features, participle_stem_cell,
 };
 
 /// Compose two per-cell accessors into the own-else-bare read every fact
@@ -90,6 +91,33 @@ pub fn noun_fact_fallback(
     }
     let (case, number) = noun_features(cell);
     let token = fact(NOUN_ACCENT_CELL);
+    // The accusative-shape fact: a lower stored accusative that is
+    // nominative-shaped where the rule answers the genitive shape (an
+    // inanimate: `а҆́ггелы`, not `а҆́ггелѡвъ`) teaches this accusative the
+    // nominative shape too. Sources derive upward only, so the anchor
+    // cell itself always resolves by the plain ladder.
+    if *recension == Recension::Synodal && case == Case::Accusative {
+        use crate::orthography::comparison_key;
+        for src in NOUN_SHAPE_SOURCE_CELLS {
+            if src >= cell {
+                break;
+            }
+            let Some(stored) = fact(src) else { continue };
+            let (_, src_number) = noun_features(src);
+            let nom = ChurchSlavonicCore::noun(lemma, &Case::Nominative, &src_number, recension);
+            let acc = ChurchSlavonicCore::noun(lemma, &Case::Accusative, &src_number, recension);
+            let key = comparison_key(&stored);
+            if key == comparison_key(&nom) && key != comparison_key(&acc) {
+                return ChurchSlavonicCore::noun_pattern(
+                    lemma,
+                    &Case::Nominative,
+                    &number,
+                    recension,
+                    token.as_deref(),
+                );
+            }
+        }
+    }
     ChurchSlavonicCore::noun_pattern(lemma, &case, &number, recension, token.as_deref())
 }
 

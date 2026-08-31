@@ -278,15 +278,14 @@ impl ChurchSlavonic {
         {
             return restyle(c.to_string(), style);
         }
-        // An accent-pattern token re-accents the rule's answer, through the
-        // one resolution engine.
-        if let Some((_, style)) = attested_cell(
-            word,
-            base,
-            recension,
-            Some(church_slavonic_core::schema::NOUN_ACCENT_CELL),
-            &get,
-        ) {
+        // An accent-pattern token re-accents the rule's answer, and a
+        // stored lower accusative teaches its shape upward — both through
+        // the one resolution engine, entered when the row carries either
+        // fact.
+        let engine_fact = std::iter::once(church_slavonic_core::schema::NOUN_ACCENT_CELL)
+            .chain(church_slavonic_core::schema::NOUN_SHAPE_SOURCE_CELLS)
+            .find_map(|i| attested_cell(word, base, recension, Some(i), &get));
+        if let Some((_, style)) = engine_fact {
             let fact = |i: usize| -> Option<String> {
                 attested_cell(word, base, recension, Some(i), &get).map(|(c, _)| c.to_string())
             };

@@ -26,7 +26,12 @@ riding inside the accent pass, so the print's stress-coupled conventions
 (the wide `ѡ`/`є`, the kamora, the final varia) follow the token's
 position; mobile paradigms stay stored — their stress shapes were measured
 too fragmented for any closed scheme vocabulary (the commonest shape
-recurs on 15 rows). The fact-resolution
+recurs on 15 rows). A fifth fact is read
+from the row's own form cells: a stored lower accusative that is
+nominative-shaped where the Synodal masculine rule answers the genitive
+shape (an inanimate) teaches the row's higher accusative cells the same
+shape (`вѣне́цъ` : `вѣнцы̀`), so an inanimate's unattested plural
+accusative answers in its attested shape. The fact-resolution
 order — the row's exact cell, the bare row's, the facts read
 own-else-bare, the rule — lives in one place,
 `church_slavonic_core::resolution`, which the runtime, the extractor and

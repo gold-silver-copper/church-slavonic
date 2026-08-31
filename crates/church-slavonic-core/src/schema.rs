@@ -33,6 +33,16 @@ pub const NOUN_ACCENT_CELL: usize = 21;
 pub const ADJ_ACCENT_CELL: usize = 126;
 pub const VERB_ACCENT_CELL: usize = 548;
 
+/// The stored form cells the noun resolution may READ as facts: the
+/// accusative singular (3) and dual (10). A Synodal masculine's accusative
+/// answers the genitive shape by rule; a row whose stored accusative is
+/// nominative-shaped instead (an inanimate) teaches its HIGHER accusative
+/// cells the same shape (see `resolution::noun_fact_fallback`). Sources
+/// only derive upward — cell 10 from 3, cell 17 from 3 or 10 — so the
+/// lowest stored accusative is always the anchor and is never subtracted
+/// by its own derivation.
+pub const NOUN_SHAPE_SOURCE_CELLS: [usize; 2] = [3, 10];
+
 /// The present-stem override cell of the verb row.
 pub const PRESENT_STEM_CELL: usize = 546;
 /// The conjugation-class override cell of the verb row.

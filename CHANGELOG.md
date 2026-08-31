@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.9.0 — the accusative-shape fact
+
+### Added
+- The noun resolution reads a row's stored LOWER accusative as a fact
+  (`schema::NOUN_SHAPE_SOURCE_CELLS`, cells 3 and 10): a stored
+  nominative-shaped accusative — an inanimate, where the Synodal masculine
+  rule answers the genitive shape — teaches the row's higher accusative
+  cells the same shape (`вѣне́цъ` : `вѣнцы̀`, not `вѣнце́въ`). Sources
+  derive upward only, so the lowest stored accusative is the anchor and
+  never subtracts itself. One engine as always: the facade, the
+  extractor's subtraction, the reachability passes and the audits all read
+  it; no new cell, no arity change. 39 stored accusative-plural cells are
+  now derived, and ~1,500 rows whose only attested accusative is the
+  singular now answer their unattested plural in the attested shape.
+
+### Findings, stated plainly
+- The scoping ceiling (1,020 rows "entirely explained" by animacy)
+  dissolved on contact: 1,513 of the 1,552 nominative-shaped-accusative
+  rows store exactly ONE such cell, where any mechanism — derivation or a
+  fact cell — is a storage wash. The planned `inan` fact cell (arity 23)
+  was therefore NOT added, per this wave's own condition: an arity bump
+  nothing needs is dead weight.
+- Selection bias claimed two designs this wave, both caught by refresh
+  deltas: the possessive adjectives' genitive-shaped accusative flip (640
+  stored gen-shaped cells are the rule's MISSES; 463 nominative-shaped
+  possessive accusatives were silently covered and broke — blanket flip
+  +1,295 rows, possessive-only flip still +38 cells) and both mandated
+  rule flips (locative plural `-ахъ`: +30 noun rows; long locative
+  singular `-омъ`: +28 adjective rows — the stored `-скомъ`/`-ской`
+  forms are outnumbered by the covered `-ѣмъ` forms they would break).
+  Stored-form tallies see only what the rule misses; every ending-choice
+  hypothesis must be judged by a full refresh, never by counting misses.
+- The possessives' nominal-cell class (`а҆́велемъ` InstSg) measured at 4
+  stored cells — below any implementation threshold.
+- The re-run censuses are essentially unchanged (letters-differ: noun
+  2,991 / adj 3,167 / verb 1,857 ending-class rows; the accent censuses
+  as in 0.8.0). The remaining mass is per-row ending choice and variant
+  noise — irreducibly lexical at current source coverage. No recorded
+  next lever clears the bar this wave's failures set; the honest next
+  step is new source data, not new mechanism.
+
 ## 0.8.0 — convention-aware accent tokens
 
 ### Changed

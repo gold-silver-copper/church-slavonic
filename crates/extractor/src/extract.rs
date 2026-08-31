@@ -2179,6 +2179,16 @@ fn resolved_cell(
     church_slavonic_core::orthography::realise(&raw, recension)
 }
 
+/// The stored FORM cells the resolution engine may read as facts for this
+/// POS — the noun accusative-shape sources; empty elsewhere.
+fn shape_sources(pos: Pos) -> &'static [usize] {
+    use church_slavonic_core::schema as sch;
+    match pos {
+        Pos::Noun => &sch::NOUN_SHAPE_SOURCE_CELLS,
+        _ => &[],
+    }
+}
+
 /// The form-cell range and fact-cell range of a POS row.
 fn fact_geometry(pos: Pos) -> Option<(usize, std::ops::Range<usize>)> {
     use church_slavonic_core::schema as sch;
@@ -2242,11 +2252,17 @@ fn infer_accent_pattern(
         candidates.push("e".to_string());
     }
     let realised = realise(lemma, recension);
+    // Snapshot for the shape-source reads: the adoption below rewrites
+    // `forms`, and the engine must see the pre-adoption stored row.
+    let stored = forms.to_vec();
     let mut best: Option<(String, Vec<usize>)> = None;
     for token in candidates {
         let fact = |i: usize| -> Option<String> {
             if i == accent_cell {
                 return Some(token.clone());
+            }
+            if shape_sources(pos).contains(&i) {
+                return Some(stored[i].clone()).filter(|f| !f.is_empty());
             }
             fact_range
                 .contains(&i)
@@ -2277,6 +2293,9 @@ fn infer_accent_pattern(
             if i == accent_cell {
                 return Some(token.clone());
             }
+            if shape_sources(pos).contains(&i) {
+                return Some(stored[i].clone()).filter(|f| !f.is_empty());
+            }
             fact_range
                 .contains(&i)
                 .then(|| raw[i].clone())
@@ -2299,6 +2318,66 @@ fn infer_accent_pattern(
     }
 }
 
+/// Re-subtract the accusative cells the accusative-shape derivation now
+/// reproduces (see `resolution::noun_fact_fallback` and
+/// `schema::NOUN_SHAPE_SOURCE_CELLS`): a stored nominative-shaped lower
+/// accusative makes the higher ones derivable, so a derivable cell whose
+/// attestation the derived resolution reproduces goes blank. The anchor
+/// (lowest stored accusative) never derives from itself and stays.
+fn subtract_derived_accusatives(
+    pos: Pos,
+    recension: &Recension,
+    lemma: &str,
+    forms: &mut [String],
+    raw: &[String],
+) {
+    if shape_sources(pos).is_empty() || *recension != Recension::Synodal {
+        return;
+    }
+    let Some((accent_cell, fact_range)) = fact_geometry(pos) else {
+        return;
+    };
+    let realised = church_slavonic_core::orthography::realise(lemma, recension);
+    // Accusative cells above the lowest source, highest first is not
+    // needed — derivation reads sources from `forms`, which this loop only
+    // blanks, never fills; blanking a higher cell cannot enable a lower.
+    let acc_cells: Vec<usize> = shape_sources(pos)
+        .iter()
+        .copied()
+        .chain(std::iter::once(noun_cell_of_accusative_plural()))
+        .filter(|c| *c > shape_sources(pos)[0])
+        .collect();
+    for cell in acc_cells {
+        if forms[cell].is_empty() || raw[cell].is_empty() {
+            continue;
+        }
+        let snapshot = forms.to_vec();
+        let fact = |i: usize| -> Option<String> {
+            if shape_sources(pos).contains(&i) && i < cell {
+                return Some(snapshot[i].clone()).filter(|f| !f.is_empty());
+            }
+            (fact_range.contains(&i) || i == accent_cell)
+                .then(|| snapshot[i].clone())
+                .filter(|f| !f.is_empty())
+        };
+        if rule_matches(
+            recension,
+            &raw[cell],
+            &resolved_cell(pos, &realised, recension, cell, &fact),
+        ) {
+            forms[cell] = String::new();
+        }
+    }
+}
+
+/// The accusative-plural cell of the noun row.
+fn noun_cell_of_accusative_plural() -> usize {
+    church_slavonic_core::schema::noun_cell(
+        &church_slavonic_core::grammar::Case::Accusative,
+        &church_slavonic_core::grammar::Number::Plural,
+    )
+}
+
 /// The audit's view of a row's full fact-aware resolution (0..form-cells),
 /// realised — `None` when the POS has no fact cells or none are set.
 pub fn audit_fact_resolution(
@@ -2310,14 +2389,19 @@ pub fn audit_fact_resolution(
 ) -> Option<Vec<String>> {
     let (_, fact_range) = fact_geometry(pos)?;
     let form_end = fact_range.start;
+    // The noun engine also reads the stored lower accusatives as facts
+    // (the accusative-shape derivation) — the audit's view must match the
+    // runtime's.
+    let sources = shape_sources(pos);
     let any = fact_range
         .clone()
+        .chain(sources.iter().copied())
         .any(|i| !cells[i].is_empty() || bare.is_some_and(|b| !b[i].is_empty()));
     if !any {
         return None;
     }
     let fact = |i: usize| -> Option<String> {
-        if !fact_range.contains(&i) {
+        if !fact_range.contains(&i) && !sources.contains(&i) {
             return None;
         }
         if !cells[i].is_empty() {
@@ -2388,6 +2472,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     infer_participle_stems(&recension, &mut forms, &mut raw);
                 }
                 infer_accent_pattern(key.pos, &recension, &key.lemma, &mut forms, &mut raw);
+                subtract_derived_accusatives(key.pos, &recension, &key.lemma, &mut forms, &raw);
                 acc.observe(forms, raw, obs.soft);
             }
         }
@@ -2454,7 +2539,26 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                         }
                     })
                     .collect();
+                // The shape-source cells the engine may read, own-else-bare,
+                // snapshotted so the re-store below can still write forms.
+                let source_cells: Vec<(usize, String)> = shape_sources(key.pos)
+                    .iter()
+                    .map(|i| {
+                        let own = &row.forms[*i];
+                        let cell = if !own.is_empty() {
+                            own.clone()
+                        } else if !is_bare {
+                            bare_exact[*i].clone()
+                        } else {
+                            String::new()
+                        };
+                        (*i, cell)
+                    })
+                    .collect();
                 let fact = |i: usize| -> Option<String> {
+                    if let Some((_, f)) = source_cells.iter().find(|(c, _)| *c == i) {
+                        return Some(f.clone()).filter(|f| !f.is_empty());
+                    }
                     facts
                         .get(i.checked_sub(fact_range.start)?)
                         .filter(|f| !f.is_empty())
