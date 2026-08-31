@@ -252,6 +252,7 @@ mod tests {
                 Pos::Adj => tables.adj = rows,
                 Pos::Verb => tables.verb = rows,
                 Pos::Pronoun => tables.pronoun = rows,
+                Pos::NPron => tables.npron = rows,
             }
         }
         let tmp = std::env::temp_dir().join(format!("cs_tables_roundtrip_{}", std::process::id()));

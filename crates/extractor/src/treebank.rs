@@ -32,7 +32,7 @@
 //! subjunctive, a passive or declined participle, a reflexive pronoun, an
 //! ambiguous `Case=Dat,Gen`) skips the token and is counted by reason.
 
-use crate::cells::{GENDERS, Pos, adj_cell, noun_cell, participle_cell, pronoun_cell, verb_cell};
+use crate::cells::{GENDERS, Pos, adj_cell, l_participle_cell, noun_cell, npron_cell, participle_cell, pronoun_cell, verb_cell};
 use church_slavonic_core::grammar::*;
 use std::collections::BTreeMap;
 use std::error::Error;
@@ -344,7 +344,27 @@ fn ud_token(
                     return;
                 }
                 Some(&"Inf") => return corpus.skip("verb: infinitive (the lemma itself)"),
-                Some(&"PartRes") => return corpus.skip("verb: l-participle"),
+                Some(&"PartRes") => {
+                    // The l-participle: nominative-only gender/number cells
+                    // (an absent case tag reads as the nominative).
+                    if matches!(feats.get("Case"), Some(c) if *c != "Nom") {
+                        return corpus.skip("verb: l-participle in an oblique case");
+                    }
+                    let genders = if genders.is_empty() {
+                        GENDERS.to_vec()
+                    } else {
+                        genders
+                    };
+                    for gender in genders {
+                        corpus.slots.push(CorpusSlot {
+                            lemma: lemma.clone(),
+                            pos: Pos::Verb,
+                            cell: l_participle_cell(&gender, &number),
+                            surface: surface.clone(),
+                        });
+                    }
+                    return;
+                }
                 Some(&"Sup") => return corpus.skip("verb: supine"),
                 _ => return corpus.skip("verb: no verb form"),
             };
@@ -360,7 +380,27 @@ fn ud_token(
         }
         "PRON" => {
             if feats.get("PronType") != Some(&"Prs") {
-                return corpus.skip("pronoun: outside the personal matrix");
+                // The non-personal pronouns: lemma-keyed gender/number/case
+                // cells. An unspecified gender reads as the masculine (the
+                // interrogatives answer every gender the same row).
+                if feats.get("PronType") == Some(&"Rcp") {
+                    return corpus.skip("pronoun: reciprocal");
+                }
+                let Some(case) = case(corpus) else { return };
+                let genders = if genders.is_empty() {
+                    vec![Gender::Masculine]
+                } else {
+                    genders
+                };
+                for gender in genders {
+                    corpus.slots.push(CorpusSlot {
+                        lemma: lemma.clone(),
+                        pos: Pos::NPron,
+                        cell: npron_cell(&gender, &number, &case),
+                        surface: surface.clone(),
+                    });
+                }
+                return;
             }
             if feats.get("Reflex") == Some(&"Yes") {
                 return corpus.skip("pronoun: reflexive");
@@ -595,7 +635,11 @@ fn unescape(text: &str) -> String {
 
 #[cfg_attr(not(feature = "checks"), allow(dead_code))]
 fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphology: &str) {
-    if !matches!(pos, "Nb" | "Ne" | "A-" | "V-" | "Pp" | "Pk") {
+    if !matches!(
+        pos,
+        "Nb" | "Ne" | "A-" | "V-" | "Pp" | "Pk" | "Pd" | "Pi" | "Pr" | "Px" | "Ps" | "Pt" | "Py"
+            | "Pc"
+    ) {
         return corpus.skip("part of speech outside the four tables");
     }
     let m: Vec<char> = morphology.chars().collect();
@@ -766,6 +810,23 @@ fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphol
                 });
             }
         }
+        "Pd" | "Pi" | "Pr" | "Px" | "Ps" | "Pt" | "Py" => {
+            let Some(case) = case(corpus) else { return };
+            let genders = if gender == '-' {
+                vec![Gender::Masculine]
+            } else {
+                genders
+            };
+            for g in genders {
+                corpus.slots.push(CorpusSlot {
+                    lemma: lemma.clone(),
+                    pos: Pos::NPron,
+                    cell: npron_cell(&g, &number, &case),
+                    surface: surface.clone(),
+                });
+            }
+        }
+        "Pc" => corpus.skip("pronoun: reciprocal"),
         "Pk" => corpus.skip("pronoun: reflexive"),
         _ => corpus.skip("part of speech outside the four tables"),
     }
@@ -831,8 +892,15 @@ mod tests {
                 &Case::Dative
             )
         );
-        assert_eq!(cells.len(), 6 + 2);
-        assert_eq!(corpus.skipped.get("verb: l-participle"), Some(&1));
+        assert_eq!(
+            cells[8],
+            (
+                Pos::Verb,
+                l_participle_cell(&Gender::Masculine, &Number::Singular),
+                "дати"
+            )
+        );
+        assert_eq!(cells.len(), 9);
         assert_eq!(corpus.skipped.get("ambiguous case"), Some(&1));
     }
 

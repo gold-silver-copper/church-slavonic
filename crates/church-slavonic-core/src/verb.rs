@@ -116,6 +116,77 @@ impl ChurchSlavonicCore {
         })
     }
 
+    /// The l-participle (resultative, the perfect's participle): the
+    /// infinitive stem + `л` + the nominative gender/number ending; a
+    /// stem-final dental drops before the `л` (`вести` : `велъ`). The
+    /// reflexive `-сѧ` rides outside, as on every finite form.
+    pub fn l_participle(
+        word: &str,
+        gender: &Gender,
+        number: &Number,
+        recension: &Recension,
+    ) -> String {
+        Self::l_participle_pattern(word, gender, number, recension, None)
+    }
+
+    /// [`Self::l_participle`] with the row's accent-pattern token — the
+    /// resolution engine's fallback path.
+    pub(crate) fn l_participle_pattern(
+        word: &str,
+        gender: &Gender,
+        number: &Number,
+        recension: &Recension,
+        pattern: Option<&str>,
+    ) -> String {
+        use crate::accent::with_accent_pattern;
+        let skeleton = strip_marks(word);
+        let reflexive = *recension == Recension::Synodal && skeleton.ends_with("сѧ");
+        if reflexive {
+            let bare: String = word.chars().take(word.chars().count() - 2).collect();
+            return with_accent_pattern(&bare, recension, pattern, |w| {
+                format!("{}сѧ", Self::l_participle_skeleton(w, gender, number, recension))
+            });
+        }
+        with_accent_pattern(word, recension, pattern, |w| {
+            Self::l_participle_skeleton(w, gender, number, recension)
+        })
+    }
+
+    fn l_participle_skeleton(
+        word: &str,
+        gender: &Gender,
+        number: &Number,
+        recension: &Recension,
+    ) -> String {
+        let synodal = *recension == Recension::Synodal;
+        let mut stem = Self::stems(word, recension).infinitive;
+        while stem.ends_with('д') || stem.ends_with('т') {
+            stem.pop();
+        }
+        // A `-сти` infinitive is read as a dental stem (`вести` : `велъ`),
+        // matching the present-stem machinery; the `нести` type is tabled.
+        if word.ends_with("сти") && stem.ends_with('с') {
+            stem.pop();
+        }
+        let ending = match (number, gender) {
+            (Number::Singular, Gender::Masculine) => "ъ",
+            (Number::Singular, Gender::Feminine) => "а",
+            (Number::Singular, Gender::Neuter) => "о",
+            (Number::Dual, Gender::Masculine) => "а",
+            (Number::Dual, _) => "ѣ",
+            (Number::Plural, Gender::Masculine) => "и",
+            (Number::Plural, Gender::Feminine) => {
+                if synodal {
+                    "ы"
+                } else {
+                    "ꙑ"
+                }
+            }
+            (Number::Plural, Gender::Neuter) => "а",
+        };
+        Self::attach(&stem, &format!("л{ending}"), recension)
+    }
+
     /// Conjugate with an explicit class/present-stem override — the runtime
     /// path for the tables' class cells, and the extractor's validation
     /// path. The suppletive [`Self::irregular`] layer and the copula answer

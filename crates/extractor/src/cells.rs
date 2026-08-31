@@ -35,6 +35,8 @@ use church_slavonic_core::orthography::{comparison_key, realise};
 pub use church_slavonic_core::verb::Conj;
 
 pub use church_slavonic_core::schema::{
+    l_participle_cell,
+    npron_cell,
     CASES, DEGREES, GENDERS, NUMBERS, PERSONS, PRESENT_STEM_CELL, VERB_BLOCKS, VERB_CLASS_CELL,
     adj_cell, noun_cell, participle_cell, participle_stem_cell, pronoun_cell, verb_cell,
 };
@@ -90,17 +92,18 @@ pub fn predict_verb_override(
         .collect()
 }
 
-/// The four parts of speech the tables cover.
+/// The five parts of speech the tables cover.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Pos {
     Noun,
     Adj,
     Verb,
     Pronoun,
+    NPron,
 }
 
 impl Pos {
-    pub const ALL: [Pos; 4] = [Pos::Noun, Pos::Adj, Pos::Verb, Pos::Pronoun];
+    pub const ALL: [Pos; 5] = [Pos::Noun, Pos::Adj, Pos::Verb, Pos::Pronoun, Pos::NPron];
 
     pub fn arity(self) -> usize {
         use church_slavonic_core::schema as sch;
@@ -109,6 +112,7 @@ impl Pos {
             Pos::Adj => sch::ADJ_ARITY,
             Pos::Verb => sch::VERB_ARITY,
             Pos::Pronoun => sch::PRONOUN_ARITY,
+            Pos::NPron => sch::NPRON_ARITY,
         }
     }
 
@@ -118,6 +122,7 @@ impl Pos {
             Pos::Adj => "adj_phf.rs",
             Pos::Verb => "verb_phf.rs",
             Pos::Pronoun => "pronoun_phf.rs",
+            Pos::NPron => "npron_phf.rs",
         }
     }
 
@@ -127,6 +132,7 @@ impl Pos {
             Pos::Adj => "adj",
             Pos::Verb => "verb",
             Pos::Pronoun => "pronoun",
+            Pos::NPron => "npron",
         }
     }
 
@@ -208,6 +214,16 @@ impl Pos {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            Pos::NPron => {
+                for gender in &GENDERS {
+                    for number in &NUMBERS {
+                        for case in &CASES[..6] {
+                            out[npron_cell(gender, number, case)] =
+                                ChurchSlavonicCore::npron(lemma, gender, number, case, recension);
                         }
                     }
                 }
@@ -318,6 +334,13 @@ mod tests {
             }
             for t in [Tense::Present, Tense::Aorist] {
                 let i = participle_stem_cell(&v, &t);
+                assert!(!seen[i]);
+                seen[i] = true;
+            }
+        }
+        for g in &GENDERS {
+            for n in &NUMBERS {
+                let i = l_participle_cell(g, n);
                 assert!(!seen[i]);
                 seen[i] = true;
             }

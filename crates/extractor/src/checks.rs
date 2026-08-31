@@ -202,6 +202,10 @@ mod harness {
                 };
                 ChurchSlavonic::adj(key, case, number, gender, &degree, r)
             }
+            Pos::Verb if i >= 549 => {
+                let (gender, number) = church_slavonic_core::schema::l_participle_features(i);
+                ChurchSlavonic::l_participle(key, &gender, &number, r)
+            }
             Pos::Verb if i >= 38 => {
                 let rest = i - 38;
                 let case = &CASES[rest % 7];
@@ -236,6 +240,10 @@ mod harness {
                     (Person::Third, Number::Singular, tense, Form::Participle)
                 };
                 ChurchSlavonic::verb(key, &person, &number, &tense, &form, r)
+            }
+            Pos::NPron => {
+                let (gender, number, case) = church_slavonic_core::schema::npron_features(i);
+                ChurchSlavonic::npron(key, &gender, &number, &case, r)
             }
             Pos::Pronoun => {
                 let (person, rest) = if i < 18 {
@@ -279,6 +287,7 @@ mod harness {
             Pos::Adj => "Adjectives",
             Pos::Verb => "Verbs",
             Pos::Pronoun => "Pronouns",
+            Pos::NPron => "Non-personal pronouns",
         }
     }
 

@@ -72,6 +72,8 @@
 use crate::alypy::{self, Defaults, TenseWord};
 use crate::assign::{Candidate, assign, forms_sig};
 use crate::cells::{
+    l_participle_cell,
+    npron_cell,
     CASES, Conj, GENDERS, NUMBERS, PRESENT_STEM_CELL, PRONOUN_KEY, Pos, VERB_CLASS_CELL, adj_cell,
     noun_cell, participle_cell, participle_stem_cell, predict_verb_override, pronoun_cell,
     recension_of_tag, rule_matches, tag, verb_cell,
@@ -98,6 +100,7 @@ pub struct Tables {
     pub adj: Table,
     pub verb: Table,
     pub pronoun: Table,
+    pub npron: Table,
 }
 
 impl Tables {
@@ -107,6 +110,7 @@ impl Tables {
             Pos::Adj => &self.adj,
             Pos::Verb => &self.verb,
             Pos::Pronoun => &self.pronoun,
+            Pos::NPron => &self.npron,
         }
     }
 
@@ -116,6 +120,7 @@ impl Tables {
             Pos::Adj => &mut self.adj,
             Pos::Verb => &mut self.verb,
             Pos::Pronoun => &mut self.pronoun,
+            Pos::NPron => &mut self.npron,
         }
     }
 }
@@ -592,7 +597,38 @@ fn gather_kaikki_entry(entry: &Entry, lexemes: &mut Lexemes) {
                 "азъ" => Person::First,
                 "тꙑ" => Person::Second,
                 "и" | "ѥ" | "ꙗ" => Person::Third,
-                _ => return,
+                _ => {
+                    // A non-personal pronoun's own declension table:
+                    // lemma-keyed gender/number/case cells.
+                    let mut obs = Observation::new(Pos::NPron.arity());
+                    obs.soft = soft;
+                    for table in kaikki::tables(entry) {
+                        for f in table.forms {
+                            let (Some(case), Some(number)) =
+                                (kaikki::case(&f.tags), kaikki::number(&f.tags))
+                            else {
+                                continue;
+                            };
+                            if case == Case::Vocative {
+                                continue;
+                            }
+                            let Some(form) = kaikki_form(&f.form) else {
+                                continue;
+                            };
+                            let genders = kaikki::genders(&f.tags);
+                            let genders = if genders.is_empty() {
+                                GENDERS.to_vec()
+                            } else {
+                                genders
+                            };
+                            for gender in genders {
+                                obs.attest(npron_cell(&gender, &number, &case), &form);
+                            }
+                        }
+                    }
+                    push_observation(lexemes, key(Pos::NPron, lemma), obs, false);
+                    return;
+                }
             };
             let mut obs = Observation::new(Pos::Pronoun.arity());
             for table in kaikki::tables(entry) {
@@ -660,6 +696,7 @@ fn gather_ud_proiel(
         ("adj", Pos::Adj),
         ("verb", Pos::Verb),
         ("pronoun", Pos::Pronoun),
+        ("npron", Pos::NPron),
     ]
     .into_iter()
     .collect();
@@ -784,20 +821,18 @@ fn gather_kaikki_form_of(entry: &Entry, lexemes: &mut Lexemes, skips: &mut Skips
             }
             "pron" => {
                 let person = match lemma.as_str() {
-                    "азъ" => Person::First,
-                    "тꙑ" => Person::Second,
-                    "и" | "ѥ" | "ꙗ" => Person::Third,
-                    _ => {
-                        skips.skip("form-of: pronoun outside the personal matrix");
-                        continue;
-                    }
+                    "азъ" => Some(Person::First),
+                    "тꙑ" => Some(Person::Second),
+                    "и" | "ѥ" | "ꙗ" => Some(Person::Third),
+                    _ => None,
                 };
                 if cases.is_empty() || numbers.is_empty() {
                     skips.skip("form-of: pronoun without a case and number");
                     continue;
                 }
                 let genders = kaikki::genders(tags);
-                let genders = if genders.is_empty() || person != Person::Third {
+                let genders = if genders.is_empty() || person.is_some_and(|p| p != Person::Third)
+                {
                     GENDERS.to_vec()
                 } else {
                     genders
@@ -806,11 +841,18 @@ fn gather_kaikki_form_of(entry: &Entry, lexemes: &mut Lexemes, skips: &mut Skips
                 for case in cases.iter().filter(|c| **c != Case::Vocative) {
                     for number in &numbers {
                         for gender in &genders {
-                            cells.push(pronoun_cell(&person, number, gender, case));
+                            cells.push(match &person {
+                                // A non-personal pronoun's form-of page.
+                                None => npron_cell(gender, number, case),
+                                Some(p) => pronoun_cell(p, number, gender, case),
+                            });
                         }
                     }
                 }
-                (Pos::Pronoun, cells)
+                match person {
+                    None => (Pos::NPron, cells),
+                    Some(_) => (Pos::Pronoun, cells),
+                }
             }
             "adj" => {
                 // The bare comparative pointer attests the comparative
@@ -857,9 +899,8 @@ fn gather_kaikki_form_of(entry: &Entry, lexemes: &mut Lexemes, skips: &mut Skips
                 (Pos::Adj, cells)
             }
             "verb" => {
-                const OUTSIDE: [&str; 7] = [
+                const OUTSIDE: [&str; 6] = [
                     "passive",
-                    "l-participle",
                     "supine",
                     "future",
                     "conditional",
@@ -870,6 +911,27 @@ fn gather_kaikki_form_of(entry: &Entry, lexemes: &mut Lexemes, skips: &mut Skips
                     skips.skip("form-of: verb form outside the schema");
                     continue;
                 }
+                if kaikki::has(tags, "l-participle") {
+                    // Nominative-only gender/number cells.
+                    let numbers = if numbers.is_empty() {
+                        vec![Number::Singular]
+                    } else {
+                        numbers.clone()
+                    };
+                    let genders = kaikki::genders(tags);
+                    let genders = if genders.is_empty() {
+                        GENDERS.to_vec()
+                    } else {
+                        genders
+                    };
+                    let mut cells = Vec::new();
+                    for number in &numbers {
+                        for gender in &genders {
+                            cells.push(l_participle_cell(gender, number));
+                        }
+                    }
+                    (Pos::Verb, cells)
+                } else 
                 if kaikki::has(tags, "participle") {
                     let cell = if kaikki::has(tags, "present") {
                         36
@@ -1301,6 +1363,7 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
             .or_insert_with(|| Observation::new(paradigm.pos.arity()));
         let mut cells: Vec<usize> = Vec::new();
         match (paradigm.pos, paradigm.block) {
+            (Pos::NPron, _) => {}
             (Pos::Noun, _) => {
                 if let Some(number) = row.number {
                     for case in &row.cases {
@@ -1534,6 +1597,7 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
                 Pos::Verb => {
                     polyakov_verb_cells(&f, perfective, form.count).map(|c| (lemma.clone(), c))
                 }
+                Pos::NPron => Err("pronoun: outside the personal matrix"),
                 Pos::Pronoun => match pronoun_person {
                     Some(person) => {
                         polyakov_pronoun_cells(&f, person).map(|c| (PRONOUN_KEY.to_string(), c))
@@ -1633,7 +1697,7 @@ fn titlo_lemmas(entry: &polyakov::Entry, pos: Pos) -> Vec<(Option<Series>, Strin
                         && f.gender == Some(Gender::Masculine)
                         && f.cases.contains(&Case::Nominative)
                 }
-                Pos::Pronoun => false,
+                Pos::Pronoun | Pos::NPron => false,
             })
             .map(|f| f.series)
             .next();
@@ -1815,7 +1879,13 @@ fn polyakov_verb_cells(
         return Err("verb: infinitive (the lemma itself)");
     }
     if f.tense == Some(TenseTag::Perfect) {
-        return Err("verb: perfect (the l-participle)");
+        // The l-participle: nominative-only gender/number cells.
+        let number = f.number.ok_or("verb: perfect without a number")?;
+        let genders: Vec<Gender> = f.gender.map_or_else(|| GENDERS.to_vec(), |g| vec![g]);
+        return Ok(genders
+            .iter()
+            .map(|g| l_participle_cell(g, &number))
+            .collect());
     }
     if f.participle {
         // The declined-participle admission is corpus-frequency gated, like
@@ -1929,9 +1999,23 @@ impl LemmaAcc {
         let is_new = !self.by_sig.contains_key(&sig);
         let c = self.by_sig.entry(sig).or_insert_with(|| Candidate {
             forms,
-            raw,
+            raw: Vec::new(),
             soft_sense: false,
         });
+        // Same-signature candidates are one candidate, but each may have
+        // attested different raw cells (two rule-equal witnesses of
+        // different cells): union the raws so the bare-shadow pass can
+        // re-materialise every attested form. A conflicting cell keeps the
+        // first witness, as before.
+        if c.raw.is_empty() {
+            c.raw = raw;
+        } else {
+            for (kept, new) in c.raw.iter_mut().zip(raw) {
+                if kept.is_empty() {
+                    *kept = new;
+                }
+            }
+        }
         c.soft_sense = if is_new { soft } else { c.soft_sense && soft };
     }
 
@@ -2175,6 +2259,7 @@ fn resolved_cell(
         Pos::Adj => res::adj_fact_fallback(lemma_realised, recension, cell, fact),
         Pos::Verb => res::verb_fact_fallback(lemma_realised, recension, cell, fact),
         Pos::Pronoun => String::new(),
+        Pos::NPron => res::npron_fact_fallback(lemma_realised, recension, cell, fact),
     };
     church_slavonic_core::orthography::realise(&raw, recension)
 }
@@ -2196,7 +2281,7 @@ fn fact_geometry(pos: Pos) -> Option<(usize, std::ops::Range<usize>)> {
         Pos::Noun => Some((sch::NOUN_ACCENT_CELL, 21..22)),
         Pos::Adj => Some((sch::ADJ_ACCENT_CELL, 126..127)),
         Pos::Verb => Some((sch::VERB_ACCENT_CELL, 542..549)),
-        Pos::Pronoun => None,
+        Pos::Pronoun | Pos::NPron => None,
     }
 }
 
@@ -3046,10 +3131,7 @@ mod tests {
             ),
             ["да́ный"]
         );
-        for (reason, n) in [
-            ("verb: infinitive (the lemma itself)", 1),
-            ("verb: perfect (the l-participle)", 1),
-        ] {
+        for (reason, n) in [("verb: infinitive (the lemma itself)", 1)] {
             assert_eq!(skips.by_reason.get(reason), Some(&n), "{reason}");
         }
         // An imperfective's `fut` is periphrastic and stays out.

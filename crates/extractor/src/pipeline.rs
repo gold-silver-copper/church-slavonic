@@ -97,11 +97,12 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     generate_tables(&tables, &config.generated_dir)?;
     accent_class_agreement(&tables, &config.artifacts_dir);
     println!(
-        "Refresh complete: {} noun, {} adjective, {} verb, {} pronoun rows regenerated in {}.",
+        "Refresh complete: {} noun, {} adjective, {} verb, {} pronoun, {} non-personal-pronoun rows regenerated in {}.",
         tables.noun.len(),
         tables.adj.len(),
         tables.verb.len(),
         tables.pronoun.len(),
+        tables.npron.len(),
         config.generated_dir.display()
     );
     Ok(())

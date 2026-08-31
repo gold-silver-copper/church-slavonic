@@ -144,6 +144,21 @@ pub fn adj_fact_fallback(
     )
 }
 
+/// What a non-personal pronoun key answers once its exact cells miss:
+/// the plain rule (the row carries no fact cells).
+pub fn npron_fact_fallback(
+    lemma: &str,
+    recension: &Recension,
+    cell: usize,
+    _fact: &dyn Fn(usize) -> Option<String>,
+) -> String {
+    if cell >= crate::schema::NPRON_ARITY {
+        return String::new();
+    }
+    let (gender, number, case) = crate::schema::npron_features(cell);
+    ChurchSlavonicCore::npron(lemma, &gender, &number, &case, recension)
+}
+
 /// The letter-level resolution with the accent-pattern token in its right
 /// seat: the plain-rule paths thread it through the accent pass (the one
 /// copy of the stress-coupled print conventions in `crate::accent`), while
@@ -157,6 +172,10 @@ fn verb_letters(
     fact: &dyn Fn(usize) -> Option<String>,
     pattern: Option<&str>,
 ) -> String {
+    if (549..558).contains(&cell) {
+        let (gender, number) = crate::schema::l_participle_features(cell);
+        return ChurchSlavonicCore::l_participle_pattern(lemma, &gender, &number, recension, pattern);
+    }
     if cell >= 542 {
         return String::new();
     }

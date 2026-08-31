@@ -22,6 +22,7 @@ pub fn names(pos: Pos) -> (&'static str, &'static str) {
         Pos::Adj => ("ADJ_TABLE", "get_adj"),
         Pos::Verb => ("VERB_TABLE", "get_verb"),
         Pos::Pronoun => ("PRONOUN_TABLE", "get_pronoun"),
+        Pos::NPron => ("NPRON_TABLE", "get_npron"),
     }
 }
 
@@ -39,6 +40,9 @@ fn doc(pos: Pos) -> &'static str {
         }
         Pos::Pronoun => {
             "first person number * 6 + case, second person 18 + the same, third person 36 + (gender * 3 + number) * 6 + case; six cases, no vocative"
+        }
+        Pos::NPron => {
+            "(gender * 3 + number) * 6 + case; genders Masculine, Feminine, Neuter; numbers Singular, Dual, Plural; six cases, the vocative answering with the nominative"
         }
     }
 }

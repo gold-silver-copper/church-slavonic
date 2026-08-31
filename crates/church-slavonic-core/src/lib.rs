@@ -37,6 +37,7 @@ mod accent;
 mod adj;
 pub mod grammar;
 mod noun;
+mod npron;
 pub mod orthography;
 mod participle;
 mod pronoun;

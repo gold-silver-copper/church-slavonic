@@ -95,6 +95,14 @@ mod verb_phf {
     ));
 }
 use verb_phf::*;
+mod npron_phf {
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/generated/npron_phf.rs"
+    ));
+}
+use npron_phf::*;
+
 mod pronoun_phf {
     include!(concat!(
         env!("CARGO_MANIFEST_DIR"),
@@ -449,6 +457,47 @@ impl ChurchSlavonic {
         })
     }
 
+    /// The l-participle (resultative), nominative only: `бꙑти` :
+    /// `бꙑлъ`/`бꙑла`/`бꙑло`. Attested table cells override the rule.
+    pub fn l_participle(
+        word: &str,
+        gender: &Gender,
+        number: &Number,
+        recension: &Recension,
+    ) -> String {
+        let get = |w: &str| get_verb(&format!("{}:{w}", tag(recension)));
+        let base = base_lemma(word, |w| ci_lookup(w, recension, get).is_some());
+        let cell = church_slavonic_core::schema::l_participle_cell(gender, number);
+        if let Some((c, style)) = attested_cell(word, base, recension, Some(cell), get) {
+            return restyle(c.to_string(), style);
+        }
+        let accent = attested_cell(
+            word,
+            base,
+            recension,
+            Some(church_slavonic_core::schema::VERB_ACCENT_CELL),
+            &get,
+        );
+        if let Some((_, style)) = accent {
+            let fact = |i: usize| -> Option<String> {
+                attested_cell(word, base, recension, Some(i), &get).map(|(c, _)| c.to_string())
+            };
+            let realised = orthography::realise(base, recension);
+            return restyle(
+                orthography::realise(
+                    &church_slavonic_core::resolution::verb_fact_fallback(
+                        &realised, recension, cell, &fact,
+                    ),
+                    recension,
+                ),
+                style,
+            );
+        }
+        rule_with_case(base, recension, |w| {
+            ChurchSlavonicCore::l_participle(w, gender, number, recension)
+        })
+    }
+
     /// Declines a participle: `tense` (`Imperfect` and `Aorist` both mean
     /// the past participle), `voice`, the short or long [`Series`], and the
     /// adjective-style agreement features. The lemma is the infinitive; like
@@ -526,6 +575,42 @@ impl ChurchSlavonic {
         }
         rule_with_case(base, recension, |w| {
             ChurchSlavonicCore::participle(w, tense, voice, series, case, number, gender, recension)
+        })
+    }
+
+    /// Declines a non-personal pronoun (demonstrative, relative,
+    /// interrogative, possessive, and their compounds): the lemma is the
+    /// masculine nominative singular (`тъ`, `иже`, `къто`). Attested table
+    /// cells override the pronominal-declension rule; the vocative answers
+    /// with the nominative.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use church_slavonic::*;
+    ///
+    /// assert_eq!(
+    ///     ChurchSlavonic::npron(
+    ///         "тъ", &Gender::Masculine, &Number::Singular, &Case::Genitive,
+    ///         &Recension::OldChurchSlavonic,
+    ///     ),
+    ///     "того"
+    /// );
+    /// ```
+    pub fn npron(
+        word: &str,
+        gender: &Gender,
+        number: &Number,
+        case: &Case,
+        recension: &Recension,
+    ) -> String {
+        let get = |w: &str| get_npron(&format!("{}:{w}", tag(recension)));
+        let base = base_lemma(word, |w| ci_lookup(w, recension, get).is_some());
+        let cell = church_slavonic_core::schema::npron_cell(gender, number, case);
+        if let Some((c, style)) = attested_cell(word, base, recension, Some(cell), get) {
+            return restyle(c.to_string(), style);
+        }
+        rule_with_case(base, recension, |w| {
+            ChurchSlavonicCore::npron(w, gender, number, case, recension)
         })
     }
 

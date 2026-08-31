@@ -7,12 +7,16 @@
 //!   Locative, Vocative`; cell 21 is the ACCENT-PATTERN cell;
 //! - adjective (127): `((degree * 3 + gender) * 3 + number) * 7 + case`,
 //!   degrees `Positive, Comparative`; cell 126 the accent-pattern cell;
-//! - verb (549): four 9-cell finite blocks `Present, Imperfect, Aorist,
+//! - verb (558): four 9-cell finite blocks `Present, Imperfect, Aorist,
 //!   Imperative` at `block * 9 + number * 3 + person`, the participle
 //!   citations 36/37, the declined participle block at 38.., the four
 //!   participle-stem cells 542..546, the present-stem override 546, the
-//!   class override 547 and the accent-pattern cell 548;
-//! - pronoun (90): the personal matrix.
+//!   class override 547, the accent-pattern cell 548, and the l-participle
+//!   (resultative) block at 549: `549 + gender * 3 + number`, nominative
+//!   only;
+//! - pronoun (90): the personal matrix;
+//! - non-personal pronoun (54): `(gender * 3 + number) * 6 + case`, six
+//!   cases (the vocative answers with the nominative).
 //!
 //! An accent-pattern token is `s<N>` (every form stresses its N-th vowel,
 //! 0-based) or `e` (every form stresses its last vowel); it re-accents
@@ -25,8 +29,9 @@ use crate::grammar::*;
 
 pub const NOUN_ARITY: usize = 22;
 pub const ADJ_ARITY: usize = 127;
-pub const VERB_ARITY: usize = 549;
+pub const VERB_ARITY: usize = 558;
 pub const PRONOUN_ARITY: usize = 90;
+pub const NPRON_ARITY: usize = 54;
 
 /// The accent-pattern fact cell of each accented row.
 pub const NOUN_ACCENT_CELL: usize = 21;
@@ -108,6 +113,26 @@ pub fn pronoun_cell(person: &Person, number: &Number, gender: &Gender, case: &Ca
     }
 }
 
+/// A non-personal pronoun cell: `(gender * 3 + number) * 6 + case`, the
+/// vocative answering with the nominative.
+pub fn npron_cell(gender: &Gender, number: &Number, case: &Case) -> usize {
+    let case = if *case == Case::Vocative {
+        0
+    } else {
+        *case as usize
+    };
+    (*gender as usize * 3 + *number as usize) * 6 + case
+}
+
+/// Decode a non-personal pronoun cell index (0..54).
+pub fn npron_features(cell: usize) -> (Gender, Number, Case) {
+    (
+        GENDERS[cell / 18],
+        NUMBERS[(cell / 6) % 3],
+        CASES[cell % 6],
+    )
+}
+
 /// The declined-participle block: cells 38.. of the verb row. `tense` is
 /// collapsed to present/past (`Imperfect` and `Aorist` are both the past
 /// participle, as in [`verb_cell`]).
@@ -130,6 +155,18 @@ pub fn participle_cell(
         Tense::Imperfect | Tense::Aorist => 1,
     };
     38 + (((series * 2 + tense) * 3 + *gender as usize) * 3 + *number as usize) * 7 + *case as usize
+}
+
+/// The l-participle (resultative) block: nominative-only, `549 + gender * 3
+/// + number`.
+pub fn l_participle_cell(gender: &Gender, number: &Number) -> usize {
+    549 + *gender as usize * 3 + *number as usize
+}
+
+/// Decode an l-participle cell index (549..558).
+pub fn l_participle_features(cell: usize) -> (Gender, Number) {
+    let rest = cell - 549;
+    (GENDERS[rest / 3], NUMBERS[rest % 3])
 }
 
 /// The four participle-stem cells: a derived stem, not an attested form.
