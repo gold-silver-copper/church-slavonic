@@ -38,6 +38,9 @@ pub enum Node {
     Verb { lemma: String, person: Person, number: Number, tense: Tense, form: Form },
     /// `(lp лемма :g m :num sg)` — the l-participle.
     LPart { lemma: String, gender: Gender, number: Number },
+    /// `(cap X)` — uppercase the first letter of the child's rendering
+    /// (sentence-initial capitals; the tree stays lemma-true).
+    Cap(Box<Node>),
     /// `(np …)`, `(cl …)`, `(s …)` — an ordered group.
     Group { head: String, children: Vec<Node> },
 }
@@ -212,6 +215,12 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
                 form,
             })
         }
+        "cap" => {
+            if rest.len() != 1 {
+                return err("(cap …) takes exactly one child");
+            }
+            Ok(Node::Cap(Box::new(from_sexpr(&rest[0])?)))
+        }
         "lp" => {
             let Some(Value::Atom(lemma)) = rest.first() else {
                 return err("(lp …) starts with a lemma atom");
@@ -292,6 +301,7 @@ pub fn to_sexpr(node: &Node) -> Value {
             key("g"), atom(show_gender(gender)),
             key("num"), atom(show_num(number)),
         ]),
+        Node::Cap(child) => Value::List(vec![atom("cap"), to_sexpr(child)]),
         Node::Group { head, children } => {
             let mut items = vec![atom(head)];
             items.extend(children.iter().map(to_sexpr));
@@ -379,6 +389,17 @@ fn walk(
                 glue_next,
             );
         }
+        Node::Cap(child) => {
+            let mut inner = String::new();
+            let mut inner_glue = false;
+            walk(child, recension, &mut inner, &mut inner_glue)?;
+            let mut chars = inner.chars();
+            let capped: String = match chars.next() {
+                Some(first) => first.to_uppercase().chain(chars).collect(),
+                None => return err("(cap …) rendered nothing"),
+            };
+            emit(&capped, false, out, glue_next);
+        }
         Node::Group { children, .. } => {
             for child in children {
                 walk(child, recension, out, glue_next)?;
@@ -451,6 +472,53 @@ mod tests {
         let rendered =
             render(&tree, &church_slavonic::Recension::Synodal).expect("renders");
         assert_eq!(rendered, verse.trim());
+    }
+
+    /// Part 1's exact-output tests: every expected string on the right is
+    /// PASTED crate output (or the pinned print itself) — never retyped.
+    #[test]
+    fn analyzed_leaves_render_through_the_crate() {
+        let syn = church_slavonic::Recension::Synodal;
+        let read = |text: &str| {
+            from_sexpr(&sexpr::parse(text).expect("sexpr")).expect("node")
+        };
+        for (tree, expect) in [
+            ("(n нача́ло :case loc :num sg)", "нача́лѣ"),
+            ("(n землѧ̀ :case acc :num sg)", "зе́млю"),
+            ("(n не́бо :case acc :num sg)", "не́бо"),
+            ("(v сотвори́ти :t aor :p 3 :num sg)", "сотворѝ"),
+            ("(v рещѝ :t aor :p 3 :num sg)", "речѐ"),
+            ("(v бы́ти :t aor :p 3 :num sg)", "бы́сть"),
+            ("(v бы́ти :t pres :p 3 :num sg)", "є҆́сть"),
+            ("(adj вели́кїй :case acc :num sg :g n)", "вели́кое"),
+            ("(cap (f въ))", "Въ"),
+            ("(f и҆)", "и҆"),
+        ] {
+            assert_eq!(render(&read(tree), &syn).expect("renders"), expect, "{tree}");
+        }
+        // an unlisted function word refuses to render
+        assert!(render(&Node::Fn("гдⷭ҇ь".into()), &syn).is_err());
+    }
+
+    /// The first real lift: Genesis 1:1, byte-checked against the print.
+    /// «бг҃ъ» stays verbatim-with-reason (titlo abbreviation — the crate
+    /// tables spell the full «бо́гъ»); everything else is analyzed or
+    /// closed-class.
+    #[test]
+    fn genesis_1_1_lifts_and_round_trips() {
+        let text = r#"(s (cl
+            (pp (cap (f въ)) (n нача́ло :case loc :num sg))
+            (v сотвори́ти :t aor :p 3 :num sg)
+            (np (w "бг҃ъ" :lemma бо́гъ :case nom :num sg))
+            (np (n не́бо :case acc :num sg)
+                (f и҆)
+                (n землѧ̀ :case acc :num sg))
+            (p ".")))"#;
+        let node = from_sexpr(&sexpr::parse(text).expect("sexpr")).expect("node");
+        assert_eq!(
+            render(&node, &church_slavonic::Recension::Synodal).expect("renders"),
+            "Въ нача́лѣ сотворѝ бг҃ъ не́бо и҆ зе́млю."
+        );
     }
 
     #[test]
