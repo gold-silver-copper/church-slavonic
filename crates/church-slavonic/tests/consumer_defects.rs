@@ -54,7 +54,6 @@ fn izhitsa_spellings_reach_one_row() {
 /// With the stem read from the attested present, the l-participle is
 /// «стри́глъ» (стриг- + -лъ, the велярный stem the row attests).
 #[test]
-#[ignore = "Part 2: derive the present stem from attested finite cells"]
 fn strishchi_l_participle_uses_the_attested_stem() {
     assert_eq!(
         ChurchSlavonic::l_participle("стрищѝ", &Gender::Masculine, &SG, &SYN),
@@ -65,11 +64,11 @@ fn strishchi_l_participle_uses_the_attested_stem() {
 /// «дои́ти» (milk) has its own row — «дои́ши, дои́тъ, доѧ́ше, дои́ша,
 /// дои́ла» all attested — yet the unattested aorist 3sg answers «дои́де»
 /// and the imperative «дои́ди»: the rule missegmented the lemma as
-/// до+и҆тѝ. The row's attested present proves the i-verb stem «дои́-»;
-/// the regular i-verb aorist 3sg is «доѝ» (as напои́ти : напоѝ, attested
-/// crate behavior) and the imperative «до́й» (as напои́ти : напо́й).
+/// до+и҆тѝ. The row's attested present proves the i-verb; the regular
+/// i-verb aorist 3sg AND imperative are «доѝ» (the «напоѝ» print type —
+/// the auditor's first guess «до́й» was the Russian contraction, another
+/// audit defect the derivation corrected).
 #[test]
-#[ignore = "Part 2: derive the present stem from attested finite cells"]
 fn doiti_the_milk_verb_is_not_a_compound_of_iti() {
     assert_eq!(
         ChurchSlavonic::verb("дои́ти", &Person::Third, &SG, &Tense::Aorist, &Form::Finite, &SYN),
@@ -84,7 +83,7 @@ fn doiti_the_milk_verb_is_not_a_compound_of_iti() {
             &Form::Imperative,
             &SYN
         ),
-        "до́й"
+        "доѝ"
     );
 }
 
@@ -94,7 +93,6 @@ fn doiti_the_milk_verb_is_not_a_compound_of_iti() {
 /// still answers the animate shape. Any attested nominative-shaped
 /// accusative teaches the others: acc sg = nom sg.
 #[test]
-#[ignore = "Part 2: the accusative-shape fact reads every attested accusative"]
 fn ogurets_the_stored_plural_shape_teaches_the_singular() {
     assert_eq!(acc("ѻ҆гꙋре́цъ"), "ѻ\u{486}гꙋре\u{301}цъ");
 }
@@ -138,20 +136,24 @@ fn jablon_is_a_feminine_i_stem() {
 
 #[test]
 fn the_audit_was_wrong_these_are_attested() {
-    // «вожжѝ» — imperative of «возжещѝ», cell 28 of its row (Polyakov);
-    // the assimilated spelling is real print (variants «возжгѝ»,
-    // «возжзѝ» live at the _2/_3 sense keys).
-    assert_eq!(
-        ChurchSlavonic::verb(
-            "возжещѝ",
-            &Person::Second,
-            &SG,
-            &Tense::Present,
-            &Form::Imperative,
-            &SYN
-        ),
-        "вожжѝ"
-    );
+    // «вожжѝ» / «возжгѝ» / «возжзѝ» — three ATTESTED imperative
+    // spellings of «возжещѝ» across its sense keys (Polyakov). Key
+    // numbers are deterministic but not immutable (lib.rs contract), so
+    // the guard asserts the attested SET, not a numbering.
+    let imperative = |key: &str| {
+        ChurchSlavonic::verb(key, &Person::Second, &SG, &Tense::Present, &Form::Imperative, &SYN)
+    };
+    let spellings = [
+        imperative("возжещѝ"),
+        imperative("возжещѝ_2"),
+        imperative("возжещѝ_3"),
+    ];
+    for attested in ["вожжѝ", "возжгѝ", "возжзѝ"] {
+        assert!(
+            spellings.iter().any(|s| s == attested),
+            "attested imperative {attested} unreachable; got {spellings:?}"
+        );
+    }
     // «пожа́тъ» — aorist 3sg of «пожа́ти», cells 19/20 attested (the -ѧти
     // class takes -ѧ́тъ: «прїѧ́тъ»); the bare variant «пожа̀» is the _2
     // sense.

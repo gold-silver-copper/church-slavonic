@@ -152,23 +152,14 @@ impl ChurchSlavonicCore {
         })
     }
 
-    fn l_participle_skeleton(
-        word: &str,
+
+    fn l_participle_ending(
         gender: &Gender,
         number: &Number,
         recension: &Recension,
-    ) -> String {
+    ) -> &'static str {
         let synodal = *recension == Recension::Synodal;
-        let mut stem = Self::stems(word, recension).infinitive;
-        while stem.ends_with('д') || stem.ends_with('т') {
-            stem.pop();
-        }
-        // A `-сти` infinitive is read as a dental stem (`вести` : `велъ`),
-        // matching the present-stem machinery; the `нести` type is tabled.
-        if word.ends_with("сти") && stem.ends_with('с') {
-            stem.pop();
-        }
-        let ending = match (number, gender) {
+        match (number, gender) {
             (Number::Singular, Gender::Masculine) => "ъ",
             (Number::Singular, Gender::Feminine) => "а",
             (Number::Singular, Gender::Neuter) => "о",
@@ -183,7 +174,24 @@ impl ChurchSlavonicCore {
                 }
             }
             (Number::Plural, Gender::Neuter) => "а",
-        };
+        }
+    }
+    fn l_participle_skeleton(
+        word: &str,
+        gender: &Gender,
+        number: &Number,
+        recension: &Recension,
+    ) -> String {
+        let mut stem = Self::stems(word, recension).infinitive;
+        while stem.ends_with('д') || stem.ends_with('т') {
+            stem.pop();
+        }
+        // A `-сти` infinitive is read as a dental stem (`вести` : `велъ`),
+        // matching the present-stem machinery; the `нести` type is tabled.
+        if word.ends_with("сти") && stem.ends_with('с') {
+            stem.pop();
+        }
+        let ending = Self::l_participle_ending(gender, number, recension);
         Self::attach(&stem, &format!("л{ending}"), recension)
     }
 
@@ -217,6 +225,26 @@ impl ChurchSlavonicCore {
             return word.to_string();
         }
         let s = Self::override_stems(word, class, present, recension);
+        // A stored stem carries its own accent («стрꙋ́ж») and skips the
+        // accent pass; an UNACCENTED override stem (derived, not stored —
+        // the v1.1 стрищѝ/дои́ти repair) threads the lemma's accent like
+        // the plain rule path.
+        let accentless = |st: &str| !st.chars().any(|c| matches!(c, '\u{0300}' | '\u{0301}'));
+        if *recension == Recension::Synodal && accentless(&s.present) && accentless(&s.infinitive) {
+            use crate::accent::with_accent_pattern;
+            let reflexive = skeleton.ends_with("сѧ");
+            if reflexive {
+                let bare: String = word.chars().take(word.chars().count() - 2).collect();
+                return with_accent_pattern(&bare, recension, None, |_w| {
+                    let answer =
+                        Self::conjugate(&skeleton, &s, person, number, tense, form, recension);
+                    format!("{}сѧ", answer.strip_suffix('ъ').unwrap_or(&answer))
+                });
+            }
+            return with_accent_pattern(word, recension, None, |_w| {
+                Self::conjugate(&skeleton, &s, person, number, tense, form, recension)
+            });
+        }
         let answer = Self::conjugate(&skeleton, &s, person, number, tense, form, recension);
         if *recension == Recension::Synodal {
             crate::accent::final_varia(&answer)
@@ -234,14 +262,67 @@ impl ChurchSlavonicCore {
     ) -> Stems {
         // Class detection reads the infinitive's ending letters, so it runs
         // on the unaccented skeleton; the override stem keeps its accent.
-        let mut s = Self::stems(&strip_marks(word), recension);
+        let skeleton = strip_marks(word);
+        let mut s = Self::stems(&skeleton, recension);
         if let Some(conj) = class.and_then(Conj::from_token) {
             s.conj = conj;
+            // A Second-class fact on an -ити lemma proves a true i-verb —
+            // the plain rule may have missegmented it as a prefixed и҆тѝ
+            // (`дои́ти` "to milk" is not до + и҆тѝ): re-derive the stems as
+            // the i-verb the attested present proved.
+            if conj == Conj::Second
+                && let Some(inf) = skeleton.strip_suffix("ти")
+                && inf.ends_with('и')
+                && s.infinitive != inf
+            {
+                s.infinitive = inf.to_string();
+                s.present = inf.strip_suffix('и').unwrap_or(inf).to_string();
+            }
         }
         if let Some(present) = present.filter(|p| !p.is_empty()) {
             s.present = present.to_string();
+            // A -щи infinitive NEUTRALIZED its velar (стриг-ти and пек-ти
+            // both spell -щи); the attested present stem reveals it, and
+            // the aorist and l-participle build from the same velar.
+            if skeleton.ends_with("щи") {
+                let bare = strip_marks(present);
+                if bare.ends_with('г') || bare.ends_with('к') {
+                    s.infinitive = bare;
+                }
+            }
         }
         s
+    }
+
+    /// The l-participle with the class/present-stem facts applied: the
+    /// override-aware [`Self::override_stems`] supplies the infinitive stem
+    /// the plain skeleton could not know (see the v1.1 ledger).
+    pub(crate) fn l_participle_from_stems(
+        word: &str,
+        class: Option<&str>,
+        present: Option<&str>,
+        gender: &Gender,
+        number: &Number,
+        recension: &Recension,
+        pattern: Option<&str>,
+    ) -> String {
+        use crate::accent::with_accent_pattern;
+        let stems = Self::override_stems(word, class, present, recension);
+        let skeleton = strip_marks(word);
+        let reflexive = *recension == Recension::Synodal && skeleton.ends_with("сѧ");
+        let build = move |_w: &str| {
+            let mut stem = stems.infinitive.clone();
+            while stem.ends_with('д') || stem.ends_with('т') {
+                stem.pop();
+            }
+            let ending = Self::l_participle_ending(gender, number, recension);
+            Self::attach(&stem, &format!("л{ending}"), recension)
+        };
+        if reflexive {
+            let bare: String = word.chars().take(word.chars().count() - 2).collect();
+            return with_accent_pattern(&bare, recension, pattern, |w| format!("{}сѧ", build(w)));
+        }
+        with_accent_pattern(word, recension, pattern, build)
     }
 
     fn verb_skeleton(

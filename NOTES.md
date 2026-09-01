@@ -105,3 +105,31 @@ Part 1 (izhitsa fold): `ѷ ~ ѵ` folded in the Synodal lookup key only —
 zero table keys spell `ѷ`, 439 spell `ѵ`, and `comparison_key` already
 folded the pair; lookup now agrees. Invariant 4 added to the lib.rs
 contract. Gates: accuracy 100/0 everywhere, check-registry OK.
+
+Part 2 (the fact mechanism, three linked repairs + one blast-radius fix):
+- `infer_verb_override` donors now strip END-STRESSED endings
+  («стриже́ши», «дои́ши») — end-stressed verbs could never hypothesize.
+- The override inference and the accusative-shape subtraction both run
+  AGAIN post-merge: Polyakov's single-cell observations meant a row's
+  cells never met inside one observation, so neither pass could see them
+  together (the стрищѝ/дои́ти/а҆ве́ль class of misses).
+- `override_stems` repairs what the infinitive hid: a Second-class fact
+  on an -ити lemma re-derives the stems as a true i-verb (дои́ти is not
+  до + и҆тѝ); a present-stem fact on a -щи lemma restores the
+  neutralized velar to the aorist/l-stems (стриг-ти vs пек-ти). New
+  `l_participle_from_stems` + the runtime's l_participle entering the
+  engine on class/stem facts, not only accent. Unaccented derived stems
+  thread the lemma's accent like the plain rule path.
+- The shape fact reads EVERY attested accusative (sources 3/10/17, src ==
+  cell skipped): a nominative-shaped plural teaches the singular
+  (ѻ҆гꙋре́цъ). The extractor's re-store pass reads its sources LIVE so
+  restoring one accusative immediately derives the rest — the stale
+  snapshot had re-stored mutually-derivable pairs and tripped
+  rule_table_sync (118 → 0).
+- The derivation corrected the AUDITOR twice more: the imperative of
+  дои́ти is «доѝ» (the «напоѝ» print type), not the Russian «до́й»; and
+  «возжещѝ»'s three imperative spellings are all attested — the guard
+  asserts the set, since sense numbers may renumber (documented).
+- Gates: accuracy 100.00%/0 on every pinned source; check-registry OK;
+  held-out delta: OCS dev+test verbs 7414 → 7413 (−1 slot, recorded);
+  all other held-out rows unchanged.

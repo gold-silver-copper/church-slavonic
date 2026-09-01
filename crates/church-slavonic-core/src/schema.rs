@@ -46,7 +46,7 @@ pub const VERB_ACCENT_CELL: usize = 548;
 /// only derive upward — cell 10 from 3, cell 17 from 3 or 10 — so the
 /// lowest stored accusative is always the anchor and is never subtracted
 /// by its own derivation.
-pub const NOUN_SHAPE_SOURCE_CELLS: [usize; 2] = [3, 10];
+pub const NOUN_SHAPE_SOURCE_CELLS: [usize; 3] = [3, 10, 17];
 
 /// The present-stem override cell of the verb row.
 pub const PRESENT_STEM_CELL: usize = 546;

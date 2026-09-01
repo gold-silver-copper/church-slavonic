@@ -2191,11 +2191,31 @@ fn infer_verb_override(
         if form.is_empty() {
             continue;
         }
-        if let Some(stem) = form.strip_suffix(ending)
-            && !stem.is_empty()
-            && !hypotheses.iter().any(|(c, st)| c == conj && st == stem)
-        {
-            hypotheses.push((*conj, stem.to_string()));
+        // An END-STRESSED donor spells the acute inside the ending
+        // («стриже́ши», «дои́тъ») — strip that spelling too, or verbs whose
+        // present is attested only with ending stress never hypothesize
+        // (the стрищѝ/дои́ти defect of the v1.1 ledger). The scorer keeps
+        // the guard: a hypothesis is adopted only when the re-run rule
+        // reproduces MORE attested cells than the plain rule.
+        let accented: String = {
+            let mut out = String::new();
+            let mut done = false;
+            for c in ending.chars() {
+                out.push(c);
+                if !done && matches!(c, 'а' | 'е' | 'и' | 'о' | 'ꙋ' | 'ы' | 'ѣ' | 'ю' | 'ѧ') {
+                    out.push('\u{0301}');
+                    done = true;
+                }
+            }
+            out
+        };
+        for suffix in [ending, accented.as_str()] {
+            if let Some(stem) = form.strip_suffix(suffix)
+                && !stem.is_empty()
+                && !hypotheses.iter().any(|(c, st)| c == conj && st == stem)
+            {
+                hypotheses.push((*conj, stem.to_string()));
+            }
         }
     }
     if hypotheses.is_empty() {
@@ -2423,44 +2443,47 @@ fn subtract_derived_accusatives(
         return;
     };
     let realised = church_slavonic_core::orthography::realise(lemma, recension);
-    // Accusative cells above the lowest source, highest first is not
-    // needed — derivation reads sources from `forms`, which this loop only
-    // blanks, never fills; blanking a higher cell cannot enable a lower.
-    let acc_cells: Vec<usize> = shape_sources(pos)
-        .iter()
-        .copied()
-        .chain(std::iter::once(noun_cell_of_accusative_plural()))
-        .filter(|c| *c > shape_sources(pos)[0])
-        .collect();
-    for cell in acc_cells {
-        if forms[cell].is_empty() || raw[cell].is_empty() {
-            continue;
+    // The shape fact teaches in BOTH directions now (v1.1: an attested
+    // nominative-shaped plural accusative teaches the singular), so any
+    // two stored accusatives may predict each other. Fixpoint, highest
+    // cell first: blank any stored accusative the REMAINING stored ones
+    // reproduce, until stable — at least one always survives as the row's
+    // anchor, and the survivor set is exactly what the runtime (and the
+    // rule_table_sync audit) cannot predict from itself.
+    loop {
+        let stored: Vec<usize> = shape_sources(pos)
+            .iter()
+            .copied()
+            .filter(|&c| !forms[c].is_empty() && !raw[c].is_empty())
+            .collect();
+        if stored.len() < 2 {
+            return;
         }
-        let snapshot = forms.to_vec();
-        let fact = |i: usize| -> Option<String> {
-            if shape_sources(pos).contains(&i) && i < cell {
-                return Some(snapshot[i].clone()).filter(|f| !f.is_empty());
+        let mut blanked = false;
+        for &cell in stored.iter().rev() {
+            let snapshot = forms.to_vec();
+            let fact = |i: usize| -> Option<String> {
+                if shape_sources(pos).contains(&i) && i != cell {
+                    return Some(snapshot[i].clone()).filter(|f| !f.is_empty());
+                }
+                (fact_range.contains(&i) || i == accent_cell)
+                    .then(|| snapshot[i].clone())
+                    .filter(|f| !f.is_empty())
+            };
+            if rule_matches(
+                recension,
+                &raw[cell],
+                &resolved_cell(pos, &realised, recension, cell, &fact),
+            ) {
+                forms[cell] = String::new();
+                blanked = true;
+                break;
             }
-            (fact_range.contains(&i) || i == accent_cell)
-                .then(|| snapshot[i].clone())
-                .filter(|f| !f.is_empty())
-        };
-        if rule_matches(
-            recension,
-            &raw[cell],
-            &resolved_cell(pos, &realised, recension, cell, &fact),
-        ) {
-            forms[cell] = String::new();
+        }
+        if !blanked {
+            return;
         }
     }
-}
-
-/// The accusative-plural cell of the noun row.
-fn noun_cell_of_accusative_plural() -> usize {
-    church_slavonic_core::schema::noun_cell(
-        &church_slavonic_core::grammar::Case::Accusative,
-        &church_slavonic_core::grammar::Number::Plural,
-    )
 }
 
 /// The audit's view of a row's full fact-aware resolution (0..form-cells),
@@ -2563,7 +2586,47 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
         }
         acc.drop_regular(arity);
         let had_regular = acc.had_regular;
-        let candidates: Vec<Candidate> = acc.by_sig.into_values().collect();
+        let mut candidates: Vec<Candidate> = acc.by_sig.into_values().collect();
+        // A verb whose forms arrived as single-cell observations (Polyakov
+        // form-of entries) never had two attested cells IN ONE observation,
+        // so the per-observation override inference above could not fire —
+        // the стрищѝ/дои́ти defect of the v1.1 ledger. Re-infer over each
+        // candidate's UNIONED raw cells; adopting the override re-subtracts
+        // the forms exactly as the in-observation path does.
+        // The same single-cell-observation gap holds for the accusative
+        // shape: the two accusatives that teach each other may arrive in
+        // separate observations, so the per-observation subtraction above
+        // never saw them together — re-subtract over the unioned rows.
+        for cand in &mut candidates {
+            let raw = cand.raw.clone();
+            subtract_derived_accusatives(key.pos, &recension, &key.lemma, &mut cand.forms, &raw);
+        }
+        if key.pos == Pos::Verb {
+            for cand in &mut candidates {
+                if !cand.forms[VERB_CLASS_CELL].is_empty()
+                    || !cand.forms[PRESENT_STEM_CELL].is_empty()
+                {
+                    continue;
+                }
+                if let Some((class, stem, predicted_ov)) =
+                    infer_verb_override(&recension, &key.lemma, &predicted, &cand.raw)
+                {
+                    for i in 0..542 {
+                        cand.forms[i] = if cand.raw[i].is_empty()
+                            || rule_matches(&recension, &cand.raw[i], &predicted_ov[i])
+                        {
+                            String::new()
+                        } else {
+                            cand.raw[i].clone()
+                        };
+                    }
+                    cand.forms[VERB_CLASS_CELL] = class.to_string();
+                    cand.forms[PRESENT_STEM_CELL] = stem.clone();
+                    cand.raw[VERB_CLASS_CELL] = class.to_string();
+                    cand.raw[PRESENT_STEM_CELL] = stem;
+                }
+            }
+        }
         let mut assigned = assign(&key.lemma, candidates, had_regular);
         // The runtime reads a `_n` blank from the bare row before the rule,
         // so where the bare row holds a cell, a variant row carries exactly
@@ -2624,33 +2687,37 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                         }
                     })
                     .collect();
-                // The shape-source cells the engine may read, own-else-bare,
-                // snapshotted so the re-store below can still write forms.
-                let source_cells: Vec<(usize, String)> = shape_sources(key.pos)
-                    .iter()
-                    .map(|i| {
-                        let own = &row.forms[*i];
-                        let cell = if !own.is_empty() {
-                            own.clone()
-                        } else if !is_bare {
-                            bare_exact[*i].clone()
-                        } else {
-                            String::new()
-                        };
-                        (*i, cell)
-                    })
-                    .collect();
-                let fact = |i: usize| -> Option<String> {
-                    if let Some((_, f)) = source_cells.iter().find(|(c, _)| *c == i) {
-                        return Some(f.clone()).filter(|f| !f.is_empty());
+                // The shape-source cells the engine may read, own-else-bare
+                // — read LIVE from the row so a cell this pass re-stores
+                // immediately teaches the next (the bidirectional shape
+                // fact makes restoring one accusative derive the others;
+                // a stale snapshot would re-store them all, v1.1).
+                let source_of = |forms: &[String], i: usize| -> String {
+                    let own = &forms[i];
+                    if !own.is_empty() {
+                        own.clone()
+                    } else if !is_bare {
+                        bare_exact[i].clone()
+                    } else {
+                        String::new()
                     }
-                    facts
-                        .get(i.checked_sub(fact_range.start)?)
-                        .filter(|f| !f.is_empty())
-                        .cloned()
                 };
-                let resolved =
-                    |cell: usize| resolved_cell(key.pos, &realised, &recension, cell, &fact);
+                let resolved = |forms: &[String], cell: usize| {
+                    let sources: Vec<(usize, String)> = shape_sources(key.pos)
+                        .iter()
+                        .map(|i| (*i, source_of(forms, *i)))
+                        .collect();
+                    let fact = |i: usize| -> Option<String> {
+                        if let Some((_, f)) = sources.iter().find(|(c, _)| *c == i) {
+                            return Some(f.clone()).filter(|f| !f.is_empty());
+                        }
+                        facts
+                            .get(i.checked_sub(fact_range.start)?)
+                            .filter(|f| !f.is_empty())
+                            .cloned()
+                    };
+                    resolved_cell(key.pos, &realised, &recension, cell, &fact)
+                };
                 // Forward: a blank cell is re-stored when the runtime's
                 // resolution for this key will NOT reproduce its
                 // attestation — a differing bare exact cell shadows the
@@ -2660,7 +2727,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                         let reproduced = if !is_bare && !bare_exact[cell].is_empty() {
                             bare_exact[cell] == row.raw[cell]
                         } else {
-                            rule_matches(&recension, &row.raw[cell], &resolved(cell))
+                            rule_matches(&recension, &row.raw[cell], &resolved(&row.forms, cell))
                         };
                         if !reproduced {
                             row.forms[cell] = row.raw[cell].clone();
@@ -2673,7 +2740,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     if !is_bare
                         && !row.forms[cell].is_empty()
                         && bare_exact[cell].is_empty()
-                        && rule_matches(&recension, &row.forms[cell], &resolved(cell))
+                        && rule_matches(&recension, &row.forms[cell], &resolved(&row.forms, cell))
                     {
                         row.forms[cell] = String::new();
                     }

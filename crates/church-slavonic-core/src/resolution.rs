@@ -91,16 +91,18 @@ pub fn noun_fact_fallback(
     }
     let (case, number) = noun_features(cell);
     let token = fact(NOUN_ACCENT_CELL);
-    // The accusative-shape fact: a lower stored accusative that is
+    // The accusative-shape fact: ANY stored accusative that is
     // nominative-shaped where the rule answers the genitive shape (an
     // inanimate: `а҆́ггелы`, not `а҆́ггелѡвъ`) teaches this accusative the
-    // nominative shape too. Sources derive upward only, so the anchor
-    // cell itself always resolves by the plain ladder.
+    // nominative shape too — the plural teaches the singular as readily
+    // as the reverse (the ѻ҆гꙋре́цъ defect of the v1.1 ledger). The
+    // anchor cell itself resolves by the plain ladder (src == cell is
+    // skipped; an exact stored cell never reaches this path).
     if *recension == Recension::Synodal && case == Case::Accusative {
         use crate::orthography::comparison_key;
         for src in NOUN_SHAPE_SOURCE_CELLS {
-            if src >= cell {
-                break;
+            if src == cell {
+                continue;
             }
             let Some(stored) = fact(src) else { continue };
             let (_, src_number) = noun_features(src);
@@ -174,6 +176,22 @@ fn verb_letters(
 ) -> String {
     if (549..558).contains(&cell) {
         let (gender, number) = crate::schema::l_participle_features(cell);
+        // The class/present-stem facts repair a stem the infinitive hid
+        // (the -щи velar, the false и҆тѝ compound) — the l-participle
+        // reads them like the finite blocks do (v1.1 ledger).
+        let class = fact(crate::schema::VERB_CLASS_CELL);
+        let present = fact(crate::schema::PRESENT_STEM_CELL);
+        if class.is_some() || present.is_some() {
+            return ChurchSlavonicCore::l_participle_from_stems(
+                lemma,
+                class.as_deref(),
+                present.as_deref(),
+                &gender,
+                &number,
+                recension,
+                pattern,
+            );
+        }
         return ChurchSlavonicCore::l_participle_pattern(lemma, &gender, &number, recension, pattern);
     }
     if cell >= 542 {

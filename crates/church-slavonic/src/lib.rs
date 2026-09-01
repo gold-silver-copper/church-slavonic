@@ -485,6 +485,12 @@ impl ChurchSlavonic {
         if let Some((c, style)) = attested_cell(word, base, recension, Some(cell), get) {
             return restyle(c.to_string(), style);
         }
+        // The class/present-stem facts repair a stem the infinitive hid
+        // (the -щи velar, the false и҆тѝ compound) — the l-participle
+        // enters the engine on ANY of the three facts, as the finite
+        // blocks do (v1.1 ledger).
+        let class = attested_cell(word, base, recension, Some(VERB_CLASS_CELL), &get);
+        let stem = attested_cell(word, base, recension, Some(PRESENT_STEM_CELL), &get);
         let accent = attested_cell(
             word,
             base,
@@ -492,7 +498,7 @@ impl ChurchSlavonic {
             Some(church_slavonic_core::schema::VERB_ACCENT_CELL),
             &get,
         );
-        if let Some((_, style)) = accent {
+        if let Some((_, style)) = class.or(stem).or(accent) {
             let fact = |i: usize| -> Option<String> {
                 attested_cell(word, base, recension, Some(i), &get).map(|(c, _)| c.to_string())
             };
