@@ -70,6 +70,9 @@
 //! 3. Opaqueness: input that resolves to no key inflects by rule on the whole
 //!    string, unchanged (the nominative of `градъ_9` is `градъ_9ъ`, not
 //!    `градъ`).
+//! 4. Izhitsa folding: `ѷ`-spelled Synodal input reaches the `ѵ`-spelled
+//!    table key (the kendema is positional typography; no table key spells
+//!    `ѷ`), with the caller's spelling untouched on rule-served cells.
 
 use church_slavonic_core::ChurchSlavonicCore;
 pub use church_slavonic_core::grammar::*;
@@ -192,11 +195,22 @@ fn restyle(s: String, style: CaseStyle) -> String {
 /// The table key spelling of an input: the recension's canonical spelling
 /// ([`realise`]) — for Old Church Slavonic the unaccented lowercase word,
 /// for Synodal the print's typography with the accent kept (a Synodal lemma
-/// is its accented citation form: `ра́бъ`, not `рабъ`).
+/// is its accented citation form: `ра́бъ`, not `рабъ`). The kendema-carrying
+/// izhitsa folds to the plain letter (`ѷ ~ ѵ`) exactly as
+/// [`orthography::comparison_key`] already treats it: the kendema is
+/// positional typography, not a distinct letter, and no table key spells it
+/// (`кѷпарі́съ` and `кѵпарі́съ` are one lemma).
 fn fold(word: &str, recension: &Recension) -> String {
     match recension {
         Recension::OldChurchSlavonic => strip_marks(&word.nfc().collect::<String>()).to_lowercase(),
-        Recension::Synodal => realise(word, recension),
+        Recension::Synodal => realise(word, recension)
+            .chars()
+            .map(|c| match c {
+                'ѷ' => 'ѵ',
+                'Ѷ' => 'Ѵ',
+                other => other,
+            })
+            .collect(),
     }
 }
 

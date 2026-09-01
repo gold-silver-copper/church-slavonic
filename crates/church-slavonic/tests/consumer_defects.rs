@@ -39,7 +39,6 @@ fn acc(w: &str) -> String {
 /// `orthography` already folds it in `comparison_key` — the lookup fold
 /// must agree with the comparison fold.
 #[test]
-#[ignore = "Part 1: fold ѷ to ѵ in the lookup key"]
 fn izhitsa_spellings_reach_one_row() {
     assert_eq!(acc("кѵпарі́съ"), "кѵпарі\u{301}съ", "the ѵ spelling (guard)");
     assert_eq!(acc("кѷпарі́съ"), "кѵпарі\u{301}съ", "the ѷ spelling must fold");

@@ -88,3 +88,20 @@ Deferred beyond 1.0 (would need new data or new scope, both recorded): Synodal n
 - Changelog rewritten consumer-facing; the "Findings, stated plainly" diary moved here (below). README regenerated from actual `accuracy` and `speedmark` runs (26,282 dev+test slots, 153,765 Syntacticus slots, 200,906 Polyakov analyses mapped; table hits 5–10M calls/s, rule fallback 50–150k/s; bundled tables ~5 MB).
 - Refresh determinism spot-checked: two consecutive refreshes byte-identical.
 - Versions: both crates 0.9.0 → 1.0.0 lockstep; docs build clean; `publish --dry-run` clean for core (facade dry-run blocks only on core not yet being on crates.io, as expected).
+
+## v1.1 consumer-defect program — 2026-08-31
+
+Part 0 (ledger): the vertograd consumer's [avoid] list diagnosed against
+the committed tables. Three surprises: «вожжѝ» and «пожа́тъ» are ATTESTED
+cells (the audit was wrong, not the crate — the -ѧти aorist in -ѧ́тъ and
+the assimilated imperative are real print, with «пожа̀»/«возжзѝ» as _n
+variants); «стрищѝ» and «дои́ти» have rows whose attested present blocks
+prove their stems, yet unattested cells fall to the blind rule; and
+«кѷпарі́съ» was a lookup miss — the key spells «кѵпарі́съ» and the fold
+did not treat the kendema. Ledger: crates/church-slavonic/tests/
+consumer_defects.rs, born ignored, un-ignored per part.
+
+Part 1 (izhitsa fold): `ѷ ~ ѵ` folded in the Synodal lookup key only —
+zero table keys spell `ѷ`, 439 spell `ѵ`, and `comparison_key` already
+folded the pair; lookup now agrees. Invariant 4 added to the lib.rs
+contract. Gates: accuracy 100/0 everywhere, check-registry OK.
