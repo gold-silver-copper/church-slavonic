@@ -251,3 +251,24 @@ tables before the next v1.x program treats it as a defect:
   non-personal pronouns (ꙗ҆́же, є҆гѡ̀, и҆́хъ, себѣ̀ …) and present
   participles (разлꙋча́ющи, сѣ́ющее, пресмыка́ющемꙋсѧ) — the crate's
   pronoun/npron/participle APIs exist and are simply not yet inverted.
+
+## 2026-09-01 — syntax part 5: the close
+
+check-treebank wired into xtask (offline-soft only on the absent
+source); full workspace suites green; `cargo xtask accuracy` closed
+where it opened — 100.00% / gap 0 on every pinned table source (this
+wave changed no tables; the one crate-side addition is the read-only
+`ChurchSlavonic::lemmas` enumeration); check-registry and
+check-witnesses pass; zero warnings. README carries the syntax crate
+section: invariant first, the real coverage table, the escape-hatch
+philosophy in two sentences.
+
+The burn-down shape for future waves: (1) invert the pronoun, npron and
+participle APIs into the index — pure syntax-crate work, likely the
+largest single coverage gain; (2) run the part-4 harvest through the
+crate's arbitration discipline and open a v1.x wave for what survives
+(ї-before-vowel, the ѡ-plural convention, бы́ти's бѣ̀/бꙋ́детъ, the
+ordinals); (3) a titlo-abbreviation lookup layer (гдⷭ҇ь and kin are the
+single largest verbatim class); (4) syntactic disambiguation of the
+15.1% ambiguous band — a separate design, deliberately not smuggled
+into this one.

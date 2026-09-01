@@ -246,6 +246,41 @@ fn main() {
   with regular-rule fallback;
   case restoration and recension realisation applied on output.
 
+### `church-slavonic-syntax`
+
+> Syntax trees that round-trip the Church Slavonic Bible.
+
+**The invariant comes first**: for every verse that has a tree,
+`render(tree)` equals the pinned print byte-for-byte — there is no other
+definition of correct. Free generation of new sentences is what the
+invariant earns, not the headline.
+
+S-expression trees with ordered children (word order is recorded, never
+derived); analyzed leaves inflect through this crate's public API;
+features are explicit and checked by a linter, never inferred. The
+escape hatch that makes the whole Bible reachable today: the `(w "…")`
+verbatim leaf — every verse starts fully verbatim and round-trips by
+construction, and progress is lifting leaves into analyzed nodes, which
+succeeds only when the crate's output matches the attested surface
+exactly. What cannot be verified stays verbatim; nothing is invented.
+
+`cargo xtask build-treebank` auto-lifts all 77 books / 34,470 verses in
+~10 s; `cargo xtask check-treebank` re-renders every stored tree against
+the print (zero mismatches) and prints the coverage table. First-run
+baseline over 631,946 tokens (2026-09-01):
+
+| Slice | Tokens | Share |
+|---|---|---|
+| Analyzed (unambiguous crate match) | 107,837 | 17.1% |
+| Closed-class (attested function words) | 171,560 | 27.1% |
+| Ambiguous (recorded, never guessed) | 95,371 | 15.1% |
+| Verbatim (the crate-vocabulary frontier) | 256,161 | 40.5% |
+| Apparatus (variant marks, footnotes) | 1,017 | 0.2% |
+
+Hand-lifted annotation (committed under `data/treebank-hand/`) reports
+its own ceiling row — Genesis 1:1–8 stands at 76.7% lifted with zero
+ambiguity, every remaining verbatim leaf carrying its reason.
+
 ### `church-slavonic-core`
 
 > The compact rule engine: ending tables per declension/conjugation class,

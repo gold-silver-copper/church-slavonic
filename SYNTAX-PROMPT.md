@@ -156,3 +156,39 @@ The finish line: `cargo xtask check-treebank` walks scripture and
 reports, book by book, how much of the Bible the machine truly
 understands — and every verse it touches comes back letter-perfect,
 because the tree was never allowed to say more than the print attests.
+
+---
+
+## Execution postscript (2026-09-01)
+
+All six parts ran the same day, one commit each (parts 0–5), every
+standing gate green throughout. Deviations and findings of record:
+
+- **Part 0**: the round-trip target is the verse text TRIMMED of the
+  JSON arrangement's cosmetic leading space (33,259 of 34,470 verses
+  carry one); the source holds zero interior double spaces, so
+  single-space token joining is byte-exact. The gate ran over Genesis 1
+  plus all of Luke — 1,181 verses.
+- **Part 1**: a `(cap …)` wrapper entered the tree language —
+  sentence-initial capitals otherwise force every first word to
+  verbatim. Genesis 1:1 lifted and matched the print first try.
+- **Part 3**: the lemma inventory needed a small public API on the main
+  crate (`ChurchSlavonic::lemmas`, read-only, base keys only) — code,
+  not tables; accuracy closed at 100.00%/0 untouched. The invariant
+  caught two print oddities on its first bulk run: the free-standing
+  period of 4 Kings 17:3 (a lone punctuation token keeps its own
+  space) and the «(,*…» cluster of Proverbs 15:33 — answered by
+  structure (the lift verifies its own reconstruction and falls back
+  to whole-token verbatim), not by special cases. Whole-Bible build
+  ~10 s; zero round-trip mismatches across 34,470 stored trees.
+- **Part 4**: Ps 90 was unavailable — this JSON's Psalter is a known
+  22-verse fragment — so the hand-lift chapter is Genesis 1 (verses
+  1–8, committed in `data/treebank-hand/`, 76.7% lifted, zero
+  ambiguous). The harvest is in NOTES.md, classified; wrong-form
+  candidates still owe the arbitration check before any v1.x wave
+  treats them as defects.
+- **Baseline** (after the part-4 pipeline gains): 17.1% analyzed +
+  27.1% closed-class = 44.2% of scripture lifts mechanically; 15.1%
+  ambiguous, recorded and never guessed; 40.5% verbatim — the
+  frontier, led by titlo abbreviations and the not-yet-inverted
+  pronoun/participle APIs.
