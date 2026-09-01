@@ -46,7 +46,7 @@ pub enum Analysis {
 }
 
 impl Analysis {
-    fn into_node(self) -> Node {
+    pub fn into_node(self) -> Node {
         match self {
             Analysis::Noun { lemma, case, number } => {
                 Node::Noun { lemma: lemma.to_string(), case, number }

@@ -318,3 +318,24 @@ discipline of v1.1 — sometimes the audit is wrong):
   zero syn: rows and an empty-string rule. The relative and possessive
   pronouns (и҆́же/ꙗ҆́же/є҆́же families) are among the commonest tokens
   of the language. v1.x intake, likely the single highest-value item.
+
+## 2026-09-01 — syntax wave 2, part 4: Genesis 1 complete
+
+All 31 verses stand in the committed hand overlay, byte-exact and — new
+gate — LINT-CLEAN: check-treebank now lints every hand entry (hand trees
+claim structure, so their claims are checked; auto-lifted trees are flat
+and stay unlinted). Ceiling row: 617 tokens — 281 analyzed (45.5%) + 209
+closed-class = 79.4% lifted, 6 deliberately ambiguous, 121 verbatim, 0
+unaccounted.
+
+The deliberate ambiguities are annotation honesty, recorded in the file:
+«во дни̑» reads accusative plural but the crate offers only dual cells
+for the spelling; «два̀ свѣти̑ла вели̑каѧ» sets the print's plural -аѧ
+agreement against a dual numeral; «дѡбра̀» is a short plural adjective
+the crate can only read as noun cells of добро̀ — a false analysis is
+worse than none. The verbatim band is the intake, itemized: the
+ве́сь/всѧ́къ npron family (part-3's headline gap), enclitic pronouns
+(ѧ҆̀, є҆го̀, и҆̀хъ, себѣ̀ — cliticized forms the pronoun table does not
+carry), бы́ти's future, the ordinals, and titlo families not yet
+admitted (блгⷭ҇вѝ = благословѝ; гл҃ѧ against the crate's participle
+spelling).

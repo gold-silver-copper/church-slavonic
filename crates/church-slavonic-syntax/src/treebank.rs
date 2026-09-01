@@ -157,6 +157,16 @@ pub fn check(bible: &Bible, dir: &Path) -> Result<Vec<BookReport>, Box<dyn Error
                 sexpr::parse_many(&hand_text).map_err(|e| format!("{}: {e}", hand_path.display()))?;
             for entry in &hand_entries {
                 let (ch, vs, tree) = read_entry(entry)?;
+                // hand trees claim structure — their claims get linted;
+                // auto-lifted trees are flat and uninteresting to lint
+                let findings = crate::lint::lint(&tree, &recension);
+                if !findings.is_empty() {
+                    return Err(format!(
+                        "hand tree {} {ch}:{vs} has lint findings: {:?}",
+                        book.name, findings
+                    )
+                    .into());
+                }
                 hand_addresses.insert((ch, vs));
                 by_address.insert((ch, vs), tree);
             }
