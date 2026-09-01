@@ -447,3 +447,65 @@ decision 4, Alypy's forms arbitrate every one of those cells; the
 Bible witnesses pin the two the grammar leaves open (ѻ҆на̀ as the
 feminine singular nominative against the bundle's ꙗ҆̀; the plural
 accusative «и҆̀хъ»).
+
+## 2026-09-01 — v1.2 part 1: the Synodal personal row arbitrated against the print
+
+The row that existed is now true. Three mechanisms, each in its own layer,
+and twelve witness rows:
+
+- **Orthography**: `realise` keeps an explicit varia on a monosyllable's
+  only vowel (the print's «и҆̀хъ»/«и҆̀мъ» against «и҆́хъ»; the Bible carries
+  exactly those two words with a non-final varia, 1,711 + 1,220 tokens),
+  and `transliteration_equivalent` names the two classes a civil
+  transliteration cannot encode (ꙗ/ѧ, that varia).
+- **Precedence as a source property** (`Source::letters_exact`,
+  `Observation::precise`): a print-exact observation merging into a
+  transliterated one takes the primary slot where it differs only within
+  those classes; a witness row is primary unconditionally
+  (`merge_as_primary`, into a lexeme with exactly one observation — a
+  homograph set keeps the v1.1 separate observation). `witnesses.tsv`
+  now accepts `pronoun` and `npron` with symbolic cells
+  (`cells::parse_cell`: `3.f.sg.dat`, `m.pl.gen`, `pl.acc`).
+  Lookup invariant 5 in lib.rs.
+- **The bare key of the shared pronoun row** goes to the row of PRIMARY
+  readings (`Candidate::primary`, pronoun only): the lexicographic sort
+  had handed `syn:personal` to the shortest variant row («ны̀» as the
+  plural nominative, «тебѐ» as the genitive, «и҆̀» as the nominative) and
+  the print-primaries to `personal_10`. Tried for every part of speech
+  first: OCS/Synodal bare-primary rates jumped (verbs OCS 92.43% →
+  99.98%) but the treebank refuted it at Gen 1:21 — Polyakov's counts
+  are per FORM, so at a tag-bundled cell (`pl,nom/acc`) the nominative's
+  frequency wears the accusative's tag and «га́ды» outranked the animate
+  «гадѡ́въ». Reverted to the pronoun row; the lemma-keyed rows' true
+  per-cell primary is a Bible-as-source question, recorded.
+- **Two source-reading defects found on the way**: (1) Polyakov's
+  third-person headword is the anaphor «и҆̀», whose nominative the
+  language does not use — its `nom/acc` bundles had put «и҆̀», «ꙗ҆̀»,
+  «є҆̀» and «и҆́хъ» into the NOMINATIVE cells; the anaphor's nominative
+  analyses are now skipped (12, counted). (2) Polyakov transcribes the
+  erok and consonant-borne abbreviation marks with a kamora on a
+  consonant («нас̑», «нбс̑нѣй»); 3,724 such spellings were attested as
+  forms and, once the primary sort reached them, «нбс̑нѣй» became
+  небе́сный's bare locative (the treebank refused it at Gen 1:14). They
+  are abbreviations, not forms: skipped, counted; 366 noun, 449
+  adjective and 337 verb rows that existed only for them are gone.
+
+Witnesses (all verified, `check-witnesses` 15/15): мы̀ (Gen 19:13),
+тебє̀ (Gen 3:10), ѻ҆́нъ (Gen 15:10), ѻ҆на̀ (Lev 20:17), є҆́й (Gen 16:8),
+є҆́ю (Gen 9:1), ѧ҆̀ dual (Gen 1:17), и҆̀мъ (Gen 9:1), и҆̀хъ (Gen 6:13),
+ни́хъ ×3 (Gen 24:3, Gen 30:34, Eph 2:10). The primary row now differs
+from the rule in exactly twelve cells (не́ю ×3, и҆̀мъ ×3, и҆̀хъ ×2,
+ни́ми ×3, ѧ҆̀ at the neuter plural accusative — part 3 moves that one
+to its clitic cell); every transliterated spelling and the anaphor's
+short forms remain reachable as `_n` variants (ledger test
+`tests/synodal_pronouns.rs`, exact outputs, verse per cell).
+
+Gates: accuracy 100.00% / gap 0 on every source, the new "Synodal
+(witnessed print)" pronoun row 12/12; check-registry, check-witnesses,
+all suites, zero warnings. Bare-primary rates: Polyakov pronouns 100% →
+78.87% (the 15 demotions ARE the arbitration — the corpus's primaries
+were the transliteration's), Alypy pronouns 68.89% → 76.67%; the erok
+cleanup lifted Polyakov nouns 96.43% → 96.86%, adjectives 95.95% →
+96.71%, verbs 97.08% → 97.20%. Treebank rebuilt: zero mismatches over
+34,470 verses; from this part alone verbatim 29.0% → 27.8%, ambiguous
+23.7% → 24.7%, analyzed 20.0% → 20.2% (и҆̀хъ, и҆̀мъ, ѧ҆̀ now lift).

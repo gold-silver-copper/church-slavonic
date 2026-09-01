@@ -248,6 +248,58 @@ impl Pos {
     }
 }
 
+/// Decode a cell written in `witnesses.tsv`: a schema index, or a symbolic
+/// name — nouns `<num>.<case>` (`pl.acc`), non-personal pronouns
+/// `<g>.<num>.<case>` (`m.sg.gen`), the personal pronoun `<1|2>.<num>.<case>`
+/// or `3.<g>.<num>.<case>` (`3.f.sg.dat`); numbers `sg|du|pl`, genders
+/// `m|f|n`, cases `nom|gen|dat|acc|ins|loc|voc`. Adjectives and verbs take
+/// the index only.
+pub fn parse_cell(pos: Pos, text: &str) -> Option<usize> {
+    if let Ok(i) = text.parse::<usize>() {
+        return (i < pos.arity()).then_some(i);
+    }
+    let parts: Vec<&str> = text.split('.').collect();
+    let number = |s: &str| match s {
+        "sg" => Some(Number::Singular),
+        "du" => Some(Number::Dual),
+        "pl" => Some(Number::Plural),
+        _ => None,
+    };
+    let gender = |s: &str| match s {
+        "m" => Some(Gender::Masculine),
+        "f" => Some(Gender::Feminine),
+        "n" => Some(Gender::Neuter),
+        _ => None,
+    };
+    let case = |s: &str| match s {
+        "nom" => Some(Case::Nominative),
+        "gen" => Some(Case::Genitive),
+        "dat" => Some(Case::Dative),
+        "acc" => Some(Case::Accusative),
+        "ins" => Some(Case::Instrumental),
+        "loc" => Some(Case::Locative),
+        "voc" => Some(Case::Vocative),
+        _ => None,
+    };
+    match (pos, parts.as_slice()) {
+        (Pos::Noun, [n, c]) => Some(noun_cell(&case(c)?, &number(n)?)),
+        (Pos::NPron, [g, n, c]) => {
+            let (g, n, c) = (gender(g)?, number(n)?, case(c)?);
+            (c != Case::Vocative).then(|| npron_cell(&g, &n, &c))
+        }
+        (Pos::Pronoun, [p @ ("1" | "2"), n, c]) => {
+            let person = if *p == "1" { Person::First } else { Person::Second };
+            let (n, c) = (number(n)?, case(c)?);
+            (c != Case::Vocative).then(|| pronoun_cell(&person, &n, &Gender::Masculine, &c))
+        }
+        (Pos::Pronoun, ["3", g, n, c]) => {
+            let (g, n, c) = (gender(g)?, number(n)?, case(c)?);
+            (c != Case::Vocative).then(|| pronoun_cell(&Person::Third, &n, &g, &c))
+        }
+        _ => None,
+    }
+}
+
 /// Does an attested surface count as "what the rule already says"? The
 /// comparison follows the recension's sources' accent policy: the Kaikki dump
 /// (OCS) is unaccented, so two spellings are one form when their
@@ -264,6 +316,28 @@ pub fn rule_matches(recension: &Recension, attested: &str, predicted: &str) -> b
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn symbolic_cells_decode_to_the_schema() {
+        use super::*;
+        assert_eq!(parse_cell(Pos::Noun, "pl.acc"), Some(noun_cell(&Case::Accusative, &Number::Plural)));
+        assert_eq!(parse_cell(Pos::Noun, "3"), Some(3));
+        assert_eq!(parse_cell(Pos::Noun, "99"), None);
+        assert_eq!(
+            parse_cell(Pos::Pronoun, "3.f.sg.dat"),
+            Some(pronoun_cell(&Person::Third, &Number::Singular, &Gender::Feminine, &Case::Dative))
+        );
+        assert_eq!(
+            parse_cell(Pos::Pronoun, "1.pl.nom"),
+            Some(pronoun_cell(&Person::First, &Number::Plural, &Gender::Neuter, &Case::Nominative))
+        );
+        assert_eq!(parse_cell(Pos::Pronoun, "3.sg.dat"), None);
+        assert_eq!(parse_cell(Pos::Pronoun, "1.pl.voc"), None);
+        assert_eq!(
+            parse_cell(Pos::NPron, "m.sg.gen"),
+            Some(npron_cell(&Gender::Masculine, &Number::Singular, &Case::Genitive))
+        );
+    }
+
     use super::*;
 
     #[test]

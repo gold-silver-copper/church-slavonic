@@ -213,16 +213,23 @@ fn realise_synodal(word: &str) -> String {
 /// oxia/varia/kamora by position.
 fn normalise_marks(units: &mut [Unit]) {
     let last = units.len().saturating_sub(1);
+    let monosyllable = units.iter().filter(|u| u.is_vowel()).count() == 1;
     for (i, unit) in units.iter_mut().enumerate() {
         let final_vowel = i == last && unit.is_vowel();
         let kamora = unit.marks.iter().any(|m| matches!(*m, KAMORA | CIRCUMFLEX));
         let stressed = unit.has_stress();
+        // A monosyllable keeps an explicit varia on its only vowel: the
+        // print tells the accusative «и҆̀хъ» and the dative «и҆̀мъ» from the
+        // genitive «и҆́хъ» by that mark alone (Alypy §47; the Bible carries
+        // exactly these two words with a non-final varia). Everywhere else
+        // the mark is positional: oxia inside the word, varia at its end.
+        let varia = final_vowel || (monosyllable && unit.marks.contains(&GRAVE));
         unit.marks
             .retain(|m| !matches!(*m, ACUTE | GRAVE | KAMORA | CIRCUMFLEX));
         if kamora {
             unit.marks.push(KAMORA);
         } else if stressed {
-            unit.marks.push(if final_vowel { GRAVE } else { ACUTE });
+            unit.marks.push(if varia { GRAVE } else { ACUTE });
         }
     }
     let breathing_at = match units {
@@ -235,6 +242,30 @@ fn normalise_marks(units: &mut [Unit]) {
     {
         units[i].marks.push(PSILI);
     }
+}
+
+/// Are two Synodal spellings one form up to what a civil transliteration
+/// cannot encode? Polyakov's dictionary writes the modern «я» for both ꙗ
+/// and ѧ, and one acute for the print's oxia and varia alike; a
+/// print-exact source (the Alypy grammar, a witnessed line of the Bible)
+/// that differs from such a spelling ONLY in those two classes attests the
+/// same form with its letters decided (`ꙗ҆̀` ~ `ѧ҆̀`, `и҆́хъ` ~ `и҆̀хъ`).
+/// Anything else — another letter, the stress on another vowel — is a
+/// different form. Equal spellings are not "equivalent": nothing to decide.
+pub fn transliteration_equivalent(a: &str, b: &str) -> bool {
+    fn fold(word: &str) -> String {
+        word.nfd()
+            .map(|c| match c {
+                'ꙗ' => 'ѧ',
+                ACUTE => GRAVE,
+                other => other,
+            })
+            .collect::<String>()
+            .nfc()
+            .collect()
+    }
+    let (a, b): (String, String) = (a.nfc().collect(), b.nfc().collect());
+    a != b && fold(&a) == fold(&b)
 }
 
 /// The accent-blind comparison key shared by both recensions: [`realise`]
@@ -361,6 +392,12 @@ fn is_mark(c: char) -> bool {
     )
 }
 
+/// Is the letter a vowel of either recension's alphabet? (The public face
+/// of the vowel set the accent and realisation rules share.)
+pub fn is_vowel_letter(c: char) -> bool {
+    is_vowel(c)
+}
+
 pub(crate) fn is_vowel(c: char) -> bool {
     matches!(
         c,
@@ -408,6 +445,17 @@ mod tests {
         assert_eq!(realise("ѩзꙑкъ", &SYN), "ꙗ҆зыкъ");
         assert_eq!(realise("моѥ", &SYN), "мое");
         assert_eq!(realise("землꙗ", &SYN), "землѧ");
+        // a monosyllable keeps its explicit varia; the positional rule
+        // still governs every other word
+        assert_eq!(realise("и҆̀хъ", &SYN), "и҆̀хъ");
+        assert_eq!(realise("и҆́хъ", &SYN), "и҆́хъ");
+        assert_eq!(realise("є҆гѡ̀", &SYN), "є҆гѡ̀");
+        assert_eq!(realise("є҆̀гѡ", &SYN), "є҆́гѡ");
+        assert!(transliteration_equivalent("ꙗ҆̀", "ѧ҆̀"));
+        assert!(transliteration_equivalent("и҆́хъ", "и҆̀хъ"));
+        assert!(!transliteration_equivalent("є҆́ю", "є҆ю̀"));
+        assert!(!transliteration_equivalent("ѧ҆̀", "ѧ҆̀"));
+        assert!(!transliteration_equivalent("менѐ", "менє̀"));
         assert_eq!(realise("ꙗзꙑкъ", &SYN), "ꙗ҆зыкъ"); // initial ꙗ kept
         assert_eq!(realise("градъ", &SYN), "градъ"); // jers kept
         assert_eq!(realise("дьнь", &SYN), "дьнь");

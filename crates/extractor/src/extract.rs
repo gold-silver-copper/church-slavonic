@@ -83,7 +83,9 @@ use crate::polyakov::{self, Features, Mood, Series, TenseTag, Voice};
 use crate::ruwiktionary;
 use church_slavonic_core::grammar::*;
 use church_slavonic_core::grammar::{Series as GSeries, Voice as GVoice};
-use church_slavonic_core::orthography::{comparison_key, realise, stress, strip_marks};
+use church_slavonic_core::orthography::{
+    comparison_key, realise, stress, strip_marks, transliteration_equivalent,
+};
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;
@@ -131,6 +133,9 @@ impl Tables {
 pub struct Observation {
     pub cells: Vec<Vec<String>>,
     pub soft: bool,
+    /// The source spells the print's letters exactly
+    /// ([`Source::letters_exact`]); a transliterated observation cannot.
+    pub precise: bool,
 }
 
 impl Observation {
@@ -138,6 +143,7 @@ impl Observation {
         Observation {
             cells: vec![Vec::new(); arity],
             soft: false,
+            precise: false,
         }
     }
 
@@ -148,14 +154,51 @@ impl Observation {
         }
     }
 
+    /// Attest `form` as the cell's PRIMARY: the print outranks the
+    /// transliteration (part 0 of v1.2, decision 4). A form already listed
+    /// moves to the front; nothing is deleted.
+    pub fn attest_primary(&mut self, cell: usize, form: &str) {
+        let slot = &mut self.cells[cell];
+        slot.retain(|f| f != form);
+        slot.insert(0, form.to_string());
+    }
+
     pub fn is_empty(&self) -> bool {
         self.cells.iter().all(|c| c.is_empty())
     }
 
+    /// Merge another observation of the same lexeme: its forms join each
+    /// cell's alternatives after the ones already there — except that a
+    /// print-exact observation merging into a transliterated one decides
+    /// the letters a transliteration cannot: a form that differs from the
+    /// cell's primary only by ꙗ/ѧ or by the oxia/varia on a monosyllable
+    /// ([`orthography::transliteration_equivalent`]) takes the primary
+    /// slot, and the transliterated spelling stays as a variant.
     fn merge(&mut self, other: &Observation) {
+        let decides_letters = other.precise && !self.precise;
         for (i, forms) in other.cells.iter().enumerate() {
             for f in forms {
-                self.attest(i, f);
+                let equivalent = decides_letters
+                    && self.cells[i]
+                        .first()
+                        .is_some_and(|primary| transliteration_equivalent(primary, f));
+                if equivalent {
+                    self.attest_primary(i, f);
+                } else {
+                    self.attest(i, f);
+                }
+            }
+        }
+        self.soft = self.soft && other.soft;
+    }
+
+    /// Merge a witness observation: every witnessed form becomes its
+    /// cell's primary unconditionally — a quoted, verified line of running
+    /// print is the strongest evidence a cell can have.
+    fn merge_as_primary(&mut self, other: &Observation) {
+        for (i, forms) in other.cells.iter().enumerate() {
+            for f in forms.iter().rev() {
+                self.attest_primary(i, f);
             }
         }
         self.soft = self.soft && other.soft;
@@ -222,6 +265,15 @@ impl Source {
 }
     }
 
+    /// Does the source spell the print's letters exactly? The Alypy grammar
+    /// and the witness file reproduce the print (breathing, oxia/varia,
+    /// ꙗ/ѧ); Polyakov's dictionary and ru.wiktionary are civil
+    /// transliterations («я» for ꙗ and ѧ, one acute for both stresses),
+    /// and the OCS sources are unaccented. See [`Observation::merge`].
+    pub fn letters_exact(self) -> bool {
+        matches!(self, Source::Alypy | Source::Witness)
+    }
+
     /// The README's "Recension" column: the recension, and the source where
     /// a recension has more than one.
     pub fn recension_label(self) -> &'static str {
@@ -247,7 +299,12 @@ pub fn gather(intermediate_dir: &Path) -> Result<Lexemes, Box<dyn Error>> {
 
 /// Read `witnesses.tsv`: one attested cell per line, grouped per lemma
 /// into a single observation (recension TAB pos TAB lemma TAB cell TAB
-/// form TAB file TAB quote; `#` comments).
+/// form TAB file TAB quote; `#` comments). The cell is a schema index or a
+/// symbolic name ([`crate::cells::parse_cell`]: `3.f.sg.dat`, `m.pl.gen`,
+/// `pl.acc`). A witnessed lexeme the other sources already observe ONCE
+/// takes its forms as primaries ([`Observation::merge_as_primary`]); a
+/// lexeme with several observations (homograph senses the witness cannot
+/// choose between) or none gets its own, as in v1.1.
 fn gather_witnesses(path: &Path, lexemes: &mut Lexemes) -> Result<(), Box<dyn Error>> {
     let text = std::fs::read_to_string(path)?;
     let mut grouped: BTreeMap<LexemeKey, Observation> = BTreeMap::new();
@@ -268,19 +325,30 @@ fn gather_witnesses(path: &Path, lexemes: &mut Lexemes) -> Result<(), Box<dyn Er
             "noun" => Pos::Noun,
             "adj" => Pos::Adj,
             "verb" => Pos::Verb,
+            "pronoun" => Pos::Pronoun,
+            "npron" => Pos::NPron,
             other => return Err(format!("witnesses.tsv: unsupported pos {other}").into()),
         };
-        let cell: usize = cols[3]
-            .parse()
-            .map_err(|_| format!("witnesses.tsv: bad cell in: {line}"))?;
-        let key = LexemeKey { tag, pos, lemma: cols[2].to_string() };
-        grouped
+        let cell = crate::cells::parse_cell(pos, cols[3])
+            .ok_or_else(|| format!("witnesses.tsv: bad cell in: {line}"))?;
+        let lemma = if pos == Pos::Pronoun {
+            PRONOUN_KEY.to_string()
+        } else {
+            cols[2].to_string()
+        };
+        let key = LexemeKey { tag, pos, lemma };
+        let obs = grouped
             .entry(key)
-            .or_insert_with(|| Observation::new(pos.arity()))
-            .attest(cell, cols[4]);
+            .or_insert_with(|| Observation::new(pos.arity()));
+        obs.precise = true;
+        obs.attest(cell, cols[4]);
     }
     for (key, obs) in grouped {
-        lexemes.entry(key).or_default().push(obs);
+        let list = lexemes.entry(key).or_default();
+        match list.as_mut_slice() {
+            [only] => only.merge_as_primary(&obs),
+            _ => list.push(obs),
+        }
     }
     Ok(())
 }
@@ -1412,6 +1480,7 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
         let obs = observations
             .entry(lemma)
             .or_insert_with(|| Observation::new(paradigm.pos.arity()));
+        obs.precise = Source::Alypy.letters_exact();
         let mut cells: Vec<usize> = Vec::new();
         match (paradigm.pos, paradigm.block) {
             (Pos::NPron, _) => {}
@@ -1639,6 +1708,15 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
             skips.skip("form: not one word");
             continue;
         };
+        // The dictionary transcribes the print's erok — the jer-replacing
+        // mark over a final consonant («нас̑» for «на́съ») — and its
+        // consonant-borne abbreviation marks («нбс̑нѣй») with the kamora
+        // (U+0311) on a consonant. Such a spelling is an abbreviation of
+        // a form, not a form: the full spelling is attested beside it.
+        if has_consonant_kamora(&surface) {
+            skips.skip("form: erok or abbreviation mark on a consonant");
+            continue;
+        }
         skips.forms += 1;
         for set in &form.cells {
             let f = polyakov::features(set);
@@ -1710,6 +1788,23 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
         // the personal pronoun is the one shared row.
         push_observation(lexemes, key, obs, pos == Pos::Pronoun);
     }
+}
+
+/// A kamora (U+0311) carried by a consonant: Polyakov's transcription of
+/// the erok and of a consonant-borne abbreviation mark; a vowel's kamora
+/// is the print's plural mark and stays.
+fn has_consonant_kamora(surface: &str) -> bool {
+    let mut previous: Option<char> = None;
+    for c in surface.nfd() {
+        if c == '\u{311}' && previous.is_some_and(|p| !church_slavonic_core::orthography::is_vowel_letter(p)) {
+            return true;
+        }
+        if c as u32 >= 0x300 && (c as u32) < 0x370 || (0x483..=0x489).contains(&(c as u32)) {
+            continue;
+        }
+        previous = Some(c);
+    }
+    false
 }
 
 /// A spelling under a titlo (or a letter-titlo): the print's abbreviation of
@@ -2015,10 +2110,18 @@ fn polyakov_pronoun_cells(f: &Features, person: Person) -> Result<Vec<usize>, &'
         (Person::Third, Some(g)) => vec![g],
         _ => GENDERS.to_vec(),
     };
+    // The third-person headword is the anaphor «и҆̀», whose nominative the
+    // language does not use — the ѻ҆́нъ series owns those cells (Alypy §47)
+    // — and the dictionary's `nom/acc` bundles would otherwise attest
+    // «и҆̀», «ꙗ҆̀», «є҆̀», «и҆́хъ» as nominatives.
+    if person == Person::Third && f.cases.iter().all(|c| *c == Case::Nominative) {
+        return Err("pronoun: the anaphor's nominative");
+    }
     let cells: Vec<usize> = f
         .cases
         .iter()
         .filter(|c| **c != Case::Vocative)
+        .filter(|c| !(person == Person::Third && **c == Case::Nominative))
         .flat_map(|case| {
             genders
                 .iter()
@@ -2045,14 +2148,16 @@ struct LemmaAcc {
 }
 
 impl LemmaAcc {
-    fn observe(&mut self, forms: Vec<String>, raw: Vec<String>, soft: bool) {
+    fn observe(&mut self, forms: Vec<String>, raw: Vec<String>, soft: bool, primary: bool) {
         let sig = forms_sig(&forms);
         let is_new = !self.by_sig.contains_key(&sig);
         let c = self.by_sig.entry(sig).or_insert_with(|| Candidate {
             forms,
             raw: Vec::new(),
             soft_sense: false,
+            primary: false,
         });
+        c.primary |= primary;
         // Same-signature candidates are one candidate, but each may have
         // attested different raw cells (two rule-equal witnesses of
         // different cells): union the raws so the bare-shadow pass can
@@ -2632,7 +2737,16 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                 }
                 infer_accent_pattern(key.pos, &recension, &key.lemma, &mut forms, &mut raw);
                 subtract_derived_accusatives(key.pos, &recension, &key.lemma, &mut forms, &raw);
-                acc.observe(forms, raw, obs.soft);
+                // The personal pronoun is ONE shared row whose primaries
+                // the print arbitrates (Alypy's order, the witnesses); the
+                // sort must not hand its bare key to a row of second
+                // choices (v1.2 part 1). A lemma-keyed row keeps the plain
+                // form sort: Polyakov's counts are per form, not per cell,
+                // so at a tag-bundled cell (`pl,nom/acc`) the "primary" is
+                // the nominative's frequency wearing the accusative's tag
+                // (га́ды over гадѡ́въ) — the Bible-as-source design is the
+                // place to measure a cell's true primary.
+                acc.observe(forms, raw, obs.soft, k == 0 && key.pos == Pos::Pronoun);
             }
         }
         acc.drop_regular(arity);

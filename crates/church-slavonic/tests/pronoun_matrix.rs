@@ -4,8 +4,10 @@
 //! `personal` with its attested variants at `personal_<n>`
 //! (`ChurchSlavonic::pronoun_sense`): the Kaikki `и`/`ꙗ`/`ѥ` tables (OCS)
 //! and, for Synodal, Polyakov's corpus primaries (frequency-ordered, full
-//! forms before enclitics) merged with §47 of the Alypy grammar, over the
-//! rule's matrix in the print's typography. Gender is consulted only in the
+//! forms before enclitics) merged with §47 of the Alypy grammar — the
+//! print outranking the transliteration where they differ only in ꙗ/ѧ or
+//! the monosyllable's varia, the witnessed Bible lines outranking both
+//! (v1.2 part 1) — over the rule's matrix in the print's typography. Gender is consulted only in the
 //! third person; the vocative answers with the nominative. This pins every
 //! cell of the first and second persons and the third-person singular in
 //! both recensions, so a transposed cell or a wrong recension condition
@@ -57,7 +59,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::First, Number::Plural, g, SYN),
-            ["ны̀", "на́съ", "на́мъ", "на́съ", "на́ми", "на́съ"]
+            ["мы̀", "на́съ", "на́мъ", "на́съ", "на́ми", "на́съ"]
         );
         assert_eq!(
             row(Person::Second, Number::Singular, g, OCS),
@@ -65,7 +67,7 @@ fn first_and_second_person_ignore_gender() {
         );
         assert_eq!(
             row(Person::Second, Number::Singular, g, SYN),
-            ["ты̀", "тебѐ", "тебѣ̀", "тебѐ", "тобо́ю", "тебѣ̀"]
+            ["ты̀", "тебє̀", "тебѣ̀", "тебѐ", "тобо́ю", "тебѣ̀"]
         );
         assert_eq!(
             row(Person::Second, Number::Plural, g, SYN),
@@ -90,32 +92,34 @@ fn third_person_singular_varies_by_gender() {
         row(Person::Third, Number::Singular, Gender::Neuter, OCS),
         ["ѥ", "ѥго", "ѥмоу", "ѥ", "имь", "ѥмь"]
     );
-    // Synodal: the corpus's anaphoric `и҆̀`/`ꙗ҆̀`/`є҆̀` and its most frequent
-    // oblique spellings (the prepositional `не́мъ`/`не́й` outnumber `є҆́мъ`),
-    // in the print's typography.
+    // Synodal: the nominatives are the ѻ҆́нъ series (Alypy §47; the
+    // anaphor «и҆̀» has no nominative in the language, the dictionary's
+    // `nom/acc` bundles notwithstanding); the prepositional `не́мъ`/`не́й`
+    // hold the locative, the witnessed `є҆́й`/`є҆́ю` the dative and
+    // instrumental (Gen 16:8, 9:1), in the print's typography.
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Masculine, SYN),
-        ["и҆̀", "є҆гѡ̀", "є҆мꙋ̀", "є҆го̀", "и҆́мъ", "не́мъ"]
+        ["ѻ҆́нъ", "є҆гѡ̀", "є҆мꙋ̀", "є҆го̀", "и҆́мъ", "не́мъ"]
     );
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Feminine, SYN),
-        ["ꙗ҆̀", "є҆ѧ̀", "не́й", "ю҆̀", "не́ю", "не́й"]
+        ["ѻ҆на̀", "є҆ѧ̀", "є҆́й", "ю҆̀", "є҆́ю", "не́й"]
     );
     assert_eq!(
         row(Person::Third, Number::Singular, Gender::Neuter, SYN),
-        ["є҆̀", "є҆гѡ̀", "є҆мꙋ̀", "є҆̀", "и҆́мъ", "не́мъ"]
+        ["ѻ҆но̀", "є҆гѡ̀", "є҆мꙋ̀", "є҆̀", "и҆́мъ", "не́мъ"]
     );
-    // The grammar's nominative lives at a variant key.
-    let keys: Vec<String> = (2..12).map(|n| format!("personal_{n}")).collect();
+    // The anaphor's short accusative «и҆̀» lives at a variant key.
+    let keys: Vec<String> = (2..16).map(|n| format!("personal_{n}")).collect();
     assert!(keys.iter().any(|k| {
         ChurchSlavonic::pronoun_sense(
             k,
             &Person::Third,
             &Number::Singular,
             &Gender::Masculine,
-            &Case::Nominative,
+            &Case::Accusative,
             &SYN,
-        ) == "ѻ҆́нъ"
+        ) == "и҆̀"
     }));
 }
 
@@ -139,7 +143,10 @@ fn third_person_plural_and_dual() {
     );
     assert_eq!(
         row(Person::Third, Number::Plural, Gender::Masculine, SYN),
-        ["ѻ҆нѝ", "и҆́хъ", "и҆́мъ", "и҆́хъ", "ни́ми", "и҆́хъ"]
+        // the print's varia on the dative and accusative monosyllables
+        // (Alypy §47; Gen 9:1 «речѐ и҆̀мъ», Gen 6:13 «погꙋблю̀ и҆̀хъ»), the
+        // prepositional locative (Gen 24:3 «въ ни́хъ»)
+        ["ѻ҆нѝ", "и҆́хъ", "и҆̀мъ", "и҆̀хъ", "ни́ми", "ни́хъ"]
     );
     assert_eq!(
         row(Person::Third, Number::Dual, Gender::Feminine, SYN)[0],

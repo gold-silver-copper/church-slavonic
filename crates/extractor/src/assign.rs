@@ -6,15 +6,19 @@
 //! engine already produces (so the rule serves it at runtime), and this module
 //! numbers the survivors:
 //!
-//! 1. sort them deterministically — standard senses before soft ones, then by
-//!    emitted form signature lexicographically (`Candidate::order_key`);
+//! 1. sort them deterministically — standard senses before soft ones, primary
+//!    readings before second choices, then by emitted form signature
+//!    lexicographically (`Candidate::order_key`);
 //! 2. hand out suffixes from `1` (or `2` when a regular pattern was dropped, so
 //!    the bare key is reserved for the rule engine): the first survivor gets the
 //!    bare lemma or `lemma_2`, the next `lemma_3`, and so on ([`make_key`]).
 //!
-//! The only non-lexicographic tiebreak is standard-before-soft: a sense the
+//! The non-lexicographic tiebreaks are standard-before-soft (a sense the
 //! source marks as dialectal must never take the bare key from a standard
-//! sibling. Everything else is the plain form sort.
+//! sibling) and primary-before-variant (the shared personal-pronoun row's
+//! second-choice alternatives must never take the bare key from the row of
+//! its print-arbitrated first choices — the v1.2 finding: the shorter
+//! variant row sorted first). Everything else is the plain form sort.
 //!
 //! # Stability
 //!
@@ -50,6 +54,13 @@ pub struct Candidate {
     /// True when EVERY contributing sense is soft (dialectal). Such a candidate
     /// sorts after standard siblings so it can never take the bare key from one.
     pub soft_sense: bool,
+    /// True when some contributing observation attested these forms as its
+    /// PRIMARY reading (the first alternative of each cell). A primary
+    /// candidate sorts before the second-choice rows, so the bare key never
+    /// goes to a row of variants merely because it is shorter. The
+    /// extractor sets it for the shared personal-pronoun row only, whose
+    /// primaries the print arbitrates; see `extract::finalize`.
+    pub primary: bool,
 }
 
 impl Candidate {
@@ -58,6 +69,7 @@ impl Candidate {
             raw: forms.clone(),
             forms,
             soft_sense: false,
+            primary: false,
         }
     }
 
@@ -66,11 +78,12 @@ impl Candidate {
     }
 
     /// The deterministic total order used to hand out suffixes: standard-before-
-    /// soft, then the emitted form signature lexicographically. It is a pure
-    /// function of the candidate's forms (and softness), so the output is
-    /// invariant under any permutation of the sources' entry order.
-    fn order_key(&self) -> (bool, String) {
-        (self.soft_sense, self.sig())
+    /// soft, primary-before-variant, then the emitted form signature
+    /// lexicographically. It is a pure function of the candidate's forms
+    /// (softness and primacy included), so the output is invariant under any
+    /// permutation of the sources' entry order.
+    fn order_key(&self) -> (bool, bool, String) {
+        (self.soft_sense, !self.primary, self.sig())
     }
 }
 
@@ -168,6 +181,16 @@ mod tests {
         let after = assign("x", vec![cand(&["м"]), cand(&["я"]), cand(&["а"])], false);
         assert_eq!(keys(&after), ["x", "x_2", "x_3"]);
         assert_eq!(after[0].forms, ["а"]);
+    }
+
+    #[test]
+    fn a_variant_row_never_takes_the_bare_key_from_the_primary() {
+        let mut primary = cand(&["я", "б"]);
+        primary.primary = true;
+        let a = assign("x", vec![cand(&["а", ""]), primary], false);
+        assert_eq!(a[0].key, "x");
+        assert_eq!(a[0].forms, ["я", "б"]);
+        assert_eq!(a[1].forms, ["а", ""]);
     }
 
     #[test]

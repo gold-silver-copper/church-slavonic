@@ -73,6 +73,16 @@
 //! 4. Izhitsa folding: `ѷ`-spelled Synodal input reaches the `ѵ`-spelled
 //!    table key (the kendema is positional typography; no table key spells
 //!    `ѷ`), with the caller's spelling untouched on rule-served cells.
+//! 5. The print outranks the transliteration: a bare row's cell holds the
+//!    source's PRIMARY reading, and where a civil transliteration (Polyakov,
+//!    ru.wiktionary) and a print-exact source (the Alypy grammar, a
+//!    witnessed line of the Bible) spell one form differently only in what
+//!    the transliteration cannot encode — ꙗ against ѧ, the oxia against the
+//!    varia on a monosyllable («и҆̀хъ» accusative, «и҆́хъ» genitive) — the
+//!    print's spelling is the primary and the transliterated one a `_<n>`
+//!    variant; a witnessed cell is the primary unconditionally. A row of a
+//!    source's second-choice alternatives never takes the bare key from the
+//!    row of its first choices (`extractor::assign`).
 
 use church_slavonic_core::ChurchSlavonicCore;
 pub use church_slavonic_core::grammar::*;
