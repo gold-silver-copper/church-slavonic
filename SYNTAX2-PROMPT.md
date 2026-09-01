@@ -151,3 +151,37 @@ The finish line: the coverage table shows how far the mechanical frontier
 moved — measured lever by lever — Genesis 1 stands complete at its
 ceiling, and the next crate program's intake is a verdict list, not a
 pile of suspicions.
+
+---
+
+## Execution postscript (2026-09-01)
+
+Five parts, five commits, every gate green throughout; the invariant
+held at zero mismatches over all 34,470 verses after every part.
+Findings and deviations of record:
+
+- **Part 1**: the npron leg contributed ZERO — Synodal npron is empty
+  in the crate (no syn: rows, an empty-string rule); recorded as the
+  intake's highest-value item, the leaf refusing to render empty. The
+  pronoun leg was the lever (~29k tokens); participles landed mostly in
+  :amb (homographic with adjectives — honest); passive was measured
+  separately (−0.6pt verbatim, ~65s build) and admitted. Degrees were
+  marginal and kept.
+- **Part 2**: the titlo layer reproduced 80.9% of the admitted
+  families' token mass (68.6% of all 27,986 abbreviation tokens); weak
+  rows (бж҃'s rule-spelling drift, спⷭ҇'s multi-lemma family) kept for
+  the record, three reconstructed citation forms marked in the tsv.
+  Полѧkov attests some abbreviated headwords directly (бг҃ъ is a table
+  lemma), so the auto-lift sees both readings — :amb, as designed.
+- **Part 3**: the arbitration flipped one verdict — «неꙋстро́енъ» was
+  never missing; THIS program's lemmas() enumeration hid every
+  sole-`_n` lemma (the ко́локолъ_2 analogue). Fixed in its proper
+  layer: ~2,000 lemmas surfaced, verbatim −3.0pt from that alone.
+  тве́рдїю and во́ды are convention divergence (the sources never spell
+  ї before a vowel: 0 vs 2,388 cells) — the Bible-as-source design
+  question is the clean resolution, deferred to v1.x.
+- **Part 4**: Genesis 1 complete, 79.4% ceiling, lint wired into
+  check-treebank for hand entries; six deliberate ambiguities kept
+  with reasons (a false analysis is worse than none).
+- **Net**: verbatim 40.5% → 29.0%; mechanical 44.2% → 47.1%; ambiguous
+  15.1% → 23.7% — the disambiguation design's measured future workload.
