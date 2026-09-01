@@ -339,3 +339,27 @@ worse than none. The verbatim band is the intake, itemized: the
 carry), бы́ти's future, the ordinals, and titlo families not yet
 admitted (блгⷭ҇вѝ = благословѝ; гл҃ѧ against the crate's participle
 spelling).
+
+## 2026-09-01 — syntax wave 2, part 5: the close
+
+Final state, whole Bible, zero round-trip mismatches, hand overlay
+lint-clean: analyzed 20.0% + closed 27.1% = 47.1% mechanical (wave
+start: 44.2%), ambiguous 23.7%, verbatim 29.0% (wave start: 40.5%),
+apparatus 0.2%. Genesis 1 complete at its 79.4% ceiling. All standing
+gates green; accuracy closed at 100.00%/0 untouched (this wave's
+crate-side changes are the read-only lemmas() enumeration — extended to
+npron and fixed for sole-_n lemmas — and nothing else).
+
+What remains of the verbatim band, by class — the next map:
+1. SYNODAL NPRON (и҆́же/ве́сь/всѧ́къ/сво́й families) + the enclitic
+   personal forms (ѧ҆̀, є҆го̀, и҆̀хъ, мѝ, тѝ, сѧ̀…) — the v1.x
+   program's headline: new table rows and pronoun cells, fed by the
+   part-3 verdict list.
+2. More titlo rows (блгⷭ҇вѝ's благослови́ти, the спⷭ҇ family's other
+   lemmas, ѻ҆ц҃ъ's nominative) — syntax-side, one tsv row each.
+3. The Bible-as-source design question (ї-before-vowel, the ѡ-plural,
+   бѣ̀): the print is already sha256-pinned; admitting it as an
+   extractor source would arbitrate every convention divergence at
+   once. A v1.x design, not a patch.
+4. The ambiguous band (23.7% and now the largest non-mechanical slice):
+   syntactic disambiguation, still deliberately its own future design.

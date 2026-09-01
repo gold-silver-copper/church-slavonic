@@ -271,15 +271,23 @@ baseline over 631,946 tokens (2026-09-01):
 
 | Slice | Tokens | Share |
 |---|---|---|
-| Analyzed (unambiguous crate match) | 107,837 | 17.1% |
+| Analyzed (unambiguous crate match) | 126,657 | 20.0% |
 | Closed-class (attested function words) | 171,560 | 27.1% |
-| Ambiguous (recorded, never guessed) | 95,371 | 15.1% |
-| Verbatim (the crate-vocabulary frontier) | 256,161 | 40.5% |
+| Ambiguous (recorded, never guessed) | 149,479 | 23.7% |
+| Verbatim (the crate-vocabulary frontier) | 183,233 | 29.0% |
 | Apparatus (variant marks, footnotes) | 1,017 | 0.2% |
 
+Wave 2 (2026-09-01) inverted the pronoun, participle and degree APIs,
+added the generated titlo layer (`data/titlo.tsv` — sacred abbreviations
+inflect as a constant stem plus the full paradigm's endings, reproducing
+80.9% of the admitted families' print tokens), and surfaced ~2,000
+lemmas whose only table rows are sense-numbered: verbatim fell from
+40.5% to 29.0%, measured lever by lever in NOTES.md.
+
 Hand-lifted annotation (committed under `data/treebank-hand/`) reports
-its own ceiling row — Genesis 1:1–8 stands at 76.7% lifted with zero
-ambiguity, every remaining verbatim leaf carrying its reason.
+its own ceiling row, byte-exact AND lint-clean — Genesis 1 stands
+complete (all 31 verses) at 79.4% lifted, six deliberate ambiguities
+and every verbatim leaf carrying its reason.
 
 ### `church-slavonic-core`
 
