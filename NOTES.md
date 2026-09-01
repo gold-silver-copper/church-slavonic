@@ -363,3 +363,87 @@ What remains of the verbatim band, by class — the next map:
    once. A v1.x design, not a patch.
 4. The ambiguous band (23.7% and now the largest non-mechanical slice):
    syntactic disambiguation, still deliberately its own future design.
+
+## 2026-09-01 — v1.2 (Synodal pronouns), part 0: design decisions
+
+Executing V1.2-PROMPT.md. Three schema questions and two precedence
+rules, decided before code, each with the measurement that will judge
+it (part 4's per-family verbatim table over the whole Bible; the
+baseline: 184,241 verbatim tokens, of which the pronoun families hold
+≈45,000 — possessives 16,352, се́й/то́й/и҆́нъ/са́мъ 7,337, ве́сь/всѧ́къ
+5,937, и҆́же 5,391, third-person short forms 4,735, clitics 2,898,
+кто̀/что̀ 2,466, себѐ 1,240).
+
+1. **The series axis — decided as recommended.** The 54-cell npron row
+   is the SHORT (pronominal) series; an APRO entry's `plen` forms enter
+   the ADJECTIVE table under the long citation form, exactly as
+   `adjective_series_lemmas` already splits an adjective entry (the
+   adjective schema has no series axis either: `-ъ` and `-ый` are two
+   lemmas there). Polyakov pre-expands `plen/brev` into both analyses,
+   so a cell the two series share (єди́ному) attests both lemmas. The
+   npron key is the short citation form (всѧ́къ, ѻ҆́въ, є҆ди́нъ); the
+   long one (всѧ́кїй, ѻ҆́вый, є҆ди́ный) is the adjective's, derived by
+   the same headword/legend rule. Alypy §48.4 prints ѻ҆́въ/ѻ҆́вый side by
+   side and feeds both tables from one grid.
+2. **The reflexive — decided as recommended.** Six cells appended to the
+   personal matrix (90..96, by case; the nominative is blank by rule) and
+   a facade `reflexive(case, recension)`. `Person` stays as it is (the
+   verb schema shares it). Sources: Alypy §47's third column (себѐ,
+   with its clitic alternatives), Polyakov's себѐ (SPRO, 6,674 tokens),
+   UD `Reflex=Yes` and PROIEL `Pk` — the 1,069 + 5,775 reflexive skips
+   the recall harness has been dropping since Phase 0.
+3. **The clitic cells — decided, with one refinement.** The enclitic
+   personal forms become addressable cells instead of rank-10 variants:
+   first and second person × number × {dat, acc} (96..108), the
+   reflexive's {dat, acc} (108..110), AND the third person's accusative
+   clitics × gender × number (110..119) — the refinement: Alypy §47
+   prints the third person's short accusatives as alternatives too
+   («є҆го̀, и҆̀»; «ѧ҆̀, и҆̀хъ»; nominative «ѻ҆́нъ (и҆̀)»), and the Bible
+   uses «ѧ҆̀» 853 times as the enclitic plural/dual accusative beside the
+   full «и҆̀хъ» (1,221). Arity 90 → 119. Facades: `clitic(person, number,
+   gender, case, recension) -> Option<&str>` (None where the language
+   has no clitic: every first/second-person dat/acc and every
+   third-person accusative has one; nothing else does) and
+   `reflexive_clitic(case, recension)`. The rule owns the closed
+   inventory in both recensions (OCS ми/мѧ/ти/тѧ/си/сѧ/нꙑ/вꙑ/на/ва and
+   the anaphor's и/ѭ/ѥ/ꙗ/ѩ; Synodal мѝ/мѧ̀/тѝ/тѧ̀/сѝ/сѧ̀/ны̀/вы̀ and
+   и҆̀/ю҆̀/є҆̀/ѧ҆̀); the tables store only what the sources attest
+   against it. Routing: Polyakov's `clit` tag → the clitic cell; an
+   Alypy alternative, and a Polyakov third-person form, that equals the
+   rule's clitic prediction for its cell (compared through
+   `comparison_key`, so civil «я» reaches it) → the clitic cell. The
+   OCS treebank mappers keep attesting the full cells (UD does not tag
+   clisis; the OCS primary accusative IS the clitic form, мѧ).
+4. **Precedence: the print outranks the transliteration.** A source
+   property, `Source::letters_exact`: Alypy and the witness file are
+   print-exact; Polyakov and ru.wiktionary are civil transliterations
+   that cannot encode two distinctions the print makes — ꙗ against ѧ
+   (civil «я»; `orthography.rs` realises initial я → ꙗ, right for
+   ꙗ҆́же and wrong for ѧ҆̀) and the oxia against the varia on a
+   monosyllable's only vowel (the print's «и҆̀хъ» accusative and «и҆̀мъ»
+   dative against the genitive «и҆́хъ»; the Bible carries exactly these
+   two words with a non-final varia, 1,711 + 1,220 tokens, and nothing
+   else). Rule: when a print-exact observation merges into a
+   transliterated one, a form that differs from the cell's primary ONLY
+   within those two classes takes the primary slot and the
+   transliterated spelling stays as a variant; a witness row (a quoted,
+   verified line of running print) takes the primary slot
+   unconditionally. Nothing attested is deleted. `realise` must keep an
+   explicit varia on a monosyllable (today it normalises it to the
+   oxia, so the print's «и҆̀хъ» could not even be stored). Recorded in
+   the lib.rs lookup invariants as number 5.
+5. **`+`-headwords.** A Polyakov headword `X+же` is the print's one word
+   `Xже` (то́йже 14,975 tokens, что́же 100): admitted by joining, declined
+   by the же-wrap the OCS rule already has. Every other `+` headword
+   (и́+на, и́+въ, что́+либо, ничто́же+въ) stays rejected as before.
+
+Also recorded for part 1, verified against the committed row: the
+`syn:personal` primary spells «ꙗ҆̀» at cells 45/63/81/87 (Polyakov's
+«я́», tag-bundled over `sg,f,nom|pl,m,acc|pl,f,nom/acc|pl,n,acc|du,acc`),
+«и҆́хъ» at the locative cells 53/71/89 and at the feminine plural
+NOMINATIVE 66 (Polyakov's `pl,gen/loc|pl,m,acc|pl,f,nom/acc` bundle);
+Alypy §47 prints «ѧ҆̀» / «(н)и́хъ» / «ѻ҆нѣ̀» / «и҆̀мъ» there. Under
+decision 4, Alypy's forms arbitrate every one of those cells; the
+Bible witnesses pin the two the grammar leaves open (ѻ҆на̀ as the
+feminine singular nominative against the bundle's ꙗ҆̀; the plural
+accusative «и҆̀хъ»).
