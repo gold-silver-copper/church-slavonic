@@ -1,0 +1,8 @@
+# The v1.1 witness source: single attested cells from running Synodal print,
+# each citing a verbatim line of the vertograd-fetched texts (the 1757
+# Elizabethan Bible index / the Ponomar maktabah pages). Verified by
+# `cargo xtask check-witnesses`. Columns (tab-separated):
+# recension<TAB>pos<TAB>lemma<TAB>cell<TAB>form<TAB>source-file<TAB>quote
+syn	noun	ѡ҆́блакъ	3	ѡ҆́блакъ	assets/bible/052.txt	бы́сть ѡ҆́блакъ, и҆ ѡ҆сѣнѝ и҆̀хъ: ѹ҆боѧ́шасѧ же, вше́дше во ѡ҆́блакъ
+syn	noun	ꙗ҆́блонь	0	ꙗ҆́блонь	assets/bible/035.txt	ши́пки, и҆ фі́нїѯъ, и҆ ꙗ҆́блонь, и҆ всѧ̑ древа̀ пѡльска́ѧ и҆зсхо́ша
+syn	noun	ꙗ҆́блонь	4	ꙗ҆́блонею	assets/bible/024.txt	под̾ ꙗ҆́блонею возбꙋди́хъ тѧ̀

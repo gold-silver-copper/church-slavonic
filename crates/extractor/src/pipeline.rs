@@ -63,6 +63,15 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
     } else {
         reuse_or_fail(&ruwiktionary_out, &ruwiktionary_src)?;
     }
+    // The curated witness file rides beside the intermediates.
+    let witness_src = config
+        .artifacts_dir
+        .parent()
+        .map(|d| d.join("witnesses.tsv"))
+        .filter(|p| p.is_file());
+    if let Some(src) = witness_src {
+        fs::copy(&src, config.artifacts_dir.join(Source::Witness.intermediate()))?;
+    }
     if ud_proiel_src.is_dir() {
         treebank::filter_train(&config.sources_dir, &config.artifacts_dir, &ud_proiel_out)?;
     } else {

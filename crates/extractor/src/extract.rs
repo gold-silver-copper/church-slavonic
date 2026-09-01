@@ -181,18 +181,23 @@ pub enum Source {
     Alypy,
     Polyakov,
     RuWiktionary,
+    /// `data/witnesses.tsv`: curated single cells from running Synodal
+    /// print, each citing a verbatim line of a pinned text (v1.1;
+    /// verified by `cargo xtask check-witnesses`).
+    Witness,
 }
 
 impl Source {
     /// Reading order: Polyakov before Alypy and ru.wiktionary, so their
     /// paradigms merge into the corpus observation of the same lemma (see the
     /// module docs).
-    pub const ALL: [Source; 5] = [
+    pub const ALL: [Source; 6] = [
         Source::Kaikki,
         Source::UdProiel,
         Source::Polyakov,
         Source::Alypy,
         Source::RuWiktionary,
+        Source::Witness,
     ];
 
     pub fn intermediate(self) -> &'static str {
@@ -202,6 +207,7 @@ impl Source {
             Source::Alypy => "alypy.jsonl",
             Source::Polyakov => "polyakov.jsonl",
             Source::RuWiktionary => "ruwiktionary.jsonl",
+            Source::Witness => "witnesses.tsv",
         }
     }
 
@@ -212,7 +218,8 @@ impl Source {
             Source::Alypy => "alypy",
             Source::Polyakov => "polyakov",
             Source::RuWiktionary => "ruwiktionary",
-        }
+                    Source::Witness => "witness",
+}
     }
 
     /// The README's "Recension" column: the recension, and the source where
@@ -224,6 +231,7 @@ impl Source {
             Source::Alypy => "Synodal (Alypy)",
             Source::Polyakov => "Synodal (Polyakov)",
             Source::RuWiktionary => "Synodal (ru.wiktionary)",
+            Source::Witness => "Synodal (witnessed print)",
         }
     }
 }
@@ -235,6 +243,46 @@ pub fn gather(intermediate_dir: &Path) -> Result<Lexemes, Box<dyn Error>> {
     let lexemes = gather_with(intermediate_dir, &Source::ALL, &mut skips)?;
     println!("Polyakov and ru.wiktionary mapping: {skips}");
     Ok(lexemes)
+}
+
+/// Read `witnesses.tsv`: one attested cell per line, grouped per lemma
+/// into a single observation (recension TAB pos TAB lemma TAB cell TAB
+/// form TAB file TAB quote; `#` comments).
+fn gather_witnesses(path: &Path, lexemes: &mut Lexemes) -> Result<(), Box<dyn Error>> {
+    let text = std::fs::read_to_string(path)?;
+    let mut grouped: BTreeMap<LexemeKey, Observation> = BTreeMap::new();
+    for line in text.lines() {
+        if line.trim().is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let cols: Vec<&str> = line.split('\t').collect();
+        if cols.len() < 5 {
+            return Err(format!("witnesses.tsv: malformed line: {line}").into());
+        }
+        let tag = match cols[0] {
+            "syn" => "syn",
+            "ocs" => "ocs",
+            other => return Err(format!("witnesses.tsv: unknown recension {other}").into()),
+        };
+        let pos = match cols[1] {
+            "noun" => Pos::Noun,
+            "adj" => Pos::Adj,
+            "verb" => Pos::Verb,
+            other => return Err(format!("witnesses.tsv: unsupported pos {other}").into()),
+        };
+        let cell: usize = cols[3]
+            .parse()
+            .map_err(|_| format!("witnesses.tsv: bad cell in: {line}"))?;
+        let key = LexemeKey { tag, pos, lemma: cols[2].to_string() };
+        grouped
+            .entry(key)
+            .or_insert_with(|| Observation::new(pos.arity()))
+            .attest(cell, cols[4]);
+    }
+    for (key, obs) in grouped {
+        lexemes.entry(key).or_default().push(obs);
+    }
+    Ok(())
 }
 
 /// [`gather`] restricted to `sources` (the accuracy harness scores each
@@ -274,6 +322,9 @@ fn gather_with(
             continue;
         }
         match source {
+            Source::Witness => {
+                gather_witnesses(&path, &mut lexemes)?;
+            }
             Source::Kaikki => {
                 // Lemma pages first, then the standalone `form-of` pages,
                 // whose attestations merge into the lemmas' observations.

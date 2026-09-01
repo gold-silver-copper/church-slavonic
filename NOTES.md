@@ -133,3 +133,25 @@ Part 2 (the fact mechanism, three linked repairs + one blast-radius fix):
 - Gates: accuracy 100.00%/0 on every pinned source; check-registry OK;
   held-out delta: OCS dev+test verbs 7414 → 7413 (−1 slot, recorded);
   all other held-out rows unchanged.
+
+Part 3 (the default, measured): the held-out corpora are all OCS — whose
+rule already answers the nominative shape — so flipping the SYNODAL
+masculine default cannot move held-out recall at all; the arbitrating
+statistic is Polyakov itself: masculine nouns are 72.9% animate by lemma
+(5227/7174, confirming the design note) and 53.3% by token. The animate
+default STANDS. Consequence recorded in the ledger: «прꙋ́дъ» and
+«ко́локолъ» have no attested accusative in any pinned text and keep the
+default; the consumer's prompts already avoid them.
+
+Part 4 (the witness source): `data/witnesses.tsv` — curated single cells
+from the running print, each citing a verbatim line of the
+vertograd-fetched texts; ingested as `Source::Witness` through the same
+gather/finalize/audit as every source (its own 100.00%/0 accuracy row),
+verified by the new `cargo xtask check-witnesses` (offline-soft).
+Admitted: the inanimate accusative of «ѡ҆́блакъ» («вше́дше во ѡ҆́блакъ»,
+Lk 9:34) and «ꙗ҆́блонь»'s nominative (Joel 1:12) + feminine instrumental
+«ꙗ҆́блонею» (Song 8:5). NO accusative of «ꙗ҆́блонь» exists in the pinned
+print — the expectation was NOT invented; the cell stays rule-served and
+the ledger documents it (Polyakov's own citation form is «я́блоня»,
+which the intake currently drops for its civil «я» — noted as a future
+ingestion nit). Ledger: 7/7 green, zero ignored.

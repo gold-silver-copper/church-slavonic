@@ -31,6 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     match args.next().as_deref() {
         Some("refresh-data") => run_extractor(args.collect(), false),
         Some("check-registry") => check_registry(),
+        Some("check-witnesses") => check_witnesses(),
         Some("accuracy") => run_extractor(args.collect(), true),
         Some("-h") | Some("--help") | None => {
             print_usage();
@@ -45,6 +46,47 @@ fn main() -> Result<(), Box<dyn Error>> {
 // tables. It CANNOT verify a row's attested VALUES are correct — `cargo xtask
 // accuracy` (with the sources) is the authoritative value check.
 // --------------------------------------------------------------------------
+/// check-witnesses: every row of data/witnesses.tsv must quote a line
+/// findable VERBATIM in its named file under the vertograd checkout
+/// (`VERTOGRAD_DIR`, default `../vertograd`). Offline-soft: absent files
+/// warn and skip; a present file whose quote is missing FAILS.
+fn check_witnesses() -> Result<(), Box<dyn Error>> {
+    let root = workspace_root()?;
+    let witnesses = root.join("data/witnesses.tsv");
+    let vertograd = std::env::var_os("VERTOGRAD_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| root.join("../vertograd"));
+    let text = std::fs::read_to_string(&witnesses)?;
+    let mut checked = 0;
+    let mut skipped = 0;
+    for line in text.lines() {
+        if line.trim().is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let cols: Vec<&str> = line.split('\t').collect();
+        if cols.len() < 7 {
+            return Err(format!("witnesses.tsv: malformed line: {line}").into());
+        }
+        let (file, quote) = (cols[5], cols[6]);
+        let path = vertograd.join(file);
+        let Ok(content) = std::fs::read_to_string(&path) else {
+            eprintln!("check-witnesses: {} absent — skipped (offline)", path.display());
+            skipped += 1;
+            continue;
+        };
+        if !content.contains(quote) {
+            return Err(format!(
+                "check-witnesses: quote not found in {}: {quote}",
+                path.display()
+            )
+            .into());
+        }
+        checked += 1;
+    }
+    println!("check-witnesses: OK — {checked} citation(s) verified, {skipped} skipped.");
+    Ok(())
+}
+
 fn check_registry() -> Result<(), Box<dyn Error>> {
     let generated_dir = workspace_root()?.join("crates/church-slavonic/generated");
     let violations = audit_tables(&generated_dir)?;
