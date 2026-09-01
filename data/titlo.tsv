@@ -1,0 +1,31 @@
+# The titlo layer (SYNTAX2 part 2, 2026-09-01): sacred abbreviations whose
+# STEM is constant while the ending follows the full lemma's paradigm.
+# Columns: abbr-prefix, full-prefix (base-letter skeleton, і/ѻ-folded),
+# full lemma, pos (n/a/v), accent mode (strip = the abbreviated form is
+# written unaccented; keep = tail accents survive), family token count in
+# the pinned print (standalone, counted 2026-09-01), note.
+# A row earns its place empirically: the verification table in NOTES.md
+# records how many of the family's distinct print tokens the generated
+# cells reproduce; rows are data, lemmas marked "reconstructed" are
+# citation forms the print never spells out.
+гдⷭ҇	господ	госпо́дь	n	strip	8027	family shared with the adjective row
+гдⷭ҇	господ	госпо́день	a	strip	8027	family count listed once
+бг҃	бог	бо́гъ	n	strip	3305	-
+бж҃	бож	бо́жїй	a	strip	1123	lemma rule-inflected (not in tables)
+гл҃	глагол	глаго́лати	v	strip	1884	-
+дх҃	дꙋх	дꙋ́хъ	n	strip	308	-
+сн҃	сын	сы́нъ	n	strip	267	-
+ѻ҆ц҃	отц	ѻ҆те́цъ	n	keep	259	oblique stem only; ѻ҆ц҃ъ nom stays verbatim
+ст҃	свѧт	свѧты́й	a	keep	972	-
+хрⷭ҇т	хріст	хрїсто́съ	n	keep	594	lemma rule-inflected
+мцⷭ҇	мѣсѧц	мѣ́сѧцъ	n	strip	356	-
+прⷪ҇	про	проро́къ	n	keep	409	-
+млⷭ҇	милос	ми́лость	n	strip	211	-
+нб҃с	небес	не́бо	n	keep	307	the s-stem obliques; нб҃о itself stays verbatim
+а҆́гг҃	агге	а҆́ггелъ	n	keep	357	-
+блгⷣ	благода	благода́ть	n	strip	161	lemma rule-inflected
+спⷭ҇	спасе	спасе́нїе	n	strip	291	lemma rule-inflected
+і҆ерⷭ҇	іерꙋса	і҆ерꙋсали́мъ	n	keep	1017	-
+і҆и҃	ізраи	і҆зра́иль	n	strip	3872	reconstructed lemma; family shared 3 ways
+і҆и҃	ізраи	і҆зра́илевъ	a	strip	3872	reconstructed lemma
+і҆и҃	іисꙋ	і҆исꙋ́съ	n	strip	3872	reconstructed lemma

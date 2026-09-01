@@ -79,6 +79,12 @@ fn walk(
         | Node::Npron { .. } | Node::Pers { .. } | Node::Part { .. } => {}
         Node::Punct(_) => {}
         Node::Cap(child) => walk(child, recension, &format!("{path}/cap"), findings),
+        Node::Abbr { prefix, child } => {
+            if !crate::titlo::rows().iter().any(|r| r.abbr == *prefix) {
+                push(findings, path, format!("(abbr \"{prefix}\" …): unknown titlo prefix"));
+            }
+            walk(child, recension, &format!("{path}/abbr"), findings);
+        }
         Node::Group { head, children } => {
             if !KNOWN_HEADS.contains(&head.as_str()) {
                 push(findings, path, format!("unknown group head: {head}"));

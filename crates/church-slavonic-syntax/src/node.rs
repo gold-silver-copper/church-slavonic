@@ -53,6 +53,9 @@ pub enum Node {
         number: Number,
         gender: Gender,
     },
+    /// `(abbr "гдⷭ҇" X)` — render the child in full, then abbreviate it
+    /// under the matching row of `data/titlo.tsv` (the titlo layer).
+    Abbr { prefix: String, child: Box<Node> },
     /// `(cap X)` — uppercase the first letter of the child's rendering
     /// (sentence-initial capitals; the tree stays lemma-true).
     Cap(Box<Node>),
@@ -280,6 +283,14 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
             }
             Ok(Node::Cap(Box::new(from_sexpr(&rest[0])?)))
         }
+        "abbr" => {
+            let (Some(Value::Str(prefix)), Some(child), None) =
+                (rest.first(), rest.get(1), rest.get(2))
+            else {
+                return err("(abbr …) takes a quoted prefix and one child");
+            };
+            Ok(Node::Abbr { prefix: prefix.clone(), child: Box::new(from_sexpr(child)?) })
+        }
         "lp" => {
             let Some(Value::Atom(lemma)) = rest.first() else {
                 return err("(lp …) starts with a lemma atom");
@@ -396,6 +407,9 @@ pub fn to_sexpr(node: &Node) -> Value {
             key("g"), atom(show_gender(gender)),
         ]),
         Node::Cap(child) => Value::List(vec![atom("cap"), to_sexpr(child)]),
+        Node::Abbr { prefix, child } => {
+            Value::List(vec![atom("abbr"), Value::Str(prefix.clone()), to_sexpr(child)])
+        }
         Node::Group { head, children } => {
             let mut items = vec![atom(head)];
             items.extend(children.iter().map(to_sexpr));
@@ -509,6 +523,23 @@ fn walk(
                 out,
                 glue_next,
             );
+        }
+        Node::Abbr { prefix, child } => {
+            let mut inner = String::new();
+            let mut inner_glue = false;
+            walk(child, recension, &mut inner, &mut inner_glue)?;
+            let abbreviated = crate::titlo::rows()
+                .iter()
+                .filter(|row| row.abbr == prefix)
+                .find_map(|row| crate::titlo::abbreviate(&inner, row));
+            match abbreviated {
+                Some(form) => emit(&form, false, out, glue_next),
+                None => {
+                    return err(format!(
+                        "(abbr \"{prefix}\" …): no titlo row abbreviates «{inner}»"
+                    ));
+                }
+            }
         }
         Node::Cap(child) => {
             let mut inner = String::new();

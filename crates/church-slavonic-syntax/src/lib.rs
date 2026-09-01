@@ -28,4 +28,5 @@ pub mod lift;
 pub mod lint;
 pub mod node;
 pub mod sexpr;
+pub mod titlo;
 pub mod treebank;

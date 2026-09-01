@@ -40,6 +40,9 @@ pub enum Analysis {
         number: Number,
         gender: Gender,
     },
+    /// a titlo abbreviation of an inner reading (row index into
+    /// [`crate::titlo::rows`])
+    Abbr { row: usize, inner: Box<Analysis> },
 }
 
 impl Analysis {
@@ -70,6 +73,10 @@ impl Analysis {
             Analysis::Part { lemma, tense, voice, series, case, number, gender } => {
                 Node::Part { lemma: lemma.to_string(), tense, voice, series, case, number, gender }
             }
+            Analysis::Abbr { row, inner } => Node::Abbr {
+                prefix: crate::titlo::rows()[row].abbr.to_string(),
+                child: Box::new(inner.into_node()),
+            },
         }
     }
 }
@@ -290,6 +297,110 @@ impl Index {
                                 case,
                             },
                         );
+                    }
+                }
+            }
+        }
+        // the titlo layer: every committed row's full paradigm,
+        // abbreviated by prefix cut (data/titlo.tsv; the verification
+        // table in NOTES.md records per-row print agreement)
+        for (ri, row) in crate::titlo::rows().iter().enumerate() {
+            let mut add_abbr = |full: String, inner: Analysis| {
+                if let Some(surface) = crate::titlo::abbreviate(&full, row) {
+                    let entry = map.entry(surface).or_default();
+                    let a = Analysis::Abbr { row: ri, inner: Box::new(inner) };
+                    if !entry.contains(&a) {
+                        entry.push(a);
+                    }
+                }
+            };
+            let lemma = row.lemma;
+            match row.pos {
+                crate::titlo::Pos::Noun => {
+                    for case in CASES {
+                        for number in NUMBERS {
+                            add_abbr(
+                                ChurchSlavonic::noun(lemma, &case, &number, recension),
+                                Analysis::Noun { lemma, case, number },
+                            );
+                        }
+                    }
+                }
+                crate::titlo::Pos::Adjective => {
+                    for case in CASES {
+                        for number in NUMBERS {
+                            for gender in GENDERS {
+                                add_abbr(
+                                    ChurchSlavonic::adj(
+                                        lemma,
+                                        &case,
+                                        &number,
+                                        &gender,
+                                        &Degree::Positive,
+                                        recension,
+                                    ),
+                                    Analysis::Adj {
+                                        lemma,
+                                        case,
+                                        number,
+                                        gender,
+                                        degree: Degree::Positive,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                }
+                crate::titlo::Pos::Verb => {
+                    for tense in TENSES {
+                        for person in PERSONS {
+                            for number in NUMBERS {
+                                add_abbr(
+                                    ChurchSlavonic::verb(
+                                        lemma,
+                                        &person,
+                                        &number,
+                                        &tense,
+                                        &Form::Finite,
+                                        recension,
+                                    ),
+                                    Analysis::Verb {
+                                        lemma,
+                                        person,
+                                        number,
+                                        tense,
+                                        form: Form::Finite,
+                                    },
+                                );
+                            }
+                        }
+                    }
+                    for tense in [Tense::Present, Tense::Aorist] {
+                        for voice in PART_VOICES {
+                            for series in [Series::Short, Series::Long] {
+                                for case in CASES {
+                                    for number in NUMBERS {
+                                        for gender in GENDERS {
+                                            add_abbr(
+                                                ChurchSlavonic::participle(
+                                                    lemma, &tense, &voice, &series, &case,
+                                                    &number, &gender, recension,
+                                                ),
+                                                Analysis::Part {
+                                                    lemma,
+                                                    tense,
+                                                    voice,
+                                                    series,
+                                                    case,
+                                                    number,
+                                                    gender,
+                                                },
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

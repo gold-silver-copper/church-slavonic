@@ -115,6 +115,7 @@ fn tree_coverage(node: &Node, coverage: &mut Coverage) {
         }
         Node::Punct(_) => {}
         Node::Cap(child) => tree_coverage(child, coverage),
+        Node::Abbr { child, .. } => tree_coverage(child, coverage),
         Node::Group { children, .. } => {
             for child in children {
                 tree_coverage(child, coverage);

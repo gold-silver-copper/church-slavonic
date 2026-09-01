@@ -1,25 +1,17 @@
 use church_slavonic::*;
 fn main() {
     let r = Recension::Synodal;
-    println!("npron lemmas: {}", ChurchSlavonic::lemmas(PartOfSpeech::NonPersonalPronoun, &r).count());
-    for l in ChurchSlavonic::lemmas(PartOfSpeech::NonPersonalPronoun, &r).take(12) { print!("{l}  "); }
-    println!();
-    // personal pronouns: does gender matter for p1/2?
-    for p in [Person::First, Person::Second, Person::Third] {
-        for g in [Gender::Masculine, Gender::Feminine] {
-            print!("{:?}/{:?}: {}  ", p, g, ChurchSlavonic::pronoun(&p, &Number::Singular, &g, &Case::Genitive, &r));
-        }
-        println!();
+    let has = |pos, w: &str| ChurchSlavonic::lemmas(pos, &r).any(|l| l == w);
+    for w in ["госпо́дь","госпо́день","бо́гъ","бо́жїй","глаго́лати","дꙋ́хъ","сы́нъ","ѻ҆те́цъ","свѧты́й","хрїсто́съ","мѣ́сѧцъ","проро́къ","благода́ть","ми́лость","спасе́нїе","і҆зра́иль","і҆ерꙋсали́мъ","і҆исꙋ́съ","а҆́ггелъ","не́бо"] {
+        let pos = [PartOfSpeech::Noun, PartOfSpeech::Adjective, PartOfSpeech::Verb]
+            .into_iter().filter(|p| has(*p, w)).map(|p| format!("{p:?}")).collect::<Vec<_>>();
+        println!("{w}: {:?}", pos);
     }
-    // vocative answers nominative?
-    println!("pers voc: {}", ChurchSlavonic::pronoun(&Person::First, &Number::Singular, &Gender::Masculine, &Case::Vocative, &r));
-    // participle samples
-    println!("part pres act short nom m: {}", ChurchSlavonic::participle("нестѝ", &Tense::Present, &Voice::Active, &Series::Short, &Case::Nominative, &Number::Singular, &Gender::Masculine, &r));
-    println!("part aor act short nom m: {}", ChurchSlavonic::participle("нестѝ", &Tense::Aorist, &Voice::Active, &Series::Short, &Case::Nominative, &Number::Singular, &Gender::Masculine, &r));
-    println!("part pres pass long nom f: {}", ChurchSlavonic::participle("нестѝ", &Tense::Present, &Voice::Passive, &Series::Long, &Case::Nominative, &Number::Singular, &Gender::Feminine, &r));
-    // adjective superlative distinct?
-    for d in [Degree::Positive, Degree::Comparative, Degree::Superlative] {
-        println!("вели́кїй {:?}: {}", d, ChurchSlavonic::adj("вели́кїй", &Case::Nominative, &Number::Singular, &Gender::Masculine, &d, &r));
-    }
-    println!("npron сво́й gen f sg: {}", ChurchSlavonic::npron("сво́й", &Gender::Feminine, &Number::Singular, &Case::Genitive, &r));
+    println!("не́бо gen: {}", ChurchSlavonic::noun("не́бо", &Case::Genitive, &Number::Singular, &r));
+    println!("госпо́дь gen: {}", ChurchSlavonic::noun("госпо́дь", &Case::Genitive, &Number::Singular, &r));
+    println!("ѻ҆те́цъ gen: {}", ChurchSlavonic::noun("ѻ҆те́цъ", &Case::Genitive, &Number::Singular, &r));
+    println!("свѧты́й gen m sg: {}", ChurchSlavonic::adj("свѧты́й", &Case::Genitive, &Number::Singular, &Gender::Masculine, &Degree::Positive, &r));
+    println!("глаго́лати pres3sg: {}", ChurchSlavonic::verb("глаго́лати", &Person::Third, &Number::Singular, &Tense::Present, &Form::Finite, &r));
+    println!("хрїсто́съ gen: {}", ChurchSlavonic::noun("хрїсто́съ", &Case::Genitive, &Number::Singular, &r));
+    println!("і҆исꙋ́съ nom: {}", ChurchSlavonic::noun("і҆исꙋ́съ", &Case::Nominative, &Number::Singular, &r));
 }
