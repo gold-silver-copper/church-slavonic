@@ -38,6 +38,21 @@ pub enum Node {
     Verb { lemma: String, person: Person, number: Number, tense: Tense, form: Form },
     /// `(lp лемма :g m :num sg)` — the l-participle.
     LPart { lemma: String, gender: Gender, number: Number },
+    /// `(pn лемма :case nom :num sg :g m)` — a non-personal pronoun.
+    Npron { lemma: String, gender: Gender, number: Number, case: Case },
+    /// `(pers :p 3 :num sg :case gen :g m)` — the personal pronoun; the
+    /// first and second persons carry no gender (omit :g).
+    Pers { person: Person, number: Number, gender: Option<Gender>, case: Case },
+    /// `(part лемма :t pres :voice act :series long :case nom :num sg :g m)`
+    Part {
+        lemma: String,
+        tense: Tense,
+        voice: Voice,
+        series: Series,
+        case: Case,
+        number: Number,
+        gender: Gender,
+    },
     /// `(cap X)` — uppercase the first letter of the child's rendering
     /// (sentence-initial capitals; the tree stays lemma-true).
     Cap(Box<Node>),
@@ -45,7 +60,7 @@ pub enum Node {
     Group { head: String, children: Vec<Node> },
 }
 
-pub use church_slavonic::{Case, Degree, Form, Gender, Number, Person, Tense};
+pub use church_slavonic::{Case, Degree, Form, Gender, Number, Person, Series, Tense, Voice};
 
 /// A tree-shape error (bad head, missing feature, unknown feature value),
 /// with the offending form printed back.
@@ -96,6 +111,10 @@ vocab!(read_person, show_person, Person, "person",
     ("1", Person::First), ("2", Person::Second), ("3", Person::Third));
 vocab!(read_tense, show_tense, Tense, "tense",
     ("pres", Tense::Present), ("impf", Tense::Imperfect), ("aor", Tense::Aorist));
+vocab!(read_voice, show_voice, Voice, "voice",
+    ("act", Voice::Active), ("pass", Voice::Passive));
+vocab!(read_series, show_series, Series, "series",
+    ("short", Series::Short), ("long", Series::Long));
 
 // ---------------------------------------------------------------------------
 // sexpr <-> Node
@@ -188,6 +207,7 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
                 degree: match take(&fs, "deg") {
                     None | Some("pos") => Degree::Positive,
                     Some("comp") => Degree::Comparative,
+                    Some("sup") => Degree::Superlative,
                     Some(other) => return err(format!("unknown degree: {other}")),
                 },
             })
@@ -213,6 +233,45 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
                     None => return err("(v …) requires :t"),
                 },
                 form,
+            })
+        }
+        "pn" => {
+            let Some(Value::Atom(lemma)) = rest.first() else {
+                return err("(pn …) starts with a lemma atom");
+            };
+            let fs = features(&rest[1..])?;
+            Ok(Node::Npron {
+                lemma: lemma.clone(),
+                case: read_case(require(&fs, "case", "pn")?)?,
+                number: read_num(require(&fs, "num", "pn")?)?,
+                gender: read_gender(require(&fs, "g", "pn")?)?,
+            })
+        }
+        "pers" => {
+            let fs = features(rest)?;
+            Ok(Node::Pers {
+                person: read_person(require(&fs, "p", "pers")?)?,
+                number: read_num(require(&fs, "num", "pers")?)?,
+                case: read_case(require(&fs, "case", "pers")?)?,
+                gender: match take(&fs, "g") {
+                    Some(g) => Some(read_gender(g)?),
+                    None => None,
+                },
+            })
+        }
+        "part" => {
+            let Some(Value::Atom(lemma)) = rest.first() else {
+                return err("(part …) starts with a lemma atom");
+            };
+            let fs = features(&rest[1..])?;
+            Ok(Node::Part {
+                lemma: lemma.clone(),
+                tense: read_tense(require(&fs, "t", "part")?)?,
+                voice: read_voice(require(&fs, "voice", "part")?)?,
+                series: read_series(require(&fs, "series", "part")?)?,
+                case: read_case(require(&fs, "case", "part")?)?,
+                number: read_num(require(&fs, "num", "part")?)?,
+                gender: read_gender(require(&fs, "g", "part")?)?,
             })
         }
         "cap" => {
@@ -266,9 +325,16 @@ pub fn to_sexpr(node: &Node) -> Value {
                 key("num"), atom(show_num(number)),
                 key("g"), atom(show_gender(gender)),
             ];
-            if *degree == Degree::Comparative {
-                items.push(key("deg"));
-                items.push(atom("comp"));
+            match degree {
+                Degree::Positive => {}
+                Degree::Comparative => {
+                    items.push(key("deg"));
+                    items.push(atom("comp"));
+                }
+                Degree::Superlative => {
+                    items.push(key("deg"));
+                    items.push(atom("sup"));
+                }
             }
             Value::List(items)
         }
@@ -300,6 +366,34 @@ pub fn to_sexpr(node: &Node) -> Value {
             atom("lp"), atom(lemma),
             key("g"), atom(show_gender(gender)),
             key("num"), atom(show_num(number)),
+        ]),
+        Node::Npron { lemma, gender, number, case } => Value::List(vec![
+            atom("pn"), atom(lemma),
+            key("case"), atom(show_case(case)),
+            key("num"), atom(show_num(number)),
+            key("g"), atom(show_gender(gender)),
+        ]),
+        Node::Pers { person, number, gender, case } => {
+            let mut items = vec![
+                atom("pers"),
+                key("p"), atom(show_person(person)),
+                key("num"), atom(show_num(number)),
+                key("case"), atom(show_case(case)),
+            ];
+            if let Some(g) = gender {
+                items.push(key("g"));
+                items.push(atom(show_gender(g)));
+            }
+            Value::List(items)
+        }
+        Node::Part { lemma, tense, voice, series, case, number, gender } => Value::List(vec![
+            atom("part"), atom(lemma),
+            key("t"), atom(show_tense(tense)),
+            key("voice"), atom(show_voice(voice)),
+            key("series"), atom(show_series(series)),
+            key("case"), atom(show_case(case)),
+            key("num"), atom(show_num(number)),
+            key("g"), atom(show_gender(gender)),
         ]),
         Node::Cap(child) => Value::List(vec![atom("cap"), to_sexpr(child)]),
         Node::Group { head, children } => {
@@ -384,6 +478,33 @@ fn walk(
         Node::LPart { lemma, gender, number } => {
             emit(
                 &ChurchSlavonic::l_participle(lemma, gender, number, recension),
+                false,
+                out,
+                glue_next,
+            );
+        }
+        Node::Npron { lemma, gender, number, case } => {
+            let form = ChurchSlavonic::npron(lemma, gender, number, case, recension);
+            if form.is_empty() {
+                return err(format!("(pn {lemma}) renders empty in this recension"));
+            }
+            emit(&form, false, out, glue_next);
+        }
+        Node::Pers { person, number, gender, case } => {
+            // the first and second persons carry no gender; masculine is
+            // the API's placeholder argument for them
+            let g = gender.unwrap_or(Gender::Masculine);
+            let form = ChurchSlavonic::pronoun(person, number, &g, case, recension);
+            if form.is_empty() {
+                return err("(pers …) renders empty".to_string());
+            }
+            emit(form, false, out, glue_next);
+        }
+        Node::Part { lemma, tense, voice, series, case, number, gender } => {
+            emit(
+                &ChurchSlavonic::participle(
+                    lemma, tense, voice, series, case, number, gender, recension,
+                ),
                 false,
                 out,
                 glue_next,
@@ -493,11 +614,24 @@ mod tests {
             ("(adj вели́кїй :case acc :num sg :g n)", "вели́кое"),
             ("(cap (f въ))", "Въ"),
             ("(f и҆)", "и҆"),
+            // wave 2: the pronoun and participle leaves (pasted output)
+            ("(pers :p 3 :num sg :case gen :g m)", "є҆гѡ̀"),
+            ("(pers :p 3 :num sg :case gen :g f)", "є҆ѧ̀"),
+            ("(pers :p 1 :num sg :case gen)", "менє̀"),
+            ("(part нестѝ :t pres :voice act :series short :case nom :num sg :g m)", "несы́й"),
+            ("(part нестѝ :t pres :voice pass :series long :case nom :num sg :g f)", "несомаѧ"),
+            ("(adj вели́кїй :case nom :num sg :g m :deg sup)", "превели́кий"),
         ] {
             assert_eq!(render(&read(tree), &syn).expect("renders"), expect, "{tree}");
         }
         // an unlisted function word refuses to render
         assert!(render(&Node::Fn("гдⷭ҇ь".into()), &syn).is_err());
+        // Synodal has no npron support today (a recorded crate gap) —
+        // the leaf refuses to render empty rather than emitting nothing
+        assert!(
+            render(&read("(pn сво́й :case gen :num sg :g f)"), &syn).is_err(),
+            "syn npron renders empty — refuse loudly"
+        );
     }
 
     /// The first real lift: Genesis 1:1, byte-checked against the print.

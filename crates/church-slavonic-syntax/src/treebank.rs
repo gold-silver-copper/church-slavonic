@@ -104,7 +104,13 @@ fn tree_coverage(node: &Node, coverage: &mut Coverage) {
             }
         }
         Node::Fn(_) => coverage.closed += 1,
-        Node::Noun { .. } | Node::Adj { .. } | Node::Verb { .. } | Node::LPart { .. } => {
+        Node::Noun { .. }
+        | Node::Adj { .. }
+        | Node::Verb { .. }
+        | Node::LPart { .. }
+        | Node::Npron { .. }
+        | Node::Pers { .. }
+        | Node::Part { .. } => {
             coverage.analyzed += 1;
         }
         Node::Punct(_) => {}

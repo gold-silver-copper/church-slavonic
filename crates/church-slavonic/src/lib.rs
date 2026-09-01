@@ -720,6 +720,7 @@ impl ChurchSlavonic {
             PartOfSpeech::Noun => NOUN_TABLE,
             PartOfSpeech::Adjective => ADJ_TABLE,
             PartOfSpeech::Verb => VERB_TABLE,
+            PartOfSpeech::NonPersonalPronoun => NPRON_TABLE,
         };
         let prefix = format!("{}:", tag(recension));
         table.iter().filter_map(move |&(key, _)| {
@@ -740,6 +741,7 @@ pub enum PartOfSpeech {
     Noun,
     Adjective,
     Verb,
+    NonPersonalPronoun,
 }
 
 #[cfg(test)]

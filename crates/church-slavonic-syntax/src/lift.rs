@@ -17,7 +17,8 @@
 
 use crate::node::Node;
 use church_slavonic::{
-    Case, ChurchSlavonic, Degree, Form, Gender, Number, PartOfSpeech, Person, Recension, Tense,
+    Case, ChurchSlavonic, Degree, Form, Gender, Number, PartOfSpeech, Person, Recension, Series,
+    Tense, Voice,
 };
 use std::collections::HashMap;
 
@@ -25,9 +26,20 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Analysis {
     Noun { lemma: &'static str, case: Case, number: Number },
-    Adj { lemma: &'static str, case: Case, number: Number, gender: Gender },
+    Adj { lemma: &'static str, case: Case, number: Number, gender: Gender, degree: Degree },
     Verb { lemma: &'static str, person: Person, number: Number, tense: Tense, form: Form },
     LPart { lemma: &'static str, gender: Gender, number: Number },
+    Npron { lemma: &'static str, gender: Gender, number: Number, case: Case },
+    Pers { person: Person, number: Number, gender: Option<Gender>, case: Case },
+    Part {
+        lemma: &'static str,
+        tense: Tense,
+        voice: Voice,
+        series: Series,
+        case: Case,
+        number: Number,
+        gender: Gender,
+    },
 }
 
 impl Analysis {
@@ -36,18 +48,27 @@ impl Analysis {
             Analysis::Noun { lemma, case, number } => {
                 Node::Noun { lemma: lemma.to_string(), case, number }
             }
-            Analysis::Adj { lemma, case, number, gender } => Node::Adj {
+            Analysis::Adj { lemma, case, number, gender, degree } => Node::Adj {
                 lemma: lemma.to_string(),
                 case,
                 number,
                 gender,
-                degree: Degree::Positive,
+                degree,
             },
             Analysis::Verb { lemma, person, number, tense, form } => {
                 Node::Verb { lemma: lemma.to_string(), person, number, tense, form }
             }
             Analysis::LPart { lemma, gender, number } => {
                 Node::LPart { lemma: lemma.to_string(), gender, number }
+            }
+            Analysis::Npron { lemma, gender, number, case } => {
+                Node::Npron { lemma: lemma.to_string(), gender, number, case }
+            }
+            Analysis::Pers { person, number, gender, case } => {
+                Node::Pers { person, number, gender, case }
+            }
+            Analysis::Part { lemma, tense, voice, series, case, number, gender } => {
+                Node::Part { lemma: lemma.to_string(), tense, voice, series, case, number, gender }
             }
         }
     }
@@ -66,6 +87,17 @@ const NUMBERS: [Number; 3] = [Number::Singular, Number::Dual, Number::Plural];
 const GENDERS: [Gender; 3] = [Gender::Masculine, Gender::Feminine, Gender::Neuter];
 const PERSONS: [Person; 3] = [Person::First, Person::Second, Person::Third];
 const TENSES: [Tense; 3] = [Tense::Present, Tense::Imperfect, Tense::Aorist];
+/// The participle voices the index inverts (see the build comment).
+const PART_VOICES: [Voice; 2] = [Voice::Active, Voice::Passive];
+/// Pronouns answer the vocative with the nominative — six real cases.
+const NPRON_CASES: [Case; 6] = [
+    Case::Nominative,
+    Case::Genitive,
+    Case::Dative,
+    Case::Accusative,
+    Case::Instrumental,
+    Case::Locative,
+];
 
 /// The surface → analyses index over the crate's whole Synodal
 /// inventory. Building it makes ~half a million generator calls; do it
@@ -97,17 +129,14 @@ impl Index {
             for case in CASES {
                 for number in NUMBERS {
                     for gender in GENDERS {
-                        add(
-                            ChurchSlavonic::adj(
-                                lemma,
-                                &case,
-                                &number,
-                                &gender,
-                                &Degree::Positive,
-                                recension,
-                            ),
-                            Analysis::Adj { lemma, case, number, gender },
-                        );
+                        for degree in [Degree::Positive, Degree::Comparative, Degree::Superlative] {
+                            add(
+                                ChurchSlavonic::adj(
+                                    lemma, &case, &number, &gender, &degree, recension,
+                                ),
+                                Analysis::Adj { lemma, case, number, gender, degree },
+                            );
+                        }
                     }
                 }
             }
@@ -172,6 +201,96 @@ impl Index {
                         ChurchSlavonic::l_participle(lemma, &gender, &number, recension),
                         Analysis::LPart { lemma, gender, number },
                     );
+                }
+            }
+        }
+        // participles, from the verb inventory: present and aorist
+        // (imperfect aliases the aorist stem in the API), both series,
+        // ACTIVE voice — passive measured and deferred or admitted by
+        // the recorded numbers, never silently
+        for lemma in ChurchSlavonic::lemmas(PartOfSpeech::Verb, recension) {
+            for tense in [Tense::Present, Tense::Aorist] {
+                for voice in PART_VOICES {
+                    for series in [Series::Short, Series::Long] {
+                        for case in CASES {
+                            for number in NUMBERS {
+                                for gender in GENDERS {
+                                    let form = ChurchSlavonic::participle(
+                                        lemma, &tense, &voice, &series, &case, &number, &gender,
+                                        recension,
+                                    );
+                                    if !form.is_empty() {
+                                        add(
+                                            form,
+                                            Analysis::Part {
+                                                lemma,
+                                                tense,
+                                                voice,
+                                                series,
+                                                case,
+                                                number,
+                                                gender,
+                                            },
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // non-personal pronouns: table lemmas (Synodal has none today —
+        // the absence is a recorded crate gap, not a silent skip; the
+        // code path stands and serves OCS the day an OCS treebank comes)
+        for lemma in ChurchSlavonic::lemmas(PartOfSpeech::NonPersonalPronoun, recension) {
+            for gender in GENDERS {
+                for number in NUMBERS {
+                    for case in NPRON_CASES {
+                        let form = ChurchSlavonic::npron(lemma, &gender, &number, &case, recension);
+                        if !form.is_empty() {
+                            add(form, Analysis::Npron { lemma, gender, number, case });
+                        }
+                    }
+                }
+            }
+        }
+        // the personal pronoun: a closed paradigm, no lemma table; the
+        // first and second persons are gender-free (one analysis each,
+        // masculine as the API's placeholder argument), the third is
+        // per-gender; the vocative answers with the nominative and is
+        // not indexed as a distinct reading
+        for number in NUMBERS {
+            for case in NPRON_CASES {
+                for person in [Person::First, Person::Second] {
+                    let form = ChurchSlavonic::pronoun(
+                        &person,
+                        &number,
+                        &Gender::Masculine,
+                        &case,
+                        recension,
+                    );
+                    if !form.is_empty() {
+                        add(
+                            form.to_string(),
+                            Analysis::Pers { person, number, gender: None, case },
+                        );
+                    }
+                }
+                for gender in GENDERS {
+                    let form =
+                        ChurchSlavonic::pronoun(&Person::Third, &number, &gender, &case, recension);
+                    if !form.is_empty() {
+                        add(
+                            form.to_string(),
+                            Analysis::Pers {
+                                person: Person::Third,
+                                number,
+                                gender: Some(gender),
+                                case,
+                            },
+                        );
+                    }
                 }
             }
         }
@@ -350,6 +469,40 @@ mod tests {
         let (tree, coverage) = lift_verse(verse, index());
         assert_eq!(render(&tree, &Recension::Synodal).expect("renders"), verse);
         assert_eq!(coverage.apparatus, 1, "꙾є҆ю̀꙾[26] stays whole");
+    }
+
+    /// A participle homographic with another reading must fall to :amb,
+    /// never to whichever index insertion ran last.
+    #[test]
+    fn cross_pos_collisions_are_ambiguous() {
+        let idx = index();
+        // the third-person pronoun є҆гѡ̀ doubles as the possessive use —
+        // and «несомаѧ» (pres pass long f) must be a Part reading
+        let part = idx.analyses("несомаѧ");
+        assert!(
+            part.iter().any(|a| matches!(a, Analysis::Part { .. })),
+            "{part:?}"
+        );
+        // find one real adjective/participle collision in the index and
+        // assert the lift records it as ambiguous
+        let collision = idx
+            .analyses("сꙋ́щаѧ")
+            .iter()
+            .any(|a| matches!(a, Analysis::Part { .. }));
+        if collision {
+            let (_, fate) = lift_token("сꙋ́щаѧ", idx);
+            if idx.analyses("сꙋ́щаѧ").len() > 1 {
+                assert_eq!(fate, TokenFate::Ambiguous);
+            }
+        }
+        // structural guarantee: EVERY multi-analysis surface lifts to :amb
+        let (nodes, fate) = lift_token("є҆гѡ̀", idx);
+        if idx.analyses("є҆гѡ̀").len() > 1 {
+            assert_eq!(fate, TokenFate::Ambiguous);
+            assert!(matches!(&nodes[0], crate::node::Node::W { .. }));
+        } else {
+            assert_eq!(fate, TokenFate::Analyzed);
+        }
     }
 
     #[test]
