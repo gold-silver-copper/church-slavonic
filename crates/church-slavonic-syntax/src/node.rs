@@ -1,0 +1,472 @@
+//! The tree model and the renderer.
+//!
+//! **The round-trip invariant**: for every verse that has a tree,
+//! [`render`] equals the pinned print byte-for-byte (the verse text
+//! trimmed of the JSON arrangement's cosmetic leading space — the source
+//! has no interior double spaces, verified over all 34,470 verses, so
+//! "join tokens with single spaces" IS the print's own spacing).
+//!
+//! Children are ORDERED: Church Slavonic word order is free and
+//! meaningful, so the tree records order and never derives it. Rendering
+//! is a left-to-right walk plus the punctuation glue rule. Features on
+//! analyzed leaves are explicit — agreement is checked by the linter,
+//! never inferred by the renderer.
+
+use crate::sexpr::Value;
+use std::fmt;
+
+/// One node. Groups (`s`, `cl`, `np`, `pp`, …) carry an arbitrary head
+/// atom — the linter knows some heads, the renderer treats them all as
+/// ordered sequence.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Node {
+    /// `(w "гдⷭ҇ь")` — a witnessed surface form, rendered as-is. May
+    /// carry belief annotations (`:lemma`, `:case`, …) that the renderer
+    /// IGNORES; they exist for the linter and the lifting pipeline.
+    W { surface: String, notes: Vec<(String, String)> },
+    /// `(p ",")` — punctuation; glues to the neighbouring token (left by
+    /// default, right for opening brackets/quotes).
+    Punct(String),
+    /// `(f и҆)` — a closed-class function word from [`crate::closed::TABLE`].
+    Fn(String),
+    /// `(n лемма :case nom :num sg)`
+    Noun { lemma: String, case: Case, number: Number },
+    /// `(adj лемма :case nom :num sg :g m)` — positive degree unless
+    /// `:deg comp`.
+    Adj { lemma: String, case: Case, number: Number, gender: Gender, degree: Degree },
+    /// `(v лемма :t aor :p 3 :num sg)` — finite unless `:form imp`/`inf`.
+    Verb { lemma: String, person: Person, number: Number, tense: Tense, form: Form },
+    /// `(lp лемма :g m :num sg)` — the l-participle.
+    LPart { lemma: String, gender: Gender, number: Number },
+    /// `(np …)`, `(cl …)`, `(s …)` — an ordered group.
+    Group { head: String, children: Vec<Node> },
+}
+
+pub use church_slavonic::{Case, Degree, Form, Gender, Number, Person, Tense};
+
+/// A tree-shape error (bad head, missing feature, unknown feature value),
+/// with the offending form printed back.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TreeError(pub String);
+
+impl fmt::Display for TreeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "tree error: {}", self.0)
+    }
+}
+impl std::error::Error for TreeError {}
+
+fn err<T>(message: impl Into<String>) -> Result<T, TreeError> {
+    Err(TreeError(message.into()))
+}
+
+// ---------------------------------------------------------------------------
+// Feature vocabularies — one place, both directions
+// ---------------------------------------------------------------------------
+
+macro_rules! vocab {
+    ($read:ident, $show:ident, $ty:ty, $feature:literal, $(($atom:literal, $variant:expr)),+ $(,)?) => {
+        fn $read(atom: &str) -> Result<$ty, TreeError> {
+            match atom {
+                $($atom => Ok($variant),)+
+                other => err(format!("unknown {}: {other}", $feature)),
+            }
+        }
+        fn $show(v: &$ty) -> &'static str {
+            match v {
+                $(x if *x == $variant => $atom,)+
+                _ => unreachable!(),
+            }
+        }
+    };
+}
+
+vocab!(read_case, show_case, Case, "case",
+    ("nom", Case::Nominative), ("gen", Case::Genitive), ("dat", Case::Dative),
+    ("acc", Case::Accusative), ("ins", Case::Instrumental), ("loc", Case::Locative),
+    ("voc", Case::Vocative));
+vocab!(read_num, show_num, Number, "number",
+    ("sg", Number::Singular), ("du", Number::Dual), ("pl", Number::Plural));
+vocab!(read_gender, show_gender, Gender, "gender",
+    ("m", Gender::Masculine), ("f", Gender::Feminine), ("n", Gender::Neuter));
+vocab!(read_person, show_person, Person, "person",
+    ("1", Person::First), ("2", Person::Second), ("3", Person::Third));
+vocab!(read_tense, show_tense, Tense, "tense",
+    ("pres", Tense::Present), ("impf", Tense::Imperfect), ("aor", Tense::Aorist));
+
+// ---------------------------------------------------------------------------
+// sexpr <-> Node
+// ---------------------------------------------------------------------------
+
+fn features(items: &[Value]) -> Result<Vec<(String, String)>, TreeError> {
+    let mut out = Vec::new();
+    let mut i = 0;
+    while i < items.len() {
+        match (&items[i], items.get(i + 1)) {
+            (Value::Key(k), Some(Value::Atom(v))) => {
+                out.push((k.clone(), v.clone()));
+                i += 2;
+            }
+            (Value::Key(k), Some(Value::Str(v))) => {
+                out.push((k.clone(), v.clone()));
+                i += 2;
+            }
+            (Value::Key(k), _) => return err(format!(":{k} lacks a value")),
+            (other, _) => return err(format!("expected :feature, got {}", crate::sexpr::print(other))),
+        }
+    }
+    Ok(out)
+}
+
+fn take<'a>(fs: &'a [(String, String)], key: &str) -> Option<&'a str> {
+    fs.iter().find(|(k, _)| k == key).map(|(_, v)| v.as_str())
+}
+
+fn require<'a>(fs: &'a [(String, String)], key: &str, head: &str) -> Result<&'a str, TreeError> {
+    take(fs, key).ok_or_else(|| TreeError(format!("({head} …) requires :{key}")))
+}
+
+/// Read a tree from a parsed sexpr value.
+pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
+    let Value::List(items) = v else {
+        return err(format!("expected a list, got {}", crate::sexpr::print(v)));
+    };
+    let Some(Value::Atom(head)) = items.first() else {
+        return err("a node starts with an atom head");
+    };
+    let rest = &items[1..];
+    match head.as_str() {
+        "w" => {
+            let Some(Value::Str(surface)) = rest.first() else {
+                return err("(w …) takes a quoted surface string");
+            };
+            let notes = features(&rest[1..])?;
+            Ok(Node::W { surface: surface.clone(), notes })
+        }
+        "p" => {
+            let Some(Value::Str(s)) = rest.first() else {
+                return err("(p …) takes a quoted punctuation string");
+            };
+            if rest.len() != 1 || s.is_empty() {
+                return err("(p …) takes exactly one non-empty string");
+            }
+            Ok(Node::Punct(s.clone()))
+        }
+        "f" => {
+            let Some(Value::Atom(word)) = rest.first() else {
+                return err("(f …) takes one atom");
+            };
+            if rest.len() != 1 {
+                return err("(f …) takes exactly one atom");
+            }
+            Ok(Node::Fn(word.clone()))
+        }
+        "n" => {
+            let Some(Value::Atom(lemma)) = rest.first() else {
+                return err("(n …) starts with a lemma atom");
+            };
+            let fs = features(&rest[1..])?;
+            Ok(Node::Noun {
+                lemma: lemma.clone(),
+                case: read_case(require(&fs, "case", "n")?)?,
+                number: read_num(require(&fs, "num", "n")?)?,
+            })
+        }
+        "adj" => {
+            let Some(Value::Atom(lemma)) = rest.first() else {
+                return err("(adj …) starts with a lemma atom");
+            };
+            let fs = features(&rest[1..])?;
+            Ok(Node::Adj {
+                lemma: lemma.clone(),
+                case: read_case(require(&fs, "case", "adj")?)?,
+                number: read_num(require(&fs, "num", "adj")?)?,
+                gender: read_gender(require(&fs, "g", "adj")?)?,
+                degree: match take(&fs, "deg") {
+                    None | Some("pos") => Degree::Positive,
+                    Some("comp") => Degree::Comparative,
+                    Some(other) => return err(format!("unknown degree: {other}")),
+                },
+            })
+        }
+        "v" => {
+            let Some(Value::Atom(lemma)) = rest.first() else {
+                return err("(v …) starts with a lemma atom");
+            };
+            let fs = features(&rest[1..])?;
+            let form = match take(&fs, "form") {
+                None | Some("fin") => Form::Finite,
+                Some("imp") => Form::Imperative,
+                Some("inf") => Form::Infinitive,
+                Some(other) => return err(format!("unknown form: {other}")),
+            };
+            Ok(Node::Verb {
+                lemma: lemma.clone(),
+                person: read_person(require(&fs, "p", "v")?)?,
+                number: read_num(require(&fs, "num", "v")?)?,
+                tense: match take(&fs, "t") {
+                    Some(t) => read_tense(t)?,
+                    None if form == Form::Infinitive => Tense::Present,
+                    None => return err("(v …) requires :t"),
+                },
+                form,
+            })
+        }
+        "lp" => {
+            let Some(Value::Atom(lemma)) = rest.first() else {
+                return err("(lp …) starts with a lemma atom");
+            };
+            let fs = features(&rest[1..])?;
+            Ok(Node::LPart {
+                lemma: lemma.clone(),
+                gender: read_gender(require(&fs, "g", "lp")?)?,
+                number: read_num(require(&fs, "num", "lp")?)?,
+            })
+        }
+        _ => {
+            let children = rest.iter().map(from_sexpr).collect::<Result<Vec<_>, _>>()?;
+            Ok(Node::Group { head: head.clone(), children })
+        }
+    }
+}
+
+/// Write a tree back to a sexpr value (`from_sexpr(to_sexpr(n)) == n`).
+pub fn to_sexpr(node: &Node) -> Value {
+    let atom = |s: &str| Value::Atom(s.to_string());
+    let key = |s: &str| Value::Key(s.to_string());
+    match node {
+        Node::W { surface, notes } => {
+            let mut items = vec![atom("w"), Value::Str(surface.clone())];
+            for (k, v) in notes {
+                items.push(key(k));
+                items.push(atom(v));
+            }
+            Value::List(items)
+        }
+        Node::Punct(s) => Value::List(vec![atom("p"), Value::Str(s.clone())]),
+        Node::Fn(word) => Value::List(vec![atom("f"), atom(word)]),
+        Node::Noun { lemma, case, number } => Value::List(vec![
+            atom("n"), atom(lemma),
+            key("case"), atom(show_case(case)),
+            key("num"), atom(show_num(number)),
+        ]),
+        Node::Adj { lemma, case, number, gender, degree } => {
+            let mut items = vec![
+                atom("adj"), atom(lemma),
+                key("case"), atom(show_case(case)),
+                key("num"), atom(show_num(number)),
+                key("g"), atom(show_gender(gender)),
+            ];
+            if *degree == Degree::Comparative {
+                items.push(key("deg"));
+                items.push(atom("comp"));
+            }
+            Value::List(items)
+        }
+        Node::Verb { lemma, person, number, tense, form } => {
+            let mut items = vec![
+                atom("v"), atom(lemma),
+                key("t"), atom(show_tense(tense)),
+                key("p"), atom(show_person(person)),
+                key("num"), atom(show_num(number)),
+            ];
+            match form {
+                Form::Finite => {}
+                Form::Imperative => {
+                    items.push(key("form"));
+                    items.push(atom("imp"));
+                }
+                Form::Infinitive => {
+                    items.push(key("form"));
+                    items.push(atom("inf"));
+                }
+                Form::Participle => {
+                    items.push(key("form"));
+                    items.push(atom("part"));
+                }
+            }
+            Value::List(items)
+        }
+        Node::LPart { lemma, gender, number } => Value::List(vec![
+            atom("lp"), atom(lemma),
+            key("g"), atom(show_gender(gender)),
+            key("num"), atom(show_num(number)),
+        ]),
+        Node::Group { head, children } => {
+            let mut items = vec![atom(head)];
+            items.extend(children.iter().map(to_sexpr));
+            Value::List(items)
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Rendering
+// ---------------------------------------------------------------------------
+
+/// Punctuation that glues to the FOLLOWING token (opening brackets and
+/// quotes); everything else glues to the preceding one.
+fn glues_right(p: &str) -> bool {
+    matches!(p.chars().next(), Some('(' | '[' | '«' | '„' | '“'))
+}
+
+/// Render a tree: a left-to-right walk emitting one token per leaf,
+/// single spaces between tokens, punctuation glued by [`glues_right`].
+/// Analyzed leaves inflect through the `church-slavonic` public API in
+/// the given recension.
+pub fn render(node: &Node, recension: &church_slavonic::Recension) -> Result<String, TreeError> {
+    let mut out = String::new();
+    let mut glue_next = false;
+    walk(node, recension, &mut out, &mut glue_next)?;
+    Ok(out)
+}
+
+fn emit(token: &str, glue_left: bool, out: &mut String, glue_next: &mut bool) {
+    if !out.is_empty() && !glue_left && !*glue_next {
+        out.push(' ');
+    }
+    out.push_str(token);
+    *glue_next = false;
+}
+
+fn walk(
+    node: &Node,
+    recension: &church_slavonic::Recension,
+    out: &mut String,
+    glue_next: &mut bool,
+) -> Result<(), TreeError> {
+    use church_slavonic::ChurchSlavonic;
+    match node {
+        Node::W { surface, .. } => emit(surface, false, out, glue_next),
+        Node::Punct(p) => {
+            if glues_right(p) {
+                emit(p, false, out, glue_next);
+                *glue_next = true;
+            } else {
+                emit(p, true, out, glue_next);
+            }
+        }
+        Node::Fn(word) => {
+            if !crate::closed::is_closed(word) {
+                return err(format!("(f {word}) is not in the closed-class table"));
+            }
+            emit(word, false, out, glue_next);
+        }
+        Node::Noun { lemma, case, number } => {
+            emit(&ChurchSlavonic::noun(lemma, case, number, recension), false, out, glue_next);
+        }
+        Node::Adj { lemma, case, number, gender, degree } => {
+            emit(
+                &ChurchSlavonic::adj(lemma, case, number, gender, degree, recension),
+                false,
+                out,
+                glue_next,
+            );
+        }
+        Node::Verb { lemma, person, number, tense, form } => {
+            emit(
+                &ChurchSlavonic::verb(lemma, person, number, tense, form, recension),
+                false,
+                out,
+                glue_next,
+            );
+        }
+        Node::LPart { lemma, gender, number } => {
+            emit(
+                &ChurchSlavonic::l_participle(lemma, gender, number, recension),
+                false,
+                out,
+                glue_next,
+            );
+        }
+        Node::Group { children, .. } => {
+            for child in children {
+                walk(child, recension, out, glue_next)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// Tokenizing and the verbatim wrap
+// ---------------------------------------------------------------------------
+
+/// Tokenize a pinned verse: trim the JSON arrangement's cosmetic outer
+/// whitespace, split on spaces. Punctuation and apparatus (`꙾…꙾`,
+/// `[26]`) stay INSIDE their tokens — the round-trip target is the verse
+/// as printed, and splitting is the lifting pipeline's business.
+pub fn tokenize(verse: &str) -> Vec<&str> {
+    verse.split_whitespace().collect()
+}
+
+/// Wrap a verse verbatim: every token a `(w …)` leaf under `(s …)`. The
+/// starting point of every tree — round-trips by construction.
+pub fn verbatim_tree(verse: &str) -> Node {
+    Node::Group {
+        head: "s".to_string(),
+        children: tokenize(verse)
+            .into_iter()
+            .map(|t| Node::W { surface: t.to_string(), notes: Vec::new() })
+            .collect(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::sexpr;
+
+    #[test]
+    fn node_sexpr_round_trip() {
+        let text = r#"(s (cl (f и҆) (v рещѝ :t aor :p 3 :num sg)
+            (np (n бо́гъ :case nom :num sg))
+            (p ":") (w "гдⷭ҇ь" :lemma госпо́дь)))"#;
+        let v = sexpr::parse(text).expect("parses");
+        let node = from_sexpr(&v).expect("reads");
+        let back = to_sexpr(&node);
+        assert_eq!(from_sexpr(&back).expect("round-trip"), node);
+    }
+
+    #[test]
+    fn shape_errors_are_loud() {
+        for bad in [
+            "(n бо́гъ :case nom)",          // missing :num
+            "(n бо́гъ :case weird :num sg)", // unknown value
+            "(v рещѝ :p 3 :num sg)",        // missing :t on a finite verb
+            "(p \"\")",                      // empty punctuation
+            "(f) ",                          // missing function word
+            "()",                            // headless
+        ] {
+            let v = sexpr::parse(bad.trim()).expect("parses as sexpr");
+            assert!(from_sexpr(&v).is_err(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn verbatim_wrap_round_trips_the_pitfall_verse() {
+        // Luke 15:12 as pinned — apparatus marks and footnote included
+        let verse = " и҆ речѐ ю҆нѣ́йшїй ꙾є҆ю̀꙾[26] ѻ҆тцꙋ̀: ѻ҆́тче, да́ждь мѝ досто́йнꙋю ча́сть и҆мѣ́нїѧ. И҆ раздѣлѝ и҆́ма и҆мѣ́нїе.";
+        let tree = verbatim_tree(verse);
+        let rendered =
+            render(&tree, &church_slavonic::Recension::Synodal).expect("renders");
+        assert_eq!(rendered, verse.trim());
+    }
+
+    #[test]
+    fn punctuation_glue() {
+        let tree = Node::Group {
+            head: "s".to_string(),
+            children: vec![
+                Node::W { surface: "а҆́зъ".into(), notes: vec![] },
+                Node::Punct(",".into()),
+                Node::W { surface: "ты̀".into(), notes: vec![] },
+                Node::Punct(".".into()),
+            ],
+        };
+        assert_eq!(
+            render(&tree, &church_slavonic::Recension::Synodal).expect("renders"),
+            "а҆́зъ, ты̀."
+        );
+    }
+}

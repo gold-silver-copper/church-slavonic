@@ -1,0 +1,17 @@
+[package]
+name = "church-slavonic-syntax"
+version = "0.1.0"
+description = "Syntax trees that round-trip the Church Slavonic Bible: S-expression trees render through church-slavonic, and correctness means byte-equality with the pinned print"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+church-slavonic = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

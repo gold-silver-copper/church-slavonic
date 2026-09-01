@@ -18,6 +18,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "church-slavonic-syntax"
+version = "0.1.0"
+dependencies = [
+ "church-slavonic",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "extractor"
 version = "0.1.0"
 dependencies = [
