@@ -155,3 +155,15 @@ print — the expectation was NOT invented; the cell stays rule-served and
 the ledger documents it (Polyakov's own citation form is «я́блоня»,
 which the intake currently drops for its civil «я» — noted as a future
 ingestion nit). Ledger: 7/7 green, zero ignored.
+
+Part 5 (close): version 1.1.0; consumer-facing CHANGELOG per class;
+README accuracy tables regenerated from the real run (the witnessed-print
+row now among the 100.00%/0 sources). The consumer proof: vertograd
+consumes 1.1.0 via [patch.crates-io], its 30 tests and full headless
+suite pass unchanged, its PHASE9 [avoid] list carries a dated arbitration
+postscript («пожа́тъ»/«вожжѝ» were attested — the audit corrected;
+«доѝ»/«стри́глъ» healed upstream; «смоло̀» stays unattested and
+unchronicled). Remaining known nit for a future wave: Polyakov headwords
+spelled with civil «я» («я́блоня») are dropped at intake — mapping them
+to «ꙗ» would admit the ja-stem paradigm this program could only witness
+piecemeal.
