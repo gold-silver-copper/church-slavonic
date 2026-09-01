@@ -272,3 +272,49 @@ ordinals); (3) a titlo-abbreviation lookup layer (гдⷭ҇ь and kin are the
 single largest verbatim class); (4) syntactic disambiguation of the
 15.1% ambiguous band — a separate design, deliberately not smuggled
 into this one.
+
+## 2026-09-01 — syntax wave 2, part 3: the harvest arbitrated
+
+Verdicts, each checked against the committed tables (the arbitration
+discipline of v1.1 — sometimes the audit is wrong):
+
+- **«тве́рдїю» vs «тве́рдію»** — CRATE RIGHT AGAINST ITS SOURCES. The
+  тве́рдь row attests only dat pl; the ins sg is rule-served, and the
+  pinned Synodal sources NEVER spell ї before a vowel (0 cells of
+  їю/їе/їѧ/їи against 2,388 of і-spellings). The Bible print's
+  ї-before-vowel is a REAL convention the sources don't carry; adopting
+  it means admitting the pinned Bible as a source (it is already
+  sha256-pinned) and deciding the realise-layer question — a v1.x
+  DESIGN item, not a bug fix.
+- **«во́ды» vs «вѡды̀»** — same class, two questions. The вода̀ row
+  attests exactly one cell («во́дꙋ», root-stressed acc sg); the plural
+  is rule-served (ѡ-convention, end stress). (a) The ѡ-plural spelling:
+  print says во́ды — Bible-as-source question, same as above. (b) The
+  accent: the attested «во́дꙋ» root stress is NOT propagated to the
+  plural nominative — a candidate for the v1.1 fact mechanism
+  (accusative-shape/accent facts), v1.x intake.
+- **бы́ти's «бѣ̀»** — MISSING FORM, unattested in any pinned source
+  (the row is rich — бѣ́ста dual aorist, participles — but the
+  imperfect 3sg is rule-served as «бѧ́ше»). The Bible uses бѣ̀
+  constantly; Bible-as-source would attest it directly. v1.x intake.
+- **бы́ти's «бꙋ́детъ»** — SCHEMA GAP: the 38-cell finite schema has no
+  future block at all. Out of scope by the current design; recorded as
+  a schema-level v1.x design question, not a data row.
+- **«неꙋстро́енъ»** — NOT MISSING: `syn:неꙋстро́енъ_2` exists; the
+  defect was in THIS PROGRAM's lemmas() enumeration, which skipped
+  every `_n` key and made sole-`_n` lemmas invisible — the enumeration
+  analogue of v1.1's ко́локолъ_2 lookup finding. FIXED HERE (the
+  part-3 exception: a defect in the consumer's own layer): lemmas()
+  now lists a base whose only row is sense-numbered. ~2,000 lemmas
+  surfaced (nouns 3,868→4,905, adjectives 4,054→4,860, verbs
+  4,307→4,466); treebank verbatim 32.0% → 29.0% from this fix alone.
+- **The ordinals (вторы́й …)** — MISSING LEMMAS, confirmed (no rows,
+  base or sensed). v1.x intake.
+- **«Землѧ́ же» (grave→acute before an enclitic)** — OUT OF SCOPE BY
+  DESIGN: a context rule over token sequences; no cell can carry it.
+  If ever modeled, it belongs to the renderer/orthography layer with
+  the Bible as its source. Deferred with reasons.
+- **Synodal npron is empty** (part-1 finding, restated for the intake):
+  zero syn: rows and an empty-string rule. The relative and possessive
+  pronouns (и҆́же/ꙗ҆́же/є҆́же families) are among the commonest tokens
+  of the language. v1.x intake, likely the single highest-value item.

@@ -723,13 +723,24 @@ impl ChurchSlavonic {
             PartOfSpeech::NonPersonalPronoun => NPRON_TABLE,
         };
         let prefix = format!("{}:", tag(recension));
+        // `_n` sense keys resolve to their base lemma, so bases are listed
+        // once — INCLUDING a base whose only row is sense-numbered (the
+        // enumeration analogue of the v1.1 ко́локолъ_2 lookup finding:
+        // `syn:неꙋстро́енъ_2` exists with no bare key, and the lemma must
+        // not be invisible for it). The tables are sorted, so a bare key
+        // always precedes its own `_n` keys and adjacent-dedup suffices.
+        let mut last: Option<&'static str> = None;
         table.iter().filter_map(move |&(key, _)| {
             let lemma = key.strip_prefix(&prefix)?;
-            // `_n` sense keys resolve to their base lemma — list bases only
-            match lemma.rsplit_once('_') {
-                Some((_, n)) if n.chars().all(|c| c.is_ascii_digit()) => None,
-                _ => Some(lemma),
+            let base = match lemma.rsplit_once('_') {
+                Some((base, n)) if n.chars().all(|c| c.is_ascii_digit()) => base,
+                _ => lemma,
+            };
+            if last == Some(base) {
+                return None;
             }
+            last = Some(base);
+            Some(base)
         })
     }
 }
