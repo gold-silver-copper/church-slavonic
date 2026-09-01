@@ -97,11 +97,18 @@ impl ChurchSlavonicCore {
             (Person::Third, Number::Plural, Gender::Neuter, false) => {
                 &["она", "ихъ", "имъ", "ꙗ", "ими", "ихъ"]
             }
+            // The print marks the plural dative and accusative monosyllables
+            // with the varia against the genitive's oxia (Alypy §47; the
+            // Bible's «и҆̀мъ» 1,711, «и҆̀хъ» 1,220) — pron:plural-varia; the
+            // neuter accusative is the short «ѧ҆̀» (§47 prints no other).
             (Person::Third, Number::Plural, Gender::Feminine, true) => {
-                &["ѻ҆нѣ̀", "и҆́хъ", "и҆́мъ", "и҆́хъ", "и҆́ми", "ни́хъ"]
+                &["ѻ҆нѣ̀", "и҆́хъ", "и҆̀мъ", "и҆̀хъ", "и҆́ми", "ни́хъ"]
+            }
+            (Person::Third, Number::Plural, Gender::Neuter, true) => {
+                &["ѻ҆нѝ", "и҆́хъ", "и҆̀мъ", "ѧ҆̀", "и҆́ми", "ни́хъ"]
             }
             (Person::Third, Number::Plural, _, true) => {
-                &["ѻ҆нѝ", "и҆́хъ", "и҆́мъ", "и҆́хъ", "и҆́ми", "ни́хъ"]
+                &["ѻ҆нѝ", "и҆́хъ", "и҆̀мъ", "и҆̀хъ", "и҆́ми", "ни́хъ"]
             }
         };
         row[*case as usize]
@@ -140,6 +147,11 @@ mod tests {
         // pron:dual-accusative-gender-leveling
         assert_eq!(p(Third, Dual, Feminine, Accusative, OCS), "и");
         assert_eq!(p(Third, Dual, Feminine, Accusative, SYN), "ѧ҆̀");
+        // pron:plural-varia
+        assert_eq!(p(Third, Plural, Masculine, Dative, SYN), "и҆̀мъ");
+        assert_eq!(p(Third, Plural, Masculine, Accusative, SYN), "и҆̀хъ");
+        assert_eq!(p(Third, Plural, Masculine, Genitive, SYN), "и҆́хъ");
+        assert_eq!(p(Third, Plural, Neuter, Accusative, SYN), "ѧ҆̀");
         // the vocative answers with the nominative
         assert_eq!(p(Second, Plural, Feminine, Vocative, SYN), "вы̀");
     }

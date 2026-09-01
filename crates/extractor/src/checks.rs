@@ -495,7 +495,12 @@ mod harness {
             let Some(recension) = recension_of_tag(key.tag) else {
                 continue;
             };
-            let same = |a: &str, b: &str| rule_matches(&recension, a, b);
+            // A transliterated source is scored under what it can encode:
+            // its «ꙗ҆́же» reproduces the print's «ꙗ҆̀же» (see
+            // `extract::attested_matches`).
+            let same = |a: &str, b: &str| {
+                crate::extract::matches_for(key.pos)(source.letters_exact(), &recension, a, b)
+            };
             let keys = keys_for(published, key.tag, key.pos, &key.lemma);
             let report = reports.entry((key.pos, source)).or_default();
             for i in 0..key.pos.arity() {

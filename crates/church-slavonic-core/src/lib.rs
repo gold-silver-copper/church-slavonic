@@ -38,6 +38,7 @@ mod adj;
 pub mod grammar;
 mod noun;
 mod npron;
+mod npron_syn;
 pub mod orthography;
 mod participle;
 mod pronoun;

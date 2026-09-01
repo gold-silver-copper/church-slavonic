@@ -21,3 +21,15 @@ syn	pronoun	personal	3.m.pl.acc	и҆̀хъ	assets/bible/000.txt	а҆́зъ по�
 syn	pronoun	personal	3.m.pl.loc	ни́хъ	assets/bible/000.txt	съ ни́миже а҆́зъ живꙋ̀ въ ни́хъ
 syn	pronoun	personal	3.f.pl.loc	ни́хъ	assets/bible/000.txt	и҆ всѐ є҆́же бѧ́ше бѣ́лое въ ни́хъ
 syn	pronoun	personal	3.n.pl.loc	ни́хъ	assets/bible/066.txt	да въ ни́хъ хо́димъ
+# v1.2 part 2 — the relative и҆́же: the dictionary's tag bundles attest the
+# plural nominative as є҆́же (8 tokens), the dative plural only in its
+# prepositional form and the locative plural as the genitive; the print's
+# forms are witnessed cell by cell.
+syn	npron	и҆́же	m.pl.nom	и҆̀же	assets/bible/000.txt	цари̑ и҆̀же съ ни́мъ
+syn	npron	и҆́же	m.pl.dat	и҆̀мже	assets/bible/001.txt	Се́й а҆арѡ́нъ и҆ мѡѷсе́й, и҆̀мже речѐ бг҃ъ
+syn	npron	и҆́же	f.pl.dat	и҆̀мже	assets/bible/001.txt	и҆ всѧ̑ жєны̀, и҆̀мже возлюби́сѧ во ѹ҆мѣ̀ и҆́хъ
+syn	npron	и҆́же	m.pl.loc	ни́хже	assets/bible/000.txt	гра́ды, въ ни́хже живѧ́ше лѡ́тъ
+syn	npron	и҆́же	f.pl.loc	ни́хже	assets/bible/000.txt	въ ни́хже а҆́зъ ѡ҆бита́ю въ землѝ и҆́хъ
+syn	npron	и҆́же	n.pl.loc	ни́хже	assets/bible/000.txt	седмѝ лѣ́тъ, въ ни́хже бѧ́ше ѻ҆би́лность
+syn	npron	и҆́же	f.pl.nom	ꙗ҆̀же	assets/bible/000.txt	ꙗ҆̀же и҆зведо́ша во́ды по родѡ́мъ и҆́хъ
+syn	npron	ве́сь	n.pl.acc	всѧ̑	assets/bible/000.txt	И҆ ви́дѣ бг҃ъ всѧ̑, є҆ли̑ка сотворѝ

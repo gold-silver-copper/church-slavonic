@@ -807,7 +807,8 @@ fn pronoun_matrix_and_realisation() {
         (Third, Plural, Feminine, Nominative, OCS, "онꙑ"),
         (Third, Plural, Feminine, Nominative, SYN, "ѻ҆нѣ̀"),
         (Third, Plural, Neuter, Accusative, OCS, "ꙗ"),
-        (Third, Plural, Masculine, Accusative, SYN, "и҆́хъ"),
+        (Third, Plural, Masculine, Accusative, SYN, "и҆̀хъ"),
+        (Third, Plural, Masculine, Genitive, SYN, "и҆́хъ"),
     ] {
         check!(
             failures,

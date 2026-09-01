@@ -55,12 +55,65 @@ fn part_1_the_personal_row_reads_as_the_print() {
     assert_eq!(pers(Third, Plural, Masculine, Locative), "ни́хъ");
     assert_eq!(pers(Third, Plural, Feminine, Locative), "ни́хъ");
     assert_eq!(pers(Third, Plural, Neuter, Locative), "ни́хъ");
-    // Nothing attested was deleted: the transliterated spelling and the
-    // anaphor's short accusative stay reachable as variants.
+    // The anaphor's short accusative and the dictionary's «ны̀» stay
+    // reachable as variants; the civil-transliterated «ꙗ҆̀» is not a form
+    // of its own (it differs from «ѧ҆̀» only in what civil «я» cannot
+    // encode) and is stored nowhere.
     let reachable = |form: &str, p: Person, n: Number, g: Gender, c: Case| {
         (2..=16).any(|k| ChurchSlavonic::pronoun_sense(&format!("personal_{k}"), &p, &n, &g, &c, &SYN) == form)
     };
-    assert!(reachable("ꙗ҆̀", Third, Dual, Neuter, Accusative));
+    assert!(!reachable("ꙗ҆̀", Third, Dual, Neuter, Accusative));
     assert!(reachable("и҆̀", Third, Singular, Masculine, Accusative));
     assert!(reachable("ны̀", First, Plural, Masculine, Accusative));
+}
+
+fn pn(lemma: &str, g: Gender, n: Number, c: Case) -> String {
+    ChurchSlavonic::npron(lemma, &g, &n, &c, &SYN)
+}
+
+#[test]
+fn part_2_the_non_personal_pronouns_read_as_the_print() {
+    use Case::*;
+    use Gender::*;
+    use Number::*;
+    // Gen 1:31 «И҆ ви́дѣ бг҃ъ всѧ̑, є҆ли̑ка сотворѝ» — the plural's kamora,
+    // which the dictionary's bundle spells as the singular's всѧ̀.
+    assert_eq!(pn("ве́сь", Neuter, Plural, Accusative), "всѧ̑");
+    assert_eq!(pn("ве́сь", Masculine, Plural, Accusative), "всѧ̑");
+    assert_eq!(pn("ве́сь", Masculine, Plural, Nominative), "всѝ");
+    assert_eq!(pn("ве́сь", Masculine, Singular, Genitive), "всегѡ̀");
+    assert_eq!(pn("ве́сь", Feminine, Singular, Nominative), "всѧ̀");
+    // the possessives are the rule's throughout (no bare table row)
+    assert_eq!(pn("мо́й", Feminine, Plural, Nominative), "моѧ̑");
+    assert_eq!(pn("тво́й", Masculine, Singular, Genitive), "твоегѡ̀");
+    assert_eq!(pn("сво́й", Feminine, Singular, Genitive), "своеѧ̀");
+    assert_eq!(pn("сво́й", Masculine, Plural, Dative), "свои̑мъ");
+    assert_eq!(pn("на́шъ", Neuter, Plural, Nominative), "на̑ша");
+    // Gen 14:5 «цари̑ и҆̀же съ ни́мъ» / Ex 6:26 «и҆̀мже речѐ бг҃ъ» / Gen 1:21
+    // «ꙗ҆̀же и҆зведо́ша во́ды»: the relative's plural varia.
+    assert_eq!(pn("и҆́же", Masculine, Plural, Nominative), "и҆̀же");
+    assert_eq!(pn("и҆́же", Masculine, Plural, Dative), "и҆̀мже");
+    assert_eq!(pn("и҆́же", Feminine, Plural, Nominative), "ꙗ҆̀же");
+    assert_eq!(pn("и҆́же", Masculine, Plural, Accusative), "ꙗ҆̀же");
+    assert_eq!(pn("и҆́же", Masculine, Singular, Genitive), "є҆гѡ́же");
+    assert_eq!(pn("и҆́же", Feminine, Singular, Nominative), "ꙗ҆́же");
+    assert_eq!(pn("и҆́же", Neuter, Singular, Nominative), "є҆́же");
+    // Gen 24:37 «въ ни́хже а҆́зъ ѡ҆бита́ю»
+    assert_eq!(pn("и҆́же", Feminine, Plural, Locative), "ни́хже");
+    // the interrogatives answer every gender and number the same
+    assert_eq!(pn("кто̀", Feminine, Dual, Dative), "комꙋ̀");
+    assert_eq!(pn("что̀", Masculine, Singular, Genitive), "чесѡ̀");
+    assert_eq!(pn("никто́же", Masculine, Singular, Dative), "никомꙋ́же");
+    // the same-series split: the long series is the adjective's
+    assert_eq!(pn("всѧ́къ", Feminine, Singular, Accusative), "всѧ́кꙋ");
+    assert_eq!(
+        ChurchSlavonic::adj("всѧ́кій", &Genitive, &Singular, &Masculine, &Degree::Positive, &SYN),
+        "всѧ́кагѡ"
+    );
+    // the inventory is enumerable
+    let lemmas: Vec<&str> = ChurchSlavonic::lemmas(PartOfSpeech::NonPersonalPronoun, &SYN).collect();
+    for l in ["ве́сь", "и҆́же", "то́й", "се́й", "на́шъ", "кто̀", "что̀", "всѧ́къ", "є҆ди́нъ"] {
+        assert!(lemmas.contains(&l), "{l}");
+    }
+    assert!(!lemmas.contains(&"мъ"));
 }

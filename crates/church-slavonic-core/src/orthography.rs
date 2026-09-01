@@ -213,7 +213,11 @@ fn realise_synodal(word: &str) -> String {
 /// oxia/varia/kamora by position.
 fn normalise_marks(units: &mut [Unit]) {
     let last = units.len().saturating_sub(1);
-    let monosyllable = units.iter().filter(|u| u.is_vowel()).count() == 1;
+    // The host of an enclitic же/жде/ждо written solid («и҆̀хже», «то́йже»):
+    // the enclitic's vowel is not the host's, so «и҆̀хже» keeps its
+    // plural varia exactly as «и҆̀хъ» does.
+    let host_len = host_before_enclitic(units);
+    let monosyllable = units[..host_len].iter().filter(|u| u.is_vowel()).count() == 1;
     for (i, unit) in units.iter_mut().enumerate() {
         let final_vowel = i == last && unit.is_vowel();
         let kamora = unit.marks.iter().any(|m| matches!(*m, KAMORA | CIRCUMFLEX));
@@ -258,6 +262,42 @@ pub fn transliteration_equivalent(a: &str, b: &str) -> bool {
             .map(|c| match c {
                 'ꙗ' => 'ѧ',
                 ACUTE => GRAVE,
+                other => other,
+            })
+            .collect::<String>()
+            .nfc()
+            .collect()
+    }
+    let (a, b): (String, String) = (a.nfc().collect(), b.nfc().collect());
+    a != b && fold(&a) == fold(&b)
+}
+
+/// The length (in units) of the word before a solid-written enclitic
+/// `же`/`жде`/`ждо` — the whole word when it carries none, or when what
+/// precedes the enclitic has no vowel (`же` itself).
+fn host_before_enclitic(units: &[Unit]) -> usize {
+    let bases: Vec<char> = units.iter().map(|u| u.base).collect();
+    for enclitic in [['ж', 'д', 'о'].as_slice(), &['ж', 'д', 'е'], &['ж', 'е']] {
+        if bases.len() > enclitic.len() && bases.ends_with(enclitic) {
+            let host = bases.len() - enclitic.len();
+            if units[..host].iter().any(Unit::is_vowel) {
+                return host;
+            }
+        }
+    }
+    units.len()
+}
+
+/// Are two Synodal spellings one form up to the stress MARK on the same
+/// vowel — the oxia/varia against the kamora, the print's number mark
+/// («всѧ̀» ~ «всѧ̑», «на́ша» ~ «на̑ша»)? Letters and the stressed vowel
+/// must agree; equal spellings are not "equivalent".
+pub fn number_mark_equivalent(a: &str, b: &str) -> bool {
+    fn fold(word: &str) -> String {
+        word.nfd()
+            .map(|c| match c {
+                'ꙗ' => 'ѧ',
+                ACUTE | KAMORA | CIRCUMFLEX => GRAVE,
                 other => other,
             })
             .collect::<String>()
@@ -451,11 +491,20 @@ mod tests {
         assert_eq!(realise("и҆́хъ", &SYN), "и҆́хъ");
         assert_eq!(realise("є҆гѡ̀", &SYN), "є҆гѡ̀");
         assert_eq!(realise("є҆̀гѡ", &SYN), "є҆́гѡ");
+        assert_eq!(realise("и҆̀хже", &SYN), "и҆̀хже");
+        assert_eq!(realise("ꙗ҆̀же", &SYN), "ꙗ҆̀же");
+        assert_eq!(realise("є҆гѡ̀же", &SYN), "є҆гѡ́же");
+        assert_eq!(realise("тогѡ̀же", &SYN), "тогѡ́же");
+        assert_eq!(realise("же", &SYN), "же");
         assert!(transliteration_equivalent("ꙗ҆̀", "ѧ҆̀"));
         assert!(transliteration_equivalent("и҆́хъ", "и҆̀хъ"));
         assert!(!transliteration_equivalent("є҆́ю", "є҆ю̀"));
         assert!(!transliteration_equivalent("ѧ҆̀", "ѧ҆̀"));
         assert!(!transliteration_equivalent("менѐ", "менє̀"));
+        assert!(number_mark_equivalent("всѧ̀", "всѧ̑"));
+        assert!(number_mark_equivalent("на́ша", "на̑ша"));
+        assert!(!number_mark_equivalent("є҆ю̀", "є҆́ю"));
+        assert!(!transliteration_equivalent("всѧ̀", "всѧ̑"));
         assert_eq!(realise("ꙗзꙑкъ", &SYN), "ꙗ҆зыкъ"); // initial ꙗ kept
         assert_eq!(realise("градъ", &SYN), "градъ"); // jers kept
         assert_eq!(realise("дьнь", &SYN), "дьнь");
@@ -494,7 +543,10 @@ mod tests {
         assert_eq!(realise("ᲂу҆чени́къ", &SYN), "оу҆чени́къ");
         assert_eq!(realise("бг҃ъ", &SYN), "бг҃ъ");
         assert_eq!(realise("Ра́бъ", &SYN), "ра́бъ");
-        assert_eq!(realise("тѣ̀мже", &SYN), "тѣ́мже");
+        // The oxia before a solid enclitic stays; the plural varia of the
+        // monosyllabic pronouns survives it too («и҆̀хже» beside «тѣ́мже»).
+        assert_eq!(realise("тѣ́мже", &SYN), "тѣ́мже");
+        assert_eq!(realise("тѣ́мъже", &SYN), "тѣ́мъже");
         assert_eq!(realise("менѐ", &SYN), "менѐ");
         assert_eq!(realise("бж҃їй", &SYN), "бж҃ій");
     }

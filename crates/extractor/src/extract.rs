@@ -86,7 +86,7 @@ use church_slavonic_core::grammar::{Series as GSeries, Voice as GVoice};
 use church_slavonic_core::orthography::{
     comparison_key, realise, stress, strip_marks, transliteration_equivalent,
 };
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fmt;
 use std::path::Path;
@@ -135,7 +135,15 @@ pub struct Observation {
     pub soft: bool,
     /// The source spells the print's letters exactly
     /// ([`Source::letters_exact`]); a transliterated observation cannot.
+    /// Every form such an observation attests is exact; a merge records
+    /// the exact forms it receives in `exact`.
     pub precise: bool,
+    /// The `(cell, form)` pairs attested by a print-exact source. A form
+    /// outside this set is a transliteration: where it differs from the
+    /// rule's prediction only in what a transliteration cannot encode
+    /// ([`transliteration_equivalent`]), the rule decides the letters and
+    /// the cell is not stored.
+    pub exact: BTreeSet<(usize, String)>,
 }
 
 impl Observation {
@@ -144,6 +152,7 @@ impl Observation {
             cells: vec![Vec::new(); arity],
             soft: false,
             precise: false,
+            exact: BTreeSet::new(),
         }
     }
 
@@ -151,6 +160,9 @@ impl Observation {
         let slot = &mut self.cells[cell];
         if !slot.iter().any(|f| f == form) {
             slot.push(form.to_string());
+        }
+        if self.precise {
+            self.exact.insert((cell, form.to_string()));
         }
     }
 
@@ -161,6 +173,13 @@ impl Observation {
         let slot = &mut self.cells[cell];
         slot.retain(|f| f != form);
         slot.insert(0, form.to_string());
+        self.exact.insert((cell, form.to_string()));
+    }
+
+    /// Is the attested form the print's own spelling (an exact source, or a
+    /// witness), as opposed to a transliteration's?
+    pub fn is_exact(&self, cell: usize, form: &str) -> bool {
+        self.precise || self.exact.contains(&(cell, form.to_string()))
     }
 
     pub fn is_empty(&self) -> bool {
@@ -186,6 +205,9 @@ impl Observation {
                     self.attest_primary(i, f);
                 } else {
                     self.attest(i, f);
+                }
+                if other.is_exact(i, f) {
+                    self.exact.insert((i, f.clone()));
                 }
             }
         }
@@ -574,6 +596,46 @@ pub fn disagreements(a: &Lexemes, b: &Lexemes) -> (u64, u64) {
         }
     }
     (exact, beyond)
+}
+
+/// Does an attested form count as the rule's own answer? An exact
+/// spelling must match the rule under the recension's policy
+/// ([`rule_matches`]); a transliterated one also matches when it differs
+/// only in what the transliteration cannot encode
+/// ([`transliteration_equivalent`]: civil «я» for ꙗ/ѧ, one acute for the
+/// monosyllable's oxia/varia) — the rule decides those letters.
+pub fn attested_matches(exact: bool, recension: &Recension, attested: &str, predicted: &str) -> bool {
+    rule_matches(recension, attested, predicted)
+        || (!exact
+            && *recension == Recension::Synodal
+            && transliteration_equivalent(attested, predicted))
+}
+
+/// [`attested_matches`] for a pronoun row: the dictionary's tag bundles
+/// (`sg,f,nom|pl,m,acc|pl,f,nom/acc`) give one spelling to a singular and
+/// the plurals it looks like, so a bundled «всѧ̀» stands in the plural
+/// cells where the print's number mark is the kamora («всѧ̑»); the
+/// pronoun rule writes that mark per cell, and a transliterated form that
+/// differs from it only by the stress mark on the same vowel is the rule's
+/// form. Exact sources (the grammar, a witness) keep their marks.
+pub fn pronoun_attested_matches(
+    exact: bool,
+    recension: &Recension,
+    attested: &str,
+    predicted: &str,
+) -> bool {
+    attested_matches(exact, recension, attested, predicted)
+        || (!exact
+            && *recension == Recension::Synodal
+            && church_slavonic_core::orthography::number_mark_equivalent(attested, predicted))
+}
+
+/// The comparison a part of speech's attestations are subtracted under.
+pub fn matches_for(pos: Pos) -> fn(bool, &Recension, &str, &str) -> bool {
+    match pos {
+        Pos::Pronoun | Pos::NPron => pronoun_attested_matches,
+        _ => attested_matches,
+    }
 }
 
 fn push_observation(lexemes: &mut Lexemes, key: LexemeKey, obs: Observation, merge: bool) {
@@ -1262,6 +1324,11 @@ struct Paradigm {
     lemma: Option<&'static str>,
     /// Per-column lemmas when the table prints only forms (§103).
     column_lemmas: &'static [&'static str],
+    /// The data columns (by rank among the table's columns, `start..end`)
+    /// this paradigm reads, when a table prints two paradigms side by side
+    /// (§47's third person beside мо́й, §48's ѻ҆́въ beside ѻ҆́вый); every
+    /// column otherwise.
+    columns: Option<(usize, usize)>,
     defaults: Defaults,
     block: Block,
 }
@@ -1273,6 +1340,7 @@ const fn declension(artifact: &'static str, index: usize, pos: Pos) -> Paradigm 
         pos,
         lemma: None,
         column_lemmas: &[],
+        columns: None,
         defaults: Defaults {
             number: None,
             tense: None,
@@ -1293,6 +1361,7 @@ const fn verb(
         pos: Pos::Verb,
         lemma: None,
         column_lemmas: &[],
+        columns: None,
         defaults: Defaults {
             number: None,
             tense,
@@ -1303,8 +1372,8 @@ const fn verb(
 
 /// The paradigm tables of the grammar, keyed by (artifact, index among that
 /// artifact's `Decline` tables). Every other `Decline` table is deliberately
-/// not a source: §37 (a collective with no number dimension), §48 (the
-/// interrogatives, outside the personal matrix), §56 (a two-word phrase),
+/// not a source: §37 (a collective with no number dimension), §48.3 (the
+/// толи́цы fragment, a grid without its singular), §56 (a two-word phrase),
 /// §58/§80/§86.0/§87.0/§93.0 (ending schemata), §62–§69 (numerals),
 /// §74–§77 (aspect illustration), §81.2–3/§84/§88/§89/§91/§102 (periphrastic
 /// tenses and moods), §95–§98 (participle formation and declension),
@@ -1326,7 +1395,39 @@ const ALYPY_PARADIGMS: &[Paradigm] = &[
         ..declension("p044.htm", 0, Pos::Noun)
     },
     declension("p047.htm", 0, Pos::Pronoun),
-    declension("p047.htm", 1, Pos::Pronoun),
+    // §47's second table prints the possessive мо́й beside the third
+    // person: the first three columns are the matrix, the rest the
+    // non-personal pronoun's row (v1.2 part 2).
+    Paradigm {
+        columns: Some((0, 3)),
+        ..declension("p047.htm", 1, Pos::Pronoun)
+    },
+    Paradigm {
+        columns: Some((3, 6)),
+        ..declension("p047.htm", 1, Pos::NPron)
+    },
+    declension("p047.htm", 2, Pos::NPron),
+    // §48: the interrogatives (singular only; the third column lists
+    // что̀'s alternatives), кі́й, на́шъ, and ѻ҆́въ's short series beside its
+    // long one — the long series is the adjective ѻ҆́вый's row.
+    Paradigm {
+        column_lemmas: &["кто̀", "что̀", "что̀"],
+        defaults: Defaults {
+            number: Some(Number::Singular),
+            tense: None,
+        },
+        ..declension("p048.htm", 0, Pos::NPron)
+    },
+    declension("p048.htm", 1, Pos::NPron),
+    declension("p048.htm", 2, Pos::NPron),
+    Paradigm {
+        columns: Some((0, 3)),
+        ..declension("p048.htm", 4, Pos::NPron)
+    },
+    Paradigm {
+        columns: Some((3, 6)),
+        ..declension("p048.htm", 4, Pos::Adj)
+    },
     declension("p053.htm", 0, Pos::Adj),
     declension("p053.htm", 1, Pos::Adj),
     declension("p057.htm", 0, Pos::Adj),
@@ -1422,12 +1523,22 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
     else {
         return Ok(());
     };
-    let rows = alypy::rows(table, paradigm.defaults)?;
-    let mut columns: Vec<usize> = rows.iter().map(|r| r.column).collect();
+    let all_rows = alypy::rows(table, paradigm.defaults)?;
+    let mut columns: Vec<usize> = all_rows.iter().map(|r| r.column).collect();
     columns.sort_unstable();
     columns.dedup();
+    let rank = |column: usize| columns.iter().position(|c| *c == column).unwrap_or(0);
+    let rows: Vec<&alypy::Row> = all_rows
+        .iter()
+        .filter(|r| {
+            paradigm
+                .columns
+                .is_none_or(|(start, end)| (start..end).contains(&rank(r.column)))
+        })
+        .collect();
 
-    // The lemma of the table's masculine nominative singular (adjectives).
+    // The lemma of the table's masculine nominative singular (adjectives
+    // and non-personal pronouns).
     let masculine_lemma = rows
         .iter()
         .find(|r| {
@@ -1439,9 +1550,13 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
         .and_then(|s| alypy::lemma_key(&s));
 
     let mut observations: BTreeMap<String, Observation> = BTreeMap::new();
-    for row in &rows {
+    for row in rows {
         let lemma = match paradigm.pos {
             Pos::Pronoun => PRONOUN_KEY.to_string(),
+            Pos::NPron if paradigm.column_lemmas.is_empty() => match &masculine_lemma {
+                Some(l) => l.clone(),
+                None => continue,
+            },
             Pos::Adj => match (paradigm.block, &masculine_lemma) {
                 // §60 declines the short comparative (`мꙋдрѣ́й`): its cells
                 // belong to the positive lemma, stressed on its stem.
@@ -1456,8 +1571,7 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
                 if let Some(l) = paradigm.lemma {
                     l.to_string()
                 } else if !paradigm.column_lemmas.is_empty() {
-                    let rank = columns.iter().position(|c| *c == row.column).unwrap_or(0);
-                    match paradigm.column_lemmas.get(rank) {
+                    match paradigm.column_lemmas.get(rank(row.column)) {
                         Some(l) => l.to_string(),
                         None => continue,
                     }
@@ -1483,7 +1597,23 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
         obs.precise = Source::Alypy.letters_exact();
         let mut cells: Vec<usize> = Vec::new();
         match (paradigm.pos, paradigm.block) {
-            (Pos::NPron, _) => {}
+            (Pos::NPron, _) => {
+                let genders = if row.genders.is_empty() {
+                    GENDERS.to_vec()
+                } else {
+                    row.genders.clone()
+                };
+                if let Some(number) = row.number {
+                    for case in &row.cases {
+                        if *case == Case::Vocative {
+                            continue;
+                        }
+                        for gender in &genders {
+                            cells.push(npron_cell(gender, &number, case));
+                        }
+                    }
+                }
+            }
             (Pos::Noun, _) => {
                 if let Some(number) = row.number {
                     for case in &row.cases {
@@ -1536,13 +1666,6 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
                 }
             }
             (Pos::Pronoun, _) => {
-                // §47's second table prints the possessive `мо́й` beside the
-                // third person: only its first three columns are the matrix.
-                if paradigm.index == 1
-                    && columns.iter().position(|c| *c == row.column).unwrap_or(0) >= 3
-                {
-                    continue;
-                }
                 let person = if paradigm.index == 1 {
                     Person::Third
                 } else {
@@ -1633,6 +1756,19 @@ fn polyakov_key(printed: &str) -> Option<String> {
     word_is_proper(&strip_marks(&key)).then_some(key)
 }
 
+/// A headword the dictionary writes with `+` before a solid enclitic
+/// (`то́й+же`, `что́+же`, `то́й+жде`) is the print's one word (то́йже); every
+/// other `+` headword (и́+на, что́+либо) is not one word.
+fn polyakov_headword(printed: &str) -> Option<String> {
+    match printed.rsplit_once('+') {
+        Some((host, enclitic @ ("же" | "жде" | "ждо"))) if !host.contains('+') => {
+            polyakov_key(&format!("{host}{enclitic}"))
+        }
+        Some(_) => None,
+        None => polyakov_key(printed),
+    }
+}
+
 fn polyakov_surface(printed: &str) -> Option<String> {
     polyakov_key(printed)
 }
@@ -1664,22 +1800,27 @@ fn restress(accented: &str, skeleton: &str) -> String {
 /// The cells one analysis attests, with the lemma that owns them.
 type Attestation = (String, Vec<usize>);
 
-/// Per `(lemma, cell)`: the attesting forms as `(clitic, frequency, print
-/// order, surface)`.
-type Attested = BTreeMap<(String, usize), Vec<(bool, u64, usize, String)>>;
+/// Per `(part of speech, lemma, cell)`: the attesting forms as `(clitic,
+/// frequency, print order, surface)`.
+type Attested = BTreeMap<(Pos, String, usize), Vec<(bool, u64, usize, String)>>;
 
 fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: &mut Skips) {
+    // `SPRO` is the substantive pronoun (the personal matrix, the
+    // reflexive, the кто̀/что̀ family), `APRO` the adjectival one (the
+    // non-personal pronoun's short series; its long series is the
+    // adjective's). The adverbial `ADVPRO` does not decline.
     let pos = match entry.tags.first().map(String::as_str) {
         Some("S" | "N") => Pos::Noun,
         Some("A") => Pos::Adj,
         Some("V") => Pos::Verb,
         Some("SPRO") => Pos::Pronoun,
+        Some("APRO") => Pos::NPron,
         _ => {
             skips.skip("entry: part of speech outside the four tables");
             return;
         }
     };
-    let Some(lemma) = polyakov_key(&entry.lemma) else {
+    let Some(lemma) = polyakov_headword(&entry.lemma) else {
         skips.skip("entry: headword is not one word");
         return;
     };
@@ -1691,7 +1832,13 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
         "и" => Some(Person::Third),
         _ => None,
     };
-    let series_lemmas = if pos == Pos::Adj {
+    // A substantive pronoun outside the personal matrix: the reflexive
+    // (part 3's cells) and the singular-only кто̀/что̀ family (classes
+    // `PNkto`/`PNcto`), which declines as a non-personal pronoun.
+    let substantive_npron = pos == Pos::Pronoun
+        && pronoun_person.is_none()
+        && (entry.class.starts_with("PNkto") || entry.class.starts_with("PNcto"));
+    let series_lemmas = if pos == Pos::Adj || pos == Pos::NPron {
         adjective_series_lemmas(entry, &lemma)
     } else {
         BTreeMap::new()
@@ -1720,16 +1867,28 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
         skips.forms += 1;
         for set in &form.cells {
             let f = polyakov::features(set);
-            let result = match pos {
-                Pos::Noun => polyakov_noun_cells(&f).map(|c| (lemma.clone(), c)),
-                Pos::Adj => polyakov_adj_cells(&f, &series_lemmas),
-                Pos::Verb => {
-                    polyakov_verb_cells(&f, perfective, form.count).map(|c| (lemma.clone(), c))
-                }
-                Pos::NPron => Err("pronoun: outside the personal matrix"),
+            let result: Result<(Pos, String, Vec<usize>), &'static str> = match pos {
+                Pos::Noun => polyakov_noun_cells(&f).map(|c| (pos, lemma.clone(), c)),
+                Pos::Adj => polyakov_adj_cells(&f, &series_lemmas).map(|(l, c)| (pos, l, c)),
+                Pos::Verb => polyakov_verb_cells(&f, perfective, form.count)
+                    .map(|c| (pos, lemma.clone(), c)),
+                // The short series is the pronoun's row; the long series
+                // declines as the adjective it is (part 0, decision 1).
+                Pos::NPron => match f.series {
+                    Some(Series::Long) => {
+                        polyakov_adj_cells(&f, &series_lemmas).map(|(l, c)| (Pos::Adj, l, c))
+                    }
+                    Some(Series::Short) => match series_lemmas.get(&Series::Short) {
+                        Some(l) => polyakov_npron_cells(&f, false).map(|c| (pos, l.clone(), c)),
+                        None => Err("pronoun: short series without an attested masculine nominative"),
+                    },
+                    None => polyakov_npron_cells(&f, false).map(|c| (pos, lemma.clone(), c)),
+                },
                 Pos::Pronoun => match pronoun_person {
-                    Some(person) => {
-                        polyakov_pronoun_cells(&f, person).map(|c| (PRONOUN_KEY.to_string(), c))
+                    Some(person) => polyakov_pronoun_cells(&f, person)
+                        .map(|c| (pos, PRONOUN_KEY.to_string(), c)),
+                    None if substantive_npron => {
+                        polyakov_npron_cells(&f, true).map(|c| (Pos::NPron, lemma.clone(), c))
                     }
                     None => Err("pronoun: outside the personal matrix"),
                 },
@@ -1737,9 +1896,9 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
             // A spelling under a titlo is its own lemma, keyed by the
             // abbreviation's citation form (`бг҃ъ`, `гл҃ати`).
             let result = match result {
-                Ok((owner, cells)) if under_titlo(&surface) && pos != Pos::Pronoun => {
+                Ok((owner_pos, owner, cells)) if under_titlo(&surface) && owner_pos != Pos::Pronoun => {
                     match titlo_owner(&titlo_lemmas, f.series, &surface) {
-                        Some(titlo) => Ok((titlo, cells)),
+                        Some(titlo) => Ok((owner_pos, titlo, cells)),
                         None => {
                             drop(owner);
                             Err("form: titlo spelling without a titlo citation form")
@@ -1749,15 +1908,13 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
                 other => other,
             };
             match result {
-                Ok((owner, cells)) => {
+                Ok((owner_pos, owner, cells)) => {
                     skips.mapped += 1;
                     for cell in cells {
-                        attested.entry((owner.clone(), cell)).or_default().push((
-                            f.clitic,
-                            form.count,
-                            order,
-                            surface.clone(),
-                        ));
+                        attested
+                            .entry((owner_pos, owner.clone(), cell))
+                            .or_default()
+                            .push((f.clitic, form.count, order, surface.clone()));
                     }
                 }
                 Err(reason) => skips.skip(reason),
@@ -1765,28 +1922,28 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
         }
     }
 
-    let mut observations: BTreeMap<String, Observation> = BTreeMap::new();
-    for ((owner, cell), mut forms) in attested {
+    let mut observations: BTreeMap<(Pos, String), Observation> = BTreeMap::new();
+    for ((owner_pos, owner, cell), mut forms) in attested {
         // Corpus frequency decides the primary and print order breaks ties;
         // an enclitic (`мя`) never outranks the full form (`мене́`), as in
         // the grammar, where the clitics are the alternatives.
         forms.sort_by(|a, b| a.0.cmp(&b.0).then(b.1.cmp(&a.1)).then(a.2.cmp(&b.2)));
         let obs = observations
-            .entry(owner)
-            .or_insert_with(|| Observation::new(pos.arity()));
+            .entry((owner_pos, owner))
+            .or_insert_with(|| Observation::new(owner_pos.arity()));
         for (_, _, _, surface) in forms {
             obs.attest(cell, &surface);
         }
     }
-    for (owner, obs) in observations {
+    for ((owner_pos, owner), obs) in observations {
         let key = LexemeKey {
             tag: tag(&SYN),
-            pos,
+            pos: owner_pos,
             lemma: owner,
         };
         // Each entry is one lexeme (a homograph gets its own observation);
         // the personal pronoun is the one shared row.
-        push_observation(lexemes, key, obs, pos == Pos::Pronoun);
+        push_observation(lexemes, key, obs, owner_pos == Pos::Pronoun);
     }
 }
 
@@ -1886,6 +2043,9 @@ fn titlo_owner(
 /// are skipped.
 fn adjective_series_lemmas(entry: &polyakov::Entry, lemma: &str) -> BTreeMap<Series, String> {
     let headword: String = entry.lemma.nfc().collect();
+    // A pronominal class (`PA2a`: мо́й, то́й) cites its SHORT form even
+    // when it ends in -ой; an adjective class reads the ending.
+    let pronominal = entry.class.starts_with('P');
     let headword_series = entry
         .forms
         .iter()
@@ -1894,7 +2054,7 @@ fn adjective_series_lemmas(entry: &polyakov::Entry, lemma: &str) -> BTreeMap<Ser
         .map(|set| polyakov::features(set))
         .filter(|f| !f.comparative)
         .find_map(|f| f.series)
-        .unwrap_or(if has_long_ending(lemma) {
+        .unwrap_or(if !pronominal && has_long_ending(lemma) {
             Series::Long
         } else {
             Series::Short
@@ -1947,6 +2107,9 @@ fn legend_skeleton(class: &str, lemma: &str, wanted: Series) -> Option<String> {
     if first.contains('*') {
         return None;
     }
+    // The pronominal classes (`PA1k`, `PA2j`) pair their series like the
+    // adjective classes they are named after.
+    let first = first.strip_prefix('P').unwrap_or(first);
     let letter = first
         .strip_prefix('A')?
         .trim_start_matches(|c: char| c.is_ascii_digit())
@@ -2102,6 +2265,29 @@ fn polyakov_verb_cells(
     verb_cell(&person, &number, &tense, &form)
         .map(|c| vec![c])
         .ok_or("verb: cell outside the schema")
+}
+
+/// The non-personal pronoun cells of one analysis: an unspecified gender
+/// attests every gender; the singular-only кто̀/что̀ family carries no
+/// number tag and attests the singular of every gender (the rule answers
+/// every cell the same six forms).
+fn polyakov_npron_cells(f: &Features, singular_only: bool) -> Result<Vec<usize>, &'static str> {
+    let number = match f.number {
+        Some(n) => n,
+        None if singular_only => Number::Singular,
+        None => return Err("pronoun: no number"),
+    };
+    let genders: Vec<Gender> = f.gender.map_or_else(|| GENDERS.to_vec(), |g| vec![g]);
+    let cells: Vec<usize> = f
+        .cases
+        .iter()
+        .filter(|c| **c != Case::Vocative)
+        .flat_map(|case| genders.iter().map(move |g| npron_cell(g, &number, case)))
+        .collect();
+    if cells.is_empty() {
+        return Err("pronoun: no case");
+    }
+    Ok(cells)
 }
 
 fn polyakov_pronoun_cells(f: &Features, person: Person) -> Result<Vec<usize>, &'static str> {
@@ -2704,7 +2890,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     .iter()
                     .enumerate()
                     .map(|(i, f)| {
-                        if f.is_empty() || rule_matches(&recension, f, &predicted[i]) {
+                        if f.is_empty() || matches_for(key.pos)(obs.is_exact(i, f), &recension, f, &predicted[i]) {
                             String::new()
                         } else {
                             f.clone()
@@ -3415,7 +3601,12 @@ mod tests {
             &mut lexemes,
             &mut skips,
         );
-        let (key, obs) = only(&lexemes);
+        let kto = LexemeKey { tag: "syn", pos: Pos::NPron, lemma: "кто̀".into() };
+        assert_eq!(
+            lexemes[&kto][0].cells[npron_cell(&Gender::Feminine, &Number::Singular, &Case::Accusative)],
+            ["кого̀"]
+        );
+        let (key, obs) = lexemes.iter().find(|(k, _)| k.pos == Pos::Pronoun).expect("row");
         assert_eq!(key.lemma, PRONOUN_KEY);
         assert_eq!(obs.len(), 1);
         let cell = |p: Person, g: Gender, c: Case| {
@@ -3430,10 +3621,7 @@ mod tests {
             cell(Person::Third, Gender::Feminine, Case::Genitive),
             ["є҆ѧ̀"]
         );
-        assert_eq!(
-            skips.by_reason.get("pronoun: outside the personal matrix"),
-            Some(&1)
-        );
+        assert_eq!(skips.by_reason.get("pronoun: outside the personal matrix"), None);
     }
 
     #[test]

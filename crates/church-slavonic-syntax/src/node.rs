@@ -657,12 +657,17 @@ mod tests {
         }
         // an unlisted function word refuses to render
         assert!(render(&Node::Fn("гдⷭ҇ь".into()), &syn).is_err());
-        // Synodal has no npron support today (a recorded crate gap) —
-        // the leaf refuses to render empty rather than emitting nothing
-        assert!(
-            render(&read("(pn сво́й :case gen :num sg :g f)"), &syn).is_err(),
-            "syn npron renders empty — refuse loudly"
+        // v1.2: the Synodal non-personal pronouns render (pasted output);
+        // a lemma outside the tables and the rule still refuses loudly
+        assert_eq!(
+            render(&read("(pn сво́й :case gen :num sg :g f)"), &syn).expect("renders"),
+            "своеѧ̀"
         );
+        assert_eq!(
+            render(&read("(pn и҆́же :case nom :num pl :g f)"), &syn).expect("renders"),
+            "ꙗ҆̀же"
+        );
+        assert!(render(&read("(pn нѣ́тъ :case gen :num sg :g f)"), &syn).is_err());
     }
 
     /// The first real lift: Genesis 1:1, byte-checked against the print.

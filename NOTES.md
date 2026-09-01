@@ -509,3 +509,71 @@ cleanup lifted Polyakov nouns 96.43% → 96.86%, adjectives 95.95% →
 96.71%, verbs 97.08% → 97.20%. Treebank rebuilt: zero mismatches over
 34,470 verses; from this part alone verbatim 29.0% → 27.8%, ambiguous
 23.7% → 24.7%, analyzed 20.0% → 20.2% (и҆̀хъ, и҆̀мъ, ѧ҆̀ now lift).
+
+## 2026-09-01 — v1.2 part 2: Synodal non-personal pronouns — rule, sources, rows
+
+Synodal npron is no longer empty. The rule (`core::npron_syn`, dispatched
+by recension from `npron`) spells the print's closed lexicon cell by
+cell from Alypy §47 (то́й, мо́й) and §48 (кто̀/что̀, кі́й, на́шъ, ѻ҆́въ):
+literal tables for то́й/се́й/ве́сь/кі́й/кто̀/что̀, ending tables for the
+ending-stressed possessives (мо́й, тво́й, сво́й, чі́й), the stem-stressed
+soft (на́шъ, ва́шъ) and hard (ѻ҆́въ, ѻ҆́нъ, є҆ди́нъ, всѧ́къ, толи́къ,
+є҆ли́къ, коли́къ, и҆́нъ, са́мъ; velar softening всѧ́цѣмъ/є҆ли́цы) classes,
+the relative и҆́же as the third-person row + же with the print's plural
+varia (и҆̀же, ꙗ҆̀же, и҆̀хже, и҆̀мже against и҆́же, ꙗ҆́же, є҆́же, ю҆́же —
+the Bible: ꙗ҆̀же 1,214 / ꙗ҆́же 392, и҆̀же 1,078 / и҆́же 1,438), and the
+ни-/нѣ́- prefixes and же/жде/ждо enclitics by strip-decline-rewrap
+(никто́же, нѣ́кій, то́йже, кі́йждо). `realise` treats a solid enclitic's
+host as the word for the monosyllable-varia rule; the personal rule now
+says «и҆̀мъ»/«и҆̀хъ» itself (pron:plural-varia) and «ѧ҆̀» for the neuter
+plural accusative (§47 prints no other).
+
+Sources admitted: Polyakov APRO (75 declinable lemmas; `brev` → the npron
+row under the short citation form, `plen` → the ADJECTIVE row under the
+long one, by `adjective_series_lemmas` — a pronominal class cites its
+short form even in -ой, so мо́й no longer legends a «мъ»), the SPRO
+кто̀/что̀ family (singular-only; classes PNkto/PNcto), the `X+же`
+headwords joined (то́йже 14,975 tokens; every other `+` headword still
+rejected), Alypy §47.2 (то́й), §47.1's мо́й columns, §48.0/1/2/4 — a
+`Paradigm` now names its column range where a grid prints two paradigms
+side by side (ѻ҆́въ | ѻ҆́вый feeds both tables). Left out: §48.3 (the
+толи́цы fragment), ADVPRO (adverbs), себѐ (part 3).
+
+Two source-reading rules, both measured, both in the extractor:
+- **A transliteration's letters are the rule's where it cannot encode
+  them** (`attested_matches`): a Polyakov form that differs from the
+  prediction only by ꙗ/ѧ or the monosyllable varia is the rule's form
+  and is not stored (its «ꙗ҆́же» reproduces the print's «ꙗ҆̀же»); the
+  accuracy harness scores each source under what it can encode
+  (`Source::letters_exact`), so the civil «ꙗ҆̀» variants of part 1 are
+  gone from the personal row too — they were never distinct forms.
+  Exactness is per attested form (`Observation::exact`), so a grammar's
+  «ѧ҆̀» beside a dictionary's «ꙗ҆̀» keeps its letters.
+- **The number mark of a pronoun cell is the rule's**
+  (`pronoun_attested_matches`, Pronoun and NPron only): the dictionary's
+  tag bundles (`sg,f,nom|pl,m,acc|pl,f,nom/acc`) put the singular's
+  spelling «всѧ̀», «сіѧ̀», «на́ша», «є҆ди́на» into the plural cells the
+  print marks with the kamora («всѧ̑» 1,791 tokens against «всѧ̀» 100);
+  a transliterated form differing only in the stress MARK on the same
+  vowel is the rule's form. Scoped to the pronoun rows on purpose: the
+  noun/adjective ^-cells were validated under exact matching and stay so.
+
+Witnesses (+8, `check-witnesses` 23/23): the relative's plural cells the
+bundles mis-attest (и҆̀же Gen 14:5, и҆̀мже Ex 6:26 / Ex 35:26, ни́хже ×3
+Gen 19:29 / 24:37 / 41:47, ꙗ҆̀же Gen 1:21) and всѧ̑ (Gen 1:31).
+
+Numbers. 158 rows, 53 bare rows, 60 lemmas, 1444 stored cells (585 in bare rows). The possessives
+мо́й/тво́й/сво́й have NO bare row: the rule reproduces every corpus
+primary. Accuracy 100.00% / gap 0 on every source including the new rows
+— Non-personal pronouns Synodal (Alypy) 252/252, (Polyakov) 1,651/1,651,
+(witnessed print) 8/8. The rule's honest measure, the bare-primary table:
+Polyakov npron 93.03% (115 of 1,651 attested cells demoted to a variant
+or answered otherwise), Alypy npron 85.32%; the personal row's Polyakov
+bare rate rose 78.87% → 91.55% (the ꙗ҆̀ artefacts are no longer counted
+as demotions). Skips now counted: adjective long series without an
+attested masculine nominative 121 (APRO `plen` forms of PA1 lemmas whose
+long nominative the entry never spells — са́мъ's са́мый is its own entry),
+"pronoun: outside the personal matrix" 20 (себѐ and the noun-like
+и҆́мѧрекъ). Treebank: zero mismatches unchanged (the lift is part 4).
+Registry: `npron_syn`'s test shows сь/се́й, тъ/то́й, вьсь/ве́сь,
+къто/кто̀, -ѥго/-егѡ̀ and the relative's plural varia cell by cell.

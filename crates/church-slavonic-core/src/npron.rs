@@ -10,8 +10,8 @@
 //! is the genitive (`кого`); everything else keeps the nominative shape —
 //! the treebank's non-personal accusatives are overwhelmingly inanimate.
 //! Anything outside the lexicon answers the empty string and lives in the
-//! tables. The rule is written in OCS letters; the Synodal print's
-//! accented rows are stored.
+//! tables. This rule is written in OCS letters; the Synodal print's
+//! lexicon, in its accented typography, is [`crate::npron_syn`].
 
 use crate::ChurchSlavonicCore;
 use crate::grammar::*;
@@ -129,12 +129,21 @@ impl ChurchSlavonicCore {
     /// Decline a non-personal pronoun by rule; the vocative answers with
     /// the nominative. Returns the empty string for a lemma outside the
     /// rule's closed lexicon — the caller's tables own those.
-    pub fn npron(lemma: &str, gender: &Gender, number: &Number, case: &Case, _: &Recension) -> String {
+    pub fn npron(
+        lemma: &str,
+        gender: &Gender,
+        number: &Number,
+        case: &Case,
+        recension: &Recension,
+    ) -> String {
         let case = if *case == Case::Vocative {
             &Case::Nominative
         } else {
             case
         };
+        if *recension == Recension::Synodal {
+            return crate::npron_syn::npron_synodal(lemma, gender, number, case);
+        }
         let i = *case as usize;
         // The `ни-`/`нѣ-` compounds: strip the wrap, decline, re-wrap.
         for prefix in ["ни", "нѣ"] {
