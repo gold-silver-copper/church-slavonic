@@ -708,6 +708,38 @@ impl ChurchSlavonic {
             Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
         }
     }
+
+    /// The lemma inventory of one recension's tables, per part of speech:
+    /// every BASE key's lemma (sense-numbered `_n` keys resolve to their
+    /// base and are not repeated). Read-only enumeration for consumers
+    /// that need to walk the crate's vocabulary — the treebank's inverse
+    /// index is the first. The iteration order is the tables' own
+    /// (sorted by key).
+    pub fn lemmas(pos: PartOfSpeech, recension: &Recension) -> impl Iterator<Item = &'static str> {
+        let table: &'static [(&'static str, &'static [(u16, &'static str)])] = match pos {
+            PartOfSpeech::Noun => NOUN_TABLE,
+            PartOfSpeech::Adjective => ADJ_TABLE,
+            PartOfSpeech::Verb => VERB_TABLE,
+        };
+        let prefix = format!("{}:", tag(recension));
+        table.iter().filter_map(move |&(key, _)| {
+            let lemma = key.strip_prefix(&prefix)?;
+            // `_n` sense keys resolve to their base lemma — list bases only
+            match lemma.rsplit_once('_') {
+                Some((_, n)) if n.chars().all(|c| c.is_ascii_digit()) => None,
+                _ => Some(lemma),
+            }
+        })
+    }
+}
+
+/// Parts of speech whose lemma inventories [`ChurchSlavonic::lemmas`]
+/// can enumerate.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PartOfSpeech {
+    Noun,
+    Adjective,
+    Verb,
 }
 
 #[cfg(test)]

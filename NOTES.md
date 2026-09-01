@@ -167,3 +167,42 @@ unchronicled). Remaining known nit for a future wave: Polyakov headwords
 spelled with civil «я» («я́блоня») are dropped at intake — mapping them
 to «ꙗ» would admit the ja-stem paradigm this program could only witness
 piecemeal.
+
+## 2026-09-01 — the syntax crate (SYNTAX-PROMPT.md, parts 0–3)
+
+A new consumer lives in the workspace: `church-slavonic-syntax`, whose
+one standing rule is the round-trip invariant — render(tree) equals the
+pinned print byte-for-byte, no other definition of correct. Parts 0–2:
+the sexpr reader (positions in errors, print/parse round-trip), the
+ordered Node model with verbatim (w) leaves, the (cap …) wrapper, the
+punctuation glue rule, the closed-class table (every entry counted
+verbatim in the print), exact-output rendering through the public API
+(Genesis 1:1 lifts and matches the print — «бг҃ъ» verbatim-with-reason,
+titlo), and the linter (only reliable rules; subject checks opt-in via
+the subj head).
+
+Part 3, the baseline measurement: `ChurchSlavonic::lemmas` (new public
+enumeration; base keys only, `_n` senses excluded) feeds the inverse
+index — 235,400 distinct Synodal surfaces from 3,868 noun + 4,054
+adjective + 4,307 verb lemmas (~500k generator calls, ~4s). The
+auto-lift walked ALL 77 books / 34,470 verses (~10s end to end,
+`cargo xtask build-treebank`), and the check re-renders every stored
+tree against the print: **zero mismatches**. First-run coverage over
+631,946 tokens:
+
+  analyzed 101,222 (16.0%) · closed-class 164,350 (26.0%) ·
+  ambiguous 95,392 (15.1%) · verbatim 269,965 (42.7%) · apparatus 1,017
+
+Two print oddities the invariant caught at build (both now handled by
+structure, not special cases): a FREE-STANDING period («а҆ссѷрі́йскъ .»,
+4 Kings 17:3 — a lone punctuation token keeps its own space, so it stays
+a verbatim leaf) and a «(,*…» opening cluster (Proverbs 15:33 — the
+lift verifies its own reconstruction under the glue rule and falls back
+to whole-token verbatim when the split cannot rebuild the token).
+
+The burn-down reading: 42% of scripture lifts mechanically today; the
+15.1% ambiguous band (acc=nom and friends) awaits a syntactic
+disambiguation design that is deliberately NOT this wave; the 42.7%
+verbatim band is the crate-vocabulary frontier (titlo abbreviations,
+proper names, pronouns and participles the index does not yet generate,
+and genuinely missing lemmas — the part-4 harvest samples it).

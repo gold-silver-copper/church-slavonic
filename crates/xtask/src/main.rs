@@ -32,6 +32,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("refresh-data") => run_extractor(args.collect(), false),
         Some("check-registry") => check_registry(),
         Some("check-witnesses") => check_witnesses(),
+        Some("build-treebank") => church_slavonic_syntax::treebank::run(true),
+        Some("check-treebank") => church_slavonic_syntax::treebank::run(false),
         Some("accuracy") => run_extractor(args.collect(), true),
         Some("-h") | Some("--help") | None => {
             print_usage();
@@ -183,4 +185,8 @@ fn print_usage() {
         "  check-registry   Source-free gate: tables well-formed, keys unique, layering holds"
     );
     eprintln!("  accuracy         Measure % of attested source slots the library reproduces");
+    eprintln!("  build-treebank   Auto-lift the pinned Bible into treebank/ (round-trip enforced)");
+    eprintln!(
+        "  check-treebank   Re-render every stored tree against the print; coverage table"
+    );
 }

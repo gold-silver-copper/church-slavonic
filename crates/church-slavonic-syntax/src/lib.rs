@@ -24,6 +24,8 @@
 
 pub mod bible;
 pub mod closed;
+pub mod lift;
 pub mod lint;
 pub mod node;
 pub mod sexpr;
+pub mod treebank;

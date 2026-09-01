@@ -155,6 +155,7 @@ dependencies = [
 name = "xtask"
 version = "0.1.0"
 dependencies = [
+ "church-slavonic-syntax",
  "extractor",
 ]
 

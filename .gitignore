@@ -3,3 +3,4 @@ target/
 /references/downloads/
 .DS_Store
 data/bible-src/
+treebank/

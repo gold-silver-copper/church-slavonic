@@ -10,6 +10,7 @@ publish = false
 
 [dependencies]
 extractor = { path = "../extractor" }
+church-slavonic-syntax = { path = "../church-slavonic-syntax" }
 
 [lints]
 workspace = true
