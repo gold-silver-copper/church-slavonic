@@ -206,3 +206,48 @@ disambiguation design that is deliberately NOT this wave; the 42.7%
 verbatim band is the crate-vocabulary frontier (titlo abbreviations,
 proper names, pronouns and participles the index does not yet generate,
 and genuinely missing lemmas — the part-4 harvest samples it).
+
+## 2026-09-01 — syntax part 4: Genesis 1 hand-lifted, defects harvested
+
+Ps 90 was the prompt's candidate, but this JSON's Psalter is a known
+22-verse fragment (one "chapter", mid-psalm text) — recorded here; the
+hand-lift chapter became Genesis 1. Verses 1–8 are hand-lifted with
+structure (cl/subj/np/pp) in the COMMITTED overlay
+`data/treebank-hand/b00.sexp` (human work, unlike the derived treebank);
+check-treebank prefers hand entries and reports them as their own
+ceiling row: 120 tokens — 50 analyzed (41.7%) + 42 closed-class = 76.7%
+lifted, ZERO ambiguous (the annotator resolves what the index may not
+guess), 28 verbatim each with a reason. All eight verses render
+byte-for-byte against the print, first try.
+
+Pipeline improvements the lift exposed (syntax-crate side, done now):
+«во», «верхꙋ̀», «посредѣ̀», «а҆́ки» enter the closed table (counted);
+the infinitive joins the inverse index (the crate always offered it).
+Rebuilt whole-Bible baseline: 17.1% analyzed + 27.1% closed = 44.2%
+mechanical, 15.1% ambiguous, 40.5% verbatim.
+
+THE HARVEST — crate-facing, classified, NOT fixed in this wave; each
+wrong-form entry still needs the arbitration check against the pinned
+tables before the next v1.x program treats it as a defect:
+
+- **Wrong-form candidates** (crate output ≠ print for the same cell):
+  «тве́рдїю» print vs «тве́рдію» crate (ins sg of тве́рдь — the ї-
+  before-vowel spelling; same class as the «преѡбраже́ніе» observation
+  from vertograd phase 10); «во́ды» print (nom/acc pl of вода̀, Gen 1)
+  vs «вѡды̀» crate (the ѡ-plural disambiguation convention AND the
+  accent differ); «вторы́й» print vs the crate's second-ordinal form.
+- **Missing forms, systematic** (a class, not a lemma): бы́ти's
+  imperfect «бѣ̀» (crate says «бѧ́ше») and future «бꙋ́детъ» — the
+  Bible's two commonest verb tokens after «речѐ»; the grave→acute
+  alternation before an enclitic («Землѧ́ же» against nominative
+  «землѧ̀») — a context rule no cell can carry.
+- **Missing lemmas**: «неꙋстро́енъ»; ordinals beyond є҆ди́нъ
+  (вторы́й, тре́тїй, четве́ртый, пѧ́тый, шесты́й all verbatim in Gen 1).
+- **Genuinely outside crate scope** (orthographic/abbreviation layer):
+  titlo abbreviations (бг҃ъ, дх҃ъ, бж҃їй, гдⷭ҇ь…) — by far the largest
+  verbatim class; the single-char uk «ѹ҆́тро» against the crate's
+  «оу҆́тро» digraph (a lookup-folding question, the ѷ→ѵ precedent).
+- **Index scope, not crate defects** (next syntax wave): pronouns and
+  non-personal pronouns (ꙗ҆́же, є҆гѡ̀, и҆́хъ, себѣ̀ …) and present
+  participles (разлꙋча́ющи, сѣ́ющее, пресмыка́ющемꙋсѧ) — the crate's
+  pronoun/npron/participle APIs exist and are simply not yet inverted.

@@ -117,11 +117,22 @@ fn tree_coverage(node: &Node, coverage: &mut Coverage) {
     }
 }
 
+/// The COMMITTED hand-lift overlay: `data/treebank-hand/bNN.sexp` under
+/// the workspace root. Human annotation work, unlike the derived
+/// auto-lift — its entries override the auto-lifted tree at the same
+/// address, and their coverage is also reported as its own ceiling row.
+pub fn hand_dir() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../data/treebank-hand")
+}
+
 /// Re-render every stored tree against the pinned print; return the
-/// coverage table. A mismatch is an error naming book/chapter/verse.
+/// coverage table (the last row aggregates the hand-lifted entries — the
+/// annotation ceiling). A mismatch is an error naming book/chapter/verse.
 pub fn check(bible: &Bible, dir: &Path) -> Result<Vec<BookReport>, Box<dyn Error>> {
     let recension = Recension::Synodal;
     let mut reports = Vec::new();
+    let mut hand_coverage = Coverage::default();
+    let mut hand_verses = 0;
     for (bi, book) in bible.books.iter().enumerate() {
         let path = book_file(dir, bi);
         let text = std::fs::read_to_string(&path)
@@ -131,6 +142,17 @@ pub fn check(bible: &Bible, dir: &Path) -> Result<Vec<BookReport>, Box<dyn Error
         for entry in &entries {
             let (ch, vs, tree) = read_entry(entry)?;
             by_address.insert((ch, vs), tree);
+        }
+        let mut hand_addresses = std::collections::HashSet::new();
+        let hand_path = book_file(&hand_dir(), bi);
+        if let Ok(hand_text) = std::fs::read_to_string(&hand_path) {
+            let hand_entries =
+                sexpr::parse_many(&hand_text).map_err(|e| format!("{}: {e}", hand_path.display()))?;
+            for entry in &hand_entries {
+                let (ch, vs, tree) = read_entry(entry)?;
+                hand_addresses.insert((ch, vs));
+                by_address.insert((ch, vs), tree);
+            }
         }
         let mut coverage = Coverage::default();
         let mut verses = 0;
@@ -152,13 +174,29 @@ pub fn check(bible: &Bible, dir: &Path) -> Result<Vec<BookReport>, Box<dyn Error
                     .into());
                 }
                 tree_coverage(tree, &mut coverage);
+                if hand_addresses.contains(&(chapter.chapter, verse.verse)) {
+                    tree_coverage(tree, &mut hand_coverage);
+                    hand_verses += 1;
+                }
                 verses += 1;
             }
         }
         reports.push(BookReport { name: book.name.clone(), verses, coverage });
     }
+    if hand_verses > 0 {
+        reports.push(BookReport {
+            // the ceiling row re-reports verses already counted in their
+            // book row — coverage_table keeps it OUT of the totals
+            name: HAND_ROW.to_string(),
+            verses: hand_verses,
+            coverage: hand_coverage,
+        });
+    }
     Ok(reports)
 }
+
+/// The ceiling row's name — re-reported verses, excluded from totals.
+pub const HAND_ROW: &str = "hand-lifted (the annotation ceiling)";
 
 /// Render the coverage table (Markdown, README-ready).
 pub fn coverage_table(reports: &[BookReport]) -> String {
@@ -184,8 +222,10 @@ pub fn coverage_table(reports: &[BookReport]) -> String {
             c.verbatim,
             c.apparatus,
         ));
-        total.add(c);
-        total_verses += r.verses;
+        if r.name != HAND_ROW {
+            total.add(c);
+            total_verses += r.verses;
+        }
     }
     out.push_str(&format!(
         "| **All** | **{}** | **{}** | **{} ({:.1}%)** | **{} ({:.1}%)** | **{} ({:.1}%)** | **{} ({:.1}%)** | **{}** |\n",

@@ -149,6 +149,23 @@ impl Index {
                     },
                 );
             }
+            add(
+                ChurchSlavonic::verb(
+                    lemma,
+                    &Person::Third,
+                    &Number::Singular,
+                    &Tense::Present,
+                    &Form::Infinitive,
+                    recension,
+                ),
+                Analysis::Verb {
+                    lemma,
+                    person: Person::Third,
+                    number: Number::Singular,
+                    tense: Tense::Present,
+                    form: Form::Infinitive,
+                },
+            );
             for gender in GENDERS {
                 for number in NUMBERS {
                     add(

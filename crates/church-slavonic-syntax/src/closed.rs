@@ -49,6 +49,11 @@ pub const TABLE: &[(&str, &str, u32)] = &[
     ("под̾", "prep", 347),
     ("междꙋ̀", "prep", 318),
     ("ѡ҆́крестъ", "prep", 356),
+    // part-4 harvest additions, counted the same way
+    ("во", "prep", 6337),
+    ("верхꙋ̀", "prep", 58),
+    ("посредѣ̀", "prep", 309),
+    ("а҆́ки", "conj", 357),
 ];
 
 /// Is this exact spelling a listed function word?
