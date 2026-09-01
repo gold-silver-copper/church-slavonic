@@ -1,5 +1,56 @@
 # Changelog
 
+## 1.1.0 — the consumer-defect release
+
+The first real consumer (the `vertograd` monastery game) audited hundreds
+of generated forms; its rejections diagnosed into three defect classes,
+each fixed in its proper layer — and twice the audit itself was wrong and
+the crate's attested answers stand guarded.
+
+### Fixed
+- **Lookup folding**: `ѷ`-spelled Synodal input now reaches the
+  `ѵ`-spelled table key (the kendema is positional typography, as
+  `comparison_key` always held); new lookup invariant 4 in the crate docs.
+  `кѷпарі́съ` finds its attested inanimate accusative.
+- **End-stressed verbs can hypothesize**: the class/present-stem override
+  inference also strips accented endings («стриже́ши», «дои́ши»), and it
+  re-runs over each candidate's UNIONED cells — sources that attest one
+  cell per entry (Polyakov form-of) previously starved it.
+- **The stems the infinitive hid**: a Second-class fact on an `-ити`
+  lemma re-derives the stems as a true i-verb (`дои́ти` "to milk" is not
+  `до` + `и҆тѝ`: aorist «доѝ», imperative «доѝ», the «напоѝ» print
+  type); a present-stem fact on a `-щи` lemma restores the neutralized
+  velar to the aorist and l-participle (`стрищѝ` : «стри́глъ»,
+  «стрижѐ»). The l-participle now enters the fact engine on class/stem
+  facts, and unaccented derived stems thread the lemma's accent like the
+  plain rule path.
+- **The accusative-shape fact teaches both ways**: any attested
+  nominative-shaped accusative (singular, dual or plural) marks the row
+  inanimate for the others (`ѻ҆гꙋре́цъ`), and the extractor's re-store
+  pass reads its sources live so mutually-derivable cells are stored
+  once.
+
+### Added
+- **The witness source** (`data/witnesses.tsv`): curated single cells
+  from running Synodal print, each citing a verbatim line of a pinned
+  text, ingested like any source (own 100.00%/0 accuracy row) and
+  verified by `cargo xtask check-witnesses`. First admissions: the
+  inanimate accusative of `ѡ҆́блакъ` (Lk 9:34), `ꙗ҆́блонь`'s nominative
+  (Joel 1:12) and feminine instrumental (Song 8:5).
+- The consumer-defect ledger (`tests/consumer_defects.rs`): every
+  diagnosed form as a test, including the guards for the two forms where
+  the AUDIT was wrong — «пожа́тъ» (the attested `-ѧти` aorist) and
+  «вожжѝ» (an attested imperative spelling; the guard asserts the
+  attested set across sense keys, since sense numbers may renumber).
+
+### Measured, unchanged
+- The Synodal unattested-masculine animate accusative default stands:
+  Polyakov's masculines are 72.9% animate by lemma / 53.3% by token, and
+  no Synodal held-out corpus exists to arbitrate further. Unattested and
+  unwitnessed accusatives (`прꙋ́дъ`, `ко́локолъ`) keep the default.
+- Held-out corpus recall: unchanged except OCS dev+test verbs
+  7414 → 7413 (−1 slot, recorded in NOTES).
+
 ## 1.0.0 — the schema close
 
 ### Added

@@ -51,6 +51,7 @@ benchmarking (`examples/speedmark.rs`, release):
 | **Nouns** | Synodal (Alypy) | 502 / 502 | 100.00% | 0 |
 | **Nouns** | Synodal (Polyakov) | 48135 / 48135 | 100.00% | 0 |
 | **Nouns** | Synodal (ru.wiktionary) | 651 / 651 | 100.00% | 0 |
+| **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
 | **Adjectives** | OCS | 38960 / 38960 | 100.00% | 0 |
 | **Adjectives** | OCS (UD PROIEL train) | 502 / 502 | 100.00% | 0 |
 | **Adjectives** | Synodal (Alypy) | 441 / 441 | 100.00% | 0 |
@@ -68,7 +69,7 @@ benchmarking (`examples/speedmark.rs`, release):
 | **Non-personal pronouns** | OCS (UD PROIEL train) | 191 / 191 | 100.00% | 0 |
 | **Nouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 8116 / 8818 | 92.04% | 702 |
 | **Adjectives** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 2134 / 2546 | 83.82% | 412 |
-| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 7414 / 8662 | 85.59% | 1248 |
+| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 7413 / 8662 | 85.58% | 1249 |
 | **Pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 4918 / 4960 | 99.15% | 42 |
 | **Non-personal pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 1208 / 1296 | 93.21% | 88 |
 | **Nouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 44305 / 48825 | 90.74% | 4520 |
@@ -76,6 +77,36 @@ benchmarking (`examples/speedmark.rs`, release):
 | **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 38709 / 45179 | 85.68% | 6470 |
 | **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 26764 / 27025 | 99.03% | 261 |
 | **Non-personal pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 17765 / 18835 | 94.32% | 1070 |
+
+OCS (UD PROIEL r2.18 dev+test, corpus recall): 39133 tokens, 26282 slots mapped, 15243 skipped: adjective: no long lemma from the short one=17; adjective: superlative=1; ambiguous case=1; no number=791; part of speech outside the four tables=13233; pronoun: reciprocal=14; pronoun: reflexive=1069; verb: future=97; verb: subjunctive=20;
+
+OCS (Syntacticus 2023-04-28, corpus recall): 213658 tokens, 153765 slots mapped, 75729 skipped: adjective: no long lemma from the short one=42; adjective: strength unspecified=334; adjective: superlative=1; ambiguous case=11; no number=4088; part of speech outside the four tables=63632; pronoun: reciprocal=113; pronoun: reflexive=5775; verb: future=570; verb: participle strength unspecified=13; verb: participle without a tense=1004; verb: subjunctive=145; verb: tense outside the schema=1;
+
+Bare-lemma correctness (does the natural bare-lemma call return the primary, first-listed, attested form?):
+
+| Part of Speech | Recension | Bare Primary / Total | Bare Accuracy | Demoted to `_n` |
+|----------------|-----------|----------------------|---------------|-----------------|
+| **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
+| **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
+| **Nouns** | Synodal (Alypy) | 418 / 502 | 83.27% | 84 |
+| **Nouns** | Synodal (Polyakov) | 46415 / 48135 | 96.43% | 1720 |
+| **Nouns** | Synodal (ru.wiktionary) | 545 / 651 | 83.72% | 106 |
+| **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
+| **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
+| **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
+| **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
+| **Adjectives** | Synodal (Polyakov) | 84429 / 87997 | 95.95% | 3568 |
+| **Verbs** | OCS | 218511 / 236411 | 92.43% | 17900 |
+| **Verbs** | OCS (UD PROIEL train) | 1395 / 1802 | 77.41% | 407 |
+| **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
+| **Verbs** | Synodal (Polyakov) | 58752 / 60517 | 97.08% | 1765 |
+| **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
+| **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
+| **Pronouns** | OCS (UD PROIEL train) | 48 / 67 | 71.64% | 19 |
+| **Pronouns** | Synodal (Alypy) | 62 / 90 | 68.89% | 28 |
+| **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
+| **Non-personal pronouns** | OCS | 805 / 811 | 99.26% | 6 |
+| **Non-personal pronouns** | OCS (UD PROIEL train) | 170 / 191 | 89.01% | 21 |
 
 The accuracy percentages measure **recall through any published key**: the
 share of attested source slots (a lemma's cell, with every form the source
