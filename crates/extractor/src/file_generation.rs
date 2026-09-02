@@ -39,7 +39,7 @@ fn doc(pos: Pos) -> &'static str {
             "finite blocks Present, Imperfect, Aorist, Imperative at block * 9 + number * 3 + person; 36 present active participle; 37 past active participle"
         }
         Pos::Pronoun => {
-            "first person number * 6 + case, second person 18 + the same, third person 36 + (gender * 3 + number) * 6 + case; six cases, no vocative"
+            "first person number * 6 + case, second person 18 + the same, third person 36 + (gender * 3 + number) * 6 + case; six cases, no vocative; the reflexive at 90 + case; the clitics at 96.. (first person number * 2 + {dat 0, acc 1}, second person 102 + the same, the third person's accusatives 108 + gender * 3 + number, the reflexive's dative 117 and accusative 118)"
         }
         Pos::NPron => {
             "(gender * 3 + number) * 6 + case; genders Masculine, Feminine, Neuter; numbers Singular, Dual, Plural; six cases, the vocative answering with the nominative"

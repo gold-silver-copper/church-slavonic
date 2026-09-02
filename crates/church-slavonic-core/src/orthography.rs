@@ -290,11 +290,16 @@ fn host_before_enclitic(units: &[Unit]) -> usize {
 
 /// Are two Synodal spellings one form up to the stress MARK on the same
 /// vowel — the oxia/varia against the kamora, the print's number mark
-/// («всѧ̀» ~ «всѧ̑», «на́ша» ~ «на̑ша»)? Letters and the stressed vowel
-/// must agree; equal spellings are not "equivalent".
+/// («всѧ̀» ~ «всѧ̑», «на́ша» ~ «на̑ша») — or, on a monosyllable, up to the
+/// mark's presence (the dictionary writes an enclitic unstressed: «ны»
+/// for the print's «ны̀», «сѧ» for «сѧ̀»)? Letters and the stressed vowel
+/// must agree; equal spellings are not "equivalent". A pronoun-row
+/// comparison (see `extractor::extract::pronoun_attested_matches`).
 pub fn number_mark_equivalent(a: &str, b: &str) -> bool {
     fn fold(word: &str) -> String {
+        let monosyllable = vowel_count(word) == 1;
         word.nfd()
+            .filter(|c| !(monosyllable && matches!(*c, ACUTE | GRAVE | KAMORA | CIRCUMFLEX)))
             .map(|c| match c {
                 'ꙗ' => 'ѧ',
                 ACUTE | KAMORA | CIRCUMFLEX => GRAVE,
@@ -501,6 +506,10 @@ mod tests {
         assert!(!transliteration_equivalent("є҆́ю", "є҆ю̀"));
         assert!(!transliteration_equivalent("ѧ҆̀", "ѧ҆̀"));
         assert!(!transliteration_equivalent("менѐ", "менє̀"));
+        assert!(!transliteration_equivalent("ны", "ны̀"));
+        assert!(number_mark_equivalent("ны", "ны̀"));
+        assert!(number_mark_equivalent("сѧ", "сѧ̀"));
+        assert!(!number_mark_equivalent("раба", "раба̀"));
         assert!(number_mark_equivalent("всѧ̀", "всѧ̑"));
         assert!(number_mark_equivalent("на́ша", "на̑ша"));
         assert!(!number_mark_equivalent("є҆ю̀", "є҆́ю"));

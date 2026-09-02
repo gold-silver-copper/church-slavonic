@@ -246,17 +246,26 @@ mod harness {
                 ChurchSlavonic::npron(key, &gender, &number, &case, r)
             }
             Pos::Pronoun => {
-                let (person, rest) = if i < 18 {
-                    (Person::First, i)
-                } else if i < 36 {
-                    (Person::Second, i - 18)
-                } else {
-                    (Person::Third, i - 36)
-                };
-                let case = &CASES[rest % 6];
-                let number = &NUMBERS[(rest / 6) % 3];
-                let gender = &GENDERS[(rest / 6) / 3];
-                ChurchSlavonic::pronoun_sense(key, &person, number, gender, case, r).to_string()
+                use church_slavonic_core::schema::{PronounCell, pronoun_features};
+                match pronoun_features(i) {
+                    PronounCell::Full { person, number, gender, case } => {
+                        ChurchSlavonic::pronoun_sense(key, &person, &number, &gender, &case, r)
+                            .to_string()
+                    }
+                    PronounCell::Reflexive { case } => {
+                        ChurchSlavonic::reflexive_sense(key, &case, r).to_string()
+                    }
+                    PronounCell::Clitic { person, number, gender, case } => {
+                        ChurchSlavonic::clitic_sense(key, &person, &number, &gender, &case, r)
+                            .unwrap_or_default()
+                            .to_string()
+                    }
+                    PronounCell::ReflexiveClitic { case } => {
+                        ChurchSlavonic::reflexive_clitic_sense(key, &case, r)
+                            .unwrap_or_default()
+                            .to_string()
+                    }
+                }
             }
         }
     }

@@ -577,3 +577,55 @@ long nominative the entry never spells — са́мъ's са́мый is its own 
 и҆́мѧрекъ). Treebank: zero mismatches unchanged (the lift is part 4).
 Registry: `npron_syn`'s test shows сь/се́й, тъ/то́й, вьсь/ве́сь,
 къто/кто̀, -ѥго/-егѡ̀ and the relative's plural varia cell by cell.
+
+## 2026-09-01 — v1.2 part 3: the reflexive and the clitic cells
+
+The personal matrix grew from 90 to 119 cells: the reflexive at 90..96
+(by case; the nominative blank), the clitics at 96..119 (first and second
+person `number × {dat, acc}`, the third person's accusatives `gender ×
+number`, the reflexive's dative and accusative). `schema::reflexive_cell`,
+`clitic_cell`, `reflexive_clitic_cell` and the decoder
+`pronoun_features` own the geometry; `Person` is untouched. The core rule
+spells the closed inventory in both recensions (OCS ми/мѧ/ти/тѧ/на/ва/
+нꙑ/вꙑ/си/сѧ and the anaphor's и/ѭ/ѥ/ꙗ/ѩ, where the clitic IS the primary
+accusative; Synodal мѝ/мѧ̀/тѝ/тѧ̀/ны̀/вы̀/сѝ/сѧ̀ and и҆̀/ю҆̀/є҆̀/ѧ҆̀; the
+reflexive себє̀/себѣ̀/себѐ/собо́ю — the genitive in є like тебє̀, the
+Bible's 111 against the accusative's 237). Facades: `reflexive`,
+`clitic` (`None` where the language has no clitic), `reflexive_clitic`,
+each with a `_sense` twin for the variant keys — the accuracy harness
+found the first version blind to them (Polyakov's Russianism «себѧ̀»
+unreachable) and the twins are the fix, in the API's own pattern.
+
+Sources: Polyakov's `clit` tag routes to the clitic cell (мѧ̀ 9,226 + 3,849,
+мѝ, тѝ, тѧ̀, ны, вы, сѧ, си); the anaphor entry's forms that spell the
+rule's clitic (through `comparison_key`, so civil «я» reaches «ѧ҆̀»)
+route there too, and where the clitic IS the full form (ю҆̀, є҆̀, the dual
+and neuter-plural ѧ҆̀) they attest both cells — the first version left
+the full cells to the prepositional variants (ню̀, нѐ, нѧ̀) and the table
+said so. Alypy §47's alternatives («мнѣ̀, мѝ», «є҆го̀, и҆̀», «ѧ҆̀, и҆̀хъ»,
+the nominative row's «(и҆̀)») route by the same rule; its third column
+is the reflexive, recognised by its forms. The dictionary writes an
+enclitic unstressed («ны», «ся»): on the pronoun rows a monosyllable's
+mark presence is the rule's (`number_mark_equivalent`; two witnesses
+pin it, ны̀ Gen 47:25 and сѧ̀ Ex 28:43). Tried as a general
+transliteration class first and refuted twice — the accent-pattern
+inference and the post-assignment re-store pass re-materialised the
+unaccented «рабъ» into ра́бъ's bare row (Gen 9:25), and once those two
+passes judged forms under the same per-cell exactness, the strip
+still reshuffled сꙋ́дъ's lexicographic bare key (Gen 18:25) — so it is
+scoped to the pronoun rows, and the noun/adjective/verb tables are
+byte-identical to part 2's. UD `Reflex=Yes` (minus `Poss=Yes`, the
+possessive свои) and PROIEL `Pk` now map to the reflexive cells.
+
+The `syn:personal` primary row now differs from the rule in six cells
+only (не́ю ×3 at the dual genitive, ни́ми ×3 at the plural instrumental —
+the corpus's prepositional primaries); the ѧ҆̀ cell of part 1 is the
+rule's. Gates: accuracy 100.00% / gap 0 on every source (the variant
+gaps the harness raised at first — reflexive variants unreachable —
+closed by the `_sense` facades); check-registry; check-witnesses 25/25;
+all suites; zero warnings; treebank unchanged at zero mismatches.
+Corpus recall now COUNTS the reflexives it used to drop: pronouns UD
+dev+test 4,918/4,960 → 5,984/6,029 (99.25%; the denominator +1,069),
+Syntacticus 26,764/27,025 → 32,525/32,800 (99.16%; +5,775) — recall on
+the old cells did not fall. Bare-primary: Polyakov pronouns 91.55% →
+93.41%, Alypy 76.67% → 84.21%.

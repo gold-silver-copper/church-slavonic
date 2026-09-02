@@ -113,6 +113,82 @@ impl ChurchSlavonicCore {
         };
         row[*case as usize]
     }
+
+    /// The reflexive pronoun (себѐ): no person, number or gender; the
+    /// nominative (and the vocative) is blank. The Synodal genitive spells
+    /// є like the second person's (себє̀; the Bible: 111 against the
+    /// accusative's себѐ 237).
+    pub fn reflexive(case: &Case, recension: &Recension) -> &'static str {
+        let row: &[&str; 6] = match recension {
+            Recension::OldChurchSlavonic => &["", "себе", "себѣ", "сѧ", "собоѭ", "себѣ"],
+            Recension::Synodal => &["", "себє̀", "себѣ̀", "себѐ", "собо́ю", "себѣ̀"],
+        };
+        match case {
+            Case::Vocative => row[0],
+            other => row[*other as usize],
+        }
+    }
+
+    /// The enclitic form of a personal pronoun cell, or `None` where the
+    /// language has none (Alypy §47 prints them as the alternatives:
+    /// «мнѣ̀, мѝ»; «є҆го̀, и҆̀»; «ѧ҆̀, и҆̀хъ»). The first and second persons
+    /// have a dative and an accusative clitic in the singular and an
+    /// accusative in the dual and plural; the third person an accusative
+    /// only. In Old Church Slavonic the accusative clitic IS the primary
+    /// accusative (мѧ, и).
+    pub fn clitic(
+        person: &Person,
+        number: &Number,
+        gender: &Gender,
+        case: &Case,
+        recension: &Recension,
+    ) -> Option<&'static str> {
+        use Case::*;
+        use Gender::*;
+        use Number::*;
+        use Person::*;
+        let synodal = *recension == Recension::Synodal;
+        Some(match (person, number, gender, case, synodal) {
+            (First, Singular, _, Dative, false) => "ми",
+            (First, Singular, _, Dative, true) => "мѝ",
+            (First, Singular, _, Accusative, false) => "мѧ",
+            (First, Singular, _, Accusative, true) => "мѧ̀",
+            (First, Dual, _, Accusative, false) => "на",
+            (First, Dual | Plural, _, Accusative, true) => "ны̀",
+            (First, Plural, _, Accusative, false) => "нꙑ",
+            (Second, Singular, _, Dative, false) => "ти",
+            (Second, Singular, _, Dative, true) => "тѝ",
+            (Second, Singular, _, Accusative, false) => "тѧ",
+            (Second, Singular, _, Accusative, true) => "тѧ̀",
+            (Second, Dual, _, Accusative, false) => "ва",
+            (Second, Dual | Plural, _, Accusative, true) => "вы̀",
+            (Second, Plural, _, Accusative, false) => "вꙑ",
+            (Third, Singular, Masculine, Accusative, false) => "и",
+            (Third, Singular, Masculine, Accusative, true) => "и҆̀",
+            (Third, Singular, Feminine, Accusative, false) => "ѭ",
+            (Third, Singular, Feminine, Accusative, true) => "ю҆̀",
+            (Third, Singular, Neuter, Accusative, false) => "ѥ",
+            (Third, Singular, Neuter, Accusative, true) => "є҆̀",
+            (Third, Dual, Masculine, Accusative, false) => "ꙗ",
+            (Third, Dual, _, Accusative, false) => "и",
+            (Third, Plural, Neuter, Accusative, false) => "ꙗ",
+            (Third, Plural, _, Accusative, false) => "ѩ",
+            (Third, Dual | Plural, _, Accusative, true) => "ѧ҆̀",
+            _ => return None,
+        })
+    }
+
+    /// The reflexive's clitic (сѝ, сѧ̀), or `None`.
+    pub fn reflexive_clitic(case: &Case, recension: &Recension) -> Option<&'static str> {
+        let synodal = *recension == Recension::Synodal;
+        Some(match (case, synodal) {
+            (Case::Dative, false) => "си",
+            (Case::Dative, true) => "сѝ",
+            (Case::Accusative, false) => "сѧ",
+            (Case::Accusative, true) => "сѧ̀",
+            _ => return None,
+        })
+    }
 }
 
 #[cfg(test)]
@@ -154,6 +230,33 @@ mod tests {
         assert_eq!(p(Third, Plural, Neuter, Accusative, SYN), "ѧ҆̀");
         // the vocative answers with the nominative
         assert_eq!(p(Second, Plural, Feminine, Vocative, SYN), "вы̀");
+    }
+
+    #[test]
+    fn the_reflexive_and_the_clitics() {
+        use Case::*;
+        use Gender::*;
+        use Number::*;
+        use Person::*;
+        assert_eq!(ChurchSlavonicCore::reflexive(&Genitive, &SYN), "себє̀");
+        assert_eq!(ChurchSlavonicCore::reflexive(&Accusative, &SYN), "себѐ");
+        assert_eq!(ChurchSlavonicCore::reflexive(&Nominative, &SYN), "");
+        assert_eq!(ChurchSlavonicCore::reflexive(&Instrumental, &OCS), "собоѭ");
+        assert_eq!(ChurchSlavonicCore::clitic(&First, &Singular, &Neuter, &Dative, &SYN), Some("мѝ"));
+        assert_eq!(ChurchSlavonicCore::clitic(&Second, &Singular, &Neuter, &Accusative, &SYN), Some("тѧ̀"));
+        assert_eq!(ChurchSlavonicCore::clitic(&First, &Plural, &Neuter, &Accusative, &SYN), Some("ны̀"));
+        assert_eq!(ChurchSlavonicCore::clitic(&First, &Plural, &Neuter, &Dative, &SYN), None);
+        assert_eq!(ChurchSlavonicCore::clitic(&Third, &Singular, &Masculine, &Accusative, &SYN), Some("и҆̀"));
+        assert_eq!(ChurchSlavonicCore::clitic(&Third, &Plural, &Feminine, &Accusative, &SYN), Some("ѧ҆̀"));
+        assert_eq!(ChurchSlavonicCore::clitic(&Third, &Plural, &Feminine, &Genitive, &SYN), None);
+        assert_eq!(ChurchSlavonicCore::clitic(&First, &Dual, &Neuter, &Accusative, &OCS), Some("на"));
+        assert_eq!(ChurchSlavonicCore::reflexive_clitic(&Accusative, &SYN), Some("сѧ̀"));
+        assert_eq!(ChurchSlavonicCore::reflexive_clitic(&Genitive, &SYN), None);
+        // canonical typography throughout
+        for c in [Genitive, Dative, Accusative, Instrumental, Locative] {
+            let f = ChurchSlavonicCore::reflexive(&c, &SYN);
+            assert_eq!(crate::orthography::realise(f, &SYN), f);
+        }
     }
 
     #[test]

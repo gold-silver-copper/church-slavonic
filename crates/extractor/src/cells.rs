@@ -23,11 +23,13 @@
 //!   expands through the same declension rule, so a verb with a regular
 //!   declension of an irregular stem costs four cells, not five hundred;
 //!   the infinitive is the lemma itself;
-//! - pronoun (90): the closed personal matrix — first person `number * 6 +
+//! - pronoun (119): the closed personal matrix — first person `number * 6 +
 //!   case` (0..18), second person likewise at 18.., third person
 //!   `36 + (gender * 3 + number) * 6 + case` — over the six non-vocative cases
-//!   (the vocative answers with the nominative). The pronoun map is keyed
-//!   `<tag>:personal`: the facade's `pronoun` call takes no lemma.
+//!   (the vocative answers with the nominative), then the reflexive
+//!   (90..96) and the clitic cells (96..119; `schema::clitic_cell`). The
+//!   pronoun map is keyed `<tag>:personal`: the facade's `pronoun` call
+//!   takes no lemma.
 
 use church_slavonic_core::ChurchSlavonicCore;
 use church_slavonic_core::grammar::*;
@@ -35,10 +37,9 @@ use church_slavonic_core::orthography::{comparison_key, realise};
 pub use church_slavonic_core::verb::Conj;
 
 pub use church_slavonic_core::schema::{
-    l_participle_cell,
-    npron_cell,
     CASES, DEGREES, GENDERS, NUMBERS, PERSONS, PRESENT_STEM_CELL, VERB_BLOCKS, VERB_CLASS_CELL,
-    adj_cell, noun_cell, participle_cell, participle_stem_cell, pronoun_cell, verb_cell,
+    adj_cell, clitic_cell, l_participle_cell, noun_cell, npron_cell, participle_cell,
+    participle_stem_cell, pronoun_cell, reflexive_cell, reflexive_clitic_cell, verb_cell,
 };
 
 /// The two recension tags that prefix every key.
@@ -238,8 +239,23 @@ impl Pos {
                                         person, number, gender, case, recension,
                                     )
                                     .to_string();
+                                if let Some(i) = clitic_cell(person, number, gender, case) {
+                                    out[i] =
+                                        ChurchSlavonicCore::clitic(person, number, gender, case, recension)
+                                            .unwrap_or_default()
+                                            .to_string();
+                                }
                             }
                         }
+                    }
+                }
+                for case in &CASES[..6] {
+                    out[reflexive_cell(case)] =
+                        ChurchSlavonicCore::reflexive(case, recension).to_string();
+                    if let Some(i) = reflexive_clitic_cell(case) {
+                        out[i] = ChurchSlavonicCore::reflexive_clitic(case, recension)
+                            .unwrap_or_default()
+                            .to_string();
                     }
                 }
             }
@@ -296,6 +312,18 @@ pub fn parse_cell(pos: Pos, text: &str) -> Option<usize> {
             let (g, n, c) = (gender(g)?, number(n)?, case(c)?);
             (c != Case::Vocative).then(|| pronoun_cell(&Person::Third, &n, &g, &c))
         }
+        (Pos::Pronoun, ["refl", c]) => {
+            let c = case(c)?;
+            (!matches!(c, Case::Vocative | Case::Nominative)).then(|| reflexive_cell(&c))
+        }
+        (Pos::Pronoun, ["refl", "clit", c]) => reflexive_clitic_cell(&case(c)?),
+        (Pos::Pronoun, ["clit", p @ ("1" | "2"), n, c]) => {
+            let person = if *p == "1" { Person::First } else { Person::Second };
+            clitic_cell(&person, &number(n)?, &Gender::Masculine, &case(c)?)
+        }
+        (Pos::Pronoun, ["clit", "3", g, n, c]) => {
+            clitic_cell(&Person::Third, &number(n)?, &gender(g)?, &case(c)?)
+        }
         _ => None,
     }
 }
@@ -331,6 +359,19 @@ mod tests {
             Some(pronoun_cell(&Person::First, &Number::Plural, &Gender::Neuter, &Case::Nominative))
         );
         assert_eq!(parse_cell(Pos::Pronoun, "3.sg.dat"), None);
+        assert_eq!(parse_cell(Pos::Pronoun, "refl.dat"), Some(reflexive_cell(&Case::Dative)));
+        assert_eq!(parse_cell(Pos::Pronoun, "refl.nom"), None);
+        assert_eq!(
+            parse_cell(Pos::Pronoun, "clit.1.sg.dat"),
+            clitic_cell(&Person::First, &Number::Singular, &Gender::Masculine, &Case::Dative)
+        );
+        // the dual and plural datives have a cell (blank by rule)
+        assert_eq!(parse_cell(Pos::Pronoun, "clit.1.pl.dat"), Some(100));
+        assert_eq!(
+            parse_cell(Pos::Pronoun, "clit.3.f.pl.acc"),
+            clitic_cell(&Person::Third, &Number::Plural, &Gender::Feminine, &Case::Accusative)
+        );
+        assert_eq!(parse_cell(Pos::Pronoun, "refl.clit.acc"), reflexive_clitic_cell(&Case::Accusative));
         assert_eq!(parse_cell(Pos::Pronoun, "1.pl.voc"), None);
         assert_eq!(
             parse_cell(Pos::NPron, "m.sg.gen"),
@@ -472,7 +513,45 @@ mod tests {
                 }
             }
         }
+        for c in &CASES[..6] {
+            let i = reflexive_cell(c);
+            assert!(!seen[i]);
+            seen[i] = true;
+            if let Some(i) = reflexive_clitic_cell(c) {
+                assert!(!seen[i]);
+                seen[i] = true;
+            }
+        }
+        for p in &PERSONS {
+            for g in &GENDERS {
+                for n in &NUMBERS {
+                    for c in &CASES[..6] {
+                        let Some(i) = clitic_cell(p, n, g, c) else { continue };
+                        if *p != Person::Third && *g != Gender::Masculine {
+                            assert_eq!(Some(i), clitic_cell(p, n, &Gender::Masculine, c));
+                            continue;
+                        }
+                        assert!(!seen[i], "{i}");
+                        seen[i] = true;
+                    }
+                }
+            }
+        }
         assert!(seen.iter().all(|s| *s));
+        // the decoder is the inverse
+        use church_slavonic_core::schema::{PronounCell, pronoun_features};
+        assert_eq!(
+            pronoun_features(reflexive_cell(&Case::Dative)),
+            PronounCell::Reflexive { case: Case::Dative }
+        );
+        assert_eq!(
+            pronoun_features(clitic_cell(&Person::Third, &Number::Plural, &Gender::Feminine, &Case::Accusative).unwrap()),
+            PronounCell::Clitic { person: Person::Third, number: Number::Plural, gender: Gender::Feminine, case: Case::Accusative }
+        );
+        assert_eq!(
+            pronoun_features(reflexive_clitic_cell(&Case::Accusative).unwrap()),
+            PronounCell::ReflexiveClitic { case: Case::Accusative }
+        );
         assert_eq!(
             pronoun_cell(
                 &Person::First,

@@ -55,16 +55,65 @@ fn part_1_the_personal_row_reads_as_the_print() {
     assert_eq!(pers(Third, Plural, Masculine, Locative), "ни́хъ");
     assert_eq!(pers(Third, Plural, Feminine, Locative), "ни́хъ");
     assert_eq!(pers(Third, Plural, Neuter, Locative), "ни́хъ");
-    // The anaphor's short accusative and the dictionary's «ны̀» stay
-    // reachable as variants; the civil-transliterated «ꙗ҆̀» is not a form
-    // of its own (it differs from «ѧ҆̀» only in what civil «я» cannot
-    // encode) and is stored nowhere.
+    // The enclitics («ны̀», the anaphor's «и҆̀») are the clitic cells' (part
+    // 3), not variants of the full cells; the civil-transliterated «ꙗ҆̀» is
+    // not a form of its own (it differs from «ѧ҆̀» only in what civil «я»
+    // cannot encode) and is stored nowhere.
     let reachable = |form: &str, p: Person, n: Number, g: Gender, c: Case| {
         (2..=16).any(|k| ChurchSlavonic::pronoun_sense(&format!("personal_{k}"), &p, &n, &g, &c, &SYN) == form)
     };
     assert!(!reachable("ꙗ҆̀", Third, Dual, Neuter, Accusative));
-    assert!(reachable("и҆̀", Third, Singular, Masculine, Accusative));
-    assert!(reachable("ны̀", First, Plural, Masculine, Accusative));
+    assert!(!reachable("и҆̀", Third, Singular, Masculine, Accusative));
+    assert!(!reachable("ны̀", First, Plural, Masculine, Accusative));
+    assert_eq!(ChurchSlavonic::clitic(&Third, &Singular, &Masculine, &Accusative, &SYN), Some("и҆̀"));
+    assert_eq!(ChurchSlavonic::clitic(&First, &Plural, &Masculine, &Accusative, &SYN), Some("ны̀"));
+}
+
+#[test]
+fn part_3_the_reflexive_and_the_clitic_cells() {
+    use Case::*;
+    use Gender::*;
+    use Number::*;
+    use Person::*;
+    let clit = |p: Person, n: Number, g: Gender, c: Case| ChurchSlavonic::clitic(&p, &n, &g, &c, &SYN);
+    // Alypy §47 «мнѣ̀, мѝ» / «менѐ, мѧ̀» / «тебѣ̀, тѝ» / «тебѐ, тѧ̀»; the
+    // Bible: мѝ 708, мѧ̀ 895, тѝ 317, тѧ̀ 1,043.
+    assert_eq!(clit(First, Singular, Masculine, Dative), Some("мѝ"));
+    assert_eq!(clit(First, Singular, Masculine, Accusative), Some("мѧ̀"));
+    assert_eq!(clit(Second, Singular, Masculine, Dative), Some("тѝ"));
+    assert_eq!(clit(Second, Singular, Masculine, Accusative), Some("тѧ̀"));
+    // Gen 47:25 «ѡ҆живи́лъ ны̀ є҆сѝ» (the dictionary writes «ны»)
+    assert_eq!(clit(First, Plural, Masculine, Accusative), Some("ны̀"));
+    assert_eq!(clit(Second, Plural, Masculine, Accusative), Some("вы̀"));
+    assert_eq!(clit(First, Plural, Masculine, Dative), None);
+    assert_eq!(clit(First, Singular, Masculine, Genitive), None);
+    // the third person's accusative clitics (§47 «є҆го̀, и҆̀»; «ѧ҆̀, и҆̀хъ»)
+    assert_eq!(clit(Third, Singular, Masculine, Accusative), Some("и҆̀"));
+    assert_eq!(clit(Third, Singular, Feminine, Accusative), Some("ю҆̀"));
+    assert_eq!(clit(Third, Singular, Neuter, Accusative), Some("є҆̀"));
+    assert_eq!(clit(Third, Plural, Masculine, Accusative), Some("ѧ҆̀"));
+    assert_eq!(clit(Third, Dual, Neuter, Accusative), Some("ѧ҆̀"));
+    assert_eq!(clit(Third, Plural, Masculine, Genitive), None);
+    // the full cells stand beside them
+    assert_eq!(pers(Third, Singular, Feminine, Accusative), "ю҆̀");
+    assert_eq!(pers(Third, Singular, Masculine, Accusative), "є҆го̀");
+    assert_eq!(pers(Third, Plural, Masculine, Accusative), "и҆̀хъ");
+    assert_eq!(pers(First, Plural, Masculine, Accusative), "на́съ");
+    // the reflexive: §47's third column; Gen 22:5? — the Bible: себѣ̀ 854,
+    // себѐ 237 (acc), себє̀ 111 (gen), собо́ю 133; Ex 28:43 «на сѧ̀»
+    assert_eq!(ChurchSlavonic::reflexive(&Genitive, &SYN), "себє̀");
+    assert_eq!(ChurchSlavonic::reflexive(&Dative, &SYN), "себѣ̀");
+    assert_eq!(ChurchSlavonic::reflexive(&Accusative, &SYN), "себѐ");
+    assert_eq!(ChurchSlavonic::reflexive(&Instrumental, &SYN), "собо́ю");
+    assert_eq!(ChurchSlavonic::reflexive(&Locative, &SYN), "себѣ̀");
+    assert_eq!(ChurchSlavonic::reflexive(&Nominative, &SYN), "");
+    assert_eq!(ChurchSlavonic::reflexive_clitic(&Accusative, &SYN), Some("сѧ̀"));
+    assert_eq!(ChurchSlavonic::reflexive_clitic(&Dative, &SYN), Some("сѝ"));
+    assert_eq!(ChurchSlavonic::reflexive_clitic(&Genitive, &SYN), None);
+    // Old Church Slavonic: the clitic is the primary accusative
+    let ocs = Recension::OldChurchSlavonic;
+    assert_eq!(ChurchSlavonic::clitic(&First, &Singular, &Masculine, &Accusative, &ocs), Some("мѧ"));
+    assert_eq!(ChurchSlavonic::reflexive(&Instrumental, &ocs), "собоѭ");
 }
 
 fn pn(lemma: &str, g: Gender, n: Number, c: Case) -> String {

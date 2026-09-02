@@ -403,7 +403,23 @@ fn ud_token(
                 return;
             }
             if feats.get("Reflex") == Some(&"Yes") {
-                return corpus.skip("pronoun: reflexive");
+                // The reflexive's own cells of the shared row (v1.2 part 3);
+                // the possessive свои carries the same feature and is the
+                // non-personal pronoun's.
+                if feats.get("Poss") == Some(&"Yes") {
+                    return corpus.skip("pronoun: reflexive possessive");
+                }
+                let Some(case) = case(corpus) else { return };
+                if matches!(case, Case::Vocative | Case::Nominative) {
+                    return corpus.skip("pronoun: reflexive nominative");
+                }
+                corpus.slots.push(CorpusSlot {
+                    lemma: crate::cells::PRONOUN_KEY.to_string(),
+                    pos: Pos::Pronoun,
+                    cell: crate::cells::reflexive_cell(&case),
+                    surface,
+                });
+                return;
             }
             let person = match feats.get("Person") {
                 Some(&"1") => Person::First,
@@ -827,7 +843,18 @@ fn proiel_token(corpus: &mut Corpus, form: &str, lemma: &str, pos: &str, morphol
             }
         }
         "Pc" => corpus.skip("pronoun: reciprocal"),
-        "Pk" => corpus.skip("pronoun: reflexive"),
+        "Pk" => {
+            let Some(case) = case(corpus) else { return };
+            if matches!(case, Case::Vocative | Case::Nominative) {
+                return corpus.skip("pronoun: reflexive nominative");
+            }
+            corpus.slots.push(CorpusSlot {
+                lemma: crate::cells::PRONOUN_KEY.to_string(),
+                pos: Pos::Pronoun,
+                cell: crate::cells::reflexive_cell(&case),
+                surface: surface.clone(),
+            });
+        }
         _ => corpus.skip("part of speech outside the four tables"),
     }
 }
@@ -923,8 +950,9 @@ mod tests {
         assert_eq!(cells[1], (Pos::Verb, 101, "ити"));
         assert_eq!(cells[2], (Pos::Noun, 3, "даръ"));
         assert_eq!(cells[3].2, "новꙑи");
+        assert_eq!(cells[4], (Pos::Pronoun, crate::cells::reflexive_cell(&Case::Accusative), "personal"));
         assert_eq!(
-            cells[4],
+            cells[5],
             (
                 Pos::Pronoun,
                 pronoun_cell(
@@ -936,6 +964,8 @@ mod tests {
                 "personal"
             )
         );
-        assert_eq!(corpus.skipped.get("pronoun: reflexive"), Some(&1));
+        // the reflexive's own cell of the shared row (accusative 93)
+        assert!(cells.iter().any(|c| *c == (Pos::Pronoun, crate::cells::reflexive_cell(&Case::Accusative), "personal")));
+        assert_eq!(corpus.skipped.get("pronoun: reflexive"), None);
     }
 }

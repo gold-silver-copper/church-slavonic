@@ -109,18 +109,11 @@ fn third_person_singular_varies_by_gender() {
         row(Person::Third, Number::Singular, Gender::Neuter, SYN),
         ["ѻ҆но̀", "є҆гѡ̀", "є҆мꙋ̀", "є҆̀", "и҆́мъ", "не́мъ"]
     );
-    // The anaphor's short accusative «и҆̀» lives at a variant key.
-    let keys: Vec<String> = (2..16).map(|n| format!("personal_{n}")).collect();
-    assert!(keys.iter().any(|k| {
-        ChurchSlavonic::pronoun_sense(
-            k,
-            &Person::Third,
-            &Number::Singular,
-            &Gender::Masculine,
-            &Case::Accusative,
-            &SYN,
-        ) == "и҆̀"
-    }));
+    // The anaphor's short accusative «и҆̀» is the clitic cell's (v1.2).
+    assert_eq!(
+        ChurchSlavonic::clitic(&Person::Third, &Number::Singular, &Gender::Masculine, &Case::Accusative, &SYN),
+        Some("и҆̀")
+    );
 }
 
 #[test]

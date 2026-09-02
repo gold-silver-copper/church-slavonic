@@ -31,9 +31,11 @@
 //! `((degree * 3 + gender) * 3 + number) * 7 + case` over the positive and
 //! comparative degrees; verbs 38: four 9-cell finite blocks present /
 //! imperfect / aorist / imperative at `number * 3 + person`, then the present
-//! and past active participle citations; the personal pronoun 90: first and
+//! and past active participle citations; the personal pronoun 119: first and
 //! second person `number * 6 + case`, third `36 + (gender * 3 + number) * 6 +
-//! case`, six cases). A cell the row does not list is served by the rule.
+//! case`, six cases, then the reflexive (90..96) and the clitic cells
+//! (96..119; see `church_slavonic_core::schema`)). A cell the row does not
+//! list is served by the rule.
 //! Table cells and rule output alike are spelled in the recension's canonical
 //! typography ([`orthography::realise`]): unaccented letters for Old Church
 //! Slavonic, the print's letters, breathing and accent for Synodal.
@@ -138,8 +140,8 @@ fn tag(recension: &Recension) -> &'static str {
 // The cell indices of the schema — the one copy lives in
 // `church_slavonic_core::schema`.
 use church_slavonic_core::schema::{
-    PRESENT_STEM_CELL, VERB_CLASS_CELL, adj_cell, noun_cell, participle_cell, participle_stem_cell,
-    pronoun_cell, verb_cell,
+    PRESENT_STEM_CELL, VERB_CLASS_CELL, adj_cell, clitic_cell, noun_cell, participle_cell,
+    participle_stem_cell, pronoun_cell, reflexive_cell, reflexive_clitic_cell, verb_cell,
 };
 
 /// The attested form at cell `i` of a sparse row (the `(cell, form)` pairs
@@ -700,6 +702,90 @@ impl ChurchSlavonic {
             .and_then(|row| cell(row, cell_index))
             .or_else(|| get(PRONOUN_KEY).and_then(|row| cell(row, cell_index)))
             .unwrap_or_else(|| ChurchSlavonicCore::pronoun(person, number, gender, case, recension))
+    }
+
+    /// The reflexive pronoun (себѐ): no person, number or gender; the
+    /// nominative is empty. The attested cells live on the `personal` row
+    /// (v1.2 part 3).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use church_slavonic::{Case, ChurchSlavonic, Recension};
+    ///
+    /// assert_eq!(ChurchSlavonic::reflexive(&Case::Dative, &Recension::Synodal), "себѣ̀");
+    /// assert_eq!(ChurchSlavonic::reflexive(&Case::Nominative, &Recension::Synodal), "");
+    /// ```
+    pub fn reflexive(case: &Case, recension: &Recension) -> &'static str {
+        Self::reflexive_sense(PRONOUN_KEY, case, recension)
+    }
+
+    /// [`Self::reflexive`] through a sense key (`personal_2`, …): the
+    /// attested variants of the reflexive's cells, like
+    /// [`Self::pronoun_sense`]'s.
+    pub fn reflexive_sense(key: &str, case: &Case, recension: &Recension) -> &'static str {
+        let i = Some(reflexive_cell(case));
+        let get = |k: &str| get_pronoun(&format!("{}:{k}", tag(recension)));
+        get(key)
+            .and_then(|row| cell(row, i))
+            .or_else(|| get(PRONOUN_KEY).and_then(|row| cell(row, i)))
+            .unwrap_or_else(|| ChurchSlavonicCore::reflexive(case, recension))
+    }
+
+    /// The enclitic form of a personal pronoun cell — the print's «мѝ»,
+    /// «тѧ̀», «ны̀», «и҆̀», «ѧ҆̀» beside the full «мнѣ̀», «тебѐ», «на́съ»,
+    /// «є҆го̀», «и҆̀хъ» — or `None` where the language has none (every
+    /// first- and second-person dative/accusative singular, the dual and
+    /// plural accusatives, the third person's accusatives). Gender is
+    /// consulted only in the third person.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use church_slavonic::{Case, ChurchSlavonic, Gender, Number, Person, Recension};
+    ///
+    /// let syn = Recension::Synodal;
+    /// assert_eq!(ChurchSlavonic::clitic(&Person::First, &Number::Singular, &Gender::Masculine, &Case::Dative, &syn), Some("мѝ"));
+    /// assert_eq!(ChurchSlavonic::clitic(&Person::First, &Number::Singular, &Gender::Masculine, &Case::Genitive, &syn), None);
+    /// ```
+    pub fn clitic(
+        person: &Person,
+        number: &Number,
+        gender: &Gender,
+        case: &Case,
+        recension: &Recension,
+    ) -> Option<&'static str> {
+        Self::clitic_sense(PRONOUN_KEY, person, number, gender, case, recension)
+    }
+
+    /// [`Self::clitic`] through a sense key.
+    pub fn clitic_sense(
+        key: &str,
+        person: &Person,
+        number: &Number,
+        gender: &Gender,
+        case: &Case,
+        recension: &Recension,
+    ) -> Option<&'static str> {
+        let i = Some(clitic_cell(person, number, gender, case)?);
+        let get = |k: &str| get_pronoun(&format!("{}:{k}", tag(recension)));
+        get(key)
+            .and_then(|row| cell(row, i))
+            .or_else(|| get(PRONOUN_KEY).and_then(|row| cell(row, i)))
+            .or_else(|| ChurchSlavonicCore::clitic(person, number, gender, case, recension))
+    }
+
+    /// The reflexive's clitic («сѝ», «сѧ̀»), or `None` for any other case.
+    pub fn reflexive_clitic(case: &Case, recension: &Recension) -> Option<&'static str> {
+        Self::reflexive_clitic_sense(PRONOUN_KEY, case, recension)
+    }
+
+    /// [`Self::reflexive_clitic`] through a sense key.
+    pub fn reflexive_clitic_sense(key: &str, case: &Case, recension: &Recension) -> Option<&'static str> {
+        let i = Some(reflexive_clitic_cell(case)?);
+        let get = |k: &str| get_pronoun(&format!("{}:{k}", tag(recension)));
+        get(key)
+            .and_then(|row| cell(row, i))
+            .or_else(|| get(PRONOUN_KEY).and_then(|row| cell(row, i)))
+            .or_else(|| ChurchSlavonicCore::reflexive_clitic(case, recension))
     }
 
     /// Capitalizes the first letter of a string.

@@ -33,3 +33,7 @@ syn	npron	и҆́же	f.pl.loc	ни́хже	assets/bible/000.txt	въ ни́хж�
 syn	npron	и҆́же	n.pl.loc	ни́хже	assets/bible/000.txt	седмѝ лѣ́тъ, въ ни́хже бѧ́ше ѻ҆би́лность
 syn	npron	и҆́же	f.pl.nom	ꙗ҆̀же	assets/bible/000.txt	ꙗ҆̀же и҆зведо́ша во́ды по родѡ́мъ и҆́хъ
 syn	npron	ве́сь	n.pl.acc	всѧ̑	assets/bible/000.txt	И҆ ви́дѣ бг҃ъ всѧ̑, є҆ли̑ка сотворѝ
+# v1.2 part 3 — the clitic cells: the dictionary writes the enclitics
+# unstressed («ны», «ся»); the print marks them.
+syn	pronoun	personal	clit.1.pl.acc	ны̀	assets/bible/000.txt	ѡ҆живи́лъ ны̀ є҆сѝ
+syn	pronoun	personal	refl.clit.acc	сѧ̀	assets/bible/001.txt	да не наведꙋ́тъ на сѧ̀ грѣха̀

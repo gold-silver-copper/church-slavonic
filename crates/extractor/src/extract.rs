@@ -72,6 +72,7 @@
 use crate::alypy::{self, Defaults, TenseWord};
 use crate::assign::{Candidate, assign, forms_sig};
 use crate::cells::{
+    clitic_cell, reflexive_cell, reflexive_clitic_cell,
     l_participle_cell,
     npron_cell,
     CASES, Conj, GENDERS, NUMBERS, PRESENT_STEM_CELL, PRONOUN_KEY, Pos, VERB_CLASS_CELL, adj_cell,
@@ -81,6 +82,7 @@ use crate::cells::{
 use crate::kaikki::{self, Entry, has};
 use crate::polyakov::{self, Features, Mood, Series, TenseTag, Voice};
 use crate::ruwiktionary;
+use church_slavonic_core::ChurchSlavonicCore;
 use church_slavonic_core::grammar::*;
 use church_slavonic_core::grammar::{Series as GSeries, Voice as GVoice};
 use church_slavonic_core::orthography::{
@@ -1666,6 +1668,27 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
                 }
             }
             (Pos::Pronoun, _) => {
+                // §47's third column is the reflexive: no exemplar heads it
+                // (себѐ has no nominative), its forms name it.
+                let reflexive = forms
+                    .iter()
+                    .any(|f| matches!(strip_marks(f).as_str(), "себе" | "себє" | "себѣ" | "собою"));
+                if reflexive {
+                    for case in &row.cases {
+                        if matches!(*case, Case::Vocative | Case::Nominative) {
+                            continue;
+                        }
+                        for form in &forms {
+                            // «себѣ̀, сѝ»: the alternative that spells the
+                            // clitic goes to the clitic cell.
+                            let clitic = ChurchSlavonicCore::reflexive_clitic(case, &SYN)
+                                .filter(|c| comparison_key(c) == comparison_key(form))
+                                .and_then(|_| reflexive_clitic_cell(case));
+                            obs.attest(clitic.unwrap_or_else(|| reflexive_cell(case)), form);
+                        }
+                    }
+                    continue;
+                }
                 let person = if paradigm.index == 1 {
                     Person::Third
                 } else {
@@ -1689,10 +1712,38 @@ fn gather_alypy_table(table: &alypy::Table, lexemes: &mut Lexemes) -> Result<(),
                             continue;
                         }
                         for gender in &genders {
-                            cells.push(pronoun_cell(&person, &number, gender, case));
+                            for form in &forms {
+                                // The grammar prints the clitic as the
+                                // alternative («мнѣ̀, мѝ»; «є҆го̀, и҆̀»; «ѧ҆̀,
+                                // и҆̀хъ»; the nominative's «ѻ҆́нъ (и҆̀)»): a
+                                // form spelling the rule's accusative or
+                                // dative clitic for the cell's person, number
+                                // and gender attests that clitic cell.
+                                let clitic = [Case::Accusative, Case::Dative]
+                                    .into_iter()
+                                    .find_map(|c| {
+                                        ChurchSlavonicCore::clitic(&person, &number, gender, &c, &SYN)
+                                            .filter(|k| comparison_key(k) == comparison_key(form))
+                                            .and_then(|k| clitic_cell(&person, &number, gender, &c).map(|i| (i, k)))
+                                    });
+                                let full = pronoun_cell(&person, &number, gender, case);
+                                match clitic {
+                                    Some((i, k)) => {
+                                        obs.attest(i, form);
+                                        // «ю҆̀» is the accusative and its clitic
+                                        if comparison_key(ChurchSlavonicCore::pronoun(&person, &number, gender, case, &SYN))
+                                            == comparison_key(k)
+                                        {
+                                            obs.attest(full, form);
+                                        }
+                                    }
+                                    None => obs.attest(full, form),
+                                }
+                            }
                         }
                     }
                 }
+                continue;
             }
         }
         for cell in cells {
@@ -1833,8 +1884,10 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
         _ => None,
     };
     // A substantive pronoun outside the personal matrix: the reflexive
-    // (part 3's cells) and the singular-only кто̀/что̀ family (classes
-    // `PNkto`/`PNcto`), which declines as a non-personal pronoun.
+    // себѐ (its own cells of the shared row) and the singular-only
+    // кто̀/что̀ family (classes `PNkto`/`PNcto`), which declines as a
+    // non-personal pronoun.
+    let reflexive = pos == Pos::Pronoun && strip_marks(&lemma) == "себе";
     let substantive_npron = pos == Pos::Pronoun
         && pronoun_person.is_none()
         && (entry.class.starts_with("PNkto") || entry.class.starts_with("PNcto"));
@@ -1885,8 +1938,11 @@ fn gather_polyakov_entry(entry: &polyakov::Entry, lexemes: &mut Lexemes, skips: 
                     None => polyakov_npron_cells(&f, false).map(|c| (pos, lemma.clone(), c)),
                 },
                 Pos::Pronoun => match pronoun_person {
-                    Some(person) => polyakov_pronoun_cells(&f, person)
+                    Some(person) => polyakov_pronoun_cells(&f, person, &surface)
                         .map(|c| (pos, PRONOUN_KEY.to_string(), c)),
+                    None if reflexive => {
+                        polyakov_reflexive_cells(&f).map(|c| (pos, PRONOUN_KEY.to_string(), c))
+                    }
                     None if substantive_npron => {
                         polyakov_npron_cells(&f, true).map(|c| (Pos::NPron, lemma.clone(), c))
                     }
@@ -2290,7 +2346,17 @@ fn polyakov_npron_cells(f: &Features, singular_only: bool) -> Result<Vec<usize>,
     Ok(cells)
 }
 
-fn polyakov_pronoun_cells(f: &Features, person: Person) -> Result<Vec<usize>, &'static str> {
+/// The personal-matrix cells of one analysis. A `clit`-tagged form (мѧ̀,
+/// мѝ, ны̀) attests the clitic cell of its person, number and case; a
+/// third-person form that spells the rule's clitic for its cell («и҆̀»,
+/// «ѧ҆̀», compared through [`comparison_key`] so civil «я» reaches it)
+/// attests the clitic cell too — the dictionary carries no `clit` tag on
+/// the anaphor.
+fn polyakov_pronoun_cells(
+    f: &Features,
+    person: Person,
+    surface: &str,
+) -> Result<Vec<usize>, &'static str> {
     let number = f.number.ok_or("pronoun: no number")?;
     let genders: Vec<Gender> = match (person, f.gender) {
         (Person::Third, Some(g)) => vec![g],
@@ -2303,19 +2369,69 @@ fn polyakov_pronoun_cells(f: &Features, person: Person) -> Result<Vec<usize>, &'
     if person == Person::Third && f.cases.iter().all(|c| *c == Case::Nominative) {
         return Err("pronoun: the anaphor's nominative");
     }
+    if f.clitic {
+        let cells: Vec<usize> = f
+            .cases
+            .iter()
+            .filter_map(|case| clitic_cell(&person, &number, &Gender::Masculine, case))
+            .collect();
+        if cells.is_empty() {
+            return Err("pronoun: clitic outside the schema");
+        }
+        return Ok(cells);
+    }
+    let key = comparison_key(surface);
+    let key = key.as_str();
     let cells: Vec<usize> = f
         .cases
         .iter()
         .filter(|c| **c != Case::Vocative)
         .filter(|c| !(person == Person::Third && **c == Case::Nominative))
         .flat_map(|case| {
-            genders
-                .iter()
-                .map(move |g| pronoun_cell(&person, &number, g, case))
+            genders.iter().flat_map(move |g| {
+                // A form spelling the rule's clitic attests the clitic
+                // cell — and the full cell too where the clitic IS the full
+                // form (ю҆̀, є҆̀, the dual and neuter-plural ѧ҆̀).
+                let full = pronoun_cell(&person, &number, g, case);
+                let clitic = ChurchSlavonicCore::clitic(&person, &number, g, case, &SYN)
+                    .filter(|c| comparison_key(c) == key)
+                    .and_then(|c| clitic_cell(&person, &number, g, case).map(|i| (i, c)));
+                match clitic {
+                    Some((i, c))
+                        if comparison_key(ChurchSlavonicCore::pronoun(&person, &number, g, case, &SYN))
+                            == comparison_key(c) =>
+                    {
+                        vec![i, full]
+                    }
+                    Some((i, _)) => vec![i],
+                    None => vec![full],
+                }
+            })
         })
         .collect();
     if cells.is_empty() {
         return Err("pronoun: no case");
+    }
+    Ok(cells)
+}
+
+/// The reflexive's cells: its cases (no number), the `clit`-tagged forms
+/// (сѧ̀, сѝ) at the reflexive clitic cells.
+fn polyakov_reflexive_cells(f: &Features) -> Result<Vec<usize>, &'static str> {
+    let cells: Vec<usize> = f
+        .cases
+        .iter()
+        .filter(|c| !matches!(**c, Case::Vocative | Case::Nominative))
+        .filter_map(|case| {
+            if f.clitic {
+                reflexive_clitic_cell(case)
+            } else {
+                Some(reflexive_cell(case))
+            }
+        })
+        .collect();
+    if cells.is_empty() {
+        return Err("pronoun: reflexive outside the schema");
     }
     Ok(cells)
 }
@@ -2659,7 +2775,9 @@ fn infer_accent_pattern(
     lemma: &str,
     forms: &mut [String],
     raw: &mut [String],
+    exact: &dyn Fn(usize) -> bool,
 ) {
+    let matches = matches_for(pos);
     use church_slavonic_core::orthography::{realise, stressed_vowel_index, vowel_count};
     if *recension != Recension::Synodal {
         return;
@@ -2719,7 +2837,8 @@ fn infer_accent_pattern(
         let covered: Vec<usize> = (0..form_end)
             .filter(|cell| {
                 !forms[*cell].is_empty()
-                    && rule_matches(
+                    && matches(
+                        exact(*cell),
                         recension,
                         &raw[*cell],
                         &resolved_cell(pos, &realised, recension, *cell, &fact),
@@ -2750,7 +2869,8 @@ fn infer_accent_pattern(
         };
         for cell in 0..form_end {
             forms[cell] = if raw[cell].is_empty()
-                || rule_matches(
+                || matches(
+                    exact(cell),
                     recension,
                     &raw[cell],
                     &resolved_cell(pos, &realised, recension, cell, &fact),
@@ -2921,7 +3041,11 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     }
                     infer_participle_stems(&recension, &mut forms, &mut raw);
                 }
-                infer_accent_pattern(key.pos, &recension, &key.lemma, &mut forms, &mut raw);
+                let exact_cells: Vec<bool> =
+                    (0..arity).map(|i| obs.is_exact(i, &raw[i])).collect();
+                infer_accent_pattern(key.pos, &recension, &key.lemma, &mut forms, &mut raw, &|i| {
+                    exact_cells[i]
+                });
                 subtract_derived_accusatives(key.pos, &recension, &key.lemma, &mut forms, &raw);
                 // The personal pronoun is ONE shared row whose primaries
                 // the print arbitrates (Alypy's order, the witnesses); the
@@ -3007,6 +3131,10 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
         if let Some((_, fact_range)) = fact_geometry(key.pos) {
             let form_end = fact_range.start;
             let realised = church_slavonic_core::orthography::realise(&key.lemma, &recension);
+            // A transliterated spelling is judged under what it can
+            // encode here too (see `attested_matches`).
+            let matches = matches_for(key.pos);
+            let is_exact = |i: usize, f: &str| observations.iter().any(|o| o.is_exact(i, f));
             // The bare row is resolved FIRST and the snapshots taken after:
             // the forward pass below can re-store bare cells, and every
             // variant must reason from the bare row the runtime will see.
@@ -3078,7 +3206,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                         let reproduced = if !is_bare && !bare_exact[cell].is_empty() {
                             bare_exact[cell] == row.raw[cell]
                         } else {
-                            rule_matches(&recension, &row.raw[cell], &resolved(&row.forms, cell))
+                            matches(is_exact(cell, &row.raw[cell]), &recension, &row.raw[cell], &resolved(&row.forms, cell))
                         };
                         if !reproduced {
                             row.forms[cell] = row.raw[cell].clone();
@@ -3091,7 +3219,7 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     if !is_bare
                         && !row.forms[cell].is_empty()
                         && bare_exact[cell].is_empty()
-                        && rule_matches(&recension, &row.forms[cell], &resolved(&row.forms, cell))
+                        && matches(is_exact(cell, &row.forms[cell]), &recension, &row.forms[cell], &resolved(&row.forms, cell))
                     {
                         row.forms[cell] = String::new();
                     }
@@ -3612,10 +3740,9 @@ mod tests {
         let cell = |p: Person, g: Gender, c: Case| {
             obs[0].cells[pronoun_cell(&p, &Number::Singular, &g, &c)].clone()
         };
-        assert_eq!(
-            cell(Person::First, Gender::Feminine, Case::Accusative),
-            ["менѐ", "мѧ̀"]
-        );
+        assert_eq!(cell(Person::First, Gender::Feminine, Case::Accusative), ["менѐ"]);
+        let clitic = clitic_cell(&Person::First, &Number::Singular, &Gender::Feminine, &Case::Accusative);
+        assert_eq!(obs[0].cells[clitic.expect("cell")], ["мѧ̀"]);
         assert_eq!(cell(Person::Third, Gender::Neuter, Case::Genitive), ["є҆гѡ̀"]);
         assert_eq!(
             cell(Person::Third, Gender::Feminine, Case::Genitive),
