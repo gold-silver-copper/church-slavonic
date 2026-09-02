@@ -126,6 +126,21 @@ fn attach_soft(stem: &str, ending: &str) -> String {
 }
 
 impl ChurchSlavonicCore {
+    /// The closed lexicon the non-personal pronoun rule declines, in the
+    /// recension's citation forms: what a consumer can enumerate beyond
+    /// the table rows (the table holds only what the rule cannot predict,
+    /// so a lemma the rule serves entirely has no row).
+    pub fn npron_lexicon(recension: &Recension) -> &'static [&'static str] {
+        match recension {
+            Recension::Synodal => crate::npron_syn::LEXICON,
+            Recension::OldChurchSlavonic => &[
+                "тъ", "сь", "вьсь", "къто", "чьто", "иже", "мои", "твои", "свои", "нашь", "вашь",
+                "овъ", "онъ", "инъ", "ѥдинъ", "самъ", "толикъ", "селикъ", "коликъ", "сиць",
+                "никътоже", "ничьтоже",
+            ],
+        }
+    }
+
     /// Decline a non-personal pronoun by rule; the vocative answers with
     /// the nominative. Returns the empty string for a lemma outside the
     /// rule's closed lexicon — the caller's tables own those.

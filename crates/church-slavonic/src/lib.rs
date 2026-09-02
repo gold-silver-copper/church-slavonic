@@ -810,8 +810,24 @@ impl ChurchSlavonic {
     /// base and are not repeated). Read-only enumeration for consumers
     /// that need to walk the crate's vocabulary — the treebank's inverse
     /// index is the first. The iteration order is the tables' own
-    /// (sorted by key).
+    /// (sorted by key); for the non-personal pronoun the rule's closed
+    /// lexicon follows (v1.2), since a lemma the rule serves entirely
+    /// has no row (никто́же) and must not be invisible for it.
     pub fn lemmas(pos: PartOfSpeech, recension: &Recension) -> impl Iterator<Item = &'static str> {
+        let from_tables: Vec<&'static str> = Self::table_lemmas(pos, recension).collect();
+        let rule: &'static [&'static str] = match pos {
+            PartOfSpeech::NonPersonalPronoun => ChurchSlavonicCore::npron_lexicon(recension),
+            _ => &[],
+        };
+        let extra: Vec<&'static str> = rule
+            .iter()
+            .copied()
+            .filter(|l| !from_tables.contains(l))
+            .collect();
+        from_tables.into_iter().chain(extra)
+    }
+
+    fn table_lemmas(pos: PartOfSpeech, recension: &Recension) -> impl Iterator<Item = &'static str> {
         let table: &'static [(&'static str, &'static [(u16, &'static str)])] = match pos {
             PartOfSpeech::Noun => NOUN_TABLE,
             PartOfSpeech::Adjective => ADJ_TABLE,

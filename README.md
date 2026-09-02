@@ -49,38 +49,42 @@ benchmarking (`examples/speedmark.rs`, release):
 | **Nouns** | OCS | 40171 / 40171 | 100.00% | 0 |
 | **Nouns** | OCS (UD PROIEL train) | 2098 / 2098 | 100.00% | 0 |
 | **Nouns** | Synodal (Alypy) | 502 / 502 | 100.00% | 0 |
-| **Nouns** | Synodal (Polyakov) | 48135 / 48135 | 100.00% | 0 |
+| **Nouns** | Synodal (Polyakov) | 47831 / 47831 | 100.00% | 0 |
 | **Nouns** | Synodal (ru.wiktionary) | 651 / 651 | 100.00% | 0 |
 | **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
 | **Adjectives** | OCS | 38960 / 38960 | 100.00% | 0 |
 | **Adjectives** | OCS (UD PROIEL train) | 502 / 502 | 100.00% | 0 |
 | **Adjectives** | Synodal (Alypy) | 441 / 441 | 100.00% | 0 |
-| **Adjectives** | Synodal (Polyakov) | 87997 / 87997 | 100.00% | 0 |
+| **Adjectives** | Synodal (Polyakov) | 87460 / 87460 | 100.00% | 0 |
 | **Verbs** | OCS | 236411 / 236411 | 100.00% | 0 |
 | **Verbs** | OCS (UD PROIEL train) | 1802 / 1802 | 100.00% | 0 |
 | **Verbs** | Synodal (Alypy) | 262 / 262 | 100.00% | 0 |
-| **Verbs** | Synodal (Polyakov) | 60517 / 60517 | 100.00% | 0 |
+| **Verbs** | Synodal (Polyakov) | 59814 / 59814 | 100.00% | 0 |
 | **Verbs** | Synodal (ru.wiktionary) | 78 / 78 | 100.00% | 0 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
-| **Pronouns** | OCS (UD PROIEL train) | 67 / 67 | 100.00% | 0 |
-| **Pronouns** | Synodal (Alypy) | 90 / 90 | 100.00% | 0 |
-| **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
+| **Pronouns** | OCS (UD PROIEL train) | 72 / 72 | 100.00% | 0 |
+| **Pronouns** | Synodal (Alypy) | 114 / 114 | 100.00% | 0 |
+| **Pronouns** | Synodal (Polyakov) | 91 / 91 | 100.00% | 0 |
+| **Pronouns** | Synodal (witnessed print) | 14 / 14 | 100.00% | 0 |
 | **Non-personal pronouns** | OCS | 811 / 811 | 100.00% | 0 |
 | **Non-personal pronouns** | OCS (UD PROIEL train) | 191 / 191 | 100.00% | 0 |
+| **Non-personal pronouns** | Synodal (Alypy) | 252 / 252 | 100.00% | 0 |
+| **Non-personal pronouns** | Synodal (Polyakov) | 1651 / 1651 | 100.00% | 0 |
+| **Non-personal pronouns** | Synodal (witnessed print) | 9 / 9 | 100.00% | 0 |
 | **Nouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 8116 / 8818 | 92.04% | 702 |
 | **Adjectives** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 2134 / 2546 | 83.82% | 412 |
 | **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 7413 / 8662 | 85.58% | 1249 |
-| **Pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 4918 / 4960 | 99.15% | 42 |
+| **Pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 5984 / 6029 | 99.25% | 45 |
 | **Non-personal pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 1208 / 1296 | 93.21% | 88 |
 | **Nouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 44305 / 48825 | 90.74% | 4520 |
 | **Adjectives** | OCS (Syntacticus 2023-04-28, corpus recall) | 11698 / 13901 | 84.15% | 2203 |
 | **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 38709 / 45179 | 85.68% | 6470 |
-| **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 26764 / 27025 | 99.03% | 261 |
+| **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 32525 / 32800 | 99.16% | 275 |
 | **Non-personal pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 17765 / 18835 | 94.32% | 1070 |
 
-OCS (UD PROIEL r2.18 dev+test, corpus recall): 39133 tokens, 26282 slots mapped, 15243 skipped: adjective: no long lemma from the short one=17; adjective: superlative=1; ambiguous case=1; no number=791; part of speech outside the four tables=13233; pronoun: reciprocal=14; pronoun: reflexive=1069; verb: future=97; verb: subjunctive=20;
+OCS (UD PROIEL r2.18 dev+test, corpus recall): 39133 tokens, 27351 slots mapped, 14174 skipped: adjective: no long lemma from the short one=17; adjective: superlative=1; ambiguous case=1; no number=791; part of speech outside the four tables=13233; pronoun: reciprocal=14; verb: future=97; verb: subjunctive=20;
 
-OCS (Syntacticus 2023-04-28, corpus recall): 213658 tokens, 153765 slots mapped, 75729 skipped: adjective: no long lemma from the short one=42; adjective: strength unspecified=334; adjective: superlative=1; ambiguous case=11; no number=4088; part of speech outside the four tables=63632; pronoun: reciprocal=113; pronoun: reflexive=5775; verb: future=570; verb: participle strength unspecified=13; verb: participle without a tense=1004; verb: subjunctive=145; verb: tense outside the schema=1;
+OCS (Syntacticus 2023-04-28, corpus recall): 213658 tokens, 159540 slots mapped, 69954 skipped: adjective: no long lemma from the short one=42; adjective: strength unspecified=334; adjective: superlative=1; ambiguous case=11; no number=4088; part of speech outside the four tables=63632; pronoun: reciprocal=113; verb: future=570; verb: participle strength unspecified=13; verb: participle without a tense=1004; verb: subjunctive=145; verb: tense outside the schema=1;
 
 Bare-lemma correctness (does the natural bare-lemma call return the primary, first-listed, attested form?):
 
@@ -88,25 +92,29 @@ Bare-lemma correctness (does the natural bare-lemma call return the primary, fir
 |----------------|-----------|----------------------|---------------|-----------------|
 | **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
 | **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
-| **Nouns** | Synodal (Alypy) | 418 / 502 | 83.27% | 84 |
-| **Nouns** | Synodal (Polyakov) | 46415 / 48135 | 96.43% | 1720 |
-| **Nouns** | Synodal (ru.wiktionary) | 545 / 651 | 83.72% | 106 |
+| **Nouns** | Synodal (Alypy) | 425 / 502 | 84.66% | 77 |
+| **Nouns** | Synodal (Polyakov) | 46353 / 47831 | 96.91% | 1478 |
+| **Nouns** | Synodal (ru.wiktionary) | 550 / 651 | 84.49% | 101 |
 | **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
 | **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
 | **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
 | **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
-| **Adjectives** | Synodal (Polyakov) | 84429 / 87997 | 95.95% | 3568 |
+| **Adjectives** | Synodal (Polyakov) | 84607 / 87460 | 96.74% | 2853 |
 | **Verbs** | OCS | 218511 / 236411 | 92.43% | 17900 |
 | **Verbs** | OCS (UD PROIEL train) | 1395 / 1802 | 77.41% | 407 |
-| **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
-| **Verbs** | Synodal (Polyakov) | 58752 / 60517 | 97.08% | 1765 |
+| **Verbs** | Synodal (Alypy) | 241 / 262 | 91.98% | 21 |
+| **Verbs** | Synodal (Polyakov) | 58191 / 59814 | 97.29% | 1623 |
 | **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
-| **Pronouns** | OCS (UD PROIEL train) | 48 / 67 | 71.64% | 19 |
-| **Pronouns** | Synodal (Alypy) | 62 / 90 | 68.89% | 28 |
-| **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
+| **Pronouns** | OCS (UD PROIEL train) | 53 / 72 | 73.61% | 19 |
+| **Pronouns** | Synodal (Alypy) | 96 / 114 | 84.21% | 18 |
+| **Pronouns** | Synodal (Polyakov) | 85 / 91 | 93.41% | 6 |
+| **Pronouns** | Synodal (witnessed print) | 14 / 14 | 100.00% | 0 |
 | **Non-personal pronouns** | OCS | 805 / 811 | 99.26% | 6 |
 | **Non-personal pronouns** | OCS (UD PROIEL train) | 170 / 191 | 89.01% | 21 |
+| **Non-personal pronouns** | Synodal (Alypy) | 215 / 252 | 85.32% | 37 |
+| **Non-personal pronouns** | Synodal (Polyakov) | 1535 / 1651 | 92.97% | 116 |
+| **Non-personal pronouns** | Synodal (witnessed print) | 9 / 9 | 100.00% | 0 |
 
 The accuracy percentages measure **recall through any published key**: the
 share of attested source slots (a lemma's cell, with every form the source
@@ -151,37 +159,46 @@ correctness — whether the natural bare-lemma call returns the primary
 |----------------|-----------|----------------------|---------------|-----------------|
 | **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
 | **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
-| **Nouns** | Synodal (Alypy) | 418 / 502 | 83.27% | 84 |
-| **Nouns** | Synodal (Polyakov) | 46411 / 48135 | 96.42% | 1724 |
-| **Nouns** | Synodal (ru.wiktionary) | 545 / 651 | 83.72% | 106 |
+| **Nouns** | Synodal (Alypy) | 425 / 502 | 84.66% | 77 |
+| **Nouns** | Synodal (Polyakov) | 46353 / 47831 | 96.91% | 1478 |
+| **Nouns** | Synodal (ru.wiktionary) | 550 / 651 | 84.49% | 101 |
+| **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
 | **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
 | **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
 | **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
-| **Adjectives** | Synodal (Polyakov) | 84429 / 87997 | 95.95% | 3568 |
+| **Adjectives** | Synodal (Polyakov) | 84607 / 87460 | 96.74% | 2853 |
 | **Verbs** | OCS | 218511 / 236411 | 92.43% | 17900 |
 | **Verbs** | OCS (UD PROIEL train) | 1395 / 1802 | 77.41% | 407 |
-| **Verbs** | Synodal (Alypy) | 232 / 262 | 88.55% | 30 |
-| **Verbs** | Synodal (Polyakov) | 58759 / 60517 | 97.10% | 1758 |
+| **Verbs** | Synodal (Alypy) | 241 / 262 | 91.98% | 21 |
+| **Verbs** | Synodal (Polyakov) | 58191 / 59814 | 97.29% | 1623 |
 | **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
 | **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
-| **Pronouns** | OCS (UD PROIEL train) | 48 / 67 | 71.64% | 19 |
-| **Pronouns** | Synodal (Alypy) | 62 / 90 | 68.89% | 28 |
-| **Pronouns** | Synodal (Polyakov) | 75 / 75 | 100.00% | 0 |
+| **Pronouns** | OCS (UD PROIEL train) | 53 / 72 | 73.61% | 19 |
+| **Pronouns** | Synodal (Alypy) | 96 / 114 | 84.21% | 18 |
+| **Pronouns** | Synodal (Polyakov) | 85 / 91 | 93.41% | 6 |
+| **Pronouns** | Synodal (witnessed print) | 14 / 14 | 100.00% | 0 |
 | **Non-personal pronouns** | OCS | 805 / 811 | 99.26% | 6 |
 | **Non-personal pronouns** | OCS (UD PROIEL train) | 170 / 191 | 89.01% | 21 |
+| **Non-personal pronouns** | Synodal (Alypy) | 215 / 252 | 85.32% | 37 |
+| **Non-personal pronouns** | Synodal (Polyakov) | 1535 / 1651 | 92.97% | 116 |
+| **Non-personal pronouns** | Synodal (witnessed print) | 9 / 9 | 100.00% | 0 |
 
 A *demotion* is a slot whose first-listed form lives at a `_n` key because the
 deterministic sort put a lexicographically earlier variant on the bare key, or
 because a regular paradigm was attested and reserved the bare key for the
 rule (`сꙑнъ` -> `сꙑнови` by rule, `сꙑнъ_2` -> `сꙑноу`). Every attested form
 stays reachable. The Synodal sources attest the same slot with a different
-primary in 113 cases between Alypy and Polyakov (73 once accents, breathings
+primary in 112 cases between Alypy and Polyakov (69 once accents, breathings
 and the print's letter choices are folded) and in 85 between ru.wiktionary
 and Polyakov (57 beyond those conventions); each becomes a variant row,
-never adjudicated, and the sort decides which holds the bare key. A corpus
-also lists rare unaccented spellings (`рабъ` next to `ра́бъ`) and the
-abbreviations under a titlo are their own lemmas (`бг҃ъ`, `гл҃ати`), so the
-Synodal demotion counts are mostly the sort's choice among such spellings.
+never adjudicated, and the sort decides which holds the bare key — except
+that a row storing an accentless Synodal spelling (`всякую` once beside
+`всѧ́кꙋю`) sorts after the clean rows, and that the shared personal-pronoun
+row's bare key goes to its print-arbitrated primaries (v1.2). The
+abbreviations under a titlo are their own lemmas (`бг҃ъ`, `гл҃ати`), and
+the transliterated sources are scored under what they can encode (civil
+«я» for ꙗ/ѧ, one acute for the print's oxia and varia), so the Synodal
+demotion counts are mostly the sort's choice among genuine variants.
 
 Throughput on an Apple M-series laptop (`cargo run --release --example
 speedmark`): 5–10 million calls per second for a table hit (nouns,
@@ -235,8 +252,11 @@ fn main() {
 
 ### `church-slavonic`
 
-> The public API for noun, adjective, verb, and pronoun inflection in either
-> recension.
+> The public API for noun, adjective, verb and pronoun inflection in either
+> recension — the personal matrix with its reflexive and enclitic cells
+> (`pronoun`, `reflexive`, `clitic`) and the non-personal pronouns
+> (`npron`: the closed lexicon of то́й, се́й, ве́сь, и҆́же, the possessives
+> and interrogatives, in both recensions).
 
 * Combines generated tables from `extractor` with rules from
   `church-slavonic-core`.
@@ -264,17 +284,18 @@ construction, and progress is lifting leaves into analyzed nodes, which
 succeeds only when the crate's output matches the attested surface
 exactly. What cannot be verified stays verbatim; nothing is invented.
 
-`cargo xtask build-treebank` auto-lifts all 77 books / 34,470 verses in
-~10 s; `cargo xtask check-treebank` re-renders every stored tree against
-the print (zero mismatches) and prints the coverage table. First-run
-baseline over 631,946 tokens (2026-09-01):
+`cargo xtask build-treebank` auto-lifts all 77 books / 34,470 verses
+(~3 min with the pronoun inventory inverted); `cargo xtask
+check-treebank` re-renders every stored tree against the print (zero
+mismatches) and prints the coverage table. Over 631,946 tokens
+(2026-09-01, after v1.2):
 
 | Slice | Tokens | Share |
 |---|---|---|
-| Analyzed (unambiguous crate match) | 126,657 | 20.0% |
+| Analyzed (unambiguous crate match) | 136,136 | 21.5% |
 | Closed-class (attested function words) | 171,560 | 27.1% |
-| Ambiguous (recorded, never guessed) | 149,479 | 23.7% |
-| Verbatim (the crate-vocabulary frontier) | 183,233 | 29.0% |
+| Ambiguous (recorded, never guessed) | 195,741 | 31.0% |
+| Verbatim (the crate-vocabulary frontier) | 127,492 | 20.2% |
 | Apparatus (variant marks, footnotes) | 1,017 | 0.2% |
 
 Wave 2 (2026-09-01) inverted the pronoun, participle and degree APIs,
@@ -282,12 +303,20 @@ added the generated titlo layer (`data/titlo.tsv` — sacred abbreviations
 inflect as a constant stem plus the full paradigm's endings, reproducing
 80.9% of the admitted families' print tokens), and surfaced ~2,000
 lemmas whose only table rows are sense-numbered: verbatim fell from
-40.5% to 29.0%, measured lever by lever in NOTES.md.
+40.5% to 29.0%. The v1.2 crate program (Synodal non-personal pronouns,
+the reflexive and the clitic cells, the print arbitrating the
+transliterated sources) then took verbatim from 29.0% to 20.2% — the
+possessives from 16,518 verbatim tokens to 27, ве́сь/всѧ́къ from 7,228
+to 64, the relative и҆́же from 5,391 to 135 — with the homographs of
+the paradigms landing honestly in the ambiguous slice; every lever is
+measured in NOTES.md.
 
 Hand-lifted annotation (committed under `data/treebank-hand/`) reports
 its own ceiling row, byte-exact AND lint-clean — Genesis 1 stands
-complete (all 31 verses) at 79.4% lifted, six deliberate ambiguities
-and every verbatim leaf carrying its reason.
+complete (all 31 verses) at 85.1% lifted, six deliberate ambiguities
+and every verbatim leaf carrying its reason. The tree language has
+`(pers … :clit yes)` for a cell's enclitic and `(refl :case dat)` for
+the reflexive since v1.2.
 
 ### `church-slavonic-core`
 
@@ -348,14 +377,19 @@ rows: 1,169 OCS, 7,098 Synodal), adjectives 1,414 KB (7,544 rows: 311 OCS,
 | nouns | 21 | `number * 7 + case` (Singular, Dual, Plural × Nom, Gen, Dat, Acc, Ins, Loc, Voc) |
 | adjectives | 126 | `((degree * 3 + gender) * 3 + number) * 7 + case` (Positive, Comparative × Masc, Fem, Neut × …) |
 | verbs | 38 | finite blocks Present, Imperfect, Aorist, Imperative at `block * 9 + number * 3 + person`; 36 present active participle; 37 past active participle |
-| pronoun | 90 | the lemma-less personal matrix: 1st `number * 6 + case`, 2nd `18 + …`, 3rd `36 + (gender * 3 + number) * 6 + case`; keyed `personal`, its variants `personal_2`… |
+| pronoun | 119 | the lemma-less personal matrix: 1st `number * 6 + case`, 2nd `18 + …`, 3rd `36 + (gender * 3 + number) * 6 + case`; the reflexive at `90 + case`; the clitic cells at 96.. (1st `number * 2 + {dat, acc}`, 2nd `102 + …`, the 3rd person's accusatives `108 + gender * 3 + number`, the reflexive's 117/118); keyed `personal`, its variants `personal_2`… |
+| non-personal pronoun | 54 | `(gender * 3 + number) * 6 + case`, six cases; keyed by the accented citation form (`syn:ве́сь`, `syn:и҆́же`) |
 
 The personal pronoun has no lemma, so its variants are numbered on the
 constant key `personal` exactly like a lemma's: `ChurchSlavonic::pronoun`
 reads the primary row and `ChurchSlavonic::pronoun_sense("personal_2", …)`
-the variants — the corpus's enclitics and minority spellings, the grammar's
-own nominatives (`ѻ҆́нъ` beside the corpus's anaphoric `и҆̀`). That is how
-the Alypy pronoun row is at 90/90.
+the variants — minority spellings and the prepositional forms. Since 1.2
+the enclitics are cells of their own (`ChurchSlavonic::clitic`: мѝ, тѧ̀,
+ны̀, ѧ҆̀), the reflexive себѐ has its five cases (`reflexive`), and the
+print outranks the transliteration where the two differ only in what a
+civil transliteration cannot encode (`и҆̀хъ` accusative beside `и҆́хъ`
+genitive, `ѧ҆̀` for the dictionary's «я́»). That is how the Alypy pronoun
+row is at 114/114 and the witnessed print at 14/14.
 
 ## 📦 Obtaining Data & Running the Extractor
 

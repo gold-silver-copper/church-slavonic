@@ -161,8 +161,10 @@ fn part_2_the_non_personal_pronouns_read_as_the_print() {
     );
     // the inventory is enumerable
     let lemmas: Vec<&str> = ChurchSlavonic::lemmas(PartOfSpeech::NonPersonalPronoun, &SYN).collect();
-    for l in ["ве́сь", "и҆́же", "то́й", "се́й", "на́шъ", "кто̀", "что̀", "всѧ́къ", "є҆ди́нъ"] {
+    for l in ["ве́сь", "и҆́же", "то́й", "се́й", "на́шъ", "кто̀", "что̀", "всѧ́къ", "є҆ди́нъ", "никто́же", "нѣ́кто", "кто́же"] {
         assert!(lemmas.contains(&l), "{l}");
     }
+    assert_eq!(lemmas.iter().filter(|l| **l == "ве́сь").count(), 1);
+    assert_eq!(pn("кто́же", Masculine, Singular, Dative), "комꙋ́же");
     assert!(!lemmas.contains(&"мъ"));
 }

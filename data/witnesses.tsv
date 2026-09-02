@@ -37,3 +37,7 @@ syn	npron	ве́сь	n.pl.acc	всѧ̑	assets/bible/000.txt	И҆ ви́дѣ бг
 # unstressed («ны», «ся»); the print marks them.
 syn	pronoun	personal	clit.1.pl.acc	ны̀	assets/bible/000.txt	ѡ҆живи́лъ ны̀ є҆сѝ
 syn	pronoun	personal	refl.clit.acc	сѧ̀	assets/bible/001.txt	да не наведꙋ́тъ на сѧ̀ грѣха̀
+# v1.2 part 5 — the relative's masculine accusative: the dictionary's
+# `nom/acc` bundle puts «и҆́же» there (10,272 nominatives); the print's
+# accusative is «є҆го́же» (503 tokens).
+syn	npron	и҆́же	m.sg.acc	є҆го́же	assets/bible/000.txt	є҆го́же возлюби́лъ є҆сѝ

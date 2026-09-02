@@ -135,6 +135,16 @@ const HARD_LEMMAS: [&str; 9] = [
     "ѻ҆́въ", "ѻ҆́нъ", "є҆ди́нъ", "всѧ́къ", "толи́къ", "є҆ли́къ", "коли́къ", "и҆́нъ", "са́мъ",
 ];
 
+/// The closed lexicon the rule declines — the citation forms a consumer
+/// can enumerate even where no table row exists because the rule
+/// reproduces every attested cell (никто́же, нѣ́кто, кто́же).
+pub(crate) const LEXICON: &[&str] = &[
+    "то́й", "се́й", "ве́сь", "кі́й", "кто̀", "что̀", "мо́й", "тво́й", "сво́й", "чі́й", "на́шъ", "ва́шъ",
+    "и҆́же", "ѻ҆́въ", "ѻ҆́нъ", "є҆ди́нъ", "всѧ́къ", "толи́къ", "є҆ли́къ", "коли́къ", "и҆́нъ", "са́мъ",
+    "никто́же", "ничто́же", "нѣ́кто", "нѣ́что", "нѣ́кій", "никі́йже", "то́йже", "то́йжде", "кто́же",
+    "что́же", "кі́йждо",
+];
+
 fn cell(gender: &Gender, number: &Number, case: &Case) -> usize {
     (*gender as usize * 3 + *number as usize) * 6 + *case as usize
 }

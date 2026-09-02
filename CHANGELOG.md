@@ -1,5 +1,82 @@
 # Changelog
 
+## 1.2.0 — the Synodal pronoun release
+
+The commonest words of the language render from cells: Synodal
+non-personal pronouns (и҆́же, ве́сь, се́й, то́й, the possessives, the
+interrogatives), the reflexive себѐ and the enclitics (мѝ, тѧ̀, ны̀, ѧ҆̀)
+were empty or unaddressable in 1.1; the whole-Bible treebank's verbatim
+share fell from 29.0% to 20.2% on this release alone. Every part is
+measured in NOTES.md (v1.2 parts 0–5).
+
+### Added
+- **Synodal non-personal pronouns**: `ChurchSlavonic::npron` answers in
+  the Synodal recension (`church_slavonic_core::npron_syn`: the print's
+  closed lexicon from Alypy §47/§48 — то́й/се́й/ве́сь/кі́й/кто̀/что̀
+  tables, the ending-stressed possessives, the stem-stressed soft and
+  hard classes with velar softening, the relative и҆́же as the
+  third-person row + же with the plural varia, ни-/нѣ́- prefixes and
+  же/жде/ждо enclitics); 158 attested rows from Polyakov's APRO entries
+  (short series; the long series joins the ADJECTIVE table under its own
+  citation form: всѧ́кїй, ѻ҆́вый), the кто̀/что̀ family and Alypy §48.
+  `lemmas(NonPersonalPronoun, Synodal)` enumerates 60 table lemmas and
+  the rule's closed lexicon (`ChurchSlavonicCore::npron_lexicon`).
+- **The reflexive and the clitic cells**: the personal matrix grows
+  append-only from 90 to 119 cells — `reflexive(case, recension)`
+  (себє̀/себѣ̀/себѐ/собо́ю), `clitic(person, number, gender, case,
+  recension) -> Option` (мѝ/мѧ̀/тѝ/тѧ̀/ны̀/вы̀; и҆̀/ю҆̀/є҆̀/ѧ҆̀; in OCS the
+  clitic is the primary accusative), `reflexive_clitic` (сѝ/сѧ̀), each
+  with a `_sense` twin for the variant keys; `schema::reflexive_cell`,
+  `clitic_cell`, `reflexive_clitic_cell`, `pronoun_features`.
+- **Witness rows for pronouns**: `data/witnesses.tsv` accepts `pronoun`
+  and `npron` with symbolic cells (`3.f.sg.dat`, `clit.1.pl.acc`,
+  `m.pl.gen`); 23 new rows, every one a verified line of the Bible.
+- **Orthography**: `realise` keeps an explicit varia on a monosyllable's
+  only vowel — and on the host of a solid enclitic — so the print's
+  «и҆̀хъ»/«и҆̀мъ» (against the genitive «и҆́хъ») and «и҆̀же»/«ꙗ҆̀же»/
+  «и҆̀хже» (the relative's plural) are spellable;
+  `transliteration_equivalent`, `number_mark_equivalent`,
+  `is_vowel_letter`.
+
+### Fixed
+- **The Synodal personal row reads as the print**: «ꙗ҆̀» (Polyakov's
+  civil «я́») gave way to «ѧ҆̀» in the dual and neuter-plural accusatives;
+  the nominatives are the ѻ҆́нъ series (the anaphor «и҆̀»/«ꙗ҆̀»/«є҆̀»
+  had been attested as nominatives by the dictionary's `nom/acc`
+  bundles); «мы̀» is the plural nominative (not «ны̀»), «тебє̀» the
+  genitive, «є҆́й»/«є҆́ю» the feminine dative/instrumental, «ни́хъ» the
+  plural locative, «и҆̀мъ»/«и҆̀хъ» the plural dative/accusative.
+- **Lookup invariant 5 — the print outranks the transliteration**: a
+  print-exact source (Alypy, a witness) decides the letters a civil
+  transliteration cannot encode (ꙗ/ѧ, the monosyllable's oxia/varia);
+  a transliterated form differing from the rule only in those is the
+  rule's form and is not stored; each source is scored under what it
+  can encode. On the pronoun rows the print's number mark (the kamora of
+  всѧ̑, на̑ша) and an enclitic's mark presence («ны» for «ны̀») are the
+  rule's too — the dictionary's tag bundles cannot attest them per cell.
+- **Bare-key assignment**: the shared personal row's bare key goes to
+  its primary readings; a row storing an accentless Synodal spelling
+  never outranks a clean one (всѧ́кій's «всякую» had taken the key from
+  «всѧ́кꙋю»). Tried for every lemma-keyed row and refuted by the
+  treebank (Polyakov's counts are per form, not per cell; «га́ды»
+  outranked «гадѡ́въ»): recorded, deferred to the Bible-as-source design.
+- **Source reading**: Polyakov's erok/abbreviation marks on a consonant
+  («нас̑», «нбс̑нѣй»; 3,762 spellings) are no longer forms — 366 noun,
+  449 adjective and 337 verb rows that existed only for them are gone;
+  the anaphor's nominative analyses are skipped; `X+же` headwords are
+  the print's one word (то́йже); UD `Reflex=Yes` (minus the possessive)
+  and PROIEL `Pk` feed the reflexive cells.
+
+### Measured
+- Accuracy 100.00% / gap 0 on every source including the new rows:
+  Non-personal pronouns Synodal (Alypy) 252/252, (Polyakov) 1,651/1,651,
+  (witnessed print) 9/9; Pronouns Synodal (witnessed print) 14/14.
+  Corpus recall now counts the reflexives it used to skip: pronouns UD
+  dev+test 5,984/6,029 (99.25%), Syntacticus 32,525/32,800 (99.16%).
+- The treebank (church-slavonic-syntax): zero mismatches over 34,470
+  verses; analyzed 20.0% → 21.5%, ambiguous 23.7% → 31.0%, verbatim
+  29.0% → 20.2%; Genesis 1's hand ceiling 79.4% → 85.1%.
+
 ## 1.1.0 — the consumer-defect release
 
 The first real consumer (the `vertograd` monastery game) audited hundreds

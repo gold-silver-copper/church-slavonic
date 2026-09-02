@@ -684,3 +684,62 @@ full cell — the two lights; the «ѧ҆̀» of 1:22 as the clitic, masculine
 plural for the mixed creatures), є҆́ю, and себѣ̀ as (refl :case loc).
 Ceiling 79.4% → 85.1% lifted (316 analyzed + 209 closed of 617; 86
 verbatim, 6 deliberate ambiguities unchanged). Lint-clean.
+
+## 2026-09-01 — v1.2 part 5: the close
+
+Version 1.2.0 (`church-slavonic`, `church-slavonic-core`); CHANGELOG
+entry per part; README tables regenerated from the final `cargo xtask
+accuracy` run (29 recall rows at 100.00% / 0) and the final
+`check-treebank`. Two last crate-side items from the residue: (1)
+`lemmas(NonPersonalPronoun)` now chains the rule's closed lexicon
+(`ChurchSlavonicCore::npron_lexicon`) — a lemma the rule serves entirely
+has no table row and was invisible to the lift (никто́же 174 tokens,
+нѣ́кто, кто́же); (2) a witness for the relative's masculine accusative
+«є҆го́же» (Gen 22:2; 503 tokens) against the dictionary's `nom/acc`
+bundle. Treebank rebuilt: zero mismatches.
+
+Final table, whole Bible (631,946 tokens): analyzed 21.5% (wave start
+20.0%), closed 27.1%, ambiguous 31.0% (23.7%), verbatim 20.2% (29.0%;
+127,492 tokens), apparatus 0.2%. Per family, verbatim before → after:
+possessives 16,518 → 27; се́й/то́й/и҆́нъ/са́мъ 6,467 → 1,451; ве́сь/всѧ́къ
+7,228 → 64; и҆́же 5,391 → 135; third-person short forms 715 → 618;
+clitics 2,898 → 784; кто̀/что̀ 2,466 → 235; себѐ 1,240 → 15. Genesis 1
+at 85.1% lifted (79.4%).
+
+What of the pronoun band is STILL verbatim, by class — the next map:
+1. **The prepositional н- forms** (ни́мъ 730, немꙋ̀ 524, ни̑мъ 353, негѡ̀
+   328, нѧ̀ 130, ню̀ 98, нѧ́же 70, ню́же 62): attested, stored as `_n`
+   variants of the personal row and of и҆́же, and the lift inverts the
+   primary row only. A syntax-side design: either invert the variant
+   keys (`(pers … :key personal_3)`) or give the prepositional form a
+   feature of its own; the print is unambiguous about it (always after a
+   preposition).
+2. **The enclitic accent contexts** (тѧ 177, мѧ 229, ми 161, ти 53, вы́
+   80, ты́ 180, что́ 74, кто́ 61, Ѻ҆ни́ 83, Ѻ҆на́ 43): the print writes a
+   clitic unstressed after a proparoxytone and a host with the oxia
+   before же/бо/ли — the «Землѧ́ же» class, out of scope by design (a
+   context rule over token sequences, recorded since syntax wave 2).
+3. **The print's ї before a vowel** (сїѧ̑ 1,080, сїѐ 675, сїю̀ 175, сїѧ̀
+   175, всѧ́кїѧ 70, всѧ́кїй 28): the crate's canonical Synodal typography
+   folds ї to і because the pinned sources never spell ї before a vowel;
+   séй's whole feminine/neuter is in this class. The Bible-as-source
+   design (HANDOFF item 2) is the only clean resolution.
+4. **Capitalised sentence-initial forms** whose lowercase is ambiguous
+   or prepositional (Сїѧ̑ 159, Ѻ҆ни́, Вси́ 14): the `cap` path lifts a
+   capital only when the lowercase lifts.
+5. **Residual bundle artefacts** the witnesses did not reach (ѻ҆́но 58 —
+   the demonstrative ѻ҆́нъ's neuter with Polyakov's second entry's
+   stress; всѧ́цѣй 45 — the print's dative/locative of всѧ́кїй against
+   the rule's всѧ́кой; вси́ 34 before an enclitic).
+Outside the pronoun band, the biggest verbatim tokens are the intake for
+the next waves: бꙋ́детъ 2,170 / бꙋ́дꙋтъ 660 / бѣ̀ 855 (бы́ти's future and
+imperfect — the schema gap), the titlo families (гдⷭ҇а 994, гдⷭ҇ꙋ 567,
+нн҃ѣ 834, бж҃їѧ 283), the closed-class words not yet in the table (и҆лѝ
+1,027, ѹ҆̀бо 761, да́же 730, та́мѡ 671, нижѐ 607, поне́же 492, ѕѣлѡ̀ 452,
+па́че 451, до́ндеже 434 — one attested row each), the numerals (два̀,
+трѝ, пѧ́ть, се́дмь, два́десѧть), and the nouns with the print's plural
+marks (лю́дїе 661, мꙋ́жїе 376).
+
+The disambiguation of the ambiguous band — now 31.0% and the largest
+non-mechanical slice, the possessives' 13,845 homographs its newest
+members — stays deliberately its own future design.
