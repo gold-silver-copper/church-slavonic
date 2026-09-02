@@ -41,8 +41,11 @@ pub enum Node {
     /// `(pn лемма :case nom :num sg :g m)` — a non-personal pronoun.
     Npron { lemma: String, gender: Gender, number: Number, case: Case },
     /// `(pers :p 3 :num sg :case gen :g m)` — the personal pronoun; the
-    /// first and second persons carry no gender (omit :g).
-    Pers { person: Person, number: Number, gender: Option<Gender>, case: Case },
+    /// first and second persons carry no gender (omit :g); `:clit yes`
+    /// renders the cell's enclitic form (мѝ, тѧ̀, ѧ҆̀ — v1.2).
+    Pers { person: Person, number: Number, gender: Option<Gender>, case: Case, clitic: bool },
+    /// `(refl :case dat)` — the reflexive себѐ; `:clit yes` for сѝ/сѧ̀.
+    Refl { case: Case, clitic: bool },
     /// `(part лемма :t pres :voice act :series long :case nom :num sg :g m)`
     Part {
         lemma: String,
@@ -141,6 +144,15 @@ fn features(items: &[Value]) -> Result<Vec<(String, String)>, TreeError> {
         }
     }
     Ok(out)
+}
+
+/// A yes/no feature (`:clit yes`); absent means no.
+fn read_flag(value: Option<&str>, head: &str) -> Result<bool, TreeError> {
+    match value {
+        None | Some("no") => Ok(false),
+        Some("yes") => Ok(true),
+        Some(other) => err(format!("({head} …): a flag is yes or no, not {other}")),
+    }
 }
 
 fn take<'a>(fs: &'a [(String, String)], key: &str) -> Option<&'a str> {
@@ -260,6 +272,14 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
                     Some(g) => Some(read_gender(g)?),
                     None => None,
                 },
+                clitic: read_flag(take(&fs, "clit"), "pers")?,
+            })
+        }
+        "refl" => {
+            let fs = features(rest)?;
+            Ok(Node::Refl {
+                case: read_case(require(&fs, "case", "refl")?)?,
+                clitic: read_flag(take(&fs, "clit"), "refl")?,
             })
         }
         "part" => {
@@ -384,7 +404,7 @@ pub fn to_sexpr(node: &Node) -> Value {
             key("num"), atom(show_num(number)),
             key("g"), atom(show_gender(gender)),
         ]),
-        Node::Pers { person, number, gender, case } => {
+        Node::Pers { person, number, gender, case, clitic } => {
             let mut items = vec![
                 atom("pers"),
                 key("p"), atom(show_person(person)),
@@ -394,6 +414,18 @@ pub fn to_sexpr(node: &Node) -> Value {
             if let Some(g) = gender {
                 items.push(key("g"));
                 items.push(atom(show_gender(g)));
+            }
+            if *clitic {
+                items.push(key("clit"));
+                items.push(atom("yes"));
+            }
+            Value::List(items)
+        }
+        Node::Refl { case, clitic } => {
+            let mut items = vec![atom("refl"), key("case"), atom(show_case(case))];
+            if *clitic {
+                items.push(key("clit"));
+                items.push(atom("yes"));
             }
             Value::List(items)
         }
@@ -504,13 +536,34 @@ fn walk(
             }
             emit(&form, false, out, glue_next);
         }
-        Node::Pers { person, number, gender, case } => {
+        Node::Pers { person, number, gender, case, clitic } => {
             // the first and second persons carry no gender; masculine is
             // the API's placeholder argument for them
             let g = gender.unwrap_or(Gender::Masculine);
-            let form = ChurchSlavonic::pronoun(person, number, &g, case, recension);
+            let form = if *clitic {
+                match ChurchSlavonic::clitic(person, number, &g, case, recension) {
+                    Some(f) => f,
+                    None => return err("(pers … :clit yes): the cell has no clitic".to_string()),
+                }
+            } else {
+                ChurchSlavonic::pronoun(person, number, &g, case, recension)
+            };
             if form.is_empty() {
                 return err("(pers …) renders empty".to_string());
+            }
+            emit(form, false, out, glue_next);
+        }
+        Node::Refl { case, clitic } => {
+            let form = if *clitic {
+                match ChurchSlavonic::reflexive_clitic(case, recension) {
+                    Some(f) => f,
+                    None => return err("(refl … :clit yes): the case has no clitic".to_string()),
+                }
+            } else {
+                ChurchSlavonic::reflexive(case, recension)
+            };
+            if form.is_empty() {
+                return err("(refl …) renders empty (the reflexive has no nominative)".to_string());
             }
             emit(form, false, out, glue_next);
         }
@@ -649,6 +702,17 @@ mod tests {
             ("(pers :p 3 :num sg :case gen :g m)", "є҆гѡ̀"),
             ("(pers :p 3 :num sg :case gen :g f)", "є҆ѧ̀"),
             ("(pers :p 1 :num sg :case gen)", "менє̀"),
+            // v1.2: the clitic and reflexive leaves (pasted output)
+            ("(pers :p 1 :num sg :case dat :clit yes)", "мѝ"),
+            ("(pers :p 2 :num sg :case acc :clit yes)", "тѧ̀"),
+            ("(pers :p 3 :num pl :case acc :g m :clit yes)", "ѧ҆̀"),
+            ("(pers :p 3 :num pl :case acc :g m)", "и҆̀хъ"),
+            ("(pers :p 3 :num pl :case dat :g m)", "и҆̀мъ"),
+            ("(refl :case dat)", "себѣ̀"),
+            ("(refl :case acc :clit yes)", "сѧ̀"),
+            ("(pn ве́сь :case acc :num pl :g n)", "всѧ̑"),
+            ("(pn всѧ́къ :case acc :num sg :g f)", "всѧ́кꙋ"),
+            ("(pn и҆́же :case acc :num pl :g f)", "ꙗ҆̀же"),
             ("(part нестѝ :t pres :voice act :series short :case nom :num sg :g m)", "несы́й"),
             ("(part нестѝ :t pres :voice pass :series long :case nom :num sg :g f)", "несомаѧ"),
             ("(adj вели́кїй :case nom :num sg :g m :deg sup)", "превели́кий"),

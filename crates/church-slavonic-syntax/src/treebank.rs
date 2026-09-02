@@ -110,6 +110,7 @@ fn tree_coverage(node: &Node, coverage: &mut Coverage) {
         | Node::LPart { .. }
         | Node::Npron { .. }
         | Node::Pers { .. }
+        | Node::Refl { .. }
         | Node::Part { .. } => {
             coverage.analyzed += 1;
         }

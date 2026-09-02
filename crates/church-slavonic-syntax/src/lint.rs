@@ -76,7 +76,7 @@ fn walk(
             let _ = notes;
         }
         Node::Noun { .. } | Node::Adj { .. } | Node::Verb { .. } | Node::LPart { .. }
-        | Node::Npron { .. } | Node::Pers { .. } | Node::Part { .. } => {}
+        | Node::Npron { .. } | Node::Pers { .. } | Node::Refl { .. } | Node::Part { .. } => {}
         Node::Punct(_) => {}
         Node::Cap(child) => walk(child, recension, &format!("{path}/cap"), findings),
         Node::Abbr { prefix, child } => {
@@ -120,7 +120,7 @@ fn lint_expect(
             return;
         }
         Node::Noun { .. } | Node::Adj { .. } | Node::Verb { .. } | Node::LPart { .. }
-        | Node::Npron { .. } | Node::Pers { .. } | Node::Part { .. } => None,
+        | Node::Npron { .. } | Node::Pers { .. } | Node::Refl { .. } | Node::Part { .. } => None,
         _ => return,
     };
     // Analyzed leaves carry no notes today; :expect arrives through the

@@ -15,10 +15,12 @@
 //!
 //! The non-lexicographic tiebreaks are standard-before-soft (a sense the
 //! source marks as dialectal must never take the bare key from a standard
-//! sibling) and primary-before-variant (the shared personal-pronoun row's
+//! sibling), primary-before-variant (the shared personal-pronoun row's
 //! second-choice alternatives must never take the bare key from the row of
 //! its print-arbitrated first choices — the v1.2 finding: the shorter
-//! variant row sorted first). Everything else is the plain form sort.
+//! variant row sorted first) and clean-before-noisy (a row storing an
+//! accentless Synodal spelling, a transliteration's dropped mark, sorts
+//! after the rows without one). Everything else is the plain form sort.
 //!
 //! # Stability
 //!
@@ -61,6 +63,11 @@ pub struct Candidate {
     /// extractor sets it for the shared personal-pronoun row only, whose
     /// primaries the print arbitrates; see `extract::finalize`.
     pub primary: bool,
+    /// How many of the row's stored Synodal forms carry no stress mark at
+    /// all — a transliteration's dropped accent («всякую» once beside
+    /// «всѧ́кꙋю» 227 times), never the print's. Such a row sorts after
+    /// the clean rows, so noise never takes the bare key (v1.2 part 4).
+    pub noise: usize,
 }
 
 impl Candidate {
@@ -70,6 +77,7 @@ impl Candidate {
             forms,
             soft_sense: false,
             primary: false,
+            noise: 0,
         }
     }
 
@@ -82,8 +90,8 @@ impl Candidate {
     /// lexicographically. It is a pure function of the candidate's forms
     /// (softness and primacy included), so the output is invariant under any
     /// permutation of the sources' entry order.
-    fn order_key(&self) -> (bool, bool, String) {
-        (self.soft_sense, !self.primary, self.sig())
+    fn order_key(&self) -> (bool, bool, usize, String) {
+        (self.soft_sense, !self.primary, self.noise, self.sig())
     }
 }
 
@@ -191,6 +199,15 @@ mod tests {
         assert_eq!(a[0].key, "x");
         assert_eq!(a[0].forms, ["я", "б"]);
         assert_eq!(a[1].forms, ["а", ""]);
+    }
+
+    #[test]
+    fn a_noisy_row_never_takes_the_bare_key() {
+        let mut noisy = cand(&["а", "б"]);
+        noisy.noise = 1;
+        let a = assign("x", vec![noisy, cand(&["я", "б"])], false);
+        assert_eq!(a[0].key, "x");
+        assert_eq!(a[0].forms, ["я", "б"]);
     }
 
     #[test]

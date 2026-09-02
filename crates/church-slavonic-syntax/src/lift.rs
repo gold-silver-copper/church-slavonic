@@ -30,7 +30,11 @@ pub enum Analysis {
     Verb { lemma: &'static str, person: Person, number: Number, tense: Tense, form: Form },
     LPart { lemma: &'static str, gender: Gender, number: Number },
     Npron { lemma: &'static str, gender: Gender, number: Number, case: Case },
-    Pers { person: Person, number: Number, gender: Option<Gender>, case: Case },
+    /// the personal pronoun; `clitic` for the enclitic form of the cell
+    /// (мѝ, тѧ̀, ѧ҆̀ — v1.2)
+    Pers { person: Person, number: Number, gender: Option<Gender>, case: Case, clitic: bool },
+    /// the reflexive себѐ (no person, number or gender), clitic or full
+    Refl { case: Case, clitic: bool },
     Part {
         lemma: &'static str,
         tense: Tense,
@@ -67,9 +71,10 @@ impl Analysis {
             Analysis::Npron { lemma, gender, number, case } => {
                 Node::Npron { lemma: lemma.to_string(), gender, number, case }
             }
-            Analysis::Pers { person, number, gender, case } => {
-                Node::Pers { person, number, gender, case }
+            Analysis::Pers { person, number, gender, case, clitic } => {
+                Node::Pers { person, number, gender, case, clitic }
             }
+            Analysis::Refl { case, clitic } => Node::Refl { case, clitic },
             Analysis::Part { lemma, tense, voice, series, case, number, gender } => {
                 Node::Part { lemma: lemma.to_string(), tense, voice, series, case, number, gender }
             }
@@ -247,9 +252,8 @@ impl Index {
                 }
             }
         }
-        // non-personal pronouns: table lemmas (Synodal has none today —
-        // the absence is a recorded crate gap, not a silent skip; the
-        // code path stands and serves OCS the day an OCS treebank comes)
+        // non-personal pronouns: the table lemmas (Synodal since v1.2 —
+        // 60 lemmas, the rule and the rows) over the six real cases
         for lemma in ChurchSlavonic::lemmas(PartOfSpeech::NonPersonalPronoun, recension) {
             for gender in GENDERS {
                 for number in NUMBERS {
@@ -280,7 +284,16 @@ impl Index {
                     if !form.is_empty() {
                         add(
                             form.to_string(),
-                            Analysis::Pers { person, number, gender: None, case },
+                            Analysis::Pers { person, number, gender: None, case, clitic: false },
+                        );
+                    }
+                    // the enclitic form of the cell, where the language has one
+                    if let Some(form) =
+                        ChurchSlavonic::clitic(&person, &number, &Gender::Masculine, &case, recension)
+                    {
+                        add(
+                            form.to_string(),
+                            Analysis::Pers { person, number, gender: None, case, clitic: true },
                         );
                     }
                 }
@@ -295,10 +308,35 @@ impl Index {
                                 number,
                                 gender: Some(gender),
                                 case,
+                                clitic: false,
+                            },
+                        );
+                    }
+                    if let Some(form) =
+                        ChurchSlavonic::clitic(&Person::Third, &number, &gender, &case, recension)
+                    {
+                        add(
+                            form.to_string(),
+                            Analysis::Pers {
+                                person: Person::Third,
+                                number,
+                                gender: Some(gender),
+                                case,
+                                clitic: true,
                             },
                         );
                     }
                 }
+            }
+        }
+        // the reflexive: no number or gender; full and clitic cells
+        for case in NPRON_CASES {
+            let form = ChurchSlavonic::reflexive(&case, recension);
+            if !form.is_empty() {
+                add(form.to_string(), Analysis::Refl { case, clitic: false });
+            }
+            if let Some(form) = ChurchSlavonic::reflexive_clitic(&case, recension) {
+                add(form.to_string(), Analysis::Refl { case, clitic: true });
             }
         }
         // the titlo layer: every committed row's full paradigm,

@@ -2458,6 +2458,7 @@ impl LemmaAcc {
             raw: Vec::new(),
             soft_sense: false,
             primary: false,
+            noise: 0,
         });
         c.primary |= primary;
         // Same-signature candidates are one candidate, but each may have
@@ -3100,6 +3101,29 @@ pub fn finalize(lexemes: &Lexemes) -> Tables {
                     cand.raw[VERB_CLASS_CELL] = class.to_string();
                     cand.raw[PRESENT_STEM_CELL] = stem;
                 }
+            }
+        }
+        // A stored Synodal form with no stress mark is a transliteration's
+        // dropped accent (the lemma is accented; a titlo abbreviation is
+        // not counted): the row that carries it must not outrank the clean
+        // rows in the bare-key sort.
+        if recension == Recension::Synodal
+            && church_slavonic_core::orthography::is_accented(&key.lemma)
+        {
+            use church_slavonic_core::orthography::{is_accented, vowel_count};
+            for cand in &mut candidates {
+                cand.noise = cand
+                    .forms
+                    .iter()
+                    .enumerate()
+                    .filter(|(i, f)| {
+                        !f.is_empty()
+                            && fact_geometry(key.pos).is_none_or(|(a, r)| *i != a && !r.contains(i))
+                            && vowel_count(f) > 0
+                            && !is_accented(f)
+                            && !f.contains('\u{483}')
+                    })
+                    .count();
             }
         }
         let mut assigned = assign(&key.lemma, candidates, had_regular);

@@ -629,3 +629,58 @@ dev+test 4,918/4,960 → 5,984/6,029 (99.25%; the denominator +1,069),
 Syntacticus 26,764/27,025 → 32,525/32,800 (99.16%; +5,775) — recall on
 the old cells did not fall. Bare-primary: Polyakov pronouns 91.55% →
 93.41%, Alypy 76.67% → 84.21%.
+
+## 2026-09-01 — v1.2 part 4: the consumer proof — the treebank
+
+The syntax crate inverts the new cells: every Synodal non-personal
+pronoun lemma × 54 cells (`lemmas()` now lists 60), the reflexive's
+five cases, and every clitic cell, into the surface → analyses index;
+two leaves join the tree language — `(pers … :clit yes)` for a cell's
+enclitic form and `(refl :case dat)` / `(refl :case acc :clit yes)` for
+себѐ — with exact-output tests pasted from the crate, and the old "syn
+npron refuses to render" test replaced by the rendering one. The
+round-trip invariant held at zero mismatches over all 34,470 verses
+after the rebuild (inverse index 839,106 surfaces).
+
+Whole Bible, before → after (part 1's build → part 4's):
+analyzed 20.2% → 21.2%, closed 27.1%, ambiguous 24.7% → 31.2%,
+verbatim 27.8% → 20.3% (176,852 → 129,239 tokens). Per family
+(verbatim / ambiguous):
+
+| family | before | after |
+|---|---|---|
+| possessives (мо́й, тво́й, сво́й, на́шъ, ва́шъ) | 16,518 / 0 | 27 / 13,845 |
+| се́й, то́й, и҆́нъ, са́мъ | 6,467 / 1,764 | 1,451 / 4,321 |
+| ве́сь, всѧ́къ | 7,228 / 419 | 64 / 5,536 |
+| и҆́же | 5,391 / 0 | 642 / 6,797 |
+| third-person short forms | 715 / 16,137 | 618 / 17,368 |
+| clitics (мѝ, тѧ̀, ны̀, сѧ̀ …) | 2,898 / 1,667 | 784 / 1,813 |
+| кто̀, что̀ and compounds | 2,466 / 0 | 470 / 1,996 |
+| себѐ | 1,240 / 0 | 15 / 854 |
+
+The families moved from verbatim into ANALYZED and AMBIGUOUS — the
+possessives' 13,845 ambiguous tokens are the honest homographs of the
+paradigm (моѧ̑ is nominative and accusative of three genders; the
+disambiguation design is still deliberately its own future). The
+residue is itemised in part 5.
+
+One more assignment finding on the way: the new adjective row всѧ́кій
+(the APRO long series) took its bare key from a row carrying Polyakov's
+single unaccented «всякую», so «всѧ́кꙋю» in Gen 1:29 rendered without
+its stress. A stored Synodal form with no stress mark under an accented
+lemma is a transliteration's dropped accent, never the print's: the
+bare-key sort now orders clean rows before noisy ones
+(`Candidate::noise`, after soft/primary, before the form signature).
+Polyakov bare-primary rates: nouns 96.86% → 96.91%, adjectives 96.67% →
+96.74%, verbs 97.20% → 97.29%; accuracy 100.00%/0 on every source.
+
+Genesis 1 (the hand overlay): every pronoun leaf lifted — the ве́сь/всѧ́къ
+family (всѧ́кꙋ, всѧ̑, всѣ́ми, все́ю, всеѧ̀, всѣ̑мъ, всѧ́комꙋ; всѧ́кꙋю /
+всѧ́кое as the adjective всѧ́кій, the part-0 decision), the relative
+(ꙗ҆́же ×4, є҆мꙋ́же ×2, ꙗ҆̀же as the plural nominative of 1:22 and the
+plural accusative of 1:21, и҆́же), сво́й, на́шъ, є҆ли́къ, the
+third-person accusatives (и҆̀хъ ×2 full; the dual «ѧ҆̀» of 1:17 as the
+full cell — the two lights; the «ѧ҆̀» of 1:22 as the clitic, masculine
+plural for the mixed creatures), є҆́ю, and себѣ̀ as (refl :case loc).
+Ceiling 79.4% → 85.1% lifted (316 analyzed + 209 closed of 617; 86
+verbatim, 6 deliberate ambiguities unchanged). Lint-clean.
