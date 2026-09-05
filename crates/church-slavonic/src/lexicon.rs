@@ -65,6 +65,7 @@ pub struct Lexicon {
     lexemes: Vec<Lexeme>,
     by_id: HashMap<String, usize>,
     by_key: HashMap<(String, Pos), Vec<usize>>,
+    index: crate::analyze::IndexSlot,
 }
 
 /// The embedded files, by recension: (pos, text).
@@ -124,7 +125,15 @@ impl Lexicon {
             }
             by_key.entry((comparison_key(&l.lemma), l.pos)).or_default().push(i);
         }
-        Lexicon { recension, lexemes, by_id, by_key }
+        Lexicon { recension, lexemes, by_id, by_key, index: crate::analyze::IndexSlot::new() }
+    }
+
+    pub(crate) fn index_cell(&self) -> &crate::analyze::IndexSlot {
+        &self.index
+    }
+
+    pub(crate) fn lexeme_at(&self, i: usize) -> &Lexeme {
+        &self.lexemes[i]
     }
 
     pub fn get(&self, id: &str) -> Option<&Lexeme> {

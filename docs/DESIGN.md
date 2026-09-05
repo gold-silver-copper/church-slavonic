@@ -184,6 +184,11 @@ same key and ranks exact-print matches first, primaries before variants.
 Ambiguity is returned, never resolved. An unknown surface returns nothing;
 guessing works from lemmas, never from surfaces.
 
+The treebank's analyzed leaves carry the lexeme id and, for a non-primary
+form of the cell, `:alt n` (the index into `forms(cell)`): `(n гадъ.n
+:case acc :num pl :alt 3)` renders гадѡ́въ. A leaf enters a tree only when
+it renders its token back byte-for-byte on its own.
+
 ## Sources and import
 
 Import is an occasional, reviewed operation: `cargo xtask import <source>

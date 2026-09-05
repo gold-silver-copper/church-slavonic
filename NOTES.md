@@ -788,3 +788,20 @@ members — stays deliberately its own future design.
   residue is source noise and lexeme-level preference (samples in the
   CHANGELOG entry); no mechanism is missing. Part 2 proceeds; the gate
   is recorded as unmet.
+
+## 2026-09-04 — 2.0 Part 2: the treebank re-lift policy (decision) and a 1.x overlay error (finding)
+
+- **Re-lift policy.** Until every part of speech lives in the 2.0
+  lexicon, `build-treebank` re-lifts stored trees in place rather than
+  from scratch: a verbatim or 1.x-noun leaf is re-analyzed, an ambiguous
+  1.x leaf keeps its count (a noun-only analyzer cannot rule out the
+  verb reading the 1.x index saw). Every replacement must render the
+  token back byte-for-byte on its own before it enters the tree. The
+  full re-lift from the 2.0 analyzer alone is Part 3's, when the legacy
+  dependency goes.
+- **A false analysis in the hand overlay.** Genesis 1:29's two «є҆́же»
+  were `(n є҆́жъ :case voc :num sg)` in the 1.x overlay — the vocative
+  of the hedgehog, which happened to print as the relative pronoun. The
+  round-trip invariant cannot see a homograph; the id leaf exposed it
+  (єжъ.n is N1s, whose vocative is є҆́жꙋ). Corrected to the relative.
+  The lesson stands from v1.1: a homographic render is not an analysis.

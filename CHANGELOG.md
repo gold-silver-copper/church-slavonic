@@ -113,6 +113,48 @@ of class + stress + provenance, and reads back 94.9% of the cells from
 two named paradigms. Recorded as a shortfall against the written gate;
 Part 2 proceeds.
 
+### Part 2 — the analyzer, the eval, the treebank (2026-09-04)
+
+- **Analyzer** (`church_slavonic::analyze`): `Lexicon::analyze(surface)
+  -> Vec<Analysis { lexeme, cell, alt, exact, print }>` over an index of
+  every lexeme × every cell × every alternative and variant, keyed by
+  the accent-blind comparison key, built lazily on first use (373,036
+  entries for the Synodal nouns in 3.4 s, release), ranked exact print
+  first, then the primary form before other alternatives. Ambiguity is
+  returned, never resolved.
+- **Treebank** (`cargo xtask build-treebank`, 6.0 s): stored trees are
+  re-lifted IN PLACE through the 2.0 lexicon — a verbatim leaf and a
+  1.x noun leaf become an id leaf `(n землѧ.n :case acc :num sg [:alt n])`
+  when exactly one EXACT reading exists and the leaf renders the token
+  back byte-for-byte, an ambiguous 1.x leaf keeps its count (its other
+  readings may be parts of speech the lexicon does not hold yet),
+  everything else stays and renders through the legacy crate until
+  Part 3. 55,453 leaves changed; zero mismatches over 34,470 verses.
+  The Genesis 1 hand overlay points its 131 noun leaves at ids
+  (`fix-hand-alts` chose the `:alt` of гадѡ́въ); two «є҆́же» that the 1.x
+  overlay had rendered through the vocative of є҆́жъ — a false analysis
+  the round-trip could not see — are the relative pronoun now.
+- **Eval** (`cargo xtask eval`): Bible coverage through the analyzer
+  and the guesser number; held-out recall waits for the OCS lexicon
+  (Part 4).
+
+Measured (gate: noun Bible coverage ≥ the 1.2 treebank's 9.18%,
+`build-treebank` < 10 s, zero mismatches, the three numbers for nouns):
+
+| Number | Value | 1.2 |
+|---|---|---|
+| Bible tokens with one exact noun reading / several / none | 76,030 (12.05%) / 76,962 (12.20%) / 477,932 | — |
+| treebank: analyzed / by lexeme id / closed / ambiguous / verbatim | 24.1% / 11.3% (71,587) / 27.1% / 34.5% / 14.1% | 21.5% / — / 27.1% / 31.0% / 20.2% |
+| noun leaves by id against the 1.2 noun share | 71,587 | 57,986 (9.18%) |
+| `build-treebank` / index build | 6.0 s / 3.4 s | ~180 s |
+| held-out recall | n/a until Part 4 | 92.04% nouns |
+| guesser, Synodal nouns: class / cells | 94.18% / 93.52% | — |
+
+The gate is met. The ambiguous share rose (31.0% → 34.5%) because the
+2.0 lexicon holds every Polyakov noun, homographs included, where 1.x
+indexed only lemmas with an irregular cell; a token whose noun readings
+are several is recorded, never guessed.
+
 ## 1.2.0 — the Synodal pronoun release
 
 The commonest words of the language render from cells: Synodal

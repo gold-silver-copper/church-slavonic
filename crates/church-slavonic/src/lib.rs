@@ -21,4 +21,5 @@ pub mod stress;
 pub use cell::*;
 pub use form::Form;
 pub use grammar::*;
+pub use analyze::Analysis;
 pub use lexicon::{Lexeme, Lexicon, Provenance};

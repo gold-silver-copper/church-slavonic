@@ -14,6 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("import") => church_slavonic_tools::import::run(args.collect()),
         Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
         Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),
+        Some("fix-hand-alts") => church_slavonic_tools::treebank::runner::fix_hand_alts(),
         Some("-h") | Some("--help") | None => {
             eprintln!("cargo xtask <eval [--legacy] | import <source> --pos <pos> [--write] | build-treebank | check-treebank>");
             Ok(())
