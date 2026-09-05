@@ -97,43 +97,60 @@ impl Lexicon {
     /// which reads the lexicon instead of a hand rule. `0` when nothing
     /// shares an ending.
     pub fn class_by_ending(&self, letters: &str, pos: Pos) -> &'static str {
+        self.class_by_ending_excluding(letters, pos, None)
+    }
+
+    /// [`Lexicon::class_by_ending`] with one lexeme's own vote left out —
+    /// the leave-one-out measurement of the guesser.
+    pub fn class_by_ending_excluding(&self, letters: &str, pos: Pos, excluded: Option<&Lexeme>) -> &'static str {
         let index = self.ending_index();
         let chars: Vec<char> = letters.chars().collect();
+        let excluded_endings: Vec<String> = excluded
+            .map(|l| {
+                let c: Vec<char> = Form::from_print(&l.lemma).letters.chars().collect();
+                (1..=3).filter(|n| c.len() >= *n).map(|n| c[c.len() - n..].iter().collect()).collect()
+            })
+            .unwrap_or_default();
         for n in (1..=3).rev() {
             if chars.len() < n {
                 continue;
             }
             let ending: String = chars[chars.len() - n..].iter().collect();
-            if let Some(class) = index.get(&(pos, ending)) {
+            let Some(classes) = index.get(&(pos, ending.clone())) else { continue };
+            let best = classes
+                .iter()
+                .map(|(class, count)| {
+                    let own = excluded.filter(|l| l.class == *class && l.pos == pos && excluded_endings.contains(&ending)).map(|_| 1).unwrap_or(0);
+                    (class, count.saturating_sub(own))
+                })
+                .filter(|(_, n)| *n > 0)
+                .max_by(|a, b| a.1.cmp(&b.1).then(b.0.cmp(a.0)));
+            if let Some((class, _)) = best {
                 return class;
             }
         }
         "0"
     }
 
-    fn ending_index(&self) -> &std::collections::HashMap<(Pos, String), &'static str> {
+    fn ending_index(&self) -> &std::collections::HashMap<(Pos, String), std::collections::HashMap<&'static str, usize>> {
         self.ending_slot().get_or_init(|| {
-            let mut votes: std::collections::HashMap<(Pos, String), std::collections::HashMap<String, usize>> = std::collections::HashMap::new();
+            let mut votes: std::collections::HashMap<(Pos, String), std::collections::HashMap<&'static str, usize>> = std::collections::HashMap::new();
+            let mut interned: std::collections::HashMap<String, &'static str> = std::collections::HashMap::new();
             for l in self.iter() {
                 if l.class == "0" || l.class.is_empty() {
                     continue;
                 }
+                let class: &'static str = *interned.entry(l.class.clone()).or_insert_with(|| Box::leak(l.class.clone().into_boxed_str()));
                 let chars: Vec<char> = Form::from_print(&l.lemma).letters.chars().collect();
                 for n in 1..=3 {
                     if chars.len() < n {
                         continue;
                     }
                     let ending: String = chars[chars.len() - n..].iter().collect();
-                    *votes.entry((l.pos, ending)).or_default().entry(l.class.clone()).or_default() += 1;
+                    *votes.entry((l.pos, ending)).or_default().entry(class).or_default() += 1;
                 }
             }
             votes
-                .into_iter()
-                .map(|(k, classes)| {
-                    let best = classes.into_iter().max_by(|a, b| a.1.cmp(&b.1).then(b.0.cmp(&a.0))).map(|(c, _)| c).unwrap_or_default();
-                    (k, &*Box::leak(best.into_boxed_str()))
-                })
-                .collect()
         })
     }
 
@@ -141,6 +158,12 @@ impl Lexicon {
     /// gender guessed from the lemma's letters, the stress paradigm from
     /// its accent, `Provenance::Guessed` on the line.
     pub fn guess(&self, lemma: &str, pos: Pos) -> Lexeme {
+        self.guess_excluding(lemma, pos, None)
+    }
+
+    /// [`Lexicon::guess`] with one lexeme's vote left out of the ending map
+    /// (the leave-one-out measurement).
+    pub fn guess_excluding(&self, lemma: &str, pos: Pos, excluded: Option<&Lexeme>) -> Lexeme {
         let form = Form::from_print(lemma);
         // the Synodal noun rule was measured (94% of classes); every other
         // part of speech and the OCS lexicon read the class off the
@@ -148,7 +171,7 @@ impl Lexicon {
         let (class, gender) = match (self.recension, pos) {
             (Recension::Synodal, Pos::Noun) => noun_class(&form.letters),
             (_, Pos::Closed) => ("0", Gender::Masculine),
-            _ => (self.class_by_ending(&form.letters, pos), Gender::Masculine),
+            _ => (self.class_by_ending_excluding(&form.letters, pos, excluded), Gender::Masculine),
         };
         let stems = Vec::new();
         let stress = match self.recension {

@@ -55,13 +55,18 @@ See the tables in `CHANGELOG.md` under "2.0.0"; `cargo xtask eval` and
 `cargo xtask check-treebank` print the current ones. Held-out recall (UD
 PROIEL dev+test): nouns 94.9%, adjectives 89.4%, verbs 85.8%, personal
 pronouns 99.3%, other pronouns 97.8%. Bible treebank: 23.4% analyzed,
-28.1% closed-class, 39.1% ambiguous, 9.3% verbatim. Polyakov cells
+28.1% closed-class, 40.2% ambiguous, 8.1% verbatim. Polyakov cells
 reproduced by the primary form: nouns 94.7%, adjectives 94.1%, verbs
-91.4%.
+91.5%.
 
 ## Open designs, in order
 
-1. **The ambiguous band.** 39% of Bible tokens have several exact
+The analysis of each — what it is, what the 2.0 measurements say, and
+the linguistically proper answer — is in `docs/OPEN-DESIGNS.md`;
+`V2.1-PROMPT.md` executes the first two (present stems by derivation,
+syncretism by underspecification).
+
+1. **The ambiguous band.** 40% of Bible tokens have several exact
    readings (nom/acc/voc of every noun, the genders of every adjective
    form, du/pl homographs). Disambiguation by context — agreement inside
    an `np`, a preposition's case — is the next design; the linter's

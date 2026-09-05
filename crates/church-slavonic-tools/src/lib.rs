@@ -1,6 +1,7 @@
 //! Tooling for the church-slavonic lexicon: source parsers, the importer,
 //! the evaluation harness and the Bible treebank (`cargo xtask`).
 
+pub mod census;
 pub mod eval;
 pub mod import;
 pub mod sources;

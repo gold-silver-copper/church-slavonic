@@ -69,7 +69,7 @@ pub struct Lexicon {
     by_key: HashMap<(String, Pos), Vec<usize>>,
     index: crate::analyze::IndexSlot,
     /// The guesser's ending → class map, built on first use.
-    endings: std::sync::OnceLock<HashMap<(Pos, String), &'static str>>,
+    endings: std::sync::OnceLock<HashMap<(Pos, String), HashMap<&'static str, usize>>>,
 }
 
 /// The embedded files, by recension: (pos, text).
@@ -136,7 +136,7 @@ impl Lexicon {
         &self.index
     }
 
-    pub(crate) fn ending_slot(&self) -> &std::sync::OnceLock<HashMap<(Pos, String), &'static str>> {
+    pub(crate) fn ending_slot(&self) -> &std::sync::OnceLock<HashMap<(Pos, String), HashMap<&'static str, usize>>> {
         &self.endings
     }
 

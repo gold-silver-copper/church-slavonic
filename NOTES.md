@@ -910,3 +910,20 @@ members — stays deliberately its own future design.
   1.2 number the gates compared against is in the CHANGELOG's Part 0
   entry; nothing needs the deleted tree.
 
+## 2026-09-05 — 2.1 Part 0: the stem census (findings)
+
+- **Stored stems are mostly not lexical (finding).** Of the 1,442 OCS verb
+  lines with a present stem, 370 are a regular derivation of the
+  infinitive stem (theme-vowel drop, iotation, -ова- → -ꙋ), 491 store a
+  whole attested present form (the seeding took one form's prefix when
+  only one present form was attested), and most of the 581 "suppletive"
+  stems are short prefixes of the same kind (блазнити 2=бла). The true
+  suppletion is a few dozen lines. The Synodal lexicon's 636 stored
+  stems are the participle-stem inference of Part 3 reading whole forms
+  off cells with an empty ending (`9=алчꙋщꙋ`), plus about a hundred
+  genuine present suppletions (взѧ́ти → возм) and a hundred stem-1
+  corrections (би́ти → бі).
+- **The guesser number is the honest baseline.** A guessed OCS verb
+  reproduces 22.7% of its present cells today, a Synodal one 46.5%;
+  Part 1 is measured against these.
+

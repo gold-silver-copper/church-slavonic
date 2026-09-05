@@ -7,7 +7,22 @@ use church_slavonic::cell::Pos;
 use church_slavonic::lexicon::Lexicon;
 use std::error::Error;
 
-pub fn run(_args: Vec<String>) -> Result<(), Box<dyn Error>> {
+pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
+    if args.iter().any(|a| a == "--guess") {
+        let ocs = args.iter().any(|a| a == "--ocs");
+        let lexicon = if ocs { Lexicon::ocs() } else { Lexicon::synodal() };
+        let g = guessed_present(lexicon);
+        println!(
+            "guesser, {} verbs, leave-one-out over {} lexemes with a present: class {:.2}%, present/imperative/participle cells {:.2}% ({}/{})",
+            if ocs { "OCS" } else { "Synodal" },
+            g.lexemes,
+            100.0 * g.class_right as f64 / g.lexemes.max(1) as f64,
+            100.0 * g.cells_right as f64 / g.cells.max(1) as f64,
+            g.cells_right,
+            g.cells
+        );
+        return Ok(());
+    }
     for corpus in held_out_corpora()? {
         let r = recall(Lexicon::ocs(), &corpus);
         println!("held-out recall, {} ({} tokens, {} slots; {} skipped by the loader):", corpus.label, corpus.tokens, corpus.slots.len(), corpus.skipped_total());
@@ -229,6 +244,36 @@ pub fn recall(lexicon: &Lexicon, corpus: &crate::sources::ud::Corpus) -> Vec<(&'
         }
     }
     counts
+}
+
+/// The guesser measured on verbs' present systems: hide each verb with a
+/// present cell in turn, guess it from its lemma alone (its own vote left
+/// out of the ending map), compare every present, imperative and
+/// present-participle cell the lexeme declares — the number V2.1 Part 1
+/// must raise.
+pub fn guessed_present(lexicon: &Lexicon) -> GuessReport {
+    use church_slavonic::cell::{Cell, FiniteTense, PartTense, VerbCell};
+    let mut r = GuessReport { lexemes: 0, class_right: 0, cells: 0, cells_right: 0 };
+    let present = |c: &Cell| matches!(c, Cell::Verb(VerbCell::Finite { tense: FiniteTense::Present, .. } | VerbCell::Imperative { .. } | VerbCell::Participle { tense: PartTense::Present, .. }));
+    for lexeme in lexicon.iter().filter(|l| l.pos == Pos::Verb && l.class != "0") {
+        let cells: Vec<Cell> = lexeme.cells().into_iter().filter(present).collect();
+        if cells.is_empty() {
+            continue;
+        }
+        r.lexemes += 1;
+        let guessed = lexicon.guess_excluding(&lexeme.lemma, Pos::Verb, Some(lexeme));
+        if guessed.class == lexeme.class {
+            r.class_right += 1;
+        }
+        for cell in cells {
+            let Some(want) = lexeme.inflect(cell) else { continue };
+            r.cells += 1;
+            if guessed.inflect(cell).map(|f| f.print(lexicon.recension)) == Some(want.print(lexicon.recension)) {
+                r.cells_right += 1;
+            }
+        }
+    }
+    r
 }
 
 /// The guesser measured against the lexicon: for every lexeme, guess a

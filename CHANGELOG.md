@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.1.0 (in progress) — present stems by derivation, syncretism by underspecification
+
+The plan is `V2.1-PROMPT.md`; the analysis behind it is
+`docs/OPEN-DESIGNS.md`.
+
+### Part 0 — the census (2026-09-05)
+
+- `cargo xtask census stems --pos verb [--ocs]` classifies every stored
+  numbered stem by its relation to the lemma's infinitive stem; `cargo
+  xtask eval --guess verbs [--ocs]` is the leave-one-out guessed-present
+  number (each verb hidden, its own vote left out of the ending map,
+  every present, imperative and present-participle cell compared).
+
+Measured:
+
+| Census | Value |
+|---|---|
+| OCS verb lines with a stored stem | 1,442 of 2,456: stem 2 `theme` 323, `iot` 36, `ov` 11, `artefact` 491 (a whole present form as the stem), `suppletive` 581 (mostly the seeding's short prefixes: блазнити 2=бла) |
+| Synodal verb lines with a stored stem | 636 of 8,279: participle stems read off attested forms with an empty ending (`9=алчꙋщꙋ` 233, `12=…нн` 109, `7=…ш` 93), 100 genuine present suppletions (взѧ́ти 2=возм), 97 stem-1 corrections (би́ти 1=бі) |
+| guessed present, OCS verbs (leave-one-out) | class 37.91%, cells 22.72% (68,531/301,680) |
+| guessed present, Synodal verbs | class 46.67%, cells 46.46% (1,027,052/2,210,493) |
+
 ## 2.0.0 (2026-09-05) — the lexicon-first rewrite
 
 Executed from V2-PROMPT.md; the design is docs/DESIGN.md. Each part
