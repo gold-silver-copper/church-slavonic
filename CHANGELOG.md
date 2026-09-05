@@ -1,5 +1,31 @@
 # Changelog
 
+## 3.1.0 (in progress) — the lexicon's twins, the gold by register
+
+The plan is `V3.0-PROMPT.md` Parts 3–4.
+
+### Part 3 — the lexicon's twins (2026-09-05)
+
+- **The rule of identity** in the Polyakov importer, after the fit (ids
+  never move): two fitted lexemes with the same accent-blind lemma, part
+  of speech, gender and animacy whose every shared attested cell prints
+  the same primary are one lexeme — the lowest id survives, refitted from
+  the union of the entries' forms, provenance joined, `twin: <id>` in the
+  note; `data/twins.tsv` maps absorbed → survivor and the hand overlay
+  was remapped from it. A pair whose shared cell differs stays two lines
+  (дѣло.n / .n.2; господь.n / .n.2 by го́споди against госпо́дїе — the
+  nomina sacra stay two lines and `:amb` through the titlo index).
+
+| Number | before | after |
+|---|---|---|
+| lexemes: nouns / adjectives / verbs | 13,205 / 8,348 / 8,285 | 13,147 / 8,323 / 8,210 (158 absorbed; 134 pairs kept apart) |
+| `census homonymy`: identical-paradigm pairs / subset pairs / differing pairs sharing a surface | 43 (307 tokens) / 36 (1,135) / 435 (6,616) | 11 (93: gender or animacy differs) / 12 (638) / 370 (5,310) |
+| several-lexeme tokens (`:amb`) | 13,183 | 11,814 |
+| Bible treebank | one cell 204,769 (32.4%), tagger 185,183, several lexemes 13,128 (2.1%; 5.6% without the tagger) | one cell 205,403 (32.5%), sets 1,779, tagger 185,910 (29.4%), closed 177,091, several lexemes 11,774 (1.9%; 5.4% without the tagger), verbatim 48,972; zero mismatches |
+| held-out recall | unchanged | unchanged |
+| hand overlay | 2,097 leaves, rules exclude none, tagger 74.8% | 2,097 leaves, rules exclude none, tagger 74.95% (820 of 1,094) |
+| ids changed | — | 0 (158 absorbed ids listed in `data/twins.tsv`) |
+
 ## 3.0.0 (2026-09-05) — the accent-paradigm inventory and weighted evidence
 
 The plan is `V2.2-PROMPT.md` Part 6, then `V3.0-PROMPT.md` Parts 0–2 and

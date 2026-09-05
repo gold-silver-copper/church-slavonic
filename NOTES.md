@@ -1520,3 +1520,51 @@ members — stays deliberately its own future design.
   3.0.0 are tags only, publishing is the user's call. Parts 3–6 of
   `V3.0-PROMPT.md` (the lexicon's twins, the gold by register, the
   clause, the placement) are the open list.
+
+## 2026-09-05 — 3.1 Part 3 (V3.0-PROMPT.md): the lexicon's twins — decisions and findings
+
+- **The rule of identity is the importer's, after the fit (decision).**
+  Ids are assigned before anything merges, so no id moves: every entry
+  is fitted as before, then two fitted lexemes are one lexeme when they
+  share the accent-blind lemma, the part of speech, the gender and the
+  animacy, and every cell both attest prints the same primary; the
+  survivor is the lowest id, refitted once from the union of both
+  entries' forms (the arbiter sees the union), provenance and notes
+  joined, the absorbed id in the note (`twin: зрѣти.v.2`). A pair whose
+  shared cell prints differently stays two lines. `data/twins.tsv` holds
+  absorbed → survivor (158 rows); the hand overlay's ids were remapped
+  from it.
+- **Most twins never met (finding).** Merged: nouns 58, verbs 75,
+  adjectives 25 = 158 lines (13,205 → 13,147; 8,285 → 8,210; 8,348 →
+  8,323), almost all with *disjoint* attestations (Polyakov's sense
+  entries cite different cells: веѳиль.n + .n.2, зрѣти.v + .v.2/.v.3/.v.5,
+  долговременный.a + three), five with overlapping attestations that
+  agree. Kept apart, a shared cell printing differently: 60 / 46 / 28
+  pairs — дѣло.n + .n.2, малый.a + .a.2, first and foremost the ones the
+  treebank sees most.
+- **господь.n and господь.n.2 are not twins by the rule (finding;
+  the nomina-sacra expectation refuted).** Their shared cell is the
+  nominative plural: го́споди (153, the print's vocative under a plural
+  tag) against госпо́дїе (21). The rule cannot merge a pair whose one
+  shared cell disagrees; гдⷭ҇ь and kin (5,767 tokens) stay `:amb` through
+  the titlo index. A hand decision (one line, госпо́дїе as the plural's
+  variant) is possible but is not this rule's, and is left open.
+- **Spelling variants merged under the key (finding).** вілъ.n → вилъ.n,
+  ѕлоѡбразный.a → ѕлообразный.a: the accent-blind key folds і/и and ѡ/о,
+  so a Polyakov entry that differs only in a letter joined its twin; the
+  citation cell keeps the survivor's spelling and the other becomes the
+  cell's variant.
+- **What remains in the census (finding).** 11 identical-paradigm pairs
+  (93 tokens) differ in gender or animacy — амаликъ.n (a person) beside
+  амаликъ.n.2 (a people), рага.n/раги.n — which the key keeps apart by
+  design; 12 subset pairs (638 tokens: первый.a + .a.2 433, лжа.n) and
+  370 differing pairs (5,310 tokens) disagree in a shared cell.
+- **The pronouns have no twins**: Part 6's merge-rule fix left one line
+  per pronoun; nothing to do.
+- Treebank rebuilt at zero mismatches: one cell 204,769 → 205,403
+  (32.5%), sets 1,779, tagger 185,910 (29.4%), closed 177,091, several
+  lexemes 13,128 → 11,774 (2.1% → 1.9%; 5.4% without the tagger),
+  verbatim 48,972; `narrow-hand` 0 findings on 2,097 leaves, the rules
+  exclude no hand cell, the tagger 74.95% (820 of 1,094). Held-out recall
+  unchanged; tests, clippy, the game green. Ids the game names: none of
+  the absorbed.

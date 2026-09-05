@@ -143,7 +143,7 @@ reproduced, a variant, or quarantined with a reason in
 
 | Lexicon | Lexemes | Classes |
 |---|---|---|
-| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,348 / 8,285 / 68 / 1,342 | 49 / 16 / 50 / 21 / 8 |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,147 / 8,323 / 8,210 / 68 / 1,342 | 49 / 16 / 50 / 21 / 8 |
 | OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,455 / 82 | 44 / 6 / 27 / 17 |
 
 The closed lexicon is structured (2.2): a line's class is its

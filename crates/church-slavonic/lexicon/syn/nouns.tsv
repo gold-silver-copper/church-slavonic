@@ -99,8 +99,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 аглѡнъ.n	а҆глѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 агнецъ.n	а҆́гнецъ	n	m	anim	N1c*	a	-	loc.pl=а҆́гнцахъ	nom.du=а҆́гнца;gen.du=а҆́гнцꙋ;acc.du=а҆́гнца;ins.pl=а҆́гнцы;loc.du=а҆́гнцꙋ;voc.du=а҆́гнца	P:N1c*;R:	-
 агница.n	а҆́гница	n	f	anim	N3c	a	-	-	-	P:N3c	-
-агнъ.n	а҆́гнъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
-агнъ.n.2	а҆́гнъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+агнъ.n	а҆́гнъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn; twin: агнъ.n.2
 агніа.n	а҆гні́а	n	f	anim	N3e	a	-	-	-	P:N3e	persn
 агнѧ.n	а҆гнѧ̀	n	n	anim	N5et	a{nom.sg=0}	-	-	nom.sg=а҆гнѧ̀×1	P:N5et	-
 агрікополь.n	а҆грікопо́ль	n	m	inan	N1j	a	-	-	-	P:N1j	topn
@@ -570,8 +569,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 аріараѳъ.n	а҆ріара́ѳъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 аріаферъ.n	а҆ріафе́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 аріва.n	а҆рі́ва	n	m	anim	N3t	a	-	-	-	P:N3t	persn
-аріилъ.n	а҆ріи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
-аріилъ.n.2	а҆ріи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+аріилъ.n	а҆ріи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn; twin: аріилъ.n.2
 арій.n	а҆́рій	n	m	anim	N1i	a{ins.sg=L}	-	-	-	P:N1i	persn
 арімаѳеа.n	а҆рімаѳе́а	n	f	inan	N3e	a	-	-	nom.sg=а҆римаѳе́а×1	P:N3e	topn
 арімаѳей.n	а҆рімаѳе́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn
@@ -1276,8 +1274,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 бѣлецъ.n.3	бѣле́цъ	n	m	anim	N1c*	b	-	-	-	P:N1c*	-
 бѣлилникъ.n	бѣли́лникъ	n	m	anim	N1k	a	-	-	nom.sg=бѣли́льникъ×1	P:N1k	headword бѣли́льникъ
 бѣлило.n	бѣли́ло	n	n	inan	N2t	a	-	-	-	P:N2t	-
-бѣлица.n	бѣли́ца	n	f	anim	N3c	a	-	-	-	P:N3c	-
-бѣлица.n.2	бѣ́лица	n	f	anim	N3c	a	-	-	-	P:N3c	-
+бѣлица.n	бѣли́ца	n	f	anim	N3c	a{dat.pl=0}	-	-	-	P:N3c	twin: бѣлица.n.2
 бѣломоріе.n	бѣломо́ріе	n	n	inan	N2i	a	-	-	-	P:N2i	topn
 бѣлоносецъ.n	бѣлоно́сецъ	n	m	anim	N1c*	a	-	-	-	P:N1c*	-
 бѣлость.n	бѣ́лость	n	f	anim	N41	a	-	-	-	P:N41	-
@@ -1559,8 +1556,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 вервь.n	ве́рвь	n	f	inan	N41	a.ipl	-	-	-	P:N41	-
 вервіе.n	ве́рвіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 веренда.n	вере́нда	n	f	inan	N3t	a	-	-	-	P:N3t	topn
-вереѧ.n	вереѧ̀	n	f	inan	N3e	b	-	ins.pl=вереѧ́ми	-	P:N3e	-
-вереѧ.n.2	вере́ѧ	n	f	inan	N3e	a	-	-	-	P:N3e	topn
+вереѧ.n	вереѧ̀	n	f	inan	N3e	c	-	ins.pl=вереѧ́ми	-	P:N3e	topn; twin: вереѧ.n.2
 верженіе.n	верже́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 верзеллай.n	верзелла́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn
 верзеллій.n	верзеллі́й	n	m	anim	N1i	a	-	-	-	P:N1i	persn
@@ -1629,8 +1625,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 веѳгамꙋлъ.n	веѳгамꙋ́лъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 веѳганъ.n	веѳга́нъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 веѳилверіѳъ.n	веѳилвері́ѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
-веѳиль.n	веѳи́ль	n	m	inan	N1j	a	-	-	-	P:N1j	topn
-веѳиль.n.2	веѳи́ль	n	m	inan	N1j	a	-	-	-	P:N1j	topn
+веѳиль.n	веѳи́ль	n	m	inan	N1j	a	-	-	-	P:N1j	topn; twin: веѳиль.n.2
 веѳилѧнинъ.n	веѳи́лѧнинъ	n	m	anim	N1in	a	-	-	-	P:N1in	-
 веѳиръ.n	веѳи́ръ	n	m	inan	N1t	b	-	-	-	P:N1t	topn
 веѳлѡмѡны.n	веѳлѡмѡ́ны	n	-	inan	N1t	a	base=веѳлѡмѡн	-	-	P:N1t	topn; pl-tantum
@@ -1676,7 +1671,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 вила.n	вила̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
 вилемосъ.n	ви́лемосъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 вилица.n	ви́лица	n	f	inan	N3c	a	-	-	-	P:N3c	-
-вилъ.n	ви́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+вилъ.n	ви́лъ	n	m	anim	N1t	a	-	nom.sg=ві́лъ	-	P:N1t	persn; twin: вілъ.n
 вильно.n	ви́льно	n	n	inan	N2t	a	-	-	-	P:N2t	topn
 вилѧрскъ.n	вилѧ́рскъ	n	m	inan	N1k	a	-	-	-	P:N1k	topn
 вина.n	вина̀	n	f	inan	N3t	b	-	-	-	P:N3t	-
@@ -2141,7 +2136,6 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 вікентій.n	віке́нтій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 вікторъ.n	ві́кторъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 вікторінъ.n	вікторі́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-вілъ.n	ві́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 вінарь.n	віна́рь	n	m	anim	N1j	b	-	dat.sg=вінаре́ви	-	P:N1j	-
 вінница.n	ві́нница	n	f	inan	N3c	a	-	-	-	P:N3c	-
 вінничина.n	ві́нничина	n	f	inan	N3t	a	-	-	-	P:N3t	-
@@ -2783,8 +2777,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 доблество.n	до́блество	n	n	inan	N2t	a	-	-	-	P:N2t	-
 доблесть.n	до́блесть	n	f	inan	N41	a	-	dat.pl=до́блестємъ	gen.sg=дѡ́блести×3;dat.sg=дѡ́блести×3;ins.pl=доблестьмѝ×1;loc.sg=дѡ́блести×3	P:N41	-
 добльствіе.n	до́бльствіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
-добро.n	добро̀	n	n	inan	N2t	b	-	nom.pl=добра̑;acc.pl=добра̑	gen.sg=дѡбра̀×38	P:N2t	-
-добро.n.2	добро̀	n	n	inan	N2t	b	-	-	-	P:N2t	-
+добро.n	добро̀	n	n	inan	N2t	b	-	nom.pl=добра̑;acc.pl=добра̑	gen.sg=дѡбра̀×38	P:N2t	twin: добро.n.2
 добровѣщаніе.n	добровѣща́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 добродѣва.n	добродѣ́ва	n	f	anim	N3t	a	-	-	-	P:N3t	-
 добродѣланіе.n	добродѣ́ланіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
@@ -2897,8 +2890,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 древце.n	дре́вце	n	n	inan	N2c*	a	-	-	-	P:N2c*	-
 древіе.n	дре́віе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 древѧномасліе.n	древѧнома́сліе	n	n	inan	N2i	a	-	-	-	P:N2i	-
-дреколь.n	дреко́ль	n	m	inan	N1j	a	-	loc.pl=дреко́лѣхъ	-	P:N1j	-
-дреколь.n.2	дреко́ль	n	m	inan	N1j	a	-	ins.pl=дреко́лми	-	P:N1j	-
+дреколь.n	дреко́ль	n	m	inan	N1j	a	-	ins.pl=дреко́лми;loc.pl=дреко́лѣхъ	-	P:N1j	twin: дреколь.n.2
 дреколіе.n	дреко́ліе	n	n	inan	N2i	a	-	gen.sg=дрекѡ́лїѧ	-	P:N2i	-
 дреманіе.n	дрема́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 дрова.n	дрова̀	n	-	inan	N3t	b	base=дров	-	-	P:N3t	pl-tantum
@@ -3571,8 +3563,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 женитва.n	жени́тва	n	f	inan	N3t	a	-	-	-	P:N3t	-
 жениховводница.n	жениховво́дница	n	f	anim	N3c	a	-	-	-	P:N3c	-
 женихъ.n	жени́хъ	n	m	anim	N1g	b	-	-	dat.sg=женихо́ви×1	P:N1g	-
-женишца.n	жени́шца	n	f	anim	N3c*	a	-	-	-	P:N3c*	-
-женишца.n.2	жени́шца	n	f	anim	N3c*	a	-	acc.pl=жени̑шца	-	P:N3c*	-
+женишца.n	жени́шца	n	f	anim	N3c*	a	-	acc.pl=жени̑шца	-	P:N3c*	twin: женишца.n.2
 женище.n	жени́ще	n	n	anim	N2s	a	-	-	nom.sg=жени́що×1	P:N2s	-
 женонеистовство.n	женонеи́стовство	n	n	inan	N2t	a	-	-	-	P:N2t	-
 женопрельщеніе.n	женопрельще́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
@@ -4215,7 +4206,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 каленіе.n	кале́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 калеріа.n	кале́ріа	n	f	anim	N3e	a	-	-	-	P:N3e	persn
 калика.n	кали́ка	n	m	anim	N3k	a	-	-	-	P:N3k	persn
-калита.n	калита̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn
+калита.n	калита̀	n	m	anim	N3t	b	-	nom.sg=каліта̀	-	P:N3t	persn; twin: каліта.n
 калифорніѧ.n	калифо́рніѧ	n	f	inan	N3i	a	-	-	-	P:N3i	topn
 каллікратіа.n	каллікра́тіа	n	f	inan	N3e	a	-	-	-	P:N3e	topn
 каллімахъ.n	калліма́хъ	n	m	anim	N1g	a	-	-	-	P:N1g	persn
@@ -4230,7 +4221,6 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 калъ.n	ка́лъ	n	m	inan	N1t	a	-	-	dat.sg=калꙋ̀×1	P:N1t	-
 каліса.n	калі́са	n	f	anim	N3t	a	-	-	-	P:N3t	persn
 калісѳенъ.n	калісѳе́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-каліта.n	каліта̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn
 калітанъ.n	каліта́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 калꙋжанинъ.n	калꙋжа́нинъ	n	m	anim	N1in	a	-	-	-	P:N1in	-
 калꙋфъ.n	калꙋ́фъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -4255,8 +4245,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 камыкъ.n	камы́къ	n	m	inan	N1k	a{nom.sg=0;gen.pl=0;acc.sg=0}	-	gen.pl=ка̑мыкъ	nom.sg=камы́къ×1;gen.pl=камы́кѡвъ×1;acc.sg=камы́къ×1;ins.sg=ка́мыкомъ×1	P:N1k	-
 камѡнъ.n	камѡ́нъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 камꙋилъ.n	камꙋи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-кана.n	кана̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-кана.n.2	ка́на	n	f	inan	N3t	a	-	-	-	P:N3t	topn
+кана.n	кана̀	n	f	inan	N3t	a.nom	-	-	-	P:N3t	topn; twin: кана.n.2
 каналъ.n	кана́лъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 кананітъ.n	канані́тъ	n	m	anim	N1t	a	-	-	gen.sg=канани́та×1;acc.sg=канани́та×1	P:N1t	-
 канаѳъ.n	кана́ѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
@@ -4398,8 +4387,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 кесарій.n	кеса́рій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 кесіѡнъ.n	кесіѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 кефіра.n	кефіра̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-кеіла.n	кеіла̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-кеіла.n.2	кеі́ла	n	f	inan	N3t	a	-	-	gen.sg=кеілы̀×2	P:N3t	topn
+кеіла.n	кеіла̀	n	f	inan	N3t	a.nom	-	-	gen.sg=кеілы̀×2	P:N3t	topn; twin: кеіла.n.2
 кеілъ.n	кеі́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 кеіль.n	кеі́ль	n	m	inan	N1j	a	-	loc.sg=кеі́лѣ	-	P:N1j	topn
 кидаръ.n	кида́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -4514,9 +4502,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 колошъ.n	коло́шъ	n	m	anim	N1s	b	-	-	-	P:N1s	-
 колпакъ.n	колпа́къ	n	m	anim	N1k	a	-	-	-	P:N1k	persn
 колце.n	колцѐ	n	n	inan	N2c*	b{ins.pl=S;loc.pl=S}	-	nom.pl=колца̑;gen.sg=кѡлца̀;acc.pl=колца̑;ins.pl=ко́лцами	gen.sg=ко́лца×8;ins.pl=колца́ми×2|ко́льцами×1	P:N2c*	headword кольцѐ
-колъ.n	ко́лъ	n	m	inan	N1t	b	-	-	-	P:N1t	-
-колъ.n.2	ко́лъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
-колъ.n.3	колъ	n	m	inan	N1t	b{acc.pl=L}	-	-	-	P:N1t	-
+колъ.n	ко́лъ	n	m	inan	N1t	d{ins.sg=S}	-	-	ins.sg=коло́мъ×1	P:N1t	twin: колъ.n.2; twin: колъ.n.3
 коліе.n	ко́ліе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 колѡніа.n	колѡ́ніа	n	f	inan	N3e	a	-	-	-	P:N3e	topn
 колѣно.n	колѣ́но	n	n	inan	N2t*	a	ins=колѣн	nom.du=колѣ̑ни;dat.pl=колѣ́нѡмъ;acc.du=колѣ̑ни	gen.sg=кѡлѣ́на×99;dat.sg=кѡлѣ́нꙋ×3;ins.pl=колѣ́нми×1	P:N2t	-
@@ -4595,8 +4581,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 коріандръ.n	коріа́ндръ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 корінка.n	корі́нка	n	f	inan	N3k	a	-	-	-	P:N3k	-
 корінѳъ.n	корі́нѳъ	n	m	anim	N1t	a	-	ins.sg=кори́нѳомъ	-	P:N1t	-
-корінѳъ.n.2	корі́нѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
-корінѳъ.n.3	корі́нѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
+корінѳъ.n.2	корі́нѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn; twin: корінѳъ.n.3
 корінѳѧнинъ.n	корі́нѳѧнинъ	n	m	anim	N1in	a	-	-	-	P:N1in	-
 корітѧнинъ.n	корі́тѧнинъ	n	m	anim	N1in	a	-	-	-	P:N1in	-
 корѡнатъ.n	корѡна́тъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -4780,8 +4765,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 кꙋколь.n	кꙋ́коль	n	m	inan	N1j	a	-	-	-	P:N1j	-
 кꙋкша.n	кꙋ́кша	n	m	anim	N3s	a	-	-	loc.sg=кꙋ́кшѣ×2	P:N3s	persn
 кꙋкꙋза.n	кꙋкꙋ́за	n	f	inan	N3t	a	-	-	-	P:N3t	topn
-кꙋкꙋмъ.n	кꙋкꙋ́мъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
-кꙋкꙋмъ.n.2	кꙋкꙋ́мъ	n	m	inan	N1t	a	-	-	loc.sg=кꙋкꙋмѣ̀×1	P:N1t	topn
+кꙋкꙋмъ.n	кꙋкꙋ́мъ	n	m	inan	N1t	a	-	-	loc.sg=кꙋкꙋмѣ̀×1	P:N1t	topn; twin: кꙋкꙋмъ.n.2
 кꙋлонъ.n	кꙋло́нъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 кꙋма.n	кꙋма̀	n	f	anim	N3t	b	-	-	-	P:N3t	-
 кꙋманъ.n	кꙋма́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
@@ -4935,9 +4919,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ликоначальникъ.n	ликонача́льникъ	n	m	anim	N1k	a	-	-	-	P:N1k	-
 ликостоѧніе.n	ликостоѧ́ніе	n	n	inan	N2i	a	-	ins.pl=ликостоѧ̑нїи	-	P:N2i	-
 ликостоѧтель.n	ликостоѧ́тель	n	m	anim	N1j	a	-	-	-	P:N1j	-
-ликъ.n	ли́къ	n	m	inan	N1k	a	-	-	nom.sg=ликъ×1;acc.sg=ликъ×1	P:N1k	-
-ликъ.n.2	ли́къ	n	m	inan	N1k	a	-	-	-	P:N1k	-
-ликъ.n.3	ли́къ	n	m	inan	N1k	a.gdpl	-	-	nom.pl=ли́кове×13;gen.pl=ли́кѡвъ×2	P:N1k	-
+ликъ.n	ли́къ	n	m	inan	N1k	a.gdpl	-	-	nom.sg=ликъ×1;nom.pl=ли́кове×13;gen.pl=ли́кѡвъ×2;acc.sg=ликъ×1	P:N1k	twin: ликъ.n.2; twin: ликъ.n.3
 лиликъ.n	лили́къ	n	m	anim	N1k	a	-	-	-	P:N1k	-
 лиса.n	лиса̀	n	f	anim	N3t	d	-	-	-	P:N3t	-
 лисица.n	лиси́ца	n	f	anim	N3c	a	-	-	-	P:N3c	-
@@ -5049,8 +5031,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 лютость.n	лю́тость	n	f	inan	N41	a	-	-	gen.sg=лю́тѡсти×2;dat.sg=лю́тѡсти×2;loc.sg=лю́тѡсти×2	P:N41	-
 лютоѧростіе.n	лютоѧ́ростіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 ліа.n	лі́а	n	f	anim	N3e	a	-	-	-	P:N3e	persn
-ліва.n	лі́ва	n	f	inan	N3t	a	-	-	-	P:N3t	-
-ліва.n.2	лі́ва	n	f	inan	N3t	a	-	acc.sg=ли́вꙋ	-	P:N3t	-
+ліва.n	лі́ва	n	f	inan	N3t	a	-	acc.sg=ли́вꙋ	-	P:N3t	twin: ліва.n.2
 ліванъ.n	ліва́нъ	n	m	inan	N1t	a	-	-	gen.sg=лѵва́на×2	P:N1t	-
 ліверій.n	ліве́рій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 лівъ.n	лі́въ	n	m	inan	N1t	a	-	-	-	P:N1t	-
@@ -5114,8 +5095,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 лѵсіа.n	лѵсі́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
 лѵсімахъ.n	лѵсіма́хъ	n	m	anim	N1g	a	-	-	nom.sg=лісіма́хъ×1	P:N1g	persn
 лѵѧ.n	лѵ́ѧ	n	f	inan	N3i	a	-	-	-	P:N3i	-
-лꙋгъ.n	лꙋ́гъ	n	m	inan	N1g	c.na	-	-	-	P:N1g	-
-лꙋгъ.n.2	лꙋ́гъ	n	m	inan	N1g	a	-	-	-	P:N1g	-
+лꙋгъ.n	лꙋ́гъ	n	m	inan	N1g	c.na	-	-	-	P:N1g	twin: лꙋгъ.n.2
 лꙋда.n	лꙋ́да	n	f	inan	N3t	a	-	-	-	P:N3t	-
 лꙋдъ.n	лꙋ́дъ	n	m	anim	N1t	a	-	-	-	P:N1t	topn
 лꙋдіимъ.n	лꙋдіи́мъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -5134,8 +5114,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 лꙋница.n	лꙋ́ница	n	f	inan	N3c	a	-	-	-	P:N3c	-
 лꙋппъ.n	лꙋ́ппъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 лꙋхъ.n	лꙋ́хъ	n	m	inan	N1g	a	-	-	-	P:N1g	topn
-лꙋча.n	лꙋча̀	n	f	inan	N3s	b	-	-	nom.pl=лꙋ́чы×2|лꙋчы̑×1;acc.pl=лꙋ́чы×2|лꙋчы̑×1	P:N3s	-
-лꙋча.n.2	лꙋча̀	n	f	inan	N3s	b	-	-	-	P:N3s	-
+лꙋча.n	лꙋча̀	n	f	inan	N3s	b	-	-	nom.pl=лꙋ́чы×2|лꙋчы̑×1;acc.pl=лꙋ́чы×2|лꙋчы̑×1	P:N3s	twin: лꙋча.n.2
 лꙋчица.n	лꙋчи́ца	n	f	inan	N3c	a	-	-	-	P:N3c	-
 лꙋчшинство.n	лꙋ́чшинство	n	n	inan	N2t	a	-	-	-	P:N2t	-
 лꙋчь.n	лꙋ́чь	n	m	inan	N1sj	b	-	gen.pl=лꙋ̑чь	nom.sg=лꙋ́чъ×1;gen.pl=лꙋ̑чъ×8;acc.sg=лꙋ́чъ×1	P:N1sj	-
@@ -5145,8 +5124,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 маадіа.n	мааді́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
 маазманъ.n	маазма́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 маазіа.n	маазі́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
-маала.n	маала̀	n	f	anim	N3t	b	-	-	-	P:N3t	persn
-маала.n.2	маа́ла	n	f	anim	N3t	a	-	-	-	P:N3t	persn
+маала.n	маала̀	n	f	anim	N3t	a.nom	-	-	-	P:N3t	persn; twin: маала.n.2
 маалъ.n	маа́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 маалъ.n.2	ма́алъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 маалѡнъ.n	маалѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -5206,15 +5184,13 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 македоній.n	македо́ній	n	m	anim	N1i	a	-	-	nom.sg=македѡ́нїй×2	P:N1i	persn
 македонѧнинъ.n	македо́нѧнинъ	n	m	anim	N1in	a	-	gen.pl=македѡ́нѧнъ;dat.pl=македѡ́нѧнѡмъ;acc.pl=македо́нѧны	nom.sg=македѡ́нѧнинъ×2;acc.pl=македѡ́нѧнъ×1	P:N1in	-
 македъ.n	маке́дъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
-македѡнъ.n	македѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
-македѡнъ.n.2	македѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+македѡнъ.n	македѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn; twin: македѡнъ.n.2
 макеллаѳъ.n	макелла́ѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 макеллъ.n	маке́ллъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 макеллѡѳъ.n	макеллѡ́ѳъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 макелѡѳъ.n	макелѡ́ѳъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 макеніа.n	макені́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
-макида.n	макида̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-макида.n.2	маки́да	n	f	inan	N3t	a	-	-	-	P:N3t	topn
+макида.n	макида̀	n	f	inan	N3t	a.nom	-	-	-	P:N3t	topn; twin: макида.n.2
 макидъ.n	маки́дъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 макидѡѳъ.n	макидѡ́ѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 маккавей.n	маккаве́й	n	m	anim	N1e	a	-	gen.pl=маккавє́й;acc.pl=маккавє́й;ins.sg=маккаве́омъ	-	P:N1e	persn
@@ -5302,8 +5278,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 маркеллінъ.n	маркеллі́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 марко.n	ма́рко	n	m	anim	N1k	a	-	nom.sg=ма́рко;loc.sg=ма́ркѣ	-	P:N1k	persn; headword ма́ркъ
 маркіанъ.n	маркіа́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-маркіонъ.n	маркіо́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-маркіѡнъ.n	маркіѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+маркіонъ.n	маркіо́нъ	n	m	anim	N1t	a	-	gen.sg=маркїѡ́на;acc.sg=маркїѡ́на	-	P:N1t	persn; twin: маркіѡнъ.n
 мармаръ.n	ма́рмаръ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 мармасімъ.n	мармасі́мъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 марміа.n	мармі́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
@@ -5323,16 +5298,14 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 маріла.n	маріла̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
 марімѡѳъ.n	марімѡ́ѳъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 маріна.n	марі́на	n	f	anim	N3t	a	-	-	-	P:N3t	persn
-маріса.n	маріса̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn
-маріса.n.2	маріса̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn
+маріса.n	маріса̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn; twin: маріса.n.2
 маріса.n.3	маріса̀	n	m	inan	N3t	b	-	-	-	P:N3t	topn
 марісанъ.n	маріса́нъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 марісисъ.n	маріси́съ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 маріѡнілла.n	маріѡні́лла	n	f	anim	N3t	a	-	-	-	P:N3t	persn
 маріѡѳъ.n	маріѡ́ѳъ	n	m	anim	N1t	a	-	nom.sg=марїо́ѳъ	-	P:N1t	persn
 марѡдахъ.n	марѡда́хъ	n	m	anim	N1g	a	-	-	-	P:N1g	persn
-марѡнъ.n	марѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-марѡнъ.n.2	ма́рѡнъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+марѡнъ.n	марѡ́нъ	n	m	anim	N1t	a{nom.sg=0;dat.sg=0;voc.sg=0}	-	-	-	P:N1t	persn; twin: марѡнъ.n.2
 марѡѳъ.n	марѡ́ѳъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 марѳа.n	ма́рѳа	n	f	anim	N3t	a	-	-	dat.sg=ма́рфѣ×1;loc.sg=ма́рфѣ×1	P:N3t	persn
 марꙋѳъ.n	марꙋ́ѳъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -5491,8 +5464,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 мерра.n	ме́рра	n	f	inan	N3t	a	-	-	-	P:N3t	topn
 мертвенность.n	ме́ртвенность	n	f	inan	N41	a	-	-	-	P:N41	-
 мертвецевоскреситель.n	мертвецевоскреси́тель	n	m	anim	N1j	a	-	-	-	P:N1j	-
-мертвецъ.n	мертве́цъ	n	m	anim	N1c	a	-	-	-	P:N1c	-
-мертвецъ.n.2	мертве́цъ	n	m	anim	N1c	b	-	-	-	P:N1c	-
+мертвецъ.n	мертве́цъ	n	m	anim	N1c	b	-	-	-	P:N1c	twin: мертвецъ.n.2
 мертвечина.n	мертвечи́на	n	f	inan	N3t	a	-	-	-	P:N3t	-
 мертвость.n	ме́ртвость	n	f	inan	N41	a	-	-	-	P:N41	-
 мертій.n	ме́ртій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
@@ -5792,8 +5764,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 мѡдинъ.n	мѡди́нъ	n	m	inan	N1t	a	-	gen.sg=мѡді́на	-	P:N1t	topn
 мѡиѳъ.n	мѡи́ѳъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn; headword мѡи́ѳъ#
 мѡкій.n	мѡкі́й	n	m	anim	N1i	a	-	-	-	P:N1i	persn
-мѡлада.n	мѡлада̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-мѡлада.n.2	мѡла́да	n	f	inan	N3t	a	-	-	-	P:N3t	topn
+мѡлада.n	мѡлада̀	n	f	inan	N3t	a.nom	-	-	-	P:N3t	topn; twin: мѡлада.n.2
 мѡрадъ.n	мѡра́дъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 мѡрасѳітинъ.n	мѡрасѳі́тинъ	n	m	anim	N1in	a	-	-	-	P:N1in	-
 мѡрилъ.n	мѡри́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -6693,8 +6664,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 олофернъ.n	ѻ҆лофе́рнъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 олтарь.n	ѻ҆лта́рь	n	m	inan	N1j	b	-	dat.sg=ѻ҆лтаре́ви;ins.pl=ѻ҆лтари̑	gen.sg=ѻ҆лта́рѧ×1;loc.pl=ѻ҆лтарѣ́хъ×2	P:N1j	-
 ольга.n	ѻ҆́льга	n	f	anim	N3k	a	-	-	-	P:N3k	persn
-олівема.n	ѻ҆лівема̀	n	f	anim	N3t	b	-	-	-	P:N3t	persn
-олівема.n.2	ѻ҆лівема̀	n	f	anim	N3t	b	-	-	-	P:N3t	persn
+олівема.n	ѻ҆лівема̀	n	f	anim	N3t	b	-	-	-	P:N3t	persn; twin: олівема.n.2
 олѵмбъ.n	ѻ҆лѵ́мбъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 олѵмпанъ.n	ѻ҆лѵмпа́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 олѵмпъ.n	ѻ҆лѵ́мпъ	n	m	anim	N1t	a	-	-	gen.sg=ѻ҆лі́мпа×1;acc.sg=ѻ҆лі́мпа×1	P:N1t	persn
@@ -6776,8 +6746,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 острожелчіе.n	ѻ҆строже́лчіе	n	n	inan	N2i	a	-	nom.sg=ѡ҆строже́лчїе;acc.sg=ѡ҆строже́лчїе	-	P:N2i	-
 острозрѣніе.n	ѻ҆строзрѣ́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 острота.n	ѻ҆строта̀	n	f	inan	N3t	b	-	-	acc.sg=ѡ҆стротꙋ̀×1;ins.sg=ѡ҆строто́ю×1	P:N3t	-
-остріе.n	ѻ҆́стріе	n	n	inan	N2i	a	-	-	-	P:N2i	-
-остріе.n.2	ѻ҆́стріе	n	n	inan	N2i	a	-	gen.sg=ѻ҆́стреѧ	-	P:N2i	-
+остріе.n	ѻ҆́стріе	n	n	inan	N2i	a	-	gen.sg=ѻ҆́стреѧ	-	P:N2i	twin: остріе.n.2
 остріхій.n	ѻ҆стрі́хїй	n	m	anim	N1i	a	-	gen.sg=ѻ҆стрѵхі́а;acc.sg=ѻ҆стрѵхі́а	nom.sg=ѻ҆стрѵ́хїй×1	P:N1i	persn; headword ѻ҆стрѵ́хій
 острꙋміе.n	ѻ҆стрꙋ́міе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 ость.n	ѻ҆́сть	n	f	inan	N41	a	-	-	-	P:N41	-
@@ -7217,8 +7186,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 папертъ.n	па́пертъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 паперть.n	па́перть	n	f	inan	N41	a	-	-	-	P:N41	-
 папиръ.n	папи́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	-
-папій.n	папі́й	n	m	anim	N1i	a	-	-	-	P:N1i	persn
-папій.n.2	па́пій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
+папій.n	папі́й	n	m	anim	N1i	a{nom.sg=0}	-	-	-	P:N1i	persn; twin: папій.n.2
 папѵла.n	папѵ́ла	n	m	anim	N3t	a	-	voc.sg=папѵ́ле	-	P:N3t	persn
 пара.n	па́ра	n	f	inan	N3t	a	-	-	-	P:N3t	-
 параекклисіархъ.n	параекклисіа́рхъ	n	m	anim	N1g	a	-	-	-	P:N1g	-
@@ -7295,8 +7263,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пелена.n	пелена̀	n	f	inan	N3t	b	-	-	nom.pl=пелены̑×1;acc.pl=пелены̑×1	P:N3t	-
 пелынь.n	пелы́нь	n	f	inan	N41	a	-	-	-	P:N41	-
 пелынь.n.2	пелы́нь	n	-	inan	N41	a	-	-	-	P:N41/N1j	-
-пелынь.n.3	пелы́нь	n	m	inan	N1j	a	-	-	-	P:N1j	-
-пелынь.n.4	пелы́нь	n	m	inan	N1j	a	-	-	-	P:N1j	-
+пелынь.n.3	пелы́нь	n	m	inan	N1j	a	-	-	-	P:N1j	twin: пелынь.n.4
 пелій.n	пе́лій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 пенсильваніѧ.n	пенсильва́ніѧ	n	f	inan	N3i	a	-	-	-	P:N3i	topn
 пентаполь.n	пентапо́ль	n	m	inan	N1j	a	-	-	-	P:N1j	topn
@@ -7684,8 +7651,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 полнота.n	полнота̀	n	f	inan	N3t	b	-	-	-	P:N3t	-
 полнощь.n	полно́щь	n	f	inan	N41	a	-	-	-	P:N41	-
 половина.n	полови́на	n	f	inan	N3t	a	-	-	-	P:N3t	-
-положеніе.n	положе́ніе	n	n	inan	N2i	a	-	dat.pl=положе́нїѧмъ	-	P:N2i	-
-положеніе.n.2	положе́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
+положеніе.n	положе́ніе	n	n	inan	N2i	a	-	dat.pl=положе́нїѧмъ	-	P:N2i	twin: положеніе.n.2
 положникъ.n	поло́жникъ	n	m	anim	N1k	a	-	-	-	P:N1k	-
 полотенцо.n	полоте́нцо	n	n	inan	N2c	a	-	nom.sg=полоте́нцо;acc.sg=полоте́нцо;ins.sg=полоте́нцомъ	-	P:N2c	-
 полотскъ.n	по́лотскъ	n	m	inan	N1k	a	-	-	-	P:N1k	topn
@@ -8909,8 +8875,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ратовище.n	ра́товище	n	n	inan	N2s	a	-	-	-	P:N2s	-
 ратосразитель.n	ратосрази́тель	n	m	anim	N1j	a	-	-	-	P:N1j	-
 рать.n	ра́ть	n	f	inan	N41	a	-	-	-	P:N41	-
-рафа.n	рафа̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn
-рафа.n.2	ра́фа	n	m	anim	N3t	a	-	-	-	P:N3t	persn
+рафа.n	рафа̀	n	m	anim	N3t	b.acc	-	-	-	P:N3t	persn; twin: рафа.n.2
 рафаилъ.n	рафаи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 рафай.n	рафа́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn
 рафакъ.n	рафа́къ	n	m	inan	N1k	a	-	loc.sg=рафа́кѣ	-	P:N1k	topn
@@ -9125,8 +9090,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 рꙋкотвореніе.n	рꙋкотворе́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 рꙋкоѧть.n	рꙋкоѧ́ть	n	f	inan	N41	a	-	-	-	P:N41	-
 рꙋкоѧтіе.n	рꙋкоѧ́тіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
-рꙋма.n	рꙋма̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-рꙋма.n.2	рꙋ́ма	n	f	inan	N3t	a	-	-	-	P:N3t	topn
+рꙋма.n	рꙋма̀	n	f	inan	N3t	a.nom	-	-	-	P:N3t	topn; twin: рꙋма.n.2
 рꙋмѧнство.n	рꙋмѧ́нство	n	n	inan	N2t	a	-	-	-	P:N2t	-
 рꙋно.n	рꙋно̀	n	n	inan	N2t*	b	ins=рꙋн	-	-	P:N2t	-
 рꙋстікъ.n	рꙋсті́къ	n	m	anim	N1k	a	-	-	-	P:N1k	persn
@@ -9141,10 +9105,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 рꙋѳь.n	рꙋ́ѳь	n	f	anim	N41	a	-	-	-	P:N41	persn
 саалъ.n	саа́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сааръ.n	саа́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-сава.n	сава̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-сава.n.2	сава̀	n	m	anim	N3t	a.nom	-	-	-	P:N3t	persn
-сава.n.3	са́ва	n	f	inan	N3t	a	-	-	-	P:N3t	topn
-сава.n.4	са́ва	n	m	anim	N3t	a	-	-	-	P:N3t	persn
+сава.n	сава̀	n	f	inan	N3t	b.voc	-	-	-	P:N3t	topn; twin: сава.n.3
+сава.n.2	сава̀	n	m	anim	N3t	a.nom	-	-	-	P:N3t	persn; twin: сава.n.4
 савадъ.n	сава́дъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 савадіа.n	саваді́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
 саванасаръ.n	саванаса́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -9166,8 +9128,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 савваѳей.n	савваѳе́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn
 саввей.n	савве́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn
 саввъ.n	са́ввъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-савей.n	саве́й	n	m	anim	N1e	a	-	-	-	P:N1e	-
-савей.n.2	саве́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn
+савей.n	саве́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn; twin: савей.n.2
 савекъ.n	саве́къ	n	m	anim	N1k	a	-	-	-	P:N1k	persn
 савелліанинъ.n	савелліа́нинъ	n	m	anim	N1in	a	-	acc.pl=савеллїа́ны	-	P:N1in	-
 савеллій.n	саве́ллій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
@@ -9426,10 +9387,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сафатъ.n	сафа́тъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сафатій.n	сафаті́й	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 сафекъ.n	сафе́къ	n	m	inan	N1k	a	-	-	-	P:N1k	topn
-сафиръ.n	сафи́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
+сафиръ.n	сафи́ръ	n	m	inan	N1t	a	-	nom.sg=сафі́ръ;acc.sg=сафі́ръ	-	P:N1t	topn; twin: сафіръ.n
 сафъ.n	са́фъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сафінъ.n	сафі́нъ	n	m	anim	N1t	a	-	dat.sg=сафі́нови	-	P:N1t	persn
-сафіръ.n	сафі́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 сафѡнъ.n	сафѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сафꙋтъ.n	сафꙋ́тъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 саханіа.n	сахані́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
@@ -9450,8 +9410,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сборище.n	сбо́рище	n	n	inan	N2s	a	-	-	-	P:N2s	-
 сбытіе.n	сбытіѐ	n	m	inan	N2i	b{dat.sg=0;ins.sg=0}	-	-	nom.sg=сбы́тїе×5;nom.pl=сбы̑тїѧ×1;gen.sg=сбы́тїѧ×1;dat.sg=сбытїю̀×1;acc.sg=сбы́тїе×5;acc.pl=сбы̑тїѧ×1	P:N2i	-
 свареніе.n	сваре́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
-сваръ.n	сва́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	-
-сваръ.n.2	сва́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	-
+сваръ.n	сва́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	twin: сваръ.n.2
 сватовство.n	сва́товство	n	n	inan	N2t	a	-	-	-	P:N2t	-
 свей.n	све́й	n	m	anim	N1e	a	-	-	-	P:N1e	-
 свекла.n	све́кла	n	f	inan	N3t	a	-	-	-	P:N3t	-
@@ -9707,9 +9666,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сепфарꙋімъ.n	сепфарꙋі́мъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 сепфѡра.n	сепфѡ́ра	n	f	anim	N3t	a	-	-	-	P:N3t	persn
 серапіѡнъ.n	серапіѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-серафімъ.n	серафі́мъ	n	m	anim	N1t	a	-	gen.pl=серафі̑мъ;ins.pl=серафі́ми	acc.pl=серафі̑мъ×105;ins.pl=серафи́ми×1	P:N1t	-
-серафімъ.n.2	серафі́мъ	n	m	anim	N1t	a	-	gen.sg=серафи́ма;acc.sg=серафи́ма	-	P:N1t	persn
-серафімъ.n.3	серафі́мъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+серафімъ.n	серафі́мъ	n	m	anim	N1t	a	-	gen.pl=серафі̑мъ;ins.pl=серафі́ми	gen.sg=серафи́ма×1;acc.sg=серафи́ма×1;acc.pl=серафі̑мъ×105;ins.pl=серафи́ми×1	P:N1t	persn; twin: серафімъ.n.2; twin: серафімъ.n.3
 серафіѡнъ.n	серафіѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сербъ.n	се́рбъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
 сербіа.n	се́рбіа	n	f	inan	N3e	a	-	-	nom.sg=се́рбїѧ×1	P:N3e	topn
@@ -10184,13 +10141,12 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сомракъ.n	сомра́къ	n	m	inan	N1k	a	-	-	-	P:N1k	-
 сомꙋченикъ.n	сомꙋ́ченикъ	n	m	anim	N1k	a	-	-	-	P:N1k	-
 сонаслѣдникъ.n	сонаслѣ́дникъ	n	m	anim	N1k	a	-	-	-	P:N1k	-
-сонирілъ.n	сонирі́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+сонирілъ.n	сонирі́лъ	n	m	anim	N1t	a	-	gen.sg=сонірі́ла;acc.sg=сонірі́ла	-	P:N1t	persn; twin: сонірілъ.n
 сонмица.n	со́нмица	n	f	inan	N3c	a	-	-	-	P:N3c	-
 сонмище.n	со́нмище	n	n	inan	N2s	a	-	-	gen.sg=сѡ́нмища×18;loc.pl=со́нмищехъ×2	P:N2s	-
 сонмъ.n	со́нмъ	n	m	inan	N1t	a	-	ins.pl=со́нми	acc.pl=со́ньмы×1	P:N1t	-
 сонъ.n	со́нъ	n	m	inan	N1t*	a	-	-	-	P:N1t	-
 соніе.n	со́ніе	n	n	inan	N2i	a	-	ins.pl=со́нїѧми	gen.sg=сѡ́нїѧ×30	P:N2i	-
-сонірілъ.n	сонірі́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сообитатель.n	сообита́тель	n	m	anim	N1j	a	-	nom.sg=соѻбита́тель	-	P:N1j	-
 сообщество.n	соо́бщество	n	n	inan	N2t	a	-	nom.sg=соѻ́бщество;acc.sg=соѻ́бщество	-	P:N2t	-
 сообщникъ.n	соо́бщникъ	n	m	anim	N1k	a	1=соѻбщник	nom.pl=соѻ́бщницы	nom.sg=соѡ́бщникъ×1	P:N1k	-
@@ -10630,8 +10586,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 счиненіе.n	счине́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 счисленіе.n	счисле́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 сшествіе.n	сше́ствіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
-сыновецъ.n	сынове́цъ	n	m	anim	N1c*	b	-	-	-	P:N1c*	-
-сыновецъ.n.2	сыно́вецъ	n	m	anim	N1c*	a	-	-	-	P:N1c*	-
+сыновецъ.n	сынове́цъ	n	m	anim	N1c*	b{nom.sg=1}	-	-	-	P:N1c*	twin: сыновецъ.n.2
 сыновленіе.n	сыновле́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 сыновство.n	сыновство̀	n	n	inan	N2t	b.gen	-	-	gen.sg=сыновства̀×1	P:N2t	-
 сынолюбіе.n	сынолю́біе	n	n	inan	N2i	a	-	-	-	P:N2i	-
@@ -10674,8 +10629,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сілѡамъ.n	сілѡа́мъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 сілꙋанъ.n	сілꙋа́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сімѡнъ.n	сі́мѡнъ	n	m	anim	N1t	a	-	-	gen.sg=си́мона×1|сімѡ́на×1;acc.sg=си́мона×1|сімѡ́на×1	P:N1t	persn
-сіна.n	сіна̀	n	f	inan	N3t	b	-	-	-	P:N3t	topn
-сіна.n.2	сі́на	n	f	inan	N3t	a	-	-	-	P:N3t	topn
+сіна.n	сіна̀	n	f	inan	N3t	b{ins.sg=S}	-	-	-	P:N3t	topn; twin: сіна.n.2
 сінаитъ.n	сінаи́тъ	n	m	anim	N1t	a	-	-	nom.sg=сінаі́тъ×1;gen.sg=сѵнаи́та×1;acc.sg=сѵнаи́та×1	P:N1t	-
 сінай.n	сіна́й	n	m	inan	N1e	a	-	gen.sg=сіна́ѧ	-	P:N1e	topn
 сіндѡнъ.n	сіндѡ́нъ	n	m	inan	N1t	a	-	dat.sg=сѵндо́нꙋ	-	P:N1t	-
@@ -10686,8 +10640,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сірахъ.n	сіра́хъ	n	m	anim	N1g	a	-	-	-	P:N1g	persn
 сіринъ.n	сі́ринъ	n	m	anim	N1t	a	-	dat.pl=сі́ринамъ	-	P:N1t	-
 сірой.n	сіро́й	n	m	anim	N1e	a	-	-	-	P:N1e	persn
-сісара.n	сіса́ра	n	m	anim	N3t	a	-	-	-	P:N3t	persn
-сісара.n.2	сіса́ра	n	m	anim	N3t*	a	ins=сісарѡв	-	-	P:N3t	persn
+сісара.n	сіса́ра	n	m	anim	N3t	a	-	gen.pl=сіса́рѡвъ	-	P:N3t	persn; twin: сісара.n.2
 сісінній.n	сісі́нній	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 сісіній.n	сісі́ній	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 сісѡй.n	сісѡ́й	n	m	anim	N1e	a	-	voc.sg=сісѡ́е	-	P:N1e	persn
@@ -10759,8 +10712,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сѣченіе.n	сѣче́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 сѣчецъ.n	сѣче́цъ	n	m	anim	N1c*	b	-	-	-	P:N1c*	-
 сѣчиво.n	сѣ́чиво	n	n	inan	N2t	a	-	-	-	P:N2t	-
-сѣчь.n	сѣ́чь	n	f	inan	N41	a	-	-	-	P:N41	-
-сѣчь.n.2	сѣ́чь	n	f	inan	N41	a	-	-	gen.sg=сѣчѝ×1;dat.sg=сѣчѝ×1;loc.sg=сѣчѝ×1	P:N41	-
+сѣчь.n	сѣ́чь	n	f	inan	N41	a	-	-	gen.sg=сѣчѝ×1;dat.sg=сѣчѝ×1;loc.sg=сѣчѝ×1	P:N41	twin: сѣчь.n.2
 сѣѧніе.n	сѣ́ѧніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 сѣѧтва.n	сѣ́ѧтва	n	f	inan	N3t	a	-	-	-	P:N3t	-
 сѣѧтель.n	сѣ́ѧтель	n	m	anim	N1j	a	-	ins.pl=сѣ́ѧтелѧми	-	P:N1j	-
@@ -10778,8 +10730,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сѵкіѡнъ.n	сѵкіѡ́нъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 сѵмаеръ.n	сѵмае́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сѵмволъ.n	сѵмво́лъ	n	m	inan	N1t	a	-	dat.pl=сѵмво́ламъ	-	P:N1t	-
-сѵмеѡнъ.n	сѵмеѡ́нъ	n	m	anim	N1t	a	-	-	gen.sg=симеѡ́на×5|сімео́на×1;acc.sg=симеѡ́на×5|сімео́на×1	P:N1t	persn
-сѵмеѡнъ.n.2	сѵмеѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	poss
+сѵмеѡнъ.n	сѵмеѡ́нъ	n	m	anim	N1t	a	-	-	gen.sg=симеѡ́на×5|сімео́на×1;acc.sg=симеѡ́на×5|сімео́на×1	P:N1t	persn; poss; twin: сѵмеѡнъ.n.2
 сѵмоворъ.n	сѵмово́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сѵмпатіа.n	сѵмпаті́а	n	f	inan	N3e	a	-	-	-	P:N3e	-
 сѵмфоріанъ.n	сѵмфоріа́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -10806,8 +10757,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сꙋббѡта.n	сꙋббѡ́та	n	f	inan	N3t	a	-	-	-	P:N3t	-
 сꙋббѡта.n.2	сꙋббѡ́та	n	f	inan	N3t*	a	ins=сꙋбот	-	-	P:N3t	-
 сꙋббѡтство.n	сꙋббѡ́тство	n	n	inan	N2t	a	-	-	-	P:N2t	-
-сꙋва.n	сꙋ́ва	n	f	inan	N3t	a	-	-	-	P:N3t	topn
-сꙋва.n.2	сꙋ́ва	n	f	inan	N3t	a	-	-	-	P:N3t	topn
+сꙋва.n	сꙋ́ва	n	f	inan	N3t	a	-	-	-	P:N3t	topn; twin: сꙋва.n.2
 сꙋвавъ.n	сꙋва́въ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сꙋваилъ.n	сꙋваи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сꙋвалъ.n	сꙋва́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -10847,8 +10797,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сꙋлокъ.n	сꙋло́къ	n	m	inan	N1k*	b	-	-	-	P:N1k*	-
 сꙋлімінь.n	сꙋлімі́нь	n	f	inan	N41	a	-	-	-	P:N41	topn
 сꙋмантѧнынѧ.n	сꙋмантѧны́нѧ	n	f	anim	N3j	a	-	-	-	P:N3j	-
-сꙋмнѣніе.n	сꙋмнѣ́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
-сꙋмнѣніе.n.2	сꙋмнѣ́ніе	n	n	inan	N2i	a	-	gen.pl=сꙋмне́нїй	-	P:N2i	-
+сꙋмнѣніе.n	сꙋмнѣ́ніе	n	n	inan	N2i	a	-	gen.pl=сꙋмне́нїй	-	P:N2i	twin: сꙋмнѣніе.n.2
 сꙋмракъ.n	сꙋмра́къ	n	m	inan	N1k	a	-	-	-	P:N1k	-
 сꙋнамъ.n	сꙋна́мъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 сꙋнінъ.n	сꙋні́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -10866,8 +10815,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сꙋровость.n	сꙋро́вость	n	f	inan	N41	a	-	-	-	P:N41	-
 сꙋровство.n	сꙋровство̀	n	n	inan	N2t	b	-	-	nom.sg=сꙋро́вство×1;gen.sg=сꙋро́вства×1|сꙋрѡ́вства×1;acc.sg=сꙋро́вство×1	P:N2t	-
 сꙋрожъ.n	сꙋро́жъ	n	m	inan	N1s	a	-	-	nom.sg=сꙋро́жь×1;acc.sg=сꙋро́жь×1	P:N1s	topn
-сꙋръ.n	сꙋ́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
-сꙋръ.n.2	сꙋ́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	persn
+сꙋръ.n	сꙋ́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	topn; persn; twin: сꙋръ.n.2
 сꙋріилъ.n	сꙋріи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сꙋса.n	сꙋса̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn
 сꙋсакімъ.n	сꙋсакі́мъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -12125,8 +12073,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 іаредъ.n	і҆а́редъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 іаръ.n	і҆а́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 іарівъ.n	і҆арі́въ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-іарімъ.n	і҆арі́мъ	n	m	anim	N1t	a	-	-	nom.sg=і҆ари́мъ×1	P:N1t	persn
-іарімъ.n.2	і҆арі́мъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+іарімъ.n	і҆арі́мъ	n	m	anim	N1t	a	-	-	nom.sg=і҆ари́мъ×1	P:N1t	persn; twin: іарімъ.n.2
 іарімъ.n.3	і҆арі́мъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 іарімѡѳъ.n	і҆арімѡ́ѳъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 іаріѡнъ.n	і҆аріѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
@@ -12213,8 +12160,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 іезеліа.n	і҆езелі́а	n	m	anim	N3e	a	-	-	-	P:N3e	persn
 іезехаръ.n	і҆езеха́ръ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 іезоніа.n	і҆езо́ніа	n	m	anim	N3e	a	-	-	nom.sg=і҆езоні́а×1	P:N3e	persn
-іезраель.n	і҆езрае́ль	n	m	inan	N1j	a	-	-	-	P:N1j	topn
-іезраель.n.2	і҆езрае́ль	n	m	inan	N1j	a	-	ins.sg=є҆зрае́лемъ	-	P:N1j	topn
+іезраель.n	і҆езрае́ль	n	m	inan	N1j	a	-	ins.sg=є҆зрае́лемъ	-	P:N1j	topn; twin: іезраель.n.2
 іезраиль.n	і҆езраи́ль	n	m	inan	N1j	a	-	-	-	P:N1j	topn
 іезраилітинъ.n	і҆езраилі́тинъ	n	m	anim	N1in	a	-	-	-	P:N1in	-
 іезраилітинъ.n.2	і҆езраилі́тинъ	n	m	anim	N1in	a	-	gen.sg=є҆зраилі́тина;acc.sg=є҆зраилі́тина	-	P:N1in	-
@@ -12373,8 +12319,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ілларіѡнъ.n	і҆лларіѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 іллюстраціа.n	і҆ллюстра́ціа	n	f	inan	N3e	a	-	-	-	P:N3e	-
 іллѵрікъ.n	і҆ллѵрі́къ	n	m	inan	N1k	a	-	-	-	P:N1k	topn
-іллѵрікъ.n.2	і҆ллѵ́рікъ	n	m	anim	N1k	a	-	ins.pl=і҆ллі́ріки	-	P:N1k	-
-іллѵрікъ.n.3	і҆ллѵ́рікъ	n	m	anim	N1k	a	-	-	-	P:N1k	persn
+іллѵрікъ.n.2	і҆ллѵ́рікъ	n	m	anim	N1k	a	-	ins.pl=і҆ллі́ріки	-	P:N1k	persn; twin: іллѵрікъ.n.3
 ілѵтонъ.n	і҆лѵто́нъ	n	m	inan	N1t*	a	1=ілітон	-	nom.sg=і҆літо́нъ×1;gen.sg=і҆лѵто́на×1;acc.sg=і҆літо́нъ×1	P:N1t	-
 іматісма.n	і҆маті́сма	n	f	inan	N3t	a	-	-	-	P:N3t	-
 імператоръ.n	і҆мпера́торъ	n	m	anim	N1t	a	-	dat.pl=і҆мпера́торамъ	-	P:N1t	-
@@ -12543,9 +12488,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 іꙋліанъ.n	і҆ꙋліа́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 іꙋліаніа.n	і҆ꙋліані́а	n	f	anim	N3e	a	-	-	-	P:N3e	persn
 іꙋліаніѧ.n	і҆ꙋліані́ѧ	n	f	anim	N3i	a	-	-	-	P:N3i	persn
-іꙋлій.n	і҆ꙋ́лій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
+іꙋлій.n	і҆ꙋ́лій	n	m	anim	N1i	a	-	-	-	P:N1i	persn; twin: іꙋлій.n.3
 іꙋлій.n.2	і҆ꙋ́лій	n	m	inan	N1i	a	-	-	-	P:N1i	-
-іꙋлій.n.3	і҆ꙋ́лій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 іꙋлітта.n	і҆ꙋлі́тта	n	f	anim	N3t	a	-	-	-	P:N3t	persn
 іꙋніа.n	і҆ꙋні́а	n	f	anim	N3e	a	-	-	acc.sg=і҆ꙋ́нїю×1	P:N3e	persn
 іꙋній.n	і҆ꙋ́ній	n	m	inan	N1i	a	-	-	-	P:N1i	-
@@ -13113,9 +13057,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѳірасъ.n	ѳі́расъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 ѳісва.n	ѳі́сва	n	f	inan	N3t	a	-	-	-	P:N3t	topn
 ѳіфаилъ.n	ѳіфаи́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
-ѳѡла.n	ѳѡла̀	n	m	anim	N3t	b	-	-	-	P:N3t	persn
+ѳѡла.n	ѳѡла̀	n	m	anim	N3t	a.nom{gen.sg=E}	-	-	-	P:N3t	persn; twin: ѳѡла.n.3
 ѳѡла.n.2	ѳѡ́ла	n	f	inan	N3t	a	-	-	-	P:N3t	topn
-ѳѡла.n.3	ѳѡ́ла	n	m	anim	N3t	a	-	-	-	P:N3t	persn
 ѳѡладъ.n	ѳѡла́дъ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 ѳѡма.n	ѳѡма̀	n	m	anim	N3t	b	-	-	nom.sg=ѳома̀×1	P:N3t	persn
 ѳѡмаіда.n	ѳѡмаі́да	n	f	anim	N3t	a	-	-	-	P:N3t	persn
@@ -13136,8 +13079,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѵперихій.n	ѵ҆пери́хій	n	m	anim	N1i	a	-	-	-	P:N1i	persn
 ѵподіаконъ.n	ѵ҆подіа́конъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
 ѵпостась.n	ѵ҆поста́сь	n	f	inan	N41	a	-	loc.pl=ѵ҆поста́сѣхъ	gen.sg=ѵ҆пѡста́си×2;dat.sg=ѵ҆пѡста́си×2;loc.sg=ѵ҆пѡста́си×2	P:N41	-
-ѵрканъ.n	ѵ҆рка́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
-ѵрканъ.n.2	ѵ҆рка́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+ѵрканъ.n	ѵ҆рка́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn; twin: ѵрканъ.n.2
 ѵрканіа.n	ѵ҆рка́ніа	n	f	inan	N3e	a	-	-	-	P:N3e	topn
 ѵссѡпъ.n	ѵ҆ссѡ́пъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 ѵтиноѕеѡнъ.n	ѵ҆тиноѕеѡ́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn

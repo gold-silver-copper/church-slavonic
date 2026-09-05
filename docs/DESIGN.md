@@ -451,6 +451,16 @@ any code change.
    primary), reaches (an alternative or variant) and adds the rest as
    variants with the source's token; a lemma the lexicon lacks is
    quarantined.
+4b. One lexeme per line (3.1): a source that splits a word by sense
+   (Polyakov's ꙗзыкъ tongue / nation, зрѣти twice) is merged after the
+   fit — two fitted lexemes with the same accent-blind lemma, part of
+   speech, gender and animacy, whose every shared attested cell prints
+   the same primary, are one lexeme: the lowest id survives (ids are
+   assigned before the merge and never move), it is refitted from the
+   union of the entries' forms, provenance joined, the absorbed id in
+   the note (`twin: зрѣти.v.2`, and `data/twins.tsv`). A pair whose
+   shared cell prints differently stays two lines: that is a paradigm
+   difference the lexicon must keep, whatever the sense.
 5. Flag suspects (no stress in an accented source, a paradigm that fits
    no class, a class that does not produce the lemma) into
    `quarantine.tsv` with a reason. A headword whose attested citation

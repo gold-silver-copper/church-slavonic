@@ -665,7 +665,9 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
     for (print, count) in &adverb_entries {
         adverb_by_key.entry(church_slavonic::orthography::comparison_key(print)).or_default().push((print.clone(), *count));
     }
-    for entry in &entries {
+    // 3.1 Part 3: what each fitted lexeme attested, for the twins' merge
+    let mut twin_evidence: HashMap<String, (usize, Attested, Bundled)> = HashMap::new();
+    for (entry_index, entry) in entries.iter().enumerate() {
         if pos_of(entry) != Some(pos) {
             continue;
         }
@@ -999,10 +1001,123 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 _ => {}
             }
         }
+        twin_evidence.insert(f.lexeme.id.clone(), (entry_index, attested.clone(), bundled.clone()));
         o.lexemes.push(f.lexeme);
+    }
+    if pos != Pos::Closed {
+        merge_twins(&mut o, pos, &entries, &twin_evidence);
     }
     o.lexemes.sort_by(|a, b| a.id.cmp(&b.id));
     Ok(o)
+}
+
+/// 3.1 Part 3 — the rule of identity. Polyakov splits one word into
+/// entries by sense (ꙗзыкъ tongue / nation, зрѣти twice); the lexicon
+/// holds one lexeme per line. Two fitted lexemes are one lexeme when they
+/// share the lemma under the accent-blind key, the part of speech, the
+/// gender and the animacy, and every cell both attest prints the same
+/// primary (a proper subset of attestations is the same lexeme with fewer
+/// forms; disjoint attestations say nothing against it). The survivor is
+/// the lowest id (the one a consumer may hold); it is refitted once from
+/// the union of both entries' forms (the arbiter sees the union), its
+/// provenance and notes joined, and the absorbed id recorded in the note
+/// (`twin: x.n.2`). A pair whose shared cells disagree (во́лна / волна̀,
+/// ꙗзыкъ anim / inan by animacy) stays two lines. Ids never move: the
+/// numbering was assigned before the merge.
+/// The identity key of a lexeme for the twins' merge: the accent-blind
+/// lemma, the part of speech, the gender and the animacy.
+type TwinKey = (String, Pos, Option<Gender>, Option<bool>);
+
+fn merge_twins(o: &mut Outcome, pos: Pos, entries: &[Entry], evidence: &HashMap<String, (usize, Attested, Bundled)>) {
+    let classes = table(pos);
+    let mut groups: BTreeMap<TwinKey, Vec<usize>> = BTreeMap::new();
+    for (i, l) in o.lexemes.iter().enumerate() {
+        groups.entry((comparison_key(&l.lemma), l.pos, l.gender, l.animate)).or_default().push(i);
+    }
+    let mut absorbed: Vec<usize> = Vec::new();
+    let mut absorbed_by: HashMap<usize, Vec<usize>> = HashMap::new();
+    let mut replacements: Vec<(usize, church_slavonic::Lexeme)> = Vec::new();
+    for (_, members) in groups.iter_mut() {
+        if members.len() < 2 {
+            continue;
+        }
+        members.sort_by(|a, b| o.lexemes[*a].id.cmp(&o.lexemes[*b].id));
+        let mut survivors: Vec<(usize, Entry)> = Vec::new();
+        'member: for &i in members.iter() {
+            let Some((entry_index, attested, _)) = evidence.get(&o.lexemes[i].id) else { continue };
+            for (si, merged_entry) in survivors.iter_mut() {
+                let Some((_, sattested, _)) = evidence.get(&o.lexemes[*si].id) else { continue };
+                let shared: Vec<&Cell> = attested.keys().filter(|c| sattested.contains_key(*c)).collect();
+                let agree = shared.iter().all(|c| match (attested[*c].first(), sattested[*c].first()) {
+                    (Some((a, _)), Some((b, _))) => super::fit::translit_equal(a, b),
+                    _ => true,
+                });
+                if !agree {
+                    o.bump("twins kept apart: a shared cell prints differently");
+                    continue;
+                }
+                let kind = if shared.len() == attested.len() && shared.len() == sattested.len() {
+                    "twins merged: identical attestations"
+                } else if shared.len() == attested.len() || shared.len() == sattested.len() {
+                    "twins merged: one side's attestations inside the other's"
+                } else if shared.is_empty() {
+                    "twins merged: disjoint attestations"
+                } else {
+                    "twins merged: overlapping attestations that agree"
+                };
+                o.bump(kind);
+                merged_entry.forms.extend(entries[*entry_index].forms.iter().cloned());
+                merged_entry.count += entries[*entry_index].count;
+                for code in class_codes(&entries[*entry_index].class) {
+                    if !class_codes(&merged_entry.class).contains(&code) {
+                        merged_entry.class = if merged_entry.class.is_empty() { code } else { format!("{}/{code}", merged_entry.class) };
+                    }
+                }
+                absorbed.push(i);
+                absorbed_by.entry(*si).or_default().push(i);
+                println!("TWIN {} → {}", o.lexemes[i].id, o.lexemes[*si].id);
+                continue 'member;
+            }
+            survivors.push((i, entries[*entry_index].clone()));
+        }
+        // refit each survivor that absorbed anything from the union
+        for (si, merged_entry) in survivors {
+            let Some(taken) = absorbed_by.get(&si).cloned() else { continue };
+            let twins: Vec<String> = taken.iter().map(|a| o.lexemes[*a].id.clone()).collect();
+            let survivor = &o.lexemes[si];
+            let Some(class) = classes.get(&survivor.class) else { continue };
+            let mut scratch = Outcome::default();
+            let (attested, bundled) = attested_cells(&merged_entry, pos, &survivor.class, &mut scratch);
+            let mut src = survivor.src.clone();
+            let mut note: Vec<String> = survivor.note.split("; ").filter(|n| !n.is_empty()).map(str::to_string).collect();
+            for a in &taken {
+                for t in &o.lexemes[*a].src {
+                    if !src.contains(t) {
+                        src.push(t.clone());
+                    }
+                }
+                for n in o.lexemes[*a].note.split("; ").filter(|n| !n.is_empty()) {
+                    if !note.iter().any(|x| x == n) {
+                        note.push(n.to_string());
+                    }
+                }
+            }
+            for t in &twins {
+                note.push(format!("twin: {t}"));
+            }
+            let f = fit(&survivor.id, &survivor.lemma, pos, SYN, class, survivor.gender, survivor.animate, survivor.stems.clone(), &attested, &bundled, src, note.join("; "));
+            replacements.push((si, f.lexeme));
+        }
+    }
+    for (si, lexeme) in replacements {
+        o.lexemes[si] = lexeme;
+    }
+    let mut drop: Vec<usize> = absorbed;
+    drop.sort_unstable();
+    drop.dedup();
+    for i in drop.into_iter().rev() {
+        o.lexemes.remove(i);
+    }
 }
 
 /// The id's stem: the lemma's letters with marks stripped.
