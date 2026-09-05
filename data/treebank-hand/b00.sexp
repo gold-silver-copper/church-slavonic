@@ -4,7 +4,7 @@
 ; Verbatim leaves carry their reason in the harvest (NOTES.md):
 ;   бг҃ъ/дх҃ъ/бж҃їй — titlo abbreviations; бѣ̀/бꙋ́детъ — быти forms the
 ;   crate does not conjugate (imperfect бѣ̀, future бꙋ́детъ);
-;   Землѧ́ — grave→acute before the enclitic же; ѹ҆́тро — single-char
+;   (Землѧ́ же is a phonological word written apart, (pwa …), since 2.2); ѹ҆́тро — single-char
 ;   uk ѹ where the crate spells the оу digraph; тве́рдїю — print ї
 ;   against crate і; ꙗ҆́же — lifted in v1.2 part 4 (the relative и҆́же);
 ;   неꙋстро́ена — lemma missing; разлꙋча́ющи — present participle,
@@ -14,7 +14,7 @@
 ;   1.x overlay had rendered through the vocative of є҆́жъ (a false
 ;   analysis the round-trip could not see), are the relative pronoun.
 (verse 1 1 (s (cl (pp (cap (f въ)) (n начало.n :case loc :num sg)) (v сотворити.v :t aor :p 3 :num sg) (subj (np (w "бг҃ъ" :lemma бо́гъ :case nom))) (np (n небо.n :case acc :num sg) (f и҆) (n землѧ.n :case acc :num sg)) (p "."))))
-(verse 1 2 (s (cl (subj (np (w "Землѧ́" :lemma землѧ̀ :case nom))) (f же) (w "бѣ̀" :lemma бы́ти) (adj невидимый.a :case nom :num sg :g f :series short) (f и҆) (w "неꙋстро́ена") (p ",")) (f и҆) (cl (subj (np (n тма.n :case nom :num sg))) (pp (f верхꙋ̀) (n бездна.n :case gen :num sg)) (p ",")) (f и҆) (cl (subj (np (w "дх҃ъ" :lemma дꙋ́хъ :case nom) (w "бж҃їй" :lemma бо́жїй))) (v носитисѧ.v :t impf :p 3 :num sg) (pp (f верхꙋ̀) (n вода.n :case gen :num sg)) (p "."))))
+(verse 1 2 (s (cl (subj (np (cap (pwa (n землѧ.n :case nom :num sg) (f же.x.2))))) (w "бѣ̀" :lemma бы́ти) (adj невидимый.a :case nom :num sg :g f :series short) (f и҆) (w "неꙋстро́ена") (p ",")) (f и҆) (cl (subj (np (n тма.n :case nom :num sg))) (pp (f верхꙋ̀) (n бездна.n :case gen :num sg)) (p ",")) (f и҆) (cl (subj (np (w "дх҃ъ" :lemma дꙋ́хъ :case nom) (w "бж҃їй" :lemma бо́жїй))) (v носитисѧ.v :t impf :p 3 :num sg) (pp (f верхꙋ̀) (n вода.n :case gen :num sg)) (p "."))))
 (verse 1 3 (s (cl (cap (f и҆)) (v рещи.v :t aor :p 3 :num sg) (subj (np (w "бг҃ъ" :lemma бо́гъ :case nom))) (p ":") (cl (f да) (w "бꙋ́детъ" :lemma бы́ти) (n свѣтъ.n :case nom :num sg)) (p ".")) (cl (cap (f и҆)) (w "бы́сть" :lemma бы́ти) (subj (np (n свѣтъ.n :case nom :num sg))) (p "."))))
 (verse 1 4 (s (cl (cap (f и҆)) (v видѣти.v :t aor :p 3 :num sg) (subj (np (w "бг҃ъ" :lemma бо́гъ :case nom))) (np (n свѣтъ.n :case acc :num sg)) (p ",") (f ꙗ҆́кѡ) (n добро.n :case nom :num sg) (p ",")) (f и҆) (cl (v разлꙋчити.v :t aor :p 3 :num sg) (subj (np (w "бг҃ъ" :lemma бо́гъ :case nom))) (pp (f междꙋ̀) (n свѣтъ.n :case ins :num sg)) (f и҆) (pp (f междꙋ̀) (n тма.n :case ins :num sg)) (p "."))))
 (verse 1 5 (s (cl (cap (f и҆)) (v нарещи.v :t aor :p 3 :num sg) (subj (np (w "бг҃ъ" :lemma бо́гъ :case nom))) (np (n свѣтъ.n :case acc :num sg)) (np (n день.n :case acc :num sg)) (p ",") (f а҆) (np (n тма.n :case acc :num sg)) (v нарещи.v :t aor :p 3 :num sg) (np (n нощь.n :case acc :num sg)) (p ".")) (cl (cap (f и҆)) (w "бы́сть" :lemma бы́ти) (subj (np (n вечеръ.n :case nom :num sg))) (p ",")) (cl (f и҆) (w "бы́сть" :lemma бы́ти) (subj (np (w "ѹ҆́тро" :lemma оу҆́тро :case nom))) (p ",")) (np (n день.n :case nom :num sg) (w "є҆ди́нъ" :lemma є҆ди́нъ)) (p ".")))

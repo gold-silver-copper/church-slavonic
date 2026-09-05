@@ -16,6 +16,7 @@ pub mod inflect;
 pub mod lexicon;
 pub mod orthography;
 pub mod paradigm;
+pub mod prosody;
 pub mod stress;
 pub mod titlo;
 

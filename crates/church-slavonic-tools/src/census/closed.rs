@@ -102,7 +102,7 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
 
 fn unwrap(node: &crate::treebank::node::Node) -> &crate::treebank::node::Node {
     match node {
-        crate::treebank::node::Node::Cap(inner) | crate::treebank::node::Node::Abbr { child: inner, .. } => unwrap(inner),
+        crate::treebank::node::Node::Cap(inner) | crate::treebank::node::Node::Abbr { child: inner, .. } | crate::treebank::node::Node::Pw { host: inner, .. } => unwrap(inner),
         other => other,
     }
 }

@@ -108,6 +108,63 @@ impl Form {
         comparison_key(&self.letters)
     }
 
+    /// The form with an enclitic written solid after it: the accentual
+    /// unit (the phonological word) the print accents as one — землѧ̀ +
+    /// же = землѧ́же, the host's final varia an oxia because the unit's last
+    /// vowel is the enclitic's; the number mark skips the enclitic's
+    /// vowels; the Synodal print drops the host's jer before the enclitic
+    /// (ихъ + же = и҆́хже, тѣ́мже), OCS keeps it (имъже). The `encl=` lexemes
+    /// (иже, кождо, the reflexive verbs) are this rule applied by the
+    /// class at the letters stage; this is the same rule for any host.
+    pub fn with_enclitic(&self, enclitic: &str, recension: Recension) -> Form {
+        let mut letters = self.letters.clone();
+        if recension == Recension::Synodal && letters.ends_with('ъ') {
+            letters.pop();
+        }
+        let enclitic_letters = strip_marks(enclitic);
+        let tail = enclitic_letters.chars().filter(|c| is_vowel_letter(*c)).count();
+        letters.push_str(&enclitic_letters);
+        Form {
+            letters,
+            stress: self.stress,
+            number_mark: self.number_mark,
+            mark_skip: self.mark_skip.saturating_add(tail.min(255) as u8),
+            varia: self.varia,
+            kamora: self.kamora,
+        }
+    }
+
+    /// The print of the form with its enclitics written solid after it
+    /// (the phonological word): `print` of [`Form::with_enclitic`]
+    /// applied in order.
+    pub fn print_unit(&self, recension: Recension, enclitics: &[&str]) -> String {
+        enclitics.iter().fold(self.clone(), |f, e| f.with_enclitic(e, recension)).print(recension)
+    }
+
+    /// The print of a host whose enclitic is written apart (Землѧ́ же): the
+    /// unit continues, so the host's final stressed vowel takes the oxia
+    /// the positional rule would make a varia; everything else as
+    /// [`Form::print`].
+    pub fn print_hosting(&self, recension: Recension) -> String {
+        let printed = self.print(recension);
+        if recension != Recension::Synodal || self.varia {
+            return printed;
+        }
+        let mut units = units(&printed);
+        let last = units.len().saturating_sub(1);
+        if let Some(u) = units.get_mut(last)
+            && u.is_vowel()
+            && u.marks.contains(&'\u{300}')
+        {
+            for m in &mut u.marks {
+                if *m == '\u{300}' {
+                    *m = '\u{301}';
+                }
+            }
+        }
+        join(&units)
+    }
+
     /// The printed word in `recension`'s typography.
     pub fn print(&self, recension: Recension) -> String {
         match recension {

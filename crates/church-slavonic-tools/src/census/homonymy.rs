@@ -61,7 +61,7 @@ fn walk(node: &crate::treebank::node::Node, lexicon: &Lexicon, shapes: &mut BTre
                 *set_names.entry(cells.name()).or_default() += 1;
             }
         }
-        Node::Cap(child) | Node::Abbr { child, .. } => walk(child, lexicon, shapes, surfaces, sizes, set_names, amb),
+        Node::Cap(child) | Node::Abbr { child, .. } | Node::Pw { host: child, .. } => walk(child, lexicon, shapes, surfaces, sizes, set_names, amb),
         Node::Group { children, .. } => {
             for c in children {
                 walk(c, lexicon, shapes, surfaces, sizes, set_names, amb);

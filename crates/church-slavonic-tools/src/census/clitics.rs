@@ -9,20 +9,7 @@ use std::error::Error;
 
 pub const ENCLITICS: &[&str] = &["же", "бо", "ли", "ми", "ти", "сѧ", "мѧ", "тѧ", "ны", "вы", "си"];
 
-/// The host with its final oxia turned into the varia the standalone
-/// print writes (землѧ́ → землѧ̀); `None` when the host has no final oxia.
-pub fn host_standalone(host: &str) -> Option<String> {
-    use unicode_normalization::UnicodeNormalization;
-    let chars: Vec<char> = host.nfd().collect();
-    let last_oxia = chars.iter().rposition(|c| *c == '\u{301}')?;
-    // no vowel letter after it: the oxia is on the host's last vowel
-    if chars[last_oxia + 1..].iter().any(|c| church_slavonic::orthography::is_vowel_letter(*c)) {
-        return None;
-    }
-    let mut out = chars;
-    out[last_oxia] = '\u{300}';
-    Some(out.into_iter().collect::<String>().nfc().collect())
-}
+pub use crate::treebank::lift::host_standalone;
 
 pub fn run() -> Result<(), Box<dyn Error>> {
     let Some(bible) = crate::treebank::bible::load()? else {

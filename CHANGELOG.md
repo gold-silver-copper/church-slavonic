@@ -108,6 +108,46 @@ design intends; the gate's substance — no coverage lost, the
 several-lexemes share not above 6.0% — holds. The game's 35 tests pass
 unchanged.
 
+### Part 3 — the phonological word (2026-09-05)
+
+- **The rule in the crate.** `Form::with_enclitic(enclitic, recension)`
+  builds the accentual unit — the host's letters with the enclitic's,
+  the host's jer dropped before it in the Synodal print (ихъ + же =
+  и҆̀хже; OCS keeps имъже), the number mark skipping the enclitic's
+  vowels — and `Form::print_unit` prints it: землѧ̀ + же = землѧ́же, the
+  host's final varia an oxia because the unit's last vowel is the
+  enclitic's. `Form::print_hosting` is the host's print when the enclitic
+  is written apart (Землѧ́ же): the final varia an oxia, nothing else
+  touched. The 2.0 `encl=` lexemes are this rule applied at the letters
+  stage and print unchanged (the consistency test). `church_slavonic::prosody::words`
+  groups a token sequence into phonological words by the lexicon's
+  prosody (a proclitic to the next tonic word, an enclitic to the
+  previous unit) for a renderer or a generator; second-position
+  placement is the generator's call.
+- **The treebank.** `(pw host (f же.x.2))` a unit written solid, `(pwa host
+  (f же.x.2))` one written apart; the host an analyzed leaf or a closed
+  lexeme, every enclitic a closed lexeme with `pros=encl`, rendered
+  through the unit rule. The lifter reads a token with no whole reading
+  as host + enclitic (the enclitic stripped, the host's final oxia read
+  as the standalone varia or its jer restored, one lexeme), and a token
+  with no whole reading followed by an enclitic token as a unit written
+  apart; the probe renders the token(s) back. The linter and the
+  coverage count a unit as its host. Three contractions entered the
+  closed lexicon by hand (`H:`): во́нь, на́нь, за́нь (въ/на/за + нь), so that
+  во́ньже reads as two lexemes (вонѧ's genitive plural beside the
+  contraction) and stays `:amb` rather than lifting as вонѧ.
+- **The hand overlay.** Genesis 1:2's «Землѧ́ же» is `(cap (pwa (n землѧ.n
+  :case nom :num sg) (f же.x.2)))`; the ceiling row rises by one.
+
+Measured (2.2 Part 2 → Part 3):
+
+| Number | before | after |
+|---|---|---|
+| tokens ending in an enclitic that analyse only as host + enclitic (census) | 524 | 441 lifted as `(pw …)` (онъ.pron 417 — и҆̀хже, ѻ҆́ньже; closed hosts 17 — на́ньже, за́ньже); the rest read as several lexemes or none |
+| hosts with a final oxia before an enclitic written apart (Bible print) | 2,538 (Рече́ же 289, Є҆гда́ же 138, ты́ же 110, Ѻ҆ни́ же 81) | 1,854 lifted as `(pwa …)` (verbs 693, closed hosts 436, pronouns 419, nouns 291); the rest read as several lexemes |
+| Bible treebank: analysed one cell / one lexeme several cells / closed / several lexemes / verbatim | 23.7 / 34.1 / 27.9 / 6.0 / 8.2 % | 23.8 (150,319) / 34.3 (216,689) / 28.0 (177,210) / 6.0 (37,663) / 7.8 (49,048) %; zero mismatches; 366,724 leaves complete |
+| Genesis 1 hand overlay | 283 analysed, Землѧ́ verbatim | 284 analysed, Землѧ́ же a unit |
+
 ## 2.1.0 (2026-09-05) — present stems by derivation, syncretism by underspecification
 
 The plan is `V2.1-PROMPT.md` (executed; its postscript lists the

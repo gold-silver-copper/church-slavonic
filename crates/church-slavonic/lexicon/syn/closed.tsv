@@ -231,6 +231,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 воистиннꙋ.x.2	вои́стиннꙋ	x	-	-	adv	a	-	-	word=вои́стинꙋ	P:-	adv
 вокрꙋгъ.x.2	вокрꙋ́гъ	x	-	-	adv	a	-	-	-	P:-	adv
 вонъ.x.2	во́нъ	x	-	-	adv	a	-	-	-	P:-	adv
+вонь.x	во́нь	x	-	-	contr	a	-	-	-	H:	contr; въ + нь (the accusative и after a preposition): во́ньже "in which", Alypy §47
 вопервыхъ.x.2	вопе́рвыхъ	x	-	-	adv	a	-	-	-	P:-	adv
 вопротивъ.x.2	вопроти́въ	x	-	-	adv	a	-	-	-	P:-	adv
 вослѣдъ.x.2	вослѣ́дъ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -423,6 +424,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 заграницей.x.2	заграни́цей	x	-	-	adv	a	-	-	-	P:-	adv
 зане.x.2	занѐ	x	-	-	conj	a	-	-	-	P:-	conj
 занеже.x.2	зане́же	x	-	-	conj	a	-	-	-	P:-	conj
+зань.x	за́нь	x	-	-	contr	a	-	-	-	H:	contr; за + нь: за́ньже, Alypy §47
 заꙋтра.x.2	заꙋ́тра	x	-	-	adv	a	-	-	-	P:-	adv
 здѣ.x.2	здѣ̀	x	-	-	adv	a	-	-	word=здѣ	P:-	adv
 здѣсь.x.2	здѣ́сь	x	-	-	adv	a	-	-	-	P:-	adv
@@ -608,6 +610,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 наичастѣе.x.2	наича́стѣе	x	-	-	adv	a	-	-	-	P:-	adv; comp
 наконецъ.x.2	наконе́цъ	x	-	-	adv	a	-	-	word=на́конецъ	P:-	adv
 намнозѣ.x.2	намно́зѣ	x	-	-	adv	a	-	-	-	P:-	adv
+нань.x	на́нь	x	-	-	contr	a	-	-	-	H:	contr; на + нь: на́ньже, Alypy §47
 написаннѡ.x.2	напи́саннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 наподобіе.x.2	наподо́бїе	x	-	-	prep	a	gov=gen;pros=procl	-	-	P:-	pr
 напослѣди.x.2	напослѣдѝ	x	-	-	adv	a	-	-	-	P:-	adv

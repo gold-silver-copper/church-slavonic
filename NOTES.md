@@ -1147,3 +1147,30 @@ members — stays deliberately its own future design.
   is marked enclitic with же/бо/ли on Alypy's authority; the census's
   ѹ҆̀бо (766 tokens) is its spelling with the ligature, a Part 3 case.
 
+## 2026-09-05 — 2.2 Part 3: the phonological word — decisions and findings
+
+- **The print writes the unit apart far more often than solid
+  (finding).** The design expected Землѧ́же; the print has Землѧ́ же —
+  2,538 hosts with a final oxia before an enclitic token against 524
+  solid ones. The unit is the same; the writing differs, so the node has
+  two spellings (`pw`, `pwa`) and the host's print has two entries
+  (`print_unit`, `print_hosting`). Рече́ же (289) is the commonest: the
+  aorist's final varia written as an oxia because же follows.
+- **The rule was already in the crate (finding).** `encl=` on иже and the
+  reflexive verbs concatenated the enclitic's letters and let the
+  positional rule place the oxia; `with_enclitic` is that operation
+  named for any host, and the consistency test over those lexemes is
+  the proof it changed nothing.
+- **A lexicon gap makes a "one lexeme" reading wrong (finding, fixed
+  by hand).** во́ньже lifted as вонѧ (fragrance) + же because the lexicon
+  had no во́нь: the contraction is not in Polyakov. Three `H:` lines
+  (во́нь, на́нь, за́нь) make the host two lexemes and the token `:amb` — the
+  honest state until a disambiguator. The rule "one exact lexeme lifts"
+  is only as good as the lexicon's coverage of the closed classes; a
+  rare-word census against the print would find the rest.
+- **What did not lift (finding).** Of the 524 solid candidates, the
+  hosts that are several lexemes (ѹ҆̀бо's spelling, ста́ми) or none; of
+  the 2,538 apart, the pronoun hosts whose accented form is several
+  lexemes (ты́, мы́ read as clitic and full cells of one lexeme lift; ѻ҆на́
+  reads as ѻ҆́нъ and ѻ҆на́ the noun). The pronoun cases are Part 4's.
+
