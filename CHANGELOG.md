@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.2.0 (in progress) — the six designs after 2.1
+
+The plan is `V2.2-PROMPT.md`; the analysis behind it is
+`docs/OPEN-DESIGNS.md`.
+
+### Part 0 — the censuses (2026-09-05)
+
+`cargo xtask census <verb-cells --ocs | closed | clitics | homonymy |
+stress>` beside `census stems`; the module is `tools/src/census/`.
+
+| Census | Value |
+|---|---|
+| OCS verb classes: aorist / imperfect / l-participle cells against the Leskien type | aorist 88 agree / 65 disagree, imperfect 144 / 9, l-participle 90 / 63 (of 153 cells each); every disagreement is Kaikki's template (класс II косехъ/кослъ for коснѫхъ/коснѫлъ; velars стрѣжехъ for стрѣгохъ; dentals грѧдехъ; nasals кльнхъ; V:I:C's imperfect понесахъ for несѣахъ) |
+| UD variants on OCS verb lines in those blocks | 501 lines: aorist 674 forms, imperfect 266, l-participle 63, past participles 783 |
+| closed lines by tag | adv 2,313, advpro 99, conj 36, pr 29, part 18, intj 7, pred 1 (2,503) |
+| adverbs an adjective already produces | letters and accent 1,435 (857 printed with the wide ѡ), letters only 67, no adjective 811 |
+| prepositions' case frames from the treebank | 23 prepositions, 39,000 tokens; the frames as expected (къ dat 1,458 unambiguous; съ ins 1,563 / gen 203; на acc 1,566 / loc 1,193; ѿ gen 3,707), with the syncretic sets counted apart |
+| solid enclitics | 43,063 tokens ending in an enclitic string analyse whole (ordinary endings: -ти, -ми, -сѧ); 524 analyse only as host + enclitic (и҆̀хже 270, ѻ҆́ньже 147, во́ньже 16, Землѧ́же among the singletons; -же 441, -сѧ 28, -ми 18, -си 12); 3,954 neither, dominated by ѹ҆̀бо 766 (a spelling of ꙋ҆́бо) and негѡ́же 63 |
+| several-lexeme tokens | 37,647: several parts of speech 19,402, several lexemes of one part of speech 17,569, a closed word beside an inflected form 676; commonest гдⷭ҇ь 3,579, а҆́зъ 1,939, ва́мъ 1,358, мнѣ̀ 1,260 |
+| underspecified sets by size | 2 cells 99,341; 3 cells 47,924; 4 cells 14,033; 6 cells 17,285; 8 cells 10,720; 12 cells 5,165; 16 cells 3,078; commonest aor.2|3.sg 14,488, nom|acc.sg 13,521, nom|acc|voc.sg 12,599, gen|acc.sg 8,163 |
+| stress columns with an exception list | nouns 395 (of 13,205) in 174 shapes, the twelve commonest absorb 145; adjectives 242 in 199 shapes / 37; verbs 1,202 in 702 shapes / 242; pronouns 31 in 24 / 19 |
+
 ## 2.1.0 (2026-09-05) — present stems by derivation, syncretism by underspecification
 
 The plan is `V2.1-PROMPT.md` (executed; its postscript lists the

@@ -70,11 +70,7 @@ pub fn relation(lexeme: &church_slavonic::Lexeme, stored: &str, recension: Recen
     "suppletive"
 }
 
-pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
-    let what = args.first().map(String::as_str).unwrap_or("");
-    if what != "stems" {
-        return Err("census stems --pos <pos> [--ocs]".into());
-    }
+pub fn run(args: &[String]) -> Result<(), Box<dyn Error>> {
     let ocs = args.iter().any(|a| a == "--ocs");
     let pos = match args.iter().position(|a| a == "--pos").and_then(|i| args.get(i + 1)).map(String::as_str) {
         Some("noun") => Pos::Noun,

@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Ok(())
         }
         Some("-h") | Some("--help") | None => {
-            eprintln!("cargo xtask <eval [--guess verbs [--ocs]] | census stems --pos <pos> [--ocs] | import <source> --pos <pos> [--write] | build-treebank | check-treebank | fix-hand-alts | narrow-hand | analyze <word>…>");
+            eprintln!("cargo xtask <eval [--guess verbs [--ocs]] | census <stems --pos <pos> [--ocs] | verb-cells --ocs | closed | clitics | homonymy | stress> | import <source> --pos <pos> [--write] | build-treebank | check-treebank | fix-hand-alts | narrow-hand | analyze <word>…>");
             Ok(())
         }
         Some(other) => Err(format!("unknown xtask command: {other}").into()),

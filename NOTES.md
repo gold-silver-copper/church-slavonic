@@ -1053,3 +1053,46 @@ members — stays deliberately its own future design.
   Each is written down in `docs/OPEN-DESIGNS.md` or `HANDOFF-PROMPT.md`
   with its number.
 
+## 2026-09-05 — 2.2 Part 0: the censuses (findings)
+
+- **The OCS non-present cells disagree with the type exactly where
+  Kaikki's template is wrong.** The type prediction (aorist: sigmatic on
+  a vowel stem, -ох- on a consonant stem with the palatalised velar before
+  е, -нѫ- kept in class II; the imperfect -ѣа-/-аа-/-ꙗа- by type; the
+  l-participle on the infinitive stem) agrees with every vowel-stem class
+  in all three blocks and disagrees with every consonant-stem class in
+  the aorist and l-participle: class II (косехъ, кослъ), the velars
+  (стрѣжехъ, влѣчехъ), the dentals (грѧдехъ, гнестхъ), the nasals
+  (кльнхъ, кльнлъ), and V:I:C's imperfect (понесахъ). 501 OCS verb lines
+  carry UD variants in these blocks (674 aorist forms): the corpus has
+  the right forms and the tables do not.
+- **Two thirds of the adverbs are an adjective's cell.** 1,435 of the
+  2,313 closed adverbs are printed exactly as an adjective already in the
+  lexicon prints its neuter short nominative (with the wide ѡ in 857) or
+  its short locative; 811 have no adjective (the primary adverbs and the
+  compounds), 67 differ in accent or letters.
+- **The preposition frames from the treebank are the grammar's**, with
+  the syncretic sets as a separate count that a disambiguator will
+  resolve (въ: loc 2,488 and acc 1,490 unambiguous, acc|nom|voc 1,875 the
+  masculine inanimate's set).
+- **Solid enclitics are a small, closed set of hosts.** 524 tokens
+  analyse only as host + enclitic once the host's final varia is read as
+  an oxia or its jer is restored: и҆̀хже (270), ѻ҆́ньже (147), во́ньже,
+  на́ньже, за́ньже, Землѧ́же. The 3,954 "neither" are ѹ҆̀бо (766, a
+  spelling of ꙋ҆́бо with the ligature ѹ) and ordinary words ending in the
+  letters of -сѧ/-ти that the lexicon lacks; -же/-бо/-ли leave 95/774/82,
+  and негѡ́же (63) is него + же, a form the personal pronoun prints only
+  after a preposition.
+- **Homonymy is mostly across parts of speech.** 19,402 of 37,647 `:amb`
+  tokens read as several parts of speech; the commonest surfaces are
+  lexicon duplicates or near-duplicates the census exposes (гдⷭ҇ь 3,579,
+  а҆́зъ 1,939, ва́мъ 1,358, мнѣ̀ 1,260): a lexicon cleaning precedes any
+  disambiguator.
+- **The stress exception lists are not paradigms.** 1,870 Synodal lines
+  carry a list, in 1,099 shapes; the twelve commonest shapes per part of
+  speech absorb 145 of 395 noun lists, 37 of 242 adjective lists, 242 of
+  1,202 verb lists. The noun shapes are paradigms (a{pl=E}, a{gen.pl=E},
+  b{voc.sg=S}, b{acc.sg=S} the рꙋка̀ retraction); the verb shapes are
+  Polyakov's per-lexeme noise (b{pres.3.sg=S} on 43 reflexives). Part 6
+  will name the noun and adjective paradigms and leave the verb lists.
+
