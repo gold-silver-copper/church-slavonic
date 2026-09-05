@@ -97,6 +97,17 @@ pub enum Degree {
     Superlative,
 }
 
+/// A word's place in the accentual unit (the phonological word): an
+/// enclitic leans on the word before it (же, бо, ли), a proclitic on the
+/// word after it (the prepositions, не, ни), a tonic word carries its own
+/// accent. A lexical fact of the closed classes (`stems=pros=encl`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Prosody {
+    Enclitic,
+    Proclitic,
+    Tonic,
+}
+
 /// The orthographic-morphological variety a query is answered in. Every rule
 /// takes one: the two recensions share the paradigm skeleton but differ in
 /// spelling (`ꙑ`/`ы`, `оу`/`ꙋ`, the nasals) and, at named cells, in the

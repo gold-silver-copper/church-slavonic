@@ -1,0 +1,13 @@
+# The closed classes: a subcategory per row, one cell (`word`, the lemma). The
+# lexeme line carries the lexical facts: `stems=gov=<case>[|<case>…]` the
+# cases a preposition governs (commonest first, from the treebank census),
+# `pros=encl|procl` the word's place in the accentual unit. Written by hand
+# (2.2 Part 2); the lexicon lines are the Polyakov importer's.
+class	exemplar	strip	stems	word
+prep	въ	0	1=base	@lemma
+conj	и҆	0	1=base	@lemma
+part	не	0	1=base	@lemma
+adv	та́кѡ	0	1=base	@lemma
+advpro	гдѣ̀	0	1=base	@lemma
+intj	ѽ	0	1=base	@lemma
+pred	лѣ́ть	0	1=base	@lemma

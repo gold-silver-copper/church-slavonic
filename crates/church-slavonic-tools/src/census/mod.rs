@@ -6,8 +6,9 @@
 //! - `verb-cells --ocs`: the OCS verb classes' aorist, imperfect and
 //!   l-participle cells against what the Leskien type predicts, and the
 //!   UD variants in those blocks.
-//! - `closed`: the closed lines by subcategory, the adverbs an adjective
-//!   produces, the prepositions' case frames counted from the treebank.
+//! - `closed [--write]`: the closed lines by subcategory, the adverbs an
+//!   adjective produces, the prepositions' case frames counted from the
+//!   treebank (`--write` stores them in `data/prep-frames.tsv`).
 //! - `clitics`: the Bible tokens ending in an enclitic written solid.
 //! - `homonymy`: the treebank's `:amb` tokens by shape, the sets by size.
 //! - `stress`: the Synodal stress columns with an exception list by shape.
@@ -25,7 +26,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     match args.first().map(String::as_str).unwrap_or("") {
         "stems" => stems::run(&args),
         "verb-cells" => verb_cells::run(&args),
-        "closed" => closed::run(),
+        "closed" => closed::run(args.iter().any(|a| a == "--write")),
         "clitics" => clitics::run(),
         "homonymy" => homonymy::run(),
         "stress" => stress::run(),

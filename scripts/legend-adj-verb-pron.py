@@ -310,12 +310,24 @@ def adjectives(table):
             if code in ("A1i", "A2i"):
                 mark("short.pos.m.du.nom")
                 mark("short.pos.m.du.acc")
+            # the adverb (2.2 Part 2): the neuter short nominative's ending
+            # with the mark that prints the wide ѡ (мꙋ́дрѡ, до́брѡ) beside the
+            # short locative (до́брѣ); the comparative adverb is the short
+            # comparative neuter nominative (мꙋдрѣ́е)
+            nom = cells.get("short.pos.n.sg.nom", "").split("|")[0]
+            loc = cells.get("short.pos.m.sg.loc", "").split("|")[0]
+            if nom and not nom.startswith("@"):
+                adv = [nom.rstrip("^") + "^"]
+                if loc and not loc.startswith("@") and loc != nom:
+                    adv.append(loc)
+                cells["adv"] = "|".join(adv)
+                cells["comp.adv"] = "@short.comp.n.sg.nom"
             exemplar = table[1][1:][hi].split(",")[0].strip().replace("-", "")
             if code.startswith("A2") and code != "A2i":
                 exemplar = table[1][1:][hi].split(",")[-1].strip().replace("-", "") if "," in table[1][1:][hi] else exemplar
             out.append((code, exemplar, strip, stems, cells))
     header_cells = [f"{s}.pos.{g}.{n}.{c}" for s in ("short", "long") for g in GENDERS for n in NUMBERS for c in CASES]
-    header_cells += ["short.comp", "long.comp", "short.comp.m.sg.nom", "short.comp.n.sg.nom", "short.comp.n.sg.acc", "short.comp.f.sg.nom", "long.comp.m.sg.nom"]
+    header_cells += ["short.comp", "long.comp", "short.comp.m.sg.nom", "short.comp.n.sg.nom", "short.comp.n.sg.acc", "short.comp.f.sg.nom", "long.comp.m.sg.nom", "adv", "comp.adv"]
     return header_cells, out
 
 

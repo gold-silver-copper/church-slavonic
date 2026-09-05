@@ -1123,3 +1123,27 @@ members — stays deliberately its own future design.
   the consistency test did not see because it checks nouns' nominatives
   only — are gone. A citation-cell check for verbs belongs in that test.
 
+## 2026-09-05 — 2.2 Part 2: the closed-class lexicon — decisions and findings
+
+- **Government is a lexicon column and the grammar decides membership
+  (decision).** The treebank census orders the cases and exposes what the
+  auto-lift claims (въ + dative 336 tokens, при + accusative 9); the
+  grammar's frames decide what is a frame, and the census's extras are
+  a `gov?` note. Reading the census as the frame would have made въ
+  govern the dative on the strength of mis-lifted tokens.
+- **An adverb an adjective prints exactly is not a lexeme (decision).**
+  1,123 lines went; their Polyakov counts are on the adjective's note.
+  The 61 an adjective prints with another accent (безобра́знѡ against the
+  adjective's stem stress) keep their line with `adv-of=`: the accent is
+  a lexical fact of the adverb the class does not predict — Part 6's
+  inventory is the place to ask whether it is a paradigm.
+- **The adverb in -ѣ is a syncretic set (finding).** до́брѣ is the
+  adjective's adv cell and its short locative singular in three
+  genders and the feminine dative; the treebank records the set, and the
+  analysed-one-cell column gave 168 tokens to the one-lexeme-several-cells
+  column. The wide ѡ separates мꙋ́дрѡ from мꙋ́дро as the design said.
+- **Prosody is three values (decision).** Enclitic, proclitic, tonic;
+  the pronominal clitics are pronoun cells (`clit`) and need no mark. ꙋ҆́бѡ
+  is marked enclitic with же/бо/ли on Alypy's authority; the census's
+  ѹ҆̀бо (766 tokens) is its spelling with the ligature, a Part 3 case.
+

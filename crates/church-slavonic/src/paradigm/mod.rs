@@ -33,6 +33,7 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 pub mod adj;
+pub mod closed;
 pub mod noun;
 pub mod ocs;
 pub mod pronoun;
@@ -675,7 +676,7 @@ pub fn table_of(pos: Pos, recension: crate::grammar::Recension) -> &'static Tabl
     use crate::grammar::Recension::{OldChurchSlavonic, Synodal};
     static SYN: [OnceLock<Table>; 4] = [OnceLock::new(), OnceLock::new(), OnceLock::new(), OnceLock::new()];
     static OCS: [OnceLock<Table>; 4] = [OnceLock::new(), OnceLock::new(), OnceLock::new(), OnceLock::new()];
-    static NONE: OnceLock<Table> = OnceLock::new();
+    static CLOSED: OnceLock<Table> = OnceLock::new();
     let (slot, text, name) = match (pos, recension) {
         (Pos::Noun, Synodal) => (&SYN[0], noun::TABLE, "classes/noun.tsv"),
         (Pos::Adjective, Synodal) => (&SYN[1], adj::TABLE, "classes/adj.tsv"),
@@ -685,7 +686,7 @@ pub fn table_of(pos: Pos, recension: crate::grammar::Recension) -> &'static Tabl
         (Pos::Adjective, OldChurchSlavonic) => (&OCS[1], ocs::ADJ, "classes/ocs/adj.tsv"),
         (Pos::Verb, OldChurchSlavonic) => (&OCS[2], ocs::VERB, "classes/ocs/verb.tsv"),
         (Pos::Pronoun, OldChurchSlavonic) => (&OCS[3], ocs::PRONOUN, "classes/ocs/pronoun.tsv"),
-        (Pos::Closed, _) => return NONE.get_or_init(|| Table { classes: Vec::new(), by_name: HashMap::new() }),
+        (Pos::Closed, _) => (&CLOSED, closed::TABLE, "classes/closed.tsv"),
     };
     slot.get_or_init(|| Table::parse_in(text, pos, recension).unwrap_or_else(|e| panic!("{name}: {e}")))
 }

@@ -15,7 +15,13 @@ fn tag(note: &str) -> &str {
     note.split([';', ' ']).next().unwrap_or("")
 }
 
-pub fn run() -> Result<(), Box<dyn Error>> {
+/// `data/prep-frames.tsv`: the treebank's case frames per preposition,
+/// the importer's input for `gov=`.
+pub fn frames_path() -> std::path::PathBuf {
+    std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../data/prep-frames.tsv")
+}
+
+pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
     let lexicon = Lexicon::synodal();
     let closed: Vec<_> = lexicon.iter().filter(|l| l.pos == Pos::Closed).collect();
     let mut by_tag: BTreeMap<&str, usize> = BTreeMap::new();
@@ -77,11 +83,19 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     println!("== prepositions' case frames (auto-lifted treebank; a set counts under 'nom|acc'-style keys)");
     let mut rows: Vec<_> = tokens.iter().collect();
     rows.sort_by_key(|(_, n)| std::cmp::Reverse(**n));
+    let mut out = String::from("# preposition\ttokens\tunambiguous case counts (case:n, commonest first)\tsets (set:n)\n# written by `cargo xtask census closed --write` from the auto-lifted treebank; the Polyakov importer reads it for gov=\n");
     for (prep, n) in rows {
         let f = &frames[prep];
         let mut cases: Vec<_> = f.iter().collect();
         cases.sort_by_key(|(_, k)| std::cmp::Reverse(**k));
         println!("{n:>7}  {prep:<14} {}", cases.iter().map(|(c, k)| format!("{c} {k}")).collect::<Vec<_>>().join(", "));
+        let single: Vec<String> = cases.iter().filter(|(c, _)| !c.contains('|')).map(|(c, k)| format!("{c}:{k}")).collect();
+        let sets: Vec<String> = cases.iter().filter(|(c, _)| c.contains('|')).map(|(c, k)| format!("{c}:{k}")).collect();
+        out.push_str(&format!("{}\t{n}\t{}\t{}\n", comparison_key(prep), single.join(" "), sets.join(" ")));
+    }
+    if write {
+        std::fs::write(frames_path(), out)?;
+        println!("wrote {}", frames_path().display());
     }
     Ok(())
 }

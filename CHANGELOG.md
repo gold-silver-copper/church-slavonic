@@ -61,6 +61,53 @@ Measured (2.1 → 2.2 Part 1):
 | Synodal stored stems | 358 | 344 (no `1=бі` line) |
 | Polyakov verb cells reproduced by the primary | 116,548 / 127,329 | 116,677 / 127,332 |
 
+### Part 2 — the closed-class lexicon: government, prosody, the adverb cell (2026-09-05)
+
+- **Subcategory as class.** A closed lexeme's class column is its
+  subcategory (`prep`, `conj`, `part`, `adv`, `advpro`, `intj`, `pred`);
+  `lexicon/classes/closed.tsv` names them with their one cell;
+  `Lexeme::subcategory()`.
+- **Government.** Every preposition line carries `gov=<case>|…`
+  (`Lexeme::government()`): the grammar's frames (Alypy's inventory, a
+  table in the importer) ordered by the treebank's unambiguous counts
+  (`data/prep-frames.tsv`, written by `cargo xtask census closed --write`);
+  a case the print attests in at least a twentieth of a preposition's
+  unambiguous tokens but the grammar does not know is a note (`gov? dat:336`
+  on въ, `gov? acc:9` on при), never a frame. 29 prepositions, every one
+  of the Bible's 23 among them. The linter's ten-preposition table is
+  deleted; `lint_pp` reads the lexicon by id or by print (the frames of
+  every closed lexeme printing the word joined) and leaves a word without
+  a frame unchecked.
+- **Prosody.** `pros=encl` on же, бо, ли, ꙋ҆́бѡ; `pros=procl` on every
+  preposition and on не, ни (`Lexeme::prosody()`, `grammar::Prosody`).
+- **The adverb cell.** `Cell::Adv(AdvCell { degree })` under the adjective
+  (`adv`, `comp.adv`); the Synodal adjective classes carry `adv=1-о^|1-ѣ`
+  (the neuter short nominative's ending with the mark that prints the
+  wide ѡ — мꙋ́дрѡ, до́брѡ — beside the short locative до́брѣ) and
+  `comp.adv=@short.comp.n.sg.nom` (мꙋдрѣ́е); the treebank leaf `(adv
+  мꙋдрый.a [:deg comp])`. A closed adverb line an adjective prints exactly
+  is gone (1,123 lines; the adjective's note carries `adv P:<count>`, 936
+  adjectives); one the adjective prints with another accent or letter
+  stays with `adv-of=<id>` (61); the rest stay (the primary adverbs and
+  the compounds, 1,129).
+
+Measured (2.1 → 2.2 Part 2):
+
+| Number | 2.1 | 2.2 Part 2 |
+|---|---|---|
+| closed lines | 2,503 | 1,380 (prep 29, conj 36, part 18, adv 1,190, advpro 99, intj 7, pred 1) |
+| adverbs that are an adjective's cell | — (closed lines) | 1,123 deleted, 61 kept with `adv-of=`, 807 without an adjective |
+| prepositions with a frame / of the Bible's | 10 (the linter's table) | 29 / 23 of 23 |
+| Bible treebank: analysed one cell / one lexeme several cells / closed / several lexemes / verbatim | 23.6 / 34.0 / 28.1 / 6.0 / 8.2 % | 23.7 (149,943) / 34.1 (215,226) / 27.9 (176,553) / 6.0 (37,660) / 8.2 (51,547) %; zero mismatches, 364,886 leaves complete |
+| analysed + closed | 326,664 | 326,496 (−168: adverb tokens that are now a syncretic set of their adjective, до́брѣ = adv | short loc; +39 several lexemes) |
+| Bible coverage (analyzer): one / one lexeme several cells / several lexemes / none | 320,930 / 205,888 / 31,785 / 72,119 | 320,930 / 206,027 / 31,824 / 72,143 |
+| held-out adjective recall | 89.31% | 89.31% (nouns 95.48, verbs 90.89, pronouns 99.25, npron 98.07) |
+
+The closed-class share fell by the adverbs that became cells, as the
+design intends; the gate's substance — no coverage lost, the
+several-lexemes share not above 6.0% — holds. The game's 35 tests pass
+unchanged.
+
 ## 2.1.0 (2026-09-05) — present stems by derivation, syncretism by underspecification
 
 The plan is `V2.1-PROMPT.md` (executed; its postscript lists the

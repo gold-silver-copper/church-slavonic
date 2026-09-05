@@ -1,0 +1,24 @@
+# preposition	tokens	unambiguous case counts (case:n, commonest first)	sets (set:n)
+# written by `cargo xtask census closed --write` from the auto-lifted treebank; the Polyakov importer reads it for gov=
+въ	11023	loc:2488 acc:1490 dat:336 gen:58 nom:31 ins:5 voc:1	acc|nom|voc:1875 acc|nom:1412 dat|loc:934 dat|gen|loc:639 acc|gen|loc:624 acc|dat|loc|nom|voc:386 acc|dat|gen|loc|nom|voc:301 gen|loc:139 acc|gen|nom|voc:115 acc|gen:76 acc|gen|nom:30 acc|loc|nom|voc:20 acc|dat|loc|nom:19 acc|ins|nom|voc:17 acc|dat|gen|loc|nom:8 dat|ins:5 nom|voc:5 acc|dat:2 acc|ins:2 acc|dat|gen|loc:1 acc|ins|loc|nom|voc:1 dat|voc:1 ins|loc|nom:1 loc|nom:1
+от	7530	gen:3707 dat:67 nom:18 acc:8 loc:6 ins:1	acc|gen:1639 gen|loc:631 acc|gen|loc:609 dat|gen|loc:296 acc|dat|gen|loc|nom|voc:295 acc|gen|nom|voc:115 acc|gen|nom:102 acc|nom:14 nom|voc:8 gen|ins|loc:5 gen|voc:4 acc|nom|voc:2 dat|loc:1 gen|nom:1 loc|nom:1
+на	6991	acc:1566 loc:1193 gen:107 ins:22 nom:16 dat:12 voc:1	acc|nom|voc:1258 acc|nom:741 acc|dat|gen|loc|nom|voc:578 acc|gen|loc:370 dat|loc:324 acc|gen:256 gen|loc:120 acc|gen|nom|voc:98 dat|gen|loc:78 acc|dat|loc|nom|voc:55 acc|gen|nom:53 acc|loc|nom|voc:51 ins|loc:19 acc|ins|nom|voc:14 acc|dat:13 acc|dat|loc|nom:10 dat|ins:7 loc|nom:7 acc|ins:5 acc|ins|loc|nom|voc:4 acc|ins|nom:4 nom|voc:3 dat|voc:2 acc|dat|gen|loc:1 acc|gen|voc:1 acc|loc|nom:1 dat|gen|loc|nom|voc:1
+съ	2420	ins:1563 gen:203 acc:10 dat:1	dat|ins:539 gen|ins|loc:58 acc|dat|gen|loc|nom|voc:14 acc|ins:7 acc|gen:6 acc|ins|loc|nom|voc:4 acc|ins|nom|voc:3 ins|nom|voc:3 acc|gen|loc:2 acc|loc|nom|voc:2 gen|loc:2 acc|nom:1 dat|gen|loc:1 ins|nom:1
+по	2182	dat:1126 loc:177 ins:8 gen:6 acc:1 nom:1	dat|loc:304 gen|loc:138 dat|gen|loc:99 acc|dat|gen|loc|nom|voc:85 dat|voc:67 acc|nom|voc:51 acc|gen|loc:49 acc|dat:22 nom|voc:11 acc|gen|nom|voc:10 dat|ins:7 acc|dat|loc|nom:4 acc|ins|loc|nom|voc:4 acc|dat|gen|loc|nom:3 acc|loc|nom|voc:3 acc|gen:2 dat|gen:2 acc|dat|loc|nom|voc:1 acc|nom:1
+къ	2040	dat:1458 gen:4 loc:2 ins:1	dat|loc:382 dat|voc:112 dat|gen|loc:49 dat|ins:21 acc|dat|gen|loc|nom|voc:4 acc|dat|loc|nom:2 acc|loc|nom|voc:2 acc|nom:2 acc|dat:1
+о	1710	loc:839 acc:44 gen:7 dat:3 ins:1 nom:1	dat|loc:305 acc|gen|loc:200 gen|loc:187 dat|gen|loc:49 ins|loc:13 acc|ins|loc|nom|voc:11 acc|dat|gen|loc|nom|voc:10 dat|ins:9 acc|nom|voc:7 acc|loc|nom|voc:6 loc|nom:6 acc|dat|loc:3 acc|dat|loc|nom:2 acc|gen:2 acc|gen|nom|voc:2 acc|dat|ins|loc|nom|voc:1 acc|dat|loc|nom|voc:1 acc|nom:1
+пред	1482	ins:1049 acc:29 gen:1 nom:1	dat|ins:305 acc|nom|voc:43 acc|gen:25 gen|ins|loc:9 acc|ins:8 acc|gen|nom:5 acc|nom:3 acc|gen|nom|voc:2 acc|gen|loc:1 ins|nom|voc:1
+до	1101	gen:827 dat:7 nom:3 acc:2	acc|gen:84 dat|gen|loc:73 acc|gen|nom|voc:30 acc|dat|gen|loc|nom|voc:27 gen|loc:21 acc|nom:10 acc|gen|loc:7 acc|gen|nom:4 nom|voc:3 acc|dat|gen:1 acc|nom|voc:1 dat|loc:1
+из	653	gen:442 dat:51	acc|dat|gen|loc|nom|voc:79 dat|gen|loc:21 gen|loc:21 acc|gen:16 acc|gen|loc:14 gen|voc:6 acc|gen|nom:1 acc|nom:1 gen|nom|voc:1
+над	614	ins:512 acc:10 dat:1	dat|ins:43 gen|ins|loc:20 acc|ins|loc|nom|voc:8 acc|nom|voc:5 acc|ins:4 acc|nom:3 ins|nom|voc:3 acc|gen:1 acc|gen|nom|voc:1 acc|ins|nom|voc:1 acc|loc|nom|voc:1 gen|loc:1
+за	511	acc:142 ins:55 gen:6	acc|nom|voc:147 acc|nom:74 acc|gen|nom|voc:25 acc|gen:16 gen|loc:16 acc|gen|loc:11 dat|ins:9 acc|ins|nom|voc:5 acc|dat:1 acc|ins:1 acc|loc|nom|voc:1 dat|loc:1 gen|ins|loc:1
+ради	393	gen:160 dat:6 nom:5 ins:3 acc:1	acc|nom|voc:74 acc|gen:35 gen|loc:30 acc|nom:24 acc|gen|nom|voc:15 acc|gen|loc:11 nom|voc:9 dat|gen|loc:7 acc|gen|nom:3 acc|dat|gen|loc|nom|voc:2 acc|dat|loc|nom|voc:2 acc|dat:1 acc|dat|gen|loc|nom:1 acc|dat|nom:1 acc|ins|nom|voc:1 gen|nom|voc:1 ins|nom|voc:1
+под	308	ins:199 acc:14 gen:7 loc:1	dat|ins:33 acc|nom:23 acc|nom|voc:14 gen|ins|loc:6 dat|loc:4 acc|gen|loc:2 acc|gen|nom|voc:2 acc|dat|loc|nom|voc:1 acc|gen:1 ins|loc:1
+между	279	ins:250 acc:3 gen:1	dat|ins:8 acc|ins:5 gen|ins|loc:4 gen|loc:2 acc|gen:1 acc|ins|nom:1 acc|ins|nom|voc:1 dat|gen|loc:1 ins|nom|voc:1 nom|voc:1
+при	226	loc:136 acc:9	dat|loc:38 acc|dat|gen|loc|nom|voc:13 dat|gen|loc:7 gen|loc:6 acc|gen|loc:5 acc|nom|voc:4 acc|ins|loc|nom|voc:3 acc|loc|nom|voc:2 dat|ins:2 ins|loc:1
+без	137	gen:88 loc:1	acc|gen:19 dat|gen|loc:16 acc|gen|nom:5 acc|gen|loc:4 gen|loc:3 acc|gen|nom|voc:1
+кромѣ	96	gen:46 dat:1	acc|gen:25 gen|loc:14 acc|dat|gen|loc|nom|voc:3 acc|gen|nom|voc:2 dat|gen|loc:2 acc|gen|nom:1 acc|nom|voc:1 nom|voc:1
+сквозѣ	82	acc:37 gen:3	acc|nom|voc:18 acc|nom:14 acc|gen:3 acc|gen|nom:3 acc|gen|nom|voc:2 gen|nom:1 gen|nom|voc:1
+чрез	44	acc:14 gen:1	acc|nom:13 acc|nom|voc:5 acc|gen:4 acc|gen|nom|voc:4 gen|loc:2 acc|gen|loc:1
+около	6	gen:2 ins:1	acc|nom|voc:2 acc|ins|nom|voc:1
+предъ	1	ins:1	

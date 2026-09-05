@@ -116,10 +116,20 @@ pub struct PronCell {
     pub case: Case,
 }
 
+/// The adverb an adjective derives (мꙋ́дрѡ, до́брѣ; the comparative
+/// мꙋдрѣ́е): a cell of the adjective's paradigm with no case, number or
+/// gender — the print tells it from the neuter short form by the wide ѡ.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct AdvCell {
+    pub degree: Degree,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Cell {
     Noun(NounCell),
     Adj(AdjCell),
+    /// An adjective's adverb (`adv`, `comp.adv`).
+    Adv(AdvCell),
     Verb(VerbCell),
     Pron(PronCell),
     /// The one form of an uninflected word (the closed classes).
@@ -454,11 +464,30 @@ impl PronCell {
     }
 }
 
+impl AdvCell {
+    pub fn name(&self) -> String {
+        match self.degree {
+            Degree::Positive => "adv".to_string(),
+            d => format!("{}.adv", degree_name(d)),
+        }
+    }
+    pub fn parse(s: &str) -> Option<AdvCell> {
+        match s {
+            "adv" => Some(AdvCell { degree: Degree::Positive }),
+            _ => {
+                let (d, rest) = s.split_once('.')?;
+                (rest == "adv").then(|| parse_degree(d).map(|degree| AdvCell { degree }))?
+            }
+        }
+    }
+}
+
 impl Cell {
     pub fn name(&self) -> String {
         match self {
             Cell::Noun(c) => c.name(),
             Cell::Adj(c) => c.name(),
+            Cell::Adv(c) => c.name(),
             Cell::Verb(c) => c.name(),
             Cell::Pron(c) => c.name(),
             Cell::Word => "word".to_string(),
@@ -468,7 +497,10 @@ impl Cell {
     pub fn parse(pos: Pos, s: &str) -> Option<Cell> {
         Some(match pos {
             Pos::Noun => Cell::Noun(NounCell::parse(s)?),
-            Pos::Adjective => Cell::Adj(AdjCell::parse(s)?),
+            Pos::Adjective => match AdvCell::parse(s) {
+                Some(a) => Cell::Adv(a),
+                None => Cell::Adj(AdjCell::parse(s)?),
+            },
             Pos::Verb => Cell::Verb(VerbCell::parse(s)?),
             Pos::Pronoun => Cell::Pron(PronCell::parse(s)?),
             Pos::Closed => (s == "word").then_some(Cell::Word)?,
@@ -558,14 +590,14 @@ impl Cell {
             | Cell::Verb(VerbCell::Participle { number, .. }) => Some(*number),
             Cell::Verb(VerbCell::Infinitive) => None,
             Cell::Pron(c) => c.number,
-            Cell::Word => None,
+            Cell::Adv(_) | Cell::Word => None,
         }
     }
 
     pub fn pos(&self) -> Pos {
         match self {
             Cell::Noun(_) => Pos::Noun,
-            Cell::Adj(_) => Pos::Adjective,
+            Cell::Adj(_) | Cell::Adv(_) => Pos::Adjective,
             Cell::Verb(_) => Pos::Verb,
             Cell::Pron(_) => Pos::Pronoun,
             Cell::Word => Pos::Closed,

@@ -12,7 +12,7 @@
 //! `src` is `token;token` (P:<class>, A:§n, R:, K:, U:, W:<ref>, H:).
 
 use crate::cell::{Cell, Pos};
-use crate::grammar::{Gender, Recension};
+use crate::grammar::{Case, Gender, Prosody, Recension};
 use crate::orthography::{comparison_key, strip_marks};
 use std::collections::HashMap;
 use std::sync::OnceLock;
@@ -59,6 +59,32 @@ impl Lexeme {
 
     pub fn is_hand_edited(&self) -> bool {
         self.src.iter().any(|s| s.starts_with("H:"))
+    }
+
+    fn stem_value(&self, key: &str) -> Option<&str> {
+        self.stems.iter().find(|(k, _)| k == key).map(|(_, v)| v.as_str())
+    }
+
+    /// The cases a preposition governs (`stems=gov=acc|loc`), commonest
+    /// first; empty for a word that governs nothing.
+    pub fn government(&self) -> Vec<Case> {
+        self.stem_value("gov").map(|v| v.split('|').filter_map(crate::cell::parse_case).collect()).unwrap_or_default()
+    }
+
+    /// The word's place in the accentual unit (`stems=pros=encl|procl`);
+    /// a word without the mark is tonic.
+    pub fn prosody(&self) -> Prosody {
+        match self.stem_value("pros") {
+            Some("encl") => Prosody::Enclitic,
+            Some("procl") => Prosody::Proclitic,
+            _ => Prosody::Tonic,
+        }
+    }
+
+    /// A closed-class word's subcategory (`prep`, `conj`, `part`, `adv`,
+    /// `advpro`, `intj`, `pred`): its class column.
+    pub fn subcategory(&self) -> Option<&str> {
+        (self.pos == Pos::Closed && !self.class.is_empty() && self.class != "0").then_some(self.class.as_str())
     }
 }
 

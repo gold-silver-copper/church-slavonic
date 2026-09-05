@@ -28,6 +28,124 @@ fn class_codes(class: &str) -> Vec<String> {
         .collect()
 }
 
+/// The prepositions' case frames as the grammar states them (Alypy,
+/// the chapter on the preposition; the standard Church Slavonic
+/// inventory), by the preposition's bare letters. The treebank census
+/// (`data/prep-frames.tsv`) orders the cases by attestation and adds, in
+/// the note, a case the grammar does not know but the print attests.
+const GRAMMAR_FRAMES: &[(&str, &[Case])] = &[
+    ("безъ", &[Case::Genitive]),
+    ("без", &[Case::Genitive]),
+    ("близъ", &[Case::Genitive]),
+    ("въ", &[Case::Accusative, Case::Locative]),
+    ("во", &[Case::Accusative, Case::Locative]),
+    ("возлѣ", &[Case::Genitive]),
+    ("возъ", &[Case::Accusative]),
+    ("вмѣстѡ", &[Case::Genitive]),
+    ("вмѣсто", &[Case::Genitive]),
+    ("длѧ", &[Case::Genitive]),
+    ("до", &[Case::Genitive]),
+    ("дѣлѧ", &[Case::Genitive]),
+    ("за", &[Case::Accusative, Case::Instrumental]),
+    ("изъ", &[Case::Genitive]),
+    ("из", &[Case::Genitive]),
+    ("кромѣ", &[Case::Genitive]),
+    ("къ", &[Case::Dative]),
+    ("ко", &[Case::Dative]),
+    ("междꙋ", &[Case::Instrumental, Case::Genitive]),
+    ("на", &[Case::Accusative, Case::Locative]),
+    ("надъ", &[Case::Instrumental, Case::Accusative]),
+    ("над", &[Case::Instrumental, Case::Accusative]),
+    ("наподобіе", &[Case::Genitive]),
+    ("ѡ", &[Case::Locative, Case::Accusative]),
+    ("о", &[Case::Locative, Case::Accusative]),
+    ("ѡбъ", &[Case::Accusative, Case::Locative]),
+    ("объ", &[Case::Accusative, Case::Locative]),
+    ("ѡколѡ", &[Case::Genitive]),
+    ("около", &[Case::Genitive]),
+    ("оу", &[Case::Genitive]),
+    ("ꙋ", &[Case::Genitive]),
+    ("ѿ", &[Case::Genitive]),
+    ("от", &[Case::Genitive]),
+    ("отъ", &[Case::Genitive]),
+    ("по", &[Case::Dative, Case::Locative, Case::Accusative]),
+    ("подъ", &[Case::Instrumental, Case::Accusative]),
+    ("под", &[Case::Instrumental, Case::Accusative]),
+    ("предъ", &[Case::Instrumental, Case::Accusative]),
+    ("пред", &[Case::Instrumental, Case::Accusative]),
+    ("при", &[Case::Locative]),
+    ("ради", &[Case::Genitive]),
+    ("сквозѣ", &[Case::Accusative]),
+    ("съ", &[Case::Instrumental, Case::Genitive, Case::Accusative]),
+    ("со", &[Case::Instrumental, Case::Genitive, Case::Accusative]),
+    ("чрезъ", &[Case::Accusative]),
+    ("чрез", &[Case::Accusative]),
+];
+
+/// The treebank's frames (`data/prep-frames.tsv`): bare letters →
+/// (case, unambiguous count), commonest first.
+fn treebank_frames() -> HashMap<String, Vec<(Case, u64)>> {
+    let path = crate::census::closed::frames_path();
+    let mut out = HashMap::new();
+    let Ok(text) = std::fs::read_to_string(&path) else { return out };
+    for line in text.lines().filter(|l| !l.starts_with('#') && !l.trim().is_empty()) {
+        let cols: Vec<&str> = line.split('\t').collect();
+        if cols.len() < 3 {
+            continue;
+        }
+        let cases: Vec<(Case, u64)> = cols[2]
+            .split_whitespace()
+            .filter_map(|item| {
+                let (c, n) = item.split_once(':')?;
+                Some((church_slavonic::cell::parse_case(c)?, n.parse().ok()?))
+            })
+            .collect();
+        out.insert(cols[0].to_string(), cases);
+    }
+    out
+}
+
+/// A preposition's `gov=` value and the note for the cases the print
+/// attests beyond the grammar: the grammar's cases ordered by the
+/// treebank's counts, then any treebank case with at least a twentieth
+/// of the unambiguous tokens as a variant frame in the note.
+fn government(letters: &str, frames: &HashMap<String, Vec<(Case, u64)>>) -> (Vec<Case>, Option<String>) {
+    let key = church_slavonic::orthography::comparison_key(letters);
+    let grammar: Vec<Case> = GRAMMAR_FRAMES
+        .iter()
+        .filter(|(w, _)| church_slavonic::orthography::comparison_key(w) == key)
+        .flat_map(|(_, cases)| cases.iter().copied())
+        .collect();
+    let attested = frames.get(&key).cloned().unwrap_or_default();
+    let total: u64 = attested.iter().map(|(_, n)| *n).sum();
+    let mut cases: Vec<Case> = attested.iter().map(|(c, _)| *c).filter(|c| grammar.contains(c)).collect();
+    for c in &grammar {
+        if !cases.contains(c) {
+            cases.push(*c);
+        }
+    }
+    let extra: Vec<String> = attested
+        .iter()
+        .filter(|(c, n)| !grammar.contains(c) && *n * 20 >= total && *n >= 5)
+        .map(|(c, n)| format!("{}:{n}", church_slavonic::cell::case_name(*c)))
+        .collect();
+    let note = (!extra.is_empty()).then(|| format!("gov? {}", extra.join(" ")));
+    (cases, note)
+}
+
+/// The closed subcategories with their prosody: the enclitics lean on the
+/// word before them, the prepositions and the negations on the word after.
+fn prosody_of(letters: &str, subcategory: &str) -> Option<&'static str> {
+    let key = church_slavonic::orthography::comparison_key(letters);
+    if ["же", "бо", "ли", "ꙋбо", "оубо"].iter().any(|w| church_slavonic::orthography::comparison_key(w) == key) {
+        return Some("encl");
+    }
+    if subcategory == "prep" || ["не", "ни"].iter().any(|w| church_slavonic::orthography::comparison_key(w) == key) {
+        return Some("procl");
+    }
+    None
+}
+
 /// Which lexicon part of speech a Polyakov entry belongs to.
 fn pos_of(entry: &Entry) -> Option<Pos> {
     match entry.tags.first().map(String::as_str)? {
@@ -440,6 +558,36 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
     let mut o = Outcome::default();
     let classes = table(pos);
     let mut ids: HashMap<String, u32> = HashMap::new();
+    let frames = treebank_frames();
+    // the adverbs an adjective of the lexicon produces (its `adv` cell):
+    // print → adjective id. A closed ADV entry printed so is not a lexeme
+    // of its own (2.2 Part 2); an adjective takes the entry's count as
+    // the provenance of its adverb.
+    let lexicon = church_slavonic::Lexicon::synodal();
+    let mut adverb_of: HashMap<String, String> = HashMap::new();
+    // by the accent-blind key too: an adverb an adjective produces with
+    // another accent or letter keeps its line and names the adjective
+    let mut adverb_key_of: HashMap<String, String> = HashMap::new();
+    if pos == Pos::Closed || pos == Pos::Adjective {
+        for adj in lexicon.iter().filter(|l| l.pos == Pos::Adjective) {
+            if let Some(cell) = Cell::parse(Pos::Adjective, "adv") {
+                for form in adj.forms(cell) {
+                    let print = form.print(SYN);
+                    adverb_key_of.entry(church_slavonic::orthography::comparison_key(&print)).or_insert_with(|| adj.id.clone());
+                    adverb_of.entry(print).or_insert_with(|| adj.id.clone());
+                }
+            }
+        }
+    }
+    let adverb_entries: HashMap<String, u64> = if pos == Pos::Adjective {
+        entries
+            .iter()
+            .filter(|e| e.tags.first().map(String::as_str) == Some("ADV"))
+            .map(|e| (Form::from_print(&realise(&e.lemma, &SYN)).print(SYN), e.count))
+            .collect()
+    } else {
+        HashMap::new()
+    };
     for entry in &entries {
         if pos_of(entry) != Some(pos) {
             continue;
@@ -499,6 +647,49 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             let primary = forms.first().cloned().unwrap_or_else(|| lemma.clone());
             let lemma_print = Form::from_print(&primary).print(SYN);
             let variants: Vec<String> = forms.iter().skip(1).map(|f| Form::from_print(f).print(SYN)).filter(|f| *f != lemma_print).collect();
+            // the subcategory is the class; an adverb an adjective produces
+            // is that adjective's cell, not a line
+            let subcategory = match entry.tags.first().map(String::as_str) {
+                Some("ADV") => "adv",
+                Some("ADVPRO") => "advpro",
+                Some("CONJ") => "conj",
+                Some("PR") => "prep",
+                Some("PART") => "part",
+                Some("INTJ") => "intj",
+                Some("PRED") => "pred",
+                _ => "adv",
+            };
+            if subcategory == "adv"
+                && let Some(adj) = adverb_of.get(&lemma_print)
+            {
+                o.bump("adverbs an adjective produces (no line; the adjective's provenance)");
+                let _ = adj;
+                continue;
+            }
+            let mut stems: Vec<(String, String)> = Vec::new();
+            let mut extra_notes: Vec<String> = Vec::new();
+            if subcategory == "adv"
+                && let Some(adj) = adverb_key_of.get(&church_slavonic::orthography::comparison_key(&lemma_print))
+            {
+                stems.push(("adv-of".to_string(), adj.clone()));
+                extra_notes.push("the adjective's adverb printed with another accent or letter".to_string());
+                o.bump("adverbs of an adjective printed differently (line kept, adv-of=)");
+            }
+            if subcategory == "prep" {
+                let (cases, note) = government(&lemma_form.letters, &frames);
+                if !cases.is_empty() {
+                    stems.push(("gov".to_string(), cases.iter().map(|c| church_slavonic::cell::case_name(*c)).collect::<Vec<_>>().join("|")));
+                    o.bump("prepositions with a case frame");
+                } else {
+                    o.bump("prepositions without a case frame");
+                }
+                if let Some(n) = note {
+                    extra_notes.push(n);
+                }
+            }
+            if let Some(p) = prosody_of(&lemma_form.letters, subcategory) {
+                stems.push(("pros".to_string(), p.to_string()));
+            }
             // the id follows the lemma as written (the primary form may
             // spell the headword differently: безѻпа́снѡ)
             let id = {
@@ -513,13 +704,13 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 pos,
                 gender: None,
                 animate: None,
-                class: "0".to_string(),
+                class: subcategory.to_string(),
                 stress: if lemma_form.stress.is_some() { "a".to_string() } else { String::new() },
-                stems: Vec::new(),
+                stems,
                 overrides: Vec::new(),
                 variants: if variants.is_empty() { Vec::new() } else { vec![(Cell::Word, variants)] },
                 src,
-                note: notes.join("; "),
+                note: notes.iter().chain(extra_notes.iter()).cloned().collect::<Vec<_>>().join("; "),
                 provenance: church_slavonic::Provenance::Attested,
                 recension: SYN,
             });
@@ -589,6 +780,20 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                     })));
         if plurale_tantum && !notes.iter().any(|n| n == "pl-tantum") {
             notes.push("pl-tantum".into());
+        }
+        if pos == Pos::Adjective
+            && let Some(cell) = Cell::parse(Pos::Adjective, "adv")
+            && let Some(existing) = lexicon.get(&id)
+        {
+            // Polyakov's ADV entry printed as this adjective's adverb: its
+            // count is the cell's provenance (the closed line is gone)
+            for form in existing.forms(cell) {
+                if let Some(n) = adverb_entries.get(&form.print(SYN)) {
+                    notes.push(format!("adv P:{n}"));
+                    o.bump("adjectives whose adverb Polyakov attests");
+                    break;
+                }
+            }
         }
         let mut best: Option<super::fit::Fit> = None;
         let consider = |f: super::fit::Fit, best: &mut Option<super::fit::Fit>| {
