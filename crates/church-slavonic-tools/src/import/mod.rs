@@ -6,6 +6,7 @@
 
 pub mod crosscheck;
 pub mod fit;
+pub mod ocs;
 pub mod polyakov;
 
 use church_slavonic::cell::Pos;
@@ -113,6 +114,8 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     let outcome = match source.as_str() {
         "polyakov" => polyakov::import(pos)?,
         "alypy" | "ruwiktionary" | "witnesses" => crosscheck::import(source, pos)?,
+        "kaikki" => ocs::import_kaikki(pos)?,
+        "ud" => ocs::import_ud(pos)?,
         s => return Err(format!("import {s}: unknown source").into()),
     };
     report(&outcome);
@@ -125,6 +128,8 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     if write {
         if source == "polyakov" {
             write_outcome(&outcome, Recension::Synodal, pos)?;
+        } else if source == "kaikki" || source == "ud" {
+            write_outcome(&outcome, Recension::OldChurchSlavonic, pos)?;
         } else {
             crosscheck::write(&outcome, pos)?;
         }
@@ -317,7 +322,7 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos) -> Result<(), Box<
     // merge: existing hand-edited entries survive; everything else is
     // replaced by the import (matching by id), keeping the variants and
     // provenance the cross-checking sources added (A:/R:/W:)
-    let existing = lexicon::parse(&std::fs::read_to_string(&path)?, pos)?;
+    let existing = lexicon::parse_in(&std::fs::read_to_string(&path)?, pos, recension)?;
     let mut merged: BTreeMap<String, Lexeme> = BTreeMap::new();
     for l in o.lexemes.iter().cloned() {
         merged.insert(l.id.clone(), l);

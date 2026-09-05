@@ -410,7 +410,7 @@ pub fn debug(pos: Pos, wanted: &str) -> Result<(), Box<dyn Error>> {
             if let Some(r) = &refl {
                 stems.push(("encl".to_string(), r.clone()));
             }
-            let f = fit("x", &lemma, pos, class, None, animate, stems, &attested, &bundled, vec![], String::new());
+            let f = fit("x", &lemma, pos, SYN, class, None, animate, stems, &attested, &bundled, vec![], String::new());
             println!("class {code}: stress {} reproduced {}/{}", f.lexeme.stress, f.reproduced, f.attested);
             for (cell, forms) in &attested {
                 let predicted = f.lexeme.inflect(*cell).map(|x| x.print(SYN)).unwrap_or_default();
@@ -510,6 +510,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 src,
                 note: notes.join("; "),
                 provenance: church_slavonic::Provenance::Attested,
+                recension: SYN,
             });
             continue;
         }
@@ -593,7 +594,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 let n = lemma_form.letters.chars().count().saturating_sub(1);
                 stems.push(("base".to_string(), lemma_form.letters.chars().take(n).collect()));
             }
-            let f = fit(&id, &lemma, pos, class, gender, animate, stems.clone(), &attested, &bundled, src.clone(), notes.join("; "));
+            let f = fit(&id, &lemma, pos, SYN, class, gender, animate, stems.clone(), &attested, &bundled, src.clone(), notes.join("; "));
             consider(f, &mut best);
             // stems read off the attested forms, kept when they fit better
             {
@@ -602,7 +603,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 if !inferred.is_empty() {
                     let mut stems3 = stems.clone();
                     stems3.extend(inferred);
-                    let f3 = fit(&id, &lemma, pos, class, gender, animate, stems3, &attested, &bundled, src.clone(), notes.join("; "));
+                    let f3 = fit(&id, &lemma, pos, SYN, class, gender, animate, stems3, &attested, &bundled, src.clone(), notes.join("; "));
                     consider(f3, &mut best);
                 }
             }
@@ -615,7 +616,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                     let mut stems2 = stems.clone();
                     stems2.retain(|(k, _)| k != "base");
                     stems2.push(("base".to_string(), narrow));
-                    let f2 = fit(&id, &lemma, pos, class, gender, animate, stems2, &attested, &bundled, src.clone(), notes.join("; "));
+                    let f2 = fit(&id, &lemma, pos, SYN, class, gender, animate, stems2, &attested, &bundled, src.clone(), notes.join("; "));
                     consider(f2, &mut best);
                 }
             }

@@ -8,7 +8,7 @@ use crate::cell::Cell;
 use crate::form::Form;
 use crate::lexicon::Lexeme;
 use crate::orthography::is_vowel_letter;
-use crate::paradigm::{Class, Letters, Subject, table};
+use crate::paradigm::{Class, Letters, Subject, table_of};
 use crate::stress::{StressSpec, resolve};
 
 impl Lexeme {
@@ -19,7 +19,7 @@ impl Lexeme {
 
     /// The class table row, if the class is known.
     pub fn class(&self) -> Option<&'static Class> {
-        table(self.pos).get(&self.class)
+        table_of(self.pos, self.recension).get(&self.class)
     }
 
     /// The stress paradigm; a malformed column is a lexicon error.
@@ -69,8 +69,9 @@ impl Lexeme {
         self.forms_with(cell, &lemma, class, stems.as_ref(), self.stress_spec().as_ref()).into_iter().map(|(f, _)| f).collect()
     }
 
-    /// Every cell's forms with their prints, the lexeme's stems and stress
-    /// paradigm computed once: what the analyzer's index walks.
+    /// Every cell's forms with their prints (in the lexeme's recension), the
+    /// lexeme's stems and stress paradigm computed once: what the analyzer's
+    /// index walks.
     pub fn all_forms(&self) -> Vec<(Cell, Vec<(Form, String)>)> {
         let lemma = self.lemma_form();
         let class = self.class();
@@ -87,7 +88,7 @@ impl Lexeme {
         stems: Option<&std::collections::HashMap<u8, String>>,
         spec: Option<&StressSpec>,
     ) -> Vec<(Form, String)> {
-        let recension = crate::grammar::Recension::Synodal;
+        let recension = self.recension;
         let mut out: Vec<(Form, String)> = Vec::new();
         let mut push = |f: Form| {
             let print = f.print(recension);

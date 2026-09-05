@@ -91,15 +91,63 @@ pub fn noun_class(letters: &str) -> (&'static str, Gender) {
 }
 
 impl Lexicon {
+    /// The class the lexicon's own lexemes give a lemma ending: the
+    /// commonest class among the lexemes of the part of speech sharing the
+    /// lemma's last three letters, then two, then one — the OCS guesser,
+    /// which reads the lexicon instead of a hand rule. `0` when nothing
+    /// shares an ending.
+    pub fn class_by_ending(&self, letters: &str, pos: Pos) -> &'static str {
+        let index = self.ending_index();
+        let chars: Vec<char> = letters.chars().collect();
+        for n in (1..=3).rev() {
+            if chars.len() < n {
+                continue;
+            }
+            let ending: String = chars[chars.len() - n..].iter().collect();
+            if let Some(class) = index.get(&(pos, ending)) {
+                return class;
+            }
+        }
+        "0"
+    }
+
+    fn ending_index(&self) -> &std::collections::HashMap<(Pos, String), &'static str> {
+        self.ending_slot().get_or_init(|| {
+            let mut votes: std::collections::HashMap<(Pos, String), std::collections::HashMap<String, usize>> = std::collections::HashMap::new();
+            for l in self.iter() {
+                if l.class == "0" || l.class.is_empty() {
+                    continue;
+                }
+                let chars: Vec<char> = Form::from_print(&l.lemma).letters.chars().collect();
+                for n in 1..=3 {
+                    if chars.len() < n {
+                        continue;
+                    }
+                    let ending: String = chars[chars.len() - n..].iter().collect();
+                    *votes.entry((l.pos, ending)).or_default().entry(l.class.clone()).or_default() += 1;
+                }
+            }
+            votes
+                .into_iter()
+                .map(|(k, classes)| {
+                    let best = classes.into_iter().max_by(|a, b| a.1.cmp(&b.1).then(b.0.cmp(&a.0))).map(|(c, _)| c).unwrap_or_default();
+                    (k, &*Box::leak(best.into_boxed_str()))
+                })
+                .collect()
+        })
+    }
+
     /// A provisional lexeme for a lemma the lexicon lacks: the class and
     /// gender guessed from the lemma's letters, the stress paradigm from
     /// its accent, `Provenance::Guessed` on the line.
     pub fn guess(&self, lemma: &str, pos: Pos) -> Lexeme {
         let form = Form::from_print(lemma);
-        let (class, gender) = match pos {
-            Pos::Noun => noun_class(&form.letters),
+        let (class, gender) = match (self.recension, pos) {
+            (Recension::Synodal, Pos::Noun) => noun_class(&form.letters),
+            (Recension::OldChurchSlavonic, _) => (self.class_by_ending(&form.letters, pos), Gender::Masculine),
             _ => ("0", Gender::Masculine),
         };
+        let stems = Vec::new();
         let stress = match self.recension {
             Recension::OldChurchSlavonic => String::new(),
             Recension::Synodal => match form.stress {
@@ -119,12 +167,13 @@ impl Lexicon {
             animate: None,
             class: class.to_string(),
             stress,
-            stems: Vec::new(),
+            stems,
             overrides: Vec::new(),
             variants: Vec::new(),
             src: Vec::new(),
             note: String::new(),
             provenance: Provenance::Guessed,
+            recension: self.recension,
         }
     }
 }

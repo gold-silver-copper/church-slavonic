@@ -43,7 +43,9 @@ fn check(lexicon: &Lexicon, recension: Recension) -> Vec<String> {
                 let encl = lexeme.stems.iter().find(|(k, _)| k == "encl").map(|(_, v)| v.as_str()).unwrap_or("");
                 let letters = church_slavonic::Form::from_print(&lexeme.lemma).letters;
                 let core = letters.strip_suffix(encl).unwrap_or(&letters);
-                Some(if core.ends_with('й') { "long.pos.m.sg.nom" } else { "short.pos.m.sg.nom" })
+                // the long nominative: -ый/-їй in the print, -ꙑи/-ии in OCS
+                let long = core.ends_with('й') || core.ends_with("ыи") || core.ends_with("ии");
+                Some(if long { "long.pos.m.sg.nom" } else { "short.pos.m.sg.nom" })
             }
             Pos::Verb => Some("inf"),
             Pos::Pronoun if lexeme.class().is_some_and(|c| c.name.starts_with("PA") || c.name.starts_with("PN")) => Some("m.sg.nom"),
@@ -56,7 +58,20 @@ fn check(lexicon: &Lexicon, recension: Recension) -> Vec<String> {
             && church_slavonic::orthography::comparison_key(&form.print(recension))
                 != church_slavonic::orthography::comparison_key(&lexeme.lemma)
         {
-            problems.push(format!("{}: {name} {} is not the lemma {}", lexeme.id, form.print(recension), lexeme.lemma));
+            // an adjective's lemma may be either series' nominative (OCS
+            // соуи, прокꙑи): the other series is asked before it is a problem
+            let other = match name {
+                "long.pos.m.sg.nom" => Some("short.pos.m.sg.nom"),
+                "short.pos.m.sg.nom" => Some("long.pos.m.sg.nom"),
+                _ => None,
+            };
+            let other_matches = other
+                .and_then(|n| Cell::parse(lexeme.pos, n))
+                .and_then(|c| lexeme.inflect(c))
+                .is_some_and(|f| church_slavonic::orthography::comparison_key(&f.print(recension)) == church_slavonic::orthography::comparison_key(&lexeme.lemma));
+            if !other_matches {
+                problems.push(format!("{}: {name} {} is not the lemma {}", lexeme.id, form.print(recension), lexeme.lemma));
+            }
         }
     }
     problems
@@ -79,10 +94,12 @@ fn ids_are_lemma_plus_pos() {
     let mut seen = std::collections::HashSet::new();
     for lexeme in Lexicon::synodal().iter().chain(Lexicon::ocs().iter()) {
         assert!(seen.insert((lexeme.id.clone(), Lexicon::synodal().iter().any(|l| std::ptr::eq(l, lexeme)))), "{}: duplicate id", lexeme.id);
-        let stem = church_slavonic::Form::from_print(&lexeme.lemma).letters;
+        // the id's stem is the lemma's letters up to typography (оу/ꙋ, ꙑ/ы)
+        let stem = church_slavonic::orthography::comparison_key(&lexeme.lemma);
+        let id_stem = lexeme.id.split('.').next().map(church_slavonic::orthography::comparison_key).unwrap_or_default();
         let expected = format!("{stem}.{}", lexeme.pos.tag());
         assert!(
-            lexeme.id == expected || lexeme.id.starts_with(&format!("{expected}.")),
+            id_stem == stem,
             "{}: id does not follow the lemma {}",
             lexeme.id,
             lexeme.lemma

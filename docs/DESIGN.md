@@ -195,6 +195,27 @@ lexicon columns, the treebank leaves and the eval reports:
 A verb class declares WHICH cells it has (бы́ти declares a future block).
 There is no global arity.
 
+### Old Church Slavonic
+
+The OCS lexicon (`lexicon/ocs/*.tsv`) lives in its own class tables
+(`classes/ocs/*.tsv`), seeded from Kaikki's paradigm tables by
+`scripts/kaikki-to-classes.py`: a class is a group of entries with one
+paradigm shape (Kaikki's stem class, the nominative's ending, the gender;
+for verbs the infinitive's ending, the present's first- and third-person
+endings and whether the present stem is the infinitive's), its row the
+majority ending per cell with a second ending as an alternative where a
+quarter of the group uses it; the pronoun table is hand-written from the
+tables of тъ, сь, иже, къто, чьто and the treebank's personal forms. A
+verb whose present stem the class cannot derive names it on its line
+(`stems=2=пь` for пити). The derivations are recension-aware (the second
+palatalisation of г is ѕ in OCS, з in the print). No stress: the stress
+column is `-` and the print drops it, mapping ы→ꙑ and ꙋ→оу; ѫ, ѧ, ѥ, ꙗ, ѣ
+are letters of the layer. Provenance `K:<class>` Kaikki, `U:` the UD
+PROIEL train split (variants on Kaikki's lexemes, new lexemes fitted to
+the inventory for the rest). Kaikki's typo class — an entry whose
+citation cell does not print its lemma — is quarantined as
+`kaikki-nom-mismatch`.
+
 ## The analyzer
 
 `Lexicon::analyze(surface) -> Vec<Analysis { lexeme, cell, exact, variant }>`.

@@ -47,6 +47,8 @@ pub struct Lexeme {
     pub src: Vec<String>,
     pub note: String,
     pub provenance: Provenance,
+    /// The recension whose class tables and print the lexeme lives in.
+    pub recension: Recension,
 }
 
 impl Lexeme {
@@ -66,6 +68,8 @@ pub struct Lexicon {
     by_id: HashMap<String, usize>,
     by_key: HashMap<(String, Pos), Vec<usize>>,
     index: crate::analyze::IndexSlot,
+    /// The guesser's ending → class map, built on first use.
+    endings: std::sync::OnceLock<HashMap<(Pos, String), &'static str>>,
 }
 
 /// The embedded files, by recension: (pos, text).
@@ -106,7 +110,7 @@ impl Lexicon {
     fn from_files(recension: Recension, files: &[(Pos, &str)]) -> Lexicon {
         let mut lexemes = Vec::new();
         for (pos, text) in files {
-            match parse(text, *pos) {
+            match parse_in(text, *pos, recension) {
                 Ok(mut parsed) => lexemes.append(&mut parsed),
                 Err(e) => panic!("lexicon/{}: {e}", pos.tag()),
             }
@@ -125,11 +129,15 @@ impl Lexicon {
             }
             by_key.entry((comparison_key(&l.lemma), l.pos)).or_default().push(i);
         }
-        Lexicon { recension, lexemes, by_id, by_key, index: crate::analyze::IndexSlot::new() }
+        Lexicon { recension, lexemes, by_id, by_key, index: crate::analyze::IndexSlot::new(), endings: std::sync::OnceLock::new() }
     }
 
     pub(crate) fn index_cell(&self) -> &crate::analyze::IndexSlot {
         &self.index
+    }
+
+    pub(crate) fn ending_slot(&self) -> &std::sync::OnceLock<HashMap<(Pos, String), &'static str>> {
+        &self.endings
     }
 
     pub(crate) fn lexeme_at(&self, i: usize) -> &Lexeme {
@@ -174,6 +182,11 @@ fn empty(s: &str) -> bool {
 /// Parse one tsv file of `pos`. A header line naming the columns is
 /// accepted; `#` lines and blank lines are skipped.
 pub fn parse(text: &str, pos: Pos) -> Result<Vec<Lexeme>, String> {
+    parse_in(text, pos, Recension::Synodal)
+}
+
+/// [`parse`] for a recension's lexicon file.
+pub fn parse_in(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme>, String> {
     let mut out = Vec::new();
     for (n, line) in text.lines().enumerate() {
         let line_no = n + 1;
@@ -265,6 +278,7 @@ pub fn parse(text: &str, pos: Pos) -> Result<Vec<Lexeme>, String> {
             src: src_v,
             note: if empty(note) { String::new() } else { note.to_string() },
             provenance: Provenance::Attested,
+            recension,
         });
     }
     Ok(out)

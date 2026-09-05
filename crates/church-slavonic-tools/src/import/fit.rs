@@ -208,7 +208,12 @@ pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
 
 /// A source form in the print's own typography.
 pub fn canonical(printed: &str) -> String {
-    Form::from_print(printed).print(Recension::Synodal)
+    canonical_in(printed, Recension::Synodal)
+}
+
+/// [`canonical`] in a recension's typography.
+pub fn canonical_in(printed: &str, recension: Recension) -> String {
+    Form::from_print(printed).print(recension)
 }
 
 /// The result of fitting one class.
@@ -239,6 +244,7 @@ pub fn fit(
     id: &str,
     lemma: &str,
     pos: Pos,
+    recension: Recension,
     class: &Class,
     gender: Option<church_slavonic::grammar::Gender>,
     animate: Option<bool>,
@@ -277,6 +283,7 @@ pub fn fit(
         src,
         note,
         provenance: Provenance::Attested,
+        recension,
     };
     let mut reproduced = 0;
     let mut reachable = 0;
@@ -284,8 +291,8 @@ pub fn fit(
     let mut stress_misses = Vec::new();
     for (cell, forms) in attested {
         let Some(primary) = forms.first() else { continue };
-        let predicted = lexeme.inflect(*cell).map(|f| f.print(Recension::Synodal));
-        let any_alt = lexeme.forms(*cell).iter().any(|f| translit_equal(&f.print(Recension::Synodal), primary));
+        let predicted = lexeme.inflect(*cell).map(|f| f.print(recension));
+        let any_alt = lexeme.forms(*cell).iter().any(|f| translit_equal(&f.print(recension), primary));
         let satisfied = predicted.as_deref().is_some_and(|p| translit_equal(p, primary))
             || (bundled.contains(cell) && any_alt);
         if satisfied {
@@ -302,15 +309,15 @@ pub fn fit(
             }
             // stored in the print's typography (the source's і where the
             // print writes ї, its я for ѧ/ꙗ), never in the source's
-            lexeme.overrides.push((*cell, canonical(primary)));
+            lexeme.overrides.push((*cell, canonical_in(primary, recension)));
         }
     }
     // variants: other attested forms the class's alternatives do not give
     for (cell, forms) in attested {
-        let produced: Vec<String> = lexeme.forms(*cell).iter().map(|f| f.print(Recension::Synodal)).collect();
+        let produced: Vec<String> = lexeme.forms(*cell).iter().map(|f| f.print(recension)).collect();
         let mut extra: Vec<String> = Vec::new();
         for f in forms.iter().skip(1) {
-            let c = canonical(f);
+            let c = canonical_in(f, recension);
             if !produced.iter().any(|p| translit_equal(p, &c)) && !extra.contains(&c) {
                 extra.push(c);
             }

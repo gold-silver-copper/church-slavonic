@@ -236,6 +236,69 @@ The gate is met on the treebank and the source accounting; the noun
 gate of Part 1 (99% / 5%) stays unmet as recorded. `data/witnesses.tsv`
 stays until Part 5: the legacy baseline instrument reads it.
 
+### Part 4 — Old Church Slavonic (2026-09-05)
+
+- **OCS class tables** (`classes/ocs/{noun,adj,verb,pronoun}.tsv`),
+  seeded from Kaikki's own paradigm tables by
+  `scripts/kaikki-to-classes.py`: 44 noun classes (Kaikki's stem class :
+  nominative ending : gender, velar twins with the second palatalisation
+  written ѕ), 6 adjective classes (short and long series, the incomplete
+  soft table filled from its complete twin, the contracted -ꙑ/-и long
+  nominatives as alternatives), 55 verb classes (the infinitive's ending,
+  the present's first- and third-person endings, whether the present stem
+  is the infinitive's — `stems=2=пь` on пити's line — with the past
+  participles derived on stems 7/8/11 and declined by delegation to the
+  adjective classes), 17 hand-written pronoun classes (тъ/сь hard and
+  soft, вьсь, the possessives, къто/чьто, the relative иже and the third
+  person on the empty stem, азъ/тꙑ/себе/мꙑ/вꙑ with per-lexeme stems, the
+  nominal PN/PNk). The class tables are per recension (`table_of`), a
+  lexeme carries its recension, the derivations know it (ѕ), the
+  enclitic keeps its jer in OCS (имъже).
+- **Kaikki import** (`cargo xtask import kaikki --pos <pos>`): 2,826 entries
+  read cell by cell from `data/intermediate/kaikki-cells.jsonl`, each
+  fitted to its seeded class and to every class producing its lemma, the
+  best kept (ties noted); 1,921 nouns (99.1% of 39,678 cells reproduced),
+  311 adjectives (97.8% of 39,096), 517 verbs (94.5% of 78,063), 15
+  pronouns; Kaikki's typo class quarantined as `kaikki-nom-mismatch` (46
+  nouns, 6 adjectives, 15 pronoun form-of headwords).
+- **UD PROIEL train import** (`cargo xtask filter-ud`, `import ud --pos
+  <pos>`): 30,379 attestations → variants with `U:` on Kaikki's lexemes
+  and 4,794 new lexemes fitted to the inventory (a class's exemplar
+  ending breaks ties; the present stem read off the attested present
+  forms; the citation cell overridden to the lemma where the class fails
+  it). Lexicon: 3,493 nouns, 1,527 adjectives, 2,456 verbs, 82 pronouns.
+- **The OCS guesser** (`Lexicon::class_by_ending`): the commonest class
+  among the lexicon's own lexemes sharing the lemma's last three, two,
+  one letters — the lexicon instead of a hand rule.
+- **Held-out recall** in `cargo xtask eval`: UD PROIEL dev+test and
+  Syntacticus through the 1.2 harness's manuscript fold (шт/шч ~ щ, the
+  jers, ѣ/ⱕ/ѧ ~ е, contracted double vowels, a titlo abbreviation as an
+  ordered subsequence, the third person's post-prepositional н- and its
+  aphaeresis), a pronoun slot also answered by its clitic twin, бꙑти's
+  imperfect-tagged aorist by the aorist cell, a lemma the lexicon lacks
+  by the guesser. `CS_RECALL_MISSES=n` samples the misses,
+  `CS_RECALL_BLOCKS=1` counts them by cell block.
+- `Lexeme::forms` deduplicates prints in the lexeme's own recension (the
+  Synodal print folded ѥ/ѩ variants away); `xtask analyze --ocs`.
+
+Measured (gate: UD dev+test recall ≥ the 1.2 baseline for every POS;
+Syntacticus reported):
+
+| Recall | 2.0 | 1.2 |
+|---|---|---|
+| UD PROIEL dev+test nouns | 94.87% (8,366/8,818) | 92.04% |
+| adjectives | 89.35% (2,291/2,564) | 83.82% |
+| verbs | 85.79% (7,514/8,759) | 85.58% |
+| personal pronouns | 99.25% (3,983/4,013) | 99.25% |
+| non-personal pronouns | 97.84% (1,268/1,296) | 93.21% |
+| Syntacticus nouns / adjectives / verbs / pronouns / npron | 95.20% / 95.17% / 93.68% / 99.20% / 95.90% | — |
+
+The gate is met (verbs by 0.21 points, the personal pronoun at par). The
+remaining misses are the guessed lemmas' present stems (the guesser
+cannot read an iotated stem off a lemma), the past participles of the
+classes seeded without them, and manuscript spellings the fold does not
+reach.
+
 ## 1.2.0 — the Synodal pronoun release
 
 The commonest words of the language render from cells: Synodal

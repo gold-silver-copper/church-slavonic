@@ -856,3 +856,34 @@ members — stays deliberately its own future design.
   Part 5 because the legacy accuracy harness — the baseline instrument
   Part 0 requires until then — reads it.
 
+## 2026-09-05 — 2.0 Part 4: decisions and findings
+
+- **OCS classes come from Kaikki, not from the legacy consts (decision).**
+  The prompt suggested an `ocs` column ported from the 1.x ending arrays;
+  Kaikki's 2,826 full paradigms with their own stem-class tags are a
+  better source: a class is a shape the data attests, its row the
+  majority ending per cell, and the fit reports how well each entry sits
+  in it. The tables are per recension; the Synodal inventory is not
+  touched.
+- **The measurement must be the 1.2 measurement (finding).** With a plain
+  key the OCS lexicon scored 46/22/10% on nouns/adjectives/verbs; ported
+  the harness's fold (jers, шт, ѣ~е, contractions) and its abbreviation
+  rule — the commonest tokens (г҃ь, б҃ъ, іс҃ъ) are written under a titlo —
+  and the same lexicon scores 95/89/86%. The numbers are comparable now;
+  they were not before.
+- **Ties are the class-choice problem (finding).** A UD lemma attested in
+  one cell fits fifty classes equally; the first row of the table won and
+  въсхотѣти landed in an -ати class. The exemplar's shared ending decides
+  a tie, classes seeded from present-less entries (`?` in the name) come
+  last, and a class must produce the lemma from the citation cell before
+  it is tried.
+- **The third person is one lexeme in both recensions (decision).** и/ѥго
+  (OCS) and ѻ҆́нъ/є҆гѡ̀ (print) are PP3 lines on the empty stem; the relative
+  is PPize with `encl=же`; Kaikki's form-of headwords (ими, ѩ, ѭ) are its
+  typo class and quarantined.
+- **Residue to chase later, not now.** Guessed verbs cannot know an iotated
+  present stem (люблѭ from любити) — a class-level `iot` derivation would
+  give it; the Kaikki tables print no past participles, so the derived
+  ones (stems 7/8/11) are a rule, not data; 14,059 dev+test slots are
+  skipped by the loader (subjunctives, supines, ambiguous cases) as in 1.2.
+

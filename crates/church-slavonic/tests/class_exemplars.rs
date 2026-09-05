@@ -157,3 +157,62 @@ fn reflexive() {
     assert_eq!(print(&b, "lpart.m.sg"), nfc("боѧ́лсѧ"));
     assert_eq!(print(&b, "part.pres.act.long.m.pl.gen"), nfc("боѧ́щихсѧ"));
 }
+
+/// The Old Church Slavonic tables: the regular paradigms of the grammars
+/// (the 1.x `regular_rules_golden`), one lexeme line per exemplar.
+#[test]
+fn old_church_slavonic() {
+    const OCS: Recension = Recension::OldChurchSlavonic;
+    let ocs = |line: &str, pos: Pos| -> Lexeme {
+        let text = format!("id\tlemma\tpos\tgender\tanim\tclass\tstress\tstems\toverrides\tvariants\tsrc\tnote\n{line}\n");
+        church_slavonic::lexicon::parse_in(&text, pos, OCS).expect("parses").remove(0)
+    };
+    let p = |l: &Lexeme, cell: &str| -> String {
+        let cell = Cell::parse(l.pos, cell).unwrap_or_else(|| panic!("cell {cell}"));
+        l.inflect(cell).unwrap_or_else(|| panic!("{}: no cell {}", l.id, cell.name())).print(OCS)
+    };
+    let rab = ocs("рабъ.n\tрабъ\tn\tm\t-\to:ъ:-\t-\t-\t-\t-\tK:o-stem\t-", Pos::Noun);
+    assert_eq!(p(&rab, "gen.sg"), "раба");
+    assert_eq!(p(&rab, "dat.sg"), "рабоу");
+    assert_eq!(p(&rab, "loc.sg"), "рабѣ");
+    assert_eq!(p(&rab, "voc.sg"), "рабе");
+    assert_eq!(p(&rab, "nom.pl"), "раби");
+    assert_eq!(p(&rab, "gen.pl"), "рабъ");
+    assert_eq!(p(&rab, "acc.pl"), "рабꙑ");
+    assert_eq!(p(&rab, "loc.pl"), "рабѣхъ");
+    let zena = ocs("жена.n\tжена\tn\tf\t-\ta:а:-\t-\t-\t-\t-\tK:a-stem\t-", Pos::Noun);
+    assert_eq!(p(&zena, "gen.sg"), "женꙑ");
+    assert_eq!(p(&zena, "acc.sg"), "женѫ");
+    assert_eq!(p(&zena, "ins.sg"), "женоѭ");
+    assert_eq!(p(&zena, "dat.pl"), "женамъ");
+    let drug = ocs("дроугъ.n\tдроугъ\tn\tm\t-\tok:ъ:-\t-\t-\t-\t-\tK:o-stem\t-", Pos::Noun);
+    assert_eq!(p(&drug, "loc.sg"), "дроуѕѣ", "the second palatalisation writes ѕ");
+    assert_eq!(p(&drug, "voc.sg"), "дроуже");
+    assert_eq!(p(&drug, "nom.pl"), "дроуѕи");
+    let kost = ocs("кость.n\tкость\tn\tf\t-\ti:ь:-\t-\t-\t-\t-\tK:i-stem\t-", Pos::Noun);
+    assert_eq!(p(&kost, "gen.sg"), "кости");
+    assert_eq!(p(&kost, "ins.pl"), "костьми");
+    let imya = ocs("имѧ.n\tимѧ\tn\tn\t-\tn:ѧ:-\t-\t-\t-\t-\tK:n-stem\t-", Pos::Noun);
+    assert_eq!(p(&imya, "gen.sg"), "имене");
+    assert_eq!(p(&imya, "nom.pl"), "имена");
+    let piti = ocs("пити.v\tпити\tv\t-\t-\tV:ити:ѭ,ѥтъ:2\t-\t2=пь\t-\t-\tK:-\t-", Pos::Verb);
+    assert_eq!(p(&piti, "pres.1.sg"), "пьѭ");
+    assert_eq!(p(&piti, "pres.3.sg"), "пьѥтъ");
+    assert_eq!(p(&piti, "aor.1.sg"), "пихъ");
+    assert_eq!(p(&piti, "lpart.m.sg"), "пилъ");
+    assert_eq!(p(&piti, "inf"), "пити");
+    let tu = ocs("тъ.pron\tтъ\tpron\tm\t-\tPA1\t-\t-\t-\t-\tK:-\t-", Pos::Pronoun);
+    assert_eq!(p(&tu, "m.sg.gen"), "того");
+    assert_eq!(p(&tu, "m.sg.ins"), "тѣмь");
+    assert_eq!(p(&tu, "f.sg.acc"), "тѫ");
+    assert_eq!(p(&tu, "m.pl.gen"), "тѣхъ");
+    let az = ocs("азъ.pron\tазъ\tpron\t-\t-\tPPja\t-\t1=мен;2=мън;3=м\t-\t-\tU:\t-", Pos::Pronoun);
+    assert_eq!(p(&az, "1.sg.gen"), "мене");
+    assert_eq!(p(&az, "1.sg.dat"), "мънѣ");
+    assert_eq!(p(&az, "clit.1.sg.acc"), "мѧ");
+    let ize = ocs("иже.pron\tиже\tpron\tm\t-\tPPize\t-\tencl=же\t-\t-\tK:-\t-", Pos::Pronoun);
+    assert_eq!(p(&ize, "m.sg.gen"), "ѥгоже");
+    assert_eq!(p(&ize, "f.sg.nom"), "ꙗже");
+    assert_eq!(p(&ize, "m.pl.dat"), "имъже");
+}
+

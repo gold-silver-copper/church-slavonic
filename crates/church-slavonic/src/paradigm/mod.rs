@@ -34,6 +34,7 @@ use std::sync::OnceLock;
 
 pub mod adj;
 pub mod noun;
+pub mod ocs;
 pub mod pronoun;
 pub mod verb;
 
@@ -119,6 +120,9 @@ pub enum Shape {
 #[derive(Debug, Clone)]
 pub struct Class {
     pub name: String,
+    /// The recension whose letters the derivations produce (the second
+    /// palatalisation of г is з in the Synodal print, ѕ in OCS).
+    pub recension: crate::grammar::Recension,
     pub exemplar: String,
     pub strip: usize,
     pub stems: Vec<(u8, Derivation)>,
@@ -185,7 +189,7 @@ impl Class {
         };
         let mut out = HashMap::new();
         for (n, derivation) in &self.stems {
-            out.insert(*n, derive(derivation, &base, subject));
+            out.insert(*n, derive(derivation, &base, subject, self.recension));
         }
         // a numbered stem the lexeme spells itself (`stems=1=льв`: the
         // fleeting vowel that leaves ь behind, a suppletive stem)
@@ -216,8 +220,11 @@ impl Class {
         let mut out = Vec::new();
         self.collect(cell, &subject, stems, &mut out, 0);
         if let Some(r) = refl {
+            // the print drops the jer before the enclitic (тѣ́мже, бои́тсѧ);
+            // OCS keeps it (имъже, ихъже)
+            let drop_jer = self.recension == crate::grammar::Recension::Synodal;
             for l in &mut out {
-                if l.letters.ends_with('ъ') {
+                if drop_jer && l.letters.ends_with('ъ') {
                     l.letters.pop();
                 }
                 l.letters.push_str(r);
@@ -300,7 +307,7 @@ fn default_animacy(subject: &Subject<'_>) -> bool {
     !matches!(subject.lemma.chars().last(), Some('о' | 'е' | 'ѧ'))
 }
 
-fn derive(d: &Derivation, base: &str, subject: &Subject<'_>) -> String {
+fn derive(d: &Derivation, base: &str, subject: &Subject<'_>, recension: crate::grammar::Recension) -> String {
     match d {
         Derivation::Base => base.to_string(),
         Derivation::Drop => drop_fleeting(base),
@@ -313,12 +320,12 @@ fn derive(d: &Derivation, base: &str, subject: &Subject<'_>) -> String {
             .iter()
             .find(|(k, _)| k == "ins")
             .map(|(_, v)| v.clone())
-            .unwrap_or_else(|| insert_fleeting(&derive(inner, base, subject))),
-        Derivation::Pal1(inner) => palatalise(&derive(inner, base, subject), true),
-        Derivation::Pal2(inner) => palatalise(&derive(inner, base, subject), false),
-        Derivation::Iot(inner) => iotate(&derive(inner, base, subject)),
+            .unwrap_or_else(|| insert_fleeting(&derive(inner, base, subject, recension))),
+        Derivation::Pal1(inner) => palatalise_in(&derive(inner, base, subject, recension), true, recension),
+        Derivation::Pal2(inner) => palatalise_in(&derive(inner, base, subject, recension), false, recension),
+        Derivation::Iot(inner) => iotate(&derive(inner, base, subject, recension)),
         Derivation::Ext(suffix, inner) => {
-            let stem = derive(inner, base, subject);
+            let stem = derive(inner, base, subject, recension);
             // a husher takes а, not ѧ/ѣ (ѻ҆троча̀ : ѻ҆троча́та; вели́чайшій)
             let husher = matches!(stem.chars().last(), Some('ж' | 'ч' | 'ш' | 'щ'));
             let suffix = match suffix.strip_prefix(['ѧ', 'ѣ']) {
@@ -431,10 +438,17 @@ pub fn insert_fleeting(stem: &str) -> String {
 /// The palatalisation of a stem's final consonant: first (`к`→`ч`, `г`→`ж`,
 /// `х`→`ш`, `ц`→`ч`) or second (`к`→`ц`, `г`→`з`, `х`→`с`).
 pub fn palatalise(stem: &str, first: bool) -> String {
+    palatalise_in(stem, first, crate::grammar::Recension::Synodal)
+}
+
+/// [`palatalise`] in a recension: OCS writes ѕ for the second
+/// palatalisation of г (дроуѕѣ), the Synodal print з (дрꙋзѣ).
+pub fn palatalise_in(stem: &str, first: bool, recension: crate::grammar::Recension) -> String {
     // the -ск- stems: ск -> ст before ѣ/и (ага́рѧнстїи)
     if !first && let Some(head) = stem.strip_suffix("ск") {
         return format!("{head}ст");
     }
+    let ocs = recension == crate::grammar::Recension::OldChurchSlavonic;
     let mut chars: Vec<char> = stem.chars().collect();
     if let Some(last) = chars.last_mut() {
         *last = match (*last, first) {
@@ -443,6 +457,7 @@ pub fn palatalise(stem: &str, first: bool) -> String {
             ('х', true) => 'ш',
             ('ц', true) => 'ч',
             ('к', false) => 'ц',
+            ('г', false) if ocs => 'ѕ',
             ('г', false) => 'з',
             ('х', false) => 'с',
             (c, _) => c,
@@ -472,6 +487,7 @@ pub fn parse_table(text: &str, pos: Pos) -> Result<Vec<Class>, String> {
             return Err(format!("line {line_no}: {} columns, header has {}", cols.len(), header.len()));
         }
         let mut class = Class {
+            recension: crate::grammar::Recension::Synodal,
             name: cols[0].to_string(),
             exemplar: cols[1].to_string(),
             strip: cols[2].parse().map_err(|_| format!("line {line_no}: strip {}", cols[2]))?,
@@ -565,7 +581,15 @@ pub struct Table {
 
 impl Table {
     pub fn parse(text: &str, pos: Pos) -> Result<Table, String> {
-        let classes = parse_table(text, pos)?;
+        Table::parse_in(text, pos, crate::grammar::Recension::Synodal)
+    }
+
+    /// [`Table::parse`] for a recension's table.
+    pub fn parse_in(text: &str, pos: Pos, recension: crate::grammar::Recension) -> Result<Table, String> {
+        let mut classes = parse_table(text, pos)?;
+        for c in &mut classes {
+            c.recension = recension;
+        }
         let by_name = classes.iter().enumerate().map(|(i, c)| (c.name.clone(), i)).collect();
         Ok(Table { classes, by_name })
     }
@@ -579,26 +603,29 @@ impl Table {
 
 /// The class table of a part of speech (parsed once).
 pub fn table(pos: Pos) -> &'static Table {
-    static NOUN: OnceLock<Table> = OnceLock::new();
-    static ADJ: OnceLock<Table> = OnceLock::new();
-    static VERB: OnceLock<Table> = OnceLock::new();
-    static PRON: OnceLock<Table> = OnceLock::new();
+    table_of(pos, crate::grammar::Recension::Synodal)
+}
+
+/// The class table of a part of speech in a recension: the Synodal
+/// tables under `classes/`, the Old Church Slavonic ones under
+/// `classes/ocs/` (seeded from Kaikki's own paradigms).
+pub fn table_of(pos: Pos, recension: crate::grammar::Recension) -> &'static Table {
+    use crate::grammar::Recension::{OldChurchSlavonic, Synodal};
+    static SYN: [OnceLock<Table>; 4] = [OnceLock::new(), OnceLock::new(), OnceLock::new(), OnceLock::new()];
+    static OCS: [OnceLock<Table>; 4] = [OnceLock::new(), OnceLock::new(), OnceLock::new(), OnceLock::new()];
     static NONE: OnceLock<Table> = OnceLock::new();
-    match pos {
-        Pos::Noun => NOUN.get_or_init(|| {
-            Table::parse(noun::TABLE, Pos::Noun).unwrap_or_else(|e| panic!("classes/noun.tsv: {e}"))
-        }),
-        Pos::Adjective => ADJ.get_or_init(|| {
-            Table::parse(adj::TABLE, Pos::Adjective).unwrap_or_else(|e| panic!("classes/adj.tsv: {e}"))
-        }),
-        Pos::Verb => VERB.get_or_init(|| {
-            Table::parse(verb::TABLE, Pos::Verb).unwrap_or_else(|e| panic!("classes/verb.tsv: {e}"))
-        }),
-        Pos::Pronoun => PRON.get_or_init(|| {
-            Table::parse(pronoun::TABLE, Pos::Pronoun).unwrap_or_else(|e| panic!("classes/pronoun.tsv: {e}"))
-        }),
-        Pos::Closed => NONE.get_or_init(|| Table { classes: Vec::new(), by_name: HashMap::new() }),
-    }
+    let (slot, text, name) = match (pos, recension) {
+        (Pos::Noun, Synodal) => (&SYN[0], noun::TABLE, "classes/noun.tsv"),
+        (Pos::Adjective, Synodal) => (&SYN[1], adj::TABLE, "classes/adj.tsv"),
+        (Pos::Verb, Synodal) => (&SYN[2], verb::TABLE, "classes/verb.tsv"),
+        (Pos::Pronoun, Synodal) => (&SYN[3], pronoun::TABLE, "classes/pronoun.tsv"),
+        (Pos::Noun, OldChurchSlavonic) => (&OCS[0], ocs::NOUN, "classes/ocs/noun.tsv"),
+        (Pos::Adjective, OldChurchSlavonic) => (&OCS[1], ocs::ADJ, "classes/ocs/adj.tsv"),
+        (Pos::Verb, OldChurchSlavonic) => (&OCS[2], ocs::VERB, "classes/ocs/verb.tsv"),
+        (Pos::Pronoun, OldChurchSlavonic) => (&OCS[3], ocs::PRONOUN, "classes/ocs/pronoun.tsv"),
+        (Pos::Closed, _) => return NONE.get_or_init(|| Table { classes: Vec::new(), by_name: HashMap::new() }),
+    };
+    slot.get_or_init(|| Table::parse_in(text, pos, recension).unwrap_or_else(|e| panic!("{name}: {e}")))
 }
 
 #[cfg(test)]

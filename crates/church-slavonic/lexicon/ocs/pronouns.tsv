@@ -1,1 +1,83 @@
 id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
+азъ.pron	азъ	pron	-	-	PPja	-	1=мен;2=мън;3=м	-	1.sg.dat=мьнѣ|мнѣ;1.sg.loc=мьнѣ|мнѣ;1.sg.ins=мноѭ|мьноѭ;1.sg.gen=мне	U:;H:seeded from the UD PROIEL train forms	the first person
+богъ.pron	богъ	pron	-	-	PA1	-	-	-	-	U:	tie PA1k,PN,PNk
+ва.pron	ва	pron	-	-	PA1a	a	-	2.du.nom=ва;2.du.gen=ваю;2.du.dat=вама;2.du.acc=ва;2.du.ins=вама;2.du.loc=ваѭ	2.du.nom=вꙑ;2.du.acc=вꙑ	U:	-
+вашь.pron	вашь	pron	-	-	PA1j	-	-	-	-	U:	tie PA1s,PA1a
+вы.pron	вы	pron	-	-	PPvy	-	1=в	-	2.pl.nom=въи;2.pl.acc=въи	U:;H:seeded from the UD PROIEL train forms	-
+вьсь.pron	вьсь	pron	-	-	PA1j	a	-	m.pl.nom=вьси;m.pl.gen=вьсѣхъ;m.pl.dat=вьсѣмъ;m.pl.acc=вьсѧ;m.pl.ins=вьсѣми;m.pl.loc=вьсѣхъ;f.sg.nom=вьсѣ;f.sg.acc=въсѫ;f.pl.nom=вьсꙙ;f.pl.gen=вьсѣхъ;f.pl.acc=въсѩ;n.sg.ins=вьсѣмъ;n.sg.loc=всемъ;n.pl.nom=вьсѣ;n.pl.gen=вьсѣхъ;n.pl.dat=всѣмъ;n.pl.acc=вьсѣ;n.pl.ins=вьсѣми;n.pl.loc=вьсѣхъ	m.sg.nom=весь;m.pl.nom=въси|вси;m.pl.gen=всѣхъ;m.pl.dat=вьсѣмь|всѣмъ|въсѣмъ|вьсѣмо;m.pl.acc=вьсꙙ|въсѧ;m.pl.ins=всѣми|въсѣми;m.pl.loc=вьсемь;f.pl.nom=въсѩ;f.pl.acc=вьси|вьсѧ;n.sg.gen=въсего;n.sg.acc=вьсѣ;n.sg.ins=вьсѣмь;n.sg.loc=вьсемъ;n.pl.nom=вьса|всѣ;n.pl.dat=вьсѣмь;n.pl.acc=вьса|въсѣ|всѣ|въса;n.pl.ins=вьсми	U:	tie PA1j*,PA1s,PA1a
+вьсѣкъ.pron	вьсѣкъ	pron	-	-	PNk	-	-	-	m.sg.nom=вьсѣкꙑи;m.sg.gen=вьсѣкаѥго;m.sg.dat=вьсѣкоуѥмоу;m.sg.acc=вьсѣкꙑи;m.sg.ins=вьсѣкꙑимь;m.sg.loc=вьсѣцѣѥмь;m.sg.voc=вьсѣкꙑи;m.du.nom=вьсѣкаꙗ;m.du.gen=вьсѣкоую;m.du.dat=вьсѣкꙑима;m.du.acc=вьсѣкаꙗ;m.du.ins=вьсѣкꙑима;m.du.loc=вьсѣкоую;m.du.voc=вьсѣкаꙗ;m.pl.nom=вьсѣции;m.pl.gen=вьсѣкꙑихъ;m.pl.dat=вьсѣкꙑимъ;m.pl.acc=вьсѣкꙑѩ;m.pl.ins=вьсѣкꙑими;m.pl.loc=вьсѣкꙑихъ;m.pl.voc=вьсѣции;f.sg.nom=вьсѣкаꙗ;f.sg.gen=вьсѣкꙑѩ;f.sg.dat=вьсѣцѣи;f.sg.acc=вьсѣкѫѭ;f.sg.ins=вьсѣкѫѭ;f.sg.loc=вьсѣцѣи;f.sg.voc=вьсѣкаꙗ;f.du.nom=вьсѣцѣи;f.du.gen=вьсѣкоую;f.du.dat=вьсѣкꙑима;f.du.acc=вьсѣцѣи;f.du.ins=вьсѣкꙑима;f.du.loc=вьсѣкоую;f.du.voc=вьсѣцѣи;f.pl.nom=вьсѣкꙑѩ;f.pl.gen=вьсѣкꙑихъ;f.pl.dat=вьсѣкꙑимъ;f.pl.acc=вьсѣкꙑѩ;f.pl.ins=вьсѣкꙑими;f.pl.loc=вьсѣкꙑихъ;f.pl.voc=вьсѣкꙑѩ;n.sg.nom=вьсѣкоѥ;n.sg.gen=вьсѣкаѥго;n.sg.dat=вьсѣкоуѥмоу;n.sg.acc=вьсѣкоѥ;n.sg.ins=вьсѣкꙑимь;n.sg.loc=вьсѣцѣѥмь;n.sg.voc=вьсѣкоѥ;n.du.nom=вьсѣцѣи;n.du.gen=вьсѣкоую;n.du.dat=вьсѣкꙑима;n.du.acc=вьсѣцѣи;n.du.ins=вьсѣкꙑима;n.du.loc=вьсѣкоую;n.du.voc=вьсѣцѣи;n.pl.nom=вьсѣкаꙗ;n.pl.gen=вьсѣкꙑихъ;n.pl.dat=вьсѣкꙑимъ;n.pl.acc=вьсѣкаꙗ;n.pl.ins=вьсѣкꙑими;n.pl.loc=вьсѣкꙑихъ;n.pl.voc=вьсѣкаꙗ	K:-	-
+вѣ.pron	вѣ	pron	-	-	PA1a	a	-	1.du.nom=вѣ;1.du.gen=наю;1.du.dat=нама;1.du.acc=на;1.du.ins=нама;1.du.loc=наю	-	U:	-
+го.pron	го	pron	-	-	PA1a	-	-	-	-	U:	-
+етеръ.pron	етеръ	pron	-	-	PA1	-	-	-	m.pl.nom=етерии	U:	tie PN,PA1k,PNk
+жде.pron	жде	pron	-	-	PA1a	a	-	m.sg.gen=жде;m.pl.nom=жде;f.sg.nom=жде;f.sg.gen=жде;f.sg.acc=жде;f.pl.gen=жде;f.pl.ins=жде;n.sg.gen=жде;n.pl.gen=жде;n.pl.acc=жде;n.pl.ins=жде	-	U:	-
+же.pron	же	pron	-	-	PA1a	a	-	m.sg.gen=же;f.sg.gen=же;n.sg.gen=же;n.sg.ins=же	-	U:	-
+и.pron	и	pron	-	-	PP3	-	-	-	3.m.sg.gen=его;3.m.sg.dat=емоу;3.n.sg.gen=его;3.n.sg.dat=емоу;3.f.sg.gen=еѩ;3.f.sg.dat=еи	U:;H:seeded from the UD PROIEL train forms	the third person (the treebank's lemma и)
+иже.pron	иже	pron	-	-	PPize	a	encl=же	m.sg.loc=ѥмьже;m.du.loc=ѥюже;m.pl.loc=ихъже;f.sg.dat=ѥииже;f.sg.loc=ѥииже;f.du.loc=ѥюже;f.pl.loc=ихъже;n.sg.loc=ѥмьже;n.du.loc=ѥюже;n.pl.loc=ихъже	m.sg.nom=ꙇже|ꙇжь|и|ꙇзе;m.sg.gen=егоже;m.sg.dat=емоуже;m.sg.acc=ꙇже|нъже|егоже|ижде;m.sg.ins=имъже|имже|нимже|ꙇмъже|имжъе|нимъже;m.sg.loc=немъже|немже;m.du.nom=ѣже;m.pl.nom=ꙇже;m.pl.gen=ꙇхъже|хъже;m.pl.dat=имже|ꙇмъже|ꙇмьже;m.pl.acc=ѧже|нѧже;f.sg.nom=ѣже|яже;f.sg.gen=ѥѧже|еѩже;f.sg.dat=еиже;f.sg.acc=нюже|нѫже|ѫже;f.sg.ins=еѭже;f.sg.loc=еиже;f.pl.nom=ѧже|же;f.pl.gen=хъже;f.pl.acc=ѧже|ꙗже;n.sg.nom=еже|яже;n.sg.gen=егоже;n.sg.dat=емоуже;n.sg.acc=еже;n.sg.ins=имъже|имже|ꙇмъже;n.sg.loc=немъже|немже;n.pl.nom=ѣже|яже;n.pl.gen=ижехъ|ихже|ꙇхъже;n.pl.acc=ѣже|яже|ѩжѩ	K:-;U:	-
+инъ.pron	инъ	pron	-	-	PA1	-	-	-	m.sg.nom=ꙇнъ;m.sg.gen=ꙇного;m.pl.nom=ꙇни;m.pl.gen=ꙇнѣхъ	U:	tie PA1k
+каковъ.pron	каковъ	pron	-	-	PA1	-	-	-	-	U:	tie PA1k,PN,PNk
+какъ.pron	какъ	pron	-	-	PA1k	a	-	n.sg.ins=кацѣмъ	-	U:	-
+колико.pron	колико	pron	-	-	PA1a	a	-	n.sg.nom=колико	-	U:	-
+коликъ.pron	коликъ	pron	-	-	PA1k	a	-	n.sg.gen=колика	n.sg.ins=колицѣмъ	U:	tie PNk,PN
+которꙑи.pron	которꙑи	pron	-	-	PA1a	a	-	m.sg.gen=которааго;m.sg.dat=котороумоу;m.sg.ins=которꙑимъ;m.pl.nom=котори;n.sg.ins=которꙑимъ	m.sg.nom=которъи|которꙑ;m.sg.gen=котораго	U:	-
+къжьдо.pron	къжьдо	pron	-	-	PA1	a	encl=жьдо	m.sg.nom=къждо;m.sg.gen=когожъдо;m.sg.dat=комоуждо;f.sg.dat=комоужьдо;n.sg.nom=кожъдо;n.sg.gen=когожъдо	m.sg.nom=кожъдо|къжъдо|кьжъдо;m.sg.gen=когожде|когождо;m.sg.dat=комоужъдо	U:	-
+къто.pron	къто	pron	-	-	PA1a	a	1=къ	m.sg.nom=кто;m.sg.gen=кого;m.sg.dat=комоу;m.sg.ins=цѣмъ;m.sg.loc=комь;f.sg.nom=къто;f.sg.gen=кого;f.sg.dat=комоу;f.sg.loc=комь	m.sg.nom=кото|кьто;m.sg.gen=кога;m.sg.dat=кътомоу;f.sg.nom=кто	U:	-
+кътоже.pron	кътоже	pron	-	-	PA1a	a	encl=же;1=къ	m.sg.dat=комоуже	-	U:	-
+кꙑи.pron	кꙑи	pron	-	-	PA1a	a	-	m.sg.gen=коѥго;m.sg.dat=коѥмоу;m.sg.ins=кꙑимъ;m.pl.nom=ции;m.pl.acc=кꙑѧ;f.sg.nom=каѣ;f.sg.gen=коѥѧ;f.sg.dat=коѥи;f.sg.acc=кѫѭ;f.sg.ins=коеѭ;f.sg.loc=кои;f.pl.nom=кꙑѧ;f.pl.acc=кꙑѧ;n.sg.nom=коѥ;n.sg.gen=коѥго;n.sg.dat=коѥмоу;n.sg.acc=коѥ;n.sg.ins=кꙑимъ;n.pl.nom=каꙗ;n.pl.acc=каꙗ	m.sg.nom=кꙑ;m.sg.gen=коего;m.sg.dat=к;m.sg.acc=кꙑ;m.sg.ins=кꙑмъ;m.pl.gen=кꙑхъ;f.sg.nom=каꙗ|каа|кая;f.sg.ins=коѭ|коѥѭ;f.sg.loc=коеи;f.pl.acc=кꙑѩ;n.sg.nom=кое;n.sg.gen=коѥга;n.sg.acc=кое;n.sg.ins=кꙑим	U:	-
+кꙑиже.pron	кꙑиже	pron	-	-	PA1a	a	encl=же	m.pl.acc=къиже;n.sg.acc=коѥже	-	U:	-
+кꙑижьдо.pron	кꙑижьдо	pron	-	-	PA1a	a	encl=жьдо	m.sg.gen=когождо;m.sg.dat=комоуждо;n.sg.nom=коѥждо;n.sg.ins=коѥмьждо	m.sg.gen=коѥгождо|коегожъде;n.sg.nom=коеждо	U:	-
+ми.pron	ми	pron	-	-	PA1a	a	-	3.m.pl.ins=ми	-	U:	-
+мои.pron	мои	pron	-	-	PA1a	-	-	m.sg.gen=моѥго;m.sg.dat=моѥмоу;m.sg.loc=моѥмь;m.du.nom=моꙗ;m.du.gen=моѥю;m.du.acc=моꙗ;m.du.loc=моѥю;m.pl.nom=мои;m.pl.acc=моѩ;f.sg.nom=моꙗ;f.sg.gen=моѥѩ;f.sg.dat=моѥи;f.sg.acc=моѭ;f.sg.ins=моѥѭ;f.sg.loc=моѥи;f.du.gen=моѥю;f.du.loc=моѥю;f.pl.nom=моѩ;f.pl.acc=моѩ;n.sg.nom=моѥ;n.sg.gen=моѥго;n.sg.dat=моѥмоу;n.sg.acc=моѥ;n.sg.loc=моѥмь;n.du.gen=моѥю;n.du.loc=моѥю;n.pl.nom=моꙗ;n.pl.acc=моꙗ	m.sg.gen=моего;f.sg.nom=моѣ;n.sg.nom=мое;n.sg.gen=моего;n.sg.acc=мое;n.pl.nom=моѣ	K:-;U:	-
+мъ.pron	мъ	pron	-	-	PA1	a	-	m.pl.dat=мъ;3.m.pl.dat=мъ	-	U:	-
+мы.pron	мы	pron	-	-	PPmy	-	1=м;2=н	1.du.nom=вѣ	1.pl.nom=нъи|мъи;1.pl.acc=нъи	U:;H:seeded from the UD PROIEL train forms	-
+насъ.pron	насъ	pron	-	-	PA1	a	-	1.pl.acc=насъ	-	U:	-
+нашь.pron	нашь	pron	-	-	PA1j	a	-	m.du.nom=наша;m.du.acc=наша;m.pl.nom=наши;m.pl.acc=нашѧ;f.sg.nom=наша;f.sg.acc=нашѫ;f.pl.nom=нашѧ;f.pl.acc=нашѧ;n.pl.nom=наша;n.pl.acc=нашѧ	f.pl.gen=нашеѧ;n.pl.acc=наша	K:-;U:	tie PA1s,PA1a
+никоторꙑиже.pron	никоторꙑиже	pron	-	-	PA1a	a	encl=же	m.sg.nom=никотерꙑи	-	U:	-
+никъто.pron	никъто	pron	-	-	PA1a	a	1=никъ	m.sg.dat=никомоу	-	U:	-
+никътоже.pron	никътоже	pron	-	-	PA1a	a	encl=же;1=никъ	m.sg.nom=никтоже;m.sg.gen=никогоже;m.sg.dat=никомоуже;m.sg.loc=комьже;f.sg.nom=никтоже;f.sg.gen=никогоже;f.sg.dat=никомоуже	f.sg.nom=никътоже	U:	-
+никꙑиже.pron	никꙑиже	pron	-	-	PA1a	a	encl=же	m.sg.ins=никꙑимъже;f.sg.ins=никоѥѭже	m.sg.nom=никꙑи;m.sg.ins=никꙑмьже	U:	-
+ничьтоже.pron	ничьтоже	pron	-	-	PA1a	a	encl=же;1=ничь	n.sg.nom=ничтоже;n.sg.gen=ничесоже;n.sg.acc=ничтоже;n.sg.ins=ничимже	n.sg.nom=ничътоже|ничьтоже|ничьто;n.sg.gen=ничсоже|ничьсоже|ничъсоже|ничесо|ничьсогоже;n.sg.acc=ничътоже|ничьсоже;n.sg.ins=ничимъже|ничимьже	U:	-
+ниѥдинъ.pron	ниѥдинъ	pron	-	-	PA1	a	-	m.sg.nom=ни;n.sg.nom=ни	-	U:	-
+ниѥдинъже.pron	ниѥдинъже	pron	-	-	PA1	a	encl=же	m.sg.nom=ни;m.sg.gen=ни	-	U:	-
+нѣ.pron	нѣ	pron	-	-	PA1a	a	-	1.du.acc=на	-	U:	-
+нѣкакъ.pron	нѣкакъ	pron	-	-	PA1	-	-	-	-	U:	tie PNk,PA1k,PN
+нѣкоторꙑи.pron	нѣкоторꙑи	pron	-	-	PA1a	a	-	m.pl.nom=нѣкотории;m.pl.acc=нѣкоторꙑѧ	-	U:	-
+нѣкто.pron	нѣкто	pron	-	-	PA1a	-	1=нѣк	-	-	U:	-
+нѣкъто.pron	нѣкъто	pron	-	-	PA1a	a	1=нѣкъ	m.sg.nom=нѣкто;m.sg.gen=нѣкого	m.sg.gen=нѣкога	U:	-
+нѣкꙑи.pron	нѣкꙑи	pron	-	-	PA1a	a	-	m.pl.nom=нѣции	-	U:	-
+нѣчьто.pron	нѣчьто	pron	-	-	PA1a	a	1=нѣчь	n.sg.nom=нѣчто;n.sg.gen=нѣчесо;n.sg.acc=нѣчто	n.sg.gen=нѣчьсо;n.sg.acc=нѣчъто	U:	-
+овъ.pron	овъ	pron	-	-	PA1	-	-	-	m.sg.nom=овꙑ	U:	tie PA1k
+онъ.pron	онъ	pron	-	-	PA1	-	-	-	m.sg.nom=онь	K:-;U:	tie PA1k
+оѥмоу.pron	оѥмоу	pron	-	-	PA1a	a	-	m.sg.dat=оѥмоу	-	U:	-
+самъ.pron	самъ	pron	-	-	PA1	-	-	-	m.sg.nom=самь	U:	tie PA1k
+свои.pron	свои	pron	-	-	PA1a	-	-	m.sg.gen=своѥго;m.sg.dat=своѥмоу;m.sg.loc=своѥмь;m.du.nom=своꙗ;m.du.gen=своѥю;m.du.acc=своꙗ;m.du.loc=своѥю;m.pl.nom=свои;m.pl.acc=своѩ;f.sg.nom=своꙗ;f.sg.gen=своѥѩ;f.sg.dat=своѥи;f.sg.acc=своѭ;f.sg.ins=своѥѭ;f.sg.loc=своѥи;f.du.gen=своѥю;f.du.loc=своѥю;f.pl.nom=своѩ;f.pl.acc=своѩ;n.sg.nom=своѥ;n.sg.gen=своѥго;n.sg.dat=своѥмоу;n.sg.acc=своѥ;n.sg.loc=своѥмь;n.du.gen=своѥю;n.du.loc=своѥю;n.pl.nom=своꙗ;n.pl.acc=своꙗ	gen=своихъ|своѥго;dat=своѥмоу;acc=свои;loc=своихъ|своѥмь;m.sg.loc=своемь;m.pl.acc=своѧ|свои;m.pl.ins=своимъ;n.sg.acc=свое;n.sg.ins=своимъ;n.sg.loc=своемь;n.pl.acc=своѣ	K:-;U:	-
+себе.pron	себе	pron	-	-	PPseb	-	1=себ;2=соб;3=с	-	-	U:;H:seeded from the UD PROIEL train forms	the reflexive
+сего.pron	сего	pron	-	-	PA1a	a	-	m.sg.gen=сего	-	U:	-
+сеи.pron	сеи	pron	-	-	PA1a	a	-	f.sg.loc=сеи	-	U:	-
+сиць.pron	сиць	pron	-	-	PA1j	a	-	m.sg.nom=сицъ;f.sg.nom=сица;f.sg.acc=сицѫ;f.pl.nom=сицꙙ;n.pl.ins=сицѣми;n.pl.loc=сицѣхъ	-	U:	tie PA1s,PA1a
+сь.pron	сь	pron	-	-	PA1j	-	-	m.pl.acc=сиꙗ	m.sg.nom=сии|съ|си;m.du.nom=сия;m.pl.acc=сиѩ|сьѩ;f.sg.gen=сеѧ;f.sg.acc=сьѭ;f.pl.nom=сиѧ;n.sg.nom=си;n.sg.gen=сега;n.sg.ins=симъ;n.sg.loc=семъ;n.du.gen=сеѭ;n.pl.dat=сим;n.pl.acc=сии	K:-;U:	tie PA1j*,PA1s,PA1a
+сѣ.pron	сѣ	pron	-	-	PA1a	a	-	n.pl.acc=сѣ	-	U:	-
+та.pron	та	pron	-	-	PA1a	a	-	f.sg.dat=тѣмъ	-	U:	-
+тако.pron	тако	pron	-	-	PA1a	a	-	n.sg.acc=тако	-	U:	-
+таковъ.pron	таковъ	pron	-	-	PA1	a	-	m.sg.nom=таковꙑи;n.pl.acc=таковаꙗ	-	U:	-
+такъ.pron	такъ	pron	-	-	PA1k	a	-	m.pl.acc=такꙑѧ	-	U:	-
+такъжде.pron	такъжде	pron	-	-	PA1	a	encl=жде	m.sg.nom=такъ;f.pl.acc=такъиже	-	U:	-
+твои.pron	твои	pron	-	-	PA1a	-	-	m.sg.gen=твоѥго;m.sg.dat=твоѥмоу;m.sg.loc=твоѥмь;m.du.nom=твоꙗ;m.du.gen=твоѥю;m.du.acc=твоꙗ;m.du.loc=твоѥю;m.pl.nom=твои;m.pl.acc=твоѩ;f.sg.nom=твоꙗ;f.sg.gen=твоѥѩ;f.sg.dat=твоѥи;f.sg.acc=твоѭ;f.sg.ins=твоѥѭ;f.sg.loc=твоѥи;f.du.gen=твоѥю;f.du.loc=твоѥю;f.pl.nom=твоѩ;f.pl.acc=твоѩ;n.sg.nom=твоѥ;n.sg.gen=твоѥго;n.sg.dat=твоѥмоу;n.sg.acc=твоѥ;n.sg.loc=твоѥмь;n.du.gen=твоѥю;n.du.loc=твоѥю;n.pl.nom=твоꙗ;n.pl.acc=твоꙗ	m.sg.dat=твоемоу;m.pl.dat=твоꙇмъ;f.sg.nom=твоѣ;f.sg.ins=твоеѭ;n.sg.nom=твое;n.sg.dat=твоемоу;n.sg.acc=твое;n.pl.nom=твоѣ;n.pl.acc=твоѣ	K:-;U:	-
+ти.pron	ти	pron	-	-	PA1a	-	-	m.pl.nom=ти	-	U:	-
+толикъ.pron	толикъ	pron	-	-	PNk	a	-	m.sg.nom=толикꙑи;m.pl.ins=толицѣми;n.sg.ins=толицѣмъ	n.sg.ins=толицѣмь	U:	-
+тъ.pron	тъ	pron	-	-	PA1	-	-	-	m.sg.nom=ть|тъи;m.sg.ins=тѣмъ;m.sg.loc=томъ;m.pl.dat=тѣмь;m.pl.acc=ти|тꙑѧ;f.sg.gen=тоѧ;f.pl.nom=тъи;f.pl.dat=тѣмь;n.sg.ins=тѣмъ|тѣм;n.sg.loc=томъ;n.pl.ins=тѣмь;2.sg.nom=тъ	K:-;U:	tie PA1k
+тъжде.pron	тъжде	pron	-	-	PA1	a	encl=жде	m.sg.nom=тъ;m.pl.nom=ти;f.sg.gen=тоѧзе;f.pl.ins=тѣми;n.pl.gen=тѣхъ;n.pl.acc=та;n.pl.ins=тѣми	n.sg.acc=то	U:	tie PA1k
+ты.pron	ты	pron	-	-	PPty	-	1=теб;2=тоб;3=т	-	2.sg.nom=тъи	U:;H:seeded from the UD PROIEL train forms	the second person
+хъже.pron	хъже	pron	-	-	PN	-	encl=же	-	-	U:	tie PNk
+чии.pron	чии	pron	-	-	PA1a	-	-	-	m.sg.nom=чи	U:	-
+чьто.pron	чьто	pron	-	-	PA1a	a	1=чь	m.sg.nom=что;m.sg.acc=что;n.sg.nom=что;n.sg.gen=чесо;n.sg.dat=чесомоу;n.sg.acc=что;n.sg.ins=чимъ;n.sg.loc=чемъ	n.sg.nom=чъто|чьто;n.sg.gen=чсо|чьсо|чъсо|чъсого;n.sg.dat=чьсомоу|чемоу;n.sg.acc=чъто|чьто;n.sg.ins=чимь|чим;n.sg.loc=чемь	U:	-
+чьтоже.pron	чьтоже	pron	-	-	PA1a	a	encl=же;1=чь	n.sg.loc=чемьже	n.sg.loc=чесомъже|чесомьже	U:	-
+ѥдино.pron	ѥдино	pron	-	-	PA1a	a	-	n.sg.nom=ѥдино	-	U:	-
+ѥдинъ.pron	ѥдинъ	pron	-	-	PA1	a	-	m.sg.gen=единого;m.sg.dat=единомоу;m.sg.loc=единомъ;m.pl.nom=едини;m.pl.dat=единѣмъ;m.pl.acc=единꙑ;f.sg.nom=едина;f.sg.loc=ѥднои;n.sg.loc=единомь	m.sg.nom=единъ;m.sg.acc=единь;m.pl.dat=единѣмь;f.sg.nom=ѥдна	U:	tie PA1k,PN,PNk,PA1a
+ѥдно.pron	ѥдно	pron	-	-	PA1a	a	-	n.sg.nom=ѥдно	-	U:	-
+ѥдного.pron	ѥдного	pron	-	-	PA1a	a	-	m.sg.gen=ѥдного	-	U:	-
+ѥдноѧ.pron	ѥдноѧ	pron	-	-	PA1a	a	-	f.sg.gen=ѥдноѧ	-	U:	-
+ѥднѣмъ.pron	ѥднѣмъ	pron	-	-	PA1	a	-	n.sg.ins=ѥднѣмъ	-	U:	-
+ѥликъ.pron	ѥликъ	pron	-	-	PA1	-	-	n.sg.nom=елико;n.sg.acc=елико	-	U:	tie PA1k,PNk,PN
+ꙗкъ.pron	ꙗкъ	pron	-	-	PA1	a	-	m.sg.nom=якъ;m.sg.ins=ѣцѣмъ;f.pl.gen=ѣцѣхъ;n.sg.ins=ѣцѣмъ	m.sg.nom=ꙗкъ	U:	tie PA1k,PNk,PN
+ꙗкъже.pron	ꙗкъже	pron	-	-	PA1	a	encl=же	m.sg.gen=якогоже;f.sg.nom=ѣкаже;f.pl.nom=ѣкъиже	-	U:	-
+ꙙ.pron	ꙙ	pron	-	-	PA1a	a	-	1.sg.acc=ꙙ	-	U:	-

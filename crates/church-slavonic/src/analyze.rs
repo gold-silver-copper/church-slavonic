@@ -51,7 +51,6 @@ impl Index {
         let lexemes: Vec<&Lexeme> = lexicon.iter().collect();
         let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1).clamp(1, 16);
         let chunk = lexemes.len().div_ceil(threads).max(1);
-        let recension = lexicon.recension;
         let mut entries: Vec<Entry> = std::thread::scope(|scope| {
             let handles: Vec<_> = lexemes
                 .chunks(chunk)
@@ -62,10 +61,7 @@ impl Index {
                         for (j, lexeme) in slice.iter().enumerate() {
                             let i = c * chunk + j;
                             for (cell, forms) in lexeme.all_forms() {
-                                for (alt, (form, print)) in forms.into_iter().enumerate() {
-                                    // the prints are Synodal; the OCS lexicon's
-                                    // index re-prints in its own recension
-                                    let print = if recension == crate::grammar::Recension::Synodal { print } else { form.print(recension) };
+                                for (alt, (_, print)) in forms.into_iter().enumerate() {
                                     out.push(Entry { key: comparison_key(&print), lexeme: i as u32, cell, alt: alt.min(255) as u8, print });
                                 }
                             }
