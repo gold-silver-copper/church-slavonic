@@ -62,6 +62,9 @@ impl Lexeme {
     }
 }
 
+/// The guesser's map: (part of speech, lemma ending) → class → votes.
+pub(crate) type EndingVotes = HashMap<(Pos, String), HashMap<&'static str, usize>>;
+
 pub struct Lexicon {
     pub recension: Recension,
     lexemes: Vec<Lexeme>,
@@ -69,7 +72,7 @@ pub struct Lexicon {
     by_key: HashMap<(String, Pos), Vec<usize>>,
     index: crate::analyze::IndexSlot,
     /// The guesser's ending → class map, built on first use.
-    endings: std::sync::OnceLock<HashMap<(Pos, String), HashMap<&'static str, usize>>>,
+    endings: std::sync::OnceLock<EndingVotes>,
 }
 
 /// The embedded files, by recension: (pos, text).
@@ -136,7 +139,7 @@ impl Lexicon {
         &self.index
     }
 
-    pub(crate) fn ending_slot(&self) -> &std::sync::OnceLock<HashMap<(Pos, String), HashMap<&'static str, usize>>> {
+    pub(crate) fn ending_slot(&self) -> &std::sync::OnceLock<EndingVotes> {
         &self.endings
     }
 

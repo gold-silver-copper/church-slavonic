@@ -195,12 +195,74 @@ fn old_church_slavonic() {
     let imya = ocs("имѧ.n\tимѧ\tn\tn\t-\tn:ѧ:-\t-\t-\t-\t-\tK:n-stem\t-", Pos::Noun);
     assert_eq!(p(&imya, "gen.sg"), "имене");
     assert_eq!(p(&imya, "nom.pl"), "имена");
-    let piti = ocs("пити.v\tпити\tv\t-\t-\tV:ити:ѭ,ѥтъ:2\t-\t2=пь\t-\t-\tK:-\t-", Pos::Verb);
+    // the present stem is the class's derivation (Leskien's classes), no
+    // stem on the lexeme line: пити's jer before j
+    let piti = ocs("пити.v\tпити\tv\t-\t-\tV:III:jer\t-\t-\t-\t-\tK:-\t-", Pos::Verb);
     assert_eq!(p(&piti, "pres.1.sg"), "пьѭ");
     assert_eq!(p(&piti, "pres.3.sg"), "пьѥтъ");
     assert_eq!(p(&piti, "aor.1.sg"), "пихъ");
     assert_eq!(p(&piti, "lpart.m.sg"), "пилъ");
     assert_eq!(p(&piti, "inf"), "пити");
+    // class IV: the first person iotates (л-epenthesis, щ/жд for the
+    // dentals), the rest of the present is on the plain stem with -и-;
+    // after a husher the iotated vowel is written plain (прошѫ, хождаахъ)
+    let v = |line: &str| ocs(line, Pos::Verb);
+    let ljubiti = v("любити.v\tлюбити\tv\t-\t-\tV:IV:i\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&ljubiti, "pres.1.sg"), "люблѭ");
+    assert_eq!(p(&ljubiti, "pres.2.sg"), "любиши");
+    assert_eq!(p(&ljubiti, "pres.3.pl"), "любѧтъ");
+    assert_eq!(p(&ljubiti, "impf.1.sg"), "люблꙗахъ");
+    assert_eq!(p(&ljubiti, "part.pres.act.short.m.sg.nom"), "любѧ");
+    assert_eq!(p(&ljubiti, "part.past.pass.short.m.sg.nom"), "любленъ");
+    let prositi = v("просити.v\tпросити\tv\t-\t-\tV:IV:i\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&prositi, "pres.1.sg"), "прошѫ");
+    assert_eq!(p(&prositi, "pres.3.sg"), "проситъ");
+    assert_eq!(p(&prositi, "impf.1.sg"), "прошаахъ");
+    let xoditi = v("ходити.v\tходити\tv\t-\t-\tV:IV:i\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&xoditi, "pres.1.sg"), "хождѫ");
+    assert_eq!(p(&xoditi, "part.past.pass.short.m.sg.nom"), "хожденъ");
+    // class III with -j-: the whole present iotated
+    let pisati = v("писати.v\tписати\tv\t-\t-\tV:III:j\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&pisati, "pres.1.sg"), "пишѫ");
+    assert_eq!(p(&pisati, "pres.2.sg"), "пишеши");
+    assert_eq!(p(&pisati, "impv.2.sg"), "пиши");
+    assert_eq!(p(&pisati, "aor.1.sg"), "писахъ");
+    let glagolati = v("глаголати.v\tглаголати\tv\t-\t-\tV:III:j\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&glagolati, "pres.1.sg"), "глаголѭ");
+    assert_eq!(p(&glagolati, "pres.3.sg"), "глаголѥтъ");
+    // class III with -aje-, and -ova-
+    let delati = v("дѣлати.v\tдѣлати\tv\t-\t-\tV:III:aje\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&delati, "pres.1.sg"), "дѣлаѭ");
+    assert_eq!(p(&delati, "pres.3.sg"), "дѣлаѥтъ");
+    let verovati = v("вѣровати.v\tвѣровати\tv\t-\t-\tV:III:ov\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&verovati, "pres.1.sg"), "вѣроуѭ"); // the OCS print writes ꙋ as оу
+    assert_eq!(p(&verovati, "aor.1.sg"), "вѣровахъ");
+    // class I: the consonant stems, the velars with the first
+    // palatalisation in the present and the second in the imperative
+    let nesti = v("нести.v\tнести\tv\t-\t-\tV:I:C\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&nesti, "pres.1.sg"), "несѫ");
+    assert_eq!(p(&nesti, "pres.2.sg"), "несеши");
+    let resti = v("рещи.v\tрещи\tv\t-\t-\tV:I:к\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&resti, "pres.1.sg"), "рекѫ");
+    assert_eq!(p(&resti, "pres.2.sg"), "речеши");
+    assert_eq!(p(&resti, "impv.2.sg"), "реци");
+    assert_eq!(p(&resti, "part.pres.act.short.m.sg.nom"), "рекꙑ");
+    let mosti = v("мощи.v\tмощи\tv\t-\t-\tV:I:г\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&mosti, "pres.1.sg"), "могѫ");
+    assert_eq!(p(&mosti, "pres.3.sg"), "можетъ");
+    assert_eq!(p(&mosti, "impv.2.sg"), "моѕи");
+    // the jer grade of the root in the imperative (рьци, not реци) is a
+    // lexical fact: an override on the lexeme line
+    let resti = v("рещи.v\tрещи\tv\t-\t-\tV:I:к\t-\t-\timpv.2.sg=рьци\t-\tK:-\t-");
+    assert_eq!(p(&resti, "impv.2.sg"), "рьци");
+    let gresti = v("грѧсти.v\tгрѧсти\tv\t-\t-\tV:I:д\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&gresti, "pres.1.sg"), "грѧдѫ");
+    assert_eq!(p(&gresti, "inf"), "грѧсти");
+    // class II
+    let dvignoti = v("двигнѫти.v\tдвигнѫти\tv\t-\t-\tV:II\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&dvignoti, "pres.1.sg"), "двигнѫ");
+    assert_eq!(p(&dvignoti, "pres.2.sg"), "двигнеши");
+    assert_eq!(p(&dvignoti, "inf"), "двигнѫти");
     let tu = ocs("тъ.pron\tтъ\tpron\tm\t-\tPA1\t-\t-\t-\t-\tK:-\t-", Pos::Pronoun);
     assert_eq!(p(&tu, "m.sg.gen"), "того");
     assert_eq!(p(&tu, "m.sg.ins"), "тѣмь");

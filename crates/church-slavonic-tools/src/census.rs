@@ -99,7 +99,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     }
     println!("== stored numbered stems: {lines} {} lines of {} ({})", pos.tag(), lexicon.iter().filter(|l| l.pos == pos).count(), if ocs { "ocs" } else { "syn" });
     let mut rows: Vec<_> = counts.into_iter().collect();
-    rows.sort_by(|a, b| b.1.len().cmp(&a.1.len()));
+    rows.sort_by_key(|r| std::cmp::Reverse(r.1.len()));
     for ((stem, rel), examples) in rows {
         println!("{:>6}  stem {stem} {rel:<10} {}", examples.len(), examples.iter().take(10).cloned().collect::<Vec<_>>().join("; "));
     }

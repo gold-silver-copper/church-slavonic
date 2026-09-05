@@ -127,9 +127,11 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     }
     if write {
         if source == "polyakov" {
-            write_outcome(&outcome, Recension::Synodal, pos)?;
-        } else if source == "kaikki" || source == "ud" {
-            write_outcome(&outcome, Recension::OldChurchSlavonic, pos)?;
+            write_outcome(&outcome, Recension::Synodal, pos, "P:")?;
+        } else if source == "kaikki" {
+            write_outcome(&outcome, Recension::OldChurchSlavonic, pos, "K:")?;
+        } else if source == "ud" {
+            write_outcome(&outcome, Recension::OldChurchSlavonic, pos, "U:")?;
         } else {
             crosscheck::write(&outcome, pos)?;
         }
@@ -312,7 +314,9 @@ fn fix_table_marks(o: &Outcome, pos: Pos) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn write_outcome(o: &Outcome, recension: Recension, pos: Pos) -> Result<(), Box<dyn Error>> {
+/// `prefix` is the writing source's provenance tag (`P:`, `K:`, `U:`):
+/// its own earlier tokens are replaced, the other sources' kept.
+fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> Result<(), Box<dyn Error>> {
     let dir = lexicon_dir();
     let rec = match recension {
         Recension::Synodal => "syn",
@@ -333,7 +337,7 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos) -> Result<(), Box<
             merged.insert(l.id.clone(), l);
             kept_hand += 1;
         } else if let Some(new) = merged.get_mut(&l.id) {
-            for token in l.src.iter().filter(|s| !s.starts_with("P:")) {
+            for token in l.src.iter().filter(|s| !s.starts_with(prefix)) {
                 if !new.src.contains(token) {
                     new.src.push(token.clone());
                 }

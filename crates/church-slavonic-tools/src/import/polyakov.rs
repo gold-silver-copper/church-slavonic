@@ -338,8 +338,19 @@ fn inferred_stems(class: &church_slavonic::paradigm::Class, subject: &church_sla
             None => letters,
         };
         let Some(alts) = class.cells.get(cell).or_else(|| cell.block().and_then(|b| class.blocks.get(&b))) else { continue };
+        // an alternative of the class already produces the form: no vote
+        let produced = alts.iter().any(|alt| match &alt.shape {
+            Shape::Ending { stem, ending, .. } => derived.get(stem).is_some_and(|d| format!("{d}{ending}") == letters),
+            _ => false,
+        });
+        if produced {
+            continue;
+        }
         for alt in alts {
+            // never a whole form as a stem (a cell with an empty ending
+            // would make the form its own stem: the census's `artefact`)
             if let Shape::Ending { stem, ending, .. } = &alt.shape
+                && !ending.is_empty()
                 && let Some(candidate) = letters.strip_suffix(ending.as_str())
                 && !candidate.is_empty()
                 && derived.get(stem).is_some_and(|d| d != candidate)

@@ -132,15 +132,15 @@ impl Lexicon {
         "0"
     }
 
-    fn ending_index(&self) -> &std::collections::HashMap<(Pos, String), std::collections::HashMap<&'static str, usize>> {
+    fn ending_index(&self) -> &crate::lexicon::EndingVotes {
         self.ending_slot().get_or_init(|| {
-            let mut votes: std::collections::HashMap<(Pos, String), std::collections::HashMap<&'static str, usize>> = std::collections::HashMap::new();
+            let mut votes: crate::lexicon::EndingVotes = std::collections::HashMap::new();
             let mut interned: std::collections::HashMap<String, &'static str> = std::collections::HashMap::new();
             for l in self.iter() {
                 if l.class == "0" || l.class.is_empty() {
                     continue;
                 }
-                let class: &'static str = *interned.entry(l.class.clone()).or_insert_with(|| Box::leak(l.class.clone().into_boxed_str()));
+                let class: &'static str = interned.entry(l.class.clone()).or_insert_with(|| Box::leak(l.class.clone().into_boxed_str()));
                 let chars: Vec<char> = Form::from_print(&l.lemma).letters.chars().collect();
                 for n in 1..=3 {
                     if chars.len() < n {

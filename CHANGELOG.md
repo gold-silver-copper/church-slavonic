@@ -22,6 +22,81 @@ Measured:
 | guessed present, OCS verbs (leave-one-out) | class 37.91%, cells 22.72% (68,531/301,680) |
 | guessed present, Synodal verbs | class 46.67%, cells 46.46% (1,027,052/2,210,493) |
 
+### Part 1 — present stems by derivation (2026-09-05)
+
+- **OCS verb classes by Leskien** (`scripts/kaikki-to-classes.py`): a class
+  is (infinitive type, present type) and its stems column is derivations
+  — `V:IV:i` (любити: `2=iot`, first person on 2, the rest on 1 with -и-,
+  the imperfect on 2, the past passive `8=ext:ен:iot`), `V:IV:ě`,
+  `V:IV:a` (лежати), `V:III:j` (писати: the whole present on `2=iot`),
+  `V:III:aje` (дѣлати), `V:III:ja` (таꙗти), `V:III:ov` (`2=ov`),
+  `V:III:jer` (пити: `2=jer`, the tense jer before j), `V:I:C` (нести),
+  `V:I:к`/`V:I:г` (рещи: `2=ext:к`, `3=pal1:ext:к`, `4=pal2:ext:к`),
+  `V:I:т`/`V:I:д`/`V:I:з` (грѧсти: the dental hidden by -сти),
+  `V:I:ьн`/`V:I:ьм` (клѧти: `2=ext:ьн:cut`), `V:I:a` (ковати), `V:II`
+  (двигнѫти). Each Kaikki entry is placed by predicting its attested
+  first and third person singular from the derived stems; every present
+  cell reads its ending against the stem the type declares, so members
+  that iotate and members that do not vote the same ending. 27 classes
+  (55 before), 12 of them residue classes (`V:res:<ending>`) for the
+  suppletive entries, which keep their stem on the line and are never
+  offered to a lexeme the seeding did not place.
+- **The spelling rule after a husher (OCS).** ѭ/ѥ/ѩ/ꙗ are written
+  ѫ/е/ѧ/а after ж ч ш щ ц and жд, at the ending and inside a derivation
+  (пишѫ, пишетъ, рождѫ, хождаахъ beside люблѭ, глаголѥтъ) — the rule that
+  lets one class name `2-ѭ` once. Kaikki's own forms agree (thousands to
+  a few hundred; the exceptions are variants now). `iotate` is vacuous
+  on a stem already palatal (дъждѫ); `ov` gives -ю- after -ева- and after
+  a vowel (воюю, оу҆треню́ю), -ꙋ- otherwise; new derivation `jer` (и → ь,
+  ы → ъ).
+- **A 2.0 defect found by the new exemplar test**: participle blocks
+  delegated to the *Synodal* adjective table for every recension, so no
+  OCS past participle was ever produced; `table_of(Adjective, recension)`.
+- **UD import**: the stem read off the attested present (`present_stem`)
+  is a fallback, tried only when no class derivation reproduces the
+  attested present, kept only when it reproduces more, and never a stem
+  as long as a form; the tie-break no longer favours the table's first
+  class for a lexeme the seeding did not place (it favoured `V:I:C`),
+  the verb table is written in order of class size so a tie goes to the
+  commonest class of the lemma's shape, and a residue class is out of the
+  running. Provenance: an import replaces its own earlier `K:`/`U:`/`P:`
+  tokens instead of accumulating them.
+- **Synodal** (`scripts/legend-adj-verb-pron.py`): the participle-stem
+  inference skips cells with an empty ending and never votes where an
+  alternative of the class already produces the form; class-level
+  derivations for what the census showed stored: the archaic past active
+  participle on the soft stem (`14=ext:ьш:iot` V21p и҆зба́вльшїй, `ext:ьш`
+  V21n, `ext:ш:iot` V21t вмѣ́щшїй, `ext:ш` V21s), the -нꙋ-less past active
+  participle of V13k/V13t (`14=ext:ш`, воздви́гшїй, воскре́сшїй, nominative
+  `1-ъ`), бити's ї-stems (`9=ext:ѧ:iota`, imperfect on 2, `14=ext:ен:iota`
+  бїе́нъ, `15` its long form). Re-imported: polyakov, alypy, ruwiktionary
+  verbs; kaikki and ud for every OCS part of speech (the husher rule
+  touches nouns and adjectives too).
+
+Measured (gate in bold; before → after):
+
+| Number | 2.0 | 2.1 Part 1 |
+|---|---|---|
+| **OCS verb lines with a stored stem** | 1,442 (of 2,456) | **56** (of 2,455): 53 suppletive (възьмати 2=въземл, бьрати 2=бер, пѣти 2=по, …), 1 artefact (роути, Kaikki's ров), клеветати (Kaikki's клевещѣтъ), дъждити |
+| OCS verb classes | 55 | 27 (12 residue) |
+| **Kaikki verb cells reproduced** | 73,791 / 78,063 (94.5%) | **74,667 (95.7%)**; reachable 74,823 |
+| Kaikki noun / adjective cells reproduced | 99.1% / 97.8% | 98.6% (39,139/39,678; Kaikki's ѩ after ц/щ) / 97.8% (38,225/39,096) |
+| **UD dev+test recall: verbs** | 85.79% (7,514/8,759) | **90.59% (7,935)** |
+| UD dev+test recall: nouns / adjectives / pronouns / npron | 94.87 / 89.35 / 99.25 / 97.84 | 95.48 / 89.31 / 99.25 / 98.07 |
+| **Syntacticus recall: verbs** | 93.68% | **94.91% (43,422/45,749)**; nouns 95.33, adjectives 95.17, pronouns 99.20, npron 96.18 |
+| **guessed present, OCS verbs (leave-one-out)** | class 37.91%, cells 22.72% | **class 79.51%, cells 78.99% (238,519/301,965)** |
+| Synodal verb lines with a stored stem | 636 (of 8,279) | 358 (of 8,284): stem 12 `…нн`/`…н` spelling 105, stem 2 suppletive 94 (взѧ́ти 2=возм, зва́ти 2=зов, и҆ма́ти 2=емл), stem 1 90 (би́ти 1=бі: Polyakov's ї before a vowel in the imperfect and passive), stem 7 82, … |
+| Polyakov verb cells reproduced by the primary | 91.5% | 91.5% (116,548/127,329); reachable 118,254 |
+| guessed present, Synodal verbs | class 46.67%, cells 46.46% | class 46.72%, cells 46.51% |
+| Bible coverage, Synodal (one reading / several / none) | 321,046 / 237,567 / 72,311 | 321,132 / 237,673 / 72,119 |
+| Bible treebank: analyzed / closed / ambiguous / verbatim | 23.4 / 28.1 / 40.2 / 8.1 % | 23.4 / 28.1 / 40.2 / 8.2 % (51,556), zero mismatches |
+| OCS exemplar test | — | любити → люблѭ/любиши/любѧтъ/люблꙗахъ/любленъ, просити → прошѫ/прошаахъ, ходити → хождѫ/хожденъ, писати → пишѫ/пишеши/пиши, глаголати → глаголѭ/глаголѥтъ, дѣлати → дѣлаѭ, вѣровати → вѣроуѭ, нести → несѫ/несеши, рещи → рекѫ/речеши/реци/рекꙑ, мощи → могѫ/можетъ/моѕи, грѧсти → грѧдѫ, двигнѫти → двигнѫ/двигнеши, пити → пьѭ |
+
+The two OCS gates the prompt set (stored stems ≤ 60; Kaikki cells ≥
+94.5%; UD verbs ≥ 85.79%; Syntacticus ≥ 93.68%; the guessed number
+rising) are met. рьци (the jer grade of the root in the imperative) is a
+lexeme override, not a derivation.
+
 ## 2.0.0 (2026-09-05) — the lexicon-first rewrite
 
 Executed from V2-PROMPT.md; the design is docs/DESIGN.md. Each part

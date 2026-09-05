@@ -550,11 +550,11 @@ def personal(table):
 # 5..8 built on the right base: 5 present active (-ѧщ/-ꙋщ), 6 present
 # passive (-им/-ем), 7 past active (-вш/-ш), 8 past passive (-ен/-ан/-т).
 VERB_STEMS = {
-    "V21n": (3, "1=base;2=base;5=ext:ѧщ;6=ext:им;7=ext:ивш;8=ext:ен;9=ext:ѧ;11=ext:ив;12=ext:н:ext:ен"),
+    "V21n": (3, "1=base;2=base;5=ext:ѧщ;6=ext:им;7=ext:ивш;8=ext:ен;9=ext:ѧ;11=ext:ив;12=ext:н:ext:ен;14=ext:ьш"),
     "V21a": (3, "1=base;2=base;5=ext:ѧщ;6=ext:им;7=ext:ивш;8=ext:ен;9=ext:ѧ;11=ext:ив;12=ext:н:ext:ен"),
-    "V21s": (3, "1=base;2=base;5=ext:ащ;6=ext:им;7=ext:ивш;8=ext:ен;9=ext:а;11=ext:ив;12=ext:н:ext:ен"),
-    "V21p": (3, "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ивш;8=ext:ен:iot;9=ext:ѧ;11=ext:ив;12=ext:н:ext:ен:iot"),
-    "V21t": (3, "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ивш;8=ext:ен:iot;9=ext:ѧ;11=ext:ив;12=ext:н:ext:ен:iot"),
+    "V21s": (3, "1=base;2=base;5=ext:ащ;6=ext:им;7=ext:ивш;8=ext:ен;9=ext:а;11=ext:ив;12=ext:н:ext:ен;14=ext:ш"),
+    "V21p": (3, "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ивш;8=ext:ен:iot;9=ext:ѧ;11=ext:ив;12=ext:н:ext:ен:iot;14=ext:ьш:iot"),
+    "V21t": (3, "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ивш;8=ext:ен:iot;9=ext:ѧ;11=ext:ив;12=ext:н:ext:ен:iot;14=ext:ш:iot"),
     "V22n": (3, "1=base;2=base;5=ext:ѧщ;6=ext:им;7=ext:ѣвш;8=ext:ен;9=ext:ѧ;11=ext:ѣв;12=ext:н:ext:ен"),
     "V22p": (3, "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ѣвш;8=ext:ен:iot;9=ext:ѧ;11=ext:ѣв;12=ext:н:ext:ен:iot"),
     "V22t": (3, "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ѣвш;8=ext:ен:iot;9=ext:ѧ;11=ext:ѣв;12=ext:н:ext:ен:iot"),
@@ -571,8 +571,8 @@ VERB_STEMS = {
     "V12x": (3, "1=base;2=base;5=ext:ꙋщ;6=ext:ем;7=ext:авш;8=ext:ан;9=ext:ꙋ;11=ext:ав;12=ext:н:ext:ан"),
     "V12x*": (3, "1=base;2=insert;5=ext:ꙋщ:insert;6=ext:ем:insert;7=ext:авш;8=ext:ан;9=ext:ꙋ:insert;11=ext:ав;12=ext:н:ext:ан"),
     "V13a": (3, "1=base;2=base;5=ext:ꙋщ;6=ext:ем;7=ext:ꙋвш;8=ext:ꙋт;9=ext:ꙋ;11=ext:ꙋв;12=ext:ꙋт"),
-    "V13t": (4, "1=base;2=base;5=ext:нꙋщ;6=ext:нем;7=ext:нꙋвш;8=ext:нꙋт;9=ext:нꙋ;11=ext:нꙋв;12=ext:нꙋт"),
-    "V13k": (4, "1=base;2=iot;5=ext:нꙋщ;6=ext:нем;7=ext:нꙋвш;8=ext:нꙋт;9=ext:нꙋ;11=ext:нꙋв;12=ext:нꙋт"),
+    "V13t": (4, "1=base;2=base;5=ext:нꙋщ;6=ext:нем;7=ext:нꙋвш;8=ext:нꙋт;9=ext:нꙋ;11=ext:нꙋв;12=ext:нꙋт;14=ext:ш"),
+    "V13k": (4, "1=base;2=iot;5=ext:нꙋщ;6=ext:нем;7=ext:нꙋвш;8=ext:нꙋт;9=ext:нꙋ;11=ext:нꙋв;12=ext:нꙋт;14=ext:ш"),
     "V14p": (3, "1=ext:б;2=ext:б;5=ext:ꙋщ:ext:б;6=ext:ом:ext:б;7=ext:ш:ext:б;8=ext:ен:ext:б;9=ext:ꙋ:ext:б;11=ext:б;12=ext:н:ext:ен:ext:б"),
     "V14z": (2, "1=base;2=base;5=ext:ꙋщ;6=ext:ом;7=ext:ш;8=ext:ен;9=ext:ꙋ;11=base;12=ext:н:ext:ен"),
     "V14t": (3, "1=ext:т;2=ext:т;5=ext:ꙋщ:ext:т;6=ext:ом:ext:т;7=ext:ш:ext:т;8=ext:ен:ext:т;9=ext:ꙋ:ext:т;11=ext:т;12=ext:н:ext:ен:ext:т"),
@@ -587,7 +587,7 @@ VERB_STEMS = {
     "V15er": (2, "1=drop;2=insert:drop;3=base;5=ext:ꙋщ:drop;6=ext:ем:drop;7=ext:ш:insert:drop;8=ext:т:insert:drop;9=ext:ꙋ:drop;11=insert:drop;12=ext:т:insert:drop"),
     "V15ol": (2, "1=base;2=base;5=ext:ющ;6=ext:ем;7=ext:вш;8=ext:ен;9=ext:ю;11=ext:в;12=ext:н:ext:ен"),
     "V15el": (2, "1=base;2=base;5=ext:ющ;6=ext:ем;7=ext:вш;8=ext:ен;9=ext:ю;11=ext:в;12=ext:н:ext:ен"),
-    "V15i": (2, "1=base;2=iota;5=ext:ющ:iota;6=ext:ем:iota;7=ext:вш;8=ext:т;9=ext:ю:iota;11=ext:в;12=ext:т"),
+    "V15i": (2, "1=base;2=iota;5=ext:ющ:iota;6=ext:ем:iota;7=ext:вш;8=ext:т;9=ext:ю:iota;11=ext:в;12=ext:т;14=ext:ен:iota;15=ext:н:ext:ен:iota"),
     "V15y": (2, "1=base;2=base;5=ext:ющ;6=ext:ем;7=ext:вш;8=ext:т;9=ext:ю;11=ext:в;12=ext:т"),
     "V15e": (2, "1=base;2=base;5=ext:ющ;6=ext:ем;7=ext:вш;8=ext:т;9=ext:ю;11=ext:в;12=ext:т"),
     "V15n": (2, "1=base;2=nasal;5=ext:ꙋщ:nasal;6=ext:ем:nasal;7=ext:вш;8=ext:т;9=ext:ꙋ:nasal;11=ext:в;12=ext:т"),
@@ -793,6 +793,36 @@ def verbs(tables_):
                 for g in ("m", "n"):
                     cells[f"part.past.pass.short.{g}.sg.ins"] = "12-ымъ"
                 cells["part.past.pass.short.f.sg.nom"] = "8-а|12-а"
+                # the archaic past active participle on the soft stem
+                # (и҆зба́вльшїй, вмѣ́щшїй, вложшїй; воздви́гшїй, воскре́сшїй
+                # without -нꙋ-): stem 14, beside the -вш- forms (V2.1 Part
+                # 1.4: 76 + 25 stored stems named by the class)
+                parts = dict(x.split("=", 1) for x in stems.split(";"))
+                if "14" in parts and code.startswith(("V21", "V13")):
+                    for series in ("short", "long"):
+                        cells[f"part.past.act.{series}"] = "7~A1s|14~A1s"
+                    cells["part.past.act.short.f.sg.nom"] = "7-и|14-и"
+                    cells["part.past.act.short.n.sg.nom"] = "7-е|14-е"
+                    cells["part.past.act.short.m.sg.acc"] = "7-а|14-а|@part.past.act.short.m.sg.nom"
+                    cells["part.past.act.long.m.sg.acc"] = "7-аго|14-аго|@part.past.act.long.m.sg.nom"
+                    cells["part.past.act.short.m.pl.nom"] = "7-е|7-и|14-е|14-и"
+                    cells["part.past.act.long.m.sg.nom"] = "11-ый|7-їй|14-їй"
+                    if code.startswith("V13"):
+                        cells["part.past.act.short.m.sg.nom"] = "11-ъ|1-ъ"
+                # бити's past passive participle: бїе́нъ, бїе́нный beside би́тъ
+                if code == "V15i":
+                    cells["part.past.pass.short"] = "8~A1t|14~A1t"
+                    cells["part.past.pass.long"] = "12~A1t|15~A1t"
+                    cells["part.past.pass.short.m.sg.nom"] = "8-ъ|14-ъ"
+                    cells["part.past.pass.short.f.sg.nom"] = "8-а|12-а|14-а"
+                    cells["part.past.pass.long.m.sg.acc"] = "12-аго|15-аго|@part.past.pass.long.m.sg.nom"
+                    parts["9"] = "ext:ѧ:iota"
+                    stems = ";".join(f"{k}={v}" for k, v in parts.items())
+                    # the imperfect's ending opens with a vowel: on the
+                    # ї-stem (бїѧ́хъ), like the present
+                    for k in list(cells):
+                        if k.startswith("impf."):
+                            cells[k] = "|".join("2-" + a[2:] if a.startswith("1-") else a for a in cells[k].split("|"))
                 # the long locative: -омъ before -ѣмъ on participles (census)
                 for g in ("m", "n"):
                     cells[f"part.past.pass.long.{g}.sg.loc"] = "12-омъ|12-ѣмъ"

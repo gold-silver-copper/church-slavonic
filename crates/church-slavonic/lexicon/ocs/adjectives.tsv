@@ -249,7 +249,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 въсточьнъ.a	въсточьнъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 въсѫдьнъ.a	въсѫдьнъ	a	-	-	A:-:ъ	a	-	long.pos.f.sg.nom=въсѫдьнаѣ	-	U:	-
 въторопрьвъ.a	въторопрьвъ	a	-	-	A:-:ъ	a	-	long.pos.f.sg.acc=въторопръвѫѭ	-	U:	-
-въторъ.a	въторъ	a	-	-	A:-:ъ	a	-	long.pos.m.sg.nom=въторꙑ;long.pos.m.sg.gen=въторааго;long.pos.m.sg.loc=вьторѣѣмь;long.pos.f.sg.nom=вътораа;long.pos.f.sg.acc=въторѫѫ;long.pos.n.sg.dat=вътороуоумоу;long.pos.n.sg.acc=въторое	long.pos.m.sg.nom=въторъи;long.pos.f.sg.nom=вътораѣ;long.pos.n.sg.acc=вътороѥ	U:	tie A:-k:ъ
+въторъ.a	въторъ	a	-	-	A:-:ъ	a	-	long.pos.m.sg.nom=въторꙑ;long.pos.m.sg.gen=въторааго;long.pos.m.sg.loc=вьторѣѣмь;long.pos.f.sg.nom=вътораа;long.pos.f.sg.acc=въторѫѫ;long.pos.n.sg.dat=вътороуоумоу;long.pos.n.sg.acc=въторое	long.pos.m.sg.nom=въторъи;long.pos.f.sg.nom=вътораѣ	U:	tie A:-k:ъ
 высокъ.a	вꙑсокъ	a	-	-	A:-k:ъ	-	-	-	short.pos.m.sg.nom=въисокъ;short.pos.f.sg.acc=въисокѫ;short.comp.m.sg.gen=вꙑшьша;short.comp.m.pl.nom=вꙑшьши;long.pos.m.pl.acc=въисокаа;long.pos.f.sg.ins=въисокоѭ;long.pos.n.pl.loc=въисокъихъ;long.comp.n.sg.acc=вꙑшеѥ	K:A:-k:ъ;U:	-
 вьдовьчь.a	вьдовьчь	a	-	-	A:-:ь	a	-	short.pos.f.sg.gen=въдовичꙙ	-	U:	-
 вьсевидѧ.a	вьсевидѧ	a	-	-	A:-:и	a	-	long.pos.f.sg.nom=вьсевидꙙштиꙗ;short.pos.m.sg.nom=вьсевидѧ	-	U:	-
@@ -962,7 +962,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 орьль.a	орьль	a	-	-	A:-:ь	a	-	short.pos.f.sg.nom=орълѣ	-	U:	-
 ослоушьливъ.a	ослоушьливъ	a	-	-	A:-:ъ	a	-	long.pos.m.pl.nom=ослоушъливии;long.pos.m.pl.dat=ослоушьливꙑмъ	-	U:	tie A:-k:ъ
 осмонадесѧтъ.a	осмонадесѧтъ	a	-	-	A:-:ъ	-	-	long.pos.n.sg.acc=осмонадесꙙтоѥ	-	U:	-
-осмъ.a	осмъ	a	-	-	A:-:ъ	a	-	long.pos.m.sg.acc=осмꙑ;long.pos.n.sg.gen=осмааго;long.pos.n.sg.dat=осмоуоумоу;long.pos.n.sg.acc=осмое	long.pos.n.sg.acc=осмоѥ	U:	-
+осмъ.a	осмъ	a	-	-	A:-:ъ	a	-	long.pos.m.sg.acc=осмꙑ;long.pos.n.sg.gen=осмааго;long.pos.n.sg.dat=осмоуоумоу;long.pos.n.sg.acc=осмое	-	U:	-
 осмь.a	осмь	a	-	-	A:-:ь	a	-	long.pos.m.sg.acc=осмьи;long.pos.f.sg.loc=осмѣи	-	U:	-
 остатъчьнъ.a	остатъчьнъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 остръ.a	остръ	a	-	-	A:-:ъ	-	-	-	long.pos.f.sg.ins=остроѭ	K:A:-:ъ;U:	tie A:-k:ъ
@@ -1102,12 +1102,12 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 приѩтьнъ.a	приѩтьнъ	a	-	-	A:-:ъ	a	-	short.pos.m.sg.nom=приѩтенъ	-	U:	-
 приꙗзнивъ.a	приꙗзнивъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 прозорьнъ.a	прозорьнъ	a	-	-	A:-:ъ	a	-	long.pos.m.sg.loc=прозорьнѣѣмь	-	U:	-
-прокаженъ.a	прокаженъ	a	-	-	A:-:ъ	-	-	long.pos.m.pl.acc=прокаженꙑѧ	long.pos.m.pl.acc=прокаженꙑѩ	U:	tie A:-k:ъ
+прокаженъ.a	прокаженъ	a	-	-	A:-:ъ	-	-	long.pos.m.pl.acc=прокаженꙑѧ	-	U:	tie A:-k:ъ
 проказивъ.a	проказивъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 проклѧтъ.a	проклѧтъ	a	-	-	A:-:ъ	-	-	-	-	K:A:-:ъ	tie A:-k:ъ
 прокꙑи.a	прокꙑи	a	-	-	A:-:ь	a	-	long.pos.m.sg.gen=прокꙑихъ;long.pos.m.pl.gen=прокꙑихъ;long.pos.f.pl.loc=прокꙑихъ;long.pos.n.sg.acc=прокоѥ;long.pos.n.sg.loc=процѣѣмь;long.pos.m.sg.nom=прокꙑи	-	U:	-
 пронꙑривъ.a	пронꙑривъ	a	-	-	A:-:ъ	a	-	long.pos.m.sg.voc=пронꙑривꙑ;long.pos.f.pl.acc=пронꙑривꙑѧ	-	U:	tie A:-k:ъ
-пророчь.a	пророчь	a	-	-	A:o/a:ь	-	-	-	-	U:	-
+пророчь.a	пророчь	a	-	-	A:-:ь	-	-	-	-	U:	tie A:o/a:ь
 пророчьскъ.a	пророчьскъ	a	-	-	A:-:ъ	a	-	short.pos.n.sg.nom=пророчъско;short.pos.n.sg.ins=пророчьскомъ;long.pos.m.sg.loc=пророчьстѣъмъ;long.pos.n.sg.dat=пророчьскоумоу;long.pos.n.sg.ins=пророчьскꙑимъ	-	U:	tie A:-k:ъ
 простовласъ.a	простовласъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 пространъ.a	пространъ	a	-	-	A:-:ъ	-	-	-	long.pos.m.sg.nom=пространъи;long.pos.m.sg.gen=пространааго;long.pos.m.sg.dat=пространоуоумоу;long.pos.m.pl.acc=пространꙑѧ;long.pos.n.sg.ins=пространꙑимъ	K:A:-:ъ;U:	tie A:-k:ъ
@@ -1140,7 +1140,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 прѣлѫкавъ.a	прѣлѫкавъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 прѣмилостивъ.a	прѣмилостивъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 прѣмрачьнъ.a	прѣмрачьнъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
-прѣмъногъ.a	прѣмъногъ	a	-	-	A:-:ъ	a	-	short.pos.m.pl.acc=прѣмногꙑ;long.pos.n.sg.dat=прѣмногоумоу;long.pos.n.pl.nom=прѣмногаꙗ	-	U:	-
+прѣмъногъ.a	прѣмъногъ	a	-	-	A:-k:ъ	a	-	short.pos.m.pl.acc=прѣмногꙑ;long.pos.n.sg.dat=прѣмногоумоу;long.pos.n.pl.nom=прѣмногаꙗ	-	U:	-
 прѣмьдивъ.a	прѣмьдивъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 прѣмьнь.a	прѣмьнь	a	-	-	A:-:ь	a	-	long.pos.f.sg.acc=прѣмьнѭѫ	-	U:	-
 прѣмѫдростьнъ.a	прѣмѫдростьнъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
@@ -1494,7 +1494,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 юговъ.a	юговъ	a	-	-	A:-:ъ	-	-	-	-	U:	tie A:-k:ъ
 южьскъ.a	южьскъ	a	-	-	A:-:ъ	a	-	long.pos.f.sg.nom=южьскаа	-	U:	-
 юнъ.a	юнъ	a	-	-	A:-:ъ	-	-	-	long.pos.m.sg.nom=юнои;long.comp.m.sg.nom=юнѣи	K:A:-:ъ;U:	tie A:-k:ъ
-юньчь.a	юньчь	a	-	-	A:o/a:ь	a	-	short.pos.n.sg.gen=юнъча	-	U:	-
+юньчь.a	юньчь	a	-	-	A:-:ь	a	-	short.pos.n.sg.gen=юнъча	-	U:	tie A:o/a:ь
 ѥ.a	ѥ	a	-	-	A:-:и	a	-	long.pos.n.sg.nom=ѥ;long.pos.n.sg.acc=ѥ;short.pos.m.sg.nom=ѥ	-	U:	-
 ѥдиначьнъ.a	ѥдиначьнъ	a	-	-	A:-:ъ	-	-	-	-	K:A:-:ъ	tie A:-k:ъ
 ѥдинооумьнъ.a	ѥдинооумьнъ	a	-	-	A:-:ъ	a	-	short.pos.m.sg.nom=ѥдинооуменъ	-	U:	-

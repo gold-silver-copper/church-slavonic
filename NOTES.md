@@ -927,3 +927,82 @@ members — stays deliberately its own future design.
   reproduces 22.7% of its present cells today, a Synodal one 46.5%;
   Part 1 is measured against these.
 
+## 2026-09-05 — 2.1 Part 1: present stems by derivation — decisions and findings
+
+- **A class is a Leskien type, and the type declares the stem of every
+  cell (decision).** The first pass matched types by predicting the first
+  and third person singular but read each cell's ending against the first
+  stem that was a prefix of the form; members whose iotation changed no
+  letter (гонити: гон = гон) then voted `2-иши` where любити voted
+  `1-иши`, and the class carried both as alternatives. The type now says
+  which stem a cell is built on (class IV: first person and imperfect on
+  the iotated stem, the rest on the plain one; class III -j-: everything
+  on the iotated stem; velars: 2 for the first person and third plural,
+  3 for the other persons, 4 for the imperative), and the data supplies
+  only the ending. Where the data disagrees with the declared stem the
+  other stems are tried and the ending recorded against whichever fits —
+  the aorist of a velar verb (влѣче) reads `3-е`.
+- **The spelling rule after a husher is the crate's, not the table's
+  (decision).** Kaikki writes прошѫ, пишетъ, рождѫ, хождаахъ and люблѭ,
+  глаголѥтъ, гонꙗахъ: the iotated vowel is plain after ж ч ш щ ц жд. The
+  count over every Kaikki form is a few thousand to a few hundred in the
+  rule's favour (жд+ѭ 108 forms from three lemmas' participles, ж+ѭ 2;
+  nouns: пищѩ 20, кръвоточицѩ 12). Applied in `Ext` and at the ending in
+  OCS; the Synodal rule (ѧ/ѣ → а after a husher) stays a derivation's
+  only, and applying it at the ending cost 139 Bible tokens before it was
+  taken back. The rule reached nouns and adjectives too: OCS noun recall
+  94.87 → 95.48, adjectives 89.35 → 89.31 (one token), Kaikki noun cells
+  99.1 → 98.6% (their ѩ after ц/щ became variants).
+- **The hidden consonant is a stem, the infinitive is the base
+  (decision).** The first seeding put the dental of грѧсти into stem 1
+  (`1=ext:д`), so no cell of the class produced the infinitive and the
+  citation filter rejected every such class; every -сти verb then landed
+  in the one class whose seed happened to be a с-stem. Now stem 1 is the
+  bare base (грѧ), the infinitive is `1-сти`, and stem 2 restores the
+  consonant. The same for velars (рещи: `2=ext:к`, `3=pal1`, `4=pal2`).
+  с-stems (нести, пасти) are the plain consonant class `V:I:C`.
+- **Kaikki's tables are template output with junk in the non-present
+  cells (finding).** коснѫти's aorist and l-participle are given as
+  косехъ, кослъ; клѧти's as кльнхъ, кльнлъ; грѧсти's l-participle as
+  грѧдлъ. The class cells stay data-driven for those blocks, so the tables
+  reproduce the junk as they did in 2.0 (the Kaikki number is a
+  reproduction number, not a correctness one); the UD attestations
+  (коснѫ сѧ, клѧтъ) enter as variants. A later part could declare the
+  aorist and l-participle by type as the present now is.
+- **The residue is real suppletion, 56 lines named in the census
+  (finding).** възьмати → въземл, бьрати → бер, жьдати → жид, пѣти → по,
+  трьти → тьр, мрѣти → мьр, сърѣсти → сърѧщ, лити → лѣ, смиꙗти → смѣ,
+  клеветати (Kaikki's клевещѣтъ), роути (Kaikki's ров). Wiktionary's
+  cluster iotation (блазнити → блажнѭ, съмотрити → съмощрѫ, оклоснити →
+  оклошнѫ) is not modelled: Synodal has соблазню̀, and `iotate` serves
+  both recensions.
+- **Kaikki iotates the present participle of the -вратити family
+  (finding).** вращѧщ- for вратити where the language has вратѧ, вратѧщ-
+  (просѧ, ходѧщ- elsewhere in the same source); seven lexemes, about 350
+  cells, left as variants rather than an alternative on every class IV
+  verb.
+- **A 2.0 defect (finding, fixed).** The participle blocks' delegation
+  read the Synodal adjective table whatever the recension, so an OCS
+  lexeme had no past participle at all; found by the exemplar test's
+  любленъ, fixed in `collect`, and part of the verb recall rise.
+- **The UD fit's tie-break was the table's first row (finding, fixed).**
+  For a lexeme the seeding did not place, `best_fit` preferred `classes[0]`
+  as if it were the seeded class; with the classes sorted by name that
+  was `V:I:C`, and 922 UD verbs took it. The seeded class is now an
+  explicit argument, the OCS verb table is written largest class first
+  so a tie goes to the commonest class of the lemma's shape, an exemplar
+  is the member with the class's commonest ending, and residue classes
+  are excluded for an unplaced lexeme.
+- **Polyakov writes ї before a vowel inside a stem (finding).** би́ти:
+  бію́, бія́хъ, біе́нъ beside би́ти, би́ша, би́лъ. The letters layer keeps і as
+  a letter (`iota`), so бити's imperfect and passive participle are
+  class-level (`2-ѧхъ`, `14=ext:ен:iota`); the remaining 90 `1=бі`-type
+  lines are lexemes where the present stem is the only і-stem Polyakov
+  attests and the class's stem 1 still serves a form with і.
+- **Synodal residue (finding).** 358 lines: the long past passive's нн/н
+  is Polyakov's own variation (благовѣща́нный against V11a's н;
+  оу҆ра́неный against V21n's нн), genuine present suppletion (взѧ́ти →
+  возм, зва́ти → зов, и҆ма́ти → емл, вергнꙋти → верж in the -щи class of its
+  doublet возврещи́), and the -нꙋти/-щи doublets whose stems 1/2/3/7 are
+  those of the other infinitive. Not moved into the classes.
+

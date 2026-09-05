@@ -71,7 +71,7 @@ fn lemma_cell(pos: Pos, lemma: &str) -> Option<Cell> {
 /// class that does not produce the lemma from the citation cell is tried
 /// only when no class does.
 #[allow(clippy::too_many_arguments)]
-fn best_fit(id: &str, lemma: &str, pos: Pos, classes: &[&Class], gender: Option<Gender>, stems: Vec<(String, String)>, attested: &Attested, src: Vec<String>, note: String) -> Option<Fit> {
+fn best_fit(id: &str, lemma: &str, pos: Pos, classes: &[&Class], seeded: Option<&str>, gender: Option<Gender>, stems: Vec<(String, String)>, attested: &Attested, src: Vec<String>, note: String) -> Option<Fit> {
     let letters = Form::from_print(lemma).letters;
     let citation = lemma_cell(pos, &letters);
     let produces_lemma = |class: &Class| -> bool {
@@ -81,14 +81,19 @@ fn best_fit(id: &str, lemma: &str, pos: Pos, classes: &[&Class], gender: Option<
     };
     let fitting: Vec<&Class> = classes.iter().copied().filter(|c| produces_lemma(c)).collect();
     let mut classes: Vec<&Class> = if fitting.is_empty() { classes.to_vec() } else { fitting };
+    // a residue class (`V:res:`) exists for the lexemes that seeded it,
+    // whose present stems sit on their own lines; a lexeme the seeding
+    // did not place is fitted to the derived classes only
+    if seeded.is_none() && classes.iter().any(|c| !c.name.starts_with("V:res:")) {
+        classes.retain(|c| !c.name.starts_with("V:res:"));
+    }
     // a tie goes to the class whose exemplar ends like the lemma (the
     // class names encode the ending); a class seeded from entries with
     // no present forms (`?` in its name) comes last
     let shared_suffix = |a: &str, b: &str| a.chars().rev().zip(b.chars().rev()).take_while(|(x, y)| x == y).count();
-    let first = classes.first().map(|c| c.name.clone());
     classes.sort_by_key(|c| {
-        let junk = c.name.contains('?');
-        let seeded = Some(&c.name) == first.as_ref();
+        let junk = c.name.contains('?') || c.name.starts_with("V:res:");
+        let seeded = seeded == Some(c.name.as_str());
         (junk, !seeded, std::cmp::Reverse(shared_suffix(&c.exemplar, &letters)))
     });
     let mut best: Option<Fit> = None;
@@ -210,7 +215,7 @@ pub fn import_kaikki(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         let mut ordered: Vec<&Class> = classes.get(&r.class).into_iter().collect();
         ordered.extend(all.iter().copied().filter(|c| c.name != r.class));
         let src = vec![format!("K:{}", if r.class == "-" { "-".to_string() } else { r.class.clone() })];
-        let Some(f) = best_fit(&id_for(&mut ids, &r.letters, pos), &lemma, pos, &ordered, gender, stems, &attested, src, note) else { continue };
+        let Some(f) = best_fit(&id_for(&mut ids, &r.letters, pos), &lemma, pos, &ordered, Some(&r.class), gender, stems, &attested, src, note) else { continue };
         record_fit(&mut o, f);
     }
     o.lexemes.sort_by(|a, b| a.id.cmp(&b.id));
@@ -237,7 +242,29 @@ fn present_stem(letters: &str, attested: &Attested) -> Option<String> {
     }
     let stem2: String = prefix.into_iter().collect();
     let stem1 = letters.strip_suffix("ти").or_else(|| letters.strip_suffix("щи")).unwrap_or(letters);
-    (stem2.chars().count() >= 2 && stem2 != stem1).then_some(stem2)
+    // never a whole form (the census's `artefact`): the stem must be
+    // shorter than every present form it was read from
+    let n = stem2.chars().count();
+    (n >= 2 && stem2 != stem1 && present.iter().all(|f| f.chars().count() > n)).then_some(stem2)
+}
+
+/// Is the cell one the present stem builds: the present, the imperative,
+/// the present participles?
+fn is_present_cell(cell: &Cell) -> bool {
+    use church_slavonic::cell::VerbCell;
+    matches!(cell, Cell::Verb(VerbCell::Finite { tense: church_slavonic::cell::FiniteTense::Present, .. } | VerbCell::Imperative { .. } | VerbCell::Participle { tense: church_slavonic::cell::PartTense::Present, .. }))
+}
+
+/// The attested present cells a fit does not reproduce.
+fn present_misses(f: &Fit, attested: &Attested) -> usize {
+    attested
+        .iter()
+        .filter(|(c, forms)| is_present_cell(c) && !forms.is_empty())
+        .filter(|(c, forms)| {
+            let want = canonical_in(&forms[0], OCS);
+            !f.lexeme.forms(**c).iter().any(|x| translit_equal(&x.print(OCS), &want))
+        })
+        .count()
 }
 
 /// A pronoun's line-level stems: the enclitic of a compound (иже,
@@ -329,12 +356,24 @@ pub fn import_ud(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             if pos == Pos::Pronoun {
                 pronoun_stems(&letters, &mut stems);
             }
+            let id = id_for(&mut ids, &letters, pos);
+            let Some(mut f) = best_fit(&id, &print, pos, &all, None, None, stems.clone(), &attested, vec!["U:".to_string()], String::new()) else { continue };
+            // a verb's present stem is the class's derivation; the stem
+            // read off the attested present is the fallback, kept only
+            // where no class derivation reproduces the attested present
             if pos == Pos::Verb
+                && present_misses(&f, &attested) > 0
                 && let Some(stem2) = present_stem(&letters, &attested)
             {
-                stems.push(("2".to_string(), stem2));
+                let mut with = stems.clone();
+                with.push(("2".to_string(), stem2));
+                if let Some(g) = best_fit(&id, &print, pos, &all, None, None, with, &attested, vec!["U:".to_string()], String::new())
+                    && present_misses(&g, &attested) < present_misses(&f, &attested)
+                {
+                    o.bump("verbs: present stem stored (no derivation fits)");
+                    f = g;
+                }
             }
-            let Some(mut f) = best_fit(&id_for(&mut ids, &letters, pos), &print, pos, &all, None, stems, &attested, vec!["U:".to_string()], String::new()) else { continue };
             // the citation cell must be the lemma, else the class is wrong
             if let Some(cell) = lemma_cell(pos, &letters)
                 && f.lexeme.inflect(cell).is_some_and(|x| comparison_key(&x.print(OCS)) != comparison_key(&print))

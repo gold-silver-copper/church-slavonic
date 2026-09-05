@@ -37,7 +37,7 @@ def letters(form):
     s = unicodedata.normalize("NFD", form.strip().lower())
     s = "".join(c for c in s if not unicodedata.combining(c))
     s = unicodedata.normalize("NFC", s)
-    s = s.replace("ꙑ", "ы").replace("оу", "ꙋ").replace("ѹ", "ꙋ").replace("ꙁ", "з").replace("ї", "и").replace("і", "и").replace("й", "и").replace("є", "е").replace("ѡ", "о")
+    s = s.replace("ꙑ", "ы").replace("оу", "ꙋ").replace("ѹ", "ꙋ").replace("ꙁ", "з").replace("ї", "и").replace("і", "и").replace("й", "и").replace("є", "е").replace("ѡ", "о").replace("шт", "щ")
     return s
 
 
@@ -210,6 +210,257 @@ def lcp(strings):
 PRESENT_CELLS = ("pres.", "impv.", "part.pres.")
 
 
+# ---------------------------------------------------------------------------
+# The verb classes by Leskien: the present stem is derived by the class
+# (V2.1 Part 1). The derivations below are the crate's (paradigm::derive)
+# in Python, so the seeding can tell which class reproduces an entry's
+# attested present.
+# ---------------------------------------------------------------------------
+
+IOT_PAIRS = {"ст": "щ", "ск": "щ", "сл": "шл", "зд": "жд"}
+IOT_ONE = {"б": "бл", "п": "пл", "в": "вл", "м": "мл", "ф": "фл", "д": "жд", "т": "щ", "з": "ж", "с": "ш", "к": "ч", "г": "ж", "х": "ш", "ц": "ч"}
+
+
+def iot(stem):
+    if stem[-1:] in "жшщч" or stem.endswith("жд"):
+        return stem
+    if len(stem) >= 2 and stem[-2:] in IOT_PAIRS:
+        return stem[:-2] + IOT_PAIRS[stem[-2:]]
+    if stem and stem[-1] in IOT_ONE:
+        return stem[:-1] + IOT_ONE[stem[-1]]
+    return stem
+
+
+def pal1(stem):
+    return stem[:-1] + PAL1[stem[-1]] if stem and stem[-1] in PAL1 else stem
+
+
+def pal2(stem):
+    if stem.endswith("ск"):
+        return stem[:-2] + "ст"
+    return stem[:-1] + PAL2[stem[-1]] if stem and stem[-1] in PAL2 else stem
+
+
+def ov(stem):
+    soft = False
+    for suffix in ("ова", "ева"):
+        if stem.endswith(suffix):
+            stem = stem[: -len(suffix)]
+            soft = suffix == "ева"
+            break
+    ju = (soft and stem[-1:] not in "жчшщц") or stem[-1:] in "аꙗиыъьоеѥѧѫюѣꙋ"
+    return stem + ("ю" if ju else "ꙋ")
+
+
+HUSHERS = "жшщчц"
+CONSONANTS = "бвгдзклмнпрстфхцчшщжѕ"
+
+HUSHER_PLAIN = {"ѭ": "ѫ", "ѥ": "е", "ѩ": "ѧ", "ꙗ": "а"}
+HUSHER_IOT = {v: k for k, v in HUSHER_PLAIN.items()}
+
+
+def is_husher(stem):
+    return stem[-1:] in "жчшщц" or stem.endswith("жд")
+
+
+def join(stem, ending):
+    """The crate's spelling rule at the stem boundary: an iotated vowel is
+    written plain after a husher (пиш + ѭ = пишѫ)."""
+    if is_husher(stem) and ending[:1] in HUSHER_PLAIN:
+        return stem + HUSHER_PLAIN[ending[0]] + ending[1:]
+    return stem + ending
+
+
+def fold_iot(form):
+    """The comparison key of an attested present: Kaikki writes ѥ/е and
+    ѭ/ѫ both ways after a vowel."""
+    return form.translate(str.maketrans("ѥѭѩ", "еѫѧ"))
+
+
+# The Leskien types a lemma of this shape may belong to, in the order of
+# trial; each is (name, base, stems as derivation strings, soft, present
+# shape). `soft` says the present endings are the iotated set (ѭ, ѥши):
+# a member whose derived stem ends in a husher writes them plain, and the
+# seeding reads the class ending back through the crate's rule. The
+# present shape is the (stem, ending) of the first and third person
+# singular the type predicts.
+def types_for(lemma):
+    L = lemma
+    out = []
+    je = "5=ext:ѭщ;6=ext:ѥм;9=ext:ѩ"
+    if L.endswith(("овати", "евати")):
+        out.append(("V:III:ov", L[:-2], "1=base;2=ov;5=ext:ѭщ:ov;6=ext:ѥм:ov;7=ext:въш;8=ext:н;9=ext:ѩ:ov;11=ext:въ;12=ext:н:ext:н", True, ("2", "ѭ"), ("2", "ѥтъ")))
+    if L.endswith("нѫти") and len(L) > 5:
+        out.append(("V:II", L[:-4], "1=base;5=ext:нѫщ;6=ext:ном;7=ext:нѫвъш;8=ext:новен;9=ext:ны;11=ext:нѫвъ;12=ext:н:ext:новен", False, ("1", "нѫ"), ("1", "нетъ")))
+    if L.endswith("ити") and len(L) > 4:
+        out.append(("V:IV:i", L[:-3], "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ивъш;8=ext:ен:iot;9=ext:ѧ;11=ext:ивъ;12=ext:н:ext:ен:iot", True, ("2", "ѭ"), ("1", "итъ")))
+    if L.endswith("ѣти") and len(L) > 4:
+        out.append(("V:IV:ě", L[:-3], "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ѣвъш;8=ext:ѣн;9=ext:ѧ;11=ext:ѣвъ;12=ext:н:ext:ѣн", True, ("2", "ѭ"), ("1", "итъ")))
+    if L.endswith("ати") and len(L) > 4:
+        if is_husher(L[:-3]):
+            out.append(("V:IV:a", L[:-3], "1=base;5=ext:ѧщ;6=ext:им;7=ext:авъш;8=ext:ан;9=ext:ѧ;11=ext:авъ;12=ext:н:ext:ан", False, ("1", "ѫ"), ("1", "итъ")))
+        out.append(("V:III:j", L[:-3], f"1=base;2=iot;5=ext:ѭщ:iot;6=ext:ѥм:iot;7=ext:авъш;8=ext:ан;9=ext:ѩ:iot;11=ext:авъ;12=ext:н:ext:ан", True, ("2", "ѭ"), ("2", "ѥтъ")))
+        out.append(("V:I:a", L[:-3], "1=base;5=ext:ѫщ;6=ext:ом;7=ext:авъш;8=ext:ан;9=ext:ы;11=ext:авъ;12=ext:н:ext:ан", False, ("1", "ѫ"), ("1", "етъ")))
+    if L.endswith("ꙗти") and len(L) > 4:
+        out.append(("V:III:ja", L[:-3], f"1=base;{je};7=ext:ꙗвъш;8=ext:ꙗн;11=ext:ꙗвъ;12=ext:н:ext:ꙗн", True, ("1", "ѭ"), ("1", "ѥтъ")))
+    if L.endswith("ѧти") and len(L) > 4:
+        for n in ("ьн", "ьм"):
+            out.append((f"V:I:{n}", L[:-2], f"1=base;2=ext:{n}:cut;5=ext:ѫщ:ext:{n}:cut;6=ext:ом:ext:{n}:cut;7=ext:въш;8=ext:т;9=ext:ы:ext:{n}:cut;11=ext:въ;12=ext:н:ext:т", False, ("2", "ѫ"), ("2", "етъ")))
+    if L.endswith(("ити", "ыти")) and len(L) > 3:
+        # the tense jer before j: пити → пьѭ, крыти → кръѭ
+        out.append(("V:III:jer", L[:-2], "1=base;2=jer;5=ext:ѭщ:jer;6=ext:ѥм:jer;7=ext:въш;8=ext:т;9=ext:ѩ:jer;11=ext:въ;12=ext:н:ext:т", True, ("2", "ѭ"), ("2", "ѥтъ")))
+    if L.endswith("ти") and len(L) > 3 and L[-3] in "аꙗѣыиꙋѫѧѥею":
+        out.append(("V:III:aje", L[:-2], f"1=base;{je};7=ext:въш;8=ext:н;11=ext:въ;12=ext:н:ext:н", True, ("1", "ѭ"), ("1", "ѥтъ")))
+    if L.endswith("щи") and len(L) > 3:
+        # the velar is hidden by the infinitive's -щи: stem 1 is the bare
+        # base (the infinitive), 2 the root with its velar (рекѫ), 3 its
+        # first palatalisation (речеши), 4 its second (рьци)
+        for k in ("к", "г"):
+            out.append((f"V:I:{k}", L[:-2], f"1=base;2=ext:{k};3=pal1:ext:{k};4=pal2:ext:{k};5=ext:ѫщ:ext:{k};6=ext:ом:ext:{k};7=ext:ъш:ext:{k};8=ext:ен:pal1:ext:{k};9=ext:ы:ext:{k};11=ext:ъ:ext:{k};12=ext:н:ext:ен:pal1:ext:{k}", False, ("2", "ѫ"), ("3", "етъ")))
+    if L.endswith("сти") and len(L) > 4:
+        # the dental is hidden by -сти: stem 2 restores it (грѧдѫ, плетѫ)
+        for d in ("т", "д", "з"):
+            out.append((f"V:I:{d}", L[:-3], f"1=base;2=ext:{d};5=ext:ѫщ:ext:{d};6=ext:ом:ext:{d};7=ext:ъш:ext:{d};8=ext:ен:ext:{d};9=ext:ы:ext:{d};11=ext:ъ:ext:{d};12=ext:н:ext:ен:ext:{d}", False, ("2", "ѫ"), ("2", "етъ")))
+    if L.endswith("ти") and len(L) > 3 and L[-3] in CONSONANTS:
+        out.append(("V:I:C", L[:-2], "1=base;5=ext:ѫщ;6=ext:ом;7=ext:ъш;8=ext:ен;9=ext:ы;11=ext:ъ;12=ext:н:ext:ен", False, ("1", "ѫ"), ("1", "етъ")))
+    return out
+
+
+def derive_py(spec, base):
+    """Apply a derivation chain (`ext:н:ext:ен:iot` = iot, then ext:ен,
+    then ext:н) to the base, the crate's order."""
+    parts = spec.split(":")
+    ops = []
+    i = 0
+    while i < len(parts):
+        if parts[i] == "ext":
+            ops.append(("ext", parts[i + 1]))
+            i += 2
+        else:
+            ops.append((parts[i], None))
+            i += 1
+    stem = base
+    for op, arg in reversed(ops):
+        if op == "base":
+            pass
+        elif op == "ext":
+            stem = join(stem, arg)
+        elif op == "iot":
+            stem = iot(stem)
+        elif op == "pal1":
+            stem = pal1(stem)
+        elif op == "pal2":
+            stem = pal2(stem)
+        elif op == "ov":
+            stem = ov(stem)
+        elif op == "cut":
+            stem = stem[:-1]
+        elif op == "jer":
+            stem = stem[:-1] + {"и": "ь", "ы": "ъ"}.get(stem[-1:], stem[-1:])
+    return stem
+
+
+def stems_from_spec(spec, base):
+    out = {}
+    for item in spec.split(";"):
+        k, v = item.split("=", 1)
+        out[k] = derive_py(v, base)
+    return out
+
+
+def verb_type(lemma, cells):
+    """The class whose derived present reproduces the attested first and
+    third person singular (either suffices when the other is missing);
+    the lemma's shape alone when no present is attested; the residue
+    (`V:res:<ending>`) with the stem read off the forms when none fits."""
+    p1 = [fold_iot(f) for f in cells.get("pres.1.sg", [])]
+    p3 = [fold_iot(f) for f in cells.get("pres.3.sg", [])]
+    candidates = types_for(lemma)
+    for name, base, spec, soft, (s1, e1), (s3, e3) in candidates:
+        st = stems_from_spec(spec, base)
+        ok1 = (not p1) or fold_iot(join(st.get(s1, ""), e1)) in p1
+        ok3 = (not p3) or fold_iot(join(st.get(s3, ""), e3)) in p3
+        if ok1 and ok3 and (p1 or p3):
+            return name, base, spec, soft, st, {}
+    if not p1 and not p3 and candidates:
+        name, base, spec, soft, _, _ = candidates[0]
+        return name, base, spec, soft, stems_from_spec(spec, base), {}
+    # the residue keeps the seeding's stem 2 on the lexeme line
+    strip = strip_of("v", lemma)
+    stem1, stem2 = verb_stems(lemma, strip, cells)
+    st = {"1": stem1, "2": stem2}
+    own = {"2": stem2} if stem2 != stem1 else {}
+    return f"V:res:{lemma[-3:]}", stem1, "1=base;2=base", False, st, own
+
+
+def verb_prefer(cell):
+    """The stems a verb form is read against, in order: the participle
+    stems for the participles, the present stem for the present."""
+    if cell.startswith("part.pres.act"):
+        return ("9", "5", "2", "1") if cell.endswith((".m.sg.nom", ".n.sg.nom")) else ("5", "2", "1")
+    if cell.startswith("part.pres.pass"):
+        return ("6", "2", "1")
+    if cell.startswith(("pres.", "impv.", "impf.")):
+        return ("2", "3", "4", "1")
+    if cell.startswith("part.past.act"):
+        return ("11", "7", "1")
+    if cell.startswith("part.past.pass"):
+        return ("12", "8", "1")
+    return ("2", "3", "1", "7", "8")
+
+
+def type_stem(name, cell):
+    """The stem a cell of a Leskien type is built on — the grammar's
+    statement, so every member of a class reads its ending against the
+    same stem whether or not the derivation changed its letters."""
+    t = name.split(":")
+    kind = t[1] if len(t) > 1 else ""
+    sub = t[2] if len(t) > 2 else ""
+    if cell.startswith("part.pres.act"):
+        return "9" if cell.endswith((".m.sg.nom", ".n.sg.nom")) else "5"
+    if cell.startswith("part.pres.pass"):
+        return "6"
+    if cell.startswith("part.past.act"):
+        return "11" if cell.endswith((".m.sg.nom", ".n.sg.nom")) else "7"
+    if cell.startswith("part.past.pass"):
+        return "8"
+    # the stem the whole present is built on, by type
+    velar = sub in ("к", "г")
+    present = {
+        ("IV", "i"): "1", ("IV", "ě"): "1", ("IV", "a"): "1",
+        ("III", "j"): "2", ("III", "ov"): "2", ("III", "jer"): "2", ("III", "aje"): "1", ("III", "ja"): "1",
+        ("I", "к"): "3", ("I", "г"): "3", ("I", "ьн"): "2", ("I", "ьм"): "2",
+        ("I", "т"): "2", ("I", "д"): "2", ("I", "з"): "2",
+    }.get((kind, sub), "1")
+    if cell in ("pres.1.sg", "pres.3.pl"):
+        if kind == "IV" and sub != "a" and cell == "pres.1.sg":
+            return "2"
+        return "2" if velar else present
+    if cell.startswith("pres."):
+        return present
+    if cell.startswith("impv."):
+        return "4" if velar else present
+    if cell.startswith("impf."):
+        return "2" if (kind == "IV" and sub != "a") or sub in ("jer", "ьн", "ьм", "т", "д", "з") else "3" if velar else "1"
+    return "1"
+
+
+def verb_spec(form, stems, cell, soft, name):
+    """`spec_of` for a verb: the ending read against the stem the type
+    declares for the cell, the other stems when the form disagrees; a soft
+    class's ending read after a husher stem is unfolded to the iotated
+    spelling the class names (прошѫ → `2-ѭ`, the crate writes ѫ back)."""
+    declared = type_stem(name, cell)
+    prefer = (declared,) + tuple(n for n in verb_prefer(cell) if n != declared)
+    spec = spec_of(form, stems, prefer)
+    if spec is None or not soft:
+        return spec
+    n, ending = spec.split("-", 1)
+    if n in ("1", "2", "3") and is_husher(stems[n]) and ending[:1] in HUSHER_IOT:
+        return f"{n}-{HUSHER_IOT[ending[0]]}{ending[1:]}"
+    return spec
+
+
 def verb_stems(lemma, strip, cells):
     """Stem 1 the infinitive's; stem 2 the present's (the longest prefix
     shared by the present, imperative and present-participle forms),
@@ -225,6 +476,7 @@ def verb_stems(lemma, strip, cells):
 def seed(pos, entries, cells_of, name_of, out_file, header_cells, comment):
     """Group entries into classes and write the table and the cells."""
     groups = defaultdict(list)
+    group_specs = {}
     records = []
     for e in entries:
         cells = cells_of(e)
@@ -235,22 +487,33 @@ def seed(pos, entries, cells_of, name_of, out_file, header_cells, comment):
         stem = lemma[: len(lemma) - strip] if strip else lemma
         stems = stems_of(stem)
         own = {}
+        spec = None
+        soft = False
         if pos == "v":
-            stem1, stem2 = verb_stems(lemma, strip, cells)
-            stems = {"1": stem1, "2": stem2}
-            if stem2 != stem1:
-                own["2"] = stem2
+            group, base, spec, soft, stems, own = verb_type(lemma, cells)
+            strip = len(lemma) - len(base)
+            group_specs[group] = spec
         endings = {}
         for k, v in cells.items():
-            prefer = ("2", "1") if (pos == "v" and k.startswith(PRESENT_CELLS)) else ("1", "5", "3", "2")
-            endings[k] = [spec_of(f, stems, prefer) for f in v]
-        group = name_of(e, lemma, strip)
+            if pos == "v":
+                endings[k] = [verb_spec(f, stems, k, soft, group) for f in v]
+            else:
+                endings[k] = [spec_of(f, stems, ("1", "5", "3")) for f in v]
+        if pos != "v":
+            group = name_of(e, lemma, strip)
         groups[group].append((lemma, strip, endings))
         records.append({"pos": pos, "lemma": e["word"], "letters": lemma, "class": group, "gender": gender_tag(e), "stems": own, "cells": cells})
     rows = []
-    for group, members in sorted(groups.items()):
+    # verb classes in order of size (the fit's tie-break reads the table
+    # in order: the commonest class of a lemma's shape wins a tie), the
+    # exemplar the member of the class's commonest ending
+    ordered = sorted(groups.items(), key=(lambda kv: (-len(kv[1]), kv[0])) if pos == "v" else (lambda kv: kv[0]))
+    for group, members in ordered:
         strip = Counter(s for _, s, _ in members).most_common(1)[0][0]
         exemplar = members[0][0]
+        if pos == "v":
+            ends = Counter(m[0][-3:] for m in members)
+            exemplar = next(m[0] for m in members if m[0][-3:] == ends.most_common(1)[0][0])
         cells = {}
         for cell in header_cells:
             votes = Counter()
@@ -266,7 +529,7 @@ def seed(pos, entries, cells_of, name_of, out_file, header_cells, comment):
             ranked = [e for e, n in votes.most_common() if n >= 0.25 * total or e == votes.most_common(1)[0][0]]
             cells[cell] = "|".join(ranked[:3])
         if pos == "v":
-            stems = "1=base;2=base"
+            stems = group_specs.get(group, "1=base;2=base")
         else:
             stems = "1=base;3=pal1;5=pal2" if any("5-" in v or "3-" in v for v in cells.values()) else "1=base"
         rows.append((group, exemplar, strip, stems, cells, len(members)))
@@ -303,19 +566,19 @@ def seed(pos, entries, cells_of, name_of, out_file, header_cells, comment):
         fixed = []
         for group, exemplar, strip, stems, cells, n in rows:
             base = exemplar[: len(exemplar) - strip] if strip else exemplar
+            named = {item.split("=", 1)[0] for item in stems.split(";")}
             vowel_end = base[-1:] in "аꙗѣиыꙋѫѧѥе"
-            if vowel_end:
-                stems += ";7=ext:вш;11=ext:в"
-            else:
-                stems += ";7=ext:ъш;11=ext:ъ"
-            if base[-1:] in "аꙗѣ":
-                stems += ";8=ext:н"
-            elif base[-1:] == "и":
-                stems += ";8=ext:ен"
-            elif vowel_end:
-                stems += ";8=ext:т"
-            else:
-                stems += ";8=ext:ен"
+            if "7" not in named:
+                stems += ";7=ext:вш;11=ext:в" if vowel_end else ";7=ext:ъш;11=ext:ъ"
+            if "8" not in named:
+                if base[-1:] in "аꙗѣ":
+                    stems += ";8=ext:н"
+                elif base[-1:] == "и":
+                    stems += ";8=ext:ен"
+                elif vowel_end:
+                    stems += ";8=ext:т"
+                else:
+                    stems += ";8=ext:ен"
             cells.setdefault("part.past.act.short", "7~A:-:ь")
             cells.setdefault("part.past.act.long", "7~A:-:ь")
             cells.setdefault("part.past.act.short.m.sg.nom", "11-ъ")

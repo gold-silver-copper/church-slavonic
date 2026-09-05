@@ -2,13 +2,13 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 азъ.pron	азъ	pron	-	-	PPja	-	1=мен;2=мън;3=м	-	1.sg.dat=мьнѣ|мнѣ;1.sg.loc=мьнѣ|мнѣ;1.sg.ins=мноѭ|мьноѭ;1.sg.gen=мне	U:;H:seeded from the UD PROIEL train forms	the first person
 богъ.pron	богъ	pron	-	-	PA1	-	-	-	-	U:	tie PA1k,PN,PNk
 ва.pron	ва	pron	-	-	PA1a	a	-	2.du.nom=ва;2.du.gen=ваю;2.du.dat=вама;2.du.acc=ва;2.du.ins=вама;2.du.loc=ваѭ	2.du.nom=вꙑ;2.du.acc=вꙑ	U:	-
-вашь.pron	вашь	pron	-	-	PA1j	-	-	-	-	U:	tie PA1s,PA1a
+вашь.pron	вашь	pron	-	-	PA1s	-	-	-	-	U:	tie PA1j,PA1a
 вы.pron	вы	pron	-	-	PPvy	-	1=в	-	2.pl.nom=въи;2.pl.acc=въи	U:;H:seeded from the UD PROIEL train forms	-
-вьсь.pron	вьсь	pron	-	-	PA1j	a	-	m.pl.nom=вьси;m.pl.gen=вьсѣхъ;m.pl.dat=вьсѣмъ;m.pl.acc=вьсѧ;m.pl.ins=вьсѣми;m.pl.loc=вьсѣхъ;f.sg.nom=вьсѣ;f.sg.acc=въсѫ;f.pl.nom=вьсꙙ;f.pl.gen=вьсѣхъ;f.pl.acc=въсѩ;n.sg.ins=вьсѣмъ;n.sg.loc=всемъ;n.pl.nom=вьсѣ;n.pl.gen=вьсѣхъ;n.pl.dat=всѣмъ;n.pl.acc=вьсѣ;n.pl.ins=вьсѣми;n.pl.loc=вьсѣхъ	m.sg.nom=весь;m.pl.nom=въси|вси;m.pl.gen=всѣхъ;m.pl.dat=вьсѣмь|всѣмъ|въсѣмъ|вьсѣмо;m.pl.acc=вьсꙙ|въсѧ;m.pl.ins=всѣми|въсѣми;m.pl.loc=вьсемь;f.pl.nom=въсѩ;f.pl.acc=вьси|вьсѧ;n.sg.gen=въсего;n.sg.acc=вьсѣ;n.sg.ins=вьсѣмь;n.sg.loc=вьсемъ;n.pl.nom=вьса|всѣ;n.pl.dat=вьсѣмь;n.pl.acc=вьса|въсѣ|всѣ|въса;n.pl.ins=вьсми	U:	tie PA1j*,PA1s,PA1a
+вьсь.pron	вьсь	pron	-	-	PA1j*	a	-	m.pl.nom=вьси;m.pl.gen=вьсѣхъ;m.pl.dat=вьсѣмъ;m.pl.acc=вьсѧ;m.pl.ins=вьсѣми;m.pl.loc=вьсѣхъ;f.sg.nom=вьсѣ;f.sg.acc=въсѫ;f.pl.nom=вьсꙙ;f.pl.gen=вьсѣхъ;f.pl.acc=въсѩ;n.sg.ins=вьсѣмъ;n.sg.loc=всемъ;n.pl.nom=вьсѣ;n.pl.gen=вьсѣхъ;n.pl.dat=всѣмъ;n.pl.acc=вьсѣ;n.pl.ins=вьсѣми;n.pl.loc=вьсѣхъ	m.sg.nom=весь;m.pl.nom=въси|вси;m.pl.gen=всѣхъ;m.pl.dat=вьсѣмь|всѣмъ|въсѣмъ|вьсѣмо;m.pl.acc=вьсꙙ|въсѧ;m.pl.ins=всѣми|въсѣми;m.pl.loc=вьсемь;f.pl.nom=въсѩ;f.pl.acc=вьси|вьсѧ;n.sg.gen=въсего;n.sg.acc=вьсѣ;n.sg.ins=вьсѣмь;n.sg.loc=вьсемъ;n.pl.nom=вьса|всѣ;n.pl.dat=вьсѣмь;n.pl.acc=вьса|въсѣ|всѣ|въса;n.pl.ins=вьсми	U:	tie PA1j,PA1s,PA1a
 вьсѣкъ.pron	вьсѣкъ	pron	-	-	PNk	-	-	-	m.sg.nom=вьсѣкꙑи;m.sg.gen=вьсѣкаѥго;m.sg.dat=вьсѣкоуѥмоу;m.sg.acc=вьсѣкꙑи;m.sg.ins=вьсѣкꙑимь;m.sg.loc=вьсѣцѣѥмь;m.sg.voc=вьсѣкꙑи;m.du.nom=вьсѣкаꙗ;m.du.gen=вьсѣкоую;m.du.dat=вьсѣкꙑима;m.du.acc=вьсѣкаꙗ;m.du.ins=вьсѣкꙑима;m.du.loc=вьсѣкоую;m.du.voc=вьсѣкаꙗ;m.pl.nom=вьсѣции;m.pl.gen=вьсѣкꙑихъ;m.pl.dat=вьсѣкꙑимъ;m.pl.acc=вьсѣкꙑѩ;m.pl.ins=вьсѣкꙑими;m.pl.loc=вьсѣкꙑихъ;m.pl.voc=вьсѣции;f.sg.nom=вьсѣкаꙗ;f.sg.gen=вьсѣкꙑѩ;f.sg.dat=вьсѣцѣи;f.sg.acc=вьсѣкѫѭ;f.sg.ins=вьсѣкѫѭ;f.sg.loc=вьсѣцѣи;f.sg.voc=вьсѣкаꙗ;f.du.nom=вьсѣцѣи;f.du.gen=вьсѣкоую;f.du.dat=вьсѣкꙑима;f.du.acc=вьсѣцѣи;f.du.ins=вьсѣкꙑима;f.du.loc=вьсѣкоую;f.du.voc=вьсѣцѣи;f.pl.nom=вьсѣкꙑѩ;f.pl.gen=вьсѣкꙑихъ;f.pl.dat=вьсѣкꙑимъ;f.pl.acc=вьсѣкꙑѩ;f.pl.ins=вьсѣкꙑими;f.pl.loc=вьсѣкꙑихъ;f.pl.voc=вьсѣкꙑѩ;n.sg.nom=вьсѣкоѥ;n.sg.gen=вьсѣкаѥго;n.sg.dat=вьсѣкоуѥмоу;n.sg.acc=вьсѣкоѥ;n.sg.ins=вьсѣкꙑимь;n.sg.loc=вьсѣцѣѥмь;n.sg.voc=вьсѣкоѥ;n.du.nom=вьсѣцѣи;n.du.gen=вьсѣкоую;n.du.dat=вьсѣкꙑима;n.du.acc=вьсѣцѣи;n.du.ins=вьсѣкꙑима;n.du.loc=вьсѣкоую;n.du.voc=вьсѣцѣи;n.pl.nom=вьсѣкаꙗ;n.pl.gen=вьсѣкꙑихъ;n.pl.dat=вьсѣкꙑимъ;n.pl.acc=вьсѣкаꙗ;n.pl.ins=вьсѣкꙑими;n.pl.loc=вьсѣкꙑихъ;n.pl.voc=вьсѣкаꙗ	K:-	-
 вѣ.pron	вѣ	pron	-	-	PA1a	a	-	1.du.nom=вѣ;1.du.gen=наю;1.du.dat=нама;1.du.acc=на;1.du.ins=нама;1.du.loc=наю	-	U:	-
 го.pron	го	pron	-	-	PA1a	-	-	-	-	U:	-
-етеръ.pron	етеръ	pron	-	-	PA1	-	-	-	m.pl.nom=етерии	U:	tie PN,PA1k,PNk
+етеръ.pron	етеръ	pron	-	-	PN	-	-	-	m.pl.nom=етерии	U:	tie PA1,PA1k,PNk
 жде.pron	жде	pron	-	-	PA1a	a	-	m.sg.gen=жде;m.pl.nom=жде;f.sg.nom=жде;f.sg.gen=жде;f.sg.acc=жде;f.pl.gen=жде;f.pl.ins=жде;n.sg.gen=жде;n.pl.gen=жде;n.pl.acc=жде;n.pl.ins=жде	-	U:	-
 же.pron	же	pron	-	-	PA1a	a	-	m.sg.gen=же;f.sg.gen=же;n.sg.gen=же;n.sg.ins=же	-	U:	-
 и.pron	и	pron	-	-	PP3	-	-	-	3.m.sg.gen=его;3.m.sg.dat=емоу;3.n.sg.gen=его;3.n.sg.dat=емоу;3.f.sg.gen=еѩ;3.f.sg.dat=еи	U:;H:seeded from the UD PROIEL train forms	the third person (the treebank's lemma и)
@@ -30,7 +30,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 мъ.pron	мъ	pron	-	-	PA1	a	-	m.pl.dat=мъ;3.m.pl.dat=мъ	-	U:	-
 мы.pron	мы	pron	-	-	PPmy	-	1=м;2=н	1.du.nom=вѣ	1.pl.nom=нъи|мъи;1.pl.acc=нъи	U:;H:seeded from the UD PROIEL train forms	-
 насъ.pron	насъ	pron	-	-	PA1	a	-	1.pl.acc=насъ	-	U:	-
-нашь.pron	нашь	pron	-	-	PA1j	a	-	m.du.nom=наша;m.du.acc=наша;m.pl.nom=наши;m.pl.acc=нашѧ;f.sg.nom=наша;f.sg.acc=нашѫ;f.pl.nom=нашѧ;f.pl.acc=нашѧ;n.pl.nom=наша;n.pl.acc=нашѧ	f.pl.gen=нашеѧ;n.pl.acc=наша	K:-;U:	tie PA1s,PA1a
+нашь.pron	нашь	pron	-	-	PA1s	a	-	m.du.nom=наша;m.du.acc=наша;m.pl.nom=наши;m.pl.acc=нашѧ;f.sg.nom=наша;f.sg.acc=нашѫ;f.pl.nom=нашѧ;f.pl.acc=нашѧ;n.pl.nom=наша;n.pl.acc=нашѧ	f.pl.gen=нашеѧ	K:-;U:	tie PA1j,PA1a
 никоторꙑиже.pron	никоторꙑиже	pron	-	-	PA1a	a	encl=же	m.sg.nom=никотерꙑи	-	U:	-
 никъто.pron	никъто	pron	-	-	PA1a	a	1=никъ	m.sg.dat=никомоу	-	U:	-
 никътоже.pron	никътоже	pron	-	-	PA1a	a	encl=же;1=никъ	m.sg.nom=никтоже;m.sg.gen=никогоже;m.sg.dat=никомоуже;m.sg.loc=комьже;f.sg.nom=никтоже;f.sg.gen=никогоже;f.sg.dat=никомоуже	f.sg.nom=никътоже	U:	-
@@ -39,7 +39,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ниѥдинъ.pron	ниѥдинъ	pron	-	-	PA1	a	-	m.sg.nom=ни;n.sg.nom=ни	-	U:	-
 ниѥдинъже.pron	ниѥдинъже	pron	-	-	PA1	a	encl=же	m.sg.nom=ни;m.sg.gen=ни	-	U:	-
 нѣ.pron	нѣ	pron	-	-	PA1a	a	-	1.du.acc=на	-	U:	-
-нѣкакъ.pron	нѣкакъ	pron	-	-	PA1	-	-	-	-	U:	tie PNk,PA1k,PN
+нѣкакъ.pron	нѣкакъ	pron	-	-	PNk	-	-	-	-	U:	tie PA1k,PA1,PN
 нѣкоторꙑи.pron	нѣкоторꙑи	pron	-	-	PA1a	a	-	m.pl.nom=нѣкотории;m.pl.acc=нѣкоторꙑѧ	-	U:	-
 нѣкто.pron	нѣкто	pron	-	-	PA1a	-	1=нѣк	-	-	U:	-
 нѣкъто.pron	нѣкъто	pron	-	-	PA1a	a	1=нѣкъ	m.sg.nom=нѣкто;m.sg.gen=нѣкого	m.sg.gen=нѣкога	U:	-
@@ -77,7 +77,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѥдного.pron	ѥдного	pron	-	-	PA1a	a	-	m.sg.gen=ѥдного	-	U:	-
 ѥдноѧ.pron	ѥдноѧ	pron	-	-	PA1a	a	-	f.sg.gen=ѥдноѧ	-	U:	-
 ѥднѣмъ.pron	ѥднѣмъ	pron	-	-	PA1	a	-	n.sg.ins=ѥднѣмъ	-	U:	-
-ѥликъ.pron	ѥликъ	pron	-	-	PA1	-	-	n.sg.nom=елико;n.sg.acc=елико	-	U:	tie PA1k,PNk,PN
-ꙗкъ.pron	ꙗкъ	pron	-	-	PA1	a	-	m.sg.nom=якъ;m.sg.ins=ѣцѣмъ;f.pl.gen=ѣцѣхъ;n.sg.ins=ѣцѣмъ	-	U:	tie PA1k,PNk,PN
+ѥликъ.pron	ѥликъ	pron	-	-	PA1k	-	-	n.sg.nom=елико;n.sg.acc=елико	-	U:	tie PNk,PA1,PN
+ꙗкъ.pron	ꙗкъ	pron	-	-	PA1k	a	-	m.sg.nom=якъ;m.sg.ins=ѣцѣмъ;f.pl.gen=ѣцѣхъ;n.sg.ins=ѣцѣмъ	-	U:	tie PNk,PA1,PN
 ꙗкъже.pron	ꙗкъже	pron	-	-	PA1	a	encl=же	m.sg.gen=якогоже;f.sg.nom=ѣкаже;f.pl.nom=ѣкъиже	-	U:	-
 ꙙ.pron	ꙙ	pron	-	-	PA1a	a	-	1.sg.acc=ꙙ	-	U:	-

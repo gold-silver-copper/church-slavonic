@@ -45,6 +45,9 @@ pub enum Derivation {
     Insert(Box<Derivation>),
     /// Base minus its last letter (`знамені` -> `знамен` before `-ьми`).
     Cut,
+    /// The tense jer before j: a stem-final и becomes ь, ы becomes ъ
+    /// (пи → пь: пьѭ, пьѥши; ры → ръ: ръѭ).
+    Jer,
     Pal1(Box<Derivation>),
     Pal2(Box<Derivation>),
     /// Iotation of the final consonant (`люб` -> `любл`, `род` -> `рожд`).
@@ -65,6 +68,7 @@ impl Derivation {
             "base" => Derivation::Base,
             "drop" => Derivation::Drop,
             "cut" => Derivation::Cut,
+            "jer" => Derivation::Jer,
             "ov" => Derivation::Ov,
             "nasal" => Derivation::Nasal,
             "iota" => Derivation::Iota,
@@ -264,6 +268,13 @@ impl Class {
             match &alt.shape {
                 Shape::Ending { stem, ending, mark } => {
                     if let Some(stem) = stems.get(stem) {
+                        // OCS spells the iotated vowel plain after a husher
+                        // at the ending too (пиш + ѭ = пишѫ); the Synodal
+                        // rule is a derivation's (ext), never an ending's
+                        let ending = match self.recension {
+                            crate::grammar::Recension::OldChurchSlavonic => after_husher(stem, ending, self.recension),
+                            crate::grammar::Recension::Synodal => std::borrow::Cow::Borrowed(ending.as_str()),
+                        };
                         out.push(Letters {
                             letters: format!("{stem}{ending}"),
                             mark: *mark,
@@ -275,7 +286,7 @@ impl Class {
                 Shape::Ref(other) => self.collect(*other, subject, stems, out, depth + 1),
                 Shape::Delegate { stem, class } => {
                     let (Some(stem), Some(adj_cell)) = (stems.get(stem), cell.as_adjective()) else { continue };
-                    let Some(adjective) = table(Pos::Adjective).get(class) else { continue };
+                    let Some(adjective) = table_of(Pos::Adjective, self.recension).get(class) else { continue };
                     // the delegate's lemma: the stem plus the class's own
                     // ending letters, so its base is exactly the stem
                     let tail: String = {
@@ -315,6 +326,15 @@ fn derive(d: &Derivation, base: &str, subject: &Subject<'_>, recension: crate::g
             let n = base.chars().count().saturating_sub(1);
             base.chars().take(n).collect()
         }
+        Derivation::Jer => {
+            let mut chars: Vec<char> = base.chars().collect();
+            match chars.last_mut() {
+                Some(c @ 'и') => *c = 'ь',
+                Some(c @ 'ы') => *c = 'ъ',
+                _ => {}
+            }
+            chars.into_iter().collect()
+        }
         Derivation::Insert(inner) => subject
             .stems
             .iter()
@@ -326,20 +346,23 @@ fn derive(d: &Derivation, base: &str, subject: &Subject<'_>, recension: crate::g
         Derivation::Iot(inner) => iotate(&derive(inner, base, subject, recension)),
         Derivation::Ext(suffix, inner) => {
             let stem = derive(inner, base, subject, recension);
-            // a husher takes а, not ѧ/ѣ (ѻ҆троча̀ : ѻ҆троча́та; вели́чайшій)
-            let husher = matches!(stem.chars().last(), Some('ж' | 'ч' | 'ш' | 'щ'));
-            let suffix = match suffix.strip_prefix(['ѧ', 'ѣ']) {
-                Some(rest) if husher => format!("а{rest}"),
-                _ => suffix.clone(),
-            };
+            let suffix = after_husher(&stem, suffix, recension);
             format!("{stem}{suffix}")
         }
         Derivation::Ov => {
-            let s = base
-                .strip_suffix("ова")
-                .or_else(|| base.strip_suffix("ева"))
-                .unwrap_or(base);
-            format!("{s}ꙋ")
+            // -ова- → -ꙋ- (вѣрꙋю), -ева- → -ю- (воюю, оу҆треню́ю; -ꙋ- after
+            // a husher: ночꙋ́ю)
+            let (s, soft) = match base.strip_suffix("ова") {
+                Some(s) => (s, false),
+                None => match base.strip_suffix("ева") {
+                    Some(s) => (s, true),
+                    None => (base, false),
+                },
+            };
+            let last = s.chars().last();
+            let husher = matches!(last, Some('ж' | 'ч' | 'ш' | 'щ' | 'ц'));
+            let ju = (soft && !husher) || last.is_some_and(is_vowel_letter);
+            format!("{s}{}", if ju { 'ю' } else { 'ꙋ' })
         }
         Derivation::Nasal => {
             let n = base.chars().count().saturating_sub(1);
@@ -353,6 +376,41 @@ fn derive(d: &Derivation, base: &str, subject: &Subject<'_>, recension: crate::g
     }
 }
 
+/// The spelling of a front or iotated vowel after a husher, at the
+/// boundary of a stem and what follows it. Synodal: a husher takes а, not
+/// ѧ/ѣ (ѻ҆троча̀ : ѻ҆троча́та; вели́чайшій). OCS: after ж ч ш щ ц (and жд,
+/// the iotation of д) the iotated vowels are written plain — ѭ as ѫ, ѥ as
+/// е, ѩ as ѧ, ꙗ as а (пишѫ, пишетъ, рождѫ, хождаахъ; beside люблѭ,
+/// глаголѥтъ, гонꙗахъ), which is what lets one class name the ending
+/// once (`2-ѭ`) for every present stem the class derives.
+fn after_husher<'s>(stem: &str, suffix: &'s str, recension: crate::grammar::Recension) -> std::borrow::Cow<'s, str> {
+    use std::borrow::Cow;
+    match recension {
+        crate::grammar::Recension::Synodal => {
+            let husher = matches!(stem.chars().last(), Some('ж' | 'ч' | 'ш' | 'щ'));
+            match suffix.strip_prefix(['ѧ', 'ѣ']) {
+                Some(rest) if husher => Cow::Owned(format!("а{rest}")),
+                _ => Cow::Borrowed(suffix),
+            }
+        }
+        crate::grammar::Recension::OldChurchSlavonic => {
+            let husher = matches!(stem.chars().last(), Some('ж' | 'ч' | 'ш' | 'щ' | 'ц')) || stem.ends_with("жд");
+            if !husher {
+                return Cow::Borrowed(suffix);
+            }
+            let mut chars = suffix.chars();
+            let plain = match chars.next() {
+                Some('ѭ') => 'ѫ',
+                Some('ѥ') => 'е',
+                Some('ѩ') => 'ѧ',
+                Some('ꙗ') => 'а',
+                _ => return Cow::Borrowed(suffix),
+            };
+            Cow::Owned(format!("{plain}{}", chars.as_str()))
+        }
+    }
+}
+
 /// Iotation of a stem's final consonant(s): the labials take л, the
 /// dentals and velars their hushers (`люб` -> `любл`, `род` -> `рожд`,
 /// `свѣт` -> `свѣщ`, `пис` -> `пиш`, `маз` -> `маж`, `алк` -> `алч`,
@@ -362,6 +420,10 @@ pub fn iotate(stem: &str) -> String {
     let n = chars.len();
     if n == 0 {
         return String::new();
+    }
+    // iotation is vacuous on a stem already palatal (дъжд-, blaž-)
+    if matches!(chars[n - 1], 'ж' | 'ш' | 'щ' | 'ч') || stem.ends_with("жд") {
+        return stem.to_string();
     }
     let head: String = chars[..n - 1].iter().collect();
     let last = chars[n - 1];
