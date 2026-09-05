@@ -22,11 +22,11 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 къжьдо.pron	къжьдо	pron	-	-	PA1	a	encl=жьдо	m.sg.nom=къждо;m.sg.gen=когожъдо;m.sg.dat=комоуждо;f.sg.dat=комоужьдо;n.sg.nom=кожъдо;n.sg.gen=когожъдо	m.sg.nom=кожъдо|къжъдо|кьжъдо;m.sg.gen=когожде|когождо;m.sg.dat=комоужъдо	U:	-
 къто.pron	къто	pron	-	-	PA1a	a	1=къ	m.sg.nom=кто;m.sg.gen=кого;m.sg.dat=комоу;m.sg.ins=цѣмъ;m.sg.loc=комь;f.sg.nom=къто;f.sg.gen=кого;f.sg.dat=комоу;f.sg.loc=комь	m.sg.nom=кото|кьто;m.sg.gen=кога;m.sg.dat=кътомоу;f.sg.nom=кто	U:	-
 кътоже.pron	кътоже	pron	-	-	PA1a	a	encl=же;1=къ	m.sg.dat=комоуже	-	U:	-
-кꙑи.pron	кꙑи	pron	-	-	PA1a	a	-	m.sg.gen=коѥго;m.sg.dat=коѥмоу;m.sg.ins=кꙑимъ;m.pl.nom=ции;m.pl.acc=кꙑѧ;f.sg.nom=каѣ;f.sg.gen=коѥѧ;f.sg.dat=коѥи;f.sg.acc=кѫѭ;f.sg.ins=коеѭ;f.sg.loc=кои;f.pl.nom=кꙑѧ;f.pl.acc=кꙑѧ;n.sg.nom=коѥ;n.sg.gen=коѥго;n.sg.dat=коѥмоу;n.sg.acc=коѥ;n.sg.ins=кꙑимъ;n.pl.nom=каꙗ;n.pl.acc=каꙗ	m.sg.nom=кꙑ;m.sg.gen=коего;m.sg.dat=к;m.sg.acc=кꙑ;m.sg.ins=кꙑмъ;m.pl.gen=кꙑхъ;f.sg.nom=каꙗ|каа|кая;f.sg.ins=коѭ|коѥѭ;f.sg.loc=коеи;f.pl.acc=кꙑѩ;n.sg.nom=кое;n.sg.gen=коѥга;n.sg.acc=кое;n.sg.ins=кꙑим	U:	-
+кꙑи.pron	кꙑи	pron	-	-	PA1a	a	-	m.sg.gen=коѥго;m.sg.dat=коѥмоу;m.sg.ins=кꙑимъ;m.pl.nom=ции;m.pl.acc=кꙑѧ;f.sg.nom=каѣ;f.sg.gen=коѥѧ;f.sg.dat=коѥи;f.sg.acc=кѫѭ;f.sg.ins=коеѭ;f.sg.loc=кои;f.pl.nom=кꙑѧ;f.pl.acc=кꙑѧ;n.sg.nom=коѥ;n.sg.gen=коѥго;n.sg.dat=коѥмоу;n.sg.acc=коѥ;n.sg.ins=кꙑимъ;n.pl.nom=каꙗ;n.pl.acc=каꙗ	m.sg.nom=кꙑ;m.sg.gen=коего;m.sg.dat=к;m.sg.acc=кꙑ;m.sg.ins=кꙑмъ;m.pl.gen=кꙑхъ;f.sg.nom=каꙗ|каа|кая;f.sg.ins=коѭ|коѥѭ;f.sg.loc=коеи;n.sg.nom=кое;n.sg.gen=коѥга;n.sg.acc=кое;n.sg.ins=кꙑим	U:	-
 кꙑиже.pron	кꙑиже	pron	-	-	PA1a	a	encl=же	m.pl.acc=къиже;n.sg.acc=коѥже	-	U:	-
 кꙑижьдо.pron	кꙑижьдо	pron	-	-	PA1a	a	encl=жьдо	m.sg.gen=когождо;m.sg.dat=комоуждо;n.sg.nom=коѥждо;n.sg.ins=коѥмьждо	m.sg.gen=коѥгождо|коегожъде;n.sg.nom=коеждо	U:	-
 ми.pron	ми	pron	-	-	PA1a	a	-	3.m.pl.ins=ми	-	U:	-
-мои.pron	мои	pron	-	-	PA1a	-	-	m.sg.gen=моѥго;m.sg.dat=моѥмоу;m.sg.loc=моѥмь;m.du.nom=моꙗ;m.du.gen=моѥю;m.du.acc=моꙗ;m.du.loc=моѥю;m.pl.nom=мои;m.pl.acc=моѩ;f.sg.nom=моꙗ;f.sg.gen=моѥѩ;f.sg.dat=моѥи;f.sg.acc=моѭ;f.sg.ins=моѥѭ;f.sg.loc=моѥи;f.du.gen=моѥю;f.du.loc=моѥю;f.pl.nom=моѩ;f.pl.acc=моѩ;n.sg.nom=моѥ;n.sg.gen=моѥго;n.sg.dat=моѥмоу;n.sg.acc=моѥ;n.sg.loc=моѥмь;n.du.gen=моѥю;n.du.loc=моѥю;n.pl.nom=моꙗ;n.pl.acc=моꙗ	m.sg.gen=моего;f.sg.nom=моѣ;n.sg.nom=мое;n.sg.gen=моего;n.sg.acc=мое;n.pl.nom=моѣ	K:-;U:	-
+мои.pron	мои	pron	-	-	PA1a	-	-	m.sg.gen=моѥго;m.sg.dat=моѥмоу;m.sg.loc=моѥмь;m.du.nom=моꙗ;m.du.gen=моѥю;m.du.acc=моꙗ;m.du.loc=моѥю;m.pl.nom=мои;m.pl.acc=моѩ;f.sg.nom=моꙗ;f.sg.gen=моѥѩ;f.sg.dat=моѥи;f.sg.acc=моѭ;f.sg.ins=моѥѭ;f.sg.loc=моѥи;f.du.gen=моѥю;f.du.loc=моѥю;f.pl.nom=моѩ;f.pl.acc=моѩ;n.sg.nom=моѥ;n.sg.gen=моѥго;n.sg.dat=моѥмоу;n.sg.acc=моѥ;n.sg.loc=моѥмь;n.du.gen=моѥю;n.du.loc=моѥю;n.pl.nom=моꙗ;n.pl.acc=моꙗ	f.sg.nom=моѣ;n.pl.nom=моѣ	K:-;U:	-
 мъ.pron	мъ	pron	-	-	PA1	a	-	m.pl.dat=мъ;3.m.pl.dat=мъ	-	U:	-
 мы.pron	мы	pron	-	-	PPmy	-	1=м;2=н	1.du.nom=вѣ	1.pl.nom=нъи|мъи;1.pl.acc=нъи	U:;H:seeded from the UD PROIEL train forms	-
 насъ.pron	насъ	pron	-	-	PA1	a	-	1.pl.acc=насъ	-	U:	-
@@ -49,19 +49,19 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 онъ.pron	онъ	pron	-	-	PA1	-	-	-	m.sg.nom=онь	K:-;U:	tie PA1k
 оѥмоу.pron	оѥмоу	pron	-	-	PA1a	a	-	m.sg.dat=оѥмоу	-	U:	-
 самъ.pron	самъ	pron	-	-	PA1	-	-	-	m.sg.nom=самь	U:	tie PA1k
-свои.pron	свои	pron	-	-	PA1a	-	-	m.sg.gen=своѥго;m.sg.dat=своѥмоу;m.sg.loc=своѥмь;m.du.nom=своꙗ;m.du.gen=своѥю;m.du.acc=своꙗ;m.du.loc=своѥю;m.pl.nom=свои;m.pl.acc=своѩ;f.sg.nom=своꙗ;f.sg.gen=своѥѩ;f.sg.dat=своѥи;f.sg.acc=своѭ;f.sg.ins=своѥѭ;f.sg.loc=своѥи;f.du.gen=своѥю;f.du.loc=своѥю;f.pl.nom=своѩ;f.pl.acc=своѩ;n.sg.nom=своѥ;n.sg.gen=своѥго;n.sg.dat=своѥмоу;n.sg.acc=своѥ;n.sg.loc=своѥмь;n.du.gen=своѥю;n.du.loc=своѥю;n.pl.nom=своꙗ;n.pl.acc=своꙗ	gen=своихъ|своѥго;dat=своѥмоу;acc=свои;loc=своихъ|своѥмь;m.sg.loc=своемь;m.pl.acc=своѧ|свои;m.pl.ins=своимъ;n.sg.acc=свое;n.sg.ins=своимъ;n.sg.loc=своемь;n.pl.acc=своѣ	K:-;U:	-
+свои.pron	свои	pron	-	-	PA1a	-	-	m.sg.gen=своѥго;m.sg.dat=своѥмоу;m.sg.loc=своѥмь;m.du.nom=своꙗ;m.du.gen=своѥю;m.du.acc=своꙗ;m.du.loc=своѥю;m.pl.nom=свои;m.pl.acc=своѩ;f.sg.nom=своꙗ;f.sg.gen=своѥѩ;f.sg.dat=своѥи;f.sg.acc=своѭ;f.sg.ins=своѥѭ;f.sg.loc=своѥи;f.du.gen=своѥю;f.du.loc=своѥю;f.pl.nom=своѩ;f.pl.acc=своѩ;n.sg.nom=своѥ;n.sg.gen=своѥго;n.sg.dat=своѥмоу;n.sg.acc=своѥ;n.sg.loc=своѥмь;n.du.gen=своѥю;n.du.loc=своѥю;n.pl.nom=своꙗ;n.pl.acc=своꙗ	gen=своихъ|своѥго;dat=своѥмоу;acc=свои;loc=своихъ|своѥмь;m.pl.acc=своѧ|свои;m.pl.ins=своимъ;n.sg.ins=своимъ;n.pl.acc=своѣ	K:-;U:	-
 себе.pron	себе	pron	-	-	PPseb	-	1=себ;2=соб;3=с	-	-	U:;H:seeded from the UD PROIEL train forms	the reflexive
 сего.pron	сего	pron	-	-	PA1a	a	-	m.sg.gen=сего	-	U:	-
 сеи.pron	сеи	pron	-	-	PA1a	a	-	f.sg.loc=сеи	-	U:	-
 сиць.pron	сиць	pron	-	-	PA1j	a	-	m.sg.nom=сицъ;f.sg.nom=сица;f.sg.acc=сицѫ;f.pl.nom=сицꙙ;n.pl.ins=сицѣми;n.pl.loc=сицѣхъ	-	U:	tie PA1s,PA1a
-сь.pron	сь	pron	-	-	PA1j	-	-	m.pl.acc=сиꙗ	m.sg.nom=сии|съ|си;m.du.nom=сия;m.pl.acc=сиѩ|сьѩ;f.sg.gen=сеѧ;f.sg.acc=сьѭ;f.pl.nom=сиѧ;n.sg.nom=си;n.sg.gen=сега;n.sg.ins=симъ;n.sg.loc=семъ;n.du.gen=сеѭ;n.pl.dat=сим;n.pl.acc=сии	K:-;U:	tie PA1j*,PA1s,PA1a
+сь.pron	сь	pron	-	-	PA1j	-	-	m.pl.acc=сиꙗ	m.sg.nom=сии|съ|си;m.du.nom=сия;m.pl.acc=сьѩ;f.sg.gen=сеѧ;f.sg.acc=сьѭ;f.pl.nom=сиѧ;n.sg.nom=си;n.sg.gen=сега;n.sg.ins=симъ;n.sg.loc=семъ;n.du.gen=сеѭ;n.pl.dat=сим;n.pl.acc=сии	K:-;U:	tie PA1j*,PA1s,PA1a
 сѣ.pron	сѣ	pron	-	-	PA1a	a	-	n.pl.acc=сѣ	-	U:	-
 та.pron	та	pron	-	-	PA1a	a	-	f.sg.dat=тѣмъ	-	U:	-
 тако.pron	тако	pron	-	-	PA1a	a	-	n.sg.acc=тако	-	U:	-
 таковъ.pron	таковъ	pron	-	-	PA1	a	-	m.sg.nom=таковꙑи;n.pl.acc=таковаꙗ	-	U:	-
 такъ.pron	такъ	pron	-	-	PA1k	a	-	m.pl.acc=такꙑѧ	-	U:	-
 такъжде.pron	такъжде	pron	-	-	PA1	a	encl=жде	m.sg.nom=такъ;f.pl.acc=такъиже	-	U:	-
-твои.pron	твои	pron	-	-	PA1a	-	-	m.sg.gen=твоѥго;m.sg.dat=твоѥмоу;m.sg.loc=твоѥмь;m.du.nom=твоꙗ;m.du.gen=твоѥю;m.du.acc=твоꙗ;m.du.loc=твоѥю;m.pl.nom=твои;m.pl.acc=твоѩ;f.sg.nom=твоꙗ;f.sg.gen=твоѥѩ;f.sg.dat=твоѥи;f.sg.acc=твоѭ;f.sg.ins=твоѥѭ;f.sg.loc=твоѥи;f.du.gen=твоѥю;f.du.loc=твоѥю;f.pl.nom=твоѩ;f.pl.acc=твоѩ;n.sg.nom=твоѥ;n.sg.gen=твоѥго;n.sg.dat=твоѥмоу;n.sg.acc=твоѥ;n.sg.loc=твоѥмь;n.du.gen=твоѥю;n.du.loc=твоѥю;n.pl.nom=твоꙗ;n.pl.acc=твоꙗ	m.sg.dat=твоемоу;m.pl.dat=твоꙇмъ;f.sg.nom=твоѣ;f.sg.ins=твоеѭ;n.sg.nom=твое;n.sg.dat=твоемоу;n.sg.acc=твое;n.pl.nom=твоѣ;n.pl.acc=твоѣ	K:-;U:	-
+твои.pron	твои	pron	-	-	PA1a	-	-	m.sg.gen=твоѥго;m.sg.dat=твоѥмоу;m.sg.loc=твоѥмь;m.du.nom=твоꙗ;m.du.gen=твоѥю;m.du.acc=твоꙗ;m.du.loc=твоѥю;m.pl.nom=твои;m.pl.acc=твоѩ;f.sg.nom=твоꙗ;f.sg.gen=твоѥѩ;f.sg.dat=твоѥи;f.sg.acc=твоѭ;f.sg.ins=твоѥѭ;f.sg.loc=твоѥи;f.du.gen=твоѥю;f.du.loc=твоѥю;f.pl.nom=твоѩ;f.pl.acc=твоѩ;n.sg.nom=твоѥ;n.sg.gen=твоѥго;n.sg.dat=твоѥмоу;n.sg.acc=твоѥ;n.sg.loc=твоѥмь;n.du.gen=твоѥю;n.du.loc=твоѥю;n.pl.nom=твоꙗ;n.pl.acc=твоꙗ	m.pl.dat=твоꙇмъ;f.sg.nom=твоѣ;n.pl.nom=твоѣ;n.pl.acc=твоѣ	K:-;U:	-
 ти.pron	ти	pron	-	-	PA1a	-	-	m.pl.nom=ти	-	U:	-
 толикъ.pron	толикъ	pron	-	-	PNk	a	-	m.sg.nom=толикꙑи;m.pl.ins=толицѣми;n.sg.ins=толицѣмъ	n.sg.ins=толицѣмь	U:	-
 тъ.pron	тъ	pron	-	-	PA1	-	-	-	m.sg.nom=ть|тъи;m.sg.ins=тѣмъ;m.sg.loc=томъ;m.pl.dat=тѣмь;m.pl.acc=ти|тꙑѧ;f.sg.gen=тоѧ;f.pl.nom=тъи;f.pl.dat=тѣмь;n.sg.ins=тѣмъ|тѣм;n.sg.loc=томъ;n.pl.ins=тѣмь;2.sg.nom=тъ	K:-;U:	tie PA1k
@@ -78,6 +78,6 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѥдноѧ.pron	ѥдноѧ	pron	-	-	PA1a	a	-	f.sg.gen=ѥдноѧ	-	U:	-
 ѥднѣмъ.pron	ѥднѣмъ	pron	-	-	PA1	a	-	n.sg.ins=ѥднѣмъ	-	U:	-
 ѥликъ.pron	ѥликъ	pron	-	-	PA1	-	-	n.sg.nom=елико;n.sg.acc=елико	-	U:	tie PA1k,PNk,PN
-ꙗкъ.pron	ꙗкъ	pron	-	-	PA1	a	-	m.sg.nom=якъ;m.sg.ins=ѣцѣмъ;f.pl.gen=ѣцѣхъ;n.sg.ins=ѣцѣмъ	m.sg.nom=ꙗкъ	U:	tie PA1k,PNk,PN
+ꙗкъ.pron	ꙗкъ	pron	-	-	PA1	a	-	m.sg.nom=якъ;m.sg.ins=ѣцѣмъ;f.pl.gen=ѣцѣхъ;n.sg.ins=ѣцѣмъ	-	U:	tie PA1k,PNk,PN
 ꙗкъже.pron	ꙗкъже	pron	-	-	PA1	a	encl=же	m.sg.gen=якогоже;f.sg.nom=ѣкаже;f.pl.nom=ѣкъиже	-	U:	-
 ꙙ.pron	ꙙ	pron	-	-	PA1a	a	-	1.sg.acc=ꙙ	-	U:	-

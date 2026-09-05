@@ -4,33 +4,9 @@ version = 4
 
 [[package]]
 name = "church-slavonic"
-version = "2.0.0-dev"
+version = "2.0.0"
 dependencies = [
  "unicode-normalization",
-]
-
-[[package]]
-name = "church-slavonic-core-legacy"
-version = "1.2.0"
-dependencies = [
- "unicode-normalization",
-]
-
-[[package]]
-name = "church-slavonic-legacy"
-version = "1.2.0"
-dependencies = [
- "church-slavonic-core-legacy",
- "unicode-normalization",
-]
-
-[[package]]
-name = "church-slavonic-syntax-legacy"
-version = "0.1.0"
-dependencies = [
- "church-slavonic-legacy",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -38,17 +14,6 @@ name = "church-slavonic-tools"
 version = "0.1.0"
 dependencies = [
  "church-slavonic",
- "serde",
- "serde_json",
- "unicode-normalization",
-]
-
-[[package]]
-name = "extractor-legacy"
-version = "0.1.0"
-dependencies = [
- "church-slavonic-core-legacy",
- "church-slavonic-legacy",
  "serde",
  "serde_json",
  "unicode-normalization",
@@ -166,14 +131,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fd4f6878c9cb28d874b009da9e8d183b5abc80117c40bbd187a1fde336be6e8"
 dependencies = [
  "tinyvec",
-]
-
-[[package]]
-name = "xtask-legacy"
-version = "0.1.0"
-dependencies = [
- "church-slavonic-syntax-legacy",
- "extractor-legacy",
 ]
 
 [[package]]

@@ -113,7 +113,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     let pos = pos.ok_or("--pos is required")?;
     let outcome = match source.as_str() {
         "polyakov" => polyakov::import(pos)?,
-        "alypy" | "ruwiktionary" | "witnesses" => crosscheck::import(source, pos)?,
+        "alypy" | "ruwiktionary" => crosscheck::import(source, pos)?,
         "kaikki" => ocs::import_kaikki(pos)?,
         "ud" => ocs::import_ud(pos)?,
         s => return Err(format!("import {s}: unknown source").into()),

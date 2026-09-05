@@ -407,3 +407,16 @@ change is a diff to a tsv line with its provenance; the game and the
 treebank consume ids that do not move; and the next wave, whatever it
 is, is a lexicon diff or a class-table diff, measured by numbers that
 can go down.
+
+## Execution postscript (2026-09-05)
+
+Executed in one session, 2026-09-04/05, Parts 0–5 in order; each part's
+commit, numbers and deviations are in CHANGELOG.md under 2.0.0 and in
+NOTES.md. Deviations from the plan: the Part 1 noun gate (99% / 5%) is
+recorded as unmet at 94.7% (source noise, lexeme preference); the OCS
+class tables were seeded from Kaikki's own paradigms rather than ported
+from the legacy ending consts; `data/witnesses.tsv` lived until Part 5
+because the legacy baseline instrument read it; the held-out recall is
+measured under the 1.2 harness's manuscript fold so the baselines
+compare. Every other gate was met.
+

@@ -97,7 +97,6 @@ fn ids_are_lemma_plus_pos() {
         // the id's stem is the lemma's letters up to typography (оу/ꙋ, ꙑ/ы)
         let stem = church_slavonic::orthography::comparison_key(&lexeme.lemma);
         let id_stem = lexeme.id.split('.').next().map(church_slavonic::orthography::comparison_key).unwrap_or_default();
-        let expected = format!("{stem}.{}", lexeme.pos.tag());
         assert!(
             id_stem == stem,
             "{}: id does not follow the lemma {}",

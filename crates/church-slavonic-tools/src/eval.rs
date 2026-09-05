@@ -2,18 +2,12 @@
 //! held-out recall (UD PROIEL dev+test, Syntacticus), Bible coverage
 //! through the analyzer, and guesser accuracy (leave-one-out over the
 //! lexicon). Part 1 fills the guesser number; Part 2 the other two.
-//! `--legacy` prints the 1.2 baselines by running the legacy harness.
 
 use church_slavonic::cell::Pos;
-use church_slavonic::grammar::Recension;
 use church_slavonic::lexicon::Lexicon;
 use std::error::Error;
-use std::process::Command;
 
-pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
-    if args.iter().any(|a| a == "--legacy") {
-        return legacy_baselines();
-    }
+pub fn run(_args: Vec<String>) -> Result<(), Box<dyn Error>> {
     for corpus in held_out_corpora()? {
         let r = recall(Lexicon::ocs(), &corpus);
         println!("held-out recall, {} ({} tokens, {} slots; {} skipped by the loader):", corpus.label, corpus.tokens, corpus.slots.len(), corpus.skipped_total());
@@ -309,20 +303,3 @@ pub fn bible_coverage() -> Result<Option<BibleCoverage>, Box<dyn Error>> {
     Ok(Some(c))
 }
 
-/// The 1.2 numbers, from the legacy instruments themselves.
-fn legacy_baselines() -> Result<(), Box<dyn Error>> {
-    let root = crate::workspace_root();
-    let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".to_string());
-    for command in ["accuracy", "check-treebank"] {
-        println!("== legacy {command}");
-        let status = Command::new(&cargo)
-            .current_dir(&root)
-            .args(["run", "-p", "xtask-legacy", "--release", "--", command])
-            .status()?;
-        if !status.success() {
-            return Err(format!("legacy {command} failed").into());
-        }
-    }
-    let _ = Recension::Synodal;
-    Ok(())
-}

@@ -1,3 +1,2 @@
 [alias]
 xtask = "run --package church-slavonic-tools --release --"
-xtask-legacy = "run --package xtask-legacy --"

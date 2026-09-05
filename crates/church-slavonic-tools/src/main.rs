@@ -1,8 +1,7 @@
 //! `cargo xtask <command>`:
 //!
-//! - `eval [--legacy]` — the three numbers (held-out recall, Bible
-//!   coverage, guesser accuracy); `--legacy` prints the 1.2 baselines by
-//!   running the legacy harness;
+//! - `eval` — the three numbers (held-out recall, Bible coverage, guesser
+//!   accuracy);
 //! - `build-treebank` / `check-treebank` — the Bible treebank.
 
 use std::error::Error;
@@ -33,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Ok(())
         }
         Some("-h") | Some("--help") | None => {
-            eprintln!("cargo xtask <eval [--legacy] | import <source> --pos <pos> [--write] | build-treebank | check-treebank | fix-hand-alts | analyze <word>…>");
+            eprintln!("cargo xtask <eval | import <source> --pos <pos> [--write] | build-treebank | check-treebank | fix-hand-alts | analyze <word>…>");
             Ok(())
         }
         Some(other) => Err(format!("unknown xtask command: {other}").into()),

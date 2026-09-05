@@ -4,209 +4,30 @@
 [![Docs.rs](https://docs.rs/church-slavonic/badge.svg)](https://docs.rs/church-slavonic)
 ![License](https://img.shields.io/crates/l/church-slavonic)
 
-**church-slavonic** is a fast, lightweight Church Slavonic inflection library
-written in Rust, covering the Old Church Slavonic and Synodal recensions of
-the one language. The bundled data is about 5 MB of generated lookup-table
-source (the attested exceptions of a 31,000-lexeme corpus dictionary, a
-grammar, two Wiktionaries and an annotated corpus; the rules predict the
-rest, accents included). It provides noun, adjective, verb, pronoun
-(personal and non-personal) and declined-participle inflection from
-processed Wiktionary, grammar-table, corpus-dictionary and treebank data,
-making it useful for real-time procedural text generation. The verb schema
-covers the finite paradigm, the imperative, the l-participle
-(resultative), and the full declined participle system — present and past,
-active and passive, short and long series — with per-verb participle STEMS
-derived from the attested declensions, so a regular declension of an
-irregular stem costs four table cells, not five hundred — and, in the same
-spirit, a per-verb conjugation-class and present-stem override that re-runs
-the finite rule with the verb's true class, collapsing a misclassed verb's
-finite block to two cells. A fourth derived fact, the Synodal
-ACCENT-PATTERN cell (`s<N>` stem-fixed or `e` ending-stressed), re-accents
-the rule's answer where a row's whole paradigm shares one stress shape —
-riding inside the accent pass, so the print's stress-coupled conventions
-(the wide `ѡ`/`є`, the kamora, the final varia) follow the token's
-position; mobile paradigms stay stored — their stress shapes were measured
-too fragmented for any closed scheme vocabulary (the commonest shape
-recurs on 15 rows). A fifth fact is read
-from the row's own form cells: a stored lower accusative that is
-nominative-shaped where the Synodal masculine rule answers the genitive
-shape (an inanimate) teaches the row's higher accusative cells the same
-shape (`вѣне́цъ` : `вѣнцы̀`), so an inanimate's unattested plural
-accusative answers in its attested shape. The fact-resolution
-order — the row's exact cell, the bare row's, the facts read
-own-else-bare, the rule — lives in one place,
-`church_slavonic_core::resolution`, which the runtime, the extractor and
-both audits all call.
+Church Slavonic morphology in Rust: a curated lexicon, a paradigm
+generator and an analyzer for the two recensions of the one language —
+Old Church Slavonic and the Synodal print. Given a lexeme and a cell it
+prints the form as the print writes it, accents and typography included;
+given a printed word it returns every lexeme and cell that produce it.
 
-## ⚡ Speed and Accuracy
+## The four stages
 
-Evaluation (`cargo xtask accuracy`, against the pinned sources listed under
-[Obtaining Data](#-obtaining-data--running-the-extractor)) and performance
-benchmarking (`examples/speedmark.rs`, release):
+A form is built in four stages and the only string a consumer sees is the
+last one. A **lexeme** is one line of the committed lexicon (id, lemma,
+part of speech, gender, animacy, letter class, stress paradigm, the stems
+the class cannot derive, explicit overrides, variants, provenance). The
+**letters** come from the class table: per cell an ending and a stem
+selector (fleeting vowel dropped, velar palatalised, present stem
+iotated), plus one bit that says the print marks this cell apart from a
+look-alike singular. The **stress** paradigm places the accent: on the
+lemma's stem vowel, on the ending, or per cell. **Typography**
+(`Form::print`) then writes the print's conventions in one pure function:
+the wide ѡ/є or the kamora on a marked plural, the oxia inside a word and
+the varia at its end, the psili on an initial vowel, the ї before a vowel.
+The analyzer reads a printed word back to stage one plus a cell through an
+index of every lexeme × every cell × every alternative and variant.
 
-| Part of Speech | Recension | Correct / Total | Accuracy | Variant gap |
-|----------------|-----------|-----------------|----------|-------------|
-| **Nouns** | OCS | 40171 / 40171 | 100.00% | 0 |
-| **Nouns** | OCS (UD PROIEL train) | 2098 / 2098 | 100.00% | 0 |
-| **Nouns** | Synodal (Alypy) | 502 / 502 | 100.00% | 0 |
-| **Nouns** | Synodal (Polyakov) | 47831 / 47831 | 100.00% | 0 |
-| **Nouns** | Synodal (ru.wiktionary) | 651 / 651 | 100.00% | 0 |
-| **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
-| **Adjectives** | OCS | 38960 / 38960 | 100.00% | 0 |
-| **Adjectives** | OCS (UD PROIEL train) | 502 / 502 | 100.00% | 0 |
-| **Adjectives** | Synodal (Alypy) | 441 / 441 | 100.00% | 0 |
-| **Adjectives** | Synodal (Polyakov) | 87460 / 87460 | 100.00% | 0 |
-| **Verbs** | OCS | 236411 / 236411 | 100.00% | 0 |
-| **Verbs** | OCS (UD PROIEL train) | 1802 / 1802 | 100.00% | 0 |
-| **Verbs** | Synodal (Alypy) | 262 / 262 | 100.00% | 0 |
-| **Verbs** | Synodal (Polyakov) | 59814 / 59814 | 100.00% | 0 |
-| **Verbs** | Synodal (ru.wiktionary) | 78 / 78 | 100.00% | 0 |
-| **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
-| **Pronouns** | OCS (UD PROIEL train) | 72 / 72 | 100.00% | 0 |
-| **Pronouns** | Synodal (Alypy) | 114 / 114 | 100.00% | 0 |
-| **Pronouns** | Synodal (Polyakov) | 91 / 91 | 100.00% | 0 |
-| **Pronouns** | Synodal (witnessed print) | 14 / 14 | 100.00% | 0 |
-| **Non-personal pronouns** | OCS | 811 / 811 | 100.00% | 0 |
-| **Non-personal pronouns** | OCS (UD PROIEL train) | 191 / 191 | 100.00% | 0 |
-| **Non-personal pronouns** | Synodal (Alypy) | 252 / 252 | 100.00% | 0 |
-| **Non-personal pronouns** | Synodal (Polyakov) | 1651 / 1651 | 100.00% | 0 |
-| **Non-personal pronouns** | Synodal (witnessed print) | 9 / 9 | 100.00% | 0 |
-| **Nouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 8116 / 8818 | 92.04% | 702 |
-| **Adjectives** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 2134 / 2546 | 83.82% | 412 |
-| **Verbs** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 7413 / 8662 | 85.58% | 1249 |
-| **Pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 5984 / 6029 | 99.25% | 45 |
-| **Non-personal pronouns** | OCS (UD PROIEL r2.18 dev+test, corpus recall) | 1208 / 1296 | 93.21% | 88 |
-| **Nouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 44305 / 48825 | 90.74% | 4520 |
-| **Adjectives** | OCS (Syntacticus 2023-04-28, corpus recall) | 11698 / 13901 | 84.15% | 2203 |
-| **Verbs** | OCS (Syntacticus 2023-04-28, corpus recall) | 38709 / 45179 | 85.68% | 6470 |
-| **Pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 32525 / 32800 | 99.16% | 275 |
-| **Non-personal pronouns** | OCS (Syntacticus 2023-04-28, corpus recall) | 17765 / 18835 | 94.32% | 1070 |
-
-OCS (UD PROIEL r2.18 dev+test, corpus recall): 39133 tokens, 27351 slots mapped, 14174 skipped: adjective: no long lemma from the short one=17; adjective: superlative=1; ambiguous case=1; no number=791; part of speech outside the four tables=13233; pronoun: reciprocal=14; verb: future=97; verb: subjunctive=20;
-
-OCS (Syntacticus 2023-04-28, corpus recall): 213658 tokens, 159540 slots mapped, 69954 skipped: adjective: no long lemma from the short one=42; adjective: strength unspecified=334; adjective: superlative=1; ambiguous case=11; no number=4088; part of speech outside the four tables=63632; pronoun: reciprocal=113; verb: future=570; verb: participle strength unspecified=13; verb: participle without a tense=1004; verb: subjunctive=145; verb: tense outside the schema=1;
-
-Bare-lemma correctness (does the natural bare-lemma call return the primary, first-listed, attested form?):
-
-| Part of Speech | Recension | Bare Primary / Total | Bare Accuracy | Demoted to `_n` |
-|----------------|-----------|----------------------|---------------|-----------------|
-| **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
-| **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
-| **Nouns** | Synodal (Alypy) | 425 / 502 | 84.66% | 77 |
-| **Nouns** | Synodal (Polyakov) | 46353 / 47831 | 96.91% | 1478 |
-| **Nouns** | Synodal (ru.wiktionary) | 550 / 651 | 84.49% | 101 |
-| **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
-| **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
-| **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
-| **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
-| **Adjectives** | Synodal (Polyakov) | 84607 / 87460 | 96.74% | 2853 |
-| **Verbs** | OCS | 218511 / 236411 | 92.43% | 17900 |
-| **Verbs** | OCS (UD PROIEL train) | 1395 / 1802 | 77.41% | 407 |
-| **Verbs** | Synodal (Alypy) | 241 / 262 | 91.98% | 21 |
-| **Verbs** | Synodal (Polyakov) | 58191 / 59814 | 97.29% | 1623 |
-| **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
-| **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
-| **Pronouns** | OCS (UD PROIEL train) | 53 / 72 | 73.61% | 19 |
-| **Pronouns** | Synodal (Alypy) | 96 / 114 | 84.21% | 18 |
-| **Pronouns** | Synodal (Polyakov) | 85 / 91 | 93.41% | 6 |
-| **Pronouns** | Synodal (witnessed print) | 14 / 14 | 100.00% | 0 |
-| **Non-personal pronouns** | OCS | 805 / 811 | 99.26% | 6 |
-| **Non-personal pronouns** | OCS (UD PROIEL train) | 170 / 191 | 89.01% | 21 |
-| **Non-personal pronouns** | Synodal (Alypy) | 215 / 252 | 85.32% | 37 |
-| **Non-personal pronouns** | Synodal (Polyakov) | 1535 / 1651 | 92.97% | 116 |
-| **Non-personal pronouns** | Synodal (witnessed print) | 9 / 9 | 100.00% | 0 |
-
-The accuracy percentages measure **recall through any published key**: the
-share of attested source slots (a lemma's cell, with every form the source
-lists for it) reproducible via the bare lemma **or** any `_n` sense key. Each
-table source is scored on its own against the tables all of them fed. The
-*variant gap* counts attested forms no key produces. The *corpus recall*
-rows are different in kind: they score annotated treebank text the tables
-never saw. Under the institutional grant (`references/TERMS.md`) the UD
-PROIEL **train split** is itself a table source — its tokens, normalised
-and gated (no titlo abbreviations, no one-letter or elided scraps or
-spelling doublets, at least 3 attestations per form), feed cells like any
-dictionary — so the held-out rows are the UD **dev+test splits**;
-Syntacticus's texts overlap the train split, so its rows measure
-manuscript-spelling robustness, not generalisation. Every
-annotated token whose lemma and features name a schema cell — the finite
-cells and, since the participle widening, the full declined participle
-system — is scored,
-lemma and surface compared through a manuscript-lax fold layered on
-`orthography::comparison_key` because manuscript spelling varies (`ъі`
-for `ꙑ`, `ꙙ` for `ѧ`, `шт` for `щ`, dropped or vocalised jers, `ѣ`~`ѧ`~`е`
-interchange, contracted `-ааго`, editorial brackets); a surface written
-under a titlo matches when its letters are an ordered subsequence of the
-full form (`г҃мь` for `господьмь`), a third-person pronoun may carry
-the post-prepositional `н`-, and the copula's imperfective aorist (`бѣ`,
-`бѣшѧ`) is accepted under either past tense, since the treebanks and the
-schema file it differently. The held-out UD dev+test files gave 39,133
-tokens and 26,282 slots (15,243 skipped and counted by reason — other
-parts of speech, reflexives and reciprocals, the periphrastic future and
-the supine); 213,658 Syntacticus tokens gave 153,765 slots (75,729
-skipped). The residual corpus-recall gap is not an
-error budget to spend: forms enter the tables only when a registered
-source attests them past the gates, so what remains is dev+test forms too
-rare to clear the train split's frequency gate, annotation noise
-(editorial lemmas like `братръ`, truncated surfaces, homograph lemmas),
-and lemmas the train split never saw. The schema scope is closed as of
-1.0.0 — the deferred edges and the sources examined and rejected for a
-further widening are recorded in `NOTES.md`. `cargo xtask accuracy` also reports bare-lemma
-correctness — whether the natural bare-lemma call returns the primary
-(first-listed) attested form:
-
-| Part of Speech | Recension | Bare Primary / Total | Bare Accuracy | Demoted to `_n` |
-|----------------|-----------|----------------------|---------------|-----------------|
-| **Nouns** | OCS | 39613 / 40171 | 98.61% | 558 |
-| **Nouns** | OCS (UD PROIEL train) | 1736 / 2098 | 82.75% | 362 |
-| **Nouns** | Synodal (Alypy) | 425 / 502 | 84.66% | 77 |
-| **Nouns** | Synodal (Polyakov) | 46353 / 47831 | 96.91% | 1478 |
-| **Nouns** | Synodal (ru.wiktionary) | 550 / 651 | 84.49% | 101 |
-| **Nouns** | Synodal (witnessed print) | 3 / 3 | 100.00% | 0 |
-| **Adjectives** | OCS | 38959 / 38960 | 99.997% | 1 |
-| **Adjectives** | OCS (UD PROIEL train) | 370 / 502 | 73.71% | 132 |
-| **Adjectives** | Synodal (Alypy) | 431 / 441 | 97.73% | 10 |
-| **Adjectives** | Synodal (Polyakov) | 84607 / 87460 | 96.74% | 2853 |
-| **Verbs** | OCS | 218511 / 236411 | 92.43% | 17900 |
-| **Verbs** | OCS (UD PROIEL train) | 1395 / 1802 | 77.41% | 407 |
-| **Verbs** | Synodal (Alypy) | 241 / 262 | 91.98% | 21 |
-| **Verbs** | Synodal (Polyakov) | 58191 / 59814 | 97.29% | 1623 |
-| **Verbs** | Synodal (ru.wiktionary) | 73 / 78 | 93.59% | 5 |
-| **Pronouns** | OCS | 60 / 60 | 100.00% | 0 |
-| **Pronouns** | OCS (UD PROIEL train) | 53 / 72 | 73.61% | 19 |
-| **Pronouns** | Synodal (Alypy) | 96 / 114 | 84.21% | 18 |
-| **Pronouns** | Synodal (Polyakov) | 85 / 91 | 93.41% | 6 |
-| **Pronouns** | Synodal (witnessed print) | 14 / 14 | 100.00% | 0 |
-| **Non-personal pronouns** | OCS | 805 / 811 | 99.26% | 6 |
-| **Non-personal pronouns** | OCS (UD PROIEL train) | 170 / 191 | 89.01% | 21 |
-| **Non-personal pronouns** | Synodal (Alypy) | 215 / 252 | 85.32% | 37 |
-| **Non-personal pronouns** | Synodal (Polyakov) | 1535 / 1651 | 92.97% | 116 |
-| **Non-personal pronouns** | Synodal (witnessed print) | 9 / 9 | 100.00% | 0 |
-
-A *demotion* is a slot whose first-listed form lives at a `_n` key because the
-deterministic sort put a lexicographically earlier variant on the bare key, or
-because a regular paradigm was attested and reserved the bare key for the
-rule (`сꙑнъ` -> `сꙑнови` by rule, `сꙑнъ_2` -> `сꙑноу`). Every attested form
-stays reachable. The Synodal sources attest the same slot with a different
-primary in 112 cases between Alypy and Polyakov (69 once accents, breathings
-and the print's letter choices are folded) and in 85 between ru.wiktionary
-and Polyakov (57 beyond those conventions); each becomes a variant row,
-never adjudicated, and the sort decides which holds the bare key — except
-that a row storing an accentless Synodal spelling (`всякую` once beside
-`всѧ́кꙋю`) sorts after the clean rows, and that the shared personal-pronoun
-row's bare key goes to its print-arbitrated primaries (v1.2). The
-abbreviations under a titlo are their own lemmas (`бг҃ъ`, `гл҃ати`), and
-the transliterated sources are scored under what they can encode (civil
-«я» for ꙗ/ѧ, one acute for the print's oxia and varia), so the Synodal
-demotion counts are mostly the sort's choice among genuine variants.
-
-Throughput on an Apple M-series laptop (`cargo run --release --example
-speedmark`): 5–10 million calls per second for a table hit (nouns,
-pronouns) and 50–150 thousand per second for a rule fallback on a long
-out-of-vocabulary word (the fold, the realisation, the rule and the accent
-placement).
-
-## 📦 Installation
+## Installation
 
 ```bash
 cargo add church-slavonic
@@ -216,242 +37,158 @@ cargo add church-slavonic
 use church_slavonic::*;
 
 fn main() {
-    // Every call names the recension. A Synodal lemma is its accented
-    // citation form: the accent is the rule's input, and rule output and
-    // table cells alike are spelled in the print's typography.
-    assert_eq!(
-        ChurchSlavonic::noun("градъ", &Case::Genitive, &Number::Singular, &Recension::OldChurchSlavonic),
-        "града"
-    );
-    assert_eq!(
-        ChurchSlavonic::noun("ра́бъ", &Case::Dative, &Number::Singular, &Recension::Synodal),
-        "рабꙋ̀"
-    );
-    assert_eq!(
-        ChurchSlavonic::noun("рꙋка̀", &Case::Genitive, &Number::Singular, &Recension::Synodal),
-        "рꙋкѝ"
-    );
-    assert_eq!(
-        ChurchSlavonic::verb("бꙑти", &Person::First, &Number::Singular, &Tense::Present, &Form::Finite, &Recension::OldChurchSlavonic),
-        "ѥсмь"
-    );
-    // Declined participles: tense, voice, series, and agreement.
-    assert_eq!(
-        ChurchSlavonic::participle("нести", &Tense::Present, &Voice::Active, &Series::Short, &Case::Genitive, &Number::Singular, &Gender::Masculine, &Recension::OldChurchSlavonic),
-        "несѫща"
-    );
-    // Sense-numbered keys expose homographs and attested variants.
-    assert_eq!(
-        ChurchSlavonic::noun("сꙑнъ_2", &Case::Dative, &Number::Singular, &Recension::OldChurchSlavonic),
-        "сꙑноу"
-    );
+    let syn = Lexicon::synodal();
+    // a lexeme by its stable id, a cell by its name
+    let rab = syn.get("рабъ.n").unwrap();
+    assert_eq!(rab.inflect(NounCell::new(Case::Dative, Number::Plural)).unwrap().print(Recension::Synodal), "рабѡ́мъ");
+    // every form of a cell: the primary first, then the class's other
+    // alternatives, then the lexeme's attested variants
+    let gen_pl: Vec<String> = rab.forms(Cell::parse(Pos::Noun, "gen.pl").unwrap()).iter().map(|f| f.print(Recension::Synodal)).collect();
+    assert_eq!(gen_pl, ["рабѡ́въ", "ра̑бъ"]);
+    // a lemma to its lexemes (accent-tolerant; homographs come together)
+    let verbs = syn.find("рещѝ", Pos::Verb);
+    assert_eq!(verbs[0].inflect(Cell::parse(Pos::Verb, "aor.3.sg").unwrap()).unwrap().print(Recension::Synodal), "речѐ");
+    // a printed word back to its readings; ambiguity is returned, never resolved
+    let readings = syn.analyze("рабѡ́мъ");
+    assert_eq!(readings[0].lexeme.id, "рабъ.n");
+    assert_eq!(readings[0].cell.name(), "dat.pl");
+    // the other recension
+    let ocs = Lexicon::ocs();
+    let rab = ocs.find("рабъ", Pos::Noun)[0];
+    assert_eq!(rab.inflect(NounCell::new(Case::Locative, Number::Plural)).unwrap().print(Recension::OldChurchSlavonic), "рабѣхъ");
+    // a lemma the lexicon lacks: a provisional lexeme from its letters
+    let guessed = syn.guess("кора́бль", Pos::Noun);
+    assert_eq!(guessed.provenance, Provenance::Guessed);
 }
 ```
 
-## 🔧 Crate Overview
+Cell names: nouns `case.number` (`gen.pl`); adjectives
+`[short|long.]pos|comp.gender.number.case` (`long.pos.m.sg.nom`); verbs
+`pres|impf|aor|fut.person.number`, `impv.person.number`, `inf`,
+`lpart.gender.number`, `part.pres|past.act|pass.short|long.gender.number.case`;
+pronouns `[clit.][person.][gender.][number.]case` (`3.m.sg.gen`,
+`clit.1.sg.dat`, `m.sg.gen`, `dat`); closed classes `word`. Cases `nom gen
+dat acc ins loc voc`, numbers `sg du pl`, genders `m f n`.
 
-### `church-slavonic`
+## The lexicon
 
-> The public API for noun, adjective, verb and pronoun inflection in either
-> recension — the personal matrix with its reflexive and enclitic cells
-> (`pronoun`, `reflexive`, `clitic`) and the non-personal pronouns
-> (`npron`: the closed lexicon of то́й, се́й, ве́сь, и҆́же, the possessives
-> and interrogatives, in both recensions).
+`crates/church-slavonic/lexicon/syn/*.tsv` (Synodal) and `lexicon/ocs/*.tsv`
+(Old Church Slavonic), one lexeme per line, tab-separated:
 
-* Combines generated tables from `extractor` with rules from
-  `church-slavonic-core`.
-* Pure Rust; dependencies: `unicode-normalization`, and the
-  first-party `church-slavonic-core`.
-* Sorted static-slice tables, binary-searched, of the attested exceptions
-  with regular-rule fallback;
-  case restoration and recension realisation applied on output.
+```
+id       lemma   pos gender anim class stress stems overrides    variants        src         note
+рабъ.n   ра́бъ    n   m      anim N1t   b      -     -            gen.pl=ра̑бъ    P:N1t;A:p034 -
+дати.v   да́ти    v   -      -    Vdat  a      -     aor.2.sg=дадѐ -              P:Vdat      pf; tran
+иже.pron и҆́же    pron m     -    PPize a{…}   encl=же …            …               A:§48;P:PNkto -
+```
 
-### `church-slavonic-syntax`
+- **id** — the lemma's bare letters, the part-of-speech tag (`n a v pron
+  x`), `.n` for a homograph. Stable: never renumbered.
+- **class** — a row of `lexicon/classes/<pos>.tsv` (Synodal, seeded from
+  Polyakov's paradigm legend) or `classes/ocs/<pos>.tsv` (seeded from
+  Kaikki's tables): per cell `<stem>-<ending>[^]` alternatives separated
+  by `|`, `@cell` references, `<stem>~<class>` delegation of a block to an
+  adjective class, `anim:`/`inan:` readings.
+- **stress** — `a` the lemma's stem vowel everywhere, `b` the ending, the
+  named paradigms of `lexicon/stress.tsv` (`c` = `S;pl=E`, `d` = `E;pl=S`),
+  `<name>{cell=S|E|L|<n>;…}` with `sg/du/pl` and block names as keys. `-`
+  for OCS.
+- **stems** — `base=`, numbered stems the class cannot derive (`2=пь`),
+  `encl=сѧ|же|либо` an enclitic written solid after every ending.
+- **overrides** / **variants** — print forms the class and stress do not
+  produce: the override is what `inflect` returns, a variant is reachable
+  through `forms` and the analyzer.
+- **src** — provenance: `P:` Polyakov, `A:` Alypy, `R:` ru.wiktionary,
+  `K:` Kaikki, `U:` UD PROIEL train, `H:` a hand edit (import never
+  touches such a line).
 
-> Syntax trees that round-trip the Church Slavonic Bible.
+Every attested print round-trips through `Form::from_print` and
+`Form::print`; the consistency test enforces it, and every source form is
+reproduced, a variant, or quarantined with a reason in
+`lexicon/quarantine.tsv`.
 
-**The invariant comes first**: for every verse that has a tree,
-`render(tree)` equals the pinned print byte-for-byte — there is no other
-definition of correct. Free generation of new sentences is what the
-invariant earns, not the headline.
+## Sizes
 
-S-expression trees with ordered children (word order is recorded, never
-derived); analyzed leaves inflect through this crate's public API;
-features are explicit and checked by a linter, never inferred. The
-escape hatch that makes the whole Bible reachable today: the `(w "…")`
-verbatim leaf — every verse starts fully verbatim and round-trips by
-construction, and progress is lifting leaves into analyzed nodes, which
-succeeds only when the crate's output matches the attested surface
-exactly. What cannot be verified stays verbatim; nothing is invented.
-
-`cargo xtask build-treebank` auto-lifts all 77 books / 34,470 verses
-(~3 min with the pronoun inventory inverted); `cargo xtask
-check-treebank` re-renders every stored tree against the print (zero
-mismatches) and prints the coverage table. Over 631,946 tokens
-(2026-09-01, after v1.2):
-
-| Slice | Tokens | Share |
+| Lexicon | Lexemes | Classes |
 |---|---|---|
-| Analyzed (unambiguous crate match) | 136,136 | 21.5% |
-| Closed-class (attested function words) | 171,560 | 27.1% |
-| Ambiguous (recorded, never guessed) | 195,741 | 31.0% |
-| Verbatim (the crate-vocabulary frontier) | 127,492 | 20.2% |
-| Apparatus (variant marks, footnotes) | 1,017 | 0.2% |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,344 / 8,279 / 68 / 2,503 | 49 / 16 / 50 / 21 |
+| OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,456 / 82 | 44 / 6 / 55 / 17 |
 
-Wave 2 (2026-09-01) inverted the pronoun, participle and degree APIs,
-added the generated titlo layer (`data/titlo.tsv` — sacred abbreviations
-inflect as a constant stem plus the full paradigm's endings, reproducing
-80.9% of the admitted families' print tokens), and surfaced ~2,000
-lemmas whose only table rows are sense-numbered: verbatim fell from
-40.5% to 29.0%. The v1.2 crate program (Synodal non-personal pronouns,
-the reflexive and the clitic cells, the print arbitrating the
-transliterated sources) then took verbatim from 29.0% to 20.2% — the
-possessives from 16,518 verbatim tokens to 27, ве́сь/всѧ́къ from 7,228
-to 64, the relative и҆́же from 5,391 to 135 — with the homographs of
-the paradigms landing honestly in the ambiguous slice; every lever is
-measured in NOTES.md.
+The Synodal analyzer index holds 7.8 million entries and builds in about
+14 seconds (release, on first use).
 
-Hand-lifted annotation (committed under `data/treebank-hand/`) reports
-its own ceiling row, byte-exact AND lint-clean — Genesis 1 stands
-complete (all 31 verses) at 85.1% lifted, six deliberate ambiguities
-and every verbatim leaf carrying its reason. The tree language has
-`(pers … :clit yes)` for a cell's enclitic and `(refl :case dat)` for
-the reflexive since v1.2.
+## Evaluation
 
-### `church-slavonic-core`
+`cargo xtask eval` prints three numbers, each of which can go down.
 
-> The compact rule engine: ending tables per declension/conjugation class,
-> recension conditions where the two recensions genuinely differ, the
-> Synodal accent rule and the orthographic realisation rules.
+**Held-out recall** — the share of annotated tokens of the UD PROIEL
+dev+test splits (never an import source) whose form the lexicon produces
+for the annotated lemma and cell, under the manuscript-spelling fold the
+1.x harness used (so the 1.2 numbers compare):
 
-* Logic-only; no data dependency (only `unicode-normalization`).
-* Synodal lemmas are the accented citation forms the sources print (`ра́бъ`,
-  `рꙋка̀`, `свѧты́й`, `твори́ти`): a stem-stressed lemma keeps its stress, an
-  ending-stressed one stresses every ending, and the print's marks — oxia,
-  varia, the psili, the wide `ѡ`/`є` and the kamora that tell a plural from
-  the singular it looks like — are placed by rule (`рꙋкѝ`, `свѧта́гѡ`,
-  `творю̀`, `рабѡ́въ`, `рабы̑`).
-* Used by the extractor to drop regular forms, preserving only irregulars.
+| Part of speech | 2.0 | 1.2 |
+|---|---|---|
+| nouns | 94.87% (8,366/8,818) | 92.04% |
+| adjectives | 89.35% (2,291/2,564) | 83.82% |
+| verbs | 85.79% (7,514/8,759) | 85.58% |
+| personal pronouns | 99.25% (3,983/4,013) | 99.25% |
+| other pronouns | 97.84% (1,268/1,296) | 93.21% |
 
-### `extractor`
+Syntacticus (which overlaps the train split): nouns 95.2%, adjectives
+95.2%, verbs 93.7%, pronouns 99.2%, other pronouns 95.9%.
 
-> Processes the pinned sources into the generated tables.
+**Bible coverage** — every token of the Elizabethan Bible through the
+Synodal analyzer (631,946 tokens; `cargo xtask check-treebank`):
 
-* Parses the Wiktionary/Kaikki Old Church Slavonic dump, the Alypy grammar
-  tables, Polyakov's corpus-based grammatical dictionary (every
-  corpus-attested Synodal form with its analysis and frequency; the
-  frequency picks each cell's primary) and the Russian Wiktionary's 39
-  structured Church Slavonic tables (Kaikki), and the UD PROIEL train
-  split (normalised, titlo-free tokens attested ≥3 times; the corpus
-  majority is each cell's primary among the split's variants); the UD
-  dev/test splits and Syntacticus are loaded for evaluation only.
-* Uses `church-slavonic-core` to blank every cell the rules already predict,
-  so the tables hold exactly the attested exceptions.
-* Numbers homograph senses and variants **deterministically** by a pure sort
-  of their emitted forms — no lockfile, no identity table, no human review.
-* Generates the static tables used in `church-slavonic`.
+| | 2.0 | 1.2 |
+|---|---|---|
+| analyzed (exactly one exact reading) | 23.4% | 21.5% |
+| closed-class | 28.1% | 27.1% |
+| ambiguous (several exact readings, recorded) | 40.2% | 31.0% |
+| verbatim (no reading) | 8.1% | 20.2% |
 
-### `xtask`
+**Guesser accuracy** — hide each Synodal noun in turn, guess it from the
+lemma alone, compare paradigms: 93.9% of classes, 93.3% of cells.
 
-Exactly three commands: `cargo xtask refresh-data` (sources -> tables),
-`cargo xtask check-registry` (source-free CI gate: keys unique and
-well-formed, fixed arity, rule/table layering holds) and `cargo xtask
-accuracy` (with the sources; prints the two tables above).
+Polyakov's own cells reproduced by the primary form, for the record:
+nouns 94.7%, adjectives 94.1%, verbs 91.5%; the rest are reachable as
+alternatives or stored as overrides and variants, and the import report
+(`cargo xtask import polyakov --pos <pos>`) lists the residue by class and
+cell.
 
-## Table schema
+## The treebank
 
-One sorted static slice per part of speech in
-`crates/church-slavonic/generated/`,
-keyed `"<recension>:<key>"` (`ocs:градъ`, `syn:ра́бъ_2` — the Synodal key is
-the accented lemma), each row the attested `(cell, form)` pairs of a
-fixed-arity row in cell order; a cell not listed is served by the bare
-row (for a `_n` key) and then by the rule. Only lemmas with at least one
-cell the rules do not predict get a row, and a `_n` row carries only the
-cells that differ from the bare row. Generated source: nouns 921 KB (8,267
-rows: 1,169 OCS, 7,098 Synodal), adjectives 1,414 KB (7,544 rows: 311 OCS,
-7,233 Synodal), verbs 810 KB (5,253 rows: 526 OCS, 4,727 Synodal), pronouns
-5 KB — 3.1 MB in all, against 17.9 MB before the accent rule.
+`cargo xtask build-treebank` lifts the whole pinned Bible into
+`treebank/` (gitignored) in about 25 s: every token with exactly one exact
+reading becomes a leaf carrying a lexeme id and a cell — `(n землѧ.n :case
+acc :num sg)`, `(v рещи.v :t aor :p 3 :num sg)`, `(pn азъ.pron :p 1 :num sg
+:case dat :clit yes)`, `(f и.x)` — and every tree renders the verse back
+byte-for-byte (`check-treebank` enforces it over all 34,470 verses). The
+Genesis 1 hand overlay (`data/treebank-hand/b00.sexp`) is committed and
+linted.
 
-| Table | Cells | Order |
-|-------|-------|-------|
-| nouns | 21 | `number * 7 + case` (Singular, Dual, Plural × Nom, Gen, Dat, Acc, Ins, Loc, Voc) |
-| adjectives | 126 | `((degree * 3 + gender) * 3 + number) * 7 + case` (Positive, Comparative × Masc, Fem, Neut × …) |
-| verbs | 38 | finite blocks Present, Imperfect, Aorist, Imperative at `block * 9 + number * 3 + person`; 36 present active participle; 37 past active participle |
-| pronoun | 119 | the lemma-less personal matrix: 1st `number * 6 + case`, 2nd `18 + …`, 3rd `36 + (gender * 3 + number) * 6 + case`; the reflexive at `90 + case`; the clitic cells at 96.. (1st `number * 2 + {dat, acc}`, 2nd `102 + …`, the 3rd person's accusatives `108 + gender * 3 + number`, the reflexive's 117/118); keyed `personal`, its variants `personal_2`… |
-| non-personal pronoun | 54 | `(gender * 3 + number) * 6 + case`, six cases; keyed by the accented citation form (`syn:ве́сь`, `syn:и҆́же`) |
+## Sources and import
 
-The personal pronoun has no lemma, so its variants are numbered on the
-constant key `personal` exactly like a lemma's: `ChurchSlavonic::pronoun`
-reads the primary row and `ChurchSlavonic::pronoun_sense("personal_2", …)`
-the variants — minority spellings and the prepositional forms. Since 1.2
-the enclitics are cells of their own (`ChurchSlavonic::clitic`: мѝ, тѧ̀,
-ны̀, ѧ҆̀), the reflexive себѐ has its five cases (`reflexive`), and the
-print outranks the transliteration where the two differ only in what a
-civil transliteration cannot encode (`и҆̀хъ` accusative beside `и҆́хъ`
-genitive, `ѧ҆̀` for the dictionary's «я́»). That is how the Alypy pronoun
-row is at 114/114 and the witnessed print at 14/14.
+| Source | Role | Terms |
+|---|---|---|
+| A. E. Polyakov's corpus-based grammatical dictionary | the Synodal lexicon: classes, tags, forms, counts | institutional grant (references/TERMS.md) |
+| Alypy (Gamanovich), *Grammar of the Church Slavonic Language* | class exemplars, cross-check | public domain text |
+| Russian Wiktionary (Church Slavonic section) | cross-check | CC BY-SA 4.0 |
+| English Wiktionary via Kaikki (Old Church Slavonic) | the OCS lexicon and classes | CC BY-SA 4.0 |
+| UD_Old_Church_Slavonic-PROIEL r2.18, train split | OCS attestation and variants | institutional grant; dev+test held out |
+| UD PROIEL dev+test, Syntacticus | evaluation only | — |
+| The Elizabethan Bible (Church Slavonic) | evaluation corpus, the treebank | public domain text |
 
-## 📦 Obtaining Data & Running the Extractor
+The raw artifacts are pinned in `references/` (`scripts/fetch-sources.sh`,
+sha256-verified) and never committed. Import is an occasional, reviewed
+operation: `cargo xtask import <source> --pos <pos>` prints the report and
+the diff, `--write` updates the lexicon, and the change is committed like
+code. The class tables are generated by the scripts under `scripts/`;
+`cargo xtask filter-ud` regenerates the UD train attestations.
 
-| Source | Recension | Pinned artifact (sha256) | Role |
-|--------|-----------|--------------------------|------|
-| English Wiktionary Old Church Slavonic ([Kaikki/Wiktextract](https://kaikki.org/dictionary/Old%20Church%20Slavonic/)) `kaikki.org-dictionary-OldChurchSlavonic.jsonl` | OCS | `fb20336e716d8f29d0c53bb4cc32f35065ad973ef8b496654c72bf542f876a83` | inflection tables (unaccented) |
-| Archbishop Alypy (Gamanovich), *Grammar of the Church Slavonic Language*, web edition: the 198 `.htm` pages | Synodal | `41dac82d5eb14342c3c158e86b6fc790a6b1b2f76a894d29db103a32604d51a4` (sha256 of the pages concatenated in sorted file-name order) | printed paradigm tables (accented) |
-| A. E. Polyakov, *Grammatical dictionary of Church Slavonic (corpus-based)*, tagged web edition ([dic.feb-web.ru](http://dic.feb-web.ru/slavonic/dicgram/)): the 43 `.htm` pages (`flexslav.htm` legend, indexes, `1/*.htm`, `2/*.htm`) | Synodal | `6fe3c1f0094c1624493f2b4a384b1fe56201392dc0c45314e928e7bc50f61c5d` (sha256 of the pages concatenated in sorted path order) | corpus-derived paradigms with frequencies (accented); table source under the institutional grant in `references/TERMS.md` |
-| Russian Wiktionary, Церковнославянский section ([Kaikki/Wiktextract](https://kaikki.org/ruwiktionary/Церковнославянский/)) `kaikki.org-dictionary-Церковнославянский.jsonl` | Synodal | `5fa83de2fc23e14ad7062e84bcb4a208006352002545df88359699274e893ec7` | the 39 entries with structured inflection tables (accented); CC BY-SA 4.0 |
-| UD_Old_Church_Slavonic-PROIEL r2.18 (`UD_Old_Church_Slavonic-PROIEL-64eddf87….tar.gz`) | OCS | `579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c` | **train split**: inflection tables from the annotated corpus (institutional grant, `references/TERMS.md`; CC BY-NC-SA 4.0 upstream); **dev/test splits**: held-out corpus recall, never a table cell |
-| Syntacticus treebank data 2023-04-28 (`syntacticus-treebank-data-525cee4f….tar.gz`): the PROIEL XML texts marked `language="chu"` | OCS | `e32844093cc173edf9241868fdad7167dfb63fb7f105d146af02a645ff382fec` | evaluation (institutional grant covers it; its texts overlap the train split, so its rows measure spelling robustness, not generalisation): corpus recall, never a table cell |
+## License
 
-1. Run `scripts/fetch-sources.sh` (downloads every pinned table source and
-   verifies it against `references/SHA256SUMS`; per-source download scripts
-   live alongside it in `scripts/`). The two treebank tarballs are placed
-   by hand under `references/downloads/<name>/` and unpacked by the
-   accuracy harness into `data/intermediate/treebanks/`; the extractor
-   cannot publish them — their loader is compiled only with the `checks`
-   feature the `refresh-data` build never enables, and its record type has
-   no path into the table generator.
-2. Run `cargo xtask refresh-data`.
-3. Generated tables land in `crates/church-slavonic/generated`; the filtered
-   sources in `data/intermediate` (gitignored, regenerable).
-4. Review `git diff crates/church-slavonic/generated/`, run
-   `cargo xtask check-registry`, then `cargo xtask accuracy`.
-
-Raw text corpora are not table sources: this library extracts from labelled
-full-form data only. Accented Synodal coverage is whatever the labelled
-sources give — Alypy's few dozen exemplar paradigms, Polyakov's 31,098
-corpus lexemes (200,906 analysed cells mapped, ru.wiktionary's included;
-the below-gate participle declensions,
-an imperfective's periphrastic future, the short adjective series of the
-fleeting-vowel classes and 1,798 titlo spellings whose entry never
-abbreviates the citation form are outside the schema and skipped, counted
-by reason on every refresh) and ru.wiktionary's 39 tables — and the table
-reports it honestly. The cells are stored in the print's canonical
-typography (`ꙋ` for the corpus edition's `у`, `ѧ` for its `я`, the psili
-on an initial vowel, oxia inside the word and varia on a final vowel), the
-one spelling the rules also produce.
-
-## Deterministic sense numbering
-
-Homographs and attested variants share a lemma and are disambiguated by a
-numeric suffix (`lemma_2`, `lemma_3`). The suffix is assigned by a pure sort of
-the emitted forms; when a source attests the paradigm the rules already
-predict, the bare key is reserved for the rule and the variants start at `_2`.
-There is no lockfile and no frozen identity. Keys are deterministic but
-**not immutable**: a source refresh can renumber a lemma's `_n` keys. Do not
-persist them as stable IDs across refreshes.
-
-## Disclaimer
-
-Source data is subject to upstream change. The generated tables in
-`crates/church-slavonic/generated/*_phf.rs` are the source of truth for a given
-revision. The rules are a compact approximation of productive morphology,
-measured by the tables above; they are not a guarantee of correct inflection
-for arbitrary out-of-vocabulary words.
-
-## 📄 License
-
-- Code: dual licensed under MIT and Apache-2.0 © gold-silver-copper.
-- Data: the `ocs:` rows derive from Wiktionary content (CC BY-SA 4.0 / GFDL);
-  the `syn:` rows reproduce the inflected forms printed in the Alypy grammar,
-  Polyakov's dictionary (institutional grant) and the Russian Wiktionary
-  (CC BY-SA 4.0). See `crates/church-slavonic/ATTRIBUTION.md`.
+Code: MIT OR Apache-2.0 © gold-silver-copper. The lexicon's OCS lines
+derive from Wiktionary content (CC BY-SA 4.0); the Synodal lines
+reproduce the forms of Polyakov's dictionary and the Russian Wiktionary
+under the terms above; see `references/TERMS.md`.

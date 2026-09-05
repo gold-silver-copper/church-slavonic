@@ -1025,10 +1025,8 @@ syn	v	вдыха́ти	P:V11a/V12t	class does not produce the lemma	вды́шт
 syn	v	вдѣ́ти	P:V15z	class not in the inventory	V15z
 syn	v	взима́ти	P:V12p/V11a	class does not produce the lemma	взе́млти
 syn	v	взима́тисѧ+ти	P:V12p/V11a	class does not produce the lemma	взима́тисѧати
-syn	v	взы́ти	P:Viti	class not in the inventory	Viti
 syn	v	ви́дѣти+же	P:V22t	class does not produce the lemma	ви́дѣтиѣти
 syn	v	внестѝ	P:V14z	no analysed forms	-
-syn	v	вни́ти	P:Viti	class not in the inventory	Viti
 syn	v	водрꙋзи́ти	P:V21t	no analysed forms	-
 syn	v	возалка́ти	P:V12t	no analysed forms	-
 syn	v	возвесели́тисѧ	P:V21n	no analysed forms	-
@@ -1095,7 +1093,6 @@ syn	v	всели́тисѧ+ми	P:V21n	attested citation form differs from the l
 syn	v	встава́ти	P:V12v	class not in the inventory	V12v
 syn	v	вчеловѣ́читисѧ	P:V21s	no analysed forms	-
 syn	v	въеле́нити	P:V21n	no analysed forms	-
-syn	v	вы́йти	P:Viti	class not in the inventory	Viti
 syn	v	вѣ́дѣтисѧ	P:Vved	class does not produce the lemma	вѣ́тисѧ
 syn	v	гра́бити	P:V21p	no analysed forms	-
 syn	v	да́тисѧ+бо	P:Vdat	class does not produce the lemma	да́тисѧ+ти
@@ -1103,12 +1100,10 @@ syn	v	дви́гатисѧ/дви́житисѧ	P:V12t/V21s	class does not produ
 syn	v	дви́гатисѧ/дви́житисѧ	P:V12t/V21s	class does not produce the lemma	дви́жатисѧ
 syn	v	держа́тисѧ+же	P:V22s	class does not produce the lemma	держа́тисѧати
 syn	v	диви́тисѧ+ли+ти	P:V21p	class does not produce the lemma	диви́тисѧ+лиити
-syn	v	дойтѝ	P:Viti	class not in the inventory	Viti
 syn	v	доплы́ти	P:V15v	class does not produce the lemma	доплы́вти
 syn	v	животвори́ти	P:V21n	no analysed forms	-
 syn	v	зави́дѣнъ	P:	no class in the source	-
 syn	v	загла́дитисѧ+бо	P:V21t	class does not produce the lemma	загла́дитисѧити
-syn	v	зайтѝ	P:Viti	class not in the inventory	Viti
 syn	v	заклѧ́тисѧ	P:V15n	class does not produce the lemma	заклѧ́тътисѧ
 syn	v	заповѣ́дѣти	P:Vved	class does not produce the lemma	заповѣ́ти
 syn	v	затвори́тисѧ+ти	P:V21n	class does not produce the lemma	затвори́тисѧити
@@ -1132,9 +1127,7 @@ syn	v	и҆зъѧзви́ти	P:V21p	no analysed forms	-
 syn	v	и҆зъѧсни́ти	P:V21n	no analysed forms	-
 syn	v	и҆зъѧсни́тисѧ	P:V21n	no analysed forms	-
 syn	v	и҆зъѧснѧ́ти	P:V11a	no analysed forms	-
-syn	v	и҆зы́ти	P:Viti	class not in the inventory	Viti
 syn	v	и҆зыма́тисѧ	P:V12p/V11a	no analysed forms	-
-syn	v	и҆зыти	P:Viti	class not in the inventory	Viti
 syn	v	и҆зѡби́дѣти	P:V22t	no analysed forms	-
 syn	v	и҆зѡблача́тисѧ	P:V11a	no analysed forms	-
 syn	v	и҆зѡблиста́ти	P:V11a	no analysed forms	-
@@ -1153,11 +1146,9 @@ syn	v	и҆зѡщрѧ́тисѧ	P:V11a	no analysed forms	-
 syn	v	и҆зꙋвѧ́днꙋти	P:V13t	no analysed forms	-
 syn	v	и҆сповѣ́дѣтисѧ	P:Vved	class does not produce the lemma	и҆сповѣ́ѣтисѧ
 syn	v	и҆стѧза́ти	P:V12t/V11a	no analysed forms	-
-syn	v	и҆тѝ	P:Viti	class not in the inventory	Viti
 syn	v	кдата́ти	P:	no class in the source	-
 syn	v	клѧ́тисѧ+ми	P:V15n	class does not produce the lemma	клѧ́тисѧ+ти
 syn	v	коснꙋ́тисѧ+ти	P:V13t	class does not produce the lemma	коснꙋ́тиснꙋти
-syn	v	мимоитѝ	P:Viti	class not in the inventory	Viti
 syn	v	млати́ти	P:V21s	class does not produce the lemma	млачи́ти
 syn	v	мнѣ́тисѧ+ми	P:V22n/V21n	class does not produce the lemma	мнѣ́тисѧѣти
 syn	v	мнѣ́тисѧ+ти	P:V22n/V21n	class does not produce the lemma	мнѣ́тисѧѣти
@@ -1170,21 +1161,17 @@ syn	v	надѣ́ти	P:V15z	class not in the inventory	V15z
 syn	v	надѣ́ѧтисѧ+же	P:V12a	class does not produce the lemma	надѣ́ѧтисѧѧти
 syn	v	надѣ́ѧтисѧ+ли	P:V12a	class does not produce the lemma	надѣ́ѧтисѧѧти
 syn	v	назда́ти	P:V12t	no analysed forms	-
-syn	v	найтѝ	P:Viti	class not in the inventory	Viti
 syn	v	наꙋчи́тисѧ+бо	P:V21s	class does not produce the lemma	наꙋчи́тисѧити
 syn	v	наꙋчи́тисѧ+ми	P:V21s	attested citation form differs from the lemma	наꙋчи́тимисѧ
-syn	v	невзы́ти	P:Viti	class not in the inventory	Viti
 syn	v	нелиша́тисѧ	P:V11a	no analysed forms	-
 syn	v	непокарѧ́тисѧ	P:V11a	no analysed forms	-
 syn	v	непокарѧ́тисѧ+же	P:V11a	no analysed forms	-
 syn	v	непокланѧ́тисѧ	P:V11a	no analysed forms	-
 syn	v	непокорѧ́тисѧ+же	P:V11a	class does not produce the lemma	непокорѧ́тисѧ+ти
 syn	v	непрестава́ти	P:V12v	class not in the inventory	V12v
-syn	v	непріитѝ	P:Viti	class not in the inventory	Viti
-syn	v	нерадѣ́ти	P:V22t/V21t	class does not produce the lemma	нера́дити
+syn	v	нерадѣ́ти	P:V22t/V21t	class does not produce the lemma	неради́ти
 syn	v	нераздира́ти	P:	no class in the source	-
 syn	v	нехотѣ́ти	P:V22t+V12t	class not in the inventory	V22t+V12t
-syn	v	низы́ти	P:Viti	class not in the inventory	Viti
 syn	v	нꙋ́дитисѧ+бо	P:V21t	class does not produce the lemma	нꙋ́дитисѧити
 syn	v	оу҆боѧ́тисѧ+же	P:V22a	no analysed forms	-
 syn	v	оу҆боѧ́тисѧ+ли	P:V22a	class does not produce the lemma	оу҆боѧ́тисѧѧти
@@ -1192,7 +1179,6 @@ syn	v	оу҆гнета́ти	P:V11a	class does not produce the lemma	оу҆гн�
 syn	v	оу҆дали́тисѧ+бо	P:V21n	class does not produce the lemma	оу҆дали́тисѧити
 syn	v	оу҆диви́тисѧ+же	P:V21p	class does not produce the lemma	оу҆диви́тисѧити
 syn	v	оу҆зрѣ́тисѧ+же	P:V22n	class does not produce the lemma	оу҆зрѣ́тисѧѣти
-syn	v	оу҆йтѝ	P:Viti	class not in the inventory	Viti
 syn	v	оу҆краси́тисѧ+бо	P:V21t	class does not produce the lemma	оу҆краси́тисѧити
 syn	v	оу҆кры́тисѧ+бы	P:V15y	class does not produce the lemma	оу҆кры́тисѧ+ти
 syn	v	оу҆крѣпи́тисѧ+же	P:V21p	class does not produce the lemma	оу҆крѣпи́тисѧити
@@ -1209,20 +1195,16 @@ syn	v	печа́лити	P:V21n	no analysed forms	-
 syn	v	плескати	P:V12t	no analysed forms	-
 syn	v	побра́тисѧ	P:V15ol	no analysed forms	-
 syn	v	повѣ́дѣти	P:Vved	class does not produce the lemma	повѣ́ти
-syn	v	подвзыти	P:Viti	class not in the inventory	Viti
 syn	v	подвига́ти/подви́жити	P:V12t/V11a/V21s	class does not produce the lemma	подвига́ти/подвижати
 syn	v	подвиза́тисѧ+бо	P:V11a	class does not produce the lemma	подвиза́босѧти
-syn	v	подвнити	P:Viti	class not in the inventory	Viti
 syn	v	подо́битисѧ+ти	P:V21p	class does not produce the lemma	подо́битисѧити
 syn	v	подстла́тисѧ	P:V12n	class does not produce the lemma	подстела́тисѧ
 syn	v	подъѧ́сти	P:Vest	no analysed forms	-
 syn	v	подызводи́ти	P:V21t	no analysed forms	-
-syn	v	подытѝ	P:Viti	class not in the inventory	Viti
 syn	v	подꙋкра́сти	P:V14d	no analysed forms	-
 syn	v	подꙋкрада́ти	P:V11a	no analysed forms	-
 syn	v	подꙋсти́ти	P:V21t	no analysed forms	-
 syn	v	подꙋчини́ти	P:V21n	no analysed forms	-
-syn	v	пойтѝ	P:Viti	class not in the inventory	Viti
 syn	v	поклони́тисѧ+ми	P:V21n	class does not produce the lemma	поклони́тисѧити
 syn	v	покори́тисѧ+ти	P:V21n	no analysed forms	-
 syn	v	ползтѝ	P:	no class in the source	-
@@ -1238,10 +1220,8 @@ syn	v	постыдѣ́тисѧ+же	P:V22t	class does not produce the lemma	по
 syn	v	похотѣ́ти	P:V22t+V12t	class not in the inventory	V22t+V12t
 syn	v	поѣ́хати	P:Vexat	class not in the inventory	Vexat
 syn	v	преблагослови́ти	P:V21p	no analysed forms	-
-syn	v	превзытѝ	P:Viti	class not in the inventory	Viti
 syn	v	превозлюби́ти	P:V21p	no analysed forms	-
 syn	v	предбра́тисѧ	P:V15ol	no analysed forms	-
-syn	v	предвзы́ти	P:Viti	class not in the inventory	Viti
 syn	v	предвига́ти/предви́жити	P:V12t/V11a/V21s	class does not produce the lemma	предвига́ти/предвижати
 syn	v	преджи́ти	P:V15v	class does not produce the lemma	преджи́вти
 syn	v	предоста́вити	P:V21p	no analysed forms	-
@@ -1262,9 +1242,8 @@ syn	v	предызводи́ти	P:V21t	no analysed forms	-
 syn	v	предызложи́ти	P:V21s	no analysed forms	-
 syn	v	предызмы́тисѧ	P:V15y	no analysed forms	-
 syn	v	предызъѧви́тисѧ	P:V21p	no analysed forms	-
-syn	v	предызы́ти	P:Viti	class not in the inventory	Viti
+syn	v	предызы́ти	P:Viti	no analysed forms	-
 syn	v	предызѡбрази́ти	P:V21t	no analysed forms	-
-syn	v	предытѝ	P:Viti	class not in the inventory	Viti
 syn	v	предѡбрази́ти	P:V21t	no analysed forms	-
 syn	v	предѡбрази́тисѧ	P:V21t	no analysed forms	-
 syn	v	предѡбрꙋча́ти	P:V11a	no analysed forms	-
@@ -1329,7 +1308,6 @@ syn	v	предꙋчини́тисѧ	P:V21n	no analysed forms	-
 syn	v	предꙋѧсни́ти	P:V21n	no analysed forms	-
 syn	v	прежи́ти	P:V15v	class does not produce the lemma	преживтѝ
 syn	v	преизъѧ́ти	P:V15n	no analysed forms	-
-syn	v	прейтѝ	P:Viti	class not in the inventory	Viti
 syn	v	преклони́тисѧ+бо	P:V21n	class does not produce the lemma	преклони́тисѧити
 syn	v	преспа́ти	P:V12p+V22p	class not in the inventory	V12p+V22p
 syn	v	пресхнꙋ́ти	P:V13k	class does not produce the lemma	пресо́хнꙋти
@@ -1338,7 +1316,6 @@ syn	v	преѡсвѧще́нствовати	P:V12ov	no analysed forms	-
 syn	v	прибли́житисѧ+бо	P:V21s	class does not produce the lemma	прибли́житисѧити
 syn	v	прибли́житисѧ+же	P:V21s	class does not produce the lemma	прибли́житисѧити
 syn	v	приближа́тисѧ+же	P:V11a	class does not produce the lemma	приближа́тисѧ+ти
-syn	v	привни́ти	P:Viti	class not in the inventory	Viti
 syn	v	привозѡбраща́ти	P:V11a	no analysed forms	-
 syn	v	приврещи́/приве́ргнꙋти	P:V14g*/V13k	class does not produce the lemma	приве́ргнꙋти
 syn	v	привы́кнꙋти	P:V13k	no analysed forms	-
@@ -1350,25 +1327,21 @@ syn	v	припре́тисѧ	P:V22n	no analysed forms	-
 syn	v	пристꙋжи́ти	P:	no class in the source	-
 syn	v	прише́льствовати	P:V12ov	class does not produce the lemma	прише́лствовати
 syn	v	прожи́ти	P:V15v	class does not produce the lemma	прожи́вти
-syn	v	произы́ти	P:Viti	class not in the inventory	Viti
 syn	v	произѡбрази́ти	P:V21t	no analysed forms	-
-syn	v	пройтѝ	P:Viti	class not in the inventory	Viti
 syn	v	промчатисѧ	P:	no class in the source	-
 syn	v	пронзи́ти	P:V13t	class does not produce the lemma	про́ннꙋти
 syn	v	проповѣ́дѣти	P:Vved	class does not produce the lemma	проповѣ́ти
-syn	v	пропѧ́ти	P:V15n	class does not produce the lemma	пропѧ́тъти
+syn	v	пропѧ́ти	P:V15n	class does not produce the lemma	пропѧтътѝ
 syn	v	пророкова́ти	P:V12ov	no analysed forms	-
 syn	v	прославлѧ́тисѧ+ми	P:V11a	class does not produce the lemma	прославлѧ́тисѧ+ти
 syn	v	противлѧ́тисѧ+ми	P:V11a	class does not produce the lemma	противлѧ́тисѧ+ти
 syn	v	противобра́ти	P:V15ol	no analysed forms	-
 syn	v	противобра́тисѧ	P:V15ol	no analysed forms	-
 syn	v	противовостава́ти	P:V12v	class not in the inventory	V12v
-syn	v	противоитѝ	P:Viti	class not in the inventory	Viti
 syn	v	пріижди́ти	P:V15v	class does not produce the lemma	прїиждивтѝ
-syn	v	пріитѝ	P:Viti	class not in the inventory	Viti
 syn	v	прѣ́тисѧ+же	P:V22n	class does not produce the lemma	прѣ́тисѧѣти
 syn	v	ра́доватисѧ+бо	P:V12ov	class does not produce the lemma	ра́доватисѧ+ти
-syn	v	ради́ти	P:V22t/V21t	class does not produce the lemma	ра́дѣти
+syn	v	ради́ти	P:V22t/V21t	class does not produce the lemma	радѣ́ти
 syn	v	разгиба́ти	P:V11a	no analysed forms	-
 syn	v	разгордѣ́тисѧ+бо	P:V22t	class does not produce the lemma	разгордѣ́тисѧѣти
 syn	v	раздѣли́тисѧ+же	P:V21n	class does not produce the lemma	раздѣли́тисѧити
@@ -1376,7 +1349,6 @@ syn	v	разли́ти	P:V15i	class does not produce the lemma	разле́ти
 syn	v	разрѣши́тисѧ+же	P:V21s	no analysed forms	-
 syn	v	разъѧри́ти	P:V21n	no analysed forms	-
 syn	v	разъѧри́тисѧ	P:V21n	no analysed forms	-
-syn	v	разыти́сѧ	P:Viti	class not in the inventory	Viti
 syn	v	распалѧ́тисѧ	P:V11a	class does not produce the lemma	роспалѧ́тисѧ
 syn	v	расплоди́ти	P:V21t	class does not produce the lemma	разплоди́ти
 syn	v	распра́ти	P:V15ol	no analysed forms	-
@@ -1390,8 +1362,6 @@ syn	v	роди́тисѧ+же	P:V21t	class does not produce the lemma	роди́
 syn	v	роси́ти	P:	no class in the source	-
 syn	v	рѣша́ти	P:V11a	no analysed forms	-
 syn	v	рꙋга́тисѧ+же	P:V11a	class does not produce the lemma	рꙋга́тисѧ+ти
-syn	v	самоитѝ	P:Viti	class not in the inventory	Viti
-syn	v	самоѡти́ти	P:Viti	class not in the inventory	Viti
 syn	v	сблаговоли́ти	P:V21n	no analysed forms	-
 syn	v	сблагосло́вити	P:V21p	no analysed forms	-
 syn	v	сбыти	P:Vbyt	no analysed forms	-
@@ -1406,16 +1376,10 @@ syn	v	свѧщеннособра́тисѧ	P:V12x*	no analysed forms	-
 syn	v	свѧщеннꙋкраси́ти	P:V21t	no analysed forms	-
 syn	v	слꙋчи́тисѧ+ти	P:V21s	class does not produce the lemma	слꙋчи́тисѧити
 syn	v	смири́тисѧ+ми	P:V21n	class does not produce the lemma	смири́тисѧити
-syn	v	сни́ти	P:Viti	class not in the inventory	Viti
-syn	v	сни́тисѧ	P:Viti	class not in the inventory	Viti
-syn	v	снизытѝ	P:Viti	class not in the inventory	Viti
-syn	v	совзытѝ	P:Viti	class not in the inventory	Viti
-syn	v	совни́ти	P:Viti	class not in the inventory	Viti
 syn	v	совозста́ти	P:V15a	class does not produce the lemma	совоста́ти
 syn	v	совозстава́ти	P:V12v	class not in the inventory	V12v
 syn	v	совоспріѧ́ти	P:V15n	class does not produce the lemma	совоспрїѧ́тъти
 syn	v	содѣ́ѧти	P:V12a	no analysed forms	-
-syn	v	соизытѝ	P:Viti	class not in the inventory	Viti
 syn	v	соизѡбража́тисѧ	P:V11a	no analysed forms	-
 syn	v	соплы́ти	P:V15v	class does not produce the lemma	соплы́вти
 syn	v	сопроти́витисѧ+бо	P:V21p	class does not produce the lemma	сопроти́витисѧити
@@ -1423,12 +1387,11 @@ syn	v	сопротивобра́тисѧ	P:V15ol	no analysed forms	-
 syn	v	сораспѧ́тисѧ	P:V15n	class does not produce the lemma	сораспѧ́тътисѧ
 syn	v	соѡбрази́тисѧ+бо	P:V21t	class does not produce the lemma	соѡбрази́тисѧити
 syn	v	соѡбъима́ти	P:V12p/V11a	no analysed forms	-
-syn	v	соѡты́ти	P:Viti	class not in the inventory	Viti
 syn	v	спа́ти	P:V12p+V22p	class not in the inventory	V12p+V22p
 syn	v	спобра́ти	P:V15or	class not in the inventory	V15or
-syn	v	сразсмотрѣ́ти	P:V22n/V21n	class does not produce the lemma	сразсмо́трити
+syn	v	сразсмотрѣ́ти	P:V22n/V21n	class does not produce the lemma	сразсмотри́ти
 syn	v	сраствори́тисѧ+же	P:V21n	class does not produce the lemma	сраствори́тисѧити
-syn	v	стена́ти	P:V12n/V22n	class does not produce the lemma	сте́нѣти
+syn	v	стена́ти	P:V12n/V22n	class does not produce the lemma	стенѣ́ти
 syn	v	стона́ти	P:V12n/V22n	class does not produce the lemma	стонѣ́ти
 syn	v	стыдѣ́тисѧ+бо	P:V22t/V21t	class does not produce the lemma	стыдѣ́тисѧѣти
 syn	v	съѧ́стисѧ	P:Vest	no analysed forms	-
@@ -1460,7 +1423,6 @@ syn	v	ѡ҆бъѧда́тисѧ	P:V11a	no analysed forms	-
 syn	v	ѡ҆бъѧсни́ти	P:V21n	no analysed forms	-
 syn	v	ѡ҆быма́тисѧ	P:V12p/V11a	no analysed forms	-
 syn	v	ѡ҆быска́тисѧ	P:V12t	no analysed forms	-
-syn	v	ѡ҆бытѝ	P:Viti	class not in the inventory	Viti
 syn	v	ѡ҆бꙋмира́ти	P:V11a	no analysed forms	-
 syn	v	ѡ҆глагольствовати	P:V12ov	no analysed forms	-
 syn	v	ѡ҆дѣ́ѧтисѧ+же	P:V12a	no analysed forms	-
@@ -1481,7 +1443,6 @@ syn	v	ѡ҆трази́тисѧ+ти	P:V21t	class does not produce the lemma	ѡ҆
 syn	v	ѡ҆тъѧ́тисѧ	P:V15n	class does not produce the lemma	ѿѧ́тисѧ
 syn	v	ѡ҆тыгра́тисѧ	P:V11a	class does not produce the lemma	ѿигра́тисѧ
 syn	v	ѡ҆тыма́тисѧ	P:V12p/V11a	class does not produce the lemma	ѿи́матисѧ
-syn	v	ѡ҆тытѝ	P:Viti	class not in the inventory	Viti
 syn	v	ѣ҆́хати	P:Vexat	class not in the inventory	Vexat
 syn	v	ѻ҆бщежи́тельствовати	P:V12ov	class does not produce the lemma	ѻ҆бщежи́телствовати
 syn	v	ꙗ҆́вленнѣ	P:V21p	class does not produce the lemma	ꙗ҆́влеити

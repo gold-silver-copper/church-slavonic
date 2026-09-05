@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0 (in progress) — the lexicon-first rewrite
+## 2.0.0 (2026-09-05) — the lexicon-first rewrite
 
 Executed from V2-PROMPT.md; the design is docs/DESIGN.md. Each part
 records the three eval numbers (held-out recall, Bible coverage,
@@ -298,6 +298,46 @@ remaining misses are the guessed lemmas' present stems (the guesser
 cannot read an iotated stem off a lemma), the past participles of the
 classes seeded without them, and manuscript spellings the fold does not
 reach.
+
+### Part 5 — the cutover (2026-09-05)
+
+- Deleted: `legacy/` (the 1.x crates and their extractor), the executed
+  1.x prompt files, `deprecated/`, `experiments/`, `data/witnesses.tsv`
+  (converted to `W:` provenance in Part 3), the `xtask-legacy` alias and
+  `eval --legacy`. `data/titlo.tsv` moved into the library as
+  `lexicon/titlo.tsv` and the titlo layer with it (`church_slavonic::titlo`:
+  `rows`, `abbreviate`, `skeleton`); a row for the gospel (є҆ѵⷢ҇лїе, 17
+  print tokens) added.
+- The workspace is two crates: `church-slavonic` 2.0.0 (dependency
+  `unicode-normalization` only) and `church-slavonic-tools` (the `cargo
+  xtask` binary, not published). README rewritten around the four
+  stages, the lexicon format and the three eval numbers; HANDOFF-PROMPT.md
+  rewritten for the 2.x program.
+- Findings on the way: a verb's participles no longer outvote its finite
+  cells when the stress paradigm is chosen (дои́ти is `b`, дои́лъ); и҆тѝ
+  and its 41 compounds get the Viti class (и҆дꙋ̀, и҆до́хъ, ше́лъ); что̀ is
+  neuter in both recensions; the third person's plural dative and
+  accusative keep the print's varia (и҆̀мъ, и҆̀хъ); a guessed verb stressed
+  on its theme keeps the stress on the ending (затепли́лъ); the Synodal
+  guesser reads verb and adjective classes off the lexicon's lemma
+  endings.
+- `~/Desktop/code/vertograd` migrated: `slavonic.rs` adapts the game's
+  lemma-keyed calls to the lexicon (`find`, `inflect`, `print`; a
+  capitalised lemma keeps its capital; a homograph is chosen by its exact
+  spelling; a lemma under a titlo declines through the titlo row); seven
+  content strings re-pasted from the crate's real output (ѻ҆́вцꙋ — the
+  print's 14 against 1; ѕе́лїе, Ѳеодо́сїе, є҆ѵⷢ҇лїе — the print's ї; хартїю̀,
+  ѳи́та, ꙗ҆ицѐ — Polyakov's headwords); its 35 tests and
+  `./scripts/headless-test.sh` green.
+
+Measured at the close (`cargo xtask eval`, `check-treebank`):
+
+| Number | 2.0.0 |
+|---|---|
+| held-out recall, UD dev+test: nouns / adjectives / verbs / personal / other pronouns | 94.87% / 89.35% / 85.79% / 99.25% / 97.84% |
+| Bible treebank: analyzed / closed / ambiguous / verbatim | 23.4% / 28.1% / 40.2% / 8.1% (zero mismatches) |
+| guesser, Synodal nouns: class / cells | 93.94% / 93.29% |
+| Polyakov cells reproduced by the primary: nouns / adjectives / verbs | 94.7% / 94.1% / 91.5% |
 
 ## 1.2.0 — the Synodal pronoun release
 

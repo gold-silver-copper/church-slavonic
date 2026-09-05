@@ -142,10 +142,13 @@ impl Lexicon {
     /// its accent, `Provenance::Guessed` on the line.
     pub fn guess(&self, lemma: &str, pos: Pos) -> Lexeme {
         let form = Form::from_print(lemma);
+        // the Synodal noun rule was measured (94% of classes); every other
+        // part of speech and the OCS lexicon read the class off the
+        // lexicon's own lemma endings
         let (class, gender) = match (self.recension, pos) {
             (Recension::Synodal, Pos::Noun) => noun_class(&form.letters),
-            (Recension::OldChurchSlavonic, _) => (self.class_by_ending(&form.letters, pos), Gender::Masculine),
-            _ => ("0", Gender::Masculine),
+            (_, Pos::Closed) => ("0", Gender::Masculine),
+            _ => (self.class_by_ending(&form.letters, pos), Gender::Masculine),
         };
         let stems = Vec::new();
         let stress = match self.recension {
@@ -155,7 +158,10 @@ impl Lexicon {
                 Some(k) => {
                     let vowels = form.letters.chars().filter(|c| is_vowel_letter(*c)).count();
                     let ends_in_vowel = form.letters.chars().last().is_some_and(is_vowel_letter);
-                    if ends_in_vowel && usize::from(k) + 1 == vowels { "b" } else { "a" }.to_string()
+                    // a verb stressed on its theme vowel (затепли́ти, глаго́лати
+                    // is not: -ла- is the stem) keeps the stress on the ending
+                    let theme = pos == Pos::Verb && form.letters.ends_with("ти") && usize::from(k) + 2 == vowels;
+                    if (ends_in_vowel && usize::from(k) + 1 == vowels) || theme { "b" } else { "a" }.to_string()
                 }
             },
         };

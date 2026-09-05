@@ -17,6 +17,7 @@ pub mod lexicon;
 pub mod orthography;
 pub mod paradigm;
 pub mod stress;
+pub mod titlo;
 
 pub use cell::*;
 pub use form::Form;

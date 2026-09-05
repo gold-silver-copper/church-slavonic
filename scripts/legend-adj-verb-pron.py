@@ -469,7 +469,7 @@ def personal(table):
                 if person:
                     parts.append(person)
                 if code in ("PPkto", "PPcto"):
-                    parts.append("m")
+                    parts.append("n" if code == "PPcto" else "m")
                 if n:
                     parts.append(n)
                 parts.append(c)
@@ -961,6 +961,30 @@ def athematic():
     imeti["part.pres.act.short.m.sg.nom"] = "9-"
     imeti["part.pres.act.long.m.sg.nom"] = "9-й"
     rows.append(("Vima", "имѣти", 4, "1=base;5=ext:ꙋщ;6=ext:ѣем;7=ext:ѣвш;8=ext:ѣн;9=ext:ѣѧ;11=ext:ѣв;12=ext:н:ext:ѣн", imeti))
+    # и҆тѝ and its compounds (Polyakov Viti, 41 lemmas): the present on the
+    # base with -д- (и҆дꙋ̀), the aorist и҆до́хъ/и҆́де, the suppletive
+    # l-participle ше́лъ on the base without its final и (stem 4)
+    iti = {}
+    iti |= finite("pres", ["1-дꙋ", "1-деши", "1-детъ", "1-дева", "1-дета", "1-дета", "1-демъ", "1-дете", "1-дꙋтъ"])
+    iti |= finite("impf", ["1-дѧхъ", "1-дѧше", "1-дѧше", "1-дѧхова", "1-дѧста", "1-дѧста", "1-дѧхомъ", "1-дѧсте", "1-дѧхꙋ"])
+    iti |= finite("aor", ["1-дохъ", "1-де", "1-де", "1-дохова", "1-доста", "1-доста", "1-дохомъ", "1-досте", "1-доша"])
+    iti |= impv("1-ди", "1-ди", "1-демъ|1-димъ", "1-дите", "1-дива", "1-дита")
+    iti["inf"] = "@lemma"
+    iti |= lpart("4", "ше")
+    iti["lpart.f.sg"] = "4-шла"
+    iti["lpart.n.sg"] = "4-шло"
+    iti["lpart.m.du"] = "4-шла"
+    iti["lpart.f.du"] = "4-шли|4-шлѣ"
+    iti["lpart.n.du"] = "4-шли|4-шлѣ"
+    iti["lpart.m.pl"] = "4-шли"
+    iti["lpart.f.pl"] = "4-шлы|4-шли"
+    iti["lpart.n.pl"] = "4-шла"
+    iti |= common_part
+    iti["part.pres.act.short.m.sg.nom"] = "9-й|9-"
+    iti["part.pres.act.long.m.sg.nom"] = "9-й"
+    iti["part.past.act.short.m.sg.nom"] = "11-ъ"
+    iti["part.past.act.long.m.sg.nom"] = "11-ый|7-їй"
+    rows.append(("Viti", "ити", 2, "1=base;4=cut;5=ext:дꙋщ;6=ext:дом;7=ext:шедш:cut;8=ext:ден;9=ext:ды;11=ext:шед:cut;12=ext:н:ext:ден", iti))
     return rows
 
 

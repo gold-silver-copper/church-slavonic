@@ -887,3 +887,26 @@ members — stays deliberately its own future design.
   ones (stems 7/8/11) are a rule, not data; 14,059 dev+test slots are
   skipped by the loader (subjunctives, supines, ambiguous cases) as in 1.2.
 
+## 2026-09-05 — 2.0 Part 5: the cutover — decisions and findings
+
+- **The consumer is the last audit (finding).** Migrating the game found
+  four lexicon defects the harness had not: the stress paradigm of a verb
+  whose participles outnumber its finite cells (дои́ти), a Polyakov class
+  missing from the inventory (Viti: и҆тѝ and 41 compounds), the gender of
+  что̀, and the plural varia of the third person lost to an import that
+  predated the `varia` flag. Each is fixed in the lexicon or the fit, none
+  in the game.
+- **Re-paste, do not argue (decision).** Where the game's pinned strings
+  disagreed with the crate, the print decided (ѻ҆́вцꙋ 14:1, the ї before a
+  vowel) or the only pinned attestation did (Polyakov's хартіѧ̀, ѳи́та,
+  ꙗ҆ицѐ); the 1.x strings had come from the 1.x rule echoing the game's
+  own accent. The letter name ѳи́та rests on one Polyakov attestation and
+  is recorded as such.
+- **The titlo layer belongs to the lexicon (decision).** `lexicon/titlo.tsv`
+  and `church_slavonic::titlo` let a consumer decline a titlo-written
+  lemma through its full lexeme; the treebank's `(abbr …)` wrapper is one
+  consumer, the game another.
+- **The legacy instruments are gone with their baselines recorded.** Every
+  1.2 number the gates compared against is in the CHANGELOG's Part 0
+  entry; nothing needs the deleted tree.
+

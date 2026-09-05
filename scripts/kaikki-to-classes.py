@@ -392,7 +392,7 @@ def write_pronoun_classes(path):
     rows.append(("PA1s", "нашь", 1, "1=base", dict(soft)))
     # къто / чьто: the stem is on the lexeme line (stems=1=к)
     rows.append(("PPkto", "къто:к", 0, "1=base", {"m.sg.nom": "1-ъто", "m.sg.gen": "1-ого", "m.sg.dat": "1-омꙋ", "m.sg.acc": "1-ого", "m.sg.ins": "1-имь", "m.sg.loc": "1-омь", "m.sg.voc": "@m.sg.nom"}))
-    rows.append(("PPcto", "чьто:ч", 0, "1=base", {"m.sg.nom": "1-ьто", "m.sg.gen": "1-есо|1-ьсо|1-есого", "m.sg.dat": "1-есомꙋ|1-емꙋ", "m.sg.acc": "1-ьто", "m.sg.ins": "1-имь", "m.sg.loc": "1-емь|1-есомь", "m.sg.voc": "@m.sg.nom"}))
+    rows.append(("PPcto", "чьто:ч", 0, "1=base", {"n.sg.nom": "1-ьто", "n.sg.gen": "1-есо|1-ьсо|1-есого", "n.sg.dat": "1-есомꙋ|1-емꙋ", "n.sg.acc": "1-ьто", "n.sg.ins": "1-имь", "n.sg.loc": "1-емь|1-есомь", "n.sg.voc": "@n.sg.nom"}))
     # the third person / relative: obliques on the empty stem
     third = {"m": {"nom": "1-и", "gen": "1-ѥго|1-него", "dat": "1-ѥмꙋ|1-немꙋ", "acc": "1-и|1-нь|1-ѥго", "ins": "1-имь|1-нимь", "loc": "1-немь|1-ѥмь"},
              "f": {"nom": "1-ꙗ", "gen": "1-ѥѩ|1-неѩ", "dat": "1-ѥи|1-неи", "acc": "1-ѭ|1-нѭ", "ins": "1-ѥѭ|1-неѭ", "loc": "1-неи|1-ѥи"},

@@ -2,23 +2,17 @@
 //! the abbreviated STEM is constant while the ending follows the full
 //! lemma's paradigm, and (per row) the print writes the result unaccented
 //! or keeps the tail's accents. That makes the class GENERATABLE from the
-//! committed table `data/titlo.tsv`, not listable form by form.
-//!
-//! The tree form is a wrapper: `(abbr "гдⷭ҇" (n госпо́дь :case gen :num sg))`
-//! renders the child through the crate, cuts the row's full prefix off by
-//! base-letter count, and attaches the abbreviated prefix — explicit and
-//! refutable like every other node, with the round-trip invariant as the
-//! arbiter of every generated form.
+//! committed table `lexicon/titlo.tsv` (abbreviated prefix, the full
+//! prefix as a base-letter skeleton, the full lemma, part of speech,
+//! accent mode, the family's token count in the pinned print), not
+//! listable form by form: [`abbreviate`] cuts the row's full prefix off a
+//! form by base-letter count and attaches the abbreviated one. The
+//! treebank's `(abbr "гдⷭ҇" X)` wrapper is its consumer.
 
-use std::path::PathBuf;
+use crate::cell::Pos;
 use std::sync::OnceLock;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Pos {
-    Noun,
-    Adjective,
-    Verb,
-}
+const TABLE: &str = include_str!("../lexicon/titlo.tsv");
 
 pub struct Row {
     /// the abbreviated prefix as printed («гдⷭ҇»)
@@ -34,25 +28,18 @@ pub struct Row {
     pub count: u32,
 }
 
-fn tsv_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../data/titlo.tsv")
-}
-
-/// The committed rows. Absent or malformed table is a hard error at first
-/// use — the file is repo data, not a fetched source.
+/// The committed rows; a malformed table is a hard error at first use.
 pub fn rows() -> &'static [Row] {
     static ROWS: OnceLock<Vec<Row>> = OnceLock::new();
     ROWS.get_or_init(|| {
-        let text = std::fs::read_to_string(tsv_path())
-            .unwrap_or_else(|e| panic!("data/titlo.tsv: {e}"));
         let mut out = Vec::new();
-        for (i, line) in text.lines().enumerate() {
+        for (i, line) in TABLE.lines().enumerate() {
             if line.starts_with('#') || line.trim().is_empty() {
                 continue;
             }
             let fields: Vec<&str> = line.split('\t').collect();
             let [abbr, full, lemma, pos, mode, count, _note] = fields[..] else {
-                panic!("data/titlo.tsv line {}: expected 7 columns", i + 1);
+                panic!("lexicon/titlo.tsv line {}: expected 7 columns", i + 1);
             };
             out.push(Row {
                 abbr: leak(abbr),
@@ -62,15 +49,15 @@ pub fn rows() -> &'static [Row] {
                     "n" => Pos::Noun,
                     "a" => Pos::Adjective,
                     "v" => Pos::Verb,
-                    other => panic!("data/titlo.tsv line {}: pos {other}", i + 1),
+                    other => panic!("lexicon/titlo.tsv line {}: pos {other}", i + 1),
                 },
                 strip: match mode {
                     "strip" => true,
                     "keep" => false,
-                    other => panic!("data/titlo.tsv line {}: mode {other}", i + 1),
+                    other => panic!("lexicon/titlo.tsv line {}: mode {other}", i + 1),
                 },
                 count: count.parse().unwrap_or_else(|_| {
-                    panic!("data/titlo.tsv line {}: bad count", i + 1)
+                    panic!("lexicon/titlo.tsv line {}: bad count", i + 1)
                 }),
             });
         }
@@ -104,11 +91,12 @@ fn is_combining(c: char) -> bool {
     matches!(c, '\u{0300}'..='\u{036F}' | '\u{0483}'..='\u{0489}' | '\u{2DE0}'..='\u{2DFF}' | '\u{A66F}')
 }
 
-/// One base letter, folded for skeleton comparison (і/ї, ѻ/о merge).
+/// One base letter, folded for skeleton comparison (і/ї, ѻ/о, є/е merge).
 fn fold(c: char) -> char {
     match c {
         'ї' => 'і',
         'ѻ' => 'о',
+        'є' => 'е',
         c => c.to_lowercase().next().unwrap_or(c),
     }
 }

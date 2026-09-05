@@ -132,7 +132,7 @@ pub fn evidence_full(
 /// majority differs from the base adds `sg=`/`du=`/`pl=`; a cell that
 /// differs from its number's place adds its own entry. `-` when no cell
 /// carries stress.
-pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
+pub fn stress_column(pos: Pos, evidence: &BTreeMap<Cell, Evidence>) -> String {
     let place_of = |e: Evidence| match e {
         Evidence::Stem => Some(Place::Stem),
         Evidence::End => Some(Place::End),
@@ -140,12 +140,28 @@ pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
         Evidence::Index(n) => Some(Place::Index(n)),
         _ => None,
     };
+    // the base is the majority outside the participle blocks: `b` already
+    // says the participles are stem-stressed (E;part=S), so they must not
+    // outvote a verb's finite cells (дои́ти: дои́ши, дои́ша, доѧ́щꙋю)
+    let participle = |c: &Cell| c.block().is_some_and(|b| b.starts_with("part."));
     let (mut stem, mut end) = (0usize, 0usize);
-    for e in evidence.values() {
+    for (cell, e) in evidence {
+        if participle(cell) {
+            continue;
+        }
         match e {
             Evidence::Stem => stem += 1,
             Evidence::End => end += 1,
             _ => {}
+        }
+    }
+    if stem + end == 0 {
+        for e in evidence.values() {
+            match e {
+                Evidence::Stem => stem += 1,
+                Evidence::End => end += 1,
+                _ => {}
+            }
         }
     }
     if stem + end == 0 && !evidence.values().any(|e| matches!(e, Evidence::Index(_) | Evidence::Either | Evidence::StemLast)) {
@@ -158,7 +174,7 @@ pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
     for number in [Number::Singular, Number::Dual, Number::Plural] {
         let (mut s, mut e) = (0, 0);
         for (cell, ev) in evidence {
-            if cell.number() != Some(number) {
+            if cell.number() != Some(number) || participle(cell) {
                 continue;
             }
             match ev {
@@ -191,14 +207,18 @@ pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
             items.push(format!("{}={}", church_slavonic::cell::number_name(number), name(place)));
         }
     }
+    let base_name = if base == Place::End { "b" } else { "a" };
+    // the exceptions are read against the paradigm's own answer (the
+    // named `b` places the participles on the stem)
+    let draft = if items.is_empty() { base_name.to_string() } else { format!("{base_name}{{{}}}", items.join(";")) };
+    let spec = church_slavonic::stress::StressSpec::parse(&draft, pos).ok().flatten();
     for (cell, ev) in evidence {
         let Some(place) = place_of(*ev) else { continue };
-        let expected = cell.number().map(|n| number_place[&(n as u8)]).unwrap_or(base);
+        let expected = spec.as_ref().map(|s| s.place(*cell)).unwrap_or_else(|| cell.number().map(|n| number_place[&(n as u8)]).unwrap_or(base));
         if place != expected {
             items.push(format!("{}={}", cell.name(), name(place)));
         }
     }
-    let base_name = if base == Place::End { "b" } else { "a" };
     if items.is_empty() {
         base_name.to_string()
     } else {
@@ -268,7 +288,7 @@ pub fn fit(
         alt_matches.push((*cell, alt));
         ev.insert(*cell, e);
     }
-    let stress = stress_column(&ev);
+    let stress = stress_column(pos, &ev);
     let mut lexeme = Lexeme {
         id: id.to_string(),
         lemma: lemma.to_string(),

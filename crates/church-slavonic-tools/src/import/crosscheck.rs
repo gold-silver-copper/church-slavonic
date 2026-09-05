@@ -1,10 +1,10 @@
-//! `cargo xtask import alypy|ruwiktionary|witnesses --pos <pos> [--write]`:
+//! `cargo xtask import alypy|ruwiktionary --pos <pos> [--write]`:
 //! the cross-checking sources. Each attests cells of lexemes the Polyakov
 //! import already holds; the importer counts what the lexicon reproduces
 //! (the primary form), what it reaches (an alternative or variant), and
 //! adds the rest as variants carrying the source's provenance token
-//! (`A:p034` Alypy's page, `R:` ru.wiktionary, `W:` a witnessed line of
-//! the print). A lemma the lexicon does not hold is quarantined with the
+//! (`A:p034` Alypy's page, `R:` ru.wiktionary; the 1.x witnesses' `W:`
+//! tokens were converted once and the file retired). A lemma the lexicon does not hold is quarantined with the
 //! reason — this importer never invents lexemes.
 
 use super::fit::{canonical, translit_equal};
@@ -322,69 +322,6 @@ pub fn ruwiktionary_attestations() -> Result<Vec<Attestation>, Box<dyn Error>> {
 }
 
 // ---------------------------------------------------------------------------
-// Witnesses
-// ---------------------------------------------------------------------------
-
-/// `data/witnesses.tsv`: recension, pos, lemma, cell, form, file, quote.
-/// A noun cell is the 1.x index (number × 7 + case); a pronoun cell a
-/// name (`3.f.sg.dat`, `clit.1.pl.acc`, `refl.clit.acc`); an npron cell
-/// `g.n.case`.
-pub fn witness_attestations() -> Result<Vec<Attestation>, Box<dyn Error>> {
-    let path = crate::workspace_root().join("data/witnesses.tsv");
-    let text = std::fs::read_to_string(&path)?;
-    let cases = [Case::Nominative, Case::Genitive, Case::Dative, Case::Accusative, Case::Instrumental, Case::Locative, Case::Vocative];
-    let numbers = [Number::Singular, Number::Dual, Number::Plural];
-    let mut out = Vec::new();
-    for line in text.lines() {
-        if line.starts_with('#') || line.trim().is_empty() {
-            continue;
-        }
-        let f: Vec<&str> = line.split('\t').collect();
-        let [rec, pos, lemma, cell, form, file, ..] = f.as_slice() else { continue };
-        if *rec != "syn" {
-            continue;
-        }
-        let src = format!("W:{}", file.rsplit('/').next().unwrap_or(file).trim_end_matches(".txt"));
-        let (pos, lemma, cell) = match *pos {
-            "noun" => {
-                let i: usize = cell.parse()?;
-                (Pos::Noun, lemma.to_string(), Cell::Noun(NounCell::new(cases[i % 7], numbers[i / 7])))
-            }
-            "pronoun" => {
-                let parts: Vec<&str> = cell.split('.').collect();
-                let clitic = parts.contains(&"clit");
-                let refl = parts.first() == Some(&"refl");
-                let case = church_slavonic::cell::parse_case(parts.last().copied().unwrap_or("")).ok_or_else(|| format!("witness cell {cell}"))?;
-                if refl {
-                    (Pos::Pronoun, "себе.pron".to_string(), Cell::Pron(PronCell { clitic, person: None, gender: None, number: None, case }))
-                } else {
-                    let rest: Vec<&str> = parts.iter().copied().filter(|p| *p != "clit").collect();
-                    let person = church_slavonic::cell::parse_person(rest[0]).ok_or_else(|| format!("witness cell {cell}"))?;
-                    let (gender, number) = if rest.len() == 4 {
-                        (church_slavonic::cell::parse_gender(rest[1]), church_slavonic::cell::parse_number(rest[2]))
-                    } else {
-                        (None, church_slavonic::cell::parse_number(rest[1]))
-                    };
-                    let number = number.ok_or_else(|| format!("witness cell {cell}"))?;
-                    (Pos::Pronoun, personal_id(person, number).to_string(), Cell::Pron(PronCell { clitic, person: Some(person), gender, number: Some(number), case }))
-                }
-            }
-            "npron" => {
-                let c = PronCell::parse(cell).ok_or_else(|| format!("witness cell {cell}"))?;
-                (Pos::Pronoun, lemma.to_string(), Cell::Pron(c))
-            }
-            other => {
-                let p = Pos::parse(other).ok_or_else(|| format!("witness pos {other}"))?;
-                let c = Cell::parse(p, cell).ok_or_else(|| format!("witness cell {cell}"))?;
-                (p, lemma.to_string(), c)
-            }
-        };
-        out.push(Attestation { pos, lemma, cell, forms: vec![realise(form, &SYN)], src });
-    }
-    Ok(out)
-}
-
-// ---------------------------------------------------------------------------
 // The check and the merge
 // ---------------------------------------------------------------------------
 
@@ -437,7 +374,6 @@ pub fn import(source: &str, pos: Pos) -> Result<Outcome, Box<dyn Error>> {
     let attestations = match source {
         "alypy" => alypy_attestations()?,
         "ruwiktionary" => ruwiktionary_attestations()?,
-        "witnesses" => witness_attestations()?,
         other => return Err(format!("import {other}: unknown source").into()),
     };
     let lexicon = Lexicon::synodal();
