@@ -40,6 +40,79 @@ Baselines (1.2.0, the numbers every later part is gated against):
 | Bible treebank, noun share of all tokens (the Part 2 gate) | 9.18 % (57,986) |
 | Guesser accuracy | not measured in 1.x |
 
+### Part 1 — Synodal nouns (2026-09-04)
+
+The design proved on the richest slice. `crates/church-slavonic/lexicon/
+syn/nouns.tsv`: 13,092 lexemes, one line each (1.09 MB), imported from
+Polyakov's S entries by `cargo xtask import polyakov --pos noun --write`.
+
+- **Class tables** (`lexicon/classes/noun.tsv`, 49 classes): seeded from
+  Polyakov's paradigm legend by `scripts/polyakov-legend-to-classes.py`
+  (stem derivations `base`/`drop`/`insert`/`pal1`/`pal2`/`ext`/`cut`
+  named per class; the twin classes `N1g`/`N1x`/`N2g`/`N1c` and the
+  indeclinable `0` added), then corrected by measurement: the number
+  mark per cell from the attested primaries (`--fix-marks`: 14 cells the
+  legend left plain, e.g. every `ins.pl` of the masculines and the
+  `nom.pl` of the neuters), the primary alternative per cell from the
+  alternative-preference census, and the print's second series of
+  plural endings (-ахъ/-амъ/-ами, -ове, -ови, the zero genitive plural
+  on the full stem of the fleeting classes: ѻ҆тє́цъ) added as
+  alternatives across the classes.
+- **Stress paradigms** (`lexicon/stress.tsv`): measured, not assumed.
+  Census over the 13,092 fitted lexemes: `a` 12,082, `b` 619, `a{pl=E}`
+  20, `b{voc.sg=S}` 16, `a{ins.pl=E}` 18, `a{gen.pl=E;dat.pl=E}` 18;
+  172 distinct specs in all, none other above 11. Named: `a`, `b`
+  (built in), `c` = `S;pl=E`, `d` = `E;pl=S`; the residue stays inline.
+  The 1.x verdict (v0.8: mobile-stress tokens rejected, commonest shape
+  on 15 rows) holds under the class prior too — Synodal noun stress is
+  fixed or ending-stressed in all but ~1% of Polyakov's lexemes.
+- **Importer** (`church-slavonic-tools::import`): a source is compared
+  under what it can encode (`translit_equal`: і for the print's ї, я
+  for ѧ/ꙗ, ѡт for ѿ — the single largest lever, 12,000 cells); a form
+  tagged for several cells (`gen/acc`) never outranks one tagged for the
+  cell alone and any alternative satisfies it; the coded class competes
+  with its fleeting-vowel and velar twins (Polyakov codes ѻ҆се́лъ N1t)
+  and numbered stems are read off the attested forms (`stems=1=льв`);
+  stored forms are canonicalised to the print's typography. Noise
+  skipped and counted: titlo spellings 1,549, abbreviation marks on a
+  consonant 870, unaccented forms 128, two stress marks, unanalysed
+  398. Quarantined 585 entries with a reason (no analysed forms 429,
+  attested nominative ≠ lemma 112, class does not produce the lemma 33,
+  adjectival classes 7, no class 3, unknown class 1).
+- **Library**: `Form::print` gained the `ї` rule and `ѿ`; the class
+  engine (`paradigm`), `stress`, `inflect` (`Lexeme::inflect`, `forms`,
+  `paradigm`), `guess` (`Lexicon::guess`), the consistency test
+  (`tests/lexicon_consistency.rs`: every override and variant reproduced,
+  every nominative the lemma) and the tools' reproduction floor test
+  (`tests/polyakov_nouns.rs`).
+
+Measured (the Part 1 gate was ≥ 99% of Polyakov's noun forms reproduced
+with overrides on < 5% of entries):
+
+| Number | Value |
+|---|---|
+| Polyakov noun cells attested (after the noise filters) | 45,876 |
+| reproduced as the primary form (`inflect`) | 43,521 (94.87%) |
+| reachable through any alternative or variant (`forms`, the analyzer's view) | 44,412 (96.81%) |
+| true exceptions (no class alternative fits): cells / lexemes | 1,464 / 964 (7.36% of lexemes) |
+| alternative preferences (an override naming a non-primary alternative) | 973 cells |
+| lexemes with any override | 1,650 (12.60%) |
+| guesser, leave-one-out over 13,028 lexemes: class / cells | 94.18% / 93.52% |
+| `ра́бъ` | one line: `N1t`, `b{voc.sg=S}`, no override, gen.pl variant |
+
+**The gate is not met and the design is not refuted.** The residue, read
+in samples (NOTES.md, Part 1): the source's own spelling variants (ль/л
+before н and ц: нача́лства, слꙋжи́телницꙋ; ѵ/и/в: наѵи́нъ : навѵ́номъ;
+ѣ/е: премѣне́ніе : премене́ній), per-lexeme alternative preferences (the
+second plural series, the gen-shaped accusative), the suppletive and
+mobile handful (ѻ҆́ко : ѻ҆чеса̀, сло́во : словесѐ, де́нь : днѝ) — lexical
+facts, which is what the columns are for. Against 1.x: the same source
+took 8,313 rows of stored cells plus five fact-cell mechanisms to reach
+its by-construction 100%; 2.0 states the same knowledge as 13,092 lines
+of class + stress + provenance, and reads back 94.9% of the cells from
+two named paradigms. Recorded as a shortfall against the written gate;
+Part 2 proceeds.
+
 ## 1.2.0 — the Synodal pronoun release
 
 The commonest words of the language render from cells: Synodal

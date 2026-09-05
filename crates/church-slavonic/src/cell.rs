@@ -54,13 +54,13 @@ impl Pos {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct NounCell {
     pub case: Case,
     pub number: Number,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct AdjCell {
     /// `None` where the class has one series only.
     pub series: Option<Series>,
@@ -71,7 +71,7 @@ pub struct AdjCell {
 }
 
 /// The finite tenses a verb class may declare.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum FiniteTense {
     Present,
     Imperfect,
@@ -81,13 +81,13 @@ pub enum FiniteTense {
 }
 
 /// A participle's tense: present or past.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum PartTense {
     Present,
     Past,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum VerbCell {
     Finite { tense: FiniteTense, person: Person, number: Number },
     Imperative { person: Person, number: Number },
@@ -107,7 +107,7 @@ pub enum VerbCell {
 /// A pronoun cell. The personal pronoun sets `person` (and `gender` in the
 /// third person); a non-personal pronoun sets `gender`; the reflexive sets
 /// neither person nor number.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct PronCell {
     pub clitic: bool,
     pub person: Option<Person>,
@@ -116,7 +116,7 @@ pub struct PronCell {
     pub case: Case,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Cell {
     Noun(NounCell),
     Adj(AdjCell),
@@ -443,6 +443,20 @@ impl Cell {
             Pos::Closed => return None,
         })
     }
+    /// The cell's number, where it has one.
+    pub fn number(&self) -> Option<Number> {
+        match self {
+            Cell::Noun(c) => Some(c.number),
+            Cell::Adj(c) => Some(c.number),
+            Cell::Verb(VerbCell::Finite { number, .. })
+            | Cell::Verb(VerbCell::Imperative { number, .. })
+            | Cell::Verb(VerbCell::LPart { number, .. })
+            | Cell::Verb(VerbCell::Participle { number, .. }) => Some(*number),
+            Cell::Verb(VerbCell::Infinitive) => None,
+            Cell::Pron(c) => c.number,
+        }
+    }
+
     pub fn pos(&self) -> Pos {
         match self {
             Cell::Noun(_) => Pos::Noun,

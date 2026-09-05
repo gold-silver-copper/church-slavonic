@@ -1,0 +1,58 @@
+# Noun letter classes, seeded from Polyakov's legend (flexslav.htm) by
+# scripts/polyakov-legend-to-classes.py; hand-maintained since.
+# Columns: class, strip (lemma letters that are the ending), stems
+# (n=derivation; base|drop|insert|pal1[:x]|pal2[:x]|ext:suffix), then
+# cell=spec where spec is `|`-separated alternatives, primary first:
+#   N-ending[^]   stem N plus the ending, ^ = the number mark
+#   @cell         the same as that cell; @lemma the lemma itself
+#   anim:… inan:… an alternative that applies to that animacy only
+class	exemplar	strip	stems	nom.sg	gen.sg	dat.sg	acc.sg	ins.sg	loc.sg	voc.sg	nom.du	gen.du	dat.du	acc.du	ins.du	loc.du	voc.du	nom.pl	gen.pl	dat.pl	acc.pl	ins.pl	loc.pl	voc.pl
+N1a	край	1	1=base	1-й	1-ѧ	1-ю|1-еви	inan:@nom.sg|anim:@gen.sg	1-емъ	1-и|1-ѣ	1-ю	1-ѧ^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-евъ^	1-емъ^	@gen.pl|1-и^	1-и^	1-ехъ	@nom.pl
+N1c	отецъ	1	1=base;2=base;3=pal1	2-ъ	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-емъ	1-ѣ	3-е	1-а^	1-ꙋ^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-ы	1-евъ^|1-ъ^|1-овъ^	1-емъ^|1-амъ	@gen.pl|1-ы	1-ы^	1-ѣхъ|1-ахъ	@nom.pl
+N1c*	отецъ	1	1=drop;2=base;3=pal1:drop	2-ъ	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-емъ	1-ѣ	3-е	1-а^	1-ꙋ^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-ы	1-евъ^|2-ъ^|1-овъ^	1-емъ^|1-амъ	@gen.pl|1-ы	1-ы^	1-ѣхъ|1-ахъ	@nom.pl
+N1e	іерей	1	1=base	1-й	1-а|1-ѧ	1-ю|1-еви	inan:@nom.sg|anim:@gen.sg	1-емъ|1-омъ	1-и|1-ѣ	1-ю|1-е	1-а^	1-ю^	1-ема|1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-е^	1-овъ^|1-евъ^	1-омъ^|1-емъ^	@gen.pl|1-и^	1-и^	1-ехъ	@nom.pl
+N1g	отрокъ	1	1=base;2=pal2;3=pal1	1-ъ	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-омъ	2-ѣ|1-ѣ	3-е|1-е	1-а^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	2-и	1-овъ^|1-ъ^	1-омъ^|1-амъ	1-и|@gen.pl	1-и^|1-ами	2-ѣхъ|1-ахъ	@nom.pl
+N1i	агапій	1	1=base	1-й	1-а|1-ѧ	1-ю	inan:@nom.sg|anim:@gen.sg	1-емъ	1-и|1-ѣ	1-е|1-ю	1-ѧ^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-евъ^	1-емъ^	@gen.pl|1-и^	1-и^	1-ехъ	@nom.pl
+N1in	галилеанинъ	3	1=base	1-инъ	1-ина	1-инꙋ	inan:@nom.sg|anim:@gen.sg	1-иномъ	1-инѣ	1-ине	1-а^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-е	1-ъ	1-омъ^	@gen.pl|1-ы	1-ы^	1-ѣхъ	@nom.pl
+N1j	конь	1	1=base	1-ь	1-ѧ|1-а	1-ю|1-еви	inan:@nom.sg|anim:@gen.sg	1-емъ	1-и|1-ѣ	1-ю	1-ѧ^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-и|1-іе|1-е^	1-ей|1-ь^	1-емъ^	@gen.pl|1-и	1-и^|1-ьми|1-ми	1-ехъ	@nom.pl
+N1j*	перстень	1	1=drop;2=base	2-ь	1-ѧ	1-ю|1-еви	inan:@nom.sg|anim:@gen.sg	1-емъ	1-и|1-ѣ	1-ю	1-ѧ^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-и|1-іе	1-ей|2-ь^	1-емъ^	@gen.pl|1-и	1-и^|1-ьми|1-ми	1-ехъ	@nom.pl
+N1k	отрокъ	1	1=base;2=pal2;3=pal1	1-ъ	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-омъ	2-ѣ|1-ѣ	3-е|1-е	1-а^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	2-ы	1-овъ^|1-ъ^	1-омъ^|1-амъ	1-и|@gen.pl	1-и^|1-ами	2-ѣхъ|1-ахъ	@nom.pl
+N1k*	свитокъ	1	1=drop;2=base;3=pal2:drop;4=pal1:drop	2-ъ	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-омъ	3-ѣ	4-е	1-а^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	3-ы	1-овъ^|2-ъ^	1-омъ^	1-и	1-и^	1-ахъ|3-ѣхъ	@nom.pl
+N1s	мужъ	1	1=base	1-ъ	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-емъ	1-и	1-ꙋ	1-а^|1-ѧ^	1-ꙋ^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-и|1-іе|1-еве	1-ей	1-емъ^	1-ы|1-и|@gen.pl	1-ы^|1-ами	1-ахъ	@nom.pl
+N1sj	врачь	1	1=base	1-ь	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-емъ	1-и|1-ѣ	1-ꙋ	1-а^|1-ѧ^	1-ꙋ^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-и|1-іе|1-еве	1-ей	1-емъ^	1-и|1-ы|@gen.pl	1-и^|1-ы^|1-ами	1-ахъ	@nom.pl
+N1t	рабъ	1	1=base	1-ъ	1-а	1-ꙋ|1-ови	inan:@nom.sg|anim:@gen.sg	1-омъ	1-ѣ	1-е	1-а^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-и|1-ове	1-овъ^|1-ъ^	1-омъ^|1-амъ	1-ы|@gen.pl	1-ы^|1-ами|1-ми|1-и	1-ѣхъ|1-ахъ	@nom.pl
+N1t*	оселъ	1	1=drop;2=base	2-ъ	1-а	1-ꙋ|1-ови	inan:@nom.sg|anim:@gen.sg	1-омъ	1-ѣ	1-е	1-а^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-и|1-ове	1-овъ^|2-ъ^	1-омъ^|1-амъ	1-ы|@gen.pl	1-ы^|1-ами|1-ми|1-и	1-ѣхъ|1-ахъ	@nom.pl
+N1x	отрокъ	1	1=base;2=pal2;3=pal1	1-ъ	1-а	1-ꙋ	inan:@nom.sg|anim:@gen.sg	1-омъ	2-ѣ|1-ѣ	3-е|1-е	1-а^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	2-и	1-овъ^|1-ъ^	1-омъ^|1-амъ	1-и|@gen.pl	1-и^|1-ами	2-ѣхъ|1-ахъ	@nom.pl
+N2c	солнце	1	1=base	1-е	1-а	1-ꙋ	@nom.sg	1-емъ	1-ѣ|1-ы	@nom.sg	1-ы^	1-ꙋ^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-а	1-ъ	1-емъ^	@nom.pl	1-ы^|1-ами	1-ахъ	@nom.pl
+N2c*	сердце	1	1=base;2=insert	1-е	1-а	1-ꙋ	@nom.sg	1-емъ	1-ѣ|1-ы	@nom.sg	1-ы^	1-ꙋ^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-а^	2-ъ	1-емъ^	@nom.pl	1-ы^|1-ами	1-ахъ	@nom.pl
+N2e	еѵангеліе	1	1=base;2=cut	1-е	1-а	1-ю	@nom.sg	1-емъ	1-и	@nom.sg	1-и^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-ѧ	1-й	1-емъ^|1-ѧмъ	@nom.pl	2-ьми|1-и^|1-ми|1-ѧми	1-ихъ|1-ѧхъ	@nom.pl
+N2g	облако	1	1=base;2=pal2	1-о	1-а	1-ꙋ	@nom.sg	1-омъ	2-ѣ|1-ѣ	@nom.sg	2-ѣ^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-а	1-ъ	1-омъ^|1-амъ	@nom.pl	1-и^|1-ами	2-ѣхъ|1-ахъ	@nom.pl
+N2i	знаменіе	1	1=base;2=cut	1-е	1-ѧ	1-ю	@nom.sg	1-емъ	1-и	@nom.sg	1-и^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-ѧ^	1-й	1-емъ^|1-ѧмъ	@nom.pl	2-ьми|1-и^|1-ми|1-ѧми	1-ихъ|1-ѧхъ	@nom.pl
+N2j	море	1	1=base	1-е	1-ѧ	1-ю	@nom.sg	1-емъ	1-и	@nom.sg	1-и^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-ѧ	1-ей	1-емъ^|1-ѧмъ	@nom.pl	1-и^	1-ѧхъ|1-ихъ	@nom.pl
+N2k	облако	1	1=base;2=pal2	1-о	1-а	1-ꙋ	@nom.sg	1-омъ	2-ѣ|1-ѣ	@nom.sg	2-ѣ^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-а^	1-ъ	1-омъ^|1-амъ	@nom.pl	1-и^|1-ами	2-ѣхъ|1-ахъ	@nom.pl
+N2s	жилище	1	1=base	1-е	1-а	1-ꙋ	@nom.sg	1-емъ	1-и	@nom.sg	1-и^|1-ѧ^	1-ю^	1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-а^	1-ъ	1-емъ^|1-амъ	@nom.pl|1-ы^|1-ѧ^	1-ами|1-и^	1-ахъ|1-ихъ	@nom.pl
+N2t	село	1	1=base	1-о	1-а	1-ꙋ	@nom.sg	1-омъ	1-ѣ	@nom.sg	1-ѣ^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-а^	1-ъ	1-омъ^|1-амъ	@nom.pl	1-ы|1-ами	1-ѣхъ|1-ахъ	@nom.pl
+N2t*	окно	1	1=base;2=insert	1-о	1-а	1-ꙋ	@nom.sg	1-омъ	1-ѣ	@nom.sg	1-ѣ^	1-ꙋ^	1-ома	@nom.du	@dat.du	@gen.du	@nom.du	1-а^	2-ъ	1-амъ|1-омъ^	@nom.pl	1-ами|1-ы^	1-ахъ|1-ѣхъ	@nom.pl
+N3a	стая	1	1=base;2=cut	1-ѧ	1-и	1-и	1-ю	1-ею	1-и	1-е	1-и^	1-ю^	1-ѧма	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-й|2-ей	1-ѧмъ	@nom.pl|@gen.pl	1-ѧми	1-ѧхъ	@nom.pl
+N3c	улица	1	1=base	1-а	1-ы	1-ѣ	1-ꙋ	1-ею	1-ѣ	1-е	1-ы^	1-ꙋ^	1-ама	@nom.du	@dat.du	@gen.du	@nom.du	1-ы^	1-ъ	1-амъ	@nom.pl|@gen.pl	1-ами	1-ахъ	@nom.pl
+N3c*	овца	1	1=base;2=insert	1-а	1-ы	1-ѣ	1-ꙋ	1-ею	1-ѣ	1-е	1-ы^	1-ꙋ^	1-ама	@nom.du	@dat.du	@gen.du	@nom.du	1-ы^	2-ъ	1-амъ	@nom.pl|@gen.pl	1-ами	1-ахъ	@nom.pl
+N3e	літургіа	1	1=base;2=cut	@lemma	1-и	1-и	1-ю	1-ею	1-и	1-е	1-и^	1-ю^	1-ама|1-ѧма	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-й|2-ей	1-амъ|1-ѧмъ	@nom.pl|@gen.pl	1-ами|1-ѧми	1-ахъ|1-ѧхъ	@nom.pl
+N3i	судія	1	1=base;2=cut	@lemma	1-и	1-и	1-ю	1-ею	1-и	1-е	1-и^	1-ю^	1-ѧма	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-й|2-ей	1-ѧмъ	@nom.pl|@gen.pl	1-ѧми	1-ѧхъ	@nom.pl
+N3j	недѣля	1	1=base	1-ѧ	1-и	1-и|1-ѣ	1-ю	1-ею	1-и	1-е	1-и^	1-ю^	1-ѧма	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-ь|1-ей	1-ѧмъ	@nom.pl|@gen.pl	1-ѧми	1-ѧхъ|1-ехъ	@nom.pl
+N3j*	земля	1	1=base;2=insert	1-ѧ	1-и	1-и|1-ѣ	1-ю	1-ею	1-и	1-е	1-и^	1-ю^	1-ѧма	@nom.du	@dat.du	@gen.du	@nom.du	1-и	2-ь	1-ѧмъ	@nom.pl|@gen.pl	1-ѧми	1-ѧхъ	@nom.pl
+N3k	рука	1	1=base;2=pal2	1-а	1-и	1-ѣ|2-ѣ	1-ꙋ	1-ою	2-ѣ|1-ѣ	1-о	2-ѣ^	1-ꙋ^	1-ама	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-ъ	1-амъ	@nom.pl|@gen.pl	1-ами	1-ахъ	@nom.pl
+N3k*	егѵптянка	1	1=base;2=insert;3=pal2	1-а	1-и	3-ѣ|1-ѣ	1-ꙋ	1-ою	3-ѣ|1-ѣ	1-о	3-ѣ^	1-ꙋ^	1-ама	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	2-ъ	1-амъ	@nom.pl|@gen.pl	1-ами	1-ахъ	@nom.pl
+N3s	юноша	1	1=base	1-а	1-и	1-и|1-ѣ	1-ꙋ	1-ею	1-и	1-е	1-и^	1-ꙋ^	1-ама|1-ема	@nom.du	@dat.du	@gen.du	@nom.du	1-ы|1-и^	1-ей|1-ъ	1-амъ|1-омъ^	1-ы|1-и^|1-ъ	1-ами	1-ахъ	@nom.pl
+N3t	жена	1	1=base	1-а	1-ы	1-ѣ	1-ꙋ	1-ою	1-ѣ	1-о|1-е	1-ѣ^	1-ꙋ^	1-ама	@nom.du	@dat.du	@gen.du	@nom.du	1-ы^	1-ъ	1-амъ	@nom.pl|@gen.pl	1-ами	1-ахъ|1-ѣхъ	@nom.pl
+N3t*	гривна	1	1=base;2=insert	1-а	1-ы	1-ѣ	1-ꙋ	1-ою	1-ѣ	1-о	1-ѣ^	1-ꙋ^	1-ама	@nom.du	@dat.du	@gen.du	@nom.du	1-ы^	2-ъ	1-амъ	@nom.pl|@gen.pl	1-ами	1-ахъ	@nom.pl
+N41	заповѣдь	1	1=base	1-ь	1-и	1-и	@nom.sg	1-ію	1-и	1-е	1-и^	1-ію^	1-ема|1-ьма	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-ей	1-емъ|1-ѧмъ	@nom.pl|@gen.pl	1-ьми|1-ами|1-ми	1-ехъ|1-ѣхъ|1-ѧхъ	@nom.pl
+N42	путь	1	1=base	1-ь	1-и	1-и	@nom.sg	1-емъ	1-и	1-ь|1-и	1-и^	1-ію	1-ьма	@nom.du	@dat.du	@gen.du	@nom.du	1-іе	1-ій|1-ей	1-емъ^	1-и^	1-ьми	1-ехъ	@nom.pl
+N43	степень	1	1=base	1-ь	1-е	1-и|1-ю	@nom.sg	1-емъ	1-и	@nom.sg	1-и^	1-ію	1-ема|1-ьма	@nom.du	@dat.du	@gen.du	@nom.du	1-и^	1-ій|1-ей	1-емъ^	@nom.pl	1-ьми	1-ѣхъ	@nom.pl
+N43*	день	1	1=drop;2=base	2-ь	1-е	1-ю|1-и|1-еви	@nom.sg	1-емъ	1-и	@nom.sg	1-и^	1-ію|1-ю	1-ьма	@nom.du	@dat.du	@gen.du	@nom.du	1-іе|1-и^	1-ій|1-ей	1-емъ^	@nom.pl	2-ьми	1-ехъ	@nom.pl
+N5*ov	церковь	1	1=drop;2=base	2-ь	1-е	1-и	@nom.sg	2-ію	1-и	@nom.sg	1-и^	2-ію^	1-ама	@nom.du	@dat.du	@gen.du	@nom.du	2-и^	1-ей	1-амъ	@nom.pl	1-ами	1-ахъ	@nom.pl
+N5en	имя	1	1=base;2=ext:ен	@lemma	2-е	2-и	@nom.sg	2-емъ	2-и	@nom.sg	2-и^	2-ꙋ	2-ема|2-ама	@nom.du	@dat.du	@gen.du	@nom.du	2-а	2-ъ	2-омъ^|2-емъ^	@nom.pl	2-ы	2-ѣхъ|2-ехъ	@nom.pl
+N5er	мати	1	1=base;2=ext:ер	@lemma	2-е	2-и	2-ь	2-ію	2-и	@nom.sg	2-и^	2-ію^	2-ема	@nom.du	@dat.du	@gen.du	@nom.du	2-и^	2-ій|2-ей	2-емъ	@nom.pl|@gen.pl	2-ьми	2-ехъ	@nom.pl
+N5es	небо	1	1=base;2=ext:ес	@lemma	2-е	2-и	@nom.sg	2-емъ	2-и	@nom.sg	2-и^	2-ꙋ	2-ема	@nom.du	@dat.du	@gen.du	@nom.du	2-а	2-ъ	2-емъ^	@nom.pl	2-ы	2-ѣхъ	@nom.pl
+N5et	осля	1	1=base;2=ext:ѧт	@lemma	2-е	2-и	@nom.sg	2-емъ	2-и	@nom.sg	2-ы	2-ꙋ	2-ома	@nom.du	@dat.du	@gen.du	@nom.du	2-а	2-ъ	2-емъ^|2-омъ^	@nom.pl	2-ы	2-ѣхъ|2-ехъ	@nom.pl
+N5ov	свекры	1	1=base;2=ext:ов	@lemma	2-е	2-и	2-ь	2-ію	2-и	@nom.sg	2-и^	2-ію^	2-ама	@nom.du	@dat.du	@gen.du	@nom.du	2-и^	2-ей	2-амъ	@nom.pl|@gen.pl	2-ами	2-ахъ	@nom.pl
+0	-	0	1=base	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma

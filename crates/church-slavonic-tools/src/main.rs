@@ -11,10 +11,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args().skip(1);
     match args.next().as_deref() {
         Some("eval") => church_slavonic_tools::eval::run(args.collect()),
+        Some("import") => church_slavonic_tools::import::run(args.collect()),
         Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
         Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),
         Some("-h") | Some("--help") | None => {
-            eprintln!("cargo xtask <eval [--legacy] | build-treebank | check-treebank>");
+            eprintln!("cargo xtask <eval [--legacy] | import <source> --pos <pos> [--write] | build-treebank | check-treebank>");
             Ok(())
         }
         Some(other) => Err(format!("unknown xtask command: {other}").into()),

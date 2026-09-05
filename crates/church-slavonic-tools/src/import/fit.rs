@@ -1,0 +1,316 @@
+//! Fitting an attested paradigm to a class and a stress paradigm.
+//!
+//! Given the attested forms per cell (primary first) and a candidate
+//! class, the fit finds the stress paradigm that reproduces the most
+//! attested primaries, then lists what the class + paradigm still miss:
+//! overrides (a primary they do not produce) and variants (other attested
+//! forms they do not produce either).
+
+use church_slavonic::cell::{Cell, Pos};
+use church_slavonic::form::Form;
+use church_slavonic::grammar::{Number, Recension};
+use church_slavonic::lexicon::{Lexeme, Provenance};
+use church_slavonic::paradigm::{Class, Subject};
+use church_slavonic::stress::{Place, resolve};
+use std::collections::BTreeMap;
+
+/// The attested forms of one cell, primary first, as print strings.
+pub type Attested = BTreeMap<Cell, Vec<String>>;
+
+/// Cells whose every attestation came from a bundled tag set (`gen/acc`):
+/// the source could not tell the cell's own form from the other's, so any
+/// alternative the class offers satisfies it.
+pub type Bundled = std::collections::BTreeSet<Cell>;
+
+/// What the stress of one attested primary says about the paradigm.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Evidence {
+    Stem,
+    End,
+    /// Stem and ending coincide here (no ending vowel): says nothing.
+    Either,
+    /// Neither: an explicit index.
+    Index(u8),
+    /// The letters differ; stress unreadable.
+    Letters,
+    /// The attested form carries no stress.
+    None,
+}
+
+/// Are two print forms one form up to what a civil transliteration cannot
+/// encode? Polyakov and ru.wiktionary write `і` for the print's positional
+/// `ї` and `я` for both `ꙗ` and `ѧ`; a source form differing from the
+/// prediction only there is the prediction's (lookup invariant 5 of 1.x,
+/// now an import rule). Equal spellings are equal.
+pub fn translit_equal(a: &str, b: &str) -> bool {
+    use unicode_normalization::UnicodeNormalization;
+    let fold = |s: &str| -> String {
+        let folded: String = s
+            .nfc()
+            .map(|c| match c {
+                'ї' => 'і',
+                'ꙗ' => 'ѧ',
+                other => other,
+            })
+            .collect();
+        // the ligature ѿ against a spelled-out ѡ҆т/ѡт
+        folded.replace("ѡ\u{486}т", "ѿ").replace("ѡт", "ѿ")
+    };
+    fold(a) == fold(b)
+}
+
+/// Read the stress evidence of an attested primary against the class's
+/// letters for the cell (any alternative), and which alternative matched.
+pub fn evidence(class: &Class, subject: &Subject<'_>, lemma_stress: Option<u8>, cell: Cell, printed: &str) -> Evidence {
+    evidence_with_alt(class, subject, lemma_stress, cell, printed).0
+}
+
+pub fn evidence_with_alt(
+    class: &Class,
+    subject: &Subject<'_>,
+    lemma_stress: Option<u8>,
+    cell: Cell,
+    printed: &str,
+) -> (Evidence, Option<usize>) {
+    let (e, m) = evidence_full(class, subject, lemma_stress, cell, printed);
+    (e, m.map(|m| m.0))
+}
+
+/// Does the attested print carry the number mark — a kamora, or a wide
+/// `ѡ`/`є` where the class's letters have the narrow one?
+fn observed_mark(attested: &Form, class_letters: &str) -> bool {
+    if attested.number_mark {
+        return true;
+    }
+    attested
+        .letters
+        .chars()
+        .zip(class_letters.chars())
+        .any(|(a, c)| (a == 'ѡ' && c == 'о') || (a == 'є' && c == 'е'))
+}
+
+/// Evidence, the matched alternative, and whether the print marked it.
+pub fn evidence_full(
+    class: &Class,
+    subject: &Subject<'_>,
+    lemma_stress: Option<u8>,
+    cell: Cell,
+    printed: &str,
+) -> (Evidence, Option<(usize, bool)>) {
+    let attested = Form::from_print(printed);
+    let key = attested.key();
+    let alts = class.letters(cell, subject);
+    let Some((index, letters)) = alts
+        .iter()
+        .enumerate()
+        .find(|(_, l)| Form::new(l.letters.clone(), None, false).key() == key)
+    else {
+        return (Evidence::Letters, None);
+    };
+    let index = (index, observed_mark(&attested, &letters.letters));
+    let Some(k) = attested.stress else { return (Evidence::None, Some(index)) };
+    let letters = &alts[index.0];
+    let total = attested.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count();
+    let stem = resolve(Place::Stem, lemma_stress, letters.stem_vowels, total);
+    let end = resolve(Place::End, lemma_stress, letters.stem_vowels, total);
+    let e = match (stem == Some(k), end == Some(k)) {
+        (true, true) => Evidence::Either,
+        (true, false) => Evidence::Stem,
+        (false, true) => Evidence::End,
+        (false, false) => Evidence::Index(k),
+    };
+    (e, Some(index))
+}
+
+/// Build the canonical stress column from per-cell evidence: the base
+/// (`a` or `b`) is the majority over unambiguous cells; a number whose
+/// majority differs from the base adds `sg=`/`du=`/`pl=`; a cell that
+/// differs from its number's place adds its own entry. `-` when no cell
+/// carries stress.
+pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
+    let place_of = |e: Evidence| match e {
+        Evidence::Stem => Some(Place::Stem),
+        Evidence::End => Some(Place::End),
+        Evidence::Index(n) => Some(Place::Index(n)),
+        _ => None,
+    };
+    let (mut stem, mut end) = (0usize, 0usize);
+    for e in evidence.values() {
+        match e {
+            Evidence::Stem => stem += 1,
+            Evidence::End => end += 1,
+            _ => {}
+        }
+    }
+    if stem + end == 0 && !evidence.values().any(|e| matches!(e, Evidence::Index(_) | Evidence::Either)) {
+        // no readable stress at all: an accented lemma is stem-stressed by
+        // default (`a`), an unaccented one has none
+        return if evidence.values().all(|e| *e == Evidence::None) && !evidence.is_empty() { "-" } else { "a" }.to_string();
+    }
+    let base = if end > stem { Place::End } else { Place::Stem };
+    let mut number_place: BTreeMap<u8, Place> = BTreeMap::new();
+    for number in [Number::Singular, Number::Dual, Number::Plural] {
+        let (mut s, mut e) = (0, 0);
+        for (cell, ev) in evidence {
+            if cell.number() != Some(number) {
+                continue;
+            }
+            match ev {
+                Evidence::Stem => s += 1,
+                Evidence::End => e += 1,
+                _ => {}
+            }
+        }
+        let place = if s + e == 0 {
+            base
+        } else if e > s {
+            Place::End
+        } else if s > e {
+            Place::Stem
+        } else {
+            base
+        };
+        number_place.insert(number as u8, place);
+    }
+    let name = |p: Place| match p {
+        Place::Stem => "S".to_string(),
+        Place::End => "E".to_string(),
+        Place::Index(n) => n.to_string(),
+    };
+    let mut items: Vec<String> = Vec::new();
+    for number in [Number::Singular, Number::Dual, Number::Plural] {
+        let place = number_place[&(number as u8)];
+        if place != base {
+            items.push(format!("{}={}", church_slavonic::cell::number_name(number), name(place)));
+        }
+    }
+    for (cell, ev) in evidence {
+        let Some(place) = place_of(*ev) else { continue };
+        let expected = cell.number().map(|n| number_place[&(n as u8)]).unwrap_or(base);
+        if place != expected {
+            items.push(format!("{}={}", cell.name(), name(place)));
+        }
+    }
+    let base_name = if base == Place::End { "b" } else { "a" };
+    if items.is_empty() {
+        base_name.to_string()
+    } else {
+        format!("{base_name}{{{}}}", items.join(";"))
+    }
+}
+
+/// A source form in the print's own typography.
+pub fn canonical(printed: &str) -> String {
+    Form::from_print(printed).print(Recension::Synodal)
+}
+
+/// The result of fitting one class.
+pub struct Fit {
+    pub lexeme: Lexeme,
+    /// Attested primaries the fit reproduces as the PRIMARY form.
+    pub reproduced: usize,
+    /// Attested primaries reachable through any alternative or variant
+    /// (the analyzer's view).
+    pub reachable: usize,
+    /// Overrides whose form no class alternative produces: true exceptions.
+    pub exceptions: usize,
+    pub attested: usize,
+    /// Cells whose letters the class gets wrong.
+    pub letter_misses: Vec<Cell>,
+    /// Cells whose letters are right and stress wrong (before the paradigm).
+    pub stress_misses: Vec<Cell>,
+    /// Which class alternative each attested primary's letters matched,
+    /// and whether the print marked it.
+    pub alt_matches: Vec<(Cell, Option<(usize, bool)>)>,
+    /// The stress evidence per attested cell.
+    pub evidence: BTreeMap<Cell, Evidence>,
+}
+
+/// Fit `attested` to `class`, producing a lexeme line.
+#[allow(clippy::too_many_arguments)]
+pub fn fit(
+    id: &str,
+    lemma: &str,
+    pos: Pos,
+    class: &Class,
+    gender: Option<church_slavonic::grammar::Gender>,
+    animate: Option<bool>,
+    stems: Vec<(String, String)>,
+    attested: &Attested,
+    bundled: &Bundled,
+    src: Vec<String>,
+    note: String,
+) -> Fit {
+    let lemma_form = Form::from_print(lemma);
+    let subject = Subject { lemma: &lemma_form.letters, animate, stems: &stems };
+    let mut ev = BTreeMap::new();
+    let mut letter_misses = Vec::new();
+    let mut alt_matches = Vec::new();
+    for (cell, forms) in attested {
+        let Some(primary) = forms.first() else { continue };
+        let (e, alt) = evidence_full(class, &subject, lemma_form.stress, *cell, primary);
+        if e == Evidence::Letters {
+            letter_misses.push(*cell);
+        }
+        alt_matches.push((*cell, alt));
+        ev.insert(*cell, e);
+    }
+    let stress = stress_column(&ev);
+    let mut lexeme = Lexeme {
+        id: id.to_string(),
+        lemma: lemma.to_string(),
+        pos,
+        gender,
+        animate,
+        class: class.name.clone(),
+        stress,
+        stems,
+        overrides: Vec::new(),
+        variants: Vec::new(),
+        src,
+        note,
+        provenance: Provenance::Attested,
+    };
+    let mut reproduced = 0;
+    let mut reachable = 0;
+    let mut exceptions = 0;
+    let mut stress_misses = Vec::new();
+    for (cell, forms) in attested {
+        let Some(primary) = forms.first() else { continue };
+        let predicted = lexeme.inflect(*cell).map(|f| f.print(Recension::Synodal));
+        let any_alt = lexeme.forms(*cell).iter().any(|f| translit_equal(&f.print(Recension::Synodal), primary));
+        let satisfied = predicted.as_deref().is_some_and(|p| translit_equal(p, primary))
+            || (bundled.contains(cell) && any_alt);
+        if satisfied {
+            reproduced += 1;
+            reachable += 1;
+        } else {
+            if any_alt {
+                reachable += 1;
+            } else {
+                exceptions += 1;
+            }
+            if !letter_misses.contains(cell) {
+                stress_misses.push(*cell);
+            }
+            // stored in the print's typography (the source's і where the
+            // print writes ї, its я for ѧ/ꙗ), never in the source's
+            lexeme.overrides.push((*cell, canonical(primary)));
+        }
+    }
+    // variants: other attested forms the class's alternatives do not give
+    for (cell, forms) in attested {
+        let produced: Vec<String> = lexeme.forms(*cell).iter().map(|f| f.print(Recension::Synodal)).collect();
+        let mut extra: Vec<String> = Vec::new();
+        for f in forms.iter().skip(1) {
+            let c = canonical(f);
+            if !produced.iter().any(|p| translit_equal(p, &c)) && !extra.contains(&c) {
+                extra.push(c);
+            }
+        }
+        if !extra.is_empty() {
+            lexeme.variants.push((*cell, extra));
+        }
+    }
+    Fit { lexeme, reproduced, reachable, exceptions, attested: attested.len(), letter_misses, stress_misses, alt_matches, evidence: ev }
+}

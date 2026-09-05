@@ -68,9 +68,39 @@ crates/church-slavonic/lexicon/
   syn/{nouns,adjectives,verbs,pronouns,closed}.tsv
   ocs/{nouns,adjectives,verbs,pronouns}.tsv
   quarantine.tsv                      source entries judged noise, WITH the reason
-  classes/{noun,adj,verb,pronoun}.toml  the class tables (stage 2)
-  stress.toml                         the stress paradigms (stage 3)
+  classes/{noun,adj,verb,pronoun}.tsv the class tables (stage 2)
+  stress.tsv                          the named stress paradigms (stage 3)
 ```
+
+The class tables and the stress file are tsv, not toml: the library's only
+dependency stays `unicode-normalization`, and a class is one line a reader
+can diff. The noun table was seeded from Polyakov's paradigm legend by
+`scripts/polyakov-legend-to-classes.py` and is measured against the source
+on every import (`--fix-marks` sets each cell's number mark where the
+attested primaries carry it; the alternative-preference census says which
+alternative is the majority and therefore the primary).
+
+### A class line
+
+```
+class  exemplar  strip  stems  nom.sg  gen.sg  …  voc.pl
+N1t    рабъ      1      1=base 1-ъ     1-а     …  @nom.pl
+N1c*   отецъ     1      1=drop;2=base;3=pal1:drop  2-ъ  1-а  …
+```
+
+- `strip`: how many letters of the lemma are its ending.
+- `stems`: numbered stems and how each derives from the base — `base` (the
+  lemma minus `strip` letters), `drop` (the fleeting vowel dropped, `й`
+  left behind after a vowel), `insert` (a vowel inserted before the last
+  consonant; the lexeme's `stems=ins=…` overrides the rule), `pal1[:x]` /
+  `pal2[:x]` (the first / second palatalisation), `ext:suffix`, `cut` (the
+  last letter removed). A lexeme's `stems=base=…` replaces the strip rule
+  and `stems=<n>=…` spells stem n outright (`1=льв` for ле́въ : льва̀).
+- a cell spec: `|`-separated alternatives, primary first — `N-ending` with
+  a trailing `^` for the number mark, `@cell` for the same as that cell,
+  `@lemma`, each optionally `anim:`/`inan:` for one animacy only. `inflect`
+  returns the first alternative the lexeme's animacy admits; `forms` returns
+  them all (the analyzer's view).
 
 Two lexicons, one per recension: the lemmas, the sources and the
 citation conventions differ (OCS `градъ` unaccented, Synodal `гра́дъ`
@@ -97,19 +127,26 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
   consumer may persist them.
 - **lemma**: the citation form as the recension prints it.
 - **gender** `m|f|n`; **anim** `anim|inan`.
-- **class**: a row of `classes/<pos>.toml`, seeded from Polyakov's own
+- **class**: a row of `classes/<pos>.tsv`, seeded from Polyakov's own
   paradigm codes (`N1t` ра́бъ, `N1c*` ѻ҆те́цъ, `N1k` ѻ҆́трокъ, `A1t*`,
   `V11a` …).
-- **stress**: a paradigm of `stress.toml` or an inline spelling:
-  `a<N>` fixed on stem vowel N; `b` on the ending wherever it has a vowel,
-  else the last stem vowel; named mobile paradigms (`c`, `d`, …) as the
-  Part 1 clustering defines them; `<name>{cell=N|e;…}` a paradigm with
-  per-cell exceptions; `{cell=…}` purely per-cell. `-` for OCS. The mark
-  kind (oxia/varia/kamora) is never stored — stage 4 decides it.
+- **stress**: a paradigm of `stress.tsv` or an inline spelling: `a` the
+  lemma's own stem vowel everywhere (the last stem vowel when a stem has
+  lost it); `a<N>` fixed on vowel N; `b` the ending wherever it has a
+  vowel, else the last stem vowel; the named paradigms of `stress.tsv`
+  (`c` = `S;pl=E`, `d` = `E;pl=S`, as the Part 1 census found them);
+  `<name>{cell=S|E|<N>;…}` a paradigm with exceptions, with `sg`/`du`/`pl`
+  accepted as keys for a whole number; `{…}` purely inline. `-` for OCS
+  and titlo lemmas. The mark kind (oxia/varia/kamora) is never stored —
+  stage 4 decides it.
 - **stems**: `name=letters;…` — stems the class cannot derive from the
   lemma (`obl=`, `pres=`, `aor=`, `pap=` …).
-- **overrides**: `cell=printform;…` — full print forms for cells where
-  class + stress are wrong. Each is a claim the eval checks.
+- **overrides**: `cell=printform;…` — full print forms, in the print's
+  typography, for cells where class + stress are wrong (a true exception)
+  or where the lexeme prefers a non-primary alternative of its class (an
+  alternative preference: the form is reachable through `forms` either
+  way; the override makes `inflect` return it). Each is a claim the
+  consistency test checks.
 - **variants**: `cell=printform|printform;…` — additional attested forms
   for a cell, indexed by the analyzer, never returned by `inflect`.
   Spelling variants, source disagreements and minority stresses live
@@ -159,8 +196,17 @@ any code change.
    best-fitting table for Alypy and Kaikki, the choice recorded).
 3. Invert typography on every form (`Form::from_print`), fit the stress
    paradigm, drop what class + stress reproduce, keep the rest as
-   overrides (the primary by count) or variants. A print-exact source
-   beats a transliterated primary in the same cell.
+   overrides (the primary by count) or variants, stored in the print's
+   typography. A source is compared under what it can encode
+   (`translit_equal`: Polyakov's і for the print's positional ї, я for
+   ѧ/ꙗ, a spelled-out ѡт for ѿ); a print-exact source beats a
+   transliterated primary in the same cell. A form tagged for several
+   cells at once (`gen/acc`) attests each only weakly: it never outranks
+   a form tagged for the cell alone, and any alternative satisfies it.
+   The coded class competes with its fleeting-vowel and velar twins
+   (Polyakov codes ѻ҆се́лъ N1t; its forms say N1t*) and the fit keeps the
+   best; numbered stems are read off the attested forms when that fits
+   better still.
 4. Match an existing entry by lemma + pos + class; update provenance, add
    variants; never touch an `H:` entry's columns; create an id only when
    nothing matches.
@@ -198,7 +244,7 @@ not grow.
 crates/church-slavonic/          the library (dependency: unicode-normalization)
   src/grammar.rs cell.rs form.rs orthography.rs lexicon.rs
   src/paradigm/{noun,adj,verb,pronoun}.rs stress.rs inflect.rs analyze.rs guess.rs
-  lexicon/                       the tsv and toml files, include_str!
+  lexicon/                       the tsv files, include_str!
 crates/church-slavonic-tools/    cargo xtask: import, eval, treebank
 ```
 

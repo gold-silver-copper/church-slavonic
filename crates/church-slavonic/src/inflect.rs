@@ -1,1 +1,166 @@
-//! The four stages composed: lexeme + cell -> Form (Part 1).
+//! The four stages composed: a lexeme and a cell give a [`Form`]. An
+//! override answers first (an attested print form the class + stress do
+//! not produce); otherwise the class gives the letters and the stress
+//! paradigm the position. There is no further fallback: a cell the class
+//! does not declare answers `None`.
+
+use crate::cell::Cell;
+use crate::form::Form;
+use crate::lexicon::Lexeme;
+use crate::orthography::is_vowel_letter;
+use crate::paradigm::{Class, Letters, Subject, table};
+use crate::stress::{StressSpec, resolve};
+
+impl Lexeme {
+    /// The lemma's letters (marks stripped) and stressed vowel.
+    pub fn lemma_form(&self) -> Form {
+        Form::from_print(&self.lemma)
+    }
+
+    /// The class table row, if the class is known.
+    pub fn class(&self) -> Option<&'static Class> {
+        table(self.pos).get(&self.class)
+    }
+
+    /// The stress paradigm; a malformed column is a lexicon error.
+    pub fn stress_spec(&self) -> Option<StressSpec> {
+        StressSpec::parse(&self.stress, self.pos)
+            .unwrap_or_else(|e| panic!("{}: stress column: {e}", self.id))
+    }
+
+    fn compose(&self, cell: Cell, letters: &Letters, spec: Option<&StressSpec>, lemma_stress: Option<u8>) -> Form {
+        let total = letters.letters.chars().filter(|c| is_vowel_letter(*c)).count();
+        let stress = spec.and_then(|s| resolve(s.place(cell), lemma_stress, letters.stem_vowels, total));
+        Form { letters: letters.letters.clone(), stress, number_mark: letters.mark }
+    }
+
+    /// The primary form of `cell`: the override, else class + stress.
+    /// `None` when the class does not declare the cell.
+    pub fn inflect(&self, cell: impl Into<Cell>) -> Option<Form> {
+        let cell = cell.into();
+        if let Some((_, printed)) = self.overrides.iter().find(|(c, _)| *c == cell) {
+            return Some(Form::from_print(printed));
+        }
+        let class = self.class()?;
+        let lemma = self.lemma_form();
+        let subject = Subject { lemma: &lemma.letters, animate: self.animate, stems: &self.stems };
+        let letters = class.letters(cell, &subject);
+        let first = letters.first()?;
+        Some(self.compose(cell, first, self.stress_spec().as_ref(), lemma.stress))
+    }
+
+    /// Every form of `cell`, primary first: the override or the class's
+    /// primary, the class's other alternatives, then the lexeme's
+    /// variants. Duplicates (by print) removed.
+    pub fn forms(&self, cell: impl Into<Cell>) -> Vec<Form> {
+        let cell = cell.into();
+        let mut out: Vec<Form> = Vec::new();
+        let mut push = |f: Form| {
+            if !out.iter().any(|o| o.print(crate::grammar::Recension::Synodal) == f.print(crate::grammar::Recension::Synodal)) {
+                out.push(f);
+            }
+        };
+        if let Some((_, printed)) = self.overrides.iter().find(|(c, _)| *c == cell) {
+            push(Form::from_print(printed));
+        }
+        if let Some(class) = self.class() {
+            let lemma = self.lemma_form();
+            let subject = Subject { lemma: &lemma.letters, animate: self.animate, stems: &self.stems };
+            let spec = self.stress_spec();
+            for letters in class.letters(cell, &subject) {
+                push(self.compose(cell, &letters, spec.as_ref(), lemma.stress));
+            }
+        }
+        for (_, variants) in self.variants.iter().filter(|(c, _)| *c == cell) {
+            for v in variants {
+                push(Form::from_print(v));
+            }
+        }
+        out
+    }
+
+    /// The whole paradigm in the class's cell order (overrides included).
+    pub fn paradigm(&self) -> Vec<(Cell, Form)> {
+        let Some(class) = self.class() else { return Vec::new() };
+        class.order.iter().filter_map(|c| self.inflect(*c).map(|f| (*c, f))).collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cell::{NounCell, Pos};
+    use crate::grammar::{Case, Number, Recension};
+    use crate::lexicon::parse;
+    use unicode_normalization::UnicodeNormalization;
+
+    const SYN: Recension = Recension::Synodal;
+
+    fn nfc(s: &str) -> String {
+        s.nfc().collect()
+    }
+
+    fn lexeme(line: &str) -> crate::lexicon::Lexeme {
+        let text = format!("id\tlemma\tpos\tgender\tanim\tclass\tstress\tstems\toverrides\tvariants\tsrc\tnote\n{line}\n");
+        parse(&text, Pos::Noun).expect("parses").remove(0)
+    }
+
+    fn cell(s: &str) -> NounCell {
+        NounCell::parse(s).expect("cell")
+    }
+
+    #[test]
+    fn rab_is_one_line() {
+        let rab = lexeme("рабъ.n\tра́бъ\tn\tm\tanim\tN1t\tb{voc.sg=S}\t-\t-\tgen.pl=ра̑бъ\tP:N1t\t-");
+        let p = |c: &str| rab.inflect(cell(c)).expect("cell").print(SYN);
+        assert_eq!(p("nom.sg"), nfc("ра́бъ"));
+        assert_eq!(p("gen.sg"), nfc("раба̀"));
+        assert_eq!(p("dat.sg"), nfc("рабꙋ̀"));
+        assert_eq!(p("acc.sg"), nfc("раба̀"));
+        assert_eq!(p("ins.sg"), nfc("рабо́мъ"));
+        assert_eq!(p("loc.sg"), nfc("рабѣ̀"));
+        assert_eq!(p("voc.sg"), nfc("ра́бе"));
+        assert_eq!(p("nom.pl"), nfc("рабѝ"));
+        assert_eq!(p("gen.pl"), nfc("рабѡ́въ"));
+        assert_eq!(p("dat.pl"), nfc("рабѡ́мъ"));
+        assert_eq!(p("acc.pl"), nfc("рабы̀"), "the print's plural accusative (Polyakov: рабы́ 159 tagged acc alone)");
+        assert_eq!(p("loc.pl"), nfc("рабѣ́хъ"));
+        assert_eq!(p("nom.du"), nfc("раба̑"));
+        assert_eq!(p("dat.du"), nfc("рабо́ма"));
+        let gen_pl: Vec<String> = rab.forms(cell("gen.pl")).iter().map(|f| f.print(SYN)).collect();
+        assert_eq!(gen_pl, [nfc("рабѡ́въ"), nfc("ра̑бъ")]);
+        assert_eq!(rab.paradigm().len(), 21);
+    }
+
+    #[test]
+    fn stem_stress_fleeting_vowels_and_overrides() {
+        let grad = lexeme("градъ.n\tгра́дъ\tn\tm\tinan\tN1t\ta\t-\t-\t-\tP:N1t\t-");
+        let p = |l: &crate::lexicon::Lexeme, c: &str| l.inflect(cell(c)).expect("cell").print(SYN);
+        assert_eq!(p(&grad, "gen.sg"), nfc("гра́да"));
+        assert_eq!(p(&grad, "acc.sg"), nfc("гра́дъ"));
+        assert_eq!(p(&grad, "dat.pl"), nfc("гра́дѡмъ"));
+        assert_eq!(p(&grad, "acc.pl"), nfc("гра́ды"));
+        assert_eq!(p(&grad, "nom.du"), nfc("гра̑да"));
+        let otec = lexeme("ѻтецъ.n\tѻ҆те́цъ\tn\tm\tanim\tN1c*\tb\t-\tvoc.sg=ѻ҆́тче\t-\tP:N1c*\t-");
+        assert_eq!(p(&otec, "nom.sg"), nfc("ѻ҆те́цъ"));
+        assert_eq!(p(&otec, "gen.sg"), nfc("ѻ҆тца̀"));
+        assert_eq!(p(&otec, "voc.sg"), nfc("ѻ҆́тче"), "the override");
+        assert_eq!(p(&otec, "gen.pl"), nfc("ѻ҆тцє́въ"));
+        let syn = lexeme("сынъ.n\tсы́нъ\tn\tm\tanim\tN1t\ta{pl=E;nom.pl=S}\t-\tnom.pl=сы́нове\t-\tP:N1t\t-");
+        assert_eq!(p(&syn, "gen.sg"), nfc("сы́на"));
+        assert_eq!(p(&syn, "gen.pl"), nfc("сынѡ́въ"));
+        assert_eq!(p(&syn, "nom.pl"), nfc("сы́нове"));
+        let imya = lexeme("имѧ.n\tи҆́мѧ\tn\tn\tinan\tN5en\ta{pl=E}\t-\t-\t-\tP:N5en\t-");
+        assert_eq!(p(&imya, "nom.sg"), nfc("и҆́мѧ"));
+        assert_eq!(p(&imya, "gen.sg"), nfc("и҆́мене"));
+        assert_eq!(p(&imya, "nom.pl"), nfc("и҆мена̀"));
+        assert_eq!(p(&imya, "gen.pl"), nfc("и҆ме́нъ"), "no ending vowel: the last stem vowel");
+    }
+
+    #[test]
+    fn an_unknown_class_answers_nothing() {
+        let x = lexeme("x.n\tх\tn\tm\tanim\tNOPE\ta\t-\t-\t-\t-\t-");
+        assert!(x.inflect(cell("nom.sg")).is_none());
+        assert!(x.paradigm().is_empty());
+        assert_eq!(x.inflect(NounCell::new(Case::Nominative, Number::Singular)), None);
+    }
+}

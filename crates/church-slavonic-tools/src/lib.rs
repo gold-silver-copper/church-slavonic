@@ -2,6 +2,7 @@
 //! the evaluation harness and the Bible treebank (`cargo xtask`).
 
 pub mod eval;
+pub mod import;
 pub mod legacy;
 pub mod sources;
 pub mod treebank;

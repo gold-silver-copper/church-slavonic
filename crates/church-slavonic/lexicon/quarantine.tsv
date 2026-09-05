@@ -1,1 +1,583 @@
-# Source entries judged noise, with the reason. Columns: recension pos lemma source reason
+# Source entries judged noise, with the reason. Columns: recension pos lemma source reason detail
+syn	n	а҆ва̀	P:0	no analysed forms	-
+syn	n	а҆вденагѡ̀	P:0	no analysed forms	-
+syn	n	а҆велвеѳмааха̀	P:0	no analysed forms	-
+syn	n	а҆вессалѡ́мъ	P:N1t	attested nominative differs from the lemma	а҆весало́мъ
+syn	n	а҆ггѐ	P:0	no analysed forms	-
+syn	n	а҆дамі̀	P:0	no analysed forms	-
+syn	n	а҆дамѝ	P:0	no analysed forms	-
+syn	n	а҆ддѝ	P:0	no analysed forms	-
+syn	n	а҆дѡнаі̀	P:N1e	no analysed forms	-
+syn	n	а҆дꙋ́й	P:N1e	no analysed forms	-
+syn	n	а҆емѐ	P:0	no analysed forms	-
+syn	n	а҆закі̀	P:0	no analysed forms	-
+syn	n	а҆келдама̀	P:0	no analysed forms	-
+syn	n	а҆ккаркѝ	P:0	no analysed forms	-
+syn	n	а҆лꙋ́а	P:N3e	no analysed forms	-
+syn	n	а҆маза́и	P:N1e	no analysed forms	-
+syn	n	а҆мали́къ	P:N1k	no analysed forms	-
+syn	n	а҆масі̀	P:0	no analysed forms	-
+syn	n	а҆ммѡрі́а	P:N3e	attested nominative differs from the lemma	а҆мѡрі́а
+syn	n	а҆мрѝ	P:0	no analysed forms	-
+syn	n	а҆мѡрѐ	P:0	no analysed forms	-
+syn	n	а҆ннꙋа̀	P:0	no analysed forms	-
+syn	n	а҆пами́нь	P:N41/N3j	class does not produce the lemma	а҆пами́нѧ
+syn	n	а҆покалѵ́ѱи	P:0	no analysed forms	-
+syn	n	а҆пфѡ̀	P:0	no analysed forms	-
+syn	n	а҆пѳѡ̀	P:0	no analysed forms	-
+syn	n	а҆ратѝ	P:0	no analysed forms	-
+syn	n	а҆рво̀	P:0	no analysed forms	-
+syn	n	а҆рмѐ	P:0	no analysed forms	-
+syn	n	а҆рха́нгелъ	P:N1t	attested nominative differs from the lemma	а҆рха́ггелъ
+syn	n	а҆сараі̀	P:N1e	no analysed forms	-
+syn	n	а҆свѝ	P:0	no analysed forms	-
+syn	n	а҆фні̀	P:0	no analysed forms	-
+syn	n	а҆ффѡ̀	P:0	no analysed forms	-
+syn	n	а҆іѐ	P:0	no analysed forms	-
+syn	n	а҆ꙋѝ	P:0	no analysed forms	-
+syn	n	багрѧни́ца	P:N3c	class does not produce the lemma	баграни́ца
+syn	n	безыме́нство	P:N2t	no analysed forms	-
+syn	n	безꙋтро́біе	P:N2i	no analysed forms	-
+syn	n	бла́го+же	P:N2k	no analysed forms	-
+syn	n	благовѣсти́тель	P:N1j	no analysed forms	-
+syn	n	благогла́сникъ	P:N1k	no analysed forms	-
+syn	n	благода́вецъ	P:N1c*	no analysed forms	-
+syn	n	благода́ріе	P:N2i	no analysed forms	-
+syn	n	благода́тельница	P:N3c	no analysed forms	-
+syn	n	благодаѧ́ніе	P:N2i	no analysed forms	-
+syn	n	благодѣ́йство	P:N2t	no analysed forms	-
+syn	n	благодѣ́латель	P:N1j	no analysed forms	-
+syn	n	благодѣ́ль	P:N1j	no analysed forms	-
+syn	n	благоизволе́ніе	P:N2i	no analysed forms	-
+syn	n	благоискꙋ́сство	P:N2t	no analysed forms	-
+syn	n	благомꙋ́жествіе	P:N2i	no analysed forms	-
+syn	n	благопода́тель	P:N1j	no analysed forms	-
+syn	n	благопоко́рливость	P:N41	no analysed forms	-
+syn	n	благопопече́ніе	P:N2i	no analysed forms	-
+syn	n	благопостоѧ́ніе	P:N2i	no analysed forms	-
+syn	n	благопохвале́ніе	P:N2i	no analysed forms	-
+syn	n	благопремѣне́ніе	P:N2i	no analysed forms	-
+syn	n	благопромышле́ніе	P:N2i	no analysed forms	-
+syn	n	благослове́сіе	P:N2i	no analysed forms	-
+syn	n	благослы́шаніе	P:N2i	no analysed forms	-
+syn	n	благоснисхожде́ніе	P:N2i	no analysed forms	-
+syn	n	благосовѣ́тіе	P:N2i	no analysed forms	-
+syn	n	благосогла́сіе	P:N2i	no analysed forms	-
+syn	n	благосочета́ніе	P:N2i	no analysed forms	-
+syn	n	благоспѣ́шество	P:N2t	no analysed forms	-
+syn	n	благоспѣ́ѧніе	P:N2i	no analysed forms	-
+syn	n	благотвори́тель	P:N1j	no analysed forms	-
+syn	n	благꙋго́діе	P:N2i	no analysed forms	-
+syn	n	благꙋмиле́ніе	P:N2i	no analysed forms	-
+syn	n	благꙋстрои́тельница	P:N3c	no analysed forms	-
+syn	n	благꙋче́ніе	P:N2i	no analysed forms	-
+syn	n	богобо́рство	P:N2t	no analysed forms	-
+syn	n	богобра́тъ	P:N1t	no analysed forms	-
+syn	n	богови́децъ	P:N1c*	no analysed forms	-
+syn	n	боговлады́чица	P:N3c	no analysed forms	-
+syn	n	боговочеловѣ́ченіе	P:N2i	no analysed forms	-
+syn	n	боговѣ́децъ	P:N1c*	no analysed forms	-
+syn	n	боговѣща́ніе	P:N2i	no analysed forms	-
+syn	n	боговѣща́тель	P:N1j	no analysed forms	-
+syn	n	богогла́сникъ	P:N1k	no analysed forms	-
+syn	n	богогла́съ	P:N1t	no analysed forms	-
+syn	n	богогла́сіе	P:N2i	no analysed forms	-
+syn	n	богоглаго́льникъ	P:N1k	no analysed forms	-
+syn	n	богоглаго́ліе	P:N2i	no analysed forms	-
+syn	n	богодѣ́йство	P:N2t	no analysed forms	-
+syn	n	богодѣ́йствіе	P:N2i	no analysed forms	-
+syn	n	богодѣ́латель	P:N1j	no analysed forms	-
+syn	n	богодѣ́тель	P:N1j	no analysed forms	-
+syn	n	богозда́ніе	P:N2i	no analysed forms	-
+syn	n	богозна́меніе	P:N2i	no analysed forms	-
+syn	n	богозна́ніе	P:N2i	no analysed forms	-
+syn	n	богозрѣ́ніе	P:N2i	no analysed forms	-
+syn	n	богоизбра́ніе	P:N2i	no analysed forms	-
+syn	n	богоиме́нство	P:N2t	no analysed forms	-
+syn	n	богокꙋ́пецъ	P:N1c*	no analysed forms	-
+syn	n	боголю́бецъ	P:N1c*	no analysed forms	-
+syn	n	боголю́бица	P:N3c	no analysed forms	-
+syn	n	боголю́біе	P:N2i	no analysed forms	-
+syn	n	боголѣ́піе	P:N2i	no analysed forms	-
+syn	n	богома́ти	P:N5er	no analysed forms	-
+syn	n	богомладе́нецъ	P:N1c*	no analysed forms	-
+syn	n	богомо́лецъ	P:N1c*	no analysed forms	-
+syn	n	богомы́сль	P:N41	no analysed forms	-
+syn	n	богомы́сліе	P:N2i	no analysed forms	-
+syn	n	богомꙋ́ченикъ	P:N1k	no analysed forms	-
+syn	n	богонаставле́ніе	P:N2i	no analysed forms	-
+syn	n	богонача́льникъ	P:N1k	no analysed forms	-
+syn	n	богонача́льствіе	P:N2i	no analysed forms	-
+syn	n	богонача́ліе	P:N2i	no analysed forms	-
+syn	n	богоневѣ́дѣніе	P:N2i	no analysed forms	-
+syn	n	богоненави́стникъ	P:N1k	no analysed forms	-
+syn	n	богоненави́стіе	P:N2i	no analysed forms	-
+syn	n	богоно́сецъ	P:N1c*	no analysed forms	-
+syn	n	богоно́сица	P:N3c	no analysed forms	-
+syn	n	богооте́цъ	P:N1c*	no analysed forms	-
+syn	n	богоотрокови́ца	P:N3c	no analysed forms	-
+syn	n	богоповѣ́стникъ	P:N1k	no analysed forms	-
+syn	n	богоподража́ніе	P:N2i	no analysed forms	-
+syn	n	богопозна́ніе	P:N2i	no analysed forms	-
+syn	n	богопра́отецъ	P:N1c*	no analysed forms	-
+syn	n	богопроповѣ́датель	P:N1j	no analysed forms	-
+syn	n	богопроповѣ́дникъ	P:N1k	no analysed forms	-
+syn	n	богопріе́мецъ	P:N1c*	no analysed forms	-
+syn	n	богопріе́мница	P:N3c	no analysed forms	-
+syn	n	богопріи́мецъ	P:N1c*	no analysed forms	-
+syn	n	богоро́диченъ	P:N1t*	no analysed forms	-
+syn	n	богоро́діе	P:N2i	no analysed forms	-
+syn	n	богороди́тельница	P:N3c	no analysed forms	-
+syn	n	богорожде́ніе	P:N2i	no analysed forms	-
+syn	n	богосвѣти́льникъ	P:N1k	no analysed forms	-
+syn	n	богосло́вникъ	P:N1k	no analysed forms	-
+syn	n	богослове́ніе	P:N2i	no analysed forms	-
+syn	n	богослꙋже́ніе	P:N2i	no analysed forms	-
+syn	n	богосіѧ́ніе	P:N2i	no analysed forms	-
+syn	n	боготаи́нникъ	P:N1k	no analysed forms	-
+syn	n	боготворе́ніе	P:N2i	no analysed forms	-
+syn	n	богоче́стіе	P:N2i	no analysed forms	-
+syn	n	богочеловѣ́къ	P:N1k	no analysed forms	-
+syn	n	богочте́цъ	P:N1c*	no analysed forms	-
+syn	n	богоѡтстꙋ́пство	P:N2t	no analysed forms	-
+syn	n	богоѡтстꙋпле́ніе	P:N2i	no analysed forms	-
+syn	n	богоѧвле́нникъ	P:N1k	no analysed forms	-
+syn	n	богꙋбі́йство	P:N2t	no analysed forms	-
+syn	n	богꙋбі́йца	P:N3c	no analysed forms	-
+syn	n	богꙋго́дникъ	P:N1k	no analysed forms	-
+syn	n	богꙋгожде́ніе	P:N2i	no analysed forms	-
+syn	n	богꙋче́ніе	P:N2i	no analysed forms	-
+syn	n	боже́ственность	P:N41	no analysed forms	-
+syn	n	бѣле́цъ	P:N1c	no analysed forms	-
+syn	n	бѣли́льникъ	P:N1k	attested nominative differs from the lemma	бѣли́лникъ
+syn	n	валаа́й	P:0	no analysed forms	-
+syn	n	варнѝ	P:0	no analysed forms	-
+syn	n	васіле́къ	P:N1k	class does not produce the lemma	васі́лкъ
+syn	n	ватнѐ	P:0	no analysed forms	-
+syn	n	вдꙋнове́ніе	P:N2i	no analysed forms	-
+syn	n	велгаі̀	P:N1e	no analysed forms	-
+syn	n	вельблю́дъ	P:N1t	attested nominative differs from the lemma	велблю́дъ
+syn	n	вельблꙋ́дъ	P:N1t	class does not produce the lemma	велблꙋ́дъ
+syn	n	вене́й#	P:N1e	attested nominative differs from the lemma	вене́й
+syn	n	веѳагла̀	P:0	no analysed forms	-
+syn	n	веѳана́хъ	P:N1g	no analysed forms	-
+syn	n	виваа̀	P:N3a	class does not produce the lemma	виваѧ̀
+syn	n	вирсаве́а	P:N3e	attested nominative differs from the lemma	вирсаве́е
+syn	n	вирсавеѐ	P:N1e	no analysed forms	-
+syn	n	виссаріѡ́нъ	P:N1t	attested nominative differs from the lemma	висаріѡ́нъ
+syn	n	вита́льница	P:N3c	attested nominative differs from the lemma	вита́лница
+syn	n	виѳагла̀	P:0	no analysed forms	-
+syn	n	военача́льникъ	P:N1k	attested nominative differs from the lemma	военача́лникъ
+syn	n	вождонача́льникъ	P:N1k	attested nominative differs from the lemma	вождонача́лникъ
+syn	n	возлива́льница	P:N3c	class does not produce the lemma	возлива́лница
+syn	n	возста́ніе	P:N2i	attested nominative differs from the lemma	воста́ніе
+syn	n	возъѧвле́ніе	P:N2i	no analysed forms	-
+syn	n	возѡбнови́тель	P:N1j	no analysed forms	-
+syn	n	возѡбновле́ніе	P:N2i	no analysed forms	-
+syn	n	возѡбраже́ніе	P:N2i	no analysed forms	-
+syn	n	возѡчище́ніе	P:N2i	no analysed forms	-
+syn	n	возꙋстрое́ніе	P:N2i	no analysed forms	-
+syn	n	воспоставле́ніе	P:N2i	attested nominative differs from the lemma	возпоставле́ніе
+syn	n	восше́ствіе	P:N2i	attested nominative differs from the lemma	возше́ствіе
+syn	n	врѵе́на	P:N3t	no analysed forms	-
+syn	n	врꙋцѣлѣ́то	P:0	no analysed forms	-
+syn	n	вселе́ннаѧ	P:A1n*	adjectival class on a noun entry (Part 3)	A1n*
+syn	n	въѧвле́ніе	P:N2i	no analysed forms	-
+syn	n	вѣ́ди	P:0	no analysed forms	-
+syn	n	га́дъ	P:N1t	no analysed forms	-
+syn	n	га́ли	P:0	no analysed forms	-
+syn	n	гавеѐ	P:N1e	no analysed forms	-
+syn	n	гавлі̀	P:0	no analysed forms	-
+syn	n	гадді̀	P:0	no analysed forms	-
+syn	n	газе́й	P:N1e	no analysed forms	-
+syn	n	гесꙋрі̀	P:0	no analysed forms	-
+syn	n	геѳсима́ніа	P:N3e	attested nominative differs from the lemma	геѳсіманѝ
+syn	n	гилѧре́вскій	P:A1k	adjectival class on a noun entry (Part 3)	A1k
+syn	n	го́рличищь	P:N1sj	attested nominative differs from the lemma	го́рличищъ
+syn	n	горѣ́ніе	P:N2i	attested nominative differs from the lemma	горе́ніе
+syn	n	господонача́льникъ	P:N1k	no analysed forms	-
+syn	n	господонача́ліе	P:N2i	no analysed forms	-
+syn	n	господороди́тельница	P:N3c	no analysed forms	-
+syn	n	гѐ	P:0	no analysed forms	-
+syn	n	гѡні̀	P:0	no analysed forms	-
+syn	n	гѡѵ́ні	P:0	no analysed forms	-
+syn	n	дама́скинъ	P:N1in	no analysed forms	-
+syn	n	дельфи́нъ	P:N1t	class does not produce the lemma	делфі́нъ
+syn	n	до́лгъ	P:N1g	no analysed forms	-
+syn	n	дово́льствіе	P:N2i	attested nominative differs from the lemma	дово́лствіе
+syn	n	домозда́тель	P:N1j	no analysed forms	-
+syn	n	дрꙋ́гъ	P:N1g	no analysed forms	-
+syn	n	дімѡна̀	P:0	no analysed forms	-
+syn	n	дѣвома́ти	P:N5er	no analysed forms	-
+syn	n	дꙋхори́торъ	P:N1t	no analysed forms	-
+syn	n	занѡ̀	P:0	no analysed forms	-
+syn	n	зарѐ	P:0	no analysed forms	-
+syn	n	зе́хрі	P:0	no analysed forms	-
+syn	n	зехрі̀	P:0	no analysed forms	-
+syn	n	златодѣ́льникъ	P:N1k	attested nominative differs from the lemma	златодѣ́лникъ
+syn	n	зо́дчій	P:A1s	adjectival class on a noun entry (Part 3)	A1s
+syn	n	зоѝ	P:0	no analysed forms	-
+syn	n	зѡѝ	P:0	no analysed forms	-
+syn	n	и҆зъѧ́тіе	P:N2i	no analysed forms	-
+syn	n	и҆зъѧви́тель	P:N1j	no analysed forms	-
+syn	n	и҆зъѧвле́ніе	P:N2i	no analysed forms	-
+syn	n	и҆зъѧде́ніе	P:N2i	no analysed forms	-
+syn	n	и҆зъѧсне́ніе	P:N2i	no analysed forms	-
+syn	n	и҆зъѧсни́тель	P:N1j	no analysed forms	-
+syn	n	и҆зыма́тель	P:N1j	no analysed forms	-
+syn	n	и҆зѡбличи́тель	P:N1j	no analysed forms	-
+syn	n	и҆зѡбрази́тель	P:N1j	no analysed forms	-
+syn	n	и҆зѡбрѣ́теніе	P:N2i	no analysed forms	-
+syn	n	и҆зѡбрѣта́тельница	P:N3c	no analysed forms	-
+syn	n	и҆зѡдѣ́ѧніе	P:N2i	no analysed forms	-
+syn	n	и҆надда̀	P:0	no analysed forms	-
+syn	n	и҆нгадді̀	P:0	no analysed forms	-
+syn	n	и҆сараі̀	P:0	no analysed forms	-
+syn	n	и҆спростре́ніе	P:N2i	attested nominative differs from the lemma	и҆зпростре́ніе
+syn	n	и҆счезнове́ніе	P:N2i	attested nominative differs from the lemma	и҆зчезнове́ніе
+syn	n	и҆сше́ствіе	P:N2i	attested nominative differs from the lemma	и҆зше́ствіе
+syn	n	ка́мень	P:N43/N1j	attested nominative differs from the lemma	ка́мы
+syn	n	кади́льникъ	P:N1k	attested nominative differs from the lemma	кади́лникъ
+syn	n	калокаіри́ни	P:0	no analysed forms	-
+syn	n	кассі́а	P:N3e	attested nominative differs from the lemma	касі́а
+syn	n	каѱокалѵвѝ	P:0	no analysed forms	-
+syn	n	кегхре́и	P:N1e	no analysed forms	-
+syn	n	кедамѡ́ѳъ	P:0	no analysed forms	-
+syn	n	книгополо́жница	P:N1c	class does not produce the lemma	книгополо́жницъ
+syn	n	книгохрани́тельница	P:N3c	class does not produce the lemma	книгохрани́телница
+syn	n	ко́рмчаѧ	P:A1s	adjectival class on a noun entry (Part 3)	A1s
+syn	n	ко́рмчій	P:N1i/A1s	adjectival class on a noun entry (Part 3)	N1i/A1s
+syn	n	кольцѐ	P:N2c*	attested nominative differs from the lemma	колцѐ
+syn	n	кора́бленникъ	P:N1k	class does not produce the lemma	кора́бленикъ
+syn	n	корабль	P:N1j	class does not produce the lemma	кара́бль
+syn	n	корѐ	P:0	no analysed forms	-
+syn	n	корі́нѳѧнинъ	P:N1t	no analysed forms	-
+syn	n	коча́новъ	P:A2t	adjectival class on a noun entry (Part 3)	A2t
+syn	n	крестопоклоне́ніе	P:N2i	no analysed forms	-
+syn	n	кривоприсѧжство	P:N2t	no analysed forms	-
+syn	n	крюче́къ	P:N1k	class does not produce the lemma	крю́чкъ
+syn	n	крѵста́ллъ	P:N1t	attested nominative differs from the lemma	крѵста́лъ
+syn	n	кі́евъ	P:N1t	no analysed forms	-
+syn	n	кѡѐ	P:0	no analysed forms	-
+syn	n	кѵ́рікъ	P:N1k	attested nominative differs from the lemma	ки́рѵкъ
+syn	n	кꙋли́шки	P:N1k	no analysed forms	-
+syn	n	лада́нъ	P:N1t	attested nominative differs from the lemma	ла́донъ
+syn	n	лаккꙋ́ны	P:N1t	no analysed forms	-
+syn	n	ласка́тельство	P:N2t	attested nominative differs from the lemma	ласка́телство
+syn	n	леве́й	P:N1e	attested nominative differs from the lemma	леѵе́й
+syn	n	лехі̀	P:0	no analysed forms	-
+syn	n	леѵіаѳа́мъ	P:N1t	attested nominative differs from the lemma	левіаѳа́мъ
+syn	n	леѵіаѳа́нъ	P:N1t	attested nominative differs from the lemma	левіаѳа́нъ
+syn	n	лжесвидѣ́тельство	P:N2t	class does not produce the lemma	лжесвидѣ́телство
+syn	n	ловені̀	P:0	no analysed forms	-
+syn	n	лю́то	P:N1t	class does not produce the lemma	лю́тъ
+syn	n	любоблагꙋтро́біе	P:N2i	no analysed forms	-
+syn	n	любы̀	P:N5ov*	class not in the inventory	N5ov*
+syn	n	лѣчба̀	P:N3t	attested nominative differs from the lemma	лѣчьба̀
+syn	n	ма́ркъ	P:N1k	attested nominative differs from the lemma	ма́рко
+syn	n	ма́си	P:0	no analysed forms	-
+syn	n	маге́ддо	P:N1t	no analysed forms	-
+syn	n	магеддѡ̀	P:0	no analysed forms	-
+syn	n	магедѡ̀	P:0	no analysed forms	-
+syn	n	малоглаго́ланіе	P:N2i	no analysed forms	-
+syn	n	мамѡ́на	P:N3t	attested nominative differs from the lemma	маммѡ́на
+syn	n	манохѡ̀	P:0	no analysed forms	-
+syn	n	манѡ́е	P:N1e	no analysed forms	-
+syn	n	массѝ	P:0	no analysed forms	-
+syn	n	матеродѣ́ва	P:N3t	no analysed forms	-
+syn	n	матѳе́й	P:	no class in the source	-
+syn	n	махаѳі̀	P:0	no analysed forms	-
+syn	n	маѡзі̀	P:0	no analysed forms	-
+syn	n	маѡнені́мъ	P:0	no analysed forms	-
+syn	n	ме́чь	P:N1sj	attested nominative differs from the lemma	ме́чъ
+syn	n	мелхісꙋ́й	P:N1e	no analysed forms	-
+syn	n	меньшеи́мство	P:N2t	attested nominative differs from the lemma	меншеи́мство
+syn	n	мера́рі	P:0	no analysed forms	-
+syn	n	мерѡ́въ	P:0	no analysed forms	-
+syn	n	мирко	P:0	no analysed forms	-
+syn	n	миръ	P:N1t	no analysed forms	-
+syn	n	мозѐ	P:0	no analysed forms	-
+syn	n	моли́твенникъ	P:N1k	no analysed forms	-
+syn	n	молитвома́сліе	P:N2i	no analysed forms	-
+syn	n	моолі̀	P:0	no analysed forms	-
+syn	n	моса̀	P:N3e	attested nominative differs from the lemma	моса́а
+syn	n	мыслѣ́те	P:0	no analysed forms	-
+syn	n	мѡи́ѳъ#	P:N1t	attested nominative differs from the lemma	мѡи́ѳъ
+syn	n	мѡсѐ	P:0	no analysed forms	-
+syn	n	мѡікѡ̀	P:0	no analysed forms	-
+syn	n	мѣсѧцесло́въ	P:N1t	attested nominative differs from the lemma	мѣсѧцосло́въ
+syn	n	мѣше́чекъ	P:N1k	no analysed forms	-
+syn	n	мѵга́ли	P:0	no analysed forms	-
+syn	n	мꙋсі̀	P:0	no analysed forms	-
+syn	n	мꙋсікі́ѧ	P:N3i	attested nominative differs from the lemma	мꙋсікі́а
+syn	n	мꙋчениколю́бица	P:N3c	no analysed forms	-
+syn	n	навѡ̀	P:0	no analysed forms	-
+syn	n	надме́ніе	P:N2i	attested nominative differs from the lemma	надмѣ́ніе
+syn	n	нарече́ніе	P:N2i	attested nominative differs from the lemma	нарѣче́ніе
+syn	n	нафѳѡ̀	P:0	no analysed forms	-
+syn	n	нача́льница	P:N3c	attested nominative differs from the lemma	нача́лница
+syn	n	наѵи́нъ	P:N1t	no analysed forms	-
+syn	n	неблагополꙋче́ніе	P:N2i	no analysed forms	-
+syn	n	невѣ́дѣніе	P:N2i	class does not produce the lemma	невѣ́денїе
+syn	n	неисцѣле́ніе	P:N2i	attested nominative differs from the lemma	неизцѣле́ніе
+syn	n	нетѡфаѝ	P:0	no analysed forms	-
+syn	n	нехаѡ̀	P:0	no analysed forms	-
+syn	n	неѡбъѧ́тіе	P:N2i	no analysed forms	-
+syn	n	но́вградъ	P:N1t	attested nominative differs from the lemma	но́въградъ
+syn	n	но́жъ	P:N1s	attested nominative differs from the lemma	но́жь
+syn	n	новосвѧщенномꙋ́ченикъ	P:N1k	no analysed forms	-
+syn	n	ні́фѡнтъ	P:N1t	attested nominative differs from the lemma	ни́ѳѡнтъ
+syn	n	оу҆́ѯꙋсъ	P:N1t	attested nominative differs from the lemma	оу҆́ксꙋсъ
+syn	n	оу҆масфа́е	P:0	no analysed forms	-
+syn	n	оу҆мерщвле́ніе	P:N2i	attested nominative differs from the lemma	оу҆мерщве́ніе
+syn	n	оу҆мыва́льница	P:N3c	class does not produce the lemma	оу҆мыва́лница
+syn	n	оу҆чреди́тель	P:N1j	attested nominative differs from the lemma	оу҆чрежди́тель
+syn	n	оу҆іркѡ̀	P:0	no analysed forms	-
+syn	n	па́рѳѧннинъ	P:N1in	class does not produce the lemma	па́рѳѧнинъ
+syn	n	панагіа́ръ	P:N1t	attested nominative differs from the lemma	панагіа́рь
+syn	n	пе́льшма	P:N3t	class does not produce the lemma	пе́лшма
+syn	n	пе́нь	P:N1j*	attested nominative differs from the lemma	пѣ́нь
+syn	n	первоа́ггелъ	P:N1t	no analysed forms	-
+syn	n	первомꙋ́ченица	P:N3c	no analysed forms	-
+syn	n	первосвѧщеннонача́льникъ	P:N1k	no analysed forms	-
+syn	n	первосвѧщеннослꙋжи́тель	P:N1j	no analysed forms	-
+syn	n	пересла́вль	P:A2j	adjectival class on a noun entry (Part 3)	A2j
+syn	n	переѧсла́вль	P:N1j	attested nominative differs from the lemma	переасла́вль
+syn	n	писмоводи́тель	P:N1j	class does not produce the lemma	письмоводи́тель
+syn	n	пла́мы	P:0	no analysed forms	-
+syn	n	пла́мѧ	P:N5en	attested nominative differs from the lemma	пла́мень
+syn	n	племенонача́льникъ	P:N1k	class does not produce the lemma	племенонача́лникъ
+syn	n	плечѐ	P:N2s	attested nominative differs from the lemma	плечо̀
+syn	n	плѧ́то	P:0	no analysed forms	-
+syn	n	поверже́ніе	P:N2i	attested nominative differs from the lemma	поверже́ніѧ
+syn	n	подви́жница	P:N1c	class does not produce the lemma	подви́жницъ
+syn	n	подъѧ́тіе	P:N2i	no analysed forms	-
+syn	n	подъѧре́мникъ	P:N1k	no analysed forms	-
+syn	n	подызѡбраже́ніе	P:N2i	no analysed forms	-
+syn	n	подꙋща́тель	P:N1j	no analysed forms	-
+syn	n	полꙋпле́мѧ	P:	no class in the source	-
+syn	n	порфѵропрода́льница	P:N3c	attested nominative differs from the lemma	порфѵропрода́лница
+syn	n	пра́ведница	P:N3c	no analysed forms	-
+syn	n	пре́докъ	P:N1k	class does not produce the lemma	пре́дкъ
+syn	n	превосше́ствіе	P:N2i	attested nominative differs from the lemma	превозше́ствіе
+syn	n	предновомѣ́сѧчіе	P:N2i	no analysed forms	-
+syn	n	предъѧвле́ніе	P:N2i	no analysed forms	-
+syn	n	предызше́ствіе	P:N2i	no analysed forms	-
+syn	n	предѡбраже́ніе	P:N2i	no analysed forms	-
+syn	n	предѡбѣща́ніе	P:N2i	no analysed forms	-
+syn	n	предѡбꙋче́ніе	P:N2i	no analysed forms	-
+syn	n	предѡгражде́ніе	P:N2i	no analysed forms	-
+syn	n	предѡпредѣле́ніе	P:N2i	no analysed forms	-
+syn	n	предѡчисти́тельница	P:N3c	no analysed forms	-
+syn	n	предѡчище́ніе	P:N2i	no analysed forms	-
+syn	n	предꙋвѣ́дѣніе	P:N2i	no analysed forms	-
+syn	n	предꙋгото́витель	P:N1j	no analysed forms	-
+syn	n	предꙋготовле́ніе	P:N2i	no analysed forms	-
+syn	n	предꙋзаконе́ніе	P:N2i	no analysed forms	-
+syn	n	предꙋсмотри́тель	P:N1j	no analysed forms	-
+syn	n	предꙋсрѣ́теніе	P:N2i	no analysed forms	-
+syn	n	предꙋставле́ніе	P:N2i	no analysed forms	-
+syn	n	премꙋ́дрость	P:N41	no analysed forms	-
+syn	n	преподобноисповѣ́дникъ	P:N1k	no analysed forms	-
+syn	n	преподобномꙋ́ченица	P:N3c	no analysed forms	-
+syn	n	присе́льникъ	P:N1k	attested nominative differs from the lemma	присе́лникъ
+syn	n	прише́лецъ	P:N1c*	attested nominative differs from the lemma	пришле́цъ
+syn	n	пророкомꙋ́ченикъ	P:N1k	no analysed forms	-
+syn	n	пско́въ	P:N1t	no analysed forms	-
+syn	n	піѧ́вица	P:N3c	attested nominative differs from the lemma	піа́вица
+syn	n	піѳѡ̀	P:0	no analysed forms	-
+syn	n	пѧто́къ	P:N1k*	no analysed forms	-
+syn	n	равві̀	P:0	no analysed forms	-
+syn	n	раввꙋні̀	P:0	no analysed forms	-
+syn	n	равноа́ггелъ	P:N1t	no analysed forms	-
+syn	n	равоса́ий	P:	no class in the source	-
+syn	n	разори́тельница	P:N3c	attested nominative differs from the lemma	разори́телница
+syn	n	разъѧре́ніе	P:N2i	no analysed forms	-
+syn	n	рамессѝ	P:0	no analysed forms	-
+syn	n	распозна́ніе	P:N2i	attested nominative differs from the lemma	разпозна́ніе
+syn	n	расхо́дъ	P:N1t	attested nominative differs from the lemma	росхо́дъ
+syn	n	расчине́ніе	P:N2i	attested nominative differs from the lemma	разчине́ніе
+syn	n	расчисле́ніе	P:N2i	attested nominative differs from the lemma	разчисле́ніе
+syn	n	рече́ніе	P:N2i	attested nominative differs from the lemma	рѣче́ніе
+syn	n	роже́нъ	P:N1t	class does not produce the lemma	ро́жнъ
+syn	n	рꙋ́фъ	P:N1t	attested nominative differs from the lemma	рꙋ́ѳъ
+syn	n	са́ре	P:0	no analysed forms	-
+syn	n	са́рѡнъ	P:N1t	attested nominative differs from the lemma	са́рѡнь
+syn	n	савеѐ	P:0	no analysed forms	-
+syn	n	савеі̀	P:0	no analysed forms	-
+syn	n	саддаі̀	P:0	no analysed forms	-
+syn	n	саифѝ	P:0	no analysed forms	-
+syn	n	салѡ́ми	P:0	no analysed forms	-
+syn	n	самарі̀	P:0	no analysed forms	-
+syn	n	самаѐ	P:0	no analysed forms	-
+syn	n	сараѝ	P:0	no analysed forms	-
+syn	n	саѵѝ	P:0	no analysed forms	-
+syn	n	свѣти́льце	P:N2c*	attested nominative differs from the lemma	свѣти́лце
+syn	n	свѧтолю́бецъ	P:N1c*	no analysed forms	-
+syn	n	свѧще́нствіе	P:N2i	no analysed forms	-
+syn	n	свѧщенноархімандрі́тъ	P:N1t	no analysed forms	-
+syn	n	свѧщеннои́нокъ	P:N1k	no analysed forms	-
+syn	n	свѧщеннома́ти	P:N5er	no analysed forms	-
+syn	n	свѧщеннопома́заніе	P:N2i	no analysed forms	-
+syn	n	свѧщеннопредстоѧ́тель	P:N1j	no analysed forms	-
+syn	n	свѧщенносвѧти́тель	P:N1j	no analysed forms	-
+syn	n	сегрі̀	P:0	no analysed forms	-
+syn	n	ски́ніа	P:N3e	attested nominative differs from the lemma	ски́ніѧ
+syn	n	ски́тъ	P:N1t	no analysed forms	-
+syn	n	скинопигі́а	P:N3e	attested nominative differs from the lemma	скѵнопи́гіа
+syn	n	скꙋде́ль	P:N41	attested nominative differs from the lemma	скꙋдѣ́ль
+syn	n	слононача́льникъ	P:N1k	attested nominative differs from the lemma	слононача́лникъ
+syn	n	смиренносло́віе	P:N2i	attested nominative differs from the lemma	смиреносло́віе
+syn	n	смо́квь	P:N41	attested nominative differs from the lemma	смо́ковь
+syn	n	соммѐ	P:0	no analysed forms	-
+syn	n	сомо́ри	P:0	no analysed forms	-
+syn	n	сомѐ	P:0	no analysed forms	-
+syn	n	сосꙋдохрани́тельница	P:N3c	class does not produce the lemma	сосꙋдохрани́телница
+syn	n	среда̀	P:N3t	no analysed forms	-
+syn	n	ста́кти	P:0	no analysed forms	-
+syn	n	стражба̀	P:N3t*	attested nominative differs from the lemma	страждба̀
+syn	n	страстоположи́тель	P:N1j	no analysed forms	-
+syn	n	строи́тельство	P:N2t	attested nominative differs from the lemma	строи́телство
+syn	n	стрѣ́льница	P:N3c	class does not produce the lemma	стрѣ́лница
+syn	n	стрѣлостоѧ́тельница	P:N3c	class does not produce the lemma	стрѣлостоѧ́телница
+syn	n	стіхі́ѧ	P:N3i	attested nominative differs from the lemma	стіхі́а
+syn	n	сынороди́тельница	P:N3c	no analysed forms	-
+syn	n	сі́нъ	P:0	no analysed forms	-
+syn	n	сіре́на	P:N3t	class does not produce the lemma	сѵре́на
+syn	n	сѡвива̀	P:0	no analysed forms	-
+syn	n	сѡхѡ̀	P:0	no analysed forms	-
+syn	n	сѣдѣ́ніе	P:N2i	attested nominative differs from the lemma	сѣде́ніе
+syn	n	сѵгі́цъ	P:N1c	attested nominative differs from the lemma	сѵгі́ца
+syn	n	сѵле́ѡ	P:0	no analysed forms	-
+syn	n	сꙋрі̀	P:0	no analysed forms	-
+syn	n	тапфꙋ̀	P:0	no analysed forms	-
+syn	n	татамі̀	P:0	no analysed forms	-
+syn	n	тетроеѵа́нгеліе	P:N2i	no analysed forms	-
+syn	n	тка́тельница	P:N3c	class does not produce the lemma	тка́телница
+syn	n	то́тьма	P:N3t*	class does not produce the lemma	то́тма
+syn	n	тре́звенникъ	P:N1k	attested nominative differs from the lemma	тре́звеникъ
+syn	n	тро́ица	P:N3c	attested nominative differs from the lemma	тро̑ца
+syn	n	тро́иченъ	P:N1t	attested nominative differs from the lemma	тро̑ченъ
+syn	n	тысѧщенача́льникъ	P:N1k	class does not produce the lemma	тысѧщенача́лникъ
+syn	n	тьма̀	P:N3t*	attested nominative differs from the lemma	тма̀
+syn	n	фаа́ѳъ	P:N1t	no analysed forms	-
+syn	n	фелеѳѳі̀	P:0	no analysed forms	-
+syn	n	фѝ	P:0	no analysed forms	-
+syn	n	ха́лки	P:N3k	no analysed forms	-
+syn	n	хазві̀	P:0	no analysed forms	-
+syn	n	хала́ни	P:0	no analysed forms	-
+syn	n	хала́нни	P:0	no analysed forms	-
+syn	n	халові̀	P:0	no analysed forms	-
+syn	n	хармі̀	P:0	no analysed forms	-
+syn	n	хеле́ѳі	P:0	no analysed forms	-
+syn	n	хереѳѳі̀	P:0	no analysed forms	-
+syn	n	херсѡ́нъ	P:N1t	attested nominative differs from the lemma	херсѡ́нь
+syn	n	хоррі̀	P:0	no analysed forms	-
+syn	n	хра́бреникъ	P:N1k	attested nominative differs from the lemma	хра́брникъ
+syn	n	храни́льница	P:N3c	class does not produce the lemma	храни́лница
+syn	n	хрістоимени́тство	P:N2t	no analysed forms	-
+syn	n	хрістолю́бецъ	P:N1c*	no analysed forms	-
+syn	n	хрістомꙋ́ченикъ	P:N1k	no analysed forms	-
+syn	n	хрістомꙋ́ченица	P:N3c	no analysed forms	-
+syn	n	хрістомꙋ́ченичество	P:N2t	no analysed forms	-
+syn	n	хрістоно́сецъ	P:N1c*	no analysed forms	-
+syn	n	хрістоно́сица	P:N3c	no analysed forms	-
+syn	n	хрістоподража́тель	P:N1j	no analysed forms	-
+syn	n	хрістопроповѣ́дникъ	P:N1k	no analysed forms	-
+syn	n	хрістопроповѣ́дница	P:N1c	no analysed forms	-
+syn	n	хрістꙋбі́йство	P:N2t	no analysed forms	-
+syn	n	хрѵса́нѳъ	P:N1t	attested nominative differs from the lemma	хріса́нѳъ
+syn	n	ца́ди	P:0	no analysed forms	-
+syn	n	царе́вичь	P:N1sj	attested nominative differs from the lemma	царе́вичъ
+syn	n	циннамо́нъ	P:N1t	no analysed forms	-
+syn	n	че́сть	P:N41	no analysed forms	-
+syn	n	четвероеѵа́нгеліе	P:N2i	no analysed forms	-
+syn	n	чревоѡбъѧде́ніе	P:N2i	no analysed forms	-
+syn	n	чрезъестество̀	P:N2t	no analysed forms	-
+syn	n	є҆́лли	P:0	no analysed forms	-
+syn	n	є҆́фі	P:0	no analysed forms	-
+syn	n	є҆драі̀	P:0	no analysed forms	-
+syn	n	є҆зекі́а	P:N3e	no analysed forms	-
+syn	n	є҆зрі̀	P:0	no analysed forms	-
+syn	n	є҆кклесіа́стъ	P:N1t	attested nominative differs from the lemma	є҆клісіа́стъ
+syn	n	є҆леа́ли	P:0	no analysed forms	-
+syn	n	є҆лесвана̀	P:0	no analysed forms	-
+syn	n	є҆лідаѐ	P:N1e	no analysed forms	-
+syn	n	є҆ліссѐ	P:0	no analysed forms	-
+syn	n	є҆ліꙋ̀	P:0	no analysed forms	-
+syn	n	є҆лѝ	P:0	no analysed forms	-
+syn	n	є҆лѳекѡ̀	P:0	no analysed forms	-
+syn	n	є҆нгадді̀	P:0	no analysed forms	-
+syn	n	є҆піфа̀	P:0	no analysed forms	-
+syn	n	є҆рмінігге́льдъ	P:N1t	attested nominative differs from the lemma	є҆рмінігге́лдъ
+syn	n	є҆ссꙋа̀	P:N3a	no analysed forms	-
+syn	n	є҆сѳемѡ̀	P:0	no analysed forms	-
+syn	n	є҆фаданѡ̀	P:0	no analysed forms	-
+syn	n	є҆фе́сѧнинъ	P:N1in	no analysed forms	-
+syn	n	є҆ѳѳі̀	P:0	no analysed forms	-
+syn	n	є҆ѵа́нгеліе	P:N2i	attested nominative differs from the lemma	є҆ѵа́ггеліе
+syn	n	є҆ѵангелі́стъ	P:N1t	no analysed forms	-
+syn	n	є҆ѵсе́віа	P:N3e	attested nominative differs from the lemma	є҆ѵсе́ѵіа
+syn	n	є҆ѵтѵ́хій	P:N1i	attested nominative differs from the lemma	є҆ѵті́хій
+syn	n	і҆́же	P:0	no analysed forms	-
+syn	n	і҆амврѝ	P:0	no analysed forms	-
+syn	n	і҆аннѝ	P:0	no analysed forms	-
+syn	n	і҆афагѝ	P:0	no analysed forms	-
+syn	n	і҆афіѐ	P:0	no analysed forms	-
+syn	n	і҆еддеді̀	P:0	no analysed forms	-
+syn	n	і҆емнѐ	P:0	no analysed forms	-
+syn	n	і҆ерамі̀	P:0	no analysed forms	-
+syn	n	і҆еріхѡ̀	P:0	no analysed forms	-
+syn	n	і҆есѝ	P:0	no analysed forms	-
+syn	n	і҆ефіѐ	P:0	no analysed forms	-
+syn	n	і҆еѳрі̀	P:0	no analysed forms	-
+syn	n	і҆еѳѳі̀	P:0	no analysed forms	-
+syn	n	і҆зра́ильтѧнынѧ	P:N3j	no analysed forms	-
+syn	n	і҆зраилі́тъ	P:N1t	no analysed forms	-
+syn	n	і҆сма́ильтѧнинъ	P:N1in	attested nominative differs from the lemma	і҆сма́илтѧнинъ
+syn	n	і҆фі̀	P:0	no analysed forms	-
+syn	n	і҆ѡа̀	P:N3e	no analysed forms	-
+syn	n	і҆ѡа́нно	P:N3t	no analysed forms	-
+syn	n	і҆ѡвѳі̀	P:0	no analysed forms	-
+syn	n	і҆ѳаана́хъ	P:N1g	no analysed forms	-
+syn	n	ѡ҆боготворе́ніе	P:N2i	no analysed forms	-
+syn	n	ѡ҆боро́тъ	P:N1t	no analysed forms	-
+syn	n	ѡ҆бъѧвле́ніе	P:N2i	no analysed forms	-
+syn	n	ѡ҆бъѧсне́ніе	P:N2i	no analysed forms	-
+syn	n	ѡ҆быма́тель	P:N1j	no analysed forms	-
+syn	n	ѡ҆бꙋме́ртвіе	P:N2i	no analysed forms	-
+syn	n	ѡ҆долѣ́ніе	P:N2i	attested nominative differs from the lemma	ѡ҆доле́ніе
+syn	n	ѡ҆каѧ́ннство	P:N2t	attested nominative differs from the lemma	ѻ҆каѧ́нство
+syn	n	ѡ҆мрачи́тель	P:N1j	attested nominative differs from the lemma	ѡ҆мрачи́телѧ
+syn	n	ѡ҆мѣ́на	P:N3t	no analysed forms	-
+syn	n	ѡ҆нѡ̀	P:0	no analysed forms	-
+syn	n	ѡ҆тъѧ́тіе	P:N2i	attested nominative differs from the lemma	ѿѧ́тіе
+syn	n	ѡ҆фѝ	P:0	no analysed forms	-
+syn	n	ѡ҆ѕлобле́ніе	P:N2i	attested nominative differs from the lemma	ѡ҆ѕлобе́ніе
+syn	n	ѯе́ніа	P:N3e	attested nominative differs from the lemma	ѯе́ніѧ
+syn	n	ѱалти́рь	P:N1j/N1t/N41	attested nominative differs from the lemma	ѱалти́ръ
+syn	n	ѳалі̀	P:0	no analysed forms	-
+syn	n	ѳарсі́сь	P:N41	class does not produce the lemma	ѳарсѵ́сь
+syn	n	ѳееі́мъ	P:0	no analysed forms	-
+syn	n	ѳеила́ѳъ	P:0	no analysed forms	-
+syn	n	ѳекѡ̀	P:0	no analysed forms	-
+syn	n	ѳекѡѐ	P:0	no analysed forms	-
+syn	n	ѳелариса̀	P:0	no analysed forms	-
+syn	n	ѳелгаѳфелласа́ръ	P:N1t	attested nominative differs from the lemma	ѳелгафелласа́ръ
+syn	n	ѳеопісті́й	P:N3e	attested nominative differs from the lemma	ѳеопісті́а
+syn	n	ѳеѐ	P:0	no analysed forms	-
+syn	n	ѳиваі́да	P:N3t	attested nominative differs from the lemma	ѳѵваі́да
+syn	n	ѳолмаі̀	P:0	no analysed forms	-
+syn	n	ѳолмі̀	P:0	no analysed forms	-
+syn	n	ѵ҆да́спи	P:0	no analysed forms	-
+syn	n	ѵ҆пакоѝ	P:0	no analysed forms	-
+syn	n	ѻ҆́блакъ	P:N1k/N2k	attested nominative differs from the lemma	ѻ҆́блако
+syn	n	ѻ҆́трочищь	P:N1sj	attested nominative differs from the lemma	ѻ҆́трочище
+syn	n	ѻ҆би́льность	P:N41	attested nominative differs from the lemma	ѻ҆би́лность
+syn	n	ѻ҆мꙋсі̀	P:0	no analysed forms	-
+syn	n	ѻ҆олі̀	P:0	no analysed forms	-
+syn	n	ѻ҆ріге́нъ	P:N1t	attested nominative differs from the lemma	ѻ҆ріге́на
+syn	n	ѻ҆рꙋжехрани́тельница	P:N3c	class does not produce the lemma	ѻ҆рꙋжехрани́телница
+syn	n	ѻ҆стрѵ́хій	P:N1i	attested nominative differs from the lemma	ѻ҆стрі́хій
+syn	n	ѻ҆течестволю́бецъ	P:N1c*	no analysed forms	-
+syn	n	ѻ҆фні̀	P:0	no analysed forms	-

@@ -229,7 +229,8 @@ fn normalise_marks(units: &mut [Unit]) {
     }
     let breathing_at = match units {
         [o, u, ..] if o.base == 'о' && u.base == 'у' => Some(1),
-        [first, ..] if first.is_vowel() => Some(0),
+        // the ligature ѿ (from-) never carries the psili in the print
+        [first, ..] if first.is_vowel() && first.base != 'ѿ' => Some(0),
         _ => None,
     };
     if let Some(i) = breathing_at
@@ -437,7 +438,7 @@ pub fn is_vowel_letter(c: char) -> bool {
 pub(crate) fn is_vowel(c: char) -> bool {
     matches!(
         c,
-        'а' | 'е'
+        'ѿ' | 'а' | 'е'
             | 'є'
             | 'и'
             | 'і'

@@ -743,3 +743,48 @@ marks (лю́дїе 661, мꙋ́жїе 376).
 The disambiguation of the ambiguous band — now 31.0% and the largest
 non-mechanical slice, the possessives' 13,845 homographs its newest
 members — stays deliberately its own future design.
+
+## 2026-09-04 — 2.0 Part 1: Synodal nouns — decisions and findings
+
+- **Stress inventory (decision).** Census over the fitted Polyakov noun
+  lexemes: a 12,082 · b 619 · a{pl=E} 20 · a{ins.pl=E} 18 ·
+  a{gen.pl=E;dat.pl=E} 18 · b{voc.sg=S} 16 · a{gen.pl=E} 11 · the rest
+  ≤ 10 each (172 specs). Named paradigms: a, b, c (S;pl=E), d (E;pl=S);
+  everything else inline per lexeme. Among b-lexemes with an attested
+  vocative, 75 stress the ending and 20 the stem — the vocative
+  retraction (ра́бе) is a minority and stays per lexeme. Consistent with
+  the v0.8 rejection of mobile tokens; the class prior did not change
+  the verdict.
+- **Kamora against widening under final stress (finding).** Over
+  Polyakov's noun forms: 197 forms carry the kamora on a final stressed
+  vowel with a narrow о/е in the stem (брозды̑, вдовы̑, борбы̑) against 508
+  with a widened stem letter (брѡзды́, вдѡвы́, вєрхи́; lexical ѡ included
+  in that count) — the same lexeme often has both. `Form::print` keeps
+  the widening (the v0.8 convention); the kamora readings are stored per
+  lexeme. The Bible will arbitrate in Part 2.
+- **Bundled tags (finding).** A Polyakov form tagged `pl,gen/acc` attests
+  the accusative only weakly: the print's animate plural accusative is
+  the nominative-shaped one as often as the genitive-shaped one
+  (а҆́ггелы, а҆рхіепі́скопы against рабѡ́въ). The importer lets a form tagged
+  for the cell alone outrank a bundled one and accepts any alternative
+  for a bundled-only cell — the 1.x «га́ды/гадѡ́въ» problem, closed at
+  import.
+- **Polyakov's codes are loose (finding).** ѻ҆се́лъ, со́нъ, ле́въ, ле́нъ are
+  coded N1t; the legend's N1t* exemplars are осел-ъ, сон-ъ. The importer
+  tries the fleeting and velar twins and keeps the best fit; a
+  monosyllable drops its only vowel (днѝ, сна̀), a dropped vowel after a
+  vowel leaves й (бойцы̀), and ле́въ : льва̀ needs `stems=1=льв`.
+- **The print's second plural series (finding).** -ахъ/-амъ/-ами, -ове,
+  -ови, the zero genitive plural on the full stem (ѻ҆тє́цъ, ѕлодѣ́латєль)
+  and the -ѧхъ/-ѧмъ/-ѧми of the -іе neuters are alternatives in most
+  classes; the majority alternative per (class, cell) is the primary,
+  by census (`== alternative preference`).
+- **Number marks (finding).** The legend omits the mark on cells the
+  print marks: every masculine ins.pl (рабы̑, а҆́ггєлы) and the neuters'
+  nom.pl (бдѣ̑ніѧ, беззакѡ́ніѧ). Measured per (class, cell) and set by
+  `--fix-marks`; N1k nom.pl is split 98/120 and stays per lexeme.
+- **Gate shortfall (decision).** 94.87% primary / 96.81% reachable /
+  true exceptions on 7.36% of lexemes against the written 99% / 5%. The
+  residue is source noise and lexeme-level preference (samples in the
+  CHANGELOG entry); no mechanism is missing. Part 2 proceeds; the gate
+  is recorded as unmet.

@@ -1,0 +1,6 @@
+name	spec
+# Built in: a (the lemma's stem vowel everywhere), b (the ending everywhere).
+# Part 1 adds the measured mobile paradigms below: name, then S/E per cell
+# (sg/du/pl shorthands allowed), the first token the default.
+c	S;pl=E
+d	E;pl=S
