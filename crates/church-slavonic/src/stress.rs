@@ -7,12 +7,15 @@
 //! may add per-cell exceptions.
 //!
 //! Column grammar: `a` | `a<N>` (fixed on vowel N) | `b` | `<name>` |
-//! `<name>{cell=S|E|L|F|<N>;…}` | `{…}` — with `sg`/`du`/`pl` accepted
+//! `<name>{cell=S|E|L|F|P|<N>;…}` | `{…}` — with `sg`/`du`/`pl` accepted
 //! as keys for a whole number, a block name (`part`, `part.pres.act`,
 //! `short.comp`) for a whole block, a finite tense (`pres`, `aor`, `impf`,
 //! `fut`) or `impv` for a whole tense. `F` is the word's last vowel (the
-//! second plural's веселитѐ). `-` is no stress (Old Church Slavonic, a
-//! titlo lemma).
+//! second plural's веселитѐ); `P` is the last vowel of the stem before
+//! the class's extension — the vowel `L` would name if a participle's
+//! suffix were an ending and not part of the stem (и҆зго́нимъ, the -ova-
+//! verbs' возревнꙋ́емъ); on a stem without an extension it is `L`. `-`
+//! is no stress (Old Church Slavonic, a titlo lemma).
 
 use crate::cell::{Cell, FiniteTense, Pos, VerbCell, parse_finite, parse_number};
 use crate::grammar::Number;
@@ -28,6 +31,10 @@ pub enum Place {
     /// The last vowel of the word (a solid enclitic's excluded): the
     /// ending's final syllable (веселитѐ, вселите́сѧ; тогѡ̀).
     Final,
+    /// The last vowel of the stem before the class's extension (the
+    /// participle suffix -им-, -ем-, -ѧщ-, -ен-): и҆зго́нимъ, возревнꙋ́емъ.
+    /// The same as `StemLast` where the stem has no extension.
+    Pre,
     Index(u8),
 }
 
@@ -38,6 +45,7 @@ impl Place {
             "E" => Some(Place::End),
             "L" => Some(Place::StemLast),
             "F" => Some(Place::Final),
+            "P" => Some(Place::Pre),
             n => n.parse().ok().map(Place::Index),
         }
     }
@@ -203,7 +211,15 @@ impl StressSpec {
 
 /// The stressed vowel index of a form: `place` resolved against the
 /// lemma's stress, the stem's vowel count and the whole form's.
+/// [`resolve_in`] with the stem's own vowels as the pre-extension stem.
 pub fn resolve(place: Place, lemma_stress: Option<u8>, stem_vowels: usize, total_vowels: usize) -> Option<u8> {
+    resolve_in(place, lemma_stress, stem_vowels, stem_vowels, total_vowels)
+}
+
+/// [`resolve`] with the vowel count of the stem before the class's
+/// extension (`pre_vowels`, the place `P`): equal to `stem_vowels` on a
+/// stem the class did not extend.
+pub fn resolve_in(place: Place, lemma_stress: Option<u8>, pre_vowels: usize, stem_vowels: usize, total_vowels: usize) -> Option<u8> {
     if total_vowels == 0 {
         return None;
     }
@@ -219,6 +235,7 @@ pub fn resolve(place: Place, lemma_stress: Option<u8>, stem_vowels: usize, total
         }
         Place::StemLast => last_stem,
         Place::Final => last,
+        Place::Pre => pre_vowels.saturating_sub(1).min(last),
         Place::Index(n) => usize::from(n).min(last),
     };
     u8::try_from(index).ok()
@@ -269,6 +286,13 @@ mod tests {
         // ѻ҆те́цъ (lemma stress 1) with the fleeting vowel dropped: stem ѻтц (1 vowel)
         assert_eq!(resolve(Place::Stem, Some(1), 1, 2), Some(0));
         assert_eq!(resolve(Place::Index(3), Some(0), 1, 2), Some(1), "clamped");
+        // и҆згони́ти: stem гон + им (2 vowels) + ъ: P is the о, L the и
+        assert_eq!(resolve_in(Place::Pre, Some(2), 2, 3, 3), Some(1));
+        assert_eq!(resolve_in(Place::StemLast, Some(2), 2, 3, 3), Some(2));
+        // no extension: P is L
+        assert_eq!(resolve_in(Place::Pre, Some(0), 1, 1, 2), resolve(Place::StemLast, Some(0), 1, 2));
+        let p = StressSpec::parse("b{part.pres.pass=P}", Pos::Verb).expect("ok").expect("some");
+        assert_eq!(p.place(Cell::parse(Pos::Verb, "part.pres.pass.short.m.sg.nom").expect("cell")), Place::Pre);
         assert_eq!(resolve(Place::Stem, None, 1, 2), None, "unaccented lemma");
     }
 }

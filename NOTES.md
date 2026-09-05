@@ -1326,3 +1326,73 @@ members — stays deliberately its own future design.
   counts the dictionary's primary against the class, and the primary is
   now the Bible's. Nouns and verbs unchanged within a tenth.
 
+
+## 2026-09-05 — 3.0 Part 0 (V3.0-PROMPT.md): the censuses — findings
+
+- **The place before the suffix is real (finding).** `census stress`
+  now reads every exception cell of every list against the places the
+  format has and one it lacked, `P` (the last vowel of the stem before
+  the class's extension — added to the crate as `Place::Pre`,
+  `Letters::pre_vowels`, `resolve_in`; no paradigm uses it yet). Verbs:
+  886 lists, 4,035 exception cells only `P` names (index-only cells 1,351
+  remain); `P` names every stuck cell of 323 lists and some of 66. The
+  shapes it makes are few: `b.pres` plus the present passive participle's
+  masculine short nominative/accusative on `P` (15, and 16 with
+  `pres.2.pl=E`, 8 with `impv.2.pl=S`), `a` plus the same (14: the -ova-
+  verbs' возревнꙋ́емъ, каменꙋ́емъ), `a` plus the present active
+  participle's short m/n nominative on `P` (14: благовѣствꙋ́ѧ,
+  пла́менꙋѧ) and its long (8). Adjectives: 13 cells only `P` names, all
+  the short comparative's masculine nominative (во́днѣй, про́стѣй): the
+  comparative suffix is an extension too. Nouns and pronouns: none (`P`
+  is `L` there).
+- **Shapes without `P` that the census repeats (finding).** `b{inf=S}`
+  12 (вонзнꙋ́ти, забы́ти: the infinitive on the stem's last vowel),
+  `b.pres{pres.2.pl=E}` 10 (возноси́те: the ending's first vowel, not
+  `b.2pl`'s final), `b.pres{aor.2.sg=S;aor.3.sg=S}` 8 (и҆знемо́же),
+  `b{sg=S}` 13 / `b{pl=S}` 8 / `a{sg=E}` 7 (the fitter's own one-number
+  candidates, written as lists because the braces are the notation),
+  `b{part.past.pass.short.f.sg.nom=E;…m.sg.gen=E;n.sg.gen=E}` 10
+  (зажжена̀). Nouns: `a{nom.sg=<n>}` 20 — proper names whose citation
+  form is stressed elsewhere than the oblique cells (а҆раві́а, а҆гнѧ̀), a
+  source fact, not a paradigm.
+- **The -надесѧть numerals (finding).** 7 lines, 44 overrides, 7
+  variants; every override is stressed on на́ (the second element's first
+  vowel). The class prints them wrong only because `encl=надесѧть` puts
+  the second element outside the stress count.
+- **The 61 `adv-of=` adverbs (finding).** 33 are printed by the
+  adjective's own `adv` cell already (the 3.0 re-import moved the
+  adjectives' stress; the closed lines are now duplicates: безобра́знѡ,
+  дре́вле); 12 are stressed on the adjective's stem where the adjective
+  is end-stressed (бла́гѡ ~ благі́й, всесвѧ́тѡ); 6 on the ending where the
+  adjective is stem-stressed (быстрѡ̀ ~ бы́стрый, далекѡ̀); 8 on none of
+  the places (ве́селѡ ~ весе́лый, же́стокѡ ~ жесто́кій: a retraction to the
+  first syllable the paradigm cannot name); 2 unaccented (благотишнѡ,
+  лꙋчше).
+- **The 135 outnumbered primaries (finding).** 115 are letter variants
+  (а҆рхїере́ємъ against а҆рхїере́ѡмъ, бѡ́льшаѧ against бо́лшаѧ: the arbiter
+  never crosses a letter), 10 the citation cell (exempt: ids stable), 1 a
+  stress twin the Bible also prints inside a set (свѧ́та), 9 stress twins
+  never inside a set — the pronouns (ѻ҆́нꙋ 67:16, ѻ҆̑ны 19:0), which were
+  refitted and never re-imported, so the arbiter never saw them, and
+  three names (наѳана́илъ 8:5, і҆а́ковъ 12:1).
+- **The lexicon's twins (finding).** гдⷭ҇ь (3,579), гдⷭ҇а, гдⷭ҇и, гдⷭ҇емъ,
+  гдⷭ҇еви — 5,767 tokens — are `:amb` through the titlo index, not the
+  analyzer: господь.n (`b{…}`, Polyakov + ru.wiktionary) and господь.n.2
+  (`a`, Polyakov's second entry, nom.pl госпо́дїе) both expand under the
+  row. Over the analyzer's `:amb` surfaces, pairs of one part of speech:
+  43 twins with identical forms in every cell (307 tokens: веѳиль.n +
+  .n.2, амаликъ, зрѣти.v + .v.2 — Polyakov's split entries), 36 subset
+  pairs (1,135 tokens: первый.a + .a.2 433, добро.n + .n.2 162), 435
+  pairs that differ (6,616 tokens: ꙗзыкъ.n anim + .n.2 inan 921,
+  дѣло.n + .n.2 467, положити.v + .v.2 363, малый.a + .a.2 359). The
+  differing pairs are mostly Polyakov's sense entries with different
+  attestation (a stress column fitted to fewer cells, an override on one
+  side); ꙗзыкъ differs in animacy, which is grammar. Part 3's rule of
+  identity has to say what "attested" means for a merged line.
+- **The tagger's 274 errors by kind (finding).** Nominative against
+  accusative 97, several features 37, gender 31, another feature (person,
+  tense, series) 30, genitive against accusative 29, dative against
+  locative (по) 14, number 14, another case 10, another part of speech 9,
+  another lexeme of the same part of speech 3. The nominative/accusative
+  block is Part 5's target; the genitive/accusative one is the
+  genitive-accusative convention and the genitive of negation.

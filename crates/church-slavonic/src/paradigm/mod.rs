@@ -147,6 +147,10 @@ pub struct Letters {
     pub mark: bool,
     /// How many vowels the stem contributed (the stress layer's boundary).
     pub stem_vowels: usize,
+    /// How many vowels the stem had before the class's extension
+    /// (`ext:им`, `ext:ѧщ`): the place `P` of the stress layer. Equal to
+    /// `stem_vowels` on a stem the class did not extend.
+    pub pre_vowels: usize,
     /// Vowels of a solid enclitic at the end (`Form::mark_skip`).
     pub tail_vowels: u8,
 }
@@ -206,6 +210,33 @@ impl Class {
         out
     }
 
+    /// The vowel count of each numbered stem before the class's
+    /// extension: for `n=ext:suffix:inner` the vowels of `inner`, for any
+    /// other stem its own — the place `P` of the stress layer. A stem the
+    /// lexeme spells itself (`stems=6=…`) has no extension the class knows.
+    pub fn pre_vowels_of(&self, subject: &Subject<'_>, stems: &HashMap<u8, String>) -> HashMap<u8, usize> {
+        let subject = &subject.core();
+        let count = |s: &str| s.chars().filter(|c| is_vowel_letter(*c)).count();
+        let mut out: HashMap<u8, usize> = stems.iter().map(|(n, s)| (*n, count(s))).collect();
+        let spelled = |n: u8| subject.stems.iter().any(|(k, _)| k.parse::<u8>().ok() == Some(n));
+        let mut base: Option<String> = None;
+        for (n, derivation) in &self.stems {
+            let Derivation::Ext(_, inner) = derivation else { continue };
+            if spelled(*n) {
+                continue;
+            }
+            let base = base.get_or_insert_with(|| match subject.stems.iter().find(|(k, _)| k == "base") {
+                Some((_, b)) => b.clone(),
+                None => {
+                    let k = subject.lemma.chars().count().saturating_sub(self.strip);
+                    subject.lemma.chars().take(k).collect()
+                }
+            });
+            out.insert(*n, count(&derive(inner, base, subject, self.recension)));
+        }
+        out
+    }
+
     /// Every alternative of `cell` for the subject, primary first; empty
     /// when the class has no such cell.
     pub fn letters(&self, cell: Cell, subject: &Subject<'_>) -> Vec<Letters> {
@@ -221,9 +252,10 @@ impl Class {
         // ending, dropping the jer before it (бои́тсѧ, боѧ́хсѧ, боѧ́щихсѧ;
         // тогѡ́же, коегѡ́ждо)
         let refl = subject.enclitic();
+        let pre = self.pre_vowels_of(subject, stems);
         let subject = subject.core();
         let mut out = Vec::new();
-        self.collect(cell, &subject, stems, &mut out, 0);
+        self.collect(cell, &subject, stems, &pre, None, &mut out, 0);
         if let Some(r) = refl {
             // the print drops the jer before the enclitic (тѣ́мже, бои́тсѧ);
             // OCS keeps it (имъже, ихъже)
@@ -239,11 +271,16 @@ impl Class {
         out
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn collect(
         &self,
         cell: Cell,
         subject: &Subject<'_>,
         stems: &HashMap<u8, String>,
+        pre: &HashMap<u8, usize>,
+        // a delegating class's pre-extension count (the participle's stem
+        // before -им-), which the adjective class declining it inherits
+        inherited_pre: Option<usize>,
         out: &mut Vec<Letters>,
         depth: usize,
     ) {
@@ -267,8 +304,8 @@ impl Class {
                 _ => {}
             }
             match &alt.shape {
-                Shape::Ending { stem, ending, mark } => {
-                    if let Some(stem) = stems.get(stem) {
+                Shape::Ending { stem: n, ending, mark } => {
+                    if let Some(stem) = stems.get(n) {
                         // OCS spells the iotated vowel plain after a husher
                         // at the ending too (пиш + ѭ = пишѫ); the Synodal
                         // rule is a derivation's (ext), never an ending's
@@ -276,17 +313,19 @@ impl Class {
                             crate::grammar::Recension::OldChurchSlavonic => after_husher(stem, ending, self.recension),
                             crate::grammar::Recension::Synodal => std::borrow::Cow::Borrowed(ending.as_str()),
                         };
+                        let stem_vowels = stem.chars().filter(|c| is_vowel_letter(*c)).count();
                         out.push(Letters {
                             letters: format!("{stem}{ending}"),
                             mark: *mark,
-                            stem_vowels: stem.chars().filter(|c| is_vowel_letter(*c)).count(),
+                            stem_vowels,
+                            pre_vowels: inherited_pre.or_else(|| pre.get(n).copied()).unwrap_or(stem_vowels),
                             tail_vowels: 0,
                         });
                     }
                 }
-                Shape::Ref(other) => self.collect(*other, subject, stems, out, depth + 1),
-                Shape::Delegate { stem, class } => {
-                    let (Some(stem), Some(adj_cell)) = (stems.get(stem), cell.as_adjective()) else { continue };
+                Shape::Ref(other) => self.collect(*other, subject, stems, pre, inherited_pre, out, depth + 1),
+                Shape::Delegate { stem: n, class } => {
+                    let (Some(stem), Some(adj_cell)) = (stems.get(n), cell.as_adjective()) else { continue };
                     let Some(adjective) = table_of(Pos::Adjective, self.recension).get(class) else { continue };
                     // the delegate's lemma: the stem plus the class's own
                     // ending letters, so its base is exactly the stem
@@ -297,14 +336,14 @@ impl Class {
                     let lemma = format!("{stem}{tail}");
                     let inner = Subject { lemma: &lemma, animate: subject.animate, stems: &[] };
                     let inner_stems = adjective.stems_of(&inner);
-                    adjective.collect(Cell::Adj(adj_cell), &inner, &inner_stems, out, depth + 1);
+                    let inner_pre = adjective.pre_vowels_of(&inner, &inner_stems);
+                    let handed = inherited_pre.or_else(|| pre.get(n).copied());
+                    adjective.collect(Cell::Adj(adj_cell), &inner, &inner_stems, &inner_pre, handed, out, depth + 1);
                 }
-                Shape::Lemma => out.push(Letters {
-                    letters: subject.lemma.to_string(),
-                    mark: false,
-                    stem_vowels: subject.lemma.chars().filter(|c| is_vowel_letter(*c)).count(),
-                    tail_vowels: 0,
-                }),
+                Shape::Lemma => {
+                    let stem_vowels = subject.lemma.chars().filter(|c| is_vowel_letter(*c)).count();
+                    out.push(Letters { letters: subject.lemma.to_string(), mark: false, stem_vowels, pre_vowels: stem_vowels, tail_vowels: 0 })
+                }
             }
         }
     }

@@ -57,6 +57,12 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
     let mut disputed = 0usize;
     let mut primary_loses = 0usize;
     let mut samples: Vec<String> = Vec::new();
+    // 3.0 Part 0.3: the outnumbered primaries by kind — the citation cell
+    // (exempt: ids stable), a letter variant (not a stress twin), a stress
+    // twin the Bible also prints inside a set leaf (exempt: the arbiter
+    // counts only unambiguous prints), a stress twin never inside a set
+    // (the arbiter's own material: should be none after the import)
+    let mut kinds: BTreeMap<&'static str, Vec<String>> = BTreeMap::new();
     for ((id, cell), by_alt) in &alts {
         cells += 1;
         if by_alt.len() < 2 {
@@ -70,11 +76,34 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
             if samples.len() < 20 {
                 samples.push(format!("{id} {cell}: alt {best} printed {n}, the primary {}", by_alt.get(&0).copied().unwrap_or(0)));
             }
+            if let Some(lexeme) = lexicon.get(id) {
+                let forms: Vec<String> = church_slavonic::cell::CellSet::parse(lexeme.pos, cell)
+                    .map(|set| lexeme.forms(set.first()).iter().map(|f| f.print(Recension::Synodal)).collect())
+                    .unwrap_or_default();
+                let primary = forms.first().cloned().unwrap_or_default();
+                let winner = forms.get(best).cloned().unwrap_or_default();
+                let same_letters = church_slavonic::Form::from_print(&primary).key() == church_slavonic::Form::from_print(&winner).key();
+                let in_a_set = |print: &str| counts.get(&(lexeme.lemma.clone(), lexeme.pos.tag().to_string(), cell.clone(), print.to_string())).is_some_and(|(_, sets)| *sets > 0);
+                let kind = if primary == lexeme.lemma {
+                    "the citation cell"
+                } else if !same_letters {
+                    "a letter variant"
+                } else if in_a_set(&primary) || in_a_set(&winner) {
+                    "a stress twin the Bible also prints inside a set"
+                } else {
+                    "a stress twin never inside a set"
+                };
+                kinds.entry(kind).or_default().push(format!("{id} {cell} {primary} < {winner} ({n}:{})", by_alt.get(&0).copied().unwrap_or(0)));
+            }
         }
     }
     println!("census forms: {leaves} one-cell leaves, {cells} (lexeme, cell) pairs; {disputed} pairs printed in more than one form, the lexicon's primary outnumbered in {primary_loses}");
     for s in &samples {
         println!("  {s}");
+    }
+    println!("the outnumbered primaries by kind: {}", kinds.iter().map(|(k, v)| format!("{k} {}", v.len())).collect::<Vec<_>>().join("; "));
+    for (k, v) in &kinds {
+        println!("  {k}: {}", v.iter().take(6).cloned().collect::<Vec<_>>().join(", "));
     }
     if write {
         let path = crate::workspace_root().join("data/treebank-forms.tsv");

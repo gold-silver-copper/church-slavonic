@@ -574,6 +574,27 @@ fn word_nodes(node: &Node) -> Vec<&Node> {
     out
 }
 
+/// The kind of a tagger's wrong cell against the hand's: what a one-token
+/// window does not see (the subject against the object of an inanimate,
+/// the antecedent's gender) apart from the rest.
+fn error_kind(hand: church_slavonic::cell::Cell, auto: church_slavonic::cell::Cell) -> &'static str {
+    use church_slavonic::grammar::Case;
+    let case_only = hand.gender() == auto.gender() && hand.number() == auto.number() && hand.person() == auto.person();
+    match (hand.case(), auto.case()) {
+        (Some(h), Some(a)) if h != a && case_only => match (h, a) {
+            (Case::Nominative, Case::Accusative) | (Case::Accusative, Case::Nominative) => "nominative against accusative",
+            (Case::Locative, Case::Dative) | (Case::Dative, Case::Locative) => "dative against locative (по)",
+            (Case::Genitive, Case::Accusative) | (Case::Accusative, Case::Genitive) => "genitive against accusative",
+            (Case::Vocative, _) | (_, Case::Vocative) => "the vocative",
+            _ => "another case",
+        },
+        _ if hand.case() == auto.case() && hand.gender() != auto.gender() && hand.number() == auto.number() => "gender",
+        _ if hand.case() == auto.case() && hand.number() != auto.number() => "number",
+        _ if hand.case() == auto.case() && hand.gender() == auto.gender() && hand.number() == auto.number() => "another feature (person, tense, series)",
+        _ => "several features",
+    }
+}
+
 /// `cargo xtask score-disambiguation`: the constraint layer against the
 /// hand overlay. Every hand verse is auto-lifted and constrained; each
 /// hand leaf is aligned with the auto word at its position. Precision:
@@ -591,6 +612,8 @@ pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
     // the tagger's own score: (leaves it chose, right, wrong cell, wrong lexeme)
     let mut tagger_score = (0usize, 0usize, 0usize, 0usize);
     let mut tagger_wrong: Vec<String> = Vec::new();
+    // 3.0 Part 0.5: the tagger's errors by kind
+    let mut tagger_kinds: std::collections::BTreeMap<&'static str, usize> = std::collections::BTreeMap::new();
     // by confidence: p bucket (tenths) → (chosen, right)
     let mut tagger_buckets: std::collections::BTreeMap<u8, (usize, usize)> = std::collections::BTreeMap::new();
     let mut hand_leaves = 0;
@@ -637,11 +660,14 @@ pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
                             if aid != hid {
                                 tagger_score.3 += 1;
                                 tagger_wrong.push(format!("{} {ch}:{vs} hand {hid} {} / tagger {aid} {} (p {p})", book.name, hc.name(), ac.name()));
+                                let same_pos = lexicon.get(hid).map(|l| l.pos) == lexicon.get(aid).map(|l| l.pos);
+                                *tagger_kinds.entry(if same_pos { "another lexeme of the same part of speech" } else { "another part of speech" }).or_default() += 1;
                             } else if ac.first() == hc.first() {
                                 tagger_score.1 += 1;
                             } else {
                                 tagger_score.2 += 1;
                                 tagger_wrong.push(format!("{} {ch}:{vs} {hid}: hand {} / tagger {} (p {p})", book.name, hc.name(), ac.name()));
+                                *tagger_kinds.entry(error_kind(hc.first(), ac.first())).or_default() += 1;
                             }
                         }
                         if aid != hid {
@@ -693,6 +719,7 @@ pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
                 above_r += r;
                 println!("  p ≥ 0.{bucket}: chose {above_n}, right {above_r} ({:.2}%); this tenth {n} chosen, {r} right", 100.0 * above_r as f64 / above_n.max(1) as f64);
             }
+            println!("  errors by kind: {}", tagger_kinds.iter().map(|(k, n)| format!("{k} {n}")).collect::<Vec<_>>().join("; "));
             for w in tagger_wrong.iter().take(if std::env::var_os("CS_ALL").is_some() { usize::MAX } else { 60 }) {
                 println!("  TAGGER {w}");
             }

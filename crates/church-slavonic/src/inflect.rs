@@ -9,7 +9,7 @@ use crate::form::Form;
 use crate::lexicon::Lexeme;
 use crate::orthography::is_vowel_letter;
 use crate::paradigm::{Class, Letters, Subject, table_of};
-use crate::stress::{StressSpec, resolve};
+use crate::stress::{StressSpec, resolve_in};
 
 impl Lexeme {
     /// The lemma's letters (marks stripped) and stressed vowel.
@@ -32,7 +32,7 @@ impl Lexeme {
         // a solid enclitic's vowels never carry the word's stress
         // (возда́стсѧ, блюсти́сѧ): the ending's vowel count stops before it
         let total = letters.letters.chars().filter(|c| is_vowel_letter(*c)).count().saturating_sub(usize::from(letters.tail_vowels));
-        let stress = spec.and_then(|s| resolve(s.place(cell), lemma_stress, letters.stem_vowels, total));
+        let stress = spec.and_then(|s| resolve_in(s.place(cell), lemma_stress, letters.pre_vowels, letters.stem_vowels, total));
         Form { letters: letters.letters.clone(), stress, number_mark: letters.mark, mark_skip: letters.tail_vowels, varia: false, kamora: false }
     }
 

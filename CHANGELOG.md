@@ -59,6 +59,24 @@ Measured (2.3.0 → Part 6 as it stands):
 | Bible treebank | one cell 204,650, tagger 185,118, several lexemes 13,107 | one cell 204,726 (32.4%), one lexeme several cells 1,775, tagger 185,169 (29.3%), closed 177,234, several lexemes 12,988 (2.1%), verbatim 49,037; zero mismatches; 389,575 leaves complete; hand overlay re-rendered after `fix-hand-alts` (21 stale `:alt`) |
 | ids changed by the re-import | — | 0 (the citation cell keeps the headword's form) |
 
+### V3.0 Part 0 — the censuses (2026-09-05)
+
+The plan is `V3.0-PROMPT.md`. Numbers on record before Part 1 moves
+anything (the findings are in NOTES):
+
+| Census | Number |
+|---|---|
+| `census stress`, exception cells only the candidate place `P` names | verbs 4,035 (886 lists; `P` names every stuck cell of 323 lists, some of 66), adjectives 13 (the short comparative's masculine), nouns 0, pronouns 0 |
+| -надесѧть numerals | 7 lines, 44 overrides (all stressed on на́), 7 variants |
+| `adv-of=` closed lines | 61: 33 printed by the adjective's `adv` cell already, 12 on the adjective's stem, 6 on its ending, 8 on none of the places, 2 unaccented |
+| `census forms`, the outnumbered primaries | 135: 115 letter variants, 10 citation cells, 1 stress twin inside a set, 9 stress twins never inside a set (pronouns, three names) |
+| `census homonymy`, pairs of one part of speech sharing a surface | 43 twins (307 tokens), 36 subset pairs (1,135), 435 differing pairs (6,616); гдⷭ҇ь and kin 5,767 tokens through the titlo index (господь.n / .n.2) |
+| `score-disambiguation`, the tagger's 274 errors by kind | nom/acc 97, several features 37, gender 31, another feature 30, gen/acc 29, по 14, number 14, another case 10, another pos 9, another lexeme 3 |
+
+The crate gained `Place::Pre` (`P`), `Letters::pre_vowels` and
+`stress::resolve_in` so the census could measure it; no paradigm names
+it yet.
+
 ## 2.3.0 (2026-09-05) — the constraint layer of homonymy, the gold, the tagger
 
 The plan is `V2.2-PROMPT.md` Parts 4–5 (Part 6, the accent inventory, is
