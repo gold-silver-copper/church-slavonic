@@ -656,6 +656,15 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
     } else {
         HashMap::new()
     };
+    // the same by the accent-blind key: Polyakov's adverb enters the
+    // adjective's `adv` cell as an attested form, so the fitter reads
+    // its accent (бла́гѡ beside благі́й: `b.adv`) and a true exception
+    // becomes the cell's override — the adverb is the adjective's cell,
+    // never a line beside it (3.0 Part 1 step 3)
+    let mut adverb_by_key: HashMap<String, Vec<(String, u64)>> = HashMap::new();
+    for (print, count) in &adverb_entries {
+        adverb_by_key.entry(church_slavonic::orthography::comparison_key(print)).or_default().push((print.clone(), *count));
+    }
     for entry in &entries {
         if pos_of(entry) != Some(pos) {
             continue;
@@ -815,10 +824,32 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             quarantine(&mut o, "class not in the inventory", entry.class.clone());
             continue;
         }
-        let (attested, bundled) = attested_cells(entry, pos, &codes[0], &mut o);
+        let (mut attested, bundled) = attested_cells(entry, pos, &codes[0], &mut o);
         if attested.is_empty() {
             quarantine(&mut o, "no analysed forms", String::new());
             continue;
+        }
+        if pos == Pos::Adjective
+            && let Some(adv_cell) = Cell::parse(Pos::Adjective, "adv")
+            && !attested.contains_key(&adv_cell)
+        {
+            let subject = church_slavonic::paradigm::Subject { lemma: &lemma_form.letters, animate: None, stems: &[] };
+            let mut found: Vec<(String, u64)> = Vec::new();
+            for class in &known {
+                for letters in class.letters(adv_cell, &subject) {
+                    let key = church_slavonic::orthography::comparison_key(&letters.letters);
+                    for (print, count) in adverb_by_key.get(&key).map(Vec::as_slice).unwrap_or(&[]) {
+                        if !found.iter().any(|(p, _)| p == print) {
+                            found.push((print.clone(), *count));
+                        }
+                    }
+                }
+            }
+            if !found.is_empty() {
+                found.sort_by_key(|(_, n)| std::cmp::Reverse(*n));
+                attested.insert(adv_cell, found);
+                o.bump("adjectives whose adv cell Polyakov's adverb entry attests");
+            }
         }
         let refl = reflexive_suffix(pos, &lemma_form.letters);
         // the cell that is the lemma names it: where the source's headword

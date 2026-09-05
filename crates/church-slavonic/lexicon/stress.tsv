@@ -56,3 +56,6 @@ b.ppf	E;part=S;part.past.pass.short.f.sg.nom=E;part.past.pass.short.m.sg.gen=E;p
 # the whole present-participle block on P: the -ova- verbs stressed on -ва́- (благовѣствꙋ́ѧ, благовѣствꙋ́ющїй: the class contracted the lemma's vowel away), and the retracting present's participles (благохва́лѧщїй beside благохва́лиши)
 a.ov	S;part.pres=P	благовѣствова́ти	23
 b.pres.part	E;part=S;pres=S;pres.1.sg=E;impv.1.pl=S;part.pres=P	благохвали́ти	9
+# adjectives, 3.0 Part 1 step 3: the adverb cell's accent against the adjective's (the census over the adv-of= lines: 12 on the stem of an end-stressed adjective, 6 on the ending of a stem-stressed one)
+b.adv	E;adv=S	благі́й	12
+a.adv	S;adv=E	бы́стрый	6

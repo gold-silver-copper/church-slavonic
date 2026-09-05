@@ -105,6 +105,19 @@ it yet.
 | Bible treebank | one cell 204,726, sets 1,775, tagger 185,169, several lexemes 12,988, verbatim 49,037 | one cell 204,710 (32.4%), sets 1,775, tagger 185,206 (29.3%), closed 177,234, several lexemes 13,027 (2.1%), verbatim 48,977 (7.8%); zero mismatches |
 | ids changed | — | 0 |
 
+Step 3 — the `adv-of=` adverbs (2026-09-05): Polyakov's adverb enters
+the adjective's `adv` cell as attested evidence (887 adjectives; `b.adv`,
+`a.adv` named; 243 `adv=` overrides); the closed re-import deleted 41
+lines, 22 `adv-of=` lines stay (another letter); `(adv прѧмый.a)` in the
+overlay.
+
+| Number | before | after |
+|---|---|---|
+| closed lines / `adv-of=` lines | 1,383 / 61 | 1,342 / 22 |
+| adjective cells attested / reproduced | 94,181 / 87,938 | 95,063 / 88,572 |
+| adjective lists | 211 | 215 (four adverb accents no paradigm names) |
+| treebank one cell / closed / several lexemes | 204,710 / 177,234 (28.0%) / 13,027 (2.1%) | 204,769 / 177,091 (28.0%) / 13,128 (2.1%); zero mismatches |
+
 ## 2.3.0 (2026-09-05) — the constraint layer of homonymy, the gold, the tagger
 
 The plan is `V2.2-PROMPT.md` Parts 4–5 (Part 6, the accent inventory, is

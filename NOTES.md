@@ -1452,3 +1452,35 @@ members — stays deliberately its own future design.
 - **Open (steps 3–4 of Part 1):** the 61 `adv-of=` adverbs (33 already
   printed by the adjective's `adv` cell can go now), the residue recorded
   in OPEN-DESIGNS, the 9 pronoun stress twins the arbiter never saw.
+
+## 2026-09-05 — 3.0 Part 1 step 3 (V3.0-CONTINUE-PROMPT.md): the adv-of adverbs — decisions and findings
+
+- **The adverb is the adjective's cell, and its accent is the cell's
+  evidence (decision).** Polyakov's ADV entry now enters the adjective's
+  `adv` cell as an attested form (matched by the accent-blind key
+  against the class's adverb letters), so `fit::stress_column` reads
+  its accent: 887 adjectives gained an attested `adv` cell (882 more
+  attested cells, reproduced 87,938 → 88,572); two named shapes,
+  `b.adv` (`E;adv=S`, бла́гѡ ~ благі́й: 6 lines) and `a.adv` (`S;adv=E`,
+  быстрѡ̀ ~ бы́стрый: 1); the rest fit the column the adjective had, or
+  became the cell's override (243 lines carry `adv=`: mostly the -ѣ
+  adverb where the class's primary is -ѡ — an alternative preference,
+  the importer's standing rule — and the retractions the paradigm cannot
+  name, ве́селѡ ~ весе́лый). A true exception on the adverb lives on the
+  adjective line now, never as a closed line beside it.
+- **The closed re-import deleted 41 lines** (adverbs an adjective
+  produces 1,123 → 1,164); 22 `adv-of=` lines stay, all printed with
+  another letter (безѿвѣ́тнѣ against безѡтвѣ́тный's ѡт, the census's
+  "letters only" 31 → the survivors), 3 of them also on none of the
+  places. The closed lexicon is 1,342 lines.
+- **The overlay named a deleted line (finding).** Genesis 1's two
+  `(f прѧмѡ.x.2)` leaves became `(adv прѧмый.a)`; `narrow-hand` 0
+  findings at 2,097 leaves; the constraint rules still exclude no hand
+  cell; the tagger 74.79%.
+- **Adjective lists 211 → 215 (recorded, went up):** four adverbs whose
+  accent fits no paradigm are exceptions now instead of closed lines.
+- Treebank rebuilt at zero mismatches: one cell 204,710 → 204,769,
+  closed 177,234 → 177,091 (28.0% still), several lexemes 13,027 →
+  13,128 (2.1% still; "several parts of speech" 235 → 295: an adjective's
+  -ѣ adverb beside a noun's locative), verbatim 48,983. Held-out recall
+  unchanged; tests, clippy, the game green.
