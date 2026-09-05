@@ -12,6 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("eval") => church_slavonic_tools::eval::run(args.collect()),
         Some("import") => church_slavonic_tools::import::run(args.collect()),
         Some("census") => church_slavonic_tools::census::run(args.collect()),
+        Some("train-tagger") => church_slavonic_tools::tagger::train(&args.collect::<Vec<_>>()),
         Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
         Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),
         Some("fix-hand-alts") => church_slavonic_tools::treebank::runner::fix_hand_alts(),

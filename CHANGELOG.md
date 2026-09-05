@@ -55,6 +55,60 @@ Measured (2.2.0 → 2.3 Part 4):
 | Bible treebank: one cell / one lexeme several cells / closed / several lexemes / verbatim | 23.8 / 34.3 / 28.0 / 6.0 / 7.8 % | **32.4 (204,650) / 26.0 (164,438) / 28.0 / 5.6 (35,562) / 7.8 %**; zero mismatches; 366,993 leaves complete |
 | leaves narrowed by rule (whole Bible) | — | voc-drop 57,615, np-agree 41,542, prep-gov 18,082, subj-verb 2,767; 1,931 several-lexeme tokens reduced to one lexeme (prep-gov) |
 
+### Part 5 — the statistical tagger (2026-09-05)
+
+- **The crate** `church-slavonic-tagger` (the library stays
+  dependency-free): an averaged perceptron over the (part of speech,
+  cell) readings the analyzer returns for a token, features from the
+  surface under a manuscript fold (accent-blind, jer-blind: де́нь ~ дьнь,
+  сотворѝ ~ сътвори), its suffixes, the neighbouring surfaces and lemmas
+  (the abbreviations differ between the recensions — бг҃ъ, б҃ъ — the
+  lemmas do not), the readings' part of speech, case, number, person,
+  and the previous token's choice; never a lexeme id, so the model
+  transfers between the recensions. Greedy left to right; the choice's
+  softmax share written on the leaf as `:prob` (`:p` is a verb leaf's
+  person); a tie is an abstention. The model is a committed binary
+  (`data/models/tagger.bin`, feature hashes and weights, 2.6 MB) with
+  its record (`tagger.md`) and the sha256 of the model and of the
+  archives it was trained on (`tagger.sha256`); `cargo xtask
+  train-tagger` rebuilds it reproducibly (fixed-seed shuffle).
+- **Training material**: the gold morphology of UD PROIEL **train** and
+  of Syntacticus with the 4,953 sentences UD holds out removed (they are
+  the same Codex Marianus); the Bible is never training material. The
+  gold follows the overlay's convention where the treebanks' differs:
+  a direct object (`obj`) the treebanks tag in the genitive — the
+  genitive-accusative, сътворимъ чловѣка `Case=Gen` — is the accusative
+  when the readings offer it. Trained only on tokens with several
+  readings among which the gold stands.
+- **In the treebank** (`treebank/tag.rs`): applied AFTER the constraint
+  layer and only where it left several readings — a leaf with a set is
+  narrowed to the tagger's cell (`:by voc-drop+tagger :from nom|acc.sg
+  :prob 0.98`), a several-lexeme token whose readings the tagger tells
+  apart by cell becomes a leaf (`:by tagger :from-lexemes 2`). The
+  coverage table reports "Tagger" as its own column, never folded into
+  the analysed share; `CS_NO_TAGGER=1` rebuilds without it and gets the
+  Part 4 numbers back exactly; the leaf census and the round-trip hold.
+  `score-disambiguation` scores the tagger apart, by confidence.
+- **A repository finding, fixed.** `.gitignore`'s `treebank/` (the built
+  Bible) also ignored `crates/church-slavonic-tools/src/treebank/`: the
+  whole treebank module (lifter, nodes, linter, runner, constraints) had
+  never been committed, and tags v2.0.0–v2.2.0 do not build from a
+  clean clone. The pattern is anchored (`/treebank/`) and the module is
+  in this commit.
+
+Measured (2.3 Part 4 → Part 5):
+
+| Number | value |
+|---|---|
+| training: UD PROIEL train / Syntacticus (held-out sentences removed) | 18,327 sentences, 102,552 annotated tokens / 19,038 sentences, 116,614 tokens; 136,985 examples with several readings; 8 epochs; 220,574 features |
+| **OCS, UD dev+test, tokens with several readings** (the overlay's object convention) | **86.86% (12,623 of 14,532)**; the analyzer's first reading 38.85%; by part of speech: verbs 89.60%, pronouns 88.99%, nouns 85.90%, adjectives 74.25%; by set size: 2 readings 91.82%, 3 86.03%, 4 86.95% |
+| the same under the treebanks' own convention (genitive-accusative as genitive) | 88.61% (12,876 of 14,531) |
+| **hand overlay: the tagger's precision** | **74.72%: 810 right of 1,084 chosen** (262 a wrong cell, 12 a wrong lexeme) of 2,095 hand leaves; at `:prob` ≥ 0.9 77.72% (764 of 983) — the perceptron's shares are not calibrated |
+| hand overlay, the whole auto tree: contains the hand cell / resolves it | 84.44% (1,769) / 83.68% (1,753) — Part 4 alone 100% / 45.0% |
+| commonest confusions (hand → tagger) | acc.sg → nom.sg 25, nom.sg → acc.sg 19, acc.sg → gen.sg 14, nom.pl → acc.pl 8, long n.sg.acc → nom 8, the neuter singular pronoun → plural 7, loc.sg → dat.sg 6 (по землѝ: the treebanks read по with the dative) |
+| Bible treebank: one cell / one lexeme several cells / **tagger** / closed / several lexemes / verbatim | 32.4% (204,650, unchanged) / 0.3% (1,775) / **29.3% (185,118)** / 28.0% / 2.1% (13,107) / 7.8%; 163,668 leaves chosen, 22,598 several-lexeme tokens reduced; zero mismatches; 389,448 leaves complete |
+| `CS_NO_TAGGER=1` | one lexeme several cells 164,438, several lexemes 35,562 — Part 4 exactly |
+
 ## 2.2.0 (2026-09-05) — the verb's whole two-stem system, the closed lexicon, the phonological word
 
 The plan is `V2.2-PROMPT.md` (Parts 0–3 of six; Parts 4–6 are the 2.3.0

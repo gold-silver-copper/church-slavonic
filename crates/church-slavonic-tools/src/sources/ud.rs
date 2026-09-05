@@ -41,13 +41,30 @@ pub struct CorpusSlot {
     pub surface: String,
 }
 
-/// A loaded treebank: its slots and the accounting of what was left out.
+/// One token of a sentence in reading order: its surface and the slot
+/// indices its gold reading occupies (several for an adjective whose
+/// gender the annotation leaves open; none for a token outside the
+/// lexicon's parts of speech).
+#[derive(Debug, Clone)]
+pub struct SequenceToken {
+    pub surface: String,
+    /// the annotated lemma, whatever the part of speech
+    pub lemma: String,
+    /// a direct object (UD `obj`, PROIEL `obj`)
+    pub object: bool,
+    pub slots: Vec<usize>,
+}
+
+/// A loaded treebank: its slots and the accounting of what was left out;
+/// `sentences` the tokens in order (the tagger's training and scoring
+/// material), each token pointing at its slots.
 #[derive(Debug, Default)]
 pub struct Corpus {
     pub label: &'static str,
     pub tokens: u64,
     pub slots: Vec<CorpusSlot>,
     pub skipped: BTreeMap<&'static str, u64>,
+    pub sentences: Vec<Vec<SequenceToken>>,
 }
 
 impl Corpus {
@@ -142,7 +159,14 @@ fn load_ud_proiel_split(
     files_with_extension(&root, "conllu", &mut files)?;
     files.retain(|f| f.file_stem().and_then(|s| s.to_str()).is_some_and(|s| s.ends_with("train") == train));
     for file in files {
+        let mut sentence: Vec<SequenceToken> = Vec::new();
         for line in fs::read_to_string(&file)?.lines() {
+            if line.trim().is_empty() {
+                if !sentence.is_empty() {
+                    corpus.sentences.push(std::mem::take(&mut sentence));
+                }
+                continue;
+            }
             let fields: Vec<&str> = line.split('\t').collect();
             if fields.len() < 10 || fields[0].contains('-') || fields[0].contains('.') {
                 continue;
@@ -150,7 +174,12 @@ fn load_ud_proiel_split(
             corpus.tokens += 1;
             let feats: BTreeMap<&str, &str> =
                 fields[5].split('|').filter_map(|f| f.split_once('=')).collect();
+            let before = corpus.slots.len();
             ud_token(&mut corpus, fields[1], fields[2], fields[3], &feats);
+            sentence.push(SequenceToken { surface: clean_surface(fields[1]), lemma: fields[2].to_lowercase(), object: fields[7] == "obj", slots: (before..corpus.slots.len()).collect() });
+        }
+        if !sentence.is_empty() {
+            corpus.sentences.push(sentence);
         }
     }
     Ok(Some(corpus))
@@ -463,7 +492,12 @@ pub fn load_syntacticus(sources_dir: &Path, artifacts_dir: &Path) -> Result<Opti
             continue;
         }
         let mut rest = xml.as_str();
+        let mut sentence: Vec<SequenceToken> = Vec::new();
         while let Some(at) = rest.find("<token ") {
+            // a sentence boundary before this token
+            if rest[..at].contains("<sentence") && !sentence.is_empty() {
+                corpus.sentences.push(std::mem::take(&mut sentence));
+            }
             let tag = &rest[at..];
             let Some(end) = tag.find('>') else { break };
             let tag = &tag[..end];
@@ -480,7 +514,13 @@ pub fn load_syntacticus(sources_dir: &Path, artifacts_dir: &Path) -> Result<Opti
                 continue;
             };
             corpus.tokens += 1;
+            let before = corpus.slots.len();
             proiel_token(&mut corpus, &form, &lemma, &pos, &morphology);
+            let object = attribute("relation").is_some_and(|r| r == "obj");
+            sentence.push(SequenceToken { surface: clean_surface(&form), lemma: lemma.to_lowercase(), object, slots: (before..corpus.slots.len()).collect() });
+        }
+        if !sentence.is_empty() {
+            corpus.sentences.push(std::mem::take(&mut sentence));
         }
     }
     Ok(Some(corpus))

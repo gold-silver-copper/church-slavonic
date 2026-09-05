@@ -337,6 +337,25 @@ linter and the coverage count a unit as its host; the linter reads a
 preposition's case frame from the lexicon (`gov=`) and leaves a word
 without one unchecked.
 
+Two layers of homonymy sit between the lifter and the stored tree (2.3),
+both outside the crate. The constraint layer (`treebank/disambiguate.rs`)
+is rules over a verse's flat tree that eliminate and never select —
+government (`prep-gov`, the lexicon's `gov=` frame), agreement
+(`np-agree`, `subj-verb`), the vocative (`voc-drop`) — each named on the
+leaf it narrowed with the set it narrowed from (`:by prep-gov :from
+nom|acc|voc.sg`; a several-lexeme token reduced to one lexeme carries
+`:from-lexemes n`), each leaving everything when it would leave nothing;
+a rule that ever excludes a hand cell is wrong and goes. The statistical
+layer (`crates/church-slavonic-tagger`) is an averaged perceptron over
+the (part of speech, cell) readings, trained on the OCS treebanks' gold
+morphology and transferred through a manuscript fold (never a lexeme
+id); it runs only where the constraints left several readings, writes
+`tagger` into `:by` and its share into `:prob`, and the coverage table
+counts its leaves in their own column: a choice is not an analysis.
+Both are scored against the hand overlay (`score-disambiguation`),
+`CS_NO_DISAMBIGUATE=1` and `CS_NO_TAGGER=1` rebuild without them, and
+neither touches the round-trip invariant or the leaf census.
+
 ## The fifth stage: the phonological word
 
 Church Slavonic accent is lexical at the word level, but the print's
@@ -426,7 +445,8 @@ crates/church-slavonic/          the library (dependency: unicode-normalization)
   src/grammar.rs cell.rs form.rs orthography.rs lexicon.rs
   src/paradigm/{noun,adj,verb,pronoun}.rs stress.rs inflect.rs analyze.rs guess.rs
   lexicon/                       the tsv files, include_str!
-crates/church-slavonic-tools/    cargo xtask: import, eval, treebank
+crates/church-slavonic-tagger/   the statistical layer (dependency: church-slavonic); model data/models/tagger.bin
+crates/church-slavonic-tools/    cargo xtask: import, eval, census, treebank, train-tagger
 ```
 
 ```rust
@@ -461,6 +481,9 @@ lex.guess("а҆дама́нтъ", Pos::Noun);              // provenance: Guesse
 - A stem the class can derive is never stored on a lexeme line; the
   census (`cargo xtask census stems`) is the arbiter, and removing lines
   is the measure of a derivation's success.
+- A constraint eliminates and names itself; a tagger's choice carries
+  `:by tagger` and is never folded into the analysed share; the Bible is
+  never training material.
 
 ## What 1.x was, and why it was replaced
 

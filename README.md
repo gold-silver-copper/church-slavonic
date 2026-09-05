@@ -158,15 +158,26 @@ Synodal analyzer (631,946 tokens; `cargo xtask check-treebank`). A token
 whose exact readings are one lexeme is analysed — in one cell, or in the
 cells its paradigm does not tell apart (syncretism, recorded as the set);
 a token whose readings are several lexemes is homonymy, recorded and
-never guessed:
+never guessed. Since 2.3 a constraint layer (agreement, government, the
+vocative) eliminates readings and names itself on the leaf (`:by
+prep-gov :from nom|acc|voc.sg`), and a statistical tagger chooses among
+what the constraints leave, in its own row — a choice, never counted as
+analysed (`CS_NO_TAGGER=1` rebuilds without it):
 
-| | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|
-| analysed, one cell | 23.8% | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 34.3% | 34.0% | — | — |
-| closed-class | 28.0% | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | 7.8% | 8.2% | 8.1% | 20.2% |
+| | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|
+| analysed, one cell | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 0.3% (26.0% without the tagger) | 34.3% | 34.0% | — | — |
+| chosen by the tagger (`:by tagger :prob`) | 29.3% | — | — | — | — |
+| closed-class | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 2.1% (5.6% without the tagger) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
+
+On the 2,095-leaf hand overlay (211 verses) the constraint layer alone
+never excludes a hand cell (precision 100%, resolution 45.0%); the
+tagger's choices are right 74.7% of the time (810 of 1,084; on Old
+Church Slavonic, UD PROIEL dev+test, 86.9% of the tokens with several
+readings against 38.9% for the analyzer's first reading).
 
 A host and the enclitic that leans on it are one accentual unit in the
 print (Землѧ́ же, и҆̀хже): the treebank writes the unit (`(pwa …)`, `(pw …)`)
@@ -193,8 +204,15 @@ are one lexeme becomes a leaf carrying the lexeme id and its cell or set
 :clit yes)`, `(f и.x)` — and every tree renders the verse back
 byte-for-byte (`check-treebank` enforces it over all 34,470 verses, and
 that every leaf names every cell of its lexeme that prints the token).
-The Genesis 1 hand overlay (`data/treebank-hand/b00.sexp`) is committed,
-linted, and checked against the lexicon's sets by `narrow-hand`.
+The hand overlay (`data/treebank-hand/`: Genesis 1–3, Exodus 1, Proverbs
+1, Matthew 1, John 1) is committed, linted, and checked against the
+lexicon's sets by `narrow-hand`; `score-disambiguation` scores the
+constraint layer and the tagger against it. The constraint layer
+(`treebank/disambiguate.rs`) eliminates and never selects; the tagger
+(`crates/church-slavonic-tagger`, model `data/models/tagger.bin`,
+rebuilt by `cargo xtask train-tagger` from UD PROIEL train and
+Syntacticus, never from the Bible) chooses only where the constraints
+left several readings and says so on the leaf.
 
 ## Sources and import
 

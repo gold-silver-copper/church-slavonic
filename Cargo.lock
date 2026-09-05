@@ -10,10 +10,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "church-slavonic-tagger"
+version = "0.1.0"
+dependencies = [
+ "church-slavonic",
+]
+
+[[package]]
 name = "church-slavonic-tools"
 version = "0.1.0"
 dependencies = [
  "church-slavonic",
+ "church-slavonic-tagger",
  "serde",
  "serde_json",
  "unicode-normalization",

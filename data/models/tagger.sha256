@@ -1,0 +1,4 @@
+# sha256 of the model and of the archives it was trained on (references/downloads)
+2f784bbbd014b1c6fe113cf550837a7283a545270d7c3353b45b265f67832a26  data/models/tagger.bin
+579b20edb50366e66168bb4d9f74bee0ce782f8e5b282bad8ebb2d8d870bd65c  ud-ocs-proiel-r2.18/UD_Old_Church_Slavonic-PROIEL-64eddf87abfaa51e7f5acf0bef1bebcdaca1559f.tar.gz
+e32844093cc173edf9241868fdad7167dfb63fb7f105d146af02a645ff382fec  syntacticus-20230428/syntacticus-treebank-data-525cee4fb40590d7d514376c11acaed1bdd91c15.tar.gz

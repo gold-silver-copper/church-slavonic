@@ -1221,3 +1221,47 @@ members — stays deliberately its own future design.
   193 hand leaves the constraint layer cannot reach because the token
   is homonymous across parts of speech, the tagger's share.
 
+## 2026-09-05 — 2.3 Part 5: the statistical tagger — decisions and findings
+
+- **A tagger chooses; the treebank says so (decision).** The averaged
+  perceptron runs after the constraints and only over what they left
+  open; every leaf it touched carries `tagger` in `:by` and its share in
+  `:prob`, the coverage table counts it in its own column, and
+  `CS_NO_TAGGER=1` gives Part 4 back exactly. Its choice is a guess by
+  design; the analysed share (32.4%) did not move.
+- **Precision on the overlay is 74.7% (finding, recorded honestly).**
+  The OCS number is 86.9% on the same kind of token; the gap is the
+  transfer. What the fold reaches: the jers (де́нь ~ дьнь), the accents,
+  the letters. What it does not: the nomina sacra abbreviate differently
+  (бг҃ъ against б҃ъ), so the neighbours enter as lemmas beside their
+  surfaces; the syntax — the nominative against the accusative of an
+  inanimate (свѣ́тъ, не́бо, де́нь: 52 of the 274 errors) and the gender of a
+  pronoun whose form is the same in two genders (є҆гѡ̀, є҆мꙋ̀) are decided
+  by the subject and the antecedent, which a window of one token does
+  not see. A calibrated confidence would let the treebank keep the
+  doubtful ones as sets; the perceptron's softmax share is not
+  calibrated (91% of its choices sit at ≥ 0.9), so no threshold is
+  applied and none is claimed.
+- **The genitive-accusative is a convention, mapped (decision).** UD
+  PROIEL and Syntacticus tag сътворимъ чловѣка with `Case=Gen` (the
+  form's case); the overlay tags the animate accusative (the function).
+  The training gold follows the overlay where the token is a direct
+  object and the readings offer the accusative; the pronoun objects
+  (є҆го̀) come along. Recorded both ways: 88.61% under the treebanks'
+  convention, 86.86% under the overlay's (the harder gold), and the
+  overlay precision rose 71.7% → 74.7%.
+- **по + locative (finding).** The treebanks read по with the dative
+  where the overlay has the locative (по землѝ); six overlay errors are
+  this convention, not the model.
+- **Syntacticus contains the held-out text (finding, handled).** The
+  Codex Marianus is in both; the 4,953 sentences of UD dev+test are
+  removed from Syntacticus by their folded token sequence before
+  training, so the OCS number is held out.
+- **The treebank module was never committed (finding, fixed).**
+  `treebank/` in `.gitignore` matched `crates/church-slavonic-tools/src/treebank/`
+  as well; the module is in the Part 5 commit and the pattern is
+  `/treebank/`. Tags v2.0.0–v2.2.0 lack it.
+- **What did not help (refuted).** Pruning small weights (the averaged
+  weights are all above 0.2; the size is the feature count); a
+  confidence threshold (see above).
+
