@@ -164,8 +164,17 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
   (`a.aor3`), the pronoun's oblique singular (`pr.obl`, `pr.kto`,
   `pr.moj`). `<name>{cell=S|E|L|F|<N>;…}` is a paradigm with exceptions —
   places: `S` stem, `E` ending, `L` last stem vowel, `F` last vowel of the
-  word, `<N>` an index; keys: a cell, `sg`/`du`/`pl`, a block (`part`,
-  `short.comp`), a finite tense (`pres`, `aor`, `impf`), `impv`. A solid
+  word, `P` (3.0 Part 1) the last vowel of the stem before the class's
+  extension (и҆зго́нимъ: `b.pres.ppm`; the -ova- and retracting presents'
+  whole participle block: `a.ov`, `b.pres.part`), `<N>` an index; keys:
+  a cell, `sg`/`du`/`pl`, a block (`part`, `short.comp`; the most
+  specific block rule wins), a finite tense (`pres`, `aor`, `impf`),
+  `impv`. The stem place is the lemma's stressed vowel while the stem
+  has it; where a derivation removed it from the base stem (-ова- →
+  -ꙋ-, the iotated -ати presents) the stress stays on the derived stem's
+  last vowel and never enters the extension (цѣлꙋ́ющїй, пи́шꙋщїй), while
+  a lemma stressed on its ending keeps the thematic index (твори́мый) —
+  `stress::resolve_in` over `Vowels { base, pre, stem, total }`. A solid
   enclitic's vowels never carry the stress (возда́стсѧ, блюсти́сѧ: the
   ending's count stops before it). `{…}` purely inline. `-` for OCS and
   titlo lemmas. The importer fits the inventory before it writes a list
@@ -181,7 +190,11 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
   of the class read off the attested forms (the present stem, a
   participle stem); `encl=сѧ|же|жде|ждо|либо` an enclitic the print writes
   solid after every ending, the jer before it dropped (бои́тсѧ, тогѡ́же,
-  кі́йждо, кто́либо) — the class works on the lemma without it. On a
+  кі́йждо, кто́либо) — the class works on the lemma without it;
+  `tail=на́десѧть` (3.0 Part 1) a stressed solid tail after every ending
+  of the first element — the compound numeral's one stress sits in the
+  tail (`Letters::tail_stress`) and the paradigm decides nothing
+  (первыйна́десѧть, первагѡна́десѧть, шестомна́десѧть). On a
   closed-class line (2.2): `gov=<case>|…` the cases a preposition governs,
   commonest first (`Lexeme::government()`); `pros=encl|procl` the word's
   place in the accentual unit (`Lexeme::prosody()`; a word without it is

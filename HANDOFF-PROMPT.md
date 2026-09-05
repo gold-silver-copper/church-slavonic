@@ -101,8 +101,8 @@ Part 6 and V3.0 Part 1 (uncommitted release): stress lists 1,871 → 1,344
 paradigms in `lexicon/stress.tsv`; the -надесѧть numerals without
 overrides (`tail=`); Polyakov cells reproduced by the primary nouns
 94.7%, adjectives 93.3%, verbs 91.6%; primaries the Bible outnumbers
-167 → 135; treebank one cell 204,726 / tagger 185,169 / several lexemes
-12,988 at zero mismatches; ids unchanged. The full table is in
+167 → 135; treebank one cell 204,710 / tagger 185,206 / several lexemes
+13,027 at zero mismatches; ids unchanged. The full table is in
 CHANGELOG "3.0.0 (in progress)".
 
 
