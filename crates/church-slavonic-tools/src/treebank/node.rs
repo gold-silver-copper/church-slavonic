@@ -161,7 +161,7 @@ fn with_notes(node: Node, fs: &[(String, String)]) -> Node {
             id,
             cells,
             alt,
-            notes: fs.iter().filter(|(k, _)| matches!(k.as_str(), "by" | "from" | "from-lexemes")).cloned().collect(),
+            notes: fs.iter().filter(|(k, _)| matches!(k.as_str(), "by" | "from" | "from-lexemes" | "prob")).cloned().collect(),
         },
         other => other,
     }

@@ -44,6 +44,9 @@ pub struct Lexeme {
     pub overrides: Vec<(Cell, String)>,
     /// Additional attested forms per cell, for the analyzer.
     pub variants: Vec<(Cell, Vec<String>)>,
+    /// A source's count on a variant (`form×12` in the column): the
+    /// analyzer's weight; a form without one weighs 0.
+    pub variant_weights: Vec<(Cell, String, u32)>,
     pub src: Vec<String>,
     pub note: String,
     pub provenance: Provenance,
@@ -83,6 +86,12 @@ impl Lexeme {
 
     /// A closed-class word's subcategory (`prep`, `conj`, `part`, `adv`,
     /// `advpro`, `intj`, `pred`): its class column.
+    /// The weight a source's count gave a variant form (`×n`), 0 when
+    /// none is recorded (the primary and the class's alternatives).
+    pub fn variant_weight(&self, cell: Cell, print: &str) -> u32 {
+        self.variant_weights.iter().find(|(c, f, _)| *c == cell && f == print).map(|(_, _, n)| *n).unwrap_or(0)
+    }
+
     pub fn subcategory(&self) -> Option<&str> {
         (self.pos == Pos::Closed && !self.class.is_empty() && self.class != "0").then_some(self.class.as_str())
     }
@@ -280,12 +289,25 @@ pub fn parse_in(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme
             }
         }
         let mut variants_v = Vec::new();
+        let mut weights_v = Vec::new();
         if !empty(variants) {
             for item in variants.split(';') {
                 let (k, v) = item
                     .split_once('=')
                     .ok_or_else(|| format!("line {line_no}: variants item {item}"))?;
-                variants_v.push((parse_cell(k)?, v.split('|').map(str::to_string).collect()));
+                let cell = parse_cell(k)?;
+                let mut forms = Vec::new();
+                for form in v.split('|') {
+                    match form.split_once('×') {
+                        Some((f, n)) => {
+                            let n: u32 = n.parse().map_err(|_| format!("line {line_no}: variant weight {form}"))?;
+                            forms.push(f.to_string());
+                            weights_v.push((cell, f.to_string(), n));
+                        }
+                        None => forms.push(form.to_string()),
+                    }
+                }
+                variants_v.push((cell, forms));
             }
         }
         let src_v: Vec<String> = if empty(src) {
@@ -304,6 +326,7 @@ pub fn parse_in(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme
             stems: stems_v,
             overrides: overrides_v,
             variants: variants_v,
+            variant_weights: weights_v,
             src: src_v,
             note: if empty(note) { String::new() } else { note.to_string() },
             provenance: Provenance::Attested,
@@ -326,7 +349,16 @@ pub fn format(lexemes: &[Lexeme]) -> String {
         let variants = l
             .variants
             .iter()
-            .map(|(c, v)| format!("{}={}", c.name(), v.join("|")))
+            .map(|(c, v)| {
+                let forms: Vec<String> = v
+                    .iter()
+                    .map(|f| match l.variant_weight(*c, f) {
+                        0 => f.clone(),
+                        n => format!("{f}×{n}"),
+                    })
+                    .collect();
+                format!("{}={}", c.name(), forms.join("|"))
+            })
             .collect::<Vec<_>>()
             .join(";");
         let cols = [
@@ -366,6 +398,14 @@ mod tests {
         let parsed = parse(text, Pos::Noun).expect("parses");
         assert_eq!(parsed.len(), 2);
         assert_eq!(parsed[0].variants[0].0.name(), "gen.pl");
+        // a variant's weight (`×n`) parses and formats back
+        let weighted = "id\tlemma\tpos\tgender\tanim\tclass\tstress\tstems\toverrides\tvariants\tsrc\tnote\n\
+            ѻвца.n\tѻ҆вца̀\tn\tf\tanim\tN3c\tb\t-\t-\tacc.sg=ѻ҆́вцꙋ×14|ѻ҆вцꙋ́\tP:N3c\t-\n";
+        let w = parse(weighted, Pos::Noun).expect("parses");
+        let acc = Cell::parse(Pos::Noun, "acc.sg").expect("cell");
+        assert_eq!(w[0].variant_weight(acc, "ѻ҆́вцꙋ"), 14);
+        assert_eq!(w[0].variant_weight(acc, "ѻ҆вцꙋ́"), 0);
+        assert!(format(&w).contains("acc.sg=ѻ҆́вцꙋ×14|ѻ҆вцꙋ́"), "{}", format(&w));
         assert_eq!(parsed[1].overrides[0].1, "ѻ҆́тче");
         assert_eq!(parsed[1].stems, vec![("obl".to_string(), "ѻтц".to_string())]);
         assert_eq!(format(&parsed), text);

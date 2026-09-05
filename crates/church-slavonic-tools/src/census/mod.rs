@@ -18,6 +18,7 @@ pub mod closed;
 pub mod homonymy;
 pub mod stems;
 pub mod stress;
+pub mod forms;
 pub mod verb_cells;
 
 use std::error::Error;
@@ -30,7 +31,8 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
         "clitics" => clitics::run(),
         "homonymy" => homonymy::run(),
         "stress" => stress::run(),
-        _ => Err("census <stems --pos <pos> [--ocs] | verb-cells --ocs | closed | clitics | homonymy | stress>".into()),
+        "forms" => forms::run(args.iter().any(|a| a == "--write")),
+        _ => Err("census <stems --pos <pos> [--ocs] | verb-cells --ocs | closed | clitics | homonymy | stress | forms [--write]>".into()),
     }
 }
 

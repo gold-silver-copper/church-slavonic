@@ -1,4 +1,4 @@
-# Handoff: church-slavonic 2.x (after 2.3.0)
+# Handoff: church-slavonic 2.x (after 2.3.0; Part 6 of V2.2 in progress on main)
 
 Read this first in a fresh session. It is the map of what exists, what
 the numbers are, and which designs are open, so work starts from
@@ -7,8 +7,13 @@ verdicts and recorded measurements. The design record is
 findings per part); `CHANGELOG.md` holds every measured number per part;
 `V2-PROMPT.md` and `V2.1-PROMPT.md` are the executed plans and stay as
 their records; `V2.2-PROMPT.md` is executed through Part 5 (releases
-2.2.0 and 2.3.0), and its Part 6 (release 3.0.0, the accent inventory)
-is the next work.
+2.2.0 and 2.3.0, tags `v2.2.0`, `v2.3.0`), and its Part 6 (the accent
+inventory and weighted evidence, release 3.0.0) is executed in substance
+on `main` but NOT closed — read the prompt's last postscript first: it
+lists exactly what is done and the three steps left (the residue's
+places, the final `eval` into the README, the version bump and tag
+`v3.0.0`); the game's 35 tests and headless run pass against this
+lexicon.
 
 ## What exists
 
@@ -41,9 +46,13 @@ is the next work.
   fold, `Trainer`. Trained on UD PROIEL train and Syntacticus (UD's
   held-out sentences removed), never on the Bible.
 - `crates/church-slavonic-tools` — `cargo xtask`: `import <source> --pos
-  <pos> [--write]` (polyakov, alypy, ruwiktionary, kaikki, ud), `filter-ud`,
-  `eval [--guess verbs [--ocs]]`, `census <stems --pos verb [--ocs] |
-  verb-cells --ocs | closed [--write] | clitics | homonymy | stress>`,
+  <pos> [--write]` (polyakov, alypy, ruwiktionary, kaikki, ud; Polyakov's
+  import fits the accent inventory and takes the Bible as arbiter of
+  stress twins from `data/treebank-forms.tsv`), `refit-stress --pos <pos>
+  [--write]` (a file's stress columns re-fitted from its own forms, no
+  form changed), `filter-ud`, `eval [--guess verbs [--ocs]]`, `census
+  <stems --pos verb [--ocs] | verb-cells --ocs | closed [--write] |
+  clitics | homonymy | stress | forms [--write]>`,
   `build-treebank` (the constraint layer `treebank/disambiguate.rs` and
   the tagger `treebank/tag.rs` run after the lift; `CS_NO_DISAMBIGUATE=1`,
   `CS_NO_TAGGER=1` turn them off), `check-treebank` (asserts every
@@ -82,7 +91,16 @@ is the next work.
   and the crate disagree, check the crate against its pinned sources
   before deciding which side is wrong.
 
-## The numbers (2.3.0)
+## The numbers (2.3.0, and Part 6 as it stands)
+
+Part 6 (uncommitted release): stress lists 1,871 → 1,344 (nouns 219,
+adjectives 218, verbs 886, pronouns 21); 31 named paradigms in
+`lexicon/stress.tsv`; Polyakov cells reproduced by the primary nouns
+94.7%, adjectives 93.3%, verbs 91.6%; primaries the Bible outnumbers
+167 → 135; treebank one cell 204,726 / tagger 185,169 / several lexemes
+12,988 at zero mismatches; ids unchanged. The full table is in
+CHANGELOG "3.0.0 (in progress)".
+
 
 See the tables in `CHANGELOG.md` under "2.3.0", "2.2.0", "2.1.0" and
 "2.0.0"; `cargo xtask eval`, `check-treebank` and `score-disambiguation`
@@ -108,12 +126,14 @@ linguistically proper answer — is in `docs/OPEN-DESIGNS.md`, which also
 records what 2.1 executed (present stems by derivation, syncretism by
 underspecification).
 
-1. **The accent inventory and weighted evidence** (`docs/OPEN-DESIGNS.md`
-   5; `V2.2-PROMPT.md` Part 6, release 3.0.0). `census stress`: 1,870
-   Synodal stress columns carry an exception list, in 1,099 shapes; the
-   noun shapes are paradigms (a{pl=E}, a{gen.pl=E}, b{voc.sg=S},
-   b{acc.sg=S}), the verb shapes are Polyakov's per-lexeme noise. The 61
-   `adv-of=` adverbs with their own accent belong to the same question.
+1. **Close 3.0.0** (`V2.2-PROMPT.md`, last postscript): the residue of
+   the accent inventory — 1,344 lists in 998 shapes, the largest blocks
+   the present passive participle's retraction before its suffix
+   (и҆зго́нимъ) and the -ova- verbs' participles (возревнꙋ́емъ), both a
+   place the column grammar lacks; the -надесѧть numerals (a stressed
+   second element, not an enclitic); the final `eval`, the version and
+   the tag. The 61 `adv-of=` adverbs with their own
+   accent belong to the same question.
 2. **What the homonymy layers left** (`docs/OPEN-DESIGNS.md` 1b, executed
    in 2.3). The tagger's errors on the overlay are the syntax a one-token
    window does not see: nominative against accusative of an inanimate

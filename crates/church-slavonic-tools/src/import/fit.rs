@@ -14,8 +14,19 @@ use church_slavonic::paradigm::{Class, Subject};
 use church_slavonic::stress::{Place, resolve};
 use std::collections::BTreeMap;
 
-/// The attested forms of one cell, primary first, as print strings.
-pub type Attested = BTreeMap<Cell, Vec<String>>;
+/// The attested forms of one cell, primary first, as print strings with
+/// the source's count (0 where the source has none).
+pub type Attested = BTreeMap<Cell, Vec<(String, u64)>>;
+
+/// What one attested primary says about where its stress falls: the
+/// stressed vowel's index and the resolution context of the class
+/// letters it matched (the enclitic's vowels excluded).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct StressSample {
+    pub index: u8,
+    pub stem_vowels: usize,
+    pub total: usize,
+}
 
 /// Cells whose every attestation came from a bundled tag set (`gen/acc`):
 /// the source could not tell the cell's own form from the other's, so any
@@ -113,7 +124,8 @@ pub fn evidence_full(
     let index = (index, observed_mark(&attested, &letters.letters));
     let Some(k) = attested.stress else { return (Evidence::None, Some(index)) };
     let letters = &alts[index.0];
-    let total = attested.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count();
+    // a solid enclitic's vowels are not the ending's (возда́стсѧ)
+    let total = attested.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count().saturating_sub(usize::from(letters.tail_vowels));
     let stem = resolve(Place::Stem, lemma_stress, letters.stem_vowels, total);
     let end = resolve(Place::End, lemma_stress, letters.stem_vowels, total);
     let last = resolve(Place::StemLast, lemma_stress, letters.stem_vowels, total);
@@ -127,12 +139,87 @@ pub fn evidence_full(
     (e, Some(index))
 }
 
-/// Build the canonical stress column from per-cell evidence: the base
-/// (`a` or `b`) is the majority over unambiguous cells; a number whose
-/// majority differs from the base adds `sg=`/`du=`/`pl=`; a cell that
-/// differs from its number's place adds its own entry. `-` when no cell
-/// carries stress.
-pub fn stress_column(pos: Pos, evidence: &BTreeMap<Cell, Evidence>) -> String {
+/// The stress sample of an attested primary: its stressed vowel and the
+/// resolution context of the class letters it matched; `None` when the
+/// letters differ or the form carries no stress.
+pub fn stress_sample(class: &Class, subject: &Subject<'_>, cell: Cell, printed: &str) -> Option<StressSample> {
+    let attested = Form::from_print(printed);
+    let key = attested.key();
+    let alts = class.letters(cell, subject);
+    let letters = alts.iter().find(|l| Form::new(l.letters.clone(), None, false).key() == key)?;
+    let index = attested.stress?;
+    let total = attested.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count().saturating_sub(usize::from(letters.tail_vowels));
+    Some(StressSample { index, stem_vowels: letters.stem_vowels, total })
+}
+
+/// The stress column that explains the samples with the fewest
+/// exceptions: every paradigm of the inventory (`a`, `b`, then
+/// `lexicon/stress.tsv` in order) is tried bare, then with one number
+/// moved (`{pl=E}`); a cell the paradigm's resolved index misses becomes
+/// an exception (`S`, `E`, `L` or the index, whichever says it simplest);
+/// ties go to the simpler column, then to the inventory's order. A
+/// lexeme without a readable sample falls back to the evidence.
+pub fn stress_column(pos: Pos, evidence: &BTreeMap<Cell, Evidence>, samples: &BTreeMap<Cell, StressSample>, lemma_stress: Option<u8>) -> String {
+    if samples.is_empty() {
+        return stress_column_by_evidence(pos, evidence);
+    }
+    use church_slavonic::stress::StressSpec;
+    let place_name = |s: &StressSample| -> String {
+        let k = Some(s.index);
+        if resolve(Place::Stem, lemma_stress, s.stem_vowels, s.total) == k {
+            "S".to_string()
+        } else if resolve(Place::End, lemma_stress, s.stem_vowels, s.total) == k {
+            "E".to_string()
+        } else if resolve(Place::StemLast, lemma_stress, s.stem_vowels, s.total) == k {
+            "L".to_string()
+        } else if resolve(Place::Final, lemma_stress, s.stem_vowels, s.total) == k {
+            "F".to_string()
+        } else {
+            s.index.to_string()
+        }
+    };
+    let names = church_slavonic::stress::paradigm_names();
+    let mut candidates: Vec<String> = names.clone();
+    for name in &names {
+        for number in ["sg", "du", "pl"] {
+            for place in ["S", "E"] {
+                candidates.push(format!("{name}{{{number}={place}}}"));
+            }
+        }
+    }
+    let mut best: Option<((usize, usize, usize), String)> = None;
+    for (order, cand) in candidates.iter().enumerate() {
+        let Ok(Some(spec)) = StressSpec::parse(cand, pos) else { continue };
+        let mut items: Vec<String> = Vec::new();
+        for (cell, s) in samples {
+            if resolve(spec.place(*cell), lemma_stress, s.stem_vowels, s.total) == Some(s.index) {
+                continue;
+            }
+            items.push(format!("{}={}", cell.name(), place_name(s)));
+        }
+        let key = (items.len(), spec.complexity(), order);
+        if best.as_ref().is_some_and(|(k, _)| *k <= key) {
+            continue;
+        }
+        let column = if items.is_empty() {
+            cand.clone()
+        } else if let Some(inner) = cand.strip_suffix('}') {
+            format!("{inner};{}}}", items.join(";"))
+        } else {
+            format!("{cand}{{{}}}", items.join(";"))
+        };
+        best = Some((key, column));
+    }
+    best.map(|(_, c)| c).unwrap_or_else(|| "a".to_string())
+}
+
+/// The pre-3.0 column from evidence alone (kept for lexemes without a
+/// readable sample: an unaccented source, letters the class misses): the
+/// base (`a` or `b`) is the majority over unambiguous cells; a number
+/// whose majority differs from the base adds `sg=`/`du=`/`pl=`; a cell
+/// that differs from its number's place adds its own entry. `-` when no
+/// cell carries stress.
+fn stress_column_by_evidence(pos: Pos, evidence: &BTreeMap<Cell, Evidence>) -> String {
     let place_of = |e: Evidence| match e {
         Evidence::Stem => Some(Place::Stem),
         Evidence::End => Some(Place::End),
@@ -198,6 +285,7 @@ pub fn stress_column(pos: Pos, evidence: &BTreeMap<Cell, Evidence>) -> String {
         Place::Stem => "S".to_string(),
         Place::End => "E".to_string(),
         Place::StemLast => "L".to_string(),
+        Place::Final => "F".to_string(),
         Place::Index(n) => n.to_string(),
     };
     let mut items: Vec<String> = Vec::new();
@@ -277,18 +365,22 @@ pub fn fit(
     let lemma_form = Form::from_print(lemma);
     let subject = Subject { lemma: &lemma_form.letters, animate, stems: &stems };
     let mut ev = BTreeMap::new();
+    let mut samples = BTreeMap::new();
     let mut letter_misses = Vec::new();
     let mut alt_matches = Vec::new();
     for (cell, forms) in attested {
-        let Some(primary) = forms.first() else { continue };
+        let Some((primary, _)) = forms.first() else { continue };
         let (e, alt) = evidence_full(class, &subject, lemma_form.stress, *cell, primary);
         if e == Evidence::Letters {
             letter_misses.push(*cell);
         }
         alt_matches.push((*cell, alt));
         ev.insert(*cell, e);
+        if let Some(sample) = stress_sample(class, &subject, *cell, primary) {
+            samples.insert(*cell, sample);
+        }
     }
-    let stress = stress_column(pos, &ev);
+    let stress = stress_column(pos, &ev, &samples, lemma_form.stress);
     let mut lexeme = Lexeme {
         id: id.to_string(),
         lemma: lemma.to_string(),
@@ -302,6 +394,7 @@ pub fn fit(
         variants: Vec::new(),
         src,
         note,
+        variant_weights: Vec::new(),
         provenance: Provenance::Attested,
         recension,
     };
@@ -310,7 +403,7 @@ pub fn fit(
     let mut exceptions = 0;
     let mut stress_misses = Vec::new();
     for (cell, forms) in attested {
-        let Some(primary) = forms.first() else { continue };
+        let Some((primary, _)) = forms.first() else { continue };
         let predicted = lexeme.inflect(*cell).map(|f| f.print(recension));
         let any_alt = lexeme.forms(*cell).iter().any(|f| translit_equal(&f.print(recension), primary));
         let satisfied = predicted.as_deref().is_some_and(|p| translit_equal(p, primary))
@@ -332,13 +425,17 @@ pub fn fit(
             lexeme.overrides.push((*cell, canonical_in(primary, recension)));
         }
     }
-    // variants: other attested forms the class's alternatives do not give
+    // variants: other attested forms the class's alternatives do not
+    // give, each with the source's count as its weight
     for (cell, forms) in attested {
         let produced: Vec<String> = lexeme.forms(*cell).iter().map(|f| f.print(recension)).collect();
         let mut extra: Vec<String> = Vec::new();
-        for f in forms.iter().skip(1) {
+        for (f, count) in forms.iter().skip(1) {
             let c = canonical_in(f, recension);
             if !produced.iter().any(|p| translit_equal(p, &c)) && !extra.contains(&c) {
+                if *count > 0 {
+                    lexeme.variant_weights.push((*cell, c.clone(), u32::try_from(*count).unwrap_or(u32::MAX)));
+                }
                 extra.push(c);
             }
         }

@@ -201,6 +201,7 @@ impl Lexicon {
             variants: Vec::new(),
             src: Vec::new(),
             note: String::new(),
+            variant_weights: Vec::new(),
             provenance: Provenance::Guessed,
             recension: self.recension,
         }

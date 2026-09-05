@@ -1,6 +1,44 @@
-name	spec
-# Built in: a (the lemma's stem vowel everywhere), b (the ending everywhere).
-# Part 1 adds the measured mobile paradigms below: name, then S/E per cell
-# (sg/du/pl shorthands allowed), the first token the default.
-c	S;pl=E
-d	E;pl=S
+name	spec	exemplar	count
+# The accent-paradigm inventory (3.0). Built in: a (the lemma's stem vowel
+# everywhere), b (the ending everywhere; a participle on the stem). Every
+# other paradigm is a shape `cargo xtask census stress` showed on
+# 2026-09-05, named, with an exemplar and the census's count at naming; a
+# lexeme's stress column names one and keeps an exception list only where
+# none fits. Places: S stem, E ending, L last stem vowel, F last vowel of
+# the word. Keys: a cell, sg/du/pl, a block (part, long.comp), a tense
+# (pres, aor, impf), impv.
+c	S;pl=E	бре́мѧ	24
+d	E;pl=S	слꙋга̀	11
+# nouns: the plural cells that go to the ending, the retractions
+a.ipl	S;ins.pl=E	ве́рвь	18
+a.gdpl	S;gen.pl=E;dat.pl=E	бѣ́съ	16
+b.voc	E;voc.sg=S	вра́гъ	16
+a.gpl	S;gen.pl=E	дꙋ́хъ	12
+a.dpl	S;dat.pl=E	га́дъ	11
+a.nom	S;nom.sg=E	веѳарава̀	10
+b.acc	E;acc.sg=S	вода̀	10
+b.npl	E;nom.pl=S	вра́чь	10
+c.na	S;pl=E;nom.pl=S;acc.pl=S	бо́гъ	8
+a.obl	S;gen.sg=L;acc.sg=L	а҆га́питъ	7
+a.gipl	S;gen.pl=E;ins.pl=E	дѣ́ти	6
+a.gdipl	S;gen.pl=E;dat.pl=E;ins.pl=E	ѻ҆́блакъ	5
+b.gen	E;gen.sg=S	бревно̀	6
+a.dat	S;dat.sg=E	во́скъ	5
+# adjectives: the short forms' end stress, the comparative's suffix
+a.short	S;short.pos.f.sg.nom=E;short.pos.m.sg.gen=E;short.pos.m.sg.acc=E;short.pos.n.sg.gen=E	гла́дный	5
+a.comp	S;long.comp.m.sg.nom=L;long.comp.m.sg.acc=L	хи́трый	4
+a.shortn	S;short.pos.n.sg.nom=E;short.pos.n.sg.acc=E	го́лый	4
+b.shortn	E;short.pos.n.sg.nom=S;short.pos.n.sg.acc=S	гнилы́й	4
+a.compn	S;short.comp.n.sg.nom=L;short.comp.n.sg.acc=L	бли́зкій	3
+a.plL	S;long.pos.m.pl.gen=L;long.pos.m.pl.loc=L;long.pos.f.pl.gen=L;long.pos.f.pl.loc=L;long.pos.n.pl.gen=L;long.pos.n.pl.loc=L;short.pos.m.pl.gen=L;short.pos.m.pl.loc=L;short.pos.f.pl.gen=L;short.pos.f.pl.loc=L;short.pos.n.pl.gen=L;short.pos.n.pl.loc=L	и҆збы́точный	3
+# verbs: the present's retraction (вожꙋ̀, во́диши), the second plural's final syllable, the participle types, the aorist's third plural
+b.pres	E;part=S;pres=S;pres.1.sg=E;impv.1.pl=S	води́ти	62
+b.2pl	E;part=S;pres.2.pl=F;impv.2.pl=F	весели́ти	41
+b.part	E;part=S;part.pres.act.short.m.sg.nom=E;part.pres.act.short.n.sg.nom=E	влещѝ	26
+b.part2	E;part=S;part.pres.act.short.m.sg.nom=E;part.pres.act.short.n.sg.nom=E;part.past.act.long.m.sg.nom=E;part.past.act.long.m.sg.acc=E	вестѝ	13
+b.part3	E;part=S;part.pres.act.short.m.sg.nom=E;part.pres.act.short.n.sg.nom=E;part.past.act.long.m.sg.nom=E	ввестѝ	13
+a.aor3	S;aor.3.pl=E	ве́ргнꙋти	17
+# pronouns: the oblique singular on the ending's last vowel
+pr.obl	S;m.sg.gen=F;m.sg.dat=F;n.sg.gen=F;n.sg.dat=F;f.sg.gen=F	то́й	4
+pr.kto	S;m.sg.gen=F;m.sg.dat=F;m.sg.acc=F	кто̀	3
+pr.moj	E;m.sg.gen=F;m.sg.dat=F;n.sg.gen=F;n.sg.dat=F;f.sg.gen=F	мо́й	3

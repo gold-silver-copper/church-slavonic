@@ -1,5 +1,64 @@
 # Changelog
 
+## 3.0.0 (in progress) — the accent-paradigm inventory and weighted evidence
+
+The plan is `V2.2-PROMPT.md` Part 6; the analysis behind it is
+`docs/OPEN-DESIGNS.md` 5. **Not closed**: the version is still 2.3.0, no
+tag; what remains is listed in `HANDOFF-PROMPT.md`.
+
+### Part 6 — the inventory, the weights, the print as arbiter (2026-09-05, in progress)
+
+- **The inventory** (`lexicon/stress.tsv`, columns `name spec exemplar
+  count`): 31 named paradigms, every one a shape the Part 0.5 census
+  showed — nouns `a.gpl` `a.dpl` `a.ipl` `a.gdpl` `a.gipl` `a.gdipl`
+  `c.na` (the plural cells that go to the ending), `b.acc` (рꙋка̀ :
+  рꙋ́кꙋ), `b.voc` (вра́же), `b.npl`, `b.gen`, `a.dat`, `a.nom`, `a.obl`;
+  adjectives `a.short`, `a.shortn`, `b.shortn`, `a.comp`, `a.compn`,
+  `a.plL`; verbs `b.pres` (вожꙋ̀ : во́диши, with the first-plural
+  imperative), `b.2pl` (веселитѐ: the Bible confirms вмѣнитѐ,
+  вселите́сѧ), `b.part` `b.part2` `b.part3` (влекі́й, веды́й), `a.aor3`;
+  pronouns `pr.obl`, `pr.kto`, `pr.moj`. Two places and two keys the
+  format needed: `F` the word's last vowel; `pres`/`aor`/`impf` and
+  `impv` for a whole tense.
+- **Two crate fixes the census exposed.** A solid enclitic's vowels
+  never carry the stress (возда́стсѧ, блюсти́сѧ: `compose` stops the
+  ending's count before the enclitic — 277 reflexive verbs carried
+  exception lists that said only this). The fitter compares resolved
+  indices, not places (`Evidence::Either` cells had been written as
+  exceptions).
+- **The fitter** (`fit::stress_column`): every paradigm of the inventory
+  is tried bare and with one number moved, the fewest exceptions win,
+  ties go to the simpler column and the inventory's order; `cargo xtask
+  refit-stress --pos <pos> [--write]` re-fits a file's lines from their
+  own forms and keeps a column only when every form prints the same (a
+  no-op check on Polyakov's files — 0 changes — and the way the
+  inventory reached the pronouns, whose lines Alypy's tables made).
+- **Weights.** `variants` carries `×n` (Polyakov's count); `Lexeme::
+  variant_weight`, `Analysis::weight`, `Reading::weight`; the analyzer
+  ranks exact, then the primary, then weight, then the form's place.
+- **The print as arbiter.** `cargo xtask census forms --write` counts
+  what the treebank's one-cell leaves print per (lexeme, cell) and what
+  its set leaves hide (`data/treebank-forms.tsv`, committed); the
+  importer makes the Bible's commonest form the primary where a source's
+  stress twins disagree — only among forms the Bible never prints inside
+  a set (дре́ва beside древа̀ stays Polyakov's), never in the citation
+  cell (lemmas and ids stable: 0 ids changed), never across a letter
+  difference. `write_outcome` now keeps another source's lines instead
+  of dropping them (Polyakov's pronoun import had dropped Alypy's).
+- Re-imported: nouns, adjectives, verbs (Polyakov); pronouns refitted.
+
+Measured (2.3.0 → Part 6 as it stands):
+
+| Number | before | after |
+|---|---|---|
+| stress columns with an exception list: nouns / adjectives / verbs / pronouns | 395 / 243 / 1,202 / 31 = 1,871 | **219 / 218 / 886 / 21 = 1,344** (in 155 / 193 / 629 / 21 shapes) |
+| lines a named paradigm absorbs (nouns / adjectives / verbs / pronouns) | c 24, d 11 | nouns 205 (c 26, a.gdpl 17, b.voc 16, a.ipl 16, d 13, a.dpl 11, c.na 11, a.nom 11, a.gpl 10, b.acc 10, b.npl 10, a.obl 8, b.gen 7, a.gipl 6, a.dat 5, a.gdipl 5) / adjectives 26 / verbs 295 (b.pres 110, b.2pl 57, b.part 30, d 27, a.aor3 18, b.part2 17, c 14, b.part3 12) / pronouns 10 |
+| Polyakov cells reproduced by the primary: nouns / adjectives / verbs | 94.7% / 94.1% / 91.5% | 94.67% (43,847/46,315) / 93.33% (87,896/94,181) / 91.63% (116,673/127,332) — adjectives fall where the print's wide-letter forms became primaries the class does not spell; true exceptions 1,628 → 1,570 / 3,712 → 3,601 / 9,057 → 8,952 |
+| primaries the Bible outnumbers (`census forms`, one-cell leaves) | 167 of 27,544 disputed pairs | 135 |
+| held-out recall (UD dev+test) | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 | unchanged (measured after the first re-import of this part; the later passes changed primaries only, which recall does not see) |
+| Bible treebank | one cell 204,650, tagger 185,118, several lexemes 13,107 | one cell 204,726 (32.4%), one lexeme several cells 1,775, tagger 185,169 (29.3%), closed 177,234, several lexemes 12,988 (2.1%), verbatim 49,037; zero mismatches; 389,575 leaves complete; hand overlay re-rendered after `fix-hand-alts` (21 stale `:alt`) |
+| ids changed by the re-import | — | 0 (the citation cell keeps the headword's form) |
+
 ## 2.3.0 (2026-09-05) — the constraint layer of homonymy, the gold, the tagger
 
 The plan is `V2.2-PROMPT.md` Parts 4–5 (Part 6, the accent inventory, is

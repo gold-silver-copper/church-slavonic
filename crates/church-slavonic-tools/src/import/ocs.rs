@@ -183,8 +183,8 @@ pub fn import_kaikki(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             for f in forms {
                 let print = Form::unaccented(f.clone()).print(OCS);
                 let entry = attested.entry(cell).or_default();
-                if !entry.contains(&print) {
-                    entry.push(print);
+                if !entry.iter().any(|(f, _)| *f == print) {
+                    entry.push((print, 0));
                 }
             }
         }
@@ -197,7 +197,7 @@ pub fn import_kaikki(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         let note = if plurale_tantum { "pl-tantum".to_string() } else { String::new() };
         // Kaikki's typo class: the citation cell does not print the lemma
         if let Some(cell) = lemma_cell(pos, &r.letters)
-            && let Some(first) = attested.get(&cell).and_then(|v| v.first())
+            && let Some((first, _)) = attested.get(&cell).and_then(|v| v.first())
             && comparison_key(first) != comparison_key(&lemma)
         {
             o.quarantine.push(Quarantined { recension: OCS, pos, lemma: r.lemma.clone(), source: "K:".into(), reason: "kaikki-nom-mismatch", detail: first.clone() });
@@ -230,7 +230,7 @@ fn present_stem(letters: &str, attested: &Attested) -> Option<String> {
     let present: Vec<&str> = attested
         .iter()
         .filter(|(c, _)| matches!(c, Cell::Verb(VerbCell::Finite { tense: church_slavonic::cell::FiniteTense::Present, .. } | VerbCell::Imperative { .. } | VerbCell::Participle { tense: church_slavonic::cell::PartTense::Present, .. })))
-        .flat_map(|(_, forms)| forms.iter().map(String::as_str))
+        .flat_map(|(_, forms)| forms.iter().map(|(f, _)| f.as_str()))
         .collect();
     if present.is_empty() {
         return None;
@@ -261,7 +261,7 @@ fn present_misses(f: &Fit, attested: &Attested) -> usize {
         .iter()
         .filter(|(c, forms)| is_present_cell(c) && !forms.is_empty())
         .filter(|(c, forms)| {
-            let want = canonical_in(&forms[0], OCS);
+            let want = canonical_in(&forms[0].0, OCS);
             !f.lexeme.forms(**c).iter().any(|x| translit_equal(&x.print(OCS), &want))
         })
         .count()
@@ -349,7 +349,7 @@ pub fn import_ud(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         };
         if targets.is_empty() {
             // a new lexeme: fitted to the inventory from its attested cells
-            let attested: Attested = cells.iter().map(|(c, forms)| (*c, forms.iter().map(|(f, _)| f.clone()).collect())).collect();
+            let attested: Attested = cells.iter().map(|(c, forms)| (*c, forms.iter().map(|(f, _)| (f.clone(), 0)).collect())).collect();
             let letters = Form::from_print(lemma).letters;
             let print = Form::unaccented(letters.clone()).print(OCS);
             let mut stems: Vec<(String, String)> = Vec::new();

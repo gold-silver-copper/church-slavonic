@@ -1274,3 +1274,55 @@ members — stays deliberately its own future design.
   headless run pass unchanged. Part 6 (the accent inventory and weighted
   evidence) continues under the same prompt as release 3.0.0.
 
+## 2026-09-05 — 3.0 Part 6: the accent inventory and weighted evidence — decisions and findings (in progress)
+
+- **The reflexive verbs' lists were the crate's (finding, fixed).**
+  277 of the 1,202 verb lists sat on `encl=сѧ` lexemes, and most said
+  one thing: the enclitic's vowel had been counted as the ending's, so
+  `b` put the stress on сѧ where the ending has no vowel (воздастсѧ̀)
+  and the importer wrote `pres.3.sg=S` to undo it. The stage-3 rule is
+  now that a solid enclitic never carries the stress; the same lists
+  vanished from the census without a paradigm.
+- **Fit by index, not by place (decision).** `Evidence::Either` (stem
+  and ending coincide) had been written as an exception whenever the
+  paradigm's place was the other one; the fitter now asks whether the
+  paradigm's resolved vowel is the attested vowel. This is what made a
+  named paradigm absorb a line: `a{pl=E}` is `c` only if the vowels
+  agree, and they do.
+- **веселитѐ is real (finding).** The 2.pl of the end-stressed i-verbs
+  carries the stress on the final syllable — Polyakov's веселитѐ, and
+  the Bible's вмѣнитѐ, вселите́сѧ (9 against 6 всели́тесѧ). A place `F`
+  (the word's last vowel) names it; `b.2pl` absorbs 57 lines.
+- **The print arbitrates only what it prints unambiguously (decision,
+  after two wrong versions).** Counting every cell of a set leaf
+  credited nom.pl tokens to a dat.sg variant (бѡлѣ́зни); counting only
+  one-cell leaves made the unambiguous spelling win by accident (жены̑
+  over жєны̀, древа̀ over дре́ва — the syncretic form has no one-cell
+  count to lose by). The rule that stands: arbitration among a cell's
+  stress twins happens only when the Bible never prints any of them
+  inside a set leaf; the citation cell is exempt (ids stable); a letter
+  variant is not a twin. 135 primaries the Bible outnumbers remain,
+  most of them syncretic forms and letter variants, recorded in
+  `census forms`.
+- **The -надесѧть numerals are not enclitic (finding).** первыйна́десѧть
+  carries the stress on the second element; under the enclitic rule the
+  class prints первы́йнадесѧть, and seven numerals now hold their forms
+  as overrides. A stressed second element is a compound, not an
+  enclitic, and wants a class of its own.
+- **Places the format lacks (finding).** The present passive
+  participle's retraction lands before its suffix (и҆зго́нимъ: neither the
+  lemma's stem vowel nor the last stem vowel, since the class counts the
+  suffix as stem), and the -ova- verbs' participles retract to the
+  present stem's ꙋ (возревнꙋ́емъ); both survive as index exceptions — the
+  largest verb residue.
+- **A merge-rule defect (finding, fixed).** `write_outcome` dropped
+  every existing line the importing source did not produce unless it
+  was hand-edited; a Polyakov pronoun import lost азъ, ты̀, и҆́же (Alypy's
+  lines). Another source's lines are kept now; the pronouns were
+  re-fitted in place (`refit-stress`) instead of re-imported.
+- **Reproduction fell for adjectives (finding, recorded).** 94.1% →
+  93.3%: the print's wide-letter forms the arbiter made primaries are
+  forms the class does not spell, so they are overrides — the metric
+  counts the dictionary's primary against the class, and the primary is
+  now the Bible's. Nouns and verbs unchanged within a tenth.
+

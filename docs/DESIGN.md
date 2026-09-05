@@ -147,16 +147,35 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
 - **class**: a row of `classes/<pos>.tsv`, seeded from Polyakov's own
   paradigm codes (`N1t` ра́бъ, `N1c*` ѻ҆те́цъ, `N1k` ѻ҆́трокъ, `A1t*`,
   `V11a` …).
-- **stress**: a paradigm of `stress.tsv` or an inline spelling: `a` the
-  lemma's own stem vowel everywhere (the last stem vowel when a stem has
-  lost it); `a<N>` fixed on vowel N; `b` the ending wherever it has a
-  vowel, else the last stem vowel; the named paradigms of `stress.tsv`
-  (`c` = `S;pl=E`, `d` = `E;pl=S`, as the Part 1 census found them);
-  `<name>{cell=S|E|<N>;…}` a paradigm with exceptions, with `sg`/`du`/`pl`
-  accepted as keys for a whole number, and block names (`part`,
-  `short.comp`) for a whole block; `{…}` purely inline. `-` for OCS
-  and titlo lemmas. The mark kind (oxia/varia/kamora) is stage 4's; a
-  stored print form carries its own choice only where it deviates.
+- **stress**: a paradigm of the accent inventory `stress.tsv` (3.0) or
+  an inline spelling: `a` the lemma's own stem vowel everywhere (the last
+  stem vowel when a stem has lost it); `a<N>` fixed on vowel N; `b` the
+  ending wherever it has a vowel, else the last stem vowel (a participle
+  on the stem); `c` = `S;pl=E`, `d` = `E;pl=S`; and the named finer
+  types the 2.2 census showed, each a row `name spec exemplar count` —
+  the plural cells that go to the ending (`a.gpl`, `a.dpl`, `a.ipl`,
+  `a.gdpl`, `a.gipl`, `a.gdipl`, `c.na`), the retractions (`b.acc` рꙋка̀ :
+  рꙋ́кꙋ, `b.voc` вра́же, `b.npl`, `b.gen`, `a.dat`, `a.nom`, `a.obl`), the
+  adjective's short-form and comparative types (`a.short`, `a.shortn`,
+  `b.shortn`, `a.comp`, `a.compn`, `a.plL`), the verb's present
+  retraction (`b.pres` вожꙋ̀ : во́диши, with the first-plural imperative),
+  the second plural's final syllable (`b.2pl` веселитѐ), the participle
+  types (`b.part`, `b.part2`, `b.part3`), the aorist's third plural
+  (`a.aor3`), the pronoun's oblique singular (`pr.obl`, `pr.kto`,
+  `pr.moj`). `<name>{cell=S|E|L|F|<N>;…}` is a paradigm with exceptions —
+  places: `S` stem, `E` ending, `L` last stem vowel, `F` last vowel of the
+  word, `<N>` an index; keys: a cell, `sg`/`du`/`pl`, a block (`part`,
+  `short.comp`), a finite tense (`pres`, `aor`, `impf`), `impv`. A solid
+  enclitic's vowels never carry the stress (возда́стсѧ, блюсти́сѧ: the
+  ending's count stops before it). `{…}` purely inline. `-` for OCS and
+  titlo lemmas. The importer fits the inventory before it writes a list
+  (`fit::stress_column`: every paradigm tried, the fewest exceptions win,
+  ties to the simpler column and the inventory's order) and
+  `cargo xtask refit-stress` re-fits a file whose lines another source
+  made, keeping a new column only when every form prints the same; an
+  exception list survives only where no paradigm fits. The mark kind
+  (oxia/varia/kamora) is stage 4's; a stored print form carries its own
+  choice only where it deviates.
 - **stems**: `name=letters;…` — `base=` the base stem where the class's
   strip rule does not give it (a plurale tantum); `<n>=` a numbered stem
   of the class read off the attested forms (the present stem, a
@@ -179,10 +198,16 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
   alternative preference: the form is reachable through `forms` either
   way; the override makes `inflect` return it). Each is a claim the
   consistency test checks.
-- **variants**: `cell=printform|printform;…` — additional attested forms
-  for a cell, indexed by the analyzer, never returned by `inflect`.
+- **variants**: `cell=printform[×n]|printform;…` — additional attested
+  forms for a cell, indexed by the analyzer, never returned by `inflect`.
   Spelling variants, source disagreements and minority stresses live
-  here, on the lexeme, never as another lexeme.
+  here, on the lexeme, never as another lexeme. `×n` (3.0) is the
+  source's count on the form, the analyzer's weight (`Lexeme::
+  variant_weight`, `Analysis::weight`, `Reading::weight`): a reading is
+  ranked by exactness, then the primary before everything, then weight,
+  then the form's place in the cell — a variant attested fourteen times
+  before one attested once and before the class's unattested
+  alternatives.
 - **src**: provenance tokens — `P:<class>` Polyakov, `A:<page>` Alypy
   (`A:p034`; the 1.x pronoun tables' `A:§47`/`A:§48`), `R:`
   ru.wiktionary, `K:` Kaikki, `U:` UD train, `W:<file>` a witnessed Bible
@@ -389,7 +414,13 @@ any code change.
 3. Invert typography on every form (`Form::from_print`), fit the stress
    paradigm, drop what class + stress reproduce, keep the rest as
    overrides (the primary by count) or variants, stored in the print's
-   typography. A source is compared under what it can encode
+   typography. Where a source's forms for a cell disagree in stress
+   (ѻ҆́вцꙋ against ѻ҆вцꙋ̀), the print decides (3.0): the form the pinned
+   Bible prints most in that cell — the treebank's one-cell leaves,
+   `data/treebank-forms.tsv` — is the primary, the source's count next;
+   a letter variant keeps its place, and the citation cell keeps the
+   headword's choice so that lemmas and ids stay stable. The counts
+   travel into the lexicon as the variants' weights. A source is compared under what it can encode
    (`translit_equal`: Polyakov's і for the print's positional ї, я for
    ѧ/ꙗ, a spelled-out ѡт for ѿ); a print-exact source beats a
    transliterated primary in the same cell. A form tagged for several

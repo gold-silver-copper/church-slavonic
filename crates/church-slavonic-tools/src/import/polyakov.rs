@@ -12,7 +12,7 @@ use crate::sources::polyakov::{self, Entry, Features, TenseTag, features};
 use church_slavonic::cell::{AdjCell, Cell, FiniteTense, NounCell, PartTense, Pos, PronCell, VerbCell};
 use church_slavonic::form::Form;
 use church_slavonic::grammar::{Case, Gender, Number, Person, Recension, Series, Voice};
-use church_slavonic::orthography::{is_accented, realise};
+use church_slavonic::orthography::{comparison_key, is_accented, realise};
 use church_slavonic::paradigm::{Derivation, table};
 use std::collections::{BTreeMap, HashMap};
 use std::error::Error;
@@ -337,20 +337,79 @@ fn attested_cells(entry: &Entry, pos: Pos, class: &str, o: &mut Outcome) -> (Att
         .filter(|(_, forms)| forms.values().all(|(u, _)| *u == 0))
         .map(|(cell, _)| *cell)
         .collect();
+    // where the source's forms disagree the print decides: the form the
+    // pinned Bible prints most (the treebank's counts, `census forms
+    // --write`) is the primary, Polyakov's count next
+    let bible = bible_counts();
+    let lemma_key = comparison_key(&realise(&entry.lemma, &SYN));
+    // never the citation cell: the lemma and the id follow the headword
+    let citation = table(pos).get(class).and_then(|c| lemma_cell(pos, c));
     let attested = counts
         .into_iter()
         .map(|(cell, forms)| {
             let any_unbundled = forms.values().any(|(u, _)| *u > 0);
-            let mut v: Vec<(String, u64, u64)> = forms.into_iter().map(|(f, (u, b))| (f, u, b)).collect();
+            // the print arbitrates the STRESS of a form (ѻ҆́вцꙋ against
+            // ѻ҆вцꙋ̀): only forms with the letters of the source's own first
+            // choice take a Bible count; a letter variant keeps its place
+            let source_first = forms
+                .iter()
+                .max_by_key(|(f, (u, b))| (!any_unbundled || *u > 0, u + b, std::cmp::Reverse((*f).clone())))
+                .map(|(f, _)| comparison_key(f))
+                .unwrap_or_default();
+            // the Bible's one-cell count of each stress twin; the print
+            // arbitrates only among forms it never prints inside a set
+            // leaf — a form that is syncretic anywhere (жєны̀ beside жены̑,
+            // дре́ва beside древа̀) has tokens no one-cell count sees
+            let bible_of = |f: &str| -> (u64, u64) {
+                if Some(cell) == citation || comparison_key(f) != source_first {
+                    return (0, 0);
+                }
+                bible.get(&(lemma_key.clone(), pos, cell.name(), super::fit::canonical(f))).copied().unwrap_or((0, 0))
+            };
+            let arbitrated = forms.iter().all(|(f, _)| bible_of(f).1 == 0);
+            let mut v: Vec<(String, u64, u64, u64)> = forms
+                .into_iter()
+                .map(|(f, (u, b))| {
+                    let printed = if arbitrated { bible_of(&f).0 } else { 0 };
+                    (f, u, b, printed)
+                })
+                .collect();
             v.sort_by(|a, b| {
-                let ka = (any_unbundled && a.1 == 0, std::cmp::Reverse(a.1 + a.2));
-                let kb = (any_unbundled && b.1 == 0, std::cmp::Reverse(b.1 + b.2));
+                let ka = (any_unbundled && a.1 == 0, std::cmp::Reverse(a.3), std::cmp::Reverse(a.1 + a.2));
+                let kb = (any_unbundled && b.1 == 0, std::cmp::Reverse(b.3), std::cmp::Reverse(b.1 + b.2));
                 ka.cmp(&kb).then(a.0.cmp(&b.0))
             });
-            (cell, v.into_iter().map(|(f, _, _)| f).collect())
+            (cell, v.into_iter().map(|(f, u, b, _)| (f, u + b)).collect())
         })
         .collect();
     (attested, bundled)
+}
+
+/// The Bible's counts per (lemma key, pos, cell name, print key), from
+/// `data/treebank-forms.tsv` when it exists (`cargo xtask census forms
+/// --write`); empty otherwise.
+/// (lemma key, pos, cell name, print) → (one-cell count, set count).
+type BibleCounts = HashMap<(String, Pos, String, String), (u64, u64)>;
+
+fn bible_counts() -> &'static BibleCounts {
+    static COUNTS: std::sync::OnceLock<BibleCounts> = std::sync::OnceLock::new();
+    COUNTS.get_or_init(|| {
+        let mut out: BibleCounts = HashMap::new();
+        let path = crate::workspace_root().join("data/treebank-forms.tsv");
+        let Ok(text) = std::fs::read_to_string(path) else { return out };
+        for line in text.lines().skip(1) {
+            let cols: Vec<&str> = line.split('\t').collect();
+            if cols.len() < 6 {
+                continue;
+            }
+            let Some(pos) = Pos::parse(cols[1]) else { continue };
+            let (Ok(n), Ok(sets)) = (cols[4].parse::<u64>(), cols[5].parse::<u64>()) else { continue };
+            let e = out.entry((comparison_key(cols[0]), pos, cols[2].to_string(), super::fit::canonical(cols[3]))).or_default();
+            e.0 += n;
+            e.1 += sets;
+        }
+        out
+    })
 }
 
 /// The base with its wide letters narrowed (`артемѡн` -> `артемон`).
@@ -418,7 +477,8 @@ fn inserted_stem(class: &church_slavonic::paradigm::Class, lemma_letters: &str, 
     let printed = attested
         .iter()
         .find(|(cell, _)| matches!(cell.name().as_str(), "gen.pl" | "short.pos.m.sg.nom"))
-        .and_then(|(_, v)| v.first())?;
+        .and_then(|(_, v)| v.first())
+        .map(|(f, _)| f)?;
     let letters = Form::from_print(printed).letters;
     let stem = letters.strip_suffix('ъ').or_else(|| letters.strip_suffix('ь'))?;
     let base: String = {
@@ -443,7 +503,7 @@ fn inferred_stems(class: &church_slavonic::paradigm::Class, subject: &church_sla
     let derived = class.stems_of(subject);
     let mut votes: HashMap<u8, BTreeMap<String, usize>> = HashMap::new();
     for (cell, forms) in attested {
-        let Some(primary) = forms.first() else { continue };
+        let Some((primary, _)) = forms.first() else { continue };
         let letters = Form::from_print(primary).letters;
         let letters: String = letters.chars().map(|c| match c { 'ѡ' => 'о', 'є' => 'е', other => other }).collect();
         let letters = match refl {
@@ -643,7 +703,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         // the closed classes: one form, the rest variants
         if pos == Pos::Closed {
             let (attested, _) = attested_cells(entry, pos, "", &mut o);
-            let forms = attested.get(&Cell::Word).cloned().unwrap_or_default();
+            let forms: Vec<String> = attested.get(&Cell::Word).cloned().unwrap_or_default().into_iter().map(|(f, _)| f).collect();
             let primary = forms.first().cloned().unwrap_or_else(|| lemma.clone());
             let lemma_print = Form::from_print(&primary).print(SYN);
             let variants: Vec<String> = forms.iter().skip(1).map(|f| Form::from_print(f).print(SYN)).filter(|f| *f != lemma_print).collect();
@@ -711,6 +771,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 variants: if variants.is_empty() { Vec::new() } else { vec![(Cell::Word, variants)] },
                 src,
                 note: notes.iter().chain(extra_notes.iter()).cloned().collect::<Vec<_>>().join("; "),
+                variant_weights: Vec::new(),
                 provenance: church_slavonic::Provenance::Attested,
                 recension: SYN,
             });
@@ -757,7 +818,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         // тма̀), the attested print is the lemma and the headword a note
         let lemma_cell_of = |class: &church_slavonic::paradigm::Class| lemma_cell(pos, class);
         if let Some(cell) = lemma_cell_of(known[0])
-            && let Some(first) = attested.get(&cell).and_then(|v| v.first())
+            && let Some((first, _)) = attested.get(&cell).and_then(|v| v.first())
             && Form::from_print(first).key() != lemma_form.key()
         {
             let refl_kept = reflexive_suffix(pos, &Form::from_print(first).letters).is_some() == reflexive_suffix(pos, &lemma_form.letters).is_some();

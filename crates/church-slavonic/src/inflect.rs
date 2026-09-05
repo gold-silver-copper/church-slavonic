@@ -29,7 +29,9 @@ impl Lexeme {
     }
 
     fn compose(&self, cell: Cell, letters: &Letters, spec: Option<&StressSpec>, lemma_stress: Option<u8>) -> Form {
-        let total = letters.letters.chars().filter(|c| is_vowel_letter(*c)).count();
+        // a solid enclitic's vowels never carry the word's stress
+        // (возда́стсѧ, блюсти́сѧ): the ending's vowel count stops before it
+        let total = letters.letters.chars().filter(|c| is_vowel_letter(*c)).count().saturating_sub(usize::from(letters.tail_vowels));
         let stress = spec.and_then(|s| resolve(s.place(cell), lemma_stress, letters.stem_vowels, total));
         Form { letters: letters.letters.clone(), stress, number_mark: letters.mark, mark_skip: letters.tail_vowels, varia: false, kamora: false }
     }
@@ -203,6 +205,21 @@ mod tests {
         assert_eq!(p(&imya, "gen.sg"), nfc("и҆́мене"));
         assert_eq!(p(&imya, "nom.pl"), nfc("и҆мена̀"));
         assert_eq!(p(&imya, "gen.pl"), nfc("и҆ме́нъ"), "no ending vowel: the last stem vowel");
+    }
+
+    #[test]
+    fn the_enclitic_never_carries_the_stress() {
+        let text = "id\tlemma\tpos\tgender\tanim\tclass\tstress\tstems\toverrides\tvariants\tsrc\tnote\n\
+            воздатисѧ.v\tвозда́тисѧ\tv\t-\t-\tVdat\tb\tencl=сѧ\t-\t-\tP:Vdat\t-\n\
+            блюстисѧ.v\tблюсти́сѧ\tv\t-\t-\tV14d\tb\tencl=сѧ\t-\t-\tP:V14d\t-\n";
+        let verbs = parse(&text, Pos::Verb).expect("parses");
+        let p = |l: &crate::lexicon::Lexeme, c: &str| l.inflect(crate::cell::Cell::parse(Pos::Verb, c).expect("cell")).expect("cell").print(SYN);
+        // no ending vowel: the last stem vowel, not the enclitic's
+        assert_eq!(p(&verbs[0], "pres.3.sg"), nfc("возда́стсѧ"));
+        assert_eq!(p(&verbs[0], "pres.1.sg"), nfc("возда́мсѧ"));
+        assert_eq!(p(&verbs[1], "inf"), nfc("блюсти́сѧ"));
+        // an ending with a vowel keeps the ending stress
+        assert_eq!(p(&verbs[1], "pres.3.sg"), nfc("блюде́тсѧ"));
     }
 
     #[test]

@@ -209,14 +209,21 @@ writes the unit apart far more often than solid: 1,854 `(pwa …)` (Рече́ �
 1:2's Землѧ́ же lifts; verbatim 8.2% → 7.8%. Not done: second-position
 placement in a generator (the function exists, no consumer calls it).
 
-## 5. The Part 1 noun gate
+## 5. The Part 1 noun gate — struck (3.0)
 
 **What.** The plan asked for 99% of Polyakov's noun cells reproduced by
 the primary form with true exceptions on at most 5% of lexemes; the
 lexicon sits at 94.7% primary, 96.8% reachable.
 
-**Why open.** Recorded as unmet after inspection class by class; not one
-missing mechanism.
+**Struck from the record in 3.0.** `V2.2-PROMPT.md` Part 6 executed the
+two designs below (the accent inventory in `lexicon/stress.tsv`, the
+weighted variants and the print as arbiter); under them the 99% gate is
+not a measurement of the language — it counted a corpus dictionary's
+tags, its wrong ones included — and the gates that stand are held-out
+recall and the Bible's coverage with the print as arbiter.
+
+**Why it was open.** Recorded as unmet after inspection class by class;
+not one missing mechanism.
 
 **What the residue is.** Two things. Source noise: forms tagged for the
 wrong cell, unaccented forms in an accented source, abbreviation marks
@@ -260,7 +267,12 @@ measured the dictionary, not the language.
    see (subject against object of an inanimate, a pronoun's gender from
    its antecedent), a calibrated confidence, and the lexicon duplicates
    the homonymy census named (гдⷭ҇ь, а҆́зъ).
-5. The accent-paradigm inventory and weighted evidence (5): `V2.2-PROMPT.md`
-   Part 6 (release 3.0.0). The census: 1,870 Synodal stress lists in
-   1,099 shapes; the noun shapes are paradigms, the verb shapes are
-   Polyakov's noise.
+5. ~~The accent-paradigm inventory and weighted evidence (5)~~ — executed
+   in 3.0 (`V2.2-PROMPT.md` Part 6): the inventory of `lexicon/stress.tsv`
+   (31 named paradigms), the enclitic's vowels out of the stress count,
+   index-based fitting, `×n` weights, the print as arbiter; the lists
+   fell from 1,871 to what no paradigm names (recorded in CHANGELOG
+   3.0.0). What remains: the places the format lacks — the present
+   passive participle's retraction before its suffix (и҆зго́нимъ), the
+   -ova- verbs' participles — and the -надесѧть numerals whose second
+   element carries the stress.

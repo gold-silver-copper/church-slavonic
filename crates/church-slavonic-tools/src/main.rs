@@ -12,6 +12,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("eval") => church_slavonic_tools::eval::run(args.collect()),
         Some("import") => church_slavonic_tools::import::run(args.collect()),
         Some("census") => church_slavonic_tools::census::run(args.collect()),
+        Some("refit-stress") => {
+            let args: Vec<String> = args.collect();
+            let pos = match args.iter().position(|a| a == "--pos").and_then(|p| args.get(p + 1)).map(String::as_str) {
+                Some("noun") => church_slavonic::Pos::Noun,
+                Some("adj") => church_slavonic::Pos::Adjective,
+                Some("verb") => church_slavonic::Pos::Verb,
+                Some("pron") => church_slavonic::Pos::Pronoun,
+                _ => return Err("refit-stress --pos <noun|adj|verb|pron> [--write]".into()),
+            };
+            church_slavonic_tools::import::refit::run(pos, args.iter().any(|a| a == "--write"))
+        }
         Some("train-tagger") => church_slavonic_tools::tagger::train(&args.collect::<Vec<_>>()),
         Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
         Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),

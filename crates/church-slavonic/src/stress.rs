@@ -7,12 +7,14 @@
 //! may add per-cell exceptions.
 //!
 //! Column grammar: `a` | `a<N>` (fixed on vowel N) | `b` | `<name>` |
-//! `<name>{cell=S|E|<N>;…}` | `{…}` — with `sg`/`du`/`pl` accepted as
-//! keys for a whole number and a block name (`part`, `part.pres.act`,
-//! `short.comp`) for a whole block. `-` is no stress (Old Church Slavonic,
-//! a titlo lemma).
+//! `<name>{cell=S|E|L|F|<N>;…}` | `{…}` — with `sg`/`du`/`pl` accepted
+//! as keys for a whole number, a block name (`part`, `part.pres.act`,
+//! `short.comp`) for a whole block, a finite tense (`pres`, `aor`, `impf`,
+//! `fut`) or `impv` for a whole tense. `F` is the word's last vowel (the
+//! second plural's веселитѐ). `-` is no stress (Old Church Slavonic, a
+//! titlo lemma).
 
-use crate::cell::{Cell, Pos, parse_number};
+use crate::cell::{Cell, FiniteTense, Pos, VerbCell, parse_finite, parse_number};
 use crate::grammar::Number;
 use std::collections::HashMap;
 use std::sync::OnceLock;
@@ -23,6 +25,9 @@ pub enum Place {
     End,
     /// The last vowel of the stem (a comparative's suffix: велича́йшїй).
     StemLast,
+    /// The last vowel of the word (a solid enclitic's excluded): the
+    /// ending's final syllable (веселитѐ, вселите́сѧ; тогѡ̀).
+    Final,
     Index(u8),
 }
 
@@ -32,6 +37,7 @@ impl Place {
             "S" => Some(Place::Stem),
             "E" => Some(Place::End),
             "L" => Some(Place::StemLast),
+            "F" => Some(Place::Final),
             n => n.parse().ok().map(Place::Index),
         }
     }
@@ -44,6 +50,11 @@ enum Key {
     /// A block prefix (`part`, `part.pres.act`): every cell whose block
     /// name starts with it.
     Block(String),
+    /// A finite tense (`pres`, `aor`, `impf`, `fut`): its every person
+    /// and number.
+    Finite(FiniteTense),
+    /// `impv`: every imperative cell.
+    Imperative,
 }
 
 /// A named or inline paradigm: a default place and exceptions.
@@ -72,6 +83,10 @@ impl Paradigm {
                 Key::Cell(cell)
             } else if k == "part" || k.starts_with("part.") || k.ends_with(".comp") || k.ends_with(".pos") {
                 Key::Block(k.to_string())
+            } else if let Some(t) = parse_finite(k) {
+                Key::Finite(t)
+            } else if k == "impv" {
+                Key::Imperative
             } else {
                 return Err(format!("stress cell {k}"));
             };
@@ -90,6 +105,11 @@ impl Paradigm {
                     .find(|(k, _)| matches!(k, Key::Block(b) if block == *b || block.starts_with(&format!("{b}."))))
                     .map(|(_, p)| *p)
             })
+            .or_else(|| match cell {
+                Cell::Verb(VerbCell::Finite { tense, .. }) => self.rules.iter().find(|(k, _)| *k == Key::Finite(tense)).map(|(_, p)| *p),
+                Cell::Verb(VerbCell::Imperative { .. }) => self.rules.iter().find(|(k, _)| *k == Key::Imperative).map(|(_, p)| *p),
+                _ => None,
+            })
             .or_else(|| {
                 let number = cell.number()?;
                 self.rules.iter().find(|(k, _)| *k == Key::Number(number)).map(|(_, p)| *p)
@@ -97,25 +117,38 @@ impl Paradigm {
     }
 }
 
-/// The named paradigms: the built-in `a`/`b` and `lexicon/stress.tsv`.
-fn named() -> &'static HashMap<String, String> {
-    static NAMED: OnceLock<HashMap<String, String>> = OnceLock::new();
+/// The named paradigms in inventory order: the built-in `a`/`b`, then
+/// `lexicon/stress.tsv` (columns `name`, `spec`, then the exemplar and
+/// the count the inventory records).
+fn inventory() -> &'static Vec<(String, String)> {
+    static NAMED: OnceLock<Vec<(String, String)>> = OnceLock::new();
     NAMED.get_or_init(|| {
-        let mut out = HashMap::new();
-        out.insert("a".to_string(), "S".to_string());
+        let mut out = vec![("a".to_string(), "S".to_string())];
         // the ending everywhere — except a participle, whose stem carries
         // the thematic vowel the finite endings supply (творю̀, творѧ́щій)
-        out.insert("b".to_string(), "E;part=S".to_string());
+        out.push(("b".to_string(), "E;part=S".to_string()));
         for line in include_str!("../lexicon/stress.tsv").lines() {
             if line.starts_with('#') || line.trim().is_empty() || line.starts_with("name\t") {
                 continue;
             }
-            if let Some((name, spec)) = line.split_once('\t') {
-                out.insert(name.trim().to_string(), spec.trim().to_string());
+            let mut cols = line.split('\t');
+            if let (Some(name), Some(spec)) = (cols.next(), cols.next()) {
+                out.push((name.trim().to_string(), spec.trim().to_string()));
             }
         }
         out
     })
+}
+
+fn named() -> &'static HashMap<String, String> {
+    static NAMED: OnceLock<HashMap<String, String>> = OnceLock::new();
+    NAMED.get_or_init(|| inventory().iter().cloned().collect())
+}
+
+/// The names of the inventory's paradigms, `a` and `b` first, then the
+/// file's order (an importer fits them in this order).
+pub fn paradigm_names() -> Vec<String> {
+    inventory().iter().map(|(n, _)| n.clone()).collect()
 }
 
 /// A lexeme's stress column, parsed.
@@ -153,6 +186,12 @@ impl StressSpec {
         Ok(Some(StressSpec { base, exceptions }))
     }
 
+    /// How many rules the column carries beyond a default (a fitter
+    /// prefers the simplest paradigm that explains the evidence).
+    pub fn complexity(&self) -> usize {
+        self.base.rules.len() + self.exceptions.rules.len()
+    }
+
     /// Where `cell` is stressed.
     pub fn place(&self, cell: Cell) -> Place {
         self.exceptions
@@ -179,6 +218,7 @@ pub fn resolve(place: Place, lemma_stress: Option<u8>, stem_vowels: usize, total
             if total_vowels > stem_vowels { stem_vowels } else { last_stem }
         }
         Place::StemLast => last_stem,
+        Place::Final => last,
         Place::Index(n) => usize::from(n).min(last),
     };
     u8::try_from(index).ok()
@@ -204,6 +244,16 @@ mod tests {
         assert_eq!(inline.place(cell("gen.sg")), Place::Stem);
         assert_eq!(inline.place(cell("dat.pl")), Place::End);
         assert_eq!(inline.place(cell("gen.pl")), Place::Stem);
+        let f = StressSpec::parse("b{pres.2.pl=F;impv=S}", Pos::Verb).expect("ok").expect("some");
+        let vcell = |s: &str| Cell::parse(Pos::Verb, s).expect("cell");
+        assert_eq!(f.place(vcell("pres.2.pl")), Place::Final);
+        assert_eq!(f.place(vcell("impv.2.sg")), Place::Stem);
+        assert_eq!(f.place(vcell("pres.3.sg")), Place::End);
+        let t = StressSpec::parse("b{pres=S;pres.1.sg=E}", Pos::Verb).expect("ok").expect("some");
+        assert_eq!(t.place(vcell("pres.3.sg")), Place::Stem);
+        assert_eq!(t.place(vcell("pres.1.sg")), Place::End);
+        assert_eq!(t.place(vcell("aor.3.sg")), Place::End);
+        assert_eq!(resolve(Place::Final, Some(1), 2, 4), Some(3));
         let a1 = StressSpec::parse("a1", Pos::Noun).expect("ok").expect("some");
         assert_eq!(a1.place(cell("nom.sg")), Place::Index(1));
         assert!(StressSpec::parse("-", Pos::Noun).expect("ok").is_none());

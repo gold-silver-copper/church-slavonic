@@ -96,10 +96,17 @@ id       lemma   pos gender anim class stress stems overrides    variants       
   Kaikki's tables): per cell `<stem>-<ending>[^]` alternatives separated
   by `|`, `@cell` references, `<stem>~<class>` delegation of a block to an
   adjective class, `anim:`/`inan:` readings.
-- **stress** — `a` the lemma's stem vowel everywhere, `b` the ending, the
-  named paradigms of `lexicon/stress.tsv` (`c` = `S;pl=E`, `d` = `E;pl=S`),
-  `<name>{cell=S|E|L|<n>;…}` with `sg/du/pl` and block names as keys. `-`
-  for OCS.
+- **stress** — a paradigm of the accent inventory `lexicon/stress.tsv`
+  (3.0): `a` the lemma's stem vowel everywhere, `b` the ending, `c`/`d`
+  the number-mobile types, and the named finer types the census showed —
+  the plural cells that go to the ending (`a.gpl` дꙋхѡ́въ, `a.ipl`), the
+  retractions (`b.acc` вода̀ : во́дꙋ, `b.voc` вра́гъ : вра́же), the
+  present's retraction (`b.pres` вожꙋ̀ : во́диши), the second plural's
+  final syllable (`b.2pl` веселитѐ), the participle types (`b.part`
+  влекі́й) — each with an exemplar and its count; `<name>{cell=S|E|L|F|<n>;…}`
+  keeps an exception list only where no paradigm fits (places: stem,
+  ending, last stem vowel, last vowel of the word, an index; keys: a cell,
+  `sg/du/pl`, a block, a tense, `impv`). `-` for OCS.
 - **stems** — `base=`, numbered stems the class cannot derive (a verb's
   present stem only where it is suppletive: `2=въземл` for възьмати;
   regular presents — люблѭ, пишѫ, рекѫ/речеши — are the class's
@@ -108,7 +115,11 @@ id       lemma   pos gender anim class stress stems overrides    variants       
   ending; on a closed line `gov=`, `pros=`, `adv-of=`.
 - **overrides** / **variants** — print forms the class and stress do not
   produce: the override is what `inflect` returns, a variant is reachable
-  through `forms` and the analyzer.
+  through `forms` and the analyzer. A variant carries the source's count
+  as its weight (`acc.sg=ѻ҆́вцꙋ×14`), and the analyzer ranks a reading by
+  it after exactness and the primary; where a source's forms disagree in
+  stress, the form the pinned Bible prints most is the primary
+  (`data/treebank-forms.tsv`, `cargo xtask census forms --write`).
 - **src** — provenance: `P:` Polyakov, `A:` Alypy, `R:` ru.wiktionary,
   `K:` Kaikki, `U:` UD PROIEL train, `H:` a hand edit (import never
   touches such a line).
@@ -189,7 +200,8 @@ OCS verbs, present cells only, 79.0% (22.7% in 2.0: the present stem is
 the class's derivation now).
 
 Polyakov's own cells reproduced by the primary form, for the record:
-nouns 94.7%, adjectives 94.1%, verbs 91.5%; the rest are reachable as
+nouns 94.7%, adjectives 93.3%, verbs 91.6% (3.0 in progress: the
+primary is the Bible's where the print arbitrates); the rest are reachable as
 alternatives or stored as overrides and variants, and the import report
 (`cargo xtask import polyakov --pos <pos>`) lists the residue by class and
 cell.

@@ -6,6 +6,7 @@
 
 pub mod crosscheck;
 pub mod fit;
+pub mod refit;
 pub mod ocs;
 pub mod polyakov;
 
@@ -332,10 +333,16 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> R
         merged.insert(l.id.clone(), l);
     }
     let mut kept_hand = 0;
+    let mut kept_other = 0;
     for l in existing {
         if l.is_hand_edited() {
             merged.insert(l.id.clone(), l);
             kept_hand += 1;
+        } else if !merged.contains_key(&l.id) && !l.src.iter().any(|s| s.starts_with(prefix)) {
+            // another source's lexeme (a witness, Alypy's pronoun tables):
+            // not this import's to drop
+            merged.insert(l.id.clone(), l);
+            kept_other += 1;
         } else if let Some(new) = merged.get_mut(&l.id) {
             for token in l.src.iter().filter(|s| !s.starts_with(prefix)) {
                 if !new.src.contains(token) {
@@ -361,7 +368,7 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos, prefix: &str) -> R
     }
     let lexemes: Vec<Lexeme> = merged.into_values().collect();
     std::fs::write(&path, lexicon::format(&lexemes))?;
-    println!("wrote {} lexemes to {} ({kept_hand} hand-edited kept)", lexemes.len(), path.display());
+    println!("wrote {} lexemes to {} ({kept_hand} hand-edited kept, {kept_other} of other sources kept)", lexemes.len(), path.display());
     let qpath = dir.join("quarantine.tsv");
     let mut text = String::from("# Source entries judged noise, with the reason. Columns: recension pos lemma source reason detail\n");
     let mut lines: Vec<String> = o

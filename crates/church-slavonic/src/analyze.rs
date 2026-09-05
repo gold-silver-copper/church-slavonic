@@ -25,6 +25,9 @@ pub struct Analysis<'a> {
     pub exact: bool,
     /// The form as the lexicon prints it.
     pub print: String,
+    /// A source's count on the matched form (a variant's `×n`), 0 when
+    /// none is recorded: the rank after exactness and the primary.
+    pub weight: u32,
 }
 
 #[derive(Debug)]
@@ -34,6 +37,7 @@ struct Entry {
     cell: Cell,
     alt: u8,
     print: String,
+    weight: u32,
 }
 
 /// The sorted index over a lexicon.
@@ -62,7 +66,8 @@ impl Index {
                             let i = c * chunk + j;
                             for (cell, forms) in lexeme.all_forms() {
                                 for (alt, (_, print)) in forms.into_iter().enumerate() {
-                                    out.push(Entry { key: comparison_key(&print), lexeme: i as u32, cell, alt: alt.min(255) as u8, print });
+                                    let weight = lexeme.variant_weight(cell, &print);
+                                    out.push(Entry { key: comparison_key(&print), lexeme: i as u32, cell, alt: alt.min(255) as u8, print, weight });
                                 }
                             }
                         }
@@ -113,9 +118,14 @@ impl Lexicon {
                 alt: usize::from(e.alt),
                 exact: e.print.nfc().collect::<String>() == surface,
                 print: e.print.clone(),
+                weight: e.weight,
             })
             .collect();
-        out.sort_by(|a, b| b.exact.cmp(&a.exact).then(a.alt.cmp(&b.alt)));
+        // exact first; the primary before everything else; then a source's
+        // weight (a variant attested fourteen times before one attested
+        // once, and before the class's unattested alternatives); then the
+        // form's place in the cell
+        out.sort_by(|a, b| b.exact.cmp(&a.exact).then((a.alt != 0).cmp(&(b.alt != 0))).then(b.weight.cmp(&a.weight)).then(a.alt.cmp(&b.alt)));
         out
     }
 }
@@ -134,6 +144,8 @@ pub struct Reading<'a> {
     pub cells: Vec<(Cell, usize)>,
     pub exact: bool,
     pub print: String,
+    /// The largest weight among the reading's forms (see [`Analysis::weight`]).
+    pub weight: u32,
 }
 
 impl Reading<'_> {
@@ -152,11 +164,14 @@ impl Lexicon {
         let mut out: Vec<Reading<'_>> = Vec::new();
         for a in self.analyze(surface) {
             match out.iter_mut().find(|r| std::ptr::eq(r.lexeme, a.lexeme) && r.print == a.print) {
-                Some(r) => match r.cells.iter_mut().find(|(c, _)| *c == a.cell) {
-                    Some((_, alt)) => *alt = (*alt).min(a.alt),
-                    None => r.cells.push((a.cell, a.alt)),
-                },
-                None => out.push(Reading { lexeme: a.lexeme, cells: vec![(a.cell, a.alt)], exact: a.exact, print: a.print }),
+                Some(r) => {
+                    r.weight = r.weight.max(a.weight);
+                    match r.cells.iter_mut().find(|(c, _)| *c == a.cell) {
+                        Some((_, alt)) => *alt = (*alt).min(a.alt),
+                        None => r.cells.push((a.cell, a.alt)),
+                    }
+                }
+                None => out.push(Reading { lexeme: a.lexeme, cells: vec![(a.cell, a.alt)], exact: a.exact, print: a.print, weight: a.weight }),
             }
         }
         for r in &mut out {
