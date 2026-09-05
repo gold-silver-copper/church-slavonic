@@ -818,11 +818,16 @@ def verbs(tables_):
                     cells["part.past.pass.long.m.sg.acc"] = "12-аго|15-аго|@part.past.pass.long.m.sg.nom"
                     parts["9"] = "ext:ѧ:iota"
                     stems = ";".join(f"{k}={v}" for k, v in parts.items())
-                    # the imperfect's ending opens with a vowel: on the
-                    # ї-stem (бїѧ́хъ), like the present
+                    # an ending that opens with a vowel or й is on the
+                    # ї-stem (бїѧ́хъ, бі́й), like the present; the
+                    # consonant-initial ones stay on и (би́хъ, би́лъ, би́ти)
                     for k in list(cells):
-                        if k.startswith("impf."):
-                            cells[k] = "|".join("2-" + a[2:] if a.startswith("1-") else a for a in cells[k].split("|"))
+                        alts = []
+                        for a in cells[k].split("|"):
+                            if a.startswith("1-") and a[2:3] and a[2:3] in "аеиоѧюѣыꙋй":
+                                a = "2-" + a[2:]
+                            alts.append(a)
+                        cells[k] = "|".join(alts)
                 # the long locative: -омъ before -ѣмъ on participles (census)
                 for g in ("m", "n"):
                     cells[f"part.past.pass.long.{g}.sg.loc"] = "12-омъ|12-ѣмъ"

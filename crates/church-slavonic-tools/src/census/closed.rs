@@ -50,7 +50,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
             Some(hits) => {
                 // the adverb's wide ѡ folded to о for the comparison
                 let adv_folded: String = l.lemma.chars().map(|c| if c == 'ѡ' { 'о' } else { c }).collect();
-                let wide = l.lemma.chars().last() == Some('ѡ') || l.lemma.ends_with("ѡ\u{301}");
+                let wide = l.lemma.ends_with('ѡ') || l.lemma.ends_with("ѡ\u{301}");
                 if hits.iter().any(|(_, _, p)| *p == adv_folded || *p == l.lemma) {
                     produced_same += 1;
                     if wide {

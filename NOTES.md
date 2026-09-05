@@ -1096,3 +1096,30 @@ members — stays deliberately its own future design.
   Polyakov's per-lexeme noise (b{pres.3.sg=S} on 43 reflexives). Part 6
   will name the noun and adjective paradigms and leave the verb lists.
 
+## 2026-09-05 — 2.2 Part 1: the non-present verb cells by type — decisions and findings
+
+- **The type's cell is the primary and Kaikki's majority is not an
+  alternative (decision).** Keeping косехъ beside коснѫхъ "for
+  reproduction" would put a form the language never had into the
+  analyzer; the 1,105 Kaikki cells that disagree with the type are
+  counted in the CHANGELOG as what they are. The Kaikki number is a
+  reproduction number and it went down; the corpus numbers went up.
+- **The root aorist of class II is an alternative on a palatalised stem
+  (decision).** въздвиже and въздвигошꙙ in the UD data are the root
+  aorist beside въздвигнѫ; the class names `13=pal1` and offers
+  `1-нѫ|13-е`, `1-нѫхъ|1-охъ`. The census predictor reports the class's
+  primary.
+- **What the UD aorist variants are now (finding).** Of the 644 left,
+  the classes reproduce the form under the manuscript fold in the
+  recall (the number rose); the variants are spellings the fold does not
+  cover — ѣ for ꙗ (ѣвихъ), ъи for ꙑ (бъихъ), ꙙ for ѧ, ръ for рь
+  (въвръгохъ) — plus бꙑти's athematic aorist in an aje class and вести's
+  old sigmatic вѣсѧ. They are not paradigm gaps.
+- **A ї-stem cell is one whose ending opens with a vowel or й
+  (finding).** Polyakov writes бі́й, бі́йте, бїѧ́хъ, бїю́щїй and би́хъ,
+  би́лъ, би́ти: the letters layer's і is the print's rule for и before a
+  vowel or й, so the class can say it (`2-й`), and the 19 lines that
+  stored `1=бі` — and printed their infinitive as вбітѝ, a 2.1 defect
+  the consistency test did not see because it checks nouns' nominatives
+  only — are gone. A citation-cell check for verbs belongs in that test.
+

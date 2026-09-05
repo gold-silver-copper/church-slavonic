@@ -291,7 +291,7 @@ def types_for(lemma):
     if L.endswith(("овати", "евати")):
         out.append(("V:III:ov", L[:-2], "1=base;2=ov;5=ext:ѭщ:ov;6=ext:ѥм:ov;7=ext:въш;8=ext:н;9=ext:ѩ:ov;11=ext:въ;12=ext:н:ext:н", True, ("2", "ѭ"), ("2", "ѥтъ")))
     if L.endswith("нѫти") and len(L) > 5:
-        out.append(("V:II", L[:-4], "1=base;5=ext:нѫщ;6=ext:ном;7=ext:нѫвъш;8=ext:новен;9=ext:ны;11=ext:нѫвъ;12=ext:н:ext:новен", False, ("1", "нѫ"), ("1", "нетъ")))
+        out.append(("V:II", L[:-4], "1=base;5=ext:нѫщ;6=ext:ном;7=ext:нѫвъш;8=ext:новен;9=ext:ны;11=ext:нѫвъ;12=ext:н:ext:новен;13=pal1", False, ("1", "нѫ"), ("1", "нетъ")))
     if L.endswith("ити") and len(L) > 4:
         out.append(("V:IV:i", L[:-3], "1=base;2=iot;5=ext:ѧщ;6=ext:им;7=ext:ивъш;8=ext:ен:iot;9=ext:ѧ;11=ext:ивъ;12=ext:н:ext:ен:iot", True, ("2", "ѭ"), ("1", "итъ")))
     if L.endswith("ѣти") and len(L) > 4:
@@ -391,6 +391,64 @@ def verb_type(lemma, cells):
     st = {"1": stem1, "2": stem2}
     own = {"2": stem2} if stem2 != stem1 else {}
     return f"V:res:{lemma[-3:]}", stem1, "1=base;2=base", False, st, own
+
+
+AOR_ENDINGS = {"1.sg": "хъ", "2.sg": "", "3.sg": "", "1.du": "ховѣ", "2.du": "ста", "3.du": "сте", "1.pl": "хомъ", "2.pl": "сте", "3.pl": "шѧ"}
+IMPF_ENDINGS = {"1.sg": "хъ", "2.sg": "ше", "3.sg": "ше", "1.du": "ховѣ", "2.du": "шета", "3.du": "шете", "1.pl": "хомъ", "2.pl": "шете", "3.pl": "хѫ"}
+LPART_ENDINGS = {"m.sg": "лъ", "f.sg": "ла", "n.sg": "ло", "m.du": "ла", "f.du": "лѣ", "n.du": "лѣ", "m.pl": "ли", "f.pl": "лы", "n.pl": "ла"}
+
+
+def type_cell(name, cell):
+    """The cell a Leskien type declares outright (V2.2 Part 1), the crate's
+    `census verb-cells` prediction in Python: the sigmatic aorist on a
+    vowel stem (дѣлахъ, дѣла; пꙋстихъ), the -ох- aorist on a consonant stem
+    with the palatalised velar before е (несохъ, рекохъ, рече; грѧдохъ),
+    class II keeping -нѫ- (коснѫхъ), the nasal types on the infinitive stem
+    (клѧхъ); the imperfect -ѣа- after a consonant stem (несѣахъ,
+    кльнѣахъ), -аа- after the palatalised velar and the a-types (речаахъ,
+    лежаахъ, писаахъ), -ꙗа- on the iotated stem of class IV -ити and the
+    jer type (хождаахъ, пьꙗахъ), -ѣа- on -ѣти (кыпѣахъ), -а- after a vowel
+    stem (дѣлаахъ, вѣроваахъ); the l-participle on the infinitive stem
+    (неслъ, коснѫлъ, реклъ, клѧлъ). None for a cell the type leaves to the
+    data, and for the residue classes."""
+    t = name.split(":")
+    kind = t[1] if len(t) > 1 else ""
+    sub = t[2] if len(t) > 2 else ""
+    if kind == "res":
+        return None
+    velar = sub in ("к", "г")
+    dental = sub in ("т", "д", "з")
+    nasal = sub in ("ьн", "ьм")
+    vowel_stem = kind in ("IV", "III") or (kind == "I" and sub == "a")
+    theme = {("IV", "i"): "и", ("IV", "ě"): "ѣ", ("IV", "a"): "а", ("III", "j"): "а", ("I", "a"): "а", ("III", "ja"): "ꙗ"}.get((kind, sub), "")
+    if cell.startswith("aor."):
+        pn = cell[4:]
+        e = AOR_ENDINGS[pn]
+        if kind == "II":
+            # -нѫ- kept first, the root aorist as the alternative (двигнѫхъ |
+            # двигохъ; двигнѫ | движе with the first palatalisation)
+            return f"1-нѫ|13-е" if e == "" else f"1-нѫ{e}|1-о{e}"
+        if nasal or vowel_stem:
+            return f"1-{theme}{e}"
+        ox = "е" if e == "" else f"о{e}"
+        if velar:
+            return "3-е" if e == "" else f"2-{ox}"
+        if dental:
+            return f"2-{ox}"
+        return f"1-{ox}"
+    if cell.startswith("impf."):
+        pn = cell[5:]
+        e = IMPF_ENDINGS[pn]
+        stem, th = {("IV", "a"): ("1", "аа"), ("IV", "ě"): ("1", "ѣа"), ("IV", "i"): ("2", "ꙗа"), ("III", "j"): ("1", "аа"), ("III", "jer"): ("2", "ꙗа"), ("III", "ja"): ("1", "ꙗа"), ("III", "aje"): ("1", "а"), ("III", "ov"): ("1", "а"), ("II", ""): ("1", "нѣа"), ("I", "a"): ("1", "аа")}.get((kind, sub), ("3", "аа") if velar else ("2", "ѣа") if (dental or nasal) else ("1", "ѣа"))
+        return f"{stem}-{th}{e}"
+    if cell.startswith("lpart."):
+        e = LPART_ENDINGS[cell[6:]]
+        if kind == "II":
+            return f"1-нѫ{e}"
+        if velar:
+            return f"2-{e}"
+        return f"1-{theme}{e}"
+    return None
 
 
 def verb_prefer(cell):
@@ -530,6 +588,13 @@ def seed(pos, entries, cells_of, name_of, out_file, header_cells, comment):
             cells[cell] = "|".join(ranked[:3])
         if pos == "v":
             stems = group_specs.get(group, "1=base;2=base")
+            # the aorist, imperfect and l-participle by type: the type's
+            # cell is the primary and Kaikki's majority is not kept (its
+            # tables are template output: косехъ, кослъ, кльнхъ)
+            for cell in header_cells:
+                declared = type_cell(group, cell)
+                if declared is not None:
+                    cells[cell] = declared
         else:
             stems = "1=base;3=pal1;5=pal2" if any("5-" in v or "3-" in v for v in cells.values()) else "1=base"
         rows.append((group, exemplar, strip, stems, cells, len(members)))

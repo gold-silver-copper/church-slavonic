@@ -33,8 +33,11 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     }
 }
 
-/// Every stored tree of the treebank, (book index, chapter, verse, tree).
-pub(crate) fn treebank_trees() -> Result<Vec<(usize, u32, u32, crate::treebank::node::Node)>, Box<dyn Error>> {
+/// One stored tree: (book index, chapter, verse, tree).
+pub(crate) type StoredTree = (usize, u32, u32, crate::treebank::node::Node);
+
+/// Every stored tree of the treebank.
+pub(crate) fn treebank_trees() -> Result<Vec<StoredTree>, Box<dyn Error>> {
     let dir = crate::treebank::runner::treebank_dir();
     let mut out = Vec::new();
     for bi in 0..80 {

@@ -263,6 +263,43 @@ fn old_church_slavonic() {
     assert_eq!(p(&dvignoti, "pres.1.sg"), "двигнѫ");
     assert_eq!(p(&dvignoti, "pres.2.sg"), "двигнеши");
     assert_eq!(p(&dvignoti, "inf"), "двигнѫти");
+    // the non-present cells by type (2.2 Part 1): the sigmatic aorist on
+    // a vowel stem, the -ох- aorist on a consonant stem with the
+    // palatalised velar before е, -нѫ- kept in class II; the imperfect
+    // by type; the l-participle on the infinitive stem
+    assert_eq!(p(&ljubiti, "aor.1.sg"), "любихъ");
+    assert_eq!(p(&ljubiti, "aor.3.sg"), "люби");
+    assert_eq!(p(&ljubiti, "lpart.m.sg"), "любилъ");
+    assert_eq!(p(&delati, "aor.1.sg"), "дѣлахъ");
+    assert_eq!(p(&delati, "impf.1.sg"), "дѣлаахъ");
+    assert_eq!(p(&delati, "lpart.f.sg"), "дѣлала");
+    assert_eq!(p(&pisati, "impf.1.sg"), "писаахъ");
+    assert_eq!(p(&nesti, "aor.1.sg"), "несохъ");
+    assert_eq!(p(&nesti, "aor.3.sg"), "несе");
+    assert_eq!(p(&nesti, "impf.1.sg"), "несѣахъ");
+    assert_eq!(p(&nesti, "lpart.m.sg"), "неслъ");
+    assert_eq!(p(&resti, "aor.1.sg"), "рекохъ");
+    assert_eq!(p(&resti, "aor.3.sg"), "рече");
+    assert_eq!(p(&resti, "impf.1.sg"), "речаахъ");
+    assert_eq!(p(&resti, "lpart.m.sg"), "реклъ");
+    assert_eq!(p(&gresti, "aor.1.sg"), "грѧдохъ");
+    assert_eq!(p(&gresti, "aor.3.sg"), "грѧде");
+    assert_eq!(p(&gresti, "impf.1.sg"), "грѧдѣахъ");
+    assert_eq!(p(&dvignoti, "aor.1.sg"), "двигнѫхъ");
+    assert_eq!(p(&dvignoti, "aor.3.sg"), "двигнѫ");
+    let aor3: Vec<String> = dvignoti.forms(Cell::parse(Pos::Verb, "aor.3.sg").unwrap()).iter().map(|f| f.print(OCS)).collect();
+    assert_eq!(aor3, ["двигнѫ", "движе"]); // the root aorist as the alternative
+    assert_eq!(p(&dvignoti, "impf.1.sg"), "двигнѣахъ");
+    assert_eq!(p(&dvignoti, "lpart.m.sg"), "двигнѫлъ");
+    let kleti = v("клѧти.v\tклѧти\tv\t-\t-\tV:I:ьн\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&kleti, "pres.1.sg"), "кльнѫ");
+    assert_eq!(p(&kleti, "aor.1.sg"), "клѧхъ");
+    assert_eq!(p(&kleti, "impf.1.sg"), "кльнѣахъ");
+    assert_eq!(p(&kleti, "lpart.m.sg"), "клѧлъ");
+    assert_eq!(p(&piti, "impf.1.sg"), "пьꙗахъ");
+    let kypeti = v("кыпѣти.v\tкыпѣти\tv\t-\t-\tV:IV:ě\t-\t-\t-\t-\tK:-\t-");
+    assert_eq!(p(&kypeti, "aor.1.sg"), "кꙑпѣхъ"); // the OCS print writes ы as ꙑ
+    assert_eq!(p(&kypeti, "impf.1.sg"), "кꙑпѣахъ");
     let tu = ocs("тъ.pron\tтъ\tpron\tm\t-\tPA1\t-\t-\t-\t-\tK:-\t-", Pos::Pronoun);
     assert_eq!(p(&tu, "m.sg.gen"), "того");
     assert_eq!(p(&tu, "m.sg.ins"), "тѣмь");

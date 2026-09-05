@@ -62,12 +62,14 @@ pub fn predicted(class: &str, cell: &Cell) -> Option<String> {
             let p = *person as u8 + 1;
             let n = church_slavonic::cell::number_name(*number);
             if kind == "II" {
+                // the class's primary; the root aorist is its alternative
                 format!("1-нѫ{}", person_ending(p, n, true))
             } else if nasal || vowel_stem {
                 format!("1-{theme}{}", person_ending(p, n, true))
             } else if velar {
-                // рекохъ, рече: the -ох- aorist, the palatalised stem before е
-                if p == 2 || p == 3 { "3-е".to_string() } else { format!("2-{}", person_ending(p, n, false)) }
+                // рекохъ, рече: the -ох- aorist, the palatalised stem before
+                // the bare е of the second and third person singular
+                if (p == 2 || p == 3) && n == "sg" { "3-е".to_string() } else { format!("2-{}", person_ending(p, n, false)) }
             } else if dental {
                 format!("2-{}", person_ending(p, n, false))
             } else {

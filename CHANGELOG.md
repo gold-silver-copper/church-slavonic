@@ -22,6 +22,45 @@ stress>` beside `census stems`; the module is `tools/src/census/`.
 | underspecified sets by size | 2 cells 99,341; 3 cells 47,924; 4 cells 14,033; 6 cells 17,285; 8 cells 10,720; 12 cells 5,165; 16 cells 3,078; commonest aor.2|3.sg 14,488, nom|acc.sg 13,521, nom|acc|voc.sg 12,599, gen|acc.sg 8,163 |
 | stress columns with an exception list | nouns 395 (of 13,205) in 174 shapes, the twelve commonest absorb 145; adjectives 242 in 199 shapes / 37; verbs 1,202 in 702 shapes / 242; pronouns 31 in 24 / 19 |
 
+### Part 1 — the non-present verb cells by type (2026-09-05)
+
+- **OCS** (`scripts/kaikki-to-classes.py`, `type_cell`): each Leskien type
+  declares its aorist, imperfect and l-participle cells outright, and
+  Kaikki's majority is not kept where it disagrees — the sigmatic aorist
+  on a vowel stem (дѣлахъ, дѣла; любихъ, люби; кꙑпѣхъ; клѧхъ), the -ох-
+  aorist on a consonant stem with the palatalised velar before the bare
+  е of the second and third person singular (несохъ, несе; рекохъ, рече;
+  грѧдохъ, грѧде), class II with -нѫ- first and the root aorist as the
+  alternative on a new `13=pal1` stem (двигнѫхъ | двигохъ, двигнѫ |
+  движе); the imperfect -ѣа- after a consonant stem (несѣахъ, кльнѣахъ,
+  грѧдѣахъ), -аа- after the palatalised velar and the a-types (речаахъ,
+  лежаахъ, писаахъ), -ꙗа- on the iotated stem of class IV -ити and the
+  jer type (хождаахъ, пьꙗахъ), -ѣа- on -ѣти (кꙑпѣахъ), -а- after a vowel
+  stem (дѣлаахъ, вѣроваахъ); the l-participle on the infinitive stem
+  (неслъ, реклъ, двигнѫлъ, клѧлъ). `census verb-cells --ocs` (its
+  predictor is the same statement in Rust) reads 153/153 agree in all
+  three blocks. The exemplar test covers one aorist, imperfect and
+  l-participle per type.
+- **Synodal** (`scripts/legend-adj-verb-pron.py`): бити's cells whose
+  ending opens with a vowel or й are on the ї-stem (бі́й, бі́йте, бїю́щїй
+  beside би́хъ, би́лъ, би́ти); the 19 `1=бі`-type lines are gone. A 2.1
+  defect went with them: those lines printed their infinitive as вбітѝ.
+  The нн/н long-participle lines stay (Polyakov's own variation).
+
+Measured (2.1 → 2.2 Part 1):
+
+| Number | 2.1 | 2.2 Part 1 |
+|---|---|---|
+| **UD dev+test verb recall** | 90.59% (7,935/8,759) | **90.89% (7,961)** |
+| **Syntacticus verb recall** | 94.91% (43,422/45,749) | **95.02% (43,469)** |
+| UD dev+test verb misses by block (not guessed) | aorist 280, past active participle short 243, present 197 | aorist 139, past active participle short 145, present 111, imperfect 24 |
+| UD variants on OCS verb lines: aorist / imperfect / l-participle | 674 / 266 / 63 (501 lines) | 644 / 266 / 59 (the rest are manuscript spellings: ѣвихъ, бъихъ, вьзꙙхъ, въвръгохъ) |
+| OCS verb cells against the type: aorist / imperfect / l-participle | 88 / 144 / 90 agree of 153 | 153 / 153 / 153 |
+| Kaikki verb cells reproduced | 74,667 / 78,063 (95.7%) | 73,562 (94.2%); reachable 73,675 — 1,105 cells are Kaikki's template against the type (косехъ, кослъ, кльнхъ, стрѣжехъ, грѧдехъ) and are counted, not kept |
+| OCS stored stems | 56 | 56 |
+| Synodal stored stems | 358 | 344 (no `1=бі` line) |
+| Polyakov verb cells reproduced by the primary | 116,548 / 127,329 | 116,677 / 127,332 |
+
 ## 2.1.0 (2026-09-05) — present stems by derivation, syncretism by underspecification
 
 The plan is `V2.1-PROMPT.md` (executed; its postscript lists the
