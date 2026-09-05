@@ -118,6 +118,17 @@ overlay.
 | adjective lists | 211 | 215 (four adverb accents no paradigm names) |
 | treebank one cell / closed / several lexemes | 204,710 / 177,234 (28.0%) / 13,027 (2.1%) | 204,769 / 177,091 (28.0%) / 13,128 (2.1%); zero mismatches |
 
+Step 4 — the residue recorded (2026-09-05): one-number moves counted
+apart (71: paradigms the notation spells inline), `a.ppp`/`a.pppn`
+named, онъ.pron.2's two twins decided by hand (ѻ҆нꙋ̀, ѡ҆́ны), the residue
+described by kind in `docs/OPEN-DESIGNS.md` 5.
+
+| Number | before | after |
+|---|---|---|
+| exception lists: nouns / adjectives / verbs / pronouns | 219 / 215 / 632 / 21 = 1,087 | **210 / 213 / 567 / 20 = 1,010** (shapes 148 / 188 / 459 / 20); one number moved 9 / 2 / 59 / 1 |
+| named paradigms | 43 | 47 |
+| stress twins the Bible outnumbers, never inside a set | 9 | 7 |
+
 ## 2.3.0 (2026-09-05) — the constraint layer of homonymy, the gold, the tagger
 
 The plan is `V2.2-PROMPT.md` Parts 4–5 (Part 6, the accent inventory, is

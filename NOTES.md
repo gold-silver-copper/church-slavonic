@@ -1484,3 +1484,26 @@ members — stays deliberately its own future design.
   13,128 (2.1% still; "several parts of speech" 235 → 295: an adjective's
   -ѣ adverb beside a noun's locative), verbatim 48,983. Held-out recall
   unchanged; tests, clippy, the game green.
+
+## 2026-09-05 — 3.0 Part 1 step 4 (V3.0-CONTINUE-PROMPT.md): the residue, recorded — decisions and findings
+
+- **A one-number move is a paradigm the notation spells inline
+  (decision).** `b{sg=S}` and its kin are the fitter's own candidates
+  (every paradigm bare and with one number moved); the census now
+  counts them apart ("one number moved": nouns 9, adjectives 2, verbs
+  59, pronouns 1) and they are no longer exception lists. The lists:
+  nouns 210, adjectives 213, verbs 567, pronouns 20 = 1,010.
+- **Two past-passive shapes named at the census's floor of three
+  (decision).** `a.ppp` (пострищѝ : постри́женъ) and `a.pppn`
+  (заве́рнꙋто): 3 lines each. The 11-line shape with an index
+  (и҆скова́ти) has no place to name it and stays.
+- **The pronoun twins decided by hand (decision).** онъ.pron.2: the
+  accusative ѻ҆нꙋ̀ (the Bible 67 against ѻ҆́нꙋ 16: `f.sg.acc=E` added to
+  the column, the old primary a variant) and the plural accusative
+  ѡ҆́ны (19 against ѻ҆̑ны 0: the override swapped with the variant);
+  `H:` on the line so no import touches it. `census forms`: stress
+  twins never inside a set 9 → 7 (names and 2:1 counts remain; the
+  citation cell is exempt).
+- What the residue is, by kind, is in `docs/OPEN-DESIGNS.md` 5.
+- Treebank unchanged at zero mismatches (one cell 204,769, several
+  lexemes 13,128); tests, clippy, the game green.

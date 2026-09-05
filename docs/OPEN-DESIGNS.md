@@ -251,6 +251,34 @@ the target is held-out recall with the print as arbiter, which Parts 2–4
 measured. The 99% was a gate written before the data was seen; it
 measured the dictionary, not the language.
 
+**The residue (3.0 Part 1, 2026-09-05), so that no later session
+re-opens it without a new source.** After the place `P`, the stem place
+through a derivation, the stressed tail and the adverb cell, the
+exception lists are nouns 210, adjectives 213, verbs 567, pronouns 20 =
+1,010 (from 1,871), in 148 / 188 / 459 / 20 shapes; 71 more columns move
+one number (`b{sg=S}`), which the notation spells inline and the census
+counts apart — they are paradigms. What the 1,010 are: (a) the fitter's
+own remainders on lines with few attested cells, where one cell's accent
+contradicts every paradigm by a hair (`b{pres.3.sg=S}` 6, `a{pres.3.pl=E}`
+4, `b{inf=S}`-like number moves on `b.inf`), Polyakov's own variation;
+(b) the proper names' citation cell (`a{nom.sg=<n>}` 20 nouns: а҆раві́а,
+а҆гнѧ̀ — the headword is stressed elsewhere than the oblique cells, a
+source fact); (c) the past passive participle's retractions the shapes
+show under three lines (`a{part.past.pass.short.m.sg.nom=<n>}` 11 with
+an index no place names, since the past participle's stem is the
+infinitive's and the retraction lands two vowels back); (d) the
+adjectives' long lists of a single letter-and-accent pattern
+(коме́льскій, кѵзі́ческій: the plural genitive and locative on the first
+vowel), source tags read against a class whose ending vowel the print
+widens; (e) four adverbs whose accent fits no paradigm (ве́селѡ ~
+весе́лый). None of these is a mechanism the format lacks; each is a
+source's fact or a line with too few cells to say otherwise. The 135
+primaries the Bible outnumbers are 115 letter variants (the arbiter never
+crosses a letter), 10 citation cells (ids stable), one stress twin the
+Bible also prints inside a set, and 7 stress twins of names and small
+counts (наѳана́илъ 8:5, высоты̑ 2:1) — the two pronoun twins (ѻ҆нꙋ̀ 67:16,
+ѡ҆́ны 19:0) were decided by hand.
+
 ## Order
 
 1. ~~Present-stem derivation (2)~~ — executed in 2.1; the non-present
@@ -272,7 +300,7 @@ measured the dictionary, not the language.
    (31 named paradigms), the enclitic's vowels out of the stress count,
    index-based fitting, `×n` weights, the print as arbiter; the lists
    fell from 1,871 to what no paradigm names (recorded in CHANGELOG
-   3.0.0). What remains: the places the format lacks — the present
-   passive participle's retraction before its suffix (и҆зго́нимъ), the
-   -ova- verbs' participles — and the -надесѧть numerals whose second
-   element carries the stress.
+   3.0.0). `V3.0-PROMPT.md` Part 1 then added the place `P` (и҆зго́нимъ),
+   the stem place through a derivation as a crate rule (цѣлꙋ́ющїй), the
+   stressed tail of the -надесѧть numerals and the adverb cell's accent:
+   1,344 → 1,010, the residue described above.

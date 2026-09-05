@@ -29,10 +29,20 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         let mut shapes: BTreeMap<String, Vec<String>> = BTreeMap::new();
         let mut plain: BTreeMap<String, usize> = BTreeMap::new();
         let mut with_list = 0;
+        // a column whose braces hold only `sg=`/`du=`/`pl=` is a paradigm
+        // with one number moved, which the notation spells inline (3.0
+        // Part 1 step 4): counted apart from the exception lists
+        let mut number_moves = 0;
         let total = lexicon.iter().filter(|l| l.pos == pos).count();
         for l in lexicon.iter().filter(|l| l.pos == pos) {
             match shape(&l.stress) {
                 Some(s) => {
+                    let inner = s.split_once('{').map(|(_, r)| r.trim_end_matches('}')).unwrap_or("");
+                    if inner.split(';').all(|e| e.starts_with("sg=") || e.starts_with("du=") || e.starts_with("pl=")) {
+                        number_moves += 1;
+                        *plain.entry(s.clone()).or_default() += 1;
+                        continue;
+                    }
                     with_list += 1;
                     shapes.entry(s).or_default().push(l.lemma.clone());
                 }
@@ -42,7 +52,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         let mut ranked: Vec<_> = shapes.iter().collect();
         ranked.sort_by_key(|(_, v)| std::cmp::Reverse(v.len()));
         let twelve: usize = ranked.iter().take(12).map(|(_, v)| v.len()).sum();
-        println!("== {} stress: {total} lines; plain columns {}; with an exception list {with_list} in {} shapes; the twelve commonest shapes absorb {twelve}", pos.tag(), plain.iter().map(|(k, n)| format!("{k} {n}")).collect::<Vec<_>>().join(", "), shapes.len());
+        println!("== {} stress: {total} lines; plain columns {}; one number moved {number_moves}; with an exception list {with_list} in {} shapes; the twelve commonest shapes absorb {twelve}", pos.tag(), plain.iter().map(|(k, n)| format!("{k} {n}")).collect::<Vec<_>>().join(", "), shapes.len());
         for (s, v) in ranked.iter().take(12) {
             println!("{:>6}  {s}  {}", v.len(), v.iter().take(4).cloned().collect::<Vec<_>>().join(", "));
         }

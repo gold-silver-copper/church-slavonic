@@ -59,3 +59,6 @@ b.pres.part	E;part=S;pres=S;pres.1.sg=E;impv.1.pl=S;part.pres=P	благохва
 # adjectives, 3.0 Part 1 step 3: the adverb cell's accent against the adjective's (the census over the adv-of= lines: 12 on the stem of an end-stressed adjective, 6 on the ending of a stem-stressed one)
 b.adv	E;adv=S	благі́й	12
 a.adv	S;adv=E	бы́стрый	6
+# the past passive participle's short masculine and neuter nominative on P (пострищѝ : постри́женъ; завернꙋ́ти : заве́рнꙋто), each a census shape of three
+a.ppp	S;part.past.pass.short.m.sg.nom=P;part.past.pass.short.m.sg.acc=P	пострищѝ	3
+a.pppn	S;part.past.pass.short.n.sg.nom=P;part.past.pass.short.n.sg.acc=P	завернꙋ́ти	3
