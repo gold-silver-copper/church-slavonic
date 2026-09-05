@@ -107,11 +107,17 @@ impl Paradigm {
         let exact = self.rules.iter().find(|(k, _)| *k == Key::Cell(cell)).map(|(_, p)| *p);
         exact
             .or_else(|| {
+                // the most specific block rule wins (`part.pres=P` over
+                // `part=S`), whatever the order they were written in
                 let block = cell.block()?;
                 self.rules
                     .iter()
-                    .find(|(k, _)| matches!(k, Key::Block(b) if block == *b || block.starts_with(&format!("{b}."))))
-                    .map(|(_, p)| *p)
+                    .filter_map(|(k, p)| match k {
+                        Key::Block(b) if block == *b || block.starts_with(&format!("{b}.")) => Some((b.len(), *p)),
+                        _ => None,
+                    })
+                    .max_by_key(|(len, _)| *len)
+                    .map(|(_, p)| p)
             })
             .or_else(|| match cell {
                 Cell::Verb(VerbCell::Finite { tense, .. }) => self.rules.iter().find(|(k, _)| *k == Key::Finite(tense)).map(|(_, p)| *p),
@@ -209,33 +215,66 @@ impl StressSpec {
     }
 }
 
-/// The stressed vowel index of a form: `place` resolved against the
-/// lemma's stress, the stem's vowel count and the whole form's.
-/// [`resolve_in`] with the stem's own vowels as the pre-extension stem.
-pub fn resolve(place: Place, lemma_stress: Option<u8>, stem_vowels: usize, total_vowels: usize) -> Option<u8> {
-    resolve_in(place, lemma_stress, stem_vowels, stem_vowels, total_vowels)
+/// The vowel counts a place is resolved against: the class's base stem
+/// (the lemma minus its ending, before any derivation), the stem before
+/// the class's extension, the whole stem, and the form (a solid
+/// enclitic's vowels excluded).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Vowels {
+    pub base: usize,
+    pub pre: usize,
+    pub stem: usize,
+    pub total: usize,
 }
 
-/// [`resolve`] with the vowel count of the stem before the class's
-/// extension (`pre_vowels`, the place `P`): equal to `stem_vowels` on a
-/// stem the class did not extend.
-pub fn resolve_in(place: Place, lemma_stress: Option<u8>, pre_vowels: usize, stem_vowels: usize, total_vowels: usize) -> Option<u8> {
-    if total_vowels == 0 {
+impl Vowels {
+    /// A stem the class neither derived nor extended.
+    pub fn plain(stem: usize, total: usize) -> Vowels {
+        Vowels { base: stem, pre: stem, stem, total }
+    }
+}
+
+/// The stressed vowel index of a form: `place` resolved against the
+/// lemma's stress, the stem's vowel count and the whole form's, for a
+/// stem the class neither derived nor extended ([`resolve_in`]).
+pub fn resolve(place: Place, lemma_stress: Option<u8>, stem_vowels: usize, total_vowels: usize) -> Option<u8> {
+    resolve_in(place, lemma_stress, Vowels::plain(stem_vowels, total_vowels))
+}
+
+/// [`resolve`] against the full vowel counts. The stem place is the
+/// lemma's stressed vowel where the stem still has it; where a derivation
+/// removed it from the base stem (-ова- → -ꙋ-, the iotated -ати stems:
+/// цѣлова́ти → цѣлꙋ́ющїй, писа́ти → пи́шꙋщїй) the stress stays on the
+/// derived stem's last vowel and never enters the class's extension; a
+/// lemma stressed on its ending keeps the thematic index (твори́ти →
+/// твори́мый). `Pre` is the last vowel of the stem before the extension.
+pub fn resolve_in(place: Place, lemma_stress: Option<u8>, v: Vowels) -> Option<u8> {
+    if v.total == 0 {
         return None;
     }
-    let last = total_vowels - 1;
-    let last_stem = stem_vowels.saturating_sub(1).min(last);
+    let last = v.total - 1;
+    let last_stem = v.stem.saturating_sub(1).min(last);
+    let pre_last = v.pre.saturating_sub(1).min(last);
     let index = match place {
         Place::Stem => {
             let k = usize::from(lemma_stress?);
-            if k < stem_vowels { k } else { last_stem }
+            if k < v.pre {
+                k
+            } else if k < v.base {
+                // the base stem had the vowel and the derivation took it
+                pre_last
+            } else if k < v.stem {
+                k
+            } else {
+                last_stem
+            }
         }
         Place::End => {
-            if total_vowels > stem_vowels { stem_vowels } else { last_stem }
+            if v.total > v.stem { v.stem } else { last_stem }
         }
         Place::StemLast => last_stem,
         Place::Final => last,
-        Place::Pre => pre_vowels.saturating_sub(1).min(last),
+        Place::Pre => pre_last,
         Place::Index(n) => usize::from(n).min(last),
     };
     u8::try_from(index).ok()
@@ -266,6 +305,9 @@ mod tests {
         assert_eq!(f.place(vcell("pres.2.pl")), Place::Final);
         assert_eq!(f.place(vcell("impv.2.sg")), Place::Stem);
         assert_eq!(f.place(vcell("pres.3.sg")), Place::End);
+        let nested = StressSpec::parse("{E;part=S;part.pres=P}", Pos::Verb).expect("ok").expect("some");
+        assert_eq!(nested.place(vcell("part.pres.act.long.m.sg.nom")), Place::Pre, "the more specific block rule wins");
+        assert_eq!(nested.place(vcell("part.past.act.long.m.sg.nom")), Place::Stem);
         let t = StressSpec::parse("b{pres=S;pres.1.sg=E}", Pos::Verb).expect("ok").expect("some");
         assert_eq!(t.place(vcell("pres.3.sg")), Place::Stem);
         assert_eq!(t.place(vcell("pres.1.sg")), Place::End);
@@ -286,11 +328,22 @@ mod tests {
         // ѻ҆те́цъ (lemma stress 1) with the fleeting vowel dropped: stem ѻтц (1 vowel)
         assert_eq!(resolve(Place::Stem, Some(1), 1, 2), Some(0));
         assert_eq!(resolve(Place::Index(3), Some(0), 1, 2), Some(1), "clamped");
-        // и҆згони́ти: stem гон + им (2 vowels) + ъ: P is the о, L the и
-        assert_eq!(resolve_in(Place::Pre, Some(2), 2, 3, 3), Some(1));
-        assert_eq!(resolve_in(Place::StemLast, Some(2), 2, 3, 3), Some(2));
+        // и҆згони́ти (stress 2, base изгон 2 vowels): stem изгон + им (3
+        // vowels) + ъ: P is the о, L the и
+        let v = Vowels { base: 2, pre: 2, stem: 3, total: 3 };
+        assert_eq!(resolve_in(Place::Pre, Some(2), v), Some(1));
+        assert_eq!(resolve_in(Place::StemLast, Some(2), v), Some(2));
         // no extension: P is L
-        assert_eq!(resolve_in(Place::Pre, Some(0), 1, 1, 2), resolve(Place::StemLast, Some(0), 1, 2));
+        assert_eq!(resolve_in(Place::Pre, Some(0), Vowels::plain(1, 2)), resolve(Place::StemLast, Some(0), 1, 2));
+        // the stem place through a derivation: писа́ти (stress 1, base
+        // писа 2 vowels) → пиш + ꙋщ + їй: the base had the а and the
+        // iotation took it, so the stress stays on the и (пи́шꙋщїй)
+        assert_eq!(resolve_in(Place::Stem, Some(1), Vowels { base: 2, pre: 1, stem: 2, total: 3 }), Some(0));
+        // цѣлова́ти (stress 2, base цѣлова 3 vowels) → цѣлꙋ + ющ: цѣлꙋ́ющїй
+        assert_eq!(resolve_in(Place::Stem, Some(2), Vowels { base: 3, pre: 2, stem: 3, total: 4 }), Some(1));
+        // твори́ти (stress 1 on the ending, base твор 1 vowel) → твор + им +
+        // ый: the thematic index stays (твори́мый)
+        assert_eq!(resolve_in(Place::Stem, Some(1), Vowels { base: 1, pre: 1, stem: 2, total: 3 }), Some(1));
         let p = StressSpec::parse("b{part.pres.pass=P}", Pos::Verb).expect("ok").expect("some");
         assert_eq!(p.place(Cell::parse(Pos::Verb, "part.pres.pass.short.m.sg.nom").expect("cell")), Place::Pre);
         assert_eq!(resolve(Place::Stem, None, 1, 2), None, "unaccented lemma");

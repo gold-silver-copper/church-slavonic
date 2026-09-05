@@ -77,6 +77,34 @@ The crate gained `Place::Pre` (`P`), `Letters::pre_vowels` and
 `stress::resolve_in` so the census could measure it; no paradigm names
 it yet.
 
+### V3.0 Part 1 — the residue's places (2026-09-05, steps 1–2 done; 3–4 open)
+
+- **The stem place through a derivation** is now a rule of the crate
+  (`stress::resolve_in` with `Vowels { base, pre, stem, total }`): the
+  lemma's stressed vowel while the stem has it; where a derivation
+  removed it (-ова- → -ꙋ-, the iotated -ати presents) the derived stem's
+  last vowel, never the extension's (цѣлꙋ́ющїй, пи́шꙋщїй); a lemma stressed
+  on its ending keeps the thematic index (твори́мый).
+- **`P`**, the last vowel of the stem before the class's extension, in
+  the column grammar; twelve named paradigms from the census (`b.pres.ppm`
+  и҆зго́нимъ, `b.pres.part` благохва́лѧщїй, `a.ov` for what the rule does
+  not reach, `b.inf`, `b.ppf`, …); the most specific block rule wins
+  (`part.pres=P` over `part=S`).
+- **The -надесѧть numerals** carry `stems=tail=на́десѧть`: a stressed
+  solid tail after the inflected first element (`Letters::tail_stress`),
+  the compound's one stress; 44 overrides gone.
+- Verbs, adjectives and nouns re-imported; the treebank rebuilt.
+
+| Number | before | after |
+|---|---|---|
+| stress columns with an exception list: nouns / adjectives / verbs / pronouns | 219 / 218 / 886 / 21 = 1,344 | **219 / 211 / 632 / 21 = 1,083** (shapes 155 / 187 / 475 / 21) |
+| named paradigms in `lexicon/stress.tsv` | 31 | 43 |
+| -надесѧть numerals: overrides / lists | 44 / 7 | 0 / 0 |
+| Polyakov cells reproduced by the primary: nouns / adjectives / verbs | 43,847 / 87,896 / 116,673 | 43,847 / 87,938 / 116,673 |
+| held-out recall (UD dev+test) | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 | unchanged |
+| Bible treebank | one cell 204,726, sets 1,775, tagger 185,169, several lexemes 12,988, verbatim 49,037 | one cell 204,710 (32.4%), sets 1,775, tagger 185,206 (29.3%), closed 177,234, several lexemes 13,027 (2.1%), verbatim 48,977 (7.8%); zero mismatches |
+| ids changed | — | 0 |
+
 ## 2.3.0 (2026-09-05) — the constraint layer of homonymy, the gold, the tagger
 
 The plan is `V2.2-PROMPT.md` Parts 4–5 (Part 6, the accent inventory, is

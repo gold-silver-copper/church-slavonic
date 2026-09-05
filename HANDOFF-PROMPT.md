@@ -1,4 +1,4 @@
-# Handoff: church-slavonic 2.x (after 2.3.0; Part 6 of V2.2 in progress on main)
+# Handoff: church-slavonic 2.x (after 2.3.0; 3.0.0 in progress on main — read V3.0-PROMPT.md's postscript first)
 
 Read this first in a fresh session. It is the map of what exists, what
 the numbers are, and which designs are open, so work starts from
@@ -9,11 +9,14 @@ findings per part); `CHANGELOG.md` holds every measured number per part;
 their records; `V2.2-PROMPT.md` is executed through Part 5 (releases
 2.2.0 and 2.3.0, tags `v2.2.0`, `v2.3.0`), and its Part 6 (the accent
 inventory and weighted evidence, release 3.0.0) is executed in substance
-on `main` but NOT closed — read the prompt's last postscript first: it
-lists exactly what is done and the three steps left (the residue's
-places, the final `eval` into the README, the version bump and tag
-`v3.0.0`); the game's 35 tests and headless run pass against this
-lexicon.
+on `main` but NOT closed. `V3.0-PROMPT.md` continues it: Part 0 (the
+censuses) and Part 1 steps 1–2 (the place `P`, the stem place through a
+derivation as a crate rule, the numerals as a stressed tail; lists
+1,344 → 1,083) are executed and committed; its postscript lists what is
+left (the `adv-of=` adverbs, the residue paragraph, the 3.0.0 close,
+then Parts 3–6). The game's 35 tests and headless run pass against this
+lexicon. Export `RUSTC_WRAPPER=` before cargo in this checkout (see the
+postscript).
 
 ## What exists
 
@@ -93,9 +96,10 @@ lexicon.
 
 ## The numbers (2.3.0, and Part 6 as it stands)
 
-Part 6 (uncommitted release): stress lists 1,871 → 1,344 (nouns 219,
-adjectives 218, verbs 886, pronouns 21); 31 named paradigms in
-`lexicon/stress.tsv`; Polyakov cells reproduced by the primary nouns
+Part 6 and V3.0 Part 1 (uncommitted release): stress lists 1,871 → 1,344
+→ 1,083 (nouns 219, adjectives 211, verbs 632, pronouns 21); 43 named
+paradigms in `lexicon/stress.tsv`; the -надесѧть numerals without
+overrides (`tail=`); Polyakov cells reproduced by the primary nouns
 94.7%, adjectives 93.3%, verbs 91.6%; primaries the Bible outnumbers
 167 → 135; treebank one cell 204,726 / tagger 185,169 / several lexemes
 12,988 at zero mismatches; ids unchanged. The full table is in

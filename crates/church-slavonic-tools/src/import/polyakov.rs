@@ -561,18 +561,26 @@ fn lemma_cell(pos: Pos, class: &church_slavonic::paradigm::Class) -> Option<Cell
     }
 }
 
-/// A verb's reflexive suffix (`-сѧ`), written solid after every ending.
-fn reflexive_suffix(pos: Pos, lemma_letters: &str) -> Option<String> {
+/// A verb's reflexive suffix (`-сѧ`), written solid after every ending;
+/// a compound's enclitic (кото́рыйждо, каковы́йлибо) or stressed tail
+/// (первыйна́десѧть: the stems entry is `tail=на́десѧть`, the tail's own
+/// stress with it). Returns the stems key and the letters after the
+/// first element.
+fn reflexive_suffix(pos: Pos, lemma_letters: &str) -> Option<(String, String)> {
     match pos {
-        Pos::Verb => (lemma_letters.ends_with("сѧ") && lemma_letters.chars().count() > 4).then(|| "сѧ".to_string()),
-        // the compound adjectives: an enclitic after the long ending
-        // (пе́рвыйнадесѧть, кото́рыйждо, каковы́йлибо)
+        Pos::Verb => (lemma_letters.ends_with("сѧ") && lemma_letters.chars().count() > 4).then(|| ("encl".to_string(), "сѧ".to_string())),
         Pos::Adjective | Pos::Pronoun => ["надесѧть", "либо", "жде", "ждо", "же", "то"]
             .into_iter()
             .find(|e| lemma_letters.strip_suffix(e).is_some_and(|core| core.ends_with('й') && core.chars().count() > 2))
-            .map(str::to_string),
+            .map(|e| if e == "надесѧть" { ("tail".to_string(), "на́десѧть".to_string()) } else { ("encl".to_string(), e.to_string()) }),
         _ => None,
     }
+}
+
+/// The letters a suffix adds to the first element (the tail's, without
+/// its stress mark).
+fn suffix_letters(suffix: &(String, String)) -> String {
+    Form::from_print(&suffix.1).letters
 }
 
 /// Print one lexeme's fit in full (`--debug <lemma>`).
@@ -597,7 +605,7 @@ pub fn debug(pos: Pos, wanted: &str) -> Result<(), Box<dyn Error>> {
             let refl = reflexive_suffix(pos, &lemma_form.letters);
             let mut stems: Vec<(String, String)> = inserted_stem(class, &lemma_form.letters, &attested).into_iter().collect();
             if let Some(r) = &refl {
-                stems.push(("encl".to_string(), r.clone()));
+                stems.push(r.clone());
             }
             let f = fit("x", &lemma, pos, SYN, class, None, animate, stems, &attested, &bundled, vec![], String::new());
             println!("class {code}: stress {} reproduced {}/{}", f.lexeme.stress, f.reproduced, f.attested);
@@ -865,7 +873,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         for class in &known {
             let mut stems: Vec<(String, String)> = inserted_stem(class, &lemma_form.letters, &attested).into_iter().collect();
             if let Some(r) = &refl {
-                stems.push(("encl".to_string(), r.clone()));
+                stems.push(r.clone());
             }
             if plurale_tantum {
                 let n = lemma_form.letters.chars().count().saturating_sub(1);
@@ -876,7 +884,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             // stems read off the attested forms, kept when they fit better
             {
                 let subject = church_slavonic::paradigm::Subject { lemma: &lemma_form.letters, animate, stems: &stems };
-                let inferred = inferred_stems(class, &subject, &attested, refl.as_deref());
+                let inferred = inferred_stems(class, &subject, &attested, refl.as_ref().map(suffix_letters).as_deref());
                 if !inferred.is_empty() {
                     let mut stems3 = stems.clone();
                     stems3.extend(inferred);

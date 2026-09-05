@@ -9,7 +9,7 @@ use crate::form::Form;
 use crate::lexicon::Lexeme;
 use crate::orthography::is_vowel_letter;
 use crate::paradigm::{Class, Letters, Subject, table_of};
-use crate::stress::{StressSpec, resolve_in};
+use crate::stress::{StressSpec, Vowels, resolve_in};
 
 impl Lexeme {
     /// The lemma's letters (marks stripped) and stressed vowel.
@@ -32,7 +32,10 @@ impl Lexeme {
         // a solid enclitic's vowels never carry the word's stress
         // (возда́стсѧ, блюсти́сѧ): the ending's vowel count stops before it
         let total = letters.letters.chars().filter(|c| is_vowel_letter(*c)).count().saturating_sub(usize::from(letters.tail_vowels));
-        let stress = spec.and_then(|s| resolve_in(s.place(cell), lemma_stress, letters.pre_vowels, letters.stem_vowels, total));
+        let vowels = Vowels { base: letters.base_vowels, pre: letters.pre_vowels, stem: letters.stem_vowels, total };
+        // a stressed tail (первыйна́десѧть) carries the compound's one
+        // stress; the paradigm decides nothing
+        let stress = letters.tail_stress.or_else(|| spec.and_then(|s| resolve_in(s.place(cell), lemma_stress, vowels)));
         Form { letters: letters.letters.clone(), stress, number_mark: letters.mark, mark_skip: letters.tail_vowels, varia: false, kamora: false }
     }
 
@@ -220,6 +223,31 @@ mod tests {
         assert_eq!(p(&verbs[1], "inf"), nfc("блюсти́сѧ"));
         // an ending with a vowel keeps the ending stress
         assert_eq!(p(&verbs[1], "pres.3.sg"), nfc("блюде́тсѧ"));
+    }
+
+    #[test]
+    fn a_stressed_tail_is_the_compound_numeral() {
+        let text = "id\tlemma\tpos\tgender\tanim\tclass\tstress\tstems\toverrides\tvariants\tsrc\tnote\n\
+            первыйнадесѧть.a\tпервыйна́десѧть\ta\t-\t-\tA1t\ta\ttail=на́десѧть\t-\t-\tP:A1t\t-\n\
+            третійнадесѧть.a\tтретійна́десѧть\ta\t-\t-\tA2i\ta\ttail=на́десѧть\t-\t-\tP:A2i\t-\n\
+            шестыйнадесѧть.a\tшестыйна́десѧть\ta\t-\t-\tA1t\ta\ttail=на́десѧть\t-\t-\tP:A1t\t-\n";
+        let adjs = parse(&text, Pos::Adjective).expect("parses");
+        let p = |l: &crate::lexicon::Lexeme, c: &str| l.inflect(crate::cell::Cell::parse(Pos::Adjective, c).expect("cell")).expect("cell").print(SYN);
+        assert_eq!(p(&adjs[0], "long.pos.m.sg.nom"), nfc("первыйна́десѧть"));
+        assert_eq!(p(&adjs[0], "long.pos.m.sg.gen"), nfc("первагѡна́десѧть"), "the first element prints as its own form, unstressed");
+        assert_eq!(p(&adjs[0], "long.pos.f.sg.nom"), nfc("перваѧна́десѧть"));
+        assert_eq!(p(&adjs[0], "long.pos.n.sg.nom"), nfc("первоена́десѧть"));
+        assert_eq!(p(&adjs[1], "short.pos.m.sg.nom"), nfc("третїйна́десѧть"), "the ї rule sees the whole word");
+        assert_eq!(p(&adjs[1], "short.pos.f.sg.nom"), nfc("третїѧна́десѧть"));
+        let loc: Vec<String> = adjs[2].forms(crate::cell::Cell::parse(Pos::Adjective, "long.pos.m.sg.loc").expect("cell")).iter().map(|f| f.print(SYN)).collect();
+        assert!(loc.contains(&nfc("шестомна́десѧть")), "the jer drops before the tail: {loc:?}");
+        // every attested print round-trips
+        for l in &adjs {
+            for (cell, form) in l.paradigm() {
+                let printed = form.print(SYN);
+                assert_eq!(crate::form::Form::from_print(&printed).print(SYN), printed, "{} {}", l.id, cell.name());
+            }
+        }
     }
 
     #[test]

@@ -181,13 +181,15 @@ impl Form {
         if self.number_mark && self.kamora {
             kamora = target.is_some();
         } else if self.number_mark {
+            // a stress inside the skipped tail (первыйна́десѧть) leaves the
+            // first element to be widened as a word of its own
+            let skip = usize::from(self.mark_skip);
             let from = match target {
-                Some(t) if t + 1 < total => t,
+                Some(t) if t + 1 < total && t + skip < total => t,
                 _ => 0,
             };
             let mut seen = total;
             let mut widened = false;
-            let skip = usize::from(self.mark_skip);
             for unit in out.iter_mut().rev() {
                 if !unit.is_vowel() {
                     continue;

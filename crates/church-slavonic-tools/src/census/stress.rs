@@ -7,7 +7,7 @@ use crate::import::fit::{StressSample, stress_sample};
 use church_slavonic::cell::Cell;
 use church_slavonic::form::Form;
 use church_slavonic::paradigm::Subject;
-use church_slavonic::stress::{Place, StressSpec, resolve, resolve_in};
+use church_slavonic::stress::{Place, StressSpec, Vowels, resolve_in};
 use church_slavonic::{Lexicon, Pos};
 use std::collections::BTreeMap;
 use std::error::Error;
@@ -56,20 +56,10 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 fn places_naming(s: &StressSample, lemma_stress: Option<u8>) -> Vec<&'static str> {
     let k = Some(s.index);
     let mut out = Vec::new();
-    if resolve(Place::Stem, lemma_stress, s.stem_vowels, s.total) == k {
-        out.push("S");
-    }
-    if resolve(Place::End, lemma_stress, s.stem_vowels, s.total) == k {
-        out.push("E");
-    }
-    if resolve(Place::StemLast, lemma_stress, s.stem_vowels, s.total) == k {
-        out.push("L");
-    }
-    if resolve(Place::Final, lemma_stress, s.stem_vowels, s.total) == k {
-        out.push("F");
-    }
-    if resolve_in(Place::Pre, lemma_stress, s.pre_vowels, s.stem_vowels, s.total) == k {
-        out.push("P");
+    for (place, name) in [(Place::Stem, "S"), (Place::End, "E"), (Place::StemLast, "L"), (Place::Final, "F"), (Place::Pre, "P")] {
+        if resolve_in(place, lemma_stress, s.vowels) == k {
+            out.push(name);
+        }
     }
     out
 }
@@ -107,7 +97,7 @@ pub fn places(lexicon: &Lexicon, pos: Pos) {
             }
             let Some(form) = l.inflect(cell) else { continue };
             let Some(sample) = stress_sample(class, &subject, cell, &form.print(l.recension)) else { continue };
-            let expected = resolve_in(base.place(cell), lemma.stress, sample.pre_vowels, sample.stem_vowels, sample.total);
+            let expected = resolve_in(base.place(cell), lemma.stress, sample.vowels);
             if expected == Some(sample.index) {
                 continue;
             }
@@ -222,10 +212,10 @@ pub fn compounds_and_adverbs(lexicon: &Lexicon) {
             continue;
         };
         let total = matched.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count();
-        let sample = StressSample { index: k, stem_vowels: matched.stem_vowels, pre_vowels: matched.pre_vowels, total };
+        let sample = StressSample { index: k, vowels: Vowels { base: matched.base_vowels, pre: matched.pre_vowels, stem: matched.stem_vowels, total } };
         let names = places_naming(&sample, adj_lemma.stress);
         let spec = adj.stress_spec();
-        let adjective_says = spec.as_ref().and_then(|s| resolve_in(s.place(adv_cell), adj_lemma.stress, sample.pre_vowels, sample.stem_vowels, total));
+        let adjective_says = spec.as_ref().and_then(|s| resolve_in(s.place(adv_cell), adj_lemma.stress, sample.vowels));
         let kind: &'static str = if adjective_says == Some(k) {
             "the adjective's own adv cell already prints it"
         } else if names.contains(&"S") {

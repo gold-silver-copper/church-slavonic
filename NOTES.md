@@ -1396,3 +1396,59 @@ members — stays deliberately its own future design.
   another lexeme of the same part of speech 3. The nominative/accusative
   block is Part 5's target; the genitive/accusative one is the
   genitive-accusative convention and the genitive of negation.
+
+## 2026-09-05 — 3.0 Part 1 (V3.0-PROMPT.md): the residue's places — decisions and findings (steps 1–2 done, 3–4 open)
+
+- **The stem place through a derivation is a rule, not a paradigm
+  (decision).** The first pass named `a.ov` (`S;part.pres=P`) and it
+  absorbed 143 lines — but they were not all -ova- verbs: а҆лка́ти →
+  а҆́лчꙋщїй, писа́ти → пи́шꙋщїй are the same case. The rule underneath: the
+  stem place is the lemma's stressed vowel while the stem has it; where
+  a derivation removed it from the base stem (-ова- → -ꙋ-, the iotated
+  -ати presents) the stress stays on the derived stem's last vowel and
+  never enters the class's extension; a lemma stressed on its ending
+  keeps the thematic index (твори́ти → твори́мый). `stress::resolve_in`
+  takes a `Vowels { base, pre, stem, total }` (`Letters::base_vowels`,
+  `pre_vowels`). Under it 112 of the 143 went back to plain `a`; `a.ov`
+  keeps 31 (unaccented lemmas such as дрѧселовати, and V12t/V12ov lines
+  whose participle Polyakov attests retracted where the rule does not
+  reach). The consistency test and the game's strings are unchanged.
+- **`P` and the block rule (decision).** `Place::Pre` is in the grammar;
+  twelve paradigms name the census's shapes (`b.pres.ppm`, `b.pres2`,
+  `b.pres2.ppm`, `b.pres.impv.ppm`, `b.pres.aor`, `a.ppm`, `a.pam`,
+  `a.paml`, `b.inf`, `b.ppf`, `a.ov`, `b.pres.part`). A defect the first
+  re-import exposed: `Paradigm::place` took the first matching block rule,
+  so `part.pres=P` after `part=S` never fired; the most specific block
+  rule wins now (test in stress.rs).
+- **The re-import, not the refit, applies a block paradigm (finding).**
+  `refit-stress` keeps a column only when every form prints the same,
+  so a paradigm that changes unattested cells (the whole participle
+  block on `P`) can only enter through `import polyakov --write`; verbs,
+  adjectives and nouns were re-imported (nouns: 0 lines changed;
+  adjectives: the comparative's `P` in 7 lines and the numerals).
+  Reproduction unchanged: 116,673 / 87,896 → 87,938 (the numerals) /
+  43,847.
+- **The stored treebank goes stale before it goes wrong (finding).**
+  `check-treebank` after the re-import failed at Genesis 41:13 (сказа̀):
+  the stored set leaf named the participle cells, which now print
+  ска́за under `b.pres.part`, so the leaf's first cell rendered
+  differently. `build-treebank` re-lifts and the invariant holds at zero
+  mismatches (one cell 204,710, sets 1,775, tagger 185,206, several
+  lexemes 13,027, verbatim 48,977).
+- **The -надесѧть numerals are a stressed tail (decision).**
+  `stems=tail=на́десѧть` replaces `encl=надесѧть`: the class inflects the
+  first element, `letters_with` appends the tail (the jer dropped before
+  it as before an enclitic), `Letters::tail_stress` puts the compound's
+  one stress in the tail and `compose` takes it over the paradigm; the
+  number mark widens over the first element only (`Form::print` starts
+  from the word's head when the stress sits inside `mark_skip`); the
+  fitter reads a tailed form as saying nothing about the paradigm. The
+  seven lines lost their 44 overrides and their lists (a{…} → a); the ї
+  rule gives третїйна́десѧть; шестомна́десѧть is the class's second
+  alternative (the primary locative is -ѣмъ).
+- Lists after this part: nouns 219, adjectives 211, verbs 632, pronouns
+  21 = 1,083 (from 1,344). Held-out recall unchanged in every row; the
+  game's 35 tests and headless run pass.
+- **Open (steps 3–4 of Part 1):** the 61 `adv-of=` adverbs (33 already
+  printed by the adjective's `adv` cell can go now), the residue recorded
+  in OPEN-DESIGNS, the 9 pronoun stress twins the arbiter never saw.

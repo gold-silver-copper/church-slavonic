@@ -42,3 +42,17 @@ a.aor3	S;aor.3.pl=E	ве́ргнꙋти	17
 pr.obl	S;m.sg.gen=F;m.sg.dat=F;n.sg.gen=F;n.sg.dat=F;f.sg.gen=F	то́й	4
 pr.kto	S;m.sg.gen=F;m.sg.dat=F;m.sg.acc=F	кто̀	3
 pr.moj	E;m.sg.gen=F;m.sg.dat=F;n.sg.gen=F;n.sg.dat=F;f.sg.gen=F	мо́й	3
+# verbs, 3.0 Part 1 (V3.0-PROMPT.md): the place P — the present passive participle's masculine short nominative retracts to the vowel before -им-/-ем- (и҆зго́нимъ, возревнꙋ́емъ), the present active participle's short and long m/n nominative to the vowel before -ѧ-/-ющ- (благовѣствꙋ́ѧ, почествꙋ́ющїй); and the shapes without P the census repeated (the infinitive on the stem, the second plural on the ending's first vowel, the aorist's second and third singular on the stem, the past passive short feminine and genitive on the ending)
+b.pres.ppm	E;part=S;pres=S;pres.1.sg=E;impv.1.pl=S;part.pres.pass.short.m.sg.nom=P;part.pres.pass.short.m.sg.acc=P	низходи́ти	15
+b.pres2	E;part=S;pres=S;pres.1.sg=E;pres.2.pl=E;impv.1.pl=S	возноси́ти	10
+b.pres2.ppm	E;part=S;pres=S;pres.1.sg=E;pres.2.pl=E;impv.1.pl=S;part.pres.pass.short.m.sg.nom=P;part.pres.pass.short.m.sg.acc=P	и҆згони́ти	16
+b.pres.impv.ppm	E;part=S;pres=S;pres.1.sg=E;impv.1.pl=S;impv.2.pl=S;part.pres.pass.short.m.sg.nom=P;part.pres.pass.short.m.sg.acc=P	и҆скꙋси́ти	8
+b.pres.aor	E;part=S;pres=S;pres.1.sg=E;impv.1.pl=S;aor.2.sg=S;aor.3.sg=S	и҆знемощѝ	8
+a.ppm	S;part.pres.pass.short.m.sg.nom=P;part.pres.pass.short.m.sg.acc=P	возревнова́ти	14
+a.pam	S;part.pres.act.short.m.sg.nom=P;part.pres.act.short.n.sg.nom=P	благоповинова́тисѧ	14
+a.paml	S;part.pres.act.long.m.sg.nom=P;part.pres.act.long.n.sg.nom=P	почествова́ти	8
+b.inf	E;part=S;inf=S	забы́ти	12
+b.ppf	E;part=S;part.past.pass.short.f.sg.nom=E;part.past.pass.short.m.sg.gen=E;part.past.pass.short.n.sg.gen=E	зажещѝ	10
+# the whole present-participle block on P: the -ova- verbs stressed on -ва́- (благовѣствꙋ́ѧ, благовѣствꙋ́ющїй: the class contracted the lemma's vowel away), and the retracting present's participles (благохва́лѧщїй beside благохва́лиши)
+a.ov	S;part.pres=P	благовѣствова́ти	23
+b.pres.part	E;part=S;pres=S;pres.1.sg=E;impv.1.pl=S;part.pres=P	благохвали́ти	9

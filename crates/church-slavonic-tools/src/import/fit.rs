@@ -11,7 +11,7 @@ use church_slavonic::form::Form;
 use church_slavonic::grammar::{Number, Recension};
 use church_slavonic::lexicon::{Lexeme, Provenance};
 use church_slavonic::paradigm::{Class, Subject};
-use church_slavonic::stress::{Place, resolve, resolve_in};
+use church_slavonic::stress::{Place, Vowels, resolve_in};
 use std::collections::BTreeMap;
 
 /// The attested forms of one cell, primary first, as print strings with
@@ -24,10 +24,8 @@ pub type Attested = BTreeMap<Cell, Vec<(String, u64)>>;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StressSample {
     pub index: u8,
-    pub stem_vowels: usize,
-    /// The stem's vowels before the class's extension (the place `P`).
-    pub pre_vowels: usize,
-    pub total: usize,
+    /// The vowel counts the places resolve against.
+    pub vowels: Vowels,
 }
 
 /// Cells whose every attestation came from a bundled tag set (`gen/acc`):
@@ -126,11 +124,16 @@ pub fn evidence_full(
     let index = (index, observed_mark(&attested, &letters.letters));
     let Some(k) = attested.stress else { return (Evidence::None, Some(index)) };
     let letters = &alts[index.0];
+    // a stressed tail carries the stress: the paradigm decides nothing
+    if letters.tail_stress.is_some() {
+        return (Evidence::Either, Some(index));
+    }
     // a solid enclitic's vowels are not the ending's (возда́стсѧ)
     let total = attested.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count().saturating_sub(usize::from(letters.tail_vowels));
-    let stem = resolve(Place::Stem, lemma_stress, letters.stem_vowels, total);
-    let end = resolve(Place::End, lemma_stress, letters.stem_vowels, total);
-    let last = resolve(Place::StemLast, lemma_stress, letters.stem_vowels, total);
+    let vowels = Vowels { base: letters.base_vowels, pre: letters.pre_vowels, stem: letters.stem_vowels, total };
+    let stem = resolve_in(Place::Stem, lemma_stress, vowels);
+    let end = resolve_in(Place::End, lemma_stress, vowels);
+    let last = resolve_in(Place::StemLast, lemma_stress, vowels);
     let e = match (stem == Some(k), end == Some(k)) {
         (true, true) => Evidence::Either,
         (true, false) => Evidence::Stem,
@@ -149,9 +152,12 @@ pub fn stress_sample(class: &Class, subject: &Subject<'_>, cell: Cell, printed: 
     let key = attested.key();
     let alts = class.letters(cell, subject);
     let letters = alts.iter().find(|l| Form::new(l.letters.clone(), None, false).key() == key)?;
+    if letters.tail_stress.is_some() {
+        return None;
+    }
     let index = attested.stress?;
     let total = attested.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count().saturating_sub(usize::from(letters.tail_vowels));
-    Some(StressSample { index, stem_vowels: letters.stem_vowels, pre_vowels: letters.pre_vowels, total })
+    Some(StressSample { index, vowels: Vowels { base: letters.base_vowels, pre: letters.pre_vowels, stem: letters.stem_vowels, total } })
 }
 
 /// The stress column that explains the samples with the fewest
@@ -168,15 +174,15 @@ pub fn stress_column(pos: Pos, evidence: &BTreeMap<Cell, Evidence>, samples: &BT
     use church_slavonic::stress::StressSpec;
     let place_name = |s: &StressSample| -> String {
         let k = Some(s.index);
-        if resolve(Place::Stem, lemma_stress, s.stem_vowels, s.total) == k {
+        if resolve_in(Place::Stem, lemma_stress, s.vowels) == k {
             "S".to_string()
-        } else if resolve(Place::End, lemma_stress, s.stem_vowels, s.total) == k {
+        } else if resolve_in(Place::End, lemma_stress, s.vowels) == k {
             "E".to_string()
-        } else if resolve(Place::StemLast, lemma_stress, s.stem_vowels, s.total) == k {
+        } else if resolve_in(Place::StemLast, lemma_stress, s.vowels) == k {
             "L".to_string()
-        } else if resolve(Place::Final, lemma_stress, s.stem_vowels, s.total) == k {
+        } else if resolve_in(Place::Final, lemma_stress, s.vowels) == k {
             "F".to_string()
-        } else if resolve_in(Place::Pre, lemma_stress, s.pre_vowels, s.stem_vowels, s.total) == k {
+        } else if resolve_in(Place::Pre, lemma_stress, s.vowels) == k {
             "P".to_string()
         } else {
             s.index.to_string()
@@ -196,7 +202,7 @@ pub fn stress_column(pos: Pos, evidence: &BTreeMap<Cell, Evidence>, samples: &BT
         let Ok(Some(spec)) = StressSpec::parse(cand, pos) else { continue };
         let mut items: Vec<String> = Vec::new();
         for (cell, s) in samples {
-            if resolve_in(spec.place(*cell), lemma_stress, s.pre_vowels, s.stem_vowels, s.total) == Some(s.index) {
+            if resolve_in(spec.place(*cell), lemma_stress, s.vowels) == Some(s.index) {
                 continue;
             }
             items.push(format!("{}={}", cell.name(), place_name(s)));

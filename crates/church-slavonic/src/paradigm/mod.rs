@@ -151,8 +151,17 @@ pub struct Letters {
     /// (`ext:им`, `ext:ѧщ`): the place `P` of the stress layer. Equal to
     /// `stem_vowels` on a stem the class did not extend.
     pub pre_vowels: usize,
-    /// Vowels of a solid enclitic at the end (`Form::mark_skip`).
+    /// How many vowels the class's base stem has (the lemma minus its
+    /// ending, before any derivation): the stress layer reads whether the
+    /// lemma's stressed vowel was in the stem a derivation shortened.
+    pub base_vowels: usize,
+    /// Vowels of a solid enclitic or stressed tail at the end
+    /// (`Form::mark_skip`).
     pub tail_vowels: u8,
+    /// A stressed solid tail's stressed vowel (`stems=tail=на́десѧть`: the
+    /// compound's one stress sits in the tail and the paradigm does not
+    /// decide it), as an index over the whole word.
+    pub tail_stress: Option<u8>,
 }
 
 /// What a class needs to know about the lexeme it declines.
@@ -172,12 +181,28 @@ impl<'a> Subject<'a> {
         self.stems.iter().find(|(k, _)| k == "encl").map(|(_, v)| v.as_str())
     }
 
-    /// The subject with the enclitic stripped off the lemma: what the
-    /// class table works on.
+    /// A stressed solid tail (`stems=tail=на́десѧть`): the second element
+    /// of a compound numeral, written after every ending of the first and
+    /// carrying the compound's one stress (первыйна́десѧть,
+    /// первагѡна́десѧть) — a proclitic first element before a stressed
+    /// host, not an enclitic. Returns the tail's letters and its stressed
+    /// vowel's index within the tail.
+    pub fn tail(&self) -> Option<(String, Option<u8>)> {
+        self.stems.iter().find(|(k, _)| k == "tail").map(|(_, v)| {
+            let f = crate::form::Form::from_print(v);
+            (f.letters, f.stress)
+        })
+    }
+
+    /// The subject with the enclitic or the tail stripped off the lemma:
+    /// what the class table works on.
     pub fn core(&self) -> Subject<'a> {
         let lemma = match self.enclitic() {
             Some(r) => self.lemma.strip_suffix(r).unwrap_or(self.lemma),
-            None => self.lemma,
+            None => match self.tail() {
+                Some((t, _)) => self.lemma.strip_suffix(t.as_str()).unwrap_or(self.lemma),
+                None => self.lemma,
+            },
         };
         Subject { lemma, animate: self.animate, stems: self.stems }
     }
@@ -215,26 +240,30 @@ impl Class {
     /// other stem its own — the place `P` of the stress layer. A stem the
     /// lexeme spells itself (`stems=6=…`) has no extension the class knows.
     pub fn pre_vowels_of(&self, subject: &Subject<'_>, stems: &HashMap<u8, String>) -> HashMap<u8, usize> {
+        self.vowels_of(subject, stems).1
+    }
+
+    /// The base stem's vowel count and [`Class::pre_vowels_of`].
+    pub fn vowels_of(&self, subject: &Subject<'_>, stems: &HashMap<u8, String>) -> (usize, HashMap<u8, usize>) {
         let subject = &subject.core();
         let count = |s: &str| s.chars().filter(|c| is_vowel_letter(*c)).count();
         let mut out: HashMap<u8, usize> = stems.iter().map(|(n, s)| (*n, count(s))).collect();
         let spelled = |n: u8| subject.stems.iter().any(|(k, _)| k.parse::<u8>().ok() == Some(n));
-        let mut base: Option<String> = None;
+        let base: String = match subject.stems.iter().find(|(k, _)| k == "base") {
+            Some((_, b)) => b.clone(),
+            None => {
+                let k = subject.lemma.chars().count().saturating_sub(self.strip);
+                subject.lemma.chars().take(k).collect()
+            }
+        };
         for (n, derivation) in &self.stems {
             let Derivation::Ext(_, inner) = derivation else { continue };
             if spelled(*n) {
                 continue;
             }
-            let base = base.get_or_insert_with(|| match subject.stems.iter().find(|(k, _)| k == "base") {
-                Some((_, b)) => b.clone(),
-                None => {
-                    let k = subject.lemma.chars().count().saturating_sub(self.strip);
-                    subject.lemma.chars().take(k).collect()
-                }
-            });
-            out.insert(*n, count(&derive(inner, base, subject, self.recension)));
+            out.insert(*n, count(&derive(inner, &base, subject, self.recension)));
         }
-        out
+        (count(&base), out)
     }
 
     /// Every alternative of `cell` for the subject, primary first; empty
@@ -252,20 +281,31 @@ impl Class {
         // ending, dropping the jer before it (бои́тсѧ, боѧ́хсѧ, боѧ́щихсѧ;
         // тогѡ́же, коегѡ́ждо)
         let refl = subject.enclitic();
-        let pre = self.pre_vowels_of(subject, stems);
+        let tail = subject.tail();
+        let (base, pre) = self.vowels_of(subject, stems);
         let subject = subject.core();
         let mut out = Vec::new();
-        self.collect(cell, &subject, stems, &pre, None, &mut out, 0);
+        self.collect(cell, &subject, stems, &pre, None, base, &mut out, 0);
+        // the print drops the jer before the enclitic (тѣ́мже, бои́тсѧ) and
+        // before the tail (шестомна́десѧть); OCS keeps it (имъже, ихъже)
+        let drop_jer = self.recension == crate::grammar::Recension::Synodal;
         if let Some(r) = refl {
-            // the print drops the jer before the enclitic (тѣ́мже, бои́тсѧ);
-            // OCS keeps it (имъже, ихъже)
-            let drop_jer = self.recension == crate::grammar::Recension::Synodal;
             for l in &mut out {
                 if drop_jer && l.letters.ends_with('ъ') {
                     l.letters.pop();
                 }
                 l.letters.push_str(r);
                 l.tail_vowels = r.chars().filter(|c| is_vowel_letter(*c)).count().min(255) as u8;
+            }
+        } else if let Some((t, stress)) = tail {
+            for l in &mut out {
+                if drop_jer && l.letters.ends_with('ъ') {
+                    l.letters.pop();
+                }
+                let host_vowels = l.letters.chars().filter(|c| is_vowel_letter(*c)).count();
+                l.letters.push_str(&t);
+                l.tail_vowels = t.chars().filter(|c| is_vowel_letter(*c)).count().min(255) as u8;
+                l.tail_stress = stress.and_then(|k| u8::try_from(host_vowels + usize::from(k)).ok());
             }
         }
         out
@@ -281,6 +321,8 @@ impl Class {
         // a delegating class's pre-extension count (the participle's stem
         // before -им-), which the adjective class declining it inherits
         inherited_pre: Option<usize>,
+        // the base stem's vowels (the delegating class's, when delegated)
+        base: usize,
         out: &mut Vec<Letters>,
         depth: usize,
     ) {
@@ -319,11 +361,13 @@ impl Class {
                             mark: *mark,
                             stem_vowels,
                             pre_vowels: inherited_pre.or_else(|| pre.get(n).copied()).unwrap_or(stem_vowels),
+                            base_vowels: base,
                             tail_vowels: 0,
+                            tail_stress: None,
                         });
                     }
                 }
-                Shape::Ref(other) => self.collect(*other, subject, stems, pre, inherited_pre, out, depth + 1),
+                Shape::Ref(other) => self.collect(*other, subject, stems, pre, inherited_pre, base, out, depth + 1),
                 Shape::Delegate { stem: n, class } => {
                     let (Some(stem), Some(adj_cell)) = (stems.get(n), cell.as_adjective()) else { continue };
                     let Some(adjective) = table_of(Pos::Adjective, self.recension).get(class) else { continue };
@@ -336,13 +380,13 @@ impl Class {
                     let lemma = format!("{stem}{tail}");
                     let inner = Subject { lemma: &lemma, animate: subject.animate, stems: &[] };
                     let inner_stems = adjective.stems_of(&inner);
-                    let inner_pre = adjective.pre_vowels_of(&inner, &inner_stems);
+                    let (_, inner_pre) = adjective.vowels_of(&inner, &inner_stems);
                     let handed = inherited_pre.or_else(|| pre.get(n).copied());
-                    adjective.collect(Cell::Adj(adj_cell), &inner, &inner_stems, &inner_pre, handed, out, depth + 1);
+                    adjective.collect(Cell::Adj(adj_cell), &inner, &inner_stems, &inner_pre, handed, base, out, depth + 1);
                 }
                 Shape::Lemma => {
                     let stem_vowels = subject.lemma.chars().filter(|c| is_vowel_letter(*c)).count();
-                    out.push(Letters { letters: subject.lemma.to_string(), mark: false, stem_vowels, pre_vowels: stem_vowels, tail_vowels: 0 })
+                    out.push(Letters { letters: subject.lemma.to_string(), mark: false, stem_vowels, pre_vowels: stem_vowels, base_vowels: stem_vowels, tail_vowels: 0, tail_stress: None })
                 }
             }
         }
