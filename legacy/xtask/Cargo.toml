@@ -1,0 +1,16 @@
+[package]
+name = "xtask-legacy"
+version = "0.1.0"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+extractor-legacy = { path = "../extractor" }
+church-slavonic-syntax-legacy = { path = "../church-slavonic-syntax" }
+
+[lints]
+workspace = true

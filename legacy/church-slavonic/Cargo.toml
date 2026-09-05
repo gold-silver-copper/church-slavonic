@@ -1,0 +1,29 @@
+[package]
+name = "church-slavonic-legacy"
+publish = false
+version = "1.2.0"
+authors.workspace = true
+edition.workspace = true
+# src/lib.rs uses let-chains (`&& let ...`), stabilized in 1.88.
+rust-version.workspace = true
+description = "Church Slavonic inflector (Old Church Slavonic and Synodal) from Wiktionary and grammar-table data"
+# The code is MIT OR Apache-2.0; the generated tables derive from Wiktionary's
+# CC BY-SA 4.0 content. See ATTRIBUTION.md.
+license = "(MIT OR Apache-2.0) AND CC-BY-SA-4.0"
+repository.workspace = true
+keywords = ["church-slavonic", "inflection", "nlp", "grammar", "linguistics"]
+categories = ["text-processing", "localization"]
+readme = "README.md"
+include = ["build.rs", "examples/**/*.rs", "generated/**/*.rs", "src/**/*.rs", "Cargo.toml", "README.md", "ATTRIBUTION.md"]
+
+[lib]
+# cdylib lets this crate be built standalone as a C-ABI / wasm dynamic library;
+# Rust dependents only ever link the rlib.
+crate-type = ["rlib"]
+
+[dependencies]
+church-slavonic-core-legacy = { path = "../church-slavonic-core" }
+unicode-normalization = { workspace = true }
+
+[lints]
+workspace = true

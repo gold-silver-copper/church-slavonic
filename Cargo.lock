@@ -4,34 +4,52 @@ version = 4
 
 [[package]]
 name = "church-slavonic"
-version = "1.2.0"
-dependencies = [
- "church-slavonic-core",
- "unicode-normalization",
-]
-
-[[package]]
-name = "church-slavonic-core"
-version = "1.2.0"
+version = "2.0.0-dev"
 dependencies = [
  "unicode-normalization",
 ]
 
 [[package]]
-name = "church-slavonic-syntax"
+name = "church-slavonic-core-legacy"
+version = "1.2.0"
+dependencies = [
+ "unicode-normalization",
+]
+
+[[package]]
+name = "church-slavonic-legacy"
+version = "1.2.0"
+dependencies = [
+ "church-slavonic-core-legacy",
+ "unicode-normalization",
+]
+
+[[package]]
+name = "church-slavonic-syntax-legacy"
 version = "0.1.0"
 dependencies = [
- "church-slavonic",
+ "church-slavonic-legacy",
  "serde",
  "serde_json",
 ]
 
 [[package]]
-name = "extractor"
+name = "church-slavonic-tools"
 version = "0.1.0"
 dependencies = [
  "church-slavonic",
- "church-slavonic-core",
+ "church-slavonic-legacy",
+ "serde",
+ "serde_json",
+ "unicode-normalization",
+]
+
+[[package]]
+name = "extractor-legacy"
+version = "0.1.0"
+dependencies = [
+ "church-slavonic-core-legacy",
+ "church-slavonic-legacy",
  "serde",
  "serde_json",
  "unicode-normalization",
@@ -152,11 +170,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "xtask"
+name = "xtask-legacy"
 version = "0.1.0"
 dependencies = [
- "church-slavonic-syntax",
- "extractor",
+ "church-slavonic-syntax-legacy",
+ "extractor-legacy",
 ]
 
 [[package]]

@@ -1,0 +1,26 @@
+[package]
+name = "church-slavonic-tools"
+version = "0.1.0"
+description = "Import, evaluation and treebank tooling for the church-slavonic lexicon (cargo xtask)"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[[bin]]
+name = "xtask"
+path = "src/main.rs"
+
+[dependencies]
+church-slavonic = { workspace = true }
+# TEMPORARY (Part 0–2): the legacy crate renders the lemma-keyed treebank
+# leaves until Part 2 re-lifts the treebank onto lexeme ids. Removed then.
+church-slavonic-legacy = { path = "../../legacy/church-slavonic" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+unicode-normalization = { workspace = true }
+
+[lints]
+workspace = true

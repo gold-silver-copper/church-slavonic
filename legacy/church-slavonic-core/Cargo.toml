@@ -1,0 +1,18 @@
+[package]
+name = "church-slavonic-core-legacy"
+publish = false
+description = "Church Slavonic inflector: the rule engine (no data)"
+version = "1.2.0"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+keywords = ["church-slavonic", "inflection", "morphology", "grammar", "nlp"]
+categories = ["text-processing"]
+
+[dependencies]
+unicode-normalization.workspace = true
+
+[lints]
+workspace = true

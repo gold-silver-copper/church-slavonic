@@ -1,27 +1,18 @@
 [package]
 name = "church-slavonic"
-version = "1.2.0"
+version = "2.0.0-dev"
+description = "Church Slavonic morphology: a curated lexicon, a paradigm generator and an analyzer, for the Old Church Slavonic and Synodal recensions"
 authors.workspace = true
 edition.workspace = true
-# src/lib.rs uses let-chains (`&& let ...`), stabilized in 1.88.
-rust-version.workspace = true
-description = "Church Slavonic inflector (Old Church Slavonic and Synodal) from Wiktionary and grammar-table data"
-# The code is MIT OR Apache-2.0; the generated tables derive from Wiktionary's
-# CC BY-SA 4.0 content. See ATTRIBUTION.md.
-license = "(MIT OR Apache-2.0) AND CC-BY-SA-4.0"
+license.workspace = true
 repository.workspace = true
-keywords = ["church-slavonic", "inflection", "nlp", "grammar", "linguistics"]
+rust-version.workspace = true
+keywords = ["church-slavonic", "inflection", "morphology", "nlp", "linguistics"]
 categories = ["text-processing", "localization"]
-readme = "README.md"
-include = ["build.rs", "examples/**/*.rs", "generated/**/*.rs", "src/**/*.rs", "Cargo.toml", "README.md", "ATTRIBUTION.md"]
-
-[lib]
-# cdylib lets this crate be built standalone as a C-ABI / wasm dynamic library;
-# Rust dependents only ever link the rlib.
-crate-type = ["cdylib", "rlib"]
+readme = "../../README.md"
+include = ["src/**/*.rs", "lexicon/**", "Cargo.toml"]
 
 [dependencies]
-church-slavonic-core = { workspace = true }
 unicode-normalization = { workspace = true }
 
 [lints]

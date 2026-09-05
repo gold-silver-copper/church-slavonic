@@ -1,0 +1,183 @@
+//! The v1.1 consumer-defect ledger (V1.1-PROMPT.md, Part 0).
+//!
+//! Every entry reproduces a form the `vertograd` consumer rejected during
+//! its 2026-08-31 audits, with the DIAGNOSED class and the justification
+//! for the expected value. Tests are born `#[ignore]`d and un-ignored by
+//! the part that fixes them. Two of the consumer's rejections turned out
+//! to be AUDIT defects — the crate's answers are attested table cells —
+//! and are recorded here as guards instead (see `the_audit_was_wrong`).
+//!
+//! Diagnosis summary (verified against the committed tables 2026-08-31):
+//! - Class A (lookup folding): `ѷ`-spelled input misses `ѵ`-spelled keys.
+//! - Class M (fact mechanism): rows whose ATTESTED finite cells reveal the
+//!   present stem still answer unattested cells by the blind rule
+//!   (стрищѝ, дои́ти); the accusative-shape fact teaches upward only, so
+//!   an attested nominative-shaped PLURAL accusative does not teach the
+//!   singular (ѻ҆гꙋре́цъ).
+//! - Class B (rule default): a wholly-unattested masculine answers the
+//!   animate accusative (ко́локолъ, прꙋ́дъ, ѡ҆́блакъ) — Part 2 measures
+//!   which default the held-out corpora prefer before flipping anything.
+//! - Class C (data): «ꙗ҆́блонь» has no row and its -ь hides the gender —
+//!   only a witness can settle it.
+
+use church_slavonic_legacy::*;
+
+const SYN: Recension = Recension::Synodal;
+const SG: Number = Number::Singular;
+
+fn acc(w: &str) -> String {
+    ChurchSlavonic::noun(w, &Case::Accusative, &SG, &SYN)
+}
+
+// -------------------------------------------------------------------------
+// Class A — lookup folding (Part 1)
+// -------------------------------------------------------------------------
+
+/// The table key is «кѵпарі́съ» (ѵ, U+0475) with the inanimate accusative
+/// ATTESTED at cell 3. The same word spelled with ѷ (U+0477) must reach
+/// the same row: `ѷ ~ ѵ` is a kendema-carrying spelling of one letter, and
+/// `orthography` already folds it in `comparison_key` — the lookup fold
+/// must agree with the comparison fold.
+#[test]
+fn izhitsa_spellings_reach_one_row() {
+    assert_eq!(acc("кѵпарі́съ"), "кѵпарі\u{301}съ", "the ѵ spelling (guard)");
+    assert_eq!(acc("кѷпарі́съ"), "кѵпарі\u{301}съ", "the ѷ spelling must fold");
+}
+
+// -------------------------------------------------------------------------
+// Class M — the fact mechanism (Part 2)
+// -------------------------------------------------------------------------
+
+/// «стрищѝ» has a row with the present block ATTESTED («стриже́ши,
+/// стриже́тъ, стригꙋ́тъ» — the velar stem is proved by the row itself),
+/// yet the unattested l-participle falls to the blind rule («стри́клъ»).
+/// With the stem read from the attested present, the l-participle is
+/// «стри́глъ» (стриг- + -лъ, the велярный stem the row attests).
+#[test]
+fn strishchi_l_participle_uses_the_attested_stem() {
+    assert_eq!(
+        ChurchSlavonic::l_participle("стрищѝ", &Gender::Masculine, &SG, &SYN),
+        "стри́глъ"
+    );
+}
+
+/// «дои́ти» (milk) has its own row — «дои́ши, дои́тъ, доѧ́ше, дои́ша,
+/// дои́ла» all attested — yet the unattested aorist 3sg answers «дои́де»
+/// and the imperative «дои́ди»: the rule missegmented the lemma as
+/// до+и҆тѝ. The row's attested present proves the i-verb; the regular
+/// i-verb aorist 3sg AND imperative are «доѝ» (the «напоѝ» print type —
+/// the auditor's first guess «до́й» was the Russian contraction, another
+/// audit defect the derivation corrected).
+#[test]
+fn doiti_the_milk_verb_is_not_a_compound_of_iti() {
+    assert_eq!(
+        ChurchSlavonic::verb("дои́ти", &Person::Third, &SG, &Tense::Aorist, &Form::Finite, &SYN),
+        "доѝ"
+    );
+    assert_eq!(
+        ChurchSlavonic::verb(
+            "дои́ти",
+            &Person::Second,
+            &SG,
+            &Tense::Present,
+            &Form::Imperative,
+            &SYN
+        ),
+        "доѝ"
+    );
+}
+
+/// «ѻ҆гꙋре́цъ» stores the nominative-shaped PLURAL accusative
+/// («ѻ҆гꙋрцы̀», cell 17) — the row attests the word inanimate — but the
+/// 0.9.0 shape fact reads lower cells only, so the singular accusative
+/// still answers the animate shape. Any attested nominative-shaped
+/// accusative teaches the others: acc sg = nom sg.
+#[test]
+fn ogurets_the_stored_plural_shape_teaches_the_singular() {
+    assert_eq!(acc("ѻ҆гꙋре́цъ"), "ѻ\u{486}гꙋре\u{301}цъ");
+}
+
+// -------------------------------------------------------------------------
+// Class B — the unattested-masculine default (Part 3; expectations
+// CONDITIONAL on the held-out measurement — see V1.1-PROMPT Part 2)
+// -------------------------------------------------------------------------
+
+/// Part 3 MEASURED the default instead of assuming it: Polyakov's
+/// masculine nouns are 72.9% animate by lemma (5227/7174 — confirming
+/// the design note's "three-quarters"), 53.3% by token, and NO Synodal
+/// held-out corpus exists to arbitrate further (the recall corpora are
+/// all OCS, whose rule already answers the nominative shape). The
+/// animate default therefore STANDS. «ѡ҆́блакъ» is fixed the honest way
+/// — its accusative is WITNESSED in the print («вше́дше во ѡ҆́блакъ»,
+/// Luke 9:34; data/witnesses.tsv) — while «прꙋ́дъ» and «ко́локолъ» have
+/// no attested accusative anywhere in the pinned texts and keep the
+/// measured default (the consumer's phase prompts already avoid them).
+#[test]
+fn oblak_is_witnessed_inanimate_the_rest_keep_the_measured_default() {
+    assert_eq!(acc("ѡ҆́блакъ"), "ѡ\u{486}\u{301}блакъ");
+    // the measured default, unchanged and documented:
+    assert_eq!(acc("ко́локолъ"), "ко́локола");
+    assert_eq!(acc("прꙋ́дъ"), "прꙋ́да");
+}
+
+// -------------------------------------------------------------------------
+// Class C — data a witness must settle (Part 4)
+// -------------------------------------------------------------------------
+
+/// «ꙗ҆́блонь»: the print attests the -ь nominative (Joel 1:12) and the
+/// FEMININE instrumental «ꙗ҆́блонею» (Song 8:5) — both witnessed — but
+/// NO accusative of this lemma exists anywhere in the pinned texts, so
+/// per the program's own rule the accusative expectation is NOT invented:
+/// it stays rule-served, and the consumer keeps tree names in the
+/// nominative (as its phase-7 prompt already prescribes). Polyakov's
+/// own citation form is the ja-stem «я́блоня», a further reason the -ь
+/// lemma's oblique cells belong to attestation, not to a guess.
+#[test]
+fn jablon_answers_its_witnessed_cells() {
+    assert_eq!(
+        ChurchSlavonic::noun("ꙗ҆́блонь", &Case::Instrumental, &SG, &SYN),
+        "ꙗ\u{486}\u{301}блонею"
+    );
+    assert_eq!(
+        ChurchSlavonic::noun("ꙗ҆́блонь", &Case::Nominative, &SG, &SYN),
+        "ꙗ\u{486}\u{301}блонь"
+    );
+}
+
+// -------------------------------------------------------------------------
+// Part 5 — the audit was wrong: these crate answers are ATTESTED cells
+// and must never "regress" toward the consumer's mistaken expectations.
+// -------------------------------------------------------------------------
+
+#[test]
+fn the_audit_was_wrong_these_are_attested() {
+    // «вожжѝ» / «возжгѝ» / «возжзѝ» — three ATTESTED imperative
+    // spellings of «возжещѝ» across its sense keys (Polyakov). Key
+    // numbers are deterministic but not immutable (lib.rs contract), so
+    // the guard asserts the attested SET, not a numbering.
+    let imperative = |key: &str| {
+        ChurchSlavonic::verb(key, &Person::Second, &SG, &Tense::Present, &Form::Imperative, &SYN)
+    };
+    let spellings = [
+        imperative("возжещѝ"),
+        imperative("возжещѝ_2"),
+        imperative("возжещѝ_3"),
+    ];
+    for attested in ["вожжѝ", "возжгѝ", "возжзѝ"] {
+        assert!(
+            spellings.iter().any(|s| s == attested),
+            "attested imperative {attested} unreachable; got {spellings:?}"
+        );
+    }
+    // «пожа́тъ» — aorist 3sg of «пожа́ти», cells 19/20 attested (the -ѧти
+    // class takes -ѧ́тъ: «прїѧ́тъ»); the bare variant «пожа̀» is the _2
+    // sense.
+    assert_eq!(
+        ChurchSlavonic::verb("пожа́ти", &Person::Third, &SG, &Tense::Aorist, &Form::Finite, &SYN),
+        "пожа́тъ"
+    );
+    assert_eq!(
+        ChurchSlavonic::verb("пожа́ти_2", &Person::Third, &SG, &Tense::Aorist, &Form::Finite, &SYN),
+        "пожа̀"
+    );
+}

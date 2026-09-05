@@ -1,0 +1,224 @@
+//! A form: letters composed with a stress position. The only string a
+//! consumer sees is [`Form::print`], the recension's typography applied
+//! to the two layers — and the analyzer reads that string back through
+//! [`Form::key`].
+//!
+//! `letters` are the recension's canonical alphabet with no combining
+//! marks: for Synodal `а б в г д е ж ѕ з и і й к л м н о п р с т ꙋ ф х ц
+//! ч ш щ ъ ы ь ѣ ю ѧ ꙗ ѯ ѱ ѳ ѵ`, plus a LEXICAL wide `ѡ`/`є` where the
+//! word has one (`ѡ҆́блакъ`, `і҆ѡа́ннъ`); the positional wide letter of a
+//! number-marked cell is never in the letters. `stress` is the 0-based
+//! index of the stressed vowel (`None` for Old Church Slavonic, an
+//! abbreviation under a titlo, or an unaccented query). `number_mark`
+//! says the cell is one the print tells apart from a look-alike singular
+//! (Alypy §6): the last narrow `о`/`е` at or after the stress widens
+//! (`рабѡ́въ`, `а҆́ггєлъ`), a form stressed on its final vowel widens the
+//! last narrow `о`/`е` anywhere (`вѡнѝ`), and a word with no candidate
+//! takes the kamora at the stress instead (`рабы̑`, `сы̑ны`).
+//!
+//! `print` applies, in order: the number mark, the stress mark (oxia
+//! inside the word, varia on a final vowel — [`crate::orthography::stress`]),
+//! the print conventions of [`crate::orthography::realise`] (the psili on an
+//! initial vowel, the initial `ѻ`/`є`, the monosyllable's varia), and the
+//! `ї` rule: an UNSTRESSED non-initial `і` before a vowel or `й` is `ї`
+//! (`лю́дїе`, `сїѧ̑`; the stressed `люді́й`, `сі́и` keep `і`). The rule reads
+//! the stress, which is why stress is placed before typography. A `ї`
+//! before a consonant is lexical (`кївѡ́тъ`) and is whatever the letters
+//! say.
+
+use crate::grammar::Recension;
+use crate::orthography::{
+    self, Unit, comparison_key, is_vowel_letter, join, realise, stressed_vowel_index, strip_marks,
+    units,
+};
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Form {
+    pub letters: String,
+    pub stress: Option<u8>,
+    pub number_mark: bool,
+}
+
+impl Form {
+    pub fn new(letters: impl Into<String>, stress: Option<u8>, number_mark: bool) -> Form {
+        Form { letters: letters.into(), stress, number_mark }
+    }
+
+    /// An unaccented form (Old Church Slavonic, or a titlo lemma).
+    pub fn unaccented(letters: impl Into<String>) -> Form {
+        Form { letters: letters.into(), stress: None, number_mark: false }
+    }
+
+    /// Read a printed form back into its layers: the letters with every
+    /// mark stripped (wide letters kept as printed — the importer decides
+    /// against the class's prediction which are lexical), the stressed
+    /// vowel's index, and `number_mark` when the print wrote a kamora.
+    pub fn from_print(printed: &str) -> Form {
+        let stress = stressed_vowel_index(printed).and_then(|i| u8::try_from(i).ok());
+        let kamora = units(printed)
+            .iter()
+            .any(|u| u.marks.iter().any(|m| matches!(*m, '\u{0311}' | '\u{0302}')));
+        // The positional ї is the rule's, not the letters': un-apply it.
+        let mut letters = units(&strip_marks(printed));
+        let stressed: Vec<bool> = units(printed).iter().map(Unit::has_stress).collect();
+        for i in 1..letters.len() {
+            if letters[i].base == 'ї'
+                && !stressed.get(i).copied().unwrap_or(false)
+                && letters.get(i + 1).is_some_and(|n| is_vowel_letter(n.base) || n.base == 'й')
+            {
+                letters[i].base = 'і';
+            }
+        }
+        Form { letters: join(&letters), stress, number_mark: kamora }
+    }
+
+    /// The accent-blind comparison key (typographic letter pairs folded)
+    /// — the analyzer's index key and the one equality of the library.
+    pub fn key(&self) -> String {
+        comparison_key(&self.letters)
+    }
+
+    /// The printed word in `recension`'s typography.
+    pub fn print(&self, recension: Recension) -> String {
+        match recension {
+            Recension::OldChurchSlavonic => realise(&self.letters, &recension),
+            Recension::Synodal => self.print_synodal(),
+        }
+    }
+
+    fn print_synodal(&self) -> String {
+        let mut out = units(&self.letters);
+        let total = out.iter().filter(|u| u.is_vowel()).count();
+        let target = self.stress.map(usize::from).filter(|t| *t < total);
+        let mut kamora = false;
+        if self.number_mark {
+            let from = match target {
+                Some(t) if t + 1 < total => t,
+                _ => 0,
+            };
+            let mut seen = total;
+            let mut widened = false;
+            for unit in out.iter_mut().rev() {
+                if !unit.is_vowel() {
+                    continue;
+                }
+                seen -= 1;
+                if seen < from {
+                    break;
+                }
+                match unit.base {
+                    'о' => {
+                        unit.base = 'ѡ';
+                        widened = true;
+                        break;
+                    }
+                    'е' => {
+                        unit.base = 'є';
+                        widened = true;
+                        break;
+                    }
+                    _ => {}
+                }
+            }
+            kamora = !widened && target.is_some();
+        }
+        let word = join(&out);
+        let word = match target {
+            Some(t) => orthography::stress(&word, t, kamora),
+            None => word,
+        };
+        let realised = realise(&word, &Recension::Synodal);
+        apply_izhitsa_rule(&realised)
+    }
+}
+
+/// The print's `ї`: an unstressed non-initial `і` before a vowel or `й`.
+fn apply_izhitsa_rule(word: &str) -> String {
+    let mut out: Vec<Unit> = units(word);
+    for i in 1..out.len() {
+        if out[i].base != 'і' || out[i].has_stress() {
+            continue;
+        }
+        let next = out.get(i + 1);
+        if next.is_some_and(|n| is_vowel_letter(n.base) || n.base == 'й') {
+            out[i].base = 'ї';
+        }
+    }
+    join(&out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use unicode_normalization::UnicodeNormalization;
+
+    const SYN: Recension = Recension::Synodal;
+
+    fn nfc(s: &str) -> String {
+        s.nfc().collect()
+    }
+
+    #[test]
+    fn the_worked_example_rab() {
+        // singular
+        assert_eq!(Form::new("рабъ", Some(0), false).print(SYN), nfc("ра́бъ"));
+        assert_eq!(Form::new("раба", Some(1), false).print(SYN), nfc("раба̀"));
+        assert_eq!(Form::new("рабꙋ", Some(1), false).print(SYN), nfc("рабꙋ̀"));
+        assert_eq!(Form::new("рабомъ", Some(1), false).print(SYN), nfc("рабо́мъ"));
+        assert_eq!(Form::new("рабе", Some(0), false).print(SYN), nfc("ра́бе"));
+        // plural: the number mark widens or takes the kamora
+        assert_eq!(Form::new("раби", Some(1), false).print(SYN), nfc("рабѝ"));
+        assert_eq!(Form::new("рабъ", Some(0), true).print(SYN), nfc("ра̑бъ"));
+        assert_eq!(Form::new("рабомъ", Some(1), true).print(SYN), nfc("рабѡ́мъ"));
+        assert_eq!(Form::new("рабы", Some(1), true).print(SYN), nfc("рабы̑"));
+        assert_eq!(Form::new("рабѣхъ", Some(1), false).print(SYN), nfc("рабѣ́хъ"));
+        assert_eq!(Form::new("рабовъ", Some(1), true).print(SYN), nfc("рабѡ́въ"));
+    }
+
+    #[test]
+    fn widening_conventions() {
+        // final-vowel stress widens anywhere
+        assert_eq!(Form::new("вони", Some(1), true).print(SYN), nfc("вѡнѝ"));
+        // an о before a non-final stress stays; the kamora lands instead
+        assert_eq!(Form::new("безпꙋтіѧ", Some(1), true).print(SYN), nfc("безпꙋ̑тїѧ"));
+        // a lexical wide letter is not mark enough
+        assert_eq!(Form::new("аарѡнимъ", Some(2), true).print(SYN), nfc("а҆арѡ̑нимъ"));
+        assert_eq!(Form::new("аггелъ", Some(0), true).print(SYN), nfc("а҆́ггєлъ"));
+    }
+
+    #[test]
+    fn typography_and_the_izhitsa_rule() {
+        assert_eq!(Form::new("отецъ", Some(1), false).print(SYN), nfc("ѻ҆те́цъ"));
+        assert_eq!(Form::new("людіе", Some(0), false).print(SYN), nfc("лю́дїе"));
+        assert_eq!(Form::new("людій", Some(1), false).print(SYN), nfc("люді́й"));
+        assert_eq!(Form::new("сіѧ", Some(1), true).print(SYN), nfc("сїѧ̑"));
+        assert_eq!(Form::new("сіи", Some(0), false).print(SYN), nfc("сі́и"));
+        assert_eq!(Form::new("пріиде", Some(1), false).print(SYN), nfc("прїи́де"));
+        // initial і stays; ї before a consonant is lexical
+        assert_eq!(Form::new("іерей", Some(2), false).print(SYN), nfc("і҆ере́й"));
+        assert_eq!(Form::new("кївотъ", Some(1), false).print(SYN), nfc("кївѡ́тъ").replace('ѡ', "о"));
+        // unaccented: no marks beyond the psili
+        assert_eq!(Form::unaccented("отецъ").print(SYN), nfc("ѻ҆тецъ"));
+        // OCS drops the stress and maps the alphabet
+        assert_eq!(Form::new("рабꙋ", Some(1), false).print(Recension::OldChurchSlavonic), "рабоу");
+    }
+
+    #[test]
+    fn from_print_inverts_print() {
+        for (letters, stress, mark) in [
+            ("рабомъ", Some(1), false),
+            ("рабы", Some(1), true),
+            ("рабѣхъ", Some(1), false),
+            ("людіе", Some(0), false),
+            ("сіѧ", Some(1), true),
+            ("кївотъ", Some(1), false),
+        ] {
+            let form = Form::new(letters, stress, mark);
+            let back = Form::from_print(&form.print(SYN));
+            assert_eq!(back.stress, stress);
+            assert_eq!(back.key(), form.key());
+            assert_eq!(back.letters, form.letters, "{letters}");
+            assert_eq!(back.number_mark, mark && form.print(SYN).contains('\u{311}'));
+        }
+    }
+}

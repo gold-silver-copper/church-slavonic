@@ -1,5 +1,45 @@
 # Changelog
 
+## 2.0.0 (in progress) — the lexicon-first rewrite
+
+Executed from V2-PROMPT.md; the design is docs/DESIGN.md. Each part
+records the three eval numbers (held-out recall, Bible coverage,
+guesser accuracy) — the gates that replace the 1.x 100.00%/0 gate.
+
+### Part 0 — freeze, scaffold, baselines (2026-09-04)
+
+- Tag `v1.2.0-final` at the freeze point. The 1.x crates moved to
+  `legacy/` as `church-slavonic-legacy`, `church-slavonic-core-legacy`,
+  `church-slavonic-syntax-legacy`, `extractor-legacy`, `xtask-legacy`
+  (`cargo xtask-legacy accuracy | check-treebank` are the baseline
+  instruments until Part 5). All legacy suites pass after the rename.
+- New crates: `church-slavonic` (2.0.0-dev; `grammar`, `cell` — typed
+  cells with one canonical name each, `form` — letters + stress +
+  number mark with `print`/`key`/`from_print`, `orthography` ported
+  unchanged except that `ї` is kept as typed and placed by
+  `Form::print`, `lexicon` — the tsv parser and the embedded files,
+  and stubs for `paradigm`, `stress`, `inflect`, `analyze`, `guess`)
+  and `church-slavonic-tools` (`cargo xtask`: the source parsers ported
+  as `sources::{polyakov,alypy,kaikki,ruwiktionary,ud}` — the UD/PROIEL
+  loader onto typed cells — and the treebank ported as
+  `treebank::{sexpr,node,lint,bible,closed,titlo,lift,runner}` with the
+  leaf grammar accepting a lexeme id; the lemma-keyed leaves render
+  through the legacy crate until Part 2).
+- `docs/DESIGN.md` written. `cargo xtask eval` prints the three numbers
+  as `n/a`; `--legacy` runs the legacy harness.
+- `cargo xtask check-treebank` (ported) re-renders all 34,470 verses at
+  zero mismatches.
+
+Baselines (1.2.0, the numbers every later part is gated against):
+
+| Number | 1.2 baseline |
+|---|---|
+| Held-out recall, UD PROIEL dev+test: nouns / adjectives / verbs / pronouns / npron | 92.04 / 83.82 / 85.58 / 99.25 / 93.21 % |
+| Bible treebank (631,946 tokens): analyzed / closed / ambiguous / verbatim | 21.5 / 27.1 / 31.0 / 20.2 % |
+| Bible treebank, analyzed by leaf kind: n / v / pers / pn / adj / lp / part / refl | 57,986 / 49,998 / 13,308 / 9,383 / 2,035 / 1,864 / 804 / 528 tokens |
+| Bible treebank, noun share of all tokens (the Part 2 gate) | 9.18 % (57,986) |
+| Guesser accuracy | not measured in 1.x |
+
 ## 1.2.0 — the Synodal pronoun release
 
 The commonest words of the language render from cells: Synodal

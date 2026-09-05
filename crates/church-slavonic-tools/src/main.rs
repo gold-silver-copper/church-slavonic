@@ -1,0 +1,22 @@
+//! `cargo xtask <command>`:
+//!
+//! - `eval [--legacy]` — the three numbers (held-out recall, Bible
+//!   coverage, guesser accuracy); `--legacy` prints the 1.2 baselines by
+//!   running the legacy harness;
+//! - `build-treebank` / `check-treebank` — the Bible treebank.
+
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let mut args = std::env::args().skip(1);
+    match args.next().as_deref() {
+        Some("eval") => church_slavonic_tools::eval::run(args.collect()),
+        Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
+        Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),
+        Some("-h") | Some("--help") | None => {
+            eprintln!("cargo xtask <eval [--legacy] | build-treebank | check-treebank>");
+            Ok(())
+        }
+        Some(other) => Err(format!("unknown xtask command: {other}").into()),
+    }
+}
