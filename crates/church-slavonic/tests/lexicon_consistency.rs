@@ -9,10 +9,7 @@ use church_slavonic::{Cell, Lexicon, Pos, Recension};
 fn check(lexicon: &Lexicon, recension: Recension) -> Vec<String> {
     let mut problems = Vec::new();
     for lexeme in lexicon.iter() {
-        if lexeme.pos == Pos::Closed {
-            continue;
-        }
-        if lexeme.class().is_none() {
+        if lexeme.pos != Pos::Closed && lexeme.class().is_none() {
             problems.push(format!("{}: unknown class {}", lexeme.id, lexeme.class));
             continue;
         }
@@ -34,16 +31,32 @@ fn check(lexicon: &Lexicon, recension: Recension) -> Vec<String> {
                 }
             }
         }
-        // the nominative singular of a noun is its lemma (or an override)
-        if lexeme.pos == Pos::Noun
-            && !lexeme.note.contains("pl-tantum")
-            && !lexeme.overrides.iter().any(|(c, _)| c.name() == "nom.sg")
-            && let Some(nom) = Cell::parse(Pos::Noun, "nom.sg")
-            && let Some(form) = lexeme.inflect(nom)
+        if lexeme.src.is_empty() {
+            problems.push(format!("{}: no provenance", lexeme.id));
+        }
+        // the citation cell prints the lemma (or an override says otherwise)
+        let citation = match lexeme.pos {
+            Pos::Noun if !lexeme.note.contains("pl-tantum") => Some("nom.sg"),
+            // a possessive's lemma is its short nominative (а҆арѡ́новъ); a
+            // compound's enclitic (пе́рвыйнадесѧть) sits after the long one
+            Pos::Adjective => {
+                let encl = lexeme.stems.iter().find(|(k, _)| k == "encl").map(|(_, v)| v.as_str()).unwrap_or("");
+                let letters = church_slavonic::Form::from_print(&lexeme.lemma).letters;
+                let core = letters.strip_suffix(encl).unwrap_or(&letters);
+                Some(if core.ends_with('й') { "long.pos.m.sg.nom" } else { "short.pos.m.sg.nom" })
+            }
+            Pos::Verb => Some("inf"),
+            Pos::Pronoun if lexeme.class().is_some_and(|c| c.name.starts_with("PA") || c.name.starts_with("PN")) => Some("m.sg.nom"),
+            _ => None,
+        };
+        if let Some(name) = citation
+            && !lexeme.overrides.iter().any(|(c, _)| c.name() == name)
+            && let Some(cell) = Cell::parse(lexeme.pos, name)
+            && let Some(form) = lexeme.inflect(cell)
             && church_slavonic::orthography::comparison_key(&form.print(recension))
                 != church_slavonic::orthography::comparison_key(&lexeme.lemma)
         {
-            problems.push(format!("{}: nom.sg {} is not the lemma {}", lexeme.id, form.print(recension), lexeme.lemma));
+            problems.push(format!("{}: {name} {} is not the lemma {}", lexeme.id, form.print(recension), lexeme.lemma));
         }
     }
     problems
@@ -63,7 +76,9 @@ fn ocs_lexicon_is_consistent() {
 
 #[test]
 fn ids_are_lemma_plus_pos() {
+    let mut seen = std::collections::HashSet::new();
     for lexeme in Lexicon::synodal().iter().chain(Lexicon::ocs().iter()) {
+        assert!(seen.insert((lexeme.id.clone(), Lexicon::synodal().iter().any(|l| std::ptr::eq(l, lexeme)))), "{}: duplicate id", lexeme.id);
         let stem = church_slavonic::Form::from_print(&lexeme.lemma).letters;
         let expected = format!("{stem}.{}", lexeme.pos.tag());
         assert!(

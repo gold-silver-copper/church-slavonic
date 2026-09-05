@@ -15,9 +15,6 @@ path = "src/main.rs"
 
 [dependencies]
 church-slavonic = { workspace = true }
-# TEMPORARY (Part 0–2): the legacy crate renders the lemma-keyed treebank
-# leaves until Part 2 re-lifts the treebank onto lexeme ids. Removed then.
-church-slavonic-legacy = { path = "../../legacy/church-slavonic" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 unicode-normalization = { workspace = true }

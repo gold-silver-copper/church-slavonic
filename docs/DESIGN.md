@@ -31,12 +31,20 @@ kind of knowledge, is testable alone, and never reaches into another.
    ending has no vowel. `None` for Old Church Slavonic and titlo lemmas.
 4. **Typography** (`form::Form::print`). One pure function, in order: the
    number mark (widen the last narrow `о`/`е` at or after the stress, or
-   anywhere when the stress is final; the kamora when nothing widens);
-   the stress mark (oxia inside, varia on a final vowel); the print's
-   conventions (psili on an initial vowel, initial `ѻ`/`є`, the
-   monosyllable's varia); the `ї` rule (an unstressed non-initial `і`
-   before a vowel or `й`). OCS printing drops the stress and maps the
-   alphabet.
+   anywhere when the stress is final, skipping a solid enclitic's vowels
+   — є҆гѡ́же, боѧ́щихсѧ; the kamora when nothing widens); the stress mark
+   (oxia inside, varia on a final vowel); the print's conventions (psili
+   on an initial vowel, initial `ѻ`/`є`, the monosyllable's varia); the
+   `ї` rule (an unstressed non-initial `і` before a vowel or `й`). OCS
+   printing drops the stress and maps the alphabet. Three flags let an
+   ATTESTED print round-trip where its choice is not the rule's:
+   `varia` (a varia where the rule writes an oxia: и҆̀хъ the accusative
+   against и҆́хъ the genitive, ꙗ҆̀же), `kamora` (the kamora where a wide
+   letter was available: своѧ̑ beside свѡѧ̀) and `mark_skip` (the
+   enclitic's vowels). A class-built form leaves them unset and takes
+   the rule; `from_print` sets them from the print, so every override
+   and variant is stored exactly as printed and printed exactly as
+   stored.
 
 There is no fallback ladder. A lexeme is complete by construction: class
 and stress answer every cell its class declares; the rare cell they get
@@ -44,7 +52,10 @@ wrong is an explicit `override` on the line. The only string a consumer
 sees is stage 4's, and the analyzer reads it back to stage 1 plus a cell.
 
 ```rust
-pub struct Form { pub letters: String, pub stress: Option<u8>, pub number_mark: bool }
+pub struct Form {
+    pub letters: String, pub stress: Option<u8>, pub number_mark: bool,
+    pub mark_skip: u8, pub varia: bool, pub kamora: bool,   // the print's own choices
+}
 impl Form {
     pub fn print(&self, recension: Recension) -> String;  // the print
     pub fn key(&self) -> String;                            // the one equality
@@ -136,11 +147,16 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
   vowel, else the last stem vowel; the named paradigms of `stress.tsv`
   (`c` = `S;pl=E`, `d` = `E;pl=S`, as the Part 1 census found them);
   `<name>{cell=S|E|<N>;…}` a paradigm with exceptions, with `sg`/`du`/`pl`
-  accepted as keys for a whole number; `{…}` purely inline. `-` for OCS
-  and titlo lemmas. The mark kind (oxia/varia/kamora) is never stored —
-  stage 4 decides it.
-- **stems**: `name=letters;…` — stems the class cannot derive from the
-  lemma (`obl=`, `pres=`, `aor=`, `pap=` …).
+  accepted as keys for a whole number, and block names (`part`,
+  `short.comp`) for a whole block; `{…}` purely inline. `-` for OCS
+  and titlo lemmas. The mark kind (oxia/varia/kamora) is stage 4's; a
+  stored print form carries its own choice only where it deviates.
+- **stems**: `name=letters;…` — `base=` the base stem where the class's
+  strip rule does not give it (a plurale tantum); `<n>=` a numbered stem
+  of the class read off the attested forms (the present stem, a
+  participle stem); `encl=сѧ|же|жде|ждо|либо` an enclitic the print writes
+  solid after every ending, the jer before it dropped (бои́тсѧ, тогѡ́же,
+  кі́йждо, кто́либо) — the class works on the lemma without it.
 - **overrides**: `cell=printform;…` — full print forms, in the print's
   typography, for cells where class + stress are wrong (a true exception)
   or where the lexeme prefers a non-primary alternative of its class (an
@@ -151,10 +167,14 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
   for a cell, indexed by the analyzer, never returned by `inflect`.
   Spelling variants, source disagreements and minority stresses live
   here, on the lexeme, never as another lexeme.
-- **src**: provenance tokens — `P:<class>` Polyakov, `A:§<n>` Alypy,
-  `R:` ru.wiktionary, `K:` Kaikki, `U:` UD train, `W:<ref>` a witnessed
-  Bible line, `H:` a hand edit (with a `W:` or a note). Import never
-  touches a column of an entry carrying `H:`.
+- **src**: provenance tokens — `P:<class>` Polyakov, `A:<page>` Alypy
+  (`A:p034`; the 1.x pronoun tables' `A:§47`/`A:§48`), `R:`
+  ru.wiktionary, `K:` Kaikki, `U:` UD train, `W:<file>` a witnessed Bible
+  line, `H:` a hand edit (with a `W:` or a note). Import never touches a
+  column of an entry carrying `H:`; a Polyakov re-import keeps the
+  variants and tokens the cross-checking sources added.
+- **note**: free text; `headword <form>` records a source headword the
+  attested citation form replaced (Polyakov's тьма̀ for the print's тма̀).
 
 ### Cell names
 
@@ -184,10 +204,18 @@ same key and ranks exact-print matches first, primaries before variants.
 Ambiguity is returned, never resolved. An unknown surface returns nothing;
 guessing works from lemmas, never from surfaces.
 
-The treebank's analyzed leaves carry the lexeme id and, for a non-primary
-form of the cell, `:alt n` (the index into `forms(cell)`): `(n гадъ.n
-:case acc :num pl :alt 3)` renders гадѡ́въ. A leaf enters a tree only when
-it renders its token back byte-for-byte on its own.
+The treebank's analyzed leaves carry the lexeme id and the cell, spelled
+by the head and its features, and `:alt n` for a non-primary form of the
+cell (the index into `forms(cell)`): `(n гадъ.n :case acc :num pl :alt
+3)` renders гадѡ́въ; `(adj мꙋдрый.a :case nom :num sg :g m :series long)`,
+`(v рещи.v :t aor :p 3 :num sg)`, `(v … :form imp|inf)`, `(lp быти.v :g m
+:num sg)`, `(part творити.v :t pres :voice act :series long :case nom
+:num sg :g m)`, `(pn азъ.pron :p 1 :num sg :case dat :clit yes)`, `(pn
+себе.pron :case dat)`, `(f и.x)` a closed-class lexeme (or `(f и҆)` by its
+surface where several closed lexemes print one word). A leaf enters a
+tree only when it renders its token back byte-for-byte on its own; a
+token with several exact readings stays verbatim with `:amb n`; the
+treebank is rebuilt from the print every time, nothing is carried over.
 
 ## Sources and import
 
@@ -214,9 +242,17 @@ any code change.
    better still.
 4. Match an existing entry by lemma + pos + class; update provenance, add
    variants; never touch an `H:` entry's columns; create an id only when
-   nothing matches.
-5. Flag suspects (nominative ≠ lemma, no stress in an accented source, a
-   paradigm that fits no class) into `quarantine.tsv` with a reason.
+   nothing matches. The cross-checking sources (Alypy, ru.wiktionary,
+   the witnesses) never create a lexeme: `import alypy|ruwiktionary|
+   witnesses --pos <pos>` counts what the lexicon reproduces (the
+   primary), reaches (an alternative or variant) and adds the rest as
+   variants with the source's token; a lemma the lexicon lacks is
+   quarantined.
+5. Flag suspects (no stress in an accented source, a paradigm that fits
+   no class, a class that does not produce the lemma) into
+   `quarantine.tsv` with a reason. A headword whose attested citation
+   form differs is not a suspect: the attested form is the lemma and the
+   headword a note.
 
 | Source | Role |
 |---|---|

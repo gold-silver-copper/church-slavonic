@@ -1,8 +1,496 @@
 # Source entries judged noise, with the reason. Columns: recension pos lemma source reason detail
+syn	a	а҆́нгеловъ	P:A2t	no analysed forms	-
+syn	a	а҆́нгельскій	P:A1k	no analysed forms	-
+syn	a	а҆ддаі́нъ	P:A2t	no analysed forms	-
+syn	a	а҆настасі́инъ	P:A2t	no analysed forms	-
+syn	a	а҆нгелови́дный	P:A1t*	no analysed forms	-
+syn	a	а҆нгелоговѣ́йный	P:A1t*	no analysed forms	-
+syn	a	а҆нгелозра́чный	P:A1t*	no analysed forms	-
+syn	a	а҆нгелоимени́тый	P:A1t	no analysed forms	-
+syn	a	а҆нгелолѣ́пный	P:A1t*	no analysed forms	-
+syn	a	а҆нгеломꙋ́дренный	P:A1n*	no analysed forms	-
+syn	a	а҆нгеломꙋ́дрый	P:A1t	no analysed forms	-
+syn	a	а҆нгелонра́вный	P:A1t*	no analysed forms	-
+syn	a	а҆нгелообра́зный	P:A1t*	no analysed forms	-
+syn	a	а҆нгелоподо́бный	P:A1t*	no analysed forms	-
+syn	a	а҆нгелоподража́тельный	P:A1t*	no analysed forms	-
+syn	a	а҆нгелотво́рный	P:A1t*	no analysed forms	-
+syn	a	а҆по́стольный	P:A1t*	no analysed forms	-
+syn	a	а҆рха́нгеловъ	P:A2t	no analysed forms	-
+syn	a	безми́лостивый	P:A1t	no analysed forms	-
+syn	a	безо́чный	P:A1t*	no analysed forms	-
+syn	a	безопа́сный	P:A1t*	no analysed forms	-
+syn	a	безорꙋ́жный	P:A1t*	no analysed forms	-
+syn	a	безоте́чественный	P:A1n*	no analysed forms	-
+syn	a	безпрее́мственный	P:A1n*	no analysed forms	-
+syn	a	безчле́нный	P:A1t*	no analysed forms	-
+syn	a	безъеле́йный	P:A1t*	no analysed forms	-
+syn	a	безъі́дѡльный	P:A1t*	no analysed forms	-
+syn	a	безъѧзы́чный	P:A1t*	no analysed forms	-
+syn	a	безызвѣ́стный	P:A1t*	no analysed forms	-
+syn	a	безымени́тый	P:A1t	no analysed forms	-
+syn	a	безымѣ́нный	P:A1t*	no analysed forms	-
+syn	a	безысхо́дный	P:A1t*	no analysed forms	-
+syn	a	безысцѣ́льный	P:A1t*	no analysed forms	-
+syn	a	безѡтра́дный	P:A1t*	no analysed forms	-
+syn	a	безꙋтѣ́шный	P:A1t*	no analysed forms	-
+syn	a	благовоздѣ́ланный	P:A1n*	no analysed forms	-
+syn	a	благоволи́тельный	P:A1t*	no analysed forms	-
+syn	a	благовхо́дный	P:A1t*	no analysed forms	-
+syn	a	благовѣ́стный	P:A1t*	no analysed forms	-
+syn	a	благовѣ́щенскій	P:A1k	no analysed forms	-
+syn	a	благовѣствова́нный	P:A1n*	no analysed forms	-
+syn	a	благода́тельный	P:A1t*	no analysed forms	-
+syn	a	благоде́нственный	P:A1n*	no analysed forms	-
+syn	a	благодѣ́йственный	P:A1n*	no analysed forms	-
+syn	a	благозна́тный	P:A1t*	no analysed forms	-
+syn	a	благоключи́мый	P:A1t	no analysed forms	-
+syn	a	благокоре́нный	P:A1n*	no analysed forms	-
+syn	a	благоли́чный	P:A1t*	no analysed forms	-
+syn	a	благоми́лостивый	P:A1t	no analysed forms	-
+syn	a	благомꙋ́дрственный	P:A1n*	no analysed forms	-
+syn	a	благомꙋ́дрый	P:A1t	no analysed forms	-
+syn	a	благомꙋ́жественный	P:A1n*	no analysed forms	-
+syn	a	благонаде́ждный	P:A1t*	no analysed forms	-
+syn	a	благонача́льный	P:A1t*	no analysed forms	-
+syn	a	благооти́шный	P:A1t*	no analysed forms	-
+syn	a	благополе́зный	P:A1t*	no analysed forms	-
+syn	a	благопремѣ́ненный	P:A1n*	no analysed forms	-
+syn	a	благопрехо́дный	P:A1t*	no analysed forms	-
+syn	a	благопривѣ́тный	P:A1t*	no analysed forms	-
+syn	a	благопримири́тельный	P:A1t*	no analysed forms	-
+syn	a	благоразсꙋди́тельный	P:A1t*	no analysed forms	-
+syn	a	благоро́згный	P:A1t*	no analysed forms	-
+syn	a	благосодѣ́ланный	P:A1n*	no analysed forms	-
+syn	a	благоста́вный	P:A1t*	no analysed forms	-
+syn	a	благотече́нный	P:A1n*	no analysed forms	-
+syn	a	благочеловѣ́чный	P:A1t*	no analysed forms	-
+syn	a	благочестивомꙋ́дренный	P:A1n*	no analysed forms	-
+syn	a	благоше́ственный	P:A1n*	no analysed forms	-
+syn	a	благоѕла́чный	P:A1t*	no analysed forms	-
+syn	a	благꙋдо́бный	P:A1t*	no analysed forms	-
+syn	a	благꙋтѣ́шный	P:A1t*	no analysed forms	-
+syn	a	богоблагода́тный	P:A1t*	no analysed forms	-
+syn	a	богоблаже́нный	P:A1n*	no analysed forms	-
+syn	a	богобо́рный	P:A1t*	no analysed forms	-
+syn	a	богобоѧ́зненный	P:A1n*	no analysed forms	-
+syn	a	богобоѧ́знивый	P:A1t	no analysed forms	-
+syn	a	боговдохнове́нный	P:A1n*	no analysed forms	-
+syn	a	богови́дительный	P:A1t*	no analysed forms	-
+syn	a	богови́дный	P:A1t*	no analysed forms	-
+syn	a	богови́дѣтельный	P:A1t*	no analysed forms	-
+syn	a	боговмѣ́стный	P:A1t*	no analysed forms	-
+syn	a	боговмѣсти́мый	P:A1t	no analysed forms	-
+syn	a	боговмѣсти́тельный	P:A1t*	no analysed forms	-
+syn	a	боговнꙋша́емый	P:A1t	no analysed forms	-
+syn	a	боговнꙋши́мый	P:A1t	no analysed forms	-
+syn	a	богово́инственный	P:A1n*	no analysed forms	-
+syn	a	боговожделѣ́нный	P:A1n*	no analysed forms	-
+syn	a	боговоздѣ́ланный	P:A1n*	no analysed forms	-
+syn	a	боговозжже́нный	P:A1n*	no analysed forms	-
+syn	a	боговочеловѣ́чный	P:A1t*	no analysed forms	-
+syn	a	боговоѡбраже́нный	P:A1n*	no analysed forms	-
+syn	a	боговходи́мый	P:A1t	no analysed forms	-
+syn	a	боговѣща́нный	P:A1n*	no analysed forms	-
+syn	a	богогла́сный	P:A1t*	no analysed forms	-
+syn	a	богоглаго́ливый	P:A1t	no analysed forms	-
+syn	a	богода́нный	P:A1n*	no analysed forms	-
+syn	a	богода́рный	P:A1t*	no analysed forms	-
+syn	a	богодарова́нный	P:A1n*	no analysed forms	-
+syn	a	богодви́жимый	P:A1t	no analysed forms	-
+syn	a	богодви́жный	P:A1t*	no analysed forms	-
+syn	a	богодохнове́нный	P:A1n*	no analysed forms	-
+syn	a	богодѣ́йный	P:A1t*	no analysed forms	-
+syn	a	богодѣ́йственный	P:A1n*	no analysed forms	-
+syn	a	богодѣ́льный	P:A1t*	no analysed forms	-
+syn	a	богодѣ́тельный	P:A1t*	no analysed forms	-
+syn	a	богодѣ́ѧнный	P:A1n*	no analysed forms	-
+syn	a	богодѣ́ѧтельный	P:A1t*	no analysed forms	-
+syn	a	богодꙋхнове́нный	P:A1n*	no analysed forms	-
+syn	a	богодꙋхо́вный	P:A1t*	no analysed forms	-
+syn	a	богодꙋхове́нный	P:A1n*	no analysed forms	-
+syn	a	богое́млемый	P:A1t	no analysed forms	-
+syn	a	богожре́нный	P:A1n*	no analysed forms	-
+syn	a	богоза́рный	P:A1t*	no analysed forms	-
+syn	a	богозаповѣ́данный	P:A1n*	no analysed forms	-
+syn	a	богозва́нный	P:A1n*	no analysed forms	-
+syn	a	богозда́нный	P:A1n*	no analysed forms	-
+syn	a	богозна́менный	P:A1t*	no analysed forms	-
+syn	a	богознамени́тый	P:A1t	no analysed forms	-
+syn	a	богозра́чный	P:A1t*	no analysed forms	-
+syn	a	богозри́мый	P:A1t	no analysed forms	-
+syn	a	богозри́тельный	P:A1t*	no analysed forms	-
+syn	a	богоизбра́нный	P:A1n*	no analysed forms	-
+syn	a	богоизліѧ́нный	P:A1n*	no analysed forms	-
+syn	a	богоизрѧ́дный	P:A1t*	no analysed forms	-
+syn	a	богоизѧ́щный	P:A1t*	no analysed forms	-
+syn	a	богоимени́тный	P:A1t*	no analysed forms	-
+syn	a	богоимени́тый	P:A1t	no analysed forms	-
+syn	a	богоистка́нный	P:A1n*	no analysed forms	-
+syn	a	богокова́нный	P:A1n*	no analysed forms	-
+syn	a	богокра́сный	P:A1t*	no analysed forms	-
+syn	a	богокраше́нный	P:A1n*	no analysed forms	-
+syn	a	боголю́бный	P:A1t*	no analysed forms	-
+syn	a	боголѣ́пный	P:A1t*	no analysed forms	-
+syn	a	боголѣ́потный	P:A1t*	no analysed forms	-
+syn	a	боголꙋ́чный	P:A1t*	no analysed forms	-
+syn	a	богома́терній	P:A1j*	no analysed forms	-
+syn	a	богомы́сленный	P:A1n*	no analysed forms	-
+syn	a	богомꙋ́дренный	P:A1n*	no analysed forms	-
+syn	a	богомꙋ́дростный	P:A1t*	no analysed forms	-
+syn	a	богомꙋ́жный	P:A1t*	no analysed forms	-
+syn	a	богонаказа́тельный	P:A1t*	no analysed forms	-
+syn	a	богонапи́санный	P:A1n*	no analysed forms	-
+syn	a	богонарече́нный	P:A1n*	no analysed forms	-
+syn	a	богонасажде́нный	P:A1n*	no analysed forms	-
+syn	a	богонача́льный	P:A1t*	no analysed forms	-
+syn	a	богоначерта́нный	P:A1n*	no analysed forms	-
+syn	a	богонаꙋче́нный	P:A1n*	no analysed forms	-
+syn	a	богоневѣ́стный	P:A1t*	no analysed forms	-
+syn	a	богоненави́стный	P:A1t*	no analysed forms	-
+syn	a	богоно́сный	P:A1t*	no analysed forms	-
+syn	a	богообра́дованный	P:A1n*	no analysed forms	-
+syn	a	богообра́зный	P:A1t*	no analysed forms	-
+syn	a	богооте́ческій	P:A1k	no analysed forms	-
+syn	a	богоотце́вскій	P:A1k	no analysed forms	-
+syn	a	богоплете́нный	P:A1n*	no analysed forms	-
+syn	a	богопо́сланный	P:A1n*	no analysed forms	-
+syn	a	богопобѣ́дный	P:A1t*	no analysed forms	-
+syn	a	богопода́тельный	P:A1t*	no analysed forms	-
+syn	a	богоподо́бный	P:A1t*	no analysed forms	-
+syn	a	богоподража́нный	P:A1n*	no analysed forms	-
+syn	a	богоподража́тельный	P:A1t*	no analysed forms	-
+syn	a	богопоко́рный	P:A1t*	no analysed forms	-
+syn	a	богопокори́вый	P:A1t	no analysed forms	-
+syn	a	богопораже́нный	P:A1n*	no analysed forms	-
+syn	a	богопорꙋче́нный	P:A1n*	no analysed forms	-
+syn	a	богопослꙋ́шный	P:A1t*	no analysed forms	-
+syn	a	богопослꙋшли́вый	P:A1t	no analysed forms	-
+syn	a	богопоста́вленный	P:A1n*	no analysed forms	-
+syn	a	богопости́жный	P:A1t*	no analysed forms	-
+syn	a	богопочте́нный	P:A1n*	no analysed forms	-
+syn	a	богопреда́нный	P:A1n*	no analysed forms	-
+syn	a	богопремꙋ́дрый	P:A1t	no analysed forms	-
+syn	a	богопрера́дованный	P:A1n*	no analysed forms	-
+syn	a	богопринесе́нный	P:A1n*	no analysed forms	-
+syn	a	богопрозѧбе́нный	P:A1n*	no analysed forms	-
+syn	a	богопрозѧбле́нный	P:A1n*	no analysed forms	-
+syn	a	богопроизведе́нный	P:A1n*	no analysed forms	-
+syn	a	богопроповѣ́дный	P:A1t*	no analysed forms	-
+syn	a	богопросвѣще́нный	P:A1n*	no analysed forms	-
+syn	a	богопросла́вленный	P:A1n*	no analysed forms	-
+syn	a	богопрохо́дный	P:A1t*	no analysed forms	-
+syn	a	богопріе́мный	P:A1t*	no analysed forms	-
+syn	a	богопріи́мный	P:A1t*	no analysed forms	-
+syn	a	богопріѧ́тный	P:A1t*	no analysed forms	-
+syn	a	богопѣ́снивый	P:A1t	no analysed forms	-
+syn	a	богопѣ́тый	P:A1t	no analysed forms	-
+syn	a	богора́дованный	P:A1n*	no analysed forms	-
+syn	a	богора́нный	P:A1t*	no analysed forms	-
+syn	a	богора́сленный	P:A1n*	no analysed forms	-
+syn	a	богоразꙋ́мный	P:A1t*	no analysed forms	-
+syn	a	богорасти́тельный	P:A1t*	no analysed forms	-
+syn	a	богоре́бренный	P:A1n*	no analysed forms	-
+syn	a	богоро́дицынъ	P:A2t	no analysed forms	-
+syn	a	богоро́дичный	P:A1t*	no analysed forms	-
+syn	a	богоро́дичій	P:A1s	no analysed forms	-
+syn	a	богоро́сный	P:A1t*	no analysed forms	-
+syn	a	богорѣ́чивый	P:A1t	no analysed forms	-
+syn	a	богоса́дный	P:A1t*	no analysed forms	-
+syn	a	богосажде́нный	P:A1n*	no analysed forms	-
+syn	a	богосвѣ́тлый	P:A1t	no analysed forms	-
+syn	a	богосказа́нный	P:A1n*	no analysed forms	-
+syn	a	богосла́вный	P:A1t*	no analysed forms	-
+syn	a	богосло́вовъ	P:A2t	no analysed forms	-
+syn	a	богосло́вскій	P:A1k	no analysed forms	-
+syn	a	богослове́сный	P:A1t*	no analysed forms	-
+syn	a	богособра́нный	P:A1n*	no analysed forms	-
+syn	a	богосодѣ́тельный	P:A1t*	no analysed forms	-
+syn	a	богосочета́нный	P:A1n*	no analysed forms	-
+syn	a	богосоѡрꙋже́нный	P:A1n*	no analysed forms	-
+syn	a	богоспаса́емый	P:A1t	no analysed forms	-
+syn	a	богострего́мый	P:A1t	no analysed forms	-
+syn	a	богосіѧ́нный	P:A1n*	no analysed forms	-
+syn	a	богосіѧ́тельный	P:A1t*	no analysed forms	-
+syn	a	богосꙋ́дный	P:A1t*	no analysed forms	-
+syn	a	боготво́рный	P:A1t*	no analysed forms	-
+syn	a	боготка́нный	P:A1n*	no analysed forms	-
+syn	a	боготѣле́сный	P:A1t*	no analysed forms	-
+syn	a	богохва́льный	P:A1t*	no analysed forms	-
+syn	a	богохо́дный	P:A1t*	no analysed forms	-
+syn	a	богохрани́мый	P:A1t	no analysed forms	-
+syn	a	богоче́стный	P:A1t*	no analysed forms	-
+syn	a	богочеловѣ́ческій	P:A1k	no analysed forms	-
+syn	a	богочеловѣ́чный	P:A1t*	no analysed forms	-
+syn	a	богочерта́нный	P:A1n*	no analysed forms	-
+syn	a	богочести́вый	P:A1t	no analysed forms	-
+syn	a	богоше́ственный	P:A1n*	no analysed forms	-
+syn	a	богоѡсвѧще́нный	P:A1n*	no analysed forms	-
+syn	a	богоѡткрове́нный	P:A1n*	no analysed forms	-
+syn	a	богоѧ́звенный	P:A1n*	no analysed forms	-
+syn	a	богоѧвле́нный	P:A1n*	no analysed forms	-
+syn	a	богоѧвле́нскій	P:A1k	no analysed forms	-
+syn	a	богоѵпоста́сный	P:A1t*	no analysed forms	-
+syn	a	богꙋ́мный	P:A1t*	no analysed forms	-
+syn	a	богꙋбі́йственный	P:A1n*	no analysed forms	-
+syn	a	богꙋвѣ́тливый	P:A1t	no analysed forms	-
+syn	a	богꙋкраше́нный	P:A1n*	no analysed forms	-
+syn	a	богꙋкрѣпле́нный	P:A1n*	no analysed forms	-
+syn	a	богꙋстро́енный	P:A1n*	no analysed forms	-
+syn	a	богꙋтвержде́нный	P:A1n*	no analysed forms	-
+syn	a	богꙋче́нный	P:A1n*	no analysed forms	-
+syn	a	богꙋчрежде́нный	P:A1n*	no analysed forms	-
+syn	a	бѣли́льничій	P:A1s	class does not produce the lemma	бѣли́лничїй
+syn	a	бꙋесло́вный	P:A1t*	no analysed forms	-
+syn	a	вельбꙋ́ждь	P:A2j	no analysed forms	-
+syn	a	влады́ческій	P:A1k	no analysed forms	-
+syn	a	внѧ́тельный	P:A1t*	class does not produce the lemma	внѧ́телный
+syn	a	волꙋ́ій	P:A1a	class not in the inventory	A1a
+syn	a	воронцо́въ	P:A2t	no analysed forms	-
+syn	a	вреди́тельный	P:A1t*	class does not produce the lemma	вреди́телный
+syn	a	всеблагово́нный	P:A1t*	no analysed forms	-
+syn	a	всеблагомо́щный	P:A1t*	no analysed forms	-
+syn	a	всеблагопріѧ́тный	P:A1t*	no analysed forms	-
+syn	a	всебоже́ственный	P:A1n*	no analysed forms	-
+syn	a	всевлады́чній	P:A1j*	no analysed forms	-
+syn	a	всепреблагі́й	P:A1g	no analysed forms	-
+syn	a	всепреподо́бный	P:A1t*	no analysed forms	-
+syn	a	всеца́рствꙋющій	P:A1s	no analysed forms	-
+syn	a	вторыйна́десѧть	P:	no class in the source	-
+syn	a	вы́ше	P:	no class in the source	-
+syn	a	высокоца́рствꙋющій	P:A1s	no analysed forms	-
+syn	a	вышенебе́сный	P:A1t*	no analysed forms	-
+syn	a	вѣ́тренній	P:A1j*	class does not produce the lemma	вѣ́тренїй
+syn	a	геннисаре́тскій	P:A1k	class does not produce the lemma	генисаре́тскїй
+syn	a	го́рькій	P:A1k*	no analysed forms	-
+syn	a	господонача́льный	P:A1t*	no analysed forms	-
+syn	a	даві́довскій	P:A1k	no analysed forms	-
+syn	a	дванадесѧтилѣ́тній	P:A1j*/A1t*	class does not produce the lemma	дванадесѧтилѣ́тный
+syn	a	доброжела́тельный	P:A1t*	class does not produce the lemma	доброжела́телный
+syn	a	добрꙋчи́тельный	P:A1t*	class does not produce the lemma	добрꙋчи́телный
+syn	a	достойнобоже́ственный	P:A1n*	no analysed forms	-
+syn	a	дрꙋгі́й	P:A1g	no analysed forms	-
+syn	a	дѣ́льный	P:A1t*	class does not produce the lemma	дѣ́лный
+syn	a	дꙋховномꙋ́дрый	P:A1t	no analysed forms	-
+syn	a	дꙋхоглаго́ливый	P:A1t	no analysed forms	-
+syn	a	дꙋхонасыще́нный	P:A1n*	no analysed forms	-
+syn	a	дꙋшетлѣ́нный	P:A1t*	no analysed forms	-
+syn	a	жерцо́въ	P:A2t	no analysed forms	-
+syn	a	жꙋ́пельный	P:A1t*	class does not produce the lemma	жꙋ́пелный
+syn	a	земледѣ́левъ	P:A2t	no analysed forms	-
+syn	a	знаменозри́тельный	P:A1t*	no analysed forms	-
+syn	a	и҆збра́нный	P:A1n*	no analysed forms	-
+syn	a	и҆звѣсти́тельный	P:A1t*	class does not produce the lemma	и҆звѣсти́телный
+syn	a	и҆звѣщава́тельный	P:A1t*	class does not produce the lemma	и҆звѣщава́телный
+syn	a	и҆зли́шній	P:A1j*	no analysed forms	-
+syn	a	и҆знꙋри́тельный	P:A1t*	class does not produce the lemma	и҆знꙋри́телный
+syn	a	и҆зъѧви́тельный	P:A1t*	no analysed forms	-
+syn	a	и҆зъѧсни́тельный	P:A1t*	no analysed forms	-
+syn	a	и҆зѡбрази́тельный	P:A1t*	no analysed forms	-
+syn	a	и҆зѡбрѣта́тельный	P:A1t*	no analysed forms	-
+syn	a	ко́рмный	P:A1t*	no analysed forms	-
+syn	a	конориста́тельный	P:A1t*	class does not produce the lemma	конориста́телный
+syn	a	кора́бленный	P:A1n*	class does not produce the lemma	кора́бленый
+syn	a	корабе́льный	P:A1t*	class does not produce the lemma	корабе́лный
+syn	a	кото́рый+ждо	P:A1t	attested citation form differs from the lemma	кото́рыйждо
+syn	a	крестобогоро́дичный	P:A1t*	no analysed forms	-
+syn	a	крестовоскре́сный	P:A1t*	no analysed forms	-
+syn	a	крестоѧвле́нный	P:A1n*	no analysed forms	-
+syn	a	кровора́дꙋющійсѧ	P:A1s	class does not produce the lemma	кровора́дꙋющїйїй
+syn	a	любоблагі́й	P:A1g	no analysed forms	-
+syn	a	любобоже́ственный	P:A1n*	no analysed forms	-
+syn	a	любомꙋ́дренный	P:A1n*	class does not produce the lemma	любомꙋ́дреный
+syn	a	мадіавꙋ́нь	P:N41	class of another part of speech	N41
+syn	a	махма́сскій	P:A1k	class does not produce the lemma	махма́скїй
+syn	a	ме́лкій	P:A1k	class does not produce the lemma	мѣ́лкїй
+syn	a	многовреди́тельный	P:A1t*	class does not produce the lemma	многовреди́телный
+syn	a	многоиждиви́тельный	P:A1t*	class does not produce the lemma	многоиждиви́телный
+syn	a	многокленꙋ́щійсѧ	P:A1s	class does not produce the lemma	многокленꙋ́щїйїй
+syn	a	многомо́щій	P:A1s	no analysed forms	-
+syn	a	многомꙋ́чивыйсѧ	P:A1s	class does not produce the lemma	многомꙋ́чивыйїй
+syn	a	многопекꙋ́щійсѧ	P:A1s	class does not produce the lemma	многопекꙋ́щїйїй
+syn	a	многопогреба́тельный	P:A1t*	class does not produce the lemma	многопогреба́телный
+syn	a	мѵроизліѧ́нный	P:A1n*	class does not produce the lemma	міроизлїѧ́нный
+syn	a	мꙋсі́нъ	P:N1t	class of another part of speech	N1t
+syn	a	на́десѧть	P:	no class in the source	-
+syn	a	напресто́льный	P:A1t*	no analysed forms	-
+syn	a	небезѡбра́зный	P:A1t*	no analysed forms	-
+syn	a	небесоподража́тельный	P:A1t*	no analysed forms	-
+syn	a	неблагода́тный	P:A1t*	no analysed forms	-
+syn	a	неблагослове́нный	P:A1n*	no analysed forms	-
+syn	a	неблагꙋ́мный	P:A1t*	no analysed forms	-
+syn	a	небогобоѧ́зливый	P:A1t	no analysed forms	-
+syn	a	небогобоѧ́зненный	P:A1n*	no analysed forms	-
+syn	a	небогро́мный	P:A1t*	no analysed forms	-
+syn	a	небодосѧ́жꙋщій	P:A1s	no analysed forms	-
+syn	a	небомы́сленный	P:A1n*	no analysed forms	-
+syn	a	небопи́санный	P:A1n*	no analysed forms	-
+syn	a	небоплете́нный	P:A1n*	no analysed forms	-
+syn	a	небоподо́бный	P:A1t*	no analysed forms	-
+syn	a	небохо́дный	P:A1t*	no analysed forms	-
+syn	a	неизсѧкнове́нный	P:A1n*	no analysed forms	-
+syn	a	неизъе́млемый	P:A1t	no analysed forms	-
+syn	a	неизъѧсни́мый	P:A1t	no analysed forms	-
+syn	a	неизѡбраже́нный	P:A1n*	no analysed forms	-
+syn	a	неклѧтвохрани́тельный	P:A1t*	class does not produce the lemma	неклѧтвохрани́телный
+syn	a	нелюбопри́тельный	P:A1t*	class does not produce the lemma	нелюбопри́телный
+syn	a	неме́рзкій	P:A1k*	class does not produce the lemma	неме́рзскїй
+syn	a	немерца́ющійсѧ	P:A1s	class does not produce the lemma	немерца́ющїйїй
+syn	a	ненаде́ждный	P:A1t*	class does not produce the lemma	ненадѣ́ждный
+syn	a	неназна́менанный	P:A1n*	class does not produce the lemma	неназна́менаный
+syn	a	неповинꙋ́ющійсѧ	P:	no class in the source	-
+syn	a	непотопле́нный	P:A1n*	class does not produce the lemma	непотопле́ный
+syn	a	нерастлѣ́нный	P:A1n*	class does not produce the lemma	нерастлѣ́ный
+syn	a	несмѣ́шенный	P:A1n*	class does not produce the lemma	несмѣ́шеный
+syn	a	несогласꙋ́ющійсѧ	P:	no class in the source	-
+syn	a	нестарѣ́ющійсѧ	P:	no class in the source	-
+syn	a	несѣ́ченный	P:A1n*	class does not produce the lemma	несѣ́ченый
+syn	a	неча́ѧнный	P:A1n*	class does not produce the lemma	неча́енный
+syn	a	неѡбъе́млемый	P:A1t	no analysed forms	-
+syn	a	неѡбъѧ́тный	P:A1t*	no analysed forms	-
+syn	a	неѡбъѧ́тый	P:A1t	no analysed forms	-
+syn	a	неѡсвѧще́нный	P:A1n*	no analysed forms	-
+syn	a	неꙋглажденный	P:A1n*	no analysed forms	-
+syn	a	неꙋдоборѣши́тельный	P:A1t*	class does not produce the lemma	неꙋдоборѣши́телный
+syn	a	новомѣ́сѧчный	P:A1t*	no analysed forms	-
+syn	a	новосмѣше́нный	P:A1n*	class does not produce the lemma	новосмѣше́ный
+syn	a	нощеборю́щійсѧ	P:	no class in the source	-
+syn	a	оу҆́ншій	P:	no class in the source	-
+syn	a	оу҆вѣща́тельный	P:A1t*	class does not produce the lemma	оу҆вѣща́телный
+syn	a	оу҆го́льный	P:A1t*	class does not produce the lemma	оу҆го́лный
+syn	a	оу҆диви́тельный	P:A1t*	class does not produce the lemma	оу҆диви́телный
+syn	a	оу҆добоѡтъе́млемый	P:A1t	class does not produce the lemma	оу҆добоѿе́млемый
+syn	a	оу҆мѣ́тельный	P:A1t*	class does not produce the lemma	оу҆мѣ́телный
+syn	a	оу҆стреми́тельный	P:A1t*	class does not produce the lemma	оу҆стреми́телный
+syn	a	первосвѧти́тельскій	P:A1k	no analysed forms	-
+syn	a	первосвѧты́й	P:A1t	no analysed forms	-
+syn	a	пла́вательный	P:A1t*	class does not produce the lemma	пла́вателный
+syn	a	погорбле́нный	P:A1n*	class does not produce the lemma	погорбле́ный
+syn	a	подви́женный	P:A1n*	class does not produce the lemma	подви́женый
+syn	a	подозри́тельный	P:A1t*	class does not produce the lemma	подозри́телный
+syn	a	подъѧбло́нный	P:A1t*	no analysed forms	-
+syn	a	подъѧре́мничій	P:A1s	no analysed forms	-
+syn	a	подъѧре́мный	P:A1t*	no analysed forms	-
+syn	a	пои́льный	P:A1t*	class does not produce the lemma	пои́лный
+syn	a	пома́зательный	P:A1t*	class does not produce the lemma	пома́зателный
+syn	a	потре́бный	P:A1t*	no analysed forms	-
+syn	a	праведнодви́жимый	P:A1t	no analysed forms	-
+syn	a	прароди́тельскій	P:A1k	class does not produce the lemma	прароди́телскїй
+syn	a	пребоже́ственный	P:A1n*	no analysed forms	-
+syn	a	предолта́рный	P:A1t*	no analysed forms	-
+syn	a	предызѧ́щный	P:A1t*	no analysed forms	-
+syn	a	предѡби́димый	P:A1t	no analysed forms	-
+syn	a	предѡсвѧще́нный	P:A1n*	no analysed forms	-
+syn	a	предѡтме́тный	P:A1t*	no analysed forms	-
+syn	a	предѡчисти́тельный	P:A1t*	no analysed forms	-
+syn	a	предꙋсмотри́тельный	P:A1t*	no analysed forms	-
+syn	a	преждесконча́вшійсѧ	P:	no class in the source	-
+syn	a	преждеѡбъѧ́вленный	P:A1n*	no analysed forms	-
+syn	a	презъесте́ственный	P:A1n*	no analysed forms	-
+syn	a	премилосе́рдный	P:A1t*	no analysed forms	-
+syn	a	премѣрный	P:A1t*	class does not produce the lemma	премерный
+syn	a	преподобномꙋ́дрый	P:A1t	no analysed forms	-
+syn	a	препрѣ́тельный	P:A1t*	class does not produce the lemma	препрѣ́телный
+syn	a	пресе́льный	P:A1t*	class does not produce the lemma	пресе́лный
+syn	a	преꙋдиви́тельный	P:A1t*	class does not produce the lemma	преꙋдиви́телный
+syn	a	приболѣ́зненный	P:A1n*	no analysed forms	-
+syn	a	присе́льничій	P:A1s	class does not produce the lemma	присе́лничїй
+syn	a	присноблагода́тный	P:A1t*	no analysed forms	-
+syn	a	присноисточа́ющійсѧ	P:	no class in the source	-
+syn	a	приснополꙋча́ющійсѧ	P:	no class in the source	-
+syn	a	присносвѧще́нный	P:A1n*	no analysed forms	-
+syn	a	прише́льчій	P:A1s	class does not produce the lemma	прише́лчїй
+syn	a	приꙋмири́тельный	P:A1t*	class does not produce the lemma	приꙋмири́телный
+syn	a	проси́тельный	P:A1t*	class does not produce the lemma	проси́телный
+syn	a	проч̑	P:	no class in the source	-
+syn	a	піѧ́нливый	P:A1t	no analysed forms	-
+syn	a	пѣшемореходѧ́щій	P:A1s	class does not produce the lemma	пѣшомореходѧ́щїй
+syn	a	ра́дъ	P:A1t	class does not produce the lemma	ра́ый
+syn	a	равноа́ггельный	P:A1t*	no analysed forms	-
+syn	a	равноа́ггельскій	P:A1k	no analysed forms	-
+syn	a	равноапо́стольскій	P:A1k	no analysed forms	-
+syn	a	равнобоже́ственный	P:A1n*	no analysed forms	-
+syn	a	са́ввинъ	P:N1t	class of another part of speech	N1t
+syn	a	самоблагі́й	P:A1g	no analysed forms	-
+syn	a	свобо́дь	P:0	class not in the inventory	0
+syn	a	свѧтоаѳѡ́нскій	P:A1k	no analysed forms	-
+syn	a	свѧтоиліи́нскій	P:A1k	no analysed forms	-
+syn	a	свѧтоимени́тый	P:A1t	no analysed forms	-
+syn	a	свѧтооте́ческій	P:A1k	no analysed forms	-
+syn	a	свѧтопе́рвый	P:A1t	no analysed forms	-
+syn	a	свѧтопервочи́стый	P:A1t	no analysed forms	-
+syn	a	свѧторазꙋ́мный	P:A1t*	no analysed forms	-
+syn	a	свѧторо́дный	P:A1t*	no analysed forms	-
+syn	a	свѧтосіѧ́тельный	P:A1t*	no analysed forms	-
+syn	a	свѧтоѧвле́нный	P:A1n*	no analysed forms	-
+syn	a	свѧщенноблаже́нный	P:A1n*	no analysed forms	-
+syn	a	свѧщеннобоже́ственный	P:A1n*	no analysed forms	-
+syn	a	свѧщеннодѣ́йствительный	P:A1t*	no analysed forms	-
+syn	a	свѧщеннодѣ́тельный	P:A1t*	no analysed forms	-
+syn	a	свѧщеннодꙋ́шный	P:A1t*	no analysed forms	-
+syn	a	свѧщенноиме́нный	P:A1n*	no analysed forms	-
+syn	a	свѧщенноимени́тый	P:A1t	no analysed forms	-
+syn	a	свѧщеннора́достный	P:A1t*	no analysed forms	-
+syn	a	свѧщенноѡбра́зный	P:A1t*	no analysed forms	-
+syn	a	скверностѧжа́тельный	P:A1t*	class does not produce the lemma	скверностѧжа́телный
+syn	a	скотопита́тельный	P:A1t*	class does not produce the lemma	скотопита́телный
+syn	a	снизходи́тельный	P:A1t*	class does not produce the lemma	снисходи́тельный
+syn	a	сопредѣ́льный	P:A1t*	class does not produce the lemma	сопредѣ́лный
+syn	a	сошве́нный	P:A1n*	class does not produce the lemma	сошве́ный
+syn	a	соѡбъѧ́тый	P:A1t	no analysed forms	-
+syn	a	средизе́мный	P:A1t*	no analysed forms	-
+syn	a	стороже́вскій	P:A1k	class does not produce the lemma	стороже́нскїй
+syn	a	страстоно́сный	P:A1t*	no analysed forms	-
+syn	a	сѡфа́нинъ	P:N1in	class of another part of speech	N1in
+syn	a	сꙋббѡ́тный	P:A1t*/A1j*	no analysed forms	-
+syn	a	таковы́й+же	P:A1t	class does not produce the lemma	таковы́й+ый
+syn	a	таковы́й+то	P:A1t	attested citation form differs from the lemma	таковы́йто
+syn	a	те́льчный	P:A1t*	class does not produce the lemma	те́лчный
+syn	a	толи́къ+жде	P:	no class in the source	-
+syn	a	трегꙋби́тельный	P:A1t*	class does not produce the lemma	трегꙋби́телный
+syn	a	треснови́тъ	P:N1t	class of another part of speech	N1t
+syn	a	тривесе́льный	P:A1t*	class does not produce the lemma	тривесе́лный
+syn	a	трилѣ́тный	P:A1t*/A1j*	class does not produce the lemma	трилѣ́тнїй
+syn	a	тщепогреба́льный	P:A1t*	class does not produce the lemma	тщепогреба́лный
+syn	a	фанꙋи́льскій	P:A1k	class does not produce the lemma	фанꙋи́лскїй
+syn	a	хвалебноблагода́рственный	P:A1n*	no analysed forms	-
+syn	a	хрістоиме́нный	P:A1n*	no analysed forms	-
+syn	a	хрістоимени́тный	P:A1t*	no analysed forms	-
+syn	a	хрістокра́сный	P:A1t*	no analysed forms	-
+syn	a	хрістолю́бный	P:A1t*	no analysed forms	-
+syn	a	хрістоненави́стный	P:A1t*	no analysed forms	-
+syn	a	хрістоно́сный	P:A1t*	no analysed forms	-
+syn	a	хрістоподо́бный	P:A1t*	no analysed forms	-
+syn	a	хрістоподража́тельный	P:A1t*	no analysed forms	-
+syn	a	хрістопослѣ́довательный	P:A1t*	no analysed forms	-
+syn	a	хрістосла́вный	P:A1t*	no analysed forms	-
+syn	a	ца́рскій+же	P:A1k	no analysed forms	-
+syn	a	человѣкодѣ́льный	P:A1t*	no analysed forms	-
+syn	a	четвертыйна́десѧть	P:	no class in the source	-
+syn	a	чревоѡбъѧ́стный	P:A1t*	no analysed forms	-
+syn	a	є҆гѵ́птѧниновъ	P:A2t	no analysed forms	-
+syn	a	є҆динобоже́ственный	P:A1n*	no analysed forms	-
+syn	a	є҆смѵрнісме́ный	P:	no class in the source	-
+syn	a	є҆стественножи́зненный	P:A1n*	class does not produce the lemma	є҆стественожи́зненный
+syn	a	є҆ѵа́нгельскій	P:A1k	class does not produce the lemma	є҆ѵа́ггельскїй
+syn	a	ѕловре́дный	P:A1t*	class does not produce the lemma	ѕловрѣ́дный
+syn	a	ѕміи́ный	P:A1t	class does not produce the lemma	ѕмѣи́ный
+syn	a	і҆зра́ильскій	P:A1k	no analysed forms	-
+syn	a	і҆зра́ильтескій	P:A1k	no analysed forms	-
+syn	a	ѡ҆бъѧ́тный	P:A1t*	no analysed forms	-
+syn	a	ѡ҆бꙋморе́нный	P:A1n*	no analysed forms	-
+syn	a	ѡ҆дꙋхновле́нный	P:A1n*	no analysed forms	-
+syn	a	ѵ҆ссо́пный	P:A1t*	class does not produce the lemma	и҆со́пный
+syn	a	ѻ҆́тчеисходный	P:A1t*	no analysed forms	-
+syn	a	ѻ҆бо́й	P:PA2a	class of another part of speech	PA2a
+syn	a	ѻ҆гнедыха́тельный	P:A1t*	class does not produce the lemma	ѻ҆гнедыха́телный
+syn	a	ѻ҆тчерожде́нный	P:A1n*	no analysed forms	-
+syn	a	ѻ҆тчеси́льный	P:A1t*	no analysed forms	-
+syn	a	ꙗ҆ковы́й+же	P:A1t	class does not produce the lemma	ꙗ҆ковы́й+ый
+syn	a	ꙗ҆ковы́й+либо	P:A1t	class does not produce the lemma	ꙗ҆ковы́й+лиый
 syn	n	а҆ва̀	P:0	no analysed forms	-
 syn	n	а҆вденагѡ̀	P:0	no analysed forms	-
 syn	n	а҆велвеѳмааха̀	P:0	no analysed forms	-
-syn	n	а҆вессалѡ́мъ	P:N1t	attested nominative differs from the lemma	а҆весало́мъ
 syn	n	а҆ггѐ	P:0	no analysed forms	-
 syn	n	а҆дамі̀	P:0	no analysed forms	-
 syn	n	а҆дамѝ	P:0	no analysed forms	-
@@ -17,7 +505,6 @@ syn	n	а҆лꙋ́а	P:N3e	no analysed forms	-
 syn	n	а҆маза́и	P:N1e	no analysed forms	-
 syn	n	а҆мали́къ	P:N1k	no analysed forms	-
 syn	n	а҆масі̀	P:0	no analysed forms	-
-syn	n	а҆ммѡрі́а	P:N3e	attested nominative differs from the lemma	а҆мѡрі́а
 syn	n	а҆мрѝ	P:0	no analysed forms	-
 syn	n	а҆мѡрѐ	P:0	no analysed forms	-
 syn	n	а҆ннꙋа̀	P:0	no analysed forms	-
@@ -28,7 +515,6 @@ syn	n	а҆пѳѡ̀	P:0	no analysed forms	-
 syn	n	а҆ратѝ	P:0	no analysed forms	-
 syn	n	а҆рво̀	P:0	no analysed forms	-
 syn	n	а҆рмѐ	P:0	no analysed forms	-
-syn	n	а҆рха́нгелъ	P:N1t	attested nominative differs from the lemma	а҆рха́ггелъ
 syn	n	а҆сараі̀	P:N1e	no analysed forms	-
 syn	n	а҆свѝ	P:0	no analysed forms	-
 syn	n	а҆фні̀	P:0	no analysed forms	-
@@ -149,39 +635,28 @@ syn	n	богꙋгожде́ніе	P:N2i	no analysed forms	-
 syn	n	богꙋче́ніе	P:N2i	no analysed forms	-
 syn	n	боже́ственность	P:N41	no analysed forms	-
 syn	n	бѣле́цъ	P:N1c	no analysed forms	-
-syn	n	бѣли́льникъ	P:N1k	attested nominative differs from the lemma	бѣли́лникъ
 syn	n	валаа́й	P:0	no analysed forms	-
 syn	n	варнѝ	P:0	no analysed forms	-
 syn	n	васіле́къ	P:N1k	class does not produce the lemma	васі́лкъ
 syn	n	ватнѐ	P:0	no analysed forms	-
 syn	n	вдꙋнове́ніе	P:N2i	no analysed forms	-
 syn	n	велгаі̀	P:N1e	no analysed forms	-
-syn	n	вельблю́дъ	P:N1t	attested nominative differs from the lemma	велблю́дъ
 syn	n	вельблꙋ́дъ	P:N1t	class does not produce the lemma	велблꙋ́дъ
-syn	n	вене́й#	P:N1e	attested nominative differs from the lemma	вене́й
 syn	n	веѳагла̀	P:0	no analysed forms	-
 syn	n	веѳана́хъ	P:N1g	no analysed forms	-
 syn	n	виваа̀	P:N3a	class does not produce the lemma	виваѧ̀
-syn	n	вирсаве́а	P:N3e	attested nominative differs from the lemma	вирсаве́е
 syn	n	вирсавеѐ	P:N1e	no analysed forms	-
-syn	n	виссаріѡ́нъ	P:N1t	attested nominative differs from the lemma	висаріѡ́нъ
-syn	n	вита́льница	P:N3c	attested nominative differs from the lemma	вита́лница
 syn	n	виѳагла̀	P:0	no analysed forms	-
-syn	n	военача́льникъ	P:N1k	attested nominative differs from the lemma	военача́лникъ
-syn	n	вождонача́льникъ	P:N1k	attested nominative differs from the lemma	вождонача́лникъ
 syn	n	возлива́льница	P:N3c	class does not produce the lemma	возлива́лница
-syn	n	возста́ніе	P:N2i	attested nominative differs from the lemma	воста́ніе
 syn	n	возъѧвле́ніе	P:N2i	no analysed forms	-
 syn	n	возѡбнови́тель	P:N1j	no analysed forms	-
 syn	n	возѡбновле́ніе	P:N2i	no analysed forms	-
 syn	n	возѡбраже́ніе	P:N2i	no analysed forms	-
 syn	n	возѡчище́ніе	P:N2i	no analysed forms	-
 syn	n	возꙋстрое́ніе	P:N2i	no analysed forms	-
-syn	n	воспоставле́ніе	P:N2i	attested nominative differs from the lemma	возпоставле́ніе
-syn	n	восше́ствіе	P:N2i	attested nominative differs from the lemma	возше́ствіе
 syn	n	врѵе́на	P:N3t	no analysed forms	-
 syn	n	врꙋцѣлѣ́то	P:0	no analysed forms	-
-syn	n	вселе́ннаѧ	P:A1n*	adjectival class on a noun entry (Part 3)	A1n*
+syn	n	вселе́ннаѧ	P:A1n*	class of another part of speech	A1n*
 syn	n	въѧвле́ніе	P:N2i	no analysed forms	-
 syn	n	вѣ́ди	P:0	no analysed forms	-
 syn	n	га́дъ	P:N1t	no analysed forms	-
@@ -191,10 +666,7 @@ syn	n	гавлі̀	P:0	no analysed forms	-
 syn	n	гадді̀	P:0	no analysed forms	-
 syn	n	газе́й	P:N1e	no analysed forms	-
 syn	n	гесꙋрі̀	P:0	no analysed forms	-
-syn	n	геѳсима́ніа	P:N3e	attested nominative differs from the lemma	геѳсіманѝ
-syn	n	гилѧре́вскій	P:A1k	adjectival class on a noun entry (Part 3)	A1k
-syn	n	го́рличищь	P:N1sj	attested nominative differs from the lemma	го́рличищъ
-syn	n	горѣ́ніе	P:N2i	attested nominative differs from the lemma	горе́ніе
+syn	n	гилѧре́вскій	P:A1k	class of another part of speech	A1k
 syn	n	господонача́льникъ	P:N1k	no analysed forms	-
 syn	n	господонача́ліе	P:N2i	no analysed forms	-
 syn	n	господороди́тельница	P:N3c	no analysed forms	-
@@ -204,7 +676,6 @@ syn	n	гѡѵ́ні	P:0	no analysed forms	-
 syn	n	дама́скинъ	P:N1in	no analysed forms	-
 syn	n	дельфи́нъ	P:N1t	class does not produce the lemma	делфі́нъ
 syn	n	до́лгъ	P:N1g	no analysed forms	-
-syn	n	дово́льствіе	P:N2i	attested nominative differs from the lemma	дово́лствіе
 syn	n	домозда́тель	P:N1j	no analysed forms	-
 syn	n	дрꙋ́гъ	P:N1g	no analysed forms	-
 syn	n	дімѡна̀	P:0	no analysed forms	-
@@ -214,8 +685,7 @@ syn	n	занѡ̀	P:0	no analysed forms	-
 syn	n	зарѐ	P:0	no analysed forms	-
 syn	n	зе́хрі	P:0	no analysed forms	-
 syn	n	зехрі̀	P:0	no analysed forms	-
-syn	n	златодѣ́льникъ	P:N1k	attested nominative differs from the lemma	златодѣ́лникъ
-syn	n	зо́дчій	P:A1s	adjectival class on a noun entry (Part 3)	A1s
+syn	n	зо́дчій	P:A1s	class of another part of speech	A1s
 syn	n	зоѝ	P:0	no analysed forms	-
 syn	n	зѡѝ	P:0	no analysed forms	-
 syn	n	и҆зъѧ́тіе	P:N2i	no analysed forms	-
@@ -233,54 +703,36 @@ syn	n	и҆зѡдѣ́ѧніе	P:N2i	no analysed forms	-
 syn	n	и҆надда̀	P:0	no analysed forms	-
 syn	n	и҆нгадді̀	P:0	no analysed forms	-
 syn	n	и҆сараі̀	P:0	no analysed forms	-
-syn	n	и҆спростре́ніе	P:N2i	attested nominative differs from the lemma	и҆зпростре́ніе
-syn	n	и҆счезнове́ніе	P:N2i	attested nominative differs from the lemma	и҆зчезнове́ніе
-syn	n	и҆сше́ствіе	P:N2i	attested nominative differs from the lemma	и҆зше́ствіе
-syn	n	ка́мень	P:N43/N1j	attested nominative differs from the lemma	ка́мы
-syn	n	кади́льникъ	P:N1k	attested nominative differs from the lemma	кади́лникъ
 syn	n	калокаіри́ни	P:0	no analysed forms	-
-syn	n	кассі́а	P:N3e	attested nominative differs from the lemma	касі́а
 syn	n	каѱокалѵвѝ	P:0	no analysed forms	-
 syn	n	кегхре́и	P:N1e	no analysed forms	-
 syn	n	кедамѡ́ѳъ	P:0	no analysed forms	-
 syn	n	книгополо́жница	P:N1c	class does not produce the lemma	книгополо́жницъ
 syn	n	книгохрани́тельница	P:N3c	class does not produce the lemma	книгохрани́телница
-syn	n	ко́рмчаѧ	P:A1s	adjectival class on a noun entry (Part 3)	A1s
-syn	n	ко́рмчій	P:N1i/A1s	adjectival class on a noun entry (Part 3)	N1i/A1s
-syn	n	кольцѐ	P:N2c*	attested nominative differs from the lemma	колцѐ
+syn	n	ко́рмчаѧ	P:A1s	class of another part of speech	A1s
 syn	n	кора́бленникъ	P:N1k	class does not produce the lemma	кора́бленикъ
 syn	n	корабль	P:N1j	class does not produce the lemma	кара́бль
 syn	n	корѐ	P:0	no analysed forms	-
 syn	n	корі́нѳѧнинъ	P:N1t	no analysed forms	-
-syn	n	коча́новъ	P:A2t	adjectival class on a noun entry (Part 3)	A2t
+syn	n	коча́новъ	P:A2t	class of another part of speech	A2t
 syn	n	крестопоклоне́ніе	P:N2i	no analysed forms	-
 syn	n	кривоприсѧжство	P:N2t	no analysed forms	-
 syn	n	крюче́къ	P:N1k	class does not produce the lemma	крю́чкъ
-syn	n	крѵста́ллъ	P:N1t	attested nominative differs from the lemma	крѵста́лъ
 syn	n	кі́евъ	P:N1t	no analysed forms	-
 syn	n	кѡѐ	P:0	no analysed forms	-
-syn	n	кѵ́рікъ	P:N1k	attested nominative differs from the lemma	ки́рѵкъ
 syn	n	кꙋли́шки	P:N1k	no analysed forms	-
-syn	n	лада́нъ	P:N1t	attested nominative differs from the lemma	ла́донъ
 syn	n	лаккꙋ́ны	P:N1t	no analysed forms	-
-syn	n	ласка́тельство	P:N2t	attested nominative differs from the lemma	ласка́телство
-syn	n	леве́й	P:N1e	attested nominative differs from the lemma	леѵе́й
 syn	n	лехі̀	P:0	no analysed forms	-
-syn	n	леѵіаѳа́мъ	P:N1t	attested nominative differs from the lemma	левіаѳа́мъ
-syn	n	леѵіаѳа́нъ	P:N1t	attested nominative differs from the lemma	левіаѳа́нъ
 syn	n	лжесвидѣ́тельство	P:N2t	class does not produce the lemma	лжесвидѣ́телство
 syn	n	ловені̀	P:0	no analysed forms	-
 syn	n	лю́то	P:N1t	class does not produce the lemma	лю́тъ
 syn	n	любоблагꙋтро́біе	P:N2i	no analysed forms	-
 syn	n	любы̀	P:N5ov*	class not in the inventory	N5ov*
-syn	n	лѣчба̀	P:N3t	attested nominative differs from the lemma	лѣчьба̀
-syn	n	ма́ркъ	P:N1k	attested nominative differs from the lemma	ма́рко
 syn	n	ма́си	P:0	no analysed forms	-
 syn	n	маге́ддо	P:N1t	no analysed forms	-
 syn	n	магеддѡ̀	P:0	no analysed forms	-
 syn	n	магедѡ̀	P:0	no analysed forms	-
 syn	n	малоглаго́ланіе	P:N2i	no analysed forms	-
-syn	n	мамѡ́на	P:N3t	attested nominative differs from the lemma	маммѡ́на
 syn	n	манохѡ̀	P:0	no analysed forms	-
 syn	n	манѡ́е	P:N1e	no analysed forms	-
 syn	n	массѝ	P:0	no analysed forms	-
@@ -289,9 +741,7 @@ syn	n	матѳе́й	P:	no class in the source	-
 syn	n	махаѳі̀	P:0	no analysed forms	-
 syn	n	маѡзі̀	P:0	no analysed forms	-
 syn	n	маѡнені́мъ	P:0	no analysed forms	-
-syn	n	ме́чь	P:N1sj	attested nominative differs from the lemma	ме́чъ
 syn	n	мелхісꙋ́й	P:N1e	no analysed forms	-
-syn	n	меньшеи́мство	P:N2t	attested nominative differs from the lemma	меншеи́мство
 syn	n	мера́рі	P:0	no analysed forms	-
 syn	n	мерѡ́въ	P:0	no analysed forms	-
 syn	n	мирко	P:0	no analysed forms	-
@@ -300,66 +750,44 @@ syn	n	мозѐ	P:0	no analysed forms	-
 syn	n	моли́твенникъ	P:N1k	no analysed forms	-
 syn	n	молитвома́сліе	P:N2i	no analysed forms	-
 syn	n	моолі̀	P:0	no analysed forms	-
-syn	n	моса̀	P:N3e	attested nominative differs from the lemma	моса́а
 syn	n	мыслѣ́те	P:0	no analysed forms	-
-syn	n	мѡи́ѳъ#	P:N1t	attested nominative differs from the lemma	мѡи́ѳъ
 syn	n	мѡсѐ	P:0	no analysed forms	-
 syn	n	мѡікѡ̀	P:0	no analysed forms	-
-syn	n	мѣсѧцесло́въ	P:N1t	attested nominative differs from the lemma	мѣсѧцосло́въ
 syn	n	мѣше́чекъ	P:N1k	no analysed forms	-
 syn	n	мѵга́ли	P:0	no analysed forms	-
 syn	n	мꙋсі̀	P:0	no analysed forms	-
-syn	n	мꙋсікі́ѧ	P:N3i	attested nominative differs from the lemma	мꙋсікі́а
 syn	n	мꙋчениколю́бица	P:N3c	no analysed forms	-
 syn	n	навѡ̀	P:0	no analysed forms	-
-syn	n	надме́ніе	P:N2i	attested nominative differs from the lemma	надмѣ́ніе
-syn	n	нарече́ніе	P:N2i	attested nominative differs from the lemma	нарѣче́ніе
 syn	n	нафѳѡ̀	P:0	no analysed forms	-
-syn	n	нача́льница	P:N3c	attested nominative differs from the lemma	нача́лница
 syn	n	наѵи́нъ	P:N1t	no analysed forms	-
 syn	n	неблагополꙋче́ніе	P:N2i	no analysed forms	-
 syn	n	невѣ́дѣніе	P:N2i	class does not produce the lemma	невѣ́денїе
-syn	n	неисцѣле́ніе	P:N2i	attested nominative differs from the lemma	неизцѣле́ніе
 syn	n	нетѡфаѝ	P:0	no analysed forms	-
 syn	n	нехаѡ̀	P:0	no analysed forms	-
 syn	n	неѡбъѧ́тіе	P:N2i	no analysed forms	-
-syn	n	но́вградъ	P:N1t	attested nominative differs from the lemma	но́въградъ
-syn	n	но́жъ	P:N1s	attested nominative differs from the lemma	но́жь
 syn	n	новосвѧщенномꙋ́ченикъ	P:N1k	no analysed forms	-
-syn	n	ні́фѡнтъ	P:N1t	attested nominative differs from the lemma	ни́ѳѡнтъ
-syn	n	оу҆́ѯꙋсъ	P:N1t	attested nominative differs from the lemma	оу҆́ксꙋсъ
 syn	n	оу҆масфа́е	P:0	no analysed forms	-
-syn	n	оу҆мерщвле́ніе	P:N2i	attested nominative differs from the lemma	оу҆мерщве́ніе
 syn	n	оу҆мыва́льница	P:N3c	class does not produce the lemma	оу҆мыва́лница
-syn	n	оу҆чреди́тель	P:N1j	attested nominative differs from the lemma	оу҆чрежди́тель
 syn	n	оу҆іркѡ̀	P:0	no analysed forms	-
 syn	n	па́рѳѧннинъ	P:N1in	class does not produce the lemma	па́рѳѧнинъ
-syn	n	панагіа́ръ	P:N1t	attested nominative differs from the lemma	панагіа́рь
 syn	n	пе́льшма	P:N3t	class does not produce the lemma	пе́лшма
-syn	n	пе́нь	P:N1j*	attested nominative differs from the lemma	пѣ́нь
 syn	n	первоа́ггелъ	P:N1t	no analysed forms	-
 syn	n	первомꙋ́ченица	P:N3c	no analysed forms	-
 syn	n	первосвѧщеннонача́льникъ	P:N1k	no analysed forms	-
 syn	n	первосвѧщеннослꙋжи́тель	P:N1j	no analysed forms	-
-syn	n	пересла́вль	P:A2j	adjectival class on a noun entry (Part 3)	A2j
-syn	n	переѧсла́вль	P:N1j	attested nominative differs from the lemma	переасла́вль
+syn	n	пересла́вль	P:A2j	class of another part of speech	A2j
 syn	n	писмоводи́тель	P:N1j	class does not produce the lemma	письмоводи́тель
 syn	n	пла́мы	P:0	no analysed forms	-
-syn	n	пла́мѧ	P:N5en	attested nominative differs from the lemma	пла́мень
 syn	n	племенонача́льникъ	P:N1k	class does not produce the lemma	племенонача́лникъ
-syn	n	плечѐ	P:N2s	attested nominative differs from the lemma	плечо̀
 syn	n	плѧ́то	P:0	no analysed forms	-
-syn	n	поверже́ніе	P:N2i	attested nominative differs from the lemma	поверже́ніѧ
 syn	n	подви́жница	P:N1c	class does not produce the lemma	подви́жницъ
 syn	n	подъѧ́тіе	P:N2i	no analysed forms	-
 syn	n	подъѧре́мникъ	P:N1k	no analysed forms	-
 syn	n	подызѡбраже́ніе	P:N2i	no analysed forms	-
 syn	n	подꙋща́тель	P:N1j	no analysed forms	-
 syn	n	полꙋпле́мѧ	P:	no class in the source	-
-syn	n	порфѵропрода́льница	P:N3c	attested nominative differs from the lemma	порфѵропрода́лница
 syn	n	пра́ведница	P:N3c	no analysed forms	-
 syn	n	пре́докъ	P:N1k	class does not produce the lemma	пре́дкъ
-syn	n	превосше́ствіе	P:N2i	attested nominative differs from the lemma	превозше́ствіе
 syn	n	предновомѣ́сѧчіе	P:N2i	no analysed forms	-
 syn	n	предъѧвле́ніе	P:N2i	no analysed forms	-
 syn	n	предызше́ствіе	P:N2i	no analysed forms	-
@@ -380,29 +808,18 @@ syn	n	предꙋставле́ніе	P:N2i	no analysed forms	-
 syn	n	премꙋ́дрость	P:N41	no analysed forms	-
 syn	n	преподобноисповѣ́дникъ	P:N1k	no analysed forms	-
 syn	n	преподобномꙋ́ченица	P:N3c	no analysed forms	-
-syn	n	присе́льникъ	P:N1k	attested nominative differs from the lemma	присе́лникъ
-syn	n	прише́лецъ	P:N1c*	attested nominative differs from the lemma	пришле́цъ
 syn	n	пророкомꙋ́ченикъ	P:N1k	no analysed forms	-
 syn	n	пско́въ	P:N1t	no analysed forms	-
-syn	n	піѧ́вица	P:N3c	attested nominative differs from the lemma	піа́вица
 syn	n	піѳѡ̀	P:0	no analysed forms	-
 syn	n	пѧто́къ	P:N1k*	no analysed forms	-
 syn	n	равві̀	P:0	no analysed forms	-
 syn	n	раввꙋні̀	P:0	no analysed forms	-
 syn	n	равноа́ггелъ	P:N1t	no analysed forms	-
 syn	n	равоса́ий	P:	no class in the source	-
-syn	n	разори́тельница	P:N3c	attested nominative differs from the lemma	разори́телница
 syn	n	разъѧре́ніе	P:N2i	no analysed forms	-
 syn	n	рамессѝ	P:0	no analysed forms	-
-syn	n	распозна́ніе	P:N2i	attested nominative differs from the lemma	разпозна́ніе
-syn	n	расхо́дъ	P:N1t	attested nominative differs from the lemma	росхо́дъ
-syn	n	расчине́ніе	P:N2i	attested nominative differs from the lemma	разчине́ніе
-syn	n	расчисле́ніе	P:N2i	attested nominative differs from the lemma	разчисле́ніе
-syn	n	рече́ніе	P:N2i	attested nominative differs from the lemma	рѣче́ніе
 syn	n	роже́нъ	P:N1t	class does not produce the lemma	ро́жнъ
-syn	n	рꙋ́фъ	P:N1t	attested nominative differs from the lemma	рꙋ́ѳъ
 syn	n	са́ре	P:0	no analysed forms	-
-syn	n	са́рѡнъ	P:N1t	attested nominative differs from the lemma	са́рѡнь
 syn	n	савеѐ	P:0	no analysed forms	-
 syn	n	савеі̀	P:0	no analysed forms	-
 syn	n	саддаі̀	P:0	no analysed forms	-
@@ -412,7 +829,6 @@ syn	n	самарі̀	P:0	no analysed forms	-
 syn	n	самаѐ	P:0	no analysed forms	-
 syn	n	сараѝ	P:0	no analysed forms	-
 syn	n	саѵѝ	P:0	no analysed forms	-
-syn	n	свѣти́льце	P:N2c*	attested nominative differs from the lemma	свѣти́лце
 syn	n	свѧтолю́бецъ	P:N1c*	no analysed forms	-
 syn	n	свѧще́нствіе	P:N2i	no analysed forms	-
 syn	n	свѧщенноархімандрі́тъ	P:N1t	no analysed forms	-
@@ -422,32 +838,21 @@ syn	n	свѧщеннопома́заніе	P:N2i	no analysed forms	-
 syn	n	свѧщеннопредстоѧ́тель	P:N1j	no analysed forms	-
 syn	n	свѧщенносвѧти́тель	P:N1j	no analysed forms	-
 syn	n	сегрі̀	P:0	no analysed forms	-
-syn	n	ски́ніа	P:N3e	attested nominative differs from the lemma	ски́ніѧ
 syn	n	ски́тъ	P:N1t	no analysed forms	-
-syn	n	скинопигі́а	P:N3e	attested nominative differs from the lemma	скѵнопи́гіа
-syn	n	скꙋде́ль	P:N41	attested nominative differs from the lemma	скꙋдѣ́ль
-syn	n	слононача́льникъ	P:N1k	attested nominative differs from the lemma	слононача́лникъ
-syn	n	смиренносло́віе	P:N2i	attested nominative differs from the lemma	смиреносло́віе
-syn	n	смо́квь	P:N41	attested nominative differs from the lemma	смо́ковь
 syn	n	соммѐ	P:0	no analysed forms	-
 syn	n	сомо́ри	P:0	no analysed forms	-
 syn	n	сомѐ	P:0	no analysed forms	-
 syn	n	сосꙋдохрани́тельница	P:N3c	class does not produce the lemma	сосꙋдохрани́телница
 syn	n	среда̀	P:N3t	no analysed forms	-
 syn	n	ста́кти	P:0	no analysed forms	-
-syn	n	стражба̀	P:N3t*	attested nominative differs from the lemma	страждба̀
 syn	n	страстоположи́тель	P:N1j	no analysed forms	-
-syn	n	строи́тельство	P:N2t	attested nominative differs from the lemma	строи́телство
 syn	n	стрѣ́льница	P:N3c	class does not produce the lemma	стрѣ́лница
 syn	n	стрѣлостоѧ́тельница	P:N3c	class does not produce the lemma	стрѣлостоѧ́телница
-syn	n	стіхі́ѧ	P:N3i	attested nominative differs from the lemma	стіхі́а
 syn	n	сынороди́тельница	P:N3c	no analysed forms	-
 syn	n	сі́нъ	P:0	no analysed forms	-
 syn	n	сіре́на	P:N3t	class does not produce the lemma	сѵре́на
 syn	n	сѡвива̀	P:0	no analysed forms	-
 syn	n	сѡхѡ̀	P:0	no analysed forms	-
-syn	n	сѣдѣ́ніе	P:N2i	attested nominative differs from the lemma	сѣде́ніе
-syn	n	сѵгі́цъ	P:N1c	attested nominative differs from the lemma	сѵгі́ца
 syn	n	сѵле́ѡ	P:0	no analysed forms	-
 syn	n	сꙋрі̀	P:0	no analysed forms	-
 syn	n	тапфꙋ̀	P:0	no analysed forms	-
@@ -455,11 +860,7 @@ syn	n	татамі̀	P:0	no analysed forms	-
 syn	n	тетроеѵа́нгеліе	P:N2i	no analysed forms	-
 syn	n	тка́тельница	P:N3c	class does not produce the lemma	тка́телница
 syn	n	то́тьма	P:N3t*	class does not produce the lemma	то́тма
-syn	n	тре́звенникъ	P:N1k	attested nominative differs from the lemma	тре́звеникъ
-syn	n	тро́ица	P:N3c	attested nominative differs from the lemma	тро̑ца
-syn	n	тро́иченъ	P:N1t	attested nominative differs from the lemma	тро̑ченъ
 syn	n	тысѧщенача́льникъ	P:N1k	class does not produce the lemma	тысѧщенача́лникъ
-syn	n	тьма̀	P:N3t*	attested nominative differs from the lemma	тма̀
 syn	n	фаа́ѳъ	P:N1t	no analysed forms	-
 syn	n	фелеѳѳі̀	P:0	no analysed forms	-
 syn	n	фѝ	P:0	no analysed forms	-
@@ -471,9 +872,7 @@ syn	n	халові̀	P:0	no analysed forms	-
 syn	n	хармі̀	P:0	no analysed forms	-
 syn	n	хеле́ѳі	P:0	no analysed forms	-
 syn	n	хереѳѳі̀	P:0	no analysed forms	-
-syn	n	херсѡ́нъ	P:N1t	attested nominative differs from the lemma	херсѡ́нь
 syn	n	хоррі̀	P:0	no analysed forms	-
-syn	n	хра́бреникъ	P:N1k	attested nominative differs from the lemma	хра́брникъ
 syn	n	храни́льница	P:N3c	class does not produce the lemma	храни́лница
 syn	n	хрістоимени́тство	P:N2t	no analysed forms	-
 syn	n	хрістолю́бецъ	P:N1c*	no analysed forms	-
@@ -486,9 +885,7 @@ syn	n	хрістоподража́тель	P:N1j	no analysed forms	-
 syn	n	хрістопроповѣ́дникъ	P:N1k	no analysed forms	-
 syn	n	хрістопроповѣ́дница	P:N1c	no analysed forms	-
 syn	n	хрістꙋбі́йство	P:N2t	no analysed forms	-
-syn	n	хрѵса́нѳъ	P:N1t	attested nominative differs from the lemma	хріса́нѳъ
 syn	n	ца́ди	P:0	no analysed forms	-
-syn	n	царе́вичь	P:N1sj	attested nominative differs from the lemma	царе́вичъ
 syn	n	циннамо́нъ	P:N1t	no analysed forms	-
 syn	n	че́сть	P:N41	no analysed forms	-
 syn	n	четвероеѵа́нгеліе	P:N2i	no analysed forms	-
@@ -499,7 +896,6 @@ syn	n	є҆́фі	P:0	no analysed forms	-
 syn	n	є҆драі̀	P:0	no analysed forms	-
 syn	n	є҆зекі́а	P:N3e	no analysed forms	-
 syn	n	є҆зрі̀	P:0	no analysed forms	-
-syn	n	є҆кклесіа́стъ	P:N1t	attested nominative differs from the lemma	є҆клісіа́стъ
 syn	n	є҆леа́ли	P:0	no analysed forms	-
 syn	n	є҆лесвана̀	P:0	no analysed forms	-
 syn	n	є҆лідаѐ	P:N1e	no analysed forms	-
@@ -509,16 +905,12 @@ syn	n	є҆лѝ	P:0	no analysed forms	-
 syn	n	є҆лѳекѡ̀	P:0	no analysed forms	-
 syn	n	є҆нгадді̀	P:0	no analysed forms	-
 syn	n	є҆піфа̀	P:0	no analysed forms	-
-syn	n	є҆рмінігге́льдъ	P:N1t	attested nominative differs from the lemma	є҆рмінігге́лдъ
 syn	n	є҆ссꙋа̀	P:N3a	no analysed forms	-
 syn	n	є҆сѳемѡ̀	P:0	no analysed forms	-
 syn	n	є҆фаданѡ̀	P:0	no analysed forms	-
 syn	n	є҆фе́сѧнинъ	P:N1in	no analysed forms	-
 syn	n	є҆ѳѳі̀	P:0	no analysed forms	-
-syn	n	є҆ѵа́нгеліе	P:N2i	attested nominative differs from the lemma	є҆ѵа́ггеліе
 syn	n	є҆ѵангелі́стъ	P:N1t	no analysed forms	-
-syn	n	є҆ѵсе́віа	P:N3e	attested nominative differs from the lemma	є҆ѵсе́ѵіа
-syn	n	є҆ѵтѵ́хій	P:N1i	attested nominative differs from the lemma	є҆ѵті́хій
 syn	n	і҆́же	P:0	no analysed forms	-
 syn	n	і҆амврѝ	P:0	no analysed forms	-
 syn	n	і҆аннѝ	P:0	no analysed forms	-
@@ -534,7 +926,6 @@ syn	n	і҆еѳрі̀	P:0	no analysed forms	-
 syn	n	і҆еѳѳі̀	P:0	no analysed forms	-
 syn	n	і҆зра́ильтѧнынѧ	P:N3j	no analysed forms	-
 syn	n	і҆зраилі́тъ	P:N1t	no analysed forms	-
-syn	n	і҆сма́ильтѧнинъ	P:N1in	attested nominative differs from the lemma	і҆сма́илтѧнинъ
 syn	n	і҆фі̀	P:0	no analysed forms	-
 syn	n	і҆ѡа̀	P:N3e	no analysed forms	-
 syn	n	і҆ѡа́нно	P:N3t	no analysed forms	-
@@ -546,16 +937,9 @@ syn	n	ѡ҆бъѧвле́ніе	P:N2i	no analysed forms	-
 syn	n	ѡ҆бъѧсне́ніе	P:N2i	no analysed forms	-
 syn	n	ѡ҆быма́тель	P:N1j	no analysed forms	-
 syn	n	ѡ҆бꙋме́ртвіе	P:N2i	no analysed forms	-
-syn	n	ѡ҆долѣ́ніе	P:N2i	attested nominative differs from the lemma	ѡ҆доле́ніе
-syn	n	ѡ҆каѧ́ннство	P:N2t	attested nominative differs from the lemma	ѻ҆каѧ́нство
-syn	n	ѡ҆мрачи́тель	P:N1j	attested nominative differs from the lemma	ѡ҆мрачи́телѧ
 syn	n	ѡ҆мѣ́на	P:N3t	no analysed forms	-
 syn	n	ѡ҆нѡ̀	P:0	no analysed forms	-
-syn	n	ѡ҆тъѧ́тіе	P:N2i	attested nominative differs from the lemma	ѿѧ́тіе
 syn	n	ѡ҆фѝ	P:0	no analysed forms	-
-syn	n	ѡ҆ѕлобле́ніе	P:N2i	attested nominative differs from the lemma	ѡ҆ѕлобе́ніе
-syn	n	ѯе́ніа	P:N3e	attested nominative differs from the lemma	ѯе́ніѧ
-syn	n	ѱалти́рь	P:N1j/N1t/N41	attested nominative differs from the lemma	ѱалти́ръ
 syn	n	ѳалі̀	P:0	no analysed forms	-
 syn	n	ѳарсі́сь	P:N41	class does not produce the lemma	ѳарсѵ́сь
 syn	n	ѳееі́мъ	P:0	no analysed forms	-
@@ -563,21 +947,545 @@ syn	n	ѳеила́ѳъ	P:0	no analysed forms	-
 syn	n	ѳекѡ̀	P:0	no analysed forms	-
 syn	n	ѳекѡѐ	P:0	no analysed forms	-
 syn	n	ѳелариса̀	P:0	no analysed forms	-
-syn	n	ѳелгаѳфелласа́ръ	P:N1t	attested nominative differs from the lemma	ѳелгафелласа́ръ
-syn	n	ѳеопісті́й	P:N3e	attested nominative differs from the lemma	ѳеопісті́а
 syn	n	ѳеѐ	P:0	no analysed forms	-
-syn	n	ѳиваі́да	P:N3t	attested nominative differs from the lemma	ѳѵваі́да
 syn	n	ѳолмаі̀	P:0	no analysed forms	-
 syn	n	ѳолмі̀	P:0	no analysed forms	-
 syn	n	ѵ҆да́спи	P:0	no analysed forms	-
 syn	n	ѵ҆пакоѝ	P:0	no analysed forms	-
-syn	n	ѻ҆́блакъ	P:N1k/N2k	attested nominative differs from the lemma	ѻ҆́блако
-syn	n	ѻ҆́трочищь	P:N1sj	attested nominative differs from the lemma	ѻ҆́трочище
-syn	n	ѻ҆би́льность	P:N41	attested nominative differs from the lemma	ѻ҆би́лность
 syn	n	ѻ҆мꙋсі̀	P:0	no analysed forms	-
 syn	n	ѻ҆олі̀	P:0	no analysed forms	-
-syn	n	ѻ҆ріге́нъ	P:N1t	attested nominative differs from the lemma	ѻ҆ріге́на
 syn	n	ѻ҆рꙋжехрани́тельница	P:N3c	class does not produce the lemma	ѻ҆рꙋжехрани́телница
-syn	n	ѻ҆стрѵ́хій	P:N1i	attested nominative differs from the lemma	ѻ҆стрі́хій
 syn	n	ѻ҆течестволю́бецъ	P:N1c*	no analysed forms	-
 syn	n	ѻ҆фні̀	P:0	no analysed forms	-
+syn	v	безѡбрази́ти	P:V21t	no analysed forms	-
+syn	v	безѡбразова́ти	P:V12ov	no analysed forms	-
+syn	v	благовоспріѧ́ти	P:V15n	no analysed forms	-
+syn	v	благовосхвали́ти	P:V21n	no analysed forms	-
+syn	v	благода́тельствовати	P:V12ov	no analysed forms	-
+syn	v	благода́тствовати	P:V12ov	no analysed forms	-
+syn	v	благодерзнꙋ́ти	P:V13t	no analysed forms	-
+syn	v	благодѣ́лати	P:V11a	no analysed forms	-
+syn	v	благоизволѧ́ти	P:V11a	no analysed forms	-
+syn	v	благоизоби́льствовати	P:V12ov	no analysed forms	-
+syn	v	благоискꙋси́тисѧ	P:V21t	no analysed forms	-
+syn	v	благоисточи́ти	P:V21s	no analysed forms	-
+syn	v	благонасади́ти	P:V21t	no analysed forms	-
+syn	v	благонаслади́тисѧ	P:V21t	no analysed forms	-
+syn	v	благоподвиза́тисѧ	P:V11a	no analysed forms	-
+syn	v	благопокори́ти	P:V21n	no analysed forms	-
+syn	v	благополꙋ́чествовати	P:V12ov	no analysed forms	-
+syn	v	благопоспѣ́шествовати	P:V12ov	no analysed forms	-
+syn	v	благопоспѣ́шствовати	P:V12ov	no analysed forms	-
+syn	v	благопреплы́ти	P:V15v	class does not produce the lemma	благопреплы́вти
+syn	v	благоскорбѣ́ти	P:V22p	no analysed forms	-
+syn	v	благосло́вствовати	P:V12ov	no analysed forms	-
+syn	v	благословлѧ́ти	P:V11a	no analysed forms	-
+syn	v	благослꙋжи́ти	P:V21s	no analysed forms	-
+syn	v	благотещѝ	P:V14k	no analysed forms	-
+syn	v	благочестивомꙋ́дрствовати	P:V12ov	no analysed forms	-
+syn	v	благоше́ствовати	P:V12ov	no analysed forms	-
+syn	v	благоѡби́льствовати	P:V12ov	no analysed forms	-
+syn	v	благꙋзако́нити	P:V21n	no analysed forms	-
+syn	v	благꙋкроти́ти	P:V21t	no analysed forms	-
+syn	v	богобо́рствовати	P:V12ov	no analysed forms	-
+syn	v	богобоѧ́тисѧ	P:V22a	no analysed forms	-
+syn	v	боговмѣсти́ти	P:V21t	no analysed forms	-
+syn	v	боговѣща́ти	P:V11a	no analysed forms	-
+syn	v	богоглаго́лати	P:V12n	no analysed forms	-
+syn	v	богогласи́ти	P:V21t	no analysed forms	-
+syn	v	богогласова́ти	P:V12ov	no analysed forms	-
+syn	v	богодѣ́йствовати	P:V12ov	no analysed forms	-
+syn	v	богодѣ́йствоватисѧ	P:V12ov	no analysed forms	-
+syn	v	боголюби́ти	P:V21p	no analysed forms	-
+syn	v	богоноси́ти	P:V21t	no analysed forms	-
+syn	v	богопокрыва́ти	P:V11a	no analysed forms	-
+syn	v	богопохвали́ти	P:V21n	no analysed forms	-
+syn	v	богопрови́дѣти	P:V22t	no analysed forms	-
+syn	v	богопрозѧ́бнꙋти	P:V13t	no analysed forms	-
+syn	v	богороди́ти	P:V21t	no analysed forms	-
+syn	v	богосло́вствовати	P:V12ov	no analysed forms	-
+syn	v	богосло́вствоватисѧ	P:V12ov	no analysed forms	-
+syn	v	богосоверша́ти	P:V11a	no analysed forms	-
+syn	v	богосодѣ́лати	P:V11a	no analysed forms	-
+syn	v	богосодѣ́латисѧ	P:V11a	no analysed forms	-
+syn	v	богосодѣ́ѧти	P:V12a	no analysed forms	-
+syn	v	боготвори́ти	P:V21n	no analysed forms	-
+syn	v	боготвори́тисѧ	P:V21n	no analysed forms	-
+syn	v	богоше́ствовати	P:V12ov	no analysed forms	-
+syn	v	богꙋгожда́ти	P:V11a	no analysed forms	-
+syn	v	богꙋдобри́тисѧ	P:V21n	no analysed forms	-
+syn	v	богꙋкрѣплѧ́ти	P:V11a	no analysed forms	-
+syn	v	богꙋправлѧ́ти	P:V11a	no analysed forms	-
+syn	v	божествова́ти	P:V12ov	no analysed forms	-
+syn	v	боѧ́тисѧ+бо	P:V22a	class does not produce the lemma	боѧ́тисѧѧти
+syn	v	боѧ́тисѧ+же	P:V22a	class does not produce the lemma	боѧ́тисѧѧти
+syn	v	бра́ти	P:V15ol	no analysed forms	-
+syn	v	бра́тисѧ	P:V15ol	no analysed forms	-
+syn	v	вдыха́ти	P:V11a/V12t	class does not produce the lemma	вды́шти
+syn	v	вдѣ́ти	P:V15z	class not in the inventory	V15z
+syn	v	взима́ти	P:V12p/V11a	class does not produce the lemma	взе́млти
+syn	v	взима́тисѧ+ти	P:V12p/V11a	class does not produce the lemma	взима́тисѧати
+syn	v	взы́ти	P:Viti	class not in the inventory	Viti
+syn	v	ви́дѣти+же	P:V22t	class does not produce the lemma	ви́дѣтиѣти
+syn	v	внестѝ	P:V14z	no analysed forms	-
+syn	v	вни́ти	P:Viti	class not in the inventory	Viti
+syn	v	водрꙋзи́ти	P:V21t	no analysed forms	-
+syn	v	возалка́ти	P:V12t	no analysed forms	-
+syn	v	возвесели́тисѧ	P:V21n	no analysed forms	-
+syn	v	возвесели́тисѧ+бо	P:V21n	class does not produce the lemma	возвесели́тисѧити
+syn	v	возвесели́тисѧ+же	P:V21n	attested citation form differs from the lemma	возвесели́тижесѧ
+syn	v	возврати́тисѧ+же	P:V21t	class does not produce the lemma	возврати́тисѧити
+syn	v	возврати́тисѧ+ми	P:V21t	class does not produce the lemma	возврати́тисѧити
+syn	v	воздѣ́ти	P:	no class in the source	-
+syn	v	воздѣ́ти	P:V15z	class not in the inventory	V15z
+syn	v	возмнѣ́тисѧ+ти	P:V22n/V21n	class does not produce the lemma	возмнѣ́тисѧѣти
+syn	v	вознеимѣ́ти	P:Vima	class does not produce the lemma	вознеи́ѣти
+syn	v	возненави́дѣти	P:V22t	no analysed forms	-
+syn	v	возопи́ти	P:V15i/V21p	no analysed forms	-
+syn	v	возора́ти	P:V12n	no analysed forms	-
+syn	v	возора́тисѧ	P:V12n	no analysed forms	-
+syn	v	возревѣ́ти	P:V22+V14	class not in the inventory	V22+V14
+syn	v	возскомлѣ́ти	P:V22+V14	class not in the inventory	V22+V14
+syn	v	возсмѣѧ́тисѧ+же	P:V12a	class does not produce the lemma	возсмѣѧ́жесѧти
+syn	v	возсмѣѧ́тисѧ+ти	P:V12a	class does not produce the lemma	возсмѣѧ́тисѧѧти
+syn	v	возъѧри́ти	P:V21n	no analysed forms	-
+syn	v	возъѧри́тисѧ	P:V21n	no analysed forms	-
+syn	v	возызмѣни́ти	P:V21n	no analysed forms	-
+syn	v	возыменова́ти	P:V12ov	no analysed forms	-
+syn	v	возыменова́тисѧ	P:V12ov	no analysed forms	-
+syn	v	возымѣ́ти	P:V11e	no analysed forms	-
+syn	v	возымѣ́ти	P:Vima	no analysed forms	-
+syn	v	возымꙋ́ществити	P:V21p	no analysed forms	-
+syn	v	возѡбита́ти	P:V11a	no analysed forms	-
+syn	v	возѡблада́ти	P:V11a	no analysed forms	-
+syn	v	возѡбновлѧ́ти	P:V11a	no analysed forms	-
+syn	v	возѡбража́ти	P:V11a	no analysed forms	-
+syn	v	возѡбрази́ти	P:V21t	no analysed forms	-
+syn	v	возѡбрази́тисѧ	P:V21t	no analysed forms	-
+syn	v	возѡбразова́тисѧ	P:V12ov	no analysed forms	-
+syn	v	возѡбраща́ти	P:V11a	no analysed forms	-
+syn	v	возѡбраща́тисѧ	P:V11a	no analysed forms	-
+syn	v	возѡглави́ти	P:V21p	no analysed forms	-
+syn	v	возѡкрꙋжа́ти	P:V11a	no analysed forms	-
+syn	v	возѡчи́стити	P:V21t	no analysed forms	-
+syn	v	возѡчища́ти	P:V11a	no analysed forms	-
+syn	v	возѡчища́тисѧ	P:V11a	no analysed forms	-
+syn	v	возꙋдарѧ́ти	P:V11a	no analysed forms	-
+syn	v	возꙋпокоева́тисѧ	P:V11a	no analysed forms	-
+syn	v	возꙋсе́рдствовати	P:V12ov	no analysed forms	-
+syn	v	возꙋстроѧ́ти	P:V11a	no analysed forms	-
+syn	v	воскрили́ти	P:V21n	class does not produce the lemma	воскрыли́ти
+syn	v	восплы́ти	P:V15v	class does not produce the lemma	восплы́вти
+syn	v	воспосла́ти	P:V12x	class does not produce the lemma	возпосла́ти
+syn	v	воспосыла́ти	P:V11a	class does not produce the lemma	возпосыла́ти
+syn	v	воспроповѣ́дати	P:V11a	class does not produce the lemma	возпроповѣ́дати
+syn	v	воспроро́чествовати	P:V12ov	no analysed forms	-
+syn	v	воспрославлѧ́тисѧ	P:V11a	class does not produce the lemma	возпрославлѧ́тисѧ
+syn	v	воспротѧнꙋ́ти	P:V13k	no analysed forms	-
+syn	v	воспріима́ти	P:V12p/V11a	no analysed forms	-
+syn	v	воспꙋсти́ти	P:V21t	class does not produce the lemma	возпꙋ́стити
+syn	v	восхотѣ́ти	P:V22t+V12t	class not in the inventory	V22t+V12t
+syn	v	восча́ѧти	P:V12a	class does not produce the lemma	возча́ѧти
+syn	v	восчꙋ́вствовати	P:V12ov	class does not produce the lemma	возчꙋ́вствовати
+syn	v	восшꙋмѣ́ти	P:V22p	class does not produce the lemma	возшꙋмѣ́ти
+syn	v	воцарѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	впери́тисѧ	P:V21n	class does not produce the lemma	впири́тисѧ
+syn	v	вплы́ти	P:V15v	class does not produce the lemma	вплы́вти
+syn	v	всели́тисѧ+ми	P:V21n	attested citation form differs from the lemma	всели́тимисѧ
+syn	v	встава́ти	P:V12v	class not in the inventory	V12v
+syn	v	вчеловѣ́читисѧ	P:V21s	no analysed forms	-
+syn	v	въеле́нити	P:V21n	no analysed forms	-
+syn	v	вы́йти	P:Viti	class not in the inventory	Viti
+syn	v	вѣ́дѣтисѧ	P:Vved	class does not produce the lemma	вѣ́тисѧ
+syn	v	гра́бити	P:V21p	no analysed forms	-
+syn	v	да́тисѧ+бо	P:Vdat	class does not produce the lemma	да́тисѧ+ти
+syn	v	дви́гатисѧ/дви́житисѧ	P:V12t/V21s	class does not produce the lemma	дви́гатисѧ/движатисѧ
+syn	v	дви́гатисѧ/дви́житисѧ	P:V12t/V21s	class does not produce the lemma	дви́жатисѧ
+syn	v	держа́тисѧ+же	P:V22s	class does not produce the lemma	держа́тисѧати
+syn	v	диви́тисѧ+ли+ти	P:V21p	class does not produce the lemma	диви́тисѧ+лиити
+syn	v	дойтѝ	P:Viti	class not in the inventory	Viti
+syn	v	доплы́ти	P:V15v	class does not produce the lemma	доплы́вти
+syn	v	животвори́ти	P:V21n	no analysed forms	-
+syn	v	зави́дѣнъ	P:	no class in the source	-
+syn	v	загла́дитисѧ+бо	P:V21t	class does not produce the lemma	загла́дитисѧити
+syn	v	зайтѝ	P:Viti	class not in the inventory	Viti
+syn	v	заклѧ́тисѧ	P:V15n	class does not produce the lemma	заклѧ́тътисѧ
+syn	v	заповѣ́дѣти	P:Vved	class does not produce the lemma	заповѣ́ти
+syn	v	затвори́тисѧ+ти	P:V21n	class does not produce the lemma	затвори́тисѧити
+syn	v	и҆жди́тисѧ	P:V15v	class does not produce the lemma	и҆жди́втисѧ
+syn	v	и҆зжи́ти	P:V15v	class does not produce the lemma	и҆зжи́вти
+syn	v	и҆зжи́тисѧ	P:V15v	no analysed forms	-
+syn	v	и҆змѣнѧ́тисѧ+ли	P:V11a	class does not produce the lemma	и҆змѣнѧ́тисѧ+ти
+syn	v	и҆зора́тисѧ	P:V12n	no analysed forms	-
+syn	v	и҆зостри́ти	P:V21n	no analysed forms	-
+syn	v	и҆зострѧ́ти	P:V11a	no analysed forms	-
+syn	v	и҆зскочи́ти	P:V21s	class does not produce the lemma	и҆зкочи́ти
+syn	v	и҆зсхнꙋ́ти	P:V13k	class does not produce the lemma	и҆зсо́хнꙋти
+syn	v	и҆зъѧ́сти	P:Vest	no analysed forms	-
+syn	v	и҆зъѧ́ти	P:V15n	no analysed forms	-
+syn	v	и҆зъѧви́ти	P:V21p	no analysed forms	-
+syn	v	и҆зъѧви́тисѧ	P:V21p	no analysed forms	-
+syn	v	и҆зъѧвлѧ́ти	P:V11a	no analysed forms	-
+syn	v	и҆зъѧвлѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	и҆зъѧда́ти	P:V11a	no analysed forms	-
+syn	v	и҆зъѧзви́ти	P:V21p	no analysed forms	-
+syn	v	и҆зъѧсни́ти	P:V21n	no analysed forms	-
+syn	v	и҆зъѧсни́тисѧ	P:V21n	no analysed forms	-
+syn	v	и҆зъѧснѧ́ти	P:V11a	no analysed forms	-
+syn	v	и҆зы́ти	P:Viti	class not in the inventory	Viti
+syn	v	и҆зыма́тисѧ	P:V12p/V11a	no analysed forms	-
+syn	v	и҆зыти	P:Viti	class not in the inventory	Viti
+syn	v	и҆зѡби́дѣти	P:V22t	no analysed forms	-
+syn	v	и҆зѡблача́тисѧ	P:V11a	no analysed forms	-
+syn	v	и҆зѡблиста́ти	P:V11a	no analysed forms	-
+syn	v	и҆зѡблича́ти	P:V11a	no analysed forms	-
+syn	v	и҆зѡбличи́тисѧ	P:V21s	no analysed forms	-
+syn	v	и҆зѡбнажи́ти	P:V21s	no analysed forms	-
+syn	v	и҆зѡбража́тисѧ	P:V11a	no analysed forms	-
+syn	v	и҆зѡбрази́тисѧ	P:V21t	no analysed forms	-
+syn	v	и҆зѡбрѣсти́сѧ	P:V14ed	no analysed forms	-
+syn	v	и҆зѡбꙋча́ти	P:V11a	no analysed forms	-
+syn	v	и҆зѡбꙋчи́ти	P:V21s	no analysed forms	-
+syn	v	и҆зѡра́ти	P:V11a	no analysed forms	-
+syn	v	и҆зѡстри́тисѧ	P:V21n	no analysed forms	-
+syn	v	и҆зѡщрѧ́ти	P:V11a	no analysed forms	-
+syn	v	и҆зѡщрѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	и҆зꙋвѧ́днꙋти	P:V13t	no analysed forms	-
+syn	v	и҆сповѣ́дѣтисѧ	P:Vved	class does not produce the lemma	и҆сповѣ́ѣтисѧ
+syn	v	и҆стѧза́ти	P:V12t/V11a	no analysed forms	-
+syn	v	и҆тѝ	P:Viti	class not in the inventory	Viti
+syn	v	кдата́ти	P:	no class in the source	-
+syn	v	клѧ́тисѧ+ми	P:V15n	class does not produce the lemma	клѧ́тисѧ+ти
+syn	v	коснꙋ́тисѧ+ти	P:V13t	class does not produce the lemma	коснꙋ́тиснꙋти
+syn	v	мимоитѝ	P:Viti	class not in the inventory	Viti
+syn	v	млати́ти	P:V21s	class does not produce the lemma	млачи́ти
+syn	v	мнѣ́тисѧ+ми	P:V22n/V21n	class does not produce the lemma	мнѣ́тисѧѣти
+syn	v	мнѣ́тисѧ+ти	P:V22n/V21n	class does not produce the lemma	мнѣ́тисѧѣти
+syn	v	моли́тисѧ+бо	P:V21n	class does not produce the lemma	моли́тисѧити
+syn	v	моли́тисѧ+бы+бо	P:V21n	class does not produce the lemma	моли́тисѧ+быити
+syn	v	моли́тисѧ+ми	P:V21n	attested citation form differs from the lemma	моли́тимисѧ
+syn	v	моли́тисѧ+ти	P:V21n	class does not produce the lemma	моли́тисѧити
+syn	v	надстоѧ́ти	P:V22a	no analysed forms	-
+syn	v	надѣ́ти	P:V15z	class not in the inventory	V15z
+syn	v	надѣ́ѧтисѧ+же	P:V12a	class does not produce the lemma	надѣ́ѧтисѧѧти
+syn	v	надѣ́ѧтисѧ+ли	P:V12a	class does not produce the lemma	надѣ́ѧтисѧѧти
+syn	v	назда́ти	P:V12t	no analysed forms	-
+syn	v	найтѝ	P:Viti	class not in the inventory	Viti
+syn	v	наꙋчи́тисѧ+бо	P:V21s	class does not produce the lemma	наꙋчи́тисѧити
+syn	v	наꙋчи́тисѧ+ми	P:V21s	attested citation form differs from the lemma	наꙋчи́тимисѧ
+syn	v	невзы́ти	P:Viti	class not in the inventory	Viti
+syn	v	нелиша́тисѧ	P:V11a	no analysed forms	-
+syn	v	непокарѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	непокарѧ́тисѧ+же	P:V11a	no analysed forms	-
+syn	v	непокланѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	непокорѧ́тисѧ+же	P:V11a	class does not produce the lemma	непокорѧ́тисѧ+ти
+syn	v	непрестава́ти	P:V12v	class not in the inventory	V12v
+syn	v	непріитѝ	P:Viti	class not in the inventory	Viti
+syn	v	нерадѣ́ти	P:V22t/V21t	class does not produce the lemma	нера́дити
+syn	v	нераздира́ти	P:	no class in the source	-
+syn	v	нехотѣ́ти	P:V22t+V12t	class not in the inventory	V22t+V12t
+syn	v	низы́ти	P:Viti	class not in the inventory	Viti
+syn	v	нꙋ́дитисѧ+бо	P:V21t	class does not produce the lemma	нꙋ́дитисѧити
+syn	v	оу҆боѧ́тисѧ+же	P:V22a	no analysed forms	-
+syn	v	оу҆боѧ́тисѧ+ли	P:V22a	class does not produce the lemma	оу҆боѧ́тисѧѧти
+syn	v	оу҆гнета́ти	P:V11a	class does not produce the lemma	оу҆гнѣта́ти
+syn	v	оу҆дали́тисѧ+бо	P:V21n	class does not produce the lemma	оу҆дали́тисѧити
+syn	v	оу҆диви́тисѧ+же	P:V21p	class does not produce the lemma	оу҆диви́тисѧити
+syn	v	оу҆зрѣ́тисѧ+же	P:V22n	class does not produce the lemma	оу҆зрѣ́тисѧѣти
+syn	v	оу҆йтѝ	P:Viti	class not in the inventory	Viti
+syn	v	оу҆краси́тисѧ+бо	P:V21t	class does not produce the lemma	оу҆краси́тисѧити
+syn	v	оу҆кры́тисѧ+бы	P:V15y	class does not produce the lemma	оу҆кры́тисѧ+ти
+syn	v	оу҆крѣпи́тисѧ+же	P:V21p	class does not produce the lemma	оу҆крѣпи́тисѧити
+syn	v	оу҆крѣплѧ́тисѧ+же	P:V11a	class does not produce the lemma	оу҆крѣплѧ́тисѧ+ти
+syn	v	оу҆милостивлѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	оу҆праздни́тисѧ+бо	P:V21n	class does not produce the lemma	оу҆праздни́тисѧити
+syn	v	оу҆ра́нитисѧ+ми	P:V21n	class does not produce the lemma	оу҆ра́нитисѧити
+syn	v	оу҆слади́тисѧ+ми	P:V21t	class does not produce the lemma	оу҆слади́тисѧити
+syn	v	оу҆слади́тисѧ+ти	P:V21t	class does not produce the lemma	оу҆слади́тисѧити
+syn	v	оу҆срами́тисѧ+бо	P:V21p	class does not produce the lemma	оу҆срами́тисѧити
+syn	v	оу҆тверди́тисѧ+бо	P:V21t	class does not produce the lemma	оу҆тверди́тисѧити
+syn	v	оу҆тѣша́тисѧ+бо	P:V11a	class does not produce the lemma	оу҆тѣша́тисѧ+ти
+syn	v	печа́лити	P:V21n	no analysed forms	-
+syn	v	плескати	P:V12t	no analysed forms	-
+syn	v	побра́тисѧ	P:V15ol	no analysed forms	-
+syn	v	повѣ́дѣти	P:Vved	class does not produce the lemma	повѣ́ти
+syn	v	подвзыти	P:Viti	class not in the inventory	Viti
+syn	v	подвига́ти/подви́жити	P:V12t/V11a/V21s	class does not produce the lemma	подвига́ти/подвижати
+syn	v	подвиза́тисѧ+бо	P:V11a	class does not produce the lemma	подвиза́босѧти
+syn	v	подвнити	P:Viti	class not in the inventory	Viti
+syn	v	подо́битисѧ+ти	P:V21p	class does not produce the lemma	подо́битисѧити
+syn	v	подстла́тисѧ	P:V12n	class does not produce the lemma	подстела́тисѧ
+syn	v	подъѧ́сти	P:Vest	no analysed forms	-
+syn	v	подызводи́ти	P:V21t	no analysed forms	-
+syn	v	подытѝ	P:Viti	class not in the inventory	Viti
+syn	v	подꙋкра́сти	P:V14d	no analysed forms	-
+syn	v	подꙋкрада́ти	P:V11a	no analysed forms	-
+syn	v	подꙋсти́ти	P:V21t	no analysed forms	-
+syn	v	подꙋчини́ти	P:V21n	no analysed forms	-
+syn	v	пойтѝ	P:Viti	class not in the inventory	Viti
+syn	v	поклони́тисѧ+ми	P:V21n	class does not produce the lemma	поклони́тисѧити
+syn	v	покори́тисѧ+ти	P:V21n	no analysed forms	-
+syn	v	ползтѝ	P:	no class in the source	-
+syn	v	помоли́тисѧ+ти	P:V21n	class does not produce the lemma	помоли́тисѧити
+syn	v	помрачи́тисѧ+ти	P:V21s	class does not produce the lemma	помрачи́тисѧити
+syn	v	поплы́ти	P:V15v	class does not produce the lemma	поплы́вти
+syn	v	пора́доватисѧ+ми	P:V12ov	class does not produce the lemma	пора́доватисѧ+ти
+syn	v	порꙋга́тисѧ+ми	P:V11a	class does not produce the lemma	порꙋга́тисѧ+ти
+syn	v	посмѣѧ́тисѧ+ми	P:V12a	class does not produce the lemma	посмѣѧ́тисѧѧти
+syn	v	поспа́ти	P:V12p+V22p	class not in the inventory	V12p+V22p
+syn	v	поспѣша́тисѧ+же	P:V11a	class does not produce the lemma	поспѣша́тисѧ+ти
+syn	v	постыдѣ́тисѧ+же	P:V22t	class does not produce the lemma	постыдѣ́тисѧѣти
+syn	v	похотѣ́ти	P:V22t+V12t	class not in the inventory	V22t+V12t
+syn	v	поѣ́хати	P:Vexat	class not in the inventory	Vexat
+syn	v	преблагослови́ти	P:V21p	no analysed forms	-
+syn	v	превзытѝ	P:Viti	class not in the inventory	Viti
+syn	v	превозлюби́ти	P:V21p	no analysed forms	-
+syn	v	предбра́тисѧ	P:V15ol	no analysed forms	-
+syn	v	предвзы́ти	P:Viti	class not in the inventory	Viti
+syn	v	предвига́ти/предви́жити	P:V12t/V11a/V21s	class does not produce the lemma	предвига́ти/предвижати
+syn	v	преджи́ти	P:V15v	class does not produce the lemma	преджи́вти
+syn	v	предоста́вити	P:V21p	no analysed forms	-
+syn	v	предподъѧ́ти	P:V15n	no analysed forms	-
+syn	v	предспѣ́ти	P:V11e	no analysed forms	-
+syn	v	представа́ти	P:V12v	class not in the inventory	V12v
+syn	v	предъѧ́ти	P:V15n	no analysed forms	-
+syn	v	предъѧви́ти	P:V21p	no analysed forms	-
+syn	v	предъѧви́тисѧ	P:V21p	no analysed forms	-
+syn	v	предъѧвлѧ́ти	P:V11a	no analysed forms	-
+syn	v	предъѧвлѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	преды́зѡбразовати	P:V12ov	no analysed forms	-
+syn	v	предыгра́ти	P:V11a	no analysed forms	-
+syn	v	предызбира́ти	P:V11a	no analysed forms	-
+syn	v	предызбра́ти	P:V12x*	no analysed forms	-
+syn	v	предызбра́тисѧ	P:V12x*	no analysed forms	-
+syn	v	предызводи́ти	P:V21t	no analysed forms	-
+syn	v	предызложи́ти	P:V21s	no analysed forms	-
+syn	v	предызмы́тисѧ	P:V15y	no analysed forms	-
+syn	v	предызъѧви́тисѧ	P:V21p	no analysed forms	-
+syn	v	предызы́ти	P:Viti	class not in the inventory	Viti
+syn	v	предызѡбрази́ти	P:V21t	no analysed forms	-
+syn	v	предытѝ	P:Viti	class not in the inventory	Viti
+syn	v	предѡбрази́ти	P:V21t	no analysed forms	-
+syn	v	предѡбрази́тисѧ	P:V21t	no analysed forms	-
+syn	v	предѡбрꙋча́ти	P:V11a	no analysed forms	-
+syn	v	предѡбрꙋчи́ти	P:V21s	no analysed forms	-
+syn	v	предѡбрꙋчи́тисѧ	P:V21s	no analysed forms	-
+syn	v	предѡбѣтова́ти	P:V12ov	no analysed forms	-
+syn	v	предѡбѣща́ти	P:V11a	no analysed forms	-
+syn	v	предѡбꙋча́тисѧ	P:V11a	no analysed forms	-
+syn	v	предѡзарѧ́ти	P:V11a	no analysed forms	-
+syn	v	предѡпредѣли́тисѧ	P:V21n	no analysed forms	-
+syn	v	предѡсіѧ́ти	P:V11a	no analysed forms	-
+syn	v	предѡтве́рзти	P:V14z	no analysed forms	-
+syn	v	предѡтве́рзтисѧ	P:V14z	no analysed forms	-
+syn	v	предѡтсѣщѝ	P:V14k	no analysed forms	-
+syn	v	предѡтъѧ́ти	P:V15n	no analysed forms	-
+syn	v	предѡчи́стити	P:V21t	no analysed forms	-
+syn	v	предѡчи́ститисѧ	P:V21t	no analysed forms	-
+syn	v	предѡчища́ти	P:V11a	no analysed forms	-
+syn	v	предѡчища́тисѧ	P:V11a	no analysed forms	-
+syn	v	предѡщꙋти́ти	P:V21t	no analysed forms	-
+syn	v	предꙋблажи́ти	P:V21s	no analysed forms	-
+syn	v	предꙋбѣжда́ти	P:V11a	no analysed forms	-
+syn	v	предꙋви́дѣти	P:V22t	no analysed forms	-
+syn	v	предꙋвѣ́дати	P:V11a	no analysed forms	-
+syn	v	предꙋвѣ́дѣтисѧ	P:Vved	no analysed forms	-
+syn	v	предꙋвѣ́рити	P:V21n	no analysed forms	-
+syn	v	предꙋвѣрѧ́ти	P:V11a	no analysed forms	-
+syn	v	предꙋгото́вати	P:V11a	no analysed forms	-
+syn	v	предꙋгото́ватисѧ	P:V12ov	no analysed forms	-
+syn	v	предꙋгото́витисѧ	P:V21p	no analysed forms	-
+syn	v	предꙋготовлѧ́ти	P:V11a	no analysed forms	-
+syn	v	предꙋготовлѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	предꙋде́рживати	P:V11a	no analysed forms	-
+syn	v	предꙋдержа́ти	P:V22s	no analysed forms	-
+syn	v	предꙋзако́нити	P:V21n	no analysed forms	-
+syn	v	предꙋзна́ти	P:V11a	no analysed forms	-
+syn	v	предꙋзрѣ́ти	P:V22n	no analysed forms	-
+syn	v	предꙋказа́ти	P:V12t	no analysed forms	-
+syn	v	предꙋказа́тисѧ	P:V12t	no analysed forms	-
+syn	v	предꙋказо́вати	P:V12ov	no analysed forms	-
+syn	v	предꙋкори́ти	P:V21n	no analysed forms	-
+syn	v	предꙋкраси́тисѧ	P:V21t	no analysed forms	-
+syn	v	предꙋкрѣпи́ти	P:V21p	no analysed forms	-
+syn	v	предꙋмертви́ти	P:V21p	no analysed forms	-
+syn	v	предꙋмре́ти	P:V15er	no analysed forms	-
+syn	v	предꙋмы́слити	P:V21n	no analysed forms	-
+syn	v	предꙋмышлѧ́ти	P:V11a	no analysed forms	-
+syn	v	предꙋпрежда́ти	P:V11a	no analysed forms	-
+syn	v	предꙋсе́рдствовати	P:V12ov	no analysed forms	-
+syn	v	предꙋслы́шати	P:V22s	no analysed forms	-
+syn	v	предꙋсмотрѧ́ти	P:V11a	no analysed forms	-
+syn	v	предꙋсрѣ́сти	P:V14ed/V14t	no analysed forms	-
+syn	v	предꙋсрѣта́ти	P:V11a	no analysed forms	-
+syn	v	предꙋста́витисѧ	P:V21p	no analysed forms	-
+syn	v	предꙋставлѧ́ти	P:V11a	no analysed forms	-
+syn	v	предꙋстро́ити	P:V21a	no analysed forms	-
+syn	v	предꙋстро́итисѧ	P:V21a	no analysed forms	-
+syn	v	предꙋтверди́ти	P:V21t	no analysed forms	-
+syn	v	предꙋтвержда́ти	P:V11a	no analysed forms	-
+syn	v	предꙋчини́ти	P:V21n	no analysed forms	-
+syn	v	предꙋчини́тисѧ	P:V21n	no analysed forms	-
+syn	v	предꙋѧсни́ти	P:V21n	no analysed forms	-
+syn	v	прежи́ти	P:V15v	class does not produce the lemma	преживтѝ
+syn	v	преизъѧ́ти	P:V15n	no analysed forms	-
+syn	v	прейтѝ	P:Viti	class not in the inventory	Viti
+syn	v	преклони́тисѧ+бо	P:V21n	class does not produce the lemma	преклони́тисѧити
+syn	v	преспа́ти	P:V12p+V22p	class not in the inventory	V12p+V22p
+syn	v	пресхнꙋ́ти	P:V13k	class does not produce the lemma	пресо́хнꙋти
+syn	v	преходи́ти	P:	no class in the source	-
+syn	v	преѡсвѧще́нствовати	P:V12ov	no analysed forms	-
+syn	v	прибли́житисѧ+бо	P:V21s	class does not produce the lemma	прибли́житисѧити
+syn	v	прибли́житисѧ+же	P:V21s	class does not produce the lemma	прибли́житисѧити
+syn	v	приближа́тисѧ+же	P:V11a	class does not produce the lemma	приближа́тисѧ+ти
+syn	v	привни́ти	P:Viti	class not in the inventory	Viti
+syn	v	привозѡбраща́ти	P:V11a	no analysed forms	-
+syn	v	приврещи́/приве́ргнꙋти	P:V14g*/V13k	class does not produce the lemma	приве́ргнꙋти
+syn	v	привы́кнꙋти	P:V13k	no analysed forms	-
+syn	v	придѣ́ти	P:V15z	class not in the inventory	V15z
+syn	v	прижа́ти	P:V15n	class does not produce the lemma	прижме́ти
+syn	v	прикаса́тисѧ+бо	P:V11a	class does not produce the lemma	прикаса́тисѧ+ти
+syn	v	прилꙋчи́тисѧ+же	P:V21s	no analysed forms	-
+syn	v	припре́тисѧ	P:V22n	no analysed forms	-
+syn	v	пристꙋжи́ти	P:	no class in the source	-
+syn	v	прише́льствовати	P:V12ov	class does not produce the lemma	прише́лствовати
+syn	v	прожи́ти	P:V15v	class does not produce the lemma	прожи́вти
+syn	v	произы́ти	P:Viti	class not in the inventory	Viti
+syn	v	произѡбрази́ти	P:V21t	no analysed forms	-
+syn	v	пройтѝ	P:Viti	class not in the inventory	Viti
+syn	v	промчатисѧ	P:	no class in the source	-
+syn	v	пронзи́ти	P:V13t	class does not produce the lemma	про́ннꙋти
+syn	v	проповѣ́дѣти	P:Vved	class does not produce the lemma	проповѣ́ти
+syn	v	пропѧ́ти	P:V15n	class does not produce the lemma	пропѧ́тъти
+syn	v	пророкова́ти	P:V12ov	no analysed forms	-
+syn	v	прославлѧ́тисѧ+ми	P:V11a	class does not produce the lemma	прославлѧ́тисѧ+ти
+syn	v	противлѧ́тисѧ+ми	P:V11a	class does not produce the lemma	противлѧ́тисѧ+ти
+syn	v	противобра́ти	P:V15ol	no analysed forms	-
+syn	v	противобра́тисѧ	P:V15ol	no analysed forms	-
+syn	v	противовостава́ти	P:V12v	class not in the inventory	V12v
+syn	v	противоитѝ	P:Viti	class not in the inventory	Viti
+syn	v	пріижди́ти	P:V15v	class does not produce the lemma	прїиждивтѝ
+syn	v	пріитѝ	P:Viti	class not in the inventory	Viti
+syn	v	прѣ́тисѧ+же	P:V22n	class does not produce the lemma	прѣ́тисѧѣти
+syn	v	ра́доватисѧ+бо	P:V12ov	class does not produce the lemma	ра́доватисѧ+ти
+syn	v	ради́ти	P:V22t/V21t	class does not produce the lemma	ра́дѣти
+syn	v	разгиба́ти	P:V11a	no analysed forms	-
+syn	v	разгордѣ́тисѧ+бо	P:V22t	class does not produce the lemma	разгордѣ́тисѧѣти
+syn	v	раздѣли́тисѧ+же	P:V21n	class does not produce the lemma	раздѣли́тисѧити
+syn	v	разли́ти	P:V15i	class does not produce the lemma	разле́ти
+syn	v	разрѣши́тисѧ+же	P:V21s	no analysed forms	-
+syn	v	разъѧри́ти	P:V21n	no analysed forms	-
+syn	v	разъѧри́тисѧ	P:V21n	no analysed forms	-
+syn	v	разыти́сѧ	P:Viti	class not in the inventory	Viti
+syn	v	распалѧ́тисѧ	P:V11a	class does not produce the lemma	роспалѧ́тисѧ
+syn	v	расплоди́ти	P:V21t	class does not produce the lemma	разплоди́ти
+syn	v	распра́ти	P:V15ol	no analysed forms	-
+syn	v	растерзава́тисѧ+же	P:V11a	class does not produce the lemma	растерзава́тисѧ+ти
+syn	v	расчеса́ти	P:V12t	class does not produce the lemma	разчеса́ти
+syn	v	расширѣ́ти	P:V11e	class does not produce the lemma	разширѣ́ти
+syn	v	расширѧ́ти	P:V11a	class does not produce the lemma	разширѧ́ти
+syn	v	ревѣ́ти	P:V22+V14	class not in the inventory	V22+V14
+syn	v	роди́тисѧ+бо	P:V21t	class does not produce the lemma	роди́тисѧити
+syn	v	роди́тисѧ+же	P:V21t	class does not produce the lemma	роди́тисѧити
+syn	v	роси́ти	P:	no class in the source	-
+syn	v	рѣша́ти	P:V11a	no analysed forms	-
+syn	v	рꙋга́тисѧ+же	P:V11a	class does not produce the lemma	рꙋга́тисѧ+ти
+syn	v	самоитѝ	P:Viti	class not in the inventory	Viti
+syn	v	самоѡти́ти	P:Viti	class not in the inventory	Viti
+syn	v	сблаговоли́ти	P:V21n	no analysed forms	-
+syn	v	сблагосло́вити	P:V21p	no analysed forms	-
+syn	v	сбыти	P:Vbyt	no analysed forms	-
+syn	v	свидѣ́тельствоватисѧ	P:V12ov	class does not produce the lemma	свидѣ́телствоватисѧ
+syn	v	свиста́ти	P:V12t/V11a	no analysed forms	-
+syn	v	свѧщеннонача́льствовати	P:V12ov	no analysed forms	-
+syn	v	свѧщеннообразова́ти	P:V12ov	no analysed forms	-
+syn	v	свѧщенноочища́ти	P:V11a	no analysed forms	-
+syn	v	свѧщеннопожи́ти	P:V15v	no analysed forms	-
+syn	v	свѧщеннопроповѣ́дати	P:V11a	no analysed forms	-
+syn	v	свѧщеннособра́тисѧ	P:V12x*	no analysed forms	-
+syn	v	свѧщеннꙋкраси́ти	P:V21t	no analysed forms	-
+syn	v	слꙋчи́тисѧ+ти	P:V21s	class does not produce the lemma	слꙋчи́тисѧити
+syn	v	смири́тисѧ+ми	P:V21n	class does not produce the lemma	смири́тисѧити
+syn	v	сни́ти	P:Viti	class not in the inventory	Viti
+syn	v	сни́тисѧ	P:Viti	class not in the inventory	Viti
+syn	v	снизытѝ	P:Viti	class not in the inventory	Viti
+syn	v	совзытѝ	P:Viti	class not in the inventory	Viti
+syn	v	совни́ти	P:Viti	class not in the inventory	Viti
+syn	v	совозста́ти	P:V15a	class does not produce the lemma	совоста́ти
+syn	v	совозстава́ти	P:V12v	class not in the inventory	V12v
+syn	v	совоспріѧ́ти	P:V15n	class does not produce the lemma	совоспрїѧ́тъти
+syn	v	содѣ́ѧти	P:V12a	no analysed forms	-
+syn	v	соизытѝ	P:Viti	class not in the inventory	Viti
+syn	v	соизѡбража́тисѧ	P:V11a	no analysed forms	-
+syn	v	соплы́ти	P:V15v	class does not produce the lemma	соплы́вти
+syn	v	сопроти́витисѧ+бо	P:V21p	class does not produce the lemma	сопроти́витисѧити
+syn	v	сопротивобра́тисѧ	P:V15ol	no analysed forms	-
+syn	v	сораспѧ́тисѧ	P:V15n	class does not produce the lemma	сораспѧ́тътисѧ
+syn	v	соѡбрази́тисѧ+бо	P:V21t	class does not produce the lemma	соѡбрази́тисѧити
+syn	v	соѡбъима́ти	P:V12p/V11a	no analysed forms	-
+syn	v	соѡты́ти	P:Viti	class not in the inventory	Viti
+syn	v	спа́ти	P:V12p+V22p	class not in the inventory	V12p+V22p
+syn	v	спобра́ти	P:V15or	class not in the inventory	V15or
+syn	v	сразсмотрѣ́ти	P:V22n/V21n	class does not produce the lemma	сразсмо́трити
+syn	v	сраствори́тисѧ+же	P:V21n	class does not produce the lemma	сраствори́тисѧити
+syn	v	стена́ти	P:V12n/V22n	class does not produce the lemma	сте́нѣти
+syn	v	стона́ти	P:V12n/V22n	class does not produce the lemma	стонѣ́ти
+syn	v	стыдѣ́тисѧ+бо	P:V22t/V21t	class does not produce the lemma	стыдѣ́тисѧѣти
+syn	v	съѧ́стисѧ	P:Vest	no analysed forms	-
+syn	v	сꙋмнѣ́тисѧ+же	P:V22n/V21n	class does not produce the lemma	сꙋмнѣ́тисѧѣти
+syn	v	трꙋжда́тисѧ+бо	P:V11a	class does not produce the lemma	трꙋжда́тисѧ+ти
+syn	v	тща́тисѧ+бо	P:V22s	class does not produce the lemma	тща́тисѧати
+syn	v	хотѣ́ти	P:V22t+V12t	class not in the inventory	V22t+V12t
+syn	v	хотѣ́ти+же	P:V22t+V12t	class not in the inventory	V22t+V12t
+syn	v	хотѣ́тисѧ	P:V22t+V12t	class not in the inventory	V22t+V12t
+syn	v	храпѣ́ти	P:V22p	class does not produce the lemma	храплѣ́ти
+syn	v	чермнова́тисѧ+бо	P:V12ov	class does not produce the lemma	чермнова́тисѧ+ти
+syn	v	ѕлорѣ́щи	P:V14k	no analysed forms	-
+syn	v	ѡ҆безно́жѣти	P:V11e	no analysed forms	-
+syn	v	ѡ҆боготвори́тисѧ	P:V21n	no analysed forms	-
+syn	v	ѡ҆брати́тисѧ+же	P:V21t	class does not produce the lemma	ѡ҆брати́тисѧити
+syn	v	ѡ҆брѣта́тисѧ+же	P:V11a	class does not produce the lemma	ѡ҆брѣта́тисѧ+ти
+syn	v	ѡ҆бъедини́ти	P:V21n	no analysed forms	-
+syn	v	ѡ҆бъюроди́ти	P:V21t	no analysed forms	-
+syn	v	ѡ҆бъюродѣ́ти	P:V11e	no analysed forms	-
+syn	v	ѡ҆бъюродѣва́ти	P:V11a	no analysed forms	-
+syn	v	ѡ҆бъюха́ти	P:V11a	no analysed forms	-
+syn	v	ѡ҆бъѧ́сти	P:Vest	no analysed forms	-
+syn	v	ѡ҆бъѧ́стисѧ	P:Vest	no analysed forms	-
+syn	v	ѡ҆бъѧ́тисѧ	P:V15n	no analysed forms	-
+syn	v	ѡ҆бъѧви́ти	P:V21p	no analysed forms	-
+syn	v	ѡ҆бъѧви́тисѧ	P:V21p	no analysed forms	-
+syn	v	ѡ҆бъѧвлѧ́ти	P:V11a	no analysed forms	-
+syn	v	ѡ҆бъѧда́тисѧ	P:V11a	no analysed forms	-
+syn	v	ѡ҆бъѧсни́ти	P:V21n	no analysed forms	-
+syn	v	ѡ҆быма́тисѧ	P:V12p/V11a	no analysed forms	-
+syn	v	ѡ҆быска́тисѧ	P:V12t	no analysed forms	-
+syn	v	ѡ҆бытѝ	P:Viti	class not in the inventory	Viti
+syn	v	ѡ҆бꙋмира́ти	P:V11a	no analysed forms	-
+syn	v	ѡ҆глагольствовати	P:V12ov	no analysed forms	-
+syn	v	ѡ҆дѣ́ѧтисѧ+же	P:V12a	no analysed forms	-
+syn	v	ѡ҆дѣти	P:V15z	class not in the inventory	V15z
+syn	v	ѡ҆дѣтисѧ	P:V15z	class not in the inventory	V15z
+syn	v	ѡ҆дѣѧ́тисѧ	P:V11a	no analysed forms	-
+syn	v	ѡ҆жи́ти	P:V15v	class does not produce the lemma	ѡ҆живтѝ
+syn	v	ѡ҆каменѣ́ти	P:V11e	no analysed forms	-
+syn	v	ѡ҆кра́сти	P:V14d	no analysed forms	-
+syn	v	ѡ҆свѣти́ти	P:V21t	no analysed forms	-
+syn	v	ѡ҆свѧтова́ти	P:V12ov	no analysed forms	-
+syn	v	ѡ҆става́ти	P:V12v	class not in the inventory	V12v
+syn	v	ѡ҆страсти́ти	P:V21t	no analysed forms	-
+syn	v	ѡ҆твраща́тисѧ+же	P:V11a	class does not produce the lemma	ѡ҆твраща́тисѧ+ти
+syn	v	ѡ҆тдви́гатисѧ/ѡтдви́житисѧ	P:V12t/V21s	class does not produce the lemma	ѡ҆тдви́гатисѧ/ѡтдвижатисѧ
+syn	v	ѡ҆ткры́тисѧ+бо	P:V15y	class does not produce the lemma	ѡ҆ткры́тисѧ+ти
+syn	v	ѡ҆трази́тисѧ+ти	P:V21t	class does not produce the lemma	ѡ҆трази́тисѧити
+syn	v	ѡ҆тъѧ́тисѧ	P:V15n	class does not produce the lemma	ѿѧ́тисѧ
+syn	v	ѡ҆тыгра́тисѧ	P:V11a	class does not produce the lemma	ѿигра́тисѧ
+syn	v	ѡ҆тыма́тисѧ	P:V12p/V11a	class does not produce the lemma	ѿи́матисѧ
+syn	v	ѡ҆тытѝ	P:Viti	class not in the inventory	Viti
+syn	v	ѣ҆́хати	P:Vexat	class not in the inventory	Vexat
+syn	v	ѻ҆бщежи́тельствовати	P:V12ov	class does not produce the lemma	ѻ҆бщежи́телствовати
+syn	v	ꙗ҆́вленнѣ	P:V21p	class does not produce the lemma	ꙗ҆́влеити
+syn	v	ꙗ҆ви́тисѧ+бо	P:V21p	class does not produce the lemma	ꙗ҆ви́тисѧити
+syn	v	ꙗ҆ви́тисѧ+же	P:V21p	class does not produce the lemma	ꙗ҆ви́тисѧити
+syn	v	ꙗ҆ви́тисѧ+ми	P:V21p	attested citation form differs from the lemma	ꙗ҆ви́тимисѧ
+syn	v	ꙗ҆ви́тисѧ+ти	P:V21p	class does not produce the lemma	ꙗ҆ви́тисѧити

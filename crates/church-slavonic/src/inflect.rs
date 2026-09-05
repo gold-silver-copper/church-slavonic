@@ -31,7 +31,14 @@ impl Lexeme {
     fn compose(&self, cell: Cell, letters: &Letters, spec: Option<&StressSpec>, lemma_stress: Option<u8>) -> Form {
         let total = letters.letters.chars().filter(|c| is_vowel_letter(*c)).count();
         let stress = spec.and_then(|s| resolve(s.place(cell), lemma_stress, letters.stem_vowels, total));
-        Form { letters: letters.letters.clone(), stress, number_mark: letters.mark }
+        Form { letters: letters.letters.clone(), stress, number_mark: letters.mark, mark_skip: letters.tail_vowels, varia: false, kamora: false }
+    }
+
+    /// The class's letters for a cell (the enclitic, if any,
+    /// appended by the class).
+    fn class_letters(&self, class: &Class, cell: Cell, lemma: &Form) -> Vec<Letters> {
+        let subject = Subject { lemma: &lemma.letters, animate: self.animate, stems: &self.stems };
+        class.letters(cell, &subject)
     }
 
     /// The primary form of `cell`: the override, else class + stress.
@@ -41,10 +48,12 @@ impl Lexeme {
         if let Some((_, printed)) = self.overrides.iter().find(|(c, _)| *c == cell) {
             return Some(Form::from_print(printed));
         }
+        if self.pos == crate::cell::Pos::Closed {
+            return (cell == Cell::Word).then(|| Form::from_print(&self.lemma));
+        }
         let class = self.class()?;
         let lemma = self.lemma_form();
-        let subject = Subject { lemma: &lemma.letters, animate: self.animate, stems: &self.stems };
-        let letters = class.letters(cell, &subject);
+        let letters = self.class_letters(class, cell, &lemma);
         let first = letters.first()?;
         Some(self.compose(cell, first, self.stress_spec().as_ref(), lemma.stress))
     }
@@ -54,21 +63,48 @@ impl Lexeme {
     /// variants. Duplicates (by print) removed.
     pub fn forms(&self, cell: impl Into<Cell>) -> Vec<Form> {
         let cell = cell.into();
-        let mut out: Vec<Form> = Vec::new();
+        let lemma = self.lemma_form();
+        let class = self.class();
+        let stems = class.map(|c| c.stems_of(&Subject { lemma: &lemma.letters, animate: self.animate, stems: &self.stems }));
+        self.forms_with(cell, &lemma, class, stems.as_ref(), self.stress_spec().as_ref()).into_iter().map(|(f, _)| f).collect()
+    }
+
+    /// Every cell's forms with their prints, the lexeme's stems and stress
+    /// paradigm computed once: what the analyzer's index walks.
+    pub fn all_forms(&self) -> Vec<(Cell, Vec<(Form, String)>)> {
+        let lemma = self.lemma_form();
+        let class = self.class();
+        let stems = class.map(|c| c.stems_of(&Subject { lemma: &lemma.letters, animate: self.animate, stems: &self.stems }));
+        let spec = self.stress_spec();
+        self.cells().into_iter().map(|cell| (cell, self.forms_with(cell, &lemma, class, stems.as_ref(), spec.as_ref()))).collect()
+    }
+
+    fn forms_with(
+        &self,
+        cell: Cell,
+        lemma: &Form,
+        class: Option<&'static Class>,
+        stems: Option<&std::collections::HashMap<u8, String>>,
+        spec: Option<&StressSpec>,
+    ) -> Vec<(Form, String)> {
+        let recension = crate::grammar::Recension::Synodal;
+        let mut out: Vec<(Form, String)> = Vec::new();
         let mut push = |f: Form| {
-            if !out.iter().any(|o| o.print(crate::grammar::Recension::Synodal) == f.print(crate::grammar::Recension::Synodal)) {
-                out.push(f);
+            let print = f.print(recension);
+            if !out.iter().any(|(_, p)| *p == print) {
+                out.push((f, print));
             }
         };
         if let Some((_, printed)) = self.overrides.iter().find(|(c, _)| *c == cell) {
             push(Form::from_print(printed));
         }
-        if let Some(class) = self.class() {
-            let lemma = self.lemma_form();
+        if self.pos == crate::cell::Pos::Closed && cell == Cell::Word {
+            push(Form::from_print(&self.lemma));
+        }
+        if let (Some(class), Some(stems)) = (class, stems) {
             let subject = Subject { lemma: &lemma.letters, animate: self.animate, stems: &self.stems };
-            let spec = self.stress_spec();
-            for letters in class.letters(cell, &subject) {
-                push(self.compose(cell, &letters, spec.as_ref(), lemma.stress));
+            for letters in class.letters_with(cell, &subject, stems) {
+                push(self.compose(cell, &letters, spec, lemma.stress));
             }
         }
         for (_, variants) in self.variants.iter().filter(|(c, _)| *c == cell) {
@@ -79,10 +115,22 @@ impl Lexeme {
         out
     }
 
-    /// The whole paradigm in the class's cell order (overrides included).
+    /// The whole paradigm in the class's cell order (overrides included);
+    /// a closed-class word's one cell.
     pub fn paradigm(&self) -> Vec<(Cell, Form)> {
+        if self.pos == crate::cell::Pos::Closed {
+            return self.inflect(Cell::Word).map(|f| vec![(Cell::Word, f)]).unwrap_or_default();
+        }
         let Some(class) = self.class() else { return Vec::new() };
         class.order.iter().filter_map(|c| self.inflect(*c).map(|f| (*c, f))).collect()
+    }
+
+    /// The cells the lexeme declares, in order.
+    pub fn cells(&self) -> Vec<Cell> {
+        if self.pos == crate::cell::Pos::Closed {
+            return vec![Cell::Word];
+        }
+        self.class().map(|c| c.order.clone()).unwrap_or_default()
     }
 }
 

@@ -8,7 +8,8 @@
 //!
 //! Column grammar: `a` | `a<N>` (fixed on vowel N) | `b` | `<name>` |
 //! `<name>{cell=S|E|<N>;…}` | `{…}` — with `sg`/`du`/`pl` accepted as
-//! cell keys for a whole number. `-` is no stress (Old Church Slavonic,
+//! keys for a whole number and a block name (`part`, `part.pres.act`,
+//! `short.comp`) for a whole block. `-` is no stress (Old Church Slavonic,
 //! a titlo lemma).
 
 use crate::cell::{Cell, Pos, parse_number};
@@ -20,6 +21,8 @@ use std::sync::OnceLock;
 pub enum Place {
     Stem,
     End,
+    /// The last vowel of the stem (a comparative's suffix: велича́йшїй).
+    StemLast,
     Index(u8),
 }
 
@@ -28,6 +31,7 @@ impl Place {
         match s {
             "S" => Some(Place::Stem),
             "E" => Some(Place::End),
+            "L" => Some(Place::StemLast),
             n => n.parse().ok().map(Place::Index),
         }
     }
@@ -37,6 +41,9 @@ impl Place {
 enum Key {
     Cell(Cell),
     Number(Number),
+    /// A block prefix (`part`, `part.pres.act`): every cell whose block
+    /// name starts with it.
+    Block(String),
 }
 
 /// A named or inline paradigm: a default place and exceptions.
@@ -61,8 +68,12 @@ impl Paradigm {
             let place = Place::parse(v).ok_or_else(|| format!("stress place {v}"))?;
             let key = if let Some(n) = parse_number(k) {
                 Key::Number(n)
+            } else if let Some(cell) = Cell::parse(pos, k) {
+                Key::Cell(cell)
+            } else if k == "part" || k.starts_with("part.") || k.ends_with(".comp") || k.ends_with(".pos") {
+                Key::Block(k.to_string())
             } else {
-                Key::Cell(Cell::parse(pos, k).ok_or_else(|| format!("stress cell {k}"))?)
+                return Err(format!("stress cell {k}"));
             };
             rules.push((key, place));
         }
@@ -71,10 +82,18 @@ impl Paradigm {
 
     fn place(&self, cell: Cell) -> Option<Place> {
         let exact = self.rules.iter().find(|(k, _)| *k == Key::Cell(cell)).map(|(_, p)| *p);
-        exact.or_else(|| {
-            let number = cell.number()?;
-            self.rules.iter().find(|(k, _)| *k == Key::Number(number)).map(|(_, p)| *p)
-        })
+        exact
+            .or_else(|| {
+                let block = cell.block()?;
+                self.rules
+                    .iter()
+                    .find(|(k, _)| matches!(k, Key::Block(b) if block == *b || block.starts_with(&format!("{b}."))))
+                    .map(|(_, p)| *p)
+            })
+            .or_else(|| {
+                let number = cell.number()?;
+                self.rules.iter().find(|(k, _)| *k == Key::Number(number)).map(|(_, p)| *p)
+            })
     }
 }
 
@@ -84,7 +103,9 @@ fn named() -> &'static HashMap<String, String> {
     NAMED.get_or_init(|| {
         let mut out = HashMap::new();
         out.insert("a".to_string(), "S".to_string());
-        out.insert("b".to_string(), "E".to_string());
+        // the ending everywhere — except a participle, whose stem carries
+        // the thematic vowel the finite endings supply (творю̀, творѧ́щій)
+        out.insert("b".to_string(), "E;part=S".to_string());
         for line in include_str!("../lexicon/stress.tsv").lines() {
             if line.starts_with('#') || line.trim().is_empty() || line.starts_with("name\t") {
                 continue;
@@ -157,6 +178,7 @@ pub fn resolve(place: Place, lemma_stress: Option<u8>, stem_vowels: usize, total
         Place::End => {
             if total_vowels > stem_vowels { stem_vowels } else { last_stem }
         }
+        Place::StemLast => last_stem,
         Place::Index(n) => usize::from(n).min(last),
     };
     u8::try_from(index).ok()

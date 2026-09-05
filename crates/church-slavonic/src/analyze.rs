@@ -44,23 +44,45 @@ pub struct Index {
 
 impl Index {
     fn build(lexicon: &Lexicon) -> Index {
-        let mut entries = Vec::new();
-        for (i, lexeme) in lexicon.iter().enumerate() {
-            let Some(class) = lexeme.class() else { continue };
-            for cell in &class.order {
-                for (alt, form) in lexeme.forms(*cell).into_iter().enumerate() {
-                    let print = form.print(lexicon.recension);
-                    entries.push(Entry {
-                        key: comparison_key(&print),
-                        lexeme: i as u32,
-                        cell: *cell,
-                        alt: alt.min(255) as u8,
-                        print,
-                    });
-                }
-            }
+        let timing = std::env::var_os("CS_INDEX_TIMING").is_some();
+        let started = std::time::Instant::now();
+        // every lexeme's paradigm, generated in parallel chunks (the
+        // Synodal lexicon is ~7.8 million forms)
+        let lexemes: Vec<&Lexeme> = lexicon.iter().collect();
+        let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1).clamp(1, 16);
+        let chunk = lexemes.len().div_ceil(threads).max(1);
+        let recension = lexicon.recension;
+        let mut entries: Vec<Entry> = std::thread::scope(|scope| {
+            let handles: Vec<_> = lexemes
+                .chunks(chunk)
+                .enumerate()
+                .map(|(c, slice)| {
+                    scope.spawn(move || {
+                        let mut out = Vec::new();
+                        for (j, lexeme) in slice.iter().enumerate() {
+                            let i = c * chunk + j;
+                            for (cell, forms) in lexeme.all_forms() {
+                                for (alt, (form, print)) in forms.into_iter().enumerate() {
+                                    // the prints are Synodal; the OCS lexicon's
+                                    // index re-prints in its own recension
+                                    let print = if recension == crate::grammar::Recension::Synodal { print } else { form.print(recension) };
+                                    out.push(Entry { key: comparison_key(&print), lexeme: i as u32, cell, alt: alt.min(255) as u8, print });
+                                }
+                            }
+                        }
+                        out
+                    })
+                })
+                .collect();
+            handles.into_iter().flat_map(|h| h.join().expect("index chunk")).collect()
+        });
+        if timing {
+            eprintln!("index: {} entries generated in {:.2?}", entries.len(), started.elapsed());
         }
         entries.sort_by(|a, b| a.key.cmp(&b.key).then(a.lexeme.cmp(&b.lexeme)).then(a.alt.cmp(&b.alt)));
+        if timing {
+            eprintln!("index: sorted in {:.2?}", started.elapsed());
+        }
         Index { entries }
     }
 

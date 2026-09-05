@@ -155,6 +155,87 @@ The gate is met. The ambiguous share rose (31.0% → 34.5%) because the
 indexed only lemmas with an irregular cell; a token whose noun readings
 are several is recorded, never guessed.
 
+### Part 3 — adjectives, verbs, participles, pronouns, closed classes (2026-09-05)
+
+- **Adjectives** (`classes/adj.tsv`, 16 classes seeded from Polyakov's
+  legend by `scripts/legend-adj-verb-pron.py`): the short and long series
+  and the comparative are blocks of ONE lexeme; the possessives' nominal
+  cells are a class (A2t, A2j); the -ск- adjectives their own velar twin
+  (A1sk: -стїи, not -цыи); measured alternatives and number marks per
+  (class, cell) by census and `--fix-marks`. 8,344 lexemes, 94.05%
+  primary / 96.07% reachable over 94,138 Polyakov cells.
+- **Verbs** (`classes/verb.tsv`, 49 classes): stems 1 infinitive, 2
+  present, 3 palatalised imperative, 5–8 the four participle stems
+  declined as adjective classes by delegation (`5~A1s`), 9 the bare
+  present participle, 11 the past active short stem, 12 the long past
+  passive; the athematic бы́ти (present, future бꙋ́дꙋ, imperfect бѧ́хъ,
+  the two aorists), да́ти, ꙗ҆́сти, вѣ́дѣти, и҆мѣ́ти as literal-cell classes;
+  reflexive verbs carry `stems=encl=сѧ` and the class writes the enclitic
+  solid, the jer before it dropped. 8,239 lexemes, 91.4% primary over
+  125,932 cells.
+- **Pronouns** (`classes/pronoun.tsv`, 21 classes; 68 lexemes): the
+  personal matrix (азъ/мы/ты/вы with per-lexeme stems, the third person
+  as a literal class on the empty stem with its н- and clitic
+  alternatives), the reflexive, the relative и҆́же (the third person's
+  obliques with its own nominatives, `encl=же`), the pronominal
+  adjectives (PA1…, the fleeting PA1*, the velar PA1tk for такі́й), the
+  nominal declension PN/PNk for тако́въ, толи́къ; кто̀/что̀ and their
+  compounds on stems named per lexeme, `encl=же|либо|ждо` for the
+  compounds. Imported from the 1.x arbitrated tables (Alypy §47/§48 with
+  the witnesses folded in) through the same fit as every source, with
+  `P:` provenance where Polyakov lists the lemma; the temporary importer
+  and the legacy dependency were then deleted.
+- **Closed classes** (`syn/closed.tsv`, 2,503 lexemes): Polyakov's ADV,
+  ADVPRO, CONJ, PR, PART, INTJ, PRED entries as one-cell lexemes, spelling
+  variants as variants.
+- **Form** gained three flags the print's own choices need to round-trip:
+  `mark_skip` (the number mark stays off a solid enclitic: є҆гѡ́же,
+  тѣ̑мже), `varia` (и҆̀хъ the accusative against и҆́хъ the genitive, ꙗ҆̀же)
+  and `kamora` (своѧ̑ beside свѡѧ̀); `from_print` folds an initial ѻ/є
+  so ids are bare letters (755 noun ids changed); the attested citation
+  form replaces a source headword that spells it otherwise (тьма̀ →
+  тма̀, 216 lexemes, the headword kept in `note`).
+- **Cross-checking sources** (`cargo xtask import alypy|ruwiktionary|
+  witnesses --pos <pos>`): every source cell is reproduced, reachable,
+  added as a variant with the source's token, or quarantined with a
+  reason; a Polyakov re-import keeps those variants. Alypy's `-ѣ` dual
+  alternative was mis-expanded by the 1.x loader (пи́шеѣ for пи́шетѣ) and
+  is fixed.
+- **Treebank**: leaves for every part of speech carry a lexeme id and a
+  cell (`(adj мꙋдрый.a :case nom :num sg :g m :series long)`, `(v рещи.v
+  :t aor :p 3 :num sg)`, `(part …)`, `(lp …)`, `(pn азъ.pron :p 1 :num sg
+  :case dat :clit yes)`, `(f и.x)`); the treebank is lifted from the
+  print every time (22 s, index 14 s built in parallel); a titlo token
+  lifts through a small index of the titlo rows' paradigms; closed-class
+  homographs (Polyakov's и҆ as conjunction and particle) are one function
+  word. The Genesis 1 hand overlay's 1.x leaves were converted to ids
+  (33 left verbatim with their old features as notes: бы́сть before the
+  бы́ти class existed, forms the sources do not attest).
+- **Analyzer**: `Lexeme::all_forms` derives stems and the stress
+  paradigm once per lexeme; the index is built in parallel chunks
+  (7.84 M entries, 14 s, was 95 s).
+
+Measured (gate: every 1.2 source reproduced/variant/quarantined with
+counts; held-out per POS — n/a until Part 4; Bible coverage ≥ 48.6%
+mechanical with verbatim ≤ 20.2%; zero mismatches):
+
+| Number | Value | 1.2 |
+|---|---|---|
+| Polyakov cells reproduced / reachable: nouns | 43,842 / — of 46,315 (94.7%) | — |
+| adjectives | 88,540 / 90,442 of 94,138 (94.05% / 96.07%) | — |
+| verbs | 115,144 of 125,932 (91.4%) | — |
+| Alypy cells reproduced / reachable / variants added / quarantined | nouns 380/58/79/14; adjectives 355/20/25/63; verbs 183/51/132/12; pronouns 274/86/46/0 | 100.00% / 0 by construction |
+| ru.wiktionary | nouns 442/82/149/42; verbs 38/11/17/0 | 100.00% / 0 |
+| witnesses | nouns 0/1/0/2; pronouns 21/0/2/0 | 100.00% / 0 |
+| treebank: analyzed / closed / ambiguous / verbatim | 23.4% / 28.1% / 39.1% / 9.3% (mechanical 51.5%) | 21.5% / 27.1% / 31.0% / 20.2% (48.6%) |
+| `build-treebank` / index build | 22 s / 14 s | ~180 s |
+| Bible tokens with one exact reading / several / none (all POS) | 50.86% / 36.59% / 12.55% | — |
+| guesser, Synodal nouns: class / cells | 93.94% / 93.29% | — |
+
+The gate is met on the treebank and the source accounting; the noun
+gate of Part 1 (99% / 5%) stays unmet as recorded. `data/witnesses.tsv`
+stays until Part 5: the legacy baseline instrument reads it.
+
 ## 1.2.0 — the Synodal pronoun release
 
 The commonest words of the language render from cells: Synodal

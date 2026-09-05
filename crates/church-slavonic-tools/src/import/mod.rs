@@ -4,6 +4,7 @@
 //! do not produce, and writes suspects to `quarantine.tsv` with a reason.
 //! Without `--write` it prints the report and the diff summary only.
 
+pub mod crosscheck;
 pub mod fit;
 pub mod polyakov;
 
@@ -74,7 +75,14 @@ pub fn intermediate_dir() -> PathBuf {
 pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     let source = args.first().ok_or("import <polyakov> --pos <noun> [--write] [--debug <lemma>]")?;
     if let Some(i) = args.iter().position(|a| a == "--debug") {
-        return polyakov::debug_noun(args.get(i + 1).ok_or("--debug <lemma>")?);
+        let pos = match args.iter().position(|a| a == "--pos").and_then(|p| args.get(p + 1)).map(String::as_str) {
+            Some("adj") => Pos::Adjective,
+            Some("verb") => Pos::Verb,
+            Some("pron") => Pos::Pronoun,
+            Some("closed") => Pos::Closed,
+            _ => Pos::Noun,
+        };
+        return polyakov::debug(pos, args.get(i + 1).ok_or("--debug <lemma>")?);
     }
     let mut pos = None;
     let mut write = false;
@@ -90,7 +98,8 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
                     Some("adj") => Pos::Adjective,
                     Some("verb") => Pos::Verb,
                     Some("pron") => Pos::Pronoun,
-                    other => return Err(format!("--pos {other:?}: noun|adj|verb|pron").into()),
+                    Some("closed") => Pos::Closed,
+                    other => return Err(format!("--pos {other:?}: noun|adj|verb|pron|closed").into()),
                 });
             }
             "--write" => write = true,
@@ -101,9 +110,10 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
         i += 1;
     }
     let pos = pos.ok_or("--pos is required")?;
-    let outcome = match (source.as_str(), pos) {
-        ("polyakov", Pos::Noun) => polyakov::import_nouns()?,
-        (s, p) => return Err(format!("import {s} --pos {p:?}: not implemented yet").into()),
+    let outcome = match source.as_str() {
+        "polyakov" => polyakov::import(pos)?,
+        "alypy" | "ruwiktionary" | "witnesses" => crosscheck::import(source, pos)?,
+        s => return Err(format!("import {s}: unknown source").into()),
     };
     report(&outcome);
     if fix_marks {
@@ -113,11 +123,26 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
         print!("{}", lexicon::format(&outcome.lexemes));
     }
     if write {
-        write_outcome(&outcome, Recension::Synodal, pos)?;
+        if source == "polyakov" {
+            write_outcome(&outcome, Recension::Synodal, pos)?;
+        } else {
+            crosscheck::write(&outcome, pos)?;
+        }
     } else {
         println!("(dry run — pass --write to update the lexicon)");
     }
     Ok(())
+}
+
+/// The lexicon file of a part of speech.
+pub fn lexicon_file(pos: Pos) -> &'static str {
+    match pos {
+        Pos::Noun => "nouns.tsv",
+        Pos::Adjective => "adjectives.tsv",
+        Pos::Verb => "verbs.tsv",
+        Pos::Pronoun => "pronouns.tsv",
+        Pos::Closed => "closed.tsv",
+    }
 }
 
 fn report(o: &Outcome) {
@@ -127,6 +152,12 @@ fn report(o: &Outcome) {
     }
     println!("{:>8}  lexemes kept", o.lexemes.len());
     println!("{:>8}  quarantined", o.quarantine.len());
+    // CS_QUARANTINE_SAMPLE=<n> lists the first n quarantined entries
+    if let Some(n) = std::env::var("CS_QUARANTINE_SAMPLE").ok().and_then(|v| v.parse::<usize>().ok()) {
+        for q in o.quarantine.iter().take(n) {
+            println!("          {} [{}] {}: {}", q.lemma, q.source, q.reason, q.detail);
+        }
+    }
     let mut reasons: BTreeMap<&str, u64> = BTreeMap::new();
     for q in &o.quarantine {
         *reasons.entry(q.reason).or_default() += 1;
@@ -164,11 +195,12 @@ fn report(o: &Outcome) {
         }
     }
     println!("== number-mark disagreements (class cell: marked/unmarked vs the table)");
-    let table = church_slavonic::paradigm::table(Pos::Noun);
+    let pos = o.lexemes.first().map(|l| l.pos).unwrap_or(Pos::Noun);
+    let table = church_slavonic::paradigm::table(pos);
     let mut disagreements = 0;
     for ((class, cell), (marked, unmarked)) in &o.mark_preference {
         let Some(c) = table.get(class) else { continue };
-        let Some(cellv) = church_slavonic::cell::Cell::parse(Pos::Noun, cell) else { continue };
+        let Some(cellv) = church_slavonic::cell::Cell::parse(pos, cell) else { continue };
         let Some(alts) = c.cells.get(&cellv) else { continue };
         let table_mark = match alts.first().map(|a| &a.shape) {
             Some(church_slavonic::paradigm::Shape::Ending { mark, .. }) => *mark,
@@ -198,9 +230,17 @@ fn report(o: &Outcome) {
         }
     }
     println!("== true exceptions (a sample of {})", o.exception_samples.len());
-    let step = (o.exception_samples.len() / 40).max(1);
-    for (lemma, class, spec, cell, attested, predicted) in o.exception_samples.iter().step_by(step).take(40) {
-        println!("  {lemma:20} {class:5} {spec:16} {cell:8} attested {attested:22} predicted {predicted}");
+    // CS_SAMPLE_CELL=<cell name> narrows the sample to one cell
+    let wanted = std::env::var("CS_SAMPLE_CELL").ok();
+    let pool: Vec<_> = o
+        .exception_samples
+        .iter()
+        .filter(|(_, _, _, cell, _, _)| wanted.as_ref().is_none_or(|w| cell == w))
+        .collect();
+    let step = (pool.len() / 40).max(1);
+    for (lemma, class, spec, cell, attested, predicted) in pool.iter().step_by(step).take(40) {
+        let spec: String = spec.chars().take(40).collect();
+        println!("  {lemma:20} {class:5} {spec:40} {cell:8} attested {attested:22} predicted {predicted}");
     }
     println!("== stress-only misses (a sample of {})", o.stress_miss_samples.len());
     let step = (o.stress_miss_samples.len() / 25).max(1);
@@ -273,16 +313,10 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos) -> Result<(), Box<
         Recension::Synodal => "syn",
         Recension::OldChurchSlavonic => "ocs",
     };
-    let file = match pos {
-        Pos::Noun => "nouns.tsv",
-        Pos::Adjective => "adjectives.tsv",
-        Pos::Verb => "verbs.tsv",
-        Pos::Pronoun => "pronouns.tsv",
-        Pos::Closed => "closed.tsv",
-    };
-    let path = dir.join(rec).join(file);
+    let path = dir.join(rec).join(lexicon_file(pos));
     // merge: existing hand-edited entries survive; everything else is
-    // replaced by the import (matching by id)
+    // replaced by the import (matching by id), keeping the variants and
+    // provenance the cross-checking sources added (A:/R:/W:)
     let existing = lexicon::parse(&std::fs::read_to_string(&path)?, pos)?;
     let mut merged: BTreeMap<String, Lexeme> = BTreeMap::new();
     for l in o.lexemes.iter().cloned() {
@@ -293,6 +327,27 @@ fn write_outcome(o: &Outcome, recension: Recension, pos: Pos) -> Result<(), Box<
         if l.is_hand_edited() {
             merged.insert(l.id.clone(), l);
             kept_hand += 1;
+        } else if let Some(new) = merged.get_mut(&l.id) {
+            for token in l.src.iter().filter(|s| !s.starts_with("P:")) {
+                if !new.src.contains(token) {
+                    new.src.push(token.clone());
+                }
+            }
+            for (cell, variants) in &l.variants {
+                let produced: Vec<String> = new.forms(*cell).iter().map(|f| f.print(recension)).collect();
+                for v in variants {
+                    if !produced.contains(v) {
+                        match new.variants.iter_mut().find(|(c, _)| c == cell) {
+                            Some((_, vs)) => {
+                                if !vs.contains(v) {
+                                    vs.push(v.clone());
+                                }
+                            }
+                            None => new.variants.push((*cell, vec![v.clone()])),
+                        }
+                    }
+                }
+            }
         }
     }
     let lexemes: Vec<Lexeme> = merged.into_values().collect();

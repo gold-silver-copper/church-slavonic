@@ -122,6 +122,8 @@ pub enum Cell {
     Adj(AdjCell),
     Verb(VerbCell),
     Pron(PronCell),
+    /// The one form of an uninflected word (the closed classes).
+    Word,
 }
 
 impl From<NounCell> for Cell {
@@ -206,7 +208,7 @@ pub fn person_name(p: Person) -> &'static str {
 pub fn parse_person(s: &str) -> Option<Person> {
     PERSONS.into_iter().find(|p| person_name(*p) == s)
 }
-fn degree_name(d: Degree) -> &'static str {
+pub fn degree_name(d: Degree) -> &'static str {
     match d {
         Degree::Positive => "pos",
         Degree::Comparative => "comp",
@@ -221,7 +223,7 @@ fn parse_degree(s: &str) -> Option<Degree> {
         _ => return None,
     })
 }
-fn series_name(s: Series) -> &'static str {
+pub fn series_name(s: Series) -> &'static str {
     match s {
         Series::Short => "short",
         Series::Long => "long",
@@ -276,6 +278,19 @@ impl NounCell {
 }
 
 impl AdjCell {
+    /// Every adjective cell with both series, in schema order.
+    pub fn all() -> impl Iterator<Item = AdjCell> {
+        [Series::Short, Series::Long].into_iter().flat_map(|series| {
+            [Degree::Positive, Degree::Comparative].into_iter().flat_map(move |degree| {
+                GENDERS.into_iter().flat_map(move |gender| {
+                    NUMBERS.into_iter().flat_map(move |number| {
+                        CASES.into_iter().map(move |case| AdjCell { series: Some(series), degree, gender, number, case })
+                    })
+                })
+            })
+        })
+    }
+
     pub fn name(&self) -> String {
         let mut out = String::new();
         if let Some(series) = self.series {
@@ -311,6 +326,21 @@ impl AdjCell {
 }
 
 impl VerbCell {
+    /// Every participle cell, in schema order.
+    pub fn participles() -> impl Iterator<Item = VerbCell> {
+        [PartTense::Present, PartTense::Past].into_iter().flat_map(|tense| {
+            [Voice::Active, Voice::Passive].into_iter().flat_map(move |voice| {
+                [Series::Short, Series::Long].into_iter().flat_map(move |series| {
+                    GENDERS.into_iter().flat_map(move |gender| {
+                        NUMBERS.into_iter().flat_map(move |number| {
+                            CASES.into_iter().map(move |case| VerbCell::Participle { tense, voice, series, gender, number, case })
+                        })
+                    })
+                })
+            })
+        })
+    }
+
     pub fn name(&self) -> String {
         match self {
             VerbCell::Finite { tense, person, number } => format!(
@@ -431,6 +461,7 @@ impl Cell {
             Cell::Adj(c) => c.name(),
             Cell::Verb(c) => c.name(),
             Cell::Pron(c) => c.name(),
+            Cell::Word => "word".to_string(),
         }
     }
     /// Parse a cell name in the part of speech's grammar.
@@ -440,9 +471,51 @@ impl Cell {
             Pos::Adjective => Cell::Adj(AdjCell::parse(s)?),
             Pos::Verb => Cell::Verb(VerbCell::parse(s)?),
             Pos::Pronoun => Cell::Pron(PronCell::parse(s)?),
-            Pos::Closed => return None,
+            Pos::Closed => (s == "word").then_some(Cell::Word)?,
         })
     }
+    /// The block a class table may address with one column instead of a
+    /// cell each: an adjective's `<series>.<degree>` (`short.comp`), a
+    /// participle's `part.<tense>.<voice>.<series>`; `None` elsewhere.
+    pub fn block(&self) -> Option<String> {
+        match self {
+            Cell::Adj(c) => Some(format!(
+                "{}.{}",
+                c.series.map(series_name).unwrap_or("long"),
+                degree_name(c.degree)
+            )),
+            Cell::Verb(VerbCell::Participle { tense, voice, series, .. }) => Some(format!(
+                "part.{}.{}.{}",
+                match tense {
+                    PartTense::Present => "pres",
+                    PartTense::Past => "past",
+                },
+                match voice {
+                    Voice::Active => "act",
+                    Voice::Passive => "pass",
+                },
+                series_name(*series)
+            )),
+            _ => None,
+        }
+    }
+
+    /// The adjective cell a participle or comparative cell declines as:
+    /// the same series, gender, number and case in the positive degree.
+    pub fn as_adjective(&self) -> Option<AdjCell> {
+        match self {
+            Cell::Adj(c) => Some(AdjCell { degree: Degree::Positive, ..*c }),
+            Cell::Verb(VerbCell::Participle { series, gender, number, case, .. }) => Some(AdjCell {
+                series: Some(*series),
+                degree: Degree::Positive,
+                gender: *gender,
+                number: *number,
+                case: *case,
+            }),
+            _ => None,
+        }
+    }
+
     /// The cell's number, where it has one.
     pub fn number(&self) -> Option<Number> {
         match self {
@@ -454,6 +527,7 @@ impl Cell {
             | Cell::Verb(VerbCell::Participle { number, .. }) => Some(*number),
             Cell::Verb(VerbCell::Infinitive) => None,
             Cell::Pron(c) => c.number,
+            Cell::Word => None,
         }
     }
 
@@ -463,6 +537,7 @@ impl Cell {
             Cell::Adj(_) => Pos::Adjective,
             Cell::Verb(_) => Pos::Verb,
             Cell::Pron(_) => Pos::Pronoun,
+            Cell::Word => Pos::Closed,
         }
     }
 }

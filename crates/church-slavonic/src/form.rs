@@ -37,16 +37,30 @@ pub struct Form {
     pub letters: String,
     pub stress: Option<u8>,
     pub number_mark: bool,
+    /// Vowels at the end of `letters` the number mark must skip: an
+    /// enclitic written solid (`-же`, `-сѧ`) is not where the plural's
+    /// wide letter goes (є҆гѡ́же, тѣ̑мже). Zero for a plain word.
+    pub mark_skip: u8,
+    /// The stress is written as a varia where the rule would write an
+    /// oxia: the print's convention for a few homographs (и҆̀хъ the
+    /// accusative against и҆́хъ the genitive, ꙗ҆̀же). Set by
+    /// [`Form::from_print`] from an attested print; a class-built form
+    /// leaves it false and takes the rule.
+    pub varia: bool,
+    /// The number mark is written as a kamora although a wide letter was
+    /// available (своѧ̑ beside свѡѧ̀): the print's choice, kept from an
+    /// attested form; a class-built form leaves it false and takes the rule.
+    pub kamora: bool,
 }
 
 impl Form {
     pub fn new(letters: impl Into<String>, stress: Option<u8>, number_mark: bool) -> Form {
-        Form { letters: letters.into(), stress, number_mark }
+        Form { letters: letters.into(), stress, number_mark, mark_skip: 0, varia: false, kamora: false }
     }
 
     /// An unaccented form (Old Church Slavonic, or a titlo lemma).
     pub fn unaccented(letters: impl Into<String>) -> Form {
-        Form { letters: letters.into(), stress: None, number_mark: false }
+        Form { letters: letters.into(), stress: None, number_mark: false, mark_skip: 0, varia: false, kamora: false }
     }
 
     /// Read a printed form back into its layers: the letters with every
@@ -69,7 +83,23 @@ impl Form {
                 letters[i].base = 'і';
             }
         }
-        Form { letters: join(&letters), stress, number_mark: kamora }
+        // the initial ѻ/є are the print's (realise writes them): fold them
+        // so the letters layer, and the ids built from it, are bare
+        if let Some(first) = letters.first_mut() {
+            match first.base {
+                'ѻ' => first.base = 'о',
+                'є' => first.base = 'е',
+                _ => {}
+            }
+        }
+        // a varia on a stressed vowel that is not the word's last letter
+        // is the print's own choice (и҆̀хъ, ꙗ҆̀же), not the positional rule
+        let varia = {
+            let us = units(printed);
+            let last = us.len().saturating_sub(1);
+            us.iter().enumerate().any(|(i, u)| u.is_vowel() && u.has_stress() && u.marks.contains(&'\u{300}') && i != last)
+        };
+        Form { letters: join(&letters), stress, number_mark: kamora, mark_skip: 0, varia, kamora }
     }
 
     /// The accent-blind comparison key (typographic letter pairs folded)
@@ -91,13 +121,16 @@ impl Form {
         let total = out.iter().filter(|u| u.is_vowel()).count();
         let target = self.stress.map(usize::from).filter(|t| *t < total);
         let mut kamora = false;
-        if self.number_mark {
+        if self.number_mark && self.kamora {
+            kamora = target.is_some();
+        } else if self.number_mark {
             let from = match target {
                 Some(t) if t + 1 < total => t,
                 _ => 0,
             };
             let mut seen = total;
             let mut widened = false;
+            let skip = usize::from(self.mark_skip);
             for unit in out.iter_mut().rev() {
                 if !unit.is_vowel() {
                     continue;
@@ -105,6 +138,9 @@ impl Form {
                 seen -= 1;
                 if seen < from {
                     break;
+                }
+                if seen + skip >= total {
+                    continue;
                 }
                 match unit.base {
                     'о' => {
@@ -124,7 +160,10 @@ impl Form {
         }
         let word = join(&out);
         let word = match target {
-            Some(t) => orthography::stress(&word, t, kamora),
+            Some(t) => {
+                let stressed = orthography::stress(&word, t, kamora);
+                if self.varia && !kamora { stressed.replace('\u{301}', "\u{300}") } else { stressed }
+            }
             None => word,
         };
         let realised = realise(&word, &Recension::Synodal);

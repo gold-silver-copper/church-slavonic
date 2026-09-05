@@ -805,3 +805,54 @@ members — stays deliberately its own future design.
   round-trip invariant cannot see a homograph; the id leaf exposed it
   (єжъ.n is N1s, whose vocative is є҆́жꙋ). Corrected to the relative.
   The lesson stands from v1.1: a homographic render is not an analysis.
+
+## 2026-09-05 — 2.0 Part 3: decisions and findings
+
+- **Enclitics are a stem entry, not a rewrap (decision).** `stems=encl=сѧ`
+  (verbs), `encl=же|жде|ждо|либо|надесѧть` (pronouns, compound
+  adjectives): the class works on the lemma without the enclitic and the
+  print writes it solid after every ending, dropping the jer before it.
+  One mechanism replaces 1.x's strip-decline-rewrap and its reflexive
+  special case; the number mark skips the enclitic's vowels
+  (`Form::mark_skip`), which the 1.x renderer got wrong for є҆гѡ́же.
+- **The print's own accent choices are data (finding).** Two words carry
+  a non-final varia (и҆̀хъ, и҆̀мъ against и҆́хъ, и҆́мъ) and the relative
+  keeps it under же (ꙗ҆̀же, и҆̀мже); сво́й's plural takes the kamora
+  (своѧ̑) where the rule would widen (свѡѧ̀). A form model that decides
+  the mark kind alone cannot store these prints; `varia` and `kamora`
+  flags set by `from_print` make every attested print round-trip, and a
+  class-built form still takes the rule.
+- **Polyakov's closed classes are homographs (finding).** и҆ is a CONJ
+  entry and a PART entry, не likewise; indexing them as two lexemes made
+  every function word ambiguous (closed 27.1% → 4.0%, ambiguous 64.4%).
+  The lifter treats closed-class readings of one surface as one
+  function word, `(f и҆)` by its surface; the leaf claims no lexeme.
+- **Headword versus citation form (decision).** 216 Polyakov headwords
+  spell the citation form otherwise than the attested forms (тьма̀ /
+  тма̀, ѻ҆бразъ / ѡ҆́бразъ). The attested print is the lemma and the id;
+  the headword is a note. Quarantining them (Part 1) lost the treebank's
+  тма̀.
+- **Participle columns the legend does not print (finding).** The short
+  masculine accusative is the genitive-shaped -ща (330/374), the short
+  plural nominative -ще (1,084 overrides before), the long neuter
+  nominative Polyakov's -ѧй tagged m/n (918), the past active long
+  nominative both -ивый and -ившїй, the past passive short plural
+  obliques keep the double н (-нныхъ). Explicit columns cut verb
+  overrides from 48.8% to 24.7% of lexemes.
+- **Alypy's dual `-ѣ` (finding).** The 1.x loader expanded «пи́ш-е-та, -ѣ»
+  to пи́шеѣ (the last hyphen segment replaced whole) and stored it as an
+  attested form; 1.x's 100.00% on Alypy included it. The ending rule now
+  replaces the last segment only when it is no longer than the ending.
+- **Pronoun classes are literal tables (decision).** The third person,
+  the relative, кто̀/что̀ and the athematic verbs are classes whose cells
+  are literal endings on a (possibly empty) stem: a closed paradigm is
+  data, and the fit still derives its stress and its exceptions.
+- **Ambiguity is where the work is (finding).** 39.1% of Bible tokens
+  have several exact readings — nom/acc/voc of every noun, the genders
+  of every adjective form, du/pl homographs. Disambiguation by context
+  is a later, separate design; the treebank records the count.
+- **witnesses.tsv (deviation).** Converted to `W:` provenance (2 noun
+  rows quarantined: lemmas the lexicon lacks); the file stays until
+  Part 5 because the legacy accuracy harness — the baseline instrument
+  Part 0 requires until then — reads it.
+

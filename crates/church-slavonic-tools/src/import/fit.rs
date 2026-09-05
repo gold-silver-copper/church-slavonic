@@ -27,6 +27,9 @@ pub type Bundled = std::collections::BTreeSet<Cell>;
 pub enum Evidence {
     Stem,
     End,
+    /// The last stem vowel, where that is neither the lemma's stem vowel
+    /// nor the ending (a comparative's suffix).
+    StemLast,
     /// Stem and ending coincide here (no ending vowel): says nothing.
     Either,
     /// Neither: an explicit index.
@@ -113,10 +116,12 @@ pub fn evidence_full(
     let total = attested.letters.chars().filter(|c| church_slavonic::orthography::is_vowel_letter(*c)).count();
     let stem = resolve(Place::Stem, lemma_stress, letters.stem_vowels, total);
     let end = resolve(Place::End, lemma_stress, letters.stem_vowels, total);
+    let last = resolve(Place::StemLast, lemma_stress, letters.stem_vowels, total);
     let e = match (stem == Some(k), end == Some(k)) {
         (true, true) => Evidence::Either,
         (true, false) => Evidence::Stem,
         (false, true) => Evidence::End,
+        (false, false) if last == Some(k) => Evidence::StemLast,
         (false, false) => Evidence::Index(k),
     };
     (e, Some(index))
@@ -131,6 +136,7 @@ pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
     let place_of = |e: Evidence| match e {
         Evidence::Stem => Some(Place::Stem),
         Evidence::End => Some(Place::End),
+        Evidence::StemLast => Some(Place::StemLast),
         Evidence::Index(n) => Some(Place::Index(n)),
         _ => None,
     };
@@ -142,7 +148,7 @@ pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
             _ => {}
         }
     }
-    if stem + end == 0 && !evidence.values().any(|e| matches!(e, Evidence::Index(_) | Evidence::Either)) {
+    if stem + end == 0 && !evidence.values().any(|e| matches!(e, Evidence::Index(_) | Evidence::Either | Evidence::StemLast)) {
         // no readable stress at all: an accented lemma is stem-stressed by
         // default (`a`), an unaccented one has none
         return if evidence.values().all(|e| *e == Evidence::None) && !evidence.is_empty() { "-" } else { "a" }.to_string();
@@ -175,6 +181,7 @@ pub fn stress_column(evidence: &BTreeMap<Cell, Evidence>) -> String {
     let name = |p: Place| match p {
         Place::Stem => "S".to_string(),
         Place::End => "E".to_string(),
+        Place::StemLast => "L".to_string(),
         Place::Index(n) => n.to_string(),
     };
     let mut items: Vec<String> = Vec::new();

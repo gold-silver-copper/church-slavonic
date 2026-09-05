@@ -13,9 +13,15 @@
 //!   consonant: the lexeme's `stems=ins=…` when given, else the rule of
 //!   [`insert_fleeting`]), `pal1[:x]` / `pal2[:x]` (the first / second
 //!   palatalisation of derivation `x`, `base` by default), `ext:suffix`
-//!   (base plus a suffix), `cut` (base minus its last letter); a lexeme's
-//!   `stems=base=…` replaces the strip rule's base and `stems=<n>=…`
-//!   spells stem n outright;
+//!   (a suffix on a derivation: `ext:ен`, `ext:т:drop`), `cut` (base minus
+//!   its last letter), `iot[:x]` (iotation: люб -> любл, род -> рожд),
+//!   `ov` (-ова -> -ꙋ), `nasal` (a final vowel -> н), `iota` (a final и
+//!   -> і); a lexeme's `stems=base=…` replaces the strip rule's base and
+//!   `stems=<n>=…` spells stem n outright;
+//! - a block column (`short.comp`, `part.pres.act.long`) gives the spec of
+//!   every cell of the block without a column of its own; `N~C` declines
+//!   stem N as adjective class C in the cell's adjective counterpart (a
+//!   participle, a comparative);
 //! - a cell spec is `|`-separated alternatives, primary first: `N-ending`
 //!   (stem N plus the ending; a trailing `^` is the number mark), `@cell`
 //!   (the same as that cell), `@lemma` (the lemma's own letters), each
@@ -26,18 +32,30 @@ use crate::orthography::is_vowel_letter;
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
+pub mod adj;
 pub mod noun;
+pub mod pronoun;
+pub mod verb;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Derivation {
     Base,
     Drop,
-    Insert,
+    Insert(Box<Derivation>),
     /// Base minus its last letter (`знамені` -> `знамен` before `-ьми`).
     Cut,
     Pal1(Box<Derivation>),
     Pal2(Box<Derivation>),
-    Ext(String),
+    /// Iotation of the final consonant (`люб` -> `любл`, `род` -> `рожд`).
+    Iot(Box<Derivation>),
+    /// A suffix on a derivation (`ext:ен`, `ext:т:drop`).
+    Ext(String, Box<Derivation>),
+    /// `-ова`/`-ева` -> `-ꙋ` (`требова` -> `требꙋ`).
+    Ov,
+    /// The final vowel -> `н` (`мѧ` -> `мн`, `жа` -> `жн`).
+    Nasal,
+    /// A final `и` -> `і` before a vowel (`би` -> `бі`).
+    Iota,
 }
 
 impl Derivation {
@@ -45,15 +63,25 @@ impl Derivation {
         Ok(match s {
             "base" => Derivation::Base,
             "drop" => Derivation::Drop,
-            "insert" => Derivation::Insert,
             "cut" => Derivation::Cut,
+            "ov" => Derivation::Ov,
+            "nasal" => Derivation::Nasal,
+            "iota" => Derivation::Iota,
             _ => {
-                if let Some(rest) = s.strip_prefix("pal1") {
+                if let Some(rest) = s.strip_prefix("insert") {
+                    Derivation::Insert(Box::new(sub(rest)?))
+                } else if let Some(rest) = s.strip_prefix("pal1") {
                     Derivation::Pal1(Box::new(sub(rest)?))
                 } else if let Some(rest) = s.strip_prefix("pal2") {
                     Derivation::Pal2(Box::new(sub(rest)?))
-                } else if let Some(suffix) = s.strip_prefix("ext:") {
-                    Derivation::Ext(suffix.to_string())
+                } else if let Some(rest) = s.strip_prefix("iot") {
+                    Derivation::Iot(Box::new(sub(rest)?))
+                } else if let Some(rest) = s.strip_prefix("ext:") {
+                    let (suffix, inner) = match rest.split_once(':') {
+                        Some((suffix, inner)) => (suffix, Derivation::parse(inner)?),
+                        None => (rest, Derivation::Base),
+                    };
+                    Derivation::Ext(suffix.to_string(), Box::new(inner))
                 } else {
                     return Err(format!("unknown stem derivation {s}"));
                 }
@@ -83,6 +111,9 @@ pub enum Shape {
     Ending { stem: u8, ending: String, mark: bool },
     Ref(Cell),
     Lemma,
+    /// Stem N declined as adjective class C in the cell's adjective
+    /// counterpart (`4~A1s`: a participle or a comparative).
+    Delegate { stem: u8, class: String },
 }
 
 #[derive(Debug, Clone)]
@@ -92,7 +123,11 @@ pub struct Class {
     pub strip: usize,
     pub stems: Vec<(u8, Derivation)>,
     pub cells: HashMap<Cell, Vec<Alt>>,
-    /// The cells in table order (the paradigm's iteration order).
+    /// Block columns (`short.comp`, `part.pres.act.long`): the spec of
+    /// every cell of the block that has no column of its own.
+    pub blocks: HashMap<String, Vec<Alt>>,
+    /// The cells in table order (the paradigm's iteration order),
+    /// block-covered cells included.
     pub order: Vec<Cell>,
 }
 
@@ -103,6 +138,8 @@ pub struct Letters {
     pub mark: bool,
     /// How many vowels the stem contributed (the stress layer's boundary).
     pub stem_vowels: usize,
+    /// Vowels of a solid enclitic at the end (`Form::mark_skip`).
+    pub tail_vowels: u8,
 }
 
 /// What a class needs to know about the lexeme it declines.
@@ -114,9 +151,29 @@ pub struct Subject<'a> {
     pub stems: &'a [(String, String)],
 }
 
+impl<'a> Subject<'a> {
+    /// The enclitic (`stems=encl=сѧ`, `encl=же`, `encl=либо`) the print
+    /// writes solid after every ending: a verb's reflexive particle, a
+    /// pronoun's же/жде/ждо/либо.
+    pub fn enclitic(&self) -> Option<&'a str> {
+        self.stems.iter().find(|(k, _)| k == "encl").map(|(_, v)| v.as_str())
+    }
+
+    /// The subject with the enclitic stripped off the lemma: what the
+    /// class table works on.
+    pub fn core(&self) -> Subject<'a> {
+        let lemma = match self.enclitic() {
+            Some(r) => self.lemma.strip_suffix(r).unwrap_or(self.lemma),
+            None => self.lemma,
+        };
+        Subject { lemma, animate: self.animate, stems: self.stems }
+    }
+}
+
 impl Class {
     /// The numbered stems of a lexeme.
     pub fn stems_of(&self, subject: &Subject<'_>) -> HashMap<u8, String> {
+        let subject = &subject.core();
         // the lexeme may name its own base stem (`stems=base=…`: a plurale
         // tantum, an irregular stem); the class's strip rule otherwise
         let base: String = match subject.stems.iter().find(|(k, _)| k == "base") {
@@ -144,8 +201,29 @@ impl Class {
     /// when the class has no such cell.
     pub fn letters(&self, cell: Cell, subject: &Subject<'_>) -> Vec<Letters> {
         let stems = self.stems_of(subject);
+        self.letters_with(cell, subject, &stems)
+    }
+
+    /// [`Class::letters`] with the stems already derived (the index walks
+    /// every cell of a lexeme: derive once).
+    pub fn letters_with(&self, cell: Cell, subject: &Subject<'_>, stems: &HashMap<u8, String>) -> Vec<Letters> {
+        // an enclitic (`stems=encl=сѧ`, `encl=же`): the class works on the
+        // lemma without it, and the print writes it solid after every
+        // ending, dropping the jer before it (бои́тсѧ, боѧ́хсѧ, боѧ́щихсѧ;
+        // тогѡ́же, коегѡ́ждо)
+        let refl = subject.enclitic();
+        let subject = subject.core();
         let mut out = Vec::new();
-        self.collect(cell, subject, &stems, &mut out, 0);
+        self.collect(cell, &subject, stems, &mut out, 0);
+        if let Some(r) = refl {
+            for l in &mut out {
+                if l.letters.ends_with('ъ') {
+                    l.letters.pop();
+                }
+                l.letters.push_str(r);
+                l.tail_vowels = r.chars().filter(|c| is_vowel_letter(*c)).count().min(255) as u8;
+            }
+        }
         out
     }
 
@@ -160,7 +238,13 @@ impl Class {
         if depth > 4 {
             return;
         }
-        let Some(alts) = self.cells.get(&cell) else { return };
+        let alts = match self.cells.get(&cell) {
+            Some(a) => a,
+            None => match cell.block().and_then(|b| self.blocks.get(&b)) {
+                Some(a) => a,
+                None => return,
+            },
+        };
         for alt in alts {
             match (alt.animacy, subject.animate) {
                 (Some(want), Some(have)) if want != have => continue,
@@ -177,21 +261,37 @@ impl Class {
                             letters: format!("{stem}{ending}"),
                             mark: *mark,
                             stem_vowels: stem.chars().filter(|c| is_vowel_letter(*c)).count(),
+                            tail_vowels: 0,
                         });
                     }
                 }
                 Shape::Ref(other) => self.collect(*other, subject, stems, out, depth + 1),
+                Shape::Delegate { stem, class } => {
+                    let (Some(stem), Some(adj_cell)) = (stems.get(stem), cell.as_adjective()) else { continue };
+                    let Some(adjective) = table(Pos::Adjective).get(class) else { continue };
+                    // the delegate's lemma: the stem plus the class's own
+                    // ending letters, so its base is exactly the stem
+                    let tail: String = {
+                        let ex: Vec<char> = adjective.exemplar.chars().collect();
+                        ex[ex.len().saturating_sub(adjective.strip)..].iter().collect()
+                    };
+                    let lemma = format!("{stem}{tail}");
+                    let inner = Subject { lemma: &lemma, animate: subject.animate, stems: &[] };
+                    let inner_stems = adjective.stems_of(&inner);
+                    adjective.collect(Cell::Adj(adj_cell), &inner, &inner_stems, out, depth + 1);
+                }
                 Shape::Lemma => out.push(Letters {
                     letters: subject.lemma.to_string(),
                     mark: false,
                     stem_vowels: subject.lemma.chars().filter(|c| is_vowel_letter(*c)).count(),
+                    tail_vowels: 0,
                 }),
             }
         }
     }
 
     pub fn has(&self, cell: Cell) -> bool {
-        self.cells.contains_key(&cell)
+        self.cells.contains_key(&cell) || cell.block().is_some_and(|b| self.blocks.contains_key(&b))
     }
 }
 
@@ -208,24 +308,88 @@ fn derive(d: &Derivation, base: &str, subject: &Subject<'_>) -> String {
             let n = base.chars().count().saturating_sub(1);
             base.chars().take(n).collect()
         }
-        Derivation::Insert => subject
+        Derivation::Insert(inner) => subject
             .stems
             .iter()
             .find(|(k, _)| k == "ins")
             .map(|(_, v)| v.clone())
-            .unwrap_or_else(|| insert_fleeting(base)),
+            .unwrap_or_else(|| insert_fleeting(&derive(inner, base, subject))),
         Derivation::Pal1(inner) => palatalise(&derive(inner, base, subject), true),
         Derivation::Pal2(inner) => palatalise(&derive(inner, base, subject), false),
-        Derivation::Ext(suffix) => {
-            // a husher takes а, not ѧ (ѻ҆троча̀ : ѻ҆троча́та)
-            let husher = matches!(base.chars().last(), Some('ж' | 'ч' | 'ш' | 'щ'));
-            let suffix = match suffix.strip_prefix('ѧ') {
+        Derivation::Iot(inner) => iotate(&derive(inner, base, subject)),
+        Derivation::Ext(suffix, inner) => {
+            let stem = derive(inner, base, subject);
+            // a husher takes а, not ѧ/ѣ (ѻ҆троча̀ : ѻ҆троча́та; вели́чайшій)
+            let husher = matches!(stem.chars().last(), Some('ж' | 'ч' | 'ш' | 'щ'));
+            let suffix = match suffix.strip_prefix(['ѧ', 'ѣ']) {
                 Some(rest) if husher => format!("а{rest}"),
                 _ => suffix.clone(),
             };
-            format!("{base}{suffix}")
+            format!("{stem}{suffix}")
+        }
+        Derivation::Ov => {
+            let s = base
+                .strip_suffix("ова")
+                .or_else(|| base.strip_suffix("ева"))
+                .unwrap_or(base);
+            format!("{s}ꙋ")
+        }
+        Derivation::Nasal => {
+            let n = base.chars().count().saturating_sub(1);
+            let head: String = base.chars().take(n).collect();
+            format!("{head}н")
+        }
+        Derivation::Iota => match base.strip_suffix('и') {
+            Some(head) => format!("{head}і"),
+            None => base.to_string(),
+        },
+    }
+}
+
+/// Iotation of a stem's final consonant(s): the labials take л, the
+/// dentals and velars their hushers (`люб` -> `любл`, `род` -> `рожд`,
+/// `свѣт` -> `свѣщ`, `пис` -> `пиш`, `маз` -> `маж`, `алк` -> `алч`,
+/// `мысл` -> `мышл`, `пꙋст` -> `пꙋщ`).
+pub fn iotate(stem: &str) -> String {
+    let chars: Vec<char> = stem.chars().collect();
+    let n = chars.len();
+    if n == 0 {
+        return String::new();
+    }
+    let head: String = chars[..n - 1].iter().collect();
+    let last = chars[n - 1];
+    // two-letter clusters first
+    if n >= 2 {
+        let pair: String = chars[n - 2..].iter().collect();
+        let replaced = match pair.as_str() {
+            "ст" => Some("щ"),
+            "ск" => Some("щ"),
+            "сл" => Some("шл"),
+            "зд" => Some("жд"),
+            _ => None,
+        };
+        if let Some(r) = replaced {
+            let head2: String = chars[..n - 2].iter().collect();
+            return format!("{head2}{r}");
         }
     }
+    let replaced = match last {
+        'б' => "бл",
+        'п' => "пл",
+        'в' => "вл",
+        'м' => "мл",
+        'ф' => "фл",
+        'д' => "жд",
+        'т' => "щ",
+        'з' => "ж",
+        'с' => "ш",
+        'к' => "ч",
+        'г' => "ж",
+        'х' => "ш",
+        'ц' => "ч",
+        _ => return stem.to_string(),
+    };
+    format!("{head}{replaced}")
 }
 
 /// Drop the fleeting vowel: the last vowel of the stem (`осел` -> `осл`,
@@ -267,6 +431,10 @@ pub fn insert_fleeting(stem: &str) -> String {
 /// The palatalisation of a stem's final consonant: first (`к`→`ч`, `г`→`ж`,
 /// `х`→`ш`, `ц`→`ч`) or second (`к`→`ц`, `г`→`з`, `х`→`с`).
 pub fn palatalise(stem: &str, first: bool) -> String {
+    // the -ск- stems: ск -> ст before ѣ/и (ага́рѧнстїи)
+    if !first && let Some(head) = stem.strip_suffix("ск") {
+        return format!("{head}ст");
+    }
     let mut chars: Vec<char> = stem.chars().collect();
     if let Some(last) = chars.last_mut() {
         *last = match (*last, first) {
@@ -309,6 +477,7 @@ pub fn parse_table(text: &str, pos: Pos) -> Result<Vec<Class>, String> {
             strip: cols[2].parse().map_err(|_| format!("line {line_no}: strip {}", cols[2]))?,
             stems: Vec::new(),
             cells: HashMap::new(),
+            blocks: HashMap::new(),
             order: Vec::new(),
         };
         for item in cols[3].split(';') {
@@ -320,7 +489,10 @@ pub fn parse_table(text: &str, pos: Pos) -> Result<Vec<Class>, String> {
             if *spec == "-" {
                 continue;
             }
-            let cell = Cell::parse(pos, name).ok_or_else(|| format!("line {line_no}: cell {name}"))?;
+            let cell = Cell::parse(pos, name);
+            if cell.is_none() && !is_block_name(pos, name) {
+                return Err(format!("line {line_no}: cell {name}"));
+            }
             let mut alts = Vec::new();
             for alt in spec.split('|') {
                 let (animacy, rest) = if let Some(r) = alt.strip_prefix("anim:") {
@@ -334,6 +506,9 @@ pub fn parse_table(text: &str, pos: Pos) -> Result<Vec<Class>, String> {
                     Shape::Lemma
                 } else if let Some(target) = rest.strip_prefix('@') {
                     Shape::Ref(Cell::parse(pos, target).ok_or_else(|| format!("line {line_no}: ref {rest}"))?)
+                } else if let Some((stem, class)) = rest.split_once('~') {
+                    let stem: u8 = stem.parse().map_err(|_| format!("line {line_no}: delegate stem {stem}"))?;
+                    Shape::Delegate { stem, class: class.to_string() }
                 } else {
                     let (stem, ending) =
                         rest.split_once('-').ok_or_else(|| format!("line {line_no}: alternative {rest}"))?;
@@ -343,12 +518,43 @@ pub fn parse_table(text: &str, pos: Pos) -> Result<Vec<Class>, String> {
                 };
                 alts.push(Alt { animacy, shape });
             }
-            class.cells.insert(cell, alts);
-            class.order.push(cell);
+            match cell {
+                Some(cell) => {
+                    class.cells.insert(cell, alts);
+                    class.order.push(cell);
+                }
+                None => {
+                    class.blocks.insert(name.clone(), alts);
+                }
+            }
+        }
+        // block-covered cells join the order after the explicit ones
+        for cell in all_cells(pos) {
+            if !class.cells.contains_key(&cell) && cell.block().is_some_and(|b| class.blocks.contains_key(&b)) {
+                class.order.push(cell);
+            }
         }
         out.push(class);
     }
     Ok(out)
+}
+
+/// Is `name` a block column of the part of speech?
+fn is_block_name(pos: Pos, name: &str) -> bool {
+    match pos {
+        Pos::Adjective => matches!(name, "short.pos" | "long.pos" | "short.comp" | "long.comp"),
+        Pos::Verb => name.starts_with("part.") && name.matches('.').count() == 3,
+        _ => false,
+    }
+}
+
+/// Every cell a class of the part of speech might declare.
+fn all_cells(pos: Pos) -> Vec<Cell> {
+    match pos {
+        Pos::Adjective => crate::cell::AdjCell::all().map(Cell::Adj).collect(),
+        Pos::Verb => crate::cell::VerbCell::participles().map(Cell::Verb).collect(),
+        _ => Vec::new(),
+    }
 }
 
 /// A parsed class table with lookup by name.
@@ -374,11 +580,24 @@ impl Table {
 /// The class table of a part of speech (parsed once).
 pub fn table(pos: Pos) -> &'static Table {
     static NOUN: OnceLock<Table> = OnceLock::new();
+    static ADJ: OnceLock<Table> = OnceLock::new();
+    static VERB: OnceLock<Table> = OnceLock::new();
+    static PRON: OnceLock<Table> = OnceLock::new();
+    static NONE: OnceLock<Table> = OnceLock::new();
     match pos {
         Pos::Noun => NOUN.get_or_init(|| {
             Table::parse(noun::TABLE, Pos::Noun).unwrap_or_else(|e| panic!("classes/noun.tsv: {e}"))
         }),
-        _ => unimplemented!("class tables for {pos:?} arrive in Part 3"),
+        Pos::Adjective => ADJ.get_or_init(|| {
+            Table::parse(adj::TABLE, Pos::Adjective).unwrap_or_else(|e| panic!("classes/adj.tsv: {e}"))
+        }),
+        Pos::Verb => VERB.get_or_init(|| {
+            Table::parse(verb::TABLE, Pos::Verb).unwrap_or_else(|e| panic!("classes/verb.tsv: {e}"))
+        }),
+        Pos::Pronoun => PRON.get_or_init(|| {
+            Table::parse(pronoun::TABLE, Pos::Pronoun).unwrap_or_else(|e| panic!("classes/pronoun.tsv: {e}"))
+        }),
+        Pos::Closed => NONE.get_or_init(|| Table { classes: Vec::new(), by_name: HashMap::new() }),
     }
 }
 

@@ -841,14 +841,20 @@ fn split_parens(text: &str) -> (String, Vec<(bool, String)>) {
 }
 
 fn apply_ending(primary: &str, ending: &str) -> String {
-    // A hyphenated primary names its own stem boundary.
-    if let Some(at) = primary.rfind('-') {
-        return format!("{}{ending}", &primary[..=at]);
-    }
     let ending_letters: Vec<char> = ending
         .chars()
         .filter(|c| !is_mark(*c) && *c != '-')
         .collect();
+    // A hyphenated primary names its own morpheme boundaries: the ending
+    // replaces the last segment when that segment is no longer than the
+    // ending (`мꙋ́др-ъ (-а)`, `мꙋ́др-ъ (-аго)`); a longer last segment
+    // (`пи́ш-е-та, -ѣ`: the dual's -тѣ) takes the letter rule below
+    if let Some(at) = primary.rfind('-') {
+        let segment = primary[at + 1..].chars().filter(|c| !is_mark(*c)).count();
+        if segment <= ending_letters.len() {
+            return format!("{}{ending}", &primary[..=at]);
+        }
+    }
     // A multi-letter ending replaces the primary from the last occurrence of
     // its first letter (`творѧ̀, -ѧ́щ-ь`; `мꙋ̑дрыѧ (ыхъ)`); otherwise as many
     // final letters as the ending has (`и҆́мава, -ѣ`; `бы́хова (-ѣ)`).

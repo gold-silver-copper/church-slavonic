@@ -38,7 +38,6 @@ name = "church-slavonic-tools"
 version = "0.1.0"
 dependencies = [
  "church-slavonic",
- "church-slavonic-legacy",
  "serde",
  "serde_json",
  "unicode-normalization",
