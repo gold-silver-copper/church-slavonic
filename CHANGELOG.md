@@ -1,5 +1,60 @@
 # Changelog
 
+## 2.3.0 (in progress) — the constraint layer of homonymy, the gold, the tagger
+
+The plan is `V2.2-PROMPT.md` Parts 4–5; the analysis behind it is
+`docs/OPEN-DESIGNS.md` 1b.
+
+### Part 4 — the constraint layer of homonymy, and the gold (2026-09-05)
+
+- **The gold.** The hand overlay grew from Genesis 1 (31 verses) to 211
+  verses: Genesis 2–3, Exodus 1, Proverbs 1 (the pinned Psalter is one
+  chapter of psalm groups, so the poetic register is Proverbs), Matthew
+  1, John 1 — flat trees, every leaf fully specified from the analyzer's
+  readings, drafted by `cargo xtask hand-draft <book> <chapter>` (the
+  auto-lifted trees before the constraint layer, every set and
+  several-lexeme token listed with its readings) and decided verse by
+  verse. 2,095 hand leaves, 1,280 of them a narrowing of a larger set;
+  `narrow-hand` at 0 findings; the linter clean; `fix-hand-alts` starts a
+  stale alternative index again from the primary. A hand cell the
+  lexicon does not print stays verbatim with `:lemma` and `:case` (a
+  lexicon finding, listed in NOTES). Genesis 1:21's гадѡ́въ was corrected
+  from the accusative to the genitive (ζῴων ἑρπετῶν).
+- **The constraints** (`treebank/disambiguate.rs`): rules over a verse's
+  flat tree that eliminate and never select, each named on the leaf it
+  narrowed (`:by prep-gov :from nom|acc|voc.sg`; a several-lexeme token
+  reduced to one lexeme carries `:from-lexemes n`), each leaving
+  everything when it would leave nothing. `prep-gov`: a preposition's
+  `gov=` frame narrows the nominal after it, and a second nominal when
+  the first is an adjective or a participle (never after a pronoun: въ
+  не́мже льстѝ нѣ́сть has the genitive of negation). `np-agree`: an
+  adjective-like leaf beside a noun leaf, each kept to the cells that
+  agree with some cell of the other in case, number and the noun's
+  gender. `subj-verb`: a noun whose every reading is nominative beside a
+  finite verb: third person, the noun's number. `voc-drop`: the vocative
+  leaves a set with other members unless an imperative or an
+  interjection stands beside the token. A narrowed leaf's alternative
+  index is recomputed for its new first cell from the token, or the leaf
+  is left alone. `build-treebank` runs the layer (`CS_NO_DISAMBIGUATE=1`
+  turns it off); `check-treebank`'s leaf census accepts a narrowed leaf
+  when its `:from` set is the lexicon's and its cells a subset.
+- **Scoring** (`cargo xtask score-disambiguation`): every hand verse is
+  auto-lifted and constrained, each hand leaf aligned with the auto word
+  at its position; precision is the auto set containing the hand's cell,
+  resolution the set being that cell alone; by rule; a rule that ever
+  excluded a hand cell was fixed (prep-gov's second target after a
+  pronoun) — never tuned.
+
+Measured (2.2.0 → 2.3 Part 4):
+
+| Number | before | after |
+|---|---|---|
+| hand overlay: verses / leaves / narrowings | 31 / 284 / 179 | 211 / 2,095 / 1,280 |
+| **precision on the gold** (hand cell inside the auto set) | — | **100%: 0 excluded of 2,095** (1,902 inside, 193 out of the layer's reach — auto `:amb` or verbatim) |
+| resolution on the gold (auto set = hand cell) | — | 45.0% (943); by rule: np-agree 98 of 150, prep-gov 55 of 76, subj-verb 28 of 28, voc-drop 33 of 298 (+17 with np-agree) |
+| Bible treebank: one cell / one lexeme several cells / closed / several lexemes / verbatim | 23.8 / 34.3 / 28.0 / 6.0 / 7.8 % | **32.4 (204,650) / 26.0 (164,438) / 28.0 / 5.6 (35,562) / 7.8 %**; zero mismatches; 366,993 leaves complete |
+| leaves narrowed by rule (whole Bible) | — | voc-drop 57,615, np-agree 41,542, prep-gov 18,082, subj-verb 2,767; 1,931 several-lexeme tokens reduced to one lexeme (prep-gov) |
+
 ## 2.2.0 (2026-09-05) — the verb's whole two-stem system, the closed lexicon, the phonological word
 
 The plan is `V2.2-PROMPT.md` (Parts 0–3 of six; Parts 4–6 are the 2.3.0

@@ -1182,3 +1182,42 @@ members — stays deliberately its own future design.
   as releases 2.3.0 (the constraint layer and the tagger) and 3.0.0 (the
   accent inventory).
 
+## 2026-09-05 — 2.3 Part 4: the constraint layer and the gold — decisions and findings
+
+- **A rule eliminates and names itself (decision).** Four rules, each an
+  elimination over a leaf's set with `:by` and `:from` on the leaf; a
+  rule that would empty a set leaves it; a rule that excluded a hand cell
+  was wrong and was fixed at the rule, not the case (prep-gov's second
+  target — the noun after an adjective — had fired after a pronoun, and
+  въ не́мже льстѝ нѣ́сть carries the genitive of negation).
+- **The vocative is the largest set and the least resolved (finding).**
+  voc-drop narrowed 57,615 leaves and resolved 33 of 298 hand leaves it
+  touched: the masculine inanimate's nom|acc|voc.sg loses the vocative
+  and stays nom|acc — the case a subject/object rule would decide, and
+  that rule needs structure the flat tree lacks. np-agree resolves two
+  thirds of what it touches, subj-verb everything (28 of 28).
+- **The gold's own findings about the lexicon.** A hand cell outside the
+  lexicon's set is verbatim with `:lemma` and `:case`: ѕвѣ̑ри the
+  accusative plural of ѕвѣ́рь (the class prints ѕвѣ̑рь), неѕлѡ́бивымъ the
+  dative plural with the wide ѡ the adjective's plural mark does not
+  reach, зла́тꙋ the short accusative of златы́й, кро́ве the old genitive
+  of кро́вь and кро́вѣ its genitive dual, но́зѣ the nominative dual of нога̀,
+  самѣ́мъ the locative of са́мъ, сапогꙋ̀ the u-stem genitive, бѡ́лша the
+  neuter plural comparative, бж҃їѧ and слы́шавшєю plural and dual
+  participle/adjective cells, Ѡ҆́на the masculine dual nominative of ѻ҆́нъ,
+  и҆спо́лнь the adjective 'full' (read as a participle), рꙋ́ѳы the genitive
+  of Ruth (the lexicon has two рꙋ́ѳъ), добро̀ the predicative adjective
+  with end stress (the lexicon prints it only as the noun), ꙗ҆̀же with the
+  varia read as the accusative where the syntax has the relative
+  nominative. The dual is the recurring gap.
+- **A hand error in the old overlay (finding).** Genesis 1:21 гадѡ́въ had
+  been annotated accusative; the syntax (всѧ́кꙋ дꙋ́шꙋ живо́тныхъ гадѡ́въ)
+  and the Greek genitive say genitive; np-agree found it.
+- **Register (finding).** Genealogy (Matthew 1) is all subject/object
+  resolution the rules do not touch (nominative and accusative names
+  around родѝ); Proverbs 1 is imperatives and vocatives, where voc-drop
+  correctly abstains beside an imperative; John 1 is the pronoun-heavy
+  register where the several-lexeme tokens (а҆́зъ, ты̀, мнѣ̀, глаго́ла) sit —
+  193 hand leaves the constraint layer cannot reach because the token
+  is homonymous across parts of speech, the tagger's share.
+
