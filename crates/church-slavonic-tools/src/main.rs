@@ -15,6 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
         Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),
         Some("fix-hand-alts") => church_slavonic_tools::treebank::runner::fix_hand_alts(),
+        Some("narrow-hand") => church_slavonic_tools::treebank::runner::narrow_hand(),
         Some("filter-ud") => {
             let root = church_slavonic_tools::workspace_root();
             church_slavonic_tools::sources::ud::filter_train(&root.join("references/downloads"), &root.join("target/sources"), &root.join("data/intermediate/ud_proiel.jsonl"))
@@ -33,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Ok(())
         }
         Some("-h") | Some("--help") | None => {
-            eprintln!("cargo xtask <eval [--guess verbs [--ocs]] | census stems --pos <pos> [--ocs] | import <source> --pos <pos> [--write] | build-treebank | check-treebank | fix-hand-alts | analyze <word>…>");
+            eprintln!("cargo xtask <eval [--guess verbs [--ocs]] | census stems --pos <pos> [--ocs] | import <source> --pos <pos> [--write] | build-treebank | check-treebank | fix-hand-alts | narrow-hand | analyze <word>…>");
             Ok(())
         }
         Some(other) => Err(format!("unknown xtask command: {other}").into()),

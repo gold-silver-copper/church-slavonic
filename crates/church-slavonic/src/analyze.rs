@@ -120,6 +120,52 @@ impl Lexicon {
     }
 }
 
+/// The analyses of a surface grouped by (lexeme, print): one lexeme and
+/// every cell whose form prints this surface, with the alternative index
+/// of each. A surface with one exact reading whose `cells` has several
+/// members is syncretism (the paradigm does not tell the cells apart);
+/// several readings are homonymy (several lexemes, or several prints of
+/// one lexeme).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Reading<'a> {
+    pub lexeme: &'a Lexeme,
+    /// The cells printing this surface, in cell order, each with which
+    /// of its forms matched (`0` the primary).
+    pub cells: Vec<(Cell, usize)>,
+    pub exact: bool,
+    pub print: String,
+}
+
+impl Reading<'_> {
+    /// The cells as an underspecified cell (`None` only for a closed-class
+    /// word, whose one cell is [`Cell::Word`]).
+    pub fn cell_set(&self) -> Option<crate::cell::CellSet> {
+        crate::cell::CellSet::new(self.cells.iter().map(|(c, _)| *c).collect())
+    }
+}
+
+impl Lexicon {
+    /// [`Lexicon::analyze`] grouped by (lexeme, print), exact readings
+    /// first; within a reading the cells are sorted and each carries the
+    /// lowest alternative index that printed the surface.
+    pub fn readings(&self, surface: &str) -> Vec<Reading<'_>> {
+        let mut out: Vec<Reading<'_>> = Vec::new();
+        for a in self.analyze(surface) {
+            match out.iter_mut().find(|r| std::ptr::eq(r.lexeme, a.lexeme) && r.print == a.print) {
+                Some(r) => match r.cells.iter_mut().find(|(c, _)| *c == a.cell) {
+                    Some((_, alt)) => *alt = (*alt).min(a.alt),
+                    None => r.cells.push((a.cell, a.alt)),
+                },
+                None => out.push(Reading { lexeme: a.lexeme, cells: vec![(a.cell, a.alt)], exact: a.exact, print: a.print }),
+            }
+        }
+        for r in &mut out {
+            r.cells.sort();
+        }
+        out
+    }
+}
+
 /// The per-lexicon index slot (kept out of `Lexicon`'s public fields).
 pub(crate) type IndexSlot = OnceLock<Index>;
 

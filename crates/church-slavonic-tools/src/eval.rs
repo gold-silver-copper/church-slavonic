@@ -32,10 +32,12 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
     }
     match bible_coverage()? {
         Some(c) => println!(
-            "Bible coverage, Synodal nouns (analyzer over {} tokens): one reading {} ({:.2}%), several {} ({:.2}%), none {} ({:.2}%); index {} entries in {:.2?}",
+            "Bible coverage, Synodal (analyzer over {} tokens, exact readings): one reading {} ({:.2}%), one lexeme several cells {} ({:.2}%), several lexemes {} ({:.2}%), none {} ({:.2}%); index {} entries in {:.2?}",
             c.tokens,
             c.one,
             100.0 * c.one as f64 / c.tokens.max(1) as f64,
+            c.one_lexeme,
+            100.0 * c.one_lexeme as f64 / c.tokens.max(1) as f64,
             c.many,
             100.0 * c.many as f64 / c.tokens.max(1) as f64,
             c.none,
@@ -309,7 +311,11 @@ pub fn guesser(lexicon: &Lexicon, pos: Pos) -> GuessReport {
 
 pub struct BibleCoverage {
     pub tokens: usize,
+    /// One lexeme, one cell.
     pub one: usize,
+    /// One lexeme, several cells (syncretism).
+    pub one_lexeme: usize,
+    /// Several lexemes (homonymy).
     pub many: usize,
     pub none: usize,
     pub index_entries: usize,
@@ -318,7 +324,8 @@ pub struct BibleCoverage {
 
 /// Every word token of the pinned Bible (punctuation split off,
 /// apparatus tokens skipped) through the Synodal analyzer, EXACT readings
-/// only: one, several, none.
+/// only: one reading with one cell, one lexeme with several cells,
+/// several lexemes, none.
 pub fn bible_coverage() -> Result<Option<BibleCoverage>, Box<dyn Error>> {
     let Some(bible) = crate::treebank::bible::load()? else {
         return Ok(None);
@@ -327,7 +334,7 @@ pub fn bible_coverage() -> Result<Option<BibleCoverage>, Box<dyn Error>> {
     let started = std::time::Instant::now();
     let index_entries = lexicon.index().len();
     let index_time = started.elapsed();
-    let mut c = BibleCoverage { tokens: 0, one: 0, many: 0, none: 0, index_entries, index_time };
+    let mut c = BibleCoverage { tokens: 0, one: 0, one_lexeme: 0, many: 0, none: 0, index_entries, index_time };
     for book in &bible.books {
         for chapter in &book.chapters {
             for verse in &chapter.verses {
@@ -335,10 +342,11 @@ pub fn bible_coverage() -> Result<Option<BibleCoverage>, Box<dyn Error>> {
                     let Some(core) = crate::treebank::lift::token_core(token) else { continue };
                     c.tokens += 1;
                     let looked_up = crate::treebank::lift::decapitalized(core).unwrap_or_else(|| core.to_string());
-                    let n = lexicon.analyze(&looked_up).into_iter().filter(|a| a.exact).count();
-                    match n {
-                        0 => c.none += 1,
-                        1 => c.one += 1,
+                    let readings: Vec<_> = lexicon.readings(&looked_up).into_iter().filter(|r| r.exact).collect();
+                    match readings.as_slice() {
+                        [] => c.none += 1,
+                        [only] if only.cells.len() == 1 => c.one += 1,
+                        [_] => c.one_lexeme += 1,
                         _ => c.many += 1,
                     }
                 }

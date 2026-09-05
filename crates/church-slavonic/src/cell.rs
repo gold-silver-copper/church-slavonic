@@ -215,7 +215,7 @@ pub fn degree_name(d: Degree) -> &'static str {
         Degree::Superlative => "sup",
     }
 }
-fn parse_degree(s: &str) -> Option<Degree> {
+pub fn parse_degree(s: &str) -> Option<Degree> {
     Some(match s {
         "pos" => Degree::Positive,
         "comp" => Degree::Comparative,
@@ -229,14 +229,14 @@ pub fn series_name(s: Series) -> &'static str {
         Series::Long => "long",
     }
 }
-fn parse_series(s: &str) -> Option<Series> {
+pub fn parse_series(s: &str) -> Option<Series> {
     Some(match s {
         "short" => Series::Short,
         "long" => Series::Long,
         _ => return None,
     })
 }
-fn finite_name(t: FiniteTense) -> &'static str {
+pub fn finite_name(t: FiniteTense) -> &'static str {
     match t {
         FiniteTense::Present => "pres",
         FiniteTense::Imperfect => "impf",
@@ -244,7 +244,7 @@ fn finite_name(t: FiniteTense) -> &'static str {
         FiniteTense::Future => "fut",
     }
 }
-fn parse_finite(s: &str) -> Option<FiniteTense> {
+pub fn parse_finite(s: &str) -> Option<FiniteTense> {
     Some(match s {
         "pres" => FiniteTense::Present,
         "impf" => FiniteTense::Imperfect,
@@ -517,6 +517,37 @@ impl Cell {
     }
 
     /// The cell's number, where it has one.
+    /// The case of a nominal cell (a noun, adjective, participle or
+    /// pronoun cell); `None` elsewhere.
+    pub fn case(&self) -> Option<Case> {
+        match self {
+            Cell::Noun(c) => Some(c.case),
+            Cell::Adj(c) => Some(c.case),
+            Cell::Verb(VerbCell::Participle { case, .. }) => Some(*case),
+            Cell::Pron(c) => Some(c.case),
+            _ => None,
+        }
+    }
+
+    /// The gender of a cell that has one.
+    pub fn gender(&self) -> Option<Gender> {
+        match self {
+            Cell::Adj(c) => Some(c.gender),
+            Cell::Verb(VerbCell::LPart { gender, .. }) | Cell::Verb(VerbCell::Participle { gender, .. }) => Some(*gender),
+            Cell::Pron(c) => c.gender,
+            _ => None,
+        }
+    }
+
+    /// The person of a finite, imperative or personal-pronoun cell.
+    pub fn person(&self) -> Option<Person> {
+        match self {
+            Cell::Verb(VerbCell::Finite { person, .. }) | Cell::Verb(VerbCell::Imperative { person, .. }) => Some(*person),
+            Cell::Pron(c) => c.person,
+            _ => None,
+        }
+    }
+
     pub fn number(&self) -> Option<Number> {
         match self {
             Cell::Noun(c) => Some(c.number),
@@ -548,9 +579,159 @@ impl fmt::Display for Cell {
     }
 }
 
+/// An underspecified cell: the set of cells of one part of speech a
+/// paradigm does not tell apart in a form (the nominative, accusative and
+/// vocative of a masculine inanimate; the masculine and neuter genitive
+/// of a long adjective; the second and third person of an aorist). Sorted
+/// and deduplicated; [`CellSet::first`] is the cell a consumer renders
+/// through. The name factors the shared components and writes the
+/// disjunction where they differ (`nom|acc|voc.sg`, `long.pos.m|n.sg.gen`,
+/// `aor.2|3.sg`); a set that is not such a product lists its cells in
+/// cell order (`nom.pl|gen.sg|acc.pl`). [`CellSet::parse`] is the inverse of
+/// [`CellSet::name`].
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct CellSet {
+    cells: Vec<Cell>,
+}
+
+impl CellSet {
+    /// A set from cells of one part of speech; `None` when empty or mixed.
+    pub fn new(mut cells: Vec<Cell>) -> Option<CellSet> {
+        let pos = cells.first()?.pos();
+        if cells.iter().any(|c| c.pos() != pos) {
+            return None;
+        }
+        cells.sort();
+        cells.dedup();
+        Some(CellSet { cells })
+    }
+
+    pub fn one(cell: Cell) -> CellSet {
+        CellSet { cells: vec![cell] }
+    }
+
+    pub fn first(&self) -> Cell {
+        self.cells[0]
+    }
+
+    pub fn cells(&self) -> &[Cell] {
+        &self.cells
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = Cell> + '_ {
+        self.cells.iter().copied()
+    }
+
+    pub fn len(&self) -> usize {
+        self.cells.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.cells.is_empty()
+    }
+
+    pub fn contains(&self, cell: Cell) -> bool {
+        self.cells.binary_search(&cell).is_ok()
+    }
+
+    pub fn pos(&self) -> Pos {
+        self.cells[0].pos()
+    }
+
+    /// The per-component values when the set is a Cartesian product of
+    /// them (every cell has the same number of name components).
+    fn columns(&self) -> Option<Vec<Vec<String>>> {
+        let names: Vec<Vec<String>> = self.cells.iter().map(|c| c.name().split('.').map(str::to_string).collect()).collect();
+        let width = names[0].len();
+        if names.iter().any(|n| n.len() != width) {
+            return None;
+        }
+        let mut columns: Vec<Vec<String>> = vec![Vec::new(); width];
+        for name in &names {
+            for (i, part) in name.iter().enumerate() {
+                if !columns[i].contains(part) {
+                    columns[i].push(part.clone());
+                }
+            }
+        }
+        let product: usize = columns.iter().map(Vec::len).product();
+        (product == self.cells.len()).then_some(columns)
+    }
+
+    /// The factored name where the set is a product and the factored
+    /// form reads back as the same set; the listed cells otherwise.
+    pub fn name(&self) -> String {
+        if self.cells.len() == 1 {
+            return self.cells[0].name();
+        }
+        if let Some(columns) = self.columns() {
+            let factored: String = columns.iter().map(|c| c.join("|")).collect::<Vec<_>>().join(".");
+            if CellSet::parse(self.pos(), &factored).as_ref() == Some(self) {
+                return factored;
+            }
+        }
+        self.cells.iter().map(Cell::name).collect::<Vec<_>>().join("|")
+    }
+
+    /// The inverse of [`CellSet::name`]: a list of whole cell names, or
+    /// a factored name with `|` inside its components.
+    pub fn parse(pos: Pos, text: &str) -> Option<CellSet> {
+        let listed: Option<Vec<Cell>> = text.split('|').map(|piece| Cell::parse(pos, piece)).collect();
+        if let Some(cells) = listed {
+            return CellSet::new(cells);
+        }
+        let columns: Vec<Vec<&str>> = text.split('.').map(|c| c.split('|').collect()).collect();
+        let mut names: Vec<String> = vec![String::new()];
+        for (i, column) in columns.iter().enumerate() {
+            let mut next = Vec::new();
+            for prefix in &names {
+                for value in column {
+                    next.push(if i == 0 { (*value).to_string() } else { format!("{prefix}.{value}") });
+                }
+            }
+            names = next;
+        }
+        let cells: Option<Vec<Cell>> = names.iter().map(|n| Cell::parse(pos, n)).collect();
+        CellSet::new(cells?)
+    }
+}
+
+impl fmt::Display for CellSet {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.name())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cell_sets_factor_and_round_trip() {
+        let set = |pos: Pos, names: &[&str]| CellSet::new(names.iter().map(|n| Cell::parse(pos, n).unwrap()).collect()).unwrap();
+        let s = set(Pos::Noun, &["voc.sg", "nom.sg", "acc.sg"]);
+        assert_eq!(s.name(), "nom|acc|voc.sg");
+        assert_eq!(s.first().name(), "nom.sg");
+        assert_eq!(CellSet::parse(Pos::Noun, "nom|acc|voc.sg"), Some(s.clone()));
+        // not a product: listed
+        let t = set(Pos::Noun, &["gen.sg", "nom.pl", "acc.pl"]);
+        assert_eq!(t.name(), "nom.pl|gen.sg|acc.pl"); // listed in cell order (case-major)
+        assert_eq!(CellSet::parse(Pos::Noun, &t.name()), Some(t));
+        let a = set(Pos::Adjective, &["long.pos.m.sg.gen", "long.pos.n.sg.gen"]);
+        assert_eq!(a.name(), "long.pos.m|n.sg.gen");
+        assert_eq!(CellSet::parse(Pos::Adjective, "long.pos.m|n.sg.gen"), Some(a));
+        let v = set(Pos::Verb, &["aor.2.sg", "aor.3.sg"]);
+        assert_eq!(v.name(), "aor.2|3.sg");
+        assert_eq!(CellSet::parse(Pos::Verb, "aor.2|3.sg"), Some(v));
+        // a pronoun's factored form that would read as a list of whole
+        // cells (dat is the reflexive's cell) is written listed instead
+        let p = set(Pos::Pronoun, &["3.m.sg.gen", "3.m.sg.dat"]);
+        assert_eq!(p.name(), "3.m.sg.gen|3.m.sg.dat");
+        assert_eq!(CellSet::parse(Pos::Pronoun, &p.name()), Some(p));
+        assert_eq!(CellSet::parse(Pos::Noun, "nom|bogus.sg"), None);
+        assert_eq!(CellSet::new(vec![]), None);
+        assert_eq!(CellSet::new(vec![Cell::parse(Pos::Noun, "nom.sg").unwrap(), Cell::Word]), None);
+    }
 
     #[test]
     fn names_round_trip() {

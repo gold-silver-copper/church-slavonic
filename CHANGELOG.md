@@ -97,6 +97,63 @@ The two OCS gates the prompt set (stored stems ≤ 60; Kaikki cells ≥
 rising) are met. рьци (the jer grade of the root in the imperative) is a
 lexeme override, not a derivation.
 
+### Part 2 — syncretism by underspecification (2026-09-05)
+
+- **Readings.** `Lexicon::readings(surface) -> Vec<Reading>` beside
+  `analyze`: the analyses grouped by (lexeme, print) — one lexeme and every
+  cell whose form prints the surface, each with its alternative index;
+  `Reading::cell_set()`.
+- **The underspecified cell.** `cell::CellSet`: a sorted, deduplicated set
+  of cells of one part of speech; `name()` factors the shared components
+  and writes the disjunction where they differ (`nom|acc|voc.sg`,
+  `long.pos.m|n.sg.gen`, `aor.2|3.sg`, `aor|impv.2|3.sg`), lists the
+  cells in cell order where the set is not such a product
+  (`nom.pl|gen.sg|acc.pl`); `parse(pos, text)` is its inverse (a factored
+  name that would read as a list of whole cells is written listed:
+  `3.m.sg.gen|3.m.sg.dat`). `Cell::case/gender/person` accessors.
+- **The treebank leaf** carries the set: `Node::Lex { id, cells, alt }`;
+  a product set as disjunctive features (`(n свѣтъ.n :case nom|acc :num
+  sg)`, `(adj мꙋдрый.a :case gen :num sg :g m|n :series long)`, `(v рещи.v
+  :t aor :p 2|3 :num sg)`), any other set as `:cell` with the set's name
+  (`(n жена.n :cell nom.pl|gen.sg|acc.pl)`); `:alt` is the first cell's,
+  rendering goes through the first cell. The reader expands a product
+  and rejects a member the part of speech has not.
+- **The lifter**: a token whose exact readings are one lexeme is
+  *analysed* — one cell, or the set (`TokenFate::Underspecified`); a
+  titlo-written token groups the expansions of one lexeme under one row
+  (дх҃ъ is nom.sg|gen.pl|acc.pl of дꙋхъ: the abbreviation erases the
+  accent that tells дꙋ́хъ from дꙋ̑хъ); several lexemes stay verbatim with
+  `:amb n` (homonymy: дꙋ́хъ the noun, дꙋ́хъ дꙋти's aorist).
+- **The linter** treats a disjunctive feature as satisfied when any
+  member agrees (np agreement, the subject's number and person, a
+  preposition's case); it never narrows a set.
+- **`check-treebank`** asserts, over every auto-lifted leaf, that the
+  leaf names every cell of its lexeme that prints the token (through the
+  titlo index for an abbreviated token) — 364,073 leaves, none
+  incomplete — and splits the table into analysed (one cell) / one
+  lexeme, several cells / closed / several lexemes / verbatim.
+  **`narrow-hand`** reports, for each Genesis 1 hand leaf, whether the
+  hand's cell is inside the lexicon's set. `eval` reports Bible coverage
+  four ways.
+
+Measured (2.0 → 2.1 Part 2):
+
+| Number | 2.0 | 2.1 Part 2 |
+|---|---|---|
+| Bible treebank: analysed (one cell) | 23.4% (147,670) | **23.6% (149,269)** |
+| Bible treebank: one lexeme, several cells | — (inside "ambiguous") | **34.0% (215,087)** |
+| Bible treebank: closed-class | 28.1% | 28.1% (177,395) |
+| Bible treebank: several lexemes (`:amb`) | 40.2% "ambiguous" (254,308) | **6.0% (37,621)** |
+| Bible treebank: verbatim | 8.1% | 8.2% (51,557) |
+| round trip | zero mismatches | zero mismatches over 34,470 verses; 364,073 auto-lifted leaves complete |
+| Bible coverage (analyzer, exact): one reading / one lexeme several cells / several lexemes / none | 50.90% / — / 37.67% / 11.43% | 50.90% (321,132) / 32.63% (205,888) / 5.04% (31,785) / 11.43% (72,119) |
+| Genesis 1 hand overlay (`narrow-hand`) | — | 283 leaves, 179 narrow a larger set, 0 outside the lexicon's set |
+| Genesis 1 auto-lift, commonest noun sets | — | gen|acc.sg 633, nom|acc.sg 552, nom|acc|voc.sg 493 |
+
+The honest size of the homonymy problem (`docs/OPEN-DESIGNS.md` 1b) is
+6.0% of the Bible's tokens; the 40.2% "ambiguous" of 2.0 was five parts
+syncretism to one part homonymy.
+
 ## 2.0.0 (2026-09-05) — the lexicon-first rewrite
 
 Executed from V2-PROMPT.md; the design is docs/DESIGN.md. Each part

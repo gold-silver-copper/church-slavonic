@@ -22,5 +22,5 @@ pub mod titlo;
 pub use cell::*;
 pub use form::Form;
 pub use grammar::*;
-pub use analyze::Analysis;
+pub use analyze::{Analysis, Reading};
 pub use lexicon::{Lexeme, Lexicon, Provenance};

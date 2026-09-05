@@ -1006,3 +1006,37 @@ members — stays deliberately its own future design.
   doublet возврещи́), and the -нꙋти/-щи doublets whose stems 1/2/3/7 are
   those of the other infinitive. Not moved into the classes.
 
+## 2026-09-05 — 2.1 Part 2: syncretism by underspecification — decisions and findings
+
+- **The set is canonical, sorted by the cell's order (decision).** A
+  `CellSet` is sorted and deduplicated; its first cell is what a leaf
+  renders through and what `:alt` indexes. The name factors a product
+  (`nom|acc|voc.sg`) and lists the rest in cell order, which is case-major
+  for nouns (`nom.pl|gen.sg|acc.pl`). `parse` prefers the listed reading
+  when every `|`-piece is a whole cell, so `name` checks its factored
+  form reads back as itself and lists otherwise — the pronoun's bare
+  `dat` (the reflexive) is the case that bites (`3.m.sg.gen|3.m.sg.dat`).
+- **A leaf writes a product set as features and any other set as `:cell`
+  (decision).** `:case nom|acc :num sg` over-claims nothing only when the
+  set is the product of its feature values; жены-type sets (gen.sg,
+  nom.pl, acc.pl) are not, and they are common, so the leaf names the
+  set outright. Two spellings, one meaning; the reader accepts both
+  everywhere.
+- **The titlo hides more than the accent (finding).** The first census
+  found 3,337 leaves "incomplete" — every one under an `(abbr …)`: дх҃ъ
+  abbreviates дꙋ́хъ (nom.sg) and дꙋ̑хъ (gen.pl, acc.pl) alike, so the
+  token's set is larger than the full print's. The check now asks the
+  titlo index for abbreviated tokens; the leaves were right.
+- **Five parts syncretism, one part homonymy (finding).** Of the 40.2%
+  the 2.0 treebank called ambiguous, 34.0% is one lexeme in several
+  cells and 6.0% is several lexemes. The analyzer's own count over the
+  Bible agrees (32.6% against 5.0%). The commonest sets are the
+  masculine and neuter singular (nom|acc, nom|acc|voc, gen|acc of the
+  animates) and the long adjective's m|n oblique cells; the largest are
+  the pronouns' (всѧ̑ names sixteen cells).
+- **The hand overlay narrows 179 of 283 leaves (finding).** Every hand
+  cell is inside the lexicon's set (`narrow-hand`: 0 findings); the hand
+  chose among nom|acc|voc.sg 493 times in Genesis alone. That choice is
+  what the constraint-based disambiguation of `docs/OPEN-DESIGNS.md` 1b
+  has to reproduce; Genesis 1 is its gold.
+
