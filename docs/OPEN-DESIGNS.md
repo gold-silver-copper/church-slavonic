@@ -7,9 +7,9 @@ the linguistically proper answer — the design a Slavicist who builds
 morphological analyzers would choose, as distinct from the quick fix. The
 order at the end is the recommended order of execution.
 `V2.1-PROMPT.md` executed the first two (2 and 1a) on 2026-09-05, tag
-`v2.1.0`; `V2.2-PROMPT.md` executed 3 and 4 and the non-present verb
+`v2.1.0`; `V2.2-PROMPT.md` executed 1b (Parts 4–5, tag `v2.3.0`), 3 and 4 and the non-present verb
 cells of 2 the same day, tag `v2.2.0`. The outcomes are recorded in place
-below; the open list is 1b and 5.
+below; the open list is 5 and what 1b left (the order's item 4).
 
 ## 1. The ambiguous band
 
@@ -251,11 +251,15 @@ measured the dictionary, not the language.
 2. ~~Underspecified syncretism (1a)~~ — executed in 2.1.
 3. ~~Adverb derivation and the closed lexicon (3), the phonological word
    (4)~~ — executed in 2.2.
-4. Constraint-based disambiguation (1b): `V2.2-PROMPT.md` Parts 4–5
-   (release 2.3.0). The census exists: 37,663 Bible tokens are several
-   lexemes (19,402 across parts of speech, the commonest surfaces
-   lexicon duplicates such as гдⷭ҇ь and а҆́зъ), and the Genesis 1 overlay
-   records 179 hand narrowings of a syncretic set — the seed of the gold.
+4. ~~Constraint-based disambiguation (1b)~~ — executed in 2.3
+   (`V2.2-PROMPT.md` Parts 4–5): four eliminating rules at 100%
+   precision on a 2,095-leaf overlay (resolution 45.0%), an averaged
+   perceptron for the rest (86.9% on OCS dev+test's several-reading
+   tokens, 74.7% precision on the overlay, its choices in their own
+   column). What remains of 1b: the syntax a one-token window does not
+   see (subject against object of an inanimate, a pronoun's gender from
+   its antecedent), a calibrated confidence, and the lexicon duplicates
+   the homonymy census named (гдⷭ҇ь, а҆́зъ).
 5. The accent-paradigm inventory and weighted evidence (5): `V2.2-PROMPT.md`
    Part 6 (release 3.0.0). The census: 1,870 Synodal stress lists in
    1,099 shapes; the noun shapes are paradigms, the verb shapes are

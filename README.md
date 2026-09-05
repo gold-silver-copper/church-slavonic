@@ -197,7 +197,7 @@ cell.
 ## The treebank
 
 `cargo xtask build-treebank` lifts the whole pinned Bible into
-`treebank/` (gitignored) in about 30 s: every token whose exact readings
+`treebank/` (gitignored) in about 70 s with both layers of homonymy: every token whose exact readings
 are one lexeme becomes a leaf carrying the lexeme id and its cell or set
 — `(n землѧ.n :case acc :num sg)`, `(n свѣтъ.n :case nom|acc :num sg)`,
 `(v рещи.v :t aor :p 2|3 :num sg)`, `(pn азъ.pron :p 1 :num sg :case dat

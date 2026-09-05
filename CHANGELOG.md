@@ -1,9 +1,12 @@
 # Changelog
 
-## 2.3.0 (in progress) — the constraint layer of homonymy, the gold, the tagger
+## 2.3.0 (2026-09-05) — the constraint layer of homonymy, the gold, the tagger
 
-The plan is `V2.2-PROMPT.md` Parts 4–5; the analysis behind it is
-`docs/OPEN-DESIGNS.md` 1b.
+The plan is `V2.2-PROMPT.md` Parts 4–5 (Part 6, the accent inventory, is
+release 3.0.0); the analysis behind it is `docs/OPEN-DESIGNS.md` 1b. The
+library's API is unchanged from 2.2.0; the release adds the crate
+`church-slavonic-tagger`, the constraint layer and the hand overlay in
+the tools, and the numbers below.
 
 ### Part 4 — the constraint layer of homonymy, and the gold (2026-09-05)
 

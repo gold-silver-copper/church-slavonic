@@ -1265,3 +1265,12 @@ members — stays deliberately its own future design.
   weights are all above 0.2; the size is the feature count); a
   confidence threshold (see above).
 
+## 2026-09-05 — 2.3.0: the close
+
+- Version 2.3.0, tag `v2.3.0`, after Parts 4–5 of `V2.2-PROMPT.md`: the
+  constraint layer, the 211-verse overlay, the tagger crate and its
+  committed model; the library's API unchanged from 2.2.0; docs
+  regenerated from the final numbers; the game's 35 tests and the
+  headless run pass unchanged. Part 6 (the accent inventory and weighted
+  evidence) continues under the same prompt as release 3.0.0.
+
