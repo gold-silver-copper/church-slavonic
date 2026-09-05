@@ -1,22 +1,20 @@
-# Handoff: church-slavonic 2.x (after 2.3.0; 3.0.0 in progress on main — read V3.0-PROMPT.md's postscript first)
+# Handoff: church-slavonic 3.0.0 (tag `v3.0.0`)
 
 Read this first in a fresh session. It is the map of what exists, what
 the numbers are, and which designs are open, so work starts from
 verdicts and recorded measurements. The design record is
 `docs/DESIGN.md`; the diary is `NOTES.md` (dated entries, decisions and
 findings per part); `CHANGELOG.md` holds every measured number per part;
-`V2-PROMPT.md` and `V2.1-PROMPT.md` are the executed plans and stay as
-their records; `V2.2-PROMPT.md` is executed through Part 5 (releases
-2.2.0 and 2.3.0, tags `v2.2.0`, `v2.3.0`), and its Part 6 (the accent
-inventory and weighted evidence, release 3.0.0) is executed in substance
-on `main` but NOT closed. `V3.0-PROMPT.md` continues it: Part 0 (the
-censuses) and Part 1 steps 1–2 (the place `P`, the stem place through a
-derivation as a crate rule, the numerals as a stressed tail; lists
-1,344 → 1,083) are executed and committed; its postscript lists what is
-left (the `adv-of=` adverbs, the residue paragraph, the 3.0.0 close,
-then Parts 3–6). The game's 35 tests and headless run pass against this
-lexicon. Export `RUSTC_WRAPPER=` before cargo in this checkout (see the
-postscript).
+`V2-PROMPT.md`, `V2.1-PROMPT.md` and `V2.2-PROMPT.md` are the executed
+plans and stay as their records (tags `v2.0.0` … `v2.3.0`);
+`V3.0-PROMPT.md` is executed through Part 2 (release 3.0.0, tag
+`v3.0.0`, with `V3.0-CONTINUE-PROMPT.md`) and its Parts 3–6 are the open
+list. The game's 35 tests and headless run pass against this lexicon.
+Two things before any command: export `RUSTC_WRAPPER=` (empty) in this
+checkout while the shared sccache daemon lacks Desktop access; after a
+lexicon change run `fix-hand-alts`, then `build-treebank` — the stored
+treebank goes stale before it goes wrong. The crate on crates.io is
+1.0.0; 2.x and 3.0.0 are tags only.
 
 ## What exists
 
@@ -94,34 +92,25 @@ postscript).
   and the crate disagree, check the crate against its pinned sources
   before deciding which side is wrong.
 
-## The numbers (2.3.0, and Part 6 as it stands)
+## The numbers (3.0.0)
 
-Part 6 and V3.0 Part 1 (uncommitted release): stress lists 1,871 → 1,344
-→ 1,083 (nouns 219, adjectives 211, verbs 632, pronouns 21); 43 named
-paradigms in `lexicon/stress.tsv`; the -надесѧть numerals without
-overrides (`tail=`); Polyakov cells reproduced by the primary nouns
-94.7%, adjectives 93.3%, verbs 91.6%; primaries the Bible outnumbers
-167 → 135; treebank one cell 204,710 / tagger 185,206 / several lexemes
-13,027 at zero mismatches; ids unchanged. The full table is in
-CHANGELOG "3.0.0 (in progress)".
-
-
-See the tables in `CHANGELOG.md` under "2.3.0", "2.2.0", "2.1.0" and
-"2.0.0"; `cargo xtask eval`, `check-treebank` and `score-disambiguation`
-print the current ones. Held-out recall (UD PROIEL dev+test): nouns
-95.5%, adjectives 89.3%, verbs 90.9%, personal pronouns 99.3%, other
-pronouns 98.1% (Syntacticus verbs 95.0%). Bible treebank: 32.4% analysed
-(one cell), 0.3% one lexeme in several cells (26.0% with the tagger
-off), 29.3% chosen by the tagger, 28.0% closed-class, 2.1% several
-lexemes (5.6% with the tagger off), 7.8% verbatim; zero mismatches; 441
-solid and 1,854 apart phonological words. On the hand overlay the
-constraint layer excludes no hand cell (resolution 45.0%); the tagger's
-precision is 74.7% (86.9% on OCS dev+test's several-reading tokens,
-first reading 38.9%).
+Stress: 47 named paradigms in `lexicon/stress.tsv` (beside `a`, `b`);
+exception lists 1,871 → 1,010 (nouns 210, adjectives 213, verbs 567,
+pronouns 20; 71 one-number moves counted apart); the -надесѧть numerals
+without overrides (`tail=на́десѧть`); 887 adjectives with Polyakov's
+adverb as their `adv` cell's evidence; the closed lexicon 1,342 lines
+(22 `adv-of=`). Polyakov cells reproduced by the primary: nouns 94.67%,
+adjectives 93.17%, verbs 91.63%; primaries the Bible outnumbers 135
+(115 letter variants). Held-out recall (UD PROIEL dev+test): nouns
+95.48%, adjectives 89.31%, verbs 90.89%, personal pronouns 99.25%, other
+pronouns 98.07% (Syntacticus verbs 95.02%). Bible treebank (631,946
+tokens): one cell 204,769 (32.4%), one lexeme several cells 1,775
+(0.3%), tagger 185,183 (29.3%), closed 177,091 (28.0%), several lexemes
+13,128 (2.1%), verbatim 48,983 (7.8%); zero mismatches. On the
+2,097-leaf hand overlay the constraint layer excludes no hand cell
+(resolution 45.0%); the tagger 74.8% (810 of 1,083; OCS dev+test 86.9%).
 Stored present stems: OCS 56 of 2,455 verbs, Synodal 344 of 8,285. The
-closed lexicon is 1,383 lines (29 prepositions with frames). Polyakov
-cells reproduced by the primary form: nouns 94.7%, adjectives 94.1%,
-verbs 91.5%.
+tables are in `CHANGELOG.md` under "3.0.0" and in the README.
 
 ## Open designs, in order
 
@@ -130,14 +119,17 @@ linguistically proper answer — is in `docs/OPEN-DESIGNS.md`, which also
 records what 2.1 executed (present stems by derivation, syncretism by
 underspecification).
 
-1. **Close 3.0.0** (`V2.2-PROMPT.md`, last postscript): the residue of
-   the accent inventory — 1,344 lists in 998 shapes, the largest blocks
-   the present passive participle's retraction before its suffix
-   (и҆зго́нимъ) and the -ova- verbs' participles (возревнꙋ́емъ), both a
-   place the column grammar lacks; the -надесѧть numerals (a stressed
-   second element, not an enclitic); the final `eval`, the version and
-   the tag. The 61 `adv-of=` adverbs with their own
-   accent belong to the same question.
+1. **`V3.0-PROMPT.md` Parts 3–6**, in order: the lexicon's twins
+   (Part 3: the Part 0 census found 43 identical pairs, 36 subset pairs,
+   435 differing pairs — mostly Polyakov's sense entries fitted to
+   different cells; гдⷭ҇ь and kin, 5,767 tokens, are `:amb` through the
+   titlo index between господь.n and господь.n.2; ꙗзыкъ.n / .n.2 differ
+   in animacy and stay two lines), the gold by register (Part 4), the
+   clause rules and calibration (Part 5: the tagger's 274 errors are
+   nominative/accusative 97, several features 37, gender 31, another
+   feature 30, genitive/accusative 29, по 14, number 14), the
+   generator's placement (Part 6). The stress residue is closed:
+   `docs/OPEN-DESIGNS.md` 5 says what the 1,010 lists are.
 2. **What the homonymy layers left** (`docs/OPEN-DESIGNS.md` 1b, executed
    in 2.3). The tagger's errors on the overlay are the syntax a one-token
    window does not see: nominative against accusative of an inanimate

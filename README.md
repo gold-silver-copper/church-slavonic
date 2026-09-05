@@ -105,14 +105,24 @@ id       lemma   pos gender anim class stress stems overrides    variants       
   final syllable (`b.2pl` веселитѐ), the participle types (`b.part`
   влекі́й) — each with an exemplar and its count; `<name>{cell=S|E|L|F|<n>;…}`
   keeps an exception list only where no paradigm fits (places: stem,
-  ending, last stem vowel, last vowel of the word, an index; keys: a cell,
-  `sg/du/pl`, a block, a tense, `impv`). `-` for OCS.
+  ending, last stem vowel, last vowel of the word, `P` the last vowel of
+  the stem before the class's extension — и҆зго́нимъ, `b.pres.ppm` —, an
+  index; keys: a cell, `sg/du/pl`, a block — the most specific wins —,
+  a tense, `impv`). The stem place is the lemma's stressed vowel while
+  the stem has it; where a derivation removed it (-ова- → -ꙋ-, the
+  iotated -ати presents) the stress stays on the derived stem's last
+  vowel and never enters the extension (цѣлꙋ́ющїй, пи́шꙋщїй), while a
+  lemma stressed on its ending keeps the thematic index (твори́мый). 47
+  named paradigms; 1,010 lines keep a list. `-` for OCS.
 - **stems** — `base=`, numbered stems the class cannot derive (a verb's
   present stem only where it is suppletive: `2=въземл` for възьмати;
   regular presents — люблѭ, пишѫ, рекѫ/речеши — are the class's
   derivations, and so are the aorist, the imperfect and the
   l-participle), `encl=сѧ|же|либо` an enclitic written solid after every
-  ending; on a closed line `gov=`, `pros=`, `adv-of=`.
+  ending, `tail=на́десѧть` a stressed solid tail after every ending of a
+  compound numeral's first element (первыйна́десѧть, первагѡна́десѧть:
+  the one stress sits in the tail); on a closed line `gov=`, `pros=`,
+  `adv-of=`.
 - **overrides** / **variants** — print forms the class and stress do not
   produce: the override is what `inflect` returns, a variant is reachable
   through `forms` and the analyzer. A variant carries the source's count
@@ -133,14 +143,16 @@ reproduced, a variant, or quarantined with a reason in
 
 | Lexicon | Lexemes | Classes |
 |---|---|---|
-| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,348 / 8,285 / 68 / 1,383 | 49 / 16 / 50 / 21 / 8 |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,348 / 8,285 / 68 / 1,342 | 49 / 16 / 50 / 21 / 8 |
 | OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,455 / 82 | 44 / 6 / 27 / 17 |
 
 The closed lexicon is structured (2.2): a line's class is its
 subcategory, a preposition carries the cases it governs (`gov=acc|loc`),
 an enclitic or proclitic its prosody (`pros=encl`); an adverb an
 adjective prints (мꙋ́дрѡ, with the wide ѡ that tells it from the neuter
-мꙋ́дро) is the adjective's `adv` cell, not a line. The Synodal analyzer
+мꙋ́дро) is the adjective's `adv` cell, not a line, and Polyakov's adverb
+is that cell's attested evidence (3.0: 887 adjectives; `b.adv` бла́гѡ ~
+благі́й). The Synodal analyzer
 index holds 8.2 million entries and builds in about 16 seconds (release,
 on first use).
 
@@ -153,13 +165,21 @@ dev+test splits (never an import source) whose form the lexicon produces
 for the annotated lemma and cell, under the manuscript-spelling fold the
 1.x harness used (so the 1.2 numbers compare):
 
-| Part of speech | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|
-| nouns | 95.48% (8,419/8,818) | 95.48% | 94.87% | 92.04% |
-| adjectives | 89.31% (2,290/2,564) | 89.31% | 89.35% | 83.82% |
-| verbs | 90.89% (7,961/8,759) | 90.59% | 85.79% | 85.58% |
-| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% | 99.25% |
-| other pronouns | 98.07% (1,271/1,296) | 98.07% | 97.84% | 93.21% |
+| Part of speech | 3.0 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|
+| nouns | 95.48% (8,419/8,818) | 95.48% | 95.48% | 94.87% | 92.04% |
+| adjectives | 89.31% (2,290/2,564) | 89.31% | 89.31% | 89.35% | 83.82% |
+| verbs | 90.89% (7,961/8,759) | 90.89% | 90.59% | 85.79% | 85.58% |
+| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% | 99.25% | 99.25% |
+| other pronouns | 98.07% (1,271/1,296) | 98.07% | 98.07% | 97.84% | 93.21% |
+
+3.0 changed no letter and no recall: it changed how every Synodal stress
+column reads (an inventory of paradigms, 47 named), the primary form
+where a source's stress twins disagree (the pinned Bible decides), and
+the analyzer's ranking (weights). Polyakov's cells reproduced by the
+primary: nouns 94.67%, adjectives 93.17% (the wide-letter forms the
+arbiter made primaries are overrides the class does not spell),
+verbs 91.63%.
 
 Syntacticus (which overlaps the train split): nouns 95.3%, adjectives
 95.2%, verbs 95.0%, pronouns 99.2%, other pronouns 96.2%.
@@ -175,18 +195,18 @@ prep-gov :from nom|acc|voc.sg`), and a statistical tagger chooses among
 what the constraints leave, in its own row — a choice, never counted as
 analysed (`CS_NO_TAGGER=1` rebuilds without it):
 
-| | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|
-| analysed, one cell | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 0.3% (26.0% without the tagger) | 34.3% | 34.0% | — | — |
-| chosen by the tagger (`:by tagger :prob`) | 29.3% | — | — | — | — |
-| closed-class | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 2.1% (5.6% without the tagger) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
+| | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|
+| analysed, one cell | 32.4% (204,769) | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 0.3% (26.1% without the tagger) | 0.3% (26.0% without the tagger) | 34.3% | 34.0% | — | — |
+| chosen by the tagger (`:by tagger :prob`) | 29.3% | 29.3% | — | — | — | — |
+| closed-class | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 2.1% (5.6% without the tagger) | 2.1% (5.6% without the tagger) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
 
-On the 2,095-leaf hand overlay (211 verses) the constraint layer alone
+On the 2,097-leaf hand overlay (211 verses) the constraint layer alone
 never excludes a hand cell (precision 100%, resolution 45.0%); the
-tagger's choices are right 74.7% of the time (810 of 1,084; on Old
+tagger's choices are right 74.8% of the time (810 of 1,083; on Old
 Church Slavonic, UD PROIEL dev+test, 86.9% of the tokens with several
 readings against 38.9% for the analyzer's first reading).
 

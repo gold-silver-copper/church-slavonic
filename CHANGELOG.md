@@ -1,12 +1,29 @@
 # Changelog
 
-## 3.0.0 (in progress) — the accent-paradigm inventory and weighted evidence
+## 3.0.0 (2026-09-05) — the accent-paradigm inventory and weighted evidence
 
-The plan is `V2.2-PROMPT.md` Part 6; the analysis behind it is
-`docs/OPEN-DESIGNS.md` 5. **Not closed**: the version is still 2.3.0, no
-tag; what remains is listed in `HANDOFF-PROMPT.md`.
+The plan is `V2.2-PROMPT.md` Part 6, then `V3.0-PROMPT.md` Parts 0–2 and
+`V3.0-CONTINUE-PROMPT.md`; the analysis behind it is `docs/OPEN-DESIGNS.md`
+5. A major release because every Synodal stress column reads differently
+(a paradigm of the inventory, 47 named, with a list only where none
+fits), `Analysis` and `Reading` gained `weight`, `Letters` and the stress
+resolution gained the vowel counts a place resolves against (`Vowels`,
+`resolve_in`), and the stems column gained `tail=`. No letter and no
+held-out number changed.
 
-### Part 6 — the inventory, the weights, the print as arbiter (2026-09-05, in progress)
+| Number | 2.3.0 | 3.0.0 |
+|---|---|---|
+| stress columns with an exception list: nouns / adjectives / verbs / pronouns | 395 / 243 / 1,202 / 31 = 1,871 | **210 / 213 / 567 / 20 = 1,010** (one number moved counted apart: 71) |
+| named paradigms in `lexicon/stress.tsv` (beside the built-in `a`, `b`) | 2 (`c`, `d`) | 47 |
+| the -надесѧть numerals' overrides | 44 | 0 (`tail=на́десѧть`) |
+| closed lines (adverbs an adjective prints are its `adv` cell) | 1,383 | 1,342; 887 adjectives carry Polyakov's adverb as the cell's evidence |
+| Polyakov cells reproduced by the primary: nouns / adjectives / verbs | 94.7% / 94.1% / 91.5% | 94.67% / 93.17% (the arbiter's wide-letter primaries are overrides) / 91.63% |
+| primaries the pinned Bible outnumbers | 167 | 135 (115 letter variants, 10 citation cells, 8 stress twins of names and small counts) |
+| held-out recall (UD dev+test) | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 | unchanged |
+| Bible treebank | one cell 32.4%, sets 0.3%, tagger 29.3%, closed 28.0%, several lexemes 2.1%, verbatim 7.8% | one cell 32.4% (204,769), sets 0.3% (1,775), tagger 29.3% (185,183), closed 28.0% (177,091), several lexemes 2.1% (13,128), verbatim 7.8% (48,983); zero mismatches |
+| ids changed | — | 0 |
+
+### Part 6 — the inventory, the weights, the print as arbiter (2026-09-05)
 
 - **The inventory** (`lexicon/stress.tsv`, columns `name spec exemplar
   count`): 31 named paradigms, every one a shape the Part 0.5 census
@@ -77,7 +94,7 @@ The crate gained `Place::Pre` (`P`), `Letters::pre_vowels` and
 `stress::resolve_in` so the census could measure it; no paradigm names
 it yet.
 
-### V3.0 Part 1 — the residue's places (2026-09-05, steps 1–2 done; 3–4 open)
+### V3.0 Part 1 — the residue's places (2026-09-05)
 
 - **The stem place through a derivation** is now a rule of the crate
   (`stress::resolve_in` with `Vowels { base, pre, stem, total }`): the

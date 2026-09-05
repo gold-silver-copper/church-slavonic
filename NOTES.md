@@ -1507,3 +1507,16 @@ members — stays deliberately its own future design.
 - What the residue is, by kind, is in `docs/OPEN-DESIGNS.md` 5.
 - Treebank unchanged at zero mismatches (one cell 204,769, several
   lexemes 13,128); tests, clippy, the game green.
+
+## 2026-09-05 — 3.0.0: the close
+
+- Version 3.0.0, tag `v3.0.0`, after `V2.2-PROMPT.md` Part 6 and
+  `V3.0-PROMPT.md` Parts 0–2 (with `V3.0-CONTINUE-PROMPT.md`): the accent
+  inventory (47 named paradigms), the place `P`, the stem place through a
+  derivation as a crate rule, the stressed tail, the adverb cell's
+  evidence, weights, the print as arbiter; lists 1,871 → 1,010; the
+  README's tables carry a 3.0 column; the game's 35 tests and headless
+  run pass unchanged. The published crate on crates.io is 1.0.0: 2.x and
+  3.0.0 are tags only, publishing is the user's call. Parts 3–6 of
+  `V3.0-PROMPT.md` (the lexicon's twins, the gold by register, the
+  clause, the placement) are the open list.
