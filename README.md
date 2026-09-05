@@ -103,8 +103,9 @@ id       lemma   pos gender anim class stress stems overrides    variants       
 - **stems** — `base=`, numbered stems the class cannot derive (a verb's
   present stem only where it is suppletive: `2=въземл` for възьмати;
   regular presents — люблѭ, пишѫ, рекѫ/речеши — are the class's
-  derivations), `encl=сѧ|же|либо` an enclitic written solid after every
-  ending.
+  derivations, and so are the aorist, the imperfect and the
+  l-participle), `encl=сѧ|же|либо` an enclitic written solid after every
+  ending; on a closed line `gov=`, `pros=`, `adv-of=`.
 - **overrides** / **variants** — print forms the class and stress do not
   produce: the override is what `inflect` returns, a variant is reachable
   through `forms` and the analyzer.
@@ -121,11 +122,16 @@ reproduced, a variant, or quarantined with a reason in
 
 | Lexicon | Lexemes | Classes |
 |---|---|---|
-| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,344 / 8,284 / 68 / 2,503 | 49 / 16 / 50 / 21 |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,348 / 8,285 / 68 / 1,383 | 49 / 16 / 50 / 21 / 8 |
 | OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,455 / 82 | 44 / 6 / 27 / 17 |
 
-The Synodal analyzer index holds 8.2 million entries and builds in about
-16 seconds (release, on first use).
+The closed lexicon is structured (2.2): a line's class is its
+subcategory, a preposition carries the cases it governs (`gov=acc|loc`),
+an enclitic or proclitic its prosody (`pros=encl`); an adverb an
+adjective prints (мꙋ́дрѡ, with the wide ѡ that tells it from the neuter
+мꙋ́дро) is the adjective's `adv` cell, not a line. The Synodal analyzer
+index holds 8.2 million entries and builds in about 16 seconds (release,
+on first use).
 
 ## Evaluation
 
@@ -136,16 +142,16 @@ dev+test splits (never an import source) whose form the lexicon produces
 for the annotated lemma and cell, under the manuscript-spelling fold the
 1.x harness used (so the 1.2 numbers compare):
 
-| Part of speech | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|
-| nouns | 95.48% (8,419/8,818) | 94.87% | 92.04% |
-| adjectives | 89.31% (2,290/2,564) | 89.35% | 83.82% |
-| verbs | 90.59% (7,935/8,759) | 85.79% | 85.58% |
-| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% |
-| other pronouns | 98.07% (1,271/1,296) | 97.84% | 93.21% |
+| Part of speech | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|
+| nouns | 95.48% (8,419/8,818) | 95.48% | 94.87% | 92.04% |
+| adjectives | 89.31% (2,290/2,564) | 89.31% | 89.35% | 83.82% |
+| verbs | 90.89% (7,961/8,759) | 90.59% | 85.79% | 85.58% |
+| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% | 99.25% |
+| other pronouns | 98.07% (1,271/1,296) | 98.07% | 97.84% | 93.21% |
 
 Syntacticus (which overlaps the train split): nouns 95.3%, adjectives
-95.2%, verbs 94.9%, pronouns 99.2%, other pronouns 96.2%.
+95.2%, verbs 95.0%, pronouns 99.2%, other pronouns 96.2%.
 
 **Bible coverage** — every token of the Elizabethan Bible through the
 Synodal analyzer (631,946 tokens; `cargo xtask check-treebank`). A token
@@ -154,13 +160,17 @@ cells its paradigm does not tell apart (syncretism, recorded as the set);
 a token whose readings are several lexemes is homonymy, recorded and
 never guessed:
 
-| | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|
-| analysed, one cell | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 34.0% | — | — |
-| closed-class | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | 8.2% | 8.1% | 20.2% |
+| | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|
+| analysed, one cell | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 34.3% | 34.0% | — | — |
+| closed-class | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | 7.8% | 8.2% | 8.1% | 20.2% |
+
+A host and the enclitic that leans on it are one accentual unit in the
+print (Землѧ́ же, и҆̀хже): the treebank writes the unit (`(pwa …)`, `(pw …)`)
+and the crate accents it (`Form::print_unit`); 2,295 units in the Bible.
 
 **Guesser accuracy** — hide each lexeme in turn, guess it from the lemma
 alone, compare paradigms: Synodal nouns 93.9% of classes, 93.3% of cells;

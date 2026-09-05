@@ -162,7 +162,17 @@ id  lemma  pos  gender  anim  class  stress  stems  overrides  variants  src  no
   of the class read off the attested forms (the present stem, a
   participle stem); `encl=сѧ|же|жде|ждо|либо` an enclitic the print writes
   solid after every ending, the jer before it dropped (бои́тсѧ, тогѡ́же,
-  кі́йждо, кто́либо) — the class works on the lemma without it.
+  кі́йждо, кто́либо) — the class works on the lemma without it. On a
+  closed-class line (2.2): `gov=<case>|…` the cases a preposition governs,
+  commonest first (`Lexeme::government()`); `pros=encl|procl` the word's
+  place in the accentual unit (`Lexeme::prosody()`; a word without it is
+  tonic); `adv-of=<adjective id>` on an adverb line the adjective prints
+  with another accent or letter. A closed lexeme's class is its
+  subcategory (`prep`, `conj`, `part`, `adv`, `advpro`, `intj`, `pred`,
+  `contr`), a row of `classes/closed.tsv`. An adverb an adjective prints
+  exactly is not a line: it is the adjective's `adv` cell (`adv=1-о^|1-ѣ`,
+  the mark printing the wide ѡ — мꙋ́дрѡ against the neuter мꙋ́дро) and
+  the adjective's note carries the source's count (`adv P:12`).
 - **overrides**: `cell=printform;…` — full print forms, in the print's
   typography, for cells where class + stress are wrong (a true exception)
   or where the lexeme prefers a non-primary alternative of its class (an
@@ -225,8 +235,21 @@ stem 2), `V:I:ьн`/`V:I:ьм` (клѧти: `2=ext:ьн:cut`), `V:I:a` (кова
 `V:II` (двигнѫти). Each Kaikki entry is placed by predicting its attested
 first and third person singular from the derived stems; each present
 cell reads its ending against the stem the type declares, so the members
-that iotate and the members that do not vote the same ending; the
-non-present cells stay data-driven. Entries no type reproduces sit in
+that iotate and the members that do not vote the same ending. The
+aorist, the imperfect and the l-participle are the type's too (2.2): the
+sigmatic aorist on a vowel stem (дѣлахъ, дѣла; любихъ; клѧхъ), the -ох-
+aorist on a consonant stem with the palatalised velar before the bare е
+of the second and third person singular (несохъ, несе; рекохъ, рече;
+грѧдохъ), class II with -нѫ- first and the root aorist as the alternative
+on `13=pal1` (двигнѫхъ | двигохъ, двигнѫ | движе); the imperfect -ѣа-
+after a consonant stem, -аа- after the palatalised velar and the a-types,
+-ꙗа- on the iotated stem of -ити and the jer type, -ѣа- on -ѣти, -а- after
+a vowel stem; the l-participle on the infinitive stem. Where Kaikki's
+majority disagrees with the type (its tables are template output:
+косехъ, кослъ, кльнхъ) the type's cell is the primary and Kaikki's is
+counted, not kept; `cargo xtask census verb-cells --ocs` reads the
+tables against the same statement in Rust. The past participles were
+type-declared in 2.1. Entries no type reproduces sit in
 residue classes (`V:res:<ending>`) with the stem on their line, and a
 residue class is never offered to a lexeme the seeding did not place. A
 guessed OCS verb therefore inflects from its infinitive alone (guessed
@@ -301,6 +324,38 @@ treats a disjunctive feature as satisfied when any member agrees and
 never narrows a set: narrowing by agreement is disambiguation. The hand
 overlay (Genesis 1) keeps fully specified leaves; `cargo xtask
 narrow-hand` reports each hand cell against the lexicon's set.
+
+Two more leaves (2.2): `(adv мꙋдрый.a [:deg comp])` an adjective's adverb;
+`(pw host (f же.x.2))` a phonological word written solid and `(pwa host
+(f же.x.2))` one written apart — a host (an analyzed leaf or a closed
+lexeme) with the enclitics that lean on it, rendered through the fifth
+stage below. The lifter reads a token with no whole reading as host +
+enclitic (the enclitic stripped, the host's final oxia read as the
+standalone varia or its jer restored, one lexeme), and a token with no
+whole reading followed by an enclitic token as a unit written apart. The
+linter and the coverage count a unit as its host; the linter reads a
+preposition's case frame from the lexicon (`gov=`) and leaves a word
+without one unchecked.
+
+## The fifth stage: the phonological word
+
+Church Slavonic accent is lexical at the word level, but the print's
+oxia against varia is decided over the accentual unit: a host with its
+enclitics (же, бо, ли, ꙋ҆́бѡ) and proclitics (the prepositions, не, ни) is
+one phonological word, so a stressed vowel that is final in the lexical
+word but not in the unit takes the oxia — землѧ̀, but Землѧ́ же and (written
+solid) землѧ́же, и҆̀хже, ѻ҆́ньже. The stage is optional and deterministic:
+`Form::with_enclitic` builds the unit's form (the enclitic's letters
+appended, the host's jer dropped before it in the Synodal print, the
+number mark skipping the enclitic's vowels) and `Form::print_unit` prints
+it; `Form::print_hosting` prints a host whose enclitic is written apart;
+`church_slavonic::prosody::words` groups a token sequence into units by
+the lexicon's prosody for a renderer or a generator, and second-position
+placement of an enclitic is the generator's call. Everything word-level —
+the number mark, the kamora, the wide letters, the monosyllabic varia —
+stays where the word has it. The 2.0 `encl=` lexemes (иже, кождо, the
+reflexive verbs) are this rule applied by the class at the letters
+stage, and print unchanged.
 
 ## Sources and import
 
@@ -384,6 +439,9 @@ for (cell, form) in rab.paradigm() { … }
 lex.analyze("рабѡ́мъ");                          // [(рабъ.n, dat.pl, exact)]
 lex.readings("свѣ́тъ");                          // [(свѣтъ.n, cells nom.sg, acc.sg)]
 CellSet::parse(Pos::Noun, "nom|acc|voc.sg");     // the underspecified cell
+lex.get("къ.x.2")?.government();                 // [Dative]
+lex.get("же.x.2")?.prosody();                    // Prosody::Enclitic
+Form::from_print("землѧ̀").print_unit(Recension::Synodal, &["же"]); // "землѧ́же"
 lex.guess("а҆дама́нтъ", Pos::Noun);              // provenance: Guessed
 ```
 

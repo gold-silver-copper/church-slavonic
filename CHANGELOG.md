@@ -1,9 +1,37 @@
 # Changelog
 
-## 2.2.0 (in progress) — the six designs after 2.1
+## 2.2.0 (2026-09-05) — the verb's whole two-stem system, the closed lexicon, the phonological word
 
-The plan is `V2.2-PROMPT.md`; the analysis behind it is
-`docs/OPEN-DESIGNS.md`.
+The plan is `V2.2-PROMPT.md` (Parts 0–3 of six; Parts 4–6 are the 2.3.0
+and 3.0.0 releases); the analysis behind it is `docs/OPEN-DESIGNS.md`.
+Tag `v2.2.0`. The library's API grew by `Cell::Adv`, `Lexeme::government/
+prosody/subcategory`, `grammar::Prosody`, `Form::with_enclitic/print_unit/
+print_hosting`, the `prosody` module; nothing was removed. The closed
+lexicon lost 1,123 lines to the adjectives' adverb cell. The game
+re-tested against 2.2.0 without a content change.
+
+### The close (2026-09-05)
+
+- `docs/DESIGN.md`: the non-present verb cells by type; the closed
+  lexicon's columns and the adverb cell; the `(adv …)`, `(pw …)`, `(pwa …)`
+  leaves; the fifth stage. `docs/OPEN-DESIGNS.md`: 3 and 4 executed with
+  their numbers, 2 completed; 1b and 5 open with their censuses.
+  `HANDOFF-PROMPT.md` and the README regenerated from the final `eval`
+  and `check-treebank`.
+- Version 2.2.0 for `church-slavonic`.
+
+The release in numbers (2.1 → 2.2):
+
+| Number | 2.1 | 2.2 |
+|---|---|---|
+| held-out recall, UD dev+test: nouns / adjectives / verbs / pronouns / npron | 95.48 / 89.31 / 90.59 / 99.25 / 98.07 | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 |
+| Syntacticus verbs | 94.91 | 95.02 |
+| Bible treebank: one cell / one lexeme several cells / closed / several lexemes / verbatim | 23.6 / 34.0 / 28.1 / 6.0 / 8.2 | 23.8 / 34.3 / 28.0 / 6.0 / 7.8 |
+| phonological words in the treebank: solid / apart | — | 441 / 1,854 |
+| closed lines / prepositions with a frame | 2,503 / 0 | 1,383 / 29 |
+| OCS verb cells against the type (aorist, imperfect, l-participle) | 88, 144, 90 of 153 | 153, 153, 153 |
+| stored stems: OCS / Synodal | 56 / 358 | 56 / 344 |
+| Bible coverage (analyzer): one / one lexeme several / several / none | 320,930 / 205,888 / 31,785 / 72,119 | 321,134 / 206,024 / 31,827 / 71,939 |
 
 ### Part 0 — the censuses (2026-09-05)
 

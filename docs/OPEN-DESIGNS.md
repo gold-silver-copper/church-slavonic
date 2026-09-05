@@ -7,8 +7,9 @@ the linguistically proper answer — the design a Slavicist who builds
 morphological analyzers would choose, as distinct from the quick fix. The
 order at the end is the recommended order of execution.
 `V2.1-PROMPT.md` executed the first two (2 and 1a) on 2026-09-05, tag
-`v2.1.0`; their outcomes are recorded in place below, and the open list
-is 1b, 3, 4, 5.
+`v2.1.0`; `V2.2-PROMPT.md` executed 3 and 4 and the non-present verb
+cells of 2 the same day, tag `v2.2.0`. The outcomes are recorded in place
+below; the open list is 1b and 5.
 
 ## 1. The ambiguous band
 
@@ -163,6 +164,16 @@ prepositions with the cases they govern (for the linter and the
 disambiguator), conjunctions, and the clitics as a category with prosodic
 properties (see 4).
 
+**Executed (2.2, 2026-09-05).** The census: 1,435 of 2,313 closed adverbs
+are printed as an adjective's neuter short nominative (857 with the wide
+ѡ) or short locative. The adverb is the adjective's cell (`adv=1-о^|1-ѣ`,
+`comp.adv`; `Cell::Adv`); 1,123 closed lines went, their counts on the
+adjectives' notes, 61 stayed with `adv-of=` (another accent), 807 have no
+adjective. The closed lexeme's class is its subcategory; every
+preposition carries `gov=` (the grammar's frames ordered by the treebank
+census, extras as `gov?` notes) and `pros=procl`, the enclitics
+`pros=encl`; the linter reads government from the lexicon.
+
 ## 4. Sentence-level accent
 
 **What.** `Form::print` decides oxia against varia by position inside one
@@ -189,6 +200,14 @@ The kamora, the wide letters and the monosyllabic varia (и҆̀хъ against
 и҆́хъ) are orthographic disambiguation of homographic cells and stay at
 the word level, where 2.0 has them. An optional fifth stage, needed by
 the renderer and the game, not by `inflect`.
+
+**Executed (2.2, 2026-09-05).** `Form::with_enclitic`/`print_unit` (the
+solid unit), `Form::print_hosting` (the host before an enclitic written
+apart), `prosody::words`; treebank `(pw …)` and `(pwa …)`. The print
+writes the unit apart far more often than solid: 1,854 `(pwa …)` (Рече́ же
+289, Є҆гда́ же 138) against 441 `(pw …)` (и҆̀хже 270, ѻ҆́ньже 147); Genesis
+1:2's Землѧ́ же lifts; verbatim 8.2% → 7.8%. Not done: second-position
+placement in a generator (the function exists, no consumer calls it).
 
 ## 5. The Part 1 noun gate
 
@@ -227,13 +246,17 @@ measured the dictionary, not the language.
 
 ## Order
 
-1. ~~Present-stem derivation (2)~~ — executed in 2.1.
+1. ~~Present-stem derivation (2)~~ — executed in 2.1; the non-present
+   cells by type in 2.2.
 2. ~~Underspecified syncretism (1a)~~ — executed in 2.1.
-3. Constraint-based disambiguation (1b), adverb derivation (3) and the
-   phonological word (4): each needs a corpus census first. For 1b the
-   census exists now: 37,621 Bible tokens are several lexemes, and the
-   Genesis 1 overlay records 179 hand narrowings of a syncretic set —
-   the seed of the gold a disambiguator is scored against.
-4. The accent-paradigm inventory and weighted evidence (5): the deepest
-   linguistics on the list and the one that would most change how the
-   lexicon reads.
+3. ~~Adverb derivation and the closed lexicon (3), the phonological word
+   (4)~~ — executed in 2.2.
+4. Constraint-based disambiguation (1b): `V2.2-PROMPT.md` Parts 4–5
+   (release 2.3.0). The census exists: 37,663 Bible tokens are several
+   lexemes (19,402 across parts of speech, the commonest surfaces
+   lexicon duplicates such as гдⷭ҇ь and а҆́зъ), and the Genesis 1 overlay
+   records 179 hand narrowings of a syncretic set — the seed of the gold.
+5. The accent-paradigm inventory and weighted evidence (5): `V2.2-PROMPT.md`
+   Part 6 (release 3.0.0). The census: 1,870 Synodal stress lists in
+   1,099 shapes; the noun shapes are paradigms, the verb shapes are
+   Polyakov's noise.

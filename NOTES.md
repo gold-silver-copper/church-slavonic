@@ -1174,3 +1174,11 @@ members — stays deliberately its own future design.
   lexemes (ты́, мы́ read as clitic and full cells of one lexeme lift; ѻ҆на́
   reads as ѻ҆́нъ and ѻ҆на́ the noun). The pronoun cases are Part 4's.
 
+## 2026-09-05 — 2.2.0: the close
+
+- Version 2.2.0, tag `v2.2.0`, after Parts 0–3 of `V2.2-PROMPT.md`; docs
+  regenerated from the final numbers; the game's 35 tests and the
+  headless run pass unchanged. Parts 4–6 continue under the same prompt
+  as releases 2.3.0 (the constraint layer and the tagger) and 3.0.0 (the
+  accent inventory).
+
