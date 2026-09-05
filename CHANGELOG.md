@@ -1,9 +1,37 @@
 # Changelog
 
-## 2.1.0 (in progress) — present stems by derivation, syncretism by underspecification
+## 2.1.0 (2026-09-05) — present stems by derivation, syncretism by underspecification
 
-The plan is `V2.1-PROMPT.md`; the analysis behind it is
-`docs/OPEN-DESIGNS.md`.
+The plan is `V2.1-PROMPT.md` (executed; its postscript lists the
+departures); the analysis behind it is `docs/OPEN-DESIGNS.md`. Tag
+`v2.1.0`. The library's API grew by `Lexicon::readings`, `Reading`,
+`cell::CellSet`, `Cell::case/gender/person` and the `jer` derivation;
+nothing was removed. The game (`~/Desktop/code/vertograd`) re-tested
+against 2.1.0 without a content change.
+
+### Part 3 — the close (2026-09-05)
+
+- `docs/DESIGN.md`: the two-stem verb model as class-level derivations
+  and the Leskien types; the spelling rule after a husher; readings,
+  the underspecified cell and the leaf grammar with disjunctions and
+  `:cell`; the four-way Bible coverage; two standing rules (syncretism as
+  the set, homonymy as `:amb`; a derivable stem is never stored).
+  `docs/OPEN-DESIGNS.md`: 2 and 1a marked executed with their numbers;
+  1b, 3, 4, 5 open, 1b's census in hand. `HANDOFF-PROMPT.md` and the
+  README regenerated from the final `eval` and `check-treebank`.
+- Version 2.1.0 for `church-slavonic`.
+
+The release in numbers (2.0 → 2.1):
+
+| Number | 2.0 | 2.1 |
+|---|---|---|
+| held-out recall, UD dev+test: nouns / adjectives / verbs / pronouns / npron | 94.87 / 89.35 / 85.79 / 99.25 / 97.84 | 95.48 / 89.31 / 90.59 / 99.25 / 98.07 |
+| Syntacticus: nouns / adjectives / verbs / pronouns / npron | 95.20 / 95.18 / 93.68 / 99.20 / 95.90 | 95.33 / 95.17 / 94.91 / 99.20 / 96.18 |
+| Bible treebank: one cell / one lexeme several cells / closed / several lexemes / verbatim | 23.4 / — / 28.1 / 40.2 / 8.1 | 23.6 / 34.0 / 28.1 / 6.0 / 8.2 |
+| stored present stems: OCS / Synodal | 1,442 / 636 | 56 / 358 |
+| guessed present cells: OCS / Synodal verbs | 22.72 / 46.46 | 78.99 / 46.51 |
+| Kaikki cells reproduced: nouns / adjectives / verbs | 99.1 / 97.8 / 94.5 | 98.6 / 97.8 / 95.7 |
+| OCS verb classes | 55 | 27 |
 
 ### Part 0 — the census (2026-09-05)
 

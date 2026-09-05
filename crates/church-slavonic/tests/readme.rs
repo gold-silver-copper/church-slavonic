@@ -14,6 +14,9 @@ fn the_readme_example() {
     let readings = syn.analyze("рабѡ́мъ");
     assert_eq!(readings[0].lexeme.id, "рабъ.n");
     assert_eq!(readings[0].cell.name(), "dat.pl");
+    let exact: Vec<_> = syn.readings("свѣ́тъ").into_iter().filter(|r| r.exact).collect();
+    assert_eq!(exact.len(), 1);
+    assert_eq!(exact[0].cell_set().unwrap().name(), "nom|acc.sg");
     let ocs = Lexicon::ocs();
     let rab = ocs.find("рабъ", Pos::Noun)[0];
     assert_eq!(rab.inflect(NounCell::new(Case::Locative, Number::Plural)).unwrap().print(Recension::OldChurchSlavonic), "рабѣхъ");

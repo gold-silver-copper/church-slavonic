@@ -104,9 +104,15 @@ N1c*   отецъ     1      1=drop;2=base;3=pal1:drop  2-ъ  1-а  …
   lemma minus `strip` letters), `drop` (the fleeting vowel dropped, `й`
   left behind after a vowel), `insert` (a vowel inserted before the last
   consonant; the lexeme's `stems=ins=…` overrides the rule), `pal1[:x]` /
-  `pal2[:x]` (the first / second palatalisation), `ext:suffix`, `cut` (the
-  last letter removed). A lexeme's `stems=base=…` replaces the strip rule
-  and `stems=<n>=…` spells stem n outright (`1=льв` for ле́въ : льва̀).
+  `pal2[:x]` (the first / second palatalisation), `iot` (iotation of the
+  final consonant: люб → любл, род → рожд, пис → пиш; vacuous on a
+  palatal), `ov` (-ова- → -ꙋ-, -ева- → -ю-), `jer` (the tense jer before
+  j: пи → пь, ры → ръ), `nasal`, `iota`, `ext:suffix`, `cut` (the last
+  letter removed); a chain applies right to left (`ext:ен:iot` iotates,
+  then appends). A lexeme's `stems=base=…` replaces the strip rule and
+  `stems=<n>=…` spells stem n outright (`1=льв` for ле́въ : льва̀) — for a
+  verb only where the stem is suppletive (възьмати 2=въземл): the present
+  stem of a verb is the class's derivation, never stored (2.1).
 - a cell spec: `|`-separated alternatives, primary first — `N-ending` with
   a trailing `^` for the number mark, `@cell` for the same as that cell,
   `@lemma`, each optionally `anim:`/`inan:` for one animacy only. `inflect`
@@ -199,16 +205,40 @@ There is no global arity.
 
 The OCS lexicon (`lexicon/ocs/*.tsv`) lives in its own class tables
 (`classes/ocs/*.tsv`), seeded from Kaikki's paradigm tables by
-`scripts/kaikki-to-classes.py`: a class is a group of entries with one
-paradigm shape (Kaikki's stem class, the nominative's ending, the gender;
-for verbs the infinitive's ending, the present's first- and third-person
-endings and whether the present stem is the infinitive's), its row the
-majority ending per cell with a second ending as an alternative where a
-quarter of the group uses it; the pronoun table is hand-written from the
-tables of тъ, сь, иже, къто, чьто and the treebank's personal forms. A
-verb whose present stem the class cannot derive names it on its line
-(`stems=2=пь` for пити). The derivations are recension-aware (the second
-palatalisation of г is ѕ in OCS, з in the print). No stress: the stress
+`scripts/kaikki-to-classes.py`: a noun or adjective class is a group of
+entries with one paradigm shape (Kaikki's stem class, the nominative's
+ending, the gender), its row the majority ending per cell with a second
+ending as an alternative where a quarter of the group uses it; the
+pronoun table is hand-written from the tables of тъ, сь, иже, къто, чьто
+and the treebank's personal forms.
+
+A verb class is a Leskien type — (infinitive type, present type) — and
+its stems column is derivations: `V:IV:i` (любити: `2=iot`, the first
+person on stem 2 with -ѭ, the other persons on stem 1 with -и-, the
+imperfect on 2, `8=ext:ен:iot`), `V:IV:ě`, `V:IV:a` (лежати), `V:III:j`
+(писати: the whole present on `2=iot`), `V:III:aje` (дѣлати), `V:III:ja`
+(таꙗти), `V:III:ov` (`2=ov`), `V:III:jer` (пити: `2=jer`), `V:I:C`
+(нести), `V:I:к`/`V:I:г` (рещи: `1=base` the infinitive, `2=ext:к`,
+`3=pal1:ext:к` for the other persons, `4=pal2:ext:к` for the imperative),
+`V:I:т`/`V:I:д`/`V:I:з` (грѧсти: the dental hidden by -сти restored on
+stem 2), `V:I:ьн`/`V:I:ьм` (клѧти: `2=ext:ьн:cut`), `V:I:a` (ковати),
+`V:II` (двигнѫти). Each Kaikki entry is placed by predicting its attested
+first and third person singular from the derived stems; each present
+cell reads its ending against the stem the type declares, so the members
+that iotate and the members that do not vote the same ending; the
+non-present cells stay data-driven. Entries no type reproduces sit in
+residue classes (`V:res:<ending>`) with the stem on their line, and a
+residue class is never offered to a lexeme the seeding did not place. A
+guessed OCS verb therefore inflects from its infinitive alone (guessed
+present cells 22.7% → 79.0%).
+
+The spelling rule after a husher is the crate's: in OCS the iotated
+vowels are written plain after ж ч ш щ ц and жд — ѭ/ѥ/ѩ/ꙗ as ѫ/е/ѧ/а,
+at the ending and inside a derivation (пишѫ, пишетъ, рождѫ, хождаахъ
+beside люблѭ, глаголѥтъ, гонꙗахъ) — which is what lets one class name
+`2-ѭ` once; the Synodal rule (ѧ/ѣ → а after a husher) is a derivation's
+only. The derivations are recension-aware (the second palatalisation of
+г is ѕ in OCS, з in the print). No stress: the stress
 column is `-` and the print drops it, mapping ы→ꙑ and ꙋ→оу; ѫ, ѧ, ѥ, ꙗ, ѣ
 are letters of the layer. Provenance `K:<class>` Kaikki, `U:` the UD
 PROIEL train split (variants on Kaikki's lexemes, new lexemes fitted to
@@ -218,25 +248,59 @@ citation cell does not print its lemma — is quarantined as
 
 ## The analyzer
 
-`Lexicon::analyze(surface) -> Vec<Analysis { lexeme, cell, exact, variant }>`.
-The index is every lexeme × every cell (variants included) keyed by
-`Form::key`, built lazily on first use; a query folds the input by the
-same key and ranks exact-print matches first, primaries before variants.
-Ambiguity is returned, never resolved. An unknown surface returns nothing;
-guessing works from lemmas, never from surfaces.
+`Lexicon::analyze(surface) -> Vec<Analysis { lexeme, cell, alt, exact, print }>`.
+The index is every lexeme × every cell (alternatives and variants
+included) keyed by `Form::key`, built lazily on first use; a query folds
+the input by the same key and ranks exact-print matches first, primaries
+before variants. Ambiguity is returned, never resolved. An unknown
+surface returns nothing; guessing works from lemmas, never from surfaces.
 
-The treebank's analyzed leaves carry the lexeme id and the cell, spelled
-by the head and its features, and `:alt n` for a non-primary form of the
-cell (the index into `forms(cell)`): `(n гадъ.n :case acc :num pl :alt
-3)` renders гадѡ́въ; `(adj мꙋдрый.a :case nom :num sg :g m :series long)`,
-`(v рещи.v :t aor :p 3 :num sg)`, `(v … :form imp|inf)`, `(lp быти.v :g m
-:num sg)`, `(part творити.v :t pres :voice act :series long :case nom
-:num sg :g m)`, `(pn азъ.pron :p 1 :num sg :case dat :clit yes)`, `(pn
-себе.pron :case dat)`, `(f и.x)` a closed-class lexeme (or `(f и҆)` by its
-surface where several closed lexemes print one word). A leaf enters a
-tree only when it renders its token back byte-for-byte on its own; a
-token with several exact readings stays verbatim with `:amb n`; the
-treebank is rebuilt from the print every time, nothing is carried over.
+`Lexicon::readings(surface) -> Vec<Reading { lexeme, cells, exact, print }>`
+groups the analyses by (lexeme, print): one lexeme and every cell whose
+form prints the surface. The two shapes of "several analyses" are
+different things. **Syncretism** is one reading whose `cells` has several
+members — a property of the paradigm, not doubt about the word: every
+masculine inanimate prints nom = acc = voc in the singular, a long
+adjective's masculine and neuter share the oblique cases, an aorist's
+second and third person singular coincide. **Homonymy** is several
+readings — several lexemes, or several prints of one lexeme — and needs
+context (`docs/OPEN-DESIGNS.md` 1b).
+
+A syncretic reading is an underspecified cell, `cell::CellSet`: a sorted,
+deduplicated set of cells of one part of speech whose `name()` factors
+the shared components and writes the disjunction where they differ —
+`nom|acc|voc.sg`, `long.pos.m|n.sg.gen`, `aor.2|3.sg`, `aor|impv.2|3.sg` —
+and lists the cells in cell order where the set is not such a product
+(`nom.pl|gen.sg|acc.pl`); `CellSet::parse(pos, text)` is the inverse. The
+first cell is what a consumer renders through; every member prints the
+same form.
+
+The treebank's analyzed leaves carry the lexeme id and the cell — or the
+set — spelled by the head and its features, and `:alt n` for a
+non-primary form of the first cell (the index into `forms(cell)`): `(n
+гадъ.n :case acc :num pl :alt 3)` renders гадѡ́въ; `(n свѣтъ.n :case
+nom|acc :num sg)` is свѣ́тъ in the two cells its paradigm does not tell
+apart; a product set is written as disjunctive features, any other set as
+`:cell` with its name (`(n жена.n :cell nom.pl|gen.sg|acc.pl)`, `(v
+сотворити.v :cell aor|impv.2|3.sg)`); `(adj мꙋдрый.a :case gen :num sg :g
+m|n :series long)`, `(v рещи.v :t aor :p 2|3 :num sg)`, `(v … :form
+imp|inf)`, `(lp быти.v :g m :num sg)`, `(part творити.v :t pres :voice act
+:series long :case nom :num sg :g m)`, `(pn азъ.pron :p 1 :num sg :case dat
+:clit yes)`, `(pn себе.pron :case dat|loc)`, `(f и.x)` a closed-class
+lexeme (or `(f и҆)` by its surface where several closed lexemes print one
+word). The lifter enters a leaf when the token's exact readings are one
+lexeme: one cell, or the set (a titlo-written token groups the expansions
+of one lexeme under one row — дх҃ъ is nom.sg|gen.pl|acc.pl of дꙋхъ, the
+abbreviation having erased the accent that tells дꙋ́хъ from дꙋ̑хъ); a leaf
+enters a tree only when it renders its token back byte-for-byte on its
+own; a token whose readings are several lexemes stays verbatim with
+`:amb n`; the treebank is rebuilt from the print every time, nothing is
+carried over, and `check-treebank` asserts over every auto-lifted leaf
+that it names every cell of its lexeme that prints the token. The linter
+treats a disjunctive feature as satisfied when any member agrees and
+never narrows a set: narrowing by agreement is disambiguation. The hand
+overlay (Genesis 1) keeps fully specified leaves; `cargo xtask
+narrow-hand` reports each hand cell against the lexicon's set.
 
 ## Sources and import
 
@@ -292,7 +356,7 @@ any code change.
 | Number | Measures |
 |---|---|
 | held-out recall | share of UD dev+test (and Syntacticus) tokens whose form lexicon + engine produce for the annotated lemma and cell |
-| Bible coverage | share of Bible tokens the analyzer resolves: unambiguous / ambiguous / none |
+| Bible coverage | share of Bible tokens the analyzer resolves, exact readings: one reading / one lexeme in several cells / several lexemes / none |
 | guesser accuracy | hide each lexeme in turn, guess it from the lemma, compare paradigms |
 
 Lexicon self-consistency is a unit test, not a metric: every override and
@@ -318,6 +382,8 @@ let form = rab.inflect(NounCell::new(Case::Genitive, Number::Plural));
 form.print(Recension::Synodal);                // "ра̑бъ"
 for (cell, form) in rab.paradigm() { … }
 lex.analyze("рабѡ́мъ");                          // [(рабъ.n, dat.pl, exact)]
+lex.readings("свѣ́тъ");                          // [(свѣтъ.n, cells nom.sg, acc.sg)]
+CellSet::parse(Pos::Noun, "nom|acc|voc.sg");     // the underspecified cell
 lex.guess("а҆дама́нтъ", Pos::Noun);              // provenance: Guessed
 ```
 
@@ -332,7 +398,11 @@ lex.guess("а҆дама́нтъ", Pos::Noun);              // provenance: Guesse
 - Curation is allowed and recorded (`H:` with `W:` or a note).
 - Gates are the eval numbers, never self-consistency.
 - The Bible round-trip invariant: `render(tree)` equals the pinned print
-  byte-for-byte for every verse; ambiguity is recorded, never guessed.
+  byte-for-byte for every verse; syncretism is recorded as the set,
+  homonymy as `:amb n`; nothing is guessed.
+- A stem the class can derive is never stored on a lexeme line; the
+  census (`cargo xtask census stems`) is the arbiter, and removing lines
+  is the measure of a derivation's success.
 
 ## What 1.x was, and why it was replaced
 

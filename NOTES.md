@@ -1040,3 +1040,16 @@ members — stays deliberately its own future design.
   what the constraint-based disambiguation of `docs/OPEN-DESIGNS.md` 1b
   has to reproduce; Genesis 1 is its gold.
 
+## 2026-09-05 — 2.1 Part 3: the close
+
+- Version 2.1.0, tag `v2.1.0`; docs regenerated from the final numbers.
+  No lexicon or class change in this part; the game's 35 tests and the
+  headless run pass against 2.1.0 unchanged.
+- **What 2.1 did not do, on purpose.** The non-present verb cells of the
+  OCS classes are still the data's majority (Kaikki's косехъ, кослъ
+  reproduced as before); Wiktionary's cluster iotation (блажнѭ) is not
+  modelled; the Synodal нн/н long participle stays a lexeme fact; a
+  non-product set on a leaf is `:cell`, not a wider feature product.
+  Each is written down in `docs/OPEN-DESIGNS.md` or `HANDOFF-PROMPT.md`
+  with its number.
+

@@ -52,6 +52,11 @@ fn main() {
     let readings = syn.analyze("рабѡ́мъ");
     assert_eq!(readings[0].lexeme.id, "рабъ.n");
     assert_eq!(readings[0].cell.name(), "dat.pl");
+    // syncretism is one reading with several cells (the underspecified cell);
+    // homonymy is several readings
+    let exact: Vec<_> = syn.readings("свѣ́тъ").into_iter().filter(|r| r.exact).collect();
+    assert_eq!(exact.len(), 1);
+    assert_eq!(exact[0].cell_set().unwrap().name(), "nom|acc.sg");
     // the other recension
     let ocs = Lexicon::ocs();
     let rab = ocs.find("рабъ", Pos::Noun)[0];
@@ -68,7 +73,9 @@ Cell names: nouns `case.number` (`gen.pl`); adjectives
 `lpart.gender.number`, `part.pres|past.act|pass.short|long.gender.number.case`;
 pronouns `[clit.][person.][gender.][number.]case` (`3.m.sg.gen`,
 `clit.1.sg.dat`, `m.sg.gen`, `dat`); closed classes `word`. Cases `nom gen
-dat acc ins loc voc`, numbers `sg du pl`, genders `m f n`.
+dat acc ins loc voc`, numbers `sg du pl`, genders `m f n`. An
+underspecified cell (`CellSet`) writes the disjunction where its members
+differ: `nom|acc|voc.sg`, `long.pos.m|n.sg.gen`, `aor.2|3.sg`.
 
 ## The lexicon
 
@@ -93,8 +100,11 @@ id       lemma   pos gender anim class stress stems overrides    variants       
   named paradigms of `lexicon/stress.tsv` (`c` = `S;pl=E`, `d` = `E;pl=S`),
   `<name>{cell=S|E|L|<n>;…}` with `sg/du/pl` and block names as keys. `-`
   for OCS.
-- **stems** — `base=`, numbered stems the class cannot derive (`2=пь`),
-  `encl=сѧ|же|либо` an enclitic written solid after every ending.
+- **stems** — `base=`, numbered stems the class cannot derive (a verb's
+  present stem only where it is suppletive: `2=въземл` for възьмати;
+  regular presents — люблѭ, пишѫ, рекѫ/речеши — are the class's
+  derivations), `encl=сѧ|же|либо` an enclitic written solid after every
+  ending.
 - **overrides** / **variants** — print forms the class and stress do not
   produce: the override is what `inflect` returns, a variant is reachable
   through `forms` and the analyzer.
@@ -111,11 +121,11 @@ reproduced, a variant, or quarantined with a reason in
 
 | Lexicon | Lexemes | Classes |
 |---|---|---|
-| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,344 / 8,279 / 68 / 2,503 | 49 / 16 / 50 / 21 |
-| OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,456 / 82 | 44 / 6 / 55 / 17 |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,205 / 8,344 / 8,284 / 68 / 2,503 | 49 / 16 / 50 / 21 |
+| OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,455 / 82 | 44 / 6 / 27 / 17 |
 
-The Synodal analyzer index holds 7.8 million entries and builds in about
-14 seconds (release, on first use).
+The Synodal analyzer index holds 8.2 million entries and builds in about
+16 seconds (release, on first use).
 
 ## Evaluation
 
@@ -126,29 +136,36 @@ dev+test splits (never an import source) whose form the lexicon produces
 for the annotated lemma and cell, under the manuscript-spelling fold the
 1.x harness used (so the 1.2 numbers compare):
 
-| Part of speech | 2.0 | 1.2 |
-|---|---|---|
-| nouns | 94.87% (8,366/8,818) | 92.04% |
-| adjectives | 89.35% (2,291/2,564) | 83.82% |
-| verbs | 85.79% (7,514/8,759) | 85.58% |
-| personal pronouns | 99.25% (3,983/4,013) | 99.25% |
-| other pronouns | 97.84% (1,268/1,296) | 93.21% |
+| Part of speech | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|
+| nouns | 95.48% (8,419/8,818) | 94.87% | 92.04% |
+| adjectives | 89.31% (2,290/2,564) | 89.35% | 83.82% |
+| verbs | 90.59% (7,935/8,759) | 85.79% | 85.58% |
+| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% |
+| other pronouns | 98.07% (1,271/1,296) | 97.84% | 93.21% |
 
-Syntacticus (which overlaps the train split): nouns 95.2%, adjectives
-95.2%, verbs 93.7%, pronouns 99.2%, other pronouns 95.9%.
+Syntacticus (which overlaps the train split): nouns 95.3%, adjectives
+95.2%, verbs 94.9%, pronouns 99.2%, other pronouns 96.2%.
 
 **Bible coverage** — every token of the Elizabethan Bible through the
-Synodal analyzer (631,946 tokens; `cargo xtask check-treebank`):
+Synodal analyzer (631,946 tokens; `cargo xtask check-treebank`). A token
+whose exact readings are one lexeme is analysed — in one cell, or in the
+cells its paradigm does not tell apart (syncretism, recorded as the set);
+a token whose readings are several lexemes is homonymy, recorded and
+never guessed:
 
-| | 2.0 | 1.2 |
-|---|---|---|
-| analyzed (exactly one exact reading) | 23.4% | 21.5% |
-| closed-class | 28.1% | 27.1% |
-| ambiguous (several exact readings, recorded) | 40.2% | 31.0% |
-| verbatim (no reading) | 8.1% | 20.2% |
+| | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|
+| analysed, one cell | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 34.0% | — | — |
+| closed-class | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | 8.2% | 8.1% | 20.2% |
 
-**Guesser accuracy** — hide each Synodal noun in turn, guess it from the
-lemma alone, compare paradigms: 93.9% of classes, 93.3% of cells.
+**Guesser accuracy** — hide each lexeme in turn, guess it from the lemma
+alone, compare paradigms: Synodal nouns 93.9% of classes, 93.3% of cells;
+OCS verbs, present cells only, 79.0% (22.7% in 2.0: the present stem is
+the class's derivation now).
 
 Polyakov's own cells reproduced by the primary form, for the record:
 nouns 94.7%, adjectives 94.1%, verbs 91.5%; the rest are reachable as
@@ -159,13 +176,15 @@ cell.
 ## The treebank
 
 `cargo xtask build-treebank` lifts the whole pinned Bible into
-`treebank/` (gitignored) in about 25 s: every token with exactly one exact
-reading becomes a leaf carrying a lexeme id and a cell — `(n землѧ.n :case
-acc :num sg)`, `(v рещи.v :t aor :p 3 :num sg)`, `(pn азъ.pron :p 1 :num sg
-:case dat :clit yes)`, `(f и.x)` — and every tree renders the verse back
-byte-for-byte (`check-treebank` enforces it over all 34,470 verses). The
-Genesis 1 hand overlay (`data/treebank-hand/b00.sexp`) is committed and
-linted.
+`treebank/` (gitignored) in about 30 s: every token whose exact readings
+are one lexeme becomes a leaf carrying the lexeme id and its cell or set
+— `(n землѧ.n :case acc :num sg)`, `(n свѣтъ.n :case nom|acc :num sg)`,
+`(v рещи.v :t aor :p 2|3 :num sg)`, `(pn азъ.pron :p 1 :num sg :case dat
+:clit yes)`, `(f и.x)` — and every tree renders the verse back
+byte-for-byte (`check-treebank` enforces it over all 34,470 verses, and
+that every leaf names every cell of its lexeme that prints the token).
+The Genesis 1 hand overlay (`data/treebank-hand/b00.sexp`) is committed,
+linted, and checked against the lexicon's sets by `narrow-hand`.
 
 ## Sources and import
 

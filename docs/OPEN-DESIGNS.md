@@ -6,7 +6,9 @@ what the question is, why it is open, what the 2.0 measurements say, and
 the linguistically proper answer — the design a Slavicist who builds
 morphological analyzers would choose, as distinct from the quick fix. The
 order at the end is the recommended order of execution.
-`V2.1-PROMPT.md` executes the first two.
+`V2.1-PROMPT.md` executed the first two (2 and 1a) on 2026-09-05, tag
+`v2.1.0`; their outcomes are recorded in place below, and the open list
+is 1b, 3, 4, 5.
 
 ## 1. The ambiguous band
 
@@ -45,6 +47,18 @@ syncretic token is *analyzed*: the lexeme is known, the cell is a set, the
 leaf carries the set (`:case nom|acc`), and every member prints the same
 form, so the invariant still holds. This changes what the treebank
 reports without any guessing. `V2.1-PROMPT.md` Part 2.
+
+**Executed (2.1, 2026-09-05).** `Lexicon::readings`, `cell::CellSet`
+(`nom|acc|voc.sg`), leaves with disjunctive features or `:cell`, the
+linter satisfied by any member, `check-treebank` asserting every
+auto-lifted leaf names every cell that prints its token (364,073, none
+incomplete), `narrow-hand` over Genesis 1 (283 leaves, 179 narrow a
+larger set, 0 outside the lexicon's set). The treebank: analysed (one
+cell) 23.6%, one lexeme in several cells 34.0%, closed 28.1%, several
+lexemes 6.0%, verbatim 8.2%. The 40.2% "ambiguous" of 2.0 was five parts
+syncretism to one part homonymy; the honest size of the disambiguation
+problem (1b) is 6.0% of the Bible's tokens, and the 179 hand choices of
+Genesis 1 are its first gold.
 
 Homonymy needs context. The linguistically serious tool is a
 constraint-based disambiguator (Constraint Grammar tradition), layered:
@@ -106,6 +120,23 @@ The primitives exist (`iot`, `pal1`, `pal2`, `ov`, `cut`). The lexeme's
 `stems=2=` is then reserved for suppletion; a guessed verb inflects from
 its infinitive alone; the lexicon shrinks, which is the design's own test
 of correctness. `V2.1-PROMPT.md` Part 1.
+
+**Executed (2.1, 2026-09-05).** The OCS verb classes are Leskien types
+with derived stems (27 classes, 12 of them residue), the spelling rule
+after a husher (ѭ/ѥ/ѩ/ꙗ → ѫ/е/ѧ/а) lives in the crate, `jer` joined the
+derivations, `ov` gives -ю- after -ева-. Stored OCS present stems 1,442 →
+56 (all named suppletion: възьмати 2=въземл, пѣти 2=по, трьти 2=тьр);
+Kaikki verb cells reproduced 94.5% → 95.7%; UD dev+test verb recall
+85.79% → 90.59%, Syntacticus 93.68% → 94.91%; a guessed OCS verb's
+present cells 22.7% → 79.0%. Synodal stored stems 636 → 358 with three
+class-level derivations (the soft-stem past active participle
+и҆зба́вльшїй, the -нꙋ-less воздви́гшїй, бити's ї-stems); the rest is
+Polyakov's нн/н variation and genuine suppletion. Two 2.0 defects fell
+out: OCS past participles had never been produced (the delegation read
+the Synodal adjective table), and the UD fit's tie-break was the table's
+first row. Open within this design: Kaikki's aorist and l-participle
+junk (косехъ, кослъ) is still reproduced by the data-driven cells; the
+next step is to declare those blocks by type as the present now is.
 
 ## 3. Adverbs and the closed classes
 
@@ -196,12 +227,13 @@ measured the dictionary, not the language.
 
 ## Order
 
-1. Present-stem derivation (2): the smallest and the most clearly right;
-   it removes data rather than adding rules.
-2. Underspecified syncretism (1a): changes what the treebank reports
-   without guessing.
+1. ~~Present-stem derivation (2)~~ — executed in 2.1.
+2. ~~Underspecified syncretism (1a)~~ — executed in 2.1.
 3. Constraint-based disambiguation (1b), adverb derivation (3) and the
-   phonological word (4): each needs a corpus census first.
+   phonological word (4): each needs a corpus census first. For 1b the
+   census exists now: 37,621 Bible tokens are several lexemes, and the
+   Genesis 1 overlay records 179 hand narrowings of a syncretic set —
+   the seed of the gold a disambiguator is scored against.
 4. The accent-paradigm inventory and weighted evidence (5): the deepest
    linguistics on the list and the one that would most change how the
    lexicon reads.
