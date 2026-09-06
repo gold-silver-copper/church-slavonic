@@ -216,14 +216,14 @@ prep-gov :from nom|acc|voc.sg`), and a statistical tagger chooses among
 what the constraints leave, in its own row — a choice, never counted as
 analysed (`CS_NO_TAGGER=1` rebuilds without it):
 
-| | 3.3 | 3.2 | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|---|---|---|---|
-| analysed, one cell | 38.1% (240,672) | 34.0% (214,958) | 33.7% | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 0.4% | 0.3% | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
-| chosen by the tagger (`:by tagger :prob`) | 30.1% | 29.7% | 30.1% | 29.3% | 29.3% | — | — | — | — |
-| closed-class | 28.3% | 28.2% | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 2.0% | 1.9% | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | **0.9%** (5,430) | 5.7% | 5.7% (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
+| | 3.4 | 3.3 | 3.2 | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| analysed, one cell | 38.7% (244,589; 27.8% without the rules) | 38.1% (240,672) | 34.0% (214,958) | 33.7% | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 0.4% (36.6% without the rules and the tagger) | 0.4% | 0.3% | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
+| chosen by the tagger (`:by tagger :prob`) | 29.5% | 30.1% | 29.7% | 30.1% | 29.3% | 29.3% | — | — | — | — |
+| closed-class | 28.3% | 28.3% | 28.2% | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 2.0% (6.2% without) | 2.0% | 1.9% | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | 0.9% (5,430) | **0.9%** (5,430) | 5.7% | 5.7% (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
 
 The verbatim share fell in 3.1 by typography alone: 11,777 tokens
 began with the uk the crate wrote as two letters, 4,300 with the prefix
@@ -244,11 +244,14 @@ Leviticus 1, Proverbs 1, Isaiah 53, Matthew 1, Luke 2, John 1, Romans
 lexicon caught up and `redraft-hand` re-drafted them) the constraint
 layer alone never excludes a hand cell (precision 100%; np-agree
 resolves 179 of the 179 leaves it touches, prep-gov 142 of 145,
-subj-verb 31 of 31, voc-drop 50 of 69, and since 3.2 the clause rule
-one-subject 10 of 10 — a transitive verb, one noun that can only be
+subj-verb 31 of 31, voc-drop 50 of 69, since 3.2 the clause rule
+one-subject 11 of 11 — a transitive verb, one noun that can only be
 nominative, every other nominative-or-accusative noun drops the
-nominative; a hand leaf that is itself a set is counted apart); the
-tagger's choices are right 74.9% of the time (1,228 of 1,639; on Old
+nominative — and since 3.4 bare-loc, 24 of 26 alone and 120 with the
+others — a locative with no preposition to govern it is impossible, so
+ви́дѣ is the aorist and not ви́дъ's locative — and bare-voc, 3 of 3; 466
+leaves in all; a hand leaf that is itself a set is counted apart); the
+tagger's choices are right 74.6% of the time (1,200 of 1,609; on Old
 Church Slavonic, UD PROIEL dev+test, 86.9% of the tokens with several
 readings against 38.9% for the analyzer's first reading).
 

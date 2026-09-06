@@ -19,7 +19,7 @@ repository = "https://github.com/gold-silver-copper/church-slavonic"
 rust-version = "1.88"
 
 [workspace.dependencies]
-church-slavonic = { path = "crates/church-slavonic", version = "3.3.0" }
+church-slavonic = { path = "crates/church-slavonic", version = "3.4.0" }
 church-slavonic-tagger = { path = "crates/church-slavonic-tagger", version = "0.1.0" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"

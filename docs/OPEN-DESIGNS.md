@@ -74,6 +74,20 @@ morphology, roughly 250,000 tokens) and transferred to the Synodal
 Bible. The Genesis 1 hand overlay is the Synodal gold and must grow before
 a tagger is trusted; evaluation stays outside the round-trip invariant.
 
+**3.4 (the transfer, measured).** Five folds of the 3,757-leaf overlay
+by chapter: a tagger trained on the OCS material plus four folds scores
+78.93% on the fifth (1,307 of 1,656 examples), the OCS-only training
+75.12%, the bundled model 74.58% — 3.8 points for some 1,300 Synodal
+examples. The shipped model stays OCS-only. The 90% bar is not a few
+more chapters of gold away: it wants a Synodal source the size of the
+OCS material, in the print's conventions, that is neither the Bible
+(the test) nor the overlay (its gold) — an edition with morphology no
+one has published, or a treebank of the Menaion or the Psalter someone
+would have to make. The errors that remain are syntax (nominative
+against accusative 114 of 387, gender 52, genitive against accusative
+46) and one convention (по with the dative in UD, the locative in the
+print, 12); none is a fold matter.
+
 ## 2. Guessed lemmas and the present stem
 
 **What.** `Lexicon::guess` builds a provisional lexeme for a lemma the

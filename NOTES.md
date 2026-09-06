@@ -2123,3 +2123,49 @@ members — stays deliberately its own future design.
   genitive (дѣ́ла 52), an accusative (лжꙋ̀ 36), a closed word (ꙗ҆́вѣ 27) or
   a participle (поѧ̀ 13) — none a case a rule may eliminate. Tests,
   clippy green.
+
+## 2026-09-05 — 3.4 Part 4 (V3.3-PROMPT.md): the tagger's transfer, measured — findings
+
+- **The fold's blind spots (finding, no fold change).** The tagger's
+  errors on the 3,757-leaf overlay by kind (`score-disambiguation`, 3.4
+  Part 3): nominative against accusative 114, another feature (person,
+  tense, series) 73, several features 56, gender 52, genitive against
+  accusative 46, number 23, another part of speech 19, dative against
+  locative (по) 12, another case 10, the vocative 1, another lexeme of
+  the same part of speech 3. None of these is a spelling the fold could
+  reach: the nomina sacra, the uk and the ligature are folded already
+  (3.1), and what remains is syntax a one-token window does not see
+  (the subject against the object of an inanimate, a pronoun's gender
+  from its antecedent, the number of a collective) or a convention of
+  the two corpora (по with the dative in UD, with the locative in the
+  print — 12 leaves). The plan's sample of thirty per kind against the
+  nearest OCS analogue was not drawn: the kinds above are the census of
+  all 387 errors, and no kind is a fold matter; `fold_word` stays as
+  it is and the model is not retrained (its OCS dev number, 86.9%,
+  stands; no hash changes).
+- **What Synodal gold would buy (measurement, no model).** `cargo xtask
+  tagger-transfer`: the overlay's examples (a hand leaf with one cell
+  whose token the auto lift, after the rules, leaves with several
+  candidates the hand cell is among) in five folds by chapter; for each
+  fold a tagger trained on the Old Church Slavonic material plus the
+  other four folds' examples, scored on the fold, against the same
+  training without the overlay and against the bundled model.   The shipped model stays the OCS-only one. OPEN-DESIGNS 1b carries the
+  number and what a Synodal training source would have to be.
+- **The gate.** The OCS dev number unchanged (no retraining); the overlay
+  number recorded; `CS_NO_TAGGER=1` unchanged; the model's record and
+  sha256 untouched.
+
+## 2026-09-05 — 3.4.0: the close
+
+- Version 3.4.0, tag `v3.4.0`; the tagger and tools crates stay 0.1.0.
+  A minor release: two eliminations in the constraint layer, a
+  measurement command; no id moved, no model changed. The crate on
+  crates.io is 1.0.0 — publishing is the user's call.
+- README: a 3.4 column in the coverage table (one cell 38.7%, and the
+  shares without the rules), the overlay paragraph (466 resolved,
+  bare-loc, the tagger 74.6%). CHANGELOG 3.4.0's release table. HANDOFF
+  rewritten for 3.4.0 (the numbers, the open list: the residue by cause,
+  then the clause's limit with the transfer measured). DESIGN 3d.
+  OPEN-DESIGNS 1b with the transfer number. `V3.3-PROMPT.md` is done.
+- Tests, clippy, check-treebank, the game (35 tests, headless) green at
+  the tag.

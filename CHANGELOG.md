@@ -1,8 +1,19 @@
 # Changelog
 
-## 3.4.0 (in progress) — the verb that is several lexemes, the tagger's transfer
+## 3.4.0 (2026-09-05) — the verb that is several lexemes, the tagger's transfer
 
-The plan is `V3.3-PROMPT.md` Parts 3–4.
+The plan is `V3.3-PROMPT.md` Parts 3–4. A minor release: the library is
+3.3's; the constraint layer gained two eliminations (bare-loc, bare-voc),
+the tools a measurement command (`tagger-transfer`); no id moved, no
+model changed.
+
+| Number | 3.3.0 | 3.4.0 |
+|---|---|---|
+| hand overlay (3,757 leaves): rules resolve / exclude | 459 / 0 | 466 / 0 |
+| tagger on the overlay | 74.9% (1,228 of 1,639) | 74.6% (1,200 of 1,609) |
+| five-fold transfer (measured, not shipped) | — | OCS + four folds 78.93%, OCS only 75.12%, bundled 74.58% |
+| Bible treebank | one cell 240,672 (38.1%), sets 2,311, tagger 190,494 (30.1%), closed 179,009, several lexemes 12,880 (2.0%), verbatim 5,430 (0.9%) | one cell 244,589 (38.7%), sets 2,306 (0.4%), tagger 186,594 (29.5%), closed 179,009 (28.3%), several lexemes 12,868 (2.0%), verbatim 5,430 (0.9%); without the rules one cell 27.8%, sets 36.6%, several lexemes 6.2% |
+| held-out recall (UD dev+test) | unchanged | unchanged |
 
 ### Part 3 — the verb that is several lexemes (2026-09-05)
 
@@ -23,6 +34,17 @@ The plan is `V3.3-PROMPT.md` Parts 3–4.
 | tagger on the overlay | 74.92% (1,228 of 1,639) | 74.58% (1,200 of 1,609: the rules took 30 of its leaves) |
 | Bible treebank | one cell 240,672 (38.1%), sets 2,311, tagger 190,494 (30.1%), closed 179,009, several lexemes 12,880 (2.0%), verbatim 5,430 (0.9%) | one cell 244,589 (38.7%), sets 2,306 (0.4%), tagger 186,594 (29.5%), closed 179,009 (28.3%), several lexemes 12,868 (2.0%), verbatim 5,430 (0.9%); zero mismatches |
 | the same with `CS_NO_DISAMBIGUATE=1` | — | one cell 175,759 (27.8%), sets 231,334 (36.6%), tagger 0, several lexemes 39,264 (6.2%), verbatim 5,430 |
+
+### Part 4 — the tagger's transfer, measured (2026-09-05)
+
+- **`cargo xtask tagger-transfer`**: five folds of the overlay by
+  chapter; a tagger trained on the OCS material plus four folds, scored
+  on the fifth, beside the OCS-only training and the bundled model.
+  Five-fold: OCS + the other folds 78.93% (1,307 of 1,656), the
+  OCS-only training repeated 75.12%, the bundled model 74.58% — 3.8
+  points for 1,300 Synodal examples. The shipped model is unchanged (OCS dev+test 86.9%).
+- The tagger's errors on the overlay by kind are recorded (NOTES); no
+  fold change, no retraining.
 
 ## 3.3.0 (2026-09-05) — the verbatim residue
 
