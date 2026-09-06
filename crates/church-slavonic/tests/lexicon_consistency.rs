@@ -18,7 +18,7 @@ fn check(lexicon: &Lexicon, recension: Recension) -> Vec<String> {
             problems.push(format!("{}: empty paradigm", lexeme.id));
         }
         for (cell, printed) in &lexeme.overrides {
-            let got = lexeme.inflect(*cell).map(|f| f.print(recension));
+            let got = lexeme.inflect(*cell).ok().map(|f| f.print(recension));
             if got.as_deref() != Some(printed.as_str()) {
                 problems.push(format!("{}: override {}={printed} prints as {got:?}", lexeme.id, cell.name()));
             }
@@ -53,8 +53,8 @@ fn check(lexicon: &Lexicon, recension: Recension) -> Vec<String> {
         };
         if let Some(name) = citation
             && !lexeme.overrides.iter().any(|(c, _)| c.name() == name)
-            && let Some(cell) = Cell::parse(lexeme.pos, name)
-            && let Some(form) = lexeme.inflect(cell)
+            && let Ok(cell) = Cell::parse(lexeme.pos, name)
+            && let Ok(form) = lexeme.inflect(cell)
             && church_slavonic::orthography::comparison_key(&form.print(recension))
                 != church_slavonic::orthography::comparison_key(&lexeme.lemma)
         {
@@ -66,8 +66,8 @@ fn check(lexicon: &Lexicon, recension: Recension) -> Vec<String> {
                 _ => None,
             };
             let other_matches = other
-                .and_then(|n| Cell::parse(lexeme.pos, n))
-                .and_then(|c| lexeme.inflect(c))
+                .and_then(|n| Cell::parse(lexeme.pos, n).ok())
+                .and_then(|c| lexeme.inflect(c).ok())
                 .is_some_and(|f| church_slavonic::orthography::comparison_key(&f.print(recension)) == church_slavonic::orthography::comparison_key(&lexeme.lemma));
             if !other_matches {
                 problems.push(format!("{}: {name} {} is not the lemma {}", lexeme.id, form.print(recension), lexeme.lemma));
@@ -84,6 +84,7 @@ fn synodal_lexicon_is_consistent() {
 }
 
 #[test]
+#[cfg(feature = "ocs")]
 fn ocs_lexicon_is_consistent() {
     let problems = check(Lexicon::ocs(), Recension::OldChurchSlavonic);
     assert!(problems.is_empty(), "{} problems:\n{}", problems.len(), problems.join("\n"));
@@ -92,7 +93,11 @@ fn ocs_lexicon_is_consistent() {
 #[test]
 fn ids_are_lemma_plus_pos() {
     let mut seen = std::collections::HashSet::new();
-    for lexeme in Lexicon::synodal().iter().chain(Lexicon::ocs().iter()) {
+    #[cfg(feature = "ocs")]
+    let lexemes: Vec<&church_slavonic::Lexeme> = Lexicon::synodal().iter().chain(Lexicon::ocs().iter()).collect();
+    #[cfg(not(feature = "ocs"))]
+    let lexemes: Vec<&church_slavonic::Lexeme> = Lexicon::synodal().iter().collect();
+    for lexeme in lexemes {
         assert!(seen.insert((lexeme.id.clone(), Lexicon::synodal().iter().any(|l| std::ptr::eq(l, lexeme)))), "{}: duplicate id", lexeme.id);
         // the id's stem is the lemma's letters up to typography (оу/ꙋ, ꙑ/ы)
         let stem = church_slavonic::orthography::comparison_key(&lexeme.lemma);

@@ -4,6 +4,7 @@
 //! paradigm the position. There is no further fallback: a cell the class
 //! does not declare answers `None`.
 
+use crate::error::InflectError;
 use crate::cell::Cell;
 use crate::form::Form;
 use crate::lexicon::Lexeme;
@@ -46,26 +47,50 @@ impl Lexeme {
         class.letters(cell, &subject)
     }
 
-    /// The primary form of `cell`: the override, else class + stress.
-    /// `None` when the class does not declare the cell.
-    pub fn inflect(&self, cell: impl Into<Cell>) -> Option<Form> {
+    /// The primary form of `cell`: the override, else class + stress. An
+    /// [`InflectError`] names why there is none: the cell is another part
+    /// of speech's, the class is not in the table, or the class declares
+    /// no such cell.
+    ///
+    /// ```
+    /// use church_slavonic::{Lexicon, Cell, Case, Number, Recension, InflectError};
+    /// let rab = Lexicon::synodal().get("рабъ.n").unwrap();
+    /// let form = rab.inflect(Cell::noun(Case::Dative, Number::Plural)).unwrap();
+    /// assert_eq!(form.print(Recension::Synodal), "рабѡ́мъ");
+    /// assert!(matches!(rab.inflect(Cell::infinitive()), Err(InflectError::NotThisPartOfSpeech { .. })));
+    /// ```
+    pub fn inflect(&self, cell: impl Into<Cell>) -> Result<Form, InflectError> {
         let cell = cell.into();
         if let Some((_, printed)) = self.overrides.iter().find(|(c, _)| *c == cell) {
-            return Some(Form::from_print(printed));
+            return Ok(Form::from_print(printed));
         }
         if self.pos == crate::cell::Pos::Closed {
-            return (cell == Cell::Word).then(|| Form::from_print(&self.lemma));
+            return if cell == Cell::Word { Ok(Form::from_print(&self.lemma)) } else { Err(InflectError::NotThisPartOfSpeech { pos: self.pos, cell }) };
         }
-        let class = self.class()?;
+        if cell.pos() != self.pos {
+            return Err(InflectError::NotThisPartOfSpeech { pos: self.pos, cell });
+        }
+        let Some(class) = self.class() else {
+            return Err(InflectError::NoClass { class: self.class.clone() });
+        };
         let lemma = self.lemma_form();
         let letters = self.class_letters(class, cell, &lemma);
-        let first = letters.first()?;
-        Some(self.compose(cell, first, self.stress_spec().as_ref(), lemma.stress))
+        let Some(first) = letters.first() else {
+            return Err(InflectError::NoSuchCell { class: self.class.clone(), cell });
+        };
+        Ok(self.compose(cell, first, self.stress_spec().as_ref(), lemma.stress))
     }
 
     /// Every form of `cell`, primary first: the override or the class's
     /// primary, the class's other alternatives, then the lexeme's
     /// variants. Duplicates (by print) removed.
+    ///
+    /// ```
+    /// use church_slavonic::{Lexicon, Cell, Case, Number, Recension};
+    /// let rab = Lexicon::synodal().get("рабъ.n").unwrap();
+    /// let gen_pl: Vec<String> = rab.forms(Cell::noun(Case::Genitive, Number::Plural)).iter().map(|f| f.print(Recension::Synodal)).collect();
+    /// assert_eq!(gen_pl, ["рабѡ́въ", "ра̑бъ"]);
+    /// ```
     pub fn forms(&self, cell: impl Into<Cell>) -> Vec<Form> {
         let cell = cell.into();
         let lemma = self.lemma_form();
@@ -128,7 +153,7 @@ impl Lexeme {
             return self.inflect(Cell::Word).map(|f| vec![(Cell::Word, f)]).unwrap_or_default();
         }
         let Some(class) = self.class() else { return Vec::new() };
-        class.order.iter().filter_map(|c| self.inflect(*c).map(|f| (*c, f))).collect()
+        class.order.iter().filter_map(|c| self.inflect(*c).ok().map(|f| (*c, f))).collect()
     }
 
     /// The cells the lexeme declares, in order.
@@ -143,6 +168,7 @@ impl Lexeme {
 #[cfg(test)]
 mod tests {
     use crate::cell::{NounCell, Pos};
+    use crate::error::InflectError;
     use crate::grammar::{Case, Number, Recension};
     use crate::lexicon::parse;
     use unicode_normalization::UnicodeNormalization;
@@ -253,8 +279,8 @@ mod tests {
     #[test]
     fn an_unknown_class_answers_nothing() {
         let x = lexeme("x.n\tх\tn\tm\tanim\tNOPE\ta\t-\t-\t-\t-\t-");
-        assert!(x.inflect(cell("nom.sg")).is_none());
+        assert!(matches!(x.inflect(cell("nom.sg")), Err(InflectError::NoClass { .. })));
         assert!(x.paradigm().is_empty());
-        assert_eq!(x.inflect(NounCell::new(Case::Nominative, Number::Singular)), None);
+        assert!(x.inflect(NounCell::new(Case::Nominative, Number::Singular)).is_err());
     }
 }

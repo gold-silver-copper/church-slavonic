@@ -36,7 +36,8 @@ index of every lexeme × every cell × every alternative and variant.
 ## Installation
 
 ```bash
-cargo add church-slavonic
+cargo add church-slavonic            # the Synodal recension
+cargo add church-slavonic -F ocs     # with the Old Church Slavonic lexicon too
 ```
 
 ```rust
@@ -44,16 +45,18 @@ use church_slavonic::*;
 
 fn main() {
     let syn = Lexicon::synodal();
-    // a lexeme by its stable id, a cell by its name
+    // a lexeme by its stable id, a cell by its features or by its name
     let rab = syn.get("рабъ.n").unwrap();
-    assert_eq!(rab.inflect(NounCell::new(Case::Dative, Number::Plural)).unwrap().print(Recension::Synodal), "рабѡ́мъ");
+    assert_eq!(rab.inflect(Cell::noun(Case::Dative, Number::Plural)).unwrap().print(Recension::Synodal), "рабѡ́мъ");
     // every form of a cell: the primary first, then the class's other
     // alternatives, then the lexeme's attested variants
     let gen_pl: Vec<String> = rab.forms(Cell::parse(Pos::Noun, "gen.pl").unwrap()).iter().map(|f| f.print(Recension::Synodal)).collect();
     assert_eq!(gen_pl, ["рабѡ́въ", "ра̑бъ"]);
+    // a cell a lexeme cannot inflect is an error that says why
+    assert!(matches!(rab.inflect(Cell::infinitive()), Err(InflectError::NotThisPartOfSpeech { .. })));
     // a lemma to its lexemes (accent-tolerant; homographs come together)
     let verbs = syn.find("рещѝ", Pos::Verb);
-    assert_eq!(verbs[0].inflect(Cell::parse(Pos::Verb, "aor.3.sg").unwrap()).unwrap().print(Recension::Synodal), "речѐ");
+    assert_eq!(verbs[0].inflect(Cell::finite(FiniteTense::Aorist, Person::Third, Number::Singular)).unwrap().print(Recension::Synodal), "речѐ");
     // a printed word back to its readings; ambiguity is returned, never resolved
     let readings = syn.analyze("рабѡ́мъ");
     assert_eq!(readings[0].lexeme.id, "рабъ.n");
@@ -63,15 +66,27 @@ fn main() {
     let exact: Vec<_> = syn.readings("свѣ́тъ").into_iter().filter(|r| r.exact).collect();
     assert_eq!(exact.len(), 1);
     assert_eq!(exact[0].cell_set().unwrap().name(), "nom|acc.sg");
-    // the other recension
-    let ocs = Lexicon::ocs();
-    let rab = ocs.find("рабъ", Pos::Noun)[0];
-    assert_eq!(rab.inflect(NounCell::new(Case::Locative, Number::Plural)).unwrap().print(Recension::OldChurchSlavonic), "рабѣхъ");
+    // the other recension (the `ocs` feature)
+    #[cfg(feature = "ocs")]
+    {
+        let rab = Lexicon::ocs().find("рабъ", Pos::Noun)[0];
+        assert_eq!(rab.inflect(Cell::noun(Case::Locative, Number::Plural)).unwrap().print(Recension::OldChurchSlavonic), "рабѣхъ");
+    }
     // a lemma the lexicon lacks: a provisional lexeme from its letters
     let guessed = syn.guess("кора́бль", Pos::Noun);
     assert_eq!(guessed.provenance, Provenance::Guessed);
 }
 ```
+
+The library has one dependency (`unicode-normalization`) and no I/O:
+the lexicon is embedded and parsed on first use (about 0.1 s), and the
+analyzer's index of every form (8.2 million entries) is built on the
+first `analyze` (about 12 s on twelve cores; generation only, the
+inflector never waits for it). Errors are named: a cell name the
+grammar does not read is a `CellError`, a malformed lexicon line a
+`LexiconError` with its line, a cell a lexeme cannot inflect an
+`InflectError` (another part of speech, a class the table lacks, a cell
+the class does not declare); absence (`get`, `find`) is an `Option`.
 
 Cell names: nouns `case.number` (`gen.pl`); adjectives
 `[short|long.]pos|comp.gender.number.case` (`long.pos.m.sg.nom`); verbs

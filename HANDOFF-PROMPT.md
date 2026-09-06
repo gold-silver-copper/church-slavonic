@@ -1,4 +1,4 @@
-# Handoff: church-slavonic 3.4.0 (tag `v3.4.0`)
+# Handoff: church-slavonic 4.0.0 (tag `v4.0.0`)
 
 Read this first in a fresh session. It is the map of what exists, what
 the numbers are, and which designs are open, so work starts from
@@ -10,13 +10,17 @@ plans and stay as their records (tags `v2.0.0` … `v2.3.0`);
 `V3.0-PROMPT.md` is executed in full (releases 3.0.0, 3.1.0, 3.2.0, tags
 `v3.0.0` … `v3.2.0`, with `V3.0-CONTINUE-PROMPT.md`); `V3.3-PROMPT.md`
 is executed in full (3.3.0 for Parts 0–2, 3.4.0 for Parts 3–4, tags
-`v3.3.0`, `v3.4.0`); the open list below is what the releases left. The
+`v3.3.0`, `v3.4.0`); `V4-PROMPT.md` Part 0 is executed as 4.0.0 (tag
+`v4.0.0`: the public API's shape — typed cells, named errors, rustdoc
+examples, the `ocs` feature), its Parts 1–3 are the plan for 4.1.0;
+the open list below is what the releases left. The
 game's 35 tests and headless run pass against this lexicon.
 Two things before any command: export `RUSTC_WRAPPER=` (empty) in this
 checkout while the shared sccache daemon lacks Desktop access; after a
 lexicon change run `fix-hand-alts`, then `build-treebank` — the stored
 treebank goes stale before it goes wrong. The crate on crates.io is
-1.0.0; 2.x and 3.x are tags only.
+1.0.0; 2.x, 3.x and 4.0.0 are tags only — 4.0.0 is the first version
+whose API is the one the README describes.
 
 ## What exists
 
@@ -31,7 +35,13 @@ treebank goes stale before it goes wrong. The crate on crates.io is
   pos)`, `Lexeme::inflect(cell)`, `forms(cell)`, `Lexicon::analyze(surface)`,
   `Lexicon::readings(surface)` (grouped by lexeme: syncretism is one
   reading with several cells, homonymy several readings),
-  `cell::CellSet` (`nom|acc|voc.sg`), `Lexicon::guess(lemma, pos)`. Ids
+  `cell::CellSet` (`nom|acc|voc.sg`), `Lexicon::guess(lemma, pos)`;
+  since 4.0 typed cell constructors (`Cell::noun(case, number)`,
+  `Cell::finite(tense, person, number)`, …) beside the name parser,
+  `inflect` a `Result<Form, InflectError>`, `Cell::parse` a
+  `Result<Cell, CellError>`, `lexicon::parse` a `LexiconError` with its
+  line, rustdoc examples run by `cargo test`, and the `ocs` feature
+  (off by default) carrying the Old Church Slavonic lexicon. Ids
   are stable (`рабъ.n`, `рещи.v`, `той.pron`, `и.x`); a consumer may
   persist them. A verb's present stem is its class's derivation (Leskien
   types in OCS: `V:IV:i`, `V:III:j`, `V:I:к`, …), and so are its aorist,
@@ -105,8 +115,11 @@ treebank goes stale before it goes wrong. The crate on crates.io is
   and the crate disagree, check the crate against its pinned sources
   before deciding which side is wrong.
 
-## The numbers (3.4.0)
+## The numbers (4.0.0 — unchanged from 3.4.0 but the start-up)
 
+Start-up: the tsv parse 0.1 s; the analyzer's index (8,190,171 forms)
+11.7 s on twelve cores (17.7 before 4.0's round-robin split); embedded
+lexicon 4.0 MB without the `ocs` feature, 6.4 with.
 Synodal lexemes: nouns 13,172, adjectives 8,323, verbs 8,224, pronouns
 72, closed 1,351 (158 twins absorbed in 3.1; 50 lexemes added in 3.3 —
 the numerals, любы̀, сто̀, the хотѣ́ти/вѣ́дѣти/спа́ти families, seven

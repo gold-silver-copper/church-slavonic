@@ -566,10 +566,10 @@ fn inferred_stems(class: &church_slavonic::paradigm::Class, subject: &church_sla
 /// The cell whose form is the lemma, per part of speech and class.
 fn lemma_cell(pos: Pos, class: &church_slavonic::paradigm::Class) -> Option<Cell> {
     match pos {
-        Pos::Noun => Cell::parse(pos, "nom.sg"),
-        Pos::Adjective => Cell::parse(pos, if class.strip >= 2 { "long.pos.m.sg.nom" } else { "short.pos.m.sg.nom" }),
+        Pos::Noun => Cell::parse(pos, "nom.sg").ok(),
+        Pos::Adjective => Cell::parse(pos, if class.strip >= 2 { "long.pos.m.sg.nom" } else { "short.pos.m.sg.nom" }).ok(),
         Pos::Verb => Some(Cell::Verb(VerbCell::Infinitive)),
-        Pos::Pronoun if class.name.starts_with("PA") => Cell::parse(pos, "m.sg.nom"),
+        Pos::Pronoun if class.name.starts_with("PA") => Cell::parse(pos, "m.sg.nom").ok(),
         _ => None,
     }
 }
@@ -651,7 +651,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
     let mut adverb_key_of: HashMap<String, String> = HashMap::new();
     if pos == Pos::Closed || pos == Pos::Adjective {
         for adj in lexicon.iter().filter(|l| l.pos == Pos::Adjective) {
-            if let Some(cell) = Cell::parse(Pos::Adjective, "adv") {
+            if let Ok(cell) = Cell::parse(Pos::Adjective, "adv") {
                 for form in adj.forms(cell) {
                     let print = form.print(SYN);
                     adverb_key_of.entry(church_slavonic::orthography::comparison_key(&print)).or_insert_with(|| adj.id.clone());
@@ -861,7 +861,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             continue;
         }
         if pos == Pos::Adjective
-            && let Some(adv_cell) = Cell::parse(Pos::Adjective, "adv")
+            && let Ok(adv_cell) = Cell::parse(Pos::Adjective, "adv")
             && !attested.contains_key(&adv_cell)
         {
             let subject = church_slavonic::paradigm::Subject { lemma: &lemma_form.letters, animate: None, stems: &[] };
@@ -913,7 +913,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             notes.push("pl-tantum".into());
         }
         if pos == Pos::Adjective
-            && let Some(cell) = Cell::parse(Pos::Adjective, "adv")
+            && let Ok(cell) = Cell::parse(Pos::Adjective, "adv")
             && let Some(existing) = lexicon.get(&id)
         {
             // Polyakov's ADV entry printed as this adjective's adverb: its
@@ -971,11 +971,11 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         let Some(f) = best else { continue };
         if let Some(cell) = lemma_cell_of(f.lexeme.class().unwrap_or(known[0])) {
             match f.lexeme.inflect(cell) {
-                None => {
+                Err(_) => {
                     quarantine(&mut o, "class declares no citation cell", f.lexeme.class.clone());
                     continue;
                 }
-                Some(form) if !plurale_tantum && form.key() != lemma_form.key() => {
+                Ok(form) if !plurale_tantum && form.key() != lemma_form.key() => {
                     quarantine(&mut o, "class does not produce the lemma", form.print(SYN));
                     continue;
                 }

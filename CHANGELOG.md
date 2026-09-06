@@ -1,5 +1,47 @@
 # Changelog
 
+## 4.0.0 (2026-09-06) — the public API's shape
+
+The plan is `V4-PROMPT.md` Part 0. A major release: the calls a consumer
+makes changed shape — no number of the lexicon, the treebank or the
+evaluation moved. Publishing is the user's call; the crate on crates.io
+is 1.0.0, a different library, and 4.0.0 is the first version whose API
+is the one the README describes.
+
+**Migration from 3.x**
+
+- `Lexeme::inflect` returns `Result<Form, InflectError>` (was `Option`):
+  `.ok()` where the old code took the `Option`, or match the error —
+  `NotThisPartOfSpeech { pos, cell }`, `NoClass { class }`,
+  `NoSuchCell { class, cell }`.
+- `Cell::parse` and `CellSet::parse` return `Result<_, CellError>` (was
+  `Option`): `.ok()`, or `?` with the error's `pos` and `text`.
+- `lexicon::parse` / `parse_in` return `Result<_, LexiconError { line,
+  message }>` (was `Result<_, String>`); `Display` prints `line N: …`
+  as before.
+- Typed cell constructors beside the parser: `Cell::noun(case, number)`,
+  `Cell::adj(series, degree, gender, number, case)`, `Cell::adv(degree)`,
+  `Cell::finite(tense, person, number)`, `Cell::imperative`,
+  `Cell::infinitive()`, `Cell::lpart`, `Cell::participle`, `Cell::pron`,
+  `Cell::word()`. `NounCell::new` and the struct literals still work.
+- The Old Church Slavonic lexicon and class tables are behind the `ocs`
+  feature (default off): `cargo add church-slavonic -F ocs` for
+  `Lexicon::ocs()` and `Lexicon::of(Recension::OldChurchSlavonic)`
+  (which panics without the feature, saying so). `Form::print(Recension::
+  OldChurchSlavonic)` needs no feature: typography is code.
+- The errors are exported at the root (`church_slavonic::{CellError,
+  InflectError, LexiconError}`).
+
+| Number | 3.4.0 | 4.0.0 |
+|---|---|---|
+| start-up: the tsv parse / the analyzer's first use | 0.1 s / 17.7 s (8,190,171 entries) | 0.1 s / 11.7 s (the same entries; round-robin over the lexemes) |
+| embedded lexicon | 6.4 MB (Synodal 4.0 + OCS 2.4) | 4.0 MB without the `ocs` feature; 6.4 with |
+| Bible treebank | one cell 244,589 (38.7%), sets 2,306, tagger 186,594, closed 179,009, several lexemes 12,868, verbatim 5,430, apparatus 1,150 | unchanged; zero mismatches |
+| hand overlay: rules resolve / exclude; tagger | 466 / 0; 74.6% (1,200 of 1,609) | unchanged |
+| census verbatim | 5,408 | unchanged |
+| held-out recall | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 | unchanged |
+| rustdoc examples | 0 | 12, run by `cargo test` |
+
 ## 3.4.0 (2026-09-05) — the verb that is several lexemes, the tagger's transfer
 
 The plan is `V3.3-PROMPT.md` Parts 3–4. A minor release: the library is

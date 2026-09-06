@@ -152,7 +152,7 @@ fn read_opt_set<T>(fs: &[(String, String)], key: &str, what: &str, parse: impl F
 /// the leaf names the set outright (the non-product case).
 fn cell_set(head: &str, fs: &[(String, String)], pos: Pos, product: Vec<Cell>) -> Result<CellSet, TreeError> {
     if let Some(text) = take(fs, "cell") {
-        return CellSet::parse(pos, text).ok_or_else(|| TreeError(format!("({head} …): :cell {text} is not a set of {} cells", pos.tag())));
+        return CellSet::parse(pos, text).map_err(|_| TreeError(format!("({head} …): :cell {text} is not a set of {} cells", pos.tag())));
     }
     CellSet::new(product).ok_or_else(|| TreeError(format!("({head} …) names no cell")))
 }

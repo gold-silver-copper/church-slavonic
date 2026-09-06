@@ -61,7 +61,7 @@ pub fn relation(lexeme: &church_slavonic::Lexeme, stored: &str, recension: Recen
         .cells()
         .into_iter()
         .filter(|c| matches!(c, Cell::Verb(VerbCell::Finite { tense: FiniteTense::Present, .. } | VerbCell::Imperative { .. })))
-        .filter_map(|c| lexeme.inflect(c))
+        .filter_map(|c| lexeme.inflect(c).ok())
         .map(|f| f.letters)
         .collect();
     if present.iter().any(|f| stored == f || stored.len() >= f.len()) || stored.ends_with(['ѫ', 'ѭ', 'ъ']) || stored.ends_with("ши") || stored.ends_with("те") {

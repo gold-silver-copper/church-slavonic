@@ -2187,3 +2187,55 @@ members — stays deliberately its own future design.
   raises and nightly does not (a map iterated by pairs for its values,
   `merge_twins`); the local gate is now `cargo +stable clippy
   --workspace --all-targets -- -D warnings`, the toolchain CI uses.
+
+## 2026-09-06 — 4.0 Part 0 (V4-PROMPT.md): the public API's shape — decisions and findings
+
+- **Measured first.** The tsv parse of the Synodal lexicon is 0.1 s
+  (31,142 lexemes); the analyzer's first use built an index of
+  8,190,171 forms in 17.7 s — generation 16.5 s, the sort 1.2 s —
+  although the build was already threaded over twelve cores: the
+  lexemes were split into contiguous chunks and the verbs, which sit
+  together in the file and carry some twenty times a noun's forms
+  (participles in two series and three degrees), landed on two or three
+  threads while the rest finished early. A round-robin split (lexeme i
+  to thread i mod n) gives 11.7 s. Per form, single-threaded, a noun's
+  generation is 4.5 µs and its keying 1.7 µs; the verbs are the cost. A
+  compact lexicon file (a build-time blob) was not built: the parse is
+  not the cost, and an index blob of eight million keys would be
+  hundreds of megabytes. The next lever, if one is wanted, is the
+  verb's `compose`/`print` path under a profiler (`examples/startup.rs`
+  is the measurement).
+- **Typed cells beside the parser (decision).** `Cell::noun`, `adj`,
+  `adv`, `finite`, `imperative`, `infinitive`, `lpart`, `participle`,
+  `pron`, `word`: the features as arguments, the parser kept as the
+  notation of the tables and the treebank. No builder types: a
+  constructor per kind is the whole surface.
+- **Errors with names (decision).** `error.rs`: `CellError { pos, text }`,
+  `LexiconError { line, message }` (the parser's messages already began
+  «line N: », so the public type is a split of them), `InflectError`
+  with three variants — the cell is another part of speech's, the
+  class is not in the table, the class declares no such cell. `get` and
+  `find` stay `Option`: absence is not an error. Thirty-three `inflect`
+  and sixty-five `parse` call sites in the workspace migrated by `.ok()`
+  or by matching; the game's four by `.ok()`.
+- **Rustdoc examples (decision).** On `Lexicon::synodal`, `ocs`, `get`,
+  `find`, `analyze`, `readings`, `guess`, `Lexeme::inflect`, `forms`,
+  `Form::print`, `Cell::parse`, `CellSet::parse`: each an assertion,
+  run by `cargo test` (CI runs the workspace's tests with
+  `--all-features`). The README's example is the same code as
+  `tests/readme.rs`.
+- **The `ocs` feature (decision).** Default off; the OCS lexicon files,
+  class tables and `Lexicon::ocs` behind it; `Lexicon::of` for the OCS
+  recension panics without it, saying which feature. The tools and the
+  tagger enable it; the game (Synodal only) does not. The integration
+  tests gate their OCS parts.
+- **The game migrated**: four `inflect` sites take `.ok()`; nothing else
+  changed; 35 tests and the headless run green.
+- **The gate.** Tests (the twelve rustdoc examples among them — two of
+  which had asserted what I assumed rather than what the crate prints:
+  `from_print` keeps a wide letter as printed, and a guessed noun keeps
+  the lemma's stem stress; the examples now say so), stable clippy over
+  every target and feature, `cargo doc` clean; the treebank's table,
+  the overlay's score, the census and the held-out recall unchanged to
+  the digit; the game (35 tests, headless) green; version 4.0.0, tag
+  `v4.0.0`.

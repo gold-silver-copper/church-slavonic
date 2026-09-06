@@ -9,8 +9,9 @@
 //!
 //! `-` is the empty value in every column. `stems` is `name=letters;…`,
 //! `overrides` is `cell=printform;…`, `variants` is `cell=form|form;…`,
-//! `src` is `token;token` (P:<class>, A:§n, R:, K:, U:, W:<ref>, H:).
+//! `src` is `token;token` (`P:` with the class, `A:§n`, `R:`, `K:`, `U:`, `W:` with a reference, `H:`).
 
+use crate::error::LexiconError;
 use crate::cell::{Cell, Pos};
 use crate::grammar::{Case, Gender, Prosody, Recension};
 use crate::orthography::{comparison_key, strip_marks};
@@ -118,6 +119,7 @@ const SYN_FILES: [(Pos, &str); 5] = [
     (Pos::Pronoun, include_str!("../lexicon/syn/pronouns.tsv")),
     (Pos::Closed, include_str!("../lexicon/syn/closed.tsv")),
 ];
+#[cfg(feature = "ocs")]
 const OCS_FILES: [(Pos, &str); 4] = [
     (Pos::Noun, include_str!("../lexicon/ocs/nouns.tsv")),
     (Pos::Adjective, include_str!("../lexicon/ocs/adjectives.tsv")),
@@ -126,22 +128,43 @@ const OCS_FILES: [(Pos, &str); 4] = [
 ];
 
 impl Lexicon {
-    /// The Synodal lexicon, parsed once.
+    /// The Synodal lexicon, parsed once on first use (about 0.1 s; the
+    /// analyzer's index is built on the first `analyze`, see there).
+    ///
+    /// ```
+    /// use church_slavonic::{Lexicon, Recension};
+    /// let syn = Lexicon::synodal();
+    /// assert_eq!(syn.recension, Recension::Synodal);
+    /// assert!(syn.len() > 30_000);
+    /// ```
     pub fn synodal() -> &'static Lexicon {
         static L: OnceLock<Lexicon> = OnceLock::new();
         L.get_or_init(|| Lexicon::from_files(Recension::Synodal, &SYN_FILES))
     }
 
-    /// The Old Church Slavonic lexicon, parsed once.
+    /// The Old Church Slavonic lexicon, parsed once (the `ocs` feature).
+    ///
+    /// ```
+    /// use church_slavonic::{Lexicon, Pos, Cell, Case, Number, Recension};
+    /// let rab = Lexicon::ocs().find("рабъ", Pos::Noun)[0];
+    /// let loc = rab.inflect(Cell::noun(Case::Locative, Number::Plural)).unwrap();
+    /// assert_eq!(loc.print(Recension::OldChurchSlavonic), "рабѣхъ");
+    /// ```
+    #[cfg(feature = "ocs")]
     pub fn ocs() -> &'static Lexicon {
         static L: OnceLock<Lexicon> = OnceLock::new();
         L.get_or_init(|| Lexicon::from_files(Recension::OldChurchSlavonic, &OCS_FILES))
     }
 
+    /// The lexicon of a recension. Old Church Slavonic needs the `ocs`
+    /// feature; without it this panics for that recension.
     pub fn of(recension: Recension) -> &'static Lexicon {
         match recension {
             Recension::Synodal => Lexicon::synodal(),
+            #[cfg(feature = "ocs")]
             Recension::OldChurchSlavonic => Lexicon::ocs(),
+            #[cfg(not(feature = "ocs"))]
+            Recension::OldChurchSlavonic => panic!("the Old Church Slavonic lexicon needs the `ocs` feature of church-slavonic"),
         }
     }
 
@@ -182,12 +205,29 @@ impl Lexicon {
         &self.lexemes[i]
     }
 
+    /// A lexeme by its id (`рабъ.n`, `рещи.v`, `той.pron`, `и.x.2`). Ids
+    /// are stable across releases; a consumer may persist them.
+    ///
+    /// ```
+    /// use church_slavonic::Lexicon;
+    /// let rab = Lexicon::synodal().get("рабъ.n").unwrap();
+    /// assert_eq!(rab.lemma, "ра́бъ");
+    /// assert!(Lexicon::synodal().get("no.such").is_none());
+    /// ```
     pub fn get(&self, id: &str) -> Option<&Lexeme> {
         self.by_id.get(id).map(|&i| &self.lexemes[i])
     }
 
     /// Every lexeme whose lemma matches, accent-tolerant; homographs come
     /// back together.
+    /// The lexemes of a lemma and part of speech, accents ignored
+    /// (homographs come back together: во́лна wool, волна̀ wave).
+    ///
+    /// ```
+    /// use church_slavonic::{Lexicon, Pos};
+    /// let found = Lexicon::synodal().find("рещѝ", Pos::Verb);
+    /// assert_eq!(found[0].id, "рещи.v");
+    /// ```
     pub fn find(&self, lemma: &str, pos: Pos) -> Vec<&Lexeme> {
         self.by_key
             .get(&(comparison_key(lemma), pos))
@@ -218,13 +258,26 @@ fn empty(s: &str) -> bool {
 }
 
 /// Parse one tsv file of `pos`. A header line naming the columns is
-/// accepted; `#` lines and blank lines are skipped.
-pub fn parse(text: &str, pos: Pos) -> Result<Vec<Lexeme>, String> {
+/// accepted; `#` lines and blank lines are skipped. A malformed line is
+/// a [`LexiconError`] with its line number.
+pub fn parse(text: &str, pos: Pos) -> Result<Vec<Lexeme>, LexiconError> {
     parse_in(text, pos, Recension::Synodal)
 }
 
 /// [`parse`] for a recension's lexicon file.
-pub fn parse_in(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme>, String> {
+pub fn parse_in(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme>, LexiconError> {
+    parse_lines(text, pos, recension).map_err(|message| {
+        // every message the parser writes begins «line N: »
+        let (line, rest) = message
+            .strip_prefix("line ")
+            .and_then(|r| r.split_once(": "))
+            .and_then(|(n, rest)| n.parse::<usize>().ok().map(|n| (n, rest.to_string())))
+            .unwrap_or((0, message.clone()));
+        LexiconError { line, message: rest }
+    })
+}
+
+fn parse_lines(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme>, String> {
     let mut out = Vec::new();
     for (n, line) in text.lines().enumerate() {
         let line_no = n + 1;
@@ -268,7 +321,7 @@ pub fn parse_in(text: &str, pos: Pos, recension: Recension) -> Result<Vec<Lexeme
             other => return Err(format!("line {line_no}: anim {other}")),
         };
         let parse_cell = |s: &str| -> Result<Cell, String> {
-            Cell::parse(pos, s).ok_or_else(|| format!("line {line_no}: cell {s}"))
+            Cell::parse(pos, s).map_err(|_| format!("line {line_no}: cell {s}"))
         };
         let mut stems_v = Vec::new();
         if !empty(stems) {
@@ -425,6 +478,7 @@ mod tests {
     #[test]
     fn the_embedded_files_parse() {
         let _ = Lexicon::synodal();
+        #[cfg(feature = "ocs")]
         let _ = Lexicon::ocs();
     }
 }

@@ -54,16 +54,16 @@ impl Index {
         // Synodal lexicon is ~7.8 million forms)
         let lexemes: Vec<&Lexeme> = lexicon.iter().collect();
         let threads = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1).clamp(1, 16);
-        let chunk = lexemes.len().div_ceil(threads).max(1);
+        // round-robin, not contiguous chunks: the verbs sit together in the
+        // lexicon and carry twenty times a noun's forms, so a contiguous
+        // split left most threads idle (4.0: 17.7 s → measured below)
         let mut entries: Vec<Entry> = std::thread::scope(|scope| {
-            let handles: Vec<_> = lexemes
-                .chunks(chunk)
-                .enumerate()
-                .map(|(c, slice)| {
+            let handles: Vec<_> = (0..threads)
+                .map(|t| {
+                    let lexemes = &lexemes;
                     scope.spawn(move || {
                         let mut out = Vec::new();
-                        for (j, lexeme) in slice.iter().enumerate() {
-                            let i = c * chunk + j;
+                        for (i, lexeme) in lexemes.iter().enumerate().skip(t).step_by(threads) {
                             for (cell, forms) in lexeme.all_forms() {
                                 for (alt, (_, print)) in forms.into_iter().enumerate() {
                                     let weight = lexeme.variant_weight(cell, &print);
@@ -104,6 +104,18 @@ impl Lexicon {
 
     /// Every reading of a printed word, ranked: exact print first, then
     /// the primary form before other alternatives, then lexicon order.
+    /// Every reading of a printed word, ranked: exact print first, then
+    /// the primary form before other alternatives, then lexicon order.
+    /// Ambiguity is returned, never resolved. The first call builds the
+    /// index of every form of every lexeme (about 8 million entries,
+    /// some seconds); later calls are lookups.
+    ///
+    /// ```
+    /// use church_slavonic::Lexicon;
+    /// let readings = Lexicon::synodal().analyze("рабѡ́мъ");
+    /// assert_eq!(readings[0].lexeme.id, "рабъ.n");
+    /// assert_eq!(readings[0].cell.name(), "dat.pl");
+    /// ```
     pub fn analyze(&self, surface: &str) -> Vec<Analysis<'_>> {
         let key = comparison_key(surface);
         let surface: String = surface.nfc().collect::<String>().to_lowercase();
@@ -160,6 +172,15 @@ impl Lexicon {
     /// [`Lexicon::analyze`] grouped by (lexeme, print), exact readings
     /// first; within a reading the cells are sorted and each carries the
     /// lowest alternative index that printed the surface.
+    /// The analyses grouped by lexeme: syncretism is one reading with
+    /// several cells, homonymy several readings.
+    ///
+    /// ```
+    /// use church_slavonic::Lexicon;
+    /// let exact: Vec<_> = Lexicon::synodal().readings("свѣ́тъ").into_iter().filter(|r| r.exact).collect();
+    /// assert_eq!(exact.len(), 1);
+    /// assert_eq!(exact[0].cell_set().unwrap().name(), "nom|acc.sg");
+    /// ```
     pub fn readings(&self, surface: &str) -> Vec<Reading<'_>> {
         let mut out: Vec<Reading<'_>> = Vec::new();
         for a in self.analyze(surface) {

@@ -15,10 +15,12 @@ env:
 
 jobs:
   # Blocking: the workspace's tests — the library (the lexicon's
-  # consistency test round-trips every attested print), the tagger, and
-  # the tools (the Polyakov reproduction floor, the treebank's node and
-  # lifter tests). The pinned intermediates under data/ are in the
-  # repository, so no source download is needed.
+  # consistency test round-trips every attested print; the rustdoc
+  # examples), the tagger, and the tools (the Polyakov reproduction
+  # floor, the treebank's node and lifter tests). --all-features turns
+  # on the `ocs` lexicon the tools and the OCS tests need. The pinned
+  # intermediates under data/ are in the repository, so no source
+  # download is needed.
   test:
     name: test
     runs-on: ubuntu-latest
@@ -26,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test --workspace
+      - run: cargo test --workspace --all-features
 
   # Blocking: clippy-clean at -D warnings over every target. There is no
   # rustfmt gate: the tree is not rustfmt-formatted by choice (3.4).
@@ -39,4 +41,4 @@ jobs:
         with:
           components: clippy
       - uses: Swatinem/rust-cache@v2
-      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo clippy --workspace --all-targets --all-features -- -D warnings

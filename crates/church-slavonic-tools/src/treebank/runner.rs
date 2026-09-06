@@ -300,7 +300,7 @@ fn collect_prints(node: &Node, abbr: Option<&Node>, out: &mut Vec<LeafPrint>) ->
                 _ => None,
             };
             let pos = cells.pos();
-            let from = notes.iter().find(|(k, _)| k == "from").and_then(|(_, v)| church_slavonic::cell::CellSet::parse(pos, v));
+            let from = notes.iter().find(|(k, _)| k == "from").and_then(|(_, v)| church_slavonic::cell::CellSet::parse(pos, v).ok());
             let from_lexemes = notes.iter().find(|(k, _)| k == "from-lexemes").and_then(|(_, v)| v.parse().ok());
             out.push(LeafPrint { id: id.clone(), cells: cells.clone(), token, abbr: prefix, from, from_lexemes });
         }

@@ -105,7 +105,7 @@ pub fn places(lexicon: &Lexicon, pos: Pos) {
             if l.overrides.iter().any(|(c, _)| *c == cell) {
                 continue;
             }
-            let Some(form) = l.inflect(cell) else { continue };
+            let Ok(form) = l.inflect(cell) else { continue };
             let Some(sample) = stress_sample(class, &subject, cell, &form.print(l.recension)) else { continue };
             let expected = resolve_in(base.place(cell), lemma.stress, sample.vowels);
             if expected == Some(sample.index) {

@@ -208,7 +208,7 @@ fn report(o: &Outcome) {
     let mut disagreements = 0;
     for ((class, cell), (marked, unmarked)) in &o.mark_preference {
         let Some(c) = table.get(class) else { continue };
-        let Some(cellv) = church_slavonic::cell::Cell::parse(pos, cell) else { continue };
+        let Ok(cellv) = church_slavonic::cell::Cell::parse(pos, cell) else { continue };
         let Some(alts) = c.cells.get(&cellv) else { continue };
         let table_mark = match alts.first().map(|a| &a.shape) {
             Some(church_slavonic::paradigm::Shape::Ending { mark, .. }) => *mark,

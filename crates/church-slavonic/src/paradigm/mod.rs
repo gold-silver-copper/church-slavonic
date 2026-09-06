@@ -35,6 +35,7 @@ use std::sync::OnceLock;
 pub mod adj;
 pub mod closed;
 pub mod noun;
+#[cfg(feature = "ocs")]
 pub mod ocs;
 pub mod pronoun;
 pub mod verb;
@@ -651,7 +652,7 @@ pub fn parse_table(text: &str, pos: Pos) -> Result<Vec<Class>, String> {
             if *spec == "-" {
                 continue;
             }
-            let cell = Cell::parse(pos, name);
+            let cell = Cell::parse(pos, name).ok();
             if cell.is_none() && !is_block_name(pos, name) {
                 return Err(format!("line {line_no}: cell {name}"));
             }
@@ -667,7 +668,7 @@ pub fn parse_table(text: &str, pos: Pos) -> Result<Vec<Class>, String> {
                 let shape = if rest == "@lemma" {
                     Shape::Lemma
                 } else if let Some(target) = rest.strip_prefix('@') {
-                    Shape::Ref(Cell::parse(pos, target).ok_or_else(|| format!("line {line_no}: ref {rest}"))?)
+                    Shape::Ref(Cell::parse(pos, target).map_err(|_| format!("line {line_no}: ref {rest}"))?)
                 } else if let Some((stem, class)) = rest.split_once('~') {
                     let stem: u8 = stem.parse().map_err(|_| format!("line {line_no}: delegate stem {stem}"))?;
                     Shape::Delegate { stem, class: class.to_string() }
@@ -758,6 +759,7 @@ pub fn table(pos: Pos) -> &'static Table {
 pub fn table_of(pos: Pos, recension: crate::grammar::Recension) -> &'static Table {
     use crate::grammar::Recension::{OldChurchSlavonic, Synodal};
     static SYN: [OnceLock<Table>; 4] = [OnceLock::new(), OnceLock::new(), OnceLock::new(), OnceLock::new()];
+    #[cfg(feature = "ocs")]
     static OCS: [OnceLock<Table>; 4] = [OnceLock::new(), OnceLock::new(), OnceLock::new(), OnceLock::new()];
     static CLOSED: OnceLock<Table> = OnceLock::new();
     let (slot, text, name) = match (pos, recension) {
@@ -765,10 +767,16 @@ pub fn table_of(pos: Pos, recension: crate::grammar::Recension) -> &'static Tabl
         (Pos::Adjective, Synodal) => (&SYN[1], adj::TABLE, "classes/adj.tsv"),
         (Pos::Verb, Synodal) => (&SYN[2], verb::TABLE, "classes/verb.tsv"),
         (Pos::Pronoun, Synodal) => (&SYN[3], pronoun::TABLE, "classes/pronoun.tsv"),
+        #[cfg(feature = "ocs")]
         (Pos::Noun, OldChurchSlavonic) => (&OCS[0], ocs::NOUN, "classes/ocs/noun.tsv"),
+        #[cfg(feature = "ocs")]
         (Pos::Adjective, OldChurchSlavonic) => (&OCS[1], ocs::ADJ, "classes/ocs/adj.tsv"),
+        #[cfg(feature = "ocs")]
         (Pos::Verb, OldChurchSlavonic) => (&OCS[2], ocs::VERB, "classes/ocs/verb.tsv"),
+        #[cfg(feature = "ocs")]
         (Pos::Pronoun, OldChurchSlavonic) => (&OCS[3], ocs::PRONOUN, "classes/ocs/pronoun.tsv"),
+        #[cfg(not(feature = "ocs"))]
+        (_, OldChurchSlavonic) => panic!("the Old Church Slavonic class tables need the `ocs` feature of church-slavonic"),
         (Pos::Closed, _) => (&CLOSED, closed::TABLE, "classes/closed.tsv"),
     };
     slot.get_or_init(|| Table::parse_in(text, pos, recension).unwrap_or_else(|e| panic!("{name}: {e}")))

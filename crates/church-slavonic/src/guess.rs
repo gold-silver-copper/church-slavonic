@@ -157,6 +157,17 @@ impl Lexicon {
     /// A provisional lexeme for a lemma the lexicon lacks: the class and
     /// gender guessed from the lemma's letters, the stress paradigm from
     /// its accent, `Provenance::Guessed` on the line.
+    /// A lexeme for a lemma the lexicon lacks, its class chosen by the
+    /// lemma's ending from what the lexicon holds (about 94% of noun
+    /// classes right); `provenance` says it was guessed.
+    ///
+    /// ```
+    /// use church_slavonic::{Lexicon, Pos, Provenance, Cell, Case, Number, Recension};
+    /// let ship = Lexicon::synodal().guess("кора́бль", Pos::Noun);
+    /// assert_eq!(ship.provenance, Provenance::Guessed);
+    /// let genitive = ship.inflect(Cell::noun(Case::Genitive, Number::Singular)).unwrap();
+    /// assert_eq!(genitive.print(Recension::Synodal), "кора́блѧ"); // stem stress: the guess keeps the lemma's
+    /// ```
     pub fn guess(&self, lemma: &str, pos: Pos) -> Lexeme {
         self.guess_excluding(lemma, pos, None)
     }

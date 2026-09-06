@@ -176,6 +176,14 @@ impl Form {
     }
 
     /// The printed word in `recension`'s typography.
+    ///
+    /// ```
+    /// use church_slavonic::{Form, Recension};
+    /// let form = Form::from_print("рабѡ́мъ");
+    /// assert_eq!(form.letters, "рабѡмъ"); // the wide letter is kept as printed; the marks are read into `stress`
+    /// assert_eq!(form.stress, Some(1));
+    /// assert_eq!(form.print(Recension::Synodal), "рабѡ́мъ");
+    /// ```
     pub fn print(&self, recension: Recension) -> String {
         match recension {
             Recension::OldChurchSlavonic => realise(&self.letters, &recension),

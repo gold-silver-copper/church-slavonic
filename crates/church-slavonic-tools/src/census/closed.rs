@@ -37,7 +37,7 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
     let mut produced: BTreeMap<String, Vec<(String, String, String)>> = BTreeMap::new();
     for adj in lexicon.iter().filter(|l| l.pos == Pos::Adjective) {
         for name in ["short.pos.n.sg.nom", "short.pos.n.sg.loc", "short.pos.m.sg.loc"] {
-            let Some(cell) = Cell::parse(Pos::Adjective, name) else { continue };
+            let Ok(cell) = Cell::parse(Pos::Adjective, name) else { continue };
             for form in adj.forms(cell) {
                 let print = form.print(Recension::Synodal);
                 produced.entry(comparison_key(&print)).or_default().push((adj.id.clone(), name.to_string(), print));

@@ -423,3 +423,12 @@ as the base).
 - Do not reformat the tree for rustfmt; do not run `check-treebank` on
   a stale treebank and call it a bug; do not publish without the
   user's word.
+
+## Execution postscript (2026-09-06)
+
+Part 0 executed and closed as 4.0.0 (tag `v4.0.0`): the typed cells, the
+named errors, twelve rustdoc examples, the `ocs` feature, the game
+migrated; start-up measured (the parse 0.1 s, the index 17.7 → 11.7 s by
+a round-robin split; no compact file, the parse is not the cost). One
+departure: the sentence's rustdoc examples wait for Part 1, where the
+sentence is. Parts 1–3 remain.

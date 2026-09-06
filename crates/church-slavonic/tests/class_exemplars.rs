@@ -17,8 +17,8 @@ fn lexeme(line: &str, pos: Pos) -> Lexeme {
 }
 
 fn print(l: &Lexeme, cell: &str) -> String {
-    let cell = Cell::parse(l.pos, cell).unwrap_or_else(|| panic!("cell {cell}"));
-    l.inflect(cell).unwrap_or_else(|| panic!("{}: no cell {}", l.id, cell.name())).print(SYN)
+    let cell = Cell::parse(l.pos, cell).unwrap_or_else(|e| panic!("{e}"));
+    l.inflect(cell).unwrap_or_else(|e| panic!("{}: {e}", l.id)).print(SYN)
 }
 
 #[test]
@@ -162,6 +162,7 @@ fn reflexive() {
 /// The Old Church Slavonic tables: the regular paradigms of the grammars
 /// (the 1.x `regular_rules_golden`), one lexeme line per exemplar.
 #[test]
+#[cfg(feature = "ocs")]
 fn old_church_slavonic() {
     const OCS: Recension = Recension::OldChurchSlavonic;
     let ocs = |line: &str, pos: Pos| -> Lexeme {
@@ -169,8 +170,8 @@ fn old_church_slavonic() {
         church_slavonic::lexicon::parse_in(&text, pos, OCS).expect("parses").remove(0)
     };
     let p = |l: &Lexeme, cell: &str| -> String {
-        let cell = Cell::parse(l.pos, cell).unwrap_or_else(|| panic!("cell {cell}"));
-        l.inflect(cell).unwrap_or_else(|| panic!("{}: no cell {}", l.id, cell.name())).print(OCS)
+        let cell = Cell::parse(l.pos, cell).unwrap_or_else(|e| panic!("{e}"));
+        l.inflect(cell).unwrap_or_else(|e| panic!("{}: {e}", l.id)).print(OCS)
     };
     let rab = ocs("рабъ.n\tрабъ\tn\tm\t-\to:ъ:-\t-\t-\t-\t-\tK:o-stem\t-", Pos::Noun);
     assert_eq!(p(&rab, "gen.sg"), "раба");

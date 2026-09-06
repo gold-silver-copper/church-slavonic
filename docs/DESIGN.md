@@ -602,20 +602,37 @@ crates/church-slavonic-tools/    cargo xtask: import, eval, census, treebank, tr
 ```
 
 ```rust
-let lex = Lexicon::synodal();
-let rab = lex.get("рабъ.n")?;                 // by stable id
+let lex = Lexicon::synodal();                  // Lexicon::ocs() with the `ocs` feature
+let rab = lex.get("рабъ.n")?;                 // by stable id (Option: absence is not an error)
 let same = lex.find("рабъ", Pos::Noun);        // by lemma, accent-tolerant
-let form = rab.inflect(NounCell::new(Case::Genitive, Number::Plural));
+let form = rab.inflect(Cell::noun(Case::Genitive, Number::Plural))?;   // Result<Form, InflectError>
 form.print(Recension::Synodal);                // "ра̑бъ"
+Cell::parse(Pos::Verb, "aor.3.sg")?;           // the name grammar; Result<Cell, CellError>
 for (cell, form) in rab.paradigm() { … }
 lex.analyze("рабѡ́мъ");                          // [(рабъ.n, dat.pl, exact)]
 lex.readings("свѣ́тъ");                          // [(свѣтъ.n, cells nom.sg, acc.sg)]
-CellSet::parse(Pos::Noun, "nom|acc|voc.sg");     // the underspecified cell
+CellSet::parse(Pos::Noun, "nom|acc|voc.sg")?;    // the underspecified cell
 lex.get("къ.x.2")?.government();                 // [Dative]
 lex.get("же.x.2")?.prosody();                    // Prosody::Enclitic
 Form::from_print("землѧ̀").print_unit(Recension::Synodal, &["же"]); // "землѧ́же"
 lex.guess("а҆дама́нтъ", Pos::Noun);              // provenance: Guessed
+lexicon::parse(text, Pos::Noun)?;              // a tsv file; Result<_, LexiconError { line, message }>
 ```
+
+The public shape (4.0): typed constructors for every cell kind beside the
+name parser (`Cell::noun`, `adj`, `adv`, `finite`, `imperative`,
+`infinitive`, `lpart`, `participle`, `pron`, `word`); errors with names
+where an `Option` hid the reason (`error.rs`: `CellError`,
+`LexiconError`, `InflectError` — another part of speech's cell, a class
+the table lacks, a cell the class does not declare); rustdoc examples on
+the functions a consumer calls, run by `cargo test`; the `ocs` feature
+(off by default) carrying the Old Church Slavonic lexicon and class
+tables — a Synodal consumer embeds 4 MB of tsv, not 6.4. Start-up,
+measured: the tsv parse 0.1 s, the analyzer's index 11.7 s on twelve
+cores (8.2 million forms; round-robin over the lexemes, since the verbs
+sit together and carry twenty times a noun's forms — the contiguous
+split had left most threads idle at 17.7 s); a compact lexicon file was
+not built because the parse is not the cost.
 
 ## Standing rules
 

@@ -87,7 +87,7 @@ impl Paradigm {
             let place = Place::parse(v).ok_or_else(|| format!("stress place {v}"))?;
             let key = if let Some(n) = parse_number(k) {
                 Key::Number(n)
-            } else if let Some(cell) = Cell::parse(pos, k) {
+            } else if let Ok(cell) = Cell::parse(pos, k) {
                 Key::Cell(cell)
             } else if k == "part" || k.starts_with("part.") || k.ends_with(".comp") || k.ends_with(".pos") {
                 Key::Block(k.to_string())

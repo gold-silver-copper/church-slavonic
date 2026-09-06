@@ -37,7 +37,7 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
         walk(&tree, &mut found);
         for (id, set, alt, one) in found {
             let Some(lexeme) = lexicon.get(&id) else { continue };
-            let Some(set) = church_slavonic::cell::CellSet::parse(lexeme.pos, &set) else { continue };
+            let Ok(set) = church_slavonic::cell::CellSet::parse(lexeme.pos, &set) else { continue };
             let Ok(print) = leaf_print(&id, set.first(), alt, Recension::Synodal) else { continue };
             if one {
                 leaves += 1;

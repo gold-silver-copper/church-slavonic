@@ -25,7 +25,7 @@ pub fn refit(lexeme: &Lexeme) -> Option<String> {
         if lexeme.overrides.iter().any(|(c, _)| *c == cell) {
             continue;
         }
-        let Some(form) = lexeme.inflect(cell) else { continue };
+        let Ok(form) = lexeme.inflect(cell) else { continue };
         if let Some(s) = stress_sample(class, &subject, cell, &form.print(lexeme.recension)) {
             samples.insert(cell, s);
         }

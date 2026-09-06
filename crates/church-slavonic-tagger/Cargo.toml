@@ -9,7 +9,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-church-slavonic = { workspace = true }
+church-slavonic = { workspace = true, features = ["ocs"] }
 
 [lints]
 workspace = true

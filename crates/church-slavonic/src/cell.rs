@@ -16,6 +16,7 @@
 //!   personal pronoun's `1.sg.nom` / `3.m.sg.gen` / `clit.1.sg.dat`, a
 //!   non-personal pronoun's `m.sg.gen`, the reflexive's `dat` / `clit.acc`.
 
+use crate::error::CellError;
 use crate::grammar::*;
 use std::fmt;
 
@@ -493,18 +494,74 @@ impl Cell {
             Cell::Word => "word".to_string(),
         }
     }
-    /// Parse a cell name in the part of speech's grammar.
-    pub fn parse(pos: Pos, s: &str) -> Option<Cell> {
-        Some(match pos {
-            Pos::Noun => Cell::Noun(NounCell::parse(s)?),
+    /// Parse a cell name in the part of speech's grammar — the notation of
+    /// the class tables, the lexicon's `overrides`/`variants` columns and
+    /// the treebank's leaves (`gen.pl`, `long.pos.m.sg.acc`, `aor.3.sg`,
+    /// `part.pres.act.short.m.sg.nom`, `3.m.sg.gen`, `clit.dat`, `word`).
+    ///
+    /// ```
+    /// use church_slavonic::{Cell, Pos, Case, Number};
+    /// assert_eq!(Cell::parse(Pos::Noun, "gen.pl"), Ok(Cell::noun(Case::Genitive, Number::Plural)));
+    /// assert!(Cell::parse(Pos::Noun, "gen").is_err());
+    /// ```
+    pub fn parse(pos: Pos, s: &str) -> Result<Cell, CellError> {
+        let parsed = match pos {
+            Pos::Noun => NounCell::parse(s).map(Cell::Noun),
             Pos::Adjective => match AdvCell::parse(s) {
-                Some(a) => Cell::Adv(a),
-                None => Cell::Adj(AdjCell::parse(s)?),
+                Some(a) => Some(Cell::Adv(a)),
+                None => AdjCell::parse(s).map(Cell::Adj),
             },
-            Pos::Verb => Cell::Verb(VerbCell::parse(s)?),
-            Pos::Pronoun => Cell::Pron(PronCell::parse(s)?),
-            Pos::Closed => (s == "word").then_some(Cell::Word)?,
-        })
+            Pos::Verb => VerbCell::parse(s).map(Cell::Verb),
+            Pos::Pronoun => PronCell::parse(s).map(Cell::Pron),
+            Pos::Closed => (s == "word").then_some(Cell::Word),
+        };
+        parsed.ok_or_else(|| CellError { pos, text: s.to_string() })
+    }
+
+    // ---- typed constructors (4.0): the cells by their features, beside
+    // the name parser ----
+
+    /// A noun's cell.
+    pub fn noun(case: Case, number: Number) -> Cell {
+        Cell::Noun(NounCell { case, number })
+    }
+    /// An adjective's cell; `series` is `None` for a class with one series.
+    pub fn adj(series: Option<Series>, degree: Degree, gender: Gender, number: Number, case: Case) -> Cell {
+        Cell::Adj(AdjCell { series, degree, gender, number, case })
+    }
+    /// The adverb an adjective derives (мꙋ́дрѡ; the comparative мꙋдрѣ́е).
+    pub fn adv(degree: Degree) -> Cell {
+        Cell::Adv(AdvCell { degree })
+    }
+    /// A finite verb form.
+    pub fn finite(tense: FiniteTense, person: Person, number: Number) -> Cell {
+        Cell::Verb(VerbCell::Finite { tense, person, number })
+    }
+    /// An imperative.
+    pub fn imperative(person: Person, number: Number) -> Cell {
+        Cell::Verb(VerbCell::Imperative { person, number })
+    }
+    /// The infinitive.
+    pub fn infinitive() -> Cell {
+        Cell::Verb(VerbCell::Infinitive)
+    }
+    /// The l-participle (nominative only).
+    pub fn lpart(gender: Gender, number: Number) -> Cell {
+        Cell::Verb(VerbCell::LPart { gender, number })
+    }
+    /// A participle's cell.
+    pub fn participle(tense: PartTense, voice: Voice, series: Series, gender: Gender, number: Number, case: Case) -> Cell {
+        Cell::Verb(VerbCell::Participle { tense, voice, series, gender, number, case })
+    }
+    /// A pronoun's cell: a personal pronoun sets `person` (and `gender` in
+    /// the third person), a non-personal one `gender`, the reflexive
+    /// neither person nor number; `clitic` is the enclitic twin (мѧ̀, мѝ).
+    pub fn pron(clitic: bool, person: Option<Person>, gender: Option<Gender>, number: Option<Number>, case: Case) -> Cell {
+        Cell::Pron(PronCell { clitic, person, gender, number, case })
+    }
+    /// A closed lexeme's one cell.
+    pub fn word() -> Cell {
+        Cell::Word
     }
     /// The block a class table may address with one column instead of a
     /// cell each: an adjective's `<series>.<degree>` (`short.comp`), a
@@ -698,7 +755,7 @@ impl CellSet {
         }
         if let Some(columns) = self.columns() {
             let factored: String = columns.iter().map(|c| c.join("|")).collect::<Vec<_>>().join(".");
-            if CellSet::parse(self.pos(), &factored).as_ref() == Some(self) {
+            if CellSet::parse_opt(self.pos(), &factored).as_ref() == Some(self) {
                 return factored;
             }
         }
@@ -707,8 +764,19 @@ impl CellSet {
 
     /// The inverse of [`CellSet::name`]: a list of whole cell names, or
     /// a factored name with `|` inside its components.
-    pub fn parse(pos: Pos, text: &str) -> Option<CellSet> {
-        let listed: Option<Vec<Cell>> = text.split('|').map(|piece| Cell::parse(pos, piece)).collect();
+    ///
+    /// ```
+    /// use church_slavonic::{CellSet, Pos};
+    /// let set = CellSet::parse(Pos::Noun, "nom|acc.sg").unwrap();
+    /// assert_eq!(set.len(), 2);
+    /// assert_eq!(set.name(), "nom|acc.sg");
+    /// ```
+    pub fn parse(pos: Pos, text: &str) -> Result<CellSet, CellError> {
+        CellSet::parse_opt(pos, text).ok_or_else(|| CellError { pos, text: text.to_string() })
+    }
+
+    fn parse_opt(pos: Pos, text: &str) -> Option<CellSet> {
+        let listed: Option<Vec<Cell>> = text.split('|').map(|piece| Cell::parse(pos, piece).ok()).collect();
         if let Some(cells) = listed {
             return CellSet::new(cells);
         }
@@ -723,7 +791,7 @@ impl CellSet {
             }
             names = next;
         }
-        let cells: Option<Vec<Cell>> = names.iter().map(|n| Cell::parse(pos, n)).collect();
+        let cells: Option<Vec<Cell>> = names.iter().map(|n| Cell::parse(pos, n).ok()).collect();
         CellSet::new(cells?)
     }
 }
@@ -744,23 +812,23 @@ mod tests {
         let s = set(Pos::Noun, &["voc.sg", "nom.sg", "acc.sg"]);
         assert_eq!(s.name(), "nom|acc|voc.sg");
         assert_eq!(s.first().name(), "nom.sg");
-        assert_eq!(CellSet::parse(Pos::Noun, "nom|acc|voc.sg"), Some(s.clone()));
+        assert_eq!(CellSet::parse(Pos::Noun, "nom|acc|voc.sg"), Ok(s.clone()));
         // not a product: listed
         let t = set(Pos::Noun, &["gen.sg", "nom.pl", "acc.pl"]);
         assert_eq!(t.name(), "nom.pl|gen.sg|acc.pl"); // listed in cell order (case-major)
-        assert_eq!(CellSet::parse(Pos::Noun, &t.name()), Some(t));
+        assert_eq!(CellSet::parse(Pos::Noun, &t.name()), Ok(t));
         let a = set(Pos::Adjective, &["long.pos.m.sg.gen", "long.pos.n.sg.gen"]);
         assert_eq!(a.name(), "long.pos.m|n.sg.gen");
-        assert_eq!(CellSet::parse(Pos::Adjective, "long.pos.m|n.sg.gen"), Some(a));
+        assert_eq!(CellSet::parse(Pos::Adjective, "long.pos.m|n.sg.gen"), Ok(a));
         let v = set(Pos::Verb, &["aor.2.sg", "aor.3.sg"]);
         assert_eq!(v.name(), "aor.2|3.sg");
-        assert_eq!(CellSet::parse(Pos::Verb, "aor.2|3.sg"), Some(v));
+        assert_eq!(CellSet::parse(Pos::Verb, "aor.2|3.sg"), Ok(v));
         // a pronoun's factored form that would read as a list of whole
         // cells (dat is the reflexive's cell) is written listed instead
         let p = set(Pos::Pronoun, &["3.m.sg.gen", "3.m.sg.dat"]);
         assert_eq!(p.name(), "3.m.sg.gen|3.m.sg.dat");
-        assert_eq!(CellSet::parse(Pos::Pronoun, &p.name()), Some(p));
-        assert_eq!(CellSet::parse(Pos::Noun, "nom|bogus.sg"), None);
+        assert_eq!(CellSet::parse(Pos::Pronoun, &p.name()), Ok(p));
+        assert!(CellSet::parse(Pos::Noun, "nom|bogus.sg").is_err());
         assert_eq!(CellSet::new(vec![]), None);
         assert_eq!(CellSet::new(vec![Cell::parse(Pos::Noun, "nom.sg").unwrap(), Cell::Word]), None);
     }
@@ -812,7 +880,7 @@ mod tests {
         assert_eq!(PronCell::parse("3.m.sg.gen").map(|c| c.name()).as_deref(), Some("3.m.sg.gen"));
         assert_eq!(PronCell::parse("clit.dat").map(|c| c.clitic), Some(true));
         assert_eq!(PronCell::parse("sg.3.nom"), None, "order is fixed");
-        assert_eq!(Cell::parse(Pos::Noun, "gen.pl").map(|c| c.name()).as_deref(), Some("gen.pl"));
-        assert_eq!(Cell::parse(Pos::Noun, "gen"), None);
+        assert_eq!(Cell::parse(Pos::Noun, "gen.pl").map(|c| c.name()).as_deref(), Ok("gen.pl"));
+        assert!(Cell::parse(Pos::Noun, "gen").is_err());
     }
 }

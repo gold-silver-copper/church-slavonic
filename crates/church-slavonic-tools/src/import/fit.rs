@@ -418,7 +418,7 @@ pub fn fit(
     let mut stress_misses = Vec::new();
     for (cell, forms) in attested {
         let Some((primary, _)) = forms.first() else { continue };
-        let predicted = lexeme.inflect(*cell).map(|f| f.print(recension));
+        let predicted = lexeme.inflect(*cell).ok().map(|f| f.print(recension));
         let any_alt = lexeme.forms(*cell).iter().any(|f| translit_equal(&f.print(recension), primary));
         let satisfied = predicted.as_deref().is_some_and(|p| translit_equal(p, primary))
             || (bundled.contains(cell) && any_alt);

@@ -1,6 +1,6 @@
 [package]
 name = "church-slavonic"
-version = "3.4.0"
+version = "4.0.0"
 description = "Church Slavonic morphology: a curated lexicon, a paradigm generator and an analyzer, for the Old Church Slavonic and Synodal recensions"
 authors.workspace = true
 edition.workspace = true
@@ -11,6 +11,12 @@ keywords = ["church-slavonic", "inflection", "morphology", "nlp", "linguistics"]
 categories = ["text-processing", "localization"]
 readme = "../../README.md"
 include = ["src/**/*.rs", "lexicon/**", "Cargo.toml"]
+
+[features]
+default = []
+# the Old Church Slavonic lexicon and class tables (2.4 MB of tsv and
+# their parse); the Synodal recension needs none of it
+ocs = []
 
 [dependencies]
 unicode-normalization = { workspace = true }

@@ -268,9 +268,9 @@ pub fn guessed_present(lexicon: &Lexicon) -> GuessReport {
             r.class_right += 1;
         }
         for cell in cells {
-            let Some(want) = lexeme.inflect(cell) else { continue };
+            let Ok(want) = lexeme.inflect(cell) else { continue };
             r.cells += 1;
-            if guessed.inflect(cell).map(|f| f.print(lexicon.recension)) == Some(want.print(lexicon.recension)) {
+            if guessed.inflect(cell).ok().map(|f| f.print(lexicon.recension)) == Some(want.print(lexicon.recension)) {
                 r.cells_right += 1;
             }
         }
@@ -301,7 +301,7 @@ pub fn guesser(lexicon: &Lexicon, pos: Pos) -> GuessReport {
         }
         for (cell, form) in lexeme.paradigm() {
             r.cells += 1;
-            if guessed.inflect(cell).map(|f| f.print(lexicon.recension)) == Some(form.print(lexicon.recension)) {
+            if guessed.inflect(cell).ok().map(|f| f.print(lexicon.recension)) == Some(form.print(lexicon.recension)) {
                 r.cells_right += 1;
             }
         }

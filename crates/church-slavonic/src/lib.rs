@@ -12,6 +12,7 @@
 
 pub mod analyze;
 pub mod cell;
+pub mod error;
 pub mod form;
 pub mod grammar;
 pub mod guess;
@@ -24,6 +25,7 @@ pub mod stress;
 pub mod titlo;
 
 pub use cell::*;
+pub use error::{CellError, InflectError, LexiconError};
 pub use form::Form;
 pub use grammar::*;
 pub use analyze::{Analysis, Reading};

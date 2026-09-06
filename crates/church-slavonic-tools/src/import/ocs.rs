@@ -63,7 +63,7 @@ fn lemma_cell(pos: Pos, lemma: &str) -> Option<Cell> {
         Pos::Pronoun => "m.sg.nom",
         Pos::Closed => return Some(Cell::Word),
     };
-    Cell::parse(pos, name)
+    Cell::parse(pos, name).ok()
 }
 
 /// The best fit of `attested` over `classes` (the first named class
@@ -177,7 +177,7 @@ pub fn import_kaikki(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         };
         let mut attested: Attested = BTreeMap::new();
         for (name, forms) in &r.cells {
-            let Some(cell) = Cell::parse(pos, name) else {
+            let Ok(cell) = Cell::parse(pos, name) else {
                 o.bump("forms skipped: no cell for the tags");
                 continue;
             };
@@ -292,7 +292,7 @@ fn ud_groups(pos: Pos) -> Result<Groups, Box<dyn Error>> {
         if pos_of(&r.pos) != Some(pos) {
             continue;
         }
-        let Some(cell) = Cell::parse(pos, &r.cell) else { continue };
+        let Ok(cell) = Cell::parse(pos, &r.cell) else { continue };
         groups.entry(r.lemma.clone()).or_default().entry(cell).or_default().push((r.form.clone(), r.count));
     }
     for cells in groups.values_mut() {
@@ -377,7 +377,7 @@ pub fn import_ud(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             }
             // the citation cell must be the lemma, else the class is wrong
             if let Some(cell) = lemma_cell(pos, &letters)
-                && f.lexeme.inflect(cell).is_some_and(|x| comparison_key(&x.print(OCS)) != comparison_key(&print))
+                && f.lexeme.inflect(cell).is_ok_and(|x| comparison_key(&x.print(OCS)) != comparison_key(&print))
                 && !f.lexeme.overrides.iter().any(|(c, _)| *c == cell)
             {
                 f.lexeme.overrides.push((cell, print.clone()));
