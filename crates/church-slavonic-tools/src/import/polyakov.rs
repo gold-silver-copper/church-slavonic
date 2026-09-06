@@ -1067,7 +1067,7 @@ fn merge_twins(o: &mut Outcome, pos: Pos, entries: &[Entry], evidence: &HashMap<
     let mut absorbed: Vec<usize> = Vec::new();
     let mut absorbed_by: HashMap<usize, Vec<usize>> = HashMap::new();
     let mut replacements: Vec<(usize, church_slavonic::Lexeme)> = Vec::new();
-    for (_, members) in groups.iter_mut() {
+    for members in groups.values_mut() {
         if members.len() < 2 {
             continue;
         }
