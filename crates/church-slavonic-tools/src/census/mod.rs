@@ -12,6 +12,8 @@
 //! - `clitics`: the Bible tokens ending in an enclitic written solid.
 //! - `homonymy`: the treebank's `:amb` tokens by shape, the sets by size.
 //! - `stress`: the Synodal stress columns with an exception list by shape.
+//! - `verbatim`: the treebank's verbatim leaves by why the lexicon does
+//!   not print them (V3.3 Part 0).
 
 pub mod clitics;
 pub mod closed;
@@ -20,6 +22,7 @@ pub mod stems;
 pub mod stress;
 pub mod forms;
 pub mod verb_cells;
+pub mod verbatim;
 
 use std::error::Error;
 
@@ -32,6 +35,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
         "homonymy" => homonymy::run(),
         "stress" => stress::run(),
         "forms" => forms::run(args.iter().any(|a| a == "--write")),
+        "verbatim" => verbatim::run(),
         _ => Err("census <stems --pos <pos> [--ocs] | verb-cells --ocs | closed | clitics | homonymy | stress | forms [--write]>".into()),
     }
 }

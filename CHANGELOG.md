@@ -1,5 +1,21 @@
 # Changelog
 
+## 3.3.0 (in progress) — the verbatim residue
+
+The plan is `V3.3-PROMPT.md`.
+
+### Part 0 — the census of the verbatim (2026-09-05)
+
+`cargo xtask census verbatim`: 36,568 verbatim leaves — found by key
+but not exactly 20,577 (marks only 13,908: во/ко/со 9,625 the lifter
+never lifts as the prepositions' variants; і/ї in loanwords 3,071; the
+izhitsa's kendema 2,055; the genitive's wide -гѡ on the н-forms and
+ѹ҆̀бо 1,144; head ѧ 161), titlo tokens with no row 7,187 (гдⷭ҇нь 1,615,
+нн҃ѣ 903, цр҃ь 407, првⷣный 283, блгⷣть 255, …), no reading 8,804 (the
+cardinal numerals and their compounds, є҆ди́нъ's spelling, всѧ́кїй's and
+и҆ны́й's long forms, хотѣти's хощ- stem, любо́вь, проти́вꙋ, бли́з̾, ѡ҆б̾,
+ра́звѣ, а҆дѡнаі̀). The verb that is several lexemes: 135 tokens.
+
 ## 3.2.0 (2026-09-05) — the clause
 
 The plan is `V3.0-PROMPT.md` Parts 5–6. A minor release: the library is

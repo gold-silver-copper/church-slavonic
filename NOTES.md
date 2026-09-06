@@ -1779,3 +1779,62 @@ members — stays deliberately its own future design.
   generator's placement deferred with the record corrected. The game's
   35 tests and headless run pass unchanged. `V3.0-PROMPT.md` is executed
   in full; the open list is in `HANDOFF-PROMPT.md`.
+
+## 2026-09-05 — 3.3 Part 0 (V3.3-PROMPT.md): the census of the verbatim — findings
+
+- **`census verbatim`: 36,568 verbatim leaves — 20,577 found by the
+  analyzer's key but not exactly, 7,187 titlo tokens with no row, 8,804
+  with no reading.** The first bucket is not spelling first: **marks
+  only 13,908**, of which во 6,469, ко 2,139, со 1,017 — the vocalised
+  prepositions are variants of въ/къ/съ (`word=во|во̀`) the analyzer
+  prints exactly (alt 1) and the lifter never uses: a function-word leaf
+  carries no alternative. Then the enclitic pronouns printed unaccented
+  after their host (мѧ 229, тѧ 177, ми 161: the lexicon prints мѧ̀), the
+  host with the oxia before an enclitic written apart when the host is
+  several lexemes (ты́ 222: the pwa lift wants one), and the cardinal
+  numerals the lexicon lacks (де́сѧть 160, два́десѧть 284, три́десѧть
+  164 read as the ordinals' short forms). **і/ї/и 3,071** (957
+  surfaces): the print writes ї in loanwords before a consonant too
+  (кївѡ́тъ 136, вїна̀, вїногра́дъ, є҆лїссе́й, фарїсе́є, пїла́тъ, галїле́и) —
+  a letter of the lexeme, Polyakov's і is a transcription. **The
+  izhitsa's kendema 2,055** (мѡѷсе́й 432, мѡѷсе́ю, вавѷлѡ́нъ, ѳѷмїа́мъ,
+  вѷссо́нъ): unstressed ѵ read as a vowel carries the kendema whatever
+  precedes it (ѡѷ in Moses), after а/е it is [v] and bare (па́ѵелъ,
+  є҆ѵа́гг҃лїе). **Wide/narrow о 1,144**: негѡ̀ 328, негѡ́же 63 — the
+  pronoun class writes the н-form only under the accusative (1-его|
+  1-него) and the genitive's wide -гѡ only without н; ѹ҆̀бо 649 beside
+  ѹ҆́бѡ (a second print of the closed word); кого́/когѡ̀, самаго̀/самагѡ̀
+  the same genitive/accusative letter. Head ѧ against ꙗ 161 (ꙗзыкъ.n
+  only, 16 surfaces).
+- **Titlo tokens with no row 7,187**, by prefix: гд 1,615 (the
+  adjective гдⷭ҇нь, whose fleeting е the abbreviation also drops — the
+  row's full prefix must be господн), нн 903 (нн҃ѣ = ны́нѣ), бл 502, цр
+  407 (цр҃ь), прв 283 (првⷣный), блг 255 (блгⷣть), пр 204 (прⷪ҇ро́къ), ѹчн
+  186 (ѹ҆чн҃къ), сп 180 (сп҃съ), нб 172 (нб҃о, нбⷭ҇ный), бж 158, хр 134,
+  іи 131, гл 108, ѻц 98, іер 96, ст 95, чл 92, мл 88, ап 80, воск 73,
+  дв 73, кр 66, вл 56, ѡсщ 45, прем 40, ѡст 40, бз 39, ѻч 37, мт 35,
+  прп 31; the single letters with a titlo (г҃, д҃, в҃, є҃, ѕ҃, а҃) are
+  the verse numerals of the Psalter fragments, not words.
+- **No reading 8,804**: the cardinal numerals (два̀ 392, сто̀ 246, двѣ̀
+  194, четы́ри 159, двѣ́сти 74, три́ста 71, четы́ре 69, трїе́хъ 65,
+  четы́реста, двѣма̀, ѻ҆́ба 98, ѻ҆бои́хъ, ѻ҆́бѣ, двою̀; the -десѧть
+  compounds 262 in 66 surfaces); є҆ди́нъ spelled with є҆ where the
+  lexicon has ѻ҆ди́нъ (є҆ди́наго 201, є҆ди́нагѡ 161, є҆ди́ныѧ 39, є҆ди́нѣй
+  29); всѧ́кїй's long forms (всѧ́кагѡ 167, всѧ́кое 88, всѧ́кїѧ 70,
+  всѧ́цѣй, всѧ́кимъ, всѧ́кїй) beside the lexicon's short всѧ́къ;
+  ѻ҆́ный (42, ѻ҆́ныхъ, ѻ҆́нагѡ), и҆ны́й's long forms (и҆ны́хъ 40, и҆ны̑мъ 37);
+  хотѣти's present on the stem хощ- (хо́щетъ 66, хо́щеши 52, хощꙋ̀ 40,
+  хо́щете, восхо́щетъ; хотѧ́ше 51 an imperfect the class lacks too);
+  любо́вь/любвѐ/любвѝ (95, the ū-stem N5ov* quarantined as "class not in
+  the inventory"); the closed words проти́вꙋ 283, бли́з̾ 170, ѡ҆б̾ 100,
+  ра́звѣ 76, вы́ше 38 (a comparative adverb), нѝ 83 with its comma;
+  а҆дѡнаі̀ 195; повѣ́ждь 26 (the athematic imperative); the apparatus
+  marks * and *↑ (76) lifted as words; 170 capitalised once-only tokens,
+  most of them not names.
+- **The verb that is several lexemes: 135 tokens** with exactly one
+  finite reading beside another part of speech (дѣ́ла 52 with a genitive,
+  лжꙋ̀ 36, ꙗ҆́вѣ 27 with a closed word, поѧ̀ 13) — ви́дѣ is not among them
+  (its other reading is not a bare locative in the census's sense): Part
+  3's bare-loc reaches tens of tokens, not the tagger's column, and is
+  scaled down to what the overlay can prove.
+- The overlay's verbatim leaves with `:lemma`: 52.
