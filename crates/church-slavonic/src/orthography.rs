@@ -64,6 +64,7 @@ fn realise_ocs(base: &str) -> String {
             }
             'ы' => out.push('ꙑ'),
             'ꙋ' | 'у' | 'ѹ' => out.push_str("оу"),
+            'ꙿ' => out.push('ъ'),
             'є' => out.push('е'),
             'ѻ' | 'ѡ' => out.push('о'),
             'ѿ' => out.push_str("от"),
@@ -154,6 +155,13 @@ pub(crate) fn join(units: &[Unit]) -> String {
 
 /// Canonical Synodal typography (see the module docs).
 fn realise_synodal(word: &str) -> String {
+    let realised = realise_synodal_units(word);
+    // the payerok letter ꙿ of the letters layer is the print's combining
+    // paerok on the letter before it (3.3)
+    realised.replace('ꙿ', "\u{33e}")
+}
+
+fn realise_synodal_units(word: &str) -> String {
     let source = units(word);
     let mut out: Vec<Unit> = Vec::with_capacity(source.len() + 1);
     let mut i = 0;
@@ -314,6 +322,8 @@ pub fn comparison_key(word: &str) -> String {
             'ї' | 'і' | 'й' | 'ꙇ' => 'и',
             'ꙗ' | 'ꙙ' => 'ѧ',
             'ꙋ' | 'ѹ' => 'у',
+            // the paerok stands for a jer (в̾слѣ́дъ ~ вслѣдъ, и҆з̾ ~ изъ)
+            'ꙿ' => 'ъ',
             'ѕ' => 'з',
             'ѷ' => 'ѵ',
             other => other,
@@ -328,10 +338,13 @@ pub fn comparison_key(word: &str) -> String {
 /// word-initial ѹ written «оу» (ids were built that way before the print
 /// wrote the one letter, 3.1; they never move).
 pub fn id_stem(letters: &str) -> String {
-    match letters.strip_prefix('ѹ') {
+    let stem = match letters.strip_prefix('ѹ') {
         Some(rest) => format!("оу{rest}"),
         None => letters.to_string(),
-    }
+    };
+    // a new lexeme's id spells the loanword's ї as і, like every id
+    // before it (3.3)
+    stem.replace('ї', "і")
 }
 
 /// Remove every combining mark (accents, breathing, titlo, kamora) and the

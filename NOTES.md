@@ -1838,3 +1838,122 @@ members — stays deliberately its own future design.
   3's bare-loc reaches tens of tokens, not the tagger's column, and is
   scaled down to what the overlay can prove.
 - The overlay's verbatim leaves with `:lemma`: 52.
+
+## 2026-09-05 — 3.3 Part 1 (V3.3-PROMPT.md): the print's last letters — decisions and findings
+
+- **The izhitsa's kendema is a stage-4 rule (decision).** `apply_kendema_rule`
+  after the ї rule in `Form::print`: an unstressed non-initial ѵ not after
+  а/е/є/ꙗ/ѧ is ѷ (мѡѷсе́й 432, вавѷлѡ́нъ, ѳѷмїа́мъ); after а/е it is [v]
+  and bare (па́ѵелъ, є҆ѵа́гг҃лїе); at the head it takes the psili and no
+  kendema (ѵ҆ссѡ́пъ, ѵ҆акі́нѳъ: 26 of the Bible's 27 initial-ѵ tokens).
+  `from_print` folds ѷ back to ѵ, so the letters keep one letter and the
+  stored overrides that spelled ѷ themselves became the rule's. The
+  first draft wrote the kendema at the head too, and the re-import
+  stored fifteen lexemes' forms as overrides (ѷ҆акі́нѳъ, ѷ҆ссѡ́пъ …)
+  against Polyakov's ѵ҆; the consistency test caught it when the rule
+  changed. The same rule had cost the noun reproduction 524 cells
+  (43,846 → 43,322, the pinned floor 43,500 — `polyakov_nouns` caught
+  it): the fit compared Polyakov's realised ѵ with the class's ѷ and
+  wrote 500-odd overrides the class already printed (мѡѷсе́й's whole
+  paradigm). `translit_equal` folds ѷ to ѵ now, the way it folds ї and
+  ꙗ — a print rule is never a difference between a source and the class
+  — and the four re-imports dropped the redundant overrides
+  (reproduction back at 43,846).
+  The census bucket fell 2,055 → 8; the residue is ѡѵ read as [v]
+  (і҆ѡѵа́нъ 4 against Moses' 432) and the source's own oddities
+  (ветѵ́лꙋ́ею, ѷпа́ти once).
+- **The paerok is a letter (decision).** The combining U+033E for an
+  elided jer (в̾слѣ́дъ, и҆з̾, пред̾, ѡ҆б̾) was stripped as a mark and never
+  round-tripped; `from_print` keeps it as the spacing ꙿ in the letters,
+  Synodal `realise` writes U+033E back, OCS writes ъ, and
+  `comparison_key` folds it to ъ (в̾слѣ́дъ ~ вслѣдъ). The closed words
+  вслѣдъ.x.2 (в̾слѣ́дъ) and ѡбъ.x.2 (ѡ҆б̾) carry the print as a hand
+  variant (`H:`).
+- **The loanword's ї is a letter of the lexeme, written by the importer
+  with the Bible as arbiter (decision).** A crate rule cannot know that
+  кївѡ́тъ, вїно̀, є҆лїссе́й, пїла́тъ take ї before a consonant and сі́мѡнъ,
+  ті́тъ do not: the letter is the word's. `census verbatim --write` writes
+  `data/loanword-iota.tsv` (lemma key, surface, count: 975 rows) from the
+  bucket's ї-surfaces; `loanword_iota` in the Polyakov importer writes ї
+  at those positions of every form of the lexeme, vetoed where the
+  lifted prints (`data/treebank-forms.tsv`) write і at the same positions
+  at least as often. The first draft respelled сі́мѡнъ because it saw
+  only the verbatim ї tokens — the veto is the lesson: the arbiter must
+  see both spellings' counts. The bucket fell 3,071 → 128 (сі́нъ, хрїста̀
+  beside хрїсто́съ's own line, names once). The id folds ї→і and ѷ→ѵ
+  (`id_lookup_key`, `id_stem`) — ids unchanged, the diff says so (no id
+  removed, none added). The game's вїно̀ string was re-pasted (the
+  Bible prints вїно̀ 109 times; the lexicon printed віно̀).
+- **Wide/narrow о (finding, two fixes).** The pronoun class wrote the
+  н-form's genitive as -негѡ and the print writes негѡ̀ 328 only without
+  н, него̀ with it: `scripts/legend-adj-verb-pron.py` (PP3 m/n sg gen
+  `1-его^|1-него^`), `classes/pronoun.tsv` regenerated (2 lines). ѹ҆̀бо
+  649 beside ѹ҆́бѡ is a second print of the closed word: a hand variant
+  `word=ѹ҆́бо|ѹ҆̀бо`; a disyllable's varia on a non-final vowel was
+  re-acuted by `normalise_marks`, so the form's own varia is now applied
+  after `realise`. The bucket fell 1,144 → 85 (и҆з̾ѻби́лїе, кого́/когѡ̀,
+  самаго̀/самагѡ̀: the print's own variation).
+- **The vocalised prepositions are the leaf's alternative (decision).**
+  во/ко/со (9,625 tokens) are variants of въ/къ/съ (`word=во|во̀`) the
+  analyzer prints exactly at alt 1 and the lifter never used: a closed
+  reading with alt > 0 is now a `Node::Lex` on `Cell::Word` with the alt,
+  written `(f въ.x.2 :alt 1)` and read back by the parser; `fn_word`
+  sees it as the function word it is (prep-gov unchanged). The bucket
+  "marks only" fell 13,908 → 3,896; what remains is the numerals the
+  lexicon lacks (два́десѧть 284, де́сѧть 160 read as the ordinals' short
+  forms), the enclitic pronouns printed unaccented after their host (мѧ
+  229, тѧ 177, ми 161), and the host with an oxia before an enclitic
+  written apart when the host is several lexemes (ты́ 222) — Part 2's.
+- **The titlo rows (decision, and two defects of the abbreviator).**
+  113 (22 → 135) rows added to `lexicon/titlo.tsv` by hand with the Bible
+  count: нн҃ѣ = ны́нѣ and ѿнн҃ѣ = ѿны́нѣ (a row may name a closed lexeme,
+  pos `x`), the benedictions (бл҃/бла for благі́й, бла́го, блаже́нный,
+  бла́гость, благоволи́ти, благослови́ти, благопоспѣши́ти, the -е́нїе
+  nouns; блгⷭ҇/благосло), цр҃/цар and црⷭ҇/царс, цр҃/цер for це́рковь,
+  прⷭ҇/прес, прⷪ҇ for проро́чество, ѹ҆чн҃/ѹ҆ч҃/ѹ҆чт҃ for ѹ҆чени́къ, ѹ҆че́нїе,
+  ѹ҆чи́тель, сп҃/спа and спⷭ҇/спас, нб҃/нбⷭ҇, бж҃/бжⷭ҇, хрⷭ҇т, і҆и҃, гл҃/гла
+  and гл҃/глагол, ѻ҆ц҃/ѻ҆́ч҃/ѻ҆ч҃, і҆ерⷭ҇, ст҃/ѡ҆ст҃/ѡ҆сщ҃, чл҃, млⷭ҇/мл҃,
+  а҆пⷭ҇, воскрⷭ҇/воскр҃, дв҃, крⷭ҇/кр҃, влⷣ, премⷣ, бз҃, мт҃, прпⷣ, возгл҃,
+  гдⷭ҇ for господи́нъ and the е-elided гдⷭ҇ви/гдⷭ҇нь, првⷣнъ, чтⷭ҇ for
+  че́сть/честны́й/чистота̀/чи́стый, пл҃, ѡ҆чⷭ҇, мр҃, сщ҃, дш҃. The row for
+  госпо́день named a lemma the lexicon lacks (the lexeme is госпо́днїй).
+  Two defects in `titlo::abbreviate` hid most of the new rows: a mark on
+  the skeleton's last letter was left at the head of the tail (спа́са
+  gave «сп҃́са», never «сп҃са» — the mark belongs to the letter before it,
+  fixed with a test), and a skeleton written with о for a lemma in ѡ҆-
+  never matched (ѡ҆свѧти́ти) — the rows now spell ѡ; folding ѡ to о in
+  the skeleton was tried and withdrawn in the same hour: бѡ́гъ the
+  genitive plural abbreviated to бг҃ъ and 1,800 one-cell leaves became
+  sets (the print never abbreviates the pagan gods — the wide letter is
+  a letter the abbreviation keeps out). A third defect sat in the
+  render: `(abbr "гл҃" …)` rendered through the first row of the prefix,
+  so a prefix with two skeletons for one lemma (гл҃ъ beside гл҃го́лъ) or
+  a strip row before a keep row (гдⷭ҇ь before гдⷭ҇и́нъ) rendered the
+  wrong print and the lifter refused the leaf — the node now carries
+  the row's skeleton, `(abbr "гл҃" "гла" (n глаголъ.n …))` (optional in
+  the hand overlay, which has none), and the render prefers the row that
+  names the child's lexeme. `cargo xtask titlo <surface>…` prints the
+  index's entries for a surface — the check every row gets.
+  The census bucket (b) fell 7,187 → 1,141: what remains is the
+  Psalter's verse numerals (ѻ҃, г҃, д҃ …, 380), lexemes the lexicon lacks
+  (і҆и҃лтѧнинъ and і҆и҃лтескїй 97, при́снѡ 39 — the compounds exist, not the
+  adverb, новоме́сѧчїе 34, бг҃о- compounds 18, марїа́мь), the print's
+  oxia where the full word has a varia (блгⷭ҇ви́ 8 beside блгⷭ҇вѝ 37,
+  сп҃се́, цр҃ѧ́ — the source's own variation), and гл҃го́лъ with its
+  punctuation stuck to it.
+- **Head ѧ against ꙗ (finding, deferred).** 161 tokens, 16 surfaces,
+  one lexeme: ѧ҆зы́къ 56, ѧ҆зы́комъ 39, ѧ҆зы́ка 22, ѧ҆зы̑ки 16 beside ꙗ҆зы́къ
+  129, ꙗ҆зы́цы 167, ꙗ҆зы́ки 138 — the Bible spells both, by no rule the
+  numbers show (the singular leans to ѧ҆, the plural to ꙗ҆, neither
+  cleanly). The importer's arbiter decides stress among Polyakov's own
+  forms and leaves letters alone by design; a letter variant of the
+  citation form is a stem variant the line format lacks. Deferred to the
+  lexicon intake with the numbers on record; not a rule.
+- **The gate.** Census 36,568 → 14,069 verbatim leaves ((a) 20,577
+  → 4,508, (b) 7,187 → 1,141, (c) 8,804 → 8,420 — Part 2's). Treebank:
+  one cell 214,958 (34.0%) → 237,565 (37.6%), sets 1,782 → 2,093, the
+  tagger's column 187,945 → 186,780 (29.6%), closed 178,215 (28.2%),
+  several lexemes 12,298 → 12,858 (2.0%), verbatim 35,731 (5.7%) →
+  13,418 (2.1%); zero mismatches; the consistency test green; `narrow-hand`
+  0 findings; held-out recall unchanged (95.48 / 89.31 / 90.89 / 99.25);
+  tests, clippy, the game (35 tests, headless) green; ids unchanged.

@@ -73,6 +73,10 @@ impl Form {
         // ѹ: fold before counting vowels, so the stress index is the
         // letters' (3.1)
         let folded = fold_initial_uk(printed);
+        // the kendema is the print's, not the letters' (3.3); the paerok
+        // (the combining mark for an elided jer: в̾слѣ́дъ, и҆з̾, пред̾) is a
+        // letter of the word, kept as the spacing payerok ꙿ
+        let folded = folded.replace('ѷ', "ѵ").replace('Ѷ', "Ѵ").replace('\u{33e}', "ꙿ");
         let printed = folded.as_str();
         let stress = stressed_vowel_index(printed).and_then(|i| u8::try_from(i).ok());
         let kamora = units(printed)
@@ -225,14 +229,15 @@ impl Form {
         }
         let word = join(&out);
         let word = match target {
-            Some(t) => {
-                let stressed = orthography::stress(&word, t, kamora);
-                if self.varia && !kamora { stressed.replace('\u{301}', "\u{300}") } else { stressed }
-            }
+            Some(t) => orthography::stress(&word, t, kamora),
             None => word,
         };
         let realised = realise(&word, &Recension::Synodal);
-        apply_izhitsa_rule(&realised)
+        // the print's own varia on a non-final vowel (и҆̀хъ, ꙗ҆̀же, ѹ҆̀бо):
+        // realisation writes the positional oxia, the form's choice comes
+        // after it (3.3: a disyllable's varia had been re-acuted)
+        let realised = if self.varia && !kamora && target.is_some() { realised.replace('\u{301}', "\u{300}") } else { realised };
+        apply_kendema_rule(&apply_izhitsa_rule(&realised))
     }
 }
 
@@ -244,6 +249,26 @@ fn fold_initial_uk(printed: &str) -> String {
         us.remove(0);
     }
     join(&us)
+}
+
+/// The print's ѷ (3.3): an unstressed ѵ read as a vowel carries the
+/// kendema (мѡѷсе́й, вавѷлѡ́нъ, ѳѷмїа́мъ); after а or е it reads [v] and
+/// stays bare (па́ѵелъ, є҆ѵа́гг҃лїе); stressed it carries the stress
+/// (є҆гѵ́петъ). The letters keep ѵ; `from_print` folds the ѷ back.
+fn apply_kendema_rule(word: &str) -> String {
+    let mut out: Vec<Unit> = units(word);
+    // a word-initial ѵ carries the psili, never the kendema (ѵ҆ссѡ́пъ,
+    // ѵ҆акі́нѳъ: 26 of the Bible's 27 initial-ѵ tokens)
+    for i in 1..out.len() {
+        if out[i].base != 'ѵ' || out[i].has_stress() {
+            continue;
+        }
+        let after_a_e = i > 0 && matches!(out[i - 1].base, 'а' | 'е' | 'є' | 'ꙗ' | 'ѧ');
+        if !after_a_e {
+            out[i].base = 'ѷ';
+        }
+    }
+    join(&out)
 }
 
 /// The print's `ї`: an unstressed non-initial `і` before a vowel or `й`.

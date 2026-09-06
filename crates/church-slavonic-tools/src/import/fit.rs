@@ -64,6 +64,9 @@ pub fn translit_equal(a: &str, b: &str) -> bool {
             .map(|c| match c {
                 'ї' => 'і',
                 'ꙗ' => 'ѧ',
+                // the kendema is the print's rule (3.3): a source's ѵ
+                // against the rule's ѷ is one letter
+                'ѷ' => 'ѵ',
                 other => other,
             })
             .collect();

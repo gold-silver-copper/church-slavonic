@@ -25,6 +25,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Some("train-tagger") => church_slavonic_tools::tagger::train(&args.collect::<Vec<_>>()),
         Some("tagger-curve") => church_slavonic_tools::tagger::curve(),
+        Some("titlo") => {
+            // what the titlo index holds for each surface (3.3 debugging)
+            let lexicon = church_slavonic::Lexicon::synodal();
+            let index = church_slavonic_tools::treebank::lift::TitloIndex::build(lexicon);
+            for word in args {
+                match index.entries(&word) {
+                    Some(v) => println!("{word}: {}", v.iter().map(|(p, id, c, a, full)| format!("{p}/{full} {id} {} alt {a}", c.name())).collect::<Vec<_>>().join(" | ")),
+                    None => println!("{word}: no row abbreviates it"),
+                }
+            }
+            Ok(())
+        }
         Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
         Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),
         Some("fix-hand-alts") => church_slavonic_tools::treebank::runner::fix_hand_alts(),

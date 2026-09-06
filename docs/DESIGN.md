@@ -35,8 +35,16 @@ kind of knowledge, is testable alone, and never reaches into another.
    — є҆гѡ́же, боѧ́щихсѧ; the kamora when nothing widens); the stress mark
    (oxia inside, varia on a final vowel); the print's conventions (psili
    on an initial vowel, initial `ѻ`/`є`, the monosyllable's varia); the
-   `ї` rule (an unstressed non-initial `і` before a vowel or `й`). OCS
-   printing drops the stress and maps the alphabet. Three flags let an
+   `ї` rule (an unstressed non-initial `і` before a vowel or `й`); the
+   izhitsa's kendema (3.3: an unstressed non-initial `ѵ` not after
+   а/е/є/ꙗ/ѧ is `ѷ` — мѡѷсе́й, вавѷлѡ́нъ, ѳѷмїа́мъ; after а/е it reads [v]
+   and is bare — па́ѵелъ, є҆ѵа́гг҃лїе; at the head it takes the psili —
+   ѵ҆ссѡ́пъ). Two marks of the print are letters of the lexeme, not
+   rules: a `ї` before a consonant (кївѡ́тъ, вїно̀ — the importer writes it
+   where the Bible prints it) and the paerok for an elided jer (в̾слѣ́дъ,
+   и҆з̾, ѡ҆б̾ — the spacing `ꙿ` in the letters, the combining U+033E in the
+   print, `ъ` in the comparison key). OCS printing drops the stress and
+   maps the alphabet. Three flags let an
    ATTESTED print round-trip where its choice is not the rule's:
    `varia` (a varia where the rule writes an oxia: и҆̀хъ the accusative
    against и҆́хъ the genitive, ꙗ҆̀же), `kamora` (the kamora where a wide
@@ -356,7 +364,16 @@ lexeme (or `(f и҆)` by its surface where several closed lexemes print one
 word). The lifter enters a leaf when the token's exact readings are one
 lexeme: one cell, or the set (a titlo-written token groups the expansions
 of one lexeme under one row — дх҃ъ is nom.sg|gen.pl|acc.pl of дꙋхъ, the
-abbreviation having erased the accent that tells дꙋ́хъ from дꙋ̑хъ); a leaf
+abbreviation having erased the accent that tells дꙋ́хъ from дꙋ̑хъ; the
+row's skeleton keeps the wide ѡ as a letter, so бѡ́гъ the genitive plural
+is never бг҃ъ, and a mark on the skeleton's last letter goes with it —
+спа́са is сп҃са; a row may name a closed lexeme, pos `x`: нн҃ѣ is ны́нѣ,
+ѿнн҃ѣ is ѿны́нѣ; the node names the row's skeleton where one prefix has
+several — `(abbr "гл҃" "гла" (n глаголъ.n …))` is гл҃го́лъ, `(abbr "гл҃"
+"глагол" …)` is гл҃ъ — and renders through the row that names its
+lexeme); a closed lexeme's own variant (во beside въ, ѹ҆̀бо beside
+ѹ҆́бо) is the leaf's alternative, `(f въ.x.2 :alt 1)`, never a verbatim
+token (3.3); a leaf
 enters a tree only when it renders its token back byte-for-byte on its
 own; a token whose readings are several lexemes stays verbatim with
 `:amb n`; the treebank is rebuilt from the print every time, nothing is
@@ -473,7 +490,14 @@ any code change.
    stem. The prefix от- is the ligature ѿ in the letters, written by the
    importer with the Bible as arbiter (a lemma whose Bible prints begin
    «ѡ҆т» — ѡ҆трѐ, о-тре — keeps them); the typography never guesses
-   morphology.
+   morphology. The loanword's `ї` before a consonant is written the same
+   way (3.3): `data/loanword-iota.tsv` (from `census verbatim --write`)
+   lists the surfaces the Bible prints with a non-positional ї for a
+   lexeme Polyakov spells with і, and the importer writes ї at those
+   positions of the lexeme's forms — vetoed for a lexeme whose lifted
+   prints write і at the same positions at least as often (сі́мѡнъ stays).
+   The lookup key folds ї to і and ѷ to ѵ, so a letter the print decides
+   never moves an id.
 4b. One lexeme per line (3.1): a source that splits a word by sense
    (Polyakov's ꙗзыкъ tongue / nation, зрѣти twice) is merged after the
    fit — two fitted lexemes with the same accent-blind lemma, part of

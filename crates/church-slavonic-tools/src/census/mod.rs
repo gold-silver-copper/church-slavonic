@@ -35,7 +35,7 @@ pub fn run(args: Vec<String>) -> Result<(), Box<dyn Error>> {
         "homonymy" => homonymy::run(),
         "stress" => stress::run(),
         "forms" => forms::run(args.iter().any(|a| a == "--write")),
-        "verbatim" => verbatim::run(),
+        "verbatim" => verbatim::run(args.iter().any(|a| a == "--write")),
         _ => Err("census <stems --pos <pos> [--ocs] | verb-cells --ocs | closed | clitics | homonymy | stress | forms [--write]>".into()),
     }
 }

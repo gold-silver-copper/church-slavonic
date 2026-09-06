@@ -64,7 +64,7 @@ fn letter_bucket(surface: &str, print: &str) -> String {
     }
 }
 
-pub fn run() -> Result<(), Box<dyn Error>> {
+pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
     let lexicon = Lexicon::synodal();
     let mut found: Vec<(String, bool)> = Vec::new();
     for (_, _, _, tree) in super::treebank_trees()? {
@@ -75,6 +75,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     let mut a: BTreeMap<String, BTreeMap<String, (usize, String)>> = BTreeMap::new();
     // (b) titlo tokens with no row, by prefix (the letters up to the titlo)
     let mut b: BTreeMap<String, (usize, bool)> = BTreeMap::new();
+    let mut b_surfaces: BTreeMap<String, BTreeMap<String, usize>> = BTreeMap::new();
     // (c) no reading, by shape
     let mut c: BTreeMap<&'static str, BTreeMap<String, usize>> = BTreeMap::new();
     let (mut na, mut nb, mut nc) = (0usize, 0usize, 0usize);
@@ -88,8 +89,9 @@ pub fn run() -> Result<(), Box<dyn Error>> {
             nb += 1;
             let prefix: String = looked_up.chars().take_while(|ch| *ch != '\u{483}' && !('\u{2de0}'..='\u{2dff}').contains(ch)).collect();
             let prefix: String = strip_marks(&prefix).chars().take(4).collect();
-            let e = b.entry(prefix).or_default();
+            let e = b.entry(prefix.clone()).or_default();
             e.0 += 1;
+            *b_surfaces.entry(prefix).or_default().entry(looked_up.clone()).or_default() += 1;
             continue;
         }
         let reading = cache.entry(looked_up.clone()).or_insert_with(|| {
@@ -128,10 +130,35 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         top.sort_by_key(|(_, (n, _))| std::cmp::Reverse(*n));
         println!("{total:>7}  {bucket} ({} surfaces): {}", m.len(), top.iter().take(12).map(|(s, (n, id))| format!("{s} {n} ({id})")).collect::<Vec<_>>().join(", "));
     }
+    if write {
+        // `data/loanword-iota.tsv`: the surfaces the print spells with a
+        // non-positional ї (кївѡ́тъ) for a lexeme Polyakov spells with і —
+        // the importer's evidence for the lexeme's letter (V3.3 Part 1)
+        let path = crate::workspace_root().join("data/loanword-iota.tsv");
+        let mut out = String::from("lemma_key\tsurface\tcount\n");
+        if let Some(m) = a.get("і/ї/и") {
+            let mut rows: Vec<_> = m.iter().collect();
+            rows.sort();
+            for (surface, (n, id)) in rows {
+                let Some(l) = lexicon.get(id) else { continue };
+                if !surface.contains('ї') {
+                    continue;
+                }
+                out.push_str(&format!("{}\t{surface}\t{n}\n", church_slavonic::orthography::comparison_key(&l.lemma)));
+            }
+        }
+        std::fs::write(&path, out)?;
+        println!("wrote {}", path.display());
+    }
     println!("== (b) titlo tokens with no row, by prefix");
     let mut rows: Vec<_> = b.iter().collect();
     rows.sort_by_key(|(_, (n, _))| std::cmp::Reverse(*n));
     println!("{}", rows.iter().take(40).map(|(p, (n, _))| format!("{p} {n}")).collect::<Vec<_>>().join(", "));
+    for (p, (n, _)) in rows.iter().take(40) {
+        let mut top: Vec<_> = b_surfaces.get(*p).map(|m| m.iter().collect()).unwrap_or_default();
+        top.sort_by_key(|(_, k)| std::cmp::Reverse(**k));
+        println!("  {p} {n}: {}", top.iter().take(10).map(|(s, k)| format!("{s} {k}")).collect::<Vec<_>>().join(", "));
+    }
     println!("== (c) no reading, by shape");
     for (shape, m) in &c {
         let total: usize = m.values().sum();

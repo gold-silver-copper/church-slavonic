@@ -59,6 +59,8 @@ pub(crate) fn leaf(node: &Node) -> Option<&Node> {
 pub(crate) fn fn_word(node: &Node) -> Option<&str> {
     match node {
         Node::Fn(w) => Some(w),
+        // a closed lexeme printed by a variant (во): a word leaf (3.3)
+        Node::Lex { id, cells, .. } if cells.iter().all(|c| c == Cell::Word) => Some(id),
         Node::Cap(inner) => fn_word(inner),
         Node::Pw { host, .. } => fn_word(host),
         _ => None,

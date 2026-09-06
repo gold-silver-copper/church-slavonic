@@ -65,7 +65,11 @@ pub enum Node {
     Lex { id: String, cells: CellSet, alt: usize, notes: Vec<(String, String)> },
     /// `(abbr "гдⷭ҇" X)` — render the child in full, then abbreviate it
     /// under the matching row of `lexicon/titlo.tsv` (the titlo layer).
-    Abbr { prefix: String, child: Box<Node> },
+    /// A titlo-written token: the abbreviated prefix as printed, the row's
+    /// full-prefix skeleton where the prefix has several rows for one lemma
+    /// (гл҃ъ beside гл҃го́лъ, 3.3; `None` renders through the first row that
+    /// names the child's lexeme), and the expansion.
+    Abbr { prefix: String, full: Option<String>, child: Box<Node> },
     /// `(cap X)` — uppercase the first letter of the child's rendering
     /// (sentence-initial capitals; the tree stays lemma-true).
     Cap(Box<Node>),
@@ -217,10 +221,17 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
             let Some(Value::Atom(word)) = rest.first() else {
                 return err("(f …) takes one atom");
             };
-            if rest.len() != 1 {
-                return err("(f …) takes exactly one atom");
+            if rest.len() == 1 {
+                return Ok(Node::Fn(word.clone()));
             }
-            Ok(Node::Fn(word.clone()))
+            // `(f въ.x.2 :alt 1)`: a closed lexeme printed by one of its
+            // variants (во, ко, со — 3.3): a word leaf with the alternative
+            let fs = features(&rest[1..])?;
+            let alt = read_alt(&fs, "f")?;
+            if !is_lexeme_id(word) {
+                return err("(f …) with :alt takes a lexeme id");
+            }
+            lex(word, CellSet::one(Cell::Word), alt).map(|n| with_notes(n, &fs))
         }
         "n" => {
             let (id, fs) = leaf_id(rest, "n")?;
@@ -375,10 +386,14 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
             Ok(Node::Pw { host: Box::new(host), enclitics, apart: head == "pwa" })
         }
         "abbr" => {
-            let (Some(Value::Str(prefix)), Some(child), None) = (rest.first(), rest.get(1), rest.get(2)) else {
-                return err("(abbr …) takes a quoted prefix and one child");
+            // (abbr "гл҃" child) or (abbr "гл҃" "гла" child): the second
+            // string is the row's full-prefix skeleton
+            let (prefix, full, child) = match (rest.first(), rest.get(1), rest.get(2), rest.get(3)) {
+                (Some(Value::Str(prefix)), Some(Value::Str(full)), Some(child), None) => (prefix, Some(full.clone()), child),
+                (Some(Value::Str(prefix)), Some(child), None, None) => (prefix, None, child),
+                _ => return err("(abbr …) takes a quoted prefix, an optional quoted skeleton and one child"),
             };
-            Ok(Node::Abbr { prefix: prefix.clone(), child: Box::new(from_sexpr(child)?) })
+            Ok(Node::Abbr { prefix: prefix.clone(), full, child: Box::new(from_sexpr(child)?) })
         }
         _ => {
             let children = rest.iter().map(from_sexpr).collect::<Result<Vec<_>, _>>()?;
@@ -644,7 +659,14 @@ pub fn to_sexpr(node: &Node) -> Value {
             items.extend(enclitics.iter().map(to_sexpr));
             Value::List(items)
         }
-        Node::Abbr { prefix, child } => Value::List(vec![atom("abbr"), Value::Str(prefix.clone()), to_sexpr(child)]),
+        Node::Abbr { prefix, full, child } => {
+            let mut items = vec![atom("abbr"), Value::Str(prefix.clone())];
+            if let Some(full) = full {
+                items.push(Value::Str(full.clone()));
+            }
+            items.push(to_sexpr(child));
+            Value::List(items)
+        }
         Node::Group { head, children } => {
             let mut items = vec![atom(head)];
             items.extend(children.iter().map(to_sexpr));
@@ -767,14 +789,23 @@ fn walk(node: &Node, recension: &church_slavonic::Recension, out: &mut String, g
             let print = leaf_print(id, cells.first(), *alt, *recension)?;
             emit(&print, false, out, glue_next);
         }
-        Node::Abbr { prefix, child } => {
+        Node::Abbr { prefix, full, child } => {
             let mut inner = String::new();
             let mut inner_glue = false;
             walk(child, recension, &mut inner, &mut inner_glue)?;
-            let abbreviated = crate::treebank::titlo::rows()
+            // the rows of the prefix (and of the skeleton when the node
+            // names one), those naming the child's lexeme first: гдⷭ҇ has
+            // a strip row for госпо́дь and a keep row for господи́нъ
+            let lemma_key = match crate::treebank::disambiguate::leaf(child) {
+                Some(Node::Lex { id, .. }) => church_slavonic::Lexicon::synodal().get(id).map(|l| church_slavonic::orthography::comparison_key(&l.lemma)),
+                _ => None,
+            };
+            let mut rows: Vec<&crate::treebank::titlo::Row> = crate::treebank::titlo::rows()
                 .iter()
-                .filter(|row| row.abbr == prefix)
-                .find_map(|row| crate::treebank::titlo::abbreviate(&inner, row));
+                .filter(|row| row.abbr == prefix && full.as_ref().is_none_or(|f| row.full == *f))
+                .collect();
+            rows.sort_by_key(|row| lemma_key.as_ref().is_some_and(|k| church_slavonic::orthography::comparison_key(row.lemma) != *k));
+            let abbreviated = rows.into_iter().find_map(|row| crate::treebank::titlo::abbreviate(&inner, row));
             match abbreviated {
                 Some(form) => emit(&form, false, out, glue_next),
                 None => return err(format!("(abbr \"{prefix}\" …): no titlo row abbreviates «{inner}»")),

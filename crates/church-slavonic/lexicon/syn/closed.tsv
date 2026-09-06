@@ -271,7 +271,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 вскорѣ.x.2	вско́рѣ	x	-	-	adv	a	-	-	-	P:-	adv
 вскрай.x.2	вскра́й	x	-	-	adv	a	-	-	-	P:-	adv
 вскꙋю.x.2	вскꙋ́ю	x	-	-	adv	a	-	-	-	P:-	adv
-вслѣдъ.x.2	вслѣ́дъ	x	-	-	adv	a	-	-	-	P:-	adv
+вслѣдъ.x.2	вслѣ́дъ	x	-	-	adv	a	-	-	word=в̾слѣ́дъ	P:-;H:the print writes в̾слѣ́дъ with the paerok (272 tokens, census verbatim 3.3)	adv
 вспѧть.x.2	вспѧ́ть	x	-	-	adv	a	-	-	-	P:-	adv
 встраственнѣ.x.2	встра́ственнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 всюдꙋ.x.2	всю́дꙋ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -557,7 +557,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 мысленнѣ.x.2	мы́сленнѣ	x	-	-	adv	a	-	-	word=мы́сленѣ	P:-	adv
 мытарски.x.2	мыта́рски	x	-	-	adv	a	-	-	-	P:-	adv
 мірски.x.2	мі́рски	x	-	-	adv	a	-	-	-	P:-	adv
-мѡѵсейски.x.2	мѡѵсе́йски	x	-	-	adv	a	-	-	-	P:-	adv
+мѡѵсейски.x.2	мѡѷсе́йски	x	-	-	adv	a	-	-	-	P:-	adv
 мꙋдреннѡ.x.2	мꙋ́дреннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 мꙋдреннѣ.x.2	мꙋ́дреннѣ	x	-	-	adv	a	-	-	-	P:-	adv
 мꙋдрственнѡ.x.2	мꙋ́дрственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -833,7 +833,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 оу.x.2	ѹ҆	x	-	-	prep	a	gov=gen;pros=procl	-	word=ѹ҆̀	P:-	pr
 оуа.x.2	ѹ҆а̀	x	-	-	intj	a	-	-	-	P:-	intj
 оубійственнѣ.x.2	ѹ҆бі́йственнѣ	x	-	-	adv	a	-	-	-	P:-	adv
-оубѡ.x.2	ѹ҆́бѡ	x	-	-	conj	a	pros=encl	-	word=ѹ҆́бо	P:-	conj
+оубѡ.x.2	ѹ҆́бѡ	x	-	-	conj	a	pros=encl	-	word=ѹ҆́бо|ѹ҆̀бо	P:-;H:the print writes ѹ҆̀бо beside ѹ҆́бѡ (649 tokens, census verbatim 3.3)	conj
 оувы.x.2	ѹ҆вы̀	x	-	-	intj	a	-	-	-	P:-	intj
 оувѣщательнѣ.x.2	ѹ҆вѣща́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 оудивительнѣ.x.2	ѹ҆диви́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1269,7 +1269,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡбразнѣ.x	ѡ҆бра́знѣ	x	-	-	adv	a	adv-of=образный.a	-	word=ѻ҆бра́знѣ|ѻ҆́бразнѣ	P:-	adv; the adjective's adverb printed with another accent or letter
 ѡбратнѡ.x.2	ѡ҆бра́тнѡ	x	-	-	adv	a	-	-	word=ѻ҆бра́тнѡ	P:-	adv
 ѡбратовиднѣ.x.2	ѡ҆братови́днѣ	x	-	-	adv	a	-	-	-	P:-	adv
-ѡбъ.x.2	ѡ҆бъ	x	-	-	prep	-	gov=acc|loc;pros=procl	-	-	P:-	pr
+ѡбъ.x.2	ѡ҆бъ	x	-	-	prep	-	gov=acc|loc;pros=procl	-	word=ѡ҆б̾	P:-;H:the print writes ѡ҆б̾ with the paerok (100 tokens, census verbatim 3.3)	pr
 ѡбъѧвленнѡ.x.2	ѡ҆бъѧвле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 ѡбъѧтельнѣ.x.2	ѡ҆бъѧ́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 ѡдеснꙋю.x.2	ѡ҆деснꙋ́ю	x	-	-	adv	a	-	-	word=ѻ҆деснꙋ́ю|ѡ҆деснꙋ́ѧ	P:-	adv

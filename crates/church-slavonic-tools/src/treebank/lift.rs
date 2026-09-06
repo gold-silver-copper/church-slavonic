@@ -21,13 +21,18 @@ use church_slavonic::{Lexicon, Recension};
 use std::collections::HashMap;
 
 /// The titlo index: abbreviated surface → (row prefix, id, cell, alt).
+/// One expansion of a titlo-written surface: the abbreviated prefix, the
+/// lexeme id, the cell, the alternative, and the row's full-prefix skeleton.
+pub type TitloEntry = (String, String, Cell, usize, String);
+
 pub struct TitloIndex {
-    map: HashMap<String, Vec<(String, String, Cell, usize)>>,
+    /// surface → its entries
+    map: HashMap<String, Vec<TitloEntry>>,
 }
 
 impl TitloIndex {
     pub fn build(lexicon: &Lexicon) -> TitloIndex {
-        let mut map: HashMap<String, Vec<(String, String, Cell, usize)>> = HashMap::new();
+        let mut map: HashMap<String, Vec<TitloEntry>> = HashMap::new();
         for row in crate::treebank::titlo::rows() {
             // the row's lemma: every lexeme whose lemma prints as it
             let key = church_slavonic::orthography::comparison_key(row.lemma);
@@ -37,7 +42,7 @@ impl TitloIndex {
                         let full = form.print(lexicon.recension);
                         if let Some(abbreviated) = crate::treebank::titlo::abbreviate(&full, row) {
                             let entry = map.entry(abbreviated).or_default();
-                            let item = (row.abbr.to_string(), lexeme.id.clone(), cell, alt);
+                            let item = (row.abbr.to_string(), lexeme.id.clone(), cell, alt, row.full.to_string());
                             if !entry.contains(&item) {
                                 entry.push(item);
                             }
@@ -53,6 +58,11 @@ impl TitloIndex {
         self.map.len()
     }
 
+    /// The index's entries for an abbreviated surface.
+    pub fn entries(&self, surface: &str) -> Option<&[TitloEntry]> {
+        self.map.get(surface).map(Vec::as_slice)
+    }
+
     pub fn is_empty(&self) -> bool {
         self.map.is_empty()
     }
@@ -61,7 +71,7 @@ impl TitloIndex {
     /// titlo row `prefix` (the abbreviation erases the accent that tells
     /// дꙋ́хъ from дꙋ̑хъ, so дх҃ъ is nom.sg|gen.pl|acc.pl).
     pub fn cells(&self, surface: &str, prefix: &str, id: &str) -> Option<CellSet> {
-        let cells: Vec<Cell> = self.map.get(surface)?.iter().filter(|(p, i, _, _)| p == prefix && i == id).map(|(_, _, c, _)| *c).collect();
+        let cells: Vec<Cell> = self.map.get(surface)?.iter().filter(|(p, i, _, _, _)| p == prefix && i == id).map(|(_, _, c, _, _)| *c).collect();
         CellSet::new(cells)
     }
 }
@@ -120,7 +130,7 @@ impl Coverage {
 
 /// A titlo-written token's expansions under one row for one lexeme:
 /// (row prefix, lexeme id, cells with their alternative index).
-type TitloGroup<'a> = (&'a str, &'a str, Vec<(Cell, usize)>);
+type TitloGroup<'a> = (&'a str, &'a str, &'a str, Vec<(Cell, usize)>);
 
 /// The lifter: the lexicon, its titlo index, and the recension.
 pub struct Lifter<'a> {
@@ -254,14 +264,14 @@ impl<'a> Lifter<'a> {
         // a titlo-written token: its expansions grouped the same way
         let titlo = self.titlo.map.get(&looked_up).map(Vec::as_slice).unwrap_or(&[]);
         let mut titlo_groups: Vec<TitloGroup<'_>> = Vec::new();
-        for (prefix, id, cell, alt) in titlo {
-            match titlo_groups.iter_mut().find(|(p, i, _)| *p == prefix && *i == id) {
-                Some((_, _, cells)) => {
+        for (prefix, id, cell, alt, full) in titlo {
+            match titlo_groups.iter_mut().find(|(p, i, _, _)| *p == prefix && *i == id) {
+                Some((_, _, _, cells)) => {
                     if !cells.iter().any(|(c, _)| c == cell) {
                         cells.push((*cell, *alt));
                     }
                 }
-                None => titlo_groups.push((prefix, id, vec![(*cell, *alt)])),
+                None => titlo_groups.push((prefix, id, full, vec![(*cell, *alt)])),
             }
         }
         let closed = crate::treebank::closed::is_closed(&looked_up) || !closed_readings.is_empty();
@@ -272,15 +282,20 @@ impl<'a> Lifter<'a> {
                     let (node, n) = leaf(&r.lexeme.id, &r.cells);
                     (node, n)
                 } else {
-                    let (prefix, id, cells) = &titlo_groups[0];
+                    let (prefix, id, full, cells) = &titlo_groups[0];
                     let (node, n) = leaf(id, cells);
-                    (Node::Abbr { prefix: (*prefix).to_string(), child: Box::new(node) }, n)
+                    (Node::Abbr { prefix: (*prefix).to_string(), full: Some((*full).to_string()), child: Box::new(node) }, n)
                 };
                 (wrap(node), if cells > 1 { TokenFate::Underspecified } else { TokenFate::Analyzed })
             }
             (0, true) => {
                 let node = match closed_readings.as_slice() {
-                    [only] => Node::Fn(only.lexeme.id.clone()),
+                    // the lexeme's own variant (во beside въ) is the leaf's
+                    // alternative, never a verbatim token (3.3)
+                    [only] => match only.cells.iter().find(|(c, _)| *c == Cell::Word).map(|(_, a)| *a).unwrap_or(0) {
+                        0 => Node::Fn(only.lexeme.id.clone()),
+                        alt => Node::Lex { id: only.lexeme.id.clone(), cells: CellSet::one(Cell::Word), alt, notes: Vec::new() },
+                    },
                     _ => Node::Fn(looked_up),
                 };
                 (wrap(node), TokenFate::ClosedClass)
@@ -454,7 +469,7 @@ mod tests {
         // acc.pl) is gone under the titlo
         let (node, fate) = lifter().lift_core("дх҃ъ");
         assert_eq!(fate, TokenFate::Underspecified);
-        let Node::Abbr { prefix, child } = node else { panic!("{node:?}") };
+        let Node::Abbr { prefix, child, .. } = node else { panic!("{node:?}") };
         assert_eq!(prefix, "дх҃");
         let Node::Lex { cells, .. } = *child else { panic!("{child:?}") };
         assert_eq!(cells.name(), "nom.sg|gen.pl|acc.pl");

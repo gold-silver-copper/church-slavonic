@@ -16,6 +16,35 @@ cardinal numerals and their compounds, є҆ди́нъ's spelling, всѧ́кїй
 и҆ны́й's long forms, хотѣти's хощ- stem, любо́вь, проти́вꙋ, бли́з̾, ѡ҆б̾,
 ра́звѣ, а҆дѡнаі̀). The verb that is several lexemes: 135 tokens.
 
+### Part 1 — the print's last letters (2026-09-05)
+
+- **The izhitsa's kendema** is a rule of `Form::print` (`ѷ` for an
+  unstressed non-initial ѵ read as a vowel; bare after а/е, the psili
+  at the head); `from_print` folds it back.
+- **The paerok** (U+033E, an elided jer: в̾слѣ́дъ, ѡ҆б̾) is a letter of
+  the word (`ꙿ` in the letters, `ъ` in the comparison key).
+- **The loanword's ї** before a consonant (кївѡ́тъ, вїно̀) is written by
+  the importer from `data/loanword-iota.tsv` (`census verbatim --write`)
+  with the lifted prints as the veto; the id folds ї/і and ѷ/ѵ.
+- **The n-forms' genitive** -негѡ → -него (the pronoun class); ѹ҆̀бо,
+  в̾слѣ́дъ, ѡ҆б̾ as hand variants; a form's own varia survives `realise`.
+- **The vocalised prepositions** во/ко/со are the leaf's alternative
+  `(f въ.x.2 :alt 1)`, never verbatim.
+- **Titlo rows**: 113 (22 → 135) added by hand with the Bible count (a row may
+  name a closed lexeme, pos `x`); `titlo::abbreviate` keeps a mark with
+  the skeleton's last letter and the skeleton keeps ѡ a letter; an abbr
+  node carries the row's skeleton, `(abbr "гл҃" "гла" …)`, and renders
+  through the row that names its lexeme; `cargo xtask titlo <surface>`
+  prints the index's entries.
+
+| Number | before | after |
+|---|---|---|
+| census verbatim | 36,568: (a) 20,577, (b) 7,187, (c) 8,804 | 14,069: (a) 4,508, (b) 1,141, (c) 8,420 |
+| (a) marks only / і-ї / kendema / wide-narrow о / head ѧ | 13,908 / 3,071 / 2,055 / 1,144 / 161 | 3,896 / 128 / 8 / 85 / 161 |
+| Bible treebank | one cell 214,958 (34.0%), sets 1,782, tagger 187,945 (29.7%), closed 178,215, several lexemes 12,298 (1.9%), verbatim 35,731 (5.7%) | one cell 237,565 (37.6%), sets 2,093 (0.3%), tagger 186,780 (29.6%), closed 178,215 (28.2%), several lexemes 12,858 (2.0%), verbatim 13,418 (2.1%); zero mismatches |
+| held-out recall | 95.48 / 89.31 / 90.89 / 99.25 | unchanged |
+| ids | — | unchanged |
+
 ## 3.2.0 (2026-09-05) — the clause
 
 The plan is `V3.0-PROMPT.md` Parts 5–6. A minor release: the library is

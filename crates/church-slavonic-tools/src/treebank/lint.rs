@@ -92,7 +92,7 @@ fn walk(
             }
         }
         Node::Cap(child) => walk(child, recension, &format!("{path}/cap"), findings),
-        Node::Abbr { prefix, child } => {
+        Node::Abbr { prefix, child, .. } => {
             if !crate::treebank::titlo::rows().iter().any(|r| r.abbr == *prefix) {
                 push(findings, path, format!("(abbr \"{prefix}\" …): unknown titlo prefix"));
             }

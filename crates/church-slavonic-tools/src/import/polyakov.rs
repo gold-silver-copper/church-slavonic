@@ -288,7 +288,7 @@ fn attested_cells(entry: &Entry, pos: Pos, class: &str, o: &mut Outcome) -> (Att
             o.bump("forms skipped: unanalysed");
             continue;
         }
-        let printed = ligature(realise(&form.form, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
+        let printed = bible_spelling(realise(&form.form, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
         if form.form.contains('\u{483}') || form.cells.iter().any(|c| c.iter().any(|t| t.starts_with('9'))) {
             o.bump("forms skipped: titlo spelling");
             continue;
@@ -590,7 +590,7 @@ pub fn debug(pos: Pos, wanted: &str) -> Result<(), Box<dyn Error>> {
     let mut o = Outcome::default();
     let classes = table(pos);
     for entry in entries.iter().filter(|e| pos_of(e) == Some(pos)) {
-        let lemma = ligature(realise(&entry.lemma, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
+        let lemma = bible_spelling(realise(&entry.lemma, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
         if Form::from_print(&lemma).key() != Form::from_print(wanted).key() {
             continue;
         }
@@ -651,7 +651,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         entries
             .iter()
             .filter(|e| e.tags.first().map(String::as_str) == Some("ADV"))
-            .map(|e| (Form::from_print(&ligature(realise(&e.lemma, &SYN), &comparison_key(&realise(&e.lemma, &SYN)))).print(SYN), e.count))
+            .map(|e| (Form::from_print(&bible_spelling(realise(&e.lemma, &SYN), &comparison_key(&realise(&e.lemma, &SYN)))).print(SYN), e.count))
             .collect()
     } else {
         HashMap::new()
@@ -672,7 +672,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             continue;
         }
         o.bump("entries");
-        let mut lemma = ligature(realise(&entry.lemma, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
+        let mut lemma = bible_spelling(realise(&entry.lemma, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
         let mut lemma_form = Form::from_print(&lemma);
         let headword = lemma.clone();
         let quarantine = |o: &mut Outcome, reason: &'static str, detail: String| {
@@ -1230,15 +1230,110 @@ fn id_stem_of(id: &str, pos: Pos) -> String {
     }
 }
 
+/// The print writes ї in a loanword before a consonant too (кївѡ́тъ,
+/// вїно̀, пїла́тъ, галїле́а), where the ї rule of the typography writes і;
+/// Polyakov writes і everywhere. The letter is the lexeme's, and the
+/// pinned Bible decides it (3.3): the positions where the Bible's
+/// commonest print of the lemma has a non-positional ї, applied to every
+/// print of the entry that has і there.
+fn loanword_iota(print: String, lemma_key: &str) -> String {
+    use unicode_normalization::UnicodeNormalization;
+    static POSITIONS: std::sync::OnceLock<HashMap<String, Vec<usize>>> = std::sync::OnceLock::new();
+    let positions = POSITIONS.get_or_init(|| {
+        // the commonest verbatim print with a ї per lemma key
+        // (`data/loanword-iota.tsv`, `census verbatim --write`)
+        let mut best: HashMap<String, (u64, String)> = HashMap::new();
+        let path = crate::workspace_root().join("data/loanword-iota.tsv");
+        for line in std::fs::read_to_string(path).unwrap_or_default().lines().skip(1) {
+            let cols: Vec<&str> = line.split('\t').collect();
+            let [key, form, n] = cols[..] else { continue };
+            let count: u64 = n.parse().unwrap_or(0);
+            let e = best.entry(key.to_string()).or_insert((0, String::new()));
+            if count > e.0 {
+                *e = (count, form.to_string());
+            }
+        }
+        // the lifted prints of the same lemma (`treebank-forms.tsv`) are
+        // the other side: the print decides by count — a lexeme the Bible
+        // mostly prints with і (сі́мѡнъ, lifted 130 times) keeps і
+        let mut lifted: HashMap<String, Vec<(String, u64)>> = HashMap::new();
+        for ((key, _, _, form), (n, _)) in bible_counts() {
+            lifted.entry(key.clone()).or_default().push((form.clone(), *n));
+        }
+        let mut out: HashMap<String, Vec<usize>> = HashMap::new();
+        for (key, (count, form)) in best {
+            let bases: Vec<char> = form.nfc().filter(|c| !unicode_normalization::char::is_combining_mark(*c)).collect();
+            let mut at = Vec::new();
+            for (i, c) in bases.iter().enumerate() {
+                if *c == 'ї' {
+                    let next = bases.get(i + 1).copied();
+                    let positional = next.is_some_and(|n| church_slavonic::orthography::is_vowel_letter(n) || n == 'й');
+                    if !positional {
+                        at.push(i);
+                    }
+                }
+            }
+            if at.is_empty() {
+                continue;
+            }
+            // the lifted prints that spell і at one of those positions
+            // (an abbreviation hides the letter and does not vote)
+            let against: u64 = lifted
+                .get(&key)
+                .map(|prints| {
+                    prints
+                        .iter()
+                        .filter(|(p, _)| {
+                            let b: Vec<char> = p.nfc().filter(|c| !unicode_normalization::char::is_combining_mark(*c)).collect();
+                            at.iter().any(|i| b.get(*i) == Some(&'і'))
+                        })
+                        .map(|(_, n)| *n)
+                        .sum()
+                })
+                .unwrap_or(0);
+            if against >= count {
+                continue;
+            }
+            out.insert(key, at);
+        }
+        out
+    });
+    let Some(at) = positions.get(lemma_key) else { return print };
+    let mut out = String::with_capacity(print.len());
+    let mut index = 0usize;
+    for c in print.nfc() {
+        if unicode_normalization::char::is_combining_mark(c) {
+            out.push(c);
+            continue;
+        }
+        if c == 'і' && at.contains(&index) {
+            out.push('ї');
+        } else {
+            out.push(c);
+        }
+        index += 1;
+    }
+    out
+}
+
+/// The Bible's spelling of a Polyakov print: the ligature and the
+/// loanword's ї.
+fn bible_spelling(print: String, lemma_key: &str) -> String {
+    loanword_iota(ligature(print, lemma_key), lemma_key)
+}
+
 /// The key an existing id is looked up by: the letters with the initial
 /// uk as «оу» and the initial ѿ as «ѡт» — the two spellings the print
 /// and Polyakov differ in, and nothing else (мі́ръ and ми́ръ stay apart).
 fn id_lookup_key(letters: &str) -> String {
     let stem = church_slavonic::orthography::id_stem(letters);
-    match stem.strip_prefix('ѿ') {
+    let stem = match stem.strip_prefix('ѿ') {
         Some(rest) if !rest.is_empty() => format!("ѡт{rest}"),
         _ => stem,
-    }
+    };
+    // the loanword's ї and the kendema are the print's letters (3.3), the
+    // ids keep Polyakov's і and ѵ
+    stem.replace('ї', "і").replace('ѷ', "ѵ")
 }
 
 /// The id's stem: the lemma's letters with marks stripped.

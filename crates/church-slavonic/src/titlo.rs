@@ -49,6 +49,7 @@ pub fn rows() -> &'static [Row] {
                     "n" => Pos::Noun,
                     "a" => Pos::Adjective,
                     "v" => Pos::Verb,
+                    "x" => Pos::Closed,
                     other => panic!("lexicon/titlo.tsv line {}: pos {other}", i + 1),
                 },
                 strip: match mode {
@@ -91,7 +92,7 @@ fn is_combining(c: char) -> bool {
     matches!(c, '\u{0300}'..='\u{036F}' | '\u{0483}'..='\u{0489}' | '\u{2DE0}'..='\u{2DFF}' | '\u{A66F}')
 }
 
-/// One base letter, folded for skeleton comparison (і/ї, ѻ/о, є/е merge).
+/// One base letter, folded for skeleton comparison (і/ї, ѻ/о, є/е merge; ѡ is a letter the print keeps — бѡ́гъ is never бг҃ъ).
 fn fold(c: char) -> char {
     match c {
         'ї' => 'і',
@@ -124,7 +125,9 @@ pub fn abbreviate(full_form: &str, row: &Row) -> Option<String> {
     let mut cut = 0; // byte offset where the tail begins
     for (i, c) in full_form.char_indices() {
         if is_combining(c) {
-            if matched < want.len() {
+            // a mark belongs to the letter before it: the prefix's last
+            // letter takes its accent with it (спа́са → сп҃са, 3.3)
+            if matched <= want.len() {
                 cut = i + c.len_utf8();
             }
             continue;
@@ -179,6 +182,9 @@ mod tests {
         let otec = rows().iter().find(|r| r.abbr == "ѻ҆ц҃").expect("ѻ҆те́цъ row");
         assert_eq!(abbreviate("ѻ҆тца̀", otec).as_deref(), Some("ѻ҆ц҃а̀"));
         assert_eq!(abbreviate("ѻ҆те́цъ", otec), None, "nominative stem differs");
+        // the accent on the prefix's last letter goes with the prefix
+        let sp = rows().iter().find(|r| r.abbr == "сп҃" && r.full == "спа").expect("сп҃ row");
+        assert_eq!(abbreviate("спа́са", sp).as_deref(), Some("сп҃са"));
     }
 
     #[test]
