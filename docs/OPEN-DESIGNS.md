@@ -206,8 +206,11 @@ solid unit), `Form::print_hosting` (the host before an enclitic written
 apart), `prosody::words`; treebank `(pw …)` and `(pwa …)`. The print
 writes the unit apart far more often than solid: 1,854 `(pwa …)` (Рече́ же
 289, Є҆гда́ же 138) against 441 `(pw …)` (и҆̀хже 270, ѻ҆́ньже 147); Genesis
-1:2's Землѧ́ же lifts; verbatim 8.2% → 7.8%. Not done: second-position
-placement in a generator (the function exists, no consumer calls it).
+1:2's Землѧ́ же lifts; verbatim 8.2% → 7.8%. Not done, and deferred in
+3.2 with the record corrected: no second-position placement function
+exists (`prosody::words` groups units, `Form::print_unit` accents one);
+no consumer generates an enclitic; a generator that does will write the
+placement as its own call.
 
 ## 5. The Part 1 noun gate — struck (3.0)
 
@@ -294,7 +297,14 @@ counts (наѳана́илъ 8:5, высоты̑ 2:1) — the two pronoun twins 
    column). What remains of 1b: the syntax a one-token window does not
    see (subject against object of an inanimate, a pronoun's gender from
    its antecedent), a calibrated confidence, and the lexicon duplicates
-   the homonymy census named (гдⷭ҇ь, а҆́зъ).
+   the homonymy census named (гдⷭ҇ь, а҆́зъ). 3.1 merged the twins (the
+   rule of identity; гдⷭ҇ь's two lines stay, their plural nominative
+   differs) and grew the gold to 3,377 leaves; 3.2 added the clause rule
+   `one-subject` (100% precision, 2,545 Bible leaves) and measured the
+   tagger's calibration on OCS dev (`tagger-curve`: the share is
+   informative, no threshold meets the overlay's 90% bar). What remains:
+   a clause whose verb is itself several lexemes (ви́дѣ) gives the rules
+   nothing; the tagger's transfer gap (89% on OCS, 76% on the overlay).
 5. ~~The accent-paradigm inventory and weighted evidence (5)~~ — executed
    in 3.0 (`V2.2-PROMPT.md` Part 6): the inventory of `lexicon/stress.tsv`
    (31 named paradigms), the enclitic's vowels out of the stress count,

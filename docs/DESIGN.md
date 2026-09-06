@@ -455,6 +455,16 @@ any code change.
    primary), reaches (an alternative or variant) and adds the rest as
    variants with the source's token; a lemma the lexicon lacks is
    quarantined.
+3c. The clause (3.2): `treebank/disambiguate.rs` reads one more piece of
+   structure than adjacency — the clause, the span between punctuation,
+   a conjunction and the relative pronoun. `one-subject`: with one finite
+   transitive verb and one noun or pronoun that can only be nominative in
+   the verb's number, every other nominative-or-accusative noun of the
+   clause drops the nominative; a first- or second-person verb has no
+   noun subject. Still an elimination that names itself; still 100%
+   precision on the overlay or it goes. A clause whose verb is itself
+   several lexemes gives the rule nothing: assuming the verb would be a
+   selection.
 4a. Ids never move (3.1): after the fit, the lexemes of one lookup key
    (the letters with the initial uk as «оу» and the initial ѿ as «ѡт»),
    in the order of their source entries, take that key's existing ids in

@@ -1,5 +1,35 @@
 # Changelog
 
+## 3.2.0 (2026-09-05) — the clause
+
+The plan is `V3.0-PROMPT.md` Parts 5–6. A minor release: the library is
+3.1's; the constraint layer gained a clause rule, the tools a calibration
+command.
+
+### Part 5 — the structure the flat tree lacks (2026-09-05)
+
+- **`one-subject`**: a clause (between punctuation, conjunctions and the
+  relative pronoun) with one finite transitive verb (the `tran` note)
+  and one noun or pronoun that can only be nominative in the verb's
+  number: every other noun reading nominative or accusative drops the
+  nominative; a verb that cannot be third person has no noun subject.
+  Precision 100% on the 3,377-leaf overlay.
+- **`cargo xtask tagger-curve`**: the bundled tagger by confidence tenth
+  on UD PROIEL dev+test; no threshold applied (see NOTES).
+
+| Number | before | after |
+|---|---|---|
+| hand overlay: leaves the rules resolve / exclude | np-agree 165, prep-gov 123, subj-verb 33, voc-drop 51 / 0 | + one-subject 28 / 0 |
+| tagger on the overlay | 75.62% (1,278 of 1,690) | 75.62% (1,259 of 1,665: the rules took 25 of its leaves) |
+| tagger on UD dev+test by share | — | p ≥ 0.9: 13,694 of 14,532 at 89.42%; below 0.9 the tenths are 42–50% |
+| Bible treebank | one cell 212,707 (33.7%), tagger 190,196 (30.1%) | one cell 214,958 (34.0%), sets 1,782, tagger 187,945 (29.7%), closed 178,215 (28.2%), several lexemes 12,298 (1.9%), verbatim 35,731 (5.7%); one-subject narrowed 2,545 leaves; zero mismatches |
+
+### Part 6 — the generator's placement (2026-09-05)
+
+Deferred: no placement function exists (the 2.2 record was inexact),
+and no consumer generates an enclitic. `prosody::words` and
+`Form::print_unit` stay what a generator would call.
+
 ## 3.1.0 (2026-09-05) — the lexicon's twins, the print's letters, the gold by register
 
 The plan is `V3.0-PROMPT.md` Parts 3–4, executed through

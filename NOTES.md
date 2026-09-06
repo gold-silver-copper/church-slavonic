@@ -1718,3 +1718,64 @@ members — stays deliberately its own future design.
   placement) for 3.2.0; the lexicon findings of Part 4 (любы̀, the
   numerals, the plural-mark cells, the ѧ҆зы- spelling, the izhitsa's
   kendema, the нн҃ѣ titlo row) are the next lexicon intake.
+
+## 2026-09-05 — 3.2 Part 5: the structure the flat tree lacks — decisions and findings
+
+- **The clause, and one rule (decision).** `one-subject` in
+  `treebank/disambiguate.rs`: a clause is the span between punctuation,
+  a conjunction (the closed lexicon's `conj`) and the relative pronoun;
+  in a clause with exactly one finite verb whose lexeme is transitive
+  (the line's `tran` note), a noun or pronoun whose every cell in the
+  verb's number is nominative is the subject, and when there is exactly
+  one, every other noun of the clause that reads nominative or accusative
+  drops the nominative (ви́дѣ бг҃ъ … свѣ́тъ); a verb that cannot be third
+  person has no noun subject and the same follows (ви́дѣхъ свѣ́тъ); an
+  aorist syncretic between second and third person is third when the
+  subject is there; a noun after a preposition is that preposition's; a
+  copula or an intransitive verb takes a predicate nominative and nothing
+  fires. Precision 100% on the 3,377-leaf overlay (28 hand leaves
+  resolved, 0 excluded); the treebank: 2,545 leaves narrowed, one cell
+  212,707 → 214,958 (34.0%), the tagger's column 190,196 → 187,945.
+- **Why it reaches so few of the 126 (finding).** The commonest
+  nominative/accusative error sits in a clause whose verb is itself
+  several lexemes (Genesis 1:4 ви́дѣ: the aorist beside the locative of
+  ви́дъ), or whose subject is not unambiguously nominative (бы́сть ве́черъ,
+  де́нь вторы́й: no transitive verb, no unique subject). A rule that
+  assumed the verb reading would be a selection; it stays silent.
+- **verb-object and neg-gen (decision).** verb-object is one-subject
+  (the transitive verb is its condition, not a second rule); neg-gen
+  would keep the genitive under не where the set has it and eliminate
+  nothing, since the print has both — recorded as an abstention, not
+  written.
+- **Calibration, measured and not applied (decision).** `cargo xtask
+  tagger-curve` evaluates the bundled model on UD PROIEL dev+test by
+  tenth of its softmax share: p ≥ 0.9 covers 13,694 of 14,532 tokens at
+  89.42%; the tenths below are coin flips (0.8: 50.2%, 0.7: 43.1%, 0.6:
+  46.1%, 0.5: 42.1%). The share is informative, but on the overlay the
+  precision above 0.9 is 77.7% (2.3's measurement, the transfer gap), far
+  from the 90% the plan set for applying a threshold: none is applied,
+  the curve is on record. A consumer that wants precision over coverage
+  can read `:prob` itself.
+
+## 2026-09-05 — 3.2 Part 6: the generator's placement — decision
+
+- **Deferred, and the record corrected.** No second-position placement
+  function exists in the crate: `prosody::words` groups a token sequence
+  into phonological words by the lexicon's prosody and `Form::print_unit`
+  accents the unit; the 2.2 note "a function without a caller" named a
+  function that was never written. The game's sentence builder generates
+  no enclitic (its strings are host words and их аорист), so there is no
+  consumer to place one for. Deferred in OPEN-DESIGNS 4 until a generator
+  needs it.
+- The phonological-word hosts that are several lexemes: the lifter
+  leaves such tokens verbatim (0 `pw`/`pwa` nodes with an `:amb` host);
+  2,247 units in the Bible.
+
+## 2026-09-05 — 3.2.0: the close
+
+- Version 3.2.0, tag `v3.2.0`, after `V3.0-PROMPT.md` Parts 5–6: the
+  clause rule `one-subject` (100% precision, one cell 34.0%), the
+  tagger's calibration measured on OCS dev and no threshold applied, the
+  generator's placement deferred with the record corrected. The game's
+  35 tests and headless run pass unchanged. `V3.0-PROMPT.md` is executed
+  in full; the open list is in `HANDOFF-PROMPT.md`.

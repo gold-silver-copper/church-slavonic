@@ -1,4 +1,4 @@
-# Handoff: church-slavonic 3.1.0 (tag `v3.1.0`)
+# Handoff: church-slavonic 3.2.0 (tag `v3.2.0`)
 
 Read this first in a fresh session. It is the map of what exists, what
 the numbers are, and which designs are open, so work starts from
@@ -7,9 +7,9 @@ verdicts and recorded measurements. The design record is
 findings per part); `CHANGELOG.md` holds every measured number per part;
 `V2-PROMPT.md`, `V2.1-PROMPT.md` and `V2.2-PROMPT.md` are the executed
 plans and stay as their records (tags `v2.0.0` … `v2.3.0`);
-`V3.0-PROMPT.md` is executed through Part 4 (releases 3.0.0 and 3.1.0,
-tags `v3.0.0`, `v3.1.0`, with `V3.0-CONTINUE-PROMPT.md`) and its Parts
-5–6 are the open list. The game's 35 tests and headless run pass against this lexicon.
+`V3.0-PROMPT.md` is executed in full (releases 3.0.0, 3.1.0, 3.2.0, tags
+`v3.0.0` … `v3.2.0`, with `V3.0-CONTINUE-PROMPT.md`); the open list
+below is what the three releases left. The game's 35 tests and headless run pass against this lexicon.
 Two things before any command: export `RUSTC_WRAPPER=` (empty) in this
 checkout while the shared sccache daemon lacks Desktop access; after a
 lexicon change run `fix-hand-alts`, then `build-treebank` — the stored
@@ -92,7 +92,7 @@ treebank goes stale before it goes wrong. The crate on crates.io is
   and the crate disagree, check the crate against its pinned sources
   before deciding which side is wrong.
 
-## The numbers (3.1.0)
+## The numbers (3.2.0)
 
 Synodal lexemes: nouns 13,147, adjectives 8,323, verbs 8,210, pronouns
 68, closed 1,340 (158 twins absorbed in 3.1, `data/twins.tsv`; ids never
@@ -101,15 +101,18 @@ The print writes the initial uk as ѹ and the prefix от- as ѿ (the
 importer, with the Bible as arbiter). Held-out recall (UD PROIEL
 dev+test): nouns 95.48%, adjectives 89.31%, verbs 90.89%, personal
 pronouns 99.25%, other pronouns 98.07%. Bible treebank (631,946 tokens):
-one cell 212,707 (33.7%), sets 1,782 (0.3%; 26.9% without the tagger),
-tagger 190,196 (30.1%), closed 178,215 (28.2%), several lexemes 12,298
+one cell 214,958 (34.0%), sets 1,782 (0.3%; 26.9% without the tagger),
+tagger 187,945 (29.7%), closed 178,215 (28.2%), several lexemes 12,298
 (1.9%; 5.5% without), verbatim 35,731 (5.7%); zero mismatches. Hand
 overlay: 337 verses, 3,377 leaves (Genesis 1–3, Exodus 1, Leviticus 1,
 Proverbs 1, Isaiah 53, Matthew 1, Luke 2, John 1, Romans 1, 1
 Corinthians 13); the rules exclude no hand cell (np-agree 165/165,
-prep-gov 123/125, subj-verb 33/33, voc-drop 51/70 resolved); the tagger
-75.6% (1,278 of 1,690; wrong cells: nominative/accusative 126, another
-feature 59, gender 51, genitive/accusative 46). `scripts/hand-apply.py`
+prep-gov 123/125, subj-verb 33/33, voc-drop 51/70, one-subject 28/28
+resolved); the tagger 75.6% (1,259 of 1,665; wrong cells:
+nominative/accusative 126, another feature 59, gender 51,
+genitive/accusative 46); on UD dev+test its share is informative
+(`tagger-curve`: 89.4% at p ≥ 0.9, coin flips below) but no threshold
+reaches the overlay's 90% bar and none is applied. `scripts/hand-apply.py`
 lists and applies a chapter's decisions. The tables are in
 `CHANGELOG.md` under "3.1.0" and "3.0.0" and in the README.
 
@@ -120,22 +123,22 @@ linguistically proper answer — is in `docs/OPEN-DESIGNS.md`, which also
 records what 2.1 executed (present stems by derivation, syncretism by
 underspecification).
 
-1. **`V3.0-PROMPT.md` Parts 5–6** (release 3.2.0): the clause chunker
-   and its eliminating rules (one-subject, verb-object, neg-gen) against
-   the tagger's nominative/accusative errors (126 of 392 on the overlay);
-   calibration fitted on OCS dev and applied only if the overlay proves
-   it; the generator's second-position placement (a caller in the game or
-   a recorded deferral). Before them, the lexicon intake Part 4 exposed:
-   the missing lexemes любы̀ (ū-stem), трѝ, се́дмь, ѻ҆́смь, the aorist
-   пови́тъ, the adverb безпреста́ни; the plural-mark cells the classes do
-   not reach (кѡры́сти, четверонѡ́гъ, ложесна̀); всѣ́мъ as the plural
-   dative; the relative и҆̀же/ꙗ҆̀же with the varia as a nominative; the
-   ѧ҆зы- spelling (156 tokens); the izhitsa's kendema (a stage-4 rule);
-   the нн҃ѣ titlo row. What Part 3 left: господь.n / .n.2 stay two lines
-   (го́споди against госпо́дїе in the plural nominative) and гдⷭ҇ь's 5,767
-   tokens stay `:amb` through the titlo index — a hand decision, not the
-   rule's.
-2. **What the homonymy layers left** (`docs/OPEN-DESIGNS.md` 1b, executed
+1. **The lexicon intake the gold exposed** (3.1 Part 4): the missing
+   lexemes любы̀ (ū-stem), трѝ, се́дмь, ѻ҆́смь, the aorist пови́тъ, the
+   adverb безпреста́ни; the plural-mark cells the classes do not reach
+   (кѡры́сти, четверонѡ́гъ, ложесна̀); всѣ́мъ as the plural dative; the
+   relative и҆̀же/ꙗ҆̀же with the varia as a nominative; the ѧ҆зы- spelling
+   (156 tokens); the izhitsa's kendema (a stage-4 rule like the ї's); the
+   нн҃ѣ titlo row. Then the hand decision Part 3 left: господь.n / .n.2
+   one line or two (гдⷭ҇ь's 5,767 tokens are `:amb` through the titlo
+   index because of it).
+2. **What the clause rule cannot reach** (3.2 Part 5): a clause whose
+   verb is itself several lexemes (ви́дѣ) gives the rules nothing without
+   a selection; the tagger's transfer gap (89% on OCS dev, 76% on the
+   overlay) is the next lever for the 126 nominative/accusative errors —
+   Synodal training material would have to come from the overlay itself,
+   which is the test; a larger overlay first.
+3. **What the homonymy layers left** (`docs/OPEN-DESIGNS.md` 1b, executed
    in 2.3). The tagger's errors on the overlay are the syntax a one-token
    window does not see: nominative against accusative of an inanimate
    (52 of 274), a pronoun's gender from its antecedent, the treebanks'
@@ -147,7 +150,7 @@ underspecification).
    lexemes to the lifter and a cleaning would move them to one. The
    overlay is 211 verses and should grow by register (the Psalter's
    poetry, the Epistles).
-3. **What 2.2 left.** Kaikki's aorist and l-participle junk is counted,
+4. **What 2.2 left.** Kaikki's aorist and l-participle junk is counted,
    not kept (1,105 cells); the OCS UD variants that remain in those
    blocks are manuscript spellings. The print writes the phonological
    word apart more than solid, and the pronoun hosts whose accented form

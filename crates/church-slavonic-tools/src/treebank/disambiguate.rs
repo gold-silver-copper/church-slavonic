@@ -325,5 +325,108 @@ pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
         narrow(&mut children[i], lexicon, "voc-drop", |c| c.case() != Some(Case::Vocative), &mut stats);
     }
     let _ = Prosody::Tonic;
+    // 5. one-subject (3.2): the clause has one finite transitive verb; a
+    //    noun that can only be nominative and agrees with it in number is
+    //    the subject, so every other noun of the clause that reads
+    //    nominative or accusative is not — it drops the nominative
+    //    (ви́дѣ бг҃ъ свѣ́тъ). With a first- or second-person verb no noun
+    //    is the subject at all (ви́дѣхъ свѣ́тъ). A clause is the span
+    //    between punctuation, conjunctions and the relative pronoun; a
+    //    noun after a preposition is that preposition's and is left
+    //    alone; a copula or an intransitive verb (быти, ꙗвитисѧ) takes a
+    //    predicate nominative and no rule fires.
+    let mut start = 0;
+    while start < n {
+        let mut end = start;
+        while end < n && !clause_boundary(children, end, lexicon) {
+            end += 1;
+        }
+        one_subject(children, start, end, lexicon, &mut stats);
+        start = end + 1;
+    }
+
     stats
+}
+
+/// A child no clause reads across: punctuation, a conjunction, the
+/// relative pronoun.
+fn clause_boundary(children: &[Node], i: usize, lexicon: &Lexicon) -> bool {
+    match children.get(i) {
+        None | Some(Node::Punct(_)) => true,
+        Some(node) => {
+            if let Some(word) = fn_word(node) {
+                let lexemes: Vec<&church_slavonic::Lexeme> = if crate::treebank::node::is_lexeme_id(word) { lexicon.get(word).into_iter().collect() } else { lexicon.find(word, Pos::Closed) };
+                return lexemes.iter().any(|l| l.subcategory() == Some("conj"));
+            }
+            matches!(leaf(node), Some(Node::Lex { id, .. }) if id == "иже.pron")
+        }
+    }
+}
+
+/// Is the child at `i` the nominal a preposition governs (the child
+/// before it is a preposition with a frame)?
+fn in_prepositional_phrase(children: &[Node], i: usize, lexicon: &Lexicon) -> bool {
+    i > 0 && fn_word(&children[i - 1]).is_some_and(|w| !frame(lexicon, w).is_empty())
+}
+
+/// A leaf whose every cell is a noun cell.
+fn noun_leaf(children: &[Node], i: usize) -> bool {
+    leaf(&children[i]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| matches!(c, Cell::Noun(_)))))
+}
+
+/// Rule 5 over one clause span `[start, end)`.
+fn one_subject(children: &mut [Node], start: usize, end: usize, lexicon: &Lexicon, stats: &mut Stats) {
+    // exactly one finite verb
+    let verbs: Vec<usize> = (start..end)
+        .filter(|&i| leaf(&children[i]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_finite(&c)))))
+        .collect();
+    let [v] = verbs[..] else { return };
+    let (vid, persons, numbers): (String, Vec<Person>, Vec<Number>) = match leaf(&children[v]) {
+        Some(Node::Lex { id, cells, .. }) => (id.clone(), cells.iter().filter_map(|c| c.person()).collect(), cells.iter().filter_map(|c| c.number()).collect()),
+        _ => return,
+    };
+    let Some(verb) = lexicon.get(&vid) else { return };
+    let transitive = verb.note.split("; ").any(|t| t == "tran");
+    if !transitive || persons.is_empty() {
+        return;
+    }
+    // an aorist reads second or third person alike (ви́дѣ): with a unique
+    // nominative subject in the clause it is third; without one nothing
+    // fires. A verb that cannot be third person has no noun subject.
+    let third = persons.contains(&Person::Third);
+    let not_third = !third;
+    if third {
+        let _ = not_third;
+        // the one noun or pronoun that can only be nominative, in the
+        // verb's number
+        let subjects: Vec<usize> = (start..end)
+            .filter(|&i| i != v && !in_prepositional_phrase(children, i, lexicon))
+            .filter(|&i| {
+                // a noun or pronoun whose every cell IN THE VERB'S NUMBER is
+                // nominative (an abbreviation hides other numbers' cells:
+                // бг҃ъ is nom.sg beside gen.pl and acc.pl, and a singular
+                // verb reads the singular)
+                leaf(&children[i]).is_some_and(|l| matches!(l, Node::Lex { cells, .. }
+                    if cells.iter().all(|c| matches!(c, Cell::Noun(_) | Cell::Pron(_)))
+                    && {
+                        let same: Vec<Cell> = cells.iter().filter(|c| c.number().is_none_or(|k| numbers.contains(&k))).collect();
+                        !same.is_empty() && same.iter().all(|c| c.case() == Some(Case::Nominative))
+                    }))
+            })
+            .collect();
+        let [subject] = subjects[..] else { return };
+        for i in start..end {
+            if i == v || i == subject || !noun_leaf(children, i) || in_prepositional_phrase(children, i, lexicon) {
+                continue;
+            }
+            narrow(&mut children[i], lexicon, "one-subject", |c| c.case() != Some(Case::Nominative), stats);
+        }
+    } else {
+        for i in start..end {
+            if i == v || !noun_leaf(children, i) || in_prepositional_phrase(children, i, lexicon) {
+                continue;
+            }
+            narrow(&mut children[i], lexicon, "one-subject", |c| c.case() != Some(Case::Nominative), stats);
+        }
+    }
 }

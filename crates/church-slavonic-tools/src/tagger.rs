@@ -133,6 +133,44 @@ fn pct(a: usize, b: usize) -> f64 {
 }
 
 /// `cargo xtask train-tagger [--epochs n]`.
+/// `cargo xtask tagger-curve`: the bundled tagger's calibration on UD
+/// PROIEL dev+test (never the overlay, never the Bible) — for each tenth
+/// of its softmax share, how many tokens it chose there and how many
+/// right, cumulatively from the top. 3.2 Part 5: a threshold is applied
+/// only if the overlay's precision above it is ≥ 90%; the curve says
+/// whether the share means anything.
+pub fn curve() -> Result<(), Box<dyn Error>> {
+    let root = crate::workspace_root();
+    let sources = root.join("references/downloads");
+    let artifacts = root.join("target/sources");
+    let lexicon = Lexicon::ocs();
+    let Some(heldout) = crate::sources::ud::load_ud_proiel_heldout(&sources, &artifacts)? else {
+        return Err("UD PROIEL absent under references/downloads".into());
+    };
+    let tagger = church_slavonic_tagger::Tagger::bundled();
+    if tagger.is_empty() {
+        return Err("no bundled tagger model".into());
+    }
+    let (dev_examples, _, _) = examples(lexicon, &heldout);
+    let mut buckets: std::collections::BTreeMap<u8, (usize, usize)> = std::collections::BTreeMap::new();
+    for e in &dev_examples {
+        let Some((i, p)) = tagger.choose(&e.ctx, &e.candidates) else { continue };
+        let b = buckets.entry(((p * 10.0).floor() as u8).min(9)).or_default();
+        b.0 += 1;
+        if i == e.gold {
+            b.1 += 1;
+        }
+    }
+    println!("tagger-curve: UD PROIEL dev+test, {} tokens with several readings", dev_examples.len());
+    let (mut above_n, mut above_r) = (0, 0);
+    for (bucket, (n, r)) in buckets.iter().rev() {
+        above_n += n;
+        above_r += r;
+        println!("  p ≥ 0.{bucket}: chose {above_n}, right {above_r} ({:.2}%); this tenth {n} chosen, {r} right ({:.2}%)", pct(above_r, above_n), pct(*r, *n));
+    }
+    Ok(())
+}
+
 pub fn train(args: &[String]) -> Result<(), Box<dyn Error>> {
     let epochs: usize = args.iter().position(|a| a == "--epochs").and_then(|i| args.get(i + 1)).and_then(|v| v.parse().ok()).unwrap_or(8);
     let root = crate::workspace_root();

@@ -204,14 +204,14 @@ prep-gov :from nom|acc|voc.sg`), and a statistical tagger chooses among
 what the constraints leave, in its own row — a choice, never counted as
 analysed (`CS_NO_TAGGER=1` rebuilds without it):
 
-| | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|---|---|
-| analysed, one cell | 33.7% (212,707) | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
-| chosen by the tagger (`:by tagger :prob`) | 30.1% | 29.3% | 29.3% | — | — | — | — |
-| closed-class | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | **5.7%** (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
+| | 3.2 | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|---|---|
+| analysed, one cell | 34.0% (214,958) | 33.7% | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 0.3% | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
+| chosen by the tagger (`:by tagger :prob`) | 29.7% | 30.1% | 29.3% | 29.3% | — | — | — | — |
+| closed-class | 28.2% | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 1.9% | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | 5.7% | **5.7%** (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
 
 The verbatim share fell in 3.1 by typography alone: 11,777 tokens
 began with the uk the crate wrote as two letters, 4,300 with the prefix
@@ -221,8 +221,11 @@ On the 3,377-leaf hand overlay (337 verses: Genesis 1–3, Exodus 1,
 Leviticus 1, Proverbs 1, Isaiah 53, Matthew 1, Luke 2, John 1, Romans
 1, 1 Corinthians 13) the constraint layer alone never excludes a hand
 cell (precision 100%; np-agree resolves 165 of the 165 leaves it
-touches, prep-gov 123 of 125, subj-verb 33 of 33, voc-drop 51 of 70);
-the tagger's choices are right 75.6% of the time (1,278 of 1,690; on Old
+touches, prep-gov 123 of 125, subj-verb 33 of 33, voc-drop 51 of 70,
+and since 3.2 the clause rule one-subject 28 of 28 — a transitive verb,
+one noun that can only be nominative, every other nominative-or-
+accusative noun drops the nominative); the tagger's choices are right
+75.6% of the time (1,259 of 1,665; on Old
 Church Slavonic, UD PROIEL dev+test, 86.9% of the tokens with several
 readings against 38.9% for the analyzer's first reading).
 
