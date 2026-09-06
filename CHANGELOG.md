@@ -45,6 +45,35 @@ cardinal numerals and their compounds, є҆ди́нъ's spelling, всѧ́кїй
 | held-out recall | 95.48 / 89.31 / 90.89 / 99.25 | unchanged |
 | ids | — | unchanged |
 
+### Part 2 — the lexicon's gaps (2026-09-05)
+
+- **The pronominal adjectives** є҆ди́нъ, всѧ́къ, и҆́нъ, ѻ҆́нъ decline with
+  the adjective's endings beside the pronominal ones (є҆ди́нагѡ, є҆ди́ныѧ,
+  и҆ны́хъ, ѻ҆́ный): PA1/PA1n carry both, всѧ́къ the velar twin PA1nk.
+- **The numerals**: пѧ́ть … де́сѧть, сто̀ and the -десѧть compounds as
+  nouns from Polyakov's NUM entries (27 lexemes); два̀, ѻ҆́ба, трѝ, четы́ре
+  as pronoun-class lexemes from Alypy (PNdva, PNoba, PNtri, PNcet); the
+  hundreds as closed words (`num`).
+- **The composite verb class** `A+B` (хотѣ́ти V22t+V12t, спа́ти
+  V12p+V22p): A's paradigm, B's present; **Vved** on the cut stem
+  (вѣ́мъ, вѣ́ждь); бы́ти's imperfect бѣ́хꙋ; 14 verbs out of the quarantine.
+- **любы̀**: the class N5ov* (любвѐ, любо́вь).
+- **Closed words by hand**: проти́вꙋ, ра́звѣ, вы́ше, при́снѡ, а҆дѡнаі̀,
+  бли́з̾; **the apparatus** `*`, `*↑`, є҆вр, гре́ч.
+- **The pronoun clitics** мѧ, тѧ, ми, ти unaccented after their host are
+  the phonological word's enclitics, `(pwa host (pn азъ.pron … :clit yes))`.
+- **`cargo xtask redraft-hand`**: the overlay's verbatim leaves become
+  leaves when the lexicon catches up; the scorer counts a hand set apart.
+
+| Number | before | after |
+|---|---|---|
+| census verbatim | 14,069: (a) 4,508, (b) 1,141, (c) 8,420 | 5,408: (a) 2,147, (b) 1,117, (c) 2,144 |
+| quarantine | 1,442 lines | 1,433 (14 lemmas out) |
+| hand overlay | 3,377 leaves, 381 verbatim; rules exclude 0; tagger 75.62% | 3,757 leaves, 6 verbatim (389 redrafted); rules exclude 0 (resolve 459); tagger 74.92% (1,228 of 1,639) |
+| Bible treebank | one cell 237,565 (37.6%), sets 2,093, tagger 186,780 (29.6%), closed 178,215, several lexemes 12,858 (2.0%), verbatim 13,418 (2.1%), apparatus 1,017 | one cell 240,672 (38.1%), sets 2,311 (0.4%), tagger 190,494 (30.1%), closed 179,009 (28.3%), several lexemes 12,880 (2.0%), verbatim 5,430 (0.9%), apparatus 1,150; zero mismatches |
+| held-out recall | 95.48 / 89.31 / 90.89 / 99.25 | unchanged |
+| ids | — | 50 added (27 nouns, 14 verbs, 9 closed), none moved |
+
 ## 3.2.0 (2026-09-05) — the clause
 
 The plan is `V3.0-PROMPT.md` Parts 5–6. A minor release: the library is

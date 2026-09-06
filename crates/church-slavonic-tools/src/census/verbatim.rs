@@ -70,7 +70,6 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
     for (_, _, _, tree) in super::treebank_trees()? {
         walk(&tree, &mut found);
     }
-    let verbatim = found.iter().filter(|(_, amb)| !amb).count();
     // (a) by key, not exactly
     let mut a: BTreeMap<String, BTreeMap<String, (usize, String)>> = BTreeMap::new();
     // (b) titlo tokens with no row, by prefix (the letters up to the titlo)
@@ -85,6 +84,11 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
             continue;
         }
         let looked_up = crate::treebank::lift::decapitalized(surface).unwrap_or_else(|| surface.clone());
+        // the apparatus (꙾, *, the notes' labels) is the treebank's own
+        // column, not a verbatim word
+        if crate::treebank::lift::is_apparatus(&looked_up) {
+            continue;
+        }
         if is_titlo(&looked_up) {
             nb += 1;
             let prefix: String = looked_up.chars().take_while(|ch| *ch != '\u{483}' && !('\u{2de0}'..='\u{2dff}').contains(ch)).collect();
@@ -120,6 +124,7 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
             }
         }
     }
+    let verbatim = na + nb + nc;
     println!("census verbatim: {verbatim} verbatim leaves — (a) found by key, not exactly {na}; (b) a titlo token with no row {nb}; (c) no reading {nc}");
     println!("== (a) by the letters that differ");
     let mut buckets: Vec<_> = a.iter().collect();

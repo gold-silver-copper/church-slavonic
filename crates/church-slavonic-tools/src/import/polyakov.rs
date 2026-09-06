@@ -156,6 +156,13 @@ fn pos_of(entry: &Entry) -> Option<Pos> {
         "APRO" if !entry.class.starts_with("PA") => Some(Pos::Adjective),
         "APRO" | "SPRO" => Some(Pos::Pronoun),
         "ADV" | "ADVPRO" | "CONJ" | "PR" | "PART" | "INTJ" | "PRED" => Some(Pos::Closed),
+        // the numerals (3.3 Part 2): five upward and the -десѧть compounds
+        // decline as nouns (N41, сто̀ N2t); the hundreds the source lists in
+        // one form (NUM100: двѣ́сти, три́ста) are closed words; two, both,
+        // three and four (NUM2, NUMoba, NUM3, NUM4) are pronoun-class lines
+        // by hand (the pronouns are never imported through this source)
+        "NUM" if entry.class.starts_with('N') && !entry.class.starts_with("NUM") => Some(Pos::Noun),
+        "NUM" if entry.class == "NUM100" => Some(Pos::Closed),
         _ => None,
     }
 }
@@ -319,7 +326,13 @@ fn attested_cells(entry: &Entry, pos: Pos, class: &str, o: &mut Outcome) -> (Att
         for analysis in form.tags.split('|') {
             let bundled = ["nom/", "gen/", "dat/", "acc/", "ins/", "loc/", "voc/"].iter().any(|c| analysis.contains(c));
             for set in polyakov::expand(analysis) {
-                let f = features(&set);
+                let mut f = features(&set);
+                // a numeral's tags name the case alone (пѧ́ть: nom/acc, пѧтѝ:
+                // gen/dat/loc): the noun's singular; the plural-shaped
+                // пѧти́хъ, пѧти́мъ the class writes for itself (3.3 Part 2)
+                if pos == Pos::Noun && f.number.is_none() && entry.tags.first().map(String::as_str) == Some("NUM") {
+                    f.number = Some(Number::Singular);
+                }
                 let cells = cells_of(pos, &f, class);
                 if cells.is_empty() {
                     o.bump("forms skipped: no cell for the tags");
@@ -689,12 +702,22 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             quarantine(&mut o, "lemma is more than one word", String::new());
             continue;
         }
-        let gender = entry.tags.iter().find_map(|t| match t.as_str() {
-            "m" => Some(Gender::Masculine),
-            "f" => Some(Gender::Feminine),
-            "n" => Some(Gender::Neuter),
-            _ => None,
-        });
+        let gender = entry
+            .tags
+            .iter()
+            .find_map(|t| match t.as_str() {
+                "m" => Some(Gender::Masculine),
+                "f" => Some(Gender::Feminine),
+                "n" => Some(Gender::Neuter),
+                _ => None,
+            })
+            // a numeral carries no gender tag: пѧ́ть … де́сѧть are feminine
+            // i-stems, сто̀ a neuter o-stem
+            .or_else(|| match (entry.tags.first().map(String::as_str), entry.class.as_str()) {
+                (Some("NUM"), "N41") => Some(Gender::Feminine),
+                (Some("NUM"), "N2t") => Some(Gender::Neuter),
+                _ => None,
+            });
         let animate = entry.tags.iter().find_map(|t| match t.as_str() {
             "anim" => Some(true),
             "inan" => Some(false),
@@ -739,6 +762,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 Some("PART") => "part",
                 Some("INTJ") => "intj",
                 Some("PRED") => "pred",
+                Some("NUM") => "num",
                 _ => "adv",
             };
             if subcategory == "adv"

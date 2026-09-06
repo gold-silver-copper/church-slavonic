@@ -55,4 +55,5 @@ N5er	мати	1	1=base;2=ext:ер	@lemma	2-е	2-и	2-ь	2-ію	2-и	@nom.sg	2-и
 N5es	небо	1	1=base;2=ext:ес	@lemma	2-е	2-и	@nom.sg	2-емъ	2-и	@nom.sg	2-и^	2-ꙋ	2-ема	@nom.du	@dat.du	@gen.du	@nom.du	2-а	2-ъ	2-емъ^	@nom.pl	2-ы	2-ѣхъ	@nom.pl
 N5et	осля	1	1=base;2=ext:ѧт	@lemma	2-е	2-и	@nom.sg	2-емъ	2-и	@nom.sg	2-ы	2-ꙋ	2-ома	@nom.du	@dat.du	@gen.du	@nom.du	2-а	2-ъ	2-емъ^|2-омъ^	@nom.pl	2-ы	2-ѣхъ|2-ехъ	@nom.pl
 N5ov	свекры	1	1=base;2=ext:ов	@lemma	2-е	2-и	2-ь	2-ію	2-и	@nom.sg	2-и^	2-ію^	2-ама	@nom.du	@dat.du	@gen.du	@nom.du	2-и^	2-ей	2-амъ	@nom.pl|@gen.pl	2-ами	2-ахъ	@nom.pl
+N5ov*	любы	1	1=base;2=ext:ов;3=ext:в	@lemma|2-ь	3-е	3-и	2-ь	2-ію	3-и	@nom.sg	3-и^	2-ію^	3-ама	@nom.du	@dat.du	@gen.du	@nom.du	3-и^	3-ей	3-амъ	@nom.pl|@gen.pl	3-ами	3-ахъ	@nom.pl
 0	-	0	1=base	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma	@lemma

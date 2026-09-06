@@ -403,8 +403,59 @@ def pronominal(table):
         for g in GENDERS:
             for n in NUMBERS:
                 cells[f"{g}.{n}.voc"] = f"@{g}.{n}.nom"
+        if code in ("PA1", "PA1n"):
+            # 3.3 (the Bible as arbiter): the print declines є҆ди́нъ, всѧ́къ,
+            # и҆́нъ, ѻ҆́нъ with the adjective's endings beside the pronominal
+            # ones — є҆ди́нагѡ 161 / є҆ди́наго 201 and no є҆ди́ного, є҆ди́ныѧ 39,
+            # є҆ди́нѣй 29, є҆ди́нымъ 20, и҆ны́хъ 40, и҆ны̑мъ 37, и҆ні́и 37, ѻ҆́ный
+            # 42, ѻ҆́ныхъ 27; и҆но́гѡ 18 beside и҆на́гѡ 10, и҆нѣ́хъ 14 beside
+            # и҆ны́хъ 40. The legend's form stays first where the print has
+            # it (PA1), the print's own first where the legend's never
+            # occurs (PA1n).
+            def with_long(short, long_):
+                return f"{short}|{long_}" if code == "PA1" else f"{long_}|{short}"
+            cells["m.sg.gen"] = with_long("1-ого^", "1-аго^")
+            cells["n.sg.gen"] = with_long("1-ого^", "1-аго^")
+            cells["m.sg.acc"] = "@m.sg.nom|" + with_long("1-ого", "1-аго")
+            cells["f.sg.gen"] = with_long("1-оѧ", "1-ыѧ")
+            for c in ("dat", "loc"):
+                cells[f"f.sg.{c}"] = with_long("1-ой", "1-ѣй")
+            for g in ("m", "n"):
+                cells[f"{g}.sg.ins"] = with_long("1-ѣмъ", "1-ымъ")
+            cells["m.sg.nom"] = "1-ъ|1-ый"
+            cells["n.sg.nom"] = "1-о|1-ое"
+            cells["n.sg.acc"] = "1-о|1-ое"
+            cells["f.sg.nom"] = "1-а|1-аѧ"
+            cells["f.sg.acc"] = "1-ꙋ|1-ꙋю"
+            cells["m.pl.nom"] = "1-и|1-їи"
+            for g in GENDERS:
+                for c in ("gen", "loc"):
+                    cells[f"{g}.pl.{c}"] = with_long("1-ѣхъ", "1-ыхъ")
+                cells[f"{g}.pl.dat"] = with_long("1-ѣмъ", "1-ымъ^")
+                cells[f"{g}.pl.ins"] = with_long("1-ѣми", "1-ыми")
+            for c in ("nom", "acc"):
+                cells[f"f.pl.{c}"] = "1-ы|1-ыѧ^"
+            for g in GENDERS:
+                for n in NUMBERS:
+                    cells[f"{g}.{n}.voc"] = f"@{g}.{n}.nom"
         exemplar = table[1][1:][hi].split(",")[0].strip().replace("-", "")
         out.append((code, exemplar, strip, stems, cells))
+        if code == "PA1n":
+            # the velar twin (всѧ́къ): всѧ́цѣмъ 93, всѧ́цѣй 45, всѧ́кїѧ 70,
+            # всѧ́кїй 28, всѧ́кимъ 42 — the second palatalisation before ѣ,
+            # ї for ы after the velar (3.3)
+            velar = {}
+            for k, v in cells.items():
+                alts = []
+                for a in v.split("|"):
+                    if a.startswith("1-ѣ"):
+                        alts.append("5-" + a[2:])
+                    elif a.startswith("1-ы"):
+                        alts.append("1-" + ("ї" if a[3:4] in ("ѧ", "й") else "и") + a[3:])
+                    else:
+                        alts.append(a)
+                velar[k] = "|".join(alts)
+            out.append(("PA1nk", "всѧкъ", 1, "1=base;5=pal2", velar))
         if code == "PA1t":
             # the velar twin (такі́й, какі́й, ꙗ҆кі́й): то́й's endings with the
             # second palatalisation before ѣ and ы (та́цѣмъ, та́цы) and the
@@ -421,6 +472,37 @@ def pronominal(table):
             fleeting["m.sg.nom"] = "2-ъ"
             fleeting["m.sg.acc"] = "@m.sg.nom|1-ого"
             out.append(("PA1*", "одинъ", 1, "1=drop;2=base", fleeting))
+    # the cardinal numerals two, both, three, four (3.3 Part 2): Alypy §
+    # p062 tables 1–2 (the dual of два̀/ѻ҆́ба, the plural of трїѐ/четы́ре),
+    # the print's own genitive двꙋ́хъ 22, ѻ҆бои́хъ 48 and dative двꙋ́мъ 5 as
+    # alternatives (Polyakov NUM2/NUMoba/NUM3/NUM4 list them too). The
+    # cells the numeral lacks stay empty; five upward are nouns (N41).
+    def dual(gen_loc, dat_ins, extra_ins=None):
+        c = {}
+        for g in GENDERS:
+            c[f"{g}.du.nom"] = "1-а" if g == "m" else "1-ѣ"
+            c[f"{g}.du.acc"] = f"@{g}.du.nom"
+            c[f"{g}.du.voc"] = f"@{g}.du.nom"
+            c[f"{g}.du.gen"] = gen_loc
+            c[f"{g}.du.loc"] = gen_loc
+            c[f"{g}.du.dat"] = dat_ins
+            c[f"{g}.du.ins"] = f"{dat_ins}|{extra_ins}" if extra_ins else dat_ins
+        return c
+    out.append(("PNdva", "два", 1, "1=base", dual("1-ою|1-ꙋ|1-ꙋхъ", "1-ѣма|1-ꙋмъ")))
+    out.append(("PNoba", "оба", 1, "1=base", dual("1-ою|1-оихъ|1-ѣихъ", "1-ѣма|1-оимъ", "1-оими|1-ѣими")))
+    def plural(nom_m, nom_fn, gen, dat, acc_m, acc_fn, ins):
+        c = {}
+        for g in GENDERS:
+            c[f"{g}.pl.nom"] = nom_m if g == "m" else nom_fn
+            c[f"{g}.pl.voc"] = f"@{g}.pl.nom"
+            c[f"{g}.pl.gen"] = gen
+            c[f"{g}.pl.loc"] = gen
+            c[f"{g}.pl.dat"] = dat
+            c[f"{g}.pl.acc"] = acc_m if g == "m" else acc_fn
+            c[f"{g}.pl.ins"] = ins
+        return c
+    out.append(("PNtri", "три", 1, "1=base", plural("1-їе|1-и", "1-и", "1-їехъ|1-ехъ", "1-їемъ|1-емъ", "1-їехъ|1-ехъ|1-и", "1-и", "1-їеми|1-еми")))
+    out.append(("PNcet", "четыре", 1, "1=base", plural("1-е|1-и", "1-и|1-е", "1-ехъ", "1-емъ", "1-и|1-е", "1-и|1-е", "1-ьми|1-ми|1-їю")))
     header_cells = [f"{g}.{n}.{c}" for g in GENDERS for n in NUMBERS for c in CASES]
     return header_cells, out
 
@@ -624,6 +706,16 @@ VERB_ROWS = {
     "инф.": ["inf"],
 }
 LPART_ENDINGS = {"m.sg": "ъ", "f.sg": "а", "n.sg": "о", "m.pl": "и", "f.pl": "ы", "n.pl": "а", "m.du": "а", "f.du": "ѣ", "n.du": "ѣ"}
+
+
+# Polyakov's composite codes `A+B` (хотѣ́ти V22t+V12t, спа́ти V12p+V22p): the
+# paradigm of A with the present indicative conjugated as B (хощꙋ̀,
+# хо́щеши, хо́щетъ … beside the imperfect хотѧ́ше and the aorist хотѣ̀ of
+# V22t; сплю̀, спи́ши, спѧ́тъ beside спа́хъ of V12p). Both halves keep
+# their stem numbers, so the pair must agree on what stem 2 is (both
+# iotate here). Any other composite the source uses stays quarantined
+# until a paradigm is shown (3.3 Part 2).
+COMPOSITE_VERBS = ["V22t+V12t", "V12p+V22p"]
 
 
 def verbs(tables_):
@@ -885,6 +977,17 @@ def verbs(tables_):
     header_cells += ["part.pres.act.long.m.sg.acc", "part.past.act.long.m.sg.acc", "part.pres.pass.long.m.sg.acc", "part.past.pass.long.m.sg.acc"]
     header_cells += [f"part.past.pass.short.{g}.pl.{c}" for g in ("m", "f", "n") for c in ("gen", "dat", "loc")]
     header_cells += ["part.past.pass.short.m.sg.ins", "part.past.pass.short.n.sg.ins", "part.past.pass.short.f.sg.nom", "part.past.pass.long.m.sg.loc", "part.past.pass.long.n.sg.loc"]
+    by_code = {code: (strip, stems, cells) for (code, exemplar, strip, stems, cells) in out}
+    for composite in COMPOSITE_VERBS:
+        a, b = composite.split("+")
+        if a not in by_code or b not in by_code:
+            raise SystemExit(f"composite {composite}: a half is not in the table")
+        strip, stems, cells_a = by_code[a]
+        cells = dict(cells_a)
+        for k, v in by_code[b][2].items():
+            if k.startswith("pres."):
+                cells[k] = v
+        out.append((composite, {"V22t+V12t": "хотѣти", "V12p+V22p": "спати"}[composite], strip, stems, cells))
     return header_cells, out
 
 
@@ -939,7 +1042,9 @@ def athematic():
     byti = {}
     byti |= finite("pres", ["1-есмь", "1-еси", "1-есть", "1-есма", "1-еста", "1-еста", "1-есмы", "1-есте", "1-сꙋть"])
     byti |= finite("fut", ["1-бꙋдꙋ", "1-бꙋдеши", "1-бꙋдетъ", "1-бꙋдева", "1-бꙋдета", "1-бꙋдета", "1-бꙋдемъ", "1-бꙋдете", "1-бꙋдꙋтъ"])
-    byti |= finite("impf", ["1-бѧхъ", "1-бѧше", "1-бѧше", "1-бѧхова", "1-бѧста", "1-бѧста", "1-бѧхомъ", "1-бѧсте", "1-бѧхꙋ"])
+    # the imperfect бѧ́хъ beside бѣ́хъ (the print's бѣ́хꙋ 31, бѣ́ста, бѣ́сте:
+    # Alypy's second imperfect; 3.3 Part 2)
+    byti |= finite("impf", ["1-бѧхъ|1-бѣхъ", "1-бѧше|1-бѣ", "1-бѧше|1-бѣ", "1-бѧхова|1-бѣхова", "1-бѧста|1-бѣста", "1-бѧста|1-бѣста", "1-бѧхомъ|1-бѣхомъ", "1-бѧсте|1-бѣсте", "1-бѧхꙋ|1-бѣхꙋ"])
     byti |= finite("aor", ["1-быхъ|1-бѣхъ", "1-бысть|1-бѣ", "1-бысть|1-бѣ", "1-быхова|1-бѣхова", "1-быста|1-бѣста", "1-быста|1-бѣста", "1-быхомъ|1-бѣхомъ", "1-бысте|1-бѣсте", "1-быша|1-бѣша"])
     byti |= impv("1-бꙋди", "1-бꙋди", "1-бꙋдимъ", "1-бꙋдите", "1-бꙋдива", "1-бꙋдита")
     byti["inf"] = "@lemma"
@@ -986,16 +1091,19 @@ def athematic():
     rows.append(("Vest", "ꙗсти", 3, "1=base;5=ext:дꙋщ;6=ext:дом;7=ext:дш;8=ext:ден;9=ext:ды;11=ext:дъ;12=ext:н:ext:ден", esti))
     # вѣ́дѣти (base вѣд): вѣ́мъ … вѣ́дѧтъ, вѣ́дѣхъ, вѣ́ждь
     vedeti = {}
-    vedeti |= finite("pres", ["1-ѣмъ", "1-ѣси", "1-ѣсть", "1-ѣва", "1-ѣста", "1-ѣста", "1-ѣмы", "1-ѣсте", "1-ѧтъ"])
+    # 3.3: the present and the imperative sit on the cut stem вѣ- (stem 2),
+    # the rest on the base вѣд-; the row had written both on one base and
+    # reproduced neither (повѣ́дѣти quarantined, вѣ́дѣти's present stored)
+    vedeti |= finite("pres", ["2-мъ", "2-си", "2-сть", "2-ва", "2-ста", "2-ста", "2-мы", "2-сте", "1-ѧтъ"])
     vedeti |= finite("impf", ["1-ѧхъ", "1-ѧше", "1-ѧше", "1-ѧхова", "1-ѧста", "1-ѧста", "1-ѧхомъ", "1-ѧсте", "1-ѧхꙋ"])
     vedeti |= finite("aor", ["1-ѣхъ", "1-ѣ", "1-ѣ", "1-ѣхова", "1-ѣста", "1-ѣста", "1-ѣхомъ", "1-ѣсте", "1-ѣша"])
-    vedeti |= impv("1-ждь", "1-ждь", "1-димъ", "1-дите|1-ждьте", "1-дива", "1-дита")
+    vedeti |= impv("2-ждь", "2-ждь", "1-имъ", "1-ите|2-ждьте", "1-ива", "1-ита")
     vedeti["inf"] = "1-ѣти"
     vedeti |= lpart("1", "ѣ")
     vedeti |= common_part
     vedeti["part.pres.act.short.m.sg.nom"] = "9-й|9-"
     vedeti["part.pres.act.long.m.sg.nom"] = "9-й"
-    rows.append(("Vved", "вѣдѣти", 3, "1=base;5=ext:ꙋщ;6=ext:ом;7=ext:ѣвш;8=ext:ѣн;9=ext:ы;11=ext:ѣв;12=ext:н:ext:ѣн", vedeti))
+    rows.append(("Vved", "вѣдѣти", 3, "1=base;2=cut;5=ext:ꙋщ;6=ext:ом;7=ext:ѣвш;8=ext:ѣн;9=ext:ы;11=ext:ѣв;12=ext:н:ext:ѣн", vedeti))
     # и҆мѣ́ти (base им): и҆́мамъ … и҆́мꙋтъ, и҆мѣ́ѧхъ, и҆мѣ́хъ, и҆мѣ́й
     imeti = {}
     imeti |= finite("pres", ["1-амъ", "1-аши", "1-ать", "1-ава", "1-ата", "1-ата", "1-амы", "1-ате", "1-ꙋтъ"])

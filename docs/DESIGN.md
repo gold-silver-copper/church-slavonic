@@ -132,6 +132,29 @@ citation conventions differ (OCS `градъ` unaccented, Synodal `гра́дъ`
 accented). They share the feature enums, the class tables (with a
 per-recension column where the endings differ) and the engine.
 
+Three kinds of row the sources did not give outright (3.3 Part 2):
+
+- a composite verb class `A+B` (Polyakov's хотѣ́ти `V22t+V12t`, спа́ти
+  `V12p+V22p`): the paradigm of A with the present indicative conjugated
+  as B — хощꙋ̀, хо́щеши, хо́щетъ beside хотѧ́ше and хотѣ̀; the generator
+  builds it from the two rows, both halves keeping their stem numbers;
+- the athematic вѣ́дѣти (`Vved`) on two stems, the present and the
+  imperative on the cut stem вѣ- (вѣ́мъ, вѣ́ждь), the rest on вѣд-;
+- the cardinal numerals: два̀ and ѻ҆́ба are dual-only, трѝ and четы́ре
+  plural-only rows of the pronoun table (`PNdva`, `PNoba`, `PNtri`,
+  `PNcet`, from Alypy's tables, the lexeme lines by hand with `A:` and
+  `H:`); пѧ́ть … де́сѧть, сто̀ and the -десѧть compounds are nouns the
+  Polyakov import brings in under their own classes (N41, N2t; a
+  numeral's tag names the case alone, which the importer reads as the
+  singular); the hundreds the source lists in one form (двѣ́сти, три́ста)
+  are closed words, subcategory `num`. A numeral leaf in the treebank
+  is a pronoun leaf, `(pn два.pron :g m :num du :case nom)`, or a noun's.
+  The pronominal adjectives є҆ди́нъ, всѧ́къ, и҆́нъ, ѻ҆́нъ decline in the
+  print with the adjective's endings beside the pronominal ones
+  (є҆ди́нагѡ, є҆ди́ныѧ, и҆ны́хъ, ѻ҆́ный): `PA1`/`PA1n` carry both as
+  alternatives, the print's first where the legend's never occurs, and
+  всѧ́къ takes the velar twin `PA1nk` (всѧ́цѣмъ, всѧ́кїѧ).
+
 ### The line
 
 Tab-separated, `-` for empty, `#` comments, one lexeme per line, sorted
@@ -411,6 +434,20 @@ morphology and transferred through a manuscript fold (never a lexeme
 id); it runs only where the constraints left several readings, writes
 `tagger` into `:by` and its share into `:prob`, and the coverage table
 counts its leaves in their own column: a choice is not an analysis.
+A personal pronoun's clitic cell leans on its host the way же and бо do
+(3.3 Part 2): the print writes мѧ, тѧ, ми, ти unaccented after the host,
+which keeps the unit's oxia — `(pwa (v прельстити.v …) (pn азъ.pron :p 1
+:num sg :case acc :clit yes))` renders «прельсти́ мѧ»; the lifter builds
+the unit whenever the next token has no reading of its own and its
+accent-blind key is a clitic cell's (the conjunction и҆ is a word and
+never the clitic и҆̀).
+
+The overlay's verbatim leaves are re-drafted by `cargo xtask redraft-hand`
+when the lexicon catches up (3.3): a `(w "трѝ" :lemma трѝ :case nom)` becomes
+the lifter's leaf, narrowed by its notes, or the lexeme its `:lemma`
+names among several; nothing is chosen the note did not say, and a verse
+that stops rendering its print keeps its old tree.
+
 Both are scored against the hand overlay (`score-disambiguation`),
 `CS_NO_DISAMBIGUATE=1` and `CS_NO_TAGGER=1` rebuild without them, and
 neither touches the round-trip invariant or the leaf census.

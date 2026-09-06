@@ -1957,3 +1957,104 @@ members — stays deliberately its own future design.
   13,418 (2.1%); zero mismatches; the consistency test green; `narrow-hand`
   0 findings; held-out recall unchanged (95.48 / 89.31 / 90.89 / 99.25);
   tests, clippy, the game (35 tests, headless) green; ids unchanged.
+
+## 2026-09-05 — 3.3 Part 2 (V3.3-PROMPT.md): the lexicon's gaps — decisions and findings
+
+- **The pronominal adjectives decline as adjectives in the print
+  (decision, the Bible as arbiter).** є҆ди́нъ: є҆ди́нагѡ 161 and є҆ди́наго
+  201 against no є҆ди́ного, є҆ди́ныѧ 39, є҆ди́нѣй 29, є҆ди́нымъ 20; всѧ́къ:
+  всѧ́кагѡ 167, всѧ́цѣмъ 93, всѧ́кое 88, всѧ́кїѧ 70, всѧ́цѣй 45, всѧ́кимъ 42,
+  всѧ́кїй 28; и҆́нъ: и҆ны́хъ 40 beside и҆нѣ́хъ 14, и҆ны̑мъ 37, и҆ні́и 37,
+  и҆но́гѡ 18 beside и҆на́гѡ 10; ѻ҆́нъ: ѻ҆́ный 42, ѻ҆́ныхъ 27, ѻ҆́нагѡ 26. The
+  legend's PA1n wrote the pronominal endings alone (-ого, -оѧ, -ой);
+  the generator now writes both series as alternatives, the print's
+  first where the legend's never occurs (PA1n) and the legend's first
+  where both occur (PA1), and всѧ́къ takes a velar twin PA1nk (the second
+  palatalisation before ѣ, ї for ы). One residue: и҆ні́и 37 needs the
+  ending stressed where и҆́ни needs the stem — one cell, two places; the
+  lexicon prints и҆́нїи, which the Bible never has (recorded, not fixed).
+- **The numerals (decision).** Polyakov has them under the tag NUM the
+  importer never read (пѧ́ть … де́сѧть, the -десѧть compounds and сто̀ with
+  noun classes N41/N2t; два̀, ѻ҆́ба, трѝ, четы́ре as NUM2/NUMoba/NUM3/NUM4;
+  the hundreds as NUM100 in one form). Five upward import as nouns (a
+  numeral's tag names the case alone — read as the singular, the
+  plural-shaped пѧти́хъ the class writes itself; gender f for N41, n for
+  сто̀); the hundreds as closed words, subcategory `num` (двѣ́сти,
+  три́ста, четы́реста, шестьсѡ́тъ); two, both, three, four are four rows
+  of the pronoun table from Alypy p062 (PNdva, PNoba dual-only; PNtri,
+  PNcet plural-only; the print's двꙋ́хъ 22, ѻ҆бои́хъ 48, двꙋ́мъ 5 as
+  alternatives) with hand lexeme lines (`A:p062;P:NUM…;H:`), the stress
+  by cell (двою̀, двѣма̀, трїе́хъ, тремѝ on the final vowel: F). The leaf
+  is a pronoun leaf, `(pn два.pron :g m :num du :case nom)`. трѝ is now
+  several lexemes (терти.v's imperative prints the same); the tagger
+  separates them. Not done: the collective дво́е/ѻ҆боѧ̀ (40 tokens).
+- **хотѣ́ти and the composite class (decision).** Polyakov's `A+B`
+  (хотѣ́ти V22t+V12t, спа́ти V12p+V22p) is A's paradigm with the present
+  indicative conjugated as B; the generator builds the two rows from the
+  halves (`COMPOSITE_VERBS`); the whole хотѣ́ти family (восхотѣ́ти,
+  похотѣ́ти, нехотѣ́ти, хотѣ́тисѧ) and the спа́ти family left the
+  quarantine. ревѣ́ти V22+V14, вдѣ́ти V15z, встава́ти V12v, ѣ҆́хати Vexat stay
+  quarantined: their codes name no row.
+- **вѣ́дѣти's row was wrong (finding, fixed).** Vved wrote the present on
+  the base (вѣдѣмъ) and the imperative on it too; the row now has the
+  cut stem вѣ- for both (вѣ́мъ, вѣ́си, вѣ́сть, вѣ́ждь) and the base for the
+  rest; повѣ́дѣти, заповѣ́дѣти, проповѣ́дѣти, и҆сповѣ́дѣтисѧ, вѣ́дѣтисѧ
+  left the quarantine ("class does not produce the lemma" had been the
+  fit taking a shorter base to match the present). бы́ти's imperfect
+  takes the бѣ- series beside бѧ- (бѣ́хꙋ 31, бѣ́ста, бѣ́сте).
+- **любы̀ (decision).** N5ov* is свекры̀'s row with the extension's о lost
+  before a vowel ending (любвѐ, любвѝ; любо́вь, любо́вїю keep it); the
+  noun generator adds the row beside the legend's; the lexeme imported.
+- **The closed words by hand (decision).** проти́вꙋ 283 (a preposition
+  Polyakov lists without a tag), ра́звѣ 76, вы́ше 38, при́снѡ 39 (the
+  compounds presuppose it), а҆дѡнаі̀ 195 (a name the print never
+  inflects, subcategory `indecl`), бли́з̾ as a variant of бли́зъ (170 with
+  the paerok, 4 without): `H:` lines and variants in closed.tsv.
+- **The apparatus (decision).** `*`, `*↑` (117 tokens) and the notes'
+  language labels є҆вр 37, гре́ч 20 are the apparatus, not words:
+  `is_apparatus` in the lifter, the census skips them.
+- **The overlay re-drafted (decision, a command).** `cargo xtask
+  redraft-hand`: a verbatim hand leaf becomes the lifter's leaf when the
+  lifter gives one lexeme (narrowed by the leaf's `:case`/`:num`/`:g`
+  notes), the lexeme its `:lemma` names among several, or a function
+  word; a verse that no longer renders keeps its old tree (the alt
+  repair of fix-hand-alts runs first, shared as `repair_alts`). 389 leaves of the overlay's 381 verbatim ones became leaves
+  (the 381 counted the plain ones; the `:lemma` ones came too), 7
+  verses reverted on the first pass and came through after the alt
+  repair; the overlay is 3,757 leaves in 337 verses, narrow-hand 0.
+  A hand leaf that is a set decides nothing: the scorer counts it apart
+  and calls the auto wrong only when its choice lies outside the whole
+  set — the first run had scored 511 «precision failures» that were the
+  hand's own sets (aor.2|3.sg against the auto's aor.3.sg).
+- **The pronoun clitics are the phonological word's enclitics (decision).**
+  The print writes мѧ, тѧ, ми, ти unaccented after their host (мѧ 229,
+  тѧ 177, ми 161, ти 53 in Part 0's census, the lexicon's мѧ̀, тѧ̀, мѝ,
+  тѝ), the host keeping the unit's oxia where its own accent was a
+  varia (прельсти́ мѧ) or printed as it stands (и҆зба́ви мѧ). The lifter's
+  `lift_apart`, which had lifted же/бо/ли written apart, takes a
+  personal pronoun's clitic cell as the enclitic too — `(pwa (v
+  прельстити.v …) (pn азъ.pron :p 1 :num sg :case acc :clit yes))` —
+  and the unit's render prints the clitic leaf without its stress mark;
+  the clitic counts as an analyzed leaf, not a closed one. The first
+  draft matched the conjunction и҆ as the clitic и҆̀ (him): a token with
+  an exact reading of its own is never a clitic — the rule now. The
+  overlay's 61 `(w "мѧ")` leaves after their host are merged into the
+  unit by `redraft-hand`. A host that is itself several lexemes (ты́
+  222) stays verbatim: the unit wants one host.
+- **The gate.** Census 14,069 → 5,408 verbatim leaves ((a) 4,508 → 2,147:
+  the clitics after a several-lexeme host ты́ 222, ѻ҆ни́ 121, and the
+  hosts the unit does not reach; (b) 1,141 → 1,117; (c) 8,420 → 2,144:
+  the collective дво́е/ѻ҆боѧ̀, ѡ҆б̾ѧ́тъ's paerok inside a prefixed verb, the
+  names, the long tail of 1,265 surfaces). Quarantine 1,442 → 1,433
+  lines (14 lemmas out, 5 in). Treebank: one cell 237,565 (37.6%) →
+  240,672 (38.1%), sets 2,093 → 2,311, tagger 186,780 → 190,494 (30.1%),
+  closed 178,215 → 179,009 (28.3%), several lexemes 12,858 → 12,880
+  (2.0%), verbatim 13,418 (2.1%) → 5,430 (0.9%), apparatus 1,017 → 1,150;
+  zero mismatches. Ids: 50 added (27 nouns, 14 verbs, 9 closed), none
+  moved; the pronouns file 68 → 72 lines by hand. Held-out recall
+  unchanged (95.48 / 89.31 / 90.89 / 99.25). The overlay 3,377 → 3,757
+  leaves; the rules resolve 459 of the leaves they touch and exclude
+  none (np-agree 179/179, prep-gov 142/145, subj-verb 31/31, voc-drop
+  50/69, one-subject 10/10, the combinations the rest); the tagger 74.92%
+  (1,228 of 1,639). The consistency test, the workspace tests, clippy
+  and the game (35 tests, headless) green.

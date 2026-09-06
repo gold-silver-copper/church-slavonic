@@ -79,6 +79,10 @@ STEMS = {
     "N5er": (1, "1=base;2=ext:ер"),
     "N5ov": (1, "1=base;2=ext:ов"),
     "N5*ov": (1, "1=drop;2=base"),
+    # любы̀ (Polyakov N5ov*, absent from the legend): свекры̀'s row with the
+    # extension's о lost before a vowel ending — любвѐ, любвѝ, but любо́вь,
+    # любо́вїю (3.3 Part 2)
+    "N5ov*": (1, "1=base;2=ext:ов;3=ext:в"),
 }
 # Classes the data uses that the legend lacks, copied from a twin.
 COPIES = {"N1g": "N1k", "N1x": "N1k", "N2g": "N2k", "N1c": "N1c*"}
@@ -259,6 +263,15 @@ def main():
     for code, twin in COPIES.items():
         if code not in classes:
             classes[code] = dict(classes[twin])
+    # N5ov*: N5ov with stem 3 (ext в) wherever the ending begins with е/и/а
+    spec = dict(classes["N5ov"])
+    for cell, alts in list(spec.items()):
+        if cell == "exemplar":
+            continue
+        spec[cell] = ["3-" + a[2:] if a.startswith("2-") and a[2:3] in ("е", "и", "а") else a for a in alts]
+    spec["nom.sg"] = ["@lemma", "2-ь"]
+    spec["exemplar"] = "любы"
+    classes["N5ov*"] = spec
     # the animacy rule: an accusative alternative that is also a genitive
     # ending of the same number is the animate reading
     for code, spec in classes.items():

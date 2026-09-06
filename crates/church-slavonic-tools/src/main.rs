@@ -40,6 +40,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("build-treebank") => church_slavonic_tools::treebank::runner::run(true),
         Some("check-treebank") => church_slavonic_tools::treebank::runner::run(false),
         Some("fix-hand-alts") => church_slavonic_tools::treebank::runner::fix_hand_alts(),
+        Some("redraft-hand") => church_slavonic_tools::treebank::runner::redraft_hand(),
         Some("narrow-hand") => church_slavonic_tools::treebank::runner::narrow_hand(),
         Some("score-disambiguation") => church_slavonic_tools::treebank::runner::score_disambiguation(),
         Some("hand-draft") => {

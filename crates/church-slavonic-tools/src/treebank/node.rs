@@ -380,7 +380,9 @@ pub fn from_sexpr(v: &Value) -> Result<Node, TreeError> {
                 return err("(pw …): the host is an analyzed leaf or a closed lexeme");
             }
             let enclitics = rest[1..].iter().map(from_sexpr).collect::<Result<Vec<_>, _>>()?;
-            if !enclitics.iter().all(|e| matches!(e, Node::Fn(id) if is_lexeme_id(id))) {
+            // an enclitic is a closed lexeme (f же.x) or a pronoun's clitic
+            // cell (pn азъ.pron … :clit yes), 3.3
+            if !enclitics.iter().all(|e| matches!(e, Node::Fn(id) if is_lexeme_id(id)) || matches!(e, Node::Lex { .. })) {
                 return err("(pw …): every enclitic is a closed lexeme by id ((f же.x))");
             }
             Ok(Node::Pw { host: Box::new(host), enclitics, apart: head == "pwa" })
@@ -734,6 +736,12 @@ fn host_form(host: &Node, recension: church_slavonic::Recension) -> Result<churc
     }
 }
 
+/// A print with its stress marks removed (the breathing stays).
+fn unaccented(printed: &str) -> String {
+    use unicode_normalization::UnicodeNormalization;
+    printed.nfd().filter(|c| !matches!(*c, '\u{300}' | '\u{301}' | '\u{311}')).collect::<String>().nfc().collect()
+}
+
 /// The print of a phonological word: the host's form with its enclitics,
 /// accented as one unit — written solid (и҆̀хже), or apart with the host
 /// keeping the unit's oxia (Землѧ́ же).
@@ -742,14 +750,26 @@ pub fn unit_print(host: &Node, enclitics: &[Node], apart: bool, recension: churc
     let lexicon = church_slavonic::Lexicon::of(recension);
     let mut letters: Vec<String> = Vec::new();
     for e in enclitics {
-        let Node::Fn(eid) = e else { return err("(pw …): an enclitic is (f <id>)") };
-        let Some(lexeme) = lexicon.get(eid) else {
-            return err(format!("{eid}: no such lexeme in the lexicon"));
-        };
-        if lexeme.prosody() != church_slavonic::grammar::Prosody::Enclitic {
-            return err(format!("{eid} is not an enclitic (pros=encl)"));
+        match e {
+            Node::Fn(eid) => {
+                let Some(lexeme) = lexicon.get(eid) else {
+                    return err(format!("{eid}: no such lexeme in the lexicon"));
+                };
+                if lexeme.prosody() != church_slavonic::grammar::Prosody::Enclitic {
+                    return err(format!("{eid} is not an enclitic (pros=encl)"));
+                }
+                letters.push(lexeme.lemma.clone());
+            }
+            // a pronoun's clitic cell leans on its host unaccented (3.3:
+            // прельсти́ мѧ, да́ждь ми — the print's мѧ̀, мѝ lose the varia)
+            Node::Lex { id, cells, alt, .. } => {
+                if !matches!(cells.first(), Cell::Pron(pc) if pc.clitic) {
+                    return err(format!("(pw …): {id} {} is not a clitic cell", cells.name()));
+                }
+                letters.push(unaccented(&leaf_print(id, cells.first(), *alt, recension)?));
+            }
+            _ => return err("(pw …): an enclitic is (f <id>) or a clitic pronoun leaf"),
         }
-        letters.push(lexeme.lemma.clone());
     }
     if apart {
         let mut out = form.print_hosting(recension);

@@ -192,7 +192,7 @@ impl<'a> Lifter<'a> {
     /// The one lexeme a surface reads as exactly (a closed lexeme counts
     /// as one: во́нь the contraction beside вонѧ's genitive is two), as a
     /// host node with its cell count.
-    fn one_lexeme(&self, surface: &str) -> Option<(Node, usize)> {
+    pub(crate) fn one_lexeme(&self, surface: &str) -> Option<(Node, usize)> {
         let exact: Vec<church_slavonic::Reading<'_>> = self.lexicon.readings(surface).into_iter().filter(|r| r.exact).collect();
         if exact.len() != 1 {
             return None;
@@ -200,10 +200,31 @@ impl<'a> Lifter<'a> {
         Some(leaf(&exact[0].lexeme.id, &exact[0].cells))
     }
 
-    /// The enclitic a token is, by its core (же, бо, ли): its id.
-    fn enclitic_id(&self, core: &str) -> Option<&str> {
+    /// The enclitic a token is, by its core: a closed enclitic (же, бо,
+    /// ли) as its function word, or (3.3) a personal pronoun's clitic cell
+    /// printed without its accent (мѧ, тѧ, ми, ти beside the lexicon's
+    /// мѧ̀, тѧ̀, мѝ, тѝ) as the clitic leaf — with its fate.
+    pub(crate) fn enclitic_node(&self, core: &str) -> Option<(Node, TokenFate)> {
         let key = church_slavonic::orthography::strip_marks(core);
-        self.enclitics.iter().find(|(letters, _)| *letters == key).map(|(_, id)| id.as_str())
+        if let Some((_, id)) = self.enclitics.iter().find(|(letters, _)| *letters == key) {
+            return Some((Node::Fn(id.clone()), TokenFate::ClosedClass));
+        }
+        if core.chars().any(|c| matches!(c, '\u{300}' | '\u{301}' | '\u{311}')) {
+            return None;
+        }
+        // a token that is a word of its own as printed (the conjunction и҆
+        // beside the clitic и҆̀) is not a clitic
+        let readings = self.lexicon.readings(core);
+        if readings.iter().any(|r| r.exact) {
+            return None;
+        }
+        let clitic: Vec<church_slavonic::Reading<'_>> = readings
+            .into_iter()
+            .filter(|r| !r.cells.is_empty() && r.cells.iter().all(|(c, _)| matches!(c, Cell::Pron(pc) if pc.clitic)))
+            .collect();
+        let [r] = clitic.as_slice() else { return None };
+        let (node, n) = leaf(&r.lexeme.id, &r.cells);
+        Some((node, if n > 1 { TokenFate::Underspecified } else { TokenFate::Analyzed }))
     }
 
     /// A host whose enclitic is written apart (Землѧ́ же): the token has no
@@ -211,20 +232,30 @@ impl<'a> Lifter<'a> {
     /// is an enclitic, and the host read as the standalone print (the
     /// oxia a varia) is one lexeme. Lifts `(pwa host (f же.x))` over the
     /// two tokens; the probe renders both back.
-    fn lift_apart(&self, token: &str, next: &str) -> Option<(Vec<Node>, TokenFate)> {
+    fn lift_apart(&self, token: &str, next: &str) -> Option<(Vec<Node>, TokenFate, TokenFate)> {
         let core = token_core(token)?;
         let next_core = token_core(next)?;
-        let enclitic = self.enclitic_id(next_core)?.to_string();
+        let (enclitic, enclitic_fate) = self.enclitic_node(next_core)?;
         let (looked_up, capped) = match decapitalized(core) {
             Some(low) => (low, true),
             None => (core.to_string(), false),
         };
-        if self.lexicon.readings(&looked_up).iter().any(|r| r.exact) {
-            return None;
-        }
-        let standalone = host_standalone(&looked_up)?;
-        let (host, n) = self.one_lexeme(&standalone)?;
-        let unit = Node::Pw { host: Box::new(host), enclitics: vec![Node::Fn(enclitic)], apart: true };
+        let has_exact = self.lexicon.readings(&looked_up).iter().any(|r| r.exact);
+        let (host, n) = if enclitic_fate == TokenFate::ClosedClass {
+            // же, бо, ли: a unit only where the host's accent shows it
+            if has_exact {
+                return None;
+            }
+            self.one_lexeme(&host_standalone(&looked_up)?)?
+        } else if has_exact {
+            // a pronoun clitic is unaccented only inside its unit: the
+            // host may be printed as it stands (и҆зба́ви мѧ) …
+            self.one_lexeme(&looked_up)?
+        } else {
+            // … or with the unit's oxia (прельсти́ мѧ)
+            self.one_lexeme(&host_standalone(&looked_up)?)?
+        };
+        let unit = Node::Pw { host: Box::new(host), enclitics: vec![enclitic], apart: true };
         let unit = if capped { Node::Cap(Box::new(unit)) } else { unit };
         // the punctuation around the two tokens
         let lead_len = core.as_ptr() as usize - token.as_ptr() as usize;
@@ -241,7 +272,7 @@ impl<'a> Lifter<'a> {
         nodes.extend(next_trail.chars().map(|c| Node::Punct(c.to_string())));
         let probe = Node::Group { head: "s".to_string(), children: nodes.clone() };
         match crate::treebank::node::render(&probe, &self.lexicon.recension) {
-            Ok(rebuilt) if rebuilt == format!("{token} {next}") => Some((nodes, if n > 1 { TokenFate::Underspecified } else { TokenFate::Analyzed })),
+            Ok(rebuilt) if rebuilt == format!("{token} {next}") => Some((nodes, if n > 1 { TokenFate::Underspecified } else { TokenFate::Analyzed }, enclitic_fate)),
             _ => None,
         }
     }
@@ -316,7 +347,7 @@ impl<'a> Lifter<'a> {
     /// Lift one token into nodes; report its fate.
     pub fn lift_token(&self, token: &str) -> (Vec<Node>, TokenFate) {
         // apparatus stays whole — the target is the verse as printed
-        if token.contains('꙾') || token.contains('[') {
+        if is_apparatus(token) {
             return (vec![Node::W { surface: token.to_string(), notes: Vec::new() }], TokenFate::Apparatus);
         }
         let Some(core) = token_core(token) else {
@@ -354,11 +385,11 @@ impl<'a> Lifter<'a> {
         while i < tokens.len() {
             // a host and the enclitic written apart after it are one unit
             if let Some(next) = tokens.get(i + 1)
-                && let Some((nodes, fate)) = self.lift_apart(tokens[i], next)
+                && let Some((nodes, fate, enclitic_fate)) = self.lift_apart(tokens[i], next)
             {
                 children.extend(nodes);
                 coverage.count(fate);
-                coverage.count(TokenFate::ClosedClass);
+                coverage.count(enclitic_fate);
                 i += 2;
                 continue;
             }
@@ -373,7 +404,7 @@ impl<'a> Lifter<'a> {
 
 /// The leaf of one lexeme's reading: every cell that prints the token,
 /// the alternative index of the first; the count of cells.
-fn leaf(id: &str, cells: &[(Cell, usize)]) -> (Node, usize) {
+pub(crate) fn leaf(id: &str, cells: &[(Cell, usize)]) -> (Node, usize) {
     if cells.iter().all(|(c, _)| *c == Cell::Word) {
         return (Node::Fn(id.to_string()), 1);
     }
@@ -390,10 +421,21 @@ fn is_punct(c: char) -> bool {
     matches!(c, '.' | ',' | ':' | ';' | '!' | '?' | '(' | ')' | '«' | '»')
 }
 
+/// The apparatus of the pinned print: the bracketed notes with their
+/// mark (꙾, [), the bare asterisk and the asterisk with the arrow (`*`,
+/// `*↑`: 117 tokens), and the notes' language labels є҆вр 37, гре́ч 20
+/// (3.3 Part 2). None of these is a word of the text.
+pub fn is_apparatus(token: &str) -> bool {
+    token.contains('꙾')
+        || token.contains('[')
+        || (!token.is_empty() && token.chars().all(|c| matches!(c, '*' | '↑')))
+        || matches!(token, "є\u{486}вр" | "гре\u{301}ч")
+}
+
 /// The word inside a verse token: leading and trailing punctuation
 /// removed; `None` for an apparatus token or bare punctuation.
 pub fn token_core(token: &str) -> Option<&str> {
-    if token.contains('꙾') || token.contains('[') {
+    if is_apparatus(token) {
         return None;
     }
     let core_start = token.len() - token.trim_start_matches(is_punct).len();

@@ -1,6 +1,7 @@
 id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 а.x.2	а҆	x	-	-	conj	-	-	-	-	P:-	conj
 абіе.x.2	а҆́бїе	x	-	-	adv	a	-	-	-	P:-	adv
+адѡнаі.x.2	а҆дѡнаі̀	x	-	-	indecl	a	-	-	-	H:the Hebrew name the print writes in one form (195 tokens; Polyakov N1e with no analysed forms; 3.3 Part 2)	indecl
 аки.x.2	а҆́ки	x	-	-	conj	a	-	-	-	P:-	conj
 акибы.x.2	а҆́кибы	x	-	-	conj	a	-	-	-	P:-	conj
 аминь.x.2	а҆ми́нь	x	-	-	pred	a	-	-	-	P:N1j	pred
@@ -102,7 +103,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 благꙋставнѡ.x.2	благꙋста́внѡ	x	-	-	adv	a	-	-	-	P:-	adv
 блаженнѡ.x.2	блаже́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 блаженнѣ.x.2	блаже́ннѣ	x	-	-	adv	a	-	-	-	P:-	adv
-близъ.x.2	бли́зъ	x	-	-	adv	a	-	-	-	P:-	adv
+близъ.x.2	бли́зъ	x	-	-	adv	a	-	-	word=бли́зъ|бли́з̾	P:-;H:the print writes бли́з̾ with the paerok (170 tokens beside бли́зъ 4, census verbatim 3.3 Part 2)	adv
 близꙋ.x.2	бли́зꙋ	x	-	-	adv	a	-	-	-	P:-	adv
 бо.x.2	бо	x	-	-	part	-	pros=encl	-	word=бо̀	P:-	part
 богобоѧзненнѡ.x.2	богобоѧ́зненнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -287,6 +288,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 высокомꙋдреннѡ.x.2	высокомꙋ́дреннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 выспреходнѣ.x.2	выспрехо́днѣ	x	-	-	adv	a	-	-	-	P:-	adv
 выспрь.x.2	вы́спрь	x	-	-	adv	a	-	-	-	P:-	adv
+выше.x.2	вы́ше	x	-	-	adv	a	-	-	-	H:the comparative adverb (38 tokens; quarantined «no class in the source»; 3.3 Part 2)	adv
 вышеестественнѡ.x.2	вышеесте́ственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 вышеестественнѣ.x.2	вышеесте́ственнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 вѣдомѡ.x.2	вѣ́домѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -317,6 +319,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 движимѡ.x.2	дви́жимѡ	x	-	-	adv	a	-	-	-	P:-	adv
 двойственнѣ.x.2	дво́йственнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 двоѧкѡ.x.2	двоѧ́кѡ	x	-	-	adv	a	-	-	-	P:-	adv
+двѣсти.x	двѣ́сти	x	-	-	num	a	-	-	word=двѣ́стѣ|двꙋ́стꙋ|двѣстѣ̀|двꙋхсо́тъ	P:NUM100	num
 девѧтищи.x.2	девѧти́щи	x	-	-	adv	a	-	-	-	P:-	adv
 деннонощнѡ.x.2	денноно́щнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 дерзновеннѡ.x.2	дерзнове́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1010,6 +1013,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 приснодолжнѡ.x.2	приснодо́лжнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 присноистекательнѣ.x.2	присноистека́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 присноточнѣ.x.2	присното́чнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+приснѡ.x.2	при́снѡ	x	-	-	adv	a	-	-	-	H:the adverb the compounds presuppose (39 tokens, прⷭ҇нѡ under the titlo; Polyakov lists it without a tag; 3.3 Part 2)	adv
 присꙋдственнѣ.x	присꙋ́дственнѣ	x	-	-	adv	a	-	-	word=присꙋ́тственнѣ	P:-	adv
 приꙋподобителнѣ.x	приꙋподоби́телнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 промежь.x.2	проме́жь	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1022,6 +1026,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пространнѡ.x.2	простра́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 пространнѣ.x.2	простра́ннѣ	x	-	-	adv	a	-	-	-	P:-	adv
 противоѡбратнѣ.x.2	противоѡбра́тнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+противꙋ.x.2	проти́вꙋ	x	-	-	prep	a	gov=dat|gen;pros=procl	-	-	H:the print's проти́вꙋ (283 tokens; Polyakov lists it without a tag, so the closed import never saw it; 3.3 Part 2)	prep
 противꙋсердечнѣ.x.2	противꙋсерде́чнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 проѧвленнѡ.x.2	проѧвле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 пріискреннѡ.x.2	прїи́скреннѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1040,6 +1045,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 равночастнѣ.x.2	равноча́стнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 равночисленнѡ.x.2	равночи́сленнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 ради.x.2	ра́ди	x	-	-	prep	a	gov=gen;pros=procl	-	-	P:-	pr
+развѣ.x.2	ра́звѣ	x	-	-	prep	a	gov=gen;pros=procl	-	-	H:the print's ра́звѣ «except» with the genitive (76 tokens; Polyakov lists it without a tag; 3.3 Part 2)	prep
 разслабленнѡ.x.2	разсла́бленнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 разсѣѧннѡ.x.2	разсѣ́ѧннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 ранѣе.x.2	ра́нѣе	x	-	-	adv	a	-	-	-	P:-	adv; comp
@@ -1204,6 +1210,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 трижды.x.2	три́жды	x	-	-	adv	a	-	-	-	P:-	adv
 трикраты.x.2	трикра́ты	x	-	-	adv	a	-	-	-	P:-	adv
 трипѣснѡ.x.2	трипѣ́снѡ	x	-	-	adv	a	-	-	-	P:-	adv
+триста.x	три́ста	x	-	-	num	a	-	-	-	P:NUM100	num
 трисіѧннѡ.x.2	трисїѧ́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 тричисленнѡ.x.2	тричи́сленнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 трищи.x.2	три́щи	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1236,6 +1243,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 четверищнѡ.x.2	четвери́щнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 четверогꙋбѡ.x.2	четверогꙋ́бѡ	x	-	-	adv	a	-	-	-	P:-	adv
 четырежды.x.2	четы́режды	x	-	-	adv	a	-	-	word=четы́рижды	P:-	adv
+четыреста.x	четы́реста	x	-	-	num	a	-	-	word=четы́риста	P:NUM100	num
 чистолѣпнѡ.x.2	чистолѣ́пнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 чрезъ.x.2	чрезъ	x	-	-	prep	a	gov=acc;pros=procl	-	word=чре́зъ	P:-	pr
 чрезъестественнѡ.x.2	чрезъесте́ственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1250,6 +1258,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 чꙋдолѣпнѡ.x.2	чꙋдолѣ́пнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 шестижды.x.2	шести́жды	x	-	-	adv	a	-	-	-	P:-	adv
 шестищи.x.2	шести́щи	x	-	-	adv	a	-	-	-	P:-	adv
+шестьсѡтъ.x	шестьсѡ́тъ	x	-	-	num	a	-	-	word=шести́сѡтъ|шестисѡ́тъ	P:NUM100	num
 щедролюбнѡ.x.2	щедролю́бнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 юдꙋже.x.2	ю҆́дꙋже	x	-	-	advpro	a	-	-	-	P:-	advpro
 юношски.x.2	ю҆́ношски	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1339,3 +1348,5 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ꙗкоже.x.2	ꙗ҆́коже	x	-	-	conj	a	-	-	word=ꙗ҆́кѡже|ꙗ҆кожѐ	P:-	conj
 ꙗкѡ.x.2	ꙗ҆́кѡ	x	-	-	conj	a	-	-	word=ꙗ҆́ко	P:-	conj
 ꙗственнѡ.x.2	ꙗ҆́ственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
+исполнь.x.2	и҆спо́лнь	x	-	-	adv	a	-	-	-	H:the print's и҆спо́лнь «full» (32 tokens, the overlay's :lemma leaf; the lifter read it as и҆спо́лнити's participle; 3.3 Part 2)	adv
+безпрестани.x.2	безпреста́ни	x	-	-	adv	a	-	-	-	H:the adverb the overlay named (5 tokens; the lifter read it as an adjective; 3.3 Part 2)	adv

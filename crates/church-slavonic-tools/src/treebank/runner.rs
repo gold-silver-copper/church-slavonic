@@ -122,7 +122,7 @@ pub(crate) fn tagged(notes: &[(String, String)]) -> bool {
 fn tree_coverage(node: &Node, coverage: &mut Coverage) {
     match node {
         Node::W { surface, notes } => {
-            if surface.contains('꙾') || surface.contains('[') {
+            if crate::treebank::lift::is_apparatus(surface) {
                 coverage.apparatus += 1;
             } else if notes.iter().any(|(k, _)| k == "amb") {
                 coverage.ambiguous += 1;
@@ -152,7 +152,12 @@ fn tree_coverage(node: &Node, coverage: &mut Coverage) {
         Node::Pw { host, enclitics, apart } => {
             tree_coverage(host, coverage);
             if *apart {
-                coverage.closed += enclitics.len();
+                for e in enclitics {
+                    match e {
+                        Node::Fn(_) => coverage.closed += 1,
+                        other => tree_coverage(other, coverage),
+                    }
+                }
             }
         }
         Node::Group { children, .. } => {
@@ -328,6 +333,184 @@ fn lexeme_cells(lifter: &Lifter<'_>, leaf: &LeafPrint) -> Option<church_slavonic
 /// cell outside that set is a finding (the tree claims a cell the lexeme
 /// does not print); a set larger than the hand's cell is what the hand
 /// disambiguated, reported as a count.
+/// `cargo xtask redraft-hand` (3.3 Part 2): a verbatim leaf of the hand
+/// overlay, `(w "трѝ" :lemma трѝ :case nom)`, written when the lexicon
+/// lacked the word, becomes the leaf the lifter gives it now — one lexeme
+/// (its set narrowed by the leaf's `:case`/`:num`/`:g` notes), the lexeme
+/// the `:lemma` note names among several, or the function word. A leaf
+/// whose lexeme is not the noted lemma, a several-lexeme token with no
+/// note, an apparatus token and a `:amb` record stay as they are; a verse
+/// that no longer renders its print keeps its old tree. Nothing is chosen
+/// here that the note did not already say.
+pub fn redraft_hand() -> Result<(), Box<dyn Error>> {
+    let Some(bible) = bible::load()? else {
+        return Err("pinned Bible absent".into());
+    };
+    let lexicon = church_slavonic::Lexicon::synodal();
+    let lifter = Lifter::new(lexicon);
+    let (mut replaced, mut kept, mut reverted) = (0usize, 0usize, 0usize);
+    let mut kept_why: std::collections::BTreeMap<String, usize> = std::collections::BTreeMap::new();
+    for (bi, book) in bible.books.iter().enumerate() {
+        let hand_path = book_file(&hand_dir(), bi);
+        let Ok(text) = std::fs::read_to_string(&hand_path) else { continue };
+        let entries = sexpr::parse_many(&text).map_err(|e| format!("{}: {e}", hand_path.display()))?;
+        let mut out = String::new();
+        let mut book_replaced = 0;
+        for entry in &entries {
+            let (ch, vs, tree) = read_entry(entry)?;
+            let target = book
+                .chapters
+                .iter()
+                .find(|c| c.chapter == ch)
+                .and_then(|c| c.verses.iter().find(|v| v.verse == vs))
+                .map(|v| v.print().to_string())
+                .ok_or_else(|| format!("{} {ch}:{vs} not in the Bible", book.name))?;
+            let mut draft = tree.clone();
+            let mut n = 0;
+            redraft_node(&mut draft, &lifter, lexicon, &mut n, &mut kept_why);
+            if n > 0 {
+                repair_alts(&mut draft, &target, lexicon);
+            }
+            let tree = if n > 0 && render(&draft, &RECENSION).ok().as_deref() == Some(target.as_str()) {
+                replaced += n;
+                book_replaced += n;
+                draft
+            } else {
+                if n > 0 {
+                    reverted += n;
+                    println!("{} {ch}:{vs}: {n} redrafted leaves do not render the print — verse kept", book.name);
+                }
+                tree
+            };
+            out.push_str(&sexpr::print(&verse_entry(ch, vs, &tree)));
+            out.push('\n');
+        }
+        if book_replaced > 0 {
+            std::fs::write(&hand_path, out)?;
+        }
+        kept += kept_why.values().sum::<usize>();
+        println!("{}: {book_replaced} leaves redrafted", hand_path.display());
+    }
+    println!("redraft-hand: {replaced} verbatim leaves became leaves, {reverted} reverted with their verse, kept as written: {}", kept_why.iter().map(|(k, v)| format!("{k} {v}")).collect::<Vec<_>>().join(", "));
+    let _ = kept;
+    Ok(())
+}
+
+fn redraft_node(node: &mut Node, lifter: &Lifter<'_>, lexicon: &church_slavonic::Lexicon, n: &mut usize, kept: &mut std::collections::BTreeMap<String, usize>) {
+    match node {
+        Node::Group { children, .. } => {
+            for c in children.iter_mut() {
+                redraft_node(c, lifter, lexicon, n, kept);
+            }
+            // a verbatim clitic after its host, `(v …) (w "мѧ")`, is the
+            // phonological word written apart: (pwa host (pn … :clit yes))
+            let mut i = 1;
+            while i < children.len() {
+                if let Node::W { surface, notes } = &children[i]
+                    && notes.iter().all(|(k, _)| k == "lemma")
+                    && let Some((enclitic, _)) = lifter.enclitic_node(surface)
+                    && matches!(enclitic, Node::Lex { .. })
+                {
+                    // the host: a leaf as written, or a verbatim host whose
+                    // unit oxia hid its reading (прельсти́ → прельстѝ)
+                    let host = match &children[i - 1] {
+                        Node::Lex { .. } | Node::Fn(_) | Node::Cap(_) | Node::Abbr { .. } => Some(children[i - 1].clone()),
+                        Node::W { surface: h, notes: hn } if hn.is_empty() => {
+                            let looked_up = crate::treebank::lift::decapitalized(h).unwrap_or_else(|| h.clone());
+                            crate::treebank::lift::host_standalone(&looked_up)
+                                .and_then(|st| lifter.one_lexeme(&st))
+                                .or_else(|| lifter.one_lexeme(&looked_up))
+                                .map(|(node, _)| if crate::treebank::lift::decapitalized(h).is_some() { Node::Cap(Box::new(node)) } else { node })
+                        }
+                        _ => None,
+                    };
+                    if let Some(host) = host {
+                        children.remove(i - 1);
+                        children[i - 1] = Node::Pw { host: Box::new(host), enclitics: vec![enclitic], apart: true };
+                        *n += 1;
+                        continue;
+                    }
+                }
+                i += 1;
+            }
+        }
+        Node::Cap(inner) | Node::Abbr { child: inner, .. } => redraft_node(inner, lifter, lexicon, n, kept),
+        Node::Pw { host, enclitics, .. } => {
+            redraft_node(host, lifter, lexicon, n, kept);
+            for e in enclitics.iter_mut() {
+                redraft_node(e, lifter, lexicon, n, kept);
+            }
+        }
+        Node::W { surface, notes } => {
+            if notes.iter().any(|(k, _)| k == "amb") || crate::treebank::lift::is_apparatus(surface) {
+                return;
+            }
+            let note = |key: &str| notes.iter().find(|(k, _)| k == key).map(|(_, v)| v.clone());
+            let why = |reason: &str| -> String {
+                match note("lemma") {
+                    Some(l) => format!("{reason} ({surface} :lemma {l})"),
+                    None => reason.to_string(),
+                }
+            };
+            let wanted_lemma = note("lemma").map(|l| church_slavonic::orthography::comparison_key(&l));
+            let (lifted, fate) = lifter.lift_core(surface);
+            let candidate: Option<Node> = match fate {
+                crate::treebank::lift::TokenFate::Analyzed | crate::treebank::lift::TokenFate::Underspecified | crate::treebank::lift::TokenFate::ClosedClass => Some(lifted),
+                crate::treebank::lift::TokenFate::Ambiguous => {
+                    // the noted lemma decides among several lexemes
+                    let Some(key) = wanted_lemma.clone() else {
+                        *kept.entry(why("several lexemes, no :lemma")).or_default() += 1;
+                        return;
+                    };
+                    let looked_up = crate::treebank::lift::decapitalized(surface).unwrap_or_else(|| surface.clone());
+                    let readings: Vec<_> = lexicon
+                        .readings(&looked_up)
+                        .into_iter()
+                        .filter(|r| r.exact && church_slavonic::orthography::comparison_key(&r.lexeme.lemma) == key)
+                        .collect();
+                    match readings.as_slice() {
+                        [r] => {
+                            let node = if r.cells.iter().all(|(c, _)| *c == church_slavonic::cell::Cell::Word) { Node::Fn(r.lexeme.id.clone()) } else { crate::treebank::lift::leaf(&r.lexeme.id, &r.cells).0 };
+                            Some(if crate::treebank::lift::decapitalized(surface).is_some() { Node::Cap(Box::new(node)) } else { node })
+                        }
+                        _ => {
+                            *kept.entry(why("several lexemes, the :lemma names none or several")).or_default() += 1;
+                            return;
+                        }
+                    }
+                }
+                _ => {
+                    *kept.entry(why("no reading")).or_default() += 1;
+                    return;
+                }
+            };
+            let Some(mut candidate) = candidate else { return };
+            // the lifted lexeme must be the noted one
+            if let Some(key) = &wanted_lemma
+                && let Some(Node::Lex { id, .. }) = crate::treebank::disambiguate::leaf(&candidate)
+                && lexicon.get(id).map(|l| church_slavonic::orthography::comparison_key(&l.lemma)).as_ref() != Some(key)
+            {
+                *kept.entry(why("the lifted lexeme is not the :lemma")).or_default() += 1;
+                return;
+            }
+            // the notes narrow the set: `:case nom`, `:num sg`, `:g m`
+            let wants: Vec<String> = ["case", "num", "g"].iter().filter_map(|k| note(k)).collect();
+            if !wants.is_empty()
+                && let Some(Node::Lex { cells, .. }) = crate::treebank::disambiguate::leaf_mut(&mut candidate)
+                && cells.len() > 1
+            {
+                let narrowed: Vec<church_slavonic::cell::Cell> = cells.iter().filter(|c| wants.iter().all(|w| c.name().split('.').any(|p| p == w))).collect();
+                if let Some(set) = church_slavonic::cell::CellSet::new(narrowed) {
+                    *cells = set;
+                }
+            }
+            *n += 1;
+            *node = candidate;
+        }
+        _ => {}
+    }
+}
+
 pub fn narrow_hand() -> Result<(), Box<dyn Error>> {
     let Some(bible) = bible::load()? else {
         return Err("pinned Bible absent".into());
@@ -369,6 +552,57 @@ pub fn narrow_hand() -> Result<(), Box<dyn Error>> {
 /// verse whose tree does not round-trip, try each leaf's other forms in
 /// turn (greedily, left to right) until the verse renders as printed.
 /// Reports what it could not repair.
+/// Repair the `:alt` of a verse tree's leaves until it renders `target`
+/// (or no alternative brings it closer): the loop of `fix-hand-alts`,
+/// shared with `redraft-hand` (3.3). Returns how many alternatives moved.
+fn repair_alts(tree: &mut Node, target: &str, lexicon: &church_slavonic::Lexicon) -> usize {
+    let mut fixed = 0;
+    // an alternative index past the cell's forms (a hand cell
+    // changed under an old :alt) starts again from the primary
+    for leaf in lex_leaves(tree) {
+        if let Node::Lex { id, cells, alt, .. } = leaf
+            && lexicon.get(id).is_some_and(|l| l.forms(cells.first()).len() <= *alt)
+        {
+            *alt = 0;
+        }
+    }
+    let mut guard = 0;
+    let mut changed = true;
+    while changed && render(tree, &RECENSION).unwrap_or_default() != target && guard < 16 {
+        changed = false;
+        guard += 1;
+        let count = lex_leaves(tree).len();
+        for i in 0..count {
+            let (n, current) = {
+                let leaves = lex_leaves(tree);
+                let Node::Lex { id, cells, alt, .. } = &*leaves[i] else { continue };
+                (lexicon.get(id).map(|l| l.forms(cells.first()).len()).unwrap_or(0), *alt)
+            };
+            let before = render(tree, &RECENSION).unwrap_or_default();
+            for k in 0..n {
+                if k == current {
+                    continue;
+                }
+                set_alt(tree, i, k);
+                // an alternative the tree cannot render (a titlo
+                // row that abbreviates no such spelling) is not
+                // this leaf's alternative
+                let Ok(after) = render(tree, &RECENSION) else {
+                    set_alt(tree, i, current);
+                    continue;
+                };
+                if closer(&after, target) > closer(&before, target) {
+                    changed = true;
+                    fixed += 1;
+                    break;
+                }
+                set_alt(tree, i, current);
+            }
+        }
+    }
+    fixed
+}
+
 pub fn fix_hand_alts() -> Result<(), Box<dyn Error>> {
     let Some(bible) = bible::load()? else {
         return Err("pinned Bible absent".into());
@@ -389,49 +623,7 @@ pub fn fix_hand_alts() -> Result<(), Box<dyn Error>> {
                 .and_then(|c| c.verses.iter().find(|v| v.verse == vs))
                 .map(|v| v.print().to_string())
                 .ok_or_else(|| format!("{} {ch}:{vs} not in the Bible", book.name))?;
-            // an alternative index past the cell's forms (a hand cell
-            // changed under an old :alt) starts again from the primary
-            for leaf in lex_leaves(&mut tree) {
-                if let Node::Lex { id, cells, alt, .. } = leaf
-                    && lexicon.get(id).is_some_and(|l| l.forms(cells.first()).len() <= *alt)
-                {
-                    *alt = 0;
-                }
-            }
-            let mut guard = 0;
-            let mut changed = true;
-            while changed && render(&tree, &RECENSION)? != target && guard < 16 {
-                changed = false;
-                guard += 1;
-                let count = lex_leaves(&mut tree).len();
-                for i in 0..count {
-                    let (n, current) = {
-                        let leaves = lex_leaves(&mut tree);
-                        let Node::Lex { id, cells, alt, .. } = &*leaves[i] else { continue };
-                        (lexicon.get(id).map(|l| l.forms(cells.first()).len()).unwrap_or(0), *alt)
-                    };
-                    let before = render(&tree, &RECENSION)?;
-                    for k in 0..n {
-                        if k == current {
-                            continue;
-                        }
-                        set_alt(&mut tree, i, k);
-                        // an alternative the tree cannot render (a titlo
-                        // row that abbreviates no such spelling) is not
-                        // this leaf's alternative
-                        let Ok(after) = render(&tree, &RECENSION) else {
-                            set_alt(&mut tree, i, current);
-                            continue;
-                        };
-                        if closer(&after, &target) > closer(&before, &target) {
-                            changed = true;
-                            fixed += 1;
-                            break;
-                        }
-                        set_alt(&mut tree, i, current);
-                    }
-                }
-            }
+            fixed += repair_alts(&mut tree, &target, lexicon);
             if render(&tree, &RECENSION)? != target {
                 println!("{} {ch}:{vs}: still not round-tripping", book.name);
             }
@@ -629,6 +821,7 @@ pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
     let mut out_of_reach = 0;
     let mut other_lexeme: Vec<String> = Vec::new();
     let mut misaligned = 0;
+    let mut undecided = 0;
     let mut by_rule: std::collections::BTreeMap<String, (usize, usize, usize)> = std::collections::BTreeMap::new();
     for (bi, book) in bible.books.iter().enumerate() {
         let hand_path = book_file(&hand_dir(), bi);
@@ -654,6 +847,18 @@ pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
                 match an {
                     Node::Lex { id: aid, cells: ac, notes, .. } => {
                         let rule = notes.iter().find(|(k, _)| k == "by").map(|(_, v)| v.clone()).unwrap_or_default();
+                        // a hand leaf that is itself a set (3.3: a redrafted
+                        // verbatim leaf whose note named no cell) decides
+                        // nothing — it is counted apart, and the auto's choice
+                        // is wrong only when it lies outside the whole set
+                        if hc.len() > 1 {
+                            undecided += 1;
+                            if aid == hid && !hc.iter().any(|c| ac.contains(c)) {
+                                wrong.push(format!("{} {ch}:{vs} {hid}: hand set {} disjoint from auto {} (:by {rule})", book.name, hc.name(), ac.name()));
+                                by_rule.entry(rule).or_default().2 += 1;
+                            }
+                            continue;
+                        }
                         if tagged(notes) {
                             tagger_score.0 += 1;
                             let p = notes.iter().find(|(k, _)| k == "prob").map(|(_, v)| v.as_str()).unwrap_or("?");
@@ -706,9 +911,9 @@ pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
             }
         }
     }
-    println!("score-disambiguation: {hand_leaves} hand leaves; auto contains the hand cell {contained} ({:.2}%), resolves it {resolved} ({:.2}%); hand cell outside the auto set {} (precision failures); another lexeme {}; out of reach (auto :amb or verbatim) {out_of_reach}; misaligned verses {misaligned}",
-        100.0 * contained as f64 / hand_leaves.max(1) as f64,
-        100.0 * resolved as f64 / hand_leaves.max(1) as f64,
+    println!("score-disambiguation: {hand_leaves} hand leaves ({undecided} of them sets, counted apart); auto contains the hand cell {contained} ({:.2}%), resolves it {resolved} ({:.2}%); hand cell outside the auto set {} (precision failures); another lexeme {}; out of reach (auto :amb or verbatim) {out_of_reach}; misaligned verses {misaligned}",
+        100.0 * contained as f64 / (hand_leaves - undecided).max(1) as f64,
+        100.0 * resolved as f64 / (hand_leaves - undecided).max(1) as f64,
         wrong.len(),
         other_lexeme.len());
     for (rule, (ok, res, bad)) in &by_rule {

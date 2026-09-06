@@ -1931,6 +1931,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 воронежъ.n	воро́нежъ	n	m	inan	N1s	a	-	-	-	P:N1s	topn
 воронъ.n	во́ронъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
 ворінъ.n	ворі́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
+восемьдесѧть.n	во́семьдесѧть	n	f	-	N41	a	-	-	-	P:N41	-
 воскипѣніе.n	воскипѣ́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 воскликновеніе.n	воскликнове́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 восклицаніе.n	восклица́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
@@ -2676,7 +2677,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 даѧтель.n	даѧ́тель	n	m	anim	N1j	a	-	-	-	P:N1j	-
 даѳанъ.n	даѳа́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 даѳема.n	даѳе́ма	n	f	inan	N3t	a	-	-	-	P:N3t	topn
+двадесѧть.n	два́десѧть	n	f	-	N41	a	-	dat.sg=два́десѧтимъ	gen.sg=двꙋ́десѧти×6;dat.sg=двꙋ́десѧти×6|двѣма́десѧтма×2;ins.sg=двѣма́десѧтма×2;loc.sg=двꙋ́десѧти×6	P:N41	-
 дванадесѧтница.n	дванадесѧ́тница	n	f	inan	N3c	a	-	-	-	P:N3c	-
+дванадесѧть.n	двана́десѧть	n	f	-	N41	a	-	gen.sg=двꙋна́десѧти;dat.sg=двана́десѧтимъ;ins.sg=двана́десѧтьми;loc.sg=двꙋна́десѧти	nom.sg=двана́десѧте×27;gen.sg=двоюна́десѧте×12|двана́десѧтихъ×9|двоюна́десѧти×7|двꙋна́десѧтихъ×3|двоена́десѧтихъ×2|двоюна́десѧтихъ×2|двоюна́десѧть×2|двꙋна́десѧть×1|двꙋнаде́сѧти×1;dat.sg=двѣмана́десѧть×1|двѣмана́десѧтьма×1;acc.sg=двана́десѧте×27;ins.sg=двѣмана́десѧть×1|двѣмана́десѧтьма×1;loc.sg=двоюна́десѧте×12|двана́десѧтихъ×9|двоюна́десѧти×7|двꙋна́десѧтихъ×3|двоена́десѧтихъ×2|двоюна́десѧтихъ×2|двоюна́десѧть×2|двꙋна́десѧть×1|двꙋнаде́сѧти×1	P:N41	-
 дверникъ.n	две́рникъ	n	m	anim	N1k	a	-	nom.pl=двє́рницы	-	P:N1k	-
 дверница.n	две́рница	n	f	anim	N3c	a	-	-	-	P:N3c	-
 дверца.n	две́рца	n	f	inan	N3c	a	-	-	-	P:N3c	-
@@ -2706,6 +2709,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 девѡръ.n	девѡ́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
 девѧтина.n	девѧти́на	n	f	inan	N3t	a	-	-	-	P:N3t	-
 девѧтица.n	девѧти́ца	n	f	inan	N3c	a	-	-	-	P:N3c	-
+девѧть.n	де́вѧть	n	f	-	N41	b.acc{nom.sg=S}	-	dat.sg=девѧ́тѣмъ	gen.sg=девѧти́хъ×1;loc.sg=девѧти́хъ×1	P:N41	-
+девѧтьдесѧть.n	де́вѧтьдесѧть	n	f	-	N41	a	-	-	-	P:N41	-
+девѧтьнадесѧть.n	де́вѧтьнадесѧть	n	f	-	N41	a	-	gen.sg=девѧтина́десѧтихъ;loc.sg=девѧтина́десѧтихъ	-	P:N41	-
 дедалъ.n	деда́лъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
 деданъ.n	деда́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
 деиръ.n	деи́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
@@ -2746,6 +2752,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 десѧтница.n	десѧ́тница	n	f	inan	N3c	a	-	-	-	P:N3c	-
 десѧтоначальникъ.n	десѧтонача́льникъ	n	m	anim	N1k	a	-	-	acc.pl=десѧтонача́лники×4	P:N1k	-
 десѧтословіе.n	десѧтосло́віе	n	n	inan	N2i	a	-	-	-	P:N2i	-
+десѧть.n	де́сѧть	n	f	-	N41	b.acc{nom.sg=S;ins.sg=F}	-	dat.sg=десѧти́мъ	nom.sg=десѧ́ть×1;gen.sg=десѧти́хъ×9;acc.sg=десѧ́ть×1;ins.sg=десѧтмѝ×1|десѧтьмѝ×1;loc.sg=десѧти́хъ×9	P:N41	-
 дечаны.n	деча́ны	n	m	inan	N1t	a	base=дечан	-	-	P:N1t	topn; pl-tantum
 деѵтерономіѡнъ.n	деѵтеро́номіѡнъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 деѵтеръ.n	деѵте́ръ	n	m	inan	N1t	a	-	-	-	P:N1t	topn
@@ -5020,6 +5027,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 любохотѣніе.n	любохотѣ́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 любочествованіе.n	любочествова́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 любочестіе.n	любоче́стіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
+любы.n	любы̀	n	f	inan	N5ov*	b{ins.sg=S}	-	-	dat.sg=любвѣ̀×1;ins.sg=лю́бовїю×1;loc.sg=любвѣ̀×1	P:N5ov*	-
 любꙋкрашеніе.n	любꙋкраше́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 любꙋченіе.n	любꙋче́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 людинъ.n	люди́нъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
@@ -6736,6 +6744,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 осмерица.n	ѻ҆смери́ца	n	f	inan	N3c	a	-	-	-	P:N3c	-
 осмица.n	ѻ҆сми́ца	n	f	inan	N3c	a	-	-	-	P:N3c	-
 осмогласникъ.n	ѻ҆смогла́сникъ	n	m	inan	N1k	a	-	loc.sg=ѻ҆смогла́сникѣ	gen.sg=ѡ҆смогла́сника×1	P:N1k	-
+осмь.n	ѻ҆́смь	n	f	-	N41	b{ins.sg=F}	-	dat.sg=ѻ҆сми́мъ	gen.sg=ѻ҆сми́хъ×14|ѻ҆сьмѝ;dat.sg=ѻ҆сьмѝ;loc.sg=ѻ҆сми́хъ×14|ѻ҆сьмѝ	P:N41	-
+осмьдесѧтъ.n	ѻ҆́смьдесѧтъ	n	f	-	N41	a{gen.sg=1;loc.sg=1}	1=осмидесѧт	nom.sg=ѻ҆́смьдесѧтъ;dat.sg=ѻ҆сми́десѧтимъ;acc.sg=ѻ҆́смьдесѧтъ	nom.sg=ѻ҆́смьдесѧть×1;dat.sg=ѻ҆сми́десѧти×6;acc.sg=ѻ҆́смьдесѧть×1	P:N41	-
+осмьнадесѧть.n	ѻ҆смьна́десѧть	n	f	-	N41	a{gen.sg=2;dat.sg=2;loc.sg=2}	1=осминадесѧт	nom.sg=ѻ҆смьна́десѧть;acc.sg=ѻ҆смьна́десѧть	nom.sg=ѻ҆смна́десѧть×2|ѻ҆смьна́десѧте×2;gen.sg=ѡ҆смина́десѧти×1|ѻ҆смина́десѧть×1;dat.sg=ѡ҆смина́десѧти×1|ѻ҆смина́десѧть×1;acc.sg=ѻ҆смна́десѧть×2|ѻ҆смьна́десѧте×2;loc.sg=ѡ҆смина́десѧти×1|ѻ҆смина́десѧть×1	P:N41	-
 осмꙋха.n	ѻ҆смꙋ́ха	n	f	inan	N3k	a	-	-	-	P:N3k	-
 особопребываніе.n	ѻ҆собопребыва́ніе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 оспа.n	ѻ҆́спа	n	f	inan	N3t	a	-	-	-	P:N3t	-
@@ -8627,9 +8638,12 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пѧтница.n	пѧ́тница	n	f	inan	N3c	a	-	-	-	P:N3c	-
 пѧтокъ.n	пѧто́къ	n	m	inan	N1k*	b	-	-	-	P:N1k*	-
 пѧторица.n	пѧтори́ца	n	f	inan	N3c	a	-	-	-	P:N3c	-
+пѧть.n	пѧ́ть	n	f	-	N41	b	-	dat.sg=пѧти́мъ;ins.sg=пѧтьмѝ	gen.sg=пѧти́хъ×13;ins.sg=пѧтїю̀×8;loc.sg=пѧти́хъ×13	P:N41	-
 пѧтьдесѧтникъ.n	пѧтьдесѧ́тникъ	n	m	anim	N1k	a	-	-	-	P:N1k	-
 пѧтьдесѧтница.n	пѧтьдесѧ́тница	n	f	inan	N3c	a	1=пѧтдесѧтниц	nom.sg=пѧтьдесѧ́тница	gen.sg=пѧтьдесѧ́тницы×26;dat.sg=пѧтьдесѧ́тницѣ×2;acc.sg=пѧтьдесѧ́тницꙋ×6;loc.sg=пѧтьдесѧ́тницѣ×2	P:N3c	-
 пѧтьдесѧтоначальникъ.n	пѧтьдесѧтонача́льникъ	n	m	anim	N1k	a	-	gen.sg=пѧтьдесѧтонача́лника;acc.sg=пѧтьдесѧтонача́лника;acc.pl=пѧтдесѧтонача́льники	acc.pl=пѧтьдесѧтонача́лники×3	P:N1k	-
+пѧтьдесѧтъ.n	пѧтьдесѧ́тъ	n	f	-	N41	a{gen.sg=1;loc.sg=1}	1=пѧтидесѧт	nom.sg=пѧтьдесѧ́тъ;dat.sg=пѧти́десѧтимъ;acc.sg=пѧтьдесѧ́тъ;ins.sg=пѧтїю́десѧтъ	nom.sg=пѧтдесѧ́тъ×11;gen.sg=пѧти́десѧтъ×7|пѧти́десѧтихъ×3|пѧти́десѧть×1;dat.sg=пѧти́десѧти×36|пѧти́десѧтъ×7|пѧти́десѧть×1;acc.sg=пѧтдесѧ́тъ×11;ins.sg=пѧтїю́десѧть×1|пѧтїюдесѧтмѝ×1;loc.sg=пѧти́десѧтъ×7|пѧти́десѧтихъ×3|пѧти́десѧть×1	P:N41	-
+пѧтьнадесѧть.n	пѧтьна́десѧть	n	f	-	N41	a{gen.sg=2;dat.sg=2;loc.sg=2}	1=пѧтинадесѧт	nom.sg=пѧтьна́десѧть;acc.sg=пѧтьна́десѧть;ins.sg=пѧтїюна́десѧть	gen.sg=пѧтина́десѧтихъ×3|пѧтьна́десѧти×1;dat.sg=пѧтина́десѧтихъ×3|пѧтьна́десѧти×1;loc.sg=пѧтина́десѧтихъ×3|пѧтьна́десѧти×1	P:N41	-
 пѵраміда.n	пѵрамі́да	n	f	inan	N3t	a	-	-	-	P:N3t	-
 пѵргъ.n	пѵ́ргъ	n	m	inan	N1g	a	-	nom.pl=пѵ́ргове;loc.pl=пѵ́ргахъ	loc.pl=пѵ̑ргахъ×1|пѵ́ргѣхъ×1	P:N1g	-
 пѵрръ.n	пѵ́рръ	n	m	anim	N1t	a	-	-	gen.sg=пи́рра×1;acc.sg=пи́рра×1	P:N1t	persn
@@ -9605,6 +9619,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 седмогласіе.n	седмогла́сіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
 седмодневникъ.n	седмодне́вникъ	n	m	inan	N1k	a	-	-	-	P:N1k	-
 седмочисліе.n	седмочи́сліе	n	n	inan	N2i	a	-	-	-	P:N2i	-
+седмь.n	се́дмь	n	f	-	N41	b{ins.sg=F}	-	dat.sg=седми́мъ	gen.sg=седми́хъ×19|седьмѝ×5;dat.sg=седьмѝ×5;ins.sg=седмью̀×1;loc.sg=седми́хъ×19|седьмѝ×5	P:N41	-
+седмьдесѧтъ.n	се́дмьдесѧтъ	n	f	-	N41	a{gen.sg=1;loc.sg=1}	1=седмидесѧт	nom.sg=се́дмьдесѧтъ;dat.sg=седми́десѧтимъ;acc.sg=се́дмьдесѧтъ;ins.sg=седми́десѧтьми	nom.sg=се́дмьдесѧть×5;gen.sg=седми́десѧтихъ×14|се́дмьдесѧти×1|седми́десѧтъ×1;dat.sg=седми́десѧти×30|се́дмьдесѧти×1|седми́десѧтъ×1;acc.sg=се́дмьдесѧть×5;loc.sg=седми́десѧтихъ×14|се́дмьдесѧти×1|седми́десѧтъ×1	P:N41	headword се́дмьдесѧть
+седмьнадесѧть.n	седмьна́десѧть	n	f	-	N41	a	-	gen.sg=седмина́десѧти;dat.sg=седмьна́десѧтимъ;ins.sg=седмїю́десѧтьми;loc.sg=седмина́десѧти	gen.sg=седмина́десѧтихъ×1;dat.sg=седмина́десѧти×2;loc.sg=седмина́десѧтихъ×1	P:N41	-
 седрахъ.n	седра́хъ	n	m	anim	N1g	a	-	-	-	P:N1g	persn
 сеитъ.n	сеи́тъ	n	m	anim	N1t	a	-	gen.pl=сеи̑тъ;acc.pl=сеи̑тъ	-	P:N1t	-
 секелагъ.n	секела́гъ	n	m	inan	N1g	a	-	-	-	P:N1g	topn
@@ -10431,6 +10448,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 стиѳатъ.n	стиѳа́тъ	n	m	anim	N1t	a	-	-	-	P:N1t	persn
 сткло.n	сткло̀	n	n	inan	N2t*	a	-	-	-	P:N2t*	-
 стклѧница.n	стклѧ́ница	n	f	inan	N3c	a	-	-	-	P:N3c	-
+сто.n	сто̀	n	n	-	N2t	a	-	nom.du=ста̑;acc.du=ста̑	nom.sg=сто×2;dat.du=стома̀×1;acc.sg=сто×2;ins.du=стома̀×1;ins.pl=сты̑×1	P:N2t	-
 стогна.n	сто́гна	n	f	inan	N3t	a	-	-	nom.sg=стѡ́гна×1;gen.sg=стѡ́гны×10	P:N3t	-
 стогъ.n	сто́гъ	n	m	inan	N1g	a	-	-	-	P:N1g	-
 стокъ.n	сто́къ	n	m	inan	N1k	a	-	-	-	P:N1k	-
@@ -11077,9 +11095,11 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 тресновица.n	треснови́ца	n	f	inan	N3c	a	-	gen.sg=треснѡви́цы	-	P:N3c	-
 третины.n	трети́ны	n	f	inan	N3t	a	base=третин	nom.pl=трети́ны;acc.pl=трети́ны	-	P:N3t	pl-tantum
 тречастіе.n	треча́стіе	n	n	inan	N2i	a	-	-	-	P:N2i	-
+тридесѧть.n	три́десѧть	n	f	-	N41	a	-	dat.sg=три́десѧтимъ;ins.sg=три́десѧтми	gen.sg=три́десѧтихъ×21;dat.sg=три́десѧтємъ×1;ins.sg=три́десѧтьми×1;loc.sg=три́десѧтихъ×21	P:N41	-
 тризна.n	три́зна	n	f	inan	N3t	a	-	-	-	P:N3t	-
 тризнище.n	три́знище	n	n	inan	N2s	a	-	-	-	P:N2s	-
 трикровъ.n	трикро́въ	n	m	inan	N1t	a	-	-	-	P:N1t	-
+тринадесѧть.n	трина́десѧть	n	f	-	N41	a	-	gen.sg=трехна́десѧти;dat.sg=тремна́десѧти;ins.sg=тремина́десѧте;loc.sg=трехна́десѧти	ins.sg=тремина́десѧть×1	P:N41	-
 трипѣснецъ.n	трипѣ́снецъ	n	m	inan	N1c*	a	-	loc.pl=трипѣ́снцахъ	-	P:N1c*	-
 трипѣсница.n	трипѣ́сница	n	f	anim	N3c	a	-	-	-	P:N3c	-
 трисвѣтъ.n	трисвѣ́тъ	n	m	anim	N1t	a	-	-	-	P:N1t	-
@@ -11789,6 +11809,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 четверть.n	че́тверть	n	f	inan	N41	a	-	-	-	P:N41	-
 четыредесѧтина.n	четыредесѧти́на	n	f	inan	N3t	a	-	-	-	P:N3t	-
 четыредесѧтница.n	четыредесѧ́тница	n	f	inan	N3c	a	-	-	-	P:N3c	-
+четыредесѧть.n	четы́редесѧть	n	f	-	N41	a	-	gen.sg=четы́редесѧте;dat.sg=четы́редесѧтимъ;ins.sg=четы́редесѧтьми	nom.sg=четы́ридесѧть×7|четы́редесѧтъ×1;gen.sg=четыреде́сѧте×1|четы́редесѧтихъ×14|четыредесѧти́хъ×1;dat.sg=четы́редесѧтемъ×2;acc.sg=четы́ридесѧть×7|четы́редесѧтъ×1;loc.sg=четы́редесѧтихъ×14|четыредесѧти́хъ×1	P:N41	-
+четыренадесѧть.n	четырена́десѧть	n	f	-	N41	a	-	dat.sg=четыренадесѧ́тѣмъ	nom.sg=четырена́десѧте×6;gen.sg=четырена́десѧтихъ×1|четырехна́десѧти×1|четырина́десѧти×1;dat.sg=четырехна́десѧти×1|четырина́десѧти×1;acc.sg=четырена́десѧте×6;loc.sg=четырена́десѧтихъ×1|четырехна́десѧти×1|четырина́десѧти×1	P:N41	-
 чешꙋѧ.n	чешꙋѧ̀	n	f	inan	N3a	b	-	nom.du=чешꙋи̑;nom.pl=чешꙋи̑;acc.du=чешꙋи̑;acc.pl=чешꙋи̑	nom.pl=чешꙋѧ̑×1;acc.pl=чешꙋѧ̑×1	P:N3a	-
 чигасы.n	чигасы̀	n	f	inan	N1t	b	base=чигас	loc.pl=чигаса́хъ	-	P:N1t	topn; pl-tantum
 чиновникъ.n	чино́вникъ	n	m	anim	N1k	a	-	nom.pl=чинѡ́вницы	-	P:N1k	-
@@ -11876,6 +11898,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 шестодневникъ.n	шестодне́вникъ	n	m	inan	N1k	a	-	-	-	P:N1k	-
 шестодневъ.n	шестодне́въ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 шестоѱалміе.n	шестоѱа́лміе	n	n	inan	N2i	a	-	gen.sg=шестоѱа́лмїа	-	P:N2i	-
+шесть.n	ше́сть	n	f	-	N41	b{ins.sg=F}	-	dat.sg=шести́мъ	gen.sg=шести́хъ×2|ше́сти×1;dat.sg=ше́сти×1;ins.sg=шестью̀×2|шестьмѝ×1;loc.sg=шести́хъ×2|ше́сти×1	P:N41	-
+шестьдесѧтъ.n	шестьдесѧ́тъ	n	f	-	N41	a{gen.sg=1;loc.sg=1}	1=шестидесѧт	nom.sg=шестьдесѧ́тъ;dat.sg=шести́десѧтимъ;acc.sg=шестьдесѧ́тъ;ins.sg=шестидесѧтьмѝ	gen.sg=шести́десѧтихъ×2;dat.sg=шести́десѧти×8;ins.sg=шестїю́десѧть×1|шестїю́десѧтьми×1;loc.sg=шести́десѧтихъ×2	P:N41	-
+шестьнадесѧть.n	шестьна́десѧть	n	f	-	N41	a{gen.sg=2;dat.sg=2;loc.sg=2}	1=шестинадесѧт	nom.sg=шестьна́десѧть;acc.sg=шестьна́десѧть	gen.sg=шести́надесѧти×2;dat.sg=шести́надесѧти×2;loc.sg=шести́надесѧти×2	P:N41	-
 шило.n	ши́ло	n	n	inan	N2t	a	-	-	-	P:N2t	-
 шинъ.n	ши́нъ	n	m	inan	N1t	a	-	-	-	P:N1t	-
 шипецъ.n	ши́пецъ	n	m	inan	N1c*	a	-	-	-	P:N1c*	-
