@@ -2419,20 +2419,20 @@ members — stays deliberately its own future design.
   the open list with the numbers above.
 - **The gate.** Every unit of every book round-trips byte-for-byte
   (142,620 units, 3,190,662 tokens; the full library builds in about ten
-  minutes against the Bible's 95 s). The library: one cell 1,206,378
+  minutes against the Bible's 95 s). The library: one cell 1,206,822
   (37.8%; 1,192,361 before the intake — LIB), sets 26,165, tagger
-  1,035,721, closed 638,779, several lexemes 102,102 (3.2%), verbatim
+  1,035,277, closed 638,779, several lexemes 102,102 (3.2%), verbatim
   70,210 (2.2%, from 178,977 = 5.6% before the wave), apparatus 111,307;
   `census verbatim`: 70,206 leaves — (a) 15,397 by letters (marks only
   11,124: the clitic hosts; і/ї/и 1,112; head ѧ 1,079; wide/narrow о
   659), (b) 13,676 titlo tokens with no row, (c) 41,133 with no reading
   (꙳ alone 25,307, `]]` 3,262, the rubric abbreviations ст 1,832, гл
-  1,246). The Bible: one cell 243,358 (38.5%), sets 2,047, tagger
-  187,993, closed 179,015, several lexemes 12,645 (2.0%, down from
+  1,246). The Bible: one cell 243,592 (38.5%), sets 2,047, tagger
+  187,759, closed 179,015, several lexemes 12,645 (2.0%, down from
   12,868), verbatim 4,789 (0.8%, from 5,430), apparatus 2,099 (the
   titlo numerals, 1,150 before); census 4,763 (from 5,408); zero
-  mismatches; the overlay's rules resolve 446 and exclude none, the
-  tagger 74.58% (1,212 of 1,625); recall unchanged (95.48 / 89.31 /
+  mismatches; the overlay's rules resolve 448 and exclude none, the
+  tagger 74.74% (1,213 of 1,623); recall unchanged (95.48 / 89.31 /
   90.89 / 99.25 / 98.07); ids: none moved, 131 nouns, 267 adjectives, 68
   verbs and 15 closed words added, 2 adjective ids and 27 adverb ids
   absorbed with their survivors in `data/twins.tsv`; the export written

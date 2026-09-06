@@ -143,16 +143,16 @@ position) and the paerok as letters of the lexeme, the izhitsa's
 kendema by rule; Polyakov's у is read as the print's ꙋ (поꙋче́нїе).
 Held-out recall (UD PROIEL dev+test): nouns 95.48%, adjectives 89.31%,
 verbs 90.89%, personal pronouns 99.25%, other pronouns 98.07%.
-Bible treebank (631,946 tokens): one cell 243,358 (38.5%), sets 2,047
-(0.3%), tagger 187,993 (29.7%), closed 179,015 (28.3%), several lexemes
+Bible treebank (631,946 tokens): one cell 243,592 (38.5%), sets 2,047
+(0.3%), tagger 187,759 (29.7%), closed 179,015 (28.3%), several lexemes
 12,645 (2.0%), verbatim 4,789 (0.8%), apparatus 2,099 (the titlo
 numerals count as apparatus since 4.1); zero mismatches; it rebuilds in
 95 s. `census verbatim`: 4,763 leaves — 2,007 found by key but printed
 otherwise (the clitic after a host that is several lexemes: ты́ 180 in
 the Bible; head ѧ҆зы́къ), 646 under a titlo with no row, 2,110 with no
 reading. The Ponomar library (28 books, 142,620 units, 3,190,662
-tokens; builds in about ten minutes): one cell 1,206,378 (37.8%), sets
-26,165, tagger 1,035,721 (32.5%), closed 638,779 (20.0%), several
+tokens; builds in about ten minutes): one cell 1,206,822 (37.8%), sets
+26,165, tagger 1,035,277 (32.4%), closed 638,779 (20.0%), several
 lexemes 102,102 (3.2%), verbatim 70,210 (2.2%; 5.6% before the intake),
 apparatus 111,307; every unit round-trips; `census verbatim --corpus
 ponomar`: 70,206 leaves — (a) 15,397 by letters (marks only 11,124: the
@@ -161,8 +161,8 @@ clitic hosts ты́ 1,676, мѧ 1,030, ны 526, мы́ 405; і/ї/и 1,112; hea
 with the varia, the rubric's abbreviations), (c) 41,133 with no reading
 (꙳ as a token of its own 25,307, `]]` 3,262, ст 1,832, гл 1,246, the
 -десѧть compounds, the capitals of titles). Hand overlay (Bible): 337
-verses, 3,757 leaves; the rules exclude no hand cell and resolve 446;
-the tagger 74.58% (1,212 of 1,625). The overlay by register: the
+verses, 3,757 leaves; the rules exclude no hand cell and resolve 448;
+the tagger 74.74% (1,213 of 1,623). The overlay by register: the
 Octoechos's Gospel stichera (22 units, 483 leaves) — rules and tagger
 contain the hand cell 77.99%, resolve 77.57%, the tagger 63.29%; the
 April Menaion's St Artemon (73 units, 736 leaves, 361 left as sets) —

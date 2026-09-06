@@ -521,7 +521,9 @@ fn one_subject(children: &mut [Node], start: usize, end: usize, lexicon: &Lexico
         let apposed: Vec<bool> = (0..children.len())
             .map(|i| {
                 let (lo, hi) = if i < subject { (i, subject) } else { (subject, i) };
-                (lo + 1..hi).all(|k| leaf(&children[k]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_adjective_like(&c)))))
+                // at least one such leaf: two bare nouns side by side are
+                // subject and object (ви́дѣ бг҃ъ свѣ́тъ)
+                hi > lo + 1 && (lo + 1..hi).all(|k| leaf(&children[k]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_adjective_like(&c)))))
             })
             .collect();
         for i in start..end {

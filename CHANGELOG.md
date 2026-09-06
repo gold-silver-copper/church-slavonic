@@ -8,10 +8,10 @@ The plan is `V4-PROMPT.md` Parts 1–2 (Part 3 is a measurement, no release).
 |---|---|---|
 | Synodal lexemes (nouns / adjectives / verbs / closed) | 13,172 / 8,323 / 8,224 / 1,351 | 13,303 / 8,588 / 8,292 / 1,366 (131 / 267 / 68 / 15 added; 2 adjective ids and 27 adverb ids absorbed, `data/twins.tsv`; none moved) |
 | titlo rows | 135 | 559 (the importer expands Polyakov's titlo-written forms: 578 entries had no other spelling) |
-| Bible treebank | one cell 244,589 (38.7%), sets 2,306, tagger 186,594, closed 179,009, several lexemes 12,868, verbatim 5,430, apparatus 1,150 | one cell 243,358 (38.5%), sets 2,047, tagger 187,993, closed 179,015, several lexemes 12,645 (2.0%), verbatim 4,789 (0.8%), apparatus 2,099 (the titlo numerals); zero mismatches |
+| Bible treebank | one cell 244,589 (38.7%), sets 2,306, tagger 186,594, closed 179,009, several lexemes 12,868, verbatim 5,430, apparatus 1,150 | one cell 243,592 (38.5%), sets 2,047, tagger 187,759, closed 179,015, several lexemes 12,645 (2.0%), verbatim 4,789 (0.8%), apparatus 2,099 (the titlo numerals); zero mismatches |
 | census verbatim (Bible) | 5,408 | 4,763 — (a) 2,007, (b) 646, (c) 2,110 |
-| hand overlay: rules resolve / exclude; tagger | 466 / 0; 74.6% (1,200 of 1,609) | 446 / 0 (np-agree no longer attaches by position between two agreeing nouns; one-subject leaves an apposed noun alone); 74.58% (1,212 of 1,625) |
-| the Ponomar library (28 books, 142,620 units, 3,190,662 tokens) | — | one cell 1,206,378 (37.8%), sets 26,165, tagger 1,035,721 (32.5%), closed 638,779, several lexemes 102,102 (3.2%), verbatim 70,210 (2.2%; 178,977 = 5.6% before the intake), apparatus 111,307; every unit round-trips; census 70,206 |
+| hand overlay: rules resolve / exclude; tagger | 466 / 0; 74.6% (1,200 of 1,609) | 448 / 0 (np-agree no longer attaches by position between two agreeing nouns; one-subject leaves an apposed noun alone); 74.74% (1,213 of 1,623) |
+| the Ponomar library (28 books, 142,620 units, 3,190,662 tokens) | — | one cell 1,206,822 (37.8%), sets 26,165, tagger 1,035,277 (32.4%), closed 638,779, several lexemes 102,102 (3.2%), verbatim 70,210 (2.2%; 178,977 = 5.6% before the intake), apparatus 111,307; every unit round-trips; census 70,206 |
 | the overlay by register (Octoechos ch. 4 / April Menaion ch. 13) | — | 483 leaves: rules+tagger contain the hand cell 77.99%, resolve 77.57%, the tagger 63.29% (150 of 237) / 736 leaves (361 sets): 92.00%, the tagger 71.88% (23 of 32) |
 | held-out recall | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 | unchanged |
 | a full build | the Bible in 95 s | the library in about ten minutes |
