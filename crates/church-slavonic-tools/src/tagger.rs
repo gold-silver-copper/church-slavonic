@@ -312,6 +312,168 @@ fn chrono_date() -> String {
     format!("{y:04}-{m:02}-{d:02}")
 }
 
+/// The overlay's examples (3.4 Part 4): every hand leaf with one cell
+/// whose token the auto lift, after the constraint layer, leaves with
+/// several candidates the hand cell is among — with the book and chapter
+/// it comes from, for the folds. The context is built the way the
+/// treebank's tagger builds it, the previous token's choice being the
+/// hand's (as the gold is in training).
+pub fn overlay_examples(lexicon: &Lexicon) -> Result<Vec<(String, Example)>, Box<dyn Error>> {
+    use crate::treebank::node::Node;
+    let Some(bible) = crate::treebank::bible::load()? else {
+        return Err("pinned Bible absent".into());
+    };
+    let lifter = crate::treebank::lift::Lifter::new(lexicon);
+    let mut out = Vec::new();
+    for (bi, book) in bible.books.iter().enumerate() {
+        let hand_path = crate::treebank::runner::book_file(&crate::treebank::runner::hand_dir(), bi);
+        let Ok(text) = std::fs::read_to_string(&hand_path) else { continue };
+        let entries = crate::treebank::sexpr::parse_many(&text).map_err(|e| format!("{}: {e}", hand_path.display()))?;
+        for entry in &entries {
+            let (ch, vs, hand) = crate::treebank::runner::read_entry(entry)?;
+            let Some(print) = book.chapters.iter().find(|c| c.chapter == ch).and_then(|c| c.verses.iter().find(|v| v.verse == vs)).map(|v| v.print().to_string()) else { continue };
+            let (mut auto, _) = lifter.lift_verse(&print);
+            crate::treebank::disambiguate::disambiguate(&mut auto, lexicon);
+            let Node::Group { children, .. } = &auto else { continue };
+            let h = crate::treebank::runner::word_nodes(&hand);
+            let a: Vec<&Node> = crate::treebank::runner::word_nodes(&auto);
+            if h.len() != a.len() {
+                continue;
+            }
+            let surfaces: Vec<Option<String>> = children.iter().map(|c| crate::treebank::tag::surface_of(c, lexicon)).collect();
+            // the auto's word nodes in order of the verse's children: map
+            // each word node to its child index by identity
+            let child_of: Vec<usize> = a.iter().map(|w| children.iter().position(|c| std::ptr::eq(c, *w) || crate::treebank::runner::word_nodes(c).iter().any(|x| std::ptr::eq(*x, *w))).unwrap_or(usize::MAX)).collect();
+            let mut prev_choice: Option<Candidate> = None;
+            for (k, (hn, an)) in h.iter().zip(a.iter()).enumerate() {
+                let i = child_of[k];
+                let Some(Node::Lex { id: hid, cells: hc, .. }) = crate::treebank::disambiguate::leaf(hn) else {
+                    prev_choice = crate::treebank::tag::choice_of(hn, lexicon);
+                    continue;
+                };
+                let Some(hpos) = lexicon.get(hid).map(|l| l.pos) else { continue };
+                let gold_candidate = Candidate { pos: hpos, cell: hc.first() };
+                if i == usize::MAX || hc.len() != 1 {
+                    prev_choice = Some(gold_candidate);
+                    continue;
+                }
+                let candidates: Vec<Candidate> = match an {
+                    Node::Lex { id, cells, .. } => match lexicon.get(id).map(|l| l.pos) {
+                        Some(pos) => cells.iter().map(|cell| Candidate { pos, cell }).collect(),
+                        None => Vec::new(),
+                    },
+                    _ => match crate::treebank::disambiguate::amb_surface(an) {
+                        Some(surface) => {
+                            let looked_up = crate::treebank::lift::decapitalized(surface).unwrap_or_else(|| surface.to_string());
+                            candidates_of(lexicon, &looked_up)
+                        }
+                        None => Vec::new(),
+                    },
+                };
+                if candidates.len() >= 2
+                    && let Some(g) = candidates.iter().position(|c| *c == gold_candidate)
+                {
+                    let before = i.checked_sub(1).filter(|j| !crate::treebank::disambiguate::boundary(children, *j));
+                    let after = (i + 1 < children.len() && !crate::treebank::disambiguate::boundary(children, i + 1)).then_some(i + 1);
+                    let ctx = Context {
+                        surface: surfaces[i].clone().unwrap_or_default(),
+                        prev: before.and_then(|j| surfaces[j].clone()),
+                        next: after.and_then(|j| surfaces[j].clone()),
+                        prev_lemma: before.and_then(|j| crate::treebank::tag::lemma_of(&children[j], lexicon)),
+                        next_lemma: after.and_then(|j| crate::treebank::tag::lemma_of(&children[j], lexicon)),
+                        prev_choice: if before.is_none() { None } else { prev_choice },
+                    };
+                    out.push((format!("{} {ch}", book.name), Example { ctx, candidates, gold: g }));
+                }
+                prev_choice = Some(gold_candidate);
+            }
+        }
+    }
+    Ok(out)
+}
 
+/// `cargo xtask tagger-transfer` (3.4 Part 4): what Synodal gold would
+/// buy, measured and not shipped. The overlay's chapters go into five
+/// folds; for each fold a tagger is trained on the Old Church Slavonic
+/// material (as `train-tagger`) plus the other four folds' overlay
+/// examples and scored on the fold; the bundled OCS-only model is scored
+/// on the same examples as the baseline. The shipped model stays the
+/// OCS-only one.
+pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
+    let epochs: usize = args.iter().position(|a| a == "--epochs").and_then(|i| args.get(i + 1)).and_then(|v| v.parse().ok()).unwrap_or(8);
+    let root = crate::workspace_root();
+    let sources = root.join("references/downloads");
+    let artifacts = root.join("target/sources");
+    let started = std::time::Instant::now();
+    let ocs = Lexicon::ocs();
+    let Some(train_ud) = crate::sources::ud::load_ud_proiel_train(&sources, &artifacts)? else {
+        return Err("UD PROIEL absent under references/downloads (scripts/fetch-sources.sh)".into());
+    };
+    let Some(heldout) = crate::sources::ud::load_ud_proiel_heldout(&sources, &artifacts)? else {
+        return Err("UD PROIEL absent".into());
+    };
+    let mut syntacticus = crate::sources::ud::load_syntacticus(&sources, &artifacts)?;
+    let held: HashSet<String> = heldout.sentences.iter().map(|s| sentence_key(s)).collect();
+    if let Some(s) = syntacticus.as_mut() {
+        s.sentences.retain(|sent| !held.contains(&sentence_key(sent)));
+    }
+    let (mut ocs_examples, _, _) = examples(ocs, &train_ud);
+    if let Some(s) = &syntacticus {
+        ocs_examples.extend(examples(ocs, s).0);
+    }
+    let synodal = Lexicon::synodal();
+    let overlay = overlay_examples(synodal)?;
+    let mut chapters: Vec<String> = overlay.iter().map(|(c, _)| c.clone()).collect();
+    chapters.sort();
+    chapters.dedup();
+    println!("OCS examples {}, overlay examples {} in {} chapters; loaded in {:.1?}", ocs_examples.len(), overlay.len(), chapters.len(), started.elapsed());
+    let bundled = Tagger::bundled();
+    let (b_right, b_n) = accuracy_pairs(&overlay, |e| bundled.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
+    println!("the bundled OCS-only model on the overlay's examples: {b_right}/{b_n} = {:.2}%", pct(b_right, b_n));
+    let folds = 5;
+    let mut total = (0usize, 0usize);
+    let mut total_ocs_only = (0usize, 0usize);
+    for f in 0..folds {
+        let test_chapters: Vec<&String> = chapters.iter().enumerate().filter(|(k, _)| k % folds == f).map(|(_, c)| c).collect();
+        let test: Vec<&(String, Example)> = overlay.iter().filter(|(c, _)| test_chapters.contains(&c)).collect();
+        let train_overlay: Vec<&Example> = overlay.iter().filter(|(c, _)| !test_chapters.contains(&c)).map(|(_, e)| e).collect();
+        let mut with: Vec<&Example> = ocs_examples.iter().collect();
+        with.extend(train_overlay.iter().copied());
+        let tagger_with = train_on(&with, epochs);
+        let ocs_only: Vec<&Example> = ocs_examples.iter().collect();
+        let tagger_ocs = train_on(&ocs_only, epochs);
+        let (r, n) = accuracy_pairs(&test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect::<Vec<_>>(), |e| tagger_with.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
+        let (r0, _) = accuracy_pairs(&test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect::<Vec<_>>(), |e| tagger_ocs.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
+        println!("fold {}: test {} ({} examples, {} overlay training examples): OCS + overlay {r}/{n} = {:.2}%; OCS only {r0}/{n} = {:.2}%", f + 1, test_chapters.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "), n, train_overlay.len(), pct(r, n), pct(r0, n));
+        total.0 += r;
+        total.1 += n;
+        total_ocs_only.0 += r0;
+        total_ocs_only.1 += n;
+    }
+    println!("five-fold over the overlay: OCS + the other folds {}/{} = {:.2}%; OCS only, retrained the same way {}/{} = {:.2}%; the bundled model {:.2}% — measured, not shipped ({:.1?})", total.0, total.1, pct(total.0, total.1), total_ocs_only.0, total_ocs_only.1, pct(total_ocs_only.0, total_ocs_only.1), pct(b_right, b_n), started.elapsed());
+    Ok(())
+}
 
+fn train_on(examples: &[&Example], epochs: usize) -> Tagger {
+    let mut trainer = Trainer::default();
+    let mut order: Vec<usize> = (0..examples.len()).collect();
+    let mut seed: u64 = 0x2545F4914F6CDD1D;
+    for _ in 0..epochs {
+        for i in (1..order.len()).rev() {
+            seed ^= seed << 13;
+            seed ^= seed >> 7;
+            seed ^= seed << 17;
+            order.swap(i, (seed % (i as u64 + 1)) as usize);
+        }
+        for &i in &order {
+            let e = examples[i];
+            trainer.step(&e.ctx, &e.candidates, e.gold);
+        }
+    }
+    trainer.finish()
+}
 
+fn accuracy_pairs(examples: &[(String, Example)], choose: impl Fn(&Example) -> usize) -> (usize, usize) {
+    let right = examples.iter().filter(|(_, e)| choose(e) == e.gold).count();
+    (right, examples.len())
+}

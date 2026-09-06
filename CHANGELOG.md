@@ -1,5 +1,29 @@
 # Changelog
 
+## 3.4.0 (in progress) — the verb that is several lexemes, the tagger's transfer
+
+The plan is `V3.3-PROMPT.md` Parts 3–4.
+
+### Part 3 — the verb that is several lexemes (2026-09-05)
+
+- **`bare-loc`**: a reading whose every cell is locative, with no
+  locative-governing preposition before it in the chunk, goes — from a
+  set or from a several-lexeme token (ви́дѣ the aorist; one-subject then
+  fires in Genesis 1:4). A leaf that is only locative and a chunk at the
+  verse's start are left alone.
+- **`bare-voc`**: voc-drop for a several-lexeme token.
+- A genitive beside a nominative subject: not a rule (NOTES).
+- `CS_DEBUG_VERSE=<ch>:<vs>` prints an overlay verse's auto tree in
+  `score-disambiguation`.
+
+| Number | before | after |
+|---|---|---|
+| hand overlay (3,757 leaves): rules resolve / exclude | 459 / 0 | 466 / 0 (bare-loc 26 alone, 120 with the others; bare-voc 3) |
+| one-subject on the overlay | 10 resolved | 11 |
+| tagger on the overlay | 74.92% (1,228 of 1,639) | 74.58% (1,200 of 1,609: the rules took 30 of its leaves) |
+| Bible treebank | one cell 240,672 (38.1%), sets 2,311, tagger 190,494 (30.1%), closed 179,009, several lexemes 12,880 (2.0%), verbatim 5,430 (0.9%) | one cell 244,589 (38.7%), sets 2,306 (0.4%), tagger 186,594 (29.5%), closed 179,009 (28.3%), several lexemes 12,868 (2.0%), verbatim 5,430 (0.9%); zero mismatches |
+| the same with `CS_NO_DISAMBIGUATE=1` | — | one cell 175,759 (27.8%), sets 231,334 (36.6%), tagger 0, several lexemes 39,264 (6.2%), verbatim 5,430 |
+
 ## 3.3.0 (2026-09-05) — the verbatim residue
 
 The plan is `V3.3-PROMPT.md` Parts 0–2 (Parts 3–4 are 3.4.0's). A minor

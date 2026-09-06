@@ -746,7 +746,7 @@ pub fn run(build_first: bool) -> Result<(), Box<dyn Error>> {
 /// The word nodes of a tree in order (punctuation dropped; a
 /// phonological word is its host, an abbreviation its child): what two
 /// trees of the same verse align on.
-fn word_nodes(node: &Node) -> Vec<&Node> {
+pub(crate) fn word_nodes(node: &Node) -> Vec<&Node> {
     fn go<'a>(node: &'a Node, out: &mut Vec<&'a Node>) {
         match node {
             Node::Punct(_) => {}
@@ -834,6 +834,11 @@ pub fn score_disambiguation() -> Result<(), Box<dyn Error>> {
             crate::treebank::disambiguate::disambiguate(&mut auto, lexicon);
             if let Some(t) = &tagger {
                 crate::treebank::tag::tag(&mut auto, lexicon, t);
+            }
+            // CS_DEBUG_VERSE=3:14 prints the auto tree of that verse of every
+            // overlay book, the rules' notes on it (a debugging aid, 3.4)
+            if std::env::var("CS_DEBUG_VERSE").ok().as_deref() == Some(format!("{ch}:{vs}").as_str()) {
+                println!("{} {ch}:{vs} auto: {}", book.name, sexpr::print(&verse_entry(ch, vs, &auto)));
             }
             let h = word_nodes(&hand);
             let a = word_nodes(&auto);

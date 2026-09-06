@@ -519,6 +519,20 @@ any code change.
    precision on the overlay or it goes. A clause whose verb is itself
    several lexemes gives the rule nothing: assuming the verb would be a
    selection.
+3d. The verb that is several lexemes (3.4): two more eliminations over
+   readings, each naming itself. `bare-loc` — a locative is governed by
+   a preposition: a reading whose every cell is locative, with no
+   locative-governing preposition before it in the chunk (the look back
+   crosses an adjective-like leaf and a nominal that can itself be the
+   preposition's locative, an attribute after its noun; it stops at a
+   function word, a verb, a noun without a locative, punctuation), goes
+   from a set or from a several-lexeme token — ви́дѣ is the aorist beside
+   ви́дъ's locative, and one-subject fires. A leaf that is only locative
+   is left alone (the grammar's locative of time), and so is a chunk
+   that reaches the verse's start (the verse is the unit, not the
+   clause: Romans 1:3–4 governs a locative across it). `bare-voc` —
+   voc-drop for a several-lexeme token. A genitive beside a nominative
+   subject is not a rule: the genitive's uses are too many to name.
 4a. Ids never move (3.1): after the fit, the lexemes of one lookup key
    (the letters with the initial uk as «оу» and the initial ѿ as «ѡт»),
    in the order of their source entries, take that key's existing ids in

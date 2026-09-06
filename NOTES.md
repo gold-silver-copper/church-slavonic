@@ -2078,3 +2078,48 @@ members — stays deliberately its own future design.
   as the last measurement).
 - Not published; the game's 35 tests and headless run pass; tests,
   clippy green at the tag.
+
+## 2026-09-05 — 3.4 Part 3 (V3.3-PROMPT.md): the verb that is several lexemes — decisions and findings
+
+- **bare-loc (decision).** A locative is governed by a preposition: a
+  reading whose every cell is locative, with no locative-governing
+  preposition before it in the chunk, is eliminated — from a set
+  (`narrow`) or from a several-lexeme token (`reduce`: ви́дѣ the aorist
+  beside ви́дъ's locative, Genesis 1:4, and one-subject fires: 10 → 11
+  on the overlay). The look back crosses an adjective-like leaf, a
+  nominal that can itself be the preposition's locative (по тве́рди
+  небе́снѣй, въ дѣ́лѣхъ жесто́кихъ: the attribute after its noun) and a
+  several-lexeme nominal with a locative reading (на пе́рсехъ твои́хъ); it
+  stops at a function word (its frame decides), a verb, a noun without
+  a locative, punctuation. Two exceptions the overlay taught: a leaf
+  that is only locative is left alone (the locative of time the grammar
+  allows without a preposition is a claim the rule may not make), and a
+  chunk that reaches the verse's start is left alone — the verse is the
+  treebank's unit, not the clause's, and Romans 1:3–4 governs a locative
+  across it (ѡ҆ сн҃ѣ … нарече́ннѣмъ сн҃ѣ бж҃їи). The first draft excluded
+  four hand locatives (all attributes after their governed noun, and
+  Romans 1:4); the rule as written excludes none: bare-loc alone
+  touches 26 hand leaves (24 resolved), 120 with the other rules, 0
+  excluded.
+- **bare-voc (decision).** voc-drop for a several-lexeme token: a reading
+  whose every cell is vocative goes unless an imperative or an
+  interjection stands beside the token. 3 hand leaves, 3 resolved, 0
+  excluded.
+- **A genitive singular beside a nominative subject is not a rule
+  (decision, as the plan asked).** The genitive has the uses the rule
+  would have to enumerate — possession after the noun, the object of
+  negation, the partitive, the genitive-accusative of an animate, the
+  complement of ѿ/и҆з̾/без̾ across an adjective — and the overlay's 46
+  genitive/accusative tagger errors sit in exactly those; an
+  elimination that names none of them is a selection.
+- **The gate.** On the overlay the rules exclude none (466 leaves resolved, from 459; one-subject
+  10 → 11); the tagger's column 74.92% → 74.58% (1,200 of 1,609: the
+  rules took 30 of its leaves). Treebank: one cell 240,672 (38.1%) →
+  244,589 (38.7%), the tagger's column 190,494 → 186,594 (29.5%), several
+  lexemes 12,880 → 12,868 (2.0%), verbatim 5,430 (0.9%), zero mismatches;
+  with `CS_NO_DISAMBIGUATE=1` one cell 175,759 (27.8%), sets 231,334
+  (36.6%), several lexemes 39,264 (6.2%). The census's 135 several-lexeme
+  verbs with one finite reading are untouched: their other reading is a
+  genitive (дѣ́ла 52), an accusative (лжꙋ̀ 36), a closed word (ꙗ҆́вѣ 27) or
+  a participle (поѧ̀ 13) — none a case a rule may eliminate. Tests,
+  clippy green.

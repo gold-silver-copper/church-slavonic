@@ -25,6 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Some("train-tagger") => church_slavonic_tools::tagger::train(&args.collect::<Vec<_>>()),
         Some("tagger-curve") => church_slavonic_tools::tagger::curve(),
+        Some("tagger-transfer") => church_slavonic_tools::tagger::transfer(&args.collect::<Vec<_>>()),
         Some("titlo") => {
             // what the titlo index holds for each surface (3.3 debugging)
             let lexicon = church_slavonic::Lexicon::synodal();

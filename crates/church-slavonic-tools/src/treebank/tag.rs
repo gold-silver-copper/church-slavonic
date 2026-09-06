@@ -21,7 +21,7 @@ pub fn enabled() -> bool {
 
 /// The surface a child renders (for the tagger's context), or nothing
 /// for a child that fails to render.
-fn surface_of(node: &Node, lexicon: &Lexicon) -> Option<String> {
+pub(crate) fn surface_of(node: &Node, lexicon: &Lexicon) -> Option<String> {
     match node {
         Node::Punct(p) => Some(p.clone()),
         Node::W { surface, .. } => Some(surface.clone()),
@@ -31,7 +31,7 @@ fn surface_of(node: &Node, lexicon: &Lexicon) -> Option<String> {
 
 /// The reading a child settles on, for the next token's context: a leaf
 /// with one cell, or a closed-class word.
-fn choice_of(node: &Node, lexicon: &Lexicon) -> Option<Candidate> {
+pub(crate) fn choice_of(node: &Node, lexicon: &Lexicon) -> Option<Candidate> {
     if let Some(Node::Lex { id, cells, .. }) = leaf(node) {
         let pos = lexicon.get(id)?.pos;
         return Some(Candidate { pos, cell: cells.first() });
@@ -44,7 +44,7 @@ fn choice_of(node: &Node, lexicon: &Lexicon) -> Option<Candidate> {
 
 /// The lemma a child settles on: an analyzed leaf's lexeme, a closed
 /// word's lexeme (or the word itself).
-fn lemma_of(node: &Node, lexicon: &Lexicon) -> Option<String> {
+pub(crate) fn lemma_of(node: &Node, lexicon: &Lexicon) -> Option<String> {
     if let Some(Node::Lex { id, .. }) = leaf(node) {
         return lexicon.get(id).map(|l| l.lemma.clone());
     }

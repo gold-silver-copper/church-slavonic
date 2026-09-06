@@ -326,6 +326,86 @@ pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
         }
         narrow(&mut children[i], lexicon, "voc-drop", |c| c.case() != Some(Case::Vocative), &mut stats);
     }
+    // 4b. bare-voc (3.4): the same for a several-lexeme token — a reading
+    //     whose every cell is vocative goes unless an imperative or an
+    //     interjection stands beside the token
+    for i in 0..n {
+        if amb_surface(&children[i]).is_none() {
+            continue;
+        }
+        let beside = |j: Option<usize>| -> bool {
+            let Some(j) = j else { return false };
+            if j >= n {
+                return false;
+            }
+            let imperative = leaf(&children[j]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().any(|c| is_imperative(&c))));
+            let interjection = fn_word(&children[j]).is_some_and(|w| is_interjection(lexicon, w));
+            imperative || interjection
+        };
+        if beside(i.checked_sub(1)) || beside(i.checked_add(1)) {
+            continue;
+        }
+        reduce(&mut children[i], lexicon, "bare-voc", |c| c.case() != Some(Case::Vocative), &mut stats);
+    }
+    // 4c. bare-loc (3.4): a locative is governed by a preposition; a
+    //     reading whose every cell is locative with no locative-governing
+    //     preposition before it in the chunk (the look back crosses
+    //     adjective-like leaves, never a noun, a verb, a function word
+    //     without a locative frame, or punctuation) is impossible and goes
+    //     — from a set (narrow) or from a several-lexeme token (reduce:
+    //     ви́дѣ the aorist beside ви́дъ's locative). A leaf that is only
+    //     locative is left as it is: eliminating everything is a claim
+    //     the grammar's exceptions (the locative of time) forbid.
+    for i in 0..n {
+        let has_locative = match (leaf(&children[i]), amb_surface(&children[i])) {
+            (Some(Node::Lex { cells, .. }), _) => cells.iter().any(|c| c.case() == Some(Case::Locative)) && !cells.iter().all(|c| c.case() == Some(Case::Locative)),
+            (_, Some(_)) => true,
+            _ => false,
+        };
+        if !has_locative {
+            continue;
+        }
+        let mut governed = false;
+        // a chunk that reaches the verse's start may continue the previous
+        // verse's phrase (Romans 1:3–4: ѡ҆ сн҃ѣ … нарече́ннѣмъ сн҃ѣ бж҃їи):
+        // the verse is the treebank's unit, not the clause's, so nothing
+        // is eliminated there
+        let mut open_start = false;
+        let mut j = i;
+        loop {
+            if j == 0 {
+                open_start = true;
+                break;
+            }
+            if boundary(children, j - 1) {
+                break;
+            }
+            j -= 1;
+            if let Some(word) = fn_word(&children[j]) {
+                governed = frame(lexicon, word).contains(&Case::Locative);
+                break;
+            }
+            // the look back crosses an adjective-like leaf and a nominal
+            // that can itself be the preposition's locative (по тве́рди
+            // небе́снѣй, въ дѣ́лѣхъ жесто́кихъ: the attribute after its noun)
+            let crosses = leaf(&children[j]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_adjective_like(&c)) || cells.iter().any(|c| c.case() == Some(Case::Locative))))
+                || amb_surface(&children[j]).is_some_and(|s| {
+                    // a several-lexeme token one of whose readings is locative
+                    // (на пе́рсехъ твои́хъ) may be the governed nominal too
+                    let looked_up = crate::treebank::lift::decapitalized(s).unwrap_or_else(|| s.to_string());
+                    lexicon.readings(&looked_up).iter().any(|r| r.exact && r.cells.iter().any(|(c, _)| c.case() == Some(Case::Locative)))
+                });
+            if !crosses {
+                break;
+            }
+        }
+        if governed || open_start {
+            continue;
+        }
+        if !narrow(&mut children[i], lexicon, "bare-loc", |c| c.case() != Some(Case::Locative), &mut stats) {
+            reduce(&mut children[i], lexicon, "bare-loc", |c| c.case() != Some(Case::Locative), &mut stats);
+        }
+    }
     let _ = Prosody::Tonic;
     // 5. one-subject (3.2): the clause has one finite transitive verb; a
     //    noun that can only be nominative and agrees with it in number is
