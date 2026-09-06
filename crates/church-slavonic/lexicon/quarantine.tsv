@@ -1410,11 +1410,6 @@ syn	v	ѡ҆свѣти́ти	P:V21t	no analysed forms	-
 syn	v	ѡ҆свѧтова́ти	P:V12ov	no analysed forms	-
 syn	v	ѡ҆става́ти	P:V12v	class not in the inventory	V12v
 syn	v	ѡ҆страсти́ти	P:V21t	no analysed forms	-
-syn	v	ѡ҆твраща́тисѧ+же	P:V11a	class does not produce the lemma	ѡ҆твраща́тисѧ+ти
-syn	v	ѡ҆тдви́гатисѧ/ѡтдви́житисѧ	P:V12t/V21s	class does not produce the lemma	ѡ҆тдви́гатисѧ/ѡтдвижатисѧ
-syn	v	ѡ҆ткры́тисѧ+бо	P:V15y	class does not produce the lemma	ѡ҆ткры́тисѧ+ти
-syn	v	ѡ҆трази́тисѧ+ти	P:V21t	class does not produce the lemma	ѡ҆трази́тисѧити
-syn	v	ѡ҆тыма́тисѧ	P:V12p/V11a	class does not produce the lemma	ѿима́тисѧ
 syn	v	ѣ҆́хати	P:Vexat	class not in the inventory	Vexat
 syn	v	ѹ҆боѧ́тисѧ+же	P:V22a	no analysed forms	-
 syn	v	ѹ҆боѧ́тисѧ+ли	P:V22a	class does not produce the lemma	ѹ҆боѧ́тисѧѧти
@@ -1435,6 +1430,11 @@ syn	v	ѹ҆срами́тисѧ+бо	P:V21p	class does not produce the lemma	ѹ҆
 syn	v	ѹ҆тверди́тисѧ+бо	P:V21t	class does not produce the lemma	ѹ҆тверди́тисѧити
 syn	v	ѹ҆тѣша́тисѧ+бо	P:V11a	class does not produce the lemma	ѹ҆тѣша́тисѧ+ти
 syn	v	ѻ҆бщежи́тельствовати	P:V12ov	class does not produce the lemma	ѻ҆бщежи́телствовати
+syn	v	ѿвраща́тисѧ+же	P:V11a	class does not produce the lemma	ѿвраща́тисѧ+ти
+syn	v	ѿдви́гатисѧ/ѡтдви́житисѧ	P:V12t/V21s	class does not produce the lemma	ѿдви́гатисѧ/ѡтдвижатисѧ
+syn	v	ѿкры́тисѧ+бо	P:V15y	class does not produce the lemma	ѿкры́тисѧ+ти
+syn	v	ѿрази́тисѧ+ти	P:V21t	class does not produce the lemma	ѿрази́тисѧити
+syn	v	ѿыма́тисѧ	P:V12p/V11a	class does not produce the lemma	ѿима́тисѧ
 syn	v	ꙗ҆́вленнѣ	P:V21p	class does not produce the lemma	ꙗ҆́влеити
 syn	v	ꙗ҆ви́тисѧ+бо	P:V21p	class does not produce the lemma	ꙗ҆ви́тисѧити
 syn	v	ꙗ҆ви́тисѧ+же	P:V21p	class does not produce the lemma	ꙗ҆ви́тисѧити

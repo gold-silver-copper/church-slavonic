@@ -288,7 +288,7 @@ fn attested_cells(entry: &Entry, pos: Pos, class: &str, o: &mut Outcome) -> (Att
             o.bump("forms skipped: unanalysed");
             continue;
         }
-        let printed = realise(&form.form, &SYN);
+        let printed = ligature(realise(&form.form, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
         if form.form.contains('\u{483}') || form.cells.iter().any(|c| c.iter().any(|t| t.starts_with('9'))) {
             o.bump("forms skipped: titlo spelling");
             continue;
@@ -590,7 +590,7 @@ pub fn debug(pos: Pos, wanted: &str) -> Result<(), Box<dyn Error>> {
     let mut o = Outcome::default();
     let classes = table(pos);
     for entry in entries.iter().filter(|e| pos_of(e) == Some(pos)) {
-        let lemma = realise(&entry.lemma, &SYN);
+        let lemma = ligature(realise(&entry.lemma, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
         if Form::from_print(&lemma).key() != Form::from_print(wanted).key() {
             continue;
         }
@@ -651,7 +651,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         entries
             .iter()
             .filter(|e| e.tags.first().map(String::as_str) == Some("ADV"))
-            .map(|e| (Form::from_print(&realise(&e.lemma, &SYN)).print(SYN), e.count))
+            .map(|e| (Form::from_print(&ligature(realise(&e.lemma, &SYN), &comparison_key(&realise(&e.lemma, &SYN)))).print(SYN), e.count))
             .collect()
     } else {
         HashMap::new()
@@ -672,7 +672,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             continue;
         }
         o.bump("entries");
-        let mut lemma = realise(&entry.lemma, &SYN);
+        let mut lemma = ligature(realise(&entry.lemma, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
         let mut lemma_form = Form::from_print(&lemma);
         let headword = lemma.clone();
         let quarantine = |o: &mut Outcome, reason: &'static str, detail: String| {
@@ -711,13 +711,16 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
                 _ => {}
             }
         }
+        // a provisional id: `restore_ids` after the loop gives every fitted
+        // lexeme the id the lexicon already holds for its lemma
         let mut id_for = |lemma_form: &Form| {
             let bare = lexeme_stem(lemma_form);
             let n = ids.entry(bare.clone()).or_default();
             *n += 1;
             if *n == 1 { format!("{bare}.{}", pos.tag()) } else { format!("{bare}.{}.{n}", pos.tag()) }
         };
-        let mut id = id_for(&lemma_form);
+        // a closed entry is numbered once, in its own block below
+        let mut id = if pos == Pos::Closed { String::new() } else { id_for(&lemma_form) };
         let src = vec![format!("P:{}", if entry.class.is_empty() { "-" } else { &entry.class })];
         // the closed classes: one form, the rest variants
         if pos == Pos::Closed {
@@ -772,11 +775,13 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             // the id follows the lemma as written (the primary form may
             // spell the headword differently: безѻпа́снѡ)
             let id = {
-                let bare = lexeme_stem(&Form::from_print(&lemma_print));
+                let letters = Form::from_print(&lemma_print).letters;
+                let bare = church_slavonic::orthography::id_stem(&letters);
                 let n = ids.entry(bare.clone()).or_default();
                 *n += 1;
                 if *n == 1 { format!("{bare}.{}", pos.tag()) } else { format!("{bare}.{}.{n}", pos.tag()) }
             };
+            twin_evidence.insert(id.clone(), (entry_index, Attested::new(), Bundled::new()));
             o.lexemes.push(church_slavonic::Lexeme {
                 id,
                 lemma: lemma_print,
@@ -1004,6 +1009,7 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
         twin_evidence.insert(f.lexeme.id.clone(), (entry_index, attested.clone(), bundled.clone()));
         o.lexemes.push(f.lexeme);
     }
+    restore_ids(&mut o, lexicon, pos, &mut twin_evidence);
     if pos != Pos::Closed {
         merge_twins(&mut o, pos, &entries, &twin_evidence);
     }
@@ -1117,6 +1123,121 @@ fn merge_twins(o: &mut Outcome, pos: Pos, entries: &[Entry], evidence: &HashMap<
     drop.dedup();
     for i in drop.into_iter().rev() {
         o.lexemes.remove(i);
+    }
+}
+
+/// Polyakov transcribes the print's ligature ѿ (the prefix от-) as «ѡ҆т»,
+/// and writes the same letters for о-т- (ѡ҆трѐ, ѡ҆то́къ); the pinned Bible
+/// tells them apart — a lexeme whose Bible prints begin «ѡ҆т» keeps the
+/// letters, every other «ѡ҆т-» lemma is the ligature (3.1). The lexeme's
+/// letters carry the fact; the typography stage never guesses it.
+fn ligature(print: String, lemma_key: &str) -> String {
+    static KEEP: std::sync::OnceLock<std::collections::HashSet<String>> = std::sync::OnceLock::new();
+    let keep = KEEP.get_or_init(|| {
+        bible_counts()
+            .keys()
+            .filter(|(_, _, _, form)| form.starts_with("ѡ\u{486}т"))
+            .map(|(key, _, _, _)| key.clone())
+            .collect()
+    });
+    if keep.contains(lemma_key) {
+        return print;
+    }
+    match print.strip_prefix("ѡ\u{486}т").or_else(|| print.strip_prefix("ѡт")) {
+        Some(rest) => format!("ѿ{rest}"),
+        None => print,
+    }
+}
+
+/// Ids never move (3.1). After the loop every fitted lexeme takes the id
+/// the lexicon already holds for its lemma: the lexemes of one lookup key
+/// (the letters with the initial uk as «оу» and the initial ѿ as «ѡт»),
+/// in the order of their source entries, take that key's existing ids in
+/// numeric order — a quarantined entry never reaches the list, so it
+/// consumes no number, whatever it did when the file was first made; a
+/// lexeme beyond the existing ids gets the next free number on the key's
+/// stem. The twins' merge then runs on the restored ids.
+fn restore_ids(o: &mut Outcome, lexicon: &church_slavonic::Lexicon, pos: Pos, evidence: &mut HashMap<String, (usize, Attested, Bundled)>) {
+    let suffix = |id: &str| -> u32 {
+        match id.rsplit_once('.') {
+            Some((head, n)) if head.matches('.').count() >= 1 && n.parse::<u32>().is_ok() => n.parse().unwrap_or(1),
+            _ => 1,
+        }
+    };
+    let mut existing: HashMap<String, Vec<String>> = HashMap::new();
+    for l in lexicon.iter().filter(|l| l.pos == pos) {
+        existing.entry(id_lookup_key(&Form::from_print(&l.lemma).letters)).or_default().push(l.id.clone());
+    }
+    // an id the twins' merge absorbed (`data/twins.tsv`) keeps its place in
+    // the numbering, so the entries after it do not slide; the merge takes
+    // it away again
+    if let Ok(text) = std::fs::read_to_string(crate::workspace_root().join("data/twins.tsv")) {
+        for line in text.lines().skip(1) {
+            let Some((absorbed, _)) = line.split_once('\t') else { continue };
+            let stem = id_stem_of(absorbed, pos);
+            if !absorbed.ends_with(&format!(".{}", pos.tag())) && !absorbed.contains(&format!(".{}.", pos.tag())) {
+                continue;
+            }
+            let list = existing.entry(id_lookup_key(&stem)).or_default();
+            if !list.contains(&absorbed.to_string()) {
+                list.push(absorbed.to_string());
+            }
+        }
+    }
+    for list in existing.values_mut() {
+        list.sort_by_key(|id| (suffix(id), id.clone()));
+    }
+    let mut groups: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+    for (i, l) in o.lexemes.iter().enumerate() {
+        groups.entry(id_lookup_key(&Form::from_print(&l.lemma).letters)).or_default().push(i);
+    }
+    let mut renamed: Vec<(String, String)> = Vec::new();
+    for (key, mut members) in groups {
+        members.sort_by_key(|i| evidence.get(&o.lexemes[*i].id).map(|e| e.0).unwrap_or(usize::MAX));
+        let held = existing.get(&key).cloned().unwrap_or_default();
+        let stem = held.first().map(|id| id_stem_of(id, pos)).unwrap_or_else(|| church_slavonic::orthography::id_stem(&Form::from_print(&o.lexemes[members[0]].lemma).letters));
+        let mut next = held.iter().map(|id| suffix(id)).max().unwrap_or(0) + 1;
+        for (k, i) in members.iter().enumerate() {
+            let id = match held.get(k) {
+                Some(id) => id.clone(),
+                None => {
+                    let id = if next == 1 { format!("{stem}.{}", pos.tag()) } else { format!("{stem}.{}.{next}", pos.tag()) };
+                    next += 1;
+                    id
+                }
+            };
+            if id != o.lexemes[*i].id {
+                renamed.push((o.lexemes[*i].id.clone(), id.clone()));
+                o.lexemes[*i].id = id;
+            }
+        }
+    }
+    let moved: Vec<(String, (usize, Attested, Bundled))> = renamed.iter().filter_map(|(old, new)| evidence.remove(old).map(|e| (new.clone(), e))).collect();
+    for (new, e) in moved {
+        evidence.insert(new, e);
+    }
+    if !o.lexemes.is_empty() {
+        o.bump("lexemes whose id the lexicon already held");
+    }
+}
+
+/// The stem of an id (`зрѣти.v.3` → `зрѣти`).
+fn id_stem_of(id: &str, pos: Pos) -> String {
+    let tag = format!(".{}", pos.tag());
+    match id.rsplit_once('.') {
+        Some((head, n)) if n.parse::<u32>().is_ok() && head.ends_with(&tag) => head[..head.len() - tag.len()].to_string(),
+        _ => id.strip_suffix(&tag).unwrap_or(id).to_string(),
+    }
+}
+
+/// The key an existing id is looked up by: the letters with the initial
+/// uk as «оу» and the initial ѿ as «ѡт» — the two spellings the print
+/// and Polyakov differ in, and nothing else (мі́ръ and ми́ръ stay apart).
+fn id_lookup_key(letters: &str) -> String {
+    let stem = church_slavonic::orthography::id_stem(letters);
+    match stem.strip_prefix('ѿ') {
+        Some(rest) if !rest.is_empty() => format!("ѡт{rest}"),
+        _ => stem,
     }
 }
 

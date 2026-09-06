@@ -549,6 +549,10 @@ mod tests {
         assert_eq!(realise("ᲂу҆чени́къ", &SYN), "ѹ҆чени́къ");
         assert_eq!(realise("ѹ҆чени́къ", &SYN), "ѹ҆чени́къ");
         assert_eq!(id_stem("ѹченикъ"), "оученикъ");
+        // the ligature ѿ is the prefix от- and a fact of the lexeme (ѡ҆трѐ is
+        // о-тре): the importer writes it, the typography keeps what it gets
+        assert_eq!(realise("ѿпада́ти", &SYN), "ѿпада́ти");
+        assert_eq!(realise("ѡ҆трѐ", &SYN), "ѡ҆трѐ");
         assert_eq!(realise("бг҃ъ", &SYN), "бг҃ъ");
         assert_eq!(realise("Ра́бъ", &SYN), "ра́бъ");
         // The oxia before a solid enclitic stays; the plural varia of the

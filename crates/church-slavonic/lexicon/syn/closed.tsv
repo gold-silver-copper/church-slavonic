@@ -1282,7 +1282,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡсанна.x.2	ѡ҆са́нна	x	-	-	intj	a	-	-	word=ѻ҆са́нна	P:-	intj
 ѡсꙋжденнѡ.x.2	ѡ҆сꙋжде́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 ѡсꙋжденнѣ.x.2	ѡ҆сꙋжде́ннѣ	x	-	-	adv	a	-	-	-	P:-	adv
-ѡтайнѣ.x.2	ѡ҆та́йнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+ѡтайнѣ.x.2	ѿа́йнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 ѡшꙋюю.x.2	ѡ҆шꙋ́юю	x	-	-	adv	a	-	-	word=ѡ҆шꙋ́ю|ѻ҆шꙋ́юю	P:-	adv
 ѽ.x	ѽ	x	-	-	intj	-	-	-	-	P:-	intj
 ѽле.x	ѽле	x	-	-	intj	a	-	-	-	P:-	intj
@@ -1307,7 +1307,6 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѿкꙋдꙋ.x	ѿкꙋ́дꙋ	x	-	-	advpro	a	-	-	-	P:-	advpro
 ѿкꙋдꙋже.x	ѿкꙋ́дꙋже	x	-	-	advpro	a	-	-	-	P:-	advpro
 ѿложнѡ.x	ѿло́жнѡ	x	-	-	adv	a	-	-	-	P:-	adv
-ѿмстительнѣ.x	ѿмсти́тельнѣ	x	-	-	adv	a	adv-of=ѡтмстительный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
 ѿнелѣже.x	ѿне́лѣже	x	-	-	advpro	a	-	-	word=ѿне́лиже|ѿне́леже	P:-	advpro
 ѿнынѣ.x	ѿны́нѣ	x	-	-	adv	a	-	-	-	P:-	adv
 ѿнюдъ.x	ѿню́дъ	x	-	-	part	a	-	-	-	P:-	part
@@ -1319,7 +1318,6 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѿрадно.x	ѿра́дно	x	-	-	adv	a	adv-of=ѡтрадный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
 ѿрѣшеннѡ.x	ѿрѣше́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 ѿселѣ.x	ѿсе́лѣ	x	-	-	advpro	a	-	-	-	P:-	advpro
-ѿстꙋпнѡ.x	ѿстꙋ́пнѡ	x	-	-	adv	a	adv-of=ѡтстꙋпный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
 ѿсюдꙋ.x	ѿсю́дꙋ	x	-	-	advpro	a	-	-	word=ѿсю́дꙋже	P:-	advpro
 ѿсꙋпротивꙋ.x	ѿсꙋпроти́вꙋ	x	-	-	adv	a	-	-	-	P:-	adv
 ѿтолѣ.x	ѿто́лѣ	x	-	-	advpro	a	-	-	-	P:-	advpro

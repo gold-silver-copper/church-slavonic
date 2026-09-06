@@ -35,12 +35,19 @@ The plan is `V3.0-PROMPT.md` Parts 3–4.
   every id's «оу» spelling; the Synodal lexicon files re-imported
   (1,191 lines re-spelled), `write_outcome` re-realises kept variants.
 
-| Number | before | after |
-|---|---|---|
-| Bible treebank | one cell 205,403 (32.5%), sets 1,779, tagger 185,910 (29.4%), closed 177,091 (28.0%), several lexemes 11,774 (1.9%), verbatim 48,972 (7.7%) | one cell 211,123 (33.4%), sets 1,790 (0.3%), tagger 189,408 (30.0%), closed 178,214 (28.2%), several lexemes 12,180 (1.9%), verbatim **38,214 (6.0%)**; zero mismatches |
-| analyzer, tokens with no reading | 71,870 (11.39%) | 61,044 (9.68%) |
-| hand overlay out of reach | 54 | 42 (tagger 74.86%) |
-| held-out recall / ids changed | — | unchanged / 0 |
+- **The prefix от- is the ligature ѿ**, written into the lexeme's letters
+  by the importer with the Bible as arbiter (ѡ҆трѐ, о-тре, keeps «ѡ҆т»);
+  **ids never move** as a rule (`restore_ids`: a lemma group's lexemes
+  take the existing ids in order, absorbed twins holding their places);
+  1 Corinthians 13 lifted (100 leaves, 0 findings; любы̀ and трѝ are
+  missing lexemes).
+
+| Number | before | after the uk | after the ligature |
+|---|---|---|---|
+| Bible treebank | one cell 205,403 (32.5%), sets 1,779, tagger 185,910 (29.4%), closed 177,091 (28.0%), several lexemes 11,774 (1.9%), verbatim 48,972 (7.7%) | one cell 211,123 (33.4%), sets 1,790, tagger 189,408 (30.0%), closed 178,214 (28.2%), several lexemes 12,180 (1.9%), verbatim 38,214 (6.0%) | one cell 212,450 (33.6%), sets 1,791 (0.3%), tagger 190,428 (30.1%), closed 178,213 (28.2%), several lexemes 12,329 (2.0%), verbatim **35,718 (5.7%)**; zero mismatches |
+| analyzer, tokens with no reading | 71,870 (11.39%) | 61,044 (9.68%) | — |
+| hand overlay | 2,097 leaves, out of reach 54 | 2,097, out of reach 42 (tagger 74.86%) | 2,197 leaves (1 Corinthians 13), rules exclude none, tagger 74.51% |
+| held-out recall / ids changed | — | unchanged / 0 | unchanged / 0 |
 
 ## 3.0.0 (2026-09-05) — the accent-paradigm inventory and weighted evidence
 

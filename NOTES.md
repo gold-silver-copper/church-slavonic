@@ -1604,3 +1604,49 @@ members — stays deliberately its own future design.
   Proverbs, and the chapters to lift are Romans 1, 1 Corinthians 13,
   Luke 2, Leviticus 1 (114 verses), with the Psalter replaced by a
   prophetic chapter if the gate needs the verses.
+
+## 2026-09-05 — 3.1 Part 4, continued: the ligature, ids that never move, the first chapter
+
+- **The prefix от- is the ligature ѿ, and that is a fact of the lexeme
+  (finding, fixed in the importer).** 1 Corinthians 13's draft left
+  ѿпа́даетъ verbatim: the pinned Bible writes the prefix as ѿ (12,933
+  tokens, 9,070 of them the bare preposition) while Polyakov transcribes
+  it «ѡ҆т-» (353 lemmas); a first crate rule «initial ѡт → ѿ» was wrong
+  and withdrawn — ѡ҆трѐ (о-тре, 110 tokens) and ѡ҆то́къ are prefix о- on a
+  т-root and the print keeps ѡ҆т. Typography cannot see morphology, so
+  the importer writes the ligature into the lexeme's letters with the
+  Bible as arbiter (`ligature`: a lemma whose Bible prints begin «ѡ҆т»
+  keeps the letters; every other «ѡ҆т-» becomes ѿ), and `realise` prints
+  what it gets.
+- **Ids never move, as a rule (decision).** The re-import under a new
+  typography exposed that ids were numbered by processing order (a
+  quarantined entry consumed a number; a closed entry was numbered
+  twice, which is why every closed id ends in `.2`). `restore_ids` now
+  runs after the loop: the fitted lexemes of one lookup key (the letters
+  with the initial uk as «оу» and the initial ѿ as «ѡт», nothing else —
+  мі́ръ and ми́ръ stay apart), in entry order, take that key's existing
+  ids in numeric order, the ids the twins' merge absorbed
+  (`data/twins.tsv`) holding their places; a lexeme beyond them gets the
+  next number on the key's stem. Verified: a re-import from the committed
+  files changes no id (the two closed adverbs ѿмсти́тельнѣ, ѿстꙋ́пнѡ went
+  to their adjectives' `adv` cell).
+- **1 Corinthians 13 lifted** (100 leaves, `narrow-hand` 0 findings;
+  `data/treebank-hand/b63.sexp`). Its findings: любы̀ (love) is analysed
+  as the adjective любый because the ū-stem noun (любы̀, любвѐ) is
+  missing; трѝ (three) as an imperative of терти because the numeral is
+  missing; ѧ҆зы̑ки — the print spells ꙗ҆зы́къ with initial ѧ in 156 tokens
+  (ꙗ҆ in 1,034), a lexical letter variant the arbiter never crosses;
+  кѷмва́лъ — the izhitsa's kendema (ѷ where it reads as a vowel) is a
+  stage-4 rule like the ї's, not written yet (rare); нн҃ѣ a titlo row
+  the table lacks. The hand leaves for these are verbatim with `:lemma`
+  and `:case`.
+- **The gate, honestly.** The Psalter of the source is fragments; the
+  chapters left are Romans 1, Luke 2, Leviticus 1 and Isaiah 53 (113
+  verses) — with 1 Corinthians 13 about 1,300 leaves, short of the
+  prompt's 4,200; the finding-first work (the uk, the ligature) moved
+  the Bible more than the gold would.
+- Treebank: one cell 212,450 (33.6%), sets 1,791, tagger 190,428
+  (30.1%), closed 178,213 (28.2%), several lexemes 12,329 (2.0%),
+  verbatim 35,718 (5.7%); zero mismatches. Recall unchanged; overlay
+  2,197 leaves, rules exclude none, tagger 74.51% (842 of 1,130). Tests,
+  clippy, the game (four re-pasted strings) green.

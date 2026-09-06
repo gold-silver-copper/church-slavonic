@@ -7589,7 +7589,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 храмный.a	хра́мный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 храмовый.a	хра́мовый	a	-	-	A1t	d{long.pos.m.sg.nom=S;long.pos.m.sg.acc=S;long.pos.m.pl.acc=E;long.pos.f.pl.nom=E;long.pos.f.pl.acc=E}	-	-	-	P:A1t	-
 хранительный.a	храни́тельный	a	-	-	A1t*	a	-	short.pos.f.sg.nom=храни́тельны	-	P:A1t*	-
-хромый.a	хромы́й	a	-	-	A1t	b.shortn{short.pos.m.sg.gen=S;short.pos.m.sg.dat=S;short.pos.m.pl.nom=S;short.pos.f.sg.nom=S;short.pos.f.sg.acc=S;short.pos.n.sg.gen=S;short.pos.n.sg.dat=S;long.pos.m.pl.nom=S;long.pos.n.sg.nom=S;long.pos.n.sg.acc=S}	-	short.pos.m.sg.ins=хрѡмы́мъ;short.pos.m.pl.dat=хромы̑мъ;short.pos.f.pl.dat=хромы̑мъ;short.pos.n.sg.ins=хрѡмы́мъ;short.pos.n.pl.dat=хромы̑мъ;long.pos.m.sg.acc=хрома́го;long.pos.m.sg.ins=хрѡмы́мъ;long.pos.m.pl.dat=хромы̑мъ;long.pos.f.sg.gen=хрѡмы́ѧ;long.pos.f.pl.dat=хромы̑мъ;long.pos.n.sg.ins=хрѡмы́мъ;long.pos.n.pl.dat=хромы̑мъ	short.pos.m.sg.acc=хро́ма×3;long.pos.m.sg.nom=хро́мый×3;long.pos.m.sg.acc=хро́мый×3;long.pos.m.pl.nom=хромі́и×10;long.pos.f.sg.nom=хрѡ́маѧ×1;long.pos.f.sg.gen=хрѡ́мыѧ×3	P:A1t	-
+хромый.a	хромы́й	a	-	-	A1t	c{short.pos.m.sg.ins=E;short.pos.m.pl.nom=S;short.pos.n.sg.ins=E;long.pos.m.sg.nom=E;long.pos.m.sg.dat=E;long.pos.m.sg.acc=E;long.pos.m.sg.ins=E;long.pos.m.pl.nom=S;long.pos.f.sg.gen=E;long.pos.n.sg.dat=E;long.pos.n.sg.ins=E}	-	short.pos.m.sg.ins=хрѡмы́мъ;short.pos.m.pl.dat=хромы̑мъ;short.pos.f.pl.dat=хромы̑мъ;short.pos.n.sg.ins=хрѡмы́мъ;short.pos.n.pl.dat=хромы̑мъ;long.pos.m.sg.acc=хрома́го;long.pos.m.sg.ins=хрѡмы́мъ;long.pos.m.pl.dat=хромы̑мъ;long.pos.f.sg.nom=хрѡ́маѧ;long.pos.f.sg.gen=хрѡмы́ѧ;long.pos.f.pl.dat=хромы̑мъ;long.pos.n.sg.ins=хрѡмы́мъ;long.pos.n.pl.dat=хромы̑мъ	long.pos.m.sg.nom=хро́мый×3;long.pos.m.sg.acc=хро́мый×3;long.pos.m.pl.nom=хромі́и×10;long.pos.f.sg.nom=хрома́ѧ×1;long.pos.f.sg.gen=хрѡ́мыѧ×3	P:A1t	-
 хрістоборный.a	хрістобо́рный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
 хрістовъ.a	хрісто́въ	a	-	-	A2t	a	-	short.pos.m.pl.nom=хрісто́вы	-	P:A2t	poss
 хрістоименитый.a	хрістоимени́тый	a	-	-	A1t	a	-	-	-	P:A1t	-
@@ -8199,26 +8199,26 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡсіевъ.a	ѡ҆сі́евъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
 ѡсіинъ.a	ѡ҆сі́инъ	a	-	-	A2t	a	-	-	-	P:A2t	poss
 ѡсꙋщественный.a	ѡ҆сꙋ́щественный	a	-	-	A1n*	a{long.pos.m.pl.acc=L;long.pos.f.pl.nom=L;long.pos.f.pl.acc=L}	-	-	-	P:A1n*	-
-ѡтвѣщательный.a	ѡ҆твѣща́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-ѡтгнательный.a	ѡ҆тгна́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-ѡтгонительный.a	ѡ҆тгони́тельный	a	-	-	A1t*	a	ins=ѿгонителен	-	-	P:A1t*	-
-ѡтдаленный.a	ѡ҆тдале́нный	a	-	-	A1n*	a	-	long.pos.m.sg.dat=ѿдале́номꙋ;long.pos.n.sg.dat=ѿдале́номꙋ	-	P:A1n*	-
-ѡтерновленный.a	ѡ҆терновле́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-ѡткровенный.a	ѡ҆ткрове́нный	a	-	-	A1n*	a	ins=ѿкровен	short.pos.m.pl.ins=ѿкрове́нными;short.pos.f.pl.ins=ѿкрове́нными;short.pos.n.pl.ins=ѿкрове́нными;long.pos.m.sg.loc=ѿкрове́нномъ;long.pos.n.sg.loc=ѿкрове́нномъ	short.pos.m.pl.dat=ѿкровє́нымъ×1;short.pos.f.pl.dat=ѿкровє́нымъ×1;short.pos.n.pl.dat=ѿкровє́нымъ×1;long.pos.m.pl.dat=ѿкровє́нымъ×1;long.pos.f.pl.dat=ѿкровє́нымъ×1;long.pos.n.pl.dat=ѿкровє́нымъ×1	P:A1n*	-
-ѡтметательный.a	ѡ҆тмета́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-ѡтметный.a	ѡ҆тме́тный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-ѡтмстительный.a	ѡ҆тмсти́тельный	a	-	-	A1t*	a	ins=ѿмстителен	adv=ѡ҆тмсти́тельнѣ	-	P:A1t*	adv P:5
-ѡтмѣнный.a	ѡ҆тмѣ́нный	a	-	-	A1n*	a	2=ѿмѣнн	-	-	P:A1n*	-
-ѡтонꙋдный.a	ѡ҆тонꙋ́дный	a	-	-	A1t*	a	1=ѿѻнꙋдн	-	-	P:A1t*	-
-ѡтпꙋстительный.a	ѡ҆тпꙋсти́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-ѡтрадный.a	ѡ҆тра́дный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:1
-ѡтрꙋбѧнный.a	ѡ҆трꙋбѧ́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
-ѡтстꙋпническій.a	ѡ҆тстꙋ́пническій	a	-	-	A1sk	a	-	-	-	P:A1k	-
-ѡтстꙋпный.a	ѡ҆тстꙋ́пный	a	-	-	A1t*	a	-	-	-	P:A1t*	adv P:2
-ѡтходный.a	ѡ҆тхо́дный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
-ѡтчаѧнный.a	ѡ҆тча́ѧнный	a	-	-	A1n*	a	ins=ѿчаѧн	short.pos.m.pl.nom=ѿча̑ѧни;short.pos.f.sg.nom=ѿча́ѧнна;long.pos.m.sg.acc=ѿча́ѧннаго;long.pos.m.sg.loc=ѿча́ѧнномъ;long.pos.n.sg.loc=ѿча́ѧнномъ	-	P:A1n*	-
-ѡтчꙋжденный.a	ѡ҆тчꙋжде́нный	a	-	-	A1n*	a	ins=ѿчюжден	-	-	P:A1n*	-
-ѡтшельническій.a	ѡ҆тше́льническій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=ѿше́льническомъ;long.pos.n.sg.nom=ѿше́лническое;long.pos.n.sg.acc=ѿше́лническое;long.pos.n.sg.loc=ѿше́льническомъ	-	P:A1k	-
+ѡтвѣщательный.a	ѿвѣща́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтгнательный.a	ѿгна́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтгонительный.a	ѿгони́тельный	a	-	-	A1t*	a	ins=ѿгонителен	-	-	P:A1t*	-
+ѡтдаленный.a	ѿдале́нный	a	-	-	A1n*	a	-	long.pos.m.sg.dat=ѿдале́номꙋ;long.pos.n.sg.dat=ѿдале́номꙋ	-	P:A1n*	-
+ѡтерновленный.a	ѿерновле́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+ѡткровенный.a	ѿкрове́нный	a	-	-	A1n*	a	ins=ѿкровен	short.pos.m.pl.ins=ѿкрове́нными;short.pos.f.pl.ins=ѿкрове́нными;short.pos.n.pl.ins=ѿкрове́нными;long.pos.m.sg.loc=ѿкрове́нномъ;long.pos.n.sg.loc=ѿкрове́нномъ	short.pos.m.pl.dat=ѿкровє́нымъ×1;short.pos.f.pl.dat=ѿкровє́нымъ×1;short.pos.n.pl.dat=ѿкровє́нымъ×1;long.pos.m.pl.dat=ѿкровє́нымъ×1;long.pos.f.pl.dat=ѿкровє́нымъ×1;long.pos.n.pl.dat=ѿкровє́нымъ×1	P:A1n*	-
+ѡтметательный.a	ѿмета́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтметный.a	ѿме́тный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтмстительный.a	ѿмсти́тельный	a	-	-	A1t*	a	ins=ѿмстителен	adv=ѿмсти́тельнѣ	-	P:A1t*	-
+ѡтмѣнный.a	ѿмѣ́нный	a	-	-	A1n*	a	-	short.pos.m.pl.acc=ѿмѣ̑нны	-	P:A1n*	-
+ѡтонꙋдный.a	ѿонꙋ́дный	a	-	-	A1t*	a	1=ѿѻнꙋдн	-	-	P:A1t*	-
+ѡтпꙋстительный.a	ѿпꙋсти́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтрадный.a	ѿра́дный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтрꙋбѧнный.a	ѿрꙋбѧ́нный	a	-	-	A1n*	a	-	-	-	P:A1n*	-
+ѡтстꙋпническій.a	ѿстꙋ́пническій	a	-	-	A1sk	a	-	-	-	P:A1k	-
+ѡтстꙋпный.a	ѿстꙋ́пный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтходный.a	ѿхо́дный	a	-	-	A1t*	a	-	-	-	P:A1t*	-
+ѡтчаѧнный.a	ѿча́ѧнный	a	-	-	A1n*	a	ins=ѿчаѧн	short.pos.m.pl.nom=ѿча̑ѧни;short.pos.f.sg.nom=ѿча́ѧнна;long.pos.m.sg.acc=ѿча́ѧннаго;long.pos.m.sg.loc=ѿча́ѧнномъ;long.pos.n.sg.loc=ѿча́ѧнномъ	-	P:A1n*	-
+ѡтчꙋжденный.a	ѿчꙋжде́нный	a	-	-	A1n*	a	ins=ѿчюжден	-	-	P:A1n*	-
+ѡтшельническій.a	ѿше́льническій	a	-	-	A1sk	a	-	long.pos.m.sg.loc=ѿше́льническомъ;long.pos.n.sg.nom=ѿше́лническое;long.pos.n.sg.acc=ѿше́лническое;long.pos.n.sg.loc=ѿше́льническомъ	-	P:A1k	-
 ѡфірскій.a	ѡ҆фі́рскій	a	-	-	A1sk	a	-	-	-	P:A1k	-
 ѡчервленный.a	ѡ҆червле́нный	a	-	-	A1n*	a.short{short.pos.f.sg.nom=S}	-	short.pos.f.sg.nom=ѡ҆червле́ны;short.pos.f.sg.ins=ѡ҆червле́ною;long.pos.f.sg.ins=ѡ҆червле́ною	short.pos.m.pl.nom=ѡ҆червленѝ×1;short.pos.f.sg.nom=ѡ҆червлена̀×1	P:A1n*	-
 ѡчистительный.a	ѡ҆чисти́тельный	a	-	-	A1t*	a	-	-	-	P:A1t*	-

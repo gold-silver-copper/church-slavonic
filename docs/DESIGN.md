@@ -455,6 +455,15 @@ any code change.
    primary), reaches (an alternative or variant) and adds the rest as
    variants with the source's token; a lemma the lexicon lacks is
    quarantined.
+4a. Ids never move (3.1): after the fit, the lexemes of one lookup key
+   (the letters with the initial uk as «оу» and the initial ѿ as «ѡт»),
+   in the order of their source entries, take that key's existing ids in
+   numeric order, the ids the twins' merge absorbed (`data/twins.tsv`)
+   holding their places; a new lexeme gets the next number on the key's
+   stem. The prefix от- is the ligature ѿ in the letters, written by the
+   importer with the Bible as arbiter (a lemma whose Bible prints begin
+   «ѡ҆т» — ѡ҆трѐ, о-тре — keeps them); the typography never guesses
+   morphology.
 4b. One lexeme per line (3.1): a source that splits a word by sense
    (Polyakov's ꙗзыкъ tongue / nation, зрѣти twice) is merged after the
    fit — two fitted lexemes with the same accent-blind lemma, part of
