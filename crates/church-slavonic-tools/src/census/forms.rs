@@ -19,6 +19,9 @@ fn walk(node: &Node, out: &mut Vec<(String, String, usize, bool)>) {
     match node {
         Node::Lex { id, cells, alt, notes } if !crate::treebank::runner::tagged(notes) => out.push((id.clone(), cells.name(), *alt, cells.len() == 1)),
         Node::Lex { .. } => {}
+        // a closed leaf printed as its primary (`(f id)`, 4.1: without
+        // this the alts alone were tallied and the primary lost 1:0)
+        Node::Fn(id) if church_slavonic::sentence::node::is_lexeme_id(id) => out.push((id.clone(), "word".to_string(), 0, true)),
         Node::Cap(inner) | Node::Abbr { child: inner, .. } => walk(inner, out),
         Node::Pw { host, .. } => walk(host, out),
         Node::Group { children, .. } => children.iter().for_each(|c| walk(c, out)),

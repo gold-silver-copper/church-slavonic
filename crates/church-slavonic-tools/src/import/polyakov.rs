@@ -295,20 +295,42 @@ fn attested_cells(entry: &Entry, pos: Pos, class: &str, o: &mut Outcome) -> (Att
             o.bump("forms skipped: unanalysed");
             continue;
         }
-        let printed = bible_spelling(realise(&form.form, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
-        if form.form.contains('\u{483}') || form.cells.iter().any(|c| c.iter().any(|t| t.starts_with('9'))) {
+        // a form written under a titlo (бг҃оро́диченъ) is the full form
+        // with the titlo rows' skeletons put back (4.1 Part 2: 578 entries
+        // had no other spelling, богоро́диченъ among them); the rows the
+        // expansion used are proposed for `lexicon/titlo.tsv`
+        let mut form_text = form.form.clone();
+        if form_text.chars().any(is_titlo_mark) && pos == Pos::Closed {
+            // a closed word's titlo spelling stays out: its lemma is its
+            // form, and the expansion would rename it (ids never move)
             o.bump("forms skipped: titlo spelling");
             continue;
         }
+        if form_text.chars().any(is_titlo_mark) {
+            match expand_titlo(&form_text, &comparison_key(&realise(&entry.lemma, &SYN))) {
+                Some((expanded, used)) => {
+                    o.bump("forms expanded: titlo spelling");
+                    for (abbr, full) in used {
+                        *o.titlo_rows.entry((abbr.to_string(), full.to_string(), entry.lemma.clone(), pos.tag().to_string())).or_default() += form.count;
+                    }
+                    form_text = expanded;
+                }
+                None => {
+                    o.bump("forms skipped: titlo spelling");
+                    continue;
+                }
+            }
+        }
+        let printed = bible_spelling(realise(&form_text, &SYN), &comparison_key(&realise(&entry.lemma, &SYN)));
         if accented_lemma && !is_accented(&printed) && church_slavonic::orthography::vowel_count(&printed) > 1 {
             o.bump("forms skipped: unaccented in an accented source");
             continue;
         }
-        if has_consonant_mark(&form.form) {
+        if has_consonant_mark(&form_text) {
             o.bump("forms skipped: erok/abbreviation mark on a consonant");
             continue;
         }
-        if stress_marks(&form.form) > 1 {
+        if stress_marks(&form_text) > 1 {
             o.bump("forms skipped: two stress marks");
             continue;
         }
@@ -374,7 +396,11 @@ fn attested_cells(entry: &Entry, pos: Pos, class: &str, o: &mut Outcome) -> (Att
             // leaf — a form that is syncretic anywhere (жєны̀ beside жены̑,
             // дре́ва beside древа̀) has tokens no one-cell count sees
             let bible_of = |f: &str| -> (u64, u64) {
-                if Some(cell) == citation || comparison_key(f) != source_first {
+                // a closed word's one cell is its citation cell (4.1: the
+                // vote flipped бо̀ to бо and ѕѣлѡ̀ to ѕѣло̀, the hand
+                // overlay's leaves with it; the lemma and the id follow
+                // the headword, the alts hold the print's spellings)
+                if Some(cell) == citation || pos == Pos::Closed || comparison_key(f) != source_first {
                     return (0, 0);
                 }
                 bible.get(&(lemma_key.clone(), pos, cell.name(), super::fit::canonical(f))).copied().unwrap_or((0, 0))
@@ -423,6 +449,84 @@ fn bible_counts() -> &'static BibleCounts {
         }
         out
     })
+}
+
+/// A titlo, a pokrytie, or a combining letter under one (ⷭ, ⷣ …).
+fn is_titlo_mark(c: char) -> bool {
+    matches!(c as u32, 0x483 | 0x487 | 0x2de0..=0x2dff | 0xa674..=0xa67d)
+}
+
+/// The letters of an abbreviated piece with its titlo cluster, the other
+/// marks dropped, lowercase: what two abbreviations share.
+fn titlo_key(s: &str) -> String {
+    use unicode_normalization::UnicodeNormalization;
+    s.nfd().filter(|c| is_titlo_mark(*c) || !unicode_normalization::char::is_combining_mark(*c)).flat_map(char::to_lowercase).collect()
+}
+
+/// A form written under titlos expanded by the rows' (abbreviation,
+/// skeleton) pairs, left to right (крⷭ҇тобг҃оро́диченъ → крестобогоро́диченъ):
+/// each piece up to a titlo cluster ends in some row's abbreviation, whose
+/// skeleton replaces it; the tail keeps its marks. Where several rows
+/// abbreviate alike (дв҃ is дѣв and даві, цр҃ цар and цер) the lemma
+/// decides: the expansion whose letters share the longest prefix with
+/// the lemma's. `None` when a piece matches no row.
+fn expand_titlo(form: &str, lemma_key: &str) -> Option<(String, Vec<(&'static str, &'static str)>)> {
+    static PAIRS: std::sync::OnceLock<Vec<(&'static str, &'static str, String)>> = std::sync::OnceLock::new();
+    let pairs = PAIRS.get_or_init(|| {
+        let mut v: Vec<(&str, &str, String)> = Vec::new();
+        for r in church_slavonic::titlo::rows() {
+            if !v.iter().any(|(a, f, _)| *a == r.abbr && *f == r.full) {
+                v.push((r.abbr, r.full, titlo_key(r.abbr)));
+            }
+        }
+        v.sort_by_key(|(_, _, k)| std::cmp::Reverse(k.chars().count()));
+        v
+    });
+    // every expansion: (text so far, rows used, the rest)
+    let mut partial: Vec<(String, Vec<(&'static str, &'static str)>, &str)> = vec![(String::new(), Vec::new(), form)];
+    let mut done: Vec<(String, Vec<(&'static str, &'static str)>)> = Vec::new();
+    while let Some((out, used, rest)) = partial.pop() {
+        let Some(start) = rest.char_indices().find(|(_, c)| is_titlo_mark(*c)).map(|(i, _)| i) else {
+            done.push((out + rest, used));
+            continue;
+        };
+        let mut end = start;
+        for (i, c) in rest[start..].char_indices() {
+            if is_titlo_mark(c) {
+                end = start + i + c.len_utf8();
+            } else {
+                break;
+            }
+        }
+        let piece = &rest[..end];
+        let key = titlo_key(piece);
+        let longest = pairs.iter().filter(|(_, _, k)| key.ends_with(k.as_str())).map(|(_, _, k)| k.chars().count()).max();
+        let Some(longest) = longest else { continue };
+        for (abbr, full, akey) in pairs.iter().filter(|(_, _, k)| key.ends_with(k.as_str()) && k.chars().count() == longest) {
+            // the printed prefix before the abbreviation: as many base
+            // letters as the key has beyond the abbreviation's
+            let lead_letters = key.chars().count() - akey.chars().count();
+            let mut seen = 0;
+            let mut cut = 0;
+            for (i, c) in piece.char_indices() {
+                if seen == lead_letters && !unicode_normalization::char::is_combining_mark(c) {
+                    cut = i;
+                    break;
+                }
+                if !unicode_normalization::char::is_combining_mark(c) {
+                    seen += 1;
+                }
+            }
+            let mut next = out.clone();
+            next.push_str(&piece[..cut]);
+            next.push_str(full);
+            let mut next_used = used.clone();
+            next_used.push((*abbr, *full));
+            partial.push((next, next_used, &rest[end..]));
+        }
+    }
+    let shared = |a: &str| comparison_key(a).chars().zip(lemma_key.chars()).take_while(|(x, y)| x == y).count();
+    done.into_iter().max_by_key(|(e, _)| shared(e))
 }
 
 /// The base with its wide letters narrowed (`артемѡн` -> `артемон`).
@@ -855,6 +959,12 @@ pub fn import(pos: Pos) -> Result<Outcome, Box<dyn Error>> {
             quarantine(&mut o, "class not in the inventory", entry.class.clone());
             continue;
         }
+        // a headword itself under a titlo (дв҃ома́ти) is a slip of the
+        // source, not a lexeme (4.1 Part 2)
+        if entry.lemma.chars().any(is_titlo_mark) {
+            quarantine(&mut o, "lemma under a titlo", entry.lemma.clone());
+            continue;
+        }
         let (mut attested, bundled) = attested_cells(entry, pos, &codes[0], &mut o);
         if attested.is_empty() {
             quarantine(&mut o, "no analysed forms", String::new());
@@ -1117,7 +1227,15 @@ fn merge_twins(o: &mut Outcome, pos: Pos, entries: &[Entry], evidence: &HashMap<
             let survivor = &o.lexemes[si];
             let Some(class) = classes.get(&survivor.class) else { continue };
             let mut scratch = Outcome::default();
-            let (attested, bundled) = attested_cells(&merged_entry, pos, &survivor.class, &mut scratch);
+            let (mut attested, bundled) = attested_cells(&merged_entry, pos, &survivor.class, &mut scratch);
+            // the survivor's cells its own forms never attest (the adv
+            // cell Polyakov's adverb entry attests) stay attested: the
+            // merge lost бла́гѡ's stress (4.1)
+            if let Some((_, sattested, _)) = evidence.get(&survivor.id) {
+                for (c, v) in sattested {
+                    attested.entry(*c).or_insert_with(|| v.clone());
+                }
+            }
             let mut src = survivor.src.clone();
             let mut note: Vec<String> = survivor.note.split("; ").filter(|n| !n.is_empty()).map(str::to_string).collect();
             for a in &taken {
@@ -1216,9 +1334,40 @@ fn restore_ids(o: &mut Outcome, lexicon: &church_slavonic::Lexicon, pos: Pos, ev
         groups.entry(id_lookup_key(&Form::from_print(&l.lemma).letters)).or_default().push(i);
     }
     let mut renamed: Vec<(String, String)> = Vec::new();
+    let groups_members: HashMap<String, usize> = groups.iter().map(|(k, v)| (k.clone(), v.len())).collect();
     for (key, mut members) in groups {
         members.sort_by_key(|i| evidence.get(&o.lexemes[*i].id).map(|e| e.0).unwrap_or(usize::MAX));
-        let held = existing.get(&key).cloned().unwrap_or_default();
+        // a lemma the source spelt with у after a prefix's о (поꙋче́ніе,
+        // 4.1) keeps the id its collapsed spelling was given (пꙋченіе.n)
+        let held = match existing.get(&key) {
+            Some(h) => h.clone(),
+            None => {
+                // the id an earlier spelling of the lemma was given: the
+                // source's headword where the attested citation form
+                // replaced it (богоме́рзкій → богоме́рзскїй, the overlay
+                // names богомерзкій.a), or the collapsed spelling of a
+                // prefix's о before ꙋ (поꙋсти́ти was пꙋстити.v.2); the
+                // ids that spelling's own group does not take
+                let mut candidates: Vec<String> = Vec::new();
+                for i in &members {
+                    if let Some(h) = o.lexemes[*i].note.split("; ").find_map(|n| n.strip_prefix("headword ")) {
+                        candidates.push(id_lookup_key(&Form::from_print(h).letters));
+                    }
+                }
+                let folded = key.replace("оꙋ", "ꙋ");
+                if folded != key {
+                    candidates.push(folded);
+                }
+                candidates
+                    .iter()
+                    .find_map(|c| {
+                        let taken = groups_members.get(c).copied().unwrap_or(0);
+                        let h: Vec<String> = existing.get(c).map(|h| h.iter().skip(taken).cloned().collect()).unwrap_or_default();
+                        if h.is_empty() { None } else { Some(h) }
+                    })
+                    .unwrap_or_default()
+            }
+        };
         let stem = held.first().map(|id| id_stem_of(id, pos)).unwrap_or_else(|| church_slavonic::orthography::id_stem(&Form::from_print(&o.lexemes[members[0]].lemma).letters));
         let mut next = held.iter().map(|id| suffix(id)).max().unwrap_or(0) + 1;
         for (k, i) in members.iter().enumerate() {
@@ -1264,61 +1413,59 @@ fn loanword_iota(print: String, lemma_key: &str) -> String {
     use unicode_normalization::UnicodeNormalization;
     static POSITIONS: std::sync::OnceLock<HashMap<String, Vec<usize>>> = std::sync::OnceLock::new();
     let positions = POSITIONS.get_or_init(|| {
-        // the commonest verbatim print with a ї per lemma key
-        // (`data/loanword-iota.tsv`, `census verbatim --write`)
-        let mut best: HashMap<String, (u64, String)> = HashMap::new();
+        // every verbatim print of the і/ї/и bucket per lemma key, with its
+        // count (`data/loanword-iota.tsv`, `census verbatim --write`): the
+        // Bible's own spellings vote by position — ї against і or и —
+        // together with the lifted prints of the lexeme
+        // (`treebank-forms.tsv`); a position takes ї only where ї
+        // outvotes the other letters (4.1: стїх 9 against сти́хъ 33 keeps
+        // і; плїнѳодѣ́ланїемъ 2 against nothing takes ї)
+        let mut prints: HashMap<String, Vec<(String, u64)>> = HashMap::new();
         let path = crate::workspace_root().join("data/loanword-iota.tsv");
         for line in std::fs::read_to_string(path).unwrap_or_default().lines().skip(1) {
             let cols: Vec<&str> = line.split('\t').collect();
             let [key, form, n] = cols[..] else { continue };
-            let count: u64 = n.parse().unwrap_or(0);
-            let e = best.entry(key.to_string()).or_insert((0, String::new()));
-            if count > e.0 {
-                *e = (count, form.to_string());
-            }
+            prints.entry(key.to_string()).or_default().push((form.to_string(), n.parse().unwrap_or(0)));
         }
-        // the lifted prints of the same lemma (`treebank-forms.tsv`) are
-        // the other side: the print decides by count — a lexeme the Bible
-        // mostly prints with і (сі́мѡнъ, lifted 130 times) keeps і
-        let mut lifted: HashMap<String, Vec<(String, u64)>> = HashMap::new();
         for ((key, _, _, form), (n, _)) in bible_counts() {
-            lifted.entry(key.clone()).or_default().push((form.clone(), *n));
+            prints.entry(key.clone()).or_default().push((form.clone(), *n));
         }
+        let bases_of = |f: &str| -> Vec<char> { f.nfc().filter(|c| !unicode_normalization::char::is_combining_mark(*c)).collect() };
         let mut out: HashMap<String, Vec<usize>> = HashMap::new();
-        for (key, (count, form)) in best {
-            let bases: Vec<char> = form.nfc().filter(|c| !unicode_normalization::char::is_combining_mark(*c)).collect();
-            let mut at = Vec::new();
-            for (i, c) in bases.iter().enumerate() {
-                if *c == 'ї' {
-                    let next = bases.get(i + 1).copied();
-                    let positional = next.is_some_and(|n| church_slavonic::orthography::is_vowel_letter(n) || n == 'й');
-                    if !positional {
-                        at.push(i);
+        for (key, forms) in prints {
+            // the candidate positions: where some print writes a
+            // non-positional ї
+            let mut candidates: Vec<usize> = Vec::new();
+            for (f, _) in &forms {
+                let b = bases_of(f);
+                for (i, c) in b.iter().enumerate() {
+                    if *c == 'ї' {
+                        let next = b.get(i + 1).copied();
+                        let positional = next.is_some_and(|n| church_slavonic::orthography::is_vowel_letter(n) || n == 'й');
+                        if !positional && !candidates.contains(&i) {
+                            candidates.push(i);
+                        }
                     }
                 }
             }
-            if at.is_empty() {
-                continue;
+            let mut at = Vec::new();
+            for i in candidates {
+                let (mut yes, mut no) = (0u64, 0u64);
+                for (f, n) in &forms {
+                    match bases_of(f).get(i) {
+                        Some('ї') => yes += n,
+                        Some('і') | Some('и') => no += n,
+                        _ => {}
+                    }
+                }
+                if yes > no {
+                    at.push(i);
+                }
             }
-            // the lifted prints that spell і at one of those positions
-            // (an abbreviation hides the letter and does not vote)
-            let against: u64 = lifted
-                .get(&key)
-                .map(|prints| {
-                    prints
-                        .iter()
-                        .filter(|(p, _)| {
-                            let b: Vec<char> = p.nfc().filter(|c| !unicode_normalization::char::is_combining_mark(*c)).collect();
-                            at.iter().any(|i| b.get(*i) == Some(&'і'))
-                        })
-                        .map(|(_, n)| *n)
-                        .sum()
-                })
-                .unwrap_or(0);
-            if against >= count {
-                continue;
+            if !at.is_empty() {
+                at.sort_unstable();
+                out.insert(key, at);
             }
-            out.insert(key, at);
         }
         out
     });
@@ -1355,9 +1502,11 @@ fn id_lookup_key(letters: &str) -> String {
         Some(rest) if !rest.is_empty() => format!("ѡт{rest}"),
         _ => stem,
     };
-    // the loanword's ї and the kendema are the print's letters (3.3), the
-    // ids keep Polyakov's і and ѵ
-    stem.replace('ї', "і").replace('ѷ', "ѵ")
+    // the loanword's ї and the kendema are the print's letters (3.3), and
+    // so is the wide о (4.1: the evidence's vote may flip ѡ/о in a
+    // lemma, the id holds); the ids keep Polyakov's і, ѵ and the spelling
+    // they were given
+    stem.replace('ї', "і").replace('ѷ', "ѵ").replace('ѡ', "о").replace('ѻ', "о")
 }
 
 /// The id's stem: the lemma's letters with marks stripped.

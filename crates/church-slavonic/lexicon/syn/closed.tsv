@@ -32,6 +32,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 безпрепоннѡ.x.2	безпрепо́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 безпрепѧтнѡ.x.2	безпрепѧ́тнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 безпрепѧтственнѡ.x.2	безпрепѧ́тственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
+безпрестани.x.2	безпреста́ни	x	-	-	adv	a	-	-	-	H:the adverb the overlay named (5 tokens; the lifter read it as an adjective; 3.3 Part 2)	adv
 безпрестаннѡ.x.2	безпреста́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 безпреткновеннѡ.x.2	безпреткнове́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 безпреткновеннѣ.x.2	безпреткнове́ннѣ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -97,10 +98,17 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 благочꙋвственнѣ.x.2	благочꙋ́вственнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 благоѡпрѧтнѡ.x.2	благоѡпрѧ́тнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 благоѡщꙋтительнѣ.x.2	благоѡщꙋти́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
-благꙋвѣтливнѣ.x.2	благꙋвѣ́тливнѣ	x	-	-	adv	a	-	-	-	P:-	adv
-благꙋдобнѣ.x.2	благꙋдо́бнѣ	x	-	-	adv	a	-	-	-	P:-	adv
-благꙋмиленнѡ.x.2	благꙋмиле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
-благꙋставнѡ.x.2	благꙋста́внѡ	x	-	-	adv	a	-	-	-	P:-	adv
+благоꙋгоднѡ.x	благоꙋго́днѡ	x	-	-	adv	a	adv-of=благꙋгодный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+благоꙋгоднѣ.x	благоꙋго́днѣ	x	-	-	adv	a	adv-of=благꙋгодный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+благоꙋкрашеннѡ.x	благоꙋкра́шеннѡ	x	-	-	adv	a	adv-of=благꙋкрашенный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+благоꙋспѣшнѡ.x	благоꙋспѣ́шнѡ	x	-	-	adv	a	adv-of=благꙋспѣшный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+благоꙋтишнѡ.x	благоꙋти́шнѡ	x	-	-	adv	a	adv-of=благꙋтишный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+благоꙋтробнѡ.x	благоꙋтро́бнѡ	x	-	-	adv	a	adv-of=благꙋтробный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+благоꙋтробнѣ.x	благоꙋтро́бнѣ	x	-	-	adv	a	adv-of=благꙋтробный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+благꙋвѣтливнѣ.x.2	благоꙋвѣ́тливнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+благꙋдобнѣ.x.2	благоꙋдо́бнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+благꙋмиленнѡ.x.2	благоꙋмиле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
+благꙋставнѡ.x.2	благоꙋста́внѡ	x	-	-	adv	a	-	-	-	P:-	adv
 блаженнѡ.x.2	блаже́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 блаженнѣ.x.2	блаже́ннѣ	x	-	-	adv	a	-	-	-	P:-	adv
 близъ.x.2	бли́зъ	x	-	-	adv	a	-	-	word=бли́зъ|бли́з̾	P:-;H:the print writes бли́з̾ with the paerok (170 tokens beside бли́зъ 4, census verbatim 3.3 Part 2)	adv
@@ -151,7 +159,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 богоѡткровеннѡ.x.2	богоѡткрове́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 богоѧвленнѡ.x.2	богоѧвле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 богоѧвленнѣ.x.2	богоѧвле́ннѣ	x	-	-	adv	a	-	-	-	P:-	adv
-богꙋмиленнѡ.x.2	богꙋмиле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
+богоꙋгоднѡ.x	богоꙋго́днѡ	x	-	-	adv	a	adv-of=богꙋгодный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+богоꙋгоднѣ.x	богоꙋго́днѣ	x	-	-	adv	a	adv-of=богꙋгодный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+богꙋмиленнѡ.x.2	богоꙋмиле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 бодреннѡ.x.2	бо́дреннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 бодрственнѡ.x.2	бо́дрственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 божественнѡ.x.2	боже́ственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -292,7 +302,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 вышеестественнѡ.x.2	вышеесте́ственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 вышеестественнѣ.x.2	вышеесте́ственнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 вѣдомѡ.x.2	вѣ́домѡ	x	-	-	adv	a	-	-	-	P:-	adv
-вꙋтріе.x.2	вꙋ́трїе	x	-	-	adv	a	-	-	word=вꙋ́трїи|вꙋ́трїѧ	P:-	adv
+вꙋтріе.x.2	воꙋ́трїе	x	-	-	adv	a	-	-	word=воꙋ́трїи|воꙋ́трїѧ|вꙋ́трїи|вꙋ́трїѧ	P:-	adv
 гадательнѡ.x.2	гада́тельнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 гадательнѣ.x.2	гада́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 гадательственнѡ.x.2	гада́тельственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -439,7 +449,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 изѡбилнѣ.x	и҆зѡби́лнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 изѡбразительнѡ.x.2	и҆зѡбрази́тельнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 изꙋстнѡ.x.2	и҆зꙋ́стнѡ	x	-	-	adv	a	-	-	-	P:-	adv
-изꙋстъ.x.2	и҆зꙋ́стъ	x	-	-	adv	a	-	-	-	P:-	adv
+изꙋстъ.x.2	и҆зоꙋ́стъ	x	-	-	adv	a	-	-	-	P:-	adv
 изꙋтра.x.2	и҆зꙋ́тра	x	-	-	adv	a	-	-	-	P:-	adv
 изꙋтрь.x.2	и҆зꙋ́трь	x	-	-	adv	a	-	-	-	P:-	adv
 изꙋтрьꙋдꙋ.x.2	и҆зꙋтрьꙋ́дꙋ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -463,6 +473,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 исперва.x.2	и҆спе́рва	x	-	-	adv	a	-	-	-	P:-	adv
 исповѣднически.x.2	и҆сповѣ́днически	x	-	-	adv	a	-	-	-	P:-	adv
 исповѣдꙋемѡ.x.2	и҆сповѣ́дꙋемѡ	x	-	-	adv	a	-	-	-	P:-	adv
+исполнь.x.2	и҆спо́лнь	x	-	-	adv	a	-	-	-	H:the print's и҆спо́лнь «full» (32 tokens, the overlay's :lemma leaf; the lifter read it as и҆спо́лнити's participle; 3.3 Part 2)	adv
 исполꙋ.x.2	и҆́сполꙋ	x	-	-	adv	a	-	-	-	P:-	adv
 испытательнѣ.x.2	и҆спыта́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 истиннолюбнѡ.x.2	и҆стиннолю́бнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -511,6 +522,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 львоѡбразнѡ.x	львоѡбра́знѡ	x	-	-	adv	a	-	-	-	P:-	adv
 любо.x.2	лю́бо	x	-	-	part	a	-	-	-	P:-	part
 любо.x.4	лю́бо	x	-	-	part	a	-	-	-	P:-	part
+любоблагоꙋтробнѣ.x	любоблагоꙋтро́бнѣ	x	-	-	adv	a	adv-of=любоблагꙋтробный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
 любоболѣзненнѡ.x.2	любоболѣ́зненнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 любодѣльнѡ.x.2	любодѣ́льнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 любоистиннѣ.x.2	любои́стиннѣ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -547,7 +559,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 многомꙋдреннѣ.x.2	многомꙋ́дреннѣ	x	-	-	adv	a	-	-	-	P:-	adv
 многораннѡ.x.2	многора́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 многшекратнѣ.x.2	многшекра́тнѣ	x	-	-	adv	a	-	-	-	P:-	adv
-многꙋсерднѣ.x.2	многꙋсе́рднѣ	x	-	-	adv	a	-	-	-	P:-	adv
+многꙋсерднѣ.x.2	многоꙋсе́рднѣ	x	-	-	adv	a	-	-	-	P:-	adv
 множественнѣ.x.2	мно́жественнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 множицею.x.2	мно́жицею	x	-	-	adv	a	-	-	-	P:-	adv
 мнѣе.x.2	мнѣ́е	x	-	-	adv	a	-	-	-	P:-	adv; comp
@@ -641,9 +653,10 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 недобльственнѡ.x.2	недо́бльственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 недомысленнѡ.x.2	недомы́сленнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 недомысленнѣ.x.2	недомы́сленнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+недоꙋмѣтельнѣ.x	недоꙋмѣ́тельнѣ	x	-	-	adv	a	adv-of=недꙋмѣтельный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
 недреманнѡ.x.2	недрема́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 недремленнѡ.x.2	недре́мленнѡ	x	-	-	adv	a	-	-	-	P:-	adv
-недꙋмѣннѡ.x.2	недꙋмѣ́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
+недꙋмѣннѡ.x.2	недоꙋмѣ́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 неже.x.2	не́же	x	-	-	conj	a	-	-	-	P:-	conj
 нежегомѡ.x.2	нежего́мѡ	x	-	-	adv	a	-	-	-	P:-	adv
 нежели.x.2	не́жели	x	-	-	conj	a	-	-	-	P:-	conj
@@ -1033,7 +1046,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пріискреннѣ.x.2	прїи́скреннѣ	x	-	-	adv	a	-	-	-	P:-	adv
 пріѡбщительнѣ.x	прїѡбщи́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 пріѧзненнѣ.x.2	прїѧ́зненнѣ	x	-	-	adv	a	-	-	-	P:-	adv
-прꙋвѣдѣннѡ.x.2	прꙋвѣ́дѣннѡ	x	-	-	adv	a	-	-	-	P:-	adv
+прꙋвѣдѣннѡ.x.2	проꙋвѣ́дѣннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 псаломски.x	псало́мски	x	-	-	adv	a	-	-	-	P:-	adv
 пѣсненнѡ.x.2	пѣ́сненнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 пѣснопѣсненнѡ.x.2	пѣснопѣ́сненнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1067,6 +1080,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 саморꙋчнѡ.x.2	саморꙋ́чнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 самослꙋчайнѡ.x.2	самослꙋча́йнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 самотворительнѡ.x.2	самотвори́тельнѡ	x	-	-	adv	a	-	-	-	P:-	adv
+самоꙋгоднѣ.x	самоꙋго́днѣ	x	-	-	adv	a	adv-of=самꙋгодный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
 сверхъ.x.2	све́рхъ	x	-	-	adv	a	-	-	-	P:-	adv
 сверхꙋ.x.2	све́рхꙋ	x	-	-	adv	a	-	-	word=сверхꙋ̀	P:-	adv
 своерꙋчнѣ.x.2	своерꙋ́чнѣ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1163,7 +1177,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сѣтованнѡ.x.2	сѣ́тованнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 сꙋмнителнѡ.x	сꙋмни́телнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 сꙋмнителнѣ.x	сꙋмни́телнѣ	x	-	-	adv	a	-	-	-	P:-	adv
-сꙋмѣрителнѣ.x.2	сꙋмѣ́рителнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+сꙋмѣрителнѣ.x.2	соꙋмѣ́рителнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 сꙋпротивъ.x.2	сꙋпроти́въ	x	-	-	adv	a	-	-	word=сꙋпроти́вꙋ	P:-	adv
 сꙋровѡ.x.2	сꙋ́ровѡ	x	-	-	adv	a	adv-of=сꙋровый.a	-	word=сꙋро́вѡ	P:-	adv; the adjective's adverb printed with another accent or letter
 сꙋщественнѡ.x.2	сꙋ́щественнѡ	x	-	-	adv	a	-	-	word=сꙋще́ственнѡ	P:-	adv
@@ -1184,7 +1198,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 таможе.x.2	та́може	x	-	-	advpro	a	-	-	word=та́мѡже	P:-	advpro
 тамъ.x.2	та́мъ	x	-	-	advpro	a	-	-	-	P:-	advpro
 тамѡ.x.2	та́мѡ	x	-	-	advpro	a	-	-	word=та́мо	P:-	advpro
-твердꙋмнѣ.x.2	твердꙋ́мнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+твердꙋмнѣ.x.2	твердоꙋ́мнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 тезоименнѡ.x.2	тезоиме́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 тезоименнѣ.x.2	тезоиме́ннѣ	x	-	-	adv	a	-	-	-	P:-	adv
 тихогласнѡ.x.2	тихогла́снѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1242,6 +1256,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 чествовательнѡ.x.2	чествова́тельнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 четверищнѡ.x.2	четвери́щнѡ	x	-	-	adv	a	-	-	-	P:-	adv
 четверогꙋбѡ.x.2	четверогꙋ́бѡ	x	-	-	adv	a	-	-	-	P:-	adv
+четвероꙋголнѡ.x	четвероꙋго́лнѡ	x	-	-	adv	a	adv-of=четверꙋгольный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
 четырежды.x.2	четы́режды	x	-	-	adv	a	-	-	word=четы́рижды	P:-	adv
 четыреста.x	четы́реста	x	-	-	num	a	-	-	word=четы́риста	P:NUM100	num
 чистолѣпнѡ.x.2	чистолѣ́пнѡ	x	-	-	adv	a	-	-	-	P:-	adv
@@ -1267,8 +1282,10 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѕлочестивнѡ.x.2	ѕлочести́внѡ	x	-	-	adv	a	-	-	-	P:-	adv
 ѕлочестивнѣ.x.2	ѕлочести́внѣ	x	-	-	adv	a	-	-	-	P:-	adv
 ѕлоѻбразнѡ.x	ѕлоѻбра́знѡ	x	-	-	adv	a	adv-of=ѕлообразный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
-ѕлꙋпотребительнѡ.x.2	ѕлꙋпотреби́тельнѡ	x	-	-	adv	a	-	-	-	P:-	adv
-ѕлꙋпотребительнѣ.x.2	ѕлꙋпотреби́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
+ѕлоꙋмнѡ.x	ѕлоꙋ́мнѡ	x	-	-	adv	a	adv-of=ѕлꙋмный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+ѕлоꙋмнѣ.x	ѕлоꙋ́мнѣ	x	-	-	adv	a	adv-of=ѕлꙋмный.a	-	-	P:-	adv; the adjective's adverb printed with another accent or letter
+ѕлꙋпотребительнѡ.x.2	ѕлоꙋпотреби́тельнѡ	x	-	-	adv	a	-	-	-	P:-	adv
+ѕлꙋпотребительнѣ.x.2	ѕлоꙋпотреби́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 ѕѣлнѡ.x	ѕѣ́лнѡ	x	-	-	adv	a	-	-	word=ѕѣ́льнѡ	P:-	adv
 ѕѣлѡ.x.2	ѕѣлѡ̀	x	-	-	adv	a	-	-	word=ѕѣло̀|ѕѣ́лѡ	P:-	adv
 ѡ.x.3	ѡ҆	x	-	-	prep	-	gov=loc|acc;pros=procl	-	word=ѻ҆	P:-	pr
@@ -1278,7 +1295,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡбразнѣ.x	ѡ҆бра́знѣ	x	-	-	adv	a	adv-of=образный.a	-	word=ѻ҆бра́знѣ|ѻ҆́бразнѣ	P:-	adv; the adjective's adverb printed with another accent or letter
 ѡбратнѡ.x.2	ѡ҆бра́тнѡ	x	-	-	adv	a	-	-	word=ѻ҆бра́тнѡ	P:-	adv
 ѡбратовиднѣ.x.2	ѡ҆братови́днѣ	x	-	-	adv	a	-	-	-	P:-	adv
-ѡбъ.x.2	ѡ҆бъ	x	-	-	prep	-	gov=acc|loc;pros=procl	-	word=ѡ҆б̾	P:-;H:the print writes ѡ҆б̾ with the paerok (100 tokens, census verbatim 3.3)	pr
+ѡбъ.x.2	ѡ҆бъ	x	-	-	prep	-	gov=acc|loc;pros=procl	-	word=ѡ҆б̾|ѡ҆б	P:-;H:the print writes ѡ҆б̾ with the paerok (100 tokens, census verbatim 3.3), the library also ѡ҆б without it (4.1)	pr
 ѡбъѧвленнѡ.x.2	ѡ҆бъѧвле́ннѡ	x	-	-	adv	a	-	-	-	P:-	adv
 ѡбъѧтельнѣ.x.2	ѡ҆бъѧ́тельнѣ	x	-	-	adv	a	-	-	-	P:-	adv
 ѡдеснꙋю.x.2	ѡ҆деснꙋ́ю	x	-	-	adv	a	-	-	word=ѻ҆деснꙋ́ю|ѡ҆деснꙋ́ѧ	P:-	adv
@@ -1348,5 +1365,3 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ꙗкоже.x.2	ꙗ҆́коже	x	-	-	conj	a	-	-	word=ꙗ҆́кѡже|ꙗ҆кожѐ	P:-	conj
 ꙗкѡ.x.2	ꙗ҆́кѡ	x	-	-	conj	a	-	-	word=ꙗ҆́ко	P:-	conj
 ꙗственнѡ.x.2	ꙗ҆́ственнѡ	x	-	-	adv	a	-	-	-	P:-	adv
-исполнь.x.2	и҆спо́лнь	x	-	-	adv	a	-	-	-	H:the print's и҆спо́лнь «full» (32 tokens, the overlay's :lemma leaf; the lifter read it as и҆спо́лнити's participle; 3.3 Part 2)	adv
-безпрестани.x.2	безпреста́ни	x	-	-	adv	a	-	-	-	H:the adverb the overlay named (5 tokens; the lifter read it as an adjective; 3.3 Part 2)	adv

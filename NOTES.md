@@ -2272,3 +2272,169 @@ members — stays deliberately its own future design.
   one-subject on бг҃ъ, which the rule leaves as the subject and narrows
   свѣ́тъ instead); tests, stable clippy over every target and feature,
   `cargo doc` clean.
+
+## 2026-09-06 — 4.1 Part 2 (V4-PROMPT.md): the Ponomar library — decisions and findings
+
+- **Fetched and pinned (decision).** `scripts/fetch-ponomar.sh`: every
+  HTML page of every book directory the index lists, one request at a
+  time with a pause, into `data/corpus/ponomar/<book>/`, the URL and
+  sha256 of each page in `MANIFEST.tsv`; the pages are gitignored (47
+  MB), the manifest, the script and `LICENSE.md` (the maintainer's
+  licence to the user, 2026-09-06) are committed. The fetch: 930 pages, 28 books, 50 MB on disk, 47 MB of HTML — gitignored, the manifest committed.
+- **The corpus in the treebank's shape (decision).** `treebank/corpus.rs`:
+  a book's pages are its chapters, its paragraphs (`<p>…</p>`) its
+  verses, so every command over the Bible runs over the library
+  unchanged behind `--corpus ponomar[/<book>]` (the loader, the
+  treebank directory and the overlay directory take the corpus's
+  suffix). The paragraph's print is its text with the markup removed:
+  the rubrics (`<red>`) are text of the print and stay (rubric-ness is
+  lost — a fourth census bucket for headings and rubrics was not built:
+  the census by cause already names their words), the page anchors go,
+  a bracketed note (`[[Ѱ. є҃]]`) is set off by a space before its
+  brackets so the note and its numeral are tokens of their own,
+  whitespace is collapsed. That text is the round-trip target; the
+  pinned HTML is the source of record.
+- **The print's conventions the Bible never showed (findings, three
+  rules).** The edition writes the initial uk as the digraph — Unicode's
+  narrow о (U+1C82) with у, or the two letters оу — where the crate
+  prints the one letter ѹ: an encoding of the same glyph pair,
+  normalised at load (not a spelling; the Apostol's verbatim fell 13,643
+  → 9,900 by it alone). The service books number everything under a
+  titlo (к҃а, д҃і, ҂а҃, the ordinal д҃-ѧ): a Cyrillic numeral under a
+  titlo is a mark of the print, not a word — `is_numeral` in the
+  lifter, counted as apparatus (the Apostol: 9,126 tokens). The
+  footnote mark ꙳ (U+A673) glued to the word before it is punctuation
+  (`is_punct`), the pericope and verse markers заⷱ҇ and сⷯ and a page
+  reference («225>>») are apparatus. Titles set in capitals (ПОСЛА́НІЕ)
+  stay verbatim: a whole-word capital is a node the tree lacks (about a
+  hundred tokens a book; recorded, not built).
+- **The loanword's ї is a vote, not a witness (finding, fixed).** The
+  Apostol writes сті́хъ 544 times where the lexicon printed стї́хъ — the
+  3.3 rule had taken one Bible token (стїха́мъ) as the lexeme's letter.
+  Now every spelling of the lexeme votes by position — the census's
+  verbatim surfaces of the і/ї/и bucket (all letters, merged into
+  `data/loanword-iota.tsv` rather than overwriting it, since a spelling
+  the importer has written since no longer shows in the census) and the
+  lifted prints of `treebank-forms.tsv` (refreshed by `census forms
+  --write`) — and a position takes ї only where ї outvotes і and и:
+  сти́хъ 33 keeps и/і, вїно̀ 109 keeps ї, плїнѳодѣ́ланїе's two tokens keep
+  ї against nothing.
+- **The export (decision).** `cargo xtask export [--corpus …]`: one
+  tab-separated file per book (chapter, unit, token, form, lexeme id,
+  cell, provenance) under `export/` (gitignored, rebuilt), the
+  provenance `lexicon`, `rule:<name>`, `tagger:<p>`, `set`, `function`,
+  `amb`, `verbatim`, `apparatus`; a manifest with each book's counts.
+- **The titlo rows the Apostol named**: бцⷣ (богоро́дица; the skeleton
+  keeps the ц — the abbreviation's ⷣ is the д), є҆пⷭ҇кп, мч҃нк, ржⷭ҇, прест҃,
+  ст҃ for свѧти́тель, бл҃ for благода́ть, сщ҃ for свѧщенномꙋ́ченикъ, бг҃ for
+  богосло́въ and богоно́сный, цр҃ for церко́вный; ѡ҆б bare as a variant of
+  ѡ҆бъ (263 in the Apostol).
+- **The intake wave (the library's census first).** The census of the
+  whole library (178,597 verbatim leaves before the wave: (a) 40,543 by
+  letters, (b) 96,885 titlo tokens with no row, (c) 41,169 with no
+  reading) named the work in order of count, and the wave took the
+  buckets that were mechanical:
+  - *The titlo rows are per lexeme, and 578 of Polyakov's entries were
+    written only under a titlo* (богоро́диченъ 13,449 tokens in his
+    count, богома́ти, богороди́тельница, а҆́ггельскій …): the importer had
+    skipped every titlo-written form, so the lexemes never existed. Now
+    a titlo-written form is expanded through the rows' (abbreviation,
+    skeleton) pairs, left to right, the lemma deciding among rows that
+    abbreviate alike (дв҃ is дѣв for дѣ́ва and даві for даві́дъ; цр҃ цар
+    and цер); the rows the expansion used are printed as proposals
+    (`TITLO-ROW` lines) and appended by hand where the skeleton agrees
+    with the lemma. A headword itself under a titlo (дв҃ома́ти) is
+    quarantined. Rows 135 → ROWS: 142 the library's own surfaces named
+    (expanded by a script over the census's titlo tokens, checked
+    against the lexicon in one `analyze` call, kept only where one
+    lexeme answered), 266 from the importer's proposals, and the hand's
+    (дв҃ is the noun дѣ́ва; влⷣч/владычи; мч҃н; ѹ҆ч҃н with the titlo before
+    the н — a second row of one abbreviation with the titlo elsewhere;
+    ржⷭ҇/рождес; воскрⷭ҇/воскрес beside воскресе). Seven lexemes the
+    library writes only under a titlo and Polyakov lacks are hand lines
+    (`H:`): и҆мѧре́къ (the rubric's "name here", 1,304 tokens),
+    мꙋ́ченченъ, крестобогоро́диченъ, тро́иченъ, тро́ица, тро́ичный,
+    тро́ическїй.
+  - *Polyakov writes the print's ꙋ as у throughout*, and the importer
+    read a prefix's о before it as the uk digraph: поꙋче́нїе had been
+    imported as пꙋче́ніе, златоꙋ́стъ as златꙋ́стъ (307 lemmas). The source
+    loader now reads у as ꙋ; the ids those lemmas were given hold
+    (пꙋченіе.n prints поꙋче́ніе — an id is a name, not a spelling).
+  - *The loanword's ї votes with the library's evidence*: the census
+    `--write` over the library merged its і/ї/и surfaces into
+    `data/loanword-iota.tsv` (992 → 1,817 rows), and сті́хъ (5,325
+    library tokens against the Bible's one стїха́мъ) keeps і.
+  - *The ids held through it all*, and the mechanism was extended where
+    the wave found it wanting: the closed word's one cell is its
+    citation cell (the arbiter had flipped бо̀ to бо and ѕѣлѡ̀ to ѕѣло̀,
+    and the forms census had never counted a closed leaf printed as its
+    primary, so the alts alone were tallied); a lemma the attested
+    citation form replaced keeps the headword's id (богомерзкій.a, which
+    the overlay names, prints богоме́рзскїй); the twin merge's refit
+    keeps the survivor's cells its own forms never attest (бла́гѡ's
+    stress). Ids that left the lexicon are in `data/twins.tsv` with
+    their survivors: благій.a.2 merged into благій.a, благоцвѣтый.a
+    (Polyakov's headword is благоцвѣтꙋ́щій), and 27 adverbs whose
+    adjectives the wave imported (боголѣпнѡ.x.2 is now боголѣ́пный's adv
+    cell). The rule stands: a lexeme's id never moves; where a lexeme
+    goes, the twins file says where.
+  - *Not taken* (recorded for the next wave, by count): the pronoun
+    clitic hosts whose standalone form has several lexemes (ты́ 1,676 —
+    ты.pron beside the aorist of тыти.v; мы́ 405; the Bible's 180 ты́ are
+    the same residue); the clitic after a titlo host (сп҃си́ мѧ 824: the
+    unit's host is looked up without the titlo index); head ѧ҆зы́къ
+    (1,079); the wide/narrow о of самаго̀, отъ (659); ꙳ as a token of its
+    own (25,307, punctuation only when glued); the -десѧть compounds;
+    the capitals of titles.
+- **The overlay by register, begun (the session as the hand).** The
+  Octoechos's Gospel stichera (chapter 4 of `Oktoih1981`, 22 units, 483
+  leaves) decided leaf by leaf; the April Menaion's service of St
+  Artemon (chapter 13 of `MineyaAprel1996`, 73 units, 736 leaves) decided
+  where the context settles it (375 leaves) and left as sets where the
+  draft's set is the grammar's (361, counted apart). Both round-trip
+  byte-for-byte, `narrow-hand` 0 findings. `score-disambiguation
+  --corpus`: on the Octoechos the rules and the tagger contain the hand
+  cell in 77.99% of leaves and resolve it in 77.57%, the tagger 63.29%
+  (150 of 237) — hymnography's word order is the tagger's weak register,
+  as the five-fold measurement predicted; on the Menaion 92.00% / 92.00%,
+  the tagger 71.88% (23 of 32). Two rule failures the register exposed,
+  both fixed at the rule and re-measured on the Bible overlay at zero
+  exclusions: np-agree attached an adjective by scan order where a noun
+  on each side agreed (видѣ́нїѧ самогѡ̀ і҆и҃са) — now an adjective with an
+  agreeing noun on both sides is left alone; and, once that attachment
+  stopped, one-subject read the apposed noun as an object (сы́нове
+  а҆арѡ̑ни жерцы̀, Leviticus 1) — a noun beside the subject through
+  adjective-like leaves alone is apposed. One lexicon finding: нога's
+  dual is printed но́зѣ (the lexicon has нѡ́зѣ and но́ѕѣ); the leaf stays
+  verbatim in the overlay. A second pass over a sample before either is
+  called gold, as the prompt asks.
+- **Not done, recorded.** The Psalter, Apostol and Gospel volumes were
+  not measured against the Bible's own text (Part 2.3); the fourth
+  census bucket (rubrics, headings) was not built (Part 2.4); of the
+  intake list, items 2 (head ѧ҆зы́къ), 4 (the collective numerals), 5
+  (the paerok in a prefixed verb), 6 (господь's twins), 7 (the
+  plural-mark cells) and 8 (the names measured) were not taken — the
+  library's census ranked the titlo rows and the titlo-only lexemes far
+  above them, and the wave stopped where the effort did. They stay on
+  the open list with the numbers above.
+- **The gate.** Every unit of every book round-trips byte-for-byte
+  (142,620 units, 3,190,662 tokens; the full library builds in about ten
+  minutes against the Bible's 95 s). The library: one cell 1,206,378
+  (37.8%; 1,192,361 before the intake — LIB), sets 26,165, tagger
+  1,035,721, closed 638,779, several lexemes 102,102 (3.2%), verbatim
+  70,210 (2.2%, from 178,977 = 5.6% before the wave), apparatus 111,307;
+  `census verbatim`: 70,206 leaves — (a) 15,397 by letters (marks only
+  11,124: the clitic hosts; і/ї/и 1,112; head ѧ 1,079; wide/narrow о
+  659), (b) 13,676 titlo tokens with no row, (c) 41,133 with no reading
+  (꙳ alone 25,307, `]]` 3,262, the rubric abbreviations ст 1,832, гл
+  1,246). The Bible: one cell 243,358 (38.5%), sets 2,047, tagger
+  187,993, closed 179,015, several lexemes 12,645 (2.0%, down from
+  12,868), verbatim 4,789 (0.8%, from 5,430), apparatus 2,099 (the
+  titlo numerals, 1,150 before); census 4,763 (from 5,408); zero
+  mismatches; the overlay's rules resolve 446 and exclude none, the
+  tagger 74.58% (1,212 of 1,625); recall unchanged (95.48 / 89.31 /
+  90.89 / 99.25 / 98.07); ids: none moved, 131 nouns, 267 adjectives, 68
+  verbs and 15 closed words added, 2 adjective ids and 27 adverb ids
+  absorbed with their survivors in `data/twins.tsv`; the export written
+  (`export/ponomar/`, 28 files and the manifest, its numbers the
+  table's); tests, clippy, the game (35 tests, the headless run) green.

@@ -70,8 +70,12 @@ impl TitloIndex {
     /// The cells of one lexeme that abbreviate to `surface` under the
     /// titlo row `prefix` (the abbreviation erases the accent that tells
     /// дꙋ́хъ from дꙋ̑хъ, so дх҃ъ is nom.sg|gen.pl|acc.pl).
-    pub fn cells(&self, surface: &str, prefix: &str, id: &str) -> Option<CellSet> {
-        let cells: Vec<Cell> = self.map.get(surface)?.iter().filter(|(p, i, _, _, _)| p == prefix && i == id).map(|(_, _, c, _, _)| *c).collect();
+    pub fn cells(&self, surface: &str, _prefix: &str, id: &str) -> Option<CellSet> {
+        // every row of the lexeme that abbreviates to the surface counts
+        // (4.1: the lifter reads one lexeme as one reading whatever the
+        // row, нб҃са̀ under нб҃с/небес and нб҃/неб alike)
+        let mut cells: Vec<Cell> = self.map.get(surface)?.iter().filter(|(_, i, _, _, _)| i == id).map(|(_, _, c, _, _)| *c).collect();
+        cells.dedup();
         CellSet::new(cells)
     }
 }
@@ -296,7 +300,9 @@ impl<'a> Lifter<'a> {
         let titlo = self.titlo.map.get(&looked_up).map(Vec::as_slice).unwrap_or(&[]);
         let mut titlo_groups: Vec<TitloGroup<'_>> = Vec::new();
         for (prefix, id, cell, alt, full) in titlo {
-            match titlo_groups.iter_mut().find(|(p, i, _, _)| *p == prefix && *i == id) {
+            // one lexeme is one reading whatever row abbreviated it (4.1:
+            // ѻ҆ц҃а̀ under the rows отц and отец counted as two lexemes)
+            match titlo_groups.iter_mut().find(|(_, i, _, _)| *i == id) {
                 Some((_, _, _, cells)) => {
                     if !cells.iter().any(|(c, _)| c == cell) {
                         cells.push((*cell, *alt));
@@ -418,7 +424,8 @@ pub fn leaf(id: &str, cells: &[(Cell, usize)]) -> (Node, usize) {
 
 /// Characters that split off a token's edges as `(p …)` nodes.
 fn is_punct(c: char) -> bool {
-    matches!(c, '.' | ',' | ':' | ';' | '!' | '?' | '(' | ')' | '«' | '»')
+    // ꙳ (U+A673): the service books' footnote mark, glued to the word before it
+    matches!(c, '.' | ',' | ':' | ';' | '!' | '?' | '(' | ')' | '«' | '»' | '꙳')
 }
 
 /// The apparatus of the pinned print: the bracketed notes with their
@@ -430,6 +437,25 @@ pub fn is_apparatus(token: &str) -> bool {
         || token.contains('[')
         || (!token.is_empty() && token.chars().all(|c| matches!(c, '*' | '↑')))
         || matches!(token, "є\u{486}вр" | "гре\u{301}ч")
+        || is_numeral(token)
+        // the service books' marks (4.1): заⷱ҇ (зача́ло, the pericope), сⷯ
+        // (сті́хъ, the verse), a page reference («225>>»), a bare number
+        || matches!(token.trim_matches(|c: char| is_punct(c)), "за\u{2df1}\u{487}" | "с\u{2def}")
+        || token.contains('>')
+        || (!token.is_empty() && token.chars().all(|c| c.is_ascii_digit()))
+}
+
+/// A Cyrillic numeral under a titlo (к҃а, д҃і, ҂а҃, the ordinal suffix
+/// д҃-ѧ): the print's chapter, verse and page numbers — a mark, not a
+/// word (4.1: the service books number everything).
+pub fn is_numeral(token: &str) -> bool {
+    let core = token.trim_matches(|c: char| c.is_ascii_punctuation() && c != '-');
+    let Some((digits, _suffix)) = core.split_once('-').or(Some((core, ""))) else { return false };
+    if !digits.contains('\u{483}') {
+        return false;
+    }
+    let letters: Vec<char> = digits.chars().filter(|c| !matches!(c, '\u{483}' | '\u{2de0}'..='\u{2dff}' | '\u{482}')).collect();
+    !letters.is_empty() && letters.len() <= 4 && letters.iter().all(|c| matches!(c, 'а' | 'в' | 'г' | 'д' | 'є' | 'е' | 'ѕ' | 'з' | 'и' | 'ѳ' | 'і' | 'к' | 'л' | 'м' | 'н' | 'ѯ' | 'ѻ' | 'о' | 'п' | 'ч' | 'р' | 'с' | 'т' | 'ѵ' | 'ф' | 'х' | 'ѱ' | 'ѡ' | 'ц' | '҂'))
 }
 
 /// The word inside a verse token: leading and trailing punctuation

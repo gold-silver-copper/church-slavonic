@@ -334,4 +334,8 @@ counts (наѳана́илъ 8:5, высоты̑ 2:1) — the two pronoun twins 
    arbiter, 113 titlo rows, the numerals, the pronominal adjectives'
    adjective endings, the composite verb class, любы̀, the pronoun
    clitics as enclitics; the Bible's verbatim share 5.7% → 0.9%. What
-   remains is in `HANDOFF-PROMPT.md`'s open list 2.
+   remains is in `HANDOFF-PROMPT.md`'s open list 2. 4.1 (`V4-PROMPT.md`
+   Part 2) added the second print — the Ponomar library, 3.19 million
+   tokens, its verbatim share 5.6% → 2.2% by the titlo-written lexemes
+   the importer had skipped (rows 135 → 559) — and left the residue
+   ranked by both censuses in the HANDOFF's open list.

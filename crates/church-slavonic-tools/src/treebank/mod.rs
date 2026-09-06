@@ -5,7 +5,9 @@
 
 pub mod bible;
 pub mod closed;
+pub mod corpus;
 pub mod disambiguate;
+pub mod export;
 pub mod tag;
 pub mod lift;
 pub mod lint;

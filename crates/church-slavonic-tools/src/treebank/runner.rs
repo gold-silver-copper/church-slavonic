@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 
 /// `treebank/` under the workspace root, or `$CS_TREEBANK`.
 pub fn treebank_dir() -> PathBuf {
-    std::env::var_os("CS_TREEBANK").map(PathBuf::from).unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../treebank"))
+    std::env::var_os("CS_TREEBANK").map(PathBuf::from).unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../treebank")).join(crate::treebank::corpus::dir_suffix())
 }
 
 pub(crate) fn book_file(dir: &Path, index: usize) -> PathBuf {
@@ -171,7 +171,7 @@ fn tree_coverage(node: &Node, coverage: &mut Coverage) {
 /// The hand-lifted overlay: `data/treebank-hand/bNN.sexp`, committed,
 /// consulted by the check on top of the generated files.
 pub fn hand_dir() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../data/treebank-hand")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../data/treebank-hand").join(crate::treebank::corpus::dir_suffix())
 }
 
 /// Re-render every stored tree against the pinned print; return the

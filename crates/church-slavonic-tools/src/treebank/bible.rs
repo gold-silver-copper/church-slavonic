@@ -61,6 +61,10 @@ pub fn source_path() -> PathBuf {
 /// callers skip soft. A PRESENT file that fails to parse is an error,
 /// never a skip.
 pub fn load() -> Result<Option<Bible>, Box<dyn std::error::Error>> {
+    // a selected corpus (4.1: --corpus ponomar) takes the Bible's place
+    if crate::treebank::corpus::current().is_some() {
+        return crate::treebank::corpus::load();
+    }
     let path = source_path();
     if !path.exists() {
         return Ok(None);

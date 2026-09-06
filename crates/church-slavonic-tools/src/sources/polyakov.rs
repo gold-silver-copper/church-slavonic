@@ -140,7 +140,16 @@ pub fn read(path: &Path) -> Result<Vec<Entry>, Box<dyn Error>> {
         if line.trim().is_empty() {
             continue;
         }
-        out.push(serde_json::from_str(&line)?);
+        let mut entry: Entry = serde_json::from_str(&line)?;
+        // Polyakov writes the print's ꙋ as у throughout (no form of his
+        // carries ꙋ, none begins with «оу»); read as у, a prefix's о
+        // before it was taken for the uk digraph and поꙋче́нїе imported
+        // as пꙋче́ніе (307 lemmas, 4.1 Part 2)
+        entry.lemma = entry.lemma.replace('у', "ꙋ").replace('У', "Ꙋ");
+        for f in &mut entry.forms {
+            f.form = f.form.replace('у', "ꙋ").replace('У', "Ꙋ");
+        }
+        out.push(entry);
     }
     Ok(out)
 }

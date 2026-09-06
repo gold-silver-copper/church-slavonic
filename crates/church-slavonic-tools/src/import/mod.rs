@@ -35,6 +35,10 @@ pub struct Outcome {
     pub quarantine: Vec<Quarantined>,
     /// Counters by name, printed in the report.
     pub counts: BTreeMap<&'static str, u64>,
+    /// The titlo rows the expansion of titlo-written forms used, by
+    /// (abbreviation, skeleton, lemma, pos) with the forms' count: rows
+    /// `lexicon/titlo.tsv` needs for the lexeme (4.1 Part 2).
+    pub titlo_rows: BTreeMap<(String, String, String, String), u64>,
     /// Override cells by name, for the class-table review.
     pub override_cells: BTreeMap<String, u64>,
     /// Stress specs by their canonical string, for the inventory census.
@@ -160,6 +164,12 @@ fn report(o: &Outcome) {
     }
     println!("{:>8}  lexemes kept", o.lexemes.len());
     println!("{:>8}  quarantined", o.quarantine.len());
+    if !o.titlo_rows.is_empty() {
+        println!("== titlo rows the expansion used (abbr, skeleton, lemma, pos, forms)");
+        for ((abbr, full, lemma, pos), n) in &o.titlo_rows {
+            println!("TITLO-ROW\t{abbr}\t{full}\t{lemma}\t{pos}\t{n}");
+        }
+    }
     // CS_QUARANTINE_SAMPLE=<n> lists the first n quarantined entries
     if let Some(n) = std::env::var("CS_QUARANTINE_SAMPLE").ok().and_then(|v| v.parse::<usize>().ok()) {
         for q in o.quarantine.iter().take(n) {

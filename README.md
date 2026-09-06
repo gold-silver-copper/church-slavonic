@@ -180,7 +180,7 @@ reproduced, a variant, or quarantined with a reason in
 
 | Lexicon | Lexemes | Classes |
 |---|---|---|
-| Synodal nouns / adjectives / verbs / pronouns / closed | 13,172 / 8,323 / 8,224 / 72 / 1,351 | 50 / 16 / 52 / 26 / 8 |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,303 / 8,588 / 8,292 / 72 / 1,366 (4.1: the titlo-written lexemes) | 50 / 16 / 52 / 26 / 8 |
 | OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,455 / 82 | 44 / 6 / 27 / 17 |
 
 The closed lexicon is structured (2.2): a line's class is its
@@ -247,14 +247,14 @@ prep-gov :from nom|acc|voc.sg`), and a statistical tagger chooses among
 what the constraints leave, in its own row — a choice, never counted as
 analysed (`CS_NO_TAGGER=1` rebuilds without it):
 
-| | 3.4 | 3.3 | 3.2 | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|---|---|---|---|---|
-| analysed, one cell | 38.7% (244,589; 27.8% without the rules) | 38.1% (240,672) | 34.0% (214,958) | 33.7% | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 0.4% (36.6% without the rules and the tagger) | 0.4% | 0.3% | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
-| chosen by the tagger (`:by tagger :prob`) | 29.5% | 30.1% | 29.7% | 30.1% | 29.3% | 29.3% | — | — | — | — |
-| closed-class | 28.3% | 28.3% | 28.2% | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 2.0% (6.2% without) | 2.0% | 1.9% | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | 0.9% (5,430) | **0.9%** (5,430) | 5.7% | 5.7% (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
+| | 4.1 | 3.4 | 3.3 | 3.2 | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| analysed, one cell | 38.5% (243,358) | 38.7% (244,589; 27.8% without the rules) | 38.1% (240,672) | 34.0% (214,958) | 33.7% | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 0.3% (2,047) | 0.4% (36.6% without the rules and the tagger) | 0.4% | 0.3% | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
+| chosen by the tagger (`:by tagger :prob`) | 29.7% | 29.5% | 30.1% | 29.7% | 30.1% | 29.3% | 29.3% | — | — | — | — |
+| closed-class | 28.3% | 28.3% | 28.3% | 28.2% | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 2.0% (12,645) | 2.0% (6.2% without) | 2.0% | 1.9% | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | 0.8% (4,789) | 0.9% (5,430) | **0.9%** (5,430) | 5.7% | 5.7% (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
 
 The verbatim share fell in 3.1 by typography alone: 11,777 tokens
 began with the uk the crate wrote as two letters, 4,300 with the prefix
@@ -324,6 +324,58 @@ rebuilt by `cargo xtask train-tagger` from UD PROIEL train and
 Syntacticus, never from the Bible) chooses only where the constraints
 left several readings and says so on the leaf.
 
+## A second print: the Ponomar library (4.1)
+
+The service books of the Ponomar library — 28 books, 930 pages, the
+twelve Menaia, the Octoechos, the Triodia, the Psalter, the Horologion,
+the Apostol and Gospel, the Sluzhebnik and Trebnik, the Typikon, the
+Dobrotolyubie — are a second print of the same orthography, licensed to
+this project by the library's maintainer (`data/corpus/ponomar/LICENSE.md`).
+`scripts/fetch-ponomar.sh` pins the pages (a manifest with the sha256 of
+each; the pages themselves are not committed) and every treebank command
+runs over a book or the whole library unchanged behind `--corpus
+ponomar[/<book>]`: a book's pages are its chapters, its paragraphs the
+units, and `cargo xtask --corpus ponomar export` writes one
+tab-separated file per book under `export/` — chapter, unit, token, the
+form as printed, the lexeme id, the cell, and the provenance of the
+reading (`lexicon`, `rule:<name>`, `tagger:<p>`, `set`, `function`,
+`amb`, `verbatim`, `apparatus`) — with a manifest of each book's counts.
+The library's coverage (4.1):
+
+| Book | Units | Tokens | One cell | Sets | Tagger | Closed | Several lexemes | Verbatim | Apparatus |
+|---|---|---|---|---|---|---|---|---|---|
+| Apostol1989 | 2,617 | 105,355 | 36,110 (34.3%) | 586 (0.6%) | 29,877 (28.4%) | 24,349 | 2,385 | 1,863 | 10,185 |
+| AugmentedPsalter1978 | 4,158 | 70,312 | 27,251 (38.8%) | 474 (0.7%) | 21,459 (30.5%) | 14,215 | 2,343 | 969 | 3,601 |
+| AugmentedPsalter21993 | 77 | 2,705 | 1,097 (40.6%) | 23 (0.9%) | 779 (28.8%) | 613 | 114 | 46 | 33 |
+| Chasoslov1991 | 1,462 | 29,395 | 11,643 (39.6%) | 257 (0.9%) | 8,940 (30.4%) | 6,254 | 1,201 | 424 | 676 |
+| Dobrotolyubie2000 | 3,220 | 314,367 | 107,122 (34.1%) | 1,319 (0.4%) | 93,306 (29.7%) | 92,017 | 4,611 | 7,621 | 8,371 |
+| Evangelie1984 | 2,544 | 88,651 | 27,589 (31.1%) | 510 (0.6%) | 27,309 (30.8%) | 20,372 | 1,482 | 1,605 | 9,784 |
+| Irmologii1995 | 2,615 | 44,574 | 17,608 (39.5%) | 378 (0.8%) | 13,981 (31.4%) | 8,272 | 1,975 | 661 | 1,699 |
+| MineyaAprel1996 | 3,450 | 58,136 | 24,040 (41.4%) | 525 (0.9%) | 19,319 (33.2%) | 9,079 | 2,232 | 1,770 | 1,171 |
+| MineyaAugust1996 | 7,655 | 146,032 | 57,645 (39.5%) | 1,368 (0.9%) | 49,353 (33.8%) | 26,058 | 4,724 | 3,776 | 3,108 |
+| MineyaDecember1997 | 6,842 | 131,763 | 52,140 (39.6%) | 1,193 (0.9%) | 43,641 (33.1%) | 23,482 | 4,842 | 3,451 | 3,014 |
+| MineyaFebvral1996 | 4,961 | 97,237 | 38,620 (39.7%) | 814 (0.8%) | 31,662 (32.6%) | 17,692 | 3,550 | 2,498 | 2,401 |
+| MineyaIun1996 | 6,467 | 112,808 | 45,296 (40.2%) | 911 (0.8%) | 38,004 (33.7%) | 19,190 | 3,807 | 3,121 | 2,479 |
+| MineyaIyul1996 | 6,362 | 123,169 | 49,947 (40.6%) | 1,067 (0.9%) | 41,389 (33.6%) | 21,048 | 4,191 | 3,183 | 2,344 |
+| MineyaMart1996 | 3,963 | 81,137 | 31,581 (38.9%) | 786 (1.0%) | 26,411 (32.6%) | 14,956 | 2,975 | 2,154 | 2,274 |
+| MineyaMay1996 | 5,832 | 110,061 | 44,912 (40.8%) | 901 (0.8%) | 36,779 (33.4%) | 18,143 | 3,857 | 3,249 | 2,220 |
+| MineyaNovember1997 | 7,805 | 142,904 | 57,985 (40.6%) | 1,447 (1.0%) | 48,100 (33.7%) | 23,849 | 4,900 | 3,652 | 2,971 |
+| MineyaObshchaya2002 | 6,495 | 103,414 | 38,213 (37.0%) | 1,060 (1.0%) | 34,406 (33.3%) | 18,769 | 3,462 | 3,182 | 4,322 |
+| MineyaOctober1997 | 6,952 | 129,130 | 52,429 (40.6%) | 1,172 (0.9%) | 43,475 (33.7%) | 21,515 | 4,510 | 3,387 | 2,642 |
+| MineyaSeptember1997 | 7,696 | 147,483 | 59,134 (40.1%) | 1,414 (1.0%) | 49,711 (33.7%) | 25,832 | 4,979 | 3,353 | 3,060 |
+| MineyaYanvar1996 | 8,057 | 155,176 | 62,474 (40.3%) | 1,156 (0.7%) | 52,134 (33.6%) | 27,632 | 5,364 | 3,368 | 3,048 |
+| Oktoih1981 | 14,030 | 253,816 | 100,186 (39.5%) | 3,076 (1.2%) | 88,267 (34.8%) | 44,225 | 9,404 | 3,466 | 5,192 |
+| PostnayaTriod1992 | 9,014 | 216,539 | 81,023 (37.4%) | 1,547 (0.7%) | 71,426 (33.0%) | 44,852 | 7,313 | 3,150 | 7,228 |
+| Sluzhebnik1906 | 2,605 | 45,429 | 17,533 (38.6%) | 509 (1.1%) | 13,596 (29.9%) | 11,036 | 1,553 | 661 | 541 |
+| StJamesLiturgyBulg1948 | 301 | 8,638 | 2,299 (26.6%) | 10 (0.1%) | 1,513 (17.5%) | 689 | 84 | 3,978 | 65 |
+| StJamesLiturgyROCOR1970 | 479 | 10,107 | 4,267 (42.2%) | 114 (1.1%) | 2,854 (28.2%) | 2,365 | 340 | 139 | 28 |
+| Tipikon | 5,428 | 240,109 | 73,209 (30.5%) | 1,643 (0.7%) | 77,580 (32.3%) | 57,285 | 9,261 | 2,587 | 18,544 |
+| Trebnik1906 | 4,837 | 91,715 | 35,370 (38.6%) | 1,093 (1.2%) | 27,402 (29.9%) | 19,133 | 2,290 | 1,354 | 5,073 |
+| TsvetnayaTriod1992 | 6,696 | 130,500 | 49,655 (38.0%) | 812 (0.6%) | 43,048 (33.0%) | 25,857 | 4,353 | 1,542 | 5,233 |
+| All | 142,620 | 3,190,662 | 1,206,378 (37.8%) | 26,165 (0.8%) | 1,035,721 (32.5%) | 638,779 (20.0%) | 102,102 (3.2%) | 70,210 (2.2%) | 111,307 |
+
+The library builds in about ten minutes; the Bible in 95 s.
+
 ## Sources and import
 
 | Source | Role | Terms |
@@ -335,6 +387,7 @@ left several readings and says so on the leaf.
 | UD_Old_Church_Slavonic-PROIEL r2.18, train split | OCS attestation and variants | institutional grant; dev+test held out |
 | UD PROIEL dev+test, Syntacticus | evaluation only | — |
 | The Elizabethan Bible (Church Slavonic) | evaluation corpus, the treebank | public domain text |
+| The Ponomar library (28 service books, ponomar.net/maktabah) | a second print: the register's treebank and export (4.1) | licence from the maintainer to this project (data/corpus/ponomar/LICENSE.md) |
 
 The raw artifacts are pinned in `references/` (`scripts/fetch-sources.sh`,
 sha256-verified) and never committed. Import is an occasional, reviewed

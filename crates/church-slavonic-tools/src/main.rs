@@ -7,7 +7,15 @@
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let mut args = std::env::args().skip(1);
+    // `--corpus ponomar[/<book>]` anywhere in the arguments selects the
+    // corpus every treebank command runs over (4.1); the Bible otherwise
+    let mut raw: Vec<String> = std::env::args().skip(1).collect();
+    if let Some(i) = raw.iter().position(|a| a == "--corpus") {
+        let spec = raw.get(i + 1).cloned().ok_or("--corpus <ponomar[/book]>")?;
+        church_slavonic_tools::treebank::corpus::select(&spec)?;
+        raw.drain(i..i + 2);
+    }
+    let mut args = raw.into_iter();
     match args.next().as_deref() {
         Some("eval") => church_slavonic_tools::eval::run(args.collect()),
         Some("import") => church_slavonic_tools::import::run(args.collect()),
@@ -26,6 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Some("train-tagger") => church_slavonic_tools::tagger::train(&args.collect::<Vec<_>>()),
         Some("tagger-curve") => church_slavonic_tools::tagger::curve(),
         Some("tagger-transfer") => church_slavonic_tools::tagger::transfer(&args.collect::<Vec<_>>()),
+        Some("export") => church_slavonic_tools::treebank::export::run(),
         Some("titlo") => {
             // what the titlo index holds for each surface (3.3 debugging)
             let lexicon = church_slavonic::Lexicon::synodal();

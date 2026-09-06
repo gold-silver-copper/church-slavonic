@@ -4,3 +4,7 @@ target/
 .DS_Store
 data/bible-src/
 /treebank/
+# the corpus export (cargo xtask export), rebuilt from the treebank
+/export/
+# the Ponomar library's pinned pages (scripts/fetch-ponomar.sh; the manifest and the licence are committed)
+/data/corpus/ponomar/*/

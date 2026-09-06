@@ -136,21 +136,32 @@ pub fn run(write: bool) -> Result<(), Box<dyn Error>> {
         println!("{total:>7}  {bucket} ({} surfaces): {}", m.len(), top.iter().take(12).map(|(s, (n, id))| format!("{s} {n} ({id})")).collect::<Vec<_>>().join(", "));
     }
     if write {
-        // `data/loanword-iota.tsv`: the surfaces the print spells with a
-        // non-positional ї (кївѡ́тъ) for a lexeme Polyakov spells with і —
-        // the importer's evidence for the lexeme's letter (V3.3 Part 1)
+        // `data/loanword-iota.tsv`: every verbatim surface of the і/ї/и
+        // bucket with its count — the importer's evidence for a loanword's
+        // ї, voting by position against the lexeme's other spellings (3.3,
+        // the vote 4.1)
+        // merged into the file that exists: a spelling the importer has
+        // since written into the lexicon no longer shows in the census
+        // (it lifts), and its evidence must not vanish with it (4.1)
         let path = crate::workspace_root().join("data/loanword-iota.tsv");
-        let mut out = String::from("lemma_key\tsurface\tcount\n");
-        if let Some(m) = a.get("і/ї/и") {
-            let mut rows: Vec<_> = m.iter().collect();
-            rows.sort();
-            for (surface, (n, id)) in rows {
-                let Some(l) = lexicon.get(id) else { continue };
-                if !surface.contains('ї') {
-                    continue;
-                }
-                out.push_str(&format!("{}\t{surface}\t{n}\n", church_slavonic::orthography::comparison_key(&l.lemma)));
+        let mut rows: BTreeMap<(String, String), usize> = BTreeMap::new();
+        for line in std::fs::read_to_string(&path).unwrap_or_default().lines().skip(1) {
+            let cols: Vec<&str> = line.split('\t').collect();
+            if let [key, surface, n] = cols[..] {
+                rows.insert((key.to_string(), surface.to_string()), n.parse().unwrap_or(0));
             }
+        }
+        if let Some(m) = a.get("і/ї/и") {
+            for (surface, (n, id)) in m {
+                let Some(l) = lexicon.get(id) else { continue };
+                let key = church_slavonic::orthography::comparison_key(&l.lemma);
+                let e = rows.entry((key, surface.clone())).or_default();
+                *e = (*e).max(*n);
+            }
+        }
+        let mut out = String::from("lemma_key\tsurface\tcount\n");
+        for ((key, surface), n) in &rows {
+            out.push_str(&format!("{key}\t{surface}\t{n}\n"));
         }
         std::fs::write(&path, out)?;
         println!("wrote {}", path.display());

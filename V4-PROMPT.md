@@ -436,3 +436,20 @@ sentence is. Parts 1–3 remain.
 Part 1 (2026-09-06): executed — `church_slavonic::sentence` (the tree, the
 lifter, the rules, the closed table moved whole; one type; the tools call
 the library); no number moved. Parts 2–3 remain.
+
+Part 2 (2026-09-06): executed and closed with Part 1 as 4.1.0 (tag
+`v4.1.0`): the library fetched and pinned (930 pages, 28 books), the
+corpus module and `--corpus`, the export with provenance, the census by
+cause over the whole library, the intake wave it ranked (the importer
+expands titlo-written forms — 578 Polyakov entries had no other spelling;
+rows 135 → 559; 481 lexemes; Polyakov's у as the print's ꙋ; the ї vote
+with the library's evidence; the closed word's citation cell exempt from
+the vote; ids never moved), the overlay by register begun by the session
+(the Octoechos's Gospel stichera, the April Menaion's St Artemon) and two
+rule amendments it exposed (np-agree between two agreeing nouns,
+one-subject and the apposed noun). The library's verbatim 5.6% → 2.2%;
+the Bible's 0.9% → 0.8%. Departures, recorded in NOTES: the Psalter,
+Apostol and Gospel volumes were not measured against the Bible's text;
+the rubric bucket was not built; the intake items 2 and 4–8 were not
+taken and stay on the HANDOFF's open list. Part 3 follows as a
+measurement.

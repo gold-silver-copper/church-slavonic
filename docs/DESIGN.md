@@ -452,6 +452,46 @@ Both are scored against the hand overlay (`score-disambiguation`),
 `CS_NO_DISAMBIGUATE=1` and `CS_NO_TAGGER=1` rebuild without them, and
 neither touches the round-trip invariant or the leaf census.
 
+## A second print: the Ponomar library (4.1)
+
+The Bible was the pinned print of record; the Ponomar library (28
+service books, licensed by its maintainer) is a second print of the same
+orthography in the register the lexicon had never met — hymnography and
+rubrics. Three decisions:
+
+- **The corpus is the treebank's shape.** `treebank/corpus.rs` loads a
+  book's pages as chapters and its paragraphs (`<p>…</p>`) as units, so
+  every command over the Bible runs over a book or the whole library
+  unchanged (`--corpus ponomar[/<book>]`; the treebank and overlay
+  directories take the corpus's suffix). The paragraph's print is its
+  text with the markup removed; the pinned HTML is the source of
+  record; the round-trip invariant is the same, byte for byte.
+- **Titlo-written forms are the lexicon's, through the rows.** The
+  titlo table is per lexeme. Polyakov writes 578 entries only under a
+  titlo (богоро́диченъ, богома́ти, а҆́ггельскій …), and the importer had
+  skipped every such form. Now a form under a titlo is expanded through
+  the table's (abbreviation, skeleton) pairs left to right, the lemma
+  choosing among rows that abbreviate alike (дв҃ is дѣв for дѣ́ва and
+  даві for даві́дъ), and the rows the expansion used are proposed for
+  the table. A headword itself under a titlo is a slip of the source.
+  In the lifter, one lexeme is one reading whatever row abbreviated the
+  surface.
+- **The export says how sure each token is.** `cargo xtask export`
+  writes one TSV per book — chapter, unit, token, form, lexeme, cell,
+  provenance (`lexicon`, `rule:<name>`, `tagger:<p>`, `set`,
+  `function`, `amb`, `verbatim`, `apparatus`) — with a manifest of the
+  coverage table. It is the corpus a reader takes; nothing in it is
+  training material for the tagger.
+
+Two rules of the sentence changed on the register's evidence (both at
+zero exclusions on the Bible overlay afterwards): np-agree leaves an
+adjective alone when a noun on each side agrees with it (the attachment
+is not the rule's to decide), and one-subject leaves a noun apposed to
+the subject alone (adjacent through adjective-like leaves only). And
+two facts of the importer: Polyakov's у is the print's ꙋ throughout, so
+a prefix's о before it is not the uk digraph (поꙋче́нїе); a closed word's
+one cell is its citation cell, which the print's vote never touches.
+
 ## The fifth stage: the phonological word
 
 Church Slavonic accent is lexical at the word level, but the print's

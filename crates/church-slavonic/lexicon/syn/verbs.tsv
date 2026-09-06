@@ -34,45 +34,60 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 благовонити.v	благово́нити	v	-	-	V21n	a	-	-	-	P:V21n	ipf; intr
 благовонствити.v	благово́нствити	v	-	-	V21p	a	-	-	-	P:V21p	ipf; intr
 благовонствовати.v	благово́нствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благовоспріѧти.v	благовоспріѧ́ти	v	-	-	V15n	a	-	part.past.act.short.m.sg.nom=благовоспрїе́мъ;part.past.act.short.m.sg.acc=благовоспрїе́мъ	-	P:V15n	pf; tran
+благовосхвалити.v	благовосхвали́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 благовчинѧти.v	благовчинѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 благовчинѧтисѧ.v	благовчинѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 благовѣровати.v	благовѣ́ровати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-благовѣствовати.v	благовѣствова́ти	v	-	-	V12ov	a	-	part.pres.act.short.n.pl.nom=благовѣствꙋ̑юща;part.pres.act.short.n.pl.acc=благовѣствꙋ̑юща;part.past.act.short.n.pl.nom=благовѣствова̑вша;part.past.act.short.n.pl.acc=благовѣствова̑вша;part.past.pass.long.m.sg.nom=благовѣствова́нный;part.past.pass.long.m.sg.acc=благовѣствова́нный	part.pres.act.short.m.sg.nom=благовѣствꙋ́ющꙋ×4;part.pres.act.short.n.sg.nom=благовѣствꙋ́ющꙋ×4	P:V12ov	ipf; tran
+благовѣствовати.v	благовѣствова́ти	v	-	-	V12ov	a	-	part.pres.act.short.n.pl.nom=благовѣствꙋ̑юща;part.pres.act.short.n.pl.acc=благовѣствꙋ̑юща;part.past.act.short.n.pl.nom=благовѣствова̑вша;part.past.act.short.n.pl.acc=благовѣствова̑вша;part.past.pass.long.m.sg.nom=благовѣствова́нный;part.past.pass.long.m.sg.acc=благовѣствова́нный	part.pres.act.short.m.sg.nom=благовѣствꙋ́ющꙋ×6;part.pres.act.short.n.sg.nom=благовѣствꙋ́ющꙋ×6	P:V12ov	ipf; tran
 благовѣствоватисѧ.v	благовѣствова́тисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
 благовѣстити.v	благовѣсти́ти	v	-	-	V21t	b	-	-	-	P:V21t	ipf; tran
 благовѣститисѧ.v	благовѣсти́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	ipf; intr; med
 благовѣщати.v	благовѣща́ти	v	-	-	V11a	a	12=благовѣщанн	-	-	P:V11a	ipf; tran
 благоглаголати.v	благоглаго́лати	v	-	-	V12n	a	-	-	-	P:V12n	ipf; tran
 благоговѣинствовати.v	благоговѣ́инствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-благоговѣти.v	благоговѣ́ти	v	-	-	V11e	a	-	part.pres.act.short.m.pl.acc=благоговѣ́ющѧ;part.pres.act.short.f.pl.nom=благоговѣ́ющѧ;part.pres.act.short.f.pl.acc=благоговѣ́ющѧ	-	P:V11e	ipf; intr
+благоговѣти.v	благоговѣ́ти	v	-	-	V11e	a	2=благоговѣ	part.pres.act.short.m.pl.acc=благоговѣ́ющѧ;part.pres.act.short.f.pl.nom=благоговѣ́ющѧ;part.pres.act.short.f.pl.acc=благоговѣ́ющѧ	-	P:V11e	ipf; intr
 благоговѣѧти.v	благоговѣ́ѧти	v	-	-	V12a	a	-	-	-	P:V12a	ipf; intr
 благодарити.v	благодари́ти	v	-	-	V21n	b	-	-	-	P:V21n	ipf; tran
 благодаритисѧ.v	благодари́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	ipf; intr; med
 благодарствовати.v	благода́рствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
+благодательствовати.v	благода́тельствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.nom=благода́телствꙋѧ;part.pres.act.short.n.sg.nom=благода́телствꙋѧ	-	P:V12ov	ipf; tran
+благодатствовати.v	благода́тствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
 благоденствовати.v	благоде́нствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благодерзнꙋти.v	благодерзнꙋ́ти	v	-	-	V13t	a	-	lpart.m.sg=благодерзнꙋ́лъ	-	P:V13t	pf; intr
 благодѣйствовати.v	благодѣ́йствовати	v	-	-	V12ov	a	-	part.pres.act.long.m.sg.nom=благодѣ́йствꙋѧ;part.pres.act.long.n.sg.nom=благодѣ́йствꙋѧ	-	P:V12ov	ipf; intr
-благодѣтельствовати.v	благодѣ́тельствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.short.m.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.short.f.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.short.f.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.short.n.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.short.n.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.long.m.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.long.m.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.long.f.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.long.f.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.long.n.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.long.n.pl.loc=благодѣ́телствꙋющихъ	part.past.pass.short.m.pl.nom=благодѣ́телствовани×2	P:V12ov	ipf; tran
+благодѣлати.v	благодѣ́лати	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+благодѣтельствовати.v	благодѣ́тельствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.short.m.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.short.f.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.short.f.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.short.n.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.short.n.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.long.m.sg.gen=благодѣ́телствꙋющагѡ;part.pres.act.long.m.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.long.m.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.long.f.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.long.f.pl.loc=благодѣ́телствꙋющихъ;part.pres.act.long.n.sg.gen=благодѣ́телствꙋющагѡ;part.pres.act.long.n.pl.gen=благодѣ́телствꙋющихъ;part.pres.act.long.n.pl.loc=благодѣ́телствꙋющихъ	part.past.pass.short.m.pl.nom=благодѣ́телствовани×2	P:V12ov	ipf; tran
 благодѣтельствоватисѧ.v	благодѣ́тельствоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
-благодѣѧти.v	благодѣ́ѧти	v	-	-	V12a	a	-	part.pres.act.short.m.sg.nom=благодѣ́ющемъ;part.pres.act.short.m.sg.loc=благодѣ́ющемъ;part.pres.act.short.n.sg.nom=благодѣ́ющемъ;part.pres.act.short.n.sg.loc=благодѣ́ющемъ	-	P:V12a	ipf; tran
+благодѣѧти.v	благодѣ́ѧти	v	-	-	V12a	a	-	part.pres.act.short.m.sg.loc=благодѣ́ющемъ;part.pres.act.short.n.sg.loc=благодѣ́ющемъ;part.pres.act.long.m.sg.nom=благодѣ́ющїй	part.pres.act.short.m.sg.nom=благодѣ́ющемъ×1|благодѣ́ющꙋ×1;part.pres.act.short.n.sg.nom=благодѣ́ющемъ×1|благодѣ́ющꙋ×1;part.pres.act.long.m.sg.acc=благодѣ́ющїй×1	P:V12a	ipf; tran
 благодꙋшествовати.v	благодꙋ́шествовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благодꙋшствовати.v	благодꙋ́шствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благоизволити.v	благоизво́лити	v	-	-	V21n	a	-	-	aor.2.sg=благоизволѝ×1;aor.3.sg=благоизволѝ×1;impv.2.sg=благоизволѝ×1;impv.3.sg=благоизволѝ×1	P:V21n	pf; tran
+благоизволѧти.v	благоизволѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 благоимѣтисѧ.v	благоимѣ́тисѧ	v	-	-	V11e	a	encl=сѧ	-	-	P:V11e	ipf; intr; med
+благоискꙋситисѧ.v	благоискꙋси́тисѧ	v	-	-	V21t	a	encl=сѧ	-	-	P:V21t	pf; intr; med
 благоискꙋсствовати.v	благоискꙋ́сствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благоисточити.v	благоисточи́ти	v	-	-	V21s	a	-	-	-	P:V21s	pf; tran
 благометати.v	благомета́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 благомоществовати.v	благомо́ществовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благомꙋдрствовати.v	благомꙋ́дрствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благомꙋжествовати.v	благомꙋ́жествовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благонасадити.v	благонасади́ти	v	-	-	V21t	a	-	-	-	P:V21t	pf; tran
+благонасладитисѧ.v	благонаслади́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	pf; intr; med
 благонаслѣдствовати.v	благонаслѣ́дствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благоплавати.v	благопла́вати	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 благоповиноватисѧ.v	благоповинова́тисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
+благоподвизатисѧ.v	благоподвиза́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 благопокорѧтисѧ.v	благопокорѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-благополꙋчити.v	благополꙋчи́ти	v	-	-	V21s	a	-	-	-	P:V21s	pf; tran
+благополꙋчествовати.v	благополꙋ́чествовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благополꙋчити.v	благополꙋчи́ти	v	-	-	V21s	b	-	-	-	P:V21s	pf; tran
 благопослꙋшествовати.v	благопослꙋ́шествовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
 благопоспѣшатисѧ.v	благопоспѣша́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+благопоспѣшествовати.v	благопоспѣ́шествовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благопоспѣшествоватисѧ.v	благопоспѣ́шествоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
 благопоспѣшити.v	благопоспѣши́ти	v	-	-	V21s	b	-	-	-	P:V21s	pf; intr
 благопоспѣшитисѧ.v	благопоспѣши́тисѧ	v	-	-	V21s	b	encl=сѧ	-	-	P:V21s	pf; intr; med
+благопоспѣшствовати.v	благопоспѣ́шствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благопохвалити.v	благопохвали́ти	v	-	-	V21n	a.ov	-	-	-	P:V21n	pf; tran
 благоправити.v	благопра́вити	v	-	-	V21p	a	-	-	-	P:V21p	ipf; intr
 благопремѣнитисѧ.v	благопремѣни́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	pf; intr; med
@@ -85,13 +100,17 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 благоразсꙋждати.v	благоразсꙋжда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 благоразсꙋждатисѧ.v	благоразсꙋжда́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 благорасположити.v	благорасположи́ти	v	-	-	V21s	b	-	-	-	P:V21s	pf; tran
-благорастворити.v	благораствори́ти	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
+благорастворити.v	благораствори́ти	v	-	-	V21n	a	-	part.past.pass.short.m.pl.acc=благорастворє́нны;part.past.pass.short.f.sg.nom=благорастворе́нны;part.past.pass.short.f.pl.nom=благорастворє́нны;part.past.pass.short.f.pl.acc=благорастворє́нны	part.past.pass.short.f.sg.nom=благорастворе́ны×2	P:V21n	pf; tran
 благорасти.v	благорастѝ	v	-	-	V14st	a	-	part.pres.act.short.n.sg.nom=благорастꙋ́що;part.pres.act.short.n.sg.acc=благорастꙋ́що	-	P:V14st	ipf; intr
-благословити.v	благослови́ти	v	-	-	V21p	b	2=благослов	pres.1.sg=благословлю̀	-	P:V21p	pf; tran
+благоскорбѣти.v	благоскорбѣ́ти	v	-	-	V22p	a	-	-	-	P:V22p	ipf; intr
+благословити.v	благослови́ти	v	-	-	V21p	b{part.pres.act.short.m.pl.gen=P;part.pres.act.short.m.pl.loc=P;part.pres.act.short.f.pl.gen=P;part.pres.act.short.f.pl.loc=P;part.pres.act.short.n.pl.gen=P;part.pres.act.short.n.pl.loc=P;part.pres.act.long.m.pl.gen=P;part.pres.act.long.m.pl.loc=P;part.pres.act.long.f.pl.gen=P;part.pres.act.long.f.pl.loc=P;part.pres.act.long.n.pl.gen=P;part.pres.act.long.n.pl.loc=P}	2=благослов	pres.1.sg=благословлю̀	part.pres.act.short.m.pl.gen=благословѧ́щихъ×1;part.pres.act.short.m.pl.loc=благословѧ́щихъ×1;part.pres.act.short.f.pl.gen=благословѧ́щихъ×1;part.pres.act.short.f.pl.loc=благословѧ́щихъ×1;part.pres.act.short.n.pl.gen=благословѧ́щихъ×1;part.pres.act.short.n.pl.loc=благословѧ́щихъ×1;part.pres.act.long.m.pl.gen=благословѧ́щихъ×1;part.pres.act.long.m.pl.loc=благословѧ́щихъ×1;part.pres.act.long.f.pl.gen=благословѧ́щихъ×1;part.pres.act.long.f.pl.loc=благословѧ́щихъ×1;part.pres.act.long.n.pl.gen=благословѧ́щихъ×1;part.pres.act.long.n.pl.loc=благословѧ́щихъ×1	P:V21p	pf; tran
 благословити.v.2	благосло́вити	v	-	-	V21p	a	-	-	-	P:V21p	ipf; tran
 благословитисѧ.v	благослови́тисѧ	v	-	-	V21p	b	encl=сѧ	-	-	P:V21p	pf; intr; med
-благословлѧти.v	благословлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+благословлѧти.v	благословлѧ́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=благословлѧ́ющꙋ×3;part.pres.act.short.n.sg.nom=благословлѧ́ющꙋ×3	P:V11a	ipf; tran
+благословлѧти.v.2	благословлѧ́ти	v	-	-	V11a	a	-	pres.3.sg=благословѧ́етъ	-	P:V11a	ipf; tran
 благословлѧтисѧ.v	благословлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+благословствовати.v	благосло́вствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благослꙋжити.v	благослꙋжи́ти	v	-	-	V21s	a	-	-	-	P:V21s	ipf; intr
 благосовѣтовати.v	благосовѣ́товати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
 благосотворити.v	благосотвори́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 благоспѣтисѧ.v	благоспѣ́тисѧ	v	-	-	V11e	a	encl=сѧ	-	-	P:V11e	pf; intr; med
@@ -101,36 +120,42 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 благострадати.v	благостра́дати	v	-	-	V12t	a	-	-	-	P:V12t	ipf; intr
 благостынствовати.v	благосты́нствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благотворити.v	благотвори́ти	v	-	-	V21n	b	-	part.pres.act.short.m.pl.acc=благотворѧ́щѧ;part.pres.act.short.f.pl.nom=благотворѧ́щѧ;part.pres.act.short.f.pl.acc=благотворѧ́щѧ	pres.2.pl=благотворитѐ×2;impv.2.pl=благотворитѐ×2	P:V21n	ipf; tran
-благохвалити.v	благохвали́ти	v	-	-	V21n	b.pres.part	-	part.pres.act.long.m.sg.nom=благохва́лѧщїй	part.pres.act.long.m.sg.acc=благохва́лѧщїй×1	P:V21n	ipf; tran
+благотещи.v	благотещѝ	v	-	-	V14k	a	-	-	-	P:V14k	ipf; intr
+благохвалити.v	благохвали́ти	v	-	-	V21n	b.pres.part{part.pres.act.short.m.sg.nom=S;part.pres.act.short.n.sg.nom=S;part.pres.pass.short.m.pl.gen=S;part.pres.pass.short.m.pl.loc=S;part.pres.pass.short.f.pl.gen=S;part.pres.pass.short.f.pl.loc=S;part.pres.pass.short.n.pl.gen=S;part.pres.pass.short.n.pl.loc=S;part.pres.pass.long.m.pl.gen=S;part.pres.pass.long.m.pl.loc=S;part.pres.pass.long.f.pl.gen=S;part.pres.pass.long.f.pl.loc=S;part.pres.pass.long.n.pl.gen=S;part.pres.pass.long.n.pl.loc=S}	-	part.pres.act.long.m.sg.nom=благохва́лѧщїй	part.pres.act.short.n.sg.nom=благохва́лѧще×4;part.pres.act.long.m.sg.acc=благохва́лѧщїй×1	P:V21n	ipf; tran
 благочадствовати.v	благоча́дствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.nom=благоча́дствꙋющꙋ;part.pres.act.short.n.sg.nom=благоча́дствꙋющꙋ	-	P:V12ov	ipf; intr
 благочествовати.v	благоче́ствовати	v	-	-	V12ov	a	-	-	part.pres.act.short.m.pl.gen=благочествꙋ́ющихъ×1;part.pres.act.short.m.pl.loc=благочествꙋ́ющихъ×1;part.pres.act.short.f.pl.gen=благочествꙋ́ющихъ×1;part.pres.act.short.f.pl.loc=благочествꙋ́ющихъ×1;part.pres.act.short.n.pl.gen=благочествꙋ́ющихъ×1;part.pres.act.short.n.pl.loc=благочествꙋ́ющихъ×1;part.pres.act.long.m.pl.gen=благочествꙋ́ющихъ×1;part.pres.act.long.m.pl.loc=благочествꙋ́ющихъ×1;part.pres.act.long.f.pl.gen=благочествꙋ́ющихъ×1;part.pres.act.long.f.pl.loc=благочествꙋ́ющихъ×1;part.pres.act.long.n.pl.gen=благочествꙋ́ющихъ×1;part.pres.act.long.n.pl.loc=благочествꙋ́ющихъ×1	P:V12ov	ipf; tran
 благочести.v	благочестѝ	v	-	-	V14t*	a	-	-	-	P:V14t*	ipf; tran
 благочестивномꙋдрствовати.v	благочестивномꙋ́дрствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благочестивомꙋдрствовати.v	благочестивомꙋ́дрствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благошествовати.v	благоше́ствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.nom=благоше́ствꙋющꙋ;part.pres.act.short.n.sg.nom=благоше́ствꙋющꙋ	-	P:V12ov	ipf; intr
+благоѡбильствовати.v	благоѡби́льствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благоѡбительствовати.v	благоѡби́тельствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 благоѡбꙋздывати.v	благоѡбꙋ́здывати	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-благꙋвидѣтисѧ.v	благꙋви́дѣтисѧ	v	-	-	V22t	a	encl=сѧ	-	-	P:V22t	pf; intr; med
-благꙋгодити.v	благꙋгоди́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; intr
-благꙋгождати.v	благꙋгожда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-благꙋгождатисѧ.v	благꙋгожда́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-благꙋготовитисѧ.v	благꙋгото́витисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	pf; intr; med
-благꙋготовлѧти.v	благꙋготовлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-благꙋкрасити.v	благꙋкраси́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; tran
-благꙋкраситисѧ.v	благꙋкраси́тисѧ	v	-	-	V21t	b{lpart.m.sg=S}	encl=сѧ	-	lpart.m.sg=благꙋкраси́лсѧ×1	P:V21t	pf; intr; med
-благꙋкрашати.v	благꙋкраша́ти	v	-	-	V11a	a	-	part.pres.pass.short.f.sg.nom=благꙋкраша́емы	-	P:V11a	ipf; tran
-благꙋкрашатисѧ.v	благꙋкраша́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-благꙋпотребити.v	благꙋпотреби́ти	v	-	-	V21p	b	-	-	-	P:V21p	ipf; intr
-благꙋправити.v	благꙋпра́вити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
-благꙋправлѧти.v	благꙋправлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
-благꙋсердствовати.v	благꙋсе́рдствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-благꙋспѣвати.v	благꙋспѣва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
-благꙋспѣти.v	благꙋспѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr
-благꙋспѣтисѧ.v	благꙋспѣ́тисѧ	v	-	-	V11e	a	encl=сѧ	-	-	P:V11e	pf; intr; med
-благꙋстроити.v	благꙋстро́ити	v	-	-	V21a	a	-	-	-	P:V21a	pf; tran
-благꙋстроѧти.v	благꙋстроѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-благꙋтробствовати.v	благꙋтро́бствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-благꙋхати.v	благꙋха́ти	v	-	-	V11a	a	-	part.pres.act.short.n.pl.nom=благꙋха̑юща;part.pres.act.short.n.pl.acc=благꙋха̑юща;part.pres.act.long.m.sg.acc=благꙋха́ющїй	part.pres.act.short.m.sg.nom=благꙋха́ющꙋ×1;part.pres.act.short.n.sg.nom=благꙋха́ющꙋ×1;part.pres.act.long.m.sg.nom=благꙋха́ющїй×1	P:V11a	ipf; intr
-благꙋхатисѧ.v	благꙋха́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-благꙋчредитисѧ.v	благꙋчреди́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	pf; intr; med
+благоꙋзаконити.v	благоꙋзако́нити	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
+благоꙋкротити.v	благоꙋкроти́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; tran
+благꙋвидѣтисѧ.v	благоꙋви́дѣтисѧ	v	-	-	V22t	a	encl=сѧ	-	-	P:V22t	pf; intr; med
+благꙋгодити.v	благоꙋгоди́ти	v	-	-	V21t	b	-	part.past.act.long.f.sg.acc=благоꙋго́ждшꙋю	-	P:V21t	pf; intr
+благꙋгождати.v	благоꙋгожда́ти	v	-	-	V11a	a	-	impv.1.pl=благоꙋгожда́имъ	part.pres.act.short.m.sg.nom=благоꙋгожда́ющꙋ×1;part.pres.act.short.n.sg.nom=благоꙋгожда́ющꙋ×1	P:V11a	ipf; tran
+благꙋгождатисѧ.v	благоꙋгожда́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+благꙋготовитисѧ.v	благоꙋгото́витисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	pf; intr; med
+благꙋготовлѧти.v	благоꙋготовлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+благꙋкрасити.v	благоꙋкраси́ти	v	-	-	V21t	b{part.past.pass.short.m.sg.nom=P;part.past.pass.short.m.sg.acc=P}	-	-	-	P:V21t	pf; tran
+благꙋкраситисѧ.v	благоꙋкраси́тисѧ	v	-	-	V21t	b{lpart.m.sg=S}	encl=сѧ	-	lpart.m.sg=благоꙋкраси́лсѧ×1|благꙋкраси́лсѧ	P:V21t	pf; intr; med
+благꙋкрашати.v	благоꙋкраша́ти	v	-	-	V11a	a	-	part.pres.pass.short.f.sg.nom=благоꙋкраша́емы	-	P:V11a	ipf; tran
+благꙋкрашатисѧ.v	благоꙋкраша́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+благꙋпотребити.v	благоꙋпотреби́ти	v	-	-	V21p	b	-	-	-	P:V21p	ipf; intr
+благꙋправити.v	благоꙋпра́вити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
+благꙋправлѧти.v	благоꙋправлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
+благꙋсердствовати.v	благоꙋсе́рдствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благꙋспѣвати.v	благоꙋспѣва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
+благꙋспѣти.v	благоꙋспѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr
+благꙋспѣтисѧ.v	благоꙋспѣ́тисѧ	v	-	-	V11e	a	encl=сѧ	-	-	P:V11e	pf; intr; med
+благꙋстроити.v	благоꙋстро́ити	v	-	-	V21a	a	-	part.past.pass.short.m.pl.gen=благоꙋстро́енныхъ;part.past.pass.short.m.pl.loc=благоꙋстро́енныхъ;part.past.pass.short.f.pl.gen=благоꙋстро́енныхъ;part.past.pass.short.f.pl.loc=благоꙋстро́енныхъ;part.past.pass.short.n.pl.gen=благоꙋстро́енныхъ;part.past.pass.short.n.pl.loc=благоꙋстро́енныхъ	-	P:V21a	pf; tran
+благꙋстроѧти.v	благоꙋстроѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+благꙋтробствовати.v	благоꙋтро́бствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+благꙋхати.v	благоꙋха́ти	v	-	-	V11a	a	-	part.pres.act.short.n.pl.nom=благоꙋха̑юща;part.pres.act.short.n.pl.acc=благоꙋха̑юща;part.pres.act.long.m.sg.acc=благоꙋха́ющїй	part.pres.act.short.m.sg.nom=благоꙋха́ющꙋ×4|благꙋха́ющꙋ;part.pres.act.short.n.sg.nom=благоꙋха́ющꙋ×4|благꙋха́ющꙋ;part.pres.act.long.m.sg.nom=благоꙋха́ющїй×2|благꙋха́ющїй	P:V11a	ipf; intr
+благꙋхатисѧ.v	благоꙋха́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+благꙋчредитисѧ.v	благоꙋчреди́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	pf; intr; med
 блаженствовати.v	блаже́нствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 блажити.v	блажи́ти	v	-	-	V21s	b	-	part.pres.act.short.m.sg.nom=блажа́щꙋ;part.pres.act.short.n.sg.nom=блажа́щꙋ;part.pres.act.long.m.sg.nom=блажа́щїй	part.pres.act.short.m.sg.nom=блажѧ̀×1;part.pres.act.short.n.sg.nom=блажѧ̀×1;part.pres.act.long.m.sg.acc=блажа́щїй×1	P:V21s	ipf; tran
 блажитисѧ.v	блажи́тисѧ	v	-	-	V21s	b.2pl	encl=сѧ	-	-	P:V21s	ipf; intr; med
@@ -159,10 +184,40 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 богатствовати.v	бога́тствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 богатѣти.v	богатѣ́ти	v	-	-	V11e	a{impv.2.sg=1;impv.3.sg=1}	-	-	-	P:V11e	ipf; intr
 богатѣтисѧ.v	богатѣ́тисѧ	v	-	-	V11e	a	encl=сѧ	-	-	P:V11e	ipf; intr; med
+богоборствовати.v	богобо́рствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+богобоѧтисѧ.v	богобоѧ́тисѧ	v	-	-	V22a	a	encl=сѧ	-	-	P:V22a	ipf; intr; med
+боговмѣстити.v	боговмѣсти́ти	v	-	-	V21t	a	-	-	-	P:V21t	pf; tran
+боговѣщати.v	боговѣща́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+богоглаголати.v	богоглаго́лати	v	-	-	V12n	a	-	-	-	P:V12n	ipf; tran
+богогласити.v	богогласи́ти	v	-	-	V21t	a	-	-	-	P:V21t	ipf; intr
+богогласовати.v	богогласова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+богодѣйствовати.v	богодѣ́йствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+богодѣйствоватисѧ.v	богодѣ́йствоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
+боголюбити.v	боголюби́ти	v	-	-	V21p	a	-	-	-	P:V21p	ipf; tran
+богоносити.v	богоноси́ти	v	-	-	V21t	a	-	-	-	P:V21t	ipf; tran
+богопокрывати.v	богопокрыва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+богопохвалити.v	богопохвали́ти	v	-	-	V21n	a	-	-	-	P:V21n	-
+богопровидѣти.v	богопрови́дѣти	v	-	-	V22t	a	-	part.past.pass.short.m.sg.nom=богопрови́дѣнъ;part.past.pass.short.m.sg.acc=богопрови́дѣнъ	-	P:V22t	ipf; tran
+богопрозѧбнꙋти.v	богопрозѧ́бнꙋти	v	-	-	V13t	a	-	part.past.act.long.f.sg.acc=богопрозѧ́бшꙋю	-	P:V13t	pf; intr
 богопріимати.v	богопріима́ти	v	-	-	V12p	a	-	part.pres.act.short.m.sg.nom=богопрїе́млющь;part.pres.act.short.m.sg.acc=богопрїе́млющь	-	P:V12p/V11a	ipf; tran
-богословити.v	богосло́вити	v	-	-	V21p	a	-	-	-	P:V21p	ipf; intr
+богородити.v	богороди́ти	v	-	-	V21t	a	-	part.past.act.long.f.sg.nom=богоро́ждшаѧ;part.past.act.long.f.sg.gen=богоро́ждшїѧ	-	P:V21t	pf; tran
+богословити.v	богосло́вити	v	-	-	V21p	a	2=богослов	pres.1.sg=богосло́влю;part.pres.act.long.f.sg.nom=богослѡ́вѧщаѧ	lpart.m.sg=богослови́лъ×1;part.pres.act.short.m.sg.nom=богосло́вѧщꙋ×1;part.pres.act.short.n.sg.nom=богосло́вѧщꙋ×1;part.past.act.long.m.pl.acc=богослови́вшыѧ×1;part.past.act.long.f.pl.nom=богослови́вшыѧ×1;part.past.act.long.f.pl.acc=богослови́вшыѧ×1	P:V21p	ipf; intr
+богословствовати.v	богосло́вствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+богословствоватисѧ.v	богосло́вствоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
+богосовершати.v	богосоверша́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+богосодѣлати.v	богосодѣ́лати	v	-	-	V11a	a	-	part.past.pass.long.f.sg.acc=богосодѣ́ланнꙋю	-	P:V11a	pf; tran
+богосодѣлатисѧ.v	богосодѣ́латисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	pf; intr; med
+богосодѣѧти.v	богосодѣ́ѧти	v	-	-	V12a	a	-	part.past.pass.short.f.sg.ins=богосодѣ́ѧнною;part.past.pass.long.f.sg.ins=богосодѣ́ѧнною	-	P:V12a	pf; tran
+боготворити.v	боготвори́ти	v	-	-	V21n	b	-	-	-	P:V21n	ipf; tran
+боготворитисѧ.v	боготвори́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	ipf; intr; med
 богохранити.v	богохрани́ти	v	-	-	V21n	a	-	-	-	P:V21n	ipf; tran
+богошествовати.v	богоше́ствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
+богоꙋгождати.v	богоꙋгожда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+богоꙋдобритисѧ.v	богоꙋдобри́тисѧ	v	-	-	V21n	a	encl=сѧ	-	-	P:V21n	pf; intr; med
+богоꙋкрѣплѧти.v	богоꙋкрѣплѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+богоꙋправлѧти.v	богоꙋправлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 бодрствовати.v	бо́дрствовати	v	-	-	V12ov	a	-	impv.1.pl=бо́дрствꙋимъ	-	P:V12ov	ipf; intr
+божествовати.v	божествова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 болѣзновати.v	болѣ́зновати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.loc=болѣ́знꙋющемъ;part.pres.act.short.n.sg.loc=болѣ́знꙋющемъ	part.pres.act.short.m.sg.nom=болѣ́знꙋющемъ×1|болѣ́знꙋющꙋ×1;part.pres.act.short.n.sg.nom=болѣ́знꙋющемъ×1|болѣ́знꙋющꙋ×1	P:V12ov	ipf; intr
 болѣти.v	болѣ́ти	v	-	-	V22n	b	-	part.pres.act.short.m.sg.loc=болѧ́щемъ;part.pres.act.short.n.sg.loc=болѧ́щемъ;part.pres.act.short.n.pl.nom=болѧ̑ща;part.pres.act.short.n.pl.acc=болѧ̑ща	part.pres.act.short.m.sg.nom=болѧ́щꙋ×5|болѧ́щемъ×1;part.pres.act.short.n.sg.nom=болѧ́щꙋ×5|болѧ́щемъ×1;part.pres.act.long.m.sg.nom=болѧ́щїй×1;part.pres.act.long.m.sg.acc=болѧ́щїй×1	P:V22n;A:p087	ipf; intr
 борзити.v	борзи́ти	v	-	-	V21t	b	-	-	-	P:V21t	ipf; intr
@@ -423,7 +478,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 возблагопꙋтствити.v	возблагопꙋ́тствити	v	-	-	V21p	a	-	-	-	P:V21p	pf; intr
 возблагословити.v	возблагослови́ти	v	-	-	V21p	b	-	-	-	P:V21p	pf; tran
 возблагословитисѧ.v	возблагослови́тисѧ	v	-	-	V21p	b	encl=сѧ	-	-	P:V21p	pf; intr; med
-возблагꙋхати.v	возблагꙋха́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; intr
+возблагꙋхати.v	возблагоꙋха́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; intr
 возблажати.v	возблажа́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 возблистати.v	возблиста́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; intr
 возблꙋдити.v	возблꙋди́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; intr
@@ -485,7 +540,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 возгарати.v	возгара́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 возгаратисѧ.v	возгара́тисѧ	v	-	-	V11a	a	encl=сѧ	part.pres.act.long.m.sg.acc=возгара́ющагѡсѧ	-	P:V11a	ipf; intr; med
 возглавити.v	возгла́вити	v	-	-	V21p	a	-	-	inf=возглави́ти×1	P:V21p	pf; tran
-возглаголати.v	возглаго́лати	v	-	-	V12n	a	-	part.past.act.long.f.sg.nom=возглагѡ́лавшаѧ	-	P:V12n	pf; tran
+возглаголати.v	возглаго́лати	v	-	-	V12n	a	-	part.past.act.long.f.sg.nom=возглагѡ́лавшаѧ	pres.1.pl=возглаголго́лемъ×1;pres.3.sg=возглаголго́летъ×2;pres.3.pl=возглаголго́лютъ×6;aor.2.sg=возглаголго́ла×1;aor.3.sg=возглаголго́ла×1;impv.1.pl=возглаголго́лемъ×1;lpart.m.sg=возглаголго́лалъ×1;part.pres.pass.short.m.sg.nom=возглаголго́лемъ×1;part.pres.pass.short.m.sg.acc=возглаголго́лемъ×1	P:V12n	pf; tran
 возглаголатисѧ.v	возглаго́латисѧ	v	-	-	V12n	a	encl=сѧ	-	-	P:V12n	pf; intr; med
 возгласити.v	возгласи́ти	v	-	-	V21t	b	-	part.past.act.short.m.pl.nom=возгла́шше	-	P:V21t	pf; tran
 возгласитисѧ.v	возгласи́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	pf; intr; med
@@ -624,7 +679,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 вознебрещи.v	вознебрещѝ	v	-	-	V14g	a	-	-	-	P:V14g	pf; intr
 вознегодовати.v	вознегодова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	pf; intr
 вознедꙋговати.v	вознедꙋ́говати	v	-	-	V12ov	a	-	-	-	P:V12ov	pf; intr
-вознедꙋмѣти.v	вознедꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr
+вознедꙋмѣти.v	вознедоꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr
 вознеистовствовати.v	вознеи́стовствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	pf; intr
 возненавидѣти.v	возненави́дѣти	v	-	-	V22t	a	12=возненавидѣн;8=возненавидѣн	impv.2.sg=возненави́ждь;impv.3.sg=возненави́ждь;part.past.pass.long.m.sg.nom=возненави́дѣнный;part.past.pass.long.m.sg.acc=возненави́дѣннаго;part.past.pass.long.f.sg.dat=возненави́дѣннѣй;part.past.pass.long.f.sg.loc=возненави́дѣннѣй	part.past.pass.long.m.sg.acc=возненави́дѣнный×1	P:V22t	pf; tran
 возненавидѣтисѧ.v	возненави́дѣтисѧ	v	-	-	V22t	a	encl=сѧ	-	-	P:V22t	pf; intr; med
@@ -778,7 +833,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 воскочити.v	воскочи́ти	v	-	-	V21s	b	-	-	-	P:V21s	pf; intr
 воскресати.v	воскреса́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 воскресити.v	воскреси́ти	v	-	-	V21t	b	12=воскрешен	-	pres.1.sg=воскрешю̀×1	P:V21t	pf; tran
-воскреснꙋти.v	воскре́снꙋти	v	-	-	V13t	b.pres.aor{inf=S}	-	aor.2.sg=воскре́се;aor.2.pl=воскреснꙋ́сте;aor.3.sg=воскре́се;part.past.act.short.m.sg.dat=воскре́сшꙋ;part.past.act.short.m.sg.ins=воскре́сшимъ;part.past.act.short.m.sg.loc=воскре́сши;part.past.act.short.f.sg.acc=воскре́сшꙋ;part.past.act.short.f.sg.ins=воскре́сшею;part.past.act.short.n.sg.dat=воскре́сшꙋ;part.past.act.short.n.sg.ins=воскре́сшимъ;part.past.act.short.n.sg.loc=воскре́сши;part.past.act.long.m.sg.nom=воскресы́й;part.past.act.long.m.sg.gen=воскре́сшагѡ;part.past.act.long.m.sg.dat=воскре́сшемꙋ;part.past.act.long.m.sg.acc=воскре́сшаго;part.past.act.long.m.sg.ins=воскре́сшимъ;part.past.act.long.m.sg.loc=воскре́сшемъ;part.past.act.long.m.pl.nom=воскре́сшїе;part.past.act.long.f.sg.nom=воскре́сшаѧ;part.past.act.long.f.sg.ins=воскре́сшею;part.past.act.long.f.du.nom=воскре́сшїе;part.past.act.long.f.du.acc=воскре́сшїе;part.past.act.long.n.sg.gen=воскре́сшагѡ;part.past.act.long.n.sg.dat=воскре́сшемꙋ;part.past.act.long.n.sg.ins=воскре́сшимъ;part.past.act.long.n.sg.loc=воскре́сшемъ;part.past.act.long.n.du.nom=воскре́сшїе;part.past.act.long.n.du.acc=воскре́сшїе	pres.1.sg=воскре́снꙋ×5;aor.2.sg=воскреснꙋ̀×6;aor.3.sg=воскреснꙋ̀×6;inf=воскреснꙋ́ти×2;part.past.act.long.m.sg.nom=воскре́сый×1;part.past.act.long.m.sg.acc=воскресы́й×59|воскре́сый×1	P:V13t	pf; intr
+воскреснꙋти.v	воскре́снꙋти	v	-	-	V13t	b.pres.aor{inf=S}	-	aor.2.sg=воскре́се;aor.2.pl=воскреснꙋ́сте;aor.3.sg=воскре́се;part.past.act.short.m.sg.dat=воскре́сшꙋ;part.past.act.short.m.sg.ins=воскре́сшимъ;part.past.act.short.m.sg.loc=воскре́сши;part.past.act.short.f.sg.acc=воскре́сшꙋ;part.past.act.short.f.sg.ins=воскре́сшею;part.past.act.short.n.sg.dat=воскре́сшꙋ;part.past.act.short.n.sg.ins=воскре́сшимъ;part.past.act.short.n.sg.loc=воскре́сши;part.past.act.long.m.sg.nom=воскресы́й;part.past.act.long.m.sg.gen=воскре́сшагѡ;part.past.act.long.m.sg.dat=воскре́сшемꙋ;part.past.act.long.m.sg.acc=воскре́сшаго;part.past.act.long.m.sg.ins=воскре́сшимъ;part.past.act.long.m.sg.loc=воскре́сшемъ;part.past.act.long.m.pl.nom=воскре́сшїе;part.past.act.long.f.sg.nom=воскре́сшаѧ;part.past.act.long.f.sg.ins=воскре́сшею;part.past.act.long.f.du.nom=воскре́сшїе;part.past.act.long.f.du.acc=воскре́сшїе;part.past.act.long.n.sg.gen=воскре́сшагѡ;part.past.act.long.n.sg.dat=воскре́сшемꙋ;part.past.act.long.n.sg.ins=воскре́сшимъ;part.past.act.long.n.sg.loc=воскре́сшемъ;part.past.act.long.n.du.nom=воскре́сшїе;part.past.act.long.n.du.acc=воскре́сшїе	pres.1.sg=воскре́снꙋ×5;aor.2.sg=воскреснꙋ̀×6;aor.3.sg=воскреснꙋ̀×6;inf=воскреснꙋ́ти×2;part.past.act.long.m.sg.nom=воскре́сый×1;part.past.act.long.m.sg.acc=воскресы́й×116|воскре́сый×1	P:V13t	pf; intr
 воскрешати.v	воскреша́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 воскривити.v	воскриви́ти	v	-	-	V21p	a	-	part.past.pass.short.n.sg.nom=воскривле́нно;part.past.pass.short.n.sg.acc=воскривле́нно	-	P:V21p	pf; tran
 воскрилити.v	воскрили́ти	v	-	-	V21n	b{part.past.pass.short.m.sg.gen=P;part.past.pass.short.m.sg.acc=P;part.past.pass.short.f.sg.nom=P;part.past.pass.short.n.sg.gen=P}	-	part.past.pass.short.n.sg.nom=воскриле́нно;part.past.pass.short.n.sg.acc=воскриле́нно	-	P:V21n	pf; tran
@@ -915,8 +970,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 воцарити.v	воцари́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 воцаритисѧ.v	воцари́тисѧ	v	-	-	V21n	b.2pl	encl=сѧ	-	-	P:V21n	pf; intr; med
 воцарѧти.v	воцарѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+воцарѧтисѧ.v	воцарѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 воцерковлѧтисѧ.v	воцерковлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-вочеловѣчитисѧ.v	вочеловѣ́читисѧ	v	-	-	V21s	a	encl=сѧ	-	part.past.act.short.m.sg.nom=вочеловѣ́чсѧ×2;part.past.act.short.m.sg.acc=вочеловѣ́чсѧ×2;part.past.act.long.m.sg.acc=вочеловѣ́чшагѡсѧ×2	P:V21s	pf; intr; med
+вочеловѣчитисѧ.v	вочеловѣ́читисѧ	v	-	-	V21s	a	encl=сѧ	part.past.act.short.m.sg.nom=вочеловѣ́чсѧ;part.past.act.short.m.sg.dat=вочеловѣ́чшꙋсѧ;part.past.act.short.f.sg.acc=вочеловѣ́чшꙋсѧ;part.past.act.short.n.sg.dat=вочеловѣ́чшꙋсѧ;part.past.act.long.m.sg.dat=вочеловѣ́чшемꙋсѧ;part.past.act.long.m.sg.acc=вочеловѣ́чшагѡсѧ;part.past.act.long.n.sg.dat=вочеловѣ́чшемꙋсѧ	part.past.act.short.m.sg.dat=вочелоовѣ́чшꙋсѧ×1;part.past.act.short.m.sg.acc=вочеловѣ́чсѧ×24;part.past.act.short.f.sg.acc=вочелоовѣ́чшꙋсѧ×1;part.past.act.short.n.sg.dat=вочелоовѣ́чшꙋсѧ×1;part.past.act.long.m.sg.acc=вочеловѣ́чившагѡсѧ×1	P:V21s	pf; intr; med
 воѡбражати.v	воѡбража́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=воѡбража́ющꙋ×2;part.pres.act.short.n.sg.nom=воѡбража́ющꙋ×2	P:V11a	ipf; tran
 воѡбражатисѧ.v	воѡбража́тисѧ	v	-	-	V11a	a	encl=сѧ	part.pres.act.short.m.sg.nom=воѡбража́ющꙋсѧ;part.pres.act.short.n.sg.nom=воѡбража́ющꙋсѧ	-	P:V11a	ipf; intr; med
 воѡбразити.v	воѡбрази́ти	v	-	-	V21t	b	-	part.past.pass.short.m.pl.nom=воѡбраже́нни;part.past.pass.short.f.sg.ins=воѡбраже́нною;part.past.pass.long.m.sg.nom=воѡбраже́ный;part.past.pass.long.m.sg.acc=воѡбраже́ный	aor.2.sg=воѻбразѝ×1;aor.3.sg=воѻбразѝ×1;impv.2.sg=воѻбразѝ×1;impv.3.sg=воѻбразѝ×1;lpart.m.sg=воѻбрази́лъ×1;part.past.pass.short.m.sg.gen=воѡбраже́нна×3;part.past.pass.short.m.sg.acc=воѡбраже́нна×3;part.past.pass.short.n.sg.gen=воѡбраже́нна×3	P:V21t	pf; tran
@@ -1036,6 +1092,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 втѣлесевати.v	втѣлесева́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 входити.v	входи́ти	v	-	-	V21t	b.pres.impv.ppm	-	impf.2.du=вхожда́стѣ;impf.3.du=вхожда́стѣ;part.pres.act.short.n.pl.nom=входѧ̑ща;part.pres.act.short.n.pl.acc=входѧ̑ща;part.pres.act.long.m.sg.acc=входѧ́щїй	pres.2.pl=входи́те×10;impv.2.pl=входи́те×10;part.pres.act.short.m.sg.nom=входѧ́щꙋ×15;part.pres.act.short.m.sg.gen=вхѡдѧ́ща×1;part.pres.act.short.m.sg.acc=вхѡдѧ́ща×1;part.pres.act.short.n.sg.nom=входѧ́щꙋ×15;part.pres.act.short.n.sg.gen=вхѡдѧ́ща×1;part.pres.act.long.m.sg.nom=входѧ́щїй×2	P:V21t	ipf; intr
 вцерковлѧтисѧ.v	вцерковлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+вчеловѣчитисѧ.v	вчеловѣ́читисѧ	v	-	-	V21s	a	encl=сѧ	part.past.act.short.m.sg.nom=вчелоовѣ́чьсѧ;part.past.act.short.m.sg.dat=вчеловѣ́чшꙋсѧ;part.past.act.short.m.sg.acc=вчелоовѣ́чьсѧ;part.past.act.short.f.sg.acc=вчеловѣ́чшꙋсѧ;part.past.act.short.n.sg.dat=вчеловѣ́чшꙋсѧ	-	P:V21s	pf; intr; med
 вчести.v	вчести	v	-	-	V14t*	a	-	part.past.pass.short.m.pl.nom=вочтє́ни;part.past.pass.long.m.pl.acc=вочтє́нныѧ;part.past.pass.long.f.pl.nom=вочтє́нныѧ;part.past.pass.long.f.pl.acc=вочтє́нныѧ	-	P:V14t*	pf; tran
 вчинити.v	вчини́ти	v	-	-	V21n	b	-	part.past.pass.short.m.pl.gen=вчине́ныхъ;part.past.pass.short.m.pl.acc=вчинє́нны;part.past.pass.short.m.pl.loc=вчине́ныхъ;part.past.pass.short.f.pl.nom=вчинє́нны;part.past.pass.short.f.pl.gen=вчине́ныхъ;part.past.pass.short.f.pl.acc=вчинє́нны;part.past.pass.short.f.pl.loc=вчине́ныхъ;part.past.pass.short.n.pl.gen=вчине́ныхъ;part.past.pass.short.n.pl.loc=вчине́ныхъ;part.past.pass.long.m.pl.gen=вчине́ныхъ;part.past.pass.long.m.pl.loc=вчине́ныхъ;part.past.pass.long.f.pl.gen=вчине́ныхъ;part.past.pass.long.f.pl.loc=вчине́ныхъ;part.past.pass.long.n.sg.nom=вчине́ное;part.past.pass.long.n.sg.acc=вчине́ное;part.past.pass.long.n.pl.gen=вчине́ныхъ;part.past.pass.long.n.pl.loc=вчине́ныхъ	part.past.pass.long.m.pl.acc=вчинє́ныѧ×1;part.past.pass.long.f.pl.nom=вчинє́ныѧ×1;part.past.pass.long.f.pl.acc=вчинє́ныѧ×1	P:V21n	pf; tran
 вчинитисѧ.v	вчини́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	pf; intr; med
@@ -1098,15 +1155,15 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 вѣѧтисѧ.v	вѣ́ѧтисѧ	v	-	-	V12a	a	encl=сѧ	-	-	P:V12a	pf; intr; med
 вѧзати.v	вѧза́ти	v	-	-	V12t	b.pres.part	-	part.pres.act.short.m.sg.nom=вѧжѧ̀;part.pres.act.short.n.sg.nom=вѧжѧ̀	impf.3.pl=вѧ́захꙋ×1	P:V12t	ipf; tran
 вѧзатисѧ.v	вѧза́тисѧ	v	-	-	V12t	b.pres	encl=сѧ	-	-	P:V12t	ipf; intr; med
-вꙋмитисѧ.v	вꙋми́тисѧ	v	-	-	V21p	b	encl=сѧ	-	-	P:V21p	pf; intr; med
-вꙋмлѧти.v	вꙋмлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+вꙋмитисѧ.v	воꙋми́тисѧ	v	-	-	V21p	b	encl=сѧ	-	-	P:V21p	pf; intr; med
+вꙋмлѧти.v	воꙋмлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 гадательствовати.v	гада́тельствовати	v	-	-	V12ov	a	-	-	pres.3.sg=гада́телствꙋетъ×1	P:V12ov	ipf; intr
 гадательствоватисѧ.v	гада́тельствоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
 гасити.v	гаси́ти	v	-	-	V21t	a	-	-	-	P:V21t	ipf; tran
 гибати.v	гиба́ти	v	-	-	V12p	a.ov	-	-	-	P:V12p	ipf; intr
 гибнꙋти.v	ги́бнꙋти	v	-	-	V13t	a	-	-	-	P:V13t	ipf; intr
-главꙋсѣкати.v	главꙋсѣка́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-глаголати.v	глаго́лати	v	-	-	V12n	a{lpart.f.sg=E}	-	part.pres.act.short.m.sg.loc=глаго́лющемъ;part.pres.act.short.m.pl.acc=глаго́лющѧ;part.pres.act.short.f.du.nom=глаго́лющѣ;part.pres.act.short.f.du.acc=глаго́лющѣ;part.pres.act.short.f.pl.nom=глаго́лющѧ;part.pres.act.short.f.pl.acc=глаго́лющѧ;part.pres.act.short.n.sg.loc=глаго́лющемъ;part.pres.act.short.n.du.nom=глаго́лющѣ;part.pres.act.short.n.du.acc=глаго́лющѣ;part.past.pass.short.m.sg.gen=глагѡ́лана;part.past.pass.short.m.sg.acc=глагѡ́лана;part.past.pass.short.m.sg.ins=глагѡ́ланнымъ;part.past.pass.short.m.pl.gen=глаго́ланныхъ;part.past.pass.short.m.pl.ins=глаго́ланными;part.past.pass.short.m.pl.loc=глаго́ланныхъ;part.past.pass.short.f.sg.nom=глагѡ́лана;part.past.pass.short.f.pl.gen=глаго́ланныхъ;part.past.pass.short.f.pl.ins=глаго́ланными;part.past.pass.short.f.pl.loc=глаго́ланныхъ;part.past.pass.short.n.sg.gen=глагѡ́лана;part.past.pass.short.n.sg.ins=глагѡ́ланнымъ;part.past.pass.short.n.pl.gen=глаго́ланныхъ;part.past.pass.short.n.pl.ins=глаго́ланными;part.past.pass.short.n.pl.loc=глаго́ланныхъ;part.past.pass.long.m.sg.ins=глагѡ́ланнымъ;part.past.pass.long.f.sg.nom=глагѡ́ланнаѧ;part.past.pass.long.f.sg.gen=глагѡ́ланныѧ;part.past.pass.long.n.sg.ins=глагѡ́ланнымъ	lpart.f.sg=глаго́лала×27;part.pres.act.short.m.sg.nom=глаго́лющꙋ×90|глаго́лющемъ×1;part.pres.act.short.m.sg.gen=глагѡ́люща×20;part.pres.act.short.m.sg.acc=глагѡ́люща×20;part.pres.act.short.m.pl.nom=глаголю́ще×1;part.pres.act.short.n.sg.nom=глаго́лющꙋ×90|глаго́лющемъ×1|глаголю́ще×1;part.pres.act.short.n.sg.gen=глагѡ́люща×20;part.pres.act.short.n.sg.acc=глаголю́ще×1;part.pres.act.long.m.sg.nom=глаго́лющїй×26;part.pres.act.long.m.sg.acc=глаго́лющїй×26;part.pres.act.long.m.pl.nom=глаго́лющїе×1;part.pres.act.long.f.sg.nom=глагѡ́лющаѧ×9;part.pres.act.long.f.du.nom=глаго́лющїе×1;part.pres.act.long.f.du.acc=глаго́лющїе×1;part.pres.act.long.n.du.nom=глаго́лющїе×1;part.pres.act.long.n.du.acc=глаго́лющїе×1;part.pres.pass.short.m.sg.gen=глагѡ́лема×1;part.pres.pass.short.m.sg.acc=глагѡ́лема×1;part.pres.pass.short.f.sg.nom=глагѡ́лема×1;part.pres.pass.short.n.sg.gen=глагѡ́лема×1;part.pres.pass.long.f.sg.nom=глагѡ́лемаѧ×1;part.past.act.short.m.sg.gen=глагѡ́лавша×1;part.past.act.short.m.sg.acc=глагѡ́лавша×1;part.past.act.short.n.sg.gen=глагѡ́лавша×1;part.past.pass.short.n.sg.nom=глаго́ланно×1;part.past.pass.short.n.sg.acc=глаго́ланно×1	P:V12n	ipf; tran
+главꙋсѣкати.v	главоꙋсѣка́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+глаголати.v	глаго́лати	v	-	-	V12n	a{lpart.f.sg=E}	-	part.pres.act.short.m.sg.loc=глаго́лющемъ;part.pres.act.short.m.pl.acc=глаго́лющѧ;part.pres.act.short.f.du.nom=глаго́лющѣ;part.pres.act.short.f.du.acc=глаго́лющѣ;part.pres.act.short.f.pl.nom=глаго́лющѧ;part.pres.act.short.f.pl.acc=глаго́лющѧ;part.pres.act.short.n.sg.loc=глаго́лющемъ;part.pres.act.short.n.du.nom=глаго́лющѣ;part.pres.act.short.n.du.acc=глаго́лющѣ;part.pres.pass.short.m.sg.nom=глаголго́лемъ;part.past.pass.short.m.sg.gen=глагѡ́лана;part.past.pass.short.m.sg.acc=глагѡ́лана;part.past.pass.short.m.sg.ins=глагѡ́ланнымъ;part.past.pass.short.m.pl.gen=глаго́ланныхъ;part.past.pass.short.m.pl.ins=глаго́ланными;part.past.pass.short.m.pl.loc=глаго́ланныхъ;part.past.pass.short.f.sg.nom=глагѡ́лана;part.past.pass.short.f.pl.gen=глаго́ланныхъ;part.past.pass.short.f.pl.ins=глаго́ланными;part.past.pass.short.f.pl.loc=глаго́ланныхъ;part.past.pass.short.n.sg.gen=глагѡ́лана;part.past.pass.short.n.sg.ins=глагѡ́ланнымъ;part.past.pass.short.n.pl.gen=глаго́ланныхъ;part.past.pass.short.n.pl.ins=глаго́ланными;part.past.pass.short.n.pl.loc=глаго́ланныхъ;part.past.pass.long.m.sg.ins=глагѡ́ланнымъ;part.past.pass.long.f.sg.nom=глагѡ́ланнаѧ;part.past.pass.long.f.sg.gen=глагѡ́ланныѧ;part.past.pass.long.n.sg.ins=глагѡ́ланнымъ	pres.1.sg=глаголго́лю×3;pres.1.pl=глаголго́лемъ×4;pres.3.sg=глаголго́летъ×87;pres.3.pl=глаголго́лютъ×6;impv.1.pl=глаголго́лемъ×4;impv.2.sg=глаголго́ли×5;impv.3.sg=глаголго́ли×5;lpart.f.sg=глаго́лала×28;part.pres.act.short.m.sg.nom=глаго́лющꙋ×90|глаголго́лѧ×21|глаго́лющемъ×1|глаголго́лющꙋ×1;part.pres.act.short.m.sg.gen=глагѡ́люща×20|глаголго́люща×5;part.pres.act.short.m.sg.dat=глаголго́лющꙋ×1;part.pres.act.short.m.sg.acc=глагѡ́люща×20|глаголго́люща×5;part.pres.act.short.m.pl.nom=глаголго́люще×25|глаголю́ще×1;part.pres.act.short.m.pl.gen=глаголго́лющихъ×1;part.pres.act.short.m.pl.dat=глаголго́лющымъ×3;part.pres.act.short.m.pl.loc=глаголго́лющихъ×1;part.pres.act.short.f.sg.nom=глаголго́лющи×1;part.pres.act.short.f.sg.dat=глаголго́лющи×1;part.pres.act.short.f.sg.acc=глаголго́лющꙋ×1;part.pres.act.short.f.sg.loc=глаголго́лющи×1;part.pres.act.short.f.pl.gen=глаголго́лющихъ×1;part.pres.act.short.f.pl.dat=глаголго́лющымъ×3;part.pres.act.short.f.pl.loc=глаголго́лющихъ×1;part.pres.act.short.n.sg.nom=глаго́лющꙋ×90|глаголго́лѧ×21|глаго́лющемъ×1|глаголго́лющꙋ×1|глаголго́люще×25|глаголю́ще×1;part.pres.act.short.n.sg.gen=глагѡ́люща×20|глаголго́люща×5;part.pres.act.short.n.sg.dat=глаголго́лющꙋ×1;part.pres.act.short.n.sg.acc=глаголго́люще×25|глаголю́ще×1;part.pres.act.short.n.pl.gen=глаголго́лющихъ×1;part.pres.act.short.n.pl.dat=глаголго́лющымъ×3;part.pres.act.short.n.pl.loc=глаголго́лющихъ×1;part.pres.act.long.m.sg.nom=глаголго́лѧй×3|глаго́лющїй×26|глаголго́лющїй×1;part.pres.act.long.m.sg.gen=глаголго́лющагѡ×1;part.pres.act.long.m.sg.acc=глаго́лющїй×26|глаголго́лющїй×1;part.pres.act.long.m.pl.nom=глаго́лющїе×1;part.pres.act.long.m.pl.gen=глаголго́лющихъ×1;part.pres.act.long.m.pl.dat=глаголго́лющымъ×3;part.pres.act.long.m.pl.loc=глаголго́лющихъ×1;part.pres.act.long.f.sg.nom=глагѡ́лющаѧ×9;part.pres.act.long.f.du.nom=глаго́лющїе×1;part.pres.act.long.f.du.acc=глаго́лющїе×1;part.pres.act.long.f.pl.gen=глаголго́лющихъ×1;part.pres.act.long.f.pl.dat=глаголго́лющымъ×3;part.pres.act.long.f.pl.loc=глаголго́лющихъ×1;part.pres.act.long.n.sg.nom=глаголго́лѧй×3|глаголго́лющее×1;part.pres.act.long.n.sg.gen=глаголго́лющагѡ×1;part.pres.act.long.n.sg.acc=глаголго́лющее×1;part.pres.act.long.n.du.nom=глаго́лющїе×1;part.pres.act.long.n.du.acc=глаго́лющїе×1;part.pres.act.long.n.pl.gen=глаголго́лющихъ×1;part.pres.act.long.n.pl.dat=глаголго́лющымъ×3;part.pres.act.long.n.pl.loc=глаголго́лющихъ×1;part.pres.pass.short.m.sg.gen=глагѡ́лема×1;part.pres.pass.short.m.sg.acc=глаголго́лемъ×4|глагѡ́лема×1;part.pres.pass.short.f.sg.nom=глагѡ́лема×1;part.pres.pass.short.n.sg.gen=глагѡ́лема×1;part.pres.pass.long.f.sg.nom=глагѡ́лемаѧ×1;part.past.act.short.m.sg.gen=глагѡ́лавша×1;part.past.act.short.m.sg.acc=глагѡ́лавша×1;part.past.act.short.n.sg.gen=глагѡ́лавша×1;part.past.pass.short.n.sg.nom=глаго́ланно×1;part.past.pass.short.n.sg.acc=глаго́ланно×1	P:V12n	ipf; tran
 глаголатисѧ.v	глаго́латисѧ	v	-	-	V12n	a	encl=сѧ	-	-	P:V12n	ipf; intr; med
 гладновати.v	гла́дновати	v	-	-	V12ov	a	-	part.pres.act.long.m.sg.nom=гла́днꙋющїй;part.pres.act.long.m.sg.acc=гла́днꙋющїй	-	P:V12ov	ipf; intr
 гладствовати.v	гла́дствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
@@ -1343,7 +1400,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 животворити.v	животвори́ти	v	-	-	V21n	b	-	part.pres.act.short.m.sg.nom=животворѧ́щемъ;part.pres.act.short.m.sg.loc=животворѧ́щемъ;part.pres.act.short.n.sg.nom=животворѧ́щемъ;part.pres.act.short.n.sg.loc=животворѧ́щемъ	part.pres.act.long.m.sg.nom=животворѧ́щїй×30;part.pres.act.long.m.sg.acc=животворѧ́щїй×30	P:V21n	ipf; tran
 животочити.v	животочи́ти	v	-	-	V21s	a	-	-	-	P:V21s	ipf; tran
 живоѡписати.v	живоѡписа́ти	v	-	-	V12t	b	-	-	-	P:V12t	pf; tran
-живꙋловити.v	живꙋлови́ти	v	-	-	V21p	b	-	-	-	P:V21p	pf; tran
+живꙋловити.v	живоꙋлови́ти	v	-	-	V21p	b	-	-	-	P:V21p	pf; tran
 жировати.v	жирова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 жительствовати.v	жи́тельствовати	v	-	-	V12ov	a	-	pres.1.pl=жи́телствꙋемъ;impf.1.sg=жи́телствовахъ;aor.1.sg=жи́телствовахъ;impv.1.pl=жи́тельствꙋимъ;lpart.m.pl=жи́телствовали;lpart.f.du=жи́телствовали;lpart.n.du=жи́телствовали;part.pres.act.short.m.pl.dat=жи́телствꙋющымъ;part.pres.act.short.f.pl.dat=жи́телствꙋющымъ;part.pres.act.short.n.pl.dat=жи́телствꙋющымъ;part.pres.act.long.m.pl.dat=жи́телствꙋющымъ;part.pres.act.long.f.pl.dat=жи́телствꙋющымъ;part.pres.act.long.n.pl.dat=жи́телствꙋющымъ	pres.3.pl=жи́телствꙋютъ×1;impv.1.pl=жи́телствꙋемъ×1;impv.2.pl=жи́телствꙋйте×2;inf=жи́телствовати×7;part.pres.act.short.m.sg.nom=жи́телствꙋѧ×1|жи́тельствꙋющꙋ×1;part.pres.act.short.n.sg.nom=жи́телствꙋѧ×1|жи́тельствꙋющꙋ×1;part.pres.act.long.m.sg.nom=жи́тельствꙋющїй×1;part.pres.act.long.m.sg.acc=жи́тельствꙋющїй×1	P:V12ov	ipf; intr
 жити.v	жи́ти	v	-	-	V15v	b.2pl{part.pres.act.short.m.sg.gen=L;part.pres.act.short.m.sg.dat=L;part.pres.act.short.m.sg.acc=L;part.pres.act.short.m.sg.ins=L;part.pres.act.short.m.pl.nom=L;part.pres.act.short.m.pl.gen=L;part.pres.act.short.m.pl.dat=L;part.pres.act.short.m.pl.ins=L;part.pres.act.short.m.pl.loc=L;part.pres.act.short.f.sg.nom=L;part.pres.act.short.f.sg.dat=L;part.pres.act.short.f.sg.acc=L;part.pres.act.short.f.sg.ins=L;part.pres.act.short.f.sg.loc=L;part.pres.act.short.f.pl.gen=L;part.pres.act.short.f.pl.dat=L;part.pres.act.short.f.pl.ins=L;part.pres.act.short.f.pl.loc=L;part.pres.act.short.n.sg.gen=L;part.pres.act.short.n.sg.dat=L;part.pres.act.short.n.sg.acc=L;part.pres.act.short.n.sg.ins=L;part.pres.act.short.n.pl.gen=L;part.pres.act.short.n.pl.dat=L;part.pres.act.short.n.pl.ins=L;part.pres.act.short.n.pl.loc=L;part.pres.act.long.m.sg.gen=L;part.pres.act.long.m.sg.dat=L;part.pres.act.long.m.sg.acc=L;part.pres.act.long.m.sg.ins=L;part.pres.act.long.m.sg.loc=L;part.pres.act.long.m.du.nom=L;part.pres.act.long.m.du.acc=L;part.pres.act.long.m.pl.nom=L;part.pres.act.long.m.pl.gen=L;part.pres.act.long.m.pl.dat=L;part.pres.act.long.m.pl.acc=L;part.pres.act.long.m.pl.ins=L;part.pres.act.long.m.pl.loc=L;part.pres.act.long.f.sg.nom=L;part.pres.act.long.f.sg.gen=L;part.pres.act.long.f.sg.dat=L;part.pres.act.long.f.sg.acc=L;part.pres.act.long.f.sg.ins=L;part.pres.act.long.f.sg.loc=L;part.pres.act.long.f.du.nom=L;part.pres.act.long.f.du.acc=L;part.pres.act.long.f.pl.nom=L;part.pres.act.long.f.pl.gen=L;part.pres.act.long.f.pl.dat=L;part.pres.act.long.f.pl.acc=L;part.pres.act.long.f.pl.ins=L;part.pres.act.long.f.pl.loc=L;part.pres.act.long.n.sg.gen=L;part.pres.act.long.n.sg.dat=L;part.pres.act.long.n.sg.acc=L;part.pres.act.long.n.sg.ins=L;part.pres.act.long.n.sg.loc=L;part.pres.act.long.n.du.nom=L;part.pres.act.long.n.du.acc=L;part.pres.act.long.n.pl.nom=L;part.pres.act.long.n.pl.gen=L;part.pres.act.long.n.pl.dat=L;part.pres.act.long.n.pl.acc=L;part.pres.act.long.n.pl.ins=L;part.pres.act.long.n.pl.loc=L}	-	aor.1.sg=жи́хъ;aor.1.pl=жи́хомъ;aor.3.pl=жи́ша;inf=жи́ти;lpart.m.sg=жи́лъ;lpart.m.pl=жи́ли;lpart.f.sg=жила̀;lpart.f.du=жи́ли;lpart.n.du=жи́ли;part.pres.act.short.m.sg.nom=живꙋ́щꙋ;part.pres.act.short.m.sg.loc=живꙋ́щемъ;part.pres.act.short.m.pl.acc=живꙋ́щѧ;part.pres.act.short.f.pl.nom=живꙋ́щѧ;part.pres.act.short.f.pl.acc=живꙋ́щѧ;part.pres.act.short.n.sg.nom=живꙋ́щꙋ;part.pres.act.short.n.sg.loc=живꙋ́щемъ;part.pres.act.long.m.sg.nom=живѧ́й;part.pres.act.long.n.sg.nom=живѧ́й	pres.2.pl=живе́те×6;part.pres.act.short.m.sg.nom=живѧ̀×13|живꙋ́щемъ×3|живꙋ́щъ×2|живꙋ́щь×1;part.pres.act.short.n.sg.nom=живѧ̀×13|живꙋ́щемъ×3|живꙋ́ще×60;part.pres.act.long.m.sg.nom=живꙋ́щїй×26;part.pres.act.long.m.sg.gen=живꙋща́гѡ×1;part.pres.act.long.m.sg.acc=живꙋ́щїй×26;part.pres.act.long.n.sg.nom=живꙋ́щее×1;part.pres.act.long.n.sg.gen=живꙋща́гѡ×1	P:V15v	ipf; intr
@@ -2181,9 +2238,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 люботрꙋдитисѧ.v	люботрꙋди́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	ipf; intr; med
 любочествовати.v	любоче́ствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
 любочествоватисѧ.v	любоче́ствоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
-любꙋдобрѧти.v	любꙋдобрѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-літꙋргисати.v	літꙋргиса́ти	v	-	-	V11a	a	-	-	pres.3.sg=літꙋргіса́етъ×2|літꙋрги́саетъ×1	P:V11a	ipf; intr
-літꙋргисовати.v	літꙋргисова́ти	v	-	-	V12ov	a	-	pres.3.sg=литꙋргисꙋ́етъ	-	P:V12ov	ipf; intr
+любꙋдобрѧти.v	любоꙋдобрѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+літꙋргисати.v	лїтꙋргиса́ти	v	-	-	V11a	a	-	-	pres.3.sg=лїтꙋргіса́етъ×2|лїтꙋрги́саетъ×1|літꙋргіса́етъ|літꙋрги́саетъ	P:V11a	ipf; intr
+літꙋргисовати.v	лїтꙋргисова́ти	v	-	-	V12ov	a	-	pres.3.sg=литꙋргисꙋ́етъ	-	P:V12ov	ipf; intr
 ліѧти.v	ліѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 лѣнитисѧ.v	лѣнити́сѧ	v	-	-	V21n	b.2pl	encl=сѧ	-	-	P:V21n	ipf; intr; med
 лѣпитисѧ.v	лѣпи́тисѧ	v	-	-	V21p	b	encl=сѧ	-	-	P:V21p	ipf; intr; med
@@ -2249,9 +2306,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 многосогрѣшити.v	многосогрѣши́ти	v	-	-	V21s	a	-	-	-	P:V21s	pf; intr
 многострадати.v	многострада́ти	v	-	-	V12t	a	-	-	-	P:V12t	ipf; intr
 многосꙋгꙋбити.v	многосꙋгꙋ́бити	v	-	-	V21p	a	-	-	-	P:V21p	ipf; tran
-многꙋмножати.v	многꙋмножа́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-многꙋсꙋгꙋбити.v	многꙋсꙋгꙋ́бити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
-многꙋсꙋгꙋблѧти.v	многꙋсꙋгꙋблѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; intr
+многꙋмножати.v	многоꙋмножа́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+многꙋсꙋгꙋбити.v	многоꙋсꙋгꙋ́бити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
+многꙋсꙋгꙋблѧти.v	многоꙋсꙋгꙋблѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; intr
 множити.v	мно́жити	v	-	-	V21s	a	-	part.pres.act.short.m.sg.nom=мно́жѧ;part.pres.act.short.n.sg.nom=мно́жѧ	-	P:V21s	ipf; tran
 множитисѧ.v	мно́житисѧ	v	-	-	V21s	a{part.pres.act.short.f.sg.nom=L;part.pres.act.short.f.sg.dat=L;part.pres.act.short.f.sg.loc=L}	encl=сѧ	part.pres.act.long.m.sg.acc=мно́жащагѡсѧ;part.pres.act.long.f.sg.nom=мнѡ́жащаѧсѧ	-	P:V21s	ipf; intr; med
 мнѣти.v	мнѣ́ти	v	-	-	V22n	b.2pl	-	part.past.act.short.n.pl.nom=мнѣ̑вша;part.past.act.short.n.pl.acc=мнѣ̑вша	pres.2.pl=мни́те×9;impv.2.pl=мни́те×9;lpart.m.sg=мни́лъ×1;part.pres.act.short.m.sg.nom=мнѧ́щꙋ×2;part.pres.act.short.n.sg.nom=мнѧ́щꙋ×2	P:V22n/V21n	ipf; tran
@@ -2292,7 +2349,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 мѧтежитисѧ.v	мѧте́житисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	ipf; intr; med
 мѧтежствовати.v	мѧте́жствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 мѧти.v	мѧ́ти	v	-	-	V15n	a	-	-	-	P:V15n	ipf; tran
-мѵроблагꙋхати.v	мѵроблагꙋха́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; intr
+мѵроблагꙋхати.v	мѵроблагоꙋха́ти	v	-	-	V11a	a	-	part.past.pass.long.m.du.nom=мѷроблагоꙋха̑ннаѧ;part.past.pass.long.m.du.acc=мѷроблагоꙋха̑ннаѧ;part.past.pass.long.n.pl.nom=мѷроблагоꙋха̑ннаѧ;part.past.pass.long.n.pl.acc=мѷроблагоꙋха̑ннаѧ	-	P:V11a	pf; intr
 мѵропомазати.v	мѵропома́зати	v	-	-	V12t	a	-	-	-	P:V12t	pf; tran
 мѵропомазатисѧ.v	мѵропома́затисѧ	v	-	-	V12t	a	encl=сѧ	-	-	P:V12t	pf; intr; med
 мѵропомазовати.v	мѵропомазова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
@@ -2437,7 +2494,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 напечататисѧ.v	напеча́татисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	pf; intr; med
 напечатлѣвати.v	напечатлѣва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 напиватисѧ.v	напива́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-написати.v	написа́ти	v	-	-	V12t	b.pres.part{part.past.pass.short.m.sg.nom=P;part.past.pass.short.m.sg.gen=P;part.past.pass.short.m.sg.dat=P;part.past.pass.short.m.sg.acc=P;part.past.pass.short.m.sg.ins=1;part.past.pass.short.m.du.nom=P;part.past.pass.short.m.du.acc=P;part.past.pass.short.m.pl.nom=P;part.past.pass.short.m.pl.gen=1;part.past.pass.short.m.pl.dat=1;part.past.pass.short.m.pl.acc=P;part.past.pass.short.m.pl.loc=1;part.past.pass.short.f.sg.nom=P;part.past.pass.short.f.sg.acc=P;part.past.pass.short.f.pl.nom=P;part.past.pass.short.f.pl.gen=1;part.past.pass.short.f.pl.dat=1;part.past.pass.short.f.pl.acc=P;part.past.pass.short.f.pl.loc=1;part.past.pass.short.n.sg.nom=P;part.past.pass.short.n.sg.gen=P;part.past.pass.short.n.sg.dat=P;part.past.pass.short.n.sg.acc=P;part.past.pass.short.n.sg.ins=1;part.past.pass.short.n.pl.nom=P;part.past.pass.short.n.pl.gen=1;part.past.pass.short.n.pl.dat=1;part.past.pass.short.n.pl.acc=P;part.past.pass.short.n.pl.loc=1;part.past.pass.long.m.sg.nom=1;part.past.pass.long.m.sg.gen=1;part.past.pass.long.m.sg.dat=1;part.past.pass.long.m.sg.acc=1;part.past.pass.long.m.sg.ins=1;part.past.pass.long.m.du.nom=1;part.past.pass.long.m.du.acc=1;part.past.pass.long.m.pl.nom=1;part.past.pass.long.m.pl.gen=1;part.past.pass.long.m.pl.dat=1;part.past.pass.long.m.pl.acc=1;part.past.pass.long.m.pl.ins=1;part.past.pass.long.m.pl.loc=1;part.past.pass.long.f.sg.dat=1;part.past.pass.long.f.sg.acc=1;part.past.pass.long.f.sg.loc=1;part.past.pass.long.f.pl.nom=1;part.past.pass.long.f.pl.gen=1;part.past.pass.long.f.pl.dat=1;part.past.pass.long.f.pl.acc=1;part.past.pass.long.f.pl.ins=1;part.past.pass.long.f.pl.loc=1;part.past.pass.long.n.sg.nom=1;part.past.pass.long.n.sg.gen=1;part.past.pass.long.n.sg.dat=1;part.past.pass.long.n.sg.acc=1;part.past.pass.long.n.sg.ins=1;part.past.pass.long.n.pl.nom=1;part.past.pass.long.n.pl.gen=1;part.past.pass.long.n.pl.dat=1;part.past.pass.long.n.pl.acc=1;part.past.pass.long.n.pl.ins=1;part.past.pass.long.n.pl.loc=1}	-	part.past.pass.short.m.sg.loc=напи́саннѣ;part.past.pass.short.m.pl.gen=напи́санныхъ;part.past.pass.short.m.pl.ins=напи́санными;part.past.pass.short.m.pl.loc=напи́санныхъ;part.past.pass.short.f.sg.dat=напи́саннѣ;part.past.pass.short.f.sg.loc=напи́саннѣ;part.past.pass.short.f.pl.gen=напи́санныхъ;part.past.pass.short.f.pl.ins=напи́санными;part.past.pass.short.f.pl.loc=напи́санныхъ;part.past.pass.short.n.sg.loc=напи́саннѣ;part.past.pass.short.n.pl.gen=напи́санныхъ;part.past.pass.short.n.pl.ins=напи́санными;part.past.pass.short.n.pl.loc=напи́санныхъ	aor.2.sg=напїса̀×1|напіса̀;aor.3.sg=напїса̀×1|напіса̀;part.past.pass.short.m.sg.nom=написа́нъ×1;part.past.pass.short.m.sg.acc=написа́нъ×1;part.past.pass.short.m.pl.gen=напи́саныхъ×1;part.past.pass.short.m.pl.loc=напи́саныхъ×1;part.past.pass.short.f.pl.gen=напи́саныхъ×1;part.past.pass.short.f.pl.loc=напи́саныхъ×1;part.past.pass.short.n.pl.gen=напи́саныхъ×1;part.past.pass.short.n.pl.loc=напи́саныхъ×1;part.past.pass.long.m.du.nom=напи̑санаѧ×1;part.past.pass.long.m.du.acc=напи̑санаѧ×1;part.past.pass.long.m.pl.gen=напи́саныхъ×1;part.past.pass.long.m.pl.acc=напи̑саныѧ×1;part.past.pass.long.m.pl.loc=напи́саныхъ×1;part.past.pass.long.f.pl.nom=напи̑саныѧ×1;part.past.pass.long.f.pl.gen=напи́саныхъ×1;part.past.pass.long.f.pl.acc=напи̑саныѧ×1;part.past.pass.long.f.pl.loc=напи́саныхъ×1;part.past.pass.long.n.sg.nom=напи́саное×4;part.past.pass.long.n.sg.acc=напи́саное×4;part.past.pass.long.n.pl.nom=напи̑санаѧ×1;part.past.pass.long.n.pl.gen=напи́саныхъ×1;part.past.pass.long.n.pl.acc=напи̑санаѧ×1;part.past.pass.long.n.pl.loc=напи́саныхъ×1	P:V12t	pf; tran
+написати.v	написа́ти	v	-	-	V12t	b.pres.part{part.past.pass.short.m.sg.nom=P;part.past.pass.short.m.sg.gen=P;part.past.pass.short.m.sg.dat=P;part.past.pass.short.m.sg.acc=P;part.past.pass.short.m.sg.ins=1;part.past.pass.short.m.du.nom=P;part.past.pass.short.m.du.acc=P;part.past.pass.short.m.pl.nom=P;part.past.pass.short.m.pl.gen=1;part.past.pass.short.m.pl.dat=1;part.past.pass.short.m.pl.acc=P;part.past.pass.short.m.pl.loc=1;part.past.pass.short.f.sg.nom=P;part.past.pass.short.f.sg.acc=P;part.past.pass.short.f.pl.nom=P;part.past.pass.short.f.pl.gen=1;part.past.pass.short.f.pl.dat=1;part.past.pass.short.f.pl.acc=P;part.past.pass.short.f.pl.loc=1;part.past.pass.short.n.sg.nom=P;part.past.pass.short.n.sg.gen=P;part.past.pass.short.n.sg.dat=P;part.past.pass.short.n.sg.acc=P;part.past.pass.short.n.sg.ins=1;part.past.pass.short.n.pl.nom=P;part.past.pass.short.n.pl.gen=1;part.past.pass.short.n.pl.dat=1;part.past.pass.short.n.pl.acc=P;part.past.pass.short.n.pl.loc=1;part.past.pass.long.m.sg.nom=1;part.past.pass.long.m.sg.gen=1;part.past.pass.long.m.sg.dat=1;part.past.pass.long.m.sg.acc=1;part.past.pass.long.m.sg.ins=1;part.past.pass.long.m.du.nom=1;part.past.pass.long.m.du.acc=1;part.past.pass.long.m.pl.nom=1;part.past.pass.long.m.pl.gen=1;part.past.pass.long.m.pl.dat=1;part.past.pass.long.m.pl.acc=1;part.past.pass.long.m.pl.ins=1;part.past.pass.long.m.pl.loc=1;part.past.pass.long.f.sg.dat=1;part.past.pass.long.f.sg.acc=1;part.past.pass.long.f.sg.loc=1;part.past.pass.long.f.pl.nom=1;part.past.pass.long.f.pl.gen=1;part.past.pass.long.f.pl.dat=1;part.past.pass.long.f.pl.acc=1;part.past.pass.long.f.pl.ins=1;part.past.pass.long.f.pl.loc=1;part.past.pass.long.n.sg.nom=1;part.past.pass.long.n.sg.gen=1;part.past.pass.long.n.sg.dat=1;part.past.pass.long.n.sg.acc=1;part.past.pass.long.n.sg.ins=1;part.past.pass.long.n.pl.nom=1;part.past.pass.long.n.pl.gen=1;part.past.pass.long.n.pl.dat=1;part.past.pass.long.n.pl.acc=1;part.past.pass.long.n.pl.ins=1;part.past.pass.long.n.pl.loc=1}	-	part.past.pass.short.m.sg.loc=напи́саннѣ;part.past.pass.short.m.pl.gen=напи́санныхъ;part.past.pass.short.m.pl.ins=напи́санными;part.past.pass.short.m.pl.loc=напи́санныхъ;part.past.pass.short.f.sg.dat=напи́саннѣ;part.past.pass.short.f.sg.loc=напи́саннѣ;part.past.pass.short.f.pl.gen=напи́санныхъ;part.past.pass.short.f.pl.ins=напи́санными;part.past.pass.short.f.pl.loc=напи́санныхъ;part.past.pass.short.n.sg.loc=напи́саннѣ;part.past.pass.short.n.pl.gen=напи́санныхъ;part.past.pass.short.n.pl.ins=напи́санными;part.past.pass.short.n.pl.loc=напи́санныхъ	aor.2.sg=напіса̀×1|напїса̀;aor.3.sg=напіса̀×1|напїса̀;part.past.pass.short.m.sg.nom=написа́нъ×1;part.past.pass.short.m.sg.acc=написа́нъ×1;part.past.pass.short.m.pl.gen=напи́саныхъ×1;part.past.pass.short.m.pl.loc=напи́саныхъ×1;part.past.pass.short.f.pl.gen=напи́саныхъ×1;part.past.pass.short.f.pl.loc=напи́саныхъ×1;part.past.pass.short.n.pl.gen=напи́саныхъ×1;part.past.pass.short.n.pl.loc=напи́саныхъ×1;part.past.pass.long.m.du.nom=напи̑санаѧ×1;part.past.pass.long.m.du.acc=напи̑санаѧ×1;part.past.pass.long.m.pl.gen=напи́саныхъ×1;part.past.pass.long.m.pl.acc=напи̑саныѧ×1;part.past.pass.long.m.pl.loc=напи́саныхъ×1;part.past.pass.long.f.pl.nom=напи̑саныѧ×1;part.past.pass.long.f.pl.gen=напи́саныхъ×1;part.past.pass.long.f.pl.acc=напи̑саныѧ×1;part.past.pass.long.f.pl.loc=напи́саныхъ×1;part.past.pass.long.n.sg.nom=напи́саное×4;part.past.pass.long.n.sg.acc=напи́саное×4;part.past.pass.long.n.pl.nom=напи̑санаѧ×1;part.past.pass.long.n.pl.gen=напи́саныхъ×1;part.past.pass.long.n.pl.acc=напи̑санаѧ×1;part.past.pass.long.n.pl.loc=напи́саныхъ×1	P:V12t	pf; tran
 написатисѧ.v	написа́тисѧ	v	-	-	V12t	b.pres	encl=сѧ	-	-	P:V12t	pf; intr; med
 написовати.v	написова́ти	v	-	-	V12ov	a{inf=1}	-	-	-	P:V12ov	ipf; tran
 написоватисѧ.v	написова́тисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
@@ -2584,7 +2641,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 невѣрствовати.v	невѣ́рствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.nom=невѣ́рствꙋющꙋ;part.pres.act.short.n.sg.nom=невѣ́рствꙋющꙋ	-	P:V12ov	ipf; intr
 невѣстоводити.v	невѣстоводи́ти	v	-	-	V21t	a	-	-	-	P:V21t	ipf; tran
 невѣстоприводитисѧ.v	невѣстоприво́дитисѧ	v	-	-	V21t	a	encl=сѧ	-	-	P:V21t	ipf; intr; med
-невѣстꙋкрасити.v	невѣстꙋкраси́ти	v	-	-	V21t	b	-	-	-	P:V21t	ipf; tran
+невѣстꙋкрасити.v	невѣстоꙋкраси́ти	v	-	-	V21t	b	-	-	-	P:V21t	ipf; tran
 негодовати.v	негодова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 недоразꙋмѣвати.v	недоразꙋмѣва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 недоспѣти.v	недоспѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr
@@ -2594,10 +2651,10 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 недостигнꙋти.v	недости́гнꙋти	v	-	-	V13k	a	-	part.past.act.long.m.sg.loc=недости́гшемъ;part.past.act.long.m.pl.acc=недости́гшыѧ;part.past.act.long.n.sg.loc=недости́гшемъ	-	P:V13k	pf; tran
 недꙋговати.v	недꙋ́говати	v	-	-	V12ov	a	-	-	part.pres.act.long.m.sg.nom=недꙋ́гꙋющїй×1;part.pres.act.long.m.sg.acc=недꙋ́гꙋющїй×1	P:V12ov	ipf; intr
 недꙋготворити.v	недꙋготвори́ти	v	-	-	V21n	a	-	-	-	P:V21n	ipf; tran
-недꙋмѣвати.v	недꙋмѣва́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=недꙋмѣва́ющꙋ×1;part.pres.act.short.n.sg.nom=недꙋмѣва́ющꙋ×1	P:V11a	ipf; tran
-недꙋмѣватисѧ.v	недꙋмѣва́тисѧ	v	-	-	V11a	a	encl=сѧ	-	part.pres.act.short.m.sg.nom=недꙋмѣва́ющꙋсѧ×1;part.pres.act.short.n.sg.nom=недꙋмѣва́ющꙋсѧ×1	P:V11a	ipf; intr; med
-недꙋмѣти.v	недꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	ipf; tran
-недꙋмѣтисѧ.v	недꙋмѣ́тисѧ	v	-	-	V11e	a	encl=сѧ;2=недꙋмѣ	-	-	P:V11e	ipf; intr; med
+недꙋмѣвати.v	недоꙋмѣва́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=недоꙋмѣва́ющꙋ×1|недꙋмѣва́ющꙋ;part.pres.act.short.n.sg.nom=недоꙋмѣва́ющꙋ×1|недꙋмѣва́ющꙋ	P:V11a	ipf; tran
+недꙋмѣватисѧ.v	недоꙋмѣва́тисѧ	v	-	-	V11a	a	encl=сѧ	-	part.pres.act.short.m.sg.nom=недоꙋмѣва́ющꙋсѧ×1|недꙋмѣва́ющꙋсѧ;part.pres.act.short.n.sg.nom=недоꙋмѣва́ющꙋсѧ×1|недꙋмѣва́ющꙋсѧ	P:V11a	ipf; intr; med
+недꙋмѣти.v	недоꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	ipf; tran
+недꙋмѣтисѧ.v	недоꙋмѣ́тисѧ	v	-	-	V11e	a	encl=сѧ;2=недоꙋмѣ	-	-	P:V11e	ipf; intr; med
 незабывати.v	незабыва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 незабыти.v	незабыти	v	-	-	Vbyt	b	-	-	-	P:Vbyt	pf; tran
 незавидѣти.v	незави́дѣти	v	-	-	V22t	a	-	-	-	P:V22t	pf; tran
@@ -2952,8 +3009,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 оудобрѣти.v	ѹ҆добрѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr; med
 оудобрѧти.v	ѹ҆добрѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 оудобрѧтисѧ.v	ѹ҆добрѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-оудобꙋвѧдати.v	ѹ҆добꙋвѧда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
-оудобꙋправлѧти.v	ѹ҆добꙋправлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+оудобꙋвѧдати.v	ѹ҆добоꙋвѧда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
+оудобꙋправлѧти.v	ѹ҆добоꙋправлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 оудовлеватисѧ.v	ѹ҆довлева́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 оудовлетворити.v	ѹ҆довлетвори́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 оудовлити.v	ѹ҆довли́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
@@ -4012,7 +4069,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 посадитисѧ.v	посади́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	pf; intr; med
 посаждати.v	посажда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 посаждатисѧ.v	посажда́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-посвѧтити.v	посвѧти́ти	v	-	-	V21t	b.ppf{part.past.pass.short.m.sg.acc=E}	-	part.past.pass.long.m.sg.loc=посвѧще́ннѣмъ;part.past.pass.long.n.sg.loc=посвѧще́ннѣмъ	-	P:V21t	pf; tran
+посвѧтити.v	посвѧти́ти	v	-	-	V21t	b.ppf	-	-	part.past.pass.short.m.sg.acc=посвѧщена̀×1	P:V21t	pf; tran
 поселити.v	посели́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 поселитисѧ.v	посели́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	pf; intr; med
 поскомлѣти.v	поскомлѣ́ти	v	-	-	V22n	a	-	aor.3.pl=поско́млетъ	-	P:V22n	pf; intr
@@ -4214,7 +4271,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 правосꙋдити.v	правосꙋди́ти	v	-	-	V21t	a.ov	-	-	-	P:V21t	ipf; tran
 правотрꙋдитисѧ.v	правотрꙋди́тисѧ	v	-	-	V21t	a	encl=сѧ	-	-	P:V21t	ipf; intr; med
 правошествовати.v	правоше́ствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-правꙋлꙋчати.v	правꙋлꙋча́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+правꙋлꙋчати.v	правоꙋлꙋча́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 праздновати.v	пра́здновати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
 праздноватисѧ.v	пра́здноватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
 празднословити.v	праздносло́вити	v	-	-	V21p	a	-	-	-	P:V21p	ipf; intr
@@ -4224,6 +4281,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пребдѣвати.v	пребдѣва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 пребеззаконновати.v	пребеззако́нновати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 пребити.v	преби́ти	v	-	-	V15i	a{pres.3.pl=E}	-	-	-	P:V15i	pf; tran
+преблагословити.v	преблагослови́ти	v	-	-	V21p	b	-	-	-	P:V21p	pf; tran
 преблꙋдити.v	преблꙋди́ти	v	-	-	V21t	a	-	part.past.act.short.m.pl.acc=преблꙋди́вшѧ;part.past.act.short.f.pl.nom=преблꙋди́вшѧ;part.past.act.short.f.pl.acc=преблꙋди́вшѧ	-	P:V21t	pf; intr
 преболѣти.v	пребо́лѣти	v	-	-	V22n	a	-	-	-	P:V22n	pf; intr
 преборати.v	пребора́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; tran
@@ -4436,7 +4494,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 предпꙋстити.v	предпꙋсти́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; tran
 предпꙋтетворити.v	предпꙋтетвори́ти	v	-	-	V21n	a	-	-	-	P:V21n	ipf; intr
 предпꙋтешествовати.v	предпꙋтеше́ствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-предпꙋчитисѧ.v	предпꙋчи́тисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	pf; intr; med
+предпꙋчитисѧ.v	предпоꙋчи́тисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	pf; intr; med
 предразглагольствовати.v	предразглаго́льствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 предразорити.v	предразори́ти	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
 предразрꙋшити.v	предразрꙋши́ти	v	-	-	V21s	a	-	-	-	P:V21s	pf; tran
@@ -4701,8 +4759,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 престаѧти.v	престаѧ́ти	v	-	-	V12a	b	-	-	part.pres.act.short.m.sg.nom=престаю́щꙋ×1;part.pres.act.short.n.sg.nom=престаю́щꙋ×1	P:V12a	ipf; tran
 престрашити.v	престраши́ти	v	-	-	V21s	b	-	-	-	P:V21s	pf; tran
 престроѧти.v	престроѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-престіхійствовати.v	престіхі́йствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
-престіхіѡвати.v	престіхі́ѡвати	v	-	-	V12ov	a	-	part.past.pass.short.m.sg.ins=престіхі́ѡваннымъ;part.past.pass.short.n.sg.ins=престіхі́ѡваннымъ;part.past.pass.long.m.sg.ins=престіхі́ѡваннымъ;part.past.pass.long.n.sg.ins=престіхі́ѡваннымъ	-	P:V12ov	pf; tran
+престіхійствовати.v	престїхі́йствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
+престіхіѡвати.v	престїхі́ѡвати	v	-	-	V12ov	a	-	part.past.pass.short.m.sg.ins=престїхі́ѡваннымъ;part.past.pass.short.n.sg.ins=престїхі́ѡваннымъ;part.past.pass.long.m.sg.ins=престїхі́ѡваннымъ;part.past.pass.long.n.sg.ins=престїхі́ѡваннымъ	-	P:V12ov	pf; tran
 престꙋпати.v	престꙋпа́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=престꙋпа́ющꙋ×1;part.pres.act.short.n.sg.nom=престꙋпа́ющꙋ×1	P:V11a	ipf; tran
 престꙋпити.v	престꙋпи́ти	v	-	-	V21p	b.pres.impv.ppm	-	part.past.act.short.m.pl.nom=престꙋ́пльше;part.past.act.long.m.sg.gen=престꙋ́пльшагѡ;part.past.act.long.m.sg.dat=престꙋ́пльшемꙋ;part.past.act.long.n.sg.gen=престꙋ́пльшагѡ;part.past.act.long.n.sg.dat=престꙋ́пльшемꙋ	pres.2.sg=престꙋпи́ши×1;pres.2.pl=престꙋпи́те×1|престꙋпитѐ×1;impv.2.pl=престꙋпи́те×1|престꙋпитѐ×1	P:V21p	pf; tran
 пресылати.v	пресыла́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
@@ -4770,6 +4828,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 преѡдѣѧти.v	преѡдѣ́ѧти	v	-	-	V12a	a	-	-	-	P:V12a	pf; tran
 преѡрꙋжити.v	преѡрꙋжи́ти	v	-	-	V21s	a	-	-	part.past.pass.long.f.sg.nom=преѻрꙋже́ннаѧ×2|преѻрꙋ́женнаѧ×1	P:V21s	pf; tran
 преѡрꙋжитисѧ.v	преѡрꙋжи́тисѧ	v	-	-	V21s	b	encl=сѧ	-	-	P:V21s	pf; intr; med
+преѡсвѧщенствовати.v	преѡсвѧще́нствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 преѡсіѧвати.v	преѡсіѧва́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 преѡсіѧти.v	преѡсіѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	pf; tran
 преѡтмщати.v	преѡтмща́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
@@ -4935,7 +4994,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 прикꙋпити.v	прикꙋпи́ти	v	-	-	V21p	b	-	-	-	P:V21p	pf; tran
 прилагати.v	прилага́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 прилагатисѧ.v	прилага́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-прилежати.v	прилежа́ти	v	-	-	V22s	b	-	part.pres.act.long.m.sg.acc=прилежа́щїй	part.pres.act.short.m.pl.gen=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.short.m.pl.loc=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.short.f.pl.gen=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.short.f.pl.loc=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.short.n.pl.gen=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.short.n.pl.loc=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.long.m.sg.nom=прилежа́щїй×1;part.pres.act.long.m.du.nom=прилєжа́щаѧ×1;part.pres.act.long.m.du.acc=прилєжа́щаѧ×1;part.pres.act.long.m.pl.gen=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.long.m.pl.loc=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.long.f.pl.gen=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.long.f.pl.loc=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.long.n.pl.nom=прилєжа́щаѧ×1;part.pres.act.long.n.pl.gen=прїлежа́щихъ×1|прілежа́щихъ;part.pres.act.long.n.pl.acc=прилєжа́щаѧ×1;part.pres.act.long.n.pl.loc=прїлежа́щихъ×1|прілежа́щихъ	P:V22s	ipf; intr
+прилежати.v	прилежа́ти	v	-	-	V22s	b	-	part.pres.act.long.m.sg.acc=прилежа́щїй	part.pres.act.short.m.pl.gen=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.short.m.pl.loc=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.short.f.pl.gen=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.short.f.pl.loc=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.short.n.pl.gen=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.short.n.pl.loc=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.long.m.sg.nom=прилежа́щїй×1;part.pres.act.long.m.du.nom=прилєжа́щаѧ×1;part.pres.act.long.m.du.acc=прилєжа́щаѧ×1;part.pres.act.long.m.pl.gen=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.long.m.pl.loc=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.long.f.pl.gen=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.long.f.pl.loc=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.long.n.pl.nom=прилєжа́щаѧ×1;part.pres.act.long.n.pl.gen=прілежа́щихъ×1|прїлежа́щихъ;part.pres.act.long.n.pl.acc=прилєжа́щаѧ×1;part.pres.act.long.n.pl.loc=прілежа́щихъ×1|прїлежа́щихъ	P:V22s	ipf; intr
 прилетати.v	прилета́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 прилипати.v	прилипа́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 прилити.v	прили́ти	v	-	-	V15i	a	-	-	-	P:V15i	pf; tran
@@ -5418,7 +5477,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 противꙋвлещи.v	противꙋвлещѝ	v	-	-	V14k	b	-	-	-	P:V14k	pf; tran
 противꙋглаголати.v	противꙋглаго́лати	v	-	-	V12n	a	-	-	-	P:V12n	ipf; tran
 противꙋратовати.v	противꙋра́товати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-противꙋслышати.v	противꙋслы́шати	v	-	-	V22s	a	-	-	-	P:V22s	pf; tran
+противꙋслышати.v	противоꙋслы́шати	v	-	-	V22s	a	-	-	-	P:V22s	pf; tran
 противꙋстати.v	противꙋста́ти	v	-	-	V15a	a	-	impf.1.sg=противꙋста́хъ	-	P:V15a	pf; intr
 противꙋстоѧти.v	противꙋстоѧ́ти	v	-	-	V22a	b	-	-	-	P:V22a	ipf; intr
 протицати.v	протица́ти	v	-	-	V12t	a	-	-	-	P:V12t	ipf; intr
@@ -5469,20 +5528,20 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пріискати.v	пріиска́ти	v	-	-	V12t	b	-	-	-	P:V12t	pf; tran
 пріистолковати.v	пріистолкова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf
 пріити.v	пріитѝ	v	-	-	Viti	b.pres.aor	11=пришед;4=при;7=пришедш	part.past.act.short.m.pl.acc=прише́дшѧ;part.past.act.short.f.pl.nom=прише́дшѧ;part.past.act.short.f.pl.acc=прише́дшѧ;part.past.act.short.n.pl.nom=пришє́дша;part.past.act.short.n.pl.acc=пришє́дша	pres.3.pl=прїидꙋ́тъ×1;aor.2.du=прїидо́стѣ×4;aor.3.du=прїидо́стѣ×4;impv.2.pl=прїи́дите×5|прїидѣ́те×1;inf=прїиттѝ×1;part.past.act.short.m.sg.nom=прише́дшъ×2;part.past.act.short.m.sg.acc=прише́дшъ×2;part.past.act.short.m.pl.acc=прише́дшы×1;part.past.act.short.f.pl.nom=прише́дшы×1;part.past.act.short.f.pl.acc=прише́дшы×1;part.past.act.short.n.sg.nom=прише́дшо×1;part.past.act.short.n.sg.acc=прише́дшо×1	P:Viti	pf; intr
-пріѧти.v	пріѧ́ти	v	-	-	V15n	a{pres.1.sg=E;impv.2.sg=E;impv.2.pl=E;impv.3.sg=E}	11=пріем;2=пріим;7=пріемш	aor.2.sg=прїѧ́тъ;aor.3.sg=прїѧ́тъ;part.past.act.short.m.du.nom=прїи̑мша;part.past.act.short.m.du.acc=прїи̑мша;part.past.act.short.m.pl.acc=прїе́мшѧ;part.past.act.short.f.pl.nom=прїе́мшѧ;part.past.act.short.f.pl.acc=прїе́мшѧ;part.past.act.short.n.pl.nom=прїи̑мша;part.past.act.short.n.pl.acc=прїи̑мша;part.past.act.long.m.du.nom=прїи̑мшаѧ;part.past.act.long.m.du.acc=прїи̑мшаѧ;part.past.act.long.n.pl.nom=прїи̑мшаѧ;part.past.act.long.n.pl.acc=прїи̑мшаѧ;part.past.pass.short.m.pl.gen=прїѧ́тыхъ;part.past.pass.short.m.pl.loc=прїѧ́тыхъ;part.past.pass.short.f.pl.gen=прїѧ́тыхъ;part.past.pass.short.f.pl.loc=прїѧ́тыхъ;part.past.pass.short.n.pl.gen=прїѧ́тыхъ;part.past.pass.short.n.pl.loc=прїѧ́тыхъ	pres.3.pl=прїимꙋ́тъ×1;impv.2.sg=примѝ×1|прімѝ×1;impv.2.pl=прїи́мите×1;impv.3.sg=примѝ×1|прімѝ×1;part.past.act.short.m.sg.nom=прїи́мъ×353|прїе́мь×172|прїѧ́въ×22|прїи́мь×10|прие́мь×1;part.past.act.short.m.sg.gen=прїи́мша×31;part.past.act.short.m.sg.dat=прїи́мшꙋ×6|прїѧ́вшꙋ×2;part.past.act.short.m.sg.acc=прїи́мъ×353|прїе́мь×172|прїи́мша×31|прїѧ́въ×22|прїи́мь×10|прие́мь×1;part.past.act.short.m.sg.loc=прїи́мши×76|прїѧ́вши×1;part.past.act.short.m.pl.nom=прїи́мше×73|прїѧ́вше×1;part.past.act.short.m.pl.gen=прїѧ́вшихъ×4;part.past.act.short.m.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.short.m.pl.acc=прїи́мшѧ×3;part.past.act.short.m.pl.loc=прїѧ́вшихъ×4;part.past.act.short.f.sg.nom=прїи́мши×76|прїѧ́вши×1;part.past.act.short.f.sg.dat=прїи́мши×76|прїѧ́вши×1;part.past.act.short.f.sg.acc=прїи́мшꙋ×6|прїѧ́вшꙋ×2;part.past.act.short.f.sg.loc=прїи́мши×76|прїѧ́вши×1;part.past.act.short.f.pl.nom=прїи́мшѧ×3;part.past.act.short.f.pl.gen=прїѧ́вшихъ×4;part.past.act.short.f.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.short.f.pl.acc=прїи́мшѧ×3;part.past.act.short.f.pl.loc=прїѧ́вшихъ×4;part.past.act.short.n.sg.nom=прїи́мше×73|прїе́мшо×3|прїѧ́вше×1;part.past.act.short.n.sg.gen=прїи́мша×31;part.past.act.short.n.sg.dat=прїи́мшꙋ×6|прїѧ́вшꙋ×2;part.past.act.short.n.sg.acc=прїи́мше×73|прїе́мшо×3|прїѧ́вше×1;part.past.act.short.n.sg.loc=прїи́мши×76|прїѧ́вши×1;part.past.act.short.n.pl.gen=прїѧ́вшихъ×4;part.past.act.short.n.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.short.n.pl.loc=прїѧ́вшихъ×4;part.past.act.long.m.sg.nom=прїѧ́вый×10|прїи́мый×5|прїимы́й×4|прїѧ́вшїй×2|прїи́мшїй×1;part.past.act.long.m.sg.gen=прїи́мшагѡ×5;part.past.act.long.m.sg.dat=прїи́мшемꙋ×4;part.past.act.long.m.sg.acc=прїи́мшаго×13|прїѧ́вый×10|прїи́мый×5|прїимы́й×4|прїѧ́вшїй×2|прїи́мшїй×1;part.past.act.long.m.pl.nom=прїи́мшїи×4;part.past.act.long.m.pl.gen=прїѧ́вшихъ×4;part.past.act.long.m.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.long.m.pl.acc=прїи́мшыѧ×3;part.past.act.long.m.pl.loc=прїѧ́вшихъ×4;part.past.act.long.f.sg.nom=прїи́мшаѧ×32|прїѧ́вшаѧ×3;part.past.act.long.f.sg.acc=прїи́мшꙋю×20;part.past.act.long.f.pl.nom=прїи́мшыѧ×3;part.past.act.long.f.pl.gen=прїѧ́вшихъ×4;part.past.act.long.f.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.long.f.pl.acc=прїи́мшыѧ×3;part.past.act.long.f.pl.loc=прїѧ́вшихъ×4;part.past.act.long.n.sg.nom=прїи́мшее×5;part.past.act.long.n.sg.gen=прїи́мшагѡ×5;part.past.act.long.n.sg.dat=прїи́мшемꙋ×4;part.past.act.long.n.sg.acc=прїи́мшее×5;part.past.act.long.n.pl.gen=прїѧ́вшихъ×4;part.past.act.long.n.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.long.n.pl.loc=прїѧ́вшихъ×4;part.past.pass.short.f.sg.nom=прїѧ́ты×6	P:V15n	pf; tran
+пріѧти.v	прїѧ́ти	v	-	-	V15n	a{pres.1.sg=E;impv.2.sg=E;impv.2.pl=E;impv.3.sg=E}	11=пріем;2=пріим;7=пріемш	aor.2.sg=прїѧ́тъ;aor.3.sg=прїѧ́тъ;part.past.act.short.m.du.nom=прїи̑мша;part.past.act.short.m.du.acc=прїи̑мша;part.past.act.short.m.pl.acc=прїе́мшѧ;part.past.act.short.f.pl.nom=прїе́мшѧ;part.past.act.short.f.pl.acc=прїе́мшѧ;part.past.act.short.n.pl.nom=прїи̑мша;part.past.act.short.n.pl.acc=прїи̑мша;part.past.act.long.m.du.nom=прїи̑мшаѧ;part.past.act.long.m.du.acc=прїи̑мшаѧ;part.past.act.long.n.pl.nom=прїи̑мшаѧ;part.past.act.long.n.pl.acc=прїи̑мшаѧ;part.past.pass.short.m.pl.gen=прїѧ́тыхъ;part.past.pass.short.m.pl.loc=прїѧ́тыхъ;part.past.pass.short.f.pl.gen=прїѧ́тыхъ;part.past.pass.short.f.pl.loc=прїѧ́тыхъ;part.past.pass.short.n.pl.gen=прїѧ́тыхъ;part.past.pass.short.n.pl.loc=прїѧ́тыхъ	pres.3.pl=прїимꙋ́тъ×1;impv.2.sg=примѝ×1|прїмѝ×1|прімѝ;impv.2.pl=прїи́мите×1;impv.3.sg=примѝ×1|прїмѝ×1|прімѝ;part.past.act.short.m.sg.nom=прїи́мъ×353|прїе́мь×172|прїѧ́въ×22|прїи́мь×10|прие́мь×1;part.past.act.short.m.sg.gen=прїи́мша×31;part.past.act.short.m.sg.dat=прїи́мшꙋ×6|прїѧ́вшꙋ×2;part.past.act.short.m.sg.acc=прїи́мъ×353|прїе́мь×172|прїи́мша×31|прїѧ́въ×22|прїи́мь×10|прие́мь×1;part.past.act.short.m.sg.loc=прїи́мши×76|прїѧ́вши×1;part.past.act.short.m.pl.nom=прїи́мше×73|прїѧ́вше×1;part.past.act.short.m.pl.gen=прїѧ́вшихъ×4;part.past.act.short.m.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.short.m.pl.acc=прїи́мшѧ×3;part.past.act.short.m.pl.loc=прїѧ́вшихъ×4;part.past.act.short.f.sg.nom=прїи́мши×76|прїѧ́вши×1;part.past.act.short.f.sg.dat=прїи́мши×76|прїѧ́вши×1;part.past.act.short.f.sg.acc=прїи́мшꙋ×6|прїѧ́вшꙋ×2;part.past.act.short.f.sg.loc=прїи́мши×76|прїѧ́вши×1;part.past.act.short.f.pl.nom=прїи́мшѧ×3;part.past.act.short.f.pl.gen=прїѧ́вшихъ×4;part.past.act.short.f.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.short.f.pl.acc=прїи́мшѧ×3;part.past.act.short.f.pl.loc=прїѧ́вшихъ×4;part.past.act.short.n.sg.nom=прїи́мше×73|прїе́мшо×3|прїѧ́вше×1;part.past.act.short.n.sg.gen=прїи́мша×31;part.past.act.short.n.sg.dat=прїи́мшꙋ×6|прїѧ́вшꙋ×2;part.past.act.short.n.sg.acc=прїи́мше×73|прїе́мшо×3|прїѧ́вше×1;part.past.act.short.n.sg.loc=прїи́мши×76|прїѧ́вши×1;part.past.act.short.n.pl.gen=прїѧ́вшихъ×4;part.past.act.short.n.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.short.n.pl.loc=прїѧ́вшихъ×4;part.past.act.long.m.sg.nom=прїѧ́вый×10|прїи́мый×5|прїимы́й×4|прїѧ́вшїй×2|прїи́мшїй×1;part.past.act.long.m.sg.gen=прїи́мшагѡ×5;part.past.act.long.m.sg.dat=прїи́мшемꙋ×4;part.past.act.long.m.sg.acc=прїи́мшаго×13|прїѧ́вый×10|прїи́мый×5|прїимы́й×4|прїѧ́вшїй×2|прїи́мшїй×1;part.past.act.long.m.pl.nom=прїи́мшїи×4;part.past.act.long.m.pl.gen=прїѧ́вшихъ×4;part.past.act.long.m.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.long.m.pl.acc=прїи́мшыѧ×3;part.past.act.long.m.pl.loc=прїѧ́вшихъ×4;part.past.act.long.f.sg.nom=прїи́мшаѧ×32|прїѧ́вшаѧ×3;part.past.act.long.f.sg.acc=прїи́мшꙋю×20;part.past.act.long.f.pl.nom=прїи́мшыѧ×3;part.past.act.long.f.pl.gen=прїѧ́вшихъ×4;part.past.act.long.f.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.long.f.pl.acc=прїи́мшыѧ×3;part.past.act.long.f.pl.loc=прїѧ́вшихъ×4;part.past.act.long.n.sg.nom=прїи́мшее×5;part.past.act.long.n.sg.gen=прїи́мшагѡ×5;part.past.act.long.n.sg.dat=прїи́мшемꙋ×4;part.past.act.long.n.sg.acc=прїи́мшее×5;part.past.act.long.n.pl.gen=прїѧ́вшихъ×4;part.past.act.long.n.pl.dat=прїи́мшымъ×3|прїѧ́вшымъ×3;part.past.act.long.n.pl.loc=прїѧ́вшихъ×4;part.past.pass.short.f.sg.nom=прїѧ́ты×6	P:V15n	pf; tran
 пріѧтисѧ.v	пріѧ́тисѧ	v	-	-	V15n	a{sg=E;pres.3.sg=S}	encl=сѧ;2=пріим	part.past.act.short.m.sg.nom=прїе́мсѧ;part.past.act.short.m.sg.acc=прїе́мсѧ	-	P:V15n	pf; intr; med
 прѣтисѧ.v	прѣ́тисѧ	v	-	-	V22n	a	encl=сѧ	impf.2.du=прѧ́стѣсѧ;impf.3.du=прѧ́стѣсѧ	-	P:V22n	ipf; intr; med
 прѧжити.v	прѧ́жити	v	-	-	V21s	a	12=прѧжен	part.past.pass.short.m.pl.gen=прѧ́женыхъ;part.past.pass.short.m.pl.loc=прѧ́женыхъ;part.past.pass.short.f.sg.nom=прѧ́жены;part.past.pass.short.f.pl.gen=прѧ́женыхъ;part.past.pass.short.f.pl.loc=прѧ́женыхъ;part.past.pass.short.n.pl.gen=прѧ́женыхъ;part.past.pass.short.n.pl.loc=прѧ́женыхъ	part.past.pass.short.m.pl.gen=прѧже́ныхъ×1;part.past.pass.short.m.pl.loc=прѧже́ныхъ×1;part.past.pass.short.f.pl.gen=прѧже́ныхъ×1;part.past.pass.short.f.pl.loc=прѧже́ныхъ×1;part.past.pass.short.n.pl.gen=прѧже́ныхъ×1;part.past.pass.short.n.pl.loc=прѧже́ныхъ×1;part.past.pass.long.m.pl.gen=прѧже́ныхъ×1;part.past.pass.long.m.pl.loc=прѧже́ныхъ×1;part.past.pass.long.f.pl.gen=прѧже́ныхъ×1;part.past.pass.long.f.pl.loc=прѧже́ныхъ×1;part.past.pass.long.n.pl.gen=прѧже́ныхъ×1;part.past.pass.long.n.pl.loc=прѧже́ныхъ×1	P:V21s	ipf; tran
 прѧсти.v	прѧ́сти	v	-	-	V14d	b.inf	-	part.past.pass.short.f.sg.nom=прѧ́дены;part.past.pass.long.m.sg.gen=прѧ́денагѡ;part.past.pass.long.m.du.nom=прѧ́дєнаѧ;part.past.pass.long.m.du.acc=прѧ́дєнаѧ;part.past.pass.long.f.sg.gen=прѧ́деныѧ;part.past.pass.long.f.sg.acc=прѧ́денꙋю;part.past.pass.long.f.sg.ins=прѧ́деною;part.past.pass.long.n.sg.gen=прѧ́денагѡ;part.past.pass.long.n.pl.nom=прѧ́дєнаѧ;part.past.pass.long.n.pl.acc=прѧ́дєнаѧ	-	P:V14d	ipf; tran
-прꙋвѣдѣти.v	прꙋвѣ́дѣти	v	-	-	Vved	a	-	-	-	P:Vved	ipf; tran
-прꙋвѣдѣтисѧ.v	прꙋвѣ́дѣтисѧ	v	-	-	Vved	a	encl=сѧ	-	-	P:Vved	pf; intr; med
-прꙋготовати.v	прꙋготова́ти	v	-	-	V11a	a{aor.2.sg=2;aor.3.sg=2;inf=2;lpart.m.sg=2;part.past.act.short.m.sg.nom=2;part.past.act.short.m.sg.acc=2}	-	-	-	P:V11a	pf; tran
-прꙋготовитисѧ.v	прꙋгото́витисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	pf; intr; med
-прꙋготовлѧти.v	прꙋготовлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-прꙋготовлѧтисѧ.v	прꙋготовлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+прꙋвѣдѣти.v	проꙋвѣ́дѣти	v	-	-	Vved	a	-	-	-	P:Vved	ipf; tran
+прꙋвѣдѣтисѧ.v	проꙋвѣ́дѣтисѧ	v	-	-	Vved	a	encl=сѧ	-	-	P:Vved	pf; intr; med
+прꙋготовати.v	проꙋготова́ти	v	-	-	V11a	a{aor.2.sg=3;aor.3.sg=3;inf=3;lpart.m.sg=3;part.past.act.short.m.sg.nom=3;part.past.act.short.m.sg.acc=3}	-	-	-	P:V11a	pf; tran
+прꙋготовитисѧ.v	проꙋгото́витисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	pf; intr; med
+прꙋготовлѧти.v	проꙋготовлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+прꙋготовлѧтисѧ.v	проꙋготовлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 прꙋжатисѧ.v	прꙋжа́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-прꙋмѧгчити.v	прꙋмѧгчи́ти	v	-	-	V21s	b	-	-	-	P:V21s	pf; tran
-прꙋразꙋмѣти.v	прꙋразꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; tran
+прꙋмѧгчити.v	проꙋмѧгчи́ти	v	-	-	V21s	b	-	-	-	P:V21s	pf; tran
+прꙋразꙋмѣти.v	проꙋразꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; tran
 птицеволшебствовати.v	птицеволше́бствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 пхати.v	пха́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 пылати.v	пыла́ти	v	-	-	V11a	a	-	part.pres.act.long.m.sg.nom=пыла́ющїй;part.pres.act.long.m.sg.acc=пыла́ющїй	-	P:V11a	ipf; intr
@@ -5500,10 +5559,10 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пѣти.v	пѣ́ти	v	-	-	V15e	a.ov{pres.1.sg=E;pres.1.pl=E;pres.2.sg=E;pres.2.pl=E;pres.3.sg=E;pres.3.pl=E;impf.2.sg=E;impf.3.sg=E;impf.3.pl=E;impv.1.pl=E}	2=по;5=поющ;6=поем	part.pres.act.short.m.sg.nom=поѧ̀;part.pres.act.short.m.pl.acc=пою́щѧ;part.pres.act.short.f.pl.nom=пою́щѧ;part.pres.act.short.f.pl.acc=пою́щѧ;part.pres.act.short.n.sg.nom=поѧ̀;part.pres.act.long.m.sg.nom=пою́щїй;part.pres.pass.long.m.sg.loc=пое́момъ;part.pres.pass.long.n.sg.loc=пое́момъ	pres.1.pl=поє́мъ×2;pres.2.pl=поетѐ×11;impv.1.pl=поє́мъ×2;inf=пѣ́ть×1;part.pres.act.short.m.sg.nom=пою́щꙋ×34|поѧ́й×1;part.pres.act.short.n.sg.nom=пою́щꙋ×34|поѧ́й×1;part.pres.act.long.m.sg.acc=пою́щїй×5;part.pres.pass.short.m.sg.nom=поє́мъ×2;part.pres.pass.short.m.sg.acc=поє́мъ×2	P:V15e;A:p093	ipf; tran
 пѣтисѧ.v	пѣ́тисѧ	v	-	-	V15e	b.inf	encl=сѧ;2=по	-	-	P:V15e	ipf; intr; med
 пѣшешествовати.v	пѣшеше́ствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-пꙋверзати.v	пꙋверза́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+пꙋверзати.v	поꙋверза́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 пꙋскати.v	пꙋска́ти	v	-	-	V11a	a	-	part.pres.act.long.m.sg.nom=пꙋска́ющїй;part.pres.act.long.m.sg.acc=пꙋска́ющїй	-	P:V11a	ipf; tran
-пꙋстити.v	пꙋсти́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; tran
-пꙋстити.v.2	пꙋсти́ти	v	-	-	V21t	b.pres{part.past.pass.short.m.sg.nom=P;part.past.pass.short.m.sg.acc=P}	-	part.past.pass.long.m.pl.nom=пꙋще́нїи;part.past.pass.long.f.sg.ins=пꙋще́ною	-	P:V21t	pf; tran
+пꙋстити.v	пꙋсти́ти	v	-	-	V21t	b.pres{part.past.pass.short.m.sg.nom=P;part.past.pass.short.m.sg.acc=P}	-	part.past.pass.long.m.pl.nom=пꙋще́нїи;part.past.pass.long.f.sg.ins=пꙋще́ною	-	P:V21t	pf; tran
+пꙋстити.v.2	поꙋсти́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; tran
 пꙋтевести.v	пꙋтевестѝ	v	-	-	V14d	b	-	-	-	P:V14d	ipf; tran
 пꙋтеводительствовати.v	пꙋтеводи́тельствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 пꙋтеводити.v	пꙋтеводи́ти	v	-	-	V21t	b.pres	-	part.pres.act.long.m.sg.acc=пꙋтеводѧ́щїй;part.pres.pass.short.f.sg.nom=пꙋтеводи́мы	part.pres.act.long.m.sg.nom=пꙋтеводѧ́щїй×2	P:V21t	ipf; tran
@@ -5517,13 +5576,14 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 пꙋтешествовати.v	пꙋтеше́ствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.nom=пꙋтеше́ствꙋющꙋ;part.pres.act.short.n.sg.nom=пꙋтеше́ствꙋющꙋ;part.pres.act.long.m.sg.acc=пꙋтеше́ствꙋющїй	part.pres.act.long.m.sg.nom=пꙋтеше́ствꙋющїй×1	P:V12ov	ipf; intr
 пꙋтьствовати.v	пꙋ́тьствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 пꙋтьшествовати.v	пꙋтьше́ствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-пꙋчаватисѧ.v	пꙋчава́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-пꙋчати.v	пꙋча́ти	v	-	-	V11a	a	-	part.pres.act.long.m.sg.acc=пꙋча́ющїй;part.pres.pass.long.m.sg.loc=пꙋча́емомъ;part.pres.pass.long.n.sg.loc=пꙋча́емомъ	part.pres.act.long.m.sg.nom=пꙋча́ющїй×1	P:V11a	ipf; tran
-пꙋчатисѧ.v	пꙋча́тисѧ	v	-	-	V11a	a	encl=сѧ	-	part.pres.act.short.m.sg.nom=пꙋча́ющꙋсѧ×3;part.pres.act.short.n.sg.nom=пꙋча́ющꙋсѧ×3	P:V11a	ipf; intr; med
-пꙋчити.v	пꙋчи́ти	v	-	-	V21s	b.2pl	-	-	-	P:V21s	pf; tran
-пꙋчитисѧ.v	пꙋчи́тисѧ	v	-	-	V21s	b	encl=сѧ	-	-	P:V21s	pf; intr; med
-пꙋщати.v	пꙋща́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran; twin: пꙋщати.v.2
-пꙋщатисѧ.v	пꙋща́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med; twin: пꙋщатисѧ.v.2
+пꙋчаватисѧ.v	поꙋчава́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+пꙋчати.v	поꙋча́ти	v	-	-	V11a	a	-	part.pres.act.long.m.sg.acc=поꙋча́ющїй;part.pres.pass.long.m.sg.loc=поꙋча́емомъ;part.pres.pass.long.n.sg.loc=поꙋча́емомъ	part.pres.act.long.m.sg.nom=поꙋча́ющїй×1|пꙋча́ющїй	P:V11a	ipf; tran
+пꙋчатисѧ.v	поꙋча́тисѧ	v	-	-	V11a	a	encl=сѧ	-	part.pres.act.short.m.sg.nom=поꙋча́ющꙋсѧ×3|пꙋча́ющꙋсѧ;part.pres.act.short.n.sg.nom=поꙋча́ющꙋсѧ×3|пꙋча́ющꙋсѧ	P:V11a	ipf; intr; med
+пꙋчити.v	поꙋчи́ти	v	-	-	V21s	b.2pl	-	-	-	P:V21s	pf; tran
+пꙋчитисѧ.v	поꙋчи́тисѧ	v	-	-	V21s	b	encl=сѧ	-	-	P:V21s	pf; intr; med
+пꙋщати.v	пꙋща́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+пꙋщати.v.2	поꙋща́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+пꙋщатисѧ.v	пꙋща́тисѧ	v	-	-	V11a	a{pres.3.pl=E}	encl=сѧ	pres.3.pl=поꙋща́ютсѧ	-	P:V11a	ipf; intr; med; twin: пꙋщатисѧ.v.2
 раболѣпствовати.v	раболѣ́пствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
 работати.v	рабо́тати	v	-	-	V11a	a	-	part.pres.act.short.m.pl.acc=рабо́тающѧ;part.pres.act.short.f.pl.nom=рабо́тающѧ;part.pres.act.short.f.pl.acc=рабо́тающѧ;part.pres.act.long.m.sg.acc=рабо́тающїй	part.pres.act.long.m.sg.nom=рабо́тающїй×3	P:V11a	ipf; intr
 равноизвѣсити.v	равноизвѣ́сити	v	-	-	V21t	a	-	-	-	P:V21t	pf; tran
@@ -6010,11 +6070,17 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 свѧтитисѧ.v	свѧти́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	ipf; intr; med
 свѧщеннодѣйствовати.v	свѧщеннодѣ́йствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.nom=свѧщеннодѣ́йствꙋющꙋ;part.pres.act.short.n.sg.nom=свѧщеннодѣ́йствꙋющꙋ;part.pres.act.long.m.sg.nom=свѧщеннодѣ́йствꙋѧ;part.pres.act.long.n.sg.nom=свѧщеннодѣ́йствꙋѧ	-	P:V12ov	ipf; intr
 свѧщеннодѣйствоватисѧ.v	свѧщеннодѣ́йствоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
+свѧщенноначальствовати.v	свѧщеннонача́льствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 свѧщеннонаꙋчитисѧ.v	свѧщеннонаꙋчи́тисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	pf; intr; med
+свѧщеннообразовати.v	свѧщеннообразова́ти	v	-	-	V12ov	a	-	part.pres.pass.short.m.sg.dat=свѧщенноѻбразꙋ́емꙋ;part.pres.pass.short.f.sg.acc=свѧщенноѻбразꙋ́емꙋ;part.pres.pass.short.n.sg.dat=свѧщенноѻбразꙋ́емꙋ	-	P:V12ov	ipf; tran
+свѧщенноочищати.v	свѧщенноочища́ти	v	-	-	V11a	a	-	part.pres.pass.short.m.sg.nom=свѧщенноѡчища́емь;part.pres.pass.short.m.sg.acc=свѧщенноѡчища́емь	-	P:V11a	ipf; tran
 свѧщенноповѣствовати.v	свѧщенноповѣствова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
-свѧщеннословити.v	свѧщенносло́вити	v	-	-	V21p	a	-	-	-	P:V21p	ipf
+свѧщеннопроповѣдати.v	свѧщеннопроповѣ́дати	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
+свѧщеннословити.v	свѧщенносло́вити	v	-	-	V21p	a	-	part.pres.act.short.m.sg.nom=свѧщенносло́вѧщꙋ;part.pres.act.short.n.sg.nom=свѧщенносло́вѧщꙋ	-	P:V21p	ipf
+свѧщеннособратисѧ.v	свѧщеннособра́тисѧ	v	-	-	V12x*	a	encl=сѧ	-	-	P:V12x*	pf; intr; med
 свѧщенносовершати.v	свѧщенносоверша́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-свѧщеннꙋдивлѧти.v	свѧщеннꙋдивлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+свѧщенноꙋкрасити.v	свѧщенноꙋкраси́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; tran
+свѧщеннꙋдивлѧти.v	свѧщенноꙋдивлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 свѧщенствовати.v	свѧще́нствовати	v	-	-	V12ov	a	-	part.past.pass.short.m.sg.gen=свѧще́нствованна;part.past.pass.short.m.sg.acc=свѧще́нствованна;part.past.pass.short.f.sg.nom=свѧще́нствованна;part.past.pass.short.n.sg.gen=свѧще́нствованна	part.pres.act.short.m.sg.nom=свѧще́нствꙋющꙋ×1;part.pres.act.short.n.sg.nom=свѧще́нствꙋющꙋ×1	P:V12ov	ipf; intr
 сгарати.v	сгара́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
 сгноѧти.v	сгноѧ́ти	v	-	-	V11a	a	-	pres.3.pl=згноѧ́ютъ	-	P:V11a	ipf; tran
@@ -6030,7 +6096,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сдроблѧти.v	сдроблѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 сдѣлать.v	сдѣ́лать	v	-	-	V11a	a	-	inf=сдѣ́лать;part.past.pass.long.n.sg.nom=сдѣ́ланное;part.past.pass.long.n.sg.acc=сдѣ́ланное	-	P:V11a	pf; tran; headword сдѣ́лати
 сдѣлѧтисѧ.v	сдѣлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-седмꙋсꙋгꙋбити.v	седмꙋсꙋгꙋ́бити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
+седмꙋсꙋгꙋбити.v	седмоꙋсꙋгꙋ́бити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
 селитисѧ.v	сели́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	ipf; intr; med
 сжалитисѧ.v	сжа́литисѧ	v	-	-	V21n	a	encl=сѧ	aor.3.pl=сжа́лиша	-	P:V21n	pf; intr; med
 сжалѣтисѧ.v	сжалѣ́тисѧ	v	-	-	V11e	a	encl=сѧ	-	-	P:V11e	pf; intr; med
@@ -6650,9 +6716,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 соѡчищати.v	соѡчища́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 спадати.v	спа́дати	v	-	-	V11a	a	-	part.pres.act.short.m.pl.acc=спа́дающѧ;part.pres.act.short.f.pl.nom=спа́дающѧ;part.pres.act.short.f.pl.acc=спа́дающѧ	-	P:V11a	ipf; intr
 спаднꙋти.v	спа́днꙋти	v	-	-	V13t	a	-	-	-	P:V13t	pf; tran
-спасати.v	спаса́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=спаса́ющꙋ×2;part.pres.act.short.n.sg.nom=спаса́ющꙋ×2;part.pres.act.long.m.sg.nom=спаса́ющїй×3;part.pres.act.long.m.sg.acc=спаса́ющїй×3	P:V11a	ipf; tran
+спасати.v	спаса́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=спаса́ющꙋ×3;part.pres.act.short.n.sg.nom=спаса́ющꙋ×3;part.pres.act.long.m.sg.nom=спаса́ющїй×3;part.pres.act.long.m.sg.acc=спаса́ющїй×3	P:V11a	ipf; tran
 спасатисѧ.v	спаса́тисѧ	v	-	-	V11a	a	encl=сѧ	part.pres.act.long.m.sg.acc=спаса́ющагѡсѧ	-	P:V11a	ipf; intr; med
-спасти.v	спастѝ	v	-	-	V14z	b.part3	-	part.past.pass.short.m.sg.ins=спасе́нымъ;part.past.pass.short.m.pl.gen=спасе́нныхъ;part.past.pass.short.m.pl.loc=спасе́нныхъ;part.past.pass.short.f.pl.gen=спасе́нныхъ;part.past.pass.short.f.pl.loc=спасе́нныхъ;part.past.pass.short.n.sg.ins=спасе́нымъ;part.past.pass.short.n.pl.gen=спасе́нныхъ;part.past.pass.short.n.pl.loc=спасе́нныхъ;part.past.pass.long.m.sg.ins=спасе́нымъ;part.past.pass.long.m.sg.loc=спасе́нѣмъ;part.past.pass.long.f.sg.gen=спасе́ныѧ;part.past.pass.long.n.sg.ins=спасе́нымъ;part.past.pass.long.n.sg.loc=спасе́нѣмъ	pres.2.pl=спасетѐ×1;impv.2.sg=спа́си×1;impv.3.sg=спа́си×1;part.past.act.long.m.sg.acc=спасы́й×74;part.past.pass.short.m.pl.gen=спасе́ныхъ×2;part.past.pass.short.m.pl.loc=спасе́ныхъ×2;part.past.pass.short.f.sg.nom=спасе́ны×10;part.past.pass.short.f.pl.gen=спасе́ныхъ×2;part.past.pass.short.f.pl.loc=спасе́ныхъ×2;part.past.pass.short.n.sg.nom=спасе́нно×1;part.past.pass.short.n.sg.acc=спасе́нно×1;part.past.pass.short.n.pl.gen=спасе́ныхъ×2;part.past.pass.short.n.pl.loc=спасе́ныхъ×2;part.past.pass.long.m.sg.nom=спасе́ный×2;part.past.pass.long.m.sg.acc=спасе́ный×2;part.past.pass.long.m.du.nom=спасє́наѧ×1;part.past.pass.long.m.du.acc=спасє́наѧ×1;part.past.pass.long.m.pl.gen=спасе́ныхъ×2;part.past.pass.long.m.pl.loc=спасе́ныхъ×2;part.past.pass.long.f.sg.acc=спасе́нꙋю×1;part.past.pass.long.f.pl.gen=спасе́ныхъ×2;part.past.pass.long.f.pl.loc=спасе́ныхъ×2;part.past.pass.long.n.pl.nom=спасє́наѧ×1;part.past.pass.long.n.pl.gen=спасе́ныхъ×2;part.past.pass.long.n.pl.acc=спасє́наѧ×1;part.past.pass.long.n.pl.loc=спасе́ныхъ×2	P:V14z	pf; tran
+спасти.v	спастѝ	v	-	-	V14z	b.part3	-	part.past.pass.short.m.sg.ins=спасе́нымъ;part.past.pass.short.m.pl.gen=спасе́нныхъ;part.past.pass.short.m.pl.loc=спасе́нныхъ;part.past.pass.short.f.sg.nom=спасе́ны;part.past.pass.short.f.pl.gen=спасе́нныхъ;part.past.pass.short.f.pl.loc=спасе́нныхъ;part.past.pass.short.n.sg.ins=спасе́нымъ;part.past.pass.short.n.pl.gen=спасе́нныхъ;part.past.pass.short.n.pl.loc=спасе́нныхъ;part.past.pass.long.m.sg.ins=спасе́нымъ;part.past.pass.long.m.sg.loc=спасе́нѣмъ;part.past.pass.long.f.sg.gen=спасе́ныѧ;part.past.pass.long.n.sg.ins=спасе́нымъ;part.past.pass.long.n.sg.loc=спасе́нѣмъ	pres.2.pl=спасетѐ×1;impv.2.sg=спа́си×1;impv.3.sg=спа́си×1;lpart.m.sg=спаслъ×158;part.past.act.long.m.sg.acc=спасы́й×131;part.past.pass.short.m.sg.gen=спасе́нна×1;part.past.pass.short.m.sg.acc=спасе́нна×1;part.past.pass.short.m.pl.gen=спасе́ныхъ×3;part.past.pass.short.m.pl.dat=спасє́нымъ×3;part.past.pass.short.m.pl.loc=спасе́ныхъ×3;part.past.pass.short.f.pl.gen=спасе́ныхъ×3;part.past.pass.short.f.pl.dat=спасє́нымъ×3;part.past.pass.short.f.pl.loc=спасе́ныхъ×3;part.past.pass.short.n.sg.nom=спасе́нно×1;part.past.pass.short.n.sg.gen=спасе́нна×1;part.past.pass.short.n.sg.acc=спасе́нно×1;part.past.pass.short.n.pl.gen=спасе́ныхъ×3;part.past.pass.short.n.pl.dat=спасє́нымъ×3;part.past.pass.short.n.pl.loc=спасе́ныхъ×3;part.past.pass.long.m.sg.nom=спасе́ный×2;part.past.pass.long.m.sg.acc=спасе́ный×2;part.past.pass.long.m.du.nom=спасє́наѧ×1;part.past.pass.long.m.du.acc=спасє́наѧ×1;part.past.pass.long.m.pl.gen=спасе́ныхъ×3;part.past.pass.long.m.pl.dat=спасє́нымъ×3;part.past.pass.long.m.pl.loc=спасе́ныхъ×3;part.past.pass.long.f.sg.acc=спасе́нꙋю×2;part.past.pass.long.f.pl.gen=спасе́ныхъ×3;part.past.pass.long.f.pl.dat=спасє́нымъ×3;part.past.pass.long.f.pl.loc=спасе́ныхъ×3;part.past.pass.long.n.pl.nom=спасє́наѧ×1;part.past.pass.long.n.pl.gen=спасе́ныхъ×3;part.past.pass.long.n.pl.dat=спасє́нымъ×3;part.past.pass.long.n.pl.acc=спасє́наѧ×1;part.past.pass.long.n.pl.loc=спасе́ныхъ×3	P:V14z	pf; tran
 спасти.v.2	спа́сти	v	-	-	V14d	b.part3{inf=S}	-	-	part.past.act.long.m.sg.acc=спады́й×6	P:V14d	pf; intr
 спастисѧ+ли.v	спасти́сѧ+ли	v	-	-	V14z	a	-	pres.3.sg=спасе́тлисѧ	-	P:V14z	pf; intr; med
 спастисѧ.v	спасти́сѧ	v	-	-	V14z	b.part2	encl=сѧ	-	pres.1.pl=спа́семсѧ×1;impv.1.pl=спа́семсѧ×1	P:V14z	pf; intr; med
@@ -6776,7 +6842,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 спꙋтешествовати.v	спꙋтеше́ствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 спꙋтствовати.v	спꙋ́тствовати	v	-	-	V12ov	a	-	pres.1.sg=спꙋ́тьствꙋю	-	P:V12ov	ipf; intr
 спꙋтьшествовати.v	спꙋтьше́ствовати	v	-	-	V12ov	a	-	part.pres.act.short.m.sg.loc=спꙋтьше́ствꙋющемъ;part.pres.act.short.n.sg.loc=спꙋтьше́ствꙋющемъ	part.pres.act.short.m.sg.nom=спꙋтьше́ствꙋющемъ×1;part.pres.act.short.n.sg.nom=спꙋтьше́ствꙋющемъ×1	P:V12ov	ipf; intr
-спꙋчавати.v	спꙋчава́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+спꙋчавати.v	споꙋчава́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 спꙋщати.v	спꙋща́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 сравнити.v	сравни́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 сравнитисѧ.v	сравни́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	pf; intr; med
@@ -6895,11 +6961,11 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 стрꙋгати.v	стрꙋга́ти	v	-	-	V12t	b.pres.part	-	part.pres.act.short.m.sg.nom=стрꙋжа̀;part.pres.act.short.n.sg.nom=стрꙋжа̀	part.pres.act.short.m.sg.nom=стрꙋжѧ̀×1;part.pres.act.short.n.sg.nom=стрꙋжѧ̀×1	P:V12t	ipf; tran
 стрꙋгатисѧ.v	стрꙋга́тисѧ	v	-	-	V12t	a	encl=сѧ	-	-	P:V12t	ipf; intr; med
 стыдѣтисѧ.v	стыдѣ́тисѧ	v	-	-	V22t	b.2pl	encl=сѧ	aor.1.pl=стыди́хомсѧ	pres.1.sg=стыжꙋ́сѧ×5;pres.2.pl=стыди́тесѧ×1;impf.2.sg=стыдѧ́ше×2;impf.3.sg=стыдѧ́ше×2;impv.2.pl=стыди́тесѧ×1;inf=стыди́тисѧ×1;part.pres.act.short.m.sg.nom=стыждѧ́сѧ×1;part.pres.act.short.n.sg.nom=стыждѧ́сѧ×1	P:V22t/V21t	ipf; intr; med
-стіхологисати.v	стіхологиса́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-стіхологисовати.v	стіхологисова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
-стіхологисоватисѧ.v	стіхологисова́тисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
-стіхословити.v	стіхосло́вити	v	-	-	V21p	a	-	-	inf=стіхослови́ти×1	P:V21p	ipf; tran
-стіхословитисѧ.v	стіхосло́витисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	ipf; intr; med
+стіхологисати.v	стїхологиса́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+стіхологисовати.v	стїхологисова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
+стіхологисоватисѧ.v	стїхологисова́тисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
+стіхословити.v	стїхосло́вити	v	-	-	V21p	a	-	-	inf=стїхослови́ти×1|стіхослови́ти	P:V21p	ipf; tran
+стіхословитисѧ.v	стїхосло́витисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	ipf; intr; med
 стіхословлѧти.v	стіхословлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 стѣснити.v	стѣсни́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 стѣснѧти.v	стѣснѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
@@ -6958,32 +7024,32 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 сѣѧти.v	сѣ́ѧти	v	-	-	V12a	a	-	part.pres.pass.short.f.sg.nom=сѣ́емы;part.past.pass.long.m.du.nom=сѣ̑ѧннаѧ;part.past.pass.long.m.du.acc=сѣ̑ѧннаѧ;part.past.pass.long.m.pl.nom=сѣ́ѧннїи;part.past.pass.long.n.sg.nom=сѣ́ѧнное;part.past.pass.long.n.sg.acc=сѣ́ѧнное;part.past.pass.long.n.pl.nom=сѣ̑ѧннаѧ;part.past.pass.long.n.pl.acc=сѣ̑ѧннаѧ	part.pres.act.short.m.sg.nom=сѣ́ющꙋ×2;part.pres.act.short.n.sg.nom=сѣ́ющꙋ×2	P:V12a	ipf; tran
 сѣѧтисѧ.v	сѣ́ѧтисѧ	v	-	-	V12a	a	encl=сѧ	-	-	P:V12a	ipf; intr; med
 сꙋббѡтствовати.v	сꙋббѡ́тствовати	v	-	-	V12ov	a	-	impv.1.pl=сꙋббѡ́тствꙋимъ	-	P:V12ov	ipf; intr
-сꙋблажатисѧ.v	сꙋблажа́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-сꙋвѧдати.v	сꙋвѧда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
-сꙋгнетатисѧ.v	сꙋгнета́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-сꙋгождати.v	сꙋгожда́ти	v	-	-	V11a	a	-	part.pres.act.short.m.sg.nom=сꙋгожда́ющꙋ;part.pres.act.short.n.sg.nom=сꙋгожда́ющꙋ	-	P:V11a	ipf; intr
-сꙋдавити.v	сꙋдави́ти	v	-	-	V21p	a.ppp{part.past.pass.short.m.sg.gen=P;part.past.pass.short.f.sg.nom=P;part.past.pass.short.n.sg.gen=P}	-	-	-	P:V21p	pf; tran
-сꙋдавлѧтисѧ.v	сꙋдавлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-сꙋдарѧти.v	сꙋдарѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+сꙋблажатисѧ.v	соꙋблажа́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+сꙋвѧдати.v	соꙋвѧда́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; intr
+сꙋгнетатисѧ.v	соꙋгнета́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+сꙋгождати.v	соꙋгожда́ти	v	-	-	V11a	a	-	part.pres.act.short.m.sg.nom=соꙋгожда́ющꙋ;part.pres.act.short.n.sg.nom=соꙋгожда́ющꙋ	-	P:V11a	ipf; intr
+сꙋдавити.v	соꙋдави́ти	v	-	-	V21p	a.ppp{part.past.pass.short.m.sg.gen=P;part.past.pass.short.f.sg.nom=P;part.past.pass.short.n.sg.gen=P}	-	-	-	P:V21p	pf; tran
+сꙋдавлѧтисѧ.v	соꙋдавлѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+сꙋдарѧти.v	соꙋдарѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 сꙋдити.v	сꙋди́ти	v	-	-	V21t	b.pres2{part.past.pass.short.n.sg.nom=P;part.past.pass.short.n.sg.acc=P}	-	impf.2.sg=сꙋдѧ́ше;impf.3.sg=сꙋдѧ́ше;part.past.act.short.m.sg.dat=сꙋ́ждшꙋ;part.past.act.short.f.sg.acc=сꙋ́ждшꙋ;part.past.act.short.n.sg.dat=сꙋ́ждшꙋ	pres.2.pl=сꙋ́дите×17;impf.3.pl=сꙋдѧ́хꙋ×1;impv.2.pl=сꙋ́дите×17;part.pres.act.short.m.sg.nom=сꙋдѧ́щꙋ×1;part.pres.act.short.n.sg.nom=сꙋдѧ́щꙋ×1;part.pres.pass.short.m.sg.nom=сꙋ́димъ×1;part.pres.pass.short.m.sg.acc=сꙋ́димъ×1;part.past.act.short.m.sg.dat=сꙋ́ждьшꙋ×1;part.past.act.short.m.pl.gen=сꙋ́ждьшихъ×1;part.past.act.short.m.pl.loc=сꙋ́ждьшихъ×1;part.past.act.short.f.sg.acc=сꙋ́ждьшꙋ×1;part.past.act.short.f.pl.gen=сꙋ́ждьшихъ×1;part.past.act.short.f.pl.loc=сꙋ́ждьшихъ×1;part.past.act.short.n.sg.dat=сꙋ́ждьшꙋ×1;part.past.act.short.n.pl.gen=сꙋ́ждьшихъ×1;part.past.act.short.n.pl.loc=сꙋ́ждьшихъ×1;part.past.act.long.m.pl.gen=сꙋ́ждьшихъ×1;part.past.act.long.m.pl.loc=сꙋ́ждьшихъ×1;part.past.act.long.f.pl.gen=сꙋ́ждьшихъ×1;part.past.act.long.f.pl.loc=сꙋ́ждьшихъ×1;part.past.act.long.n.pl.gen=сꙋ́ждьшихъ×1;part.past.act.long.n.pl.loc=сꙋ́ждьшихъ×1;part.past.pass.short.n.sg.nom=сꙋжде́но×2|сꙋждено̀×1;part.past.pass.short.n.sg.acc=сꙋжде́но×2|сꙋждено̀×1	P:V21t;A:p082	ipf; tran
 сꙋдитисѧ.v	сꙋди́тисѧ	v	-	-	V21t	b.pres2.ppm	encl=сѧ	part.pres.act.long.m.sg.acc=сꙋдѧ́щагѡсѧ	-	P:V21t	ipf; intr; med
 сꙋемꙋдрствовати.v	сꙋемꙋ́дрствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-сꙋжасатисѧ.v	сꙋжаса́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-сꙋмертвитисѧ.v	сꙋмертви́тисѧ	v	-	-	V21p	b	encl=сѧ	-	-	P:V21p	pf; intr; med
-сꙋмножати.v	сꙋмножа́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-сꙋмножитисѧ.v	сꙋмно́житисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	pf; intr; med
+сꙋжасатисѧ.v	соꙋжаса́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
+сꙋмертвитисѧ.v	соꙋмертви́тисѧ	v	-	-	V21p	b	encl=сѧ	-	-	P:V21p	pf; intr; med
+сꙋмножати.v	соꙋмножа́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+сꙋмножитисѧ.v	соꙋмно́житисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	pf; intr; med
 сꙋмнѣватисѧ.v	сꙋмнѣва́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 сꙋмнѣтисѧ.v	сꙋмнѣ́тисѧ	v	-	-	V22n	b	encl=сѧ	part.pres.act.short.m.pl.gen=сꙋмнѧ́щихъ;part.pres.act.short.m.pl.loc=сꙋмнѧ́щихъ;part.pres.act.short.f.pl.gen=сꙋмнѧ́щихъ;part.pres.act.short.f.pl.loc=сꙋмнѧ́щихъ;part.pres.act.short.n.pl.gen=сꙋмнѧ́щихъ;part.pres.act.short.n.pl.loc=сꙋмнѧ́щихъ;part.pres.act.long.m.sg.nom=сꙋмнѧ́й;part.pres.act.long.m.pl.gen=сꙋмнѧ́щихъ;part.pres.act.long.m.pl.loc=сꙋмнѧ́щихъ;part.pres.act.long.f.pl.gen=сꙋмнѧ́щихъ;part.pres.act.long.f.pl.loc=сꙋмнѧ́щихъ;part.pres.act.long.n.sg.nom=сꙋмнѧ́й;part.pres.act.long.n.pl.gen=сꙋмнѧ́щихъ;part.pres.act.long.n.pl.loc=сꙋмнѧ́щихъ	part.pres.act.short.m.sg.nom=сꙋмнѧ́йсѧ×3;part.pres.act.short.n.sg.nom=сꙋмнѧ́йсѧ×3	P:V22n/V21n	ipf; intr; med
-сꙋмрети.v	сꙋмре́ти	v	-	-	V15er	b	-	-	-	P:V15er	pf; intr
-сꙋмствовати.v	сꙋ́мствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
-сꙋмѣрити.v	сꙋмѣ́рити	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
+сꙋмрети.v	соꙋмре́ти	v	-	-	V15er	b	-	-	-	P:V15er	pf; intr
+сꙋмствовати.v	соꙋ́мствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
+сꙋмѣрити.v	соꙋмѣ́рити	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
 сꙋпротивитисѧ.v	сꙋпроти́витисѧ	v	-	-	V21p	a	encl=сѧ	part.past.act.short.m.sg.loc=сꙋпроти́вльшисѧ;part.past.act.short.n.sg.loc=сꙋпроти́вльшисѧ	-	P:V21p	pf; intr; med
-сꙋразꙋмѣти.v	сꙋразꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; tran
-сꙋслаждатисѧ.v	сꙋслажда́тисѧ	v	-	-	V11a	a	encl=сѧ	part.pres.act.short.m.sg.nom=сꙋслажда́ющꙋсѧ;part.pres.act.short.n.sg.nom=сꙋслажда́ющꙋсѧ	-	P:V11a	ipf; intr; med
-сꙋстроитисѧ.v	сꙋстро́итисѧ	v	-	-	V21a	a	encl=сѧ	-	-	P:V21a	pf; intr; med
-сꙋтѣшитисѧ.v	сꙋтѣ́шитисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	pf; intr; med
-сꙋчинити.v	сꙋчини́ти	v	-	-	V21n	b	12=сꙋчинен	part.past.pass.short.m.pl.gen=сꙋчине́ныхъ;part.past.pass.short.m.pl.loc=сꙋчине́ныхъ;part.past.pass.short.f.pl.gen=сꙋчине́ныхъ;part.past.pass.short.f.pl.loc=сꙋчине́ныхъ;part.past.pass.short.n.pl.gen=сꙋчине́ныхъ;part.past.pass.short.n.pl.loc=сꙋчине́ныхъ;part.past.pass.long.m.pl.nom=сꙋчине́ннїи	-	P:V21n	pf; tran
-сꙋчинитисѧ.v	сꙋчини́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	pf; intr; med
+сꙋразꙋмѣти.v	соꙋразꙋмѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; tran
+сꙋслаждатисѧ.v	соꙋслажда́тисѧ	v	-	-	V11a	a	encl=сѧ	part.pres.act.short.m.sg.nom=соꙋслажда́ющꙋсѧ;part.pres.act.short.n.sg.nom=соꙋслажда́ющꙋсѧ	-	P:V11a	ipf; intr; med
+сꙋстроитисѧ.v	соꙋстро́итисѧ	v	-	-	V21a	a	encl=сѧ	-	-	P:V21a	pf; intr; med
+сꙋтѣшитисѧ.v	соꙋтѣ́шитисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	pf; intr; med
+сꙋчинити.v	соꙋчини́ти	v	-	-	V21n	b	12=соꙋчинен	part.past.pass.short.m.pl.gen=соꙋчине́ныхъ;part.past.pass.short.m.pl.loc=соꙋчине́ныхъ;part.past.pass.short.f.pl.gen=соꙋчине́ныхъ;part.past.pass.short.f.pl.loc=соꙋчине́ныхъ;part.past.pass.short.n.pl.gen=соꙋчине́ныхъ;part.past.pass.short.n.pl.loc=соꙋчине́ныхъ;part.past.pass.long.m.pl.nom=соꙋчине́ннїи	-	P:V21n	pf; tran
+сꙋчинитисѧ.v	соꙋчини́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	pf; intr; med
 сꙋшити.v	сꙋши́ти	v	-	-	V21s	b	12=сꙋшен	part.pres.act.short.m.sg.nom=сꙋшѧ̀;part.pres.act.short.n.sg.nom=сꙋшѧ̀;part.past.pass.short.m.pl.gen=сꙋше́ныхъ;part.past.pass.short.m.pl.loc=сꙋше́ныхъ;part.past.pass.short.f.sg.nom=сꙋшены̀;part.past.pass.short.f.pl.gen=сꙋше́ныхъ;part.past.pass.short.f.pl.loc=сꙋше́ныхъ;part.past.pass.short.n.pl.gen=сꙋше́ныхъ;part.past.pass.short.n.pl.loc=сꙋше́ныхъ	-	P:V21s	ipf; tran
 сꙋществовати.v	сꙋществова́ти	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 сꙋществоватисѧ.v	сꙋществова́тисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
@@ -6998,9 +7064,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 тайнонаꙋчатисѧ.v	тайнонаꙋча́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 тайнонаꙋчити.v	тайнонаꙋчи́ти	v	-	-	V21s	b.pres	-	part.past.pass.short.f.sg.nom=тайнонаꙋче́ны	-	P:V21s	pf; tran
 тайнонаꙋчитисѧ.v	тайнонаꙋчи́тисѧ	v	-	-	V21s	b	encl=сѧ	-	-	P:V21s	pf; intr; med
-тайнꙋвѣдати.v	тайнꙋвѣ́дати	v	-	-	V11a	a	-	-	-	P:V11a	pf; tran
-тайнꙋчити.v	тайнꙋчи́ти	v	-	-	V21s	b	-	part.pres.act.long.m.sg.nom=тайнꙋча̀;part.pres.act.long.n.sg.nom=тайнꙋча̀	-	P:V21s	ipf; tran
-тайнꙋчитисѧ.v	тайнꙋчи́тисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	ipf; intr; med
+тайнꙋвѣдати.v	тайноꙋвѣ́дати	v	-	-	V11a	a	-	-	-	P:V11a	pf; tran
+тайнꙋчити.v	тайноꙋчи́ти	v	-	-	V21s	b	-	part.pres.act.long.m.sg.nom=тайноꙋча̀;part.pres.act.long.n.sg.nom=тайноꙋча̀	-	P:V21s	ipf; tran
+тайнꙋчитисѧ.v	тайноꙋчи́тисѧ	v	-	-	V21s	a	encl=сѧ	-	-	P:V21s	ipf; intr; med
 таѧти.v	та́ѧти	v	-	-	V12a	a	-	part.pres.act.short.m.sg.nom=та́ющꙋ;part.pres.act.short.n.sg.nom=та́ющꙋ	-	P:V12a	ipf; intr
 твердитисѧ.v	тверди́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	ipf; intr; med
 творити.v	твори́ти	v	-	-	V21n	b	-	impf.2.du=творѧ́стѣ;impf.3.du=творѧ́стѣ;part.pres.act.short.m.sg.loc=творѧ́щемъ;part.pres.act.short.m.pl.acc=творѧ́щѧ;part.pres.act.short.f.pl.nom=творѧ́щѧ;part.pres.act.short.f.pl.acc=творѧ́щѧ;part.pres.act.short.n.sg.loc=творѧ́щемъ;part.pres.act.short.n.pl.nom=творѧ̑ща;part.pres.act.short.n.pl.acc=творѧ̑ща;part.pres.pass.long.f.sg.nom=твѡри́маѧ	pres.2.pl=творитѐ×68;pres.3.sg=тво́ритъ×2;impv.2.pl=творитѐ×68;inf=тво́рити×1;part.pres.act.short.m.sg.nom=творѧ́щꙋ×33|творѧ́щемъ×1;part.pres.act.short.n.sg.nom=творѧ́щꙋ×33|творѧ́щемъ×1|творѧ́що×1;part.pres.act.short.n.sg.acc=творѧ́що×1;part.pres.act.long.m.sg.nom=творѧ́щїй×8;part.pres.act.long.m.sg.acc=творѧ́щїй×8	P:V21n	ipf; tran
@@ -7097,7 +7163,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 хранитисѧ.v	храни́тисѧ	v	-	-	V21n	b	encl=сѧ	part.pres.act.long.m.sg.nom=хранѧ́щїйсѧ;part.pres.act.long.m.sg.acc=хранѧ́щагѡсѧ	part.pres.act.long.m.sg.acc=хранѧ́щїйсѧ×1	P:V21n	ipf; intr; med
 храпати.v	храпа́ти	v	-	-	V12p	a.ov	-	-	-	P:V12p	ipf; intr
 хромати.v	хрома́ти	v	-	-	V12p	b	-	-	-	P:V12p	ipf; intr
-хіротонисати.v	хіротониса́ти	v	-	-	V11a	a	-	part.past.pass.long.m.sg.nom=хіротониса́нный;part.past.pass.long.m.sg.acc=хіротониса́нный	-	P:V11a	ipf; tran
+хіротонисати.v	хїротониса́ти	v	-	-	V11a	a	-	part.past.pass.long.m.sg.nom=хїротониса́нный;part.past.pass.long.m.sg.acc=хїротониса́нный	-	P:V11a	ipf; tran
 хꙋдожествовати.v	хꙋдо́жествовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 хꙋлити.v	хꙋ́лити	v	-	-	V21n	a{part.pres.pass.short.m.sg.ins=L;part.pres.pass.short.n.sg.ins=L;part.pres.pass.long.m.sg.ins=L;part.pres.pass.long.n.sg.ins=L}	-	-	part.pres.act.short.m.sg.nom=хꙋлѧ̀×1;part.pres.act.short.m.pl.nom=хꙋлѧ́ще×2;part.pres.act.short.n.sg.nom=хꙋлѧ̀×1|хꙋлѧ́ще×2;part.pres.act.short.n.sg.acc=хꙋлѧ́ще×2;part.past.act.long.m.sg.dat=хꙋли́вшемꙋ×1;part.past.act.long.n.sg.dat=хꙋли́вшемꙋ×1	P:V21n	ipf; tran
 хꙋлитисѧ.v	хꙋ́литисѧ	v	-	-	V21n	a	encl=сѧ	-	pres.3.sg=хꙋли́тсѧ×2	P:V21n	ipf; intr; med
@@ -7172,7 +7238,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 щитоповергати.v	щитоповерга́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 юношствовати.v	ю҆́ношствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
 юродствовати.v	ю҆ро́дствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; intr
-ѕвѣреꙋловити.v	ѕвѣреꙋлови́ти	v	-	-	V21p	a	-	part.past.pass.short.m.sg.nom=ѕвѣрꙋловле́нъ;part.past.pass.short.m.sg.acc=ѕвѣрꙋловле́нъ	-	P:V21p	ipf; tran
+ѕвѣреꙋловити.v	ѕвѣреꙋлови́ти	v	-	-	V21p	a	-	part.past.pass.short.m.sg.nom=ѕвѣроꙋловле́нъ;part.past.pass.short.m.sg.acc=ѕвѣроꙋловле́нъ	-	P:V21p	ipf; tran
 ѕвѣреꙋловлѧти.v	ѕвѣреꙋловлѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 ѕлитисѧ.v	ѕли́тисѧ	v	-	-	V21n	a	encl=сѧ	-	-	P:V21n	pf; intr; med
 ѕлобитисѧ.v	ѕло́битисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	ipf; intr; med
@@ -7194,9 +7260,9 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѕлострадати.v	ѕлострада́ти	v	-	-	V12t	b.pres.part	-	part.pres.act.short.m.sg.nom=ѕлострада́ѧ;part.pres.act.short.n.sg.nom=ѕлострада́ѧ;part.pres.act.long.m.sg.nom=ѕлостра́ждꙋщїй;part.pres.act.long.m.sg.acc=ѕлостра́ждꙋщїй	-	P:V12t/V11a	ipf; intr
 ѕлотворити.v	ѕлотвори́ти	v	-	-	V21n	b	-	-	-	P:V21n	ipf; tran
 ѕлочествовати.v	ѕлоче́ствовати	v	-	-	V12ov	a	-	-	part.pres.act.short.m.pl.gen=ѕлочествꙋ́ющихъ×1;part.pres.act.short.m.pl.loc=ѕлочествꙋ́ющихъ×1;part.pres.act.short.f.pl.gen=ѕлочествꙋ́ющихъ×1;part.pres.act.short.f.pl.loc=ѕлочествꙋ́ющихъ×1;part.pres.act.short.n.pl.gen=ѕлочествꙋ́ющихъ×1;part.pres.act.short.n.pl.loc=ѕлочествꙋ́ющихъ×1;part.pres.act.long.m.pl.gen=ѕлочествꙋ́ющихъ×1;part.pres.act.long.m.pl.loc=ѕлочествꙋ́ющихъ×1;part.pres.act.long.f.pl.gen=ѕлочествꙋ́ющихъ×1;part.pres.act.long.f.pl.loc=ѕлочествꙋ́ющихъ×1;part.pres.act.long.n.pl.gen=ѕлочествꙋ́ющихъ×1;part.pres.act.long.n.pl.loc=ѕлочествꙋ́ющихъ×1	P:V12ov	ipf; tran
-ѕлꙋмрети.v	ѕлꙋмре́ти	v	-	-	V15er	a	-	-	-	P:V15er	pf; intr
-ѕлꙋпотреблѧти.v	ѕлꙋпотреблѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
-ѕлꙋхитрити.v	ѕлꙋхи́трити	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
+ѕлꙋмрети.v	ѕлоꙋмре́ти	v	-	-	V15er	a	-	-	-	P:V15er	pf; intr
+ѕлꙋпотреблѧти.v	ѕлоꙋпотреблѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
+ѕлꙋхитрити.v	ѕлоꙋхи́трити	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
 ідѡлонеистовствовати.v	і҆дѡлонеи́стовствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
 ідѡлоносити.v	і҆дѡлоноси́ти	v	-	-	V21t	a	-	-	-	P:V21t	ipf; tran
 ідѡлотворитисѧ.v	і҆дѡлотвори́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	ipf; intr; med
@@ -7288,14 +7354,14 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡблаговонствити.v	ѡ҆благово́нствити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
 ѡблаговонствовати.v	ѡ҆благово́нствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	pf; tran
 ѡблагодательствовати.v	ѡ҆благода́тельствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	pf; tran
-ѡблагодатити.v	ѡ҆благодати́ти	v	-	-	V21t	b{part.past.act.short.m.sg.loc=P;part.past.act.short.f.sg.nom=P;part.past.act.short.f.sg.dat=P;part.past.act.short.f.sg.loc=P;part.past.act.short.n.sg.loc=P;part.past.act.long.f.sg.nom=P}	-	-	part.past.act.short.m.sg.nom=ѡ҆благода́тивъ×1;part.past.act.short.m.sg.acc=ѡ҆благода́тивъ×1	P:V21t	pf; tran
+ѡблагодатити.v	ѡ҆благодати́ти	v	-	-	V21t	b{part.past.act.short.m.sg.loc=P;part.past.act.short.f.sg.nom=P;part.past.act.short.f.sg.dat=P;part.past.act.short.f.sg.loc=P;part.past.act.short.n.sg.loc=P;part.past.act.long.f.sg.nom=P}	-	-	part.past.act.short.m.sg.nom=ѡ҆благода́тивъ×1;part.past.act.short.m.sg.acc=ѡ҆благода́тивъ×1;part.past.act.short.m.sg.loc=ѡ҆благодати́вши×1;part.past.act.short.f.sg.nom=ѡ҆благодати́вши×1;part.past.act.short.f.sg.dat=ѡ҆благодати́вши×1;part.past.act.short.f.sg.loc=ѡ҆благодати́вши×1;part.past.act.short.n.sg.loc=ѡ҆благодати́вши×1	P:V21t	pf; tran
 ѡблагодатитисѧ.v	ѡ҆благода́титисѧ	v	-	-	V21t	a	encl=сѧ	-	-	P:V21t	pf; intr; med
 ѡблагодатствити.v	ѡ҆благода́тствити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
 ѡблагодатствитисѧ.v	ѡ҆благода́тствитисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	pf; intr; med
-ѡблагодатствовати.v	ѡ҆благода́тствовати	v	-	-	V12ov	a	-	part.past.pass.long.m.sg.nom=ѡ҆благода́тствованный;part.past.pass.long.m.sg.acc=ѡ҆благода́тствованный;part.past.pass.long.f.sg.acc=ѡ҆благода́тствованнꙋю	-	P:V12ov	pf; tran
-ѡблагодѣтельствовати.v	ѡ҆благодѣ́тельствовати	v	-	-	V12ov	a	-	-	-	P:V12ov	pf; tran
+ѡблагодатствовати.v	ѡ҆благода́тствовати	v	-	-	V12ov	a	-	part.past.pass.long.m.sg.nom=ѡ҆благода́тствованный;part.past.pass.long.m.sg.acc=ѡ҆благода́тствованный;part.past.pass.long.f.sg.nom=ѡ҆благода́тствованнаѧ;part.past.pass.long.f.sg.acc=ѡ҆благода́тствованнꙋю;part.past.pass.long.n.sg.nom=ѡ҆благода́тствованное;part.past.pass.long.n.sg.acc=ѡ҆благода́тствованное	-	P:V12ov	pf; tran
+ѡблагодѣтельствовати.v	ѡ҆благодѣ́тельствовати	v	-	-	V12ov	a	-	part.past.pass.long.f.sg.nom=ѡ҆благодѣ́тельствованнаѧ	-	P:V12ov	pf; tran
 ѡблаготворѧтисѧ.v	ѡ҆благотворѧ́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-ѡблагꙋхати.v	ѡ҆благꙋха́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=ѡ҆благꙋха́ющꙋ×1;part.pres.act.short.n.sg.nom=ѡ҆благꙋха́ющꙋ×1	P:V11a	pf; tran
+ѡблагꙋхати.v	ѡ҆благоꙋха́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=ѡ҆благоꙋха́ющꙋ×1|ѡ҆благꙋха́ющꙋ;part.pres.act.short.n.sg.nom=ѡ҆благоꙋха́ющꙋ×1|ѡ҆благꙋха́ющꙋ	P:V11a	pf; tran
 ѡбладати.v	ѡ҆блада́ти	v	-	-	V11a	a	-	part.pres.act.short.m.sg.nom=ѡ҆блада́ющꙋ;part.pres.act.short.n.sg.nom=ѡ҆блада́ющꙋ;part.past.pass.short.m.pl.gen=ѡ҆блада́нныхъ;part.past.pass.short.m.pl.loc=ѡ҆блада́нныхъ;part.past.pass.short.f.pl.gen=ѡ҆блада́нныхъ;part.past.pass.short.f.pl.loc=ѡ҆блада́нныхъ;part.past.pass.short.n.pl.gen=ѡ҆блада́нныхъ;part.past.pass.short.n.pl.loc=ѡ҆блада́нныхъ;part.past.pass.long.m.pl.gen=ѡ҆блада́нныхъ;part.past.pass.long.m.pl.loc=ѡ҆блада́нныхъ;part.past.pass.long.f.pl.gen=ѡ҆блада́нныхъ;part.past.pass.long.f.pl.loc=ѡ҆блада́нныхъ;part.past.pass.long.n.sg.nom=ѡ҆блада́нное;part.past.pass.long.n.sg.acc=ѡ҆блада́нное;part.past.pass.long.n.pl.gen=ѡ҆блада́нныхъ;part.past.pass.long.n.pl.loc=ѡ҆блада́нныхъ	part.pres.act.long.m.sg.nom=ѡ҆блада́ющїй×4;part.pres.act.long.m.sg.acc=ѡ҆блада́ющїй×4;part.pres.act.long.m.pl.nom=ѡ҆бладаю́щїи×1;part.pres.act.long.f.du.nom=ѡ҆бладаю́щїи×1;part.pres.act.long.f.du.acc=ѡ҆бладаю́щїи×1;part.pres.act.long.n.du.nom=ѡ҆бладаю́щїи×1;part.pres.act.long.n.du.acc=ѡ҆бладаю́щїи×1	P:V11a	ipf; intr
 ѡблазнити.v	ѡ҆блазни́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 ѡблачати.v	ѡ҆блача́ти	v	-	-	V11a	a	-	pres.3.pl=ѻ҆блача́ютъ	-	P:V11a	ipf; tran
@@ -7370,7 +7436,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡбогатѣтисѧ.v	ѡ҆богатѣ́тисѧ	v	-	-	V11e	a	encl=сѧ	-	-	P:V11e	pf; intr; med
 ѡбогащати.v	ѡ҆богаща́ти	v	-	-	V11a	a	-	part.pres.act.short.m.pl.acc=ѡ҆богаща́ющѧ;part.pres.act.short.f.pl.nom=ѡ҆богаща́ющѧ;part.pres.act.short.f.pl.acc=ѡ҆богаща́ющѧ;part.pres.pass.short.f.sg.nom=ѡ҆богаща́емы	-	P:V11a	ipf; tran
 ѡбогащатисѧ.v	ѡ҆богаща́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-ѡбоготворити.v	ѡ҆боготвори́ти	v	-	-	V21n	a	-	part.past.act.short.m.pl.acc=ѡ҆боготвори́вшѧ;part.past.act.short.f.pl.nom=ѡ҆боготвори́вшѧ;part.past.act.short.f.pl.acc=ѡ҆боготвори́вшѧ	-	P:V21n	pf; tran
+ѡбоготворити.v	ѡ҆боготвори́ти	v	-	-	V21n	b	-	part.past.act.short.m.pl.acc=ѡ҆боготвори́вшѧ;part.past.act.short.f.pl.nom=ѡ҆боготвори́вшѧ;part.past.act.short.f.pl.acc=ѡ҆боготвори́вшѧ	-	P:V21n	pf; tran
+ѡбоготворитисѧ.v	ѡ҆боготвори́тисѧ	v	-	-	V21n	b	encl=сѧ	-	-	P:V21n	pf; intr; med
 ѡбоготворѧти.v	ѡ҆боготворѧ́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 ѡбодрати.v	ѡ҆бодра́ти	v	-	-	V12x*	a	-	-	-	P:V12x*	pf; tran
 ѡбодрити.v	ѡ҆бо́дрити	v	-	-	V21n	a	-	-	-	P:V21n	pf; tran
@@ -7506,7 +7573,7 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡвдовѣти.v	ѡ҆вдовѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr
 ѡвладѣти.v	ѡ҆владѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; tran
 ѡглаголати.v	ѡ҆глаго́лати	v	-	-	V12n	a	-	-	-	P:V12n	pf; tran
-ѡглаголовати.v	ѡ҆глаго́ловати	v	-	-	V12ov	a	-	-	-	P:V12ov	ipf; tran
+ѡглаголовати.v	ѡ҆глаго́ловати	v	-	-	V12ov	a	-	-	pres.3.sg=ѡ҆глаголго́лꙋетъ×1	P:V12ov	ipf; tran
 ѡгладити.v	ѡ҆гла́дити	v	-	-	V21t	a	-	-	-	P:V21t	pf; tran
 ѡгласити.v	ѡ҆гласи́ти	v	-	-	V21t	b	-	part.past.pass.short.m.pl.gen=ѡ҆глаше́нныхъ;part.past.pass.short.m.pl.loc=ѡ҆глаше́нныхъ;part.past.pass.short.f.pl.gen=ѡ҆глаше́нныхъ;part.past.pass.short.f.pl.loc=ѡ҆глаше́нныхъ;part.past.pass.short.n.sg.nom=ѡ҆глаше́нно;part.past.pass.short.n.sg.acc=ѡ҆глаше́нно;part.past.pass.short.n.pl.gen=ѡ҆глаше́нныхъ;part.past.pass.short.n.pl.loc=ѡ҆глаше́нныхъ	-	P:V21t	pf; tran
 ѡгласити.v.2	ѡ҆гласи́ти	v	-	-	V21t	a	12=оглашенн	part.past.pass.short.m.pl.gen=ѻ҆глаше́нныхъ;part.past.pass.short.m.pl.loc=ѻ҆глаше́нныхъ;part.past.pass.short.f.pl.gen=ѻ҆глаше́нныхъ;part.past.pass.short.f.pl.loc=ѻ҆глаше́нныхъ;part.past.pass.short.n.pl.gen=ѻ҆глаше́нныхъ;part.past.pass.short.n.pl.loc=ѻ҆глаше́нныхъ	-	P:V21t	pf; tran
@@ -7702,8 +7769,8 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡмыти.v	ѡ҆мы́ти	v	-	-	V15y	a	-	impv.1.pl=ѡ҆мы́имъ;part.past.pass.short.m.sg.nom=ѡ҆мове́нъ;part.past.pass.short.m.sg.acc=ѡ҆мове́нъ;part.past.pass.short.f.sg.nom=ѡ҆мове́на;part.past.pass.short.f.sg.ins=ѡ҆мове́нною;part.past.pass.long.f.sg.ins=ѡ҆мове́нною	pres.1.sg=ѡ҆мыю̀×1;impv.2.sg=ѡ҆мо́й×1;impv.3.sg=ѡ҆мо́й×1	P:V15y	pf; tran
 ѡмытисѧ.v	ѡ҆мы́тисѧ	v	-	-	V15y	a	encl=сѧ	-	-	P:V15y	pf; intr; med
 ѡмꙋжествити.v	ѡ҆мꙋ́жествити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
-ѡнебесити.v	ѡ҆небеси́ти	v	-	-	V21t	b	-	-	-	P:V21t	pf; tran
-ѡнебеситисѧ.v	ѡ҆небеси́тисѧ	v	-	-	V21t	b	encl=сѧ	-	-	P:V21t	pf; intr; med
+ѡнебесити.v	ѡ҆небеси́ти	v	-	-	V21t	b	-	-	part.past.act.short.m.pl.nom=ѡ҆небси́вше×1;part.past.act.short.n.sg.nom=ѡ҆небси́вше×1;part.past.act.short.n.sg.acc=ѡ҆небси́вше×1;part.past.act.long.f.sg.nom=ѡ҆небси́вшаѧ×1	P:V21t	pf; tran
+ѡнебеситисѧ.v	ѡ҆небеси́тисѧ	v	-	-	V21t	b	encl=сѧ	-	aor.2.sg=ѡ҆небси́сѧ×1;aor.3.sg=ѡ҆небси́сѧ×1;impv.2.sg=ѡ҆небси́сѧ×1;impv.3.sg=ѡ҆небси́сѧ×1	P:V21t	pf; intr; med
 ѡнеплодствити.v	ѡ҆непло́дствити	v	-	-	V21p	a	-	-	-	P:V21p	pf; tran
 ѡнеплодствитисѧ.v	ѡ҆непло́дствитисѧ	v	-	-	V21p	a	encl=сѧ	-	-	P:V21p	ipf; tran; med
 ѡнепотребствоватисѧ.v	ѡ҆непотре́бствоватисѧ	v	-	-	V12ov	a	encl=сѧ	-	-	P:V12ov	ipf; intr; med
@@ -7797,9 +7864,10 @@ id	lemma	pos	gender	anim	class	stress	stems	overrides	variants	src	note
 ѡсвѣтлити.v	ѡ҆свѣтли́ти	v	-	-	V21n	b	-	-	-	P:V21n	pf; tran
 ѡсвѣщати.v	ѡ҆свѣща́ти	v	-	-	V11a	a	-	-	-	P:V11a	ipf; tran
 ѡсвѣщатисѧ.v	ѡ҆свѣща́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
-ѡсвѧтити.v	ѡ҆свѧти́ти	v	-	-	V21t	b	-	part.past.act.long.m.sg.acc=ѡ҆свѧ́щшаго;part.past.pass.short.m.sg.gen=ѡ҆свѧще́нна;part.past.pass.short.m.sg.dat=ѡ҆свѧще́ннꙋ;part.past.pass.short.m.sg.voc=ѡ҆свѧще́нне;part.past.pass.short.m.du.dat=ѻ҆свѧще́нныма;part.past.pass.short.m.du.ins=ѻ҆свѧще́нныма;part.past.pass.short.m.pl.gen=ѡ҆свѧще́нныхъ;part.past.pass.short.m.pl.acc=ѡ҆свѧщє́нны;part.past.pass.short.m.pl.ins=ѡ҆свѧще́нными;part.past.pass.short.m.pl.loc=ѡ҆свѧще́нныхъ;part.past.pass.short.f.sg.nom=ѡ҆свѧще́нна;part.past.pass.short.f.sg.acc=ѡ҆свѧще́ннꙋ;part.past.pass.short.f.du.dat=ѻ҆свѧще́нныма;part.past.pass.short.f.du.ins=ѻ҆свѧще́нныма;part.past.pass.short.f.pl.nom=ѡ҆свѧщє́нны;part.past.pass.short.f.pl.gen=ѡ҆свѧще́нныхъ;part.past.pass.short.f.pl.acc=ѡ҆свѧщє́нны;part.past.pass.short.f.pl.ins=ѡ҆свѧще́нными;part.past.pass.short.f.pl.loc=ѡ҆свѧще́нныхъ;part.past.pass.short.n.sg.nom=ѡ҆свѧще́нно;part.past.pass.short.n.sg.gen=ѡ҆свѧще́нна;part.past.pass.short.n.sg.dat=ѡ҆свѧще́ннꙋ;part.past.pass.short.n.sg.acc=ѡ҆свѧще́нно;part.past.pass.short.n.du.dat=ѻ҆свѧще́нныма;part.past.pass.short.n.du.ins=ѻ҆свѧще́нныма;part.past.pass.short.n.pl.gen=ѡ҆свѧще́нныхъ;part.past.pass.short.n.pl.ins=ѡ҆свѧще́нными;part.past.pass.short.n.pl.loc=ѡ҆свѧще́нныхъ;part.past.pass.long.m.sg.loc=ѡ҆свѧще́ннѣмъ;part.past.pass.long.m.du.nom=ѡ҆свѧщє́наѧ;part.past.pass.long.m.du.dat=ѻ҆свѧще́нныма;part.past.pass.long.m.du.acc=ѡ҆свѧщє́наѧ;part.past.pass.long.m.du.ins=ѻ҆свѧще́нныма;part.past.pass.long.f.du.dat=ѻ҆свѧще́нныма;part.past.pass.long.f.du.ins=ѻ҆свѧще́нныма;part.past.pass.long.n.sg.loc=ѡ҆свѧще́ннѣмъ;part.past.pass.long.n.du.dat=ѻ҆свѧще́нныма;part.past.pass.long.n.du.ins=ѻ҆свѧще́нныма;part.past.pass.long.n.pl.nom=ѡ҆свѧщє́наѧ;part.past.pass.long.n.pl.acc=ѡ҆свѧщє́наѧ	pres.3.sg=ѻ҆свѧти́тъ×1;aor.2.sg=ѻ҆свѧтѝ×5;aor.3.sg=ѻ҆свѧтѝ×5;impv.2.sg=ѻ҆свѧтѝ×5;impv.3.sg=ѻ҆свѧтѝ×5;inf=ѻ҆свѧти́ти×1;part.past.act.short.m.sg.nom=ѡ҆свѧ́щъ×3|ѻ҆свѧти́въ×2;part.past.act.short.m.sg.acc=ѡ҆свѧ́щъ×3|ѻ҆свѧти́въ×2;part.past.act.long.m.sg.dat=ѻ҆свѧти́вшемꙋ×1;part.past.act.long.n.sg.dat=ѻ҆свѧти́вшемꙋ×1;part.past.pass.short.m.sg.acc=ѡ҆свѧще́нна×11;part.past.pass.short.m.pl.nom=ѡ҆свѧще́нни×1;part.past.pass.short.m.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.short.m.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.short.f.sg.nom=ѡ҆свѧщены̀×1;part.past.pass.short.f.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.short.f.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.short.n.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.short.n.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.long.m.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.long.m.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.long.f.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.long.f.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.long.n.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.long.n.pl.loc=ѻ҆свѧще́нныхъ×1	P:V21t	pf; tran
-ѡсвѧтитисѧ.v	ѡ҆свѧти́тисѧ	v	-	-	V21t	b	encl=сѧ	part.past.act.short.m.sg.nom=ѡ҆свѧ́щсѧ;part.past.act.short.m.sg.acc=ѡ҆свѧ́щсѧ;part.past.act.short.m.sg.loc=ѡ҆свѧ́щшисѧ;part.past.act.short.n.sg.loc=ѡ҆свѧ́щшисѧ	pres.2.pl=ѡ҆свѧтите́сѧ×1;aor.3.pl=ѻ҆свѧти́шасѧ×1;impv.2.pl=ѡ҆свѧтите́сѧ×1	P:V21t	pf; intr; med
-ѡсвѧщати.v	ѡ҆свѧща́ти	v	-	-	V11a	a	-	-	part.pres.act.short.m.sg.nom=ѡ҆свѧща́ющꙋ×2;part.pres.act.short.m.sg.gen=ѻ҆свѧща́юща×1;part.pres.act.short.m.sg.acc=ѻ҆свѧща́юща×1;part.pres.act.short.n.sg.nom=ѡ҆свѧща́ющꙋ×2|ѡ҆свѧща́ющо×1;part.pres.act.short.n.sg.gen=ѻ҆свѧща́юща×1;part.pres.act.short.n.sg.acc=ѡ҆свѧща́ющо×1;part.pres.act.long.m.sg.nom=ѻ҆свѧща́ѧй×1|ѡ҆свѧща́ющїй×1;part.pres.act.long.m.sg.dat=ѻ҆свѧща́ющемꙋ×1;part.pres.act.long.m.sg.acc=ѡ҆свѧща́ющїй×1;part.pres.act.long.n.sg.nom=ѻ҆свѧща́ѧй×1;part.pres.act.long.n.sg.dat=ѻ҆свѧща́ющемꙋ×1	P:V11a	ipf; tran
+ѡсвѧтити.v	ѡ҆свѧти́ти	v	-	-	V21t	b	-	part.past.act.long.m.sg.acc=ѡ҆свѧ́щшаго;part.past.pass.short.m.sg.gen=ѡ҆свѧще́нна;part.past.pass.short.m.sg.dat=ѡ҆свѧще́ннꙋ;part.past.pass.short.m.sg.voc=ѡ҆свѧще́нне;part.past.pass.short.m.du.dat=ѻ҆свѧще́нныма;part.past.pass.short.m.du.ins=ѻ҆свѧще́нныма;part.past.pass.short.m.pl.gen=ѡ҆свѧще́нныхъ;part.past.pass.short.m.pl.acc=ѡ҆свѧщє́нны;part.past.pass.short.m.pl.ins=ѡ҆свѧще́нными;part.past.pass.short.m.pl.loc=ѡ҆свѧще́нныхъ;part.past.pass.short.f.sg.nom=ѡ҆свѧще́нна;part.past.pass.short.f.sg.acc=ѡ҆свѧще́ннꙋ;part.past.pass.short.f.sg.ins=ѡ҆свѧще́нною;part.past.pass.short.f.du.dat=ѻ҆свѧще́нныма;part.past.pass.short.f.du.ins=ѻ҆свѧще́нныма;part.past.pass.short.f.pl.nom=ѡ҆свѧщє́нны;part.past.pass.short.f.pl.gen=ѡ҆свѧще́нныхъ;part.past.pass.short.f.pl.acc=ѡ҆свѧщє́нны;part.past.pass.short.f.pl.ins=ѡ҆свѧще́нными;part.past.pass.short.f.pl.loc=ѡ҆свѧще́нныхъ;part.past.pass.short.n.sg.nom=ѡ҆свѧще́нно;part.past.pass.short.n.sg.gen=ѡ҆свѧще́нна;part.past.pass.short.n.sg.dat=ѡ҆свѧще́ннꙋ;part.past.pass.short.n.sg.acc=ѡ҆свѧще́нно;part.past.pass.short.n.du.dat=ѻ҆свѧще́нныма;part.past.pass.short.n.du.ins=ѻ҆свѧще́нныма;part.past.pass.short.n.pl.gen=ѡ҆свѧще́нныхъ;part.past.pass.short.n.pl.ins=ѡ҆свѧще́нными;part.past.pass.short.n.pl.loc=ѡ҆свѧще́нныхъ;part.past.pass.long.m.sg.loc=ѡ҆свѧще́ннѣмъ;part.past.pass.long.m.du.nom=ѡ҆свѧщє́наѧ;part.past.pass.long.m.du.dat=ѻ҆свѧще́нныма;part.past.pass.long.m.du.acc=ѡ҆свѧщє́наѧ;part.past.pass.long.m.du.ins=ѻ҆свѧще́нныма;part.past.pass.long.f.du.dat=ѻ҆свѧще́нныма;part.past.pass.long.f.du.ins=ѻ҆свѧще́нныма;part.past.pass.long.n.sg.loc=ѡ҆свѧще́ннѣмъ;part.past.pass.long.n.du.dat=ѻ҆свѧще́нныма;part.past.pass.long.n.du.ins=ѻ҆свѧще́нныма;part.past.pass.long.n.pl.nom=ѡ҆свѧщє́наѧ;part.past.pass.long.n.pl.acc=ѡ҆свѧщє́наѧ	pres.3.sg=ѻ҆свѧти́тъ×1;aor.2.sg=ѻ҆свѧтѝ×7;aor.3.sg=ѻ҆свѧтѝ×7;impv.2.sg=ѻ҆свѧтѝ×7;impv.3.sg=ѻ҆свѧтѝ×7;inf=ѻ҆свѧти́ти×1;part.past.act.short.m.sg.nom=ѡ҆свѧ́щъ×3|ѻ҆свѧти́въ×2;part.past.act.short.m.sg.acc=ѡ҆свѧ́щъ×3|ѻ҆свѧти́въ×2;part.past.act.long.m.sg.dat=ѻ҆свѧти́вшемꙋ×1;part.past.act.long.n.sg.dat=ѻ҆свѧти́вшемꙋ×1;part.past.pass.short.m.sg.acc=ѡ҆свѧще́нна×15;part.past.pass.short.m.pl.nom=ѡ҆свѧще́нни×1;part.past.pass.short.m.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.short.m.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.short.f.sg.nom=ѡ҆свѧщены̀×4|ѡ҆свѧще́нны×1|ѡ҆свѧще́ны×1;part.past.pass.short.f.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.short.f.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.short.n.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.short.n.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.long.m.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.long.m.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.long.f.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.long.f.pl.loc=ѻ҆свѧще́нныхъ×1;part.past.pass.long.n.pl.gen=ѻ҆свѧще́нныхъ×1;part.past.pass.long.n.pl.loc=ѻ҆свѧще́нныхъ×1	P:V21t	pf; tran
+ѡсвѧтитисѧ.v	ѡ҆свѧти́тисѧ	v	-	-	V21t	b	encl=сѧ	part.past.act.short.m.sg.nom=ѡ҆свѧ́щсѧ;part.past.act.short.m.sg.acc=ѡ҆свѧ́щсѧ	pres.2.pl=ѡ҆свѧтите́сѧ×1;aor.3.pl=ѻ҆свѧти́шасѧ×1;impv.2.pl=ѡ҆свѧтите́сѧ×1	P:V21t	pf; intr; med
+ѡсвѧтовати.v	ѡ҆свѧтова́ти	v	-	-	V12ov	a	-	part.past.pass.long.m.sg.nom=ѡ҆свѧтова́нный;part.past.pass.long.m.sg.acc=ѡ҆свѧтова́нный	-	P:V12ov	pf; tran
+ѡсвѧщати.v	ѡ҆свѧща́ти	v	-	-	V11a	a	-	-	inf=ѡ҆свѧща́ть×1;part.pres.act.short.m.sg.nom=ѡ҆свѧща́ющꙋ×2;part.pres.act.short.m.sg.gen=ѻ҆свѧща́юща×1;part.pres.act.short.m.sg.acc=ѻ҆свѧща́юща×1;part.pres.act.short.n.sg.nom=ѡ҆свѧща́ющꙋ×2|ѡ҆свѧща́ющо×1;part.pres.act.short.n.sg.gen=ѻ҆свѧща́юща×1;part.pres.act.short.n.sg.acc=ѡ҆свѧща́ющо×1;part.pres.act.long.m.sg.nom=ѻ҆свѧща́ѧй×1|ѡ҆свѧща́ющїй×2;part.pres.act.long.m.sg.dat=ѻ҆свѧща́ющемꙋ×1;part.pres.act.long.m.sg.acc=ѡ҆свѧща́ющїй×2;part.pres.act.long.n.sg.nom=ѻ҆свѧща́ѧй×1;part.pres.act.long.n.sg.dat=ѻ҆свѧща́ющемꙋ×1	P:V11a	ipf; tran
 ѡсвѧщатисѧ.v	ѡ҆свѧща́тисѧ	v	-	-	V11a	a	encl=сѧ	-	-	P:V11a	ipf; intr; med
 ѡсиротѣти.v	ѡ҆сиротѣ́ти	v	-	-	V11e	a	-	-	-	P:V11e	pf; intr
 ѡсквернавити.v	ѡ҆скверна́вити	v	-	-	V21p	b.pres.impv.ppm{sg=S}	-	-	-	P:V21p	pf; tran

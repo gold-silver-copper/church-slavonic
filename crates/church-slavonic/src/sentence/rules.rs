@@ -279,6 +279,23 @@ pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
             if !adj_cells.iter().any(|x| noun_cells.iter().any(|y| agree(x, y))) {
                 continue;
             }
+            // an adjective with an agreeing noun on its other side too
+            // (видѣ́нїѧ самогѡ̀ і҆и҃са — 4.1, the Octoechos) attaches to
+            // neither by position: the rule eliminates only where the
+            // attachment is the only one
+            let other = if a < b { a.checked_sub(1) } else { Some(a + 1) };
+            if let Some(o) = other
+                && o < n
+                && !boundary(children, if a < b { a } else { o })
+                && let Some(Node::Lex { id: oid, cells: oc, .. }) = leaf(&children[o])
+                && oc.iter().all(|c| matches!(c, Cell::Noun(_)))
+            {
+                let other_gender: Option<Gender> = lexicon.get(oid).and_then(|l| l.gender);
+                let agree_o = |x: &Cell, y: &Cell| -> bool { x.case() == y.case() && x.number() == y.number() && other_gender.is_none_or(|g| x.gender().is_none_or(|xg| xg == g)) };
+                if adj_cells.iter().any(|x| oc.iter().any(|y| agree_o(x, &y))) {
+                    continue;
+                }
+            }
             let keep_adj = |c: &Cell| noun_cells.iter().any(|y| agree(c, y));
             let keep_noun = |c: &Cell| adj_cells.iter().any(|x| agree(x, c));
             narrow(&mut children[a], lexicon, "np-agree", keep_adj, &mut stats);
@@ -497,8 +514,18 @@ fn one_subject(children: &mut [Node], start: usize, end: usize, lexicon: &Lexico
             })
             .collect();
         let [subject] = subjects[..] else { return };
+        // a noun beside the subject with only adjective-like leaves
+        // between is apposed to it (сы́нове а҆арѡ̑ни жерцы̀ — 4.1, the
+        // Leviticus overlay once np-agree stopped attaching а҆арѡ̑ни by
+        // position), not another argument
+        let apposed: Vec<bool> = (0..children.len())
+            .map(|i| {
+                let (lo, hi) = if i < subject { (i, subject) } else { (subject, i) };
+                (lo + 1..hi).all(|k| leaf(&children[k]).is_some_and(|l| matches!(l, Node::Lex { cells, .. } if cells.iter().all(|c| is_adjective_like(&c)))))
+            })
+            .collect();
         for i in start..end {
-            if i == v || i == subject || !noun_leaf(children, i) || in_prepositional_phrase(children, i, lexicon) {
+            if i == v || i == subject || !noun_leaf(children, i) || in_prepositional_phrase(children, i, lexicon) || apposed[i] {
                 continue;
             }
             narrow(&mut children[i], lexicon, "one-subject", |c| c.case() != Some(Case::Nominative), stats);
