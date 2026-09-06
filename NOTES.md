@@ -2438,3 +2438,31 @@ members — stays deliberately its own future design.
   absorbed with their survivors in `data/twins.tsv`; the export written
   (`export/ponomar/`, 28 files and the manifest, its numbers the
   table's); tests, clippy, the game (35 tests, the headless run) green.
+
+## 2026-09-06 — 4.1 Part 3 (V4-PROMPT.md): the training data, measured — decisions and findings
+
+- **The candidate.** The rules, distilled: every leaf one elimination
+  resolved (`:by` naming rules only, `:from` the set it narrowed) in the
+  stored Bible treebank outside the overlay's chapters (65,735) and in
+  the Ponomar library (311,208) as training examples beside the OCS
+  material — `cargo xtask tagger-transfer --rules`, the same five folds
+  by chapter as 3.4 Part 4, four models a fold (OCS only; OCS + the
+  other folds' gold; OCS + the rules' examples; OCS + rules + gold).
+  The bar, stated before running: the bundled model's 74.76% on the
+  overlay's 1,656 examples, the four folds of gold 78.62%.
+- **The number.** OCS + the rules' examples 76.03% (1,259 of 1,656);
+  OCS retrained alone 75.36%; OCS + gold 78.62%; OCS + rules + gold
+  77.90%. Per fold the rules' examples add between −0.2 and +2.6 points
+  over OCS alone and take between −0.4 and −5.0 from OCS + gold. The
+  run: 48 minutes.
+- **The reading.** 377,000 examples of the contexts where a rule fires
+  buy 0.7 points; 1,300 examples of gold buy 3.3. The bias named
+  before the run is the result: the rules' examples are the
+  preposition's noun, the vocative, the agreeing adjective — contexts
+  a one-token window already reads — and say nothing of the
+  nominative-against-accusative choices that are the tagger's errors;
+  on top of gold they dilute it. Distillation is not a road. Recorded
+  in OPEN-DESIGNS 1b with what is not a source (self-training,
+  templates, the test). The remaining road is gold in the register
+  and the syntax the rules can name.
+

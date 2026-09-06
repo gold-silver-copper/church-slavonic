@@ -21,7 +21,9 @@ every token by `cargo xtask export`; the intake wave its census
 dictated — the importer expands titlo-written forms, rows 135 → 559,
 481 lexemes added; the overlay by register begun by hand: the
 Octoechos's Gospel stichera and the April Menaion's St Artemon); Part 3
-is a measurement recorded in `docs/OPEN-DESIGNS.md` 1b. The open list
+is a measurement recorded in `docs/OPEN-DESIGNS.md` 1b: the rules'
+376,943 resolved leaves as training examples buy 0.7 points where 1,300
+of gold buy 3.3, and dilute gold — distillation is not a road. The open list
 below is what the releases left, ranked by both censuses. The
 game's 35 tests and headless run pass against this lexicon.
 Two things before any command: export `RUSTC_WRAPPER=` (empty) in this

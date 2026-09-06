@@ -453,3 +453,10 @@ Apostol and Gospel volumes were not measured against the Bible's text;
 the rubric bucket was not built; the intake items 2 and 4–8 were not
 taken and stay on the HANDOFF's open list. Part 3 follows as a
 measurement.
+
+Part 3 (2026-09-06): executed as a measurement — `tagger-transfer
+--rules`: OCS + the rules' 376,943 examples 76.03% on the overlay's
+folds against OCS alone 75.36%, gold's four folds 78.62%, rules on top
+of gold 77.90%; below the bar; the decision in OPEN-DESIGNS 1b
+(distillation is not a road; gold in the register is). V4-PROMPT.md is
+executed in full.

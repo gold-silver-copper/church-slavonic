@@ -319,6 +319,27 @@ counts (наѳана́илъ 8:5, высоты̑ 2:1) — the two pronoun twins 
    informative, no threshold meets the overlay's 90% bar). What remains:
    a clause whose verb is itself several lexemes (ви́дѣ) gives the rules
    nothing; the tagger's transfer gap (89% on OCS, 76% on the overlay).
+   4.1 Part 3 measured the one candidate for training data that is
+   neither the test nor a guess — the rules, distilled: the 376,943
+   leaves one elimination resolved in the stored Bible (65,735, outside
+   the overlay's chapters) and Ponomar (311,208) treebanks, as examples
+   beside the OCS material (`tagger-transfer --rules`, five folds by
+   chapter, the bar stated before running: the bundled model's 74.76%
+   on these examples, four folds of gold 78.62%). OCS + the rules'
+   examples 76.03% against OCS retrained alone 75.36% — 0.7 points for
+   377,000 examples, where 1,300 of gold buy 3.3; and on top of the
+   gold folds they lower it, 78.62% → 77.90%: the examples cover only
+   the contexts a rule fires in (a preposition before, a vocative, an
+   agreeing noun beside) and teach nothing about the contexts the
+   rules do not reach, which are exactly the tagger's errors
+   (nominative against accusative). The decision the number supports:
+   distillation is not a road; the remaining road is gold in the
+   register — the overlay by register begun in 4.1 Part 2, drafted by
+   `hand-draft`, decided by the session, a sample re-read before it is
+   called gold — and the syntax the rules can name. Not a source,
+   written down once: the tagger's own column over any text
+   (self-training), sentences generated from the lexicon by templates,
+   the overlay's chapters.
 5. ~~The accent-paradigm inventory and weighted evidence (5)~~ — executed
    in 3.0 (`V2.2-PROMPT.md` Part 6): the inventory of `lexicon/stress.tsv`
    (31 named paradigms), the enclitic's vowels out of the stress count,

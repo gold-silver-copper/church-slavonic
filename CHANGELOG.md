@@ -49,6 +49,17 @@ The plan is `V4-PROMPT.md` Parts 1–2 (Part 3 is a measurement, no release).
   Psalter/Apostol/Gospel volumes against the Bible's text, the fourth
   census bucket, the intake items 2, 4–8 of the plan.
 
+### Part 3 — the training data, measured (2026-09-06; no release, no model shipped)
+
+`cargo xtask tagger-transfer --rules`: the rule-resolved leaves of the
+stored Bible (65,735 outside the overlay) and Ponomar (311,208)
+treebanks as training examples. Five folds over the overlay's 1,656
+examples: OCS + the rules' examples 76.03%; OCS retrained alone 75.36%;
+OCS + four folds of gold 78.62%; OCS + rules + gold 77.90%; the bundled
+model 74.76%. Below the bar: 0.7 points for 377,000 examples where
+1,300 of gold buy 3.3, and a dilution on top of gold. The decision is
+in OPEN-DESIGNS 1b.
+
 ### Part 1 — the sentence in the library (2026-09-06)
 
 - **`church_slavonic::sentence`**: `Sentence::parse` (tokenize and lift
