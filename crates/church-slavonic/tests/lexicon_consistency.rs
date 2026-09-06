@@ -102,8 +102,12 @@ fn ids_are_lemma_plus_pos() {
         // the id's stem is the lemma's letters up to typography (оу/ꙋ, ꙑ/ы)
         let stem = church_slavonic::orthography::comparison_key(&lexeme.lemma);
         let id_stem = lexeme.id.split('.').next().map(church_slavonic::orthography::comparison_key).unwrap_or_default();
+        // an id never moves (3.1): where the attested citation form
+        // replaced the source's headword (4.1: богоме́рзскїй under
+        // богомерзкій.a), the id follows the headword the note keeps
+        let headword = lexeme.note.split("; ").find_map(|n| n.strip_prefix("headword ")).map(church_slavonic::orthography::comparison_key);
         assert!(
-            id_stem == stem,
+            id_stem == stem || headword.as_deref() == Some(id_stem.as_str()),
             "{}: id does not follow the lemma {}",
             lexeme.id,
             lexeme.lemma

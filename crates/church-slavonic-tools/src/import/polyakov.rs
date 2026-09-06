@@ -483,8 +483,9 @@ fn expand_titlo(form: &str, lemma_key: &str) -> Option<(String, Vec<(&'static st
         v
     });
     // every expansion: (text so far, rows used, the rest)
-    let mut partial: Vec<(String, Vec<(&'static str, &'static str)>, &str)> = vec![(String::new(), Vec::new(), form)];
-    let mut done: Vec<(String, Vec<(&'static str, &'static str)>)> = Vec::new();
+    type Used = Vec<(&'static str, &'static str)>;
+    let mut partial: Vec<(String, Used, &str)> = vec![(String::new(), Vec::new(), form)];
+    let mut done: Vec<(String, Used)> = Vec::new();
     while let Some((out, used, rest)) = partial.pop() {
         let Some(start) = rest.char_indices().find(|(_, c)| is_titlo_mark(*c)).map(|(i, _)| i) else {
             done.push((out + rest, used));
@@ -1506,7 +1507,7 @@ fn id_lookup_key(letters: &str) -> String {
     // so is the wide о (4.1: the evidence's vote may flip ѡ/о in a
     // lemma, the id holds); the ids keep Polyakov's і, ѵ and the spelling
     // they were given
-    stem.replace('ї', "і").replace('ѷ', "ѵ").replace('ѡ', "о").replace('ѻ', "о")
+    stem.replace('ї', "і").replace('ѷ', "ѵ").replace(['ѡ', 'ѻ'], "о")
 }
 
 /// The id's stem: the lemma's letters with marks stripped.

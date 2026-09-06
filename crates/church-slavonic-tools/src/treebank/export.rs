@@ -88,8 +88,11 @@ fn safe_name(name: &str) -> String {
     name.chars().map(|c| if c.is_alphanumeric() { c } else { '_' }).collect()
 }
 
+/// (surface, lexeme id, cell, provenance)
+type Emit<'a> = dyn FnMut(&str, Option<&str>, Option<String>, &str) + 'a;
+
 /// Every token of a tree in order, with its provenance.
-fn walk(node: &Node, lexicon: &church_slavonic::Lexicon, emit: &mut dyn FnMut(&str, Option<&str>, Option<String>, &str)) {
+fn walk(node: &Node, lexicon: &church_slavonic::Lexicon, emit: &mut Emit<'_>) {
     match node {
         Node::Group { children, .. } => {
             for c in children {
@@ -105,16 +108,16 @@ fn walk(node: &Node, lexicon: &church_slavonic::Lexicon, emit: &mut dyn FnMut(&s
         }
         Node::Cap(inner) | Node::Abbr { child: inner, .. } => {
             let surface = church_slavonic::sentence::node::render(node, &lexicon.recension).unwrap_or_default();
-            leaf_line(inner, &surface, lexicon, emit);
+            leaf_line(inner, &surface, emit);
         }
         other => {
             let surface = church_slavonic::sentence::node::render(other, &lexicon.recension).unwrap_or_default();
-            leaf_line(other, &surface, lexicon, emit);
+            leaf_line(other, &surface, emit);
         }
     }
 }
 
-fn leaf_line(node: &Node, surface: &str, lexicon: &church_slavonic::Lexicon, emit: &mut dyn FnMut(&str, Option<&str>, Option<String>, &str)) {
+fn leaf_line(node: &Node, surface: &str, emit: &mut Emit<'_>) {
     match node {
         Node::Lex { id, cells, notes, .. } => {
             let by = notes.iter().find(|(k, _)| k == "by").map(|(_, v)| v.as_str());
@@ -138,7 +141,7 @@ fn leaf_line(node: &Node, surface: &str, lexicon: &church_slavonic::Lexicon, emi
             };
             emit(surface, None, None, prov);
         }
-        Node::Cap(inner) | Node::Abbr { child: inner, .. } => leaf_line(inner, surface, lexicon, emit),
+        Node::Cap(inner) | Node::Abbr { child: inner, .. } => leaf_line(inner, surface, emit),
         Node::Pw { .. } | Node::Group { .. } | Node::Punct(_) => {}
     }
 }

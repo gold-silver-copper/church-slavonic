@@ -392,6 +392,61 @@ pub fn overlay_examples(lexicon: &Lexicon) -> Result<Vec<(String, Example)>, Box
     Ok(out)
 }
 
+/// Part 3 (4.1): the rule-resolved leaves of a stored treebank as
+/// training examples — a leaf one elimination narrowed to one cell (`:by`
+/// names rules only, never the tagger; `:from` is the set it narrowed),
+/// its candidates that set, its gold the cell. Supervision from the rules,
+/// verified at zero exclusions on the gold; the bias is that the
+/// examples cover only the contexts where a rule fires. Chapters in
+/// `skip` (the overlay's, the test) are left out.
+pub fn rule_examples(lexicon: &Lexicon, dir: &std::path::Path, book_names: &[String], skip: &HashSet<String>) -> Result<Vec<Example>, Box<dyn Error>> {
+    use crate::treebank::node::Node;
+    let mut out = Vec::new();
+    for (bi, name) in book_names.iter().enumerate() {
+        let path = crate::treebank::runner::book_file(dir, bi);
+        let Ok(text) = std::fs::read_to_string(&path) else { continue };
+        for entry in crate::treebank::sexpr::parse_many(&text).map_err(|e| format!("{}: {e}", path.display()))? {
+            let (ch, _, tree) = crate::treebank::runner::read_entry(&entry)?;
+            if skip.contains(&format!("{name} {ch}")) {
+                continue;
+            }
+            let Node::Group { children, .. } = &tree else { continue };
+            let surfaces: Vec<Option<String>> = children.iter().map(|c| crate::treebank::tag::surface_of(c, lexicon)).collect();
+            for i in 0..children.len() {
+                let Some(Node::Lex { id, cells, notes, .. }) = crate::treebank::disambiguate::leaf(&children[i]) else { continue };
+                if cells.len() != 1 {
+                    continue;
+                }
+                let Some(by) = notes.iter().find(|(k, _)| k == "by").map(|(_, v)| v.as_str()) else { continue };
+                if by.split('+').any(|r| r == "tagger") {
+                    continue;
+                }
+                let Some(from) = notes.iter().find(|(k, _)| k == "from").map(|(_, v)| v.as_str()) else { continue };
+                let Some(lexeme) = lexicon.get(id) else { continue };
+                let Ok(set) = church_slavonic::cell::CellSet::parse(lexeme.pos, from) else { continue };
+                let candidates: Vec<Candidate> = set.iter().map(|cell| Candidate { pos: lexeme.pos, cell }).collect();
+                if candidates.len() < 2 {
+                    continue;
+                }
+                let gold_candidate = Candidate { pos: lexeme.pos, cell: cells.first() };
+                let Some(g) = candidates.iter().position(|c| *c == gold_candidate) else { continue };
+                let before = i.checked_sub(1).filter(|j| !crate::treebank::disambiguate::boundary(children, *j));
+                let after = (i + 1 < children.len() && !crate::treebank::disambiguate::boundary(children, i + 1)).then_some(i + 1);
+                let ctx = Context {
+                    surface: surfaces[i].clone().unwrap_or_default(),
+                    prev: before.and_then(|j| surfaces[j].clone()),
+                    next: after.and_then(|j| surfaces[j].clone()),
+                    prev_lemma: before.and_then(|j| crate::treebank::tag::lemma_of(&children[j], lexicon)),
+                    next_lemma: after.and_then(|j| crate::treebank::tag::lemma_of(&children[j], lexicon)),
+                    prev_choice: before.and_then(|j| crate::treebank::tag::choice_of(&children[j], lexicon)),
+                };
+                out.push(Example { ctx, candidates, gold: g });
+            }
+        }
+    }
+    Ok(out)
+}
+
 /// `cargo xtask tagger-transfer` (3.4 Part 4): what Synodal gold would
 /// buy, measured and not shipped. The overlay's chapters go into five
 /// folds; for each fold a tagger is trained on the Old Church Slavonic
@@ -427,12 +482,35 @@ pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
     chapters.sort();
     chapters.dedup();
     println!("OCS examples {}, overlay examples {} in {} chapters; loaded in {:.1?}", ocs_examples.len(), overlay.len(), chapters.len(), started.elapsed());
+    // Part 3 (4.1): `--rules` adds the rule-resolved leaves of the stored
+    // Bible treebank (outside the overlay's chapters) and of the Ponomar
+    // library as training examples
+    let rules_source = args.iter().any(|a| a == "--rules");
+    let mut rule_examples_all: Vec<Example> = Vec::new();
+    if rules_source {
+        let skip: HashSet<String> = chapters.iter().cloned().collect();
+        if let Some(bible) = crate::treebank::bible::load()? {
+            let names: Vec<String> = bible.books.iter().map(|b| b.name.clone()).collect();
+            let bible_rules = rule_examples(synodal, &crate::treebank::runner::treebank_dir(), &names, &skip)?;
+            println!("rule-resolved examples: the Bible outside the overlay {}", bible_rules.len());
+            rule_examples_all.extend(bible_rules);
+        }
+        let lib_names = crate::treebank::corpus::books();
+        if !lib_names.is_empty() {
+            let lib_dir = root.join("treebank/ponomar");
+            let lib_rules = rule_examples(synodal, &lib_dir, &lib_names, &HashSet::new())?;
+            println!("rule-resolved examples: the library {}", lib_rules.len());
+            rule_examples_all.extend(lib_rules);
+        }
+    }
     let bundled = Tagger::bundled();
     let (b_right, b_n) = accuracy_pairs(&overlay, |e| bundled.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
     println!("the bundled OCS-only model on the overlay's examples: {b_right}/{b_n} = {:.2}%", pct(b_right, b_n));
     let folds = 5;
     let mut total = (0usize, 0usize);
     let mut total_ocs_only = (0usize, 0usize);
+    let mut total_rules = (0usize, 0usize);
+    let mut total_both = (0usize, 0usize);
     for f in 0..folds {
         let test_chapters: Vec<&String> = chapters.iter().enumerate().filter(|(k, _)| k % folds == f).map(|(_, c)| c).collect();
         let test: Vec<&(String, Example)> = overlay.iter().filter(|(c, _)| test_chapters.contains(&c)).collect();
@@ -442,6 +520,22 @@ pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
         let tagger_with = train_on(&with, epochs);
         let ocs_only: Vec<&Example> = ocs_examples.iter().collect();
         let tagger_ocs = train_on(&ocs_only, epochs);
+        if rules_source {
+            let mut with_rules: Vec<&Example> = ocs_examples.iter().collect();
+            with_rules.extend(rule_examples_all.iter());
+            let tagger_rules = train_on(&with_rules, epochs);
+            let mut with_both: Vec<&Example> = with_rules.clone();
+            with_both.extend(train_overlay.iter().copied());
+            let tagger_both = train_on(&with_both, epochs);
+            let test_ex: Vec<(String, Example)> = test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect();
+            let (rr, _) = accuracy_pairs(&test_ex, |e| tagger_rules.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
+            let (rb, _) = accuracy_pairs(&test_ex, |e| tagger_both.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
+            println!("fold {}: OCS + the rules' examples {rr}/{} = {:.2}%; OCS + rules + the other folds {rb}/{} = {:.2}%", f + 1, test_ex.len(), pct(rr, test_ex.len()), test_ex.len(), pct(rb, test_ex.len()));
+            total_rules.0 += rr;
+            total_rules.1 += test_ex.len();
+            total_both.0 += rb;
+            total_both.1 += test_ex.len();
+        }
         let (r, n) = accuracy_pairs(&test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect::<Vec<_>>(), |e| tagger_with.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
         let (r0, _) = accuracy_pairs(&test.iter().map(|(c, e)| (c.clone(), Example { ctx: e.ctx.clone(), candidates: e.candidates.clone(), gold: e.gold })).collect::<Vec<_>>(), |e| tagger_ocs.choose(&e.ctx, &e.candidates).map(|(i, _)| i).unwrap_or(0));
         println!("fold {}: test {} ({} examples, {} overlay training examples): OCS + overlay {r}/{n} = {:.2}%; OCS only {r0}/{n} = {:.2}%", f + 1, test_chapters.iter().map(|c| c.as_str()).collect::<Vec<_>>().join(", "), n, train_overlay.len(), pct(r, n), pct(r0, n));
@@ -449,6 +543,9 @@ pub fn transfer(args: &[String]) -> Result<(), Box<dyn Error>> {
         total.1 += n;
         total_ocs_only.0 += r0;
         total_ocs_only.1 += n;
+    }
+    if rules_source {
+        println!("five-fold with the rules' examples ({}): OCS + rules {}/{} = {:.2}%; OCS + rules + the other folds {}/{} = {:.2}%", rule_examples_all.len(), total_rules.0, total_rules.1, pct(total_rules.0, total_rules.1), total_both.0, total_both.1, pct(total_both.0, total_both.1));
     }
     println!("five-fold over the overlay: OCS + the other folds {}/{} = {:.2}%; OCS only, retrained the same way {}/{} = {:.2}%; the bundled model {:.2}% — measured, not shipped ({:.1?})", total.0, total.1, pct(total.0, total.1), total_ocs_only.0, total_ocs_only.1, pct(total_ocs_only.0, total_ocs_only.1), pct(b_right, b_n), started.elapsed());
     Ok(())
