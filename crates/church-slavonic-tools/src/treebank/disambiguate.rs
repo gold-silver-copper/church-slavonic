@@ -250,8 +250,22 @@ pub fn disambiguate(tree: &mut Node, lexicon: &Lexicon) -> Stats {
         }
         let pair = [(i, i + 1), (i + 1, i)];
         for (a, b) in pair {
-            let (Some(Node::Lex { cells: ac, .. }), Some(Node::Lex { id: bid, cells: bc, .. })) = (leaf(&children[a]), leaf(&children[b])) else { continue };
+            let (Some(Node::Lex { id: aid, cells: ac, .. }), Some(Node::Lex { id: bid, cells: bc, .. })) = (leaf(&children[a]), leaf(&children[b])) else { continue };
             if !ac.iter().all(|c| is_adjective_like(&c)) || !bc.iter().all(|c| matches!(c, Cell::Noun(_))) {
+                continue;
+            }
+            // the relative pronoun after a noun opens a clause, it does not
+            // modify the noun (на ѻ҆гнѝ ꙗ҆̀же на ѻ҆лтарѝ — 3.1, Leviticus 1:8)
+            if aid == "иже.pron" {
+                continue;
+            }
+            // a short present active participle before a noun is a converb
+            // with that noun as its object, not its attribute (разверза́ѧ
+            // ложесна̀ — 3.1, Luke 2:23); after the noun it may modify it
+            // (мѣ́дь звенѧ́щи)
+            let converb = a < b
+                && ac.iter().all(|c| matches!(c, Cell::Verb(VerbCell::Participle { tense: church_slavonic::cell::PartTense::Present, voice: church_slavonic::grammar::Voice::Active, series: church_slavonic::grammar::Series::Short, .. })));
+            if converb {
                 continue;
             }
             let noun_gender: Option<Gender> = lexicon.get(bid).and_then(|l| l.gender);

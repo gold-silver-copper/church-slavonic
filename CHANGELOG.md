@@ -49,6 +49,17 @@ The plan is `V3.0-PROMPT.md` Parts 3–4.
 | hand overlay | 2,097 leaves, out of reach 54 | 2,097, out of reach 42 (tagger 74.86%) | 2,197 leaves (1 Corinthians 13), rules exclude none, tagger 74.51% |
 | held-out recall / ids changed | — | unchanged / 0 | unchanged / 0 |
 
+The gold itself (2026-09-05): Leviticus 1, Isaiah 53, Luke 2, Romans 1,
+1 Corinthians 13 hand-lifted; two np-agree defects fixed at the rule
+(the relative pronoun after a noun, the preposed converb).
+
+| Number | before | after |
+|---|---|---|
+| hand overlay | 211 verses, 2,097 leaves | 337 verses, **3,377 leaves** (2,035 narrow a set), 0 findings; the gate asked 4,200 |
+| constraint rules on the overlay | exclude none | exclude none (np-agree 165/165 resolved, prep-gov 123/125, subj-verb 33/33, voc-drop 51/70) |
+| tagger on the overlay | 74.8% (810 of 1,083) | 75.62% (1,278 of 1,690); nom/acc 126 of 392 wrong cells |
+| Bible treebank | one cell 212,450, several lexemes 12,329, verbatim 35,718 | one cell 212,707 (33.7%), sets 1,782, tagger 190,196 (30.1%), closed 178,215, several lexemes 12,298 (1.9%), verbatim 35,731 (5.7%); zero mismatches |
+
 ## 3.0.0 (2026-09-05) — the accent-paradigm inventory and weighted evidence
 
 The plan is `V2.2-PROMPT.md` Part 6, then `V3.0-PROMPT.md` Parts 0–2 and

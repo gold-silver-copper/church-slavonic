@@ -416,7 +416,13 @@ pub fn fix_hand_alts() -> Result<(), Box<dyn Error>> {
                             continue;
                         }
                         set_alt(&mut tree, i, k);
-                        let after = render(&tree, &RECENSION)?;
+                        // an alternative the tree cannot render (a titlo
+                        // row that abbreviates no such spelling) is not
+                        // this leaf's alternative
+                        let Ok(after) = render(&tree, &RECENSION) else {
+                            set_alt(&mut tree, i, current);
+                            continue;
+                        };
                         if closer(&after, &target) > closer(&before, &target) {
                             changed = true;
                             fixed += 1;

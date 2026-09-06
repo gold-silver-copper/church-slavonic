@@ -1650,3 +1650,59 @@ members — stays deliberately its own future design.
   verbatim 35,718 (5.7%); zero mismatches. Recall unchanged; overlay
   2,197 leaves, rules exclude none, tagger 74.51% (842 of 1,130). Tests,
   clippy, the game (four re-pasted strings) green.
+
+## 2026-09-05 — 3.1 Part 4: the gold by register — decisions and findings
+
+- **Five chapters lifted by hand** (`data/treebank-hand/`): Leviticus 1
+  (b02, 17 verses: the law's да-forms and the offering's cases), Isaiah
+  53 (b27, 12: prophetic poetry, in place of the Psalter the source
+  holds only as fragments), Luke 2 (b52, 52: narrative, dialogue, the
+  dual of the two parents), Romans 1 (b62, 32: participial chains, the
+  vice list's accusative-genitive), 1 Corinthians 13 (b63, 13). The
+  overlay is 337 verses and 3,377 leaves (from 211 and 2,097), 2,035 of
+  them narrowing a larger set, `narrow-hand` 0 findings. Every leaf was
+  decided with the analyzer's readings in front of me, one verse at a
+  time, through a decisions file per chapter (`hand_apply.py` in the
+  session's scratch: a numbered list of the set and `:amb` leaves, a
+  chosen cell or lexeme per line, `abbr` for a titlo token, `w "…"` for a
+  wrong lexeme, `noalt`/`alt n` where the draft's alternative index named
+  the set's form and not the cell's).
+- **The gate, honestly.** The prompt asked for ≥ 4,200 leaves (the
+  overlay doubled); 3,377 is 61% more, short by 820 — the Psalter of the
+  pinned source cannot be lifted by chapter, and the two typography
+  findings that came first (the uk, the ligature) moved the Bible more
+  than the gold would have.
+- **Two rules were wrong and are fixed, never tuned (decision).** On the
+  new gold the pure rules excluded three hand cells: Leviticus 1:8 and
+  1:12 «на ѻ҆гнѝ ꙗ҆̀же на ѻ҆лтарѝ» — np-agree paired the relative pronoun
+  with the noun before it and made the locative an accusative plural;
+  Luke 2:23 «разверза́ѧ ложесна̀» — np-agree paired a preposed short
+  present active participle (a converb) with the noun it governs. The
+  relative pronoun (иже.pron) is never attributive to the noun before it;
+  a short present active participle before a noun is a converb (after
+  it, мѣ́дь звенѧ́щи, it may modify). Precision is 100% again: np-agree
+  165 resolved of 165 inside, prep-gov 123 of 125, subj-verb 33 of 33,
+  voc-drop 51 of 70; excluded 0.
+- **The tagger on 1,690 leaves: 75.62% (1,278 right; 392 wrong cells, 20
+  wrong lexemes).** By kind: nominative against accusative 126, another
+  feature (person, tense, series) 59, gender 51, genitive against
+  accusative 46, another part of speech 17, another case 15, dative
+  against locative (по) 14 — the same shape as on the 211 verses: Part
+  5's clause rule is the next lever.
+- **Lexicon findings the hand cells exposed** (verbatim leaves with
+  `:lemma` and `:case`): the missing lexemes любы̀ (love, ū-stem), трѝ,
+  се́дмь, ѻ҆́смь (the numerals), пови́тъ (an aorist the class lacks),
+  безпреста́ни (an adverb read as an adjective); the number-mark cells
+  the classes do not reach (кѡры́сти acc.pl, четверонѡ́гъ gen.pl,
+  ложесна̀ pl.); всѣ́мъ with the acute as the plural dative; и҆̀же/ꙗ҆̀же
+  with the varia as the singular and neuter-plural relative nominative
+  (the 2.3 finding again); ѧ҆зы̑ки, the lexical spelling variant; нн҃ѣ, a
+  titlo row the table lacks; кѷмва́лъ, the izhitsa's kendema. The Lord's
+  abbreviated genitive гдⷭ҇а is го́спода (the soft class's primary is -ѧ),
+  the dative гдⷭ҇еви the fourth alternative.
+- **fix-hand-alts no longer aborts** when an alternative it tries cannot
+  render (a titlo row that abbreviates no such spelling: хрⷭ҇т with a
+  variant's letters); the alternative is simply not the leaf's.
+- Treebank: one cell 212,707 (33.7%), sets 1,782, tagger 190,196
+  (30.1%), closed 178,215 (28.2%), several lexemes 12,298 (1.9%),
+  verbatim 35,731 (5.7%); zero mismatches.
