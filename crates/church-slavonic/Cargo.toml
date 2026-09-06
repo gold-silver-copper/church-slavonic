@@ -1,6 +1,6 @@
 [package]
 name = "church-slavonic"
-version = "3.0.0"
+version = "3.1.0"
 description = "Church Slavonic morphology: a curated lexicon, a paradigm generator and an analyzer, for the Old Church Slavonic and Synodal recensions"
 authors.workspace = true
 edition.workspace = true

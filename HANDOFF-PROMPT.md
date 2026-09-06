@@ -1,4 +1,4 @@
-# Handoff: church-slavonic 3.0.0 (tag `v3.0.0`)
+# Handoff: church-slavonic 3.1.0 (tag `v3.1.0`)
 
 Read this first in a fresh session. It is the map of what exists, what
 the numbers are, and which designs are open, so work starts from
@@ -7,9 +7,9 @@ verdicts and recorded measurements. The design record is
 findings per part); `CHANGELOG.md` holds every measured number per part;
 `V2-PROMPT.md`, `V2.1-PROMPT.md` and `V2.2-PROMPT.md` are the executed
 plans and stay as their records (tags `v2.0.0` … `v2.3.0`);
-`V3.0-PROMPT.md` is executed through Part 2 (release 3.0.0, tag
-`v3.0.0`, with `V3.0-CONTINUE-PROMPT.md`) and its Parts 3–6 are the open
-list. The game's 35 tests and headless run pass against this lexicon.
+`V3.0-PROMPT.md` is executed through Part 4 (releases 3.0.0 and 3.1.0,
+tags `v3.0.0`, `v3.1.0`, with `V3.0-CONTINUE-PROMPT.md`) and its Parts
+5–6 are the open list. The game's 35 tests and headless run pass against this lexicon.
 Two things before any command: export `RUSTC_WRAPPER=` (empty) in this
 checkout while the shared sccache daemon lacks Desktop access; after a
 lexicon change run `fix-hand-alts`, then `build-treebank` — the stored
@@ -92,25 +92,26 @@ treebank goes stale before it goes wrong. The crate on crates.io is
   and the crate disagree, check the crate against its pinned sources
   before deciding which side is wrong.
 
-## The numbers (3.0.0)
+## The numbers (3.1.0)
 
-Stress: 47 named paradigms in `lexicon/stress.tsv` (beside `a`, `b`);
-exception lists 1,871 → 1,010 (nouns 210, adjectives 213, verbs 567,
-pronouns 20; 71 one-number moves counted apart); the -надесѧть numerals
-without overrides (`tail=на́десѧть`); 887 adjectives with Polyakov's
-adverb as their `adv` cell's evidence; the closed lexicon 1,342 lines
-(22 `adv-of=`). Polyakov cells reproduced by the primary: nouns 94.67%,
-adjectives 93.17%, verbs 91.63%; primaries the Bible outnumbers 135
-(115 letter variants). Held-out recall (UD PROIEL dev+test): nouns
-95.48%, adjectives 89.31%, verbs 90.89%, personal pronouns 99.25%, other
-pronouns 98.07% (Syntacticus verbs 95.02%). Bible treebank (631,946
-tokens): one cell 204,769 (32.4%), one lexeme several cells 1,775
-(0.3%), tagger 185,183 (29.3%), closed 177,091 (28.0%), several lexemes
-13,128 (2.1%), verbatim 48,983 (7.8%); zero mismatches. On the
-2,097-leaf hand overlay the constraint layer excludes no hand cell
-(resolution 45.0%); the tagger 74.8% (810 of 1,083; OCS dev+test 86.9%).
-Stored present stems: OCS 56 of 2,455 verbs, Synodal 344 of 8,285. The
-tables are in `CHANGELOG.md` under "3.0.0" and in the README.
+Synodal lexemes: nouns 13,147, adjectives 8,323, verbs 8,210, pronouns
+68, closed 1,340 (158 twins absorbed in 3.1, `data/twins.tsv`; ids never
+move — `restore_ids`). Stress: 47 named paradigms, 1,010 exception lists.
+The print writes the initial uk as ѹ and the prefix от- as ѿ (the
+importer, with the Bible as arbiter). Held-out recall (UD PROIEL
+dev+test): nouns 95.48%, adjectives 89.31%, verbs 90.89%, personal
+pronouns 99.25%, other pronouns 98.07%. Bible treebank (631,946 tokens):
+one cell 212,707 (33.7%), sets 1,782 (0.3%; 26.9% without the tagger),
+tagger 190,196 (30.1%), closed 178,215 (28.2%), several lexemes 12,298
+(1.9%; 5.5% without), verbatim 35,731 (5.7%); zero mismatches. Hand
+overlay: 337 verses, 3,377 leaves (Genesis 1–3, Exodus 1, Leviticus 1,
+Proverbs 1, Isaiah 53, Matthew 1, Luke 2, John 1, Romans 1, 1
+Corinthians 13); the rules exclude no hand cell (np-agree 165/165,
+prep-gov 123/125, subj-verb 33/33, voc-drop 51/70 resolved); the tagger
+75.6% (1,278 of 1,690; wrong cells: nominative/accusative 126, another
+feature 59, gender 51, genitive/accusative 46). `scripts/hand-apply.py`
+lists and applies a chapter's decisions. The tables are in
+`CHANGELOG.md` under "3.1.0" and "3.0.0" and in the README.
 
 ## Open designs, in order
 
@@ -119,17 +120,21 @@ linguistically proper answer — is in `docs/OPEN-DESIGNS.md`, which also
 records what 2.1 executed (present stems by derivation, syncretism by
 underspecification).
 
-1. **`V3.0-PROMPT.md` Parts 3–6**, in order: the lexicon's twins
-   (Part 3: the Part 0 census found 43 identical pairs, 36 subset pairs,
-   435 differing pairs — mostly Polyakov's sense entries fitted to
-   different cells; гдⷭ҇ь and kin, 5,767 tokens, are `:amb` through the
-   titlo index between господь.n and господь.n.2; ꙗзыкъ.n / .n.2 differ
-   in animacy and stay two lines), the gold by register (Part 4), the
-   clause rules and calibration (Part 5: the tagger's 274 errors are
-   nominative/accusative 97, several features 37, gender 31, another
-   feature 30, genitive/accusative 29, по 14, number 14), the
-   generator's placement (Part 6). The stress residue is closed:
-   `docs/OPEN-DESIGNS.md` 5 says what the 1,010 lists are.
+1. **`V3.0-PROMPT.md` Parts 5–6** (release 3.2.0): the clause chunker
+   and its eliminating rules (one-subject, verb-object, neg-gen) against
+   the tagger's nominative/accusative errors (126 of 392 on the overlay);
+   calibration fitted on OCS dev and applied only if the overlay proves
+   it; the generator's second-position placement (a caller in the game or
+   a recorded deferral). Before them, the lexicon intake Part 4 exposed:
+   the missing lexemes любы̀ (ū-stem), трѝ, се́дмь, ѻ҆́смь, the aorist
+   пови́тъ, the adverb безпреста́ни; the plural-mark cells the classes do
+   not reach (кѡры́сти, четверонѡ́гъ, ложесна̀); всѣ́мъ as the plural
+   dative; the relative и҆̀же/ꙗ҆̀же with the varia as a nominative; the
+   ѧ҆зы- spelling (156 tokens); the izhitsa's kendema (a stage-4 rule);
+   the нн҃ѣ titlo row. What Part 3 left: господь.n / .n.2 stay two lines
+   (го́споди against госпо́дїе in the plural nominative) and гдⷭ҇ь's 5,767
+   tokens stay `:amb` through the titlo index — a hand decision, not the
+   rule's.
 2. **What the homonymy layers left** (`docs/OPEN-DESIGNS.md` 1b, executed
    in 2.3). The tagger's errors on the overlay are the syntax a one-token
    window does not see: nominative against accusative of an inanimate

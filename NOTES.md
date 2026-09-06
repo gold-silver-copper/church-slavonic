@@ -1706,3 +1706,15 @@ members — stays deliberately its own future design.
 - Treebank: one cell 212,707 (33.7%), sets 1,782, tagger 190,196
   (30.1%), closed 178,215 (28.2%), several lexemes 12,298 (1.9%),
   verbatim 35,731 (5.7%); zero mismatches.
+
+## 2026-09-05 — 3.1.0: the close
+
+- Version 3.1.0, tag `v3.1.0`, after `V3.0-PROMPT.md` Parts 3–4: the
+  lexicon's twins (one lexeme per line, ids that never move), the
+  print's initial uk and prefix ligature (verbatim 7.8% → 5.7%), the gold
+  by register (3,377 leaves). README tables carry a 3.1 column; the
+  game's 35 tests and headless run pass (four strings re-pasted). Open:
+  `V3.0-PROMPT.md` Parts 5–6 (the clause, the calibration, the
+  placement) for 3.2.0; the lexicon findings of Part 4 (любы̀, the
+  numerals, the plural-mark cells, the ѧ҆зы- spelling, the izhitsa's
+  kendema, the нн҃ѣ titlo row) are the next lexicon intake.

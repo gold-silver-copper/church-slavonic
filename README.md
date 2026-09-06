@@ -23,8 +23,11 @@ look-alike singular. The **stress** paradigm places the accent: on the
 lemma's stem vowel, on the ending, or per cell. **Typography**
 (`Form::print`) then writes the print's conventions in one pure function:
 the wide ѡ/є or the kamora on a marked plural, the oxia inside a word and
-the varia at its end, the psili on an initial vowel, the ї before a vowel.
-The analyzer reads a printed word back to stage one plus a cell through an
+the varia at its end, the psili on an initial vowel, the ї before a vowel,
+the initial uk as the one letter ѹ (3.1). The prefix от- is the ligature
+ѿ in the lexeme's letters, written by the importer with the Bible as
+arbiter (ѿпа́даетъ, but ѡ҆трѐ: о-тре). The analyzer reads a printed word
+back to stage one plus a cell through an
 index of every lexeme × every cell × every alternative and variant.
 
 ## Installation
@@ -143,7 +146,7 @@ reproduced, a variant, or quarantined with a reason in
 
 | Lexicon | Lexemes | Classes |
 |---|---|---|
-| Synodal nouns / adjectives / verbs / pronouns / closed | 13,147 / 8,323 / 8,210 / 68 / 1,342 | 49 / 16 / 50 / 21 / 8 |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,147 / 8,323 / 8,210 / 68 / 1,340 | 49 / 16 / 50 / 21 / 8 |
 | OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,455 / 82 | 44 / 6 / 27 / 17 |
 
 The closed lexicon is structured (2.2): a line's class is its
@@ -165,13 +168,19 @@ dev+test splits (never an import source) whose form the lexicon produces
 for the annotated lemma and cell, under the manuscript-spelling fold the
 1.x harness used (so the 1.2 numbers compare):
 
-| Part of speech | 3.0 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|
-| nouns | 95.48% (8,419/8,818) | 95.48% | 95.48% | 94.87% | 92.04% |
-| adjectives | 89.31% (2,290/2,564) | 89.31% | 89.31% | 89.35% | 83.82% |
-| verbs | 90.89% (7,961/8,759) | 90.89% | 90.59% | 85.79% | 85.58% |
-| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% | 99.25% | 99.25% |
-| other pronouns | 98.07% (1,271/1,296) | 98.07% | 98.07% | 97.84% | 93.21% |
+| Part of speech | 3.1 | 3.0 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|
+| nouns | 95.48% (8,419/8,818) | 95.48% | 95.48% | 95.48% | 94.87% | 92.04% |
+| adjectives | 89.31% (2,290/2,564) | 89.31% | 89.31% | 89.31% | 89.35% | 83.82% |
+| verbs | 90.89% (7,961/8,759) | 90.89% | 90.89% | 90.59% | 85.79% | 85.58% |
+| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% | 99.25% | 99.25% | 99.25% |
+| other pronouns | 98.07% (1,271/1,296) | 98.07% | 98.07% | 98.07% | 97.84% | 93.21% |
+
+3.1 changed no letter of Old Church Slavonic. In the Synodal lexicon a
+source's sense entries became one lexeme per line (158 lines absorbed,
+ids unchanged), the print's initial uk (ѹ) and prefix ligature (ѿ) are
+written as the pinned Bible writes them, and the hand overlay grew to
+337 verses.
 
 3.0 changed no letter and no recall: it changed how every Synodal stress
 column reads (an inventory of paradigms, 47 named), the primary form
@@ -195,18 +204,25 @@ prep-gov :from nom|acc|voc.sg`), and a statistical tagger chooses among
 what the constraints leave, in its own row — a choice, never counted as
 analysed (`CS_NO_TAGGER=1` rebuilds without it):
 
-| | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|---|
-| analysed, one cell | 32.4% (204,769) | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 0.3% (26.1% without the tagger) | 0.3% (26.0% without the tagger) | 34.3% | 34.0% | — | — |
-| chosen by the tagger (`:by tagger :prob`) | 29.3% | 29.3% | — | — | — | — |
-| closed-class | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 2.1% (5.6% without the tagger) | 2.1% (5.6% without the tagger) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
+| | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|---|
+| analysed, one cell | 33.7% (212,707) | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
+| chosen by the tagger (`:by tagger :prob`) | 30.1% | 29.3% | 29.3% | — | — | — | — |
+| closed-class | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | **5.7%** (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
 
-On the 2,097-leaf hand overlay (211 verses) the constraint layer alone
-never excludes a hand cell (precision 100%, resolution 45.0%); the
-tagger's choices are right 74.8% of the time (810 of 1,083; on Old
+The verbatim share fell in 3.1 by typography alone: 11,777 tokens
+began with the uk the crate wrote as two letters, 4,300 with the prefix
+ligature it wrote as ѡ҆т.
+
+On the 3,377-leaf hand overlay (337 verses: Genesis 1–3, Exodus 1,
+Leviticus 1, Proverbs 1, Isaiah 53, Matthew 1, Luke 2, John 1, Romans
+1, 1 Corinthians 13) the constraint layer alone never excludes a hand
+cell (precision 100%; np-agree resolves 165 of the 165 leaves it
+touches, prep-gov 123 of 125, subj-verb 33 of 33, voc-drop 51 of 70);
+the tagger's choices are right 75.6% of the time (1,278 of 1,690; on Old
 Church Slavonic, UD PROIEL dev+test, 86.9% of the tokens with several
 readings against 38.9% for the analyzer's first reading).
 

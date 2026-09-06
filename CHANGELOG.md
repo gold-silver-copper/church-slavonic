@@ -1,8 +1,22 @@
 # Changelog
 
-## 3.1.0 (in progress) — the lexicon's twins, the gold by register
+## 3.1.0 (2026-09-05) — the lexicon's twins, the print's letters, the gold by register
 
-The plan is `V3.0-PROMPT.md` Parts 3–4.
+The plan is `V3.0-PROMPT.md` Parts 3–4, executed through
+`V3.0-CONTINUE-PROMPT.md` step 4. A minor release: no id moved (now a
+rule of the importer), no letter of Old Church Slavonic changed, the
+library's API is 3.0's; the Synodal print writes the initial uk as ѹ and
+the prefix от- as ѿ, and every consumer that pasted a string with «оу҆»
+re-pastes it (the game did: four strings).
+
+| Number | 3.0.0 | 3.1.0 |
+|---|---|---|
+| Synodal lexemes: nouns / adjectives / verbs / closed | 13,205 / 8,348 / 8,285 / 1,342 | 13,147 / 8,323 / 8,210 / 1,340 (158 twins absorbed, `data/twins.tsv`) |
+| ids changed | — | 0 (`restore_ids`) |
+| Bible treebank | one cell 204,769 (32.4%), sets 1,775, tagger 185,183 (29.3%), closed 177,091 (28.0%), several lexemes 13,128 (2.1%; 5.6% without the tagger), verbatim 48,983 (7.8%) | one cell 212,707 (33.7%), sets 1,782 (0.3%; 26.9%), tagger 190,196 (30.1%), closed 178,215 (28.2%), several lexemes 12,298 (1.9%; 5.5%), verbatim **35,731 (5.7%)**; zero mismatches |
+| analyzer, tokens with no reading | 71,870 (11.39%) | 61,044 (9.68%) before the ligature |
+| hand overlay | 211 verses, 2,097 leaves; tagger 74.8% | 337 verses, 3,377 leaves, 0 findings; rules exclude none; tagger 75.6% |
+| held-out recall (UD dev+test) | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 | unchanged |
 
 ### Part 3 — the lexicon's twins (2026-09-05)
 
@@ -26,7 +40,7 @@ The plan is `V3.0-PROMPT.md` Parts 3–4.
 | hand overlay | 2,097 leaves, rules exclude none, tagger 74.8% | 2,097 leaves, rules exclude none, tagger 74.95% (820 of 1,094) |
 | ids changed | — | 0 (158 absorbed ids listed in `data/twins.tsv`) |
 
-### Part 4 — the gold by register: the lexicon finding first (2026-09-05, in progress)
+### Part 4 — the gold by register: the lexicon findings first (2026-09-05)
 
 - **The word-initial uk is the one letter ѹ.** The pinned Bible never
   writes «оу»; the crate realised it so, and 11,777 + 229 tokens stayed
