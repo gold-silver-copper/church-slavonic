@@ -1,4 +1,5 @@
 //! The README's example, verified: every string is the crate's real output.
+#![allow(clippy::unwrap_used)] // a test asserts with unwrap
 
 use church_slavonic::*;
 

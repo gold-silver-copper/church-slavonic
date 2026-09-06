@@ -2169,3 +2169,17 @@ members — stays deliberately its own future design.
   OPEN-DESIGNS 1b with the transfer number. `V3.3-PROMPT.md` is done.
 - Tests, clippy, check-treebank, the game (35 tests, headless) green at
   the tag.
+
+## 2026-09-06 — CI: the workflow rewritten for the 2.x layout
+
+- `.github/workflows/ci.yml` still ran the 1.x pipeline (`cargo test -p
+  extractor`, `cargo run -p xtask -- check-registry`, an example, `cargo
+  fmt --check`) and had failed on every push since the 2.0 rewrite; the
+  local gate never ran fmt and ran clippy without `--all-targets`, so
+  nothing here saw it. Now two jobs: `cargo test --workspace` and
+  `cargo clippy --workspace --all-targets -- -D warnings`. No rustfmt
+  gate: the tree is not rustfmt-formatted by choice (853 hunks). The
+  workspace denies `unwrap_used` for the code it ships; test code
+  asserts with unwrap and says so (`#![cfg_attr(test, allow(…))]` in the
+  two libraries, `#![allow(…)]` in the two integration tests); two
+  needless borrows in a test fixed.

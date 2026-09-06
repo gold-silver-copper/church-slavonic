@@ -1,6 +1,9 @@
 //! Tooling for the church-slavonic lexicon: source parsers, the importer,
 //! the evaluation harness and the Bible treebank (`cargo xtask`).
 
+// a test asserts with unwrap; the workspace denies it in the code it ships
+#![cfg_attr(test, allow(clippy::unwrap_used))]
+
 pub mod census;
 pub mod eval;
 pub mod import;

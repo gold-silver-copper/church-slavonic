@@ -7,6 +7,9 @@
 //! complete by construction. The [`analyze`]r reads a printed word back to
 //! a lexeme and a cell. See `docs/DESIGN.md`.
 
+// a test asserts with unwrap; the workspace denies it in the code it ships
+#![cfg_attr(test, allow(clippy::unwrap_used))]
+
 pub mod analyze;
 pub mod cell;
 pub mod form;

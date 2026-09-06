@@ -215,7 +215,7 @@ mod tests {
         let text = "id\tlemma\tpos\tgender\tanim\tclass\tstress\tstems\toverrides\tvariants\tsrc\tnote\n\
             воздатисѧ.v\tвозда́тисѧ\tv\t-\t-\tVdat\tb\tencl=сѧ\t-\t-\tP:Vdat\t-\n\
             блюстисѧ.v\tблюсти́сѧ\tv\t-\t-\tV14d\tb\tencl=сѧ\t-\t-\tP:V14d\t-\n";
-        let verbs = parse(&text, Pos::Verb).expect("parses");
+        let verbs = parse(text, Pos::Verb).expect("parses");
         let p = |l: &crate::lexicon::Lexeme, c: &str| l.inflect(crate::cell::Cell::parse(Pos::Verb, c).expect("cell")).expect("cell").print(SYN);
         // no ending vowel: the last stem vowel, not the enclitic's
         assert_eq!(p(&verbs[0], "pres.3.sg"), nfc("возда́стсѧ"));
@@ -231,7 +231,7 @@ mod tests {
             первыйнадесѧть.a\tпервыйна́десѧть\ta\t-\t-\tA1t\ta\ttail=на́десѧть\t-\t-\tP:A1t\t-\n\
             третійнадесѧть.a\tтретійна́десѧть\ta\t-\t-\tA2i\ta\ttail=на́десѧть\t-\t-\tP:A2i\t-\n\
             шестыйнадесѧть.a\tшестыйна́десѧть\ta\t-\t-\tA1t\ta\ttail=на́десѧть\t-\t-\tP:A1t\t-\n";
-        let adjs = parse(&text, Pos::Adjective).expect("parses");
+        let adjs = parse(text, Pos::Adjective).expect("parses");
         let p = |l: &crate::lexicon::Lexeme, c: &str| l.inflect(crate::cell::Cell::parse(Pos::Adjective, c).expect("cell")).expect("cell").print(SYN);
         assert_eq!(p(&adjs[0], "long.pos.m.sg.nom"), nfc("первыйна́десѧть"));
         assert_eq!(p(&adjs[0], "long.pos.m.sg.gen"), nfc("первагѡна́десѧть"), "the first element prints as its own form, unstressed");

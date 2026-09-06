@@ -1,5 +1,6 @@
 //! The legend's exemplars through the class tables: one lexeme line per
 //! exemplar, the print forms the tables must produce.
+#![allow(clippy::unwrap_used)] // a test asserts with unwrap
 
 use church_slavonic::{Cell, Lexeme, Pos, Recension};
 use unicode_normalization::UnicodeNormalization;
