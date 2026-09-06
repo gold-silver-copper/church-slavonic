@@ -2183,3 +2183,7 @@ members — stays deliberately its own future design.
   asserts with unwrap and says so (`#![cfg_attr(test, allow(…))]` in the
   two libraries, `#![allow(…)]` in the two integration tests); two
   needless borrows in a test fixed.
+- The first run under the new workflow failed clippy on one lint stable
+  raises and nightly does not (a map iterated by pairs for its values,
+  `merge_twins`); the local gate is now `cargo +stable clippy
+  --workspace --all-targets -- -D warnings`, the toolchain CI uses.
