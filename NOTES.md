@@ -2058,3 +2058,23 @@ members — stays deliberately its own future design.
   50/69, one-subject 10/10, the combinations the rest); the tagger 74.92%
   (1,228 of 1,639). The consistency test, the workspace tests, clippy
   and the game (35 tests, headless) green.
+
+## 2026-09-05 — 3.3.0: the close
+
+- Version 3.3.0 (`crates/church-slavonic/Cargo.toml`, the workspace
+  dependency), tag `v3.3.0`; the tagger and tools crates stay 0.1.0. A
+  minor release: no id moved, the API is 3.2's with two print rules and
+  the clitic enclitic added. The crate on crates.io is 1.0.0 — publishing
+  is the user's call.
+- README: the sizes (13,172 / 8,323 / 8,224 / 72 / 1,351; classes 50 /
+  16 / 52 / 26 / 8), a 3.3 column in the held-out table (unchanged) and
+  the coverage table (one cell 38.1%, verbatim 0.9%), the stages
+  paragraph (the kendema, the loanword's ї, the paerok), the overlay
+  paragraph (3,757 leaves, the rules 459 / 0 excluded, the tagger
+  74.9%), the clitic unit. CHANGELOG 3.3.0's release table. HANDOFF
+  rewritten for 3.3.0 (the numbers, the open list: Parts 3–4, then the
+  residue by cause). OPEN-DESIGNS 7. The without-tagger shares were not
+  remeasured this release (a second full rebuild; the 3.1 numbers stand
+  as the last measurement).
+- Not published; the game's 35 tests and headless run pass; tests,
+  clippy green at the tag.

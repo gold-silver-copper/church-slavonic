@@ -24,9 +24,12 @@ lemma's stem vowel, on the ending, or per cell. **Typography**
 (`Form::print`) then writes the print's conventions in one pure function:
 the wide ѡ/є or the kamora on a marked plural, the oxia inside a word and
 the varia at its end, the psili on an initial vowel, the ї before a vowel,
-the initial uk as the one letter ѹ (3.1). The prefix от- is the ligature
-ѿ in the lexeme's letters, written by the importer with the Bible as
-arbiter (ѿпа́даетъ, but ѡ҆трѐ: о-тре). The analyzer reads a printed word
+the initial uk as the one letter ѹ (3.1), the izhitsa's kendema on an
+unstressed ѵ read as a vowel (мѡѷсе́й, 3.3). The prefix от- is the
+ligature ѿ in the lexeme's letters, written by the importer with the
+Bible as arbiter (ѿпа́даетъ, but ѡ҆трѐ: о-тре), and so are the loanword's
+ї before a consonant (кївѡ́тъ, вїно̀) and the paerok of an elided jer
+(в̾слѣ́дъ, ѡ҆б̾). The analyzer reads a printed word
 back to stage one plus a cell through an
 index of every lexeme × every cell × every alternative and variant.
 
@@ -146,7 +149,7 @@ reproduced, a variant, or quarantined with a reason in
 
 | Lexicon | Lexemes | Classes |
 |---|---|---|
-| Synodal nouns / adjectives / verbs / pronouns / closed | 13,147 / 8,323 / 8,210 / 68 / 1,340 | 49 / 16 / 50 / 21 / 8 |
+| Synodal nouns / adjectives / verbs / pronouns / closed | 13,172 / 8,323 / 8,224 / 72 / 1,351 | 50 / 16 / 52 / 26 / 8 |
 | OCS nouns / adjectives / verbs / pronouns | 3,493 / 1,527 / 2,455 / 82 | 44 / 6 / 27 / 17 |
 
 The closed lexicon is structured (2.2): a line's class is its
@@ -168,13 +171,22 @@ dev+test splits (never an import source) whose form the lexicon produces
 for the annotated lemma and cell, under the manuscript-spelling fold the
 1.x harness used (so the 1.2 numbers compare):
 
-| Part of speech | 3.1 | 3.0 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|---|
-| nouns | 95.48% (8,419/8,818) | 95.48% | 95.48% | 95.48% | 94.87% | 92.04% |
-| adjectives | 89.31% (2,290/2,564) | 89.31% | 89.31% | 89.31% | 89.35% | 83.82% |
-| verbs | 90.89% (7,961/8,759) | 90.89% | 90.89% | 90.59% | 85.79% | 85.58% |
-| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% | 99.25% | 99.25% | 99.25% |
-| other pronouns | 98.07% (1,271/1,296) | 98.07% | 98.07% | 98.07% | 97.84% | 93.21% |
+| Part of speech | 3.3 | 3.1 | 3.0 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|---|
+| nouns | 95.48% (8,419/8,818) | 95.48% | 95.48% | 95.48% | 95.48% | 94.87% | 92.04% |
+| adjectives | 89.31% (2,290/2,564) | 89.31% | 89.31% | 89.31% | 89.31% | 89.35% | 83.82% |
+| verbs | 90.89% (7,961/8,759) | 90.89% | 90.89% | 90.89% | 90.59% | 85.79% | 85.58% |
+| personal pronouns | 99.25% (3,983/4,013) | 99.25% | 99.25% | 99.25% | 99.25% | 99.25% | 99.25% |
+| other pronouns | 98.07% (1,271/1,296) | 98.07% | 98.07% | 98.07% | 98.07% | 97.84% | 93.21% |
+
+3.3 changed no letter of Old Church Slavonic and no recall. The Synodal
+print gained two rules of typography (the izhitsa's kendema, the paerok
+as a letter) and the loanword's ї written where the Bible prints it,
+113 titlo rows, the numerals (пѧ́ть … де́сѧть, сто̀, the -десѧть
+compounds; два̀, ѻ҆́ба, трѝ, четы́ре as pronoun-class lexemes), the
+pronominal adjectives' adjective endings (є҆ди́нагѡ), хотѣ́ти's composite
+class, любы̀, and the pronoun clitics as the phonological word's
+enclitics (прельсти́ мѧ).
 
 3.1 changed no letter of Old Church Slavonic. In the Synodal lexicon a
 source's sense entries became one lexeme per line (158 lines absorbed,
@@ -204,34 +216,46 @@ prep-gov :from nom|acc|voc.sg`), and a statistical tagger chooses among
 what the constraints leave, in its own row — a choice, never counted as
 analysed (`CS_NO_TAGGER=1` rebuilds without it):
 
-| | 3.2 | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
-|---|---|---|---|---|---|---|---|---|
-| analysed, one cell | 34.0% (214,958) | 33.7% | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
-| analysed, one lexeme in several cells | 0.3% | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
-| chosen by the tagger (`:by tagger :prob`) | 29.7% | 30.1% | 29.3% | 29.3% | — | — | — | — |
-| closed-class | 28.2% | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
-| several lexemes (recorded `:amb n`) | 1.9% | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
-| verbatim (no reading) | 5.7% | **5.7%** (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
+| | 3.3 | 3.2 | 3.1 | 3.0 | 2.3 | 2.2 | 2.1 | 2.0 | 1.2 |
+|---|---|---|---|---|---|---|---|---|---|
+| analysed, one cell | 38.1% (240,672) | 34.0% (214,958) | 33.7% | 32.4% | 32.4% | 23.8% | 23.6% | 23.4% | 21.5% |
+| analysed, one lexeme in several cells | 0.4% | 0.3% | 0.3% (26.9% without the tagger) | 0.3% (26.1%) | 0.3% (26.0%) | 34.3% | 34.0% | — | — |
+| chosen by the tagger (`:by tagger :prob`) | 30.1% | 29.7% | 30.1% | 29.3% | 29.3% | — | — | — | — |
+| closed-class | 28.3% | 28.2% | 28.2% | 28.0% | 28.0% | 28.0% | 28.1% | 28.1% | 27.1% |
+| several lexemes (recorded `:amb n`) | 2.0% | 1.9% | 1.9% (5.5% without the tagger) | 2.1% (5.6%) | 2.1% (5.6%) | 6.0% | 6.0% | 40.2% (with the row above) | 31.0% |
+| verbatim (no reading) | **0.9%** (5,430) | 5.7% | 5.7% (35,731) | 7.8% | 7.8% | 7.8% | 8.2% | 8.1% | 20.2% |
 
 The verbatim share fell in 3.1 by typography alone: 11,777 tokens
 began with the uk the crate wrote as two letters, 4,300 with the prefix
-ligature it wrote as ѡ҆т.
+ligature it wrote as ѡ҆т. In 3.3 it fell from 35,731 to 5,430 by the
+print's last letters (the kendema, the paerok, the loanword's ї, the
+prepositions' во/ко/со as the leaf's alternative, 113 titlo rows) and
+the lexicon's gaps (the numerals, the pronominal adjectives' adjective
+endings, хотѣ́ти, любы̀, the closed words, the pronoun clitics as
+enclitics, the apparatus counted apart); `cargo xtask census verbatim`
+names what remains (5,408 leaves: 1,117 under a titlo the table lacks a
+row for, 2,144 with no reading — names and a long tail of 1,265
+surfaces, 2,147 found by key but printed otherwise — the clitic after
+a host that is itself several lexemes, ты́ 222).
 
-On the 3,377-leaf hand overlay (337 verses: Genesis 1–3, Exodus 1,
+On the 3,757-leaf hand overlay (337 verses: Genesis 1–3, Exodus 1,
 Leviticus 1, Proverbs 1, Isaiah 53, Matthew 1, Luke 2, John 1, Romans
-1, 1 Corinthians 13) the constraint layer alone never excludes a hand
-cell (precision 100%; np-agree resolves 165 of the 165 leaves it
-touches, prep-gov 123 of 125, subj-verb 33 of 33, voc-drop 51 of 70,
-and since 3.2 the clause rule one-subject 28 of 28 — a transitive verb,
-one noun that can only be nominative, every other nominative-or-
-accusative noun drops the nominative); the tagger's choices are right
-75.6% of the time (1,259 of 1,665; on Old
+1, 1 Corinthians 13; 389 of its leaves were verbatim until 3.3's
+lexicon caught up and `redraft-hand` re-drafted them) the constraint
+layer alone never excludes a hand cell (precision 100%; np-agree
+resolves 179 of the 179 leaves it touches, prep-gov 142 of 145,
+subj-verb 31 of 31, voc-drop 50 of 69, and since 3.2 the clause rule
+one-subject 10 of 10 — a transitive verb, one noun that can only be
+nominative, every other nominative-or-accusative noun drops the
+nominative; a hand leaf that is itself a set is counted apart); the
+tagger's choices are right 74.9% of the time (1,228 of 1,639; on Old
 Church Slavonic, UD PROIEL dev+test, 86.9% of the tokens with several
 readings against 38.9% for the analyzer's first reading).
 
 A host and the enclitic that leans on it are one accentual unit in the
-print (Землѧ́ же, и҆̀хже): the treebank writes the unit (`(pwa …)`, `(pw …)`)
-and the crate accents it (`Form::print_unit`); 2,295 units in the Bible.
+print (Землѧ́ же, и҆̀хже, and since 3.3 a pronoun's clitic: прельсти́ мѧ):
+the treebank writes the unit (`(pwa …)`, `(pw …)`) and the crate accents
+it (`Form::print_unit`).
 
 **Guesser accuracy** — hide each lexeme in turn, guess it from the lemma
 alone, compare paradigms: Synodal nouns 93.9% of classes, 93.3% of cells;

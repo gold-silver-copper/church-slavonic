@@ -314,3 +314,10 @@ counts (наѳана́илъ 8:5, высоты̑ 2:1) — the two pronoun twins 
    the stem place through a derivation as a crate rule (цѣлꙋ́ющїй), the
    stressed tail of the -надесѧть numerals and the adverb cell's accent:
    1,344 → 1,010, the residue described above.
+7. ~~The lexicon intake the gold exposed~~ — executed in 3.3
+   (`V3.3-PROMPT.md` Parts 1–2): the print's last letters as rules or
+   as letters of the lexeme written by the importer with the Bible as
+   arbiter, 113 titlo rows, the numerals, the pronominal adjectives'
+   adjective endings, the composite verb class, любы̀, the pronoun
+   clitics as enclitics; the Bible's verbatim share 5.7% → 0.9%. What
+   remains is in `HANDOFF-PROMPT.md`'s open list 2.

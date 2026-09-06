@@ -1,8 +1,26 @@
 # Changelog
 
-## 3.3.0 (in progress) — the verbatim residue
+## 3.3.0 (2026-09-05) — the verbatim residue
 
-The plan is `V3.3-PROMPT.md`.
+The plan is `V3.3-PROMPT.md` Parts 0–2 (Parts 3–4 are 3.4.0's). A minor
+release: no id moved (50 added), no letter of Old Church Slavonic
+changed, the library's API is 3.2's — `Form::print` gained two rules of
+the print (the izhitsa's kendema, the paerok as a letter), a titlo row
+may name a closed lexeme, and the phonological word takes a pronoun's
+clitic as its enclitic. The Bible's verbatim share fell from 5.7% to
+0.9%.
+
+| Number | 3.2.0 | 3.3.0 |
+|---|---|---|
+| Synodal lexemes: nouns / adjectives / verbs / pronouns / closed | 13,147 / 8,323 / 8,210 / 68 / 1,340 | 13,172 / 8,323 / 8,224 / 72 / 1,351 |
+| titlo rows | 22 | 135 |
+| quarantine | 1,442 lines | 1,433 |
+| ids changed | 0 | 0 (50 added) |
+| census verbatim (`census verbatim`) | 36,568 | 5,408: (a) 2,147 found by key, (b) 1,117 titlo, (c) 2,144 no reading |
+| Bible treebank | one cell 214,958 (34.0%), sets 1,782 (0.3%), tagger 187,945 (29.7%), closed 178,215 (28.2%), several lexemes 12,298 (1.9%), verbatim 35,731 (5.7%), apparatus 1,017 | one cell 240,672 (38.1%), sets 2,311 (0.4%), tagger 190,494 (30.1%), closed 179,009 (28.3%), several lexemes 12,880 (2.0%), verbatim 5,430 (0.9%), apparatus 1,150; zero mismatches |
+| hand overlay | 337 verses, 3,377 leaves; rules exclude none; tagger 75.6% (1,259 of 1,665) | 337 verses, 3,757 leaves (389 redrafted); rules exclude none (resolve 459); tagger 74.9% (1,228 of 1,639) |
+| Polyakov cells reproduced by the primary: nouns / adjectives / verbs | 43,847 / 88,572 / 116,673 | 43,934 / 88,572 / 117,016 |
+| held-out recall (UD dev+test) | 95.48 / 89.31 / 90.89 / 99.25 / 98.07 | unchanged |
 
 ### Part 0 — the census of the verbatim (2026-09-05)
 
