@@ -519,6 +519,15 @@ any code change.
    precision on the overlay or it goes. A clause whose verb is itself
    several lexemes gives the rule nothing: assuming the verb would be a
    selection.
+3e. The sentence in the library (4.1): the tree type (`sentence::node::
+   Node`, its renderer and tokenizer), the lifter (`sentence::lift`),
+   the seven rules (`sentence::rules`) and the closed-class table moved
+   from the tools into the crate as `church_slavonic::sentence`, one
+   type for both — the tools keep the s-expression reader and writer,
+   the Bible and the overlay, and call the library. `Sentence::parse`,
+   `disambiguate`, `print`, `tokens()`: a consumer gets the readings,
+   the rule that narrowed each and the set it narrowed from, and never a
+   choice (the tagger crate is opt-in). No number moved in the move.
 3d. The verb that is several lexemes (3.4): two more eliminations over
    readings, each naming itself. `bare-loc` — a locative is governed by
    a preposition: a reading whose every cell is locative, with no
@@ -596,6 +605,7 @@ not grow.
 crates/church-slavonic/          the library (dependency: unicode-normalization)
   src/grammar.rs cell.rs form.rs orthography.rs lexicon.rs
   src/paradigm/{noun,adj,verb,pronoun}.rs stress.rs inflect.rs analyze.rs guess.rs
+  src/sentence/{node,lift,rules,closed}.rs   the sentence (4.1): the tree, the lifter, the seven rules, the closed table
   lexicon/                       the tsv files, include_str!
 crates/church-slavonic-tagger/   the statistical layer (dependency: church-slavonic); model data/models/tagger.bin
 crates/church-slavonic-tools/    cargo xtask: import, eval, census, treebank, train-tagger

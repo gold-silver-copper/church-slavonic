@@ -432,3 +432,7 @@ migrated; start-up measured (the parse 0.1 s, the index 17.7 → 11.7 s by
 a round-robin split; no compact file, the parse is not the cost). One
 departure: the sentence's rustdoc examples wait for Part 1, where the
 sentence is. Parts 1–3 remain.
+
+Part 1 (2026-09-06): executed — `church_slavonic::sentence` (the tree, the
+lifter, the rules, the closed table moved whole; one type; the tools call
+the library); no number moved. Parts 2–3 remain.

@@ -78,6 +78,22 @@ fn main() {
 }
 ```
 
+What a word is *here* (4.1): a sentence lifted and constrained. The
+seven rules eliminate readings and name themselves on the leaf; nothing
+is chosen — a statistical choice is the `church-slavonic-tagger` crate's.
+
+```rust
+use church_slavonic::{Lexicon, Recension, sentence::Sentence};
+
+let mut s = Sentence::parse(Lexicon::synodal(), "И҆ ви́дѣ бг҃ъ свѣ́тъ, ꙗ҆́кѡ добро̀.");
+s.disambiguate();
+let words = s.tokens();
+assert_eq!(words[1].reading.as_ref().unwrap().0, "видѣти.v");          // ви́дѣ the aorist, not ви́дъ's locative
+assert_eq!(words[1].narrowed_by.as_deref(), Some("bare-loc"));
+assert_eq!(words[3].narrowed_by.as_deref(), Some("one-subject"));      // свѣ́тъ: nom|acc.sg → acc.sg
+assert_eq!(s.print(Recension::Synodal).unwrap(), "И҆ ви́дѣ бг҃ъ свѣ́тъ, ꙗ҆́кѡ добро̀.");
+```
+
 The library has one dependency (`unicode-normalization`) and no I/O:
 the lexicon is embedded and parsed on first use (about 0.1 s), and the
 analyzer's index of every form (8.2 million entries) is built on the
@@ -289,7 +305,8 @@ cell.
 
 ## The treebank
 
-`cargo xtask build-treebank` lifts the whole pinned Bible into
+`cargo xtask build-treebank` lifts the whole pinned Bible (through the
+library's `sentence` module since 4.1) into
 `treebank/` (gitignored) in about 70 s with both layers of homonymy: every token whose exact readings
 are one lexeme becomes a leaf carrying the lexeme id and its cell or set
 — `(n землѧ.n :case acc :num sg)`, `(n свѣтъ.n :case nom|acc :num sg)`,

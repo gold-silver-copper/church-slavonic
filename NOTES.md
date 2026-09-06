@@ -2239,3 +2239,36 @@ members — stays deliberately its own future design.
   the overlay's score, the census and the held-out recall unchanged to
   the digit; the game (35 tests, headless) green; version 4.0.0, tag
   `v4.0.0`.
+
+## 2026-09-06 — 4.1 Part 1 (V4-PROMPT.md): the sentence in the library — decisions and findings
+
+- **One type, not two (decision).** The treebank's `Node` moved into the
+  library as `church_slavonic::sentence::node::Node` with its renderer
+  (`render`, `leaf_form`, `leaf_print`, `unit_print`, the tokenizer);
+  the tools' `treebank::node` keeps only the s-expression reader and
+  writer and re-exports the rest, so every `crate::treebank::node::…`
+  path in the tools resolves as before. The lifter (`sentence::lift`:
+  the titlo index, the apparatus rule, `lift_apart`, the enclitics),
+  the seven rules (`sentence::rules`, was `disambiguate.rs`) and the
+  closed-class table (`sentence::closed`) moved whole; the tools'
+  files of those names are re-export shims, the lifter's tests that
+  read s-expressions staying on the tools' side. What was `pub(crate)`
+  in the rules (`leaf`, `leaf_mut`, `fn_word`, `amb_surface`, `narrow`,
+  `reduce`, `boundary`) is `pub`: the tools' tagger pass and scorer
+  call them. Lines: library +1,509 (node 320, lift 455, rules 514,
+  closed 87, the `Sentence` wrapper 133); tools node.rs 1,005 → 699.
+- **The API (decision).** `Sentence::parse(&Lexicon, &str)`,
+  `disambiguate() -> Stats`, `print(Recension) -> Result<String,
+  TreeError>`, `coverage()`, `tree()`/`tree_mut()`, and `tokens() ->
+  Vec<Token>` — a `Token` is the surface, the reading (the lexeme id and
+  its cell set, or a function word's id), the rule that narrowed it and
+  the set it narrowed from, and whether the token is several lexemes.
+  No environment variable in the library: the tools' `CS_NO_DISAMBIGUATE`
+  simply does not call `disambiguate`. The tagger stays in its crate
+  and the tools apply it over the tree.
+- **The gate.** The treebank's table, the overlay's score, the census
+  and the recall unchanged to the digit; the rustdoc example on the
+  sentence asserts the crate's own output (the first draft had put
+  one-subject on бг҃ъ, which the rule leaves as the subject and narrows
+  свѣ́тъ instead); tests, stable clippy over every target and feature,
+  `cargo doc` clean.

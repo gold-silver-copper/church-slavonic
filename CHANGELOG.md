@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.1.0 (in progress) — the sentence in the library, the Ponomar library
+
+The plan is `V4-PROMPT.md` Parts 1–3.
+
+### Part 1 — the sentence in the library (2026-09-06)
+
+- **`church_slavonic::sentence`**: `Sentence::parse` (tokenize and lift
+  a verse), `disambiguate` (the seven eliminations, each named on the
+  leaf), `print` (the round trip), `tokens()` (the words with their
+  readings, the rule that narrowed each, the set it narrowed from). The
+  tree type, the lifter, the rules and the closed table moved from the
+  tools (1,509 lines); the tools keep the s-expression form and the
+  Bible, and call the library.
+- No number moved: the treebank's table (one cell 244,589, sets 2,306, tagger 186,594, closed 179,009, several lexemes 12,868, verbatim 5,430, apparatus 1,150; zero mismatches), the overlay's score (466 / 0; tagger 1,200 of 1,609), the census (5,408) and the recall unchanged.
+
 ## 4.0.0 (2026-09-06) — the public API's shape
 
 The plan is `V4-PROMPT.md` Part 0. A major release: the calls a consumer
